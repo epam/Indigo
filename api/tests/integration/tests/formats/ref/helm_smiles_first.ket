@@ -59,50 +59,34 @@
         "alias": "Mod0",
         "attachmentPoints": [
             {
-                "attachmentAtom": 8,
+                "attachmentAtom": 6,
                 "label": "R1",
                 "leavingGroup": {
                     "atoms": [
-                        10
+                        7
                     ]
                 }
             },
             {
-                "attachmentAtom": 5,
+                "attachmentAtom": 3,
                 "label": "R2",
                 "leavingGroup": {
                     "atoms": [
-                        11
+                        4
                     ]
                 }
             },
             {
-                "attachmentAtom": 1,
+                "attachmentAtom": 0,
                 "label": "R3",
                 "leavingGroup": {
                     "atoms": [
-                        9
+                        1
                     ]
                 }
             }
         ],
         "atoms": [
-            {
-                "label": "O",
-                "location": [
-                    -1.082676,
-                    -1.202434,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    -0.169131,
-                    -1.609170,
-                    0.000000
-                ]
-            },
             {
                 "label": "C",
                 "location": [
@@ -112,10 +96,10 @@
                 ]
             },
             {
-                "label": "O",
+                "label": "H",
                 "location": [
-                    1.494522,
-                    -0.970554,
+                    -0.000000,
+                    -1.732051,
                     0.000000
                 ]
             },
@@ -130,56 +114,40 @@
             {
                 "label": "O",
                 "location": [
-                    0.406737,
-                    0.913545,
+                    0.500000,
+                    0.866025,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    1.500000,
+                    0.866025,
                     0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -0.978147,
-                    -0.207912,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    -1.721292,
-                    0.461219,
+                    -1.000000,
+                    0.000000,
                     0.000000
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    -2.672349,
-                    0.152202,
+                    -1.500000,
+                    0.866025,
                     0.000000
                 ]
             },
             {
                 "label": "H",
                 "location": [
-                    0.038781,
-                    -2.587318,
-                    0.000000
-                ]
-            },
-            {
-                "label": "H",
-                "location": [
-                    -3.415494,
-                    0.821333,
-                    0.000000
-                ]
-            },
-            {
-                "label": "H",
-                "location": [
-                    1.401258,
-                    1.018074,
+                    -2.500000,
+                    0.866025,
                     0.000000
                 ]
             }
@@ -195,37 +163,36 @@
             {
                 "type": 1,
                 "atoms": [
-                    1,
-                    2
-                ]
+                    2,
+                    0
+                ],
+                "stereo": 6
             },
             {
                 "type": 1,
                 "atoms": [
                     2,
                     3
-                ],
-                "stereo": 1
+                ]
             },
             {
                 "type": 1,
                 "atoms": [
-                    2,
+                    3,
                     4
                 ]
             },
             {
                 "type": 1,
                 "atoms": [
-                    4,
+                    2,
                     5
-                ],
-                "stereo": 1
+                ]
             },
             {
                 "type": 1,
                 "atoms": [
-                    4,
+                    5,
                     6
                 ]
             },
@@ -233,44 +200,7 @@
                 "type": 1,
                 "atoms": [
                     6,
-                    0
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    6,
                     7
-                ],
-                "stereo": 6
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    7,
-                    8
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    1,
-                    9
-                ],
-                "stereo": 6
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    10,
-                    8
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    11,
-                    5
                 ]
             }
         ]
