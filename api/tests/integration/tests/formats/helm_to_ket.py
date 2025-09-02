@@ -58,7 +58,7 @@ helm_data = {
     "helm_alias_single_r_p": "RNA1{r.p}$$$$V2.0",
     "helm_alias_ambiguous": "RNA1{[Sm5moe]([m2nprn2A]+[nobn6pur]+[nC6n2G]+[nC6n8A])[mepo2]}$$$$V2.0",
     "helm_rsite_no_brackets": "PEPTIDE1{[dF].C.F.[dW].K.T.C.[*N[C@H](CO)[C@@H](C)O|$_R1;;;;;;;$|]}$PEPTIDE1,PEPTIDE1,2:R3-7:R3$$$",
-    "helm_smiles_first": "RNA1{[O1[C@@H]%91[C@H](O)[C@H](O%92)[C@H]1CO%93.[*:3]%91.[*:1]%93.[*:2]%92 |$;;;;;;;;;_R3;_R1;_R2$|].p}$$$$V2.0",
+    "helm_smiles_first": "RNA1{[C([*:3])[C@@H](O[*:2])CO[*:1]].p}$$$$V2.0",
 }
 
 lib = indigo.loadMonomerLibraryFromFile(
