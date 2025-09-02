@@ -610,9 +610,8 @@ void SmilesLoader::_readOtherStuff()
                             {
                                 std::unique_ptr<QueryMolecule::Atom> x_atom = std::make_unique<QueryMolecule::Atom>();
 
-                                x_atom->type = QueryMolecule::OP_NONE;
+                                x_atom->type = QueryMolecule::ATOM_STAR;
                                 _qmol->resetAtom(i, x_atom.release());
-                                _qmol->setAlias(i, "*");
                             }
                             else if (label.size() == 2 && label[0] == 'X')
                             {

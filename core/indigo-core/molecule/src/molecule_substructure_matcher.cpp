@@ -381,8 +381,11 @@ bool MoleculeSubstructureMatcher::matchQueryAtom(QueryMolecule::Atom* query, Bas
 
     switch (query->type)
     {
+    // ATOM_STAR which came from SMILES/MOL matches any atom
+    case QueryMolecule::ATOM_STAR:
     case QueryMolecule::OP_NONE:
         return true;
+        break;
     case QueryMolecule::OP_AND:
         for (i = 0; i < query->children.size(); i++)
             if (!matchQueryAtom(query->child(i), target, super_idx, fmcache, flags))
