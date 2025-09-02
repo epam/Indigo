@@ -763,8 +763,9 @@ void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chi
             output.printf("A");
         break;
     }
-    // both AH and * represented as * in SMARTS. TODO: it should be replaced here with *,H
     case ATOM_STAR:
+        output.writeString("*,H");
+        break;
     case OP_NONE:
         output.writeChar('*');
         break;
