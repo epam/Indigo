@@ -763,6 +763,8 @@ void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chi
             output.printf("A");
         break;
     }
+    // both AH and * represented as * in SMARTS. TODO: it should be replaced here with *,H
+    case ATOM_STAR:
     case OP_NONE:
         output.writeChar('*');
         break;
@@ -2819,6 +2821,8 @@ int QueryMolecule::parseQueryAtomSmarts(QueryMolecule& qm, int aid, std::vector<
     QueryMolecule::Atom& qa = qm.getAtom(aid);
     if (qa.type == QueryMolecule::OP_NONE)
         return QUERY_ATOM_AH;
+    if (qa.type == QueryMolecule::ATOM_STAR)
+        return QUERY_ATOM_STAR;
     if (_isAtomOrListAndProps(&qa, query_atom_list, negative, atom_props))
     {
         bool can_be_query_atom = true;
@@ -2842,7 +2846,7 @@ int QueryMolecule::parseQueryAtomSmarts(QueryMolecule& qm, int aid, std::vector<
             if (negative)
             {
                 if (atom_list.size() == 1 && atom_list[0] == ELEM_H)
-                    return QUERY_ATOM_STAR; // !H
+                    return QUERY_ATOM_A;
                 else if (atom_list == std::vector<int>{ELEM_H, ELEM_C})
                     return QUERY_ATOM_Q;
                 else if (atom_list == std::vector<int>{ELEM_C})
@@ -2889,6 +2893,8 @@ int QueryMolecule::parseQueryAtom(QueryMolecule::Atom& qa, Array<int>& list)
     QueryMolecule::Atom* qc = stripKnownAttrs(qa);
     if (qa.type == QueryMolecule::OP_NONE)
         return QUERY_ATOM_AH;
+    if (qa.type == QueryMolecule::ATOM_STAR)
+        return QUERY_ATOM_STAR;
     if (qc != NULL && isNotAtom(*qc, ELEM_H))
         return QUERY_ATOM_A;
     bool notList = false;
@@ -2966,7 +2972,7 @@ bool QueryMolecule::queryAtomIsSpecial(int query_atom_type)
     if ((query_atom_type == QueryMolecule::QUERY_ATOM_Q) || (query_atom_type == QueryMolecule::QUERY_ATOM_QH) ||
         (query_atom_type == QueryMolecule::QUERY_ATOM_X) || (query_atom_type == QueryMolecule::QUERY_ATOM_XH) ||
         (query_atom_type == QueryMolecule::QUERY_ATOM_M) || (query_atom_type == QueryMolecule::QUERY_ATOM_MH) ||
-        (query_atom_type == QueryMolecule::QUERY_ATOM_AH))
+        (query_atom_type == QueryMolecule::QUERY_ATOM_AH) || (query_atom_type == QueryMolecule::QUERY_ATOM_STAR))
     {
         return true;
     }
