@@ -823,8 +823,9 @@ void SmilesSaver::_writeAtom(int idx, bool /*aromatic*/, bool lowercase, int chi
                     throw Error("atom list can be used only with smarts_mode");
             }
         }
-
-        throw Error("undefined atom number");
+        // any undefined atom
+        _output.printf("*");
+        return;
     }
 
     if (inside_rsmiles)
