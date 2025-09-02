@@ -334,7 +334,7 @@ void MolfileLoader::_readCtab2000()
                 throw Error("'AH' label is allowed only for queries");
             atom_type = _ATOM_AH;
         }
-        else if (buf[0] == 'X' && buf[1] == 0 && !treat_x_as_pseudoatom) // TODO: treat_x_as_pseudoatom should be checked only for mol? 
+        else if (buf[0] == 'X' && buf[1] == 0 && !treat_x_as_pseudoatom) // TODO: treat_x_as_pseudoatom should be checked only for mol?
         {
             if (_qmol == 0)
                 throw Error("'X' label is allowed only for queries");
