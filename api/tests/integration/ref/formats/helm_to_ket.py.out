@@ -23,6 +23,7 @@ helm_rna_without_base.ket:SUCCEED
 helm_rsite_no_brackets.ket:SUCCEED
 helm_simple_rna.ket:SUCCEED
 helm_smiles.ket:SUCCEED
+helm_smiles_first.ket:SUCCEED
 helm_smiles_no_ap.ket:SUCCEED
 helm_smiles_sugar.ket:SUCCEED
 helm_unresolved.ket:SUCCEED
