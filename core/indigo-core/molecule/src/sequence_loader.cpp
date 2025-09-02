@@ -1952,12 +1952,14 @@ void SequenceLoader::loadHELM(KetDocument& document)
                     if (ch == '.' || ch == '}') // single monomer - could be unsplitted RNA or phosphate or sugar
                     {
                         size_t added_idx;
+                        auto& monomer_alias = std::get<0>(monomer_info);
+                        auto tmpl_it = _alias_to_id.find(std::make_pair(MonomerClass::Sugar, monomer_alias));
                         // if found sugar id - add sugar, else if found phosphate id - add phosphate, else - add unsplitted RNA(may be unresolved)
-                        if (_library.getMonomerTemplateIdByAlias(MonomerClass::Sugar, std::get<0>(monomer_info)).size() > 0 ||
-                            _library.getMonomerTemplateIdByAliasHELM(MonomerClass::Sugar, std::get<0>(monomer_info)).size() > 0)
+                        if (tmpl_it != _alias_to_id.end() || _library.getMonomerTemplateIdByAlias(MonomerClass::Sugar, monomer_alias).size() > 0 ||
+                            _library.getMonomerTemplateIdByAliasHELM(MonomerClass::Sugar, monomer_alias).size() > 0)
                             added_idx = addHelmMonomer(document, monomer_info, MonomerClass::Sugar, pos);
-                        else if (_library.getMonomerTemplateIdByAlias(MonomerClass::Phosphate, std::get<0>(monomer_info)).size() > 0 ||
-                                 _library.getMonomerTemplateIdByAliasHELM(MonomerClass::Phosphate, std::get<0>(monomer_info)).size() > 0)
+                        else if (_library.getMonomerTemplateIdByAlias(MonomerClass::Phosphate, monomer_alias).size() > 0 ||
+                                 _library.getMonomerTemplateIdByAliasHELM(MonomerClass::Phosphate, monomer_alias).size() > 0)
                             added_idx = addHelmMonomer(document, monomer_info, MonomerClass::Phosphate, pos);
                         else
                             added_idx = addHelmMonomer(document, monomer_info, MonomerClass::RNA, pos);
