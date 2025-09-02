@@ -27,7 +27,7 @@ ref_path = joinPathPy("ref/", __file__)
 filename = "star_atom"
 expected_smiles = "*C.*N.*O |$;;AH_p;;star_e;$|"
 
-mol = indigo.loadQueryMolecule(expected_smiles)
+mol = indigo.loadMolecule(expected_smiles)
 
 # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
 #     file.write(mol.json())
