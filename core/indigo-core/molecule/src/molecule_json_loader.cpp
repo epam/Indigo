@@ -175,6 +175,9 @@ int MoleculeJsonLoader::addAtomToMoleculeQuery(const char* label, int element, i
         case _ATOM_A:
             atom.reset(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)));
             break;
+        case _ATOM_STAR:
+            atom->type = QueryMolecule::ATOM_STAR;
+            break;
         case _ATOM_AH:
             atom->type = QueryMolecule::OP_NONE;
             break;
@@ -239,9 +242,6 @@ int MoleculeJsonLoader::addAtomToMoleculeQuery(const char* label, int element, i
             break;
         case _ATOM_R:
             atom = std::make_unique<QueryMolecule::Atom>(QueryMolecule::ATOM_RSITE, 0);
-            break;
-        case _ATOM_STAR:
-            atom.reset(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)));
             break;
         }
     }

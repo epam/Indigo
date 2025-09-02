@@ -73,7 +73,7 @@ namespace indigo
             OP_AND,
             OP_OR,
             OP_NOT,
-
+            ATOM_STAR,
             ATOM_NUMBER,
             ATOM_PSEUDO,
             ATOM_RSITE,
