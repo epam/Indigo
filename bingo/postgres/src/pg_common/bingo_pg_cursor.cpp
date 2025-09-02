@@ -4,6 +4,7 @@ extern "C"
 {
 #include "postgres.h"
 
+#include "access/xact.h"
 #include "catalog/pg_type.h"
 #include "executor/spi.h"
 #include "fmgr.h"
@@ -24,6 +25,10 @@ using namespace indigo;
 
 IMPL_ERROR(BingoPgCursor, "bingo cursor access");
 
+static void bingoPgCursorXactCallback(XactEvent event, void* arg);
+static bool callbackRegistered = false;
+static int cursorsToFinish = 0;
+
 BingoPgCursor::BingoPgCursor(const char* format, ...)
 {
     Array<char> buf;
@@ -33,6 +38,7 @@ BingoPgCursor::BingoPgCursor(const char* format, ...)
     output.vprintf(format, args);
     output.writeChar(0);
     va_end(args);
+    _finishOnTransactionEnd = false;
 
     _init(buf);
 }
@@ -49,10 +55,23 @@ BingoPgCursor::~BingoPgCursor()
      */
     BINGO_PG_TRY
     {
+        if (!callbackRegistered)
+        {
+            callbackRegistered = false;
+            RegisterXactCallback(bingoPgCursorXactCallback, NULL);
+        }
         Portal cur_ptr = SPI_cursor_find(_cursorName.ptr());
         if (cur_ptr != NULL)
             SPI_cursor_close((Portal)_cursorPtr);
-        SPI_finish();
+        if (_finishOnTransactionEnd)
+        {
+            ++cursorsToFinish;
+        }
+        else
+        {
+            SPI_finish();
+        }
+
         SPI_pop_conditional(_pushed);
     }
     BINGO_PG_HANDLE(elog(WARNING, "internal error: can not close the cursor: %s", message));
@@ -201,6 +220,7 @@ void BingoPgCursor::_init(indigo::Array<char>& query_str)
     {
         _pushed = SPI_push_conditional();
         SPI_connect();
+
         SPIPlanPtr plan_ptr = SPI_prepare_cursor(query_str.ptr(), arg_types.size(), arg_types.ptr(), 0);
 
         auto cursor_idx = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now().time_since_epoch()).count();
@@ -211,4 +231,16 @@ void BingoPgCursor::_init(indigo::Array<char>& query_str)
         _cursorPtr = SPI_cursor_open(_cursorName.ptr(), plan_ptr, 0, 0, true);
     }
     BINGO_PG_HANDLE(throw Error("internal error: can not prepare or open a cursor: %s", message));
+}
+
+static void bingoPgCursorXactCallback(XactEvent event, void* arg)
+{
+    if (event == XACT_EVENT_COMMIT || event == XACT_EVENT_PARALLEL_COMMIT || event == XACT_EVENT_ABORT || event == XACT_EVENT_PARALLEL_ABORT)
+    {
+        while (cursorsToFinish > 0)
+        {
+            --cursorsToFinish;
+            SPI_finish();
+        }
+    }
 }

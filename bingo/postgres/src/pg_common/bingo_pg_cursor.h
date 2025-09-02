@@ -22,13 +22,24 @@ public:
     uintptr_t getDatum(int arg_idx);
     unsigned int getArgOid(int arg_idx);
 
+    /**
+     * Forces deferred SPI_finish at transaction end instead of immediately
+     * when the cursor is destroyed. This is needed to avoid invoking
+     * inside the index code. SPI_finish will be called once
+     * the transaction has fully ended.
+     */
+    void finishOnTransactionEnd()
+    {
+        _finishOnTransactionEnd = true;
+    }
+
     DECL_ERROR;
 
 private:
     BingoPgCursor(const BingoPgCursor&); // no implicit copy
 
     void _init(indigo::Array<char>& query_str);
-
+    bool _finishOnTransactionEnd;
     indigo::Array<char> _cursorName;
     PG_OBJECT _cursorPtr;
     bool _pushed;

@@ -34,6 +34,11 @@ def entities(request, indigo):
     del entities
 
 
+@pytest.fixture
+def db_backend(request):
+    return request.config.getoption("--db")
+
+
 @pytest.fixture(scope="class")
 def db(request, indigo):
     db_str = request.config.getoption("--db")
@@ -65,7 +70,6 @@ def db(request, indigo):
         pass
     elif db_str == DB_MSSQL:
         pass
-
     yield db
 
     logger.info("Dropping DB...")
