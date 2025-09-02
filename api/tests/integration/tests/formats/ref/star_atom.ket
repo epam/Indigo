@@ -77,7 +77,6 @@
         "atoms": [
             {
                 "label": "*",
-                "alias": "*",
                 "location": [
                     0.0,
                     2.0,

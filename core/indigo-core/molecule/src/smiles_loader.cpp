@@ -1959,11 +1959,14 @@ void SmilesLoader::_loadParsedMolecule()
         }
     }
 
-    for (i = 0; i < _atoms.size(); i++)
+    if (_mol)
     {
-        if (_atoms[i].star_atom && _atoms[i].label == ELEM_PSEUDO)
+        for (i = 0; i < _atoms.size(); i++)
         {
-            _mol->setPseudoAtom(i, "A");
+            if (_atoms[i].star_atom && _atoms[i].label == ELEM_PSEUDO)
+            {
+                _mol->setPseudoAtom(i, "*");
+            }
         }
     }
 
