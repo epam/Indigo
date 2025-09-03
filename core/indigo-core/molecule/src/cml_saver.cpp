@@ -154,7 +154,8 @@ void CmlSaver::_addMoleculeElement(XMLElement* elem, BaseMolecule& mol, bool que
                     {
                         atom_str = Element::toString(ELEM_C);
                     }
-                } else
+                }
+                else
                     atom_str = "*";
             }
 
