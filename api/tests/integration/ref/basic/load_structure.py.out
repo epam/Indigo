@@ -6,7 +6,7 @@
 
 
 (** #2 **): Smile (no parameter):
-C1C=CC=CC=1* |$;;;;;;*$|
+C1C=CC=CC=1* |$;;;;;;star_e$|
 
 (** #3 **): Smile (query parameter):
 C1C=CC=CC=1*
@@ -23,7 +23,7 @@ C1C=CC=CC=1*>>C1C=C(*)C=CC=1
 C1C=CC=CC=1*>>C1C=C(*)C=CC=1
 
 (** #7 **): Smiles, (no parameter):
-C1C=CC=CC=1* |$;;;;;;*$|
+C1C=CC=CC=1* |$;;;;;;star_e$|
 
 (** #8 **): Smarts, (smarts parameter):
 [O;H]-c1ccccc1
