@@ -377,7 +377,7 @@ C1c2cc3cc4ccc5cc6Cc7cc8ccc1c1c9c%10c%11c(c6c7c%10c81)c5c4c%11c3c29
 M  END
 
 C*CC |$;;;R$|
-C*CC |$;*;;R$|
+C*CC |$;star_e;;R$|
 
   -INDIGO-01000000002D
 
@@ -394,7 +394,7 @@ R
 M  END
 
 C*CC |$;;R$|
-C*CC |$;*;R;$|
+C*CC |$;star_e;R;$|
 
   -INDIGO-01000000002D
 
@@ -426,7 +426,7 @@ C*CC |$;R;;$|
 M  END
 
 C*CC |$R$|
-C*CC |$R;*;;$|
+C*CC |$R;star_e;;$|
 
   -INDIGO-01000000002D
 
@@ -443,7 +443,7 @@ R
 M  END
 
 C*CC |$R$|
-C*CC |$R;*;;$|
+C*CC |$R;star_e;;$|
 
   -INDIGO-01000000002D
 
