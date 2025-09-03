@@ -2763,6 +2763,10 @@ bool QueryMolecule::_isAtomOrListAndProps(Atom* p_query_atom, std::vector<std::u
             neg = is_neg;
             return true;
         }
+        else if (p_query_atom_child->type == ATOM_STAR)
+        {
+            return true;
+        }
         else if (!is_neg && isAtomProperty(p_query_atom_child->type)) // atom property, no negative props here
         {
             properties[p_query_atom_child->type] = std::unique_ptr<Atom>(p_query_atom_child->clone());
@@ -2874,7 +2878,7 @@ int QueryMolecule::parseQueryAtomSmarts(QueryMolecule& qm, int aid, std::vector<
         else
         {
             if (query_atom_list.size() == 0)
-                return QUERY_ATOM_A;
+                return QUERY_ATOM_STAR;
             else if (query_atom_list.size() == 1)
                 return QUERY_ATOM_SINGLE;
             else

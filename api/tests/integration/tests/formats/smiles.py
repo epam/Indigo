@@ -146,3 +146,9 @@ for sm in mols_smiles:
         bs = mol.getBond(i).bondStereo()
         if bs > 0:
             print("bond:%d stereo:%d" % (i, bs))
+
+print("*** Star atom ***")
+mols_smiles = ["*1C=*C=*C=1"]
+for sm in mols_smiles:
+    mol = indigo.loadMolecule(sm)
+    print(mol.json())

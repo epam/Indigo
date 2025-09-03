@@ -32,3 +32,9 @@ print(
         joinPathPy("molecules/macro/sa-mono.mol", __file__)
     ).smiles()
 )
+
+print(
+    indigo.loadMoleculeFromFile(
+        joinPathPy("molecules/3088-star-smarts.mol", __file__)
+    ).smarts()
+)
