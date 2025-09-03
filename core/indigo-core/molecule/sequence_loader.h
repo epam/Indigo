@@ -65,8 +65,6 @@ namespace indigo
         void loadSequence(BaseMolecule& mol, const std::string& seq_type_str);
         void loadFasta(BaseMolecule& mol, const std::string& seq_type_str);
         void loadFasta(BaseMolecule& mol, SeqType seq_type);
-        void loadIdt(BaseMolecule& mol);
-        void loadHELM(BaseMolecule& mol);
 
         void loadSequence(KetDocument& document, const std::string& seq_type_str);
         void loadSequence(KetDocument& document, SeqType seq_type);
