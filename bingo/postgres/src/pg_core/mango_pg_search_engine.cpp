@@ -424,6 +424,10 @@ void MangoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr)
     }
     // profTimerStart(t4, "mango_pg.exact_search_cursor");
     _searchCursor = std::make_unique<BingoPgCursor>("SELECT %s FROM %s WHERE %s", what_clause.ptr(), from_clause.ptr(), where_clause.ptr());
+    if (_deferred_finish)
+    {
+        _searchCursor->finishOnTransactionEnd();
+    }
     // profTimerStop(t4);
     //   if(nanoHowManySeconds(profTimerGetTime(t4) )> 1)
     //      elog(WARNING, "select %s from %s where %s", what_clause.ptr(), from_clause.ptr(), where_clause.ptr());
@@ -466,6 +470,10 @@ void MangoPgSearchEngine::_prepareGrossSearch(PG_OBJECT scan_desc_ptr)
     {
         const char* gross_conditions = bingoCore.mangoGrossGetConditions();
         _searchCursor = std::make_unique<BingoPgCursor>("SELECT b_id, gross FROM %s WHERE %s", _shadowRelName.ptr(), gross_conditions);
+        if (_deferred_finish)
+        {
+            _searchCursor->finishOnTransactionEnd();
+        }
     }
     CORE_CATCH_ERROR("molecule search engine: can not get gross conditions")
 }
@@ -473,6 +481,10 @@ void MangoPgSearchEngine::_prepareGrossSearch(PG_OBJECT scan_desc_ptr)
 void MangoPgSearchEngine::_prepareSmartsSearch(PG_OBJECT scan_desc_ptr)
 {
     _prepareSubSearch(scan_desc_ptr);
+    if (_deferred_finish)
+    {
+        _searchCursor->finishOnTransactionEnd();
+    }
 }
 
 void MangoPgSearchEngine::_prepareMassSearch(PG_OBJECT scan_desc_ptr)
@@ -514,6 +526,10 @@ void MangoPgSearchEngine::_prepareMassSearch(PG_OBJECT scan_desc_ptr)
         where_clause.printf("AND mass < %f", max_mass);
     where_clause.writeChar(0);
     _searchCursor = std::make_unique<BingoPgCursor>("SELECT b_id FROM %s WHERE %s", _shadowRelName.ptr(), where_clause_str.ptr());
+    if (_deferred_finish)
+    {
+        _searchCursor->finishOnTransactionEnd();
+    }
 }
 
 void MangoPgSearchEngine::_prepareSimSearch(PG_OBJECT scan_desc_ptr)
