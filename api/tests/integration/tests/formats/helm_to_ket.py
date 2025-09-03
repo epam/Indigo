@@ -58,6 +58,7 @@ helm_data = {
     "helm_alias_single_r_p": "RNA1{r.p}$$$$V2.0",
     "helm_alias_ambiguous": "RNA1{[Sm5moe]([m2nprn2A]+[nobn6pur]+[nC6n2G]+[nC6n8A])[mepo2]}$$$$V2.0",
     "helm_rsite_no_brackets": "PEPTIDE1{[dF].C.F.[dW].K.T.C.[*N[C@H](CO)[C@@H](C)O|$_R1;;;;;;;$|]}$PEPTIDE1,PEPTIDE1,2:R3-7:R3$$$",
+    "helm_smiles_first": "RNA1{[C([*:3])[C@@H](O[*:2])CO[*:1]].p}$$$$V2.0",
 }
 
 lib = indigo.loadMonomerLibraryFromFile(
@@ -67,8 +68,8 @@ lib = indigo.loadMonomerLibraryFromFile(
 for filename in sorted(helm_data.keys()):
     try:
         mol = indigo.loadHelm(helm_data[filename], lib)
-        with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
-            file.write(mol.json())
+        # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
+        #     file.write(mol.json())
         with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
             ket_ref = file.read()
         ket = mol.json()
