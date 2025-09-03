@@ -150,11 +150,12 @@ void CmlSaver::_addMoleculeElement(XMLElement* elem, BaseMolecule& mol, bool que
                     {
                         atom_str = Element::toString(list[0]);
                     }
-                    if (QueryMolecule::queryAtomIsSpecial(*qmol, i) || query_atom_type == QueryMolecule::QUERY_ATOM_A)
+                    else if (QueryMolecule::queryAtomIsSpecial(*qmol, i) || query_atom_type == QueryMolecule::QUERY_ATOM_A)
                     {
                         atom_str = Element::toString(ELEM_C);
                     }
-                }
+                } else
+                    atom_str = "*";
             }
 
             if (atom_str == nullptr)

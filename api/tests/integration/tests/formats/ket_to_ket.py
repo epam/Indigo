@@ -27,11 +27,19 @@ root_rea = joinPathPy("reactions/", __file__)
 
 files = [
     "images",
+    "3087-star-process",
 ]
 
 files.sort()
 for filename in files:
-    mol = indigo.loadMoleculeFromFile(os.path.join(root, filename + ".ket"))
+    try:
+        mol = indigo.loadMoleculeFromFile(
+            os.path.join(root, filename + ".ket")
+        )
+    except:
+        mol = indigo.loadQueryMoleculeFromFile(
+            os.path.join(root, filename + ".ket")
+        )
 
     # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
     #     file.write(mol.json())

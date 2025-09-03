@@ -1,4 +1,5 @@
 *** KET to KET ***
+3087-star-process.ket:SUCCEED
 images.ket:SUCCEED
 ambiguous_monomer.ket doc loadKetDocument: SUCCEED
 ambiguous_monomer.ket mol loadMolecule: SUCCEED
