@@ -28,9 +28,13 @@ files = ["1878-ket-to-cml", "macro/sa-mono", "3086-star-cml"]
 files.sort()
 for filename in files:
     try:
-        ket = indigo.loadMoleculeFromFile(os.path.join(root, filename + ".ket"))
+        ket = indigo.loadMoleculeFromFile(
+            os.path.join(root, filename + ".ket")
+        )
     except:
-        ket = indigo.loadQueryMoleculeFromFile(os.path.join(root, filename + ".ket"))
+        ket = indigo.loadQueryMoleculeFromFile(
+            os.path.join(root, filename + ".ket")
+        )
 
     cml = ket.cml()
     # with open(os.path.join(ref_path, filename) + ".cml", "w") as file:
