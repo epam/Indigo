@@ -502,32 +502,32 @@
     {
         "query_id": 101,
         "query_type": "rsmiles",
-        "expected": "C1(=O)CCN1>>*C{-}(CCN{+n}*)=O |$;;;;;*;;;;;*;$|"
+        "expected": "C1(=O)CCN1>>*C{-}(CCN{+n}*)=O |$;;;;;star_e;;;;;star_e;$|"
     },
     {
         "query_id": 102,
         "query_type": "rsmiles",
-        "expected": "[C:2]1(=[O:1])[CH2:3][CH2:4][NH:5]1>>*[C:2]{-}([CH2:3][CH2:4][NH:5]{+n}*)=[O:1] |$;;;;;*;;;;;*;$|"
+        "expected": "[C:2]1(=[O:1])[CH2:3][CH2:4][NH:5]1>>*[C:2]{-}([CH2:3][CH2:4][NH:5]{+n}*)=[O:1] |$;;;;;star_e;;;;;star_e;$|"
     },
     {
         "query_id": 103,
         "query_type": "rsmiles",
-        "expected": "C1(=O)CCN1>>*C{-}(CCN{+n}*)=O |$;;;;;*;;;;;*;$|"
+        "expected": "C1(=O)CCN1>>*C{-}(CCN{+n}*)=O |$;;;;;star_e;;;;;star_e;$|"
     },
     {
         "query_id": 104,
         "query_type": "rsmiles",
-        "expected": "C1(=O)CCN1>>*C{-}(CCN{+n}*)=O |$;;;;;*;;;;;*;$|"
+        "expected": "C1(=O)CCN1>>*C{-}(CCN{+n}*)=O |$;;;;;star_e;;;;;star_e;$|"
     },
     {
         "query_id": 105,
         "query_type": "rsmiles",
-        "expected": "OC(CCN([H])[H])=O>>*C{-}(CCN{+n}*)=O |$;;;;;;;;*;;;;;*;$|"
+        "expected": "OC(CCN([H])[H])=O>>*C{-}(CCN{+n}*)=O |$;;;;;;;;star_e;;;;;star_e;$|"
     },
     {
         "query_id": 106,
         "query_type": "rsmiles",
-        "expected": "O[C:2]([CH2:3][CH2:4][N:5]([H])[H])=[O:1]>>*[C:2]{-}([CH2:3][CH2:4][NH:5]{+n}*)=[O:1] |$;;;;;;;;*;;;;;*;$|"
+        "expected": "O[C:2]([CH2:3][CH2:4][N:5]([H])[H])=[O:1]>>*[C:2]{-}([CH2:3][CH2:4][NH:5]{+n}*)=[O:1] |$;;;;;;;;star_e;;;;;star_e;$|"
     },
     {
         "query_id": 107,
