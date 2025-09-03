@@ -65,12 +65,12 @@ bool BingoPgSearch::next(PG_OBJECT scan_desc_ptr, PG_OBJECT result_ptr)
     return _fpEngine->searchNext(result_ptr);
 }
 
-void BingoPgSearch::prepareRescan(PG_OBJECT scan_desc_ptr)
+void BingoPgSearch::prepareRescan(PG_OBJECT scan_desc_ptr, bool deferred_finish)
 {
     _indexScanDesc = scan_desc_ptr;
     if (_initSearch)
     {
-        _initScanSearch();
+        _initScanSearch(deferred_finish);
     }
     else
     {
@@ -81,7 +81,7 @@ void BingoPgSearch::prepareRescan(PG_OBJECT scan_desc_ptr)
     }
 }
 
-void BingoPgSearch::_initScanSearch()
+void BingoPgSearch::_initScanSearch(bool deferred_finish)
 {
     _initSearch = false;
 
@@ -102,6 +102,8 @@ void BingoPgSearch::_initScanSearch()
         _fpEngine = std::make_unique<RingoPgSearchEngine>(rel_name);
     else
         throw Error("unknown index type %d", index_type);
+
+    _fpEngine->setDeferredFinish(deferred_finish);
     /*
      * Read configuration from index tuple
      */
