@@ -66,6 +66,8 @@ idt_data = {
     "idt_rna_dna_mixed_custom": "r(R1:50003000)(R1)",
     "idt_mixed_ketcher": "KrK(K1:00003070)r(K2:00003070)",
     "idt_issue_2257": "/3ThioMC3-D/",
+    "idt_issue_3144": "/5AmMC6/rA/3Phos/",
+    "idt_baseless": "/5dSp//idSp//3dSp/",
 }
 
 for filename in sorted(idt_data.keys()):
@@ -92,7 +94,7 @@ idt_errors = {
     "ket-to-idt-invalid-last-phosphate": "Sequence saver: Cannot save molecule in IDT format - phosphate R cannot be last monomer in sequence.",
     "ket-to-idt-invalid-nucleotide": "IDT alias for group sugar:m2e2r base:z8c3G phosphate:mepo2 not found.",
     "ket-to-idt-invalid-sugar-phosphate": "IDT alias for group sugar:m2e2r phosphate:mepo2 not found.",
-    "ket-to-idt-invalid-sugar": "Cannot save molecule in IDT format - sugar whithout base.",
+    "ket-to-idt-invalid-sugar": "IDT alias for sugar:m2e2r not found.",
     "ket-to-idt-invalid-sugar-base": "IDT alias for group sugar:m2e2r base:z8c3G not found.",
     "ket-to-idt-alternatives-base": "Cannot save IDT - only mixture supported but found alternatives.",
 }
