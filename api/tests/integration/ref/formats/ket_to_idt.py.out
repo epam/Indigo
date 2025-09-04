@@ -9,6 +9,7 @@ idt_52moera_sp_32moera.ket:SUCCEED
 idt_52moera_sp_i2moera_sp.ket:SUCCEED
 idt_52moera_with_3phos.ket:SUCCEED
 idt_5phos.ket:SUCCEED
+idt_baseless.ket:SUCCEED
 idt_bases.ket:SUCCEED
 idt_i2moera.ket:SUCCEED
 idt_i2moera_32moera.ket:SUCCEED
@@ -16,6 +17,7 @@ idt_i2moera_sp.ket:SUCCEED
 idt_i2moera_sp_32moera.ket:SUCCEED
 idt_i2moera_t.ket:SUCCEED
 idt_issue_2257.ket:SUCCEED
+idt_issue_3144.ket:SUCCEED
 idt_many_molecules.ket:SUCCEED
 idt_mixed.ket:SUCCEED
 idt_mixed_custom.ket:SUCCEED
@@ -36,7 +38,7 @@ Test ket-to-idt-alternatives-base: got expected error 'Cannot save IDT - only mi
 Test ket-to-idt-invalid-last-phosphate: got expected error 'Sequence saver: Cannot save molecule in IDT format - phosphate R cannot be last monomer in sequence.'
 Test ket-to-idt-invalid-nucleotide: got expected error 'IDT alias for group sugar:m2e2r base:z8c3G phosphate:mepo2 not found.'
 Test ket-to-idt-invalid-posphates: got expected error 'Sequence saver: Cannot save in IDT format - nonstandard connection found.'
-Test ket-to-idt-invalid-sugar: got expected error 'Cannot save molecule in IDT format - sugar whithout base.'
+Test ket-to-idt-invalid-sugar: got expected error 'IDT alias for sugar:m2e2r not found.'
 Test ket-to-idt-invalid-sugar-base: got expected error 'IDT alias for group sugar:m2e2r base:z8c3G not found.'
 Test ket-to-idt-invalid-sugar-phosphate: got expected error 'IDT alias for group sugar:m2e2r phosphate:mepo2 not found.'
 Test ket-to-idt-peptide: got expected error 'Sequence saver: Cannot save molecule in IDT format - expected sugar but found AminoAcid monomer DPhe4C.'

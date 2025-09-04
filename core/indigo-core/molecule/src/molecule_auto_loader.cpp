@@ -414,7 +414,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, MonomerTemplateLibrary
                 }
                 else if (kIDT == tag.data())
                 {
-                    sl.loadIdt(mol);
+                    sl.loadIdt(mol.getKetDocument());
                     return;
                 }
                 else if (kHELM == tag.data())
