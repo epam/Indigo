@@ -97,6 +97,7 @@ idt_errors = {
     "ket-to-idt-invalid-sugar": "IDT alias for sugar:m2e2r not found.",
     "ket-to-idt-invalid-sugar-base": "IDT alias for group sugar:m2e2r base:z8c3G not found.",
     "ket-to-idt-alternatives-base": "Cannot save IDT - only mixture supported but found alternatives.",
+    "ket-to-idt-no3prime": "Nucleotide '5Br-dU' has no 'three-prime end' IDT alias.",
 }
 for filename in sorted(idt_errors.keys()):
     error = idt_errors[filename]

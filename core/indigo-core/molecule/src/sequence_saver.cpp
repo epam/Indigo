@@ -31,7 +31,7 @@
 #include "molecule/smiles_saver.h"
 
 #ifdef _MSC_VER
-#pragma warning(push)
+#pragma warning(push, 4)
 #endif
 
 using namespace indigo;
@@ -407,8 +407,6 @@ void SequenceSaver::saveKetDocument(KetDocument& doc, SeqFormat sf)
 
 void SequenceSaver::saveIdt(KetDocument& doc, std::vector<std::deque<std::string>> sequences, std::string& seq_text)
 {
-    auto& monomer_templates = doc.templates();
-    auto& variant_monomer_templates = doc.ambiguousTemplates();
     auto& monomers = doc.monomers();
     if (doc.nonSequenceConnections().size() > 0)
         throw Error("Cannot save in IDT format - nonstandard connection found.");
@@ -432,10 +430,11 @@ void SequenceSaver::saveIdt(KetDocument& doc, std::vector<std::deque<std::string
             std::string phosphate;
             IdtModification possible_modification = modification;
             if (sequence.size() == 0) // last monomer
-                if (seq_string.size() > 0)
+            {
+                possible_modification = IdtModification::THREE_PRIME_END;
+                if (seq_string.size() != 0) // for corner case - only one monomer - modification will be FIVE_PRIME_END
                     modification = IdtModification::THREE_PRIME_END;
-                else // corner case - only one monomer
-                    possible_modification = IdtModification::THREE_PRIME_END;
+            }
 
             if (monomer_class == MonomerClass::Phosphate || monomer_class == MonomerClass::CHEM || monomer_class == MonomerClass::DNA ||
                 monomer_class == MonomerClass::RNA)
@@ -476,13 +475,13 @@ void SequenceSaver::saveIdt(KetDocument& doc, std::vector<std::deque<std::string
                 {
                     if (monomer_template.templateType() == KetBaseMonomerTemplate::TemplateType::MonomerTemplate &&
                         static_cast<const MonomerTemplate&>(monomer_template).unresolved())
-                        throw Error("Unresolved monomer '%s' has no IDT alias.", monomer.c_str());
+                        throw Error("Unresolved monomer '%s' has no '%s' IDT alias.", monomer.c_str(), IdtAlias::IdtModificationToString(modification).c_str());
                     else if (monomer_class == MonomerClass::DNA || monomer_class == MonomerClass::RNA)
-                        throw Error("Nucleotide '%s' has no IDT alias.", monomer.c_str());
+                        throw Error("Nucleotide '%s' has no '%s' IDT alias.", monomer.c_str(), IdtAlias::IdtModificationToString(modification).c_str());
                     else if (monomer_class == MonomerClass::Phosphate)
-                        throw Error("Phosphate '%s' has no IDT alias.", monomer.c_str());
+                        throw Error("Phosphate '%s' has no '%s' IDT alias.", monomer.c_str(), IdtAlias::IdtModificationToString(modification).c_str());
                     else // CHEM
-                        throw Error("Chem '%s' has no IDT alias.", monomer.c_str());
+                        throw Error("Chem '%s' has no '%s' IDT alias.", monomer.c_str(), IdtAlias::IdtModificationToString(modification).c_str());
                 }
             }
             else if (monomer_class != MonomerClass::Sugar)
@@ -791,7 +790,6 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
                 if (helm_string.size() > 0)
                     helm_string += '|';
                 // start new polymer
-                std::string helm_polymer_class;
                 if (monomer->monomerType() == KetBaseMonomer::MonomerType::Monomer && hasKetStrProp(templates.at(monomer->templateId()), classHELM))
                     helm_polymer_class = getKetStrProp(templates.at(monomer->templateId()), classHELM);
                 else
@@ -917,9 +915,9 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
         // convert Sup sgroup without name attachment points to rg-labels
         auto& sgroups = pbmol->sgroups;
         int ap_count = 0;
-        for (int i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
+        for (int j = sgroups.begin(); j != sgroups.end(); j = sgroups.next(j))
         {
-            auto& sgroup = sgroups.getSGroup(i);
+            auto& sgroup = sgroups.getSGroup(j);
             if (sgroup.sgroup_type != SGroup::SG_TYPE_SUP)
                 continue;
             Superatom& sa = static_cast<Superatom&>(sgroup);
@@ -949,7 +947,7 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
                     qmol.allowRGroupOnRSite(leaving_atom, ap_idx);
                 }
             }
-            sgroups.remove(i);
+            sgroups.remove(j);
         }
         // check direct monomer to molecule connections without attachment point
         if (molecules_connections.count(mol_id) > 0 && ap_count == 0)
