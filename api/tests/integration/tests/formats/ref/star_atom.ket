@@ -16,7 +16,7 @@
         "type": "molecule",
         "atoms": [
             {
-                "label": "A",
+                "label": "*",
                 "location": [
                     0.0,
                     0.0,
@@ -77,7 +77,6 @@
         "atoms": [
             {
                 "label": "*",
-                "alias": "*",
                 "location": [
                     0.0,
                     2.0,

@@ -122,7 +122,6 @@ void MolfileLoader::_loadMolecule()
             throw Error("unexpected string in molecule: %s", str.ptr());
         _scanner.seek(next_block_pos, SEEK_SET);
     }
-
     _postLoad();
 }
 
@@ -335,7 +334,7 @@ void MolfileLoader::_readCtab2000()
                 throw Error("'AH' label is allowed only for queries");
             atom_type = _ATOM_AH;
         }
-        else if (buf[0] == 'X' && buf[1] == 0 && !treat_x_as_pseudoatom)
+        else if (buf[0] == 'X' && buf[1] == 0 && !treat_x_as_pseudoatom) // TODO: treat_x_as_pseudoatom should be checked only for mol?
         {
             if (_qmol == 0)
                 throw Error("'X' label is allowed only for queries");
@@ -386,6 +385,10 @@ void MolfileLoader::_readCtab2000()
         {
             label = ELEM_H;
             isotope = TRITIUM;
+        }
+        else if (_qmol && buf[0] == '*' && buf[1] == 0)
+        {
+            atom_type = _ATOM_STAR;
         }
         else
         {
@@ -474,7 +477,11 @@ void MolfileLoader::_readCtab2000()
             else if (atom_type == _ATOM_AH)
             {
                 atom = std::make_unique<QueryMolecule::Atom>();
-                atom->type = QueryMolecule::OP_NONE;
+            }
+            else if (atom_type == _ATOM_STAR)
+            {
+                atom = std::make_unique<QueryMolecule::Atom>();
+                atom->type = QueryMolecule::ATOM_STAR;
             }
             else if (atom_type == _ATOM_QH)
                 atom.reset(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C)));
@@ -2415,7 +2422,12 @@ void MolfileLoader::_readCtab3000()
                     if (was_m)
                         throw Error("'M' inside atom list, if present, must be single");
 
-                    if (buf.size() == 2 && buf[0] == 'A')
+                    if (buf.size() == 2 && buf[0] == '*')
+                    {
+                        was_a = true;
+                        atom_type = _ATOM_STAR;
+                    }
+                    else if (buf.size() == 2 && buf[0] == 'A')
                     {
                         was_a = true;
                         atom_type = _ATOM_A;
@@ -2594,7 +2606,12 @@ void MolfileLoader::_readCtab3000()
                 else if (atom_type == _ATOM_AH)
                 {
                     std::unique_ptr<QueryMolecule::Atom> atom = std::make_unique<QueryMolecule::Atom>();
-                    atom->type = QueryMolecule::OP_NONE;
+                    _qmol->addAtom(atom.release());
+                }
+                else if (atom_type == _ATOM_STAR)
+                {
+                    std::unique_ptr<QueryMolecule::Atom> atom = std::make_unique<QueryMolecule::Atom>();
+                    atom->type = QueryMolecule::ATOM_STAR;
                     _qmol->addAtom(atom.release());
                 }
                 else if (atom_type == _ATOM_X)

@@ -732,11 +732,15 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
         buf.clear();
         int anum = mol.getAtomNumber(i);
         int isotope = mol.getAtomIsotope(i);
+        int radical = 0;
+
+        if (!mol.isPseudoAtom(i) && !mol.isTemplateAtom(i) && !mol.isRSite(i))
+            radical = mol.getAtomRadical(i);
+
         writer.StartObject();
         if (mol.attachmentPointCount())
             saveAttachmentPoint(mol, i, writer);
         QS_DEF(Array<int>, rg_list);
-        int radical = 0;
         int query_atom_type = QueryMolecule::QUERY_ATOM_UNKNOWN;
         bool needCustomQuery = false;
         std::map<int, std::unique_ptr<QueryMolecule::Atom>> query_atom_properties;
@@ -782,7 +786,6 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
             else if (anum != VALUE_UNKNOWN)
             {
                 buf.readString(Element::toString(anum, isotope), true);
-                radical = mol.getAtomRadical(i);
             }
             else if (_pqmol)
             {
@@ -834,6 +837,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                         {
                             buf.readString(_pqmol->getAlias(i), true);
                         }
+
                         if (buf.size() != 2 || buf[0] != '*')
                         {
                             buf.clear();
@@ -1007,6 +1011,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
             writer.Key("explicitValence");
             writer.Int(evalence);
         }
+
         if (radical > 0)
         {
             writer.Key("radical");

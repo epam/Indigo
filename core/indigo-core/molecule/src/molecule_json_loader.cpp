@@ -180,6 +180,9 @@ int MoleculeJsonLoader::addAtomToMoleculeQuery(const char* label, int element, i
         case _ATOM_A:
             atom.reset(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_H)));
             break;
+        case _ATOM_STAR:
+            atom->type = QueryMolecule::ATOM_STAR;
+            break;
         case _ATOM_AH:
             atom->type = QueryMolecule::OP_NONE;
             break;
@@ -260,8 +263,8 @@ int MoleculeJsonLoader::addAtomToMoleculeQuery(const char* label, int element, i
         atom.reset(QueryMolecule::Atom::und(atom.release(), new QueryMolecule::Atom(QueryMolecule::ATOM_RADICAL, radical)));
 
     auto atom_idx = _pqmol->addAtom(atom.release());
-    if (label != nullptr && label[0] == '*' && label[1] == 0)
-        _pqmol->setAlias(atom_idx, label);
+    // if (label != nullptr && label[0] == '*' && label[1] == 0)
+    //     _pqmol->setAlias(atom_idx, label);
     return atom_idx;
 }
 
@@ -401,10 +404,6 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
                     if (!_pqmol && QueryMolecule::getAtomType(label.c_str()) != _ATOM_PSEUDO)
                         throw Error("'%s' label is allowed only for queries", label.c_str());
                     elem = ELEM_PSEUDO;
-                    if (isotope != 0)
-                    {
-                        throw Error("isotope number not allowed on pseudo-atoms");
-                    }
                 }
             }
         }

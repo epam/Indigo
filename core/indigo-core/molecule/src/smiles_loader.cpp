@@ -610,9 +610,8 @@ void SmilesLoader::_readOtherStuff()
                             {
                                 std::unique_ptr<QueryMolecule::Atom> x_atom = std::make_unique<QueryMolecule::Atom>();
 
-                                x_atom->type = QueryMolecule::OP_NONE;
+                                x_atom->type = QueryMolecule::ATOM_STAR;
                                 _qmol->resetAtom(i, x_atom.release());
-                                _qmol->setAlias(i, "*");
                             }
                             else if (label.size() == 2 && label[0] == 'X')
                             {
@@ -1959,11 +1958,14 @@ void SmilesLoader::_loadParsedMolecule()
         }
     }
 
-    for (i = 0; i < _atoms.size(); i++)
+    if (_mol)
     {
-        if (_atoms[i].star_atom && _atoms[i].label == ELEM_PSEUDO)
+        for (i = 0; i < _atoms.size(); i++)
         {
-            _mol->setPseudoAtom(i, "A");
+            if (_atoms[i].star_atom && _atoms[i].label == ELEM_PSEUDO)
+            {
+                _mol->setPseudoAtom(i, "*");
+            }
         }
     }
 
