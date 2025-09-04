@@ -56,235 +56,6 @@ static const std::map<std::string, std::vector<std::string>> IDT_STANDARD_MIXED_
     {"R", {"A", "G"}},      {"Y", {"C", "T"}},      {"M", {"A", "C"}},      {"K", {"G", "T"}},      {"S", {"G", "C"}},          {"W", {"A", "T"}},
     {"H", {"A", "C", "T"}}, {"B", {"G", "C", "T"}}, {"V", {"A", "C", "G"}}, {"D", {"A", "G", "T"}}, {"N", {"A", "C", "G", "T"}}};
 
-std::string SequenceSaver::saveIdt(BaseMolecule& mol, std::deque<int>& sequence)
-{
-    std::string seq_string;
-    std::unordered_set<int> used_atoms;
-    IdtModification modification = IdtModification::FIVE_PRIME_END;
-    while (sequence.size() > 0)
-    {
-        int atom_idx = sequence.front();
-        used_atoms.emplace(atom_idx);
-        sequence.pop_front();
-        if (!mol.isTemplateAtom(atom_idx))
-            throw Error("Cannot save regular atom %s in IDT format.", mol.getAtomDescription(atom_idx).c_str());
-        std::string monomer_class = mol.getTemplateAtomClass(atom_idx);
-        std::string monomer = mol.getTemplateAtom(atom_idx);
-        bool standard_sugar = true;
-        bool standard_base = true;
-        bool standard_phosphate = true;
-        std::string sugar;
-        std::string base;
-        std::string phosphate;
-        if (monomer_class == kMonomerClassPHOSPHATE)
-        {
-            if (used_atoms.size() > 1 && sequence.size()) // Inside the sequence
-                throw Error("Cannot save molecule in IDT format - expected sugar but found phosphate %s.", monomer.c_str());
-            // first and last monomer can be phosphate "P" only
-            if (monomer != "P")
-            {
-                if (used_atoms.size() > 1)
-                    throw Error("Cannot save molecule in IDT format - phosphate %s cannot be last monomer in sequence.", monomer.c_str());
-                throw Error("Cannot save molecule in IDT format - phosphate %s cannot be first monomer in sequence.", monomer.c_str());
-            }
-            // This is 'P' at one of the end
-            if (used_atoms.size() == 1) // First monomer
-            {
-                seq_string += "/5Phos/";
-                modification = IdtModification::INTERNAL;
-            }
-            else
-            {
-                seq_string += "/3Phos/";
-                modification = IdtModification::THREE_PRIME_END;
-            }
-            continue;
-        }
-        else if (monomer_class == kMonomerClassCHEM || monomer_class == kMonomerClassDNA || monomer_class == kMonomerClassRNA)
-        {
-            // Try to find in library
-            const std::string& monomer_id = _library.getMonomerTemplateIdByAlias(MonomerTemplate::StrToMonomerClass(monomer_class), monomer);
-            if (monomer_id.size()) // Monomer in library
-            {
-                const MonomerTemplate& templ = _library.getMonomerTemplateById(monomer_id);
-                if (templ.idtAlias().hasModification(modification))
-                {
-                    const std::string& idt_alias = templ.idtAlias().getModification(modification);
-                    seq_string += '/';
-                    seq_string += idt_alias;
-                    seq_string += '/';
-                    continue;
-                }
-            }
-
-            // Check TGroup for IdtAlias
-            std::optional<std::reference_wrapper<TGroup>> tg_ref = std::nullopt;
-            int temp_idx = mol.getTemplateAtomTemplateIndex(atom_idx);
-            if (temp_idx > -1)
-                tg_ref = std::optional<std::reference_wrapper<TGroup>>(std::ref(mol.tgroups.getTGroup(temp_idx)));
-            else
-                auto tg_ref = findTemplateInMap(monomer, monomer_class, _templates);
-            if (tg_ref.has_value())
-            {
-                auto& tg = tg_ref.value().get();
-                if (tg.idt_alias.size())
-                {
-                    seq_string.push_back('/');
-                    seq_string.append(tg.idt_alias.ptr());
-                    seq_string.push_back('/');
-                    modification = IdtModification::INTERNAL;
-                    continue;
-                }
-                else
-                {
-                    if (tg.unresolved)
-                        throw Error("Unresolved monomer '%s' has no IDT alias.", tg.tgroup_text_id.ptr());
-                    else if (monomer_class == kMonomerClassDNA || monomer_class == kMonomerClassRNA)
-                        throw Error("Nucleotide '%s' has no IDT alias.", monomer.c_str());
-                    else // CHEM
-                        throw Error("Chem '%s' has no IDT alias.", tg.tgroup_text_id.ptr());
-                }
-            }
-            else
-            {
-                throw Error("Internal error - monomer %s with class %s not found.", monomer.c_str(), monomer_class.c_str());
-            }
-        }
-        else if (monomer_class != kMonomerClassSUGAR)
-        {
-            throw Error("Cannot save molecule in IDT format - expected sugar but found %s monomer %s.", monomer_class.c_str(), monomer.c_str());
-        }
-
-        sugar = monomer;
-        if (IDT_STANDARD_SUGARS.count(monomer) == 0)
-            standard_sugar = false;
-        auto& v = mol.getVertex(atom_idx);
-        for (auto nei_idx = v.neiBegin(); nei_idx < v.neiEnd(); nei_idx = v.neiNext(nei_idx))
-        {
-            int nei_atom_idx = v.neiVertex(nei_idx);
-            if (used_atoms.count(nei_atom_idx) > 0)
-                continue;
-            used_atoms.emplace(nei_atom_idx);
-            if (mol.isTemplateAtom(nei_atom_idx))
-            {
-                monomer_class = std::string(mol.getTemplateAtomClass(nei_atom_idx));
-                if (monomer_class == kMonomerClassBASE)
-                {
-                    if (base.size() > 0)
-                        throw Error("Cannot save molecule in IDT format - sugar %s with two base connected %s and %s.", monomer.c_str(), base.c_str(),
-                                    mol.getTemplateAtom(nei_atom_idx));
-                    base = mol.getTemplateAtom(nei_atom_idx);
-                    if (IDT_STANDARD_BASES.count(base) == 0)
-                        standard_base = false;
-                }
-                else if (monomer_class == kMonomerClassPHOSPHATE)
-                {
-                    if (phosphate.size() > 0) // left phosphate should be in used_atoms and skiped
-                        throw Error("Cannot save molecule in IDT format - sugar %s with too much phosphates connected %s and %s.", monomer.c_str(),
-                                    phosphate.c_str(), mol.getTemplateAtom(nei_atom_idx));
-                    phosphate = mol.getTemplateAtom(nei_atom_idx);
-                }
-                else if (monomer_class != kMonomerClassCHEM) // chem is ok in any place
-                {
-                    throw Error("Cannot save molecule in IDT format - sugar %s connected to monomer %s with class %s (only base or phosphate expected).",
-                                monomer.c_str(), mol.getTemplateAtom(nei_atom_idx), monomer_class.c_str());
-                }
-            }
-            else
-            {
-                throw Error("Cannot save regular atom %s in IDT format.", mol.getAtomDescription(atom_idx).c_str());
-            }
-        }
-
-        if (sequence.size() > 0)
-        { // process phosphate
-            atom_idx = sequence.front();
-            sequence.pop_front();
-            if (!mol.isTemplateAtom(atom_idx))
-                throw Error("Cannot save regular atom %s in IDT format.", mol.getAtomDescription(atom_idx).c_str());
-            monomer_class = mol.getTemplateAtomClass(atom_idx);
-            monomer = mol.getTemplateAtom(atom_idx);
-            if (monomer_class != kMonomerClassPHOSPHATE)
-                throw Error("Cannot save molecule in IDT format - phosphate expected between sugars but %s monomer %s found.", monomer_class.c_str(),
-                            monomer.c_str());
-            if (used_atoms.count(atom_idx) == 0) // phosphate should be already processed at sugar neighbours check
-                throw Error("Cannot save molecule in IDT format - phosphate %s not connected to previous sugar.", phosphate.c_str());
-            if (phosphate != "P" && phosphate != "sP")
-                standard_phosphate = false;
-        }
-        else
-        {
-            modification = IdtModification::THREE_PRIME_END;
-            phosphate = "";
-            standard_phosphate = true;
-        }
-
-        bool add_asterisk = false;
-        if (phosphate == "sP")
-        {
-            phosphate = "P"; // Assume that modified monomers always contains P and modified to sP with *. TODO: confirm it with BA
-            add_asterisk = true;
-        }
-        if (standard_base && standard_phosphate && standard_sugar)
-        {
-            sugar = IDT_STANDARD_SUGARS.at(sugar);
-            if (sugar.size())
-                seq_string += sugar;
-            seq_string += base == "In" ? "I" : base; // Inosine coded as I in IDT
-            if (sequence.size() == 0 && phosphate.size())
-            {
-                if (phosphate != "P" || add_asterisk)
-                    throw Error("Cannot save molecule in IDT format - phosphate %s cannot be last monomer in sequence.", monomer.c_str());
-                seq_string += "/3Phos/";
-            }
-        }
-        else
-        {
-            // Try to find sugar,base,phosphate group template
-            const std::string& sugar_id = _library.getMonomerTemplateIdByAlias(MonomerClass::Sugar, sugar);
-            const std::string& phosphate_id = _library.getMonomerTemplateIdByAlias(MonomerClass::Phosphate, phosphate);
-            std::string base_id;
-            if (base.size())
-                base_id = _library.getMonomerTemplateIdByAlias(MonomerClass::Base, base);
-            const std::string& idt_alias = _library.getIdtAliasByModification(modification, sugar_id, base_id, phosphate_id);
-            if (idt_alias.size())
-            {
-                seq_string += '/';
-                seq_string += idt_alias;
-                seq_string += '/';
-            }
-            else
-            {
-                if (base.size())
-                {
-                    if (phosphate.size())
-                        throw Error("IDT alias for group sugar:%s base:%s phosphate:%s not found.", sugar.c_str(), base.c_str(), phosphate.c_str());
-                    else
-                        throw Error("IDT alias for group sugar:%s base:%s not found.", sugar.c_str(), base.c_str());
-                }
-                else
-                {
-                    if (phosphate.size())
-
-                        throw Error("IDT alias for group sugar:%s phosphate:%s not found.", sugar.c_str(), phosphate.c_str());
-                    else
-                        throw Error("IDT alias for sugar:%s not found.", sugar.c_str());
-                }
-            }
-        }
-
-        if (add_asterisk)
-        {
-            seq_string += "*";
-            phosphate = "sP";
-        }
-
-        if (modification == IdtModification::FIVE_PRIME_END)
-            modification = IdtModification::INTERNAL;
-    }
-    return seq_string;
-}
-
 static inline void add_monomer_str(std::string& helm_string, const std::string& monomer_alias)
 {
     if (monomer_alias.size() == 1)
@@ -374,6 +145,13 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
         doc.parseSimplePolymers(sequences, false);
         seq_text = saveHELM(doc, sequences);
     }
+    else if (sf == SeqFormat::IDT)
+    {
+        std::vector<std::deque<std::string>> sequences;
+        auto& doc = mol.getKetDocument();
+        doc.parseSimplePolymers(sequences, true);
+        saveIdt(doc, sequences, seq_text);
+    }
     else
     {
         auto& mol_properties = mol.properties();
@@ -382,145 +160,85 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
         sl.sequenceExtract(sequences);
         auto prop_it = mol_properties.begin();
         int seq_idx = 0;
-        if (sf == SeqFormat::IDT)
-        {
-            std::vector<std::map<int, int>> directions_map;
-            mol.getTemplateAtomDirectionsMap(directions_map);
-            std::map<int, int> left_backbone_links;
-            std::map<int, int> right_backbone_links;
-            std::map<int, size_t> seq_start;
-            std::map<int, size_t> seq_end;
-            for (size_t idx = 0; idx < sequences.size(); idx++)
-            {
-                auto& sequence = sequences[idx];
-                auto template_idx = sequence.front();
-                seq_start[template_idx] = idx;
-                seq_end[sequence.back()] = idx;
-                if (sequence.size() != 1) // CHEM sequence always only one monomer
-                    continue;
-                if (strcasecmp(mol.getTemplateAtomClass(template_idx), kMonomerClassCHEM))
-                    continue;
-                check_backbone_connection(mol, directions_map, template_idx, kLeftAttachmentPointIdx, left_backbone_links, right_backbone_links);
-                check_backbone_connection(mol, directions_map, template_idx, kRightAttachmentPointIdx, right_backbone_links, left_backbone_links);
-            }
-            if (left_backbone_links.size())
-            {
-                std::vector<std::deque<int>> joined_sequences;
-                while (left_backbone_links.size())
-                {
-                    auto left_atom_idx = left_backbone_links.begin()->second;
-                    // find leftmost sequence and copy to joined sequences
-                    for (auto left = left_backbone_links.find(left_atom_idx); left != left_backbone_links.end(); left = left_backbone_links.find(left_atom_idx))
-                    {
-                        left_atom_idx = left->second;
-                    }
-                    joined_sequences.push_back({});
-                    for (auto idx : sequences[seq_end[left_atom_idx]])
-                    {
-                        joined_sequences.back().emplace_back(idx);
-                    }
-                    // while have sequence at right - connect it
-                    for (auto right = right_backbone_links.find(left_atom_idx); right != right_backbone_links.end();)
-                    {
-                        auto right_atom_idx = right->second;
-                        left_backbone_links.erase(right_atom_idx);
-                        int right_idx;
-                        for (auto idx : sequences[seq_start[right_atom_idx]])
-                        {
-                            joined_sequences.back().emplace_back(idx);
-                            right_idx = idx;
-                        }
-                        right = right_backbone_links.find(right_idx);
-                    }
-                }
-                sequences = joined_sequences;
-            }
-        }
         for (auto& sequence : sequences)
         {
             std::string seq_string;
-            if (sf == SeqFormat::IDT)
+            for (auto atom_idx : sequence)
             {
-                seq_string.append(saveIdt(mol, sequence));
-            }
-            else
-            {
-                for (auto atom_idx : sequence)
+                if (mol.isTemplateAtom(atom_idx))
                 {
-                    if (mol.isTemplateAtom(atom_idx))
+                    std::string mon_class = mol.getTemplateAtomClass(atom_idx);
+                    if (isBackboneClass(mon_class))
                     {
-                        std::string mon_class = mol.getTemplateAtomClass(atom_idx);
-                        if (isBackboneClass(mon_class))
+                        std::string label;
+                        if (mon_class == kMonomerClassSUGAR)
                         {
-                            std::string label;
-                            if (mon_class == kMonomerClassSUGAR)
+                            auto& v = mol.getVertex(atom_idx);
+                            for (auto nei_idx = v.neiBegin(); nei_idx < v.neiEnd(); nei_idx = v.neiNext(nei_idx))
                             {
-                                auto& v = mol.getVertex(atom_idx);
-                                for (auto nei_idx = v.neiBegin(); nei_idx < v.neiEnd(); nei_idx = v.neiNext(nei_idx))
+                                int nei_atom_idx = v.neiVertex(nei_idx);
+                                if (mol.isTemplateAtom(nei_atom_idx) && std::string(mol.getTemplateAtomClass(nei_atom_idx)) == kMonomerClassBASE)
                                 {
-                                    int nei_atom_idx = v.neiVertex(nei_idx);
-                                    if (mol.isTemplateAtom(nei_atom_idx) && std::string(mol.getTemplateAtomClass(nei_atom_idx)) == kMonomerClassBASE)
-                                    {
-                                        mon_class = kMonomerClassBASE;
-                                        atom_idx = nei_atom_idx;
-                                        label = monomerAliasByName(mon_class, mol.getTemplateAtom(nei_atom_idx));
-                                        break;
-                                    }
+                                    mon_class = kMonomerClassBASE;
+                                    atom_idx = nei_atom_idx;
+                                    label = monomerAliasByName(mon_class, mol.getTemplateAtom(nei_atom_idx));
+                                    break;
                                 }
                             }
-                            else if (isAminoAcidClass(mon_class))
-                            {
-                                mon_class = kMonomerClassAA;
-                                label = monomerAliasByName(kMonomerClassAA, mol.getTemplateAtom(atom_idx));
-                            }
-                            else if (isNucleotideClass(mon_class))
-                            {
-                                mon_class = kMonomerClassBASE; // treat nucleotide symbol as a base
-                                label = monomerAliasByName(kMonomerClassBASE, mol.getTemplateAtom(atom_idx));
-                            }
+                        }
+                        else if (isAminoAcidClass(mon_class))
+                        {
+                            mon_class = kMonomerClassAA;
+                            label = monomerAliasByName(kMonomerClassAA, mol.getTemplateAtom(atom_idx));
+                        }
+                        else if (isNucleotideClass(mon_class))
+                        {
+                            mon_class = kMonomerClassBASE; // treat nucleotide symbol as a base
+                            label = monomerAliasByName(kMonomerClassBASE, mol.getTemplateAtom(atom_idx));
+                        }
 
-                            if (label.size())
+                        if (label.size())
+                        {
+                            TGroup temp;
+                            if (!_mon_lib.getMonomerTemplate(mon_class, label, temp))
                             {
-                                TGroup temp;
-                                if (!_mon_lib.getMonomerTemplate(mon_class, label, temp))
+                                // if symbol is not standard, check its natural analog
+                                const char* natrep = nullptr;
+                                int temp_idx = mol.getTemplateAtomTemplateIndex(atom_idx);
+                                if (temp_idx > -1)
                                 {
-                                    // if symbol is not standard, check its natural analog
-                                    const char* natrep = nullptr;
-                                    int temp_idx = mol.getTemplateAtomTemplateIndex(atom_idx);
-                                    if (temp_idx > -1)
+                                    auto& tg = mol.tgroups.getTGroup(temp_idx);
+                                    natrep = tg.tgroup_natreplace.ptr();
+                                }
+                                else
+                                {
+                                    auto tg_ref = findTemplateInMap(label, mon_class, _templates);
+                                    if (tg_ref.has_value())
                                     {
-                                        auto& tg = mol.tgroups.getTGroup(temp_idx);
+                                        auto& tg = tg_ref.value().get();
                                         natrep = tg.tgroup_natreplace.ptr();
                                     }
-                                    else
-                                    {
-                                        auto tg_ref = findTemplateInMap(label, mon_class, _templates);
-                                        if (tg_ref.has_value())
-                                        {
-                                            auto& tg = tg_ref.value().get();
-                                            natrep = tg.tgroup_natreplace.ptr();
-                                        }
-                                    }
-                                    std::string natural_analog;
-                                    if (natrep)
-                                        natural_analog = monomerAliasByName(mon_class, extractMonomerName(natrep));
-
-                                    if (_mon_lib.getMonomerTemplate(mon_class, natural_analog, temp))
-                                        label = natural_analog;
-                                    else if (mon_class == kMonomerClassBASE)
-                                        throw Error("'%s' nucleotide has no natural analog and cannot be saved into a sequence.", label.c_str());
-                                    else if (mon_class == kMonomerClassAA)
-                                        label = "X";
                                 }
+                                std::string natural_analog;
+                                if (natrep)
+                                    natural_analog = monomerAliasByName(mon_class, extractMonomerName(natrep));
 
-                                if (label.size() > 1)
-                                    throw Error("Can't save '%s' to sequence format", label.c_str());
-                                seq_string += label;
+                                if (_mon_lib.getMonomerTemplate(mon_class, natural_analog, temp))
+                                    label = natural_analog;
+                                else if (mon_class == kMonomerClassBASE)
+                                    throw Error("'%s' nucleotide has no natural analog and cannot be saved into a sequence.", label.c_str());
+                                else if (mon_class == kMonomerClassAA)
+                                    label = "X";
                             }
+
+                            if (label.size() > 1)
+                                throw Error("Can't save '%s' to sequence format", label.c_str());
+                            seq_string += label;
                         }
                     }
                 }
             }
+
             if (seq_string.size())
             {
                 // sequences separators are different for FASTA, IDT and Sequence
@@ -719,31 +437,8 @@ void SequenceSaver::saveIdt(KetDocument& doc, std::vector<std::deque<std::string
                 else // corner case - only one monomer
                     possible_modification = IdtModification::THREE_PRIME_END;
 
-            if (monomer_class == MonomerClass::Phosphate)
-            {
-                if (seq_string.size() > 0 && sequence.size()) // Inside the sequence
-                    throw Error("Cannot save molecule in IDT format - expected sugar but found phosphate %s.", monomer.c_str());
-                // first and last monomer can be phosphate "P" only
-                if (monomer != "P")
-                {
-                    if (seq_string.size() > 0)
-                        throw Error("Cannot save molecule in IDT format - phosphate %s cannot be last monomer in sequence.", monomer.c_str());
-                    throw Error("Cannot save molecule in IDT format - phosphate %s cannot be first monomer in sequence.", monomer.c_str());
-                }
-                // This is 'P' at one of the end
-                if (seq_string.size() == 0) // First monomer
-                {
-                    seq_string += "/5Phos/";
-                    modification = IdtModification::INTERNAL;
-                }
-                else
-                {
-                    seq_string += "/3Phos/";
-                    modification = IdtModification::THREE_PRIME_END;
-                }
-                continue;
-            }
-            else if (monomer_class == MonomerClass::CHEM || monomer_class == MonomerClass::DNA || monomer_class == MonomerClass::RNA)
+            if (monomer_class == MonomerClass::Phosphate || monomer_class == MonomerClass::CHEM || monomer_class == MonomerClass::DNA ||
+                monomer_class == MonomerClass::RNA)
             {
                 auto write_name = [&](const IdtAlias& idtAlias) -> bool {
                     bool has_modification = idtAlias.hasModification(modification);
@@ -784,6 +479,8 @@ void SequenceSaver::saveIdt(KetDocument& doc, std::vector<std::deque<std::string
                         throw Error("Unresolved monomer '%s' has no IDT alias.", monomer.c_str());
                     else if (monomer_class == MonomerClass::DNA || monomer_class == MonomerClass::RNA)
                         throw Error("Nucleotide '%s' has no IDT alias.", monomer.c_str());
+                    else if (monomer_class == MonomerClass::Phosphate)
+                        throw Error("Phosphate '%s' has no IDT alias.", monomer.c_str());
                     else // CHEM
                         throw Error("Chem '%s' has no IDT alias.", monomer.c_str());
                 }
@@ -885,10 +582,6 @@ void SequenceSaver::saveIdt(KetDocument& doc, std::vector<std::deque<std::string
                         }
                     }
                 }
-            }
-            else
-            {
-                throw Error("Cannot save molecule in IDT format - sugar whithout base.");
             }
 
             if (sequence.size() > 0)
