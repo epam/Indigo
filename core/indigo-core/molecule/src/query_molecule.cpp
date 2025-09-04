@@ -569,8 +569,11 @@ std::string QueryMolecule::getMolMrvSmaExtension(QueryMolecule& qm, int aid)
                     else if (qatom->type == ATOM_PSEUDO)
                         output.writeString(qatom->alias.ptr());
                 }
-                output.writeChar(';');
-                atoms_writed = true;
+                if (atom_list.size())
+                {
+                    output.writeChar(';');
+                    atoms_writed = true;
+                }
             }
             writeSmartsAtom(output, atom_props[property].get(), -1, -1, 1, false, false, qm.original_format);
         }
@@ -760,6 +763,9 @@ void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chi
             output.printf("A");
         break;
     }
+    case ATOM_STAR:
+        output.writeString("*,H");
+        break;
     case OP_NONE:
         output.writeChar('*');
         break;
@@ -2757,6 +2763,10 @@ bool QueryMolecule::_isAtomOrListAndProps(Atom* p_query_atom, std::vector<std::u
             neg = is_neg;
             return true;
         }
+        else if (p_query_atom_child->type == ATOM_STAR)
+        {
+            return true;
+        }
         else if (!is_neg && isAtomProperty(p_query_atom_child->type)) // atom property, no negative props here
         {
             properties[p_query_atom_child->type] = std::unique_ptr<Atom>(p_query_atom_child->clone());
@@ -2816,6 +2826,8 @@ int QueryMolecule::parseQueryAtomSmarts(QueryMolecule& qm, int aid, std::vector<
     QueryMolecule::Atom& qa = qm.getAtom(aid);
     if (qa.type == QueryMolecule::OP_NONE)
         return QUERY_ATOM_AH;
+    if (qa.type == QueryMolecule::ATOM_STAR)
+        return QUERY_ATOM_STAR;
     if (_isAtomOrListAndProps(&qa, query_atom_list, negative, atom_props))
     {
         bool can_be_query_atom = true;
@@ -2839,7 +2851,7 @@ int QueryMolecule::parseQueryAtomSmarts(QueryMolecule& qm, int aid, std::vector<
             if (negative)
             {
                 if (atom_list.size() == 1 && atom_list[0] == ELEM_H)
-                    return QUERY_ATOM_A; // !H
+                    return QUERY_ATOM_A;
                 else if (atom_list == std::vector<int>{ELEM_H, ELEM_C})
                     return QUERY_ATOM_Q;
                 else if (atom_list == std::vector<int>{ELEM_C})
@@ -2866,7 +2878,7 @@ int QueryMolecule::parseQueryAtomSmarts(QueryMolecule& qm, int aid, std::vector<
         else
         {
             if (query_atom_list.size() == 0)
-                return QUERY_ATOM_A;
+                return QUERY_ATOM_STAR;
             else if (query_atom_list.size() == 1)
                 return QUERY_ATOM_SINGLE;
             else
@@ -2886,6 +2898,8 @@ int QueryMolecule::parseQueryAtom(QueryMolecule::Atom& qa, Array<int>& list)
     QueryMolecule::Atom* qc = stripKnownAttrs(qa);
     if (qa.type == QueryMolecule::OP_NONE)
         return QUERY_ATOM_AH;
+    if (qa.type == QueryMolecule::ATOM_STAR)
+        return QUERY_ATOM_STAR;
     if (qc != NULL && isNotAtom(*qc, ELEM_H))
         return QUERY_ATOM_A;
     bool notList = false;
@@ -2963,7 +2977,7 @@ bool QueryMolecule::queryAtomIsSpecial(int query_atom_type)
     if ((query_atom_type == QueryMolecule::QUERY_ATOM_Q) || (query_atom_type == QueryMolecule::QUERY_ATOM_QH) ||
         (query_atom_type == QueryMolecule::QUERY_ATOM_X) || (query_atom_type == QueryMolecule::QUERY_ATOM_XH) ||
         (query_atom_type == QueryMolecule::QUERY_ATOM_M) || (query_atom_type == QueryMolecule::QUERY_ATOM_MH) ||
-        (query_atom_type == QueryMolecule::QUERY_ATOM_AH))
+        (query_atom_type == QueryMolecule::QUERY_ATOM_AH) || (query_atom_type == QueryMolecule::QUERY_ATOM_STAR))
     {
         return true;
     }
@@ -3162,9 +3176,9 @@ bool QueryMolecule::standardize(const StandardizeOptions& options)
 
 int QueryMolecule::getAtomType(const char* label)
 {
-    static const std::unordered_map<std::string, int> atom_types = {{"R", _ATOM_R},   {"A", _ATOM_A},   {"X", _ATOM_X},   {"Q", _ATOM_Q},
-                                                                    {"M", _ATOM_M},   {"AH", _ATOM_AH}, {"XH", _ATOM_XH}, {"QH", _ATOM_QH},
-                                                                    {"XH", _ATOM_XH}, {"QH", _ATOM_QH}, {"MH", _ATOM_MH}, {"*", _ATOM_AH}};
+    static const std::unordered_map<std::string, int> atom_types = {{"*", _ATOM_STAR}, {"R", _ATOM_R},   {"A", _ATOM_A},   {"X", _ATOM_X},
+                                                                    {"Q", _ATOM_Q},    {"M", _ATOM_M},   {"AH", _ATOM_AH}, {"XH", _ATOM_XH},
+                                                                    {"QH", _ATOM_QH},  {"XH", _ATOM_XH}, {"QH", _ATOM_QH}, {"MH", _ATOM_MH}};
     auto it = atom_types.find(label);
     if (it != atom_types.end())
         return it->second;
@@ -3173,9 +3187,9 @@ int QueryMolecule::getAtomType(const char* label)
 
 void QueryMolecule::getQueryAtomLabel(int qa, Array<char>& result)
 {
-    static const std::unordered_map<int, std::string> query_atom_labels = {{QUERY_ATOM_A, "A"},   {QUERY_ATOM_Q, "Q"},   {QUERY_ATOM_X, "X"},
-                                                                           {QUERY_ATOM_AH, "AH"}, {QUERY_ATOM_XH, "XH"}, {QUERY_ATOM_QH, "QH"},
-                                                                           {QUERY_ATOM_MH, "MH"}, {QUERY_ATOM_M, "M"}};
+    static const std::unordered_map<int, std::string> query_atom_labels = {{QUERY_ATOM_STAR, "*"}, {QUERY_ATOM_A, "A"},   {QUERY_ATOM_Q, "Q"},
+                                                                           {QUERY_ATOM_X, "X"},    {QUERY_ATOM_AH, "AH"}, {QUERY_ATOM_XH, "XH"},
+                                                                           {QUERY_ATOM_QH, "QH"},  {QUERY_ATOM_MH, "MH"}, {QUERY_ATOM_M, "M"}};
 
     auto it = query_atom_labels.find(qa);
     if (it != query_atom_labels.end())

@@ -45,6 +45,7 @@ namespace indigo
 
     enum
     {
+        _ATOM_STAR,
         _ATOM_R,
         _ATOM_A,
         _ATOM_X,
@@ -72,7 +73,7 @@ namespace indigo
             OP_AND,
             OP_OR,
             OP_NOT,
-
+            ATOM_STAR,
             ATOM_NUMBER,
             ATOM_PSEUDO,
             ATOM_RSITE,
@@ -358,7 +359,8 @@ namespace indigo
         enum QUERY_ATOM
         {
             QUERY_ATOM_UNKNOWN = -1,
-            QUERY_ATOM_A = 0,
+            QUERY_ATOM_STAR = 0,
+            QUERY_ATOM_A,
             QUERY_ATOM_X,
             QUERY_ATOM_Q,
             QUERY_ATOM_M,
