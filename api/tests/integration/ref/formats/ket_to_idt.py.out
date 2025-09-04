@@ -8,6 +8,7 @@ idt_52moera_sp.ket:SUCCEED
 idt_52moera_sp_32moera.ket:SUCCEED
 idt_52moera_sp_i2moera_sp.ket:SUCCEED
 idt_52moera_with_3phos.ket:SUCCEED
+idt_5end_without_r2.ket:SUCCEED
 idt_5phos.ket:SUCCEED
 idt_baseless.ket:SUCCEED
 idt_bases.ket:SUCCEED

@@ -68,6 +68,7 @@ idt_data = {
     "idt_issue_2257": "/3ThioMC3-D/",
     "idt_issue_3144": "/5AmMC6/rA/3Phos/",
     "idt_baseless": "/5dSp//idSp//3dSp/",
+    "idt_5end_without_r2": "/5DigN/rA",
 }
 
 for filename in sorted(idt_data.keys()):
