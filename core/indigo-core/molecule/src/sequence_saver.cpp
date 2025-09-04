@@ -432,10 +432,11 @@ void SequenceSaver::saveIdt(KetDocument& doc, std::vector<std::deque<std::string
             std::string phosphate;
             IdtModification possible_modification = modification;
             if (sequence.size() == 0) // last monomer
-                if (seq_string.size() > 0)
+            {
+                possible_modification = IdtModification::THREE_PRIME_END;
+                if (seq_string.size() != 0) // for corner case - only one monomer - modification will be FIVE_PRIME_END
                     modification = IdtModification::THREE_PRIME_END;
-                else // corner case - only one monomer
-                    possible_modification = IdtModification::THREE_PRIME_END;
+            }
 
             if (monomer_class == MonomerClass::Phosphate || monomer_class == MonomerClass::CHEM || monomer_class == MonomerClass::DNA ||
                 monomer_class == MonomerClass::RNA)
@@ -476,13 +477,13 @@ void SequenceSaver::saveIdt(KetDocument& doc, std::vector<std::deque<std::string
                 {
                     if (monomer_template.templateType() == KetBaseMonomerTemplate::TemplateType::MonomerTemplate &&
                         static_cast<const MonomerTemplate&>(monomer_template).unresolved())
-                        throw Error("Unresolved monomer '%s' has no IDT alias.", monomer.c_str());
+                        throw Error("Unresolved monomer '%s' has no '%s' IDT alias.", monomer.c_str(), IdtAlias::IdtModificationToString(modification));
                     else if (monomer_class == MonomerClass::DNA || monomer_class == MonomerClass::RNA)
-                        throw Error("Nucleotide '%s' has no IDT alias.", monomer.c_str());
+                        throw Error("Nucleotide '%s' has no '%s' IDT alias.", monomer.c_str(), IdtAlias::IdtModificationToString(modification));
                     else if (monomer_class == MonomerClass::Phosphate)
-                        throw Error("Phosphate '%s' has no IDT alias.", monomer.c_str());
+                        throw Error("Phosphate '%s' has no '%s' IDT alias.", monomer.c_str(), IdtAlias::IdtModificationToString(modification));
                     else // CHEM
-                        throw Error("Chem '%s' has no IDT alias.", monomer.c_str());
+                        throw Error("Chem '%s' has no '%s' IDT alias.", monomer.c_str(), IdtAlias::IdtModificationToString(modification));
                 }
             }
             else if (monomer_class != MonomerClass::Sugar)
