@@ -131,6 +131,34 @@ CopolymerGroup::~CopolymerGroup()
 {
 }
 
+MonomerGroup::MonomerGroup()
+{
+    sgroup_type = SGroup::SG_TYPE_MON;
+}
+
+MonomerGroup::~MonomerGroup()
+{
+}
+
+ComponentGroup::ComponentGroup()
+{
+    sgroup_type = SGroup::SG_TYPE_COM;
+    component_count = 0;
+}
+
+ComponentGroup::~ComponentGroup()
+{
+}
+
+MixtureGroup::MixtureGroup()
+{
+    sgroup_type = SGroup::SG_TYPE_MIX;
+}
+
+MixtureGroup::~MixtureGroup()
+{
+}
+
 MultipleGroup::MultipleGroup()
 {
     sgroup_type = SGroup::SG_TYPE_MUL;
@@ -223,6 +251,18 @@ int MoleculeSGroups::addSGroup(int sg_type)
     else if (sg_type == SGroup::SG_TYPE_COP)
     {
         idx = _sgroups.add(new CopolymerGroup());
+    }
+    else if (sg_type == SGroup::SG_TYPE_MON)
+    {
+        idx = _sgroups.add(new MonomerGroup());
+    }
+    else if (sg_type == SGroup::SG_TYPE_COM)
+    {
+        idx = _sgroups.add(new ComponentGroup());
+    }
+    else if (sg_type == SGroup::SG_TYPE_MIX)
+    {
+        idx = _sgroups.add(new MixtureGroup());
     }
     else
     {

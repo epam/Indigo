@@ -390,7 +390,6 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
     }
     break;
     case SGroup::SG_TYPE_MON:
-        throw Error("SG_TYPE_MON not implemented in indigo yet");
         break;
     case SGroup::SG_TYPE_MER:
         throw Error("SG_TYPE_MER not implemented in indigo yet");
@@ -438,11 +437,28 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
     case SGroup::SG_TYPE_GRA:
         throw Error("SG_TYPE_GRA not implemented in indigo yet");
         break;
-    case SGroup::SG_TYPE_COM:
-        throw Error("SG_TYPE_COM not implemented in indigo yet");
-        break;
-    case SGroup::SG_TYPE_MIX:
-        throw Error("SG_TYPE_MIX not implemented in indigo yet");
+    case SGroup::SG_TYPE_COM: {
+        ComponentGroup& cg = (ComponentGroup&)sgroup;
+        if (cg.component_count > 0)
+        {
+            writer.Key("compno");
+            writer.Int(cg.component_count);
+        }
+        if (cg.subscript.size())
+        {
+            writer.Key("subscript");
+            writer.String(cg.subscript.ptr());
+        }
+    }
+    break;
+    case SGroup::SG_TYPE_MIX: {
+            MixtureGroup& mg = (MixtureGroup&)sgroup;
+            if (mg.subscript.size())
+            {
+                writer.Key("subscript");
+                writer.String(mg.subscript.ptr());
+            }
+        }
         break;
     case SGroup::SG_TYPE_FOR:
         throw Error("SG_TYPE_FOR not implemented in indigo yet");

@@ -246,6 +246,21 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
                     if (mapping[supermg.parent_atoms[j]] >= 0)
                         mg.parent_atoms.push(mapping[supermg.parent_atoms[j]]);
             }
+            else if (sg.sgroup_type == SGroup::SG_TYPE_COM)
+            {
+                ComponentGroup& cg = (ComponentGroup&)sg;
+                ComponentGroup& supercg = (ComponentGroup&)supersg;
+
+                cg.component_count = supercg.component_count;
+                cg.subscript.copy(supercg.subscript);
+            }
+            else if (sg.sgroup_type == SGroup::SG_TYPE_MIX)
+            {
+                MixtureGroup& mg = (MixtureGroup&)sg;
+                MixtureGroup& supermg = (MixtureGroup&)supersg;
+
+                mg.subscript.copy(supermg.subscript);
+            }
         }
         else
         {

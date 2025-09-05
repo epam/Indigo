@@ -1070,6 +1070,33 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                 }
                 _writeMultiString(output, buf.ptr(), buf.size());
             }
+            else if (sgroup.sgroup_type == SGroup::SG_TYPE_COM)
+            {
+                
+                ComponentGroup& cg = static_cast<ComponentGroup&>(sgroup);
+                
+                if (cg.subscript.size() > 1)
+                {
+                    out.printf(" LABEL=%s", cg.subscript.ptr());
+                }
+                if (cg.component_count > 0)
+                {
+                    out.printf(" COMPNO=%d", cg.component_count);
+                }
+                _writeMultiString(output, buf.ptr(), buf.size());
+            }
+            else if (sgroup.sgroup_type == SGroup::SG_TYPE_MON)
+            {
+                _writeMultiString(output, buf.ptr(), buf.size());
+            }
+            else if (sgroup.sgroup_type == SGroup::SG_TYPE_MIX)
+            {
+                MixtureGroup& mg = static_cast<MixtureGroup&>(sgroup);
+                if (mg.subscript.size() > 1) {
+                    out.printf(" LABEL=%s", mg.subscript.ptr());
+                }
+                _writeMultiString(output, buf.ptr(), buf.size());
+            }
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_MUL)
             {
                 MultipleGroup& mg = static_cast<MultipleGroup&>(sgroup);
@@ -1946,6 +1973,23 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                 }
 
                 output.printf("M  SMT %3d %d\n", mg.original_group, mg.multiplier);
+            } else if (sgroup.sgroup_type == SGroup::SG_TYPE_COM)
+            {
+                ComponentGroup& cg = (ComponentGroup&)sgroup;
+                if (cg.subscript.size() > 1)
+                {
+                    if (cg.subscript.find(' ') > -1)
+                        output.printfCR("M  SMT %3d \"%s\"", cg.original_group, cg.subscript.ptr());
+                    else
+                        output.printfCR("M  SMT %3d %s", cg.original_group, cg.subscript.ptr());
+                }
+                if (cg.component_count > 0)
+                    output.printfCR("M  SNC %3d %d", cg.original_group, cg.component_count);
+            } else if (sgroup.sgroup_type == SGroup::SG_TYPE_MIX)
+            {
+                MixtureGroup& mg = (MixtureGroup&)sgroup;
+                if (mg.subscript.size() > 1)
+                    output.printfCR("M  SMT %3d %s", mg.original_group, mg.subscript.ptr());
             }
             for (j = 0; j < sgroup.brackets.size(); j++)
             {

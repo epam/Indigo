@@ -937,7 +937,7 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
     {
         const Value& s = sgroups[i];
         const Value& atoms = s["atoms"];
-        std::string sg_type_str = s["type"].GetString(); // GEN, MUL, SRU, SUP, COP
+        std::string sg_type_str = s["type"].GetString(); // GEN, MUL, SRU, SUP, COP, MON, COM, MIX
         if (sg_type_str == "queryComponent")
         {
             if (_pqmol)
@@ -1117,6 +1117,29 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
                     ru.connectivity = RepeatingUnit::HEAD_TO_HEAD;
                 else if (conn == "EU")
                     ru.connectivity = RepeatingUnit::EITHER;
+            }
+        }
+        break;
+        case SGroup::SG_TYPE_MON: 
+            // no special parameters
+            break;
+        case SGroup::SG_TYPE_COM: {
+            ComponentGroup& cg = (ComponentGroup&)sgroup;
+            if (s.HasMember("compno"))
+            {
+                cg.component_count = s["compno"].GetInt();
+            }
+            if (s.HasMember("subscript"))
+            {
+                cg.subscript.readString(s["subscript"].GetString(), true);
+            }
+        }
+        break;
+        case SGroup::SG_TYPE_MIX: {
+            MixtureGroup& mg = (MixtureGroup&)sgroup;
+            if (s.HasMember("subscript"))
+            {
+                mg.subscript.readString(s["subscript"].GetString(), true);
             }
         }
         break;
