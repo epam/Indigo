@@ -270,23 +270,25 @@ void KetDocument::processAmbiguousMonomerTemplates()
 
 static bool isSimplePolymerConnection(MonomerClass cl1, const std::string& ap1, MonomerClass cl2, const std::string& ap2)
 {
-    if ((cl1 == MonomerClass::Sugar && ap1 == "R3" && cl2 == MonomerClass::Base && ap2 == "R1") ||
-        (cl2 == MonomerClass::Sugar && ap2 == "R3" && cl1 == MonomerClass::Base && ap1 == "R1"))
+    if ((cl1 == MonomerClass::Sugar && ap1 == kAttachmentPointR3 && cl2 == MonomerClass::Base && ap2 == kAttachmentPointR1) ||
+        (cl2 == MonomerClass::Sugar && ap2 == kAttachmentPointR3 && cl1 == MonomerClass::Base && ap1 == kAttachmentPointR1))
         return true;
-    if (cl1 == MonomerClass::AminoAcid && cl2 == MonomerClass::AminoAcid && ((ap1 == "R1" && ap2 == "R2") || (ap1 == "R2" && ap2 == "R1")))
+    if (cl1 == MonomerClass::AminoAcid && cl2 == MonomerClass::AminoAcid &&
+        ((ap1 == kAttachmentPointR1 && ap2 == kAttachmentPointR2) || (ap1 == kAttachmentPointR2 && ap2 == kAttachmentPointR1)))
         return true;
     if (((cl1 == MonomerClass::Phosphate && cl2 == MonomerClass::Sugar) || (cl2 == MonomerClass::Phosphate && cl1 == MonomerClass::Sugar)) &&
-        ((ap1 == "R1" && ap2 == "R2") || (ap1 == "R2" && ap2 == "R1")))
+        ((ap1 == kAttachmentPointR1 && ap2 == kAttachmentPointR2) || (ap1 == kAttachmentPointR2 && ap2 == kAttachmentPointR1)))
         return true;
-    if ((cl1 == MonomerClass::Sugar && cl2 == MonomerClass::Sugar) && ((ap1 == "R1" && ap2 == "R2") || (ap1 == "R2" && ap2 == "R1")))
+    if ((cl1 == MonomerClass::Sugar && cl2 == MonomerClass::Sugar) &&
+        ((ap1 == kAttachmentPointR1 && ap2 == kAttachmentPointR2) || (ap1 == kAttachmentPointR2 && ap2 == kAttachmentPointR1)))
         return true;
     if (((cl1 == MonomerClass::DNA || cl1 == MonomerClass::RNA) && (cl2 == MonomerClass::Phosphate || cl2 == MonomerClass::Sugar) &&
-         (ap1 == "R2" && ap2 == "R1")) ||
+         (ap1 == kAttachmentPointR2 && ap2 == kAttachmentPointR1)) ||
         ((cl1 == MonomerClass::Phosphate || cl1 == MonomerClass::Sugar) && (cl2 == MonomerClass::DNA || cl2 == MonomerClass::RNA) &&
-         (ap1 == "R2" && ap2 == "R1")))
+         (ap1 == kAttachmentPointR2 && ap2 == kAttachmentPointR1)))
         return true;
     if (((cl1 == MonomerClass::DNA && cl2 == MonomerClass::DNA) || (cl1 == MonomerClass::RNA && cl2 == MonomerClass::RNA)) &&
-        ((ap1 == "R2" && ap2 == "R1") || (ap1 == "R1" && ap2 == "R2")))
+        ((ap1 == kAttachmentPointR2 && ap2 == kAttachmentPointR1) || (ap1 == kAttachmentPointR1 && ap2 == kAttachmentPointR2)))
         return true;
     return false;
 }
@@ -297,16 +299,22 @@ static bool isIdtConnection(MonomerClass cl1, const std::string& ap1, MonomerCla
     if (is_simple_pol_connection)
         return true;
     static const std::set<MonomerClass> idt_backbone = {MonomerClass::CHEM, MonomerClass::DNA, MonomerClass::RNA, MonomerClass::Sugar, MonomerClass::Phosphate};
-    if (idt_backbone.count(cl1) > 0 && idt_backbone.count(cl2) > 0 && ((ap1 == "R1" && ap2 == "R2") || (ap1 == "R2" && ap2 == "R1")))
-        return true;
-    if ((cl1 == MonomerClass::Phosphate && cl2 == MonomerClass::Phosphate) && ((ap1 == "R1" && ap2 == "R2") || (ap1 == "R2" && ap2 == "R1")))
+    if (idt_backbone.count(cl1) > 0 && idt_backbone.count(cl2) > 0)
+    {
+        if ((ap1 == kAttachmentPointR1 && ap2 == kAttachmentPointR2) || (ap1 == kAttachmentPointR2 && ap2 == kAttachmentPointR1))
+            return true;
+        if ((cl1 == MonomerClass::CHEM || cl2 == MonomerClass::CHEM) && ap1 == kAttachmentPointR1 && ap2 == kAttachmentPointR1)
+            return true;
+    }
+    if ((cl1 == MonomerClass::Phosphate && cl2 == MonomerClass::Phosphate) &&
+        ((ap1 == kAttachmentPointR1 && ap2 == kAttachmentPointR2) || (ap1 == kAttachmentPointR2 && ap2 == kAttachmentPointR1)))
         return true;
     return false;
 }
 
 void KetDocument::collect_sequence_side(const std::string& start_monomer_id, bool left_side, std::set<std::string>& monomers,
                                         std::set<std::string>& used_monomers, std::deque<std::string>& sequence,
-                                        std::map<std::pair<std::string, std::string>, const KetConnection&>& ap_to_connection)
+                                        std::map<std::pair<std::string, std::string>, const KetConnection&>& ap_to_connection, bool for_idt)
 {
     bool has_monomer_id = true;
     std::string monomer_id = start_monomer_id;
@@ -323,14 +331,24 @@ void KetDocument::collect_sequence_side(const std::string& start_monomer_id, boo
 
         const ket_connections_type& connections = _monomers.at(monomer_id)->connections();
 
-        if (auto side_it = connections.find(left_side ? kAttachmentPointR1 : kAttachmentPointR2); side_it == connections.end())
+        auto side_it = connections.find(left_side ? kAttachmentPointR1 : kAttachmentPointR2);
+        if (side_it == connections.end())
+        {
             has_monomer_id = false;
-        else
+            if (!left_side && getMonomerClass(*_monomers.at(monomer_id)) == MonomerClass::CHEM)
+            {
+                side_it = connections.find(kAttachmentPointR1);
+                if (side_it != connections.end() && side_it->second.second == kAttachmentPointR1)
+                    has_monomer_id = true;
+            }
+        }
+        if (has_monomer_id)
         {
             monomer_id = _monomer_ref_to_id.at(side_it->second.first);
             if (used_monomers.count(monomer_id) != 0) // This monomer already in sequence - this is cycle, connection should be stored as no-sequence
             {
-                if (left_side) // add only when go left to avoid duplicate
+                if (left_side && (!for_idt || side_it->second.second != kAttachmentPointR1))
+                    // add only when go left to avoid duplicate, in IDT chem can be connected at left using R1-R1
                     _non_sequence_connections.emplace_back(ap_to_connection.at(std::make_pair(monomer_id, side_it->second.second)));
                 break;
             }
@@ -339,7 +357,7 @@ void KetDocument::collect_sequence_side(const std::string& start_monomer_id, boo
         if (!left_side || has_monomer_id)
         {
             auto& conns = left_side ? _monomers.at(monomer_id)->connections() : connections;
-            if (auto base_it = conns.find("R3"); base_it != conns.end())
+            if (auto base_it = conns.find(kAttachmentPointR3); base_it != conns.end())
             {
                 auto& base_id = _monomer_ref_to_id.at(base_it->second.first);
                 used_monomers.emplace(base_id);
@@ -511,8 +529,8 @@ void KetDocument::parseSimplePolymers(std::vector<std::deque<std::string>>& sequ
         }
         auto& sequence = sequences.emplace_back();
 
-        collect_sequence_side(start_monomer_id, false, monomers, used_monomers, sequence, ap_to_connection);
-        collect_sequence_side(start_monomer_id, true, monomers, used_monomers, sequence, ap_to_connection);
+        collect_sequence_side(start_monomer_id, false, monomers, used_monomers, sequence, ap_to_connection, for_idt);
+        collect_sequence_side(start_monomer_id, true, monomers, used_monomers, sequence, ap_to_connection, for_idt);
     }
 }
 
