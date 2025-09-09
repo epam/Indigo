@@ -486,14 +486,14 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
     }
     break;
     case SGroup::SG_TYPE_MIX: {
-            MixtureGroup& mg = (MixtureGroup&)sgroup;
-            if (mg.subscript.size())
-            {
-                writer.Key("subscript");
-                writer.String(mg.subscript.ptr());
-            }
+        MixtureGroup& mg = (MixtureGroup&)sgroup;
+        if (mg.subscript.size())
+        {
+            writer.Key("subscript");
+            writer.String(mg.subscript.ptr());
         }
-        break;
+    }
+    break;
     case SGroup::SG_TYPE_FOR:
         throw Error("SG_TYPE_FOR not implemented in indigo yet");
         break;

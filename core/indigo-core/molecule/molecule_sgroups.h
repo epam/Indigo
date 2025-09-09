@@ -242,7 +242,7 @@ namespace indigo
         ~ComponentGroup() override;
 
         Array<char> subscript; // SMT in Molfile format
-        int component_count; // SNC in Molfile format
+        int component_count;   // SNC in Molfile format
 
     private:
         ComponentGroup(const ComponentGroup&);

@@ -1132,7 +1132,7 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
             }
         }
         break;
-        case SGroup::SG_TYPE_MON: 
+        case SGroup::SG_TYPE_MON:
             // no special parameters
             break;
         case SGroup::SG_TYPE_COM: {

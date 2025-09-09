@@ -1083,9 +1083,9 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
             }
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_COM)
             {
-                
+
                 ComponentGroup& cg = static_cast<ComponentGroup&>(sgroup);
-                
+
                 if (cg.subscript.size() > 1)
                 {
                     out.printf(" LABEL=%s", cg.subscript.ptr());
@@ -1103,7 +1103,8 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_MIX)
             {
                 MixtureGroup& mg = static_cast<MixtureGroup&>(sgroup);
-                if (mg.subscript.size() > 1) {
+                if (mg.subscript.size() > 1)
+                {
                     out.printf(" LABEL=%s", mg.subscript.ptr());
                 }
                 _writeMultiString(output, buf.ptr(), buf.size());
@@ -1973,7 +1974,8 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                 }
 
                 output.printf("M  SMT %3d %d\n", mg.original_group, mg.multiplier);
-            } else if (sgroup.sgroup_type == SGroup::SG_TYPE_COM)
+            }
+            else if (sgroup.sgroup_type == SGroup::SG_TYPE_COM)
             {
                 ComponentGroup& cg = (ComponentGroup&)sgroup;
                 if (cg.subscript.size() > 1)
@@ -1985,7 +1987,8 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                 }
                 if (cg.component_count > 0)
                     output.printfCR("M  SNC %3d %d", cg.original_group, cg.component_count);
-            } else if (sgroup.sgroup_type == SGroup::SG_TYPE_MIX)
+            }
+            else if (sgroup.sgroup_type == SGroup::SG_TYPE_MIX)
             {
                 MixtureGroup& mg = (MixtureGroup&)sgroup;
                 if (mg.subscript.size() > 1)
