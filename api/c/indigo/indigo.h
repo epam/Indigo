@@ -255,6 +255,10 @@ CEXPORT int indigoSaveHelm(int molecule, int output, int library);
 CEXPORT int indigoSaveHelmToFile(int molecule, const char* filename, int library);
 CEXPORT const char* indigoHelm(int molecule, int library);
 
+CEXPORT int indigoSaveMonomerLibrary(int output, int library);
+CEXPORT int indigoSaveMonomerLibraryToFile(const char* filename, int library);
+CEXPORT const char* indigoMonomerLibrary(int library);
+
 CEXPORT int indigoSaveJsonToFile(int item, const char* filename);
 CEXPORT int indigoSaveJson(int item, int output);
 

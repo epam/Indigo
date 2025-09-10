@@ -278,7 +278,7 @@ namespace indigo
         const std::string& getIdtAliasByModification(IdtModification modification, const std::string sugar_id, const std::string base_id,
                                                      const std::string phosphate_id);
 
-        const std::map<std::string, MonomerTemplate>& monomerTemplates()
+        const std::map<std::string, MonomerTemplate>& monomerTemplates() const
         {
             return _monomer_templates;
         };

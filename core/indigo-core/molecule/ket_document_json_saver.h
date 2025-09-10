@@ -52,9 +52,9 @@ namespace indigo
         KetDocumentJsonSaver(const KetDocumentJsonSaver&) = delete; // no implicit copy
 
         void saveKetDocument(const KetDocument& document);
+        void saveMonomerLibrary(const MonomerTemplateLibrary& monomers_library);
 
         static void saveKetDocument(JsonWriter& writer, const KetDocument& document);
-
         static void saveMonomerTemplate(JsonWriter& writer, const MonomerTemplate& monomer_template);
 
         bool pretty_json;

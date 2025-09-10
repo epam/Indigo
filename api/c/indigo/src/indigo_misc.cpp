@@ -43,6 +43,7 @@
 #include "indigo_ket_document.h"
 #include "indigo_loaders.h"
 #include "indigo_molecule.h"
+#include "indigo_monomer_library.h"
 #include "indigo_properties.h"
 #include "indigo_reaction.h"
 #include "indigo_savers.h"
@@ -1671,6 +1672,22 @@ CEXPORT const char* indigoCheckStructure(const char* structure, const char* prop
             out.printf("{\"LOAD\":{\"message\":\"Error at loading structure. %s\"}}", e.message());
         }
 
+        out.writeChar(0);
+        return tmp.string.ptr();
+    }
+    INDIGO_END(0);
+}
+
+CEXPORT const char* indigoMonomerLibrary(int library)
+{
+    INDIGO_BEGIN
+    {
+        auto& tmp = self.getThreadTmpData();
+        ArrayOutput out(tmp.string);
+        KetDocumentJsonSaver js(out);
+        IndigoObject& lib_obj = self.getObject(library);
+        js.pretty_json = self.json_saving_pretty;
+        js.saveMonomerLibrary(IndigoMonomerLibrary::get(lib_obj));
         out.writeChar(0);
         return tmp.string.ptr();
     }

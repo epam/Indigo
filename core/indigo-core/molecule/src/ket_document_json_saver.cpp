@@ -425,6 +425,35 @@ void KetDocumentJsonSaver::saveAnnotation(JsonWriter& writer, const std::optiona
     }
 }
 
+void KetDocumentJsonSaver::saveMonomerLibrary(const MonomerTemplateLibrary& monomers_library)
+{
+    rapidjson::StringBuffer string_buffer;
+    JsonWriter writer(pretty_json);
+    writer.Reset(string_buffer);
+    writer.StartObject(); // start
+    writer.Key("root");
+    writer.StartObject();
+    writer.Key("nodes");
+    writer.StartArray();
+    writer.Key("templates");
+    writer.StartArray();
+    for (const auto& kvp : monomers_library.monomerTemplates())
+    {
+        writer.StartObject();
+        saveStr(writer, "$ref", MonomerTemplate::ref_prefix + kvp.first);
+        writer.EndObject();
+    }
+    writer.EndArray();  // templates
+    writer.EndArray();  // nodes
+    writer.EndObject(); // root
+
+    for (const auto& kvp : monomers_library.monomerTemplates())
+        saveMonomerTemplate(writer, kvp.second);
+    writer.EndObject(); // end
+    std::stringstream result;
+    _output.writeString(string_buffer.GetString());
+}
+
 void KetDocumentJsonSaver::saveKetDocument(JsonWriter& writer, const KetDocument& document)
 {
     // auto& molecules = document.molecules();
@@ -467,7 +496,6 @@ void KetDocumentJsonSaver::saveKetDocument(JsonWriter& writer, const KetDocument
     }
     for (auto& shape : document.monomerShapes())
     {
-
         writer.StartObject();
         saveStr(writer, "$ref", get_ref(shape));
         writer.EndObject();

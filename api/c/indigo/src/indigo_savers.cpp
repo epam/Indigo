@@ -723,6 +723,21 @@ CEXPORT int indigoSaveHelm(int item, int output, int library)
     INDIGO_END(-1);
 }
 
+CEXPORT int indigoSaveMonomerLibrary(int output, int library)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& lib_obj = self.getObject(library);
+        Output& out = IndigoOutput::get(self.getObject(output));
+        KetDocumentJsonSaver js(out);
+        js.pretty_json = self.json_saving_pretty;
+        js.saveMonomerLibrary(IndigoMonomerLibrary::get(lib_obj));
+        out.flush();
+        return 1;
+    }
+    INDIGO_END(-1);
+}
+
 CEXPORT int indigoSaveJson(int item, int output)
 {
     INDIGO_BEGIN
