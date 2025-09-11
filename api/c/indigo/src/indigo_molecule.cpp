@@ -44,6 +44,8 @@
 #include "molecule/sequence_loader.h"
 #include "molecule/smiles_loader.h"
 #include "molecule/smiles_saver.h"
+#include "molecule/sdf_loader.h"
+#include "molecule/molfile_loader.h"
 
 IndigoBaseMolecule::IndigoBaseMolecule(int type_) : IndigoObject(type_)
 {
@@ -638,9 +640,42 @@ CEXPORT int indigoLoadMonomerLibrary(int source)
     {
         IndigoObject& obj = self.getObject(source);
         std::unique_ptr<IndigoMonomerLibrary> libptr = std::make_unique<IndigoMonomerLibrary>();
-        MoleculeJsonLoader loader(IndigoScanner::get(obj));
-        loader.stereochemistry_options.ignore_errors = true;
-        loader.loadMonomerLibrary(libptr->get());
+        try // try to load as json
+        {
+            MoleculeJsonLoader loader(IndigoScanner::get(obj));
+            loader.stereochemistry_options.ignore_errors = true;
+            loader.loadMonomerLibrary(libptr->get());
+        }
+		catch (Exception& e) // trying as SDF
+		{
+            try
+			{
+                SdfLoader sdf_loader(IndigoScanner::get(obj));
+                PropertiesMap properties;
+                while (!sdf_loader.isEOF())
+                {
+                    sdf_loader.readNext();
+                    // Copy properties
+                    properties.copy(sdf_loader.properties);
+                    BufferScanner scanner2(sdf_loader.data);
+                    MolfileLoader loader(scanner2);
+                    loader.stereochemistry_options = self.stereochemistry_options;
+                    loader.ignore_noncritical_query_features = self.ignore_noncritical_query_features;
+                    loader.skip_3d_chirality = self.skip_3d_chirality;
+                    loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
+                    loader.ignore_no_chiral_flag = self.ignore_no_chiral_flag;
+                    loader.treat_stereo_as = self.treat_stereo_as;
+                    Molecule mol;
+                    loader.loadMolecule(mol);
+                    // now we have molecule and properties. we need to add it to library.
+                    libptr->get().addMonomersFromMolecule(mol, properties);
+                }
+            }
+			catch (Exception& e)
+			{
+				throw IndigoError("Error loading monomer library: %s", e.message());
+			}
+		}
         return self.addObject(libptr.release());
     }
     INDIGO_END(-1);

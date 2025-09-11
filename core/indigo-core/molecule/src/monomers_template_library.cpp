@@ -295,4 +295,9 @@ namespace indigo
         }
         return EMPTY_STRING;
     }
+
+    void MonomerTemplateLibrary::addMonomersFromMolecule(Molecule& mol, PropertiesMap& properties)
+    {
+
+    }
 }

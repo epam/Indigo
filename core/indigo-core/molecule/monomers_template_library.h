@@ -19,6 +19,8 @@ namespace indigo
 {
     class MonomerTemplateLibrary;
     class TGroup;
+    class Molecule;
+    class PropertiesMap;
 
     class DLLEXPORT MonomerTemplate : public KetBaseMonomerTemplate
     {
@@ -226,6 +228,23 @@ namespace indigo
             return _idt_alias;
         }
 
+        inline const std::string& name() const
+		{
+			return _name;
+		}
+
+        inline const std::string& groupClass() const
+        {
+            return _class;
+        }
+
+        inline const auto& monomerTemplates() const
+		{
+			return _monomer_templates;
+		};
+
+        static inline const std::string ref_prefix = "monomerGroupTemplate-";
+
     private:
         std::string _id;
         std::string _name;
@@ -249,6 +268,7 @@ namespace indigo
         MonomerTemplateLibrary& operator=(MonomerTemplateLibrary&&) = delete;
 
         MonomerTemplate& addMonomerTemplate(const std::string& id, const std::string& monomer_class, IdtAlias idt_alias, bool unresolved = false);
+        void addMonomersFromMolecule(Molecule& mol, PropertiesMap& properties);
 
         inline void addMonomerGroupTemplate(MonomerGroupTemplate&& monomer_group_template)
         {
@@ -278,10 +298,15 @@ namespace indigo
         const std::string& getIdtAliasByModification(IdtModification modification, const std::string sugar_id, const std::string base_id,
                                                      const std::string phosphate_id);
 
-        const std::map<std::string, MonomerTemplate>& monomerTemplates() const
+        const auto& monomerTemplates() const
         {
             return _monomer_templates;
         };
+
+        const auto& monomerGroupTemplates() const
+		{
+			return _monomer_group_templates;
+		};
 
     private:
         std::map<std::string, MonomerTemplate> _monomer_templates;

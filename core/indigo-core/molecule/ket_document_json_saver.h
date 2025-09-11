@@ -38,6 +38,7 @@ namespace indigo
 
     class Output;
     class MonomerTemplate;
+    class MonomerGroupTemplate;
     class KetMolecule;
     class KetMonomer;
     class KetAmbiguousMonomer;
@@ -55,7 +56,9 @@ namespace indigo
         void saveMonomerLibrary(const MonomerTemplateLibrary& monomers_library);
 
         static void saveKetDocument(JsonWriter& writer, const KetDocument& document);
-        static void saveMonomerTemplate(JsonWriter& writer, const MonomerTemplate& monomer_template);
+        static void saveMonomerTemplate(JsonWriter& writer, const MonomerTemplate& monomer_template, bool write_idt_alais = false);
+        static void saveMonomerTemplateGroup(JsonWriter& writer, const MonomerGroupTemplate& monomer_group_template);
+        static void saveIdtAlias(JsonWriter& writer, const IdtAlias& idt_alias);
 
         bool pretty_json;
 

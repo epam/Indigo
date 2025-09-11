@@ -118,7 +118,7 @@ namespace indigo
 
         static std::string getBaseForMod(const std::string& alias);
 
-        inline bool hasModifications()
+        inline bool hasModifications() const
         {
             return _has_modifications;
         }
