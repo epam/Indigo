@@ -11,8 +11,7 @@ on:
     tags:
       - 'indigo-*'
   workflow_dispatch:
-  # temporary disable due billing issue
-  # pull_request:
+  pull_request:
   repository_dispatch:
 
 jobs:
