@@ -22,7 +22,7 @@ namespace indigo
     {
     public:
         DECL_ERROR;
-        IdtAlias(){};
+        IdtAlias() : _has_modifications(false) {};
 
         IdtAlias(const std::string& base) : _base(base), _has_modifications(false)
         {
@@ -60,6 +60,11 @@ namespace indigo
                 break;
             };
             _has_modifications = true;
+        };
+
+        inline void setBase(const std::string& base)
+        {
+            _base = base;
         };
 
         inline bool hasModification(IdtModification modification) const

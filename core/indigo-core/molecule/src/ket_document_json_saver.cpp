@@ -293,7 +293,7 @@ void KetDocumentJsonSaver::saveMonomerTemplateGroup(JsonWriter& writer, const Mo
     for (auto& kvp : monomer_group_template.monomerTemplates())
 	{
         writer.StartObject();
-		saveStr(writer, "$ref", kvp.first);
+		saveStr(writer, "$ref", MonomerTemplate::ref_prefix + kvp.first);
 		writer.EndObject();
 	}
 	writer.EndArray();

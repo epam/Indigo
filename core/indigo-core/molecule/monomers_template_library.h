@@ -21,6 +21,7 @@ namespace indigo
     class TGroup;
     class Molecule;
     class PropertiesMap;
+    class Superatom;
 
     class DLLEXPORT MonomerTemplate : public KetBaseMonomerTemplate
     {
@@ -85,6 +86,8 @@ namespace indigo
         KetAttachmentPoint& AddAttachmentPoint(const std::string& label, int att_atom);
 
         KetAttachmentPoint& AddAttachmentPointId(const std::string& id, int att_atom);
+
+        void addSuperatomAttachmentPoints(const Superatom& sa);
 
         const KetAttachmentPoint& getAttachmenPointById(const std::string& att_point_id);
 
@@ -267,7 +270,9 @@ namespace indigo
         MonomerTemplateLibrary& operator=(const MonomerTemplateLibrary&) = delete;
         MonomerTemplateLibrary& operator=(MonomerTemplateLibrary&&) = delete;
 
-        MonomerTemplate& addMonomerTemplate(const std::string& id, const std::string& monomer_class, IdtAlias idt_alias, bool unresolved = false);
+        MonomerTemplate& addMonomerTemplate(const std::string& id, const std::string& monomer_class, const IdtAlias& idt_alias, bool unresolved = false);
+        MonomerTemplate& addMonomerTemplate(const TGroup& tgroup, const IdtAlias& idt_alias);
+
         void addMonomersFromMolecule(Molecule& mol, PropertiesMap& properties);
 
         inline void addMonomerGroupTemplate(MonomerGroupTemplate&& monomer_group_template)

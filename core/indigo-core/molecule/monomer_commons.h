@@ -79,9 +79,14 @@ namespace indigo
     int getAttachmentOrder(const std::string& label);
     std::string getAttachmentLabel(int order);
     std::string monomerAlias(const TGroup& tg);
+    std::string monomerId(const TGroup& tg);
+
     std::optional<std::reference_wrapper<TGroup>> findTemplateInMap(
         const std::string& name, const std::string& class_name,
         std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash>& templates_map);
+
+    std::string monomerKETClass(const std::string& class_name);
+    std::string monomerHELMClass(const std::string& class_name);
 
     const auto kLeftAttachmentPoint = "Al";
     const auto kRightAttachmentPoint = "Br";

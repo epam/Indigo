@@ -667,7 +667,7 @@ CEXPORT int indigoLoadMonomerLibrary(int source)
                     loader.treat_stereo_as = self.treat_stereo_as;
                     Molecule mol;
                     loader.loadMolecule(mol);
-                    // now we have molecule and properties. we need to add it to library.
+                    // now we have molecule and its properties. we need to add it to library.
                     libptr->get().addMonomersFromMolecule(mol, properties);
                 }
             }
