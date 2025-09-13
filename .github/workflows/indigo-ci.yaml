@@ -403,7 +403,7 @@ jobs:
       matrix:
         # temporary disable macos-13 due billing issue
         # os: [ macos-13, ubuntu-latest, windows-latest ]
-        os: [ macos-13, ubuntu-latest, windows-latest ]
+        os: [ ubuntu-latest, windows-latest ]
     runs-on: ${{ matrix.os }}
     needs: [ merge_indigo_wrappers, test_indigo_python_x86_64 ]
     steps:
@@ -538,7 +538,7 @@ jobs:
       matrix:
         # temporary disable macos-13 due billing issue
         # os: [ macos-13, ubuntu-latest, windows-latest ]
-        os: [ macos-13, windows-latest ]
+        os: [ ubuntu-latest, windows-latest ]
     runs-on: ${{ matrix.os }}
     needs: [ merge_indigo_wrappers, test_indigo_java_x86_64 ]
     steps:
@@ -889,7 +889,7 @@ jobs:
       matrix:
         # temporary disable macos-13 due billing issue
         # os: [ macos-13, ubuntu-latest, windows-latest ]
-        os: [ macos-13, ubuntu-latest, windows-latest ]
+        os: [ ubuntu-latest, windows-latest ]
     runs-on: ${{ matrix.os }}
     # needs: [build_bingo_postgres_linux_x86_64, build_bingo_postgres_windows_msvc_x86_64, build_bingo_postgres_macos_x86_64]
     needs: [build_bingo_postgres_linux_x86_64, build_bingo_postgres_windows_msvc_x86_64]
