@@ -300,7 +300,7 @@ void KetDocumentJsonSaver::saveMonomerTemplateGroup(JsonWriter& writer, const Mo
 	writer.EndObject();
 }
 
-void KetDocumentJsonSaver::saveMonomerTemplate(JsonWriter& writer, const MonomerTemplate& monomer_template, bool write_idt_alais)
+void KetDocumentJsonSaver::saveMonomerTemplate(JsonWriter& writer, const MonomerTemplate& monomer_template, bool write_idt_alias)
 {
     writer.Key(get_ref(monomer_template));
     writer.StartObject();
@@ -312,9 +312,8 @@ void KetDocumentJsonSaver::saveMonomerTemplate(JsonWriter& writer, const Monomer
     {
         writer.Key("unresolved");
         writer.Bool(monomer_template.unresolved());
-    }
-
-    if (monomer_template.unresolved() || write_idt_alais)
+        saveIdtAlias(writer, monomer_template.idtAlias().getBase());
+    } else if (write_idt_alias)
         saveIdtAlias(writer, monomer_template.idtAlias());
 
     if (monomer_template.modificationTypes().size() > 0)
