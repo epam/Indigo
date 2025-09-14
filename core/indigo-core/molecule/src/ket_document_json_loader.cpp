@@ -282,7 +282,7 @@ void KetDocumentJsonLoader::parseMonomerTemplate(const rapidjson::Value& mt_json
 void KetDocumentJsonLoader::parseMonomerTemplate(const rapidjson::Value& mt_json, MonomerTemplateLibrary& library)
 {
     template_add_func func = [&library](const std::string& id, const std::string& monomer_class, IdtAlias idt_alias, bool unresolved) -> MonomerTemplate& {
-        return library.addMonomerTemplate(id, monomer_class, idt_alias, unresolved);
+        return library.addMonomerTemplate(id, id, monomer_class, idt_alias, unresolved);
     };
     parseMonomerTemplate(mt_json, func);
 }

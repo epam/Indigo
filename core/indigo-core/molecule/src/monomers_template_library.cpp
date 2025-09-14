@@ -213,12 +213,33 @@ namespace indigo
 
     IMPL_ERROR(MonomerTemplateLibrary, "MonomerTemplateLibrary");
 
-    MonomerTemplate& MonomerTemplateLibrary::addMonomerTemplate(const TGroup& tg, const IdtAlias& idt_alias)
+    std::pair<std::string, MonomerTemplate&> MonomerTemplateLibrary::addMonomerTemplate(const TGroup& tg, const IdtAlias& idt_alias, bool update)
     {
         if (tg.tgroup_name.ptr() && tg.tgroup_class.ptr())
         {
             std::string template_class(monomerKETClass(tg.tgroup_class.ptr()));
-            auto& mt = addMonomerTemplate(monomerId(tg), template_class, idt_alias, false);
+            auto inchi_key = monomerInchi(tg);
+            auto id = monomerTemplateId(tg);
+            auto it = _monomer_templates.find(inchi_key);
+            if (it != _monomer_templates.end()) // check if the same name exists
+                if (update)
+                {
+                    _monomer_templates.erase(it);
+                }
+                else
+                {
+                    auto& mon = it->second;
+                    return std::pair<std::string, MonomerTemplate&>{inchi_key, mon};
+                }
+
+            // now check if id is unique
+            if (_duplicate_names_count.count(id) > 0)
+                id = id + "_" + std::to_string(++_duplicate_names_count[id]);
+            else
+                _duplicate_names_count.emplace(id, 0);
+
+            auto& mt = addMonomerTemplate(inchi_key, id, template_class, idt_alias, false);
+
             // set properties
             mt.setStringProp(toUType(MonomerTemplate::StringProps::classHELM), monomerHELMClass(tg.tgroup_class.ptr()));
             mt.setStringProp(toUType(MonomerTemplate::StringProps::alias), monomerAlias(tg));
@@ -278,15 +299,15 @@ namespace indigo
                     sgroups.remove(j);
                 }
             }
-            return mt;
+            return std::pair<std::string, MonomerTemplate&>{inchi_key, mt};
         }
         throw Error("TGroup should have name and class to be converted to monomer template.");
     }
 
-    MonomerTemplate& MonomerTemplateLibrary::addMonomerTemplate(const std::string& id, const std::string& monomer_class, const IdtAlias& idt_alias,
-                                                                bool unresolved)
+    MonomerTemplate& MonomerTemplateLibrary::addMonomerTemplate(const std::string& key_id, const std::string& id, const std::string& monomer_class,
+                                                                const IdtAlias& idt_alias, bool unresolved)
     {
-        auto res = _monomer_templates.try_emplace(id, id, monomer_class, idt_alias, unresolved);
+        auto res = _monomer_templates.try_emplace(key_id, id, monomer_class, idt_alias, unresolved);
         if (!res.second)
             throw Error("Monomer template '%s' already exists", id.c_str());
         for (auto modification : {IdtModification::FIVE_PRIME_END, IdtModification::INTERNAL, IdtModification::THREE_PRIME_END})
@@ -408,6 +429,8 @@ namespace indigo
     void MonomerTemplateLibrary::addMonomersFromMolecule(Molecule& mol, PropertiesMap& properties)
     {
         // read common properties values first
+        std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash> templates;
+        mol.getTemplatesMap(templates);
         std::string mon_type, alias_helm;
         IdtAlias idt_alias;
         if (properties.contains("type"))
@@ -444,11 +467,11 @@ namespace indigo
             {
                 try
                 {
-                    auto& mt = addMonomerTemplate(mol.tgroups.getTGroup(0), idt_alias);
+                    auto& mt = addMonomerTemplate(mol.tgroups.getTGroup(0), idt_alias, true);
                     if (modification_type.size())
-                        mt.addModificationType(modification_type);
+                        mt.second.addModificationType(modification_type);
                     if (alias_helm.size())
-                        mt.setStringProp(toUType(MonomerTemplate::StringProps::aliasHELM), alias_helm);
+                        mt.second.setStringProp(toUType(MonomerTemplate::StringProps::aliasHELM), alias_helm);
                 }
                 catch (const Error& /* e */)
                 {
@@ -461,16 +484,19 @@ namespace indigo
         }
         else // add multiple monomer templates
         {
+            std::map<std::string, std::string> local2global_id_map;
             for (int i = mol.tgroups.begin(); i != mol.tgroups.end(); i = mol.tgroups.next(i))
             {
                 try
                 {
                     auto& mt = addMonomerTemplate(mol.tgroups.getTGroup(i), IdtAlias());
+                    local2global_id_map.emplace(monomerId(mol.tgroups.getTGroup(i)), mt.first);
                 }
-                catch (const Error& /* e */)
+                catch (const Error& /* e */) // ignore monomer if already exists
                 {
                 }
             }
+
             if (mon_type == "monomerGroupTemplate")
             {
                 std::string group_class, group_name;
@@ -486,11 +512,30 @@ namespace indigo
                     for (const auto& v : mol.vertices())
                     {
                         Array<char> label;
-						mol.getAtomSymbol(v, label);
+                        mol.getAtomSymbol(v, label);
                         std::string mon_class = mol.getTemplateAtomClass(v);
                         // find correspoding monomer template
-                        auto template_id = getMonomerTemplateIdByAlias(MonomerTemplate::StrToMonomerClass(mon_class), label.ptr());
-                        mgt.addTemplate(*this, template_id);
+
+                        int tg_idx = mol.getTemplateAtomTemplateIndex(v);
+                        if (tg_idx < 0)
+                        {
+                            std::string mon_class = mol.getTemplateAtomClass(v);
+                            std::string alias = mol.getTemplateAtom(v);
+                            auto tg_ref = findTemplateInMap(alias, mon_class, templates);
+                            if (tg_ref.has_value())
+                            {
+                                auto& tg = tg_ref.value().get();
+                                tg_idx = tg.tgroup_id - 1;
+                            }
+                        }
+                        TGroup& tg = mol.tgroups.getTGroup(tg_idx);
+                        std::string local_id = monomerId(tg);
+                        auto local_it = local2global_id_map.find(local_id);
+                        if (local_it != local2global_id_map.end())
+                            mgt.addTemplate(*this, local_it->second);
+                        else
+                            throw Error("Atom %d belongs to TGroup %s which was not added to the library.", v, local_id.c_str());
+
                     }
                 }
             }

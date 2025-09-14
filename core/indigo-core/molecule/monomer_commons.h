@@ -80,6 +80,8 @@ namespace indigo
     std::string getAttachmentLabel(int order);
     std::string monomerAlias(const TGroup& tg);
     std::string monomerId(const TGroup& tg);
+    std::string monomerTemplateId(const TGroup& tg);
+    std::string monomerInchi(const TGroup& tg);
 
     std::optional<std::reference_wrapper<TGroup>> findTemplateInMap(
         const std::string& name, const std::string& class_name,

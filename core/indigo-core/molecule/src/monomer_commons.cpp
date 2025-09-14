@@ -22,7 +22,9 @@
 
 #include <unordered_map>
 
+#include "base_cpp/output.h"
 #include "molecule/base_molecule.h"
+#include "molecule/molecule_inchi.h"
 #include "molecule/monomer_commons.h"
 
 namespace indigo
@@ -252,6 +254,29 @@ namespace indigo
         return name;
     }
 
+    std::string monomerTemplateId(const TGroup& tg)
+    {
+        std::string name;
+        std::string monomer_class;
+        if (tg.tgroup_text_id.ptr())
+            return tg.tgroup_text_id.ptr();
+        if (tg.tgroup_name.ptr())
+            name = tg.tgroup_name.ptr();
+        if (tg.tgroup_class.ptr())
+            monomer_class = tg.tgroup_class.ptr();
+
+        return monomerNameByAlias(monomer_class, name);
+    }
+
+    std::string monomerInchi(const TGroup& tg)
+    {
+        std::string templ_inchi_str;
+        StringOutput templ_inchi_output(templ_inchi_str);
+        MoleculeInChI templ_inchi(templ_inchi_output);
+        templ_inchi.outputInChI(tg.fragment->asMolecule());
+        return templ_inchi_str;
+    }
+
     std::string monomerAlias(const TGroup& tg)
     {
         std::string monomer_class;
@@ -344,8 +369,6 @@ namespace indigo
             return kMonomerClassRNA;
         return kMonomerClassCHEM;
     }
-
-
 
 }
 
