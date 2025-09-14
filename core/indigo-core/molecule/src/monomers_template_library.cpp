@@ -535,7 +535,6 @@ namespace indigo
                             mgt.addTemplate(*this, local_it->second);
                         else
                             throw Error("Atom %d belongs to TGroup %s which was not added to the library.", v, local_id.c_str());
-
                     }
                 }
             }
