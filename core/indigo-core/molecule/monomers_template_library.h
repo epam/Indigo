@@ -232,9 +232,9 @@ namespace indigo
         }
 
         inline const std::string& name() const
-		{
-			return _name;
-		}
+        {
+            return _name;
+        }
 
         inline const std::string& groupClass() const
         {
@@ -242,9 +242,9 @@ namespace indigo
         }
 
         inline const auto& monomerTemplates() const
-		{
-			return _monomer_templates;
-		};
+        {
+            return _monomer_templates;
+        };
 
         static inline const std::string ref_prefix = "monomerGroupTemplate-";
 
@@ -310,9 +310,9 @@ namespace indigo
         };
 
         const auto& monomerGroupTemplates() const
-		{
-			return _monomer_group_templates;
-		};
+        {
+            return _monomer_group_templates;
+        };
 
     private:
         std::map<std::string, MonomerTemplate> _monomer_templates;

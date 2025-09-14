@@ -22,7 +22,7 @@ namespace indigo
     {
     public:
         DECL_ERROR;
-        IdtAlias() : _has_modifications(false) {};
+        IdtAlias() : _has_modifications(false){};
 
         IdtAlias(const std::string& base) : _base(base), _has_modifications(false)
         {

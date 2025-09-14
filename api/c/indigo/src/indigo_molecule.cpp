@@ -40,12 +40,12 @@
 #include "molecule/molecule_mass.h"
 #include "molecule/molecule_name_parser.h"
 #include "molecule/molecule_savers.h"
+#include "molecule/molfile_loader.h"
 #include "molecule/query_molecule.h"
+#include "molecule/sdf_loader.h"
 #include "molecule/sequence_loader.h"
 #include "molecule/smiles_loader.h"
 #include "molecule/smiles_saver.h"
-#include "molecule/sdf_loader.h"
-#include "molecule/molfile_loader.h"
 
 IndigoBaseMolecule::IndigoBaseMolecule(int type_) : IndigoObject(type_)
 {
@@ -646,10 +646,10 @@ CEXPORT int indigoLoadMonomerLibrary(int source)
             loader.stereochemistry_options.ignore_errors = true;
             loader.loadMonomerLibrary(libptr->get());
         }
-		catch (Exception& e) // trying as SDF
-		{
+        catch (Exception& e) // trying as SDF
+        {
             try
-			{
+            {
                 SdfLoader sdf_loader(IndigoScanner::get(obj));
                 PropertiesMap properties;
                 while (!sdf_loader.isEOF())
@@ -671,11 +671,11 @@ CEXPORT int indigoLoadMonomerLibrary(int source)
                     libptr->get().addMonomersFromMolecule(mol, properties);
                 }
             }
-			catch (Exception& e)
-			{
-				throw IndigoError("Error loading monomer library: %s", e.message());
-			}
-		}
+            catch (Exception& e)
+            {
+                throw IndigoError("Error loading monomer library: %s", e.message());
+            }
+        }
         return self.addObject(libptr.release());
     }
     INDIGO_END(-1);

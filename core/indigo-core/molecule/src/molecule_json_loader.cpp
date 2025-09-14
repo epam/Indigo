@@ -144,7 +144,8 @@ MoleculeJsonLoader::MoleculeJsonLoader(Scanner& scanner)
                 parse_ket(_document);
             }
         }
-    } else
+    }
+    else
         throw Error("Invalid JSON input");
 }
 
