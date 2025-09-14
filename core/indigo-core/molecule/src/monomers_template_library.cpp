@@ -103,8 +103,8 @@ namespace indigo
                     auto& atp = sa.attachment_points[kvp.second];
                     std::string atp_id_str(atp.apid.ptr());
                     auto& atp_ket = AddAttachmentPointId(atp_id_str, atp.aidx);
-                    atp_ket.setLeavingGroup(std::vector<int>{{atp.lvidx}});
-
+                    std::vector<int> lgrp{{atp.lvidx}};
+                    atp_ket.setLeavingGroup(lgrp);
                     if (!isAttachmentPointsInOrder(order++, atp_id_str))
                     {
                         if (atp_id_str == kLeftAttachmentPoint || atp_id_str == kAttachmentPointR1)
@@ -467,7 +467,7 @@ namespace indigo
             {
                 try
                 {
-                    auto& mt = addMonomerTemplate(mol.tgroups.getTGroup(0), idt_alias, true);
+                    auto mt = addMonomerTemplate(mol.tgroups.getTGroup(0), idt_alias, true);
                     if (modification_type.size())
                         mt.second.addModificationType(modification_type);
                     if (alias_helm.size())
@@ -489,7 +489,7 @@ namespace indigo
             {
                 try
                 {
-                    auto& mt = addMonomerTemplate(mol.tgroups.getTGroup(i), IdtAlias());
+                    auto mt = addMonomerTemplate(mol.tgroups.getTGroup(i), IdtAlias());
                     local2global_id_map.emplace(monomerId(mol.tgroups.getTGroup(i)), mt.first);
                 }
                 catch (const Error& /* e */) // ignore monomer if already exists
