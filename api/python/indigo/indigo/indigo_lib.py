@@ -358,6 +358,8 @@ class IndigoLib:
         IndigoLib.lib.indigoCdxBase64.argtypes = [c_int]
         IndigoLib.lib.indigoJson.restype = c_char_p
         IndigoLib.lib.indigoJson.argtypes = [c_int]
+        IndigoLib.lib.indigoMonomerLibrary.restype = c_char_p
+        IndigoLib.lib.indigoMonomerLibrary.argtypes = [c_int]
         IndigoLib.lib.indigoSaveMDLCT.restype = c_int
         IndigoLib.lib.indigoSaveMDLCT.argtypes = [c_int, c_int]
         IndigoLib.lib.indigoAddReactant.restype = c_int
