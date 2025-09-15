@@ -487,7 +487,7 @@ M  END
             const cdx_data = fs.readFileSync("test64.cdx");
             const ket = indigo.convert(cdx_data, "ket", options);
             const ket_data = fs.readFileSync("test64.ket").toString();
-            fs.writeFileSync("test64a1.ket", ket_data);
+            // fs.writeFileSync("test64a1.ket", ket_data);
             assert.equal(ket, ket_data);
             options.delete();
         });
