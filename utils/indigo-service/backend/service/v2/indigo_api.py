@@ -378,10 +378,10 @@ def load_moldata(
         md.struct = indigo.loadHelm(molstr, library)
         md.is_rxn = False
         md.is_query = False
-    if input_format in ("monomer-library", "chemical/x-monomer-library"):
+    elif input_format in ("monomer-library", "chemical/x-monomer-library"):
         md.struct = indigo.loadMonomerLibrary(molstr)
         md.is_rxn = False
-        md.is_query = True
+        md.is_query = False
     elif molstr.startswith("InChI"):
         md.struct = indigo.inchi.loadMolecule(molstr)
         md.is_rxn = False
