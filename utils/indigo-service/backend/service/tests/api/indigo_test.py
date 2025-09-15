@@ -480,7 +480,7 @@ chemical/x-iupac, chemical/x-daylight-smarts, chemical/x-inchi-aux, chemical/x-c
 chemical/x-cdxml, chemical/x-cdx, chemical/x-sdf, chemical/x-rdf, chemical/x-peptide-sequence, \
 chemical/x-peptide-sequence-3-letter, chemical/x-rna-sequence, chemical/x-dna-sequence, chemical/x-sequence, \
 chemical/x-peptide-fasta, chemical/x-rna-fasta, chemical/x-dna-fasta, chemical/x-fasta, \
-chemical/x-idt, chemical/x-helm."
+chemical/x-idt, chemical/x-helm, chemical/x-monomer-library."
         expected_text = (
             "ValidationError: {'input_format': ['Must be one of: %s']}"
             % formats
