@@ -423,7 +423,7 @@ namespace indigo
                     return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
                 exceptionMessages.emplace_back(indigoGetLastError());
             }
-            else if (input_format->second == "monomer-library")
+            else if (input_format->second == "monomer-library" || input_format->second == "chemical/x-monomer-library")
             {
                 objectId = indigoLoadMonomerLibraryFromString(data.c_str());
                 if (objectId >= 0)
