@@ -95,6 +95,7 @@ namespace indigo
             EKETReaction,
             EKETReactionQuery,
             EKETDocument,
+            EKETMonomerLibrary
         };
         KOType objtype;
 
@@ -228,6 +229,11 @@ namespace indigo
                 print_js(outputFormat.c_str());
                 result = _checkResultString(indigoToString(buffer.id));
             }
+            else if (outputFormat == "monomer-library" || outputFormat == "chemical/x-monomer-library")
+            {
+                print_js(outputFormat.c_str());
+                result = _checkResultString(indigoMonomerLibrary(id()));
+            }
             else
             {
                 std::stringstream ss;
@@ -346,7 +352,7 @@ namespace indigo
         IndigoRendererSession& operator=(IndigoRendererSession&&) = delete;
     };
 
-    IndigoKetcherObject loadMoleculeOrReaction(const std::string& data, const std::map<std::string, std::string>& options, int library = -1,
+    IndigoKetcherObject loadKETObject(const std::string& data, const std::map<std::string, std::string>& options, int library = -1,
                                                bool use_document = false)
     {
         constexpr auto PEPTIDE = "PEPTIDE";
@@ -361,7 +367,7 @@ namespace indigo
         static std::unordered_map<std::string, std::string> fasta_formats = {
             {"chemical/x-peptide-fasta", PEPTIDE}, {"chemical/x-rna-fasta", RNA}, {"chemical/x-dna-fasta", DNA}};
 
-        print_js("loadMoleculeOrReaction:");
+        print_js("loadKETObject:");
         std::vector<std::string> exceptionMessages;
         exceptionMessages.reserve(4);
 
@@ -369,7 +375,7 @@ namespace indigo
         auto input_format = options.find("input-format");
         if (input_format != options.end())
         {
-            if (input_format != options.end() && (input_format->second == "smarts" || input_format->second == "chemical/x-daylight-smarts"))
+            if (input_format->second == "smarts" || input_format->second == "chemical/x-daylight-smarts")
             {
                 print_js("load as smarts");
                 objectId = indigoLoadSmartsFromBuffer(data.c_str(), data.size());
@@ -387,7 +393,7 @@ namespace indigo
                 }
                 exceptionMessages.emplace_back(indigoGetLastError());
             }
-            else if (input_format != options.end() && seq_formats.count(input_format->second))
+            else if (seq_formats.count(input_format->second))
             {
                 auto seq_it = seq_formats.find(input_format->second);
                 objectId = indigoLoadSequenceFromString(data.c_str(), seq_it->second.c_str(), library);
@@ -415,6 +421,13 @@ namespace indigo
                 objectId = indigoLoadHelmFromString(data.c_str(), library);
                 if (objectId >= 0)
                     return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
+                exceptionMessages.emplace_back(indigoGetLastError());
+            }
+            else if (input_format->second == "monomer-library")
+            {
+                objectId = indigoLoadMonomerLibraryFromString(data.c_str());
+                if (objectId >= 0)
+                    return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMonomerLibrary);
                 exceptionMessages.emplace_back(indigoGetLastError());
             }
         }
@@ -633,7 +646,7 @@ namespace indigo
                                                             "chemical/x-helm"};
         if ((input_format == "ket" || input_format == "application/json") && outputFormat.size() > 0 && document_formats.count(outputFormat) > 0)
             use_document = true;
-        IndigoKetcherObject iko = loadMoleculeOrReaction(data, options_copy, library, use_document);
+        IndigoKetcherObject iko = loadKETObject(data, options_copy, library, use_document);
 
         return iko.toString(options, outputFormat.size() ? outputFormat : "ket", library);
     }
@@ -648,7 +661,7 @@ namespace indigo
         {
             options_copy["query"] = "true";
         }
-        IndigoKetcherObject iko = loadMoleculeOrReaction(data, options_copy);
+        IndigoKetcherObject iko = loadKETObject(data, options_copy);
         if (mode == "fold")
         {
             _checkResult(indigoFoldHydrogens(iko.id()));
@@ -668,7 +681,7 @@ namespace indigo
     {
         const IndigoSession session;
         indigoSetOptions(options);
-        const auto iko = loadMoleculeOrReaction(data.c_str(), options);
+        const auto iko = loadKETObject(data.c_str(), options);
         _checkResult(indigoAromatize(iko.id()));
         return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
     }
@@ -677,7 +690,7 @@ namespace indigo
     {
         const IndigoSession session;
         indigoSetOptions(options);
-        const auto iko = loadMoleculeOrReaction(data.c_str(), options);
+        const auto iko = loadKETObject(data.c_str(), options);
         _checkResult(indigoDearomatize(iko.id()));
         return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
     }
@@ -691,7 +704,7 @@ namespace indigo
         {
             options_copy["query"] = "true";
         }
-        const auto iko = loadMoleculeOrReaction(data.c_str(), options_copy);
+        const auto iko = loadKETObject(data.c_str(), options_copy);
         _checkResult(indigoLayout(iko.id()));
         return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
     }
@@ -701,7 +714,7 @@ namespace indigo
     {
         const IndigoSession session;
         indigoSetOptions(options);
-        auto iko = loadMoleculeOrReaction(data.c_str(), options);
+        auto iko = loadKETObject(data.c_str(), options);
         const auto& subiko = (selected_atoms.empty()) ? iko : iko.substructure(selected_atoms);
         _checkResult(indigoClean2d(subiko.id()));
         return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
@@ -711,7 +724,7 @@ namespace indigo
     {
         const IndigoSession session;
         indigoSetOptions(options);
-        const auto iko = loadMoleculeOrReaction(data.c_str(), options);
+        const auto iko = loadKETObject(data.c_str(), options);
         _checkResult(indigoAutomap(iko.id(), mode.c_str()));
         return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
     }
@@ -720,7 +733,7 @@ namespace indigo
     {
         const IndigoSession session;
         indigoSetOptions(options);
-        const auto iko = loadMoleculeOrReaction(data.c_str(), options);
+        const auto iko = loadKETObject(data.c_str(), options);
         return _checkResultString(indigoCheckObj(iko.id(), properties.c_str()));
     }
 
@@ -730,7 +743,7 @@ namespace indigo
         indigoSetOptions(options);
         indigoSetOption("json-saving-add-stereo-desc", "true");
         indigoSetOption("molfile-saving-add-stereo-desc", "true");
-        const auto iko = loadMoleculeOrReaction(data.c_str(), options);
+        const auto iko = loadKETObject(data.c_str(), options);
         return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
     }
 
@@ -932,7 +945,7 @@ namespace indigo
     {
         const IndigoSession session;
         indigoSetOptions(options);
-        const auto iko = loadMoleculeOrReaction(data.c_str(), options);
+        const auto iko = loadKETObject(data.c_str(), options);
         return std::to_string(indigoPka(iko.id()));
     }
 
@@ -940,7 +953,7 @@ namespace indigo
     {
         const IndigoSession session;
         indigoSetOptions(options);
-        const auto iko = loadMoleculeOrReaction(data.c_str(), options);
+        const auto iko = loadKETObject(data.c_str(), options);
         return indigoPkaValues(iko.id());
     }
 
@@ -948,7 +961,7 @@ namespace indigo
     {
         const IndigoSession session;
         indigoSetOptions(options);
-        const auto iko = loadMoleculeOrReaction(data.c_str(), options);
+        const auto iko = loadKETObject(data.c_str(), options);
         return std::to_string(indigoLogP(iko.id()));
     }
 
@@ -956,7 +969,7 @@ namespace indigo
     {
         const IndigoSession session;
         indigoSetOptions(options);
-        const auto iko = loadMoleculeOrReaction(data.c_str(), options);
+        const auto iko = loadKETObject(data.c_str(), options);
         return std::to_string(indigoMolarRefractivity(iko.id()));
     }
 
@@ -964,7 +977,7 @@ namespace indigo
     {
         const IndigoSession session;
         indigoSetOptions(options);
-        auto iko = loadMoleculeOrReaction(data.c_str(), options);
+        auto iko = loadKETObject(data.c_str(), options);
         rapidjson::Document result;
         auto& allocator = result.GetAllocator();
         result.SetObject();
@@ -1043,7 +1056,7 @@ namespace indigo
         const IndigoRendererSession indigoRendererSession(session.getSessionId());
 
         indigoSetOptions(options);
-        const auto iko = loadMoleculeOrReaction(data.c_str(), options);
+        const auto iko = loadKETObject(data.c_str(), options);
         auto buffer_object = IndigoObject(_checkResult(indigoWriteBuffer()));
         char* raw_ptr = nullptr;
         int size = 0;
@@ -1143,7 +1156,7 @@ namespace indigo
         }
 
         indigoSetOptions(options_copy);
-        const auto iko = loadMoleculeOrReaction(data.c_str(), options_copy, library, true);
+        const auto iko = loadKETObject(data.c_str(), options_copy, library, true);
         _checkResult(indigoExpandMonomers(iko.id()));
         return iko.toString(options, outputFormat.size() ? outputFormat : "ket");
     }
