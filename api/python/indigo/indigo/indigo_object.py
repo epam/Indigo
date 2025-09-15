@@ -368,7 +368,9 @@ class IndigoObject:
             str: KET format for the structure
         """
 
-        return IndigoLib.checkResultString(self._lib().indigoMonomerLibrary(self.id))
+        return IndigoLib.checkResultString(
+            self._lib().indigoMonomerLibrary(self.id)
+        )
 
     def saveMDLCT(self, output):
         """Structure method saves the structure in MDLCT format into a buffer
