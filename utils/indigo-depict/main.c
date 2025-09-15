@@ -871,7 +871,7 @@ int main(int argc, char* argv[])
     indigoSetOption("molfile-saving-mode", "3000");
     indigoSetOption("ket-saving-version", "1.0.0");
     indigoSetOptionBool("json-saving-pretty", true);
-    indigoSetOptionBool("json-use-native-precision", true);
+    // indigoSetOptionBool("json-use-native-precision", true);
     indigoSetOptionFloat("reaction-component-margin-size", 0.0f);
     // indigoSetOptionBool("json-saving-add-reaction-data", "on");
 
