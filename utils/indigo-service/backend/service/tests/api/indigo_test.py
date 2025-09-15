@@ -4041,6 +4041,41 @@ M  END
         # check
         self.assertEqual(result_json, ref_json)
 
+    def test_monomer_library(self):
+        with open(
+            os.path.join(
+                joinPathPy("structures/", __file__), "lib_rna_preset_g.sdf"
+            ),
+            "r",
+        ) as file:
+            struct = file.read()
+        headers, data = self.get_headers(
+            {
+                "struct": struct,
+                "options": {
+                    "json-use-native-precision": True,
+                    "json-saving-pretty": True,
+                },
+                "output_format": "chemical/x-indigo-ket",
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        result_json = json.loads(result.text)["struct"]
+
+        file_name = os.path.join(
+            joinPathPy("ref/", __file__), "lib_rna_preset_g.ket"
+        )
+        # write references
+        # with open(file_name, "w") as file:
+        #     file.write(result_json)
+        with open(file_name, "r") as file:
+            ref_json = file.read()
+
+        # check
+        self.assertEqual(result_json, ref_json)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2, warnings="ignore")
