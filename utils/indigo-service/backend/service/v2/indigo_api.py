@@ -378,6 +378,10 @@ def load_moldata(
         md.struct = indigo.loadHelm(molstr, library)
         md.is_rxn = False
         md.is_query = False
+    if input_format in ("monomer-library", "chemical/x-monomer-library"):
+        md.struct = indigo.loadMonomerLibrary(molstr)
+        md.is_rxn = False
+        md.is_query = True
     elif molstr.startswith("InChI"):
         md.struct = indigo.inchi.loadMolecule(molstr)
         md.is_rxn = False
@@ -495,6 +499,8 @@ def save_moldata(
             rdfSaver.append(reac.clone())
         rdfSaver.close()
         return buffer.toString()
+    elif output_format in ("monomer-library", "chemical/x-monomer-library"):
+        return md.struct.monomerLibrary()
     raise HttpException("Format %s is not supported" % output_format, 400)
 
 
