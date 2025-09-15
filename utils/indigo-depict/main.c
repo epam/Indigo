@@ -925,10 +925,10 @@ int main(int argc, char* argv[])
     // read in the input
     reader = (p.file_to_load != NULL) ? indigoReadFile(p.file_to_load) : indigoReadString(p.string_to_load);
 
-    // int lib = indigoLoadMonomerLibraryFromString("{\"root\":{}}");
+    int lib = indigoLoadMonomerLibraryFromString("{\"root\":{}}");
     // int lib = indigoLoadMonomerLibraryFromFile("monomers.ket");
-    int lib = indigoLoadMonomerLibraryFromFile("rna.sdf");
-    indigoSaveMonomerLibraryToFile("rna_lib.ket", lib);
+    // int lib = indigoLoadMonomerLibraryFromFile("rna.sdf");
+    // indigoSaveMonomerLibraryToFile("rna_lib.ket", lib);
 
     if (p.mode == MODE_SINGLE_MOLECULE)
     {
