@@ -352,8 +352,7 @@ namespace indigo
         IndigoRendererSession& operator=(IndigoRendererSession&&) = delete;
     };
 
-    IndigoKetcherObject loadKETObject(const std::string& data, const std::map<std::string, std::string>& options, int library = -1,
-                                               bool use_document = false)
+    IndigoKetcherObject loadKETObject(const std::string& data, const std::map<std::string, std::string>& options, int library = -1, bool use_document = false)
     {
         constexpr auto PEPTIDE = "PEPTIDE";
         constexpr auto PEPTIDE_3_LETTER = "PEPTIDE-3-LETTER";
