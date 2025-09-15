@@ -480,7 +480,7 @@ bool EmbeddingEnumerator::_Enumerator::_checkPair(int node1, int node2)
         {
             int pair_id = (node1 << 16) + eq_class;
 
-            if (_mapped_orbit_ids.find_or_insert(pair_id))
+            if (_mapped_orbit_ids.insert(pair_id))
             {
                 if (needRemove && _context.cb_vertex_remove != 0)
                     _context.cb_vertex_remove(*_context._g1, node1, _context.userdata);

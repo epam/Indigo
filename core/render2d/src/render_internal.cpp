@@ -860,7 +860,7 @@ void MoleculeRenderInternal::_prepareSGroups(bool collapseAtLeastOneSuperatom)
                         superAtomID = amol.addAtom(ELEM_PSEUDO);
                         amol.setPseudoAtom(superAtomID, group.subscript.ptr());
                     }
-                    QS_DEF(RedBlackSet<int>, groupAtoms);
+                    QS_DEF(std::set<int>, groupAtoms);
                     groupAtoms.clear();
                     for (int j = 0; j < group.atoms.size(); ++j)
                     {
@@ -875,7 +875,7 @@ void MoleculeRenderInternal::_prepareSGroups(bool collapseAtLeastOneSuperatom)
                         for (int j = v.neiBegin(); j < v.neiEnd(); j = v.neiNext(j))
                         {
                             int neighboringAtomID = v.neiVertex(j);
-                            if (!groupAtoms.find(neighboringAtomID))
+                            if (groupAtoms.find(neighboringAtomID) == groupAtoms.end())
                             {
                                 if (!useDisplayPosition)
                                 {
@@ -1188,7 +1188,7 @@ bool MoleculeRenderInternal::_ringHasSelfIntersections(const Ring& ring)
 
 void MoleculeRenderInternal::_findRings()
 {
-    QS_DEF(RedBlackSet<int>, mask);
+    QS_DEF(std::set<int>, mask);
     for (int i = 0; i < _data.bondends.size(); ++i)
     {
         BondEnd& be = _be(i);
@@ -1207,7 +1207,7 @@ void MoleculeRenderInternal::_findRings()
             if (c > _data.bondends.size() || j < 0 || _be(j).lRing != -1)
                 break;
             int aid = _be(j).aid;
-            if (mask.find(aid))
+            if (mask.find(aid) != mask.end())
             {
                 while (ring.bondEnds.size() > 1 && _be(ring.bondEnds.top()).aid != aid)
                 {

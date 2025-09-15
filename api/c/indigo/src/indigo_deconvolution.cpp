@@ -877,7 +877,7 @@ void IndigoDeconvolution::addCompleteRGroup(IndigoDecompositionMatch& deco_match
     /*
      * A set to keep attachment orders
      */
-    QS_DEF(RedBlackSet<int>, str_keys);
+    QS_DEF(std::set<int>, str_keys);
     /*
      * A string to keep attachemnt orders strings
      */
@@ -906,15 +906,22 @@ void IndigoDeconvolution::addCompleteRGroup(IndigoDecompositionMatch& deco_match
         for (int nei_idx = vert.neiBegin(); nei_idx != vert.neiEnd(); nei_idx = vert.neiNext(nei_idx))
         {
             int nei_vert = vert.neiVertex(nei_idx);
-            str_keys.find_or_insert(nei_vert);
+            str_keys.insert(nei_vert);
         }
         /*
          * Call sort and create string
          */
         str_out.clear();
+        /**
+         *  I dont know rly is that correct change RedBlackSet to std::set?
         for (int key_idx = str_keys.begin(); key_idx != str_keys.end(); key_idx = str_keys.next(key_idx))
         {
             str_out.printf("%d;", str_keys.key(key_idx));
+        }
+        */
+        for (const auto& st_key : str_keys)
+        {
+            str_out.printf("%d;", st_key);
         }
         str_out.writeChar(0);
         /*
@@ -1114,7 +1121,7 @@ int IndigoDeconvolution::_createRgMap(IndigoDecompositionMatch& deco_match, int 
     /*
      * A set to keep attachment orders
      */
-    QS_DEF(RedBlackSet<int>, str_keys);
+    QS_DEF(std::set<int>, str_keys);
     /*
      * A string to keep attachemnt orders strings
      */
@@ -1145,15 +1152,22 @@ int IndigoDeconvolution::_createRgMap(IndigoDecompositionMatch& deco_match, int 
         for (int a_x = 0; a_x < att_orders.size(); ++a_x)
         {
             att_order = auto_map.at(map.at(att_orders[a_x]));
-            str_keys.find_or_insert(att_order);
+            str_keys.insert(att_order);
         }
         /*
          * Call sort and create string
          */
         str_out.clear();
+        /**
+         *  I dont know rly is that correct change RedBlackSet to std::set?
         for (int key_idx = str_keys.begin(); key_idx != str_keys.end(); key_idx = str_keys.next(key_idx))
         {
             str_out.printf("%d;", str_keys.key(key_idx));
+        }
+        **/
+        for (const auto& st_key : str_keys)
+        {
+            str_out.printf("%d;", st_key);
         }
         str_out.writeChar(0);
         /*
@@ -1254,11 +1268,11 @@ bool IndigoDeconvolution::DecompositionEnumerator::shouldContinue(int* map, int 
     if (contexts.size() == 0)
         return false;
 
-    RedBlackSet<int> map_set;
+    std::set<int> map_set;
     for (int i = 0; i < size; ++i)
     {
         if (map[i] >= 0)
-            map_set.find_or_insert(map[i]);
+            map_set.insert(map[i]);
     }
 
     for (int m_idx = 0; m_idx < contexts.size(); ++m_idx)
@@ -1269,7 +1283,7 @@ bool IndigoDeconvolution::DecompositionEnumerator::shouldContinue(int* map, int 
         int i = 0;
         for (; i < scaf_atoms.size(); ++i)
         {
-            if (!map_set.find(scaf_atoms[i]))
+            if (map_set.find(scaf_atoms[i]) == map_set.end())
                 break;
         }
         if (i == scaf_atoms.size())
@@ -1299,7 +1313,7 @@ void IndigoDeconvolution::DecompositionEnumerator::addMatch(IndigoDecompositionM
     QueryMolecule r_molecule;
     ObjArray<Array<int>> rsite_orders;
     std::map<int, int> r_sites;
-    QS_DEF(RedBlackSet<int>, processed_r);
+    QS_DEF(std::set<int>, processed_r);
     QS_DEF(Array<int>, swap_order);
     Array<int>& direct_order = rsite_orders.push();
 
@@ -1369,10 +1383,10 @@ void IndigoDeconvolution::DecompositionEnumerator::addMatch(IndigoDecompositionM
             for (const auto& pair : r_sites)
             {
                 auto rs_key = pair.first;
-                if (!processed_r.find(rs_key) && auto_map[rs_key] != rs_key)
+                if (processed_r.find(rs_key) == processed_r.end() && auto_map[rs_key] != rs_key)
                 {
-                    processed_r.find_or_insert(rs_key);
-                    processed_r.find_or_insert(auto_map[rs_key]);
+                    processed_r.insert(rs_key);
+                    processed_r.insert(auto_map[rs_key]);
                     _swapIndexes(nu_match, pair.second, r_sites.at(auto_map[rs_key]));
                 }
             }

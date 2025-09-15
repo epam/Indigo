@@ -928,7 +928,7 @@ void Molecule3dConstraintsChecker::markUsedAtoms(int* arr, int value)
 
 void Molecule3dConstraintsChecker::_mark(int idx)
 {
-    if (_cache_mark.find(idx))
+    if (_cache_mark.find(idx) != _cache_mark.end())
         return;
 
     _cache_mark.insert(idx);

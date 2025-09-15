@@ -19,6 +19,7 @@
 #define __metadata_storage__
 
 #include <cstdint>
+#include <set>
 
 #include "base_cpp/ptr_array.h"
 #include "base_cpp/ptr_pool.h"
@@ -37,7 +38,7 @@ namespace indigo
         virtual MetaObject* clone() const = 0;
         virtual void getBoundingBox(Rect2f& bbox) const = 0;
         virtual void offset(const Vec2f& offset) = 0;
-        virtual ~MetaObject(){};
+        virtual ~MetaObject() {};
     };
 
     class MetaDataStorage
@@ -86,7 +87,7 @@ namespace indigo
         Array<int> _simple_object_indexes;
         Array<int> _text_object_indexes;
         Array<int> _image_indexes;
-        RedBlackSet<int> _explicit_reaction_object_indexes;
+        std::set<int> _explicit_reaction_object_indexes;
     };
 }
 #endif

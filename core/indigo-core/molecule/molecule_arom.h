@@ -22,6 +22,8 @@
 #include "base_cpp/red_black.h"
 #include "base_cpp/tlscont.h"
 
+#include <set>
+
 #ifdef _WIN32
 #pragma warning(push)
 #pragma warning(disable : 4251)
@@ -106,7 +108,7 @@ namespace indigo
         TL_CP_DECL(Array<int>, _bonds_arom_count);
         TL_CP_DECL(Array<CycleDef>, _unsure_cycles);
         TL_CP_DECL(Array<int>, _cycle_atoms);
-        TL_CP_DECL(RedBlackSet<int>, _inside_superatoms);
+        TL_CP_DECL(std::set<int>, _inside_superatoms);
 
         int _cycle_atoms_mark;
 

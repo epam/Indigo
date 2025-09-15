@@ -828,7 +828,7 @@ namespace indigo
                     ml.filter = &f;
 
                     ml.make();
-                    RedBlackSet<int> atoms_with_nei;
+                    std::set<int> atoms_with_nei;
 
                     for (int i = 0; i < expander.added_atoms.size(); i++)
                     {
@@ -836,12 +836,14 @@ namespace indigo
                         for (int nei = vertex.neiBegin(); nei != vertex.neiEnd(); nei = vertex.neiNext(nei))
                         {
                             int nei_atom = vertex.neiVertex(nei);
-                            atoms_with_nei.find_or_insert(nei_atom);
+                            atoms_with_nei.insert(nei_atom);
                         }
-                        atoms_with_nei.find_or_insert(expander.added_atoms[i]);
+                        atoms_with_nei.insert(expander.added_atoms[i]);
                     }
-                    for (int i = atoms_with_nei.begin(); i != atoms_with_nei.end(); i = atoms_with_nei.next(i))
-                        mol.markBondStereocenters(atoms_with_nei.key(i));
+                    for (const auto& atom : atoms_with_nei)
+                    {
+                        mol.markBondStereocenters(atom);
+                    }
                 }
 
                 return count;

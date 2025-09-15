@@ -19,6 +19,8 @@
 #ifndef __molecule_dearom_h__
 #define __molecule_dearom_h__
 
+#include <set>
+
 #include "base_cpp/array.h"
 #include "base_cpp/d_bitset.h"
 #include "base_cpp/exception.h"
@@ -163,7 +165,7 @@ namespace indigo
         TL_CP_DECL(Array<int>, _groupEdges);
         TL_CP_DECL(Array<int>, _groupHeteroAtoms);
         TL_CP_DECL(GROUP_DATA, _groupData);
-        TL_CP_DECL(RedBlackSet<int>, _inside_superatoms);
+        TL_CP_DECL(std::set<int>, _inside_superatoms);
     };
 
     // Molecule dearomatization class.

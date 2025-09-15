@@ -21,6 +21,8 @@
 #include "base_cpp/obj_array.h"
 #include "base_cpp/red_black.h"
 
+#include <set>
+
 namespace indigo
 {
 
@@ -55,7 +57,7 @@ namespace indigo
 
         ObjArray<Array<int>> _cycles;
 
-        RedBlackSet<int> _cycleVertices;
+        std::set<int> _cycleVertices;
     };
 
 } // namespace indigo

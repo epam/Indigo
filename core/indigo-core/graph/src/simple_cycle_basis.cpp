@@ -25,6 +25,8 @@
 #include "graph/shortest_path_finder.h"
 #include "graph/spanning_tree.h"
 
+#include <set>
+
 using namespace indigo;
 
 SimpleCycleBasis::SimpleCycleBasis(const Graph& graph) : _graph(graph), _isMinimized(false)
@@ -60,7 +62,7 @@ void SimpleCycleBasis::create()
 
     Graph spanning_tree;
 
-    QS_DEF(RedBlackSet<int>, visited_edges);
+    QS_DEF(std::set<int>, visited_edges);
     visited_edges.clear();
 
     // FIFO for the BFS
@@ -93,7 +95,7 @@ void SimpleCycleBasis::create()
             // find a neighbour vertex of the current vertex
             int edge = c_vertex.neiEdge(i);
 
-            if (!visited_edges.find(edge))
+            if (visited_edges.find(edge) == visited_edges.end())
             {
 
                 // mark edge as visited
@@ -382,9 +384,9 @@ void SimpleCycleBasis::_prepareSubgraph(Graph& subgraph)
 {
     QS_DEF(Array<int>, path_vertices);
     path_vertices.clear();
-    QS_DEF(RedBlackSet<int>, selected_edges);
+    QS_DEF(std::set<int>, selected_edges);
     selected_edges.clear();
-    QS_DEF(RedBlackSet<int>, remaining_edges);
+    QS_DEF(std::set<int>, remaining_edges);
     remaining_edges.clear();
     for (int i = subgraph.edgeBegin(); i < subgraph.edgeEnd(); i = subgraph.edgeNext(i))
     {
@@ -396,7 +398,7 @@ void SimpleCycleBasis::_prepareSubgraph(Graph& subgraph)
     while (remaining_edges.size() > 0)
     {
 
-        int edge = remaining_edges.begin();
+        int edge = *remaining_edges.begin();
 
         int source = subgraph.getEdge(edge).beg;
         int target = subgraph.getEdge(edge).end;
@@ -417,13 +419,13 @@ void SimpleCycleBasis::_prepareSubgraph(Graph& subgraph)
 
         for (int i = 0; i < path_edges.size(); ++i)
         {
-            remaining_edges.remove_if_exists(path_edges[i]);
+            remaining_edges.erase(path_edges[i]);
         }
     }
 
-    for (int i = selected_edges.begin(); i < selected_edges.end(); i = selected_edges.next(i))
+    for (const auto& selected_edge : selected_edges)
     {
-        subgraph.removeEdge(selected_edges.key(i));
+        subgraph.removeEdge(selected_edge);
     }
 }
 

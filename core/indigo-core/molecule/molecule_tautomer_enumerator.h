@@ -80,7 +80,7 @@ namespace indigo
         int _currentRule;
         bool _complete;
         int aromatizedRange[2];
-        RedBlackSet<unsigned> _enumeratedHistory;
+        std::set<unsigned> _enumeratedHistory;
     };
 
 } // namespace indigo

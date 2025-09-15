@@ -20,6 +20,7 @@
 #define __molecule_3d_constraints__
 
 #include <map>
+#include <set>
 
 #include "base_cpp/ptr_array.h"
 #include "base_cpp/tlscont.h"
@@ -398,7 +399,7 @@ namespace indigo
         int* _to_mark;
         int _mark_value;
 
-        TL_CP_DECL(RedBlackSet<int>, _cache_mark);
+        TL_CP_DECL(std::set<int>, _cache_mark);
     };
 
 } // namespace indigo

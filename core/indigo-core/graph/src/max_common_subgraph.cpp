@@ -21,6 +21,7 @@
 #include "base_cpp/cancellation_handler.h"
 #include "time.h"
 #include <algorithm>
+#include <set>
 
 using namespace indigo;
 
@@ -359,7 +360,7 @@ bool MaxCommonSubgraph::ReCreation::_hasCommonSymbol(int e11, int e12, int e21, 
 void MaxCommonSubgraph::ReCreation::_createList(const Dbitset& proj_bitset, Graph& graph, Array<int>& v_list, Array<int>& e_list) const
 {
     int e_num, v_num1, v_num2;
-    RedBlackSet<int> rb_set;
+    std::set<int> rb_set;
 
     v_list.clear();
     e_list.clear();
@@ -370,12 +371,14 @@ void MaxCommonSubgraph::ReCreation::_createList(const Dbitset& proj_bitset, Grap
         e_num = x;
         v_num1 = graph.getEdge(e_num).beg;
         v_num2 = graph.getEdge(e_num).end;
-        rb_set.find_or_insert(v_num1);
-        rb_set.find_or_insert(v_num2);
+        rb_set.insert(v_num1);
+        rb_set.insert(v_num2);
         e_list.push(e_num);
     }
-    for (int i = rb_set.begin(); i < rb_set.end(); i = rb_set.next(i))
-        v_list.push(rb_set.key(i));
+    for (const auto& rb_item : rb_set)
+    {
+        v_list.push(rb_item);
+    }
 }
 
 void MaxCommonSubgraph::ReCreation::setCorrespondence(const Dbitset& bits, Array<int>& map) const

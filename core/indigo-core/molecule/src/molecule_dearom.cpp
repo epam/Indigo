@@ -595,7 +595,7 @@ DearomatizationsGroups::DearomatizationsGroups(BaseMolecule& molecule, bool skip
             if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
             {
                 for (int j = 0; j < sgroup.atoms.size(); j++)
-                    _inside_superatoms.find_or_insert(sgroup.atoms[j]);
+                    _inside_superatoms.insert(sgroup.atoms[j]);
             }
         }
 }
@@ -725,7 +725,7 @@ int DearomatizationsGroups::detectAromaticGroups(const int* atom_external_conn)
 
     for (int v_idx = _molecule.vertexBegin(); v_idx < _molecule.vertexEnd(); v_idx = _molecule.vertexNext(v_idx))
     {
-        if (_inside_superatoms.find(v_idx))
+        if (_inside_superatoms.find(v_idx) != _inside_superatoms.end())
             continue;
 
         if (_vertexAromaticGroupIndex[v_idx] != -1)

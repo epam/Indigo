@@ -19,7 +19,9 @@
 #ifndef __molecule_rgroups_composition__
 #define __molecule_rgroups_composition__
 
+#include <map>
 #include <memory>
+#include <set>
 
 #include "base_cpp/array.h"
 #include "base_cpp/multimap.h"
@@ -32,7 +34,7 @@ namespace indigo
     {
     public:
         explicit MoleculeRGroupsComposition(BaseMolecule& mol);
-        ~MoleculeRGroupsComposition(){};
+        ~MoleculeRGroupsComposition() {};
 
         // State of search abstracted from chemistry details
         class AttachmentIter : NonCopyable
@@ -175,10 +177,7 @@ namespace indigo
                 ORDER
             };
 #define RGCOMP_OPT MoleculeIter::Option
-#define RGCOMP_OPT_ENUM                                                                                                                                        \
-    {                                                                                                                                                          \
-        RGCOMP_OPT::ERASE, RGCOMP_OPT::LEAVE, RGCOMP_OPT::ORDER                                                                                                \
-    }
+#define RGCOMP_OPT_ENUM {RGCOMP_OPT::ERASE, RGCOMP_OPT::LEAVE, RGCOMP_OPT::ORDER}
 #define RGCOMP_OPT_COUNT 3
 
             static const char* const OPTION(Option opt)
