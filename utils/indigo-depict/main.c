@@ -927,8 +927,8 @@ int main(int argc, char* argv[])
 
     int lib = indigoLoadMonomerLibraryFromString("{\"root\":{}}");
     // int lib = indigoLoadMonomerLibraryFromFile("monomers.ket");
-    // int lib = indigoLoadMonomerLibraryFromFile("rna.sdf");
-    // indigoSaveMonomerLibraryToFile("rna_lib.ket", lib);
+    // int lib = indigoLoadMonomerLibraryFromFile("phos.sdf");
+    // indigoSaveMonomerLibraryToFile("phos.ket", lib);
 
     if (p.mode == MODE_SINGLE_MOLECULE)
     {

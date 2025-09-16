@@ -16,6 +16,7 @@
         "classHELM": "RNA",
         "alias": "P",
         "naturalAnalogShort": "P",
+        "aliasHELM": "p",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,

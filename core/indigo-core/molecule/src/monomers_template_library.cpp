@@ -435,8 +435,8 @@ namespace indigo
         IdtAlias idt_alias;
         if (properties.contains("type"))
             mon_type = properties.at("type");
-        if (properties.contains("aliasHelm"))
-            alias_helm = properties.at("aliasHelm");
+        if (properties.contains("aliasHELM"))
+            alias_helm = properties.at("aliasHELM");
         // read idtAliases
         if (properties.contains("idtAliases"))
         {

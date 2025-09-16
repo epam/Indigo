@@ -58,8 +58,8 @@ for filename in files:
     lib = indigo.loadMonomerLibraryFromFile(
         os.path.join(root, filename + ".sdf")
     )
-    with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
-        file.write(lib.monomerLibrary())
+    # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
+    #    file.write(lib.monomerLibrary())
     with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
         ket_ref = file.read()
     ket = lib.monomerLibrary()
