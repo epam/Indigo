@@ -56,9 +56,9 @@ namespace indigo
         void saveMonomerLibrary(const MonomerTemplateLibrary& monomers_library);
 
         static void saveKetDocument(JsonWriter& writer, const KetDocument& document);
-        static void saveMonomerTemplate(JsonWriter& writer, const MonomerTemplate& monomer_template, bool write_idt_alias = false);
+        static void saveMonomerTemplate(JsonWriter& writer, const MonomerTemplate& monomer_template, bool save_resolved_idt_alias = false);
         static void saveMonomerTemplateGroup(JsonWriter& writer, const MonomerGroupTemplate& monomer_group_template);
-        static void saveIdtAlias(JsonWriter& writer, const IdtAlias& idt_alias);
+        static void saveIdtAlias(JsonWriter& writer, const IdtAlias& idt_alias, bool save_resolved = false);
 
         bool pretty_json;
 

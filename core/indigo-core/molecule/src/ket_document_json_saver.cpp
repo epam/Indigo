@@ -300,7 +300,7 @@ void KetDocumentJsonSaver::saveMonomerTemplateGroup(JsonWriter& writer, const Mo
     writer.EndObject();
 }
 
-void KetDocumentJsonSaver::saveMonomerTemplate(JsonWriter& writer, const MonomerTemplate& monomer_template, bool write_idt_alias)
+void KetDocumentJsonSaver::saveMonomerTemplate(JsonWriter& writer, const MonomerTemplate& monomer_template, bool save_resolved_idt_alias)
 {
     writer.Key(get_ref(monomer_template));
     writer.StartObject();
@@ -314,8 +314,8 @@ void KetDocumentJsonSaver::saveMonomerTemplate(JsonWriter& writer, const Monomer
         writer.Bool(monomer_template.unresolved());
         saveIdtAlias(writer, monomer_template.idtAlias().getBase());
     }
-    else if (write_idt_alias)
-        saveIdtAlias(writer, monomer_template.idtAlias());
+    else if (save_resolved_idt_alias)
+        saveIdtAlias(writer, monomer_template.idtAlias(), save_resolved_idt_alias);
 
     if (monomer_template.modificationTypes().size() > 0)
     {
@@ -334,13 +334,14 @@ void KetDocumentJsonSaver::saveMonomerTemplate(JsonWriter& writer, const Monomer
     writer.EndObject();
 }
 
-void KetDocumentJsonSaver::saveIdtAlias(JsonWriter& writer, const IdtAlias& idt_alias)
+void KetDocumentJsonSaver::saveIdtAlias(JsonWriter& writer, const IdtAlias& idt_alias, bool save_resolved)
 {
-    if (idt_alias.getBase().size()) // Save IDT alias only for unresolved
+    if (idt_alias.getBase().size() || (save_resolved && idt_alias.hasModifications())) // Save IDT alias only for unresolved
     {
         writer.Key("idtAliases");
         writer.StartObject();
-        saveStr(writer, "base", idt_alias.getBase());
+        if (idt_alias.getBase().size())
+            saveStr(writer, "base", idt_alias.getBase());
         if (idt_alias.hasModifications())
         {
             writer.Key("modifications");
