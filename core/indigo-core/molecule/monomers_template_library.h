@@ -270,7 +270,7 @@ namespace indigo
         MonomerTemplateLibrary& operator=(const MonomerTemplateLibrary&) = delete;
         MonomerTemplateLibrary& operator=(MonomerTemplateLibrary&&) = delete;
 
-        MonomerTemplate& addMonomerTemplate(const std::string& key_id, const std::string& id, const std::string& monomer_class, const IdtAlias& idt_alias,
+        MonomerTemplate& addMonomerTemplate(const std::string& id, const std::string& monomer_class, const IdtAlias& idt_alias,
                                             bool unresolved = false);
         std::pair<std::string, MonomerTemplate&> addMonomerTemplate(const TGroup& tgroup, const IdtAlias& idt_alias, bool update = false);
 
@@ -318,6 +318,7 @@ namespace indigo
         std::map<std::string, MonomerTemplate> _monomer_templates;
         std::map<std::string, MonomerGroupTemplate> _monomer_group_templates;
         std::unordered_map<std::string, int> _duplicate_names_count;
+        std::unordered_map<std::string, std::string> _inchi_key_to_monomer_id;
         std::map<std::string, std::pair<MonomerTemplate&, IdtModification>> _id_alias_to_monomer_templates;
         std::map<std::string, std::pair<MonomerGroupTemplate&, IdtModification>> _id_alias_to_monomer_group_templates;
     };

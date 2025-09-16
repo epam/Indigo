@@ -1544,8 +1544,8 @@ M  END""",
             data=data,
         )
         fname = "render-coloring-false.png"
-        with open(os.path.join(ref_path, fname), "wb") as file:
-            file.write(result.content)
+        # with open(os.path.join(ref_path, fname), "wb") as file:
+        #     file.write(result.content)
         with open(os.path.join(ref_path, fname), "rb") as file:
             ref = file.read()
             self.assertEqual(result.content, ref)
@@ -1564,8 +1564,8 @@ M  END""",
             data=data,
         )
         fname = "render-coloring-true.png"
-        with open(os.path.join(ref_path, fname), "wb") as file:
-            file.write(result.content)
+        # with open(os.path.join(ref_path, fname), "wb") as file:
+        #     file.write(result.content)
         with open(os.path.join(ref_path, fname), "rb") as file:
             ref = file.read()
             self.assertEqual(result.content, ref)
