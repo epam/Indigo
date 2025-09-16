@@ -4,234 +4,15 @@
             "templates",
             [
                 {
-                    "$ref": "monomerTemplate-Rib"
-                },
-                {
                     "$ref": "monomerTemplate-Gua"
                 },
                 {
                     "$ref": "monomerTemplate-P"
+                },
+                {
+                    "$ref": "monomerTemplate-Rib"
                 }
             ]
-        ]
-    },
-    "monomerTemplate-Rib": {
-        "type": "monomerTemplate",
-        "id": "Rib",
-        "class": "Sugar",
-        "classHELM": "RNA",
-        "alias": "R",
-        "naturalAnalog": "Rib",
-        "naturalAnalogShort": "R",
-        "attachmentPoints": [
-            {
-                "attachmentAtom": 10,
-                "leavingGroup": {
-                    "atoms": [
-                        11
-                    ]
-                }
-            },
-            {
-                "attachmentAtom": 6,
-                "leavingGroup": {
-                    "atoms": [
-                        8
-                    ]
-                }
-            },
-            {
-                "attachmentAtom": 0,
-                "leavingGroup": {
-                    "atoms": [
-                        5
-                    ]
-                }
-            }
-        ],
-        "atoms": [
-            {
-                "label": "C",
-                "location": [
-                    1.499000,
-                    1.176000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    1.656000,
-                    0.188000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    0.765000,
-                    -0.266000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    0.058000,
-                    0.441000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    0.512000,
-                    1.332000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    2.207000,
-                    1.883000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    0.608000,
-                    -1.254000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    2.547000,
-                    -0.266000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "H",
-                "location": [
-                    1.386000,
-                    -1.883000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    -0.930000,
-                    0.285000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    -1.559000,
-                    1.062000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "H",
-                "location": [
-                    -2.547000,
-                    0.905000,
-                    0.000000
-                ]
-            }
-        ],
-        "bonds": [
-            {
-                "type": 1,
-                "atoms": [
-                    0,
-                    4
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    4,
-                    3
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    3,
-                    2
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    2,
-                    1
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    1,
-                    0
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    0,
-                    5
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    2,
-                    6
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    1,
-                    7
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    6,
-                    8
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    3,
-                    9
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    9,
-                    10
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    10,
-                    11
-                ]
-            }
         ]
     },
     "monomerTemplate-Gua": {
@@ -542,6 +323,225 @@
             }
         ]
     },
+    "monomerTemplate-Rib": {
+        "type": "monomerTemplate",
+        "id": "Rib",
+        "class": "Sugar",
+        "classHELM": "RNA",
+        "alias": "R",
+        "naturalAnalog": "Rib",
+        "naturalAnalogShort": "R",
+        "attachmentPoints": [
+            {
+                "attachmentAtom": 10,
+                "leavingGroup": {
+                    "atoms": [
+                        11
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 6,
+                "leavingGroup": {
+                    "atoms": [
+                        8
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        5
+                    ]
+                }
+            }
+        ],
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    1.499000,
+                    1.176000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    1.656000,
+                    0.188000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.765000,
+                    -0.266000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.058000,
+                    0.441000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    0.512000,
+                    1.332000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    2.207000,
+                    1.883000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    0.608000,
+                    -1.254000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    2.547000,
+                    -0.266000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    1.386000,
+                    -1.883000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -0.930000,
+                    0.285000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    -1.559000,
+                    1.062000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    -2.547000,
+                    0.905000,
+                    0.000000
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    4
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    4,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    1
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    0
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    5
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    6
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    7
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    6,
+                    8
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    9
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    9,
+                    10
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    10,
+                    11
+                ]
+            }
+        ]
+    },
     "monomerGroupTemplate-G": {
         "type": "monomerGroupTemplate",
         "id": "G",
@@ -552,13 +552,13 @@
         },
         "templates": [
             {
-                "$ref": "monomerTemplate-Rib"
-            },
-            {
                 "$ref": "monomerTemplate-Gua"
             },
             {
                 "$ref": "monomerTemplate-P"
+            },
+            {
+                "$ref": "monomerTemplate-Rib"
             }
         ]
     }

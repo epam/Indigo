@@ -17,6 +17,7 @@
         "alias": "A",
         "naturalAnalog": "Ala",
         "naturalAnalogShort": "A",
+        "aliasHELM": "A",
         "modificationTypes": [
             "Natural amino acid"
         ],

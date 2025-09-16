@@ -16,6 +16,13 @@
         "classHELM": "RNA",
         "alias": "P",
         "naturalAnalogShort": "P",
+        "aliasHELM": "p",
+        "idtAliases": {
+            "modifications": {
+                "endpoint5": "5Phos",
+                "endpoint3": "3Phos"
+            }
+        },
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
