@@ -4056,7 +4056,8 @@ M  END
                     "json-use-native-precision": True,
                     "json-saving-pretty": True,
                 },
-                "output_format": "chemical/x-indigo-ket",
+                "input_format": "chemical/x-monomer-library",
+                "output_format": "chemical/x-monomer-library",
             }
         )
         result = requests.post(

@@ -443,7 +443,9 @@ def load_moldata(
 def save_moldata(
     md, output_format=None, options={}, indigo=None, library=None
 ):
-    if output_format in ("chemical/x-mdl-molfile", "chemical/x-mdl-rxnfile"):
+    if output_format in ("monomer-library", "chemical/x-monomer-library"):
+        return md.struct.monomerLibrary()
+    elif output_format in ("chemical/x-mdl-molfile", "chemical/x-mdl-rxnfile"):
         return md.struct.rxnfile() if md.is_rxn else md.struct.molfile()
     elif output_format == "chemical/x-indigo-ket":
         return md.struct.json()
@@ -499,8 +501,6 @@ def save_moldata(
             rdfSaver.append(reac.clone())
         rdfSaver.close()
         return buffer.toString()
-    elif output_format in ("monomer-library", "chemical/x-monomer-library"):
-        return md.struct.monomerLibrary()
     raise HttpException("Format %s is not supported" % output_format, 400)
 
 
@@ -904,6 +904,7 @@ def convert():
                 - chemical/x-iupac
                 - chemical/x-daylight-smarts
                 - chemical/x-inchi-aux
+                - chemical/x-monomer-library
           example:
             struct: C1=CC=CC=C1
             output_format: chemical/x-mdl-molfile
