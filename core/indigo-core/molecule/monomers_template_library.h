@@ -270,8 +270,7 @@ namespace indigo
         MonomerTemplateLibrary& operator=(const MonomerTemplateLibrary&) = delete;
         MonomerTemplateLibrary& operator=(MonomerTemplateLibrary&&) = delete;
 
-        MonomerTemplate& addMonomerTemplate(const std::string& id, const std::string& monomer_class, const IdtAlias& idt_alias,
-                                            bool unresolved = false);
+        MonomerTemplate& addMonomerTemplate(const std::string& id, const std::string& monomer_class, const IdtAlias& idt_alias, bool unresolved = false);
         std::pair<std::string, MonomerTemplate&> addMonomerTemplate(const TGroup& tgroup, const IdtAlias& idt_alias, bool update = false);
 
         void addMonomersFromMolecule(Molecule& mol, PropertiesMap& properties);
