@@ -101,19 +101,18 @@ namespace indigo
                 for (const auto& kvp : sorted_attachment_points)
                 {
                     auto& atp = sa.attachment_points[kvp.second];
-                    std::string atp_id_str(atp.apid.ptr());
-                    auto& atp_ket = AddAttachmentPointId(atp_id_str, atp.aidx);
+                    auto& atp_ket = AddAttachmentPointId(kvp.first, atp.aidx);
                     std::vector<int> lgrp{{atp.lvidx}};
                     atp_ket.setLeavingGroup(lgrp);
-                    if (!isAttachmentPointsInOrder(order++, atp_id_str))
+                    if (!isAttachmentPointsInOrder(order++, kvp.first))
                     {
-                        if (atp_id_str == kLeftAttachmentPoint || atp_id_str == kAttachmentPointR1)
-                            atp_ket.setStringProp(toUType(KetAttachmentPoint::StringProps::type), "left");
-                        else if (atp_id_str == kRightAttachmentPoint || atp_id_str == kAttachmentPointR2)
-                            atp_ket.setStringProp(toUType(KetAttachmentPoint::StringProps::type), "right");
+                        if (kvp.first == kLeftAttachmentPoint || kvp.first == kAttachmentPointR1)
+                            setKetStrProp(atp_ket, type, "left");
+                        else if (kvp.first == kRightAttachmentPoint || kvp.first == kAttachmentPointR2)
+                            setKetStrProp(atp_ket, type, "right");
                         else
-                            atp_ket.setStringProp(toUType(KetAttachmentPoint::StringProps::type), "side");
-                        atp_ket.setStringProp(toUType(KetAttachmentPoint::StringProps::label), convertAPToHELM(atp_id_str));
+                            setKetStrProp(atp_ket, type, "side");
+                        setKetStrProp(atp_ket, label, convertAPToHELM(kvp.first));
                     }
                 }
             }
@@ -250,11 +249,11 @@ namespace indigo
             _inchi_key_to_monomer_id.emplace(inchi_key, id);
 
             // set properties
-            mt.setStringProp(toUType(MonomerTemplate::StringProps::classHELM), monomerHELMClass(tg.tgroup_class.ptr()));
-            mt.setStringProp(toUType(MonomerTemplate::StringProps::alias), monomerAlias(tg));
+            setKetStrProp(mt, classHELM, monomerHELMClass(tg.tgroup_class.ptr()));
+            setKetStrProp(mt, alias, monomerAlias(tg));
 
             if (tg.tgroup_full_name.size())
-                mt.setStringProp(toUType(MonomerTemplate::StringProps::fullName), tg.tgroup_full_name.ptr());
+                setKetStrProp(mt, fullName, tg.tgroup_full_name.ptr());
 
             std::string natreplace;
             if (tg.tgroup_natreplace.size() == 0)
@@ -279,9 +278,9 @@ namespace indigo
             {
                 auto analog = extractMonomerName(natreplace);
                 auto nat_alias = monomerAliasByName(tg.tgroup_class.ptr(), analog);
-                mt.setStringProp(toUType(MonomerTemplate::StringProps::naturalAnalogShort), nat_alias.c_str());
+                setKetStrProp(mt, naturalAnalogShort, nat_alias);
                 if (analog.size() > 1)
-                    mt.setStringProp(toUType(MonomerTemplate::StringProps::naturalAnalog), analog.c_str());
+                    setKetStrProp(mt, naturalAnalog, analog);
             }
 
             // atoms
@@ -480,7 +479,9 @@ namespace indigo
                     if (modification_type.size())
                         mt.second.addModificationType(modification_type);
                     if (alias_helm.size())
-                        mt.second.setStringProp(toUType(MonomerTemplate::StringProps::aliasHELM), alias_helm);
+                    {
+                        setKetStrProp(mt.second, aliasHELM, alias_helm);
+                    }
                 }
                 catch (const Error& /* e */)
                 {
