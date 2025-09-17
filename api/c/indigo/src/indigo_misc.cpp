@@ -1780,6 +1780,10 @@ CEXPORT const char* indigoGetOriginalFormat(int item)
             auto& doc = static_cast<IndigoKetDocument&>(obj).get();
             original_format = doc.original_format;
         }
+        else if (IndigoMonomerLibrary::is(obj))
+        {
+            original_format = 0;
+        }
         else
             throw IndigoError("indigoSaveJson(): expected molecule, got %s", obj.debugInfo());
 
