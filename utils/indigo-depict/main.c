@@ -868,9 +868,10 @@ int main(int argc, char* argv[])
 
     indigoSetOption("ignore-stereochemistry-errors", "on");
     indigoSetOption("ignore-bad-valence", "on");
-    indigoSetOption("molfile-saving-mode", "2000");
+    indigoSetOption("molfile-saving-mode", "3000");
     indigoSetOption("ket-saving-version", "1.0.0");
     indigoSetOptionBool("json-saving-pretty", true);
+    // indigoSetOptionBool("json-use-native-precision", true);
     indigoSetOptionFloat("reaction-component-margin-size", 0.0f);
     // indigoSetOptionBool("json-saving-add-reaction-data", "on");
 
@@ -926,6 +927,9 @@ int main(int argc, char* argv[])
 
     int lib = indigoLoadMonomerLibraryFromString("{\"root\":{}}");
     // int lib = indigoLoadMonomerLibraryFromFile("monomers.ket");
+    // int lib = indigoLoadMonomerLibraryFromFile("phos.sdf");
+    // indigoSaveMonomerLibraryToFile("phos.ket", lib);
+
     if (p.mode == MODE_SINGLE_MOLECULE)
     {
         if (p.id != NULL)

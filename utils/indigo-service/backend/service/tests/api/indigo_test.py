@@ -480,7 +480,7 @@ chemical/x-iupac, chemical/x-daylight-smarts, chemical/x-inchi-aux, chemical/x-c
 chemical/x-cdxml, chemical/x-cdx, chemical/x-sdf, chemical/x-rdf, chemical/x-peptide-sequence, \
 chemical/x-peptide-sequence-3-letter, chemical/x-rna-sequence, chemical/x-dna-sequence, chemical/x-sequence, \
 chemical/x-peptide-fasta, chemical/x-rna-fasta, chemical/x-dna-fasta, chemical/x-fasta, \
-chemical/x-idt, chemical/x-helm."
+chemical/x-idt, chemical/x-helm, chemical/x-monomer-library."
         expected_text = (
             "ValidationError: {'input_format': ['Must be one of: %s']}"
             % formats
@@ -4031,6 +4031,42 @@ M  END
 
         file_name = os.path.join(
             joinPathPy("ref/", __file__), "expanded_selection.ket"
+        )
+        # write references
+        # with open(file_name, "w") as file:
+        #     file.write(result_json)
+        with open(file_name, "r") as file:
+            ref_json = file.read()
+
+        # check
+        self.assertEqual(result_json, ref_json)
+
+    def test_monomer_library(self):
+        with open(
+            os.path.join(
+                joinPathPy("structures/", __file__), "lib_rna_preset_g.sdf"
+            ),
+            "r",
+        ) as file:
+            struct = file.read()
+        headers, data = self.get_headers(
+            {
+                "struct": struct,
+                "options": {
+                    "json-use-native-precision": True,
+                    "json-saving-pretty": True,
+                },
+                "input_format": "chemical/x-monomer-library",
+                "output_format": "chemical/x-monomer-library",
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        result_json = json.loads(result.text)["struct"]
+
+        file_name = os.path.join(
+            joinPathPy("ref/", __file__), "lib_rna_preset_g.ket"
         )
         # write references
         # with open(file_name, "w") as file:

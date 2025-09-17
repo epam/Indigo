@@ -636,7 +636,7 @@ class Indigo:
         )
 
     def loadMonomerLibrary(self, string):
-        """Loads monomer library from ket string
+        """Loads monomer library from ket/sdf string
 
         Args:
             string (str): ket
@@ -656,7 +656,7 @@ class Indigo:
         )
 
     def loadMonomerLibraryFromFile(self, filename):
-        """Loads monomer library from from file in ket format
+        """Loads monomer library from from file in ket/sdf format
 
         Args:
             string (str): full path to the file with ket

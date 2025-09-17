@@ -1128,50 +1128,6 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
     }
 }
 
-std::string MoleculeJsonSaver::monomerId(const TGroup& tg)
-{
-    std::string name;
-    std::string monomer_class;
-    if (tg.tgroup_text_id.ptr())
-        return tg.tgroup_text_id.ptr();
-    if (tg.tgroup_name.ptr())
-        name = tg.tgroup_name.ptr();
-    if (tg.tgroup_class.ptr())
-        monomer_class = tg.tgroup_class.ptr();
-    if (name.size())
-        name = monomerNameByAlias(monomer_class, name) + "_" + std::to_string(tg.tgroup_id);
-    else
-        name = std::string("#") + std::to_string(tg.tgroup_id);
-    return name;
-}
-
-std::string MoleculeJsonSaver::monomerHELMClass(const std::string& class_name)
-{
-    if (isAminoAcidClass(class_name))
-        return kMonomerClassPEPTIDE;
-    if (isNucleicClass(class_name))
-        return kMonomerClassRNA;
-    return kMonomerClassCHEM;
-}
-
-std::string MoleculeJsonSaver::monomerKETClass(const std::string& class_name)
-{
-    auto mclass = class_name;
-    if (class_name == kMonomerClassAA)
-        return kMonomerClassAminoAcid;
-
-    if (mclass == kMonomerClassdAA)
-        return kMonomerClassDAminoAcid;
-
-    if (mclass == kMonomerClassRNA || mclass == kMonomerClassDNA || mclass.find(kMonomerClassMOD) == 0 || mclass.find(kMonomerClassXLINK) == 0)
-        return mclass;
-
-    for (auto it = mclass.begin(); it < mclass.end(); ++it)
-        *it = static_cast<char>(it > mclass.begin() ? std::tolower(*it) : std::toupper(*it));
-
-    return mclass;
-}
-
 void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
 {
     std::string template_id("monomerTemplate-");

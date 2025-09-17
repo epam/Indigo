@@ -176,6 +176,20 @@ CEXPORT int indigoSaveIdtToFile(int item, const char* filename, int library)
     return res;
 }
 
+CEXPORT int indigoSaveMonomerLibraryToFile(const char* filename, int library)
+{
+    int f = indigoWriteFile(filename);
+    int res;
+
+    if (f == -1)
+        return -1;
+
+    res = indigoSaveMonomerLibrary(f, library);
+
+    indigoFree(f);
+    return res;
+}
+
 CEXPORT int indigoSaveHelmToFile(int item, const char* filename, int library)
 {
     int f = indigoWriteFile(filename);

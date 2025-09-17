@@ -5466,13 +5466,13 @@ void BaseMolecule::transformTemplatesToSuperatoms()
                 auto tg_idx = getTemplateAtomTemplateIndex(atom_idx);
                 if (tg_idx < 0)
                 {
-                    std::string alias = getTemplateAtomClass(atom_idx);
-                    std::string mon_class = getTemplateAtom(atom_idx);
+                    std::string alias = getTemplateAtom(atom_idx);
+                    std::string mon_class = getTemplateAtomClass(atom_idx);
                     auto tg_ref = findTemplateInMap(alias, mon_class, templates);
                     if (tg_ref.has_value())
                     {
                         auto& tg = tg_ref.value().get();
-                        tg_idx = tg.tgroup_id;
+                        tg_idx = tg.tgroup_id - 1;
                     }
                 }
                 if (tg_idx != -1)

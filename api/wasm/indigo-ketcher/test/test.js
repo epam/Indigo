@@ -487,7 +487,7 @@ M  END
             const cdx_data = fs.readFileSync("test64.cdx");
             const ket = indigo.convert(cdx_data, "ket", options);
             const ket_data = fs.readFileSync("test64.ket").toString();
-            fs.writeFileSync("test64a1.ket", ket_data);
+            // fs.writeFileSync("test64a1.ket", ket_data);
             assert.equal(ket, ket_data);
             options.delete();
         });
@@ -1330,6 +1330,60 @@ M  END
             // fs.writeFileSync("expanded_selection.ket", expanded);
             const expanded_ref = fs.readFileSync("expanded_selection.ket");
             assert.equal(expanded, expanded_ref.toString());
+            options.delete();
+            assert(true);
+        });
+    }
+
+    {
+        test("monomer_library", "aminoacid", () => {
+            var fs = require('fs');
+            const lib_sdf = fs.readFileSync("lib_alanine.sdf");
+            let options = new indigo.MapStringString();
+            options.set('json-use-native-precision', 'true')
+            options.set('json-saving-pretty', 'true');
+            options.set('input-format', 'monomer-library');
+            options.set('output-content-type', 'chemical/monomer-library');
+            let lib_ket = indigo.convert(lib_sdf, "monomer-library", options);            
+            // fs.writeFileSync("lib_alanine.ket", lib_ket);
+            const lib_ket_ref = fs.readFileSync("lib_alanine.ket");
+            assert.equal(lib_ket, lib_ket_ref.toString());
+            options.delete();
+            assert(true);
+        });
+    }
+
+    {
+        test("monomer_library", "phosphate", () => {
+            var fs = require('fs');
+            const lib_sdf = fs.readFileSync("lib_phos.sdf");
+            let options = new indigo.MapStringString();
+            options.set('json-use-native-precision', 'true')
+            options.set('json-saving-pretty', 'true');
+            options.set('input-format', 'monomer-library');
+            options.set('output-content-type', 'chemical/monomer-library');
+            let lib_ket = indigo.convert(lib_sdf, "monomer-library", options);            
+            // fs.writeFileSync("lib_phos.ket", lib_ket);
+            const lib_ket_ref = fs.readFileSync("lib_phos.ket");
+            assert.equal(lib_ket, lib_ket_ref.toString());
+            options.delete();
+            assert(true);
+        });
+    }
+
+    {
+        test("monomer_library", "rna", () => {
+            var fs = require('fs');
+            const lib_sdf = fs.readFileSync("lib_rna_preset_g.sdf");
+            let options = new indigo.MapStringString();
+            options.set('json-use-native-precision', 'true')
+            options.set('json-saving-pretty', 'true');
+            options.set('input-format', 'monomer-library');
+            options.set('output-content-type', 'chemical/monomer-library');
+            let lib_ket = indigo.convert(lib_sdf, "monomer-library", options);            
+            // fs.writeFileSync("lib_rna_preset_g.ket", lib_ket);
+            const lib_ket_ref = fs.readFileSync("lib_rna_preset_g.ket");
+            assert.equal(lib_ket, lib_ket_ref.toString());
             options.delete();
             assert(true);
         });

@@ -63,9 +63,6 @@ namespace indigo
         static void saveFontStyles(JsonWriter& writer, const FONT_STYLE_SET& fss);
         static void saveParagraphs(JsonWriter& writer, const SimpleTextObject& text_obj);
         static void saveParts(JsonWriter& writer, const SimpleTextObject::KETTextParagraph& paragraph, const FONT_STYLE_SET& def_fss);
-        static std::string monomerId(const TGroup& tg);
-        static std::string monomerKETClass(const std::string& class_name);
-        static std::string monomerHELMClass(const std::string& class_name);
 
         bool add_stereo_desc;
         bool add_reaction_data;

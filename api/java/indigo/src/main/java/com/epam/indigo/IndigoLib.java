@@ -207,6 +207,8 @@ public interface IndigoLib extends Library {
 
     Pointer indigoJson(int object);
 
+    Pointer indigoMonomerLibrary(int object);
+
     @SuppressWarnings("checkstyle:Indentation")
     int indigoSaveCdxml(int object, int output);
 

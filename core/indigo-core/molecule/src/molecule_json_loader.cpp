@@ -145,6 +145,8 @@ MoleculeJsonLoader::MoleculeJsonLoader(Scanner& scanner)
             }
         }
     }
+    else
+        throw Error("Invalid JSON input");
 }
 
 MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes)
