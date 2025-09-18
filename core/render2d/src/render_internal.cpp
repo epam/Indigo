@@ -2435,11 +2435,11 @@ void MoleculeRenderInternal::_writeQueryAtomToString(Output& output, int aid)
         else if (ad.queryLabel == QueryMolecule::QUERY_ATOM_Q)
         {
             output.printf("Q");
-        } 
+        }
         else if (ad.queryLabel == QueryMolecule::QUERY_ATOM_STAR)
         {
             output.printf("*");
-        } 
+        }
         else if (ad.queryLabel == QueryMolecule::QUERY_ATOM_LIST || ad.queryLabel == QueryMolecule::QUERY_ATOM_NOTLIST)
         {
             QueryMolecule& qm = bm.asQueryMolecule();
