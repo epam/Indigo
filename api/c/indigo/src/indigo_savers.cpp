@@ -723,6 +723,34 @@ CEXPORT int indigoSaveHelm(int item, int output, int library)
     INDIGO_END(-1);
 }
 
+CEXPORT int indigoSaveAxoLabs(int item, int output, int library)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(item);
+        Output& out = IndigoOutput::get(self.getObject(output));
+        if (IndigoBaseMolecule::is(obj))
+        {
+            IndigoObject& lib_obj = self.getObject(library);
+            SequenceSaver saver(out, IndigoMonomerLibrary::get(lib_obj));
+            BaseMolecule& mol = obj.getBaseMolecule();
+            saver.saveKetDocument(mol.getKetDocument(), SequenceSaver::SeqFormat::IDT);
+            out.flush();
+            return 1;
+        }
+        else if (IndigoKetDocument::is(obj))
+        {
+            IndigoObject& lib_obj = self.getObject(library);
+            SequenceSaver saver(out, IndigoMonomerLibrary::get(lib_obj));
+            saver.saveKetDocument(static_cast<IndigoKetDocument&>(obj).get(), SequenceSaver::SeqFormat::AxoLabs);
+            out.flush();
+            return 1;
+        }
+        throw IndigoError("indigoSaveAxoLabs(): expected molecule, got %s", obj.debugInfo());
+    }
+    INDIGO_END(-1);
+}
+
 CEXPORT int indigoSaveMonomerLibrary(int output, int library)
 {
     INDIGO_BEGIN

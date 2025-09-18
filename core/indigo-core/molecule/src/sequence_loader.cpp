@@ -540,6 +540,7 @@ void SequenceLoader::addNucleotide(KetDocument& document, const std::string& bas
     {
         // No phosphate - connect sugar to the previous monomer
         addMonomerConnection(document, _last_monomer_idx, sugar_idx);
+        _last_monomer_idx = static_cast<int>(sugar_idx);
     }
 
     if (_last_monomer_idx < 0 || phosphate_at_left)
@@ -1027,6 +1028,186 @@ void SequenceLoader::loadIdt(KetDocument& document)
 
     if (invalid_symbols.size())
         throw Error("Invalid symbols in the sequence: %s", invalid_symbols.c_str());
+}
+
+void SequenceLoader::loadAxoLabs(KetDocument& document)
+{
+    _row = 0;
+    std::string data;
+    _scanner.readAll(data);
+    auto data_size = data.size();
+
+    constexpr char* CRLF = "\r\n";
+    constexpr char* LF = "\n";
+    const auto MIN_AXO_SIZE = sizeof(AXOLABS_PREFIX) + sizeof(AXOLABS_SUFFIX) - 1;
+
+    size_t start = 0, end = 0;
+    auto search_line_end = [&data, &CRLF, &LF, data_size](size_t start, size_t& pos) -> size_t {
+        auto crlf = data.find(CRLF, start);
+        auto lf = data.find(LF, start);
+        if (lf == std::string::npos && crlf == std::string::npos)
+        {
+            pos = data_size;
+            return std::string::npos;
+        }
+
+        if (lf < crlf)
+        {
+            pos = lf;
+            return 1;
+        }
+        else
+        {
+            pos = crlf;
+            return 2;
+        };
+    };
+    auto search_data = [&data_size, &search_line_end](size_t& start, size_t& end) {
+        auto count = search_line_end(start, end);
+        while (end - start == 0 && start != data_size) // skip empty strings
+        {
+            start += count;
+            count = search_line_end(start, end);
+        }
+    };
+
+    search_data(start, end);
+    if (start == end)
+        throw Error("Empty string");
+    while (start != end)
+    {
+        _seq_id = 0;
+        _last_monomer_idx = -1;
+        _col = 0;
+        std::string sequence = data.substr(start, end - start);
+        if (sequence.size() < MIN_AXO_SIZE)
+            throw Error("Sequence too short: '%s'", data.substr(start, end - start).c_str());
+        std::string affix = sequence.substr(0, sizeof(AXOLABS_PREFIX) - 1);
+        if (affix != AXOLABS_PREFIX)
+            throw Error("Invalid AxoLabs sequence: expected %s got %s", AXOLABS_PREFIX, affix.c_str());
+        affix = sequence.substr(sequence.size() - sizeof(AXOLABS_SUFFIX) + 1, sizeof(AXOLABS_SUFFIX) - 1);
+        if (affix != AXOLABS_SUFFIX)
+            throw Error("Invalid AxoLabs sequence: expected %s got %s", AXOLABS_SUFFIX, affix.c_str());
+        // remove prefix and suffix
+        sequence.erase(sequence.size() - sizeof(AXOLABS_SUFFIX) + 1, sizeof(AXOLABS_SUFFIX) - 1);
+        sequence.erase(0, sizeof(AXOLABS_PREFIX) - 1);
+
+        std::size_t pos = 0;
+        std::size_t length = sequence.size();
+        while (pos < length)
+        {
+            std::string group{sequence[pos++]};
+            if (pos == 1 && group == "s")
+                throw Error("Invalid AxoLabs sequence: phosphate 'sP' could be only inside sequence.");
+            if (group == "p")
+            {
+                if (pos != 1 && pos != length)
+                    throw Error("Invalid AxoLabs sequence: phosphate 'p' could be only at start or finish of sequence.");
+                auto& monomer_template_id = _library.getMonomerTemplateIdByAlias(MonomerClass::Phosphate, "P");
+                const MonomerTemplate& monomer_template = _library.getMonomerTemplateById(monomer_template_id);
+                checkAddTemplate(document, monomer_template);
+                auto& alias = getKetStrProp(monomer_template, alias);
+                auto monomer_idx = document.monomers().size();
+                auto& monomer = document.addMonomer(alias, monomer_template_id);
+                setKetIntProp(*monomer, seqid, _seq_id++);
+                if (_last_monomer_idx >= 0)
+                    addMonomerConnection(document, _last_monomer_idx, monomer_idx);
+                monomer->setPosition(getBackboneMonomerPosition());
+                _col++;
+                _last_monomer_idx = static_cast<int>(monomer_idx);
+                continue;
+            }
+            std::string mgt_id;
+            if (group.front() == '(')
+            { // read till ')'
+                while (pos < length)
+                {
+                    group += sequence[pos++];
+                    if (pos >= length)
+                        throw Error("Unexpected end of data");
+                    if (group.back() == ')')
+                        break;
+                }
+                if (group.back() != ')')
+                    throw Error("Unexpected end of data");
+            }
+            else if (pos < length && STANDARD_NUCLEOTIDES.count(group) > 0 && std::islower(sequence[pos]) && sequence[pos] != 's' && sequence[pos] != 'p')
+            {
+                group += sequence[pos++];
+            }
+            else
+            {
+                mgt_id = _library.getMGTidByAliasAxoLabs(group);
+                if (mgt_id.size() == 0) // if not a/c/t/g - read second char
+                {
+                    if (pos >= length)
+                        throw Error("Unexpected end of data");
+                    group += sequence[pos++];
+                }
+            }
+            std::string phosphate = "P";
+            std::string sugar, base;
+            if (pos < length && sequence[pos] == 's')
+            {
+                pos++;
+                if (pos >= length || (pos == length - 1 && sequence[pos] == 'p'))
+                    throw Error("Invalid AxoLabs sequence: phosphate 'sP' could be only inside sequence.");
+                phosphate = "sP";
+            }
+            if (mgt_id.size() == 0)
+            {
+                mgt_id = _library.getMGTidByAliasAxoLabs(group);
+            }
+            if (mgt_id.size() > 0)
+            {
+                auto& mgt = _library.getMonomerGroupTemplateById(mgt_id);
+                if (mgt.hasTemplate(MonomerClass::Sugar))
+                    sugar = getKetStrProp(mgt.getTemplateByClass(MonomerClass::Sugar), alias);
+                if (mgt.hasTemplate(MonomerClass::Base))
+                    base = getKetStrProp(mgt.getTemplateByClass(MonomerClass::Base), alias);
+                _alias_to_id.emplace(make_pair(MonomerClass::Sugar, sugar), checkAddTemplate(document, MonomerClass::Sugar, sugar));
+                _alias_to_id.emplace(make_pair(MonomerClass::Base, base), checkAddTemplate(document, MonomerClass::Base, base));
+                _alias_to_id.emplace(make_pair(MonomerClass::Phosphate, phosphate), checkAddTemplate(document, MonomerClass::Phosphate, phosphate));
+                if (pos >= length || (pos == length - 1 && sequence[pos] == 'p'))
+                    phosphate = ""; // last nuleotide without phosphate
+                addNucleotide(document, base, sugar, phosphate, false, false);
+                _col++;
+            }
+            else
+            {
+                std::string alias;
+                std::string monomer_template_id = _library.getMonomerTemplateIdByAliasAxoLabs(group);
+                if (monomer_template_id.size() > 0)
+                {
+                    const MonomerTemplate& monomer_template = _library.getMonomerTemplateById(monomer_template_id);
+                    checkAddTemplate(document, monomer_template);
+                    alias = getKetStrProp(monomer_template, alias);
+                }
+                else
+                {
+                    if (group[0] != '(')
+                        throw Error("Invalid AxoLabs sequence: %s", group.c_str()); // unresolved should be in ()
+                    alias = group;
+                    MonomerTemplate monomer_template(monomer_template_id, MonomerClass::CHEM, IdtAlias(), true);
+                    setKetStrProp(monomer_template, alias, group);
+                    for (auto ap : {"R1", "R2"})
+                        monomer_template.AddAttachmentPoint(ap, -1);
+                    checkAddTemplate(document, monomer_template);
+                }
+                auto monomer_idx = document.monomers().size();
+                auto& monomer = document.addMonomer(alias, monomer_template_id);
+                setKetIntProp(*monomer, seqid, _seq_id++);
+                monomer->setPosition(getBackboneMonomerPosition());
+                _col++;
+                if (_last_monomer_idx >= 0)
+                    addMonomerConnection(document, _last_monomer_idx, monomer_idx);
+                _last_monomer_idx = static_cast<int>(monomer_idx);
+            }
+        }
+        start = end;
+        search_data(start, end);
+        _row += 2;
+    }
 }
 
 static std::set<std::string> polymer_types{kHELMPolymerTypePEPTIDE, kHELMPolymerTypeRNA, kHELMPolymerTypeCHEM, kHELMPolymerTypeUnknown};

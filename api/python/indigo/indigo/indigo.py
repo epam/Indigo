@@ -903,6 +903,52 @@ class Indigo:
             ),
         )
 
+    def loadAxoLabs(self, string, library):
+        """Loads molecule from AxoLabs string
+
+        Args:
+            string (str): sequence string
+            library (IndigoObject): monomer library object
+
+        Returns:
+            IndigoObject: loaded query molecular structure
+
+        Raises:
+            IndigoException: Exception if structure format is incorrect
+        """
+
+        return IndigoObject(
+            self,
+            IndigoLib.checkResult(
+                self._lib().indigoLoadAxoLabsFromString(
+                    string.encode(), library.id
+                )
+            ),
+        )
+
+    def loadAxoLabsFromFile(self, filename, library):
+        """Loads query molecule from file in AxoLabs sequence format
+
+        Args:
+            filename (str): full path to the file with sequence string
+            library (IndigoObject): monomer library object
+
+        Returns:
+            IndigoObject: loaded query molecular structure
+
+        Raises:
+            IndigoException: Exception if structure format is incorrect
+        """
+
+        return IndigoObject(
+            self,
+            IndigoLib.checkResult(
+                self._lib().indigoLoadAxoLabsFromFile(
+                    filename.encode(), library.id
+                )
+            ),
+        )
+
     def loadReaction(self, string):
         """Loads reaction from string. Format will be automatically recognized.
 

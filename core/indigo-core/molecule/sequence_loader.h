@@ -73,6 +73,7 @@ namespace indigo
         void loadIdt(KetDocument& document);
         void loadHELM(KetDocument& document);
         void load3LetterSequence(KetDocument& document);
+        void loadAxoLabs(KetDocument& document);
 
     private:
         Vec3f getBackboneMonomerPosition();
