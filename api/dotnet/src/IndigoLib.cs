@@ -234,7 +234,7 @@ namespace com.epam.indigo
         public static extern byte* indigoHelm(int molecule, int library);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern byte* indigoAxolabs(int molecule, int library);
+        public static extern byte* indigoAxoLabs(int molecule, int library);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoSaveCml(int molecule, int output);
