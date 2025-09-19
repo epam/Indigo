@@ -453,7 +453,7 @@ public class Indigo {
         return new IndigoObject(this, checkResult(this, lib.indigoLoadHelmFromFile(path, library.self)));
     }
 
-    public IndigoObject loadAxpLabs(String str, IndigoObject library) {
+    public IndigoObject loadAxoLabs(String str, IndigoObject library) {
         setSessionID();
         return new IndigoObject(this, checkResult(this, lib.indigoLoadAxoLabsFromString(str, library.self)));
     }
