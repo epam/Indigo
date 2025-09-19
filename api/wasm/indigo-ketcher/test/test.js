@@ -1379,11 +1379,29 @@ M  END
             options.set('json-use-native-precision', 'true')
             options.set('json-saving-pretty', 'true');
             options.set('input-format', 'monomer-library');
-            options.set('output-content-type', 'chemical/monomer-library');
+            options.set('output-content-type', 'chemical/x-monomer-library');
             let lib_ket = indigo.convert(lib_sdf, "monomer-library", options);            
             // fs.writeFileSync("lib_rna_preset_g.ket", lib_ket);
             const lib_ket_ref = fs.readFileSync("lib_rna_preset_g.ket");
             assert.equal(lib_ket, lib_ket_ref.toString());
+            options.delete();
+            assert(true);
+        });
+    }
+
+    {
+        test("reaction", "rgroup", () => {
+            var fs = require('fs');
+            const ket = fs.readFileSync("reaction-rgroup.ket");
+            let options = new indigo.MapStringString();
+            options.set('json-use-native-precision', 'true')
+            options.set('json-saving-pretty', 'true');
+            options.set('input-format', 'ket');
+            options.set('output-content-type', 'rxnfile');
+            let lib_rxn = indigo.convert(ket, "rxnfile", options);            
+            fs.writeFileSync("reaction-rgroup.rxn", lib_rxn);
+            const lib_rxn_ref = fs.readFileSync("reaction-rgroup.rxn");
+            assert.equal(lib_rxn, lib_rxn_ref.toString());
             options.delete();
             assert(true);
         });
