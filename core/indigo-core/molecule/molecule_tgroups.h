@@ -56,6 +56,7 @@ namespace indigo
         bool different_aliasHELM;
         Array<char> aliasHELM;
         ObjArray<Array<char>> modification_types;
+        Array<char> aliasAxoLabs;
 
         TGroup();
         ~TGroup();

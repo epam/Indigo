@@ -502,6 +502,12 @@ namespace com.epam.indigo
             return new IndigoObject(this, checkResult(IndigoLib.indigoLoadHelmFromString(str, library.self)));
         }
 
+        public IndigoObject loadAxoLabs(string str, IndigoObject library)
+        {
+            setSessionID();
+            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadAxoLabsFromString(str, library.self)));
+        }
+
         public IndigoObject loadSmarts(byte[] buf)
         {
             setSessionID();
@@ -548,6 +554,12 @@ namespace com.epam.indigo
         {
             setSessionID();
             return new IndigoObject(this, checkResult(IndigoLib.indigoLoadHelmFromFile(path, library.self)));
+        }
+
+        public IndigoObject loadAxoLabsFromFile(string path, IndigoObject library)
+        {
+            setSessionID();
+            return new IndigoObject(this, checkResult(IndigoLib.indigoLoadAxoLabsFromFile(path, library.self)));
         }
 
         public IndigoObject loadReaction(string str)

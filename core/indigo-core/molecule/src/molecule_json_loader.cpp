@@ -1242,6 +1242,11 @@ void MoleculeJsonLoader::addToLibMonomerGroupTemplate(MonomerTemplateLibrary& li
                 mgt.addTemplate(library, _template_ref_to_id[template_ref]);
             }
         }
+        if (monomer_group_template.HasMember("aliasAxoLabs"))
+        {
+            MonomerGroupTemplate& mgt = library.getMonomerGroupTemplateById(id);
+            mgt.setAliasAxoLabs(monomer_group_template["aliasAxoLabs"].GetString());
+        }
     }
 }
 
@@ -1384,6 +1389,11 @@ int MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_tem
         {
             tg.different_aliasHELM = true;
             tg.aliasHELM.readString(monomer_template["aliasHELM"].GetString(), true);
+        }
+
+        if (monomer_template.HasMember("aliasAxoLabs"))
+        {
+            tg.aliasAxoLabs.readString(monomer_template["aliasAxoLabs"].GetString(), true);
         }
 
         if (monomer_template.HasMember("attachmentPoints"))

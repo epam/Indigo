@@ -1245,6 +1245,12 @@ void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
             writer.String("");
     }
 
+    if (tg.aliasAxoLabs.size() > 0)
+    {
+        writer.Key("aliasAxoLabs");
+        writer.String(tg.aliasAxoLabs.ptr());
+    }
+
     saveMonomerAttachmentPoints(tg, writer);
     saveFragment(*tg.fragment, writer);
     writer.EndObject();

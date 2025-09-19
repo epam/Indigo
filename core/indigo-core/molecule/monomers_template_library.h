@@ -166,6 +166,7 @@ namespace indigo
             naturalAnalog,
             naturalAnalogShort,
             aliasHELM,
+            aliasAxoLabs,
         };
 
     private:
@@ -231,6 +232,16 @@ namespace indigo
             return _idt_alias;
         }
 
+        inline void setAliasAxoLabs(const std::string& aliasAxoLabs)
+        {
+            _alias_axolabs = aliasAxoLabs;
+        }
+
+        inline const std::optional<std::string>& aliasAxoLabs()
+        {
+            return _alias_axolabs;
+        }
+
         inline const std::string& name() const
         {
             return _name;
@@ -253,6 +264,7 @@ namespace indigo
         std::string _name;
         std::string _class;
 
+        std::optional<std::string> _alias_axolabs;
         IdtAlias _idt_alias;
         std::map<std::string, std::reference_wrapper<const MonomerTemplate>> _monomer_templates;
     };
@@ -280,18 +292,17 @@ namespace indigo
             auto res = _monomer_group_templates.emplace(monomer_group_template.id(), std::move(monomer_group_template));
             if (res.second)
                 for (auto modification : {IdtModification::FIVE_PRIME_END, IdtModification::INTERNAL, IdtModification::THREE_PRIME_END})
-                {
-                    if (monomer_group_template.idtAlias().hasModification(modification))
+                    if (res.first->second.idtAlias().hasModification(modification))
                     {
-                        const std::string& alias = monomer_group_template.idtAlias().getModification(modification);
-                        _id_alias_to_monomer_group_templates.emplace(alias, std::make_pair(std::ref(res.first->second), modification));
+                        const std::string& alias = res.first->second.idtAlias().getModification(modification);
+                        _idt_alias_to_monomer_group_templates.emplace(alias, std::make_pair(std::ref(res.first->second), modification));
                     }
-                }
         }
 
         const MonomerTemplate& getMonomerTemplateById(const std::string& monomer_template_id);
         const std::string& getMonomerTemplateIdByAlias(MonomerClass monomer_class, const std::string& monomer_template_alias);
-        const std::string& getMonomerTemplateIdByAliasHELM(MonomerClass monomer_class, const std::string& monomer_template_alias);
+        const std::string& getMonomerTemplateIdByAliasHELM(MonomerClass monomer_class, const std::string& alias);
+        const std::string& getMonomerTemplateIdByAliasAxoLabs(const std::string& alias);
         MonomerGroupTemplate& getMonomerGroupTemplateById(const std::string& monomer_template_id);
 
         const std::string& getMonomerTemplateIdByIdtAliasBase(const std::string& alias_base);
@@ -299,6 +310,8 @@ namespace indigo
 
         const std::string& getMonomerTemplateIdByIdtAlias(const std::string& alias, IdtModification& mod);
         const std::string& getMGTidByIdtAlias(const std::string& alias, IdtModification& mod);
+        const std::string& getMGTidByAliasAxoLabs(const std::string& alias);
+        const std::string& getMGTidByComponents(const std::string sugar_id, const std::string base_id, const std::string phosphate_id);
 
         const std::string& getIdtAliasByModification(IdtModification modification, const std::string sugar_id, const std::string base_id,
                                                      const std::string phosphate_id);
@@ -319,7 +332,7 @@ namespace indigo
         std::unordered_map<std::string, int> _duplicate_names_count;
         std::unordered_map<std::string, std::string> _inchi_key_to_monomer_id;
         std::map<std::string, std::pair<MonomerTemplate&, IdtModification>> _id_alias_to_monomer_templates;
-        std::map<std::string, std::pair<MonomerGroupTemplate&, IdtModification>> _id_alias_to_monomer_group_templates;
+        std::map<std::string, std::pair<MonomerGroupTemplate&, IdtModification>> _idt_alias_to_monomer_group_templates;
     };
 
 }

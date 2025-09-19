@@ -151,5 +151,8 @@ namespace indigo
     static const std::set<std::string> RNA_DNA_MIXED_BASES = {"R", "M", "S", "V"};
     static const std::map<std::string, std::string> STANDARD_MIXED_PEPTIDES_ALIAS_TO_NAME = {{"B", "Asx"}, {"J", "Xle"}, {"X", "Xaa"}, {"Z", "Glx"}};
     static const std::map<std::string, std::string> STANDARD_MIXED_PEPTIDES_NAME_TO_ALIAS = {{"Asx", "B"}, {"Xle", "J"}, {"Xaa", "X"}, {"Glx", "Z"}};
+
+    constexpr char AXOLABS_PREFIX[] = "5'-";
+    constexpr char AXOLABS_SUFFIX[] = "-3'";
 }
 #endif

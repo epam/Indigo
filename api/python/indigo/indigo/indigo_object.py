@@ -3684,6 +3684,33 @@ class IndigoObject:
             self._lib().indigoHelm(self.id, library.id)
         )
 
+    def saveAxoLabs(self, filename, library):
+        """Saves macromolecule to AxoLabs file
+
+        Args:
+            filename (str): full file path to the output file
+
+        Returns:
+            int: 1 if file is saved successfully
+        """
+
+        return IndigoLib.checkResult(
+            self._lib().indigoSaveAxoLabsToFile(
+                self.id, filename.encode(), library.id
+            )
+        )
+
+    def axolabs(self, library):
+        """Molecule or reaction method returns AxoLabs for the structure
+
+        Returns:
+            str: AxoLabs string
+        """
+
+        return IndigoLib.checkResultString(
+            self._lib().indigoAxoLabs(self.id, library.id)
+        )
+
     def smarts(self):
         """Molecule or reaction method calculates SMARTS for the structure
 

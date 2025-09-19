@@ -50,6 +50,7 @@ namespace indigo
             {"naturalAnalog", toUType(StringProps::naturalAnalog)},
             {"naturalAnalogShort", toUType(StringProps::naturalAnalogShort)},
             {"aliasHELM", toUType(StringProps::aliasHELM)},
+            {"aliasAxoLabs", toUType(StringProps::aliasAxoLabs)},
         };
         return str_to_idx;
     };
@@ -346,12 +347,21 @@ namespace indigo
         return EMPTY_STRING;
     }
 
-    const std::string& MonomerTemplateLibrary::getMonomerTemplateIdByAliasHELM(MonomerClass monomer_class, const std::string& monomer_template_alias)
+    const std::string& MonomerTemplateLibrary::getMonomerTemplateIdByAliasHELM(MonomerClass monomer_class, const std::string& alias)
     {
         for (auto& it : _monomer_templates)
         {
-            if (it.second.monomerClass() == monomer_class && hasKetStrProp(it.second, aliasHELM) &&
-                getKetStrProp(it.second, aliasHELM) == monomer_template_alias)
+            if (it.second.monomerClass() == monomer_class && hasKetStrProp(it.second, aliasHELM) && getKetStrProp(it.second, aliasHELM) == alias)
+                return it.second.id();
+        }
+        return EMPTY_STRING;
+    }
+
+    const std::string& MonomerTemplateLibrary::getMonomerTemplateIdByAliasAxoLabs(const std::string& alias)
+    {
+        for (auto& it : _monomer_templates)
+        {
+            if (hasKetStrProp(it.second, aliasAxoLabs) && getKetStrProp(it.second, aliasAxoLabs) == alias)
                 return it.second.id();
         }
         return EMPTY_STRING;
@@ -396,13 +406,47 @@ namespace indigo
 
     const std::string& MonomerTemplateLibrary::getMGTidByIdtAlias(const std::string& alias, IdtModification& mod)
     {
-        if (auto it = _id_alias_to_monomer_group_templates.find(alias); it != _id_alias_to_monomer_group_templates.end())
+        if (auto it = _idt_alias_to_monomer_group_templates.find(alias); it != _idt_alias_to_monomer_group_templates.end())
         {
             mod = it->second.second;
             return it->second.first.id();
         }
         return EMPTY_STRING;
     };
+
+    const std::string& MonomerTemplateLibrary::getMGTidByAliasAxoLabs(const std::string& alias)
+    {
+        for (auto& it : _monomer_group_templates)
+        {
+            auto axolabs_alias = it.second.aliasAxoLabs();
+            if (axolabs_alias.has_value() && *axolabs_alias == alias)
+                return it.second.id();
+        }
+        return EMPTY_STRING;
+    };
+
+    const std::string& MonomerTemplateLibrary::getMGTidByComponents(const std::string sugar_id, const std::string base_id, const std::string phosphate_id)
+    {
+        for (auto& mgt : _monomer_group_templates)
+        {
+            if (!mgt.second.hasTemplate(MonomerClass::Sugar, sugar_id))
+                continue;
+            if (!mgt.second.hasTemplate(MonomerClass::Phosphate, phosphate_id))
+                continue;
+            if (base_id.size())
+            {
+                if (!mgt.second.hasTemplate(MonomerClass::Base, base_id))
+                    continue;
+            }
+            else // If no base - group template should not contain base template
+            {
+                if (mgt.second.hasTemplate(MonomerClass::Base))
+                    continue;
+            }
+            return mgt.second.id();
+        }
+        return EMPTY_STRING;
+    }
 
     const std::string& MonomerTemplateLibrary::getIdtAliasByModification(IdtModification modification, const std::string sugar_id, const std::string base_id,
                                                                          const std::string phosphate_id)

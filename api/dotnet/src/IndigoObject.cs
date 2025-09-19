@@ -116,6 +116,12 @@ namespace com.epam.indigo
             return dispatcher.checkResult(IndigoLib.indigoHelm(self, library.self));
         }
 
+        public string axolabs(IndigoObject library)
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoAxoLabs(self, library.self));
+        }
+
         public void saveSequenceToFile(string filename, IndigoObject library)
         {
             dispatcher.setSessionID();

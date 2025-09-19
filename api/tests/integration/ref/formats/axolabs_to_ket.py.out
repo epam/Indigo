@@ -1,0 +1,10 @@
+*** AxoLabs to KET ***
+AxoLabs_ACsGsU.ket:SUCCEED
+AxoLabs_chem.ket:SUCCEED
+AxoLabs_pACsGsUp.ket:SUCCEED
+Test '5'-pACpGsUsp-3'': got expected error 'Invalid AxoLabs sequence: phosphate 'p' can only be terminal'
+Test '5'-pACsGsUs-3'': got expected error 'Invalid AxoLabs sequence: phosphate 's' can only be internal'
+Test '5'-pACsGsUsp-3': got expected error 'Invalid AxoLabs sequence: expected -3' got p-3'
+Test '5'-pACsGsUsp-3'': got expected error 'Invalid AxoLabs sequence: phosphate 's' can only be internal'
+Test '5'-sACsGsUp-3'': got expected error 'Invalid AxoLabs sequence: phosphate 's' can only be internal'
+Test '5-pACsGsUsp-3'': got expected error 'Invalid AxoLabs sequence: expected 5'- got 5-p'

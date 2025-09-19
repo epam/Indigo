@@ -297,6 +297,11 @@ void SequenceSaver::saveKetDocument(KetDocument& doc, SeqFormat sf)
         doc.parseSimplePolymers(sequences, true);
         saveIdt(doc, sequences, seq_text);
     }
+    else if (sf == SeqFormat::AxoLabs)
+    {
+        doc.parseSimplePolymers(sequences, true);
+        saveAxoLabs(doc, sequences, seq_text);
+    }
     else if (sf == SeqFormat::FASTA || sf == SeqFormat::Sequence || sf == SeqFormat::Sequence3)
     {
         if (doc.moleculesRefs().size() > 0)
@@ -667,6 +672,155 @@ void SequenceSaver::saveIdt(KetDocument& doc, std::vector<std::deque<std::string
         }
         if (seq_text.size() > 0)
             seq_text += "\n";
+        seq_text += seq_string;
+    }
+}
+
+void SequenceSaver::saveAxoLabs(KetDocument& doc, std::vector<std::deque<std::string>> sequences, std::string& seq_text)
+{
+    auto& monomers = doc.monomers();
+    if (doc.nonSequenceConnections().size() > 0)
+        throw Error("Cannot save in AxoLabs format - non-standard connection found.");
+    for (auto& sequence : sequences)
+    {
+        std::string seq_string{AXOLABS_PREFIX};
+        while (sequence.size() > 0)
+        {
+            auto monomer_id = sequence.front();
+            sequence.pop_front();
+            MonomerClass monomer_class = doc.getMonomerClass(monomer_id);
+            auto& monomer = monomers.at(monomer_id)->alias();
+            std::string sugar;
+            std::string base;
+            std::string phosphate;
+            if (seq_string.size() == sizeof(AXOLABS_PREFIX) - 1 && monomer_class == MonomerClass::Phosphate && monomer != "P")
+                throw Error("Cannot save molecule in AxoLabs format - phosphate %s cannot be first monomer in sequence.", monomer.c_str());
+
+            if (monomer_class == MonomerClass::Phosphate || monomer_class == MonomerClass::CHEM || monomer_class == MonomerClass::DNA ||
+                monomer_class == MonomerClass::RNA)
+            {
+                const std::string& lib_monomer_id = _library.getMonomerTemplateIdByAlias(monomer_class, monomer);
+                auto& mon_template =
+                    lib_monomer_id.size() > 0 ? _library.getMonomerTemplateById(lib_monomer_id) : doc.getMonomerTemplate(monomers.at(monomer_id)->templateId());
+                if (mon_template.templateType() == KetBaseMonomerTemplate::TemplateType::AmbiguousMonomerTemplate)
+                    throw Error("Cannot save in AxoLabs format - ambiguous monomer '%s' found.",
+                                static_cast<const KetAmbiguousMonomerTemplate&>(mon_template).alias().c_str());
+                auto& monomer_template = static_cast<const MonomerTemplate&>(mon_template);
+                if (hasKetStrProp(monomer_template, aliasAxoLabs))
+                {
+                    seq_string += getKetStrProp(monomer_template, aliasAxoLabs);
+                    continue;
+                }
+                else if (monomer_class == MonomerClass::Phosphate && monomer == "P" &&
+                         (seq_string.size() == sizeof(AXOLABS_PREFIX) - 1 || sequence.size() == 0))
+                {
+                    seq_string += "p";
+                    continue;
+                }
+                else
+                {
+                    if (monomer_template.templateType() == KetBaseMonomerTemplate::TemplateType::MonomerTemplate &&
+                        static_cast<const MonomerTemplate&>(monomer_template).unresolved())
+                        throw Error("Unresolved monomer '%s' has no AxoLabs alias.", monomer.c_str());
+                    else if (monomer_class == MonomerClass::DNA || monomer_class == MonomerClass::RNA)
+                        throw Error("Nucleotide '%s' has no AxoLabs alias.", monomer.c_str());
+                    else if (monomer_class == MonomerClass::Phosphate)
+                        throw Error("Phosphate '%s' has no AxoLabs alias.", monomer.c_str());
+                    else // CHEM
+                        throw Error("Chem '%s' has no AxoLabs alias.", monomer.c_str());
+                }
+            }
+            else if (monomer_class != MonomerClass::Sugar)
+            {
+                throw Error("Cannot save molecule in AxoLabs format - expected sugar but found %s monomer %s.",
+                            MonomerTemplate::MonomerClassToStr(monomer_class).c_str(), monomer.c_str());
+            }
+
+            sugar = monomer;
+
+            if (sequence.size() > 0)
+            { // process base
+                auto base_id = sequence.front();
+                if (doc.getMonomerClass(base_id) == MonomerClass::Base)
+                {
+                    const auto& base_monomer = *monomers.at(base_id);
+                    base = base_monomer.alias();
+                    sequence.pop_front();
+                    if (base_monomer.monomerType() == KetBaseMonomer::MonomerType::AmbiguousMonomer)
+                    {
+                        throw Error("Cannot save in AxoLabs format - ambiguous base '%s' found.", base.c_str());
+                    }
+                }
+            }
+
+            bool has_phosphate = false;
+            if (sequence.size() > 0)
+            { // process phosphate
+                auto phosphate_id = sequence.front();
+                sequence.pop_front();
+                MonomerClass phosphate_class = doc.getMonomerClass(phosphate_id);
+                phosphate = monomers.at(phosphate_id)->alias();
+                if (phosphate_class != MonomerClass::Phosphate)
+                    throw Error("Cannot save molecule in AxoLabs format - phosphate expected between sugars but %s monomer %s found.",
+                                MonomerTemplate::MonomerClassToStr(phosphate_class).c_str(), phosphate.c_str());
+                if (phosphate != "P" && phosphate != "sP")
+                    throw Error("Cannot save molecule in AxoLabs format - non-standard phosphate '%s' found", phosphate.c_str());
+                has_phosphate = true;
+            }
+
+            bool add_s = false;
+            if (phosphate == "sP")
+            {
+                if (sequence.size() == 0)
+                    throw Error("Cannot save molecule in AxoLabs format - phosphate %s cannot be last monomer in sequence.", phosphate.c_str());
+                phosphate = "P";
+                add_s = true;
+            }
+            if (sequence.size() == 0 && phosphate.size() == 0)
+                phosphate = "P";
+
+            // Try to find sugar,base,phosphate group template
+            const std::string& sugar_id = _library.getMonomerTemplateIdByAlias(MonomerClass::Sugar, sugar);
+            const std::string& phosphate_id = _library.getMonomerTemplateIdByAlias(MonomerClass::Phosphate, phosphate);
+            std::string base_id;
+            if (base.size())
+                base_id = _library.getMonomerTemplateIdByAlias(MonomerClass::Base, base);
+            const std::string& mgt_id = _library.getMGTidByComponents(sugar_id, base_id, phosphate_id);
+            if (mgt_id.size())
+            {
+                auto& alias_axolabs = _library.getMonomerGroupTemplateById(mgt_id).aliasAxoLabs();
+                if (!alias_axolabs.has_value())
+                    throw Error("Monomer group '%s' has no AxoLabs alias.", mgt_id.c_str());
+                seq_string += *alias_axolabs;
+                if (sequence.size() == 0 && has_phosphate)
+                    seq_string += "p";
+            }
+            else
+            {
+                if (base.size())
+                {
+                    if (phosphate.size() && has_phosphate)
+                        throw Error("Group sugar:%s base:%s phosphate:%s not found.", sugar.c_str(), base.c_str(), phosphate.c_str());
+                    else
+                        throw Error("Group sugar:%s base:%s not found.", sugar.c_str(), base.c_str());
+                }
+                else
+                {
+                    if (phosphate.size() && has_phosphate)
+                        throw Error("Group sugar:%s phosphate:%s not found.", sugar.c_str(), phosphate.c_str());
+                    else
+                        throw Error("Sugar:%s has no AxoLabs alias.", sugar.c_str());
+                }
+            }
+
+            if (add_s)
+            {
+                seq_string += "s";
+            }
+        }
+        if (seq_text.size() > 0)
+            seq_text += "\n";
+        seq_string += AXOLABS_SUFFIX;
         seq_text += seq_string;
     }
 }
