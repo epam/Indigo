@@ -13,6 +13,7 @@ dala.ket:SUCCEED
 dcysteine.ket:SUCCEED
 dna_mod.ket:SUCCEED
 dthymine.ket:SUCCEED
+exp-valence-0.ket:SUCCEED
 flip_rotate.ket:SUCCEED
 flip_rotate_2000.ket:SUCCEED
 flip_rotate_rna.ket:SUCCEED
