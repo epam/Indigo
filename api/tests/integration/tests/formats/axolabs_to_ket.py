@@ -53,12 +53,12 @@ for filename in sorted(axolabs_data.keys()):
         print(diff)
 
 axolabs_errors = {
-    "5'-pACsGsUsp-3'": "Invalid AxoLabs sequence: phosphate 'sP' could be only inside sequence",
-    "5'-sACsGsUp-3'": "Invalid AxoLabs sequence: phosphate 'sP' could be only inside sequence",
-    "5'-pACsGsUs-3'": "Invalid AxoLabs sequence: phosphate 'sP' could be only inside sequence",
+    "5'-pACsGsUsp-3'": "Invalid AxoLabs sequence: phosphate 's' can only be internal",
+    "5'-sACsGsUp-3'": "Invalid AxoLabs sequence: phosphate 's' can only be internal",
+    "5'-pACsGsUs-3'": "Invalid AxoLabs sequence: phosphate 's' can only be internal",
     "5-pACsGsUsp-3'": "Invalid AxoLabs sequence: expected 5'- got 5-p",
     "5'-pACsGsUsp-3": "Invalid AxoLabs sequence: expected -3' got p-3",
-    "5'-pACpGsUsp-3'": "Invalid AxoLabs sequence: phosphate 'p' could be only at start or finish of sequence",
+    "5'-pACpGsUsp-3'": "Invalid AxoLabs sequence: phosphate 'p' can only be terminal",
 }
 for axolabs_seq in sorted(axolabs_errors.keys()):
     error = axolabs_errors[axolabs_seq]

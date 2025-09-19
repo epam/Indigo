@@ -1098,11 +1098,11 @@ void SequenceLoader::loadAxoLabs(KetDocument& document)
         {
             std::string group{sequence[pos++]};
             if (pos == 1 && group == "s")
-                throw Error("Invalid AxoLabs sequence: phosphate 'sP' could be only inside sequence.");
+                throw Error("Invalid AxoLabs sequence: phosphate 's' can only be internal.");
             if (group == "p")
             {
                 if (pos != 1 && pos != length)
-                    throw Error("Invalid AxoLabs sequence: phosphate 'p' could be only at start or finish of sequence.");
+                    throw Error("Invalid AxoLabs sequence: phosphate 'p' can only be terminal.");
                 auto& monomer_template_id = _library.getMonomerTemplateIdByAlias(MonomerClass::Phosphate, "P");
                 const MonomerTemplate& monomer_template = _library.getMonomerTemplateById(monomer_template_id);
                 checkAddTemplate(document, monomer_template);
@@ -1151,7 +1151,7 @@ void SequenceLoader::loadAxoLabs(KetDocument& document)
             {
                 pos++;
                 if (pos >= length || (pos == length - 1 && sequence[pos] == 'p'))
-                    throw Error("Invalid AxoLabs sequence: phosphate 'sP' could be only inside sequence.");
+                    throw Error("Invalid AxoLabs sequence: phosphate 's' can only be internal.");
                 phosphate = "sP";
             }
             if (mgt_id.size() == 0)
@@ -1186,7 +1186,7 @@ void SequenceLoader::loadAxoLabs(KetDocument& document)
                 else
                 {
                     if (group[0] != '(')
-                        throw Error("Invalid AxoLabs sequence: %s", group.c_str()); // unresolved should be in ()
+                        throw Error("The following string cannot be interpreted as an AxoLabs string: %s", group.c_str()); // unresolved should be in ()
                     alias = group;
                     MonomerTemplate monomer_template(monomer_template_id, MonomerClass::CHEM, IdtAlias(), true);
                     setKetStrProp(monomer_template, alias, group);

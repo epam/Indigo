@@ -55,12 +55,12 @@ for filename in sorted(axolabs_data.keys()):
         print(filename + ".ket:FAILED - %s" % text)
 
 axolabs_errors = {
-    "ket-to-idt-r1r1connection": "Cannot save in AxoLabs format - nonstandard connection found.",
+    "ket-to-idt-r1r1connection": "Cannot save in AxoLabs format - non-standard connection found.",
     "ket-to-idt-peptide": "Cannot save molecule in AxoLabs format - expected sugar but found AminoAcid monomer DPhe4C.",
-    "ket-to-idt-two-bases": "Cannot save in AxoLabs format - nonstandard connection found.",
-    "ket-to-idt-invalid-posphates": "Cannot save in AxoLabs format - nonstandard connection found.",
-    "ket-to-idt-invalid-nucleotide": "Cannot save molecule in AxoLabs format - non standard phosphate 'mepo2' found",
-    "ket-to-idt-invalid-sugar-phosphate": "Cannot save molecule in AxoLabs format - non standard phosphate 'mepo2' found",
+    "ket-to-idt-two-bases": "Cannot save in AxoLabs format - non-standard connection found.",
+    "ket-to-idt-invalid-posphates": "Cannot save in AxoLabs format - non-standard connection found.",
+    "ket-to-idt-invalid-nucleotide": "Cannot save molecule in AxoLabs format - non-standard phosphate 'mepo2' found",
+    "ket-to-idt-invalid-sugar-phosphate": "Cannot save molecule in AxoLabs format - non-standard phosphate 'mepo2' found",
     "ket-to-idt-invalid-sugar": "Sugar:m2e2r has no AxoLabs alias.",
     "ket-to-idt-invalid-sugar-base": "Group sugar:m2e2r base:z8c3G not found.",
     "ket-to-idt-alternatives-base": "Cannot save in AxoLabs format - ambiguous base 'S' found.",

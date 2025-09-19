@@ -680,7 +680,7 @@ void SequenceSaver::saveAxoLabs(KetDocument& doc, std::vector<std::deque<std::st
 {
     auto& monomers = doc.monomers();
     if (doc.nonSequenceConnections().size() > 0)
-        throw Error("Cannot save in AxoLabs format - nonstandard connection found.");
+        throw Error("Cannot save in AxoLabs format - non-standard connection found.");
     for (auto& sequence : sequences)
     {
         std::string seq_string{AXOLABS_PREFIX};
@@ -764,7 +764,7 @@ void SequenceSaver::saveAxoLabs(KetDocument& doc, std::vector<std::deque<std::st
                     throw Error("Cannot save molecule in AxoLabs format - phosphate expected between sugars but %s monomer %s found.",
                                 MonomerTemplate::MonomerClassToStr(phosphate_class).c_str(), phosphate.c_str());
                 if (phosphate != "P" && phosphate != "sP")
-                    throw Error("Cannot save molecule in AxoLabs format - non standard phosphate '%s' found", phosphate.c_str());
+                    throw Error("Cannot save molecule in AxoLabs format - non-standard phosphate '%s' found", phosphate.c_str());
                 has_phosphate = true;
             }
 
