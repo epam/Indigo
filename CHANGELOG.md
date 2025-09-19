@@ -1,3 +1,51 @@
+# Indigo 1.35.0
+Released 2025-09-19
+
+## Features
+* #2894 - Saving expanded monomers into MOL-files 
+* Update monomer expand to follow Indigo structure
+
+## Bugfixes and improvements
+* #2900 - CIP labels are always rendered from cdxml
+* #3012 - Create IUPAC Compliant Chemical Formula
+* #3050, #3047, #3048, #3054, #3051 - Loading monomer chain from SDF file works wrong - bonds between monomers got lost/Export RNA monomers from MOLv3000 doesn't work for ACCLDraw export
+* #2928 - Isoelectric Point calculation should take into account occupied leaving groups (exclude them)
+* #3053 - Calculate properties doesn't work for "rich" sequences
+* #3049 - Stereo labels got missied on export to SVG result
+* #3056 - HELM load fails if it contains more than one instance of monomers with aliasHELM property
+* #3045 - Adding substituents to reactants breaks chemical property calculations
+* #3061, #3062 - System can't recognize single rebose or phosphate if loaded from HELM
+* #3069 - Export to RXN doesn't work, system throws exception: Error: memory access out of bounds
+* #3094 - Export of expanded CHEMs works wrong (system losts CHEM type)
+
+
+**Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.34.0-rc.1...indigo-1.35.0
+
+# Indigo 1.34.0
+Released 2025-08-21
+
+## Features
+* 2899 - Peptide sequence should be auto-deceted at insert
+* 2958 - Map molfile monomers onto library monomers on import
+* 2967 - Support for marking of nucleotide components
+* 2952 - Expand c api to return CIP labels
+
+## Bugfixes and improvements
+* 2929 - Isoelectric Point calculation formula seems to be wrong
+* 2964 - System loads base as sugar
+* 2985 - Incorrect Implementation of PKA calculation 
+* 2926 - Atom weights in indigo should be updated according to last IUPAC data
+* 2936 - System doesn't calculate melting temperature for mix of nucleotides/nucleosides and unsplit nucleotides/unsplit nucleosides
+* 2965 - System shouldn't allow to export molecules to 3-letter sequence format
+* 2989 - Export (and import) of sequence of nucleosides to HELM works wrong (doesn't work for import)
+* 2993 - System shouldn't consider closing bracket as part of name
+* 2998 - Input fields for ion concentration and oligonucleotides become inactive after entering excessively long number
+* 2970 - Rendering CIP labels breaks the generated svg for firefox
+* 3014 - Wrong bingo-postgres-linux version
+
+
+**Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.33.0-rc.1...indigo-1.34.0
+
 # Indigo 1.33.0
 Released 2025-08-14
 
