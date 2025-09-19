@@ -78,6 +78,7 @@ files = [
     ("flip_rotate_2000", "2000"),
     ("flip_rotate_rna", "3000"),
     ("3068-star-issue", "3000"),
+    ("exp-valence-0", "2000"),
 ]
 
 files.sort(key=lambda x: x[0])
