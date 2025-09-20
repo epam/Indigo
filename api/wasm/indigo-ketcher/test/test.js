@@ -1394,16 +1394,9 @@ M  END
             var fs = require('fs');
             const ket = fs.readFileSync("reaction-rgroup.ket");
             let options = new indigo.MapStringString();
-            options.set('json-use-native-precision', 'true')
-            options.set('json-saving-pretty', 'true');
-            options.set('input-format', 'ket');
-            options.set('output-content-type', 'rxnfile');
-            let lib_rxn = indigo.convert(ket, "rxnfile", options);            
-            fs.writeFileSync("reaction-rgroup.rxn", lib_rxn);
-            const lib_rxn_ref = fs.readFileSync("reaction-rgroup.rxn");
-            assert.equal(lib_rxn, lib_rxn_ref.toString());
+            const values = JSON.parse(indigo.check(mol_smiles, "", options));
+            assert.equal(values.coord, 'Structure has no atoms coordinates');
             options.delete();
-            assert(true);
         });
     }
 
