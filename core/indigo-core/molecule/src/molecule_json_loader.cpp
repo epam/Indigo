@@ -301,7 +301,7 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
     for (SizeType i = 0; i < atoms.Size(); i++)
     {
         std::string label;
-        int atom_idx = 0, charge = 0, valence = 0, radical = 0, isotope = 0, elem = 0, rsite_idx = 0;
+        int atom_idx = 0, charge = 0, valence = -1, radical = 0, isotope = 0, elem = 0, rsite_idx = 0;
         bool is_not_list = false;
         std::unique_ptr<QueryMolecule::Atom> atomlist;
         const Value& a = atoms[i];
@@ -423,7 +423,7 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
             _pmol->setAtomCharge_Silent(atom_idx, charge);
             _pmol->setAtomRadical(atom_idx, radical);
             _pmol->setAtomIsotope(atom_idx, isotope);
-            if (valence > 0 && valence <= 14)
+            if (valence >= 0 && valence <= 14)
                 _pmol->setExplicitValence(atom_idx, valence);
             if (valence == 15)
                 _pmol->setExplicitValence(atom_idx, 0);

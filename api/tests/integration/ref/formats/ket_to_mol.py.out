@@ -1,5 +1,6 @@
 *** KET to MOL ***
 3068-star-issue.ket:SUCCEED
+3178-any-bond.ket:SUCCEED
 5amd.ket:SUCCEED
 accl_no_class.ket:SUCCEED
 acgt_1412.ket:SUCCEED
@@ -13,6 +14,7 @@ dala.ket:SUCCEED
 dcysteine.ket:SUCCEED
 dna_mod.ket:SUCCEED
 dthymine.ket:SUCCEED
+exp-valence-0.ket:SUCCEED
 flip_rotate.ket:SUCCEED
 flip_rotate_2000.ket:SUCCEED
 flip_rotate_rna.ket:SUCCEED
