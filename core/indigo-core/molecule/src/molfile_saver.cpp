@@ -146,7 +146,7 @@ void MolfileSaver::_calculateSEQIDs(BaseMolecule& mol, const std::vector<std::ma
                 std::string mon_class = mol.getTemplateAtomClass(atom_idx);
                 if (isBackboneClass(mon_class) && mon_class != kMonomerClassCHEM) // No SEQID for chem
                 {
-                    mol.asMolecule().setTemplateAtomSeqid(atom_idx, seq_id);
+                    mol.setTemplateAtomSeqid(atom_idx, seq_id);
                     if (mon_class == kMonomerClassSUGAR)
                     {
                         // set seq_id for base
@@ -161,9 +161,9 @@ void MolfileSaver::_calculateSEQIDs(BaseMolecule& mol, const std::vector<std::ma
                                 seq_name = mol.getTemplateAtom(br_it->second);
                                 if (br_class == kMonomerClassBASE)
                                 {
-                                    mol.asMolecule().setTemplateAtomSeqid(br_it->second, seq_id);
-                                    mol.asMolecule().setTemplateAtomSeqName(br_it->second, seq_name.c_str());
-                                    mol.asMolecule().setTemplateAtomSeqName(atom_idx, seq_name.c_str());
+                                    mol.setTemplateAtomSeqid(br_it->second, seq_id);
+                                    mol.setTemplateAtomSeqName(br_it->second, seq_name.c_str());
+                                    mol.setTemplateAtomSeqName(atom_idx, seq_name.c_str());
                                 }
                             }
                             if (seq_name.size())
@@ -173,7 +173,7 @@ void MolfileSaver::_calculateSEQIDs(BaseMolecule& mol, const std::vector<std::ma
                                 {
                                     std::string br_class = mol.getTemplateAtomClass(br_it->second);
                                     if (br_class == kMonomerClassPHOSPHATE)
-                                        mol.asMolecule().setTemplateAtomSeqName(br_it->second, seq_name.c_str());
+                                        mol.setTemplateAtomSeqName(br_it->second, seq_name.c_str());
                                 }
                             }
                         }
