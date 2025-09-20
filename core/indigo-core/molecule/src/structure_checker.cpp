@@ -723,7 +723,7 @@ StructureChecker::CheckResult StructureChecker::checkMolecule(const BaseMolecule
         std::string prefix = "R-Group R" + std::to_string(idx);
         for (int i = rgr.fragments.begin(); i < rgr.fragments.end(); i = rgr.fragments.next(i))
         {
-            StructureChecker::CheckResult res = checkMolecule(rgr.fragments[i]->asMolecule(), check_types, std::vector<int>{}, std::vector<int>{});
+            StructureChecker::CheckResult res = checkMolecule(*rgr.fragments[i], check_types, std::vector<int>{}, std::vector<int>{});
             std::transform(res.messages.begin(), res.messages.end(), std::back_inserter(result.messages), [&prefix](StructureChecker::CheckMessage& msg) {
                 msg.prefix = prefix;
                 return msg;

@@ -868,7 +868,7 @@ int main(int argc, char* argv[])
 
     indigoSetOption("ignore-stereochemistry-errors", "on");
     indigoSetOption("ignore-bad-valence", "on");
-    indigoSetOption("molfile-saving-mode", "3000");
+    indigoSetOption("molfile-saving-mode", "2000");
     indigoSetOption("ket-saving-version", "1.0.0");
     indigoSetOptionBool("json-saving-pretty", true);
     // indigoSetOptionBool("json-use-native-precision", true);

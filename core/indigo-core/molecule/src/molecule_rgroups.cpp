@@ -172,6 +172,11 @@ RGroup& MoleculeRGroups::getRGroup(int idx)
     return _rgroups[idx - 1];
 }
 
+const RGroup& MoleculeRGroups::getRGroup(int idx) const
+{
+    return _rgroups[idx - 1];
+}
+
 int MoleculeRGroups::getRGroupCount() const
 {
     return _rgroups.size();

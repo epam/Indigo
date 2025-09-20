@@ -74,6 +74,7 @@ namespace indigo
         void copyRGroupsFromMolecule(MoleculeRGroups& other);
 
         RGroup& getRGroup(int idx);
+        const RGroup& getRGroup(int idx) const;
         int getRGroupCount() const;
 
         void clear();

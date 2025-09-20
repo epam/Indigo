@@ -19,7 +19,7 @@
         <color r="1" g="0" b="1"/>
         <color r="0.5" g="0.5" b="0.5"/>
     </colortable>
-    <page HeightPages="1" WidthPages="1" BoundingBox="0.000000 -0.000000 0.000000 -0.000000">
+    <page HeightPages="1" WidthPages="1" BoundingBox="0.000000 320.123993 172.376999 -0.000000">
         <fragment id="4"/>
         <altgroup id="5" Valence="0">
             <fragment id="6">
