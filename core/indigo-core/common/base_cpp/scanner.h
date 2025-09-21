@@ -56,6 +56,8 @@ namespace indigo
         void read(int length, Array<char>& buf);
 
         void readLine(Array<char>& out, bool append_zero);
+        void readQuotedLine(Array<char>& out, bool append_zero);
+
         void appendLine(Array<char>& out, bool append_zero);
         bool skipLine();
 

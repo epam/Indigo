@@ -469,6 +469,19 @@ void Scanner::readLine(Array<char>& out, bool append_zero)
     appendLine(out, append_zero);
 }
 
+void Scanner::readQuotedLine(Array<char>& out, bool append_zero)
+{
+    out.clear();
+    Array<char> stripped_line;
+    appendLine(stripped_line, append_zero);
+    if (stripped_line.size() > 2 && stripped_line[0] == '"' && stripped_line[stripped_line.size() - 2] == '"')
+    {
+        stripped_line.remove(stripped_line.size() - 2, 1);
+        stripped_line.remove(0, 1);
+    }
+    out.copy(stripped_line);
+}
+
 void Scanner::readCharsFix(int n, char* chars_out)
 {
     read(n, chars_out);

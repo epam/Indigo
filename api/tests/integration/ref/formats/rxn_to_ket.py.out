@@ -2,4 +2,5 @@
 2485-bad-layout.ket:SUCCEED
 2531-bad-layout.ket:SUCCEED
 2591-up-down.ket:SUCCEED
+quoted_subscript.ket:SUCCEED
 rxn3000-with-macro.ket:SUCCEED
