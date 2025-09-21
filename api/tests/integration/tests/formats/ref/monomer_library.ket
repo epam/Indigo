@@ -2266,6 +2266,9 @@
         "$ref": "monomerGroupTemplate-dR(U)P"
       },
       {
+          "$ref": "monomerGroupTemplate-dR(5meC)P"
+      },
+      {
           "$ref": "monomerGroupTemplate-R(G)"
       },
       {
@@ -43154,6 +43157,7 @@
     "id": "A6OH___6-amino-hexanol",
     "fullName": "6-amino-hexanol",
     "alias": "A6OH",
+    "aliasAxoLabs": "(NHC6)",
     "attachmentPoints": [
       {
         "attachmentAtom": 2,
@@ -174066,6 +174070,7 @@
     "id": "A",
     "name": "A",
     "class": "RNA",
+    "aliasAxoLabs": "A",
     "idtAliases": {
       "base": "rA"
     },
@@ -174086,6 +174091,7 @@
     "id": "C",
     "name": "C",
     "class": "RNA",
+    "aliasAxoLabs": "C",
     "idtAliases": {
       "base": "rC"
     },
@@ -174106,6 +174112,7 @@
     "id": "G",
     "name": "G",
     "class": "RNA",
+    "aliasAxoLabs": "G",
     "idtAliases": {
       "base": "rG"
     },
@@ -174146,6 +174153,7 @@
     "id": "U",
     "name": "U",
     "class": "RNA",
+    "aliasAxoLabs": "U",
     "idtAliases": {
       "base": "rU"
     },
@@ -174166,6 +174174,7 @@
     "id": "MOE(A)P",
     "name": "MOE(A)P",
     "class": "RNA",
+    "aliasAxoLabs": "Am",
     "idtAliases": {
       "base": "2MOErA"
     },
@@ -174206,6 +174215,7 @@
     "id": "MOE(G)P",
     "name": "MOE(G)P",
     "class": "RNA",
+    "aliasAxoLabs": "Gm",
     "idtAliases": {
       "base": "2MOErG"
     },
@@ -174226,6 +174236,7 @@
     "id": "MOE(T)P",
     "name": "MOE(T)P",
     "class": "RNA",
+    "aliasAxoLabs": "Tm",
     "idtAliases": {
       "base": "2MOErT"
     },
@@ -174258,6 +174269,27 @@
       },
       {
         "$ref": "monomerTemplate-P___Phosphate"
+      }
+    ]
+  },
+  "monomerGroupTemplate-dR(5meC)P": {
+    "type": "monomerGroupTemplate",
+    "id": "dR(5meC)P",
+    "name": "dR(5meC)P",
+    "class": "RNA",
+    "aliasAxoLabs": "(5MdC)",
+    "idtAliases": {
+      "base": "Me-dC"
+    },
+    "templates": [
+      {
+          "$ref": "monomerTemplate-dR___Deoxy-Ribose"
+      },
+      {
+          "$ref": "monomerTemplate-5meC___5-methylcytosine"
+      },
+      {
+          "$ref": "monomerTemplate-P___Phosphate"
       }
     ]
   },
@@ -174303,6 +174335,7 @@
       "id": "dR(In)P",
       "name": "dR(In)P",
       "class": "RNA",
+      "aliasAxoLabs": "dI",
       "idtAliases": {
           "base": "deoxyI"
       },
