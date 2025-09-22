@@ -1283,7 +1283,7 @@ void MolfileLoader::_readCtab2000()
                 {
                     _scanner.skip(1);
                     Superatom& sup = (Superatom&)_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
-                    _scanner.readLine(sup.subscript, true);
+                    _scanner.readQuotedLine(sup.subscript, true);
                 }
                 else if (_sgroup_types[sgroup_idx] == SGroup::SG_TYPE_MUL)
                 {
@@ -1296,7 +1296,7 @@ void MolfileLoader::_readCtab2000()
                 {
                     _scanner.skip(1);
                     RepeatingUnit& sru = (RepeatingUnit&)_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
-                    _scanner.readLine(sru.subscript, true);
+                    _scanner.readQuotedLine(sru.subscript, true);
                 }
                 else
                     _scanner.skipLine();
