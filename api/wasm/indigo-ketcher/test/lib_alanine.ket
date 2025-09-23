@@ -1,12 +1,10 @@
 {
     "root": {
-        "nodes": [
-            "templates",
-            [
-                {
-                    "$ref": "monomerTemplate-Ala"
-                }
-            ]
+        "nodes": [],
+        "templates": [
+            {
+                "$ref": "monomerTemplate-Ala"
+            }
         ]
     },
     "monomerTemplate-Ala": {
@@ -19,7 +17,8 @@
         "naturalAnalogShort": "A",
         "aliasHELM": "A",
         "modificationTypes": [
-            "Natural amino acid"
+            "Natural amino acid",
+            "modification2"
         ],
         "attachmentPoints": [
             {

@@ -1,18 +1,16 @@
 {
     "root": {
-        "nodes": [
-            "templates",
-            [
-                {
-                    "$ref": "monomerTemplate-Gua"
-                },
-                {
-                    "$ref": "monomerTemplate-P"
-                },
-                {
-                    "$ref": "monomerTemplate-Rib"
-                }
-            ]
+        "nodes": [],
+        "templates": [
+            {
+                "$ref": "monomerTemplate-Gua"
+            },
+            {
+                "$ref": "monomerTemplate-P"
+            },
+            {
+                "$ref": "monomerTemplate-Rib"
+            }
         ]
     },
     "monomerTemplate-Gua": {

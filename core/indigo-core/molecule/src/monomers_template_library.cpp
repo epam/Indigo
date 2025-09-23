@@ -511,17 +511,20 @@ namespace indigo
         // single monomer template
         if (mon_type == "monomerTemplate")
         {
-            std::string modification_type;
+            std::string modification_types;
             // read monomer template specific properties
-            if (properties.contains("modificationType"))
-                modification_type = properties.at("modificationType");
+            if (properties.contains("modificationTypes"))
+                modification_types = properties.at("modificationTypes");
             if (mol.tgroups.getTGroupCount() == 1)
             {
                 try
                 {
                     auto mt = addMonomerTemplate(mol.tgroups.getTGroup(0), idt_alias, true);
-                    if (modification_type.size())
-                        mt.second.addModificationType(modification_type);
+                    if (modification_types.size())
+                    {
+                        for (auto& modification_type : split(modification_types, ';'))
+                            mt.second.addModificationType(modification_type);
+                    }
                     if (alias_helm.size())
                     {
                         setKetStrProp(mt.second, aliasHELM, alias_helm);

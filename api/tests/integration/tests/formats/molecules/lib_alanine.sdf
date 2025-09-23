@@ -51,7 +51,7 @@ monomerTemplate
 >  <aliasHELM>
 A
 
->  <modificationType>
-Natural amino acid
+>  <modificationTypes>
+Natural amino acid;modification1
 
 $$$$
