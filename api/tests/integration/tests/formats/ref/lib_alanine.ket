@@ -17,7 +17,8 @@
         "naturalAnalogShort": "A",
         "aliasHELM": "A",
         "modificationTypes": [
-            "Natural amino acid"
+            "Natural amino acid",
+            "modification1"
         ],
         "attachmentPoints": [
             {
