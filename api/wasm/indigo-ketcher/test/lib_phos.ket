@@ -1,12 +1,10 @@
 {
     "root": {
-        "nodes": [
-            "templates",
-            [
-                {
-                    "$ref": "monomerTemplate-P"
-                }
-            ]
+        "nodes": [],
+        "templates": [
+            {
+                "$ref": "monomerTemplate-P"
+            }
         ]
     },
     "monomerTemplate-P": {

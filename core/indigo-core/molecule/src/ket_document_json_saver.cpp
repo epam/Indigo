@@ -462,6 +462,7 @@ void KetDocumentJsonSaver::saveMonomerLibrary(const MonomerTemplateLibrary& mono
     writer.StartObject();
     writer.Key("nodes");
     writer.StartArray();
+    writer.EndArray(); // nodes
     writer.Key("templates");
     writer.StartArray();
     for (const auto& kvp : monomers_library.monomerTemplates())
@@ -471,7 +472,6 @@ void KetDocumentJsonSaver::saveMonomerLibrary(const MonomerTemplateLibrary& mono
         writer.EndObject();
     }
     writer.EndArray();  // templates
-    writer.EndArray();  // nodes
     writer.EndObject(); // root
 
     for (const auto& kvp : monomers_library.monomerTemplates())
