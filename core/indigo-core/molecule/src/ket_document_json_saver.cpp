@@ -468,9 +468,17 @@ void KetDocumentJsonSaver::saveMonomerLibrary(const MonomerTemplateLibrary& mono
     for (const auto& kvp : monomers_library.monomerTemplates())
     {
         writer.StartObject();
-        saveStr(writer, "$ref", MonomerTemplate::ref_prefix + kvp.second.id());
+        saveStr(writer, "$ref", get_ref(kvp.second));
         writer.EndObject();
     }
+
+    for (const auto& kvp : monomers_library.monomerGroupTemplates())
+    {
+        writer.StartObject();
+        saveStr(writer, "$ref", get_ref(kvp.second));
+        writer.EndObject();
+    }
+
     writer.EndArray();  // templates
     writer.EndObject(); // root
 

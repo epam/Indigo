@@ -62,6 +62,11 @@ void KetDocumentJsonLoader::parseJson(const std::string& json_str, KetDocument& 
                 {
                     parseVariantMonomerTemplate(templ, document);
                 }
+                else if (templ_type == "monomerGroupTemplate")
+                {
+                    // parseMonomerGroupTemplate(templ, document);
+                    // not implemented yet
+                }
                 else
                     throw Error("Unknows template type: %s", templ_type.c_str());
             }
@@ -178,6 +183,43 @@ static IdtAlias parseIdtAlias(const rapidjson::Value& parent)
         return IdtAlias(idt_alias_base);
 }
 
+void KetDocumentJsonLoader::parseMonomerGroupTemplate(const rapidjson::Value& mt_json, template_group_add_func addMonomerGroupTemplate)
+{
+    if (!mt_json.HasMember("id"))
+        throw Error("Monomer template group without id");
+
+    std::string id = mt_json["id"].GetString();
+    std::string name = mt_json["name"].GetString();
+
+    if (!mt_json.HasMember("class"))
+        throw Error("Monomer template group without class");
+    std::string monomer_class = mt_json["class"].GetString();
+
+    IdtAlias idt_alias;
+    if (mt_json.HasMember("idtAliases"))
+    {
+        idt_alias = parseIdtAlias(mt_json);
+        auto& idt_base = idt_alias.getBase();
+        if (idt_base.size() == 0)
+            throw Error("Monomer template group %s contains IDT alias without base.", id.c_str());
+    }
+
+    std::vector<std::string> template_refs;
+    if (mt_json.HasMember("templates"))
+    {
+        auto& templates = mt_json["templates"];
+        for (SizeType i = 0; i < templates.Size(); i++)
+        {
+            auto& template_el = templates[i];
+            if (!template_el.HasMember("$ref"))
+                template_refs.push_back(template_el["$ref"].GetString());
+        }
+    }
+
+    /* auto& mon_group_template = */ addMonomerGroupTemplate(id, name, monomer_class, idt_alias, template_refs);
+    // no extra parameters to fill yet
+}
+
 void KetDocumentJsonLoader::parseMonomerTemplate(const rapidjson::Value& mt_json, template_add_func addMonomerTemplate)
 {
     if (!mt_json.HasMember("id"))
@@ -285,6 +327,19 @@ void KetDocumentJsonLoader::parseMonomerTemplate(const rapidjson::Value& mt_json
         return library.addMonomerTemplate(id, monomer_class, idt_alias, unresolved);
     };
     parseMonomerTemplate(mt_json, func);
+}
+
+void KetDocumentJsonLoader::parseMonomerGroupTemplate(const rapidjson::Value& mt_json, MonomerTemplateLibrary& library)
+{
+    template_group_add_func func = [&library](const std::string& id, const std::string& name, const std::string& monomer_class, IdtAlias idt_alias,
+                                              const std::vector<std::string>& template_refs) -> MonomerGroupTemplate& {
+        library.addMonomerGroupTemplate(MonomerGroupTemplate(id, name, monomer_class, idt_alias));
+        auto& mgt = library.getMonomerGroupTemplateById(id);
+        for (const auto& ref : template_refs)
+            mgt.addTemplate(library, ref);
+        return mgt;
+    };
+    parseMonomerGroupTemplate(mt_json, func);
 }
 
 void KetDocumentJsonLoader::parseKetMolecule(std::string& ref, rapidjson::Value& json, KetDocument& document)

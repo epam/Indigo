@@ -313,6 +313,22 @@ namespace indigo
         throw Error("TGroup should have name and class to be converted to monomer template.");
     }
 
+    //MonomerGroupTemplate& MonomerTemplateLibrary::addMonomerGroupTemplate(const std::string& id, const std::string& monomer_class, const IdtAlias& idt_alias)
+    //{
+    //    auto res = _monomer_group_templates.try_emplace(id, id, monomer_class, idt_alias);
+    //    if (!res.second)
+    //        throw Error("Monomer template group '%s' already exists", id.c_str());
+    //    for (auto modification : {IdtModification::FIVE_PRIME_END, IdtModification::INTERNAL, IdtModification::THREE_PRIME_END})
+    //    {
+    //        if (res.first->second.idtAlias().hasModification(modification))
+    //        {
+    //            const std::string& alias = res.first->second.idtAlias().getModification(modification);
+    //            _idt_alias_to_monomer_group_templates.emplace(alias, std::make_pair(std::ref(res.first->second), modification));
+    //        }
+    //    }
+    //    return res.first->second;
+    //}
+
     MonomerTemplate& MonomerTemplateLibrary::addMonomerTemplate(const std::string& id, const std::string& monomer_class, const IdtAlias& idt_alias,
                                                                 bool unresolved)
     {
