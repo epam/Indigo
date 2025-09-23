@@ -52,7 +52,7 @@ CEXPORT int indigoLayout(int object)
                     f.unhide(submol.vertices[i]);
                 }
             }
-            if (mol->tgroups.getTGroupCount() == 0)
+            //if (mol->tgroups.getTGroupCount() == 0)
             {
                 MoleculeLayout ml(*mol, self.smart_layout);
 
