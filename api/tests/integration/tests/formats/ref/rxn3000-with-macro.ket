@@ -473,7 +473,7 @@
     "monomerTemplate-PEG-2_2": {
         "type": "monomerTemplate",
         "id": "PEG-2_2",
-        "class": "Linker",
+        "class": "Chem",
         "classHELM": "CHEM",
         "alias": "PEG-2",
         "name": "PEG-2",
@@ -1021,7 +1021,7 @@
     "monomerTemplate-PEG-2_2": {
         "type": "monomerTemplate",
         "id": "PEG-2_2",
-        "class": "Linker",
+        "class": "Chem",
         "classHELM": "CHEM",
         "alias": "PEG-2",
         "name": "PEG-2",
@@ -1569,7 +1569,7 @@
     "monomerTemplate-PEG-2_2": {
         "type": "monomerTemplate",
         "id": "PEG-2_2",
-        "class": "Linker",
+        "class": "Chem",
         "classHELM": "CHEM",
         "alias": "PEG-2",
         "name": "PEG-2",
