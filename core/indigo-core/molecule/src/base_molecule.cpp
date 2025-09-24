@@ -303,16 +303,16 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
         _xyz.zerofill();
 
     // copy cip values
-    for (auto i = mol._cip_atoms.begin(); i != mol._cip_atoms.end(); i = mol._cip_atoms.next(i))
+    for (auto& cip_atom : mol._cip_atoms)
     {
         try
         {
-            auto cip_atom_key = mol._cip_atoms.key(i);
+            auto cip_atom_key = cip_atom.first;
             auto aidx = mapping[cip_atom_key];
             if (aidx >= 0)
             {
-                _cip_atoms.insert(aidx, mol._cip_atoms.value(i));
-                _show_cip_atoms.insert(aidx, mol.getShowAtomCIP(cip_atom_key));
+                _cip_atoms.insert(std::make_pair<>(aidx, cip_atom.second));
+                _show_cip_atoms.insert(std::make_pair<>(aidx, mol.getShowAtomCIP(cip_atom_key)));
             }
         }
         catch (Exception&)
@@ -320,13 +320,13 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
         }
     }
 
-    for (auto i = mol._cip_bonds.begin(); i != mol._cip_bonds.end(); i = mol._cip_bonds.next(i))
+    for (auto& cip_bond : mol._cip_bonds)
     {
         try
         {
-            auto eidx = edge_mapping[mol._cip_bonds.key(i)];
+            auto eidx = edge_mapping[cip_bond.first];
             if (eidx >= 0)
-                _cip_bonds.insert(eidx, mol._cip_bonds.value(i));
+                _cip_bonds.insert(std::make_pair<>(eidx, cip_bond.second));
         }
         catch (Exception&)
         {
@@ -4723,7 +4723,7 @@ void BaseMolecule::setStereoFlagPosition(int frag_index, const Vec3f& pos)
 {
     try
     {
-        _stereo_flag_positions.insert(frag_index, pos);
+        _stereo_flag_positions.insert(std::make_pair<>(frag_index, pos));
     }
     catch (Exception&)
     {
@@ -4732,7 +4732,7 @@ void BaseMolecule::setStereoFlagPosition(int frag_index, const Vec3f& pos)
 
 bool BaseMolecule::getStereoFlagPosition(int frag_index, Vec3f& pos)
 {
-    auto* pval = _stereo_flag_positions.at2(frag_index);
+    auto* pval = &_stereo_flag_positions.at(frag_index);
     if (pval)
     {
         pos = *pval;
@@ -4903,35 +4903,35 @@ void BaseMolecule::clearCIP()
 
 CIPDesc BaseMolecule::getAtomCIP(int atom_idx)
 {
-    auto* pval = _cip_atoms.at2(atom_idx);
+    auto* pval = &_cip_atoms.at(atom_idx);
     return pval ? *pval : CIPDesc::NONE;
 }
 
 bool BaseMolecule::getShowAtomCIP(const int atomIndex)
 {
-    auto* pval = _show_cip_atoms.at2(atomIndex);
+    auto* pval = &_show_cip_atoms.at(atomIndex);
     return pval ? *pval : false;
 }
 
 CIPDesc BaseMolecule::getBondCIP(int bond_idx)
 {
-    auto* pval = _cip_bonds.at2(bond_idx);
+    auto* pval = &_cip_bonds.at(bond_idx);
     return pval ? *pval : CIPDesc::NONE;
 }
 
 void BaseMolecule::setAtomCIP(int atom_idx, CIPDesc cip)
 {
-    _cip_atoms.insert(atom_idx, cip);
-    _show_cip_atoms.insert(atom_idx, true);
+    _cip_atoms.insert(std::make_pair<>(atom_idx, cip));
+    _show_cip_atoms.insert(std::make_pair<>(atom_idx, true));
     have_cip = true;
 }
 
 void BaseMolecule::setShowAtomCIP(const int atomIndex, const bool display)
 {
-    auto* pval = _show_cip_atoms.at2(atomIndex);
+    auto* pval = &_show_cip_atoms.at(atomIndex);
     if (pval == nullptr)
     {
-        _show_cip_atoms.insert(atomIndex, display);
+        _show_cip_atoms.insert(std::make_pair<>(atomIndex, display));
     }
     else
     {
@@ -4941,7 +4941,7 @@ void BaseMolecule::setShowAtomCIP(const int atomIndex, const bool display)
 
 void BaseMolecule::setBondCIP(int bond_idx, CIPDesc cip)
 {
-    _cip_bonds.insert(bond_idx, cip);
+    _cip_bonds.insert(std::make_pair<>(bond_idx, cip));
     have_cip = true;
 }
 

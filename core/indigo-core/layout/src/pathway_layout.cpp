@@ -110,7 +110,7 @@ void PathwayLayout::buildLayoutTree()
         for (int j = 0; j < simpleReaction.reactantIndexes.size(); ++j)
         {
             // check if it is a final reactant
-            auto pcr = reactionNode.connectedReactants.at2(j);
+            auto pcr = &reactionNode.connectedReactants.at(j);
             if (pcr)
             {
                 if (!already_added.count(*pcr))

@@ -40,11 +40,14 @@ MoleculeRGroupsComposition::MoleculeRGroupsComposition(BaseMolecule& mol)
         {
             continue;
         }
-        _rsite2vertex.insert(rsite, vertex);
+        _rsite2vertex.insert(std::make_pair<>(rsite, vertex));
 
         Array<int> rgroups;
         _mol.getAllowedRGroups(vertex, rgroups);
-        _rsite2rgroup.insert(vertex, rgroups);
+        for (auto& rgroup : rgroups)
+        {
+            _rsite2rgroup.insert(std::make_pair<>(vertex, rgroup));
+        }
 
         int total = 0;
         for (int i = 0; i < rgroups.size(); i++)

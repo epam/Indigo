@@ -239,13 +239,20 @@ namespace indigo
 
         inline Fragment _fragment_coordinates(int rsite, int fragment) const
         {
-            const RedBlackSet<int>& rs = _rsite2rgroup[_rsite2vertex.at(rsite)];
+            std::set<int> rs;
+            //_rsite2rgroup[_rsite2vertex.at(rsite)];
+
+            const auto itr = _rsite2rgroup.find(_rsite2vertex.at(rsite));
+            for (auto itrJ = itr; itrJ->first == itr->first; itrJ++)
+            {
+                rs.insert(itrJ->second);
+            }
 
             int r = -1;
             int f = fragment;
-            for (int i = rs.begin(); i != rs.end(); i = rs.next(i))
+            for (auto& rsV : rs)
             {
-                r = rs.key(i);
+                r = rsV;
                 int size = _rgroup2size[r];
                 if (f >= size)
                 {
@@ -280,8 +287,8 @@ namespace indigo
 
         Array<int> _limits;
         Array<int> _rgroup2size;
-        MultiMap<int, int> _rsite2rgroup;
-        RedBlackMap<int, int> _rsite2vertex;
+        std::multimap<int, int> _rsite2rgroup;
+        std::map<int, int> _rsite2vertex;
 
         mutable std::unique_ptr<Attachments> _ats;
 

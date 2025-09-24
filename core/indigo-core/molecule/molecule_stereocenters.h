@@ -19,6 +19,7 @@
 #ifndef __molecule_stereocenters__
 #define __molecule_stereocenters__
 
+#include <map>
 #include <unordered_set>
 
 #include "base_cpp/red_black.h"
@@ -119,7 +120,7 @@ namespace indigo
         bool isPossibleStereocenter(BaseMolecule& baseMolecule, int atom_idx, bool* possible_implicit_h = 0, bool* possible_lone_pair = 0);
         bool isPossibleAtropocenter(BaseMolecule& baseMolecule, int atom_idx, int& possible_atropo_bond);
         bool hasAtropoStereoBonds(BaseMolecule& baseMolecule, int atom_idx);
-        bool findAtropoStereobonds(BaseMolecule& baseMolecule, RedBlackMap<int, int>& directions_map, int atom_idx, std::unordered_set<int>& visited_bonds,
+        bool findAtropoStereobonds(BaseMolecule& baseMolecule, std::map<int, int>& directions_map, int atom_idx, std::unordered_set<int>& visited_bonds,
                                    bool first_only = false, int* sensible_bonds_out = nullptr);
         bool hasRing(BaseMolecule& baseMolecule, int atom_idx, std::unordered_set<int>& visited_bonds);
 
@@ -162,7 +163,7 @@ namespace indigo
         struct _AtropoCenter
         {
             int atropo_bond;
-            RedBlackMap<int, int> bond_directions;
+            std::map<int, int> bond_directions;
         };
 
         struct _EdgeIndVec
@@ -182,8 +183,8 @@ namespace indigo
             int implicit_degree;
         };
 
-        RedBlackMap<int, _Atom> _stereocenters;
-        RedBlackObjMap<int, _AtropoCenter> _atropocenters;
+        std::map<int, _Atom> _stereocenters;
+        std::map<int, _AtropoCenter> _atropocenters;
 
         static int _sign(const Vec3f& v1, const Vec3f& v2, const Vec3f& v3);
         static int _xyzzy(const Vec3f& v1, const Vec3f& v2, const Vec3f& u);

@@ -157,13 +157,13 @@ bool MoleculeCIPCalculator::addCIPStereoDescriptors(BaseMolecule& mol)
     for (atom_idx = 0; atom_idx < atom_cip_desc.size(); ++atom_idx)
     {
         if (atom_cip_desc[atom_idx] > CIPDesc::UNKNOWN)
-            mol._cip_atoms.insert(atom_idx, atom_cip_desc[atom_idx]);
+            mol._cip_atoms.insert(std::make_pair<>(atom_idx, atom_cip_desc[atom_idx]));
     }
 
     for (auto bond_idx = 0; bond_idx < bond_cip_desc.size(); ++bond_idx)
     {
         if (bond_cip_desc[bond_idx] != CIPDesc::NONE)
-            mol._cip_bonds.insert(bond_idx, bond_cip_desc[bond_idx]);
+            mol._cip_bonds.insert(std::make_pair<>(bond_idx, bond_cip_desc[bond_idx]));
     }
     return mol._cip_atoms.size() || mol._cip_bonds.size();
 }
@@ -183,13 +183,13 @@ void MoleculeCIPCalculator::addCIPSgroups(BaseMolecule& mol)
 {
     int sg_idx;
 
-    for (int i = mol._cip_atoms.begin(); i != mol._cip_atoms.end(); i = mol._cip_atoms.next(i))
+    for (auto& cip_atom : mol._cip_atoms)
     {
         sg_idx = mol.sgroups.addSGroup(SGroup::SG_TYPE_DAT);
         DataSGroup& sgroup = (DataSGroup&)mol.sgroups.getSGroup(sg_idx);
-        sgroup.atoms.push(mol._cip_atoms.key(i));
+        sgroup.atoms.push(cip_atom.first);
 
-        switch (mol._cip_atoms.value(i))
+        switch (cip_atom.second)
         {
         case CIPDesc::R:
             sgroup.data.readString("(R)", true);
@@ -212,9 +212,9 @@ void MoleculeCIPCalculator::addCIPSgroups(BaseMolecule& mol)
         sgroup.relative = true;
     }
 
-    for (int i = mol._cip_bonds.begin(); i != mol._cip_bonds.end(); i = mol._cip_bonds.next(i))
+    for (auto& cip_atom : mol._cip_atoms)
     {
-        int bond_idx = mol._cip_bonds.key(i);
+        int bond_idx = cip_atom.first;
         int beg = mol.getEdge(bond_idx).beg;
         int end = mol.getEdge(bond_idx).end;
 
@@ -223,9 +223,9 @@ void MoleculeCIPCalculator::addCIPSgroups(BaseMolecule& mol)
 
         sgroup.atoms.push(beg);
         sgroup.atoms.push(end);
-        if (mol._cip_bonds.value(i) == CIPDesc::E)
+        if (cip_atom.second == CIPDesc::E)
             sgroup.data.readString("(E)", true);
-        else if (mol._cip_bonds.value(i) == CIPDesc::Z)
+        else if (cip_atom.second == CIPDesc::Z)
             sgroup.data.readString("(Z)", true);
 
         sgroup.name.readString("INDIGO_CIP_DESC", true);

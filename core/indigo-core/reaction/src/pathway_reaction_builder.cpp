@@ -187,7 +187,7 @@ void PathwayReactionBuilder::buildNodes(std::deque<Reaction>& reactions)
                 bool found = false;
                 for (auto ridx : val)
                 {
-                    found = rnj.connectedReactants.find(ridx);
+                    found = rnj.connectedReactants.find(ridx) != rnj.connectedReactants.end();
                     if (found)
                         break;
                 }
@@ -197,7 +197,7 @@ void PathwayReactionBuilder::buildNodes(std::deque<Reaction>& reactions)
                     rn.successorReactionIndexes.push(j);
                     rnj.precursorReactionIndexes.push(i);
                     for (auto ridx : val)
-                        rnj.connectedReactants.insert(ridx, i);
+                        rnj.connectedReactants.insert(std::make_pair<>(ridx, i));
                 }
                 else
                 {

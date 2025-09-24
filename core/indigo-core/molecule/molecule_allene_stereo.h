@@ -28,6 +28,8 @@
 #include "base_cpp/red_black.h"
 #include "math/algebra.h"
 
+#include <map>
+
 namespace indigo
 {
 
@@ -86,7 +88,7 @@ namespace indigo
 
         bool _isAlleneCenter(BaseMolecule& mol, int idx, _Atom& atom, int* sensible_bonds_out);
 
-        RedBlackMap<int, _Atom> _centers;
+        std::map<int, _Atom> _centers;
     };
 
 } // namespace indigo

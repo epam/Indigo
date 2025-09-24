@@ -282,7 +282,7 @@ void MoleculeAlleneStereo::buildFromBonds(BaseMolecule& baseMolecule, bool ignor
             if (!ignore_errors)
                 throw err;
         }
-        _centers.insert(i, atom);
+        _centers.insert(std::make_pair<>(i, atom));
     }
 }
 
@@ -293,7 +293,7 @@ void MoleculeAlleneStereo::clear()
 
 bool MoleculeAlleneStereo::isCenter(int atom_idx)
 {
-    return _centers.at2(atom_idx) != 0;
+    return _centers.find(atom_idx) != _centers.end();
 }
 
 void MoleculeAlleneStereo::invert(int atom_idx)
@@ -304,7 +304,7 @@ void MoleculeAlleneStereo::invert(int atom_idx)
 
 void MoleculeAlleneStereo::reset(int atom_idx)
 {
-    _centers.remove(atom_idx);
+    _centers.erase(atom_idx);
 }
 
 int MoleculeAlleneStereo::size()
@@ -318,12 +318,12 @@ bool MoleculeAlleneStereo::checkSub(BaseMolecule& query, BaseMolecule& target, c
 
     for (i = query.vertexBegin(); i != query.vertexEnd(); i = query.vertexNext(i))
     {
-        const _Atom* qa = query.allene_stereo._centers.at2(i);
+        const _Atom* qa = &query.allene_stereo._centers.at(i);
 
         if (qa == 0)
             continue;
 
-        const _Atom* ta = target.allene_stereo._centers.at2(mapping[i]);
+        const _Atom* ta = &target.allene_stereo._centers.at(mapping[i]);
 
         if (ta == 0)
             return false;
@@ -362,12 +362,12 @@ bool MoleculeAlleneStereo::checkSub(BaseMolecule& query, BaseMolecule& target, c
 
 void MoleculeAlleneStereo::buildOnSubmolecule(BaseMolecule& baseMolecule, BaseMolecule& super, int* mapping)
 {
-    int i, j;
+    int j;
 
-    for (i = super.allene_stereo._centers.begin(); i != super.allene_stereo._centers.end(); i = super.allene_stereo._centers.next(i))
+    for (auto& center : super.allene_stereo._centers)
     {
-        int super_idx = super.allene_stereo._centers.key(i);
-        const _Atom& super_center = super.allene_stereo._centers.value(i);
+        int super_idx = center.first;
+        const _Atom& super_center = center.second;
         int sub_idx = mapping[super_idx];
 
         if (sub_idx < 0)
@@ -422,7 +422,7 @@ void MoleculeAlleneStereo::buildOnSubmolecule(BaseMolecule& baseMolecule, BaseMo
             new_center.parity = 3 - new_center.parity;
         }
 
-        _centers.insert(sub_idx, new_center);
+        _centers.insert(std::make_pair<>(sub_idx, new_center));
 
         const Vertex& super_left = super.getVertex(super_center.left);
         const Vertex& super_right = super.getVertex(super_center.right);
@@ -451,6 +451,7 @@ void MoleculeAlleneStereo::buildOnSubmolecule(BaseMolecule& baseMolecule, BaseMo
     }
 }
 
+/*
 int MoleculeAlleneStereo::begin() const
 {
     return _centers.begin();
@@ -476,6 +477,7 @@ void MoleculeAlleneStereo::get(int i, int& atom_idx, int& left, int& right, int 
     parity = atom.parity;
     memcpy(subst, atom.subst, sizeof(int) * 4);
 }
+*/
 
 void MoleculeAlleneStereo::getByAtomIdx(int atom_idx, int& left, int& right, int subst[4], int& parity)
 {
@@ -496,16 +498,16 @@ void MoleculeAlleneStereo::add(int atom_idx, int left, int right, int subst[4], 
     memcpy(atom.subst, subst, 4 * sizeof(int));
     atom.parity = parity;
 
-    _centers.insert(atom_idx, atom);
+    _centers.insert(std::make_pair<>(atom_idx, atom));
 }
 
 void MoleculeAlleneStereo::markBonds(BaseMolecule& baseMolecule)
 {
-    int i, j;
-    for (i = _centers.begin(); i != _centers.end(); i = _centers.next(i))
+    int j;
+    for (auto& center : _centers)
     {
-        int idx = _centers.key(i);
-        _Atom& atom = _centers.value(i);
+        int idx = center.first;
+        _Atom& atom = center.second;
 
         Vec3f subst_vecs[4];
         int k;
@@ -664,17 +666,17 @@ void MoleculeAlleneStereo::removeAtoms(BaseMolecule& baseMolecule, const Array<i
     for (i = 0; i < indices.size(); i++)
     {
         int idx = indices[i];
-        if (_centers.find(idx))
+        if (_centers.find(idx) == _centers.end())
         {
             centers_to_remove.push(idx);
             continue;
         }
 
         // TODO: this can be done without looping through all centers
-        for (j = _centers.begin(); j != _centers.end(); j = _centers.next(j))
+        for (auto& center : _centers)
         {
-            int center_idx = _centers.key(j);
-            _Atom& atom = _centers.value(j);
+            int center_idx = center.first;
+            _Atom& atom = center.second;
 
             if (idx == atom.left || idx == atom.right)
             {
@@ -712,8 +714,8 @@ void MoleculeAlleneStereo::removeAtoms(BaseMolecule& baseMolecule, const Array<i
     for (i = 0; i < centers_to_remove.size(); i++)
     {
         int idx = centers_to_remove[i];
-        if (_centers.find(idx))
-            _centers.remove(idx);
+        if (_centers.find(idx) == _centers.end())
+            _centers.erase(idx);
     }
 }
 
@@ -726,14 +728,14 @@ void MoleculeAlleneStereo::removeBonds(BaseMolecule& baseMolecule, const Array<i
         int idx = indices[i];
 
         // TODO: this can be done without looping through all centers
-        for (j = _centers.begin(); j != _centers.end(); j = _centers.next(j))
+        for (auto& center : _centers)
         {
-            int center_idx = _centers.key(j);
-            _Atom& atom = _centers.value(j);
+            int center_idx = center.first;
+            _Atom& atom = center.second;
 
             if (idx == baseMolecule.findEdgeIndex(center_idx, atom.left) || idx == baseMolecule.findEdgeIndex(center_idx, atom.right))
             {
-                _centers.remove(center_idx);
+                _centers.erase(center_idx);
                 continue;
             }
 
@@ -745,7 +747,7 @@ void MoleculeAlleneStereo::removeBonds(BaseMolecule& baseMolecule, const Array<i
             {
                 if (atom.subst[1] == -1 || (baseMolecule.getAtomNumber(atom.subst[1]) == ELEM_H && baseMolecule.possibleAtomIsotope(atom.subst[1], 0)))
                 {
-                    _centers.remove(center_idx);
+                    _centers.erase(center_idx);
                     continue;
                 }
                 atom.subst[0] = atom.subst[1];
@@ -755,7 +757,7 @@ void MoleculeAlleneStereo::removeBonds(BaseMolecule& baseMolecule, const Array<i
             {
                 if (atom.subst[3] == -1 || (baseMolecule.getAtomNumber(atom.subst[3]) == ELEM_H && baseMolecule.possibleAtomIsotope(atom.subst[3], 0)))
                 {
-                    _centers.remove(center_idx);
+                    _centers.erase(center_idx);
                     continue;
                 }
                 atom.subst[2] = atom.subst[3];
@@ -767,12 +769,10 @@ void MoleculeAlleneStereo::removeBonds(BaseMolecule& baseMolecule, const Array<i
 
 void MoleculeAlleneStereo::registerUnfoldedHydrogen(int atom_idx, int added_hydrogen)
 {
-    int j;
-
     // TODO: this can be done without looping through all centers
-    for (j = _centers.begin(); j != _centers.end(); j = _centers.next(j))
+    for (auto& center : _centers)
     {
-        _Atom& atom = _centers.value(j);
+        _Atom& atom = center.second;
 
         if (atom_idx == atom.left && atom.subst[1] == -1)
             atom.subst[1] = added_hydrogen;

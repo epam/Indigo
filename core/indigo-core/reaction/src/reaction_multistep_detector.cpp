@@ -1292,7 +1292,7 @@ void ReactionMultistepDetector::constructPathwayReaction(PathwayReaction& rxn)
                 {
                     auto rcidx_it = rcidx_to_reactant.find(ridx);
                     if (rcidx_it != rcidx_to_reactant.end())
-                        rn.connectedReactants.insert(rcidx_it->second, reac_idx);
+                        rn.connectedReactants.insert(std::make_pair<>(rcidx_it->second, reac_idx));
                 }
             }
         }

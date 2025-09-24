@@ -205,7 +205,7 @@ namespace indigo
         virtual int getAtomSubstCount(int idx) = 0;
         virtual int getAtomRingBondsCount(int idx) = 0; // >= 0 -- ring bonds count, -1 -- not sure
         virtual int getAtomConnectivity(int idx) = 0;
-        virtual void setExplicitValence(int /*idx*/, int /*valence*/){};
+        virtual void setExplicitValence(int /*idx*/, int /*valence*/) {};
 
         int getAtomRadical_NoThrow(int idx, int fallback);
         int getAtomValence_NoThrow(int idx, int fallback);
@@ -682,11 +682,11 @@ namespace indigo
         Array<int> _bond_directions;
 
         Array<Vec3f> _xyz;
-        RedBlackMap<int, Vec3f> _stereo_flag_positions;
+        std::map<int, Vec3f> _stereo_flag_positions;
         // CIP maps should be changed to std::unordered_map
-        RedBlackMap<int, CIPDesc> _cip_atoms;
-        RedBlackMap<int, bool> _show_cip_atoms;
-        RedBlackMap<int, CIPDesc> _cip_bonds;
+        std::map<int, CIPDesc> _cip_atoms;
+        std::map<int, bool> _show_cip_atoms;
+        std::map<int, CIPDesc> _cip_bonds;
 
         ObjArray<Array<int>> _rsite_attachment_points;
         bool _rGroupFragment;
