@@ -23,10 +23,10 @@
         ],
         "templates": [
             {
-                "$ref": "monomerTemplate-unknown_monomer_with_idt_alias_unr1"
+                "$ref": "monomerTemplate-unknown_monomer_with_idt_alias_/unr1/"
             },
             {
-                "$ref": "monomerTemplate-unknown_monomer_with_idt_alias_unr2"
+                "$ref": "monomerTemplate-unknown_monomer_with_idt_alias_/unr2/"
             }
         ]
     },
@@ -38,8 +38,8 @@
             "x": 0.000000,
             "y": -0.000000
         },
-        "alias": "unr1",
-        "templateId": "unknown_monomer_with_idt_alias_unr1"
+        "alias": "/unr1/",
+        "templateId": "unknown_monomer_with_idt_alias_/unr1/"
     },
     "monomer1": {
         "type": "monomer",
@@ -49,17 +49,17 @@
             "x": 1.500000,
             "y": -0.000000
         },
-        "alias": "unr2",
-        "templateId": "unknown_monomer_with_idt_alias_unr2"
+        "alias": "/unr2/",
+        "templateId": "unknown_monomer_with_idt_alias_/unr2/"
     },
-    "monomerTemplate-unknown_monomer_with_idt_alias_unr1": {
+    "monomerTemplate-unknown_monomer_with_idt_alias_/unr1/": {
         "type": "monomerTemplate",
-        "id": "unknown_monomer_with_idt_alias_unr1",
+        "id": "unknown_monomer_with_idt_alias_/unr1/",
         "class": "CHEM",
-        "alias": "unr1",
+        "alias": "/unr1/",
         "unresolved": true,
         "idtAliases": {
-            "base": "unr1"
+            "base": "/unr1/"
         },
         "attachmentPoints": [
             {
@@ -82,14 +82,14 @@
         "atoms": [],
         "bonds": []
     },
-    "monomerTemplate-unknown_monomer_with_idt_alias_unr2": {
+    "monomerTemplate-unknown_monomer_with_idt_alias_/unr2/": {
         "type": "monomerTemplate",
-        "id": "unknown_monomer_with_idt_alias_unr2",
+        "id": "unknown_monomer_with_idt_alias_/unr2/",
         "class": "CHEM",
-        "alias": "unr2",
+        "alias": "/unr2/",
         "unresolved": true,
         "idtAliases": {
-            "base": "unr2"
+            "base": "/unr2/"
         },
         "attachmentPoints": [
             {

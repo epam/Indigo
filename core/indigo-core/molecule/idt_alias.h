@@ -28,9 +28,9 @@ namespace indigo
         {
             if (_base.size() > 0)
             {
-                _five_prime_end = "5" + base;
-                _internal = "i" + base;
-                _three_prime_end = "3" + base;
+                _five_prime_end = "/5" + base + "/";
+                _internal = "/i" + base + "/";
+                _three_prime_end = "/3" + base + "/";
             }
         };
 

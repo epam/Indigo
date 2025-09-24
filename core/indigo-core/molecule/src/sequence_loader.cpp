@@ -658,21 +658,19 @@ void SequenceLoader::loadIdt(KetDocument& document)
                 if (cur_token.size())
                     throw Error("Sugar prefix could not be used with modified monomer.");
                 // read till next '/'
+                cur_token += ch;
                 ch = 0;
-                while (!_scanner.isEOL())
+                while (ch != '/' && !_scanner.isEOL())
                 {
                     ch = _scanner.readChar();
-                    if (ch == '/')
-                        break;
                     cur_token += ch;
                 }
                 if (ch != '/')
                     throw Error("Unexpected end of data");
-                if (cur_token == "")
+                if (cur_token == "//")
                     throw Error("Invalid modification: empty string.");
-                if (cur_token.size() < 3)
+                if (cur_token.size() < 5)
                     throw Error("Invalid modification: %s.", cur_token.c_str());
-                cur_token += ch;
                 break;
             }
             case '(': { // read till ')'
@@ -759,9 +757,8 @@ void SequenceLoader::loadIdt(KetDocument& document)
 
             if (token.first.back() == '/')
             {
-                token.first.pop_back();
                 idt_alias = token.first;
-                if ((idt_alias == "5Phos" || idt_alias == "3Phos") && (token.second || prev_token.second))
+                if ((idt_alias == "/5Phos/" || idt_alias == "/3Phos/") && (token.second || prev_token.second))
                     throw Error("Symbol '*' could be placed only between two nucleotides/nucleosides.");
             }
             else
@@ -921,7 +918,7 @@ void SequenceLoader::loadIdt(KetDocument& document)
                 {
                     modification = IdtModification::THREE_PRIME_END;
                     // Corner case: /3Phos/ after standard monomer - no additional P should be added
-                    if (prev_token.first.size() > 0 && prev_token.first.size() <= MAX_STD_TOKEN_SIZE && idt_alias == "3Phos")
+                    if (prev_token.first.size() > 0 && prev_token.first.size() <= MAX_STD_TOKEN_SIZE && idt_alias == "/3Phos/")
                         continue;
                 }
 
@@ -940,7 +937,7 @@ void SequenceLoader::loadIdt(KetDocument& document)
                     if (alias_mod == IdtModification::THREE_PRIME_END)
                     {
                         if (token.second)
-                            throw Error("Monomer /%s/ doesn't have phosphate, so '*' couldn't be applied.", idt_alias.c_str());
+                            throw Error("Monomer %s doesn't have phosphate, so '*' couldn't be applied.", idt_alias.c_str());
                         phosphate = "";
                     }
                     else
@@ -964,7 +961,7 @@ void SequenceLoader::loadIdt(KetDocument& document)
                         else
                         {
                             if (token.second)
-                                throw Error("Monomer /%s/ doesn't have phosphate, so '*' couldn't be applied.", idt_alias.c_str());
+                                throw Error("Monomer %s doesn't have phosphate, so '*' couldn't be applied.", idt_alias.c_str());
                             phosphate = "";
                         }
                     }
@@ -982,7 +979,7 @@ void SequenceLoader::loadIdt(KetDocument& document)
                     if (monomer_template_id.size())
                     {
                         if (token.second)
-                            throw Error("'*' couldn't be applied to monomer /%s/.", idt_alias.c_str());
+                            throw Error("'*' couldn't be applied to monomer %s.", idt_alias.c_str());
                         check_monomer_place(idt_alias, modification, alias_mod, prev_token.first.size() > 0);
                         const MonomerTemplate& monomer_template = _library.getMonomerTemplateById(monomer_template_id);
                         checkAddTemplate(document, monomer_template);
