@@ -2907,10 +2907,7 @@ void MolfileLoader::_readCtab3000()
                     QS_DEF(Array<char>, temp_class);
                     strscan.readWord(temp_class, 0);
                     temp_class.push(0);
-                    if (strcasecmp(temp_class.ptr(), kMonomerClassLINKER) == 0)
-                        _bmol->setTemplateAtomClass(i, kMonomerClassCHEM);
-                    else
-                        _bmol->setTemplateAtomClass(i, temp_class.ptr());
+                    _bmol->setTemplateAtomClass(i, temp_class.ptr());
                 }
                 else if (strcmp(prop, "SEQID") == 0)
                 {
@@ -3649,21 +3646,16 @@ void MolfileLoader::_readSGroup3000(const char* str)
         }
         else if (strcmp(entity.ptr(), "CLASS") == 0)
         {
-            Array<char> class_str;
             while (!scanner.isEOF())
             {
                 char c = scanner.readChar();
                 if (c == ' ')
                     break;
                 if (sup != 0)
-                    class_str.push(c);
+                    sup->sa_class.push(c);
             }
-            class_str.push(0);
             if (sup != 0)
-                if (strcasecmp(class_str.ptr(), kMonomerClassLINKER) == 0)
-                    sup->sa_class.copy(kMonomerClassCHEM, 5);
-                else
-                    sup->sa_class.copy(class_str);
+                sup->sa_class.push(0);
         }
         else if (strcmp(entity.ptr(), "SEQID") == 0)
         {
@@ -3835,10 +3827,7 @@ void MolfileLoader::_readTGroups3000()
                 char stop_char = strscan.readChar();
                 if (stop_char == '/')
                 {
-                    if (strcasecmp(word.ptr(), kMonomerClassLINKER) == 0)
-                        tgroup.tgroup_class.copy(kMonomerClassCHEM, 5);
-                    else
-                        tgroup.tgroup_class.copy(word);
+                    tgroup.tgroup_class.copy(word);
                     strscan.readWord(word, " /");
                     tgroup.tgroup_name.copy(word);
 

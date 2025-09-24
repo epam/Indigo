@@ -4062,7 +4062,7 @@
     "monomerTemplate-SMCC_15": {
         "type": "monomerTemplate",
         "id": "SMCC_15",
-        "class": "Chem",
+        "class": "CHEM",
         "classHELM": "CHEM",
         "alias": "SMCC",
         "name": "SMCC",
