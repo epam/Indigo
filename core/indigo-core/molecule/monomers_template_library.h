@@ -187,9 +187,7 @@ namespace indigo
         MonomerGroupTemplate(MonomerGroupTemplate&& other)
             : _id(other._id), _name(other._name), _class(other._class), _idt_alias(other._idt_alias), _monomer_templates(std::move(other._monomer_templates))
 
-        {
-            ;
-        };
+                                                                                                          {};
 
         MonomerGroupTemplate(const std::string& id, const std::string& name, const std::string& template_class)
             : _id(id), _name(name), _class(template_class){};
@@ -283,6 +281,7 @@ namespace indigo
         MonomerTemplateLibrary& operator=(MonomerTemplateLibrary&&) = delete;
 
         MonomerTemplate& addMonomerTemplate(const std::string& id, const std::string& monomer_class, const IdtAlias& idt_alias, bool unresolved = false);
+
         std::pair<std::string, MonomerTemplate&> addMonomerTemplate(const TGroup& tgroup, const IdtAlias& idt_alias, bool update = false);
 
         void addMonomersFromMolecule(Molecule& mol, PropertiesMap& properties);
