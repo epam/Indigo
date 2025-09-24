@@ -62,8 +62,8 @@ namespace indigo
         void parseKetMonomerShape(std::string& ref, rapidjson::Value& json, KetDocument& document);
 
         using template_add_func = std::function<MonomerTemplate&(const std::string& id, const std::string& monomer_class, IdtAlias idt_alias, bool unresolved)>;
-        using template_group_add_func = std::function<MonomerGroupTemplate&(const std::string& id, const std::string& name, const std::string& monomer_class, IdtAlias idt_alias,
-                                                                            const std::vector<std::string>& template_refs)>;
+        using template_group_add_func = std::function<MonomerGroupTemplate&(const std::string& id, const std::string& name, const std::string& monomer_class,
+                                                                            IdtAlias idt_alias, const std::vector<std::string>& template_refs)>;
 
         static void parseMonomerTemplate(const rapidjson::Value& mt_json, template_add_func addMonomerTemplate);
         static void parseMonomerGroupTemplate(const rapidjson::Value& mt_json, template_group_add_func addMonomerTemplateGroup);
