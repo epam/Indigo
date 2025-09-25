@@ -1091,7 +1091,10 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
             if (pclass && strlen(pclass))
             {
                 writer.Key("class");
-                writer.String(pclass);
+                if (strcasecmp(pclass, kMonomerClassLINKER) == 0)
+                    writer.String(kMonomerClassCHEM);
+                else
+                    writer.String(pclass);
             }
 
             auto seqid = mol.getTemplateAtomSeqid(i);
@@ -1144,7 +1147,10 @@ void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
     if (tg.tgroup_class.size())
     {
         writer.Key("class");
-        writer.String(template_class.c_str());
+        if (strcasecmp(template_class.c_str(), kMonomerClassLINKER) == 0)
+            writer.String(kMonomerClassCHEM);
+        else
+            writer.String(template_class.c_str());
         writer.Key("classHELM");
         writer.String(helm_class.c_str());
     }
