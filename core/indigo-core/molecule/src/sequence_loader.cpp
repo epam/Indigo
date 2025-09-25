@@ -988,12 +988,12 @@ void SequenceLoader::loadIdt(KetDocument& document)
                     }
                     else // IDT alias not found
                     {
-                        single_monomer = "unknown_monomer_with_idt_alias_" + idt_alias;
-                        single_monomer_alias = idt_alias;
+                        single_monomer_alias = idt_alias.substr(1, idt_alias.size() - 2); // remove slashes
+                        single_monomer = "unknown_monomer_with_idt_alias_" + single_monomer_alias;
                         auto monomer_class = MonomerClass::CHEM;
                         // Unresoved monomer could be in any position
-                        MonomerTemplate monomer_template(single_monomer, monomer_class, IdtAlias(idt_alias, idt_alias, idt_alias, idt_alias), true);
-                        setKetStrProp(monomer_template, alias, idt_alias);
+                        MonomerTemplate monomer_template(single_monomer, monomer_class, IdtAlias(single_monomer_alias, idt_alias, idt_alias, idt_alias), true);
+                        setKetStrProp(monomer_template, alias, single_monomer_alias);
                         for (auto ap : {"R1", "R2", "R3", "R4"})
                             monomer_template.AddAttachmentPoint(ap, -1);
                         checkAddTemplate(document, monomer_template);

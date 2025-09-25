@@ -660,7 +660,7 @@ void SequenceSaver::saveIdt(KetDocument& doc, std::vector<std::deque<std::string
                 if (phosphate != "P")
                     throw Error("Cannot save molecule in IDT format - phosphate %s cannot be last monomer in sequence.", phosphate.c_str());
 
-                seq_string += "/3Phos/";
+                seq_string += _library.getMonomerTemplateById(phosphate_id).idtAlias().getThreePrimeEnd();
             }
             if (modification == IdtModification::FIVE_PRIME_END)
                 modification = IdtModification::INTERNAL;

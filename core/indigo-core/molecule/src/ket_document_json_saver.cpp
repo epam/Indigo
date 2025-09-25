@@ -312,7 +312,7 @@ void KetDocumentJsonSaver::saveMonomerTemplate(JsonWriter& writer, const Monomer
     {
         writer.Key("unresolved");
         writer.Bool(monomer_template.unresolved());
-        saveIdtAlias(writer, monomer_template.idtAlias().getBase());
+        saveIdtAlias(writer, monomer_template.idtAlias());
     }
     else if (save_resolved_idt_alias)
         saveIdtAlias(writer, monomer_template.idtAlias(), save_resolved_idt_alias);
