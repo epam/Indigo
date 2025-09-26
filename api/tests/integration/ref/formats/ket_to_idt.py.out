@@ -1,6 +1,7 @@
 *** KET to IDT ***
 idt_32moera.ket:SUCCEED
 idt_3phos.ket:SUCCEED
+idt_3ribog.ket:SUCCEED
 idt_52moera.ket:SUCCEED
 idt_52moera_32moera.ket:SUCCEED
 idt_52moera_i2moera.ket:SUCCEED
@@ -12,6 +13,7 @@ idt_5end_without_r2.ket:SUCCEED
 idt_5phos.ket:SUCCEED
 idt_baseless.ket:SUCCEED
 idt_bases.ket:SUCCEED
+idt_deoxyi.ket:SUCCEED
 idt_i2moera.ket:SUCCEED
 idt_i2moera_32moera.ket:SUCCEED
 idt_i2moera_sp.ket:SUCCEED
@@ -36,7 +38,7 @@ idt_unresolved.ket:SUCCEED
 idt_unresolved_many.ket:SUCCEED
 idt_unsplit.ket:SUCCEED
 Test ket-to-idt-alternatives-base: got expected error 'Cannot save IDT - only mixture supported but found alternatives.'
-Test ket-to-idt-invalid-last-phosphate: got expected error 'Sequence saver: Cannot save molecule in IDT format - phosphate R cannot be last monomer in sequence.'
+Test ket-to-idt-invalid-last-phosphate: got expected error 'Sequence saver: Cannot save molecule in IDT format - phosphate sP cannot be last monomer in sequence.'
 Test ket-to-idt-invalid-nucleotide: got expected error 'IDT alias for group sugar:m2e2r base:z8c3G phosphate:mepo2 not found.'
 Test ket-to-idt-invalid-posphates: got expected error 'Sequence saver: Cannot save in IDT format - nonstandard connection found.'
 Test ket-to-idt-invalid-sugar: got expected error 'IDT alias for sugar:m2e2r not found.'

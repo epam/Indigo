@@ -1,6 +1,7 @@
 *** IDT to KET ***
 idt_32moera.ket:SUCCEED
 idt_3phos.ket:SUCCEED
+idt_3ribog.ket:SUCCEED
 idt_52moera.ket:SUCCEED
 idt_52moera_32moera.ket:SUCCEED
 idt_52moera_i2moera.ket:SUCCEED
@@ -11,6 +12,7 @@ idt_52moera_with_3phos.ket:SUCCEED
 idt_5end_without_r2.ket:SUCCEED
 idt_5phos.ket:SUCCEED
 idt_bases.ket:SUCCEED
+idt_deoxyi.ket:SUCCEED
 idt_i2moera.ket:SUCCEED
 idt_i2moera_32moera.ket:SUCCEED
 idt_i2moera_sp.ket:SUCCEED
@@ -38,18 +40,18 @@ Test '+/5Phos/A': got expected error 'Sugar prefix could not be used with modifi
 Test '/': got expected error 'Unexpected end of data'
 Test '//': got expected error 'Invalid modification: empty string.'
 Test '/32MOErA/*': got expected error 'Monomer /32MOErA/ doesn't have phosphate, so '*' couldn't be applied.'
-Test '/32MOErA/T': got expected error 'IDT alias '32MOErA' cannot be used at five prime end.'
+Test '/32MOErA/T': got expected error 'IDT alias '/32MOErA/' cannot be used at five prime end.'
 Test '/3Phos/*': got expected error 'Symbol '*' could be placed only between two nucleotides/nucleosides.'
-Test '/3Phos/T': got expected error 'IDT alias '3Phos' cannot be used at five prime end.'
+Test '/3Phos/T': got expected error 'IDT alias '/3Phos/' cannot be used at five prime end.'
 Test '/52MOErA/*/3Phos/': got expected error 'Symbol '*' could be placed only between two nucleotides/nucleosides.'
 Test '/52MOErA//32MOErA/*': got expected error 'Monomer /32MOErA/ doesn't have phosphate, so '*' couldn't be applied.'
 Test '/5Phos/*A': got expected error 'Symbol '*' could be placed only between two nucleotides/nucleosides.'
-Test '/a/': got expected error 'Invalid modification: a.'
+Test '/a/': got expected error 'Invalid modification: /a/.'
 Test 'A+/3Phos/': got expected error 'Sugar prefix could not be used with modified monomer.'
 Test 'Am/3Phos/': got expected error 'Sugar prefix could not be used with modified monomer.'
 Test 'Ar/3Phos/': got expected error 'Sugar prefix could not be used with modified monomer.'
-Test 'T/52MOErA/': got expected error 'IDT alias '52MOErA' cannot be used at three prime end.'
-Test 'T/5Phos/': got expected error 'IDT alias '5Phos' cannot be used at three prime end.'
+Test 'T/52MOErA/': got expected error 'IDT alias '/52MOErA/' cannot be used at three prime end.'
+Test 'T/5Phos/': got expected error 'IDT alias '/5Phos/' cannot be used at three prime end.'
 Test 'm/5Phos/A': got expected error 'Sugar prefix could not be used with modified monomer.'
 Test 'r(B1:50003000)(B1)': got expected error 'Unknown mixed base 'B1''
 Test 'r+A': got expected error 'Sugar prefix 'r' whithout base.'
