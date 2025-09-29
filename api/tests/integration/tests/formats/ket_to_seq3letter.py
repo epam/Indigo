@@ -51,6 +51,7 @@ for filename in files:
 
 seq_errors = {
     "peptides_molecule": "Sequence saver: Can't save micro-molecules to sequence format",
+    "issue_3200": "Only amino acids can be saved as three letter amino acid codes",
 }
 
 for filename in sorted(seq_errors.keys()):

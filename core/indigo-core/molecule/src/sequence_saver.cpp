@@ -317,6 +317,8 @@ void SequenceSaver::saveKetDocument(KetDocument& doc, SeqFormat sf)
                 MonomerClass monomer_class = doc.getMonomerClass(monomer_id);
                 const auto& monomer = monomers.at(monomer_id);
                 auto monomer_alias = monomer->alias();
+                if (sf == SeqFormat::Sequence3 && monomer_class != MonomerClass::AminoAcid)
+                    throw Error("Only amino acids can be saved as three letter amino acid codes.");
                 if (monomer_class == MonomerClass::CHEM)
                     throw Error("Can't save chem '%s' to sequence format", monomer_alias.c_str());
                 if (monomer_class == MonomerClass::Sugar || monomer_class == MonomerClass::Phosphate ||
@@ -360,8 +362,6 @@ void SequenceSaver::saveKetDocument(KetDocument& doc, SeqFormat sf)
                 }
                 if (sf == SeqFormat::Sequence3)
                 {
-                    if (monomer_class != MonomerClass::AminoAcid)
-                        throw Error("Only amino acids can be saved as three letter amino acid codes.");
                     if (STANDARD_PEPTIDES.count(monomer_alias) > 0)
                         monomer_alias = monomerNameByAlias(kMonomerClassAminoAcid, monomer_alias);
                     else if (STANDARD_MIXED_PEPTIDES_ALIAS_TO_NAME.count(monomer_alias) > 0)
