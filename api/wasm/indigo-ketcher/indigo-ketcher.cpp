@@ -162,6 +162,10 @@ namespace indigo
             {
                 result = _checkResultString(indigoHelm(id(), library));
             }
+            else if (outputFormat == "axo-labs" || outputFormat == "chemical/x-axo-labs")
+            {
+                result = _checkResultString(indigoAxoLabs(id(), library));
+            }
             else if (outputFormat == "smarts" || outputFormat == "chemical/x-daylight-smarts")
             {
                 if (options.count("smarts") > 0 && options.at("smarts") == "canonical")
@@ -397,7 +401,7 @@ namespace indigo
                 auto seq_it = seq_formats.find(input_format->second);
                 objectId = indigoLoadSequenceFromString(data.c_str(), seq_it->second.c_str(), library);
                 if (objectId >= 0)
-                    return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
+                    return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
                 exceptionMessages.emplace_back(indigoGetLastError());
             }
             else if (fasta_formats.count(input_format->second))
@@ -405,21 +409,28 @@ namespace indigo
                 auto fasta_it = fasta_formats.find(input_format->second);
                 objectId = indigoLoadFastaFromString(data.c_str(), fasta_it->second.c_str(), library);
                 if (objectId >= 0)
-                    return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
+                    return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
                 exceptionMessages.emplace_back(indigoGetLastError());
             }
             else if (input_format->second == "chemical/x-idt")
             {
                 objectId = indigoLoadIdtFromString(data.c_str(), library);
                 if (objectId >= 0)
-                    return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
+                    return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
                 exceptionMessages.emplace_back(indigoGetLastError());
             }
             else if (input_format->second == "chemical/x-helm")
             {
                 objectId = indigoLoadHelmFromString(data.c_str(), library);
                 if (objectId >= 0)
-                    return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETMolecule);
+                    return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
+                exceptionMessages.emplace_back(indigoGetLastError());
+            }
+            else if (input_format->second == "chemical/x-axo-labs")
+            {
+                objectId = indigoLoadAxoLabsFromString(data.c_str(), library);
+                if (objectId >= 0)
+                    return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
                 exceptionMessages.emplace_back(indigoGetLastError());
             }
             else if (input_format->second == "monomer-library" || input_format->second == "chemical/x-monomer-library")
@@ -541,6 +552,12 @@ namespace indigo
                 {
                     return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
                 }
+                print_js("try as AxoLabs");
+                objectId = indigoLoadAxoLabsFromString(data.c_str(), library);
+                if (objectId >= 0)
+                {
+                    return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
+                }
             }
         }
         exceptionMessages.emplace_back(indigoGetLastError());
@@ -633,16 +650,20 @@ namespace indigo
             input_format = it->second;
 
         bool use_document = false;
-        static const std::set<std::string> document_formats{"sequence",
-                                                            "chemical/x-sequence",
-                                                            "peptide-sequence-3-letter",
-                                                            "chemical/x-peptide-sequence-3-letter",
-                                                            "fasta",
-                                                            "chemical/x-fasta",
-                                                            "idt",
-                                                            "chemical/x-idt",
-                                                            "helm",
-                                                            "chemical/x-helm"};
+        static const std::set<std::string> document_formats{
+            "sequence",
+            "chemical/x-sequence",
+            "peptide-sequence-3-letter",
+            "chemical/x-peptide-sequence-3-letter",
+            "fasta",
+            "chemical/x-fasta",
+            "idt",
+            "chemical/x-idt",
+            "helm",
+            "chemical/x-helm",
+            "axo-labs",
+            "chemical/x-axo-labs",
+        };
         if ((input_format == "ket" || input_format == "application/json") && outputFormat.size() > 0 && document_formats.count(outputFormat) > 0)
             use_document = true;
         IndigoKetcherObject iko = loadKETObject(data, options_copy, library, use_document);
