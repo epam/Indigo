@@ -26,6 +26,7 @@
 #include "molecule/ket_objects.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_json_loader.h"
+#include "molecule/molecule_standardize_options.h"
 #include "molecule/monomer_commons.h"
 #include "molecule/monomers_template_library.h"
 #include "molecule/smiles_saver.h"
@@ -898,7 +899,9 @@ void SequenceSaver::add_monomer(KetDocument& document, const std::unique_ptr<Ket
             }
             sgroups.remove(i);
         }
-        std::string smiles;
+        StandardizeOptions std_opts;
+        std_opts.standardize_stereo = true;
+        pmol->standardize(std_opts);
         StringOutput s_out(monomer_str);
         SmilesSaver saver(s_out);
         saver.separate_rsites = false;
