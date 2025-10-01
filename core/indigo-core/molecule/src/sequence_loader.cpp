@@ -164,13 +164,16 @@ void SequenceLoader::loadSequence(BaseMolecule& mol, SeqType seq_type)
 
     bool isGenBankPept = false;
     bool start_char = true;
-    bool text_started = false;
+    bool before_text = true;
 
     while (!_scanner.isEOF())
     {
         auto ch = _scanner.readChar();
         if (ch == '\n' || ch == '\r')
+        {
+            before_text = true;
             continue;
+        }
 
         if (start_char)
         {
@@ -185,11 +188,11 @@ void SequenceLoader::loadSequence(BaseMolecule& mol, SeqType seq_type)
 
         if (isGenBankPept)
         {
-            if (!text_started && (ch == ' ' || (ch >= NUM_BEGIN && ch < NUM_END)))
+            if (ch == ' ' || (before_text && ch >= NUM_BEGIN && ch < NUM_END))
             {
                 continue;
             }
-            text_started = true;
+            before_text = false;
             if (ch >= CHAR_LOWERCASE_BEGIN && ch < CHAR_LOWERCASE_END)
             {
                 ch -= CHAR_SHIFT_CONVERT;
@@ -2091,13 +2094,16 @@ void SequenceLoader::loadSequence(KetDocument& document, SeqType seq_type)
 
     bool isGenBankPept = false;
     bool start_char = true;
-    bool text_started = false;
+    bool before_text = true;
 
     while (!_scanner.isEOF())
     {
         auto ch = _scanner.readChar();
         if (ch == '\n' || ch == '\r')
+        {
+            before_text = true;
             continue;
+        }
 
         if (start_char)
         {
@@ -2110,9 +2116,9 @@ void SequenceLoader::loadSequence(KetDocument& document, SeqType seq_type)
 
         if (isGenBankPept)
         {
-            if (!text_started && (ch == ' ' || (ch >= NUM_BEGIN && ch < NUM_END)))
+            if (ch == ' ' || (before_text && ch >= NUM_BEGIN && ch < NUM_END))
                 continue;
-            text_started = true;
+            before_text = false;
         }
         if (islower(ch))
             ch -= CHAR_SHIFT_CONVERT;
