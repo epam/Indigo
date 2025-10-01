@@ -164,12 +164,16 @@ void SequenceLoader::loadSequence(BaseMolecule& mol, SeqType seq_type)
 
     bool isGenBankPept = false;
     bool start_char = true;
+    bool before_text = true;
 
     while (!_scanner.isEOF())
     {
         auto ch = _scanner.readChar();
         if (ch == '\n' || ch == '\r')
+        {
+            before_text = true;
             continue;
+        }
 
         if (start_char)
         {
@@ -184,10 +188,11 @@ void SequenceLoader::loadSequence(BaseMolecule& mol, SeqType seq_type)
 
         if (isGenBankPept)
         {
-            if (ch == ' ' || (ch >= NUM_BEGIN && ch < NUM_END))
+            if (ch == ' ' || (before_text && ch >= NUM_BEGIN && ch < NUM_END))
             {
                 continue;
             }
+            before_text = false;
             if (ch >= CHAR_LOWERCASE_BEGIN && ch < CHAR_LOWERCASE_END)
             {
                 ch -= CHAR_SHIFT_CONVERT;
@@ -2089,26 +2094,31 @@ void SequenceLoader::loadSequence(KetDocument& document, SeqType seq_type)
 
     bool isGenBankPept = false;
     bool start_char = true;
+    bool before_text = true;
 
     while (!_scanner.isEOF())
     {
         auto ch = _scanner.readChar();
         if (ch == '\n' || ch == '\r')
+        {
+            before_text = true;
             continue;
+        }
 
         if (start_char)
         {
             if (ch == ' ' || ch == '\t')
                 continue; // skip leading whitespaces
-            if (isdigit(ch))
+            if (ch >= NUM_BEGIN && ch < NUM_END)
                 isGenBankPept = true;
             start_char = false;
         }
 
         if (isGenBankPept)
         {
-            if (ch == ' ' || isdigit(ch))
+            if (ch == ' ' || (before_text && ch >= NUM_BEGIN && ch < NUM_END))
                 continue;
+            before_text = false;
         }
         if (islower(ch))
             ch -= CHAR_SHIFT_CONVERT;
