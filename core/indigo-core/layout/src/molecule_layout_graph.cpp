@@ -36,6 +36,8 @@ MoleculeLayoutGraph::MoleculeLayoutGraph() : Graph()
     cancellation = 0;
     _flipped = false;
     preserve_existing_layout = false;
+    respect_cycles_direction = false;
+    flexible_fixed_components = false;
 }
 
 MoleculeLayoutGraph::~MoleculeLayoutGraph()

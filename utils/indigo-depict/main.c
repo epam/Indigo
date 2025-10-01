@@ -925,8 +925,8 @@ int main(int argc, char* argv[])
     // read in the input
     reader = (p.file_to_load != NULL) ? indigoReadFile(p.file_to_load) : indigoReadString(p.string_to_load);
 
-    int lib = indigoLoadMonomerLibraryFromString("{\"root\":{}}");
-    // int lib = indigoLoadMonomerLibraryFromFile("monomers.ket");
+    // int lib = indigoLoadMonomerLibraryFromString("{\"root\":{}}");
+    int lib = indigoLoadMonomerLibraryFromFile("monomer_library.ket");
     // int lib = indigoLoadMonomerLibraryFromFile("phos.sdf");
     // indigoSaveMonomerLibraryToFile("phos.ket", lib);
 
@@ -963,7 +963,7 @@ int main(int argc, char* argv[])
 
         if (p.action == ACTION_LAYOUT)
         {
-            indigoLayout(obj);
+            indigoLayoutSelected(obj);
             if (p.out_ext == OEXT_MOL)
                 indigoSaveMolfileToFile(obj, p.outfile);
             else if (p.out_ext == OEXT_KET)

@@ -93,6 +93,9 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates(float bond_length)
         bc_decom.getComponent(i, comp);
         std::unique_ptr<MoleculeLayoutGraph> tmp(getInstance());
         tmp->makeLayoutSubgraph(*this, comp);
+        tmp->respect_cycles_direction = respect_cycles_direction;
+        tmp->flexible_fixed_components = flexible_fixed_components;
+
         bc_components.add(tmp.release());
     }
 
@@ -268,12 +271,12 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
         return;
     }
 
+    for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
+        _layout_vertices[i].pos = supergraph.getPos(getVertexExtIdx(i));
+
     //	2.1. Use layout of fixed components and find border edges and vertices
     if (fixed_component)
     {
-        for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
-            _layout_vertices[i].pos = supergraph.getPos(getVertexExtIdx(i));
-
         CycleEnumerator ce(*this);
 
         ce.context = this;
@@ -449,10 +452,19 @@ void MoleculeLayoutGraphSimple::_assignFirstCycle(const Cycle& cycle)
 
     _first_vertex_idx = cycle.getVertex(0);
 
-    _layout_vertices[cycle.getVertex(0)].pos.set(0.f, 0.f);
-    _layout_vertices[cycle.getVertex(1)].pos.set(1.f, 0.f);
-
     phi = (float)M_PI * (n - 2) / n;
+
+    Vec2f diff(_layout_vertices[cycle.getVertex(1)].pos - _layout_vertices[cycle.getVertex(0)].pos);
+    if (respect_cycles_direction && diff.normalize())
+    {
+        phi *= _getCycleDirection();
+        _layout_vertices[cycle.getVertex(1)].pos = _layout_vertices[cycle.getVertex(0)].pos + diff;
+    }
+    else
+    {
+        _layout_vertices[cycle.getVertex(0)].pos.set(0.f, 0.f);
+        _layout_vertices[cycle.getVertex(1)].pos.set(1.f, 0.f);
+    }
 
     for (i = 1; i < n - 1; i++)
     {
@@ -735,7 +747,19 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
     if (_n_fixed > 0)
     {
         for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
-            _layout_vertices[i].pos.scale(bond_length);
+        {
+            if (flexible_fixed_components)
+            {
+                if (_fixed_vertices[i] == 0)
+                    _layout_vertices[i].pos.scale(bond_length);
+                else
+                {
+                    // TODO: update fixed vertex positions
+                }
+            }
+            else
+                _layout_vertices[i].pos.scale(bond_length);
+        }                                                             
         return;
     }
 
@@ -949,67 +973,17 @@ void MoleculeLayoutGraph::_findFixedComponents(BiconnectedDecomposer& bc_decom, 
 
         bc_decom.getComponent(i, filter);
 
-        // if (fixed_count[i] > filter.count(*this) / 2)
         if (fixed_count[i] == filter.count(*this))
             fixed_components[i] = 1;
+        else if (fixed_count[i] && flexible_fixed_components)
+            fixed_components[i] = 2;
     }
 
-    _fixed_vertices.zerofill();
-
-    // update fixed vertices
-    for (int i = 0; i < n_comp; i++)
+    if (!flexible_fixed_components)
     {
-        if (!fixed_components[i])
-            continue;
-
-        MoleculeLayoutGraph& component = *bc_components[i];
-
-        for (int j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
-            _fixed_vertices[component.getVertexExtIdx(j)] = 1;
-    }
-
-    Filter fixed_filter(_fixed_vertices.ptr(), Filter::EQ, 1);
-
-    Graph fixed_graph;
-    QS_DEF(Array<int>, fixed_mapping);
-    QS_DEF(Array<int>, fixed_inv_mapping);
-
-    fixed_graph.makeSubgraph(*this, fixed_filter, &fixed_mapping, &fixed_inv_mapping);
-
-    if (Graph::isConnected(fixed_graph))
-        _n_fixed = fixed_filter.count(*this);
-    else
-    {
-        // fixed subgraph is not connected - choose its greatest component
-        int n = fixed_graph.countComponents();
-        const Array<int>& decomposition = fixed_graph.getDecomposition();
-
-        fixed_count.clear_resize(n);
-        fixed_count.zerofill();
-
-        for (int i = fixed_graph.vertexBegin(); i < fixed_graph.vertexEnd(); i = fixed_graph.vertexNext(i))
-            fixed_count[decomposition[i]]++;
-
-        int j = 0;
-        for (int i = 1; i < n; i++)
-            if (fixed_count[i] > fixed_count[j])
-                j = i;
-
-        Filter max_filter(decomposition.ptr(), Filter::EQ, j);
+        _fixed_vertices.zerofill();
 
         // update fixed vertices
-        _fixed_vertices.zerofill();
-        _n_fixed = 0;
-
-        for (int i = fixed_graph.vertexBegin(); i < fixed_graph.vertexEnd(); i = fixed_graph.vertexNext(i))
-        {
-            if (max_filter.valid(i))
-            {
-                _fixed_vertices[fixed_mapping[i]] = 1;
-                _n_fixed++;
-            }
-        }
-
         for (int i = 0; i < n_comp; i++)
         {
             if (!fixed_components[i])
@@ -1017,10 +991,64 @@ void MoleculeLayoutGraph::_findFixedComponents(BiconnectedDecomposer& bc_decom, 
 
             MoleculeLayoutGraph& component = *bc_components[i];
 
-            int comp_v = component.getVertexExtIdx(component.vertexBegin());
-            int mapped = fixed_inv_mapping[comp_v];
-            if (!max_filter.valid(mapped))
-                fixed_components[i] = 0;
+            for (int j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
+                _fixed_vertices[component.getVertexExtIdx(j)] = 1;
+        }
+
+        Filter fixed_filter(_fixed_vertices.ptr(), Filter::EQ, 1);
+
+        Graph fixed_graph;
+        QS_DEF(Array<int>, fixed_mapping);
+        QS_DEF(Array<int>, fixed_inv_mapping);
+
+        fixed_graph.makeSubgraph(*this, fixed_filter, &fixed_mapping, &fixed_inv_mapping);
+
+        if (Graph::isConnected(fixed_graph))
+            _n_fixed = fixed_filter.count(*this);
+        else
+        {
+            // fixed subgraph is not connected - choose its greatest component
+            int n = fixed_graph.countComponents();
+            const Array<int>& decomposition = fixed_graph.getDecomposition();
+
+            fixed_count.clear_resize(n);
+            fixed_count.zerofill();
+
+            for (int i = fixed_graph.vertexBegin(); i < fixed_graph.vertexEnd(); i = fixed_graph.vertexNext(i))
+                fixed_count[decomposition[i]]++;
+
+            int j = 0;
+            for (int i = 1; i < n; i++)
+                if (fixed_count[i] > fixed_count[j])
+                    j = i;
+
+            Filter max_filter(decomposition.ptr(), Filter::EQ, j);
+
+            // update fixed vertices
+            _fixed_vertices.zerofill();
+            _n_fixed = 0;
+
+            for (int i = fixed_graph.vertexBegin(); i < fixed_graph.vertexEnd(); i = fixed_graph.vertexNext(i))
+            {
+                if (max_filter.valid(i))
+                {
+                    _fixed_vertices[fixed_mapping[i]] = 1;
+                    _n_fixed++;
+                }
+            }
+
+            for (int i = 0; i < n_comp; i++)
+            {
+                if (!fixed_components[i])
+                    continue;
+
+                MoleculeLayoutGraph& component = *bc_components[i];
+
+                int comp_v = component.getVertexExtIdx(component.vertexBegin());
+                int mapped = fixed_inv_mapping[comp_v];
+                if (!max_filter.valid(mapped))
+                    fixed_components[i] = 0;
+            }
         }
     }
 }

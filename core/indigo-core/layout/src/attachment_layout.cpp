@@ -323,9 +323,16 @@ void LayoutChooser::_makeLayout()
                     // 1. Shift
                     cur_pos.sum(comp.getPos(j), p);
                     // 2. Rotate around v
-                    p1.diff(cur_pos, _layout._graph.getPos(v));
-                    p1.rotate(sina, cosa);
-                    cur_pos.sum(p1, _layout._graph.getPos(v));
+                    if (comp.flexible_fixed_components)
+                    {
+                        // TODO: add handling of flexible fixed components
+                    }
+                    else
+                    {
+                        p1.diff(cur_pos, _layout._graph.getPos(v));
+                        p1.rotate(sina, cosa);
+                        cur_pos.sum(p1, _layout._graph.getPos(v));
+                    }
                 }
                 else // fixed components
                 {
@@ -334,7 +341,6 @@ void LayoutChooser::_makeLayout()
 
                 _layout._new_vertices[k] = comp.getVertexExtIdx(j);
             }
-
         cur_angle += _layout._bc_angles[comp_idx];
     }
 

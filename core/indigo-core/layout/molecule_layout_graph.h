@@ -172,6 +172,8 @@ namespace indigo
         LAYOUT_ORIENTATION layout_orientation;
 
         bool preserve_existing_layout;
+        bool respect_cycles_direction;
+        bool flexible_fixed_components;
 
         CancellationHandler* cancellation;
 
@@ -281,6 +283,7 @@ namespace indigo
         };
 
         // geometry functions
+        int _getCycleDirection() const;
         int _calcIntersection(int edge1, int edge2) const;
         bool _isVertexOnEdge(int vert_idx, int edge_beg, int edge_end) const;
         bool _isVertexOnSomeEdge(int vert_idx) const;
