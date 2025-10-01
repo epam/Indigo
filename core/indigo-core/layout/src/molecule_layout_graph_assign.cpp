@@ -964,19 +964,14 @@ void MoleculeLayoutGraph::_findFixedComponents(BiconnectedDecomposer& bc_decom, 
         for (int j = vertexBegin(); j < vertexEnd(); j = vertexNext(j))
             if (filter.valid(j) && _fixed_vertices[j])
                 fixed_count[i]++;
-    }
-
-    // keep only with fixed number greater than a half
-    for (int i = 0; i < n_comp; i++)
-    {
-        Filter filter;
-
-        bc_decom.getComponent(i, filter);
 
         if (fixed_count[i] == filter.count(*this))
             fixed_components[i] = 1;
         else if (fixed_count[i] && flexible_fixed_components)
+        {
+            // not all the vertices are fixed in the component. 2 - flexible fixed component.
             fixed_components[i] = 2;
+        }
     }
 
     if (!flexible_fixed_components)
