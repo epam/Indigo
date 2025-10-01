@@ -480,7 +480,7 @@ chemical/x-iupac, chemical/x-daylight-smarts, chemical/x-inchi-aux, chemical/x-c
 chemical/x-cdxml, chemical/x-cdx, chemical/x-sdf, chemical/x-rdf, chemical/x-peptide-sequence, \
 chemical/x-peptide-sequence-3-letter, chemical/x-rna-sequence, chemical/x-dna-sequence, chemical/x-sequence, \
 chemical/x-peptide-fasta, chemical/x-rna-fasta, chemical/x-dna-fasta, chemical/x-fasta, \
-chemical/x-idt, chemical/x-helm, chemical/x-monomer-library."
+chemical/x-idt, chemical/x-helm, chemical/x-monomer-library, chemical/x-axo-labs."
         expected_text = (
             "ValidationError: {'input_format': ['Must be one of: %s']}"
             % formats
@@ -3592,9 +3592,9 @@ M  END
 
         # write references
         # with open(
-        #    os.path.join(ref_path, "rna_fasta_ref") + ".fasta", "w"
+        #     os.path.join(ref_path, "rna_fasta_ref") + ".fasta", "w"
         # ) as file:
-        #    file.write(json.loads(result_rna_fasta.text)["struct"])
+        #     file.write(json.loads(result_rna_fasta.text)["struct"])
         # with open(
         #     os.path.join(ref_path, "rna_fasta_ref") + ".ket", "w"
         # ) as file:
@@ -4076,6 +4076,71 @@ M  END
 
         # check
         self.assertEqual(result_json, ref_json)
+
+    def test_convert_axolabs(self):
+        fname = "axolabs"
+
+        lib_file = "monomer_library.ket"
+        lib_path = os.path.join(joinPathPy("structures/", __file__), lib_file)
+        with open(lib_path, "r") as file:
+            monomer_library = file.read()
+
+        axolabs_struct = "5'-dI(5MdC)AmA(NHC6)GmTm-3'"
+        # AxoLabs to ket
+        headers, data = self.get_headers(
+            {
+                "struct": axolabs_struct,
+                "options": {"monomerLibrary": monomer_library},
+                "input_format": "chemical/x-axo-labs",
+                "output_format": "chemical/x-indigo-ket",
+            }
+        )
+
+        result = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        result_ket = json.loads(result.text)["struct"]
+
+        ref_prefix = os.path.join(joinPathPy("ref/", __file__), fname)
+        # write references
+        # with open(ref_prefix + ".ket", "w") as file:
+        #     file.write(result_ket)
+
+        # check
+        with open(ref_prefix + ".ket", "r") as file:
+            ref_ket = file.read()
+        self.assertEqual(result_ket, ref_ket)
+
+        # AxoLabs autodetect
+        headers, data = self.get_headers(
+            {
+                "struct": axolabs_struct,
+                "options": {"monomerLibrary": monomer_library},
+                "output_format": "chemical/x-indigo-ket",
+            }
+        )
+
+        result = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        result_ket = json.loads(result.text)["struct"]
+        self.assertEqual(result_ket, ref_ket)
+
+        # Ket to AxoLabs
+        headers, data = self.get_headers(
+            {
+                "struct": result_ket,
+                "options": {"monomerLibrary": monomer_library},
+                "input_format": "chemical/x-indigo-ket",
+                "output_format": "chemical/x-axo-labs",
+            }
+        )
+
+        result = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        result_axolabs = json.loads(result.text)["struct"]
+        self.assertEqual(axolabs_struct, result_axolabs)
 
 
 if __name__ == "__main__":
