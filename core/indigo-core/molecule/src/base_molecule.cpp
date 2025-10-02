@@ -173,6 +173,7 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
 void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& mapping, Array<int>& edge_mapping)
 {
     int i;
+    std::multimap<int, int> indicesByOriginalId{};
 
     for (i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
     {
@@ -181,6 +182,7 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
         SGroup& sg = sgroups.getSGroup(idx);
         sg.original_group = supersg.original_group;
         sg.parent_group = supersg.parent_group;
+        indicesByOriginalId.emplace(sg.original_group, idx);
 
         if (_mergeSGroupWithSubmolecule(sg, supersg, mol, mapping, edge_mapping))
         {
@@ -274,13 +276,6 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
 
     // Reassign parent indices when an sgroup has been removed.
     // Depending on component order this can change.
-    std::multimap<int, int> indicesByOriginalId{};
-    for (auto i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
-    {
-        SGroup& sgroup = sgroups.getSGroup(i);
-        indicesByOriginalId.emplace(sgroup.original_group, i);
-    }
-
     for (auto i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
     {
         SGroup& sgroup = sgroups.getSGroup(i);
