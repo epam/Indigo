@@ -94,8 +94,8 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates(float bond_length)
         std::unique_ptr<MoleculeLayoutGraph> tmp(getInstance());
         tmp->makeLayoutSubgraph(*this, comp);
         tmp->respect_cycles_direction = respect_cycles_direction;
-        tmp->flexible_fixed_components = flexible_fixed_components;
-
+        if ( tmp->sssrCount() > 0)
+          tmp->flexible_fixed_components = flexible_fixed_components;
         bc_components.add(tmp.release());
     }
 
@@ -752,14 +752,29 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
             {
                 if (_fixed_vertices[i] == 0)
                     _layout_vertices[i].pos.scale(bond_length);
-                else
-                {
-                    // TODO: update fixed vertex positions
-                }
             }
             else
                 _layout_vertices[i].pos.scale(bond_length);
-        }                                                             
+        }
+        if (flexible_fixed_components)
+        {
+            Array<Vec2f> shifts;
+            for (i = 0; i < _fixed_subgraphs_ext_vertices.size(); ++i)
+            {
+                Vec2f shift;
+                auto& ext_vertices = _fixed_subgraphs_ext_vertices[i];
+                for (auto idx : ext_vertices)
+                    shift += _layout_vertices[idx].pos - src_layout[idx];
+                shift.scale(1.f / ext_vertices.size());
+                shifts.push(shift);
+            }
+
+            for (i = 0; i < _fixed_vertices_subgraph.size(); ++i)
+            {
+                if (_fixed_vertices_subgraph[i] != -1)
+                    _layout_vertices[i].pos.add(shifts[_fixed_vertices_subgraph[i]]);
+            }
+        }
         return;
     }
 
@@ -965,20 +980,43 @@ void MoleculeLayoutGraph::_findFixedComponents(BiconnectedDecomposer& bc_decom, 
             if (filter.valid(j) && _fixed_vertices[j])
                 fixed_count[i]++;
 
+        if ((fixed_count[i] == filter.count(*this)) || (fixed_count[i] && flexible_fixed_components))
+            fixed_components[i] = 1;
         if (fixed_count[i] == filter.count(*this))
             fixed_components[i] = 1;
         else if (fixed_count[i] && flexible_fixed_components)
-        {
-            // not all the vertices are fixed in the component. 2 - flexible fixed component.
             fixed_components[i] = 2;
-        }
     }
 
-    if (!flexible_fixed_components)
+    if (flexible_fixed_components)
+    {
+        Filter fixed_filter(_fixed_vertices.ptr(), Filter::EQ, 1);
+        Graph fixed_graph;
+        QS_DEF(Array<int>, fixed_mapping);
+        QS_DEF(Array<int>, fixed_inv_mapping);
+        fixed_graph.makeSubgraph(*this, fixed_filter, &fixed_mapping, &fixed_inv_mapping);
+        const Array<int>& decomposition = fixed_graph.getDecomposition();
+        _fixed_subgraphs_ext_vertices.clear_resize(fixed_graph.countComponents());
+        _fixed_vertices_subgraph.clear_resize(_fixed_vertices.size());
+        _fixed_vertices_subgraph.fffill();
+        for (int v_idx = 0; v_idx < decomposition.size(); ++v_idx)
+        {
+            int orig_v_idx = fixed_mapping[v_idx];
+            auto& v = getVertex(orig_v_idx);
+            _fixed_vertices_subgraph[orig_v_idx] = decomposition[v_idx];
+            for (int nei_idx = v.neiBegin(); nei_idx != v.neiEnd(); nei_idx = v.neiNext(nei_idx))
+            {
+                int nei = v.neiVertex(nei_idx);
+                if (!fixed_filter.valid(nei)) // neighbor is not fixed
+                    _fixed_subgraphs_ext_vertices[decomposition[v_idx]].push(nei);
+            }
+        }
+    }
+    else
     {
         _fixed_vertices.zerofill();
 
-        // update fixed vertices
+        // extend fixed vertices
         for (int i = 0; i < n_comp; i++)
         {
             if (!fixed_components[i])
@@ -991,7 +1029,6 @@ void MoleculeLayoutGraph::_findFixedComponents(BiconnectedDecomposer& bc_decom, 
         }
 
         Filter fixed_filter(_fixed_vertices.ptr(), Filter::EQ, 1);
-
         Graph fixed_graph;
         QS_DEF(Array<int>, fixed_mapping);
         QS_DEF(Array<int>, fixed_inv_mapping);
