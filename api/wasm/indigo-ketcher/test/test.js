@@ -1198,6 +1198,27 @@ M  END
     }
 
     {
+        test("Input format", "no autoload", () => {
+            var fs = require('fs');
+            let options = new indigo.MapStringString();
+            const monomersLib = fs.readFileSync("monomer_library.ket");
+            options.set("output-content-type", "application/json");
+            options.set("input-format", "chemical/x-helm");
+            options.set("monomerLibrary", monomersLib);
+            let got_exception = false;
+            try{
+                // try load sequence as helm, exception should be generated
+                const res = indigo.convert("ACGT", "ket", options);
+            }catch(e){
+                got_exception = true;
+                assert.match(e, /Unknown polymer type 'ACGT'/);
+            }
+            assert.ok(got_exception);
+            options.delete();
+        });
+    }
+
+    {
         test("layout", "pathway", () => {
             var fs = require('fs');
             const pathway = fs.readFileSync("pathway.ket");
