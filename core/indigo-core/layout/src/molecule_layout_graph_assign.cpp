@@ -94,8 +94,8 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates(float bond_length)
         std::unique_ptr<MoleculeLayoutGraph> tmp(getInstance());
         tmp->makeLayoutSubgraph(*this, comp);
         tmp->respect_cycles_direction = respect_cycles_direction;
-        if ( tmp->sssrCount() > 0)
-          tmp->flexible_fixed_components = flexible_fixed_components;
+        if (tmp->sssrCount() > 0)
+            tmp->flexible_fixed_components = flexible_fixed_components;
         bc_components.add(tmp.release());
     }
 
@@ -746,16 +746,48 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
 
     if (_n_fixed > 0)
     {
+        // calculate geometrical center
+
+        Vec2f geom_center_flex, geom_center_fix;
+        int vcount_flex = 0, vcount_fix = 0;
+        if (flexible_fixed_components)
+        {
+            for (const auto i : _fixed_int_vertices)
+            {
+                geom_center_fix.add(_layout_vertices[i].pos);
+                vcount_fix++;
+            }
+
+            for (auto i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
+                if (_fixed_vertices[i] == 0)
+                {
+                    geom_center_flex.add(_layout_vertices[i].pos);
+                    vcount_flex++;
+                }
+        }
+
+        if (vcount_fix > 0)
+            geom_center_fix.scale(1.f / vcount_fix);
+
+        if (vcount_flex > 0)
+            geom_center_flex.scale(1.f / vcount_flex);
+
         for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
         {
             if (flexible_fixed_components)
             {
                 if (_fixed_vertices[i] == 0)
+                {
+                    _layout_vertices[i].pos.sub(geom_center_flex);
                     _layout_vertices[i].pos.scale(bond_length);
+                    _layout_vertices[i].pos.add(geom_center_flex);
+                    // _layout_vertices[i].pos.add(geom_center_fix - geom_center_flex);
+                }
             }
             else
                 _layout_vertices[i].pos.scale(bond_length);
         }
+
         if (flexible_fixed_components)
         {
             Array<Vec2f> shifts;
@@ -999,6 +1031,7 @@ void MoleculeLayoutGraph::_findFixedComponents(BiconnectedDecomposer& bc_decom, 
         _fixed_subgraphs_ext_vertices.clear_resize(fixed_graph.countComponents());
         _fixed_vertices_subgraph.clear_resize(_fixed_vertices.size());
         _fixed_vertices_subgraph.fffill();
+        _fixed_int_vertices.clear();
         for (int v_idx = 0; v_idx < decomposition.size(); ++v_idx)
         {
             int orig_v_idx = fixed_mapping[v_idx];
@@ -1008,7 +1041,10 @@ void MoleculeLayoutGraph::_findFixedComponents(BiconnectedDecomposer& bc_decom, 
             {
                 int nei = v.neiVertex(nei_idx);
                 if (!fixed_filter.valid(nei)) // neighbor is not fixed
+                {
                     _fixed_subgraphs_ext_vertices[decomposition[v_idx]].push(nei);
+                    _fixed_int_vertices.push(orig_v_idx);
+                }
             }
         }
     }

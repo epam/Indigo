@@ -182,7 +182,9 @@ namespace indigo
         ObjArray<LayoutVertex> _layout_vertices;
         ObjArray<LayoutEdge> _layout_edges;
 
+        Array<int> _fixed_int_vertices;
         ObjArray<Array<int>> _fixed_subgraphs_ext_vertices; 
+
         Array<int> _fixed_vertices;
         Array<int> _fixed_vertices_subgraph;
 
