@@ -247,12 +247,14 @@ void MoleculeLayoutGraphSimple::makeLayoutSubgraph(MoleculeLayoutGraph& graph, F
 
     new_vertex.is_cyclic = false;
 
+    _fixed_vertices.clear_resize(vertices[vertexEnd() - 1] + 1);
     for (int i = 0; i < vertices.size(); i++)
     {
         new_vertex.ext_idx = vertices[i];
         new_vertex.type = graph._layout_vertices[vertices[i]].type;
         new_vertex.morgan_code = graph._layout_vertices[vertices[i]].morgan_code;
         registerLayoutVertex(mapping[vertices[i]], new_vertex);
+        _fixed_vertices[vertices[i]] = graph._fixed_vertices[mapping[vertices[i]]];
     }
 
     for (int i = edgeBegin(); i < edgeEnd(); i = edgeNext(i))

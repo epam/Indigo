@@ -182,12 +182,10 @@ namespace indigo
         ObjArray<LayoutVertex> _layout_vertices;
         ObjArray<LayoutEdge> _layout_edges;
 
-        Array<int> _fixed_int_vertices;
         ObjArray<Array<int>> _fixed_subgraphs_ext_vertices; 
+        ObjArray<Array<int>> _fixed_subgraphs_int_vertices; 
 
         Array<int> _fixed_vertices;
-        Array<int> _fixed_vertices_subgraph;
-
         long _total_morgan_code;
         int _first_vertex_idx;
         int _n_fixed;
@@ -339,7 +337,7 @@ namespace indigo
                                             int& parity);
         void _calculatePositionsManyNotDrawn(int vert_idx, Array<int>& adjacent_list, Array<Vec2f>& positions);
         void _orderByEnergy(Array<Vec2f>& positions);
-        void _assignRelativeSingleEdge(int& fixed_component, const MoleculeLayoutGraph& supergraph);
+        void _assignRelativeSingleEdge(int fixed_component, const MoleculeLayoutGraph& supergraph);
         void _findFirstVertexIdx(int n_comp, Array<int>& fixed_components, PtrArray<MoleculeLayoutGraph>& bc_components, bool all_trivial);
         bool _prepareAssignedList(Array<int>& assigned_list, BiconnectedDecomposer& bc_decom, PtrArray<MoleculeLayoutGraph>& bc_components,
                                   Array<int>& bc_tree);
