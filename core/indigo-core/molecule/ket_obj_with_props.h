@@ -63,6 +63,8 @@ namespace indigo
     public:
         DECL_ERROR;
 
+        KetObjWithProps() = default;
+
         virtual ~KetObjWithProps() = default;
 
         inline void setBoolProp(int idx, bool value)
@@ -124,6 +126,9 @@ namespace indigo
             _int_props = other._int_props;
             _string_props = other._string_props;
         }
+
+    protected:
+        KetObjWithProps(const KetObjWithProps& other) = default;
 
     private:
         std::map<int, bool> _bool_props;

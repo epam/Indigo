@@ -127,7 +127,7 @@ namespace indigo
     //     return _attachment_points.at(att_point_id);
     // }
 
-    std::unique_ptr<TGroup> MonomerTemplate::getTGroup() const
+    std::unique_ptr<TGroup> MonomerTemplate::getTGroup(bool for_smiles) const
     {
         auto tgroup = std::make_unique<TGroup>();
         // save template to ket
@@ -135,7 +135,34 @@ namespace indigo
         JsonWriter writer;
         writer.Reset(string_buffer);
         writer.StartObject();
-        KetDocumentJsonSaver::saveMonomerTemplate(writer, *this);
+        if (for_smiles)
+        { // Replace leaving groups with RSites
+            MonomerTemplate tmpl(_id, _monomer_class, IdtAlias(), _unresolved);
+            tmpl.copy(*this);
+            for (auto att_point : _attachment_points)
+            {
+                std::string label = getKetStrProp(att_point.second, label);
+                label.replace(0, 1, "rg-");
+                auto& leaving = att_point.second.leavingGroup();
+                if (leaving.has_value())
+                {
+                    for (auto atom : leaving.value())
+                    {
+                        tmpl._atoms[atom] = std::make_unique<KetRgLabel>();
+                        auto* atom_ptr = tmpl._atoms[atom].get();
+                        KetRgLabel* r_ptr = static_cast<KetRgLabel*>(atom_ptr);
+                        std::vector<std::string> ref_list;
+                        ref_list.emplace_back(label);
+                        r_ptr->setRefs(ref_list);
+                    }
+                }
+            }
+            KetDocumentJsonSaver::saveMonomerTemplate(writer, tmpl);
+        }
+        else
+        {
+            KetDocumentJsonSaver::saveMonomerTemplate(writer, *this);
+        }
         writer.EndObject();
         std::string ket(string_buffer.GetString());
         // read TGroup
