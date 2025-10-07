@@ -148,9 +148,6 @@ namespace indigo
             return _query_properties;
         };
 
-    protected:
-        KetBaseAtom(atype atype) : KetBaseAtomType(atype){};
-
         enum class IntProps
         {
             charge,
@@ -166,12 +163,16 @@ namespace indigo
             mapping,
             invRet
         };
+
         enum class StringProps
         {
             alias,
             stereoLabel,
             cip
         };
+
+    protected:
+        KetBaseAtom(atype atype) : KetBaseAtomType(atype){};
 
     private:
         std::optional<KetQueryProperties> _query_properties;
@@ -240,7 +241,7 @@ namespace indigo
     {
     public:
         using AttachemntOrder = std::vector<std::pair<int, int>>;
-        KetRgLabel() : KetBaseAtomType(atype::atom), _attachmentOrder(), _refs(){};
+        KetRgLabel() : KetBaseAtomType(atype::rg_label), _attachmentOrder(), _refs(){};
         inline void setAttachmentOrder(AttachemntOrder& attOrder)
         {
             _attachmentOrder = attOrder;
@@ -748,6 +749,9 @@ namespace indigo
     {
     public:
         DECL_ERROR;
+
+        KetConnectionEndPoint() = default;
+        KetConnectionEndPoint(const KetConnectionEndPoint& other) = default;
 
         const std::map<std::string, int>& getStringPropStrToIdx() const override;
 

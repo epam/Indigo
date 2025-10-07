@@ -1312,7 +1312,29 @@ std::string SequenceLoader::readHelmMonomerAlias(KetDocument& document, MonomerC
                     if (anum == VALUE_UNKNOWN)
                         throw Error("Unknown element");
                     int isotope = mol.getAtomIsotope(i);
-                    mon_template.AddAtom(Element::toString(anum, isotope), mol.getAtomXyz(i));
+                    auto atom_idx = mon_template.AddAtom(Element::toString(anum, isotope), mol.getAtomXyz(i));
+                    auto stereo_type = mol.stereocenters.getType(i);
+                    if (stereo_type > 0)
+                    {
+                        auto& base_atom = static_cast<KetBaseAtom&>(*mon_template.getAtom(atom_idx));
+                        switch (stereo_type)
+                        {
+                        case MoleculeStereocenters::ATOM_ANY:
+                            setKetStrProp(base_atom, stereoLabel, "any");
+                            break;
+                        case MoleculeStereocenters::ATOM_AND:
+                            setKetStrProp(base_atom, stereoLabel, "rac");
+                            break;
+                        case MoleculeStereocenters::ATOM_OR:
+                            setKetStrProp(base_atom, stereoLabel, "rel");
+                            break;
+                        case MoleculeStereocenters::ATOM_ABS:
+                            setKetStrProp(base_atom, stereoLabel, "abs");
+                            break;
+                        default:
+                            break;
+                        }
+                    }
                 }
             }
             for (auto i : mol.edges())
