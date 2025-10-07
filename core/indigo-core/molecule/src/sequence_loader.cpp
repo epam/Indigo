@@ -1125,10 +1125,10 @@ void SequenceLoader::loadAxoLabs(KetDocument& document)
                 while (pos < length)
                 {
                     group += sequence[pos++];
-                    if (pos >= length)
-                        throw Error("Unexpected end of data");
                     if (group.back() == ')')
                         break;
+                    if (pos >= length)
+                        throw Error("Unexpected end of data");
                 }
                 if (group.back() != ')')
                     throw Error("Unexpected end of data");

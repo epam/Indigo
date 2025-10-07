@@ -36,6 +36,7 @@ axolabs_data = {
     "AxoLabs_pACsGsUp": "5'-pACsGsUp-3'",
     "AxoLabs_ACsGsU": "5'-ACsGsU-3'",
     "AxoLabs_chem": "5'-dI(5MdC)AmA(NHC6)GmTm-3'",
+    "AxoLabs_brackets": "5'-(5MdC)(5MdC)(5MdC)-3'",
 }
 
 for filename in sorted(axolabs_data.keys()):
