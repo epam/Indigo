@@ -808,8 +808,8 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
             for (i = 0; i < _fixed_subgraphs_ext_vertices.size(); ++i)
             {
                 auto& int_vertices = _fixed_subgraphs_int_vertices[i];
-                for (auto vi : int_vertices)
-					_layout_vertices[vi].pos.add(shifts[i]);
+                //for (auto vi : int_vertices)
+				//	_layout_vertices[vi].pos.add(shifts[i]);
             }
         }
         return;
