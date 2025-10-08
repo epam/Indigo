@@ -180,6 +180,7 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
         SGroup& supersg = mol.sgroups.getSGroup(i);
         int idx = sgroups.addSGroup(supersg.sgroup_type);
         SGroup& sg = sgroups.getSGroup(idx);
+        sg.parent_idx = supersg.parent_idx;
         sg.original_group = supersg.original_group;
         sg.parent_group = supersg.parent_group;
         indicesByOriginalId.emplace(sg.original_group, idx);
