@@ -303,16 +303,15 @@ void KetMolecule::parseKetAtoms(KetMolecule::atoms_type& ket_atoms, const rapidj
         if (atom_type == "atom")
         {
             ket_atoms.push_back(std::make_unique<KetAtom>(atom["label"].GetString()));
-            auto base_atom = ket_atoms.rbegin();
+            atom_ptr = ket_atoms.rbegin()->get();
             if (query_props.has_value())
-                static_cast<KetAtom*>(base_atom->get())->setQueryProperties(query_props.value());
-            atom_ptr = base_atom->get();
+                static_cast<KetAtom*>(atom_ptr)->setQueryProperties(query_props.value());
         }
         else if (atom_type == "rg-label")
         {
             ket_atoms.push_back(std::make_unique<KetRgLabel>());
-            auto rg_label = ket_atoms.rbegin();
-            KetRgLabel* r_ptr = static_cast<KetRgLabel*>(rg_label->get());
+            atom_ptr = ket_atoms.rbegin()->get();
+            KetRgLabel* r_ptr = static_cast<KetRgLabel*>(atom_ptr);
             if (atom.HasMember("$refs"))
             {
                 auto& refs = atom["$refs"];
@@ -343,6 +342,7 @@ void KetMolecule::parseKetAtoms(KetMolecule::atoms_type& ket_atoms, const rapidj
                 elem_list.emplace_back(elements[j].GetString());
             }
             ket_atoms.push_back(std::make_unique<KetAtomList>(elem_list));
+            atom_ptr = ket_atoms.rbegin()->get();
             // auto& base_atom = ket_atoms.rbegin();
             // if (query_props.has_value())
             //     static_cast<KetBaseAtom*>(base_atom->get())->setQueryProperties(query_props.value());
@@ -364,7 +364,8 @@ void KetMolecule::parseKetAtoms(KetMolecule::atoms_type& ket_atoms, const rapidj
             }
         }
 
-        atom_ptr->parseOptsFromKet(atom);
+        if (atom_type != "rg-label")
+            static_cast<KetBaseAtom*>(atom_ptr)->parseOptsFromKet(atom);
     }
 }
 

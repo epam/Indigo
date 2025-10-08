@@ -26,6 +26,7 @@
 #include "molecule/ket_objects.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_json_loader.h"
+#include "molecule/molecule_standardize_options.h"
 #include "molecule/monomer_commons.h"
 #include "molecule/monomers_template_library.h"
 #include "molecule/smiles_saver.h"
@@ -869,36 +870,8 @@ void SequenceSaver::add_monomer(KetDocument& document, const std::unique_ptr<Ket
     else
     {
         // monomer not in library - generate smiles
-        auto tgroup = mon_templ.getTGroup();
+        auto tgroup = mon_templ.getTGroup(true);
         auto* pmol = static_cast<Molecule*>(tgroup->fragment.get());
-
-        // convert Sup sgroup without name attachment points to rg-labels
-        auto& sgroups = pmol->sgroups;
-        for (int i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
-        {
-            auto& sgroup = sgroups.getSGroup(i);
-            if (sgroup.sgroup_type != SGroup::SG_TYPE_SUP)
-                continue;
-            Superatom& sa = static_cast<Superatom&>(sgroup);
-            for (int ap_id = sa.attachment_points.begin(); ap_id != sa.attachment_points.end(); ap_id = sa.attachment_points.next(ap_id))
-            {
-                auto& ap = sa.attachment_points.at(ap_id);
-                int leaving_atom = ap.lvidx;
-                int ap_idx = getAttachmentOrder(ap.apid.ptr()) + 1;
-                if (leaving_atom >= 0)
-                {
-                    pmol->resetAtom(leaving_atom, ELEM_RSITE);
-                }
-                else
-                {
-                    leaving_atom = pmol->addAtom(ELEM_RSITE);
-                    pmol->addBond(ap.aidx, leaving_atom, BOND_SINGLE);
-                }
-                pmol->allowRGroupOnRSite(leaving_atom, ap_idx);
-            }
-            sgroups.remove(i);
-        }
-        std::string smiles;
         StringOutput s_out(monomer_str);
         SmilesSaver saver(s_out);
         saver.separate_rsites = false;

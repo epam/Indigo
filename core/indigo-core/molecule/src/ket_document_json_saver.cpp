@@ -186,7 +186,8 @@ static void saveKetAtom(JsonWriter& writer, const KetBaseAtomType* base_atom)
         saveNativeFloat(writer, loc.z);
         writer.EndArray();
     }
-    base_atom->saveOptsToKet(writer);
+    if (base_atom->getType() != KetBaseAtomType::atype::rg_label)
+        static_cast<const KetBaseAtom*>(base_atom)->saveOptsToKet(writer);
     writer.EndObject();
 }
 
