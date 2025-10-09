@@ -51,7 +51,7 @@ for filename in files:
         print(diff)
 
 print("*** SDF-monomer library to KET ***")
-files = ["lib_alanine", "lib_phos", "lib_rna_preset_g"]
+files = ["lib_alanine", "lib_alanine_expanded", "lib_phos", "lib_rna_preset_g"]
 
 files.sort()
 for filename in files:
@@ -59,7 +59,7 @@ for filename in files:
         os.path.join(root, filename + ".sdf")
     )
     # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
-    #    file.write(lib.monomerLibrary())
+    #     file.write(lib.monomerLibrary())
     with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
         ket_ref = file.read()
     ket = lib.monomerLibrary()
