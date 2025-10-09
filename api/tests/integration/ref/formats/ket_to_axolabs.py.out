@@ -1,5 +1,6 @@
 *** KET to AxoLabs ***
 AxoLabs_ACsGsU.ket:SUCCEED
+AxoLabs_brackets.ket:SUCCEED
 AxoLabs_chem.ket:SUCCEED
 AxoLabs_pACsGsUp.ket:SUCCEED
 Test ket-to-idt-alternatives-base: got expected error 'Cannot save in AxoLabs format - ambiguous base 'S' found.'
