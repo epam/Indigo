@@ -2093,8 +2093,7 @@ void MolfileLoader::_postLoad()
             nucleo_templates.emplace(tg.tgroup_name.ptr(), tg_idx);
     }
 
-    if (!_disable_sgroups_conversion && _bmol->sgroups.getSGroupCount() &&
-        (_bmol->tgroups.getTGroupCount() || (_monomer_library && _monomer_library->monomerTemplates().size())))
+    if (!_disable_sgroups_conversion && _bmol->sgroups.getSGroupCount() && (_bmol->tgroups.getTGroupCount() || _monomer_library))
         _bmol->transformSuperatomsToTemplates(_max_template_id, _monomer_library);
 
     std::set<int> templates_to_remove;

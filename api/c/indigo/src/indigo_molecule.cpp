@@ -658,7 +658,7 @@ CEXPORT int indigoLoadMonomerLibrary(int source)
                     // Copy properties
                     properties.copy(sdf_loader.properties);
                     BufferScanner scanner2(sdf_loader.data);
-                    MolfileLoader loader(scanner2);
+                    MolfileLoader loader(scanner2, &libptr->get());
                     loader.stereochemistry_options = self.stereochemistry_options;
                     loader.ignore_noncritical_query_features = self.ignore_noncritical_query_features;
                     loader.skip_3d_chirality = self.skip_3d_chirality;
