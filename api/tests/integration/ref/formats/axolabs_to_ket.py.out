@@ -1,5 +1,6 @@
 *** AxoLabs to KET ***
 AxoLabs_ACsGsU.ket:SUCCEED
+AxoLabs_brackets.ket:SUCCEED
 AxoLabs_chem.ket:SUCCEED
 AxoLabs_pACsGsUp.ket:SUCCEED
 Test '5'-pACpGsUsp-3'': got expected error 'Invalid AxoLabs sequence: phosphate 'p' can only be terminal'
