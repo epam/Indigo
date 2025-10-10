@@ -51,7 +51,13 @@ for filename in files:
         print(diff)
 
 print("*** SDF-monomer library to KET ***")
-files = ["lib_alanine", "lib_alanine_expanded", "lib_phos", "lib_rna_preset_g"]
+files = [
+    "lib_alanine",
+    "lib_alanine_expanded",
+    "lib_phos",
+    "lib_rna_preset_g",
+    "lib_rna_preset_same",
+]
 
 files.sort()
 for filename in files:

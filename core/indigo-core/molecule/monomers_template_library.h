@@ -334,7 +334,7 @@ namespace indigo
         std::map<std::string, MonomerTemplate> _monomer_templates;
         std::map<std::string, MonomerGroupTemplate> _monomer_group_templates;
         std::unordered_map<std::string, int> _duplicate_names_count;
-        std::unordered_map<std::string, std::string> _inchi_key_to_monomer_id;
+        std::map<std::pair<std::string, std::string>, std::string> _inchi_key_to_monomer_id;
         std::map<std::string, std::pair<MonomerTemplate&, IdtModification>> _id_alias_to_monomer_templates;
         std::map<std::string, std::pair<MonomerGroupTemplate&, IdtModification>> _idt_alias_to_monomer_group_templates;
     };
