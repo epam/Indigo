@@ -21,6 +21,7 @@
         "id": "BaseX",
         "class": "Base",
         "classHELM": "RNA",
+        "fullName": "BaseX",
         "alias": "BaseX",
         "naturalAnalogShort": "X",
         "attachmentPoints": [
@@ -112,6 +113,7 @@
         "id": "Phosphate",
         "class": "Phosphate",
         "classHELM": "RNA",
+        "fullName": "Phosphate",
         "alias": "Phosphate",
         "naturalAnalogShort": "P",
         "attachmentPoints": [
@@ -203,6 +205,7 @@
         "id": "Sugar",
         "class": "Sugar",
         "classHELM": "RNA",
+        "fullName": "Sugar",
         "alias": "Sugar",
         "naturalAnalog": "Rib",
         "naturalAnalogShort": "R",
