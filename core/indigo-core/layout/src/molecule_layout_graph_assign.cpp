@@ -748,19 +748,11 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
         if (flexible_fixed_components)
         {
             for (auto i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
-                if (_fixed_vertices[i] == 0)
+                if (_fixed_vertices[i] == 0 || _fixed_vertices[i] == 2)
                 {
                     geom_center.add(_layout_vertices[i].pos);
                     vcount++;
                 }
-            for (auto i = 0; i < _fixed_subgraphs_ext_vertices.size(); ++i)
-            {
-                for (auto vi : _fixed_subgraphs_ext_vertices[i])
-                {
-                    geom_center.add(_layout_vertices[vi].pos);
-                    vcount++;
-                }
-			}
         }
 
         if (vcount > 0)
@@ -770,7 +762,7 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
         {
             if (flexible_fixed_components)
             {
-                if (_fixed_vertices[i] == 0)
+                if (_fixed_vertices[i] == 0 || _fixed_vertices[i] == 2)
                 {
                     _layout_vertices[i].pos.sub(geom_center);
                     _layout_vertices[i].pos.scale(bond_length);
@@ -779,16 +771,6 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
             }
             else
                 _layout_vertices[i].pos.scale(bond_length);
-        }
-
-        for (auto i = 0; i < _fixed_subgraphs_ext_vertices.size(); ++i)
-        {
-            for (auto vi : _fixed_subgraphs_ext_vertices[i])
-            {
-                _layout_vertices[vi].pos.sub(geom_center);
-                _layout_vertices[vi].pos.scale(bond_length);
-                _layout_vertices[vi].pos.add(geom_center);
-            }
         }
 
         // Shift fixed parts. TODO: refinement?
@@ -1044,6 +1026,7 @@ void MoleculeLayoutGraph::_findFixedComponents(BiconnectedDecomposer& bc_decom, 
                 if (!fixed_filter.valid(nei)) // neighbor is not fixed
                 {
                     _fixed_subgraphs_ext_vertices[decomposition[v_idx]].push(orig_v_idx);
+                    _fixed_vertices[orig_v_idx] = 2; // mark as external fixed vertex
                     has_non_fixed_nei = true;
                     break;
                 }
