@@ -1,0 +1,33 @@
+{
+    "version": 3,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 19,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "indigo-debug",
+            "hidden": false,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "BUILD_INDIGO": "ON",
+                "BUILD_INDIGO_WRAPPERS": "OFF",
+                "BUILD_INDIGO_UTILS": "ON",
+                "BUILD_BINGO": "OFF",
+                "BUILD_BINGO_ELASTIC": "OFF"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "indigo-debug",
+            "configurePreset": "indigo-debug",
+            "targets": [
+                "all"
+            ]
+        }
+    ]
+}
