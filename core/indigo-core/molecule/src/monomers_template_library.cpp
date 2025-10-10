@@ -247,8 +247,9 @@ namespace indigo
             std::string template_class(monomerKETClass(tg.tgroup_class.ptr()));
             auto inchi_key = monomerInchi(tg);
             auto id = monomerTemplateId(tg);
+            std::pair<std::string, std::string> i_key = std::make_pair(inchi_key, tg.tgroup_class.ptr());
 
-            auto it_key = _inchi_key_to_monomer_id.find(inchi_key);
+            auto it_key = _inchi_key_to_monomer_id.find(i_key);
             if (it_key != _inchi_key_to_monomer_id.end())
             {
                 auto it = _monomer_templates.find(it_key->second);
@@ -274,7 +275,7 @@ namespace indigo
                 _duplicate_names_count.emplace(id, 0);
 
             auto& mt = addMonomerTemplate(id, template_class, idt_alias, false);
-            _inchi_key_to_monomer_id.emplace(inchi_key, id);
+            _inchi_key_to_monomer_id.emplace(i_key, id);
 
             // set properties
             setKetStrProp(mt, classHELM, monomerHELMClass(tg.tgroup_class.ptr()));
@@ -617,7 +618,7 @@ namespace indigo
                         auto local_it = local2global_id_map.find(local_id);
                         if (local_it != local2global_id_map.end())
                         {
-                            auto global_it = _inchi_key_to_monomer_id.find(local_it->second);
+                            auto global_it = _inchi_key_to_monomer_id.find(std::make_pair(local_it->second, tg.tgroup_class.ptr()));
                             if (global_it != _inchi_key_to_monomer_id.end())
                                 mgt.addTemplate(*this, global_it->second);
                         }
