@@ -758,15 +758,22 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
         if (vcount > 0)
             geom_center.scale(1.f / vcount);
 
+        // scale bonds
+        ObjArray<Array<Vec2f>> shifts;
+        shifts.clear_resize(_fixed_subgraphs_ext_vertices.size());
         for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
         {
             if (flexible_fixed_components)
             {
                 if (_fixed_vertices[i] == 0 || _fixed_vertices[i] == 2)
                 {
-                    _layout_vertices[i].pos.sub(geom_center);
-                    _layout_vertices[i].pos.scale(bond_length);
-                    _layout_vertices[i].pos.add(geom_center);
+                    auto vpos = _layout_vertices[i].pos;
+                    vpos.sub(geom_center);
+                    vpos.scale(bond_length);
+                    vpos.add(geom_center);
+                    if (_fixed_vertices[i] == 2 && i < _fixed_decomposition.size())
+                        shifts[_fixed_decomposition[i]].push(vpos - _layout_vertices[i].pos);
+                    _layout_vertices[i].pos = vpos;
                 }
             }
             else
@@ -776,22 +783,19 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
         // Shift fixed parts. TODO: refinement?
         if (flexible_fixed_components)
         {
-            Array<Vec2f> shifts;
-            for (i = 0; i < _fixed_subgraphs_ext_vertices.size(); ++i)
+            for (i = 0; i < shifts.size(); ++i)
             {
-                Vec2f shift;
-                auto& ext_vertices = _fixed_subgraphs_ext_vertices[i];
-                for (auto vi : ext_vertices)
-                    shift += _layout_vertices[vi].pos - src_layout[vi];
-                shift.scale(1.f / ext_vertices.size());
-                shifts.push(shift);
-            }
-
-            for (i = 0; i < _fixed_subgraphs_ext_vertices.size(); ++i)
-            {
-                auto& int_vertices = _fixed_subgraphs_int_vertices[i];
-                //for (auto vi : int_vertices)
-				//	_layout_vertices[vi].pos.add(shifts[i]);
+                auto& fixed_part = shifts[i];
+                if (fixed_part.size())
+                {
+                    Vec2f shift;
+                    for (auto& vi : fixed_part)
+                        shift += vi;
+                    shift.scale(1.f / fixed_part.size());
+                    auto& int_vertices = _fixed_subgraphs_int_vertices[i];
+                    for (auto vi : int_vertices)
+                        _layout_vertices[vi].pos.add(shift);
+                }
             }
         }
         return;
@@ -1005,12 +1009,14 @@ void MoleculeLayoutGraph::_findFixedComponents(BiconnectedDecomposer& bc_decom, 
 
     if (flexible_fixed_components)
     {
-        Filter fixed_filter(_fixed_vertices.ptr(), Filter::EQ, 1);
+        Filter fixed_filter(_fixed_vertices.ptr(), Filter::MORE, 0);
+
         Graph fixed_graph;
         QS_DEF(Array<int>, fixed_mapping);
         QS_DEF(Array<int>, fixed_inv_mapping);
         fixed_graph.makeSubgraph(*this, fixed_filter, &fixed_mapping, &fixed_inv_mapping);
         const Array<int>& decomposition = fixed_graph.getDecomposition();
+        _fixed_decomposition.copy(decomposition);
         _fixed_subgraphs_ext_vertices.clear_resize(fixed_graph.countComponents());
         _fixed_subgraphs_int_vertices.clear_resize(fixed_graph.countComponents());
 
@@ -1200,16 +1206,16 @@ void MoleculeLayoutGraph::_assignRelativeSingleEdge(int fixed_component, const M
         {
             pos2.sub(pos1);
             pos1.set(0.f, 0.f);
-            if(!pos2.normalize())
+            if (!pos2.normalize())
                 pos2.set(1.f, 0.f);
         }
         else if (supergraph._fixed_vertices[getVertexExtIdx(idx1)] && supergraph._fixed_vertices[getVertexExtIdx(idx2)] == 0)
-		{
-			pos1.sub(pos2);
-			pos2.set(0.f, 0.f);
-			if(!pos1.normalize())
-				pos1.set(1.f, 0.f);
-		}
+        {
+            pos1.sub(pos2);
+            pos2.set(0.f, 0.f);
+            if (!pos1.normalize())
+                pos1.set(1.f, 0.f);
+        }
         _layout_vertices[idx1].pos = pos1;
         _layout_vertices[idx2].pos = pos2;
     }

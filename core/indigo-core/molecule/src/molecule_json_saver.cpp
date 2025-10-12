@@ -711,7 +711,7 @@ void MoleculeJsonSaver::writeFloat(JsonWriter& writer, float f_value)
         writer.Double(f_value);
 }
 
-void indigo::MoleculeJsonSaver::writePos(JsonWriter& writer, const Vec3f& pos)
+void MoleculeJsonSaver::writePos(JsonWriter& writer, const Vec3f& pos)
 {
     writer.StartObject();
     writer.Key("x");

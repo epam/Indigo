@@ -314,27 +314,25 @@ void LayoutChooser::_makeLayout()
         p.diff(_layout._graph.getPos(v), comp.getPos(v1C));
 
         for (j = comp.vertexBegin(); j < comp.vertexEnd(); j = comp.vertexNext(j))
-            if (comp.getVertexExtIdx(j) != v)
+        {
+            auto v1 = comp.getVertexExtIdx(j);
+            if (v1 != v)
             {
                 Vec2f& cur_pos = _layout._layout[++k];
                 if (_fixed_components[bc_com_idx] == 0 || comp.flexible_fixed_components) // Skip fixed components
                 {
                     Array<char> atom_symb;
                     _layout._graph._molecule->getAtomSymbol(v, atom_symb);
-                    std::cout << atom_symb.ptr() << std::endl;
                     // 1. Shift
                     cur_pos.sum(comp.getPos(j), p);
                     // 2. Rotate around v
-                    if (_layout._graph._fixed_vertices.size() == 0 || _layout._graph._fixed_vertices[v] == 0)
+                    if (_layout._graph._fixed_vertices.size() == 0 || _layout._graph._fixed_vertices[v] == 0 || _layout._graph._fixed_vertices[v] == 2)
                     {
+                        std::cout << atom_symb.ptr() << ":" << _layout._graph._fixed_vertices[v] << std::endl;
                         p1.diff(cur_pos, _layout._graph.getPos(v));
                         p1.rotate(sina, cosa);
                         cur_pos.sum(p1, _layout._graph.getPos(v));
                     }
-                    //if (_layout._graph._fixed_vertices.size() == 0 || _layout._graph._fixed_vertices[v] == 0)
-                    //{
-                    //} else
-                    //    cur_pos.copy(comp.getPos(j));
                 }
                 else // fixed components
                 {
@@ -343,6 +341,7 @@ void LayoutChooser::_makeLayout()
 
                 _layout._new_vertices[k] = comp.getVertexExtIdx(j);
             }
+        }
         cur_angle += _layout._bc_angles[comp_idx];
     }
 
