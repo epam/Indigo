@@ -780,7 +780,7 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                 _layout_vertices[i].pos.scale(bond_length);
         }
 
-        // Shift fixed parts. TODO: refinement?
+        // Shift fixed parts.
         if (flexible_fixed_components)
         {
             for (i = 0; i < shifts.size(); ++i)
