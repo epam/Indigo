@@ -21,6 +21,7 @@
         "id": "Gua",
         "class": "Base",
         "classHELM": "RNA",
+        "fullName": "Gua",
         "alias": "G",
         "naturalAnalog": "Gua",
         "naturalAnalogShort": "G",
@@ -231,6 +232,7 @@
         "id": "P",
         "class": "Phosphate",
         "classHELM": "RNA",
+        "fullName": "P",
         "alias": "P",
         "naturalAnalogShort": "P",
         "attachmentPoints": [
@@ -329,6 +331,7 @@
         "id": "Rib",
         "class": "Sugar",
         "classHELM": "RNA",
+        "fullName": "Rib",
         "alias": "R",
         "naturalAnalog": "Rib",
         "naturalAnalogShort": "R",
