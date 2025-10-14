@@ -283,6 +283,8 @@ namespace indigo
 
             if (tg.tgroup_full_name.size())
                 setKetStrProp(mt, fullName, tg.tgroup_full_name.ptr());
+            else if (tg.tgroup_name.size())
+                setKetStrProp(mt, fullName, tg.tgroup_name.ptr());
 
             std::string natreplace;
             if (tg.tgroup_natreplace.size() == 0)

@@ -12,6 +12,7 @@
         "id": "Ala",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
+        "fullName": "Alanine",
         "alias": "A",
         "naturalAnalog": "Ala",
         "naturalAnalogShort": "A",
