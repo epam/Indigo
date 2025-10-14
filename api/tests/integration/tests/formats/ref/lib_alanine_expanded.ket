@@ -3,17 +3,17 @@
         "nodes": [],
         "templates": [
             {
-                "$ref": "monomerTemplate-Ala"
+                "$ref": "monomerTemplate-Alanine"
             }
         ]
     },
-    "monomerTemplate-Ala": {
+    "monomerTemplate-Alanine": {
         "type": "monomerTemplate",
-        "id": "Ala",
+        "id": "Alanine",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
-        "fullName": "A",
-        "alias": "A",
+        "fullName": "Alanine",
+        "alias": "Alanine",
         "naturalAnalog": "Ala",
         "naturalAnalogShort": "A",
         "aliasHELM": "A",
