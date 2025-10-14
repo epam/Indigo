@@ -12,6 +12,7 @@
         "id": "P",
         "class": "Phosphate",
         "classHELM": "RNA",
+        "fullName": "Phosphate",
         "alias": "P",
         "naturalAnalogShort": "P",
         "aliasHELM": "p",

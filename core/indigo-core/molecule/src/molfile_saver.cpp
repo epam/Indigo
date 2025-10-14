@@ -1179,6 +1179,11 @@ void MolfileSaver::_writeTGroup(Output& output, BaseMolecule& mol, int tg_idx)
         out.printf(" NATREPLACE=%s", tgroup.tgroup_natreplace.ptr());
     if (tgroup.tgroup_comment.size() > 0)
         out.printf(" COMMENT=%s", tgroup.tgroup_comment.ptr());
+    if (tgroup.tgroup_full_name.size() > 0)
+        if (tgroup.tgroup_full_name.count(' ') > 0)
+            out.printf(" FULLNAME=\"%s\"", tgroup.tgroup_full_name.ptr());
+        else
+            out.printf(" FULLNAME=%s", tgroup.tgroup_full_name.ptr());
 
     _writeMultiString(output, buf.ptr(), buf.size());
 
