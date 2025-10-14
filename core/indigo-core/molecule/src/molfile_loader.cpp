@@ -3853,18 +3853,21 @@ void MolfileLoader::_readTGroups3000()
                     strscan.readWord(word, "=");
                     strscan.skip(1); // =
                     word.push(0);
+
                     if (strcmp(word.ptr(), "COMMENT") == 0)
                     {
                         _readStringInQuotes(strscan, &tgroup.tgroup_comment);
                     }
-
-                    if (strcmp(word.ptr(), "NATREPLACE") == 0)
+                    else if (strcmp(word.ptr(), "NATREPLACE") == 0)
                     {
                         _readStringInQuotes(strscan, &tgroup.tgroup_natreplace);
                     }
+                    else
 
-                    if (!strscan.isEOF())
-                        strscan.skip(1);
+                        if (strcmp(word.ptr(), "FULLNAME") == 0)
+                    {
+                        _readStringInQuotes(strscan, &tgroup.tgroup_full_name);
+                    }
                 }
 
                 long long pos = _scanner.tell();
