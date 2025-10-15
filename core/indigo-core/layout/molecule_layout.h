@@ -54,6 +54,7 @@ namespace indigo
         bool respect_existing_layout;
         bool respect_cycles_direction;
         bool flexible_fixed_components;
+        bool sequence_layout;
         Filter* filter;
         int max_iterations;
         bool _smart_layout;

@@ -28,7 +28,7 @@ IMPL_ERROR(MoleculeLayout, "molecule_layout");
 
 MoleculeLayout::MoleculeLayout(BaseMolecule& molecule, bool smart_layout)
     : _molecule(molecule), _smart_layout(smart_layout), respect_existing_layout(false), multiple_distance(std::nullopt), respect_cycles_direction(false),
-      flexible_fixed_components(false)
+      flexible_fixed_components(false), sequence_layout(false)
 {
     _hasMulGroups = _molecule.sgroups.getSGroupCount(SGroup::SG_TYPE_MUL) > 0;
     _init(smart_layout);
@@ -47,6 +47,7 @@ void MoleculeLayout::_init(bool smart_layout)
         _layout_graph = std::make_unique<MoleculeLayoutGraphSimple>();
         _layout_graph->respect_cycles_direction = respect_cycles_direction;
         _layout_graph->flexible_fixed_components = flexible_fixed_components;
+        _layout_graph->sequence_layout = sequence_layout;
     }
 
     max_iterations = LAYOUT_MAX_ITERATION;
@@ -371,7 +372,7 @@ void MoleculeLayout::_make()
     _layout_graph->layout_orientation = layout_orientation;
     _layout_graph->respect_cycles_direction = respect_cycles_direction;
     _layout_graph->flexible_fixed_components = flexible_fixed_components;
-
+    _layout_graph->sequence_layout = sequence_layout;
     // 0. Find 2D coordinates via proxy _layout_graph object
     _layout_graph->max_iterations = max_iterations;
     _makeLayout();

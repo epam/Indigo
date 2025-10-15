@@ -38,6 +38,7 @@ MoleculeLayoutGraph::MoleculeLayoutGraph() : Graph()
     preserve_existing_layout = false;
     respect_cycles_direction = false;
     flexible_fixed_components = false;
+    sequence_layout = false;
 }
 
 MoleculeLayoutGraph::~MoleculeLayoutGraph()
@@ -254,7 +255,8 @@ void MoleculeLayoutGraphSimple::makeLayoutSubgraph(MoleculeLayoutGraph& graph, F
         new_vertex.type = graph._layout_vertices[vertices[i]].type;
         new_vertex.morgan_code = graph._layout_vertices[vertices[i]].morgan_code;
         registerLayoutVertex(mapping[vertices[i]], new_vertex);
-        _fixed_vertices[vertices[i]] = graph._fixed_vertices[mapping[vertices[i]]];
+        if (graph._fixed_vertices.size())
+            _fixed_vertices[vertices[i]] = graph._fixed_vertices[mapping[vertices[i]]];
     }
 
     for (int i = edgeBegin(); i < edgeEnd(); i = edgeNext(i))

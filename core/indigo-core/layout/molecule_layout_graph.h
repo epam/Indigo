@@ -70,6 +70,7 @@ namespace indigo
         int orig_idx;
         long morgan_code;
         bool is_cyclic;
+        bool is_inner_cycle;
         int type;
 
         Vec2f pos;
@@ -174,6 +175,7 @@ namespace indigo
         bool preserve_existing_layout;
         bool respect_cycles_direction;
         bool flexible_fixed_components;
+        bool sequence_layout;
 
         CancellationHandler* cancellation;
 
@@ -311,6 +313,7 @@ namespace indigo
 
         // for components
         virtual void _calcMorganCodes();
+        void _markInnerVertices(const MoleculeLayoutGraph& component);
 
         // for whole graph
         void _assignAbsoluteCoordinates(float bond_length);

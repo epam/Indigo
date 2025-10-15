@@ -171,7 +171,8 @@ CEXPORT int indigoLayoutSelected(int object)
             ml.bond_length = LayoutOptions::DEFAULT_BOND_LENGTH * 1.5;
             ml.respect_existing_layout = true;
             ml.respect_cycles_direction = true;
-            ml.flexible_fixed_components = true;
+            ml.flexible_fixed_components = false;
+            ml.sequence_layout = true;
             ml._smart_layout = false;
 
             TimeoutCancellationHandler cancellation(self.cancellation_timeout);

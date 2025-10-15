@@ -93,6 +93,7 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates(float bond_length)
         tmp->makeLayoutSubgraph(*this, comp);
         tmp->respect_cycles_direction = respect_cycles_direction;
         tmp->flexible_fixed_components = flexible_fixed_components;
+        tmp->sequence_layout = sequence_layout;
         bc_components.add(tmp.release());
     }
 
@@ -153,7 +154,7 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates(float bond_length)
             if (all_trivial && bc_tree[k] != -1 && !bc_components[bc_tree[k]]->isSingleEdge())
                 all_trivial = false;
 
-            if (all_trivial && !flexible_fixed_components)
+            if (all_trivial && !sequence_layout)
             {
                 adjacent_list.qsort(_vertex_cmp, this);
                 _attachDandlingVertices(k, adjacent_list);
@@ -170,6 +171,7 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates(float bond_length)
         }
         // ( 4] repeat steps 1-3 until all atoms have been assigned absolute coordinates.;
     }
+    //
 }
 
 void MoleculeLayoutGraphSimple::_layout_component(BiconnectedDecomposer& bc_decom, PtrArray<MoleculeLayoutGraph>& bc_components, Array<int>& bc_tree,
@@ -742,37 +744,59 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
 
     if (_n_fixed > 0)
     {
-        // calculate geometrical center
-        Vec2f geom_center;
+        // calculate geometrical center of non-fixed vertices
+        Vec2f geom_center, geom_center_original;
         int vcount = 0;
-        if (flexible_fixed_components)
+        if (sequence_layout)
         {
             for (auto i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
-                if (_fixed_vertices[i] == 0 || _fixed_vertices[i] == 2)
+                if (_fixed_vertices[i] == 0 || (flexible_fixed_components && _fixed_vertices[i] == 2))
                 {
                     geom_center.add(_layout_vertices[i].pos);
+                    geom_center_original.add(src_layout[i]);
                     vcount++;
                 }
         }
 
         if (vcount > 0)
+        {
             geom_center.scale(1.f / vcount);
+            geom_center_original.scale(1.f / vcount);
+        }
 
         // scale bonds
         ObjArray<Array<Vec2f>> shifts;
         shifts.clear_resize(_fixed_subgraphs_ext_vertices.size());
         for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
         {
-            if (flexible_fixed_components)
+            if (sequence_layout)
             {
-                if (_fixed_vertices[i] == 0 || _fixed_vertices[i] == 2)
+                if (_fixed_vertices[i] == 0 || (flexible_fixed_components && _fixed_vertices[i] == 2))
                 {
+                    if (_layout_vertices[i].is_inner_cycle)
+                    {
+                        auto& vx = getVertex(_layout_vertices[i].ext_idx);
+                        for (auto vx_nei = vx.neiBegin(); vx_nei != vx.neiEnd(); vx_nei = vx.neiNext(vx_nei))
+                        {
+                            auto vx_idx = vx.neiVertex(vx_nei);
+                            _layout_vertices[i].pos.sub(_layout_vertices[vx_idx].pos);
+                            _layout_vertices[i].pos.negate();
+                            _layout_vertices[i].pos.add(_layout_vertices[vx_idx].pos);
+                        }
+                    }
                     auto vpos = _layout_vertices[i].pos;
                     vpos.sub(geom_center);
                     vpos.scale(bond_length);
-                    vpos.add(geom_center);
-                    if (_fixed_vertices[i] == 2 && i < _fixed_decomposition.size())
-                        shifts[_fixed_decomposition[i]].push(vpos - _layout_vertices[i].pos);
+                    if (flexible_fixed_components)
+                    {
+                        vpos.add(geom_center);
+                        if (_fixed_vertices[i] == 2 && i < _fixed_decomposition.size())
+                            shifts[_fixed_decomposition[i]].push(vpos - _layout_vertices[i].pos);
+                    }
+                    else
+                    {
+                        vpos.add(geom_center_original);
+                    }
                     _layout_vertices[i].pos = vpos;
                 }
             }
@@ -1007,7 +1031,7 @@ void MoleculeLayoutGraph::_findFixedComponents(BiconnectedDecomposer& bc_decom, 
             fixed_components[i] = 1;
     }
 
-    if (flexible_fixed_components)
+    if (sequence_layout)
     {
         Filter fixed_filter(_fixed_vertices.ptr(), Filter::MORE, 0);
 
@@ -1032,7 +1056,7 @@ void MoleculeLayoutGraph::_findFixedComponents(BiconnectedDecomposer& bc_decom, 
                 if (!fixed_filter.valid(nei)) // neighbor is not fixed
                 {
                     _fixed_subgraphs_ext_vertices[decomposition[v_idx]].push(orig_v_idx);
-                    _fixed_vertices[orig_v_idx] = 2; // mark as external fixed vertex
+                    _fixed_vertices[orig_v_idx] = 2; // 2 - mark as external fixed vertex
                     has_non_fixed_nei = true;
                     break;
                 }
@@ -1186,7 +1210,37 @@ bool MoleculeLayoutGraph::_assignComponentsRelativeCoordinates(PtrArray<Molecule
             }
         }
     }
+
+    for (int i = 0; i < n_comp; i++)
+    {
+        MoleculeLayoutGraph& component = *bc_components[i];
+        if (!component.isSingleEdge())
+            _markInnerVertices(component);
+    }
     return all_trivial;
+}
+
+void MoleculeLayoutGraph::_markInnerVertices(const MoleculeLayoutGraph& component)
+{
+    for (int i = component.vertexBegin(); i < component.vertexEnd(); i = component.vertexNext(i))
+    {
+        auto vidx = component._layout_vertices[i].ext_idx;
+        auto& lv = _layout_vertices[vidx];
+        auto& vx = getVertex(vidx);
+        for (int j = vx.neiBegin(); j < vx.neiEnd(); j = vx.neiNext(j))
+        {
+            auto nei_idx = vx.neiVertex(j);
+            if (!_layout_vertices[nei_idx].is_cyclic)
+            {
+                auto& vx_nei = getVertex(nei_idx);
+                int nei_count = 0;
+                for (int k = vx_nei.neiBegin(); k < vx_nei.neiEnd(); k = vx_nei.neiNext(k), ++nei_count)
+                    ;
+                if (nei_count == 1 && component.vertexCount() > 5)
+                    _layout_vertices[nei_idx].is_inner_cycle = true;
+            }
+        }
+    }
 }
 
 void MoleculeLayoutGraph::_assignRelativeSingleEdge(int fixed_component, const MoleculeLayoutGraph& supergraph)
