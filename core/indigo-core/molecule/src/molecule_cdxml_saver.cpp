@@ -1160,7 +1160,7 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& bmol, const Vec2f& o
     saveMoleculeFragment(bmol, offset, scale, -1, id, atom_ids);
 }
 
-void MoleculeCdxmlSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, const Vec2f& offset, int rgnum)
+void MoleculeCdxmlSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, const Vec2f& offset, int rgnum, Rect2f& doc_bbox)
 {
     // XMLElement* parent = _current;
     XMLElement* fragment = _doc->NewElement("altgroup");
@@ -1186,6 +1186,7 @@ void MoleculeCdxmlSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, const Vec2
         saveMoleculeFragment(*fragments[i], offset, 1);
         valence += fragments[i]->attachmentPointCount();
     }
+    doc_bbox.extend(Rect2f(rmin, rmax));
     std::string rg_name("R");
     rg_name += std::to_string(rgnum);
     rmin.add(offset);
@@ -2095,7 +2096,7 @@ void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& bmol)
     {
         auto& rgrp = bmol.rgroups.getRGroup(i);
         if (rgrp.fragments.size())
-            saveRGroup(rgrp.fragments, offset, i);
+            saveRGroup(rgrp.fragments, offset, i, bbox);
     }
 
     for (int i = 0; i < bmol.meta().metaData().size(); ++i)
