@@ -321,7 +321,8 @@ void LayoutChooser::_makeLayout()
                 Vec2f& cur_pos = _layout._layout[++k];
                 if (_fixed_components[bc_com_idx] == 0 || comp.flexible_fixed_components) // Skip fixed components
                 {
-                    if (_layout._graph._fixed_vertices.size() == 0 || _layout._graph._fixed_vertices[v] == 0 || _layout._graph._fixed_vertices[v] == 2)
+                    if (!comp.flexible_fixed_components || _layout._graph._fixed_vertices.size() == 0 || _layout._graph._fixed_vertices[v] == 0 ||
+                        _layout._graph._fixed_vertices[v] == 2)
                     {
                         // 1. Shift
                         cur_pos.sum(comp.getPos(j), p);
