@@ -3731,6 +3731,7 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
     int idx = addTemplateAtom(tg.tgroup_name.ptr());
     setTemplateAtomClass(idx, tg.tgroup_class.ptr());
     setTemplateAtomSeqid(idx, su.seqid);
+    setTemplateAtomDisplayOption(idx, su.contracted);
     setTemplateAtomTemplateIndex(idx, tg_idx);
 
     for (int j = 0; j < ap_points_atoms.size(); j++)
