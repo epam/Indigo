@@ -72,7 +72,7 @@ static int _vertex_cmp(int& n1, int& n2, void* context)
 
 void MoleculeLayoutGraph::_assignAbsoluteCoordinates(float bond_length)
 {
-    BiconnectedDecomposer bc_decom(*this);
+    BiconnectedDecomposer bc_decom(*this, sequence_layout);
     QS_DEF(Array<int>, bc_tree);
     PtrArray<MoleculeLayoutGraph> bc_components;
     QS_DEF(Array<int>, fixed_components);

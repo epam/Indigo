@@ -26,9 +26,9 @@ IMPL_ERROR(BiconnectedDecomposer, "biconnected_decomposer");
 
 CP_DEF(BiconnectedDecomposer);
 
-BiconnectedDecomposer::BiconnectedDecomposer(const Graph& graph)
+BiconnectedDecomposer::BiconnectedDecomposer(const Graph& graph, bool split_fixed)
     : _graph(graph), CP_INIT, TL_CP_GET(_components), TL_CP_GET(_dfs_order), TL_CP_GET(_lowest_order), TL_CP_GET(_component_lists), TL_CP_GET(_component_ids),
-      TL_CP_GET(_edges_stack), _cur_order(0)
+      TL_CP_GET(_edges_stack), _cur_order(0), _split_fixed(split_fixed)
 {
     _components.clear();
     _component_lists.clear();
@@ -67,7 +67,7 @@ int BiconnectedDecomposer::decomposeWithFixed(const Array<int>& fixed_vertices)
             {
                 v = dfs_stack.top();
 
-                bool pushed = _pushToStack(dfs_stack, v);
+                bool pushed = _pushToStack(dfs_stack, v, fixed_vertices);
 
                 if (!pushed)
                 {
@@ -76,7 +76,7 @@ int BiconnectedDecomposer::decomposeWithFixed(const Array<int>& fixed_vertices)
                     if (dfs_stack.size() == 0)
                         continue;
 
-                    _processIfNotPushed(dfs_stack, v);
+                    _processIfNotPushed(dfs_stack, v, fixed_vertices);
                 }
             }
         }
@@ -136,7 +136,7 @@ int BiconnectedDecomposer::getIncomingCount(int idx) const
     return _component_ids[idx]->size();
 }
 
-bool BiconnectedDecomposer::_pushToStack(Array<int>& dfs_stack, int v)
+bool BiconnectedDecomposer::_pushToStack(Array<int>& dfs_stack, int v, const Array<int>& fixed_vertices)
 {
     Edge new_edge;
 
@@ -167,23 +167,51 @@ bool BiconnectedDecomposer::_pushToStack(Array<int>& dfs_stack, int v)
         }
         else if (_dfs_order[w] < _dfs_order[v] && w != u)
         {
-            new_edge.beg = v;
-            new_edge.end = w;
-            _edges_stack.push(new_edge);
-
-            if (_lowest_order[v] > _dfs_order[w])
-                _lowest_order[v] = _dfs_order[w];
+            if (_sameClass(v, w, fixed_vertices) && _pathSameClass(dfs_stack, w, v, fixed_vertices))
+            {
+                new_edge.beg = v;
+                new_edge.end = w;
+                _edges_stack.push(new_edge);
+                if (_lowest_order[v] > _dfs_order[w])
+                    _lowest_order[v] = _dfs_order[w];
+            }
+            else
+            {
+                Array<int>& one = _components.add(new Array<int>());
+                one.clear_resize(_graph.vertexEnd());
+                one.zerofill();
+                one[v] = 1;
+                one[w] = 1;
+                if (_component_ids[v] == 0)
+                    _component_ids[v] = &_component_lists.add(new Array<int>());
+                _component_ids[v]->push(_components.size() - 1);
+            }
         }
     }
     return false;
 }
 
-void BiconnectedDecomposer::_processIfNotPushed(Array<int>& dfs_stack, int w)
+void BiconnectedDecomposer::_processIfNotPushed(Array<int>& dfs_stack, int w, const Array<int>& fixed_vertices)
 {
     int v = dfs_stack.top();
 
-    if (_lowest_order[w] < _lowest_order[v])
+    if (_sameClass(v, w, fixed_vertices) && _lowest_order[w] < _lowest_order[v])
         _lowest_order[v] = _lowest_order[w];
+
+    if (!_sameClass(v, w, fixed_vertices))
+    {
+        Array<int>& one = _components.add(new Array<int>());
+        one.clear_resize(_graph.vertexEnd());
+        one.zerofill();
+        one.at(v) = 1;
+        one.at(w) = 1;
+
+        if (_component_ids[v] == 0)
+            _component_ids[v] = &_component_lists.add(new Array<int>());
+        _component_ids[v]->push(_components.size() - 1);
+        _edges_stack.pop();
+        return;
+    }
 
     if (_lowest_order[w] >= _dfs_order[v])
     {
@@ -202,13 +230,45 @@ void BiconnectedDecomposer::_processIfNotPushed(Array<int>& dfs_stack, int w)
 
         while (_dfs_order[_edges_stack.top().beg] >= _dfs_order[w])
         {
-            _components[cur_comp]->at(_edges_stack.top().beg) = 1;
-            _components[cur_comp]->at(_edges_stack.top().end) = 1;
+            Edge e = _edges_stack.top();
             _edges_stack.pop();
+            if (_sameClass(e.beg, e.end, fixed_vertices))
+            {
+                _components[cur_comp]->at(e.beg) = 1;
+                _components[cur_comp]->at(e.end) = 1;
+            }
+            else
+            {
+                // cross-class edge -> its own single-edge component
+                Array<int>& one = _components.add(new Array<int>());
+                one.clear_resize(_graph.vertexEnd());
+                one.zerofill();
+                one.at(e.beg) = 1;
+                one.at(e.end) = 1;
+                if (_component_ids[v] == 0)
+                    _component_ids[v] = &_component_lists.add(new Array<int>());
+                _component_ids[v]->push(_components.size() - 1);
+            }
         }
-
+        // add the final tree edge (v,w) exactly like in the old code
         _components[cur_comp]->at(v) = 1;
         _components[cur_comp]->at(w) = 1;
         _edges_stack.pop();
     }
+}
+
+bool BiconnectedDecomposer::_pathSameClass(const Array<int>& dfs_stack, int anc, int v, const Array<int>& fixed_vertices) const
+{
+    if (fixed_vertices.size())
+    {
+        for (int k = dfs_stack.size() - 1; k >= 0; --k)
+        {
+            int x = dfs_stack[k];
+            if (!_sameClass(x, v, fixed_vertices))
+                return false;
+            if (x == anc)
+                break;
+        }
+    }
+    return true;
 }
