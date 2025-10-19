@@ -44,6 +44,12 @@ BiconnectedDecomposer::~BiconnectedDecomposer()
 }
 
 int BiconnectedDecomposer::decompose()
+{
+    Array<int> fixed_empty;
+    return decomposeWithFixed(fixed_empty);
+}
+
+int BiconnectedDecomposer::decomposeWithFixed(const Array<int>& fixed_vertices)
 { // recursion? no, not heard...
     QS_DEF(Array<int>, dfs_stack);
     int i, v;

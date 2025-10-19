@@ -78,7 +78,7 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates(float bond_length)
     QS_DEF(Array<int>, fixed_components);
     bool all_trivial = true;
 
-    int n_comp = bc_decom.decompose();
+    int n_comp = bc_decom.decomposeWithFixed(_fixed_vertices);
 
     fixed_components.clear_resize(n_comp);
     fixed_components.zerofill();
@@ -1020,9 +1020,7 @@ void MoleculeLayoutGraph::_findFixedComponents(BiconnectedDecomposer& bc_decom, 
     for (int i = 0; i < n_comp; i++)
     {
         Filter filter;
-
         bc_decom.getComponent(i, filter);
-
         for (int j = vertexBegin(); j < vertexEnd(); j = vertexNext(j))
             if (filter.valid(j) && _fixed_vertices[j])
                 fixed_count[i]++;
@@ -1034,7 +1032,6 @@ void MoleculeLayoutGraph::_findFixedComponents(BiconnectedDecomposer& bc_decom, 
     if (sequence_layout)
     {
         Filter fixed_filter(_fixed_vertices.ptr(), Filter::MORE, 0);
-
         Graph fixed_graph;
         QS_DEF(Array<int>, fixed_mapping);
         QS_DEF(Array<int>, fixed_inv_mapping);

@@ -248,7 +248,8 @@ void MoleculeLayoutGraphSimple::makeLayoutSubgraph(MoleculeLayoutGraph& graph, F
 
     new_vertex.is_cyclic = false;
 
-    _fixed_vertices.clear_resize(vertices[vertexEnd() - 1] + 1);
+    if (vertices.size())
+        _fixed_vertices.clear_resize(vertices[vertexEnd() - 1] + 1);
     for (int i = 0; i < vertices.size(); i++)
     {
         new_vertex.ext_idx = vertices[i];

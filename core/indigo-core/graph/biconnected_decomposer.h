@@ -39,6 +39,7 @@ namespace indigo
 
         // returns the amount of biconnected components
         int decompose();
+        int decomposeWithFixed(const Array<int>& fixed_vertices);
 
         int componentsCount();
 
