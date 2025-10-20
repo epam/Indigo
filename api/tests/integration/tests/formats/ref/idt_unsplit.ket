@@ -87,7 +87,12 @@
         "alias": "5UNSPLIT",
         "unresolved": true,
         "idtAliases": {
-            "base": "5UNSPLIT"
+            "base": "5UNSPLIT",
+            "modifications": {
+                "endpoint5": "/5UNSPLIT/",
+                "internal": "/5UNSPLIT/",
+                "endpoint3": "/5UNSPLIT/"
+            }
         },
         "attachmentPoints": [
             {
@@ -117,7 +122,12 @@
         "alias": "iUNSPLIT",
         "unresolved": true,
         "idtAliases": {
-            "base": "iUNSPLIT"
+            "base": "iUNSPLIT",
+            "modifications": {
+                "endpoint5": "/iUNSPLIT/",
+                "internal": "/iUNSPLIT/",
+                "endpoint3": "/iUNSPLIT/"
+            }
         },
         "attachmentPoints": [
             {
@@ -147,7 +157,12 @@
         "alias": "3UNSPLIT",
         "unresolved": true,
         "idtAliases": {
-            "base": "3UNSPLIT"
+            "base": "3UNSPLIT",
+            "modifications": {
+                "endpoint5": "/3UNSPLIT/",
+                "internal": "/3UNSPLIT/",
+                "endpoint3": "/3UNSPLIT/"
+            }
         },
         "attachmentPoints": [
             {

@@ -307,6 +307,15 @@ def try_load_macromol(indigo, md, molstr, library, options):
         return
     try:
         md.struct = indigo.loadHelm(molstr, library)
+        md.is_rxn = False
+        md.is_query = False
+        return
+    except IndigoException:
+        pass
+    try:
+        md.struct = indigo.loadAxoLabs(molstr, library)
+        md.is_rxn = False
+        md.is_query = False
     except IndigoException:
         raise HttpException(
             "struct data not recognized as molecule, query, reaction or reaction query",
@@ -376,6 +385,10 @@ def load_moldata(
         md.is_query = False
     elif input_format == "chemical/x-helm":
         md.struct = indigo.loadHelm(molstr, library)
+        md.is_rxn = False
+        md.is_query = False
+    elif input_format == "chemical/x-axo-labs":
+        md.struct = indigo.loadAxoLabs(molstr, library)
         md.is_rxn = False
         md.is_query = False
     elif input_format in ("monomer-library", "chemical/x-monomer-library"):
@@ -459,6 +472,8 @@ def save_moldata(
         return md.struct.idt(library)
     elif output_format == "chemical/x-helm":
         return md.struct.helm(library)
+    elif output_format == "chemical/x-axo-labs":
+        return md.struct.axolabs(library)
     elif output_format == "chemical/x-daylight-smiles":
         if options.get("smiles") == "canonical":
             return md.struct.canonicalSmiles()
@@ -952,6 +967,7 @@ def convert():
             "chemical/x-idt",
             "chemical/x-helm",
             "chemical/x-peptide-sequence-3-letter",
+            "chemical/x-axo-labs",
         ):
             try_document = True
 

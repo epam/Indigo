@@ -22,6 +22,7 @@
 #include "molecule/ket_document.h"
 #include "molecule/ket_document_json_saver.h"
 #include "molecule/meta_commons.h"
+#include "molecule/monomer_commons.h"
 #include "molecule/monomers_template_library.h"
 #include <base_cpp/scanner.h>
 
@@ -185,7 +186,8 @@ static void saveKetAtom(JsonWriter& writer, const KetBaseAtomType* base_atom)
         saveNativeFloat(writer, loc.z);
         writer.EndArray();
     }
-    base_atom->saveOptsToKet(writer);
+    if (base_atom->getType() != KetBaseAtomType::atype::rg_label)
+        static_cast<const KetBaseAtom*>(base_atom)->saveOptsToKet(writer);
     writer.EndObject();
 }
 
@@ -306,13 +308,21 @@ void KetDocumentJsonSaver::saveMonomerTemplate(JsonWriter& writer, const Monomer
     writer.StartObject();
     saveStr(writer, "type", "monomerTemplate");
     saveStr(writer, "id", monomer_template.id());
-    saveNonEmptyStr(writer, "class", monomer_template.monomerClassStr());
+    auto monomer_class = monomer_template.monomerClassStr();
+    if (monomer_class.size() > 0)
+    {
+        writer.Key("class");
+        if (strcasecmp(monomer_class.c_str(), kMonomerClassLINKER) == 0)
+            writer.String(kMonomerClassCHEM);
+        else
+            writer.String(monomer_class);
+    }
     monomer_template.saveOptsToKet(writer);
     if (monomer_template.unresolved())
     {
         writer.Key("unresolved");
         writer.Bool(monomer_template.unresolved());
-        saveIdtAlias(writer, monomer_template.idtAlias().getBase());
+        saveIdtAlias(writer, monomer_template.idtAlias());
     }
     else if (save_resolved_idt_alias)
         saveIdtAlias(writer, monomer_template.idtAlias(), save_resolved_idt_alias);

@@ -60,6 +60,8 @@ idt_data = {
     "idt_mixed_custom": "(N1:10203050)(N1)N",
     "idt_rna_dna_mixed_custom": "r(R1:50003000)(R1)",
     "idt_5end_without_r2": "/5DigN/rA",
+    "idt_3ribog": "rA/3RiboG/",
+    "idt_deoxyi": "/5deoxyI/rA/ideoxyI/rA/3deoxyI/",
 }
 
 lib = indigo.loadMonomerLibraryFromFile(
@@ -84,12 +86,12 @@ idt_errors = {
     "!+A-$#12w12r23e32e33": "Invalid symbols in the sequence: !,-,$,#,1,2,w,1,2,2,3,e,3,2,e,3,3",
     "/": "Unexpected end of data",
     "//": "Invalid modification: empty string.",
-    "/a/": "Invalid modification: a.",
+    "/a/": "Invalid modification: /a/.",
     "r+A": "Sugar prefix 'r' whithout base.",
-    "/32MOErA/T": "IDT alias '32MOErA' cannot be used at five prime end.",
-    "T/52MOErA/": "IDT alias '52MOErA' cannot be used at three prime end.",
-    "/3Phos/T": "IDT alias '3Phos' cannot be used at five prime end.",
-    "T/5Phos/": "IDT alias '5Phos' cannot be used at three prime end.",
+    "/32MOErA/T": "IDT alias '/32MOErA/' cannot be used at five prime end.",
+    "T/52MOErA/": "IDT alias '/52MOErA/' cannot be used at three prime end.",
+    "/3Phos/T": "IDT alias '/3Phos/' cannot be used at five prime end.",
+    "T/5Phos/": "IDT alias '/5Phos/' cannot be used at three prime end.",
     "/5Phos/*A": "Symbol '*' could be placed only between two nucleotides/nucleosides.",
     "r/5Phos/A": "Sugar prefix could not be used with modified monomer.",
     "+/5Phos/A": "Sugar prefix could not be used with modified monomer.",

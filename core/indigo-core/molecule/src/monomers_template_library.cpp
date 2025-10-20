@@ -127,7 +127,7 @@ namespace indigo
     //     return _attachment_points.at(att_point_id);
     // }
 
-    std::unique_ptr<TGroup> MonomerTemplate::getTGroup() const
+    std::unique_ptr<TGroup> MonomerTemplate::getTGroup(bool for_smiles) const
     {
         auto tgroup = std::make_unique<TGroup>();
         // save template to ket
@@ -135,7 +135,34 @@ namespace indigo
         JsonWriter writer;
         writer.Reset(string_buffer);
         writer.StartObject();
-        KetDocumentJsonSaver::saveMonomerTemplate(writer, *this);
+        if (for_smiles)
+        { // Replace leaving groups with RSites
+            MonomerTemplate tmpl(_id, _monomer_class, IdtAlias(), _unresolved);
+            tmpl.copy(*this);
+            for (auto att_point : _attachment_points)
+            {
+                std::string label = getKetStrProp(att_point.second, label);
+                label.replace(0, 1, "rg-");
+                auto& leaving = att_point.second.leavingGroup();
+                if (leaving.has_value())
+                {
+                    for (auto atom : leaving.value())
+                    {
+                        tmpl._atoms[atom] = std::make_unique<KetRgLabel>();
+                        auto* atom_ptr = tmpl._atoms[atom].get();
+                        KetRgLabel* r_ptr = static_cast<KetRgLabel*>(atom_ptr);
+                        std::vector<std::string> ref_list;
+                        ref_list.emplace_back(label);
+                        r_ptr->setRefs(ref_list);
+                    }
+                }
+            }
+            KetDocumentJsonSaver::saveMonomerTemplate(writer, tmpl);
+        }
+        else
+        {
+            KetDocumentJsonSaver::saveMonomerTemplate(writer, *this);
+        }
         writer.EndObject();
         std::string ket(string_buffer.GetString());
         // read TGroup
@@ -220,8 +247,9 @@ namespace indigo
             std::string template_class(monomerKETClass(tg.tgroup_class.ptr()));
             auto inchi_key = monomerInchi(tg);
             auto id = monomerTemplateId(tg);
+            std::pair<std::string, std::string> i_key = std::make_pair(inchi_key, tg.tgroup_class.ptr());
 
-            auto it_key = _inchi_key_to_monomer_id.find(inchi_key);
+            auto it_key = _inchi_key_to_monomer_id.find(i_key);
             if (it_key != _inchi_key_to_monomer_id.end())
             {
                 auto it = _monomer_templates.find(it_key->second);
@@ -247,7 +275,7 @@ namespace indigo
                 _duplicate_names_count.emplace(id, 0);
 
             auto& mt = addMonomerTemplate(id, template_class, idt_alias, false);
-            _inchi_key_to_monomer_id.emplace(inchi_key, id);
+            _inchi_key_to_monomer_id.emplace(i_key, id);
 
             // set properties
             setKetStrProp(mt, classHELM, monomerHELMClass(tg.tgroup_class.ptr()));
@@ -255,6 +283,8 @@ namespace indigo
 
             if (tg.tgroup_full_name.size())
                 setKetStrProp(mt, fullName, tg.tgroup_full_name.ptr());
+            else if (tg.tgroup_name.size())
+                setKetStrProp(mt, fullName, tg.tgroup_name.ptr());
 
             std::string natreplace;
             if (tg.tgroup_natreplace.size() == 0)
@@ -590,7 +620,7 @@ namespace indigo
                         auto local_it = local2global_id_map.find(local_id);
                         if (local_it != local2global_id_map.end())
                         {
-                            auto global_it = _inchi_key_to_monomer_id.find(local_it->second);
+                            auto global_it = _inchi_key_to_monomer_id.find(std::make_pair(local_it->second, tg.tgroup_class.ptr()));
                             if (global_it != _inchi_key_to_monomer_id.end())
                                 mgt.addTemplate(*this, global_it->second);
                         }

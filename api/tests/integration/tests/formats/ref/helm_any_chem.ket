@@ -46,7 +46,12 @@
         "alias": "unknown_monomer_0",
         "unresolved": true,
         "idtAliases": {
-            "base": "unknown_monomer_0"
+            "base": "unknown_monomer_0",
+            "modifications": {
+                "endpoint5": "unknown_monomer_0",
+                "internal": "unknown_monomer_0",
+                "endpoint3": "unknown_monomer_0"
+            }
         },
         "attachmentPoints": [
             {
@@ -76,7 +81,12 @@
         "alias": "unknown_monomer_1",
         "unresolved": true,
         "idtAliases": {
-            "base": "unknown_monomer_1"
+            "base": "unknown_monomer_1",
+            "modifications": {
+                "endpoint5": "unknown_monomer_1",
+                "internal": "unknown_monomer_1",
+                "endpoint3": "unknown_monomer_1"
+            }
         },
         "attachmentPoints": [
             {

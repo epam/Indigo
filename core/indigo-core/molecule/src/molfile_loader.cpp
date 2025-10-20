@@ -2093,8 +2093,7 @@ void MolfileLoader::_postLoad()
             nucleo_templates.emplace(tg.tgroup_name.ptr(), tg_idx);
     }
 
-    if (!_disable_sgroups_conversion && _bmol->sgroups.getSGroupCount() &&
-        (_bmol->tgroups.getTGroupCount() || (_monomer_library && _monomer_library->monomerTemplates().size())))
+    if (!_disable_sgroups_conversion && _bmol->sgroups.getSGroupCount() && (_bmol->tgroups.getTGroupCount() || _monomer_library))
         _bmol->transformSuperatomsToTemplates(_max_template_id, _monomer_library);
 
     std::set<int> templates_to_remove;
@@ -3854,18 +3853,21 @@ void MolfileLoader::_readTGroups3000()
                     strscan.readWord(word, "=");
                     strscan.skip(1); // =
                     word.push(0);
+
                     if (strcmp(word.ptr(), "COMMENT") == 0)
                     {
                         _readStringInQuotes(strscan, &tgroup.tgroup_comment);
                     }
-
-                    if (strcmp(word.ptr(), "NATREPLACE") == 0)
+                    else if (strcmp(word.ptr(), "NATREPLACE") == 0)
                     {
                         _readStringInQuotes(strscan, &tgroup.tgroup_natreplace);
                     }
+                    else
 
-                    if (!strscan.isEOF())
-                        strscan.skip(1);
+                        if (strcmp(word.ptr(), "FULLNAME") == 0)
+                    {
+                        _readStringInQuotes(strscan, &tgroup.tgroup_full_name);
+                    }
                 }
 
                 long long pos = _scanner.tell();

@@ -26,6 +26,7 @@
 #include "molecule/ket_objects.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_json_loader.h"
+#include "molecule/molecule_standardize_options.h"
 #include "molecule/monomer_commons.h"
 #include "molecule/monomers_template_library.h"
 #include "molecule/smiles_saver.h"
@@ -317,6 +318,8 @@ void SequenceSaver::saveKetDocument(KetDocument& doc, SeqFormat sf)
                 MonomerClass monomer_class = doc.getMonomerClass(monomer_id);
                 const auto& monomer = monomers.at(monomer_id);
                 auto monomer_alias = monomer->alias();
+                if (sf == SeqFormat::Sequence3 && monomer_class != MonomerClass::AminoAcid)
+                    throw Error("Only amino acids can be saved as three letter amino acid codes.");
                 if (monomer_class == MonomerClass::CHEM)
                     throw Error("Can't save chem '%s' to sequence format", monomer_alias.c_str());
                 if (monomer_class == MonomerClass::Sugar || monomer_class == MonomerClass::Phosphate ||
@@ -360,8 +363,6 @@ void SequenceSaver::saveKetDocument(KetDocument& doc, SeqFormat sf)
                 }
                 if (sf == SeqFormat::Sequence3)
                 {
-                    if (monomer_class != MonomerClass::AminoAcid)
-                        throw Error("Only amino acids can be saved as three letter amino acid codes.");
                     if (STANDARD_PEPTIDES.count(monomer_alias) > 0)
                         monomer_alias = monomerNameByAlias(kMonomerClassAminoAcid, monomer_alias);
                     else if (STANDARD_MIXED_PEPTIDES_ALIAS_TO_NAME.count(monomer_alias) > 0)
@@ -450,9 +451,7 @@ void SequenceSaver::saveIdt(KetDocument& doc, std::vector<std::deque<std::string
                     {
                         const std::string& idt_alias =
                             has_modification ? idtAlias.getModification(modification) : idtAlias.getModification(possible_modification);
-                        seq_string += '/';
                         seq_string += idt_alias;
-                        seq_string += '/';
                         return true;
                     }
                     return false;
@@ -613,60 +612,57 @@ void SequenceSaver::saveIdt(KetDocument& doc, std::vector<std::deque<std::string
                 phosphate = "P"; // Assume that modified monomers always contains P and modified to sP with *. TODO: confirm it with BA
                 add_asterisk = true;
             }
-            if ((standard_base || variant_base) && standard_phosphate && standard_sugar)
+            // Try to find sugar,base,phosphate group template
+            const std::string& sugar_id = _library.getMonomerTemplateIdByAlias(MonomerClass::Sugar, sugar);
+            const std::string& phosphate_id = _library.getMonomerTemplateIdByAlias(MonomerClass::Phosphate, phosphate);
+            std::string base_id;
+            if (base.size())
+                base_id = _library.getMonomerTemplateIdByAlias(MonomerClass::Base, base);
+            const std::string& idt_alias = _library.getIdtAliasByModification(modification, sugar_id, base_id, phosphate_id);
+            if (idt_alias.size())
+            {
+                seq_string += idt_alias;
+            }
+            else if ((standard_base || variant_base) && standard_phosphate && standard_sugar)
             {
                 sugar = IDT_STANDARD_SUGARS.at(sugar);
                 if (sugar.size())
                     seq_string += sugar;
                 seq_string += base == "In" ? "I" : base; // Inosine coded as I in IDT
-                if (sequence.size() == 0 && phosphate.size())
-                {
-                    if (phosphate != "P" || add_asterisk)
-                        throw Error("Cannot save molecule in IDT format - phosphate %s cannot be last monomer in sequence.", monomer.c_str());
-                    seq_string += "/3Phos/";
-                }
             }
             else
             {
-                // Try to find sugar,base,phosphate group template
-                const std::string& sugar_id = _library.getMonomerTemplateIdByAlias(MonomerClass::Sugar, sugar);
-                const std::string& phosphate_id = _library.getMonomerTemplateIdByAlias(MonomerClass::Phosphate, phosphate);
-                std::string base_id;
                 if (base.size())
-                    base_id = _library.getMonomerTemplateIdByAlias(MonomerClass::Base, base);
-                const std::string& idt_alias = _library.getIdtAliasByModification(modification, sugar_id, base_id, phosphate_id);
-                if (idt_alias.size())
                 {
-                    seq_string += '/';
-                    seq_string += idt_alias;
-                    seq_string += '/';
+                    if (phosphate.size())
+                        throw Error("IDT alias for group sugar:%s base:%s phosphate:%s not found.", sugar.c_str(), base.c_str(), phosphate.c_str());
+                    else
+                        throw Error("IDT alias for group sugar:%s base:%s not found.", sugar.c_str(), base.c_str());
                 }
                 else
                 {
-                    if (base.size())
-                    {
-                        if (phosphate.size())
-                            throw Error("IDT alias for group sugar:%s base:%s phosphate:%s not found.", sugar.c_str(), base.c_str(), phosphate.c_str());
-                        else
-                            throw Error("IDT alias for group sugar:%s base:%s not found.", sugar.c_str(), base.c_str());
-                    }
-                    else
-                    {
-                        if (phosphate.size())
+                    if (phosphate.size())
 
-                            throw Error("IDT alias for group sugar:%s phosphate:%s not found.", sugar.c_str(), phosphate.c_str());
-                        else
-                            throw Error("IDT alias for sugar:%s not found.", sugar.c_str());
-                    }
+                        throw Error("IDT alias for group sugar:%s phosphate:%s not found.", sugar.c_str(), phosphate.c_str());
+                    else
+                        throw Error("IDT alias for sugar:%s not found.", sugar.c_str());
                 }
             }
 
-            if (add_asterisk)
+            bool modified = idt_alias.size() > 0 && idt_alias.front() == '/';
+            if (add_asterisk && (modification != IdtModification::THREE_PRIME_END || modified))
             {
                 seq_string += "*";
                 phosphate = "sP";
             }
 
+            if (sequence.size() == 0 && phosphate.size() && !modified)
+            {
+                if (phosphate != "P")
+                    throw Error("Cannot save molecule in IDT format - phosphate %s cannot be last monomer in sequence.", phosphate.c_str());
+
+                seq_string += _library.getMonomerTemplateById(phosphate_id).idtAlias().getThreePrimeEnd();
+            }
             if (modification == IdtModification::FIVE_PRIME_END)
                 modification = IdtModification::INTERNAL;
         }
@@ -874,36 +870,8 @@ void SequenceSaver::add_monomer(KetDocument& document, const std::unique_ptr<Ket
     else
     {
         // monomer not in library - generate smiles
-        auto tgroup = mon_templ.getTGroup();
+        auto tgroup = mon_templ.getTGroup(true);
         auto* pmol = static_cast<Molecule*>(tgroup->fragment.get());
-
-        // convert Sup sgroup without name attachment points to rg-labels
-        auto& sgroups = pmol->sgroups;
-        for (int i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
-        {
-            auto& sgroup = sgroups.getSGroup(i);
-            if (sgroup.sgroup_type != SGroup::SG_TYPE_SUP)
-                continue;
-            Superatom& sa = static_cast<Superatom&>(sgroup);
-            for (int ap_id = sa.attachment_points.begin(); ap_id != sa.attachment_points.end(); ap_id = sa.attachment_points.next(ap_id))
-            {
-                auto& ap = sa.attachment_points.at(ap_id);
-                int leaving_atom = ap.lvidx;
-                int ap_idx = getAttachmentOrder(ap.apid.ptr()) + 1;
-                if (leaving_atom >= 0)
-                {
-                    pmol->resetAtom(leaving_atom, ELEM_RSITE);
-                }
-                else
-                {
-                    leaving_atom = pmol->addAtom(ELEM_RSITE);
-                    pmol->addBond(ap.aidx, leaving_atom, BOND_SINGLE);
-                }
-                pmol->allowRGroupOnRSite(leaving_atom, ap_idx);
-            }
-            sgroups.remove(i);
-        }
-        std::string smiles;
         StringOutput s_out(monomer_str);
         SmilesSaver saver(s_out);
         saver.separate_rsites = false;

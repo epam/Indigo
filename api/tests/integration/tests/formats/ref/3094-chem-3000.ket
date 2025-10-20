@@ -20,13 +20,14 @@
             "x": 10.625011444091797,
             "y": -5.8000006675720219
         },
+        "expanded": true,
         "alias": "4aPEGMal",
         "templateId": "4aPEGMal_1"
     },
     "monomerTemplate-4aPEGMal_1": {
         "type": "monomerTemplate",
         "id": "4aPEGMal_1",
-        "class": "Linker",
+        "class": "CHEM",
         "classHELM": "CHEM",
         "alias": "4aPEGMal",
         "name": "4aPEGMal",

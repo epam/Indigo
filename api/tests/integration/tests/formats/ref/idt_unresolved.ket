@@ -59,7 +59,12 @@
         "alias": "unr1",
         "unresolved": true,
         "idtAliases": {
-            "base": "unr1"
+            "base": "unr1",
+            "modifications": {
+                "endpoint5": "/unr1/",
+                "internal": "/unr1/",
+                "endpoint3": "/unr1/"
+            }
         },
         "attachmentPoints": [
             {
@@ -89,7 +94,12 @@
         "alias": "unr2",
         "unresolved": true,
         "idtAliases": {
-            "base": "unr2"
+            "base": "unr2",
+            "modifications": {
+                "endpoint5": "/unr2/",
+                "internal": "/unr2/",
+                "endpoint3": "/unr2/"
+            }
         },
         "attachmentPoints": [
             {

@@ -91,7 +91,7 @@ namespace indigo
 
         const KetAttachmentPoint& getAttachmenPointById(const std::string& att_point_id);
 
-        std::unique_ptr<TGroup> getTGroup() const;
+        std::unique_ptr<TGroup> getTGroup(bool for_smiles = false) const;
 
         inline bool hasAttachmenPointWithId(const std::string& att_point_id)
         {
@@ -140,6 +140,11 @@ namespace indigo
         }
 
         size_t AddAtom(const std::string& label, Vec3f location);
+
+        atom_ptr& getAtom(size_t index)
+        {
+            return _atoms[index];
+        }
 
         size_t AddBond(int bond_type, int atom1, int atom2);
 
@@ -329,7 +334,7 @@ namespace indigo
         std::map<std::string, MonomerTemplate> _monomer_templates;
         std::map<std::string, MonomerGroupTemplate> _monomer_group_templates;
         std::unordered_map<std::string, int> _duplicate_names_count;
-        std::unordered_map<std::string, std::string> _inchi_key_to_monomer_id;
+        std::map<std::pair<std::string, std::string>, std::string> _inchi_key_to_monomer_id;
         std::map<std::string, std::pair<MonomerTemplate&, IdtModification>> _id_alias_to_monomer_templates;
         std::map<std::string, std::pair<MonomerGroupTemplate&, IdtModification>> _idt_alias_to_monomer_group_templates;
     };

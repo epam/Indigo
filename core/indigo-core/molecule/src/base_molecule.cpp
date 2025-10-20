@@ -3731,6 +3731,7 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
     int idx = addTemplateAtom(tg.tgroup_name.ptr());
     setTemplateAtomClass(idx, tg.tgroup_class.ptr());
     setTemplateAtomSeqid(idx, su.seqid);
+    setTemplateAtomDisplayOption(idx, su.contracted);
     setTemplateAtomTemplateIndex(idx, tg_idx);
 
     for (int j = 0; j < ap_points_atoms.size(); j++)
@@ -5254,22 +5255,6 @@ void BaseMolecule::getBoundingBox(Vec2f& a, Vec2f& b) const
         {
             a.min(vec);
             b.max(vec);
-        }
-    }
-
-    for (int rgroup_idx = 0; rgroup_idx < rgroups.getRGroupCount(); ++rgroup_idx)
-    {
-        const auto& rgroup = rgroups.getRGroup(rgroup_idx + 1);
-        for (int frag_idx = rgroup.fragments.begin(); frag_idx != rgroup.fragments.end(); frag_idx = rgroup.fragments.next(frag_idx))
-        {
-            const auto& frag = rgroup.fragments[frag_idx];
-            for (int atom_idx = 0; atom_idx < frag->vertexCount(); ++atom_idx)
-            {
-                const auto& vec3d = frag->_xyz[atom_idx];
-                Vec2f vec(vec3d.x, vec3d.y);
-                a.min(vec);
-                b.max(vec);
-            }
         }
     }
 }

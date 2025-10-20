@@ -164,12 +164,16 @@ void SequenceLoader::loadSequence(BaseMolecule& mol, SeqType seq_type)
 
     bool isGenBankPept = false;
     bool start_char = true;
+    bool before_text = true;
 
     while (!_scanner.isEOF())
     {
         auto ch = _scanner.readChar();
         if (ch == '\n' || ch == '\r')
+        {
+            before_text = true;
             continue;
+        }
 
         if (start_char)
         {
@@ -184,10 +188,11 @@ void SequenceLoader::loadSequence(BaseMolecule& mol, SeqType seq_type)
 
         if (isGenBankPept)
         {
-            if (ch == ' ' || (ch >= NUM_BEGIN && ch < NUM_END))
+            if (ch == ' ' || (before_text && ch >= NUM_BEGIN && ch < NUM_END))
             {
                 continue;
             }
+            before_text = false;
             if (ch >= CHAR_LOWERCASE_BEGIN && ch < CHAR_LOWERCASE_END)
             {
                 ch -= CHAR_SHIFT_CONVERT;
@@ -658,21 +663,19 @@ void SequenceLoader::loadIdt(KetDocument& document)
                 if (cur_token.size())
                     throw Error("Sugar prefix could not be used with modified monomer.");
                 // read till next '/'
+                cur_token += ch;
                 ch = 0;
-                while (!_scanner.isEOL())
+                while (ch != '/' && !_scanner.isEOL())
                 {
                     ch = _scanner.readChar();
-                    if (ch == '/')
-                        break;
                     cur_token += ch;
                 }
                 if (ch != '/')
                     throw Error("Unexpected end of data");
-                if (cur_token == "")
+                if (cur_token == "//")
                     throw Error("Invalid modification: empty string.");
-                if (cur_token.size() < 3)
+                if (cur_token.size() < 5)
                     throw Error("Invalid modification: %s.", cur_token.c_str());
-                cur_token += ch;
                 break;
             }
             case '(': { // read till ')'
@@ -759,9 +762,8 @@ void SequenceLoader::loadIdt(KetDocument& document)
 
             if (token.first.back() == '/')
             {
-                token.first.pop_back();
                 idt_alias = token.first;
-                if ((idt_alias == "5Phos" || idt_alias == "3Phos") && (token.second || prev_token.second))
+                if ((idt_alias == "/5Phos/" || idt_alias == "/3Phos/") && (token.second || prev_token.second))
                     throw Error("Symbol '*' could be placed only between two nucleotides/nucleosides.");
             }
             else
@@ -921,7 +923,7 @@ void SequenceLoader::loadIdt(KetDocument& document)
                 {
                     modification = IdtModification::THREE_PRIME_END;
                     // Corner case: /3Phos/ after standard monomer - no additional P should be added
-                    if (prev_token.first.size() > 0 && prev_token.first.size() <= MAX_STD_TOKEN_SIZE && idt_alias == "3Phos")
+                    if (prev_token.first.size() > 0 && prev_token.first.size() <= MAX_STD_TOKEN_SIZE && idt_alias == "/3Phos/")
                         continue;
                 }
 
@@ -940,7 +942,7 @@ void SequenceLoader::loadIdt(KetDocument& document)
                     if (alias_mod == IdtModification::THREE_PRIME_END)
                     {
                         if (token.second)
-                            throw Error("Monomer /%s/ doesn't have phosphate, so '*' couldn't be applied.", idt_alias.c_str());
+                            throw Error("Monomer %s doesn't have phosphate, so '*' couldn't be applied.", idt_alias.c_str());
                         phosphate = "";
                     }
                     else
@@ -964,7 +966,7 @@ void SequenceLoader::loadIdt(KetDocument& document)
                         else
                         {
                             if (token.second)
-                                throw Error("Monomer /%s/ doesn't have phosphate, so '*' couldn't be applied.", idt_alias.c_str());
+                                throw Error("Monomer %s doesn't have phosphate, so '*' couldn't be applied.", idt_alias.c_str());
                             phosphate = "";
                         }
                     }
@@ -982,7 +984,7 @@ void SequenceLoader::loadIdt(KetDocument& document)
                     if (monomer_template_id.size())
                     {
                         if (token.second)
-                            throw Error("'*' couldn't be applied to monomer /%s/.", idt_alias.c_str());
+                            throw Error("'*' couldn't be applied to monomer %s.", idt_alias.c_str());
                         check_monomer_place(idt_alias, modification, alias_mod, prev_token.first.size() > 0);
                         const MonomerTemplate& monomer_template = _library.getMonomerTemplateById(monomer_template_id);
                         checkAddTemplate(document, monomer_template);
@@ -991,12 +993,12 @@ void SequenceLoader::loadIdt(KetDocument& document)
                     }
                     else // IDT alias not found
                     {
-                        single_monomer = "unknown_monomer_with_idt_alias_" + idt_alias;
-                        single_monomer_alias = idt_alias;
+                        single_monomer_alias = idt_alias.substr(1, idt_alias.size() - 2); // remove slashes
+                        single_monomer = "unknown_monomer_with_idt_alias_" + single_monomer_alias;
                         auto monomer_class = MonomerClass::CHEM;
                         // Unresoved monomer could be in any position
-                        MonomerTemplate monomer_template(single_monomer, monomer_class, IdtAlias(idt_alias, idt_alias, idt_alias, idt_alias), true);
-                        setKetStrProp(monomer_template, alias, idt_alias);
+                        MonomerTemplate monomer_template(single_monomer, monomer_class, IdtAlias(single_monomer_alias, idt_alias, idt_alias, idt_alias), true);
+                        setKetStrProp(monomer_template, alias, single_monomer_alias);
                         for (auto ap : {"R1", "R2", "R3", "R4"})
                             monomer_template.AddAttachmentPoint(ap, -1);
                         checkAddTemplate(document, monomer_template);
@@ -1123,10 +1125,10 @@ void SequenceLoader::loadAxoLabs(KetDocument& document)
                 while (pos < length)
                 {
                     group += sequence[pos++];
-                    if (pos >= length)
-                        throw Error("Unexpected end of data");
                     if (group.back() == ')')
                         break;
+                    if (pos >= length)
+                        throw Error("Unexpected end of data");
                 }
                 if (group.back() != ')')
                     throw Error("Unexpected end of data");
@@ -1310,7 +1312,29 @@ std::string SequenceLoader::readHelmMonomerAlias(KetDocument& document, MonomerC
                     if (anum == VALUE_UNKNOWN)
                         throw Error("Unknown element");
                     int isotope = mol.getAtomIsotope(i);
-                    mon_template.AddAtom(Element::toString(anum, isotope), mol.getAtomXyz(i));
+                    auto atom_idx = mon_template.AddAtom(Element::toString(anum, isotope), mol.getAtomXyz(i));
+                    auto stereo_type = mol.stereocenters.getType(i);
+                    if (stereo_type > 0)
+                    {
+                        auto& base_atom = static_cast<KetBaseAtom&>(*mon_template.getAtom(atom_idx));
+                        switch (stereo_type)
+                        {
+                        case MoleculeStereocenters::ATOM_ANY:
+                            setKetStrProp(base_atom, stereoLabel, "any");
+                            break;
+                        case MoleculeStereocenters::ATOM_AND:
+                            setKetStrProp(base_atom, stereoLabel, "rac");
+                            break;
+                        case MoleculeStereocenters::ATOM_OR:
+                            setKetStrProp(base_atom, stereoLabel, "rel");
+                            break;
+                        case MoleculeStereocenters::ATOM_ABS:
+                            setKetStrProp(base_atom, stereoLabel, "abs");
+                            break;
+                        default:
+                            break;
+                        }
+                    }
                 }
             }
             for (auto i : mol.edges())
@@ -2092,26 +2116,31 @@ void SequenceLoader::loadSequence(KetDocument& document, SeqType seq_type)
 
     bool isGenBankPept = false;
     bool start_char = true;
+    bool before_text = true;
 
     while (!_scanner.isEOF())
     {
         auto ch = _scanner.readChar();
         if (ch == '\n' || ch == '\r')
+        {
+            before_text = true;
             continue;
+        }
 
         if (start_char)
         {
             if (ch == ' ' || ch == '\t')
                 continue; // skip leading whitespaces
-            if (isdigit(ch))
+            if (ch >= NUM_BEGIN && ch < NUM_END)
                 isGenBankPept = true;
             start_char = false;
         }
 
         if (isGenBankPept)
         {
-            if (ch == ' ' || isdigit(ch))
+            if (ch == ' ' || (before_text && ch >= NUM_BEGIN && ch < NUM_END))
                 continue;
+            before_text = false;
         }
         if (islower(ch))
             ch -= CHAR_SHIFT_CONVERT;

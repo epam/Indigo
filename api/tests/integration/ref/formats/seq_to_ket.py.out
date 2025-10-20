@@ -6,3 +6,5 @@ spaces.ket:SUCCEED
 aminoacids_variants.ket:SUCCEED
 rna_variants.ket:SUCCEED
 dna_variants.ket:SUCCEED
+Test RNA '12w12r23c32c33': got expected error 'Invalid symbols in the sequence: 1,2,2,3,3,2,3,3'
+Test PEPTIDE '12w12r23e32e33': got expected error 'Invalid symbols in the sequence: 1,2,2,3,3,2,3,3'

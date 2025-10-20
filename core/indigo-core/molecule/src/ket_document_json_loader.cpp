@@ -242,8 +242,6 @@ void KetDocumentJsonLoader::parseMonomerTemplate(const rapidjson::Value& mt_json
         auto& idt_base = idt_alias.getBase();
         if (idt_base.size() == 0)
             throw Error("Monomer template %s contains IDT alias without base.", id.c_str());
-        if (unresolved) // For unresoved all modifications should be equal to base
-            idt_alias.setModifications(idt_base, idt_base, idt_base);
     }
 
     auto& mon_template = addMonomerTemplate(id, monomer_class, idt_alias, unresolved);
