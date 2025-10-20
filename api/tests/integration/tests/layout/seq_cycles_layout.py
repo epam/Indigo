@@ -50,8 +50,8 @@ for filename in files:
         )
 
     mol.layout()
-    with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
-        file.write(mol.json())
+    # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
+    #     file.write(mol.json())
     with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
         ket_ref = file.read()
 
