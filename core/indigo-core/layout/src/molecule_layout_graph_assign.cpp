@@ -922,7 +922,7 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
     }
 
     // 2.2. If it has length from L/2 to 2L - scale by it, otherwise by L
-    if (src_norm >= bond_length / 2 && src_norm <= 2 * bond_length)
+    if (!sequence_layout && src_norm >= bond_length / 2 && src_norm <= 2 * bond_length)
         scale = src_norm / norm;
 
     // 3. Move first vertex to (0,0)
@@ -1016,7 +1016,6 @@ void MoleculeLayoutGraph::_findFixedComponents(BiconnectedDecomposer& bc_decom, 
     fixed_count.clear_resize(n_comp);
     fixed_count.zerofill();
 
-    // calculate number of fixed vertices in each component
     for (int i = 0; i < n_comp; i++)
     {
         Filter filter;
@@ -1026,7 +1025,9 @@ void MoleculeLayoutGraph::_findFixedComponents(BiconnectedDecomposer& bc_decom, 
                 fixed_count[i]++;
 
         if ((fixed_count[i] == filter.count(*this)) || (fixed_count[i] && flexible_fixed_components))
+        {
             fixed_components[i] = 1;
+        }
     }
 
     if (sequence_layout)
