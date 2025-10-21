@@ -276,14 +276,17 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
 
     // Reassign parent indices when an sgroup has been removed.
     // Depending on component order this can change.
-    for (auto i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
+    if (sgroups.getSGroupCount() < mol.sgroups.getSGroupCount())
     {
-        SGroup& sgroup = sgroups.getSGroup(i);
-
-        const auto it = indicesByOriginalId.find(sgroup.parent_group);
-        if (it != indicesByOriginalId.end())
+        for (auto i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
         {
-            sgroup.parent_idx = it->second;
+            SGroup& sgroup = sgroups.getSGroup(i);
+
+            const auto it = indicesByOriginalId.find(sgroup.parent_group);
+            if (it != indicesByOriginalId.end())
+            {
+                sgroup.parent_idx = it->second;
+            }
         }
     }
 }
