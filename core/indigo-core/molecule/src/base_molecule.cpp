@@ -278,7 +278,7 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
     // Depending on component order this can change.
     if (sgroups.getSGroupCount() < mol.sgroups.getSGroupCount())
     {
-        for (auto i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
+        for (i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
         {
             SGroup& sgroup = sgroups.getSGroup(i);
 
