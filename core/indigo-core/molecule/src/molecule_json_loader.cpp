@@ -1725,6 +1725,11 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
             mol.setAtomXyz(idx, static_cast<float>(pos_val["x"].GetDouble()), static_cast<float>(pos_val["y"].GetDouble()), 0);
         }
 
+        if (ma.HasMember("selected") && ma["selected"].GetBool())
+        {
+            mol.selectAtom(idx);
+        }
+
         if (ma.HasMember("expanded"))
         {
             bool expanded = ma["expanded"].GetBool();

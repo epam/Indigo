@@ -519,6 +519,19 @@ void MoleculeLayoutGraph::_calculatePos(float phi, const Vec2f& v1, const Vec2f&
     v.set(v1.x + cos(alpha), v1.y + sin(alpha));
 }
 
+int MoleculeLayoutGraph::_getCycleDirection() const
+{
+    float signed_area = 0;
+    for (int i = 0; i < _layout_vertices.size() - 1; ++i)
+    {
+        if (_layout_vertices[i].is_cyclic)
+            signed_area += Vec2f::cross(_layout_vertices[i].pos, _layout_vertices[i + 1].pos);
+        else
+            throw Error("not all vertices are cyclic");
+    }
+    return signed_area > 0 ? -1 : 1;
+}
+
 // Explore intersection of two edges:
 // 0     at least one edge is not drawn
 // 1     no intersection

@@ -36,6 +36,9 @@ MoleculeLayoutGraph::MoleculeLayoutGraph() : Graph()
     cancellation = 0;
     _flipped = false;
     preserve_existing_layout = false;
+    respect_cycles_direction = false;
+    flexible_fixed_components = false;
+    sequence_layout = false;
 }
 
 MoleculeLayoutGraph::~MoleculeLayoutGraph()
@@ -245,12 +248,16 @@ void MoleculeLayoutGraphSimple::makeLayoutSubgraph(MoleculeLayoutGraph& graph, F
 
     new_vertex.is_cyclic = false;
 
+    if (vertices.size())
+        _fixed_vertices.clear_resize(vertices[vertexEnd() - 1] + 1);
     for (int i = 0; i < vertices.size(); i++)
     {
         new_vertex.ext_idx = vertices[i];
         new_vertex.type = graph._layout_vertices[vertices[i]].type;
         new_vertex.morgan_code = graph._layout_vertices[vertices[i]].morgan_code;
         registerLayoutVertex(mapping[vertices[i]], new_vertex);
+        if (graph._fixed_vertices.size())
+            _fixed_vertices[vertices[i]] = graph._fixed_vertices[mapping[vertices[i]]];
     }
 
     for (int i = edgeBegin(); i < edgeEnd(); i = edgeNext(i))
@@ -385,6 +392,8 @@ void MoleculeLayoutGraph::_layoutMultipleComponents(BaseMolecule& molecule, bool
         component.makeLayoutSubgraph(*this, comp_filter);
         component.max_iterations = max_iterations;
         component.layout_orientation = layout_orientation;
+        component.respect_cycles_direction = respect_cycles_direction;
+        component.flexible_fixed_components = flexible_fixed_components;
 
         component._molecule = &molecule;
         component._molecule_edge_mapping = molecule_edge_mapping.ptr();
