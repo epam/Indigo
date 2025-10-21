@@ -917,7 +917,7 @@ CEXPORT int indigoSaveCdxml(int item, int output)
         if (IndigoBaseMolecule::is(obj))
         {
             MoleculeCdxmlSaver saver(out);
-            if (obj.type == IndigoObject::MOLECULE)
+            if (obj.type == IndigoObject::MOLECULE || obj.type == IndigoObject::REACTION_MOLECULE)
             {
                 Molecule& mol = obj.getMolecule();
                 saver.saveMolecule(mol);
