@@ -12,7 +12,8 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
-from env_indigo import Indigo, joinPathPy  # noqa
+
+from env_indigo import *  # noqa
 
 indigo = Indigo()
 indigo.setOption("json-saving-pretty", True)
@@ -21,7 +22,6 @@ indigo.setOption("ignore-stereochemistry-errors", True)
 print("*** Sequence cycles layout ***")
 
 root = joinPathPy("molecules/", __file__)
-ref_path = joinPathPy("ref/", __file__)
 root_rea = joinPathPy("reactions/", __file__)
 
 files = [
@@ -52,7 +52,7 @@ for filename in files:
     mol.layout()
     # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
     #     file.write(mol.json())
-    with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
+    with open(getRefFilepath(filename + ".ket"), "r") as file:
         ket_ref = file.read()
 
     ket = mol.json()
