@@ -57,6 +57,7 @@ files = [
     "lib_phos",
     "lib_rna_preset_g",
     "lib_rna_preset_same",
+    "lib_default_type",
 ]
 
 files.sort()
