@@ -513,7 +513,7 @@ namespace indigo
         // read common properties values first
         std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash> templates;
         mol.getTemplatesMap(templates);
-        std::string mon_type, alias_helm;
+        std::string mon_type = "monomerTemplate", alias_helm;
         IdtAlias idt_alias;
         if (properties.contains("type"))
             mon_type = properties.at("type");
