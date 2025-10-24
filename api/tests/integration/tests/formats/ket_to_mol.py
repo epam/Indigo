@@ -80,6 +80,7 @@ files = [
     ("3068-star-issue", "3000"),
     ("exp-valence-0", "2000"),
     ("3178-any-bond", "3000"),
+    ("3227-copolymer", "3000"),
 ]
 
 files.sort(key=lambda x: x[0])
