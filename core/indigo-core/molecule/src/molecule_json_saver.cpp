@@ -438,9 +438,40 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
     case SGroup::SG_TYPE_MER:
         throw Error("SG_TYPE_MER not implemented in indigo yet");
         break;
-    case SGroup::SG_TYPE_COP:
-        throw Error("SG_TYPE_COP not implemented in indigo yet");
-        break;
+    case SGroup::SG_TYPE_COP: {
+        CopolymerGroup& ru = (CopolymerGroup&)sgroup;
+        if (ru.sgroup_subtype != 0)
+        {
+            writer.Key("subtype");
+            if (ru.sgroup_subtype == SGroup::SG_SUBTYPE_ALT)
+            {
+                writer.String("ALT");
+            }
+            else if (ru.sgroup_subtype == SGroup::SG_SUBTYPE_RAN)
+            {
+                writer.String("RAN");
+            }
+            else if (ru.sgroup_subtype == SGroup::SG_SUBTYPE_BLO)
+            {
+                writer.String("BLO");
+            }
+        }
+
+        writer.Key("connectivity");
+        switch (ru.connectivity)
+        {
+        case SGroup::HEAD_TO_TAIL:
+            writer.String("HT");
+            break;
+        case SGroup::HEAD_TO_HEAD:
+            writer.String("HH");
+            break;
+        default:
+            writer.String("EU");
+            break;
+        }
+    }
+    break;
     case SGroup::SG_TYPE_CRO:
         throw Error("SG_TYPE_CRO not implemented in indigo yet");
         break;

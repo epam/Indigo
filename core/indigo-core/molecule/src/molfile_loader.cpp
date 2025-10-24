@@ -1029,6 +1029,28 @@ void MolfileLoader::_readCtab2000()
 
                 _scanner.skipLine();
             }
+            else if (strncmp(chars, "SST", 3) == 0)
+            {
+                int n = _scanner.readIntFix(3);
+
+                while (n-- > 0)
+                {
+                    _scanner.skip(1);
+                    char type[4] = {0, 0, 0, 0};
+                    int sgroup_idx = _scanner.readIntFix(3) - 1;
+                    _scanner.skip(1);
+                    _scanner.readCharsFix(3, type);
+                    int idx = _sgroup_mapping[sgroup_idx];
+                    SGroup* sgroup = &_bmol->sgroups.getSGroup(idx);
+                    if (strcmp(type, "ALT") == 0)
+                        sgroup->sgroup_subtype = SGroup::SG_SUBTYPE_ALT;
+                    else if (strcmp(type, "RAN") == 0)
+                        sgroup->sgroup_subtype = SGroup::SG_SUBTYPE_RAN;
+                    else if (strcmp(type, "BLO") == 0)
+                        sgroup->sgroup_subtype = SGroup::SG_SUBTYPE_BLO;
+                }
+                _scanner.skipLine();
+            }
             else if (strncmp(chars, "STY", 3) == 0)
             {
                 int n = _scanner.readIntFix(3);

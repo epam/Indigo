@@ -63,6 +63,7 @@ files = [
     "3047-accldraw",
     "3094-chem-2000",
     "3094-chem-3000",
+    "3227-copolymer",
 ]
 
 native_precision = [
