@@ -229,6 +229,7 @@ public:
     void toString(Array<char>& str) override;
 
     std::unique_ptr<GROSS_UNITS> gross;
+    bool iupacFormula;
 };
 
 class IndigoReactionGross : public IndigoObject
@@ -240,6 +241,7 @@ public:
     void toString(Array<char>& str) override;
 
     std::unique_ptr<std::pair<PtrArray<GROSS_UNITS>, PtrArray<GROSS_UNITS>>> gross;
+    bool iupacFormula;
 };
 
 struct DLLEXPORT ProductEnumeratorParams
@@ -293,7 +295,6 @@ public:
     {
         Array<char> string;
         float xyz[3];
-
         void clear();
     };
 
@@ -333,9 +334,11 @@ public:
     bool molfile_saving_add_implicit_h;
     bool molfile_saving_add_mrv_sma;
     bool json_saving_add_stereo_desc;
+    bool json_saving_add_reaction_data;
     bool json_saving_pretty;
     bool json_use_native_precision;
     bool smiles_saving_write_name;
+    bool smiles_loading_strict_aliphatic;
     bool smiles_saving_smarts_mode;
 
     Encoding filename_encoding;

@@ -1,8 +1,8 @@
 [
     {
-        "grossFormula": "C13 N6 O6 H18",
-        "mass": 354.318622,
-        "pKa": 4.006666,
+        "grossFormula": "C13 H18 N6 O6",
+        "mass": 354.322993,
+        "pKa": 2.39,
         "extinctionCoefficient": 0,
         "hydrophobicity": [
             0.616

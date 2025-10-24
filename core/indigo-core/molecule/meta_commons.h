@@ -876,8 +876,10 @@ namespace indigo
 
         Rect2f bbox;
         std::vector<int> indexes;
+        std::vector<int> plus_indexes;
         int role;
-        int reaction_idx;
+        int reaction_idx; // arrow index. only for products.
+        std::vector<std::pair<int, int>> reaction_indexes;
         std::vector<int> arrows_to;
         std::vector<int> arrows_from;
     };

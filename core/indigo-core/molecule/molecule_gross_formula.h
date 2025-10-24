@@ -58,7 +58,8 @@ namespace indigo
 
         static void toString(const Array<int>& gross, Array<char>& str, bool add_rsites = false);
         static void toString(GROSS_UNITS& gross, Array<char>& str, bool add_rsites = false);
-        static void toString_Hill(GROSS_UNITS& gross, Array<char>& str, bool add_rsites = false);
+        static void toString_Hill(GROSS_UNITS& gross, Array<char>& str, bool add_rsites = false, bool iupacFormula = false);
+        static void toStringType(const GrossFormulaUnit& grossFormulaUnit, ArrayOutput& output, const bool addRsites, const bool iupacFormuala);
         static void fromString(const char* str, Array<int>& gross);
         static void fromString(Scanner& scanner, Array<int>& gross);
 
@@ -76,6 +77,7 @@ namespace indigo
 
         static void _toString(const Array<int>& gross, ArrayOutput& output, int (*cmp)(_ElemCounter&, _ElemCounter&, void*), bool add_rsites);
         static void _toString(const std::map<int, int>& gross, ArrayOutput& output, int (*cmp)(_ElemCounter&, _ElemCounter&, void*), bool add_rsites);
+        static void _toStringIUPAC(const std::map<int, int>& gross, ArrayOutput& output, int (*cmp)(_ElemCounter&, _ElemCounter&, void*));
         static int _cmp(_ElemCounter& ec1, _ElemCounter& ec2, void* context);
         static int _cmp_hill(_ElemCounter& ec1, _ElemCounter& ec2, void* context);
         static int _cmp_hill_no_carbon(_ElemCounter& ec1, _ElemCounter& ec2, void* context);

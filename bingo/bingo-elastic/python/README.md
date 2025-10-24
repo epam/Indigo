@@ -47,7 +47,7 @@ You could use any favourite Elasticsearch distribution:
 Something simple could be done as following:
 
 ```
-docker run -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" -e "indices.query.bool.max_clause_count=4096" docker.elastic.co/elasticsearch/elasticsearch:7.15.1
+docker run -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" -e "indices.query.bool.max_clause_count=4096" docker.elastic.co/elasticsearch/elasticsearch:7.17.28
 ```
 
 ### Usage
@@ -132,7 +132,7 @@ Full usage example sync:
 
 ```
 from bingo_elastic.model import helpers
-from bingo_elastic.elastic import, ElasticRepository IndexName
+from bingo_elastic.elastic import ElasticRepository, IndexName
 from pathlib import Path
 
 repository = ElasticRepository(IndexName.BINGO_MOLECULE, host="127.0.0.1", port=9200)
@@ -189,33 +189,70 @@ Supported similarity algorithms:
 
 #### Find exact records from Elasticsearch
 
+To run exact match, your target must be either IndigoRecordMolecule or IndigoRecordReaction
+
 Sync:
 ```
-exact_records = repository.filter(exact=target, limit=20)
+indigo = Indigo()
+molecule = indigo.loadMolecule("CCO")
+target = IndigoRecordMolecule(indigo_object=molecule)
+exact_records = repo.filter(exact=target, indigo_session=indigo, limit=20)
+```
+
+```
+indigo = Indigo()
+records = indigo.loadReaction("C=C.BrBr>>C(CBr)Br")
+target = IndigoRecordReaction(indigo_object=molecule)
+exact_records = repo.filter(exact=target, indigo_session=indigo, limit=20)
 ```
 
 Async:
 ```
-exact_records = await repository.filter(exact=target, limit=20)
+indigo = Indigo()
+molecule = indigo.loadMolecule("CCO")
+target = IndigoRecordMolecule(indigo_object=molecule)
+exact_records = await repo.filter(exact=target, indigo_session=indigo, limit=20)
 ```
 
-In this case we requested top-20 candidate molecules with exact same fingerprint to `target`.
-`target` should be an instance of `IndigoRecord` class.
-
+```
+indigo = Indigo()
+records = indigo.loadReaction("C=C.BrBr>>C(CBr)Br")
+target = IndigoRecordReaction(indigo_object=molecule)
+exact_records = await repo.filter(exact=target, indigo_session=indigo, limit=20)
+```
 
 #### Subsctructure match of the records from Elasticsearch
 
+To run substructure search, your target must be query molecule
+
 Sync:
 ```
-submatch_records = repository.filter(substructure=target)
+indigo = Indigo()
+target = indigo.loadQueryMolecule("CCO")
+submatch_records = repo.filter(substructure=target, indigo_session=indigo, limit=20)
+```
+
+```
+indigo = Indigo()
+target = indigo.loadQueryReaction("C=C>>")
+submatch_records = repo.filter(substructure=target, indigo_session=indigo, limit=20)
 ```
 
 Async:
 ```
-submatch_records = await repository.filter(substructure=target)
+indigo = Indigo()
+target = indigo.loadQueryMolecule("CCO")
+submatch_records = await repo.filter(substructure=target, indigo_session=indigo, limit=20)
 ```
 
-In this case we requested top-10 candidate molecules with exact same fingerprint to `target`.
+```
+indigo = Indigo()
+target = indigo.loadQueryReaction("C=C>>")
+submatch_records = await repo.filter(substructure=target, indigo_session=indigo, limit=20)
+```
+
+Note: 
+Bingo is requesting data from Elasticsearch with batches. You can control it with page_size argument
 
 #### Custom fields for molecule records
 

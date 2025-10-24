@@ -27,7 +27,7 @@ IMPL_ERROR(Transformation, "Transformation");
 static const std::map<std::string, Transformation::FlipType> flip_types = {
     {"", Transformation::FlipType::none}, {"horizontal", Transformation::FlipType::horizontal}, {"vertical", Transformation::FlipType::vertical}};
 
-Transformation::Transformation(float rotation, const Vec2f& shift, std::string flip_type) : rotate(rotation), shift(shift)
+Transformation::Transformation(float rotation, const Vec2f& shift, std::string flip_type) : rotate(rotation), shift(shift), scale(1.0f)
 {
     auto it = flip_types.find(flip_type);
     if (it != flip_types.end())

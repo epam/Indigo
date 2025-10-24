@@ -1,5 +1,7 @@
 *** KET to RDF ***
 2404-metadata_detect.rdf:SUCCEED
+3071-bad-cast.rdf:SUCCEED
+3212-disorginize.rdf:SUCCEED
 multi.rdf:SUCCEED
 multi_merge1.rdf:SUCCEED
 multi_merge2.rdf:SUCCEED

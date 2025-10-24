@@ -27,11 +27,19 @@ root_rea = joinPathPy("reactions/", __file__)
 
 files = [
     "images",
+    "3087-star-process",
 ]
 
 files.sort()
 for filename in files:
-    mol = indigo.loadMoleculeFromFile(os.path.join(root, filename + ".ket"))
+    try:
+        mol = indigo.loadMoleculeFromFile(
+            os.path.join(root, filename + ".ket")
+        )
+    except:
+        mol = indigo.loadQueryMoleculeFromFile(
+            os.path.join(root, filename + ".ket")
+        )
 
     # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
     #     file.write(mol.json())
@@ -63,6 +71,7 @@ files = [
     "helm_alias",
     "modification_types",
     "monomer_transform",
+    "helm_annotation",
 ]
 savers = {
     "doc": [indigo.loadKetDocument],
@@ -92,9 +101,44 @@ for format in sorted(savers.keys()):
         data_ref = file.read()
     check_res(filename, format, data_ref, data)
 
+files = ["multi_merge4", "3069-reaction"]
+
+files.sort()
+for filename in files:
+    try:
+        rea = indigo.loadReactionFromFile(
+            os.path.join(root_rea, filename + ".ket")
+        )
+    except:
+        try:
+            rea = indigo.loadQueryReactionFromFile(
+                os.path.join(root_rea, filename + ".ket")
+            )
+        except:
+            print("bad reaction data")
+
+    # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
+    #     file.write(rea.json())
+    with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
+        ket_ref = file.read()
+    ket = rea.json()
+    diff = find_diff(ket_ref, ket)
+    if not diff:
+        print(filename + ".ket:SUCCEED")
+    else:
+        print(filename + ".ket:FAILED")
+        print(diff)
+
+# reaction data
 files = [
-    "multi_merge4",
+    "mixed_reaction",
+    "two_pathways",
+    "multi_reaction",
+    "multi1",
+    "special_condition",
 ]
+
+indigo.setOption("json-saving-add-reaction-data", True)
 
 files.sort()
 for filename in files:

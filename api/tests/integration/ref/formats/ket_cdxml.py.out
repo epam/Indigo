@@ -12,6 +12,7 @@ multi.ket:SUCCEED
 multi_overlap.cdxml:SUCCEED
 multi_overlap.ket:SUCCEED
 *** KET to CDXML ***
+3080-star-issue.cdxml:SUCCEED
 963-super.cdxml:SUCCEED
 images.cdxml:SUCCEED
 macro/sa-mono.cdxml:SUCCEED

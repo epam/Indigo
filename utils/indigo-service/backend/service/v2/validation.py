@@ -36,6 +36,8 @@ class InputFormatSchema(Schema):
         "chemical/x-fasta",
         "chemical/x-idt",
         "chemical/x-helm",
+        "chemical/x-monomer-library",
+        "chemical/x-axo-labs",
     )
     input_format = fields.Str(missing=None, validate=OneOf(struct_mime_types))
 

@@ -17,6 +17,7 @@
  ***************************************************************************/
 
 #include <ctype.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -869,8 +870,10 @@ int main(int argc, char* argv[])
     indigoSetOption("ignore-bad-valence", "on");
     indigoSetOption("molfile-saving-mode", "2000");
     indigoSetOption("ket-saving-version", "1.0.0");
-    indigoSetOptionBool("json-saving-pretty", "on");
+    indigoSetOptionBool("json-saving-pretty", true);
+    // indigoSetOptionBool("json-use-native-precision", true);
     indigoSetOptionFloat("reaction-component-margin-size", 0.0f);
+    // indigoSetOptionBool("json-saving-add-reaction-data", "on");
 
     if (parseParams(&p, argc, argv) < 0)
         return -1;
@@ -923,6 +926,8 @@ int main(int argc, char* argv[])
     reader = (p.file_to_load != NULL) ? indigoReadFile(p.file_to_load) : indigoReadString(p.string_to_load);
 
     int lib = indigoLoadMonomerLibraryFromString("{\"root\":{}}");
+    // int lib = indigoLoadMonomerLibraryFromFile("monomer_library.ket");
+
     if (p.mode == MODE_SINGLE_MOLECULE)
     {
         if (p.id != NULL)
@@ -952,7 +957,7 @@ int main(int argc, char* argv[])
             obj = indigoLoadHelm(reader, lib);
         }
         else
-            obj = indigoLoadMolecule(reader);
+            obj = indigoLoadMoleculeWithLib(reader, lib);
 
         if (p.action == ACTION_LAYOUT)
         {
@@ -1059,12 +1064,6 @@ int main(int argc, char* argv[])
         _prepare(obj, p.aromatization);
         if (p.action == ACTION_LAYOUT)
         {
-            auto mols = indigoIterateMolecules(obj);
-            while (indigoHasNext(mols))
-            {
-                int mol = indigoNext(mols);
-                printf("%d\n", mol);
-            }
             indigoLayout(obj);
             if (p.out_ext == OEXT_CML)
                 indigoSaveCmlToFile(obj, p.outfile);

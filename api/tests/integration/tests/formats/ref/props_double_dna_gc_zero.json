@@ -1,0 +1,13 @@
+[
+    {
+        "grossFormula": "C38 H50 N16 O24 P2",
+        "mass": 1176.85398,
+        "monomerCount": {
+            "peptides": {},
+            "nucleotides": {
+                "C": 2,
+                "G": 2
+            }
+        }
+    }
+]

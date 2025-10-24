@@ -50,10 +50,12 @@ namespace indigo
         };
 
         SmilesSaver(Output& output);
-        ~SmilesSaver();
+        virtual ~SmilesSaver();
 
-        void saveMolecule(Molecule& mol);
+        virtual void saveMolecule(Molecule& mol);
         void saveQueryMolecule(QueryMolecule& mol);
+        void setComma(bool comma);
+        bool getComma();
 
         int* vertex_ranks;
 
@@ -72,7 +74,12 @@ namespace indigo
         void writeSpecialAtom(int aid, Output& out);
         static SMILES_MODE parseFormatMode(const std::string& format);
         static void saveFormatMode(SMILES_MODE mode, std::string& output);
-
+        void writeRingCisTrans(int bonds_offset = 0);
+        void writePseudoAtoms(int atoms_offset = 0, bool have_separators = true);
+        int writeRadicals(int atoms_offset = 0, int prev_radical = -1);
+        bool writeHighlightedAtoms(int atoms_offset = 0, bool is_cont = false);
+        bool writeHighlightedBonds(int bonds_offset = 0, bool is_cont = false);
+        int findNonABSStereoCenter(MoleculeStereocenters& stereocenters);
         bool inside_rsmiles;
 
         bool smarts_mode;
@@ -116,11 +123,7 @@ namespace indigo
         void _banSlashes();
         int _calcBondDirection(int idx, int vprev);
         bool _updateSideBonds(int bond_idx);
-        void _writeRingCisTrans();
         void _writeStereogroups();
-        void _writeRadicals();
-        void _writePseudoAtoms();
-        void _writeHighlighting();
         void _writeRGroups();
         void _writeSGroups();
         void _writeSGroupAtoms(const SGroup& sgroup);

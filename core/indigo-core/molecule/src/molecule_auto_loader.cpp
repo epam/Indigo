@@ -54,6 +54,7 @@ void MoleculeAutoLoader::_init()
     ignore_cistrans_errors = false;
     ignore_no_chiral_flag = false;
     ignore_bad_valence = false;
+    smiles_loading_strict_aliphatic = false;
     dearomatize_on_load = false;
     treat_stereo_as = 0;
 }
@@ -87,14 +88,14 @@ MoleculeAutoLoader::~MoleculeAutoLoader()
         delete _scanner;
 }
 
-void MoleculeAutoLoader::loadQueryMolecule(QueryMolecule& qmol)
+void MoleculeAutoLoader::loadQueryMolecule(QueryMolecule& qmol, MonomerTemplateLibrary* monomer_lib)
 {
     loadMolecule(qmol);
 }
 
-void MoleculeAutoLoader::loadMolecule(BaseMolecule& bmol)
+void MoleculeAutoLoader::loadMolecule(BaseMolecule& bmol, MonomerTemplateLibrary* monomer_lib)
 {
-    _loadMolecule(bmol);
+    _loadMolecule(bmol, monomer_lib);
 
     if (!bmol.isQueryMolecule())
     {
@@ -197,7 +198,7 @@ void MoleculeAutoLoader::readAllDataToString(Scanner& scanner, Array<char>& data
     dataBuf.push('\0');
 }
 
-void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
+void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, MonomerTemplateLibrary* monomer_lib)
 {
     bool query = mol.isQueryMolecule();
     properties.clear();
@@ -274,7 +275,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
         if (tryMDLCT(*_scanner, buf))
         {
             BufferScanner scanner2(buf);
-            MolfileLoader loader(scanner2);
+            MolfileLoader loader(scanner2, monomer_lib);
             loader.stereochemistry_options = stereochemistry_options;
             loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
             loader.skip_3d_chirality = skip_3d_chirality;
@@ -413,7 +414,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
                 }
                 else if (kIDT == tag.data())
                 {
-                    sl.loadIdt(mol);
+                    sl.loadIdt(mol.getKetDocument());
                     return;
                 }
                 else if (kHELM == tag.data())
@@ -482,7 +483,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
             loader.stereochemistry_options = stereochemistry_options;
             loader.ignore_cistrans_errors = ignore_cistrans_errors;
             loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
-
+            loader.strict_aliphatic = smiles_loading_strict_aliphatic;
             /*
             If exception is thrown, try the SMARTS, if exception thrown again - the string is rather an IUPAC name than a SMILES string
             We catch it and pass down to IUPAC name conversion
@@ -544,7 +545,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol)
 
             BufferScanner scanner2(sdf_loader.data);
 
-            MolfileLoader loader(scanner2);
+            MolfileLoader loader(scanner2, monomer_lib);
             loader.stereochemistry_options = stereochemistry_options;
             loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
             loader.skip_3d_chirality = skip_3d_chirality;

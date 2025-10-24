@@ -247,6 +247,11 @@ bool MoleculeStandardizer::standardize(Molecule& mol, const StandardizeOptions& 
         _removeExtraStereoBonds(mol);
     }
 
+    if (options.standardize_stereo_mark_undefined)
+    {
+        _standardizeStereoMarkUndefined(mol);
+    }
+
     return true;
 }
 
@@ -455,6 +460,11 @@ bool MoleculeStandardizer::standardize(QueryMolecule& query, const StandardizeOp
     if (options.create_hydrogen_bonds)
     {
         _createHydrogenBonds(query);
+    }
+
+    if (options.standardize_stereo_mark_undefined)
+    {
+        _standardizeStereoMarkUndefined(query);
     }
 
     return true;
@@ -1149,6 +1159,58 @@ void MoleculeStandardizer::_removeExtraStereoBonds(BaseMolecule& mol)
             }
         }
     }
+}
+
+void MoleculeStandardizer::_standardizeStereoMarkUndefined(Molecule& mol)
+{
+
+    auto dummy = std::make_unique<Molecule>();
+    dummy->clone_KeepIndices(mol);
+
+    for (const auto& vertex : dummy->vertices())
+    {
+        if (!dummy->stereocenters.exists(vertex) && dummy->isPossibleStereocenter(vertex))
+        {
+            try
+            {
+                // Mark possible stereocenters as ABS, so they can be propely removed
+                // after automorphism search
+                dummy->addStereocenters(vertex, MoleculeStereocenters::ATOM_ABS, 0, false);
+            }
+            catch (Exception&)
+            {
+                // Just ignore this stereo center
+            }
+        }
+    }
+
+    MoleculeAutomorphismSearch as;
+    as.detect_invalid_cistrans_bonds = true;
+    as.detect_invalid_stereocenters = true;
+    as.find_canonical_ordering = false;
+    as.process(*dummy);
+
+    for (const auto& vertex : dummy->vertices())
+    {
+        if (dummy->stereocenters.exists(vertex) && as.invalidStereocenter(vertex))
+        {
+            dummy->stereocenters.remove(vertex);
+        }
+    }
+
+    for (const auto& vertex : dummy->vertices())
+    {
+        if (!mol.stereocenters.exists(vertex) && dummy->stereocenters.exists(vertex))
+        {
+            // Mark new undefined stereocenters as ANY
+            mol.addStereocenters(vertex, MoleculeStereocenters::ATOM_ANY, 0, false);
+        }
+    }
+}
+
+void MoleculeStandardizer::_standardizeStereoMarkUndefined(QueryMolecule& /*mol*/)
+{
+    throw Error("This option is not available for QueryMolecule object");
 }
 
 int MoleculeStandardizer::_asc_cmp_cb(int& v1, int& v2, void* context)

@@ -723,6 +723,49 @@ CEXPORT int indigoSaveHelm(int item, int output, int library)
     INDIGO_END(-1);
 }
 
+CEXPORT int indigoSaveAxoLabs(int item, int output, int library)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(item);
+        Output& out = IndigoOutput::get(self.getObject(output));
+        if (IndigoBaseMolecule::is(obj))
+        {
+            IndigoObject& lib_obj = self.getObject(library);
+            SequenceSaver saver(out, IndigoMonomerLibrary::get(lib_obj));
+            BaseMolecule& mol = obj.getBaseMolecule();
+            saver.saveKetDocument(mol.getKetDocument(), SequenceSaver::SeqFormat::IDT);
+            out.flush();
+            return 1;
+        }
+        else if (IndigoKetDocument::is(obj))
+        {
+            IndigoObject& lib_obj = self.getObject(library);
+            SequenceSaver saver(out, IndigoMonomerLibrary::get(lib_obj));
+            saver.saveKetDocument(static_cast<IndigoKetDocument&>(obj).get(), SequenceSaver::SeqFormat::AxoLabs);
+            out.flush();
+            return 1;
+        }
+        throw IndigoError("indigoSaveAxoLabs(): expected molecule, got %s", obj.debugInfo());
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoSaveMonomerLibrary(int output, int library)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& lib_obj = self.getObject(library);
+        Output& out = IndigoOutput::get(self.getObject(output));
+        KetDocumentJsonSaver js(out);
+        js.pretty_json = self.json_saving_pretty;
+        js.saveMonomerLibrary(IndigoMonomerLibrary::get(lib_obj));
+        out.flush();
+        return 1;
+    }
+    INDIGO_END(-1);
+}
+
 CEXPORT int indigoSaveJson(int item, int output)
 {
     INDIGO_BEGIN
@@ -874,7 +917,7 @@ CEXPORT int indigoSaveCdxml(int item, int output)
         if (IndigoBaseMolecule::is(obj))
         {
             MoleculeCdxmlSaver saver(out);
-            if (obj.type == IndigoObject::MOLECULE)
+            if (obj.type == IndigoObject::MOLECULE || obj.type == IndigoObject::REACTION_MOLECULE)
             {
                 Molecule& mol = obj.getMolecule();
                 saver.saveMolecule(mol);

@@ -12,7 +12,12 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
-from env_indigo import *  # noqa
+from env_indigo import (
+    Indigo,
+    IndigoException,
+    getIndigoExceptionText,
+    joinPathPy,
+)
 
 indigo = Indigo()
 indigo.setOption("json-saving-pretty", True)
@@ -48,6 +53,8 @@ files = [
     "multi_merge5",
     "multi_merge6",
     "pathway_no_product",
+    "3071-bad-cast",
+    "3212-disorginize",
 ]
 
 files.sort()
@@ -73,7 +80,7 @@ for filename in files:
     rdf = buffer.toString()
 
     # with open(os.path.join(ref_path, filename) + ".rdf", "w") as file:
-    #    file.write(rdf)
+    #     file.write(rdf)
 
     with open(os.path.join(ref_path, filename) + ".rdf", "r") as file:
         rdf_ref = file.read()

@@ -44,10 +44,26 @@ namespace indigo
         return static_cast<std::underlying_type_t<T>>(enumerator);
     }
 
+#define hasKetStrProp(obj, prop) (obj).hasStringProp(toUType(std::remove_reference_t<decltype(obj)>::StringProps::prop))
+#define hasKetIntProp(obj, prop) (obj).hasIntProp(toUType(std::remove_reference_t<decltype(obj)>::IntProps::prop))
+#define hasKetBoolProp(obj, prop) (obj).hasBoolProp(toUType(std::remove_reference_t<decltype(obj)>::BoolProps::prop))
+
+#define getKetStrProp(obj, prop) (obj).getStringProp(toUType(std::remove_reference_t<decltype(obj)>::StringProps::prop))
+#define getKetIntProp(obj, prop) (obj).getIntProp(toUType(std::remove_reference_t<decltype(obj)>::IntProps::prop))
+#define getKetBoolProp(obj, prop) (obj).getBoolProp(toUType(std::remove_reference_t<decltype(obj)>::BoolProps::prop))
+
+#define setKetStrProp(obj, prop, v) (obj).setStringProp(toUType(std::remove_reference_t<decltype(obj)>::StringProps::prop), v)
+#define setKetIntProp(obj, prop, v) (obj).setIntProp(toUType(std::remove_reference_t<decltype(obj)>::IntProps::prop), v)
+#define setKetBoolProp(obj, prop, v) (obj).setBoolProp(toUType(std::remove_reference_t<decltype(obj)>::BoolProps::prop), v)
+
+#define isKetBoolPropTrue(obj, prop) (obj).isBoolPropTrue(toUType(std::remove_reference_t<decltype(obj)>::BoolProps::prop))
+
     class DLLEXPORT KetObjWithProps
     {
     public:
         DECL_ERROR;
+
+        KetObjWithProps() = default;
 
         virtual ~KetObjWithProps() = default;
 
@@ -66,14 +82,10 @@ namespace indigo
             _int_props[idx] = static_cast<int>(value);
         };
 
-        inline void setStringProp(int idx, std::string value)
+        inline void setStringProp(int idx, const std::string& value)
         {
             _string_props[idx] = value;
         };
-
-        void setBoolProp(std::string name, bool value);
-        void setIntProp(std::string name, int value);
-        void setStringProp(std::string name, std::string value);
 
         virtual const std::map<std::string, int>& getBoolPropStrToIdx() const;
         virtual const std::map<std::string, int>& getIntPropStrToIdx() const;
@@ -96,35 +108,14 @@ namespace indigo
         int getIntProp(int idx) const;
         const std::string& getStringProp(int idx) const;
 
+        bool isBoolPropTrue(int idx) const
+        {
+            return hasBoolProp(idx) && getBoolProp(idx);
+        };
+
         std::pair<bool, int> getBoolPropIdx(const std::string& name) const;
         std::pair<bool, int> getIntPropIdx(const std::string& name) const;
         std::pair<bool, int> getStringPropIdx(const std::string& name) const;
-
-        bool hasBoolProp(const std::string& name) const
-        {
-            auto res = getBoolPropIdx(name);
-            if (res.first)
-                return hasBoolProp(res.second);
-            return false;
-        }
-        bool hasIntProp(const std::string& name) const
-        {
-            auto res = getIntPropIdx(name);
-            if (res.first)
-                return hasIntProp(res.second);
-            return false;
-        };
-        bool hasStringProp(const std::string& name) const
-        {
-            auto res = getStringPropIdx(name);
-            if (res.first)
-                return hasStringProp(res.second);
-            return false;
-        };
-
-        bool getBoolProp(const std::string& name) const;
-        int getIntProp(const std::string& name) const;
-        const std::string& getStringProp(const std::string& name) const;
 
         void parseOptsFromKet(const rapidjson::Value& json);
         void saveOptsToKet(JsonWriter& writer) const;
@@ -135,6 +126,9 @@ namespace indigo
             _int_props = other._int_props;
             _string_props = other._string_props;
         }
+
+    protected:
+        KetObjWithProps(const KetObjWithProps& other) = default;
 
     private:
         std::map<int, bool> _bool_props;

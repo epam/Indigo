@@ -1,5 +1,8 @@
+import gc
+
 import pytest
 from indigo import Indigo
+
 from .constants import (
     DATA_TYPES,
     DB_BINGO,
@@ -17,9 +20,10 @@ from .logger import logger
 
 @pytest.fixture(scope="class")
 def indigo():
-    # TODO: uncomment this:
     indigo = Indigo()
-    return indigo
+    yield indigo
+    del indigo
+    gc.collect()
 
 
 @pytest.fixture(scope="class")
@@ -28,6 +32,11 @@ def entities(request, indigo):
     entities = get_query_entities(indigo, function)
     yield entities
     del entities
+
+
+@pytest.fixture
+def db_backend(request):
+    return request.config.getoption("--db")
 
 
 @pytest.fixture(scope="class")
@@ -48,6 +57,7 @@ def db(request, indigo):
         db.import_data(meta["import_no_sql"], data_type)
     elif db_str == DB_BINGO_ELASTIC:
         from bingo_elastic.elastic import IndexName
+
         from .dbc.BingoElastic import BingoElastic
 
         if data_type == EntitiesType.MOLECULES:
@@ -60,7 +70,6 @@ def db(request, indigo):
         pass
     elif db_str == DB_MSSQL:
         pass
-
     yield db
 
     logger.info("Dropping DB...")

@@ -49,3 +49,30 @@ for filename in files:
     else:
         print(filename + ".ket:FAILED")
         print(diff)
+
+print("*** SDF-monomer library to KET ***")
+files = [
+    "lib_alanine",
+    "lib_alanine_expanded",
+    "lib_phos",
+    "lib_rna_preset_g",
+    "lib_rna_preset_same",
+    "lib_default_type",
+]
+
+files.sort()
+for filename in files:
+    lib = indigo.loadMonomerLibraryFromFile(
+        os.path.join(root, filename + ".sdf")
+    )
+    # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
+    #     file.write(lib.monomerLibrary())
+    with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
+        ket_ref = file.read()
+    ket = lib.monomerLibrary()
+    diff = find_diff(ket_ref, ket)
+    if not diff:
+        print(filename + ".ket:SUCCEED")
+    else:
+        print(filename + ".ket:FAILED")
+        print(diff)

@@ -22,6 +22,7 @@
 #include "base_cpp/exception.h"
 #include "base_cpp/obj_array.h"
 #include "base_cpp/tlscont.h"
+#include "molecule/smiles_saver.h"
 #include "reaction.h"
 
 #ifdef _WIN32
@@ -54,7 +55,8 @@ namespace indigo
         BaseReaction* _brxn;
         QueryReaction* _qrxn;
         Reaction* _rxn;
-
+        void _writeMolecule(int i);
+        virtual SmilesSaver& _addMoleculeSaver();
         void _saveReaction();
 
         struct _Idx
@@ -70,14 +72,16 @@ namespace indigo
         TL_CP_DECL(Array<_Idx>, _written_bonds);
         TL_CP_DECL(Array<int>, _ncomp);
 
-        void _writeMolecule(int i);
         void _writeFragmentsInfo();
         void _writeStereogroups();
         void _writeRadicals();
+        void _startExtension();
         void _writePseudoAtoms();
         void _writeHighlighting();
+        void _writeRingCisTrans();
 
         bool _comma;
+        std::vector<std::unique_ptr<SmilesSaver>> _smiles_savers;
 
     private:
         RSmilesSaver(const RSmilesSaver&); // no implicit copy

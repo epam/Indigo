@@ -19,12 +19,15 @@
 #include <memory>
 
 #include "../layout/molecule_layout.h"
+#include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/tlscont.h"
 #include "layout/sequence_layout.h"
 #include "molecule/elements.h"
+#include "molecule/inchi_wrapper.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_3d_constraints.h"
+#include "molecule/molecule_inchi.h"
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/molfile_loader.h"
 #include "molecule/molfile_saver.h"
@@ -41,10 +44,11 @@ IMPL_ERROR(MolfileLoader, "molfile loader");
 
 CP_DEF(MolfileLoader);
 
-MolfileLoader::MolfileLoader(Scanner& scanner)
-    : _scanner(scanner), _monomer_templates(MonomerTemplates::_instance()), _max_template_id(0), CP_INIT, TL_CP_GET(_stereo_care_atoms),
-      TL_CP_GET(_stereo_care_bonds), TL_CP_GET(_stereocenter_types), TL_CP_GET(_stereocenter_groups), TL_CP_GET(_sensible_bond_directions),
-      TL_CP_GET(_ignore_cistrans), TL_CP_GET(_atom_types), TL_CP_GET(_hcount), TL_CP_GET(_sgroup_types), TL_CP_GET(_sgroup_mapping)
+MolfileLoader::MolfileLoader(Scanner& scanner, MonomerTemplateLibrary* monomer_library)
+    : _scanner(scanner), _monomer_templates(MonomerTemplates::_instance()), _max_template_id(0), _disable_sgroups_conversion(false), CP_INIT,
+      TL_CP_GET(_stereo_care_atoms), TL_CP_GET(_stereo_care_bonds), TL_CP_GET(_stereocenter_types), TL_CP_GET(_stereocenter_groups),
+      TL_CP_GET(_sensible_bond_directions), TL_CP_GET(_ignore_cistrans), TL_CP_GET(_atom_types), TL_CP_GET(_hcount), TL_CP_GET(_sgroup_types),
+      TL_CP_GET(_sgroup_mapping)
 {
     _rgfile = false;
     treat_x_as_pseudoatom = false;
@@ -53,6 +57,7 @@ MolfileLoader::MolfileLoader(Scanner& scanner)
     ignore_no_chiral_flag = false;
     ignore_bad_valence = false;
     treat_stereo_as = 0;
+    _monomer_library = monomer_library;
 }
 
 void MolfileLoader::loadMolecule(Molecule& mol)
@@ -76,6 +81,7 @@ void MolfileLoader::copyProperties(const MolfileLoader& loader)
     skip_3d_chirality = loader.skip_3d_chirality;
     treat_stereo_as = loader.treat_stereo_as;
     treat_x_as_pseudoatom = loader.treat_x_as_pseudoatom;
+    _monomer_library = loader._monomer_library;
 }
 
 void MolfileLoader::loadQueryMolecule(QueryMolecule& mol)
@@ -116,7 +122,6 @@ void MolfileLoader::_loadMolecule()
             throw Error("unexpected string in molecule: %s", str.ptr());
         _scanner.seek(next_block_pos, SEEK_SET);
     }
-
     _postLoad();
 }
 
@@ -329,7 +334,7 @@ void MolfileLoader::_readCtab2000()
                 throw Error("'AH' label is allowed only for queries");
             atom_type = _ATOM_AH;
         }
-        else if (buf[0] == 'X' && buf[1] == 0 && !treat_x_as_pseudoatom)
+        else if (buf[0] == 'X' && buf[1] == 0 && !treat_x_as_pseudoatom) // TODO: treat_x_as_pseudoatom should be checked only for mol?
         {
             if (_qmol == 0)
                 throw Error("'X' label is allowed only for queries");
@@ -380,6 +385,10 @@ void MolfileLoader::_readCtab2000()
         {
             label = ELEM_H;
             isotope = TRITIUM;
+        }
+        else if (_qmol && buf[0] == '*' && buf[1] == 0)
+        {
+            atom_type = _ATOM_STAR;
         }
         else
         {
@@ -468,7 +477,11 @@ void MolfileLoader::_readCtab2000()
             else if (atom_type == _ATOM_AH)
             {
                 atom = std::make_unique<QueryMolecule::Atom>();
-                atom->type = QueryMolecule::OP_NONE;
+            }
+            else if (atom_type == _ATOM_STAR)
+            {
+                atom = std::make_unique<QueryMolecule::Atom>();
+                atom->type = QueryMolecule::ATOM_STAR;
             }
             else if (atom_type == _ATOM_QH)
                 atom.reset(QueryMolecule::Atom::nicht(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C)));
@@ -1292,7 +1305,7 @@ void MolfileLoader::_readCtab2000()
                 {
                     _scanner.skip(1);
                     Superatom& sup = (Superatom&)_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
-                    _scanner.readLine(sup.subscript, true);
+                    _scanner.readQuotedLine(sup.subscript, true);
                 }
                 else if (_sgroup_types[sgroup_idx] == SGroup::SG_TYPE_MUL)
                 {
@@ -1305,7 +1318,7 @@ void MolfileLoader::_readCtab2000()
                 {
                     _scanner.skip(1);
                     RepeatingUnit& sru = (RepeatingUnit&)_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
-                    _scanner.readLine(sru.subscript, true);
+                    _scanner.readQuotedLine(sru.subscript, true);
                 }
                 else
                     _scanner.skipLine();
@@ -2102,8 +2115,8 @@ void MolfileLoader::_postLoad()
             nucleo_templates.emplace(tg.tgroup_name.ptr(), tg_idx);
     }
 
-    if (_bmol->tgroups.getTGroupCount() && _bmol->sgroups.getSGroupCount())
-        _bmol->transformSuperatomsToTemplates(_max_template_id);
+    if (!_disable_sgroups_conversion && _bmol->sgroups.getSGroupCount() && (_bmol->tgroups.getTGroupCount() || _monomer_library))
+        _bmol->transformSuperatomsToTemplates(_max_template_id, _monomer_library);
 
     std::set<int> templates_to_remove;
     std::unordered_map<MonomerKey, int, pair_hash> new_templates;
@@ -2430,7 +2443,12 @@ void MolfileLoader::_readCtab3000()
                     if (was_m)
                         throw Error("'M' inside atom list, if present, must be single");
 
-                    if (buf.size() == 2 && buf[0] == 'A')
+                    if (buf.size() == 2 && buf[0] == '*')
+                    {
+                        was_a = true;
+                        atom_type = _ATOM_STAR;
+                    }
+                    else if (buf.size() == 2 && buf[0] == 'A')
                     {
                         was_a = true;
                         atom_type = _ATOM_A;
@@ -2609,7 +2627,12 @@ void MolfileLoader::_readCtab3000()
                 else if (atom_type == _ATOM_AH)
                 {
                     std::unique_ptr<QueryMolecule::Atom> atom = std::make_unique<QueryMolecule::Atom>();
-                    atom->type = QueryMolecule::OP_NONE;
+                    _qmol->addAtom(atom.release());
+                }
+                else if (atom_type == _ATOM_STAR)
+                {
+                    std::unique_ptr<QueryMolecule::Atom> atom = std::make_unique<QueryMolecule::Atom>();
+                    atom->type = QueryMolecule::ATOM_STAR;
                     _qmol->addAtom(atom.release());
                 }
                 else if (atom_type == _ATOM_X)
@@ -3852,18 +3875,21 @@ void MolfileLoader::_readTGroups3000()
                     strscan.readWord(word, "=");
                     strscan.skip(1); // =
                     word.push(0);
+
                     if (strcmp(word.ptr(), "COMMENT") == 0)
                     {
                         _readStringInQuotes(strscan, &tgroup.tgroup_comment);
                     }
-
-                    if (strcmp(word.ptr(), "NATREPLACE") == 0)
+                    else if (strcmp(word.ptr(), "NATREPLACE") == 0)
                     {
                         _readStringInQuotes(strscan, &tgroup.tgroup_natreplace);
                     }
+                    else
 
-                    if (!strscan.isEOF())
-                        strscan.skip(1);
+                        if (strcmp(word.ptr(), "FULLNAME") == 0)
+                    {
+                        _readStringInQuotes(strscan, &tgroup.tgroup_full_name);
+                    }
                 }
 
                 long long pos = _scanner.tell();
@@ -3872,9 +3898,8 @@ void MolfileLoader::_readTGroups3000()
                 {
                     _scanner.seek(pos, SEEK_SET);
                     tgroup.fragment.reset(_bmol->neu());
-                    //               tgroup.fragment = _bmol->neu();
-
                     MolfileLoader loader(_scanner);
+                    loader._disable_sgroups_conversion = true;
                     loader.copyProperties(*this);
                     loader._bmol = tgroup.fragment.get();
                     if (_bmol->isQueryMolecule())
@@ -3889,6 +3914,48 @@ void MolfileLoader::_readTGroups3000()
                     }
                     loader._readCtab3000();
                     loader._postLoad();
+                    if (_monomer_library != nullptr && tgroup.tgroup_class.size() > 0)
+                    {
+                        auto& class_map = MonomerTemplates::getStrToMonomerType();
+                        auto class_it = class_map.find(tgroup.tgroup_class.ptr());
+                        if (class_it != class_map.end())
+                        {
+                            // Search monomer library for monomer with same class and alias
+                            std::string id = _monomer_library->getMonomerTemplateIdByAlias(class_it->second, tgroup.tgroup_name.ptr());
+                            if (id.size() == 0 && tgroup.tgroup_alias.size() > 0)
+                                id = _monomer_library->getMonomerTemplateIdByAlias(class_it->second, tgroup.tgroup_alias.ptr());
+                            if (id.size() > 0)
+                            {
+                                // template with same class and alias found
+                                // check inchi keys of structures
+                                try
+                                {
+                                    const auto& templ = _monomer_library->getMonomerTemplateById(id);
+                                    std::string templ_inchi_str;
+                                    StringOutput templ_inchi_output(templ_inchi_str);
+                                    MoleculeInChI templ_inchi(templ_inchi_output);
+                                    auto templ_tgroup = templ.getTGroup();
+                                    templ_inchi.outputInChI(templ_tgroup->fragment->asMolecule());
+                                    std::string tg_inchi_str;
+                                    StringOutput tg_inchi_output(tg_inchi_str);
+                                    MoleculeInChI tg_inchi(tg_inchi_output);
+                                    tg_inchi.outputInChI(tgroup.fragment->asMolecule());
+                                    if (templ_inchi_str == tg_inchi_str)
+                                    {
+                                        std::string tgroup_name = tgroup.tgroup_name.ptr();
+                                        tgroup.copy_without_fragment(*templ_tgroup);
+                                        // restore tgroup_name. we can't replace it with tgroup_name from library without updating template atoms'names.
+                                        tgroup.tgroup_name.readString(tgroup_name.c_str(), true);
+                                        tgroup.tgroup_text_id.readString(id.c_str(), true);
+                                    }
+                                }
+                                catch (...)
+                                {
+                                    // just do not copy on error
+                                }
+                            }
+                        }
+                    }
                 }
                 else
                     throw Error("unexpected string in template: %s", str.ptr());

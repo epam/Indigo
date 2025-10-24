@@ -43,6 +43,7 @@
 #include "indigo_ket_document.h"
 #include "indigo_loaders.h"
 #include "indigo_molecule.h"
+#include "indigo_monomer_library.h"
 #include "indigo_properties.h"
 #include "indigo_reaction.h"
 #include "indigo_savers.h"
@@ -1124,6 +1125,28 @@ CEXPORT int indigoIsSelected(int item)
     INDIGO_END(-1);
 }
 
+CEXPORT int indigoHasSelection(int item)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(item);
+
+        if (IndigoBaseMolecule::is(obj))
+        {
+            return obj.getBaseMolecule().hasSelection() ? 1 : 0;
+        }
+        else if (IndigoBaseReaction::is(obj))
+        {
+            return obj.getBaseReaction().hasSelection() ? 1 : 0;
+        }
+        else
+            throw IndigoError("indigoHasSelection(): expected molecule or reaction, got %s", obj.debugInfo());
+
+        return 1;
+    }
+    INDIGO_END(-1);
+}
+
 CEXPORT int indigoOptimize(int query, const char* options)
 {
     INDIGO_BEGIN
@@ -1655,6 +1678,22 @@ CEXPORT const char* indigoCheckStructure(const char* structure, const char* prop
     INDIGO_END(0);
 }
 
+CEXPORT const char* indigoMonomerLibrary(int library)
+{
+    INDIGO_BEGIN
+    {
+        auto& tmp = self.getThreadTmpData();
+        ArrayOutput out(tmp.string);
+        KetDocumentJsonSaver js(out);
+        IndigoObject& lib_obj = self.getObject(library);
+        js.pretty_json = self.json_saving_pretty;
+        js.saveMonomerLibrary(IndigoMonomerLibrary::get(lib_obj));
+        out.writeChar(0);
+        return tmp.string.ptr();
+    }
+    INDIGO_END(0);
+}
+
 CEXPORT const char* indigoJson(int item)
 {
     INDIGO_BEGIN
@@ -1740,6 +1779,10 @@ CEXPORT const char* indigoGetOriginalFormat(int item)
         {
             auto& doc = static_cast<IndigoKetDocument&>(obj).get();
             original_format = doc.original_format;
+        }
+        else if (IndigoMonomerLibrary::is(obj))
+        {
+            original_format = 0;
         }
         else
             throw IndigoError("indigoSaveJson(): expected molecule, got %s", obj.debugInfo());

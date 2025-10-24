@@ -197,6 +197,45 @@ mol = indigo.loadMoleculeFromFile(ket_fname)
 renderer.renderToFile(mol, joinPathPy("out/" + ket_png_fname, __file__))
 print(checkImageSimilarity(ket_png_fname))
 
+print("issue 2748 backwards substituents")
+indigo.resetOptions()
+indigo.setOption("render-output-format", "png")
+fname = "backwards_substituents_2748"
+png_fname = fname + ".png"
+cdxml_fname = joinPathPy("molecules/%s.cdxml" % fname, __file__)
+mol = indigo.loadMoleculeFromFile(cdxml_fname)
+renderer.renderToFile(mol, joinPathPy("out/" + png_fname, __file__))
+print(checkImageSimilarity(png_fname))
+
+print("issue 2970 cip breaks svg")
+indigo.resetOptions()
+indigo.setOption("render-output-format", "png")
+fname = "cip_breaks_svg_2970"
+png_fname = fname + ".png"
+cdxml_fname = joinPathPy("molecules/%s.cdxml" % fname, __file__)
+mol = indigo.loadMoleculeFromFile(cdxml_fname)
+renderer.renderToFile(mol, joinPathPy("out/" + png_fname, __file__))
+print(checkImageSimilarity(png_fname))
+
+print("issue 2900 cip always render")
+indigo.resetOptions()
+indigo.setOption("render-output-format", "png")
+fname = "cip_labels_2900"
+png_fname = fname + ".png"
+cdxml_fname = joinPathPy("molecules/%s.cdxml" % fname, __file__)
+mol = indigo.loadMoleculeFromFile(cdxml_fname)
+renderer.renderToFile(mol, joinPathPy("out/" + png_fname, __file__))
+print(checkImageSimilarity(png_fname))
+
+print("issue 3049 missing stereolabels")
+indigo.resetOptions()
+indigo.setOption("render-output-format", "png")
+fname = "cip_labels_3049"
+png_fname = fname + ".png"
+ket_fname = joinPathPy("reactions/%s.ket" % fname, __file__)
+mol = indigo.loadReactionFromFile(ket_fname)
+renderer.renderToFile(mol, joinPathPy("out/" + png_fname, __file__))
+print(checkImageSimilarity(png_fname))
 
 if isIronPython():
     renderer.Dispose()

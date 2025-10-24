@@ -102,6 +102,11 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResultString(this, lib.indigoHelm(self, library.self));
     }
 
+    public String axolabs(IndigoObject library) {
+        dispatcher.setSessionID();
+        return Indigo.checkResultString(this, lib.indigoAxoLabs(self, library.self));
+    }
+
     public String macroProperties(float upc, float nac) {
         dispatcher.setSessionID();
         return Indigo.checkResultString(this, lib.indigoMacroProperties(self, upc, nac));
@@ -140,6 +145,11 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
     public String json() {
         dispatcher.setSessionID();
         return Indigo.checkResultString(this, lib.indigoJson(self));
+    }
+
+    public String monomerLibrary() {
+        dispatcher.setSessionID();
+        return Indigo.checkResultString(this, lib.indigoMonomerLibrary(self));
     }
 
     public void saveCml(String filename) {
@@ -482,6 +492,26 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResult(this, lib.indigoCheckRGroups(self));
     }
 
+    public int atomIndex() {
+        dispatcher.setSessionID();
+        return Indigo.checkResult(this, lib.indigoAtomIndex(self));
+    }
+
+    public int bondIndex() {
+        dispatcher.setSessionID();
+        return Indigo.checkResult(this, lib.indigoBondIndex(self));
+    }
+
+    public int bondBegin() {
+        dispatcher.setSessionID();
+        return Indigo.checkResult(this, lib.indigoBondBegin(self));
+    }
+
+    public int bondEnd() {
+        dispatcher.setSessionID();
+        return Indigo.checkResult(this, lib.indigoBondEnd(self));
+    }
+
     public int checkChirality() {
         dispatcher.setSessionID();
         return Indigo.checkResult(this, lib.indigoCheckChirality(self));
@@ -712,6 +742,16 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResult(this, lib.indigoValidateChirality(self));
     }
 
+    public int stereocenterCIPDescriptor() {
+        dispatcher.setSessionID();
+        return Indigo.checkResult(this, lib.indigoStereocenterCIPDescriptor(self));
+    }
+
+    public int addCIPStereoDescriptors() {
+        dispatcher.setSessionID();
+        return Indigo.checkResult(this, lib.indigoAddCIPStereoDescriptors(self));
+    }
+
     public IndigoObject addAtom(String symbol) {
         dispatcher.setSessionID();
         return new IndigoObject(
@@ -791,6 +831,16 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResult(this, lib.indigoIsHighlighted(self)) == 1;
     }
 
+    public boolean isSelected() {
+        dispatcher.setSessionID();
+        return Indigo.checkResult(this, lib.indigoIsSelected(self)) == 1;
+    }
+
+    public boolean hasSelection() {
+        dispatcher.setSessionID();
+        return Indigo.checkResult(this, lib.indigoHasSelection(self)) == 1;
+    }
+
     public int countComponents() {
         dispatcher.setSessionID();
         return Indigo.checkResult(this, lib.indigoCountComponents(self));
@@ -866,6 +916,17 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         }
     }
 
+    public String molecularFormula() {
+        int gf = -1;
+        try {
+            dispatcher.setSessionID();
+            gf = Indigo.checkResult(this, lib.indigoMolecularFormula(self));
+            return Indigo.checkResultString(this, lib.indigoToString(gf));
+        } finally {
+            lib.indigoFree(gf);
+        }
+    }
+
     public double molecularWeight() {
         dispatcher.setSessionID();
         return Indigo.checkResultDouble(this, lib.indigoMolecularWeight(self));
@@ -923,6 +984,11 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
     public double pKa() {
         dispatcher.setSessionID();
         return Indigo.checkResultDouble(this, lib.indigoPka(self));
+    }
+
+    public String pKaValues() {
+        dispatcher.setSessionID();
+        return Indigo.checkResultString(this, lib.indigoPkaValues(self));
     }
 
     public String canonicalSmiles() {
@@ -1501,6 +1567,11 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
     public void foldUnfoldHydrogens() {
         dispatcher.setSessionID();
         Indigo.checkResult(this, lib.indigoFoldUnfoldHydrogens(self));
+    }
+
+    public void expandMonomers() {
+        dispatcher.setSessionID();
+        Indigo.checkResult(this, lib.indigoExpandMonomers(self));
     }
 
     public void clearXYZ() {

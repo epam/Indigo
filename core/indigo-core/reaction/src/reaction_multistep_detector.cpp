@@ -164,7 +164,7 @@ void ReactionMultistepDetector::createSummBlocks()
                 auto& last_sb = component_summ_blocks_list.back();
                 last_sb.indexes.push_back(plus_connection.first);
                 last_sb.indexes.push_back(plus_connection.second);
-
+                last_sb.plus_indexes.push_back(i);
                 rc_connection.first.summ_block_idx = ReactionComponent::CONNECTED; // mark as connected
                 rc_connection.second.summ_block_idx = ReactionComponent::CONNECTED;
                 auto last_it = std::prev(component_summ_blocks_list.end());
@@ -175,22 +175,28 @@ void ReactionMultistepDetector::createSummBlocks()
 
             case LI_BOTH: {
                 // merge two blocks
-                auto& block_first = *rc_connection.first.summ_block_it;
-                auto& block_second = *rc_connection.second.summ_block_it;
-                auto second_block_it = rc_connection.second.summ_block_it;
-                merge_bbox(block_first.bbox, block_second.bbox);
-                for (int v : block_second.indexes)
+                auto second_block_it = rc_connection.second.summ_block_it; // don't merge the same blocks!!!
+                if (second_block_it != rc_connection.first.summ_block_it)
                 {
-                    block_first.indexes.push_back(v);                                          // copy all indexes of block_second to block_first
-                    _reaction_components[v].summ_block_it = rc_connection.first.summ_block_it; // patch copied components. now they belong to block_first.
+                    auto& block_first = *rc_connection.first.summ_block_it;
+                    auto& block_second = *rc_connection.second.summ_block_it;
+                    merge_bbox(block_first.bbox, block_second.bbox);
+                    // copy pluses
+                    block_first.plus_indexes.insert(block_first.plus_indexes.end(), block_second.plus_indexes.begin(), block_second.plus_indexes.end());
+                    for (int v : block_second.indexes)
+                    {
+                        block_first.indexes.push_back(v);                                          // copy all indexes of block_second to block_first
+                        _reaction_components[v].summ_block_it = rc_connection.first.summ_block_it; // patch copied components. now they belong to block_first.
+                    }
+                    component_summ_blocks_list.erase(second_block_it); // remove block_second
                 }
-                component_summ_blocks_list.erase(second_block_it); // remove block_second
             }
             break;
 
             case LI_FIRST_ONLY: {
                 // connect second to the existing first block
                 auto& block = *rc_connection.first.summ_block_it;
+                block.plus_indexes.push_back(i);                                        // add plus
                 block.indexes.push_back(plus_connection.second);                        // add second component
                 merge_bbox(block.bbox, rc_connection.second.bbox);                      // merge second box with block box
                 rc_connection.second.summ_block_it = rc_connection.first.summ_block_it; // bind second to the first block
@@ -201,6 +207,8 @@ void ReactionMultistepDetector::createSummBlocks()
             case LI_SECOND_ONLY: {
                 // connect first to the existing second block
                 auto& block = *rc_connection.second.summ_block_it;
+                block.plus_indexes.push_back(i);
+                // maybe it's better to push to front?
                 block.indexes.push_back(plus_connection.first);                         // add second component
                 merge_bbox(block.bbox, rc_connection.first.bbox);                       // merge second box with block box
                 rc_connection.first.summ_block_it = rc_connection.second.summ_block_it; // bind second to the first block
@@ -540,38 +548,43 @@ void ReactionMultistepDetector::mergeCloseComponents()
     for (size_t i = 0; i < _mol_distances.size(); ++i)
     {
         auto& mdi = _mol_distances[i];
-        if (mdi.sorted_distances.empty() || !_components[i].mol)
-            continue;
-        std::queue<std::pair<std::size_t, std::optional<std::pair<int, int>>>> bfs_queue;
-        std::vector<std::size_t> cluster;
-        bfs_queue.emplace(i, std::nullopt);
-        cluster.push_back(i);
-        while (!bfs_queue.empty())
+        if (mdi.sorted_distances.size() && _components[i].mol)
         {
-            auto qel = bfs_queue.front();
-            auto& mdj = _mol_distances[qel.first];
-            bfs_queue.pop();
-            for (auto& sd : mdj.sorted_distances)
+            std::queue<std::pair<std::size_t, std::optional<std::pair<int, int>>>> bfs_queue;
+            std::vector<std::size_t> cluster;
+            bfs_queue.emplace(i, std::nullopt);
+            cluster.push_back(i);
+            while (!bfs_queue.empty())
             {
-                auto j = sd.first;
-                if (!_components[j].mol || std::find(cluster.begin(), cluster.end(), j) != cluster.end())
-                    continue;
-                auto zone = isMergeable(qel.first, j, qel.second);
-                if (zone.has_value())
+                auto qel = bfs_queue.front();
+                auto& mdj = _mol_distances[qel.first];
+                bfs_queue.pop();
+                for (auto& sd : mdj.sorted_distances)
                 {
-                    cluster.push_back(j);
-                    bfs_queue.emplace(j, zone);
+                    auto j = sd.first;
+                    if (!_components[j].mol || std::find(cluster.begin(), cluster.end(), j) != cluster.end())
+                        continue;
+                    auto zone = isMergeable(qel.first, j, qel.second);
+                    if (zone.has_value())
+                    {
+                        cluster.push_back(j);
+                        bfs_queue.emplace(j, zone);
+                    }
                 }
             }
-        }
-        for (std::size_t k = 1; k < cluster.size(); ++k)
-        {
-            QS_DEF(Array<int>, mapping);
-            if (_components[cluster[k]].mol)
+            for (std::size_t k = 1; k < cluster.size(); ++k)
             {
-                _components[i].mol->mergeWithMolecule(*_components[cluster[k]].mol, &mapping, 0);
-                _components[cluster[k]].idx = (int)i;
-                _components[cluster[k]].mol.reset();
+                QS_DEF(Array<int>, mapping);
+                if (_components[cluster[k]].mol)
+                {
+                    auto& cluster_comp = _components[cluster[k]];
+                    auto& comp = _components[i];
+                    comp.mol->mergeWithMolecule(*cluster_comp.mol, &mapping, 0);
+                    comp.merged_indexes.push_back(cluster[k]);
+                    comp.merged_indexes.insert(comp.merged_indexes.end(), cluster_comp.merged_indexes.begin(), cluster_comp.merged_indexes.end());
+                    cluster_comp.merged_indexes.clear();
+                    _components[cluster[k]].mol.reset();
+                }
             }
         }
     }
@@ -580,9 +593,10 @@ void ReactionMultistepDetector::mergeCloseComponents()
     {
         if (_components[i].mol)
         {
-            _merged_components.emplace_back(std::move(_components[i].mol), _components[i].hull, (int)_merged_components.size());
-            _merged_components.back().mapped_idx = i;
-            _components[i].mapped_idx = (int)_merged_components.size() - 1;
+            _merged_components.emplace_back(std::move(_components[i].mol), _components[i].hull);
+            auto& mc_last = _merged_components.back();
+            mc_last.merged_indexes.push_back(i);
+            mc_last.merged_indexes.insert(mc_last.merged_indexes.end(), _components[i].merged_indexes.begin(), _components[i].merged_indexes.end());
         }
     }
     _moleculeCount = (int)_merged_components.size();
@@ -643,8 +657,8 @@ std::optional<std::pair<int, int>> ReactionMultistepDetector::isMergeable(size_t
                 }
 
                 // different zone types are not mergeable
-                if (_zones[zone1.value().first].zone_type != _zones[zone2.value().first].zone_type && comm_zones.empty())
-                    return std::nullopt;
+                // if (_zones[zone1.value().first].zone_type != _zones[zone2.value().first].zone_type && comm_zones.empty())
+                //    return std::nullopt;
             }
 
             if (!current_zone.has_value())
@@ -722,15 +736,15 @@ void ReactionMultistepDetector::sortSummblocks()
     _component_summ_blocks = std::move(sorted_blocks);
 
     // Update arrows_to and arrows_from with new indices
-    for (auto& block : _component_summ_blocks)
+    for (auto& csb : _component_summ_blocks)
     {
         auto update_arrow = [&](int& arrow) {
             if (arrow >= 0 && arrow < static_cast<int>(old_to_new.size()))
                 arrow = old_to_new[arrow];
         };
 
-        std::for_each(block.arrows_to.begin(), block.arrows_to.end(), update_arrow);
-        std::for_each(block.arrows_from.begin(), block.arrows_from.end(), update_arrow);
+        std::for_each(csb.arrows_to.begin(), csb.arrows_to.end(), update_arrow);
+        std::for_each(csb.arrows_from.begin(), csb.arrows_from.end(), update_arrow);
     }
     // Update reaction components with new indices
     for (auto& rc : _reaction_components)
@@ -738,6 +752,114 @@ void ReactionMultistepDetector::sortSummblocks()
         if (rc.summ_block_idx >= 0 && rc.summ_block_idx < static_cast<int>(old_to_new.size()))
             rc.summ_block_idx = old_to_new[rc.summ_block_idx];
     }
+}
+
+void ReactionMultistepDetector::buildReactionsData()
+{
+    // separate reactions by connected components
+    std::vector<bool> visited(_component_summ_blocks.size());
+    std::unordered_map<int, std::vector<size_t>> agents_map;
+    // collect agents
+    for (size_t i = 0; i < _component_summ_blocks.size(); ++i)
+    {
+        auto& csb = _component_summ_blocks[i];
+        if (csb.role == BaseReaction::CATALYST)
+        {
+            for (auto ri : csb.reaction_indexes)
+            {
+                if (ri.first == BaseReaction::CATALYST) // catalyst can't be a reactant or product of other reactions
+                {
+                    auto step_it = agents_map.find(ri.second);
+                    if (step_it != agents_map.end())
+                        step_it->second.push_back(i); // add catalyst to the existing step
+                    else
+                        agents_map.emplace(std::piecewise_construct, std::forward_as_tuple(ri.second),
+                                           std::forward_as_tuple(static_cast<std::size_t>(1), i)); // create new step with catalyst
+                }
+                else
+                    throw Error("Catalyst can't be a reactant or product in other reactions");
+            }
+        }
+    }
+
+    for (size_t i = 0; i < _component_summ_blocks.size(); ++i)
+    {
+        auto& csb = _component_summ_blocks[i];
+
+        if (csb.role == BaseReaction::UNDEFINED)
+            continue;
+
+        for (auto csb_idx : csb.indexes)
+        {
+            auto& mc = _merged_components[csb_idx];
+            if (mc.merged_indexes.size() > 1)
+                _complex_molecules_info[csb_idx].second = mc.merged_indexes;
+        }
+
+        if (!visited[i])
+        {
+            std::vector<int> reaction_components;
+            std::map<int, std::vector<std::pair<int, int>>> steps;
+            std::stack<size_t> st;
+            st.push(i);
+            visited[i] = true;
+            while (!st.empty())
+            {
+                auto u = st.top();
+                auto& csb = _component_summ_blocks[u];
+                st.pop();
+                // check reaction steps/arrows where csb is a participant
+                for (auto ri : csb.reaction_indexes)
+                {
+                    auto ri_it = steps.find(ri.second); // ri.second is reaction index
+                    if (ri_it != steps.end())
+                        ri_it->second.emplace_back(ri.first, (int)u); // emplace role and component index
+                    else
+                        steps.emplace(std::piecewise_construct, std::forward_as_tuple(ri.second),
+                                      std::forward_as_tuple(static_cast<std::size_t>(1), std::pair<int, int>{ri.first, (int)u}));
+
+                    if (csb.role != BaseReaction::CATALYST)
+                    { // find catalysts for this reaction step
+                        auto agent_it = agents_map.find(ri.second);
+                        if (agent_it != agents_map.end())
+                        {
+                            for (auto agent_idx : agent_it->second)
+                            {
+                                if (!visited[agent_idx])
+                                {
+                                    visited[agent_idx] = true;
+                                    st.push(agent_idx);
+                                }
+                            }
+                        }
+                    }
+                }
+                reaction_components.push_back((int)u);
+                // collect reactants and products
+                for (int v : csb.arrows_to)
+                {
+                    if (!visited[v])
+                    {
+                        visited[v] = true;
+                        st.push(v);
+                    }
+                }
+                for (int v : _component_summ_blocks[u].arrows_from)
+                {
+                    if (!visited[v])
+                    {
+                        visited[v] = true;
+                        st.push(v);
+                    }
+                }
+            }
+            _reactions_info.emplace_back(reaction_components, steps);
+        }
+    }
+    // add indexes to complex molecules info
+    int complex_mol_idx = 0;
+    for (auto& kvp : _complex_molecules_info)
+        kvp.second.first = complex_mol_idx++;
 }
 
 ReactionMultistepDetector::ReactionType ReactionMultistepDetector::detectReaction()
@@ -758,14 +880,16 @@ ReactionMultistepDetector::ReactionType ReactionMultistepDetector::detectReactio
         hull.push_back(bbox.rightBottom());
         hull.push_back(bbox.rightTop());
         hull.push_back(bbox.leftTop());
-        _components.emplace_back(std::move(component), hull, i);
+        _components.emplace_back(std::move(component), hull);
     }
 
     collectSortedDistances();
     mergeCloseComponents();
     createSummBlocks();
+    std::generate_n(std::inserter(_remaining_csbs, _remaining_csbs.end()), _component_summ_blocks.size(), [i = 0]() mutable { return i++; });
     bool has_multistep = mapReactionComponents();
     bool has_multitail = mapMultitailReactionComponents();
+    mapCatalysts();
     sortSummblocks();
     mergeUndefinedComponents();
     return has_multitail ? ReactionType::EPathwayReaction : (has_multistep ? ReactionType::EMutistepReaction : ReactionType::ESimpleReaction);
@@ -776,6 +900,7 @@ bool ReactionMultistepDetector::mapReactionComponents()
     int arrow_count = _bmol.meta().getMetaCount(ReactionArrowObject::CID);
     if (arrow_count > 0)
     {
+        // map reactants and products
         for (int reaction_index = 0; reaction_index < arrow_count; ++reaction_index)
         {
             auto& arrow = (const ReactionArrowObject&)_bmol.meta().getMetaObject(ReactionArrowObject::CID, reaction_index);
@@ -789,6 +914,7 @@ bool ReactionMultistepDetector::mapReactionComponents()
 
             float min_dist_prod = -1, min_dist_reac = -1;
             int idx_cs_min_prod = -1, idx_cs_min_reac = -1;
+
             for (int index_cs = 0; index_cs < static_cast<int>(_component_summ_blocks.size()); ++index_cs)
             {
                 auto& csb = _component_summ_blocks[index_cs];
@@ -822,21 +948,6 @@ bool ReactionMultistepDetector::mapReactionComponents()
                         idx_cs_min_reac = index_cs;
                     }
                 }
-                else
-                {
-                    for (auto rc_idx : csb.indexes)
-                    {
-                        auto& rc = _reaction_components[rc_idx];
-                        if (rc.component_type == ReactionComponent::MOLECULE)
-                        {
-                            auto& top_zone = _zones[reaction_index].zone_sections[2];
-                            auto& bottom_zone = _zones[reaction_index].zone_sections[3];
-                            if (convexPolygonsIntersect(_merged_components[rc_idx].hull, top_zone) ||
-                                convexPolygonsIntersect(_merged_components[rc_idx].hull, bottom_zone))
-                                csb.role = BaseReaction::CATALYST;
-                        }
-                    }
-                }
             }
 
             // TODO: add upper limit
@@ -849,9 +960,16 @@ bool ReactionMultistepDetector::mapReactionComponents()
                 {
                     auto& csb_min_prod = _component_summ_blocks[idx_cs_min_prod];
                     if (csb_min_prod.role == BaseReaction::UNDEFINED)
+                    {
+                        csb_min_prod.reaction_indexes.emplace_back(BaseReaction::PRODUCT, reaction_index);
                         csb_min_prod.role = BaseReaction::PRODUCT;
+                        _remaining_csbs.erase(idx_cs_min_prod);
+                    }
                     else if (csb_min_prod.role == BaseReaction::REACTANT)
+                    {
+                        csb_min_prod.reaction_indexes.emplace_back(BaseReaction::PRODUCT, reaction_index);
                         csb_min_prod.role = BaseReaction::INTERMEDIATE;
+                    }
                     if (min_dist_reac >= 0)
                         csb_min_prod.arrows_from.push_back(idx_cs_min_reac);
                     csb_min_prod.reaction_idx = reaction_index;
@@ -861,14 +979,22 @@ bool ReactionMultistepDetector::mapReactionComponents()
                 {
                     auto& csb_min_reac = _component_summ_blocks[idx_cs_min_reac];
                     if (csb_min_reac.role == BaseReaction::UNDEFINED)
+                    {
+                        csb_min_reac.reaction_indexes.emplace_back(BaseReaction::REACTANT, reaction_index);
                         csb_min_reac.role = BaseReaction::REACTANT;
+                        _remaining_csbs.erase(idx_cs_min_reac);
+                    }
                     else if (csb_min_reac.role == BaseReaction::PRODUCT)
+                    {
+                        csb_min_reac.reaction_indexes.emplace_back(BaseReaction::REACTANT, reaction_index);
                         csb_min_reac.role = BaseReaction::INTERMEDIATE;
+                    }
                     if (min_dist_prod >= 0)
                         csb_min_reac.arrows_to.push_back(idx_cs_min_prod);
                 }
             }
         }
+
         return arrow_count > 1;
     }
     return false;
@@ -877,12 +1003,14 @@ bool ReactionMultistepDetector::mapReactionComponents()
 bool ReactionMultistepDetector::mapMultitailReactionComponents()
 {
     int pathway_count = _bmol.meta().getMetaCount(ReactionMultitailArrowObject::CID);
+    int arrow_count = _bmol.meta().getMetaCount(ReactionArrowObject::CID);
 
     bool bad_pathway = pathway_count == 0;
 
     for (int pathway_idx = 0; pathway_idx < pathway_count; ++pathway_idx)
     {
         auto& multi = (const ReactionMultitailArrowObject&)_bmol.meta().getMetaObject(ReactionMultitailArrowObject::CID, pathway_idx);
+        auto reaction_idx = pathway_idx + arrow_count;
         float min_dist_prod = -1;
         int idx_cs_min_prod = -1;
         auto arr_begin = multi.getHead();
@@ -929,14 +1057,20 @@ bool ReactionMultistepDetector::mapMultitailReactionComponents()
         else
         {
             auto& csb_min_prod = _component_summ_blocks[idx_cs_min_prod];
-            csb_min_prod.reaction_idx = pathway_idx + _bmol.meta().getMetaCount(ReactionArrowObject::CID);
-            auto& rc_arrow = _reaction_components[_moleculeCount + _bmol.meta().getMetaCount(ReactionPlusObject::CID) +
-                                                  _bmol.meta().getMetaCount(ReactionArrowObject::CID) + pathway_idx];
+            csb_min_prod.reaction_idx = reaction_idx;
+            auto& rc_arrow = _reaction_components[_moleculeCount + _bmol.meta().getMetaCount(ReactionPlusObject::CID) + arrow_count + pathway_idx];
             rc_arrow.summ_block_idx = ReactionComponent::CONNECTED; // mark arrow as connected
             if (csb_min_prod.role == BaseReaction::UNDEFINED)
+            {
+                csb_min_prod.reaction_indexes.emplace_back(BaseReaction::PRODUCT, reaction_idx);
                 csb_min_prod.role = BaseReaction::PRODUCT;
+                _remaining_csbs.erase(idx_cs_min_prod);
+            }
             else if (csb_min_prod.role == BaseReaction::REACTANT)
+            {
+                csb_min_prod.reaction_indexes.emplace_back(BaseReaction::PRODUCT, reaction_idx);
                 csb_min_prod.role = BaseReaction::INTERMEDIATE;
+            }
         }
 
         PathwayComponent pwc;
@@ -948,9 +1082,16 @@ bool ReactionMultistepDetector::mapMultitailReactionComponents()
             {
                 auto& csb_min_reac = _component_summ_blocks[reac.second];
                 if (csb_min_reac.role == BaseReaction::UNDEFINED)
+                {
+                    csb_min_reac.reaction_indexes.emplace_back(BaseReaction::REACTANT, reaction_idx);
                     csb_min_reac.role = BaseReaction::REACTANT;
+                    _remaining_csbs.erase(reac.second);
+                }
                 else if (csb_min_reac.role == BaseReaction::PRODUCT)
+                {
+                    csb_min_reac.reaction_indexes.emplace_back(BaseReaction::REACTANT, reaction_idx);
                     csb_min_reac.role = BaseReaction::INTERMEDIATE;
+                }
 
                 // idx_cs_min_reac <-> idx_cs_min_prod
 
@@ -964,7 +1105,36 @@ bool ReactionMultistepDetector::mapMultitailReactionComponents()
                 bad_pathway = true;
         }
     }
+
     return !bad_pathway;
+}
+
+void ReactionMultistepDetector::mapCatalysts()
+{
+    // map catalysts
+    int arrow_count = _bmol.meta().getMetaCount(ReactionArrowObject::CID);
+    for (int reaction_index = 0; reaction_index < arrow_count; ++reaction_index)
+    {
+        for (auto index_csb : _remaining_csbs)
+        {
+            auto& csb = _component_summ_blocks[index_csb];
+            for (auto rc_idx : csb.indexes)
+            {
+                auto& rc = _reaction_components[rc_idx];
+                if (rc.component_type == ReactionComponent::MOLECULE)
+                {
+                    auto& top_zone = _zones[reaction_index].zone_sections[2];
+                    auto& bottom_zone = _zones[reaction_index].zone_sections[3];
+                    if (convexPolygonsIntersect(_merged_components[rc_idx].hull, top_zone) ||
+                        convexPolygonsIntersect(_merged_components[rc_idx].hull, bottom_zone))
+                    {
+                        csb.role = BaseReaction::CATALYST;
+                        csb.reaction_indexes.emplace_back(BaseReaction::CATALYST, reaction_index);
+                    }
+                }
+            }
+        }
+    }
 }
 
 void ReactionMultistepDetector::collectUndefinedDistances(const std::vector<std::pair<size_t, Rect2f>>& component_bboxes,
@@ -1076,7 +1246,6 @@ void ReactionMultistepDetector::mergeUndefinedComponents()
             if (rc_undef.molecule && rc_target.molecule)
             {
                 rc_target.molecule->mergeWithMolecule(*rc_undef.molecule, nullptr, 0);
-                _components[undef_bbox.first].idx = _components[comp_bbox.first].idx;
                 rc_undef.molecule.reset();
                 comp_bbox.second.extend(undef_bbox.second);
             }
@@ -1429,9 +1598,8 @@ void ReactionMultistepDetector::constructMultipleArrowReaction(BaseReaction& rxn
         }
     }
 
-    for (int i = 0; i < (int)_component_summ_blocks.size(); ++i)
+    for (auto& csb : _component_summ_blocks)
     {
-        auto& csb = _component_summ_blocks[i];
         for (auto csb_index : csb.arrows_to)
         {
             auto& rb = rxn.addReactionBlock();
@@ -1479,15 +1647,14 @@ void ReactionMultistepDetector::constructSimpleArrowReaction(BaseReaction& rxn)
         MOLECULE_IDX
     };
 
+    // handle case with arrow
     if (rxn.meta().getMetaCount(ReactionArrowObject::CID))
     {
         auto& arrow = (const ReactionArrowObject&)rxn.meta().getMetaObject(ReactionArrowObject::CID, 0);
         bool reverseReactionOrder = arrow.getArrowType() == ReactionArrowObject::ERetrosynthetic;
 
         if (reverseReactionOrder)
-        {
             rxn.setIsRetrosyntetic();
-        }
 
         for (int i = 0; i < rxn.meta().getMetaCount(SimpleTextObject::CID); ++i)
         {
@@ -1496,8 +1663,6 @@ void ReactionMultistepDetector::constructSimpleArrowReaction(BaseReaction& rxn)
             text.getBoundingBox(bbox);
             _reaction_components.emplace_back(ReactionComponent::TEXT, bbox, i, nullptr);
         }
-
-        int text_meta_idx = 0;
 
         std::vector<std::pair<int, uint8_t>> undefined_components;
         std::vector<std::pair<int, int>> product_components, reactant_components;
@@ -1574,17 +1739,20 @@ void ReactionMultistepDetector::constructSimpleArrowReaction(BaseReaction& rxn)
                 int side = !reverseReactionOrder ? getPointSide(pt, arrow.getTail(), arrow.getHead()) : getPointSide(pt, arrow.getHead(), arrow.getTail());
                 if (side == KReagentUpArea || side == KReagentDownArea)
                 {
-                    rxn.addSpecialCondition(text_meta_idx, bbox);
+                    rxn.addSpecialCondition(comp.index, bbox);
+                    if (_special_conditions.empty())
+                        _special_conditions.emplace(0, std::vector<int>{comp.index});
+                    else
+                        _special_conditions.begin()->second.push_back(comp.index);
                     break;
                 }
-                text_meta_idx++;
             }
             break;
             default:
                 break;
             }
         }
-    }
+    } // handle case without an arrow
     else
         for (auto& csb : _component_summ_blocks)
         {

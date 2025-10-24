@@ -1,4 +1,6 @@
 *** KET to MOL ***
+3068-star-issue.ket:SUCCEED
+3178-any-bond.ket:SUCCEED
 5amd.ket:SUCCEED
 accl_no_class.ket:SUCCEED
 acgt_1412.ket:SUCCEED
@@ -12,6 +14,10 @@ dala.ket:SUCCEED
 dcysteine.ket:SUCCEED
 dna_mod.ket:SUCCEED
 dthymine.ket:SUCCEED
+exp-valence-0.ket:SUCCEED
+flip_rotate.ket:SUCCEED
+flip_rotate_2000.ket:SUCCEED
+flip_rotate_rna.ket:SUCCEED
 fmoc.ket:SUCCEED
 hydro_atp_ch.ket:SUCCEED
 issue_1476.ket:SUCCEED
@@ -42,6 +48,7 @@ pepchem.ket:SUCCEED
 peptides.ket:SUCCEED
 query_explicit_val.ket:SUCCEED
 rna_mod.ket:SUCCEED
+sgroup_class.ket:SUCCEED
 sgroups_mul.ket:SUCCEED
 suplabel.ket:SUCCEED
 taspoglutide.ket:SUCCEED

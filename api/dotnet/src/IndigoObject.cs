@@ -116,6 +116,12 @@ namespace com.epam.indigo
             return dispatcher.checkResult(IndigoLib.indigoHelm(self, library.self));
         }
 
+        public string axolabs(IndigoObject library)
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoAxoLabs(self, library.self));
+        }
+
         public void saveSequenceToFile(string filename, IndigoObject library)
         {
             dispatcher.setSessionID();
@@ -154,6 +160,12 @@ namespace com.epam.indigo
         {
             dispatcher.setSessionID();
             return dispatcher.checkResult(IndigoLib.indigoJson(self));
+        }
+
+        public string monomerLibrary()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoMonomerLibrary(self));
         }
 
         public void saveCml(string filename)
@@ -577,6 +589,30 @@ namespace com.epam.indigo
         {
             dispatcher.setSessionID();
             return dispatcher.checkResult(IndigoLib.indigoCheckRGroups(self));
+        }
+
+        public int atomIndex()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoAtomIndex(self));
+        }
+
+        public int bondIndex()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoBondIndex(self));
+        }
+
+        public int bondBegin()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoBondBegin(self));
+        }
+
+        public int bondEnd()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoBondEnd(self));
         }
 
         public int? countHydrogens()
@@ -1275,6 +1311,18 @@ namespace com.epam.indigo
             return dispatcher.checkResult(IndigoLib.indigoValidateChirality(self));
         }
 
+        public int stereocenterCIPDescriptor()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoStereocenterCIPDescriptor(self));
+        }
+
+        public int addCIPStereoDescriptors()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoAddCIPStereoDescriptors(self));
+        }
+
         public IndigoObject addAtom(string symbol)
         {
             dispatcher.setSessionID();
@@ -1365,6 +1413,18 @@ namespace com.epam.indigo
             return (dispatcher.checkResult(IndigoLib.indigoIsHighlighted(self)) == 1);
         }
 
+        public bool isSelected()
+        {
+            dispatcher.setSessionID();
+            return (dispatcher.checkResult(IndigoLib.indigoIsSelected(self)) == 1);
+        }
+
+        public bool hasSelection()
+        {
+            dispatcher.setSessionID();
+            return (dispatcher.checkResult(IndigoLib.indigoHasSelection(self)) == 1);
+        }
+
         public int countComponents()
         {
             dispatcher.setSessionID();
@@ -1448,6 +1508,23 @@ namespace com.epam.indigo
 
         }
 
+        public string molecularFormula()
+        {
+            int gf = -1;
+            try
+            {
+                dispatcher.setSessionID();
+                gf = dispatcher.checkResult(IndigoLib.indigoMolecularFormula(self));
+                string result = dispatcher.checkResult(IndigoLib.indigoToString(gf));
+                return result;
+            }
+            finally
+            {
+                dispatcher.checkResult(IndigoLib.indigoFree(gf));
+            }
+
+        }
+
         public double molecularWeight()
         {
             dispatcher.setSessionID();
@@ -1512,6 +1589,12 @@ namespace com.epam.indigo
         {
             dispatcher.setSessionID();
             return dispatcher.checkResult(IndigoLib.indigoPka(self));
+        }
+
+        public string pKaValues()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoPkaValues(self));
         }
 
         public string canonicalSmiles()
@@ -1670,6 +1753,12 @@ namespace com.epam.indigo
         {
             dispatcher.setSessionID();
             dispatcher.checkResult(IndigoLib.indigoFoldUnfoldHydrogens(self));
+        }
+
+        public void expandMonomers()
+        {
+            dispatcher.setSessionID();
+            dispatcher.checkResult(IndigoLib.indigoExpandMonomers(self));
         }
 
         public void clearXYZ()

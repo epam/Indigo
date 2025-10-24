@@ -146,7 +146,7 @@ void MolfileSaver::_calculateSEQIDs(BaseMolecule& mol, const std::vector<std::ma
                 std::string mon_class = mol.getTemplateAtomClass(atom_idx);
                 if (isBackboneClass(mon_class) && mon_class != kMonomerClassCHEM) // No SEQID for chem
                 {
-                    mol.asMolecule().setTemplateAtomSeqid(atom_idx, seq_id);
+                    mol.setTemplateAtomSeqid(atom_idx, seq_id);
                     if (mon_class == kMonomerClassSUGAR)
                     {
                         // set seq_id for base
@@ -161,9 +161,9 @@ void MolfileSaver::_calculateSEQIDs(BaseMolecule& mol, const std::vector<std::ma
                                 seq_name = mol.getTemplateAtom(br_it->second);
                                 if (br_class == kMonomerClassBASE)
                                 {
-                                    mol.asMolecule().setTemplateAtomSeqid(br_it->second, seq_id);
-                                    mol.asMolecule().setTemplateAtomSeqName(br_it->second, seq_name.c_str());
-                                    mol.asMolecule().setTemplateAtomSeqName(atom_idx, seq_name.c_str());
+                                    mol.setTemplateAtomSeqid(br_it->second, seq_id);
+                                    mol.setTemplateAtomSeqName(br_it->second, seq_name.c_str());
+                                    mol.setTemplateAtomSeqName(atom_idx, seq_name.c_str());
                                 }
                             }
                             if (seq_name.size())
@@ -173,7 +173,7 @@ void MolfileSaver::_calculateSEQIDs(BaseMolecule& mol, const std::vector<std::ma
                                 {
                                     std::string br_class = mol.getTemplateAtomClass(br_it->second);
                                     if (br_class == kMonomerClassPHOSPHATE)
-                                        mol.asMolecule().setTemplateAtomSeqName(br_it->second, seq_name.c_str());
+                                        mol.setTemplateAtomSeqName(br_it->second, seq_name.c_str());
                                 }
                             }
                         }
@@ -205,18 +205,15 @@ void MolfileSaver::_saveMolecule(BaseMolecule& bmol, bool query)
 
     BaseMolecule* pmol = &bmol;
     std::unique_ptr<BaseMolecule> mol(bmol.neu());
+    mol->clone_KeepIndices(bmol);
     if (mode == MODE_2000)
     {
         _v2000 = true;
-        if (bmol.tgroups.getTGroupCount())
-        {
-            mol->clone(bmol);
-            mol->transformTemplatesToSuperatoms();
-            pmol = mol.get();
-        }
     }
     else if (mode == MODE_3000)
+    {
         _v2000 = false;
+    }
     else
     {
         // auto-detect the format: save to v3000 molfile only
@@ -224,6 +221,9 @@ void MolfileSaver::_saveMolecule(BaseMolecule& bmol, bool query)
         _v2000 = !(pmol->hasHighlighting() || pmol->stereocenters.haveEnhancedStereocenter() ||
                    (pmol->vertexCount() > 999 || pmol->edgeCount() > 999 || pmol->tgroups.getTGroupCount()));
     }
+
+    if (mol->tgroups.getTGroupCount() && mol->convertTemplateAtomsToSuperatoms(!_v2000))
+        pmol = mol.get();
 
     bool rg2000 = (_v2000 && pmol->rgroups.getRGroupCount() > 0);
 
@@ -529,22 +529,10 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         }
         else if (qmol != 0 && (query_atom_type = QueryMolecule::parseQueryAtomSmarts(*qmol, i, list, properties)) != -1)
         {
-            if (query_atom_type == QueryMolecule::QUERY_ATOM_A)
-                out.writeChar('A');
-            else if (query_atom_type == QueryMolecule::QUERY_ATOM_Q)
-                out.writeChar('Q');
-            else if (query_atom_type == QueryMolecule::QUERY_ATOM_X)
-                out.writeChar('X');
-            else if (query_atom_type == QueryMolecule::QUERY_ATOM_M)
-                out.writeChar('M');
-            else if (query_atom_type == QueryMolecule::QUERY_ATOM_AH)
-                out.writeString("AH");
-            else if (query_atom_type == QueryMolecule::QUERY_ATOM_QH)
-                out.writeString("QH");
-            else if (query_atom_type == QueryMolecule::QUERY_ATOM_XH)
-                out.writeString("XH");
-            else if (query_atom_type == QueryMolecule::QUERY_ATOM_MH)
-                out.writeString("MH");
+            Array<char> qa_label;
+            qmol->getQueryAtomLabel(query_atom_type, qa_label);
+            if (qa_label.size() > 1)
+                out.write(qa_label.ptr(), qa_label.size() - 1);
             else if (query_atom_type == QueryMolecule::QUERY_ATOM_LIST || query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
             {
                 if (query_atom_type == QueryMolecule::QUERY_ATOM_NOTLIST)
@@ -1094,7 +1082,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
             _writeRGroup(output, mol, i);
 
     int n_tgroups = mol.tgroups.getTGroupCount();
-    if (n_tgroups > 0)
+    if ((n_tgroups > 0 && (template_atoms.size() || mol.vertexCount() == 0)))
     {
         output.writeStringCR("M  V30 BEGIN TEMPLATE");
         for (i = mol.tgroups.begin(); i != mol.tgroups.end(); i = mol.tgroups.next(i))
@@ -1110,7 +1098,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                 tmp_alias = tg.tgroup_alias.ptr();
             if (tg.tgroup_name.ptr())
                 tmp_name = tg.tgroup_name.ptr();
-            if (template_atoms.size() == 0 || template_atoms.count({tmp_alias, tmp_class}) || template_atoms.count({tmp_name, tmp_class}))
+            if (mol.vertexCount() == 0 || template_atoms.count({tmp_alias, tmp_class}) || template_atoms.count({tmp_name, tmp_class}))
                 _writeTGroup(output, mol, i);
         }
         output.writeStringCR("M  V30 END TEMPLATE");
@@ -1211,6 +1199,11 @@ void MolfileSaver::_writeTGroup(Output& output, BaseMolecule& mol, int tg_idx)
         out.printf(" NATREPLACE=%s", tgroup.tgroup_natreplace.ptr());
     if (tgroup.tgroup_comment.size() > 0)
         out.printf(" COMMENT=%s", tgroup.tgroup_comment.ptr());
+    if (tgroup.tgroup_full_name.size() > 0)
+        if (tgroup.tgroup_full_name.count(' ') > 0)
+            out.printf(" FULLNAME=\"%s\"", tgroup.tgroup_full_name.ptr());
+        else
+            out.printf(" FULLNAME=%s", tgroup.tgroup_full_name.ptr());
 
     _writeMultiString(output, buf.ptr(), buf.size());
 
@@ -1301,8 +1294,9 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             std::vector<std::unique_ptr<QueryMolecule::Atom>> list;
             std::map<int, std::unique_ptr<QueryMolecule::Atom>> properties;
             int query_atom_type = QueryMolecule::parseQueryAtomSmarts(*qmol, i, list, properties);
-
-            if (query_atom_type == QueryMolecule::QUERY_ATOM_A)
+            if (query_atom_type == QueryMolecule::QUERY_ATOM_STAR)
+                label[0] = '*';
+            else if (query_atom_type == QueryMolecule::QUERY_ATOM_A)
                 label[0] = 'A';
             else if (query_atom_type == QueryMolecule::QUERY_ATOM_Q)
                 label[0] = 'Q';

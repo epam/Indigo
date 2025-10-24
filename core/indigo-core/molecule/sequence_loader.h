@@ -65,8 +65,6 @@ namespace indigo
         void loadSequence(BaseMolecule& mol, const std::string& seq_type_str);
         void loadFasta(BaseMolecule& mol, const std::string& seq_type_str);
         void loadFasta(BaseMolecule& mol, SeqType seq_type);
-        void loadIdt(BaseMolecule& mol);
-        void loadHELM(BaseMolecule& mol);
 
         void loadSequence(KetDocument& document, const std::string& seq_type_str);
         void loadSequence(KetDocument& document, SeqType seq_type);
@@ -75,6 +73,7 @@ namespace indigo
         void loadIdt(KetDocument& document);
         void loadHELM(KetDocument& document);
         void load3LetterSequence(KetDocument& document);
+        void loadAxoLabs(KetDocument& document);
 
     private:
         Vec3f getBackboneMonomerPosition();
@@ -109,15 +108,15 @@ namespace indigo
         static void check_monomer_place(std::string& idt_alias, IdtModification mon_mod, IdtModification alias_mod, bool has_prev_mon);
 
         using ambiguous_template_opts = std::pair<bool, std::vector<std::pair<std::string, std::optional<float>>>>;
-        using MonomerInfo = std::tuple<std::string, std::string, std::string, ambiguous_template_opts>;
+        using MonomerInfo = std::tuple<std::string, bool, std::string, std::string, ambiguous_template_opts>;
 
         const std::string checkAddAmbiguousMonomerTemplate(KetDocument& document, const std::string& alias, MonomerClass monomer_class,
                                                            ambiguous_template_opts& options);
         size_t addHelmMonomer(KetDocument& document, MonomerInfo info, MonomerClass monomer_class, const Vec3f& pos);
-        int readCount(std::string& count, Scanner& _scanner);
+        int readCount(std::string& count);
 
         MonomerInfo readHelmMonomer(KetDocument& document, MonomerClass monomer_class = MonomerClass::Unknown);
-        std::string readHelmMonomerAlias(KetDocument& document, MonomerClass monomer_class);
+        std::string readHelmMonomerAlias(KetDocument& document, MonomerClass monomer_class, bool inside_parentheses = false);
         std::string readHelmRepeating();
         std::string readHelmAnnotation();
         std::string readHelmSimplePolymerName(std::string& polymer_name);

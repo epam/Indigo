@@ -1,5 +1,7 @@
 *** KET to HELM ***
 dna_variants.ket:SUCCEED
+helm_alias_ambiguous.ket:SUCCEED
+helm_alias_single_r_p.ket:SUCCEED
 helm_aminoacids_variants.ket:SUCCEED
 helm_annotations.ket:SUCCEED
 helm_any_chem.ket:SUCCEED
@@ -16,10 +18,16 @@ helm_molecule_2418.ket:SUCCEED
 helm_monomer_molecule.ket:SUCCEED
 helm_monomer_molecule_direct.ket:SUCCEED
 helm_multi_char_rna.ket:SUCCEED
+helm_nucleosides.ket:SUCCEED
 helm_peptide.ket:SUCCEED
 helm_rna_without_base.ket:SUCCEED
+helm_rsite_no_brackets.ket:SUCCEED
 helm_simple_rna.ket:SUCCEED
 helm_smiles.ket:SUCCEED
+helm_smiles_direction.ket:SUCCEED
+helm_smiles_first.ket:SUCCEED
 helm_smiles_sugar.ket:SUCCEED
 helm_unknown.ket:SUCCEED
+helm_unresolved.ket:SUCCEED
+helm_unresolved_rna.ket:SUCCEED
 rna_variants.ket:SUCCEED

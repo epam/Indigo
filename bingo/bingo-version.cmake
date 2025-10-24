@@ -3,6 +3,7 @@ set(BINGO_MAX_REVISION 1000)
 
 find_package(Git)
 if(GIT_EXECUTABLE)
+    EXECUTE_PROCESS(COMMAND ${GIT_EXECUTABLE} config --global --add safe.directory /github/workspace)
     EXECUTE_PROCESS(COMMAND ${GIT_EXECUTABLE} describe --long --tags --match indigo-*
             OUTPUT_VARIABLE BINGO_FULL_VERSION
             OUTPUT_STRIP_TRAILING_WHITESPACE

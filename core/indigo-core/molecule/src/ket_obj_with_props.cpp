@@ -45,33 +45,6 @@ const std::map<std::string, int>& KetObjWithProps::getStringPropStrToIdx() const
     return empty_str_to_idx;
 };
 
-void KetObjWithProps::setBoolProp(std::string name, bool value)
-{
-    auto& map = getBoolPropStrToIdx();
-    auto it = map.find(name);
-    if (it == map.end())
-        throw Error("Unknown bool property '%s'", name.c_str());
-    setBoolProp(it->second, value);
-}
-
-void KetObjWithProps::setIntProp(std::string name, int value)
-{
-    auto& map = getIntPropStrToIdx();
-    auto it = map.find(name);
-    if (it == map.end())
-        throw Error("Unknown int property '%s'", name.c_str());
-    setIntProp(it->second, value);
-}
-
-void KetObjWithProps::setStringProp(std::string name, std::string value)
-{
-    auto& map = getStringPropStrToIdx();
-    auto it = map.find(name);
-    if (it == map.end())
-        throw Error("Unknown string property '%s'", name.c_str());
-    setStringProp(it->second, value);
-}
-
 bool KetObjWithProps::getBoolProp(int idx) const
 {
     auto it = _bool_props.find(idx);
@@ -119,28 +92,6 @@ std::pair<bool, int> KetObjWithProps::getStringPropIdx(const std::string& name) 
     return find_prop_idx(getStringPropStrToIdx(), name);
 }
 
-bool KetObjWithProps::getBoolProp(const std::string& name) const
-{
-    auto res = getBoolPropIdx(name);
-    if (!res.first)
-        throw Error("Bool property %s not found", name.c_str());
-    return getBoolProp(res.second);
-}
-int KetObjWithProps::getIntProp(const std::string& name) const
-{
-    auto res = getIntPropIdx(name);
-    if (!res.first)
-        throw Error("Int property %s not found", name.c_str());
-    return getIntProp(res.second);
-};
-const std::string& KetObjWithProps::getStringProp(const std::string& name) const
-{
-    auto res = getStringPropIdx(name);
-    if (!res.first)
-        throw Error("String property %s not found", name.c_str());
-    return getStringProp(res.second);
-};
-
 void KetObjWithProps::parseOptsFromKet(const rapidjson::Value& json)
 {
     // Parse bool props
@@ -176,7 +127,7 @@ void KetObjWithProps::saveOptsToKet(JsonWriter& writer) const
         if (hasBoolProp(it.first))
         {
             writer.Key(it.second);
-            writer.Bool(getBoolProp(it.second));
+            writer.Bool(getBoolProp(it.first));
         }
     }
 
@@ -191,7 +142,7 @@ void KetObjWithProps::saveOptsToKet(JsonWriter& writer) const
         if (hasIntProp(it.first))
         {
             writer.Key(it.second);
-            writer.Int(getIntProp(it.second));
+            writer.Int(getIntProp(it.first));
         }
     }
     // Parse string props
@@ -205,7 +156,7 @@ void KetObjWithProps::saveOptsToKet(JsonWriter& writer) const
         if (hasStringProp(it.first))
         {
             writer.Key(it.second);
-            writer.String(getStringProp(it.second));
+            writer.String(getStringProp(it.first));
         }
     }
 };

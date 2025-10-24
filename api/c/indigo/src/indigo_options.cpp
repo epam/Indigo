@@ -349,11 +349,13 @@ void IndigoOptionHandlerSetter::setBasicOptionHandlers(const qword id)
     mgr->setOptionHandlerBool("molfile-saving-skip-date", SETTER_GETTER_BOOL_OPTION(indigo.molfile_saving_skip_date));
     mgr->setOptionHandlerBool("molfile-saving-add-stereo-desc", SETTER_GETTER_BOOL_OPTION(indigo.molfile_saving_add_stereo_desc));
     mgr->setOptionHandlerBool("json-saving-add-stereo-desc", SETTER_GETTER_BOOL_OPTION(indigo.json_saving_add_stereo_desc));
+    mgr->setOptionHandlerBool("json-saving-add-reaction-data", SETTER_GETTER_BOOL_OPTION(indigo.json_saving_add_reaction_data));
     mgr->setOptionHandlerBool("json-saving-pretty", SETTER_GETTER_BOOL_OPTION(indigo.json_saving_pretty));
     mgr->setOptionHandlerBool("json-use-native-precision", SETTER_GETTER_BOOL_OPTION(indigo.json_use_native_precision));
     mgr->setOptionHandlerBool("molfile-saving-add-implicit-h", SETTER_GETTER_BOOL_OPTION(indigo.molfile_saving_add_implicit_h));
     mgr->setOptionHandlerBool("molfile-saving-add-mrv-sma", SETTER_GETTER_BOOL_OPTION(indigo.molfile_saving_add_mrv_sma));
     mgr->setOptionHandlerBool("smiles-saving-write-name", SETTER_GETTER_BOOL_OPTION(indigo.smiles_saving_write_name));
+    mgr->setOptionHandlerBool("smiles-loading-strict-aliphatic", SETTER_GETTER_BOOL_OPTION(indigo.smiles_loading_strict_aliphatic));
     mgr->setOptionHandlerString("filename-encoding", indigoSetFilenameEncoding, indigoGetFilenameEncoding);
     mgr->setOptionHandlerInt("fp-ord-qwords", SETTER_GETTER_INT_OPTION(indigo.fp_params.ord_qwords));
     mgr->setOptionHandlerInt("fp-sim-qwords", SETTER_GETTER_INT_OPTION(indigo.fp_params.sim_qwords));
@@ -425,6 +427,7 @@ void IndigoOptionHandlerSetter::setBasicOptionHandlers(const qword id)
     mgr->setOptionHandlerBool("standardize-create-dative-bonds", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.create_coordination_bonds));
     mgr->setOptionHandlerBool("standardize-create-hydrogen-bonds", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.create_hydrogen_bonds));
     mgr->setOptionHandlerBool("standardize-remove-extra-stereo-bonds", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.remove_extra_stereo_bonds));
+    mgr->setOptionHandlerBool("standardize-stereo-mark-undefined", SETTER_GETTER_BOOL_OPTION(indigo.standardize_options.standardize_stereo_mark_undefined));
 
     mgr->setOptionHandlerString("pKa-model", indigoSetPkaModel, indigoGetPkaModel);
     mgr->setOptionHandlerInt("pKa-model-level", SETTER_GETTER_INT_OPTION(indigo.ionize_options.level));

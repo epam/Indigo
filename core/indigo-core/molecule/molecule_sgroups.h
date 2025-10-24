@@ -283,12 +283,12 @@ namespace indigo
         void findSGroups(int property, Array<int>& value, Array<int>& sgs);
 
         void registerUnfoldedHydrogen(int idx, int new_h_idx);
+        int findSGroupById(int id);
 
     protected:
         PtrPool<SGroup> _sgroups;
 
     private:
-        int _findSGroupById(int id);
         bool _cmpIndices(Array<int>& t_inds, Array<int>& q_inds);
     };
 

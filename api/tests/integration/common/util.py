@@ -141,13 +141,37 @@ def file_sha1(path):
     return sha1sum.hexdigest()
 
 
+def file_md5(path):
+    import hashlib
+
+    md5sum = hashlib.md5()
+    with open(path, "rb") as source:
+        block = source.read(2**16)
+        while len(block) != 0:
+            md5sum.update(block)
+            block = source.read(2**16)
+    return md5sum.hexdigest()
+
+
 def download_jna(jna_version, path):
     import urllib
 
     def check_jna_sha1():
         jna_sha1_url = "{}.sha1".format(jna_url)
-        jna_ref_sha1 = urllib.urlopen(jna_sha1_url).read()
+        sha_req = urllib.urlopen(jna_sha1_url)
+        jna_ref_sha1 = sha_req.read()
         jna_file_sha1 = file_sha1(output_path)
+        if (
+            len(jna_ref_sha1) != 40 or sha_req.getcode() >= 400
+        ):  # Http error, try use md5
+            print("sha1 load failed: %s" % jna_ref_sha1)
+            print("fallback to MD5")
+            sha_req.close()
+            jna_sha1_url = "{}.md5".format(jna_url)
+            md5_req = urllib.urlopen(jna_sha1_url)
+            jna_ref_sha1 = md5_req.read()
+            jna_file_sha1 = file_md5(output_path)
+
         if jna_ref_sha1 != jna_file_sha1:
             print(
                 "Checked JNA at {}, sha1 {} is not equal to reference {}".format(

@@ -52,51 +52,76 @@ CEXPORT int indigoLayout(int object)
                     f.unhide(submol.vertices[i]);
                 }
             }
-            if (mol->tgroups.getTGroupCount() == 0)
-            {
-                MoleculeLayout ml(*mol, self.smart_layout);
 
-                if (obj.type == IndigoObject::SUBMOLECULE)
+            MoleculeLayout ml(*mol, self.smart_layout);
+
+            if (obj.type == IndigoObject::SUBMOLECULE)
+            {
+                ml.filter = &f;
+            }
+            else
+            {
+                std::set<int> selected_atoms;
+                mol->getAtomSelection(selected_atoms);
+                if (!selected_atoms.empty())
                 {
+                    f.initNone(mol->vertexEnd());
+                    // unhide only selected
+                    for (auto i : mol->vertices())
+                    {
+                        if (selected_atoms.find(i) != selected_atoms.end())
+                            f.unhide(i);
+                    }
                     ml.filter = &f;
                 }
+            }
 
-                ml.max_iterations = self.layout_max_iterations;
-                ml.bond_length = LayoutOptions::DEFAULT_BOND_LENGTH;
-                ml.layout_orientation = (LAYOUT_ORIENTATION)self.layout_orientation;
-                if (self.layout_preserve_existing || mol->hasAtropoStereoBonds())
-                    ml.respect_existing_layout = true;
+            ml.max_iterations = self.layout_max_iterations;
+            ml.bond_length = LayoutOptions::DEFAULT_BOND_LENGTH;
+            ml.layout_orientation = (LAYOUT_ORIENTATION)self.layout_orientation;
+            if (self.layout_preserve_existing || mol->hasAtropoStereoBonds())
+                ml.respect_existing_layout = true;
 
-                TimeoutCancellationHandler cancellation(self.cancellation_timeout);
-                ml.setCancellationHandler(&cancellation);
-                ml.make();
+            TimeoutCancellationHandler cancellation(self.cancellation_timeout);
+            ml.setCancellationHandler(&cancellation);
 
-                if (obj.type != IndigoObject::SUBMOLECULE)
+            if (mol->tgroups.getTGroupCount())
+            {
+                ml.bond_length = LayoutOptions::DEFAULT_BOND_LENGTH * 1.5;
+                ml.respect_existing_layout = true;
+                ml.respect_cycles_direction = true;
+                ml.flexible_fixed_components = false;
+                ml.sequence_layout = true;
+                ml._smart_layout = false;
+            }
+
+            ml.make();
+
+            if (obj.type != IndigoObject::SUBMOLECULE)
+            {
+                mol->clearBondDirections();
+                try
                 {
-                    mol->clearBondDirections();
-                    try
-                    {
-                        mol->markBondsStereocenters();
-                        mol->markBondsAlleneStereo();
-                    }
-                    catch (Exception e)
-                    {
-                    }
-                    for (int i = 1; i <= mol->rgroups.getRGroupCount(); i++)
-                    {
-                        RGroup& rgp = mol->rgroups.getRGroup(i);
+                    mol->markBondsStereocenters();
+                    mol->markBondsAlleneStereo();
+                }
+                catch (Exception e)
+                {
+                }
+                for (int i = 1; i <= mol->rgroups.getRGroupCount(); i++)
+                {
+                    RGroup& rgp = mol->rgroups.getRGroup(i);
 
-                        for (int j = rgp.fragments.begin(); j != rgp.fragments.end(); j = rgp.fragments.next(j))
+                    for (int j = rgp.fragments.begin(); j != rgp.fragments.end(); j = rgp.fragments.next(j))
+                    {
+                        rgp.fragments[j]->clearBondDirections();
+                        try
                         {
-                            rgp.fragments[j]->clearBondDirections();
-                            try
-                            {
-                                rgp.fragments[j]->markBondsStereocenters();
-                                rgp.fragments[j]->markBondsAlleneStereo();
-                            }
-                            catch (Exception e)
-                            {
-                            }
+                            rgp.fragments[j]->markBondsStereocenters();
+                            rgp.fragments[j]->markBondsAlleneStereo();
+                        }
+                        catch (Exception e)
+                        {
                         }
                     }
                 }

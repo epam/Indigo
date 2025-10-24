@@ -1,8 +1,10 @@
 import time
+from collections import Counter
 from pathlib import Path
 from typing import Callable
 
 import pytest
+from elasticsearch import NotFoundError
 from indigo import Indigo  # type: ignore
 
 from bingo_elastic.elastic import (
@@ -12,6 +14,7 @@ from bingo_elastic.elastic import (
 )
 from bingo_elastic.model.helpers import iterate_file
 from bingo_elastic.model.record import (
+    IndigoRecord,
     IndigoRecordMolecule,
     IndigoRecordReaction,
     as_iob,
@@ -98,36 +101,91 @@ async def test_a_similarity_matches(
                 break
 
 
-def test_exact_match(
+def test_indigorecord_direct_instantiate(indigo_fixture: Indigo):
+    with pytest.raises(TypeError):
+        molecule = indigo_fixture.loadMolecule("CCCO")
+        IndigoRecord(indigo_object=molecule)
+
+
+def test_molecule_exact_search(
     elastic_repository_molecule: ElasticRepository,
     indigo_fixture: Indigo,
-    loaded_sdf: IndigoRecordMolecule,
+    fixture_molecules_20_10_5_1: None,
 ):
-    result = elastic_repository_molecule.filter(
-        query_subject=loaded_sdf, indigo_session=indigo_fixture
+    _ = fixture_molecules_20_10_5_1
+    molecule = indigo_fixture.loadMolecule("CCCO")
+    target = IndigoRecordMolecule(indigo_object=molecule)
+    records = elastic_repository_molecule.filter(
+        exact=target,
+        indigo_session=indigo_fixture,
+        limit=50,
+        tests_yield_empty=True,
     )
+    res_with_collisions = 0
+    results: Counter[str] = Counter()
+    for x in records:
+        res_with_collisions += 1
+        if not getattr(x, "empty", False):
+            results[x.as_indigo_object(indigo_fixture).canonicalSmiles()] += 1
+    assert 11 == res_with_collisions, (
+        f"Should be 11 initial results, got "
+        f"{res_with_collisions} one will be "
+        f"filtered out by postprocess actions"
+    )
+    assert "CCCO" in results, "CCCO not found in results"
+    assert 1 == len(
+        results
+    ), f"Expected 1 molecules (CCCO), got {len(results)}"
     assert (
-        loaded_sdf.as_indigo_object(indigo_fixture).canonicalSmiles()
-        == next(result).as_indigo_object(indigo_fixture).canonicalSmiles()
-    )
+        10 == results["CCCO"]
+    ), f"Expected 10 CCCO molecules, got {results['CCO']}"
+
+
+def test_exact_wrong_type(
+    elastic_repository_molecule: ElasticRepository, indigo_fixture: Indigo
+):
+    with pytest.raises(TypeError):
+        target = indigo_fixture.loadMolecule("CCCO")
+        result = elastic_repository_molecule.filter(
+            exact=target, indigo_session=indigo_fixture
+        )
+        next(result)
 
 
 @pytest.mark.asyncio
-async def test_a_exact_match(
+async def test_a_molecule_exact_search(
     a_elastic_repository_molecule: AsyncRepositoryT,
     indigo_fixture: Indigo,
-    loaded_sdf: IndigoRecordMolecule,
+    fixture_molecules_20_10_5_1: None,
 ):
+    _ = fixture_molecules_20_10_5_1
     async with a_elastic_repository_molecule() as rep:
-        result = rep.filter(
-            query_subject=loaded_sdf, indigo_session=indigo_fixture
+        molecule = indigo_fixture.loadMolecule("CCCO")
+        target = IndigoRecordMolecule(indigo_object=molecule)
+        records = rep.filter(
+            exact=target,
+            indigo_session=indigo_fixture,
+            limit=50,
+            tests_yield_empty=True,
         )
-        async for mol in result:
-            assert (
-                loaded_sdf.as_indigo_object(indigo_fixture).canonicalSmiles()
-                == mol.as_indigo_object(indigo_fixture).canonicalSmiles()
-            )
-            break
+        res_with_collisions = 0
+        results: Counter[str] = Counter()
+        async for x in records:
+            res_with_collisions += 1
+            if not getattr(x, "empty", False):
+                results[
+                    x.as_indigo_object(indigo_fixture).canonicalSmiles()
+                ] += 1
+    assert 11 == res_with_collisions, (
+        f"Should be 11 initial results, got "
+        f"{res_with_collisions} one will be "
+        f"filtered out by postprocess actions"
+    )
+    assert "CCCO" in results, "CCCO not found in results"
+    assert 1 == len(results), f"Expected 1 molecule (CCCO), got {len(results)}"
+    assert (
+        10 == results["CCCO"]
+    ), f"Expected 10 CCCO molecules, got {results['CCO']}"
 
 
 @pytest.mark.asyncio
@@ -208,44 +266,133 @@ async def test_filter_by_name(
             assert item.name == "Composition1"
 
 
-def test_substructure_search(
+def test_molecule_substructure_search(
     elastic_repository_molecule: ElasticRepository,
     indigo_fixture: Indigo,
-    loaded_sdf: IndigoRecordMolecule,
+    fixture_molecules_20_10_5_1: None,
 ):
-    query_mol = indigo_fixture.loadQueryMolecule(
-        loaded_sdf.as_indigo_object(indigo_fixture).canonicalSmiles()
+    _ = fixture_molecules_20_10_5_1
+    target = indigo_fixture.loadQueryMolecule("CCCO")
+    records = elastic_repository_molecule.filter(
+        substructure=target,
+        indigo_session=indigo_fixture,
+        tests_yield_empty=True,
+        limit=50,
     )
-    result = elastic_repository_molecule.filter(
-        query_subject=query_mol, indigo_session=indigo_fixture
+    res_with_collisions = 0
+    results: Counter[str] = Counter()
+    for x in records:
+        res_with_collisions += 1
+        if not getattr(x, "empty", False):
+            results[x.as_indigo_object(indigo_fixture).canonicalSmiles()] += 1
+    assert 11 == res_with_collisions, (
+        f"Should be 11 initial results, got "
+        f"{res_with_collisions} one will be "
+        f"filtered out by postprocess actions"
     )
-    for item in result:
-        assert (
-            item.as_indigo_object(indigo_fixture).canonicalSmiles()
-            == loaded_sdf.as_indigo_object(indigo_fixture).canonicalSmiles()
-        )
+    assert "CCCO" in results, "CCCO not found in results"
+    assert 1 == len(
+        results
+    ), f"Expected 1 molecules (CCCO), got {len(results)}"
+    assert (
+        10 == results["CCCO"]
+    ), f"Expected 10 CCCO molecules, got {results['CCO']}"
+
+
+def test_molecule_substructure_search_pagination(
+    elastic_repository_molecule: ElasticRepository,
+    indigo_fixture: Indigo,
+    fixture_molecules_20_10_5_1: None,
+):
+    _ = fixture_molecules_20_10_5_1
+    target = indigo_fixture.loadQueryMolecule("CCO")
+    records = elastic_repository_molecule.filter(
+        query_subject=target,
+        indigo_session=indigo_fixture,
+        limit=50,
+        page_size=1,
+    )
+    results = Counter(
+        x.as_indigo_object(indigo_fixture).canonicalSmiles() for x in records
+    )
+    assert "CCO" in results, "CCO not found in results"
+    assert "CCCO" in results, "CCCO not found in results"
+    assert 2 == len(
+        results
+    ), f"Expected 2 molecules (CCO, CCCO), got {len(results)}"
+    assert (
+        20 == results["CCO"]
+    ), f"Expected 20 CCO molecules, got {results['CCO']}"
+    assert (
+        10 == results["CCCO"]
+    ), f"Expected 10 CCCO molecules, got {results['CCO']}"
 
 
 @pytest.mark.asyncio
-async def test_a_substructure_search(
+async def test_a_molecule_substructure_search(
     a_elastic_repository_molecule: AsyncRepositoryT,
     indigo_fixture: Indigo,
-    loaded_sdf: IndigoRecordMolecule,
+    fixture_molecules_20_10_5_1: None,
 ):
+    _ = fixture_molecules_20_10_5_1
     async with a_elastic_repository_molecule() as rep:
-        query_mol = indigo_fixture.loadQueryMolecule(
-            loaded_sdf.as_indigo_object(indigo_fixture).canonicalSmiles()
+        target = indigo_fixture.loadQueryMolecule("CCCO")
+        records = rep.filter(
+            substructure=target,
+            indigo_session=indigo_fixture,
+            tests_yield_empty=True,
+            limit=50,
         )
-        result = rep.filter(
-            query_subject=query_mol, indigo_session=indigo_fixture
+        res_with_collisions = 0
+        results: Counter[str] = Counter()
+        async for x in records:
+            res_with_collisions += 1
+            if not getattr(x, "empty", False):
+                results[
+                    x.as_indigo_object(indigo_fixture).canonicalSmiles()
+                ] += 1
+    assert 11 == res_with_collisions, (
+        f"Should be 11 initial results, got "
+        f"{res_with_collisions} one will be "
+        f"filtered out by postprocess actions"
+    )
+    assert "CCCO" in results, "CCCO not found in results"
+    assert 1 == len(results), f"Expected 1 molecule (CCCO), got {len(results)}"
+    assert (
+        10 == results["CCCO"]
+    ), f"Expected 10 CCCO molecules, got {results['CCO']}"
+
+
+@pytest.mark.asyncio
+async def test_a_molecule_substructure_search_pagination(
+    a_elastic_repository_molecule: AsyncRepositoryT,
+    indigo_fixture: Indigo,
+    fixture_molecules_20_10_5_1: None,
+):
+    _ = fixture_molecules_20_10_5_1
+    async with a_elastic_repository_molecule() as rep:
+        target = indigo_fixture.loadQueryMolecule("CCO")
+        records = rep.filter(
+            query_subject=target,
+            indigo_session=indigo_fixture,
+            limit=50,
+            page_size=1,
         )
-        async for item in result:
-            assert (
-                item.as_indigo_object(indigo_fixture).canonicalSmiles()
-                == loaded_sdf.as_indigo_object(
-                    indigo_fixture
-                ).canonicalSmiles()
-            )
+        results: Counter[str] = Counter()
+        async for x in records:
+            smiles = x.as_indigo_object(indigo_fixture).canonicalSmiles()
+            results[smiles] += 1
+    assert "CCO" in results, "CCO not found in results"
+    assert "CCCO" in results, "CCCO not found in results"
+    assert 2 == len(
+        results
+    ), f"Expected 2 molecules (CCO, CCCO), got {len(results)}"
+    assert (
+        20 == results["CCO"]
+    ), f"Expected 20 CCO molecules, got {results['CCO']}"
+    assert (
+        10 == results["CCCO"]
+    ), f"Expected 10 CCCO molecules, got {results['CCO']}"
 
 
 def test_range_search(
@@ -482,7 +629,7 @@ async def test_a_similaririty_matches_reactions(
         resource_loader("reactions/rheadb/50353.rxn")
     )
 
-    reaction_rec = IndigoRecordMolecule(indigo_object=reaction)
+    reaction_rec = IndigoRecordReaction(indigo_object=reaction)
 
     async with a_elastic_repository_reaction() as rep:
         async for found_reaction in rep.filter(
@@ -509,7 +656,9 @@ async def test_a_similaririty_matches_reactions(
                 == reaction.countReactants()
             )
 
-        async for found_reaction in rep.filter(query_subject=reaction_rec):
+        async for found_reaction in rep.filter(
+            query_subject=reaction_rec, indigo_session=indigo_fixture
+        ):
             assert (
                 as_iob(found_reaction, indigo_fixture).countReactants()
                 == reaction.countReactants()
@@ -519,7 +668,7 @@ async def test_a_similaririty_matches_reactions(
 def test_limit_on_size(
     elastic_repository_molecule: ElasticRepository,
 ):
-    with pytest.raises(ValueError):
+    with pytest.raises(NotFoundError):
         result = elastic_repository_molecule.filter(limit=2000)
         next(result)
 
@@ -528,8 +677,173 @@ def test_limit_on_size(
 async def test_a_limit_on_size(
     a_elastic_repository_molecule: AsyncRepositoryT,
 ):
-    with pytest.raises(ValueError):
+    with pytest.raises(NotFoundError):
         async with a_elastic_repository_molecule() as rep:
             result = rep.filter(limit=2000)
             async for mol in result:
                 mol.name
+
+
+def test_reaction_exact_search_pagination(
+    elastic_repository_reaction: ElasticRepository,
+    indigo_fixture: Indigo,
+    fixture_reactions_20_10_5_1: None,
+):
+    _ = fixture_reactions_20_10_5_1
+    reaction = indigo_fixture.loadReaction("CCCO>>CC=C")
+    target = IndigoRecordReaction(indigo_object=reaction)
+    records = elastic_repository_reaction.filter(
+        exact=target, indigo_session=indigo_fixture, limit=50, page_size=1
+    )
+    results = Counter(
+        x.as_indigo_object(indigo_fixture).canonicalSmiles() for x in records
+    )
+    assert "CCCO>>CC=C" in results, "CCCO>>CC=C not found in results"
+    assert 1 == len(
+        results
+    ), f"Expected 1 reaction (CCCO>>CC=C), got {len(results)}"
+    assert (
+        10 == results["CCCO>>CC=C"]
+    ), f"Expected 10 CCCO>>CC=C reactions, got {results['CCCO>>CC=C']}"
+
+
+def test_reaction_substructure_search(
+    elastic_repository_reaction: ElasticRepository,
+    indigo_fixture: Indigo,
+    fixture_reactions_20_10_5_1: None,
+):
+    _ = fixture_reactions_20_10_5_1
+    target = indigo_fixture.loadQueryReaction("CCO>>")
+    records = elastic_repository_reaction.filter(
+        substructure=target,
+        indigo_session=indigo_fixture,
+        tests_yield_empty=True,
+        limit=50,
+    )
+    res_with_collisions = 0
+    results: Counter[str] = Counter()
+    for x in records:
+        res_with_collisions += 1
+        if not getattr(x, "empty", False):
+            results[x.as_indigo_object(indigo_fixture).canonicalSmiles()] += 1
+    assert 31 == res_with_collisions, (
+        f"Should be 31 initial results, got "
+        f"{res_with_collisions} one will be "
+        f"filtered out by postprocess actions"
+    )
+    assert "CCCO>>CC=C" in results, "CCCO>>CC=C not found in results"
+    assert "CCO>>CC=O" in results, "CCO>>CC=O not found in results"
+    assert 2 == len(results), f"Expected 2 reaction types, got {len(results)}"
+    assert (
+        20 == results["CCO>>CC=O"]
+    ), f"Expected 20 CCO>>CC=O reactions, got {results['CCO>>CC=O']}"
+    assert (
+        10 == results["CCCO>>CC=C"]
+    ), f"Expected 10 CCCO>>CC=C reactions, got {results['CCCO>>CC=C']}"
+
+
+def test_reaction_exact_search(
+    elastic_repository_reaction: ElasticRepository,
+    indigo_fixture: Indigo,
+    fixture_reactions_20_10_5_1: None,
+):
+    _ = fixture_reactions_20_10_5_1
+    reaction = indigo_fixture.loadReaction("CCCO>>CC=C")
+    target = IndigoRecordReaction(indigo_object=reaction)
+    records = elastic_repository_reaction.filter(
+        exact=target,
+        indigo_session=indigo_fixture,
+        tests_yield_empty=True,
+        limit=50,
+    )
+    res_with_collisions = 0
+    results: Counter[str] = Counter()
+    for x in records:
+        res_with_collisions += 1
+        if not getattr(x, "empty", False):
+            results[x.as_indigo_object(indigo_fixture).canonicalSmiles()] += 1
+    assert 11 == res_with_collisions, (
+        f"Should be 11 initial results, got "
+        f"{res_with_collisions} one will be "
+        f"filtered out by postprocess actions"
+    )
+    assert "CCCO>>CC=C" in results, "CCCO>>CC=C not found in results"
+    assert 1 == len(results), f"Expected 1 reaction types, got {len(results)}"
+    assert (
+        10 == results["CCCO>>CC=C"]
+    ), f"Expected 10 CCCO>>CC=C reactions, got {results['CCCO>>CC=C']}"
+
+
+@pytest.mark.asyncio
+async def test_a_reaction_substructure_search(
+    a_elastic_repository_reaction: AsyncRepositoryT,
+    indigo_fixture: Indigo,
+    fixture_reactions_20_10_5_1: None,
+):
+    _ = fixture_reactions_20_10_5_1
+    async with a_elastic_repository_reaction() as rep:
+        target = indigo_fixture.loadQueryReaction("CCO>>")
+        records = rep.filter(
+            substructure=target,
+            indigo_session=indigo_fixture,
+            tests_yield_empty=True,
+            limit=50,
+        )
+        res_with_collisions = 0
+        results: Counter[str] = Counter()
+        async for x in records:
+            res_with_collisions += 1
+            if not getattr(x, "empty", False):
+                results[
+                    x.as_indigo_object(indigo_fixture).canonicalSmiles()
+                ] += 1
+    assert 31 == res_with_collisions, (
+        f"Should be 31 initial results, got "
+        f"{res_with_collisions} one will be "
+        f"filtered out by postprocess actions"
+    )
+    assert "CCCO>>CC=C" in results, "CCCO>>CC=C not found in results"
+    assert "CCO>>CC=O" in results, "CCO>>CC=O not found in results"
+    assert 2 == len(results), f"Expected 2 reaction types, got {len(results)}"
+    assert (
+        20 == results["CCO>>CC=O"]
+    ), f"Expected 20 CCO>>CC=O reactions, got {results['CCO>>CC=O']}"
+    assert (
+        10 == results["CCCO>>CC=C"]
+    ), f"Expected 10 CCCO>>CC=C reactions, got {results['CCCO>>CC=C']}"
+
+
+@pytest.mark.asyncio
+async def test_a_reaction_exact_search(
+    a_elastic_repository_reaction: AsyncRepositoryT,
+    indigo_fixture: Indigo,
+    fixture_reactions_20_10_5_1: None,
+):
+    _ = fixture_reactions_20_10_5_1
+    async with a_elastic_repository_reaction() as rep:
+        reaction = indigo_fixture.loadReaction("CCCO>>CC=C")
+        target = IndigoRecordReaction(indigo_object=reaction)
+        records = rep.filter(
+            exact=target,
+            indigo_session=indigo_fixture,
+            tests_yield_empty=True,
+            limit=50,
+        )
+        res_with_collisions = 0
+        results: Counter[str] = Counter()
+        async for x in records:
+            res_with_collisions += 1
+            if not getattr(x, "empty", False):
+                results[
+                    x.as_indigo_object(indigo_fixture).canonicalSmiles()
+                ] += 1
+    assert 11 == res_with_collisions, (
+        f"Should be 11 initial results, got "
+        f"{res_with_collisions} one will be "
+        f"filtered out by postprocess actions"
+    )
+    assert "CCCO>>CC=C" in results, "CCCO>>CC=C not found in results"
+    assert 1 == len(results), f"Expected 1 reaction types, got {len(results)}"
+    assert (
+        10 == results["CCCO>>CC=C"]
+    ), f"Expected 10 CCCO>>CC=C reactions, got {results['CCCO>>CC=C']}"

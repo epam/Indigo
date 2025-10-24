@@ -9,7 +9,7 @@
 #include "indigo_reaction.h"
 #include "molecule/crippen.h"
 
-IndigoMoleculeGross::IndigoMoleculeGross() : IndigoObject(GROSS_MOLECULE)
+IndigoMoleculeGross::IndigoMoleculeGross() : IndigoObject(GROSS_MOLECULE), iupacFormula(false)
 {
 }
 
@@ -20,10 +20,10 @@ IndigoMoleculeGross::~IndigoMoleculeGross()
 void IndigoMoleculeGross::toString(Array<char>& str)
 {
     Indigo& self = indigoGetInstance();
-    MoleculeGrossFormula::toString_Hill(*gross, str, self.gross_formula_options.add_rsites);
+    MoleculeGrossFormula::toString_Hill(*gross, str, self.gross_formula_options.add_rsites, iupacFormula);
 }
 
-IndigoReactionGross::IndigoReactionGross() : IndigoObject(GROSS_REACTION)
+IndigoReactionGross::IndigoReactionGross() : IndigoObject(GROSS_REACTION), iupacFormula(false)
 {
 }
 
@@ -34,7 +34,7 @@ IndigoReactionGross::~IndigoReactionGross()
 void IndigoReactionGross::toString(Array<char>& str)
 {
     Indigo& self = indigoGetInstance();
-    ReactionGrossFormula::toString_Hill(*gross, str, self.gross_formula_options.add_rsites);
+    ReactionGrossFormula::toString_Hill(*gross, str, self.gross_formula_options.add_rsites, iupacFormula);
 }
 
 CEXPORT int indigoGrossFormula(int object)
@@ -64,15 +64,40 @@ CEXPORT int indigoGrossFormula(int object)
     INDIGO_END(-1);
 }
 
+CEXPORT int indigoMolecularFormula(int object)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& indigoObject = self.getObject(object);
+        if (IndigoBaseMolecule::is(indigoObject))
+        {
+            BaseMolecule& mol = self.getObject(object).getBaseMolecule();
+            std::unique_ptr<IndigoMoleculeGross> grossptr = std::make_unique<IndigoMoleculeGross>();
+            grossptr->gross = MoleculeGrossFormula::collect(mol, self.gross_formula_options.add_isotopes);
+            grossptr->iupacFormula = true;
+            return self.addObject(grossptr.release());
+        }
+        else if (IndigoBaseReaction::is(indigoObject))
+        {
+            auto& rxn = self.getObject(object).getBaseReaction();
+            std::unique_ptr<IndigoReactionGross> grossptr = std::make_unique<IndigoReactionGross>();
+            grossptr->gross = ReactionGrossFormula::collect(rxn, self.gross_formula_options.add_isotopes);
+            grossptr->iupacFormula = true;
+            return self.addObject(grossptr.release());
+        }
+        else
+        {
+            throw IndigoError("incorrect object type for molecular formula: %s", indigoObject.debugInfo());
+        }
+    }
+    INDIGO_END(-1);
+}
+
 static BaseMolecule& _indigoPrepareMass(IndigoObject& obj, MoleculeMass mass)
 {
     if (IndigoBaseMolecule::is(obj))
     {
         auto& mol = obj.getBaseMolecule();
-        if (mol.isQueryMolecule())
-        {
-            throw IndigoError("can not calculate mass for query molecule");
-        }
         return mol;
     }
     else
@@ -88,7 +113,7 @@ CEXPORT double indigoMolecularWeight(int molecule)
         MoleculeMass mass;
         auto& mol = _indigoPrepareMass(self.getObject(molecule), mass);
         mass.mass_options = self.mass_options;
-        return mass.molecularWeight(mol.asMolecule());
+        return mass.molecularWeight(mol);
     }
     INDIGO_END(-1);
 }
@@ -100,7 +125,7 @@ CEXPORT double indigoMostAbundantMass(int molecule)
         MoleculeMass mass;
         auto& mol = _indigoPrepareMass(self.getObject(molecule), mass);
         mass.mass_options = self.mass_options;
-        return mass.mostAbundantMass(mol.asMolecule());
+        return mass.mostAbundantMass(mol);
     }
     INDIGO_END(-1);
 }
@@ -112,7 +137,7 @@ CEXPORT double indigoMonoisotopicMass(int molecule)
         MoleculeMass mass;
         auto& mol = _indigoPrepareMass(self.getObject(molecule), mass);
         mass.mass_options = self.mass_options;
-        return mass.monoisotopicMass(mol.asMolecule());
+        return mass.monoisotopicMass(mol);
     }
     INDIGO_END(-1);
 }
@@ -126,7 +151,7 @@ CEXPORT const char* indigoMassComposition(int molecule)
         mass.mass_options = self.mass_options;
 
         auto& tmp = self.getThreadTmpData();
-        mass.massComposition(mol.asMolecule(), tmp.string);
+        mass.massComposition(mol, tmp.string);
 
         return tmp.string.ptr();
     }
@@ -223,6 +248,32 @@ CEXPORT double indigoMolarRefractivity(const int molecule)
     INDIGO_END(-1);
 }
 
+CEXPORT const char* indigoPkaValues(const int molecule)
+{
+    INDIGO_BEGIN
+    {
+        auto& obj = self.getObject(molecule);
+        if (IndigoMolecule::is(obj))
+        {
+            auto& mol = obj.getMolecule();
+            Array<double> pka_values;
+            Crippen::getPKaValues(mol, pka_values);
+            auto& tmp = self.getThreadTmpData();
+            tmp.clear();
+            for (auto& pka_val : pka_values)
+            {
+                if (tmp.string.size())
+                    tmp.string.appendString(",", true);
+                tmp.string.appendString(std::to_string(pka_val).c_str(), true);
+            }
+            return tmp.string.ptr();
+        }
+        else
+            throw IndigoError("incorrect object type for pKa calculation: %s, should be molecule", obj.debugInfo());
+    }
+    INDIGO_END(0);
+}
+
 CEXPORT double indigoPka(const int molecule)
 {
     INDIGO_BEGIN
@@ -233,7 +284,7 @@ CEXPORT double indigoPka(const int molecule)
             auto& mol = obj.getMolecule();
             return Crippen::pKa(mol);
         }
-        throw IndigoError("incorrect object type for logP calculation: %s, should be molecule", obj.debugInfo());
+        throw IndigoError("incorrect object type for pKa calculation: %s, should be molecule", obj.debugInfo());
     }
     INDIGO_END(-1);
 }

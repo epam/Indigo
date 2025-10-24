@@ -1,4 +1,5 @@
 *** KET to KET ***
+3087-star-process.ket:SUCCEED
 images.ket:SUCCEED
 ambiguous_monomer.ket doc loadKetDocument: SUCCEED
 ambiguous_monomer.ket mol loadMolecule: SUCCEED
@@ -9,6 +10,9 @@ expanded_monomer.ket mol loadQueryMolecule: SUCCEED
 helm_alias.ket doc loadKetDocument: SUCCEED
 helm_alias.ket mol loadMolecule: SUCCEED
 helm_alias.ket mol loadQueryMolecule: SUCCEED
+helm_annotation.ket doc loadKetDocument: SUCCEED
+helm_annotation.ket mol loadMolecule: SUCCEED
+helm_annotation.ket mol loadQueryMolecule: SUCCEED
 modification_types.ket doc loadKetDocument: SUCCEED
 modification_types.ket mol loadMolecule: SUCCEED
 modification_types.ket mol loadQueryMolecule: SUCCEED
@@ -20,4 +24,10 @@ monomer_transform.ket mol loadMolecule: SUCCEED
 monomer_transform.ket mol loadQueryMolecule: SUCCEED
 2707_subst_count.ket ket: SUCCEED
 2707_subst_count.ket mol: SUCCEED
+3069-reaction.ket:SUCCEED
 multi_merge4.ket:SUCCEED
+mixed_reaction.ket:SUCCEED
+multi1.ket:SUCCEED
+multi_reaction.ket:SUCCEED
+special_condition.ket:SUCCEED
+two_pathways.ket:SUCCEED

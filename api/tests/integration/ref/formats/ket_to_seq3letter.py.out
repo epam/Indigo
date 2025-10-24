@@ -1,2 +1,4 @@
 *** KET to 3 LETTER SEQUENCE ***
 peptides_3letter : SUCCEED
+Test 'issue_3200': got expected error 'Only amino acids can be saved as three letter amino acid codes'
+Test 'peptides_molecule': got expected error 'Sequence saver: Can't save micro-molecules to sequence format'

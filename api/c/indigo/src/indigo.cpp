@@ -131,6 +131,7 @@ void Indigo::init()
     molfile_saving_add_stereo_desc = false;
 
     json_saving_add_stereo_desc = false;
+    json_saving_add_reaction_data = false;
     json_saving_pretty = false;
     json_use_native_precision = false;
 
@@ -138,6 +139,7 @@ void Indigo::init()
     molfile_saving_add_mrv_sma = true;
 
     smiles_saving_write_name = false;
+    smiles_loading_strict_aliphatic = false;
     smiles_saving_smarts_mode = false;
 
     aam_cancellation_timeout = 0;
@@ -212,6 +214,7 @@ void Indigo::initMoleculeJsonSaver(MoleculeJsonSaver& saver)
 void Indigo::initReactionJsonSaver(ReactionJsonSaver& saver) const
 {
     saver.add_stereo_desc = json_saving_add_stereo_desc;
+    saver.add_reaction_data = json_saving_add_reaction_data;
     saver.pretty_json = json_saving_pretty;
     saver.ket_version = ket_saving_version;
     saver.layout_options = layout_options;
@@ -221,6 +224,7 @@ void Indigo::initReactionJsonSaver(ReactionJsonSaver& saver) const
 void Indigo::initReactionJsonSaver(PathwayReactionJsonSaver& saver)
 {
     saver.add_stereo_desc = json_saving_add_stereo_desc;
+    saver.add_reaction_data = json_saving_add_reaction_data;
     saver.pretty_json = json_saving_pretty;
     saver.use_native_precision = json_use_native_precision;
 }

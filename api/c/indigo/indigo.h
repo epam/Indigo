@@ -180,10 +180,20 @@ CEXPORT int indigoLoadStructureFromString(const char* string, const char* params
 CEXPORT int indigoLoadStructureFromBuffer(const byte* string, int bufferSize, const char* params);
 CEXPORT int indigoLoadStructureFromFile(const char* filename, const char* params);
 
+CEXPORT int indigoLoadMoleculeWithLib(int source, int monomer_library);
+CEXPORT int indigoLoadMoleculeWithLibFromString(const char* string, int monomer_library);
+CEXPORT int indigoLoadMoleculeWithLibFromFile(const char* filename, int monomer_library);
+CEXPORT int indigoLoadMoleculeWithLibFromBuffer(const char* buffer, int size, int monomer_library);
+
 CEXPORT int indigoLoadMolecule(int source);
 CEXPORT int indigoLoadMoleculeFromString(const char* string);
 CEXPORT int indigoLoadMoleculeFromFile(const char* filename);
 CEXPORT int indigoLoadMoleculeFromBuffer(const char* buffer, int size);
+
+CEXPORT int indigoLoadQueryMoleculeWithLib(int source, int monomer_library);
+CEXPORT int indigoLoadQueryMoleculeWithLibFromString(const char* string, int monomer_library);
+CEXPORT int indigoLoadQueryMoleculeWithLibFromFile(const char* filename, int monomer_library);
+CEXPORT int indigoLoadQueryMoleculeWithLibFromBuffer(const char* buffer, int size, int monomer_library);
 
 CEXPORT int indigoLoadQueryMolecule(int source);
 CEXPORT int indigoLoadQueryMoleculeFromString(const char* string);
@@ -221,6 +231,10 @@ CEXPORT int indigoLoadHelm(int source, int library);
 CEXPORT int indigoLoadHelmFromString(const char* string, int library);
 CEXPORT int indigoLoadHelmFromFile(const char* filename, int library);
 
+CEXPORT int indigoLoadAxoLabs(int source, int library);
+CEXPORT int indigoLoadAxoLabsFromString(const char* string, int library);
+CEXPORT int indigoLoadAxoLabsFromFile(const char* filename, int library);
+
 CEXPORT int indigoSaveMolfile(int molecule, int output);
 CEXPORT int indigoSaveMolfileToFile(int molecule, const char* filename);
 CEXPORT const char* indigoMolfile(int molecule);
@@ -245,8 +259,18 @@ CEXPORT int indigoSaveHelm(int molecule, int output, int library);
 CEXPORT int indigoSaveHelmToFile(int molecule, const char* filename, int library);
 CEXPORT const char* indigoHelm(int molecule, int library);
 
+CEXPORT int indigoSaveAxoLabs(int molecule, int output, int library);
+CEXPORT int indigoSaveAxoLabsToFile(int molecule, const char* filename, int library);
+CEXPORT const char* indigoAxoLabs(int molecule, int library);
+
+CEXPORT int indigoSaveMonomerLibrary(int output, int library);
+CEXPORT int indigoSaveMonomerLibraryToFile(const char* filename, int library);
+CEXPORT const char* indigoMonomerLibrary(int library);
+
 CEXPORT int indigoSaveJsonToFile(int item, const char* filename);
 CEXPORT int indigoSaveJson(int item, int output);
+
+CEXPORT int indigoExpandMonomers(int item);
 
 // accepts molecules and reactions (but not query ones)
 CEXPORT int indigoSaveCml(int object, int output);
@@ -298,10 +322,20 @@ CEXPORT int indigoLoadReactionFromString(const char* string);
 CEXPORT int indigoLoadReactionFromFile(const char* filename);
 CEXPORT int indigoLoadReactionFromBuffer(const char* buffer, int size);
 
+CEXPORT int indigoLoadReactionWithLib(int source, int monomer_library);
+CEXPORT int indigoLoadReactionWithLibFromString(const char* string, int monomer_library);
+CEXPORT int indigoLoadReactionWithLibFromFile(const char* filename, int monomer_library);
+CEXPORT int indigoLoadReactionWithLibFromBuffer(const char* buffer, int size, int monomer_library);
+
 CEXPORT int indigoLoadQueryReaction(int source);
 CEXPORT int indigoLoadQueryReactionFromString(const char* string);
 CEXPORT int indigoLoadQueryReactionFromFile(const char* filename);
 CEXPORT int indigoLoadQueryReactionFromBuffer(const char* buffer, int size);
+
+CEXPORT int indigoLoadQueryReactionWithLib(int source, int monomer_library);
+CEXPORT int indigoLoadQueryReactionWithLibFromString(const char* string, int monomer_library);
+CEXPORT int indigoLoadQueryReactionWithLibFromFile(const char* filename, int monomer_library);
+CEXPORT int indigoLoadQueryReactionWithLibFromBuffer(const char* buffer, int size, int monomer_library);
 
 CEXPORT int indigoLoadReactionSmarts(int source);
 CEXPORT int indigoLoadReactionSmartsFromString(const char* string);
@@ -484,6 +518,15 @@ CEXPORT int indigoCheckQuery(int item);
 // Returns one if structure contains RGroup features (RSites, RGroups or attachment points
 CEXPORT int indigoCheckRGroups(int item);
 
+// Return atom index
+CEXPORT int indigoAtomIndex(int atom);
+// Return bond index
+CEXPORT int indigoBondIndex(int bond);
+// Return atom index begining a bond
+CEXPORT int indigoBondBegin(int bond);
+// Return atom index ending a bond
+CEXPORT int indigoBondEnd(int bond);
+
 // Returns check result for Indigo object as text file for requested properties as JSON
 CEXPORT const char* indigoCheck(const char* item, const char* check_flags, const char* load_params);
 
@@ -658,6 +701,11 @@ CEXPORT int indigoMarkStereobonds(int handle);
 
 CEXPORT int indigoValidateChirality(int handle);
 
+// Return CIP descriptor of an atom
+CEXPORT int indigoStereocenterCIPDescriptor(int atom);
+// Adds CIP descriptors to a molecule
+CEXPORT int indigoAddCIPStereoDescriptors(int molecule);
+
 // Accepts a symbol from the periodic table (like "C" or "Br"),
 // or a pseudoatom symbol, like "Pol". Returns the added atom.
 CEXPORT int indigoAddAtom(int molecule, const char* symbol);
@@ -715,6 +763,9 @@ CEXPORT int indigoUnselect(int item);
 // Access atoms and bonds
 CEXPORT int indigoIsSelected(int item);
 
+// Molecule or reaction
+CEXPORT int indigoHasSelection(int item);
+
 /* Connected components of molecules */
 
 CEXPORT int indigoCountComponents(int molecule);
@@ -739,6 +790,7 @@ CEXPORT int indigoIterateEdgeSubmolecules(int molecule, int min_bonds, int max_b
 
 CEXPORT int indigoCountHeavyAtoms(int molecule);
 CEXPORT int indigoGrossFormula(int molecule);
+CEXPORT int indigoMolecularFormula(int molecule);
 CEXPORT double indigoMolecularWeight(int molecule);
 CEXPORT double indigoMostAbundantMass(int molecule);
 CEXPORT double indigoMonoisotopicMass(int molecule);
@@ -750,6 +802,7 @@ CEXPORT int indigoNumHydrogenBondDonors(int molecule);
 CEXPORT double indigoLogP(int molecule);
 CEXPORT double indigoMolarRefractivity(int molecule);
 CEXPORT double indigoPka(int molecule);
+CEXPORT const char* indigoPkaValues(int molecule);
 
 CEXPORT const char* indigoCanonicalSmiles(int molecule);
 CEXPORT const char* indigoLayeredCode(int molecule);
@@ -792,6 +845,7 @@ CEXPORT int indigoUnfoldHydrogens(int item);
 CEXPORT int indigoFoldUnfoldHydrogens(int item);
 
 CEXPORT int indigoLayout(int object);
+CEXPORT int indigoLayoutSelected(int object);
 CEXPORT int indigoClean2d(int object);
 
 CEXPORT const char* indigoSmiles(int item);

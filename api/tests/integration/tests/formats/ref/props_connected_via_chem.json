@@ -1,8 +1,8 @@
 [
     {
-        "grossFormula": "C29 N10 O12 H44",
-        "mass": 724.719466,
-        "pKa": 4.006666,
+        "grossFormula": "C29 H44 N10 O12",
+        "mass": 724.728986,
+        "pKa": 2.39,
         "extinctionCoefficient": 0,
         "hydrophobicity": [
             0.616

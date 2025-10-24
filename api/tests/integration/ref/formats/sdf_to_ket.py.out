@@ -1,2 +1,9 @@
 *** SDF to KET ***
 acd2d_err.ket:SUCCEED
+*** SDF-monomer library to KET ***
+lib_alanine.ket:SUCCEED
+lib_alanine_expanded.ket:SUCCEED
+lib_default_type.ket:SUCCEED
+lib_phos.ket:SUCCEED
+lib_rna_preset_g.ket:SUCCEED
+lib_rna_preset_same.ket:SUCCEED

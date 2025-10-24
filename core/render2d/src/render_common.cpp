@@ -272,7 +272,6 @@ void MoleculeRenderData::clear()
     graphitems.clear();
     rings.clear();
     textitems.clear();
-    cipItems.clear();
     aam.clear();
     reactingCenters.clear();
     inversions.clear();

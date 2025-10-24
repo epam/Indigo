@@ -42,11 +42,13 @@ namespace indigo
     class QueryMolecule;
     class Output;
     class MonomerTemplate;
+    class ReactionMultistepDetector;
 
     class DLLEXPORT MoleculeJsonSaver
     {
     public:
         explicit MoleculeJsonSaver(Output& output);
+        explicit MoleculeJsonSaver(Output& output, ReactionMultistepDetector& rmd);
         void saveMolecule(BaseMolecule& bmol);
         void saveMolecule(BaseMolecule& bmol, JsonWriter& writer);
         void saveMetaData(JsonWriter& writer, const MetaDataStorage& meta);
@@ -61,11 +63,9 @@ namespace indigo
         static void saveFontStyles(JsonWriter& writer, const FONT_STYLE_SET& fss);
         static void saveParagraphs(JsonWriter& writer, const SimpleTextObject& text_obj);
         static void saveParts(JsonWriter& writer, const SimpleTextObject::KETTextParagraph& paragraph, const FONT_STYLE_SET& def_fss);
-        static std::string monomerId(const TGroup& tg);
-        static std::string monomerKETClass(const std::string& class_name);
-        static std::string monomerHELMClass(const std::string& class_name);
 
         bool add_stereo_desc;
+        bool add_reaction_data;
         bool pretty_json;
         bool use_native_precision; // TODO: Remove option and use_native_precision always - have to fix a lot of UTs
         KETVersion ket_version;
@@ -94,6 +94,8 @@ namespace indigo
         void saveStereoCenter(BaseMolecule& mol, int atom_idx, JsonWriter& writer);
         void saveHighlights(BaseMolecule& mol, JsonWriter& writer);
 
+        void saveAnnotation(JsonWriter& writer, const KetObjectAnnotation& annotation);
+
         DECL_ERROR;
 
     protected:
@@ -112,6 +114,7 @@ namespace indigo
         std::vector<std::unique_ptr<BaseMolecule>> _no_template_molecules;
         ObjArray<Array<int>> _mappings;
         std::unordered_map<int, int> _atom_to_mol_id;
+        std::optional<std::reference_wrapper<ReactionMultistepDetector>> _rmd;
 
     private:
         MoleculeJsonSaver(const MoleculeJsonSaver&); // no implicit copy

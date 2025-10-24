@@ -222,6 +222,10 @@ void RingoPgSearchEngine::_prepareExactSearch(PG_OBJECT scan_desc_ptr)
     _prepareExactQueryStrings(what_clause, from_clause, where_clause);
 
     _searchCursor = std::make_unique<BingoPgCursor>("SELECT %s FROM %s WHERE %s", what_clause.ptr(), from_clause.ptr(), where_clause.ptr());
+    if (_deferred_finish)
+    {
+        _searchCursor->finishOnTransactionEnd();
+    }
 }
 
 void RingoPgSearchEngine::_prepareSmartsSearch(PG_OBJECT scan_desc_ptr)

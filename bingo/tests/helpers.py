@@ -84,7 +84,7 @@ def indigo_iterator(indigo: Indigo, filename: str):
     return iterator(filename)
 
 
-def get_query_entities(indigo: Indigo, function: str):
+def get_query_entities(indigo: Indigo.Indigo, function: str):
     """
     Return dict with mapping: query_id - entity (molecule or reaction).
     Molecules are coming from data/{mol_function}/queries/.
@@ -98,10 +98,20 @@ def get_query_entities(indigo: Indigo, function: str):
 
     index = 1
     for entities_file in entities_files:
-        for mol in indigo_iterator(indigo, entities_file):
-            result[index] = mol
-            index += 1
-
+        it = indigo_iterator(indigo, entities_file)
+        prev_molecule = ""
+        while True:
+            try:
+                mol = next(it)
+                result[index] = mol
+                index += 1
+                prev_molecule = mol.name()
+            except StopIteration:
+                break
+            except Exception as e:
+                print(
+                    f"[ERROR] Failed to read entity {e}, prev_molecule={prev_molecule}"
+                )
     return result
 
 

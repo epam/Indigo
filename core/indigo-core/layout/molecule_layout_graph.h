@@ -70,6 +70,7 @@ namespace indigo
         int orig_idx;
         long morgan_code;
         bool is_cyclic;
+        bool is_inner_cycle;
         int type;
 
         Vec2f pos;
@@ -172,6 +173,9 @@ namespace indigo
         LAYOUT_ORIENTATION layout_orientation;
 
         bool preserve_existing_layout;
+        bool respect_cycles_direction;
+        bool flexible_fixed_components;
+        bool sequence_layout;
 
         CancellationHandler* cancellation;
 
@@ -180,8 +184,11 @@ namespace indigo
         ObjArray<LayoutVertex> _layout_vertices;
         ObjArray<LayoutEdge> _layout_edges;
 
-        Array<int> _fixed_vertices;
+        ObjArray<Array<int>> _fixed_subgraphs_ext_vertices;
+        ObjArray<Array<int>> _fixed_subgraphs_int_vertices;
+        Array<int> _fixed_decomposition;
 
+        Array<int> _fixed_vertices;
         long _total_morgan_code;
         int _first_vertex_idx;
         int _n_fixed;
@@ -281,6 +288,7 @@ namespace indigo
         };
 
         // geometry functions
+        int _getCycleDirection() const;
         int _calcIntersection(int edge1, int edge2) const;
         bool _isVertexOnEdge(int vert_idx, int edge_beg, int edge_end) const;
         bool _isVertexOnSomeEdge(int vert_idx) const;
@@ -305,6 +313,7 @@ namespace indigo
 
         // for components
         virtual void _calcMorganCodes();
+        void _markInnerVertices(const MoleculeLayoutGraph& component);
 
         // for whole graph
         void _assignAbsoluteCoordinates(float bond_length);
@@ -332,7 +341,7 @@ namespace indigo
                                             int& parity);
         void _calculatePositionsManyNotDrawn(int vert_idx, Array<int>& adjacent_list, Array<Vec2f>& positions);
         void _orderByEnergy(Array<Vec2f>& positions);
-        void _assignRelativeSingleEdge(int& fixed_component, const MoleculeLayoutGraph& supergraph);
+        void _assignRelativeSingleEdge(int fixed_component, const MoleculeLayoutGraph& supergraph);
         void _findFirstVertexIdx(int n_comp, Array<int>& fixed_components, PtrArray<MoleculeLayoutGraph>& bc_components, bool all_trivial);
         bool _prepareAssignedList(Array<int>& assigned_list, BiconnectedDecomposer& bc_decom, PtrArray<MoleculeLayoutGraph>& bc_components,
                                   Array<int>& bc_tree);

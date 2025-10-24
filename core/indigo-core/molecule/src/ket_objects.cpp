@@ -303,16 +303,15 @@ void KetMolecule::parseKetAtoms(KetMolecule::atoms_type& ket_atoms, const rapidj
         if (atom_type == "atom")
         {
             ket_atoms.push_back(std::make_unique<KetAtom>(atom["label"].GetString()));
-            auto base_atom = ket_atoms.rbegin();
+            atom_ptr = ket_atoms.rbegin()->get();
             if (query_props.has_value())
-                static_cast<KetAtom*>(base_atom->get())->setQueryProperties(query_props.value());
-            atom_ptr = base_atom->get();
+                static_cast<KetAtom*>(atom_ptr)->setQueryProperties(query_props.value());
         }
         else if (atom_type == "rg-label")
         {
             ket_atoms.push_back(std::make_unique<KetRgLabel>());
-            auto rg_label = ket_atoms.rbegin();
-            KetRgLabel* r_ptr = static_cast<KetRgLabel*>(rg_label->get());
+            atom_ptr = ket_atoms.rbegin()->get();
+            KetRgLabel* r_ptr = static_cast<KetRgLabel*>(atom_ptr);
             if (atom.HasMember("$refs"))
             {
                 auto& refs = atom["$refs"];
@@ -343,6 +342,7 @@ void KetMolecule::parseKetAtoms(KetMolecule::atoms_type& ket_atoms, const rapidj
                 elem_list.emplace_back(elements[j].GetString());
             }
             ket_atoms.push_back(std::make_unique<KetAtomList>(elem_list));
+            atom_ptr = ket_atoms.rbegin()->get();
             // auto& base_atom = ket_atoms.rbegin();
             // if (query_props.has_value())
             //     static_cast<KetBaseAtom*>(base_atom->get())->setQueryProperties(query_props.value());
@@ -364,7 +364,8 @@ void KetMolecule::parseKetAtoms(KetMolecule::atoms_type& ket_atoms, const rapidj
             }
         }
 
-        atom_ptr->parseOptsFromKet(atom);
+        if (atom_type != "rg-label")
+            static_cast<KetBaseAtom*>(atom_ptr)->parseOptsFromKet(atom);
     }
 }
 
@@ -404,14 +405,14 @@ IMPL_ERROR(KetBaseMonomer, "Ket Base Monomer")
 void KetBaseMonomer::connectAttachmentPointTo(const std::string& ap_id, const std::string& monomer_ref, const std::string& other_ap_id)
 {
     if (_attachment_points.find(ap_id) == _attachment_points.end())
-        throw Error("Unknown attachment point '%s' in monomer %s", ap_id.c_str(), _alias.c_str());
+        throw Error("Unknown attachment point '%s' in monomer '%s(%s)'", ap_id.c_str(), _alias.c_str(), _ref.c_str());
     auto it = _connections.find(ap_id);
     if (it != _connections.end() && (it->second.first != monomer_ref || it->second.second != other_ap_id))
-        throw Error("Monomer '%s' attachment point '%s' already connected to monomer'%s' attachment point '%s'", _alias.c_str(), ap_id.c_str(),
-                    it->second.first.c_str(), it->second.second.c_str());
+        throw Error("Monomer '%s(%s)' attachment point '%s' already connected to monomer'%s' attachment point '%s'", _alias.c_str(), _ref.c_str(),
+                    ap_id.c_str(), it->second.first.c_str(), it->second.second.c_str());
     auto mol_it = _connections_to_molecules.find(ap_id);
     if (mol_it != _connections_to_molecules.end())
-        throw Error("Monomer '%s' attachment point '%s' already connected to molecule '%s' atom '%d'", _alias.c_str(), ap_id.c_str(),
+        throw Error("Monomer '%s(%s)' attachment point '%s' already connected to molecule '%s' atom '%d'", _alias.c_str(), _ref.c_str(), ap_id.c_str(),
                     mol_it->second.first.c_str(), mol_it->second.second);
     if (it == _connections.end())
         _connections.try_emplace(ap_id, monomer_ref, other_ap_id);
@@ -420,14 +421,14 @@ void KetBaseMonomer::connectAttachmentPointTo(const std::string& ap_id, const st
 void KetBaseMonomer::connectAttachmentPointToMolecule(const std::string& ap_id, const std::string& molecule_ref, int atom_idx)
 {
     if (_attachment_points.find(ap_id) == _attachment_points.end())
-        throw Error("Unknown attachment point '%s' in monomer %s", ap_id.c_str(), _alias.c_str());
+        throw Error("Unknown attachment point '%s' in monomer '%s(%s)'", ap_id.c_str(), _alias.c_str(), _ref.c_str());
     auto it = _connections.find(ap_id);
     if (it != _connections.end())
-        throw Error("Monomer '%s' attachment point '%s' already connected to monomer'%s' attachment point '%s'", _alias.c_str(), ap_id.c_str(),
-                    it->second.first.c_str(), it->second.second.c_str());
+        throw Error("Monomer '%s(%s)' attachment point '%s' already connected to monomer'%s' attachment point '%s'", _alias.c_str(), _ref.c_str(),
+                    ap_id.c_str(), it->second.first.c_str(), it->second.second.c_str());
     auto mol_it = _connections_to_molecules.find(ap_id);
     if (mol_it != _connections_to_molecules.end())
-        throw Error("Monomer '%s' attachment point '%s' already connected to molecule '%s' atom '%d'", _alias.c_str(), ap_id.c_str(),
+        throw Error("Monomer '%s(%s)' attachment point '%s' already connected to molecule '%s' atom '%d'", _alias.c_str(), _ref.c_str(), ap_id.c_str(),
                     mol_it->second.first.c_str(), mol_it->second.second);
     if (it == _connections.end())
         _connections_to_molecules.try_emplace(ap_id, molecule_ref, atom_idx);
@@ -441,7 +442,22 @@ void KetBaseMonomer::disconnectAttachmentPoint(const std::string& ap_id)
         _connections_to_molecules.erase(ap_id);
     else
         throw Error("Attachment point '%s' is not connected", ap_id.c_str());
-};
+}
+
+bool KetBaseMonomer::selected() const
+{
+    auto& map = getBoolPropStrToIdx();
+    const auto& it = map.find("selected");
+    return it != map.end() && hasBoolProp(it->second) && getBoolProp(it->second);
+}
+
+const std::map<std::string, int>& KetBaseMonomer::getIntPropStrToIdx() const
+{
+    static std::map<std::string, int> str_to_idx{
+        {"seqid", toUType(IntProps::seqid)},
+    };
+    return str_to_idx;
+}
 
 IMPL_ERROR(KetMonomer, "Ket Monomer")
 
@@ -449,14 +465,7 @@ const std::map<std::string, int>& KetMonomer::getBoolPropStrToIdx() const
 {
     static std::map<std::string, int> str_to_idx{
         {"expanded", toUType(BoolProps::expanded)},
-    };
-    return str_to_idx;
-}
-
-const std::map<std::string, int>& KetMonomer::getIntPropStrToIdx() const
-{
-    static std::map<std::string, int> str_to_idx{
-        {"seqid", toUType(IntProps::seqid)},
+        {"selected", toUType(BoolProps::selected)},
     };
     return str_to_idx;
 }
@@ -510,20 +519,28 @@ const std::map<std::string, int>& KetConnection::getStringPropStrToIdx() const
     return str_to_idx;
 }
 
-IMPL_ERROR(KetAmbiguousMonomer, "Ket Ambiguous Monomer")
-
-const std::map<std::string, int>& KetAmbiguousMonomer::getIntPropStrToIdx() const
+const std::map<std::string, int>& KetConnection::getBoolPropStrToIdx() const
 {
     static std::map<std::string, int> str_to_idx{
-        {"seqid", toUType(IntProps::seqid)},
+        {"selected", toUType(BoolProps::selected)},
     };
     return str_to_idx;
 }
+
+IMPL_ERROR(KetAmbiguousMonomer, "Ket Ambiguous Monomer")
 
 const std::map<std::string, int>& KetAmbiguousMonomer::getStringPropStrToIdx() const
 {
     static std::map<std::string, int> str_to_idx{
         {"alias", toUType(StringProps::alias)},
+    };
+    return str_to_idx;
+}
+
+const std::map<std::string, int>& KetAmbiguousMonomer::getBoolPropStrToIdx() const
+{
+    static std::map<std::string, int> str_to_idx{
+        {"selected", toUType(BoolProps::selected)},
     };
     return str_to_idx;
 }
@@ -542,6 +559,31 @@ bool KetBaseMonomerTemplate::hasIdtAliasBase(const std::string& alias_base)
     if (_idt_alias.getBase() == alias_base)
         return true;
     return false;
+}
+
+IMPL_ERROR(KetObjectAnnotation, "Ket Object Annotation")
+
+const std::map<std::string, int>& KetObjectAnnotation::getStringPropStrToIdx() const
+{
+    static std::map<std::string, int> str_to_idx{
+        {"text", toUType(StringProps::text)},
+    };
+    return str_to_idx;
+}
+
+IMPL_ERROR(KetAnnotation, "Ket Annotation")
+
+void KetAnnotation::copy(const KetAnnotation& other)
+{
+    KetObjWithProps::copy(other);
+    if (other._extended.has_value())
+        setExtended(*other._extended);
+}
+
+void KetAnnotation::setExtended(const rapidjson::Document& extended)
+{
+    _extended.emplace();
+    _extended->CopyFrom(extended, _extended->GetAllocator());
 }
 
 #ifdef _MSC_VER

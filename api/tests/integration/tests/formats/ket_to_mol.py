@@ -73,6 +73,13 @@ files = [
     ("issue_2702", "auto"),
     ("issue_2699_rlogic", "3000"),
     ("hydro_atp_ch", "3000"),
+    ("sgroup_class", "3000"),
+    ("flip_rotate", "3000"),
+    ("flip_rotate_2000", "2000"),
+    ("flip_rotate_rna", "3000"),
+    ("3068-star-issue", "3000"),
+    ("exp-valence-0", "2000"),
+    ("3178-any-bond", "3000"),
 ]
 
 files.sort(key=lambda x: x[0])
@@ -112,7 +119,7 @@ for filename in files:
     rc = indigo.loadReactionFromFile(os.path.join(root_rea, filename + ".ket"))
     ket = rc.rxnfile()
     # with open(os.path.join(ref_path, filename) + ".mol", "w") as file:
-    #    file.write(ket)
+    #   file.write(ket)
 
     with open(os.path.join(ref_path, filename) + ".mol", "r") as file:
         ket_ref = file.read()

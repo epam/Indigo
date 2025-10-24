@@ -385,7 +385,6 @@ namespace indigo
         ObjArray<Ring> rings;
         ObjArray<BondEnd> bondends;
         ObjArray<TextItem> textitems;
-        ObjArray<TextItem> cipItems;
         ObjArray<GraphItem> graphitems;
         ObjArray<RenderItemAttachmentPoint> attachmentPoints;
         ObjArray<RenderItemRSiteAttachmentIndex> rSiteAttachmentIndices;

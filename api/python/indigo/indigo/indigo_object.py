@@ -361,6 +361,17 @@ class IndigoObject:
 
         return IndigoLib.checkResultString(self._lib().indigoJson(self.id))
 
+    def monomerLibrary(self):
+        """Structure method returns the structure as a string in KET format
+
+        Returns:
+            str: KET format for the structure
+        """
+
+        return IndigoLib.checkResultString(
+            self._lib().indigoMonomerLibrary(self.id)
+        )
+
     def saveMDLCT(self, output):
         """Structure method saves the structure in MDLCT format into a buffer
 
@@ -964,6 +975,36 @@ class IndigoObject:
 
         IndigoLib.checkResult(self._lib().indigoValidateChirality(self.id))
 
+    def stereocenterCIPDescriptor(self):
+        """Atom method returns the cip descriptor of the given atom
+
+        Returns:
+            int: atom cip descriptor
+                * NONE = 0
+                * UNKNOWN = 1
+                * s = 2
+                * r = 3
+                * S = 4
+                * R = 5
+                * E = 6
+                * Z = 7
+        """
+
+        return IndigoLib.checkResult(
+            self._lib().indigoStereocenterCIPDescriptor(self.id)
+        )
+
+    def addCIPStereoDescriptors(self):
+        """Molecule method adds cip descriptors to stereocenters
+
+        Returns:
+            int: 0 if there are no errors
+        """
+
+        return IndigoLib.checkResult(
+            self._lib().indigoAddCIPStereoDescriptors(self.id)
+        )
+
     def singleAllowedRGroup(self):
         """Atom method returns single allowed r-group
 
@@ -1168,6 +1209,42 @@ class IndigoObject:
         """
 
         return IndigoLib.checkResult(self._lib().indigoValence(self.id))
+
+    def atomIndex(self):
+        """Atom method returns the atom index number
+
+        Returns:
+            int: atom index
+        """
+
+        return IndigoLib.checkResult(self._lib().indigoAtomIndex(self.id))
+
+    def bondIndex(self):
+        """Bond method returns the bond index number
+
+        Returns:
+            int: bond index
+        """
+
+        return IndigoLib.checkResult(self._lib().indigoBondIndex(self.id))
+
+    def bondBegin(self):
+        """Bond method returns the begining atom index of the bond
+
+        Returns:
+            int: begining atom index
+        """
+
+        return IndigoLib.checkResult(self._lib().indigoBondBegin(self.id))
+
+    def bondEnd(self):
+        """Bond method returns the ending atom index of the bond
+
+        Returns:
+            int: ending atom index
+        """
+
+        return IndigoLib.checkResult(self._lib().indigoBondEnd(self.id))
 
     def checkValence(self):
         """Atom method validates the valence
@@ -2524,6 +2601,17 @@ class IndigoObject:
 
         return IndigoLib.checkResultFloat(self._lib().indigoPka(self.id))
 
+    def pKaValues(self):
+        """Molecule method returns calculated Lee-Crippen SMARTS pKa values
+
+        Returns:
+            array of floats: calculated pKa values of the molecule
+        """
+        pka_string = IndigoLib.checkResultString(
+            self._lib().indigoPkaValues(self.id)
+        )
+        return pka_string
+
     def bondOrder(self):
         """Bond method returns bond order
 
@@ -2903,6 +2991,28 @@ class IndigoObject:
             IndigoLib.checkResult(self._lib().indigoIsHighlighted(self.id))
         )
 
+    def isSelected(self):
+        """Atom or bond method returns True if selected
+
+        Returns:
+            bool: True if selected, False otherwise
+        """
+
+        return bool(
+            IndigoLib.checkResult(self._lib().indigoIsSelected(self.id))
+        )
+
+    def hasSelection(self):
+        """Molecule or reaction method returns True if has selection
+
+        Returns:
+            bool: True if has selection, False otherwise
+        """
+
+        return bool(
+            IndigoLib.checkResult(self._lib().indigoHasSelection(self.id))
+        )
+
     def countComponents(self):
         """Molecule method returns the number of components
 
@@ -3052,6 +3162,19 @@ class IndigoObject:
         """
 
         gf_id = IndigoLib.checkResult(self._lib().indigoGrossFormula(self.id))
+        gf = IndigoObject(self.session, gf_id)
+        return IndigoLib.checkResultString(self._lib().indigoToString(gf.id))
+
+    def molecularFormula(self):
+        """Molecule or reaction method returns IUPAC molecular formula
+
+        Returns:
+            str: IUPAC molecular formula
+        """
+
+        gf_id = IndigoLib.checkResult(
+            self._lib().indigoMolecularFormula(self.id)
+        )
         gf = IndigoObject(self.session, gf_id)
         return IndigoLib.checkResultString(self._lib().indigoToString(gf.id))
 
@@ -3401,6 +3524,14 @@ class IndigoObject:
             self._lib().indigoFoldUnfoldHydrogens(self.id)
         )
 
+    def expandMonomers(self):
+        """Molecule method expand selected monomers
+
+        Returns:
+            IndigoObject: molecule object as submolecule
+        """
+        return IndigoLib.checkResult(self._lib().indigoExpandMonomers(self.id))
+
     def layout(self):
         """Molecule or reaction method calculates layout for the structure
 
@@ -3551,6 +3682,33 @@ class IndigoObject:
 
         return IndigoLib.checkResultString(
             self._lib().indigoHelm(self.id, library.id)
+        )
+
+    def saveAxoLabs(self, filename, library):
+        """Saves macromolecule to AxoLabs file
+
+        Args:
+            filename (str): full file path to the output file
+
+        Returns:
+            int: 1 if file is saved successfully
+        """
+
+        return IndigoLib.checkResult(
+            self._lib().indigoSaveAxoLabsToFile(
+                self.id, filename.encode(), library.id
+            )
+        )
+
+    def axolabs(self, library):
+        """Molecule or reaction method returns AxoLabs for the structure
+
+        Returns:
+            str: AxoLabs string
+        """
+
+        return IndigoLib.checkResultString(
+            self._lib().indigoAxoLabs(self.id, library.id)
         )
 
     def smarts(self):

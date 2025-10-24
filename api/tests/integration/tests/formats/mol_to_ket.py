@@ -54,19 +54,49 @@ files = [
     "2708-sgroup-data",
     "2704-stereocenters",
     "issue_2699_rlogic",
+    "issue_2958_map_template",
+    "sgroup_class",
+    "flip_rotate",
+    "flip_rotate_2000",
+    "flip_rotate_rna",
+    "3050-bad-cbonds",
+    "3047-accldraw",
+    "3094-chem-2000",
+    "3094-chem-3000",
 ]
 
-native_precisipon = [
+native_precision = [
     "2708-sgroup-data",
     "2704-stereocenters",
     "issue_2699_rlogic",
+    "issue_2958_map_template",
 ]
+
+with_lib = [
+    "issue_2958_map_template",
+    "flip_rotate",
+    "flip_rotate_2000",
+    "flip_rotate_rna",
+    "taspoglutide",
+    "apamine",
+    "anacyclamide",
+    "3094-chem-2000",
+    "3094-chem-3000",
+]
+
+lib = indigo.loadMonomerLibraryFromFile(
+    os.path.join(ref_path, "monomer_library_ket.ket")
+)
 
 files.sort()
 for filename in files:
-    mol = indigo.loadMoleculeFromFile(os.path.join(root, filename + ".mol"))
+    fname = os.path.join(root, filename + ".mol")
+    if filename in with_lib:
+        mol = indigo.loadMoleculeWithLibFromFile(fname, lib)
+    else:
+        mol = indigo.loadMoleculeFromFile(fname)
 
-    if filename in native_precisipon:
+    if filename in native_precision:
         indigo.setOption("json-use-native-precision", True)
     else:
         indigo.setOption("json-use-native-precision", False)

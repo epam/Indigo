@@ -83,9 +83,11 @@ namespace indigo
         {
             reactants.copy(other.reactants);
             products.copy(other.products);
+            catalysts.copy(other.catalysts);
         }
         Array<int> reactants;
         Array<int> products;
+        Array<int> catalysts;
     };
 
     class DLLEXPORT BaseReaction : public NonCopyable
@@ -115,6 +117,11 @@ namespace indigo
         virtual int count();
 
         void remove(int i);
+
+        PtrPool<BaseMolecule>& molecules()
+        {
+            return _allMolecules;
+        }
 
         int intermediateBegin()
         {
@@ -333,9 +340,10 @@ namespace indigo
         int addCatalyst();
         int addIntermediate();
         int addUndefined();
+        int specialConditionCount();
         int addSpecialCondition(int meta_idx, const Rect2f& bbox);
         void clearSpecialConditions();
-        const SpecialCondition& specialCondition(int meta_idx) const;
+        const SpecialCondition& specialCondition(int idx) const;
 
         int addReactantCopy(BaseMolecule& mol, Array<int>* mapping, Array<int>* inv_mapping);
         int addProductCopy(BaseMolecule& mol, Array<int>* mapping, Array<int>* inv_mapping);
@@ -371,6 +379,8 @@ namespace indigo
         };
 
         KetDocument& getKetDocument();
+
+        bool hasSelection();
 
         DECL_ERROR;
 

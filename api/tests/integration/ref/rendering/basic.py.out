@@ -29,3 +29,11 @@ render_heavy_atoms_2150.png rendering status: OK
 issue 2815 cip labels
 cip_labels_2815_cdxml.png rendering status: OK
 cip_labels_2815_ket.png rendering status: OK
+issue 2748 backwards substituents
+backwards_substituents_2748.png rendering status: OK
+issue 2970 cip breaks svg
+cip_breaks_svg_2970.png rendering status: OK
+issue 2900 cip always render
+cip_labels_2900.png rendering status: OK
+issue 3049 missing stereolabels
+cip_labels_3049.png rendering status: OK
