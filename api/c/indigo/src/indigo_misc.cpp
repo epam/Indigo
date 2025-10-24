@@ -1687,7 +1687,7 @@ CEXPORT const char* indigoJsonMonomerLibrary(int library)
         KetDocumentJsonSaver js(out);
         IndigoObject& lib_obj = self.getObject(library);
         js.pretty_json = self.json_saving_pretty;
-        js.saveJsonMonomerLibrary(IndigoMonomerLibrary::get(lib_obj));
+        js.saveMonomerLibrary(IndigoMonomerLibrary::get(lib_obj));
         out.writeChar(0);
         return tmp.string.ptr();
     }
