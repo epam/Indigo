@@ -1678,7 +1678,7 @@ CEXPORT const char* indigoCheckStructure(const char* structure, const char* prop
     INDIGO_END(0);
 }
 
-CEXPORT const char* indigoMonomerLibrary(int library)
+CEXPORT const char* indigoJsonMonomerLibrary(int library)
 {
     INDIGO_BEGIN
     {

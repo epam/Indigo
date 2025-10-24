@@ -66,10 +66,10 @@ for filename in files:
         os.path.join(root, filename + ".sdf")
     )
     # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
-    #     file.write(lib.monomerLibrary())
+    #     file.write(lib.jsonMonomerLibrary())
     with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
         ket_ref = file.read()
-    ket = lib.monomerLibrary()
+    ket = lib.jsonMonomerLibrary()
     diff = find_diff(ket_ref, ket)
     if not diff:
         print(filename + ".ket:SUCCEED")

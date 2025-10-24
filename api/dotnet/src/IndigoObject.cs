@@ -162,10 +162,10 @@ namespace com.epam.indigo
             return dispatcher.checkResult(IndigoLib.indigoJson(self));
         }
 
-        public string monomerLibrary()
+        public string jsonMonomerLibrary()
         {
             dispatcher.setSessionID();
-            return dispatcher.checkResult(IndigoLib.indigoMonomerLibrary(self));
+            return dispatcher.checkResult(IndigoLib.indigoJsonMonomerLibrary(self));
         }
 
         public void saveCml(string filename)

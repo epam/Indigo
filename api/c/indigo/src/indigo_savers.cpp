@@ -751,7 +751,7 @@ CEXPORT int indigoSaveAxoLabs(int item, int output, int library)
     INDIGO_END(-1);
 }
 
-CEXPORT int indigoSaveMonomerLibrary(int output, int library)
+CEXPORT int indigoSaveJsonMonomerLibrary(int output, int library)
 {
     INDIGO_BEGIN
     {

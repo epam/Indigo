@@ -176,7 +176,7 @@ CEXPORT int indigoSaveIdtToFile(int item, const char* filename, int library)
     return res;
 }
 
-CEXPORT int indigoSaveMonomerLibraryToFile(const char* filename, int library)
+CEXPORT int indigoSaveJsonMonomerLibraryToFile(const char* filename, int library)
 {
     int f = indigoWriteFile(filename);
     int res;
@@ -184,7 +184,7 @@ CEXPORT int indigoSaveMonomerLibraryToFile(const char* filename, int library)
     if (f == -1)
         return -1;
 
-    res = indigoSaveMonomerLibrary(f, library);
+    res = indigoSaveJsonMonomerLibrary(f, library);
 
     indigoFree(f);
     return res;
