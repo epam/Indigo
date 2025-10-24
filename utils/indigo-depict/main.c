@@ -927,6 +927,7 @@ int main(int argc, char* argv[])
 
     int lib = indigoLoadMonomerLibraryFromString("{\"root\":{}}");
     // int lib = indigoLoadMonomerLibraryFromFile("monomer_library.ket");
+    indigoSaveJsonMonomerLibraryToFile(lib, "monomer_library.ket");
 
     if (p.mode == MODE_SINGLE_MOLECULE)
     {

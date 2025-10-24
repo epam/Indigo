@@ -236,7 +236,7 @@ namespace indigo
             else if (outputFormat == "monomer-library" || outputFormat == "chemical/x-monomer-library")
             {
                 print_js(outputFormat.c_str());
-                result = _checkResultString(indigoMonomerLibrary(id()));
+                result = _checkResultString(indigoJsonMonomerLibrary(id()));
             }
             else
             {

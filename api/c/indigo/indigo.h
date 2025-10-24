@@ -263,8 +263,8 @@ CEXPORT int indigoSaveAxoLabs(int molecule, int output, int library);
 CEXPORT int indigoSaveAxoLabsToFile(int molecule, const char* filename, int library);
 CEXPORT const char* indigoAxoLabs(int molecule, int library);
 
-CEXPORT int indigoSaveMonomerLibrary(int output, int library);
-CEXPORT int indigoSaveMonomerLibraryToFile(const char* filename, int library);
+CEXPORT int indigoSaveJsonMonomerLibrary(int output, int library);
+CEXPORT int indigoSaveJsonMonomerLibraryToFile(const char* filename, int library);
 CEXPORT const char* indigoMonomerLibrary(int library);
 
 CEXPORT int indigoSaveJsonToFile(int item, const char* filename);
