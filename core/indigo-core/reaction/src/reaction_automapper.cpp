@@ -619,7 +619,7 @@ bool ReactionAutomapper::_checkAtomMapping(bool change_rc, bool change_aam, bool
                             continue;
                         }
 
-                        //YQ: Sapio JIRA [CHEMBUGS-64] fixes:
+                        // YQ: Sapio JIRA [CHEMBUGS-64] fixes:
                         bool bond_cond_simple = RSubstructureMcs::bondConditionReactSimple(pmol, rmol, mapping[i], bond_idx, &rsm);
 
                         const bool is_unchanged = bond_cond_simple || (react_arom && prod_arom);
@@ -627,12 +627,15 @@ bool ReactionAutomapper::_checkAtomMapping(bool change_rc, bool change_aam, bool
                         const bool order_changed = !is_unchanged || aromaticity_changed;
 
                         // Make ORDER_CHANGED dominate UNCHANGED on this bond
-                        int &flags = bond_centers[mol_idx][bond_idx];
-                        if (order_changed) {
+                        int& flags = bond_centers[mol_idx][bond_idx];
+                        if (order_changed)
+                        {
                             // ensure exclusivity: once ORDER_CHANGED is set, never keep UNCHANGED
                             flags &= ~RC_UNCHANGED;
                             flags |= RC_ORDER_CHANGED;
-                        } else {
+                        }
+                        else
+                        {
                             // only mark UNCHANGED if ORDER_CHANGED wasn't set by a previous candidate
                             if ((flags & RC_ORDER_CHANGED) == 0)
                                 flags |= RC_UNCHANGED;
