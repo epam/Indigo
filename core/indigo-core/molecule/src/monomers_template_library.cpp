@@ -244,35 +244,43 @@ namespace indigo
     {
         if (tg.tgroup_name.ptr() && tg.tgroup_class.ptr())
         {
+            bool new_template = true;
             std::string template_class(monomerKETClass(tg.tgroup_class.ptr()));
-            auto inchi_key = monomerInchi(tg);
-            auto id = monomerTemplateId(tg);
-            std::pair<std::string, std::string> i_key = std::make_pair(inchi_key, template_class);
-
-            auto it_key = _inchi_key_to_monomer_id.find(i_key);
-            if (it_key != _inchi_key_to_monomer_id.end())
+            std::string alias(monomerAlias(tg));
+            std::optional<std::reference_wrapper<MonomerTemplate>> mt_ref;
+            auto lib_id = getMonomerTemplateIdByAlias(MonomerTemplate::StrToMonomerClass(template_class), alias);
+            if (lib_id.size() > 0)
             {
-                auto it = _monomer_templates.find(it_key->second);
-                if (it != _monomer_templates.end())
+                // monomer with same name and class - check inchi
+                mt_ref = _monomer_templates.at(lib_id);
+                auto inchi_key_lib = monomerInchi(*mt_ref->get().getTGroup());
+                auto inchi_key_new = monomerInchi(tg);
+                if (inchi_key_new != inchi_key_lib)
+                    throw Error("Monomer %s with alias %s and same structure already in the library.", template_class.c_str(), alias.c_str());
+                new_template = false;
+            }
+            else
+            {
+                // new monomer
+                auto id = monomerTemplateId(tg);
+                // check if id is unique
+                if (_monomer_templates.find(id) != _monomer_templates.end())
                 {
-                    // template with same class name and inchi already exists - return it
-                    if (id == it_key->second && template_class == it->second.monomerClassStr())
-                        return it->second;
+                    if (_duplicate_names_count.count(id) == 0)
+                        _duplicate_names_count.emplace(id, 0);
+                    do
+                    {
+                        id = id + "_" + std::to_string(++_duplicate_names_count[id]);
+                    } while (_monomer_templates.find(id) != _monomer_templates.end());
                 }
+                mt_ref = addMonomerTemplate(id, template_class, idt_alias, false);
             }
 
-            // now check if id is unique
-            if (_duplicate_names_count.count(id) > 0)
-                id = id + "_" + std::to_string(++_duplicate_names_count[id]);
-            else
-                _duplicate_names_count.emplace(id, 0);
+            auto& mt = mt_ref->get();
 
-            auto& mt = addMonomerTemplate(id, template_class, idt_alias, false);
-            _inchi_key_to_monomer_id.emplace(i_key, id);
-
-            // set properties
+            // set/update properties
             setKetStrProp(mt, classHELM, monomerHELMClass(tg.tgroup_class.ptr()));
-            setKetStrProp(mt, alias, monomerAlias(tg));
+            setKetStrProp(mt, alias, alias);
 
             if (tg.tgroup_full_name.size())
                 setKetStrProp(mt, fullName, tg.tgroup_full_name.ptr());
@@ -307,28 +315,31 @@ namespace indigo
                     setKetStrProp(mt, naturalAnalog, analog);
             }
 
-            // atoms
-            for (const auto& v : tg.fragment->vertices())
+            if (new_template)
             {
-                Array<char> label;
-                tg.fragment->getAtomSymbol(v, label);
-                mt.AddAtom(label.ptr(), tg.fragment->getAtomXyz(v));
-            }
-            // bonds
-            for (const auto& e_idx : tg.fragment->edges())
-            {
-                auto& e = tg.fragment->getEdge(e_idx);
-                mt.AddBond(tg.fragment->getBondOrder(e_idx), e.beg, e.end);
-            }
-            // attachment points
-            auto& sgroups = tg.fragment->sgroups;
-            for (int j = sgroups.begin(); j != sgroups.end(); j = sgroups.next(j))
-            {
-                SGroup& sg = sgroups.getSGroup(j);
-                if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
+                // atoms
+                for (const auto& v : tg.fragment->vertices())
                 {
-                    mt.addSuperatomAttachmentPoints((Superatom&)sg);
-                    sgroups.remove(j);
+                    Array<char> label;
+                    tg.fragment->getAtomSymbol(v, label);
+                    mt.AddAtom(label.ptr(), tg.fragment->getAtomXyz(v));
+                }
+                // bonds
+                for (const auto& e_idx : tg.fragment->edges())
+                {
+                    auto& e = tg.fragment->getEdge(e_idx);
+                    mt.AddBond(tg.fragment->getBondOrder(e_idx), e.beg, e.end);
+                }
+                // attachment points
+                auto& sgroups = tg.fragment->sgroups;
+                for (int j = sgroups.begin(); j != sgroups.end(); j = sgroups.next(j))
+                {
+                    SGroup& sg = sgroups.getSGroup(j);
+                    if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
+                    {
+                        mt.addSuperatomAttachmentPoints((Superatom&)sg);
+                        sgroups.remove(j);
+                    }
                 }
             }
             return mt;
