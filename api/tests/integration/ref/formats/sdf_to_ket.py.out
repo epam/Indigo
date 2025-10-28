@@ -7,3 +7,4 @@ lib_default_type.ket:SUCCEED
 lib_phos.ket:SUCCEED
 lib_rna_preset_g.ket:SUCCEED
 lib_rna_preset_same.ket:SUCCEED
+lib_same_struct.ket:SUCCEED
