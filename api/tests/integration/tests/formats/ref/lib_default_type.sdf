@@ -72,6 +72,6 @@ monomerTemplate
 _Base3_HELM***---
 
 >  <idtAliases>
-base=_Base3;ep5=/5_Base3/;ep3=/3_Base3/;internal=/i_Base3/
+base=_Base3
 
 $$$$

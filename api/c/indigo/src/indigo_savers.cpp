@@ -172,28 +172,31 @@ void IndigoSdfSaver::saveMonomerLibrary(const MonomerTemplateLibrary& monomers_l
         if (idt_base.size())
             idt_aliases = "base=" + idt_base;
 
-        if (idt_alias.hasModification(IdtModification::FIVE_PRIME_END))
+        if (idt_alias.hasModifications())
         {
-            if (idt_aliases.size())
-                idt_aliases += ";";
-            const std::string& alias = idt_alias.getModification(IdtModification::FIVE_PRIME_END);
-            idt_aliases += "ep5=" + alias;
-        }
+            if (idt_alias.hasModification(IdtModification::FIVE_PRIME_END))
+            {
+                if (idt_aliases.size())
+                    idt_aliases += ";";
+                const std::string& alias = idt_alias.getModification(IdtModification::FIVE_PRIME_END);
+                idt_aliases += "ep5=" + alias;
+            }
 
-        if (idt_alias.hasModification(IdtModification::THREE_PRIME_END))
-        {
-            if (idt_aliases.size())
-                idt_aliases += ";";
-            const std::string& alias = idt_alias.getModification(IdtModification::THREE_PRIME_END);
-            idt_aliases += "ep3=" + alias;
-        }
+            if (idt_alias.hasModification(IdtModification::THREE_PRIME_END))
+            {
+                if (idt_aliases.size())
+                    idt_aliases += ";";
+                const std::string& alias = idt_alias.getModification(IdtModification::THREE_PRIME_END);
+                idt_aliases += "ep3=" + alias;
+            }
 
-        if (idt_alias.hasModification(IdtModification::INTERNAL))
-        {
-            if (idt_aliases.size())
-                idt_aliases += ";";
-            const std::string& alias = idt_alias.getModification(IdtModification::INTERNAL);
-            idt_aliases += "internal=" + alias;
+            if (idt_alias.hasModification(IdtModification::INTERNAL))
+            {
+                if (idt_aliases.size())
+                    idt_aliases += ";";
+                const std::string& alias = idt_alias.getModification(IdtModification::INTERNAL);
+                idt_aliases += "internal=" + alias;
+            }
         }
 
         if (idt_aliases.size())
