@@ -35,9 +35,9 @@ jobs:
 
   set_matrix:
     runs-on: ubuntu-latest
-    # outputs:
-    #   - matrix: ${{ steps.*.outputs.matrix[0] }}
-    #   - matrix-aarch64: ${{ steps.*.outputs.matrix-aarch64[0] }}
+    outputs:
+      - matrix: ${{ steps.*.outputs[0].matrix }}
+      - matrix-aarch64: ${{ steps.*.outputs[0].matrix-aarch64 }}
     steps:
       - id: set-matrix-with-macos
         if: ${{ !startsWith(github.ref, 'refs/tags/indigo-') }}
