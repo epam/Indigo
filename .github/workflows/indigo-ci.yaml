@@ -33,16 +33,31 @@ jobs:
           python3 -m pip install -r api/python/requirements_dev.txt --break-system-packages
           .ci/static_analysis_check.sh
 
+  set_matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      - matrix: ${{ steps.*.outputs.matrix }}
+      - matrix-aarch64: ${{ steps.*.outputs.matrix-aarch64 }}
+    steps:
+      - id: set-matrix-with-macos
+        if: ${{ !startsWith(github.ref, 'refs/tags/indigo-') }}
+        run: echo "matrix={\"os\":[\"ubuntu-latest\",\"windows-latest\",\"macos-13\"]}" >> $GITHUB_OUTPUT
+      - id: set-matrix-without-macos
+        if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
+        run: echo "matrix={\"os\":[\"ubuntu-latest\",\"windows-latest\"]}" >> $GITHUB_OUTPUT
+      - id: set-matrix-aarch64-with-macos
+        if: ${{ !startsWith(github.ref, 'refs/tags/indigo-') }}
+        run: echo "matrix-aarch64={\"os\":[\"ubuntu-latest\",\"windows-latest\",\"macos-13\"]}" >> $GITHUB_OUTPUT
+      - id: set-matrix-aarch64-without-macos
+        if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
+        run: echo "matrix-aarch64={\"os\":[\"ubuntu-latest\",\"windows-latest\"]}" >> $GITHUB_OUTPUT
+
   build_indigo_libs_x86_64:
     strategy:
       fail-fast: false
-      matrix:
-        os: [ ubuntu-latest, windows-latest ]
-        include:
-          - os: macos-13
-            if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
+      matrix: ${{ fromJSON(needs.set_matrix.outputs.matrix) }}
     runs-on: ${{ matrix.os }}
-    needs: static_analysis
+    needs: [ static_analysis, set_matrix ]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -121,13 +136,9 @@ jobs:
   build_indigo_libs_aarch64:
     strategy:
       fail-fast: false
-      matrix:
-        os: [ ubuntu-latest ]
-        include:
-          - os: macos-13
-            if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
+      matrix: ${{ fromJSON(needs.set_matrix.outputs.matrix-aarch64) }}
     runs-on: ${{ matrix.os }}
-    needs: static_analysis
+    needs: [ static_analysis, set_matrix ]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -261,15 +272,10 @@ jobs:
           pattern: indigo-native-shared-libs-*
 
   test_indigo_python_x86_64:
-    
     timeout-minutes: 60
     strategy:
       fail-fast: false
-      matrix:
-        os: [ ubuntu-latest, windows-latest ]
-        include:
-          - os: macos-13
-            if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
+      matrix: ${{ fromJSON(needs.set_matrix.outputs.matrix) }}
     runs-on: ${{ matrix.os }}
     needs: merge_indigo_wrappers
     steps:
@@ -405,11 +411,7 @@ jobs:
     timeout-minutes: 60
     strategy:
       fail-fast: false
-      matrix:
-        os: [ ubuntu-latest, windows-latest ]
-        include:
-          - os: macos-13
-            if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
+      matrix: ${{ fromJSON(needs.set_matrix.outputs.matrix) }}
     runs-on: ${{ matrix.os }}
     needs: [ merge_indigo_wrappers, test_indigo_python_x86_64 ]
     steps:
@@ -541,11 +543,7 @@ jobs:
     timeout-minutes: 60
     strategy:
       fail-fast: false
-      matrix:
-        os: [ ubuntu-latest, windows-latest ]
-        include:
-          - os: macos-13
-            if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
+      matrix: ${{ fromJSON(needs.set_matrix.outputs.matrix) }}
     runs-on: ${{ matrix.os }}
     needs: [ merge_indigo_wrappers, test_indigo_java_x86_64 ]
     steps:
@@ -893,11 +891,7 @@ jobs:
   build_indigo_utils_x86_64:
     strategy:
       fail-fast: false
-      matrix:
-        os: [ ubuntu-latest, windows-latest ]
-        include:
-          - os: macos-13
-            if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
+      matrix: ${{ fromJSON(needs.set_matrix.outputs.matrix) }}
     runs-on: ${{ matrix.os }}
     # needs: [build_bingo_postgres_linux_x86_64, build_bingo_postgres_windows_msvc_x86_64, build_bingo_postgres_macos_x86_64]
     needs: [build_bingo_postgres_linux_x86_64, build_bingo_postgres_windows_msvc_x86_64]
