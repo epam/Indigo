@@ -1487,8 +1487,7 @@ M  END
             var fs = require('fs');
             const lib_ket = fs.readFileSync("lib_rna_preset_g.ket");
             let options = new indigo.MapStringString();
-            options.set('json-use-native-precision', 'true')
-            options.set('json-saving-pretty', 'true');
+            options.set('molfile-saving-skip-date', 'true');
             options.set('input-format', 'monomer-library');
             options.set('output-content-type', 'chemical/x-monomer-library-sdf');
             let lib_sdf = indigo.convert(lib_ket, "monomer-library-sdf", options);            

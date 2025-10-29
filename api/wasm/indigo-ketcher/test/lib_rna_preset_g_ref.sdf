@@ -1,5 +1,5 @@
 
-  -INDIGO-10292509202D
+  -INDIGO-01000000002D
 
   0  0  0  0  0  0  0  0  0  0  0 V3000
 M  V30 BEGIN CTAB
@@ -142,5 +142,5 @@ RNA
 G
 
 >  <idtAliases>
-base=rG
+base=rG;ep5=/5rG/;ep3=/3rG/;internal=/irG/
 
