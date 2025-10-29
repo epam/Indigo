@@ -204,7 +204,6 @@ CEXPORT int indigoSaveSDFMonomerLibraryToFile(const char* filename, int library)
     return res;
 }
 
-
 CEXPORT int indigoSaveHelmToFile(int item, const char* filename, int library)
 {
     int f = indigoWriteFile(filename);
