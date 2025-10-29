@@ -252,6 +252,9 @@ namespace com.epam.indigo
         public static extern byte* indigoJsonMonomerLibrary(int lib);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern byte* indigoSDFMonomerLibrary(int lib);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoSaveCdxml(int molecule, int output);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]

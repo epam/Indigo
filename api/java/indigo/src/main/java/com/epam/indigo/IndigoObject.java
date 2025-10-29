@@ -152,6 +152,11 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResultString(this, lib.indigoJsonMonomerLibrary(self));
     }
 
+    public String SDFMonomerLibrary() {
+        dispatcher.setSessionID();
+        return Indigo.checkResultString(this, lib.indigoSDFMonomerLibrary(self));
+    }
+
     public void saveCml(String filename) {
         dispatcher.setSessionID();
         Indigo.checkResult(this, lib.indigoSaveCmlToFile(self, filename));

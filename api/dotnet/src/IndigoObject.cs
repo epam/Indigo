@@ -168,6 +168,12 @@ namespace com.epam.indigo
             return dispatcher.checkResult(IndigoLib.indigoJsonMonomerLibrary(self));
         }
 
+        public string SDFMonomerLibrary()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoSDFMonomerLibrary(self));
+        }
+
         public void saveCml(string filename)
         {
             dispatcher.setSessionID();
