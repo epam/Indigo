@@ -1709,7 +1709,6 @@ CEXPORT const char* indigoSDFMonomerLibrary(int library)
     INDIGO_END(0);
 }
 
-
 CEXPORT const char* indigoJson(int item)
 {
     INDIGO_BEGIN
