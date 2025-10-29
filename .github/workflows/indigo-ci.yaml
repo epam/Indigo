@@ -124,7 +124,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest ]
         include:
-          - macos-13:
+          - os: macos-13
             if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
     runs-on: ${{ matrix.os }}
     needs: static_analysis
@@ -268,7 +268,7 @@ jobs:
       matrix:
         os: [ ubuntu-latest, windows-latest ]
         include:
-          - macos-13:
+          - os: macos-13
             if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
     runs-on: ${{ matrix.os }}
     needs: merge_indigo_wrappers
@@ -542,10 +542,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos-13, ubuntu-latest, windows-latest ]
+        os: [ ubuntu-latest, windows-latest ]
+        include:
+          - os: macos-13
+            if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
     runs-on: ${{ matrix.os }}
     needs: [ merge_indigo_wrappers, test_indigo_java_x86_64 ]
-    if: ${{ !startsWith(matrix.os, 'macos') || startsWith(github.ref, 'refs/tags/indigo-') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -892,11 +894,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos-13, ubuntu-latest, windows-latest ]
+        os: [ ubuntu-latest, windows-latest ]
+        include:
+          - os: macos-13
+            if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
     runs-on: ${{ matrix.os }}
     # needs: [build_bingo_postgres_linux_x86_64, build_bingo_postgres_windows_msvc_x86_64, build_bingo_postgres_macos_x86_64]
     needs: [build_bingo_postgres_linux_x86_64, build_bingo_postgres_windows_msvc_x86_64]
-    if: ${{ !startsWith(matrix.os, 'macos') || startsWith(github.ref, 'refs/tags/indigo-') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
