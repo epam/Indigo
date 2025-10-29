@@ -372,6 +372,17 @@ class IndigoObject:
             self._lib().indigoJsonMonomerLibrary(self.id)
         )
 
+    def SDFMonomerLibrary(self):
+        """Structure method returns the structure as a string in SDF format
+
+        Returns:
+            str: SDF format for the structure
+        """
+
+        return IndigoLib.checkResultString(
+            self._lib().indigoSDFMonomerLibrary(self.id)
+        )
+
     def saveMDLCT(self, output):
         """Structure method saves the structure in MDLCT format into a buffer
 

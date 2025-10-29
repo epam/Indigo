@@ -1,0 +1,316 @@
+{
+    "root": {
+        "nodes": [],
+        "templates": [
+            {
+                "$ref": "monomerTemplate-BaseX"
+            },
+            {
+                "$ref": "monomerTemplate-Phosphate"
+            },
+            {
+                "$ref": "monomerTemplate-Sugar"
+            },
+            {
+                "$ref": "monomerGroupTemplate-Q"
+            }
+        ]
+    },
+    "monomerTemplate-BaseX": {
+        "type": "monomerTemplate",
+        "id": "BaseX",
+        "class": "Base",
+        "classHELM": "RNA",
+        "fullName": "BaseX",
+        "alias": "BaseX",
+        "naturalAnalogShort": "X",
+        "attachmentPoints": [
+            {
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        1
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        2
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        3
+                    ]
+                }
+            }
+        ],
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    9.616020,
+                    -9.600000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    8.750020,
+                    -9.100000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    10.482000,
+                    -9.100000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    9.616020,
+                    -10.600000,
+                    0.000000
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    0
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    3
+                ]
+            }
+        ]
+    },
+    "monomerTemplate-Phosphate": {
+        "type": "monomerTemplate",
+        "id": "Phosphate",
+        "class": "Phosphate",
+        "classHELM": "RNA",
+        "fullName": "Phosphate",
+        "alias": "Phosphate",
+        "naturalAnalogShort": "P",
+        "attachmentPoints": [
+            {
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        1
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        2
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        3
+                    ]
+                }
+            }
+        ],
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    11.442000,
+                    -9.125000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    10.576000,
+                    -8.625000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    12.308000,
+                    -8.625000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    11.442000,
+                    -10.125000,
+                    0.000000
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    3
+                ]
+            }
+        ]
+    },
+    "monomerTemplate-Sugar": {
+        "type": "monomerTemplate",
+        "id": "Sugar",
+        "class": "Sugar",
+        "classHELM": "RNA",
+        "fullName": "Sugar",
+        "alias": "Sugar",
+        "naturalAnalog": "Rib",
+        "naturalAnalogShort": "R",
+        "attachmentPoints": [
+            {
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        1
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        2
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        3
+                    ]
+                }
+            }
+        ],
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    11.442000,
+                    -9.125000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    10.576000,
+                    -8.625000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    12.308000,
+                    -8.625000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    11.442000,
+                    -10.125000,
+                    0.000000
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    3
+                ]
+            }
+        ]
+    },
+    "monomerGroupTemplate-Q": {
+        "type": "monomerGroupTemplate",
+        "id": "Q",
+        "name": "Q",
+        "class": "RNA",
+        "idtAliases": {
+            "base": "rQ"
+        },
+        "templates": [
+            {
+                "$ref": "monomerTemplate-BaseX"
+            },
+            {
+                "$ref": "monomerTemplate-Phosphate"
+            },
+            {
+                "$ref": "monomerTemplate-Sugar"
+            }
+        ]
+    }
+}

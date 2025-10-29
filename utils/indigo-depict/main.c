@@ -925,9 +925,11 @@ int main(int argc, char* argv[])
     // read in the input
     reader = (p.file_to_load != NULL) ? indigoReadFile(p.file_to_load) : indigoReadString(p.string_to_load);
 
-    int lib = indigoLoadMonomerLibraryFromString("{\"root\":{}}");
+    // int lib = indigoLoadMonomerLibraryFromString("{\"root\":{}}");
     // int lib = indigoLoadMonomerLibraryFromFile("monomer_library.ket");
-    indigoSaveJsonMonomerLibraryToFile(lib, "monomer_library.ket");
+
+    int lib = indigoLoadMonomerLibraryFromFile("phos.ket");
+    indigoSaveSDFMonomerLibraryToFile("phos1.sdf", lib);
 
     if (p.mode == MODE_SINGLE_MOLECULE)
     {

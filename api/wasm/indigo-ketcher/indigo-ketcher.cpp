@@ -238,6 +238,11 @@ namespace indigo
                 print_js(outputFormat.c_str());
                 result = _checkResultString(indigoJsonMonomerLibrary(id()));
             }
+            else if (outputFormat == "monomer-library-sdf" || outputFormat == "chemical/x-monomer-library-sdf")
+            {
+                print_js(outputFormat.c_str());
+                result = _checkResultString(indigoSDFMonomerLibrary(id()));
+            }
             else
             {
                 std::stringstream ss;

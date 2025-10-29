@@ -593,7 +593,7 @@ namespace indigo
                     group_class = properties.at("groupClass");
                     group_name = properties.at("groupName");
                     std::string id = group_name;
-                    addMonomerGroupTemplate(MonomerGroupTemplate(id, group_name, group_class, idt_alias.hasModifications() ? idt_alias : idt_alias.getBase()));
+                    addMonomerGroupTemplate(MonomerGroupTemplate(id, group_name, group_class, idt_alias));
                     auto& mgt = getMonomerGroupTemplateById(id);
                     // iterate atoms
                     for (const auto& v : mol.vertices())

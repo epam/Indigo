@@ -60,6 +60,7 @@ public:
     const char* debugInfo() const override;
     static void append(Output& output, IndigoObject& object);
     static void appendMolfile(Output& output, IndigoObject& object);
+    void saveMonomerLibrary(const MonomerTemplateLibrary& monomers_library);
 
 protected:
     virtual void _append(IndigoObject& object);

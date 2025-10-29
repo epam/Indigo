@@ -94,3 +94,32 @@ for filename in files:
     else:
         print(filename + ".sdf:FAILED")
         print(diff)
+
+print("*** KET-monomer library to SDF ***")
+root = joinPathPy("molecules/", __file__)
+ref_path = joinPathPy("ref/", __file__)
+files = [
+    "lib_alanine",
+    "lib_alanine_expanded",
+    "lib_phos",
+    "lib_rna_preset_g",
+    "lib_rna_preset_same",
+    "lib_default_type",
+]
+
+files.sort()
+for filename in files:
+    lib = indigo.loadMonomerLibraryFromFile(
+        os.path.join(root, filename + ".ket")
+    )
+    # with open(os.path.join(ref_path, filename) + ".sdf", "w") as file:
+    #     file.write(lib.SDFMonomerLibrary())
+    with open(os.path.join(ref_path, filename) + ".sdf", "r") as file:
+        sdf_ref = file.read()
+    sdf = lib.SDFMonomerLibrary()
+    diff = find_diff(sdf_ref, sdf)
+    if not diff:
+        print(filename + ".sdf:SUCCEED")
+    else:
+        print(filename + ".sdf:FAILED")
+        print(diff)

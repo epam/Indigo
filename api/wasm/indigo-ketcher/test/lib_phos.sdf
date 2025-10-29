@@ -48,6 +48,6 @@ monomerTemplate
 p
 
 >  <idtAliases>
-ep5=5Phos,ep3=3Phos
+base=P,ep5=5Phos,ep3=3Phos
 
 $$$$

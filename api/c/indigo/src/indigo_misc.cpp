@@ -1694,6 +1694,22 @@ CEXPORT const char* indigoJsonMonomerLibrary(int library)
     INDIGO_END(0);
 }
 
+CEXPORT const char* indigoSDFMonomerLibrary(int library)
+{
+    INDIGO_BEGIN
+    {
+        auto& tmp = self.getThreadTmpData();
+        ArrayOutput out(tmp.string);
+        IndigoObject& lib_obj = self.getObject(library);
+        IndigoSdfSaver ss(out);
+        ss.saveMonomerLibrary(IndigoMonomerLibrary::get(lib_obj));
+        out.writeChar(0);
+        return tmp.string.ptr();
+    }
+    INDIGO_END(0);
+}
+
+
 CEXPORT const char* indigoJson(int item)
 {
     INDIGO_BEGIN

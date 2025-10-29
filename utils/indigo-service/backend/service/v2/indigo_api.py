@@ -457,7 +457,9 @@ def save_moldata(
     md, output_format=None, options={}, indigo=None, library=None
 ):
     if output_format in ("monomer-library", "chemical/x-monomer-library"):
-        return md.struct.monomerLibrary()
+        return md.struct.jsonMonomerLibrary()
+    elif output_format in ("monomer-library-sdf", "chemical/x-monomer-library-sdf"):
+        return md.struct.SDFMonomerLibrary()
     elif output_format in ("chemical/x-mdl-molfile", "chemical/x-mdl-rxnfile"):
         return md.struct.rxnfile() if md.is_rxn else md.struct.molfile()
     elif output_format == "chemical/x-indigo-ket":
