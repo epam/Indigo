@@ -37,10 +37,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos-13, ubuntu-latest, windows-latest ]
-        exlude:
-          - macos-13:
-            if: ${{ !startsWith(github.ref, 'refs/tags/indigo-') }}
+        os: [ ubuntu-latest, windows-latest ]
+        include:
+          - os: macos-13
+            if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
     runs-on: ${{ matrix.os }}
     needs: static_analysis
     steps:
@@ -66,7 +66,7 @@ jobs:
             ctest --verbose
             "
       - name: Build macOS
-        if: ${{ startsWith(matrix.os, 'macos') && startsWith(github.ref, 'refs/tags/indigo-') }}
+        if: ${{ startsWith(matrix.os, 'macos') }}
         run: |
           mkdir build
           cd build
@@ -122,10 +122,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos-13, ubuntu-latest ]
+        os: [ ubuntu-latest ]
+        include:
+          - macos-13:
+            if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
     runs-on: ${{ matrix.os }}
     needs: static_analysis
-    if: ${{ !startsWith(matrix.os, 'macos') || startsWith(github.ref, 'refs/tags/indigo-') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -149,7 +151,7 @@ jobs:
             ctest --verbose -R dlopen
             "
       - name: Build macOS
-        if: ${{ startsWith(matrix.os, 'macos') && startsWith(github.ref, 'refs/tags/indigo-') }}
+        if: ${{ startsWith(matrix.os, 'macos') }}
         run: |
           mkdir build
           cd build
@@ -169,7 +171,6 @@ jobs:
         wrapper: [ python, java, dotnet ]
     runs-on: ubuntu-latest
     needs: [ build_indigo_libs_x86_64, build_indigo_libs_aarch64, build_indigo_libs_i386 ]
-    if: ${{ !startsWith(matrix.os, 'macos') || startsWith(github.ref, 'refs/tags/indigo-') }}
     container: epmlsop/indigo-tester:latest
     steps:
       - name: Checkout
@@ -265,10 +266,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos-13, ubuntu-latest, windows-latest ]
+        os: [ ubuntu-latest, windows-latest ]
+        include:
+          - macos-13:
+            if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
     runs-on: ${{ matrix.os }}
     needs: merge_indigo_wrappers
-    if: ${{ !startsWith(matrix.os, 'macos') || startsWith(github.ref, 'refs/tags/indigo-') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -403,10 +406,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos-13, ubuntu-latest, windows-latest ]
+        os: [ ubuntu-latest, windows-latest ]
+        include:
+          - os: macos-13
+            if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
     runs-on: ${{ matrix.os }}
     needs: [ merge_indigo_wrappers, test_indigo_python_x86_64 ]
-    if: ${{ !startsWith(matrix.os, 'macos') || startsWith(github.ref, 'refs/tags/indigo-') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
