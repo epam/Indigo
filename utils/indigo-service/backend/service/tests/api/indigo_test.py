@@ -4091,6 +4091,7 @@ M  END
                 "options": {
                     "json-use-native-precision": True,
                     "json-saving-pretty": True,
+                    "molfile-saving-skip-date": True,
                 },
                 "input_format": "chemical/x-monomer-library",
                 "output_format": "chemical/x-monomer-library-sdf",
