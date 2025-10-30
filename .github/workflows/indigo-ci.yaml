@@ -40,8 +40,9 @@ jobs:
       - matrix-aarch64: ${{ steps.set-matrix.outputs.matrix-aarch64 }}
     steps:
       - name: set-matrix
-        run: echo 'MY_MATRIX="\"ubuntu-latest\",\"windows-latest\"' >> $GITHUB_ENV
-        run: echo 'MY_MATRIX_64="\"ubuntu-latest\",\"windows-latest\"' >> $GITHUB_ENV
+        run: |
+             echo 'MY_MATRIX="\"ubuntu-latest\",\"windows-latest\"' >> $GITHUB_ENV
+             echo 'MY_MATRIX_64="\"ubuntu-latest\",\"windows-latest\"' >> $GITHUB_ENV
       - name: add-macos
         if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
         run: |
