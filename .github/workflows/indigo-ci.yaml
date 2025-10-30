@@ -35,8 +35,8 @@ jobs:
 
   set_matrix:
     runs-on: ubuntu-latest
-    # outputs:
-      # - matrix: ${{ steps.set-matrix.outputs.matrix }}
+    outputs:
+      - matrix: ${{ steps.set-matrix.outputs.matrix }}
       # - matrix-aarch64: ${{ steps.set-matrix.outputs.matrix-aarch64 }}
       # - matrix1: ${{ steps.set-matrix.outputs.matrix1 }}
     steps:
@@ -53,7 +53,7 @@ jobs:
              echo MY_MATRIX_64=$MY_MATRIX_64
       - id: set-matrix
         run: |
-             echo "matrix={\"os\":[$MY_MATRIX]}" >> $GITHUB_OUTPUT
+             echo "matrix=\"os\":[$MY_MATRIX]" >> $GITHUB_OUTPUT
              echo "matrix-aarch64={\"os\":[$MY_MATRIX]}" >> $GITHUB_OUTPUT
              echo "matrix={\"os\":[$MY_MATRIX]}"
              echo "matrix-aarch64={\"os\":[$MY_MATRIX]}"
@@ -61,8 +61,8 @@ jobs:
              echo "matrix1={\"include\":[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}"
       - name: Get matrix
         env:
-          MATRIX1: ${{ steps.set-matrix.outputs.matrix1 }}
-        run: echo "The selected color is $MATRIX1"
+          MATRIX1: ${{ steps.set-matrix.outputs.matrix }}
+        run: echo "MATRIX is $MATRIX"
 
   show_matrix:
     runs-on: ubuntu-latest
