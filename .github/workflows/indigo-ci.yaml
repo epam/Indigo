@@ -55,7 +55,7 @@ jobs:
         run: |
              echo "matrix={\"os\":[$MY_MATRIX]}" >> $GITHUB_OUTPUT
              echo "matrix-aarch64={\"os\":[$MY_MATRIX_64]}" >> $GITHUB_OUTPUT
-             echo "matrix-dotnet={\"os\":[$MY_MATRIX_dotnet]}" >> $GITHUB_OUTPUT
+             echo "matrix-dotnet={\"os\":[$MY_MATRIX_DOTNET]}" >> $GITHUB_OUTPUT
       - name: Get matrix
         env:
           MATRIX: ${{ steps.set-matrix.outputs.matrix }}
