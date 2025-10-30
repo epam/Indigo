@@ -17,8 +17,8 @@
  ***************************************************************************/
 
 #include "indigo_internal.h"
-#include "indigo_version.h"
 #include "indigo_savers.h"
+#include "indigo_version.h"
 #include <atomic>
 #include <clocale>
 
