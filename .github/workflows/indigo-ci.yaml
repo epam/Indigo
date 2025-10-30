@@ -60,11 +60,11 @@ jobs:
         env:
           MATRIX: ${{ steps.set-matrix.outputs.matrix }}
           MATRIX64: ${{ steps.set-matrix.outputs.matrix-aarch64 }}
-          MATRIX_DOTNET: ${{ steps.set-matrix.outputs.matrix-dotnet }}
+          MATRIXDOTNET: ${{ steps.set-matrix.outputs.matrix-dotnet }}
         run: |
           echo "matrix is $MATRIX"
           echo "matrix-aarch64 is $MATRIX64"
-          echo "matrix-dotnet is $MATRIX_DOTNET"
+          echo "matrix-dotnet is $MATRIXDOTNET"
 
   build_indigo_libs_x86_64:
     strategy:
