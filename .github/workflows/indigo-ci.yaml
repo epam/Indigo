@@ -33,15 +33,45 @@ jobs:
           python3 -m pip install -r api/python/requirements_dev.txt --break-system-packages
           .ci/static_analysis_check.sh
 
+  set_matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      matrix-aarch64: ${{ steps.set-matrix.outputs.matrix-aarch64 }}
+      matrix-dotnet: ${{ steps.set-matrix.outputs.matrix-dotnet }}
+    steps:
+      - name: set matrix env
+        run: |
+             echo 'MY_MATRIX="ubuntu-latest","windows-latest"' >> $GITHUB_ENV
+             echo 'MY_MATRIX_64="ubuntu-latest"' >> $GITHUB_ENV
+             echo 'MY_MATRIX_DOTNET="windows-latest"' >> $GITHUB_ENV
+      - name: add macos
+        if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
+        run: |
+             echo "MY_MATRIX=$MY_MATRIX,\"macos-13\"" >> $GITHUB_ENV
+             echo "MY_MATRIX_64=$MY_MATRIX_64,\"macos-13\"" >> $GITHUB_ENV
+             echo "MY_MATRIX_DOTNET=$MY_MATRIX_DOTNET,\"macos-13\"" >> $GITHUB_ENV
+      - id: set-matrix
+        run: |
+             echo "matrix={\"os\":[$MY_MATRIX]}" >> $GITHUB_OUTPUT
+             echo "matrix-aarch64={\"os\":[$MY_MATRIX_64]}" >> $GITHUB_OUTPUT
+             echo "matrix-dotnet={\"os\":[$MY_MATRIX_DOTNET]}" >> $GITHUB_OUTPUT
+      - name: Get matrix
+        env:
+          MATRIX: ${{ steps.set-matrix.outputs.matrix }}
+          MATRIX64: ${{ steps.set-matrix.outputs.matrix-aarch64 }}
+          MATRIXDOTNET: ${{ steps.set-matrix.outputs.matrix-dotnet }}
+        run: |
+          echo "matrix is $MATRIX"
+          echo "matrix-aarch64 is $MATRIX64"
+          echo "matrix-dotnet is $MATRIXDOTNET"
+
   build_indigo_libs_x86_64:
     strategy:
       fail-fast: false
-      matrix:
-        # temporary disable macos-13 due billing issue
-        # os: [ macos-13, ubuntu-latest, windows-latest ]
-        os: [ ubuntu-latest, windows-latest ]
+      matrix: ${{ fromJSON(needs.set_matrix.outputs.matrix) }}
     runs-on: ${{ matrix.os }}
-    needs: static_analysis
+    needs: [ static_analysis, set_matrix ]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -120,12 +150,9 @@ jobs:
   build_indigo_libs_aarch64:
     strategy:
       fail-fast: false
-      matrix:
-        # temporary disable macos-13 due billing issue
-        # os: [ macos-13, ubuntu-latest ]
-        os: [ ubuntu-latest ]
+      matrix: ${{ fromJSON(needs.set_matrix.outputs.matrix-aarch64) }}
     runs-on: ${{ matrix.os }}
-    needs: static_analysis
+    needs: [ static_analysis, set_matrix ]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -202,17 +229,18 @@ jobs:
         with:
           name: indigo-libs-windows-i386
           path: dist/
-      # temporary disable macos-13 due billing issue
-      # - name: Download macOS native libs x86_64
-      #   uses: actions/download-artifact@v4
-      #   with:
-      #     name: indigo-libs-macos-x86_64
-      #     path: dist/
-      # - name: Download macOS native libs aarch64
-      #   uses: actions/download-artifact@v4
-      #   with:
-      #     name: indigo-libs-macos-aarch64
-      #     path: dist/
+      - name: Download macOS native libs x86_64
+        if: startsWith(github.ref, 'refs/tags/indigo-')
+        uses: actions/download-artifact@v4
+        with:
+          name: indigo-libs-macos-x86_64
+          path: dist/
+      - name: Download macOS native libs aarch64
+        if: startsWith(github.ref, 'refs/tags/indigo-')
+        uses: actions/download-artifact@v4
+        with:
+          name: indigo-libs-macos-aarch64
+          path: dist/
       - name: Install Python test dependencies
         run: python3 -m pip install -r api/python/requirements_dev.txt --break-system-packages
       - name: Build wrappers
@@ -261,12 +289,9 @@ jobs:
     timeout-minutes: 60
     strategy:
       fail-fast: false
-      matrix:
-        # temporary disable macos-13 due billing issue
-        # os: [ macos-13, ubuntu-latest, windows-latest ]
-        os: [ ubuntu-latest, windows-latest ]
+      matrix: ${{ fromJSON(needs.set_matrix.outputs.matrix) }}
     runs-on: ${{ matrix.os }}
-    needs: merge_indigo_wrappers
+    needs: [ merge_indigo_wrappers, set_matrix ]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -400,12 +425,9 @@ jobs:
     timeout-minutes: 60
     strategy:
       fail-fast: false
-      matrix:
-        # temporary disable macos-13 due billing issue
-        # os: [ macos-13, ubuntu-latest, windows-latest ]
-        os: [ ubuntu-latest, windows-latest ]
+      matrix: ${{ fromJSON(needs.set_matrix.outputs.matrix) }}
     runs-on: ${{ matrix.os }}
-    needs: [ merge_indigo_wrappers, test_indigo_python_x86_64 ]
+    needs: [ merge_indigo_wrappers, test_indigo_python_x86_64, set_matrix ]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -535,12 +557,9 @@ jobs:
     timeout-minutes: 60
     strategy:
       fail-fast: false
-      matrix:
-        # temporary disable macos-13 due billing issue
-        # os: [ macos-13, ubuntu-latest, windows-latest ]
-        os: [ windows-latest ]
+      matrix: ${{ fromJSON(needs.set_matrix.outputs.matrix-dotnet) }}
     runs-on: ${{ matrix.os }}
-    needs: [ merge_indigo_wrappers, test_indigo_java_x86_64 ]
+    needs: [ merge_indigo_wrappers, test_indigo_java_x86_64, set_matrix ]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -886,13 +905,10 @@ jobs:
   build_indigo_utils_x86_64:
     strategy:
       fail-fast: false
-      matrix:
-        # temporary disable macos-13 due billing issue
-        # os: [ macos-13, ubuntu-latest, windows-latest ]
-        os: [ ubuntu-latest, windows-latest ]
+      matrix: ${{ fromJSON(needs.set_matrix.outputs.matrix) }}
     runs-on: ${{ matrix.os }}
     # needs: [build_bingo_postgres_linux_x86_64, build_bingo_postgres_windows_msvc_x86_64, build_bingo_postgres_macos_x86_64]
-    needs: [build_bingo_postgres_linux_x86_64, build_bingo_postgres_windows_msvc_x86_64]
+    needs: [build_bingo_postgres_linux_x86_64, build_bingo_postgres_windows_msvc_x86_64, set_matrix ]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -1135,41 +1151,41 @@ jobs:
           name: bingo-postgres-${{ matrix.postgres_major_version }}-windows-x86_64
           path: dist/bingo-postgres*.zip
 
-  # temporary disable macos-13 due billing issue
-  # build_bingo_postgres_macos_x86_64:
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       postgres_major_version: [ 13, 14, 15, 16, 17 ]
-  #   runs-on: macos-13
-  #   needs: [build_indigo_windows_mingw_x86_64, build_indigo_ketcher_cjk, build_bingo_oracle_linux_x86_64, build_bingo_oracle_windows_mingw_x86_64, build_bingo_oracle_windows_msvc_x86_64]
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
-  #       with:
-  #         lfs: false
-  #         fetch-depth: 500
-  #     - name: Git fetch tags
-  #       run: |
-  #            git config --global --add safe.directory '*'
-  #            git fetch --tags -f
-  #     - name: Setup Postgres
-  #       run: |
-  #         case ${{ matrix.postgres_major_version }} in 17) pg_version=17.5;; 16) pg_version=16.9;; 15) pg_version=15.13;; 14) pg_version=14.18;; 13) pg_version=13.21;; esac;
-  #         curl -O https://get.enterprisedb.com/postgresql/postgresql-${pg_version}-1-osx-binaries.zip
-  #         unzip postgresql-${pg_version}-1-osx-binaries.zip
-  #         mv pgsql/include/zlib.h pgsql/include/zlib.h.bck
-  #     - name: Build bingo-postgres
-  #       run: |
-  #         mkdir build
-  #         cd build
-  #         cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_ORACLE=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF -DPostgreSQL_ROOT="$(dirname $PWD)/pgsql" -DPostgreSQL_ADDITIONAL_VERSIONS=${{ matrix.postgres_major_version }}
-  #         cmake --build . --config Release --target package-bingo-postgres
-  #     - name: Upload artifacts
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: bingo-postgres-${{ matrix.postgres_major_version }}-macos-x86_64
-  #         path: dist/bingo-postgres*.tgz
+  build_bingo_postgres_macos_x86_64:
+    if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
+    strategy:
+      fail-fast: false
+      matrix:
+        postgres_major_version: [ 13, 14, 15, 16, 17 ]
+    runs-on: macos-13
+    needs: [build_indigo_windows_mingw_x86_64, build_indigo_ketcher_cjk, build_bingo_oracle_linux_x86_64, build_bingo_oracle_windows_mingw_x86_64, build_bingo_oracle_windows_msvc_x86_64]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
+      - name: Setup Postgres
+        run: |
+          case ${{ matrix.postgres_major_version }} in 17) pg_version=17.5;; 16) pg_version=16.9;; 15) pg_version=15.13;; 14) pg_version=14.18;; 13) pg_version=13.21;; esac;
+          curl -O https://get.enterprisedb.com/postgresql/postgresql-${pg_version}-1-osx-binaries.zip
+          unzip postgresql-${pg_version}-1-osx-binaries.zip
+          mv pgsql/include/zlib.h pgsql/include/zlib.h.bck
+      - name: Build bingo-postgres
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DBUILD_BINGO_POSTGRES=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_ORACLE=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF -DPostgreSQL_ROOT="$(dirname $PWD)/pgsql" -DPostgreSQL_ADDITIONAL_VERSIONS=${{ matrix.postgres_major_version }}
+          cmake --build . --config Release --target package-bingo-postgres
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: bingo-postgres-${{ matrix.postgres_major_version }}-macos-x86_64
+          path: dist/bingo-postgres*.tgz
 
   build_bingo_sqlserver_windows_msvc_x86_64:
     strategy:
