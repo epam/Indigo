@@ -38,40 +38,21 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
       matrix-aarch64: ${{ steps.set-matrix.outputs.matrix-aarch64 }}
-      matrix1: ${{ steps.set-matrix.outputs.matrix1 }}
     steps:
       - name: set-matrix
         run: |
              echo 'MY_MATRIX="ubuntu-latest","windows-latest"' >> $GITHUB_ENV
              echo 'MY_MATRIX_64="ubuntu-latest","windows-latest"' >> $GITHUB_ENV
       - name: add-macos
-        # if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
+        if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
         run: |
              echo "MY_MATRIX=$MY_MATRIX,\"macos-13\"" >> $GITHUB_ENV
              echo "MY_MATRIX_64=$MY_MATRIX_64,\"macos-13\"" >> $GITHUB_ENV
-             echo MY_MATRIX=$MY_MATRIX
-             echo MY_MATRIX_64=$MY_MATRIX_64
       - id: set-matrix
         run: |
              echo "matrix=\"os\":[$MY_MATRIX]" >> $GITHUB_OUTPUT
              echo "matrix-aarch64={\"os\":[$MY_MATRIX]}" >> $GITHUB_OUTPUT
-             echo "matrix={\"os\":[$MY_MATRIX]}"
-             echo "matrix-aarch64={\"os\":[$MY_MATRIX]}"
-             echo "matrix1={\"include\":[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}" >> $GITHUB_OUTPUT
-             echo "matrix1={\"include\":[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}"
-             echo "test=hello" >> "$GITHUB_OUTPUT"
-      - name: Get matrix
-        env:
-          MATRIX1: ${{ steps.set-matrix.outputs.matrix }}
-        run: echo "MATRIX is $MATRIX"
 
-  show_matrix:
-    needs: set_matrix
-    runs-on: ubuntu-latest
-    steps:
-      - name: show_matrix
-        run: echo "matrix= ${{ fromJSON(needs.set_matrix.outputs.matrix) }}"
-  
   build_indigo_libs_x86_64:
     strategy:
       fail-fast: false
@@ -297,7 +278,7 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJSON(needs.set_matrix.outputs.matrix) }}
     runs-on: ${{ matrix.os }}
-    needs: merge_indigo_wrappers
+    needs: [ merge_indigo_wrappers, set_matrix ]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -433,7 +414,7 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJSON(needs.set_matrix.outputs.matrix) }}
     runs-on: ${{ matrix.os }}
-    needs: [ merge_indigo_wrappers, test_indigo_python_x86_64 ]
+    needs: [ merge_indigo_wrappers, test_indigo_python_x86_64, set_matrix ]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -565,7 +546,7 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJSON(needs.set_matrix.outputs.matrix) }}
     runs-on: ${{ matrix.os }}
-    needs: [ merge_indigo_wrappers, test_indigo_java_x86_64 ]
+    needs: [ merge_indigo_wrappers, test_indigo_java_x86_64, set_matrix ]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -914,7 +895,7 @@ jobs:
       matrix: ${{ fromJSON(needs.set_matrix.outputs.matrix) }}
     runs-on: ${{ matrix.os }}
     # needs: [build_bingo_postgres_linux_x86_64, build_bingo_postgres_windows_msvc_x86_64, build_bingo_postgres_macos_x86_64]
-    needs: [build_bingo_postgres_linux_x86_64, build_bingo_postgres_windows_msvc_x86_64]
+    needs: [build_bingo_postgres_linux_x86_64, build_bingo_postgres_windows_msvc_x86_64, set_matrix ]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
