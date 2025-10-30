@@ -89,7 +89,7 @@ namespace indigo
 
         void addSuperatomAttachmentPoints(const Superatom& sa);
 
-        const KetAttachmentPoint& getAttachmenPointById(const std::string& att_point_id);
+        // const KetAttachmentPoint& getAttachmenPointById(const std::string& att_point_id);
 
         std::unique_ptr<TGroup> getTGroup(bool for_smiles = false) const;
 

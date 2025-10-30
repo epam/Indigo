@@ -25,6 +25,7 @@
 #include "molecule/canonical_smiles_saver.h"
 #include "molecule/cml_saver.h"
 #include "molecule/ket_document_json_saver.h"
+#include "molecule/ket_obj_with_props.h"
 #include "molecule/molecule_cdxml_saver.h"
 #include "molecule/molecule_json_saver.h"
 #include "molecule/molfile_loader.h"
@@ -109,6 +110,46 @@ void IndigoSaver::appendObject(IndigoObject& object)
 }
 
 //
+// IndigoMonomerTemplateLibrarySaver
+//
+
+void IndigoMonomerLibrarySaver::save(const MonomerTemplateLibrary& monomers_library)
+{
+    Indigo& indigo = indigoGetInstance();
+    if (indigo.monomer_library_saving_mode == ESDF_FORMAT)
+    {
+        IndigoSdfSaver ss(_output);
+        ss.saveMonomerLibrary(monomers_library);
+    }
+    else
+    {
+        KetDocumentJsonSaver js(_output);
+        js.pretty_json = indigo.json_saving_pretty;
+        js.saveMonomerLibrary(monomers_library);
+    }
+    _output.flush();
+}
+
+int IndigoMonomerLibrarySaver::parseFormatMode(const char* mode)
+{
+    return strcasecmp(mode, "sdf") == 0 ? ESDF_FORMAT : EJSON_FORMAT;
+}
+
+void IndigoMonomerLibrarySaver::saveFormatMode(int mode, Array<char>& output)
+{
+    switch (mode)
+    {
+    case ESDF_FORMAT:
+        output.readString("sdf", true);
+        break;
+    default:
+    case EJSON_FORMAT:
+        output.readString("json", true);
+        break;
+    }
+}
+
+//
 // IndigoSDFSaver
 //
 
@@ -150,6 +191,112 @@ const char* IndigoSdfSaver::debugInfo() const
 void IndigoSdfSaver::_append(IndigoObject& object)
 {
     append(_output, object);
+}
+
+void IndigoSdfSaver::saveMonomerLibrary(const MonomerTemplateLibrary& monomers_library)
+{
+    // collect referred templates
+    std::unordered_set<std::string> referred_templates;
+    for (auto& group_kvp : monomers_library.monomerGroupTemplates())
+    {
+        for (auto& template_kvp : group_kvp.second.monomerTemplates())
+        {
+            auto& mt = template_kvp.second.get();
+            referred_templates.insert(mt.id());
+        }
+    }
+
+    auto printIdtAlias = [](const IdtAlias& idt_alias, Output& out) {
+        std::string idt_base = idt_alias.getBase();
+        std::string idt_aliases;
+        if (idt_base.size())
+            idt_aliases = "base=" + idt_base;
+
+        if (idt_alias.hasModifications())
+        {
+            if (idt_alias.hasModification(IdtModification::FIVE_PRIME_END))
+            {
+                if (idt_aliases.size())
+                    idt_aliases += ";";
+                const std::string& alias = idt_alias.getModification(IdtModification::FIVE_PRIME_END);
+                idt_aliases += "ep5=" + alias;
+            }
+
+            if (idt_alias.hasModification(IdtModification::THREE_PRIME_END))
+            {
+                if (idt_aliases.size())
+                    idt_aliases += ";";
+                const std::string& alias = idt_alias.getModification(IdtModification::THREE_PRIME_END);
+                idt_aliases += "ep3=" + alias;
+            }
+
+            if (idt_alias.hasModification(IdtModification::INTERNAL))
+            {
+                if (idt_aliases.size())
+                    idt_aliases += ";";
+                const std::string& alias = idt_alias.getModification(IdtModification::INTERNAL);
+                idt_aliases += "internal=" + alias;
+            }
+        }
+
+        if (idt_aliases.size())
+            out.printf(">  <%s>\n%s\n\n", "idtAliases", idt_aliases.c_str());
+    };
+
+    Indigo& indigo = indigoGetInstance();
+    MolfileSaver saver(_output);
+    indigo.initMolfileSaver(saver);
+    saver.mode = MolfileSaver::MODE_3000;
+
+    for (auto& template_kvp : monomers_library.monomerTemplates())
+    {
+        auto& mt = template_kvp.second;
+        auto tg = mt.getTGroup();
+        Molecule mol;
+        mol.tgroups.addTGroup();
+        mol.tgroups.getTGroup(0).copy(*tg);
+        saver.saveBaseMolecule(mol);
+        _output.printf(">  <%s>\n%s\n\n", "type", "monomerTemplate");
+        if (mt.hasStringProp(toUType(MonomerTemplate::StringProps::aliasHELM)))
+            _output.printf(">  <%s>\n%s\n\n", "aliasHELM", mt.getStringProp(toUType(MonomerTemplate::StringProps::aliasHELM)).c_str());
+
+        printIdtAlias(mt.idtAlias(), _output);
+
+        std::string modification_types;
+        for (auto& mod_type : mt.modificationTypes())
+        {
+            if (modification_types.size())
+                modification_types += ";";
+            modification_types += mod_type;
+        }
+
+        if (modification_types.size())
+            _output.printf(">  <%s>\n%s\n\n", "modificationTypes", modification_types.c_str());
+
+        _output.printfCR("$$$$");
+    }
+
+    for (auto& group_kvp : monomers_library.monomerGroupTemplates())
+    {
+        auto& mgt = group_kvp.second;
+        Molecule mol;
+        for (auto& template_kvp : mgt.monomerTemplates())
+        {
+            auto& mt = template_kvp.second;
+            auto tg = mt.get().getTGroup();
+            mol.tgroups.addTGroup();
+            mol.tgroups.getTGroup(mol.tgroups.getTGroupCount() - 1).copy(*tg);
+            int tidx = mol.addTemplateAtom(tg->tgroup_name.ptr());
+            mol.setTemplateAtomClass(tidx, tg->tgroup_class.ptr());
+            mol.setTemplateAtomTemplateIndex(tidx, mol.tgroups.getTGroupCount() - 1);
+        }
+        saver.saveBaseMolecule(mol);
+        _output.printf(">  <%s>\n%s\n\n", "type", "monomerGroupTemplate");
+        _output.printf(">  <%s>\n%s\n\n", "groupClass", mgt.groupClass().c_str());
+        _output.printf(">  <%s>\n%s\n\n", "groupName", mgt.name().c_str());
+        printIdtAlias(mgt.idtAlias(), _output);
+    }
+    _output.flush();
 }
 
 CEXPORT int indigoSdfAppend(int output, int molecule)
@@ -755,12 +902,10 @@ CEXPORT int indigoSaveMonomerLibrary(int output, int library)
 {
     INDIGO_BEGIN
     {
-        IndigoObject& lib_obj = self.getObject(library);
         Output& out = IndigoOutput::get(self.getObject(output));
-        KetDocumentJsonSaver js(out);
-        js.pretty_json = self.json_saving_pretty;
-        js.saveMonomerLibrary(IndigoMonomerLibrary::get(lib_obj));
-        out.flush();
+        IndigoMonomerLibrarySaver ms(out);
+        IndigoObject& lib_obj = self.getObject(library);
+        ms.save(IndigoMonomerLibrary::get(lib_obj));
         return 1;
     }
     INDIGO_END(-1);

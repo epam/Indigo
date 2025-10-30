@@ -323,7 +323,9 @@ public:
     bool deco_save_ap_bond_orders;
     bool deco_ignore_errors;
 
-    int molfile_saving_mode; // MolfileSaver::MODE_***, default is zero
+    int molfile_saving_mode;         // MolfileSaver::MODE_***, default is zero
+    int monomer_library_saving_mode; // MolfileSaver::MODE_***, default is zero
+
     KETVersion ket_saving_version;
     bool dearomatize_on_load;
     SmilesSaver::SMILES_MODE smiles_saving_format;

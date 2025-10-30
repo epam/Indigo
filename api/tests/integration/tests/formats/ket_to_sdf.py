@@ -18,6 +18,7 @@ indigo = Indigo()
 indigo.setOption("json-saving-pretty", True)
 indigo.setOption("molfile-saving-skip-date", True)
 indigo.setOption("ignore-stereochemistry-errors", True)
+indigo.setOption("monomer-library-saving-mode", "sdf")
 
 print("*** KET to SDF ***")
 
@@ -88,6 +89,35 @@ for filename in files:
 
     with open(os.path.join(ref_path, filename) + ".sdf", "r") as file:
         sdf_ref = file.read()
+    diff = find_diff(sdf_ref, sdf)
+    if not diff:
+        print(filename + ".sdf:SUCCEED")
+    else:
+        print(filename + ".sdf:FAILED")
+        print(diff)
+
+print("*** KET-monomer library to SDF ***")
+root = joinPathPy("molecules/", __file__)
+ref_path = joinPathPy("ref/", __file__)
+files = [
+    "lib_alanine",
+    "lib_alanine_expanded",
+    "lib_phos",
+    "lib_rna_preset_g",
+    "lib_rna_preset_same",
+    "lib_default_type",
+]
+
+files.sort()
+for filename in files:
+    lib = indigo.loadMonomerLibraryFromFile(
+        os.path.join(root, filename + ".ket")
+    )
+    # with open(os.path.join(ref_path, filename) + ".sdf", "w") as file:
+    #     file.write(lib.monomerLibrary())
+    with open(os.path.join(ref_path, filename) + ".sdf", "r") as file:
+        sdf_ref = file.read()
+    sdf = lib.monomerLibrary()
     diff = find_diff(sdf_ref, sdf)
     if not diff:
         print(filename + ".sdf:SUCCEED")

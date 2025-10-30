@@ -1684,10 +1684,9 @@ CEXPORT const char* indigoMonomerLibrary(int library)
     {
         auto& tmp = self.getThreadTmpData();
         ArrayOutput out(tmp.string);
-        KetDocumentJsonSaver js(out);
+        IndigoMonomerLibrarySaver ms(out);
         IndigoObject& lib_obj = self.getObject(library);
-        js.pretty_json = self.json_saving_pretty;
-        js.saveMonomerLibrary(IndigoMonomerLibrary::get(lib_obj));
+        ms.save(IndigoMonomerLibrary::get(lib_obj));
         out.writeChar(0);
         return tmp.string.ptr();
     }

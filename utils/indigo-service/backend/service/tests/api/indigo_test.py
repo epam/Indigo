@@ -4077,6 +4077,44 @@ M  END
         # check
         self.assertEqual(result_json, ref_json)
 
+    def test_monomer_library_ket(self):
+        with open(
+            os.path.join(
+                joinPathPy("structures/", __file__), "lib_rna_preset_g.ket"
+            ),
+            "r",
+        ) as file:
+            struct = file.read()
+        headers, data = self.get_headers(
+            {
+                "struct": struct,
+                "options": {
+                    "json-use-native-precision": True,
+                    "json-saving-pretty": True,
+                    "molfile-saving-skip-date": True,
+                    "monomer-library-saving-mode": "sdf",
+                },
+                "input_format": "chemical/x-monomer-library",
+                "output_format": "chemical/x-monomer-library",
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        result_sdf = json.loads(result.text)["struct"]
+
+        file_name = os.path.join(
+            joinPathPy("ref/", __file__), "lib_rna_preset_g_ref.sdf"
+        )
+        # write references
+        # with open(file_name, "w") as file:
+        #     file.write(result_sdf)
+        with open(file_name, "r") as file:
+            ref_sdf = file.read()
+
+        # check
+        self.assertEqual(result_sdf, ref_sdf)
+
     def test_convert_axolabs(self):
         fname = "axolabs"
 

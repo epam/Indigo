@@ -3,89 +3,103 @@
         "nodes": [],
         "templates": [
             {
-                "$ref": "monomerTemplate-P"
+                "$ref": "monomerTemplate-Alanine"
             }
         ]
     },
-    "monomerTemplate-P": {
+    "monomerTemplate-Alanine": {
         "type": "monomerTemplate",
-        "id": "P",
-        "class": "Phosphate",
-        "classHELM": "RNA",
-        "fullName": "Phosphate",
-        "alias": "P",
-        "naturalAnalogShort": "P",
-        "aliasHELM": "p",
-        "idtAliases": {
-            "base": "P",
-            "modifications": {
-                "endpoint5": "5Phos",
-                "endpoint3": "3Phos"
-            }
-        },
+        "id": "Alanine",
+        "class": "AminoAcid",
+        "classHELM": "PEPTIDE",
+        "fullName": "Alanine",
+        "alias": "Alanine",
+        "naturalAnalog": "Ala",
+        "naturalAnalogShort": "A",
+        "aliasHELM": "A",
+        "modificationTypes": [
+            "Natural amino acid",
+            "modification1"
+        ],
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
                 "leavingGroup": {
                     "atoms": [
-                        3
+                        5
                     ]
                 }
             },
             {
-                "attachmentAtom": 0,
+                "attachmentAtom": 2,
                 "leavingGroup": {
                     "atoms": [
-                        4
+                        6
                     ]
                 }
             }
         ],
         "atoms": [
             {
-                "label": "P",
+                "label": "N",
                 "location": [
-                    0.000000,
-                    0.000000,
+                    0.384000,
+                    -1.500000,
                     0.000000
                 ]
             },
             {
-                "label": "O",
+                "label": "C",
                 "location": [
-                    0.500000,
-                    -0.866000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    0.500000,
-                    0.866000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
+                    1.250000,
                     -1.000000,
-                    0.000000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    2.116000,
+                    -1.500000,
                     0.000000
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    1.000000,
+                    2.116000,
+                    -2.500000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    1.250000,
                     0.000000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    -0.482000,
+                    -1.000000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    2.982000,
+                    -1.000000,
                     0.000000
                 ]
             }
         ],
         "bonds": [
             {
-                "type": 2,
+                "type": 1,
                 "atoms": [
                     0,
                     1
@@ -95,20 +109,34 @@
                 "type": 1,
                 "atoms": [
                     0,
+                    5
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
                     2
                 ]
             },
             {
                 "type": 1,
                 "atoms": [
-                    0,
+                    2,
+                    6
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    2,
                     3
                 ]
             },
             {
                 "type": 1,
                 "atoms": [
-                    0,
+                    1,
                     4
                 ]
             }

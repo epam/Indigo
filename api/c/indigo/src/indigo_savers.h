@@ -51,6 +51,28 @@ private:
     Output* _own_output;
 };
 
+class IndigoMonomerLibrarySaver : public IndigoSaver
+{
+public:
+    enum
+    {
+        EJSON_FORMAT,
+        ESDF_FORMAT
+    };
+
+    IndigoMonomerLibrarySaver(Output& output) : IndigoSaver(output)
+    {
+    }
+    void save(const MonomerTemplateLibrary& monomers_library);
+    static int parseFormatMode(const char* mode);
+    static void saveFormatMode(int mode, Array<char>& output);
+
+protected:
+    void _append(IndigoObject& object) override
+    {
+    }
+};
+
 class IndigoSdfSaver : public IndigoSaver
 {
 public:
@@ -60,6 +82,7 @@ public:
     const char* debugInfo() const override;
     static void append(Output& output, IndigoObject& object);
     static void appendMolfile(Output& output, IndigoObject& object);
+    void saveMonomerLibrary(const MonomerTemplateLibrary& monomers_library);
 
 protected:
     virtual void _append(IndigoObject& object);
