@@ -35,9 +35,9 @@ jobs:
 
   set_matrix:
     runs-on: ubuntu-latest
-    # outputs:
-    #   - matrix: ${{ steps.set-matrix.outputs.matrix }}
-    #   - matrix-aarch64: ${{ steps.set-matrix.outputs.matrix-aarch64 }}
+    outputs:
+      - matrix: ${{ steps.set-matrix.outputs.matrix }}
+      - matrix-aarch64: ${{ steps.set-matrix.outputs.matrix-aarch64 }}
     steps:
       - name: set-matrix
         run: |
