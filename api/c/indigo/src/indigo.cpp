@@ -18,7 +18,7 @@
 
 #include "indigo_internal.h"
 #include "indigo_version.h"
-
+#include "indigo_savers.h"
 #include <atomic>
 #include <clocale>
 
@@ -109,6 +109,7 @@ void Indigo::init()
     ket_saving_version = {1, 0, 0};
     dearomatize_on_load = false;
     smiles_saving_format = SmilesSaver::SMILES_MODE::SMILES_CHEMAXON;
+    monomer_library_saving_mode = IndigoMonomerLibrarySaver::EJSON_FORMAT;
     molfile_saving_no_chiral = false;
     molfile_saving_chiral_flag = -1;
     filename_encoding = ENCODING_ASCII;

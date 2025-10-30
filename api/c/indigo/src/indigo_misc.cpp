@@ -1678,31 +1678,15 @@ CEXPORT const char* indigoCheckStructure(const char* structure, const char* prop
     INDIGO_END(0);
 }
 
-CEXPORT const char* indigoJsonMonomerLibrary(int library)
+CEXPORT const char* indigoMonomerLibrary(int library)
 {
     INDIGO_BEGIN
     {
         auto& tmp = self.getThreadTmpData();
         ArrayOutput out(tmp.string);
-        KetDocumentJsonSaver js(out);
+        IndigoMonomerLibrarySaver ms(out);
         IndigoObject& lib_obj = self.getObject(library);
-        js.pretty_json = self.json_saving_pretty;
-        js.saveMonomerLibrary(IndigoMonomerLibrary::get(lib_obj));
-        out.writeChar(0);
-        return tmp.string.ptr();
-    }
-    INDIGO_END(0);
-}
-
-CEXPORT const char* indigoSDFMonomerLibrary(int library)
-{
-    INDIGO_BEGIN
-    {
-        auto& tmp = self.getThreadTmpData();
-        ArrayOutput out(tmp.string);
-        IndigoObject& lib_obj = self.getObject(library);
-        IndigoSdfSaver ss(out);
-        ss.saveMonomerLibrary(IndigoMonomerLibrary::get(lib_obj));
+        ms.save(IndigoMonomerLibrary::get(lib_obj));
         out.writeChar(0);
         return tmp.string.ptr();
     }

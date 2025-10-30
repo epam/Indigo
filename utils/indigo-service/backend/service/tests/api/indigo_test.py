@@ -480,7 +480,7 @@ chemical/x-iupac, chemical/x-daylight-smarts, chemical/x-inchi-aux, chemical/x-c
 chemical/x-cdxml, chemical/x-cdx, chemical/x-sdf, chemical/x-rdf, chemical/x-peptide-sequence, \
 chemical/x-peptide-sequence-3-letter, chemical/x-rna-sequence, chemical/x-dna-sequence, chemical/x-sequence, \
 chemical/x-peptide-fasta, chemical/x-rna-fasta, chemical/x-dna-fasta, chemical/x-fasta, \
-chemical/x-idt, chemical/x-helm, chemical/x-monomer-library, chemical/x-monomer-library-sdf, chemical/x-axo-labs."
+chemical/x-idt, chemical/x-helm, chemical/x-monomer-library, chemical/x-axo-labs."
         expected_text = (
             "ValidationError: {'input_format': ['Must be one of: %s']}"
             % formats
@@ -4092,9 +4092,10 @@ M  END
                     "json-use-native-precision": True,
                     "json-saving-pretty": True,
                     "molfile-saving-skip-date": True,
+                    "monomer-library-saving-mode": "sdf",
                 },
                 "input_format": "chemical/x-monomer-library",
-                "output_format": "chemical/x-monomer-library-sdf",
+                "output_format": "chemical/x-monomer-library",
             }
         )
         result = requests.post(

@@ -361,7 +361,7 @@ class IndigoObject:
 
         return IndigoLib.checkResultString(self._lib().indigoJson(self.id))
 
-    def jsonMonomerLibrary(self):
+    def monomerLibrary(self):
         """Structure method returns the structure as a string in KET format
 
         Returns:
@@ -369,18 +369,7 @@ class IndigoObject:
         """
 
         return IndigoLib.checkResultString(
-            self._lib().indigoJsonMonomerLibrary(self.id)
-        )
-
-    def SDFMonomerLibrary(self):
-        """Structure method returns the structure as a string in SDF format
-
-        Returns:
-            str: SDF format for the structure
-        """
-
-        return IndigoLib.checkResultString(
-            self._lib().indigoSDFMonomerLibrary(self.id)
+            self._lib().indigoMonomerLibrary(self.id)
         )
 
     def saveMDLCT(self, output):
