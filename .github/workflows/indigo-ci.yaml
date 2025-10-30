@@ -52,7 +52,7 @@ jobs:
              echo MY_MATRIX_64=$MY_MATRIX_64
       - id: set-matrix
         run: |
-             echo "matrix=\"os\":[$MY_MATRIX]" >> $GITHUB_OUTPUT
+             echo "matrix={\"os\":[$MY_MATRIX]}" >> $GITHUB_OUTPUT
              echo "matrix-aarch64={\"os\":[$MY_MATRIX_64]}" >> $GITHUB_OUTPUT
              echo "matrix={\"os\":[$MY_MATRIX]}"
              echo "matrix-aarch64={\"os\":[$MY_MATRIX_64]}"
