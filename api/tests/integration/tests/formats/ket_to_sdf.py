@@ -18,6 +18,7 @@ indigo = Indigo()
 indigo.setOption("json-saving-pretty", True)
 indigo.setOption("molfile-saving-skip-date", True)
 indigo.setOption("ignore-stereochemistry-errors", True)
+indigo.setOption("monomer-library-saving-mode", "sdf")
 
 print("*** KET to SDF ***")
 
@@ -113,10 +114,10 @@ for filename in files:
         os.path.join(root, filename + ".ket")
     )
     # with open(os.path.join(ref_path, filename) + ".sdf", "w") as file:
-    #     file.write(lib.SDFMonomerLibrary())
+    #     file.write(lib.monomerLibrary())
     with open(os.path.join(ref_path, filename) + ".sdf", "r") as file:
         sdf_ref = file.read()
-    sdf = lib.SDFMonomerLibrary()
+    sdf = lib.monomerLibrary()
     diff = find_diff(sdf_ref, sdf)
     if not diff:
         print(filename + ".sdf:SUCCEED")
