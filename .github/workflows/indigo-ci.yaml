@@ -149,7 +149,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     needs: [ static_analysis, set_matrix ]
     steps:
-      - show-matrix:
+      - name: show-matrix
         run: |
           echo "matrix is ${{ fromJSON(needs.set_matrix.outputs.matrix) }}"
           echo "matrix-64 is ${{ fromJSON(needs.set_matrix.outputs.matrix-aarch64) }}"
