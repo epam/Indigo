@@ -58,7 +58,7 @@ jobs:
              echo "matrix-aarch64={\"os\":[$MY_MATRIX_64]}"
       - name: Get matrix
         env:
-          MATRIX1: ${{ steps.set-matrix.outputs.matrix }}
+          MATRIX: ${{ steps.set-matrix.outputs.matrix }}
         run: echo "MATRIX is $MATRIX"
 
   build_indigo_libs_x86_64:
@@ -149,6 +149,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     needs: [ static_analysis, set_matrix ]
     steps:
+      - show-matrix:
+        run: |
+          echo "matrix is ${{ fromJSON(needs.set_matrix.outputs.matrix) }}"
+          echo "matrix-64 is ${{ fromJSON(needs.set_matrix.outputs.matrix-aarch64) }}"
       - name: Checkout
         uses: actions/checkout@v4
         with:
