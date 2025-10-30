@@ -35,9 +35,9 @@ jobs:
 
   set_matrix:
     runs-on: ubuntu-latest
-    outputs:
-      - matrix: ${{ steps.set-matrix.outputs.matrix }}
-      - matrix-aarch64: ${{ steps.set-matrix.outputs.matrix-aarch64 }}
+    # outputs:
+    #   - matrix: ${{ steps.set-matrix.outputs.matrix }}
+    #   - matrix-aarch64: ${{ steps.set-matrix.outputs.matrix-aarch64 }}
     steps:
       - name: set-matrix
         run: |
@@ -54,6 +54,8 @@ jobs:
         run: |
              echo "matrix={\"os\":[$MY_MATRIX]}" >> $GITHUB_OUTPUT
              echo "matrix-aarch64={\"os\":[$MY_MATRIX]}" >> $GITHUB_OUTPUT
+             echo "matrix={\"os\":[$MY_MATRIX]}"
+             echo "matrix-aarch64={\"os\":[$MY_MATRIX]}"
 
   show_matrix:
     runs-on: ubuntu-latest
