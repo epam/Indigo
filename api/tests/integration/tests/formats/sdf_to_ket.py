@@ -58,6 +58,8 @@ files = [
     "lib_rna_preset_g",
     "lib_rna_preset_same",
     "lib_default_type",
+    "lib_rna_preset_from_lib",
+    "lib_same_struct",
 ]
 
 files.sort()

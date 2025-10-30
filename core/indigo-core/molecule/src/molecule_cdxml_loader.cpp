@@ -997,6 +997,17 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
             _pmol->setAtomIsotope(atom_idx, atom.isotope);
             if (atom.hydrogens > 0)
                 _pmol->setImplicitH(atom_idx, atom.hydrogens);
+            const int element = atom.element;
+            // All metals up to group 13, set implicit hydrogens to 0 if set in the cdxml file (and valence to avoid (0) labels)
+            if ((element >= 3 && element <= 4) || (element >= 11 && element <= 12) || (element >= 19 && element <= 30) || (element >= 37 && element <= 48) ||
+                (element >= 55 && element <= 80) || (element >= 87 && element <= 112))
+            {
+                if (atom.hydrogens == 0)
+                {
+                    _pmol->setImplicitH(atom_idx, atom.hydrogens);
+                    _pmol->setValence(atom_idx, atom.valence);
+                }
+            }
             const auto it = kIndexToCIPDesc.find(atom.stereo);
             if (it != kIndexToCIPDesc.end())
             {

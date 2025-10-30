@@ -173,6 +173,7 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
 void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& mapping, Array<int>& edge_mapping)
 {
     int i;
+    std::map<int, int> old_idx_to_new;
 
     for (i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
     {
@@ -180,9 +181,14 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
         int idx = sgroups.addSGroup(supersg.sgroup_type);
         SGroup& sg = sgroups.getSGroup(idx);
         sg.parent_idx = supersg.parent_idx;
+        sg.original_group = supersg.original_group;
+        sg.parent_group = supersg.parent_group;
 
         if (_mergeSGroupWithSubmolecule(sg, supersg, mol, mapping, edge_mapping))
         {
+            if (idx != i)
+                old_idx_to_new.emplace(i, idx);
+
             if (sg.sgroup_type == SGroup::SG_TYPE_DAT)
             {
                 DataSGroup& dg = (DataSGroup&)sg;
@@ -268,6 +274,21 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
         else
         {
             sgroups.remove(idx);
+        }
+    }
+
+    // Update parent_idx
+    if (sgroups.getSGroupCount() < mol.sgroups.getSGroupCount())
+    {
+        for (i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
+        {
+            SGroup& sgroup = sgroups.getSGroup(i);
+            if (sgroup.parent_idx < 0)
+                continue;
+
+            const auto it = old_idx_to_new.find(sgroup.parent_idx);
+            if (it != old_idx_to_new.end())
+                sgroup.parent_idx = it->second;
         }
     }
 }
