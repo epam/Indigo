@@ -36,9 +36,10 @@ jobs:
   set_matrix:
     runs-on: ubuntu-latest
     outputs:
-      - matrix: ${{ steps.set-matrix.outputs.matrix }}
+      # - matrix: ${{ steps.set-matrix.outputs.matrix }}
       # - matrix-aarch64: ${{ steps.set-matrix.outputs.matrix-aarch64 }}
       # - matrix1: ${{ steps.set-matrix.outputs.matrix1 }}
+      - matrix: ${{ steps.set-matrix.outputs.test }}
     steps:
       - name: set-matrix
         run: |
@@ -59,16 +60,18 @@ jobs:
              echo "matrix-aarch64={\"os\":[$MY_MATRIX]}"
              echo "matrix1={\"include\":[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}" >> $GITHUB_OUTPUT
              echo "matrix1={\"include\":[{\"project\":\"foo\",\"config\":\"Debug\"},{\"project\":\"bar\",\"config\":\"Release\"}]}"
+             echo "test=hello" >> "$GITHUB_OUTPUT"
       - name: Get matrix
         env:
           MATRIX1: ${{ steps.set-matrix.outputs.matrix }}
         run: echo "MATRIX is $MATRIX"
 
   show_matrix:
+    needs: set_matrix
     runs-on: ubuntu-latest
     steps:
       - name: show_matrix
-        run: echo "matrix1= ${{ fromJSON(needs.set_matrix.outputs.matrix1) }}"
+        run: echo "matrix= ${{ fromJSON(needs.set_matrix.outputs.matrix) }}"
   
   build_indigo_libs_x86_64:
     strategy:
