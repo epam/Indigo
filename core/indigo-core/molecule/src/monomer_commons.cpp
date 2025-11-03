@@ -370,6 +370,54 @@ namespace indigo
         return kMonomerClassCHEM;
     }
 
+    // Calclulate offset to maximize sense-antisense complementary pairs count
+    // return pair from offset and flag set to true when antisense should be moved to left
+    std::pair<size_t, bool> best_allign(const std::string& sense, const std::string& antisense)
+    {
+        if (sense.size() == 0 || antisense.size() == 0)
+            return std::make_pair(0, false);
+        size_t max_count = 0;
+        size_t allign = 0;
+        bool left = false;
+        // move right
+        for (auto i = 0; i < sense.size(); i++)
+        {
+            size_t count = 0;
+            size_t len = std::min(sense.size() - i, antisense.size());
+            if (len < max_count)
+                break;
+            for (auto idx = 0; idx < len; idx++)
+            {
+                if (complementary_bases.count(std::make_pair(sense[i + idx], antisense[idx])) > 0)
+                    count++;
+            }
+            if (count > max_count)
+            {
+                allign = i;
+                max_count = count;
+            }
+        }
+        // move left
+        for (auto i = 1; i < antisense.size(); i++)
+        {
+            size_t count = 0;
+            size_t len = std::min(antisense.size() - i, sense.size());
+            if (len < max_count)
+                break;
+            for (auto idx = 0; idx < len; idx++)
+            {
+                if (complementary_bases.count(std::make_pair(sense[idx], antisense[idx + i])) > 0)
+                    count++;
+            }
+            if (count > max_count)
+            {
+                allign = i;
+                max_count = count;
+                left = true;
+            }
+        }
+        return std::make_pair(allign, left);
+    }
 }
 
 #ifdef _MSC_VER

@@ -42,6 +42,7 @@
 #include <molecule/molecule_substructure_matcher.h>
 #include <molecule/molfile_loader.h>
 #include <molecule/molfile_saver.h>
+#include <molecule/monomer_commons.h>
 #include <molecule/query_molecule.h>
 #include <molecule/sdf_loader.h>
 #include <molecule/smiles_loader.h>
@@ -722,6 +723,30 @@ TEST_F(IndigoCoreFormatsTest, expand_monomers)
         ASSERT_TRUE(std::fabs(v1.y - v2.y) < epsilon);
         ASSERT_TRUE(std::fabs(v1.z - v2.z) < epsilon);
     }
+}
+
+TEST_F(IndigoCoreFormatsTest, best_allign)
+{
+    FileScanner source_file(dataPath("molecules/basic/best_allign.txt").c_str());
+    std::string sense;
+    std::string antisense;
+    source_file.readLine(sense);
+    source_file.readLine(antisense);
+    auto res = best_allign(sense, antisense);
+    ASSERT_EQ(res.first, 20);
+    ASSERT_EQ(res.second, false);
+    source_file.readLine(sense); // empty string
+    source_file.readLine(sense);
+    source_file.readLine(antisense);
+    res = best_allign(sense, antisense);
+    ASSERT_EQ(res.first, 20);
+    ASSERT_EQ(res.second, true);
+    source_file.readLine(sense); // empty string
+    source_file.readLine(sense);
+    source_file.readLine(antisense);
+    res = best_allign(sense, antisense);
+    ASSERT_EQ(res.first, 85);
+    ASSERT_EQ(res.second, true);
 }
 
 #ifdef _MSC_VER
