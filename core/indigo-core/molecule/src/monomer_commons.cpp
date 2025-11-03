@@ -380,13 +380,13 @@ namespace indigo
         size_t allign = 0;
         bool left = false;
         // move right
-        for (auto i = 0; i < sense.size(); i++)
+        for (size_t i = 0; i < sense.size(); i++)
         {
             size_t count = 0;
             size_t len = std::min(sense.size() - i, antisense.size());
             if (len < max_count)
                 break;
-            for (auto idx = 0; idx < len; idx++)
+            for (size_t idx = 0; idx < len; idx++)
             {
                 if (complementary_bases.count(std::make_pair(sense[i + idx], antisense[idx])) > 0)
                     count++;
@@ -398,13 +398,13 @@ namespace indigo
             }
         }
         // move left
-        for (auto i = 1; i < antisense.size(); i++)
+        for (size_t i = 1; i < antisense.size(); i++)
         {
             size_t count = 0;
             size_t len = std::min(antisense.size() - i, sense.size());
             if (len < max_count)
                 break;
-            for (auto idx = 0; idx < len; idx++)
+            for (size_t idx = 0; idx < len; idx++)
             {
                 if (complementary_bases.count(std::make_pair(sense[idx], antisense[idx + i])) > 0)
                     count++;
