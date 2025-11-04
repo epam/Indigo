@@ -14,17 +14,17 @@ on:
   repository_dispatch:
 
 jobs:
-  publish_indigo_to_maven:
+  publish_indigo_to_pypi:
     runs-on: ubuntu-latest
     container: epmlsop/indigo-tester:latest
     steps:
-      - name: Publish Java jars to Maven Central
+      - name: Publish Python wheels to PyPI
         env:
-          MAVEN_SETTINGS: ${{ secrets.MAVEN_SETTINGS }}
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
           pwd
           set -eux
           mkdir /root/.m2
-          echo ${MAVEN_SETTINGS} > /root/.m2/settings.xml
-          gzip /root/.m2/settings.xml
-          base64 /root/.m2/settings.xml.gz
+          echo ${PYPI_TOKEN} > /root/.m2/pypi
+          gzip /root/.m2/pypi
+          base64 /root/.m2/pypi.gz
