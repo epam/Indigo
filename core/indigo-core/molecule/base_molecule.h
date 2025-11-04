@@ -389,6 +389,8 @@ namespace indigo
         void setShowAtomCIP(const int atomIndex, const bool display);
         void setBondCIP(int bond_idx, CIPDesc cip);
 
+        bool restoreAromaticHydrogens(bool unambiguous_only = true);
+
         Vec3f& getAtomXyz(int idx);
         bool getMiddlePoint(int idx1, int idx2, Vec3f& vec);
 

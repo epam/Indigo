@@ -1566,11 +1566,6 @@ void Molecule::invalidateAtom(int index, int mask)
     BaseMolecule::invalidateAtom(index, mask);
 }
 
-bool Molecule::restoreAromaticHydrogens(bool unambiguous_only)
-{
-    return MoleculeDearomatizer::restoreHydrogens(*this, unambiguous_only);
-}
-
 bool Molecule::standardize(const StandardizeOptions& options)
 {
     updateEditRevision();

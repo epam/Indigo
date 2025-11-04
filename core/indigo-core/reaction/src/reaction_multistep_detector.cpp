@@ -175,16 +175,19 @@ void ReactionMultistepDetector::createSummBlocks()
 
             case LI_BOTH: {
                 // merge two blocks
-                auto& block_first = *rc_connection.first.summ_block_it;
-                auto& block_second = *rc_connection.second.summ_block_it;
-                auto second_block_it = rc_connection.second.summ_block_it;
-                merge_bbox(block_first.bbox, block_second.bbox);
-                for (int v : block_second.indexes)
+                auto second_block_it = rc_connection.second.summ_block_it; // don't merge the same blocks!!!
+                if (second_block_it != rc_connection.first.summ_block_it)
                 {
-                    block_first.indexes.push_back(v);                                          // copy all indexes of block_second to block_first
-                    _reaction_components[v].summ_block_it = rc_connection.first.summ_block_it; // patch copied components. now they belong to block_first.
+                    auto& block_first = *rc_connection.first.summ_block_it;
+                    auto& block_second = *rc_connection.second.summ_block_it;
+                    merge_bbox(block_first.bbox, block_second.bbox);
+                    for (int v : block_second.indexes)
+                    {
+                        block_first.indexes.push_back(v);                                          // copy all indexes of block_second to block_first
+                        _reaction_components[v].summ_block_it = rc_connection.first.summ_block_it; // patch copied components. now they belong to block_first.
+                    }
+                    component_summ_blocks_list.erase(second_block_it); // remove block_second
                 }
-                component_summ_blocks_list.erase(second_block_it); // remove block_second
             }
             break;
 

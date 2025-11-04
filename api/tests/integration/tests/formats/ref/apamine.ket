@@ -2,9 +2,6 @@
     "root": {
         "nodes": [
             {
-                "$ref": "mol0"
-            },
-            {
                 "$ref": "monomer0"
             },
             {
@@ -127,17 +124,6 @@
                 "endpoint2": {
                     "monomerId": "monomer1",
                     "attachmentPointId": "R2"
-                }
-            },
-            {
-                "connectionType": "single",
-                "endpoint1": {
-                    "moleculeId": "mol0",
-                    "atomId": "0"
-                },
-                "endpoint2": {
-                    "monomerId": "monomer2",
-                    "attachmentPointId": "R1"
                 }
             },
             {
@@ -300,34 +286,34 @@
                 "$ref": "monomerTemplate-Am_1"
             },
             {
-                "$ref": "monomerTemplate-His_2"
+                "$ref": "monomerTemplate-H___Histidine"
             },
             {
-                "$ref": "monomerTemplate-Gln_3"
+                "$ref": "monomerTemplate-Q___Glutamine"
             },
             {
-                "$ref": "monomerTemplate-Arg_4"
+                "$ref": "monomerTemplate-R___Arginine"
             },
             {
-                "$ref": "monomerTemplate-Ala_5"
+                "$ref": "monomerTemplate-A___Alanine"
             },
             {
-                "$ref": "monomerTemplate-Leu_6"
+                "$ref": "monomerTemplate-L___Leucine"
             },
             {
-                "$ref": "monomerTemplate-Thr_7"
+                "$ref": "monomerTemplate-T___Threonine"
             },
             {
-                "$ref": "monomerTemplate-Glu_8"
+                "$ref": "monomerTemplate-E___Glutamic acid"
             },
             {
-                "$ref": "monomerTemplate-Pro_9"
+                "$ref": "monomerTemplate-P___Proline"
             },
             {
-                "$ref": "monomerTemplate-Lys_10"
+                "$ref": "monomerTemplate-K___Lysine"
             },
             {
-                "$ref": "monomerTemplate-Asn_11"
+                "$ref": "monomerTemplate-N___Asparagine"
             },
             {
                 "$ref": "monomerTemplate-Cys_12"
@@ -396,7 +382,7 @@
             "y": -6.5625
         },
         "alias": "His",
-        "templateId": "His_2"
+        "templateId": "H___Histidine"
     },
     "monomer5": {
         "type": "monomer",
@@ -407,7 +393,7 @@
             "y": -6.5625
         },
         "alias": "Gln",
-        "templateId": "Gln_3"
+        "templateId": "Q___Glutamine"
     },
     "monomer6": {
         "type": "monomer",
@@ -418,7 +404,7 @@
             "y": -6.5625
         },
         "alias": "Gln",
-        "templateId": "Gln_3"
+        "templateId": "Q___Glutamine"
     },
     "monomer7": {
         "type": "monomer",
@@ -429,7 +415,7 @@
             "y": -6.5625
         },
         "alias": "Arg",
-        "templateId": "Arg_4"
+        "templateId": "R___Arginine"
     },
     "monomer8": {
         "type": "monomer",
@@ -440,7 +426,7 @@
             "y": -6.5625
         },
         "alias": "Arg",
-        "templateId": "Arg_4"
+        "templateId": "R___Arginine"
     },
     "monomer9": {
         "type": "monomer",
@@ -451,7 +437,7 @@
             "y": -6.5625
         },
         "alias": "Ala",
-        "templateId": "Ala_5"
+        "templateId": "A___Alanine"
     },
     "monomer10": {
         "type": "monomer",
@@ -462,7 +448,7 @@
             "y": -6.5625
         },
         "alias": "Leu",
-        "templateId": "Leu_6"
+        "templateId": "L___Leucine"
     },
     "monomer11": {
         "type": "monomer",
@@ -473,7 +459,7 @@
             "y": -6.5625
         },
         "alias": "Ala",
-        "templateId": "Ala_5"
+        "templateId": "A___Alanine"
     },
     "monomer12": {
         "type": "monomer",
@@ -484,7 +470,7 @@
             "y": -6.5625
         },
         "alias": "Thr",
-        "templateId": "Thr_7"
+        "templateId": "T___Threonine"
     },
     "monomer13": {
         "type": "monomer",
@@ -495,7 +481,7 @@
             "y": -6.5625
         },
         "alias": "Glu",
-        "templateId": "Glu_8"
+        "templateId": "E___Glutamic acid"
     },
     "monomer14": {
         "type": "monomer",
@@ -506,7 +492,7 @@
             "y": -6.5625
         },
         "alias": "Pro",
-        "templateId": "Pro_9"
+        "templateId": "P___Proline"
     },
     "monomer15": {
         "type": "monomer",
@@ -517,7 +503,7 @@
             "y": -6.5625
         },
         "alias": "Ala",
-        "templateId": "Ala_5"
+        "templateId": "A___Alanine"
     },
     "monomer16": {
         "type": "monomer",
@@ -528,7 +514,7 @@
             "y": -6.5625
         },
         "alias": "Lys",
-        "templateId": "Lys_10"
+        "templateId": "K___Lysine"
     },
     "monomer17": {
         "type": "monomer",
@@ -539,7 +525,7 @@
             "y": -6.5625
         },
         "alias": "Asn",
-        "templateId": "Asn_11"
+        "templateId": "N___Asparagine"
     },
     "monomer18": {
         "type": "monomer",
@@ -597,14 +583,16 @@
             }
         ]
     },
-    "monomerTemplate-His_2": {
+    "monomerTemplate-H___Histidine": {
         "type": "monomerTemplate",
-        "id": "His_2",
+        "id": "H___Histidine",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "H",
         "name": "His",
+        "fullName": "Histidine",
         "naturalAnalogShort": "H",
+        "naturalAnalog": "His",
         "attachmentPoints": [
             {
                 "attachmentAtom": 5,
@@ -833,14 +821,16 @@
             }
         ]
     },
-    "monomerTemplate-Gln_3": {
+    "monomerTemplate-Q___Glutamine": {
         "type": "monomerTemplate",
-        "id": "Gln_3",
+        "id": "Q___Glutamine",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "Q",
         "name": "Gln",
+        "fullName": "Glutamine",
         "naturalAnalogShort": "Q",
+        "naturalAnalog": "Gln",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1047,14 +1037,16 @@
             }
         ]
     },
-    "monomerTemplate-Arg_4": {
+    "monomerTemplate-R___Arginine": {
         "type": "monomerTemplate",
-        "id": "Arg_4",
+        "id": "R___Arginine",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "R",
         "name": "Arg",
+        "fullName": "Arginine",
         "naturalAnalogShort": "R",
+        "naturalAnalog": "Arg",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1291,14 +1283,16 @@
             }
         ]
     },
-    "monomerTemplate-Ala_5": {
+    "monomerTemplate-A___Alanine": {
         "type": "monomerTemplate",
-        "id": "Ala_5",
+        "id": "A___Alanine",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "A",
         "name": "Ala",
+        "fullName": "Alanine",
         "naturalAnalogShort": "A",
+        "naturalAnalog": "Ala",
         "attachmentPoints": [
             {
                 "attachmentAtom": 2,
@@ -1422,14 +1416,16 @@
             }
         ]
     },
-    "monomerTemplate-Leu_6": {
+    "monomerTemplate-L___Leucine": {
         "type": "monomerTemplate",
-        "id": "Leu_6",
+        "id": "L___Leucine",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "L",
         "name": "Leu",
+        "fullName": "Leucine",
         "naturalAnalogShort": "L",
+        "naturalAnalog": "Leu",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1598,14 +1594,16 @@
             }
         ]
     },
-    "monomerTemplate-Thr_7": {
+    "monomerTemplate-T___Threonine": {
         "type": "monomerTemplate",
-        "id": "Thr_7",
+        "id": "T___Threonine",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "T",
         "name": "Thr",
+        "fullName": "Threonine",
         "naturalAnalogShort": "T",
+        "naturalAnalog": "Thr",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1784,14 +1782,16 @@
             }
         ]
     },
-    "monomerTemplate-Glu_8": {
+    "monomerTemplate-E___Glutamic acid": {
         "type": "monomerTemplate",
-        "id": "Glu_8",
+        "id": "E___Glutamic acid",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "E",
         "name": "Glu",
+        "fullName": "Glutamic acid",
         "naturalAnalogShort": "E",
+        "naturalAnalog": "Glu",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1998,14 +1998,16 @@
             }
         ]
     },
-    "monomerTemplate-Pro_9": {
+    "monomerTemplate-P___Proline": {
         "type": "monomerTemplate",
-        "id": "Pro_9",
+        "id": "P___Proline",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "P",
         "name": "Pro",
+        "fullName": "Proline",
         "naturalAnalogShort": "P",
+        "naturalAnalog": "Pro",
         "attachmentPoints": [
             {
                 "attachmentAtom": 7,
@@ -2166,14 +2168,16 @@
             }
         ]
     },
-    "monomerTemplate-Lys_10": {
+    "monomerTemplate-K___Lysine": {
         "type": "monomerTemplate",
-        "id": "Lys_10",
+        "id": "K___Lysine",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "K",
         "name": "Lys",
+        "fullName": "Lysine",
         "naturalAnalogShort": "K",
+        "naturalAnalog": "Lys",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -2380,14 +2384,16 @@
             }
         ]
     },
-    "monomerTemplate-Asn_11": {
+    "monomerTemplate-N___Asparagine": {
         "type": "monomerTemplate",
-        "id": "Asn_11",
+        "id": "N___Asparagine",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
         "alias": "N",
         "name": "Asn",
+        "fullName": "Asparagine",
         "naturalAnalogShort": "N",
+        "naturalAnalog": "Asn",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -2916,7 +2922,12 @@
         "naturalAnalogShort": "C",
         "attachmentPoints": [
             {
-                "attachmentAtom": 4
+                "attachmentAtom": 4,
+                "leavingGroup": {
+                    "atoms": [
+                        6
+                    ]
+                }
             },
             {
                 "attachmentAtom": 0
@@ -2974,9 +2985,24 @@
                     -7.514800071716309,
                     0.0
                 ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    4.952000141143799,
+                    -6.154799938201904,
+                    0.0
+                ]
             }
         ],
         "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    4,
+                    6
+                ]
+            },
             {
                 "type": 1,
                 "atoms": [
@@ -3014,19 +3040,5 @@
                 ]
             }
         ]
-    },
-    "mol0": {
-        "type": "molecule",
-        "atoms": [
-            {
-                "label": "H",
-                "location": [
-                    4.952000141143799,
-                    -6.154799938201904,
-                    0.0
-                ]
-            }
-        ],
-        "bonds": []
     }
 }

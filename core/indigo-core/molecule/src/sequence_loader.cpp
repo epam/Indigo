@@ -1640,28 +1640,40 @@ const std::string SequenceLoader::checkAddAmbiguousMonomerTemplate(KetDocument& 
         std::map<std::string, KetAttachmentPoint> att_points;
         for (auto& option : options.second)
         {
-            auto opt_template_id = _library.getMonomerTemplateIdByAlias(monomer_class, option.first);
+            auto& helm_alias = option.first;
+            auto opt_template_id = _library.getMonomerTemplateIdByAliasHELM(monomer_class, helm_alias);
+            std::string opt_alias;
             if (opt_template_id.size() > 0)
             {
-                checkAddTemplate(document, _library.getMonomerTemplateById(opt_template_id));
+                _aliasHELM_to_id.emplace(make_pair(monomer_class, helm_alias), opt_template_id);
+                opt_alias = _library.getMonomerTemplateById(opt_template_id).getStringProp("alias");
+                checkAddTemplate(document, monomer_class, opt_alias);
             }
             else
             {
-                auto tmpl_it = _alias_to_id.find(std::make_pair(monomer_class, option.first));
-                if (tmpl_it != _alias_to_id.end())
+                opt_alias = helm_alias;
+                opt_template_id = _library.getMonomerTemplateIdByAlias(monomer_class, opt_alias);
+                if (opt_template_id.size() > 0)
                 {
-                    opt_template_id = tmpl_it->second;
+                    checkAddTemplate(document, _library.getMonomerTemplateById(opt_template_id));
                 }
                 else
-                { // unknown monomer - add unresolved template
-                    MonomerTemplate monomer_template(MonomerTemplate::MonomerClassToStr(monomer_class) + option.first, monomer_class, IdtAlias(), true);
-                    monomer_template.setStringProp("alias", option.first);
-                    monomer_template.setStringProp("aliasHELM", alias);
-                    for (auto ap : {"R1", "R2", "R3", "R4"})
-                        monomer_template.AddAttachmentPoint(ap, -1);
-                    checkAddTemplate(document, monomer_template);
-                    _alias_to_id.emplace(make_pair(monomer_class, option.first), monomer_template.id());
-                    opt_template_id = monomer_template.id();
+                {
+                    auto tmpl_it = _alias_to_id.find(std::make_pair(monomer_class, opt_alias));
+                    if (tmpl_it != _alias_to_id.end())
+                    {
+                        opt_template_id = tmpl_it->second;
+                    }
+                    else
+                    { // unknown monomer - add unresolved template
+                        MonomerTemplate monomer_template(MonomerTemplate::MonomerClassToStr(monomer_class) + opt_alias, monomer_class, IdtAlias(), true);
+                        monomer_template.setStringProp("alias", opt_alias);
+                        for (auto ap : {"R1", "R2", "R3", "R4"})
+                            monomer_template.AddAttachmentPoint(ap, -1);
+                        checkAddTemplate(document, monomer_template);
+                        _alias_to_id.emplace(make_pair(monomer_class, opt_alias), monomer_template.id());
+                        opt_template_id = monomer_template.id();
+                    }
                 }
             }
             auto& opt = opts.emplace_back(opt_template_id);
@@ -1893,9 +1905,11 @@ void SequenceLoader::loadHELM(KetDocument& document)
                     {
                         size_t added_idx;
                         // if found sugar id - add sugar, else if found phosphate id - add phosphate, else - add unsplitted RNA(may be unresolved)
-                        if (_library.getMonomerTemplateIdByAlias(MonomerClass::Sugar, std::get<0>(monomer_info)).size() > 0)
+                        if (_library.getMonomerTemplateIdByAlias(MonomerClass::Sugar, std::get<0>(monomer_info)).size() > 0 ||
+                            _library.getMonomerTemplateIdByAliasHELM(MonomerClass::Sugar, std::get<0>(monomer_info)).size() > 0)
                             added_idx = addHelmMonomer(document, monomer_info, MonomerClass::Sugar, pos);
-                        else if (_library.getMonomerTemplateIdByAlias(MonomerClass::Phosphate, std::get<0>(monomer_info)).size() > 0)
+                        else if (_library.getMonomerTemplateIdByAlias(MonomerClass::Phosphate, std::get<0>(monomer_info)).size() > 0 ||
+                                 _library.getMonomerTemplateIdByAliasHELM(MonomerClass::Phosphate, std::get<0>(monomer_info)).size() > 0)
                             added_idx = addHelmMonomer(document, monomer_info, MonomerClass::Phosphate, pos);
                         else
                             added_idx = addHelmMonomer(document, monomer_info, MonomerClass::RNA, pos);
