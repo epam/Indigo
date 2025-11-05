@@ -26,14 +26,11 @@
 #include "molecule/base_molecule.h"
 #include "molecule/elements.h"
 #include "molecule/inchi_wrapper.h"
-#include "molecule/ket_document.h"
-#include "molecule/ket_document_json_loader.h"
 #include "molecule/molecule_arom_match.h"
 #include "molecule/molecule_dearom.h"
 #include "molecule/molecule_exact_matcher.h"
 #include "molecule/molecule_exact_substructure_matcher.h"
 #include "molecule/molecule_inchi.h"
-#include "molecule/molecule_json_saver.h"
 #include "molecule/molecule_substructure_matcher.h"
 #include "molecule/monomer_commons.h"
 #include "molecule/monomers_template_library.h"
@@ -49,13 +46,12 @@ using namespace indigo;
 
 IMPL_ERROR(BaseMolecule, "molecule");
 
-BaseMolecule::BaseMolecule() : original_format(BaseMolecule::UNKNOWN), _document(new KetDocument), _edit_revision(0)
+BaseMolecule::BaseMolecule() : original_format(BaseMolecule::UNKNOWN), _edit_revision(0)
 {
 }
 
 BaseMolecule::~BaseMolecule()
 {
-    delete _document;
 }
 
 Molecule& BaseMolecule::asMolecule()
@@ -120,8 +116,6 @@ void BaseMolecule::clear()
     _meta.resetMetaData();
     clearCIP();
     aliases.clear();
-    delete _document;
-    _document = new KetDocument();
 }
 
 bool BaseMolecule::hasCoord(BaseMolecule& mol)
@@ -1505,6 +1499,9 @@ int BaseMolecule::transformFullCTABtoSCSR(ObjArray<TGroup>& templates)
         const TGroup& tg = templates.at(i);
 
         fragment.clear();
+        // ambiguous templates have no fragment
+        if (tg.fragment.get() == nullptr)
+            continue;
         fragment.clone_KeepIndices(*tg.fragment.get());
 
         if (ignore_chem_templates)
@@ -2271,6 +2268,9 @@ int BaseMolecule::transformFullCTABtoSCSR(ObjArray<TGroup>& templates)
         const TGroup& tg = templates.at(i);
 
         fragment.clear();
+        // ambiguous templates have no fragment
+        if (tg.fragment.get() == nullptr)
+            continue;
         fragment.clone_KeepIndices(*tg.fragment.get());
 
         if (ignore_chem_templates)
@@ -5515,33 +5515,6 @@ std::string BaseMolecule::getAtomDescription(int idx)
     Array<char> description;
     getAtomDescription(idx, description);
     return std::string(description.ptr(), description.size());
-}
-
-KetDocument& BaseMolecule::getKetDocument()
-{
-    // static thread_local std::optional<std::unique_ptr<KetDocument>> document; // Temporary until direct conversion to document supported
-    if (_document == nullptr || _edit_revision != _document_revision)
-    {
-        if (_document != nullptr)
-        {
-            delete _document;
-            _document = nullptr;
-        }
-        // save to ket
-        std::string json;
-        StringOutput out(json);
-        MoleculeJsonSaver saver(out);
-        saver.saveMolecule(*this);
-        // load document from ket
-        rapidjson::Document data;
-        /*auto& res*/ std::ignore = data.Parse(json.c_str());
-        // if res.hasParseError()
-        _document = new KetDocument;
-        KetDocumentJsonLoader loader{};
-        loader.parseJson(json, *_document);
-        _document_revision = _edit_revision;
-    }
-    return *_document;
 }
 
 const char* BaseMolecule::getTemplateAtom(int idx)

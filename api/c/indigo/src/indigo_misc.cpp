@@ -1746,11 +1746,21 @@ CEXPORT const char* indigoMacroProperties(int object, float upc, float nac)
 
         IndigoObject& obj = self.getObject(object);
 
-        if (IndigoBaseMolecule::is(obj) || IndigoBaseReaction::is(obj) || IndigoKetDocument::is(obj))
+        MacroPropertiesCalculator calc;
+
+        if (IndigoBaseMolecule::is(obj))
         {
-            auto& doc = obj.getKetDocument();
-            MacroPropertiesCalculator calc;
-            calc.CalculateMacroProps(doc, out, upc, nac, self.json_saving_pretty);
+            std::unique_ptr<KetDocument> doc_ptr(new KetDocument(obj.getBaseMolecule()));
+            calc.CalculateMacroProps(*doc_ptr, out, upc, nac, self.json_saving_pretty);
+        }
+        else if (IndigoBaseReaction::is(obj))
+        {
+            std::unique_ptr<KetDocument> doc_ptr(new KetDocument(obj.getBaseReaction()));
+            calc.CalculateMacroProps(*doc_ptr, out, upc, nac, self.json_saving_pretty);
+        }
+        else if (IndigoKetDocument::is(obj))
+        {
+            calc.CalculateMacroProps(static_cast<IndigoKetDocument&>(obj).get(), out, upc, nac, self.json_saving_pretty);
         }
         out.writeChar(0);
         return tmp.string.ptr();
