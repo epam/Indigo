@@ -39,15 +39,18 @@ def main():
         mol.transformCTABtoSCSR(monomer_template)
         helm_string = mol.helm(monomer_library)
         if helm_string != EXPECTED_HELM:
-            print(f"FAILURE on iteration {i} after {success_count} successes")
-            print(f"Expected: {EXPECTED_HELM}")
-            print(f"Got:      {helm_string}")
+            print(
+                "FAILURE on iteration %s after %s successes"
+                % (i, success_count)
+            )
+            print("Expected: %s" % EXPECTED_HELM)
+            print("Got:      %s" % helm_string)
             return
 
         if i % 100 == 0:
-            print(f"Iteration {i}: OK")
+            print("Iteration %s: OK" % i)
 
-    print(f"Completed {max_iterations} iterations without failure.")
+    print("Completed %s iterations without failure." % max_iterations)
 
 
 if __name__ == "__main__":
