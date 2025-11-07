@@ -59,7 +59,7 @@ CEXPORT int indigoLayout(int object)
             {
                 ml.filter = &f;
             }
-            else
+            else if (mol->tgroups.getTGroupCount()) // selection works only with monomers
             {
                 std::set<int> selected_atoms;
                 mol->getAtomSelection(selected_atoms);
