@@ -60,6 +60,7 @@ files = [
     "lib_default_type",
     "lib_rna_preset_from_lib",
     "lib_same_struct",
+    "lib_empty",
 ]
 
 files.sort()

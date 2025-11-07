@@ -663,7 +663,8 @@ CEXPORT int indigoLoadMonomerLibrary(int source)
                     Molecule mol;
                     loader.loadMolecule(mol);
                     // now we have molecule and its properties. we need to add it to library.
-                    libptr->get().addMonomersFromMolecule(mol, properties);
+                    if (mol.tgroups.getTGroupCount())
+                        libptr->get().addMonomersFromMolecule(mol, properties);
                 }
             }
             catch (Exception& e)
