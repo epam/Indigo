@@ -29,8 +29,8 @@
 #include "graph/graph.h"
 #include "math/algebra.h"
 #include "molecule/elements.h"
+#include "molecule/ket_annotation.h"
 #include "molecule/ket_monomer_shape.h"
-#include "molecule/ket_objects.h"
 #include "molecule/metadata_storage.h"
 #include "molecule/molecule_allene_stereo.h"
 #include "molecule/molecule_arom.h"
@@ -124,7 +124,6 @@ namespace indigo
     class Molecule;
     class QueryMolecule;
     class MetaDataStorage;
-    class KetDocument;
     class TGroup;
     class MonomerTemplateLibrary;
 
@@ -643,8 +642,6 @@ namespace indigo
         void setAlias(int atom_idx, const char* alias);
         void removeAlias(int atom_idx);
 
-        KetDocument& getKetDocument();
-
         PtrArray<KetMonomerShape> monomer_shapes;
 
         DECL_ERROR;
@@ -729,9 +726,6 @@ namespace indigo
 
         RedBlackObjMap<int, Array<char>> aliases;
         RedBlackObjMap<int, PropertiesMap> _properties;
-
-        KetDocument* _document;
-        int _document_revision;
 
         std::unique_ptr<BaseMolecule> _with_expanded_monomers;
     };

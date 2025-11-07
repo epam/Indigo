@@ -106,11 +106,6 @@ BaseMolecule& IndigoMolecule::getBaseMolecule()
     return mol;
 }
 
-KetDocument& IndigoMolecule::getKetDocument()
-{
-    return getBaseMolecule().getKetDocument();
-}
-
 const char* IndigoMolecule::getName()
 {
     if (mol.name.ptr() == 0)
@@ -5055,9 +5050,16 @@ CEXPORT int indigoExpandMonomers(int item)
     {
         IndigoObject& obj = self.getObject(item);
 
-        if (IndigoKetDocument::is(obj) || IndigoBaseMolecule::is(obj))
+        if (IndigoBaseMolecule::is(obj))
         {
-            indigoExpand(obj.getKetDocument());
+            auto& bmol = obj.getBaseMolecule();
+            KetDocument doc(bmol);
+            indigoExpand(doc);
+            bmol.clone_KeepIndices(doc.getBaseMolecule());
+        }
+        else if (IndigoKetDocument::is(obj))
+        {
+            indigoExpand(static_cast<IndigoKetDocument&>(obj).get());
         }
         else
         {

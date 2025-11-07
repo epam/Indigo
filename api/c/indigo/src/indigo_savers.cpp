@@ -881,7 +881,8 @@ CEXPORT int indigoSaveAxoLabs(int item, int output, int library)
             IndigoObject& lib_obj = self.getObject(library);
             SequenceSaver saver(out, IndigoMonomerLibrary::get(lib_obj));
             BaseMolecule& mol = obj.getBaseMolecule();
-            saver.saveKetDocument(mol.getKetDocument(), SequenceSaver::SeqFormat::IDT);
+            KetDocument doc(mol);
+            saver.saveKetDocument(doc, SequenceSaver::SeqFormat::IDT);
             out.flush();
             return 1;
         }
