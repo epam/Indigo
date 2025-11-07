@@ -9,7 +9,7 @@
         {
             "name": "indigo-debug",
             "hidden": false,
-            "generator": "Ninja",
+            "generator": "Ninja Multi-Config",
             "binaryDir": "${sourceDir}/build",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
