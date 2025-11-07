@@ -18,10 +18,13 @@
 
 #include "molecule/ket_document.h"
 #include "base_cpp/exception.h"
+#include "molecule/ket_document_json_loader.h"
 #include "molecule/ket_document_json_saver.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_json_loader.h"
+#include "molecule/molecule_json_saver.h"
 #include "molecule/monomer_commons.h"
+#include "reaction/reaction_json_saver.h"
 
 #ifdef _MSC_VER
 #pragma warning(push, 4)
@@ -548,6 +551,35 @@ int KetDocument::moleculeIdxByRef(const std::string& ref)
     if (it == _mol_ref_to_idx.end())
         throw Error("Molecule with ref %s not found", ref.c_str());
     return it->second;
+}
+
+KetDocument::KetDocument(BaseMolecule& bmol)
+{
+    // save molecule to ket
+    std::string json;
+    StringOutput out(json);
+    MoleculeJsonSaver saver(out);
+    saver.saveMolecule(bmol);
+    // load document from ket
+    rapidjson::Document data;
+    /*auto& res*/ std::ignore = data.Parse(json.c_str());
+    // if res.hasParseError()
+    KetDocumentJsonLoader loader{};
+    loader.parseJson(json, *this);
+}
+
+KetDocument::KetDocument(BaseReaction& breact)
+{
+    // save reaction to ket
+    std::string json;
+    StringOutput out(json);
+    ReactionJsonSaver saver(out);
+    saver.saveReaction(breact);
+    // load document from ket
+    rapidjson::Document data;
+    std::ignore = data.Parse(json.c_str());
+    KetDocumentJsonLoader loader{};
+    loader.parseJson(json, *this);
 }
 
 #ifdef _MSC_VER

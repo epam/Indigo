@@ -142,14 +142,14 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
     if (sf == SeqFormat::HELM)
     {
         std::vector<std::deque<std::string>> sequences;
-        auto& doc = mol.getKetDocument();
+        KetDocument doc(mol);
         doc.parseSimplePolymers(sequences, false);
         seq_text = saveHELM(doc, sequences);
     }
     else if (sf == SeqFormat::IDT)
     {
         std::vector<std::deque<std::string>> sequences;
-        auto& doc = mol.getKetDocument();
+        KetDocument doc(mol);
         doc.parseSimplePolymers(sequences, true);
         saveIdt(doc, sequences, seq_text);
     }

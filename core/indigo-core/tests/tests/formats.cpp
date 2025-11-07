@@ -502,7 +502,7 @@ TEST_F(IndigoCoreFormatsTest, mol_to_document)
     Molecule mol;
     loader.loadMolecule(mol);
 
-    KetDocument& document = mol.getKetDocument();
+    KetDocument document(mol);
     std::vector<std::deque<std::string>> sequences;
     // parse connections between monomers and return backbone sequences
     // non-backbone connection stored in document.nonSequenceConnections()

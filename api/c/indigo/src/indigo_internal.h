@@ -191,8 +191,6 @@ public:
     virtual Molecule& getMolecule();
     virtual const Molecule& getMolecule() const;
 
-    virtual KetDocument& getKetDocument();
-
     virtual BaseReaction& getBaseReaction();
     virtual QueryReaction& getQueryReaction();
     virtual Reaction& getReaction();

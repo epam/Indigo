@@ -16,39 +16,39 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "indigo_ket_document.h"
-#include "molecule/ket_document_json_loader.h"
+#include "molecule/ket_annotation.h"
 
-//
-// IndigoKetDocument
-//
+#ifdef _MSC_VER
+#pragma warning(push, 4)
+#endif
 
-IndigoKetDocument::IndigoKetDocument() : IndigoObject(KET_DOCUMENT), _document()
+using namespace indigo;
+
+IMPL_ERROR(KetObjectAnnotation, "Ket Object Annotation")
+
+const std::map<std::string, int>& KetObjectAnnotation::getStringPropStrToIdx() const
 {
+    static std::map<std::string, int> str_to_idx{
+        {"text", toUType(StringProps::text)},
+    };
+    return str_to_idx;
 }
 
-IndigoKetDocument::~IndigoKetDocument()
+IMPL_ERROR(KetAnnotation, "Ket Annotation")
+
+void KetAnnotation::copy(const KetAnnotation& other)
 {
+    KetObjWithProps::copy(other);
+    if (other._extended.has_value())
+        setExtended(*other._extended);
 }
 
-bool IndigoKetDocument::is(const IndigoObject& object)
+void KetAnnotation::setExtended(const rapidjson::Document& extended)
 {
-    return object.type == KET_DOCUMENT;
+    _extended.emplace();
+    _extended->CopyFrom(extended, _extended->GetAllocator());
 }
 
-KetDocument& IndigoKetDocument::get(IndigoObject& obj)
-{
-    if (obj.type != KET_DOCUMENT)
-        throw IndigoError("%s is not a ket document", obj.debugInfo());
-    return reinterpret_cast<IndigoKetDocument&>(obj)._document;
-}
-
-const char* IndigoKetDocument::debugInfo() const
-{
-    return "<KetDocument>";
-}
-
-BaseMolecule& IndigoKetDocument::getBaseMolecule()
-{
-    return _document.getBaseMolecule();
-}
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
