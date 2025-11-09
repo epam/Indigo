@@ -1,0 +1,75 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "mol0"
+            }
+        ]
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    7.853899955749512,
+                    -7.368800163269043,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    9.152899742126465,
+                    -7.868800163269043,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    10.018899917602539,
+                    -7.368800163269043,
+                    0.0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            }
+        ],
+        "sgroups": [
+            {
+                "type": "SUP",
+                "atoms": [
+                    1,
+                    2
+                ],
+                "name": "AminoAcid29",
+                "expanded": true,
+                "class": "AA",
+                "attachmentPoints": [
+                    {
+                        "attachmentAtom": 1,
+                        "attachmentId": "R1"
+                    }
+                ],
+                "bonds": [
+                    1
+                ]
+            }
+        ]
+    }
+}

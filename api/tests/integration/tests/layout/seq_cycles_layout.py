@@ -22,7 +22,8 @@ indigo.setOption("ignore-stereochemistry-errors", True)
 print("*** Sequence cycles layout ***")
 
 root = joinPathPy("molecules/", __file__)
-root_rea = joinPathPy("reactions/", __file__)
+ref_path = joinPathPy("ref/", __file__)
+
 
 files = [
     "pep_sel",
