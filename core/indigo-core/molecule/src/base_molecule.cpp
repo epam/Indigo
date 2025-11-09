@@ -3578,7 +3578,6 @@ bool BaseMolecule::_replaceExpandedMonomerWithTemplate(int sg_idx, int& tg_id, M
 
 int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
 {
-    QS_DEF(Array<int>, remove_atoms);
     QS_DEF(Array<int>, leaving_atoms);
     QS_DEF(Array<int>, tgroup_atoms);
     QS_DEF(Array<int>, residue_atoms);
@@ -3798,17 +3797,20 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
     }
 
     QS_DEF(Vec2f, cp);
-    QS_DEF(Vec3f, p);
-    p.set(0, 0, 0);
+    QS_DEF(Vec3f, pcenter);
+    pcenter.set(0, 0, 0);
     getAtomsCenterPoint(su.atoms, cp);
-    p.x = cp.x;
-    p.y = cp.y;
-    setAtomXyz(idx, p);
-
-    remove_atoms.copy(su.atoms);
-
+    pcenter.x = cp.x;
+    pcenter.y = cp.y;
+    setAtomXyz(idx, pcenter);
     removeAtoms(tgroup_atoms);
-
+    // fix template atoms' coordinates
+    for (auto vidx : tg.fragment->vertices())
+    {
+        auto p = tg.fragment->getAtomXyz(vidx);
+        p.sub(pcenter);
+        tg.fragment->setAtomXyz(vidx, p);
+    }
     return idx;
 }
 
@@ -5775,7 +5777,8 @@ std::unique_ptr<BaseMolecule>& BaseMolecule::expandedMonomersToAtoms()
                             {
                                 auto& atp = sa.attachment_points[it->second];
                                 attached_atom.insert(std::make_pair(ap.ap_aidx, atp.aidx)); // molecule atom ap.ap_aidx is attached to atp.aidx in monomer
-                                atoms_to_remove.push(atp.lvidx);
+                                if (atp.lvidx >= 0)
+                                    atoms_to_remove.push(atp.lvidx);
                             }
                             result->template_attachment_points.remove(indexes.at(att_idx));
                         }

@@ -64,6 +64,7 @@ files = [
     "3094-chem-2000",
     "3094-chem-3000",
     "3227-copolymer",
+    "3292-template-center",
 ]
 
 native_precision = [
