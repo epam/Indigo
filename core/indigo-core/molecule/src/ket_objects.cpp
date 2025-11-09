@@ -561,31 +561,6 @@ bool KetBaseMonomerTemplate::hasIdtAliasBase(const std::string& alias_base)
     return false;
 }
 
-IMPL_ERROR(KetObjectAnnotation, "Ket Object Annotation")
-
-const std::map<std::string, int>& KetObjectAnnotation::getStringPropStrToIdx() const
-{
-    static std::map<std::string, int> str_to_idx{
-        {"text", toUType(StringProps::text)},
-    };
-    return str_to_idx;
-}
-
-IMPL_ERROR(KetAnnotation, "Ket Annotation")
-
-void KetAnnotation::copy(const KetAnnotation& other)
-{
-    KetObjWithProps::copy(other);
-    if (other._extended.has_value())
-        setExtended(*other._extended);
-}
-
-void KetAnnotation::setExtended(const rapidjson::Document& extended)
-{
-    _extended.emplace();
-    _extended->CopyFrom(extended, _extended->GetAllocator());
-}
-
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif

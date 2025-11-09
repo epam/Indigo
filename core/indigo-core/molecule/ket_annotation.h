@@ -16,43 +16,54 @@
  * limitations under the License.
  ***************************************************************************/
 
-#ifndef __indigo_ket_documnet__
-#define __indigo_ket_documnet__
+#ifndef __ket_annotation__
+#define __ket_annotation__
 
-#include "indigo_internal.h"
-#include "molecule/base_molecule.h"
-#include "molecule/ket_document.h"
+#include "molecule/ket_obj_with_props.h"
+#include <optional>
 
 #ifdef _WIN32
 #pragma warning(push)
 #pragma warning(disable : 4251)
 #endif
 
-class DLLEXPORT IndigoKetDocument : public IndigoObject
+namespace indigo
 {
-public:
-    explicit IndigoKetDocument();
 
-    ~IndigoKetDocument() override;
-
-    static bool is(const IndigoObject& obj);
-
-    static KetDocument& get(IndigoObject& obj);
-
-    inline KetDocument& get()
+    class DLLEXPORT KetObjectAnnotation : public KetObjWithProps
     {
-        return _document;
-    }
+    public:
+        DECL_ERROR;
 
-    BaseMolecule& getBaseMolecule() override;
+        const std::map<std::string, int>& getStringPropStrToIdx() const override;
 
-    const char* debugInfo() const override;
+        enum class StringProps
+        {
+            text
+        };
+    };
 
-private:
-    KetDocument _document;
-};
+    class DLLEXPORT KetAnnotation : public KetObjWithProps
+    {
+    public:
+        DECL_ERROR;
 
-#ifdef _WIN32
+        void copy(const KetAnnotation& other);
+
+        void setExtended(const rapidjson::Document& extended);
+
+        const std::optional<rapidjson::Document>& extended() const
+        {
+            return _extended;
+        };
+
+    private:
+        std::optional<rapidjson::Document> _extended;
+    };
+
+}
+
+#ifdef _MSC_VER
 #pragma warning(pop)
 #endif
 

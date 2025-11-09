@@ -27,6 +27,7 @@
 #include "molecule/icm_loader.h"
 #include "molecule/icm_saver.h"
 #include "molecule/inchi_wrapper.h"
+#include "molecule/ket_document.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_auto_loader.h"
 #include "molecule/molecule_cdxml_loader.h"
@@ -414,12 +415,14 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, MonomerTemplateLibrary
                 }
                 else if (kIDT == tag.data())
                 {
-                    sl.loadIdt(mol.getKetDocument());
+                    KetDocument doc(mol);
+                    sl.loadIdt(doc);
                     return;
                 }
                 else if (kHELM == tag.data())
                 {
-                    // sl.loadHelm(mol);
+                    KetDocument doc(mol);
+                    sl.loadHELM(doc);
                     return;
                 }
                 else

@@ -19,8 +19,6 @@
 #include "reaction/base_reaction.h"
 #include "base_cpp/output.h"
 #include "base_cpp/tlscont.h"
-#include "molecule/ket_document.h"
-#include "molecule/ket_document_json_loader.h"
 #include "molecule/meta_commons.h"
 #include "molecule/molecule_dearom.h"
 #include "reaction/pathway_reaction.h"
@@ -99,7 +97,7 @@ SideIter SideAuto::end()
 
 BaseReaction::BaseReaction()
     : reactants(*this, REACTANT), catalysts(*this, CATALYST), products(*this, PRODUCT), intermediates(*this, INTERMEDIATE), undefined(*this, UNDEFINED),
-      original_format(BaseMolecule::UNKNOWN), _document(nullptr)
+      original_format(BaseMolecule::UNKNOWN)
 {
     clear();
 }
@@ -121,11 +119,6 @@ void BaseReaction::clear()
     _specialConditions.clear();
     _types.clear();
     name.clear();
-    if (_document != nullptr)
-    {
-        delete _document;
-        _document = nullptr;
-    }
 }
 
 int BaseReaction::getAAM(int index, int atom)
@@ -549,23 +542,4 @@ PropertiesMap& BaseReaction::properties()
 int BaseReaction::multitaleCount() const
 {
     return _meta.getMetaCount(ReactionMultitailArrowObject::CID);
-}
-
-KetDocument& BaseReaction::getKetDocument()
-{
-    if (_document == nullptr)
-    {
-        // save to ket
-        std::string json;
-        StringOutput out(json);
-        ReactionJsonSaver saver(out);
-        saver.saveReaction(*this);
-        // load document from ket
-        rapidjson::Document data;
-        std::ignore = data.Parse(json.c_str());
-        _document = new KetDocument;
-        KetDocumentJsonLoader loader{};
-        loader.parseJson(json, *_document);
-    }
-    return *_document;
 }
