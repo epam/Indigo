@@ -772,7 +772,7 @@ void SequenceSaver::saveAxoLabs(KetDocument& doc, std::vector<std::deque<std::st
                 phosphate = "P";
                 add_s = true;
             }
-            if (sequence.size() == 0 && phosphate.size() == 0)
+            if (sequence.size() == 0 && phosphate.size() == 0 && base.size() > 0)
                 phosphate = "P";
 
             // Try to find sugar,base,phosphate group template
@@ -781,7 +781,9 @@ void SequenceSaver::saveAxoLabs(KetDocument& doc, std::vector<std::deque<std::st
             std::string base_id;
             if (base.size())
                 base_id = _library.getMonomerTemplateIdByAlias(MonomerClass::Base, base);
-            const std::string& mgt_id = _library.getMGTidByComponents(sugar_id, base_id, phosphate_id);
+            std::string mgt_id;
+            if (base.size() || phosphate.size())
+                mgt_id = _library.getMGTidByComponents(sugar_id, base_id, phosphate_id);
             if (mgt_id.size())
             {
                 auto& alias_axolabs = _library.getMonomerGroupTemplateById(mgt_id).aliasAxoLabs();
