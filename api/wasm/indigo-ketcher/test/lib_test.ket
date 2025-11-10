@@ -1,0 +1,552 @@
+{
+    "root": {
+        "nodes": [],
+        "templates": [
+            {
+                "$ref": "monomerTemplate-Nuc01"
+            },
+            {
+                "$ref": "monomerTemplate-pNuc01"
+            },
+            {
+                "$ref": "monomerTemplate-sNuc01"
+            },
+            {
+                "$ref": "monomerGroupTemplate-tst"
+            }
+        ]
+    },
+    "monomerTemplate-Nuc01": {
+        "type": "monomerTemplate",
+        "id": "Nuc01",
+        "class": "Base",
+        "classHELM": "RNA",
+        "fullName": "Nuc01",
+        "alias": "Nuc01",
+        "naturalAnalog": "Ade",
+        "naturalAnalogShort": "A",
+        "attachmentPoints": [
+            {
+                "attachmentAtom": 8,
+                "leavingGroup": {
+                    "atoms": [
+                        10
+                    ]
+                }
+            }
+        ],
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    -1.559500,
+                    1.945600,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -0.555700,
+                    0.830800,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -1.019200,
+                    -0.595700,
+                    0.000000
+                ]
+            },
+            {
+                "label": "N",
+                "location": [
+                    -2.486500,
+                    -0.907700,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -3.490000,
+                    0.207100,
+                    0.000000
+                ]
+            },
+            {
+                "label": "N",
+                "location": [
+                    -3.026500,
+                    1.633600,
+                    0.000000
+                ]
+            },
+            {
+                "label": "N",
+                "location": [
+                    0.944300,
+                    0.830800,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    1.407800,
+                    -0.595700,
+                    0.000000
+                ]
+            },
+            {
+                "label": "N",
+                "location": [
+                    0.194300,
+                    -1.477400,
+                    0.000000
+                ]
+            },
+            {
+                "label": "N",
+                "location": [
+                    -1.096000,
+                    3.372300,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    0.194300,
+                    -2.977400,
+                    0.000000
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    1,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    3
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    3,
+                    4
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    4,
+                    5
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    5,
+                    0
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    6
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    6,
+                    7
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    7,
+                    8
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    8,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    10,
+                    8
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    9
+                ]
+            }
+        ]
+    },
+    "monomerTemplate-pNuc01": {
+        "type": "monomerTemplate",
+        "id": "pNuc01",
+        "class": "Phosphate",
+        "classHELM": "RNA",
+        "fullName": "pNuc01",
+        "alias": "pNuc01",
+        "naturalAnalog": "Ade",
+        "naturalAnalogShort": "A",
+        "attachmentPoints": [
+            {
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        3
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        4
+                    ]
+                }
+            }
+        ],
+        "atoms": [
+            {
+                "label": "P",
+                "location": [
+                    -2.887500,
+                    -4.971400,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    -1.674200,
+                    -5.853100,
+                    0.000000
+                ]
+            },
+            {
+                "label": "S",
+                "location": [
+                    -4.100900,
+                    -4.089500,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    -3.769100,
+                    -6.184900,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    -2.005800,
+                    -3.757700,
+                    0.000000
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    4
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    0,
+                    2
+                ]
+            }
+        ]
+    },
+    "monomerTemplate-sNuc01": {
+        "type": "monomerTemplate",
+        "id": "sNuc01",
+        "class": "Sugar",
+        "classHELM": "RNA",
+        "fullName": "sNuc01",
+        "alias": "sNuc01",
+        "naturalAnalog": "Ade",
+        "naturalAnalogShort": "A",
+        "attachmentPoints": [
+            {
+                "attachmentAtom": 8,
+                "leavingGroup": {
+                    "atoms": [
+                        9
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 6,
+                "leavingGroup": {
+                    "atoms": [
+                        10
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        11
+                    ]
+                }
+            }
+        ],
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    -0.070500,
+                    -1.405900,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    1.143000,
+                    -2.287600,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.679500,
+                    -3.714200,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -0.820500,
+                    -3.714200,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    -1.284000,
+                    -2.287600,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -1.702200,
+                    -4.927700,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    1.561200,
+                    -4.927700,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    2.569600,
+                    -1.824100,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    -3.194100,
+                    -4.771100,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    -4.075800,
+                    -5.984900,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    3.052900,
+                    -4.771100,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    -0.070500,
+                    0.094100,
+                    0.000000
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    4
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    4,
+                    0
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    5
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    6
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    7
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    5,
+                    8
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    11
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    9,
+                    8
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    6,
+                    10
+                ]
+            }
+        ]
+    },
+    "monomerGroupTemplate-tst": {
+        "type": "monomerGroupTemplate",
+        "id": "tst",
+        "name": "tst",
+        "class": "RNA",
+        "templates": [
+            {
+                "$ref": "monomerTemplate-Nuc01"
+            },
+            {
+                "$ref": "monomerTemplate-pNuc01"
+            },
+            {
+                "$ref": "monomerTemplate-sNuc01"
+            }
+        ]
+    }
+}
