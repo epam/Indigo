@@ -176,7 +176,7 @@ namespace indigo
         {'S', 'S'},
     };
 
-    std::pair<size_t, bool> best_allign(const std::string& sense, const std::string& antisense);
+    size_t best_allign(const std::string& sense, const std::string& antisense, std::vector<std::pair<size_t, size_t>>& pairs, bool& shift_sense);
 
 }
 #endif

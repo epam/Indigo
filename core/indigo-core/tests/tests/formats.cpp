@@ -732,21 +732,34 @@ TEST_F(IndigoCoreFormatsTest, best_allign)
     std::string antisense;
     source_file.readLine(sense);
     source_file.readLine(antisense);
-    auto res = best_allign(sense, antisense);
-    ASSERT_EQ(res.first, 20);
-    ASSERT_EQ(res.second, false);
+    std::vector<std::pair<size_t, size_t>> pairs;
+    bool shift_sense;
+    auto res = best_allign(sense, antisense, pairs, shift_sense);
+    ASSERT_EQ(res, 20);
+    ASSERT_EQ(shift_sense, false);
+    ASSERT_EQ(pairs.size(), 2);
+    ASSERT_EQ(pairs[0].first, 20);
+    ASSERT_EQ(pairs[0].second, 0);
+    ASSERT_EQ(pairs[1].first, 21);
+    ASSERT_EQ(pairs[1].second, 1);
     source_file.readLine(sense); // empty string
     source_file.readLine(sense);
     source_file.readLine(antisense);
-    res = best_allign(sense, antisense);
-    ASSERT_EQ(res.first, 20);
-    ASSERT_EQ(res.second, true);
+    res = best_allign(sense, antisense, pairs, shift_sense);
+    ASSERT_EQ(res, 20);
+    ASSERT_EQ(shift_sense, true);
+    ASSERT_EQ(pairs.size(), 2);
+    ASSERT_EQ(pairs[0].first, 0);
+    ASSERT_EQ(pairs[0].second, 20);
+    ASSERT_EQ(pairs[1].first, 1);
+    ASSERT_EQ(pairs[1].second, 21);
     source_file.readLine(sense); // empty string
     source_file.readLine(sense);
     source_file.readLine(antisense);
-    res = best_allign(sense, antisense);
-    ASSERT_EQ(res.first, 85);
-    ASSERT_EQ(res.second, true);
+    res = best_allign(sense, antisense, pairs, shift_sense);
+    ASSERT_EQ(res, 85);
+    ASSERT_EQ(shift_sense, true);
+    ASSERT_EQ(pairs.size(), 559);
 }
 
 #ifdef _MSC_VER
