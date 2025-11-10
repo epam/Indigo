@@ -1189,9 +1189,11 @@ void SequenceLoader::loadAxoLabs(KetDocument& document)
                 {
                     if (group[0] != '(')
                         throw Error("The following string cannot be interpreted as an AxoLabs string: %s", group.c_str()); // unresolved should be in ()
+                    monomer_template_id = group;
                     alias = group;
                     MonomerTemplate monomer_template(monomer_template_id, MonomerClass::CHEM, IdtAlias(), true);
                     setKetStrProp(monomer_template, alias, group);
+                    setKetStrProp(monomer_template, aliasAxoLabs, group);
                     for (auto ap : {"R1", "R2"})
                         monomer_template.AddAttachmentPoint(ap, -1);
                     checkAddTemplate(document, monomer_template);
