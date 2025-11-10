@@ -320,6 +320,7 @@ void KetDocument::collect_sequence_side(const std::string& start_monomer_id, boo
                                         std::map<std::pair<std::string, std::string>, const KetConnection&>& ap_to_connection, bool for_idt)
 {
     bool has_monomer_id = true;
+    bool cycle_found = false;
     std::string monomer_id = start_monomer_id;
     while (has_monomer_id)
     {
@@ -350,10 +351,14 @@ void KetDocument::collect_sequence_side(const std::string& start_monomer_id, boo
             monomer_id = _monomer_ref_to_id.at(side_it->second.first);
             if (used_monomers.count(monomer_id) != 0) // This monomer already in sequence - this is cycle, connection should be stored as no-sequence
             {
-                if (left_side && (!for_idt || side_it->second.second != kAttachmentPointR1))
-                    // add only when go left to avoid duplicate, in IDT chem can be connected at left using R1-R1
-                    _non_sequence_connections.emplace_back(ap_to_connection.at(std::make_pair(monomer_id, side_it->second.second)));
-                break;
+                cycle_found = true;
+                if (left_side) // for right_side we should collect base
+                {
+                    // add non-sequence only when go left to avoid duplicate,
+                    if (!(for_idt && side_it->second.second == kAttachmentPointR1)) // in IDT chem can be connected at left using R1-R1
+                        _non_sequence_connections.emplace_back(ap_to_connection.at(std::make_pair(monomer_id, side_it->second.second)));
+                    break;
+                }
             }
         }
         // When collect left side - base should be placed before sugar, when right - after
@@ -371,6 +376,8 @@ void KetDocument::collect_sequence_side(const std::string& start_monomer_id, boo
                     sequence.emplace_back(base_id);
             }
         }
+        if (cycle_found)
+            break;
     }
 }
 

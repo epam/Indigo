@@ -929,7 +929,7 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
             }
             if (monomer_idx && monomer_class != MonomerClass::Base && !((prev_monomer_class == MonomerClass::Base) && monomer_class == MonomerClass::Phosphate))
                 helm_string += '.'; // no separator between base and between base and phosphate
-            if (monomer_class == MonomerClass::Base && prev_monomer_class != MonomerClass::Sugar)
+            if (monomer_idx > 0 && monomer_class == MonomerClass::Base && prev_monomer_class != MonomerClass::Sugar)
                 throw Error("Wrong monomer sequence: base monomer %s after %s monomer.", monomer->alias().c_str(),
                             MonomerTemplate::MonomerClassToStr(prev_monomer_class).c_str());
             if (monomer_class == MonomerClass::Base)
