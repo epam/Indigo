@@ -56,9 +56,11 @@ namespace indigo
         void read(int length, Array<char>& buf);
 
         void readLine(Array<char>& out, bool append_zero);
+        void readLine(std::string& out);
         void readQuotedLine(Array<char>& out, bool append_zero);
 
         void appendLine(Array<char>& out, bool append_zero);
+        void appendLine(std::string& out);
         bool skipLine();
 
         virtual char readChar();

@@ -370,6 +370,69 @@ namespace indigo
         return kMonomerClassCHEM;
     }
 
+    // Calclulate offset to maximize sense-antisense complementary pairs count
+    // return offset, vector of pairs and flag set to true when antisense should be moved to left
+    size_t best_allign(const std::string& sense, const std::string& antisense, std::vector<std::pair<size_t, size_t>>& pairs, bool& shift_sense)
+    {
+        shift_sense = false;
+        pairs.clear();
+        if (sense.size() == 0 || antisense.size() == 0)
+            return 0;
+        size_t max_count = 0;
+        std::vector<std::pair<size_t, size_t>> max_pairs;
+        size_t allign = 0;
+        bool left = false;
+        // move right
+        for (size_t i = 0; i < sense.size(); i++)
+        {
+            size_t count = 0;
+            size_t len = std::min(sense.size() - i, antisense.size());
+            std::vector<std::pair<size_t, size_t>> cur_pairs;
+            if (len < max_count)
+                break;
+            for (size_t idx = 0; idx < len; idx++)
+            {
+                if (complementary_bases.count(std::make_pair(sense[i + idx], antisense[idx])) > 0)
+                {
+                    count++;
+                    cur_pairs.emplace_back(i + idx, idx);
+                }
+            }
+            if (count > max_count)
+            {
+                allign = i;
+                max_count = count;
+                max_pairs = cur_pairs;
+            }
+        }
+        // move left
+        for (size_t i = 1; i < antisense.size(); i++)
+        {
+            size_t count = 0;
+            size_t len = std::min(antisense.size() - i, sense.size());
+            std::vector<std::pair<size_t, size_t>> cur_pairs;
+            if (len < max_count)
+                break;
+            for (size_t idx = 0; idx < len; idx++)
+            {
+                if (complementary_bases.count(std::make_pair(sense[idx], antisense[idx + i])) > 0)
+                {
+                    count++;
+                    cur_pairs.emplace_back(idx, idx + i);
+                }
+            }
+            if (count > max_count)
+            {
+                allign = i;
+                max_count = count;
+                max_pairs = cur_pairs;
+                left = true;
+            }
+        }
+        pairs = max_pairs;
+        shift_sense = left;
+        return allign;
+    }
 }
 
 #ifdef _MSC_VER
