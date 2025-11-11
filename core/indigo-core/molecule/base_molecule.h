@@ -560,6 +560,8 @@ namespace indigo
         void setAtomsCenterPoint(const Vec3f& center);
         float getBondsMeanLength();
 
+        bool isPiBonded(int atom_index) const;
+
         void scale(const Vec2f& center, float scale);
 
         void getAtomSymbol(int v, Array<char>& output);

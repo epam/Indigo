@@ -171,10 +171,22 @@ namespace indigo
         auto template_id = ref_prefix + _id;
         auto& mon_template = document[template_id.c_str()];
         Molecule mol;
+        QueryMolecule qmol;
+        BaseMolecule* bmol = &mol;
         StereocentersOptions stereo_opt;
         stereo_opt.ignore_errors = true;
-        int idx = MoleculeJsonLoader::parseMonomerTemplate(mon_template, mol, stereo_opt);
-        auto& tg = mol.tgroups.getTGroup(idx);
+        int idx = -1;
+        try
+        {
+            idx = MoleculeJsonLoader::parseMonomerTemplate(mon_template, mol, stereo_opt);
+        }
+        catch (MoleculeJsonLoader::Error&) // try as query molecule
+        {
+            idx = MoleculeJsonLoader::parseMonomerTemplate(mon_template, qmol, stereo_opt);
+            bmol = &qmol;
+        }
+
+        auto& tg = bmol->tgroups.getTGroup(idx);
         if (_unresolved)
         {
             tg.unresolved = _unresolved;

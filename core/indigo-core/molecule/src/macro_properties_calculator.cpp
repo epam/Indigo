@@ -440,7 +440,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
                 }
 
                 auto tgroup = monomer_template.getTGroup();
-                auto* pmol = static_cast<Molecule*>(tgroup->fragment.get());
+                auto* pmol = tgroup->fragment.get();
                 if (document.getMonomerClass(*monomer) == MonomerClass::AminoAcid)
                 {
                     Array<double> pkas_array;
