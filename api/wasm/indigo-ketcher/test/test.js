@@ -1447,17 +1447,35 @@ M  END
     }
 
     {
-        test("monomer_library_ket", "aminoacid", () => {
+        test("monomer_library", "rna_test", () => {
             var fs = require('fs');
-            const lib_ket = fs.readFileSync("lib_alanine.ket");
+            const lib_sdf = fs.readFileSync("lib_test.sdf");
             let options = new indigo.MapStringString();
             options.set('json-use-native-precision', 'true')
             options.set('json-saving-pretty', 'true');
             options.set('input-format', 'monomer-library');
+            options.set('output-content-type', 'chemical/x-monomer-library');
+            options.set('ignore-stereochemistry-errors', 'true');
+            let lib_ket = indigo.convert(lib_sdf, "monomer-library", options);            
+            // fs.writeFileSync("lib_test.ket", lib_ket);
+            const lib_ket_ref = fs.readFileSync("lib_test.ket");
+            assert.equal(lib_ket, lib_ket_ref.toString());
+            options.delete();
+            assert(true);
+        });
+    }
+
+    {
+        test("monomer_library_ket", "aminoacid", () => {
+            var fs = require('fs');
+            const lib_ket = fs.readFileSync("lib_alanine.ket");
+            let options = new indigo.MapStringString();
+            options.set('molfile-saving-skip-date', 'true');
+            options.set('input-format', 'monomer-library');
             options.set('output-content-type', 'chemical/monomer-library');
             options.set('monomer-library-saving-mode', 'sdf');
             let lib_sdf = indigo.convert(lib_ket, "monomer-library", options);            
-            fs.writeFileSync("lib_alanine_ref.sdf", lib_sdf);
+            // fs.writeFileSync("lib_alanine_ref.sdf", lib_sdf);
             const lib_sdf_ref = fs.readFileSync("lib_alanine_ref.sdf");
             assert.equal(lib_sdf, lib_sdf_ref.toString());
             options.delete();
@@ -1470,13 +1488,12 @@ M  END
             var fs = require('fs');
             const lib_ket = fs.readFileSync("lib_phos.ket");
             let options = new indigo.MapStringString();
-            options.set('json-use-native-precision', 'true')
-            options.set('json-saving-pretty', 'true');
+            options.set('molfile-saving-skip-date', 'true');
             options.set('input-format', 'monomer-library');
             options.set('output-content-type', 'chemical/monomer-library');
             options.set('monomer-library-saving-mode', 'sdf');
             let lib_sdf = indigo.convert(lib_ket, "monomer-library", options);            
-            fs.writeFileSync("lib_phos_ref.sdf", lib_sdf);
+            // fs.writeFileSync("lib_phos_ref.sdf", lib_sdf);
             const lib_sdf_ref = fs.readFileSync("lib_phos_ref.sdf");
             assert.equal(lib_sdf, lib_sdf_ref.toString());
             options.delete();
@@ -1494,7 +1511,7 @@ M  END
             options.set('output-content-type', 'chemical/x-monomer-library');
             options.set('monomer-library-saving-mode', 'sdf');
             let lib_sdf = indigo.convert(lib_ket, "monomer-library", options);            
-            fs.writeFileSync("lib_rna_preset_g_ref.sdf", lib_sdf);
+            // fs.writeFileSync("lib_rna_preset_g_ref.sdf", lib_sdf);
             const lib_sdf_ref = fs.readFileSync("lib_rna_preset_g_ref.sdf");
             assert.equal(lib_sdf, lib_sdf_ref.toString());
             options.delete();
