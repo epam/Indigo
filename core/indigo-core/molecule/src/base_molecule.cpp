@@ -5942,6 +5942,20 @@ bool BaseMolecule::restoreAromaticHydrogens(bool unambiguous_only)
     return MoleculeDearomatizer::restoreHydrogens(*this, unambiguous_only);
 }
 
+bool BaseMolecule::isPiBonded(const int atom_index) const
+{
+    const Vertex& vertex = getVertex(atom_index);
+    for (auto i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
+    {
+        const int order = getBondOrder(vertex.neiEdge(i));
+        if (order == BOND_DOUBLE || order == BOND_TRIPLE || order == BOND_AROMATIC)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif

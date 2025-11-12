@@ -1328,6 +1328,7 @@ int MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_tem
     one_tgroup.PushBack(monomer_template_cp, data.GetAllocator());
     MoleculeJsonLoader loader(one_tgroup);
     loader.stereochemistry_options = stereochemistry_options;
+    loader.ignore_noncritical_query_features = true;
     tg.fragment.reset(mol.neu());
     loader.loadMolecule(*tg.fragment);
     auto& monomer_mol = *tg.fragment;
