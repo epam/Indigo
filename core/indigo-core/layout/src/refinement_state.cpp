@@ -129,7 +129,10 @@ void RefinementState::flipBranch(const Filter& branch, const RefinementState& st
 
     for (i = _graph.vertexBegin(); i < _graph.vertexEnd(); i = _graph.vertexNext(i))
     {
-        if (!branch.valid(i))
+        // BUG FIX: In sequence_layout mode, do not flip fixed vertices
+        bool is_fixed = _graph.sequence_layout && _graph._n_fixed > 0 && _graph._fixed_vertices.size() > i && _graph._fixed_vertices[i] != 0;
+
+        if (!branch.valid(i) && !is_fixed)
         {
             const Vec2f& vi = state.layout[i];
 
@@ -159,7 +162,10 @@ void RefinementState::rotateBranch(const Filter& branch, const RefinementState& 
 
     for (i = _graph.vertexBegin(); i < _graph.vertexEnd(); i = _graph.vertexNext(i))
     {
-        if (!branch.valid(i))
+        // q: In sequence_layout mode, do not rotate fixed vertices
+        bool is_fixed = _graph.sequence_layout && _graph._n_fixed > 0 && _graph._fixed_vertices.size() > i && _graph._fixed_vertices[i] != 0;
+
+        if (!branch.valid(i) && !is_fixed)
         {
             d.diff(state.layout[i], v);
             d.rotate(si, co);
@@ -196,7 +202,10 @@ void RefinementState::stretchBranch(const Filter& branch, const RefinementState&
 
     for (i = _graph.vertexBegin(); i < _graph.vertexEnd(); i = _graph.vertexNext(i))
     {
-        if (!branch.valid(i))
+        // BUG FIX: In sequence_layout mode, do not stretch fixed vertices
+        bool is_fixed = _graph.sequence_layout && _graph._n_fixed > 0 && _graph._fixed_vertices.size() > i && _graph._fixed_vertices[i] != 0;
+
+        if (!branch.valid(i) && !is_fixed)
             layout[i].sum(state.layout[i], d);
         else
             layout[i] = state.layout[i];
@@ -221,10 +230,20 @@ void RefinementState::rotateLayout(const RefinementState& state, int v_idx, floa
 
     for (i = _graph.vertexBegin(); i < _graph.vertexEnd(); i = _graph.vertexNext(i))
     {
-        d.diff(state.layout[i], v);
-        d.rotate(si, co);
+        // BUG FIX: In sequence_layout mode, do not rotate fixed vertices
+        int ext_idx = _graph.getVertexExtIdx(i);
+        bool is_fixed = _graph.sequence_layout && _graph._n_fixed > 0 && _graph._fixed_vertices.size() > ext_idx && _graph._fixed_vertices[ext_idx] != 0;
 
-        layout[i].sum(d, v);
+        if (!is_fixed)
+        {
+            d.diff(state.layout[i], v);
+            d.rotate(si, co);
+            layout[i].sum(d, v);
+        }
+        else
+        {
+            layout[i] = state.layout[i];
+        }
     }
 }
 
@@ -243,6 +262,7 @@ bool RefinementState::is_small_cycle()
 
 float RefinementState::calc_best_angle()
 {
+    // Convex hull approach
     QS_DEF(Array<int>, convex_hull);
     QS_DEF(Array<bool>, take);
     convex_hull.resize(_graph.vertexEnd() + 1);

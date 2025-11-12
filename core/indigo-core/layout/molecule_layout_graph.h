@@ -189,6 +189,7 @@ namespace indigo
         Array<int> _fixed_decomposition;
 
         Array<int> _fixed_vertices;
+        ObjArray<Array<Vec2f>> _bridge_fixed_positions; // for each vertex in component, positions of fixed vertices it connects to
         long _total_morgan_code;
         int _first_vertex_idx;
         int _n_fixed;

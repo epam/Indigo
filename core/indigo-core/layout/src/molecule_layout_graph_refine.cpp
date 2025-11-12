@@ -142,6 +142,59 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
     v1c = v1 = vertexBegin();
     v2c = v2 = vertexNext(v1);
 
+    // Initialize bridge_fixed_positions if not already filled (for sequence_layout mode)
+    // This handles the case where fixed and selected vertices are in the same graph (not separated into components)
+    if (sequence_layout && _n_fixed > 0)
+    {
+        // Check if bridge_fixed_positions needs initialization
+        // Count how many vertices have bridge connections
+        int vertices_with_bridges = 0;
+        int total_bridge_edges = 0;
+        for (int v = vertexBegin(); v < vertexEnd(); v = vertexNext(v))
+        {
+            if (_bridge_fixed_positions.size() > v && _bridge_fixed_positions[v].size() > 0)
+            {
+                vertices_with_bridges++;
+                total_bridge_edges += _bridge_fixed_positions[v].size();
+            }
+        }
+
+        // If no vertices have bridge data, initialize it
+        if (vertices_with_bridges == 0)
+        {
+            _bridge_fixed_positions.clear();
+            _bridge_fixed_positions.resize(vertexEnd());
+
+            for (int v = vertexBegin(); v < vertexEnd(); v = vertexNext(v))
+            {
+                _bridge_fixed_positions[v].clear();
+
+                // Check if this vertex is fixed - skip it
+                int v_ext_idx = getVertexExtIdx(v);
+                if (_fixed_vertices.size() > v_ext_idx && _fixed_vertices[v_ext_idx] != 0)
+                    continue;
+
+                // For non-fixed vertices, find edges to fixed vertices
+                for (int e = edgeBegin(); e < edgeEnd(); e = edgeNext(e))
+                {
+                    const Edge& edge = getEdge(e);
+                    if (edge.beg != v && edge.end != v)
+                        continue;
+
+                    // Get the other vertex
+                    int other_v = (edge.beg == v) ? edge.end : edge.beg;
+                    int other_ext_idx = getVertexExtIdx(other_v);
+
+                    // Check if other vertex is fixed
+                    if (_fixed_vertices.size() > other_ext_idx && _fixed_vertices[other_ext_idx] != 0)
+                    {
+                        _bridge_fixed_positions[v].push(getPos(other_v));
+                    }
+                }
+            }
+        }
+    }
+
     // Calculate initial energy
     beg_state.copyFromGraph();
     beg_state.calcEnergy();
@@ -317,7 +370,7 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
 
             if (around_beg)
             {
-                new_state.rotateBranch(filter, beg_state, edge.beg, 10);
+                new_state.rotateBranch(filter, beg_state, edge.beg, _2FLOAT(RAD2DEG(M_PI / 18.0)));
                 new_state.calcDistance(v1c, v2c);
                 new_state.calcEnergy();
 
@@ -327,7 +380,7 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
                     best_state.copy(new_state);
                 }
 
-                new_state.rotateBranch(filter, beg_state, edge.beg, -10);
+                new_state.rotateBranch(filter, beg_state, edge.beg, _2FLOAT(RAD2DEG(-M_PI / 18.0)));
                 new_state.calcDistance(v1c, v2c);
                 new_state.calcEnergy();
 
@@ -340,7 +393,7 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
 
             if (around_end)
             {
-                new_state.rotateBranch(filter, beg_state, edge.end, 10);
+                new_state.rotateBranch(filter, beg_state, edge.end, _2FLOAT(RAD2DEG(M_PI / 18.0)));
                 new_state.calcDistance(v1c, v2c);
                 new_state.calcEnergy();
 
@@ -350,7 +403,7 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
                     best_state.copy(new_state);
                 }
 
-                new_state.rotateBranch(filter, beg_state, edge.end, -10);
+                new_state.rotateBranch(filter, beg_state, edge.end, _2FLOAT(RAD2DEG(-M_PI / 18.0)));
                 new_state.calcDistance(v1c, v2c);
                 new_state.calcEnergy();
 
@@ -381,6 +434,41 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
             beg_state.copy(best_state);
     }
 
+    // DEBUG: Check variance before final rotation
+    if (sequence_layout && _n_fixed > 0 && _bridge_fixed_positions.size() > 0)
+    {
+        QS_DEF(Array<float>, pre_rotation_lengths);
+        pre_rotation_lengths.clear();
+
+        for (int v = vertexBegin(); v < vertexEnd(); v = vertexNext(v))
+        {
+            if (_bridge_fixed_positions.size() <= v || _bridge_fixed_positions[v].size() == 0)
+                continue;
+
+            for (int i = 0; i < _bridge_fixed_positions[v].size(); i++)
+            {
+                const Vec2f& fixed_pos = _bridge_fixed_positions[v][i];
+                float len = Vec2f::dist(beg_state.layout[v], fixed_pos);
+                pre_rotation_lengths.push(len);
+            }
+        }
+
+        if (pre_rotation_lengths.size() > 0)
+        {
+            float mean_len = 0;
+            for (int i = 0; i < pre_rotation_lengths.size(); i++)
+                mean_len += pre_rotation_lengths[i];
+            mean_len /= pre_rotation_lengths.size();
+
+            float variance = 0;
+            for (int i = 0; i < pre_rotation_lengths.size(); i++)
+            {
+                float dev = pre_rotation_lengths[i] - mean_len;
+                variance += dev * dev;
+            }
+        }
+    }
+
     if (_n_fixed == 0)
     {
         if (!beg_state.is_small_cycle())
@@ -399,19 +487,18 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
 
             if (layout_orientation != UNCPECIFIED)
             {
-                new_state.rotateLayout(beg_state, center, _2FLOAT(beg_state.calc_best_angle() / M_PI * 180.));
+                new_state.rotateLayout(beg_state, center, _2FLOAT(RAD2DEG(beg_state.calc_best_angle())));
                 beg_state.copy(new_state);
 
                 if (layout_orientation == VERTICAL)
                 {
-                    new_state.rotateLayout(beg_state, center, 90);
+                    new_state.rotateLayout(beg_state, center, _2FLOAT(RAD2DEG(M_PI_2)));
                     beg_state.copy(new_state);
                 }
             }
             else
             {
-
-                for (float angle = -90.f; angle < 90.f + EPSILON; angle += 30.f)
+                for (float angle = _2FLOAT(RAD2DEG(-M_PI_2)); angle < _2FLOAT(RAD2DEG(M_PI_2)) + EPSILON; angle += _2FLOAT(RAD2DEG(M_PI / 6.0)))
                 {
                     new_state.rotateLayout(beg_state, center, angle);
                     new_state.calcHeight();
@@ -423,8 +510,146 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
         }
     }
 
-    beg_state.applyToGraph();
+    // For sequence_layout mode: optimize rotation and translation to minimize bridge bond variance
+    if (sequence_layout && _n_fixed > 0 && _bridge_fixed_positions.size() > 0)
+    {
+        // Count total bridge bonds
+        int total_bridge_count = 0;
+        for (int v = vertexBegin(); v < vertexEnd(); v = vertexNext(v))
+        {
+            if (_bridge_fixed_positions.size() > v)
+                total_bridge_count += _bridge_fixed_positions[v].size();
+        }
 
+        if (total_bridge_count > 0)
+        {
+            // Calculate centroid of selected vertices
+            Vec2f center(0, 0);
+            int count = 0;
+            for (int v = vertexBegin(); v < vertexEnd(); v = vertexNext(v))
+            {
+                int v_ext = getVertexExtIdx(v);
+                if (_fixed_vertices.size() > v_ext && _fixed_vertices[v_ext] == 0)
+                {
+                    center.add(beg_state.layout[v]);
+                    count++;
+                }
+            }
+            if (count > 0)
+                center.scale(1.0f / count);
+
+            // Find best rotation angle and translation to minimize bridge bond variance
+            // Goal: make all bridge bonds as close to 1.5 as possible, or minimize variance
+            float best_angle = 0;
+            Vec2f best_overall_translation(0, 0);
+            float min_cost = -1;
+            const float angle_step = _2FLOAT(M_PI / 72.0); // 2.5 degrees
+
+            for (float angle_rad = _2FLOAT(-M_PI); angle_rad <= _2FLOAT(M_PI); angle_rad += angle_step)
+            {
+                float co = cos(angle_rad);
+                float si = sin(angle_rad);
+
+                // Try different translations to bring bridge bonds closer to 1.5
+                Vec2f best_translation(0, 0);
+                float best_translation_cost = -1;
+
+                // Sample translations in a finer grid with larger range
+                for (float tx = -2.0f; tx <= 2.0f; tx += 0.2f)
+                {
+                    for (float ty = -2.0f; ty <= 2.0f; ty += 0.2f)
+                    {
+                        Vec2f translation(tx, ty);
+
+                        // Calculate bridge bond lengths with this rotation + translation
+                        QS_DEF(Array<float>, bridge_lengths);
+                        bridge_lengths.clear();
+
+                        for (int v = vertexBegin(); v < vertexEnd(); v = vertexNext(v))
+                        {
+                            if (_bridge_fixed_positions.size() <= v || _bridge_fixed_positions[v].size() == 0)
+                                continue;
+
+                            // Rotate and translate this selected vertex
+                            Vec2f d;
+                            d.diff(beg_state.layout[v], center);
+                            d.rotate(si, co);
+                            Vec2f transformed_pos;
+                            transformed_pos.sum(d, center);
+                            transformed_pos.add(translation);
+
+                            // Calculate distances to all fixed neighbors
+                            for (int i = 0; i < _bridge_fixed_positions[v].size(); i++)
+                            {
+                                const Vec2f& fixed_pos = _bridge_fixed_positions[v][i];
+                                float len = Vec2f::dist(transformed_pos, fixed_pos);
+                                bridge_lengths.push(len);
+                            }
+                        }
+
+                        if (bridge_lengths.size() == 0)
+                            continue;
+
+                        // Calculate cost: variance + deviation from target length 1.5
+                        float mean_len = 0;
+                        for (int i = 0; i < bridge_lengths.size(); i++)
+                            mean_len += bridge_lengths[i];
+                        mean_len /= bridge_lengths.size();
+
+                        float variance = 0;
+                        float deviation_from_target = 0;
+                        for (int i = 0; i < bridge_lengths.size(); i++)
+                        {
+                            float dev = bridge_lengths[i] - mean_len;
+                            variance += dev * dev;
+
+                            // Also penalize deviation from target length 1.5
+                            float dev_from_target = bridge_lengths[i] - 1.5f;
+                            deviation_from_target += dev_from_target * dev_from_target;
+                        }
+                        variance /= bridge_lengths.size();
+                        deviation_from_target /= bridge_lengths.size();
+
+                        // Cost function: prioritize low variance, then closeness to 1.5
+                        float cost = variance + 0.1f * deviation_from_target;
+
+                        if (best_translation_cost < 0 || cost < best_translation_cost)
+                        {
+                            best_translation_cost = cost;
+                            best_translation = translation;
+                        }
+                    }
+                }
+
+                // Use the best translation for this rotation
+                if (min_cost < 0 || best_translation_cost < min_cost)
+                {
+                    min_cost = best_translation_cost;
+                    best_angle = angle_rad;
+                    best_overall_translation = best_translation;
+                }
+            }
+
+            // Apply best rotation and translation to all selected vertices
+            float co = cos(best_angle);
+            float si = sin(best_angle);
+
+            for (int v = vertexBegin(); v < vertexEnd(); v = vertexNext(v))
+            {
+                int v_ext = getVertexExtIdx(v);
+                if (_fixed_vertices.size() > v_ext && _fixed_vertices[v_ext] == 0)
+                {
+                    Vec2f d;
+                    d.diff(beg_state.layout[v], center);
+                    d.rotate(si, co);
+                    beg_state.layout[v].sum(d, center);
+                    beg_state.layout[v].add(best_overall_translation);
+                }
+            }
+        }
+    }
+
+    beg_state.applyToGraph();
     _excludeDandlingIntersections();
 }
 
