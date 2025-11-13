@@ -766,6 +766,75 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
             geom_center_original.scale(1.f / vcount);
         }
 
+        // For sequence_layout mode: scale selected vertices to bond_length
+        if (sequence_layout && _n_fixed > 0)
+        {
+            // Calculate current average bond length for selected-selected edges
+            float total_length = 0;
+            int bond_count = 0;
+
+            for (int e = edgeBegin(); e < edgeEnd(); e = edgeNext(e))
+            {
+                const Edge& edge = getEdge(e);
+                int v1 = edge.beg;
+                int v2 = edge.end;
+
+                int v1_ext = getVertexExtIdx(v1);
+                int v2_ext = getVertexExtIdx(v2);
+
+                // Only count edges between two selected (non-fixed) vertices
+                bool v1_selected = (v1_ext < _fixed_vertices.size() && _fixed_vertices[v1_ext] == 0);
+                bool v2_selected = (v2_ext < _fixed_vertices.size() && _fixed_vertices[v2_ext] == 0);
+
+                if (v1_selected && v2_selected)
+                {
+                    float len = Vec2f::dist(_layout_vertices[v1].pos, _layout_vertices[v2].pos);
+                    total_length += len;
+                    bond_count++;
+                }
+            }
+
+            if (bond_count > 0)
+            {
+                float avg_length = total_length / bond_count;
+
+                // Scale factor to make average bond length = bond_length
+                float scale_factor = bond_length / avg_length;
+
+                // Calculate centroid of selected vertices
+                Vec2f centroid(0, 0);
+                int selected_count = 0;
+
+                for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
+                {
+                    int ext_idx = getVertexExtIdx(i);
+                    if (ext_idx < _fixed_vertices.size() && _fixed_vertices[ext_idx] == 0)
+                    {
+                        centroid.add(_layout_vertices[i].pos);
+                        selected_count++;
+                    }
+                }
+
+                if (selected_count > 0)
+                {
+                    centroid.scale(1.0f / selected_count);
+
+                    // Scale selected vertices around their centroid
+                    for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
+                    {
+                        int ext_idx = getVertexExtIdx(i);
+                        if (ext_idx < _fixed_vertices.size() && _fixed_vertices[ext_idx] == 0)
+                        {
+                            Vec2f offset;
+                            offset.diff(_layout_vertices[i].pos, centroid);
+                            offset.scale(scale_factor);
+                            _layout_vertices[i].pos.sum(centroid, offset);
+                        }
+                    }
+                }
+            }
+        }
+
         // scale bonds
         ObjArray<Array<Vec2f>> shifts;
         shifts.clear_resize(_fixed_subgraphs_ext_vertices.size());
@@ -788,7 +857,7 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                         }
                     }
 
-                    // For selected vertices (non-fixed), skip scaling - they are already scaled to bond_length=1.5
+                    // For selected vertices (non-fixed), skip additional scaling - already scaled above
                 }
                 // Fixed vertices don't need any transformation - they keep their original positions
             }
@@ -1537,65 +1606,6 @@ bool MoleculeLayoutGraph::_prepareAssignedList(Array<int>& assigned_list, Biconn
         for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
             if (_layout_vertices[i].type == ELEMENT_IGNORE)
                 _layout_vertices[i].type = ELEMENT_BOUNDARY;
-
-        // For sequence_layout mode: scale selected vertices to bond_length=1.5
-        if (sequence_layout && _n_fixed > 0)
-        {
-            // Calculate current average bond length for selected-selected edges
-            float total_length = 0;
-            int bond_count = 0;
-
-            for (int e = edgeBegin(); e < edgeEnd(); e = edgeNext(e))
-            {
-                const Edge& edge = getEdge(e);
-                int v1_ext = getVertexExtIdx(edge.beg);
-                int v2_ext = getVertexExtIdx(edge.end);
-
-                // Check if both vertices are selected (non-fixed)
-                if (_fixed_vertices.size() > v1_ext && _fixed_vertices.size() > v2_ext &&
-                    _fixed_vertices[v1_ext] == 0 && _fixed_vertices[v2_ext] == 0)
-                {
-                    Vec2f d;
-                    d.diff(getPos(edge.beg), getPos(edge.end));
-                    total_length += d.length();
-                    bond_count++;
-                }
-            }
-
-            if (bond_count > 0)
-            {
-                float avg_length = total_length / bond_count;
-                float scale_factor = 1.5f / avg_length;
-
-                // Calculate centroid of selected vertices
-                Vec2f center(0, 0);
-                int count = 0;
-                for (int v = vertexBegin(); v < vertexEnd(); v = vertexNext(v))
-                {
-                    int v_ext = getVertexExtIdx(v);
-                    if (_fixed_vertices.size() > v_ext && _fixed_vertices[v_ext] == 0)
-                    {
-                        center.add(getPos(v));
-                        count++;
-                    }
-                }
-                if (count > 0)
-                    center.scale(1.0f / count);
-
-                // Scale selected vertices around their centroid
-                for (int v = vertexBegin(); v < vertexEnd(); v = vertexNext(v))
-                {
-                    int v_ext = getVertexExtIdx(v);
-                    if (_fixed_vertices.size() > v_ext && _fixed_vertices[v_ext] == 0)
-                    {
-                        Vec2f d;
-                        d.diff(getPos(v), center);
-                        d.scale(scale_factor);
-                        _layout_vertices[v].pos.sum(center, d);
-                    }
-                }
-            }
-        }
 
         _refineCoordinates(bc_decom, bc_components, bc_tree);
 
