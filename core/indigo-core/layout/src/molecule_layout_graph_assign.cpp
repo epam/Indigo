@@ -1667,7 +1667,10 @@ void MoleculeLayoutGraph::_findFirstVertexIdx(int n_comp, Array<int>& fixed_comp
             MoleculeLayoutGraph& nucleus = *bc_components[nucleus_idx];
 
             _copyLayout(nucleus);
-            _first_vertex_idx = nucleus._layout_vertices[nucleus._first_vertex_idx].ext_idx;
+            if (nucleus._first_vertex_idx >= 0 && nucleus._first_vertex_idx < nucleus._layout_vertices.size())
+                _first_vertex_idx = nucleus._layout_vertices[nucleus._first_vertex_idx].ext_idx;
+            else
+                _first_vertex_idx = vertexBegin();
         }
         else
         {
