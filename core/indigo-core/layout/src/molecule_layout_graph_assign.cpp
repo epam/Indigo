@@ -894,41 +894,75 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                 }
             }
 
+            // Calculate centroid of selected vertices for rotation
+            Vec2f selected_centroid(0, 0);
+            int selected_count = 0;
+            for (int v = vertexBegin(); v < vertexEnd(); v = vertexNext(v))
+            {
+                int v_ext = getVertexExtIdx(v);
+                if (_fixed_vertices.size() > v_ext && _fixed_vertices[v_ext] == 0)
+                {
+                    selected_centroid.add(_layout_vertices[v].pos);
+                    selected_count++;
+                }
+            }
+            if (selected_count > 0)
+                selected_centroid.scale(1.0f / selected_count);
+
             Vec2f best_translation(0, 0);
+            float best_angle = 0;
             float min_cost = -1;
 
-            // Try different translations (scaled by bond_length)
+            // Try different rotations and translations
             float search_range = 3.0f * bond_length;
             float search_step = 0.2f * bond_length;
-            for (float dx = -search_range; dx <= search_range; dx += search_step)
+            float angle_step = 5.0f; // degrees
+
+            for (float angle = -180.0f; angle <= 180.0f; angle += angle_step)
             {
-                for (float dy = -search_range; dy <= search_range; dy += search_step)
+                float angle_rad = angle * 3.14159265f / 180.0f;
+                float cos_a = cos(angle_rad);
+                float sin_a = sin(angle_rad);
+
+                for (float dx = -search_range; dx <= search_range; dx += search_step)
                 {
-                    // Calculate bridge bond lengths with this translation
-                    QS_DEF(Array<float>, bridge_lengths);
-                    bridge_lengths.clear();
-
-                    for (int v = vertexBegin(); v < vertexEnd(); v = vertexNext(v))
+                    for (float dy = -search_range; dy <= search_range; dy += search_step)
                     {
-                        int v_ext = getVertexExtIdx(v);
-                        if (_fixed_vertices.size() > v_ext && _fixed_vertices[v_ext] == 0)
-                        {
-                            // This is a selected vertex - check if it has bridge bonds
-                            if (bridge_fixed_positions.size() > v && bridge_fixed_positions[v].size() > 0)
-                            {
-                                Vec2f translated_pos = _layout_vertices[v].pos;
-                                translated_pos.x += dx;
-                                translated_pos.y += dy;
+                        // Calculate bridge bond lengths with this rotation + translation
+                        QS_DEF(Array<float>, bridge_lengths);
+                        bridge_lengths.clear();
 
-                                for (int i = 0; i < bridge_fixed_positions[v].size(); i++)
+                        for (int v = vertexBegin(); v < vertexEnd(); v = vertexNext(v))
+                        {
+                            int v_ext = getVertexExtIdx(v);
+                            if (_fixed_vertices.size() > v_ext && _fixed_vertices[v_ext] == 0)
+                            {
+                                // This is a selected vertex - check if it has bridge bonds
+                                if (bridge_fixed_positions.size() > v && bridge_fixed_positions[v].size() > 0)
                                 {
-                                    const Vec2f& fixed_pos = bridge_fixed_positions[v][i];
-                                    float len = Vec2f::dist(translated_pos, fixed_pos);
-                                    bridge_lengths.push(len);
+                                    // First rotate around centroid, then translate
+                                    Vec2f pos = _layout_vertices[v].pos;
+                                    Vec2f offset;
+                                    offset.diff(pos, selected_centroid);
+
+                                    Vec2f rotated_offset;
+                                    rotated_offset.x = offset.x * cos_a - offset.y * sin_a;
+                                    rotated_offset.y = offset.x * sin_a + offset.y * cos_a;
+
+                                    Vec2f transformed_pos;
+                                    transformed_pos.sum(selected_centroid, rotated_offset);
+                                    transformed_pos.x += dx;
+                                    transformed_pos.y += dy;
+
+                                    for (int i = 0; i < bridge_fixed_positions[v].size(); i++)
+                                    {
+                                        const Vec2f& fixed_pos = bridge_fixed_positions[v][i];
+                                        float len = Vec2f::dist(transformed_pos, fixed_pos);
+                                        bridge_lengths.push(len);
+                                    }
                                 }
                             }
                         }
-                    }
 
                     if (bridge_lengths.size() == 0)
                         continue;
@@ -968,10 +1002,19 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                         int v_ext = getVertexExtIdx(v);
                         if (_fixed_vertices.size() > v_ext && _fixed_vertices[v_ext] == 0)
                         {
-                            // This is a selected vertex
-                            Vec2f translated_pos = _layout_vertices[v].pos;
-                            translated_pos.x += dx;
-                            translated_pos.y += dy;
+                            // This is a selected vertex - apply rotation + translation
+                            Vec2f pos = _layout_vertices[v].pos;
+                            Vec2f offset;
+                            offset.diff(pos, selected_centroid);
+
+                            Vec2f rotated_offset;
+                            rotated_offset.x = offset.x * cos_a - offset.y * sin_a;
+                            rotated_offset.y = offset.x * sin_a + offset.y * cos_a;
+
+                            Vec2f transformed_pos;
+                            transformed_pos.sum(selected_centroid, rotated_offset);
+                            transformed_pos.x += dx;
+                            transformed_pos.y += dy;
 
                             // Check distance to all fixed vertices
                             for (int fix_idx = 0; fix_idx < all_fixed_positions.size(); fix_idx++)
@@ -998,7 +1041,7 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                                         continue; // Skip bridge-connected pairs
                                 }
 
-                                float dist = Vec2f::dist(translated_pos, all_fixed_positions[fix_idx]);
+                                float dist = Vec2f::dist(transformed_pos, all_fixed_positions[fix_idx]);
                                 if (dist < min_allowed_distance)
                                 {
                                     float overlap = min_allowed_distance - dist;
@@ -1019,16 +1062,33 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                     {
                         min_cost = cost;
                         best_translation.set(dx, dy);
+                        best_angle = angle;
+                    }
                     }
                 }
             }
 
-            // Apply best translation to selected vertices
+            // Apply best rotation + translation to selected vertices
+            float best_angle_rad = best_angle * 3.14159265f / 180.0f;
+            float cos_best = cos(best_angle_rad);
+            float sin_best = sin(best_angle_rad);
+
             for (int v = vertexBegin(); v < vertexEnd(); v = vertexNext(v))
             {
                 int v_ext = getVertexExtIdx(v);
                 if (_fixed_vertices.size() > v_ext && _fixed_vertices[v_ext] == 0)
                 {
+                    // Rotate around centroid
+                    Vec2f offset;
+                    offset.diff(_layout_vertices[v].pos, selected_centroid);
+
+                    Vec2f rotated_offset;
+                    rotated_offset.x = offset.x * cos_best - offset.y * sin_best;
+                    rotated_offset.y = offset.x * sin_best + offset.y * cos_best;
+
+                    _layout_vertices[v].pos.sum(selected_centroid, rotated_offset);
+
+                    // Then translate
                     _layout_vertices[v].pos.add(best_translation);
                 }
             }
