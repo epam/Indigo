@@ -743,29 +743,6 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
 
     if (_n_fixed > 0)
     {
-        // calculate geometrical center of non-fixed vertices
-        Vec2f geom_center, geom_center_original;
-        int vcount = 0;
-        if (sequence_layout)
-        {
-            for (auto i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
-            {
-                int ext_idx = getVertexExtIdx(i);
-                if (ext_idx < _fixed_vertices.size() && _fixed_vertices[ext_idx] == 0)
-                {
-                    geom_center.add(_layout_vertices[i].pos);
-                    geom_center_original.add(src_layout[i]);
-                    vcount++;
-                }
-            }
-        }
-
-        if (vcount > 0)
-        {
-            geom_center.scale(1.f / vcount);
-            geom_center_original.scale(1.f / vcount);
-        }
-
         // For sequence_layout mode: scale selected vertices to bond_length
         if (sequence_layout && _n_fixed > 0)
         {
@@ -868,18 +845,30 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
         // Optimize translation of selected block to minimize bridge bond variance
         if (_n_fixed > 0 && sequence_layout)
         {
-            // Build bridge bond information
+            // Build bridge bond information and collect all fixed/selected vertices
             ObjArray<Array<Vec2f>> bridge_fixed_positions;
             bridge_fixed_positions.resize(vertexEnd());
+
+            // Collect all fixed vertex positions for collision detection
+            QS_DEF(Array<Vec2f>, all_fixed_positions);
+            all_fixed_positions.clear();
+
+            // Build a set of bridge-connected pairs to exclude from collision check
+            QS_DEF(RedBlackSet<int>, bridge_connected_pairs);
+            bridge_connected_pairs.clear();
 
             for (int v = vertexBegin(); v < vertexEnd(); v = vertexNext(v))
             {
                 bridge_fixed_positions[v].clear();
 
-                // Check if this vertex is selected (non-fixed)
                 int v_ext_idx = getVertexExtIdx(v);
+
+                // Collect all fixed vertex positions
                 if (_fixed_vertices.size() > v_ext_idx && _fixed_vertices[v_ext_idx] != 0)
+                {
+                    all_fixed_positions.push(src_layout[v]);
                     continue;
+                }
 
                 // For selected vertices, find edges to fixed vertices
                 for (int e = edgeBegin(); e < edgeEnd(); e = edgeNext(e))
@@ -897,6 +886,10 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                     {
                         // Use src_layout for fixed vertices (they keep original positions)
                         bridge_fixed_positions[v].push(src_layout[other_v]);
+
+                        // Mark this pair as bridge-connected (to exclude from collision)
+                        int pair_key = v < other_v ? (v * vertexEnd() + other_v) : (other_v * vertexEnd() + v);
+                        bridge_connected_pairs.insert(pair_key);
                     }
                 }
             }
@@ -954,9 +947,73 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                     }
                     variance /= bridge_lengths.size();
 
-                    // Cost function: minimize variance + minimize total length
+                    // Calculate penalty for bridge bonds shorter than bond_length
+                    float short_bond_penalty = 0;
+                    for (int i = 0; i < bridge_lengths.size(); i++)
+                    {
+                        if (bridge_lengths[i] < bond_length)
+                        {
+                            float shortage = bond_length - bridge_lengths[i];
+                            // Quadratic penalty to strongly discourage short bonds
+                            short_bond_penalty += shortage * shortage * 100.0f;
+                        }
+                    }
+
+                    // Calculate collision penalty: selected vertices too close to fixed vertices (not connected by bridge)
+                    float collision_penalty = 0;
+                    float min_allowed_distance = bond_length * 0.8f; // Minimum distance is 80% of bond_length
+
+                    for (int v = vertexBegin(); v < vertexEnd(); v = vertexNext(v))
+                    {
+                        int v_ext = getVertexExtIdx(v);
+                        if (_fixed_vertices.size() > v_ext && _fixed_vertices[v_ext] == 0)
+                        {
+                            // This is a selected vertex
+                            Vec2f translated_pos = _layout_vertices[v].pos;
+                            translated_pos.x += dx;
+                            translated_pos.y += dy;
+
+                            // Check distance to all fixed vertices
+                            for (int fix_idx = 0; fix_idx < all_fixed_positions.size(); fix_idx++)
+                            {
+                                // Skip if this is a bridge-connected pair
+                                int fixed_v = -1;
+                                for (int fv = vertexBegin(); fv < vertexEnd(); fv = vertexNext(fv))
+                                {
+                                    int fv_ext = getVertexExtIdx(fv);
+                                    if (_fixed_vertices.size() > fv_ext && _fixed_vertices[fv_ext] != 0)
+                                    {
+                                        if (Vec2f::distSqr(src_layout[fv], all_fixed_positions[fix_idx]) < 0.0001f)
+                                        {
+                                            fixed_v = fv;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                if (fixed_v >= 0)
+                                {
+                                    int pair_key = v < fixed_v ? (v * vertexEnd() + fixed_v) : (fixed_v * vertexEnd() + v);
+                                    if (bridge_connected_pairs.find(pair_key))
+                                        continue; // Skip bridge-connected pairs
+                                }
+
+                                float dist = Vec2f::dist(translated_pos, all_fixed_positions[fix_idx]);
+                                if (dist < min_allowed_distance)
+                                {
+                                    float overlap = min_allowed_distance - dist;
+                                    // Strong penalty for overlap
+                                    collision_penalty += overlap * overlap * 200.0f;
+                                }
+                            }
+                        }
+                    }
+
+                    // Cost function: minimize variance + minimize total length + penalize short bonds + penalize collisions
                     // Weight for mean length is small to prioritize variance minimization
-                    float cost = variance + 0.01f * mean;
+                    // Short bond penalty is large to prevent bonds shorter than bond_length
+                    // Collision penalty is very large to prevent overlap between selected and fixed structures
+                    float cost = variance + 0.01f * mean + short_bond_penalty + collision_penalty;
 
                     if (min_cost < 0 || cost < min_cost)
                     {
