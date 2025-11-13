@@ -833,7 +833,7 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
             }
 
             Vec2f best_translation(0, 0);
-            float min_variance = -1;
+            float min_cost = -1;
 
             // Try different translations (scaled by bond_length)
             float search_range = 3.0f * bond_length;
@@ -871,7 +871,7 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                     if (bridge_lengths.size() == 0)
                         continue;
 
-                    // Calculate variance
+                    // Calculate mean and variance
                     float mean = 0;
                     for (int i = 0; i < bridge_lengths.size(); i++)
                         mean += bridge_lengths[i];
@@ -885,9 +885,13 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                     }
                     variance /= bridge_lengths.size();
 
-                    if (min_variance < 0 || variance < min_variance)
+                    // Cost function: minimize variance + minimize total length
+                    // Weight for mean length is small to prioritize variance minimization
+                    float cost = variance + 0.01f * mean;
+
+                    if (min_cost < 0 || cost < min_cost)
                     {
-                        min_variance = variance;
+                        min_cost = cost;
                         best_translation.set(dx, dy);
                     }
                 }
