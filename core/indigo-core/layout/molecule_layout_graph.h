@@ -174,7 +174,6 @@ namespace indigo
 
         bool preserve_existing_layout;
         bool respect_cycles_direction;
-        bool flexible_fixed_components;
         bool sequence_layout;
 
         CancellationHandler* cancellation;

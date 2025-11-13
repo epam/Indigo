@@ -319,9 +319,8 @@ void LayoutChooser::_makeLayout()
             if (v1 != v)
             {
                 Vec2f& cur_pos = _layout._layout[++k];
-                if (_fixed_components[bc_com_idx] == 0 || comp.flexible_fixed_components) // Skip fixed components
+                if (_fixed_components[bc_com_idx] == 0) // Skip fixed components
                 {
-                    // BUG FIX: Do not transform fixed vertices (fixed=1 or fixed=2)
                     // Check if vertex v1 is marked as fixed in the main graph
                     bool is_vertex_fixed = _layout._graph._fixed_vertices.size() > 0 && _layout._graph._fixed_vertices[v1] != 0 && _layout._graph.sequence_layout;
                     if (!is_vertex_fixed)

@@ -37,7 +37,6 @@ MoleculeLayoutGraph::MoleculeLayoutGraph() : Graph()
     _flipped = false;
     preserve_existing_layout = false;
     respect_cycles_direction = false;
-    flexible_fixed_components = false;
     sequence_layout = false;
 }
 
@@ -393,7 +392,6 @@ void MoleculeLayoutGraph::_layoutMultipleComponents(BaseMolecule& molecule, bool
         component.max_iterations = max_iterations;
         component.layout_orientation = layout_orientation;
         component.respect_cycles_direction = respect_cycles_direction;
-        component.flexible_fixed_components = flexible_fixed_components;
 
         component._molecule = &molecule;
         component._molecule_edge_mapping = molecule_edge_mapping.ptr();

@@ -46,7 +46,6 @@ void MoleculeLayout::_init(bool smart_layout)
     {
         _layout_graph = std::make_unique<MoleculeLayoutGraphSimple>();
         _layout_graph->respect_cycles_direction = respect_cycles_direction;
-        _layout_graph->flexible_fixed_components = flexible_fixed_components;
         _layout_graph->sequence_layout = sequence_layout;
     }
 
@@ -371,7 +370,6 @@ void MoleculeLayout::_make()
     _layout_graph->max_iterations = max_iterations;
     _layout_graph->layout_orientation = layout_orientation;
     _layout_graph->respect_cycles_direction = respect_cycles_direction;
-    _layout_graph->flexible_fixed_components = flexible_fixed_components;
     _layout_graph->sequence_layout = sequence_layout;
     // 0. Find 2D coordinates via proxy _layout_graph object
     _layout_graph->max_iterations = max_iterations;

@@ -92,7 +92,6 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates(float bond_length)
         std::unique_ptr<MoleculeLayoutGraph> tmp(getInstance());
         tmp->makeLayoutSubgraph(*this, comp);
         tmp->respect_cycles_direction = respect_cycles_direction;
-        tmp->flexible_fixed_components = flexible_fixed_components;
         tmp->sequence_layout = sequence_layout;
         bc_components.add(tmp.release());
     }
@@ -750,12 +749,15 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
         if (sequence_layout)
         {
             for (auto i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
-                if (_fixed_vertices[i] == 0 || (flexible_fixed_components && _fixed_vertices[i] == 2))
+            {
+                int ext_idx = getVertexExtIdx(i);
+                if (ext_idx < _fixed_vertices.size() && _fixed_vertices[ext_idx] == 0)
                 {
                     geom_center.add(_layout_vertices[i].pos);
                     geom_center_original.add(src_layout[i]);
                     vcount++;
                 }
+            }
         }
 
         if (vcount > 0)
@@ -771,7 +773,8 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
         {
             if (sequence_layout)
             {
-                if (_fixed_vertices[i] == 0 || (flexible_fixed_components && _fixed_vertices[i] == 2))
+                int ext_idx = getVertexExtIdx(i);
+                if (ext_idx < _fixed_vertices.size() && _fixed_vertices[ext_idx] == 0)
                 {
                     if (_layout_vertices[i].is_inner_cycle)
                     {
@@ -786,44 +789,117 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                     }
 
                     // For selected vertices (non-fixed), skip scaling - they are already scaled to bond_length=1.5
-                    if (_fixed_vertices[i] != 0)
-                    {
-                        auto vpos = _layout_vertices[i].pos;
-                        vpos.sub(geom_center);
-                        vpos.scale(bond_length);
-                        if (flexible_fixed_components)
-                        {
-                            vpos.add(geom_center);
-                            if (_fixed_vertices[i] == 2 && i < _fixed_decomposition.size())
-                                shifts[_fixed_decomposition[i]].push(vpos - _layout_vertices[i].pos);
-                        }
-                        else
-                        {
-                            vpos.add(geom_center_original);
-                        }
-                        _layout_vertices[i].pos = vpos;
-                    }
                 }
+                // Fixed vertices don't need any transformation - they keep their original positions
             }
             else
                 _layout_vertices[i].pos.scale(bond_length);
         }
 
-        // Shift fixed parts.
-        if (flexible_fixed_components)
+        // Optimize translation of selected block to minimize bridge bond variance
+        if (_n_fixed > 0 && sequence_layout)
         {
-            for (i = 0; i < shifts.size(); ++i)
+            // Build bridge bond information
+            ObjArray<Array<Vec2f>> bridge_fixed_positions;
+            bridge_fixed_positions.resize(vertexEnd());
+
+            for (int v = vertexBegin(); v < vertexEnd(); v = vertexNext(v))
             {
-                auto& fixed_part = shifts[i];
-                if (fixed_part.size())
+                bridge_fixed_positions[v].clear();
+
+                // Check if this vertex is selected (non-fixed)
+                int v_ext_idx = getVertexExtIdx(v);
+                if (_fixed_vertices.size() > v_ext_idx && _fixed_vertices[v_ext_idx] != 0)
+                    continue;
+
+                // For selected vertices, find edges to fixed vertices
+                for (int e = edgeBegin(); e < edgeEnd(); e = edgeNext(e))
                 {
-                    Vec2f shift;
-                    for (auto& vi : fixed_part)
-                        shift += vi;
-                    shift.scale(1.f / fixed_part.size());
-                    auto& int_vertices = _fixed_subgraphs_int_vertices[i];
-                    for (auto vi : int_vertices)
-                        _layout_vertices[vi].pos.add(shift);
+                    const Edge& edge = getEdge(e);
+                    if (edge.beg != v && edge.end != v)
+                        continue;
+
+                    // Get the other vertex
+                    int other_v = (edge.beg == v) ? edge.end : edge.beg;
+                    int other_ext_idx = getVertexExtIdx(other_v);
+
+                    // Check if other vertex is fixed
+                    if (_fixed_vertices.size() > other_ext_idx && _fixed_vertices[other_ext_idx] != 0)
+                    {
+                        // Use src_layout for fixed vertices (they keep original positions)
+                        bridge_fixed_positions[v].push(src_layout[other_v]);
+                    }
+                }
+            }
+
+            Vec2f best_translation(0, 0);
+            float min_variance = -1;
+
+            // Try different translations (scaled by bond_length)
+            float search_range = 3.0f * bond_length;
+            float search_step = 0.2f * bond_length;
+            for (float dx = -search_range; dx <= search_range; dx += search_step)
+            {
+                for (float dy = -search_range; dy <= search_range; dy += search_step)
+                {
+                    // Calculate bridge bond lengths with this translation
+                    QS_DEF(Array<float>, bridge_lengths);
+                    bridge_lengths.clear();
+
+                    for (int v = vertexBegin(); v < vertexEnd(); v = vertexNext(v))
+                    {
+                        int v_ext = getVertexExtIdx(v);
+                        if (_fixed_vertices.size() > v_ext && _fixed_vertices[v_ext] == 0)
+                        {
+                            // This is a selected vertex - check if it has bridge bonds
+                            if (bridge_fixed_positions.size() > v && bridge_fixed_positions[v].size() > 0)
+                            {
+                                Vec2f translated_pos = _layout_vertices[v].pos;
+                                translated_pos.x += dx;
+                                translated_pos.y += dy;
+
+                                for (int i = 0; i < bridge_fixed_positions[v].size(); i++)
+                                {
+                                    const Vec2f& fixed_pos = bridge_fixed_positions[v][i];
+                                    float len = Vec2f::dist(translated_pos, fixed_pos);
+                                    bridge_lengths.push(len);
+                                }
+                            }
+                        }
+                    }
+
+                    if (bridge_lengths.size() == 0)
+                        continue;
+
+                    // Calculate variance
+                    float mean = 0;
+                    for (int i = 0; i < bridge_lengths.size(); i++)
+                        mean += bridge_lengths[i];
+                    mean /= bridge_lengths.size();
+
+                    float variance = 0;
+                    for (int i = 0; i < bridge_lengths.size(); i++)
+                    {
+                        float dev = bridge_lengths[i] - mean;
+                        variance += dev * dev;
+                    }
+                    variance /= bridge_lengths.size();
+
+                    if (min_variance < 0 || variance < min_variance)
+                    {
+                        min_variance = variance;
+                        best_translation.set(dx, dy);
+                    }
+                }
+            }
+
+            // Apply best translation to selected vertices
+            for (int v = vertexBegin(); v < vertexEnd(); v = vertexNext(v))
+            {
+                int v_ext = getVertexExtIdx(v);
+                if (_fixed_vertices.size() > v_ext && _fixed_vertices[v_ext] == 0)
+                {
+                    _layout_vertices[v].pos.add(best_translation);
                 }
             }
         }
@@ -1030,7 +1106,7 @@ void MoleculeLayoutGraph::_findFixedComponents(BiconnectedDecomposer& bc_decom, 
             if (filter.valid(j) && _fixed_vertices[j])
                 fixed_count[i]++;
 
-        if ((fixed_count[i] == filter.count(*this)) || (fixed_count[i] && flexible_fixed_components))
+        if (fixed_count[i] == filter.count(*this))
         {
             fixed_components[i] = 1;
         }
@@ -1357,9 +1433,7 @@ bool MoleculeLayoutGraphSimple::_tryToFindPattern(int& fixed_component)
 
 void MoleculeLayoutGraph::_findFirstVertexIdx(int n_comp, Array<int>& fixed_components, PtrArray<MoleculeLayoutGraph>& bc_components, bool all_trivial)
 {
-    // BUG FIX: In sequence_layout mode, fixed vertices are handled differently (they may not form complete biconnected components),
-    // so we should not require finding a fixed biconnected component in that case
-    if (_n_fixed > 0 && !flexible_fixed_components && !sequence_layout)
+    if (_n_fixed > 0 && !sequence_layout)
     {
         int j = -1;
         for (int i = 0; i < n_comp; i++)
