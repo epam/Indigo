@@ -202,7 +202,6 @@ void RefinementState::stretchBranch(const Filter& branch, const RefinementState&
 
     for (i = _graph.vertexBegin(); i < _graph.vertexEnd(); i = _graph.vertexNext(i))
     {
-        // BUG FIX: In sequence_layout mode, do not stretch fixed vertices
         bool is_fixed = _graph.sequence_layout && _graph._n_fixed > 0 && _graph._fixed_vertices.size() > i && _graph._fixed_vertices[i] != 0;
 
         if (!branch.valid(i) && !is_fixed)
@@ -230,7 +229,6 @@ void RefinementState::rotateLayout(const RefinementState& state, int v_idx, floa
 
     for (i = _graph.vertexBegin(); i < _graph.vertexEnd(); i = _graph.vertexNext(i))
     {
-        // BUG FIX: In sequence_layout mode, do not rotate fixed vertices
         int ext_idx = _graph.getVertexExtIdx(i);
         bool is_fixed = _graph.sequence_layout && _graph._n_fixed > 0 && _graph._fixed_vertices.size() > ext_idx && _graph._fixed_vertices[ext_idx] != 0;
 
