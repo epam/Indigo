@@ -142,59 +142,6 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
     v1c = v1 = vertexBegin();
     v2c = v2 = vertexNext(v1);
 
-    // Initialize bridge_fixed_positions if not already filled (for sequence_layout mode)
-    // This handles the case where fixed and selected vertices are in the same graph (not separated into components)
-    if (sequence_layout && _n_fixed > 0)
-    {
-        // Check if bridge_fixed_positions needs initialization
-        // Count how many vertices have bridge connections
-        int vertices_with_bridges = 0;
-        int total_bridge_edges = 0;
-        for (int v = vertexBegin(); v < vertexEnd(); v = vertexNext(v))
-        {
-            if (_bridge_fixed_positions.size() > v && _bridge_fixed_positions[v].size() > 0)
-            {
-                vertices_with_bridges++;
-                total_bridge_edges += _bridge_fixed_positions[v].size();
-            }
-        }
-
-        // If no vertices have bridge data, initialize it
-        if (vertices_with_bridges == 0)
-        {
-            _bridge_fixed_positions.clear();
-            _bridge_fixed_positions.resize(vertexEnd());
-
-            for (int v = vertexBegin(); v < vertexEnd(); v = vertexNext(v))
-            {
-                _bridge_fixed_positions[v].clear();
-
-                // Check if this vertex is fixed - skip it
-                int v_ext_idx = getVertexExtIdx(v);
-                if (_fixed_vertices.size() > v_ext_idx && _fixed_vertices[v_ext_idx] != 0)
-                    continue;
-
-                // For non-fixed vertices, find edges to fixed vertices
-                for (int e = edgeBegin(); e < edgeEnd(); e = edgeNext(e))
-                {
-                    const Edge& edge = getEdge(e);
-                    if (edge.beg != v && edge.end != v)
-                        continue;
-
-                    // Get the other vertex
-                    int other_v = (edge.beg == v) ? edge.end : edge.beg;
-                    int other_ext_idx = getVertexExtIdx(other_v);
-
-                    // Check if other vertex is fixed
-                    if (_fixed_vertices.size() > other_ext_idx && _fixed_vertices[other_ext_idx] != 0)
-                    {
-                        _bridge_fixed_positions[v].push(getPos(other_v));
-                    }
-                }
-            }
-        }
-    }
-
     // Calculate initial energy
     beg_state.copyFromGraph();
     beg_state.calcEnergy();
@@ -432,41 +379,6 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
 
         if (improved)
             beg_state.copy(best_state);
-    }
-
-    // DEBUG: Check variance before final rotation
-    if (sequence_layout && _n_fixed > 0 && _bridge_fixed_positions.size() > 0)
-    {
-        QS_DEF(Array<float>, pre_rotation_lengths);
-        pre_rotation_lengths.clear();
-
-        for (int v = vertexBegin(); v < vertexEnd(); v = vertexNext(v))
-        {
-            if (_bridge_fixed_positions.size() <= v || _bridge_fixed_positions[v].size() == 0)
-                continue;
-
-            for (int i = 0; i < _bridge_fixed_positions[v].size(); i++)
-            {
-                const Vec2f& fixed_pos = _bridge_fixed_positions[v][i];
-                float len = Vec2f::dist(beg_state.layout[v], fixed_pos);
-                pre_rotation_lengths.push(len);
-            }
-        }
-
-        if (pre_rotation_lengths.size() > 0)
-        {
-            float mean_len = 0;
-            for (int i = 0; i < pre_rotation_lengths.size(); i++)
-                mean_len += pre_rotation_lengths[i];
-            mean_len /= pre_rotation_lengths.size();
-
-            float variance = 0;
-            for (int i = 0; i < pre_rotation_lengths.size(); i++)
-            {
-                float dev = pre_rotation_lengths[i] - mean_len;
-                variance += dev * dev;
-            }
-        }
     }
 
     if (_n_fixed == 0)
