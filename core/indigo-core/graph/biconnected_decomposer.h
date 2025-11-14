@@ -39,7 +39,10 @@ namespace indigo
 
         // Virtual method to check if edge (v, w) is part of a regular polygon
         // that should not be split during decomposition
-        virtual bool isRegularPolygonEdge(int v, int w) const { return false; }
+        virtual bool isRegularPolygonEdge(int v, int w) const
+        {
+            return false;
+        }
 
         // returns the amount of biconnected components
         int decompose();

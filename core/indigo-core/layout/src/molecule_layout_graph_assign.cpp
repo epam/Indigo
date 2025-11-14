@@ -442,7 +442,7 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
                 if (_fixed_vertices.size() > v_idx && _fixed_vertices[v_idx] != 0)
                 {
                     has_fixed = true;
-                    //break;
+                    // break;
                 }
             }
 

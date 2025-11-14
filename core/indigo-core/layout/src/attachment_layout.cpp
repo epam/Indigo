@@ -322,7 +322,8 @@ void LayoutChooser::_makeLayout()
                 if (_fixed_components[bc_com_idx] == 0) // Skip fixed components
                 {
                     // Check if vertex v1 is marked as fixed in the main graph
-                    bool is_vertex_fixed = _layout._graph._fixed_vertices.size() > 0 && _layout._graph._fixed_vertices[v1] != 0 && _layout._graph.sequence_layout;
+                    bool is_vertex_fixed =
+                        _layout._graph._fixed_vertices.size() > 0 && _layout._graph._fixed_vertices[v1] != 0 && _layout._graph.sequence_layout;
                     if (!is_vertex_fixed)
                     {
                         // Vertex is not fixed, apply normal transformation

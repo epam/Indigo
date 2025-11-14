@@ -27,8 +27,8 @@ IMPL_ERROR(BiconnectedDecomposer, "biconnected_decomposer");
 CP_DEF(BiconnectedDecomposer);
 
 BiconnectedDecomposer::BiconnectedDecomposer(const Graph& graph, bool split_fixed)
-    : _graph(graph), _split_fixed(split_fixed), CP_INIT, TL_CP_GET(_components), TL_CP_GET(_dfs_order), TL_CP_GET(_lowest_order), TL_CP_GET(_component_lists), TL_CP_GET(_component_ids),
-      TL_CP_GET(_edges_stack), _cur_order(0)
+    : _graph(graph), _split_fixed(split_fixed), CP_INIT, TL_CP_GET(_components), TL_CP_GET(_dfs_order), TL_CP_GET(_lowest_order), TL_CP_GET(_component_lists),
+      TL_CP_GET(_component_ids), TL_CP_GET(_edges_stack), _cur_order(0)
 {
     _components.clear();
     _component_lists.clear();

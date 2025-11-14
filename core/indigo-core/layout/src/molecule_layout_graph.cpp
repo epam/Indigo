@@ -251,8 +251,8 @@ void MoleculeLayoutGraphSimple::makeLayoutSubgraph(MoleculeLayoutGraph& graph, F
         _fixed_vertices.clear_resize(vertexEnd());
     for (int i = 0; i < vertices.size(); i++)
     {
-        int v_ext = vertices[i];  // external index in parent graph
-        int v_int = mapping[v_ext];  // internal index in this subgraph
+        int v_ext = vertices[i];    // external index in parent graph
+        int v_int = mapping[v_ext]; // internal index in this subgraph
 
         new_vertex.ext_idx = v_ext;
         new_vertex.type = graph._layout_vertices[v_ext].type;
