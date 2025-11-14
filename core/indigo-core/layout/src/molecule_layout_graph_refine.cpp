@@ -404,13 +404,13 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
 
                 if (layout_orientation == VERTICAL)
                 {
-                    new_state.rotateLayout(beg_state, center, _2FLOAT(RAD2DEG(M_PI_2)));
+                    new_state.rotateLayout(beg_state, center, _2FLOAT(RAD2DEG(M_PI/2)));
                     beg_state.copy(new_state);
                 }
             }
             else
             {
-                for (float angle = _2FLOAT(RAD2DEG(-M_PI_2)); angle < _2FLOAT(RAD2DEG(M_PI_2)) + EPSILON; angle += _2FLOAT(RAD2DEG(M_PI / 6.0)))
+                for (float angle = _2FLOAT(RAD2DEG(-M_PI/2)); angle < _2FLOAT(RAD2DEG(M_PI/2)) + EPSILON; angle += _2FLOAT(RAD2DEG(M_PI / 6.0)))
                 {
                     new_state.rotateLayout(beg_state, center, angle);
                     new_state.calcHeight();
