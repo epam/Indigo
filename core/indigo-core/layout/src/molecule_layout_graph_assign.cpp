@@ -70,9 +70,126 @@ static int _vertex_cmp(int& n1, int& n2, void* context)
     return v1.morgan_code - v2.morgan_code;
 }
 
+// Specialized BiconnectedDecomposer that prevents splitting regular polygons
+class MoleculeLayoutBiconnectedDecomposer : public BiconnectedDecomposer
+{
+public:
+    MoleculeLayoutBiconnectedDecomposer(const MoleculeLayoutGraph& graph, bool split_fixed)
+        : BiconnectedDecomposer(graph, split_fixed), _layout_graph(graph)
+    {
+    }
+
+    bool isRegularPolygonEdge(int v, int w) const override
+    {
+        // Get edge length
+        const Vec2f& pos_v = _layout_graph.getPos(v);
+        const Vec2f& pos_w = _layout_graph.getPos(w);
+        float edge_len = Vec2f::dist(pos_v, pos_w);
+
+        const float target_len = 1.5f;
+        const float tolerance = 0.1f;
+        if (fabs(edge_len - target_len) > tolerance)
+            return false;
+
+        Array<int> cycle;
+        return _findRegularPolygonCycle(v, w, cycle);
+    }
+
+private:
+    bool _findRegularPolygonCycle(int v, int w, Array<int>& cycle) const
+    {
+        // Simple cycle detection: try to find path from w back to v
+        // using only edges with length ~1.5
+        const float target_len = 1.5f;
+        const float tolerance = 0.3f;
+
+        Array<int> queue;
+        Array<int> parent;
+        Array<int> visited;
+
+        visited.clear_resize(_layout_graph.vertexEnd());
+        visited.zerofill();
+        parent.clear_resize(_layout_graph.vertexEnd());
+        parent.fill(-1);
+
+        queue.clear();
+        queue.push(w);
+        visited[w] = 1;
+
+        int queue_pos = 0;
+        while (queue_pos < queue.size())
+        {
+            int curr = queue[queue_pos++];
+            const Vertex& curr_vert = _layout_graph.getVertex(curr);
+
+            for (int nei_idx = curr_vert.neiBegin(); nei_idx < curr_vert.neiEnd(); nei_idx = curr_vert.neiNext(nei_idx))
+            {
+                int nei = curr_vert.neiVertex(nei_idx);
+
+                // Skip the direct edge back to v from w (we're looking for alternate path)
+                if (curr == w && nei == v)
+                    continue;
+
+                // Check edge length
+                float nei_edge_len = Vec2f::dist(_layout_graph.getPos(curr), _layout_graph.getPos(nei));
+                if (fabs(nei_edge_len - target_len) > tolerance)
+                    continue;
+
+                if (nei == v)
+                {
+                    Array<int> path;
+                    int node = curr;
+                    while (node != -1)
+                    {
+                        path.push(node);
+                        if (node == w)
+                            break;
+                        node = parent[node];
+                    }
+
+                    cycle.clear();
+                    cycle.push(v);
+                    for (int i = path.size() - 1; i >= 0; i--)
+                        cycle.push(path[i]);
+
+                    return _isCycleRegular(cycle, target_len, tolerance);
+                }
+
+                if (!visited[nei])
+                {
+                    visited[nei] = 1;
+                    parent[nei] = curr;
+                    queue.push(nei);
+                }
+            }
+        }
+
+        return false;
+    }
+
+    bool _isCycleRegular(const Array<int>& cycle, float target_len, float tolerance) const
+    {
+        if (cycle.size() < 3)
+            return false;
+
+        for (int i = 0; i < cycle.size(); i++)
+        {
+            int v1 = cycle[i];
+            int v2 = cycle[(i + 1) % cycle.size()];
+            float len = Vec2f::dist(_layout_graph.getPos(v1), _layout_graph.getPos(v2));
+            if (fabs(len - target_len) > tolerance)
+                return false;
+        }
+
+        return true;
+    }
+
+    const MoleculeLayoutGraph& _layout_graph;
+};
+
 void MoleculeLayoutGraph::_assignAbsoluteCoordinates(float bond_length)
 {
-    BiconnectedDecomposer bc_decom(*this, sequence_layout);
+    MoleculeLayoutBiconnectedDecomposer bc_decom(*this, sequence_layout);
     QS_DEF(Array<int>, bc_tree);
     PtrArray<MoleculeLayoutGraph> bc_components;
     QS_DEF(Array<int>, fixed_components);
