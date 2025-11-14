@@ -51,10 +51,13 @@ for filename in files:
         )
 
     mol.layout()
-    # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
-    #     file.write(mol.json())
+    with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
+        file.write(mol.json())
     with open(getRefFilepath(filename + ".ket"), "r") as file:
         ket_ref = file.read()
+    
+    print(os.path.join(ref_path, filename))
+    print(getRefFilepath(filename + ".ket"))
 
     ket = mol.json()
     diff = find_diff(ket_ref, ket)

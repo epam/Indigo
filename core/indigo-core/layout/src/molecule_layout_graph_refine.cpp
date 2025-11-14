@@ -317,7 +317,7 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
 
             if (around_beg)
             {
-                new_state.rotateBranch(filter, beg_state, edge.beg, 10);
+                new_state.rotateBranch(filter, beg_state, edge.beg, _2FLOAT(RAD2DEG(M_PI / 18.0)));
                 new_state.calcDistance(v1c, v2c);
                 new_state.calcEnergy();
 
@@ -327,7 +327,7 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
                     best_state.copy(new_state);
                 }
 
-                new_state.rotateBranch(filter, beg_state, edge.beg, -10);
+                new_state.rotateBranch(filter, beg_state, edge.beg, _2FLOAT(RAD2DEG(-M_PI / 18.0)));
                 new_state.calcDistance(v1c, v2c);
                 new_state.calcEnergy();
 
@@ -340,7 +340,7 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
 
             if (around_end)
             {
-                new_state.rotateBranch(filter, beg_state, edge.end, 10);
+                new_state.rotateBranch(filter, beg_state, edge.end, _2FLOAT(RAD2DEG(M_PI / 18.0)));
                 new_state.calcDistance(v1c, v2c);
                 new_state.calcEnergy();
 
@@ -350,7 +350,7 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
                     best_state.copy(new_state);
                 }
 
-                new_state.rotateBranch(filter, beg_state, edge.end, -10);
+                new_state.rotateBranch(filter, beg_state, edge.end, _2FLOAT(RAD2DEG(-M_PI / 18.0)));
                 new_state.calcDistance(v1c, v2c);
                 new_state.calcEnergy();
 
@@ -399,19 +399,18 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
 
             if (layout_orientation != UNCPECIFIED)
             {
-                new_state.rotateLayout(beg_state, center, _2FLOAT(beg_state.calc_best_angle() / M_PI * 180.));
+                new_state.rotateLayout(beg_state, center, _2FLOAT(RAD2DEG(beg_state.calc_best_angle())));
                 beg_state.copy(new_state);
 
                 if (layout_orientation == VERTICAL)
                 {
-                    new_state.rotateLayout(beg_state, center, 90);
+                    new_state.rotateLayout(beg_state, center, _2FLOAT(RAD2DEG(M_PI/2)));
                     beg_state.copy(new_state);
                 }
             }
             else
             {
-
-                for (float angle = -90.f; angle < 90.f + EPSILON; angle += 30.f)
+                for (float angle = _2FLOAT(RAD2DEG(-M_PI/2)); angle < _2FLOAT(RAD2DEG(M_PI/2)) + EPSILON; angle += _2FLOAT(RAD2DEG(M_PI / 6.0)))
                 {
                     new_state.rotateLayout(beg_state, center, angle);
                     new_state.calcHeight();
@@ -424,7 +423,6 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
     }
 
     beg_state.applyToGraph();
-
     _excludeDandlingIntersections();
 }
 

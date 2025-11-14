@@ -319,17 +319,25 @@ void LayoutChooser::_makeLayout()
             if (v1 != v)
             {
                 Vec2f& cur_pos = _layout._layout[++k];
-                if (_fixed_components[bc_com_idx] == 0 || comp.flexible_fixed_components) // Skip fixed components
+                if (_fixed_components[bc_com_idx] == 0) // Skip fixed components
                 {
-                    if (!comp.flexible_fixed_components || _layout._graph._fixed_vertices.size() == 0 || _layout._graph._fixed_vertices[v] == 0 ||
-                        _layout._graph._fixed_vertices[v] == 2)
+                    // Check if vertex v1 is marked as fixed in the main graph
+                    bool is_vertex_fixed =
+                        _layout._graph._fixed_vertices.size() > 0 && _layout._graph._fixed_vertices[v1] != 0 && _layout._graph.sequence_layout;
+                    if (!is_vertex_fixed)
                     {
+                        // Vertex is not fixed, apply normal transformation
                         // 1. Shift
                         cur_pos.sum(comp.getPos(j), p);
                         // 2. Rotate around v
                         p1.diff(cur_pos, _layout._graph.getPos(v));
                         p1.rotate(sina, cosa);
                         cur_pos.sum(p1, _layout._graph.getPos(v));
+                    }
+                    else
+                    {
+                        // Vertex v1 is fixed (type 1 or 2), use its current position without transformation
+                        cur_pos.copy(_layout._graph.getPos(v1));
                     }
                 }
                 else // fixed components

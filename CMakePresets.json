@@ -19,12 +19,36 @@
                 "BUILD_BINGO": "OFF",
                 "BUILD_BINGO_ELASTIC": "OFF"
             }
+        },
+        {
+            "name": "indigo-sanitize",
+            "hidden": false,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build_sanitizer",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_CXX_FLAGS": "-fsanitize=undefined -fsanitize=address -fno-omit-frame-pointer -g -Wuninitialized -Wconditional-uninitialized",
+                "CMAKE_C_FLAGS": "-fsanitize=undefined -fsanitize=address -fno-omit-frame-pointer -g -Wuninitialized",
+                "CMAKE_EXE_LINKER_FLAGS": "-fsanitize=undefined -fsanitize=address",
+                "BUILD_INDIGO": "ON",
+                "BUILD_INDIGO_WRAPPERS": "OFF",
+                "BUILD_INDIGO_UTILS": "ON",
+                "BUILD_BINGO": "OFF",
+                "BUILD_BINGO_ELASTIC": "OFF"
+            }
         }
     ],
     "buildPresets": [
         {
             "name": "indigo-debug",
             "configurePreset": "indigo-debug",
+            "targets": [
+                "all"
+            ]
+        },
+        {
+            "name": "indigo-sanitize",
+            "configurePreset": "indigo-sanitize",
             "targets": [
                 "all"
             ]
