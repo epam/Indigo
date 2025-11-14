@@ -71,6 +71,7 @@ namespace indigo
         long morgan_code;
         bool is_cyclic;
         bool is_inner_cycle;
+        bool is_nailed;
         int type;
 
         Vec2f pos;
@@ -188,6 +189,7 @@ namespace indigo
         Array<int> _fixed_decomposition;
 
         Array<int> _fixed_vertices;
+        Array<int> _no_scale_vertices;  // Vertices from cycles with fixed vertices - should not be scaled
         long _total_morgan_code;
         int _first_vertex_idx;
         int _n_fixed;

@@ -74,8 +74,7 @@ static int _vertex_cmp(int& n1, int& n2, void* context)
 class MoleculeLayoutBiconnectedDecomposer : public BiconnectedDecomposer
 {
 public:
-    MoleculeLayoutBiconnectedDecomposer(const MoleculeLayoutGraph& graph, bool split_fixed)
-        : BiconnectedDecomposer(graph, split_fixed), _layout_graph(graph)
+    MoleculeLayoutBiconnectedDecomposer(const MoleculeLayoutGraph& graph, bool split_fixed) : BiconnectedDecomposer(graph, split_fixed), _layout_graph(graph)
     {
     }
 
@@ -90,7 +89,6 @@ public:
         const float tolerance = 0.1f;
         if (fabs(edge_len - target_len) > tolerance)
             return false;
-
         Array<int> cycle;
         return _findRegularPolygonCycle(v, w, cycle);
     }
@@ -152,7 +150,9 @@ private:
                     for (int i = path.size() - 1; i >= 0; i--)
                         cycle.push(path[i]);
 
-                    return _isCycleRegular(cycle, target_len, tolerance);
+                    return true;
+                    // TODO: implement accurate detection that cycle is a regular polygon or made of arcs
+                    // return _isCycleRegular(cycle, target_len, tolerance);
                 }
 
                 if (!visited[nei])
@@ -423,45 +423,48 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
     }
 
     // Check cycles for fixed vertices and mark them as ELEMENT_BOUNDARY
-    QS_DEF(Array<int>, cycles_to_remove);
-    cycles_to_remove.clear();
     bool found_fixed_cycle = false;
-
-    for (i = cycles.begin(); i < cycles.end(); i = cycles.next(i))
+    if (sequence_layout)
     {
-        const Cycle& cycle = cycles[i];
-        bool has_fixed = false;
+        QS_DEF(Array<int>, cycles_to_remove);
+        cycles_to_remove.clear();
 
-        // Check if cycle has any fixed vertices
-        for (int j = 0; j < cycle.vertexCount(); j++)
+        for (i = cycles.begin(); i < cycles.end(); i = cycles.next(i))
         {
-            int v_idx = cycle.getVertex(j);
-            int v_ext = getVertexExtIdx(v_idx);
-            if (_fixed_vertices.size() > v_ext && _fixed_vertices[v_ext] != 0)
-            {
-                has_fixed = true;
-                break;
-            }
-        }
+            const Cycle& cycle = cycles[i];
+            bool has_fixed = false;
 
-        if (has_fixed)
-        {
-            found_fixed_cycle = true;
-            // Mark all vertices and edges in this cycle as ELEMENT_BOUNDARY
+            // Check if cycle has any fixed vertices
             for (int j = 0; j < cycle.vertexCount(); j++)
             {
-                _layout_vertices[cycle.getVertex(j)].type = ELEMENT_BOUNDARY;
-                _layout_edges[cycle.getEdge(j)].type = ELEMENT_BOUNDARY;
+                int v_idx = cycle.getVertex(j);
+                int v_ext = getVertexExtIdx(v_idx);
+                if (_fixed_vertices.size() > v_idx && _fixed_vertices[v_idx] != 0)
+                {
+                    has_fixed = true;
+                    //break;
+                }
             }
-            cycles_to_remove.push(i);
+
+            if (has_fixed)
+            {
+                found_fixed_cycle = true;
+                // Mark all vertices and edges in this cycle as ELEMENT_BOUNDARY and fix them
+                for (int j = 0; j < cycle.vertexCount(); j++)
+                {
+                    _layout_vertices[cycle.getVertex(j)].type = ELEMENT_BOUNDARY;
+                    _layout_edges[cycle.getEdge(j)].type = ELEMENT_BOUNDARY;
+                    _layout_vertices[cycle.getVertex(j)].is_nailed = true;
+                }
+                cycles_to_remove.push(i);
+            }
         }
+
+        // Remove cycles with fixed vertices
+        for (i = 0; i < cycles_to_remove.size(); i++)
+            cycles.remove(cycles_to_remove[i]);
     }
 
-    // Remove cycles with fixed vertices
-    for (i = 0; i < cycles_to_remove.size(); i++)
-        cycles.remove(cycles_to_remove[i]);
-
-    // Build sorted list of remaining cycles
     sorted_cycles.clear();
     for (i = cycles.begin(); i < cycles.end(); i = cycles.next(i))
     {
@@ -960,7 +963,7 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                     for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
                     {
                         int ext_idx = getVertexExtIdx(i);
-                        if (ext_idx < _fixed_vertices.size() && _fixed_vertices[ext_idx] == 0)
+                        if (ext_idx < _fixed_vertices.size() && _fixed_vertices[ext_idx] == 0 && !_layout_vertices[i].is_nailed)
                         {
                             Vec2f offset;
                             offset.diff(_layout_vertices[i].pos, centroid);
@@ -1024,7 +1027,7 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                 int v_ext_idx = getVertexExtIdx(v);
 
                 // Collect all fixed vertex positions
-                if (_fixed_vertices.size() > v_ext_idx && _fixed_vertices[v_ext_idx] != 0)
+                if (_fixed_vertices.size() > v_ext_idx && (_fixed_vertices[v_ext_idx] != 0 || _layout_vertices[v].is_nailed))
                 {
                     all_fixed_positions.push(src_layout[v]);
                     continue;
@@ -1124,106 +1127,102 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                             }
                         }
 
-                    if (bridge_lengths.size() == 0)
-                        continue;
+                        if (bridge_lengths.size() == 0)
+                            continue;
 
-                    // Calculate mean and variance
-                    float mean = 0;
-                    for (int i = 0; i < bridge_lengths.size(); i++)
-                        mean += bridge_lengths[i];
-                    mean /= bridge_lengths.size();
+                        // Calculate mean and variance
+                        float mean = 0;
+                        for (int i = 0; i < bridge_lengths.size(); i++)
+                            mean += bridge_lengths[i];
+                        mean /= bridge_lengths.size();
 
-                    float variance = 0;
-                    for (int i = 0; i < bridge_lengths.size(); i++)
-                    {
-                        float dev = bridge_lengths[i] - mean;
-                        variance += dev * dev;
-                    }
-                    variance /= bridge_lengths.size();
-
-                    // Calculate penalty for bridge bonds shorter than bond_length
-                    float short_bond_penalty = 0;
-                    for (int i = 0; i < bridge_lengths.size(); i++)
-                    {
-                        if (bridge_lengths[i] < bond_length)
+                        float variance = 0;
+                        for (int i = 0; i < bridge_lengths.size(); i++)
                         {
-                            float shortage = bond_length - bridge_lengths[i];
-                            // Quadratic penalty to strongly discourage short bonds
-                            short_bond_penalty += shortage * shortage * 100.0f;
+                            float dev = bridge_lengths[i] - mean;
+                            variance += dev * dev;
                         }
-                    }
+                        variance /= bridge_lengths.size();
 
-                    // Calculate collision penalty: selected vertices too close to fixed vertices (not connected by bridge)
-                    float collision_penalty = 0;
-                    float min_allowed_distance = bond_length * 0.8f; // Minimum distance is 80% of bond_length
-
-                    for (int v = vertexBegin(); v < vertexEnd(); v = vertexNext(v))
-                    {
-                        int v_ext = getVertexExtIdx(v);
-                        if (_fixed_vertices.size() > v_ext && _fixed_vertices[v_ext] == 0)
+                        // Calculate penalty for bridge bonds shorter than bond_length
+                        float short_bond_penalty = 0;
+                        for (int i = 0; i < bridge_lengths.size(); i++)
                         {
-                            // This is a selected vertex - apply rotation + translation
-                            Vec2f pos = _layout_vertices[v].pos;
-                            Vec2f offset;
-                            offset.diff(pos, selected_centroid);
-
-                            Vec2f rotated_offset;
-                            rotated_offset.x = offset.x * cos_a - offset.y * sin_a;
-                            rotated_offset.y = offset.x * sin_a + offset.y * cos_a;
-
-                            Vec2f transformed_pos;
-                            transformed_pos.sum(selected_centroid, rotated_offset);
-                            transformed_pos.x += dx;
-                            transformed_pos.y += dy;
-
-                            // Check distance to all fixed vertices
-                            for (int fix_idx = 0; fix_idx < all_fixed_positions.size(); fix_idx++)
+                            if (bridge_lengths[i] < bond_length)
                             {
-                                // Skip if this is a bridge-connected pair
-                                int fixed_v = -1;
-                                for (int fv = vertexBegin(); fv < vertexEnd(); fv = vertexNext(fv))
+                                float shortage = bond_length - bridge_lengths[i];
+                                // Quadratic penalty to strongly discourage short bonds
+                                short_bond_penalty += shortage * shortage * 100.0f;
+                            }
+                        }
+
+                        // Calculate collision penalty: selected vertices too close to fixed vertices (not connected by bridge)
+                        float collision_penalty = 0;
+                        float min_allowed_distance = bond_length * 0.8f; // Minimum distance is 80% of bond_length
+
+                        for (int v = vertexBegin(); v < vertexEnd(); v = vertexNext(v))
+                        {
+                            int v_ext = getVertexExtIdx(v);
+                            if (_fixed_vertices.size() > v_ext && _fixed_vertices[v_ext] == 0)
+                            {
+                                // This is a selected vertex - apply rotation + translation
+                                Vec2f pos = _layout_vertices[v].pos;
+                                Vec2f offset;
+                                offset.diff(pos, selected_centroid);
+
+                                Vec2f rotated_offset;
+                                rotated_offset.x = offset.x * cos_a - offset.y * sin_a;
+                                rotated_offset.y = offset.x * sin_a + offset.y * cos_a;
+
+                                Vec2f transformed_pos;
+                                transformed_pos.sum(selected_centroid, rotated_offset);
+                                transformed_pos.x += dx;
+                                transformed_pos.y += dy;
+
+                                // Check distance to all fixed vertices
+                                for (int fix_idx = 0; fix_idx < all_fixed_positions.size(); fix_idx++)
                                 {
-                                    int fv_ext = getVertexExtIdx(fv);
-                                    if (_fixed_vertices.size() > fv_ext && _fixed_vertices[fv_ext] != 0)
+                                    // Skip if this is a bridge-connected pair
+                                    int fixed_v = -1;
+                                    for (int fv = vertexBegin(); fv < vertexEnd(); fv = vertexNext(fv))
                                     {
-                                        if (Vec2f::distSqr(src_layout[fv], all_fixed_positions[fix_idx]) < 0.0001f)
+                                        int fv_ext = getVertexExtIdx(fv);
+                                        if (_fixed_vertices.size() > fv_ext && _fixed_vertices[fv_ext] != 0)
                                         {
-                                            fixed_v = fv;
-                                            break;
+                                            if (Vec2f::distSqr(src_layout[fv], all_fixed_positions[fix_idx]) < 0.0001f)
+                                            {
+                                                fixed_v = fv;
+                                                break;
+                                            }
                                         }
                                     }
-                                }
 
-                                if (fixed_v >= 0)
-                                {
-                                    int pair_key = v < fixed_v ? (v * vertexEnd() + fixed_v) : (fixed_v * vertexEnd() + v);
-                                    if (bridge_connected_pairs.find(pair_key))
-                                        continue; // Skip bridge-connected pairs
-                                }
+                                    if (fixed_v >= 0)
+                                    {
+                                        int pair_key = v < fixed_v ? (v * vertexEnd() + fixed_v) : (fixed_v * vertexEnd() + v);
+                                        if (bridge_connected_pairs.find(pair_key))
+                                            continue; // Skip bridge-connected pairs
+                                    }
 
-                                float dist = Vec2f::dist(transformed_pos, all_fixed_positions[fix_idx]);
-                                if (dist < min_allowed_distance)
-                                {
-                                    float overlap = min_allowed_distance - dist;
-                                    // Strong penalty for overlap
-                                    collision_penalty += overlap * overlap * 200.0f;
+                                    float dist = Vec2f::dist(transformed_pos, all_fixed_positions[fix_idx]);
+                                    if (dist < min_allowed_distance)
+                                    {
+                                        float overlap = min_allowed_distance - dist;
+                                        // Strong penalty for overlap
+                                        collision_penalty += overlap * overlap * 200.0f;
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    // Cost function: minimize variance + minimize total length + penalize short bonds + penalize collisions
-                    // Weight for mean length is small to prioritize variance minimization
-                    // Short bond penalty is large to prevent bonds shorter than bond_length
-                    // Collision penalty is very large to prevent overlap between selected and fixed structures
-                    float cost = variance + 0.01f * mean + short_bond_penalty + collision_penalty;
+                        float cost = variance + 0.01f * mean + short_bond_penalty + collision_penalty;
 
-                    if (min_cost < 0 || cost < min_cost)
-                    {
-                        min_cost = cost;
-                        best_translation.set(dx, dy);
-                        best_angle = angle;
-                    }
+                        if (min_cost < 0 || cost < min_cost)
+                        {
+                            min_cost = cost;
+                            best_translation.set(dx, dy);
+                            best_angle = angle;
+                        }
                     }
                 }
             }
@@ -1447,7 +1446,6 @@ void MoleculeLayoutGraph::_findFixedComponents(BiconnectedDecomposer& bc_decom, 
 
     fixed_count.clear_resize(n_comp);
     fixed_count.zerofill();
-
     for (int i = 0; i < n_comp; i++)
     {
         Filter filter;
@@ -1656,6 +1654,7 @@ void MoleculeLayoutGraph::_markInnerVertices(const MoleculeLayoutGraph& componen
     {
         auto vidx = component._layout_vertices[i].ext_idx;
         auto& lv = _layout_vertices[vidx];
+        lv.is_nailed = component._layout_vertices[i].is_nailed;
         auto& vx = getVertex(vidx);
         for (int j = vx.neiBegin(); j < vx.neiEnd(); j = vx.neiNext(j))
         {
