@@ -1307,7 +1307,7 @@ void SequenceLoader::loadAxoLabs(KetDocument& document)
                 // save sense
                 _col = static_cast<int>(shift_sense ? offset : 0);
                 int last_monomer_idx = -1;
-                for (auto idx = 0; idx < sense_chain.size(); idx++)
+                for (size_t idx = 0; idx < sense_chain.size(); idx++)
                 {
                     if (sense_ids.count(idx) > 0) // if id in pairs - save base id
                         add_link_monomers(sense_chain.at(idx), last_monomer_idx, false, &sense_ids.at(idx));
@@ -1319,7 +1319,7 @@ void SequenceLoader::loadAxoLabs(KetDocument& document)
                 _row += 3;
                 _col = static_cast<int>(shift_sense ? antisense_chain.size() - 1 : offset + antisense_chain.size() - 1);
                 last_monomer_idx = -1;
-                for (auto idx = 0; idx < antisense_chain.size(); idx++)
+                for (size_t idx = 0; idx < antisense_chain.size(); idx++)
                 {
 
                     if (antisense_ids.count(idx) > 0) // if id in pairs - save base id
