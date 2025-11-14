@@ -422,18 +422,61 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
         cycles[cycle_idx].canonize();
     }
 
+    // Check cycles for fixed vertices and mark them as ELEMENT_BOUNDARY
+    QS_DEF(Array<int>, cycles_to_remove);
+    cycles_to_remove.clear();
+    bool found_fixed_cycle = false;
+
+    for (i = cycles.begin(); i < cycles.end(); i = cycles.next(i))
+    {
+        const Cycle& cycle = cycles[i];
+        bool has_fixed = false;
+
+        // Check if cycle has any fixed vertices
+        for (int j = 0; j < cycle.vertexCount(); j++)
+        {
+            int v_idx = cycle.getVertex(j);
+            int v_ext = getVertexExtIdx(v_idx);
+            if (_fixed_vertices.size() > v_ext && _fixed_vertices[v_ext] != 0)
+            {
+                has_fixed = true;
+                break;
+            }
+        }
+
+        if (has_fixed)
+        {
+            found_fixed_cycle = true;
+            // Mark all vertices and edges in this cycle as ELEMENT_BOUNDARY
+            for (int j = 0; j < cycle.vertexCount(); j++)
+            {
+                _layout_vertices[cycle.getVertex(j)].type = ELEMENT_BOUNDARY;
+                _layout_edges[cycle.getEdge(j)].type = ELEMENT_BOUNDARY;
+            }
+            cycles_to_remove.push(i);
+        }
+    }
+
+    // Remove cycles with fixed vertices
+    for (i = 0; i < cycles_to_remove.size(); i++)
+        cycles.remove(cycles_to_remove[i]);
+
+    // Build sorted list of remaining cycles
     sorted_cycles.clear();
     for (i = cycles.begin(); i < cycles.end(); i = cycles.next(i))
     {
         cycles[i].calcMorganCode(*this);
         sorted_cycles.push(i);
     }
-    sorted_cycles.qsort(Cycle::compare_cb, &cycles);
 
-    _assignFirstCycle(cycles[sorted_cycles[0]]);
-
-    cycles.remove(sorted_cycles[0]);
-    sorted_cycles.remove(0);
+    // Only call _assignFirstCycle if there were NO cycles with fixed vertices
+    if (!found_fixed_cycle && sorted_cycles.size() > 0)
+    {
+        sorted_cycles.qsort(Cycle::compare_cb, &cycles);
+        _assignFirstCycle(cycles[sorted_cycles[0]]);
+        cycles.remove(sorted_cycles[0]);
+        sorted_cycles.remove(0);
+    }
 
     bool chain_attached;
 
