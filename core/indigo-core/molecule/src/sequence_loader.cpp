@@ -300,9 +300,9 @@ void SequenceLoader::addTemplateBond(BaseMolecule& mol, int left_idx, int right_
 
 void SequenceLoader::addMonomerConnection(KetDocument& document, std::size_t left_idx, std::size_t right_idx, bool branch)
 {
-    std::string left_ap = branch ? kAttachmentPointR3 : kAttachmentPointR2;
     auto& left_monomer = document.monomers().at(std::to_string(left_idx));
     auto& right_monomer = document.monomers().at(std::to_string(right_idx));
+    std::string left_ap = branch ? kAttachmentPointR3 : kAttachmentPointR2;
     if (!branch)
     {
         auto& att_points = left_monomer->attachmentPoints();
@@ -1076,11 +1076,50 @@ void SequenceLoader::loadAxoLabs(KetDocument& document)
     search_data(start, end);
     if (start == end)
         throw Error("Empty string");
+
+    class link
+    {
+    public:
+        link(const std::string& monomer) : mon_id(monomer), base_id(){};
+        link(const std::string& monomer, const std::string& base) : mon_id(monomer), base_id(base){};
+        std::string mon_id;
+        std::string base_id;
+    };
+
+    std::string sense;
+    std::vector<link> sense_chain;
+    std::string antisense;
+    std::vector<link> antisense_chain;
+    auto constexpr non_pairing = 'X';
+    bool is_sense = true;
+
+    auto get_analog_short = [non_pairing](const MonomerTemplate& templ) {
+        if (hasKetStrProp(templ, naturalAnalogShort))
+            return getKetStrProp(templ, naturalAnalogShort)[0];
+        if (hasKetStrProp(templ, alias))
+        {
+            auto alias = getKetStrProp(templ, alias);
+            if (alias.size() == 1)
+                return alias[0];
+        }
+        return non_pairing;
+    };
+
+    auto add_link = [&](const MonomerTemplate& monomer_template) {
+        if (is_sense)
+        {
+            sense.append(1, get_analog_short(monomer_template));
+            sense_chain.emplace_back(monomer_template.id());
+        }
+        else
+        {
+            antisense.append(1, get_analog_short(monomer_template));
+            antisense_chain.emplace_back(monomer_template.id());
+        }
+    };
+
     while (start != end)
     {
-        _seq_id = 0;
-        _last_monomer_idx = -1;
-        _col = 0;
         std::string sequence = data.substr(start, end - start);
         if (sequence.size() < MIN_AXO_SIZE)
             throw Error("Sequence too short: '%s'", data.substr(start, end - start).c_str());
@@ -1108,15 +1147,7 @@ void SequenceLoader::loadAxoLabs(KetDocument& document)
                 auto& monomer_template_id = _library.getMonomerTemplateIdByAlias(MonomerClass::Phosphate, "P");
                 const MonomerTemplate& monomer_template = _library.getMonomerTemplateById(monomer_template_id);
                 checkAddTemplate(document, monomer_template);
-                auto& alias = getKetStrProp(monomer_template, alias);
-                auto monomer_idx = document.monomers().size();
-                auto& monomer = document.addMonomer(alias, monomer_template_id);
-                setKetIntProp(*monomer, seqid, _seq_id++);
-                if (_last_monomer_idx >= 0)
-                    addMonomerConnection(document, _last_monomer_idx, monomer_idx);
-                monomer->setPosition(getBackboneMonomerPosition());
-                _col++;
-                _last_monomer_idx = static_cast<int>(monomer_idx);
+                add_link(monomer_template);
                 continue;
             }
             std::string mgt_id;
@@ -1163,54 +1194,162 @@ void SequenceLoader::loadAxoLabs(KetDocument& document)
             if (mgt_id.size() > 0)
             {
                 auto& mgt = _library.getMonomerGroupTemplateById(mgt_id);
-                if (mgt.hasTemplate(MonomerClass::Sugar))
-                    sugar = getKetStrProp(mgt.getTemplateByClass(MonomerClass::Sugar), alias);
+                std::string base_id;
+                auto base_analog = non_pairing;
                 if (mgt.hasTemplate(MonomerClass::Base))
-                    base = getKetStrProp(mgt.getTemplateByClass(MonomerClass::Base), alias);
-                _alias_to_id.emplace(make_pair(MonomerClass::Sugar, sugar), checkAddTemplate(document, MonomerClass::Sugar, sugar));
-                _alias_to_id.emplace(make_pair(MonomerClass::Base, base), checkAddTemplate(document, MonomerClass::Base, base));
-                _alias_to_id.emplace(make_pair(MonomerClass::Phosphate, phosphate), checkAddTemplate(document, MonomerClass::Phosphate, phosphate));
-                if (pos >= length || (pos == length - 1 && sequence[pos] == 'p'))
-                    phosphate = ""; // last nuleotide without phosphate
-                addNucleotide(document, base, sugar, phosphate, false, false);
-                _col++;
+                {
+                    auto& base_template = mgt.getTemplateByClass(MonomerClass::Base);
+                    checkAddTemplate(document, base_template);
+                    base_id = base_template.id();
+                    base_analog = get_analog_short(base_template);
+                }
+                auto& sugar_template = mgt.getTemplateByClass(MonomerClass::Sugar);
+                checkAddTemplate(document, sugar_template);
+                if (is_sense)
+                {
+                    sense.append(1, base_analog);
+                    sense_chain.emplace_back(sugar_template.id(), base_id);
+                }
+                else
+                {
+                    antisense.append(1, base_analog);
+                    antisense_chain.emplace_back(sugar_template.id(), base_id);
+                }
+                if (!(pos >= length || (pos == length - 1 && sequence[pos] == 'p'))) // last nuleotide without phosphate, this is not last nucleotide
+                {
+                    auto& phosphate_template = group.front() == '('
+                                                   ? mgt.getTemplateByClass(MonomerClass::Phosphate)
+                                                   : _library.getMonomerTemplateById(_library.getMonomerTemplateIdByAlias(MonomerClass::Phosphate, phosphate));
+                    add_link(phosphate_template);
+                    checkAddTemplate(document, phosphate_template);
+                }
             }
             else
             {
-                std::string alias;
                 std::string monomer_template_id = _library.getMonomerTemplateIdByAliasAxoLabs(group);
                 if (monomer_template_id.size() > 0)
                 {
                     const MonomerTemplate& monomer_template = _library.getMonomerTemplateById(monomer_template_id);
                     checkAddTemplate(document, monomer_template);
-                    alias = getKetStrProp(monomer_template, alias);
+                    add_link(monomer_template);
                 }
                 else
                 {
                     if (group[0] != '(')
                         throw Error("The following string cannot be interpreted as an AxoLabs string: %s", group.c_str()); // unresolved should be in ()
                     monomer_template_id = group;
-                    alias = group;
                     MonomerTemplate monomer_template(monomer_template_id, MonomerClass::CHEM, IdtAlias(), true);
                     setKetStrProp(monomer_template, alias, group);
                     setKetStrProp(monomer_template, aliasAxoLabs, group);
                     for (auto ap : {"R1", "R2"})
                         monomer_template.AddAttachmentPoint(ap, -1);
                     checkAddTemplate(document, monomer_template);
+                    add_link(monomer_template);
                 }
-                auto monomer_idx = document.monomers().size();
-                auto& monomer = document.addMonomer(alias, monomer_template_id);
-                setKetIntProp(*monomer, seqid, _seq_id++);
-                monomer->setPosition(getBackboneMonomerPosition());
-                _col++;
-                if (_last_monomer_idx >= 0)
-                    addMonomerConnection(document, _last_monomer_idx, monomer_idx);
-                _last_monomer_idx = static_cast<int>(monomer_idx);
             }
         }
         start = end;
         search_data(start, end);
-        _row += 2;
+        if (start == end || !is_sense) // last sequence or end of antisense
+        {
+            auto add_link_monomers = [&](const link& cur_link, int& last_monomer_idx, bool reverse_base = false, std::string* base_id = nullptr) {
+                Vec3f pos = getBackboneMonomerPosition();
+                auto monomer_idx = document.monomers().size();
+                auto& monomer_template = document.templates().at(cur_link.mon_id);
+                if (monomer_template.monomerClass() != MonomerClass::Phosphate)
+                    _seq_id++;
+                auto& monomer = document.addMonomer(getKetStrProp(monomer_template, alias), monomer_template.id());
+                setKetIntProp(*monomer, seqid, _seq_id);
+                monomer->setPosition(pos);
+                if (last_monomer_idx >= 0)
+                    addMonomerConnection(document, last_monomer_idx, monomer_idx);
+                if (cur_link.base_id.size() > 0)
+                {
+                    auto base_idx = document.monomers().size();
+                    auto& base_template = document.templates().at(cur_link.base_id);
+                    auto& base = document.addMonomer(getKetStrProp(base_template, alias), base_template.id());
+                    if (base_id != nullptr)
+                        base_id->assign(base->id());
+                    setKetIntProp(*base, seqid, _seq_id);
+                    auto base_shift = LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH;
+                    if (reverse_base)
+                        base_shift = -base_shift;
+                    Vec3f base_pos(pos.x, pos.y - base_shift, 0);
+                    base->setPosition(base_pos);
+                    addMonomerConnection(document, monomer_idx, base_idx, true);
+                }
+                last_monomer_idx = static_cast<int>(monomer_idx);
+            };
+            if (is_sense) // last sequence is sense - just add it
+            {
+                _col = 0;
+                int last_monomer_idx = -1;
+                for (auto it = sense_chain.begin(); it != sense_chain.end(); it++)
+                {
+                    add_link_monomers(*it, last_monomer_idx);
+                    _col++;
+                }
+            }
+            else // end of antisense sequence - add doube-chain
+            {
+                std::vector<std::pair<size_t, size_t>> pairs;
+                bool shift_sense;
+                std::reverse(antisense.begin(), antisense.end());
+                auto offset = best_allign(sense, antisense, pairs, shift_sense);
+                std::map<size_t, std::string> sense_ids;
+                std::map<size_t, std::string> antisense_ids;
+                for (auto it = pairs.begin(); it != pairs.end(); it++)
+                {
+                    sense_ids.emplace(it->first, "");
+                    // fix antisense index - it is reversed
+                    auto antisense_idx = antisense_chain.size() - 1 - it->second;
+                    it->second = antisense_idx;
+                    antisense_ids.emplace(antisense_idx, "");
+                }
+                // save sense
+                _col = static_cast<int>(shift_sense ? offset : 0);
+                int last_monomer_idx = -1;
+                for (size_t idx = 0; idx < sense_chain.size(); idx++)
+                {
+                    if (sense_ids.count(idx) > 0) // if id in pairs - save base id
+                        add_link_monomers(sense_chain.at(idx), last_monomer_idx, false, &sense_ids.at(idx));
+                    else
+                        add_link_monomers(sense_chain.at(idx), last_monomer_idx);
+                    _col++;
+                }
+                // save antisense (from right to left)
+                _row += 3;
+                _col = static_cast<int>(shift_sense ? antisense_chain.size() - 1 : offset + antisense_chain.size() - 1);
+                last_monomer_idx = -1;
+                for (size_t idx = 0; idx < antisense_chain.size(); idx++)
+                {
+
+                    if (antisense_ids.count(idx) > 0) // if id in pairs - save base id
+                        add_link_monomers(antisense_chain.at(idx), last_monomer_idx, true, &antisense_ids.at(idx));
+                    else
+                        add_link_monomers(antisense_chain.at(idx), last_monomer_idx, true);
+                    _col--;
+                }
+                // add hydrogen bonds
+                for (auto it = pairs.begin(); it != pairs.end(); it++)
+                {
+                    document.addConnection(document.monomers().at(sense_ids.at(it->first))->ref(), HelmHydrogenPair,
+                                           document.monomers().at(antisense_ids.at(it->second))->ref(), HelmHydrogenPair);
+                }
+                sense.clear();
+                antisense.clear();
+                sense_ids.clear();
+                antisense_ids.clear();
+                sense_chain.clear();
+                antisense_chain.clear();
+                is_sense = !is_sense;
+                _row += 1;
+            }
+        }
+        else // not last sequence and not antisense - next will be antisense
+        {
+            is_sense = !is_sense;
+        }
     }
 }
 

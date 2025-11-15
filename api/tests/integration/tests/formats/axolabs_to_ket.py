@@ -34,6 +34,11 @@ axolabs_data = {
     "AxoLabs_chem": "5'-dI(5MdC)AmA(NHC6)GmTm-3'",
     "AxoLabs_brackets": "5'-(5MdC)(5MdC)(5MdC)-3'",
     "AxoLabs_unknown": "5'-A(Unknown1)(Unknown2)(Unknown3)A-3'",
+    "AxoLabs_double": "5'-AC-3'\n5'-GU-3'",
+    "AxoLabs_double_and_single": "5'-AC-3'\n5'-GU-3'\n5'-UG-3'",
+    "AxoLabs_two_double": "5'-AC-3'\n5'-GU-3'\n5'-AC-3'\n5'-GU-3'",
+    "AxoLabs_double_sense_shift": "5'-AC-3'\n5'-GUAA-3'",
+    "AxoLabs_double_antisense_shift": "5'-AAAC-3'\n5'-GU-3'",
 }
 
 lib = indigo.loadMonomerLibraryFromFile(
