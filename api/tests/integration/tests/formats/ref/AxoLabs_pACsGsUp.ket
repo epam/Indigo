@@ -224,7 +224,7 @@
     "monomer2": {
         "type": "monomer",
         "id": "2",
-        "seqid": 2,
+        "seqid": 1,
         "position": {
             "x": 1.500000,
             "y": -1.500000
@@ -235,7 +235,7 @@
     "monomer3": {
         "type": "monomer",
         "id": "3",
-        "seqid": 3,
+        "seqid": 1,
         "position": {
             "x": 3.000000,
             "y": -0.000000
@@ -246,7 +246,7 @@
     "monomer4": {
         "type": "monomer",
         "id": "4",
-        "seqid": 4,
+        "seqid": 2,
         "position": {
             "x": 4.500000,
             "y": -0.000000
@@ -257,7 +257,7 @@
     "monomer5": {
         "type": "monomer",
         "id": "5",
-        "seqid": 5,
+        "seqid": 2,
         "position": {
             "x": 4.500000,
             "y": -1.500000
@@ -268,7 +268,7 @@
     "monomer6": {
         "type": "monomer",
         "id": "6",
-        "seqid": 6,
+        "seqid": 2,
         "position": {
             "x": 6.000000,
             "y": -0.000000
@@ -279,7 +279,7 @@
     "monomer7": {
         "type": "monomer",
         "id": "7",
-        "seqid": 7,
+        "seqid": 3,
         "position": {
             "x": 7.500000,
             "y": -0.000000
@@ -290,7 +290,7 @@
     "monomer8": {
         "type": "monomer",
         "id": "8",
-        "seqid": 8,
+        "seqid": 3,
         "position": {
             "x": 7.500000,
             "y": -1.500000
@@ -301,7 +301,7 @@
     "monomer9": {
         "type": "monomer",
         "id": "9",
-        "seqid": 9,
+        "seqid": 3,
         "position": {
             "x": 9.000000,
             "y": -0.000000
@@ -312,7 +312,7 @@
     "monomer10": {
         "type": "monomer",
         "id": "10",
-        "seqid": 10,
+        "seqid": 4,
         "position": {
             "x": 10.500000,
             "y": -0.000000
@@ -323,7 +323,7 @@
     "monomer11": {
         "type": "monomer",
         "id": "11",
-        "seqid": 11,
+        "seqid": 4,
         "position": {
             "x": 10.500000,
             "y": -1.500000
@@ -334,7 +334,7 @@
     "monomer12": {
         "type": "monomer",
         "id": "12",
-        "seqid": 12,
+        "seqid": 4,
         "position": {
             "x": 12.000000,
             "y": -0.000000

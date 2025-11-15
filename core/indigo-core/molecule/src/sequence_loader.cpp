@@ -1256,8 +1256,10 @@ void SequenceLoader::loadAxoLabs(KetDocument& document)
                 Vec3f pos = getBackboneMonomerPosition();
                 auto monomer_idx = document.monomers().size();
                 auto& monomer_template = document.templates().at(cur_link.mon_id);
+                if (monomer_template.monomerClass() != MonomerClass::Phosphate)
+                    _seq_id++;
                 auto& monomer = document.addMonomer(getKetStrProp(monomer_template, alias), monomer_template.id());
-                setKetIntProp(*monomer, seqid, _seq_id++);
+                setKetIntProp(*monomer, seqid, _seq_id);
                 monomer->setPosition(pos);
                 if (last_monomer_idx >= 0)
                     addMonomerConnection(document, last_monomer_idx, monomer_idx);
@@ -1268,7 +1270,7 @@ void SequenceLoader::loadAxoLabs(KetDocument& document)
                     auto& base = document.addMonomer(getKetStrProp(base_template, alias), base_template.id());
                     if (base_id != nullptr)
                         base_id->assign(base->id());
-                    setKetIntProp(*base, seqid, _seq_id++);
+                    setKetIntProp(*base, seqid, _seq_id);
                     auto base_shift = LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH;
                     if (reverse_base)
                         base_shift = -base_shift;
