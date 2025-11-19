@@ -10,7 +10,6 @@
 #include "molecule/idt_alias.h"
 #include "molecule/ket_objects.h"
 #include "molecule/monomers_defs.h"
-#include <functional>
 #include <map>
 #include <memory>
 #include <string>
@@ -280,8 +279,6 @@ namespace indigo
 
         MonomerTemplateLibrary() = default;
         virtual ~MonomerTemplateLibrary() = default;
-
-        using template_add_func = std::function<MonomerTemplate&(const std::string& id, const std::string& monomer_class, IdtAlias idt_alias, bool unresolved)>;
 
         MonomerTemplateLibrary(const MonomerTemplateLibrary&) = delete;
         MonomerTemplateLibrary(MonomerTemplateLibrary&&) = delete;
