@@ -41,6 +41,7 @@ namespace indigo
     class KetMonomer;
     class MonomerTemplate;
     class MonomerTemplateLibrary;
+    class MonomerGroupTemplate;
 
     class DLLEXPORT KetDocumentJsonLoader
     {
@@ -54,19 +55,19 @@ namespace indigo
         static void parseMonomerTemplate(const rapidjson::Value& mt_json, MonomerTemplateLibrary& library);
         static void parseMonomerGroupTemplate(const rapidjson::Value& mt_json, MonomerTemplateLibrary& library);
 
-    protected:
-        void parseKetMolecule(std::string& ref, rapidjson::Value& json, KetDocument& document);
-        void parseKetRgroup(std::string& ref, rapidjson::Value& json, KetDocument& document);
-        void parseKetMonomer(std::string& ref, rapidjson::Value& json, KetDocument& document);
-        void parseKetVariantMonomer(std::string& ref, rapidjson::Value& json, KetDocument& document);
-        void parseKetMonomerShape(std::string& ref, rapidjson::Value& json, KetDocument& document);
-
         using template_add_func = std::function<MonomerTemplate&(const std::string& id, const std::string& monomer_class, IdtAlias idt_alias, bool unresolved)>;
         using template_group_add_func = std::function<MonomerGroupTemplate&(const std::string& id, const std::string& name, const std::string& monomer_class,
                                                                             IdtAlias idt_alias, const std::vector<std::string>& template_refs)>;
 
         static void parseMonomerTemplate(const rapidjson::Value& mt_json, template_add_func addMonomerTemplate);
         static void parseMonomerGroupTemplate(const rapidjson::Value& mt_json, template_group_add_func addMonomerTemplateGroup);
+
+    protected:
+        void parseKetMolecule(std::string& ref, rapidjson::Value& json, KetDocument& document);
+        void parseKetRgroup(std::string& ref, rapidjson::Value& json, KetDocument& document);
+        void parseKetMonomer(std::string& ref, rapidjson::Value& json, KetDocument& document);
+        void parseKetVariantMonomer(std::string& ref, rapidjson::Value& json, KetDocument& document);
+        void parseKetMonomerShape(std::string& ref, rapidjson::Value& json, KetDocument& document);
 
         static void parseVariantMonomerTemplate(const rapidjson::Value& mt_json, KetDocument& document);
 
