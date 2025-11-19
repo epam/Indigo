@@ -39,6 +39,7 @@
 
 namespace indigo
 {
+    using template_add_func = std::function<MonomerTemplate&(const std::string& id, const std::string& monomer_class, IdtAlias idt_alias, bool unresolved)>;
     static std::string EMPTY_STRING;
 
     IMPL_ERROR(MonomerTemplate, "MonomerTemplate");
