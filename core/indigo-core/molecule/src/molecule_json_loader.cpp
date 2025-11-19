@@ -1277,7 +1277,6 @@ void MoleculeJsonLoader::addToLibMonomerGroupTemplate(MonomerTemplateLibrary& li
 
 void MoleculeJsonLoader::loadMonomerLibrary(MonomerTemplateLibrary& library)
 {
-    Molecule mol;
     // Add monomer teplates
     for (SizeType i = 0; i < _templates.Size(); i++)
     {
