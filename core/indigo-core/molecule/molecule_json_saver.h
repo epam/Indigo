@@ -53,6 +53,7 @@ namespace indigo
         void saveMolecule(BaseMolecule& bmol, JsonWriter& writer);
         void saveMetaData(JsonWriter& writer, const MetaDataStorage& meta);
         void saveRoot(BaseMolecule& mol, JsonWriter& writer);
+        void saveMonomerTemplate(TGroup& tg, JsonWriter& writer);
 
         static void parseFormatMode(const char* version_str, KETVersion& version);
         static void saveFormatMode(KETVersion& version, Array<char>& output);
@@ -82,7 +83,6 @@ namespace indigo
         void saveBonds(BaseMolecule& mol, JsonWriter& writer);
         void saveRGroup(RGroup& rgroup, int rgnum, JsonWriter& writer);
         void saveFragment(BaseMolecule& fragment, JsonWriter& writer);
-        void saveMonomerTemplate(TGroup& tg, JsonWriter& writer);
         void saveAmbiguousMonomerTemplate(TGroup& tg, JsonWriter& writer);
         void saveMonomerAttachmentPoints(TGroup& tg, JsonWriter& writer);
         void saveSuperatomAttachmentPoints(Superatom& sa, JsonWriter& writer);
