@@ -55,20 +55,20 @@ namespace indigo
         void saveKetDocument(const KetDocument& document);
         void saveMonomerLibrary(const MonomerTemplateLibrary& monomers_library);
 
-        static void saveKetDocument(JsonWriter& writer, const KetDocument& document);
-        static void saveMonomerTemplate(JsonWriter& writer, const MonomerTemplate& monomer_template, bool save_resolved_idt_alias = false);
-        static void saveMonomerTemplateGroup(JsonWriter& writer, const MonomerGroupTemplate& monomer_group_template);
-        static void saveIdtAlias(JsonWriter& writer, const IdtAlias& idt_alias, bool save_resolved = false);
+        static void saveKetDocument(IJsonWriter& writer, const KetDocument& document);
+        static void saveMonomerTemplate(IJsonWriter& writer, const MonomerTemplate& monomer_template, bool save_resolved_idt_alias = false);
+        static void saveMonomerTemplateGroup(IJsonWriter& writer, const MonomerGroupTemplate& monomer_group_template);
+        static void saveIdtAlias(IJsonWriter& writer, const IdtAlias& idt_alias, bool save_resolved = false);
 
         bool pretty_json;
 
     protected:
-        static void saveMolecule(JsonWriter& writer, const std::string& ref, const KetMolecule& molecule);
-        static void saveMonomer(JsonWriter& writer, const KetMonomer& monomer);
-        static void saveVariantMonomer(JsonWriter& writer, const KetAmbiguousMonomer& monomer);
-        static void saveVariantMonomerTemplate(JsonWriter& writer, const KetAmbiguousMonomerTemplate& monomer_template);
-        static void saveMonomerShape(JsonWriter& writer, const KetMonomerShape& monomer_shape);
-        static void saveAnnotation(JsonWriter& writer, const std::optional<KetObjectAnnotation>& annotation);
+        static void saveMolecule(IJsonWriter& writer, const std::string& ref, const KetMolecule& molecule);
+        static void saveMonomer(IJsonWriter& writer, const KetMonomer& monomer);
+        static void saveVariantMonomer(IJsonWriter& writer, const KetAmbiguousMonomer& monomer);
+        static void saveVariantMonomerTemplate(IJsonWriter& writer, const KetAmbiguousMonomerTemplate& monomer_template);
+        static void saveMonomerShape(IJsonWriter& writer, const KetMonomerShape& monomer_shape);
+        static void saveAnnotation(IJsonWriter& writer, const std::optional<KetObjectAnnotation>& annotation);
 
         DECL_ERROR;
 

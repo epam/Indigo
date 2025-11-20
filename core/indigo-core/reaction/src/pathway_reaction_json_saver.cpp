@@ -16,6 +16,7 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include <memory>
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
 
@@ -53,7 +54,12 @@ void PathwayReactionJsonSaver::saveReaction(PathwayReaction& pwr)
         rmd.buildReactionsData();
     }
     rapidjson::StringBuffer buffer;
-    JsonWriter writer(pretty_json);
+    std::unique_ptr<IJsonWriter> writer_ptr;
+    if (pretty_json)
+        writer_ptr = std::make_unique<PrettyJsonWriter>();
+    else
+        writer_ptr = std::make_unique<CompactJsonWriter>();
+    IJsonWriter& writer = *writer_ptr;
     writer.Reset(buffer);
     MoleculeJsonSaver moleculeSaver(_output, rmd);
     moleculeSaver.add_stereo_desc = add_stereo_desc;

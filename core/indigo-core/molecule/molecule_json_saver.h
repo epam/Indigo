@@ -50,20 +50,20 @@ namespace indigo
         explicit MoleculeJsonSaver(Output& output);
         explicit MoleculeJsonSaver(Output& output, ReactionMultistepDetector& rmd);
         void saveMolecule(BaseMolecule& bmol);
-        void saveMolecule(BaseMolecule& bmol, JsonWriter& writer);
-        void saveMetaData(JsonWriter& writer, const MetaDataStorage& meta);
-        void saveRoot(BaseMolecule& mol, JsonWriter& writer);
-        void saveMonomerTemplate(TGroup& tg, JsonWriter& writer);
+        void saveMolecule(BaseMolecule& bmol, IJsonWriter& writer);
+        void saveMetaData(IJsonWriter& writer, const MetaDataStorage& meta);
+        void saveRoot(BaseMolecule& mol, IJsonWriter& writer);
+        void saveMonomerTemplate(TGroup& tg, IJsonWriter& writer);
 
         static void parseFormatMode(const char* version_str, KETVersion& version);
         static void saveFormatMode(KETVersion& version, Array<char>& output);
 
-        static void saveTextV1(JsonWriter& writer, const SimpleTextObject& text_obj);
-        static void saveTextV2(JsonWriter& writer, const SimpleTextObject& text_obj);
-        static void saveAlignment(JsonWriter& writer, SimpleTextObject::TextAlignment alignment);
-        static void saveFontStyles(JsonWriter& writer, const FONT_STYLE_SET& fss);
-        static void saveParagraphs(JsonWriter& writer, const SimpleTextObject& text_obj);
-        static void saveParts(JsonWriter& writer, const SimpleTextObject::KETTextParagraph& paragraph, const FONT_STYLE_SET& def_fss);
+        static void saveTextV1(IJsonWriter& writer, const SimpleTextObject& text_obj);
+        static void saveTextV2(IJsonWriter& writer, const SimpleTextObject& text_obj);
+        static void saveAlignment(IJsonWriter& writer, SimpleTextObject::TextAlignment alignment);
+        static void saveFontStyles(IJsonWriter& writer, const FONT_STYLE_SET& fss);
+        static void saveParagraphs(IJsonWriter& writer, const SimpleTextObject& text_obj);
+        static void saveParts(IJsonWriter& writer, const SimpleTextObject::KETTextParagraph& paragraph, const FONT_STYLE_SET& def_fss);
 
         bool add_stereo_desc;
         bool add_reaction_data;
@@ -72,29 +72,29 @@ namespace indigo
         KETVersion ket_version;
 
     protected:
-        void saveMoleculeReference(int mol_id, JsonWriter& writer);
-        void saveEndpoint(BaseMolecule& mol, const std::string& ep, int beg_idx, int end_idx, JsonWriter& writer, bool hydrogen = false);
+        void saveMoleculeReference(int mol_id, IJsonWriter& writer);
+        void saveEndpoint(BaseMolecule& mol, const std::string& ep, int beg_idx, int end_idx, IJsonWriter& writer, bool hydrogen = false);
         int getMonomerNumber(int mon_idx);
 
-        void writeFloat(JsonWriter& writer, float f_value);
-        void writePos(JsonWriter& writer, const Vec3f& pos);
+        void writeFloat(IJsonWriter& writer, float f_value);
+        void writePos(IJsonWriter& writer, const Vec3f& pos);
 
-        void saveAtoms(BaseMolecule& mol, JsonWriter& writer);
-        void saveBonds(BaseMolecule& mol, JsonWriter& writer);
-        void saveRGroup(RGroup& rgroup, int rgnum, JsonWriter& writer);
-        void saveFragment(BaseMolecule& fragment, JsonWriter& writer);
-        void saveAmbiguousMonomerTemplate(TGroup& tg, JsonWriter& writer);
-        void saveMonomerAttachmentPoints(TGroup& tg, JsonWriter& writer);
-        void saveSuperatomAttachmentPoints(Superatom& sa, JsonWriter& writer);
+        void saveAtoms(BaseMolecule& mol, IJsonWriter& writer);
+        void saveBonds(BaseMolecule& mol, IJsonWriter& writer);
+        void saveRGroup(RGroup& rgroup, int rgnum, IJsonWriter& writer);
+        void saveFragment(BaseMolecule& fragment, IJsonWriter& writer);
+        void saveAmbiguousMonomerTemplate(TGroup& tg, IJsonWriter& writer);
+        void saveMonomerAttachmentPoints(TGroup& tg, IJsonWriter& writer);
+        void saveSuperatomAttachmentPoints(Superatom& sa, IJsonWriter& writer);
 
-        void saveSGroups(BaseMolecule& mol, JsonWriter& writer);
-        void saveSGroup(SGroup& sgroup, JsonWriter& writer);
+        void saveSGroups(BaseMolecule& mol, IJsonWriter& writer);
+        void saveSGroup(SGroup& sgroup, IJsonWriter& writer);
 
-        void saveAttachmentPoint(BaseMolecule& mol, int atom_idx, JsonWriter& writer);
-        void saveStereoCenter(BaseMolecule& mol, int atom_idx, JsonWriter& writer);
-        void saveHighlights(BaseMolecule& mol, JsonWriter& writer);
+        void saveAttachmentPoint(BaseMolecule& mol, int atom_idx, IJsonWriter& writer);
+        void saveStereoCenter(BaseMolecule& mol, int atom_idx, IJsonWriter& writer);
+        void saveHighlights(BaseMolecule& mol, IJsonWriter& writer);
 
-        void saveAnnotation(JsonWriter& writer, const KetObjectAnnotation& annotation);
+        void saveAnnotation(IJsonWriter& writer, const KetObjectAnnotation& annotation);
 
         DECL_ERROR;
 
@@ -102,7 +102,7 @@ namespace indigo
         void _checkSGroupIndices(BaseMolecule& mol, Array<int>& sgs_list);
         bool _checkAttPointOrder(BaseMolecule& mol, int rsite);
         bool _needCustomQuery(QueryMolecule::Atom* atom) const;
-        void _writeQueryProperties(QueryMolecule::Atom* atom, JsonWriter& writer);
+        void _writeQueryProperties(QueryMolecule::Atom* atom, IJsonWriter& writer);
 
         Molecule* _pmol;
         QueryMolecule* _pqmol;
