@@ -99,7 +99,8 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn)
 
     // dump molecules
     StringBuffer s;
-    JsonWriter writer(pretty_json);
+    auto writer_ptr = JsonWriter::createJsonWriter(pretty_json);
+    JsonWriter& writer = *writer_ptr;
     writer.Reset(s);
     MoleculeJsonSaver json_saver(_output, rmd);
     json_saver.add_stereo_desc = add_stereo_desc;
