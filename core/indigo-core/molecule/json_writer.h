@@ -45,15 +45,10 @@ namespace indigo
     class DLLEXPORT JsonWriter
     {
     public:
-        enum class Type
-        {
-            COMPACT,
-            PRETTY,
-            DOCUMENT
-        };
         using Ch = char;
 
-        static std::unique_ptr<JsonWriter> createJsonWriter(Type type);
+        static std::unique_ptr<JsonWriter> createJsonWriter(bool pretty);
+        static std::unique_ptr<JsonWriter> createJsonDocumentWriter();
 
         virtual ~JsonWriter() = default;
 
@@ -261,7 +256,7 @@ namespace indigo
         }
 
     private:
-        friend std::unique_ptr<JsonWriter> JsonWriter::createJsonWriter(Type type);
+        friend std::unique_ptr<JsonWriter> JsonWriter::createJsonWriter(bool pretty);
         CompactJsonWriter() = default;
 
         rapidjson::Writer<rapidjson::StringBuffer> _writer;
@@ -418,7 +413,7 @@ namespace indigo
         }
 
     private:
-        friend std::unique_ptr<JsonWriter> JsonWriter::createJsonWriter(Type type);
+        friend std::unique_ptr<JsonWriter> JsonWriter::createJsonWriter(bool pretty);
         PrettyJsonWriter() = default;
 
         rapidjson::PrettyWriter<rapidjson::StringBuffer> _pretty_writer;
@@ -696,7 +691,7 @@ namespace indigo
         }
 
     private:
-        friend std::unique_ptr<JsonWriter> JsonWriter::createJsonWriter(Type type);
+        friend std::unique_ptr<JsonWriter> JsonWriter::createJsonDocumentWriter();
 
         DocumentJsonWriter()
         {

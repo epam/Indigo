@@ -135,7 +135,7 @@ namespace indigo
         auto tgroup = std::make_unique<TGroup>();
         // save template to ket
         rapidjson::StringBuffer string_buffer;
-        auto writer_ptr = JsonWriter::createJsonWriter(JsonWriter::Type::COMPACT);
+        auto writer_ptr = JsonWriter::createJsonWriter(false);
         JsonWriter& writer = *writer_ptr;
         writer.Reset(string_buffer);
         writer.StartObject();
@@ -282,7 +282,7 @@ namespace indigo
                     return result;
                 };
 
-                auto jwriter_ptr = JsonWriter::createJsonWriter(JsonWriter::Type::DOCUMENT);
+                auto jwriter_ptr = JsonWriter::createJsonDocumentWriter();
                 DocumentJsonWriter& jwriter = static_cast<DocumentJsonWriter&>(*jwriter_ptr);
                 NullOutput null_out;
                 MoleculeJsonSaver json_saver(null_out);

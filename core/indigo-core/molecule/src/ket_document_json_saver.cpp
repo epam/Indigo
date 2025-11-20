@@ -466,11 +466,7 @@ void KetDocumentJsonSaver::saveAnnotation(JsonWriter& writer, const std::optiona
 void KetDocumentJsonSaver::saveMonomerLibrary(const MonomerTemplateLibrary& monomers_library)
 {
     rapidjson::StringBuffer string_buffer;
-    std::unique_ptr<JsonWriter> writer_ptr;
-    if (pretty_json)
-        writer_ptr = JsonWriter::createJsonWriter(JsonWriter::Type::PRETTY);
-    else
-        writer_ptr = JsonWriter::createJsonWriter(JsonWriter::Type::COMPACT);
+    auto writer_ptr = JsonWriter::createJsonWriter(pretty_json);
     JsonWriter& writer = *writer_ptr;
     writer.Reset(string_buffer);
     writer.StartObject(); // start
@@ -666,11 +662,7 @@ void KetDocumentJsonSaver::saveKetDocument(JsonWriter& writer, const KetDocument
 void KetDocumentJsonSaver::saveKetDocument(const KetDocument& document)
 {
     rapidjson::StringBuffer string_buffer;
-    std::unique_ptr<JsonWriter> writer_ptr;
-    if (pretty_json)
-        writer_ptr = JsonWriter::createJsonWriter(JsonWriter::Type::PRETTY);
-    else
-        writer_ptr = JsonWriter::createJsonWriter(JsonWriter::Type::COMPACT);
+    auto writer_ptr = JsonWriter::createJsonWriter(pretty_json);
     JsonWriter& writer = *writer_ptr;
     writer.Reset(string_buffer);
     saveKetDocument(writer, document);

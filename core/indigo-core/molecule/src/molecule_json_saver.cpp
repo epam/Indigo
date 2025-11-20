@@ -2133,11 +2133,7 @@ void MoleculeJsonSaver::saveFragment(BaseMolecule& fragment, JsonWriter& writer)
 void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol)
 {
     StringBuffer s;
-    std::unique_ptr<JsonWriter> writer_ptr;
-    if (pretty_json)
-        writer_ptr = JsonWriter::createJsonWriter(JsonWriter::Type::PRETTY);
-    else
-        writer_ptr = JsonWriter::createJsonWriter(JsonWriter::Type::COMPACT);
+    auto writer_ptr = JsonWriter::createJsonWriter(pretty_json);
     JsonWriter& writer = *writer_ptr;
     writer.Reset(s);
     saveMolecule(bmol, writer);
