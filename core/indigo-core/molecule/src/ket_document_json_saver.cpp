@@ -42,13 +42,13 @@ const std::string get_ref(const T& obj)
     return T::ref_prefix + obj.id();
 }
 
-static void saveNativeFloat(IJsonWriter& writer, float f_value)
+static void saveNativeFloat(JsonWriter& writer, float f_value)
 {
     std::string val = std::to_string(f_value);
     writer.RawValue(val.c_str(), val.length(), kStringType);
 }
 
-static void saveNonEmptyStr(IJsonWriter& writer, const char* name, const std::string& str)
+static void saveNonEmptyStr(JsonWriter& writer, const char* name, const std::string& str)
 {
     if (str.size())
     {
@@ -57,13 +57,13 @@ static void saveNonEmptyStr(IJsonWriter& writer, const char* name, const std::st
     }
 }
 
-static void saveStr(IJsonWriter& writer, const char* name, const std::string& str)
+static void saveStr(JsonWriter& writer, const char* name, const std::string& str)
 {
     writer.Key(name);
     writer.String(str);
 }
 
-static void saveMonomerTemplateAttachmentPoints(IJsonWriter& writer, const MonomerTemplate& monomer_template)
+static void saveMonomerTemplateAttachmentPoints(JsonWriter& writer, const MonomerTemplate& monomer_template)
 {
     if (monomer_template.attachmentPoints().size() == 0)
         return;
@@ -99,7 +99,7 @@ static void saveMonomerTemplateAttachmentPoints(IJsonWriter& writer, const Monom
     writer.EndArray();
 }
 
-static void saveKetAtom(IJsonWriter& writer, const KetBaseAtomType* base_atom)
+static void saveKetAtom(JsonWriter& writer, const KetBaseAtomType* base_atom)
 {
     if (base_atom == nullptr)
         return;
@@ -192,7 +192,7 @@ static void saveKetAtom(IJsonWriter& writer, const KetBaseAtomType* base_atom)
     writer.EndObject();
 }
 
-static void saveKetAtoms(IJsonWriter& writer, const KetMolecule::atoms_type& atoms)
+static void saveKetAtoms(JsonWriter& writer, const KetMolecule::atoms_type& atoms)
 {
     writer.Key("atoms");
     writer.StartArray();
@@ -201,7 +201,7 @@ static void saveKetAtoms(IJsonWriter& writer, const KetMolecule::atoms_type& ato
     writer.EndArray();
 };
 
-static void saveKetBonds(IJsonWriter& writer, const std::vector<KetBond>& bonds)
+static void saveKetBonds(JsonWriter& writer, const std::vector<KetBond>& bonds)
 {
     writer.Key("bonds");
     writer.StartArray();
@@ -221,7 +221,7 @@ static void saveKetBonds(IJsonWriter& writer, const std::vector<KetBond>& bonds)
     writer.EndArray();
 };
 
-void KetDocumentJsonSaver::saveMolecule(IJsonWriter& writer, const std::string& ref, const KetMolecule& molecule)
+void KetDocumentJsonSaver::saveMolecule(JsonWriter& writer, const std::string& ref, const KetMolecule& molecule)
 {
     writer.Key(ref);
     writer.StartObject();
@@ -231,7 +231,7 @@ void KetDocumentJsonSaver::saveMolecule(IJsonWriter& writer, const std::string& 
     writer.EndObject();
 }
 
-void KetDocumentJsonSaver::saveMonomer(IJsonWriter& writer, const KetMonomer& monomer)
+void KetDocumentJsonSaver::saveMonomer(JsonWriter& writer, const KetMonomer& monomer)
 {
     writer.Key(monomer.ref());
     writer.StartObject();
@@ -282,7 +282,7 @@ void KetDocumentJsonSaver::saveMonomer(IJsonWriter& writer, const KetMonomer& mo
     writer.EndObject();
 }
 
-void KetDocumentJsonSaver::saveMonomerTemplateGroup(IJsonWriter& writer, const MonomerGroupTemplate& monomer_group_template)
+void KetDocumentJsonSaver::saveMonomerTemplateGroup(JsonWriter& writer, const MonomerGroupTemplate& monomer_group_template)
 {
     writer.Key(get_ref(monomer_group_template));
     writer.StartObject();
@@ -303,7 +303,7 @@ void KetDocumentJsonSaver::saveMonomerTemplateGroup(IJsonWriter& writer, const M
     writer.EndObject();
 }
 
-void KetDocumentJsonSaver::saveMonomerTemplate(IJsonWriter& writer, const MonomerTemplate& monomer_template, bool save_resolved_idt_alias)
+void KetDocumentJsonSaver::saveMonomerTemplate(JsonWriter& writer, const MonomerTemplate& monomer_template, bool save_resolved_idt_alias)
 {
     writer.Key(get_ref(monomer_template));
     writer.StartObject();
@@ -345,7 +345,7 @@ void KetDocumentJsonSaver::saveMonomerTemplate(IJsonWriter& writer, const Monome
     writer.EndObject();
 }
 
-void KetDocumentJsonSaver::saveIdtAlias(IJsonWriter& writer, const IdtAlias& idt_alias, bool save_resolved)
+void KetDocumentJsonSaver::saveIdtAlias(JsonWriter& writer, const IdtAlias& idt_alias, bool save_resolved)
 {
     if (idt_alias.getBase().size() || (save_resolved && idt_alias.hasModifications())) // Save IDT alias only for unresolved
     {
@@ -369,7 +369,7 @@ void KetDocumentJsonSaver::saveIdtAlias(IJsonWriter& writer, const IdtAlias& idt
     }
 }
 
-void KetDocumentJsonSaver::saveVariantMonomer(IJsonWriter& writer, const KetAmbiguousMonomer& monomer)
+void KetDocumentJsonSaver::saveVariantMonomer(JsonWriter& writer, const KetAmbiguousMonomer& monomer)
 {
     writer.Key(monomer.ref());
     writer.StartObject();
@@ -393,7 +393,7 @@ void KetDocumentJsonSaver::saveVariantMonomer(IJsonWriter& writer, const KetAmbi
     writer.EndObject();
 }
 
-void KetDocumentJsonSaver::saveVariantMonomerTemplate(IJsonWriter& writer, const KetAmbiguousMonomerTemplate& monomer_template)
+void KetDocumentJsonSaver::saveVariantMonomerTemplate(JsonWriter& writer, const KetAmbiguousMonomerTemplate& monomer_template)
 {
     writer.Key(get_ref(monomer_template));
     writer.StartObject();
@@ -425,7 +425,7 @@ void KetDocumentJsonSaver::saveVariantMonomerTemplate(IJsonWriter& writer, const
     writer.EndObject();
 }
 
-void KetDocumentJsonSaver::saveMonomerShape(IJsonWriter& writer, const KetMonomerShape& monomer_shape)
+void KetDocumentJsonSaver::saveMonomerShape(JsonWriter& writer, const KetMonomerShape& monomer_shape)
 {
     writer.Key(get_ref(monomer_shape));
     writer.StartObject();
@@ -452,7 +452,7 @@ void KetDocumentJsonSaver::saveMonomerShape(IJsonWriter& writer, const KetMonome
     writer.EndObject();
 }
 
-void KetDocumentJsonSaver::saveAnnotation(IJsonWriter& writer, const std::optional<KetObjectAnnotation>& annotation)
+void KetDocumentJsonSaver::saveAnnotation(JsonWriter& writer, const std::optional<KetObjectAnnotation>& annotation)
 {
     if (annotation.has_value())
     {
@@ -466,12 +466,12 @@ void KetDocumentJsonSaver::saveAnnotation(IJsonWriter& writer, const std::option
 void KetDocumentJsonSaver::saveMonomerLibrary(const MonomerTemplateLibrary& monomers_library)
 {
     rapidjson::StringBuffer string_buffer;
-    std::unique_ptr<IJsonWriter> writer_ptr;
+    std::unique_ptr<JsonWriter> writer_ptr;
     if (pretty_json)
         writer_ptr = std::make_unique<PrettyJsonWriter>();
     else
         writer_ptr = std::make_unique<CompactJsonWriter>();
-    IJsonWriter& writer = *writer_ptr;
+    JsonWriter& writer = *writer_ptr;
     writer.Reset(string_buffer);
     writer.StartObject(); // start
     writer.Key("root");
@@ -509,7 +509,7 @@ void KetDocumentJsonSaver::saveMonomerLibrary(const MonomerTemplateLibrary& mono
     _output.writeString(string_buffer.GetString());
 }
 
-void KetDocumentJsonSaver::saveKetDocument(IJsonWriter& writer, const KetDocument& document)
+void KetDocumentJsonSaver::saveKetDocument(JsonWriter& writer, const KetDocument& document)
 {
     // auto& molecules = document.molecules();
     auto& monomers = document.monomers();
@@ -666,9 +666,12 @@ void KetDocumentJsonSaver::saveKetDocument(IJsonWriter& writer, const KetDocumen
 void KetDocumentJsonSaver::saveKetDocument(const KetDocument& document)
 {
     rapidjson::StringBuffer string_buffer;
-    PrettyJsonWriter pretty_writer;
-    CompactJsonWriter compact_writer;
-    IJsonWriter& writer = pretty_json ? static_cast<IJsonWriter&>(pretty_writer) : static_cast<IJsonWriter&>(compact_writer);
+    std::unique_ptr<JsonWriter> writer_ptr;
+    if (pretty_json)
+        writer_ptr = std::make_unique<PrettyJsonWriter>();
+    else
+        writer_ptr = std::make_unique<CompactJsonWriter>();
+    JsonWriter& writer = *writer_ptr;
     writer.Reset(string_buffer);
     saveKetDocument(writer, document);
     std::stringstream result;

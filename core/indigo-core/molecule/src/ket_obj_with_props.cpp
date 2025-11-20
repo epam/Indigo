@@ -114,7 +114,7 @@ void KetObjWithProps::parseOptsFromKet(const rapidjson::Value& json)
     }
 };
 
-void KetObjWithProps::saveOptsToKet(IJsonWriter& writer) const
+void KetObjWithProps::saveOptsToKet(JsonWriter& writer) const
 {
     // Parse bool props
     std::map<int, std::string> boolPropIdxTostr;

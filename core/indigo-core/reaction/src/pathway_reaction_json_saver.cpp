@@ -54,12 +54,12 @@ void PathwayReactionJsonSaver::saveReaction(PathwayReaction& pwr)
         rmd.buildReactionsData();
     }
     rapidjson::StringBuffer buffer;
-    std::unique_ptr<IJsonWriter> writer_ptr;
+    std::unique_ptr<JsonWriter> writer_ptr;
     if (pretty_json)
         writer_ptr = std::make_unique<PrettyJsonWriter>();
     else
         writer_ptr = std::make_unique<CompactJsonWriter>();
-    IJsonWriter& writer = *writer_ptr;
+    JsonWriter& writer = *writer_ptr;
     writer.Reset(buffer);
     MoleculeJsonSaver moleculeSaver(_output, rmd);
     moleculeSaver.add_stereo_desc = add_stereo_desc;
