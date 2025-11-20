@@ -40,6 +40,8 @@ namespace indigo
         void rotateBranch(const Filter& branch, const RefinementState& state, int v_idx, float angle);
         void stretchBranch(const Filter& branch, const RefinementState& state, int v1, int v2, int d);
         void rotateLayout(const RefinementState& state, int v_idx, float angle);
+        void rotateLayout(const RefinementState& state, const Vec2f& center, float angle);
+        void translateLayout(const RefinementState& state, const Vec2f& offset);
         bool is_small_cycle();
         float calc_best_angle();
 

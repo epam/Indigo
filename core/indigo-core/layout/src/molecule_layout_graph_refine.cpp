@@ -25,6 +25,10 @@
 
 using namespace indigo;
 
+// Epsilon for energy comparisons in refinement algorithm
+// Must be larger than EPSILON from algebra.h to maintain backward compatibility
+constexpr float EPSILON_ENERGY = 0.00001f;
+
 bool MoleculeLayoutGraph::_edge_check(Graph& graph, int e_idx, void* context_)
 {
     EnumContext& context = *(EnumContext*)context_;
@@ -242,7 +246,7 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
 
                 n_edges = edges.size();
 
-                if (beg_state.dist - 0.00001 > new_state.dist)
+                if (beg_state.dist - EPSILON_ENERGY > new_state.dist)
                 {
                     beg_state.dist = new_state.dist;
                     v1c = v1;
@@ -280,7 +284,7 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
             new_state.flipBranch(filter, beg_state, edge.beg, edge.end);
             new_state.calcEnergy();
 
-            if (new_state.energy < best_state.energy - 0.00001)
+            if (new_state.energy < best_state.energy - EPSILON_ENERGY)
             {
                 improved = true;
                 best_state.copy(new_state);
@@ -317,21 +321,21 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
 
             if (around_beg)
             {
-                new_state.rotateBranch(filter, beg_state, edge.beg, 10);
+                new_state.rotateBranch(filter, beg_state, edge.beg, _2FLOAT(RAD2DEG(M_PI / 18.0)));
                 new_state.calcDistance(v1c, v2c);
                 new_state.calcEnergy();
 
-                if (new_state.dist > beg_state.dist && new_state.energy < best_state.energy - 0.00001)
+                if (new_state.dist > beg_state.dist && new_state.energy < best_state.energy - EPSILON_ENERGY)
                 {
                     improved = true;
                     best_state.copy(new_state);
                 }
 
-                new_state.rotateBranch(filter, beg_state, edge.beg, -10);
+                new_state.rotateBranch(filter, beg_state, edge.beg, _2FLOAT(RAD2DEG(-M_PI / 18.0)));
                 new_state.calcDistance(v1c, v2c);
                 new_state.calcEnergy();
 
-                if (new_state.dist > beg_state.dist && new_state.energy < best_state.energy - 0.00001)
+                if (new_state.dist > beg_state.dist && new_state.energy < best_state.energy - EPSILON_ENERGY)
                 {
                     improved = true;
                     best_state.copy(new_state);
@@ -340,21 +344,21 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
 
             if (around_end)
             {
-                new_state.rotateBranch(filter, beg_state, edge.end, 10);
+                new_state.rotateBranch(filter, beg_state, edge.end, _2FLOAT(RAD2DEG(M_PI / 18.0)));
                 new_state.calcDistance(v1c, v2c);
                 new_state.calcEnergy();
 
-                if (new_state.dist > beg_state.dist && new_state.energy < best_state.energy - 0.00001)
+                if (new_state.dist > beg_state.dist && new_state.energy < best_state.energy - EPSILON_ENERGY)
                 {
                     improved = true;
                     best_state.copy(new_state);
                 }
 
-                new_state.rotateBranch(filter, beg_state, edge.end, -10);
+                new_state.rotateBranch(filter, beg_state, edge.end, _2FLOAT(RAD2DEG(-M_PI / 18.0)));
                 new_state.calcDistance(v1c, v2c);
                 new_state.calcEnergy();
 
-                if (new_state.dist > beg_state.dist && new_state.energy < best_state.energy - 0.00001)
+                if (new_state.dist > beg_state.dist && new_state.energy < best_state.energy - EPSILON_ENERGY)
                 {
                     improved = true;
                     best_state.copy(new_state);
@@ -369,10 +373,55 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
                 new_state.calcDistance(v1c, v2c);
                 new_state.calcEnergy();
 
-                if (new_state.dist > beg_state.dist && new_state.energy + 20 < beg_state.energy && new_state.energy < best_state.energy - 0.00001)
+                if (new_state.dist > beg_state.dist && new_state.energy + 20 < beg_state.energy && new_state.energy < best_state.energy - EPSILON_ENERGY)
                 {
                     improved = true;
                     best_state.copy(new_state);
+                }
+            }
+        }
+
+        if (sequence_layout && _n_fixed > 0) // energy optimisation if selection presents. only for sequence_layout!!!
+        {
+            Vec2f selected_center;
+            int selected_count = 0;
+            for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
+            {
+                int ext_idx = getVertexExtIdx(i);
+                // Check if vertex is NOT fixed (i.e., it's selected)
+                bool is_fixed = _fixed_vertices.size() > ext_idx && _fixed_vertices[ext_idx] != 0;
+                if (!is_fixed)
+                {
+                    selected_center.add(beg_state.layout[i]);
+                    selected_count++;
+                }
+            }
+
+            if (selected_count > 0)
+            {
+                selected_center.scale(1.0f / selected_count);
+                for (float angle = _2FLOAT(RAD2DEG(-M_PI / 2)); angle < _2FLOAT(RAD2DEG(M_PI / 2)) + EPSILON; angle += _2FLOAT(RAD2DEG(M_PI / 6.0)))
+                {
+                    new_state.rotateLayout(beg_state, selected_center, angle);
+                    new_state.calcEnergy();
+                    if (new_state.energy < beg_state.energy - EPSILON_ENERGY)
+                    {
+                        improved = true;
+                        best_state.copy(new_state);
+                    }
+                }
+
+                for (float angle = 0; angle < M_PI * 2 + EPSILON; angle += M_PI / 6.0)
+                {
+                    Vec2f dir(0.1, 0);
+                    dir.rotate(angle);
+                    new_state.translateLayout(beg_state, dir); // try different directions
+                    new_state.calcEnergy();
+                    if (new_state.energy < best_state.energy - EPSILON_ENERGY)
+                    {
+                        best_state.copy(new_state);
+                        improved = true;
+                    }
                 }
             }
         }
@@ -399,32 +448,29 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
 
             if (layout_orientation != UNCPECIFIED)
             {
-                new_state.rotateLayout(beg_state, center, _2FLOAT(beg_state.calc_best_angle() / M_PI * 180.));
+                new_state.rotateLayout(beg_state, center, _2FLOAT(RAD2DEG(beg_state.calc_best_angle())));
                 beg_state.copy(new_state);
 
                 if (layout_orientation == VERTICAL)
                 {
-                    new_state.rotateLayout(beg_state, center, 90);
+                    new_state.rotateLayout(beg_state, center, _2FLOAT(RAD2DEG(M_PI / 2)));
                     beg_state.copy(new_state);
                 }
             }
             else
             {
-
-                for (float angle = -90.f; angle < 90.f + EPSILON; angle += 30.f)
+                for (float angle = _2FLOAT(RAD2DEG(-M_PI / 2)); angle < _2FLOAT(RAD2DEG(M_PI / 2)) + EPSILON; angle += _2FLOAT(RAD2DEG(M_PI / 6.0)))
                 {
                     new_state.rotateLayout(beg_state, center, angle);
                     new_state.calcHeight();
 
-                    if (new_state.height < beg_state.height - EPSILON)
+                    if (new_state.height < beg_state.height - EPSILON_ENERGY)
                         beg_state.copy(new_state);
                 }
             }
         }
     }
-
     beg_state.applyToGraph();
-
     _excludeDandlingIntersections();
 }
 

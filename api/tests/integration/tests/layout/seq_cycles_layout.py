@@ -37,6 +37,7 @@ files = [
     "shifting_structs_1_sel",
     "shifting_structs_2_sel",
     "overlapping",
+    "ring_fuse",
 ]
 
 files.sort()

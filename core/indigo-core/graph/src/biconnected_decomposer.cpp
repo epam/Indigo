@@ -27,8 +27,8 @@ IMPL_ERROR(BiconnectedDecomposer, "biconnected_decomposer");
 CP_DEF(BiconnectedDecomposer);
 
 BiconnectedDecomposer::BiconnectedDecomposer(const Graph& graph, bool split_fixed)
-    : _graph(graph), CP_INIT, TL_CP_GET(_components), TL_CP_GET(_dfs_order), TL_CP_GET(_lowest_order), TL_CP_GET(_component_lists), TL_CP_GET(_component_ids),
-      TL_CP_GET(_edges_stack), _cur_order(0), _split_fixed(split_fixed)
+    : _graph(graph), _split_fixed(split_fixed), CP_INIT, TL_CP_GET(_components), TL_CP_GET(_dfs_order), TL_CP_GET(_lowest_order), TL_CP_GET(_component_lists),
+      TL_CP_GET(_component_ids), TL_CP_GET(_edges_stack), _cur_order(0)
 {
     _components.clear();
     _component_lists.clear();
@@ -167,7 +167,11 @@ bool BiconnectedDecomposer::_pushToStack(Array<int>& dfs_stack, int v, const Arr
         }
         else if (_dfs_order[w] < _dfs_order[v] && w != u)
         {
-            if (_sameClass(v, w, fixed_vertices) && _pathSameClass(dfs_stack, w, v, fixed_vertices))
+            // Check if vertices are in same class OR if edge is part of regular polygon
+            bool same_class = _sameClass(v, w, fixed_vertices) && _pathSameClass(dfs_stack, w, v, fixed_vertices);
+            bool is_regular_polygon = isRegularPolygonEdge(v, w, fixed_vertices);
+
+            if (same_class || is_regular_polygon)
             {
                 new_edge.beg = v;
                 new_edge.end = w;
@@ -195,10 +199,13 @@ void BiconnectedDecomposer::_processIfNotPushed(Array<int>& dfs_stack, int w, co
 {
     int v = dfs_stack.top();
 
-    if (_sameClass(v, w, fixed_vertices) && _lowest_order[w] < _lowest_order[v])
+    bool same_class = _sameClass(v, w, fixed_vertices);
+    bool is_regular_polygon = this->isRegularPolygonEdge(v, w, fixed_vertices);
+
+    if ((same_class || is_regular_polygon) && _lowest_order[w] < _lowest_order[v])
         _lowest_order[v] = _lowest_order[w];
 
-    if (!_sameClass(v, w, fixed_vertices))
+    if (!same_class && !is_regular_polygon)
     {
         Array<int>& one = _components.add(new Array<int>());
         one.clear_resize(_graph.vertexEnd());
@@ -232,7 +239,10 @@ void BiconnectedDecomposer::_processIfNotPushed(Array<int>& dfs_stack, int w, co
         {
             Edge e = _edges_stack.top();
             _edges_stack.pop();
-            if (_sameClass(e.beg, e.end, fixed_vertices))
+            bool edge_same_class = _sameClass(e.beg, e.end, fixed_vertices);
+            bool edge_regular_polygon = this->isRegularPolygonEdge(e.beg, e.end, fixed_vertices);
+
+            if (edge_same_class || edge_regular_polygon)
             {
                 _components[cur_comp]->at(e.beg) = 1;
                 _components[cur_comp]->at(e.end) = 1;

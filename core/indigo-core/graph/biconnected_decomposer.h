@@ -37,6 +37,13 @@ namespace indigo
         explicit BiconnectedDecomposer(const Graph& graph, bool split_fixed = false);
         virtual ~BiconnectedDecomposer();
 
+        // Virtual method to check if edge (v, w) is part of a regular polygon
+        // that should not be split during decomposition
+        virtual bool isRegularPolygonEdge(int v, int w, const Array<int>& fixed_vertices) const
+        {
+            return false;
+        }
+
         // returns the amount of biconnected components
         int decompose();
         int decomposeWithFixed(const Array<int>& fixed_vertices);

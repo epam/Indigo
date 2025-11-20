@@ -71,6 +71,7 @@ namespace indigo
         long morgan_code;
         bool is_cyclic;
         bool is_inner_cycle;
+        bool is_nailed;
         int type;
 
         Vec2f pos;
@@ -174,7 +175,6 @@ namespace indigo
 
         bool preserve_existing_layout;
         bool respect_cycles_direction;
-        bool flexible_fixed_components;
         bool sequence_layout;
 
         CancellationHandler* cancellation;
@@ -189,6 +189,7 @@ namespace indigo
         Array<int> _fixed_decomposition;
 
         Array<int> _fixed_vertices;
+        Array<int> _no_scale_vertices; // Vertices from cycles with fixed vertices - should not be scaled
         long _total_morgan_code;
         int _first_vertex_idx;
         int _n_fixed;
@@ -346,6 +347,10 @@ namespace indigo
         bool _prepareAssignedList(Array<int>& assigned_list, BiconnectedDecomposer& bc_decom, PtrArray<MoleculeLayoutGraph>& bc_components,
                                   Array<int>& bc_tree);
         void _assignFinalCoordinates(float bond_length, const Array<Vec2f>& src_layout);
+        void _optimizeSelectedPartPlacement(float bond_length, const std::vector<std::vector<Vec2f>>& bridge_fixed_positions,
+                                            const std::vector<std::pair<int, Vec2f>>& all_fixed_vertices, const std::unordered_set<int>& bridge_connected_pairs,
+                                            const Vec2f& selected_center, const std::vector<int>& selected_vertices, Vec2f& best_translation,
+                                            float& best_rotation);
         void _copyLayout(MoleculeLayoutGraph& component);
         void _getAnchor(int& v1, int& v2, int& v3) const;
 
