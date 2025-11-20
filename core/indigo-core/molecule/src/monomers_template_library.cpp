@@ -24,8 +24,8 @@
 
 #include "common/base_cpp/scanner.h"
 #include "layout/molecule_layout.h"
+
 #include "molecule/elements.h"
-#include "molecule/json_writer.h"
 #include "molecule/ket_document_json_loader.h"
 #include "molecule/ket_document_json_saver.h"
 #include "molecule/molecule.h"
@@ -135,7 +135,7 @@ namespace indigo
         auto tgroup = std::make_unique<TGroup>();
         // save template to ket
         rapidjson::StringBuffer string_buffer;
-        JsonWriter writer;
+        CompactJsonWriter writer;
         writer.Reset(string_buffer);
         writer.StartObject();
         if (for_smiles)
@@ -293,7 +293,7 @@ namespace indigo
                     return result;
                 };
 
-                JsonWriter jwriter(false, true);
+                DocumentJsonWriter jwriter;
                 NullOutput null_out;
                 MoleculeJsonSaver json_saver(null_out);
                 json_saver.saveMonomerTemplate(tg, jwriter);
