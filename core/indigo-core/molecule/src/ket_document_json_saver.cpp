@@ -468,9 +468,9 @@ void KetDocumentJsonSaver::saveMonomerLibrary(const MonomerTemplateLibrary& mono
     rapidjson::StringBuffer string_buffer;
     std::unique_ptr<JsonWriter> writer_ptr;
     if (pretty_json)
-        writer_ptr = std::make_unique<PrettyJsonWriter>();
+        writer_ptr = JsonWriter::createJsonWriter(JsonWriter::Type::PRETTY);
     else
-        writer_ptr = std::make_unique<CompactJsonWriter>();
+        writer_ptr = JsonWriter::createJsonWriter(JsonWriter::Type::COMPACT);
     JsonWriter& writer = *writer_ptr;
     writer.Reset(string_buffer);
     writer.StartObject(); // start
@@ -668,9 +668,9 @@ void KetDocumentJsonSaver::saveKetDocument(const KetDocument& document)
     rapidjson::StringBuffer string_buffer;
     std::unique_ptr<JsonWriter> writer_ptr;
     if (pretty_json)
-        writer_ptr = std::make_unique<PrettyJsonWriter>();
+        writer_ptr = JsonWriter::createJsonWriter(JsonWriter::Type::PRETTY);
     else
-        writer_ptr = std::make_unique<CompactJsonWriter>();
+        writer_ptr = JsonWriter::createJsonWriter(JsonWriter::Type::COMPACT);
     JsonWriter& writer = *writer_ptr;
     writer.Reset(string_buffer);
     saveKetDocument(writer, document);
