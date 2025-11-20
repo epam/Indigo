@@ -54,11 +54,7 @@ void PathwayReactionJsonSaver::saveReaction(PathwayReaction& pwr)
         rmd.buildReactionsData();
     }
     rapidjson::StringBuffer buffer;
-    std::unique_ptr<JsonWriter> writer_ptr;
-    if (pretty_json)
-        writer_ptr = JsonWriter::createJsonWriter(JsonWriter::Type::PRETTY);
-    else
-        writer_ptr = JsonWriter::createJsonWriter(JsonWriter::Type::COMPACT);
+    auto writer_ptr = JsonWriter::createJsonWriter(pretty_json);
     JsonWriter& writer = *writer_ptr;
     writer.Reset(buffer);
     MoleculeJsonSaver moleculeSaver(_output, rmd);

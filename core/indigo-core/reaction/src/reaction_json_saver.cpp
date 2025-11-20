@@ -99,11 +99,7 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn)
 
     // dump molecules
     StringBuffer s;
-    std::unique_ptr<JsonWriter> writer_ptr;
-    if (pretty_json)
-        writer_ptr = JsonWriter::createJsonWriter(JsonWriter::Type::PRETTY);
-    else
-        writer_ptr = JsonWriter::createJsonWriter(JsonWriter::Type::COMPACT);
+    auto writer_ptr = JsonWriter::createJsonWriter(pretty_json);
     JsonWriter& writer = *writer_ptr;
     writer.Reset(s);
     MoleculeJsonSaver json_saver(_output, rmd);
