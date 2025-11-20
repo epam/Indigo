@@ -24,6 +24,7 @@
 #pragma warning(disable : 4251)
 #endif
 
+#include <memory>
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
 #include <rapidjson/stringbuffer.h>
