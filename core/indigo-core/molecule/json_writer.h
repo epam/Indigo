@@ -38,18 +38,18 @@ namespace indigo
 {
 
     // Interface for JSON writers
-    class DLLEXPORT IJsonWriter
+    class DLLEXPORT JsonWriter
     {
     public:
         using Ch = char;
 
-        virtual ~IJsonWriter() = default;
+        virtual ~JsonWriter() = default;
 
         // Rule of five - prevent copying but allow moving
-        IJsonWriter(const IJsonWriter&) = delete;
-        IJsonWriter& operator=(const IJsonWriter&) = delete;
-        IJsonWriter(IJsonWriter&&) = default;
-        IJsonWriter& operator=(IJsonWriter&&) = default;
+        JsonWriter(const JsonWriter&) = delete;
+        JsonWriter& operator=(const JsonWriter&) = delete;
+        JsonWriter(JsonWriter&&) = default;
+        JsonWriter& operator=(JsonWriter&&) = default;
 
         virtual void Reset(rapidjson::StringBuffer& buffer) = 0;
         virtual bool IsComplete() const = 0;
@@ -95,11 +95,11 @@ namespace indigo
         }
 
     protected:
-        IJsonWriter() = default;
+        JsonWriter() = default;
     };
 
     // Compact JSON writer - writes to string buffer without pretty printing
-    class DLLEXPORT CompactJsonWriter : public IJsonWriter
+    class DLLEXPORT CompactJsonWriter : public JsonWriter
     {
     public:
         CompactJsonWriter() = default;
@@ -255,7 +255,7 @@ namespace indigo
     };
 
     // Pretty JSON writer - writes to string buffer with pretty printing
-    class DLLEXPORT PrettyJsonWriter : public IJsonWriter
+    class DLLEXPORT PrettyJsonWriter : public JsonWriter
     {
     public:
         PrettyJsonWriter() = default;
@@ -411,7 +411,7 @@ namespace indigo
     };
 
     // Document JSON writer - writes to rapidjson::Document
-    class DLLEXPORT DocumentJsonWriter : public IJsonWriter
+    class DLLEXPORT DocumentJsonWriter : public JsonWriter
     {
     public:
         DocumentJsonWriter()

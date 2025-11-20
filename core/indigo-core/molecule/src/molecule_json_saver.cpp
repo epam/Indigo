@@ -216,7 +216,7 @@ void MoleculeJsonSaver::_checkSGroupIndices(BaseMolecule& mol, Array<int>& sgs_l
     }
 }
 
-void MoleculeJsonSaver::saveSGroups(BaseMolecule& mol, IJsonWriter& writer)
+void MoleculeJsonSaver::saveSGroups(BaseMolecule& mol, JsonWriter& writer)
 {
     QS_DEF(Array<int>, sgs_sorted);
     _checkSGroupIndices(mol, sgs_sorted);
@@ -266,7 +266,7 @@ void MoleculeJsonSaver::saveSGroups(BaseMolecule& mol, IJsonWriter& writer)
     }
 }
 
-void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, IJsonWriter& writer)
+void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
 {
     writer.StartObject();
     writer.Key("type");
@@ -511,7 +511,7 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, IJsonWriter& writer)
     writer.EndObject();
 }
 
-void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, IJsonWriter& writer)
+void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, JsonWriter& writer)
 {
     QS_DEF(Array<char>, buf);
     ArrayOutput out(buf);
@@ -645,7 +645,7 @@ void MoleculeJsonSaver::saveBonds(BaseMolecule& mol, IJsonWriter& writer)
     }
 }
 
-void MoleculeJsonSaver::saveAttachmentPoint(BaseMolecule& mol, int atom_idx, IJsonWriter& writer)
+void MoleculeJsonSaver::saveAttachmentPoint(BaseMolecule& mol, int atom_idx, JsonWriter& writer)
 {
     int val = 0;
     for (int idx = 1; idx <= mol.attachmentPointCount(); idx++)
@@ -667,7 +667,7 @@ void MoleculeJsonSaver::saveAttachmentPoint(BaseMolecule& mol, int atom_idx, IJs
     }
 }
 
-void MoleculeJsonSaver::saveStereoCenter(BaseMolecule& mol, int atom_idx, IJsonWriter& writer)
+void MoleculeJsonSaver::saveStereoCenter(BaseMolecule& mol, int atom_idx, JsonWriter& writer)
 {
     writer.Key("pyramid");
     writer.StartArray();
@@ -682,7 +682,7 @@ void MoleculeJsonSaver::saveStereoCenter(BaseMolecule& mol, int atom_idx, IJsonW
     writer.EndArray();
 }
 
-void MoleculeJsonSaver::saveHighlights(BaseMolecule& mol, IJsonWriter& writer)
+void MoleculeJsonSaver::saveHighlights(BaseMolecule& mol, JsonWriter& writer)
 {
     int ca = mol.countHighlightedAtoms();
     int cb = mol.countHighlightedBonds();
@@ -730,13 +730,13 @@ void MoleculeJsonSaver::saveHighlights(BaseMolecule& mol, IJsonWriter& writer)
         writer.EndArray();
     }
 }
-static void saveNativeFloat(IJsonWriter& writer, float f_value)
+static void saveNativeFloat(JsonWriter& writer, float f_value)
 {
     std::string val = std::to_string(f_value);
     writer.RawValue(val.c_str(), val.length(), kStringType);
 }
 
-void MoleculeJsonSaver::writeFloat(IJsonWriter& writer, float f_value)
+void MoleculeJsonSaver::writeFloat(JsonWriter& writer, float f_value)
 {
     if (use_native_precision)
         saveNativeFloat(writer, f_value);
@@ -744,7 +744,7 @@ void MoleculeJsonSaver::writeFloat(IJsonWriter& writer, float f_value)
         writer.Double(f_value);
 }
 
-void MoleculeJsonSaver::writePos(IJsonWriter& writer, const Vec3f& pos)
+void MoleculeJsonSaver::writePos(JsonWriter& writer, const Vec3f& pos)
 {
     writer.StartObject();
     writer.Key("x");
@@ -756,7 +756,7 @@ void MoleculeJsonSaver::writePos(IJsonWriter& writer, const Vec3f& pos)
     writer.EndObject();
 }
 
-void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, IJsonWriter& writer)
+void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
 {
     QS_DEF(Array<char>, buf);
     ArrayOutput out(buf);
@@ -1164,7 +1164,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, IJsonWriter& writer)
     }
 }
 
-void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, IJsonWriter& writer)
+void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
 {
     std::string template_id("monomerTemplate-");
     std::string tg_id(monomerId(tg));
@@ -1295,7 +1295,7 @@ void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, IJsonWriter& writer)
     writer.EndObject();
 }
 
-void MoleculeJsonSaver::saveAmbiguousMonomerTemplate(TGroup& tg, IJsonWriter& writer)
+void MoleculeJsonSaver::saveAmbiguousMonomerTemplate(TGroup& tg, JsonWriter& writer)
 {
     std::string template_id("ambiguousMonomerTemplate-");
     std::string tg_id(monomerId(tg));
@@ -1331,7 +1331,7 @@ void MoleculeJsonSaver::saveAmbiguousMonomerTemplate(TGroup& tg, IJsonWriter& wr
     writer.EndObject();
 }
 
-void MoleculeJsonSaver::saveSuperatomAttachmentPoints(Superatom& sa, IJsonWriter& writer)
+void MoleculeJsonSaver::saveSuperatomAttachmentPoints(Superatom& sa, JsonWriter& writer)
 {
     std::map<std::string, int> sorted_attachment_points;
     if (sa.attachment_points.size())
@@ -1390,7 +1390,7 @@ void MoleculeJsonSaver::saveSuperatomAttachmentPoints(Superatom& sa, IJsonWriter
     }
 }
 
-void MoleculeJsonSaver::saveMonomerAttachmentPoints(TGroup& tg, IJsonWriter& writer)
+void MoleculeJsonSaver::saveMonomerAttachmentPoints(TGroup& tg, JsonWriter& writer)
 {
     auto& sgroups = tg.fragment->sgroups;
     for (int j = sgroups.begin(); j != sgroups.end(); j = sgroups.next(j))
@@ -1403,7 +1403,7 @@ void MoleculeJsonSaver::saveMonomerAttachmentPoints(TGroup& tg, IJsonWriter& wri
         }
     }
 }
-void MoleculeJsonSaver::saveRGroup(RGroup& rgroup, int rgnum, IJsonWriter& writer)
+void MoleculeJsonSaver::saveRGroup(RGroup& rgroup, int rgnum, JsonWriter& writer)
 {
     QS_DEF(Array<char>, buf);
     ArrayOutput out(buf);
@@ -1493,7 +1493,7 @@ int MoleculeJsonSaver::getMonomerNumber(int mon_idx)
     return -1;
 }
 
-void MoleculeJsonSaver::saveEndpoint(BaseMolecule& mol, const std::string& ep, int beg_idx, int end_idx, IJsonWriter& writer, bool hydrogen)
+void MoleculeJsonSaver::saveEndpoint(BaseMolecule& mol, const std::string& ep, int beg_idx, int end_idx, JsonWriter& writer, bool hydrogen)
 {
     writer.Key(ep.c_str());
     writer.StartObject();
@@ -1527,7 +1527,7 @@ void MoleculeJsonSaver::saveEndpoint(BaseMolecule& mol, const std::string& ep, i
     writer.EndObject();
 }
 
-void MoleculeJsonSaver::saveMoleculeReference(int mol_id, IJsonWriter& writer)
+void MoleculeJsonSaver::saveMoleculeReference(int mol_id, JsonWriter& writer)
 {
     writer.StartObject();
     writer.Key("$ref");
@@ -1547,7 +1547,7 @@ void MoleculeJsonSaver::saveMoleculeReference(int mol_id, IJsonWriter& writer)
     // printf("\n");
 }
 
-void MoleculeJsonSaver::saveAnnotation(IJsonWriter& writer, const KetObjectAnnotation& annotation)
+void MoleculeJsonSaver::saveAnnotation(JsonWriter& writer, const KetObjectAnnotation& annotation)
 {
     writer.Key("annotation");
     writer.StartObject();
@@ -1555,7 +1555,7 @@ void MoleculeJsonSaver::saveAnnotation(IJsonWriter& writer, const KetObjectAnnot
     writer.EndObject();
 }
 
-void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, IJsonWriter& writer)
+void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
 {
     _no_template_molecules.clear();
     QS_DEF(Array<char>, buf);
@@ -1747,7 +1747,7 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, IJsonWriter& writer)
     writer.EndObject(); // root
 }
 
-void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, IJsonWriter& writer)
+void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
 {
     if (add_stereo_desc)
         bmol.addCIP();
@@ -2088,7 +2088,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, IJsonWriter& writer)
     writer.EndObject();
 }
 
-void MoleculeJsonSaver::saveFragment(BaseMolecule& fragment, IJsonWriter& writer)
+void MoleculeJsonSaver::saveFragment(BaseMolecule& fragment, JsonWriter& writer)
 {
     _pmol = nullptr;
     _pqmol = nullptr;
@@ -2133,12 +2133,12 @@ void MoleculeJsonSaver::saveFragment(BaseMolecule& fragment, IJsonWriter& writer
 void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol)
 {
     StringBuffer s;
-    std::unique_ptr<IJsonWriter> writer_ptr;
+    std::unique_ptr<JsonWriter> writer_ptr;
     if (pretty_json)
         writer_ptr = std::make_unique<PrettyJsonWriter>();
     else
         writer_ptr = std::make_unique<CompactJsonWriter>();
-    IJsonWriter& writer = *writer_ptr;
+    JsonWriter& writer = *writer_ptr;
     writer.Reset(s);
     saveMolecule(bmol, writer);
     std::stringstream result;
@@ -2146,7 +2146,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol)
     _output.printf("%s", result.str().c_str());
 }
 
-void MoleculeJsonSaver::saveMetaData(IJsonWriter& writer, const MetaDataStorage& meta)
+void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& meta)
 {
     static const std::unordered_map<int, std::string> _arrow_type2string = {
         {ReactionComponent::ARROW_BASIC, "open-angle"},
@@ -2432,7 +2432,7 @@ void MoleculeJsonSaver::saveMetaData(IJsonWriter& writer, const MetaDataStorage&
     }
 }
 
-void MoleculeJsonSaver::saveTextV1(IJsonWriter& writer, const SimpleTextObject& text_obj)
+void MoleculeJsonSaver::saveTextV1(JsonWriter& writer, const SimpleTextObject& text_obj)
 {
     std::string content = text_obj.content();
     if (content.empty() && text_obj.block().size())
@@ -2542,7 +2542,7 @@ void MoleculeJsonSaver::saveTextV1(IJsonWriter& writer, const SimpleTextObject& 
     writer.EndObject();
 }
 
-void MoleculeJsonSaver::saveTextV2(IJsonWriter& writer, const SimpleTextObject& text_obj)
+void MoleculeJsonSaver::saveTextV2(JsonWriter& writer, const SimpleTextObject& text_obj)
 {
     writer.Key("boundingBox");
     writer.WriteRect(text_obj.boundingBox());
@@ -2559,7 +2559,7 @@ void MoleculeJsonSaver::saveTextV2(IJsonWriter& writer, const SimpleTextObject& 
         saveParagraphs(writer, text_obj);
 }
 
-void MoleculeJsonSaver::saveFontStyles(IJsonWriter& writer, const FONT_STYLE_SET& fss)
+void MoleculeJsonSaver::saveFontStyles(JsonWriter& writer, const FONT_STYLE_SET& fss)
 {
     std::vector<std::reference_wrapper<const std::pair<KETFontStyle, bool>>> font_fields;
     for (auto& fs : fss)
@@ -2623,7 +2623,7 @@ void MoleculeJsonSaver::saveFontStyles(IJsonWriter& writer, const FONT_STYLE_SET
     }
 }
 
-void MoleculeJsonSaver::saveParagraphs(IJsonWriter& writer, const SimpleTextObject& text_obj)
+void MoleculeJsonSaver::saveParagraphs(JsonWriter& writer, const SimpleTextObject& text_obj)
 {
     const auto& paragraphs = text_obj.block();
     writer.Key("paragraphs");
@@ -2660,7 +2660,7 @@ void MoleculeJsonSaver::saveParagraphs(IJsonWriter& writer, const SimpleTextObje
     writer.EndArray();
 }
 
-void MoleculeJsonSaver::saveParts(IJsonWriter& writer, const SimpleTextObject::KETTextParagraph& paragraph, const FONT_STYLE_SET& def_fss)
+void MoleculeJsonSaver::saveParts(JsonWriter& writer, const SimpleTextObject::KETTextParagraph& paragraph, const FONT_STYLE_SET& def_fss)
 {
     if (paragraph.font_styles.size() > 1)
     {
@@ -2684,7 +2684,7 @@ void MoleculeJsonSaver::saveParts(IJsonWriter& writer, const SimpleTextObject::K
     }
 }
 
-void MoleculeJsonSaver::saveAlignment(IJsonWriter& writer, SimpleTextObject::TextAlignment alignment)
+void MoleculeJsonSaver::saveAlignment(JsonWriter& writer, SimpleTextObject::TextAlignment alignment)
 {
     std::string alignment_str;
     switch (alignment)

@@ -36,7 +36,7 @@
 
 namespace indigo
 {
-    class IJsonWriter;
+    class JsonWriter;
 
     template <typename T>
     constexpr auto toUType(T enumerator) noexcept
@@ -118,7 +118,7 @@ namespace indigo
         std::pair<bool, int> getStringPropIdx(const std::string& name) const;
 
         void parseOptsFromKet(const rapidjson::Value& json);
-        void saveOptsToKet(IJsonWriter& writer) const;
+        void saveOptsToKet(JsonWriter& writer) const;
 
         void copy(const KetObjWithProps& other)
         {

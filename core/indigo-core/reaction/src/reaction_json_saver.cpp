@@ -99,12 +99,12 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn)
 
     // dump molecules
     StringBuffer s;
-    std::unique_ptr<IJsonWriter> writer_ptr;
+    std::unique_ptr<JsonWriter> writer_ptr;
     if (pretty_json)
         writer_ptr = std::make_unique<PrettyJsonWriter>();
     else
         writer_ptr = std::make_unique<CompactJsonWriter>();
-    IJsonWriter& writer = *writer_ptr;
+    JsonWriter& writer = *writer_ptr;
     writer.Reset(s);
     MoleculeJsonSaver json_saver(_output, rmd);
     json_saver.add_stereo_desc = add_stereo_desc;
