@@ -36,12 +36,24 @@
 
 namespace indigo
 {
+    // Forward declarations
+    class CompactJsonWriter;
+    class PrettyJsonWriter;
+    class DocumentJsonWriter;
 
     // Interface for JSON writers
     class DLLEXPORT JsonWriter
     {
     public:
+        enum class Type
+        {
+            COMPACT,
+            PRETTY,
+            DOCUMENT
+        };
         using Ch = char;
+
+        static std::unique_ptr<JsonWriter> createJsonWriter(Type type);
 
         virtual ~JsonWriter() = default;
 
@@ -102,8 +114,6 @@ namespace indigo
     class DLLEXPORT CompactJsonWriter : public JsonWriter
     {
     public:
-        CompactJsonWriter() = default;
-
         void Reset(rapidjson::StringBuffer& buffer) override
         {
             _writer.Reset(buffer);
@@ -251,6 +261,9 @@ namespace indigo
         }
 
     private:
+        friend std::unique_ptr<JsonWriter> JsonWriter::createJsonWriter(Type type);
+        CompactJsonWriter() = default;
+
         rapidjson::Writer<rapidjson::StringBuffer> _writer;
     };
 
@@ -258,8 +271,6 @@ namespace indigo
     class DLLEXPORT PrettyJsonWriter : public JsonWriter
     {
     public:
-        PrettyJsonWriter() = default;
-
         void Reset(rapidjson::StringBuffer& buffer) override
         {
             _pretty_writer.Reset(buffer);
@@ -407,6 +418,9 @@ namespace indigo
         }
 
     private:
+        friend std::unique_ptr<JsonWriter> JsonWriter::createJsonWriter(Type type);
+        PrettyJsonWriter() = default;
+
         rapidjson::PrettyWriter<rapidjson::StringBuffer> _pretty_writer;
     };
 
@@ -414,11 +428,6 @@ namespace indigo
     class DLLEXPORT DocumentJsonWriter : public JsonWriter
     {
     public:
-        DocumentJsonWriter()
-        {
-            _document.SetNull();
-        }
-
         void Reset(rapidjson::StringBuffer& /*buffer*/) override
         {
             _document.SetNull();
@@ -687,6 +696,13 @@ namespace indigo
         }
 
     private:
+        friend std::unique_ptr<JsonWriter> JsonWriter::createJsonWriter(Type type);
+
+        DocumentJsonWriter()
+        {
+            _document.SetNull();
+        }
+
         struct Context
         {
             rapidjson::Value* value;
@@ -725,7 +741,6 @@ namespace indigo
             }
         }
     };
-
 } // namespace indigo
 
 #ifdef _MSC_VER
