@@ -950,7 +950,7 @@ void MoleculeLayoutGraph::_optimizeSelectedPartPlacement(float bond_length, cons
                 rotated_pos.x += dx;              // Apply translation
                 rotated_pos.y += dy;
 
-                for (int i = 0; i < bridge_fixed_positions[v].size(); i++)
+                for (size_t i = 0; i < bridge_fixed_positions[v].size(); i++)
                 {
                     const Vec2f& fixed_pos = bridge_fixed_positions[v][i];
                     float len = Vec2f::dist(rotated_pos, fixed_pos);
@@ -964,13 +964,13 @@ void MoleculeLayoutGraph::_optimizeSelectedPartPlacement(float bond_length, cons
 
         // Calculate total length and variance of bridge bonds
         float total_length = 0;
-        for (int i = 0; i < bridge_lengths.size(); i++)
+        for (size_t i = 0; i < bridge_lengths.size(); i++)
             total_length += bridge_lengths[i];
 
         float mean = total_length / bridge_lengths.size();
 
         float variance = 0;
-        for (int i = 0; i < bridge_lengths.size(); i++)
+        for (size_t i = 0; i < bridge_lengths.size(); i++)
         {
             float dev = bridge_lengths[i] - mean;
             variance += dev * dev;
