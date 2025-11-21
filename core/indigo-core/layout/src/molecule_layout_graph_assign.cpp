@@ -506,7 +506,7 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
 
     bool chain_attached;
 
-    float bond_length_arc = (sequence_layout && supergraph._n_fixed) ? LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH : 1.0;
+    float bond_length_arc = (sequence_layout && supergraph._n_fixed) ? LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH : 1.0f;
 
     // Try to attach chains with one, two or more common edges outside drawn part
     do
