@@ -275,7 +275,7 @@ void parse_cdx(const char* filename, bool pretty_json)
     sc.seek(22, SEEK_CUR); // VcjD0100 + 0x01020304 + 10 zero bytes
 
     rapidjson::StringBuffer s;
-    indigo::JsonWriter json(pretty_json);
+    auto& json = *JsonWriter::createJsonWriter(true);
     json.Reset(s);
     uint16_t tag;
     json.StartArray();

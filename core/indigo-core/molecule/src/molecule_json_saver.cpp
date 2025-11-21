@@ -20,6 +20,7 @@
 #include <set>
 
 #include "layout/molecule_layout.h"
+
 #include "molecule/molecule.h"
 #include "molecule/molecule_cip_calculator.h"
 #include "molecule/molecule_json_saver.h"
@@ -28,6 +29,7 @@
 #include "molecule/monomer_commons.h"
 #include "molecule/monomers_template_library.h"
 #include "molecule/parse_utils.h"
+
 #include "molecule/query_molecule.h"
 #include "molecule/smiles_loader.h"
 #include "molecule/smiles_saver.h"
@@ -2131,7 +2133,8 @@ void MoleculeJsonSaver::saveFragment(BaseMolecule& fragment, JsonWriter& writer)
 void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol)
 {
     StringBuffer s;
-    JsonWriter writer(pretty_json);
+    auto writer_ptr = JsonWriter::createJsonWriter(pretty_json);
+    JsonWriter& writer = *writer_ptr;
     writer.Reset(s);
     saveMolecule(bmol, writer);
     std::stringstream result;

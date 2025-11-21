@@ -19,6 +19,7 @@
 #include "molecule/macro_properties_calculator.h"
 #include "molecule/crippen.h"
 #include "molecule/json_writer.h"
+
 #include "molecule/molecule.h"
 #include "molecule/molecule_gross_formula.h"
 #include "molecule/molecule_json_loader.h"
@@ -368,7 +369,8 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
     }
     // Sequences generated. Calculate macro properties
     rapidjson::StringBuffer s;
-    JsonWriter writer(pretty_json);
+    auto writer_ptr = JsonWriter::createJsonWriter(pretty_json);
+    JsonWriter& writer = *writer_ptr;
     writer.Reset(s);
     writer.SetMaxDecimalPlaces(6);
     writer.StartArray();
