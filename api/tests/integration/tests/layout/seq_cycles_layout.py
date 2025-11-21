@@ -18,6 +18,7 @@ from env_indigo import *  # noqa
 indigo = Indigo()
 indigo.setOption("json-saving-pretty", True)
 indigo.setOption("ignore-stereochemistry-errors", True)
+indigo.setOption("json-use-native-precision", True)
 
 print("*** Sequence cycles layout ***")
 
@@ -52,8 +53,8 @@ for filename in files:
         )
 
     mol.layout()
-    with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
-        file.write(mol.json())
+    # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
+    #     file.write(mol.json())
     with open(getRefFilepath(filename + ".ket"), "r") as file:
         ket_ref = file.read()
 
