@@ -255,9 +255,10 @@ void BiconnectedDecomposer::_processIfNotPushed(Array<int>& dfs_stack, int w, co
                 one.zerofill();
                 one.at(e.beg) = 1;
                 one.at(e.end) = 1;
-                if (_component_ids[v] == 0)
-                    _component_ids[v] = &_component_lists.add(new Array<int>());
-                _component_ids[v]->push(_components.size() - 1);
+                int anchor = (_dfs_order[e.beg] < _dfs_order[e.end]) ? e.beg : e.end;
+                if (_component_ids[anchor] == 0)
+                    _component_ids[anchor] = &_component_lists.add(new Array<int>());
+                _component_ids[anchor]->push(_components.size() - 1);
             }
         }
         // add the final tree edge (v,w) exactly like in the old code
