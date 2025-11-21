@@ -3,6 +3,7 @@ n-agon1.ket:SUCCEED
 n-agon2.ket:SUCCEED
 overlapping.ket:SUCCEED
 pep_sel.ket:SUCCEED
+ring_fuse.ket:SUCCEED
 rna_bicyclic.ket:SUCCEED
 rna_sel.ket:SUCCEED
 shifting_structs_1.ket:SUCCEED

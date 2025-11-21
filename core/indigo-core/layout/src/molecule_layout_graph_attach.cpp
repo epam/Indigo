@@ -224,6 +224,15 @@ bool MoleculeLayoutGraphSimple::_attachCycleOutside(const Cycle& cycle, float le
     Vec2f p;
 
     // Make Border1, Border2 from component border (borders have two common vertices)
+    // First check that both vertices are on the border
+    Cycle border;
+    _getBorder(border);
+    if (border.findVertex(c_beg) == -1 || border.findVertex(c_end) == -1)
+    {
+        // One or both vertices are not on the border - cannot attach this way
+        return false;
+    }
+
     _splitBorder(c_beg, c_end, border1v, border1e, border2v, border2e);
 
     QS_DEF(MoleculeLayoutGraphSimple, next_bc);
@@ -323,7 +332,13 @@ bool MoleculeLayoutGraphSimple::_attachCycleOutside(const Cycle& cycle, float le
 
     // Copy new layout
     if (is_attached)
+    {
+        for (int i = 0; i < cycle.vertexCount(); i++)
+        {
+            _layout_vertices[cycle.getVertex(i)].is_nailed = true;
+        }
         next_bc.copyLayoutTo(*this, mapping);
+    }
 
     return is_attached;
 }
@@ -449,7 +464,11 @@ bool MoleculeLayoutGraphSimple::_attachCycleInside(const Cycle& cycle, float len
 
     // Copy new layout
     if (attached)
-        next_bc.copyLayoutTo(*this, mapping);
+        for (int i = 0; i < cycle.vertexCount(); i++)
+        {
+            _layout_vertices[cycle.getVertex(i)].is_nailed = true;
+            next_bc.copyLayoutTo(*this, mapping);
+        }
 
     return attached;
 }

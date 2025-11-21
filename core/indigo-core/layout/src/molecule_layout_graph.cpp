@@ -37,7 +37,6 @@ MoleculeLayoutGraph::MoleculeLayoutGraph() : Graph()
     _flipped = false;
     preserve_existing_layout = false;
     respect_cycles_direction = false;
-    flexible_fixed_components = false;
     sequence_layout = false;
 }
 
@@ -248,16 +247,24 @@ void MoleculeLayoutGraphSimple::makeLayoutSubgraph(MoleculeLayoutGraph& graph, F
 
     new_vertex.is_cyclic = false;
 
-    if (vertices.size())
-        _fixed_vertices.clear_resize(vertices[vertexEnd() - 1] + 1);
+    if (graph._fixed_vertices.size())
+    {
+        _fixed_vertices.clear_resize(vertices.size());
+        _fixed_vertices.zerofill();
+    }
     for (int i = 0; i < vertices.size(); i++)
     {
-        new_vertex.ext_idx = vertices[i];
-        new_vertex.type = graph._layout_vertices[vertices[i]].type;
-        new_vertex.morgan_code = graph._layout_vertices[vertices[i]].morgan_code;
-        registerLayoutVertex(mapping[vertices[i]], new_vertex);
-        if (graph._fixed_vertices.size())
-            _fixed_vertices[vertices[i]] = graph._fixed_vertices[mapping[vertices[i]]];
+        int v_ext = vertices[i];    // external index in parent graph
+        int v_int = mapping[v_ext]; // internal index in this subgraph
+
+        new_vertex.ext_idx = v_ext;
+        new_vertex.type = graph._layout_vertices[v_ext].type;
+        new_vertex.morgan_code = graph._layout_vertices[v_ext].morgan_code;
+        registerLayoutVertex(v_int, new_vertex);
+        if (graph._fixed_vertices.size() > v_ext)
+        {
+            _fixed_vertices[v_int] = graph._fixed_vertices[v_ext];
+        }
     }
 
     for (int i = edgeBegin(); i < edgeEnd(); i = edgeNext(i))
@@ -393,7 +400,6 @@ void MoleculeLayoutGraph::_layoutMultipleComponents(BaseMolecule& molecule, bool
         component.max_iterations = max_iterations;
         component.layout_orientation = layout_orientation;
         component.respect_cycles_direction = respect_cycles_direction;
-        component.flexible_fixed_components = flexible_fixed_components;
 
         component._molecule = &molecule;
         component._molecule_edge_mapping = molecule_edge_mapping.ptr();

@@ -87,7 +87,7 @@ CEXPORT int indigoLayout(int object)
 
             if (mol->tgroups.getTGroupCount())
             {
-                ml.bond_length = LayoutOptions::DEFAULT_BOND_LENGTH * 1.5;
+                ml.bond_length = LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH;
                 ml.respect_existing_layout = true;
                 ml.respect_cycles_direction = true;
                 ml.flexible_fixed_components = false;
