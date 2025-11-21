@@ -417,7 +417,7 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
 
                 for (float angle = 0; angle < _2FLOAT(DEG2RAD(ANGLE_360)) + EPSILON; angle += _2FLOAT(DEG2RAD(ANGLE_30)))
                 {
-                    Vec2f dir(0.1, 0);
+                    Vec2f dir(0.1f, 0);
                     dir.rotate(angle);
                     new_state.translateLayout(beg_state, dir); // try different directions
                     new_state.calcEnergy();

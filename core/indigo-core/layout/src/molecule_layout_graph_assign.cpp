@@ -940,7 +940,7 @@ void MoleculeLayoutGraph::_optimizeSelectedPartPlacement(float bond_length, cons
         for (auto v : selected_vertices)
         {
             // This is a selected vertex - check if it has bridge bonds
-            if (bridge_fixed_positions.size() > v && bridge_fixed_positions[v].size() > 0)
+            if (bridge_fixed_positions.size() > size_t(v) && bridge_fixed_positions[v].size() > 0)
             {
                 // Apply rotation around selected_center, then translation
                 Vec2f rotated_pos = _layout_vertices[v].pos;
