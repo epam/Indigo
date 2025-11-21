@@ -16,20 +16,20 @@
  * limitations under the License.
  ***************************************************************************/
 
-#pragma once
-
-#include "base_cpp/array.h"
+#include "molecule/json_writer.h"
 
 namespace indigo
 {
-    class BaseMolecule;
-
-    class Crippen
+    std::unique_ptr<JsonWriter> JsonWriter::createJsonWriter(bool pretty)
     {
-    public:
-        static double logP(BaseMolecule& molecule);
-        static double molarRefractivity(BaseMolecule& molecule);
-        static double pKa(BaseMolecule& molecule);
-        static void getPKaValues(BaseMolecule& molecule, Array<double>& values);
-    };
-}
+        if (pretty)
+            return std::unique_ptr<JsonWriter>(new PrettyJsonWriter());
+        else
+            return std::unique_ptr<JsonWriter>(new CompactJsonWriter());
+    }
+
+    std::unique_ptr<JsonWriter> JsonWriter::createJsonDocumentWriter()
+    {
+        return std::unique_ptr<JsonWriter>(new DocumentJsonWriter());
+    }
+} // namespace indigo

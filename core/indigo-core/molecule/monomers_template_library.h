@@ -287,7 +287,7 @@ namespace indigo
 
         MonomerTemplate& addMonomerTemplate(const std::string& id, const std::string& monomer_class, const IdtAlias& idt_alias, bool unresolved = false);
 
-        MonomerTemplate& addMonomerTemplate(const TGroup& tgroup, const IdtAlias& idt_alias);
+        MonomerTemplate& addMonomerTemplate(TGroup& tgroup, const IdtAlias& idt_alias);
 
         void addMonomersFromMolecule(Molecule& mol, PropertiesMap& properties);
 
