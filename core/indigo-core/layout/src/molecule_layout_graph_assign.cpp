@@ -505,7 +505,8 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
     }
 
     bool chain_attached;
-    float bond_length_arc = sequence_layout ? LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH : 1.0;
+
+    float bond_length_arc = (sequence_layout && supergraph._n_fixed) ? LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH : 1.0;
 
     // Try to attach chains with one, two or more common edges outside drawn part
     do
@@ -1093,16 +1094,37 @@ void MoleculeLayoutGraph::_optimizeSelectedPartPlacement(float bond_length, cons
     best_rotation = angle;
 }
 
+// Reflect inner cycle vertices through their single neighbor
+void MoleculeLayoutGraph::_reflectCycleVertices(const std::vector<int>& cycle_vertices)
+{
+    // Reflect inner cycle vertices through their single neighbor
+    for (auto vx_inner_idx : cycle_vertices)
+    {
+        auto& vx = getVertex(_layout_vertices[vx_inner_idx].ext_idx);
+        int nei_vx_idx = vx.neiVertex(vx.neiBegin()); // Only one neighbor
+
+        auto& inner_pos = _layout_vertices[vx_inner_idx].pos;
+        auto& nei_pos = _layout_vertices[nei_vx_idx].pos;
+
+        // Reflect inner_pos through nei_pos: inner_pos = 2*nei_pos - inner_pos
+        inner_pos.sub(nei_pos);
+        inner_pos.negate();
+        inner_pos.add(nei_pos);
+    }
+}
+
 // Scale and transform
 void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array<Vec2f>& src_layout)
 {
+    std::vector<int> inner_cycle_vertices;
+
     if (_n_fixed > 0)
     {
         // For sequence_layout mode: scale selected vertices to bond_length
         if (sequence_layout)
         {
             Vec2f selected_centroid(0, 0);
-            std::vector<int> sel_vertices, inner_cycle_vertices, fix_vertexes;
+            std::vector<int> sel_vertices, fix_vertexes;
 
             // Collect selected vertices (not fixed/nailed)
             for (auto vx_idx : vertices())
@@ -1118,7 +1140,6 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                     fix_vertexes.push_back(vx_idx);
                     continue;
                 }
-
                 selected_centroid.add(lvx.pos);
                 sel_vertices.push_back(vx_idx);
                 if (lvx.is_inner_cycle)
@@ -1138,21 +1159,7 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                     lvx.pos += selected_centroid;
                 }
 
-                // Reflect inner cycle vertices through their single neighbor
-                for (auto vx_inner_idx : inner_cycle_vertices)
-                {
-                    auto& vx = getVertex(_layout_vertices[vx_inner_idx].ext_idx);
-                    int nei_vx_idx = vx.neiVertex(vx.neiBegin()); // Only one neighbor
-
-                    auto& inner_pos = _layout_vertices[vx_inner_idx].pos;
-                    auto& nei_pos = _layout_vertices[nei_vx_idx].pos;
-
-                    // Reflect inner_pos through nei_pos: inner_pos = 2*nei_pos - inner_pos
-                    inner_pos.sub(nei_pos);
-                    inner_pos.negate();
-                    inner_pos.add(nei_pos);
-                }
-
+                _reflectCycleVertices(inner_cycle_vertices);
                 // Build bridge bond information using already collected vertices
                 std::vector<std::vector<Vec2f>> bridge_fixed_positions(vertexEnd());
                 std::vector<std::pair<int, Vec2f>> all_fixed_vertices;
@@ -1191,8 +1198,6 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                     }
                 }
 
-                // Use selected_centroid as optimization center (already calculated)
-                // Use gradient descent to find optimal translation and rotation
                 Vec2f best_translation(0, 0);
                 float best_rotation = 0.0f;
                 _optimizeSelectedPartPlacement(bond_length, bridge_fixed_positions, all_fixed_vertices, bridge_connected_pairs, selected_centroid, sel_vertices,
@@ -1202,10 +1207,10 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                 for (auto vx_idx : sel_vertices)
                 {
                     auto& pos = _layout_vertices[vx_idx].pos;
-                    pos.sub(selected_centroid); // Move to origin
+                    pos.sub(selected_centroid);
                     pos.rotate(best_rotation);
-                    pos.add(selected_centroid); // Move back
-                    pos.add(best_translation);  // Apply translation
+                    pos.add(selected_centroid);
+                    pos.add(best_translation);
                 }
             }
         }
@@ -1214,7 +1219,18 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
             for (auto vx_idx : vertices())
                 _layout_vertices[vx_idx].pos.scale(bond_length);
         }
+
         return;
+    }
+    else if (sequence_layout)
+    {
+        for (auto vx_idx : vertices())
+        {
+            auto& lvx = _layout_vertices[vx_idx];
+            if (lvx.is_inner_cycle)
+                inner_cycle_vertices.push_back(vx_idx);
+        }
+        _reflectCycleVertices(inner_cycle_vertices);
     }
 
     if (vertexCount() == 1)

@@ -356,6 +356,7 @@ namespace indigo
 
         void _findFixedComponents(BiconnectedDecomposer& bc_decom, Array<int>& fixed_components, PtrArray<MoleculeLayoutGraph>& bc_components);
         bool _assignComponentsRelativeCoordinates(PtrArray<MoleculeLayoutGraph>& bc_components, Array<int>& fixed_components, BiconnectedDecomposer& bc_decom);
+        void _reflectCycleVertices(const std::vector<int>& cycle_vertices);
         void _attachCrossingEdges();
 
         void _buildOutline(void);
