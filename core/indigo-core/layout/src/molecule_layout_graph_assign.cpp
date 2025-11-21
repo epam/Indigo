@@ -21,6 +21,7 @@
 #include "graph/embedding_enumerator.h"
 #include "graph/morgan_code.h"
 #include "layout/attachment_layout.h"
+#include "layout/metalayout.h"
 #include "layout/molecule_layout_graph.h"
 
 #include <memory>
@@ -102,7 +103,7 @@ public:
         const Vec2f& pos_w = _layout_graph.getPos(w);
         float edge_len = Vec2f::dist(pos_v, pos_w);
 
-        const float target_len = 1.5f;
+        const float target_len = LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH;
         const float tolerance = 0.1f;
 
         if (fabs(edge_len - target_len) > tolerance)
@@ -121,7 +122,7 @@ private:
     {
         // Simple cycle detection: try to find path from w back to v
         // using only edges with length ~1.5
-        const float target_len = 1.5f;
+        const float target_len = LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH;
         const float tolerance = 0.3f;
 
         Array<int> queue;
@@ -504,7 +505,7 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
     }
 
     bool chain_attached;
-    float bond_length_arc = sequence_layout ? 1.5 : 1.0;
+    float bond_length_arc = sequence_layout ? LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH : 1.0;
 
     // Try to attach chains with one, two or more common edges outside drawn part
     do
@@ -578,8 +579,8 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
 
         for (i = 0; !chain_attached && i < sorted_cycles.size();)
         {
-            // 1.5f (> 1) means to calculate new length;
-            if (_attachCycleOutside(cycles[sorted_cycles[i]], 1.5, 0))
+            // LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH (> 1) means to calculate new length;
+            if (_attachCycleOutside(cycles[sorted_cycles[i]], LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, 0))
             {
                 cycles.remove(sorted_cycles[i]);
                 sorted_cycles.remove(i);
