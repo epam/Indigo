@@ -642,7 +642,7 @@ void MoleculeLayoutGraphSimple::_assignFirstCycle(const Cycle& cycle)
     Vec2f diff(_layout_vertices[cycle.getVertex(1)].pos - _layout_vertices[cycle.getVertex(0)].pos);
     if (respect_cycles_direction && diff.normalize())
     {
-        phi *= _getCycleDirection();
+        phi *= _getCycleDirection(cycle);
         _layout_vertices[cycle.getVertex(1)].pos = _layout_vertices[cycle.getVertex(0)].pos + diff;
     }
     else

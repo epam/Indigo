@@ -289,7 +289,7 @@ namespace indigo
         };
 
         // geometry functions
-        int _getCycleDirection() const;
+        int _getCycleDirection(const Cycle& cycle) const;
         int _calcIntersection(int edge1, int edge2) const;
         bool _isVertexOnEdge(int vert_idx, int edge_beg, int edge_end) const;
         bool _isVertexOnSomeEdge(int vert_idx) const;
