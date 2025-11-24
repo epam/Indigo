@@ -115,7 +115,7 @@ namespace indigo
     {
         CdxmlNode()
             : element(ELEM_C), type(kCDXNodeType_Element), enchanced_stereo(EnhancedStereoType::UNSPECIFIED), is_not_list(false), has_fragment(false),
-              showAtomStereo(false) // Carbon by default
+              showAtomStereo(false), hydrogens(-1) // Carbon by default
         {
         }
 
