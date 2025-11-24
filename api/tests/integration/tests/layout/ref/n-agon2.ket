@@ -104,8 +104,8 @@
         "type": "monomer",
         "id": "2",
         "position": {
-            "x": 3.213526,
-            "y": 0.176584
+            "x": 3.213525,
+            "y": -2.676585
         },
         "alias": "R",
         "templateId": "R___Arginine"
@@ -115,7 +115,7 @@
         "id": "3",
         "position": {
             "x": 2.000000,
-            "y": 1.058262
+            "y": -3.558263
         },
         "alias": "R",
         "templateId": "R___Arginine"
@@ -124,8 +124,8 @@
         "type": "monomer",
         "id": "4",
         "position": {
-            "x": 0.786475,
-            "y": 0.176585
+            "x": 0.786474,
+            "y": -2.676585
         },
         "alias": "R",
         "templateId": "R___Arginine"

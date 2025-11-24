@@ -946,8 +946,8 @@ void MoleculeLayoutGraph::_optimizeSelectedPartPlacement(float bond_length, cons
                 Vec2f rotated_pos = _layout_vertices[v].pos;
                 rotated_pos.sub(selected_center); // Move to origin
                 rotated_pos.rotate(angle);
-                rotated_pos.add(selected_center); // Move back
-                rotated_pos.x += dx;              // Apply translation
+                rotated_pos.add(selected_center); 
+                rotated_pos.x += dx; 
                 rotated_pos.y += dy;
 
                 for (size_t i = 0; i < bridge_fixed_positions[v].size(); i++)
@@ -962,12 +962,16 @@ void MoleculeLayoutGraph::_optimizeSelectedPartPlacement(float bond_length, cons
         if (bridge_lengths.size() == 0)
             return INVALID_COST;
 
-        // Calculate total length and variance of bridge bonds
-        float total_length = 0;
+        // Calculate deviation from ideal bond_length and variance
+        float ideal_deviation = 0;
+        float mean = 0;
         for (size_t i = 0; i < bridge_lengths.size(); i++)
-            total_length += bridge_lengths[i];
-
-        float mean = total_length / bridge_lengths.size();
+        {
+            float dev = bridge_lengths[i] - bond_length;
+            ideal_deviation += dev * dev;
+            mean += bridge_lengths[i];
+        }
+        mean /= bridge_lengths.size();
 
         float variance = 0;
         for (size_t i = 0; i < bridge_lengths.size(); i++)
@@ -977,10 +981,10 @@ void MoleculeLayoutGraph::_optimizeSelectedPartPlacement(float bond_length, cons
         }
         variance /= bridge_lengths.size();
 
-        // Calculate collision penalty: selected vertices too close to fixed vertices (not connected by bridge)
+        // Calculate collision penalty:
         // HIGHEST PRIORITY - must avoid overlaps at all costs
         float collision_penalty = 0;
-        float min_allowed_distance = bond_length * 1.5f; // Minimum distance is 150% of bond_length to avoid overlaps
+        float min_allowed_distance = bond_length; 
 
         for (auto v : selected_vertices)
         {
@@ -1015,83 +1019,90 @@ void MoleculeLayoutGraph::_optimizeSelectedPartPlacement(float bond_length, cons
 
         // Cost function with prioritized components:
         // 1. Collision penalty (highest priority) - weight: 1000.0
-        // 2. Total bridge bond length (medium priority) - weight: 10.0
+        // 2. Deviation from ideal bond_length (medium priority) - weight: 10.0
         // 3. Variance (balanced priority) - weight: 10.0
-        return collision_penalty + 10.0f * total_length + 10.0f * variance;
+        return collision_penalty + 10.0f * ideal_deviation + 10.0f * variance;
     };
 
-    // Gradient descent optimization (translation + rotation)
-    float min_cost = -1;
-
-    const int max_iterations = 150;
-    const float initial_step = 0.5f * bond_length;
+    // Multi-start gradient descent optimization (translation + rotation)
+    // Try multiple starting angles to avoid local minima
+    const int max_iterations = 15;
+    const float initial_step = bond_length;
     const float min_step = 0.01f * bond_length;
     const float step_decay = 0.95f;
-    const float epsilon = 1e-4f; // Numerical gradient epsilon
+    const float epsilon = 1e-4f;
+    const float angle_step = (float)M_PI / 6; // 30 degrees
 
-    // Initialize starting point (no rotation, start at origin)
-    float dx = 0.0f;
-    float dy = 0.0f;
-    float angle = 0.0f;
+    float best_dx = 0.0f;
+    float best_dy = 0.0f;
+    float best_angle = 0.0f;
+    float best_cost = calculate_cost(0, 0, 0);
 
-    float step_size = initial_step;
-    float prev_cost = calculate_cost(dx, dy, angle);
-
-    for (int iter = 0; iter < max_iterations; iter++)
+    // Try different starting angles (0, 30, 60, ..., 330 degrees)
+    for (int angle_idx = 0; angle_idx < 12; angle_idx++)
     {
-        // Calculate numerical gradient
-        float cost_center = prev_cost;
+        float dx = 0.0f;
+        float dy = 0.0f;
+        float angle = angle_idx * angle_step;
 
-        // Gradient w.r.t. dx
-        float cost_dx_plus = calculate_cost(dx + epsilon, dy, angle);
-        float grad_dx = (cost_dx_plus - cost_center) / epsilon;
+        float step_size = initial_step;
+        float prev_cost = calculate_cost(dx, dy, angle);
 
-        // Gradient w.r.t. dy
-        float cost_dy_plus = calculate_cost(dx, dy + epsilon, angle);
-        float grad_dy = (cost_dy_plus - cost_center) / epsilon;
-
-        // Gradient w.r.t. angle
-        float cost_angle_plus = calculate_cost(dx, dy, angle + epsilon);
-        float grad_angle = (cost_angle_plus - cost_center) / epsilon;
-
-        // Normalize gradient to prevent numerical issues
-        float grad_norm = sqrt(grad_dx * grad_dx + grad_dy * grad_dy + grad_angle * grad_angle);
-        if (grad_norm < 1e-8f)
-            break; // Converged
-
-        // Update parameters with adaptive step size
-        float new_dx = dx - step_size * grad_dx / grad_norm;
-        float new_dy = dy - step_size * grad_dy / grad_norm;
-        float new_angle = angle - step_size * grad_angle / grad_norm;
-
-        float new_cost = calculate_cost(new_dx, new_dy, new_angle);
-
-        // If cost increased, reduce step size and try again
-        if (new_cost > cost_center)
+        for (int iter = 0; iter < max_iterations; iter++)
         {
-            step_size *= 0.5f;
-            if (step_size < min_step)
-                break; // Step too small, stop
-            continue;
+            float cost_center = prev_cost;
+
+            // Calculate numerical gradient
+            float cost_dx_plus = calculate_cost(dx + epsilon, dy, angle);
+            float grad_dx = (cost_dx_plus - cost_center) / epsilon;
+
+            float cost_dy_plus = calculate_cost(dx, dy + epsilon, angle);
+            float grad_dy = (cost_dy_plus - cost_center) / epsilon;
+
+            float cost_angle_plus = calculate_cost(dx, dy, angle + epsilon);
+            float grad_angle = (cost_angle_plus - cost_center) / epsilon;
+
+            float grad_norm = sqrt(grad_dx * grad_dx + grad_dy * grad_dy + grad_angle * grad_angle);
+            if (grad_norm < 1e-8f)
+                break;
+
+            float new_dx = dx - step_size * grad_dx / grad_norm;
+            float new_dy = dy - step_size * grad_dy / grad_norm;
+            float new_angle = angle - step_size * grad_angle / grad_norm;
+
+            float new_cost = calculate_cost(new_dx, new_dy, new_angle);
+
+            if (new_cost > cost_center)
+            {
+                step_size *= 0.5f;
+                if (step_size < min_step)
+                    break;
+                continue;
+            }
+
+            dx = new_dx;
+            dy = new_dy;
+            angle = new_angle;
+            prev_cost = new_cost;
+
+            step_size *= step_decay;
+
+            if (fabs(new_cost - cost_center) < 1e-6f)
+                break;
         }
 
-        // Accept the update
-        dx = new_dx;
-        dy = new_dy;
-        angle = new_angle;
-        prev_cost = new_cost;
-
-        // Decay step size
-        step_size *= step_decay;
-
-        // Check convergence
-        if (fabs(new_cost - cost_center) < 1e-6f)
-            break;
+        // Keep best solution across all starting angles
+        if (prev_cost < best_cost)
+        {
+            best_cost = prev_cost;
+            best_dx = dx;
+            best_dy = dy;
+            best_angle = angle;
+        }
     }
 
-    // Set best solution (translation + rotation)
-    best_translation.set(dx, dy);
-    best_rotation = angle;
+    best_translation.set(best_dx, best_dy);
+    best_rotation = best_angle;
 }
 
 // Reflect inner cycle vertices through their single neighbor
@@ -1197,6 +1208,27 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                         }
                     }
                 }
+
+                // Calculate src_layout centroid for selected vertices
+                Vec2f src_selected_centroid(0, 0);
+                for (auto vx_idx : sel_vertices)
+                    src_selected_centroid.add(src_layout[vx_idx]);
+                src_selected_centroid.scale(1.0f / sel_vertices.size());
+
+                // Recalculate _layout_vertices centroid after scaling
+                Vec2f layout_selected_centroid(0, 0);
+                for (auto vx_idx : sel_vertices)
+                    layout_selected_centroid.add(_layout_vertices[vx_idx].pos);
+                layout_selected_centroid.scale(1.0f / sel_vertices.size());
+
+                // Shift selected vertices to align centroids (move to src_layout position)
+                Vec2f initial_offset;
+                initial_offset.diff(src_selected_centroid, layout_selected_centroid);
+                for (auto vx_idx : sel_vertices)
+                    _layout_vertices[vx_idx].pos.add(initial_offset);
+
+                // Update selected_centroid to new position for optimization
+                selected_centroid = src_selected_centroid;
 
                 Vec2f best_translation(0, 0);
                 float best_rotation = 0.0f;

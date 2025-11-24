@@ -202,8 +202,8 @@
         "type": "monomer",
         "id": "0",
         "position": {
-            "x": 1.061278,
-            "y": -0.351070
+            "x": 2.874299,
+            "y": 0.223570
         },
         "selected": true,
         "alias": "E",
@@ -213,8 +213,8 @@
         "type": "monomer",
         "id": "1",
         "position": {
-            "x": 2.193027,
-            "y": -1.335521
+            "x": 2.728828,
+            "y": -1.269359
         },
         "selected": true,
         "alias": "E",
@@ -224,8 +224,8 @@
         "type": "monomer",
         "id": "2",
         "position": {
-            "x": 3.689407,
-            "y": -1.231365
+            "x": 3.681625,
+            "y": -2.427884
         },
         "selected": true,
         "alias": "E",
@@ -235,8 +235,8 @@
         "type": "monomer",
         "id": "3",
         "position": {
-            "x": 4.673858,
-            "y": -0.099615
+            "x": 5.174554,
+            "y": -2.573354
         },
         "selected": true,
         "alias": "E",
@@ -246,8 +246,8 @@
         "type": "monomer",
         "id": "4",
         "position": {
-            "x": 4.569702,
-            "y": 1.396764
+            "x": 6.333079,
+            "y": -1.620557
         },
         "selected": true,
         "alias": "E",
@@ -257,8 +257,8 @@
         "type": "monomer",
         "id": "5",
         "position": {
-            "x": 3.437953,
-            "y": 2.381215
+            "x": 6.478549,
+            "y": -0.127628
         },
         "selected": true,
         "alias": "E",
@@ -268,8 +268,8 @@
         "type": "monomer",
         "id": "6",
         "position": {
-            "x": 1.941573,
-            "y": 2.277059
+            "x": 5.525753,
+            "y": 1.030896
         },
         "selected": true,
         "alias": "E",
@@ -279,8 +279,8 @@
         "type": "monomer",
         "id": "7",
         "position": {
-            "x": 0.957122,
-            "y": 1.145310
+            "x": 4.032823,
+            "y": 1.176367
         },
         "selected": true,
         "alias": "E",
