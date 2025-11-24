@@ -946,8 +946,8 @@ void MoleculeLayoutGraph::_optimizeSelectedPartPlacement(float bond_length, cons
                 Vec2f rotated_pos = _layout_vertices[v].pos;
                 rotated_pos.sub(selected_center); // Move to origin
                 rotated_pos.rotate(angle);
-                rotated_pos.add(selected_center); 
-                rotated_pos.x += dx; 
+                rotated_pos.add(selected_center);
+                rotated_pos.x += dx;
                 rotated_pos.y += dy;
 
                 for (size_t i = 0; i < bridge_fixed_positions[v].size(); i++)
@@ -984,7 +984,7 @@ void MoleculeLayoutGraph::_optimizeSelectedPartPlacement(float bond_length, cons
         // Calculate collision penalty:
         // HIGHEST PRIORITY - must avoid overlaps at all costs
         float collision_penalty = 0;
-        float min_allowed_distance = bond_length; 
+        float min_allowed_distance = bond_length;
 
         for (auto v : selected_vertices)
         {
