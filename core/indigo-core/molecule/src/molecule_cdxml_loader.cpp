@@ -995,7 +995,7 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
                 _pmol->setExplicitValence(atom_idx, atom.valence);
             _pmol->setAtomRadical(atom_idx, atom.radical);
             _pmol->setAtomIsotope(atom_idx, atom.isotope);
-            if (atom.hydrogens > 0)
+            if (atom.hydrogens >= 0)
                 _pmol->setImplicitH(atom_idx, atom.hydrogens);
             const int element = atom.element;
             // All metals up to group 13, set implicit hydrogens to 0 if set in the cdxml file (and valence to avoid (0) labels)
