@@ -76,8 +76,7 @@ static int _vertex_cmp(int& n1, int& n2, void* context)
 class MoleculeLayoutBiconnectedDecomposer : public BiconnectedDecomposer
 {
 public:
-    MoleculeLayoutBiconnectedDecomposer(const MoleculeLayoutGraph& graph, bool split_fixed)
-        : BiconnectedDecomposer(graph, split_fixed), _layout_graph(graph)
+    MoleculeLayoutBiconnectedDecomposer(const MoleculeLayoutGraph& graph, bool split_fixed) : BiconnectedDecomposer(graph, split_fixed), _layout_graph(graph)
     {
         if (split_fixed)
             _findRegularCyclesSSR();
@@ -1591,6 +1590,45 @@ bool MoleculeLayoutGraph::_assignComponentsRelativeCoordinates(PtrArray<Molecule
                         _fixed_vertices[k] = 1;
                         _n_fixed++;
                     }
+            }
+        }
+    }
+
+    if (sequence_layout)
+    {
+        // Temporary storage for nailed positions to avoid writing to supergraph coordinates
+        std::unordered_map<int, Vec2f> nailed_positions;
+
+        // 1. Collect is_nailed from all components to supergraph and temp storage
+        for (int i = 0; i < n_comp; i++)
+        {
+            MoleculeLayoutGraph& component = *bc_components[i];
+            for (int j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
+            {
+                if (component._layout_vertices[j].is_nailed)
+                {
+                    int ext_idx = component.getVertexExtIdx(j);
+                    _layout_vertices[ext_idx].is_nailed = true;
+                    nailed_positions[ext_idx] = component._layout_vertices[j].pos;
+                }
+            }
+        }
+
+        // 2. Distribute is_nailed from supergraph to all components (including single-edge)
+        //    and apply coordinates from the temp storage
+        for (int i = 0; i < n_comp; i++)
+        {
+            MoleculeLayoutGraph& component = *bc_components[i];
+            for (int j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
+            {
+                int ext_idx = component.getVertexExtIdx(j);
+                if (_layout_vertices[ext_idx].is_nailed)
+                {
+                    component._layout_vertices[j].is_nailed = true;
+                    auto it = nailed_positions.find(ext_idx);
+                    if (it != nailed_positions.end())
+                        component._layout_vertices[j].pos = it->second;
+                }
             }
         }
     }
