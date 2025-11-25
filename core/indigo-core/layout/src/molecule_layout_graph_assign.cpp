@@ -25,6 +25,7 @@
 #include "layout/molecule_layout_graph.h"
 
 #include <memory>
+#include <unordered_set>
 
 using namespace indigo;
 
@@ -75,140 +76,88 @@ static int _vertex_cmp(int& n1, int& n2, void* context)
 class MoleculeLayoutBiconnectedDecomposer : public BiconnectedDecomposer
 {
 public:
-    MoleculeLayoutBiconnectedDecomposer(const MoleculeLayoutGraph& graph, bool split_fixed) : BiconnectedDecomposer(graph, split_fixed), _layout_graph(graph)
+    MoleculeLayoutBiconnectedDecomposer(const MoleculeLayoutGraph& graph, bool split_fixed)
+        : BiconnectedDecomposer(graph, split_fixed), _layout_graph(graph)
     {
+        if (split_fixed)
+            _findRegularCyclesSSR();
     }
 
     bool isRegularPolygonEdge(int v, int w, const Array<int>& fixed_vertices) const override
     {
-        // Edge is regular if:
-        // 1. Both vertices belong to same class (selected or fixed), OR
-        // 2. Edge has length ~1.5 AND is part of a cycle where ALL edges have length ~1.5
+        if (!_split_fixed || fixed_vertices.size() == 0)
+            return true;
 
-        // Check condition 1: same class
-        if (_split_fixed && fixed_vertices.size() > 0)
-        {
-            bool v_fixed = (v >= 0 && v < fixed_vertices.size() && fixed_vertices[v] != 0);
-            bool w_fixed = (w >= 0 && w < fixed_vertices.size() && fixed_vertices[w] != 0);
+        bool v_fixed = (v >= 0 && v < fixed_vertices.size() && fixed_vertices[v] != 0);
+        bool w_fixed = (w >= 0 && w < fixed_vertices.size() && fixed_vertices[w] != 0);
 
-            if (v_fixed == w_fixed)
-            {
-                // Both vertices in same class - regular
-                return true;
-            }
-        }
+        // Both selected: always keep together
+        if (!v_fixed && !w_fixed)
+            return true;
 
-        // Check condition 2: edge length ~1.5 and part of regular cycle
-        const Vec2f& pos_v = _layout_graph.getPos(v);
-        const Vec2f& pos_w = _layout_graph.getPos(w);
-        float edge_len = Vec2f::dist(pos_v, pos_w);
+        // Both fixed: always keep together
+        if (v_fixed && w_fixed)
+            return true;
 
-        const float target_len = LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH;
-        const float tolerance = 0.1f;
-
-        if (fabs(edge_len - target_len) > tolerance)
-        {
-            // Edge length not ~1.5 - not regular
-            return false;
-        }
-
-        // Edge has length ~1.5, check if it's part of a regular cycle
-        Array<int> cycle;
-        return _findRegularPolygonCycle(v, w, cycle);
+        // Cross-class (selected ↔ fixed): keep ONLY if fixed vertex in regular cycle
+        int fixed_vertex = v_fixed ? v : w;
+        return (_regular_cycle_vertices.find(fixed_vertex) != _regular_cycle_vertices.end());
     }
 
 private:
-    bool _findRegularPolygonCycle(int v, int w, Array<int>& cycle) const
+    void _findRegularCyclesSSR()
     {
-        // Simple cycle detection: try to find path from w back to v
-        // using only edges with length ~1.5
         const float target_len = LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH;
-        const float tolerance = 0.3f;
+        const float tolerance = 0.1f;
 
-        Array<int> queue;
-        Array<int> parent;
-        Array<int> visited;
+        MoleculeLayoutGraph& graph = const_cast<MoleculeLayoutGraph&>(_layout_graph);
+        int n_cycles = graph.sssrCount();
 
-        visited.clear_resize(_layout_graph.vertexEnd());
-        visited.zerofill();
-        parent.clear_resize(_layout_graph.vertexEnd());
-        parent.fill(-1);
-
-        queue.clear();
-        queue.push(w);
-        visited[w] = 1;
-
-        int queue_pos = 0;
-        while (queue_pos < queue.size())
+        for (int i = 0; i < n_cycles; i++)
         {
-            int curr = queue[queue_pos++];
-            const Vertex& curr_vert = _layout_graph.getVertex(curr);
+            List<int>& cycle_vertices = graph.sssrVertices(i);
 
-            for (int nei_idx = curr_vert.neiBegin(); nei_idx < curr_vert.neiEnd(); nei_idx = curr_vert.neiNext(nei_idx))
+            bool is_regular = true;
+            int prev_v = -1;
+            int first_v = -1;
+
+            for (int it = cycle_vertices.begin(); it != cycle_vertices.end(); it = cycle_vertices.next(it))
             {
-                int nei = curr_vert.neiVertex(nei_idx);
+                int v = cycle_vertices[it];
+                if (first_v == -1)
+                    first_v = v;
 
-                // Skip the direct edge back to v from w (we're looking for alternate path)
-                if (curr == w && nei == v)
-                    continue;
-
-                // Check edge length
-                float nei_edge_len = Vec2f::dist(_layout_graph.getPos(curr), _layout_graph.getPos(nei));
-                if (fabs(nei_edge_len - target_len) > tolerance)
-                    continue;
-
-                if (nei == v)
+                if (prev_v != -1)
                 {
-                    Array<int> path;
-                    int node = curr;
-                    while (node != -1)
+                    float len = Vec2f::dist(_layout_graph.getPos(prev_v), _layout_graph.getPos(v));
+                    if (fabs(len - target_len) > tolerance)
                     {
-                        path.push(node);
-                        if (node == w)
-                            break;
-                        node = parent[node];
+                        is_regular = false;
+                        break;
                     }
-
-                    cycle.clear();
-                    cycle.push(v);
-                    for (int i = path.size() - 1; i >= 0; i--)
-                        cycle.push(path[i]);
-
-                    return true;
-                    // TODO: implement accurate detection that cycle is a regular polygon or made of arcs
-                    // return _isCycleRegular(cycle, target_len, tolerance);
                 }
+                prev_v = v;
+            }
 
-                if (!visited[nei])
+            if (is_regular && prev_v != -1 && first_v != -1)
+            {
+                float len = Vec2f::dist(_layout_graph.getPos(prev_v), _layout_graph.getPos(first_v));
+                if (fabs(len - target_len) > tolerance)
+                    is_regular = false;
+            }
+
+            if (is_regular && cycle_vertices.size() >= 3)
+            {
+                for (int it = cycle_vertices.begin(); it != cycle_vertices.end(); it = cycle_vertices.next(it))
                 {
-                    visited[nei] = 1;
-                    parent[nei] = curr;
-                    queue.push(nei);
+                    _regular_cycle_vertices.insert(cycle_vertices[it]);
                 }
             }
         }
-
-        return false;
-    }
-
-    bool _isCycleRegular(const Array<int>& cycle, float target_len, float tolerance) const
-    {
-        if (cycle.size() < 3)
-            return false;
-
-        for (int i = 0; i < cycle.size(); i++)
-        {
-            int v1 = cycle[i];
-            int v2 = cycle[(i + 1) % cycle.size()];
-            float len = Vec2f::dist(_layout_graph.getPos(v1), _layout_graph.getPos(v2));
-            if (fabs(len - target_len) > tolerance)
-                return false;
-        }
-
-        return true;
     }
 
     const MoleculeLayoutGraph& _layout_graph;
+    std::unordered_set<int> _regular_cycle_vertices;
 };
 
 void MoleculeLayoutGraph::_assignAbsoluteCoordinates(float bond_length)
