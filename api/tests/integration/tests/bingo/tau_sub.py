@@ -23,7 +23,7 @@ def testSearchSub(bingo, smile, options=""):
     result = bingo.searchSub(qm, options)
     while result.next():
         id = result.getCurrentId()
-        print(id, bingo.getRecordById(id).smiles())
+        print("{0} {1}".format(id, bingo.getRecordById(id).smiles()))
 
 
 indigo = Indigo()
