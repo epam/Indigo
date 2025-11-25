@@ -16,7 +16,7 @@ from env_indigo import (  # noqa
 )
 
 
-def testSearchSub(bingo: Bingo, smile: str, options=""):
+def testSearchSub(bingo, smile, options=""):
     print("** searchSub({0}, {1}) **".format(smile, options))
     qm = indigo.loadQueryMolecule(qsmile)
     # qm.aromatize()
