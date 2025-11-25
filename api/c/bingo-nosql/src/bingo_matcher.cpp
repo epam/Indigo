@@ -411,7 +411,7 @@ void BaseSubstructureMatcher::setQueryData(SubstructureQueryData* query_data)
     _query_data.reset(query_data);
 
     const MoleculeFingerprintParameters& fp_params = _index.getFingerprintParams();
-    auto& query_obj = static_cast<SubstructureMoleculeQuery&>(_query_data->getQueryObject());
+    auto& query_obj = _query_data->getQueryObject();
     query_obj.setIsTau(_tautomer);
     query_obj.buildFingerprint(fp_params, &_query_fp, nullptr);
 

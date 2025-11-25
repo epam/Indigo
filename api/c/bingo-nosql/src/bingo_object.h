@@ -26,6 +26,8 @@ namespace bingo
                                       indigo::Array<byte>* sim_fp) /* const */
             = 0;
         virtual ~QueryObject(){};
+
+        virtual void setIsTau(bool is_tau){};
     };
 
     //////////////////////////
@@ -60,7 +62,7 @@ namespace bingo
         bool buildFingerprint(const indigo::MoleculeFingerprintParameters& fp_params, indigo::Array<byte>* sub_fp,
                               indigo::Array<byte>* sim_fp) /*const*/ override;
 
-        void setIsTau(bool is_tau)
+        void setIsTau(bool is_tau) override
         {
             _is_tau = is_tau;
         };
