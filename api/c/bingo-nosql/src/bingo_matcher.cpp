@@ -341,7 +341,7 @@ float BaseMatcher::esimateRemainingTime(float& delta)
 //
 
 BaseSubstructureMatcher::BaseSubstructureMatcher(/*const */ BaseIndex& index, IndigoObject*& current_obj)
-    : BaseMatcher(index, current_obj), _fp_storage(_index.getSubStorage())
+    : BaseMatcher(index, current_obj), _fp_storage(_index.getSubStorage()), _tautomer(false)
 {
     _fp_size = _index.getFingerprintParams().fingerprintSize();
 
@@ -413,7 +413,7 @@ void BaseSubstructureMatcher::setQueryData(SubstructureQueryData* query_data)
     const MoleculeFingerprintParameters& fp_params = _index.getFingerprintParams();
     auto& query_obj = static_cast<SubstructureMoleculeQuery&>(_query_data->getQueryObject());
     query_obj.setIsTau(_tautomer);
-    query_obj.buildFingerprint(fp_params, &_query_fp, 0);
+    query_obj.buildFingerprint(fp_params, &_query_fp, nullptr);
 
     int bit_cnt = bitGetOnesCount(_query_fp.ptr(), _fp_size);
 
@@ -739,7 +739,7 @@ void BaseSimilarityMatcher::setQueryData(SimilarityQueryData* query_data)
     _query_data.reset(query_data);
 
     const MoleculeFingerprintParameters& fp_params = _index.getFingerprintParams();
-    _query_data->getQueryObject().buildFingerprint(fp_params, 0, &_query_fp);
+    _query_data->getQueryObject().buildFingerprint(fp_params, nullptr, &_query_fp);
 
     SimStorage& sim_storage = _index.getSimStorage();
 
@@ -1262,7 +1262,7 @@ void TopNSimMatcher::_findTopN()
 
     if (_current_results.size() > 0)
     {
-        _current_results.qsort(_cmp_sim_res, 0);
+        _current_results.qsort(_cmp_sim_res, nullptr);
 
         for (i = 0; i < _current_results.size(); i++)
         {
@@ -1459,7 +1459,7 @@ void RxnExactMatcher::_setParameters(const char* flags)
         scanner.skipSpace();
         if (scanner.isEOF())
             break;
-        scanner.readWord(word, 0);
+        scanner.readWord(word, nullptr);
 
         if (strcasecmp(word.ptr(), "NONE") == 0)
         {
