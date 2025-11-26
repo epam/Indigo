@@ -337,6 +337,7 @@ public:
     bool json_saving_add_reaction_data;
     bool json_saving_pretty;
     bool json_use_native_precision;
+    int json_native_precision;
     bool smiles_saving_write_name;
     bool smiles_loading_strict_aliphatic;
     bool smiles_saving_smarts_mode;

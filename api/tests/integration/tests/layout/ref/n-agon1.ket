@@ -192,7 +192,7 @@
         "type": "monomer",
         "id": "1",
         "position": {
-            "x": 3.435914,
+            "x": 3.435915,
             "y": -4.319886
         },
         "alias": "C",
@@ -212,8 +212,8 @@
         "type": "monomer",
         "id": "3",
         "position": {
-            "x": 6.291971,
-            "y": -4.809838
+            "x": 6.291972,
+            "y": -4.809837
         },
         "alias": "C",
         "templateId": "C___Cysteine"
@@ -223,7 +223,7 @@
         "id": "4",
         "position": {
             "x": 7.516695,
-            "y": -3.943784
+            "y": -3.943783
         },
         "alias": "C",
         "templateId": "C___Cysteine"
@@ -233,7 +233,7 @@
         "id": "5",
         "position": {
             "x": 8.144311,
-            "y": -2.581398
+            "y": -2.581397
         },
         "alias": "C",
         "templateId": "C___Cysteine"
@@ -242,8 +242,8 @@
         "type": "monomer",
         "id": "6",
         "position": {
-            "x": 8.006648,
-            "y": -1.087728
+            "x": 8.006647,
+            "y": -1.087727
         },
         "alias": "C",
         "templateId": "C___Cysteine"
@@ -253,7 +253,7 @@
         "id": "7",
         "position": {
             "x": 7.140594,
-            "y": 0.136996
+            "y": 0.136997
         },
         "alias": "C",
         "templateId": "C___Cysteine"
@@ -262,8 +262,8 @@
         "type": "monomer",
         "id": "8",
         "position": {
-            "x": 5.778208,
-            "y": 0.764612
+            "x": 5.778207,
+            "y": 0.764613
         },
         "alias": "C",
         "templateId": "C___Cysteine"
@@ -272,7 +272,7 @@
         "type": "monomer",
         "id": "9",
         "position": {
-            "x": 4.284538,
+            "x": 4.284537,
             "y": 0.626951
         },
         "alias": "C",

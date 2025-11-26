@@ -283,7 +283,7 @@
         "id": "8",
         "position": {
             "x": 1.860511,
-            "y": -2.457811
+            "y": -2.457812
         },
         "alias": "A",
         "templateId": "A___Alanine"
@@ -313,7 +313,7 @@
         "id": "11",
         "position": {
             "x": 4.431354,
-            "y": -3.092588
+            "y": -3.092587
         },
         "alias": "V",
         "templateId": "V___Valine"
