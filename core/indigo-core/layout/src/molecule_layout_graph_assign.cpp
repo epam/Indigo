@@ -256,23 +256,13 @@ private:
     void _selectMinimumCycleBasis(std::vector<CycleInfo>& cycles, std::vector<CycleInfo>& basis_cycles, int rank_needed)
     {
         // Sort cycles by geometric length
-        QS_DEF(Array<int>, indices);
-        indices.clear_resize((int)cycles.size());
+        std::vector<size_t> indices(cycles.size());
         for (size_t i = 0; i < cycles.size(); i++)
             indices[i] = i;
 
-        for (size_t i = 0; i < cycles.size() - 1; i++)
-        {
-            for (int j = 0; j < cycles.size() - i - 1; j++)
-            {
-                if (cycles[indices[j]].geom_length > cycles[indices[j + 1]].geom_length)
-                {
-                    int tmp = indices[j];
-                    indices[j] = indices[j + 1];
-                    indices[j + 1] = tmp;
-                }
-            }
-        }
+        std::sort(indices.begin(), indices.end(), [&cycles](size_t a, size_t b) {
+            return cycles[a].geom_length < cycles[b].geom_length;
+        });
 
         // Select minimum basis using XOR
         QS_DEF(Array<uint64_t>, basis);
