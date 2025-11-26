@@ -74,6 +74,7 @@ namespace indigo
         TL_CP_DECL(PtrArray<Array<int>>, _component_lists);
         TL_CP_DECL(Array<Array<int>*>, _component_ids); // list of components for articulation point
         TL_CP_DECL(Array<Edge>, _edges_stack);
+        TL_CP_DECL(Array<int>, _forbidden_edges_processed); // bitset to track processed forbidden edges
         int _cur_order;
         bool _split_fixed;
     };

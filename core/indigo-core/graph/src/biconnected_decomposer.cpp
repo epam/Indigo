@@ -28,7 +28,7 @@ CP_DEF(BiconnectedDecomposer);
 
 BiconnectedDecomposer::BiconnectedDecomposer(const Graph& graph, bool split_fixed)
     : _graph(graph), _split_fixed(split_fixed), CP_INIT, TL_CP_GET(_components), TL_CP_GET(_dfs_order), TL_CP_GET(_lowest_order), TL_CP_GET(_component_lists),
-      TL_CP_GET(_component_ids), TL_CP_GET(_edges_stack), _cur_order(0)
+      TL_CP_GET(_component_ids), TL_CP_GET(_edges_stack), TL_CP_GET(_forbidden_edges_processed), _cur_order(0)
 {
     _components.clear();
     _component_lists.clear();
@@ -37,6 +37,8 @@ BiconnectedDecomposer::BiconnectedDecomposer(const Graph& graph, bool split_fixe
     _lowest_order.clear_resize(graph.vertexEnd());
     _component_ids.clear_resize(graph.vertexEnd());
     _component_ids.zerofill();
+    _forbidden_edges_processed.clear_resize(graph.edgeEnd());
+    _forbidden_edges_processed.zerofill();
 }
 
 BiconnectedDecomposer::~BiconnectedDecomposer()
@@ -181,6 +183,14 @@ bool BiconnectedDecomposer::_pushToStack(Array<int>& dfs_stack, int v, const Arr
             }
             else
             {
+                // Check if this forbidden edge was already processed
+                int edge_idx = _graph.findEdgeIndex(v, w);
+                if (edge_idx != -1 && _forbidden_edges_processed[edge_idx] != 0)
+                {
+                    // Already created a component for this edge, skip
+                    continue;
+                }
+
                 Array<int>& one = _components.add(new Array<int>());
                 one.clear_resize(_graph.vertexEnd());
                 one.zerofill();
@@ -189,6 +199,10 @@ bool BiconnectedDecomposer::_pushToStack(Array<int>& dfs_stack, int v, const Arr
                 if (_component_ids[v] == 0)
                     _component_ids[v] = &_component_lists.add(new Array<int>());
                 _component_ids[v]->push(_components.size() - 1);
+
+                // Mark this edge as processed
+                if (edge_idx != -1)
+                    _forbidden_edges_processed[edge_idx] = 1;
             }
         }
     }
@@ -207,6 +221,15 @@ void BiconnectedDecomposer::_processIfNotPushed(Array<int>& dfs_stack, int w, co
 
     if (!same_class && !is_regular_polygon)
     {
+        // Check if this forbidden edge was already processed
+        int edge_idx = _graph.findEdgeIndex(v, w);
+        if (edge_idx != -1 && _forbidden_edges_processed[edge_idx] != 0)
+        {
+            // Already created a component for this edge, skip
+            _edges_stack.pop();
+            return;
+        }
+
         Array<int>& one = _components.add(new Array<int>());
         one.clear_resize(_graph.vertexEnd());
         one.zerofill();
@@ -216,6 +239,11 @@ void BiconnectedDecomposer::_processIfNotPushed(Array<int>& dfs_stack, int w, co
         if (_component_ids[v] == 0)
             _component_ids[v] = &_component_lists.add(new Array<int>());
         _component_ids[v]->push(_components.size() - 1);
+
+        // Mark this edge as processed
+        if (edge_idx != -1)
+            _forbidden_edges_processed[edge_idx] = 1;
+
         _edges_stack.pop();
         return;
     }
