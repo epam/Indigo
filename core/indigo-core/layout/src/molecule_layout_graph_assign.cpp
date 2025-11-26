@@ -26,6 +26,9 @@
 
 #include <memory>
 #include <unordered_set>
+#include <set>
+#include <vector>
+#include <algorithm>
 
 using namespace indigo;
 
@@ -107,53 +110,195 @@ public:
     }
 
 private:
+    struct CycleInfo
+    {
+        float geom_length;
+        std::vector<int> vertices;
+        uint64_t edge_vector;
+    };
+
     void _findRegularCyclesSSR()
     {
         const float target_len = LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH;
-        const float tolerance = 0.1f;
+        const float tolerance = 0.05f; // Match Python tolerance
 
+        // Find minimum cycle basis using geometry-based selection like Python
+        std::vector<CycleInfo> cycles;
+        _findAllSimpleCycles(cycles, 20); // max_len=20 like Python
+
+        // Calculate rank needed (number of edges - number of vertices + 1)
         MoleculeLayoutGraph& graph = const_cast<MoleculeLayoutGraph&>(_layout_graph);
-        int n_cycles = graph.sssrCount();
+        int rank_needed = graph.edgeCount() - graph.vertexCount() + 1;
 
-        for (int i = 0; i < n_cycles; i++)
+        // Select minimum cycle basis
+        std::vector<CycleInfo> basis_cycles;
+        _selectMinimumCycleBasis(cycles, basis_cycles, rank_needed);
+
+        // Check which cycles are regular
+        for (size_t i = 0; i < basis_cycles.size(); i++)
         {
-            List<int>& cycle_vertices = graph.sssrVertices(i);
-
+            CycleInfo& cycle_info = basis_cycles[i];
             bool is_regular = true;
-            int prev_v = -1;
-            int first_v = -1;
 
-            for (int it = cycle_vertices.begin(); it != cycle_vertices.end(); it = cycle_vertices.next(it))
+            // Check all edge lengths in the cycle
+            for (int j = 0; j < cycle_info.vertices.size(); j++)
             {
-                int v = cycle_vertices[it];
-                if (first_v == -1)
-                    first_v = v;
+                int v1 = cycle_info.vertices[j];
+                int v2 = cycle_info.vertices[(j + 1) % cycle_info.vertices.size()];
+                float len = Vec2f::dist(_layout_graph.getPos(v1), _layout_graph.getPos(v2));
 
-                if (prev_v != -1)
+                if (fabs(len - target_len) > tolerance)
                 {
-                    float len = Vec2f::dist(_layout_graph.getPos(prev_v), _layout_graph.getPos(v));
-                    if (fabs(len - target_len) > tolerance)
+                    is_regular = false;
+                    break;
+                }
+            }
+
+            if (is_regular && cycle_info.vertices.size() >= 3)
+            {
+                for (int j = 0; j < cycle_info.vertices.size(); j++)
+                {
+                    _regular_cycle_vertices.insert(cycle_info.vertices[j]);
+                }
+            }
+        }
+    }
+
+    void _findAllSimpleCycles(std::vector<CycleInfo>& cycles, int max_len)
+    {
+        MoleculeLayoutGraph& graph = const_cast<MoleculeLayoutGraph&>(_layout_graph);
+        std::set<std::vector<int>> found_cycles;
+
+        // DFS-based cycle enumeration matching Python's enumerate_simple_cycles
+        for (int start = graph.vertexBegin(); start < graph.vertexEnd(); start = graph.vertexNext(start))
+        {
+            std::vector<std::pair<int, std::vector<int>>> stack;
+            stack.push_back({start, {start}});
+
+            while (!stack.empty())
+            {
+                auto [cur, path] = stack.back();
+                stack.pop_back();
+
+                const Vertex& v = graph.getVertex(cur);
+                for (int nei = v.neiBegin(); nei < v.neiEnd(); nei = v.neiNext(nei))
+                {
+                    int nb = v.neiVertex(nei);
+
+                    if (nb == start && path.size() >= 3)
                     {
-                        is_regular = false;
-                        break;
+                        // Found a cycle - normalize it
+                        std::vector<int> cyc = path;
+                        int mins = *std::min_element(cyc.begin(), cyc.end());
+
+                        // Find canonical form
+                        std::vector<std::vector<int>> candidates;
+                        for (size_t pos = 0; pos < cyc.size(); pos++)
+                        {
+                            if (cyc[pos] == mins)
+                            {
+                                std::vector<int> rot;
+                                for (size_t j = 0; j < cyc.size(); j++)
+                                    rot.push_back(cyc[(pos + j) % cyc.size()]);
+                                candidates.push_back(rot);
+
+                                std::reverse(rot.begin(), rot.end());
+                                candidates.push_back(rot);
+                            }
+                        }
+
+                        std::vector<int> canonical = *std::min_element(candidates.begin(), candidates.end());
+
+                        if (found_cycles.find(canonical) == found_cycles.end())
+                        {
+                            found_cycles.insert(canonical);
+
+                            // Calculate geometric length
+                            float geom_len = 0.0f;
+                            for (size_t j = 0; j < canonical.size(); j++)
+                            {
+                                int v1 = canonical[j];
+                                int v2 = canonical[(j + 1) % canonical.size()];
+                                geom_len += Vec2f::dist(_layout_graph.getPos(v1), _layout_graph.getPos(v2));
+                            }
+
+                            // Calculate edge vector
+                            uint64_t edge_vec = 0;
+                            for (size_t j = 0; j < canonical.size(); j++)
+                            {
+                                int v1 = canonical[j];
+                                int v2 = canonical[(j + 1) % canonical.size()];
+                                int edge_idx = graph.findEdgeIndex(v1, v2);
+                                if (edge_idx >= 0 && edge_idx < 64)
+                                    edge_vec ^= (1ULL << edge_idx);
+                            }
+
+                            CycleInfo info;
+                            info.geom_length = geom_len;
+                            info.vertices = canonical;
+                            info.edge_vector = edge_vec;
+                            cycles.push_back(info);
+                        }
+                    }
+                    else if (std::find(path.begin(), path.end(), nb) == path.end() && (int)path.size() < max_len)
+                    {
+                        if (nb < start)
+                            continue;
+                        std::vector<int> new_path = path;
+                        new_path.push_back(nb);
+                        stack.push_back({nb, new_path});
                     }
                 }
-                prev_v = v;
             }
+        }
+    }
 
-            if (is_regular && prev_v != -1 && first_v != -1)
-            {
-                float len = Vec2f::dist(_layout_graph.getPos(prev_v), _layout_graph.getPos(first_v));
-                if (fabs(len - target_len) > tolerance)
-                    is_regular = false;
-            }
+    void _selectMinimumCycleBasis(std::vector<CycleInfo>& cycles, std::vector<CycleInfo>& basis_cycles, int rank_needed)
+    {
+        // Sort cycles by geometric length
+        QS_DEF(Array<int>, indices);
+        indices.clear_resize(cycles.size());
+        for (int i = 0; i < cycles.size(); i++)
+            indices[i] = i;
 
-            if (is_regular && cycle_vertices.size() >= 3)
+        // Bubble sort by geometric length
+        for (int i = 0; i < cycles.size() - 1; i++)
+        {
+            for (int j = 0; j < cycles.size() - i - 1; j++)
             {
-                for (int it = cycle_vertices.begin(); it != cycle_vertices.end(); it = cycle_vertices.next(it))
+                if (cycles[indices[j]].geom_length > cycles[indices[j + 1]].geom_length)
                 {
-                    _regular_cycle_vertices.insert(cycle_vertices[it]);
+                    int tmp = indices[j];
+                    indices[j] = indices[j + 1];
+                    indices[j + 1] = tmp;
                 }
+            }
+        }
+
+        // Select minimum basis using XOR
+        QS_DEF(Array<uint64_t>, basis);
+        basis.clear();
+
+        for (int i = 0; i < cycles.size() && basis.size() < rank_needed; i++)
+        {
+            CycleInfo& cycle_info = cycles[indices[i]];
+            uint64_t vec = cycle_info.edge_vector;
+
+            if (vec == 0)
+                continue;
+
+            // XOR with existing basis vectors
+            for (int j = 0; j < basis.size(); j++)
+            {
+                uint64_t xor_result = vec ^ basis[j];
+                if (xor_result < vec)
+                    vec = xor_result;
+            }
+
+            if (vec != 0)
+            {
+                basis.push(vec);
+                basis_cycles.push_back(cycle_info);
             }
         }
     }
