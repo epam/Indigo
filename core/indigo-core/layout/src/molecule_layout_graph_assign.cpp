@@ -1824,6 +1824,42 @@ void MoleculeLayoutGraph::_findFirstVertexIdx(int n_comp, Array<int>& fixed_comp
                 _first_vertex_idx = nucleus._layout_vertices[nucleus._first_vertex_idx].ext_idx;
             else
                 _first_vertex_idx = vertexBegin();
+
+            // Copy vertex types (but NOT positions) from forbidden edge components
+            // (single-edge components where one vertex is fixed and the other is not)
+            for (int i = 0; i < n_comp; i++)
+            {
+                if (i != nucleus_idx && bc_components[i]->isSingleEdge())
+                {
+                    MoleculeLayoutGraph& component = *bc_components[i];
+                    // Get the two vertices in this single-edge component
+                    int v1_idx = component.vertexBegin();
+                    int v2_idx = component.vertexNext(v1_idx);
+
+                    int v1_ext = component._layout_vertices[v1_idx].ext_idx;
+                    int v2_ext = component._layout_vertices[v2_idx].ext_idx;
+
+                    bool v1_fixed = (v1_ext >= 0 && v1_ext < _fixed_vertices.size() && _fixed_vertices[v1_ext] != 0);
+                    bool v2_fixed = (v2_ext >= 0 && v2_ext < _fixed_vertices.size() && _fixed_vertices[v2_ext] != 0);
+
+                    // Only copy vertex types if this is a forbidden edge (one fixed, one not fixed)
+                    if (v1_fixed != v2_fixed)
+                    {
+                        // Copy only vertex types, NOT positions (positions are already correct for fixed vertices)
+                        for (int j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
+                        {
+                            LayoutVertex& vert = component._layout_vertices[j];
+                            _layout_vertices[vert.ext_idx].type = vert.type;
+                        }
+                        // Copy edge types too
+                        for (int j = component.edgeBegin(); j < component.edgeEnd(); j = component.edgeNext(j))
+                        {
+                            LayoutEdge& edge = component._layout_edges[j];
+                            _layout_edges[edge.ext_idx].type = edge.type;
+                        }
+                    }
+                }
+            }
         }
         else
         {
