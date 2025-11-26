@@ -32,7 +32,6 @@ files = [
     "n-agon1",
     "n-agon2",
     "rna_bicyclic",
-    "rna_bicyclic_sel_1",
     "rna_bicyclic_sel_2",
     "small_mol",
     "shifting_structs_1",

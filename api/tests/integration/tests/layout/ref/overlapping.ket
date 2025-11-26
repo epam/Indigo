@@ -365,7 +365,7 @@
         "type": "monomer",
         "id": "0",
         "position": {
-            "x": 10.909536,
+            "x": 10.909538,
             "y": -4.990434
         },
         "alias": "T",
@@ -375,7 +375,7 @@
         "type": "monomer",
         "id": "1",
         "position": {
-            "x": 9.499997,
+            "x": 9.499999,
             "y": -5.503463
         },
         "alias": "T",
@@ -385,8 +385,8 @@
         "type": "monomer",
         "id": "2",
         "position": {
-            "x": 8.090459,
-            "y": -4.990431
+            "x": 8.090460,
+            "y": -4.990432
         },
         "alias": "T",
         "templateId": "T___Threonine"
@@ -395,8 +395,8 @@
         "type": "monomer",
         "id": "3",
         "position": {
-            "x": 7.340459,
-            "y": -3.691392
+            "x": 7.340461,
+            "y": -3.691394
         },
         "alias": "T",
         "templateId": "T___Threonine"
@@ -405,8 +405,8 @@
         "type": "monomer",
         "id": "4",
         "position": {
-            "x": 7.600933,
-            "y": -2.214181
+            "x": 7.600934,
+            "y": -2.214182
         },
         "alias": "T",
         "templateId": "T___Threonine"
@@ -435,8 +435,8 @@
         "type": "monomer",
         "id": "7",
         "position": {
-            "x": 11.659539,
-            "y": -3.691393
+            "x": 11.659540,
+            "y": -3.691392
         },
         "alias": "T",
         "templateId": "T___Threonine"
@@ -445,8 +445,8 @@
         "type": "monomer",
         "id": "8",
         "position": {
-            "x": 7.340457,
-            "y": -6.289469
+            "x": 7.340460,
+            "y": -6.289471
         },
         "alias": "C",
         "templateId": "C___Cysteine"
@@ -455,8 +455,8 @@
         "type": "monomer",
         "id": "9",
         "position": {
-            "x": 8.090456,
-            "y": -7.588507
+            "x": 8.090459,
+            "y": -7.588508
         },
         "alias": "C",
         "templateId": "C___Cysteine"
@@ -465,8 +465,8 @@
         "type": "monomer",
         "id": "10",
         "position": {
-            "x": 5.840457,
-            "y": -6.289468
+            "x": 5.840460,
+            "y": -6.289470
         },
         "alias": "C",
         "templateId": "C___Cysteine"
@@ -475,8 +475,8 @@
         "type": "monomer",
         "id": "11",
         "position": {
-            "x": 5.350216,
-            "y": -5.361402
+            "x": 5.350218,
+            "y": -5.361404
         },
         "alias": "D",
         "templateId": "D___Aspartic acid"
@@ -485,8 +485,8 @@
         "type": "monomer",
         "id": "12",
         "position": {
-            "x": 5.863248,
-            "y": -3.951864
+            "x": 5.863249,
+            "y": -3.951866
         },
         "alias": "D",
         "templateId": "D___Aspartic acid"
@@ -496,7 +496,7 @@
         "id": "13",
         "position": {
             "x": 4.899067,
-            "y": -2.802796
+            "y": -2.802799
         },
         "alias": "D",
         "templateId": "D___Aspartic acid"
@@ -505,8 +505,8 @@
         "type": "monomer",
         "id": "14",
         "position": {
-            "x": 7.600935,
-            "y": -0.285818
+            "x": 7.600934,
+            "y": -0.285820
         },
         "alias": "E",
         "templateId": "E___Glutamic acid"
@@ -515,8 +515,8 @@
         "type": "monomer",
         "id": "15",
         "position": {
-            "x": 6.451868,
-            "y": 0.678364
+            "x": 6.451867,
+            "y": 0.678362
         },
         "alias": "E",
         "templateId": "E___Glutamic acid"
@@ -525,8 +525,8 @@
         "type": "monomer",
         "id": "16",
         "position": {
-            "x": 5.302802,
-            "y": 1.642545
+            "x": 5.302800,
+            "y": 1.642543
         },
         "alias": "E",
         "templateId": "E___Glutamic acid"
@@ -535,7 +535,7 @@
         "type": "monomer",
         "id": "17",
         "position": {
-            "x": 10.849157,
+            "x": 10.849155,
             "y": 1.278047
         },
         "alias": "D",
@@ -555,8 +555,8 @@
         "type": "monomer",
         "id": "19",
         "position": {
-            "x": 8.360228,
-            "y": 0.532908
+            "x": 8.360227,
+            "y": 0.532907
         },
         "alias": "D",
         "templateId": "D___Aspartic acid"
@@ -576,7 +576,7 @@
         "id": "21",
         "position": {
             "x": 12.830509,
-            "y": -1.551618
+            "y": -1.551617
         },
         "alias": "K",
         "templateId": "K___Lysine"
@@ -586,7 +586,7 @@
         "id": "22",
         "position": {
             "x": 11.627324,
-            "y": -0.655880
+            "y": -0.655879
         },
         "alias": "K",
         "templateId": "K___Lysine"
@@ -595,8 +595,8 @@
         "type": "monomer",
         "id": "23",
         "position": {
-            "x": 11.801463,
-            "y": 0.833977
+            "x": 11.801462,
+            "y": 0.833978
         },
         "alias": "K",
         "templateId": "K___Lysine"
