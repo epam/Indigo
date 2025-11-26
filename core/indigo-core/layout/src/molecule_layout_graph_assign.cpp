@@ -169,7 +169,7 @@ private:
         MoleculeLayoutGraph& graph = const_cast<MoleculeLayoutGraph&>(_layout_graph);
         std::set<std::vector<int>> found_cycles;
 
-        // DFS-based cycle enumeration matching Python's enumerate_simple_cycles
+        // DFS-based cycle enumeration
         for (int start = graph.vertexBegin(); start < graph.vertexEnd(); start = graph.vertexNext(start))
         {
             std::vector<std::pair<int, std::vector<int>>> stack;
