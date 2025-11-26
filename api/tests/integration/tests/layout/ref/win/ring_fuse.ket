@@ -140,20 +140,7 @@
                 "endpoint2": {
                     "monomerId": "monomer8",
                     "attachmentPointId": "R1"
-                },
-                "selected": true
-            },
-            {
-                "connectionType": "single",
-                "endpoint1": {
-                    "monomerId": "monomer8",
-                    "attachmentPointId": "R2"
-                },
-                "endpoint2": {
-                    "monomerId": "monomer9",
-                    "attachmentPointId": "R1"
-                },
-                "selected": true
+                }
             },
             {
                 "connectionType": "single",
@@ -1070,77 +1057,6 @@
                     12
                 ]
             }
-        ],
-        "class": "AminoAcid",
-        "classHELM": "PEPTIDE",
-        "id": "F___Phenylalanine",
-        "fullName": "Phenylalanine",
-        "alias": "F",
-        "aliasHELM": "F",
-        "attachmentPoints": [
-            {
-                "attachmentAtom": 9,
-                "leavingGroup": {
-                    "atoms": [
-                        10
-                    ]
-                },
-                "type": "left"
-            },
-            {
-                "attachmentAtom": 8,
-                "leavingGroup": {
-                    "atoms": [
-                        12
-                    ]
-                },
-                "type": "right"
-            }
-        ],
-        "naturalAnalogShort": "F"
-    },
-    "monomer13": {
-        "type": "monomer",
-        "id": "13",
-        "position": {
-            "x": 35.84733337402345,
-            "y": -9.631150973002118
-        },
-        "alias": "F",
-        "templateId": "F___Phenylalanine",
-        "selected": true
-    },
-    "monomer14": {
-        "type": "monomer",
-        "id": "14",
-        "position": {
-            "x": 35.04733337402344,
-            "y": -11.48115097300212
-        },
-        "alias": "F",
-        "templateId": "F___Phenylalanine",
-        "selected": true
-    },
-    "monomer15": {
-        "type": "monomer",
-        "id": "15",
-        "position": {
-            "x": 36.597333374023435,
-            "y": -13.081150973002119
-        },
-        "alias": "F",
-        "templateId": "F___Phenylalanine",
-        "selected": true
-    },
-    "monomer16": {
-        "type": "monomer",
-        "id": "16",
-        "position": {
-            "x": 33.79733337402345,
-            "y": -16.38115097300212
-        },
-        "alias": "F",
-        "templateId": "F___Phenylalanine",
-        "selected": true
+        ]
     }
 }
