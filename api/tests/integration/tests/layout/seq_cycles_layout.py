@@ -18,6 +18,7 @@ from env_indigo import *  # noqa
 indigo = Indigo()
 indigo.setOption("json-saving-pretty", True)
 indigo.setOption("ignore-stereochemistry-errors", True)
+indigo.setOption("json-use-native-precision", True)
 
 print("*** Sequence cycles layout ***")
 
@@ -31,12 +32,14 @@ files = [
     "n-agon1",
     "n-agon2",
     "rna_bicyclic",
+    "rna_bicyclic_sel_2",
     "small_mol",
     "shifting_structs_1",
     "shifting_structs_2",
     "shifting_structs_1_sel",
     "shifting_structs_2_sel",
     "overlapping",
+    "ring_fuse",
 ]
 
 files.sort()

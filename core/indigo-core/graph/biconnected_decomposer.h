@@ -37,6 +37,13 @@ namespace indigo
         explicit BiconnectedDecomposer(const Graph& graph, bool split_fixed = false);
         virtual ~BiconnectedDecomposer();
 
+        // Virtual method to check if edge (v, w) is permitted (should be kept together in same component)
+        // If returns false, edge is forbidden and creates a separate single-edge component
+        virtual bool isPermitted(int v, int w, const Array<int>& fixed_vertices) const
+        {
+            return true; // By default all edges are permitted
+        }
+
         // returns the amount of biconnected components
         int decompose();
         int decomposeWithFixed(const Array<int>& fixed_vertices);
@@ -53,11 +60,6 @@ namespace indigo
     protected:
         bool _pushToStack(Array<int>& dfs_stack, int v, const Array<int>& fixed_vertices);
         void _processIfNotPushed(Array<int>& dfs_stack, int w, const Array<int>& fixed_vertices);
-        bool _pathSameClass(const Array<int>& dfs_stack, int anc, int v, const Array<int>& fixed_vertices) const;
-        inline bool _sameClass(int a, int b, const Array<int>& fixed_vertices) const
-        {
-            return (fixed_vertices.size() && _split_fixed) ? fixed_vertices[a] == fixed_vertices[b] : true;
-        }
 
         const Graph& _graph;
         CP_DECL;
@@ -67,6 +69,7 @@ namespace indigo
         TL_CP_DECL(PtrArray<Array<int>>, _component_lists);
         TL_CP_DECL(Array<Array<int>*>, _component_ids); // list of components for articulation point
         TL_CP_DECL(Array<Edge>, _edges_stack);
+        TL_CP_DECL(Array<int>, _forbidden_edges_processed); // bitset to track processed forbidden edges
         int _cur_order;
         bool _split_fixed;
     };

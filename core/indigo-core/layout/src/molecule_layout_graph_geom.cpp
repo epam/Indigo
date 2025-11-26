@@ -519,15 +519,16 @@ void MoleculeLayoutGraph::_calculatePos(float phi, const Vec2f& v1, const Vec2f&
     v.set(v1.x + cos(alpha), v1.y + sin(alpha));
 }
 
-int MoleculeLayoutGraph::_getCycleDirection() const
+int MoleculeLayoutGraph::_getCycleDirection(const Cycle& cycle) const
 {
-    float signed_area = 0;
-    for (int i = 0; i < _layout_vertices.size() - 1; ++i)
+    int n = cycle.vertexCount();
+    float signed_area = 0.0f;
+    for (int i = 0; i < n; i++)
     {
-        if (_layout_vertices[i].is_cyclic)
-            signed_area += Vec2f::cross(_layout_vertices[i].pos, _layout_vertices[i + 1].pos);
-        else
-            throw Error("not all vertices are cyclic");
+        int next_i = (i + 1) % n;
+        const Vec2f& p1 = _layout_vertices[cycle.getVertex(i)].pos;
+        const Vec2f& p2 = _layout_vertices[cycle.getVertex(next_i)].pos;
+        signed_area += Vec2f::cross(p1, p2);
     }
     return signed_area > 0 ? -1 : 1;
 }

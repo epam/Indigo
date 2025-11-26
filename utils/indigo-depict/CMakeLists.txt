@@ -5,6 +5,11 @@ project(indigo-depict LANGUAGES C)
 add_executable(indigo-depict ${CMAKE_CURRENT_SOURCE_DIR}/main.c)
 target_link_libraries(indigo-depict indigo-static indigo-renderer-static)
 
+# Suppress implicit-int warning for legacy C code using 'auto' keyword
+if(CMAKE_C_COMPILER_ID MATCHES "Clang|GNU")
+    target_compile_options(indigo-depict PRIVATE -Wno-implicit-int)
+endif()
+
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory ${DIST_DIRECTORY}/utils
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> ${DIST_DIRECTORY}/utils/
