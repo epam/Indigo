@@ -260,9 +260,7 @@ private:
         for (size_t i = 0; i < cycles.size(); i++)
             indices[i] = i;
 
-        std::sort(indices.begin(), indices.end(), [&cycles](size_t a, size_t b) {
-            return cycles[a].geom_length < cycles[b].geom_length;
-        });
+        std::sort(indices.begin(), indices.end(), [&cycles](size_t a, size_t b) { return cycles[a].geom_length < cycles[b].geom_length; });
 
         // Select minimum basis using XOR
         QS_DEF(Array<uint64_t>, basis);
