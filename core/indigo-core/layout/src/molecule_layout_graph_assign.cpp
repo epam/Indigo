@@ -141,7 +141,7 @@ private:
             bool is_regular = true;
 
             // Check all edge lengths in the cycle
-            for (int j = 0; j < cycle_info.vertices.size(); j++)
+            for (size_t j = 0; j < cycle_info.vertices.size(); j++)
             {
                 int v1 = cycle_info.vertices[j];
                 int v2 = cycle_info.vertices[(j + 1) % cycle_info.vertices.size()];
@@ -156,7 +156,7 @@ private:
 
             if (is_regular && cycle_info.vertices.size() >= 3)
             {
-                for (int j = 0; j < cycle_info.vertices.size(); j++)
+                for (size_t j = 0; j < cycle_info.vertices.size(); j++)
                 {
                     _regular_cycle_vertices.insert(cycle_info.vertices[j]);
                 }
@@ -258,11 +258,10 @@ private:
         // Sort cycles by geometric length
         QS_DEF(Array<int>, indices);
         indices.clear_resize((int)cycles.size());
-        for (int i = 0; i < cycles.size(); i++)
+        for (size_t i = 0; i < cycles.size(); i++)
             indices[i] = i;
 
-        // Bubble sort by geometric length
-        for (int i = 0; i < cycles.size() - 1; i++)
+        for (size_t i = 0; i < cycles.size() - 1; i++)
         {
             for (int j = 0; j < cycles.size() - i - 1; j++)
             {
@@ -279,7 +278,7 @@ private:
         QS_DEF(Array<uint64_t>, basis);
         basis.clear();
 
-        for (int i = 0; i < cycles.size() && basis.size() < rank_needed; i++)
+        for (size_t i = 0; i < cycles.size() && basis.size() < rank_needed; i++)
         {
             CycleInfo& cycle_info = cycles[indices[i]];
             uint64_t vec = cycle_info.edge_vector;
@@ -288,7 +287,7 @@ private:
                 continue;
 
             // XOR with existing basis vectors
-            for (int j = 0; j < basis.size(); j++)
+            for (size_t j = 0; j < basis.size(); j++)
             {
                 uint64_t xor_result = vec ^ basis[j];
                 if (xor_result < vec)
