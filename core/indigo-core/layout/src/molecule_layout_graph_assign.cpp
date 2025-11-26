@@ -122,9 +122,9 @@ private:
         const float target_len = LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH;
         const float tolerance = 0.05f; // Match Python tolerance
 
-        // Find minimum cycle basis using geometry-based selection like Python
+        // Find minimum cycle basis using geometry-based selection
         std::vector<CycleInfo> cycles;
-        _findAllSimpleCycles(cycles, 20); // max_len=20 like Python
+        _findAllSimpleCycles(cycles, 20);
 
         // Calculate rank needed (number of edges - number of vertices + 1)
         MoleculeLayoutGraph& graph = const_cast<MoleculeLayoutGraph&>(_layout_graph);
