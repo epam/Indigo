@@ -24,11 +24,11 @@
 #include "layout/metalayout.h"
 #include "layout/molecule_layout_graph.h"
 
-#include <memory>
-#include <unordered_set>
-#include <set>
-#include <vector>
 #include <algorithm>
+#include <memory>
+#include <set>
+#include <unordered_set>
+#include <vector>
 
 using namespace indigo;
 
@@ -257,7 +257,7 @@ private:
     {
         // Sort cycles by geometric length
         QS_DEF(Array<int>, indices);
-        indices.clear_resize(cycles.size());
+        indices.clear_resize((int)cycles.size());
         for (int i = 0; i < cycles.size(); i++)
             indices[i] = i;
 
