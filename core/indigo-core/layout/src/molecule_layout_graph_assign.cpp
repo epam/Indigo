@@ -275,7 +275,7 @@ private:
                 continue;
 
             // XOR with existing basis vectors
-            for (size_t j = 0; j < basis.size(); j++)
+            for (int j = 0; j < (int)basis.size(); j++)
             {
                 uint64_t xor_result = vec ^ basis[j];
                 if (xor_result < vec)
