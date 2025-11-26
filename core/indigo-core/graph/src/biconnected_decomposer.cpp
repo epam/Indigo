@@ -156,7 +156,36 @@ bool BiconnectedDecomposer::_pushToStack(Array<int>& dfs_stack, int v, const Arr
 
         if (_dfs_order[w] == 0)
         {
-            // Push new edge
+            // Tree edge (v, w)
+            if (_split_fixed && !isPermitted(v, w, fixed_vertices))
+            {
+                // Forbidden tree edge - create separate single-edge component
+                // Do NOT mark w as visited - outer loop will visit it later
+                // Use canonical edge representation: (min, max) to check if already processed
+                int v_min = (v < w) ? v : w;
+                int v_max = (v < w) ? w : v;
+                int edge_idx = _graph.findEdgeIndex(v_min, v_max);
+                if (edge_idx == -1)
+                    edge_idx = _graph.findEdgeIndex(v_max, v_min);
+
+                if (edge_idx == -1 || _forbidden_edges_processed[edge_idx] == 0)
+                {
+                    Array<int>& one = _components.add(new Array<int>());
+                    one.clear_resize(_graph.vertexEnd());
+                    one.zerofill();
+                    one[v] = 1;
+                    one[w] = 1;
+                    if (_component_ids[v] == 0)
+                        _component_ids[v] = &_component_lists.add(new Array<int>());
+                    _component_ids[v]->push(_components.size() - 1);
+
+                    if (edge_idx != -1)
+                        _forbidden_edges_processed[edge_idx] = 1;
+                }
+                continue; // Skip this edge, don't go deeper
+            }
+
+            // Permitted tree edge - add to stack and continue DFS
             new_edge.beg = v;
             new_edge.end = w;
 
@@ -169,12 +198,10 @@ bool BiconnectedDecomposer::_pushToStack(Array<int>& dfs_stack, int v, const Arr
         }
         else if (_dfs_order[w] < _dfs_order[v] && w != u)
         {
-            // Check if vertices are in same class OR if edge is part of regular polygon
-            bool same_class = _sameClass(v, w, fixed_vertices) && _pathSameClass(dfs_stack, w, v, fixed_vertices);
-            bool is_regular_polygon = isRegularPolygonEdge(v, w, fixed_vertices);
-
-            if (same_class || is_regular_polygon)
+            // Back edge (v, w)
+            if (!_split_fixed || isPermitted(v, w, fixed_vertices))
             {
+                // Permitted edge - add to stack
                 new_edge.beg = v;
                 new_edge.end = w;
                 _edges_stack.push(new_edge);
@@ -183,8 +210,14 @@ bool BiconnectedDecomposer::_pushToStack(Array<int>& dfs_stack, int v, const Arr
             }
             else
             {
-                // Check if this forbidden edge was already processed
-                int edge_idx = _graph.findEdgeIndex(v, w);
+                // Forbidden edge - create separate single-edge component
+                // Use canonical edge representation: (min, max) to check if already processed
+                int v_min = (v < w) ? v : w;
+                int v_max = (v < w) ? w : v;
+                int edge_idx = _graph.findEdgeIndex(v_min, v_max);
+                if (edge_idx == -1)
+                    edge_idx = _graph.findEdgeIndex(v_max, v_min);
+
                 if (edge_idx != -1 && _forbidden_edges_processed[edge_idx] != 0)
                 {
                     // Already created a component for this edge, skip
@@ -213,44 +246,13 @@ void BiconnectedDecomposer::_processIfNotPushed(Array<int>& dfs_stack, int w, co
 {
     int v = dfs_stack.top();
 
-    bool same_class = _sameClass(v, w, fixed_vertices);
-    bool is_regular_polygon = this->isRegularPolygonEdge(v, w, fixed_vertices);
-
-    if ((same_class || is_regular_polygon) && _lowest_order[w] < _lowest_order[v])
+    // Tree edge (v, w) is always permitted here (already checked in _pushToStack)
+    if (_lowest_order[w] < _lowest_order[v])
         _lowest_order[v] = _lowest_order[w];
-
-    if (!same_class && !is_regular_polygon)
-    {
-        // Check if this forbidden edge was already processed
-        int edge_idx = _graph.findEdgeIndex(v, w);
-        if (edge_idx != -1 && _forbidden_edges_processed[edge_idx] != 0)
-        {
-            // Already created a component for this edge, skip
-            _edges_stack.pop();
-            return;
-        }
-
-        Array<int>& one = _components.add(new Array<int>());
-        one.clear_resize(_graph.vertexEnd());
-        one.zerofill();
-        one.at(v) = 1;
-        one.at(w) = 1;
-
-        if (_component_ids[v] == 0)
-            _component_ids[v] = &_component_lists.add(new Array<int>());
-        _component_ids[v]->push(_components.size() - 1);
-
-        // Mark this edge as processed
-        if (edge_idx != -1)
-            _forbidden_edges_processed[edge_idx] = 1;
-
-        _edges_stack.pop();
-        return;
-    }
 
     if (_lowest_order[w] >= _dfs_order[v])
     {
-        // v -articulation point in G;
+        // v - articulation point in G;
         // start new BCcomp;
         Array<int>& new_comp = _components.add(new Array<int>());
         new_comp.clear_resize(_graph.vertexEnd());
@@ -267,47 +269,13 @@ void BiconnectedDecomposer::_processIfNotPushed(Array<int>& dfs_stack, int w, co
         {
             Edge e = _edges_stack.top();
             _edges_stack.pop();
-            bool edge_same_class = _sameClass(e.beg, e.end, fixed_vertices);
-            bool edge_regular_polygon = this->isRegularPolygonEdge(e.beg, e.end, fixed_vertices);
-
-            if (edge_same_class || edge_regular_polygon)
-            {
-                _components[cur_comp]->at(e.beg) = 1;
-                _components[cur_comp]->at(e.end) = 1;
-            }
-            else
-            {
-                // cross-class edge -> its own single-edge component
-                Array<int>& one = _components.add(new Array<int>());
-                one.clear_resize(_graph.vertexEnd());
-                one.zerofill();
-                one.at(e.beg) = 1;
-                one.at(e.end) = 1;
-                int anchor = (_dfs_order[e.beg] < _dfs_order[e.end]) ? e.beg : e.end;
-                if (_component_ids[anchor] == 0)
-                    _component_ids[anchor] = &_component_lists.add(new Array<int>());
-                _component_ids[anchor]->push(_components.size() - 1);
-            }
+            // All edges in stack are permitted (forbidden edges don't go into stack)
+            _components[cur_comp]->at(e.beg) = 1;
+            _components[cur_comp]->at(e.end) = 1;
         }
-        // add the final tree edge (v,w) exactly like in the old code
+        // add the final tree edge (v,w)
         _components[cur_comp]->at(v) = 1;
         _components[cur_comp]->at(w) = 1;
         _edges_stack.pop();
     }
-}
-
-bool BiconnectedDecomposer::_pathSameClass(const Array<int>& dfs_stack, int anc, int v, const Array<int>& fixed_vertices) const
-{
-    if (fixed_vertices.size())
-    {
-        for (int k = dfs_stack.size() - 1; k >= 0; --k)
-        {
-            int x = dfs_stack[k];
-            if (!_sameClass(x, v, fixed_vertices))
-                return false;
-            if (x == anc)
-                break;
-        }
-    }
-    return true;
 }

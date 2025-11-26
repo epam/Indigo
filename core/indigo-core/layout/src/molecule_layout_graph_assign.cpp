@@ -72,7 +72,8 @@ static int _vertex_cmp(int& n1, int& n2, void* context)
     return v1.morgan_code - v2.morgan_code;
 }
 
-// Specialized BiconnectedDecomposer that prevents splitting regular polygons
+// Specialized BiconnectedDecomposer for molecule layout
+// Uses SSSR-based decomposition like decompose.py
 class MoleculeLayoutBiconnectedDecomposer : public BiconnectedDecomposer
 {
 public:
@@ -82,7 +83,8 @@ public:
             _findRegularCyclesSSR();
     }
 
-    bool isRegularPolygonEdge(int v, int w, const Array<int>& fixed_vertices) const override
+    // Implementation matching decompose.py:edge_is_permitted
+    bool isPermitted(int v, int w, const Array<int>& fixed_vertices) const override
     {
         if (!_split_fixed || fixed_vertices.size() == 0)
             return true;
@@ -90,17 +92,18 @@ public:
         bool v_fixed = (v >= 0 && v < fixed_vertices.size() && fixed_vertices[v] != 0);
         bool w_fixed = (w >= 0 && w < fixed_vertices.size() && fixed_vertices[w] != 0);
 
-        // Both selected: always keep together
-        if (!v_fixed && !w_fixed)
+        // Same class (both selected or both fixed) -> always permitted
+        if (v_fixed == w_fixed)
             return true;
 
-        // Both fixed: always keep together
-        if (v_fixed && w_fixed)
+        // Edge between selected (0) and fixed (1), but fixed endpoint is on regular cycle -> permitted
+        if (!v_fixed && w_fixed && _regular_cycle_vertices.find(w) != _regular_cycle_vertices.end())
+            return true;
+        if (!w_fixed && v_fixed && _regular_cycle_vertices.find(v) != _regular_cycle_vertices.end())
             return true;
 
-        // Cross-class (selected ↔ fixed): keep ONLY if fixed vertex in regular cycle
-        int fixed_vertex = v_fixed ? v : w;
-        return (_regular_cycle_vertices.find(fixed_vertex) != _regular_cycle_vertices.end());
+        // Otherwise this is a forbidden edge
+        return false;
     }
 
 private:
