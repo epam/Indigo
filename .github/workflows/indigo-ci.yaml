@@ -229,18 +229,18 @@ jobs:
         with:
           name: indigo-libs-windows-i386
           path: dist/
-      - name: Download macOS native libs x86_64
-        if: startsWith(github.ref, 'refs/tags/indigo-')
-        uses: actions/download-artifact@v4
-        with:
-          name: indigo-libs-macos-x86_64
-          path: dist/
-      - name: Download macOS native libs aarch64
-        if: startsWith(github.ref, 'refs/tags/indigo-')
-        uses: actions/download-artifact@v4
-        with:
-          name: indigo-libs-macos-aarch64
-          path: dist/
+#      - name: Download macOS native libs x86_64
+#        if: startsWith(github.ref, 'refs/tags/indigo-')
+#        uses: actions/download-artifact@v4
+#        with:
+#          name: indigo-libs-macos-x86_64
+#          path: dist/
+#      - name: Download macOS native libs aarch64
+#        if: startsWith(github.ref, 'refs/tags/indigo-')
+#        uses: actions/download-artifact@v4
+#        with:
+#          name: indigo-libs-macos-aarch64
+#          path: dist/
       - name: Install Python test dependencies
         run: python3 -m pip install -r api/python/requirements_dev.txt --break-system-packages
       - name: Build wrappers
