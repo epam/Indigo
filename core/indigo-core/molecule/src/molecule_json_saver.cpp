@@ -16,10 +16,10 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include <iomanip>
 #include <memory>
 #include <set>
 #include <sstream>
-#include <iomanip>
 
 #include "layout/molecule_layout.h"
 
