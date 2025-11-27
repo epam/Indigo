@@ -275,7 +275,7 @@ void parse_cdx(const char* filename, bool pretty_json)
     sc.seek(22, SEEK_CUR); // VcjD0100 + 0x01020304 + 10 zero bytes
 
     rapidjson::StringBuffer s;
-    auto& json = *JsonWriter::createJsonWriter(true);
+    auto& json = *JsonWriter::createJsonWriter(pretty_json);
     json.Reset(s);
     uint16_t tag;
     json.StartArray();

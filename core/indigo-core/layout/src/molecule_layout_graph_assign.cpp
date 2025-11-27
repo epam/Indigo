@@ -122,9 +122,9 @@ private:
         const float target_len = LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH;
         const float tolerance = 0.05f; // Match Python tolerance
 
-        // Find minimum cycle basis using geometry-based selection like Python
+        // Find minimum cycle basis using geometry-based selection
         std::vector<CycleInfo> cycles;
-        _findAllSimpleCycles(cycles, 20); // max_len=20 like Python
+        _findAllSimpleCycles(cycles, 20);
 
         // Calculate rank needed (number of edges - number of vertices + 1)
         MoleculeLayoutGraph& graph = const_cast<MoleculeLayoutGraph&>(_layout_graph);
@@ -336,8 +336,13 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates(float bond_length)
     QS_DEF(Array<int>, assigned_list);
     QS_DEF(Array<int>, adjacent_list);
 
+    int iteration = 0;
     while (true)
     {
+        iteration++;
+        if (iteration > 10000)
+            throw Error("Infinite loop in layout after %d iterations", iteration);
+
         if (cancellation && cancellation->isCancelled())
             throw Error("Molecule layout has been cancelled: %s", cancellation->cancelledRequestMessage());
 
@@ -1957,8 +1962,10 @@ void MoleculeLayoutGraph::_findFirstVertexIdx(int n_comp, Array<int>& fixed_comp
             else
                 _first_vertex_idx = vertexBegin();
 
-            // Copy vertex types (but NOT positions) from forbidden edge components
-            // (single-edge components where one vertex is fixed and the other is not)
+            // Copy vertex types from single-edge components
+            // This includes:
+            // 1. Forbidden edges (one vertex fixed, one not)
+            // 2. Fixed-to-fixed edges that aren't part of the nucleus
             for (int i = 0; i < n_comp; i++)
             {
                 if (i != nucleus_idx && bc_components[i]->isSingleEdge())
@@ -1974,8 +1981,10 @@ void MoleculeLayoutGraph::_findFirstVertexIdx(int n_comp, Array<int>& fixed_comp
                     bool v1_fixed = (v1_ext >= 0 && v1_ext < _fixed_vertices.size() && _fixed_vertices[v1_ext] != 0);
                     bool v2_fixed = (v2_ext >= 0 && v2_ext < _fixed_vertices.size() && _fixed_vertices[v2_ext] != 0);
 
-                    // Only copy vertex types if this is a forbidden edge (one fixed, one not fixed)
-                    if (v1_fixed != v2_fixed)
+                    // Copy vertex types if:
+                    // - This is a forbidden edge (one fixed, one not fixed), OR
+                    // - Both vertices are fixed (fixed-to-fixed edge outside nucleus)
+                    if ((v1_fixed != v2_fixed) || (v1_fixed && v2_fixed))
                     {
                         // Copy only vertex types, NOT positions (positions are already correct for fixed vertices)
                         for (int j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))

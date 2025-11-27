@@ -16,8 +16,10 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include <iomanip>
 #include <memory>
 #include <set>
+#include <sstream>
 
 #include "layout/molecule_layout.h"
 
@@ -730,16 +732,27 @@ void MoleculeJsonSaver::saveHighlights(BaseMolecule& mol, JsonWriter& writer)
         writer.EndArray();
     }
 }
-static void saveNativeFloat(JsonWriter& writer, float f_value)
+
+static void saveNativeFloat(JsonWriter& writer, float f_value, int precision = -1)
 {
-    std::string val = std::to_string(f_value);
+    std::string val;
+    if (precision >= 0)
+    {
+        std::ostringstream oss;
+        oss << std::fixed << std::setprecision(precision) << f_value;
+        val = oss.str();
+    }
+    else
+    {
+        val = std::to_string(f_value);
+    }
     writer.RawValue(val.c_str(), val.length(), kStringType);
 }
 
 void MoleculeJsonSaver::writeFloat(JsonWriter& writer, float f_value)
 {
     if (use_native_precision)
-        saveNativeFloat(writer, f_value);
+        saveNativeFloat(writer, f_value, native_precision);
     else
         writer.Double(f_value);
 }
@@ -1324,7 +1337,7 @@ void MoleculeJsonSaver::saveAmbiguousMonomerTemplate(TGroup& tg, JsonWriter& wri
         if (tg.ratios[i] >= 0)
         {
             writer.Key(num_name);
-            saveNativeFloat(writer, tg.ratios[i]);
+            saveNativeFloat(writer, tg.ratios[i], native_precision);
         }
     }
     writer.EndArray();
@@ -2073,9 +2086,9 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
         Vec2f pos = monomer_shape.position();
         writer.StartObject();
         writer.Key("x");
-        saveNativeFloat(writer, pos.x);
+        saveNativeFloat(writer, pos.x, native_precision);
         writer.Key("y");
-        saveNativeFloat(writer, pos.y);
+        saveNativeFloat(writer, pos.y, native_precision);
         writer.EndObject();
         writer.Key("monomers");
         writer.StartArray();
