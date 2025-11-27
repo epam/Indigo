@@ -871,13 +871,8 @@ int main(int argc, char* argv[])
     indigoSetOption("molfile-saving-mode", "2000");
     indigoSetOption("ket-saving-version", "1.0.0");
     indigoSetOptionBool("json-saving-pretty", true);
-<<<<<<< HEAD
     // indigoSetOptionBool("json-use-native-precision", true);
     // indigoSetOptionInt("json-set-native-precision", 3);
-=======
-    indigoSetOptionBool("json-use-native-precision", true);
-    indigoSetOptionInt("json-set-native-precision", 3);
->>>>>>> de686ee30 (fix)
     indigoSetOptionFloat("reaction-component-margin-size", 0.0f);
     // indigoSetOptionBool("json-saving-add-reaction-data", "on");
 
