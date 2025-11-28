@@ -1011,8 +1011,11 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
             const auto it = kIndexToCIPDesc.find(atom.stereo);
             if (it != kIndexToCIPDesc.end())
             {
-                _pmol->setAtomCIP(atom_idx, it->second);
-                _pmol->setShowAtomCIP(atom_idx, atom.showAtomStereo);
+                if (it->second != CIPDesc::UNKNOWN)
+                {
+                    _pmol->setAtomCIP(atom_idx, it->second);
+                    _pmol->setShowAtomCIP(atom_idx, atom.showAtomStereo);
+                }
             }
             if (atom.type == kCDXNodeType_GenericNickname || atom.element == ELEM_PSEUDO)
                 _pmol->setPseudoAtom(atom_idx, atom.label.c_str());
