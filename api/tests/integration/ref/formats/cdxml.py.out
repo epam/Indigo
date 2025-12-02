@@ -6,3 +6,44 @@ C4H8
 56.108
 C2H2
 26.038
+issue 3360 cip labels not added when loading cdxml
+Before adding cip descriptors
+atom: 0 cip: 0
+atom: 1 cip: 0
+atom: 2 cip: 0
+atom: 3 cip: 0
+atom: 4 cip: 0
+atom: 5 cip: 0
+atom: 6 cip: 0
+atom: 7 cip: 0
+atom: 8 cip: 0
+atom: 9 cip: 0
+atom: 10 cip: 0
+atom: 11 cip: 0
+atom: 12 cip: 0
+atom: 13 cip: 0
+atom: 14 cip: 0
+atom: 15 cip: 0
+atom: 16 cip: 0
+atom: 17 cip: 0
+atom: 18 cip: 0
+After adding cip descriptors
+atom: 0 cip: 0
+atom: 1 cip: 0
+atom: 2 cip: 5
+atom: 3 cip: 0
+atom: 4 cip: 0
+atom: 5 cip: 3
+atom: 6 cip: 0
+atom: 7 cip: 0
+atom: 8 cip: 0
+atom: 9 cip: 0
+atom: 10 cip: 0
+atom: 11 cip: 5
+atom: 12 cip: 0
+atom: 13 cip: 0
+atom: 14 cip: 0
+atom: 15 cip: 0
+atom: 16 cip: 0
+atom: 17 cip: 0
+atom: 18 cip: 0
