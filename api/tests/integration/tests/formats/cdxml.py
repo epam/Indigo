@@ -44,6 +44,31 @@ for testFile in fileList:
     print(mol.molecularFormula())
     print("{:.3f}".format(mol.molecularWeight()))
 
+print("issue 3360 cip labels not added when loading cdxml")
+indigo.resetOptions()
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/3360_noCIPLabels.cdxml", __file__)
+)
+print("Before adding cip descriptors")
+for atom in mol.iterateAtoms():
+    output = (
+        "atom: "
+        + str(atom.index())
+        + " cip: "
+        + str(atom.stereocenterCIPDescriptor())
+    )
+    print(output)
+mol.addCIPStereoDescriptors()
+print("After adding cip descriptors")
+for atom in mol.iterateAtoms():
+    output = (
+        "atom: "
+        + str(atom.index())
+        + " cip: "
+        + str(atom.stereocenterCIPDescriptor())
+    )
+    print(output)
+
 print("issue 3362 13C isotope not recognised")
 indigo.resetOptions()
 indigo.setOption("gross-formula-add-isotopes", True)
