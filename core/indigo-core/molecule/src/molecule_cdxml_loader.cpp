@@ -1457,7 +1457,8 @@ void MoleculeCdxmlLoader::_parseNode(CdxmlNode& node, BaseCDXElement& elem)
                     node.label = label;
                     // Catch the case when the element attribute isn't given
                     // (and assumed to be carbon). Bug #3060
-                    if (label == "CH3" || label == "CH2" || label == "CH")
+                    std::regex match(R"(^\d{0,2}(CH|CH2|CH3)$)");
+                    if (std::regex_match(label, match))
                     {
                         node.element = ELEM_C;
                     }
