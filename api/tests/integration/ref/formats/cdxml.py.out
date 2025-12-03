@@ -47,3 +47,6 @@ atom: 15 cip: 0
 atom: 16 cip: 0
 atom: 17 cip: 0
 atom: 18 cip: 0
+issue 3362 13C isotope not recognised
+C6[9C][13C2]H18[D]
+127.262

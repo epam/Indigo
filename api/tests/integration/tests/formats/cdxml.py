@@ -69,5 +69,14 @@ for atom in mol.iterateAtoms():
     )
     print(output)
 
+print("issue 3362 13C isotope not recognised")
+indigo.resetOptions()
+indigo.setOption("gross-formula-add-isotopes", True)
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/3362_carbon_isotopes.cdxml", __file__)
+)
+print(mol.molecularFormula())
+print("{:.3f}".format(mol.molecularWeight()))
+
 if isIronPython():
     renderer.Dispose()
