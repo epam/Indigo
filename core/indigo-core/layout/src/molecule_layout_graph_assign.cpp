@@ -1209,7 +1209,8 @@ void MoleculeLayoutGraph::_reflectCycleVertices(const std::vector<int>& cycle_ve
         // Reflect inner_pos through nei_pos: inner_pos = 2*nei_pos - inner_pos
         inner_pos.sub(nei_pos);
         inner_pos.scale(bond_length);
-        inner_pos.negate();
+        if (!_layout_vertices[nei_vx_idx].is_inside)
+            inner_pos.negate();
         inner_pos.add(nei_pos);
     }
 }
@@ -1251,7 +1252,7 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                 }
             }
 
-            //_reflectCycleVertices(inner_cycle_vertices, bond_length);
+            _reflectCycleVertices(inner_cycle_vertices, bond_length);
 
             if (!sel_vertices.empty())
             {
@@ -1740,11 +1741,10 @@ bool MoleculeLayoutGraph::_assignComponentsRelativeCoordinates(PtrArray<Molecule
             MoleculeLayoutGraph& component = *bc_components[i];
             for (int j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
             {
+                int ext_idx = component.getVertexExtIdx(j);
+                _layout_vertices[ext_idx].is_inside = component._layout_vertices[j].is_inside;
                 if (component._layout_vertices[j].is_nailed)
-                {
-                    int ext_idx = component.getVertexExtIdx(j);
                     _layout_vertices[ext_idx].is_nailed = true;
-                }
             }
         }
 

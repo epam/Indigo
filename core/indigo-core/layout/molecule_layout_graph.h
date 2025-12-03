@@ -71,6 +71,7 @@ namespace indigo
         long morgan_code;
         bool is_cyclic;
         bool is_inner_cycle;
+        bool is_inside;
         bool is_nailed;
         int type;
 
