@@ -356,7 +356,7 @@ namespace indigo
 
         void _findFixedComponents(BiconnectedDecomposer& bc_decom, Array<int>& fixed_components, PtrArray<MoleculeLayoutGraph>& bc_components);
         bool _assignComponentsRelativeCoordinates(PtrArray<MoleculeLayoutGraph>& bc_components, Array<int>& fixed_components, BiconnectedDecomposer& bc_decom);
-        void _reflectCycleVertices(const std::vector<int>& cycle_vertices);
+        void _reflectCycleVertices(const std::vector<int>& cycle_vertices, float bond_length);
         void _attachCrossingEdges();
 
         void _buildOutline(void);
@@ -411,7 +411,7 @@ namespace indigo
         // assigning coordinates
         void _assignRelativeCoordinates(int& fixed_component, const MoleculeLayoutGraph& supergraph) override;
         bool _tryToFindPattern(int& fixed_component);
-        void _assignFirstCycle(const Cycle& cycle);
+        void _assignFirstCycle(const Cycle& cycle, float radius);
 
         // attaching cycles
         bool _attachCycleOutside(const Cycle& cycle, float length, int n_common);
