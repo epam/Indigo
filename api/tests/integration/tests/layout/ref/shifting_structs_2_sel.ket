@@ -338,8 +338,8 @@
         "type": "monomer",
         "id": "4",
         "position": {
-            "x": 7.2821,
-            "y": -1.4430
+            "x": 7.6769,
+            "y": -1.6796
         },
         "selected": true,
         "alias": "4aPEGMal",
@@ -349,8 +349,8 @@
         "type": "monomer",
         "id": "5",
         "position": {
-            "x": 8.9249,
-            "y": -2.9805
+            "x": 8.4824,
+            "y": -2.9449
         },
         "selected": true,
         "alias": "E",
@@ -360,8 +360,8 @@
         "type": "monomer",
         "id": "6",
         "position": {
-            "x": 7.7921,
-            "y": 0.7484
+            "x": 8.3701,
+            "y": -0.3493
         },
         "selected": true,
         "alias": "E",
@@ -371,8 +371,8 @@
         "type": "monomer",
         "id": "7",
         "position": {
-            "x": 9.9450,
-            "y": 1.4024
+            "x": 9.8686,
+            "y": -0.2844
         },
         "selected": true,
         "alias": "E",
@@ -382,8 +382,8 @@
         "type": "monomer",
         "id": "8",
         "position": {
-            "x": 11.0777,
-            "y": -2.3265
+            "x": 9.9810,
+            "y": -2.8801
         },
         "selected": true,
         "alias": "E",
@@ -393,8 +393,8 @@
         "type": "monomer",
         "id": "9",
         "position": {
-            "x": 11.5878,
-            "y": -0.1351
+            "x": 10.6741,
+            "y": -1.5498
         },
         "selected": true,
         "alias": "E",
