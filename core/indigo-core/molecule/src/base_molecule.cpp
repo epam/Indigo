@@ -3093,6 +3093,7 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
     Superatom& residue_super_atom = (Superatom&)sgu;
 
     // printf("Template = %s (%d)\n", tgroup.tgroup_name.ptr(), idx);
+    std::map<int, std::pair<int, bool>> lv_atom_dir;
 
     for (int j = residue_super_atom.attachment_points.begin(); j < residue_super_atom.attachment_points.end(); j = residue_super_atom.attachment_points.next(j))
     {
@@ -3106,6 +3107,14 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
             tg_atoms.push(ap.aidx);
             lv_atoms.push(ap.lvidx);
             ap_ids.push(ap_points_ids.add(ap.apid));
+            // If edge aidx->lvidx has direction - save it
+            int edge = fragment->findEdgeIndex(ap.aidx, ap.lvidx);
+            if (edge >= 0)
+            {
+                int dir = fragment->getBondDirection(edge);
+                if (dir > 0)
+                    lv_atom_dir.try_emplace(ap.aidx, dir, fragment->_edges[edge].beg == ap.aidx);
+            }
             ap.lvidx = -1;
             // printf("idx = %d, att_atom_idx = %d, ap.aidx = %d, ap.lvidx = %d, ap_id = %s\n", idx, att_atom_idx, ap.aidx, ap.lvidx, ap.apid.ptr());
         }
@@ -3159,9 +3168,51 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
             {
                 if (findEdgeIndex(att_atoms[i], idx) > -1)
                 {
+                    // will be called once or twice - first to flip t2-t1 bond to t2-ap1 and second to flip ap1-t2 to ap1-ap2
+                    int old_bond_idx = findEdgeIndex(att_atoms[i], idx);
+                    int old_bond_dir = getBondDirection(old_bond_idx);
+
                     // printf("Flip bond = %d, att_atom[i] = %d, tg_atoms[i] = %d, mapping[tg_atoms[i]] = %d\n", findEdgeIndex(att_atoms[i], idx), att_atoms[i],
                     // tg_atoms[i], mapping[tg_atoms[i]]);
                     flipBond(att_atoms[i], idx, mapping[tg_atoms[i]]);
+                    int template_bond_dir = BOND_DIRECTION_MONO;
+                    int dir_from_ap = true;
+                    auto it = lv_atom_dir.find(tg_atoms[i]);
+                    if (it != lv_atom_dir.end())
+                    {
+                        template_bond_dir = it->second.first;
+                        dir_from_ap = it->second.second;
+                    }
+                    int new_edge = findEdgeIndex(att_atoms[i], mapping[tg_atoms[i]]);
+                    auto reverse_direction = [](int dir) -> int {
+                        if (dir == BOND_DOWN)
+                            return BOND_UP;
+                        else if (dir == BOND_UP)
+                            return BOND_DOWN;
+                        return dir;
+                    };
+                    if (isTemplateAtom(att_atoms[i]))
+                    { // first call
+                        if (template_bond_dir != BOND_DIRECTION_MONO)
+                        {
+                            setBondDirection(new_edge, dir_from_ap ? reverse_direction(template_bond_dir) : template_bond_dir);
+                        }
+                    }
+                    else
+                    { // second call
+                        if (template_bond_dir == BOND_DIRECTION_MONO)
+                        {
+                            if (old_bond_dir)
+                                setBondDirection(new_edge, reverse_direction(old_bond_dir));
+                        }
+                        else
+                        {
+                            if (!dir_from_ap) // new edge is (other_ap, template_ap) and dir not from template_ap - should be reversed
+                                template_bond_dir = reverse_direction(template_bond_dir);
+                            if (old_bond_dir == BOND_DIRECTION_MONO || old_bond_dir == template_bond_dir)
+                                setBondDirection(new_edge, template_bond_dir);
+                        }
+                    }
                 }
                 else if (isTemplateAtom(att_atoms[i]))
                 {
@@ -5478,38 +5529,38 @@ void BaseMolecule::getTemplatesMap(std::unordered_map<std::pair<std::string, std
 
 void BaseMolecule::transformTemplatesToSuperatoms()
 {
-    if (tgroups.getTGroupCount())
+    if (tgroups.getTGroupCount() == 0)
+        return;
+
+    std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash> templates;
+    bool modified = false;
+    getTemplatesMap(templates);
+    for (auto atom_idx = vertexBegin(); atom_idx < vertexEnd(); atom_idx = vertexNext(atom_idx))
     {
-        std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash> templates;
-        bool modified = false;
-        getTemplatesMap(templates);
-        for (auto atom_idx = vertexBegin(); atom_idx < vertexEnd(); atom_idx = vertexNext(atom_idx))
+        if (isTemplateAtom(atom_idx))
         {
-            if (isTemplateAtom(atom_idx))
+            auto tg_idx = getTemplateAtomTemplateIndex(atom_idx);
+            if (tg_idx < 0)
             {
-                auto tg_idx = getTemplateAtomTemplateIndex(atom_idx);
-                if (tg_idx < 0)
+                std::string alias = getTemplateAtom(atom_idx);
+                std::string mon_class = getTemplateAtomClass(atom_idx);
+                auto tg_ref = findTemplateInMap(alias, mon_class, templates);
+                if (tg_ref.has_value())
                 {
-                    std::string alias = getTemplateAtom(atom_idx);
-                    std::string mon_class = getTemplateAtomClass(atom_idx);
-                    auto tg_ref = findTemplateInMap(alias, mon_class, templates);
-                    if (tg_ref.has_value())
-                    {
-                        auto& tg = tg_ref.value().get();
-                        tg_idx = tg.tgroup_id - 1;
-                    }
-                }
-                if (tg_idx != -1)
-                {
-                    _transformTGroupToSGroup(atom_idx, tg_idx);
-                    modified = true;
+                    auto& tg = tg_ref.value().get();
+                    tg_idx = tg.tgroup_id - 1;
                 }
             }
+            if (tg_idx != -1)
+            {
+                _transformTGroupToSGroup(atom_idx, tg_idx);
+                modified = true;
+            }
         }
-        tgroups.clear();
-        template_attachment_points.clear();
-        template_attachment_indexes.clear();
     }
+    tgroups.clear();
+    template_attachment_points.clear();
+    template_attachment_indexes.clear();
 }
 
 std::string BaseMolecule::getAtomDescription(int idx)
@@ -5909,7 +5960,11 @@ bool BaseMolecule::convertTemplateAtomsToSuperatoms(bool only_transformed)
     {
         std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash> templates;
         getTemplatesMap(templates);
+        std::vector<int> verts;
+        // VerticesAuto fails if graph changed inside cycle
         for (auto vi : vertices())
+            verts.emplace_back(vi);
+        for (auto vi : verts)
         {
             if (isTemplateAtom(vi) &&
                 (!only_transformed || getTemplateAtomTransform(vi).hasTransformation() || getTemplateAtomDisplayOption(vi) == DisplayOption::Expanded))
