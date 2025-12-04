@@ -171,7 +171,9 @@ float Vec2f::distSqr(const Vec2f& a, const Vec2f& b)
     float dx = b.x - a.x;
     float dy = b.y - a.y;
 
-    return dx * dx + dy * dy;
+    // Use std::hypot for better numerical stability
+    float h = std::hypot(dx, dy);
+    return h * h;
 }
 
 float Vec2f::dist(const Vec2f& a, const Vec2f& b)
