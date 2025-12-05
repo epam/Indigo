@@ -321,6 +321,7 @@ void LayoutChooser::_makeLayout()
                 Vec2f& cur_pos = _layout._layout[++k];
                 bool is_fixed_in_graph = _layout._graph._fixed_vertices.size() > 0 && _layout._graph._fixed_vertices[v1] != 0 && _layout._graph.sequence_layout;
                 bool is_nailed = comp.getLayoutVertex(j).is_nailed && _layout._graph.sequence_layout;
+
                 if (_fixed_components[bc_com_idx] == 0 && !is_fixed_in_graph && !is_nailed) // Skip fixed components
                 {
                     // Vertex is not fixed, apply normal transformation

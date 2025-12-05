@@ -18,6 +18,8 @@ from env_indigo import *  # noqa
 indigo = Indigo()
 indigo.setOption("json-saving-pretty", True)
 indigo.setOption("ignore-stereochemistry-errors", True)
+indigo.setOption("json-use-native-precision", True)
+indigo.setOption("json-set-native-precision", 4)
 
 print("*** Sequence cycles layout ***")
 

@@ -584,17 +584,17 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
 
     // Assign first cycle: only if there are NO fixed cycles.
     // If there are fixed cycles, remaining cycles should be attached via _attachCycleOutside.
+    float radius = (sequence_layout && supergraph._n_fixed) ? LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH : 1.0f;
+
     if (!found_fixed_cycle && sorted_cycles.size() > 0)
     {
         sorted_cycles.qsort(Cycle::compare_cb, &cycles);
-        _assignFirstCycle(cycles[sorted_cycles[0]]);
+        _assignFirstCycle(cycles[sorted_cycles[0]], radius);
         cycles.remove(sorted_cycles[0]);
         sorted_cycles.remove(0);
     }
 
     bool chain_attached;
-
-    float bond_length_arc = (sequence_layout && supergraph._n_fixed) ? LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH : 1.0f;
 
     // Try to attach chains with one, two or more common edges outside drawn part
     do
@@ -603,7 +603,7 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
 
         for (i = 0; !chain_attached && i < sorted_cycles.size();)
         {
-            if (_attachCycleOutside(cycles[sorted_cycles[i]], bond_length_arc, 1))
+            if (_attachCycleOutside(cycles[sorted_cycles[i]], radius, 1))
             {
                 cycles.remove(sorted_cycles[i]);
                 sorted_cycles.remove(i);
@@ -615,7 +615,7 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
 
         for (i = 0; !chain_attached && i < sorted_cycles.size();)
         {
-            if (_attachCycleOutside(cycles[sorted_cycles[i]], bond_length_arc, 2))
+            if (_attachCycleOutside(cycles[sorted_cycles[i]], radius, 2))
             {
                 cycles.remove(sorted_cycles[i]);
                 sorted_cycles.remove(i);
@@ -627,7 +627,7 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
 
         for (i = 0; !chain_attached && i < sorted_cycles.size();)
         {
-            if (_attachCycleOutside(cycles[sorted_cycles[i]], bond_length_arc, 0))
+            if (_attachCycleOutside(cycles[sorted_cycles[i]], radius, 0))
             {
                 cycles.remove(sorted_cycles[i]);
                 sorted_cycles.remove(i);
@@ -641,7 +641,7 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
     // Try to attach chains inside
     for (i = 0; i < sorted_cycles.size();)
     {
-        if (_attachCycleInside(cycles[sorted_cycles[i]], bond_length_arc))
+        if (_attachCycleInside(cycles[sorted_cycles[i]], radius))
         {
             cycles.remove(sorted_cycles[i]);
             sorted_cycles.remove(i);
@@ -686,7 +686,7 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
 
         for (i = 0; !chain_attached && i < sorted_cycles.size();)
         {
-            if (_attachCycleWithIntersections(cycles[sorted_cycles[i]], bond_length_arc))
+            if (_attachCycleWithIntersections(cycles[sorted_cycles[i]], radius))
             {
                 cycles.remove(sorted_cycles[i]);
                 sorted_cycles.remove(i);
@@ -709,7 +709,7 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
     }
 }
 
-void MoleculeLayoutGraphSimple::_assignFirstCycle(const Cycle& cycle)
+void MoleculeLayoutGraphSimple::_assignFirstCycle(const Cycle& cycle, float radius)
 {
     // TODO: Start drawing from vertex with maximum code and continue to the right with one of two which has maximum code
     int i, n;
@@ -731,12 +731,13 @@ void MoleculeLayoutGraphSimple::_assignFirstCycle(const Cycle& cycle)
     if (respect_cycles_direction && diff.normalize())
     {
         phi *= _getCycleDirection(cycle);
+        diff.scale(radius);
         _layout_vertices[cycle.getVertex(1)].pos = _layout_vertices[cycle.getVertex(0)].pos + diff;
     }
     else
     {
         _layout_vertices[cycle.getVertex(0)].pos.set(0.f, 0.f);
-        _layout_vertices[cycle.getVertex(1)].pos.set(1.f, 0.f);
+        _layout_vertices[cycle.getVertex(1)].pos.set(radius, 0.f);
     }
 
     for (i = 1; i < n - 1; i++)
@@ -1194,7 +1195,7 @@ void MoleculeLayoutGraph::_optimizeSelectedPartPlacement(float bond_length, cons
 }
 
 // Reflect inner cycle vertices through their single neighbor
-void MoleculeLayoutGraph::_reflectCycleVertices(const std::vector<int>& cycle_vertices)
+void MoleculeLayoutGraph::_reflectCycleVertices(const std::vector<int>& cycle_vertices, float bond_length)
 {
     // Reflect inner cycle vertices through their single neighbor
     for (auto vx_inner_idx : cycle_vertices)
@@ -1207,7 +1208,9 @@ void MoleculeLayoutGraph::_reflectCycleVertices(const std::vector<int>& cycle_ve
 
         // Reflect inner_pos through nei_pos: inner_pos = 2*nei_pos - inner_pos
         inner_pos.sub(nei_pos);
-        inner_pos.negate();
+        inner_pos.scale(bond_length);
+        if (!_layout_vertices[nei_vx_idx].is_inside)
+            inner_pos.negate();
         inner_pos.add(nei_pos);
     }
 }
@@ -1233,32 +1236,27 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                 auto& vx = getVertex(ext_idx);
 
                 // Skip if fixed, nailed, or single bond to nailed vertex
-                if (((ext_idx < _fixed_vertices.size() && _fixed_vertices[ext_idx]) || lvx.is_nailed) ||
-                    (vx.degree() == 1 && _layout_vertices[vx.neiVertex(vx.neiBegin())].is_nailed))
+                bool is_fixed = ext_idx < _fixed_vertices.size() && _fixed_vertices[ext_idx];
+
+                if (lvx.is_inner_cycle && !is_fixed)
+                    inner_cycle_vertices.push_back(vx_idx);
+
+                if ((is_fixed || lvx.is_nailed) || (vx.degree() == 1 && _layout_vertices[vx.neiVertex(vx.neiBegin())].is_nailed))
                 {
                     fix_vertexes.push_back(vx_idx);
-                    continue;
                 }
-                selected_centroid.add(lvx.pos);
-                sel_vertices.push_back(vx_idx);
-                if (lvx.is_inner_cycle)
-                    inner_cycle_vertices.push_back(vx_idx);
+                else
+                {
+                    selected_centroid.add(lvx.pos);
+                    sel_vertices.push_back(vx_idx);
+                }
             }
+
+            _reflectCycleVertices(inner_cycle_vertices, bond_length);
 
             if (!sel_vertices.empty())
             {
                 selected_centroid.scale(1.0f / sel_vertices.size());
-
-                // Scale selected vertices around their centroid
-                for (auto vx_idx : sel_vertices)
-                {
-                    auto& lvx = _layout_vertices[vx_idx];
-                    lvx.pos -= selected_centroid;
-                    lvx.pos.scale(bond_length);
-                    lvx.pos += selected_centroid;
-                }
-
-                _reflectCycleVertices(inner_cycle_vertices);
                 // Build bridge bond information using already collected vertices
                 std::vector<std::vector<Vec2f>> bridge_fixed_positions(vertexEnd());
                 std::vector<std::pair<int, Vec2f>> all_fixed_vertices;
@@ -1350,7 +1348,7 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
             if (lvx.is_inner_cycle)
                 inner_cycle_vertices.push_back(vx_idx);
         }
-        _reflectCycleVertices(inner_cycle_vertices);
+        _reflectCycleVertices(inner_cycle_vertices, 1.0f);
     }
 
     if (vertexCount() == 1)
@@ -1736,21 +1734,17 @@ bool MoleculeLayoutGraph::_assignComponentsRelativeCoordinates(PtrArray<Molecule
 
     if (sequence_layout)
     {
-        // Temporary storage for nailed positions to avoid writing to supergraph coordinates
-        std::unordered_map<int, Vec2f> nailed_positions;
-
         // 1. Collect is_nailed from all components to supergraph and temp storage
+        std::unordered_map<int, Vec2f> nailed_positions;
         for (int i = 0; i < n_comp; i++)
         {
             MoleculeLayoutGraph& component = *bc_components[i];
             for (int j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
             {
+                int ext_idx = component.getVertexExtIdx(j);
+                _layout_vertices[ext_idx].is_inside = component._layout_vertices[j].is_inside;
                 if (component._layout_vertices[j].is_nailed)
-                {
-                    int ext_idx = component.getVertexExtIdx(j);
                     _layout_vertices[ext_idx].is_nailed = true;
-                    nailed_positions[ext_idx] = component._layout_vertices[j].pos;
-                }
             }
         }
 
@@ -1788,7 +1782,6 @@ void MoleculeLayoutGraph::_markInnerVertices(const MoleculeLayoutGraph& componen
     {
         auto vidx = component._layout_vertices[i].ext_idx;
         auto& lv = _layout_vertices[vidx];
-        lv.is_nailed = component._layout_vertices[i].is_nailed;
         auto& vx = getVertex(vidx);
         for (int j = vx.neiBegin(); j < vx.neiEnd(); j = vx.neiNext(j))
         {
@@ -1819,6 +1812,7 @@ void MoleculeLayoutGraph::_assignRelativeSingleEdge(int fixed_component, const M
     {
         Vec2f pos1 = supergraph.getPos(getVertexExtIdx(idx1));
         Vec2f pos2 = supergraph.getPos(getVertexExtIdx(idx2));
+
         if (supergraph._fixed_vertices[getVertexExtIdx(idx1)] == 0 && supergraph._fixed_vertices[getVertexExtIdx(idx2)])
         {
             pos2.sub(pos1);
@@ -1833,6 +1827,7 @@ void MoleculeLayoutGraph::_assignRelativeSingleEdge(int fixed_component, const M
             if (!pos1.normalize())
                 pos1.set(1.f, 0.f);
         }
+
         _layout_vertices[idx1].pos = pos1;
         _layout_vertices[idx2].pos = pos2;
     }

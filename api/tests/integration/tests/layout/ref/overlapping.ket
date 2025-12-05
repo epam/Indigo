@@ -575,8 +575,8 @@
         "type": "monomer",
         "id": "21",
         "position": {
-            "x": 12.8305,
-            "y": -1.5516
+            "x": 11.8015,
+            "y": 0.8340
         },
         "alias": "K",
         "templateId": "K___Lysine"
@@ -595,8 +595,8 @@
         "type": "monomer",
         "id": "23",
         "position": {
-            "x": 11.8015,
-            "y": 0.8340
+            "x": 12.8305,
+            "y": -1.5516
         },
         "alias": "K",
         "templateId": "K___Lysine"
