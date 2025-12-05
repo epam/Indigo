@@ -254,6 +254,9 @@ namespace bingo
 
         void _initPartition() override;
 
+        bool _tautomer;
+        IndigoTautomerParams _tautomer_params;
+
     private:
         Array<int> _candidates;
         int _current_cand_id;
