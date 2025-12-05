@@ -1317,7 +1317,7 @@ BaseExactMatcher::BaseExactMatcher(BaseIndex& index, IndigoObject*& current_obj)
 {
     _candidates.clear();
     _current_cand_id = 0;
-    _flags = 0;
+    _flags = MoleculeExactMatcher::CONDITION_ALL;
 }
 
 bool BaseExactMatcher::next()
