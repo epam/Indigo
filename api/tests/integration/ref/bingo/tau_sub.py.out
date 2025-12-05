@@ -1,0 +1,97 @@
+*** Creating temporary database ****
+v0.72
+** searchSub(OC1=CC=CNC1, ) **
+** searchSub(OC1=CC=CNC1, TAU) **
+0 O=C1CNCc2ccccc12
+** searchSub(OC1=CC=CNC1, TAU R1) **
+** searchSub(OC1=CC=CNC1, TAU R2) **
+0 O=C1CNCc2ccccc12
+** searchSub(OC1=CC=CNC1, TAU R3) **
+** searchSub(OC1=CC=CNC1, TAU R*) **
+0 O=C1CNCc2ccccc12
+** searchSub(OC1=CC=CNC1, TAU R-C) **
+0 O=C1CNCc2ccccc12
+** searchSub(CC1CCC(=C)CC1, ) **
+** searchSub(CC1CCC(=C)CC1, TAU) **
+1 CC(C)=C1CCC(C)=CC1
+** searchSub(CC1CCC(=C)CC1, TAU R1) **
+** searchSub(CC1CCC(=C)CC1, TAU R2) **
+** searchSub(CC1CCC(=C)CC1, TAU R3) **
+** searchSub(CC1CCC(=C)CC1, TAU R*) **
+** searchSub(CC1CCC(=C)CC1, TAU R-C) **
+1 CC(C)=C1CCC(C)=CC1
+** searchSub(NC1=NC2=NC=CN=C2C=N1, ) **
+2 Nc1[n]c2c([n]c(c[n]2)C(O)=O)c(=O)[nH]1
+3 Nc1[n]c2c([n]cc(=O)[nH]2)c(=O)[nH]1
+** searchSub(NC1=NC2=NC=CN=C2C=N1, TAU) **
+2 Nc1[n]c2c([n]c(c[n]2)C(O)=O)c(=O)[nH]1
+3 Nc1[n]c2c([n]cc(=O)[nH]2)c(=O)[nH]1
+** searchSub(NC1=NC2=NC=CN=C2C=N1, TAU R1) **
+2 Nc1[n]c2c([n]c(c[n]2)C(O)=O)c(=O)[nH]1
+3 Nc1[n]c2c([n]cc(=O)[nH]2)c(=O)[nH]1
+** searchSub(NC1=NC2=NC=CN=C2C=N1, TAU R2) **
+2 Nc1[n]c2c([n]c(c[n]2)C(O)=O)c(=O)[nH]1
+3 Nc1[n]c2c([n]cc(=O)[nH]2)c(=O)[nH]1
+** searchSub(NC1=NC2=NC=CN=C2C=N1, TAU R3) **
+2 Nc1[n]c2c([n]c(c[n]2)C(O)=O)c(=O)[nH]1
+3 Nc1[n]c2c([n]cc(=O)[nH]2)c(=O)[nH]1
+** searchSub(NC1=NC2=NC=CN=C2C=N1, TAU R*) **
+2 Nc1[n]c2c([n]c(c[n]2)C(O)=O)c(=O)[nH]1
+3 Nc1[n]c2c([n]cc(=O)[nH]2)c(=O)[nH]1
+** searchSub(NC1=NC2=NC=CN=C2C=N1, TAU R-C) **
+2 Nc1[n]c2c([n]c(c[n]2)C(O)=O)c(=O)[nH]1
+3 Nc1[n]c2c([n]cc(=O)[nH]2)c(=O)[nH]1
+** searchSub(CC1(C)NC(=O)C2=CC=CC=C2N1, ) **
+** searchSub(CC1(C)NC(=O)C2=CC=CC=C2N1, TAU) **
+** searchSub(CC1(C)NC(=O)C2=CC=CC=C2N1, TAU R1) **
+** searchSub(CC1(C)NC(=O)C2=CC=CC=C2N1, TAU R2) **
+** searchSub(CC1(C)NC(=O)C2=CC=CC=C2N1, TAU R3) **
+** searchSub(CC1(C)NC(=O)C2=CC=CC=C2N1, TAU R*) **
+** searchSub(CC1(C)NC(=O)C2=CC=CC=C2N1, TAU R-C) **
+4 CC(=C)Nc1ccccc1C(N)=O
+** searchSub(OCCCN, ) **
+** searchSub(OCCCN, TAU) **
+6 P(=O)(O[H])(O[H])OC([H])([H])c1c([H])[n]c(C([H])([H])[H])[n]c1N([H])[H]
+** searchSub(OCCCN, TAU R1) **
+6 P(=O)(O[H])(O[H])OC([H])([H])c1c([H])[n]c(C([H])([H])[H])[n]c1N([H])[H]
+** searchSub(OCCCN, TAU R2) **
+** searchSub(OCCCN, TAU R3) **
+6 P(=O)(O[H])(O[H])OC([H])([H])c1c([H])[n]c(C([H])([H])[H])[n]c1N([H])[H]
+** searchSub(OCCCN, TAU R*) **
+6 P(=O)(O[H])(O[H])OC([H])([H])c1c([H])[n]c(C([H])([H])[H])[n]c1N([H])[H]
+** searchSub(OCCCN, TAU R-C) **
+6 P(=O)(O[H])(O[H])OC([H])([H])c1c([H])[n]c(C([H])([H])[H])[n]c1N([H])[H]
+** searchSub(CCC, ) **
+0 O=C1CNCc2ccccc12
+1 CC(C)=C1CCC(C)=CC1
+** searchSub(CCC, TAU) **
+0 O=C1CNCc2ccccc12
+1 CC(C)=C1CCC(C)=CC1
+4 CC(=C)Nc1ccccc1C(N)=O
+6 P(=O)(O[H])(O[H])OC([H])([H])c1c([H])[n]c(C([H])([H])[H])[n]c1N([H])[H]
+** searchSub(CCC, TAU R1) **
+0 O=C1CNCc2ccccc12
+1 CC(C)=C1CCC(C)=CC1
+4 CC(=C)Nc1ccccc1C(N)=O
+** searchSub(CCC, TAU R2) **
+0 O=C1CNCc2ccccc12
+1 CC(C)=C1CCC(C)=CC1
+4 CC(=C)Nc1ccccc1C(N)=O
+** searchSub(CCC, TAU R3) **
+0 O=C1CNCc2ccccc12
+1 CC(C)=C1CCC(C)=CC1
+4 CC(=C)Nc1ccccc1C(N)=O
+6 P(=O)(O[H])(O[H])OC([H])([H])c1c([H])[n]c(C([H])([H])[H])[n]c1N([H])[H]
+** searchSub(CCC, TAU R*) **
+0 O=C1CNCc2ccccc12
+1 CC(C)=C1CCC(C)=CC1
+4 CC(=C)Nc1ccccc1C(N)=O
+6 P(=O)(O[H])(O[H])OC([H])([H])c1c([H])[n]c(C([H])([H])[H])[n]c1N([H])[H]
+** searchSub(CCC, TAU R-C) **
+0 O=C1CNCc2ccccc12
+1 CC(C)=C1CCC(C)=CC1
+2 Nc1[n]c2c([n]c(c[n]2)C(O)=O)c(=O)[nH]1
+3 Nc1[n]c2c([n]cc(=O)[nH]2)c(=O)[nH]1
+4 CC(=C)Nc1ccccc1C(N)=O
+5 O=c1[n]c[nH]c2c1c[n][nH]2
+6 P(=O)(O[H])(O[H])OC([H])([H])c1c([H])[n]c(C([H])([H])[H])[n]c1N([H])[H]
