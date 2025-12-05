@@ -31,9 +31,9 @@
 
 #define SQR(x) ((x) * (x))
 
-#define DEG2RAD(x) ((x)*M_PI / 180)
-#define RAD2DEG(x) ((x)*180 / M_PI)
-#define HYPOT(a, b) (sqrt((a) * (a) + (b) * (b)))
+#define DEG2RAD(x) (x * M_PI / 180)
+#define RAD2DEG(x) (x * 180 / M_PI)
+#define HYPOT(a, b) (std::hypot(a, b))
 
 namespace indigo
 {
@@ -151,7 +151,7 @@ namespace indigo
 
         inline float length() const
         {
-            return _2FLOAT(sqrt(lengthSqr()));
+            return std::hypotf(x, y);
         }
 
         // OPERATORS:

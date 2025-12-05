@@ -202,8 +202,8 @@
         "type": "monomer",
         "id": "0",
         "position": {
-            "x": 2.8743,
-            "y": 0.2236
+            "x": 2.8730,
+            "y": 0.2209
         },
         "selected": true,
         "alias": "E",
@@ -213,8 +213,8 @@
         "type": "monomer",
         "id": "1",
         "position": {
-            "x": 2.7288,
-            "y": -1.2694
+            "x": 2.7291,
+            "y": -1.2722
         },
         "selected": true,
         "alias": "E",
@@ -224,8 +224,8 @@
         "type": "monomer",
         "id": "2",
         "position": {
-            "x": 3.6816,
-            "y": -2.4279
+            "x": 3.6832,
+            "y": -2.4297
         },
         "selected": true,
         "alias": "E",
@@ -235,8 +235,8 @@
         "type": "monomer",
         "id": "3",
         "position": {
-            "x": 5.1746,
-            "y": -2.5734
+            "x": 5.1763,
+            "y": -2.5735
         },
         "selected": true,
         "alias": "E",
@@ -246,8 +246,8 @@
         "type": "monomer",
         "id": "4",
         "position": {
-            "x": 6.3331,
-            "y": -1.6206
+            "x": 6.3338,
+            "y": -1.6195
         },
         "selected": true,
         "alias": "E",
@@ -257,8 +257,8 @@
         "type": "monomer",
         "id": "5",
         "position": {
-            "x": 6.4785,
-            "y": -0.1276
+            "x": 6.4776,
+            "y": -0.1264
         },
         "selected": true,
         "alias": "E",
@@ -268,8 +268,8 @@
         "type": "monomer",
         "id": "6",
         "position": {
-            "x": 5.5258,
-            "y": 1.0309
+            "x": 5.5236,
+            "y": 1.0311
         },
         "selected": true,
         "alias": "E",
@@ -279,8 +279,8 @@
         "type": "monomer",
         "id": "7",
         "position": {
-            "x": 4.0328,
-            "y": 1.1764
+            "x": 4.0305,
+            "y": 1.1749
         },
         "selected": true,
         "alias": "E",
