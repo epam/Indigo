@@ -360,7 +360,7 @@ jobs:
         uses: uraimo/run-on-arch-action@v2.8.1
         with:
           arch: aarch64
-          distro: ubuntu20.04
+          distro: ubuntu22.04
           githubToken: ${{ github.token }}
           run: |
             apt update
