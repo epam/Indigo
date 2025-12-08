@@ -181,7 +181,6 @@ bool MoleculeLayoutGraphSimple::_attachCycleOutside(const Cycle& cycle, float le
     for (int i = 0; i < cycle.vertexCount(); i++)
     {
         cycle_vertex_types[i] = _layout_vertices[cycle.getVertex(i)].type;
-
         if (cycle_vertex_types[i] > 0)
             n_common_v++;
         if (_layout_edges[cycle.getEdge(i)].type > 0)
@@ -334,9 +333,7 @@ bool MoleculeLayoutGraphSimple::_attachCycleOutside(const Cycle& cycle, float le
     if (is_attached)
     {
         for (int i = 0; i < cycle.vertexCount(); i++)
-        {
             _layout_vertices[cycle.getVertex(i)].is_nailed = true;
-        }
         next_bc.copyLayoutTo(*this, mapping);
     }
 
@@ -464,12 +461,14 @@ bool MoleculeLayoutGraphSimple::_attachCycleInside(const Cycle& cycle, float len
 
     // Copy new layout
     if (attached)
+    {
         for (int i = 0; i < cycle.vertexCount(); i++)
         {
             _layout_vertices[cycle.getVertex(i)].is_nailed = true;
-            next_bc.copyLayoutTo(*this, mapping);
+            _layout_vertices[cycle.getVertex(i)].is_inside = true;
         }
-
+        next_bc.copyLayoutTo(*this, mapping);
+    }
     return attached;
 }
 
