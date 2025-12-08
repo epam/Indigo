@@ -7,7 +7,13 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
-from env_indigo import *  # noqa
+from env_indigo import (  # noqa
+    Bingo,
+    BingoException,
+    Indigo,
+    getIndigoExceptionText,
+    joinPathPy,
+)
 
 
 def searchSim(bingo, q, minSim, maxSim, metric=None):
@@ -108,6 +114,6 @@ for rxn in itertools.islice(
     indigo.iterateSmilesFile(joinPathPy("reactions/rhea.smiles", __file__)),
     100,
 ):
-    searchExact(bingo, rxn)
+    searchExact(bingo, rxn, "NONE")
 
 bingo.close()
