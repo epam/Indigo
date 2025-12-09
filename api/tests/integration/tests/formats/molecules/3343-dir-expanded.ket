@@ -34,8 +34,8 @@
         "type": "monomer",
         "id": "0",
         "position": {
-            "x": 10.05,
-            "y": -4.3
+            "x": 13.175,
+            "y": -7.0375000000000005
         },
         "alias": "SingleUP",
         "templateId": "SingleUP___SingleUP",
@@ -134,8 +134,8 @@
         "type": "monomer",
         "id": "1",
         "position": {
-            "x": 10.251000000000001,
-            "y": -4.3
+            "x": 14.675,
+            "y": -7.0375000000000005
         },
         "alias": "Single",
         "templateId": "Single___Single",

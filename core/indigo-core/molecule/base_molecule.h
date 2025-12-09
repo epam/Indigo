@@ -481,6 +481,7 @@ namespace indigo
         int mergeAtoms(int atom1, int atom2);
 
         void flipBond(int atom_parent, int atom_from, int atom_to);
+        int flipBondWithDirection(int atom_parent, int atom_from, int atom_to, int leaving_dir, bool leaving_atom_is_beg);
 
         void makeSubmolecule(BaseMolecule& mol, const Array<int>& vertices, Array<int>* mapping_out, int skip_flags = 0);
         void makeSubmolecule(BaseMolecule& other, const Filter& filter, Array<int>* mapping_out, Array<int>* inv_mapping, int skip_flags = 0);
