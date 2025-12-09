@@ -225,7 +225,7 @@ bool SequenceLoader::addTemplate(BaseMolecule& mol, const std::string alias, Mon
 
     if (_mon_lib.getMonomerTemplate(mon_type, alias, tg))
     {
-        tg.tgroup_id = tg_idx;
+        tg.tgroup_id = tg_idx + 1;
         _added_templates.emplace(mon_type, alias);
         return true;
     }
@@ -558,7 +558,7 @@ bool SequenceLoader::addMonomerTemplate(BaseMolecule& mol, MonomerClass mt, cons
     auto& tg = mol.tgroups.getTGroup(tg_idx);
     if (_mon_lib.getMonomerTemplate(mt, alias, tg))
     {
-        tg.tgroup_id = tg_idx;
+        tg.tgroup_id = tg_idx + 1;
         return true;
     }
     else
@@ -583,7 +583,7 @@ void SequenceLoader::checkAddTemplate(BaseMolecule& mol, const MonomerTemplate& 
         int tg_idx = mol.tgroups.addTGroup();
         auto& tg = mol.tgroups.getTGroup(tg_idx);
         tg.copy(*monomer_template.getTGroup());
-        tg.tgroup_id = tg_idx;
+        tg.tgroup_id = tg_idx + 1;
         tg.idt_alias.readString(monomer_template.idtAlias().getBase().c_str(), true);
         _added_templates.emplace(monomer_template.monomerClass(), getKetStrProp(monomer_template, alias));
     }

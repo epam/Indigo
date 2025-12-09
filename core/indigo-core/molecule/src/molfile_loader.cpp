@@ -2169,7 +2169,7 @@ int MolfileLoader::_insertTemplate(MonomersLib::value_type& nuc, std::unordered_
     auto& tg = _bmol->tgroups.getTGroup(tg_idx);
     // handle tgroup
     tg.copy(nuc.second);
-    tg.tgroup_id = tg_idx;
+    tg.tgroup_id = tg_idx + 1; // tgroup_id is 1-based
     new_templates.emplace(nuc.first, tg_idx);
     return tg_idx;
 }
