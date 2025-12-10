@@ -205,7 +205,7 @@ namespace indigo
         virtual int getAtomSubstCount(int idx) = 0;
         virtual int getAtomRingBondsCount(int idx) = 0; // >= 0 -- ring bonds count, -1 -- not sure
         virtual int getAtomConnectivity(int idx) = 0;
-        virtual void setExplicitValence(int /*idx*/, int /*valence*/){};
+        virtual void setExplicitValence(int /*idx*/, int /*valence*/) {};
 
         int getAtomRadical_NoThrow(int idx, int fallback);
         int getAtomValence_NoThrow(int idx, int fallback);
@@ -481,7 +481,6 @@ namespace indigo
         int mergeAtoms(int atom1, int atom2);
 
         void flipBond(int atom_parent, int atom_from, int atom_to);
-        int flipBondWithDirection(int atom_parent, int atom_from, int atom_to, int leaving_dir, bool leaving_atom_is_beg);
 
         void makeSubmolecule(BaseMolecule& mol, const Array<int>& vertices, Array<int>* mapping_out, int skip_flags = 0);
         void makeSubmolecule(BaseMolecule& other, const Filter& filter, Array<int>* mapping_out, Array<int>* inv_mapping, int skip_flags = 0);
@@ -540,9 +539,10 @@ namespace indigo
         // Each time molecule is changed revision number is increased.
         // If revision number is the same then molecule hasn't been changed.
         int getEditRevision();
-        // Manually update edit revision. This is required when molecule is changed
         // directly without calling molecule methods (for example mol.cis_trans.clear() and etc.)
         void updateEditRevision();
+
+        int flipBondWithDirection(int atom_parent, int atom_from, int atom_to, int leaving_atom);
 
         void clearBondDirections();
         int getBondDirection(int idx) const;
