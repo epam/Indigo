@@ -5788,7 +5788,6 @@ std::unique_ptr<BaseMolecule>& BaseMolecule::expandedMonomersToAtoms()
     std::unique_ptr<BaseMolecule>& result = _with_expanded_monomers;
     result.reset(neu());
     result->clone(*this);
-    std::list<int> att_indexes_to_remove;
     std::list<int> monomer_ids;
     for (int monomer_id = result->vertexBegin(); monomer_id != result->vertexEnd(); monomer_id = result->vertexNext(monomer_id))
     {
@@ -5827,9 +5826,11 @@ std::unique_ptr<BaseMolecule>& BaseMolecule::expandedMonomersToAtoms()
         std::map<int, int> attached_atom;
         Array<int> atoms_to_remove;
         // Attachment points stored in SuperAtom SGroups
-        for (int j = monomer_sgroups.begin(); j != monomer_sgroups.end(); j = monomer_sgroups.next(j))
+        int sg_idx = monomer_sgroups.begin();
+        while (sg_idx != monomer_sgroups.end())
         {
-            SGroup& sg = monomer_sgroups.getSGroup(j);
+            int next_sg_idx = monomer_sgroups.next(sg_idx);
+            SGroup& sg = monomer_sgroups.getSGroup(sg_idx);
             if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
             {
                 auto& sa = static_cast<Superatom&>(sg);
@@ -5847,7 +5848,7 @@ std::unique_ptr<BaseMolecule>& BaseMolecule::expandedMonomersToAtoms()
                     if (monomer_id < result->template_attachment_indexes.size()) // check if monomer has attachment points in use
                     {
                         auto& indexes = result->template_attachment_indexes.at(monomer_id);
-                        for (int att_idx = 0; att_idx < indexes.size(); att_idx++)
+                        for (int att_idx = indexes.begin(); att_idx != indexes.end(); att_idx = indexes.next(att_idx))
                         {
                             auto& ap = result->template_attachment_points.at(indexes.at(att_idx));
                             assert(ap.ap_occur_idx == monomer_id);
@@ -5861,11 +5862,12 @@ std::unique_ptr<BaseMolecule>& BaseMolecule::expandedMonomersToAtoms()
                             }
                             result->template_attachment_points.remove(indexes.at(att_idx));
                         }
-                        att_indexes_to_remove.emplace_back(monomer_id);
+                        result->template_attachment_indexes.remove(monomer_id);
                     }
                 }
-                monomer_sgroups.remove(j);
+                monomer_sgroups.remove(sg_idx);
             }
+            sg_idx = next_sg_idx;
         }
         Array<int> atom_map;
         result->mergeWithMolecule(*monomer_mol, &atom_map);
@@ -5895,7 +5897,7 @@ std::unique_ptr<BaseMolecule>& BaseMolecule::expandedMonomersToAtoms()
                     if (other < result->template_attachment_indexes.size())
                     {
                         auto& indexes = result->template_attachment_indexes.at(other);
-                        for (int att_idx = 0; att_idx < indexes.size(); att_idx++)
+                        for (int att_idx = indexes.begin(); att_idx != indexes.end(); att_idx = indexes.next(att_idx))
                         {
                             auto& ap = result->template_attachment_points.at(indexes.at(att_idx));
                             if (ap.ap_aidx == monomer_id)
@@ -5912,9 +5914,6 @@ std::unique_ptr<BaseMolecule>& BaseMolecule::expandedMonomersToAtoms()
         // remove leaved atoms
         result->removeAtoms(atoms_to_remove);
     }
-    att_indexes_to_remove.sort(std::greater<int>());
-    for (int idx : att_indexes_to_remove)
-        result->template_attachment_indexes.remove(idx);
     return result;
 }
 
