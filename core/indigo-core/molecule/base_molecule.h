@@ -205,7 +205,7 @@ namespace indigo
         virtual int getAtomSubstCount(int idx) = 0;
         virtual int getAtomRingBondsCount(int idx) = 0; // >= 0 -- ring bonds count, -1 -- not sure
         virtual int getAtomConnectivity(int idx) = 0;
-        virtual void setExplicitValence(int /*idx*/, int /*valence*/){};
+        virtual void setExplicitValence(int /*idx*/, int /*valence*/) {};
 
         int getAtomRadical_NoThrow(int idx, int fallback);
         int getAtomValence_NoThrow(int idx, int fallback);
@@ -695,6 +695,15 @@ namespace indigo
         bool _restoreTemplateFromLibrary(TGroup& tg, MonomerTemplateLibrary& mtl, const std::string& residue_inchi);
         void _collectSuparatomAttachmentPoints(Superatom& sa, std::unordered_map<int, std::string>& ap_ids_map);
         static bool _findAffineTransform(BaseMolecule& src, BaseMolecule& dst, Mat23& M, const int* mapping);
+
+        void _processMonomerAttachmentPoints(int monomer_id, BaseMolecule& result, BaseMolecule& monomer_mol, std::map<int, std::pair<int, int>>& attached_atom,
+                                             Array<int>& atoms_to_remove);
+        void _connectMonomerToNeighbors(int monomer_id, BaseMolecule& result, BaseMolecule& monomer_mol, const Array<int>& atom_map,
+                                        const std::map<int, std::pair<int, int>>& attached_atom,
+                                        std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash>& templates);
+        std::pair<int, bool> _getNeighborLeavingBondDir(
+            int other, int monomer_id, BaseMolecule& result,
+            std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash>& templates);
 
         Array<int> _hl_atoms;
         Array<int> _hl_bonds;
