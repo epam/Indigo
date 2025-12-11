@@ -310,7 +310,7 @@ jobs:
           name: indigo-python
           path: dist/
       - name: Install Pillow
-        run: python3 -m pip install Pillow
+        run: python3 -m pip install Pillow --break-system-packages
       - name: Install wrappers Linux
         if: ${{ startsWith(matrix.os, 'ubuntu') }}
         run: python3 -m pip install dist/*manylinux1_x86_64*.whl
