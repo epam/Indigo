@@ -309,6 +309,12 @@ jobs:
         with:
           name: indigo-python
           path: dist/
+      - name: Setup Python (macOS)
+        if: ${{ startsWith(matrix.os, 'macos') }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          architecture: 'x64'
       - name: Install Pillow
         run: python3 -m pip install Pillow --break-system-packages
       - name: Install wrappers Linux
