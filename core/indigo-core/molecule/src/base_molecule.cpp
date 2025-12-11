@@ -3282,7 +3282,6 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
                     {
                         if (getTemplateAtomAttachmentPoint(att_atoms[i], m) == idx)
                         {
-                            QS_DEF(Array<char>, ap_id);
                             getTemplateAtomAttachmentPointId(att_atoms[i], m, ap_id);
                             int added_bond = addBond(att_atoms[i], mapping[tg_atoms[i]], BOND_SINGLE);
                             (void)added_bond;
@@ -3304,7 +3303,6 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
                     {
                         if (getTemplateAtomAttachmentPoint(att_atoms[i], m) == idx)
                         {
-                            QS_DEF(Array<char>, ap_id);
                             getTemplateAtomAttachmentPointId(att_atoms[i], m, ap_id);
                             // printf("Flip AP  att_atom[i] = %d, tg_atoms[i] = %d, mapping[tg_atoms[i]] = %d, ap_id = %s\n", att_atoms[i], tg_atoms[i],
                             // mapping[tg_atoms[i]], ap_id.ptr());
@@ -5916,9 +5914,9 @@ std::unique_ptr<BaseMolecule>& BaseMolecule::expandedMonomersToAtoms()
             neighbors.push_back(v.neiVertex(k));
         }
 
-        for (int other : neighbors)
+        for (int nei : neighbors)
         {
-            int edge_idx = result->findEdgeIndex(monomer_id, other);
+            int edge_idx = result->findEdgeIndex(monomer_id, nei);
             if (edge_idx >= 0 && result->getBondOrder(edge_idx) == BOND_SINGLE)
             {
                 int a1 = result->getEdge(edge_idx).beg;
@@ -6027,7 +6025,7 @@ std::unique_ptr<BaseMolecule>& BaseMolecule::expandedMonomersToAtoms()
                         }
                     }
 
-                    int new_bond = result->flipBondWithDirection(atom_parent, monomer_id, ap_new_idx, mapped_leaving_atom_idx);
+                    result->flipBondWithDirection(atom_parent, monomer_id, ap_new_idx, mapped_leaving_atom_idx);
 
                     // fix neighbor template_attachment_points
                     if (other < result->template_attachment_indexes.size())
