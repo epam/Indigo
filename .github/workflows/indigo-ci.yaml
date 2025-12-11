@@ -315,8 +315,12 @@ jobs:
         with:
           python-version: '3.11'
           architecture: 'x64'
-      - name: Install Pillow
+      - name: Install Pillow (Linux/Windows)
+        if: ${{ !startsWith(matrix.os, 'macos') }}
         run: python3 -m pip install Pillow --break-system-packages
+      - name: Install Pillow (macOS)
+        if: ${{ startsWith(matrix.os, 'macos') }}
+        run: arch -x86_64 python3 -m pip install Pillow --break-system-packages
       - name: Install wrappers Linux
         if: ${{ startsWith(matrix.os, 'ubuntu') }}
         run: python3 -m pip install dist/*manylinux1_x86_64*.whl
