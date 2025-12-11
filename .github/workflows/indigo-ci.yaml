@@ -322,6 +322,7 @@ jobs:
         run: python3 -m pip install dist/*manylinux1_x86_64*.whl
       - name: Install wrappers Windows
         if: ${{ startsWith(matrix.os, 'windows') }}
+        run: Get-ChildItem dist -Filter *win_amd64*.whl -Recurse | % { python3 -m pip install $_.FullName }
       - name: Debug Python environment
         if: ${{ startsWith(matrix.os, 'macos') }}
         run: |
