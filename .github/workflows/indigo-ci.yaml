@@ -325,7 +325,7 @@ jobs:
         run: Get-ChildItem dist -Filter *win_amd64*.whl -Recurse | % { python3 -m pip install $_.FullName }
       - name: Install wrappers macOS
         if: ${{ startsWith(matrix.os, 'macos') }}
-        run: ls dist/ && python3 -m pip install dist/*macosx_11_0_intel*.whl --break-system-packages
+        run: ls dist/ && python3 -m pip install dist/*macosx_11_0_x86_64*.whl --break-system-packages
       - name: Test
         run: python3 -Wignore api/tests/integration/test.py -t 1 -j junit_report.xml
       - name: Publish Test Report
