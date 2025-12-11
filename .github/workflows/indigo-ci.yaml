@@ -322,7 +322,14 @@ jobs:
         run: python3 -m pip install dist/*manylinux1_x86_64*.whl
       - name: Install wrappers Windows
         if: ${{ startsWith(matrix.os, 'windows') }}
-        run: Get-ChildItem dist -Filter *win_amd64*.whl -Recurse | % { python3 -m pip install $_.FullName }
+      - name: Debug Python environment
+        if: ${{ startsWith(matrix.os, 'macos') }}
+        run: |
+          echo "Architecture: $(uname -m)"
+          python3 -c "import platform; print(f'Platform machine: {platform.machine()}')"
+          python3 -c "import platform; print(f'Platform platform: {platform.platform()}')"
+          python3 -c "import sysconfig; print(f'Sysconfig platform: {sysconfig.get_platform()}')"
+          python3 -m pip debug --verbose
       - name: Install wrappers macOS
         if: ${{ startsWith(matrix.os, 'macos') }}
         run: ls dist/ && python3 -m pip install dist/*macosx_11_0_x86_64*.whl --break-system-packages
