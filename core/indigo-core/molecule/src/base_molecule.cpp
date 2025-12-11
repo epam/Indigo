@@ -741,12 +741,6 @@ int BaseMolecule::flipBondWithDirection(int atom_parent, int atom_from, int atom
         }
     }
 
-    // Coerce invalid directions for renderer
-    if (final_dir == BOND_UP_OR_UNSPECIFIED)
-        final_dir = BOND_UP;
-    else if (final_dir == BOND_DOWN_OR_UNSPECIFIED)
-        final_dir = BOND_DOWN;
-
     if (kept_bond_idx >= 0)
         setBondDirection(kept_bond_idx, final_dir);
 
@@ -3722,6 +3716,19 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
 
     if (su.sa_class.size() && std::string(su.sa_class.ptr()) == "LGRP")
         return -1;
+
+    for (auto k : su.atoms)
+    {
+        auto& vx = getVertex(k);
+        for (auto nei_idx = vx.neiBegin(); nei_idx != vx.neiEnd(); nei_idx = vx.neiNext(nei_idx))
+        {
+            if (su.atoms.find(vx.neiVertex(nei_idx)) == -1)
+            {
+                if (getBondDirection(vx.neiEdge(nei_idx)))
+                    return -1;
+            }
+        }
+    }
 
     ap_points_atoms.clear();
     ap_points_ids.clear();
