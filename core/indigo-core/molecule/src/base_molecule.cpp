@@ -888,10 +888,8 @@ void BaseMolecule::removeAtoms(const Array<int>& indices)
         mapping[indices[i]] = -1;
 
     // sgroups
-    int next_j;
-    for (j = sgroups.begin(); j != sgroups.end(); j = next_j)
+    for (j = sgroups.begin(); j != sgroups.end(); j = sgroups.next(j))
     {
-        next_j = sgroups.next(j);
         SGroup& sg = sgroups.getSGroup(j);
         _removeAtomsFromSGroup(sg, mapping);
         if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
