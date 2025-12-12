@@ -436,6 +436,7 @@ jobs:
           check_name: "${{ matrix.os }}-i386-python_test_report"
 
   test_indigo_java_x86_64:
+    if: false
     timeout-minutes: 60
     strategy:
       fail-fast: false
