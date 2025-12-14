@@ -116,6 +116,66 @@ jobs:
           name: indigo-libs-${{ fromJSON(env.OS_NAME_MAPPING_JSON)[matrix.os] }}-x86_64
           path: dist
 
+  build_indigo_windows_mingw_x86_64:
+    timeout-minutes: 60
+    runs-on: windows-latest
+    needs: [build_indigo_libs_x86_64]
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+          fetch-depth: 500
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: mingw64
+          install: mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake git mingw-w64-x86_64-python mingw-w64-x86_64-python-pip mingw-w64-x86_64-python-wheel mingw-w64-x86_64-python-pillow
+      - name: Git fetch tags
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
+      - name: Configure Pagefile
+        uses: al-cheb/configure-pagefile-action@v1.4
+        with:
+          minimum-size: 8GB
+          maximum-size: 32GB
+          disk-root: "C:"
+      - name: Build native libs
+        run: |
+          mkdir build
+          cd build
+          cmake .. -G "MinGW Makefiles" -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_BINGO=OFF -DBUILD_BINGO_ELASTIC=OFF -DPython3_ROOT_DIR=/mingw64 -DCMAKE_C_FLAGS="-Wno-error"
+          cmake --build . --config Release --target all --parallel
+      - name: Test native libs
+        run: |
+          cd build
+          ctest --verbose
+#      - name: Install Python test dependencies
+#        run: python3 -m pip install -r api/python/requirements_dev.txt
+#      - name: Prepare integration tests
+#        run: |
+#          cd build
+#          cmake .. -G "MinGW Makefiles" -DBUILD_INDIGO_WRAPPERS=ON -DBUILD_BINGO=OFF -DBUILD_BINGO_ELASTIC=OFF -DPython3_ROOT_DIR=/mingw64
+#          cmake --build . --config Release --target indigo-python -- -j $(nproc) --output-sync
+#      - name: Run integration tests
+#        run: |
+#          python api/tests/integration/test.py -t 1 -j junit_report.xml -platform mingw
+#      - name: Publish Test Report
+#        if: always()
+#        uses: mikepenz/action-junit-report@v4
+#        with:
+#          report_paths: 'junit_report.xml'
+#          github_token: ${{ secrets.GITHUB_TOKEN }}
+#          check_name: "windows-mingw_python_test_report"
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: indigo-libs-windows-mingw-x86_64
+          path: dist
+
   build_indigo_libs_i386:
     strategy:
       fail-fast: false
@@ -436,12 +496,12 @@ jobs:
           check_name: "${{ matrix.os }}-i386-python_test_report"
 
   test_indigo_java_x86_64:
-    if: false
     timeout-minutes: 60
     strategy:
-      fail-fast: false
+      fail-fast: false 
       matrix: ${{ fromJSON(needs.set_matrix.outputs.matrix) }}
     runs-on: ${{ matrix.os }}
+
     needs: [ merge_indigo_wrappers, test_indigo_python_x86_64, set_matrix ]
     steps:
       - name: Checkout
@@ -463,20 +523,14 @@ jobs:
       - name: Install Jython
         run: |
           curl -L https://repo1.maven.org/maven2/org/python/jython-standalone/2.7.2/jython-standalone-2.7.2.jar -o jython.jar
-      - name: Test (Linux/Windows)
+      - name: Test
         if: ${{ !startsWith(matrix.os, 'macos') }}
         env:
           INDIGO_PATH: ${{ github.workspace }}/dist
         run: |
           java -Xss4m -jar jython.jar api/tests/integration/test.py -t 1 -j junit_report.xml
-      - name: Test (macOS)
-        if: ${{ startsWith(matrix.os, 'macos') }}
-        env:
-          INDIGO_PATH: ${{ github.workspace }}/dist
-        run: |
-          arch -x86_64 java -Xss4m -jar jython.jar api/tests/integration/test.py -t 1 -j junit_report.xml
       - name: Publish Test Report
-        if: always()
+        if: always() && !startsWith(matrix.os, 'macos')
         uses: mikepenz/action-junit-report@v4
         with:
           report_paths: 'junit_report.xml'
@@ -806,60 +860,6 @@ jobs:
         run: mvn -B --file pom.xml -Dmaven.repo.local=/home/runner/.m2/repository clean test
         working-directory: bingo/bingo-elastic/java
 
-  build_indigo_windows_mingw_x86_64:
-    timeout-minutes: 60
-    runs-on: windows-latest
-    needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_java_i386, test_indigo_dotnet_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, merge_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64, build_indigo_ketcher]
-    defaults:
-      run:
-        shell: msys2 {0}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          lfs: false
-          fetch-depth: 500
-      - uses: msys2/setup-msys2@v2
-        with:
-          msystem: mingw64
-          install: mingw-w64-x86_64-gcc mingw-w64-x86_64-make mingw-w64-x86_64-cmake git mingw-w64-x86_64-python mingw-w64-x86_64-python-pip mingw-w64-x86_64-python-wheel mingw-w64-x86_64-python-pillow
-      - name: Git fetch tags
-        run: |
-             git config --global --add safe.directory '*'
-             git fetch --tags -f
-      - name: Build native libs
-        run: |
-          mkdir build
-          cd build
-          cmake .. -G "MinGW Makefiles" -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_BINGO=OFF -DBUILD_BINGO_ELASTIC=OFF -DPython3_ROOT_DIR=/mingw64
-          cmake --build . --config Release --target all -- -j $(nproc) --output-sync
-      - name: Test native libs
-        run: |
-          cd build
-          ctest --verbose
-#      - name: Install Python test dependencies
-#        run: python3 -m pip install -r api/python/requirements_dev.txt
-#      - name: Prepare integration tests
-#        run: |
-#          cd build
-#          cmake .. -G "MinGW Makefiles" -DBUILD_INDIGO_WRAPPERS=ON -DBUILD_BINGO=OFF -DBUILD_BINGO_ELASTIC=OFF -DPython3_ROOT_DIR=/mingw64
-#          cmake --build . --config Release --target indigo-python -- -j $(nproc) --output-sync
-#      - name: Run integration tests
-#        run: |
-#          python api/tests/integration/test.py -t 1 -j junit_report.xml -platform mingw
-#      - name: Publish Test Report
-#        if: always()
-#        uses: mikepenz/action-junit-report@v4
-#        with:
-#          report_paths: 'junit_report.xml'
-#          github_token: ${{ secrets.GITHUB_TOKEN }}
-#          check_name: "windows-mingw_python_test_report"
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: indigo-libs-windows-mingw-x86_64
-          path: dist
-
   build_indigo_ketcher:
     runs-on: ubuntu-latest
     needs: [ static_analysis, test_indigo_python_x86_64 ]
@@ -1179,7 +1179,7 @@ jobs:
       fail-fast: false
       matrix:
         postgres_major_version: [ 13, 14, 15, 16, 17 ]
-    runs-on: macos-13
+    runs-on: macos-15
     needs: [build_indigo_windows_mingw_x86_64, build_indigo_ketcher_cjk, build_bingo_oracle_linux_x86_64, build_bingo_oracle_windows_mingw_x86_64, build_bingo_oracle_windows_msvc_x86_64]
     steps:
       - name: Checkout
@@ -1275,6 +1275,7 @@ jobs:
         env:
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
         run: |
+             pip install --upgrade twine
              twine upload -u __token__ -p ${PYPI_TOKEN} --skip-existing dist/*.whl
 
   publish_indigo_to_nuget:
