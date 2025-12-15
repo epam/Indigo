@@ -660,13 +660,14 @@ int BaseMolecule::flipBondWithDirection(int atom_parent, int atom_from, int atom
     // atom_to = AttA (Attachment Point on A)
     // leaving_atom = L (Leaving Atom)
 
-    // Method 1: Update Existing Bond (A-B) -> (AttA-B)
+    // Get existing bond (A-B) details
     int bond_AB_idx = findEdgeIndex(atom_parent, atom_from);
-    int dir_AB = BOND_DIRECTION_MONO;
-    if (bond_AB_idx >= 0)
-        dir_AB = getBondDirection(bond_AB_idx);
+    if (bond_AB_idx < 0)
+        return -1;
 
-    // Method 2: Update Leaving Bond (AttA-L) -> (AttA-B)
+    int dir_AB = getBondDirection(bond_AB_idx);
+
+    // Get leaving bond (AttA-L) details
     int bond_AttAL_idx = -1;
     if (leaving_atom >= 0)
         bond_AttAL_idx = findEdgeIndex(atom_to, leaving_atom);
@@ -690,55 +691,92 @@ int BaseMolecule::flipBondWithDirection(int atom_parent, int atom_from, int atom
         return 0;
     };
 
-    int p_AB = get_priority(dir_AB);
-    int p_AttAL = get_priority(dir_AttAL);
+    int p_AB = PRIORITIES[dir_AB];
+    int p_AttAL = PRIORITIES[dir_AttAL];
 
-    // Selection Logic
-    // If Leaving Bond has STRICTLY higher priority, use Method 2.
-    // Otherwise (Existing is better or equal), use Method 1.
     int kept_bond_idx = -1;
     int final_dir = BOND_DIRECTION_MONO;
 
+    // Helper Lambda: In-place Bond Flip
+    // Directly modifies the graph structure (Edge endpoints and Vertex adjacency)
+    // to "move" a bond from (pivot, old) to (pivot, new) without destroying the Edge object.
+    auto inplaceFlipBond = [&](int pivot, int old_neighbor, int new_neighbor) {
+        // Find the edge to flip (between pivot and old_neighbor)
+        int edge_idx = findEdgeIndex(pivot, old_neighbor);
+        if (edge_idx < 0)
+            throw Error("flipBondWithDirection: edge not found between %d and %d", pivot, old_neighbor);
+
+        // 1. Update internal molecular structures
+        stereocenters.flipBond(pivot, old_neighbor, new_neighbor);
+        cis_trans.flipBond(*this, pivot, old_neighbor, new_neighbor);
+
+        // 2. Direct Graph Modification: Update Edge endpoints
+        Edge& edge = _edges[edge_idx];
+        if (edge.beg == old_neighbor)
+            edge.beg = new_neighbor;
+        else if (edge.end == old_neighbor)
+            edge.end = new_neighbor;
+        else
+            throw Error("flipBondWithDirection: edge ends mismatch for %d", edge_idx);
+
+        // 3. Update Adjacency Lists
+        // A. Pivot (stays connected): change neighbor ref from old to new
+        Vertex& v_pivot = _vertices->at(pivot);
+        int item_pivot = v_pivot.findNeiEdge(edge_idx);
+        if (item_pivot == -1)
+            throw Error("flipBondWithDirection: inconsistency at pivot %d", pivot);
+        v_pivot.neighbors_list[item_pivot].v = new_neighbor;
+
+        // B. Old Neighbor (loses connection): remove edge from adjacency list
+        Vertex& v_old = _vertices->at(old_neighbor);
+        int item_old = v_old.findNeiEdge(edge_idx);
+        if (item_old == -1)
+            throw Error("flipBondWithDirection: inconsistency at old neighbor %d", old_neighbor);
+        v_old.neighbors_list.remove(item_old);
+
+        // C. New Neighbor (gains connection): add edge to adjacency list
+        Vertex& v_new = _vertices->at(new_neighbor);
+        int item_new = v_new.neighbors_list.add();
+        VertexEdge& ve_new = v_new.neighbors_list[item_new];
+        ve_new.e = edge_idx;
+        ve_new.v = pivot;
+
+        // 4. Invalidate Graph Caches
+        _topology_valid = false;
+        _sssr_valid = false;
+        _components_valid = false;
+    };
+
+    // Selection Logic:
+    // If Leaving Bond has STRICTLY higher priority, use Method 2.
+    // Otherwise (Existing is better or equal), use Method 1.
     if (p_AttAL > p_AB && bond_AttAL_idx >= 0)
     {
-        // Method 2: Keep Leaving Bond (AttA-L), change to (AttA-B)
-        // Flip (AttA, L) -> (AttA, B)
-        stereocenters.flipBond(atom_to, leaving_atom, atom_parent);
-        cis_trans.flipBond(*this, atom_to, leaving_atom, atom_parent);
-        _flipBond(atom_to, leaving_atom, atom_parent);
+        // Method 2: Keep Leaving Bond (AttA-L)
+        // We preserve the bond (AttA-L) and move its endpoint L -> B.
+        // Result: Bond (AttA, B) using the 'Leaving' edge object.
+        inplaceFlipBond(atom_to, leaving_atom, atom_parent);
 
-        // Remove the OTHER bond (A-B) if it exists
-        if (bond_AB_idx >= 0)
-            removeBond(bond_AB_idx);
+        // Remove the conflicting A-B bond.
+        removeBond(bond_AB_idx);
 
         final_dir = dir_AttAL;
         kept_bond_idx = findEdgeIndex(atom_to, atom_parent);
     }
     else
     {
-        // Method 1: Keep Existing Bond (A-B), change to (AttA-B)
-        // Flip (B, A) -> (B, AttA).
+        // Method 1: Keep Existing Bond (A-B)
+        // We preserve the bond (A-B) and move its endpoint A -> AttA.
+        // Result: Bond (B, AttA) using the 'Existing' edge object.
+        // Note: Guaranteed to have bond_AB_idx >= 0 here.
+        inplaceFlipBond(atom_parent, atom_from, atom_to);
 
-        if (bond_AB_idx >= 0)
-        {
-            stereocenters.flipBond(atom_parent, atom_from, atom_to);
-            cis_trans.flipBond(*this, atom_parent, atom_from, atom_to);
-            _flipBond(atom_parent, atom_from, atom_to);
+        // Remove the unused AttA-L bond.
+        if (bond_AttAL_idx >= 0)
+            removeBond(bond_AttAL_idx);
 
-            // Remove Leaving Bond (AttA-L)
-            if (bond_AttAL_idx >= 0)
-                removeBond(bond_AttAL_idx);
-
-            removeBond(bond_AB_idx);
-
-            final_dir = dir_AB;
-            kept_bond_idx = findEdgeIndex(atom_parent, atom_to);
-        }
-        else
-        {
-            kept_bond_idx = addBond(atom_parent, atom_to, BOND_SINGLE);
-            final_dir = BOND_DIRECTION_MONO;
-        }
+        final_dir = dir_AB;
+        kept_bond_idx = findEdgeIndex(atom_parent, atom_to);
     }
 
     if (kept_bond_idx >= 0)
@@ -3269,29 +3307,27 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
                 if (i < lv_atoms.size() && lv_atoms[i] >= 0 && lv_atoms[i] < mapping.size())
                     leaving_atom = mapping[lv_atoms[i]];
 
-                if (findEdgeIndex(att_atoms[i], idx) > -1)
+                int edge_idx = findEdgeIndex(att_atoms[i], idx);
+                if (edge_idx > -1)
                 {
                     flipBondWithDirection(att_atoms[i], idx, mapping[tg_atoms[i]], leaving_atom);
                 }
-                else if (isTemplateAtom(att_atoms[i]))
+                else
                 {
-                    int ap_count = getTemplateAtomAttachmentPointsCount(att_atoms[i]);
-                    for (int m = 0; m < ap_count; m++)
+                    if (isTemplateAtom(att_atoms[i]))
                     {
-                        if (getTemplateAtomAttachmentPoint(att_atoms[i], m) == idx)
+                        int ap_count = getTemplateAtomAttachmentPointsCount(att_atoms[i]);
+                        for (int m = 0; m < ap_count; m++)
                         {
-                            getTemplateAtomAttachmentPointId(att_atoms[i], m, ap_id);
-                            int added_bond = addBond(att_atoms[i], mapping[tg_atoms[i]], BOND_SINGLE);
-                            (void)added_bond;
-                            // printf("Add bond = %d, att_atom[i] = %d, tg_atoms[i] = %d, mapping[tg_atoms[i]] = %d\n", added_bond, att_atoms[i],
-                            // tg_atoms[i], mapping[tg_atoms[i]]); printf("Flip AP  att_atom[i] = %d, tg_atoms[i] = %d, mapping[tg_atoms[i]] = %d, ap_id =
-                            // %s\n", att_atoms[i], tg_atoms[i], mapping[tg_atoms[i]], ap_id.ptr());
-                            _flipTemplateAtomAttachmentPoint(att_atoms[i], idx, ap_id, mapping[tg_atoms[i]]);
+                            if (getTemplateAtomAttachmentPoint(att_atoms[i], m) == idx)
+                            {
+                                getTemplateAtomAttachmentPointId(att_atoms[i], m, ap_id);
+                                int added_bond = addBond(att_atoms[i], mapping[tg_atoms[i]], BOND_SINGLE);
+                                (void)added_bond;
+                                _flipTemplateAtomAttachmentPoint(att_atoms[i], idx, ap_id, mapping[tg_atoms[i]]);
+                            }
                         }
                     }
-                    // int added_bond = this->asMolecule().addBond(att_atoms[i], mapping[tg_atoms[i]], BOND_SINGLE);
-                    // printf("Add bond = %d, att_atom[i] = %d, tg_atoms[i] = %d, mapping[tg_atoms[i]] = %d\n", added_bond, att_atoms[i], tg_atoms[i],
-                    // mapping[tg_atoms[i]]);
                 }
 
                 if (isTemplateAtom(att_atoms[i]))
@@ -3720,8 +3756,11 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
         {
             if (su.atoms.find(vx.neiVertex(nei_idx)) == -1)
             {
-                if (getBondDirection(vx.neiEdge(nei_idx)))
-                    return -1;
+                if (su.atoms.find(vx.neiVertex(nei_idx)) == -1)
+                {
+                    if (getBondDirection(vx.neiEdge(nei_idx)))
+                        return -1;
+                }
             }
         }
     }
@@ -3898,12 +3937,8 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
                 int v_k = neighbors[k];
                 if (findEdgeIndex(v_k, att_point_idx) != -1)
                 {
-                    int orig_dir = getBondDirection(findEdgeIndex(v_k, att_point_idx));
                     if (findEdgeIndex(v_k, idx) == -1)
-                        flipBond(v_k, att_point_idx, idx);
-                    int new_ext_edge = findEdgeIndex(v_k, idx);
-                    if (new_ext_edge >= 0)
-                        setBondDirection(new_ext_edge, orig_dir);
+                        flipBondWithDirection(v_k, att_point_idx, idx, -1);
                     setTemplateAtomAttachmentOrder(idx, v_k, ap_points_ids.at(ap_ids[j]));
                     if (isTemplateAtom(v_k))
                     {
@@ -5605,7 +5640,7 @@ void BaseMolecule::getTemplatesMap(std::unordered_map<std::pair<std::string, std
 
 void BaseMolecule::transformTemplatesToSuperatoms()
 {
-    if (tgroups.getTGroupCount() == 0)
+    if (!tgroups.getTGroupCount())
         return;
 
     std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash> templates;
