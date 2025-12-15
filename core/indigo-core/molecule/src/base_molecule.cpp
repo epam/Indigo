@@ -3301,6 +3301,9 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
             su.sa_natreplace.copy(tgroup.tgroup_natreplace);
             su.contracted = getTemplateAtomDisplayOption(idx);
 
+            // fprintf(stderr, "DEBUG: _transformTGroupToSGroup su.bonds.size() initial = %d\n", su.bonds.size());
+            // fflush(stderr);
+
             for (int i = 0; i < att_atoms.size(); i++)
             {
                 int leaving_atom = -1;
@@ -3348,7 +3351,10 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
 
                 int bond_idx = findEdgeIndex(att_atoms[i], mapping[tg_atoms[i]]);
                 if (bond_idx > -1)
-                    su.bonds.push(bond_idx);
+                {
+                    if (su.bonds.find(bond_idx) == -1)
+                        su.bonds.push(bond_idx);
+                }
             }
         }
     }
