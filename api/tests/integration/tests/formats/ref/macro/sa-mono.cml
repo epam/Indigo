@@ -30,6 +30,7 @@
                 <bondStereo atomRefs4="a5 a3 a1 a2">C</bondStereo>
             </bond>
             <bond atomRefs2="a1 a2" order="1"/>
+            <bond atomRefs2="a2 a7" order="1"/>
             <bond atomRefs2="a8 a7" order="1"/>
             <bond atomRefs2="a8 a9" order="1">
                 <bondStereo>W</bondStereo>
@@ -37,7 +38,6 @@
             <bond atomRefs2="a8 a10" order="1"/>
             <bond atomRefs2="a10 a11" order="2"/>
             <bond atomRefs2="a10 a12" order="1"/>
-            <bond atomRefs2="a2 a7" order="1"/>
         </bondArray>
         <molecule id="sg0" atomRefs="a2 a0 a4 a5 a3 a1" role="SuperatomSgroup">
             <MBracket type="SQUARE">
