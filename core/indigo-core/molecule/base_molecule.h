@@ -539,6 +539,7 @@ namespace indigo
         // Each time molecule is changed revision number is increased.
         // If revision number is the same then molecule hasn't been changed.
         int getEditRevision();
+        // Manually update edit revision. This is required when molecule is changed
         // directly without calling molecule methods (for example mol.cis_trans.clear() and etc.)
         void updateEditRevision();
 
