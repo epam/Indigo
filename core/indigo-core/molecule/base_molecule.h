@@ -324,7 +324,7 @@ namespace indigo
         void removeAttachmentPoints();
         void getAttachmentIndicesForAtom(int atom_idx, Array<int>& res);
         int getExpandedMonomerCount() const;
-        std::unique_ptr<BaseMolecule>& expandedMonomersToAtoms();
+        std::unique_ptr<BaseMolecule> expandedMonomersToAtoms();
 
         virtual bool isSaturatedAtom(int idx) = 0;
 
@@ -739,8 +739,6 @@ namespace indigo
 
         RedBlackObjMap<int, Array<char>> aliases;
         RedBlackObjMap<int, PropertiesMap> _properties;
-
-        std::unique_ptr<BaseMolecule> _with_expanded_monomers;
     };
 
 } // namespace indigo
