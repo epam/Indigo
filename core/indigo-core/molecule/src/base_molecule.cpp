@@ -378,6 +378,7 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
             continue;
         reaction_bond_reacting_center[edge_idx] = mol.reaction_bond_reacting_center[j];
         _bond_directions[edge_idx] = mol.getBondDirection(j);
+
         if (mol.isBondSelected(j))
             selectBond(edge_idx);
         if (mol.isBondHighlighted(j))
@@ -3301,9 +3302,6 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
             su.sa_natreplace.copy(tgroup.tgroup_natreplace);
             su.contracted = getTemplateAtomDisplayOption(idx);
 
-            // fprintf(stderr, "DEBUG: _transformTGroupToSGroup su.bonds.size() initial = %d\n", su.bonds.size());
-            // fflush(stderr);
-
             for (int i = 0; i < att_atoms.size(); i++)
             {
                 int leaving_atom = -1;
@@ -5845,10 +5843,9 @@ int BaseMolecule::getExpandedMonomerCount() const
     return count;
 }
 
-std::unique_ptr<BaseMolecule>& BaseMolecule::expandedMonomersToAtoms()
+std::unique_ptr<BaseMolecule> BaseMolecule::expandedMonomersToAtoms()
 {
-    std::unique_ptr<BaseMolecule>& result = _with_expanded_monomers;
-    result.reset(neu());
+    std::unique_ptr<BaseMolecule> result(neu());
     result->clone(*this);
 
     std::list<int> monomer_ids;
