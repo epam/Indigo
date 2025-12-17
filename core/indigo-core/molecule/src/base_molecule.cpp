@@ -707,8 +707,6 @@ int BaseMolecule::flipBondWithDirection(int atom_parent, int atom_from, int atom
     int final_dir = BOND_DIRECTION_MONO;
 
     // Helper Lambda: In-place Bond Flip
-    // Directly modifies the graph structure (Edge endpoints and Vertex adjacency)
-    // to "move" a bond from (pivot, old) to (pivot, new) without destroying the Edge object.
     auto inplaceFlipBond = [&](int pivot, int old_neighbor, int new_neighbor) {
         // Find the edge to flip (between pivot and old_neighbor)
         int edge_idx = findEdgeIndex(pivot, old_neighbor);
@@ -749,11 +747,6 @@ int BaseMolecule::flipBondWithDirection(int atom_parent, int atom_from, int atom
         VertexEdge& ve_new = v_new.neighbors_list[item_new];
         ve_new.e = edge_idx;
         ve_new.v = pivot;
-
-        // 4. Invalidate Graph Caches
-        _topology_valid = false;
-        _sssr_valid = false;
-        _components_valid = false;
     };
 
     // Selection Logic:
