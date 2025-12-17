@@ -6191,6 +6191,7 @@ std::pair<int, bool> BaseMolecule::_getNeighborLeavingBondDir(
                         }
                     }
                 }
+                // break template_attachment_indexes loop after first match
                 break;
             }
         }
