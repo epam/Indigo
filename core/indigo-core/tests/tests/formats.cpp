@@ -651,7 +651,7 @@ TEST_F(IndigoCoreFormatsTest, expand_monomers)
         }
     }
     // get molecule with expanded monomers
-    auto& expanded_mol = mol.expandedMonomersToAtoms();
+    auto expanded_mol = mol.expandedMonomersToAtoms();
 
     std::string ref_path{dataPath("molecules/basic/peptide_expanded.mol")};
     // write reference
@@ -702,7 +702,7 @@ TEST_F(IndigoCoreFormatsTest, expand_monomers)
         dy -= 1.5f;
     }
     // get molecule with expanded monomers
-    auto& expanded_doc_mol = document.getBaseMolecule().expandedMonomersToAtoms();
+    auto expanded_doc_mol = document.getBaseMolecule().expandedMonomersToAtoms();
 
     // write to string
     std::string s_doc_mol;

@@ -2084,7 +2084,7 @@ int MolfileSaver::_getStereocenterParity(BaseMolecule& mol, int idx)
         for (int i = 0; i < 4; i++)
         {
             int p = pyramid[i];
-            if (mol.getAtomNumber(p) == ELEM_H)
+            if (p != -1 && mol.getAtomNumber(p) == ELEM_H)
             {
                 bool pure_hydrogen = (mol.getAtomIsotope(p) == 0);
                 if (!pure_hydrogen && mol.isQueryMolecule())

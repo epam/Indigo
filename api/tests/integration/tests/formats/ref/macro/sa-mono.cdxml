@@ -49,10 +49,10 @@
                             <s font="3" size="10" face="96">O</s>
                         </t>
                     </n>
-                    <b id="23" B="12" E="11"/>
-                    <b id="24" B="12" E="13" Display="WedgeBegin"/>
-                    <b id="25" B="12" E="14"/>
-                    <b id="26" B="14" E="15" Order="2"/>
+                    <b id="24" B="12" E="11"/>
+                    <b id="25" B="12" E="13" Display="WedgeBegin"/>
+                    <b id="26" B="12" E="14"/>
+                    <b id="27" B="14" E="15" Order="2"/>
                     <b id="39" B="36" E="11"/>
                     <b id="40" B="38" E="14"/>
                 </fragment>
