@@ -692,8 +692,16 @@ int BaseMolecule::flipBondWithDirection(int atom_parent, int atom_from, int atom
         return 0;
     };
 
-    int p_AB = PRIORITIES[dir_AB];
-    int p_AttAL = PRIORITIES[dir_AttAL];
+    int p_AB = get_priority(dir_AB);
+    int p_AttAL = get_priority(dir_AttAL);
+
+    // Case 1: If leaving bond starts at leaving_atom, it has lowest priority.
+    if (bond_AttAL_idx >= 0)
+    {
+        const Edge& edge = _edges[bond_AttAL_idx];
+        if (edge.beg == leaving_atom)
+            p_AttAL = -1;
+    }
 
     int kept_bond_idx = -1;
     int final_dir = BOND_DIRECTION_MONO;
@@ -770,13 +778,30 @@ int BaseMolecule::flipBondWithDirection(int atom_parent, int atom_from, int atom
         // We preserve the bond (A-B) and move its endpoint A -> AttA.
         // Result: Bond (B, AttA) using the 'Existing' edge object.
         // Note: Guaranteed to have bond_AB_idx >= 0 here.
+
+        // Capture orientation BEFORE modification for Case 2 checks
+        bool bond_ends_at_atom_from = false;
+        if (bond_AB_idx >= 0)
+            bond_ends_at_atom_from = (_edges[bond_AB_idx].end == atom_from);
+
         inplaceFlipBond(atom_parent, atom_from, atom_to);
+
+        final_dir = dir_AB;
+
+        // Case 2: Conflict Resolution Logic
+        // If not Case 1 (implied, as we are in else branch/Method 1),
+        // and direction > 0 and priorities are equal:
+        if (bond_AttAL_idx >= 0 && dir_AB > BOND_DIRECTION_MONO && p_AB == p_AttAL)
+        {
+            // If Existing Bond "Comes To Us", zero out.
+            if (bond_ends_at_atom_from)
+                final_dir = BOND_DIRECTION_MONO;
+        }
 
         // Remove the unused AttA-L bond.
         if (bond_AttAL_idx >= 0)
             removeBond(bond_AttAL_idx);
 
-        final_dir = dir_AB;
         kept_bond_idx = findEdgeIndex(atom_parent, atom_to);
     }
 
