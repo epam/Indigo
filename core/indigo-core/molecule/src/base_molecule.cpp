@@ -378,6 +378,7 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
             continue;
         reaction_bond_reacting_center[edge_idx] = mol.reaction_bond_reacting_center[j];
         _bond_directions[edge_idx] = mol.getBondDirection(j);
+
         if (mol.isBondSelected(j))
             selectBond(edge_idx);
         if (mol.isBondHighlighted(j))
@@ -651,6 +652,157 @@ void BaseMolecule::flipBond(int atom_parent, int atom_from, int atom_to)
     }
 
     updateEditRevision();
+}
+
+int BaseMolecule::flipBondWithDirection(int atom_parent, int atom_from, int atom_to, int leaving_atom)
+{
+    // atom_parent = B (Neighbor)
+    // atom_from = A (Monomer)
+    // atom_to = AttA (Attachment Point on A)
+    // leaving_atom = L (Leaving Atom)
+
+    // Get existing bond (A-B) details
+    int bond_AB_idx = findEdgeIndex(atom_parent, atom_from);
+    if (bond_AB_idx < 0)
+        return -1;
+
+    int dir_AB = getBondDirection(bond_AB_idx);
+
+    // Get leaving bond (AttA-L) details
+    int bond_AttAL_idx = -1;
+    if (leaving_atom >= 0)
+        bond_AttAL_idx = findEdgeIndex(atom_to, leaving_atom);
+
+    int dir_AttAL = BOND_DIRECTION_MONO;
+    if (bond_AttAL_idx >= 0)
+        dir_AttAL = getBondDirection(bond_AttAL_idx);
+
+    static const int PRIORITIES[] = {
+        0, // BOND_DIRECTION_MONO = 0
+        3, // BOND_UP = 1
+        3, // BOND_DOWN = 2
+        2, // BOND_EITHER = 3
+        1, // BOND_UP_OR_UNSPECIFIED = 4
+        1  // BOND_DOWN_OR_UNSPECIFIED = 5
+    };
+
+    auto get_priority = [&](int dir) -> int {
+        if (dir >= 0 && dir < sizeof(PRIORITIES) / sizeof(PRIORITIES[0]))
+            return PRIORITIES[dir];
+        return 0;
+    };
+
+    int p_AB = get_priority(dir_AB);
+    int p_AttAL = get_priority(dir_AttAL);
+
+    // Case 1: If leaving bond starts at leaving_atom, it has lowest priority.
+    if (bond_AttAL_idx >= 0)
+    {
+        const Edge& edge = _edges[bond_AttAL_idx];
+        if (edge.beg == leaving_atom)
+            p_AttAL = -1;
+    }
+
+    int kept_bond_idx = -1;
+    int final_dir = BOND_DIRECTION_MONO;
+
+    // Helper Lambda: In-place Bond Flip
+    auto inplaceFlipBond = [&](int pivot, int old_neighbor, int new_neighbor) {
+        // Find the edge to flip (between pivot and old_neighbor)
+        int edge_idx = findEdgeIndex(pivot, old_neighbor);
+        if (edge_idx < 0)
+            throw Error("flipBondWithDirection: edge not found between %d and %d", pivot, old_neighbor);
+
+        // 1. Update internal molecular structures
+        stereocenters.flipBond(pivot, old_neighbor, new_neighbor);
+        cis_trans.flipBond(*this, pivot, old_neighbor, new_neighbor);
+
+        // 2. Direct Graph Modification: Update Edge endpoints
+        Edge& edge = _edges[edge_idx];
+        if (edge.beg == old_neighbor)
+            edge.beg = new_neighbor;
+        else if (edge.end == old_neighbor)
+            edge.end = new_neighbor;
+        else
+            throw Error("flipBondWithDirection: edge ends mismatch for %d", edge_idx);
+
+        // 3. Update Adjacency Lists
+        // A. Pivot (stays connected): change neighbor ref from old to new
+        Vertex& v_pivot = _vertices->at(pivot);
+        int item_pivot = v_pivot.findNeiEdge(edge_idx);
+        if (item_pivot == -1)
+            throw Error("flipBondWithDirection: inconsistency at pivot %d", pivot);
+        v_pivot.neighbors_list[item_pivot].v = new_neighbor;
+
+        // B. Old Neighbor (loses connection): remove edge from adjacency list
+        Vertex& v_old = _vertices->at(old_neighbor);
+        int item_old = v_old.findNeiEdge(edge_idx);
+        if (item_old == -1)
+            throw Error("flipBondWithDirection: inconsistency at old neighbor %d", old_neighbor);
+        v_old.neighbors_list.remove(item_old);
+
+        // C. New Neighbor (gains connection): add edge to adjacency list
+        Vertex& v_new = _vertices->at(new_neighbor);
+        int item_new = v_new.neighbors_list.add();
+        VertexEdge& ve_new = v_new.neighbors_list[item_new];
+        ve_new.e = edge_idx;
+        ve_new.v = pivot;
+    };
+
+    // Selection Logic:
+    // If Leaving Bond has STRICTLY higher priority, use Method 2.
+    // Otherwise (Existing is better or equal), use Method 1.
+    if (p_AttAL > p_AB && bond_AttAL_idx >= 0)
+    {
+        // Method 2: Keep Leaving Bond (AttA-L)
+        // We preserve the bond (AttA-L) and move its endpoint L -> B.
+        // Result: Bond (AttA, B) using the 'Leaving' edge object.
+        inplaceFlipBond(atom_to, leaving_atom, atom_parent);
+
+        // Remove the conflicting A-B bond.
+        removeBond(bond_AB_idx);
+
+        final_dir = dir_AttAL;
+        kept_bond_idx = findEdgeIndex(atom_to, atom_parent);
+    }
+    else
+    {
+        // Method 1: Keep Existing Bond (A-B)
+        // We preserve the bond (A-B) and move its endpoint A -> AttA.
+        // Result: Bond (B, AttA) using the 'Existing' edge object.
+        // Note: Guaranteed to have bond_AB_idx >= 0 here.
+
+        // Capture orientation BEFORE modification for Case 2 checks
+        bool bond_ends_at_atom_from = false;
+        if (bond_AB_idx >= 0)
+            bond_ends_at_atom_from = (_edges[bond_AB_idx].end == atom_from);
+
+        inplaceFlipBond(atom_parent, atom_from, atom_to);
+
+        final_dir = dir_AB;
+
+        // Case 2: Conflict Resolution Logic
+        // If not Case 1 (implied, as we are in else branch/Method 1),
+        // and direction > 0 and priorities are equal:
+        if (bond_AttAL_idx >= 0 && dir_AB > BOND_DIRECTION_MONO && p_AB == p_AttAL)
+        {
+            // If Existing Bond "Comes To Us", zero out.
+            if (bond_ends_at_atom_from)
+                final_dir = BOND_DIRECTION_MONO;
+        }
+
+        // Remove the unused AttA-L bond.
+        if (bond_AttAL_idx >= 0)
+            removeBond(bond_AttAL_idx);
+
+        kept_bond_idx = findEdgeIndex(atom_parent, atom_to);
+    }
+
+    if (kept_bond_idx >= 0)
+        setBondDirection(kept_bond_idx, final_dir);
+
+    updateEditRevision();
+    return kept_bond_idx;
 }
 
 void BaseMolecule::makeSubmolecule(BaseMolecule& mol, const Array<int>& vertices, Array<int>* mapping_out, int skip_flags)
@@ -3044,6 +3196,8 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
     QS_DEF(StringPool, ap_points_ids);
     QS_DEF(Array<int>, ap_ids);
     QS_DEF(Array<char>, ap_id);
+    QS_DEF(Array<int>, lv_dirs);
+    QS_DEF(Array<char>, lv_atom_is_beg);
 
     int tg_idx = t_idx;
     if (t_idx == -1)
@@ -3063,6 +3217,8 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
     residue_sgroups.clear();
     ap_points_ids.clear();
     ap_ids.clear();
+    lv_dirs.clear();
+    lv_atom_is_beg.clear();
 
     // collect leaving groups into sgs and residue to base_sgs
     for (int j = fragment->sgroups.begin(); j != fragment->sgroups.end(); j = fragment->sgroups.next(j))
@@ -3092,9 +3248,6 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
 
     Superatom& residue_super_atom = (Superatom&)sgu;
 
-    // printf("Template = %s (%d)\n", tgroup.tgroup_name.ptr(), idx);
-    std::map<int, std::pair<int, bool>> lv_atom_dir;
-
     for (int j = residue_super_atom.attachment_points.begin(); j < residue_super_atom.attachment_points.end(); j = residue_super_atom.attachment_points.next(j))
     {
         Superatom::_AttachmentPoint& ap = residue_super_atom.attachment_points.at(j);
@@ -3107,14 +3260,16 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
             tg_atoms.push(ap.aidx);
             lv_atoms.push(ap.lvidx);
             ap_ids.push(ap_points_ids.add(ap.apid));
-            // If edge aidx->lvidx has direction - save it
             int edge = fragment->findEdgeIndex(ap.aidx, ap.lvidx);
+            int dir = BOND_DIRECTION_MONO;
+            bool lv_beg = false;
             if (edge >= 0)
             {
-                int dir = fragment->getBondDirection(edge);
-                if (dir > 0)
-                    lv_atom_dir.try_emplace(ap.aidx, dir, fragment->_edges[edge].beg == ap.aidx);
+                dir = fragment->getBondDirection(edge);
+                lv_beg = fragment->_edges[edge].beg == ap.lvidx;
             }
+            lv_dirs.push(dir);
+            lv_atom_is_beg.push((char)lv_beg);
             ap.lvidx = -1;
             // printf("idx = %d, att_atom_idx = %d, ap.aidx = %d, ap.lvidx = %d, ap_id = %s\n", idx, att_atom_idx, ap.aidx, ap.lvidx, ap.apid.ptr());
         }
@@ -3126,6 +3281,7 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
     // collect leaving atoms
     for (const auto sg_index : leaving_groups)
     {
+
         const SGroup& lvg = fragment->sgroups.getSGroup(sg_index);
         for (const auto lv_atom_index : lv_atoms)
         {
@@ -3166,73 +3322,31 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
 
             for (int i = 0; i < att_atoms.size(); i++)
             {
-                if (findEdgeIndex(att_atoms[i], idx) > -1)
-                {
-                    // will be called once or twice - first to flip t2-t1 bond to t2-ap1 and second to flip ap1-t2 to ap1-ap2
-                    int old_bond_idx = findEdgeIndex(att_atoms[i], idx);
-                    int old_bond_dir = getBondDirection(old_bond_idx);
+                int leaving_atom = -1;
+                if (i < lv_atoms.size() && lv_atoms[i] >= 0 && lv_atoms[i] < mapping.size())
+                    leaving_atom = mapping[lv_atoms[i]];
 
-                    // printf("Flip bond = %d, att_atom[i] = %d, tg_atoms[i] = %d, mapping[tg_atoms[i]] = %d\n", findEdgeIndex(att_atoms[i], idx), att_atoms[i],
-                    // tg_atoms[i], mapping[tg_atoms[i]]);
-                    flipBond(att_atoms[i], idx, mapping[tg_atoms[i]]);
-                    int template_bond_dir = BOND_DIRECTION_MONO;
-                    int dir_from_ap = true;
-                    auto it = lv_atom_dir.find(tg_atoms[i]);
-                    if (it != lv_atom_dir.end())
-                    {
-                        template_bond_dir = it->second.first;
-                        dir_from_ap = it->second.second;
-                    }
-                    int new_edge = findEdgeIndex(att_atoms[i], mapping[tg_atoms[i]]);
-                    auto reverse_direction = [](int dir) -> int {
-                        if (dir == BOND_DOWN)
-                            return BOND_UP;
-                        else if (dir == BOND_UP)
-                            return BOND_DOWN;
-                        return dir;
-                    };
-                    if (isTemplateAtom(att_atoms[i]))
-                    { // first call
-                        if (template_bond_dir != BOND_DIRECTION_MONO)
-                        {
-                            setBondDirection(new_edge, dir_from_ap ? reverse_direction(template_bond_dir) : template_bond_dir);
-                        }
-                    }
-                    else
-                    { // second call
-                        if (template_bond_dir == BOND_DIRECTION_MONO)
-                        {
-                            if (old_bond_dir)
-                                setBondDirection(new_edge, reverse_direction(old_bond_dir));
-                        }
-                        else
-                        {
-                            if (!dir_from_ap) // new edge is (other_ap, template_ap) and dir not from template_ap - should be reversed
-                                template_bond_dir = reverse_direction(template_bond_dir);
-                            if (old_bond_dir == BOND_DIRECTION_MONO || old_bond_dir == template_bond_dir)
-                                setBondDirection(new_edge, template_bond_dir);
-                        }
-                    }
-                }
-                else if (isTemplateAtom(att_atoms[i]))
+                int edge_idx = findEdgeIndex(att_atoms[i], idx);
+                if (edge_idx > -1)
                 {
-                    int ap_count = getTemplateAtomAttachmentPointsCount(att_atoms[i]);
-                    for (int m = 0; m < ap_count; m++)
+                    flipBondWithDirection(att_atoms[i], idx, mapping[tg_atoms[i]], leaving_atom);
+                }
+                else
+                {
+                    if (isTemplateAtom(att_atoms[i]))
                     {
-                        if (getTemplateAtomAttachmentPoint(att_atoms[i], m) == idx)
+                        int ap_count = getTemplateAtomAttachmentPointsCount(att_atoms[i]);
+                        for (int m = 0; m < ap_count; m++)
                         {
-                            getTemplateAtomAttachmentPointId(att_atoms[i], m, ap_id);
-                            int added_bond = addBond(att_atoms[i], mapping[tg_atoms[i]], BOND_SINGLE);
-                            (void)added_bond;
-                            // printf("Add bond = %d, att_atom[i] = %d, tg_atoms[i] = %d, mapping[tg_atoms[i]] = %d\n", added_bond, att_atoms[i], tg_atoms[i],
-                            // mapping[tg_atoms[i]]); printf("Flip AP  att_atom[i] = %d, tg_atoms[i] = %d, mapping[tg_atoms[i]] = %d, ap_id = %s\n",
-                            // att_atoms[i], tg_atoms[i], mapping[tg_atoms[i]], ap_id.ptr());
-                            _flipTemplateAtomAttachmentPoint(att_atoms[i], idx, ap_id, mapping[tg_atoms[i]]);
+                            if (getTemplateAtomAttachmentPoint(att_atoms[i], m) == idx)
+                            {
+                                getTemplateAtomAttachmentPointId(att_atoms[i], m, ap_id);
+                                int added_bond = addBond(att_atoms[i], mapping[tg_atoms[i]], BOND_SINGLE);
+                                (void)added_bond;
+                                _flipTemplateAtomAttachmentPoint(att_atoms[i], idx, ap_id, mapping[tg_atoms[i]]);
+                            }
                         }
                     }
-                    // int added_bond = this->asMolecule().addBond(att_atoms[i], mapping[tg_atoms[i]], BOND_SINGLE);
-                    // printf("Add bond = %d, att_atom[i] = %d, tg_atoms[i] = %d, mapping[tg_atoms[i]] = %d\n", added_bond, att_atoms[i], tg_atoms[i],
-                    // mapping[tg_atoms[i]]);
                 }
 
                 if (isTemplateAtom(att_atoms[i]))
@@ -3253,7 +3367,10 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
 
                 int bond_idx = findEdgeIndex(att_atoms[i], mapping[tg_atoms[i]]);
                 if (bond_idx > -1)
-                    su.bonds.push(bond_idx);
+                {
+                    if (su.bonds.find(bond_idx) == -1)
+                        su.bonds.push(bond_idx);
+                }
             }
         }
     }
@@ -3654,6 +3771,22 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
     if (su.sa_class.size() && std::string(su.sa_class.ptr()) == "LGRP")
         return -1;
 
+    for (auto k : su.atoms)
+    {
+        auto& vx = getVertex(k);
+        for (auto nei_idx = vx.neiBegin(); nei_idx != vx.neiEnd(); nei_idx = vx.neiNext(nei_idx))
+        {
+            if (su.atoms.find(vx.neiVertex(nei_idx)) == -1)
+            {
+                if (su.atoms.find(vx.neiVertex(nei_idx)) == -1)
+                {
+                    if (getBondDirection(vx.neiEdge(nei_idx)))
+                        return -1;
+                }
+            }
+        }
+    }
+
     ap_points_atoms.clear();
     ap_points_ids.clear();
     ap_ids.clear();
@@ -3815,7 +3948,7 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
             neighbors.clear();
             for (int k = v.neiBegin(); k != v.neiEnd(); k = v.neiNext(k))
             {
-                if (su.atoms.find(v.neiVertex(k)) == -1)
+                if (su.atoms.find(v.neiVertex(k)) == -1 && leaving_atoms.find(v.neiVertex(k)) == -1)
                 {
                     neighbors.push(v.neiVertex(k));
                 }
@@ -3827,7 +3960,7 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
                 if (findEdgeIndex(v_k, att_point_idx) != -1)
                 {
                     if (findEdgeIndex(v_k, idx) == -1)
-                        flipBond(v_k, att_point_idx, idx);
+                        flipBondWithDirection(v_k, att_point_idx, idx, -1);
                     setTemplateAtomAttachmentOrder(idx, v_k, ap_points_ids.at(ap_ids[j]));
                     if (isTemplateAtom(v_k))
                     {
@@ -5529,7 +5662,7 @@ void BaseMolecule::getTemplatesMap(std::unordered_map<std::pair<std::string, std
 
 void BaseMolecule::transformTemplatesToSuperatoms()
 {
-    if (tgroups.getTGroupCount() == 0)
+    if (!tgroups.getTGroupCount())
         return;
 
     std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash> templates;
@@ -5728,18 +5861,21 @@ int BaseMolecule::getExpandedMonomerCount() const
     return count;
 }
 
-std::unique_ptr<BaseMolecule>& BaseMolecule::expandedMonomersToAtoms()
+std::unique_ptr<BaseMolecule> BaseMolecule::expandedMonomersToAtoms()
 {
-    std::unique_ptr<BaseMolecule>& result = _with_expanded_monomers;
-    result.reset(neu());
+    std::unique_ptr<BaseMolecule> result(neu());
     result->clone(*this);
-    std::list<int> att_indexes_to_remove;
+
     std::list<int> monomer_ids;
     for (int monomer_id = result->vertexBegin(); monomer_id != result->vertexEnd(); monomer_id = result->vertexNext(monomer_id))
     {
         if (result->isTemplateAtom(monomer_id))
             monomer_ids.push_front(monomer_id);
     }
+
+    QS_DEF(Array<int>, all_atoms_to_remove);
+    all_atoms_to_remove.clear();
+
     std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash> templates;
     getTemplatesMap(templates);
     for (int monomer_id : monomer_ids)
@@ -5768,50 +5904,11 @@ std::unique_ptr<BaseMolecule>& BaseMolecule::expandedMonomersToAtoms()
             continue;
 
         auto monomer_mol = tgroup.fragment->applyTransformation(result->getTemplateAtomTransform(monomer_id), result->getAtomXyz(monomer_id));
-        auto& monomer_sgroups = monomer_mol->sgroups;
-        std::map<int, int> attached_atom;
+        std::map<int, std::pair<int, int>> attached_atom;
         Array<int> atoms_to_remove;
-        // Attachment points stored in SuperAtom SGroups
-        for (int j = monomer_sgroups.begin(); j != monomer_sgroups.end(); j = monomer_sgroups.next(j))
-        {
-            SGroup& sg = monomer_sgroups.getSGroup(j);
-            if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
-            {
-                auto& sa = static_cast<Superatom&>(sg);
-                if (sa.attachment_points.size())
-                {
-                    std::map<std::string, int> sorted_attachment_points; // AP id to index in attachment points
-                    for (int i = sa.attachment_points.begin(); i != sa.attachment_points.end(); i = sa.attachment_points.next(i))
-                    {
-                        auto& atp = sa.attachment_points[i];
-                        std::string atp_id_str(atp.apid.ptr());
-                        if (atp_id_str.size())
-                            sorted_attachment_points.insert(std::make_pair(atp_id_str, i));
-                    }
-                    // for all used AP mark leaving atom to remove, all leaving atom are leafs - so bonds will be removed automatically
-                    if (monomer_id < result->template_attachment_indexes.size()) // check if monomer has attachment points in use
-                    {
-                        auto& indexes = result->template_attachment_indexes.at(monomer_id);
-                        for (int att_idx = 0; att_idx < indexes.size(); att_idx++)
-                        {
-                            auto& ap = result->template_attachment_points.at(indexes.at(att_idx));
-                            assert(ap.ap_occur_idx == monomer_id);
-                            auto it = sorted_attachment_points.find(ap.ap_id.ptr());
-                            if (it != sorted_attachment_points.end())
-                            {
-                                auto& atp = sa.attachment_points[it->second];
-                                attached_atom.insert(std::make_pair(ap.ap_aidx, atp.aidx)); // molecule atom ap.ap_aidx is attached to atp.aidx in monomer
-                                if (atp.lvidx >= 0)
-                                    atoms_to_remove.push(atp.lvidx);
-                            }
-                            result->template_attachment_points.remove(indexes.at(att_idx));
-                        }
-                        att_indexes_to_remove.emplace_back(monomer_id);
-                    }
-                }
-                monomer_sgroups.remove(j);
-            }
-        }
+
+        _processMonomerAttachmentPoints(monomer_id, *result, *monomer_mol, attached_atom, atoms_to_remove);
+
         Array<int> atom_map;
         result->mergeWithMolecule(*monomer_mol, &atom_map);
         // update atom indexes
@@ -5819,47 +5916,20 @@ std::unique_ptr<BaseMolecule>& BaseMolecule::expandedMonomersToAtoms()
         {
             *i = atom_map[*i];
         }
+
         // add bonds from template atom neighbors to attachment points
-        const Vertex& v = result->getVertex(monomer_id);
-        Array<int> bonds_to_delete;
-        for (int k = v.neiBegin(); k != v.neiEnd(); k = v.neiNext(k))
-        {
-            int edge_idx = result->findEdgeIndex(monomer_id, v.neiVertex(k));
-            if (edge_idx >= 0 && result->getBondOrder(edge_idx) == BOND_SINGLE)
-            {
-                int a1 = result->getEdge(edge_idx).beg;
-                int a2 = result->getEdge(edge_idx).end;
-                int other = a1 == monomer_id ? a2 : a1;
-                auto it = attached_atom.find(other);
-                if (it != attached_atom.end())
-                {
-                    int ap_new_idx = atom_map[it->second];
-                    int new_bond = result->addBond_Silent(ap_new_idx, other, BOND_SINGLE);
-                    result->setBondDirection(new_bond, BOND_DIRECTION_MONO);
-                    // fix neighbor template_attachment_points
-                    if (other < result->template_attachment_indexes.size())
-                    {
-                        auto& indexes = result->template_attachment_indexes.at(other);
-                        for (int att_idx = 0; att_idx < indexes.size(); att_idx++)
-                        {
-                            auto& ap = result->template_attachment_points.at(indexes.at(att_idx));
-                            if (ap.ap_aidx == monomer_id)
-                                ap.ap_aidx = ap_new_idx;
-                        }
-                    }
-                }
-                bonds_to_delete.push(edge_idx);
-            }
-        }
+        _connectMonomerToNeighbors(monomer_id, *result, *monomer_mol, atom_map, attached_atom, templates);
+
         // remove template atom and all bonds to it
-        result->removeBonds(bonds_to_delete);
-        result->removeAtom(monomer_id);
+        all_atoms_to_remove.push(monomer_id);
+
         // remove leaved atoms
-        result->removeAtoms(atoms_to_remove);
+        for (int k = 0; k < atoms_to_remove.size(); ++k)
+            all_atoms_to_remove.push(atoms_to_remove[k]);
     }
-    att_indexes_to_remove.sort(std::greater<int>());
-    for (int idx : att_indexes_to_remove)
-        result->template_attachment_indexes.remove(idx);
+
+    result->removeAtoms(all_atoms_to_remove);
+
     return result;
 }
 
@@ -5972,13 +6042,13 @@ bool BaseMolecule::convertTemplateAtomsToSuperatoms(bool only_transformed)
                 auto tg_idx = getTemplateAtomTemplateIndex(vi);
                 if (tg_idx < 0)
                 {
-                    std::string alias = getTemplateAtomClass(vi);
-                    std::string mon_class = getTemplateAtom(vi);
+                    std::string alias = getTemplateAtom(vi);
+                    std::string mon_class = getTemplateAtomClass(vi);
                     auto tg_ref = findTemplateInMap(alias, mon_class, templates);
                     if (tg_ref.has_value())
                     {
                         auto& tg = tg_ref.value().get();
-                        tg_idx = tg.tgroup_id;
+                        tg_idx = tg.tgroup_id - 1;
                     }
                 }
                 if (tg_idx != -1)
@@ -6009,6 +6079,208 @@ bool BaseMolecule::isPiBonded(const int atom_index) const
         }
     }
     return false;
+}
+
+void BaseMolecule::_processMonomerAttachmentPoints(int monomer_id, BaseMolecule& result, BaseMolecule& monomer_mol,
+                                                   std::map<int, std::pair<int, int>>& attached_atom, Array<int>& atoms_to_remove)
+{
+    auto& monomer_sgroups = monomer_mol.sgroups;
+    int sg_idx = monomer_sgroups.begin();
+    while (sg_idx != monomer_sgroups.end())
+    {
+        int next_sg_idx = monomer_sgroups.next(sg_idx);
+        SGroup& sg = monomer_sgroups.getSGroup(sg_idx);
+        if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
+        {
+            auto& sa = static_cast<Superatom&>(sg);
+            if (sa.attachment_points.size())
+            {
+                std::map<std::string, int> sorted_attachment_points; // AP id to index in attachment points
+                for (int i = sa.attachment_points.begin(); i != sa.attachment_points.end(); i = sa.attachment_points.next(i))
+                {
+                    auto& atp = sa.attachment_points[i];
+                    std::string atp_id_str(atp.apid.ptr());
+                    if (atp_id_str.size())
+                        sorted_attachment_points.insert(std::make_pair(atp_id_str, i));
+                }
+                // for all used AP mark leaving atom to remove, all leaving atom are leafs - so bonds will be removed automatically
+                if (monomer_id < result.template_attachment_indexes.size()) // check if monomer has attachment points in use
+                {
+                    auto& indexes = result.template_attachment_indexes.at(monomer_id);
+                    for (int att_idx = indexes.begin(); att_idx != indexes.end(); att_idx = indexes.next(att_idx))
+                    {
+                        auto& ap = result.template_attachment_points.at(indexes.at(att_idx));
+                        assert(ap.ap_occur_idx == monomer_id);
+                        auto it = sorted_attachment_points.find(ap.ap_id.ptr());
+                        if (it != sorted_attachment_points.end())
+                        {
+                            auto& atp = sa.attachment_points[it->second];
+                            attached_atom.insert(
+                                std::make_pair(ap.ap_aidx, std::make_pair(atp.aidx, atp.lvidx))); // molecule atom ap.ap_aidx is attached to atp.aidx in monomer
+                            if (atp.lvidx >= 0)
+                                atoms_to_remove.push(atp.lvidx);
+                        }
+                        result.template_attachment_points.remove(indexes.at(att_idx));
+                    }
+                }
+            }
+            monomer_sgroups.remove(sg_idx);
+        }
+        sg_idx = next_sg_idx;
+    }
+}
+
+std::pair<int, bool> BaseMolecule::_getNeighborLeavingBondDir(
+    int other, int monomer_id, BaseMolecule& result,
+    std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash>& templates)
+{
+    int leaving_bond_dir2 = 0;
+    bool leaving_bond_is_beg2 = false;
+    if (other < result.template_attachment_indexes.size())
+    {
+        auto& b_indexes = result.template_attachment_indexes.at(other);
+        for (int att_idx = b_indexes.begin(); att_idx != b_indexes.end(); att_idx = b_indexes.next(att_idx))
+        {
+            auto& ap = result.template_attachment_points.at(b_indexes.at(att_idx));
+            if (ap.ap_aidx == monomer_id)
+            { // Found B's AP connecting to A.
+                // Need leaving direction from B's template.
+                int b_occur_idx = result.getTemplateAtomOccurrence(other);
+                int b_tmpl_idx = result._template_occurrences.at(b_occur_idx).template_idx;
+                std::optional<std::reference_wrapper<TGroup>> b_tgroup_opt;
+                if (b_tmpl_idx == -1)
+                {
+                    auto b_tg_ref = findTemplateInMap(std::string(result.getTemplateAtom(other)), std::string(result.getTemplateAtomClass(other)), templates);
+                    if (b_tg_ref.has_value())
+                        b_tgroup_opt = b_tg_ref.value();
+                }
+                else
+                {
+                    b_tgroup_opt = result.tgroups.getTGroup(b_tmpl_idx);
+                }
+
+                if (b_tgroup_opt.has_value())
+                {
+                    TGroup& b_tgroup = b_tgroup_opt.value().get();
+                    // Find SGroup with AP ID
+                    std::string ap_id(ap.ap_id.ptr());
+                    // We need B's fragment to look up SGroup APs by ID.
+                    BaseMolecule* b_mol = b_tgroup.fragment.get();
+                    // Search SGroups in B
+                    for (int k = b_mol->sgroups.begin(); k != b_mol->sgroups.end(); k = b_mol->sgroups.next(k))
+                    {
+                        SGroup& sg = b_mol->sgroups.getSGroup(k);
+                        if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
+                        {
+                            Superatom& sa = (Superatom&)sg;
+                            for (int m = sa.attachment_points.begin(); m != sa.attachment_points.end(); m = sa.attachment_points.next(m))
+                            {
+                                if (strcmp(sa.attachment_points[m].apid.ptr(), ap_id.c_str()) == 0)
+                                {
+                                    // Found matching AP. Get Leaving info.
+                                    int la_idx = sa.attachment_points[m].lvidx;
+                                    int aa_idx = sa.attachment_points[m].aidx;
+                                    int lb_idx = b_mol->findEdgeIndex(aa_idx, la_idx);
+                                    if (lb_idx != -1)
+                                    {
+                                        leaving_bond_dir2 = b_mol->getBondDirection(lb_idx);
+                                        leaving_bond_is_beg2 = (b_mol->getEdge(lb_idx).beg == la_idx);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                // break template_attachment_indexes loop after first match
+                break;
+            }
+        }
+    }
+    return {leaving_bond_dir2, leaving_bond_is_beg2};
+}
+
+void BaseMolecule::_connectMonomerToNeighbors(int monomer_id, BaseMolecule& result, BaseMolecule& monomer_mol, const Array<int>& atom_map,
+                                              const std::map<int, std::pair<int, int>>& attached_atom,
+                                              std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash>& templates)
+{
+    const Vertex& v = result.getVertex(monomer_id);
+    Array<int> bonds_to_delete;
+    std::vector<int> neighbors;
+    for (int k = v.neiBegin(); k != v.neiEnd(); k = v.neiNext(k))
+    {
+        neighbors.push_back(v.neiVertex(k));
+    }
+
+    for (int nei : neighbors)
+    {
+        int edge_idx = result.findEdgeIndex(monomer_id, nei);
+        if (edge_idx >= 0 && result.getBondOrder(edge_idx) == BOND_SINGLE)
+        {
+            int a1 = result.getEdge(edge_idx).beg;
+            int a2 = result.getEdge(edge_idx).end;
+            int other = a1 == monomer_id ? a2 : a1;
+            auto it = attached_atom.find(other);
+            if (it != attached_atom.end())
+            {
+                int ap_new_idx = atom_map[it->second.first];
+                int local_leaving_atom_idx = it->second.second;
+                int mapped_leaving_atom_idx = (local_leaving_atom_idx >= 0) ? atom_map[local_leaving_atom_idx] : -1;
+
+                int leaving_bond_dir1 = 0;
+                bool leaving_bond_is_beg1 = false;
+
+                if (local_leaving_atom_idx >= 0)
+                {
+                    int lb_idx = monomer_mol.findEdgeIndex(it->second.first, local_leaving_atom_idx);
+                    leaving_bond_dir1 = monomer_mol.getBondDirection(lb_idx);
+                    leaving_bond_is_beg1 = (monomer_mol.getEdge(lb_idx).beg == local_leaving_atom_idx);
+                }
+
+                auto [leaving_bond_dir2, leaving_bond_is_beg2] = std::make_pair(0, false);
+
+                if (result.isTemplateAtom(other)) // Check neighbor
+                {
+                    std::tie(leaving_bond_dir2, leaving_bond_is_beg2) = _getNeighborLeavingBondDir(other, monomer_id, result, templates);
+                }
+
+                int atom_parent = other;
+                // If 'other' is already expanded, the bond (other, monomer_id) might have been moved to (ap_other, monomer_id).
+                // We need to find which attachment point of 'other' is connected to 'monomer_id'.
+                if (other < result.template_attachment_indexes.size())
+                {
+                    auto& indexes = result.template_attachment_indexes.at(other);
+                    for (int att_idx = indexes.begin(); att_idx != indexes.end(); att_idx = indexes.next(att_idx))
+                    {
+                        auto& ap = result.template_attachment_points.at(indexes.at(att_idx));
+                        // Check if 'monomer_id' is connected to this AP
+                        if (result.findEdgeIndex(monomer_id, ap.ap_aidx) >= 0)
+                        {
+                            atom_parent = ap.ap_aidx;
+                            break;
+                        }
+                    }
+                }
+
+                result.flipBondWithDirection(atom_parent, monomer_id, ap_new_idx, mapped_leaving_atom_idx);
+
+                // fix neighbor template_attachment_points
+                if (other < result.template_attachment_indexes.size())
+                {
+                    auto& indexes = result.template_attachment_indexes.at(other);
+                    for (int att_idx = indexes.begin(); att_idx != indexes.end(); att_idx = indexes.next(att_idx))
+                    {
+                        auto& ap = result.template_attachment_points.at(indexes.at(att_idx));
+                        if (ap.ap_aidx == monomer_id)
+                            ap.ap_aidx = ap_new_idx;
+                    }
+                }
+            }
+            else
+            {
+                bonds_to_delete.push(edge_idx);
+            }
+        }
+    }
 }
 
 #ifdef _MSC_VER
