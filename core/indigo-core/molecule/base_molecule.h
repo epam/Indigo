@@ -205,7 +205,7 @@ namespace indigo
         virtual int getAtomSubstCount(int idx) = 0;
         virtual int getAtomRingBondsCount(int idx) = 0; // >= 0 -- ring bonds count, -1 -- not sure
         virtual int getAtomConnectivity(int idx) = 0;
-        virtual void setExplicitValence(int /*idx*/, int /*valence*/) {};
+        virtual void setExplicitValence(int /*idx*/, int /*valence*/){};
 
         int getAtomRadical_NoThrow(int idx, int fallback);
         int getAtomValence_NoThrow(int idx, int fallback);
