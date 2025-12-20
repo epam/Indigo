@@ -101,7 +101,9 @@ void OsCommandDispatcher::_run(int nthreads)
     // Create handling threads
     for (int i = 0; i < _left_thread_count; i++)
     {
-        std::thread thread{[this]() { this->_threadFunc(); }};
+        std::thread thread{[this]() {
+            this->_threadFunc();
+        }};
         thread.detach();
     }
 

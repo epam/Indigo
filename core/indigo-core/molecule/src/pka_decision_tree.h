@@ -1,7 +1,14 @@
 namespace indigo
 {
     // clang-format off
-    struct Node { const char* smarts; int yes; int no; float pka; float pka_range; };
+    struct Node
+    {
+        const char* smarts;
+        int yes;
+        int no;
+        float pka;
+        float pka_range;
+    };
     static const Node pkaDecisionTree[] = {
         { "[#G6H]C(=O)", 1, 550, 5.9131093f, 17.32f },
         { "[OH][i](=O)*(~*)~*", 2, 299, 3.6849957f, 5.9569998f },

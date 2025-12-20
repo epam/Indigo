@@ -167,7 +167,9 @@ namespace indigo
                 if (!molecules.empty())
                 {
                     float totalWidth = std::accumulate(molecules.begin(), molecules.end(), 0.0f,
-                                                       [](float acc, const std::pair<int, Rect2f>& r) { return acc + r.second.width(); });
+                                                       [](float acc, const std::pair<int, Rect2f>& r) {
+                                                           return acc + r.second.width();
+                                                       });
                     float margin = COMPONENTS_MARGIN * (molecules.size() - 1);
                     float blockWidth = totalWidth + margin;
 

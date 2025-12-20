@@ -50,9 +50,15 @@ ReactionMultistepDetector::ReactionMultistepDetector(BaseMolecule& bmol, const L
 
 void ReactionMultistepDetector::createSummBlocks()
 {
-    auto pair_comp_asc = [](const FLOAT_INT_PAIR& a, const FLOAT_INT_PAIR& b) { return b.first > a.first; };
-    auto pair_comp_des = [](const FLOAT_INT_PAIR& a, const FLOAT_INT_PAIR& b) { return b.first < a.first; };
-    auto pair_comp_mol_asc = [](const FLOAT_INT_PAIR& a, const FLOAT_INT_PAIR& b) { return b.second > a.second; };
+    auto pair_comp_asc = [](const FLOAT_INT_PAIR& a, const FLOAT_INT_PAIR& b) {
+        return b.first > a.first;
+    };
+    auto pair_comp_des = [](const FLOAT_INT_PAIR& a, const FLOAT_INT_PAIR& b) {
+        return b.first < a.first;
+    };
+    auto pair_comp_mol_asc = [](const FLOAT_INT_PAIR& a, const FLOAT_INT_PAIR& b) {
+        return b.second > a.second;
+    };
     _reaction_components.reserve(_moleculeCount);
     FLOAT_INT_PAIRS mol_tops, mol_bottoms, mol_lefts, mol_rights;
 
@@ -273,7 +279,9 @@ void ReactionMultistepDetector::collectSortedDistances()
             mdj.distances_map.emplace(i, dist);
             mdi.distances_map.emplace(j, dist);
         }
-        std::sort(mdi.sorted_distances.begin(), mdi.sorted_distances.end(), [](auto& lhs, auto& rhs) { return lhs.second < rhs.second; });
+        std::sort(mdi.sorted_distances.begin(), mdi.sorted_distances.end(), [](auto& lhs, auto& rhs) {
+            return lhs.second < rhs.second;
+        });
     }
 }
 
@@ -639,7 +647,9 @@ std::optional<std::pair<int, int>> ReactionMultistepDetector::isMergeable(size_t
                 // check if there are opposite sections
                 std::map<int, std::set<int>> comm_zones;
                 std::set_intersection(other_zones1.begin(), other_zones1.end(), other_zones2.begin(), other_zones2.end(),
-                                      std::inserter(comm_zones, comm_zones.begin()), [](auto& a, auto& b) { return a.first < b.first; });
+                                      std::inserter(comm_zones, comm_zones.begin()), [](auto& a, auto& b) {
+                                          return a.first < b.first;
+                                      });
 
                 for (auto& cz : comm_zones)
                 {
@@ -886,7 +896,9 @@ ReactionMultistepDetector::ReactionType ReactionMultistepDetector::detectReactio
     collectSortedDistances();
     mergeCloseComponents();
     createSummBlocks();
-    std::generate_n(std::inserter(_remaining_csbs, _remaining_csbs.end()), _component_summ_blocks.size(), [i = 0]() mutable { return i++; });
+    std::generate_n(std::inserter(_remaining_csbs, _remaining_csbs.end()), _component_summ_blocks.size(), [i = 0]() mutable {
+        return i++;
+    });
     bool has_multistep = mapReactionComponents();
     bool has_multitail = mapMultitailReactionComponents();
     mapCatalysts();
@@ -1163,7 +1175,9 @@ void ReactionMultistepDetector::collectUndefinedDistances(const std::vector<std:
             mdj.distances_map.emplace(i, dist);
             mdi.distances_map.emplace(j, dist);
         }
-        std::sort(mdi.sorted_distances.begin(), mdi.sorted_distances.end(), [](auto& lhs, auto& rhs) { return lhs.second < rhs.second; });
+        std::sort(mdi.sorted_distances.begin(), mdi.sorted_distances.end(), [](auto& lhs, auto& rhs) {
+            return lhs.second < rhs.second;
+        });
 
         // collect distances to detected components
         auto& mdic = undef_comp_distances[i];
@@ -1174,7 +1188,9 @@ void ReactionMultistepDetector::collectUndefinedDistances(const std::vector<std:
             if (dist < LayoutOptions::DEFAULT_BOND_LENGTH * 2)
                 mdic.sorted_distances.emplace_back(j, dist);
         }
-        std::sort(mdic.sorted_distances.begin(), mdic.sorted_distances.end(), [](auto& lhs, auto& rhs) { return lhs.second < rhs.second; });
+        std::sort(mdic.sorted_distances.begin(), mdic.sorted_distances.end(), [](auto& lhs, auto& rhs) {
+            return lhs.second < rhs.second;
+        });
     }
 }
 
@@ -1252,7 +1268,9 @@ void ReactionMultistepDetector::mergeUndefinedComponents()
         }
         size_t index = 0;
         undef_component_bboxes.erase(std::remove_if(undef_component_bboxes.begin(), undef_component_bboxes.end(),
-                                                    [&](std::pair<size_t, Rect2f>&) { return undefs_delete.count(index++); }),
+                                                    [&](std::pair<size_t, Rect2f>&) {
+                                                        return undefs_delete.count(index++);
+                                                    }),
                                      undef_component_bboxes.end());
 
     } while (has_merges);
@@ -1266,9 +1284,15 @@ bool ReactionMultistepDetector::findPlusNeighbours(const Vec2f& plus_pos, const 
     auto plus_pos_top = std::make_pair(plus_pos.y + PLUS_BBOX_SHIFT.y, -1);
     auto plus_pos_bottom = std::make_pair(plus_pos.y - PLUS_BBOX_SHIFT.y, -1);
 
-    auto pair_comp_asc = [](const FLOAT_INT_PAIR& a, const FLOAT_INT_PAIR& b) { return b.first > a.first; };
-    auto pair_comp_des = [](const FLOAT_INT_PAIR& a, const FLOAT_INT_PAIR& b) { return b.first < a.first; };
-    auto pair_comp_mol_asc = [](const FLOAT_INT_PAIR& a, const FLOAT_INT_PAIR& b) { return b.second > a.second; };
+    auto pair_comp_asc = [](const FLOAT_INT_PAIR& a, const FLOAT_INT_PAIR& b) {
+        return b.first > a.first;
+    };
+    auto pair_comp_des = [](const FLOAT_INT_PAIR& a, const FLOAT_INT_PAIR& b) {
+        return b.first < a.first;
+    };
+    auto pair_comp_mol_asc = [](const FLOAT_INT_PAIR& a, const FLOAT_INT_PAIR& b) {
+        return b.second > a.second;
+    };
     // look for mols where top > plus_pos_bottom
     auto tops_above_it = std::upper_bound(mol_tops.begin(), mol_tops.end(), plus_pos_bottom, pair_comp_asc);
     // look for mols where bottom < plus_pos_top

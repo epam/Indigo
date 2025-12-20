@@ -134,7 +134,10 @@ namespace indigo
             size_t start = i;
             bool is_space = (str[i] == ' ');
 
-            i = std::find_if(str.begin() + i, str.end(), [is_space](char c) { return (c == ' ') != is_space; }) - str.begin();
+            i = std::find_if(str.begin() + i, str.end(), [is_space](char c) {
+                    return (c == ' ') != is_space;
+                }) -
+                str.begin();
 
             result.emplace_back(str.substr(start, i - start));
         }

@@ -871,13 +871,17 @@ namespace indigo
     {
         std::vector<Vec2f> result;
         result.reserve(polygon1.size());
-        std::copy_if(polygon1.begin(), polygon1.end(), std::back_inserter(result), [&](auto& p) { return isPointInPolygon(p, polygon2); });
+        std::copy_if(polygon1.begin(), polygon1.end(), std::back_inserter(result), [&](auto& p) {
+            return isPointInPolygon(p, polygon2);
+        });
         return result;
     }
 
     inline bool isPointInConvexPolygon(const Vec2f& p, const std::vector<Vec2f>& poly)
     {
-        auto cross = [](const Vec2f& a, const Vec2f& b, const Vec2f& c) { return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x); };
+        auto cross = [](const Vec2f& a, const Vec2f& b, const Vec2f& c) {
+            return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+        };
         bool sign = cross(poly.back(), poly[0], p) < 0;
         for (size_t i = 0, n = poly.size(); i < n; ++i)
             if ((cross(poly[i], poly[(i + 1) % n], p) < 0) != sign)
@@ -889,7 +893,9 @@ namespace indigo
     {
         std::vector<Vec2f> result;
         result.reserve(polygon1.size());
-        std::copy_if(polygon1.begin(), polygon1.end(), std::back_inserter(result), [&](auto& p) { return isPointInConvexPolygon(p, polygon2); });
+        std::copy_if(polygon1.begin(), polygon1.end(), std::back_inserter(result), [&](auto& p) {
+            return isPointInConvexPolygon(p, polygon2);
+        });
         return result;
     }
 
@@ -911,11 +917,15 @@ namespace indigo
     inline bool convexPolygonsIntersect(const std::vector<Vec2f>& poly1, const std::vector<Vec2f>& poly2)
     {
         auto project = [](const std::vector<Vec2f>& poly, const Vec2f& axis) {
-            auto [min, max] = std::minmax_element(poly.begin(), poly.end(), [&](const Vec2f& a, const Vec2f& b) { return a * axis < b * axis; });
+            auto [min, max] = std::minmax_element(poly.begin(), poly.end(), [&](const Vec2f& a, const Vec2f& b) {
+                return a * axis < b * axis;
+            });
             return std::pair{*min * axis, *max * axis};
         };
 
-        auto overlap = [](const auto& range1, const auto& range2) { return !(range1.first > range2.second || range2.first > range1.second); };
+        auto overlap = [](const auto& range1, const auto& range2) {
+            return !(range1.first > range2.second || range2.first > range1.second);
+        };
 
         auto getNormals = [](const std::vector<Vec2f>& poly) {
             std::vector<Vec2f> normals;

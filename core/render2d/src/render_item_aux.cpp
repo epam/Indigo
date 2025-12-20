@@ -454,8 +454,11 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                                     ti.text.readString(line_str.c_str(), true);
                                     _rc.setTextItemSize(ti);
                                     ti.bbp.x = static_cast<float>(text_origin.x - ti.relpos.x + text_offset_x);
-                                    trailing_spaces.first = (int)std::distance(
-                                        line_str.rbegin(), std::find_if(line_str.rbegin(), line_str.rend(), [](char c) { return c != ' '; }));
+                                    trailing_spaces.first =
+                                        (int)std::distance(line_str.rbegin(),
+                                                           std::find_if(line_str.rbegin(), line_str.rend(), [](char c) {
+                                                               return c != ' ';
+                                                           }));
                                     trailing_spaces.second = trailing_spaces.first ? _rc.getSpaceWidth() * trailing_spaces.first : 0.0f;
 
                                     if (spc_count)

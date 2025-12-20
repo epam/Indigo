@@ -160,7 +160,9 @@ static void check_valence(BaseMolecule& mol, const std::unordered_set<int>& sele
     else
     {
         FILTER_ATOMS(StructureChecker::CheckMessageCode::CHECK_MSG_VALENCE,
-                     [](BaseMolecule& mol, int idx) { return mol.getAtomValence_NoThrow(idx, -1) == -1; });
+                     [](BaseMolecule& mol, int idx) {
+                         return mol.getAtomValence_NoThrow(idx, -1) == -1;
+                     });
     }
 }
 
@@ -174,13 +176,17 @@ static void check_radical(BaseMolecule& mol, const std::unordered_set<int>& sele
     else
     {
         FILTER_ATOMS_DEFAULT(StructureChecker::CheckMessageCode::CHECK_MSG_RADICAL,
-                             [](BaseMolecule& mol, int idx) { return mol.getAtomRadical_NoThrow(idx, -1) > 0; });
+                             [](BaseMolecule& mol, int idx) {
+                                 return mol.getAtomRadical_NoThrow(idx, -1) > 0;
+                             });
     }
 }
 static void check_pseudoatom(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& /*selected_bonds*/,
                              StructureChecker::CheckResult& result)
 {
-    FILTER_ATOMS(StructureChecker::CheckMessageCode::CHECK_MSG_PSEUDOATOM, [](BaseMolecule& mol, int idx) { return mol.isPseudoAtom(idx); });
+    FILTER_ATOMS(StructureChecker::CheckMessageCode::CHECK_MSG_PSEUDOATOM, [](BaseMolecule& mol, int idx) {
+        return mol.isPseudoAtom(idx);
+    });
 }
 static void check_stereo(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& /*selected_bonds*/,
                          StructureChecker::CheckResult& result)
@@ -240,7 +246,9 @@ static void check_stereo(BaseMolecule& mol, const std::unordered_set<int>& selec
                    (mol.stereocenters.exists(idx) && !target->stereocenters.exists(idx));
         });
         FILTER_ATOMS_DEFAULT(StructureChecker::CheckMessageCode::CHECK_MSG_UNDEFINED_STEREO,
-                             [&target](BaseMolecule& mol, int idx) { return !mol.stereocenters.exists(idx) && target->stereocenters.exists(idx); });
+                             [&target](BaseMolecule& mol, int idx) {
+                                 return !mol.stereocenters.exists(idx) && target->stereocenters.exists(idx);
+                             });
 
         mol.asMolecule().setIgnoreBadValenceFlag(saved_valence_flag);
     }
@@ -257,11 +265,16 @@ static void check_query(BaseMolecule& mol, const std::unordered_set<int>& select
         message(result, StructureChecker::CheckMessageCode::CHECK_MSG_QUERY);
     }
     FILTER_ATOMS_DEFAULT(StructureChecker::CheckMessageCode::CHECK_MSG_QUERY_ATOM,
-                         [](BaseMolecule& mol, int idx) { return mol.reaction_atom_exact_change[idx] || mol.reaction_atom_inversion[idx]; });
+                         [](BaseMolecule& mol, int idx) {
+                             return mol.reaction_atom_exact_change[idx] || mol.reaction_atom_inversion[idx];
+                         });
 
     std::vector<int> ids;
     std::copy_if(selected_atoms.begin(), selected_atoms.end(), std::back_inserter(ids),
-                 [&mol](int idx) { return idx >= 0 && idx < mol.reaction_bond_reacting_center.size() && mol.reaction_bond_reacting_center[idx] != 0; });
+                 [&mol](int idx) {
+                     return idx >= 0 && idx < mol.reaction_bond_reacting_center.size() &&
+                            mol.reaction_bond_reacting_center[idx] != 0;
+                 });
     if (ids.size())
     {
         message(result, StructureChecker::CheckMessageCode::CHECK_MSG_QUERY_BOND, ids);
@@ -395,7 +408,9 @@ static void check_chiral_flag(BaseMolecule& mol, const std::unordered_set<int>& 
 static void check_3d_coord(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& /*selected_bonds*/,
                            StructureChecker::CheckResult& result)
 {
-    FILTER_ATOMS(StructureChecker::CheckMessageCode::CHECK_MSG_3D_COORD, [](BaseMolecule& mol, int idx) { return fabs(mol.getAtomXyz(idx).z) > 0.001; });
+    FILTER_ATOMS(StructureChecker::CheckMessageCode::CHECK_MSG_3D_COORD, [](BaseMolecule& mol, int idx) {
+        return fabs(mol.getAtomXyz(idx).z) > 0.001;
+    });
 }
 
 static void check_charge(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& /*selected_bonds*/,
@@ -702,12 +717,20 @@ StructureChecker::CheckResult StructureChecker::checkMolecule(const BaseMolecule
     else
     {
         std::copy_if(selected_atoms.begin(), selected_atoms.end(), std::inserter(sel_atoms, sel_atoms.begin()),
-                     [num_atoms](int i) { return i >= 0 && i < num_atoms; });
+                     [num_atoms](int i) {
+                         return i >= 0 && i < num_atoms;
+                     });
         std::copy_if(selected_bonds.begin(), selected_bonds.end(), std::inserter(sel_bonds, sel_bonds.begin()),
-                     [num_bonds](int i) { return i >= 0 && i < num_bonds; });
+                     [num_bonds](int i) {
+                         return i >= 0 && i < num_bonds;
+                     });
     }
-    std::transform(sel_bonds.begin(), sel_bonds.end(), std::inserter(sel_atoms, sel_atoms.begin()), [&bmol](int i) { return bmol.getEdge(i).beg; });
-    std::transform(sel_bonds.begin(), sel_bonds.end(), std::inserter(sel_atoms, sel_atoms.begin()), [&bmol](int i) { return bmol.getEdge(i).end; });
+    std::transform(sel_bonds.begin(), sel_bonds.end(), std::inserter(sel_atoms, sel_atoms.begin()), [&bmol](int i) {
+        return bmol.getEdge(i).beg;
+    });
+    std::transform(sel_bonds.begin(), sel_bonds.end(), std::inserter(sel_atoms, sel_atoms.begin()), [&bmol](int i) {
+        return bmol.getEdge(i).end;
+    });
 
     const auto& ct = check_types.size() ? check_types : check_names_map.all;
     std::set<CheckTypeCode> ct_uniq;

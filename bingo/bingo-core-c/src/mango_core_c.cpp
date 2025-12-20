@@ -319,7 +319,10 @@ CEXPORT int mangoSetupMatch(const char* search_type, const char* query, const ch
         {
             return self.mangoSetupMatch(search_type, query, options);
         }
-        CATCH_READ_TARGET_MOL(self.error.readString(e.message(), 1); return -1;);
+        CATCH_READ_TARGET_MOL({
+            self.error.readString(e.message(), 1);
+            return -1;
+        });
     }
     BINGO_END(-2, -2);
 }
@@ -439,7 +442,10 @@ int BingoCore::mangoMatchTarget(const char* target, int target_buf_len)
         else
             throw BingoError("Invalid search type");
     }
-    CATCH_READ_TARGET_MOL(self.warning.readString(e.message(), 1); return -1;);
+    CATCH_READ_TARGET_MOL({
+        self.warning.readString(e.message(), 1);
+        return -1;
+    });
     return 0;
 }
 
@@ -499,7 +505,10 @@ int BingoCore::mangoMatchTargetBinary(const char* target_bin, int target_bin_len
         else
             throw BingoError("Invalid search type");
     }
-    CATCH_READ_TARGET_MOL(self.warning.readString(e.message(), 1); return -1;);
+    CATCH_READ_TARGET_MOL({
+        self.warning.readString(e.message(), 1);
+        return -1;
+    });
     return 0;
 }
 

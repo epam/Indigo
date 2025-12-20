@@ -29,11 +29,17 @@ namespace indigo
 {
     using cstring = const char*;
 
-    EM_JS(void, jsThrow, (cstring str), { throw UTF8ToString(str); });
+    EM_JS(void, jsThrow, (cstring str), {
+        throw UTF8ToString(str);
+    });
 
-    EM_JS(void, print_jsn, (cstring str, int n), { console.log(UTF8ToString(str) + n); });
+    EM_JS(void, print_jsn, (cstring str, int n), {
+        console.log(UTF8ToString(str) + n);
+    });
 #ifdef _DEBUG
-    EM_JS(void, print_js, (cstring str), { console.log(UTF8ToString(str)); });
+    EM_JS(void, print_js, (cstring str), {
+        console.log(UTF8ToString(str));
+    });
 #else
     void print_js(const cstring)
     {
@@ -487,8 +493,12 @@ namespace indigo
                     {
                         return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
                     }
-                    auto is_upper = std::all_of(data.begin(), data.end(), [](int ch) { return !std::isalpha(ch) || std::isupper(ch); });
-                    auto is_lower = std::all_of(data.begin(), data.end(), [](int ch) { return !std::isalpha(ch) || std::islower(ch); });
+                    auto is_upper = std::all_of(data.begin(), data.end(), [](int ch) {
+                        return !std::isalpha(ch) || std::isupper(ch);
+                    });
+                    auto is_lower = std::all_of(data.begin(), data.end(), [](int ch) {
+                        return !std::isalpha(ch) || std::islower(ch);
+                    });
                     if (sequence_type != options.end()) // try according to selector
                     {
                         std::string msg = "try as FASTA-" + sequence_type->second;

@@ -919,21 +919,29 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
                 need_to_flip = do_flip_cnt > dont_flip_cnt;
             }
 
-            /*float rotate1 = Vec2f::cross(layout.getPos((startIndex + 1) % size) - layout.getPos(startIndex), layout.getPos((startIndex + 2) % size) -
-            layout.getPos((startIndex + 1) % size)); Vec2f next_point; if (isEdgeDrawn(cycle.getEdgeC(startIndex + 1))) next_point =
-            getPos(cycle.getVertexC(startIndex + 2)); else { for (int j = getVertex(cycle.getVertexC(startIndex + 1)).neiBegin(); j !=
-            getVertex(cycle.getVertexC(startIndex + 1)).neiEnd(); j = getVertex(cycle.getVertexC(startIndex + 1)).neiNext(j)) if
-            (isEdgeDrawn(getVertex(cycle.getVertexC(startIndex + 1)).neiEdge(j)) && getVertex(cycle.getVertexC(startIndex + 1)).neiVertex(j) !=
-            cycle.getVertex(startIndex)) next_point = _layout_vertices[getVertex(cycle.getVertexC(startIndex + 1)).neiVertex(j)].pos;
+            /*float rotate1 = Vec2f::cross(layout.getPos((startIndex + 1) % size) - layout.getPos(startIndex),
+                                           layout.getPos((startIndex + 2) % size) - layout.getPos((startIndex + 1) % size));
+            Vec2f next_point;
+            if (isEdgeDrawn(cycle.getEdgeC(startIndex + 1)))
+                next_point = getPos(cycle.getVertexC(startIndex + 2));
+            else
+            {
+                for (int j = getVertex(cycle.getVertexC(startIndex + 1)).neiBegin(); j !=
+                                 getVertex(cycle.getVertexC(startIndex + 1)).neiEnd(); j = getVertex(cycle.getVertexC(startIndex + 1)).neiNext(j))
+                    if (isEdgeDrawn(getVertex(cycle.getVertexC(startIndex + 1)).neiEdge(j)) &&
+                        getVertex(cycle.getVertexC(startIndex + 1)).neiVertex(j) != cycle.getVertex(startIndex))
+                        next_point = _layout_vertices[getVertex(cycle.getVertexC(startIndex + 1)).neiVertex(j)].pos;
             }
 
             float rotate2 = Vec2f::cross(getPos(cycle.getVertexC(startIndex + 1)) - getPos(cycle.getVertexC(startIndex)),
-                next_point - getPos(cycle.getVertexC(startIndex + 1)));
+                                         next_point - getPos(cycle.getVertexC(startIndex + 1)));
 
-            if (!isEdgeDrawn(cycle.getEdgeC(startIndex + 1))) {
+            if (!isEdgeDrawn(cycle.getEdgeC(startIndex + 1)))
+            {
                 need_to_flip = rotate1 * rotate2 > 0;
             }
-            else if (isEdgeDrawn(cycle.getEdgeC(startIndex))) need_to_flip = rotate1 * rotate2 < 0;
+            else if (isEdgeDrawn(cycle.getEdgeC(startIndex)))
+                need_to_flip = rotate1 * rotate2 < 0;
             */
 
             if (need_to_flip)

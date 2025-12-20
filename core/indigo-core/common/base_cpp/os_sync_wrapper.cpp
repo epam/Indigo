@@ -36,7 +36,9 @@ void OsSemaphore::Wait()
 {
     std::unique_lock<std::mutex> lock{_mutex};
 
-    _cond.wait(lock, [this]() { return _count > 0; });
+    _cond.wait(lock, [this]() {
+        return _count > 0;
+    });
 
     --_count;
 }

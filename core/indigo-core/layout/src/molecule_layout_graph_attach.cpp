@@ -925,7 +925,9 @@ void MoleculeLayoutGraph::_calculatePositionsManyNotDrawn(int vert_idx, Array<in
             edge.y += 0.001f; // if edge too small - add y size
         edges_angles.emplace_back(neiVert, edge.tiltAngle2());
     }
-    std::sort(edges_angles.begin(), edges_angles.end(), [](std::pair<int, float> a, std::pair<int, float> b) { return a.second < b.second; });
+        std::sort(edges_angles.begin(), edges_angles.end(), [](std::pair<int, float> a, std::pair<int, float> b) {
+            return a.second < b.second;
+        });
 
     index_angles angles; // angles between edges
     for (size_t i = 0; i + 1 < edges_angles.size(); i++)

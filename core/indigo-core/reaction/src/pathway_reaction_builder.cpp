@@ -52,7 +52,9 @@ auto PathwayReactionBuilder::findSuccessorReactions(int reactionIdx)
             // then we just copy the set of reactions where the product is a reactant
             std::map<int, std::vector<int>> reactionReactantIndexes;
             std::transform(rtr_it->second.begin(), rtr_it->second.end(), std::inserter(reactionReactantIndexes, reactionReactantIndexes.end()),
-                           [](const auto& pair) { return std::make_pair(pair.first, std::vector<int>{pair.second}); });
+                           [](const auto& pair) {
+                               return std::make_pair(pair.first, std::vector<int>{pair.second});
+                           });
 
             if (matchedReactions.empty())
                 matchedReactions = reactionReactantIndexes;
@@ -63,7 +65,9 @@ auto PathwayReactionBuilder::findSuccessorReactions(int reactionIdx)
                 // typically we have only one product, but just it case it is possible to have more than one
                 std::map<int, std::vector<int>> intersection;
                 std::set_intersection(matchedReactions.begin(), matchedReactions.end(), reactionReactantIndexes.begin(), reactionReactantIndexes.end(),
-                                      std::inserter(intersection, intersection.begin()), [](const auto& a, const auto& b) { return a.first < b.first; });
+                                      std::inserter(intersection, intersection.begin()), [](const auto& a, const auto& b) {
+                                          return a.first < b.first;
+                                      });
 
                 for (auto& [key, values] : intersection)
                     values.insert(values.end(), reactionReactantIndexes.at(key).begin(), reactionReactantIndexes.at(key).end());

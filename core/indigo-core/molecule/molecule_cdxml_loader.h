@@ -817,7 +817,9 @@ namespace indigo
 
         static auto strLambda(std::string& str)
         {
-            return [&str](const std::string& data) { str = data; };
+            return [&str](const std::string& data) {
+                str = data;
+            };
         }
 
         static auto justificationLambda(std::optional<CDXTextJustification>& justification)
@@ -831,12 +833,16 @@ namespace indigo
 
         static auto intLambda(AutoInt& val)
         {
-            return [&val](const std::string& data) { val = data; };
+            return [&val](const std::string& data) {
+                val = data;
+            };
         }
 
         static auto floatLambda(float& val)
         {
-            return [&val](const std::string& data) { val = std::stof(data); };
+            return [&val](const std::string& data) {
+                val = std::stof(data);
+            };
         }
 
         auto posLambda(Vec2f& pos)

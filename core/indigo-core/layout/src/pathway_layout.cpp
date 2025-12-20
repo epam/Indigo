@@ -150,8 +150,10 @@ void PathwayLayout::buildLayoutTree()
             if (totalLines > MIN_LINES_COUNT)
                 totalLines = MIN_LINES_COUNT;
 
-            auto totalHeight = std::accumulate(currentLayoutItem.children.begin(), currentLayoutItem.children.end(), 0.0f,
-                                               [](float summ, const PathwayLayoutItem* item) { return summ + item->height; });
+    auto totalHeight = std::accumulate(currentLayoutItem.children.begin(), currentLayoutItem.children.end(), 0.0f,
+                                       [](float summ, const PathwayLayoutItem* item) {
+                                           return summ + item->height;
+                                       });
             auto totalSpacing = (currentLayoutItem.children.size() - 1) * VERTICAL_SPACING;
             totalHeight -= currentLayoutItem.children.front()->height / 2;
             totalHeight -= currentLayoutItem.children.back()->height / 2;
@@ -176,8 +178,12 @@ void PathwayLayout::copyTextPropertiesToNode(const PathwayReaction::SimpleReacti
     auto& props = reaction.properties;
     // split text labels and put them into the reaction node name_text and conditions_text
     auto text_max_width = _default_arrow_size - _reaction_margin_size * 2;
-    auto boldWidthLambda = [text_max_width](char ch) { return text_max_width / MAX_SYMBOLS; };   // TODO: implement bold font width
-    auto italicWidthLambda = [text_max_width](char ch) { return text_max_width / MAX_SYMBOLS; }; // TODO: implement italic font width
+    auto boldWidthLambda = [text_max_width](char ch) {
+        return text_max_width / MAX_SYMBOLS;
+    }; // TODO: implement bold font width
+    auto italicWidthLambda = [text_max_width](char ch) {
+        return text_max_width / MAX_SYMBOLS;
+    }; // TODO: implement italic font width
     for (auto prop_idx = props.begin(); prop_idx != props.end(); prop_idx = props.next(prop_idx))
     {
         std::string prop_val = props.value(prop_idx).ptr();
@@ -190,8 +196,10 @@ void PathwayLayout::copyTextPropertiesToNode(const PathwayReaction::SimpleReacti
             for (auto& line : splitted_name)
             {
                 node.name_text.push().readString(line.c_str(), true);
-                node.text_width = std::max(node.text_width, std::accumulate(line.begin(), line.end(), 0.0f,
-                                                                            [&boldWidthLambda](float sum, char ch) { return sum + boldWidthLambda(ch); }));
+                node.text_width = std::max(node.text_width,
+                                           std::accumulate(line.begin(), line.end(), 0.0f, [&boldWidthLambda](float sum, char ch) {
+                                               return sum + boldWidthLambda(ch);
+                                           }));
             }
         }
         else if (props.key(prop_idx) == std::string(REACTION_CONDITIONS))
@@ -200,8 +208,10 @@ void PathwayLayout::copyTextPropertiesToNode(const PathwayReaction::SimpleReacti
             for (auto& line : splitted_conditions)
             {
                 node.conditions_text.push().readString(line.c_str(), true);
-                node.text_width = std::max(node.text_width, std::accumulate(line.begin(), line.end(), 0.0f,
-                                                                            [&italicWidthLambda](float sum, char ch) { return sum + italicWidthLambda(ch); }));
+                node.text_width = std::max(node.text_width,
+                                           std::accumulate(line.begin(), line.end(), 0.0f, [&italicWidthLambda](float sum, char ch) {
+                                               return sum + italicWidthLambda(ch);
+                                           }));
             }
         }
     }
@@ -305,13 +315,19 @@ void PathwayLayout::applyLayout()
                 for (auto child : layoutItem->children)
                 {
                     Vec2f tail = child->boundingBox.rightMiddle();
-                    auto tail_it = std::lower_bound(tails.begin(), tails.end(), tail, [](const Vec2f& a, const Vec2f& b) { return a.y > b.y; });
+                    auto tail_it = std::lower_bound(tails.begin(), tails.end(), tail, [](const Vec2f& a, const Vec2f& b) {
+                        return a.y > b.y;
+                    });
                     tails.insert(tail_it, tail);
                 }
-                auto rigt_most_x = std::max_element(tails.begin(), tails.end(), [](const Vec2f& a, const Vec2f& b) { return a.x < b.x; })->x;
+                auto rigt_most_x = std::max_element(tails.begin(), tails.end(), [](const Vec2f& a, const Vec2f& b) {
+                    return a.x < b.x;
+                })->x;
                 rigt_most_x += _reaction_margin_size;
 
-                std::for_each(tails.begin(), tails.end(), [rigt_most_x](Vec2f& v) { v.x = rigt_most_x; });
+                std::for_each(tails.begin(), tails.end(), [rigt_most_x](Vec2f& v) {
+                    v.x = rigt_most_x;
+                });
                 arrows.insert(arrows.end(), tails.begin(), tails.end());
 
                 // add spines

@@ -61,11 +61,29 @@ using namespace indigo;
     if (typeMap.at(name) != type)                                                                                                                              \
     throw Error("Property type mismatch", name)
 
-#define SETTER_GETTER_BOOL_OPTION(option) [](int enabled) { option = (enabled != 0); }, [](int& enabled) { enabled = (option != 0); }
+#define SETTER_GETTER_BOOL_OPTION(option)                                                                                      \
+    [](int enabled) {                                                                                                         \
+        option = (enabled != 0);                                                                                              \
+    },                                                                                                                        \
+    [](int& enabled) {                                                                                                        \
+        enabled = (option != 0);                                                                                              \
+    }
 
-#define SETTER_GETTER_INT_OPTION(option) [](int value) { option = value; }, [](int& value) { value = option; }
+#define SETTER_GETTER_INT_OPTION(option)                                                                                       \
+    [](int value) {                                                                                                           \
+        option = value;                                                                                                       \
+    },                                                                                                                        \
+    [](int& value) {                                                                                                          \
+        value = option;                                                                                                       \
+    }
 
-#define SETTER_GETTER_FLOAT_OPTION(option) [](float value) { option = value; }, [](float& value) { value = option; }
+#define SETTER_GETTER_FLOAT_OPTION(option)                                                                                     \
+    [](float value) {                                                                                                         \
+        option = value;                                                                                                       \
+    },                                                                                                                        \
+    [](float& value) {                                                                                                        \
+        value = option;                                                                                                       \
+    }
 
 #define SETTER_GETTER_COLOR_OPTION(option)                                                                                                                     \
     [](float r, float g, float b) { option.set(r, g, b); }, [](float& r, float& g, float& b) {                                                                 \

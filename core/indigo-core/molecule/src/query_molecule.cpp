@@ -2178,7 +2178,9 @@ bool QueryMolecule::Node::hasNoConstraintExcept(std::vector<int> what_types)
         return true;
     }
 
-    return std::any_of(what_types.cbegin(), what_types.cend(), [this](int i) { return type == i; });
+    return std::any_of(what_types.cbegin(), what_types.cend(), [this](int i) {
+        return type == i;
+    });
 }
 
 void QueryMolecule::Node::removeConstraints(int what_type)
@@ -2678,7 +2680,9 @@ bool QueryMolecule::_tryToConvertToList(Atom* p_query_atom, std::vector<std::uni
         }
         if (atom_not_found)
             return false;
-        auto compare = [](const std::unique_ptr<Atom>& a, const std::unique_ptr<Atom>& b) { return a->type > b->type; };
+        auto compare = [](const std::unique_ptr<Atom>& a, const std::unique_ptr<Atom>& b) {
+            return a->type > b->type;
+        };
         if (i == 0) // first atom
         {
             std::sort(atoms_properties.begin(), atoms_properties.end(), compare);

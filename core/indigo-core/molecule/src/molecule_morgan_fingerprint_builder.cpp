@@ -158,7 +158,9 @@ void MoleculeMorganFingerprintBuilder::buildDescriptors(int fp_depth)
         }
 
         // Features are sorted by their iteration number, then by their hash
-        std::sort(new_features.begin(), new_features.end(), [](const FeatureDescriptor& fd1, const FeatureDescriptor& fd2) { return fd1.hash < fd2.hash; });
+        std::sort(new_features.begin(), new_features.end(), [](const FeatureDescriptor& fd1, const FeatureDescriptor& fd2) {
+            return fd1.hash < fd2.hash;
+        });
 
         // Update features
         for (auto& feature : new_features)
@@ -176,7 +178,9 @@ void MoleculeMorganFingerprintBuilder::calculateNewAtomDescriptors(int iteration
     for (auto& atom : atom_descriptors)
     {
         std::sort(atom.bond_descriptors.begin(), atom.bond_descriptors.end(),
-                  [&](const BondDescriptor& bd1, const BondDescriptor& bd2) { return bondDescriptorCmp(bd1, bd2) < 0; });
+                  [&](const BondDescriptor& bd1, const BondDescriptor& bd2) {
+                      return bondDescriptorCmp(bd1, bd2) < 0;
+                  });
 
         atom.new_descr.hash = (dword)iterationNumber * MAGIC_HASH_NUMBER + atom.descr.hash;
         atom.new_descr.bond_set.clear();

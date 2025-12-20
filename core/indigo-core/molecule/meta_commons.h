@@ -481,7 +481,9 @@ namespace indigo
                 {
                     std::string part;
                     FONT_STYLE_SET fss;
-                    auto text_lambda = [&part](const std::string&, const rapidjson::Value& text_val) { part = text_val.GetString(); };
+                    auto text_lambda = [&part](const std::string&, const rapidjson::Value& text_val) {
+                        part = text_val.GetString();
+                    };
                     auto style_lambda = styleLambda(fss);
                     DispatchMapKVP paragraph_dispatcher = {{"text", text_lambda},
                                                            {KFontBoldStr, style_lambda},
@@ -502,7 +504,9 @@ namespace indigo
                         paragraph.text += part;
                         FONT_STYLE_SET fss_off;
                         std::transform(fss.begin(), fss.end(), std::inserter(fss_off, fss_off.end()),
-                                       [](const auto& entry) { return std::make_pair(entry.first, false); });
+                                       [](const auto& entry) {
+                                           return std::make_pair(entry.first, false);
+                                       });
                         fss = std::move(fss_off);
                         paragraph.font_styles.emplace(paragraph.text.size(), fss);
                     }

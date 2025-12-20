@@ -972,9 +972,13 @@ CEXPORT int indigoLoadSmarts(int source)
 
 static bool isReacton(const char* string)
 {
-    auto isIn = [](const char* source, const char* pattern) -> bool { return std::string(source).find(pattern) != std::string::npos; };
+    auto isIn = [](const char* source, const char* pattern) -> bool {
+        return std::string(source).find(pattern) != std::string::npos;
+    };
 
-    auto startWith = [](const char* source, const char* pattern) -> bool { return strncmp(source, pattern, strlen(pattern)) == 0; };
+    auto startWith = [](const char* source, const char* pattern) -> bool {
+        return strncmp(source, pattern, strlen(pattern)) == 0;
+    };
 
     return isIn(string, ">>") || startWith(string, "$RXN") || isIn(string, "<reactantList>");
 }

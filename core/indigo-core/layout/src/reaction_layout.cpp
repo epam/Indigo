@@ -92,8 +92,14 @@ bool ReactionLayout::validVerticalRange(const std::vector<Rect2f>& bblist)
     if (bblist.empty())
         return true;
 
-    float max_start = std::max_element(bblist.begin(), bblist.end(), [](const Rect2f& a, const Rect2f& b) { return a.bottom() < b.bottom(); })->bottom();
-    float min_end = std::min_element(bblist.begin(), bblist.end(), [](const Rect2f& a, const Rect2f& b) { return a.top() < b.top(); })->top();
+    float max_start = std::max_element(bblist.begin(), bblist.end(), [](const Rect2f& a, const Rect2f& b) {
+                         return a.bottom() < b.bottom();
+                     })
+                          ->bottom();
+    float min_end = std::min_element(bblist.begin(), bblist.end(), [](const Rect2f& a, const Rect2f& b) {
+                        return a.top() < b.top();
+                    })
+                        ->top();
     return max_start <= min_end;
 }
 

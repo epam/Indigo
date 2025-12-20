@@ -131,8 +131,10 @@ ORAEXT OCIString* oraRingoCheckReaction(OCIExtProcContext* ctx, OCILobLocator* t
                 loader.loadReaction(reaction);
                 Reaction::checkForConsistency(reaction);
             }
-            CATCH_READ_TARGET_RXN(OCIStringAssignText(env.envhp(), env.errhp(), (text*)e.message(), strlen(e.message()), &result);
-                                  *return_indicator = OCI_IND_NOTNULL;);
+            CATCH_READ_TARGET_RXN({
+                OCIStringAssignText(env.envhp(), env.errhp(), (text*)e.message(), strlen(e.message()), &result);
+                *return_indicator = OCI_IND_NOTNULL;
+            });
 
             if (*return_indicator == OCI_IND_NULL)
                 // This is needed for Oracle 9. Returning NULL drops the extproc.

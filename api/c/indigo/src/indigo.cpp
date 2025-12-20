@@ -63,7 +63,9 @@ CEXPORT const char* indigoVersionInfo()
         std::string version = indigoVersion();
 
         const std::string digits = "0123456789";
-        const auto parse = [&](const auto& shift) { return version.substr(shift, version.find_first_of("-\\")); };
+        const auto parse = [&](const auto& shift) {
+            return version.substr(shift, version.find_first_of("-\\"));
+        };
         const auto slice = [&](const auto& value) {
             version.erase(0, value.size() + 1);
             return value;

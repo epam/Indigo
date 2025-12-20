@@ -171,7 +171,10 @@ CEXPORT int ringoSetupMatch(const char* search_type, const char* query, const ch
         {
             return self.ringoSetupMatch(search_type, query, options);
         }
-        CATCH_READ_TARGET_RXN(self.error.readString(e.message(), 1); return -1;);
+        CATCH_READ_TARGET_RXN({
+            self.error.readString(e.message(), 1);
+            return -1;
+        });
     }
     BINGO_END(-2, -2);
 }
@@ -201,7 +204,10 @@ int BingoCore::ringoMatchTarget(const char* target, int target_buf_len)
         else
             throw BingoError("Invalid search type");
     }
-    CATCH_READ_TARGET_RXN(self.warning.readString(e.message(), 1); return -1;);
+    CATCH_READ_TARGET_RXN({
+        self.warning.readString(e.message(), 1);
+        return -1;
+    });
     return 0;
 }
 
@@ -245,7 +251,10 @@ int BingoCore::ringoMatchTargetBinary(const char* target_bin, int target_bin_len
         else
             throw BingoError("Invalid search type");
     }
-    CATCH_READ_TARGET_RXN(self.warning.readString(e.message(), 1); return -1;);
+    CATCH_READ_TARGET_RXN({
+        self.warning.readString(e.message(), 1);
+        return -1;
+    });
     return 0;
 }
 

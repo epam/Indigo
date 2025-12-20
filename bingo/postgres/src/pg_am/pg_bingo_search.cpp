@@ -95,7 +95,10 @@ Datum bingo_beginscan(PG_FUNCTION_ARGS)
 
         BingoPgCommon::appendPath(index_schema);
     }
-    PG_BINGO_HANDLE(delete so; scan->opaque = NULL);
+    PG_BINGO_HANDLE({
+        delete so;
+        scan->opaque = NULL;
+    });
 
 #if PG_VERSION_NUM / 100 >= 906
     return scan;
@@ -137,7 +140,10 @@ Datum bingo_rescan(PG_FUNCTION_ARGS)
             so->prepareRescan(scan, true);
         }
     }
-    PG_BINGO_HANDLE(delete so; scan->opaque = NULL);
+    PG_BINGO_HANDLE({
+        delete so;
+        scan->opaque = NULL;
+    });
 
 #if PG_VERSION_NUM / 100 < 906
     PG_RETURN_VOID();
@@ -241,7 +247,10 @@ Datum bingo_gettuple(PG_FUNCTION_ARGS)
         result = search_engine->next(scan, &scan->xs_ctup.t_self);
 #endif
     }
-    PG_BINGO_HANDLE(delete search_engine; scan->opaque = NULL);
+    PG_BINGO_HANDLE({
+        delete search_engine;
+        scan->opaque = NULL;
+    });
     /*
      * If true then searching was successfull
      */

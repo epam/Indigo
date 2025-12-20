@@ -429,7 +429,9 @@ void BaseSubstructureMatcher::setQueryData(SubstructureQueryData* query_data)
     // Sort bits accoring to the bits frequency
     MMFArray<int>& fp_bit_usage = _index.getSubStorage().getFpBitUsageCounts();
     std::sort(_query_fp_bits_used.ptr(), _query_fp_bits_used.ptr() + _query_fp_bits_used.size(),
-              [&](int i1, int i2) { return fp_bit_usage[i1] < fp_bit_usage[i2]; });
+              [&](int i1, int i2) {
+                  return fp_bit_usage[i1] < fp_bit_usage[i2];
+              });
 }
 
 void BaseSubstructureMatcher::_findPackCandidates(int pack_idx)

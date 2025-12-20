@@ -148,7 +148,10 @@ public:
                     *data = pg_strtoint64(str);
 #endif
                 }
-                BINGO_PG_HANDLE(data.reset(0); throw BingoPgError("error while converting to int64: %s", message));
+                BINGO_PG_HANDLE({
+                    data.reset(0);
+                    throw BingoPgError("error while converting to int64: %s", message);
+                });
             }
         }
 
@@ -194,7 +197,10 @@ public:
                     *data = pg_strtoint32(str2.ptr());
 #endif
                 }
-                BINGO_PG_HANDLE(data.reset(0); throw BingoPgError("error while converting to int32: %s", message));
+                BINGO_PG_HANDLE({
+                    data.reset(0);
+                    throw BingoPgError("error while converting to int32: %s", message);
+                });
             }
         }
 
