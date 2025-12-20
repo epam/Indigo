@@ -248,7 +248,9 @@ _vg_format_to_pixman (VGImageFormat format,
     switch (format) {
 	/* RGB{A,X} channel ordering */
     case VG_sRGBX_8888: return PIXMAN_r8g8b8x8;
-    case VG_sRGBA_8888: *needs_premult_fixup = TRUE; return PIXMAN_r8g8b8a8;
+    case VG_sRGBA_8888:
+        *needs_premult_fixup = TRUE;
+        return PIXMAN_r8g8b8a8;
     case VG_sRGBA_8888_PRE: return PIXMAN_r8g8b8a8;
     case VG_sRGB_565: return PIXMAN_r5g6b5;
     case VG_sRGBA_5551: return 0;
@@ -265,7 +267,9 @@ _vg_format_to_pixman (VGImageFormat format,
 
 	/* {A,X}RGB channel ordering */
     case VG_sXRGB_8888: return PIXMAN_x8r8g8b8;
-    case VG_sARGB_8888: *needs_premult_fixup = TRUE; return PIXMAN_a8r8g8b8;
+    case VG_sARGB_8888:
+        *needs_premult_fixup = TRUE;
+        return PIXMAN_a8r8g8b8;
     case VG_sARGB_8888_PRE: return PIXMAN_a8r8g8b8;
     case VG_sARGB_1555: return 0;
     case VG_sARGB_4444: return 0;
@@ -275,7 +279,9 @@ _vg_format_to_pixman (VGImageFormat format,
 
 	/* BGR{A,X} channel ordering */
     case VG_sBGRX_8888: return PIXMAN_b8g8r8x8;
-    case VG_sBGRA_8888: *needs_premult_fixup = TRUE; return PIXMAN_b8g8r8a8;
+    case VG_sBGRA_8888:
+        *needs_premult_fixup = TRUE;
+        return PIXMAN_b8g8r8a8;
     case VG_sBGRA_8888_PRE: return PIXMAN_b8g8r8a8;
     case VG_sBGR_565: return PIXMAN_b5g6r5;
     case VG_sBGRA_5551: return 0;
@@ -286,7 +292,9 @@ _vg_format_to_pixman (VGImageFormat format,
 
 	/* {A,X}BGR channel ordering */
     case VG_sXBGR_8888: return PIXMAN_x8b8g8r8;
-    case VG_sABGR_8888: *needs_premult_fixup = TRUE; return PIXMAN_a8b8g8r8;
+    case VG_sABGR_8888:
+        *needs_premult_fixup = TRUE;
+        return PIXMAN_a8b8g8r8;
     case VG_sABGR_8888_PRE: return PIXMAN_a8b8g8r8;
     case VG_sABGR_1555: return 0;
     case VG_sABGR_4444: return 0;

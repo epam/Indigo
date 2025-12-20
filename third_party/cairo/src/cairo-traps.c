@@ -326,13 +326,17 @@ _cairo_traps_tessellate_convex_quad (cairo_traps_t *traps,
 	     *  | /      \|     \ \  c.y d.y  cd   ad
 	     *  d         d       d
 	     */
-	    left.p1  = q[a]; left.p2  = q[b];
-	    right.p1 = q[a]; right.p2 = q[d];
-	    _cairo_traps_add_clipped_trap (traps, q[a].y, q[b].y, &left, &right);
-	    left.p1  = q[b]; left.p2  = q[c];
-	    _cairo_traps_add_clipped_trap (traps, q[b].y, q[c].y, &left, &right);
-	    left.p1  = q[c]; left.p2  = q[d];
-	    _cairo_traps_add_clipped_trap (traps, q[c].y, q[d].y, &left, &right);
+        left.p1 = q[a];
+        left.p2 = q[b];
+        right.p1 = q[a];
+        right.p2 = q[d];
+        _cairo_traps_add_clipped_trap (traps, q[a].y, q[b].y, &left, &right);
+        left.p1 = q[b];
+        left.p2 = q[c];
+        _cairo_traps_add_clipped_trap (traps, q[b].y, q[c].y, &left, &right);
+        left.p1 = q[c];
+        left.p2 = q[d];
+        _cairo_traps_add_clipped_trap (traps, q[c].y, q[d].y, &left, &right);
 	} else {
 	    /* Y-sort is abcd and b is right of d, (slope(ab) <= slope (ad))
 	     *
@@ -344,13 +348,17 @@ _cairo_traps_tessellate_convex_quad (cairo_traps_t *traps,
 	     *  / /     |/      \ | c.y d.y  ad  cd
 	     *  d       d         d
 	     */
-	    left.p1  = q[a]; left.p2  = q[d];
-	    right.p1 = q[a]; right.p2 = q[b];
-	    _cairo_traps_add_clipped_trap (traps, q[a].y, q[b].y, &left, &right);
-	    right.p1 = q[b]; right.p2 = q[c];
-	    _cairo_traps_add_clipped_trap (traps, q[b].y, q[c].y, &left, &right);
-	    right.p1 = q[c]; right.p2 = q[d];
-	    _cairo_traps_add_clipped_trap (traps, q[c].y, q[d].y, &left, &right);
+        left.p1 = q[a];
+        left.p2 = q[d];
+        right.p1 = q[a];
+        right.p2 = q[b];
+        _cairo_traps_add_clipped_trap (traps, q[a].y, q[b].y, &left, &right);
+        right.p1 = q[b];
+        right.p2 = q[c];
+        _cairo_traps_add_clipped_trap (traps, q[b].y, q[c].y, &left, &right);
+        right.p1 = q[c];
+        right.p2 = q[d];
+        _cairo_traps_add_clipped_trap (traps, q[c].y, q[d].y, &left, &right);
 	}
     } else {
 	if (b_left_of_d) {
@@ -364,13 +372,17 @@ _cairo_traps_tessellate_convex_quad (cairo_traps_t *traps,
 	     *  //         \ /     \|  d.y c.y  bc  dc
 	     *  c           c       c
 	     */
-	    left.p1  = q[a]; left.p2  = q[b];
-	    right.p1 = q[a]; right.p2 = q[d];
-	    _cairo_traps_add_clipped_trap (traps, q[a].y, q[b].y, &left, &right);
-	    left.p1  = q[b]; left.p2  = q[c];
-	    _cairo_traps_add_clipped_trap (traps, q[b].y, q[d].y, &left, &right);
-	    right.p1 = q[d]; right.p2 = q[c];
-	    _cairo_traps_add_clipped_trap (traps, q[d].y, q[c].y, &left, &right);
+        left.p1 = q[a];
+        left.p2 = q[b];
+        right.p1 = q[a];
+        right.p2 = q[d];
+        _cairo_traps_add_clipped_trap (traps, q[a].y, q[b].y, &left, &right);
+        left.p1 = q[b];
+        left.p2 = q[c];
+        _cairo_traps_add_clipped_trap (traps, q[b].y, q[d].y, &left, &right);
+        right.p1 = q[d];
+        right.p2 = q[c];
+        _cairo_traps_add_clipped_trap (traps, q[d].y, q[c].y, &left, &right);
 	} else {
 	    /* Y-sort is abdc and b is right of d, (slope (ab) <= slope (ad))
 	     *
@@ -382,13 +394,17 @@ _cairo_traps_tessellate_convex_quad (cairo_traps_t *traps,
 	     *  |/     \ /         \\  d.y c.y  dc  bc
 	     *  c       c	   c
 	     */
-	    left.p1  = q[a]; left.p2  = q[d];
-	    right.p1 = q[a]; right.p2 = q[b];
-	    _cairo_traps_add_clipped_trap (traps, q[a].y, q[b].y, &left, &right);
-	    right.p1 = q[b]; right.p2 = q[c];
-	    _cairo_traps_add_clipped_trap (traps, q[b].y, q[d].y, &left, &right);
-	    left.p1  = q[d]; left.p2  = q[c];
-	    _cairo_traps_add_clipped_trap (traps, q[d].y, q[c].y, &left, &right);
+        left.p1 = q[a];
+        left.p2 = q[d];
+        right.p1 = q[a];
+        right.p2 = q[b];
+        _cairo_traps_add_clipped_trap (traps, q[a].y, q[b].y, &left, &right);
+        right.p1 = q[b];
+        right.p2 = q[c];
+        _cairo_traps_add_clipped_trap (traps, q[b].y, q[d].y, &left, &right);
+        left.p1 = q[d];
+        left.p2 = q[c];
+        _cairo_traps_add_clipped_trap (traps, q[d].y, q[c].y, &left, &right);
 	}
     }
 }
@@ -1012,15 +1028,20 @@ _cairo_traps_path (const cairo_traps_t *traps,
 	_sanitize_trap (&trap);
 
 	status = _cairo_path_fixed_move_to (path, trap.left.p1.x, trap.top);
-	if (unlikely (status)) return status;
-	status = _cairo_path_fixed_line_to (path, trap.right.p1.x, trap.top);
-	if (unlikely (status)) return status;
-	status = _cairo_path_fixed_line_to (path, trap.right.p2.x, trap.bottom);
-	if (unlikely (status)) return status;
-	status = _cairo_path_fixed_line_to (path, trap.left.p2.x, trap.bottom);
-	if (unlikely (status)) return status;
-	status = _cairo_path_fixed_close_path (path);
-	if (unlikely (status)) return status;
+    if (unlikely(status))
+        return status;
+    status = _cairo_path_fixed_line_to (path, trap.right.p1.x, trap.top);
+    if (unlikely(status))
+        return status;
+    status = _cairo_path_fixed_line_to (path, trap.right.p2.x, trap.bottom);
+    if (unlikely(status))
+        return status;
+    status = _cairo_path_fixed_line_to (path, trap.left.p2.x, trap.bottom);
+    if (unlikely(status))
+        return status;
+    status = _cairo_path_fixed_close_path (path);
+    if (unlikely(status))
+        return status;
     }
 
     return CAIRO_STATUS_SUCCESS;

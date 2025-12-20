@@ -299,23 +299,41 @@ emit_stop (CoglVertexP2C4 **position,
 
     p[0].x = left;
     p[0].y = 0;
-    p[0].r = lr; p[0].g = lg; p[0].b = lb; p[0].a = la;
+    p[0].r = lr;
+    p[0].g = lg;
+    p[0].b = lb;
+    p[0].a = la;
     p[1].x = left;
     p[1].y = 1;
-    p[1].r = lr; p[1].g = lg; p[1].b = lb; p[1].a = la;
+    p[1].r = lr;
+    p[1].g = lg;
+    p[1].b = lb;
+    p[1].a = la;
     p[2].x = right;
     p[2].y = 1;
-    p[2].r = rr; p[2].g = rg; p[2].b = rb; p[2].a = ra;
+    p[2].r = rr;
+    p[2].g = rg;
+    p[2].b = rb;
+    p[2].a = ra;
 
     p[3].x = left;
     p[3].y = 0;
-    p[3].r = lr; p[3].g = lg; p[3].b = lb; p[3].a = la;
+    p[3].r = lr;
+    p[3].g = lg;
+    p[3].b = lb;
+    p[3].a = la;
     p[4].x = right;
     p[4].y = 1;
-    p[4].r = rr; p[4].g = rg; p[4].b = rb; p[4].a = ra;
+    p[4].r = rr;
+    p[4].g = rg;
+    p[4].b = rb;
+    p[4].a = ra;
     p[5].x = right;
     p[5].y = 0;
-    p[5].r = rr; p[5].g = rg; p[5].b = rb; p[5].a = ra;
+    p[5].r = rr;
+    p[5].g = rg;
+    p[5].b = rb;
+    p[5].a = ra;
 
     *position = &p[6];
 }

@@ -299,8 +299,10 @@ edges_compare_x_for_y_general (const cairo_edge_t *a,
                    bmin = b->line.p2.x;
                    bmax = b->line.p1.x;
            }
-           if (amax < bmin) return -1;
-           if (amin > bmax) return +1;
+           if (amax < bmin)
+               return -1;
+           if (amin > bmax)
+               return +1;
     }
 
     ady = a->line.p2.y - a->line.p1.y;

@@ -6621,8 +6621,10 @@ int GetBaseCanonRanking( INCHI_CLOCK *ic,
     pBCN->num_at_tg = num_at_tg;
     pBCN->num_atoms = num_atoms;
 
-    pBCN->ftcn[TAUT_NON].NeighList = NeighList[TAUT_NON]; NeighList[TAUT_NON] = NULL;
-    pBCN->ftcn[TAUT_YES].NeighList = NeighList[TAUT_YES]; NeighList[TAUT_YES] = NULL;
+    pBCN->ftcn[TAUT_NON].NeighList = NeighList[TAUT_NON];
+    NeighList[TAUT_NON] = NULL;
+    pBCN->ftcn[TAUT_YES].NeighList = NeighList[TAUT_YES];
+    NeighList[TAUT_YES] = NULL;
 
     if (bReqTaut)
     {
@@ -6633,17 +6635,23 @@ int GetBaseCanonRanking( INCHI_CLOCK *ic,
         pBCN->ftcn[TAUT_YES].num_at_tg = num_at_tg;
         pBCN->ftcn[TAUT_YES].num_atoms = num_atoms;
 
-        pBCN->ftcn[TAUT_YES].LinearCt = Ct_Base->Ctbl;            Ct_Base->Ctbl = NULL;
+        pBCN->ftcn[TAUT_YES].LinearCt = Ct_Base->Ctbl;
+        Ct_Base->Ctbl = NULL;
         pBCN->ftcn[TAUT_YES].nLenLinearCtAtOnly = s[iBase].nLenCTAtOnly;
         pBCN->ftcn[TAUT_YES].nMaxLenLinearCt = s[iBase].nLenCT + 1;
         pBCN->ftcn[TAUT_YES].nLenLinearCt = s[iBase].nLenCT;
 
-        pBCN->ftcn[TAUT_YES].PartitionCt.Rank = nCanonRankBase;        nCanonRankBase = NULL;
-        pBCN->ftcn[TAUT_YES].PartitionCt.AtNumber = nAtomNumberCanonBase;  nAtomNumberCanonBase = NULL;
-        pBCN->ftcn[TAUT_YES].nSymmRankCt = nSymmRankBase;         nSymmRankBase = NULL;
+        pBCN->ftcn[TAUT_YES].PartitionCt.Rank = nCanonRankBase;
+        nCanonRankBase = NULL;
+        pBCN->ftcn[TAUT_YES].PartitionCt.AtNumber = nAtomNumberCanonBase;
+        nAtomNumberCanonBase = NULL;
+        pBCN->ftcn[TAUT_YES].nSymmRankCt = nSymmRankBase;
+        nSymmRankBase = NULL;
 
-        pBCN->ftcn[TAUT_YES].nNumHOrig = numH;                 numH = NULL;
-        pBCN->ftcn[TAUT_YES].nNumH = Ct_Base->NumH;        Ct_Base->NumH = NULL;
+        pBCN->ftcn[TAUT_YES].nNumHOrig = numH;
+        numH = NULL;
+        pBCN->ftcn[TAUT_YES].nNumH = Ct_Base->NumH;
+        Ct_Base->NumH = NULL;
         pBCN->ftcn[TAUT_YES].nLenNumH = inchi_min( maxlenNumH, Ct_Base->maxlenNumH );
 
         /* fixed H structure: exists only if the structure is tautomeric */
@@ -6659,14 +6667,21 @@ int GetBaseCanonRanking( INCHI_CLOCK *ic,
         /* isotopic canonicalization */
         if (Ct_BaseIso)
         {
-            pBCN->ftcn[TAUT_YES].PartitionCtIso.Rank = nCanonRankBaseIso;           nCanonRankBaseIso = NULL;
-            pBCN->ftcn[TAUT_YES].PartitionCtIso.AtNumber = nAtomNumberCanonBaseIso;     nAtomNumberCanonBaseIso = NULL;
-            pBCN->ftcn[TAUT_YES].nSymmRankCtIso = nSymmRankBaseIso;            nSymmRankBaseIso = NULL;
-            pBCN->ftcn[TAUT_YES].iso_sort_keys = Ct_BaseIso->iso_sort_key;    Ct_BaseIso->iso_sort_key = NULL;
-            pBCN->ftcn[TAUT_YES].iso_sort_keysOrig = iso_sort_keyBase;            iso_sort_keyBase = NULL;
+            pBCN->ftcn[TAUT_YES].PartitionCtIso.Rank = nCanonRankBaseIso;
+            nCanonRankBaseIso = NULL;
+            pBCN->ftcn[TAUT_YES].PartitionCtIso.AtNumber = nAtomNumberCanonBaseIso;
+            nAtomNumberCanonBaseIso = NULL;
+            pBCN->ftcn[TAUT_YES].nSymmRankCtIso = nSymmRankBaseIso;
+            nSymmRankBaseIso = NULL;
+            pBCN->ftcn[TAUT_YES].iso_sort_keys = Ct_BaseIso->iso_sort_key;
+            Ct_BaseIso->iso_sort_key = NULL;
+            pBCN->ftcn[TAUT_YES].iso_sort_keysOrig = iso_sort_keyBase;
+            iso_sort_keyBase = NULL;
             pBCN->ftcn[TAUT_YES].len_iso_sort_keys = len_iso_sort_keyBase;
-            pBCN->ftcn[TAUT_YES].iso_exchg_atnos = Ct_BaseIso->iso_exchg_atnos; Ct_BaseIso->iso_exchg_atnos = NULL;
-            pBCN->ftcn[TAUT_YES].iso_exchg_atnosOrig = iso_exchg_atnos;             iso_exchg_atnos = NULL;
+            pBCN->ftcn[TAUT_YES].iso_exchg_atnos = Ct_BaseIso->iso_exchg_atnos;
+            Ct_BaseIso->iso_exchg_atnos = NULL;
+            pBCN->ftcn[TAUT_YES].iso_exchg_atnosOrig = iso_exchg_atnos;
+            iso_exchg_atnos = NULL;
 
             CleanIsoSortKeys( pBCN->ftcn[TAUT_YES].iso_sort_keys, pBCN->ftcn[TAUT_YES].len_iso_sort_keys );
             CleanIsoSortKeys( pBCN->ftcn[TAUT_YES].iso_sort_keysOrig, pBCN->ftcn[TAUT_YES].len_iso_sort_keys );
@@ -6685,15 +6700,23 @@ int GetBaseCanonRanking( INCHI_CLOCK *ic,
         if (!bReqTaut)
         {
             /* rearrange the results for a non-tautomeric structure */
-            nSymmRankFixH = nSymmRankNoTautH;           nSymmRankNoTautH = NULL;
-            nCanonRankFixH = nCanonRankNoTautH;          nCanonRankNoTautH = NULL;
-            nAtomNumberCanonFixH = nAtomNumberCanonNoTautH;    nAtomNumberCanonNoTautH = NULL;
-            Ct_FixH = Ct_NoTautH;                 Ct_NoTautH = NULL;
+            nSymmRankFixH = nSymmRankNoTautH;
+            nSymmRankNoTautH = NULL;
+            nCanonRankFixH = nCanonRankNoTautH;
+            nCanonRankNoTautH = NULL;
+            nAtomNumberCanonFixH = nAtomNumberCanonNoTautH;
+            nAtomNumberCanonNoTautH = NULL;
+            Ct_FixH = Ct_NoTautH;
+            Ct_NoTautH = NULL;
             /* isotopic canonicalization */
-            nSymmRankFixHIso = nSymmRankNoTautHIso;        nSymmRankNoTautHIso = NULL;
-            nCanonRankFixHIso = nCanonRankNoTautHIso;       nCanonRankNoTautHIso = NULL;
-            nAtomNumberCanonFixHIso = nAtomNumberCanonNoTautHIso; nAtomNumberCanonNoTautHIso = NULL;
-            Ct_FixHIso = Ct_NoTautHIso;              Ct_NoTautHIso = NULL;
+            nSymmRankFixHIso = nSymmRankNoTautHIso;
+            nSymmRankNoTautHIso = NULL;
+            nCanonRankFixHIso = nCanonRankNoTautHIso;
+            nCanonRankNoTautHIso = NULL;
+            nAtomNumberCanonFixHIso = nAtomNumberCanonNoTautHIso;
+            nAtomNumberCanonNoTautHIso = NULL;
+            Ct_FixHIso = Ct_NoTautHIso;
+            Ct_NoTautHIso = NULL;
 
             if (iOther == TAUT_YES && pBCN->ftcn[TAUT_NON].NeighList && !pBCN->ftcn[TAUT_YES].NeighList)
             {
@@ -6749,11 +6772,16 @@ int GetBaseCanonRanking( INCHI_CLOCK *ic,
        /* isotopic canonicalization */
         if (Ct_FixHIso)
         {
-            pBCN->ftcn[iOther].PartitionCtIso.Rank = nCanonRankFixHIso;        nCanonRankFixHIso = NULL;
-            pBCN->ftcn[iOther].PartitionCtIso.AtNumber = nAtomNumberCanonFixHIso;  nAtomNumberCanonFixHIso = NULL;
-            pBCN->ftcn[iOther].nSymmRankCtIso = nSymmRankFixHIso;         nSymmRankFixHIso = NULL;
-            pBCN->ftcn[iOther].iso_sort_keys = Ct_FixHIso->iso_sort_key; Ct_FixHIso->iso_sort_key = NULL;
-            pBCN->ftcn[iOther].iso_sort_keysOrig = iso_sort_key_NoTautH;     iso_sort_key_NoTautH = NULL;
+            pBCN->ftcn[iOther].PartitionCtIso.Rank = nCanonRankFixHIso;
+            nCanonRankFixHIso = NULL;
+            pBCN->ftcn[iOther].PartitionCtIso.AtNumber = nAtomNumberCanonFixHIso;
+            nAtomNumberCanonFixHIso = NULL;
+            pBCN->ftcn[iOther].nSymmRankCtIso = nSymmRankFixHIso;
+            nSymmRankFixHIso = NULL;
+            pBCN->ftcn[iOther].iso_sort_keys = Ct_FixHIso->iso_sort_key;
+            Ct_FixHIso->iso_sort_key = NULL;
+            pBCN->ftcn[iOther].iso_sort_keysOrig = iso_sort_key_NoTautH;
+            iso_sort_key_NoTautH = NULL;
             pBCN->ftcn[iOther].len_iso_sort_keys = len_iso_sort_key_NoTautH;
 
 #if ( USE_ISO_SORT_KEY_HFIXED == 1 )

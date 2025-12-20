@@ -270,20 +270,22 @@ _cairo_xcb_surface_set_precision (cairo_xcb_surface_t	*surface,
 
     if (connection->force_precision != -1)
 	    precision = connection->force_precision;
-    else switch (antialias) {
-    default:
-    case CAIRO_ANTIALIAS_DEFAULT:
-    case CAIRO_ANTIALIAS_GRAY:
-    case CAIRO_ANTIALIAS_NONE:
-    case CAIRO_ANTIALIAS_FAST:
-    case CAIRO_ANTIALIAS_GOOD:
-	precision = XCB_RENDER_POLY_MODE_IMPRECISE;
-	break;
-    case CAIRO_ANTIALIAS_SUBPIXEL:
-    case CAIRO_ANTIALIAS_BEST:
-	precision = XCB_RENDER_POLY_MODE_PRECISE;
-	break;
-    }
+    else
+        switch (antialias)
+        {
+        default:
+        case CAIRO_ANTIALIAS_DEFAULT:
+        case CAIRO_ANTIALIAS_GRAY:
+        case CAIRO_ANTIALIAS_NONE:
+        case CAIRO_ANTIALIAS_FAST:
+        case CAIRO_ANTIALIAS_GOOD:
+            precision = XCB_RENDER_POLY_MODE_IMPRECISE;
+            break;
+        case CAIRO_ANTIALIAS_SUBPIXEL:
+        case CAIRO_ANTIALIAS_BEST:
+            precision = XCB_RENDER_POLY_MODE_PRECISE;
+            break;
+        }
 
     if (surface->precision != precision) {
 	_cairo_xcb_connection_render_change_picture (connection,
@@ -4154,10 +4156,16 @@ _cairo_xcb_font_create (cairo_xcb_connection_t *connection,
     for (i = 0; i < NUM_GLYPHSETS; i++) {
 	cairo_xcb_font_glyphset_info_t *info = &priv->glyphset_info[i];
 	switch (i) {
-	case GLYPHSET_INDEX_ARGB32: info->format = CAIRO_FORMAT_ARGB32; break;
-	case GLYPHSET_INDEX_A8:     info->format = CAIRO_FORMAT_A8;     break;
-	case GLYPHSET_INDEX_A1:     info->format = CAIRO_FORMAT_A1;     break;
-	default:                    ASSERT_NOT_REACHED;                          break;
+    case GLYPHSET_INDEX_ARGB32:
+        info->format = CAIRO_FORMAT_ARGB32;
+        break;
+    case GLYPHSET_INDEX_A8:
+        info->format = CAIRO_FORMAT_A8;
+        break;
+    case GLYPHSET_INDEX_A1:
+        info->format = CAIRO_FORMAT_A1;
+        break;
+    default:                    ASSERT_NOT_REACHED;                          break;
 	}
 	info->xrender_format = 0;
 	info->glyphset = XCB_NONE;
@@ -4603,10 +4611,16 @@ _emit_glyphs_chunk (cairo_xcb_surface_t *dst,
       }
 
       switch (width) {
-      case 1: *(uint8_t *) (buf + len) = glyphs[i].index; break;
-      case 2: *(uint16_t *) (buf + len) = glyphs[i].index; break;
+      case 1:
+          *(uint8_t*)(buf + len) = glyphs[i].index;
+          break;
+      case 2:
+          *(uint16_t*)(buf + len) = glyphs[i].index;
+          break;
       default:
-      case 4: *(uint32_t *) (buf + len) = glyphs[i].index; break;
+      case 4:
+          *(uint32_t*)(buf + len) = glyphs[i].index;
+          break;
       }
       len += width;
       elt->len++;

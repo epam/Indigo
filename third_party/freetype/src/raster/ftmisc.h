@@ -102,9 +102,21 @@
 
 
     s = 1;
-    if ( a < 0 ) { a = -a; s = -1; }
-    if ( b < 0 ) { b = -b; s = -s; }
-    if ( c < 0 ) { c = -c; s = -s; }
+    if ( a < 0 )
+    {
+      a = -a;
+      s = -1;
+    }
+    if ( b < 0 )
+    {
+      b = -b;
+      s = -s;
+    }
+    if ( c < 0 )
+    {
+      c = -c;
+      s = -s;
+    }
 
     d = (FT_Long)( c > 0 ? ( (FT_Int64)a * b + ( c >> 1 ) ) / c
                          : 0x7FFFFFFFL );
@@ -123,9 +135,21 @@
 
 
     s = 1;
-    if ( a < 0 ) { a = -a; s = -1; }
-    if ( b < 0 ) { b = -b; s = -s; }
-    if ( c < 0 ) { c = -c; s = -s; }
+    if ( a < 0 )
+    {
+      a = -a;
+      s = -1;
+    }
+    if ( b < 0 )
+    {
+      b = -b;
+      s = -s;
+    }
+    if ( c < 0 )
+    {
+      c = -c;
+      s = -s;
+    }
 
     d = (FT_Long)( c > 0 ? (FT_Int64)a * b / c
                          : 0x7FFFFFFFL );

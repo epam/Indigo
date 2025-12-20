@@ -900,7 +900,8 @@ create_separable_convolution (int *n_values,
 
     *n_values = 4 + size_x + size_y;
     params = _cairo_malloc (*n_values * sizeof (pixman_fixed_t));
-    if (!params) return 0;
+    if (!params)
+        return 0;
 
     params[0] = pixman_int_to_fixed (xwidth);
     params[1] = pixman_int_to_fixed (ywidth);
@@ -960,10 +961,12 @@ _pixman_image_set_properties (pixman_image_t *pixman_image,
 	/* Clip at maximum pixman_fixed number. Besides making it
 	 * passable to pixman, this avoids errors from inf and nan.
 	 */
-	if (! (dx < 0x7FFF)) dx = 0x7FFF;
-	if (! (dy < 0x7FFF)) dy = 0x7FFF;
+    if (!(dx < 0x7FFF))
+        dx = 0x7FFF;
+    if (!(dy < 0x7FFF))
+        dy = 0x7FFF;
 
-	switch (pattern->filter) {
+    switch (pattern->filter) {
 	case CAIRO_FILTER_FAST:
 	    pixman_filter = PIXMAN_FILTER_FAST;
 	    break;
@@ -972,29 +975,47 @@ _pixman_image_set_properties (pixman_image_t *pixman_image,
 	    kernel = KERNEL_BOX;
 	    /* Clip the filter size to prevent extreme slowness. This
 	       value could be raised if 2-pass filtering is done */
-	    if (dx > 16.0) dx = 16.0;
-	    if (dy > 16.0) dy = 16.0;
-	    /* Match the bilinear filter for scales > .75: */
-	    if (dx < 1.0/0.75) dx = 1.0;
-	    if (dy < 1.0/0.75) dy = 1.0;
-	    break;
+        if (dx > 16.0)
+            dx = 16.0;
+        if (dy > 16.0)
+            dy = 16.0;
+        /* Match the bilinear filter for scales > .75: */
+        if (dx < 1.0 / 0.75)
+            dx = 1.0;
+        if (dy < 1.0 / 0.75)
+            dy = 1.0;
+        break;
 	case CAIRO_FILTER_BEST:
 	    pixman_filter = PIXMAN_FILTER_SEPARABLE_CONVOLUTION;
 	    kernel = KERNEL_CATMULL_ROM; /* LANCZOS3 is better but not much */
 	    /* Clip the filter size to prevent extreme slowness. This
 	       value could be raised if 2-pass filtering is done */
-	    if (dx > 16.0) { dx = 16.0; kernel = KERNEL_BOX; }
-	    /* blur up to 2x scale, then blend to square pixels for larger: */
+        if (dx > 16.0)
+        {
+            dx = 16.0;
+            kernel = KERNEL_BOX;
+        }
+        /* blur up to 2x scale, then blend to square pixels for larger: */
 	    else if (dx < 1.0) {
-		if (dx < 1.0/128) dx = 1.0/127;
-		else if (dx < 0.5) dx = 1.0 / (1.0 / dx - 1.0);
-		else dx = 1.0;
+            if (dx < 1.0 / 128)
+                dx = 1.0 / 127;
+            else if (dx < 0.5)
+                dx = 1.0 / (1.0 / dx - 1.0);
+            else
+                dx = 1.0;
 	    }
-	    if (dy > 16.0) { dy = 16.0; kernel = KERNEL_BOX; }
-	    else if (dy < 1.0) {
-		if (dy < 1.0/128) dy = 1.0/127;
-		else if (dy < 0.5) dy = 1.0 / (1.0 / dy - 1.0);
-		else dy = 1.0;
+        if (dy > 16.0)
+        {
+            dy = 16.0;
+            kernel = KERNEL_BOX;
+        }
+        else if (dy < 1.0) {
+            if (dy < 1.0 / 128)
+                dy = 1.0 / 127;
+            else if (dy < 0.5)
+                dy = 1.0 / (1.0 / dy - 1.0);
+            else
+                dy = 1.0;
 	    }
 	    break;
 	case CAIRO_FILTER_NEAREST:

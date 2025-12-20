@@ -86,8 +86,9 @@ class MatchResultListener {
   // is NULL.
   template <typename T>
   MatchResultListener& operator<<(const T& x) {
-    if (stream_ != nullptr) *stream_ << x;
-    return *this;
+      if (stream_ != nullptr)
+          *stream_ << x;
+      return *this;
   }
 
   // Returns the underlying ostream.
@@ -298,8 +299,9 @@ class MatcherBase : private MatcherDescriberInterface {
   // of the describer, which is only guaranteed to be alive when
   // this matcher object is alive.
   const MatcherDescriberInterface* GetDescriber() const {
-    if (vtable_ == nullptr) return nullptr;
-    return vtable_->get_describer(*this);
+      if (vtable_ == nullptr)
+          return nullptr;
+      return vtable_->get_describer(*this);
   }
 
  protected:
@@ -320,16 +322,19 @@ class MatcherBase : private MatcherDescriberInterface {
 
   MatcherBase(const MatcherBase& other)
       : vtable_(other.vtable_), buffer_(other.buffer_) {
-    if (IsShared()) buffer_.shared->Ref();
+      if (IsShared())
+          buffer_.shared->Ref();
   }
 
   MatcherBase& operator=(const MatcherBase& other) {
-    if (this == &other) return *this;
-    Destroy();
-    vtable_ = other.vtable_;
-    buffer_ = other.buffer_;
-    if (IsShared()) buffer_.shared->Ref();
-    return *this;
+      if (this == &other)
+          return *this;
+      Destroy();
+      vtable_ = other.vtable_;
+      buffer_ = other.buffer_;
+      if (IsShared())
+          buffer_.shared->Ref();
+      return *this;
   }
 
   MatcherBase(MatcherBase&& other)
@@ -338,12 +343,13 @@ class MatcherBase : private MatcherDescriberInterface {
   }
 
   MatcherBase& operator=(MatcherBase&& other) {
-    if (this == &other) return *this;
-    Destroy();
-    vtable_ = other.vtable_;
-    buffer_ = other.buffer_;
-    other.vtable_ = nullptr;
-    return *this;
+      if (this == &other)
+          return *this;
+      Destroy();
+      vtable_ = other.vtable_;
+      buffer_ = other.buffer_;
+      other.vtable_ = nullptr;
+      return *this;
   }
 
   ~MatcherBase() override { Destroy(); }

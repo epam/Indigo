@@ -805,9 +805,13 @@ cell_list_render_edge(
 	y2 = GRID_Y;
     } else {
 	int tmp;
-	tmp = ix1; ix1 = ix2; ix2 = tmp;
-	tmp = fx1; fx1 = fx2; fx2 = tmp;
-	dx = -dx;
+    tmp = ix1;
+    ix1 = ix2;
+    ix2 = tmp;
+    tmp = fx1;
+    fx1 = fx2;
+    fx2 = tmp;
+    dx = -dx;
 	sign = -sign;
 	y1 = GRID_Y;
 	y2 = 0;

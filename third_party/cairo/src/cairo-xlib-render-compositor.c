@@ -1003,10 +1003,16 @@ _cairo_xlib_font_create (cairo_xlib_display_t *display,
     for (i = 0; i < NUM_GLYPHSETS; i++) {
 	cairo_xlib_font_glyphset_t *info = &priv->glyphset[i];
 	switch (i) {
-	case GLYPHSET_INDEX_ARGB32: info->format = CAIRO_FORMAT_ARGB32; break;
-	case GLYPHSET_INDEX_A8:     info->format = CAIRO_FORMAT_A8;     break;
-	case GLYPHSET_INDEX_A1:     info->format = CAIRO_FORMAT_A1;     break;
-	default:                    ASSERT_NOT_REACHED;                          break;
+    case GLYPHSET_INDEX_ARGB32:
+        info->format = CAIRO_FORMAT_ARGB32;
+        break;
+    case GLYPHSET_INDEX_A8:
+        info->format = CAIRO_FORMAT_A8;
+        break;
+    case GLYPHSET_INDEX_A1:
+        info->format = CAIRO_FORMAT_A1;
+        break;
+    default:                    ASSERT_NOT_REACHED;                          break;
 	}
 	info->xrender_format = NULL;
 	info->glyphset = None;
@@ -1486,10 +1492,16 @@ _emit_glyphs_chunk (cairo_xlib_display_t *display,
       }
 
       switch (width) {
-      case 1: char8 [j] = (char)           glyphs[i].index; break;
-      case 2: char16[j] = (unsigned short) glyphs[i].index; break;
+      case 1:
+          char8[j] = (char)glyphs[i].index;
+          break;
+      case 2:
+          char16[j] = (unsigned short)glyphs[i].index;
+          break;
       default:
-      case 4: char32[j] = (unsigned int)   glyphs[i].index; break;
+      case 4:
+          char32[j] = (unsigned int)glyphs[i].index;
+          break;
       }
 
       n++;

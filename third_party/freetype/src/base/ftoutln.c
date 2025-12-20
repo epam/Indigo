@@ -485,12 +485,16 @@
 
 
           x = vec->x;
-          if ( x < xMin ) xMin = x;
-          if ( x > xMax ) xMax = x;
+          if ( x < xMin )
+            xMin = x;
+          if ( x > xMax )
+            xMax = x;
 
           y = vec->y;
-          if ( y < yMin ) yMin = y;
-          if ( y > yMax ) yMax = y;
+          if ( y < yMin )
+            yMin = y;
+          if ( y > yMax )
+            yMax = y;
         }
       }
       acbox->xMin = xMin;

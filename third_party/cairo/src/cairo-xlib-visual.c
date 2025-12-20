@@ -53,8 +53,12 @@ static inline int
 _color_distance (unsigned short r1, unsigned short g1, unsigned short b1,
 		 unsigned short r2, unsigned short g2, unsigned short b2)
 {
-    r1 >>= 8; g1 >>= 8; b1 >>= 8;
-    r2 >>= 8; g2 >>= 8; b2 >>= 8;
+    r1 >>= 8;
+    g1 >>= 8;
+    b1 >>= 8;
+    r2 >>= 8;
+    g2 >>= 8;
+    b2 >>= 8;
 
     return ((r2 - r1) * (r2 - r1) +
 	    (g2 - g1) * (g2 - g1) +

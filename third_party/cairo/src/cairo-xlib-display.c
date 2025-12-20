@@ -501,12 +501,15 @@ _cairo_xlib_display_get_xrender_format (cairo_xlib_display_t	*display,
 
 	switch (format) {
 	case CAIRO_FORMAT_A1:
-	    pict_format = PictStandardA1; break;
-	case CAIRO_FORMAT_A8:
-	    pict_format = PictStandardA8; break;
-	case CAIRO_FORMAT_RGB24:
-	    pict_format = PictStandardRGB24; break;
-	case CAIRO_FORMAT_RGB16_565:
+        pict_format = PictStandardA1;
+        break;
+    case CAIRO_FORMAT_A8:
+        pict_format = PictStandardA8;
+        break;
+    case CAIRO_FORMAT_RGB24:
+        pict_format = PictStandardRGB24;
+        break;
+    case CAIRO_FORMAT_RGB16_565:
 	    xrender_format = _cairo_xlib_display_get_xrender_format_for_pixman(display,
 									       PIXMAN_r5g6b5);
 	    break;
@@ -526,8 +529,9 @@ _cairo_xlib_display_get_xrender_format (cairo_xlib_display_t	*display,
 	default:
 	    ASSERT_NOT_REACHED;
 	case CAIRO_FORMAT_ARGB32:
-	    pict_format = PictStandardARGB32; break;
-	}
+        pict_format = PictStandardARGB32;
+        break;
+    }
 	if (pict_format != PictStandardNUM)
 	    xrender_format =
 		XRenderFindStandardFormat (display->display, pict_format);

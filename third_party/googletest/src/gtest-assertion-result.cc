@@ -58,7 +58,8 @@ void AssertionResult::swap(AssertionResult& other) {
 // Returns the assertion's negation. Used with EXPECT/ASSERT_FALSE.
 AssertionResult AssertionResult::operator!() const {
   AssertionResult negation(!success_);
-  if (message_.get() != nullptr) negation << *message_;
+  if (message_.get() != nullptr)
+      negation << *message_;
   return negation;
 }
 

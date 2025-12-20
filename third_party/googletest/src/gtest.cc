@@ -491,7 +491,8 @@ MarkAsIgnored::MarkAsIgnored(const char* test_suite) {
 void InsertSyntheticTestCase(const std::string& name, CodeLocation location,
                              bool has_test_p) {
   const auto& ignored = *GetIgnoredParameterizedTestSuites();
-  if (ignored.find(name) != ignored.end()) return;
+  if (ignored.find(name) != ignored.end())
+      return;
 
   const char kMissingInstantiation[] =  //
       " is defined via TEST_P, but never instantiated. None of the test cases "
@@ -563,36 +564,33 @@ void TypeParameterizedTestSuiteRegistry::RegisterInstantiation(
 void TypeParameterizedTestSuiteRegistry::CheckForInstantiations() {
   const auto& ignored = *GetIgnoredParameterizedTestSuites();
   for (const auto& testcase : suites_) {
-    if (testcase.second.instantiated) continue;
-    if (ignored.find(testcase.first) != ignored.end()) continue;
+      if (testcase.second.instantiated)
+          continue;
+      if (ignored.find(testcase.first) != ignored.end())
+          continue;
 
-    std::string message =
-        "Type parameterized test suite " + testcase.first +
-        " is defined via REGISTER_TYPED_TEST_SUITE_P, but never instantiated "
-        "via INSTANTIATE_TYPED_TEST_SUITE_P. None of the test cases will run."
-        "\n\n"
-        "Ideally, TYPED_TEST_P definitions should only ever be included as "
-        "part of binaries that intend to use them. (As opposed to, for "
-        "example, being placed in a library that may be linked in to get other "
-        "utilities.)"
-        "\n\n"
-        "To suppress this error for this test suite, insert the following line "
-        "(in a non-header) in the namespace it is defined in:"
-        "\n\n"
-        "GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(" +
-        testcase.first + ");";
+      std::string message = "Type parameterized test suite " + testcase.first +
+                            " is defined via REGISTER_TYPED_TEST_SUITE_P, but never instantiated "
+                            "via INSTANTIATE_TYPED_TEST_SUITE_P. None of the test cases will run."
+                            "\n\n"
+                            "Ideally, TYPED_TEST_P definitions should only ever be included as "
+                            "part of binaries that intend to use them. (As opposed to, for "
+                            "example, being placed in a library that may be linked in to get other "
+                            "utilities.)"
+                            "\n\n"
+                            "To suppress this error for this test suite, insert the following line "
+                            "(in a non-header) in the namespace it is defined in:"
+                            "\n\n"
+                            "GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(" +
+                            testcase.first + ");";
 
-    std::string full_name =
-        "UninstantiatedTypeParameterizedTestSuite<" + testcase.first + ">";
-    RegisterTest(  //
-        "GoogleTestVerification", full_name.c_str(),
-        nullptr,  // No type parameter.
-        nullptr,  // No value parameter.
-        testcase.second.code_location.file.c_str(),
-        testcase.second.code_location.line, [message, testcase] {
-          return new FailureTest(testcase.second.code_location, message,
-                                 kErrorOnUninstantiatedTypeParameterizedTest);
-        });
+      std::string full_name = "UninstantiatedTypeParameterizedTestSuite<" + testcase.first + ">";
+      RegisterTest( //
+          "GoogleTestVerification", full_name.c_str(),
+          nullptr, // No type parameter.
+          nullptr, // No value parameter.
+          testcase.second.code_location.file.c_str(), testcase.second.code_location.line,
+          [message, testcase] { return new FailureTest(testcase.second.code_location, message, kErrorOnUninstantiatedTypeParameterizedTest); });
   }
 }
 
@@ -644,7 +642,8 @@ std::string UnitTestOptions::GetAbsolutePathToOutputFile() {
   const char* const gtest_output_flag = s.c_str();
 
   std::string format = GetOutputFormat();
-  if (format.empty()) format = std::string(kDefaultOutputFormat);
+  if (format.empty())
+      format = std::string(kDefaultOutputFormat);
 
   const char* const colon = strchr(gtest_output_flag, ':');
   if (colon == nullptr)
@@ -660,7 +659,8 @@ std::string UnitTestOptions::GetAbsolutePathToOutputFile() {
         internal::FilePath(UnitTest::GetInstance()->original_working_dir()),
         internal::FilePath(colon + 1));
 
-  if (!output_name.IsDirectory()) return output_name.string();
+  if (!output_name.IsDirectory())
+      return output_name.string();
 
   internal::FilePath result(internal::FilePath::GenerateUniqueFileName(
       output_name, internal::GetCurrentExecutableName(),
@@ -1180,11 +1180,13 @@ const char* String::Utf16ToAnsi(LPCWSTR utf16_str) {
 // C string is considered different to any non-NULL C string,
 // including the empty string.
 bool String::CStringEquals(const char* lhs, const char* rhs) {
-  if (lhs == nullptr) return rhs == nullptr;
+    if (lhs == nullptr)
+        return rhs == nullptr;
 
-  if (rhs == nullptr) return false;
+    if (rhs == nullptr)
+        return false;
 
-  return strcmp(lhs, rhs) == 0;
+    return strcmp(lhs, rhs) == 0;
 }
 
 #if GTEST_HAS_STD_WSTRING
@@ -1327,7 +1329,8 @@ class InternalStrings {
  public:
   size_t GetId(const std::string& str) {
     IdMap::iterator it = ids_.find(str);
-    if (it != ids_.end()) return it->second;
+    if (it != ids_.end())
+        return it->second;
     size_t id = ids_.size();
     return ids_[str] = id;
   }
@@ -1587,7 +1590,8 @@ std::string GetBoolAssertionFailureMessage(
   Message msg;
   msg << "Value of: " << expression_text
       << "\n  Actual: " << actual_predicate_value;
-  if (actual_message[0] != '\0') msg << " (" << actual_message << ")";
+  if (actual_message[0] != '\0')
+      msg << " (" << actual_message << ")";
   msg << "\nExpected: " << expected_predicate_value;
   return msg.GetString();
 }
@@ -1597,7 +1601,8 @@ AssertionResult DoubleNearPredFormat(const char* expr1, const char* expr2,
                                      const char* abs_error_expr, double val1,
                                      double val2, double abs_error) {
   const double diff = fabs(val1 - val2);
-  if (diff <= abs_error) return AssertionSuccess();
+  if (diff <= abs_error)
+      return AssertionSuccess();
 
   // Find the value which is closest to zero.
   const double min_abs = std::min(fabs(val1), fabs(val2));
@@ -1744,15 +1749,17 @@ namespace {
 // itself only.
 
 bool IsSubstringPred(const char* needle, const char* haystack) {
-  if (needle == nullptr || haystack == nullptr) return needle == haystack;
+    if (needle == nullptr || haystack == nullptr)
+        return needle == haystack;
 
-  return strstr(haystack, needle) != nullptr;
+    return strstr(haystack, needle) != nullptr;
 }
 
 bool IsSubstringPred(const wchar_t* needle, const wchar_t* haystack) {
-  if (needle == nullptr || haystack == nullptr) return needle == haystack;
+    if (needle == nullptr || haystack == nullptr)
+        return needle == haystack;
 
-  return wcsstr(haystack, needle) != nullptr;
+    return wcsstr(haystack, needle) != nullptr;
 }
 
 // StringType here can be either ::std::string or ::std::wstring.
@@ -2012,23 +2019,29 @@ inline uint32_t CreateCodePointFromUtf16SurrogatePair(wchar_t first,
 // and contains invalid UTF-16 surrogate pairs, values in those pairs
 // will be encoded as individual Unicode characters from Basic Normal Plane.
 std::string WideStringToUtf8(const wchar_t* str, int num_chars) {
-  if (num_chars == -1) num_chars = static_cast<int>(wcslen(str));
+    if (num_chars == -1)
+        num_chars = static_cast<int>(wcslen(str));
 
-  ::std::stringstream stream;
-  for (int i = 0; i < num_chars; ++i) {
-    uint32_t unicode_code_point;
+    ::std::stringstream stream;
+    for (int i = 0; i < num_chars; ++i)
+    {
+        uint32_t unicode_code_point;
 
-    if (str[i] == L'\0') {
-      break;
-    } else if (i + 1 < num_chars && IsUtf16SurrogatePair(str[i], str[i + 1])) {
-      unicode_code_point =
-          CreateCodePointFromUtf16SurrogatePair(str[i], str[i + 1]);
-      i++;
-    } else {
-      unicode_code_point = static_cast<uint32_t>(str[i]);
-    }
+        if (str[i] == L'\0')
+        {
+            break;
+        }
+        else if (i + 1 < num_chars && IsUtf16SurrogatePair(str[i], str[i + 1]))
+        {
+            unicode_code_point = CreateCodePointFromUtf16SurrogatePair(str[i], str[i + 1]);
+            i++;
+        }
+        else
+        {
+            unicode_code_point = static_cast<uint32_t>(str[i]);
+        }
 
-    stream << CodePointToUtf8(unicode_code_point);
+        stream << CodePointToUtf8(unicode_code_point);
   }
   return StringStreamToString(&stream);
 }
@@ -2036,9 +2049,10 @@ std::string WideStringToUtf8(const wchar_t* str, int num_chars) {
 // Converts a wide C string to an std::string using the UTF-8 encoding.
 // NULL will be converted to "(null)".
 std::string String::ShowWideCString(const wchar_t* wide_c_str) {
-  if (wide_c_str == nullptr) return "(null)";
+    if (wide_c_str == nullptr)
+        return "(null)";
 
-  return internal::WideStringToUtf8(wide_c_str, -1);
+    return internal::WideStringToUtf8(wide_c_str, -1);
 }
 
 // Compares two wide C strings.  Returns true if and only if they have the
@@ -2048,11 +2062,13 @@ std::string String::ShowWideCString(const wchar_t* wide_c_str) {
 // C string is considered different to any non-NULL C string,
 // including the empty string.
 bool String::WideCStringEquals(const wchar_t* lhs, const wchar_t* rhs) {
-  if (lhs == nullptr) return rhs == nullptr;
+    if (lhs == nullptr)
+        return rhs == nullptr;
 
-  if (rhs == nullptr) return false;
+    if (rhs == nullptr)
+        return false;
 
-  return wcscmp(lhs, rhs) == 0;
+    return wcscmp(lhs, rhs) == 0;
 }
 
 // Helper function for *_STREQ on wide strings.
@@ -2087,9 +2103,11 @@ AssertionResult CmpHelperSTRNE(const char* s1_expression,
 // NULL C string is considered different to any non-NULL C string,
 // including the empty string.
 bool String::CaseInsensitiveCStringEquals(const char* lhs, const char* rhs) {
-  if (lhs == nullptr) return rhs == nullptr;
-  if (rhs == nullptr) return false;
-  return posix::StrCaseCmp(lhs, rhs) == 0;
+    if (lhs == nullptr)
+        return rhs == nullptr;
+    if (rhs == nullptr)
+        return false;
+    return posix::StrCaseCmp(lhs, rhs) == 0;
 }
 
 // Compares two wide C strings, ignoring case.  Returns true if and only if they
@@ -2106,9 +2124,11 @@ bool String::CaseInsensitiveCStringEquals(const char* lhs, const char* rhs) {
 // current locale.
 bool String::CaseInsensitiveWideCStringEquals(const wchar_t* lhs,
                                               const wchar_t* rhs) {
-  if (lhs == nullptr) return rhs == nullptr;
+    if (lhs == nullptr)
+        return rhs == nullptr;
 
-  if (rhs == nullptr) return false;
+    if (rhs == nullptr)
+        return false;
 
 #if GTEST_OS_WINDOWS
   return _wcsicmp(lhs, rhs) == 0;
@@ -2218,16 +2238,18 @@ TestResult::~TestResult() {}
 // range from 0 to total_part_count() - 1. If i is not in that range,
 // aborts the program.
 const TestPartResult& TestResult::GetTestPartResult(int i) const {
-  if (i < 0 || i >= total_part_count()) internal::posix::Abort();
-  return test_part_results_.at(static_cast<size_t>(i));
+    if (i < 0 || i >= total_part_count())
+        internal::posix::Abort();
+    return test_part_results_.at(static_cast<size_t>(i));
 }
 
 // Returns the i-th test property. i can range from 0 to
 // test_property_count() - 1. If i is not in that range, aborts the
 // program.
 const TestProperty& TestResult::GetTestProperty(int i) const {
-  if (i < 0 || i >= test_property_count()) internal::posix::Abort();
-  return test_properties_.at(static_cast<size_t>(i));
+    if (i < 0 || i >= test_property_count())
+        internal::posix::Abort();
+    return test_properties_.at(static_cast<size_t>(i));
 }
 
 // Clears the test part results.
@@ -2372,7 +2394,8 @@ bool TestResult::Skipped() const {
 // Returns true if and only if the test failed.
 bool TestResult::Failed() const {
   for (int i = 0; i < total_part_count(); ++i) {
-    if (GetTestPartResult(i).failed()) return true;
+      if (GetTestPartResult(i).failed())
+          return true;
   }
   return false;
 }
@@ -2662,17 +2685,18 @@ Result HandleExceptionsInMethodIfSupported(T* object, Result (T::*method)(),
 
 // Runs the test and updates the test result.
 void Test::Run() {
-  if (!HasSameFixtureClass()) return;
+    if (!HasSameFixtureClass())
+        return;
 
-  internal::UnitTestImpl* const impl = internal::GetUnitTestImpl();
-  impl->os_stack_trace_getter()->UponLeavingGTest();
-  internal::HandleExceptionsInMethodIfSupported(this, &Test::SetUp, "SetUp()");
-  // We will run the test only if SetUp() was successful and didn't call
-  // GTEST_SKIP().
-  if (!HasFatalFailure() && !IsSkipped()) {
+    internal::UnitTestImpl* const impl = internal::GetUnitTestImpl();
     impl->os_stack_trace_getter()->UponLeavingGTest();
-    internal::HandleExceptionsInMethodIfSupported(this, &Test::TestBody,
-                                                  "the test body");
+    internal::HandleExceptionsInMethodIfSupported(this, &Test::SetUp, "SetUp()");
+    // We will run the test only if SetUp() was successful and didn't call
+    // GTEST_SKIP().
+    if (!HasFatalFailure() && !IsSkipped())
+    {
+        impl->os_stack_trace_getter()->UponLeavingGTest();
+        internal::HandleExceptionsInMethodIfSupported(this, &Test::TestBody, "the test body");
   }
 
   // However, we want to clean up as much as possible.  Hence we will
@@ -2825,8 +2849,9 @@ void UnitTestImpl::RegisterParameterizedTests() {
 void TestInfo::Run() {
   TestEventListener* repeater = UnitTest::GetInstance()->listeners().repeater();
   if (!should_run_) {
-    if (is_disabled_ && matches_filter_) repeater->OnTestDisabled(*this);
-    return;
+      if (is_disabled_ && matches_filter_)
+          repeater->OnTestDisabled(*this);
+      return;
   }
 
   // Tells UnitTest where to store test result.
@@ -2872,24 +2897,23 @@ void TestInfo::Run() {
 
 // Skip and records a skipped test result for this object.
 void TestInfo::Skip() {
-  if (!should_run_) return;
+    if (!should_run_)
+        return;
 
-  internal::UnitTestImpl* const impl = internal::GetUnitTestImpl();
-  impl->set_current_test_info(this);
+    internal::UnitTestImpl* const impl = internal::GetUnitTestImpl();
+    impl->set_current_test_info(this);
 
-  TestEventListener* repeater = UnitTest::GetInstance()->listeners().repeater();
+    TestEventListener* repeater = UnitTest::GetInstance()->listeners().repeater();
 
-  // Notifies the unit test event listeners that a test is about to start.
-  repeater->OnTestStart(*this);
+    // Notifies the unit test event listeners that a test is about to start.
+    repeater->OnTestStart(*this);
 
-  const TestPartResult test_part_result =
-      TestPartResult(TestPartResult::kSkip, this->file(), this->line(), "");
-  impl->GetTestPartResultReporterForCurrentThread()->ReportTestPartResult(
-      test_part_result);
+    const TestPartResult test_part_result = TestPartResult(TestPartResult::kSkip, this->file(), this->line(), "");
+    impl->GetTestPartResultReporterForCurrentThread()->ReportTestPartResult(test_part_result);
 
-  // Notifies the unit test event listener that a test has just finished.
-  repeater->OnTestEnd(*this);
-  impl->set_current_test_info(nullptr);
+    // Notifies the unit test event listener that a test has just finished.
+    repeater->OnTestEnd(*this);
+    impl->set_current_test_info(nullptr);
 }
 
 // class TestSuite
@@ -2983,15 +3007,16 @@ void TestSuite::AddTestInfo(TestInfo* test_info) {
 
 // Runs every test in this TestSuite.
 void TestSuite::Run() {
-  if (!should_run_) return;
+    if (!should_run_)
+        return;
 
-  internal::UnitTestImpl* const impl = internal::GetUnitTestImpl();
-  impl->set_current_test_suite(this);
+    internal::UnitTestImpl* const impl = internal::GetUnitTestImpl();
+    impl->set_current_test_suite(this);
 
-  TestEventListener* repeater = UnitTest::GetInstance()->listeners().repeater();
+    TestEventListener* repeater = UnitTest::GetInstance()->listeners().repeater();
 
-  // Call both legacy and the new API
-  repeater->OnTestSuiteStart(*this);
+    // Call both legacy and the new API
+    repeater->OnTestSuiteStart(*this);
 //  Legacy API is deprecated but still available
 #ifndef GTEST_REMOVE_LEGACY_TEST_CASEAPI_
   repeater->OnTestCaseStart(*this);
@@ -3037,15 +3062,16 @@ void TestSuite::Run() {
 
 // Skips all tests under this TestSuite.
 void TestSuite::Skip() {
-  if (!should_run_) return;
+    if (!should_run_)
+        return;
 
-  internal::UnitTestImpl* const impl = internal::GetUnitTestImpl();
-  impl->set_current_test_suite(this);
+    internal::UnitTestImpl* const impl = internal::GetUnitTestImpl();
+    impl->set_current_test_suite(this);
 
-  TestEventListener* repeater = UnitTest::GetInstance()->listeners().repeater();
+    TestEventListener* repeater = UnitTest::GetInstance()->listeners().repeater();
 
-  // Call both legacy and the new API
-  repeater->OnTestSuiteStart(*this);
+    // Call both legacy and the new API
+    repeater->OnTestSuiteStart(*this);
 //  Legacy API is deprecated but still available
 #ifndef GTEST_REMOVE_LEGACY_TEST_CASEAPI_
   repeater->OnTestCaseStart(*this);
@@ -3330,7 +3356,8 @@ static void PrintFullTestCommentIfPresent(const TestInfo& test_info) {
     printf(", where ");
     if (type_param != nullptr) {
       printf("%s = %s", kTypeParamLabel, type_param);
-      if (value_param != nullptr) printf(" and ");
+      if (value_param != nullptr)
+          printf(" and ");
     }
     if (value_param != nullptr) {
       printf("%s = %s", kValueParamLabel, value_param);
@@ -3491,7 +3518,8 @@ void PrettyUnitTestResultPrinter::OnTestEnd(const TestInfo& test_info) {
     ColoredPrintf(GTestColor::kRed, "[  FAILED  ] ");
   }
   PrintTestName(test_info.test_suite_name(), test_info.name());
-  if (test_info.result()->Failed()) PrintFullTestCommentIfPresent(test_info);
+  if (test_info.result()->Failed())
+      PrintFullTestCommentIfPresent(test_info);
 
   if (GTEST_FLAG_GET(print_time)) {
     printf(" (%s ms)\n",
@@ -3505,14 +3533,13 @@ void PrettyUnitTestResultPrinter::OnTestEnd(const TestInfo& test_info) {
 
 #ifndef GTEST_REMOVE_LEGACY_TEST_CASEAPI_
 void PrettyUnitTestResultPrinter::OnTestCaseEnd(const TestCase& test_case) {
-  if (!GTEST_FLAG_GET(print_time)) return;
+    if (!GTEST_FLAG_GET(print_time))
+        return;
 
-  const std::string counts =
-      FormatCountableNoun(test_case.test_to_run_count(), "test", "tests");
-  ColoredPrintf(GTestColor::kGreen, "[----------] ");
-  printf("%s from %s (%s ms total)\n\n", counts.c_str(), test_case.name(),
-         internal::StreamableToString(test_case.elapsed_time()).c_str());
-  fflush(stdout);
+    const std::string counts = FormatCountableNoun(test_case.test_to_run_count(), "test", "tests");
+    ColoredPrintf(GTestColor::kGreen, "[----------] ");
+    printf("%s from %s (%s ms total)\n\n", counts.c_str(), test_case.name(), internal::StreamableToString(test_case.elapsed_time()).c_str());
+    fflush(stdout);
 }
 #else
 void PrettyUnitTestResultPrinter::OnTestSuiteEnd(const TestSuite& test_suite) {
@@ -4595,7 +4622,8 @@ void JsonUnitTestResultPrinter::OutputJsonKey(std::ostream* stream,
       << "\".";
 
   *stream << indent << "\"" << name << "\": \"" << EscapeJson(value) << "\"";
-  if (comma) *stream << ",\n";
+  if (comma)
+      *stream << ",\n";
 }
 
 void JsonUnitTestResultPrinter::OutputJsonKey(
@@ -4610,7 +4638,8 @@ void JsonUnitTestResultPrinter::OutputJsonKey(
       << "\".";
 
   *stream << indent << "\"" << name << "\": " << StreamableToString(value);
-  if (comma) *stream << ",\n";
+  if (comma)
+      *stream << ",\n";
 }
 
 // Streams a test suite JSON stanza containing the given test result.
@@ -4728,7 +4757,8 @@ void JsonUnitTestResultPrinter::OutputJsonTestResult(::std::ostream* stream,
     }
   }
 
-  if (failures > 0) *stream << "\n" << kIndent << "]";
+  if (failures > 0)
+      *stream << "\n" << kIndent << "]";
   *stream << "\n" << Indent(8) << "}";
 }
 
@@ -5090,7 +5120,8 @@ void TestEventListeners::SetDefaultResultPrinter(TestEventListener* listener) {
     // list.
     delete Release(default_result_printer_);
     default_result_printer_ = listener;
-    if (listener != nullptr) Append(listener);
+    if (listener != nullptr)
+        Append(listener);
   }
 }
 
@@ -5105,7 +5136,8 @@ void TestEventListeners::SetDefaultXmlGenerator(TestEventListener* listener) {
     // list.
     delete Release(default_xml_generator_);
     default_xml_generator_ = listener;
-    if (listener != nullptr) Append(listener);
+    if (listener != nullptr)
+        Append(listener);
   }
 }
 
@@ -5706,7 +5738,8 @@ TestSuite* UnitTestImpl::GetTestSuite(
       std::find_if(test_suites_.rbegin(), test_suites_.rend(),
                    TestSuiteNameIs(test_suite_name));
 
-  if (test_suite != test_suites_.rend()) return *test_suite;
+  if (test_suite != test_suites_.rend())
+      return *test_suite;
 
   // No.  Let's create one.
   auto* const new_test_suite =
@@ -6288,13 +6321,15 @@ bool SkipPrefix(const char* prefix, const char** pstr) {
 static const char* ParseFlagValue(const char* str, const char* flag_name,
                                   bool def_optional) {
   // str and flag must not be NULL.
-  if (str == nullptr || flag_name == nullptr) return nullptr;
+  if (str == nullptr || flag_name == nullptr)
+      return nullptr;
 
   // The flag must start with "--" followed by GTEST_FLAG_PREFIX_.
   const std::string flag_str =
       std::string("--") + GTEST_FLAG_PREFIX_ + flag_name;
   const size_t flag_len = flag_str.length();
-  if (strncmp(str, flag_str.c_str(), flag_len) != 0) return nullptr;
+  if (strncmp(str, flag_str.c_str(), flag_len) != 0)
+      return nullptr;
 
   // Skips the flag name.
   const char* flag_end = str + flag_len;
@@ -6307,7 +6342,8 @@ static const char* ParseFlagValue(const char* str, const char* flag_name,
   // If def_optional is true and there are more characters after the
   // flag name, or if def_optional is false, there must be a '=' after
   // the flag name.
-  if (flag_end[0] != '=') return nullptr;
+  if (flag_end[0] != '=')
+      return nullptr;
 
   // Returns the string after "=".
   return flag_end + 1;
@@ -6328,7 +6364,8 @@ static bool ParseFlag(const char* str, const char* flag_name, bool* value) {
   const char* const value_str = ParseFlagValue(str, flag_name, true);
 
   // Aborts if the parsing failed.
-  if (value_str == nullptr) return false;
+  if (value_str == nullptr)
+      return false;
 
   // Converts the string value to a bool.
   *value = !(*value_str == '0' || *value_str == 'f' || *value_str == 'F');
@@ -6344,7 +6381,8 @@ bool ParseFlag(const char* str, const char* flag_name, int32_t* value) {
   const char* const value_str = ParseFlagValue(str, flag_name, false);
 
   // Aborts if the parsing failed.
-  if (value_str == nullptr) return false;
+  if (value_str == nullptr)
+      return false;
 
   // Sets *value to the value of the flag.
   return ParseInt32(Message() << "The value of flag --" << flag_name, value_str,
@@ -6361,7 +6399,8 @@ static bool ParseFlag(const char* str, const char* flag_name, String* value) {
   const char* const value_str = ParseFlagValue(str, flag_name, false);
 
   // Aborts if the parsing failed.
-  if (value_str == nullptr) return false;
+  if (value_str == nullptr)
+      return false;
 
   // Sets *value to the value of the flag.
   *value = value_str;
@@ -6673,9 +6712,11 @@ void ParseGoogleTestFlagsOnly(int* argc, wchar_t** argv) {
 template <typename CharType>
 void InitGoogleTestImpl(int* argc, CharType** argv) {
   // We don't want to run the initialization code twice.
-  if (GTestIsInitialized()) return;
+  if (GTestIsInitialized())
+      return;
 
-  if (*argc <= 0) return;
+  if (*argc <= 0)
+      return;
 
   g_argvs.clear();
   for (int i = 0; i != *argc; i++) {

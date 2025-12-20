@@ -257,7 +257,8 @@ void PrintCharAndCodeTo(Char c, ostream* os) {
   // To aid user debugging, we also print c's code in decimal, unless
   // it's 0 (in which case c was printed as '\\0', making the code
   // obvious).
-  if (c == 0) return;
+  if (c == 0)
+      return;
   *os << " (" << static_cast<int>(c);
 
   // For more convenience, we print c's code again in hexadecimal,

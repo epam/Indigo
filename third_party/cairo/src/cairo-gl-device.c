@@ -432,14 +432,28 @@ _cairo_gl_ensure_framebuffer (cairo_gl_context_t *ctx,
 	const char *str;
 	switch (status) {
 	//case GL_FRAMEBUFFER_UNDEFINED: str= "undefined"; break;
-	case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT: str= "incomplete attachment"; break;
-	case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT: str= "incomplete/missing attachment"; break;
-	case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER: str= "incomplete draw buffer"; break;
-	case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER: str= "incomplete read buffer"; break;
-	case GL_FRAMEBUFFER_UNSUPPORTED: str= "unsupported"; break;
-	case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE: str= "incomplete multiple"; break;
-	default: str = "unknown error"; break;
-	}
+    case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+        str = "incomplete attachment";
+        break;
+    case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+        str = "incomplete/missing attachment";
+        break;
+    case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
+        str = "incomplete draw buffer";
+        break;
+    case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
+        str = "incomplete read buffer";
+        break;
+    case GL_FRAMEBUFFER_UNSUPPORTED:
+        str = "unsupported";
+        break;
+    case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
+        str = "incomplete multiple";
+        break;
+    default:
+        str = "unknown error";
+        break;
+    }
 
 	fprintf (stderr,
 		 "destination is framebuffer incomplete: %s [%#x]\n",

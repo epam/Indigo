@@ -2528,10 +2528,10 @@ _cairo_radial_pattern_box_to_parameter (const cairo_radial_pattern_t *radial,
 	maxd2 = 0;
 
 	/* degenerate circles (lines) passing through each edge */
-	T_EDGE (y0, dy, dx, minx, maxx, y_focus, x_focus);
-	T_EDGE (y1, dy, dx, minx, maxx, y_focus, x_focus);
-	T_EDGE (x0, dx, dy, miny, maxy, x_focus, y_focus);
-	T_EDGE (x1, dx, dy, miny, maxy, x_focus, y_focus);
+    T_EDGE(y0, dy, dx, minx, maxx, y_focus, x_focus);
+    T_EDGE(y1, dy, dx, minx, maxx, y_focus, x_focus);
+    T_EDGE(x0, dx, dy, miny, maxy, x_focus, y_focus);
+    T_EDGE(x1, dx, dy, miny, maxy, x_focus, y_focus);
 
 #undef T_EDGE
 
@@ -2580,10 +2580,10 @@ _cairo_radial_pattern_box_to_parameter (const cairo_radial_pattern_t *radial,
 	}
 
 	/* circles touching each corner */
-	T_CORNER (x0, y0);
-	T_CORNER (x0, y1);
-	T_CORNER (x1, y0);
-	T_CORNER (x1, y1);
+    T_CORNER(x0, y0);
+    T_CORNER(x0, y1);
+    T_CORNER(x1, y0);
+    T_CORNER(x1, y1);
 
 #undef T_CORNER
     } else {
@@ -2618,10 +2618,10 @@ _cairo_radial_pattern_box_to_parameter (const cairo_radial_pattern_t *radial,
 	}
 
 	/* circles touching each corner */
-	T_CORNER (x0, y0);
-	T_CORNER (x0, y1);
-	T_CORNER (x1, y0);
-	T_CORNER (x1, y1);
+    T_CORNER(x0, y0);
+    T_CORNER(x0, y1);
+    T_CORNER(x1, y0);
+    T_CORNER(x1, y1);
 
 #undef T_CORNER
     }
@@ -3534,38 +3534,50 @@ _cairo_pattern_sampled_area (const cairo_pattern_t *pattern,
     case CAIRO_FILTER_GOOD:
 	/* Correct value is max(width,1)*.5 */
 	padx = _cairo_hypot (pattern->matrix.xx, pattern->matrix.xy);
-	if (padx <= 1.0) padx = 0.495;
-	else if (padx >= 16.0) padx = 7.92;
-	else padx *= 0.495;
+    if (padx <= 1.0)
+        padx = 0.495;
+    else if (padx >= 16.0)
+        padx = 7.92;
+	    else
+		padx *= 0.495;
 	pady = _cairo_hypot (pattern->matrix.yx, pattern->matrix.yy);
-	if (pady <= 1.0) pady = 0.495;
-	else if (pady >= 16.0) pady = 7.92;
-	else pady *= 0.495;
+    if (pady <= 1.0)
+        pady = 0.495;
+    else if (pady >= 16.0)
+        pady = 7.92;
+	else
+	    pady *= 0.495;
 	break;
     case CAIRO_FILTER_BEST:
 	/* Correct value is width*2 */
 	padx = _cairo_hypot (pattern->matrix.xx, pattern->matrix.xy) * 1.98;
-	if (padx > 7.92) padx = 7.92;
-	pady = _cairo_hypot (pattern->matrix.yx, pattern->matrix.yy) * 1.98;
-	if (pady > 7.92) pady = 7.92;
-	break;
+    if (padx > 7.92)
+        padx = 7.92;
+    pady = _cairo_hypot (pattern->matrix.yx, pattern->matrix.yy) * 1.98;
+    if (pady > 7.92)
+        pady = 7.92;
+    break;
     }
 
     /* round furthest samples to edge of pixels */
     x1 = floor (x1 - padx);
-    if (x1 < CAIRO_RECT_INT_MIN) x1 = CAIRO_RECT_INT_MIN;
+    if (x1 < CAIRO_RECT_INT_MIN)
+        x1 = CAIRO_RECT_INT_MIN;
     sample->x = x1;
 
     y1 = floor (y1 - pady);
-    if (y1 < CAIRO_RECT_INT_MIN) y1 = CAIRO_RECT_INT_MIN;
+    if (y1 < CAIRO_RECT_INT_MIN)
+        y1 = CAIRO_RECT_INT_MIN;
     sample->y = y1;
 
     x2 = floor (x2 + padx) + 1.0;
-    if (x2 > CAIRO_RECT_INT_MAX) x2 = CAIRO_RECT_INT_MAX;
+    if (x2 > CAIRO_RECT_INT_MAX)
+        x2 = CAIRO_RECT_INT_MAX;
     sample->width = x2 - x1;
 
     y2 = floor (y2 + pady) + 1.0;
-    if (y2 > CAIRO_RECT_INT_MAX) y2 = CAIRO_RECT_INT_MAX;
+    if (y2 > CAIRO_RECT_INT_MAX)
+        y2 = CAIRO_RECT_INT_MAX;
     sample->height = y2 - y1;
 }
 
@@ -3761,8 +3773,10 @@ _cairo_pattern_get_extents (const cairo_pattern_t         *pattern,
     }
 
     if (_cairo_matrix_is_translation (&pattern->matrix)) {
-	x1 -= pattern->matrix.x0; x2 -= pattern->matrix.x0;
-	y1 -= pattern->matrix.y0; y2 -= pattern->matrix.y0;
+        x1 -= pattern->matrix.x0;
+        x2 -= pattern->matrix.x0;
+        y1 -= pattern->matrix.y0;
+        y2 -= pattern->matrix.y0;
     } else {
 	cairo_matrix_t imatrix;
 	cairo_status_t status;
@@ -3789,7 +3803,8 @@ _cairo_pattern_get_extents (const cairo_pattern_t         *pattern,
 	ix2 = CAIRO_RECT_INT_MAX;
     else
 	ix2 = _cairo_lround (x2);
-    extents->x = ix1; extents->width  = ix2 - ix1;
+    extents->x = ix1;
+    extents->width = ix2 - ix1;
     if (is_vector && extents->width == 0 && x1 != x2)
 	extents->width += 1;
 
@@ -3805,7 +3820,8 @@ _cairo_pattern_get_extents (const cairo_pattern_t         *pattern,
 	iy2 = CAIRO_RECT_INT_MAX;
     else
 	iy2 = _cairo_lround (y2);
-    extents->y = iy1; extents->height = iy2 - iy1;
+    extents->y = iy1;
+    extents->height = iy2 - iy1;
     if (is_vector && extents->height == 0 && y1 != y2)
 	extents->height += 1;
 
@@ -4672,32 +4688,85 @@ _cairo_debug_print_surface_pattern (FILE *file,
 {
     const char *s;
     switch (pattern->surface->type) {
-    case CAIRO_SURFACE_TYPE_IMAGE: s = "image"; break;
-    case CAIRO_SURFACE_TYPE_PDF: s = "pdf"; break;
-    case CAIRO_SURFACE_TYPE_PS: s = "ps"; break;
-    case CAIRO_SURFACE_TYPE_XLIB: s = "xlib"; break;
-    case CAIRO_SURFACE_TYPE_XCB: s = "xcb"; break;
-    case CAIRO_SURFACE_TYPE_GLITZ: s = "glitz"; break;
-    case CAIRO_SURFACE_TYPE_QUARTZ: s = "quartz"; break;
-    case CAIRO_SURFACE_TYPE_WIN32: s = "win32"; break;
-    case CAIRO_SURFACE_TYPE_BEOS: s = "beos"; break;
-    case CAIRO_SURFACE_TYPE_DIRECTFB: s = "directfb"; break;
-    case CAIRO_SURFACE_TYPE_SVG: s = "svg"; break;
-    case CAIRO_SURFACE_TYPE_OS2: s = "os2"; break;
-    case CAIRO_SURFACE_TYPE_WIN32_PRINTING: s = "win32_printing"; break;
-    case CAIRO_SURFACE_TYPE_QUARTZ_IMAGE: s = "quartz_image"; break;
-    case CAIRO_SURFACE_TYPE_SCRIPT: s = "script"; break;
-    case CAIRO_SURFACE_TYPE_QT: s = "qt"; break;
-    case CAIRO_SURFACE_TYPE_RECORDING: s = "recording"; break;
-    case CAIRO_SURFACE_TYPE_VG: s = "vg"; break;
-    case CAIRO_SURFACE_TYPE_GL: s = "gl"; break;
-    case CAIRO_SURFACE_TYPE_DRM: s = "drm"; break;
-    case CAIRO_SURFACE_TYPE_TEE: s = "tee"; break;
-    case CAIRO_SURFACE_TYPE_XML: s = "xml"; break;
-    case CAIRO_SURFACE_TYPE_SKIA: s = "skia"; break; /* Deprecated */
-    case CAIRO_SURFACE_TYPE_SUBSURFACE: s = "subsurface"; break;
-    case CAIRO_SURFACE_TYPE_COGL: s = "cogl"; break;
-    default: s = "invalid"; ASSERT_NOT_REACHED; break;
+    case CAIRO_SURFACE_TYPE_IMAGE:
+        s = "image";
+        break;
+    case CAIRO_SURFACE_TYPE_PDF:
+        s = "pdf";
+        break;
+    case CAIRO_SURFACE_TYPE_PS:
+        s = "ps";
+        break;
+    case CAIRO_SURFACE_TYPE_XLIB:
+        s = "xlib";
+        break;
+    case CAIRO_SURFACE_TYPE_XCB:
+        s = "xcb";
+        break;
+    case CAIRO_SURFACE_TYPE_GLITZ:
+        s = "glitz";
+        break;
+    case CAIRO_SURFACE_TYPE_QUARTZ:
+        s = "quartz";
+        break;
+    case CAIRO_SURFACE_TYPE_WIN32:
+        s = "win32";
+        break;
+    case CAIRO_SURFACE_TYPE_BEOS:
+        s = "beos";
+        break;
+    case CAIRO_SURFACE_TYPE_DIRECTFB:
+        s = "directfb";
+        break;
+    case CAIRO_SURFACE_TYPE_SVG:
+        s = "svg";
+        break;
+    case CAIRO_SURFACE_TYPE_OS2:
+        s = "os2";
+        break;
+    case CAIRO_SURFACE_TYPE_WIN32_PRINTING:
+        s = "win32_printing";
+        break;
+    case CAIRO_SURFACE_TYPE_QUARTZ_IMAGE:
+        s = "quartz_image";
+        break;
+    case CAIRO_SURFACE_TYPE_SCRIPT:
+        s = "script";
+        break;
+    case CAIRO_SURFACE_TYPE_QT:
+        s = "qt";
+        break;
+    case CAIRO_SURFACE_TYPE_RECORDING:
+        s = "recording";
+        break;
+    case CAIRO_SURFACE_TYPE_VG:
+        s = "vg";
+        break;
+    case CAIRO_SURFACE_TYPE_GL:
+        s = "gl";
+        break;
+    case CAIRO_SURFACE_TYPE_DRM:
+        s = "drm";
+        break;
+    case CAIRO_SURFACE_TYPE_TEE:
+        s = "tee";
+        break;
+    case CAIRO_SURFACE_TYPE_XML:
+        s = "xml";
+        break;
+    case CAIRO_SURFACE_TYPE_SKIA:
+        s = "skia";
+        break; /* Deprecated */
+    case CAIRO_SURFACE_TYPE_SUBSURFACE:
+        s = "subsurface";
+        break;
+    case CAIRO_SURFACE_TYPE_COGL:
+        s = "cogl";
+        break;
+    default:
+        s = "invalid";
+        ASSERT_NOT_REACHED;
+        break;
     }
     fprintf (file, "  surface type: %s\n", s);
 }
@@ -4732,13 +4801,28 @@ _cairo_debug_print_pattern (FILE *file, const cairo_pattern_t *pattern)
 {
     const char *s;
     switch (pattern->type) {
-    case CAIRO_PATTERN_TYPE_SOLID: s = "solid"; break;
-    case CAIRO_PATTERN_TYPE_SURFACE: s = "surface"; break;
-    case CAIRO_PATTERN_TYPE_LINEAR: s = "linear"; break;
-    case CAIRO_PATTERN_TYPE_RADIAL: s = "radial"; break;
-    case CAIRO_PATTERN_TYPE_MESH: s = "mesh"; break;
-    case CAIRO_PATTERN_TYPE_RASTER_SOURCE: s = "raster"; break;
-    default: s = "invalid"; ASSERT_NOT_REACHED; break;
+    case CAIRO_PATTERN_TYPE_SOLID:
+        s = "solid";
+        break;
+    case CAIRO_PATTERN_TYPE_SURFACE:
+        s = "surface";
+        break;
+    case CAIRO_PATTERN_TYPE_LINEAR:
+        s = "linear";
+        break;
+    case CAIRO_PATTERN_TYPE_RADIAL:
+        s = "radial";
+        break;
+    case CAIRO_PATTERN_TYPE_MESH:
+        s = "mesh";
+        break;
+    case CAIRO_PATTERN_TYPE_RASTER_SOURCE:
+        s = "raster";
+        break;
+    default:
+        s = "invalid";
+        ASSERT_NOT_REACHED;
+        break;
     }
 
     fprintf (file, "pattern: %s\n", s);
@@ -4746,22 +4830,48 @@ _cairo_debug_print_pattern (FILE *file, const cairo_pattern_t *pattern)
 	return;
 
     switch (pattern->extend) {
-    case CAIRO_EXTEND_NONE: s = "none"; break;
-    case CAIRO_EXTEND_REPEAT: s = "repeat"; break;
-    case CAIRO_EXTEND_REFLECT: s = "reflect"; break;
-    case CAIRO_EXTEND_PAD: s = "pad"; break;
-    default: s = "invalid"; ASSERT_NOT_REACHED; break;
+    case CAIRO_EXTEND_NONE:
+        s = "none";
+        break;
+    case CAIRO_EXTEND_REPEAT:
+        s = "repeat";
+        break;
+    case CAIRO_EXTEND_REFLECT:
+        s = "reflect";
+        break;
+    case CAIRO_EXTEND_PAD:
+        s = "pad";
+        break;
+    default:
+        s = "invalid";
+        ASSERT_NOT_REACHED;
+        break;
     }
     fprintf (file, "  extend: %s\n", s);
 
     switch (pattern->filter) {
-    case CAIRO_FILTER_FAST: s = "fast"; break;
-    case CAIRO_FILTER_GOOD: s = "good"; break;
-    case CAIRO_FILTER_BEST: s = "best"; break;
-    case CAIRO_FILTER_NEAREST: s = "nearest"; break;
-    case CAIRO_FILTER_BILINEAR: s = "bilinear"; break;
-    case CAIRO_FILTER_GAUSSIAN: s = "gaussian"; break;
-    default: s = "invalid"; ASSERT_NOT_REACHED; break;
+    case CAIRO_FILTER_FAST:
+        s = "fast";
+        break;
+    case CAIRO_FILTER_GOOD:
+        s = "good";
+        break;
+    case CAIRO_FILTER_BEST:
+        s = "best";
+        break;
+    case CAIRO_FILTER_NEAREST:
+        s = "nearest";
+        break;
+    case CAIRO_FILTER_BILINEAR:
+        s = "bilinear";
+        break;
+    case CAIRO_FILTER_GAUSSIAN:
+        s = "gaussian";
+        break;
+    default:
+        s = "invalid";
+        ASSERT_NOT_REACHED;
+        break;
     }
     fprintf (file, "  filter: %s\n", s);
     fprintf (file, "  matrix: [%g %g %g %g %g %g]\n",

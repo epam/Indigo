@@ -57,7 +57,8 @@ int ZEXPORT inflateBackInit_(
 #endif
     state = (struct inflate_state FAR *)ZALLOC(strm, 1,
                                                sizeof(struct inflate_state));
-    if (state == Z_NULL) return Z_MEM_ERROR;
+    if ( state == Z_NULL )
+      return Z_MEM_ERROR;
     Tracev((stderr, "inflate: allocated\n"));
     strm->state = (struct internal_state FAR *)state;
     state->dmax = 32768U;
@@ -342,8 +343,10 @@ int ZEXPORT inflateBack(
                 copy = state->length;
                 PULL();
                 ROOM();
-                if (copy > have) copy = have;
-                if (copy > left) copy = left;
+                if ( copy > have )
+                  copy = have;
+                if ( copy > left )
+                  copy = left;
                 zmemcpy(put, next, copy);
                 have -= copy;
                 next += copy;
@@ -399,7 +402,8 @@ int ZEXPORT inflateBack(
             while (state->have < state->nlen + state->ndist) {
                 for (;;) {
                     here = state->lencode[BITS(state->lenbits)];
-                    if ((unsigned)(here.bits) <= bits) break;
+                    if ( (unsigned)( here.bits ) <= bits )
+                      break;
                     PULLBYTE();
                 }
                 if (here.val < 16) {
@@ -444,7 +448,8 @@ int ZEXPORT inflateBack(
             }
 
             /* handle error breaks in while */
-            if (state->mode == BAD) break;
+            if ( state->mode == BAD )
+              break;
 
             /* check for end-of-block code (better have one) */
             if (state->lens[256] == 0) {
@@ -493,7 +498,8 @@ int ZEXPORT inflateBack(
             /* get a literal, length, or end-of-block code */
             for (;;) {
                 here = state->lencode[BITS(state->lenbits)];
-                if ((unsigned)(here.bits) <= bits) break;
+                if ( (unsigned)( here.bits ) <= bits )
+                  break;
                 PULLBYTE();
             }
             if (here.op && (here.op & 0xf0) == 0) {
@@ -501,7 +507,8 @@ int ZEXPORT inflateBack(
                 for (;;) {
                     here = state->lencode[last.val +
                             (BITS(last.bits + last.op) >> last.bits)];
-                    if ((unsigned)(last.bits + here.bits) <= bits) break;
+                    if ( (unsigned)( last.bits + here.bits ) <= bits )
+                      break;
                     PULLBYTE();
                 }
                 DROPBITS(last.bits);
@@ -547,7 +554,8 @@ int ZEXPORT inflateBack(
             /* get distance code */
             for (;;) {
                 here = state->distcode[BITS(state->distbits)];
-                if ((unsigned)(here.bits) <= bits) break;
+                if ( (unsigned)( here.bits ) <= bits )
+                  break;
                 PULLBYTE();
             }
             if ((here.op & 0xf0) == 0) {
@@ -555,7 +563,8 @@ int ZEXPORT inflateBack(
                 for (;;) {
                     here = state->distcode[last.val +
                             (BITS(last.bits + last.op) >> last.bits)];
-                    if ((unsigned)(last.bits + here.bits) <= bits) break;
+                    if ( (unsigned)( last.bits + here.bits ) <= bits )
+                      break;
                     PULLBYTE();
                 }
                 DROPBITS(last.bits);
@@ -595,7 +604,8 @@ int ZEXPORT inflateBack(
                     from = put - state->offset;
                     copy = left;
                 }
-                if (copy > state->length) copy = state->length;
+                if ( copy > state->length )
+                  copy = state->length;
                 state->length -= copy;
                 left -= copy;
                 do {

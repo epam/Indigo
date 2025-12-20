@@ -42,7 +42,11 @@ public:
     }
 
     char last() const { return *(m_ptr - 1); }
-    void push_back(char c) { *m_ptr = c; ++m_ptr; }
+    void push_back(char c)
+    {
+        *m_ptr = c;
+        ++m_ptr;
+    }
     size_t size() const { return m_ptr - m_begin; }
     void resize(size_t size) { m_ptr = m_begin + size; }
 

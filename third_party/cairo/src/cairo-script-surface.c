@@ -1286,8 +1286,8 @@ _write_image_surface (cairo_output_stream_t *output,
 	    uint16_t *dst = (uint16_t *) rowdata;
 	    int col;
 	    for (col = 0; col < width; col++)
-		dst[col] = bswap_16 (src[col]);
-	    _cairo_output_stream_write (output, rowdata, 2*width);
+            dst[col] = bswap_16(src[col]);
+        _cairo_output_stream_write (output, rowdata, 2*width);
 	    data += stride;
 	}
 	break;
@@ -1312,8 +1312,8 @@ _write_image_surface (cairo_output_stream_t *output,
 	    uint32_t *dst = (uint32_t *) rowdata;
 	    int col;
 	    for (col = 0; col < width; col++)
-		dst[col] = bswap_32 (src[col]);
-	    _cairo_output_stream_write (output, rowdata, 4*width);
+            dst[col] = bswap_32(src[col]);
+        _cairo_output_stream_write (output, rowdata, 4*width);
 	    data += stride;
 	}
 	break;
@@ -1454,8 +1454,8 @@ _emit_image_surface (cairo_script_surface_t *surface,
 
 	    base85_stream = _cairo_base85_stream_create (ctx->stream);
 
-	    len = to_be32 (len);
-	    _cairo_output_stream_write (base85_stream, &len, sizeof (len));
+        len = to_be32(len);
+        _cairo_output_stream_write (base85_stream, &len, sizeof (len));
 
 	    zlib_stream = _cairo_deflate_stream_create (base85_stream);
 	    status = _write_image_surface (zlib_stream, clone);
@@ -2902,7 +2902,7 @@ _emit_type42_font (cairo_script_surface_t *surface,
 				 load_flags);
 
     base85_stream = _cairo_base85_stream_create (ctx->stream);
-    len = to_be32 (size);
+    len = to_be32(size);
     _cairo_output_stream_write (base85_stream, &len, sizeof (len));
 
     zlib_stream = _cairo_deflate_stream_create (base85_stream);

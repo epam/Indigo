@@ -196,9 +196,10 @@ FilePath FilePath::MakeFileName(const FilePath& directory,
 // On Windows, uses \ as the separator rather than /.
 FilePath FilePath::ConcatPaths(const FilePath& directory,
                                const FilePath& relative_path) {
-  if (directory.IsEmpty()) return relative_path;
-  const FilePath dir(directory.RemoveTrailingPathSeparator());
-  return FilePath(dir.string() + kPathSeparator + relative_path.string());
+    if (directory.IsEmpty())
+        return relative_path;
+    const FilePath dir(directory.RemoveTrailingPathSeparator());
+    return FilePath(dir.string() + kPathSeparator + relative_path.string());
 }
 
 // Returns true if pathname describes something findable in the file-system,

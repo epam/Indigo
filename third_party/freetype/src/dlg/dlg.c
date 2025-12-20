@@ -29,14 +29,21 @@ const struct dlg_style dlg_default_output_styles[] = {
 
 static void* xalloc(size_t size) {
 	void* ret = calloc(size, 1);
-	if(!ret) fprintf(stderr, "dlg: calloc returned NULL, probably crashing (size: %zu)\n", size);
-	return ret;
+        if ( !ret )
+          fprintf( stderr,
+                   "dlg: calloc returned NULL, probably crashing (size: %zu)\n",
+                   size );
+        return ret;
 }
 
 static void* xrealloc(void* ptr, size_t size) {
 	void* ret = realloc(ptr, size);
-	if(!ret) fprintf(stderr, "dlg: realloc returned NULL, probably crashing (size: %zu)\n", size);
-	return ret;
+        if ( !ret )
+          fprintf(
+              stderr,
+              "dlg: realloc returned NULL, probably crashing (size: %zu)\n",
+              size );
+        return ret;
 }
 
 struct dlg_tag_func_pair {
@@ -230,11 +237,19 @@ void dlg_escape_sequence(struct dlg_style style, char buf[12]) {
 	}
 
 	switch(count) {
-		case 1: snprintf(buf, 12, "\033[%dm", nums[0]); break;
-		case 2: snprintf(buf, 12, "\033[%d;%dm", nums[0], nums[1]); break;
-		case 3: snprintf(buf, 12, "\033[%d;%d;%dm", nums[0], nums[1], nums[2]); break;
-		default: buf[0] = '\0'; break;
-	}
+        case 1:
+          snprintf( buf, 12, "\033[%dm", nums[0] );
+          break;
+        case 2:
+          snprintf( buf, 12, "\033[%d;%dm", nums[0], nums[1] );
+          break;
+        case 3:
+          snprintf( buf, 12, "\033[%d;%d;%dm", nums[0], nums[1], nums[2] );
+          break;
+        default:
+          buf[0] = '\0';
+          break;
+        }
 }
 
 int dlg_vfprintf(FILE* stream, const char* format, va_list args) {

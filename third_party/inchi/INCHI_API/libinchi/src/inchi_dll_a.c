@@ -376,7 +376,8 @@ int INCHI_DECL INCHIGEN_Setup( INCHIGEN_HANDLE _HGen,
         }
     }
 
-    if (retcode != inchi_Ret_OKAY) goto ret;
+    if (retcode != inchi_Ret_OKAY)
+        goto ret;
 
     PrintInputParms( log_file, ip );
 
@@ -388,18 +389,37 @@ int INCHI_DECL INCHIGEN_Setup( INCHIGEN_HANDLE _HGen,
 
 ret:switch (retcode)
 {
-    case _IS_OKAY: retcode = inchi_Ret_OKAY; HGen->init_passed = 1; break;    /* Success; break; no errors or warnings */
+case _IS_OKAY:
+    retcode = inchi_Ret_OKAY;
+    HGen->init_passed = 1;
+    /* Success; no errors or warnings */
+    break;
 
-    case _IS_ERROR: ( HGen->num_err )++;  retcode = inchi_Ret_ERROR; break;
-                                                            /* Error: no INChI has been created */
-    case _IS_FATAL: ( HGen->num_err )++;  retcode = inchi_Ret_FATAL; break;
-                                                            /* Severe error: no INChI has been created
-                                                            (typically; break; memory allocation failed) */
-    case _IS_SKIP: retcode = inchi_Ret_SKIP; break;   /* not used in INChI dll */
-    case _IS_EOF: retcode = inchi_Ret_EOF; break;   /* no structural data has been provided */
-    case _IS_WARNING: retcode = inchi_Ret_WARNING; HGen->init_passed = 1; break;    /* Success; break; warning(s) issued */
-    case _IS_UNKNOWN:
-    default: retcode = inchi_Ret_UNKNOWN; break;   /* Unlnown program error */
+case _IS_ERROR:
+    (HGen->num_err)++;
+    retcode = inchi_Ret_ERROR;
+    break;
+    /* Error: no INChI has been created */
+case _IS_FATAL:
+    (HGen->num_err)++;
+    retcode = inchi_Ret_FATAL;
+    break;
+    /* Severe error: no INChI has been created
+    (typically; break; memory allocation failed) */
+case _IS_SKIP:
+    retcode = inchi_Ret_SKIP;
+    break; /* not used in INChI dll */
+case _IS_EOF:
+    retcode = inchi_Ret_EOF;
+    break; /* no structural data has been provided */
+case _IS_WARNING:
+    retcode = inchi_Ret_WARNING;
+    HGen->init_passed = 1;
+    break; /* Success; break; warning(s) issued */
+case _IS_UNKNOWN:
+default:
+    retcode = inchi_Ret_UNKNOWN;
+    break; /* Unlnown program error */
 }
 
     if (NULL!=pGenData)
@@ -817,16 +837,32 @@ int INCHI_DECL INCHIGEN_DoCanonicalization
 
     switch (nRet)
     {
-        case _IS_SKIP: nRet = inchi_Ret_SKIP; break; /* not used in INChI dll */
-        case _IS_EOF: nRet = inchi_Ret_EOF; break; /* no structural data has been provided */
-        case _IS_OKAY: nRet = inchi_Ret_OKAY; HGen->canon_passed = 1; break;
-                                                    /* Success; break; no errors or warnings */
-        case _IS_WARNING: nRet = inchi_Ret_WARNING; HGen->canon_passed = 1; break;
-                                                    /* Success; break; warning(s) issued */
-        case _IS_ERROR: nRet = inchi_Ret_ERROR; break; /* Error: no INChI has been created */
-        case _IS_FATAL: nRet = inchi_Ret_FATAL; break; /* Severe error: no INChI has been created (typically; break; memory allocation failed) */
-        case _IS_UNKNOWN:
-        default: nRet = inchi_Ret_UNKNOWN; break; /* Unknown program error */
+    case _IS_SKIP:
+        nRet = inchi_Ret_SKIP;
+        break; /* not used in INChI dll */
+    case _IS_EOF:
+        nRet = inchi_Ret_EOF;
+        break; /* no structural data has been provided */
+    case _IS_OKAY:
+        nRet = inchi_Ret_OKAY;
+        HGen->canon_passed = 1;
+        break;
+        /* Success; break; no errors or warnings */
+    case _IS_WARNING:
+        nRet = inchi_Ret_WARNING;
+        HGen->canon_passed = 1;
+        break;
+        /* Success; break; warning(s) issued */
+    case _IS_ERROR:
+        nRet = inchi_Ret_ERROR;
+        break; /* Error: no INChI has been created */
+    case _IS_FATAL:
+        nRet = inchi_Ret_FATAL;
+        break; /* Severe error: no INChI has been created (typically; break; memory allocation failed) */
+    case _IS_UNKNOWN:
+    default:
+        nRet = inchi_Ret_UNKNOWN;
+        break; /* Unknown program error */
     }
 exit_function:
 

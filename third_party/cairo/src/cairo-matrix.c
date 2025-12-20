@@ -114,9 +114,12 @@ cairo_matrix_init (cairo_matrix_t *matrix,
 		   double xy, double yy,
 		   double x0, double y0)
 {
-    matrix->xx = xx; matrix->yx = yx;
-    matrix->xy = xy; matrix->yy = yy;
-    matrix->x0 = x0; matrix->y0 = y0;
+    matrix->xx = xx;
+    matrix->yx = yx;
+    matrix->xy = xy;
+    matrix->yy = yy;
+    matrix->x0 = x0;
+    matrix->y0 = y0;
 }
 slim_hidden_def(cairo_matrix_init);
 
@@ -651,8 +654,10 @@ _cairo_matrix_compute_determinant (const cairo_matrix_t *matrix)
 {
     double a, b, c, d;
 
-    a = matrix->xx; b = matrix->yx;
-    c = matrix->xy; d = matrix->yy;
+    a = matrix->xx;
+    b = matrix->yx;
+    c = matrix->xy;
+    d = matrix->yy;
 
     return a*d - b*c;
 }

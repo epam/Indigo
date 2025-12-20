@@ -267,10 +267,14 @@ int InchiToInchi_Input( INCHI_IOSTREAM *inp_molfile,
                         if (!at_old)
                         {
             /* the first structure */
-                            orig_at_data->atom = at_new;            at_new = NULL;
-                            orig_at_data->num_atoms = num_inp_atoms_new; num_inp_atoms_new = 0;
-                            orig_at_data->stereo0D = stereo0D_new;      stereo0D_new = NULL;
-                            orig_at_data->num_stereo0D = num_inp_0D_new;    num_inp_0D_new = 0;
+            orig_at_data->atom = at_new;
+            at_new = NULL;
+            orig_at_data->num_atoms = num_inp_atoms_new;
+            num_inp_atoms_new = 0;
+            orig_at_data->stereo0D = stereo0D_new;
+            stereo0D_new = NULL;
+            orig_at_data->num_stereo0D = num_inp_0D_new;
+            num_inp_0D_new = 0;
                         }
                         else
                             if (orig_at_data->atom = CreateInchiAtom( nNumAtoms ))

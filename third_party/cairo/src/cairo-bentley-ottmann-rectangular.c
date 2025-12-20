@@ -788,7 +788,8 @@ _cairo_bentley_ottmann_tessellate_boxes (const cairo_boxes_t *in,
 	return CAIRO_STATUS_SUCCESS;
     }
 
-    y_min = INT_MAX; y_max = INT_MIN;
+    y_min = INT_MAX;
+    y_max = INT_MIN;
     for (chunk = &in->chunks; chunk != NULL; chunk = chunk->next) {
 	const cairo_box_t *box = chunk->base;
 	for (i = 0; i < chunk->count; i++) {

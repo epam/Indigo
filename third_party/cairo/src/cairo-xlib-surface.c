@@ -432,8 +432,8 @@ _swap_ximage_2bytes (XImage *ximage)
     for (j = ximage->height; j; j--) {
 	uint16_t *p = (uint16_t *) line;
 	for (i = ximage->width; i; i--) {
-	    *p = bswap_16 (*p);
-	    p++;
+        *p = bswap_16(*p);
+        p++;
 	}
 
 	line += ximage->bytes_per_line;
@@ -469,8 +469,8 @@ _swap_ximage_4bytes (XImage *ximage)
     for (j = ximage->height; j; j--) {
 	uint32_t *p = (uint32_t *) line;
 	for (i = ximage->width; i; i--) {
-	    *p = bswap_32 (*p);
-	    p++;
+        *p = bswap_32(*p);
+        p++;
 	}
 
 	line += ximage->bytes_per_line;
@@ -1534,7 +1534,8 @@ get_compositor (cairo_xlib_surface_t **surface,
 		const cairo_compositor_t **compositor)
 {
     cairo_xlib_surface_t *s = *surface;
-    cairo_int_status_t status = CAIRO_INT_STATUS_SUCCESS;;
+    cairo_int_status_t status = CAIRO_INT_STATUS_SUCCESS;
+    ;
 
     if (s->fallback) {
 	assert (s->base.damage != NULL);

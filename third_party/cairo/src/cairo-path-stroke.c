@@ -209,8 +209,10 @@ _cairo_slope_compare_sgn (double dx1, double dy1, double dx2, double dy2)
 {
     double  c = (dx1 * dy2 - dx2 * dy1);
 
-    if (c > 0) return 1;
-    if (c < 0) return -1;
+    if (c > 0)
+        return 1;
+    if (c < 0)
+        return -1;
     return 0;
 }
 
@@ -549,15 +551,18 @@ _cairo_stroker_join (cairo_stroker_t *stroker,
 	    iy = _cairo_fixed_to_double (in->point.y);
 
 	    /* slope of one face */
-	    fdx1 = x1 - ix; fdy1 = y1 - iy;
+        fdx1 = x1 - ix;
+        fdy1 = y1 - iy;
 
-	    /* slope of the other face */
-	    fdx2 = x2 - ix; fdy2 = y2 - iy;
+        /* slope of the other face */
+        fdx2 = x2 - ix;
+        fdy2 = y2 - iy;
 
-	    /* slope from the intersection to the miter point */
-	    mdx = mx - ix; mdy = my - iy;
+        /* slope from the intersection to the miter point */
+        mdx = mx - ix;
+        mdy = my - iy;
 
-	    /*
+        /*
 	     * Make sure the miter point line lies between the two
 	     * faces by comparing the slopes
 	     */

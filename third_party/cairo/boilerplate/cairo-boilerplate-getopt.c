@@ -74,8 +74,9 @@ static void increment_index(void)
 static int permute_argv_once(void)
 {
 	/* Movability check */
-	if(argv_index + nonopt >= prev_argc) return 1;
-	/* Move the current option to the end, bring the others to front */
+    if (argv_index + nonopt >= prev_argc)
+        return 1;
+    /* Move the current option to the end, bring the others to front */
 	else
 	{
 		char* tmp = prev_argv[argv_index];
@@ -147,8 +148,9 @@ int _cairo_getopt(int argc, char** argv, const char* optstr)
 		/* If we mildly don't want it, then move it back */
 		else
 		{
-			if(!permute_argv_once()) goto getopt_top;
-			else c = -1;
+            if (!permute_argv_once())
+                goto getopt_top;
+            else c = -1;
 		}
 	}
 	/* Otherwise we're looking at an option */
@@ -160,8 +162,9 @@ int _cairo_getopt(int argc, char** argv, const char* optstr)
 		c = argv[argv_index][opt_offset++];
 
 		/* Is the option in the optstr? */
-		if(optstr[0] == '-') opt_ptr = strchr(optstr+1, c);
-		else opt_ptr = strchr(optstr, c);
+        if (optstr[0] == '-')
+            opt_ptr = strchr(optstr + 1, c);
+        else opt_ptr = strchr(optstr, c);
 		/* Invalid argument */
 		if(!opt_ptr)
 		{
@@ -189,14 +192,17 @@ int _cairo_getopt(int argc, char** argv, const char* optstr)
 			else if(opt_ptr[2] != ':')
 			{
 				/* One of those "you're not expected to understand this" moment */
-				if(argv_index2 < argv_index) argv_index2 = argv_index;
-				while(argv[++argv_index2] && argv[argv_index2][0] == '-');
+                if (argv_index2 < argv_index)
+                    argv_index2 = argv_index;
+				while (argv[++argv_index2] && argv[argv_index2][0] == '-')
+					;
 				optarg = argv[argv_index2];
 
 				/* Don't cross into the non-option argument list */
-				if(argv_index2 + nonopt >= prev_argc) optarg = NULL;
+                if (argv_index2 + nonopt >= prev_argc)
+                    optarg = NULL;
 
-				/* Move onto the next option */
+                /* Move onto the next option */
 				increment_index();
 			}
 			else

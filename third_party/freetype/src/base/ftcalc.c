@@ -282,9 +282,10 @@
   {
     FT_UInt32  lo1, hi1, lo2, hi2, lo, hi, i1, i2;
 
-
-    lo1 = x & 0x0000FFFFU;  hi1 = x >> 16;
-    lo2 = y & 0x0000FFFFU;  hi2 = y >> 16;
+    lo1 = x & 0x0000FFFFU;
+    hi1 = x >> 16;
+    lo2 = y & 0x0000FFFFU;
+    hi2 = y >> 16;
 
     lo = lo1 * lo2;
     i1 = lo1 * hi2;
@@ -325,7 +326,8 @@
     /* for smaller dividends that barely use the high register.            */
 
     i = 31 - FT_MSB( hi );
-    r = ( hi << i ) | ( lo >> ( 32 - i ) ); lo <<= i; /* left 64-bit shift */
+    r = ( hi << i ) | ( lo >> ( 32 - i ) );
+    lo <<= i; /* left 64-bit shift */
     q = r / y;
     r -= q * y;   /* remainder */
 
@@ -333,7 +335,8 @@
     do
     {
       q <<= 1;
-      r   = ( r << 1 ) | ( lo >> 31 ); lo <<= 1;
+      r = ( r << 1 ) | ( lo >> 31 );
+      lo <<= 1;
 
       if ( r >= y )
       {

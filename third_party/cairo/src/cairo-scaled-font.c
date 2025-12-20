@@ -1640,11 +1640,15 @@ cairo_scaled_font_glyph_extents (cairo_scaled_font_t   *scaled_font,
 	    min_y = top;
 	    max_y = bottom;
 	} else {
-	    if (left < min_x) min_x = left;
-	    if (right > max_x) max_x = right;
-	    if (top < min_y) min_y = top;
-	    if (bottom > max_y) max_y = bottom;
-	}
+        if (left < min_x)
+            min_x = left;
+        if (right > max_x)
+            max_x = right;
+        if (top < min_y)
+            min_y = top;
+        if (bottom > max_y)
+            max_y = bottom;
+    }
     }
 
     if (visible) {
@@ -2277,10 +2281,14 @@ _cairo_scaled_font_glyph_device_extents (cairo_scaled_font_t	 *scaled_font,
 	if (overlap == FALSE)
 	    overlap = _range_contains_glyph (&box, x1, y1, x2, y2);
 
-	if (x1 < box.p1.x) box.p1.x = x1;
-	if (x2 > box.p2.x) box.p2.x = x2;
-	if (y1 < box.p1.y) box.p1.y = y1;
-	if (y2 > box.p2.y) box.p2.y = y2;
+    if (x1 < box.p1.x)
+        box.p1.x = x1;
+    if (x2 > box.p2.x)
+        box.p2.x = x2;
+    if (y1 < box.p1.y)
+        box.p1.y = y1;
+    if (y2 > box.p2.y)
+        box.p2.y = y2;
     }
 
     _cairo_scaled_font_thaw_cache (scaled_font);
@@ -2325,12 +2333,16 @@ _cairo_scaled_font_glyph_approximate_extents (cairo_scaled_font_t	 *scaled_font,
 	double g;
 
 	g = glyphs[i].x;
-	if (g < x0) x0 = g;
-	if (g > x1) x1 = g;
+    if (g < x0)
+        x0 = g;
+    if (g > x1)
+        x1 = g;
 
-	g = glyphs[i].y;
-	if (g < y0) y0 = g;
-	if (g > y1) y1 = g;
+    g = glyphs[i].y;
+    if (g < y0)
+        y0 = g;
+    if (g > y1)
+        y1 = g;
     }
 
     pad = MAX(scaled_font->fs_extents.max_x_advance,
@@ -2731,11 +2743,15 @@ _cairo_scaled_glyph_set_metrics (cairo_scaled_glyph_t *scaled_glyph,
 		min_user_x = max_user_x = x;
 		min_user_y = max_user_y = y;
 	    } else {
-		if (x < min_user_x) min_user_x = x;
-		if (x > max_user_x) max_user_x = x;
-		if (y < min_user_y) min_user_y = y;
-		if (y > max_user_y) max_user_y = y;
-	    }
+            if (x < min_user_x)
+                min_user_x = x;
+            if (x > max_user_x)
+                max_user_x = x;
+            if (y < min_user_y)
+                min_user_y = y;
+            if (y > max_user_y)
+                max_user_y = y;
+        }
 
 	    /* Transform this corner to device space from glyph origin */
 	    x = fs_metrics->x_bearing + fs_metrics->width * wm;
@@ -2747,11 +2763,15 @@ _cairo_scaled_glyph_set_metrics (cairo_scaled_glyph_t *scaled_glyph,
 		min_device_x = max_device_x = x;
 		min_device_y = max_device_y = y;
 	    } else {
-		if (x < min_device_x) min_device_x = x;
-		if (x > max_device_x) max_device_x = x;
-		if (y < min_device_y) min_device_y = y;
-		if (y > max_device_y) max_device_y = y;
-	    }
+            if (x < min_device_x)
+                min_device_x = x;
+            if (x > max_device_x)
+                max_device_x = x;
+            if (y < min_device_y)
+                min_device_y = y;
+            if (y > max_device_y)
+                max_device_y = y;
+        }
 	    first = FALSE;
 	}
     scaled_glyph->metrics.x_bearing = min_user_x;

@@ -2445,44 +2445,84 @@ i915_shader_num_texcoords (const i915_shader_t *shader)
     default:
 	ASSERT_NOT_REACHED;
     case TEXCOORDFMT_NOT_PRESENT: break;
-    case TEXCOORDFMT_2D: cnt += 2; break;
-    case TEXCOORDFMT_3D: cnt += 3; break;
-    case TEXCOORDFMT_4D: cnt += 4; break;
-    case TEXCOORDFMT_1D: cnt += 1; break;
-    case TEXCOORDFMT_2D_16: cnt += 1; break;
+    case TEXCOORDFMT_2D:
+        cnt += 2;
+        break;
+    case TEXCOORDFMT_3D:
+        cnt += 3;
+        break;
+    case TEXCOORDFMT_4D:
+        cnt += 4;
+        break;
+    case TEXCOORDFMT_1D:
+        cnt += 1;
+        break;
+    case TEXCOORDFMT_2D_16:
+        cnt += 1;
+        break;
     }
 
     switch (shader->mask.base.texfmt) {
     default:
 	ASSERT_NOT_REACHED;
     case TEXCOORDFMT_NOT_PRESENT: break;
-    case TEXCOORDFMT_2D: cnt += 2; break;
-    case TEXCOORDFMT_3D: cnt += 3; break;
-    case TEXCOORDFMT_4D: cnt += 4; break;
-    case TEXCOORDFMT_1D: cnt += 1; break;
-    case TEXCOORDFMT_2D_16: cnt += 1; break;
+    case TEXCOORDFMT_2D:
+        cnt += 2;
+        break;
+    case TEXCOORDFMT_3D:
+        cnt += 3;
+        break;
+    case TEXCOORDFMT_4D:
+        cnt += 4;
+        break;
+    case TEXCOORDFMT_1D:
+        cnt += 1;
+        break;
+    case TEXCOORDFMT_2D_16:
+        cnt += 1;
+        break;
     }
 
     switch (shader->clip.base.texfmt) {
     default:
 	ASSERT_NOT_REACHED;
     case TEXCOORDFMT_NOT_PRESENT: break;
-    case TEXCOORDFMT_2D: cnt += 2; break;
-    case TEXCOORDFMT_3D: cnt += 3; break;
-    case TEXCOORDFMT_4D: cnt += 4; break;
-    case TEXCOORDFMT_1D: cnt += 1; break;
-    case TEXCOORDFMT_2D_16: cnt += 1; break;
+    case TEXCOORDFMT_2D:
+        cnt += 2;
+        break;
+    case TEXCOORDFMT_3D:
+        cnt += 3;
+        break;
+    case TEXCOORDFMT_4D:
+        cnt += 4;
+        break;
+    case TEXCOORDFMT_1D:
+        cnt += 1;
+        break;
+    case TEXCOORDFMT_2D_16:
+        cnt += 1;
+        break;
     }
 
     switch (shader->dst.base.texfmt) {
     default:
 	ASSERT_NOT_REACHED;
     case TEXCOORDFMT_NOT_PRESENT: break;
-    case TEXCOORDFMT_2D: cnt += 2; break;
-    case TEXCOORDFMT_3D: cnt += 3; break;
-    case TEXCOORDFMT_4D: cnt += 4; break;
-    case TEXCOORDFMT_1D: cnt += 1; break;
-    case TEXCOORDFMT_2D_16: cnt += 1; break;
+    case TEXCOORDFMT_2D:
+        cnt += 2;
+        break;
+    case TEXCOORDFMT_3D:
+        cnt += 3;
+        break;
+    case TEXCOORDFMT_4D:
+        cnt += 4;
+        break;
+    case TEXCOORDFMT_1D:
+        cnt += 1;
+        break;
+    case TEXCOORDFMT_2D_16:
+        cnt += 1;
+        break;
     }
 
     return cnt;
@@ -2699,7 +2739,8 @@ i915_composite_vertex (float *v,
      *   [0-2] mask texture coordinates
      */
 
-    *v++ = x; *v++ = y;
+    *v++ = x;
+    *v++ = y;
     switch (shader->source.type.vertex) {
     case VS_ZERO:
     case VS_CONSTANT:
@@ -2710,8 +2751,9 @@ i915_composite_vertex (float *v,
     case VS_TEXTURE:
 	s = x, t = y;
 	cairo_matrix_transform_point (&shader->source.base.matrix, &s, &t);
-	*v++ = s; *v++ = t;
-	break;
+    *v++ = s;
+    *v++ = t;
+    break;
     case VS_TEXTURE_16:
 	s = x, t = y;
 	cairo_matrix_transform_point (&shader->source.base.matrix, &s, &t);
@@ -2728,8 +2770,9 @@ i915_composite_vertex (float *v,
     case VS_TEXTURE:
 	s = x, t = y;
 	cairo_matrix_transform_point (&shader->mask.base.matrix, &s, &t);
-	*v++ = s; *v++ = t;
-	break;
+    *v++ = s;
+    *v++ = t;
+    break;
     case VS_TEXTURE_16:
 	s = x, t = y;
 	cairo_matrix_transform_point (&shader->mask.base.matrix, &s, &t);

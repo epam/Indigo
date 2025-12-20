@@ -1797,20 +1797,20 @@ _cairo_svg_surface_emit_parametric_filter (cairo_svg_surface_t *surface,
     unsigned int filter_id = surface->document->filter_id++;
     switch (filter) {
     case CAIRO_SVG_FILTER_OVER:
-	_CAIRO_SVG_SURFACE_OUTPUT_FE_COMPOSITE_FILTER ("over")
-	break;
+        _CAIRO_SVG_SURFACE_OUTPUT_FE_COMPOSITE_FILTER("over")
+        break;
     case CAIRO_SVG_FILTER_IN:
-	_CAIRO_SVG_SURFACE_OUTPUT_FE_COMPOSITE_FILTER ("in")
-	break;
+        _CAIRO_SVG_SURFACE_OUTPUT_FE_COMPOSITE_FILTER("in")
+        break;
     case CAIRO_SVG_FILTER_OUT:
-	_CAIRO_SVG_SURFACE_OUTPUT_FE_COMPOSITE_FILTER ("out")
-	break;
+        _CAIRO_SVG_SURFACE_OUTPUT_FE_COMPOSITE_FILTER("out")
+        break;
     case CAIRO_SVG_FILTER_ATOP:
-	_CAIRO_SVG_SURFACE_OUTPUT_FE_COMPOSITE_FILTER ("atop")
-	break;
+        _CAIRO_SVG_SURFACE_OUTPUT_FE_COMPOSITE_FILTER("atop")
+        break;
     case CAIRO_SVG_FILTER_XOR:
-	_CAIRO_SVG_SURFACE_OUTPUT_FE_COMPOSITE_FILTER ("xor")
-	break;
+        _CAIRO_SVG_SURFACE_OUTPUT_FE_COMPOSITE_FILTER("xor")
+        break;
     case CAIRO_SVG_FILTER_ADD:
 	// This can also be done with <feComposite operator="lighter"/>, but it is not in SVG 1.1
 	_cairo_svg_stream_printf (&surface->document->xml_node_filters,
@@ -1837,58 +1837,58 @@ _cairo_svg_surface_emit_parametric_filter (cairo_svg_surface_t *surface,
 				  "</filter>\n");
 	break;
     case CAIRO_SVG_FILTER_MULTIPLY:
-	_CAIRO_SVG_SURFACE_OUTPUT_FE_BLEND_FILTER ("multiply")
-	break;
+        _CAIRO_SVG_SURFACE_OUTPUT_FE_BLEND_FILTER("multiply")
+        break;
     case CAIRO_SVG_FILTER_SCREEN:
-	_CAIRO_SVG_SURFACE_OUTPUT_FE_BLEND_FILTER ("screen")
-	break;
+        _CAIRO_SVG_SURFACE_OUTPUT_FE_BLEND_FILTER("screen")
+        break;
     case CAIRO_SVG_FILTER_OVERLAY:
-	_CAIRO_SVG_SURFACE_OUTPUT_FE_BLEND_FILTER ("overlay")
-	break;
+        _CAIRO_SVG_SURFACE_OUTPUT_FE_BLEND_FILTER("overlay")
+        break;
     case CAIRO_SVG_FILTER_DARKEN:
-	_CAIRO_SVG_SURFACE_OUTPUT_FE_BLEND_FILTER ("darken")
-	break;
+        _CAIRO_SVG_SURFACE_OUTPUT_FE_BLEND_FILTER("darken")
+        break;
     case CAIRO_SVG_FILTER_LIGHTEN:
-	_CAIRO_SVG_SURFACE_OUTPUT_FE_BLEND_FILTER ("lighten")
-	break;
+        _CAIRO_SVG_SURFACE_OUTPUT_FE_BLEND_FILTER("lighten")
+        break;
     case CAIRO_SVG_FILTER_COLOR_DODGE:
-	_CAIRO_SVG_SURFACE_OUTPUT_FE_BLEND_FILTER ("color-dodge")
-	break;
+        _CAIRO_SVG_SURFACE_OUTPUT_FE_BLEND_FILTER("color-dodge")
+        break;
     case CAIRO_SVG_FILTER_COLOR_BURN:
-	_CAIRO_SVG_SURFACE_OUTPUT_FE_BLEND_FILTER ("color-burn")
-	break;
+        _CAIRO_SVG_SURFACE_OUTPUT_FE_BLEND_FILTER("color-burn")
+        break;
     case CAIRO_SVG_FILTER_HARD_LIGHT:
-	_CAIRO_SVG_SURFACE_OUTPUT_FE_BLEND_FILTER ("hard-light")
-	break;
+        _CAIRO_SVG_SURFACE_OUTPUT_FE_BLEND_FILTER("hard-light")
+        break;
     case CAIRO_SVG_FILTER_SOFT_LIGHT:
-	_CAIRO_SVG_SURFACE_OUTPUT_FE_BLEND_FILTER ("soft-light")
-	break;
+        _CAIRO_SVG_SURFACE_OUTPUT_FE_BLEND_FILTER("soft-light")
+        break;
     case CAIRO_SVG_FILTER_DIFFERENCE:
-	_CAIRO_SVG_SURFACE_OUTPUT_FE_BLEND_FILTER ("difference")
-	break;
+        _CAIRO_SVG_SURFACE_OUTPUT_FE_BLEND_FILTER("difference")
+        break;
     case CAIRO_SVG_FILTER_EXCLUSION:
-	_CAIRO_SVG_SURFACE_OUTPUT_FE_BLEND_FILTER ("exclusion")
-	break;
+        _CAIRO_SVG_SURFACE_OUTPUT_FE_BLEND_FILTER("exclusion")
+        break;
     case CAIRO_SVG_FILTER_HUE:
-	_CAIRO_SVG_SURFACE_OUTPUT_FE_BLEND_FILTER ("hue")
-	break;
+        _CAIRO_SVG_SURFACE_OUTPUT_FE_BLEND_FILTER("hue")
+        break;
     case CAIRO_SVG_FILTER_SATURATION:
-	_CAIRO_SVG_SURFACE_OUTPUT_FE_BLEND_FILTER ("saturation")
-	break;
+        _CAIRO_SVG_SURFACE_OUTPUT_FE_BLEND_FILTER("saturation")
+        break;
     case CAIRO_SVG_FILTER_COLOR:
-	_CAIRO_SVG_SURFACE_OUTPUT_FE_BLEND_FILTER ("color")
-	break;
+        _CAIRO_SVG_SURFACE_OUTPUT_FE_BLEND_FILTER("color")
+        break;
     case CAIRO_SVG_FILTER_LUMINOSITY:
-	_CAIRO_SVG_SURFACE_OUTPUT_FE_BLEND_FILTER ("luminosity")
-	break;
+        _CAIRO_SVG_SURFACE_OUTPUT_FE_BLEND_FILTER("luminosity")
+        break;
     default:
-	ASSERT_NOT_REACHED;
+        ASSERT_NOT_REACHED;
     }
     return filter_id;
 }
 
 typedef struct {
-    cairo_svg_stream_t *output;
+    cairo_svg_stream_t* output;
     unsigned int in_mem;
     unsigned int trailing;
     unsigned char src[3];

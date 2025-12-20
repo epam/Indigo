@@ -606,9 +606,12 @@ _cairo_path_fixed_curve_to (cairo_path_fixed_t	*path,
 	}
     }
 
-    point[0].x = x0; point[0].y = y0;
-    point[1].x = x1; point[1].y = y1;
-    point[2].x = x2; point[2].y = y2;
+    point[0].x = x0;
+    point[0].y = y0;
+    point[1].x = x1;
+    point[1].y = y1;
+    point[2].x = x2;
+    point[2].y = y2;
 
     _cairo_box_add_curve_to (&path->extents, &path->current_point,
 			     &point[0], &point[1], &point[2]);

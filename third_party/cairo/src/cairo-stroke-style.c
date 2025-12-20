@@ -221,9 +221,15 @@ _cairo_stroke_style_dash_stroked (const cairo_stroke_style_t *style)
 
     switch (style->line_cap) {
     default: ASSERT_NOT_REACHED;
-    case CAIRO_LINE_CAP_BUTT:   cap_scale = 0.0; break;
-    case CAIRO_LINE_CAP_ROUND:  cap_scale = ROUND_MINSQ_APPROXIMATION; break;
-    case CAIRO_LINE_CAP_SQUARE: cap_scale = 1.0; break;
+    case CAIRO_LINE_CAP_BUTT:
+        cap_scale = 0.0;
+        break;
+    case CAIRO_LINE_CAP_ROUND:
+        cap_scale = ROUND_MINSQ_APPROXIMATION;
+        break;
+    case CAIRO_LINE_CAP_SQUARE:
+        cap_scale = 1.0;
+        break;
     }
 
     stroked = 0.0;

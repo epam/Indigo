@@ -601,28 +601,34 @@ debug_load_indirect (struct debug_stream *stream,
 	if (bits & (1<<i)) {
 	    switch (1<<(8+i)) {
 	    case LI0_STATE_STATIC_INDIRECT:
-		fprintf (stderr, "        STATIC: 0x%08x | %x\n", ptr[j]&~3, ptr[j]&3); j++;
-		fprintf (stderr, "                0x%08x\n", ptr[j++]);
-		break;
+            fprintf(stderr, "        STATIC: 0x%08x | %x\n", ptr[j] & ~3, ptr[j] & 3);
+            j++;
+            fprintf(stderr, "                0x%08x\n", ptr[j++]);
+            break;
 	    case LI0_STATE_DYNAMIC_INDIRECT:
-		fprintf (stderr, "       DYNAMIC: 0x%08x | %x\n", ptr[j]&~3, ptr[j]&3); j++;
-		break;
+            fprintf(stderr, "       DYNAMIC: 0x%08x | %x\n", ptr[j] & ~3, ptr[j] & 3);
+            j++;
+            break;
 	    case LI0_STATE_SAMPLER:
-		fprintf (stderr, "       SAMPLER: 0x%08x | %x\n", ptr[j]&~3, ptr[j]&3); j++;
-		fprintf (stderr, "                0x%08x\n", ptr[j++]);
-		break;
+            fprintf(stderr, "       SAMPLER: 0x%08x | %x\n", ptr[j] & ~3, ptr[j] & 3);
+            j++;
+            fprintf(stderr, "                0x%08x\n", ptr[j++]);
+            break;
 	    case LI0_STATE_MAP:
-		fprintf (stderr, "           MAP: 0x%08x | %x\n", ptr[j]&~3, ptr[j]&3); j++;
-		fprintf (stderr, "                0x%08x\n", ptr[j++]);
-		break;
+            fprintf(stderr, "           MAP: 0x%08x | %x\n", ptr[j] & ~3, ptr[j] & 3);
+            j++;
+            fprintf(stderr, "                0x%08x\n", ptr[j++]);
+            break;
 	    case LI0_STATE_PROGRAM:
-		fprintf (stderr, "       PROGRAM: 0x%08x | %x\n", ptr[j]&~3, ptr[j]&3); j++;
-		fprintf (stderr, "                0x%08x\n", ptr[j++]);
-		break;
+            fprintf(stderr, "       PROGRAM: 0x%08x | %x\n", ptr[j] & ~3, ptr[j] & 3);
+            j++;
+            fprintf(stderr, "                0x%08x\n", ptr[j++]);
+            break;
 	    case LI0_STATE_CONSTANTS:
-		fprintf (stderr, "     CONSTANTS: 0x%08x | %x\n", ptr[j]&~3, ptr[j]&3); j++;
-		fprintf (stderr, "                0x%08x\n", ptr[j++]);
-		break;
+            fprintf(stderr, "     CONSTANTS: 0x%08x | %x\n", ptr[j] & ~3, ptr[j] & 3);
+            j++;
+            fprintf(stderr, "                0x%08x\n", ptr[j++]);
+            break;
 	    default:
 		ASSERT_NOT_REACHED;
 		break;

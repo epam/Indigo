@@ -142,8 +142,9 @@ free_blocks (cairo_mempool_t *pool,
 		(i & (len - 1)) == 0) /* block would not be on boundary */
 		break;
 
-	    bits--; len >>=1;
-	} while (len);
+        bits--;
+        len >>= 1;
+    } while (len);
 
 	if (len == 0)
 	    break;

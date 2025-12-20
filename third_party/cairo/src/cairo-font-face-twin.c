@@ -178,7 +178,8 @@ field_matches (const char *s1,
         }
         return FALSE;
       }
-      s1++; s2++;
+      s1++;
+      s2++;
       len--;
     }
 
@@ -360,10 +361,12 @@ compute_hinting_scales (cairo_t *cr,
 {
     double x, y;
 
-    x = 1; y = 0;
+    x = 1;
+    y = 0;
     compute_hinting_scale (cr, x, y, x_scale, x_scale_inv);
 
-    x = 0; y = 1;
+    x = 0;
+    y = 1;
     compute_hinting_scale (cr, x, y, y_scale, y_scale_inv);
 }
 
@@ -610,8 +613,9 @@ twin_scaled_font_render_glyph (cairo_scaled_font_t  *scaled_font,
 	/* resnap margin for new transform */
 	{
 	    double x, y, x_scale, x_scale_inv;
-	    x = 1; y = 0;
-	    compute_hinting_scale (cr, x, y, &x_scale, &x_scale_inv);
+        x = 1;
+        y = 0;
+        compute_hinting_scale (cr, x, y, &x_scale, &x_scale_inv);
 	    marginl = SNAPXI (marginl);
 	}
     }

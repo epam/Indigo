@@ -1658,17 +1658,23 @@ _transform_glyph_bitmap (cairo_matrix_t         * shape,
     /* Find the bounding box of the original bitmap under that
      * transform
      */
-    x[0] = 0;          y[0] = 0;
-    x[1] = orig_width; y[1] = 0;
-    x[2] = orig_width; y[2] = orig_height;
-    x[3] = 0;          y[3] = orig_height;
+    x[0] = 0;
+    y[0] = 0;
+    x[1] = orig_width;
+    y[1] = 0;
+    x[2] = orig_width;
+    y[2] = orig_height;
+    x[3] = 0;
+    y[3] = orig_height;
 
     for (i = 0; i < 4; i++)
       cairo_matrix_transform_point (&original_to_transformed,
 				    &x[i], &y[i]);
 
-    x_min = floor (x[0]);   y_min = floor (y[0]);
-    x_max =  ceil (x[0]);   y_max =  ceil (y[0]);
+    x_min = floor(x[0]);
+    y_min = floor(y[0]);
+    x_max = ceil(x[0]);
+    y_max = ceil(y[0]);
 
     for (i = 1; i < 4; i++) {
 	if (x[i] < x_min)
@@ -2366,7 +2372,8 @@ cairo_ft_apply_variations (FT_Face                 face,
 
             p += 4;
             while (_cairo_isspace (*p)) p++;
-            if (*p == '=') p++;
+            if (*p == '=')
+                p++;
 
             if (p - start < 5)
                 goto skip;

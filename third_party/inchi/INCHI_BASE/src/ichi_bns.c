@@ -2772,7 +2772,9 @@ int fix_explicitly_indicated_bonds( int nebend,
 
         if (i2 < i1)
         {
-            int tmp = i1; i1 = i2; i2 = tmp;
+            int tmp = i1;
+            i1 = i2;
+            i2 = tmp;
         }
 
         a = at + i1;
@@ -2781,7 +2783,8 @@ int fix_explicitly_indicated_bonds( int nebend,
             neigh = (int) a->neighbor[i];
             if (neigh == i2)
             {
-                index = i; break;
+                index = i;
+                break;
             }
         }
         if (index > -1)

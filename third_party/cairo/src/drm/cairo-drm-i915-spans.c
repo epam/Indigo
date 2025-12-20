@@ -210,21 +210,24 @@ i915_span_texture (i915_spans_t *spans,
     *vertices++ = y1;
     s = x0, t = y0;
     cairo_matrix_transform_point (&spans->shader.source.base.matrix, &s, &t);
-    *vertices++ = s; *vertices++ = t;
+    *vertices++ = s;
+    *vertices++ = t;
     *vertices++ = a;
 
     *vertices++ = x0;
     *vertices++ = y1;
     s = x1, t = y0;
     cairo_matrix_transform_point (&spans->shader.source.base.matrix, &s, &t);
-    *vertices++ = s; *vertices++ = t;
+    *vertices++ = s;
+    *vertices++ = t;
     *vertices++ = a;
 
     *vertices++ = x0;
     *vertices++ = y0;
     s = x1, t = y1;
     cairo_matrix_transform_point (&spans->shader.source.base.matrix, &s, &t);
-    *vertices++ = s; *vertices++ = t;
+    *vertices++ = s;
+    *vertices++ = t;
     *vertices++ = a;
 }
 
@@ -278,7 +281,8 @@ i915_span_generic (i915_spans_t *spans,
     vertices = spans->get_rectangle (spans);
 
     /* bottom right */
-    *vertices++ = x1; *vertices++ = y1;
+    *vertices++ = x1;
+    *vertices++ = y1;
     s = x1, t = y1;
     switch (spans->shader.source.type.vertex) {
     case VS_ZERO:
@@ -289,8 +293,9 @@ i915_span_generic (i915_spans_t *spans,
 	break;
     case VS_TEXTURE:
 	cairo_matrix_transform_point (&spans->shader.source.base.matrix, &s, &t);
-	*vertices++ = s; *vertices++ = t;
-	break;
+    *vertices++ = s;
+    *vertices++ = t;
+    break;
     case VS_TEXTURE_16:
 	cairo_matrix_transform_point (&spans->shader.source.base.matrix, &s, &t);
 	*vertices++ = texcoord_2d_16 (s, t);
@@ -309,7 +314,8 @@ i915_span_generic (i915_spans_t *spans,
     }
 
     /* bottom left */
-    *vertices++ = x0; *vertices++ = y1;
+    *vertices++ = x0;
+    *vertices++ = y1;
     s = x0, t = y1;
     switch (spans->shader.source.type.vertex) {
     case VS_ZERO:
@@ -320,8 +326,9 @@ i915_span_generic (i915_spans_t *spans,
 	break;
     case VS_TEXTURE:
 	cairo_matrix_transform_point (&spans->shader.source.base.matrix, &s, &t);
-	*vertices++ = s; *vertices++ = t;
-	break;
+    *vertices++ = s;
+    *vertices++ = t;
+    break;
     case VS_TEXTURE_16:
 	cairo_matrix_transform_point (&spans->shader.source.base.matrix, &s, &t);
 	*vertices++ = texcoord_2d_16 (s, t);
@@ -340,7 +347,8 @@ i915_span_generic (i915_spans_t *spans,
     }
 
     /* top left */
-    *vertices++ = x0; *vertices++ = y0;
+    *vertices++ = x0;
+    *vertices++ = y0;
     s = x0, t = y0;
     switch (spans->shader.source.type.vertex) {
     case VS_ZERO:
@@ -351,8 +359,9 @@ i915_span_generic (i915_spans_t *spans,
 	break;
     case VS_TEXTURE:
 	cairo_matrix_transform_point (&spans->shader.source.base.matrix, &s, &t);
-	*vertices++ = s; *vertices++ = t;
-	break;
+    *vertices++ = s;
+    *vertices++ = t;
+    break;
     case VS_TEXTURE_16:
 	cairo_matrix_transform_point (&spans->shader.source.base.matrix, &s, &t);
 	*vertices++ = texcoord_2d_16 (s, t);

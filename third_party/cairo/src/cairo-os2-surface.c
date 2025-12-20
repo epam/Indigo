@@ -104,7 +104,8 @@ cairo_os2_init (void)
     /* This may initialize some stuffs, like create mutex semaphores etc.. */
 
     cairo_os2_initialization_count++;
-    if (cairo_os2_initialization_count > 1) return;
+    if (cairo_os2_initialization_count > 1)
+        return;
 
     DisableFPUException ();
 
@@ -131,9 +132,11 @@ cairo_os2_fini (void)
 {
     /* This has to uninitialize some stuffs, like destroy mutex semaphores etc.. */
 
-    if (cairo_os2_initialization_count <= 0) return;
+    if (cairo_os2_initialization_count <= 0)
+        return;
     cairo_os2_initialization_count--;
-    if (cairo_os2_initialization_count > 0) return;
+    if (cairo_os2_initialization_count > 0)
+        return;
 
     DisableFPUException ();
 

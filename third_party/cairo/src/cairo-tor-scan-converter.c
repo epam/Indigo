@@ -1405,8 +1405,10 @@ glitter_scan_converter_reset(
     glitter_status_t status;
     int max_num_spans;
 
-    converter->xmin = 0; converter->xmax = 0;
-    converter->ymin = 0; converter->ymax = 0;
+    converter->xmin = 0;
+    converter->xmax = 0;
+    converter->ymin = 0;
+    converter->ymax = 0;
 
     max_num_spans = xmax - xmin + 1;
 

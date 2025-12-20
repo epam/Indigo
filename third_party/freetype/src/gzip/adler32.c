@@ -165,10 +165,14 @@ local uLong adler32_combine_(
     MOD(sum2);
     sum1 += (adler2 & 0xffff) + BASE - 1;
     sum2 += ((adler1 >> 16) & 0xffff) + ((adler2 >> 16) & 0xffff) + BASE - rem;
-    if (sum1 >= BASE) sum1 -= BASE;
-    if (sum1 >= BASE) sum1 -= BASE;
-    if (sum2 >= ((unsigned long)BASE << 1)) sum2 -= ((unsigned long)BASE << 1);
-    if (sum2 >= BASE) sum2 -= BASE;
+    if ( sum1 >= BASE )
+      sum1 -= BASE;
+    if ( sum1 >= BASE )
+      sum1 -= BASE;
+    if ( sum2 >= ( (unsigned long)BASE << 1 ) )
+      sum2 -= ( (unsigned long)BASE << 1 );
+    if ( sum2 >= BASE )
+      sum2 -= BASE;
     return sum1 | (sum2 << 16);
 }
 

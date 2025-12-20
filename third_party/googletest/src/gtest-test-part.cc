@@ -96,8 +96,9 @@ HasNewFatalFailureHelper::~HasNewFatalFailureHelper() {
 
 void HasNewFatalFailureHelper::ReportTestPartResult(
     const TestPartResult& result) {
-  if (result.fatally_failed()) has_new_fatal_failure_ = true;
-  original_reporter_->ReportTestPartResult(result);
+    if (result.fatally_failed())
+        has_new_fatal_failure_ = true;
+    original_reporter_->ReportTestPartResult(result);
 }
 
 }  // namespace internal

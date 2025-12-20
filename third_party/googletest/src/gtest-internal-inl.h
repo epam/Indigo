@@ -275,7 +275,8 @@ inline int CountIf(const Container& c, Predicate predicate) {
   // Solaris has a non-standard signature.
   int count = 0;
   for (auto it = c.begin(); it != c.end(); ++it) {
-    if (predicate(*it)) ++count;
+      if (predicate(*it))
+          ++count;
   }
   return count;
 }

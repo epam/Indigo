@@ -295,8 +295,10 @@ edges_compare_x_for_y_general (const cairo_bo_edge_t *a,
                    bmin = b->edge.line.p2.x;
                    bmax = b->edge.line.p1.x;
            }
-           if (amax < bmin) return -1;
-           if (amin > bmax) return +1;
+           if (amax < bmin)
+               return -1;
+           if (amin > bmax)
+               return +1;
     }
 
     ady = a->edge.line.p2.y - a->edge.line.p1.y;
@@ -1416,7 +1418,8 @@ _cairo_polygon_reduce (cairo_polygon_t *polygon,
 	events[i].edge.next = NULL;
     }
 
-    num_limits = polygon->num_limits; polygon->num_limits = 0;
+    num_limits = polygon->num_limits;
+    polygon->num_limits = 0;
     polygon->num_edges = 0;
 
     status = _cairo_bentley_ottmann_tessellate_bo_edges (event_ptrs,

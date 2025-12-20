@@ -742,7 +742,8 @@ unsigned long ZEXPORT crc32_z(
     z_size_t len)
 {
     /* Return initial CRC, if requested. */
-    if (buf == Z_NULL) return 0;
+    if ( buf == Z_NULL )
+      return 0;
 
 #ifdef DYNAMIC_CRC_TABLE
     once(&made, make_crc_table);

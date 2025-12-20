@@ -231,11 +231,17 @@ _cairo_user_scaled_glyph_init (void			 *abstract_font,
 	case CAIRO_ANTIALIAS_DEFAULT:
 	case CAIRO_ANTIALIAS_FAST:
 	case CAIRO_ANTIALIAS_GOOD:
-	case CAIRO_ANTIALIAS_GRAY:	format = CAIRO_FORMAT_A8;	break;
-	case CAIRO_ANTIALIAS_NONE:	format = CAIRO_FORMAT_A1;	break;
-	case CAIRO_ANTIALIAS_BEST:
-	case CAIRO_ANTIALIAS_SUBPIXEL:	format = CAIRO_FORMAT_ARGB32;	break;
-	}
+    case CAIRO_ANTIALIAS_GRAY:
+        format = CAIRO_FORMAT_A8;
+        break;
+    case CAIRO_ANTIALIAS_NONE:
+        format = CAIRO_FORMAT_A1;
+        break;
+    case CAIRO_ANTIALIAS_BEST:
+    case CAIRO_ANTIALIAS_SUBPIXEL:
+        format = CAIRO_FORMAT_ARGB32;
+        break;
+    }
 	surface = cairo_image_surface_create (format, width, height);
 
 	cairo_surface_set_device_offset (surface,
@@ -430,10 +436,12 @@ _cairo_user_font_face_scaled_font_create (void                        *abstract_
 						      1);
 	if (status == CAIRO_STATUS_SUCCESS) {
 
-	    if (x_scale == 0) x_scale = 1.;
-	    if (y_scale == 0) y_scale = 1.;
+        if (x_scale == 0)
+            x_scale = 1.;
+        if (y_scale == 0)
+            y_scale = 1.;
 
-	    user_scaled_font->snap_x_scale = x_scale;
+        user_scaled_font->snap_x_scale = x_scale;
 	    user_scaled_font->snap_y_scale = y_scale;
 
 	    /* since glyphs are pretty much 1.0x1.0, we can reduce error by

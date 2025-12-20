@@ -112,15 +112,18 @@ i965_add_glyph_rectangle (i965_glyphs_t *glyphs,
     v = glyphs->get_rectangle (glyphs);
 
     /* bottom right */
-    *v++ = x2; *v++ = y2;
+    *v++ = x2;
+    *v++ = y2;
     *v++ = glyph->texcoord[0];
 
     /* bottom left */
-    *v++ = x1; *v++ = y2;
+    *v++ = x1;
+    *v++ = y2;
     *v++ = glyph->texcoord[1];
 
     /* top left */
-    *v++ = x1; *v++ = y1;
+    *v++ = x1;
+    *v++ = y1;
     *v++ = glyph->texcoord[2];
 }
 

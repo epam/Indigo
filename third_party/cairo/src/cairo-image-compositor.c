@@ -2099,10 +2099,16 @@ mono_renderer_init (cairo_image_span_renderer_t	*r,
 	     * using SSE2 etc.
 	     */
 	    switch (PIXMAN_FORMAT_BPP(dst->pixman_format)) {
-	    case 8: r->base.render_rows = _fill8_spans; break;
-	    case 16: r->base.render_rows = _fill16_spans; break;
-	    case 32: r->base.render_rows = _fill32_spans; break;
-	    default: break;
+        case 8:
+            r->base.render_rows = _fill8_spans;
+            break;
+        case 16:
+            r->base.render_rows = _fill16_spans;
+            break;
+        case 32:
+            r->base.render_rows = _fill32_spans;
+            break;
+        default: break;
 	    }
 	    r->u.fill.data = dst->data;
 	    r->u.fill.stride = dst->stride;

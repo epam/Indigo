@@ -55,9 +55,12 @@ i915_emit_glyph_rectangle_zero (i915_device_t *device,
      */
 
     v = i915_add_rectangle (device);
-    *v++ = x2; *v++ = y2;
-    *v++ = x1; *v++ = y2;
-    *v++ = x1; *v++ = y1;
+    *v++ = x2;
+    *v++ = y2;
+    *v++ = x1;
+    *v++ = y2;
+    *v++ = x1;
+    *v++ = y1;
 }
 
 static void
@@ -77,15 +80,18 @@ i915_emit_glyph_rectangle_constant (i915_device_t *device,
     v = i915_add_rectangle (device);
 
     /* bottom right */
-    *v++ = x2; *v++ = y2;
+    *v++ = x2;
+    *v++ = y2;
     *v++ = glyph->texcoord[0];
 
     /* bottom left */
-    *v++ = x1; *v++ = y2;
+    *v++ = x1;
+    *v++ = y2;
     *v++ = glyph->texcoord[1];
 
     /* top left */
-    *v++ = x1; *v++ = y1;
+    *v++ = x1;
+    *v++ = y1;
     *v++ = glyph->texcoord[2];
 }
 
@@ -108,7 +114,8 @@ i915_emit_glyph_rectangle_general (i915_device_t *device,
     v = i915_add_rectangle (device);
 
     /* bottom right */
-    *v++ = x2; *v++ = y2;
+    *v++ = x2;
+    *v++ = y2;
     s = x2, t = y2;
     switch (shader->source.type.vertex) {
     case VS_ZERO:
@@ -119,8 +126,9 @@ i915_emit_glyph_rectangle_general (i915_device_t *device,
 	break;
     case VS_TEXTURE:
 	cairo_matrix_transform_point (&shader->source.base.matrix, &s, &t);
-	*v++ = s; *v++ = t;
-	break;
+    *v++ = s;
+    *v++ = t;
+    break;
     case VS_TEXTURE_16:
 	cairo_matrix_transform_point (&shader->source.base.matrix, &s, &t);
 	*v++ = texcoord_2d_16 (s, t);
@@ -129,7 +137,8 @@ i915_emit_glyph_rectangle_general (i915_device_t *device,
     *v++ = glyph->texcoord[0];
 
     /* bottom left */
-    *v++ = x1; *v++ = y2;
+    *v++ = x1;
+    *v++ = y2;
     s = x1, t = y2;
     switch (shader->source.type.vertex) {
     case VS_ZERO:
@@ -140,8 +149,9 @@ i915_emit_glyph_rectangle_general (i915_device_t *device,
 	break;
     case VS_TEXTURE:
 	cairo_matrix_transform_point (&shader->source.base.matrix, &s, &t);
-	*v++ = s; *v++ = t;
-	break;
+    *v++ = s;
+    *v++ = t;
+    break;
     case VS_TEXTURE_16:
 	cairo_matrix_transform_point (&shader->source.base.matrix, &s, &t);
 	*v++ = texcoord_2d_16 (s, t);
@@ -150,7 +160,8 @@ i915_emit_glyph_rectangle_general (i915_device_t *device,
     *v++ = glyph->texcoord[1];
 
     /* top left */
-    *v++ = x1; *v++ = y1;
+    *v++ = x1;
+    *v++ = y1;
     s = x1, t = y2;
     switch (shader->source.type.vertex) {
     case VS_ZERO:
@@ -161,8 +172,9 @@ i915_emit_glyph_rectangle_general (i915_device_t *device,
 	break;
     case VS_TEXTURE:
 	cairo_matrix_transform_point (&shader->source.base.matrix, &s, &t);
-	*v++ = s; *v++ = t;
-	break;
+    *v++ = s;
+    *v++ = t;
+    break;
     case VS_TEXTURE_16:
 	cairo_matrix_transform_point (&shader->source.base.matrix, &s, &t);
 	*v++ = texcoord_2d_16 (s, t);

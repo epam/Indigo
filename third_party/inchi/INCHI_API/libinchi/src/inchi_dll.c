@@ -709,14 +709,28 @@ translate_RetVal:
 
     switch (nRet)
     {
-        case _IS_SKIP: nRet = inchi_Ret_SKIP; break; /* not used in INChI dll */
-        case _IS_EOF: nRet = inchi_Ret_EOF; break; /* no structural data has been provided */
-        case _IS_OKAY: nRet = inchi_Ret_OKAY; break; /* Success; break; no errors or warnings */
-        case _IS_WARNING: nRet = inchi_Ret_WARNING; break; /* Success; break; warning(s) issued */
-        case _IS_ERROR: nRet = inchi_Ret_ERROR; break; /* Error: no INChI has been created */
-        case _IS_FATAL: nRet = inchi_Ret_FATAL; break; /* Severe error: no INChI has been created (typically; break; memory allocation failed) */
-        case _IS_UNKNOWN:
-        default: nRet = inchi_Ret_UNKNOWN; break; /* Unlnown program error */
+    case _IS_SKIP:
+        nRet = inchi_Ret_SKIP;
+        break; /* not used in INChI dll */
+    case _IS_EOF:
+        nRet = inchi_Ret_EOF;
+        break; /* no structural data has been provided */
+    case _IS_OKAY:
+        nRet = inchi_Ret_OKAY;
+        break; /* Success; break; no errors or warnings */
+    case _IS_WARNING:
+        nRet = inchi_Ret_WARNING;
+        break; /* Success; break; warning(s) issued */
+    case _IS_ERROR:
+        nRet = inchi_Ret_ERROR;
+        break; /* Error: no INChI has been created */
+    case _IS_FATAL:
+        nRet = inchi_Ret_FATAL;
+        break; /* Severe error: no INChI has been created (typically; break; memory allocation failed) */
+    case _IS_UNKNOWN:
+    default:
+        nRet = inchi_Ret_UNKNOWN;
+        break; /* Unlnown program error */
     }
 
     return nRet;
@@ -918,9 +932,12 @@ int INCHI_DECL CheckINCHI( const char *szINCHI, const int strict )
         }
         prev_is_slash = (pp != '/') ? 0 : 1;
 #endif
-        if (pp >= 'A' && pp <= 'Z')   continue;
-        if (pp >= 'a' && pp <= 'z')   continue;
-        if (pp >= '0' && pp <= '9')  continue;
+        if (pp >= 'A' && pp <= 'Z')
+            continue;
+        if (pp >= 'a' && pp <= 'z')
+            continue;
+        if (pp >= '0' && pp <= '9')
+            continue;
         switch (pp)
         {
             case '(': case ')':
@@ -2391,31 +2408,37 @@ translate_RetVal:
 
     switch (nRet)
     {
-        case -3: nRet = inchi_Ret_ERROR; break; /* Error: no Structure has been created */
-        case -2: nRet = inchi_Ret_ERROR; break; /* Error: no Structure has been created */
-        case -1: nRet = inchi_Ret_FATAL; break; /* Severe error: no Structure has been created (typically; break; memory allocation failed) */
-        default:
-            /*
-            if ( !outStruct->atom || !outStruct->num_atoms )
+    case -3:
+        nRet = inchi_Ret_ERROR;
+        break; /* Error: no Structure has been created */
+    case -2:
+        nRet = inchi_Ret_ERROR;
+        break; /* Error: no Structure has been created */
+    case -1:
+        nRet = inchi_Ret_FATAL;
+        break; /* Severe error: no Structure has been created (typically; break; memory allocation failed) */
+    default:
+        /*
+        if ( !outStruct->atom || !outStruct->num_atoms )
+        {
+            nRet = inchi_Ret_EOF;
+        }
+        else
+        {
+            int m,n,t=0;
+            for ( m=0; m < 2; m ++ )
             {
-                nRet = inchi_Ret_EOF;
-            }
-            else
-            {
-                int m,n,t=0;
-                for ( m=0; m < 2; m ++ )
+                for ( n=0; n < 2; n ++ )
                 {
-                    for ( n=0; n < 2; n ++ )
-                    {
-                        if ( outStruct->WarningFlags[m][n] ) {
-                            t ++;
-                        }
+                    if ( outStruct->WarningFlags[m][n] ) {
+                        t ++;
                     }
                 }
-                nRet = t? inchi_Ret_WARNING : inchi_Ret_OKAY;
             }
-            */
-            break;
+            nRet = t? inchi_Ret_WARNING : inchi_Ret_OKAY;
+        }
+        */
+        break;
     }
 
     return nRet;
@@ -2788,30 +2811,36 @@ translate_RetVal:
 
     switch (nRet)
     {
-        case -3: nRet = inchi_Ret_ERROR; break; /* Error: no Structure has been created */
-        case -2: nRet = inchi_Ret_ERROR; break; /* Error: no Structure has been created */
-        case -1: nRet = inchi_Ret_FATAL; break; /* Severe error: no Structure has been created (typically; break; memory allocation failed) */
-        default:
-            if (!outStruct->atom || !outStruct->num_atoms)
+    case -3:
+        nRet = inchi_Ret_ERROR;
+        break; /* Error: no Structure has been created */
+    case -2:
+        nRet = inchi_Ret_ERROR;
+        break; /* Error: no Structure has been created */
+    case -1:
+        nRet = inchi_Ret_FATAL;
+        break; /* Severe error: no Structure has been created (typically; break; memory allocation failed) */
+    default:
+        if (!outStruct->atom || !outStruct->num_atoms)
+        {
+            nRet = inchi_Ret_EOF;
+        }
+        else
+        {
+            int m, n, t = 0;
+            for (m = 0; m < 2; m++)
             {
-                nRet = inchi_Ret_EOF;
-            }
-            else
-            {
-                int m, n, t = 0;
-                for (m = 0; m < 2; m++)
+                for (n = 0; n < 2; n++)
                 {
-                    for (n = 0; n < 2; n++)
+                    if (outStruct->WarningFlags[m][n])
                     {
-                        if (outStruct->WarningFlags[m][n])
-                        {
-                            t++;
-                        }
+                        t++;
                     }
                 }
-                nRet = t ? inchi_Ret_WARNING : inchi_Ret_OKAY;
             }
-            break;
+            nRet = t ? inchi_Ret_WARNING : inchi_Ret_OKAY;
+        }
+        break;
     }
 
     return nRet;
@@ -3153,7 +3182,11 @@ int SetExtOrigAtDataByInChIExtInput( OAD_Polymer **ppPolymer,
         if (iev->n_steabs && iev->lists_steabs)
         {
             pv->lists_steabs = (int **) inchi_calloc( iev->n_steabs, sizeof( int* ) );
-            if (NULL == pv->lists_steabs) { err = 9001; goto exitf; }
+            if (NULL == pv->lists_steabs)
+            {
+                err = 9001;
+                goto exitf;
+            }
             for (m = 0; m < iev->n_steabs; m++)
             {
                 int *lst = NULL;
@@ -3174,7 +3207,11 @@ int SetExtOrigAtDataByInChIExtInput( OAD_Polymer **ppPolymer,
         if (iev->n_sterac && iev->lists_sterac)
         {
             pv->lists_sterac = (int **) inchi_calloc( iev->n_sterac, sizeof( int* ) );
-            if (NULL == pv->lists_sterac) { err = 9001; goto exitf; }
+            if (NULL == pv->lists_sterac)
+            {
+                err = 9001;
+                goto exitf;
+            }
             for (m = 0; m < iev->n_sterac; m++)
             {
                 int *lst = NULL;
@@ -3195,7 +3232,11 @@ int SetExtOrigAtDataByInChIExtInput( OAD_Polymer **ppPolymer,
         if (iev->n_sterel && iev->lists_sterel)
         {
             pv->lists_sterel = (int **) inchi_calloc( iev->n_sterel, sizeof( int* ) );
-            if (NULL == pv->lists_sterel) { err = 9001; goto exitf; }
+            if (NULL == pv->lists_sterel)
+            {
+                err = 9001;
+                goto exitf;
+            }
             for (m = 0; m < iev->n_sterel; m++)
             {
                 int *lst = NULL;
@@ -3247,7 +3288,8 @@ int SetInChIExtInputByExtOrigAtData( OAD_Polymer     *orp,
         ( *iip )->units = (inchi_Input_PolymerUnit**) inchi_calloc( orp->n, sizeof( ( *iip )->units[0] ) );
         if (!( *iip )->units)
         {
-            err = 9001; goto exitf;
+            err = 9001;
+            goto exitf;
         }
         memset( ( *iip )->units, 0, sizeof( *( *iip )->units ) );
         for (k = 0; k < orp->n; k++)
@@ -3259,7 +3301,8 @@ int SetInChIExtInputByExtOrigAtData( OAD_Polymer     *orp,
             unitk = ( *iip )->units[k];
             if (!unitk)
             {
-                err = 9001; goto exitf;
+                err = 9001;
+                goto exitf;
             }
             memset( unitk, 0, sizeof( *unitk ) );
             unitk->id = groupk->id;
@@ -3277,7 +3320,8 @@ int SetInChIExtInputByExtOrigAtData( OAD_Polymer     *orp,
             unitk->alist = (int *) inchi_calloc( unitk->na, sizeof( int ) );
             if (!unitk->alist)
             {
-                err = 9001; goto exitf;
+                err = 9001;
+                goto exitf;
             }
             for (m = 0; m < unitk->na; m++)
             {
@@ -3289,7 +3333,8 @@ int SetInChIExtInputByExtOrigAtData( OAD_Polymer     *orp,
                 unitk->blist = (int *) inchi_calloc( 2 * unitk->nb, sizeof( int ) );
                 if (!unitk->blist)
                 {
-                    err = 9001; goto exitf;
+                    err = 9001;
+                    goto exitf;
                 }
                 for (m = 0; m < 2 * groupk->nb; m++)
                 {
@@ -3309,7 +3354,8 @@ int SetInChIExtInputByExtOrigAtData( OAD_Polymer     *orp,
         *iiv = (inchi_Input_V3000 *) inchi_calloc( 1, sizeof( OAD_V3000 ) );
         if (!*iiv)
         {
-            err = 9001; goto exitf;
+            err = 9001;
+            goto exitf;
         }
         memset( *iiv, 0, sizeof( **iiv ) );
 
@@ -3372,7 +3418,11 @@ int SetInChIExtInputByExtOrigAtData( OAD_Polymer     *orp,
         if (orv->n_steabs && orv->lists_steabs)
         {
             ( *iiv )->lists_steabs = (int **) inchi_calloc( orv->n_steabs, sizeof( int* ) );
-            if (NULL == ( *iiv )->lists_steabs) { err = 9001; goto exitf; }
+            if (NULL == (*iiv)->lists_steabs)
+            {
+                err = 9001;
+                goto exitf;
+            }
             for (m = 0; m < orv->n_steabs; m++)
             {
                 int *lst = NULL;
@@ -3393,7 +3443,11 @@ int SetInChIExtInputByExtOrigAtData( OAD_Polymer     *orp,
         if (orv->n_sterac && orv->lists_sterac)
         {
             ( *iiv )->lists_sterac = (int **) inchi_calloc( orv->n_sterac, sizeof( int* ) );
-            if (NULL == ( *iiv )->lists_sterac) { err = 9001; goto exitf; }
+            if (NULL == (*iiv)->lists_sterac)
+            {
+                err = 9001;
+                goto exitf;
+            }
             for (m = 0; m < orv->n_sterac; m++)
             {
                 int *lst = NULL;
@@ -3414,7 +3468,11 @@ int SetInChIExtInputByExtOrigAtData( OAD_Polymer     *orp,
         if (orv->n_sterel && orv->lists_sterel)
         {
             ( *iiv )->lists_sterel = (int **) inchi_calloc( orv->n_sterel, sizeof( int* ) );
-            if (NULL == ( *iiv )->lists_sterel) { err = 9001; goto exitf; }
+            if (NULL == (*iiv)->lists_sterel)
+            {
+                err = 9001;
+                goto exitf;
+            }
             for (m = 0; m < orv->n_sterel; m++)
             {
                 int *lst = NULL;

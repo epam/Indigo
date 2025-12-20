@@ -523,7 +523,12 @@ int CanonOneStructureINChI( CANON_GLOBALS *pCG,
             ip->msec_LeftTime -= InchiTimeElapsed( ic, &ulTStart );
         }
 
-        switch (nRet) { case _IS_ERROR: case _IS_FATAL: goto exit_cycle; }
+        switch (nRet)
+        {
+        case _IS_ERROR:
+        case _IS_FATAL:
+            goto exit_cycle;
+        }
 
 #ifndef TARGET_API_LIB
         /*  console request: Display the component? */
@@ -1129,7 +1134,8 @@ int  Normalization_step( CANON_GLOBALS *pCG,
 
     memset( z->s, 0, sizeof( z->s ) );
 
-    if (pBCN) memset( pBCN, 0, sizeof( pBCN[0] ) );
+    if (pBCN)
+        memset(pBCN, 0, sizeof(pBCN[0]));
 
     memset( t_group_info, 0, sizeof( *t_group_info ) );
     memset( t_group_info_orig, 0, sizeof( *t_group_info_orig ) );

@@ -925,7 +925,8 @@ _cairo_gl_shader_set_samplers (cairo_gl_context_t *ctx,
     if (location != -1) {
 	dispatch->Uniform1i (location, CAIRO_GL_TEX_MASK);
     }
-    if(_cairo_gl_get_error()) return CAIRO_STATUS_DEVICE_ERROR;
+    if (_cairo_gl_get_error())
+        return CAIRO_STATUS_DEVICE_ERROR;
     dispatch->UseProgram (saved_program);
     /* Pop and ignore a possible gl-error when restoring the previous program.
      * It may be that being selected in the gl-context was the last reference

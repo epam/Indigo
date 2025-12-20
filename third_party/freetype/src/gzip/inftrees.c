@@ -112,8 +112,10 @@ int ZLIB_INTERNAL inflate_table(
     /* bound code lengths, force root to be within code lengths */
     root = *bits;
     for (max = MAXBITS; max >= 1; max--)
-        if (count[max] != 0) break;
-    if (root > max) root = max;
+      if ( count[max] != 0 )
+        break;
+    if ( root > max )
+      root = max;
     if (max == 0) {                     /* no symbols to code at all */
         here.op = (unsigned char)64;    /* invalid code marker */
         here.bits = (unsigned char)1;
@@ -124,15 +126,18 @@ int ZLIB_INTERNAL inflate_table(
         return 0;     /* no symbols, but wait for decoding to report error */
     }
     for (min = 1; min < max; min++)
-        if (count[min] != 0) break;
-    if (root < min) root = min;
+      if ( count[min] != 0 )
+        break;
+    if ( root < min )
+      root = min;
 
     /* check for an over-subscribed or incomplete set of lengths */
     left = 1;
     for (len = 1; len <= MAXBITS; len++) {
         left <<= 1;
         left -= count[len];
-        if (left < 0) return -1;        /* over-subscribed */
+        if ( left < 0 )
+          return -1; /* over-subscribed */
     }
     if (left > 0 && (type == CODES || max != 1))
         return -1;                      /* incomplete set */
@@ -144,7 +149,8 @@ int ZLIB_INTERNAL inflate_table(
 
     /* sort symbols by length, by symbol order within each length */
     for (sym = 0; sym < codes; sym++)
-        if (lens[sym] != 0) work[offs[lens[sym]]++] = (unsigned short)sym;
+      if ( lens[sym] != 0 )
+        work[offs[lens[sym]]++] = (unsigned short)sym;
 
     /*
        Create and fill in decoding tables.  In this loop, the table being
@@ -250,8 +256,9 @@ int ZLIB_INTERNAL inflate_table(
         /* go to next symbol, update count, len */
         sym++;
         if (--(count[len]) == 0) {
-            if (len == max) break;
-            len = lens[work[sym]];
+          if ( len == max )
+            break;
+          len = lens[work[sym]];
         }
 
         /* create new sub-table if needed */
@@ -268,7 +275,8 @@ int ZLIB_INTERNAL inflate_table(
             left = (int)(1 << curr);
             while (curr + drop < max) {
                 left -= count[curr + drop];
-                if (left <= 0) break;
+                if ( left <= 0 )
+                  break;
                 curr++;
                 left <<= 1;
             }

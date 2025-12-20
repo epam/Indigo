@@ -51,45 +51,93 @@ const char *ErrMsg( int nErrorCode )
     static char szErrMsg[64];
     switch (nErrorCode)
     {
-        case 0:                      p = "";                      break;
-        case CT_OVERFLOW:            p = "ARRAY OVERFLOW";        break;
-        case CT_LEN_MISMATCH:        p = "LENGTH_MISMATCH";       break;
-        case CT_OUT_OF_RAM:          p = "Out of RAM";            break;
-        case CT_RANKING_ERR:         p = "RANKING_ERR";           break;
-        case CT_ISOCOUNT_ERR:        p = "ISOCOUNT_ERR";          break;
-        case CT_TAUCOUNT_ERR:        p = "TAUCOUNT_ERR";          break;
-        case CT_ISOTAUCOUNT_ERR:     p = "ISOTAUCOUNT_ERR";       break;
-        case CT_MAPCOUNT_ERR:        p = "MAPCOUNT_ERR";          break;
-        case CT_TIMEOUT_ERR:         p = "Time limit exceeded";   break;
-        case CT_ISO_H_ERR:           p = "ISO_H_ERR";             break;
-        case CT_STEREOCOUNT_ERR:     p = "STEREOCOUNT_ERR";       break;
-        case CT_ATOMCOUNT_ERR:       p = "ATOMCOUNT_ERR";         break;
-        case CT_STEREOBOND_ERROR:    p = "STEREOBOND_ERR";        break;
-        case CT_USER_QUIT_ERR:       p = "User requested termination"; break;
-        case CT_REMOVE_STEREO_ERR:   p = "REMOVE_STEREO_ERR";     break;
-        case CT_CALC_STEREO_ERR:     p = "CALC_STEREO_ERR";       break;
-        case CT_STEREO_CANON_ERR:    p = "STEREO_CANON_ERR";      break;
-        case CT_CANON_ERR:           p = "CANON_ERR";             break;
-        case CT_WRONG_FORMULA:       p = "Wrong or missing chemical formula";  break;
-        /*case CT_CANON_ERR2:          p = "CT_CANON_ERR2";         break;*/
-        case CT_UNKNOWN_ERR:         p = "UNKNOWN_ERR";           break;
-        case BNS_RADICAL_ERR:        p = "Cannot process free radical center"; break;
-        case BNS_ALTBOND_ERR:        p = "Cannot process aromatic bonds";      break;
-        /* v. 1.05 */
-        case BNS_TIMEOUT:             p = "Structure normalization timeout";      break;
+    case 0:
+        p = "";
+        break;
+    case CT_OVERFLOW:
+        p = "ARRAY OVERFLOW";
+        break;
+    case CT_LEN_MISMATCH:
+        p = "LENGTH_MISMATCH";
+        break;
+    case CT_OUT_OF_RAM:
+        p = "Out of RAM";
+        break;
+    case CT_RANKING_ERR:
+        p = "RANKING_ERR";
+        break;
+    case CT_ISOCOUNT_ERR:
+        p = "ISOCOUNT_ERR";
+        break;
+    case CT_TAUCOUNT_ERR:
+        p = "TAUCOUNT_ERR";
+        break;
+    case CT_ISOTAUCOUNT_ERR:
+        p = "ISOTAUCOUNT_ERR";
+        break;
+    case CT_MAPCOUNT_ERR:
+        p = "MAPCOUNT_ERR";
+        break;
+    case CT_TIMEOUT_ERR:
+        p = "Time limit exceeded";
+        break;
+    case CT_ISO_H_ERR:
+        p = "ISO_H_ERR";
+        break;
+    case CT_STEREOCOUNT_ERR:
+        p = "STEREOCOUNT_ERR";
+        break;
+    case CT_ATOMCOUNT_ERR:
+        p = "ATOMCOUNT_ERR";
+        break;
+    case CT_STEREOBOND_ERROR:
+        p = "STEREOBOND_ERR";
+        break;
+    case CT_USER_QUIT_ERR:
+        p = "User requested termination";
+        break;
+    case CT_REMOVE_STEREO_ERR:
+        p = "REMOVE_STEREO_ERR";
+        break;
+    case CT_CALC_STEREO_ERR:
+        p = "CALC_STEREO_ERR";
+        break;
+    case CT_STEREO_CANON_ERR:
+        p = "STEREO_CANON_ERR";
+        break;
+    case CT_CANON_ERR:
+        p = "CANON_ERR";
+        break;
+    case CT_WRONG_FORMULA:
+        p = "Wrong or missing chemical formula";
+        break;
+    /*case CT_CANON_ERR2:          p = "CT_CANON_ERR2";         break;*/
+    case CT_UNKNOWN_ERR:
+        p = "UNKNOWN_ERR";
+        break;
+    case BNS_RADICAL_ERR:
+        p = "Cannot process free radical center";
+        break;
+    case BNS_ALTBOND_ERR:
+        p = "Cannot process aromatic bonds";
+        break;
+    /* v. 1.05 */
+    case BNS_TIMEOUT:
+        p = "Structure normalization timeout";
+        break;
 
-        default:
-            if (nErrorCode > CT_UNKNOWN_ERR)
-            {
-                sprintf( szErrMsg, "No description(%d)", nErrorCode );
-                p = szErrMsg;
-            }
-            else
-            {
-                sprintf( szErrMsg, "UNKNOWN_ERR(%d)", CT_UNKNOWN_ERR - nErrorCode );
-                p = szErrMsg;
-            }
-            break;
+    default:
+        if (nErrorCode > CT_UNKNOWN_ERR)
+        {
+            sprintf(szErrMsg, "No description(%d)", nErrorCode);
+            p = szErrMsg;
+        }
+        else
+        {
+            sprintf(szErrMsg, "UNKNOWN_ERR(%d)", CT_UNKNOWN_ERR - nErrorCode);
+            p = szErrMsg;
+        }
+        break;
     }
 
     return p;
