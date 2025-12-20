@@ -61,7 +61,8 @@ void SVGGeometryElement::updateMarkerPositions(SVGMarkerPositionList& positions,
     auto markerStart = getMarker(state.marker_start());
     auto markerMid = getMarker(state.marker_mid());
     auto markerEnd = getMarker(state.marker_end());
-    if(markerStart == nullptr && markerMid == nullptr && markerEnd == nullptr) {
+    if(markerStart == nullptr && markerMid == nullptr && markerEnd == nullptr)
+    {
         return;
     }
 
@@ -219,8 +220,10 @@ Rect SVGRectElement::updateShape(Path& path)
     auto rx = lengthContext.valueForLength(m_rx);
     auto ry = lengthContext.valueForLength(m_ry);
 
-    if(rx <= 0.f) rx = ry;
-    if(ry <= 0.f) ry = rx;
+    if(rx <= 0.f)
+        rx = ry;
+    if(ry <= 0.f)
+        ry = rx;
 
     rx = std::min(rx, width / 2.f);
     ry = std::min(ry, height / 2.f);
@@ -272,7 +275,8 @@ Rect SVGCircleElement::updateShape(Path& path)
 {
     LengthContext lengthContext(this);
     auto r = lengthContext.valueForLength(m_r);
-    if(r <= 0.f || r <= 0.f) {
+    if(r <= 0.f || r <= 0.f)
+    {
         return Rect::Empty;
     }
 

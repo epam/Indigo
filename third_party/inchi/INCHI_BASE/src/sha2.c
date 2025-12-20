@@ -354,7 +354,8 @@ void sha2_hmac( unsigned char *key, int keylen,
 
     for (i = 0; i < keylen; i++)
     {
-        if (i >= 64) break;
+        if (i >= 64)
+            break;
 
         k_ipad[i] ^= key[i];
         k_opad[i] ^= key[i];

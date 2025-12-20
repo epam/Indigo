@@ -60,7 +60,9 @@ PropertyID propertyid(const std::string_view& name)
         {"y2", PropertyID::Y2}
     };
 
-    auto it = std::lower_bound(table, std::end(table), name, [](const auto& item, const auto& name) { return item.name < name; });
+    auto it = std::lower_bound(
+        table, std::end(table), name,
+        [](const auto& item, const auto& name) { return item.name < name; });
     if(it == std::end(table) || it->name != name)
         return csspropertyid(name);
     return it->value;
@@ -106,7 +108,9 @@ PropertyID csspropertyid(const std::string_view& name)
         {"white-space", PropertyID::WhiteSpace}
     };
 
-    auto it = std::lower_bound(table, std::end(table), name, [](const auto& item, const auto& name) { return item.name < name; });
+    auto it = std::lower_bound(
+        table, std::end(table), name,
+        [](const auto& item, const auto& name) { return item.name < name; });
     if(it == std::end(table) || it->name != name)
         return PropertyID::Unknown;
     return it->value;

@@ -666,7 +666,8 @@ void DisplayOrigAndResultStructuresAndComponents( int               nRet,
 {
 
 
-    if (ip->bDisplay)    ip->bDisplayCompositeResults = 1;    /* v. 1.05 */
+    if (ip->bDisplay)
+        ip->bDisplayCompositeResults = 1;    /* v. 1.05 */
 
 #ifndef COMPILE_ANSI_ONLY /* { */
 

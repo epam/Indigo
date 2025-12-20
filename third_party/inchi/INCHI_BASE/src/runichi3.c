@@ -1342,13 +1342,17 @@ int  OAD_PolymerUnit_CompareAtomListsMod( OAD_PolymerUnit *u1,
     int n1 = u1->na;
     int n2 = u2->na;
     int n = n1;
-    if (n1 < n2)    return -1;
-    if (n1 > n2)    return 1;
+    if (n1 < n2)
+        return -1;
+    if (n1 > n2)
+        return 1;
     /* n1 == n2 == n */
     for (i = 0; i < n; i++)
     {
-        if (u1->alist[i] < u2->alist[i])    return -1;
-        if (u1->alist[i] > u2->alist[i])    return    1;
+        if (u1->alist[i] < u2->alist[i])
+            return -1;
+        if (u1->alist[i] > u2->alist[i])
+            return    1;
     }
 
     return 0;
@@ -1456,8 +1460,10 @@ int  OAD_PolymerUnit_OrderBondAtomsAndBondsThemselves( OAD_PolymerUnit  *u,
         if (b1a1 > b2a1)
         {
             /* swap */
-            u->blist[0] = b2a1; u->blist[1] = b2a2;
-            u->blist[2] = b1a1; u->blist[3] = b1a2;
+            u->blist[0] = b2a1;
+            u->blist[1] = b2a2;
+            u->blist[2] = b1a1;
+            u->blist[3] = b1a2;
         }
     }
 
@@ -1784,7 +1790,8 @@ int OAD_ValidatePolymerAndPseudoElementData( ORIG_ATOM_DATA *orig_at_data,
             for (k = 0; k < u->nb; k++)
             {
                 /* Check that there are no H end groups */
-                a1 = u->blist[2 * k]; a2 = u->blist[2 * k + 1];
+                a1 = u->blist[2 * k];
+                a2 = u->blist[2 * k + 1];
                 if (!strcmp( orig_at_data->at[a1 - 1].elname, "H" ) ||
                      !strcmp( orig_at_data->at[a1 - 1].elname, "D" ) ||
                      !strcmp( orig_at_data->at[a1 - 1].elname, "T" ))
@@ -2583,7 +2590,8 @@ int  OrigAtData_AddBond( int        this_atom,
     {
         if (a->neighbor[i] == other_atom)
         {
-            already_here = 1; break;
+            already_here = 1;
+            break;
         }
     }
 
@@ -2603,7 +2611,8 @@ int  OrigAtData_AddBond( int        this_atom,
     {
         if (a->neighbor[i] == this_atom)
         {
-            already_here = 1; break;
+            already_here = 1;
+            break;
         }
     }
 
@@ -2920,7 +2929,8 @@ void OAD_CollectBackboneAtoms(ORIG_ATOM_DATA  *at_data,
         goto exit_function;
     }
 
-    start = sg->orig2node[end_atom1]; end = sg->orig2node[end_atom2];
+    start = sg->orig2node[end_atom1];
+    end = sg->orig2node[end_atom2];
     if (start > end)
     {
         int tmp = end;
@@ -2934,7 +2944,8 @@ void OAD_CollectBackboneAtoms(ORIG_ATOM_DATA  *at_data,
         goto exit_function;
     }
 
-    spf->seen[0] = spf->start; spf->nseen = 1;    
+    spf->seen[0] = spf->start;
+    spf->nseen = 1;    
     nbkbonds = 0;
     *nbkatoms = 0;
     
@@ -4056,8 +4067,10 @@ int  OAD_Polymer_CompareBackboneBondsSeniority( int* b1, int* b2, OAD_AtProps *a
     int b1min, b1max, b2min, b2max, tmp, cmp = 0;
 
     /* Find min and max ext-ranked ends of the both bonds */
-    b1max = b1[0]; b1min = b1[1];
-    b2max = b2[0]; b2min = b2[1];
+    b1max = b1[0];
+    b1min = b1[1];
+    b2max = b2[0];
+    b2min = b2[1];
     if (OAD_Polymer_IsFirstAtomRankLower( b1min, b1max, aprops ) == -1)
     {
         tmp = b1max;

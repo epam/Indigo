@@ -318,7 +318,8 @@ bool StyleSheet::parseSheet(std::string_view input)
                 input.remove_prefix(1);
                 if(ch == ';' && depth == 0)
                     break;
-                if(ch == '{') ++depth;
+                if(ch == '{')
+                    ++depth;
                 else if(ch == '}' && depth > 0) {
                     if(depth == 1)
                         break;
@@ -760,8 +761,10 @@ bool Document::parse(const char* data, size_t length)
                         int depth = 1;
                         input.remove_prefix(1);
                         while(!input.empty() && depth > 0) {
-                            if(input.front() == '[') ++depth;
-                            else if(input.front() == ']') --depth;
+                            if(input.front() == '[')
+                                ++depth;
+                            else if(input.front() == ']')
+                                --depth;
                             input.remove_prefix(1);
                         }
                     } else {

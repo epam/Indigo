@@ -902,9 +902,10 @@ int ReadWriteInChI( INCHI_CLOCK *ic,
                 }
                 else
                 {
-                    if (bInChI2Structure)    inchi_ios_print( pRealOut, "Structure: %ld. (%s)%s",
-                                                              num_inp, strHdr ? strHdr : "No struct name",
-                                                              pTAB ); /* output header */
+                    if (bInChI2Structure)
+                        inchi_ios_print( pRealOut, "Structure: %ld. (%s)%s",
+                                         num_inp, strHdr ? strHdr : "No struct name",
+                                         pTAB ); /* output header */
 #if ( FIX_DALKE_BUGS == 1 )
 #else
                     sprintf( szMessage, "Structure: %ld. (%s)%s", num_inp, strHdr ? strHdr : "No struct name", pTAB );
@@ -3880,7 +3881,7 @@ int ParseAuxSegmentNumbers( const char  *str,               /* AuxInfo string   
                                     break;
 
                                 case 1:
-                                    pInChI_From = bAltInChIExists ? pAltInChI : NULL;;
+                                    pInChI_From = bAltInChIExists ? pAltInChI : NULL;
                                     bIso_From = 1;
                                     break;
                                 default:
@@ -3909,7 +3910,7 @@ int ParseAuxSegmentNumbers( const char  *str,               /* AuxInfo string   
                                     ret = RI_ERR_SYNTAX;
                                     goto exit_function;
                                 case 1:
-                                    pInChI_From = bAltInChIExists ? pAltInChI : NULL;;
+                                    pInChI_From = bAltInChIExists ? pAltInChI : NULL;
                                     bIso_From = 1;
                                     break;
                                 default:
@@ -5956,14 +5957,16 @@ one_more_time:
                 if (p[0] == '+' && isdigit( UCINT p[1] ))
                 {
                     isoAtom.nIsoDifference = (NUM_H) inchi_strtol( p + 1, &q, 10 );
-                    if (isoAtom.nIsoDifference >= 0) isoAtom.nIsoDifference++;
+                    if (isoAtom.nIsoDifference >= 0)
+                        isoAtom.nIsoDifference++;
                     p = q;
                 }
                 else
                     if (p[0] == '-' && isdigit( UCINT p[1] ))
                     {
                         isoAtom.nIsoDifference = -(NUM_H) inchi_strtol( p + 1, &q, 10 );
-                        if (isoAtom.nIsoDifference == 0) isoAtom.nIsoDifference++;
+                        if (isoAtom.nIsoDifference == 0)
+                            isoAtom.nIsoDifference++;
                         p = q;
                     }
                 if (*p == 'T')
@@ -7347,13 +7350,15 @@ int ParseSegmentPolymer( const char  *str,
 
     if (!pd)
     {
-        ret = RI_ERR_ALLOC; goto exit_function;
+        ret = RI_ERR_ALLOC;
+        goto exit_function;
     }
 
 
     if (!bInchi2Struct)
     {
-        ret = RI_ERR_SYNTAX; goto exit_function;
+        ret = RI_ERR_SYNTAX;
+        goto exit_function;
     }
 
     /* Count units */
@@ -7368,14 +7373,16 @@ int ParseSegmentPolymer( const char  *str,
     inchi_calloc( pd->n, sizeof( OAD_PolymerUnit * ) );
     if (!pd->units)
     {
-        ret = RI_ERR_ALLOC; goto exit_function;
+        ret = RI_ERR_ALLOC;
+        goto exit_function;
     }
 
     pStart = (char  *) str;
     pStart++;
     if (!pStart)
     {
-        ret = RI_ERR_PROGR; goto exit_function;
+        ret = RI_ERR_PROGR;
+        goto exit_function;
     }
 
     iunit = 0;
@@ -7447,7 +7454,8 @@ int ParseSegmentPolymer( const char  *str,
 #endif
             if (!num_atom || num_atom > na_total)
             {
-                ret = RI_ERR_SYNTAX; goto exit_function;
+                ret = RI_ERR_SYNTAX;
+                goto exit_function;
             }
             if (is_range)
             {
@@ -7456,7 +7464,8 @@ int ParseSegmentPolymer( const char  *str,
                 {
                     if (0 != IntArray_Append( &alist, a ))
                     {
-                        ret = RI_ERR_ALLOC; goto exit_function;
+                        ret = RI_ERR_ALLOC;
+                        goto exit_function;
                     }
                 }
                 is_range = 0;
@@ -7466,7 +7475,8 @@ int ParseSegmentPolymer( const char  *str,
             {
                 if (0 != IntArray_Append( &alist, num_atom ))
                 {
-                    ret = RI_ERR_ALLOC; goto exit_function;
+                    ret = RI_ERR_ALLOC;
+                    goto exit_function;
                 }
                 prev = num_atom;
             }
@@ -7501,7 +7511,8 @@ int ParseSegmentPolymer( const char  *str,
 
             if (!unit)
             {
-                ret = RI_ERR_ALLOC; goto exit_function;
+                ret = RI_ERR_ALLOC;
+                goto exit_function;
             }
             pd->units[iunit] = unit;
             IntArray_Reset( &alist );
@@ -7527,11 +7538,13 @@ int ParseSegmentPolymer( const char  *str,
             {
                 if (*p == '-')
                 {
-                    have = endgroups; break;
+                    have = endgroups;
+                    break;
                 }
                 if (*p == ',')
                 {
-                    have = stars; break;
+                    have = stars;
+                    break;
                 }
             }
             if (have == stars)
@@ -7540,15 +7553,18 @@ int ParseSegmentPolymer( const char  *str,
                 {
                     if (*p == ',')
                     {
-                        have = stars_ring; break;
+                        have = stars_ring;
+                        break;
                     }
                     if (*p == '.')
                     {
-                        have = stars_bond; break;
+                        have = stars_bond;
+                        break;
                     }
                     if (*p == ')')
                     {
-                        have = stars_atom; break;
+                        have = stars_atom;
+                        break;
                     }
                 }
             }
@@ -7570,10 +7586,14 @@ int ParseSegmentPolymer( const char  *str,
                     unit->blist = (int *) inchi_calloc( 2 * unit->nb, sizeof( int ) );
                     if (!unit->blist)
                     {
-                        ret = RI_ERR_ALLOC; IntArray_Free( &numlist ); goto exit_function;
+                        ret = RI_ERR_ALLOC;
+                        IntArray_Free( &numlist );
+                        goto exit_function;
                     }
-                    unit->blist[0] = numlist.item[0];    unit->blist[1] = numlist.item[1];
-                    unit->blist[2] = numlist.item[2];    unit->blist[3] = numlist.item[3];
+                    unit->blist[0] = numlist.item[0];
+                    unit->blist[1] = numlist.item[1];
+                    unit->blist[2] = numlist.item[2];
+                    unit->blist[3] = numlist.item[3];
                     unit->cap1 = numlist.item[0]; /* just for GAF check belows */
                     unit->cap2 = numlist.item[2];
                     IntArray_Free( &numlist );
@@ -7589,7 +7609,9 @@ int ParseSegmentPolymer( const char  *str,
                 p = ParseSegmentReadDelimitedNumbers( p, pEnd, &numlist, comma, dash, &res );
                 if (res != 1 || numlist.used != 2)
                 {
-                    ret = RI_ERR_SYNTAX; IntArray_Free( &numlist ); goto exit_function;
+                    ret = RI_ERR_SYNTAX;
+                    IntArray_Free( &numlist );
+                    goto exit_function;
                 }
                 /* OK, we got star atom numbers */
                 if (have == stars_ring)
@@ -7640,7 +7662,9 @@ int ParseSegmentPolymer( const char  *str,
             }
             else
             {
-                ret = RI_ERR_SYNTAX;  IntArray_Free( &numlist );  goto exit_function;
+                ret = RI_ERR_SYNTAX;
+                IntArray_Free( &numlist );
+                goto exit_function;
             }
 
             unit->cap1 = numlist.item[0];
@@ -7807,7 +7831,8 @@ const char* ParseSegmentReadDelimitedNumbers( const char *str,
             }
             else
             {
-                *ret = -1; return NULL;
+                *ret = -1;
+                return NULL;
             }
         }
         if (*p == c_stop)
@@ -11309,7 +11334,8 @@ int DetectAndExposePolymerInternals( INCHI_IOSTREAM *is )
     if (i2)
     {
         s2 = (char *) inchi_calloc( slength - i2 + 2, sizeof( char ) );
-        if (!s2) goto endf;
+        if (!s2)
+            goto endf;
         strcpy( s2, s + i2 );
         s[i2] = '\0';
     }
@@ -11656,7 +11682,8 @@ int DetectHiddenPolymerStuff( char *tmpstr,
         {
             if (!closed)
             {
-                ret = -3; goto endf;
+                ret = -3;
+                goto endf;
             }
             opened = 1;
             skip = 0;
@@ -11666,7 +11693,8 @@ int DetectHiddenPolymerStuff( char *tmpstr,
         {
             if (!opened)
             {
-                ret = -3; goto endf;
+                ret = -3;
+                goto endf;
             }
             if (!skip)
             {

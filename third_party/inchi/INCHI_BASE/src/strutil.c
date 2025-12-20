@@ -395,16 +395,24 @@ int fix_non_uniform_drawn_oxoanions( int num_atoms,
                 switch (en_term)
                 {
                     case dO:    break;
-                    case dS:    if (( en_center == dSe ) || ( en_center == dAt ) || ( en_center == dTe )) break;  continue;
-                    case dSe:   if (( en_center == dAt ) || ( en_center == dTe )) break;  continue;
-                    case dTe:   if (en_center == dAt) break; continue;
+                    case dS:
+                        if (( en_center == dSe ) || ( en_center == dAt ) || ( en_center == dTe )) break;
+                        continue;
+                    case dSe:
+                        if (( en_center == dAt ) || ( en_center == dTe )) break;
+                        continue;
+                    case dTe:
+                        if (en_center == dAt) break;
+                        continue;
                     default:    continue;
                 }
 
                 /* From several candidates, select one with less el. number (==more electronegative). */
                 if (en_term < min_en)
                 {
-                    min_en = en_term; kk = k; jj = j;
+                        min_en = en_term;
+                        kk = k;
+                        jj = j;
                     min_iso = at[j].iso_atw_diff > 0 ? at[i].iso_atw_diff - 1 : at[i].iso_atw_diff;
                     continue;
                 }
@@ -414,7 +422,10 @@ int fix_non_uniform_drawn_oxoanions( int num_atoms,
                     iso = at[j].iso_atw_diff > 0 ? at[i].iso_atw_diff - 1 : at[i].iso_atw_diff;
                     if (iso < min_iso)
                     {
-                        min_iso = iso; kk = k; jj = j; continue;
+                        min_iso = iso;
+                        kk = k;
+                        jj = j;
+                        continue;
                     }
                 }
             } /* end of checking nbrs. */
@@ -858,7 +869,8 @@ int fix_odd_things( int num_atoms,
                                 at[i1].bond_stereo[0] = at[c].bond_stereo[k1] = 0;
                                 at[i1].chem_bonds_valence++;
                                 at[c].chem_bonds_valence++;
-                                if (bFixBug) at[c].charge--; /* added 2010-03-17 DT*/
+                                if (bFixBug)
+                                    at[c].charge--; /* added 2010-03-17 DT*/
                                 num_changes++;
                                 break;
                             case 1:
@@ -867,7 +879,8 @@ int fix_odd_things( int num_atoms,
                                 at[i2].bond_stereo[0] = at[c].bond_stereo[k2] = 0;
                                 at[i2].chem_bonds_valence++;
                                 at[c].chem_bonds_valence++;
-                                if (bFixBug) at[c].charge--; /* added 2010-03-17 DT */
+                                if (bFixBug)
+                                    at[c].charge--; /* added 2010-03-17 DT */
                                 num_changes++;
                                 break;
                         }
@@ -3451,7 +3464,8 @@ double GetMinDistDistribution( inp_ATOM *at,
                         {
                             /* bond does not cross at[iat] */
                             double fyixi = atan2( yi, xi );
-                            if (fyixi < 0.0) fyixi += two_pi;
+                            if (fyixi < 0.0)
+                                fyixi += two_pi;
                             kk = (int) floor( ( fyixi + h_step ) / f_step ) % num_segm;
                             if (min_dist[kk] > rmin)
                             {
@@ -3462,7 +3476,8 @@ double GetMinDistDistribution( inp_ATOM *at,
                         {
                             /* bond does cross at[iat] */
                             double fyixi = atan2( yi, xi );
-                            if (fyixi < 0.0) fyixi += two_pi;
+                            if (fyixi < 0.0)
+                                fyixi += two_pi;
                             kk = (int) floor( ( fyixi + h_step ) / f_step ) % num_segm;
                             if (min_dist[kk] > rmin)
                             {

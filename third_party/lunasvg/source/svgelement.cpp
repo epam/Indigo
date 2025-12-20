@@ -47,7 +47,9 @@ ElementID elementid(const std::string_view& name)
         {"use", ElementID::Use}
     };
 
-    auto it = std::lower_bound(table, std::end(table), name, [](const auto& item, const auto& name) { return item.name < name; });
+    auto it = std::lower_bound(
+        table, std::end(table), name,
+        [](const auto& item, const auto& name) { return item.name < name; });
     if(it == std::end(table) || it->name != name)
         return ElementID::Unknown;
     return it->value;
@@ -315,8 +317,10 @@ Rect SVGElement::paintBoundingBox() const
     m_paintBoundingBox = Rect::Empty;
     m_paintBoundingBox = strokeBoundingBox();
     assert(m_paintBoundingBox.isValid());
-    if(m_clipper) m_paintBoundingBox.intersect(m_clipper->clipBoundingBox(this));
-    if(m_masker) m_paintBoundingBox.intersect(m_masker->maskBoundingBox(this));
+    if(m_clipper)
+        m_paintBoundingBox.intersect(m_clipper->clipBoundingBox(this));
+    if(m_masker)
+        m_paintBoundingBox.intersect(m_masker->maskBoundingBox(this));
     return m_paintBoundingBox;
 }
 
@@ -404,7 +408,10 @@ std::unique_ptr<SVGNode> SVGElement::clone(bool deep) const
 {
     auto element = SVGElement::create(document(), m_id);
     element->setAttributes(m_attributes);
-    if(deep) { cloneChildren(element.get()); }
+    if(deep)
+    {
+        cloneChildren(element.get());
+    }
     return element;
 }
 
@@ -526,7 +533,8 @@ bool SVGPaintServer::applyPaint(SVGRenderState& state) const
 {
     if(!isRenderable())
         return false;
-    if(m_element) return m_element->applyPaint(state, m_opacity);
+    if(m_element)
+        return m_element->applyPaint(state, m_opacity);
     state->setColor(m_color.colorWithAlpha(m_opacity));
     return true;
 }

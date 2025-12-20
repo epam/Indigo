@@ -1490,7 +1490,8 @@ int SetExtOrigAtDataByMolfileExtInput( MOL_FMT_DATA* mfdata,
             pv->lists_haptic_bonds = (int **) inchi_calloc( mpv->n_haptic_bonds, sizeof( int* ) );
             if (NULL == pv->lists_haptic_bonds)
             {
-                TREAT_ERR( err, 9001, "Out of RAM" ); goto exit_function;
+                TREAT_ERR( err, 9001, "Out of RAM" );
+                goto exit_function;
             }
             for (m = 0; m < mpv->n_haptic_bonds; m++)
             {
@@ -1514,7 +1515,8 @@ int SetExtOrigAtDataByMolfileExtInput( MOL_FMT_DATA* mfdata,
             pv->lists_steabs = (int **) inchi_calloc( mpv->n_steabs, sizeof( int* ) );
             if (NULL == pv->lists_steabs)
             {
-                TREAT_ERR( err, 9001, "Out of RAM" ); goto exit_function;
+                TREAT_ERR( err, 9001, "Out of RAM" );
+                goto exit_function;
             }
             for (m = 0; m < mpv->n_steabs; m++)
             {
@@ -1538,7 +1540,8 @@ int SetExtOrigAtDataByMolfileExtInput( MOL_FMT_DATA* mfdata,
             pv->lists_sterac = (int **) inchi_calloc( mpv->n_sterac, sizeof( int* ) );
             if (NULL == pv->lists_sterac)
             {
-                TREAT_ERR( err, 9001, "Out of RAM" ); goto exit_function;
+                TREAT_ERR( err, 9001, "Out of RAM" );
+                goto exit_function;
             }
             for (m = 0; m < mpv->n_sterac; m++)
             {
@@ -1562,7 +1565,8 @@ int SetExtOrigAtDataByMolfileExtInput( MOL_FMT_DATA* mfdata,
             pv->lists_sterel = (int **) inchi_calloc( mpv->n_sterel, sizeof( int* ) );
             if (NULL == pv->lists_sterel)
             {
-                TREAT_ERR( err, 9001, "Out of RAM" ); goto exit_function;
+                TREAT_ERR( err, 9001, "Out of RAM" );
+                goto exit_function;
             }
             for (m = 0; m < mpv->n_sterel; m++)
             {

@@ -449,7 +449,8 @@ int MakeMult( int mult,
         strcpy( szValue + len, szTailingDelim );
 
         n = inchi_strbuf_printf( buf, "%s", szValue );
-        if (-1 == n) *bOverflow |= 1;
+        if (-1 == n)
+            *bOverflow |= 1;
         return n;
         /*
         len += len_delim;
@@ -524,7 +525,8 @@ int MakeEqStr( const char       *szTailingDelim,
     if (n > 0)
     {
         n = inchi_strbuf_printf( buf, "%-s", szValue );
-        if (-1 == n) *bOverflow |= 1;
+        if (-1 == n)
+            *bOverflow |= 1;
     }
     n = inchi_strbuf_printf( buf, "%-s", szTailingDelim );
     if (-1 == n)

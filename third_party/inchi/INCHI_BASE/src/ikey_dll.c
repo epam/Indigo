@@ -224,22 +224,26 @@ int INCHI_DECL GetINCHIKeyFromINCHI( const char* szINCHISource,
     smajor = (char*) inchi_calloc( slen + 1, sizeof( char ) );
     if (NULL == smajor)
     {
-        ret = INCHIKEY_NOT_ENOUGH_MEMORY; goto fin;
+        ret = INCHIKEY_NOT_ENOUGH_MEMORY;
+        goto fin;
     }
     sminor = (char*) inchi_calloc( 2 * slen + 2, sizeof( char ) ); /* we may double the length ... */
     if (NULL == sminor)
     {
-        ret = INCHIKEY_NOT_ENOUGH_MEMORY; goto fin;
+        ret = INCHIKEY_NOT_ENOUGH_MEMORY;
+        goto fin;
     }
     stmp = (char*) inchi_calloc( slen + 1, sizeof( char ) );
     if (NULL == stmp)
     {
-        ret = INCHIKEY_NOT_ENOUGH_MEMORY; goto fin;
+        ret = INCHIKEY_NOT_ENOUGH_MEMORY;
+        goto fin;
     }
     sproto = (char*) inchi_calloc( slen + 1, sizeof( char ) );
     if (NULL == sproto)
     {
-        ret = INCHIKEY_NOT_ENOUGH_MEMORY; goto fin;
+        ret = INCHIKEY_NOT_ENOUGH_MEMORY;
+        goto fin;
     }
 
     szINCHIKey[0] = '\0';

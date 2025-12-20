@@ -1433,60 +1433,74 @@ number of valence electrons = (type>1)? type-1: type
     }
     else if (nPeriodicNumber == 2)
     {
-        type = 0; row = 0;
+        type = 0;
+        row = 0;
     }
     else if (nPeriodicNumber <= 10)
     {
         /* Li: 2, Be: 3, B: 4, C: 5, N: 6, O: 7, F: 8, Ne: 9; later subtract 1 */
-        type = nPeriodicNumber - 1; row = 1;
+        type = nPeriodicNumber - 1;
+        row = 1;
     }
     else if (nPeriodicNumber <= 18)
     {
-        type = nPeriodicNumber - 9; row = 2;
+        type = nPeriodicNumber - 9;
+        row = 2;
     }
     else if (nPeriodicNumber <= 20)
     {
-        type = nPeriodicNumber - 17; row = 3;
+        type = nPeriodicNumber - 17;
+        row = 3;
     }
     else if (nPeriodicNumber <= 30)
     {
-        type = 0; row = 3;
+        type = 0;
+        row = 3;
     }
     else if (nPeriodicNumber <= 36)
     {
-        type = nPeriodicNumber - 27; row = 3;
+        type = nPeriodicNumber - 27;
+        row = 3;
     }
     else if (nPeriodicNumber <= 38)
     {
-        type = nPeriodicNumber - 35; row = 4;
+        type = nPeriodicNumber - 35;
+        row = 4;
     }
     else if (nPeriodicNumber <= 48)
     {
-        type = 0; row = 4;
+        type = 0;
+        row = 4;
     }
     else if (nPeriodicNumber <= 54)
     {
-        type = nPeriodicNumber - 45; row = 4;
+        type = nPeriodicNumber - 45;
+        row = 4;
     }
     else if (nPeriodicNumber <= 56)
     {
-        type = nPeriodicNumber - 53; row = 5;
+        type = nPeriodicNumber - 53;
+        row = 5;
     }
     else if (nPeriodicNumber <= 80)
     {
-        type = 0; row = 5;
+        type = 0;
+        row = 5;
     }
     else if (nPeriodicNumber <= 86)
     {
-        type = nPeriodicNumber - 77; row = 5;
+        type = nPeriodicNumber - 77;
+        row = 5;
     }
     else if (nPeriodicNumber <= 88)
     {
-        type = nPeriodicNumber - 85; row = 6;
+        type = nPeriodicNumber - 85;
+        row = 6;
     }
     else
     {
-        type = 0; row = 6;
+        type = 0;
+        row = 6;
     }
 
     *nRow = row;

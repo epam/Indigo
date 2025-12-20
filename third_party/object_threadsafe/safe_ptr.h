@@ -131,10 +131,23 @@ namespace sf {
             safe_obj(T&& obj) : obj(std::move(obj)) {}
             template<typename... Args>
             safe_obj(Args... args) : obj(args...) {}
-            safe_obj(safe_obj&& safe_obj) noexcept { std::lock_guard<mutex_t> lock(safe_obj.mtx); obj = std::move(safe_obj.obj); }
+            safe_obj(safe_obj&& safe_obj) noexcept
+            {
+                std::lock_guard<mutex_t> lock(safe_obj.mtx);
+                obj = std::move(safe_obj.obj);
+            }
             safe_obj& operator=(safe_obj&& safe_obj) noexcept = default;
-            safe_obj(safe_obj const& safe_obj) { std::lock_guard<mutex_t> lock(safe_obj.mtx); obj = safe_obj.obj; }
-            explicit operator T() const { s_lock_t lock(mtx); T obj_tmp = obj; return obj_tmp; };
+            safe_obj(safe_obj const& safe_obj)
+            {
+                std::lock_guard<mutex_t> lock(safe_obj.mtx);
+                obj = safe_obj.obj;
+            }
+            explicit operator T() const
+            {
+                s_lock_t lock(mtx);
+                T obj_tmp = obj;
+                return obj_tmp;
+            };
 
             auto_lock_t<x_lock_t> operator -> () { return auto_lock_t<x_lock_t>(get_obj_ptr(), *get_mtx_ptr()); }
             auto_lock_obj_t<x_lock_t> operator * () { return auto_lock_obj_t<x_lock_t>(get_obj_ptr(), *get_mtx_ptr()); }
@@ -231,9 +244,11 @@ namespace sf {
 		bool success;
 
 		template<typename mtx_t>
-		std::unique_lock<mtx_t> try_lock_one(mtx_t &mtx) const {
-			std::unique_lock<mtx_t> lock(mtx, std::defer_lock_t());
-			for (size_t i = 0; i < spin_iterations; ++i) if (lock.try_lock()) return lock;
+            std::unique_lock<mtx_t> try_lock_one(mtx_t &mtx) const {
+                std::unique_lock<mtx_t> lock(mtx, std::defer_lock_t());
+                for (size_t i = 0; i < spin_iterations; ++i)
+                    if (lock.try_lock())
+                        return lock;
 			const std::chrono::steady_clock::time_point start_time = std::chrono::steady_clock::now();
 			//while (!lock.try_lock_for(duration(deadlock_timeout)))    // only for timed mutexes
 			while (!lock.try_lock()) {
@@ -311,7 +326,12 @@ namespace sf {
         spinlock_t() { lock_flag.clear(); }
 
         bool try_lock() { return !lock_flag.test_and_set(std::memory_order_acquire); }
-        void lock() { for (volatile size_t i = 0; !try_lock(); ++i) if (i % 100000 == 0) std::this_thread::yield(); }
+        void lock()
+        {
+            for (volatile size_t i = 0; !try_lock(); ++i)
+                if (i % 100000 == 0)
+                    std::this_thread::yield();
+        }
         void unlock() { lock_flag.clear(std::memory_order_release); }
     };
     // ---------------------------------------------------------------
@@ -340,7 +360,8 @@ namespace sf {
 
         void lock() {
             for (volatile size_t i = 0; !try_lock(); ++i)
-                if (i % 100000 == 0) std::this_thread::yield();
+                if (i % 100000 == 0)
+                    std::this_thread::yield();
         }
 
         void unlock() {
@@ -383,7 +404,11 @@ namespace sf {
             std::shared_ptr<array_slock_t> array_slock_ptr;
             unregister_t(int index, std::shared_ptr<array_slock_t> const& ptr) : thread_index(index), array_slock_ptr(ptr) {}
             unregister_t(unregister_t &&src) : thread_index(src.thread_index), array_slock_ptr(std::move(src.array_slock_ptr)) {}
-            ~unregister_t() { if (array_slock_ptr.use_count() > 0) (*array_slock_ptr)[thread_index].value--; }
+            ~unregister_t()
+            {
+                if (array_slock_ptr.use_count() > 0)
+                    (*array_slock_ptr)[thread_index].value--;
+            }
         };
 
         int get_or_set_index(index_op_t index_op = get_index_op, int set_index = -1) {
@@ -464,7 +489,8 @@ namespace sf {
                         while (want_x_lock.load(std::memory_order_seq_cst)) {
                             shared_locks_array[register_index].value.store(recursion_depth, std::memory_order_seq_cst);
                             for (volatile size_t i = 0; want_x_lock.load(std::memory_order_seq_cst); ++i)
-								if (i % 100000 == 0) std::this_thread::yield();
+                                    if (i % 100000 == 0)
+                                        std::this_thread::yield();
                             shared_locks_array[register_index].value.store(recursion_depth + 1, std::memory_order_seq_cst);
                         }
                     }
@@ -472,12 +498,13 @@ namespace sf {
                     // (shared_locks_array[register_index] > 2)                                 // recursive shared lock
                 }
                 else {
-					if (owner_thread_id.load(std::memory_order_acquire) != get_fast_this_thread_id()) {
-						size_t i = 0;
-						for (bool flag = false; !want_x_lock.compare_exchange_weak(flag, true, std::memory_order_seq_cst); flag = false)
-							if (++i % 100000 == 0) std::this_thread::yield();
-						owner_thread_id.store(get_fast_this_thread_id(), std::memory_order_release);
-					}
+                        if (owner_thread_id.load(std::memory_order_acquire) != get_fast_this_thread_id()) {
+                            size_t i = 0;
+                            for (bool flag = false; !want_x_lock.compare_exchange_weak(flag, true, std::memory_order_seq_cst); flag = false)
+                                if (++i % 100000 == 0)
+                                    std::this_thread::yield();
+                            owner_thread_id.store(get_fast_this_thread_id(), std::memory_order_release);
+                        }
 					++recursive_xlock_count;
                 }
             }
@@ -505,10 +532,11 @@ namespace sf {
                 if (register_index >= 0)
                     assert(shared_locks_array[register_index].value.load(std::memory_order_acquire) == 1);
 
-				if (owner_thread_id.load(std::memory_order_acquire) != get_fast_this_thread_id()) {
-					size_t i = 0;
-					for (bool flag = false; !want_x_lock.compare_exchange_weak(flag, true, std::memory_order_seq_cst); flag = false)
-						if (++i % 1000000 == 0) std::this_thread::yield();
+                    if (owner_thread_id.load(std::memory_order_acquire) != get_fast_this_thread_id()) {
+                        size_t i = 0;
+                        for (bool flag = false; !want_x_lock.compare_exchange_weak(flag, true, std::memory_order_seq_cst); flag = false)
+                            if (++i % 1000000 == 0)
+                                std::this_thread::yield();
 
 					owner_thread_id.store(get_fast_this_thread_id(), std::memory_order_release);
 
@@ -564,8 +592,20 @@ namespace sf {
             for (auto &i : il) partition->emplace(i, container_t());
         }
 
-        part_iterator part_it(key_t const& k) { auto it = partition->lower_bound(k); if (it == partition->cend()) --it; return it; }
-        const_part_iterator part_it(key_t const& k) const { auto it = partition->lower_bound(k); if (it == partition->cend()) --it; return it; }
+        part_iterator part_it(key_t const& k)
+        {
+            auto it = partition->lower_bound(k);
+            if (it == partition->cend())
+                --it;
+            return it;
+        }
+        const_part_iterator part_it(key_t const& k) const
+        {
+            auto it = partition->lower_bound(k);
+            if (it == partition->cend())
+                --it;
+            return it;
+        }
         safe_container_t& part(key_t const& k) { return part_it(k)->second; }
         const safe_container_t& part(key_t const& k) const { return part_it(k)->second; }
         slocked_safe_ptr<safe_container_t> read_only_part(key_t const& k) const { return slock_safe_ptr(part(k)); }
@@ -582,7 +622,8 @@ namespace sf {
             auto const& const_part = *partition;
             auto end_it = (const_part.upper_bound(up) == const_part.cend()) ? const_part.cend() : std::next(const_part.upper_bound(up), 1);
             auto it = const_part.lower_bound(low);
-            if (it == const_part.cend()) --it;
+            if (it == const_part.cend())
+                --it;
             for (; it != end_it; ++it)
                 result_vec.insert(result_vec.end(), it->second->lower_bound(low), it->second->upper_bound(up));
         }

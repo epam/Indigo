@@ -1034,14 +1034,30 @@ int OrigAtData_WriteToSDfileAtomsBlock( const ORIG_ATOM_DATA *inp_at_data,
                 /* Only atoms without alias can be here*/
                 switch (at[i].charge)
                 {
-                    case  3: charge = 1; break;
-                    case  2: charge = 2; break;
-                    case  1: charge = 3; break;
-                    case -1: charge = 5; break;
-                    case -2: charge = 6; break;
-                    case -3: charge = 7; break;
-                    case  0: charge = 0; break;
-                    default: flag_bad_charge = 1; break;
+                    case  3:
+                        charge = 1;
+                        break;
+                    case  2:
+                        charge = 2;
+                        break;
+                    case  1:
+                        charge = 3;
+                        break;
+                    case -1:
+                        charge = 5;
+                        break;
+                    case -2:
+                        charge = 6;
+                        break;
+                    case -3:
+                        charge = 7;
+                        break;
+                    case  0:
+                        charge = 0;
+                        break;
+                    default:
+                        flag_bad_charge = 1;
+                        break;
                 }
             }
 

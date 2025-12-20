@@ -3329,7 +3329,8 @@ int OutputINCHI_ChargeAndRemovedAddedProtonsLayers( CANON_GLOBALS    *pCG,
         }
         else
         {
-            if (io->bPlainTextTags == 1) inchi_ios_print_nodisplay( out_file, "/" );
+            if (io->bPlainTextTags == 1)
+                inchi_ios_print_nodisplay( out_file, "/" );
         }
     }
 
@@ -3421,7 +3422,8 @@ int OutputINCHI_StereoLayer( CANON_GLOBALS    *pCG,
         }
         else
         {
-            if (io->bPlainTextTags == 1) inchi_ios_print_nodisplay( out_file, "/" ); /* sp3 */
+            if (io->bPlainTextTags == 1)
+                inchi_ios_print_nodisplay( out_file, "/" ); /* sp3 */
         }
 
         /* bStereoAbsInverted[io->iCurTautMode]  */
@@ -3430,7 +3432,8 @@ int OutputINCHI_StereoLayer( CANON_GLOBALS    *pCG,
         if (io->nSegmAction = INChI_SegmentAction( io->sDifSegs[io->nCurINChISegment][DIFS_m_SP3INV] ))
         {
             szGetTag( IdentLbl, io->nTag, io->bTag2 = io->bTag1 | IL_INVS, io->szTag2, &io->bAlways );
-            inchi_strbuf_reset( strbuf ); io->tot_len = 0;
+            inchi_strbuf_reset( strbuf );
+            io->tot_len = 0;
             if (INCHI_SEGM_FILL == io->nSegmAction)
             {
                 io->tot_len = str_StereoAbsInv( io->pINChISort, strbuf,
@@ -3460,7 +3463,8 @@ int OutputINCHI_StereoLayer( CANON_GLOBALS    *pCG,
             const char *p_stereo = io->bRelativeStereo[io->iCurTautMode] ? x_rel :
                 io->bRacemicStereo[io->iCurTautMode] ? x_rac : x_abs;
             szGetTag( IdentLbl, io->nTag, io->bTag2 = io->bTag1 | IL_TYPS, io->szTag2, &io->bAlways );
-            inchi_strbuf_reset( strbuf ); io->tot_len = 0;
+            inchi_strbuf_reset( strbuf );
+            io->tot_len = 0;
             if (INCHI_SEGM_FILL == io->nSegmAction)
             {
                 ( io->tot_len ) += MakeDelim( p_stereo, strbuf, &io->bOverflow );
@@ -3479,7 +3483,8 @@ int OutputINCHI_StereoLayer( CANON_GLOBALS    *pCG,
     }
     else
     {
-        if (io->bPlainTextTags == 1) inchi_ios_print_nodisplay( out_file, "////" ); /* sp3, sp2, abs-inv, stereo.type */
+        if (io->bPlainTextTags == 1)
+            inchi_ios_print_nodisplay( out_file, "////" ); /* sp3, sp2, abs-inv, stereo.type */
     }
 
     return 0;
@@ -3587,7 +3592,8 @@ int OutputINCHI_IsotopicLayer( CANON_GLOBALS    *pCG,
             }
             else
             {
-                if (io->bPlainTextTags == 1) inchi_ios_print_nodisplay( out_file, "/" ); /* iso sp2 */
+                if (io->bPlainTextTags == 1)
+                    inchi_ios_print_nodisplay( out_file, "/" ); /* iso sp2 */
             }
 
             /************************
@@ -3787,7 +3793,8 @@ int OutputINCHI_FixedHLayerWithSublayers( CANON_GLOBALS    *pCG,
         szGetTag( IdentLbl, io->nTag, io->bTag1 = io->bFhTag, io->szTag1, &io->bAlways );
         /***** constitution non-taut: dot-disconnected Hill formulas: <formula> -- only if different */
         szGetTag( IdentLbl, io->nTag, io->bTag1 = IL_FMLF | io->bFhTag, io->szTag1, &io->bAlways );
-        inchi_strbuf_reset( strbuf ); io->tot_len = 0;
+        inchi_strbuf_reset( strbuf );
+        io->tot_len = 0;
         io->nSegmAction = INChI_SegmentAction( io->sDifSegs[io->nCurINChISegment][DIFS_f_FORMULA] );
         if (INCHI_SEGM_FILL == io->nSegmAction)
         {
@@ -3816,7 +3823,8 @@ int OutputINCHI_FixedHLayerWithSublayers( CANON_GLOBALS    *pCG,
         if (INCHI_SEGM_FILL == io->nSegmAction)
         {
             szGetTag( IdentLbl, io->nTag, io->bTag1 = IL_HFIX | io->bFhTag, io->szTag1, &io->bAlways );
-            inchi_strbuf_reset( strbuf ); io->tot_len = 0; /* open H-fixed */
+            inchi_strbuf_reset( strbuf );
+            io->tot_len = 0; /* open H-fixed */
             /* output the second non-tautomeric item: fixed H -- do not output in xml if empty */
             io->tot_len2 = str_FixedH_atoms( io->pINChISort, strbuf,
                                              &io->bOverflow, io->bOutType, io->ATOM_MODE,
@@ -4183,7 +4191,8 @@ static int OutputINCHI_PolymerLayer_SingleUnit( OAD_PolymerUnit *u,
                 curr_star_num = pOrigStruct->num_atoms - n_expl_H - total_star_atoms + *n_used_stars + 1;
                 if (curr_star_num > pOrigStruct->num_atoms)
                 {
-                    err = 11; goto exit_function;
+                    err = 11;
+                    goto exit_function;
                 }
                 a1 = curr_star_num;
                 (*n_used_stars)++;
@@ -4193,7 +4202,8 @@ static int OutputINCHI_PolymerLayer_SingleUnit( OAD_PolymerUnit *u,
                 curr_star_num = pOrigStruct->num_atoms - n_expl_H - total_star_atoms + *n_used_stars + 1;
                 if (curr_star_num > pOrigStruct->num_atoms)
                 {
-                    err = 11; goto exit_function;
+                    err = 11;
+                    goto exit_function;
                 }
                 a2 = curr_star_num;
                 (*n_used_stars)++;
@@ -4287,7 +4297,8 @@ static int OutputINCHI_PolymerLayer_SingleUnit( OAD_PolymerUnit *u,
 
                 for (k = 0; k < u->nbkbonds; k++)
                 {
-                    a3 = u->bkbonds[k][0]; a4 = u->bkbonds[k][1];
+                    a3 = u->bkbonds[k][0];
+                    a4 = u->bkbonds[k][1];
                     /*if ( a3 > a4 )    { tmp = a4; a4 = a3; a3 = tmp; }*/
                     inchi_strbuf_printf( strbuf, "%-d,%-d%-c", a3, a4, k == u->nbkbonds - 1 ? ')' : ',' );
                 }
@@ -4323,7 +4334,8 @@ int OutputAUXINFO_HeaderAndNormalization_type( CANON_GLOBALS    *pCG,
             ( bINChIOutputOptions & INCHI_OUT_WINCHI_WINDOW ) ? "\n" : "",
                                   strbuf->pStr, pLF );
         szGetTag( AuxLbl, io->nTag, io->bTag1 = AL_VERS, io->szTag1, &io->bAlways );
-        inchi_strbuf_reset( strbuf ); io->tot_len = 0;
+        inchi_strbuf_reset( strbuf );
+        io->tot_len = 0;
         inchi_strbuf_printf( strbuf, "%s", x_curr_ver );
         /* avoid leading slash in plain output */
         if (str_LineEnd( io->szTag1, &io->bOverflow, strbuf, -1, io->bPlainTextTags ))
@@ -4345,7 +4357,8 @@ int OutputAUXINFO_HeaderAndNormalization_type( CANON_GLOBALS    *pCG,
     if (num_components2[0] || num_components2[1])
     {
         szGetTag( AuxLbl, io->nTag, io->bTag1 = AL_NORM, io->szTag1, &io->bAlways );
-        inchi_strbuf_reset( strbuf ); io->tot_len = 0;
+        inchi_strbuf_reset( strbuf );
+        io->tot_len = 0;
         inchi_strbuf_printf( strbuf, "%d", ( io->bTautomeric && io->bTautomericOutputAllowed ) ? io->bTautomeric : 0 );
         if (str_LineEnd( io->szTag1, &io->bOverflow, strbuf, -1, io->bPlainTextTags ))
         {
@@ -4437,7 +4450,8 @@ int OutputAUXINFO_TautomericGroupsEquivalence( CANON_GLOBALS    *pCG,
 
         /*-- aux tgroup equ */
         szGetTag( AuxLbl, io->nTag, io->bTag1 = AL_GEQU | io->bFhTag, io->szTag1, &io->bAlways );
-        inchi_strbuf_reset( strbuf ); io->tot_len = 0;
+        inchi_strbuf_reset( strbuf );
+        io->tot_len = 0;
         io->tot_len = str_AuxTgroupEqu( io->pINChISort,
                                     strbuf, &io->bOverflow, io->bOutType, io->TAUT_MODE,
                                     io->num_components, io->bUseMulipliers );
@@ -4479,7 +4493,8 @@ int OutputAUXINFO_Stereo( CANON_GLOBALS     *pCG,
         szGetTag( AuxLbl, io->nTag, io->bTag1 = AL_STER | io->bFhTag, io->szTag1, &io->bAlways );
         /*-- inverted sp3 start tag */
         szGetTag( AuxLbl, io->nTag, io->bTag2 = io->bTag1 | AL_SP3I, io->szTag2, &io->bAlways );
-        inchi_strbuf_reset( strbuf ); io->tot_len = 0;
+        inchi_strbuf_reset( strbuf );
+        io->tot_len = 0;
         io->tot_len = str_AuxInvSp3( io->pINChISort, io->pINChISort2, strbuf,
                                  &io->bOverflow, io->bOutType, io->TAUT_MODE, io->num_components,
                                  io->bSecondNonTautPass, io->bOmitRepetitions, io->bUseMulipliers );
@@ -4491,7 +4506,8 @@ int OutputAUXINFO_Stereo( CANON_GLOBALS     *pCG,
         if (io->bInvStereoOrigNumb[io->iCurTautMode])
         {
             szGetTag( AuxLbl, io->nTag, io->bTag2 = io->bTag1 | AL_SP3N, io->szTag2, &io->bAlways );
-            inchi_strbuf_reset( strbuf ); io->tot_len = 0;
+            inchi_strbuf_reset( strbuf );
+            io->tot_len = 0;
 
             io->tot_len = str_AuxInvSp3Numb( pCG, io->pINChISort, io->pINChISort2,
                                          strbuf, &io->bOverflow, io->bOutType,
@@ -4506,7 +4522,8 @@ int OutputAUXINFO_Stereo( CANON_GLOBALS     *pCG,
         }
         else
         {
-            if (io->bPlainTextTags == 1) inchi_ios_print( out_file, "/" );
+            if (io->bPlainTextTags == 1)
+                inchi_ios_print( out_file, "/" );
         }
     }
     else
@@ -4578,7 +4595,8 @@ int OutputAUXINFO_IsotopicInfo( CANON_GLOBALS    *pCG,
         {
             /*-- atoms */
             szGetTag( AuxLbl, io->nTag, io->bTag2 = io->bTag1 | AL_AEQU, io->szTag2, &io->bAlways );
-            inchi_strbuf_reset( strbuf ); io->tot_len = 0;
+            inchi_strbuf_reset( strbuf );
+            io->tot_len = 0;
             io->tot_len = str_AuxIsoEqu( io->pINChISort, io->pINChISort2,
                                      strbuf,
                                      &io->bOverflow, io->bOutType, io->TAUT_MODE, io->num_components,
@@ -4602,7 +4620,8 @@ int OutputAUXINFO_IsotopicInfo( CANON_GLOBALS    *pCG,
         {
             /*-- Isotopic tautomeric groups equivalence */
             szGetTag( AuxLbl, io->nTag, io->bTag2 = io->bTag1 | AL_GEQU, io->szTag2, &io->bAlways );
-            inchi_strbuf_reset( strbuf ); io->tot_len = 0;
+            inchi_strbuf_reset( strbuf );
+            io->tot_len = 0;
             io->tot_len = str_AuxIsoTgroupEqu( io->pINChISort,
                                            strbuf, &io->bOverflow,
                                            io->bOutType, io->TAUT_MODE, io->num_components,
@@ -4629,7 +4648,8 @@ int OutputAUXINFO_IsotopicInfo( CANON_GLOBALS    *pCG,
             szGetTag( AuxLbl, io->nTag, io->bTag2 = io->bTag1 | AL_STER, io->szTag2, &io->bAlways );
             /*-- inverted isotopic sp3 start tag */
             szGetTag( AuxLbl, io->nTag, io->bTag3 = io->bTag2 | AL_SP3I, io->szTag3, &io->bAlways );
-            inchi_strbuf_reset( strbuf ); io->tot_len = 0;
+            inchi_strbuf_reset( strbuf );
+            io->tot_len = 0;
             io->tot_len = str_AuxInvIsoSp3( io->pINChISort, io->pINChISort2,
                                         strbuf, &io->bOverflow,
                                         io->bOutType, io->TAUT_MODE, io->num_components,
@@ -4643,7 +4663,8 @@ int OutputAUXINFO_IsotopicInfo( CANON_GLOBALS    *pCG,
             if (io->bInvIsotopicStereoOrigNumb[io->iCurTautMode])
             {
                 szGetTag( AuxLbl, io->nTag, io->bTag3 = io->bTag2 | AL_SP3N, io->szTag3, &io->bAlways );
-                inchi_strbuf_reset( strbuf ); io->tot_len = 0;
+                inchi_strbuf_reset( strbuf );
+                io->tot_len = 0;
                 io->tot_len = str_AuxInvIsoSp3Numb( pCG, io->pINChISort, io->pINChISort2,
                                                 strbuf, &io->bOverflow,
                                                 io->bOutType, io->TAUT_MODE,
@@ -5500,5 +5521,3 @@ static void inchi_sort_int_pair_ascending(int *a, int *b)
 
     return;
 }
-
-

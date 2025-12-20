@@ -1277,8 +1277,10 @@ Returns 1 if bonds (a1,a2) and (b1,b2) are the same, -1 if atoms swapped,
 ****************************************************************************/
 int bIsSameBond(int a1, int a2, int b1, int b2)
 {
-    if (a1 == b1 && a2 == b2) return 1;
-    if (a1 == b2 && a2 == b1) return -1;
+    if (a1 == b1 && a2 == b2)
+        return 1;
+    if (a1 == b2 && a2 == b1)
+        return -1;
     return 0;
 }
 
@@ -1722,24 +1724,34 @@ int OAD_StructureEdits_Init(OAD_StructureEdits *ed)
     ed->del_side_chains = 0; /* by default, do not delete */
 
     ed->del_atom = (INT_ARRAY *)inchi_calloc(1, sizeof(INT_ARRAY));
-    if (!ed->del_atom)						goto exitf;
-    if (0 != IntArray_Alloc(ed->del_atom, 2))	goto exitf;
+    if (!ed->del_atom)
+        goto exitf;
+    if (0 != IntArray_Alloc(ed->del_atom, 2))
+        goto exitf;
 
     ed->del_bond = (INT_ARRAY *)inchi_calloc(1, sizeof(INT_ARRAY));
-    if (!ed->del_bond)						goto exitf;
-    if (0 != IntArray_Alloc(ed->del_bond, 2))	goto exitf;
+    if (!ed->del_bond)
+        goto exitf;
+    if (0 != IntArray_Alloc(ed->del_bond, 2))
+        goto exitf;
 
     ed->new_bond = (INT_ARRAY *)inchi_calloc(1, sizeof(INT_ARRAY));
-    if (!ed->new_bond)						goto exitf;
-    if (0 != IntArray_Alloc(ed->new_bond, 2))	goto exitf;
+    if (!ed->new_bond)
+        goto exitf;
+    if (0 != IntArray_Alloc(ed->new_bond, 2))
+        goto exitf;
 
     ed->mod_bond = (INT_ARRAY *)inchi_calloc(1, sizeof(INT_ARRAY));
-    if (!ed->mod_bond)						goto exitf;
-    if (0 != IntArray_Alloc(ed->mod_bond, 12))	goto exitf;
+    if (!ed->mod_bond)
+        goto exitf;
+    if (0 != IntArray_Alloc(ed->mod_bond, 12))
+        goto exitf;
 
     ed->mod_coord = (INT_ARRAY *)inchi_calloc(1, sizeof(INT_ARRAY));
-    if (!ed->mod_coord)						goto exitf;
-    if (0 != IntArray_Alloc(ed->mod_coord, 4))	goto exitf;
+    if (!ed->mod_coord)
+        goto exitf;
+    if (0 != IntArray_Alloc(ed->mod_coord, 4))
+        goto exitf;
 
 
     return 0;
@@ -2601,16 +2613,24 @@ int  OAD_Polymer_PrepareFrameShiftEdits( ORIG_ATOM_DATA *orig_at_data,
         if (!err && cap1_is_star && cap2_is_star && end1 && end2 && cap1 && cap2)
         {
             /* find old CRU ends */
-            if (cap1 == u->blist[0])		old_end1 = u->blist[1];
-            else if (cap1 == u->blist[1])	old_end1 = u->blist[0];
-            else if (cap1 == u->blist[2])	old_end1 = u->blist[3];
-            else if (cap1 == u->blist[3])	old_end1 = u->blist[2];
+            if (cap1 == u->blist[0])
+                old_end1 = u->blist[1];
+            else if (cap1 == u->blist[1])
+                old_end1 = u->blist[0];
+            else if (cap1 == u->blist[2])
+                old_end1 = u->blist[3];
+            else if (cap1 == u->blist[3])
+                old_end1 = u->blist[2];
             else /* something wrong */
                 continue;
-            if (cap2 == u->blist[0])		old_end2 = u->blist[1];
-            else if (cap2 == u->blist[1])	old_end2 = u->blist[0];
-            else if (cap2 == u->blist[2])	old_end2 = u->blist[3];
-            else if (cap2 == u->blist[3])	old_end2 = u->blist[2];
+            if (cap2 == u->blist[0])
+                old_end2 = u->blist[1];
+            else if (cap2 == u->blist[1])
+                old_end2 = u->blist[0];
+            else if (cap2 == u->blist[2])
+                old_end2 = u->blist[3];
+            else if (cap2 == u->blist[3])
+                old_end2 = u->blist[2];
             else /* something wrong */
                 continue;
 
@@ -2856,9 +2876,15 @@ int ModSCenter_IsChanged(ModSCenterInfo *scinfo, inp_ATOM *at)
     {
         return -1; /* something went wrong */
     }
-    a[0] = at[base1].x - at[scinfo->num].x; a[1] = at[base1].y - at[scinfo->num].y; a[2] = at[base1].z - at[scinfo->num].z;
-    b[0] = at[base2].x - at[scinfo->num].x; b[1] = at[base2].y - at[scinfo->num].y; b[2] = at[base2].z - at[scinfo->num].z;
-    new_b[0] = at[new_base2].x - at[scinfo->num].x; new_b[1] = at[new_base2].y - at[scinfo->num].y; new_b[2] = at[new_base2].z - at[scinfo->num].z;
+    a[0] = at[base1].x - at[scinfo->num].x;
+    a[1] = at[base1].y - at[scinfo->num].y;
+    a[2] = at[base1].z - at[scinfo->num].z;
+    b[0] = at[base2].x - at[scinfo->num].x;
+    b[1] = at[base2].y - at[scinfo->num].y;
+    b[2] = at[base2].z - at[scinfo->num].z;
+    new_b[0] = at[new_base2].x - at[scinfo->num].x;
+    new_b[1] = at[new_base2].y - at[scinfo->num].y;
+    new_b[2] = at[new_base2].z - at[scinfo->num].z;
 
     cross_prod3(a, b, z);
     cross_prod3(a, new_b, new_z);

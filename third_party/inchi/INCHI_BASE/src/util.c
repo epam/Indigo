@@ -1813,9 +1813,12 @@ void extract_inchi_substring( char ** buf, const char *str, size_t slen )
     {
         pp = p[i];
 
-        if (pp >= 'A' && pp <= 'Z')   continue;
-        if (pp >= 'a' && pp <= 'z')   continue;
-        if (pp >= '0' && pp <= '9')   continue;
+        if (pp >= 'A' && pp <= 'Z')
+            continue;
+        if (pp >= 'a' && pp <= 'z')
+            continue;
+        if (pp >= '0' && pp <= '9')
+            continue;
         switch (pp)
         {
             case '(':
@@ -1873,7 +1876,8 @@ void extract_auxinfo_substring( char ** buf, const char *str, size_t slen )
     for (i = 0; i < slen; i++)
     {
         pp = p[i];
-        if (isspace( UCINT pp ))    break;
+        if (isspace( UCINT pp ))
+            break;
     }
 
     *buf = (char*) inchi_calloc( i + 1, sizeof( char ) );

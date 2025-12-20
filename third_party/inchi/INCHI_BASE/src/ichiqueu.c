@@ -1494,7 +1494,8 @@ int Check15TautPath( struct tagCANON_GLOBALS *pCG,
     }
 
     /* check bond types along alt path */
-    alt_bonds[0] = alt_bonds[1] = 0;
+    alt_bonds[0] = 0;
+    alt_bonds[1] = 0;
     for (i = 0; i < nLenDfsPath; i++)
     {
         alt_bonds[i % 2] |= IS_ALT_OR_DBLBOND( DfsPath[i].bond_type );

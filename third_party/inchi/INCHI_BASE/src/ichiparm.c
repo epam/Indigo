@@ -908,7 +908,8 @@ int ReadCommandLineParms( int argc,
             else if (!inchi_memicmp( pArg, "ACIDTAUT:", 9 ))
             {
                 bAcidTautomerism = c = (int) strtol( pArg + 9, NULL, 10 );
-                if (0 <= c && c <= 2)  bAcidTautomerism = c;
+                if (0 <= c && c <= 2)
+                    bAcidTautomerism = c;
                 /*else bNotRecognized = 2*bReleaseVersion;*/
                 bStdFormat = 0;
             }
@@ -976,7 +977,7 @@ int ReadCommandLineParms( int argc,
             }
             else if (!inchi_memicmp( pArg, "UNCHARGEDACIDS:", 15 ) && developer_options)
             {
-                bUnchargedAcidTaut = ( 0 != strtol( pArg + 15, NULL, 16 ) );;
+                bUnchargedAcidTaut = ( 0 != strtol( pArg + 15, NULL, 16 ) );
             }
             else if (!inchi_memicmp( pArg, "ACIDTAUT:", 9 ) && developer_options)
             {
