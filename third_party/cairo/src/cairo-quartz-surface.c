@@ -1026,8 +1026,8 @@ _cairo_quartz_cairo_repeating_surface_pattern_to_quartz (cairo_quartz_surface_t 
 #ifdef QUARTZ_DEBUG
     ND ((stderr, "  pbounds: %f %f %f %f\n", pbounds.origin.x, pbounds.origin.y, pbounds.size.width, pbounds.size.height));
     ND ((stderr,
-	 "  pattern xform: t: %f %f xx: %f xy: %f yx: %f yy: %f\n",
-	 ptransform.tx, ptransform.ty, ptransform.a, ptransform.b, ptransform.c, ptransform.d));
+         "  pattern xform: t: %f %f xx: %f xy: %f yx: %f yy: %f\n",
+         ptransform.tx, ptransform.ty, ptransform.a, ptransform.b, ptransform.c, ptransform.d));
     CGAffineTransform xform = CGContextGetCTM (dest->cgContext);
     ND ((stderr, "  context xform: t: %f %f xx: %f xy: %f yx: %f yy: %f\n", xform.tx, xform.ty, xform.a, xform.b, xform.c, xform.d));
 #endif
