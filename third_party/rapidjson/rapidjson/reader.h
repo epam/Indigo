@@ -1735,12 +1735,24 @@ private:
     template<unsigned parseFlags, typename InputStream, typename Handler>
     void ParseValue(InputStream& is, Handler& handler) {
         switch (is.Peek()) {
-            case 'n': ParseNull  <parseFlags>(is, handler); break;
-            case 't': ParseTrue  <parseFlags>(is, handler); break;
-            case 'f': ParseFalse <parseFlags>(is, handler); break;
-            case '"': ParseString<parseFlags>(is, handler); break;
-            case '{': ParseObject<parseFlags>(is, handler); break;
-            case '[': ParseArray <parseFlags>(is, handler); break;
+            case 'n':
+                ParseNull  <parseFlags>(is, handler);
+                break;
+            case 't':
+                ParseTrue  <parseFlags>(is, handler);
+                break;
+            case 'f':
+                ParseFalse <parseFlags>(is, handler);
+                break;
+            case '"':
+                ParseString<parseFlags>(is, handler);
+                break;
+            case '{':
+                ParseObject<parseFlags>(is, handler);
+                break;
+            case '[':
+                ParseArray <parseFlags>(is, handler);
+                break;
             default :
                       ParseNumber<parseFlags>(is, handler);
                       break;
@@ -2151,16 +2163,31 @@ private:
         }
 
         switch (src) {
-        case IterativeParsingStartState:            RAPIDJSON_PARSE_ERROR(kParseErrorDocumentEmpty, is.Tell()); return;
-        case IterativeParsingFinishState:           RAPIDJSON_PARSE_ERROR(kParseErrorDocumentRootNotSingular, is.Tell()); return;
+        case IterativeParsingStartState:
+            RAPIDJSON_PARSE_ERROR(kParseErrorDocumentEmpty, is.Tell());
+            return;
+        case IterativeParsingFinishState:
+            RAPIDJSON_PARSE_ERROR(kParseErrorDocumentRootNotSingular, is.Tell());
+            return;
         case IterativeParsingObjectInitialState:
-        case IterativeParsingMemberDelimiterState:  RAPIDJSON_PARSE_ERROR(kParseErrorObjectMissName, is.Tell()); return;
-        case IterativeParsingMemberKeyState:        RAPIDJSON_PARSE_ERROR(kParseErrorObjectMissColon, is.Tell()); return;
-        case IterativeParsingMemberValueState:      RAPIDJSON_PARSE_ERROR(kParseErrorObjectMissCommaOrCurlyBracket, is.Tell()); return;
+        case IterativeParsingMemberDelimiterState:
+            RAPIDJSON_PARSE_ERROR(kParseErrorObjectMissName, is.Tell());
+            return;
+        case IterativeParsingMemberKeyState:
+            RAPIDJSON_PARSE_ERROR(kParseErrorObjectMissColon, is.Tell());
+            return;
+        case IterativeParsingMemberValueState:
+            RAPIDJSON_PARSE_ERROR(kParseErrorObjectMissCommaOrCurlyBracket, is.Tell());
+            return;
         case IterativeParsingKeyValueDelimiterState:
         case IterativeParsingArrayInitialState:
-        case IterativeParsingElementDelimiterState: RAPIDJSON_PARSE_ERROR(kParseErrorValueInvalid, is.Tell()); return;
-        default: RAPIDJSON_ASSERT(src == IterativeParsingElementState); RAPIDJSON_PARSE_ERROR(kParseErrorArrayMissCommaOrSquareBracket, is.Tell()); return;
+        case IterativeParsingElementDelimiterState:
+            RAPIDJSON_PARSE_ERROR(kParseErrorValueInvalid, is.Tell());
+            return;
+        default:
+            RAPIDJSON_ASSERT(src == IterativeParsingElementState);
+            RAPIDJSON_PARSE_ERROR(kParseErrorArrayMissCommaOrSquareBracket, is.Tell());
+            return;
         }
     }
 

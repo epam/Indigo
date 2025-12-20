@@ -241,7 +241,8 @@ local void tr_static_init()
     ush bl_count[MAX_BITS+1];
     /* number of codes at each bit length for an optimal tree */
 
-    if (static_init_done) return;
+    if (static_init_done)
+        return;
 
     /* For some embedded targets, global variables are not initialized: */
 #ifdef NO_INIT_GLOBAL_POINTERS

@@ -69,15 +69,42 @@ inline void DigitGen(const DiyFp& W, const DiyFp& Mp, uint64_t delta, char* buff
     while (kappa > 0) {
         uint32_t d = 0;
         switch (kappa) {
-            case  9: d = p1 /  100000000; p1 %=  100000000; break;
-            case  8: d = p1 /   10000000; p1 %=   10000000; break;
-            case  7: d = p1 /    1000000; p1 %=    1000000; break;
-            case  6: d = p1 /     100000; p1 %=     100000; break;
-            case  5: d = p1 /      10000; p1 %=      10000; break;
-            case  4: d = p1 /       1000; p1 %=       1000; break;
-            case  3: d = p1 /        100; p1 %=        100; break;
-            case  2: d = p1 /         10; p1 %=         10; break;
-            case  1: d = p1;              p1 =           0; break;
+            case  9:
+                d = p1 /  100000000;
+                p1 %=  100000000;
+                break;
+            case  8:
+                d = p1 /   10000000;
+                p1 %=   10000000;
+                break;
+            case  7:
+                d = p1 /    1000000;
+                p1 %=    1000000;
+                break;
+            case  6:
+                d = p1 /     100000;
+                p1 %=     100000;
+                break;
+            case  5:
+                d = p1 /      10000;
+                p1 %=      10000;
+                break;
+            case  4:
+                d = p1 /       1000;
+                p1 %=       1000;
+                break;
+            case  3:
+                d = p1 /        100;
+                p1 %=        100;
+                break;
+            case  2:
+                d = p1 /         10;
+                p1 %=         10;
+                break;
+            case  1:
+                d = p1;
+                p1 =           0;
+                break;
             default:;
         }
         if (d || *len)

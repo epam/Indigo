@@ -580,7 +580,8 @@ pixman_coalesce (region_type_t * region,      /* Region to coalesce		 */
     numRects = cur_start - prev_start;
     critical_if_fail (numRects == region->data->numRects - cur_start);
 
-    if (!numRects) return cur_start;
+    if (!numRects)
+	return cur_start;
 
     /*
      * The bands may only be coalesced if the bottom of the previous
@@ -588,7 +589,8 @@ pixman_coalesce (region_type_t * region,      /* Region to coalesce		 */
      */
     prev_box = PIXREGION_BOX (region, prev_start);
     cur_box = PIXREGION_BOX (region, cur_start);
-    if (prev_box->y2 != cur_box->y1) return cur_start;
+    if (prev_box->y2 != cur_box->y1)
+	return cur_start;
 
     /*
      * Make sure the bands have boxes in the same places. This

@@ -225,10 +225,30 @@ public:
 
     bool Null() { return WriteType(kNullType); }
     bool Bool(bool b) { return WriteType(b ? kTrueType : kFalseType); }
-    bool Int(int i) { Number n; n.u.i = i; n.d = static_cast<double>(i); return WriteNumber(n); }
-    bool Uint(unsigned u) { Number n; n.u.u = u; n.d = static_cast<double>(u); return WriteNumber(n); }
-    bool Int64(int64_t i) { Number n; n.u.i = i; n.d = static_cast<double>(i); return WriteNumber(n); }
-    bool Uint64(uint64_t u) { Number n; n.u.u = u; n.d = static_cast<double>(u); return WriteNumber(n); }
+    bool Int(int i) {
+        Number n;
+        n.u.i = i;
+        n.d = static_cast<double>(i);
+        return WriteNumber(n);
+    }
+    bool Uint(unsigned u) {
+        Number n;
+        n.u.u = u;
+        n.d = static_cast<double>(u);
+        return WriteNumber(n);
+    }
+    bool Int64(int64_t i) {
+        Number n;
+        n.u.i = i;
+        n.d = static_cast<double>(i);
+        return WriteNumber(n);
+    }
+    bool Uint64(uint64_t u) {
+        Number n;
+        n.u.u = u;
+        n.d = static_cast<double>(u);
+        return WriteNumber(n);
+    }
     bool Double(double d) { 
         Number n; 
         if (d < 0) n.u.i = static_cast<int64_t>(d);

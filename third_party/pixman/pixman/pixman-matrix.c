@@ -626,10 +626,14 @@ pixman_transform_bounds (const struct pixman_transform *matrix,
 	}
 	else
 	{
-	    if (x1 < b->x1) b->x1 = x1;
-	    if (y1 < b->y1) b->y1 = y1;
-	    if (x2 > b->x2) b->x2 = x2;
-	    if (y2 > b->y2) b->y2 = y2;
+	    if (x1 < b->x1)
+		b->x1 = x1;
+	    if (y1 < b->y1)
+		b->y1 = y1;
+	    if (x2 > b->x2)
+		b->x2 = x2;
+	    if (y2 > b->y2)
+		b->y2 = y2;
 	}
     }
 
@@ -1050,10 +1054,14 @@ pixman_f_transform_bounds (const struct pixman_f_transform *t,
 	}
 	else
 	{
-	    if (x1 < b->x1) b->x1 = x1;
-	    if (y1 < b->y1) b->y1 = y1;
-	    if (x2 > b->x2) b->x2 = x2;
-	    if (y2 > b->y2) b->y2 = y2;
+	    if (x1 < b->x1)
+		b->x1 = x1;
+	    if (y1 < b->y1)
+		b->y1 = y1;
+	    if (x2 > b->x2)
+		b->x2 = x2;
+	    if (y2 > b->y2)
+		b->y2 = y2;
 	}
     }
 

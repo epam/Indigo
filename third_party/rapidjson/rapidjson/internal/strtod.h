@@ -48,8 +48,10 @@ inline double StrtodNormalPrecision(double d, int p) {
 template <typename T>
 inline T Min3(T a, T b, T c) {
     T m = a;
-    if (m > b) m = b;
-    if (m > c) m = c;
+    if (m > b)
+        m = b;
+    if (m > c)
+        m = c;
     return m;
 }
 

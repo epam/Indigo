@@ -916,9 +916,12 @@ int flush;
         case COPY:
             copy = state->length;
             if (copy) {
-                if (copy > have) copy = have;
-                if (copy > left) copy = left;
-                if (copy == 0) goto inf_leave;
+                if (copy > have)
+                    copy = have;
+                if (copy > left)
+                    copy = left;
+                if (copy == 0)
+                    goto inf_leave;
                 zmemcpy(put, next, copy);
                 have -= copy;
                 next += copy;
@@ -1463,9 +1466,11 @@ z_streamp strm;
     else
         state->wrap &= ~4;  /* no point in computing a check value now */
     flags = state->flags;
-    in = strm->total_in;  out = strm->total_out;
+    in = strm->total_in;
+    out = strm->total_out;
     inflateReset(strm);
-    strm->total_in = in;  strm->total_out = out;
+    strm->total_in = in;
+    strm->total_out = out;
     state->flags = flags;
     state->mode = TYPE;
     return Z_OK;

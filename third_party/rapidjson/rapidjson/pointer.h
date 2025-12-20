@@ -875,8 +875,10 @@ private:
                 if (c == '~') {
                     if (i < length) {
                         c = source[i];
-                        if (c == '0')       c = '~';
-                        else if (c == '1')  c = '/';
+                        if (c == '0')
+                            c = '~';
+                        else if (c == '1')
+                            c = '/';
                         else {
                             parseErrorCode_ = kPointerParseErrorInvalidEscape;
                             goto error;
@@ -1001,9 +1003,12 @@ private:
             for (int j = 0; j < 2; j++) {
                 c = static_cast<Ch>(c << 4);
                 Ch h = *src_;
-                if      (h >= '0' && h <= '9') c = static_cast<Ch>(c + h - '0');
-                else if (h >= 'A' && h <= 'F') c = static_cast<Ch>(c + h - 'A' + 10);
-                else if (h >= 'a' && h <= 'f') c = static_cast<Ch>(c + h - 'a' + 10);
+                if      (h >= '0' && h <= '9')
+                    c = static_cast<Ch>(c + h - '0');
+                else if (h >= 'A' && h <= 'F')
+                    c = static_cast<Ch>(c + h - 'A' + 10);
+                else if (h >= 'a' && h <= 'f')
+                    c = static_cast<Ch>(c + h - 'a' + 10);
                 else {
                     valid_ = false;
                     return 0;

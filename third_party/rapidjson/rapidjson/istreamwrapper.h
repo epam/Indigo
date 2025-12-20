@@ -68,10 +68,16 @@ public:
     // tellg() may return -1 when failed. So we count by ourself.
     size_t Tell() const { return count_; }
 
-    Ch* PutBegin() { RAPIDJSON_ASSERT(false); return 0; }
+    Ch* PutBegin() {
+        RAPIDJSON_ASSERT(false);
+        return 0;
+    }
     void Put(Ch) { RAPIDJSON_ASSERT(false); }
     void Flush() { RAPIDJSON_ASSERT(false); }
-    size_t PutEnd(Ch*) { RAPIDJSON_ASSERT(false); return 0; }
+    size_t PutEnd(Ch*) {
+        RAPIDJSON_ASSERT(false);
+        return 0;
+    }
 
     // For encoding detection only.
     const Ch* Peek4() const {

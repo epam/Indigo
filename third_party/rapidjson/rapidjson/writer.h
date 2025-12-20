@@ -178,19 +178,40 @@ public:
     */
     //@{
 
-    bool Null()                 { Prefix(kNullType);   return EndValue(WriteNull()); }
-    bool Bool(bool b)           { Prefix(b ? kTrueType : kFalseType); return EndValue(WriteBool(b)); }
-    bool Int(int i)             { Prefix(kNumberType); return EndValue(WriteInt(i)); }
-    bool Uint(unsigned u)       { Prefix(kNumberType); return EndValue(WriteUint(u)); }
-    bool Int64(int64_t i64)     { Prefix(kNumberType); return EndValue(WriteInt64(i64)); }
-    bool Uint64(uint64_t u64)   { Prefix(kNumberType); return EndValue(WriteUint64(u64)); }
+    bool Null()                 {
+        Prefix(kNullType);
+        return EndValue(WriteNull());
+    }
+    bool Bool(bool b)           {
+        Prefix(b ? kTrueType : kFalseType);
+        return EndValue(WriteBool(b));
+    }
+    bool Int(int i)             {
+        Prefix(kNumberType);
+        return EndValue(WriteInt(i));
+    }
+    bool Uint(unsigned u)       {
+        Prefix(kNumberType);
+        return EndValue(WriteUint(u));
+    }
+    bool Int64(int64_t i64)     {
+        Prefix(kNumberType);
+        return EndValue(WriteInt64(i64));
+    }
+    bool Uint64(uint64_t u64)   {
+        Prefix(kNumberType);
+        return EndValue(WriteUint64(u64));
+    }
 
     //! Writes the given \c double value to the stream
     /*!
         \param d The value to be written.
         \return Whether it is succeed.
     */
-    bool Double(double d)       { Prefix(kNumberType); return EndValue(WriteDouble(d)); }
+    bool Double(double d)       {
+        Prefix(kNumberType);
+        return EndValue(WriteDouble(d));
+    }
 
     bool RawNumber(const Ch* str, SizeType length, bool copy = false) {
         RAPIDJSON_ASSERT(str != 0);
@@ -294,17 +315,28 @@ protected:
 
     bool WriteNull()  {
         PutReserve(*os_, 4);
-        PutUnsafe(*os_, 'n'); PutUnsafe(*os_, 'u'); PutUnsafe(*os_, 'l'); PutUnsafe(*os_, 'l'); return true;
+        PutUnsafe(*os_, 'n');
+        PutUnsafe(*os_, 'u');
+        PutUnsafe(*os_, 'l');
+        PutUnsafe(*os_, 'l');
+        return true;
     }
 
     bool WriteBool(bool b)  {
         if (b) {
             PutReserve(*os_, 4);
-            PutUnsafe(*os_, 't'); PutUnsafe(*os_, 'r'); PutUnsafe(*os_, 'u'); PutUnsafe(*os_, 'e');
+            PutUnsafe(*os_, 't');
+            PutUnsafe(*os_, 'r');
+            PutUnsafe(*os_, 'u');
+            PutUnsafe(*os_, 'e');
         }
         else {
             PutReserve(*os_, 5);
-            PutUnsafe(*os_, 'f'); PutUnsafe(*os_, 'a'); PutUnsafe(*os_, 'l'); PutUnsafe(*os_, 's'); PutUnsafe(*os_, 'e');
+            PutUnsafe(*os_, 'f');
+            PutUnsafe(*os_, 'a');
+            PutUnsafe(*os_, 'l');
+            PutUnsafe(*os_, 's');
+            PutUnsafe(*os_, 'e');
         }
         return true;
     }
@@ -351,7 +383,9 @@ protected:
                 return false;
             if (internal::Double(d).IsNan()) {
                 PutReserve(*os_, 3);
-                PutUnsafe(*os_, 'N'); PutUnsafe(*os_, 'a'); PutUnsafe(*os_, 'N');
+                PutUnsafe(*os_, 'N');
+                PutUnsafe(*os_, 'a');
+                PutUnsafe(*os_, 'N');
                 return true;
             }
             if (internal::Double(d).Sign()) {
@@ -360,8 +394,14 @@ protected:
             }
             else
                 PutReserve(*os_, 8);
-            PutUnsafe(*os_, 'I'); PutUnsafe(*os_, 'n'); PutUnsafe(*os_, 'f');
-            PutUnsafe(*os_, 'i'); PutUnsafe(*os_, 'n'); PutUnsafe(*os_, 'i'); PutUnsafe(*os_, 't'); PutUnsafe(*os_, 'y');
+            PutUnsafe(*os_, 'I');
+            PutUnsafe(*os_, 'n');
+            PutUnsafe(*os_, 'f');
+            PutUnsafe(*os_, 'i');
+            PutUnsafe(*os_, 'n');
+            PutUnsafe(*os_, 'i');
+            PutUnsafe(*os_, 't');
+            PutUnsafe(*os_, 'y');
             return true;
         }
 
@@ -451,10 +491,22 @@ protected:
         return RAPIDJSON_LIKELY(is.Tell() < length);
     }
 
-    bool WriteStartObject() { os_->Put('{'); return true; }
-    bool WriteEndObject()   { os_->Put('}'); return true; }
-    bool WriteStartArray()  { os_->Put('['); return true; }
-    bool WriteEndArray()    { os_->Put(']'); return true; }
+    bool WriteStartObject() {
+        os_->Put('{');
+        return true;
+    }
+    bool WriteEndObject()   {
+        os_->Put('}');
+        return true;
+    }
+    bool WriteStartArray()  {
+        os_->Put('[');
+        return true;
+    }
+    bool WriteEndArray()    {
+        os_->Put(']');
+        return true;
+    }
 
     bool WriteRawValue(const Ch* json, size_t length) {
         PutReserve(*os_, length);
@@ -550,7 +602,9 @@ inline bool Writer<StringBuffer>::WriteDouble(double d) {
             return false;
         if (internal::Double(d).IsNan()) {
             PutReserve(*os_, 3);
-            PutUnsafe(*os_, 'N'); PutUnsafe(*os_, 'a'); PutUnsafe(*os_, 'N');
+            PutUnsafe(*os_, 'N');
+            PutUnsafe(*os_, 'a');
+            PutUnsafe(*os_, 'N');
             return true;
         }
         if (internal::Double(d).Sign()) {
@@ -559,8 +613,14 @@ inline bool Writer<StringBuffer>::WriteDouble(double d) {
         }
         else
             PutReserve(*os_, 8);
-        PutUnsafe(*os_, 'I'); PutUnsafe(*os_, 'n'); PutUnsafe(*os_, 'f');
-        PutUnsafe(*os_, 'i'); PutUnsafe(*os_, 'n'); PutUnsafe(*os_, 'i'); PutUnsafe(*os_, 't'); PutUnsafe(*os_, 'y');
+        PutUnsafe(*os_, 'I');
+        PutUnsafe(*os_, 'n');
+        PutUnsafe(*os_, 'f');
+        PutUnsafe(*os_, 'i');
+        PutUnsafe(*os_, 'n');
+        PutUnsafe(*os_, 'i');
+        PutUnsafe(*os_, 't');
+        PutUnsafe(*os_, 'y');
         return true;
     }
     

@@ -48,14 +48,24 @@ public:
     }
 
     Ch Peek() const { return *current_; }
-    Ch Take() { Ch c = *current_; Read(); return c; }
+    Ch Take() {
+        Ch c = *current_;
+        Read();
+        return c;
+    }
     size_t Tell() const { return count_ + static_cast<size_t>(current_ - buffer_); }
 
     // Not implemented
     void Put(Ch) { RAPIDJSON_ASSERT(false); }
     void Flush() { RAPIDJSON_ASSERT(false); } 
-    Ch* PutBegin() { RAPIDJSON_ASSERT(false); return 0; }
-    size_t PutEnd(Ch*) { RAPIDJSON_ASSERT(false); return 0; }
+    Ch* PutBegin() {
+        RAPIDJSON_ASSERT(false);
+        return 0;
+    }
+    size_t PutEnd(Ch*) {
+        RAPIDJSON_ASSERT(false);
+        return 0;
+    }
 
     // For encoding detection only.
     const Ch* Peek4() const {

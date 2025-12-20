@@ -161,13 +161,40 @@ struct UTF8 {
         }
         bool result = true;
         switch (type) {
-        case 2: TAIL(); return result;
-        case 3: TAIL(); TAIL(); return result;
-        case 4: COPY(); TRANS(0x50); TAIL(); return result;
-        case 5: COPY(); TRANS(0x10); TAIL(); TAIL(); return result;
-        case 6: TAIL(); TAIL(); TAIL(); return result;
-        case 10: COPY(); TRANS(0x20); TAIL(); return result;
-        case 11: COPY(); TRANS(0x60); TAIL(); TAIL(); return result;
+        case 2:
+            TAIL();
+            return result;
+        case 3:
+            TAIL();
+            TAIL();
+            return result;
+        case 4:
+            COPY();
+            TRANS(0x50);
+            TAIL();
+            return result;
+        case 5:
+            COPY();
+            TRANS(0x10);
+            TAIL();
+            TAIL();
+            return result;
+        case 6:
+            TAIL();
+            TAIL();
+            TAIL();
+            return result;
+        case 10:
+            COPY();
+            TRANS(0x20);
+            TAIL();
+            return result;
+        case 11:
+            COPY();
+            TRANS(0x60);
+            TAIL();
+            TAIL();
+            return result;
         default: return false;
         }
 #undef COPY
@@ -187,13 +214,40 @@ struct UTF8 {
 
         bool result = true;
         switch (GetRange(static_cast<unsigned char>(c))) {
-        case 2: TAIL(); return result;
-        case 3: TAIL(); TAIL(); return result;
-        case 4: COPY(); TRANS(0x50); TAIL(); return result;
-        case 5: COPY(); TRANS(0x10); TAIL(); TAIL(); return result;
-        case 6: TAIL(); TAIL(); TAIL(); return result;
-        case 10: COPY(); TRANS(0x20); TAIL(); return result;
-        case 11: COPY(); TRANS(0x60); TAIL(); TAIL(); return result;
+        case 2:
+            TAIL();
+            return result;
+        case 3:
+            TAIL();
+            TAIL();
+            return result;
+        case 4:
+            COPY();
+            TRANS(0x50);
+            TAIL();
+            return result;
+        case 5:
+            COPY();
+            TRANS(0x10);
+            TAIL();
+            TAIL();
+            return result;
+        case 6:
+            TAIL();
+            TAIL();
+            TAIL();
+            return result;
+        case 10:
+            COPY();
+            TRANS(0x20);
+            TAIL();
+            return result;
+        case 11:
+            COPY();
+            TRANS(0x60);
+            TAIL();
+            TAIL();
+            return result;
         default: return false;
         }
 #undef COPY

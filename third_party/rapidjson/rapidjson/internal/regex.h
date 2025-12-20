@@ -571,12 +571,23 @@ private:
             case '{':
             case '}':
             case '\\':
-                *escapedCodepoint = codepoint; return true;
-            case 'f': *escapedCodepoint = 0x000C; return true;
-            case 'n': *escapedCodepoint = 0x000A; return true;
-            case 'r': *escapedCodepoint = 0x000D; return true;
-            case 't': *escapedCodepoint = 0x0009; return true;
-            case 'v': *escapedCodepoint = 0x000B; return true;
+                *escapedCodepoint = codepoint;
+                return true;
+            case 'f':
+                *escapedCodepoint = 0x000C;
+                return true;
+            case 'n':
+                *escapedCodepoint = 0x000A;
+                return true;
+            case 'r':
+                *escapedCodepoint = 0x000D;
+                return true;
+            case 't':
+                *escapedCodepoint = 0x0009;
+                return true;
+            case 'v':
+                *escapedCodepoint = 0x000B;
+                return true;
             default:
                 return false; // Unsupported escape character
         }

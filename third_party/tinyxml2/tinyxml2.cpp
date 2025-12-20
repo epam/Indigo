@@ -835,7 +835,8 @@ void XMLNode::SetValue( const char* str, bool staticMem )
 XMLNode* XMLNode::DeepClone(XMLDocument* target) const
 {
 	XMLNode* clone = this->ShallowClone(target);
-	if (!clone) return 0;
+	if (!clone)
+		return 0;
 
 	for (const XMLNode* child = this->FirstChild(); child; child = child->NextSibling()) {
 		XMLNode* childClone = child->DeepClone(target);

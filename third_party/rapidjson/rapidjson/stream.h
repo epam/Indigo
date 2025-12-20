@@ -160,10 +160,16 @@ struct GenericStringStream {
     Ch Take() { return *src_++; }
     size_t Tell() const { return static_cast<size_t>(src_ - head_); }
 
-    Ch* PutBegin() { RAPIDJSON_ASSERT(false); return 0; }
+    Ch* PutBegin() {
+        RAPIDJSON_ASSERT(false);
+        return 0;
+    }
     void Put(Ch) { RAPIDJSON_ASSERT(false); }
     void Flush() { RAPIDJSON_ASSERT(false); }
-    size_t PutEnd(Ch*) { RAPIDJSON_ASSERT(false); return 0; }
+    size_t PutEnd(Ch*) {
+        RAPIDJSON_ASSERT(false);
+        return 0;
+    }
 
     const Ch* src_;     //!< Current read position.
     const Ch* head_;    //!< Original head of the string.
@@ -196,13 +202,20 @@ struct GenericInsituStringStream {
     size_t Tell() { return static_cast<size_t>(src_ - head_); }
 
     // Write
-    void Put(Ch c) { RAPIDJSON_ASSERT(dst_ != 0); *dst_++ = c; }
+    void Put(Ch c) {
+        RAPIDJSON_ASSERT(dst_ != 0);
+        *dst_++ = c;
+    }
 
     Ch* PutBegin() { return dst_ = src_; }
     size_t PutEnd(Ch* begin) { return static_cast<size_t>(dst_ - begin); }
     void Flush() {}
 
-    Ch* Push(size_t count) { Ch* begin = dst_; dst_ += count; return begin; }
+    Ch* Push(size_t count) {
+        Ch* begin = dst_;
+        dst_ += count;
+        return begin;
+    }
     void Pop(size_t count) { dst_ -= count; }
 
     Ch* src_;

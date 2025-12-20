@@ -85,9 +85,12 @@ public:
     }
 
     BigInteger& operator*=(uint64_t u) {
-        if (u == 0) return *this = 0;
-        if (u == 1) return *this;
-        if (*this == 1) return *this = u;
+        if (u == 0)
+            return *this = 0;
+        if (u == 1)
+            return *this;
+        if (*this == 1)
+            return *this = u;
 
         uint64_t k = 0;
         for (size_t i = 0; i < count_; i++) {
@@ -103,9 +106,12 @@ public:
     }
 
     BigInteger& operator*=(uint32_t u) {
-        if (u == 0) return *this = 0;
-        if (u == 1) return *this;
-        if (*this == 1) return *this = u;
+        if (u == 0)
+            return *this = 0;
+        if (u == 1)
+            return *this;
+        if (*this == 1)
+            return *this = u;
 
         uint64_t k = 0;
         for (size_t i = 0; i < count_; i++) {
@@ -126,7 +132,8 @@ public:
     }
 
     BigInteger& operator<<=(size_t shift) {
-        if (IsZero() || shift == 0) return *this;
+        if (IsZero() || shift == 0)
+            return *this;
 
         size_t offset = shift / kTypeBit;
         size_t interShift = shift % kTypeBit;
@@ -174,10 +181,14 @@ public:
             5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5,
             5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5 * 5
         };
-        if (exp == 0) return *this;
-        for (; exp >= 27; exp -= 27) *this *= RAPIDJSON_UINT64_C2(0X6765C793, 0XFA10079D); // 5^27
-        for (; exp >= 13; exp -= 13) *this *= static_cast<uint32_t>(1220703125u); // 5^13
-        if (exp > 0)                 *this *= kPow5[exp - 1];
+        if (exp == 0)
+            return *this;
+        for (; exp >= 27; exp -= 27)
+            *this *= RAPIDJSON_UINT64_C2(0X6765C793, 0XFA10079D); // 5^27
+        for (; exp >= 13; exp -= 13)
+            *this *= static_cast<uint32_t>(1220703125u); // 5^13
+        if (exp > 0)
+            *this *= kPow5[exp - 1];
         return *this;
     }
 
@@ -188,8 +199,16 @@ public:
         RAPIDJSON_ASSERT(cmp != 0);
         const BigInteger *a, *b;  // Makes a > b
         bool ret;
-        if (cmp < 0) { a = &rhs; b = this; ret = true; }
-        else         { a = this; b = &rhs; ret = false; }
+        if (cmp < 0) {
+            a = &rhs;
+            b = this;
+            ret = true;
+        }
+        else {
+            a = this;
+            b = &rhs;
+            ret = false;
+        }
 
         Type borrow = 0;
         for (size_t i = 0; i < a->count_; i++) {
@@ -217,7 +236,10 @@ public:
     }
 
     size_t GetCount() const { return count_; }
-    Type GetDigit(size_t index) const { RAPIDJSON_ASSERT(index < count_); return digits_[index]; }
+    Type GetDigit(size_t index) const {
+        RAPIDJSON_ASSERT(index < count_);
+        return digits_[index];
+    }
     bool IsZero() const { return count_ == 1 && digits_[0] == 0; }
 
 private:
