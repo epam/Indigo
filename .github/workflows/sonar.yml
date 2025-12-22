@@ -1,14 +1,6 @@
 name: Sonar
 
 on:
-  push:
-    branches:
-      - master
-      - 'release/**'
-  pull_request:
-    branches:
-      - master
-      - 'release/**'
   workflow_dispatch:
 
 jobs:
