@@ -257,7 +257,9 @@
 
 #else /**********************************************************************/
 
-# error "XXX: No mutex implementation found.  Cairo will not work with multiple threads.  Define CAIRO_NO_MUTEX to 1 to acknowledge and accept this limitation and compile cairo without thread-safety support."
+# error "XXX: No mutex implementation found.  Cairo will not work with multiple threads. " \
+       "Define CAIRO_NO_MUTEX to 1 to acknowledge and accept this limitation and compile cairo " \
+       "without thread-safety support."
 
 #endif
 

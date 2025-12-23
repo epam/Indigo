@@ -1693,7 +1693,8 @@ tests[] = {
     },
     {
 	"failed sort",
-	"A test derived from random testing that leads to an inconsistent sort --- looks like we just can't attempt to validate the sweep line with edge_compare?",
+	"A test derived from random testing that leads to an inconsistent sort --- "
+	"looks like we just can't attempt to validate the sweep line with edge_compare?",
 	3,
 	{
 	    { { 6, 2}, {0, 0}, { 6, 5}, NULL, NULL },
