@@ -41,7 +41,6 @@
 #include <base_cpp/scanner.h>
 
 using namespace indigo;
-using namespace rapidjson;
 
 void MoleculeJsonSaver::_checkSGroupIndices(BaseMolecule& mol, Array<int>& sgs_list)
 {

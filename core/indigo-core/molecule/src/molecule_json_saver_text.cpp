@@ -41,7 +41,6 @@
 #include <base_cpp/scanner.h>
 
 using namespace indigo;
-using namespace rapidjson;
 
 void MoleculeJsonSaver::saveTextV1(JsonWriter& writer, const SimpleTextObject& text_obj)
 {

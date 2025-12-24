@@ -41,7 +41,6 @@
 #include <base_cpp/scanner.h>
 
 using namespace indigo;
-using namespace rapidjson;
 
 int MoleculeJsonSaver::getMonomerNumber(int mon_idx)
 {
