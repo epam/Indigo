@@ -211,7 +211,7 @@ void SequenceLoader::addNucleotide(KetDocument& document, const std::string& bas
             phosphate->setPosition(phosphate_coord);
 
             if (_last_monomer_idx >= 0)
-                addMonomerConnection(document, _last_monomer_idx, sugar_idx); // сonnect sugar to the previous monomer
+                addMonomerConnection(document, _last_monomer_idx, sugar_idx); // connect sugar to the previous monomer
             addMonomerConnection(document, sugar_idx, phosphate_idx);         // connect phosphate to the current sugar
             _last_monomer_idx = static_cast<int>(phosphate_idx);
         }
@@ -229,9 +229,7 @@ void SequenceLoader::addNucleotide(KetDocument& document, const std::string& bas
 }
 
 
-// return true if monomer already in templates or successfuly added. otherwise - false
-
-// return true if monomer already in templates or successfuly added. otherwise - false
+// return true if monomer already in templates or successfully added. otherwise - false
 
 void SequenceLoader::checkAddTemplate(KetDocument& document, const MonomerTemplate& monomer_template)
 {
@@ -362,7 +360,7 @@ void SequenceLoader::loadIdt(KetDocument& document)
             case '+':
             case 'm':
                 if (cur_token.size())
-                    throw Error("Sugar prefix '%s' whithout base.", cur_token.c_str());
+                    throw Error("Sugar prefix '%s' without base.", cur_token.c_str());
                 else
                     cur_token += ch;
                 continue;
@@ -999,7 +997,7 @@ void SequenceLoader::loadAxoLabs(KetDocument& document)
 
 static std::set<std::string> polymer_types{kHELMPolymerTypePEPTIDE, kHELMPolymerTypeRNA, kHELMPolymerTypeCHEM, kHELMPolymerTypeUnknown};
 static const char* reserved_helm_chars = "${}|.,-:[]()";
-static const char* unexpected_eod = unexpected_eod;
+static const char unexpected_eod[] = "Unexpected end of data";
 
 std::string SequenceLoader::readHelmMonomerAlias(KetDocument& document, MonomerClass monomer_class, bool inside_parentheses)
 {
@@ -1059,7 +1057,7 @@ std::string SequenceLoader::readHelmMonomerAlias(KetDocument& document, MonomerC
             // loader.ignore_cistrans_errors = true;
             loader.loadMolecule(mol);
             MoleculeLayout ml(mol, true);
-            ml.layout_orientation = UNCPECIFIED;
+            ml.layout_orientation = UNSPECIFIED;
             ml.make();
             mol.clearBondDirections();
             try
@@ -1239,7 +1237,7 @@ int SequenceLoader::readCount(std::string& count)
                 if (count.size() == 0)
                     count += '0';
                 else if (count.find(ch, 0) != count.npos) // second dot
-                    throw Error("Enexpected symbol. Second dot in number");
+                    throw Error("Unexpected symbol. Second dot in number");
             }
             count += ch;
             ch = static_cast<char>(_scanner.lookNext());
@@ -1303,7 +1301,7 @@ SequenceLoader::MonomerInfo SequenceLoader::readHelmMonomer(KetDocument& documen
                 break;
             opt_alias = readHelmMonomerAlias(document, monomer_class, inside_parentheses);
             if (aliases.count(opt_alias) > 0)
-                throw Error("Ivalid ambiguous monomer. Monomer '%s' repeated more than once.", opt_alias.c_str());
+                throw Error("Invalid ambiguous monomer. Monomer '%s' repeated more than once.", opt_alias.c_str());
             ch = readCount(count);
             if (is_mixture && ch != '+' && ch != ')')
                 throw Error("Invalid ambiguous monomer. Expected '+' but found '%c'", ch);
