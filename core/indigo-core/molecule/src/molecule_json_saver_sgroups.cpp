@@ -16,29 +16,11 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include <iomanip>
-#include <memory>
-#include <set>
-#include <sstream>
+#include <cstring>
+#include <string>
 
-#include "layout/molecule_layout.h"
-
-#include "molecule/molecule.h"
-#include "molecule/molecule_cip_calculator.h"
 #include "molecule/molecule_json_saver.h"
-#include "molecule/molecule_savers.h"
-#include "molecule/molecule_substructure_matcher.h"
 #include "molecule/monomer_commons.h"
-#include "molecule/monomers_template_library.h"
-#include "molecule/parse_utils.h"
-
-#include "molecule/query_molecule.h"
-#include "molecule/smiles_loader.h"
-#include "molecule/smiles_saver.h"
-#include "reaction/pathway_reaction.h"
-#include "reaction/reaction_multistep_detector.h"
-
-#include <base_cpp/scanner.h>
 
 using namespace indigo;
 

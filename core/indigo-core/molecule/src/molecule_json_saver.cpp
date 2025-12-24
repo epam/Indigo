@@ -49,6 +49,22 @@ using namespace rapidjson;
 
 IMPL_ERROR(MoleculeJsonSaver, "molecule json saver");
 
+void indigo::saveNativeFloat(JsonWriter& writer, float f_value, int precision)
+{
+    std::string val;
+    if (precision >= 0)
+    {
+        std::ostringstream oss;
+        oss << std::fixed << std::setprecision(precision) << f_value;
+        val = oss.str();
+    }
+    else
+    {
+        val = std::to_string(f_value);
+    }
+    writer.RawValue(val.c_str(), val.length(), rapidjson::kStringType);
+}
+
 void dumpAtoms(BaseMolecule& mol)
 {
     for (auto i : mol.vertices())
@@ -338,22 +354,6 @@ void MoleculeJsonSaver::saveHighlights(BaseMolecule& mol, JsonWriter& writer)
 
         writer.EndArray();
     }
-}
-
-static void saveNativeFloat(JsonWriter& writer, float f_value, int precision = -1)
-{
-    std::string val;
-    if (precision >= 0)
-    {
-        std::ostringstream oss;
-        oss << std::fixed << std::setprecision(precision) << f_value;
-        val = oss.str();
-    }
-    else
-    {
-        val = std::to_string(f_value);
-    }
-    writer.RawValue(val.c_str(), val.length(), kStringType);
 }
 
 void MoleculeJsonSaver::writeFloat(JsonWriter& writer, float f_value)
