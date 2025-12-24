@@ -34,8 +34,6 @@
 
 using namespace indigo;
 
-#define BOND_STEREO_BOLD 10001
-
 void MoleculeRenderInternal::_drawBond(int b)
 {
     BondDescr& bd = _bd(b);

@@ -34,8 +34,6 @@
 
 using namespace indigo;
 
-#define BOND_STEREO_BOLD 10001
-
 void MoleculeRenderInternal::_renderBondIds()
 {
     // show bond ids
