@@ -57,7 +57,6 @@ static char readSgChar(Scanner& scanner)
     return c;
 }
 
-
 void SmilesLoader::_readOtherStuff()
 {
     MoleculeCisTrans& cis_trans = _bmol->cis_trans;
@@ -1161,7 +1160,6 @@ void SmilesLoader::_readOtherStuff()
         _bmol->removeAtoms(to_remove);
 }
 
-
 void SmilesLoader::_parseMolecule()
 {
     _cycles.clear();
@@ -1612,7 +1610,6 @@ void SmilesLoader::_parseMolecule()
         throw Error("polymer not closed");
 }
 
-
 void SmilesLoader::_handleCurlyBrace(_AtomDesc& atom, bool& inside_polymer)
 {
     QS_DEF(Array<char>, curly);
@@ -1650,7 +1647,6 @@ void SmilesLoader::_handleCurlyBrace(_AtomDesc& atom, bool& inside_polymer)
         atom.ends_polymer = true;
     }
 }
-
 
 void SmilesLoader::_handlePolymerRepetition(int i)
 {
@@ -1811,7 +1807,6 @@ void SmilesLoader::_handlePolymerRepetition(int i)
     }
 }
 
-
 void SmilesLoader::readSmartsBondStr(const std::string& bond_str, std::unique_ptr<QueryMolecule::Bond>& qbond)
 {
     _BondDesc bond;
@@ -1819,7 +1814,6 @@ void SmilesLoader::readSmartsBondStr(const std::string& bond_str, std::unique_pt
     ac_str.copy(bond_str.c_str(), static_cast<int>(bond_str.size()));
     _readBond(ac_str, bond, qbond, true);
 }
-
 
 void SmilesLoader::_readBond(Array<char>& bond_str, _BondDesc& bond, std::unique_ptr<QueryMolecule::Bond>& qbond, bool smarts_mode)
 {
@@ -1900,7 +1894,6 @@ void SmilesLoader::_readBond(Array<char>& bond_str, _BondDesc& bond, std::unique
     }
     _readBondSub(bond_str, bond, qbond, smarts_mode);
 }
-
 
 void SmilesLoader::_readBondSub(Array<char>& bond_str, _BondDesc& bond, std::unique_ptr<QueryMolecule::Bond>& qbond, bool smarts_mode)
 {
@@ -2053,7 +2046,6 @@ void SmilesLoader::_readBondSub(Array<char>& bond_str, _BondDesc& bond, std::uni
     }
 }
 
-
 bool SmilesLoader::_readAtomLogic(Array<char>& atom_str, bool first_in_brackets, _AtomDesc& atom, std::unique_ptr<QueryMolecule::Atom>& qatom, bool smarts_mode,
                                   bool inside_rsmiles)
 {
@@ -2166,7 +2158,6 @@ bool SmilesLoader::_readAtomLogic(Array<char>& atom_str, bool first_in_brackets,
     return true;
 }
 
-
 void SmilesLoader::readSmartsAtomStr(const std::string& atom_str, std::unique_ptr<QueryMolecule::Atom>& qatom)
 {
     Pool<List<int>::Elem> neipool;
@@ -2186,7 +2177,6 @@ void SmilesLoader::readSmartsAtomStr(const std::string& atom_str, std::unique_pt
     }
     _readAtom(ac_str, in_bracket, atom, qatom, true, false);
 }
-
 
 void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _AtomDesc& atom, std::unique_ptr<QueryMolecule::Atom>& qatom, bool smarts_mode,
                              bool inside_rsmiles, bool strict_aliphatic)
@@ -2898,7 +2888,6 @@ void SmilesLoader::_readAtom(Array<char>& atom_str, bool first_in_brackets, _Ato
     }
 }
 
-
 int SmilesLoader::_parseCurly(Array<char>& curly, int& repetitions)
 {
     if (curly.size() == 1 && curly[0] == '-')
@@ -2922,4 +2911,3 @@ int SmilesLoader::_parseCurly(Array<char>& curly, int& repetitions)
     }
     return 0;
 }
-

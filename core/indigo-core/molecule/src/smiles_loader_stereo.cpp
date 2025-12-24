@@ -189,7 +189,6 @@ void SmilesLoader::_calcStereocenters()
     }
 }
 
-
 void SmilesLoader::_calcCisTrans()
 {
     QS_DEF(Array<int>, dirs);
@@ -213,7 +212,6 @@ void SmilesLoader::_calcCisTrans()
     }
 }
 
-
 void SmilesLoader::_validateStereoCenters()
 {
     for (int i = _bmol->stereocenters.begin(); i < _bmol->stereocenters.end(); i = _bmol->stereocenters.next(i))
@@ -225,7 +223,6 @@ void SmilesLoader::_validateStereoCenters()
             throw Error("atom %d is not a stereocenter", atom_idx);
     }
 }
-
 
 void SmilesLoader::_addExplicitHForStereo()
 {
@@ -252,7 +249,6 @@ void SmilesLoader::_addExplicitHForStereo()
         }
     }
 }
-
 
 void SmilesLoader::_addLigandsForStereo()
 {
@@ -329,7 +325,6 @@ void SmilesLoader::_addLigandsForStereo()
     }
 }
 
-
 bool SmilesLoader::_isAlleneLike(int i)
 {
     if (_bmol->getVertex(i).degree() == 2)
@@ -343,4 +338,3 @@ bool SmilesLoader::_isAlleneLike(int i)
     }
     return false;
 }
-
