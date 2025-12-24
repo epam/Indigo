@@ -1948,4 +1948,3 @@ CEXPORT int indigoResetExplicitValence(int atom)
     }
     INDIGO_END(-1);
 }
-
