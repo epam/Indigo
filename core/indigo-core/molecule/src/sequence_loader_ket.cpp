@@ -59,8 +59,6 @@ void SequenceLoader::addMonomerConnection(KetDocument& document, std::size_t lef
     document.addConnection(left_monomer->ref(), left_ap, right_monomer->ref(), kAttachmentPointR1);
 }
 
-
-
 void SequenceLoader::addMonomer(KetDocument& document, const std::string& monomer, SeqType seq_type, bool mixed)
 {
     MonomerClass monomer_class = seq_type == SeqType::PEPTIDESeq ? MonomerClass::AminoAcid : MonomerClass::Base;
@@ -227,7 +225,6 @@ void SequenceLoader::addNucleotide(KetDocument& document, const std::string& bas
     if (_last_monomer_idx < 0 || phosphate_at_left)
         _last_monomer_idx = static_cast<int>(sugar_idx);
 }
-
 
 // return true if monomer already in templates or successfully added. otherwise - false
 
