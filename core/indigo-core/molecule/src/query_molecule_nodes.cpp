@@ -16,10 +16,11 @@
  * limitations under the License.
  ***************************************************************************/
 
-
+// clang-format off
 #include "molecule/query_molecule.h"
 #include "molecule/molecule_arom.h"
 #include "molecule/molecule_dearom.h"
+// clang-format on
 #include <algorithm>
 
 #ifdef _MSC_VER

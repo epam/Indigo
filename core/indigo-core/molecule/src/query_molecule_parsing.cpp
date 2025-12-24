@@ -16,9 +16,10 @@
  * limitations under the License.
  ***************************************************************************/
 
-
+// clang-format off
 #include "molecule/query_molecule.h"
 #include "molecule/elements.h"
+// clang-format on
 #include <algorithm>
 #include <map>
 #include <unordered_map>

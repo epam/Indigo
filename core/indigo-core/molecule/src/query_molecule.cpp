@@ -1036,7 +1036,6 @@ bool QueryMolecule::isSaturatedAtom(int /*idx*/)
     throw Error("not implemented");
 }
 
-
 int QueryMolecule::calcAtomMaxH(int idx, int conn)
 {
     int number = getAtomNumber(idx);
@@ -1310,7 +1309,6 @@ void QueryMolecule::allowRGroupOnRSite(int atom_idx, int rg_idx)
 
     throw Error("allowRGroupOnRSite(): atom #%d does not seem to be an r-site", atom_idx);
 }
-
 
 void QueryMolecule::invalidateAtom(int index, int mask)
 {
