@@ -41,7 +41,7 @@ using namespace indigo;
 
 static std::set<std::string> polymer_types{kHELMPolymerTypePEPTIDE, kHELMPolymerTypeRNA, kHELMPolymerTypeCHEM, kHELMPolymerTypeUnknown};
 static const char* reserved_helm_chars = "${}|.,-:[]()";
-static const char* unexpected_eod = unexpected_eod;
+static const char* unexpected_eod = "Unexpected end of data";
 
 std::string SequenceLoader::readHelmMonomerAlias(KetDocument& document, MonomerClass monomer_class, bool inside_parentheses)
 {
