@@ -47,7 +47,8 @@
 using namespace indigo;
 using namespace rapidjson;
 
-void mergeMappings(Array<int>& dest, Array<int>& src)
+// Adjust destination indices using the source mapping.
+static void mergeMappings(Array<int>& dest, Array<int>& src)
 {
     for (int i = 0; i < dest.size(); ++i)
     {
@@ -57,22 +58,6 @@ void mergeMappings(Array<int>& dest, Array<int>& src)
         else
             dest[i] = -1;
     }
-}
-
-static void saveNativeFloat(JsonWriter& writer, float f_value, int precision = -1)
-{
-    std::string val;
-    if (precision >= 0)
-    {
-        std::ostringstream oss;
-        oss << std::fixed << std::setprecision(precision) << f_value;
-        val = oss.str();
-    }
-    else
-    {
-        val = std::to_string(f_value);
-    }
-    writer.RawValue(val.c_str(), val.length(), kStringType);
 }
 
 void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
@@ -235,7 +220,7 @@ void MoleculeJsonSaver::saveAmbiguousMonomerTemplate(TGroup& tg, JsonWriter& wri
         if (tg.ratios[i] >= 0)
         {
             writer.Key(num_name);
-            saveNativeFloat(writer, tg.ratios[i], native_precision);
+            saveNativeFloat(writer, tg.ratios[i], this->native_precision);
         }
     }
     writer.EndArray();
@@ -984,9 +969,9 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
         Vec2f pos = monomer_shape.position();
         writer.StartObject();
         writer.Key("x");
-        saveNativeFloat(writer, pos.x, native_precision);
+        saveNativeFloat(writer, pos.x, this->native_precision);
         writer.Key("y");
-        saveNativeFloat(writer, pos.y, native_precision);
+        saveNativeFloat(writer, pos.y, this->native_precision);
         writer.EndObject();
         writer.Key("monomers");
         writer.StartArray();

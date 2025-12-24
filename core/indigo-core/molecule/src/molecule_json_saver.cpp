@@ -721,7 +721,7 @@ void MoleculeJsonSaver::saveHighlights(BaseMolecule& mol, JsonWriter& writer)
     }
 }
 
-static void saveNativeFloat(JsonWriter& writer, float f_value, int precision = -1)
+void saveNativeFloat(JsonWriter& writer, float f_value, int precision)
 {
     std::string val;
     if (precision >= 0)

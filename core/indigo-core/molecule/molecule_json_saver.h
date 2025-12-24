@@ -44,6 +44,8 @@ namespace indigo
     class MonomerTemplate;
     class ReactionMultistepDetector;
 
+    void saveNativeFloat(JsonWriter& writer, float f_value, int precision);
+
     class DLLEXPORT MoleculeJsonSaver
     {
     public:
