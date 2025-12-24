@@ -512,4 +512,3 @@ void MolfileLoader::_readRGroups2000()
             _scanner.skipLine();
     }
 }
-

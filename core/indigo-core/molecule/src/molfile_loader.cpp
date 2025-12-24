@@ -270,4 +270,3 @@ char* MolfileLoader::_strtrim(char* buf)
     }
     return buf;
 }
-
