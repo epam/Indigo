@@ -1165,7 +1165,6 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
     }
 }
 
-
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
