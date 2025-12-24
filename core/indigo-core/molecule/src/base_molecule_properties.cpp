@@ -163,7 +163,7 @@ void BaseMolecule::getAtomBoundingBox(int atom_idx, float font_size, LABEL_MODE 
             bottom_left.sub(shift);
             top_right.add(shift);
             // Add isotope at left
-            if (isotope > 0 && !(label = ELEM_H && (isotope == DEUTERIUM || isotope == TRITIUM)))
+            if (isotope > 0 && !(label == ELEM_H && (isotope == DEUTERIUM || isotope == TRITIUM)))
             {
                 if (isotope > 99)
                     len = 3;
