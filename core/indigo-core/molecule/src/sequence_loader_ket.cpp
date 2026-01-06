@@ -734,8 +734,8 @@ void SequenceLoader::loadAxoLabs(KetDocument& document)
     class link
     {
     public:
-        link(const std::string& monomer) : mon_id(monomer), base_id(){};
-        link(const std::string& monomer, const std::string& base) : mon_id(monomer), base_id(base){};
+        link(const std::string& monomer) : mon_id(monomer), base_id() {};
+        link(const std::string& monomer, const std::string& base) : mon_id(monomer), base_id(base) {};
         std::string mon_id;
         std::string base_id;
     };
@@ -946,54 +946,95 @@ void SequenceLoader::loadAxoLabs(KetDocument& document)
             }
             else // end of antisense sequence - add doube-chain
             {
-                std::vector<std::pair<size_t, size_t>> pairs;
-                bool shift_sense;
-                std::reverse(antisense.begin(), antisense.end());
-                auto offset = best_allign(sense, antisense, pairs, shift_sense);
-                std::map<size_t, std::string> sense_ids;
-                std::map<size_t, std::string> antisense_ids;
-                for (auto it = pairs.begin(); it != pairs.end(); it++)
+                std::vector<std::pair<size_t, size_t>> strands;
+                std::map<std::pair<char, char>, int> similarity;
+                for (auto& pair : complementary_bases)
                 {
-                    sense_ids.emplace(it->first, "");
-                    // fix antisense index - it is reversed
-                    auto antisense_idx = antisense_chain.size() - 1 - it->second;
-                    it->second = antisense_idx;
-                    antisense_ids.emplace(antisense_idx, "");
+                    similarity[pair] = 1;
                 }
-                // save sense
-                _col = static_cast<int>(shift_sense ? offset : 0);
-                int last_monomer_idx = -1;
-                for (size_t idx = 0; idx < sense_chain.size(); idx++)
+                similarity.emplace(std::make_pair('P', 'P'), 1);
+                auto match_cout = needleman_wunsch(sense, std::string(antisense.rbegin(), antisense.rend()), strands, similarity);
+                if (match_cout > 0)
                 {
-                    if (sense_ids.count(idx) > 0) // if id in pairs - save base id
-                        add_link_monomers(sense_chain.at(idx), last_monomer_idx, false, &sense_ids.at(idx));
-                    else
+                    std::map<size_t, std::string> sense_ids;
+                    std::map<size_t, std::string> antisense_ids;
+                    for (auto it = strands.begin(); it != strands.end(); it++)
+                    {
+                        if (it->second != SIZE_MAX)
+                        {
+                            // fix antisense index - it is reversed
+                            auto antisense_idx = antisense_chain.size() - 1 - it->second;
+                            it->second = antisense_idx;
+                            if (it->first != SIZE_MAX &&
+                                complementary_bases.count(std::make_pair(sense[it->first], antisense[antisense_idx])) > 0) // this is pair
+                            {
+                                sense_ids.emplace(it->first, "");
+                                antisense_ids.emplace(antisense_idx, "");
+                            }
+                        }
+                    }
+                    // save sense
+                    _col = 0;
+                    int last_monomer_idx = -1;
+                    size_t idx = 0;
+                    for (auto it = strands.begin(); it != strands.end(); it++)
+                    {
+                        if (it->first != SIZE_MAX)
+                        {
+                            if (sense_ids.count(idx)) // this is pair - save base id
+                                add_link_monomers(sense_chain.at(idx), last_monomer_idx, false, &sense_ids.at(idx));
+                            else
+                                add_link_monomers(sense_chain.at(idx), last_monomer_idx);
+                            idx++;
+                        }
+                        _col++;
+                    }
+                    // save antisense (from right to left)
+                    _row += 3;
+                    _col = static_cast<int>(strands.size() - 1);
+                    last_monomer_idx = -1;
+                    idx = 0;
+                    for (auto it = strands.rbegin(); it != strands.rend(); it++)
+                    {
+                        if (it->second != SIZE_MAX)
+                        {
+                            if (antisense_ids.count(idx) > 0) // if id in pairs - save base id
+                                add_link_monomers(antisense_chain.at(idx), last_monomer_idx, true, &antisense_ids.at(idx));
+                            else
+                                add_link_monomers(antisense_chain.at(idx), last_monomer_idx, true);
+                            idx++;
+                        }
+                        _col--;
+                    }
+                    // add hydrogen bonds
+                    for (auto it = strands.begin(); it != strands.end(); it++)
+                    {
+                        if (it->first != SIZE_MAX && it->second != SIZE_MAX &&
+                            complementary_bases.count(std::make_pair(sense[it->first], antisense[it->second])) > 0) // it is pair
+                            document.addConnection(document.monomers().at(sense_ids.at(it->first))->ref(), HelmHydrogenPair,
+                                                   document.monomers().at(antisense_ids.at(it->second))->ref(), HelmHydrogenPair);
+                    }
+                }
+                else
+                { // No match - two separate chains
+                    int last_monomer_idx = -1;
+                    _col = 0;
+                    for (size_t idx = 0; idx < sense_chain.size(); idx++)
+                    {
                         add_link_monomers(sense_chain.at(idx), last_monomer_idx);
-                    _col++;
-                }
-                // save antisense (from right to left)
-                _row += 3;
-                _col = static_cast<int>(shift_sense ? antisense_chain.size() - 1 : offset + antisense_chain.size() - 1);
-                last_monomer_idx = -1;
-                for (size_t idx = 0; idx < antisense_chain.size(); idx++)
-                {
-
-                    if (antisense_ids.count(idx) > 0) // if id in pairs - save base id
-                        add_link_monomers(antisense_chain.at(idx), last_monomer_idx, true, &antisense_ids.at(idx));
-                    else
-                        add_link_monomers(antisense_chain.at(idx), last_monomer_idx, true);
-                    _col--;
-                }
-                // add hydrogen bonds
-                for (auto it = pairs.begin(); it != pairs.end(); it++)
-                {
-                    document.addConnection(document.monomers().at(sense_ids.at(it->first))->ref(), HelmHydrogenPair,
-                                           document.monomers().at(antisense_ids.at(it->second))->ref(), HelmHydrogenPair);
+                        _col++;
+                    }
+                    last_monomer_idx = -1;
+                    _col = 0;
+                    _row += 2;
+                    for (size_t idx = 0; idx < antisense_chain.size(); idx++)
+                    {
+                        add_link_monomers(antisense_chain.at(idx), last_monomer_idx);
+                        _col++;
+                    }
                 }
                 sense.clear();
                 antisense.clear();
-                sense_ids.clear();
-                antisense_ids.clear();
                 sense_chain.clear();
                 antisense_chain.clear();
                 is_sense = !is_sense;

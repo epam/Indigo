@@ -433,6 +433,74 @@ namespace indigo
         shift_sense = left;
         return allign;
     }
+
+    size_t needleman_wunsch(const std::string& sense, const std::string& antisense, std::vector<std::pair<size_t, size_t>>& strands,
+                            std::map<std::pair<char, char>, int> similarity, int mismatch, int indel)
+    {
+        std::vector<std::vector<int>> H;
+        // First line of scorring matrix contais sense size +1 zeroes
+        H.emplace_back(std::vector<int>());
+        for (auto i = 0; i <= sense.size(); i++)
+            H[0].emplace_back(i * indel);
+        // Function to get pair score from similarity or mismatch value
+        auto score = [&similarity, &mismatch](char base1, char base2) {
+            auto it = similarity.find(std::make_pair(base1, base2));
+            int match = it == similarity.end() ? mismatch : it->second;
+            return match;
+        };
+        // Fill scoring matrix
+        for (auto a = 0; a < antisense.size(); a++)
+        {
+            auto a_base = antisense[a];
+            auto& vec = H.emplace_back(std::vector<int>(1, (a + 1) * indel));
+            auto& prev_vec = H[a];
+            int prev_a = prev_vec[0];
+            int prev_s = vec[0];
+            for (auto s = 0; s < sense.size(); s++)
+            {
+                // Calculate next vector element(cur_s) based on already calculated (prev_s, prev_a, cur_a)
+                // | prev_a | cur_a |
+                // +--------+-------+
+                // | prev_s | cur_s +
+                int cur_a = prev_vec[s + 1];
+                int cur_s = std::max({prev_a + score(a_base, sense[s]), cur_a + indel, prev_s + indel});
+                vec.emplace_back(cur_s);
+                prev_s = cur_s;
+                prev_a = cur_a;
+            }
+        }
+        // Traceback
+        size_t a = antisense.size(), s = sense.size(), match_count = 0;
+        while (a > 0 && s > 0)
+        {
+            int current = H[a][s];
+            if (current == H[a - 1][s - 1] + score(antisense[a - 1], sense[s - 1]))
+            {
+                strands.emplace_back(--s, --a);
+                ++match_count;
+            }
+            else if (current == H[a - 1][s] + indel)
+            {
+                strands.emplace_back(SIZE_MAX, --a);
+            }
+            else
+            {
+                strands.emplace_back(--s, SIZE_MAX);
+            }
+        }
+        while (a > 0)
+        {
+            strands.emplace_back(SIZE_MAX, --a);
+        }
+        while (s > 0)
+        {
+            strands.emplace_back(--s, SIZE_MAX);
+        }
+
+        // Reverse pairs
+        std::reverse(strands.begin(), strands.end());
+        return match_count;
+    }
 }
 
 #ifdef _MSC_VER
