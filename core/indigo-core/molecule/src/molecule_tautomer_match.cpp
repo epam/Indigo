@@ -156,121 +156,83 @@ bool TautomerMatcher::isTautomerActivatedCarbon(BaseMolecule& mol, int atom_idx)
 
     const Vertex& v = mol.getVertex(atom_idx);
 
+    static const int ACTIVATING_HETERO[] = {ELEM_O, ELEM_N, ELEM_S, ELEM_P};
+    static const int EWG_CENTERS[] = {ELEM_C, ELEM_N, ELEM_S, ELEM_P};
+    static const int EWG_ATOMS[] = {ELEM_O, ELEM_N, ELEM_S};
+    static const int ENOL_ATOMS[] = {ELEM_O, ELEM_N, ELEM_S, ELEM_P};
+    static const int UNSAT_BONDS[] = {BOND_DOUBLE, BOND_TRIPLE, BOND_AROMATIC};
+
+    auto matches = [&](int idx, const int* list, size_t size) {
+        for (size_t i = 0; i < size; ++i)
+            if (mol.possibleAtomNumber(idx, list[i]))
+                return true;
+        return false;
+    };
+
+    auto matchesBond = [&](int idx, const int* list, size_t size) {
+        for (size_t i = 0; i < size; ++i)
+            if (mol.possibleBondOrder(idx, list[i]))
+                return true;
+        return false;
+    };
+
     for (int nei = v.neiBegin(); nei != v.neiEnd(); nei = v.neiNext(nei))
     {
         int nei_idx = v.neiVertex(nei);
         if (nei_idx < 0 || nei_idx >= mol.vertexEnd())
             continue;
 
-        int elem = -1;
-        // Use possibleAtomNumber to safely handle QueryMolecules
-        if (mol.possibleAtomNumber(nei_idx, ELEM_O))
-            elem = ELEM_O;
-        else if (mol.possibleAtomNumber(nei_idx, ELEM_N))
-            elem = ELEM_N;
-        else if (mol.possibleAtomNumber(nei_idx, ELEM_S))
-            elem = ELEM_S;
-        else if (mol.possibleAtomNumber(nei_idx, ELEM_P))
-            elem = ELEM_P;
-        else if (mol.possibleAtomNumber(nei_idx, ELEM_C))
-            elem = ELEM_C;
+        int edge_idx = v.neiEdge(nei);
 
-        // Case 3: Directly connected to Heteroatom (O, N, S, P)
-        // Activated if attached to OH/NH/etc.
-        if (elem == ELEM_O || elem == ELEM_N || elem == ELEM_S || elem == ELEM_P)
+        // Rule 1: Direct Heteroatom Connection
+        if (matches(nei_idx, ACTIVATING_HETERO, NELEM(ACTIVATING_HETERO)))
             return true;
 
-        int bond_type = 0;
-        int edge_idx = v.neiEdge(nei);
-        // Use possibleBondOrder for safety
-        if (mol.possibleBondOrder(edge_idx, BOND_DOUBLE))
-            bond_type = BOND_DOUBLE;
-        else if (mol.possibleBondOrder(edge_idx, BOND_TRIPLE))
-            bond_type = BOND_TRIPLE;
-        else if (mol.possibleBondOrder(edge_idx, BOND_AROMATIC))
-            bond_type = BOND_AROMATIC;
-        else if (mol.possibleBondOrder(edge_idx, BOND_SINGLE))
-            bond_type = BOND_SINGLE;
-
-        // Case 1: alpha to EWG
-        if (elem == ELEM_C || elem == ELEM_N || elem == ELEM_S || elem == ELEM_P)
+        // Rule 2: Alpha to EWG
+        if (matches(nei_idx, EWG_CENTERS, NELEM(EWG_CENTERS)))
         {
             const Vertex& v_nei = mol.getVertex(nei_idx);
+            bool neighbor_is_C = mol.possibleAtomNumber(nei_idx, ELEM_C);
+
             for (int n_nei = v_nei.neiBegin(); n_nei != v_nei.neiEnd(); n_nei = v_nei.neiNext(n_nei))
             {
                 int n_nei_idx = v_nei.neiVertex(n_nei);
-                if (n_nei_idx == atom_idx)
-                    continue;
-                if (n_nei_idx < 0 || n_nei_idx >= mol.vertexEnd())
+                if (n_nei_idx == atom_idx || n_nei_idx < 0 || n_nei_idx >= mol.vertexEnd())
                     continue;
 
-                int n_elem = -1;
-                if (mol.possibleAtomNumber(n_nei_idx, ELEM_O))
-                    n_elem = ELEM_O;
-                else if (mol.possibleAtomNumber(n_nei_idx, ELEM_N))
-                    n_elem = ELEM_N;
-                else if (mol.possibleAtomNumber(n_nei_idx, ELEM_S))
-                    n_elem = ELEM_S;
+                // Must be connected to O, N, S
+                if (!matches(n_nei_idx, EWG_ATOMS, NELEM(EWG_ATOMS)))
+                    continue;
 
-                int n_edge_idx = v_nei.neiEdge(n_nei);
-                int n_bond_type = 0;
-                // Optimization: just check activating types
-                if (mol.possibleBondOrder(n_edge_idx, BOND_DOUBLE))
-                    n_bond_type = BOND_DOUBLE;
-                else if (mol.possibleBondOrder(n_edge_idx, BOND_TRIPLE))
-                    n_bond_type = BOND_TRIPLE;
-                else if (mol.possibleBondOrder(n_edge_idx, BOND_AROMATIC))
-                    n_bond_type = BOND_AROMATIC;
-                else if (mol.possibleBondOrder(n_edge_idx, BOND_SINGLE))
-                    n_bond_type = BOND_SINGLE;
-
-                bool bond_ok = false;
-                if (elem == ELEM_C)
+                // Bond Check: If Center is C, bond must be Unsaturated.
+                if (neighbor_is_C)
                 {
-                    if (n_bond_type == BOND_DOUBLE || n_bond_type == BOND_TRIPLE || n_bond_type == BOND_AROMATIC)
-                        bond_ok = true;
+                    int n_edge_idx = v_nei.neiEdge(n_nei);
+                    if (!matchesBond(n_edge_idx, UNSAT_BONDS, NELEM(UNSAT_BONDS)))
+                        continue;
                 }
-                else
-                {
-                    bond_ok = true; // For N,S,P
-                }
-
-                if (bond_ok)
-                {
-                    if (n_elem == ELEM_O || n_elem == ELEM_N || n_elem == ELEM_S)
-                        return true;
-                }
+                // If Center is N/S/P, any bond is activating (implicit single/double logic handled by valency usually)
+                return true;
             }
         }
 
-        // Case 2: Enolic carbon
-        if (elem == ELEM_C && bond_type == BOND_DOUBLE)
+        // Rule 3: Enolic System (C=C-OH)
+        if (mol.possibleAtomNumber(nei_idx, ELEM_C) && mol.possibleBondOrder(edge_idx, BOND_DOUBLE))
         {
             const Vertex& v_nei = mol.getVertex(nei_idx);
             for (int n_nei = v_nei.neiBegin(); n_nei != v_nei.neiEnd(); n_nei = v_nei.neiNext(n_nei))
             {
                 int n_nei_idx = v_nei.neiVertex(n_nei);
-                if (n_nei_idx == atom_idx)
+                if (n_nei_idx == atom_idx || n_nei_idx < 0 || n_nei_idx >= mol.vertexEnd())
                     continue;
-                if (n_nei_idx < 0 || n_nei_idx >= mol.vertexEnd())
-                    continue;
-
-                int n_elem = -1;
-                if (mol.possibleAtomNumber(n_nei_idx, ELEM_O))
-                    n_elem = ELEM_O;
-                else if (mol.possibleAtomNumber(n_nei_idx, ELEM_N))
-                    n_elem = ELEM_N;
-                else if (mol.possibleAtomNumber(n_nei_idx, ELEM_S))
-                    n_elem = ELEM_S;
-                else if (mol.possibleAtomNumber(n_nei_idx, ELEM_P))
-                    n_elem = ELEM_P;
 
                 int n_edge_idx = v_nei.neiEdge(n_nei);
-                if (mol.possibleBondOrder(n_edge_idx, BOND_SINGLE))
-                {
-                    if (n_elem == ELEM_O || n_elem == ELEM_N || n_elem == ELEM_S || n_elem == ELEM_P)
-                        return true;
-                }
+                // Must be Single Bond to Heteroatom
+                if (!mol.possibleBondOrder(n_edge_idx, BOND_SINGLE))
+                    continue;
+
+                if (matches(n_nei_idx, ENOL_ATOMS, NELEM(ENOL_ATOMS)))
+                    return true;
             }
         }
     }
