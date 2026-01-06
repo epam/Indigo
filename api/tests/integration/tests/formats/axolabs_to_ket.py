@@ -39,6 +39,7 @@ axolabs_data = {
     "AxoLabs_two_double": "5'-AC-3'\n5'-GU-3'\n5'-AC-3'\n5'-GU-3'",
     "AxoLabs_double_sense_shift": "5'-AC-3'\n5'-GUAA-3'",
     "AxoLabs_double_antisense_shift": "5'-AAAC-3'\n5'-GU-3'",
+    "AxoLabs_double_3": "5'-TmGCGCA-3'\n5'-UCAA-3'",
 }
 
 lib = indigo.loadMonomerLibraryFromFile(
