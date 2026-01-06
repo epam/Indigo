@@ -149,8 +149,140 @@ bool TautomerMatcher::matchBondsTauSub(Graph& subgraph, Graph& supergraph, int s
     return false;
 }
 
-bool TautomerMatcher::matchAtomsTau(BaseMolecule& g1, BaseMolecule& g2, int n1, int n2)
+bool TautomerMatcher::isTautomerActivatedCarbon(BaseMolecule& mol, int atom_idx)
 {
+    if (atom_idx < 0 || atom_idx >= mol.vertexEnd())
+        return false;
+
+    const Vertex& v = mol.getVertex(atom_idx);
+
+    for (int nei = v.neiBegin(); nei != v.neiEnd(); nei = v.neiNext(nei))
+    {
+        int nei_idx = v.neiVertex(nei);
+        if (nei_idx < 0 || nei_idx >= mol.vertexEnd())
+            continue;
+
+        int elem = -1;
+        // Use possibleAtomNumber to safely handle QueryMolecules
+        if (mol.possibleAtomNumber(nei_idx, ELEM_O))
+            elem = ELEM_O;
+        else if (mol.possibleAtomNumber(nei_idx, ELEM_N))
+            elem = ELEM_N;
+        else if (mol.possibleAtomNumber(nei_idx, ELEM_S))
+            elem = ELEM_S;
+        else if (mol.possibleAtomNumber(nei_idx, ELEM_P))
+            elem = ELEM_P;
+        else if (mol.possibleAtomNumber(nei_idx, ELEM_C))
+            elem = ELEM_C;
+
+        // Case 3: Directly connected to Heteroatom (O, N, S, P)
+        // Activated if attached to OH/NH/etc.
+        if (elem == ELEM_O || elem == ELEM_N || elem == ELEM_S || elem == ELEM_P)
+            return true;
+
+        int bond_type = 0;
+        int edge_idx = v.neiEdge(nei);
+        // Use possibleBondOrder for safety
+        if (mol.possibleBondOrder(edge_idx, BOND_DOUBLE))
+            bond_type = BOND_DOUBLE;
+        else if (mol.possibleBondOrder(edge_idx, BOND_TRIPLE))
+            bond_type = BOND_TRIPLE;
+        else if (mol.possibleBondOrder(edge_idx, BOND_AROMATIC))
+            bond_type = BOND_AROMATIC;
+        else if (mol.possibleBondOrder(edge_idx, BOND_SINGLE))
+            bond_type = BOND_SINGLE;
+
+        // Case 1: alpha to EWG
+        if (elem == ELEM_C || elem == ELEM_N || elem == ELEM_S || elem == ELEM_P)
+        {
+            const Vertex& v_nei = mol.getVertex(nei_idx);
+            for (int n_nei = v_nei.neiBegin(); n_nei != v_nei.neiEnd(); n_nei = v_nei.neiNext(n_nei))
+            {
+                int n_nei_idx = v_nei.neiVertex(n_nei);
+                if (n_nei_idx == atom_idx)
+                    continue;
+                if (n_nei_idx < 0 || n_nei_idx >= mol.vertexEnd())
+                    continue;
+
+                int n_elem = -1;
+                if (mol.possibleAtomNumber(n_nei_idx, ELEM_O))
+                    n_elem = ELEM_O;
+                else if (mol.possibleAtomNumber(n_nei_idx, ELEM_N))
+                    n_elem = ELEM_N;
+                else if (mol.possibleAtomNumber(n_nei_idx, ELEM_S))
+                    n_elem = ELEM_S;
+
+                int n_edge_idx = v_nei.neiEdge(n_nei);
+                int n_bond_type = 0;
+                // Optimization: just check activating types
+                if (mol.possibleBondOrder(n_edge_idx, BOND_DOUBLE))
+                    n_bond_type = BOND_DOUBLE;
+                else if (mol.possibleBondOrder(n_edge_idx, BOND_TRIPLE))
+                    n_bond_type = BOND_TRIPLE;
+                else if (mol.possibleBondOrder(n_edge_idx, BOND_AROMATIC))
+                    n_bond_type = BOND_AROMATIC;
+                else if (mol.possibleBondOrder(n_edge_idx, BOND_SINGLE))
+                    n_bond_type = BOND_SINGLE;
+
+                bool bond_ok = false;
+                if (elem == ELEM_C)
+                {
+                    if (n_bond_type == BOND_DOUBLE || n_bond_type == BOND_TRIPLE || n_bond_type == BOND_AROMATIC)
+                        bond_ok = true;
+                }
+                else
+                {
+                    bond_ok = true; // For N,S,P
+                }
+
+                if (bond_ok)
+                {
+                    if (n_elem == ELEM_O || n_elem == ELEM_N || n_elem == ELEM_S)
+                        return true;
+                }
+            }
+        }
+
+        // Case 2: Enolic carbon
+        if (elem == ELEM_C && bond_type == BOND_DOUBLE)
+        {
+            const Vertex& v_nei = mol.getVertex(nei_idx);
+            for (int n_nei = v_nei.neiBegin(); n_nei != v_nei.neiEnd(); n_nei = v_nei.neiNext(n_nei))
+            {
+                int n_nei_idx = v_nei.neiVertex(n_nei);
+                if (n_nei_idx == atom_idx)
+                    continue;
+                if (n_nei_idx < 0 || n_nei_idx >= mol.vertexEnd())
+                    continue;
+
+                int n_elem = -1;
+                if (mol.possibleAtomNumber(n_nei_idx, ELEM_O))
+                    n_elem = ELEM_O;
+                else if (mol.possibleAtomNumber(n_nei_idx, ELEM_N))
+                    n_elem = ELEM_N;
+                else if (mol.possibleAtomNumber(n_nei_idx, ELEM_S))
+                    n_elem = ELEM_S;
+                else if (mol.possibleAtomNumber(n_nei_idx, ELEM_P))
+                    n_elem = ELEM_P;
+
+                int n_edge_idx = v_nei.neiEdge(n_nei);
+                if (mol.possibleBondOrder(n_edge_idx, BOND_SINGLE))
+                {
+                    if (n_elem == ELEM_O || n_elem == ELEM_N || n_elem == ELEM_S || n_elem == ELEM_P)
+                        return true;
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
+bool TautomerMatcher::matchAtomsTau(BaseMolecule& g1, BaseMolecule& g2, int n1, int n2, bool strict)
+{
+    if (n1 < 0 || n1 >= g1.vertexEnd() || n2 < 0 || n2 >= g2.vertexEnd())
+        return false;
+
     if (g1.isPseudoAtom(n1) || g2.isPseudoAtom(n2))
         return false;
 
@@ -160,7 +292,25 @@ bool TautomerMatcher::matchAtomsTau(BaseMolecule& g1, BaseMolecule& g2, int n1, 
     if (g1.isRSite(n1) || g2.isRSite(n2))
         return false;
 
-    return g1.getAtomNumber(n1) == g2.getAtomNumber(n2) && g1.possibleAtomIsotope(n1, g2.getAtomIsotope(n2));
+    if (g1.getAtomNumber(n1) == g2.getAtomNumber(n2) && g1.possibleAtomIsotope(n1, g2.getAtomIsotope(n2)))
+    {
+        // Anti-Tautomer Rule
+        if (g1.possibleAtomNumber(n1, ELEM_C))
+        {
+            int h1 = g1.getAtomTotalH(n1);
+            int h2 = g2.getAtomTotalH(n2);
+
+            if (h1 != h2)
+            {
+                if (strict && (!isTautomerActivatedCarbon(g1, n1) || !isTautomerActivatedCarbon(g2, n2)))
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    return false;
 }
 
 int TautomerMatcher::_remainderEmbedding(Graph& g1, Graph& g2, int* core1, int* core2, void* userdata)
@@ -397,7 +547,7 @@ bool TautomerMatcher::isFeasiblePair(int n1, int n2, int& h_diff)
     int charge1 = _d.context.g1.getAtomCharge(n1);
     int charge2 = _d.context.g2.getAtomCharge(n2);
 
-    if (!matchAtomsTau(_d.context.g1, _d.context.g2, n1, n2))
+    if (!matchAtomsTau(_d.context.g1, _d.context.g2, n1, n2, _d.context.strict))
         return false;
 
     int h_count_1 = _d.context.g1.getAtomTotalH(n1);

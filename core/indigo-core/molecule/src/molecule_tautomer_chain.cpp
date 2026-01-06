@@ -113,7 +113,7 @@ bool TautomerChainFinder::nextPair(int& n1, int& n2, int& e1, int& e2, int prev_
                 if (_context.core_2[n2] != EmbeddingEnumerator::UNMAPPED)
                     continue;
 
-                if (TautomerMatcher::matchAtomsTau(_context.g1, _context.g2, n1, n2))
+                if (TautomerMatcher::matchAtomsTau(_context.g1, _context.g2, n1, n2, _context.strict))
                     return true;
             }
 
@@ -144,7 +144,7 @@ bool TautomerChainFinder::nextPair(int& n1, int& n2, int& e1, int& e2, int prev_
                 if (_context.core_2[n2] != EmbeddingEnumerator::UNMAPPED)
                     continue;
 
-                if (TautomerMatcher::matchAtomsTau(_context.g1, _context.g2, n1, n2))
+                if (TautomerMatcher::matchAtomsTau(_context.g1, _context.g2, n1, n2, _context.strict))
                     return true;
             }
 
@@ -175,7 +175,7 @@ bool TautomerChainFinder::nextPair(int& n1, int& n2, int& e1, int& e2, int prev_
                 if (_context.core_2[n2] != EmbeddingEnumerator::UNMAPPED)
                     continue;
 
-                if (TautomerMatcher::matchAtomsTau(_context.g1, _context.g2, n1, n2))
+                if (TautomerMatcher::matchAtomsTau(_context.g1, _context.g2, n1, n2, _context.strict))
                     return true;
             }
 
@@ -490,7 +490,7 @@ bool TautomerChainChecker::isFeasibleStartingPair(int n1, int n2, int& h_diff)
         return true;
     }
 
-    if (!TautomerMatcher::matchAtomsTau(_context.g1, _context.g2, n1, n2))
+    if (!TautomerMatcher::matchAtomsTau(_context.g1, _context.g2, n1, n2, _context.strict))
         return false;
 
     int h_count_2 = _context.g2.getAtomTotalH(n2);
@@ -751,7 +751,7 @@ int TautomerChainChecker::isFeasiblePair(int n1, int n2, TautomerChainChecker& n
 
     if (n1 != -1)
     {
-        if (!TautomerMatcher::matchAtomsTau(_context.g1, _context.g2, n1, n2))
+        if (!TautomerMatcher::matchAtomsTau(_context.g1, _context.g2, n1, n2, _context.strict))
             return 0;
 
         int h_rep_1 = 0;
