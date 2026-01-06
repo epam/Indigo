@@ -440,7 +440,7 @@ namespace indigo
         std::vector<std::vector<int>> H;
         // First line of scorring matrix contais sense size +1 zeroes
         H.emplace_back(std::vector<int>());
-        for (auto i = 0; i <= sense.size(); i++)
+        for (size_t i = 0; i <= sense.size(); i++)
             H[0].emplace_back(i * indel);
         // Function to get pair score from similarity or mismatch value
         auto score = [&similarity, &mismatch](char base1, char base2) {
@@ -449,14 +449,14 @@ namespace indigo
             return match;
         };
         // Fill scoring matrix
-        for (auto a = 0; a < antisense.size(); a++)
+        for (size_t a = 0; a < antisense.size(); a++)
         {
             auto a_base = antisense[a];
             auto& vec = H.emplace_back(std::vector<int>(1, (a + 1) * indel));
             auto& prev_vec = H[a];
             int prev_a = prev_vec[0];
             int prev_s = vec[0];
-            for (auto s = 0; s < sense.size(); s++)
+            for (size_t s = 0; s < sense.size(); s++)
             {
                 // Calculate next vector element(cur_s) based on already calculated (prev_s, prev_a, cur_a)
                 // | prev_a | cur_a |
