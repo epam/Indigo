@@ -734,8 +734,8 @@ void SequenceLoader::loadAxoLabs(KetDocument& document)
     class link
     {
     public:
-        link(const std::string& monomer) : mon_id(monomer), base_id() {};
-        link(const std::string& monomer, const std::string& base) : mon_id(monomer), base_id(base) {};
+        link(const std::string& monomer) : mon_id(monomer), base_id(){};
+        link(const std::string& monomer, const std::string& base) : mon_id(monomer), base_id(base){};
         std::string mon_id;
         std::string base_id;
     };
