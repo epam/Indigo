@@ -29,7 +29,7 @@ using namespace indigo;
 IMPL_ERROR(MoleculeTautomerMatcher, "molecule tautomer matcher");
 
 MoleculeTautomerMatcher::MoleculeTautomerMatcher(Molecule& target, bool substructure)
-    : _substructure(substructure), _force_hydrogens(false), _ring_chain(false), _rules(0), _rules_list(0), _target_src(target)
+    : _substructure(substructure), _force_hydrogens(false), _ring_chain(false), _strict(false), _rules(0), _rules_list(0), _target_src(target)
 {
     if (substructure)
     {
@@ -50,12 +50,13 @@ void MoleculeTautomerMatcher::setRulesList(const PtrArray<TautomerRule>* rules_l
     _rules_list = rules_list;
 }
 
-void MoleculeTautomerMatcher::setRules(int rules_set, bool force_hydrogens, bool ring_chain, TautomerMethod method)
+void MoleculeTautomerMatcher::setRules(int rules_set, bool force_hydrogens, bool ring_chain, TautomerMethod method, bool strict)
 {
     _rules = rules_set;
     _force_hydrogens = force_hydrogens;
     _ring_chain = ring_chain;
     _method = method;
+    _strict = strict;
 }
 
 void MoleculeTautomerMatcher::setQuery(BaseMolecule& query)
@@ -103,6 +104,7 @@ bool MoleculeTautomerMatcher::find()
 
     _context->force_hydrogens = _force_hydrogens;
     _context->ring_chain = _ring_chain;
+    _context->strict = _strict;
     _context->rules = _rules;
     _context->method = _method;
 
@@ -139,7 +141,8 @@ const int* MoleculeTautomerMatcher::getQueryMapping()
     return _context->core_1.ptr();
 }
 
-void MoleculeTautomerMatcher::parseConditions(const char* tautomer_text, int& rules, bool& force_hydrogens, bool& ring_chain, TautomerMethod& method)
+void MoleculeTautomerMatcher::parseConditions(const char* tautomer_text, int& rules, bool& force_hydrogens, bool& ring_chain, TautomerMethod& method,
+                                              bool& strict)
 {
     if (tautomer_text == 0)
         throw Error("zero pointer passed to parseConditions()");
@@ -148,6 +151,7 @@ void MoleculeTautomerMatcher::parseConditions(const char* tautomer_text, int& ru
     force_hydrogens = false;
     ring_chain = false;
     method = BASIC;
+    strict = false;
 
     BufferScanner scanner(tautomer_text);
 
@@ -187,6 +191,11 @@ void MoleculeTautomerMatcher::parseConditions(const char* tautomer_text, int& ru
         if (strcasecmp(word.ptr(), "R-C") == 0)
         {
             ring_chain = true;
+            continue;
+        }
+        if (strcasecmp(word.ptr(), "STRICT") == 0)
+        {
+            strict = true;
             continue;
         }
         if (strcasecmp(word.ptr(), "R*") == 0)

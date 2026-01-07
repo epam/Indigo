@@ -48,13 +48,13 @@ namespace indigo
         void setQuery(BaseMolecule& query);
 
         void setRulesList(const PtrArray<TautomerRule>* rules_list);
-        void setRules(int rules_set, bool force_hydrogens, bool ring_chain, TautomerMethod method);
+        void setRules(int rules_set, bool force_hydrogens, bool ring_chain, TautomerMethod method, bool strict);
 
         bool find();
 
         const int* getQueryMapping();
 
-        static void parseConditions(const char* tautomer_text, int& rules, bool& force_hydrogens, bool& ring_chain, TautomerMethod& method);
+        static void parseConditions(const char* tautomer_text, int& rules, bool& force_hydrogens, bool& ring_chain, TautomerMethod& method, bool& strict);
 
         static int countNonHydrogens(BaseMolecule& molecule);
 
@@ -66,6 +66,7 @@ namespace indigo
         bool _substructure;
         bool _force_hydrogens;
         bool _ring_chain;
+        bool _strict;
         TautomerMethod _method;
         int _rules;
 
