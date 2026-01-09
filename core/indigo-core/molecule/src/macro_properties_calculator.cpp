@@ -726,7 +726,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
         }
 
         // Monomer count
-        static const std::string peptides = "ACDEFGHIKLMNPQRSTVWY";
+        static const std::string peptides = "ACDEFGHIKLMNOPQRSTUVWY";
         static const std::string nucleotides = "ACGTU";
         std::map<std::string, size_t> peptides_count;
         std::map<std::string, size_t> nucleotides_count;
