@@ -1252,7 +1252,14 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                 }
             }
 
-            _reflectCycleVertices(inner_cycle_vertices, bond_length);
+            if (!sel_vertices.empty())
+            {
+                for (auto vx_idx : sel_vertices)
+                    _layout_vertices[vx_idx].pos.scale(bond_length);
+                selected_centroid.scale(bond_length);
+            }
+
+            _reflectCycleVertices(inner_cycle_vertices, 1.0f);
 
             if (!sel_vertices.empty())
             {
