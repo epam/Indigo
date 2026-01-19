@@ -18,7 +18,8 @@ library = indigo.loadMonomerLibraryFromFile(
     dataPath("molecules/basic/monomer_library.ket")
 )
 helm = (
-    "PEPTIDE1{C.C.C.C.C.C.C.C.C.C.C.C.C}$" "PEPTIDE1,PEPTIDE1,5:R3-8:R3$$$V2.0"
+    "PEPTIDE1{C.C.C.C.C.C.C.C.C.C.C.C.C}$"
+    + "PEPTIDE1,PEPTIDE1,5:R3-8:R3$$$V2.0"
 )
 ket_doc = indigo.loadHelm(helm, library)
 mol = indigo.loadMolecule(ket_doc.json())
