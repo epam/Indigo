@@ -46,6 +46,7 @@ struct IndigoTautomerParams
     int conditions;
     bool force_hydrogens;
     bool ring_chain;
+    bool strict;
     TautomerMethod method;
 };
 

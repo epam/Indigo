@@ -130,7 +130,7 @@ DLLEXPORT bool _indigoParseTautomerFlags(const char* flags, IndigoTautomerParams
     if (strcasecmp(word.ptr(), "TAU") != 0)
         return false;
 
-    MoleculeTautomerMatcher::parseConditions(flags, params.conditions, params.force_hydrogens, params.ring_chain, params.method);
+    MoleculeTautomerMatcher::parseConditions(flags, params.conditions, params.force_hydrogens, params.ring_chain, params.method, params.strict);
 
     return true;
 }
@@ -266,7 +266,7 @@ CEXPORT int indigoExactMatch(int handler1, int handler2, const char* flags)
 
                 matcher.arom_options = self.arom_options;
                 matcher.setRulesList(&self.tautomer_rules);
-                matcher.setRules(params.conditions, params.force_hydrogens, params.ring_chain, params.method);
+                matcher.setRules(params.conditions, params.force_hydrogens, params.ring_chain, params.method, params.strict);
                 matcher.setQuery(mol1);
 
                 if (!matcher.find())
@@ -709,7 +709,7 @@ bool IndigoMoleculeSubstructureMatcher::findTautomerMatch(QueryMolecule& query, 
     }
 
     tau_matcher->setRulesList(&tautomer_rules);
-    tau_matcher->setRules(tau_params.conditions, tau_params.force_hydrogens, tau_params.ring_chain, tau_params.method);
+    tau_matcher->setRules(tau_params.conditions, tau_params.force_hydrogens, tau_params.ring_chain, tau_params.method, tau_params.strict);
     tau_matcher->setQuery(query);
     tau_matcher->arom_options = indigo.arom_options;
     if (!tau_matcher->find())

@@ -149,8 +149,102 @@ bool TautomerMatcher::matchBondsTauSub(Graph& subgraph, Graph& supergraph, int s
     return false;
 }
 
-bool TautomerMatcher::matchAtomsTau(BaseMolecule& g1, BaseMolecule& g2, int n1, int n2)
+bool TautomerMatcher::isTautomerActivatedCarbon(BaseMolecule& mol, int atom_idx)
 {
+    if (atom_idx < 0 || atom_idx >= mol.vertexEnd())
+        return false;
+
+    const Vertex& v = mol.getVertex(atom_idx);
+
+    static const int ACTIVATING_HETERO[] = {ELEM_O, ELEM_N, ELEM_S, ELEM_P};
+    static const int EWG_CENTERS[] = {ELEM_C, ELEM_N, ELEM_S, ELEM_P};
+    static const int EWG_ATOMS[] = {ELEM_O, ELEM_N, ELEM_S};
+    static const int ENOL_ATOMS[] = {ELEM_O, ELEM_N, ELEM_S, ELEM_P};
+    static const int UNSAT_BONDS[] = {BOND_DOUBLE, BOND_TRIPLE, BOND_AROMATIC};
+
+    auto matches = [&](int idx, const int* list, size_t size) {
+        for (size_t i = 0; i < size; ++i)
+            if (mol.possibleAtomNumber(idx, list[i]))
+                return true;
+        return false;
+    };
+
+    auto matchesBond = [&](int idx, const int* list, size_t size) {
+        for (size_t i = 0; i < size; ++i)
+            if (mol.possibleBondOrder(idx, list[i]))
+                return true;
+        return false;
+    };
+
+    for (int nei = v.neiBegin(); nei != v.neiEnd(); nei = v.neiNext(nei))
+    {
+        int nei_idx = v.neiVertex(nei);
+        if (nei_idx < 0 || nei_idx >= mol.vertexEnd())
+            continue;
+
+        int edge_idx = v.neiEdge(nei);
+
+        // Rule 1: Direct Heteroatom Connection
+        if (matches(nei_idx, ACTIVATING_HETERO, NELEM(ACTIVATING_HETERO)))
+            return true;
+
+        // Rule 2: Alpha to EWG
+        if (matches(nei_idx, EWG_CENTERS, NELEM(EWG_CENTERS)))
+        {
+            const Vertex& v_nei = mol.getVertex(nei_idx);
+            bool neighbor_is_C = mol.possibleAtomNumber(nei_idx, ELEM_C);
+
+            for (int n_nei = v_nei.neiBegin(); n_nei != v_nei.neiEnd(); n_nei = v_nei.neiNext(n_nei))
+            {
+                int n_nei_idx = v_nei.neiVertex(n_nei);
+                if (n_nei_idx == atom_idx || n_nei_idx < 0 || n_nei_idx >= mol.vertexEnd())
+                    continue;
+
+                // Must be connected to O, N, S
+                if (!matches(n_nei_idx, EWG_ATOMS, NELEM(EWG_ATOMS)))
+                    continue;
+
+                // Bond Check: If Center is C, bond must be Unsaturated.
+                if (neighbor_is_C)
+                {
+                    int n_edge_idx = v_nei.neiEdge(n_nei);
+                    if (!matchesBond(n_edge_idx, UNSAT_BONDS, NELEM(UNSAT_BONDS)))
+                        continue;
+                }
+                // If Center is N/S/P, any bond is activating (implicit single/double logic handled by valency usually)
+                return true;
+            }
+        }
+
+        // Rule 3: Enolic System (C=C-OH)
+        if (mol.possibleAtomNumber(nei_idx, ELEM_C) && mol.possibleBondOrder(edge_idx, BOND_DOUBLE))
+        {
+            const Vertex& v_nei = mol.getVertex(nei_idx);
+            for (int n_nei = v_nei.neiBegin(); n_nei != v_nei.neiEnd(); n_nei = v_nei.neiNext(n_nei))
+            {
+                int n_nei_idx = v_nei.neiVertex(n_nei);
+                if (n_nei_idx == atom_idx || n_nei_idx < 0 || n_nei_idx >= mol.vertexEnd())
+                    continue;
+
+                int n_edge_idx = v_nei.neiEdge(n_nei);
+                // Must be Single Bond to Heteroatom
+                if (!mol.possibleBondOrder(n_edge_idx, BOND_SINGLE))
+                    continue;
+
+                if (matches(n_nei_idx, ENOL_ATOMS, NELEM(ENOL_ATOMS)))
+                    return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+bool TautomerMatcher::matchAtomsTau(BaseMolecule& g1, BaseMolecule& g2, int n1, int n2, bool strict)
+{
+    if (n1 < 0 || n1 >= g1.vertexEnd() || n2 < 0 || n2 >= g2.vertexEnd())
+        return false;
+
     if (g1.isPseudoAtom(n1) || g2.isPseudoAtom(n2))
         return false;
 
@@ -160,7 +254,25 @@ bool TautomerMatcher::matchAtomsTau(BaseMolecule& g1, BaseMolecule& g2, int n1, 
     if (g1.isRSite(n1) || g2.isRSite(n2))
         return false;
 
-    return g1.getAtomNumber(n1) == g2.getAtomNumber(n2) && g1.possibleAtomIsotope(n1, g2.getAtomIsotope(n2));
+    if (g1.getAtomNumber(n1) == g2.getAtomNumber(n2) && g1.possibleAtomIsotope(n1, g2.getAtomIsotope(n2)))
+    {
+        // Anti-Tautomer Rule
+        if (g1.possibleAtomNumber(n1, ELEM_C))
+        {
+            int h1 = g1.getAtomTotalH(n1);
+            int h2 = g2.getAtomTotalH(n2);
+
+            if (h1 != h2)
+            {
+                if (strict && (!isTautomerActivatedCarbon(g1, n1) || !isTautomerActivatedCarbon(g2, n2)))
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    return false;
 }
 
 int TautomerMatcher::_remainderEmbedding(Graph& g1, Graph& g2, int* core1, int* core2, void* userdata)
@@ -397,7 +509,7 @@ bool TautomerMatcher::isFeasiblePair(int n1, int n2, int& h_diff)
     int charge1 = _d.context.g1.getAtomCharge(n1);
     int charge2 = _d.context.g2.getAtomCharge(n2);
 
-    if (!matchAtomsTau(_d.context.g1, _d.context.g2, n1, n2))
+    if (!matchAtomsTau(_d.context.g1, _d.context.g2, n1, n2, _d.context.strict))
         return false;
 
     int h_count_1 = _d.context.g1.getAtomTotalH(n1);
