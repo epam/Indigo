@@ -16,6 +16,7 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include "layout/metalayout.h"
 #include "layout/molecule_layout_graph.h"
 
 using namespace indigo;
@@ -509,6 +510,7 @@ float MoleculeLayoutGraphSimple::calculateAngle(int v, int& v1, int& v2) const
 void MoleculeLayoutGraph::_calculatePos(float phi, const Vec2f& v1, const Vec2f& v2, Vec2f& v)
 {
     float alpha;
+    float length = 1.0f;
     Vec2f dir;
 
     dir.diff(v2, v1);
@@ -516,7 +518,10 @@ void MoleculeLayoutGraph::_calculatePos(float phi, const Vec2f& v1, const Vec2f&
     alpha = dir.tiltAngle();
     alpha += phi;
 
-    v.set(v1.x + cos(alpha), v1.y + sin(alpha));
+    if (sequence_layout && _n_fixed > 0)
+        length = LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH;
+
+    v.set(v1.x + cos(alpha) * length, v1.y + sin(alpha) * length);
 }
 
 int MoleculeLayoutGraph::_getCycleDirection(const Cycle& cycle) const
