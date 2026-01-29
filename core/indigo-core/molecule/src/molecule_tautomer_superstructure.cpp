@@ -89,6 +89,10 @@ TautomerSuperStructure::TautomerSuperStructure(Molecule& mol)
             attachedBonds.push(addEdge(v1, v2));
         }
 
+    _bond_orders.expandFill(edgeEnd(), -1);
+    _bond_directions.expandFill(edgeEnd(), 0);
+    reaction_bond_reacting_center.expandFill(edgeEnd(), -1);
+
     _isBondAttachedArray.resize(edgeEnd());
     _isBondAttachedArray.zerofill();
     for (i = 0; i < attachedBonds.size(); i++)

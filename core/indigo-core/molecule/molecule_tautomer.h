@@ -81,6 +81,7 @@ namespace indigo
 
         bool force_hydrogens;
         bool ring_chain;
+        bool strict;
         int rules;
         TautomerMethod method;
         bool substructure;
@@ -123,11 +124,12 @@ namespace indigo
         bool isFeasiblePair(int n1, int n2, int& h_diff);
         void restore();
 
-        static bool matchAtomsTau(BaseMolecule& g1, BaseMolecule& g2, int n1, int n2);
+        static bool matchAtomsTau(BaseMolecule& g1, BaseMolecule& g2, int n1, int n2, bool strict);
         static bool matchBondsTau(Graph& subgraph, Graph& supergraph, int sub_idx, int super_idx, void* userdata);
         static bool matchBondsTauSub(Graph& subgraph, Graph& supergraph, int sub_idx, int super_idx, void* userdata);
 
         static bool fixBondsNotInChains(TautomerSearchContext& context, const int* core1, const int* core2);
+        static bool isTautomerActivatedCarbon(BaseMolecule& mol, int atom_idx);
 
     private:
         bool _checkInterPathBonds();
