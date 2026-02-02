@@ -462,13 +462,10 @@ bool Element::calcValence(int elem, int charge, int radical, int conn, int& vale
     valence = conn;
     hyd = 0;
 
+    // Attemping to follow the BIOVIA post 2014 valence table.
+    // In general all metal atoms should have an implied valecne of 0 and 0 implicit hydrogens.
     if (groupno == 1)
     {
-        // if (elem == ELEM_Li || elem == ELEM_Na || elem == ELEM_K || elem == ELEM_Rb || elem == ELEM_Cs || elem == ELEM_Fr)
-        //{
-        //     valence = 1;
-        //     hyd = 1 - rad - conn - abs(charge);
-        // }
         if (elem == ELEM_H)
         {
             valence = 1;
@@ -486,31 +483,6 @@ bool Element::calcValence(int elem, int charge, int radical, int conn, int& vale
                 hyd = -1;
         }
     }
-    // else if (groupno == 2)
-    //{
-    //     if (elem == ELEM_Be || elem == ELEM_Mg || elem == ELEM_Ca || elem == ELEM_Sr || elem == ELEM_Ba || elem == ELEM_Ra)
-    //     {
-    //         valence = 2;
-    //         if (conn != 0)
-    //         {
-    //             if (rad > 0 || abs(charge) > 0)
-    //                 hyd = -1;
-    //             else
-    //                 hyd = 2 - conn;
-    //         }
-    //         else if (rad > 0 || abs(charge) > 0)
-    //         {
-    //             hyd = 2 - rad - abs(charge);
-    //         }
-    //         else
-    //         {
-    //             hyd = 0;
-    //         }
-
-    //        if (hyd != 0)
-    //            hyd = -1;
-    //    }
-    //}
     else if (groupno == 3)
     {
         if (elem == ELEM_B || elem == ELEM_Al || elem == ELEM_Ga || elem == ELEM_In)
@@ -539,53 +511,6 @@ bool Element::calcValence(int elem, int charge, int radical, int conn, int& vale
             {
                 valence = 3;
                 hyd = 3 - rad - conn - abs(charge);
-            }
-        }
-        else if (elem == ELEM_Tl)
-        {
-            if (charge == -1)
-            {
-                if (rad + conn <= 2)
-                {
-                    valence = 2;
-                    hyd = 2 - rad - conn;
-                }
-                else
-                {
-                    valence = 4;
-                    hyd = 4 - rad - conn;
-                }
-            }
-            else if (charge == -2)
-            {
-                if (rad + conn <= 3)
-                {
-                    valence = 3;
-                    hyd = 3 - rad - conn;
-                }
-                else
-                {
-                    valence = 5;
-                    hyd = 5 - rad - conn;
-                }
-            }
-            else if (charge == -3 && rad + conn == 6)
-            { // ISIS Draw and Marvin allow this
-                valence = 6;
-                hyd = 0;
-            }
-            else
-            {
-                if (rad + conn + abs(charge) <= 1)
-                {
-                    valence = 1;
-                    hyd = 1 - rad - conn - abs(charge);
-                }
-                else
-                {
-                    valence = 3;
-                    hyd = 3 - rad - conn - abs(charge);
-                }
             }
         }
     }
