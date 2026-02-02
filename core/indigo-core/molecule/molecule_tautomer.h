@@ -84,6 +84,7 @@ namespace indigo
         int rules;
         TautomerMethod method;
         bool substructure;
+        bool inner;
         bool (*cb_check_rules)(TautomerSearchContext& context, int first1, int first2, int last1, int last2);
 
         int max_chains;

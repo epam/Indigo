@@ -572,7 +572,8 @@ bool MoleculeSubMatcher::_tryCurrent() // const
 
         matcher.arom_options = indigo.arom_options;
         matcher.setRulesList(&indigo.tautomer_rules);
-        matcher.setRules(_tautomer_params.conditions, _tautomer_params.force_hydrogens, _tautomer_params.ring_chain, _tautomer_params.method);
+        matcher.setRules(_tautomer_params.conditions, _tautomer_params.force_hydrogens, _tautomer_params.ring_chain, _tautomer_params.method,
+                         _tautomer_params.inner);
         matcher.setQuery(query_mol);
         return matcher.find();
     }
@@ -1411,7 +1412,8 @@ bool MolExactMatcher::_tryCurrent() /* const */
 
         matcher.arom_options = indigo.arom_options;
         matcher.setRulesList(&indigo.tautomer_rules);
-        matcher.setRules(_tautomer_params.conditions, _tautomer_params.force_hydrogens, _tautomer_params.ring_chain, _tautomer_params.method);
+        matcher.setRules(_tautomer_params.conditions, _tautomer_params.force_hydrogens, _tautomer_params.ring_chain, _tautomer_params.method,
+                         _tautomer_params.inner);
         matcher.setQuery(query_mol);
         return matcher.find();
     }
