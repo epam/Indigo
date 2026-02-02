@@ -270,7 +270,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1544 [HH] [HH]
 	1552 [H+][H] [H+][H]
 	1804 [H][2H].[2HH] [H][2H].[2HH]
-	1988 [RbH] [RbH]
+	1988 [Rb] [Rb]
 ** searchSub(C1(=O)CCCC1C, '') **
 ** searchSim(C1(=O)CCCC1C, 0.9, 1, tanimoto) **
 ** searchSim(C1(=O)CCCC1C, 0.9, 1, tversky 0.3 0.7) **
@@ -369,7 +369,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1451 [CH] |^1:0| [CH] |^1:0|
 	1452 [NH7+] [NH7+]
 	1494 C[CH]C=C |^1:1| C[CH]C=C |^1:1|
-	1524 [CsH] [CsH]
+	1524 [Cs] [Cs]
 	1544 [HH] [HH]
 	1552 [H+][H] [H+][H]
 	1582 [CH2]C[CH2] |^1:0,2| [CH2]C[CH2] |^1:0,2|
@@ -680,7 +680,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	171 [Md] [Md]
 	195 [H+].[Cl-] [H+].[Cl-]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	337 N N
 	379 [CH2] |^4:0| [CH2] |^4:0|
@@ -1136,7 +1136,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	133 [NH7] [NH7]
 	216 [Zr] [Zr]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	337 N N
 	379 [CH2] |^4:0| [CH2] |^4:0|
@@ -2264,7 +2264,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1352 [H][2H].[2HH].[2H][2H][3H].[2H][3H][2H] [H][2H].[2HH].[2H][2H][3H].[2H][3H][2H]
 	1373 [2H+] [2H+]
 	1451 [CH] |^1:0| [CH] |^1:0|
-	1524 [CsH] [CsH]
+	1524 [Cs] [Cs]
 	1544 [HH] [HH]
 	1552 [H+][H] [H+][H]
 	1729 [OH-] [OH-]
@@ -2529,7 +2529,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1552 [H+][H] [H+][H]
 	1804 [H][2H].[2HH] [H][2H].[2HH]
 	1812 C([H])(C([H])([H])[H])([H])[H] C([H])(C([H])([H])[H])([H])[H]
-	1988 [RbH] [RbH]
+	1988 [Rb] [Rb]
 ** searchSub(C(CO)(CO)C, '') **
 	51 C(C(C([O-])=[OH+])C([O-])=[OH+])(N)N C(C(C([O-])=[OH+])C([O-])=[OH+])(N)N
 	63 C12OSC3C4(C5OSC6OSC(OS5)C(C(SO3)OS1)(C1SOC3SOC(SO1)C6(C1OSC4OSC(OS1)C23Br)C)Cl)C C12OSC3C4(C5OSC6OSC(OS5)C(C(SO3)OS1)(C1SOC3SOC(SO1)C6(C1OSC4OSC(OS1)C23Br)C)Cl)C
@@ -2677,7 +2677,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1746 [Kr] [Kr]
 	1804 [H][2H].[2HH] [H][2H].[2HH]
 	1812 C([H])(C([H])([H])[H])([H])[H] C([H])(C([H])([H])[H])([H])[H]
-	1813 [KH] [KH]
+	1813 [K] [K]
 ** searchSub(C(C([O-])=O)O[Sb], '') **
 ** searchSim(C(C([O-])=O)O[SbH2], 0.9, 1, tanimoto) **
 ** searchSim(C(C([O-])=O)O[SbH2], 0.9, 1, tversky 0.3 0.7) **
@@ -2768,7 +2768,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	69 S S
 	133 [NH7] [NH7]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	337 N N
 	379 [CH2] |^4:0| [CH2] |^4:0|
@@ -3291,7 +3291,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 ** searchSim(C1N(N)N=NC=1, 0.9, 1, euclid-sub) **
 	133 [NH7] [NH7]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	337 N N
 	379 [CH2] |^4:0| [CH2] |^4:0|
@@ -3493,7 +3493,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 ** searchSim(CCC(CCC)N=N, 0.9, 1, euclid-sub) **
 	133 [NH7] [NH7]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	308 [2H+].CCCC.[HH] [2H+].CCCC.[HH]
@@ -3828,7 +3828,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	133 [NH7] [NH7]
 	216 [Zr] [Zr]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	337 N N
@@ -3858,7 +3858,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1746 [Kr] [Kr]
 	1779 [Hf] [Hf]
 	1804 [H][2H].[2HH] [H][2H].[2HH]
-	1813 [KH] [KH]
+	1813 [K] [K]
 	1839 O([H])[H] O([H])[H]
 	1954 [O][2H][2H] [O][2H][2H]
 ** searchSub(C(S[O-])CCCC, '') **
@@ -3911,7 +3911,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	133 [NH7] [NH7]
 	216 [Zr] [Zr]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	337 N N
 	379 [CH2] |^4:0| [CH2] |^4:0|
@@ -4020,7 +4020,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1590 [C-](N([C+]=C)C)=C [C-](N([C+]=C)C)=C
 	1804 [H][2H].[2HH] [H][2H].[2HH]
 	1909 [CH2-]N([CH2+])C [CH2-]N([CH2+])C
-	1988 [RbH] [RbH]
+	1988 [Rb] [Rb]
 	2019 [Co] [Co]
 ** searchSub(C1(=O)NN=CC=C1, '') **
 ** searchSim(C1(=O)NN=CC=C1, 0.9, 1, tanimoto) **
@@ -4088,7 +4088,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	133 [NH7] [NH7]
 	216 [Zr] [Zr]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	337 N N
 	379 [CH2] |^4:0| [CH2] |^4:0|
@@ -4138,7 +4138,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1729 [OH-] [OH-]
 	1804 [H][2H].[2HH] [H][2H].[2HH]
 	1839 O([H])[H] O([H])[H]
-	1921 [FrH] [FrH]
+	1921 [Fr] [Fr]
 	1954 [O][2H][2H] [O][2H][2H]
 ** searchSub(C1([N+])=C(C)NN=C1, '') **
 ** searchSim(C1([NH3+])=C(C)NN=C1, 0.9, 1, tanimoto) **
@@ -4147,7 +4147,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	133 [NH7] [NH7]
 	216 [Zr] [Zr]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	337 N N
@@ -4327,7 +4327,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	261 [H+].[H+] [H+].[H+]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	379 [CH2] |^4:0| [CH2] |^4:0|
-	408 [NaH] [NaH]
+	408 [Na] [Na]
 	414 [H][H] [H][H]
 	420 [C@@](C)([2H])([H])[3H] |&1:0,r| [C@@](C)([2H])([H])[3H] |&1:0,r|
 	534 [2H][2H][2H][2H] [2H][2H][2H][2H]
@@ -4393,7 +4393,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1437 C[CH]C |^1:1| C[CH]C |^1:1|
 	1451 [CH] |^1:0| [CH] |^1:0|
 	1452 [NH7+] [NH7+]
-	1524 [CsH] [CsH]
+	1524 [Cs] [Cs]
 	1544 [HH] [HH]
 	1552 [H+][H] [H+][H]
 	1582 [CH2]C[CH2] |^1:0,2| [CH2]C[CH2] |^1:0,2|
@@ -4451,7 +4451,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1839 O([H])[H] O([H])[H]
 	1840 Cl[H] Cl[H]
 	1954 [O][2H][2H] [O][2H][2H]
-	1988 [RbH] [RbH]
+	1988 [Rb] [Rb]
 ** searchSub(N1(C)C(S)=NC=C1, '') **
 ** searchSim(N1(C)C(S)=NC=C1, 0.9, 1, tanimoto) **
 ** searchSim(N1(C)C(S)=NC=C1, 0.9, 1, tversky 0.3 0.7) **
@@ -4531,7 +4531,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	300 [Cm] [Cm]
 	337 N N
 	379 [CH2] |^4:0| [CH2] |^4:0|
-	408 [NaH] [NaH]
+	408 [Na] [Na]
 	414 [H][H] [H][H]
 	420 [C@@](C)([2H])([H])[3H] |&1:0,r| [C@@](C)([2H])([H])[3H] |&1:0,r|
 	534 [2H][2H][2H][2H] [2H][2H][2H][2H]
@@ -4729,7 +4729,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	133 [NH7] [NH7]
 	216 [Zr] [Zr]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	337 N N
@@ -4821,7 +4821,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	133 [NH7] [NH7]
 	216 [Zr] [Zr]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	337 N N
@@ -5130,7 +5130,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	152 [Lr] [Lr]
 	216 [Zr] [Zr]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	337 N N
@@ -5243,7 +5243,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1804 [H][2H].[2HH] [H][2H].[2HH]
 	1812 C([H])(C([H])([H])[H])([H])[H] C([H])(C([H])([H])[H])([H])[H]
 	1860 B B
-	1921 [FrH] [FrH]
+	1921 [Fr] [Fr]
 ** searchSub(CNC1CCC(C)C1, '') **
 ** searchSim(CNC1CCC(C)C1, 0.9, 1, tanimoto) **
 ** searchSim(CNC1CCC(C)C1, 0.9, 1, tversky 0.3 0.7) **
@@ -6181,7 +6181,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	133 [NH7] [NH7]
 	216 [Zr] [Zr]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	337 N N
@@ -6353,7 +6353,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1812 C([H])(C([H])([H])[H])([H])[H] C([H])(C([H])([H])[H])([H])[H]
 	1840 Cl[H] Cl[H]
 	1909 [CH2-]N([CH2+])C [CH2-]N([CH2+])C
-	1988 [RbH] [RbH]
+	1988 [Rb] [Rb]
 ** searchSub(N1(CSCC1)CC=C, '') **
 	1472 c1(-c2c(OC)ccc(OC)c2)[n+]2c(S/C(/C2=O)=C\c2ccc[n]c2)[n]c(C)c1C(OCC)=O.C1(=C2/C(=[O+]C)C=CC(OC)=C/2)/N2C(S/C(/C2=O)=C\c2ccc[n]c2)=NC(C)=C/1C(OCC)=O c1(-c2c(OC)ccc(OC)c2)[n+]2c(S/C(/C2=O)=C\c2ccc[n]c2)[n]c(C)c1C(OCC)=O.C1(=C2/C(=[O+]C)C=CC(OC)=C/2)/N2C(S/C(/C2=O)=C\c2ccc[n]c2)=NC(C)=C/1C(OCC)=O
 ** searchSim(N1(CSCC1)CC=C, 0.9, 1, tanimoto) **
@@ -6405,7 +6405,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1812 C([H])(C([H])([H])[H])([H])[H] C([H])(C([H])([H])[H])([H])[H]
 	1840 Cl[H] Cl[H]
 	1909 [CH2-]N([CH2+])C [CH2-]N([CH2+])C
-	1988 [RbH] [RbH]
+	1988 [Rb] [Rb]
 ** searchSub(C1(=NOC=C1)NCC, '') **
 ** searchSim(C1(=NOC=C1)NCC, 0.9, 1, tanimoto) **
 ** searchSim(C1(=NOC=C1)NCC, 0.9, 1, tversky 0.3 0.7) **
@@ -6567,7 +6567,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	261 [H+].[H+] [H+].[H+]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	379 [CH2] |^4:0| [CH2] |^4:0|
-	408 [NaH] [NaH]
+	408 [Na] [Na]
 	414 [H][H] [H][H]
 	420 [C@@](C)([2H])([H])[3H] |&1:0,r| [C@@](C)([2H])([H])[3H] |&1:0,r|
 	534 [2H][2H][2H][2H] [2H][2H][2H][2H]
@@ -6641,7 +6641,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1812 C([H])(C([H])([H])[H])([H])[H] C([H])(C([H])([H])[H])([H])[H]
 	1839 O([H])[H] O([H])[H]
 	1899 [PoH2] [PoH2]
-	1921 [FrH] [FrH]
+	1921 [Fr] [Fr]
 	1954 [O][2H][2H] [O][2H][2H]
 ** searchSub(CPC1=CC=CC=C1, '') **
 	3 [P@@](c1c(OC)cccc1)(c1ccccc1)C(C)(C)C [P@@](c1c(OC)cccc1)(c1ccccc1)C(C)(C)C
@@ -6733,7 +6733,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	133 [NH7] [NH7]
 	216 [Zr] [Zr]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	337 N N
 	349 C/C=C/[CH2] |^1:3| C/C=C/[CH2] |^1:3|
@@ -6931,7 +6931,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	337 N N
 	379 [CH2] |^4:0| [CH2] |^4:0|
-	408 [NaH] [NaH]
+	408 [Na] [Na]
 	414 [H][H] [H][H]
 	420 [C@@](C)([2H])([H])[3H] |&1:0,r| [C@@](C)([2H])([H])[3H] |&1:0,r|
 	534 [2H][2H][2H][2H] [2H][2H][2H][2H]
@@ -7340,7 +7340,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	300 [Cm] [Cm]
 	337 N N
 	379 [CH2] |^4:0| [CH2] |^4:0|
-	408 [NaH] [NaH]
+	408 [Na] [Na]
 	414 [H][H] [H][H]
 	415 [2H+].CCC [2H+].CCC
 	420 [C@@](C)([2H])([H])[3H] |&1:0,r| [C@@](C)([2H])([H])[3H] |&1:0,r|
@@ -7584,7 +7584,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 ** searchSim(C(/C=N\C=N)C1=NN=NN1, 0.9, 1, euclid-sub) **
 	133 [NH7] [NH7]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	337 N N
@@ -7772,7 +7772,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	211 [n]1c(N)[s]c(N)[n]1 [n]1c(N)[s]c(N)[n]1
 	216 [Zr] [Zr]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	337 N N
@@ -7811,7 +7811,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1804 [H][2H].[2HH] [H][2H].[2HH]
 	1812 C([H])(C([H])([H])[H])([H])[H] C([H])(C([H])([H])[H])([H])[H]
 	1840 Cl[H] Cl[H]
-	1988 [RbH] [RbH]
+	1988 [Rb] [Rb]
 ** searchSub(C12C(S)=NC=NC=1SC=C2, '') **
 ** searchSim(C12C(S)=NC=NC=1SC=C2, 0.9, 1, tanimoto) **
 ** searchSim(C12C(S)=NC=NC=1SC=C2, 0.9, 1, tversky 0.3 0.7) **
@@ -7843,7 +7843,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1552 [H+][H] [H+][H]
 	1562 [He] [He]
 	1804 [H][2H].[2HH] [H][2H].[2HH]
-	1921 [FrH] [FrH]
+	1921 [Fr] [Fr]
 	2000 [Np] [Np]
 	2007 [Ba] [Ba]
 ** searchSub(C1(S(=O)=O)=CC=CC=C1, '') **
@@ -7855,7 +7855,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	409 N(=N/c1ccccc1)\c1c(S(=O)(=O)O)cc2c(c(cc(c2)S(O)(=O)=O)NC(=O)C)c1O.[Na+].N(/Nc1ccccc1)=C1\C(S(=O)(=O)O)=Cc2c(c(cc(c2)S(=O)(O)=O)/N=C(/C)\O)C\1=O N(=N/c1ccccc1)\c1c(S(=O)(=O)O)cc2c(c(cc(c2)S(O)(=O)=O)NC(=O)C)c1O.[Na+].N(/Nc1ccccc1)=C1\C(S(=O)(=O)O)=Cc2c(c(cc(c2)S(=O)(O)=O)/N=C(/C)\O)C\1=O
 	450 FS(c1c([H])c([H])c(N(C(C([n+]2c([H])c(N(C(=O)C(Oc3c([H])c([H])c(Cl)c(Cl)c3[H])([H])[H])[H])c([H])c([H])c2[H])([H])[H])=O)[H])c([H])c1[H])(=O)=O.[Br-] FS(c1c([H])c([H])c(N(C(C([n+]2c([H])c(N(C(=O)C(Oc3c([H])c([H])c(Cl)c(Cl)c3[H])([H])[H])[H])c([H])c([H])c2[H])([H])[H])=O)[H])c([H])c1[H])(=O)=O.[Br-]
 	490 C1(=[n]2ccc(/N=C/c3ccc(O)cc3)cc2)/C(=N/S(c2ccc(C)cc2)(=O)=O)/N=C2C=CC=CC2=N1 C1(=[n]2ccc(/N=C/c3ccc(O)cc3)cc2)/C(=N/S(c2ccc(C)cc2)(=O)=O)/N=C2C=CC=CC2=N1
-	505 [O-][N+](c1ccc(C=Cc2c(S(=O)(=O)O)cc(N=Nc3cc(C)c(N=Nc4cc(S(=O)(=O)O)c(OC)cc4)cc3OC)cc2)c(S(O)(=O)=O)c1)=Nc1cc(S(=O)(O)=O)c(C=Cc2c(S(O)(=O)=O)cc(N=Nc3cc(C)c(N=Nc4cc(S(=O)(=O)O)c(OC)cc4)cc3OC)cc2)cc1.[NaH] [O-][N+](c1ccc(C=Cc2c(S(=O)(=O)O)cc(N=Nc3cc(C)c(N=Nc4cc(S(=O)(=O)O)c(OC)cc4)cc3OC)cc2)c(S(O)(=O)=O)c1)=Nc1cc(S(=O)(O)=O)c(C=Cc2c(S(O)(=O)=O)cc(N=Nc3cc(C)c(N=Nc4cc(S(=O)(=O)O)c(OC)cc4)cc3OC)cc2)cc1.[NaH]
+	505 [O-][N+](c1ccc(C=Cc2c(S(=O)(=O)O)cc(N=Nc3cc(C)c(N=Nc4cc(S(=O)(=O)O)c(OC)cc4)cc3OC)cc2)c(S(O)(=O)=O)c1)=Nc1cc(S(=O)(O)=O)c(C=Cc2c(S(O)(=O)=O)cc(N=Nc3cc(C)c(N=Nc4cc(S(=O)(=O)O)c(OC)cc4)cc3OC)cc2)cc1.[Na] [O-][N+](c1ccc(C=Cc2c(S(=O)(=O)O)cc(N=Nc3cc(C)c(N=Nc4cc(S(=O)(=O)O)c(OC)cc4)cc3OC)cc2)c(S(O)(=O)=O)c1)=Nc1cc(S(=O)(O)=O)c(C=Cc2c(S(O)(=O)=O)cc(N=Nc3cc(C)c(N=Nc4cc(S(=O)(=O)O)c(OC)cc4)cc3OC)cc2)cc1.[Na]
 	571 [c]12[c]([H])[c]([H])[c]([H])[c]([H])[c]1[s][c]([c]2Cl)C(N([c]1[c]([H])[c]([H])[c](S(N([c]2[s][c]([H])[c]([H])[n]2)[H])(=O)=O)[c]([H])[c]1[H])[H])=O |^1:0,1,3,5,7,9,11,12,16,17,19,21,24,26,28,30,34,36| [c]12[c]([H])[c]([H])[c]([H])[c]([H])[c]1[s][c]([c]2Cl)C(N([c]1[c]([H])[c]([H])[c](S(N([c]2[s][c]([H])[c]([H])[n]2)[H])(=O)=O)[c]([H])[c]1[H])[H])=O |^1:0,1,3,5,7,9,11,12,16,17,19,21,24,26,28,30,34,36|
 	611 C1(=[n]2ccc(NC(c3ccccc3)=O)cc2O)/C(=N/S(c2ccc(C)cc2)(=O)=O)/N=C2C=CC=CC2=N1 C1(=[n]2ccc(NC(c3ccccc3)=O)cc2O)/C(=N/S(c2ccc(C)cc2)(=O)=O)/N=C2C=CC=CC2=N1
 	782 c1(-[n+]2ccc(/N=C/c3ccc(O)cc3)cc2)c([N-]S(c2ccc(C)cc2)(=O)=O)[n]c2ccccc2[n]1 c1(-[n+]2ccc(/N=C/c3ccc(O)cc3)cc2)c([N-]S(c2ccc(C)cc2)(=O)=O)[n]c2ccccc2[n]1
@@ -8115,7 +8115,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	133 [NH7] [NH7]
 	216 [Zr] [Zr]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	337 N N
@@ -8157,7 +8157,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	216 [Zr] [Zr]
 	239 ON=O.O=NO.[nH]1ccc[n]1.[n]1ccc[nH]1 ON=O.O=NO.[nH]1ccc[n]1.[n]1ccc[nH]1
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	337 N N
@@ -8195,7 +8195,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1779 [Hf] [Hf]
 	1804 [H][2H].[2HH] [H][2H].[2HH]
 	1812 C([H])(C([H])([H])[H])([H])[H] C([H])(C([H])([H])[H])([H])[H]
-	1813 [KH] [KH]
+	1813 [K] [K]
 	1839 O([H])[H] O([H])[H]
 	1887 [Ca] [Ca]
 	1954 [O][2H][2H] [O][2H][2H]
@@ -8206,7 +8206,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	133 [NH7] [NH7]
 	216 [Zr] [Zr]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	337 N N
@@ -8334,7 +8334,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1839 O([H])[H] O([H])[H]
 	1840 Cl[H] Cl[H]
 	1954 [O][2H][2H] [O][2H][2H]
-	1988 [RbH] [RbH]
+	1988 [Rb] [Rb]
 ** searchSub(N1=C(/C(=C/C)/C)SN=C1, '') **
 ** searchSim(N1=C(/C(=C/C)/C)SN=C1, 0.9, 1, tanimoto) **
 ** searchSim(N1=C(/C(=C/C)/C)SN=C1, 0.9, 1, tversky 0.3 0.7) **
@@ -8380,7 +8380,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1746 [Kr] [Kr]
 	1804 [H][2H].[2HH] [H][2H].[2HH]
 	1812 C([H])(C([H])([H])[H])([H])[H] C([H])(C([H])([H])[H])([H])[H]
-	1813 [KH] [KH]
+	1813 [K] [K]
 ** searchSub(C1C=CSC=1/N=C/SC, '') **
 ** searchSim(C1C=CSC=1/N=C/SC, 0.9, 1, tanimoto) **
 ** searchSim(C1C=CSC=1/N=C/SC, 0.9, 1, tversky 0.3 0.7) **
@@ -8526,7 +8526,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	300 [Cm] [Cm]
 	337 N N
 	379 [CH2] |^4:0| [CH2] |^4:0|
-	408 [NaH] [NaH]
+	408 [Na] [Na]
 	414 [H][H] [H][H]
 	420 [C@@](C)([2H])([H])[3H] |&1:0,r| [C@@](C)([2H])([H])[3H] |&1:0,r|
 	534 [2H][2H][2H][2H] [2H][2H][2H][2H]
@@ -8935,7 +8935,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	337 N N
 	379 [CH2] |^4:0| [CH2] |^4:0|
 	392 CS.[2H+] CS.[2H+]
-	408 [NaH] [NaH]
+	408 [Na] [Na]
 	414 [H][H] [H][H]
 	440 [35Cl][2H] [35Cl][2H]
 	534 [2H][2H][2H][2H] [2H][2H][2H][2H]
@@ -9076,7 +9076,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	133 [NH7] [NH7]
 	216 [Zr] [Zr]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	337 N N
@@ -9117,7 +9117,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1779 [Hf] [Hf]
 	1804 [H][2H].[2HH] [H][2H].[2HH]
 	1812 C([H])(C([H])([H])[H])([H])[H] C([H])(C([H])([H])[H])([H])[H]
-	1813 [KH] [KH]
+	1813 [K] [K]
 	1900 [Ti] [Ti]
 ** searchSub(C1CCCN1CCNCC, '') **
 	907 O=C1N2C(CCC2)C(=O)NCC(=O)N[C@H](C(N[C@H](C(N[C@@H]2[C@@H](C)SC[C@H](C(=O)N[C@@H](C(N[C@@H](C(N[C@H](C(N[C@H]3[C@H](C)SCC4C(=O)N[C@H](Cc5[n]c[nH]c5)C(=O)N[C@H](C(N[C@H](C(N[C@H](C(N[C@@H](Cc5c[nH]c[n]5)C(N[C@@H](C(=O)NC(C(N[C@@H](CCCCN)C(=O)O)=O)=C)C(C)C)=O)=O)[C@H](CC)C)=O)CO)=O)CS[C@H](C)C(C(N4)=O)NC(=O)[C@@H](C)NC3=O)=O)CCCCN)=O)CCSC)=O)CC(N)=O)NC(=O)CNC(=O)[C@H](CCSC)NC(=O)[C@H](CC(C)C)NC(=O)[C@@H](C)NC(=O)CNC2=O)=O)CCCCN)=O)CS[C@@H](C)[C@@H]1NC(=O)[C@H]1NC(=O)[C@H](CC(C)C)NC(=O)C(=C)NC(=O)C([C@@H](CC)C)NC(=O)[C@H](NC(=O)/C(/NC([C@@H]([C@H](CC)C)N)=O)=C\C)CSC1 |&1:14,17,20,21,25,29,32,35,38,39,47,57,60,63,66,75,82,98,108,117,145,153,161,179,181,185,189,203,210,217,218,r| O=C1N2C(CCC2)C(=O)NCC(=O)N[C@H](C(N[C@H](C(N[C@@H]2[C@@H](C)SC[C@H](C(=O)N[C@@H](C(N[C@@H](C(N[C@H](C(N[C@H]3[C@H](C)SCC4C(=O)N[C@H](Cc5[n]c[nH]c5)C(=O)N[C@H](C(N[C@H](C(N[C@H](C(N[C@@H](Cc5c[nH]c[n]5)C(N[C@@H](C(=O)NC(C(N[C@@H](CCCCN)C(=O)O)=O)=C)C(C)C)=O)=O)[C@H](CC)C)=O)CO)=O)CS[C@H](C)C(C(N4)=O)NC(=O)[C@@H](C)NC3=O)=O)CCCCN)=O)CCSC)=O)CC(N)=O)NC(=O)CNC(=O)[C@H](CCSC)NC(=O)[C@H](CC(C)C)NC(=O)[C@@H](C)NC(=O)CNC2=O)=O)CCCCN)=O)CS[C@@H](C)[C@@H]1NC(=O)[C@H]1NC(=O)[C@H](CC(C)C)NC(=O)C(=C)NC(=O)C([C@@H](CC)C)NC(=O)[C@H](NC(=O)/C(/NC([C@@H]([C@H](CC)C)N)=O)=C\C)CSC1 |&1:14,17,20,21,25,29,32,35,38,39,47,57,60,63,66,75,82,98,108,117,145,153,161,179,181,185,189,203,210,217,218,r|
@@ -9209,7 +9209,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	133 [NH7] [NH7]
 	216 [Zr] [Zr]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	337 N N
@@ -9244,7 +9244,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1779 [Hf] [Hf]
 	1804 [H][2H].[2HH] [H][2H].[2HH]
 	1812 C([H])(C([H])([H])[H])([H])[H] C([H])(C([H])([H])[H])([H])[H]
-	1813 [KH] [KH]
+	1813 [K] [K]
 	1887 [Ca] [Ca]
 ** searchSub(C1(C=CC=C2COCC=12)[N+], '') **
 ** searchSim(C1(C=CC=C2COCC=12)[NH3+], 0.9, 1, tanimoto) **
@@ -9541,7 +9541,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	216 [Zr] [Zr]
 	239 ON=O.O=NO.[nH]1ccc[n]1.[n]1ccc[nH]1 ON=O.O=NO.[nH]1ccc[n]1.[n]1ccc[nH]1
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	337 N N
@@ -9583,7 +9583,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	337 N N
 	379 [CH2] |^4:0| [CH2] |^4:0|
-	408 [NaH] [NaH]
+	408 [Na] [Na]
 	414 [H][H] [H][H]
 	415 [2H+].CCC [2H+].CCC
 	420 [C@@](C)([2H])([H])[3H] |&1:0,r| [C@@](C)([2H])([H])[3H] |&1:0,r|
@@ -10205,7 +10205,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	195 [H+].[Cl-] [H+].[Cl-]
 	216 [Zr] [Zr]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	337 N N
@@ -11258,8 +11258,8 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1840 Cl[H] Cl[H]
 	1900 [Ti] [Ti]
 	1909 [CH2-]N([CH2+])C [CH2-]N([CH2+])C
-	1921 [FrH] [FrH]
-	1988 [RbH] [RbH]
+	1921 [Fr] [Fr]
+	1988 [Rb] [Rb]
 ** searchSub(C1CN(CC1)N/C(=N/C=C)/C, '') **
 ** searchSim(C1CN(CC1)N/C(=N/C=C)/C, 0.9, 1, tanimoto) **
 ** searchSim(C1CN(CC1)N/C(=N/C=C)/C, 0.9, 1, tversky 0.3 0.7) **
@@ -11323,7 +11323,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	300 [Cm] [Cm]
 	337 N N
 	379 [CH2] |^4:0| [CH2] |^4:0|
-	408 [NaH] [NaH]
+	408 [Na] [Na]
 	414 [H][H] [H][H]
 	420 [C@@](C)([2H])([H])[3H] |&1:0,r| [C@@](C)([2H])([H])[3H] |&1:0,r|
 	503 [H][B]1([5H][B]([H])([H])[H]1)[H] [H][B]1([5H][B]([H])([H])[H]1)[H]
@@ -11380,7 +11380,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	195 [H+].[Cl-] [H+].[Cl-]
 	216 [Zr] [Zr]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	337 N N
@@ -11427,7 +11427,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1779 [Hf] [Hf]
 	1804 [H][2H].[2HH] [H][2H].[2HH]
 	1812 C([H])(C([H])([H])[H])([H])[H] C([H])(C([H])([H])[H])([H])[H]
-	1813 [KH] [KH]
+	1813 [K] [K]
 	1839 O([H])[H] O([H])[H]
 	1840 Cl[H] Cl[H]
 	1887 [Ca] [Ca]
@@ -11946,7 +11946,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1804 [H][2H].[2HH] [H][2H].[2HH]
 	1812 C([H])(C([H])([H])[H])([H])[H] C([H])(C([H])([H])[H])([H])[H]
 	1900 [Ti] [Ti]
-	1921 [FrH] [FrH]
+	1921 [Fr] [Fr]
 	2007 [Ba] [Ba]
 ** searchSub(CCCCCCCCCC, '') **
 	25 C([C@@](C)([C@](C)([C@](C)(CC)CCC)[C@](C)(CC)CCC)CC)CC.C([C@](C)([C@](C(C)[C@@]([C@](C)(CC)CCC)([C@](CC)(CCC)C)[C@@](CC)(CCC)C)([C@@](C)(CC)CCC)[C@@](C)(CC)CCC)CC)CC.C(C(C)([C@](C)(C(C)(CC)CCC)C(C)(CC)CCC)CC)CC |&1:1,3,5,12,24,26,29,30,37,44,51,58,72,w:70,74,81,r| C([C@@](C)([C@](C)([C@](C)(CC)CCC)[C@](C)(CC)CCC)CC)CC.C([C@](C)([C@](C(C)[C@@]([C@](C)(CC)CCC)([C@](CC)(CCC)C)[C@@](CC)(CCC)C)([C@@](C)(CC)CCC)[C@@](C)(CC)CCC)CC)CC.C(C(C)([C@](C)(C(C)(CC)CCC)C(C)(CC)CCC)CC)CC |&1:1,3,5,12,24,26,29,30,37,44,51,58,72,w:70,74,81,r|
@@ -12158,7 +12158,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	216 [Zr] [Zr]
 	250 [Nb] [Nb]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	308 [2H+].CCCC.[HH] [2H+].CCCC.[HH]
@@ -12309,7 +12309,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1812 C([H])(C([H])([H])[H])([H])[H] C([H])(C([H])([H])[H])([H])[H]
 	1840 Cl[H] Cl[H]
 	1900 [Ti] [Ti]
-	1988 [RbH] [RbH]
+	1988 [Rb] [Rb]
 ** searchSub(C1(C=CC=CC=1)OSNC, '') **
 ** searchSim(C1(C=CC=CC=1)OSNC, 0.9, 1, tanimoto) **
 ** searchSim(C1(C=CC=CC=1)OSNC, 0.9, 1, tversky 0.3 0.7) **
@@ -13244,7 +13244,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	216 [Zr] [Zr]
 	249 [Gd] [Gd]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	337 N N
 	379 [CH2] |^4:0| [CH2] |^4:0|
@@ -13788,7 +13788,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	216 [Zr] [Zr]
 	224 [Ag+].[Cl-] [Ag+].[Cl-]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	337 N N
@@ -13834,7 +13834,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1779 [Hf] [Hf]
 	1804 [H][2H].[2HH] [H][2H].[2HH]
 	1812 C([H])(C([H])([H])[H])([H])[H] C([H])(C([H])([H])[H])([H])[H]
-	1813 [KH] [KH]
+	1813 [K] [K]
 	1839 O([H])[H] O([H])[H]
 	1840 Cl[H] Cl[H]
 	1887 [Ca] [Ca]
@@ -13877,7 +13877,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1647 c1ccc[c]c1 |^1:4| c1ccc[c]c1 |^1:4|
 	1751 c1ccccc1 c1ccccc1
 	1804 [H][2H].[2HH] [H][2H].[2HH]
-	1921 [FrH] [FrH]
+	1921 [Fr] [Fr]
 ** searchSub(C1(CC1)NC1CCN(C)CC1, '') **
 ** searchSim(C1(CC1)NC1CCN(C)CC1, 0.9, 1, tanimoto) **
 ** searchSim(C1(CC1)NC1CCN(C)CC1, 0.9, 1, tversky 0.3 0.7) **
@@ -13938,7 +13938,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	216 [Zr] [Zr]
 	249 [Gd] [Gd]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	337 N N
@@ -13983,7 +13983,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1779 [Hf] [Hf]
 	1804 [H][2H].[2HH] [H][2H].[2HH]
 	1812 C([H])(C([H])([H])[H])([H])[H] C([H])(C([H])([H])[H])([H])[H]
-	1813 [KH] [KH]
+	1813 [K] [K]
 	1839 O([H])[H] O([H])[H]
 	1840 Cl[H] Cl[H]
 	1887 [Ca] [Ca]
@@ -13998,7 +13998,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	153 c1(cc([CH2])cc([CH2])c1)[CH2] |^1:3,6,8| c1(cc([CH2])cc([CH2])c1)[CH2] |^1:3,6,8|
 	216 [Zr] [Zr]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	337 N N
 	379 [CH2] |^4:0| [CH2] |^4:0|
@@ -14143,7 +14143,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	153 c1(cc([CH2])cc([CH2])c1)[CH2] |^1:3,6,8| c1(cc([CH2])cc([CH2])c1)[CH2] |^1:3,6,8|
 	216 [Zr] [Zr]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	337 N N
@@ -14193,12 +14193,12 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	216 [Zr] [Zr]
 	249 [Gd] [Gd]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	337 N N
 	379 [CH2] |^4:0| [CH2] |^4:0|
-	408 [NaH] [NaH]
+	408 [Na] [Na]
 	414 [H][H] [H][H]
 	420 [C@@](C)([2H])([H])[3H] |&1:0,r| [C@@](C)([2H])([H])[3H] |&1:0,r|
 	534 [2H][2H][2H][2H] [2H][2H][2H][2H]
@@ -14568,7 +14568,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	216 [Zr] [Zr]
 	246 [n]1c(C)[s]c(C)[n]1 [n]1c(C)[s]c(C)[n]1
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	308 [2H+].CCCC.[HH] [2H+].CCCC.[HH]
@@ -14627,7 +14627,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	178 [Sc] [Sc]
 	216 [Zr] [Zr]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	337 N N
 	379 [CH2] |^4:0| [CH2] |^4:0|
@@ -14657,7 +14657,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1751 c1ccccc1 c1ccccc1
 	1779 [Hf] [Hf]
 	1804 [H][2H].[2HH] [H][2H].[2HH]
-	1921 [FrH] [FrH]
+	1921 [Fr] [Fr]
 ** searchSub(C1(=CC=CC=C1)C/C=C/SCS, '') **
 ** searchSim(C1(=CC=CC=C1)C/C=C/SCS, 0.9, 1, tanimoto) **
 ** searchSim(C1(=CC=CC=C1)C/C=C/SCS, 0.9, 1, tversky 0.3 0.7) **
@@ -14961,7 +14961,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	171 [Md] [Md]
 	208 [Pm] [Pm]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	337 N N
@@ -15074,7 +15074,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	231 [Zr+4].[O-]C(=O)C([H])([H])[H].[O-]C(=O)C([H])([H])[H].[O-]C(=O)C([H])([H])[H].[O-]C(=O)C([H])([H])[H] [Zr+4].[O-]C(=O)C([H])([H])[H].[O-]C(=O)C([H])([H])[H].[O-]C(=O)C([H])([H])[H].[O-]C(=O)C([H])([H])[H]
 	239 ON=O.O=NO.[nH]1ccc[n]1.[n]1ccc[nH]1 ON=O.O=NO.[nH]1ccc[n]1.[n]1ccc[nH]1
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	337 N N
@@ -15125,7 +15125,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1779 [Hf] [Hf]
 	1804 [H][2H].[2HH] [H][2H].[2HH]
 	1812 C([H])(C([H])([H])[H])([H])[H] C([H])(C([H])([H])[H])([H])[H]
-	1813 [KH] [KH]
+	1813 [K] [K]
 	1839 O([H])[H] O([H])[H]
 	1887 [Ca] [Ca]
 	1889 OC=O.O=CO OC=O.O=CO
@@ -15245,7 +15245,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1909 [CH2-]N([CH2+])C [CH2-]N([CH2+])C
 	1943 CC[N@@+](C[N@@+](CC)(C)[H])(C)[H] CC[N@@+](C[N@@+](CC)(C)[H])(C)[H]
 	1954 [O][2H][2H] [O][2H][2H]
-	1988 [RbH] [RbH]
+	1988 [Rb] [Rb]
 ** searchSub(C(/C(=N/C)/C=C)C1C=CC=CC=1, '') **
 ** searchSim(C(/C(=N/C)/C=C)C1C=CC=CC=1, 0.9, 1, tanimoto) **
 ** searchSim(C(/C(=N/C)/C=C)C1C=CC=CC=1, 0.9, 1, tversky 0.3 0.7) **
@@ -15373,7 +15373,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	133 [NH7] [NH7]
 	153 c1(cc([CH2])cc([CH2])c1)[CH2] |^1:3,6,8| c1(cc([CH2])cc([CH2])c1)[CH2] |^1:3,6,8|
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	337 N N
@@ -15868,7 +15868,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1746 [Kr] [Kr]
 	1804 [H][2H].[2HH] [H][2H].[2HH]
 	1812 C([H])(C([H])([H])[H])([H])[H] C([H])(C([H])([H])[H])([H])[H]
-	1813 [KH] [KH]
+	1813 [K] [K]
 	1839 O([H])[H] O([H])[H]
 	1909 [CH2-]N([CH2+])C [CH2-]N([CH2+])C
 	1954 [O][2H][2H] [O][2H][2H]
@@ -16565,7 +16565,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1437 C[CH]C |^1:1| C[CH]C |^1:1|
 	1451 [CH] |^1:0| [CH] |^1:0|
 	1452 [NH7+] [NH7+]
-	1524 [CsH] [CsH]
+	1524 [Cs] [Cs]
 	1544 [HH] [HH]
 	1552 [H+][H] [H+][H]
 	1582 [CH2]C[CH2] |^1:0,2| [CH2]C[CH2] |^1:0,2|
@@ -16629,7 +16629,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1452 [NH7+] [NH7+]
 	1473 C1=C2C3C=C4C(=C2)C=C2C(C=C5C(=C2)C=C2C(C=C6C(=C2)C=C2C=C7C(=CC2=C6)C=C2C=C6C(=CC2=C7)C=C2C(C=C7C(=C2)C=C2C=C1C(=CC2=C7)C=3)=C6)=C5)=C4.C1=C2C3C=C4C(=C2)C=C2C(C=C5C(=C2)C=C2C(C=C6C(=C2)C=C2C=C7C(=CC2=C6)C=C2C=C6C(=CC2=C7)C=C2C(C=C7C(=C2)C=C2C=C1C(=CC2=C7)C=3)=C6)=C5)=C4.C1=C2C3C=C4C(=C2)C=C2C(C=C5C(=C2)C=C2C=C6C(=CC2=C5)C=C2C=C5C(=CC2=C6)C=C2C=C6C(=CC2=C5)C=C2C(C=C5C(=C2)C=C2C=C1C(=CC2=C5)C=3)=C6)=C4 C1=C2C3C=C4C(=C2)C=C2C(C=C5C(=C2)C=C2C(C=C6C(=C2)C=C2C=C7C(=CC2=C6)C=C2C=C6C(=CC2=C7)C=C2C(C=C7C(=C2)C=C2C=C1C(=CC2=C7)C=3)=C6)=C5)=C4.C1=C2C3C=C4C(=C2)C=C2C(C=C5C(=C2)C=C2C(C=C6C(=C2)C=C2C=C7C(=CC2=C6)C=C2C=C6C(=CC2=C7)C=C2C(C=C7C(=C2)C=C2C=C1C(=CC2=C7)C=3)=C6)=C5)=C4.C1=C2C3C=C4C(=C2)C=C2C(C=C5C(=C2)C=C2C=C6C(=CC2=C5)C=C2C=C5C(=CC2=C6)C=C2C=C6C(=CC2=C5)C=C2C(C=C5C(=C2)C=C2C=C1C(=CC2=C5)C=3)=C6)=C4
 	1494 C[CH]C=C |^1:1| C[CH]C=C |^1:1|
-	1524 [CsH] [CsH]
+	1524 [Cs] [Cs]
 	1544 [HH] [HH]
 	1552 [H+][H] [H+][H]
 	1582 [CH2]C[CH2] |^1:0,2| [CH2]C[CH2] |^1:0,2|
@@ -16657,7 +16657,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	349 C/C=C/[CH2] |^1:3| C/C=C/[CH2] |^1:3|
 	379 [CH2] |^4:0| [CH2] |^4:0|
 	386 c1c(C=C)[s+]ccc1 c1c(C=C)[s+]ccc1
-	408 [NaH] [NaH]
+	408 [Na] [Na]
 	414 [H][H] [H][H]
 	420 [C@@](C)([2H])([H])[3H] |&1:0,r| [C@@](C)([2H])([H])[3H] |&1:0,r|
 	534 [2H][2H][2H][2H] [2H][2H][2H][2H]
@@ -16762,7 +16762,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1840 Cl[H] Cl[H]
 	1900 [Ti] [Ti]
 	1909 [CH2-]N([CH2+])C [CH2-]N([CH2+])C
-	1988 [RbH] [RbH]
+	1988 [Rb] [Rb]
 ** searchSub(C12=CC=CC=C1OC(CNC)=C2, '') **
 ** searchSim(C12=CC=CC=C1OC(CNC)=C2, 0.9, 1, tanimoto) **
 ** searchSim(C12=CC=CC=C1OC(CNC)=C2, 0.9, 1, tversky 0.3 0.7) **
@@ -16978,7 +16978,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1840 Cl[H] Cl[H]
 	1909 [CH2-]N([CH2+])C [CH2-]N([CH2+])C
 	1954 [O][2H][2H] [O][2H][2H]
-	1988 [RbH] [RbH]
+	1988 [Rb] [Rb]
 ** searchSub(C(/C=C\C=C)N(CC1C=CC=CC=1)C, '') **
 ** searchSim(C(/C=C\C=C)N(CC1C=CC=CC=1)C, 0.9, 1, tanimoto) **
 ** searchSim(C(/C=C\C=C)N(CC1C=CC=CC=1)C, 0.9, 1, tversky 0.3 0.7) **
@@ -17490,7 +17490,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	133 [NH7] [NH7]
 	216 [Zr] [Zr]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	337 N N
@@ -17540,7 +17540,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1751 c1ccccc1 c1ccccc1
 	1804 [H][2H].[2HH] [H][2H].[2HH]
 	1812 C([H])(C([H])([H])[H])([H])[H] C([H])(C([H])([H])[H])([H])[H]
-	1813 [KH] [KH]
+	1813 [K] [K]
 	1839 O([H])[H] O([H])[H]
 	1954 [O][2H][2H] [O][2H][2H]
 ** searchSub(C1(CCC(C)O1)N1C=CCNC1=O, '') **
@@ -17565,7 +17565,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	349 C/C=C/[CH2] |^1:3| C/C=C/[CH2] |^1:3|
 	379 [CH2] |^4:0| [CH2] |^4:0|
 	385 CC[N@+](C[N@@+](CC)(C)[H])(C)[H] CC[N@+](C[N@@+](CC)(C)[H])(C)[H]
-	408 [NaH] [NaH]
+	408 [Na] [Na]
 	414 [H][H] [H][H]
 	415 [2H+].CCC [2H+].CCC
 	420 [C@@](C)([2H])([H])[3H] |&1:0,r| [C@@](C)([2H])([H])[3H] |&1:0,r|
@@ -17755,7 +17755,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1840 Cl[H] Cl[H]
 	1900 [Ti] [Ti]
 	1909 [CH2-]N([CH2+])C [CH2-]N([CH2+])C
-	1988 [RbH] [RbH]
+	1988 [Rb] [Rb]
 ** searchSub(C1(C=C)=C(C)OCC2CCCN12, '') **
 ** searchSim(C1(C=C)=C(C)OCC2CCCN12, 0.9, 1, tanimoto) **
 ** searchSim(C1(C=C)=C(C)OCC2CCCN12, 0.9, 1, tversky 0.3 0.7) **
@@ -17815,7 +17815,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1450 [Ir] [Ir]
 	1451 [CH] |^1:0| [CH] |^1:0|
 	1452 [NH7+] [NH7+]
-	1524 [CsH] [CsH]
+	1524 [Cs] [Cs]
 	1540 [SiH4] [SiH4]
 	1544 [HH] [HH]
 	1552 [H+][H] [H+][H]
@@ -17894,7 +17894,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	216 [Zr] [Zr]
 	230 [CH2]/C=C/C=C/[CH2] |^1:0,5| [CH2]/C=C/C=C/[CH2] |^1:0,5|
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	337 N N
 	349 C/C=C/[CH2] |^1:3| C/C=C/[CH2] |^1:3|
@@ -18140,7 +18140,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	308 [2H+].CCCC.[HH] [2H+].CCCC.[HH]
 	379 [CH2] |^4:0| [CH2] |^4:0|
-	408 [NaH] [NaH]
+	408 [Na] [Na]
 	414 [H][H] [H][H]
 	415 [2H+].CCC [2H+].CCC
 	420 [C@@](C)([2H])([H])[3H] |&1:0,r| [C@@](C)([2H])([H])[3H] |&1:0,r|
@@ -18185,7 +18185,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	171 [Md] [Md]
 	173 [Pu] [Pu]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	337 N N
@@ -18277,7 +18277,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	261 [H+].[H+] [H+].[H+]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	379 [CH2] |^4:0| [CH2] |^4:0|
-	408 [NaH] [NaH]
+	408 [Na] [Na]
 	414 [H][H] [H][H]
 	420 [C@@](C)([2H])([H])[3H] |&1:0,r| [C@@](C)([2H])([H])[3H] |&1:0,r|
 	440 [35Cl][2H] [35Cl][2H]
@@ -18326,7 +18326,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	300 [Cm] [Cm]
 	337 N N
 	379 [CH2] |^4:0| [CH2] |^4:0|
-	408 [NaH] [NaH]
+	408 [Na] [Na]
 	414 [H][H] [H][H]
 	415 [2H+].CCC [2H+].CCC
 	420 [C@@](C)([2H])([H])[3H] |&1:0,r| [C@@](C)([2H])([H])[3H] |&1:0,r|
@@ -18509,7 +18509,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1465 CC(=O)[O-].CC(=O)[O-].CC(=O)[O-].[La+3] CC(=O)[O-].CC(=O)[O-].CC(=O)[O-].[La+3]
 	1489 [AlH3] [AlH3]
 	1495 [Fe-4]([H])([H])([H])([H])([H])[H] [Fe-4]([H])([H])([H])([H])([H])[H]
-	1524 [CsH] [CsH]
+	1524 [Cs] [Cs]
 	1533 [O-2].[O-2].[O-2].[Fe+3].[Fe+3] [O-2].[O-2].[O-2].[Fe+3].[Fe+3]
 	1544 [HH] [HH]
 	1552 [H+][H] [H+][H]
@@ -19207,7 +19207,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1437 C[CH]C |^1:1| C[CH]C |^1:1|
 	1451 [CH] |^1:0| [CH] |^1:0|
 	1452 [NH7+] [NH7+]
-	1524 [CsH] [CsH]
+	1524 [Cs] [Cs]
 	1544 [HH] [HH]
 	1552 [H+][H] [H+][H]
 	1582 [CH2]C[CH2] |^1:0,2| [CH2]C[CH2] |^1:0,2|
@@ -19662,7 +19662,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	235 [n]1(c(S)nc(C)n1)[H] [n]1(c(S)nc(C)n1)[H]
 	249 [Gd] [Gd]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	337 N N
 	379 [CH2] |^4:0| [CH2] |^4:0|
@@ -20394,7 +20394,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	133 [NH7] [NH7]
 	216 [Zr] [Zr]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	308 [2H+].CCCC.[HH] [2H+].CCCC.[HH]
@@ -20523,7 +20523,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	344 [O-]C(C)=C.[K+] [O-]C(C)=C.[K+]
 	349 C/C=C/[CH2] |^1:3| C/C=C/[CH2] |^1:3|
 	379 [CH2] |^4:0| [CH2] |^4:0|
-	408 [NaH] [NaH]
+	408 [Na] [Na]
 	414 [H][H] [H][H]
 	420 [C@@](C)([2H])([H])[3H] |&1:0,r| [C@@](C)([2H])([H])[3H] |&1:0,r|
 	534 [2H][2H][2H][2H] [2H][2H][2H][2H]
@@ -20573,12 +20573,12 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	216 [Zr] [Zr]
 	249 [Gd] [Gd]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	337 N N
 	341 [Th+4].[I-].[I-].[I-].[I-] [Th+4].[I-].[I-].[I-].[I-]
 	379 [CH2] |^4:0| [CH2] |^4:0|
-	408 [NaH] [NaH]
+	408 [Na] [Na]
 	414 [H][H] [H][H]
 	415 [2H+].CCC [2H+].CCC
 	420 [C@@](C)([2H])([H])[3H] |&1:0,r| [C@@](C)([2H])([H])[3H] |&1:0,r|
@@ -20638,7 +20638,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1839 O([H])[H] O([H])[H]
 	1900 [Ti] [Ti]
 	1954 [O][2H][2H] [O][2H][2H]
-	1988 [RbH] [RbH]
+	1988 [Rb] [Rb]
 	1990 CON([2H])([2H])([3H])[2H] CON([2H])([2H])([3H])[2H]
 	2007 [Ba] [Ba]
 ** searchSub(C1(=CC=C(Cl)C=C1)SNCC(Cl)CO, '') **
@@ -20814,7 +20814,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	133 [NH7] [NH7]
 	206 c1c[n](CCCO)c[n]1 c1c[n](CCCO)c[n]1
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	337 N N
@@ -20850,7 +20850,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1781 [H][n]1ccnc1 [H][n]1ccnc1
 	1804 [H][2H].[2HH] [H][2H].[2HH]
 	1812 C([H])(C([H])([H])[H])([H])[H] C([H])(C([H])([H])[H])([H])[H]
-	1813 [KH] [KH]
+	1813 [K] [K]
 	1824 c1c[n](CCCO)cn1 c1c[n](CCCO)cn1
 	1839 O([H])[H] O([H])[H]
 	1875 [C-]#[O+] [C-]#[O+]
@@ -20872,7 +20872,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	337 N N
 	379 [CH2] |^4:0| [CH2] |^4:0|
 	392 CS.[2H+] CS.[2H+]
-	408 [NaH] [NaH]
+	408 [Na] [Na]
 	414 [H][H] [H][H]
 	420 [C@@](C)([2H])([H])[3H] |&1:0,r| [C@@](C)([2H])([H])[3H] |&1:0,r|
 	523 c1coc(C)c1 c1coc(C)c1
@@ -20971,7 +20971,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1764 [Cd] [Cd]
 	1804 [H][2H].[2HH] [H][2H].[2HH]
 	1812 C([H])(C([H])([H])[H])([H])[H] C([H])(C([H])([H])[H])([H])[H]
-	1813 [KH] [KH]
+	1813 [K] [K]
 	1839 O([H])[H] O([H])[H]
 	1954 [O][2H][2H] [O][2H][2H]
 ** searchSub(S(NCCN/C=C/C)C1=CC=CC=C1, '') **
@@ -21472,7 +21472,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	300 [Cm] [Cm]
 	337 N N
 	379 [CH2] |^4:0| [CH2] |^4:0|
-	408 [NaH] [NaH]
+	408 [Na] [Na]
 	414 [H][H] [H][H]
 	420 [C@@](C)([2H])([H])[3H] |&1:0,r| [C@@](C)([2H])([H])[3H] |&1:0,r|
 	512 c12ccccc1cccc2 c12ccccc1cccc2
@@ -21560,7 +21560,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1812 C([H])(C([H])([H])[H])([H])[H] C([H])(C([H])([H])[H])([H])[H]
 	1860 B B
 	1900 [Ti] [Ti]
-	1921 [FrH] [FrH]
+	1921 [Fr] [Fr]
 	2007 [Ba] [Ba]
 ** searchSub(C1C=CC=C(NCNCCC=C)C=1, '') **
 ** searchSim(C1C=CC=C(NCNCCC=C)C=1, 0.9, 1, tanimoto) **
@@ -21749,7 +21749,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1373 [2H+] [2H+]
 	1437 C[CH]C |^1:1| C[CH]C |^1:1|
 	1451 [CH] |^1:0| [CH] |^1:0|
-	1524 [CsH] [CsH]
+	1524 [Cs] [Cs]
 	1544 [HH] [HH]
 	1552 [H+][H] [H+][H]
 	1582 [CH2]C[CH2] |^1:0,2| [CH2]C[CH2] |^1:0,2|
@@ -21810,7 +21810,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	171 [Md] [Md]
 	216 [Zr] [Zr]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	337 N N
@@ -21845,7 +21845,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1779 [Hf] [Hf]
 	1804 [H][2H].[2HH] [H][2H].[2HH]
 	1812 C([H])(C([H])([H])[H])([H])[H] C([H])(C([H])([H])[H])([H])[H]
-	1813 [KH] [KH]
+	1813 [K] [K]
 	1900 [Ti] [Ti]
 	2007 [Ba] [Ba]
 ** searchSub(C1(=N/NCC)\C2=CC=CC=C2NC\1, '') **
@@ -21998,7 +21998,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1647 c1ccc[c]c1 |^1:4| c1ccc[c]c1 |^1:4|
 	1751 c1ccccc1 c1ccccc1
 	1804 [H][2H].[2HH] [H][2H].[2HH]
-	1921 [FrH] [FrH]
+	1921 [Fr] [Fr]
 	2007 [Ba] [Ba]
 ** searchSub(N12C=CC=CC1=NC(=NC2=O)SC, '') **
 ** searchSim(N12C=CC=CC1=NC(=NC2=O)SC, 0.9, 1, tanimoto) **
@@ -22018,7 +22018,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	379 [CH2] |^4:0| [CH2] |^4:0|
 	385 CC[N@+](C[N@@+](CC)(C)[H])(C)[H] CC[N@+](C[N@@+](CC)(C)[H])(C)[H]
 	392 CS.[2H+] CS.[2H+]
-	408 [NaH] [NaH]
+	408 [Na] [Na]
 	414 [H][H] [H][H]
 	420 [C@@](C)([2H])([H])[3H] |&1:0,r| [C@@](C)([2H])([H])[3H] |&1:0,r|
 	485 O=C(N([2H])[2H])N O=C(N([2H])[2H])N
@@ -22157,7 +22157,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1373 [2H+] [2H+]
 	1437 C[CH]C |^1:1| C[CH]C |^1:1|
 	1451 [CH] |^1:0| [CH] |^1:0|
-	1524 [CsH] [CsH]
+	1524 [Cs] [Cs]
 	1544 [HH] [HH]
 	1552 [H+][H] [H+][H]
 	1582 [CH2]C[CH2] |^1:0,2| [CH2]C[CH2] |^1:0,2|
@@ -22177,7 +22177,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	216 [Zr] [Zr]
 	230 [CH2]/C=C/C=C/[CH2] |^1:0,5| [CH2]/C=C/C=C/[CH2] |^1:0,5|
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	308 [2H+].CCCC.[HH] [2H+].CCCC.[HH]
@@ -22224,7 +22224,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1790 [13CH]1=CC=CC1 [13CH]1=CC=CC1
 	1804 [H][2H].[2HH] [H][2H].[2HH]
 	1812 C([H])(C([H])([H])[H])([H])[H] C([H])(C([H])([H])[H])([H])[H]
-	1813 [KH] [KH]
+	1813 [K] [K]
 	1887 [Ca] [Ca]
 	1900 [Ti] [Ti]
 ** searchSub(C1(SC=C(CC)N=1)C1C=CC(C)=CC=1, '') **
@@ -22415,7 +22415,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1840 Cl[H] Cl[H]
 	1909 [CH2-]N([CH2+])C [CH2-]N([CH2+])C
 	1954 [O][2H][2H] [O][2H][2H]
-	1988 [RbH] [RbH]
+	1988 [Rb] [Rb]
 ** searchSub(C1(C)=CC=C(C2=CC=NC=C2)N=C1C=C, '') **
 ** searchSim(C1(C)=CC=C(C2=CC=NC=C2)N=C1C=C, 0.9, 1, tanimoto) **
 ** searchSim(C1(C)=CC=C(C2=CC=NC=C2)N=C1C=C, 0.9, 1, tversky 0.3 0.7) **
@@ -22629,7 +22629,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1437 C[CH]C |^1:1| C[CH]C |^1:1|
 	1451 [CH] |^1:0| [CH] |^1:0|
 	1452 [NH7+] [NH7+]
-	1524 [CsH] [CsH]
+	1524 [Cs] [Cs]
 	1529 [Cu] [Cu]
 	1544 [HH] [HH]
 	1552 [H+][H] [H+][H]
@@ -23025,7 +23025,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1812 C([H])(C([H])([H])[H])([H])[H] C([H])(C([H])([H])[H])([H])[H]
 	1839 O([H])[H] O([H])[H]
 	1900 [Ti] [Ti]
-	1921 [FrH] [FrH]
+	1921 [Fr] [Fr]
 	1954 [O][2H][2H] [O][2H][2H]
 	2007 [Ba] [Ba]
 ** searchSub(C12C=C(C=CC1=CC=C(SCl)C=2)S(Cl)=O, '') **
@@ -23243,7 +23243,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	216 [Zr] [Zr]
 	239 ON=O.O=NO.[nH]1ccc[n]1.[n]1ccc[nH]1 ON=O.O=NO.[nH]1ccc[n]1.[n]1ccc[nH]1
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	337 N N
@@ -23290,7 +23290,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1779 [Hf] [Hf]
 	1804 [H][2H].[2HH] [H][2H].[2HH]
 	1812 C([H])(C([H])([H])[H])([H])[H] C([H])(C([H])([H])[H])([H])[H]
-	1813 [KH] [KH]
+	1813 [K] [K]
 	1839 O([H])[H] O([H])[H]
 	1887 [Ca] [Ca]
 	1954 [O][2H][2H] [O][2H][2H]
@@ -23496,7 +23496,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	216 [Zr] [Zr]
 	235 [n]1(c(S)nc(C)n1)[H] [n]1(c(S)nc(C)n1)[H]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	337 N N
@@ -23566,7 +23566,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	133 [NH7] [NH7]
 	216 [Zr] [Zr]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	308 [2H+].CCCC.[HH] [2H+].CCCC.[HH]
@@ -24230,7 +24230,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	192 [InH3] [InH3]
 	195 [H+].[Cl-] [H+].[Cl-]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	337 N N
@@ -24301,7 +24301,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1900 [Ti] [Ti]
 	1909 [CH2-]N([CH2+])C [CH2-]N([CH2+])C
 	1954 [O][2H][2H] [O][2H][2H]
-	1988 [RbH] [RbH]
+	1988 [Rb] [Rb]
 ** searchSub(CCC1=CC=C(SN2CCOCC2)C=C1, '') **
 ** searchSim(CCC1=CC=C(SN2CCOCC2)C=C1, 0.9, 1, tanimoto) **
 ** searchSim(CCC1=CC=C(SN2CCOCC2)C=C1, 0.9, 1, tversky 0.3 0.7) **
@@ -24438,7 +24438,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	216 [Zr] [Zr]
 	249 [Gd] [Gd]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	333 [nH]1c2c(c[n][nH]2)c[n]1 [nH]1c2c(c[n][nH]2)c[n]1
 	337 N N
@@ -24572,7 +24572,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1437 C[CH]C |^1:1| C[CH]C |^1:1|
 	1451 [CH] |^1:0| [CH] |^1:0|
 	1452 [NH7+] [NH7+]
-	1524 [CsH] [CsH]
+	1524 [Cs] [Cs]
 	1544 [HH] [HH]
 	1552 [H+][H] [H+][H]
 	1582 [CH2]C[CH2] |^1:0,2| [CH2]C[CH2] |^1:0,2|
@@ -24762,7 +24762,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1804 [H][2H].[2HH] [H][2H].[2HH]
 	1812 C([H])(C([H])([H])[H])([H])[H] C([H])(C([H])([H])[H])([H])[H]
 	1839 O([H])[H] O([H])[H]
-	1921 [FrH] [FrH]
+	1921 [Fr] [Fr]
 	1954 [O][2H][2H] [O][2H][2H]
 	2007 [Ba] [Ba]
 ** searchSub(N1(CC2=C(C=CC=C2)N=C1)C(C=C)=C, '') **
@@ -24815,7 +24815,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1451 [CH] |^1:0| [CH] |^1:0|
 	1452 [NH7+] [NH7+]
 	1475 c1ccccc1C[N+](C)(C)C.[Br-] c1ccccc1C[N+](C)(C)C.[Br-]
-	1524 [CsH] [CsH]
+	1524 [Cs] [Cs]
 	1544 [HH] [HH]
 	1552 [H+][H] [H+][H]
 	1582 [CH2]C[CH2] |^1:0,2| [CH2]C[CH2] |^1:0,2|
@@ -24871,7 +24871,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1437 C[CH]C |^1:1| C[CH]C |^1:1|
 	1451 [CH] |^1:0| [CH] |^1:0|
 	1452 [NH7+] [NH7+]
-	1524 [CsH] [CsH]
+	1524 [Cs] [Cs]
 	1544 [HH] [HH]
 	1552 [H+][H] [H+][H]
 	1582 [CH2]C[CH2] |^1:0,2| [CH2]C[CH2] |^1:0,2|
@@ -25355,7 +25355,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	300 [Cm] [Cm]
 	337 N N
 	379 [CH2] |^4:0| [CH2] |^4:0|
-	408 [NaH] [NaH]
+	408 [Na] [Na]
 	414 [H][H] [H][H]
 	415 [2H+].CCC [2H+].CCC
 	420 [C@@](C)([2H])([H])[3H] |&1:0,r| [C@@](C)([2H])([H])[3H] |&1:0,r|
@@ -25392,7 +25392,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1804 [H][2H].[2HH] [H][2H].[2HH]
 	1812 C([H])(C([H])([H])[H])([H])[H] C([H])(C([H])([H])[H])([H])[H]
 	1900 [Ti] [Ti]
-	1921 [FrH] [FrH]
+	1921 [Fr] [Fr]
 	2007 [Ba] [Ba]
 ** searchSub(C1(S(=O)(=O)C)CCC(NC(=O)OC)CC1, '') **
 ** searchSim(C1(S(=O)(=O)C)CCC(NC(=O)OC)CC1, 0.9, 1, tanimoto) **
@@ -25604,7 +25604,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	195 [H+].[Cl-] [H+].[Cl-]
 	250 [Nb] [Nb]
 	261 [H+].[H+] [H+].[H+]
-	272 [LiH] [LiH]
+	272 [Li] [Li]
 	273 [CH+] |^4:0| [CH+] |^4:0|
 	300 [Cm] [Cm]
 	337 N N
@@ -25660,7 +25660,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1840 Cl[H] Cl[H]
 	1899 [PoH2] [PoH2]
 	1900 [Ti] [Ti]
-	1921 [FrH] [FrH]
+	1921 [Fr] [Fr]
 	1954 [O][2H][2H] [O][2H][2H]
 ** searchSub(C12C=CC=C(Cl)C=1N=CC(COCC)=C2, '') **
 ** searchSim(C12C=CC=C(Cl)C=1N=CC(COCC)=C2, 0.9, 1, tanimoto) **
@@ -25753,7 +25753,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1437 C[CH]C |^1:1| C[CH]C |^1:1|
 	1451 [CH] |^1:0| [CH] |^1:0|
 	1479 C[C@@H](CC)C |&1:1,r| C[C@@H](CC)C |&1:1,r|
-	1524 [CsH] [CsH]
+	1524 [Cs] [Cs]
 	1532 [14CH3][C](C)C(C)C [14CH3][C](C)C(C)C
 	1544 [HH] [HH]
 	1552 [H+][H] [H+][H]
@@ -25802,7 +25802,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1647 c1ccc[c]c1 |^1:4| c1ccc[c]c1 |^1:4|
 	1751 c1ccccc1 c1ccccc1
 	1804 [H][2H].[2HH] [H][2H].[2HH]
-	1921 [FrH] [FrH]
+	1921 [Fr] [Fr]
 ** searchSub(N1C2=C(C=CC=C2)/C(/N1C(C)C)=N/CC |^1:0|, '') **
 ** searchSim([N]1C2=C(C=CC=C2)/C(/N1C(C)C)=N/CC |^1:0|, 0.9, 1, tanimoto) **
 ** searchSim([N]1C2=C(C=CC=C2)/C(/N1C(C)C)=N/CC |^1:0|, 0.9, 1, tversky 0.3 0.7) **
@@ -25874,7 +25874,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	1787 C=N[C]C |^3:2| C=N[C]C |^3:2|
 	1804 [H][2H].[2HH] [H][2H].[2HH]
 	1812 C([H])(C([H])([H])[H])([H])[H] C([H])(C([H])([H])[H])([H])[H]
-	1813 [KH] [KH]
+	1813 [K] [K]
 	1887 [Ca] [Ca]
 	1900 [Ti] [Ti]
 	1909 [CH2-]N([CH2+])C [CH2-]N([CH2+])C
@@ -26690,7 +26690,7 @@ Finished indexing 2026 structures. 210 wrong structures excluded
 	940 [Ag].[3HH].[Ar].[Xe].[Mn].[Zn].[Cu].[BH].[Kr].[Pd].[Rn].[Pt].[Cd].[HH].[Li].[Na].[K].[Rb].[Cs].[Sc].[Y].[La].[Ce].[Tb].[Th].[Bk].[2HH].[Be].[Mg].[Ca].[Sr].[Ba].[Ti].[Zr].[Hf].[Pr].[Dy].[Pa].[Cf].[He].[Ne].[AlH].[GaH].[InH].[TlH].[V].[Nb].[Ta].[Nd].[Ho].[U].[Es].[Fr].[CH2].[SiH2].[GeH2].[Sn].[Pb].[Cr].[Mo].[W].[Pm].[Er].[Np].[Fm].[Ra].[NH].[PH].[AsH].[SbH].[BiH].[Fe].[Tc].[Re].[Sm].[Tm].[Pu].[Md].[Ac].[O].[S].[Se].[Te].[Po].[Ni].[Ru].[Os].[Eu].[Yb].[Am].[No].[Rf].F.Cl.Br.I.[At].[Co].[Rh].[Ir].[Gd].[Lu].[Cm].[Lr].[Hg].[Au] |^3:0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105| [Ag].[3HH].[Ar].[Xe].[Mn].[Zn].[Cu].[BH].[Kr].[Pd].[Rn].[Pt].[Cd].[HH].[Li].[Na].[K].[Rb].[Cs].[Sc].[Y].[La].[Ce].[Tb].[Th].[Bk].[2HH].[Be].[Mg].[Ca].[Sr].[Ba].[Ti].[Zr].[Hf].[Pr].[Dy].[Pa].[Cf].[He].[Ne].[AlH].[GaH].[InH].[TlH].[V].[Nb].[Ta].[Nd].[Ho].[U].[Es].[Fr].[CH2].[SiH2].[GeH2].[Sn].[Pb].[Cr].[Mo].[W].[Pm].[Er].[Np].[Fm].[Ra].[NH].[PH].[AsH].[SbH].[BiH].[Fe].[Tc].[Re].[Sm].[Tm].[Pu].[Md].[Ac].[O].[S].[Se].[Te].[Po].[Ni].[Ru].[Os].[Eu].[Yb].[Am].[No].[Rf].F.Cl.Br.I.[At].[Co].[Rh].[Ir].[Gd].[Lu].[Cm].[Lr].[Hg].[Au] |^3:0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105|
 	955 [Ag-3].[3H-3].[Ar-3].[Xe-3].[Mn-3].[Zn-3].[Cu-3].[B-3].[Kr-3].[Pd-3].[Rn-3].[Pt-3].[Cd-3].[H-3].[Li-3].[Na-3].[K-3].[Rb-3].[Cs-3].[Sc-3].[Y-3].[La-3].[Ce-3].[Tb-3].[Th-3].[Bk-3].[2H-3].[Be-3].[Mg-3].[Ca-3].[Sr-3].[Ba-3].[Ti-3].[Zr-3].[Hf-3].[Pr-3].[Dy-3].[Pa-3].[Cf-3].[He-3].[Ne-3].[Al-3].[Ga-3].[In-3].[Tl-3].[V-3].[Nb-3].[Ta-3].[Nd-3].[Ho-3].[U-3].[Es-3].[Fr-3].[CH-3].[SiH-3].[GeH-3].[SnH-3].[PbH-3].[Cr-3].[Mo-3].[W-3].[Pm-3].[Er-3].[Np-3].[Fm-3].[Ra-3].[N-3].[P-3].[As-3].[Sb-3].[Bi-3].[Fe-3].[Tc-3].[Re-3].[Sm-3].[Tm-3].[Pu-3].[Md-3].[Ac-3].[O-3].[SH-3].[SeH-3].[Te-3].[PoH-3].[Ni-3].[Ru-3].[Os-3].[Eu-3].[Yb-3].[Am-3].[No-3].[Rf-3].[F-3].[Cl-3].[Br-3].[I-3].[At-3].[Co-3].[Rh-3].[Ir-3].[Gd-3].[Lu-3].[Cm-3].[Lr-3].[Hg-3].[Au-3] [Ag-3].[3H-3].[Ar-3].[Xe-3].[Mn-3].[Zn-3].[Cu-3].[B-3].[Kr-3].[Pd-3].[Rn-3].[Pt-3].[Cd-3].[H-3].[Li-3].[Na-3].[K-3].[Rb-3].[Cs-3].[Sc-3].[Y-3].[La-3].[Ce-3].[Tb-3].[Th-3].[Bk-3].[2H-3].[Be-3].[Mg-3].[Ca-3].[Sr-3].[Ba-3].[Ti-3].[Zr-3].[Hf-3].[Pr-3].[Dy-3].[Pa-3].[Cf-3].[He-3].[Ne-3].[Al-3].[Ga-3].[In-3].[Tl-3].[V-3].[Nb-3].[Ta-3].[Nd-3].[Ho-3].[U-3].[Es-3].[Fr-3].[CH-3].[SiH-3].[GeH-3].[SnH-3].[PbH-3].[Cr-3].[Mo-3].[W-3].[Pm-3].[Er-3].[Np-3].[Fm-3].[Ra-3].[N-3].[P-3].[As-3].[Sb-3].[Bi-3].[Fe-3].[Tc-3].[Re-3].[Sm-3].[Tm-3].[Pu-3].[Md-3].[Ac-3].[O-3].[SH-3].[SeH-3].[Te-3].[PoH-3].[Ni-3].[Ru-3].[Os-3].[Eu-3].[Yb-3].[Am-3].[No-3].[Rf-3].[F-3].[Cl-3].[Br-3].[I-3].[At-3].[Co-3].[Rh-3].[Ir-3].[Gd-3].[Lu-3].[Cm-3].[Lr-3].[Hg-3].[Au-3]
 	986 [Ag].[3HH].[Ar].[Xe].[Mn].[Zn].[Cu].[BH2].[Kr].[Pd].[Rn].[Pt].[Cd].[HH].[Li].[Na].[K].[Rb].[Cs].[Sc].[Y].[La].[Ce].[Tb].[Th].[Bk].[2HH].[Be].[Mg].[Ca].[Sr].[Ba].[Ti].[Zr].[Hf].[Pr].[Dy].[Pa].[Cf].[He].[Ne].[AlH2].[GaH2].[InH2].[Tl].[V].[Nb].[Ta].[Nd].[Ho].[U].[Es].[Fr].[CH3].[SiH3].[GeH3].[SnH].[PbH].[Cr].[Mo].[W].[Pm].[Er].[Np].[Fm].[Ra].[NH2].[PH2].[AsH2].[SbH2].[BiH2].[Fe].[Tc].[Re].[Sm].[Tm].[Pu].[Md].[Ac].[OH].[SH].[SeH].[TeH].[PoH].[Ni].[Ru].[Os].[Eu].[Yb].[Am].[No].[Rf].[F].[Cl].[Br].[I].[At].[Co].[Rh].[Ir].[Gd].[Lu].[Cm].[Lr].[Hg].[Au] |^1:0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105| [Ag].[3HH].[Ar].[Xe].[Mn].[Zn].[Cu].[BH2].[Kr].[Pd].[Rn].[Pt].[Cd].[HH].[Li].[Na].[K].[Rb].[Cs].[Sc].[Y].[La].[Ce].[Tb].[Th].[Bk].[2HH].[Be].[Mg].[Ca].[Sr].[Ba].[Ti].[Zr].[Hf].[Pr].[Dy].[Pa].[Cf].[He].[Ne].[AlH2].[GaH2].[InH2].[Tl].[V].[Nb].[Ta].[Nd].[Ho].[U].[Es].[Fr].[CH3].[SiH3].[GeH3].[SnH].[PbH].[Cr].[Mo].[W].[Pm].[Er].[Np].[Fm].[Ra].[NH2].[PH2].[AsH2].[SbH2].[BiH2].[Fe].[Tc].[Re].[Sm].[Tm].[Pu].[Md].[Ac].[OH].[SH].[SeH].[TeH].[PoH].[Ni].[Ru].[Os].[Eu].[Yb].[Am].[No].[Rf].[F].[Cl].[Br].[I].[At].[Co].[Rh].[Ir].[Gd].[Lu].[Cm].[Lr].[Hg].[Au] |^1:0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105|
-	1334 [Ag].[3HH].[Ar].[Xe].[Mn].[Zn].[Cu].B.[Kr].[Pd].[Rn].[Pt].[Cd].[HH].[LiH].[NaH].[KH].[RbH].[CsH].[Sc].[Y].[La].[Ce].[Tb].[Th].[Bk].[2HH].[Be].[Mg].[Ca].[Sr].[Ba].[Ti].[Zr].[Hf].[Pr].[Dy].[Pa].[Cf].[He].[Ne].[AlH3].[GaH3].[InH3].[TlH].[V].[Nb].[Ta].[Nd].[Ho].[U].[Es].[FrH].C.[SiH4].[GeH4].[SnH2].[PbH2].[Cr].[Mo].[W].[Pm].[Er].[Np].[Fm].[Ra].N.P.[AsH3].[SbH3].[BiH3].[Fe].[Tc].[Re].[Sm].[Tm].[Pu].[Md].[Ac].O.S.[SeH2].[TeH2].[PoH2].[Ni].[Ru].[Os].[Eu].[Yb].[Am].[No].[Rf].F.Cl.Br.I.[AtH].[Co].[Rh].[Ir].[Gd].[Lu].[Cm].[Lr].[Hg].[Au] [Ag].[3HH].[Ar].[Xe].[Mn].[Zn].[Cu].B.[Kr].[Pd].[Rn].[Pt].[Cd].[HH].[LiH].[NaH].[KH].[RbH].[CsH].[Sc].[Y].[La].[Ce].[Tb].[Th].[Bk].[2HH].[Be].[Mg].[Ca].[Sr].[Ba].[Ti].[Zr].[Hf].[Pr].[Dy].[Pa].[Cf].[He].[Ne].[AlH3].[GaH3].[InH3].[TlH].[V].[Nb].[Ta].[Nd].[Ho].[U].[Es].[FrH].C.[SiH4].[GeH4].[SnH2].[PbH2].[Cr].[Mo].[W].[Pm].[Er].[Np].[Fm].[Ra].N.P.[AsH3].[SbH3].[BiH3].[Fe].[Tc].[Re].[Sm].[Tm].[Pu].[Md].[Ac].O.S.[SeH2].[TeH2].[PoH2].[Ni].[Ru].[Os].[Eu].[Yb].[Am].[No].[Rf].F.Cl.Br.I.[AtH].[Co].[Rh].[Ir].[Gd].[Lu].[Cm].[Lr].[Hg].[Au]
+	1334 [Ag].[3HH].[Ar].[Xe].[Mn].[Zn].[Cu].B.[Kr].[Pd].[Rn].[Pt].[Cd].[HH].[Li].[Na].[K].[Rb].[Cs].[Sc].[Y].[La].[Ce].[Tb].[Th].[Bk].[2HH].[Be].[Mg].[Ca].[Sr].[Ba].[Ti].[Zr].[Hf].[Pr].[Dy].[Pa].[Cf].[He].[Ne].[AlH3].[GaH3].[InH3].[TlH].[V].[Nb].[Ta].[Nd].[Ho].[U].[Es].[Fr].C.[SiH4].[GeH4].[SnH2].[PbH2].[Cr].[Mo].[W].[Pm].[Er].[Np].[Fm].[Ra].N.P.[AsH3].[SbH3].[BiH3].[Fe].[Tc].[Re].[Sm].[Tm].[Pu].[Md].[Ac].O.S.[SeH2].[TeH2].[PoH2].[Ni].[Ru].[Os].[Eu].[Yb].[Am].[No].[Rf].F.Cl.Br.I.[AtH].[Co].[Rh].[Ir].[Gd].[Lu].[Cm].[Lr].[Hg].[Au] [Ag].[3HH].[Ar].[Xe].[Mn].[Zn].[Cu].B.[Kr].[Pd].[Rn].[Pt].[Cd].[HH].[Li].[Na].[K].[Rb].[Cs].[Sc].[Y].[La].[Ce].[Tb].[Th].[Bk].[2HH].[Be].[Mg].[Ca].[Sr].[Ba].[Ti].[Zr].[Hf].[Pr].[Dy].[Pa].[Cf].[He].[Ne].[AlH3].[GaH3].[InH3].[TlH].[V].[Nb].[Ta].[Nd].[Ho].[U].[Es].[Fr].C.[SiH4].[GeH4].[SnH2].[PbH2].[Cr].[Mo].[W].[Pm].[Er].[Np].[Fm].[Ra].N.P.[AsH3].[SbH3].[BiH3].[Fe].[Tc].[Re].[Sm].[Tm].[Pu].[Md].[Ac].O.S.[SeH2].[TeH2].[PoH2].[Ni].[Ru].[Os].[Eu].[Yb].[Am].[No].[Rf].F.Cl.Br.I.[AtH].[Co].[Rh].[Ir].[Gd].[Lu].[Cm].[Lr].[Hg].[Au]
 	1536 [AgH].[3HH].[ArH].[XeH].[MnH].[ZnH].[CuH].[BH].[KrH].[PdH].[RnH].[PtH].[CdH].[HH].[LiH].[NaH].[KH].[RbH].[CsH].[ScH].[YH].[LaH].[CeH].[TbH].[ThH].[BkH].[2HH].[BeH].[MgH].[CaH].[SrH].[BaH].[TiH].[ZrH].[HfH].[PrH].[DyH].[PaH].[CfH].[HeH].[NeH].[AlH].[GaH].[InH].[TlH].[VH].[NbH].[TaH].[NdH].[HoH].[UH].[EsH].[FrH].[CH].[SiH].[GeH].[SnH].[PbH].[CrH].[MoH].[WH].[PmH].[ErH].[NpH].[FmH].[RaH].[NH].[PH].[AsH].[SbH].[BiH].[FeH].[TcH].[ReH].[SmH].[TmH].[PuH].[MdH].[AcH].[OH].[SH].[SeH].[TeH].[PoH].[NiH].[RuH].[OsH].[EuH].[YbH].[AmH].[NoH].[RfH].F.Cl.Br.I.[AtH].[CoH].[RhH].[IrH].[GdH].[LuH].[CmH].[LrH].[HgH].[AuH] [AgH].[3HH].[ArH].[XeH].[MnH].[ZnH].[CuH].[BH].[KrH].[PdH].[RnH].[PtH].[CdH].[HH].[LiH].[NaH].[KH].[RbH].[CsH].[ScH].[YH].[LaH].[CeH].[TbH].[ThH].[BkH].[2HH].[BeH].[MgH].[CaH].[SrH].[BaH].[TiH].[ZrH].[HfH].[PrH].[DyH].[PaH].[CfH].[HeH].[NeH].[AlH].[GaH].[InH].[TlH].[VH].[NbH].[TaH].[NdH].[HoH].[UH].[EsH].[FrH].[CH].[SiH].[GeH].[SnH].[PbH].[CrH].[MoH].[WH].[PmH].[ErH].[NpH].[FmH].[RaH].[NH].[PH].[AsH].[SbH].[BiH].[FeH].[TcH].[ReH].[SmH].[TmH].[PuH].[MdH].[AcH].[OH].[SH].[SeH].[TeH].[PoH].[NiH].[RuH].[OsH].[EuH].[YbH].[AmH].[NoH].[RfH].F.Cl.Br.I.[AtH].[CoH].[RhH].[IrH].[GdH].[LuH].[CmH].[LrH].[HgH].[AuH]
 	1888 [AgH4].[3HH4].[ArH4].[XeH4].[MnH4].[ZnH4].[CuH4].[BH4].[KrH4].[PdH4].[RnH4].[PtH4].[CdH4].[HH4].[LiH4].[NaH4].[KH4].[RbH4].[CsH4].[ScH4].[YH4].[LaH4].[CeH4].[TbH4].[ThH4].[BkH4].[2HH4].[BeH4].[MgH4].[CaH4].[SrH4].[BaH4].[TiH4].[ZrH4].[HfH4].[PrH4].[DyH4].[PaH4].[CfH4].[HeH4].[NeH4].[AlH4].[GaH4].[InH4].[TlH4].[VH4].[NbH4].[TaH4].[NdH4].[HoH4].[UH4].[EsH4].[FrH4].C.[SiH4].[GeH4].[SnH4].[PbH4].[CrH4].[MoH4].[WH4].[PmH4].[ErH4].[NpH4].[FmH4].[RaH4].[NH4].[PH4].[AsH4].[SbH4].[BiH4].[FeH4].[TcH4].[ReH4].[SmH4].[TmH4].[PuH4].[MdH4].[AcH4].[OH4].[SH4].[SeH4].[TeH4].[PoH4].[NiH4].[RuH4].[OsH4].[EuH4].[YbH4].[AmH4].[NoH4].[RfH4].[FH4].[ClH4].[BrH4].[IH4].[AtH4].[CoH4].[RhH4].[IrH4].[GdH4].[LuH4].[CmH4].[LrH4].[HgH4].[AuH4] [AgH4].[3HH4].[ArH4].[XeH4].[MnH4].[ZnH4].[CuH4].[BH4].[KrH4].[PdH4].[RnH4].[PtH4].[CdH4].[HH4].[LiH4].[NaH4].[KH4].[RbH4].[CsH4].[ScH4].[YH4].[LaH4].[CeH4].[TbH4].[ThH4].[BkH4].[2HH4].[BeH4].[MgH4].[CaH4].[SrH4].[BaH4].[TiH4].[ZrH4].[HfH4].[PrH4].[DyH4].[PaH4].[CfH4].[HeH4].[NeH4].[AlH4].[GaH4].[InH4].[TlH4].[VH4].[NbH4].[TaH4].[NdH4].[HoH4].[UH4].[EsH4].[FrH4].C.[SiH4].[GeH4].[SnH4].[PbH4].[CrH4].[MoH4].[WH4].[PmH4].[ErH4].[NpH4].[FmH4].[RaH4].[NH4].[PH4].[AsH4].[SbH4].[BiH4].[FeH4].[TcH4].[ReH4].[SmH4].[TmH4].[PuH4].[MdH4].[AcH4].[OH4].[SH4].[SeH4].[TeH4].[PoH4].[NiH4].[RuH4].[OsH4].[EuH4].[YbH4].[AmH4].[NoH4].[RfH4].[FH4].[ClH4].[BrH4].[IH4].[AtH4].[CoH4].[RhH4].[IrH4].[GdH4].[LuH4].[CmH4].[LrH4].[HgH4].[AuH4]
 	1914 [Ag+].[3H+].[Ar+].[Xe+].[Mn+].[Zn+].[Cu+].[BH2+].[Kr+].[Pd+].[Rn+].[Pt+].[Cd+].[H+].[Li+].[Na+].[K+].[Rb+].[Cs+].[Sc+].[Y+].[La+].[Ce+].[Tb+].[Th+].[Bk+].[2H+].[Be+].[Mg+].[Ca+].[Sr+].[Ba+].[Ti+].[Zr+].[Hf+].[Pr+].[Dy+].[Pa+].[Cf+].[He+].[Ne+].[AlH2+].[GaH2+].[InH2+].[Tl+].[V+].[Nb+].[Ta+].[Nd+].[Ho+].[U+].[Es+].[Fr+].[CH3+].[SiH3+].[GeH3+].[SnH+].[PbH+].[Cr+].[Mo+].[W+].[Pm+].[Er+].[Np+].[Fm+].[Ra+].[NH4+].[PH4+].[AsH4+].[SbH2+].[BiH2+].[Fe+].[Tc+].[Re+].[Sm+].[Tm+].[Pu+].[Md+].[Ac+].[OH3+].[SH3+].[SeH3+].[TeH3+].[PoH3+].[Ni+].[Ru+].[Os+].[Eu+].[Yb+].[Am+].[No+].[Rf+].[F+].[ClH2+].[BrH2+].[IH2+].[AtH2+].[Co+].[Rh+].[Ir+].[Gd+].[Lu+].[Cm+].[Lr+].[Hg+].[Au+] [Ag+].[3H+].[Ar+].[Xe+].[Mn+].[Zn+].[Cu+].[BH2+].[Kr+].[Pd+].[Rn+].[Pt+].[Cd+].[H+].[Li+].[Na+].[K+].[Rb+].[Cs+].[Sc+].[Y+].[La+].[Ce+].[Tb+].[Th+].[Bk+].[2H+].[Be+].[Mg+].[Ca+].[Sr+].[Ba+].[Ti+].[Zr+].[Hf+].[Pr+].[Dy+].[Pa+].[Cf+].[He+].[Ne+].[AlH2+].[GaH2+].[InH2+].[Tl+].[V+].[Nb+].[Ta+].[Nd+].[Ho+].[U+].[Es+].[Fr+].[CH3+].[SiH3+].[GeH3+].[SnH+].[PbH+].[Cr+].[Mo+].[W+].[Pm+].[Er+].[Np+].[Fm+].[Ra+].[NH4+].[PH4+].[AsH4+].[SbH2+].[BiH2+].[Fe+].[Tc+].[Re+].[Sm+].[Tm+].[Pu+].[Md+].[Ac+].[OH3+].[SH3+].[SeH3+].[TeH3+].[PoH3+].[Ni+].[Ru+].[Os+].[Eu+].[Yb+].[Am+].[No+].[Rf+].[F+].[ClH2+].[BrH2+].[IH2+].[AtH2+].[Co+].[Rh+].[Ir+].[Gd+].[Lu+].[Cm+].[Lr+].[Hg+].[Au+]

@@ -464,11 +464,11 @@ bool Element::calcValence(int elem, int charge, int radical, int conn, int& vale
 
     if (groupno == 1)
     {
-        if (elem == ELEM_Li || elem == ELEM_Na || elem == ELEM_K || elem == ELEM_Rb || elem == ELEM_Cs || elem == ELEM_Fr)
-        {
-            valence = 1;
-            hyd = 1 - rad - conn - abs(charge);
-        }
+        // if (elem == ELEM_Li || elem == ELEM_Na || elem == ELEM_K || elem == ELEM_Rb || elem == ELEM_Cs || elem == ELEM_Fr)
+        //{
+        //     valence = 1;
+        //     hyd = 1 - rad - conn - abs(charge);
+        // }
         if (elem == ELEM_H)
         {
             valence = 1;
@@ -486,31 +486,31 @@ bool Element::calcValence(int elem, int charge, int radical, int conn, int& vale
                 hyd = -1;
         }
     }
-    else if (groupno == 2)
-    {
-        if (elem == ELEM_Be || elem == ELEM_Mg || elem == ELEM_Ca || elem == ELEM_Sr || elem == ELEM_Ba || elem == ELEM_Ra)
-        {
-            valence = 2;
-            if (conn != 0)
-            {
-                if (rad > 0 || abs(charge) > 0)
-                    hyd = -1;
-                else
-                    hyd = 2 - conn;
-            }
-            else if (rad > 0 || abs(charge) > 0)
-            {
-                hyd = 2 - rad - abs(charge);
-            }
-            else
-            {
-                hyd = 0;
-            }
+    // else if (groupno == 2)
+    //{
+    //     if (elem == ELEM_Be || elem == ELEM_Mg || elem == ELEM_Ca || elem == ELEM_Sr || elem == ELEM_Ba || elem == ELEM_Ra)
+    //     {
+    //         valence = 2;
+    //         if (conn != 0)
+    //         {
+    //             if (rad > 0 || abs(charge) > 0)
+    //                 hyd = -1;
+    //             else
+    //                 hyd = 2 - conn;
+    //         }
+    //         else if (rad > 0 || abs(charge) > 0)
+    //         {
+    //             hyd = 2 - rad - abs(charge);
+    //         }
+    //         else
+    //         {
+    //             hyd = 0;
+    //         }
 
-            if (hyd != 0)
-                hyd = -1;
-        }
-    }
+    //        if (hyd != 0)
+    //            hyd = -1;
+    //    }
+    //}
     else if (groupno == 3)
     {
         if (elem == ELEM_B || elem == ELEM_Al || elem == ELEM_Ga || elem == ELEM_In)
