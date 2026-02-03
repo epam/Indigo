@@ -86,7 +86,7 @@ void MangoTautomer::setParams(int conditions, bool force_hydrogens, bool ring_ch
     _params.force_hydrogens = force_hydrogens;
     _params.ring_chain = ring_chain;
     _params.substructure = substructure;
-    _params.inner=inner;
+    _params.inner = inner;
 }
 
 void MangoTautomer::setParameters(const char* conditions)
