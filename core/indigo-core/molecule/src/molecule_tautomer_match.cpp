@@ -27,6 +27,10 @@
 #include "molecule/molecule_tautomer_enumerator.h"
 #include "molecule/molecule_tautomer_utils.h"
 
+#ifdef _MSC_VER
+#pragma warning(push, 4)
+#endif
+
 using namespace indigo;
 
 class PathRulesChecker;
@@ -36,8 +40,9 @@ CP_DEF(TautomerSearchContext);
 TautomerSearchContext::TautomerSearchContext(BaseMolecule& g1_, BaseMolecule& g2_, GraphDecomposer& decomposer1_, GraphDecomposer& decomposer2_,
                                              const PtrArray<TautomerRule>& rules_list_, const AromaticityOptions& arom_options)
     : g1(g1_), g2(g2_), decomposer1(decomposer1_), decomposer2(decomposer2_), CP_INIT, TL_CP_GET(h_rep_count_1), TL_CP_GET(h_rep_count_2),
-      rules_list(rules_list_), force_hydrogens(false), ring_chain(false), rules(0), substructure(false), cb_check_rules(0), TL_CP_GET(dearomatizations),
-      TL_CP_GET(core_1), TL_CP_GET(core_2), TL_CP_GET(chains_2), TL_CP_GET(edges_1), TL_CP_GET(edges_2), TL_CP_GET(edge_types_2), TL_CP_GET(n1), TL_CP_GET(n2)
+      rules_list(rules_list_), force_hydrogens(false), ring_chain(false), rules(0), substructure(false), inner(false), cb_check_rules(0),
+      TL_CP_GET(dearomatizations), TL_CP_GET(core_1), TL_CP_GET(core_2), TL_CP_GET(chains_2), TL_CP_GET(edges_1), TL_CP_GET(edges_2), TL_CP_GET(edge_types_2),
+      TL_CP_GET(n1), TL_CP_GET(n2)
 {
     this->arom_options = arom_options;
     if (g2.vertexCount() + g2.edgeCount() > 80)
@@ -584,3 +589,7 @@ bool TautomerMatcher::fixBondsNotInChains(TautomerSearchContext& context, const 
 
     return ok;
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif

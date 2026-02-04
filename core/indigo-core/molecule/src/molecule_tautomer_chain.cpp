@@ -375,6 +375,20 @@ TautomerChainChecker::~TautomerChainChecker()
 {
 }
 
+#ifdef TRACE_TAUTOMER_MATCHING
+void print_arr(const char* name, const Array<int>& arr)
+{
+    printf("%s: ", name);
+    for (int i = 0; i < arr.size(); i++)
+    {
+        if (i > 0 && i < arr.size())
+            printf(", ");
+        printf("%d", arr[i]);
+    }
+    printf("\n");
+};
+#endif
+
 bool TautomerChainChecker::check()
 {
     int n1 = -1, n2 = -1;
@@ -461,6 +475,10 @@ bool TautomerChainChecker::nextStartingPair(int& n1, int& n2)
     {
         n1 = _core_2[n2];
 
+        // if INNER submatch - use only matched vertices
+        if (_context.substructure && _context.inner && n1 < 0)
+            continue;
+
         if (n1 != EmbeddingEnumerator::IGNORE && _context.chains_2[n2] <= 0)
             break;
     }
@@ -536,6 +554,10 @@ bool TautomerChainChecker::nextPair(int& n1, int& n2, int& e1, int& e2)
     for (; e2 != vertex2.neiEnd(); e2 = vertex2.neiNext(e2))
     {
         n2 = vertex2.neiVertex(e2);
+
+        // if INNER submatch - use only matched vertices
+        if (_context.substructure && _context.inner && _context.core_2[n2] < 0)
+            continue;
 
         if (_context.chains_2[n2] == 0 && _core_2[n2] != EmbeddingEnumerator::IGNORE)
             break;

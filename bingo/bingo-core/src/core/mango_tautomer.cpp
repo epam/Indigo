@@ -80,18 +80,19 @@ const char* MangoTautomer::getQueryGross()
     return _query_gross_str.ptr();
 }
 
-void MangoTautomer::setParams(int conditions, bool force_hydrogens, bool ring_chain, bool substructure)
+void MangoTautomer::setParams(int conditions, bool force_hydrogens, bool ring_chain, bool substructure, bool inner)
 {
     _params.conditions = conditions;
     _params.force_hydrogens = force_hydrogens;
     _params.ring_chain = ring_chain;
     _params.substructure = substructure;
+    _params.inner = inner;
 }
 
 void MangoTautomer::setParameters(const char* conditions)
 {
     TautomerMethod m = RSMARTS;
-    MoleculeTautomerMatcher::parseConditions(conditions, _params.conditions, _params.force_hydrogens, _params.ring_chain, m);
+    MoleculeTautomerMatcher::parseConditions(conditions, _params.conditions, _params.force_hydrogens, _params.ring_chain, m, _params.inner);
 }
 
 void MangoTautomer::_validateQueryData()
@@ -159,7 +160,7 @@ bool MangoTautomer::matchLoadedTarget()
     TautomerMethod m = RSMARTS;
 
     matcher.setRulesList(&_context.tautomer_rules);
-    matcher.setRules(_params.conditions, _params.force_hydrogens, _params.ring_chain, m);
+    matcher.setRules(_params.conditions, _params.force_hydrogens, _params.ring_chain, m, _params.inner);
     matcher.setQuery(*_query);
     matcher.highlight = true;
 
@@ -213,7 +214,7 @@ bool MangoTautomer::matchBinary(Scanner& scanner)
     MoleculeTautomerMatcher matcher(_target, _params.substructure);
 
     matcher.setRulesList(&_context.tautomer_rules);
-    matcher.setRules(_params.conditions, _params.force_hydrogens, _params.ring_chain, m);
+    matcher.setRules(_params.conditions, _params.force_hydrogens, _params.ring_chain, m, _params.inner);
     matcher.setQuery(*_query);
 
     profTimerStart(temb, "match.embedding");
