@@ -1526,71 +1526,26 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id, const Vec2
         int font_size = static_cast<int>(KDefaultFontSize);
         int color_index = -1;
         CDXMLFontStyle font_face(0);
-        for (auto& text_item : ko.block())
-        {
+        auto pos_str = [](float bond_length, const Vec2f& text_origin) -> std::string {
+            return std::to_string(bond_length * text_origin.x) + " " + std::to_string(-bond_length * text_origin.y);
+        };
+        auto box_str = [](float bond_length, const Rect2f& bbox) -> std::string {
+            return std::to_string(bond_length * bbox.left()) + " " + std::to_string(-bond_length * bbox.top()) + " " +
+                   std::to_string(bond_length * bbox.right()) + " " + std::to_string(-bond_length * bbox.bottom());
+        };
+        auto create_t = [this, &pos_str, &id](Vec2f text_origin) -> XMLElement* {
+            XMLElement* t = _doc->NewElement("t");
+            _current->LinkEndChild(t);
+            t->SetAttribute("id", id);
+            t->SetAttribute("p", pos_str(_bond_length, text_origin).c_str());
+            // t->SetAttribute("BoundingBox", box_str(_bond_length, text_origin).c_str());
+            return t;
+        };
+        auto save_paragraph_styles = [this, &font_face, &font_size, &color_index](const SimpleTextObject::KETTextParagraph& text_item, XMLElement* t) {
             bool is_first_index = true;
             size_t first_index = 0;
             size_t second_index = 0;
             FONT_STYLE_SET current_styles;
-            Vec2f text_origin(ko.boundingBox().left(), ko.boundingBox().bottom());
-            auto align = text_item.alignment.has_value() ? text_item.alignment : ko.alignment();
-            if (align.has_value())
-            {
-                switch (align.value())
-                {
-                case SimpleTextObject::TextAlignment::ECenter:
-                    text_origin.x = ko.boundingBox().center().x;
-                    break;
-                case SimpleTextObject::TextAlignment::ERight:
-                    text_origin.x = ko.boundingBox().right();
-                    break;
-                }
-            }
-
-            std::string pos_str = std::to_string(_bond_length * text_origin.x) + " " + std::to_string(-_bond_length * text_origin.y);
-            std::string box_str = std::to_string(_bond_length * ko.boundingBox().left()) + " " + std::to_string(-_bond_length * ko.boundingBox().top()) + " " +
-                                  std::to_string(_bond_length * ko.boundingBox().right()) + " " + std::to_string(-_bond_length * ko.boundingBox().bottom());
-
-            XMLElement* t = _doc->NewElement("t");
-            _current->LinkEndChild(t);
-            t->SetAttribute("id", id);
-            t->SetAttribute("p", pos_str.c_str());
-            // t->SetAttribute("BoundingBox", box_str.c_str());
-            if (align.has_value())
-            {
-                switch (align.value())
-                {
-                case SimpleTextObject::TextAlignment::ELeft:
-                    t->SetAttribute("Justification", "Left");
-                    break;
-                case SimpleTextObject::TextAlignment::ECenter:
-                    t->SetAttribute("Justification", "Center");
-                    break;
-                case SimpleTextObject::TextAlignment::ERight:
-                    t->SetAttribute("Justification", "Right");
-                    break;
-                case SimpleTextObject::TextAlignment::EFull:
-                    t->SetAttribute("Justification", "Full");
-                    break;
-                default:
-                    t->SetAttribute("Justification", "Left");
-                    break;
-                }
-            }
-            if (text_item.line_starts.has_value() && text_item.line_starts.value().size())
-            {
-                auto& line_starts = text_item.line_starts.value();
-                std::string line_starts_str;
-                for (auto ls : line_starts)
-                {
-                    if (!line_starts_str.empty())
-                        line_starts_str += " ";
-                    line_starts_str += std::to_string(ls);
-                }
-                t->SetAttribute("LineStarts", line_starts_str.c_str());
-                t->SetAttribute("WordWrapWidth", ko.boundingBox().width() * _bond_length);
-            }
-            t->SetAttribute("InterpretChemically", "no");
             for (auto& kvp : text_item.font_styles)
             {
                 if (is_first_index)
@@ -1670,6 +1625,86 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id, const Vec2
                 s->LinkEndChild(txt);
                 current_styles = kvp.second;
                 first_index = second_index;
+            }
+        };
+        if (ko.version() == SimpleTextObject::Versions::ONE)
+        {
+            Vec2f text_origin(ko.boundingBox().left(), ko.boundingBox().bottom());
+            XMLElement* t = create_t(text_origin);
+            t->SetAttribute("InterpretChemically", "no");
+            bool not_first = false;
+            for (auto& text_item : ko.block())
+            {
+                if (not_first)
+                {
+                    XMLElement* s = _doc->NewElement("s");
+                    t->LinkEndChild(s);
+                    XMLText* txt = _doc->NewText("\n");
+                    s->LinkEndChild(txt);
+                }
+                else
+                {
+                    not_first = true;
+                }
+                save_paragraph_styles(text_item, t);
+            }
+        }
+        else if (ko.version() == SimpleTextObject::Versions::TWO)
+        {
+            for (auto& text_item : ko.block())
+            {
+                Vec2f text_origin(ko.boundingBox().left(), ko.boundingBox().bottom());
+                auto align = text_item.alignment.has_value() ? text_item.alignment : ko.alignment();
+                if (align.has_value())
+                {
+                    switch (align.value())
+                    {
+                    case SimpleTextObject::TextAlignment::ECenter:
+                        text_origin.x = ko.boundingBox().center().x;
+                        break;
+                    case SimpleTextObject::TextAlignment::ERight:
+                        text_origin.x = ko.boundingBox().right();
+                        break;
+                    }
+                }
+
+                XMLElement* t = create_t(text_origin);
+                if (align.has_value())
+                {
+                    switch (align.value())
+                    {
+                    case SimpleTextObject::TextAlignment::ELeft:
+                        t->SetAttribute("Justification", "Left");
+                        break;
+                    case SimpleTextObject::TextAlignment::ECenter:
+                        t->SetAttribute("Justification", "Center");
+                        break;
+                    case SimpleTextObject::TextAlignment::ERight:
+                        t->SetAttribute("Justification", "Right");
+                        break;
+                    case SimpleTextObject::TextAlignment::EFull:
+                        t->SetAttribute("Justification", "Full");
+                        break;
+                    default:
+                        t->SetAttribute("Justification", "Left");
+                        break;
+                    }
+                }
+                if (text_item.line_starts.has_value() && text_item.line_starts.value().size())
+                {
+                    auto& line_starts = text_item.line_starts.value();
+                    std::string line_starts_str;
+                    for (auto ls : line_starts)
+                    {
+                        if (!line_starts_str.empty())
+                            line_starts_str += " ";
+                        line_starts_str += std::to_string(ls);
+                    }
+                    t->SetAttribute("LineStarts", line_starts_str.c_str());
+                    t->SetAttribute("WordWrapWidth", ko.boundingBox().width() * _bond_length);
+                }
+                t->SetAttribute("InterpretChemically", "no");
+                save_paragraph_styles(text_item, t);
             }
         }
     }
