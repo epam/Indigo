@@ -304,6 +304,23 @@
             <b id="255" B="116" E="117" Order="1.5" Display="Dash" Display2="Dash"/>
             <b id="256" B="117" E="108" Order="1.5" Display="Dash" Display2="Dash"/>
         </fragment>
+        <arrow id="257" BoundingBox="1008.776672 604.825623 696.776672 604.825623" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="2250" Head3D="1008.776672 604.825623 0.000000" Tail3D="696.776672 604.825623 0.000000"/>
+        <graphic id="258" BoundingBox="696.776672 524.859375 696.776672 684.791870" GraphicType="Line"/>
+        <graphic id="259" BoundingBox="672.776672 524.859375 696.776672 524.859375" GraphicType="Line"/>
+        <graphic id="260" BoundingBox="672.776672 684.791870 696.776672 684.791870" GraphicType="Line"/>
+        <arrow id="261" BoundingBox="1008.776672 222.482635 696.776672 222.482635" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="2250" Head3D="1008.776672 222.482635 0.000000" Tail3D="696.776672 222.482635 0.000000"/>
+        <graphic id="262" BoundingBox="696.776672 69.000008 696.776672 375.965271" GraphicType="Line"/>
+        <graphic id="263" BoundingBox="672.776672 69.000008 696.776672 69.000008" GraphicType="Line"/>
+        <graphic id="264" BoundingBox="672.776672 216.002151 696.776672 216.002151" GraphicType="Line"/>
+        <graphic id="265" BoundingBox="672.776672 375.965271 696.776672 375.965271" GraphicType="Line"/>
+        <arrow id="266" BoundingBox="1465.140625 413.654114 1153.140625 413.654114" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="2250" Head3D="1465.140625 413.654114 0.000000" Tail3D="1153.140625 413.654114 0.000000"/>
+        <graphic id="267" BoundingBox="1153.140625 222.482635 1153.140625 604.825623" GraphicType="Line"/>
+        <graphic id="268" BoundingBox="1129.140625 222.482635 1153.140625 222.482635" GraphicType="Line"/>
+        <graphic id="269" BoundingBox="1129.140625 604.825623 1153.140625 604.825623" GraphicType="Line"/>
+        <arrow id="270" BoundingBox="885.589539 1144.014160 573.589478 1144.014160" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="2250" Head3D="885.589539 1144.014160 0.000000" Tail3D="573.589478 1144.014160 0.000000"/>
+        <graphic id="271" BoundingBox="573.589478 967.660767 573.589478 1320.367432" GraphicType="Line"/>
+        <graphic id="272" BoundingBox="549.589539 967.660767 573.589478 967.660767" GraphicType="Line"/>
+        <graphic id="273" BoundingBox="549.589539 1320.367432 573.589478 1320.367432" GraphicType="Line"/>
         <t id="118" p="1641.976074 401.460754" InterpretChemically="no">
             <s font="4" size="8.66667" face="2">123456789012345678901234567890</s>
             <s>

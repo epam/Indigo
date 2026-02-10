@@ -1363,6 +1363,21 @@ void MoleculeCdxmlSaver::addImage(int id, const EmbeddedImageObject& image)
     addCustomElement(id, emb_object, attrs);
 }
 
+void MoleculeCdxmlSaver::addMultitailArrow(int& id, const ReactionMultitailArrowObject& arrow)
+{
+    float spine_x = arrow.getSpineBegin().x;
+    addArrow(++id, ReactionArrowObject::EFilledTriangle, Vec2f{spine_x, arrow.getHead().y}, arrow.getHead());
+    PropertiesMap attrs;
+    attrs.clear();
+    attrs.insert("GraphicType", "Line");
+    addElement("graphic", ++id, arrow.getSpineBegin(), arrow.getSpineEnd(), attrs);
+    const auto& tails = arrow.getTails();
+    for (int i = 0; i < tails.size(); i++)
+    {
+        addElement("graphic", ++id, tails[i], Vec2f{spine_x, tails[i].y}, attrs);
+    }
+}
+
 void MoleculeCdxmlSaver::addArrow(int id, int arrow_type, const Vec2f& beg, const Vec2f& end)
 {
     PropertiesMap attrs;
