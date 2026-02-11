@@ -115,6 +115,13 @@ void ReactionCdxmlSaver::saveReaction(BaseReaction& rxn)
     for (int i = rxn.begin(); i != rxn.end(); i = rxn.next(i))
         molsaver.saveMoleculeFragment(rxn.getBaseMolecule(i), offset, 1, mol_ids[i], _id, nodes_ids[i]);
 
+    for (int i = 0; i < multi_count; ++i)
+    {
+        int arrow_index = rxn.meta().getMetaObjectIndex(ReactionMultitailArrowObject::CID, i);
+        std::unique_ptr<MetaObject> cp_obj(rxn.meta().metaData()[arrow_index]->clone());
+        molsaver.addMultitailArrow(_id, static_cast<ReactionMultitailArrowObject&>(*cp_obj));
+    }
+
     if (rxn.meta().metaData().size()) // we have metadata
     {
         for (int i = 0; i < rxn.meta().metaData().size(); ++i)

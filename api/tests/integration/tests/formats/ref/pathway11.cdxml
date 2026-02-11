@@ -474,6 +474,22 @@
             <b id="329" B="153" E="154"/>
             <b id="330" B="153" E="148" Order="1.5" Display="Dash" Display2="Dash"/>
         </fragment>
+        <arrow id="331" BoundingBox="635.902832 957.395752 323.903015 957.395752" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="2250" Head3D="635.902832 957.395752 0.000000" Tail3D="323.903015 957.395752 0.000000"/>
+        <graphic id="332" BoundingBox="323.903015 877.664062 323.903015 1037.127686" GraphicType="Line"/>
+        <graphic id="333" BoundingBox="299.903015 877.664062 323.903015 877.664062" GraphicType="Line"/>
+        <graphic id="334" BoundingBox="299.903015 1037.127686 323.903015 1037.127686" GraphicType="Line"/>
+        <arrow id="335" BoundingBox="2158.161621 865.904541 1846.161743 865.904541" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="2250" Head3D="2158.161621 865.904541 0.000000" Tail3D="1846.161743 865.904541 0.000000"/>
+        <graphic id="336" BoundingBox="1846.161743 774.413269 1846.161743 957.395813" GraphicType="Line"/>
+        <graphic id="337" BoundingBox="1822.161743 774.413269 1846.161743 774.413269" GraphicType="Line"/>
+        <graphic id="338" BoundingBox="1822.161743 957.395813 1846.161743 957.395813" GraphicType="Line"/>
+        <arrow id="339" BoundingBox="2158.161621 340.356628 1846.161743 340.356628" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="2250" Head3D="2158.161621 340.356628 0.000000" Tail3D="1846.161743 340.356628 0.000000"/>
+        <graphic id="340" BoundingBox="1846.161743 164.003281 1846.161743 516.709900" GraphicType="Line"/>
+        <graphic id="341" BoundingBox="1822.161743 164.003281 1846.161743 164.003281" GraphicType="Line"/>
+        <graphic id="342" BoundingBox="1822.161743 516.709900 1846.161743 516.709900" GraphicType="Line"/>
+        <arrow id="343" BoundingBox="2857.053467 603.130615 2545.053467 603.130615" FillType="None" ArrowheadType="Solid" HeadSize="2250" ArrowheadWidth="563" ArrowheadHead="Full" ArrowheadCenterSize="2250" Head3D="2857.053467 603.130615 0.000000" Tail3D="2545.053467 603.130615 0.000000"/>
+        <graphic id="344" BoundingBox="2545.053467 340.356628 2545.053467 865.904541" GraphicType="Line"/>
+        <graphic id="345" BoundingBox="2521.053223 340.356628 2545.053467 340.356628" GraphicType="Line"/>
+        <graphic id="346" BoundingBox="2521.053223 865.904541 2545.053467 865.904541" GraphicType="Line"/>
         <t id="155" p="3511.761230 590.937256" InterpretChemically="no">
             <s font="4" size="8.66667" face="1">Removal of benzoxazol-2-yl</s>
             <s>
