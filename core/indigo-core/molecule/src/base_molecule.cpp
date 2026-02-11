@@ -5583,6 +5583,18 @@ const int BaseMolecule::getTemplateAtomSeqid(int idx)
     return res;
 }
 
+// [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+bool BaseMolecule::isValidTemplateOccurrence(int template_occur_idx) const
+{
+    return template_occur_idx >= 0 && _template_occurrences.hasElement(template_occur_idx);
+}
+
+// [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+bool BaseMolecule::isValidTemplateAttachmentPoint(int template_att_point_idx) const
+{
+    return template_att_point_idx >= 0 && template_attachment_points.hasElement(template_att_point_idx);
+}
+
 const DisplayOption BaseMolecule::getTemplateAtomDisplayOption(int idx) const
 {
     int template_occur_idx = getTemplateAtomOccurrence(idx);
@@ -5762,7 +5774,16 @@ std::unique_ptr<BaseMolecule>& BaseMolecule::expandedMonomersToAtoms()
                         auto& indexes = result->template_attachment_indexes.at(monomer_id);
                         for (int att_idx = 0; att_idx < indexes.size(); att_idx++)
                         {
-                            auto& ap = result->template_attachment_points.at(indexes.at(att_idx));
+                            int ap_idx = indexes.at(att_idx);
+                            // [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+                            // Validate attachment point index before accessing to prevent pool access errors.
+                            // Invalid indices may occur after cloning if attachment points weren't properly copied.
+                            if (!result->isValidTemplateAttachmentPoint(ap_idx))
+                            {
+                                // Skip invalid attachment point - it may have been removed or corrupted during cloning
+                                continue;
+                            }
+                            auto& ap = result->template_attachment_points.at(ap_idx);
                             assert(ap.ap_occur_idx == monomer_id);
                             auto it = sorted_attachment_points.find(ap.ap_id.ptr());
                             if (it != sorted_attachment_points.end())
@@ -5771,7 +5792,7 @@ std::unique_ptr<BaseMolecule>& BaseMolecule::expandedMonomersToAtoms()
                                 attached_atom.insert(std::make_pair(ap.ap_aidx, atp.aidx)); // molecule atom ap.ap_aidx is attached to atp.aidx in monomer
                                 atoms_to_remove.push(atp.lvidx);
                             }
-                            result->template_attachment_points.remove(indexes.at(att_idx));
+                            result->template_attachment_points.remove(ap_idx);
                         }
                         att_indexes_to_remove.emplace_back(monomer_id);
                     }
@@ -5809,7 +5830,16 @@ std::unique_ptr<BaseMolecule>& BaseMolecule::expandedMonomersToAtoms()
                         auto& indexes = result->template_attachment_indexes.at(other);
                         for (int att_idx = 0; att_idx < indexes.size(); att_idx++)
                         {
-                            auto& ap = result->template_attachment_points.at(indexes.at(att_idx));
+                            int ap_idx = indexes.at(att_idx);
+                            // [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+                            // Validate attachment point index before accessing to prevent pool access errors.
+                            // Invalid indices may occur if attachment points were removed during expansion.
+                            if (!result->isValidTemplateAttachmentPoint(ap_idx))
+                            {
+                                // Skip invalid attachment point - it may have been removed or corrupted
+                                continue;
+                            }
+                            auto& ap = result->template_attachment_points.at(ap_idx);
                             if (ap.ap_aidx == monomer_id)
                                 ap.ap_aidx = ap_new_idx;
                         }

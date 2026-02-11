@@ -256,6 +256,31 @@ namespace indigo
         virtual bool isTemplateAtom(int idx) const = 0;
         virtual int getTemplateAtomOccurrence(int idx) const = 0;
 
+        // [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+        // Validates that a template occurrence index is valid in the template occurrences pool.
+        // This is used to safely check template occurrence indices before accessing them,
+        // preventing "pool: access to unused element" errors when working with cloned molecules.
+        //
+        // Args:
+        //   template_occur_idx: The template occurrence index to validate
+        //
+        // Returns:
+        //   true if the index is valid and the element exists in the pool, false otherwise
+        bool isValidTemplateOccurrence(int template_occur_idx) const;
+
+        // [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+        // Validates that a template attachment point index is valid in the template attachment points pool.
+        // This is used to safely check attachment point indices before accessing them,
+        // preventing "pool: access to unused element" errors when working with cloned molecules
+        // or during monomer expansion when attachment points may be removed.
+        //
+        // Args:
+        //   template_att_point_idx: The template attachment point index to validate
+        //
+        // Returns:
+        //   true if the index is valid and the element exists in the pool, false otherwise
+        bool isValidTemplateAttachmentPoint(int template_att_point_idx) const;
+
         const char* getTemplateAtom(int idx);
         const int getTemplateAtomSeqid(int idx);
         const char* getTemplateAtomSeqName(int idx);

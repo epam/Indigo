@@ -639,6 +639,8 @@ CEXPORT const char* indigoGetTGroupAlias(int tgroup);
 
 CEXPORT int indigoTransformSCSRtoCTAB(int item);
 CEXPORT int indigoTransformCTABtoSCSR(int molecule, int templates);
+// [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+CEXPORT int indigoExpandedMonomersToAtoms(int molecule);
 
 CEXPORT int indigoResetCharge(int atom);
 CEXPORT int indigoResetExplicitValence(int atom);
