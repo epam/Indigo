@@ -1131,6 +1131,24 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
     }
 }
 
+// [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+// Validates that a TGroup is safe to save to KET JSON.
+// Returns true if the TGroup has all required data, false otherwise.
+// Invalid TGroups should be skipped to prevent malformed JSON output.
+static bool isValidTGroupForSaving(const TGroup& tg)
+{
+    // For non-ambiguous templates, fragment is required for saving template structure
+    if (!tg.ambiguous && tg.fragment == nullptr)
+        return false;
+
+    // Template ID is required for template name and identification
+    std::string tg_id = monomerId(tg);
+    if (tg_id.empty())
+        return false;
+
+    return true;
+}
+
 void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
 {
     std::string template_id("monomerTemplate-");
@@ -1702,6 +1720,12 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
         for (int i = mol.tgroups.begin(); i != mol.tgroups.end(); i = mol.tgroups.next(i))
         {
             TGroup& tg = mol.tgroups.getTGroup(i);
+            // [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+            // Validate TGroup before writing template reference to prevent malformed JSON.
+            // Skip invalid TGroups (e.g., null fragment or empty ID).
+            if (!isValidTGroupForSaving(tg))
+                continue;
+
             auto template_name = std::string(tg.ambiguous ? "ambiguousMonomerTemplate-" : "monomerTemplate-") + monomerId(tg);
             writer.StartObject();
             writer.Key("$ref");
@@ -1836,6 +1860,12 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
     for (int i = mol->tgroups.begin(); i != mol->tgroups.end(); i = mol->tgroups.next(i))
     {
         TGroup& tg = mol->tgroups.getTGroup(i);
+        // [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+        // Validate TGroup before writing template node to prevent malformed JSON.
+        // Skip invalid TGroups (e.g., null fragment or empty ID).
+        if (!isValidTGroupForSaving(tg))
+            continue;
+
         if (tg.ambiguous)
             saveAmbiguousMonomerTemplate(tg, writer);
         else
