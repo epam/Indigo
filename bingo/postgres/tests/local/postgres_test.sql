@@ -36,7 +36,7 @@ drop table aatest
 truncate table btest
 select bingo.importSDF('btest(a)', '/home/tarquin/projects/indigo/indigo-git/bingo/tests/postgres/java_tests/test_mango.sdf')
 create table aatest(a text)
-insert into aatest(a) (select * from btest where a @ ('CC1CCCCC1', '')::bingo.smarts)
+insert into aatest(a) (select a from btest where a @ ('CC1CCCCC1', '')::bingo.smarts)
 explain select * from aatest where not bingo.matchSmarts(a, ('CC1CCCCC1', ''))
 
 create index aatest_idx on aatest using bingo_idx (a bingo.molecule)
@@ -918,7 +918,7 @@ create table test_pubchem_1m(m_id serial, a text);
 select bingo.importsmiles('test_pubchem_10m', 'a', '', 'c:/_work/Indigo/bases/pubchem_slice_10m.smiles');
 
 create index pb10m_idx on test_pubchem_10m using bingo_idx (a bingo.molecule)
-insert into test_pubchem_1m (m_id, a) select m_id, a from test_pubchem_10m limit 1000000
+insert into test_pubchem_1m (m_id, a) (select m_id, a from test_pubchem_10m limit 1000000)
 select count(*) from test_pubchem_1m
 create index pb1m_idx on test_pubchem_1m using bingo_idx (a bingo.molecule)
 select count(*) from test_pubchem_1m where a @ ('CN1N(C(=O)C=C1C)C1=CC=CC=C1', '')::bingo.sub
