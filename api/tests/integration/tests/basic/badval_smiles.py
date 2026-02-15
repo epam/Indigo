@@ -9,7 +9,26 @@ sys.path.append(
         "common",
     )
 )
-from env_indigo import *
+from env_indigo import (  # noqa: F401
+    Bingo,
+    BingoException,
+    BingoObject,
+    Indigo,
+    IndigoException,
+    IndigoInchi,
+    IndigoObject,
+    IndigoRenderer,
+    dataPath,
+    dir_exists,
+    file_exists,
+    file_size,
+    getIndigoExceptionText,
+    joinPathPy,
+    makedirs,
+    relativePath,
+    rmdir,
+    threading,
+)
 
 indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", True)
