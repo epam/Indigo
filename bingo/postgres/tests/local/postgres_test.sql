@@ -16,7 +16,7 @@ create index btest_idx on btest using bingo_idx (a bingo.molecule) with (IGNORE_
 
 DROP TABLE bingotest.bingo_test_table3
 
-SELECT * FROM bingotest.bingo_test_table2 where a @ ('OCNCCl', 'ELE')::bingo.exact
+SELECT a FROM bingotest.bingo_test_table2 where a @ ('OCNCCl', 'ELE')::bingo.exact
 
 SELECT bingo.getIndexStructuresCount('bingotest.bingo_test_index2'::regclass::oid)
 
@@ -1181,4 +1181,3 @@ select a, bingo.getSimilarity(a, 'Cn1c(=O)c(=O)c2cc(C(S)=N)ccc12', '') from btes
 
 
 drop index sim_idx
-
