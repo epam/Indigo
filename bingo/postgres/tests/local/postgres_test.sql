@@ -1181,3 +1181,4 @@ select a, bingo.getSimilarity(a, 'Cn1c(=O)c(=O)c2cc(C(S)=N)ccc12', '') from btes
 
 
 drop index sim_idx
+
