@@ -761,13 +761,13 @@ create index pubchem_slice_idx on pubchem_slice using bingo_idx(data bingo.molec
 
 select * from pubchem_slice
 
-explain select * from (select a.b as regno, b.b as dup from btest a, btest b 
+explain select * from (select a.b as regno, b.b as dup from btest a cross join btest b 
 where a.a @ (b.a, '')::bingo.exact order by a.b) as duplicate where regno <> dup;
 
 explain select * from (select a.b as regno, b.b as dup from btest a btest b 
 where a.a @ (b.a, '')::bingo.exact order by a.b) as duplicate where regno <> dup;
 
-explain select * from (select x.b as regno, y.b as dup from btest2 x, btest2 y 
+explain select * from (select x.b as regno, y.b as dup from btest2 x cross join btest2 y 
 where x.a @ (y.a, '')::bingo.exact order by x.b) as duplicate where regno <> dup;
 
 explain select btest.b, z.dup  from (select x.a as a1, y.a as a2, x.b as regno, y.b as dup from btest x cross join btest y) as z 
@@ -779,7 +779,7 @@ create table btest_init(a text, b serial);
 insert into btest_init(a) (select a from pubchem_slice limit 200)
 
 
-select * from (select x.b as regno, y.b as dup from btest_init x, btest_init y 
+select * from (select x.b as regno, y.b as dup from btest_init x cross join btest_init y 
 where x.a @ (y.a, '')::bingo.exact order by x.b) as duplicate where regno <> dup;
 
 select b from btest_init
@@ -803,7 +803,7 @@ insert into btest(a,b) (select a,b from btest_init);
 create index btest_idx on btest using bingo_idx (a bingo.molecule)
 drop index btest_idx
 
-explain select * from (select x.b as regno, y.b as dup from btest x, btest y 
+explain select * from (select x.b as regno, y.b as dup from btest x cross join btest y 
 where x.a @ (y.a, '')::bingo.exact order by x.b) as duplicate where regno <> dup;
 
 
@@ -819,7 +819,7 @@ insert into btest3(b) values(104);
 select * from btest3
 create index btest3_idx on btest3 using hash(b)
 
-explain select * from (select x.b as regno, y.b as dup from btest3 x, btest3 y 
+explain select * from (select x.b as regno, y.b as dup from btest3 x cross join btest3 y 
 where x.b=y.b order by x.b) as duplicate ;
 
 select bingo._print_profiling_info()
@@ -852,10 +852,10 @@ drop index join_idx
 
 
 select * from join_m_m_t
-explain select * from (select x.id as regno, y.id as dup from join_m_m_t x, join_m_m_t y 
+explain select * from (select x.id as regno, y.id as dup from join_m_m_t x cross join join_m_m_t y 
 where x.data @ (y.data, '') :: bingo.exact order by x.id) as duplicate where regno <> dup
 
-select * from (select x.id as regno, y.id as dup from join_m_m_t x, join_m_m_t y 
+select * from (select x.id as regno, y.id as dup from join_m_m_t x cross join join_m_m_t y 
 where x.data @ (y.data, '') :: bingo.sub order by x.id) as duplicate where regno <> dup
 
 select * from join_idx_shadow
@@ -864,9 +864,9 @@ select * from join_idx_shadow_hash
 select bingo._print_profiling_info()
 select bingo._reset_profiling_info()
 
-explain select sh.b_id from join_idx_shadow sh, join_idx_shadow_hash t0, join_idx_shadow_hash t1, join_idx_shadow_hash t2, 
-join_idx_shadow_hash t3, join_idx_shadow_hash t4, join_idx_shadow_hash t5, join_idx_shadow_hash t6, 
-join_idx_shadow_hash t7, join_idx_shadow_hash t8, join_idx_shadow_hash t9 where 
+explain select sh.b_id from join_idx_shadow sh cross join join_idx_shadow_hash t0 cross join join_idx_shadow_hash t1 cross join join_idx_shadow_hash t2 cross join 
+join_idx_shadow_hash t3 cross join join_idx_shadow_hash t4 cross join join_idx_shadow_hash t5 cross join join_idx_shadow_hash t6 cross join 
+join_idx_shadow_hash t7 cross join join_idx_shadow_hash t8 cross join join_idx_shadow_hash t9 where 
 t4.ex_hash = 1082584219 AND t5.ex_hash = 1412634575 AND t6.ex_hash = -1302344237 AND t7.ex_hash = -223495129 AND 
 t8.ex_hash = 213635681 AND t9.ex_hash = -1082012957 AND t0.f_count = 3 AND t1.f_count = 1 AND t2.f_count = 1 AND 
 t0.ex_hash = 771813063 AND t1.ex_hash = -797207101 AND t2.ex_hash = 1174076319 AND t3.ex_hash = -1571572743 AND
