@@ -764,7 +764,7 @@ select ctid from pubchem_slice
 explain select regno, dup from (select a.b as regno, b.b as dup from btest a, btest b 
 where a.a @ (b.a, '')::bingo.exact order by a.b) as duplicate where regno <> dup;
 
-explain select regno, dup from (select a.b as regno, b.b as dup from btest a btest b 
+explain select regno, dup from (select a.b as regno, b.b as dup from btest a, btest b 
 where a.a @ (b.a, '')::bingo.exact order by a.b) as duplicate where regno <> dup;
 
 explain select regno, dup from (select x.b as regno, y.b as dup from btest2 x, btest2 y 
