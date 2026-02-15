@@ -69,29 +69,29 @@ go
 -- Create tables for bingo user
 create table [$(bingo)].CONFIG (n int not null, name varchar(100) not null, value varchar(4000), primary key(n, name));
 create index CONFIG_N on [$(bingo)].CONFIG(n); 
-insert into [$(bingo)].CONFIG values(0, 'treat-x-as-pseudoatom', '0');
-insert into [$(bingo)].CONFIG values(0, 'ignore-closing-bond-direction-mismatch', '0');
-insert into [$(bingo)].CONFIG values(0, 'nthreads', '-1');
-insert into [$(bingo)].CONFIG values(0, 'ignore-stereocenter-errors', 0);
-insert into [$(bingo)].CONFIG values(0, 'ignore-cistrans-errors', 0);
-insert into [$(bingo)].CONFIG values(0, 'allow-non-unique-dearomatization', 0);
-insert into [$(bingo)].CONFIG values(0, 'zero-unknown-aromatic-hydrogens', 0);
-insert into [$(bingo)].CONFIG values(0, 'stereochemistry-bidirectional-mode', 0);
-insert into [$(bingo)].CONFIG values(0, 'stereochemistry-detect-haworth-projection', 0);
-insert into [$(bingo)].CONFIG values(0, 'reject-invalid-structures', 0);
-insert into [$(bingo)].CONFIG values(0, 'ignore-bad-valence', 0);
+insert into [$(bingo)].CONFIG (n, name, value) values(0, 'treat-x-as-pseudoatom', '0');
+insert into [$(bingo)].CONFIG (n, name, value) values(0, 'ignore-closing-bond-direction-mismatch', '0');
+insert into [$(bingo)].CONFIG (n, name, value) values(0, 'nthreads', '-1');
+insert into [$(bingo)].CONFIG (n, name, value) values(0, 'ignore-stereocenter-errors', 0);
+insert into [$(bingo)].CONFIG (n, name, value) values(0, 'ignore-cistrans-errors', 0);
+insert into [$(bingo)].CONFIG (n, name, value) values(0, 'allow-non-unique-dearomatization', 0);
+insert into [$(bingo)].CONFIG (n, name, value) values(0, 'zero-unknown-aromatic-hydrogens', 0);
+insert into [$(bingo)].CONFIG (n, name, value) values(0, 'stereochemistry-bidirectional-mode', 0);
+insert into [$(bingo)].CONFIG (n, name, value) values(0, 'stereochemistry-detect-haworth-projection', 0);
+insert into [$(bingo)].CONFIG (n, name, value) values(0, 'reject-invalid-structures', 0);
+insert into [$(bingo)].CONFIG (n, name, value) values(0, 'ignore-bad-valence', 0);
 go
 
-insert into [$(bingo)].CONFIG values(0, 'FP_ORD_SIZE', '25');
-insert into [$(bingo)].CONFIG values(0, 'FP_ANY_SIZE', '15');
-insert into [$(bingo)].CONFIG values(0, 'FP_TAU_SIZE', '10');
-insert into [$(bingo)].CONFIG values(0, 'FP_SIM_SIZE', '8');
-insert into [$(bingo)].CONFIG values(0, 'SUB_SCREENING_MAX_BITS', '8');
-insert into [$(bingo)].CONFIG values(0, 'KEEP_CACHE', '0');
-insert into [$(bingo)].CONFIG values(0, 'SIM_SCREENING_PASS_MARK', '128');
-insert into [$(bingo)].CONFIG values(0, 'SIMILARITY_TYPE', 'SIM');
-insert into [$(bingo)].CONFIG values(0, 'CT_FORMAT_SAVE_DATE', '1');
-insert into [$(bingo)].CONFIG values(0, 'CT_FORMAT_MODE', 'AUTO');
+insert into [$(bingo)].CONFIG (n, name, value) values(0, 'FP_ORD_SIZE', '25');
+insert into [$(bingo)].CONFIG (n, name, value) values(0, 'FP_ANY_SIZE', '15');
+insert into [$(bingo)].CONFIG (n, name, value) values(0, 'FP_TAU_SIZE', '10');
+insert into [$(bingo)].CONFIG (n, name, value) values(0, 'FP_SIM_SIZE', '8');
+insert into [$(bingo)].CONFIG (n, name, value) values(0, 'SUB_SCREENING_MAX_BITS', '8');
+insert into [$(bingo)].CONFIG (n, name, value) values(0, 'KEEP_CACHE', '0');
+insert into [$(bingo)].CONFIG (n, name, value) values(0, 'SIM_SCREENING_PASS_MARK', '128');
+insert into [$(bingo)].CONFIG (n, name, value) values(0, 'SIMILARITY_TYPE', 'SIM');
+insert into [$(bingo)].CONFIG (n, name, value) values(0, 'CT_FORMAT_SAVE_DATE', '1');
+insert into [$(bingo)].CONFIG (n, name, value) values(0, 'CT_FORMAT_MODE', 'AUTO');
 go
 
 create table [$(bingo)].CONFIG_BIN (n int not null, name varchar(100) not null, value varbinary(max), primary key(n, name));
