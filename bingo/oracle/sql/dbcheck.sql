@@ -86,7 +86,7 @@ Select OBJECT_TYPE || ' ' || OBJECT_NAME
    From USER_OBJECTS
    Where STATUS = 'INVALID'
    Order By OBJECT_TYPE ;
-Select * From USER_ERRORS;
+Select NAME, TYPE, SEQUENCE, LINE, POSITION, TEXT, ATTRIBUTE, MESSAGE_NUMBER From USER_ERRORS;
 Prompt DB check executed.
 --Prompt Type QUIT to leave SQLPLUS command prompt.
 exit;
