@@ -5,14 +5,14 @@ select 'CC' @ ('CC', '')::bingo.smarts
 explain select * from btest where a @ ('CC(=O)', '')::bingo.sub
 
 select * from bingo.bingo_config
-drop index IX_btest_idx;
-create index IX_btest_idx on btest using bingo_idx (a bingo.molecule) with ( REJECT_INVALID_STRUCTURES=1)
-create index IX_btest_idx on btest using bingo_idx (a bingo.molecule) with (NTHREADS=1)
-create index IX_rtest_idx on rtest using bingo_idx (a bingo.reaction)
+drop index IX_btest;
+create index IX_btest on btest using bingo_idx (a bingo.molecule) with ( REJECT_INVALID_STRUCTURES=1)
+create index IX_btest on btest using bingo_idx (a bingo.molecule) with (NTHREADS=1)
+create index IX_rtest on rtest using bingo_idx (a bingo.reaction)
 
 select bingo.CheckMolecule('[O-][N+](=O)c1cc([N+](=O)[O-])c2c(c1)[n+]1nc3c([n-]1n2)cc(cc3[N+](=O)[O-])[N+](=O)[O-]');
 
-create index IX_btest_idx on btest using bingo_idx (a bingo.molecule) with (IGNORE_CISTRANS_ERRORS=1)
+create index IX_btest on btest using bingo_idx (a bingo.molecule) with (IGNORE_CISTRANS_ERRORS=1)
 
 DROP TABLE bingotest.bingo_test_table3
 
@@ -39,7 +39,7 @@ create table aatest(a text)
 insert into aatest (select * from btest where a @ ('CC1CCCCC1', '')::bingo.smarts)
 explain select * from aatest where not bingo.matchSmarts(a, ('CC1CCCCC1', ''))
 
-create index IX_aatest_idx on aatest using bingo_idx (a bingo.molecule)
+create index IX_aatest on aatest using bingo_idx (a bingo.molecule)
 
 
 select count(*) from aatest where bingo.matchSmarts(a, ('CC1CCCCC1', ''))
@@ -80,8 +80,8 @@ select * from btest where ctid='(0,97)'::tid
 drop table btest_idx_shadow
 select * from btest_idx_shadow
 select * from btest_idx_shadow_hash
-create index IX_btest_idx on btest using bingo_idx (a bingo_ops) with ( "treatx-as-pseudoatom=5", FP_SIM_SIZE=4);
-create index IX_btest_idx on btest using bingo_idx (a bingo.molecule) with (NTHREADS=1)
+create index IX_btest on btest using bingo_idx (a bingo_ops) with ( "treatx-as-pseudoatom=5", FP_SIM_SIZE=4);
+create index IX_btest on btest using bingo_idx (a bingo.molecule) with (NTHREADS=1)
 
 explain select * from btest where a @ ('CCC', '')::bingo.sub
 explain select * from btest where a @ ('CC', '')::bingo_exact
@@ -103,10 +103,10 @@ select relname from pg_class where relfilenode = 402148
 select relname from pg_class where oid = 2200
 
 select 'btest'::regclass::oid
-select 'IX_btest_idx'::regclass::oid
+select 'IX_btest'::regclass::oid
 
 select * from pg_depend where objid='btest'::regclass::oid
-select * from pg_depend where objid='IX_btest_idx'::regclass::oid
+select * from pg_depend where objid='IX_btest'::regclass::oid
 select * from pg_depend where objid='btest_idx_shadow'::regclass::oid
 
 insert into pg_depend (classid, objid, objsubid, refclassid, refobjid, refobjsubid, deptype)
@@ -115,13 +115,13 @@ values (
 'btest_idx_shadow'::regclass::oid,
 0,
 'pg_class'::regclass::oid,
-'IX_btest_idx'::regclass::oid,
+'IX_btest'::regclass::oid,
 0,
 'i')
 
 
-drop index IX_btest_idx2;
-create index IX_btest_idx2 on btest using bingo_idx (a bingo_sim_ops);
+drop index IX_btest2;
+create index IX_btest2 on btest using bingo_idx (a bingo_sim_ops);
 
 
 select * from pg_proc where proname in ('hashcostestimate','bingo_costestimate')
@@ -153,7 +153,7 @@ select * from pg_am
 
 explain select mol from test_table where (mol @ 'CCC') is true;
 
-create index IX_test_idx on test_table using gist (mol gist_bingo_ops);
+create index IX_test on test_table using gist (mol gist_bingo_ops);
 
 CREATE OR REPLACE FUNCTION bingo_test(text)
 RETURNS float4
@@ -313,12 +313,12 @@ insert into rtest(a) values('Cc3ccc(Cn1c(=O)c(=O)c2cc(C(N)=O)ccc12)cc3C>>');
 insert into rtest(a) values('NC(=O)c4ccc3n(Cc2ccc1ccccc1c2)c(=O)c(=O)c3c4>>');
 insert into rtest(a) values('NC(=O)c3ccc2n(Cc1cc(O)cc(O)c1)c(=O)c(=O)c2c3>>');
 
-select * from pg_class where relname='IX_btest_idx'
-select oid from pg_class where relname='IX_btest_idx'
-select 'IX_btest_idx'::regclass::oid
+select * from pg_class where relname='IX_btest'
+select oid from pg_class where relname='IX_btest'
+select 'IX_btest'::regclass::oid
 select * from pg_opclass 
 32776
-update pg_class set relam=32776 where relname='IX_btest_idx'
+update pg_class set relam=32776 where relname='IX_btest'
 
 
 
@@ -344,7 +344,7 @@ select bingoImportsdf1('test_table(a)', '/home/tarquin/projects/indigo/postgres-
 
 
 drop FUNCTION bingo_getStructuresCount(oid)
-select bingoGetIndexStructuresCount('IX_btest_idx'::regclass::oid)
+select bingoGetIndexStructuresCount('IX_btest'::regclass::oid)
 
 create table acd2d_symyx(a text)
 select count(*) from acd2d_symyx
@@ -353,7 +353,7 @@ truncate table btest
 select bingo.importSDF('acd2d_symyx(a)', '/home/tarquin/projects/bases/acd2d_symyx.sdf')
 
 grant all on table pg_depend to tarquin
-create index IX_acd2d_idx on acd2d_symyx using bingo_idx (a bingo.molecule)
+create index IX_acd2d on acd2d_symyx using bingo_idx (a bingo.molecule)
 select * from acd2d_symyx where a @ ('COCC1=CC=C(C=C1)C1=CC=CC=C1','')::bingo.smarts limit 100;
 select * from pg_depend
 
@@ -506,7 +506,7 @@ delete from pg_am where amname='bingo_idx'
 create table bingo.test(a integer)
 
 create table ringo_test(a text)
-create index IX_ringo_test_idx on ringo_test using bingo_idx (a bingo.reaction)
+create index IX_ringo_test on ringo_test using bingo_idx (a bingo.reaction)
 insert into ringo_test(a) values('OCNCCl>>OCNCCl')
 insert into ringo_test(a) values('AAA>>')
 
@@ -530,8 +530,8 @@ select insert_table('CCC', 129000)
 create table test64k (a text)
 drop table test64k
 select count(*) from test64k
-create index IX_test64k_idx on test64k using bingo_idx (a bingo.molecule)
-drop index IX_test64k_idx
+create index IX_test64k on test64k using bingo_idx (a bingo.molecule)
+drop index IX_test64k
 drop function bingo.getversion(oid)
 select * from test64k where a @ ('CC', '')::bingo.sub limit 100
 
@@ -576,7 +576,7 @@ select bingo.gross('CCC')
 create table test_bug1(a text)
 select bingo.importSDF('test_bug1222', 'a', '', '/home/tarquin/projects/indigo/indigo-git/bingo/tests/data/molecules/exact/import/targets/mols.sdf');
 select count(*) from test_bug1
-create index IX_test_bug1_idx on test_bug1 using bingo_idx (a bingo.molecule)
+create index IX_test_bug1 on test_bug1 using bingo_idx (a bingo.molecule)
 select a from test_bug1 where a @ ('CC(C)(C)[Si](C)(C)OCCN1CCOC1=O', '')::bingo.exact;
 select a from test_bug1 where a @ ('CCC', '')::bingo.sub;
 
@@ -617,7 +617,7 @@ drop table molecule_test
 insert into molecule_test(a_id, a) values ('154654654'::float8, 'NC1C(O)C(O)C(P)C(F)C1Cl')
 select a_id from molecule_test
 select count(*) from molecule_test
-create index IX_molecule_test_idx on molecule_test using bingo_idx (a bingo.molecule)
+create index IX_molecule_test on molecule_test using bingo_idx (a bingo.molecule)
 explain select * from molecule_test where a @ ('NC1C(O)C(O)C(P)C(F)C1Cl', '')::bingo.sub
 select count(*) from molecule_test where a @ ('CN1N(C(=O)C=C1C)C1=CC=CC=C1', '')::bingo.sub
 
@@ -626,7 +626,7 @@ create table min_oci_test(a_id serial, a text);
 select * from min_oci_test
 select bingo.importSDF('min_oci_test', 'a', '', 
 '/home/tarquin/projects/indigo/bugs/postgres/min_oci_call_error.sdf');
-create index IX_min_oci_test_idx on min_oci_test using bingo_idx (a bingo.molecule)
+create index IX_min_oci_test on min_oci_test using bingo_idx (a bingo.molecule)
 explain select * from min_oci_test where a @ ('CN1N(C(=O)C=C1C)C1=CC=CC=C1', '')::bingo.sub
 
 select * from btest where ctid = '(0, 90)'::tid
@@ -639,8 +639,8 @@ select pg_cancel_backend(3859);
 select kill(3859)
 select bingo.getweight(a, ''), a from btest where a @ ('CC', '')::bingo.sub
 select * from btest where a @ ('CC', '')::bingo.sub
-drop index IX_btest_idx
-create index IX_btest_idx on btest using bingo_idx (a bingo.molecule)
+drop index IX_btest
+create index IX_btest on btest using bingo_idx (a bingo.molecule)
 
 select * from btest where a @ ('GGGNC(=O)', '')::bingo.sub
 select * from btest where a @ ('GGGCC', '')::bingo.exact
@@ -654,16 +654,16 @@ select bingo._print_profiling_info()
 create table clean_public_mols (a serial, data text)
 select bingo.importSdf('clean_public_mols','data','', '/home/tarquin/projects/indigo/bugs/postgres/clean_for_bingo.sdf')
 select * from clean_public_mols limit 10
-create index IX_clean_public_mols_idx on clean_public_mols using bingo_idx (data bingo.molecule);
+create index IX_clean_public_mols on clean_public_mols using bingo_idx (data bingo.molecule);
 select a from clean_public_mols where data @ ('c1ccc2ccccc2c1', '' )::bingo.sub;1158
 SELECT data FROM clean_public_mols WHERE ctid='(3760,5)'::tid
-drop index IX_clean_public_mols_idx
+drop index IX_clean_public_mols
 select * from chembl_test where data @ ('CCCCCNC(C)=O', '')::bingo.sub;
 select * from chembl_test where ctid='(29324,5)'::tid
 
 
 insert into btest(a)  (select data from chembl_test where ctid='(29324,5)'::tid)
-create index IX_btest_idx on btest using bingo_idx (a bingo.molecule)
+create index IX_btest on btest using bingo_idx (a bingo.molecule)
 
 
 select * from btest where a @ ('CCCCCNC(C)=O', '')::bingo.sub;
@@ -673,7 +673,7 @@ drop table chembl_test2
 create table chembl_test2 (a int, data text)
 
 insert into chembl_test2(a, data) select a, data from chembl_test where (a > 253000 and a < 254361 )
-create index IX_chembl_idx2 on chembl_test2 using bingo_idx (data bingo.molecule)
+create index IX_chembl2 on chembl_test2 using bingo_idx (data bingo.molecule)
 select * from chembl_test2 where data @ ('CCCCCNC(C)=O', '')::bingo.sub;
 select * from chembl_test2 where data @ ('NC(CSC1CC(=O)N(CCC(O)=O)C1=O)CC=O', '')::bingo.sub;
 select * from chembl_test where data @ ('NC(CSC1CC(=O)N(CCC(O)=O)C1=O)CC=O', '')::bingo.sub;
@@ -705,7 +705,7 @@ explain select * from btest where a @ ('CC(=O)', '')::bingo.sub
 update btest set b = bingo.compactMolecule(a, false)
 
 explain select * from btest where b @ ('CC(=O)', '')::bingo.sub
-create index IX_btest_idx2 on btest using bingo_idx_b (b bingo.molecule)
+create index IX_btest2 on btest using bingo_idx_b (b bingo.molecule)
 
 select bingo.compactMolecule('NC1CCCC(C1)C1CCCCC1',false) @ ('CC1CCCCC1', '')::bingo.smarts
 
@@ -717,7 +717,7 @@ select * from test
 
 create table chembl_test (a serial, data text)
 select bingo.importsdf('chembl_test', 'data', '', '/home/tarquin/projects/bases/chembl_04.sdf');
-create index IX_chembl_idx on chembl_test using bingo_idx (data bingo.molecule)
+create index IX_chembl on chembl_test using bingo_idx (data bingo.molecule)
 
 select * from chembl_test where data@ ('*1*******1','')::bingo.sub limit 100;
 
@@ -739,7 +739,7 @@ select bingo.importsmiles('chembl_test222', 'data', '', '/home/tarquin/projects/
 ﻿drop table test_pubchem_slice;
 create table test_pubchem_slice(id serial, data text);
 select bingo.importsdf('public.test_pubchem_slice', 'data', '', '/home/tarquin/projects/bases/pubchem_slice_10000000.smiles');
-create index IX_test_pubchem_slice_idx on test_pubchem_slice using bingo_idx (data bingo.molecule);
+create index IX_test_pubchem_slice on test_pubchem_slice using bingo_idx (data bingo.molecule);
 select id from test_pubchem_slice where data @ ('C1(C=CC(S)=CC=1)/C=C/C(OC)=O', '') :: bingo.sub;
 select id from test_pubchem_slice limit 10
 
@@ -747,9 +747,9 @@ drop table sch_test
 create table sch_test(a serial, b text)
 select bingo.importsdf('public.sch_test', 'b', '', '/home/tarquin/projects/bases/sch_50k.rdf');
 select count(*) from sch_test
-create index IX_sch_test_idx on sch_test using bingo_idx (b bingo.reaction)
+create index IX_sch_test on sch_test using bingo_idx (b bingo.reaction)
 select * from sch_test where b @ ('*1***C**1>>', '')::bingo.rsub limit 100
-drop index IX_sch_test_idx
+drop index IX_sch_test
 
 update bingo.bingo_config set cvalue='20' where cname='NTHREADS'
 
@@ -757,7 +757,7 @@ drop table pubchem_slice
 create table pubchem_slice(a text, b serial)
 select bingo.importsmiles('public.pubchem_slice', 'a', '', '/home/tarquin/projects/bases/pubchem_slice_100000.smiles');
 
-create index IX_pubchem_slice_idx on pubchem_slice using bingo_idx(data bingo.molecule)
+create index IX_pubchem_slice on pubchem_slice using bingo_idx(data bingo.molecule)
 
 select * from pubchem_slice
 
@@ -800,8 +800,8 @@ create table btest(a text, b serial);
 insert into btest(a,b) (select a,b from btest_init);
 
 
-create index IX_btest_idx on btest using bingo_idx (a bingo.molecule)
-drop index IX_btest_idx
+create index IX_btest on btest using bingo_idx (a bingo.molecule)
+drop index IX_btest
 
 explain select * from (select x.b as regno, y.b as dup from btest x, btest y 
 where x.a @ (y.a, '')::bingo.exact order by x.b) as duplicate where regno <> dup;
@@ -817,7 +817,7 @@ insert into btest3(b) values(102);
 insert into btest3(b) values(103);
 insert into btest3(b) values(104);
 select * from btest3
-create index IX_btest3_idx on btest3 using hash(b)
+create index IX_btest3 on btest3 using hash(b)
 
 explain select * from (select x.b as regno, y.b as dup from btest3 x, btest3 y 
 where x.b=y.b order by x.b) as duplicate ;
@@ -847,8 +847,8 @@ drop table join_m_m_t;
 create table join_m_m_t as (select * from checkmolecule_m_m_q where bingo.checkmolecule(data) is null);
 create table join_m_m_t as (select * from checkmolecule_m_m_q where bingo.checkmolecule(data) is null limit 700);
 create table join_m_m_t as (select * from checkmolecule_m_m_q where bingo.checkmolecule(data) is null limit 25 offset 700);
-create index IX_join_idx on join_m_m_t using bingo_idx (data bingo.molecule)
-drop index IX_join_idx
+create index IX_join on join_m_m_t using bingo_idx (data bingo.molecule)
+drop index IX_join
 
 
 select * from join_m_m_t
@@ -917,10 +917,10 @@ create table test_pubchem_10m(m_id serial, a text);
 create table test_pubchem_1m(m_id serial, a text);
 select bingo.importsmiles('test_pubchem_10m', 'a', '', 'c:/_work/Indigo/bases/pubchem_slice_10m.smiles');
 
-create index IX_pb10m_idx on test_pubchem_10m using bingo_idx (a bingo.molecule)
+create index IX_pb10m on test_pubchem_10m using bingo_idx (a bingo.molecule)
 insert into test_pubchem_1m select * from test_pubchem_10m limit 1000000
 select count(*) from test_pubchem_1m
-create index IX_pb1m_idx on test_pubchem_1m using bingo_idx (a bingo.molecule)
+create index IX_pb1m on test_pubchem_1m using bingo_idx (a bingo.molecule)
 select count(*) from test_pubchem_1m where a @ ('CN1N(C(=O)C=C1C)C1=CC=CC=C1', '')::bingo.sub
 select count(*) from test_pubchem_1m where a @ ('CN1N(C(=O)C=C1C)C1=CC=CC=C1', 'B_ID 1 B_COUNT 3')::bingo.sub
 --2.5 sec (7.5)
@@ -933,10 +933,10 @@ select count(*) from test_pubchem_1m where a @ ('CN1N(C(=O)C=C1C)C1=CC=CC=C1', '
 
 select count(*) from test_pubchem_1m where a @ (0.9, 1, 'CN1N(C(=O)C=C1C)C1=CC=CC=C1', 'B_ID 1 B_COUNT 3')::bingo.sim
 
-select bingo.getstructurescount('IX_btest_idx')
-select bingo.getblockcount('IX_btest_idx')
-select bingo.precacheDatabase('IX_btest_idx', 'KB')
-select bingo._precache_database('IX_pb1m_idx'::regclass::oid, 'MB')
+select bingo.getstructurescount('IX_btest')
+select bingo.getblockcount('IX_btest')
+select bingo.precacheDatabase('IX_btest', 'KB')
+select bingo._precache_database('IX_pb1m'::regclass::oid, 'MB')
 
 drop function bingo._precache_database(oid, text)
 
@@ -974,10 +974,10 @@ CREATE INDEX IX_bingo_compound_index ON chemistry.compound USING bingo_idx (stru
 
 
 drop table qc.cmp_test
-drop index qc.IX_cmp_test_idx
+drop index qc.IX_cmp_test
 select compound_id,smiles,structure into qc.cmp_test from chemistry.compound
 select * from qc.cmp_test where ctid='(103,7)'::tid
-create index IX_cmp_test_idx on qc.cmp_test using bingo_idx (structure bingo.molecule)
+create index IX_cmp_test on qc.cmp_test using bingo_idx (structure bingo.molecule)
 explain select compound_id,smiles from qc.cmp_test where structure @ ('C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1.C1CCCCC1', '')::bingo.exact
 select compound_id,smiles from qc.cmp_test where structure @ ('c1ccccc1', '')::bingo.exact
 select * from qc.cmp_test where compound_id=1527
@@ -1042,7 +1042,7 @@ select * from btest where a @ ('N1C=C(CC(C)CC)C(=O)N(C)C1=O', '')::bingo.exact
 
 drop table b_fing
 create table b_fing (a text, b serial);
-create index IX_b_fing_idx on b_fing using bingo_idx (a bingo.molecule)
+create index IX_b_fing on b_fing using bingo_idx (a bingo.molecule)
 
 
 select bingo.importSmiles('b_fing', 'a', '', '/home/tarquin/projects/indigo-git/tests/api.as/data/ind_692.smiles');
@@ -1064,7 +1064,7 @@ select 'OC(CCCCCC=C)C=CC#CC#CC(O)C=C' @ ('OC(CCCCCC=C)C=CC#CC#CC(O)C=C', '')::bi
 drop table pubchem_1m
 create table pubchem_1m (a text, b serial);
 select bingo.importSmiles('pubchem_1m', 'a', '', '/opt/_work/Indigo/bases/pubchem_slice_1m.smiles');
-create index IX_pubchem_1m_idx on pubchem_1m using bingo_idx (a bingo.molecule) with (NTHREADS=32)
+create index IX_pubchem_1m on pubchem_1m using bingo_idx (a bingo.molecule) with (NTHREADS=32)
 
 select distinct(b.b), b.a from pubchem_1m as a
 inner join pubchem_1m b on b.a @ (a.a, '')::bingo.sub
@@ -1082,7 +1082,7 @@ select
 
 select bingo.importSdf('pubchem_1m', 'a', '', '/opt/_work/Indigo/bases/pubchem_1M_sd.gz');
 
-create index IX_pubchem_1m_idx on pubchem_1m using bingo_idx (a bingo.molecule) 
+create index IX_pubchem_1m on pubchem_1m using bingo_idx (a bingo.molecule) 
 
 select * from pubchem_1m where a @ ('OC1=CC=CC=C1-O-O', '')::bingo.sub limit 10
 select count(*) from pubchem_1m where a @ ('OC1=CC=CC=C1-O-O', '')::bingo.sub
@@ -1093,11 +1093,11 @@ select count(*) from pubchem_1m where a @ ('c1ccccc1', '')::bingo.sub
 
 create table test_raw (a text, b serial);
 select bingo.importSdf('test_raw', 'a', '', '/opt/_work/Indigo/bases/pubchem_10k.sd.gz')
-create index IX_test_raw_idx on test_raw using bingo_idx (a bingo.molecule)
+create index IX_test_raw on test_raw using bingo_idx (a bingo.molecule)
 
 create table test_gz (m bytea, p text, b serial);
 select count(*) from test_gz 
-create index IX_test_gz_idx on test_gz using bingo_idx (m bingo.bmolecule)
+create index IX_test_gz on test_gz using bingo_idx (m bingo.bmolecule)
 
 
 
@@ -1118,9 +1118,9 @@ insert into test_34(a) values('Cc1ccccc1C(O)=O');
 insert into test_34(a) values('Cc1cc(ccc1)C(O)=O');
 insert into test_34(a) values('Cc1ccc(cc1)C(O)=O');
 
-create index IX_test_34_idx on test_34 using bingo_idx (a bingo.molecule)
+create index IX_test_34 on test_34 using bingo_idx (a bingo.molecule)
 
-drop index IX_test_34_idx
+drop index IX_test_34
 
 
 explain 
@@ -1134,8 +1134,8 @@ bingo.matchsmarts(m.a, ('C=C',''))
 create table test_100k (m bytea, p text, b serial);
 
 select count(*) from test_100k
-create index CONCURRENTLY IX_test_100k_idx on test_100k using bingo_idx (m bingo.bmolecule)
-drop index IX_test_100k_idx
+create index CONCURRENTLY IX_test_100k on test_100k using bingo_idx (m bingo.bmolecule)
+drop index IX_test_100k
 
 explain 
 select b, bingo.smiles(m.m) from test_100k m where m.m @ ('Cc1ccc(cc1)C(O)=O','')::bingo.sub limit 30
@@ -1146,9 +1146,9 @@ select bingo._print_profiling_info()
 explain
 select * from test_34 where a @ ('CC','')::bingo.sub 
 drop 
-create index IX_test_34_idx on test_34 using bingo_idx (a bingo.molecule)
+create index IX_test_34 on test_34 using bingo_idx (a bingo.molecule)
 
-SELECT bingo.getIndexStructuresCount('IX_btest_idx'::regclass::oid)
+SELECT bingo.getIndexStructuresCount('IX_btest'::regclass::oid)
 
 
 insert into btest(a) values('Cn1c(=O)c(=O)c2cc(N(=O)=O)ccc12');
@@ -1170,7 +1170,7 @@ select bingo.getSimilarity('Cc1sc2c(C(=N[C@@H](CC(=O)OC(C)(C)C)c3nnc(C)n23)c4ccc
 select bingo.getSimilarity('P(OCC(O)C(O)(CO)C)(O)(O)=O', 'O(C(C[N+](C)(C)C)CC([O-])=O)C(=O)C', '')
 
 
-create index IX_sim_idx on btest using bingo_idx (a bingo.molecule)
+create index IX_sim on btest using bingo_idx (a bingo.molecule)
 
 
 explain 
@@ -1180,5 +1180,5 @@ select a from btest where a @ (0,0.01, 'P(OCC(O)C(O)(CO)C)(O)(O)=O', '')::bingo.
 select a, bingo.getSimilarity(a, 'Cn1c(=O)c(=O)c2cc(C(S)=N)ccc12', '') from btest where a @ (0,0.5, 'Cn1c(=O)c(=O)c2cc(C(S)=N)ccc12', '')::bingo.sim
 
 
-drop index IX_sim_idx
+drop index IX_sim
 
