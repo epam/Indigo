@@ -46,7 +46,7 @@ jobs:
              echo 'MY_MATRIX_64="ubuntu-latest"' >> $GITHUB_ENV
              echo 'MY_MATRIX_DOTNET="windows-latest"' >> $GITHUB_ENV
       - name: add macos
-        if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
+        # if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
         run: |
              echo "MY_MATRIX=$MY_MATRIX,\"macos-15\"" >> $GITHUB_ENV
              echo "MY_MATRIX_64=$MY_MATRIX_64,\"macos-15\"" >> $GITHUB_ENV
@@ -389,7 +389,7 @@ jobs:
         run: Get-ChildItem dist -Filter *win_amd64*.whl -Recurse | % { python3 -m pip install $_.FullName }
       - name: Install wrappers macOS
         if: ${{ startsWith(matrix.os, 'macos') }}
-        run: ls dist/ && arch -x86_64 python3 -m pip install dist/*macosx_11_0_x86_64*.whl --break-system-packages
+        run: ls dist/ && arch -x86_64 python3 -m pip install dist/*macosx_15_0_x86_64*.whl --break-system-packages
       - name: Test (Linux/Windows)
         if: ${{ !startsWith(matrix.os, 'macos') }}
         run: python3 -Wignore api/tests/integration/test.py -t 1 -j junit_report.xml

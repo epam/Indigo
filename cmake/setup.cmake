@@ -42,8 +42,7 @@ if (EMSCRIPTEN)
 endif()
 
 if (APPLE)
-    string(APPEND CMAKE_CXX_FLAGS " -Wno-register -fno-define-target-os-macros")
-    string(APPEND CMAKE_C_FLAGS " -fno-define-target-os-macros")
+    string(APPEND CMAKE_CXX_FLAGS " -Wno-register")
 endif()
 
 if (MINGW)
