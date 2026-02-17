@@ -790,11 +790,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          lfs: false
-          fetch-depth: 500
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
@@ -855,7 +853,7 @@ jobs:
           lfs: false
           fetch-depth: 500
       - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v4
         with:
           java-version: ${{ matrix.java-version }}
       - name: Cache Maven packages
