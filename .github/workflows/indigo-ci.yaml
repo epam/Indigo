@@ -793,6 +793,8 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Install setuptools
+        run: python -m pip install --upgrade pip setuptools==68.0.0
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
