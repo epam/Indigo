@@ -794,7 +794,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install setuptools
-        run: python -m pip install --upgrade pip setuptools==68.0.0
+        run: python -m pip install --upgrade pip setuptools==59.6.0
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
@@ -858,7 +858,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: ${{ matrix.java-version }}
-          distribution: 'temurin'
+          distribution: 'adopt-hotspot'
       - name: Cache Maven packages
         uses: actions/cache@v4
         with:
