@@ -122,7 +122,6 @@ jobs:
           path: dist
 
   build_indigo_windows_mingw_x86_64:
-    if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
     timeout-minutes: 60
     runs-on: windows-latest
     needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_java_i386, test_indigo_dotnet_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, merge_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64, build_indigo_ketcher]
@@ -352,7 +351,6 @@ jobs:
           pattern: indigo-native-shared-libs-*
 
   test_indigo_python_x86_64:
-    if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
     timeout-minutes: 60
     strategy:
       fail-fast: false
@@ -785,8 +783,7 @@ jobs:
       fail-fast: false
       matrix:
         python-version: [ '3.9', '3.10' ]
-    needs: [ merge_indigo_wrappers ]
-    # needs: [ merge_indigo_wrappers, test_indigo_dotnet_x86_64 ]
+    needs: [ merge_indigo_wrappers, test_indigo_dotnet_x86_64 ]
     services:
       elasticsearch:
         image: docker.elastic.co/elasticsearch/elasticsearch:7.17.11 # Use an appropriate version
@@ -863,8 +860,7 @@ jobs:
       matrix:
         java-version: [ 1.8, 1.11 ]
     runs-on: ubuntu-latest
-    needs: [ merge_indigo_wrappers ]
-    # needs: [ merge_indigo_wrappers, test_indigo_dotnet_x86_64 ]
+    needs: [ merge_indigo_wrappers, test_indigo_dotnet_x86_64 ]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -889,7 +885,7 @@ jobs:
       - name: Install Indigo jars
         run: find dist -name "*.jar" -not -name "*javadoc*" -not -name "*sources*" -exec mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile={} \;
       - name: Build bingo-elastic
-        run: mvn -B -e -X --file pom.xml -Dmaven.repo.local=/home/runner/.m2/repository clean test
+        run: mvn -B --file pom.xml -Dmaven.repo.local=/home/runner/.m2/repository clean test
         working-directory: bingo/bingo-elastic/java
 
 
