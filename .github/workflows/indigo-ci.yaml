@@ -889,7 +889,7 @@ jobs:
       - name: Install Indigo jars
         run: find dist -name "*.jar" -not -name "*javadoc*" -not -name "*sources*" -exec mvn org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file -Dfile={} \;
       - name: Build bingo-elastic
-        run: mvn -B --file pom.xml -Dmaven.repo.local=/home/runner/.m2/repository clean test
+        run: mvn -B -e -X --file pom.xml -Dmaven.repo.local=/home/runner/.m2/repository clean test
         working-directory: bingo/bingo-elastic/java
 
 
