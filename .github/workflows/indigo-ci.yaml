@@ -787,6 +787,20 @@ jobs:
         python-version: [ '3.9', '3.10' ]
     needs: [ merge_indigo_wrappers ]
     # needs: [ merge_indigo_wrappers, test_indigo_dotnet_x86_64 ]
+    services:
+      elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.17.11 # Use an appropriate version
+        env:
+          discovery.type: single-node
+          indices.query.bool.max_clause_count: "4096"
+        ports:
+          - 9200:9200
+          - 9300:9300
+        options: >-
+          --health-cmd "curl http://localhost:9200/_cluster/health"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10    
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
@@ -808,10 +822,13 @@ jobs:
       - name: Install dev dependencies
         run: pip install ".[dev]" --break-system-packages
         working-directory: bingo/bingo-elastic/python
-      - name: Setup elasticsearch
-        run: docker run -d -e HOST=0.0.0.0 -p 127.0.0.1:9200:9200 -p 127.0.0.1:9300:9300 -e "discovery.type=single-node" -e "indices.query.bool.max_clause_count=4096" docker.elastic.co/elasticsearch/elasticsearch:7.16.2
       - name: Wait elastic is ready
-        run: sleep 30s
+        run: |
+          # Wait until Elasticsearch is available
+          for i in {1..30}; do
+            curl http://localhost:9200 && break
+            sleep 1
+          done
       - name: Build wheel
         working-directory: bingo/bingo-elastic/python
         run: |
