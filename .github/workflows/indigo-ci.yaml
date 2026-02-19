@@ -295,13 +295,13 @@ jobs:
           name: indigo-libs-windows-i386
           path: dist/
       - name: Download macOS native libs x86_64
-        if: startsWith(github.ref, 'refs/tags/indigo-')
+        # if: startsWith(github.ref, 'refs/tags/indigo-')
         uses: actions/download-artifact@v4
         with:
           name: indigo-libs-macos-x86_64
           path: dist/
       - name: Download macOS native libs aarch64
-        if: startsWith(github.ref, 'refs/tags/indigo-')
+        # if: startsWith(github.ref, 'refs/tags/indigo-')
         uses: actions/download-artifact@v4
         with:
           name: indigo-libs-macos-aarch64
@@ -1204,7 +1204,7 @@ jobs:
           path: dist/bingo-postgres*.zip
 
   build_bingo_postgres_macos_x86_64:
-    if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
+    # if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
     strategy:
       fail-fast: false
       matrix:
