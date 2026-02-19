@@ -782,7 +782,7 @@ jobs:
     needs: [ merge_indigo_wrappers, test_indigo_dotnet_x86_64 ]
     services:
       elasticsearch:
-        image: docker.elastic.co/elasticsearch/elasticsearch:7.17.11 # Use an appropriate version
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.17.11
         env:
           discovery.type: single-node
           indices.query.bool.max_clause_count: "4096"
