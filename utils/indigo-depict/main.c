@@ -1014,12 +1014,12 @@ int main(int argc, char* argv[])
             }
             else if (p.out_ext == OEXT_SD1)
             {
-                auto buffer = indigoWriteBuffer();
-                auto comp_it = indigoIterateComponents(obj);
+                int buffer = indigoWriteBuffer();
+                int comp_it = indigoIterateComponents(obj);
                 while (indigoHasNext(comp_it))
                 {
-                    auto frag_id = indigoNext(comp_it);
-                    const auto mol_obj = indigoClone(frag_id);
+                    int frag_id = indigoNext(comp_it);
+                    const int mol_obj = indigoClone(frag_id);
                     indigoSdfAppend(buffer, mol_obj);
                     indigoFree(mol_obj);
                     indigoFree(frag_id);
@@ -1098,24 +1098,24 @@ int main(int argc, char* argv[])
             {
                 writer = indigoWriteFile(p.outfile);
                 indigoRdfHeader(writer);
-                auto it_id = indigoIterateReactions(obj);
+                int it_id = indigoIterateReactions(obj);
                 while (indigoHasNext(it_id))
                 {
-                    const auto robj = indigoNext(it_id);
-                    const auto rxn_id = indigoClone(robj);
-                    auto rc = indigoRdfAppend(writer, rxn_id);
+                    const int robj = indigoNext(it_id);
+                    const int rxn_id = indigoClone(robj);
+                    int rc = indigoRdfAppend(writer, rxn_id);
                 }
                 indigoFree(writer);
             }
             else if (p.out_ext == OEXT_SDF)
             {
                 writer = indigoWriteFile(p.outfile);
-                auto it_id = indigoIterateMolecules(obj);
+                int it_id = indigoIterateMolecules(obj);
                 while (indigoHasNext(it_id))
                 {
-                    const auto robj = indigoNext(it_id);
-                    const auto mol_id = indigoClone(robj);
-                    auto rc = indigoSdfAppend(writer, mol_id);
+                    const int robj = indigoNext(it_id);
+                    const int mol_id = indigoClone(robj);
+                    int rc = indigoSdfAppend(writer, mol_id);
                 }
                 indigoFree(writer);
             }
