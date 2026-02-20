@@ -6,8 +6,14 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
-from env_indigo import *
-
+from env_indigo import (
+    Bingo,
+    Indigo,
+    dir_exists,
+    joinPathPy,
+    makedirs,
+    rmdir,
+)
 indigo = Indigo()
 
 smilesList = [

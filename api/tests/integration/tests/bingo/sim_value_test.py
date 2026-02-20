@@ -6,8 +6,12 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
-from env_indigo import *
-
+from env_indigo import (
+    Bingo,
+    Indigo,
+    joinPathPy,
+    makedirs,
+)
 if not os.path.exists(joinPathPy("out/sim_value_test", __file__)):
     makedirs(joinPathPy("out/sim_value_test", __file__))
 

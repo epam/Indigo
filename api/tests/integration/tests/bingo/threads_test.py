@@ -6,7 +6,14 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
-from env_indigo import *  # noqa
+from env_indigo import (
+    Bingo,
+    BingoException,
+    Indigo,
+    getIndigoExceptionText,
+    joinPathPy,
+    threading,
+)
 
 db_dir1 = joinPathPy("out/mol_test_db1", __file__)
 db_dir2 = joinPathPy("out/mol_test_db2", __file__)

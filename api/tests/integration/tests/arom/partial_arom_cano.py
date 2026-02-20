@@ -6,8 +6,7 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
-from env_indigo import *
-
+from env_indigo import Indigo, joinPathPy
 indigo = Indigo()
 for m in indigo.iterateSDFile(
     joinPathPy("molecules/partial_arom.sdf", __file__)

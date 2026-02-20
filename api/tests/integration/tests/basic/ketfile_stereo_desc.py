@@ -13,8 +13,12 @@ sys.path.append(
     )
 )
 
-from env_indigo import *
-
+from env_indigo import (
+    Indigo,
+    isJython,
+    joinPathPy,
+    threading,
+)
 threading.stack_size(2 * 1024 * 1024)
 
 

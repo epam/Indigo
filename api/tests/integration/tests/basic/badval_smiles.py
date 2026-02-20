@@ -9,8 +9,7 @@ sys.path.append(
         "common",
     )
 )
-from env_indigo import *
-
+from env_indigo import Indigo, joinPathPy
 indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", True)
 
