@@ -338,7 +338,7 @@ CREATE FUNCTION [$(bingo)].CheckMoleculeTable
   )
   RETURNS TABLE
 AS
-  RETURN (SELECT * FROM [$(bingo)].z_CheckMoleculeTable (@table, @id_column, @data_column, '$(bingo)'))
+  RETURN (SELECT id, msg FROM [$(bingo)].z_CheckMoleculeTable (@table, @id_column, @data_column, '$(bingo)'))
 
 GO
 grant select on [$(bingo)].CheckMoleculeTable to $(bingo)_reader
@@ -412,7 +412,7 @@ CREATE FUNCTION [$(bingo)].CheckReactionTable
   )
   RETURNS TABLE
 AS
-  RETURN (SELECT * FROM [$(bingo)].z_CheckReactionTable (@table, @id_column, @data_column, '$(bingo)'))
+  RETURN (SELECT id, msg FROM [$(bingo)].z_CheckReactionTable (@table, @id_column, @data_column, '$(bingo)'))
 
 GO
 grant select on [$(bingo)].CheckReactionTable to $(bingo)_reader
@@ -1876,7 +1876,7 @@ CREATE FUNCTION [$(bingo)].SearchExact
   )
   RETURNS TABLE
 AS
-  RETURN (SELECT * FROM [$(bingo)].z_SearchExact (@table, @query, @options, '$(bingo)'))
+  RETURN (SELECT id FROM [$(bingo)].z_SearchExact (@table, @query, @options, '$(bingo)'))
 
 GO
 grant select on [$(bingo)].SearchExact to $(bingo)_reader
@@ -1908,7 +1908,7 @@ CREATE FUNCTION [$(bingo)].SearchGross
   )
   RETURNS TABLE
 AS
-  RETURN (SELECT * FROM [$(bingo)].z_SearchGross (@table, @query, @options, '$(bingo)'))
+  RETURN (SELECT id FROM [$(bingo)].z_SearchGross (@table, @query, @options, '$(bingo)'))
 
 GO
 grant select on [$(bingo)].SearchGross to $(bingo)_reader
@@ -1942,7 +1942,7 @@ CREATE FUNCTION [$(bingo)].SearchMolecularWeight
   )
   RETURNS TABLE
 AS
-  RETURN (SELECT * FROM [$(bingo)].z_SearchMolecularWeight (@table, @min_bound, @max_bound, @options, '$(bingo)'))
+  RETURN (SELECT id, weight FROM [$(bingo)].z_SearchMolecularWeight (@table, @min_bound, @max_bound, @options, '$(bingo)'))
 
 GO
 grant select on [$(bingo)].SearchMolecularWeight to $(bingo)_reader
@@ -1974,7 +1974,7 @@ CREATE FUNCTION [$(bingo)].SearchRExact
   )
   RETURNS TABLE
 AS
-  RETURN (SELECT * FROM [$(bingo)].z_SearchRExact (@table, @query, @options, '$(bingo)'))
+  RETURN (SELECT id FROM [$(bingo)].z_SearchRExact (@table, @query, @options, '$(bingo)'))
 
 GO
 grant select on [$(bingo)].SearchRExact to $(bingo)_reader
@@ -2006,7 +2006,7 @@ CREATE FUNCTION [$(bingo)].SearchRSMARTS
   )
   RETURNS TABLE
 AS
-  RETURN (SELECT * FROM [$(bingo)].z_SearchRSMARTS (@table, @query, @options, '$(bingo)'))
+  RETURN (SELECT id FROM [$(bingo)].z_SearchRSMARTS (@table, @query, @options, '$(bingo)'))
 
 GO
 grant select on [$(bingo)].SearchRSMARTS to $(bingo)_reader
@@ -2038,7 +2038,7 @@ CREATE FUNCTION [$(bingo)].SearchRSMARTSHi
   )
   RETURNS TABLE
 AS
-  RETURN (SELECT * FROM [$(bingo)].z_SearchRSMARTSHi (@table, @query, @options, '$(bingo)'))
+  RETURN (SELECT id, highlighting FROM [$(bingo)].z_SearchRSMARTSHi (@table, @query, @options, '$(bingo)'))
 
 GO
 grant select on [$(bingo)].SearchRSMARTSHi to $(bingo)_reader
@@ -2070,7 +2070,7 @@ CREATE FUNCTION [$(bingo)].SearchRSub
   )
   RETURNS TABLE
 AS
-  RETURN (SELECT * FROM [$(bingo)].z_SearchRSub (@table, @query, @options, '$(bingo)'))
+  RETURN (SELECT id FROM [$(bingo)].z_SearchRSub (@table, @query, @options, '$(bingo)'))
 
 GO
 grant select on [$(bingo)].SearchRSub to $(bingo)_reader
@@ -2102,7 +2102,7 @@ CREATE FUNCTION [$(bingo)].SearchRSubHi
   )
   RETURNS TABLE
 AS
-  RETURN (SELECT * FROM [$(bingo)].z_SearchRSubHi (@table, @query, @options, '$(bingo)'))
+  RETURN (SELECT id, highlighting FROM [$(bingo)].z_SearchRSubHi (@table, @query, @options, '$(bingo)'))
 
 GO
 grant select on [$(bingo)].SearchRSubHi to $(bingo)_reader
@@ -2138,7 +2138,7 @@ CREATE FUNCTION [$(bingo)].SearchSim
   )
   RETURNS TABLE
 AS
-  RETURN (SELECT * FROM [$(bingo)].z_SearchSim (@table, @query, @metric, '$(bingo)', @min_bound, @max_bound))
+  RETURN (SELECT id, similarity FROM [$(bingo)].z_SearchSim (@table, @query, @metric, '$(bingo)', @min_bound, @max_bound))
 
 GO
 grant select on [$(bingo)].SearchSim to $(bingo)_reader
@@ -2170,7 +2170,7 @@ CREATE FUNCTION [$(bingo)].SearchSMARTS
   )
   RETURNS TABLE
 AS
-  RETURN (SELECT * FROM [$(bingo)].z_SearchSMARTS (@table, @query, @options, '$(bingo)'))
+  RETURN (SELECT id FROM [$(bingo)].z_SearchSMARTS (@table, @query, @options, '$(bingo)'))
 
 GO
 grant select on [$(bingo)].SearchSMARTS to $(bingo)_reader
@@ -2202,7 +2202,7 @@ CREATE FUNCTION [$(bingo)].SearchSMARTSHi
   )
   RETURNS TABLE
 AS
-  RETURN (SELECT * FROM [$(bingo)].z_SearchSMARTSHi (@table, @query, @options, '$(bingo)'))
+  RETURN (SELECT id, highlighting FROM [$(bingo)].z_SearchSMARTSHi (@table, @query, @options, '$(bingo)'))
 
 GO
 grant select on [$(bingo)].SearchSMARTSHi to $(bingo)_reader
@@ -2234,7 +2234,7 @@ CREATE FUNCTION [$(bingo)].SearchSub
   )
   RETURNS TABLE
 AS
-  RETURN (SELECT * FROM [$(bingo)].z_SearchSub (@table, @query, @options, '$(bingo)'))
+  RETURN (SELECT id FROM [$(bingo)].z_SearchSub (@table, @query, @options, '$(bingo)'))
 
 GO
 grant select on [$(bingo)].SearchSub to $(bingo)_reader
@@ -2266,7 +2266,7 @@ CREATE FUNCTION [$(bingo)].SearchSubHi
   )
   RETURNS TABLE
 AS
-  RETURN (SELECT * FROM [$(bingo)].z_SearchSubHi (@table, @query, @options, '$(bingo)'))
+  RETURN (SELECT id, highlighting FROM [$(bingo)].z_SearchSubHi (@table, @query, @options, '$(bingo)'))
 
 GO
 grant select on [$(bingo)].SearchSubHi to $(bingo)_reader
