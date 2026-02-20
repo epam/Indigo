@@ -18,15 +18,15 @@ Set Verify Off;
 spool bingo_config;
 
 create table CONFIG_STR (n int, name varchar2(100), value varchar2(4000));
-create index CONFIG_STR_N on CONFIG_STR(n);
+create index IX_CONFIG_STR_N on CONFIG_STR(n);
 create table CONFIG_INT (n int, name varchar2(100), value int);
-create index CONFIG_INT_N on CONFIG_INT(n);
+create index IX_CONFIG_INT_N on CONFIG_INT(n);
 create table CONFIG_FLOAT (n int, name varchar2(100), value float);
-create index CONFIG_FLOAT_N on CONFIG_FLOAT(n);
+create index IX_CONFIG_FLOAT_N on CONFIG_FLOAT(n);
 create table CONFIG_CLOB (n int, name varchar2(100), value CLOB);
-create index CONFIG_CLOB_N on CONFIG_CLOB(n);
+create index IX_CONFIG_CLOB_N on CONFIG_CLOB(n);
 create table CONFIG_BLOB (n int, name varchar2(100), value BLOB) NOLOGGING LOB(value) STORE AS (NOCACHE NOLOGGING);
-create index CONFIG_BLOB_N on CONFIG_BLOB(n);
+create index IX_CONFIG_BLOB_N on CONFIG_BLOB(n);
 
 create table TAUTOMER_RULES (id INT PRIMARY KEY, beg VARCHAR2(100), end VARCHAR2(100));
 

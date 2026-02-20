@@ -24,7 +24,7 @@ ALTER TABLE IF EXISTS issue2922.compound
     OWNER to postgres;
 
 /* Create a bingo index on table compound */
-CREATE INDEX IF NOT EXISTS idx_compound
+CREATE INDEX IF NOT EXISTS IX_compound
     ON issue2922.compound USING bingo_idx
     (mol_file bingo.molecule);
 

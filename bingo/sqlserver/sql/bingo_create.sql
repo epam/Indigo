@@ -68,7 +68,7 @@ go
 
 -- Create tables for bingo user
 create table [$(bingo)].CONFIG (n int not null, name varchar(100) not null, value varchar(4000), primary key(n, name));
-create index CONFIG_N on [$(bingo)].CONFIG(n); 
+create index IX_CONFIG_N on [$(bingo)].CONFIG(n); 
 insert into [$(bingo)].CONFIG values(0, 'treat-x-as-pseudoatom', '0');
 insert into [$(bingo)].CONFIG values(0, 'ignore-closing-bond-direction-mismatch', '0');
 insert into [$(bingo)].CONFIG values(0, 'nthreads', '-1');
@@ -95,12 +95,12 @@ insert into [$(bingo)].CONFIG values(0, 'CT_FORMAT_MODE', 'AUTO');
 go
 
 create table [$(bingo)].CONFIG_BIN (n int not null, name varchar(100) not null, value varbinary(max), primary key(n, name));
-create index CONFIG_BIN_N on [$(bingo)].CONFIG_BIN(n); 
+create index IX_CONFIG_BIN_N on [$(bingo)].CONFIG_BIN(n); 
 go
 
 -- Create context
 create table [$(bingo)].CONTEXT (obj_id int not null, database_id int not null, full_table_name varchar(100), id_column varchar(100), data_column varchar(100), type varchar(100), primary key (obj_id, database_id));
-create index CONTEXT_ID on [$(bingo)].CONTEXT(obj_id);
+create index IX_CONTEXT_ID on [$(bingo)].CONTEXT(obj_id);
 go
 
 -- Create table with tautomer rules
