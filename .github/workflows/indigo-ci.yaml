@@ -506,7 +506,6 @@ jobs:
       fail-fast: false 
       matrix: ${{ fromJSON(needs.set_matrix.outputs.matrix-java) }}
     runs-on: ${{ matrix.os }}
-
     needs: [ merge_indigo_wrappers, test_indigo_python_x86_64, set_matrix ]
     steps:
       - name: Checkout
