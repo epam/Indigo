@@ -30,31 +30,31 @@ create index CONFIG_BLOB_N on CONFIG_BLOB(n);
 
 create table TAUTOMER_RULES (id INT PRIMARY KEY, beg VARCHAR2(100), end VARCHAR2(100));
 
-insert into TAUTOMER_RULES values (1, 'N,O,P,S,As,Se,Sb,Te', 'N,O,P,S,As,Se,Sb,Te');
-insert into TAUTOMER_RULES values (2, '0C', 'N,O,P,S');
-insert into TAUTOMER_RULES values (3, '1C', 'N,O');
+insert into TAUTOMER_RULES (id, beg, end) values (1, 'N,O,P,S,As,Se,Sb,Te', 'N,O,P,S,As,Se,Sb,Te');
+insert into TAUTOMER_RULES (id, beg, end) values (2, '0C', 'N,O,P,S');
+insert into TAUTOMER_RULES (id, beg, end) values (3, '1C', 'N,O');
 
 grant insert, select, delete on TAUTOMER_RULES to public;
 
-insert into CONFIG_INT values(0, 'FP_ORD_SIZE', 25);
-insert into CONFIG_INT values(0, 'FP_ANY_SIZE', 15);
-insert into CONFIG_INT values(0, 'FP_TAU_SIZE', 10);
-insert into CONFIG_INT values(0, 'FP_SIM_SIZE', 8);
-insert into CONFIG_INT values(0, 'FP_STORAGE_CHUNK', 1024);
-insert into CONFIG_INT values(0, 'SUB_SCREENING_MAX_BITS', 8);
-insert into CONFIG_INT values(0, 'SUB_SCREENING_PASS_MARK', 128);
-insert into CONFIG_INT values(0, 'SIM_SCREENING_PASS_MARK', 128);
+insert into CONFIG_INT (n, name, value) values(0, 'FP_ORD_SIZE', 25);
+insert into CONFIG_INT (n, name, value) values(0, 'FP_ANY_SIZE', 15);
+insert into CONFIG_INT (n, name, value) values(0, 'FP_TAU_SIZE', 10);
+insert into CONFIG_INT (n, name, value) values(0, 'FP_SIM_SIZE', 8);
+insert into CONFIG_INT (n, name, value) values(0, 'FP_STORAGE_CHUNK', 1024);
+insert into CONFIG_INT (n, name, value) values(0, 'SUB_SCREENING_MAX_BITS', 8);
+insert into CONFIG_INT (n, name, value) values(0, 'SUB_SCREENING_PASS_MARK', 128);
+insert into CONFIG_INT (n, name, value) values(0, 'SIM_SCREENING_PASS_MARK', 128);
 
-insert into CONFIG_INT values(0, 'TREAT_X_AS_PSEUDOATOM', 0);
-insert into CONFIG_INT values(0, 'IGNORE_CLOSING_BOND_DIRECTION_MISMATCH', 0);
-insert into CONFIG_INT values(0, 'IGNORE_STEREOCENTER_ERRORS', 0);
-insert into CONFIG_INT values(0, 'IGNORE_CISTRANS_ERRORS', 0);
-insert into CONFIG_INT values(0, 'ALLOW_NON_UNIQUE_DEAROMATIZATION', 0);
-insert into CONFIG_INT values(0, 'ZERO_UNKNOWN_AROMATIC_HYDROGENS', 0);
-insert into CONFIG_INT values(0, 'STEREOCHEMISTRY_BIDIRECTIONAL_MODE', 0);
-insert into CONFIG_INT values(0, 'STEREOCHEMISTRY_DETECT_HAWORTH_PROJECTION', 0);	
-insert into CONFIG_INT values(0, 'REJECT_INVALID_STRUCTURES', 0);	
-insert into CONFIG_INT values(0, 'IGNORE_BAD_VALENCE', 0);
+insert into CONFIG_INT (n, name, value) values(0, 'TREAT_X_AS_PSEUDOATOM', 0);
+insert into CONFIG_INT (n, name, value) values(0, 'IGNORE_CLOSING_BOND_DIRECTION_MISMATCH', 0);
+insert into CONFIG_INT (n, name, value) values(0, 'IGNORE_STEREOCENTER_ERRORS', 0);
+insert into CONFIG_INT (n, name, value) values(0, 'IGNORE_CISTRANS_ERRORS', 0);
+insert into CONFIG_INT (n, name, value) values(0, 'ALLOW_NON_UNIQUE_DEAROMATIZATION', 0);
+insert into CONFIG_INT (n, name, value) values(0, 'ZERO_UNKNOWN_AROMATIC_HYDROGENS', 0);
+insert into CONFIG_INT (n, name, value) values(0, 'STEREOCHEMISTRY_BIDIRECTIONAL_MODE', 0);
+insert into CONFIG_INT (n, name, value) values(0, 'STEREOCHEMISTRY_DETECT_HAWORTH_PROJECTION', 0);	
+insert into CONFIG_INT (n, name, value) values(0, 'REJECT_INVALID_STRUCTURES', 0);	
+insert into CONFIG_INT (n, name, value) values(0, 'IGNORE_BAD_VALENCE', 0);
 
 create or replace procedure SetRelativeAtomicMass (list in VARCHAR2) is
 begin
