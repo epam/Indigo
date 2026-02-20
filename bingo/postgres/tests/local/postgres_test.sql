@@ -36,7 +36,7 @@ drop table aatest
 truncate table btest
 select bingo.importSDF('btest(a)', '/home/tarquin/projects/indigo/indigo-git/bingo/tests/postgres/java_tests/test_mango.sdf')
 create table aatest(a text)
-insert into aatest(a) (select * from btest where a @ ('CC1CCCCC1', '')::bingo.smarts)
+insert into aatest (select * from btest where a @ ('CC1CCCCC1', '')::bingo.smarts)
 explain select * from aatest where not bingo.matchSmarts(a, ('CC1CCCCC1', ''))
 
 create index aatest_idx on aatest using bingo_idx (a bingo.molecule)
@@ -366,7 +366,7 @@ select * from btest_shadow
 select count(*) from btest_shadow
 select a from btest
 select '(1,2)'::tid
-insert into btest_shadow (idx, h) values(null, null)
+insert into btest_shadow values()
 
 
 create index btest_shadow_index on btest_shadow(idx)
@@ -389,7 +389,7 @@ RETURNS boolean AS $$
    DECLARE
       sc tid;
    BEGIN
-	execute 'insert into btest_shadow (idx, h) values('|| CAST ( bingo_test_tid() AS tid ) ||', 2)';
+	execute 'insert into btest_shadow values('|| CAST ( bingo_test_tid() AS tid ) ||', 2)';
 	RETURN true;
    END;
 $$ LANGUAGE 'plpgsql';
@@ -435,7 +435,7 @@ select bingo_test_cur_next(bingo_test_cur_begin('btest'))
 select bingo_test_select()
 
 truncate table btest_shadow
-insert into btest_shadow (idx, h) values('(1,4)'::tid, 2)
+insert into btest_shadow values('(1,4)'::tid, 2)
 
 select * from btest_idx_shadow
 create table btest_idx_shadow(like btest_idx) 
@@ -918,7 +918,7 @@ create table test_pubchem_1m(m_id serial, a text);
 select bingo.importsmiles('test_pubchem_10m', 'a', '', 'c:/_work/Indigo/bases/pubchem_slice_10m.smiles');
 
 create index pb10m_idx on test_pubchem_10m using bingo_idx (a bingo.molecule)
-insert into test_pubchem_1m (m_id, a) select * from test_pubchem_10m limit 1000000
+insert into test_pubchem_1m select * from test_pubchem_10m limit 1000000
 select count(*) from test_pubchem_1m
 create index pb1m_idx on test_pubchem_1m using bingo_idx (a bingo.molecule)
 select count(*) from test_pubchem_1m where a @ ('CN1N(C(=O)C=C1C)C1=CC=CC=C1', '')::bingo.sub
@@ -1181,3 +1181,4 @@ select a, bingo.getSimilarity(a, 'Cn1c(=O)c(=O)c2cc(C(S)=N)ccc12', '') from btes
 
 
 drop index sim_idx
+
