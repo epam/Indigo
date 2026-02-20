@@ -48,7 +48,7 @@ jobs:
              echo 'MY_MATRIX_DOTNET="windows-latest"' >> $GITHUB_ENV
              echo 'MY_MATRIX_JAVA="ubuntu-latest","windows-latest"' >> $GITHUB_ENV
       - name: add macos
-        # if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
+        if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
         run: |
              echo "MY_MATRIX=$MY_MATRIX,\"macos-15\"" >> $GITHUB_ENV
              echo "MY_MATRIX_64=$MY_MATRIX_64,\"macos-15\"" >> $GITHUB_ENV
@@ -295,13 +295,13 @@ jobs:
           name: indigo-libs-windows-i386
           path: dist/
       - name: Download macOS native libs x86_64
-        # if: startsWith(github.ref, 'refs/tags/indigo-')
+        if: startsWith(github.ref, 'refs/tags/indigo-')
         uses: actions/download-artifact@v4
         with:
           name: indigo-libs-macos-x86_64
           path: dist/
       - name: Download macOS native libs aarch64
-        # if: startsWith(github.ref, 'refs/tags/indigo-')
+        if: startsWith(github.ref, 'refs/tags/indigo-')
         uses: actions/download-artifact@v4
         with:
           name: indigo-libs-macos-aarch64
@@ -506,7 +506,6 @@ jobs:
       fail-fast: false 
       matrix: ${{ fromJSON(needs.set_matrix.outputs.matrix-java) }}
     runs-on: ${{ matrix.os }}
-
     needs: [ merge_indigo_wrappers, test_indigo_python_x86_64, set_matrix ]
     steps:
       - name: Checkout
@@ -1203,7 +1202,7 @@ jobs:
           path: dist/bingo-postgres*.zip
 
   build_bingo_postgres_macos_x86_64:
-    # if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
+    if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
     strategy:
       fail-fast: false
       matrix:
