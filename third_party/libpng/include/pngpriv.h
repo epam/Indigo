@@ -525,7 +525,8 @@
     * Note: TARGET_OS_MAC removed - modern macOS doesn't have <fp.h>
     */
 #    if !defined(__MATH_H__) && !defined(__MATH_H) && !defined(__cmath__)
-#      include <fp.h>
+#    include <math.h>
+// #      include <fp.h>
 #    endif
 #  else
 #    include <math.h>
