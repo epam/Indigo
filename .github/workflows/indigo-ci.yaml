@@ -39,32 +39,37 @@ jobs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
       matrix-aarch64: ${{ steps.set-matrix.outputs.matrix-aarch64 }}
       matrix-dotnet: ${{ steps.set-matrix.outputs.matrix-dotnet }}
+      matrix-java: ${{ steps.set-matrix.outputs.matrix-java }}
     steps:
       - name: set matrix env
         run: |
              echo 'MY_MATRIX="ubuntu-latest","windows-latest"' >> $GITHUB_ENV
              echo 'MY_MATRIX_64="ubuntu-latest"' >> $GITHUB_ENV
              echo 'MY_MATRIX_DOTNET="windows-latest"' >> $GITHUB_ENV
+            #  echo 'MY_MATRIX_JAVA="ubuntu-latest","windows-latest"' >> $GITHUB_ENV
       - name: add macos
-        if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
+        # if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
         run: |
              echo "MY_MATRIX=$MY_MATRIX,\"macos-15\"" >> $GITHUB_ENV
              echo "MY_MATRIX_64=$MY_MATRIX_64,\"macos-15\"" >> $GITHUB_ENV
-             echo "MY_MATRIX_DOTNET=$MY_MATRIX_DOTNET,\"macos-15\"" >> $GITHUB_ENV
+            #  echo "MY_MATRIX_DOTNET=$MY_MATRIX_DOTNET,\"macos-15\"" >> $GITHUB_ENV
       - id: set-matrix
         run: |
              echo "matrix={\"os\":[$MY_MATRIX]}" >> $GITHUB_OUTPUT
              echo "matrix-aarch64={\"os\":[$MY_MATRIX_64]}" >> $GITHUB_OUTPUT
              echo "matrix-dotnet={\"os\":[$MY_MATRIX_DOTNET]}" >> $GITHUB_OUTPUT
+            #  echo "matrix-java={\"os\":[$MY_MATRIX_JAVA]}" >> $GITHUB_OUTPUT
       - name: Get matrix
         env:
           MATRIX: ${{ steps.set-matrix.outputs.matrix }}
           MATRIX64: ${{ steps.set-matrix.outputs.matrix-aarch64 }}
           MATRIXDOTNET: ${{ steps.set-matrix.outputs.matrix-dotnet }}
+          # MATRIXJAVA: ${{ steps.set-matrix.outputs.matrix-java }}
         run: |
           echo "matrix is $MATRIX"
           echo "matrix-aarch64 is $MATRIX64"
           echo "matrix-dotnet is $MATRIXDOTNET"
+        # echo "matrix-java is $MATRIXJAVA"
 
   build_indigo_libs_x86_64:
     strategy:
@@ -290,13 +295,13 @@ jobs:
           name: indigo-libs-windows-i386
           path: dist/
       - name: Download macOS native libs x86_64
-        if: startsWith(github.ref, 'refs/tags/indigo-')
+        # if: startsWith(github.ref, 'refs/tags/indigo-')
         uses: actions/download-artifact@v4
         with:
           name: indigo-libs-macos-x86_64
           path: dist/
       - name: Download macOS native libs aarch64
-        if: startsWith(github.ref, 'refs/tags/indigo-')
+        # if: startsWith(github.ref, 'refs/tags/indigo-')
         uses: actions/download-artifact@v4
         with:
           name: indigo-libs-macos-aarch64
@@ -499,9 +504,9 @@ jobs:
     timeout-minutes: 60
     strategy:
       fail-fast: false 
+      # matrix: ${{ fromJSON(needs.set_matrix.outputs.matrix-java) }}
       matrix: ${{ fromJSON(needs.set_matrix.outputs.matrix) }}
     runs-on: ${{ matrix.os }}
-
     needs: [ merge_indigo_wrappers, test_indigo_python_x86_64, set_matrix ]
     steps:
       - name: Checkout
@@ -780,14 +785,28 @@ jobs:
       matrix:
         python-version: [ '3.9', '3.10' ]
     needs: [ merge_indigo_wrappers, test_indigo_dotnet_x86_64 ]
+    services:
+      elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.17.11 # Use an appropriate version
+        env:
+          discovery.type: single-node
+          indices.query.bool.max_clause_count: "4096"
+        ports:
+          - 9200:9200
+          - 9300:9300
+        options: >-
+          --health-cmd "curl http://localhost:9200/_cluster/health"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10    
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          lfs: false
-          fetch-depth: 500
+      - name: Install setuptools
+        run: python -m pip install --upgrade pip setuptools==59.6.0
       - name: Create folder for native libs
         run: mkdir dist
       - name: Download wrappers
@@ -801,10 +820,13 @@ jobs:
       - name: Install dev dependencies
         run: pip install ".[dev]" --break-system-packages
         working-directory: bingo/bingo-elastic/python
-      - name: Setup elasticsearch
-        run: docker run -d -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" -e "indices.query.bool.max_clause_count=4096" docker.elastic.co/elasticsearch/elasticsearch:7.16.2
       - name: Wait elastic is ready
-        run: sleep 30s
+        run: |
+          # Wait until Elasticsearch is available
+          for i in {1..30}; do
+            curl http://localhost:9200 && break
+            sleep 1
+          done
       - name: Build wheel
         working-directory: bingo/bingo-elastic/python
         run: |
@@ -1181,7 +1203,7 @@ jobs:
           path: dist/bingo-postgres*.zip
 
   build_bingo_postgres_macos_x86_64:
-    if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
+    # if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
     strategy:
       fail-fast: false
       matrix:
