@@ -366,7 +366,7 @@ select * from btest_shadow
 select count(*) from btest_shadow
 select a from btest
 select '(1,2)'::tid
-insert into btest_shadow (idx, h) values()
+insert into btest_shadow (idx, h) values(null, null)
 
 
 create index btest_shadow_index on btest_shadow(idx)
