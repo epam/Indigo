@@ -1,17 +1,13 @@
 import os
 import sys
+import threading
 
 sys.path.append(
     os.path.normpath(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
-from env_indigo import (
-    Indigo,
-    isJython,
-    joinPathPy,
-    threading,
-)
+from env_indigo import Indigo, isJython, joinPathPy
 
 threading.stack_size(2 * 1024 * 1024)
 

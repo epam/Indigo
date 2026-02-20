@@ -1,5 +1,6 @@
 import os
 import sys
+import threading
 
 sys.path.append(
     os.path.normpath(
@@ -12,7 +13,6 @@ from env_indigo import (
     Indigo,
     getIndigoExceptionText,
     joinPathPy,
-    threading,
 )
 
 db_dir1 = joinPathPy("out/mol_test_db1", __file__)

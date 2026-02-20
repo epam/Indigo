@@ -1,6 +1,7 @@
 import difflib
 import os
 import sys
+import threading
 
 
 def find_diff(a, b):
@@ -13,12 +14,7 @@ sys.path.append(
     )
 )
 
-from env_indigo import (
-    Indigo,
-    isJython,
-    joinPathPy,
-    threading,
-)
+from env_indigo import Indigo, isJython, joinPathPy
 threading.stack_size(2 * 1024 * 1024)
 
 
