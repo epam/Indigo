@@ -6,7 +6,14 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
-from env_indigo import *  # noqa
+from env_indigo import (
+    Bingo,
+    Indigo,
+    dir_exists,
+    joinPathPy,
+    makedirs,
+    rmdir,
+)
 
 if dir_exists(joinPathPy("out/append", __file__)):
     rmdir(joinPathPy("out/append", __file__))

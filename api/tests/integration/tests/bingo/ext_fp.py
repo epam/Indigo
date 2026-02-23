@@ -7,7 +7,15 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
-from env_indigo import *  # noqa
+from env_indigo import (
+    Bingo,
+    BingoException,
+    Indigo,
+    System,
+    getIndigoExceptionText,
+    isIronPython,
+    joinPathPy,
+)
 
 
 def searchSimExt(bingo, q, minSim, maxSim, ext_fp, metric=None):

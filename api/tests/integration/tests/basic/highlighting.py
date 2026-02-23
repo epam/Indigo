@@ -7,7 +7,7 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
-from env_indigo import *  # noqa
+from env_indigo import Indigo, joinPathPy, makedirs
 
 indigo = Indigo()
 mol = indigo.loadMolecule("C1C=NC=CN=1")
