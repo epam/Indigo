@@ -300,7 +300,10 @@ namespace indigo
         static void _findAngles(int k, float s, float& x, float& y);
         static float _dichotomy1(float a0, float b0, int L, float s);
         static float _dichotomy2(float a0, float b0, int L, float s);
-        static void _calculatePos(float phi, const Vec2f& v1, const Vec2f& v2, Vec2f& v);
+        static void _calculatePos(float phi, const Vec2f& v1, const Vec2f& v2, Vec2f& v, float length = 1.0f);
+
+        // Bond length for _calculatePos callers: monomer length for sequence layout with fixed atoms, 1.0 otherwise.
+        float _bondLength() const;
 
         // border functions
         virtual void _getBorder(Cycle& border) const = 0;

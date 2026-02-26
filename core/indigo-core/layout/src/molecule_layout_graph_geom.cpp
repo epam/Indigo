@@ -16,8 +16,8 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "layout/molecule_layout_graph.h"
 #include "layout/metalayout.h"
+#include "layout/molecule_layout_graph.h"
 
 using namespace indigo;
 
@@ -506,24 +506,21 @@ float MoleculeLayoutGraphSimple::calculateAngle(int v, int& v1, int& v2) const
     return max_angle;
 }
 
-// Calculate position by adding one unit with given angle to the segment
-void MoleculeLayoutGraph::_calculatePos(float phi, const Vec2f& v1, const Vec2f& v2, Vec2f& v)
+// Calculate next vertex position at a given angle relative to the v1->v2 direction.
+// Pure geometric helper: caller decides the edge length.
+void MoleculeLayoutGraph::_calculatePos(float phi, const Vec2f& v1, const Vec2f& v2, Vec2f& v, float length)
 {
-    float alpha;
-    float length = 1.0f;
     Vec2f dir;
-
     dir.diff(v2, v1);
 
-    alpha = dir.tiltAngle();
-    alpha += phi;
-
-    if (sequence_layout && _n_fixed > 0)
-    {
-        length = LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH;
-    }
+    float alpha = dir.tiltAngle() + phi;
 
     v.set(v1.x + cos(alpha) * length, v1.y + sin(alpha) * length);
+}
+
+float MoleculeLayoutGraph::_bondLength() const
+{
+    return (sequence_layout && _n_fixed > 0) ? LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH : 1.0f;
 }
 
 int MoleculeLayoutGraph::_getCycleDirection(const Cycle& cycle) const

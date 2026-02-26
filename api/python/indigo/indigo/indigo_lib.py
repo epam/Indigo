@@ -841,6 +841,10 @@ class IndigoLib:
         IndigoLib.lib.indigoUnhighlight.argtypes = [c_int]
         IndigoLib.lib.indigoIsHighlighted.restype = c_int
         IndigoLib.lib.indigoIsHighlighted.argtypes = [c_int]
+        IndigoLib.lib.indigoSelect.restype = c_int
+        IndigoLib.lib.indigoSelect.argtypes = [c_int]
+        IndigoLib.lib.indigoUnselect.restype = c_int
+        IndigoLib.lib.indigoUnselect.argtypes = [c_int]
         IndigoLib.lib.indigoIsSelected.restype = c_int
         IndigoLib.lib.indigoIsSelected.argtypes = [c_int]
         IndigoLib.lib.indigoHasSelection.restype = c_int
