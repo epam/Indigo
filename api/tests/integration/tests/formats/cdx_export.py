@@ -13,7 +13,12 @@ sys.path.append(
     )
 )
 
-from env_indigo import *  # noqa
+from env_indigo import (  # noqa
+    Indigo,
+    IndigoException,
+    getIndigoExceptionText,
+    joinPathPy,
+)
 
 indigo = Indigo()
 

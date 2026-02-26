@@ -1,3 +1,101 @@
+# Indigo 1.40.0
+Released 2026-02-23
+
+## Features
+* #3375 - Improve the alignment logic
+
+## Bugfixes and improvements
+* #3360 - CIP labels aren't added correctly when loading from a cdxml file with no CIP labels
+* #3362 - 13C isotope not recognised in molecular formula when loading from cdxml
+
+
+**Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.39.0-rc.1...indigo-1.40.0
+
+# Indigo 1.39.0
+Released 2026-02-20
+
+## Features
+* #3211 - Introducing alignment of sense and antisense chains
+* #3273 - Circular structures improvement - formation of fused rings 
+* #3250 - Alignment of sense and antisense strings in AxoLabs format
+* #3337 - Bingo NoSQL tautomer substructure search support.
+
+## Bugfixes and improvements
+* #3282 - Can't use indigo as a git submodule
+* #3297 - Random '$$$$V2.0' empty return from conversion to HELM
+* #3306 - Saving to HELM doesn't work for cycled structures consist of nucleosides
+* #3177 - System can't calculate Calculate properties window values for Amino acids with query bonds
+* #3299 - System should set Implicit H value for atoms if the comes without hydrogens from CDXML
+* #3343 - Export to Mol v3000 works wrong for stereo bonds between monomers
+* #3369 - Bingo NoSQL treat empty flags as NONE instead of ALL
+* #3363 - The layout algorithm returns different coordinates on macOS for some tests
+* #3342 - Export ot SVG and PNG doesn't work for stereo bond between monomers, system throws an error: pool: access to unused element
+* #3343 - Export to Mol v3000 works wrong for stereo bonds between monomers
+* #3344 - Export to SVG/PNG works wrong for stereo bonds between monomers
+
+
+**Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.38.0-rc.1...indigo-1.39.0
+
+# Indigo 1.38.0
+Released 2026-02-20
+
+## Features
+* #3227 - Introducing Copolymer S-group type
+* #3272 - SDF files for library/monomer information
+* #3196 - Support formation of circular structures in flex mode - PoC
+
+## Bugfixes and improvements
+* #3239 - System doesn't save monomer expand/collapse state in Mol v3000 for user created monomers (they always come in collapsed state)
+* #3261 - indigoSaveCdxml doesn't support reaction molecules
+* #3269 - System ignored HELM alias for bases on monomer load to Library
+* #3256 - Metals loaded from cdxml are always represented with hydrogens
+* #3237 - Stackoverflow iterate components
+* #3277 - System adds broken Preset to the library (part2)
+* #3278 - System doesn't allow to add monomers with the same structure but different names (part2)
+* #3286 - CHEMBUGS-64 Automapping fails to guard against contradictory reaction center annotation, corrupts future structure export data
+* #3297 - Random '$$$$V2.0' empty return from conversion to HELM
+* #3293 - Library update works wrong if we use empty SDF file
+* #3292 - Save to SDF v2000 works wrong for created monomers
+* #3291 - Layout works wrong 
+* #3267 - Export to sugar monomer to AxoLabs error message is wrong
+* #3265 - System should be able to load unknown monomer on any position
+* #3338 - System losts stereo bonds on monomer load to Library
+* #3247 - SVG/PNG: Export of any atom with Isotope (atomic mass) value set doesn't work
+
+
+**Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.37.0-rc.1...indigo-1.38.0
+
+# Indigo 1.37.0
+Released 2026-02-19
+
+## Features
+* #3161 - SDF files for library/monomer information
+* #3152 - AxoLabs format support
+* #3146 - IDT export: use hardcorded nucleotides instead of standard ones
+
+## Bugfixes and improvements
+* #2922 - Performing an exact match search results in PostgreSQL termination
+* #3193 - Missing valence of 0 in mol file
+* #3016 - Valence 0 is not taken into account by Molfile export via API
+* #3079 - Export to SVG/PNG doesn't work for molecules with "star" atom. System throws an error: molecule render internal: Query atom type 4 not supported
+* #3141 - One time exception on export to RXN: molecule: casting to molecule is invalid
+* #3178 - Unable to copy user created monomer, exception: Convert error! molecule: casting to molecule is invalid
+* #3070 - Saving to RXN v2000 encloses Polymer labels into double quotes
+* #3206 - Export (or import) to (from) Mol v3000 works wrong for CHEM monomers
+* #3200 - System allows to export not a purely amino acid to Sequence (3-letter code)
+* #3210 - System loads Sequence with numbers in middle
+* #3102 - System can't load sugar-phosphate preset from HELM if sugar provided with HELMAlias name
+* #3220 - System ignores implicitly provided file format on load content thru Paste From Clipboard way
+* #3187 - Export to HELM works wrong for custom monomers imported from HELM with inline SMILES (part 2)
+* #3228 - Loading of AxoLabs with last monomer in brackets doesn't work
+* #3234 - Unable to add user`s peptide, nucleotide and CHEM to the library
+* #3235 - System adds broken Preset to the library
+* #3238 - Monomer name is missed if updated from the API
+* #3212 - Export to RXN disorganize the reaction
+
+
+**Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.36.0-rc.1...indigo-1.37.0
+
 # Indigo 1.36.0
 Released 2025-10-16
 

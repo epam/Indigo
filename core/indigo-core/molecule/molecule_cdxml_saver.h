@@ -112,6 +112,7 @@ namespace indigo
         void addArrow(int id, int arrow_type, const Vec2f& beg, const Vec2f& end);
         void addRetrosynteticArrow(int graphic_obj_id, int arrow_id, const Vec2f& arrow_beg, const Vec2f& arrow_end);
         void addImage(int id, const EmbeddedImageObject& image);
+        void addMultitailArrow(int& id, const ReactionMultitailArrowObject& arrow);
 
         void addText(const Vec2f& pos, const char* text);
         void addText(const Vec2f& pos, const char* text, const char* alignment);
