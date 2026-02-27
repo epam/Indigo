@@ -117,8 +117,12 @@ class TestLayoutModifier:
         assert len(coords) >= 6, "Benzene should have >= 6 atoms"
 
         # At least some coords should be non-zero
-        non_zero = [c for c in coords if abs(c[0]) > 0.001 or abs(c[1]) > 0.001]
-        assert len(non_zero) > 0, "All coordinates are zero — layout not applied"
+        non_zero = [
+            c for c in coords if abs(c[0]) > 0.001 or abs(c[1]) > 0.001
+        ]
+        assert (
+            len(non_zero) > 0
+        ), "All coordinates are zero — layout not applied"
 
     def test_layout_bond_lengths_uniform(self) -> None:
         """After layout, all bonds in benzene should have similar length."""
@@ -138,9 +142,9 @@ class TestLayoutModifier:
         assert len(lengths) >= 6
         avg = sum(lengths) / len(lengths)
         for i, length in enumerate(lengths):
-            assert length == pytest.approx(avg, abs=0.2), (
-                f"Bond {i} length {length:.3f} != avg {avg:.3f}"
-            )
+            assert length == pytest.approx(
+                avg, abs=0.2
+            ), f"Bond {i} length {length:.3f} != avg {avg:.3f}"
 
     def test_layout_with_aromatize(self) -> None:
         """Layout + aromatize modifiers should both be applied."""
@@ -211,9 +215,7 @@ class TestLayoutComplex:
 
         assert len(lengths) >= 9
         for i, length in enumerate(lengths):
-            assert length > 0.5, (
-                f"Chain bond {i} is too short: {length:.3f}"
-            )
+            assert length > 0.5, f"Chain bond {i} is too short: {length:.3f}"
 
     def test_fused_rings_layout(self) -> None:
         """Naphthalene (fused rings) should produce valid layout."""
@@ -234,9 +236,9 @@ class TestLayoutComplex:
         assert len(lengths) >= 11
         avg = sum(lengths) / len(lengths)
         for i, length in enumerate(lengths):
-            assert length == pytest.approx(avg, abs=0.3), (
-                f"Fused ring bond {i}: {length:.3f} vs avg {avg:.3f}"
-            )
+            assert length == pytest.approx(
+                avg, abs=0.3
+            ), f"Fused ring bond {i}: {length:.3f} vs avg {avg:.3f}"
 
     def test_layout_idempotent_via_molfile(self) -> None:
         """Applying layout twice via re-conversion should give consistent coords."""
@@ -273,9 +275,9 @@ class TestLayoutComplex:
         lengths2 = bond_lengths_from_coords(coords2, molfile2)
         assert len(lengths1) == len(lengths2)
         for i, (l1, l2) in enumerate(zip(lengths1, lengths2)):
-            assert l1 == pytest.approx(l2, abs=0.15), (
-                f"Bond {i} changed: {l1:.3f} → {l2:.3f}"
-            )
+            assert l1 == pytest.approx(
+                l2, abs=0.15
+            ), f"Bond {i} changed: {l1:.3f} → {l2:.3f}"
 
 
 # ==========================================================================
@@ -351,4 +353,6 @@ class TestClean2dModifier:
         lengths = bond_lengths_from_coords(coords, molfile)
 
         for i, length in enumerate(lengths):
-            assert length > 0.3, f"Bond {i} near-zero after clean2d: {length:.3f}"
+            assert (
+                length > 0.3
+            ), f"Bond {i} near-zero after clean2d: {length:.3f}"

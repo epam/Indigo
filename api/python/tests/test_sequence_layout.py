@@ -11,7 +11,7 @@ import math
 
 import pytest
 
-from indigo import Indigo, IndigoException
+from indigo import Indigo
 
 # ── Constants (mirror metalayout.h) ──────────────────
 MONOMER_BOND_LENGTH = 1.5
@@ -122,9 +122,7 @@ class TestLinearChainLayout:
 
         lengths = _bond_lengths(mol)
         assert len(lengths) >= 1
-        assert lengths[0] == pytest.approx(
-            MONOMER_BOND_LENGTH, abs=TOLERANCE
-        )
+        assert lengths[0] == pytest.approx(MONOMER_BOND_LENGTH, abs=TOLERANCE)
 
 
 # ==========================================================================
@@ -178,9 +176,9 @@ class TestRingLayout:
 
         avg = sum(lengths) / len(lengths)
         for i, length in enumerate(lengths):
-            assert length == pytest.approx(avg, abs=TOLERANCE), (
-                f"Bond {i} = {length:.3f}, expected ~{avg:.3f}"
-            )
+            assert length == pytest.approx(
+                avg, abs=TOLERANCE
+            ), f"Bond {i} = {length:.3f}, expected ~{avg:.3f}"
 
 
 # ==========================================================================
@@ -244,7 +242,9 @@ class TestRingWithTailLayout:
         min_len = min(lengths)
         max_len = max(lengths)
 
-        assert (max_len - min_len) < TOLERANCE * 2, (
+        assert (
+            max_len - min_len
+        ) < TOLERANCE * 2, (
             f"Left tail inconsistency: min={min_len:.3f} max={max_len:.3f}"
         )
 
@@ -280,9 +280,7 @@ class TestSelectionLayoutNoRing:
 
     def test_partial_selection_preserves_length(self, indigo, library):
         """Selecting part of a linear chain and calling layout."""
-        mol = indigo.loadHelm(
-            "PEPTIDE1{C.C.C.C.C.C.C.C}$$$$V2.0", library
-        )
+        mol = indigo.loadHelm("PEPTIDE1{C.C.C.C.C.C.C.C}$$$$V2.0", library)
 
         _select_atoms(mol, [4, 5, 6, 7])
         mol.layout()
@@ -291,9 +289,9 @@ class TestSelectionLayoutNoRing:
         assert len(lengths) > 0
 
         for i, length in enumerate(lengths):
-            assert length > MONOMER_BOND_LENGTH * 0.5, (
-                f"Bond {i} too short after selected layout: {length:.3f}"
-            )
+            assert (
+                length > MONOMER_BOND_LENGTH * 0.5
+            ), f"Bond {i} too short after selected layout: {length:.3f}"
 
     def test_full_selection_equals_no_selection(self, indigo, library):
         """Selecting ALL atoms should produce the same result as no selection."""
@@ -312,9 +310,9 @@ class TestSelectionLayoutNoRing:
 
         assert len(lengths1) == len(lengths2)
         for i, (l1, l2) in enumerate(zip(lengths1, lengths2)):
-            assert l1 == pytest.approx(l2, abs=TOLERANCE), (
-                f"Bond {i}: no-sel={l1:.3f} vs all-sel={l2:.3f}"
-            )
+            assert l1 == pytest.approx(
+                l2, abs=TOLERANCE
+            ), f"Bond {i}: no-sel={l1:.3f} vs all-sel={l2:.3f}"
 
 
 # ==========================================================================
@@ -339,7 +337,9 @@ class TestMultipleRings:
         min_len = min(lengths)
         max_len = max(lengths)
 
-        assert (max_len - min_len) < TOLERANCE * 3, (
+        assert (
+            max_len - min_len
+        ) < TOLERANCE * 3, (
             f"Multi-ring inconsistency: min={min_len:.3f} max={max_len:.3f}"
         )
 
@@ -374,16 +374,14 @@ class TestEdgeCases:
 
         assert len(lengths1) == len(lengths2)
         for i, (l1, l2) in enumerate(zip(lengths1, lengths2)):
-            assert l1 == pytest.approx(l2, abs=0.1), (
-                f"Bond {i} changed between layouts: {l1:.3f} → {l2:.3f}"
-            )
+            assert l1 == pytest.approx(
+                l2, abs=0.1
+            ), f"Bond {i} changed between layouts: {l1:.3f} → {l2:.3f}"
 
     def test_long_chain_30_monomers(self, indigo, library):
         """Stress: 30-monomer chain should not crash or produce zero-length bonds."""
         monomers = ".".join(["C"] * 30)
-        mol = indigo.loadHelm(
-            f"PEPTIDE1{{{monomers}}}$$$$V2.0", library
-        )
+        mol = indigo.loadHelm(f"PEPTIDE1{{{monomers}}}$$$$V2.0", library)
         mol.layout()
 
         lengths = _bond_lengths(mol)
