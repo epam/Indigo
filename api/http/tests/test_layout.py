@@ -8,7 +8,7 @@ Note: The HTTP service does not support HELM format directly.
 These tests verify layout behaviour through regular molecule input.
 """
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional, Tuple
 
 import pytest
 from fastapi.testclient import TestClient
@@ -24,7 +24,7 @@ client = TestClient(app)
 def convert_request(
     structure: str,
     output_format: str = "molfile",
-    modifiers: List[str] | None = None,
+    modifiers: Optional[List[str]] = None,
     input_format: str = "auto",
 ) -> Dict[str, Any]:
     """Build a JSON:API convert request payload."""
@@ -47,12 +47,12 @@ def convert_request(
     }
 
 
-def molfile_atom_coords(molfile: str) -> list[tuple[float, float]]:
+def molfile_atom_coords(molfile: str) -> List[Tuple[float, float]]:
     """Extract 2D atom coordinates from a V2000 or V3000 molfile string.
 
     Parses only V2000 atom block (lines after counts line, before bond block).
     """
-    coords = []
+    coords: List[Tuple[float, float]] = []
     lines = molfile.strip().splitlines()
     # V2000: line 4 is the counts line (atom_count bond_count ...)
     if len(lines) < 5:
@@ -70,8 +70,8 @@ def molfile_atom_coords(molfile: str) -> list[tuple[float, float]]:
 
 
 def bond_lengths_from_coords(
-    coords: list[tuple[float, float]], molfile: str
-) -> list[float]:
+    coords: List[Tuple[float, float]], molfile: str
+) -> List[float]:
     """Compute bond lengths from a molfile's bond block."""
     import math
 
