@@ -3213,7 +3213,7 @@ CEXPORT int indigoExpandedMonomersToAtoms(int molecule)
         // Call expandedMonomersToAtoms on the working copy
         // This method clones internally and returns a molecule with all expanded monomers
         // converted to regular atoms.
-        std::unique_ptr<BaseMolecule>& expanded = work_mol->mol.expandedMonomersToAtoms();
+        std::unique_ptr<BaseMolecule> expanded = work_mol->mol.expandedMonomersToAtoms();
 
         // Create new IndigoMolecule for the final result
         std::unique_ptr<IndigoMolecule> new_mol = std::make_unique<IndigoMolecule>();
