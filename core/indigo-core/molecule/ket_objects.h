@@ -32,6 +32,7 @@
 #include "common/base_cpp/exception.h"
 #include "common/math/algebra.h"
 #include "molecule/idt_alias.h"
+#include "molecule/ket_annotation.h"
 #include "molecule/ket_obj_with_props.h"
 #include "molecule/monomers_defs.h"
 #include "molecule/transformation.h"
@@ -53,19 +54,6 @@ namespace indigo
     using ket_connections_type = std::map<std::string, std::pair<std::string, std::string>>;
     // Connection point ID to molecule ref and atom idx
     using ket_connections_to_mol_type = std::map<std::string, std::pair<std::string, int>>;
-
-    class DLLEXPORT KetObjectAnnotation : public KetObjWithProps
-    {
-    public:
-        DECL_ERROR;
-
-        const std::map<std::string, int>& getStringPropStrToIdx() const override;
-
-        enum class StringProps
-        {
-            text
-        };
-    };
 
     class KetQueryProperties : public KetObjWithProps
     {
@@ -1019,24 +1007,6 @@ namespace indigo
         {
             selected
         };
-    };
-
-    class DLLEXPORT KetAnnotation : public KetObjWithProps
-    {
-    public:
-        DECL_ERROR;
-
-        void copy(const KetAnnotation& other);
-
-        void setExtended(const rapidjson::Document& extended);
-
-        const std::optional<rapidjson::Document>& extended() const
-        {
-            return _extended;
-        };
-
-    private:
-        std::optional<rapidjson::Document> _extended;
     };
 
 }

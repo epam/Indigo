@@ -17,6 +17,7 @@
  ***************************************************************************/
 
 #include "indigo_internal.h"
+#include "indigo_savers.h"
 #include "molecule/molfile_saver.h"
 
 static void setStrValue(const char* source, char* dest, int len)
@@ -36,6 +37,18 @@ static void indigoGetMolfileSavingMode(Array<char>& value)
 {
     Indigo& self = indigoGetInstance();
     MolfileSaver::saveFormatMode(self.molfile_saving_mode, value);
+}
+
+static void indigoSetMonomerLibrarySavingMode(const char* mode)
+{
+    Indigo& self = indigoGetInstance();
+    self.monomer_library_saving_mode = IndigoMonomerLibrarySaver::parseFormatMode(mode);
+}
+
+static void indigoGetMonomerLibrarySavingMode(Array<char>& value)
+{
+    Indigo& self = indigoGetInstance();
+    IndigoMonomerLibrarySaver::saveFormatMode(self.monomer_library_saving_mode, value);
 }
 
 static void indigoGetJsonSavingVersion(Array<char>& value)
@@ -341,6 +354,7 @@ void IndigoOptionHandlerSetter::setBasicOptionHandlers(const qword id)
     mgr->setOptionHandlerBool("deco-save-ap-bond-orders", SETTER_GETTER_BOOL_OPTION(indigo.deco_save_ap_bond_orders));
     mgr->setOptionHandlerBool("deco-ignore-errors", SETTER_GETTER_BOOL_OPTION(indigo.deco_ignore_errors));
     mgr->setOptionHandlerString("molfile-saving-mode", indigoSetMolfileSavingMode, indigoGetMolfileSavingMode);
+    mgr->setOptionHandlerString("monomer-library-saving-mode", indigoSetMonomerLibrarySavingMode, indigoGetMonomerLibrarySavingMode);
     mgr->setOptionHandlerString("ket-saving-version", indigoSetJsonSavingVersion, indigoGetJsonSavingVersion);
     mgr->setOptionHandlerString("smiles-saving-format", indigoSetSmilesSavingFormat, indigoGetSmilesSavingFormat);
 
@@ -352,6 +366,7 @@ void IndigoOptionHandlerSetter::setBasicOptionHandlers(const qword id)
     mgr->setOptionHandlerBool("json-saving-add-reaction-data", SETTER_GETTER_BOOL_OPTION(indigo.json_saving_add_reaction_data));
     mgr->setOptionHandlerBool("json-saving-pretty", SETTER_GETTER_BOOL_OPTION(indigo.json_saving_pretty));
     mgr->setOptionHandlerBool("json-use-native-precision", SETTER_GETTER_BOOL_OPTION(indigo.json_use_native_precision));
+    mgr->setOptionHandlerInt("json-set-native-precision", SETTER_GETTER_INT_OPTION(indigo.json_native_precision));
     mgr->setOptionHandlerBool("molfile-saving-add-implicit-h", SETTER_GETTER_BOOL_OPTION(indigo.molfile_saving_add_implicit_h));
     mgr->setOptionHandlerBool("molfile-saving-add-mrv-sma", SETTER_GETTER_BOOL_OPTION(indigo.molfile_saving_add_mrv_sma));
     mgr->setOptionHandlerBool("smiles-saving-write-name", SETTER_GETTER_BOOL_OPTION(indigo.smiles_saving_write_name));

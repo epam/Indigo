@@ -53,6 +53,7 @@ macro_data = [
     "props_double_dna_single",
     "2928-props-r3",
     "props_issue_3053",
+    "props_issue_3177",
 ]
 
 lib = indigo.loadMonomerLibraryFromFile(

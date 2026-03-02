@@ -191,8 +191,6 @@ public:
     virtual Molecule& getMolecule();
     virtual const Molecule& getMolecule() const;
 
-    virtual KetDocument& getKetDocument();
-
     virtual BaseReaction& getBaseReaction();
     virtual QueryReaction& getQueryReaction();
     virtual Reaction& getReaction();
@@ -323,7 +321,9 @@ public:
     bool deco_save_ap_bond_orders;
     bool deco_ignore_errors;
 
-    int molfile_saving_mode; // MolfileSaver::MODE_***, default is zero
+    int molfile_saving_mode;         // MolfileSaver::MODE_***, default is zero
+    int monomer_library_saving_mode; // MolfileSaver::MODE_***, default is zero
+
     KETVersion ket_saving_version;
     bool dearomatize_on_load;
     SmilesSaver::SMILES_MODE smiles_saving_format;
@@ -337,6 +337,7 @@ public:
     bool json_saving_add_reaction_data;
     bool json_saving_pretty;
     bool json_use_native_precision;
+    int json_native_precision;
     bool smiles_saving_write_name;
     bool smiles_loading_strict_aliphatic;
     bool smiles_saving_smarts_mode;

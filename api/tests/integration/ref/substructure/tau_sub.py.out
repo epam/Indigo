@@ -63,6 +63,17 @@ OC1C2=CNN=C2N=CN=1 |ha:0,1,2,6,7,hb:0,1,6,7|
 2 -> 6
 3 -> 5
 4 -> 4
+unmatched
+matched
+CC(=C1CC=C(C)CC1)C |ha:1,2,3,4,5,6,7,8,hb:1,2,3,4,5,6,7,8|
+0 -> 1
+1 -> 3
+2 -> 4
+3 -> 5
+4 -> 6
+5 -> 7
+6 -> 8
+7 -> 9
 *** Specific cases ***
 matched
 P(OCc1c(N)[n]c(C)[n]c1)(O)(O)=O |ha:3,4,10,hb:3,10|
@@ -74,3 +85,4 @@ P(=O)(O)(O)OCc1c[n]c(C)[n]c1N |ha:6,7,12,hb:6,12|
 0 -> 4
 1 -> 3
 2 -> 10
+unmatched

@@ -39,6 +39,7 @@ namespace indigo
         bool add_stereo_desc;
         bool pretty_json;
         bool use_native_precision;
+        int native_precision;
         bool add_reaction_data;
         DECL_ERROR;
 

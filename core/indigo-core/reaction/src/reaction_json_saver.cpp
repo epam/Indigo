@@ -99,12 +99,14 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn)
 
     // dump molecules
     StringBuffer s;
-    JsonWriter writer(pretty_json);
+    auto writer_ptr = JsonWriter::createJsonWriter(pretty_json);
+    JsonWriter& writer = *writer_ptr;
     writer.Reset(s);
     MoleculeJsonSaver json_saver(_output, rmd);
     json_saver.add_stereo_desc = add_stereo_desc;
     json_saver.ket_version = ket_version;
     json_saver.use_native_precision = use_native_precision;
+    json_saver.native_precision = native_precision;
     json_saver.add_reaction_data = add_reaction_data;
     json_saver.saveMolecule(*merged, writer);
 

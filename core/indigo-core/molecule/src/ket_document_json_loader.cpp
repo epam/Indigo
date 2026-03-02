@@ -41,7 +41,7 @@ void KetDocumentJsonLoader::parseJson(const std::string& json_str, KetDocument& 
     Document data;
     auto& ket = data.Parse(json_str.c_str());
     if (ket.HasParseError())
-        throw Error("Parse error at offset %llu: %s", ket.GetErrorOffset(), GetParseError_En(ket.GetParseError()));
+        throw Error("Parse error at offset %zu: %s", ket.GetErrorOffset(), GetParseError_En(ket.GetParseError()));
 
     Value& root = ket["root"];
     if (root.HasMember("templates"))

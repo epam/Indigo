@@ -17,6 +17,7 @@
         "naturalAnalogShort": "P",
         "aliasHELM": "p",
         "idtAliases": {
+            "base": "P",
             "modifications": {
                 "endpoint5": "5Phos",
                 "endpoint3": "3Phos"

@@ -67,6 +67,7 @@ axolabs_errors = {
     "ket-to-idt-alternatives-base": "Cannot save in AxoLabs format - ambiguous base 'S' found.",
     "ket-to-idt-invalid-last-phosphate": "Cannot save molecule in AxoLabs format - phosphate sP cannot be last monomer in sequence.",
     "ket-to-idt-no3prime": "Nucleotide '5Br-dU' has no AxoLabs alias.",
+    "ket-to-axolabs-baseless-mgt": "Sugar:12ddR has no AxoLabs alias.",
 }
 for filename in sorted(axolabs_errors.keys()):
     error = axolabs_errors[filename]

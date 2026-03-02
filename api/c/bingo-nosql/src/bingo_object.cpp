@@ -48,9 +48,44 @@ const BaseMolecule& BaseMoleculeQuery::getMolecule()
     return _base_mol;
 }
 
-SubstructureMoleculeQuery::SubstructureMoleculeQuery(/* const */ QueryMolecule& mol) : BaseMoleculeQuery(_mol, true)
+SubstructureMoleculeQuery::SubstructureMoleculeQuery(/* const */ QueryMolecule& mol) : BaseMoleculeQuery(_mol, true), _is_tau(false)
 {
     _mol.clone(mol, 0, 0);
+}
+
+bool SubstructureMoleculeQuery::buildFingerprint(const MoleculeFingerprintParameters& fp_params, Array<byte>* sub_fp, Array<byte>* /* sim_fp */) // const
+{
+    QueryMolecule aromatized_query;
+    if (_is_tau)
+    {
+        aromatized_query.clone(_mol);
+        QueryMoleculeAromatizer::aromatizeBonds(aromatized_query, AromaticityOptions::BASIC);
+    }
+
+    MoleculeFingerprintBuilder fp_builder(_is_tau ? aromatized_query : _mol, fp_params);
+    fp_builder.query = true;
+    fp_builder.skip_sim = true;
+
+    if (_is_tau)
+    {
+        fp_builder.skip_ord = true;
+
+        // Tautomer fingerprint part does already contain all necessary any-bits
+        fp_builder.skip_any_atoms = true;
+        fp_builder.skip_any_bonds = true;
+        fp_builder.skip_any_atoms_bonds = true;
+    }
+    else
+    {
+        fp_builder.skip_tau = true;
+    }
+
+    fp_builder.process();
+
+    if (sub_fp)
+        sub_fp->copy(fp_builder.get(), fp_params.fingerprintSize());
+
+    return true;
 }
 
 SimilarityMoleculeQuery::SimilarityMoleculeQuery(/* const */ Molecule& mol) : BaseMoleculeQuery(_mol, false)

@@ -33,6 +33,13 @@ axolabs_data = {
     "AxoLabs_ACsGsU": "5'-ACsGsU-3'",
     "AxoLabs_chem": "5'-dI(5MdC)AmA(NHC6)GmTm-3'",
     "AxoLabs_brackets": "5'-(5MdC)(5MdC)(5MdC)-3'",
+    "AxoLabs_unknown": "5'-A(Unknown1)(Unknown2)(Unknown3)A-3'",
+    "AxoLabs_double": "5'-AC-3'\n5'-GU-3'",
+    "AxoLabs_double_and_single": "5'-AC-3'\n5'-GU-3'\n5'-UG-3'",
+    "AxoLabs_two_double": "5'-AC-3'\n5'-GU-3'\n5'-AC-3'\n5'-GU-3'",
+    "AxoLabs_double_sense_shift": "5'-AC-3'\n5'-GUAA-3'",
+    "AxoLabs_double_antisense_shift": "5'-AAAC-3'\n5'-GU-3'",
+    "AxoLabs_double_3": "5'-TmGCGCA-3'\n5'-UCAA-3'",
 }
 
 lib = indigo.loadMonomerLibraryFromFile(
@@ -42,8 +49,8 @@ lib = indigo.loadMonomerLibraryFromFile(
 for filename in sorted(axolabs_data.keys()):
     mol = indigo.loadAxoLabs(axolabs_data[filename], lib)
     ket = mol.json()
-    with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
-        file.write(mol.json())
+    # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
+    #     file.write(mol.json())
     with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
         ket_ref = file.read()
     diff = find_diff(ket_ref, ket)

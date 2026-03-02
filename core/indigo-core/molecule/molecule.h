@@ -149,7 +149,6 @@ namespace indigo
         // Check
         bool isNitrogenV5(int atom_index);
         bool isNitrogenV5ForConnectivity(int atom_index, int conn);
-        bool isPiBonded(int atom_index) const;
 
         void invalidateAtom(int index, int mask) override;
 

@@ -65,6 +65,8 @@ helm_data = {
     "helm_rsite_no_brackets": "PEPTIDE1{[dF].C.F.[dW].K.T.C.[[*:1]N[C@@H]([C@H](O)C)CO |$_R1;;;;;;;$|]}$PEPTIDE1,PEPTIDE1,2:R3-7:R3$$$V2.0",
     "helm_smiles_first": "RNA1{[C([C@H](CO[*:1])O[*:2])[*:3] |$;;;;_R1;;_R2;_R3$|].p}$$$$V2.0",
     "helm_smiles_direction": "RNA1{[O1[C@H](CO[*:1])[C@@H](O[*:2])[C@@H](O)[C@@H]1[*:3] |$;;;;_R1;;;_R2;;;;_R3$|]}$$$$V2.0",
+    "helm_cycle_no_sugar": "RNA1{r(A).r(A).r(A).r(A).r(A).r(A).r(A)}$RNA1,RNA1,1:R1-13:R2$$$V2.0",
+    "helm_only_base": "RNA1{(A)}$$$$V2.0",
 }
 
 for filename in sorted(helm_data.keys()):

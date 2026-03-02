@@ -106,12 +106,13 @@ namespace indigo
         void addColorToTable(int id, float r, float g, float b);
         void saveMoleculeFragment(BaseMolecule& bmol, const Vec2f& offset, float scale, int frag_id, int& id, std::map<int, int>& atom_ids);
         void saveMoleculeFragment(BaseMolecule& bmol, const Vec2f& offset, float scale);
-        void saveRGroup(PtrPool<BaseMolecule>& fragments, const Vec2f& offset, int rgnum);
+        void saveRGroup(PtrPool<BaseMolecule>& fragments, const Vec2f& offset, int rgnum, Rect2f& bbox);
 
         void addMetaObject(const MetaObject& obj, int id, const Vec2f& offset);
         void addArrow(int id, int arrow_type, const Vec2f& beg, const Vec2f& end);
         void addRetrosynteticArrow(int graphic_obj_id, int arrow_id, const Vec2f& arrow_beg, const Vec2f& arrow_end);
         void addImage(int id, const EmbeddedImageObject& image);
+        void addMultitailArrow(int& id, const ReactionMultitailArrowObject& arrow);
 
         void addText(const Vec2f& pos, const char* text);
         void addText(const Vec2f& pos, const char* text, const char* alignment);

@@ -9,6 +9,7 @@ helm_chem_peptide.ket:SUCCEED
 helm_chem_rna.ket:SUCCEED
 helm_chem_rna_hydro.ket:SUCCEED
 helm_connetion_separator.ket:SUCCEED
+helm_cycle_no_sugar.ket:SUCCEED
 helm_cycled_polymer.ket:SUCCEED
 helm_different_id.ket:SUCCEED
 helm_fractional_ratio.ket:SUCCEED
@@ -19,6 +20,7 @@ helm_monomer_molecule.ket:SUCCEED
 helm_monomer_molecule_direct.ket:SUCCEED
 helm_multi_char_rna.ket:SUCCEED
 helm_nucleosides.ket:SUCCEED
+helm_only_base.ket:SUCCEED
 helm_peptide.ket:SUCCEED
 helm_rna_without_base.ket:SUCCEED
 helm_rsite_no_brackets.ket:SUCCEED

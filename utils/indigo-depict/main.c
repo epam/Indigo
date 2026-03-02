@@ -872,6 +872,7 @@ int main(int argc, char* argv[])
     indigoSetOption("ket-saving-version", "1.0.0");
     indigoSetOptionBool("json-saving-pretty", true);
     // indigoSetOptionBool("json-use-native-precision", true);
+    // indigoSetOptionInt("json-set-native-precision", 3);
     indigoSetOptionFloat("reaction-component-margin-size", 0.0f);
     // indigoSetOptionBool("json-saving-add-reaction-data", "on");
 
@@ -926,9 +927,7 @@ int main(int argc, char* argv[])
     reader = (p.file_to_load != NULL) ? indigoReadFile(p.file_to_load) : indigoReadString(p.string_to_load);
 
     int lib = indigoLoadMonomerLibraryFromString("{\"root\":{}}");
-    // int lib = indigoLoadMonomerLibraryFromFile("monomers.ket");
-    // int lib = indigoLoadMonomerLibraryFromFile("phos.sdf");
-    // indigoSaveMonomerLibraryToFile("phos.ket", lib);
+    // int lib = indigoLoadMonomerLibraryFromFile("monomer_library.ket");
 
     if (p.mode == MODE_SINGLE_MOLECULE)
     {

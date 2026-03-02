@@ -995,13 +995,27 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
                 _pmol->setExplicitValence(atom_idx, atom.valence);
             _pmol->setAtomRadical(atom_idx, atom.radical);
             _pmol->setAtomIsotope(atom_idx, atom.isotope);
-            if (atom.hydrogens > 0)
+            if (atom.hydrogens >= 0)
                 _pmol->setImplicitH(atom_idx, atom.hydrogens);
+            const int element = atom.element;
+            // All metals up to group 13, set implicit hydrogens to 0 if set in the cdxml file (and valence to avoid (0) labels)
+            if ((element >= 3 && element <= 4) || (element >= 11 && element <= 12) || (element >= 19 && element <= 30) || (element >= 37 && element <= 48) ||
+                (element >= 55 && element <= 80) || (element >= 87 && element <= 112))
+            {
+                if (atom.hydrogens == 0)
+                {
+                    _pmol->setImplicitH(atom_idx, atom.hydrogens);
+                    _pmol->setValence(atom_idx, atom.valence);
+                }
+            }
             const auto it = kIndexToCIPDesc.find(atom.stereo);
             if (it != kIndexToCIPDesc.end())
             {
-                _pmol->setAtomCIP(atom_idx, it->second);
-                _pmol->setShowAtomCIP(atom_idx, atom.showAtomStereo);
+                if (it->second != CIPDesc::UNKNOWN)
+                {
+                    _pmol->setAtomCIP(atom_idx, it->second);
+                    _pmol->setShowAtomCIP(atom_idx, atom.showAtomStereo);
+                }
             }
             if (atom.type == kCDXNodeType_GenericNickname || atom.element == ELEM_PSEUDO)
                 _pmol->setPseudoAtom(atom_idx, atom.label.c_str());
@@ -1446,7 +1460,8 @@ void MoleculeCdxmlLoader::_parseNode(CdxmlNode& node, BaseCDXElement& elem)
                     node.label = label;
                     // Catch the case when the element attribute isn't given
                     // (and assumed to be carbon). Bug #3060
-                    if (label == "CH3" || label == "CH2" || label == "CH")
+                    std::regex match(R"(^\d{0,2}(CH|CH2|CH3)$)");
+                    if (std::regex_match(label, match))
                     {
                         node.element = ELEM_C;
                     }

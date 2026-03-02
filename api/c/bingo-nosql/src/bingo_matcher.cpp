@@ -341,7 +341,7 @@ float BaseMatcher::esimateRemainingTime(float& delta)
 //
 
 BaseSubstructureMatcher::BaseSubstructureMatcher(/*const */ BaseIndex& index, IndigoObject*& current_obj)
-    : BaseMatcher(index, current_obj), _fp_storage(_index.getSubStorage())
+    : BaseMatcher(index, current_obj), _fp_storage(_index.getSubStorage()), _tautomer(false)
 {
     _fp_size = _index.getFingerprintParams().fingerprintSize();
 
@@ -411,7 +411,9 @@ void BaseSubstructureMatcher::setQueryData(SubstructureQueryData* query_data)
     _query_data.reset(query_data);
 
     const MoleculeFingerprintParameters& fp_params = _index.getFingerprintParams();
-    _query_data->getQueryObject().buildFingerprint(fp_params, &_query_fp, 0);
+    auto& query_obj = _query_data->getQueryObject();
+    query_obj.setIsTau(_tautomer);
+    query_obj.buildFingerprint(fp_params, &_query_fp, nullptr);
 
     int bit_cnt = bitGetOnesCount(_query_fp.ptr(), _fp_size);
 
@@ -506,8 +508,12 @@ void BaseSubstructureMatcher::_findIncCandidates()
     }
 }
 
-void BaseSubstructureMatcher::_setParameters(const char* params)
+void BaseSubstructureMatcher::_setParameters(const char* parameters)
 {
+    if (_indigoParseTautomerFlags(parameters, _tautomer_params))
+        _tautomer = true;
+    else
+        _tautomer = false;
 }
 
 void BaseSubstructureMatcher::_initPartition()
@@ -558,19 +564,36 @@ bool MoleculeSubMatcher::_tryCurrent() // const
 
     Molecule& target_mol = _current_obj->getMolecule();
 
-    profTimerStart(tr_m, "sub_try_matching");
-    MoleculeSubstructureMatcher msm(target_mol);
-
-    msm.setQuery(query_mol);
-
-    bool find_res = msm.find();
-
-    profTimerStop(tr_m);
-
-    if (find_res)
+    if (_tautomer)
     {
-        _mapping.copy(msm.getTargetMapping(), target_mol.vertexCount());
-        return true;
+        MoleculeTautomerMatcher matcher(target_mol, true);
+
+        Indigo& indigo = indigoGetInstance();
+
+        matcher.arom_options = indigo.arom_options;
+        matcher.setRulesList(&indigo.tautomer_rules);
+        matcher.setRules(_tautomer_params.conditions, _tautomer_params.force_hydrogens, _tautomer_params.ring_chain, _tautomer_params.method,
+                         _tautomer_params.inner);
+        matcher.setQuery(query_mol);
+        return matcher.find();
+    }
+    else
+    {
+
+        profTimerStart(tr_m, "sub_try_matching");
+        MoleculeSubstructureMatcher msm(target_mol);
+
+        msm.setQuery(query_mol);
+
+        bool find_res = msm.find();
+
+        profTimerStop(tr_m);
+
+        if (find_res)
+        {
+            _mapping.copy(msm.getTargetMapping(), target_mol.vertexCount());
+            return true;
+        }
     }
 
     // return true;
@@ -717,7 +740,7 @@ void BaseSimilarityMatcher::setQueryData(SimilarityQueryData* query_data)
     _query_data.reset(query_data);
 
     const MoleculeFingerprintParameters& fp_params = _index.getFingerprintParams();
-    _query_data->getQueryObject().buildFingerprint(fp_params, 0, &_query_fp);
+    _query_data->getQueryObject().buildFingerprint(fp_params, nullptr, &_query_fp);
 
     SimStorage& sim_storage = _index.getSimStorage();
 
@@ -1240,7 +1263,7 @@ void TopNSimMatcher::_findTopN()
 
     if (_current_results.size() > 0)
     {
-        _current_results.qsort(_cmp_sim_res, 0);
+        _current_results.qsort(_cmp_sim_res, nullptr);
 
         for (i = 0; i < _current_results.size(); i++)
         {
@@ -1295,7 +1318,7 @@ BaseExactMatcher::BaseExactMatcher(BaseIndex& index, IndigoObject*& current_obj)
 {
     _candidates.clear();
     _current_cand_id = 0;
-    _flags = 0;
+    _flags = MoleculeExactMatcher::CONDITION_ALL;
 }
 
 bool BaseExactMatcher::next()
@@ -1389,7 +1412,8 @@ bool MolExactMatcher::_tryCurrent() /* const */
 
         matcher.arom_options = indigo.arom_options;
         matcher.setRulesList(&indigo.tautomer_rules);
-        matcher.setRules(_tautomer_params.conditions, _tautomer_params.force_hydrogens, _tautomer_params.ring_chain, _tautomer_params.method);
+        matcher.setRules(_tautomer_params.conditions, _tautomer_params.force_hydrogens, _tautomer_params.ring_chain, _tautomer_params.method,
+                         _tautomer_params.inner);
         matcher.setQuery(query_mol);
         return matcher.find();
     }
@@ -1437,7 +1461,7 @@ void RxnExactMatcher::_setParameters(const char* flags)
         scanner.skipSpace();
         if (scanner.isEOF())
             break;
-        scanner.readWord(word, 0);
+        scanner.readWord(word, nullptr);
 
         if (strcasecmp(word.ptr(), "NONE") == 0)
         {

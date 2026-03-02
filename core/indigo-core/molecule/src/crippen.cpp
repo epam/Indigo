@@ -21,8 +21,7 @@
 
 #include "base_cpp/csv_reader.h"
 #include "base_cpp/scanner.h"
-#include "molecule/molecule.h"
-#include "molecule/molecule_auto_loader.h"
+#include "molecule/base_molecule.h"
 #include "molecule/molecule_substructure_matcher.h"
 #include "molecule/smiles_loader.h"
 #include "pka_decision_tree.h"
@@ -299,7 +298,7 @@ namespace
         return contributions;
     }
 
-    unordered_map<string, int> calculateMatches(Molecule& rawMolecule)
+    unordered_map<string, int> calculateMatches(BaseMolecule& rawMolecule)
     {
         Molecule molecule;
         molecule.clone(rawMolecule);
@@ -367,22 +366,22 @@ namespace
             return n & 1 ? v[n / 2] : (v[n / 2 - 1] + v[n / 2]) / 2.0f;
         }
 
-        double calculate(Molecule& target) const
+        double calculate(BaseMolecule& target) const
         {
             auto pkaValues = calculatePKAs(target);
             return median(pkaValues);
         }
 
-        std::vector<double> calculatePKAs(Molecule& target) const
+        std::vector<double> calculatePKAs(BaseMolecule& target) const
         {
             target.transformSCSRtoFullCTAB();
-            Molecule mol_copy;
-            mol_copy.clone(target);
-            if (mol_copy.tgroups.getTGroupCount())
+            std::unique_ptr<BaseMolecule> mol_copy{target.neu()};
+            mol_copy->clone(target);
+            if (mol_copy->tgroups.getTGroupCount())
             {
-                mol_copy.transformSCSRtoFullCTAB();
+                mol_copy->transformSCSRtoFullCTAB();
             }
-            MoleculeSubstructureMatcher matcher(mol_copy);
+            MoleculeSubstructureMatcher matcher(*mol_copy);
             std::vector<int> tree_indexes;
             const int amino_index = 551;  // 1427; Index of the amino group decision tree
             const int thiol_index = 675;  // Index of the thiol group decision tree
@@ -437,7 +436,7 @@ namespace
 namespace indigo
 {
     // https://doi.org/10.1021/ci990307l
-    double Crippen::logP(Molecule& molecule)
+    double Crippen::logP(BaseMolecule& molecule)
     {
         const auto& matches = calculateMatches(molecule);
         const auto& logPContributions = getLogPContributions();
@@ -450,7 +449,7 @@ namespace indigo
     }
 
     // https://doi.org/10.1021/ci990307l
-    double Crippen::molarRefractivity(Molecule& molecule)
+    double Crippen::molarRefractivity(BaseMolecule& molecule)
     {
         const auto& matches = calculateMatches(molecule);
         const auto& contributions = getMRContributions();
@@ -463,7 +462,7 @@ namespace indigo
     }
 
     // https://doi.org/10.1021/ci8001815
-    double Crippen::pKa(Molecule& molecule)
+    double Crippen::pKa(BaseMolecule& molecule)
     {
         Molecule copy;
         copy.clone(molecule);
@@ -471,11 +470,11 @@ namespace indigo
         return pkaCalculator.calculate(molecule);
     }
 
-    void Crippen::getPKaValues(Molecule& molecule, Array<double>& values)
+    void Crippen::getPKaValues(BaseMolecule& molecule, Array<double>& values)
     {
-        Molecule copy;
-        copy.clone(molecule);
-        copy.aromatize(AromaticityOptions());
+        std::unique_ptr<BaseMolecule> copy(molecule.neu());
+        copy->clone(molecule);
+        copy->aromatize(AromaticityOptions());
         auto vals = pkaCalculator.calculatePKAs(molecule);
         for (const auto& val : vals)
             values.push(val);

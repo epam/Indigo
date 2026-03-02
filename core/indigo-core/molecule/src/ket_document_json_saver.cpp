@@ -24,6 +24,7 @@
 #include "molecule/meta_commons.h"
 #include "molecule/monomer_commons.h"
 #include "molecule/monomers_template_library.h"
+
 #include <base_cpp/scanner.h>
 
 #ifdef _MSC_VER
@@ -465,7 +466,8 @@ void KetDocumentJsonSaver::saveAnnotation(JsonWriter& writer, const std::optiona
 void KetDocumentJsonSaver::saveMonomerLibrary(const MonomerTemplateLibrary& monomers_library)
 {
     rapidjson::StringBuffer string_buffer;
-    JsonWriter writer(pretty_json);
+    auto writer_ptr = JsonWriter::createJsonWriter(pretty_json);
+    JsonWriter& writer = *writer_ptr;
     writer.Reset(string_buffer);
     writer.StartObject(); // start
     writer.Key("root");
@@ -660,7 +662,8 @@ void KetDocumentJsonSaver::saveKetDocument(JsonWriter& writer, const KetDocument
 void KetDocumentJsonSaver::saveKetDocument(const KetDocument& document)
 {
     rapidjson::StringBuffer string_buffer;
-    JsonWriter writer(pretty_json);
+    auto writer_ptr = JsonWriter::createJsonWriter(pretty_json);
+    JsonWriter& writer = *writer_ptr;
     writer.Reset(string_buffer);
     saveKetDocument(writer, document);
     std::stringstream result;

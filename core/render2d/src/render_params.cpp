@@ -203,12 +203,17 @@ void RenderParamInterface::render(RenderParams& params)
     int obj = -1;
     Array<int> objs;
     Array<int> titles;
+    std::unique_ptr<BaseMolecule> expanded_mol;
+
     if (params.rmode == RENDER_MOL)
     {
         if (params.mols.size() == 0)
         {
             obj = factory.addItemMolecule();
-            BaseMolecule& bm = params.mol->getExpandedMonomerCount() == 0 ? *params.mol.get() : *params.mol->expandedMonomersToAtoms().get();
+            if (params.mol->getExpandedMonomerCount() > 0)
+                expanded_mol = params.mol->expandedMonomersToAtoms();
+            BaseMolecule& bm = expanded_mol ? *expanded_mol : *params.mol;
+
             _prepareMolecule(params, bm);
             factory.getItemMolecule(obj).mol = &bm;
         }

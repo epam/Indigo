@@ -47,6 +47,7 @@ namespace indigo
         bool pretty_json;
         KETVersion ket_version;
         bool use_native_precision;
+        int native_precision;
         indigo::LayoutOptions layout_options;
         DECL_ERROR;
 

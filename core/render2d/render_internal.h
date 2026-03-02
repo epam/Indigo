@@ -27,6 +27,9 @@
 namespace indigo
 {
 
+    // Marker value used to render bold stereo bonds (distinct from existing stereochemistry codes).
+    const int BOND_STEREO_BOLD = 10001;
+
     class RenderContext;
 
     class MoleculeRenderInternal

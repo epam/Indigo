@@ -630,6 +630,12 @@ namespace indigo
             }
         }
 
+        if (outputFormat.find("smarts") != std::string::npos)
+        {
+            options_copy["query"] = "true";
+        }
+
+        indigoSetOptions(options);
         int library = -1;
         auto monomerLibrary = options.find("monomerLibrary");
         if (monomerLibrary != options.end() && monomerLibrary->second.size())
@@ -641,11 +647,6 @@ namespace indigo
             library = indigoLoadMonomerLibraryFromString("{\"root\":{}}");
         }
 
-        if (outputFormat.find("smarts") != std::string::npos)
-        {
-            options_copy["query"] = "true";
-        }
-        indigoSetOptions(options);
         std::string input_format = "ket";
         if (const auto& it = options.find("input-format"); it != options.end())
             input_format = it->second;

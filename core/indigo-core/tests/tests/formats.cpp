@@ -42,6 +42,7 @@
 #include <molecule/molecule_substructure_matcher.h>
 #include <molecule/molfile_loader.h>
 #include <molecule/molfile_saver.h>
+#include <molecule/monomer_commons.h>
 #include <molecule/query_molecule.h>
 #include <molecule/sdf_loader.h>
 #include <molecule/smiles_loader.h>
@@ -502,7 +503,7 @@ TEST_F(IndigoCoreFormatsTest, mol_to_document)
     Molecule mol;
     loader.loadMolecule(mol);
 
-    KetDocument& document = mol.getKetDocument();
+    KetDocument document(mol);
     std::vector<std::deque<std::string>> sequences;
     // parse connections between monomers and return backbone sequences
     // non-backbone connection stored in document.nonSequenceConnections()
@@ -650,7 +651,7 @@ TEST_F(IndigoCoreFormatsTest, expand_monomers)
         }
     }
     // get molecule with expanded monomers
-    auto& expanded_mol = mol.expandedMonomersToAtoms();
+    auto expanded_mol = mol.expandedMonomersToAtoms();
 
     std::string ref_path{dataPath("molecules/basic/peptide_expanded.mol")};
     // write reference
@@ -701,7 +702,7 @@ TEST_F(IndigoCoreFormatsTest, expand_monomers)
         dy -= 1.5f;
     }
     // get molecule with expanded monomers
-    auto& expanded_doc_mol = document.getBaseMolecule().expandedMonomersToAtoms();
+    auto expanded_doc_mol = document.getBaseMolecule().expandedMonomersToAtoms();
 
     // write to string
     std::string s_doc_mol;
@@ -722,6 +723,43 @@ TEST_F(IndigoCoreFormatsTest, expand_monomers)
         ASSERT_TRUE(std::fabs(v1.y - v2.y) < epsilon);
         ASSERT_TRUE(std::fabs(v1.z - v2.z) < epsilon);
     }
+}
+
+TEST_F(IndigoCoreFormatsTest, best_allign)
+{
+    FileScanner source_file(dataPath("molecules/basic/best_allign.txt").c_str());
+    std::string sense;
+    std::string antisense;
+    source_file.readLine(sense);
+    source_file.readLine(antisense);
+    std::vector<std::pair<size_t, size_t>> pairs;
+    bool shift_sense;
+    auto res = best_allign(sense, antisense, pairs, shift_sense);
+    ASSERT_EQ(res, 20);
+    ASSERT_EQ(shift_sense, false);
+    ASSERT_EQ(pairs.size(), 2);
+    ASSERT_EQ(pairs[0].first, 20);
+    ASSERT_EQ(pairs[0].second, 0);
+    ASSERT_EQ(pairs[1].first, 21);
+    ASSERT_EQ(pairs[1].second, 1);
+    source_file.readLine(sense); // empty string
+    source_file.readLine(sense);
+    source_file.readLine(antisense);
+    res = best_allign(sense, antisense, pairs, shift_sense);
+    ASSERT_EQ(res, 20);
+    ASSERT_EQ(shift_sense, true);
+    ASSERT_EQ(pairs.size(), 2);
+    ASSERT_EQ(pairs[0].first, 0);
+    ASSERT_EQ(pairs[0].second, 20);
+    ASSERT_EQ(pairs[1].first, 1);
+    ASSERT_EQ(pairs[1].second, 21);
+    source_file.readLine(sense); // empty string
+    source_file.readLine(sense);
+    source_file.readLine(antisense);
+    res = best_allign(sense, antisense, pairs, shift_sense);
+    ASSERT_EQ(res, 85);
+    ASSERT_EQ(shift_sense, true);
+    ASSERT_EQ(pairs.size(), 559);
 }
 
 #ifdef _MSC_VER

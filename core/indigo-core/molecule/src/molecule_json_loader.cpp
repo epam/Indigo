@@ -988,7 +988,7 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
     {
         const Value& s = sgroups[i];
         const Value& atoms = s["atoms"];
-        std::string sg_type_str = s["type"].GetString(); // GEN, MUL, SRU, SUP
+        std::string sg_type_str = s["type"].GetString(); // GEN, MUL, SRU, SUP, COP
         if (sg_type_str == "queryComponent")
         {
             if (_pqmol)
@@ -1148,6 +1148,31 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
                 dsg.num_chars = s["displayedChars"].GetInt();
         }
         break;
+        case SGroup::SG_TYPE_COP: {
+            CopolymerGroup& ru = (CopolymerGroup&)sgroup;
+            if (s.HasMember("subtype"))
+            {
+                std::string conn = s["subtype"].GetString();
+                if (conn == "RAN")
+                    ru.sgroup_subtype = SGroup::SG_SUBTYPE_RAN;
+                else if (conn == "ALT")
+                    ru.sgroup_subtype = SGroup::SG_SUBTYPE_ALT;
+                else if (conn == "BLO")
+                    ru.sgroup_subtype = SGroup::SG_SUBTYPE_BLO;
+            }
+
+            if (s.HasMember("connectivity"))
+            {
+                std::string conn = s["connectivity"].GetString();
+                if (conn == "HT")
+                    ru.connectivity = RepeatingUnit::HEAD_TO_TAIL;
+                else if (conn == "HH")
+                    ru.connectivity = RepeatingUnit::HEAD_TO_HEAD;
+                else if (conn == "EU")
+                    ru.connectivity = RepeatingUnit::EITHER;
+            }
+        }
+        break;
         default:
             throw Error("Invalid sgroup type %s", sg_type_str.c_str());
         }
@@ -1292,7 +1317,6 @@ void MoleculeJsonLoader::addToLibMonomerGroupTemplate(MonomerTemplateLibrary& li
 
 void MoleculeJsonLoader::loadMonomerLibrary(MonomerTemplateLibrary& library)
 {
-    Molecule mol;
     // Add monomer teplates
     for (SizeType i = 0; i < _templates.Size(); i++)
     {
@@ -1343,6 +1367,7 @@ int MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_tem
     one_tgroup.PushBack(monomer_template_cp, data.GetAllocator());
     MoleculeJsonLoader loader(one_tgroup);
     loader.stereochemistry_options = stereochemistry_options;
+    loader.ignore_noncritical_query_features = true;
     tg.fragment.reset(mol.neu());
     loader.loadMolecule(*tg.fragment);
     auto& monomer_mol = *tg.fragment;
@@ -1763,6 +1788,11 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         {
             auto& pos_val = ma["position"];
             mol.setAtomXyz(idx, static_cast<float>(pos_val["x"].GetDouble()), static_cast<float>(pos_val["y"].GetDouble()), 0);
+        }
+
+        if (ma.HasMember("selected") && ma["selected"].GetBool())
+        {
+            mol.selectAtom(idx);
         }
 
         if (ma.HasMember("expanded"))

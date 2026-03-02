@@ -12,7 +12,12 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
-from env_indigo import *  # noqa
+from env_indigo import (  # noqa
+    Indigo,
+    IndigoException,
+    getIndigoExceptionText,
+    joinPathPy,
+)
 
 indigo = Indigo()
 indigo.setOption("ignore-stereochemistry-errors", True)
@@ -60,3 +65,30 @@ for filename in files:
     else:
         print(filename + ".cdxml:FAILED")
         print(diff)
+
+
+def compare_cdxml_with_reference(cdxml_text, reference_file):
+    with open(os.path.join(ref_path, reference_file), "r") as file:
+        cdxml_ref = file.read()
+    diff = find_diff(cdxml_ref, cdxml_text)
+    if not diff:
+        print(reference_file + ":SUCCEED")
+    else:
+        print(reference_file + ":FAILED")
+        print(diff)
+
+
+reaction = indigo.loadReactionFromFile(
+    os.path.join(root, "3261_cdxml_reaction_molecule.cdxml")
+)
+for reactant in reaction.iterateReactants():
+    cdxml_text = reactant.cdxml()
+    compare_cdxml_with_reference(cdxml_text, "3261_ref1.cdxml")
+
+for catalyst in reaction.iterateCatalysts():
+    cdxml_text = catalyst.cdxml()
+    compare_cdxml_with_reference(cdxml_text, "3261_ref2.cdxml")
+
+for product in reaction.iterateProducts():
+    cdxml_text = product.cdxml()
+    compare_cdxml_with_reference(cdxml_text, "3261_ref3.cdxml")

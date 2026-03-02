@@ -6,3 +6,10 @@ pathway1.sdf:SUCCEED
 pathway2.sdf:SUCCEED
 pathway3.sdf:SUCCEED
 qreaction.sdf:SUCCEED
+*** KET-monomer library to SDF ***
+lib_alanine.sdf:SUCCEED
+lib_alanine_expanded.sdf:SUCCEED
+lib_default_type.sdf:SUCCEED
+lib_phos.sdf:SUCCEED
+lib_rna_preset_g.sdf:SUCCEED
+lib_rna_preset_same.sdf:SUCCEED

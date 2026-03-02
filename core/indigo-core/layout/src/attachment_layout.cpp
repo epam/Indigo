@@ -314,12 +314,17 @@ void LayoutChooser::_makeLayout()
         p.diff(_layout._graph.getPos(v), comp.getPos(v1C));
 
         for (j = comp.vertexBegin(); j < comp.vertexEnd(); j = comp.vertexNext(j))
-            if (comp.getVertexExtIdx(j) != v)
+        {
+            auto v1 = comp.getVertexExtIdx(j);
+            if (v1 != v)
             {
-                k = k + 1;
-                Vec2f& cur_pos = _layout._layout[k];
-                if (_fixed_components[bc_com_idx] == 0) // Skip fixed components
+                Vec2f& cur_pos = _layout._layout[++k];
+                bool is_fixed_in_graph = _layout._graph._fixed_vertices.size() > 0 && _layout._graph._fixed_vertices[v1] != 0 && _layout._graph.sequence_layout;
+                bool is_nailed = comp.getLayoutVertex(j).is_nailed && _layout._graph.sequence_layout;
+
+                if (_fixed_components[bc_com_idx] == 0 && !is_fixed_in_graph && !is_nailed) // Skip fixed components
                 {
+                    // Vertex is not fixed, apply normal transformation
                     // 1. Shift
                     cur_pos.sum(comp.getPos(j), p);
                     // 2. Rotate around v
@@ -327,14 +332,14 @@ void LayoutChooser::_makeLayout()
                     p1.rotate(sina, cosa);
                     cur_pos.sum(p1, _layout._graph.getPos(v));
                 }
-                else // fixed components
-                {
+                else if (is_nailed)
                     cur_pos.copy(comp.getPos(j));
-                }
+                else // fixed components or fixed vertex in graph
+                    cur_pos.copy(_layout._graph.getPos(v1));
 
                 _layout._new_vertices[k] = comp.getVertexExtIdx(j);
             }
-
+        }
         cur_angle += _layout._bc_angles[comp_idx];
     }
 

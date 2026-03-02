@@ -3,6 +3,7 @@ AxoLabs_ACsGsU.ket:SUCCEED
 AxoLabs_brackets.ket:SUCCEED
 AxoLabs_chem.ket:SUCCEED
 AxoLabs_pACsGsUp.ket:SUCCEED
+Test ket-to-axolabs-baseless-mgt: got expected error 'Sugar:12ddR has no AxoLabs alias.'
 Test ket-to-idt-alternatives-base: got expected error 'Cannot save in AxoLabs format - ambiguous base 'S' found.'
 Test ket-to-idt-invalid-last-phosphate: got expected error 'Cannot save molecule in AxoLabs format - phosphate sP cannot be last monomer in sequence.'
 Test ket-to-idt-invalid-nucleotide: got expected error 'Cannot save molecule in AxoLabs format - non-standard phosphate 'mepo2' found'

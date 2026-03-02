@@ -26,9 +26,9 @@ IMPL_ERROR(BiconnectedDecomposer, "biconnected_decomposer");
 
 CP_DEF(BiconnectedDecomposer);
 
-BiconnectedDecomposer::BiconnectedDecomposer(const Graph& graph)
-    : _graph(graph), CP_INIT, TL_CP_GET(_components), TL_CP_GET(_dfs_order), TL_CP_GET(_lowest_order), TL_CP_GET(_component_lists), TL_CP_GET(_component_ids),
-      TL_CP_GET(_edges_stack), _cur_order(0)
+BiconnectedDecomposer::BiconnectedDecomposer(const Graph& graph, bool split_fixed)
+    : _graph(graph), _split_fixed(split_fixed), CP_INIT, TL_CP_GET(_components), TL_CP_GET(_dfs_order), TL_CP_GET(_lowest_order), TL_CP_GET(_component_lists),
+      TL_CP_GET(_component_ids), TL_CP_GET(_edges_stack), TL_CP_GET(_forbidden_edges_processed), _cur_order(0)
 {
     _components.clear();
     _component_lists.clear();
@@ -37,6 +37,8 @@ BiconnectedDecomposer::BiconnectedDecomposer(const Graph& graph)
     _lowest_order.clear_resize(graph.vertexEnd());
     _component_ids.clear_resize(graph.vertexEnd());
     _component_ids.zerofill();
+    _forbidden_edges_processed.clear_resize(graph.edgeEnd());
+    _forbidden_edges_processed.zerofill();
 }
 
 BiconnectedDecomposer::~BiconnectedDecomposer()
@@ -44,6 +46,12 @@ BiconnectedDecomposer::~BiconnectedDecomposer()
 }
 
 int BiconnectedDecomposer::decompose()
+{
+    Array<int> fixed_empty;
+    return decomposeWithFixed(fixed_empty);
+}
+
+int BiconnectedDecomposer::decomposeWithFixed(const Array<int>& fixed_vertices)
 { // recursion? no, not heard...
     QS_DEF(Array<int>, dfs_stack);
     int i, v;
@@ -61,7 +69,7 @@ int BiconnectedDecomposer::decompose()
             {
                 v = dfs_stack.top();
 
-                bool pushed = _pushToStack(dfs_stack, v);
+                bool pushed = _pushToStack(dfs_stack, v, fixed_vertices);
 
                 if (!pushed)
                 {
@@ -70,7 +78,7 @@ int BiconnectedDecomposer::decompose()
                     if (dfs_stack.size() == 0)
                         continue;
 
-                    _processIfNotPushed(dfs_stack, v);
+                    _processIfNotPushed(dfs_stack, v, fixed_vertices);
                 }
             }
         }
@@ -130,7 +138,7 @@ int BiconnectedDecomposer::getIncomingCount(int idx) const
     return _component_ids[idx]->size();
 }
 
-bool BiconnectedDecomposer::_pushToStack(Array<int>& dfs_stack, int v)
+bool BiconnectedDecomposer::_pushToStack(Array<int>& dfs_stack, int v, const Array<int>& fixed_vertices)
 {
     Edge new_edge;
 
@@ -148,7 +156,36 @@ bool BiconnectedDecomposer::_pushToStack(Array<int>& dfs_stack, int v)
 
         if (_dfs_order[w] == 0)
         {
-            // Push new edge
+            // Tree edge (v, w)
+            if (_split_fixed && !isPermitted(v, w, fixed_vertices))
+            {
+                // Forbidden tree edge - create separate single-edge component
+                // Do NOT mark w as visited - outer loop will visit it later
+                // Use canonical edge representation: (min, max) to check if already processed
+                int v_min = (v < w) ? v : w;
+                int v_max = (v < w) ? w : v;
+                int edge_idx = _graph.findEdgeIndex(v_min, v_max);
+                if (edge_idx == -1)
+                    edge_idx = _graph.findEdgeIndex(v_max, v_min);
+
+                if (edge_idx == -1 || _forbidden_edges_processed[edge_idx] == 0)
+                {
+                    Array<int>& one = _components.add(new Array<int>());
+                    one.clear_resize(_graph.vertexEnd());
+                    one.zerofill();
+                    one[v] = 1;
+                    one[w] = 1;
+                    if (_component_ids[v] == 0)
+                        _component_ids[v] = &_component_lists.add(new Array<int>());
+                    _component_ids[v]->push(_components.size() - 1);
+
+                    if (edge_idx != -1)
+                        _forbidden_edges_processed[edge_idx] = 1;
+                }
+                continue; // Skip this edge, don't go deeper
+            }
+
+            // Permitted tree edge - add to stack and continue DFS
             new_edge.beg = v;
             new_edge.end = w;
 
@@ -161,27 +198,61 @@ bool BiconnectedDecomposer::_pushToStack(Array<int>& dfs_stack, int v)
         }
         else if (_dfs_order[w] < _dfs_order[v] && w != u)
         {
-            new_edge.beg = v;
-            new_edge.end = w;
-            _edges_stack.push(new_edge);
+            // Back edge (v, w)
+            if (!_split_fixed || isPermitted(v, w, fixed_vertices))
+            {
+                // Permitted edge - add to stack
+                new_edge.beg = v;
+                new_edge.end = w;
+                _edges_stack.push(new_edge);
+                if (_lowest_order[v] > _dfs_order[w])
+                    _lowest_order[v] = _dfs_order[w];
+            }
+            else
+            {
+                // Forbidden edge - create separate single-edge component
+                // Use canonical edge representation: (min, max) to check if already processed
+                int v_min = (v < w) ? v : w;
+                int v_max = (v < w) ? w : v;
+                int edge_idx = _graph.findEdgeIndex(v_min, v_max);
+                if (edge_idx == -1)
+                    edge_idx = _graph.findEdgeIndex(v_max, v_min);
 
-            if (_lowest_order[v] > _dfs_order[w])
-                _lowest_order[v] = _dfs_order[w];
+                if (edge_idx != -1 && _forbidden_edges_processed[edge_idx] != 0)
+                {
+                    // Already created a component for this edge, skip
+                    continue;
+                }
+
+                Array<int>& one = _components.add(new Array<int>());
+                one.clear_resize(_graph.vertexEnd());
+                one.zerofill();
+                one[v] = 1;
+                one[w] = 1;
+                if (_component_ids[v] == 0)
+                    _component_ids[v] = &_component_lists.add(new Array<int>());
+                _component_ids[v]->push(_components.size() - 1);
+
+                // Mark this edge as processed
+                if (edge_idx != -1)
+                    _forbidden_edges_processed[edge_idx] = 1;
+            }
         }
     }
     return false;
 }
 
-void BiconnectedDecomposer::_processIfNotPushed(Array<int>& dfs_stack, int w)
+void BiconnectedDecomposer::_processIfNotPushed(Array<int>& dfs_stack, int w, const Array<int>& fixed_vertices)
 {
     int v = dfs_stack.top();
 
+    // Tree edge (v, w) is always permitted here (already checked in _pushToStack)
     if (_lowest_order[w] < _lowest_order[v])
         _lowest_order[v] = _lowest_order[w];
 
     if (_lowest_order[w] >= _dfs_order[v])
     {
-        // v -articulation point in G;
+        // v - articulation point in G;
         // start new BCcomp;
         Array<int>& new_comp = _components.add(new Array<int>());
         new_comp.clear_resize(_graph.vertexEnd());
@@ -196,11 +267,13 @@ void BiconnectedDecomposer::_processIfNotPushed(Array<int>& dfs_stack, int w)
 
         while (_dfs_order[_edges_stack.top().beg] >= _dfs_order[w])
         {
-            _components[cur_comp]->at(_edges_stack.top().beg) = 1;
-            _components[cur_comp]->at(_edges_stack.top().end) = 1;
+            Edge e = _edges_stack.top();
             _edges_stack.pop();
+            // All edges in stack are permitted (forbidden edges don't go into stack)
+            _components[cur_comp]->at(e.beg) = 1;
+            _components[cur_comp]->at(e.end) = 1;
         }
-
+        // add the final tree edge (v,w)
         _components[cur_comp]->at(v) = 1;
         _components[cur_comp]->at(w) = 1;
         _edges_stack.pop();

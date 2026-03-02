@@ -142,14 +142,14 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
     if (sf == SeqFormat::HELM)
     {
         std::vector<std::deque<std::string>> sequences;
-        auto& doc = mol.getKetDocument();
+        KetDocument doc(mol);
         doc.parseSimplePolymers(sequences, false);
         seq_text = saveHELM(doc, sequences);
     }
     else if (sf == SeqFormat::IDT)
     {
         std::vector<std::deque<std::string>> sequences;
-        auto& doc = mol.getKetDocument();
+        KetDocument doc(mol);
         doc.parseSimplePolymers(sequences, true);
         saveIdt(doc, sequences, seq_text);
     }
@@ -772,7 +772,7 @@ void SequenceSaver::saveAxoLabs(KetDocument& doc, std::vector<std::deque<std::st
                 phosphate = "P";
                 add_s = true;
             }
-            if (sequence.size() == 0 && phosphate.size() == 0)
+            if (sequence.size() == 0 && phosphate.size() == 0 && base.size() > 0)
                 phosphate = "P";
 
             // Try to find sugar,base,phosphate group template
@@ -781,7 +781,9 @@ void SequenceSaver::saveAxoLabs(KetDocument& doc, std::vector<std::deque<std::st
             std::string base_id;
             if (base.size())
                 base_id = _library.getMonomerTemplateIdByAlias(MonomerClass::Base, base);
-            const std::string& mgt_id = _library.getMGTidByComponents(sugar_id, base_id, phosphate_id);
+            std::string mgt_id;
+            if (base.size() || phosphate.size())
+                mgt_id = _library.getMGTidByComponents(sugar_id, base_id, phosphate_id);
             if (mgt_id.size())
             {
                 auto& alias_axolabs = _library.getMonomerGroupTemplateById(mgt_id).aliasAxoLabs();
@@ -929,7 +931,7 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
             }
             if (monomer_idx && monomer_class != MonomerClass::Base && !((prev_monomer_class == MonomerClass::Base) && monomer_class == MonomerClass::Phosphate))
                 helm_string += '.'; // no separator between base and between base and phosphate
-            if (monomer_class == MonomerClass::Base && prev_monomer_class != MonomerClass::Sugar)
+            if (monomer_idx > 0 && monomer_class == MonomerClass::Base && prev_monomer_class != MonomerClass::Sugar)
                 throw Error("Wrong monomer sequence: base monomer %s after %s monomer.", monomer->alias().c_str(),
                             MonomerTemplate::MonomerClassToStr(prev_monomer_class).c_str());
             if (monomer_class == MonomerClass::Base)

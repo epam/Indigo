@@ -29,8 +29,8 @@
 #include "graph/graph.h"
 #include "math/algebra.h"
 #include "molecule/elements.h"
+#include "molecule/ket_annotation.h"
 #include "molecule/ket_monomer_shape.h"
-#include "molecule/ket_objects.h"
 #include "molecule/metadata_storage.h"
 #include "molecule/molecule_allene_stereo.h"
 #include "molecule/molecule_arom.h"
@@ -124,7 +124,6 @@ namespace indigo
     class Molecule;
     class QueryMolecule;
     class MetaDataStorage;
-    class KetDocument;
     class TGroup;
     class MonomerTemplateLibrary;
 
@@ -350,7 +349,7 @@ namespace indigo
         void removeAttachmentPoints();
         void getAttachmentIndicesForAtom(int atom_idx, Array<int>& res);
         int getExpandedMonomerCount() const;
-        std::unique_ptr<BaseMolecule>& expandedMonomersToAtoms();
+        std::unique_ptr<BaseMolecule> expandedMonomersToAtoms();
 
         virtual bool isSaturatedAtom(int idx) = 0;
 
@@ -569,6 +568,8 @@ namespace indigo
         // directly without calling molecule methods (for example mol.cis_trans.clear() and etc.)
         void updateEditRevision();
 
+        int flipBondWithDirection(int atom_parent, int atom_from, int atom_to, int leaving_atom);
+
         void clearBondDirections();
         int getBondDirection(int idx) const;
         void setBondDirection(int idx, int dir);
@@ -585,6 +586,8 @@ namespace indigo
         void getAtomsCenterPoint(Vec2f& res);
         void setAtomsCenterPoint(const Vec3f& center);
         float getBondsMeanLength();
+
+        bool isPiBonded(int atom_index) const;
 
         void scale(const Vec2f& center, float scale);
 
@@ -668,8 +671,6 @@ namespace indigo
         void setAlias(int atom_idx, const char* alias);
         void removeAlias(int atom_idx);
 
-        KetDocument& getKetDocument();
-
         PtrArray<KetMonomerShape> monomer_shapes;
 
         DECL_ERROR;
@@ -721,6 +722,15 @@ namespace indigo
         void _collectSuparatomAttachmentPoints(Superatom& sa, std::unordered_map<int, std::string>& ap_ids_map);
         static bool _findAffineTransform(BaseMolecule& src, BaseMolecule& dst, Mat23& M, const int* mapping);
 
+        void _processMonomerAttachmentPoints(int monomer_id, BaseMolecule& result, BaseMolecule& monomer_mol, std::map<int, std::pair<int, int>>& attached_atom,
+                                             Array<int>& atoms_to_remove);
+        void _connectMonomerToNeighbors(int monomer_id, BaseMolecule& result, BaseMolecule& monomer_mol, const Array<int>& atom_map,
+                                        const std::map<int, std::pair<int, int>>& attached_atom,
+                                        std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash>& templates);
+        std::pair<int, bool> _getNeighborLeavingBondDir(
+            int other, int monomer_id, BaseMolecule& result,
+            std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash>& templates);
+
         Array<int> _hl_atoms;
         Array<int> _hl_bonds;
         Array<int> _sl_atoms;
@@ -754,11 +764,6 @@ namespace indigo
 
         RedBlackObjMap<int, Array<char>> aliases;
         RedBlackObjMap<int, PropertiesMap> _properties;
-
-        KetDocument* _document;
-        int _document_revision;
-
-        std::unique_ptr<BaseMolecule> _with_expanded_monomers;
     };
 
 } // namespace indigo

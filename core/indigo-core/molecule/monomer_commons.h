@@ -154,5 +154,31 @@ namespace indigo
 
     constexpr char AXOLABS_PREFIX[] = "5'-";
     constexpr char AXOLABS_SUFFIX[] = "-3'";
+
+    static const std::set<std::pair<char, char>> complementary_bases{
+        {'A', 'T'},
+        {'T', 'A'},
+        {'A', 'U'},
+        {'U', 'A'},
+        {'C', 'G'},
+        {'G', 'C'},
+        // complementary_mixed_bases
+        {'N', 'N'},
+        {'B', 'V'},
+        {'V', 'B'},
+        {'D', 'H'},
+        {'H', 'D'},
+        {'K', 'M'},
+        {'M', 'K'},
+        {'W', 'W'},
+        {'Y', 'R'},
+        {'R', 'Y'},
+        {'S', 'S'},
+    };
+
+    size_t best_allign(const std::string& sense, const std::string& antisense, std::vector<std::pair<size_t, size_t>>& pairs, bool& shift_sense);
+    size_t needleman_wunsch(const std::string& sense, const std::string& antisense, std::vector<std::pair<size_t, size_t>>& strands,
+                            std::map<std::pair<char, char>, int> similarity, int mismatch = -1, int indel = -1);
+
 }
 #endif

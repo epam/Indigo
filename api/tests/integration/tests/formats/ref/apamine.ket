@@ -63,89 +63,100 @@
             {
                 "connectionType": "single",
                 "endpoint1": {
+                    "monomerId": "monomer18",
+                    "attachmentPointId": "R3"
+                },
+                "endpoint2": {
+                    "monomerId": "monomer0",
+                    "attachmentPointId": "R3"
+                }
+            },
+            {
+                "connectionType": "single",
+                "endpoint1": {
+                    "monomerId": "monomer18",
+                    "attachmentPointId": "R2"
+                },
+                "endpoint2": {
                     "monomerId": "monomer6",
                     "attachmentPointId": "R1"
-                },
-                "endpoint2": {
-                    "monomerId": "monomer18",
-                    "attachmentPointId": "R2"
                 }
             },
             {
                 "connectionType": "single",
                 "endpoint1": {
-                    "monomerId": "monomer17",
-                    "attachmentPointId": "R2"
-                },
-                "endpoint2": {
-                    "monomerId": "monomer0",
+                    "monomerId": "monomer18",
                     "attachmentPointId": "R1"
-                }
-            },
-            {
-                "connectionType": "single",
-                "endpoint1": {
-                    "monomerId": "monomer18",
-                    "attachmentPointId": "R3"
                 },
                 "endpoint2": {
-                    "monomerId": "monomer0",
-                    "attachmentPointId": "R3"
+                    "monomerId": "monomer7",
+                    "attachmentPointId": "R2"
                 }
             },
             {
                 "connectionType": "single",
                 "endpoint1": {
+                    "monomerId": "monomer0",
+                    "attachmentPointId": "R2"
+                },
+                "endpoint2": {
                     "monomerId": "monomer16",
                     "attachmentPointId": "R1"
-                },
-                "endpoint2": {
+                }
+            },
+            {
+                "connectionType": "single",
+                "endpoint1": {
                     "monomerId": "monomer0",
+                    "attachmentPointId": "R1"
+                },
+                "endpoint2": {
+                    "monomerId": "monomer17",
                     "attachmentPointId": "R2"
                 }
             },
             {
                 "connectionType": "single",
                 "endpoint1": {
-                    "monomerId": "monomer10",
+                    "monomerId": "monomer1",
+                    "attachmentPointId": "R3"
+                },
+                "endpoint2": {
+                    "monomerId": "monomer2",
+                    "attachmentPointId": "R3"
+                }
+            },
+            {
+                "connectionType": "single",
+                "endpoint1": {
+                    "monomerId": "monomer1",
                     "attachmentPointId": "R2"
                 },
                 "endpoint2": {
-                    "monomerId": "monomer1",
-                    "attachmentPointId": "R1"
-                }
-            },
-            {
-                "connectionType": "single",
-                "endpoint1": {
                     "monomerId": "monomer9",
                     "attachmentPointId": "R1"
-                },
-                "endpoint2": {
-                    "monomerId": "monomer1",
-                    "attachmentPointId": "R2"
                 }
             },
             {
                 "connectionType": "single",
                 "endpoint1": {
                     "monomerId": "monomer1",
-                    "attachmentPointId": "R3"
-                },
-                "endpoint2": {
-                    "monomerId": "monomer2",
-                    "attachmentPointId": "R3"
-                }
-            },
-            {
-                "connectionType": "single",
-                "endpoint1": {
-                    "monomerId": "monomer17",
                     "attachmentPointId": "R1"
                 },
                 "endpoint2": {
+                    "monomerId": "monomer10",
+                    "attachmentPointId": "R2"
+                }
+            },
+            {
+                "connectionType": "single",
+                "endpoint1": {
                     "monomerId": "monomer2",
                     "attachmentPointId": "R2"
+                },
+                "endpoint2": {
+                    "monomerId": "monomer17",
+                    "attachmentPointId": "R1"
                 }
             },
             {
@@ -266,17 +277,6 @@
                 },
                 "endpoint2": {
                     "monomerId": "monomer15",
-                    "attachmentPointId": "R1"
-                }
-            },
-            {
-                "connectionType": "single",
-                "endpoint1": {
-                    "monomerId": "monomer7",
-                    "attachmentPointId": "R2"
-                },
-                "endpoint2": {
-                    "monomerId": "monomer18",
                     "attachmentPointId": "R1"
                 }
             }
@@ -2608,16 +2608,16 @@
             {
                 "label": "C",
                 "location": [
-                    21.85300064086914,
-                    -6.570300102233887,
+                    1.0190505981445313,
+                    -0.6373000144958496,
                     0.0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    20.833999633789064,
-                    -5.972799777984619,
+                    0.000049591064453125,
+                    -0.03979969024658203,
                     0.0
                 ],
                 "stereoLabel": "abs"
@@ -2625,32 +2625,32 @@
             {
                 "label": "C",
                 "location": [
-                    20.84119987487793,
-                    -4.791500091552734,
+                    0.0072498321533203129,
+                    1.1414999961853028,
                     0.0
                 ]
             },
             {
                 "label": "S",
                 "location": [
-                    19.82229995727539,
-                    -4.193900108337402,
+                    -1.0116500854492188,
+                    1.7390999794006348,
                     0.0
                 ]
             },
             {
                 "label": "N",
                 "location": [
-                    19.805999755859376,
-                    -6.554699897766113,
+                    -1.0279502868652344,
+                    -0.6216998100280762,
                     0.0
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    21.847200393676759,
-                    -7.514800071716309,
+                    1.0132503509521485,
+                    -1.5817999839782715,
                     0.0
                 ]
             }
@@ -2717,16 +2717,16 @@
             {
                 "label": "C",
                 "location": [
-                    9.569499969482422,
-                    -6.570300102233887,
+                    1.019033432006836,
+                    -0.6373000144958496,
                     0.0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    8.55049991607666,
-                    -5.972799777984619,
+                    0.00003337860107421875,
+                    -0.03979969024658203,
                     0.0
                 ],
                 "stereoLabel": "abs"
@@ -2734,32 +2734,32 @@
             {
                 "label": "C",
                 "location": [
-                    8.55780029296875,
-                    -4.791500091552734,
+                    0.0073337554931640629,
+                    1.1414999961853028,
                     0.0
                 ]
             },
             {
                 "label": "S",
                 "location": [
-                    7.53879976272583,
-                    -4.193900108337402,
+                    -1.0116667747497559,
+                    1.7390999794006348,
                     0.0
                 ]
             },
             {
                 "label": "N",
                 "location": [
-                    7.522500038146973,
-                    -6.554699897766113,
+                    -1.0279664993286133,
+                    -0.6216998100280762,
                     0.0
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    9.563699722290039,
-                    -7.514800071716309,
+                    1.0132331848144532,
+                    -1.5817999839782715,
                     0.0
                 ]
             }
@@ -2826,16 +2826,16 @@
             {
                 "label": "C",
                 "location": [
-                    18.07349967956543,
-                    -6.570300102233887,
+                    1.0190982818603516,
+                    -0.6373000144958496,
                     0.0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    17.054500579833986,
-                    -5.972799777984619,
+                    0.00009918212890625,
+                    -0.03979969024658203,
                     0.0
                 ],
                 "stereoLabel": "abs"
@@ -2843,32 +2843,32 @@
             {
                 "label": "C",
                 "location": [
-                    17.06170082092285,
-                    -4.791500091552734,
+                    0.0072994232177734379,
+                    1.1414999961853028,
                     0.0
                 ]
             },
             {
                 "label": "S",
                 "location": [
-                    16.042699813842775,
-                    -4.193900108337402,
+                    -1.0117015838623047,
+                    1.7390999794006348,
                     0.0
                 ]
             },
             {
                 "label": "N",
                 "location": [
-                    16.026399612426759,
-                    -6.554699897766113,
+                    -1.0280017852783204,
+                    -0.6216998100280762,
                     0.0
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    18.06760025024414,
-                    -7.514800071716309,
+                    1.0131988525390626,
+                    -1.5817999839782715,
                     0.0
                 ]
             }
@@ -2940,16 +2940,16 @@
             {
                 "label": "C",
                 "location": [
-                    7.679800033569336,
-                    -6.570300102233887,
+                    1.0191001892089844,
+                    -0.6373000144958496,
                     0.0
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    6.660799980163574,
-                    -5.972799777984619,
+                    0.00010013580322265625,
+                    -0.03979969024658203,
                     0.0
                 ],
                 "stereoLabel": "abs"
@@ -2957,40 +2957,40 @@
             {
                 "label": "C",
                 "location": [
-                    6.668000221252441,
-                    -4.791500091552734,
+                    0.007300376892089844,
+                    1.1414999961853028,
                     0.0
                 ]
             },
             {
                 "label": "S",
                 "location": [
-                    5.64900016784668,
-                    -4.193900108337402,
+                    -1.0116996765136719,
+                    1.7390999794006348,
                     0.0
                 ]
             },
             {
                 "label": "N",
                 "location": [
-                    5.632699966430664,
-                    -6.554699897766113,
+                    -1.0279998779296876,
+                    -0.6216998100280762,
                     0.0
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    7.673900127410889,
-                    -7.514800071716309,
+                    1.013200283050537,
+                    -1.5817999839782715,
                     0.0
                 ]
             },
             {
                 "label": "H",
                 "location": [
-                    4.952000141143799,
-                    -6.154799938201904,
+                    -1.7086997032165528,
+                    -0.2217998504638672,
                     0.0
                 ]
             }

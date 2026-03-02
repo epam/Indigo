@@ -22,14 +22,14 @@
 
 namespace indigo
 {
-    class Molecule;
+    class BaseMolecule;
 
     class Crippen
     {
     public:
-        static double logP(Molecule& molecule);
-        static double molarRefractivity(Molecule& molecule);
-        static double pKa(Molecule& molecule);
-        static void getPKaValues(Molecule& molecule, Array<double>& values);
+        static double logP(BaseMolecule& molecule);
+        static double molarRefractivity(BaseMolecule& molecule);
+        static double pKa(BaseMolecule& molecule);
+        static void getPKaValues(BaseMolecule& molecule, Array<double>& values);
     };
 }

@@ -16,6 +16,7 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include <memory>
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
 
@@ -53,11 +54,13 @@ void PathwayReactionJsonSaver::saveReaction(PathwayReaction& pwr)
         rmd.buildReactionsData();
     }
     rapidjson::StringBuffer buffer;
-    JsonWriter writer(pretty_json);
+    auto writer_ptr = JsonWriter::createJsonWriter(pretty_json);
+    JsonWriter& writer = *writer_ptr;
     writer.Reset(buffer);
     MoleculeJsonSaver moleculeSaver(_output, rmd);
     moleculeSaver.add_stereo_desc = add_stereo_desc;
     moleculeSaver.use_native_precision = use_native_precision;
+    moleculeSaver.native_precision = native_precision;
     moleculeSaver.add_reaction_data = add_reaction_data;
     moleculeSaver.saveMolecule(*merged, writer);
     _output.printf("%s", buffer.GetString());

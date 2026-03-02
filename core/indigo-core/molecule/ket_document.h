@@ -36,6 +36,7 @@
 namespace indigo
 {
     class BaseMolecule;
+    class BaseReaction;
     class Output;
 
     class DLLEXPORT KetDocument : public MonomerTemplateLibrary
@@ -46,6 +47,8 @@ namespace indigo
             : _molecules(), original_format(0), _meta_objects(rapidjson::kArrayType), _r_groups(rapidjson::kArrayType), _json_molecules(rapidjson::kArrayType),
               _json_document(){};
         KetDocument(const KetDocument& other) = delete;
+        KetDocument(BaseMolecule& bmol);
+        KetDocument(BaseReaction& breact);
         KetDocument& operator=(const KetDocument&) = delete;
 
         KetMolecule& addMolecule(const std::string& ref);

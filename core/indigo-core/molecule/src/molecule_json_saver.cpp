@@ -16,10 +16,13 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include <iomanip>
 #include <memory>
 #include <set>
+#include <sstream>
 
 #include "layout/molecule_layout.h"
+
 #include "molecule/molecule.h"
 #include "molecule/molecule_cip_calculator.h"
 #include "molecule/molecule_json_saver.h"
@@ -28,6 +31,7 @@
 #include "molecule/monomer_commons.h"
 #include "molecule/monomers_template_library.h"
 #include "molecule/parse_utils.h"
+
 #include "molecule/query_molecule.h"
 #include "molecule/smiles_loader.h"
 #include "molecule/smiles_saver.h"
@@ -438,9 +442,40 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
     case SGroup::SG_TYPE_MER:
         throw Error("SG_TYPE_MER not implemented in indigo yet");
         break;
-    case SGroup::SG_TYPE_COP:
-        throw Error("SG_TYPE_COP not implemented in indigo yet");
-        break;
+    case SGroup::SG_TYPE_COP: {
+        CopolymerGroup& ru = (CopolymerGroup&)sgroup;
+        if (ru.sgroup_subtype != 0)
+        {
+            writer.Key("subtype");
+            if (ru.sgroup_subtype == SGroup::SG_SUBTYPE_ALT)
+            {
+                writer.String("ALT");
+            }
+            else if (ru.sgroup_subtype == SGroup::SG_SUBTYPE_RAN)
+            {
+                writer.String("RAN");
+            }
+            else if (ru.sgroup_subtype == SGroup::SG_SUBTYPE_BLO)
+            {
+                writer.String("BLO");
+            }
+        }
+
+        writer.Key("connectivity");
+        switch (ru.connectivity)
+        {
+        case SGroup::HEAD_TO_TAIL:
+            writer.String("HT");
+            break;
+        case SGroup::HEAD_TO_HEAD:
+            writer.String("HH");
+            break;
+        default:
+            writer.String("EU");
+            break;
+        }
+    }
+    break;
     case SGroup::SG_TYPE_CRO:
         throw Error("SG_TYPE_CRO not implemented in indigo yet");
         break;
@@ -697,21 +732,32 @@ void MoleculeJsonSaver::saveHighlights(BaseMolecule& mol, JsonWriter& writer)
         writer.EndArray();
     }
 }
-static void saveNativeFloat(JsonWriter& writer, float f_value)
+
+static void saveNativeFloat(JsonWriter& writer, float f_value, int precision = -1)
 {
-    std::string val = std::to_string(f_value);
+    std::string val;
+    if (precision >= 0)
+    {
+        std::ostringstream oss;
+        oss << std::fixed << std::setprecision(precision) << f_value;
+        val = oss.str();
+    }
+    else
+    {
+        val = std::to_string(f_value);
+    }
     writer.RawValue(val.c_str(), val.length(), kStringType);
 }
 
 void MoleculeJsonSaver::writeFloat(JsonWriter& writer, float f_value)
 {
     if (use_native_precision)
-        saveNativeFloat(writer, f_value);
+        saveNativeFloat(writer, f_value, native_precision);
     else
         writer.Double(f_value);
 }
 
-void indigo::MoleculeJsonSaver::writePos(JsonWriter& writer, const Vec3f& pos)
+void MoleculeJsonSaver::writePos(JsonWriter& writer, const Vec3f& pos)
 {
     writer.StartObject();
     writer.Key("x");
@@ -1309,7 +1355,7 @@ void MoleculeJsonSaver::saveAmbiguousMonomerTemplate(TGroup& tg, JsonWriter& wri
         if (tg.ratios[i] >= 0)
         {
             writer.Key(num_name);
-            saveNativeFloat(writer, tg.ratios[i]);
+            saveNativeFloat(writer, tg.ratios[i], native_precision);
         }
     }
     writer.EndArray();
@@ -2070,9 +2116,9 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
         Vec2f pos = monomer_shape.position();
         writer.StartObject();
         writer.Key("x");
-        saveNativeFloat(writer, pos.x);
+        saveNativeFloat(writer, pos.x, native_precision);
         writer.Key("y");
-        saveNativeFloat(writer, pos.y);
+        saveNativeFloat(writer, pos.y, native_precision);
         writer.EndObject();
         writer.Key("monomers");
         writer.StartArray();
@@ -2130,7 +2176,8 @@ void MoleculeJsonSaver::saveFragment(BaseMolecule& fragment, JsonWriter& writer)
 void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol)
 {
     StringBuffer s;
-    JsonWriter writer(pretty_json);
+    auto writer_ptr = JsonWriter::createJsonWriter(pretty_json);
+    JsonWriter& writer = *writer_ptr;
     writer.Reset(s);
     saveMolecule(bmol, writer);
     std::stringstream result;

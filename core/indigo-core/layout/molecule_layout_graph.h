@@ -70,6 +70,9 @@ namespace indigo
         int orig_idx;
         long morgan_code;
         bool is_cyclic;
+        bool is_inner_cycle;
+        bool is_inside;
+        bool is_nailed;
         int type;
 
         Vec2f pos;
@@ -172,6 +175,8 @@ namespace indigo
         LAYOUT_ORIENTATION layout_orientation;
 
         bool preserve_existing_layout;
+        bool respect_cycles_direction;
+        bool sequence_layout;
 
         CancellationHandler* cancellation;
 
@@ -180,8 +185,12 @@ namespace indigo
         ObjArray<LayoutVertex> _layout_vertices;
         ObjArray<LayoutEdge> _layout_edges;
 
-        Array<int> _fixed_vertices;
+        ObjArray<Array<int>> _fixed_subgraphs_ext_vertices;
+        ObjArray<Array<int>> _fixed_subgraphs_int_vertices;
+        Array<int> _fixed_decomposition;
 
+        Array<int> _fixed_vertices;
+        Array<int> _no_scale_vertices; // Vertices from cycles with fixed vertices - should not be scaled
         long _total_morgan_code;
         int _first_vertex_idx;
         int _n_fixed;
@@ -281,6 +290,7 @@ namespace indigo
         };
 
         // geometry functions
+        int _getCycleDirection(const Cycle& cycle) const;
         int _calcIntersection(int edge1, int edge2) const;
         bool _isVertexOnEdge(int vert_idx, int edge_beg, int edge_end) const;
         bool _isVertexOnSomeEdge(int vert_idx) const;
@@ -305,6 +315,7 @@ namespace indigo
 
         // for components
         virtual void _calcMorganCodes();
+        void _markInnerVertices(const MoleculeLayoutGraph& component);
 
         // for whole graph
         void _assignAbsoluteCoordinates(float bond_length);
@@ -332,16 +343,21 @@ namespace indigo
                                             int& parity);
         void _calculatePositionsManyNotDrawn(int vert_idx, Array<int>& adjacent_list, Array<Vec2f>& positions);
         void _orderByEnergy(Array<Vec2f>& positions);
-        void _assignRelativeSingleEdge(int& fixed_component, const MoleculeLayoutGraph& supergraph);
+        void _assignRelativeSingleEdge(int fixed_component, const MoleculeLayoutGraph& supergraph);
         void _findFirstVertexIdx(int n_comp, Array<int>& fixed_components, PtrArray<MoleculeLayoutGraph>& bc_components, bool all_trivial);
         bool _prepareAssignedList(Array<int>& assigned_list, BiconnectedDecomposer& bc_decom, PtrArray<MoleculeLayoutGraph>& bc_components,
                                   Array<int>& bc_tree);
         void _assignFinalCoordinates(float bond_length, const Array<Vec2f>& src_layout);
+        void _optimizeSelectedPartPlacement(float bond_length, const std::vector<std::vector<Vec2f>>& bridge_fixed_positions,
+                                            const std::vector<std::pair<int, Vec2f>>& all_fixed_vertices, const std::unordered_set<int>& bridge_connected_pairs,
+                                            const Vec2f& selected_center, const std::vector<int>& selected_vertices, Vec2f& best_translation,
+                                            float& best_rotation);
         void _copyLayout(MoleculeLayoutGraph& component);
         void _getAnchor(int& v1, int& v2, int& v3) const;
 
         void _findFixedComponents(BiconnectedDecomposer& bc_decom, Array<int>& fixed_components, PtrArray<MoleculeLayoutGraph>& bc_components);
         bool _assignComponentsRelativeCoordinates(PtrArray<MoleculeLayoutGraph>& bc_components, Array<int>& fixed_components, BiconnectedDecomposer& bc_decom);
+        void _reflectCycleVertices(const std::vector<int>& cycle_vertices, float bond_length);
         void _attachCrossingEdges();
 
         void _buildOutline(void);
@@ -396,7 +412,7 @@ namespace indigo
         // assigning coordinates
         void _assignRelativeCoordinates(int& fixed_component, const MoleculeLayoutGraph& supergraph) override;
         bool _tryToFindPattern(int& fixed_component);
-        void _assignFirstCycle(const Cycle& cycle);
+        void _assignFirstCycle(const Cycle& cycle, float radius);
 
         // attaching cycles
         bool _attachCycleOutside(const Cycle& cycle, float length, int n_common);

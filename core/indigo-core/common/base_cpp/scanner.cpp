@@ -463,10 +463,23 @@ void Scanner::appendLine(Array<char>& out, bool append_zero)
         out.push(0);
 }
 
+void Scanner::appendLine(std::string& out)
+{
+    Array<char> buf;
+    appendLine(buf, false);
+    out.assign(buf.ptr(), buf.size());
+}
+
 void Scanner::readLine(Array<char>& out, bool append_zero)
 {
     out.clear();
     appendLine(out, append_zero);
+}
+
+void Scanner::readLine(std::string& out)
+{
+    out.clear();
+    appendLine(out);
 }
 
 void Scanner::readQuotedLine(Array<char>& out, bool append_zero)

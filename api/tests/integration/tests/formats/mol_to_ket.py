@@ -63,6 +63,9 @@ files = [
     "3047-accldraw",
     "3094-chem-2000",
     "3094-chem-3000",
+    "3227-copolymer",
+    "3292-template-center",
+    "3343-dir-expanded",
 ]
 
 native_precision = [

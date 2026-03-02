@@ -243,6 +243,7 @@ namespace indigo
             bool force_hydrogens;
             bool ring_chain;
             bool substructure;
+            bool inner;
         };
 
         MangoTautomer(BingoContext& context);
@@ -251,7 +252,7 @@ namespace indigo
         void loadQuery(Scanner& scanner);
         void loadQuery(const char* str);
 
-        void setParams(int conditions, bool force_hydrogens, bool ring_chain, bool substructure);
+        void setParams(int conditions, bool force_hydrogens, bool ring_chain, bool substructure, bool inner);
         void setParameters(const char* conditions);
 
         const char* getQueryGross();

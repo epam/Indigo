@@ -1031,6 +1031,26 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                 }
                 _writeMultiString(output, buf.ptr(), buf.size());
             }
+            else if (sgroup.sgroup_type == SGroup::SG_TYPE_COP)
+            {
+                CopolymerGroup& cg = static_cast<CopolymerGroup&>(sgroup);
+                if (cg.connectivity == SGroup::HEAD_TO_HEAD)
+                    out.printf(" CONNECT=HH");
+                else if (cg.connectivity == SGroup::HEAD_TO_TAIL)
+                    out.printf(" CONNECT=HT");
+                else
+                    out.printf(" CONNECT=EU");
+                if (cg.sgroup_subtype != 0)
+                {
+                    if (cg.sgroup_subtype == SGroup::SG_SUBTYPE_ALT)
+                        out.printf(" SUBTYPE=ALT");
+                    else if (cg.sgroup_subtype == SGroup::SG_SUBTYPE_RAN)
+                        out.printf(" SUBTYPE=RAN");
+                    else if (cg.sgroup_subtype == SGroup::SG_SUBTYPE_BLO)
+                        out.printf(" SUBTYPE=BLO");
+                }
+                _writeMultiString(output, buf.ptr(), buf.size());
+            }
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_MUL)
             {
                 MultipleGroup& mg = static_cast<MultipleGroup&>(sgroup);
@@ -2064,7 +2084,7 @@ int MolfileSaver::_getStereocenterParity(BaseMolecule& mol, int idx)
         for (int i = 0; i < 4; i++)
         {
             int p = pyramid[i];
-            if (mol.getAtomNumber(p) == ELEM_H)
+            if (p != -1 && mol.getAtomNumber(p) == ELEM_H)
             {
                 bool pure_hydrogen = (mol.getAtomIsotope(p) == 0);
                 if (!pure_hydrogen && mol.isQueryMolecule())
