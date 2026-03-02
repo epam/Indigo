@@ -3168,3 +3168,64 @@ CEXPORT int indigoExpandMonomers(int item)
     }
     INDIGO_END(0);
 }
+
+// [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+// This function fully expands all template atoms (monomers) in a macromolecule to regular atoms.
+// It creates a working copy of the molecule to avoid side effects, marks all template atoms as
+// expanded, then calls the internal expandedMonomersToAtoms() method to perform the actual
+// expansion. The result is a new molecule with all monomers fully expanded to their atomic
+// structures, suitable for molecular weight calculations and compatibility with third-party tools.
+CEXPORT int indigoExpandedMonomersToAtoms(int molecule)
+{
+    INDIGO_BEGIN
+    {
+        BaseMolecule& mol = self.getObject(molecule).getBaseMolecule();
+
+        // Create a working copy to avoid side effects on the original molecule
+        std::unique_ptr<IndigoMolecule> work_mol = std::make_unique<IndigoMolecule>();
+        QS_DEF(Array<int>, work_mapping);
+        work_mol->mol.clone(mol, 0, &work_mapping);
+
+        // Set display options on template atoms in the working copy
+        // This marks them as expanded so expandedMonomersToAtoms() will process them.
+        // We validate each template atom's occurrence index before accessing to detect
+        // data corruption issues early.
+        for (int v_idx = work_mol->mol.vertexBegin(); v_idx != work_mol->mol.vertexEnd(); v_idx = work_mol->mol.vertexNext(v_idx))
+        {
+            if (!work_mol->mol.isTemplateAtom(v_idx))
+                continue;
+
+            // Get the template occurrence index - this should not throw since we checked isTemplateAtom()
+            int template_occur_idx = work_mol->mol.getTemplateAtomOccurrence(v_idx);
+
+            // Validate that the occurrence index is valid in the pool
+            // If invalid, this indicates data corruption and we should fail rather than silently skip
+            if (!work_mol->mol.isValidTemplateOccurrence(template_occur_idx))
+            {
+                throw IndigoError("expandedMonomersToAtoms: template atom #%d has invalid occurrence index %d (data corruption detected)",
+                                 v_idx, template_occur_idx);
+            }
+
+            // Mark this template atom as expanded
+            work_mol->mol.setTemplateAtomDisplayOption(v_idx, DisplayOption::Expanded);
+        }
+
+        // Call expandedMonomersToAtoms on the working copy
+        // This method clones internally and returns a molecule with all expanded monomers
+        // converted to regular atoms.
+        std::unique_ptr<BaseMolecule> expanded = work_mol->mol.expandedMonomersToAtoms();
+
+        // Create new IndigoMolecule for the final result
+        std::unique_ptr<IndigoMolecule> new_mol = std::make_unique<IndigoMolecule>();
+        QS_DEF(Array<int>, mapping);
+        new_mol->mol.clone(*expanded, 0, &mapping);
+
+        // Copy properties from original molecule
+        auto& props = self.getObject(molecule).getProperties();
+        new_mol->copyProperties(props);
+
+        // Add to session and return ID
+        return self.addObject(new_mol.release());
+    }
+    INDIGO_END(-1);
+}

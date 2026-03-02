@@ -105,9 +105,49 @@ void MoleculeJsonLoader::parse_ket(Document& ket)
             if (ket.HasMember(template_ref.c_str()))
             {
                 Value& template_node = ket[template_ref.c_str()];
+                // [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+                // Skip null template nodes - they indicate the template was not saved
+                // (e.g., due to invalid TGroup data). This allows loading to continue
+                // with valid templates while gracefully handling invalid ones.
+                if (template_node.IsNull())
+                {
+                    // Template reference points to null - skip it
+                    // This can occur when invalid TGroups are skipped during saving
+                    continue;
+                }
+                // [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+                // Validate template node before accessing to provide clear error messages.
+                // This prevents crashes and gives users actionable feedback about corrupted data.
+                if (!template_node.IsObject())
+                {
+                    const char* type_name = "unknown";
+                    if (template_node.IsBool())
+                        type_name = "boolean";
+                    else if (template_node.IsNumber())
+                        type_name = "number";
+                    else if (template_node.IsString())
+                        type_name = "string";
+                    else if (template_node.IsArray())
+                        type_name = "array";
+                    throw Error("Template reference '%s' points to invalid value (expected object, got %s). "
+                              "This may indicate corrupted KET JSON data.",
+                              template_ref.c_str(), type_name);
+                }
+                if (!template_node.HasMember("id"))
+                {
+                    throw Error("Template reference '%s' points to object missing required 'id' field. "
+                              "This may indicate corrupted KET JSON data.",
+                              template_ref.c_str());
+                }
                 std::string id = template_node["id"].GetString();
+                // [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+                // Use actual index in _templates array, not loop index, to handle skipped null templates.
+                // When null templates are skipped with continue, the loop index i doesn't match
+                // the actual position in _templates array, causing out-of-bounds access later.
+                // This ensures _id_to_template maps template IDs to correct indices in _templates.
+                rapidjson::SizeType template_index = _templates.Size();
                 _templates.PushBack(template_node, ket.GetAllocator());
-                _id_to_template.emplace(id, i);
+                _id_to_template.emplace(id, template_index);
                 _template_ref_to_id.emplace(template_ref, id);
             }
         }
