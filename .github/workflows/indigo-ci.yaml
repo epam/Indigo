@@ -1086,6 +1086,98 @@ jobs:
           name: bingo-oracle-windows-msvc-x86_64
           path: dist/bingo-oracle*.zip
 
+  test_bingo_oracle_linux_x86_64:
+    runs-on: ubuntu-latest
+    needs: [build_bingo_oracle_linux_x86_64]
+    services:
+      oracle:
+        image: gvenzl/oracle-xe:21-slim
+        env:
+          ORACLE_PASSWORD: password
+        ports:
+          - 1521:1521
+        options: >-
+          --health-cmd healthcheck.sh
+          --health-interval 30s
+          --health-timeout 10s
+          --health-retries 10
+          --health-start-period 120s
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+          fetch-depth: 500
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Git fetch tags
+        run: |
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
+      - name: Install Oracle Instant Client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libaio1
+          wget -q https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-basic-linux.x64-23.5.0.24.07.zip
+          wget -q https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-sqlplus-linux.x64-23.5.0.24.07.zip
+          sudo mkdir -p /opt/oracle
+          sudo unzip -o instantclient-basic-linux.x64-23.5.0.24.07.zip -d /opt/oracle
+          sudo unzip -o instantclient-sqlplus-linux.x64-23.5.0.24.07.zip -d /opt/oracle
+          echo "/opt/oracle/instantclient_23_5" | sudo tee /etc/ld.so.conf.d/oracle.conf
+          sudo ldconfig
+          echo "/opt/oracle/instantclient_23_5" >> $GITHUB_PATH
+      - name: Download bingo-oracle artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: bingo-oracle-linux-x86_64
+          path: dist
+      - name: Install bingo-oracle
+        env:
+          ORACLE_HOME: /opt/oracle/instantclient_23_5
+          LD_LIBRARY_PATH: /opt/oracle/instantclient_23_5
+          PATH: /opt/oracle/instantclient_23_5:${{ env.PATH }}
+        run: |
+          mkdir -p /opt/bingo-oracle && cd /opt/bingo-oracle
+          tar -xzf $GITHUB_WORKSPACE/dist/bingo-oracle*.tgz --strip-components=1
+          sh ./bingo-oracle-install.sh \
+            -libdir /opt/oracle/instantclient_23_5 \
+            -dbaname system \
+            -dbapass password \
+            -instance localhost:1521/XEPDB1 \
+            -bingoname bingo \
+            -bingopass bingo \
+            -y
+      - name: Create test schema user
+        env:
+          LD_LIBRARY_PATH: /opt/oracle/instantclient_23_5
+        run: |
+          echo "
+          CREATE USER test IDENTIFIED BY test DEFAULT TABLESPACE bingo;
+          GRANT CONNECT TO test;
+          GRANT CREATE TABLE TO test;
+          GRANT CREATE SESSION TO test;
+          GRANT UNLIMITED TABLESPACE TO test;
+          GRANT EXECUTE ON bingo.MangoPackage TO test;
+          GRANT EXECUTE ON bingo.RingoPackage TO test;
+          EXIT;
+          " | sqlplus system/password@localhost:1521/XEPDB1
+      - name: Install dev dependencies
+        run: |
+          pip install -r bingo/tests/requirements.txt --break-system-packages
+      - name: Run Bingo Oracle tests
+        run: |
+          pytest -s --tb=no --db oracle --junit-xml=junit_report.xml
+        working-directory: bingo/tests
+      - name: Publish Test Report
+        if: always()
+        uses: mikepenz/action-junit-report@v4
+        with:
+          report_paths: 'bingo/tests/junit_report.xml'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          check_name: "bingo_oracle_test_report"
+
   build_bingo_postgres_linux_x86_64:
     strategy:
       fail-fast: false
