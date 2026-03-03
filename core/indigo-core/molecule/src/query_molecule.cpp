@@ -108,7 +108,7 @@ int QueryMolecule::getExplicitValence(int idx)
 
 void QueryMolecule::setExplicitValence(int idx, int valence)
 {
-    resetAtom(idx, QueryMolecule::Atom::und(_atoms[idx], new QueryMolecule::Atom(QueryMolecule::ATOM_TOTAL_BOND_ORDER, valence)));
+    resetAtom(idx, QueryMolecule::Atom::und(releaseAtom(idx), new QueryMolecule::Atom(QueryMolecule::ATOM_TOTAL_BOND_ORDER, valence)));
 }
 
 int QueryMolecule::getAtomAromaticity(int idx)
