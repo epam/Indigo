@@ -44,6 +44,8 @@ namespace bingo
         MMFArray<_Addr> _addresses;
     };
 
+    // This class used to backward compatibility
+    // https://github.com/epam/Indigo/issues/3528
     class ByteBufferStorageShort
     {
     public:

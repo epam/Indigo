@@ -46,6 +46,8 @@ namespace bingo
         static dword _calculateGrossHash(const char* gross_str, int len);
     };
 
+    // This class used to backward compatibility
+    // https://github.com/epam/Indigo/issues/3528
     class GrossStorageShort
     {
     public:

@@ -126,9 +126,12 @@ namespace bingo
         MMFPtr<SimStorage> _sim_fp_storage;
         MMFPtr<ExactStorage> _exact_storage;
         MMFPtr<GrossStorage> _gross_storage;
-        MMFPtr<GrossStorageShort> _gross_storage_short;
         MMFPtr<ByteBufferStorage> _cf_storage;
+        // This two variables used to backward compatibility
+        // https://github.com/epam/Indigo/issues/3528
+        MMFPtr<GrossStorageShort> _gross_storage_short;
         MMFPtr<ByteBufferStorageShort> _cf_storage_short;
+
         MMFPtr<Properties> _properties;
 
         MoleculeFingerprintParameters _fp_params;
