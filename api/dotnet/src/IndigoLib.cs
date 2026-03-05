@@ -24,7 +24,7 @@ namespace com.epam.indigo
         public static extern byte* indigoGetLastError();
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern void indigoSetErrorMessage(string message);
+        public static extern void indigoSetErrorMessage([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string message);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoFree(int id);
@@ -36,49 +36,49 @@ namespace com.epam.indigo
         public static extern int indigoCountReferences();
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoSetOption(string name, string value);
+        public static extern int indigoSetOption([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string name, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string value);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoSetOptionInt(string name, int value);
+        public static extern int indigoSetOptionInt([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string name, int value);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoSetOptionBool(string name, int value);
+        public static extern int indigoSetOptionBool([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string name, int value);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoSetOptionFloat(string name, float value);
+        public static extern int indigoSetOptionFloat([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string name, float value);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoSetOptionColor(string name, float r, float g, float b);
+        public static extern int indigoSetOptionColor([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string name, float r, float g, float b);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoSetOptionXY(string name, int x, int y);
+        public static extern int indigoSetOptionXY([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string name, int x, int y);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern byte* indigoGetOption(string name);
+        public static extern byte* indigoGetOption([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string name);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoGetOptionInt(string name, int* value);
+        public static extern int indigoGetOptionInt([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string name, int* value);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoGetOptionBool(string name, int* value);
+        public static extern int indigoGetOptionBool([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string name, int* value);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoGetOptionFloat(string name, float* value);
+        public static extern int indigoGetOptionFloat([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string name, float* value);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern byte* indigoGetOptionType(string name);
+        public static extern byte* indigoGetOptionType([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string name);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoResetOptions();
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoReadFile(string filename);
+        public static extern int indigoReadFile([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string filename);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoReadString(string str);
+        public static extern int indigoReadString([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string str);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadString(string str);
+        public static extern int indigoLoadString([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string str);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoReadBuffer(byte[] buffer, int size);
@@ -87,7 +87,7 @@ namespace com.epam.indigo
         public static extern int indigoLoadBuffer(byte[] buffer, int size);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoWriteFile(string filename);
+        public static extern int indigoWriteFile([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string filename);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoWriteBuffer();
@@ -108,100 +108,100 @@ namespace com.epam.indigo
         public static extern int indigoCreateQueryMolecule();
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadMoleculeFromString(string str);
+        public static extern int indigoLoadMoleculeFromString([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string str);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadMoleculeFromFile(string path);
+        public static extern int indigoLoadMoleculeFromFile([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string path);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoLoadMoleculeFromBuffer(byte[] buf, int bufsize);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadMoleculeWithLibFromString(string str, int library);
+        public static extern int indigoLoadMoleculeWithLibFromString([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string str, int library);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadMoleculeWithLibFromFile(string path, int library);
+        public static extern int indigoLoadMoleculeWithLibFromFile([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string path, int library);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoLoadMoleculeWithLibFromBuffer(byte[] buf, int bufsize, int library);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadQueryMoleculeFromString(string str);
+        public static extern int indigoLoadQueryMoleculeFromString([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string str);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadQueryMoleculeFromFile(string path);
+        public static extern int indigoLoadQueryMoleculeFromFile([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string path);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoLoadQueryMoleculeFromBuffer(byte[] buf, int bufsize);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadQueryMoleculeWithLibFromString(string str, int library);
+        public static extern int indigoLoadQueryMoleculeWithLibFromString([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string str, int library);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadQueryMoleculeWithLibFromFile(string path, int library);
+        public static extern int indigoLoadQueryMoleculeWithLibFromFile([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string path, int library);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoLoadQueryMoleculeWithLibFromBuffer(byte[] buf, int bufsize, int library);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadSmartsFromString(string str);
+        public static extern int indigoLoadSmartsFromString([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string str);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadSmartsFromFile(string filename);
+        public static extern int indigoLoadSmartsFromFile([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string filename);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadMonomerLibraryFromString(string str);
+        public static extern int indigoLoadMonomerLibraryFromString([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string str);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadKetDocumentFromString(string str);
+        public static extern int indigoLoadKetDocumentFromString([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string str);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadSequenceFromString(string str, string seq_type, int library);
+        public static extern int indigoLoadSequenceFromString([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string str, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string seq_type, int library);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadFastaFromString(string str, string seq_type, int library);
+        public static extern int indigoLoadFastaFromString([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string str, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string seq_type, int library);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadIdtFromString(string str, int library);
+        public static extern int indigoLoadIdtFromString([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string str, int library);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadHelmFromString(string str, int library);
+        public static extern int indigoLoadHelmFromString([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string str, int library);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadAxoLabsFromString(string str, int library);
+        public static extern int indigoLoadAxoLabsFromString([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string str, int library);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadMonomerLibraryFromFile(string filename);
+        public static extern int indigoLoadMonomerLibraryFromFile([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string filename);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadKetDocumentFromFile(string filename);
+        public static extern int indigoLoadKetDocumentFromFile([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string filename);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadSequenceFromFile(string filename, string seq_type, int library);
+        public static extern int indigoLoadSequenceFromFile([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string filename, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string seq_type, int library);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadFastaFromFile(string filename, string seq_type, int library);
+        public static extern int indigoLoadFastaFromFile([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string filename, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string seq_type, int library);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadIdtFromFile(string filename, int library);
+        public static extern int indigoLoadIdtFromFile([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string filename, int library);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadHelmFromFile(string filename, int library);
+        public static extern int indigoLoadHelmFromFile([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string filename, int library);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadAxoLabsFromFile(string filename, int library);
+        public static extern int indigoLoadAxoLabsFromFile([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string filename, int library);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoLoadSmartsFromBuffer(byte[] buffer, int size);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadStructureFromString(string str, string options);
+        public static extern int indigoLoadStructureFromString([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string str, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string options);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadStructureFromFile(string path, string options);
+        public static extern int indigoLoadStructureFromFile([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string path, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string options);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadStructureFromBuffer(byte[] buf, int bufsize, string options);
+        public static extern int indigoLoadStructureFromBuffer(byte[] buf, int bufsize, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string options);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoSaveMolfile(int molecule, int output);
@@ -213,7 +213,7 @@ namespace com.epam.indigo
         public static extern int indigoSaveSequence3LetterToFile(int molecule, int output, int library);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoSaveMolfileToFile(int molecule, string filename);
+        public static extern int indigoSaveMolfileToFile(int molecule, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string filename);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern byte* indigoMolfile(int molecule);
@@ -240,7 +240,7 @@ namespace com.epam.indigo
         public static extern int indigoSaveCml(int molecule, int output);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoSaveCmlToFile(int molecule, string filename);
+        public static extern int indigoSaveCmlToFile(int molecule, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string filename);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern byte* indigoCml(int molecule);
@@ -255,7 +255,7 @@ namespace com.epam.indigo
         public static extern int indigoSaveCdxml(int molecule, int output);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoSaveCdxmlToFile(int molecule, string filename);
+        public static extern int indigoSaveCdxmlToFile(int molecule, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string filename);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern byte* indigoCdxml(int molecule);
@@ -267,55 +267,55 @@ namespace com.epam.indigo
         public static extern int indigoSaveMDLCT(int item, int output);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoCreateSaver(int output, string format);
+        public static extern int indigoCreateSaver(int output, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string format);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoCreateFileSaver(string filename, string format);
+        public static extern int indigoCreateFileSaver([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string filename, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string format);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoAppend(int saver, int obj);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadReactionFromString(string str);
+        public static extern int indigoLoadReactionFromString([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string str);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadReactionFromFile(string path);
+        public static extern int indigoLoadReactionFromFile([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string path);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoLoadReactionFromBuffer(byte[] buf, int bufsize);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadQueryReactionFromString(string str);
+        public static extern int indigoLoadQueryReactionFromString([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string str);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadQueryReactionFromFile(string path);
+        public static extern int indigoLoadQueryReactionFromFile([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string path);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoLoadQueryReactionFromBuffer(byte[] buf, int bufsize);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadReactionWithLibFromString(string str, int library);
+        public static extern int indigoLoadReactionWithLibFromString([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string str, int library);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadReactionWithLibFromFile(string path, int library);
+        public static extern int indigoLoadReactionWithLibFromFile([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string path, int library);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoLoadReactionWithLibFromBuffer(byte[] buf, int bufsize, int library);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadQueryReactionWithLibFromString(string str, int library);
+        public static extern int indigoLoadQueryReactionWithLibFromString([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string str, int library);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadQueryReactionWithLibFromFile(string path, int library);
+        public static extern int indigoLoadQueryReactionWithLibFromFile([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string path, int library);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoLoadQueryReactionWithLibFromBuffer(byte[] buf, int bufsize, int library);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadReactionSmartsFromString(string str);
+        public static extern int indigoLoadReactionSmartsFromString([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string str);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoLoadReactionSmartsFromFile(string path);
+        public static extern int indigoLoadReactionSmartsFromFile([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string path);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoLoadReactionSmartsFromBuffer(byte[] buf, int bufsize);
@@ -366,13 +366,13 @@ namespace com.epam.indigo
         public static extern int indigoSaveRxnfile(int reaction, int output);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoSaveRxnfileToFile(int reaction, string filename);
+        public static extern int indigoSaveRxnfileToFile(int reaction, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string filename);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern byte* indigoRxnfile(int reaction);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoAutomap(int reaction, string filename);
+        public static extern int indigoAutomap(int reaction, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string filename);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoGetAtomMappingNumber(int reaction, int reaction_atom);
@@ -393,10 +393,10 @@ namespace com.epam.indigo
         public static extern int indigoSetReactingCenter(int reaction, int reaction_bond, int rc);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoOptimize(int query, string options);
+        public static extern int indigoOptimize(int query, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string options);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoNormalize(int structure, string options);
+        public static extern int indigoNormalize(int structure, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string options);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoStandardize(int item);
@@ -411,7 +411,7 @@ namespace com.epam.indigo
         public static extern float* indigoGetBasicPkaValue(int item, int atom, int level, int min_level);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoBuildPkaModel(int level, float theshold, string filename);
+        public static extern int indigoBuildPkaModel(int level, float theshold, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string filename);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoIterateAtoms(int molecule);
@@ -585,13 +585,13 @@ namespace com.epam.indigo
         public static extern byte* indigoData(int item);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoAddDataSGroup(int molecule, int natoms, int[] atoms, int nbonds, int[] bonds, string description, string data);
+        public static extern int indigoAddDataSGroup(int molecule, int natoms, int[] atoms, int nbonds, int[] bonds, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string description, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string data);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoSetDataSGroupXY(int sgroup, float x, float y, string options);
+        public static extern int indigoSetDataSGroupXY(int sgroup, float x, float y, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string options);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoAddSuperatom(int molecule, int natoms, int[] atoms, string name);
+        public static extern int indigoAddSuperatom(int molecule, int natoms, int[] atoms, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string name);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern byte* indigoGetRepeatingUnitSubscript(int sgroup);
@@ -600,13 +600,13 @@ namespace com.epam.indigo
         public static extern int indigoGetRepeatingUnitConnectivity(int sgroup);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoCreateSGroup(string type, int mapping, string name);
+        public static extern int indigoCreateSGroup([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string type, int mapping, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string name);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoSetSGroupClass(int sgroup, string sgclass);
+        public static extern int indigoSetSGroupClass(int sgroup, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string sgclass);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoSetSGroupName(int sgroup, string sgname);
+        public static extern int indigoSetSGroupName(int sgroup, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string sgname);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern byte* indigoGetSGroupClass(int sgroup);
@@ -618,7 +618,7 @@ namespace com.epam.indigo
         public static extern int indigoGetSGroupNumCrossBonds(int sgroup);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoAddSGroupAttachmentPoint(int sgroup, int aidx, int lvidx, string apid);
+        public static extern int indigoAddSGroupAttachmentPoint(int sgroup, int aidx, int lvidx, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string apid);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoDeleteSGroupAttachmentPoint(int sgroup, int apidx);
@@ -642,37 +642,37 @@ namespace com.epam.indigo
         public static extern int indigoSetSGroupMultiplier(int sgroup, int mult);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoSetSGroupData(int sgroup, string data);
+        public static extern int indigoSetSGroupData(int sgroup, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string data);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoSetSGroupCoords(int sgroup, float x, float y);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoSetSGroupDescription(int sgroup, string description);
+        public static extern int indigoSetSGroupDescription(int sgroup, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string description);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoSetSGroupFieldName(int sgroup, string name);
+        public static extern int indigoSetSGroupFieldName(int sgroup, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string name);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoSetSGroupQueryCode(int sgroup, string querycode);
+        public static extern int indigoSetSGroupQueryCode(int sgroup, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string querycode);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoSetSGroupQueryOper(int sgroup, string queryoper);
+        public static extern int indigoSetSGroupQueryOper(int sgroup, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string queryoper);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoSetSGroupDisplay(int sgroup, string option);
+        public static extern int indigoSetSGroupDisplay(int sgroup, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string option);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoSetSGroupLocation(int sgroup, string option);
+        public static extern int indigoSetSGroupLocation(int sgroup, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string option);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoSetSGroupTag(int sgroup, string tag);
+        public static extern int indigoSetSGroupTag(int sgroup, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string tag);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoSetSGroupTagAlign(int sgroup, int tag_align);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoSetSGroupDataType(int sgroup, string type);
+        public static extern int indigoSetSGroupDataType(int sgroup, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string type);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoSetSGroupXCoord(int sgroup, float x);
@@ -685,7 +685,7 @@ namespace com.epam.indigo
                                                          float x3, float y3, float x4, float y4);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoFindSGroups(int molecule, string property, string value);
+        public static extern int indigoFindSGroups(int molecule, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string property, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string value);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoGetSGroupType(int sgroup);
@@ -706,13 +706,13 @@ namespace com.epam.indigo
         public static extern int indigoSetSGroupParentId(int sgroup, int parent);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoAddTemplate(int molecule, int templates, string name);
+        public static extern int indigoAddTemplate(int molecule, int templates, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string name);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoRemoveTemplate(int molecule, string name);
+        public static extern int indigoRemoveTemplate(int molecule, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string name);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoFindTemplate(int molecule, string name);
+        public static extern int indigoFindTemplate(int molecule, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string name);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern byte* indigoGetTGroupClass(int tgroup);
@@ -733,7 +733,7 @@ namespace com.epam.indigo
         public static extern byte* indigoGetTemplateAtomClass(int atom);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoSetTemplateAtomClass(int atom, string name);
+        public static extern int indigoSetTemplateAtomClass(int atom, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string name);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern float* indigoXYZ(int atom);
@@ -763,16 +763,16 @@ namespace com.epam.indigo
         public static extern int indigoClearAttachmentPoints(int item);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoRemoveConstraints(int item, string type);
+        public static extern int indigoRemoveConstraints(int item, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string type);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoAddConstraint(int item, string type, string value);
+        public static extern int indigoAddConstraint(int item, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string type, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string value);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoAddConstraintNot(int item, string type, string value);
+        public static extern int indigoAddConstraintNot(int item, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string type, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string value);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoAddConstraintOr(int item, string type, string value);
+        public static extern int indigoAddConstraintOr(int item, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string type, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string value);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoInvertStereo(int atom);
@@ -862,16 +862,16 @@ namespace com.epam.indigo
         public static extern int indigoAddCIPStereoDescriptors(int molecule);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoAddAtom(int molecule, string symbol);
+        public static extern int indigoAddAtom(int molecule, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string symbol);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoResetAtom(int atom, string symbol);
+        public static extern int indigoResetAtom(int atom, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string symbol);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoAddRSite(int molecule, string name);
+        public static extern int indigoAddRSite(int molecule, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string name);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoSetRSite(int atom, string name);
+        public static extern int indigoSetRSite(int atom, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string name);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoSetCharge(int atom, int charge);
@@ -1003,7 +1003,7 @@ namespace com.epam.indigo
         public static extern int indigoIsChiral(int molecule);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoIsPossibleFischerProjection(int molecule, string options);
+        public static extern int indigoIsPossibleFischerProjection(int molecule, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string options);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoCreateSubmolecule(int molecule, int nvertices, int[] vertices);
@@ -1060,10 +1060,10 @@ namespace com.epam.indigo
         public static extern byte* indigoCanonicalSmarts(int item);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoExactMatch(int item1, int item2, string flags);
+        public static extern int indigoExactMatch(int item1, int item2, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string flags);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoSetTautomerRule(int id, string beg, string end);
+        public static extern int indigoSetTautomerRule(int id, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string beg, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string end);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoRemoveTautomerRule(int id);
@@ -1075,7 +1075,7 @@ namespace com.epam.indigo
         public static extern byte* indigoName(int item);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoSetName(int item, string name);
+        public static extern int indigoSetName(int item, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string name);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoSerialize(int handle, byte** buf, int* size);
@@ -1084,16 +1084,16 @@ namespace com.epam.indigo
         public static extern int indigoUnserialize(byte[] buf, int size);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoHasProperty(int handle, string field);
+        public static extern int indigoHasProperty(int handle, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string field);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern byte* indigoGetProperty(int handle, string field);
+        public static extern byte* indigoGetProperty(int handle, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string field);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoSetProperty(int handle, string field, string value);
+        public static extern int indigoSetProperty(int handle, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string field, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string value);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoRemoveProperty(int item, string prop);
+        public static extern int indigoRemoveProperty(int item, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string prop);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoIterateProperties(int handle);
@@ -1117,16 +1117,16 @@ namespace com.epam.indigo
         public static extern int indigoCheckStereo(int handle);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern byte* indigoCheck(string item, string type, string load_params);
+        public static extern byte* indigoCheck([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string item, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string type, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string load_params);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern byte* indigoCheckObj(int item, string type);
+        public static extern byte* indigoCheckObj(int item, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string type);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern byte* indigoCheckStructure(string structure, string type);
+        public static extern byte* indigoCheckStructure([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string structure, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string type);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoFingerprint(int item, string type);
+        public static extern int indigoFingerprint(int item, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string type);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern byte* indigoOneBitsList(int fingerprint);
@@ -1144,7 +1144,7 @@ namespace com.epam.indigo
         public static extern int indigoCommonBits(int fingerprint1, int fingerprint2);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern float indigoSimilarity(int molecule1, int molecule2, string metrics);
+        public static extern float indigoSimilarity(int molecule1, int molecule2, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string metrics);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoIterateSDF(int reader);
@@ -1162,19 +1162,19 @@ namespace com.epam.indigo
         public static extern int indigoIterateCDX(int reader);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoIterateSDFile(string filename);
+        public static extern int indigoIterateSDFile([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string filename);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoIterateRDFile(string filename);
+        public static extern int indigoIterateRDFile([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string filename);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoIterateSmilesFile(string filename);
+        public static extern int indigoIterateSmilesFile([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string filename);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoIterateCMLFile(string filename);
+        public static extern int indigoIterateCMLFile([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string filename);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoIterateCDXFile(string filename);
+        public static extern int indigoIterateCDXFile([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string filename);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern byte* indigoRawData(int item);
@@ -1222,7 +1222,7 @@ namespace com.epam.indigo
         public static extern int indigoIterateArray(int arr);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoSubstructureMatcher(int target, string mode);
+        public static extern int indigoSubstructureMatcher(int target, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string mode);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoIgnoreAtom(int matcher, int atom);
@@ -1258,13 +1258,13 @@ namespace com.epam.indigo
         public static extern int indigoMapMolecule(int match, int query_reaction_molecule);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoExtractCommonScaffold(int structures, string options);
+        public static extern int indigoExtractCommonScaffold(int structures, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string options);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoRGroupComposition(int molecule, string options);
+        public static extern int indigoRGroupComposition(int molecule, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string options);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoGetFragmentedMolecule(int molecule, string options);
+        public static extern int indigoGetFragmentedMolecule(int molecule, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string options);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoAllScaffolds(int extracted);
@@ -1330,10 +1330,10 @@ namespace com.epam.indigo
         public static extern int indigoExpandAbbreviations(int structure);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoIterateTautomers(int structure, string parameters);
+        public static extern int indigoIterateTautomers(int structure, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string parameters);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoNameToStructure(string name, string parameters);
+        public static extern int indigoNameToStructure([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string name, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string parameters);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoTransformHELMtoSCSR(int item);

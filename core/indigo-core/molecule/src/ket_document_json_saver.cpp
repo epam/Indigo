@@ -526,18 +526,24 @@ void KetDocumentJsonSaver::saveKetDocument(JsonWriter& writer, const KetDocument
     }
     // */
     std::string molecule_prefix = "mol";
-    for (rapidjson::SizeType i = 0; i < document.jsonMolecules().Size(); i++)
+    if (document.jsonMolecules().IsArray())
     {
-        writer.StartObject();
-        saveStr(writer, "$ref", molecule_prefix + std::to_string(i));
-        writer.EndObject();
+        for (rapidjson::SizeType i = 0; i < document.jsonMolecules().Size(); i++)
+        {
+            writer.StartObject();
+            saveStr(writer, "$ref", molecule_prefix + std::to_string(i));
+            writer.EndObject();
+        }
     }
     std::string rgroup_prefix = "rg";
-    for (rapidjson::SizeType i = 0; i < document.rgroups().Size(); i++)
+    if (document.rgroups().IsArray())
     {
-        writer.StartObject();
-        saveStr(writer, "$ref", rgroup_prefix + std::to_string(i));
-        writer.EndObject();
+        for (rapidjson::SizeType i = 0; i < document.rgroups().Size(); i++)
+        {
+            writer.StartObject();
+            saveStr(writer, "$ref", rgroup_prefix + std::to_string(i));
+            writer.EndObject();
+        }
     }
     for (auto& id : document.monomersIds())
     {
@@ -620,17 +626,23 @@ void KetDocumentJsonSaver::saveKetDocument(JsonWriter& writer, const KetDocument
     writer.EndObject(); // root
 
     auto& json_molecules = document.jsonMolecules();
-    for (rapidjson::SizeType i = 0; i < json_molecules.Size(); i++)
+    if (json_molecules.IsArray())
     {
-        writer.Key(molecule_prefix + std::to_string(i));
-        json_molecules[i].Accept(writer);
+        for (rapidjson::SizeType i = 0; i < json_molecules.Size(); i++)
+        {
+            writer.Key(molecule_prefix + std::to_string(i));
+            json_molecules[i].Accept(writer);
+        }
     }
 
     auto& rgroups = document.rgroups();
-    for (rapidjson::SizeType i = 0; i < rgroups.Size(); i++)
+    if (rgroups.IsArray())
     {
-        writer.Key(rgroup_prefix + std::to_string(i));
-        rgroups[i].Accept(writer);
+        for (rapidjson::SizeType i = 0; i < rgroups.Size(); i++)
+        {
+            writer.Key(rgroup_prefix + std::to_string(i));
+            rgroups[i].Accept(writer);
+        }
     }
 
     // for (auto& it : document.moleculesRefs())

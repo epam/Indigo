@@ -12,13 +12,13 @@ namespace com.epam.indigo
         public static extern int indigoRender(int item, int output);
 
         [DllImport("indigo-renderer"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoRenderToFile(int item, string filename);
+        public static extern int indigoRenderToFile(int item, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string filename);
 
         [DllImport("indigo-renderer"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoRenderGrid(int items, int[] refAtoms, int nColumns, int output);
 
         [DllImport("indigo-renderer"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoRenderGridToFile(int items, int[] refAtoms, int nColumns, string filename);
+        public static extern int indigoRenderGridToFile(int items, int[] refAtoms, int nColumns, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string filename);
 
         [DllImport("indigo-renderer"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoRenderReset();

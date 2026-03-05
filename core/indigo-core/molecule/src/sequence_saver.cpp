@@ -998,7 +998,7 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
     int molecule_idx = 0;
     rapidjson::Document json{};
     std::map<std::string, std::vector<int>> molecules_connections;
-    if (molecules.Size() > 0)
+    if (molecules.IsArray() && molecules.Size() > 0)
     {
         auto process_ep = [&molecules_connections](const KetConnectionEndPoint& ep) {
             if (hasKetStrProp(ep, moleculeId))
@@ -1016,7 +1016,7 @@ std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::dequ
             process_ep(connection.ep2());
         }
     }
-    for (rapidjson::SizeType i = 0; i < molecules.Size(); i++)
+    for (rapidjson::SizeType i = 0; molecules.IsArray() && i < molecules.Size(); i++)
     {
         const auto& molecule = molecules[i];
         std::string mol_id = "mol" + std::to_string(molecule_idx++);

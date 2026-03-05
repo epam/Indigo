@@ -34,5 +34,6 @@ namespace indigo
         static std::string dataPath(const char* dataPathSuffix);
         static std::string smiles(Molecule& m);
         static std::string smiles(QueryMolecule& m);
+        static std::string canonicalSmiles(Molecule& m);
     };
 }
