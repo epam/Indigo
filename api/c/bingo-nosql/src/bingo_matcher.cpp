@@ -252,7 +252,10 @@ void BaseMatcher::setOptions(const char* options)
 bool BaseMatcher::_isCurrentObjectExist()
 {
     int cf_len;
-    _index.getCfStorage().get(_current_id, cf_len);
+    if (_index.useShortBuffer())
+        _index.getCfStorageShort().get(_current_id, cf_len);
+    else
+        _index.getCfStorage().get(_current_id, cf_len);
 
     if (cf_len == -1)
         return false;
@@ -268,10 +271,10 @@ bool BaseMatcher::_loadCurrentObject()
             throw Exception("BaseMatcher: Matcher's current object was destroyed");
 
         profTimerStart(t_get_cmf, "loadCurObj_get_cf");
-        ByteBufferStorage& cf_storage = _index.getCfStorage();
 
         int cf_len;
-        const char* cf_str = (const char*)cf_storage.get(_current_id, cf_len);
+        const char* cf_str = _index.useShortBuffer() ? (const char*)_index.getCfStorageShort().get(_current_id, cf_len)
+                                                     : (const char*)_index.getCfStorage().get(_current_id, cf_len);
 
         if (cf_len == -1)
             return false;
@@ -1548,11 +1551,13 @@ BaseGrossMatcher::BaseGrossMatcher(BaseIndex& index, IndigoObject*& current_obj)
 
 bool BaseGrossMatcher::next()
 {
-    GrossStorage& gross_storage = _index.getGrossStorage();
     GrossQuery& gross_qobj = (GrossQuery&)_query_data->getQueryObject();
 
     if (_candidates.size() == 0)
-        gross_storage.findCandidates(gross_qobj.getGrossString(), _candidates, _part_id, _part_count);
+        if (_index.useShortBuffer())
+            _index.getGrossStorageShort().findCandidates(gross_qobj.getGrossString(), _candidates, _part_id, _part_count);
+        else
+            _index.getGrossStorage().findCandidates(gross_qobj.getGrossString(), _candidates, _part_id, _part_count);
 
     while (_current_cand_id < _candidates.size())
     {
@@ -1618,9 +1623,8 @@ bool MolGrossMatcher::_tryCurrent() /* const */
     if (_current_obj == 0)
         throw Exception("MolGrossMatcher: Matcher's current object was destroyed");
 
-    GrossStorage& gross_storage = _index.getGrossStorage();
-
-    return gross_storage.tryCandidate(_query_array, _current_id);
+    return _index.useShortBuffer() ? _index.getGrossStorageShort().tryCandidate(_query_array, _current_id)
+                                   : _index.getGrossStorage().tryCandidate(_query_array, _current_id);
 }
 
 EnumeratorMatcher::EnumeratorMatcher(BaseIndex& index) : BaseMatcher(index, (IndigoObject*&)_indigoObject)

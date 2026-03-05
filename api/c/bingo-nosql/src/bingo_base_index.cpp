@@ -191,7 +191,82 @@ void BaseIndex::load(const char* location, const char* options, int index_id)
     ExactStorage::load(_exact_storage, _header.ptr()->exact_offset);
     TranspFpStorage::load(_sub_fp_storage, _header.ptr()->sub_offset);
     ByteBufferStorage::load(_cf_storage, _header.ptr()->cf_offset);
-    GrossStorage::load(_gross_storage, _header.ptr()->gross_offset);
+    // try to load data using int64_t
+    auto count = getObjectsCount();
+    if (count > 0)
+    {
+        if (count > 100)
+            count = 100;
+        auto check_records = [&]() -> bool {
+            for (int i = 0; i < count; i++)
+            {
+                if (!_cf_storage->is_record_ok(i))
+                    return false;
+                int len;
+                const byte* ptr = _cf_storage->get(i, len);
+                if (len <= 0)
+                    continue;
+                // try to load object from data
+                BufferScanner buf_scn(ptr, len);
+                if (_type == IndexType::MOLECULE)
+                {
+                    Molecule mol;
+                    CmfLoader cmf_loader(buf_scn);
+                    try
+                    {
+                        cmf_loader.loadMolecule(mol);
+                    }
+                    catch (...)
+                    {
+                        use_short = true;
+                        break;
+                    };
+                }
+                else if (_type == IndexType::REACTION)
+                {
+                    Reaction rxn;
+                    CrfLoader crf_loader(buf_scn);
+                    try
+                    {
+                        crf_loader.loadReaction(rxn);
+                    }
+                    catch (...)
+                    {
+                        use_short = true;
+                        break;
+                    };
+                }
+                else
+                {
+                    use_short = true;
+                    break;
+                };
+            }
+            return true;
+        };
+        if (!check_records())
+        {
+            // try load data using int32_t
+            ByteBufferStorageShort::load(_cf_storage_short, _header.ptr()->cf_offset);
+            auto check_records_short = [&]() -> bool {
+                for (int i = 0; i < count; i++)
+                {
+                    if (!_cf_storage_short->is_record_ok(i))
+                        return false;
+                    int len;
+                    const byte* ptr = _cf_storage_short->get(i, len);
+                }
+                return true;
+            };
+            if (!check_records_short())
+                throw indigo::Exception("ByteBufferStorage: incorrect buffer");
+            use_short = true;
+        }
+    }
+    if (use_short)
+        GrossStorageShort::load(_gross_storage_short, _header.ptr()->gross_offset);
+    else
+        GrossStorage::load(_gross_storage, _header.ptr()->gross_offset);
 }
 
 int BaseIndex::add(int obj_id, const ObjectIndexData& _obj_data)
@@ -252,7 +327,10 @@ void BaseIndex::remove(int obj_id)
     if (obj_id < 0 || back_id_mapping.get(obj_id) == (size_t)-1)
         throw Exception("There is no object with this id");
 
-    _cf_storage->remove(back_id_mapping.get(obj_id));
+    if (use_short)
+        _cf_storage_short->remove(back_id_mapping.get(obj_id));
+    else
+        _cf_storage->remove(back_id_mapping.get(obj_id));
     _mappingRemove(obj_id);
 }
 
@@ -281,6 +359,11 @@ GrossStorage& BaseIndex::getGrossStorage()
     return _gross_storage.ref();
 }
 
+GrossStorageShort& BaseIndex::getGrossStorageShort()
+{
+    return _gross_storage_short.ref();
+}
+
 MMFArray<int>& BaseIndex::getIdMapping()
 {
     return _id_mapping_ptr.ref();
@@ -296,6 +379,11 @@ MMFMapping& BaseIndex::getBackIdMapping()
     return _cf_storage.ref();
 }
 
+ByteBufferStorageShort& BaseIndex::getCfStorageShort()
+{
+    return _cf_storage_short.ref();
+}
+
 int BaseIndex::getObjectsCount() const
 {
     return _header->object_count;
@@ -303,7 +391,8 @@ int BaseIndex::getObjectsCount() const
 
 const byte* BaseIndex::getObjectCf(int id, int& len)
 {
-    const byte* cf_buf = _cf_storage->get(_back_id_mapping_ptr.ref().get(id), len);
+    const byte* cf_buf =
+        use_short ? _cf_storage_short->get(_back_id_mapping_ptr.ref().get(id), len) : _cf_storage->get(_back_id_mapping_ptr.ref().get(id), len);
 
     if (len == -1)
         throw Exception("There is no object with this id");
@@ -501,9 +590,15 @@ void BaseIndex::_insertIndexData(const ObjectIndexData& obj_data)
 {
     _sub_fp_storage.ptr()->add(obj_data.sub_fp.ptr());
     _sim_fp_storage.ptr()->add(obj_data.sim_fp.ptr(), _header->object_count);
-    _cf_storage.ptr()->add((byte*)obj_data.cf_str.ptr(), obj_data.cf_str.size(), _header->object_count);
+    if (use_short)
+        _cf_storage_short.ptr()->add((byte*)obj_data.cf_str.ptr(), obj_data.cf_str.size(), _header->object_count);
+    else
+        _cf_storage.ptr()->add((byte*)obj_data.cf_str.ptr(), obj_data.cf_str.size(), _header->object_count);
     _exact_storage.ptr()->add(obj_data.hash, _header->object_count);
-    _gross_storage.ptr()->add(obj_data.gross_str, _header->object_count);
+    if (use_short)
+        _gross_storage_short.ptr()->add(obj_data.gross_str, _header->object_count);
+    else
+        _gross_storage.ptr()->add(obj_data.gross_str, _header->object_count);
 }
 
 void BaseIndex::_mappingLoad()
