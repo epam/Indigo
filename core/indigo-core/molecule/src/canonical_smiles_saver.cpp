@@ -32,7 +32,7 @@ IMPL_ERROR(CanonicalSmilesSaver, "canonical SMILES saver");
 CanonicalSmilesSaver::CanonicalSmilesSaver(Output& output) : SmilesSaver(output), TL_CP_GET(_actual_atom_atom_mapping), TL_CP_GET(_initial_to_actual)
 {
     find_invalid_stereo = true;
-    ignore_invalid_hcount = false;
+    invalid_hcount_mode = InvalidHCountMode::kFixAndRecord;
     ignore_hydrogens = true;
     canonize_chiralities = true;
     write_extra_info = false;

@@ -19,6 +19,9 @@
 #ifndef __smiles_saver__
 #define __smiles_saver__
 
+#include <string>
+#include <vector>
+
 #include "base_cpp/array.h"
 #include "base_cpp/exception.h"
 #include "base_cpp/list.h"
@@ -42,6 +45,22 @@ namespace indigo
     class DLLEXPORT SmilesSaver
     {
     public:
+        // How to handle atoms with non-deterministic implicit H count.
+        enum class InvalidHCountMode
+        {
+            kSkip,        // Keep hydro as-is (-1); no brackets forced (SmilesSaver default).
+            kFixAndRecord // Set hydro = 0, force brackets, record atom (CanonicalSmilesSaver default).
+        };
+
+        // Atom info recorded when kFixAndRecord encounters non-standard valence.
+        struct NonStandardValenceInfo
+        {
+            int atom_idx;     // Index in the (possibly cloned) molecule
+            int atom_number;  // Element number (6 = C, 14 = Si, …)
+            int charge;       // Formal charge
+            int connectivity; // Sum of explicit bond orders (-1 if unavailable)
+        };
+
         DECL_ERROR;
         enum class SMILES_MODE
         {
@@ -83,7 +102,14 @@ namespace indigo
         bool inside_rsmiles;
 
         bool smarts_mode;
-        bool ignore_invalid_hcount;
+
+        InvalidHCountMode invalid_hcount_mode;
+
+        // True if any atoms hit the non-standard valence fallback (kFixAndRecord only).
+        bool hasNonStandardValence() const;
+
+        // Atoms that triggered the non-standard valence fallback.
+        const std::vector<NonStandardValenceInfo>& getNonStandardValenceAtoms() const;
 
         const Array<int>& getSavedCisTransParities();
 
@@ -195,8 +221,16 @@ namespace indigo
         int _touched_cistransbonds;
         bool _comma;
 
+        // Diagnostic list populated by _writeAtom in kFixAndRecord mode.
+        // Mutable: _writeAtom is const; std::vector for external const-ref access.
+        mutable std::vector<NonStandardValenceInfo> _nonstandard_valence_atoms;
+
+        // Record non-standard valence atom, return corrected hydro (0).
+        int _handleInvalidHCount(int idx, int atom_number, int charge) const;
+
     private:
-        SmilesSaver(const SmilesSaver&); // no implicit copy
+        SmilesSaver(const SmilesSaver&) = delete;
+        SmilesSaver& operator=(const SmilesSaver&) = delete;
     };
 
 } // namespace indigo

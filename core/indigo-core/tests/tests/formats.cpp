@@ -32,6 +32,7 @@
 #include "molecule/sequence_saver.h"
 #include <base_cpp/output.h>
 #include <base_cpp/scanner.h>
+#include <molecule/canonical_smiles_saver.h>
 #include <molecule/cmf_loader.h>
 #include <molecule/cmf_saver.h>
 #include <molecule/cml_saver.h>
@@ -760,6 +761,580 @@ TEST_F(IndigoCoreFormatsTest, best_allign)
     ASSERT_EQ(res, 85);
     ASSERT_EQ(shift_sense, true);
     ASSERT_EQ(pairs.size(), 559);
+}
+
+// ============================================================================
+// Issue #3496: loadQueryMolecule crash on V3000 molfiles with VAL= property.
+// Root cause: use-after-free in setExplicitValence (_atoms[idx] vs releaseAtom).
+// Each test loads a synthetic V3000 molfile, then calls smiles() to trigger
+// traversal of the atom constraint tree.
+// ============================================================================
+
+// Test 1: Single atom with VAL= positive value — simplest crash trigger
+TEST_F(IndigoCoreFormatsTest, val_positive_single_atom)
+{
+    const char* mol = "\n\n\n"
+                      "  0  0  0     0  0            999 V3000\n"
+                      "M  V30 BEGIN CTAB\n"
+                      "M  V30 COUNTS 1 0 0 0 0\n"
+                      "M  V30 BEGIN ATOM\n"
+                      "M  V30 1 N 0 0 0 0 VAL=3\n"
+                      "M  V30 END ATOM\n"
+                      "M  V30 END CTAB\n"
+                      "M  END\n";
+
+    QueryMolecule qmol;
+    BufferScanner scanner(mol);
+    MolfileLoader loader(scanner);
+    ASSERT_NO_THROW(loader.loadQueryMolecule(qmol));
+    ASSERT_EQ(qmol.vertexCount(), 1);
+    ASSERT_FALSE(smiles(qmol).empty());
+}
+
+// Test 2: VAL=-1 (special value → valence=0)
+TEST_F(IndigoCoreFormatsTest, val_minus_one)
+{
+    const char* mol = "\n\n\n"
+                      "  0  0  0     0  0            999 V3000\n"
+                      "M  V30 BEGIN CTAB\n"
+                      "M  V30 COUNTS 1 0 0 0 0\n"
+                      "M  V30 BEGIN ATOM\n"
+                      "M  V30 1 Cl 1.5 -2.0 0 0 VAL=-1\n"
+                      "M  V30 END ATOM\n"
+                      "M  V30 END CTAB\n"
+                      "M  END\n";
+
+    QueryMolecule qmol;
+    BufferScanner scanner(mol);
+    MolfileLoader loader(scanner);
+    ASSERT_NO_THROW(loader.loadQueryMolecule(qmol));
+    ASSERT_EQ(qmol.vertexCount(), 1);
+    ASSERT_FALSE(smiles(qmol).empty());
+}
+
+// Test 3: CHG= and VAL= on the same atom — double resetAtom sequence
+TEST_F(IndigoCoreFormatsTest, chg_and_val_same_atom)
+{
+    const char* mol = "\n\n\n"
+                      "  0  0  0     0  0            999 V3000\n"
+                      "M  V30 BEGIN CTAB\n"
+                      "M  V30 COUNTS 1 0 0 0 0\n"
+                      "M  V30 BEGIN ATOM\n"
+                      "M  V30 1 Fe 0 0 0 0 CHG=2 VAL=6\n"
+                      "M  V30 END ATOM\n"
+                      "M  V30 END CTAB\n"
+                      "M  END\n";
+
+    QueryMolecule qmol;
+    BufferScanner scanner(mol);
+    MolfileLoader loader(scanner);
+    ASSERT_NO_THROW(loader.loadQueryMolecule(qmol));
+    ASSERT_EQ(qmol.vertexCount(), 1);
+    ASSERT_FALSE(smiles(qmol).empty());
+}
+
+// Test 4: MASS= and VAL= on the same atom — isotope + valence
+TEST_F(IndigoCoreFormatsTest, mass_and_val_same_atom)
+{
+    const char* mol = "\n\n\n"
+                      "  0  0  0     0  0            999 V3000\n"
+                      "M  V30 BEGIN CTAB\n"
+                      "M  V30 COUNTS 1 0 0 0 0\n"
+                      "M  V30 BEGIN ATOM\n"
+                      "M  V30 1 P 0 0 0 0 MASS=31 VAL=5\n"
+                      "M  V30 END ATOM\n"
+                      "M  V30 END CTAB\n"
+                      "M  END\n";
+
+    QueryMolecule qmol;
+    BufferScanner scanner(mol);
+    MolfileLoader loader(scanner);
+    ASSERT_NO_THROW(loader.loadQueryMolecule(qmol));
+    ASSERT_EQ(qmol.vertexCount(), 1);
+    ASSERT_FALSE(smiles(qmol).empty());
+}
+
+// Test 5: VAL= on atom connected by bond type 8 (any) — query bond + valence
+TEST_F(IndigoCoreFormatsTest, val_with_any_bond)
+{
+    const char* mol = "\n\n\n"
+                      "  0  0  0     0  0            999 V3000\n"
+                      "M  V30 BEGIN CTAB\n"
+                      "M  V30 COUNTS 2 1 0 0 0\n"
+                      "M  V30 BEGIN ATOM\n"
+                      "M  V30 1 Ru 0 0 0 0 CHG=3 VAL=6\n"
+                      "M  V30 2 O 1.5 0 0 0 VAL=2\n"
+                      "M  V30 END ATOM\n"
+                      "M  V30 BEGIN BOND\n"
+                      "M  V30 1 8 1 2\n"
+                      "M  V30 END BOND\n"
+                      "M  V30 END CTAB\n"
+                      "M  END\n";
+
+    QueryMolecule qmol;
+    BufferScanner scanner(mol);
+    MolfileLoader loader(scanner);
+    ASSERT_NO_THROW(loader.loadQueryMolecule(qmol));
+    ASSERT_EQ(qmol.vertexCount(), 2);
+    ASSERT_EQ(qmol.edgeCount(), 1);
+    ASSERT_FALSE(smiles(qmol).empty());
+}
+
+// Test 6: Multiple atoms with VAL= in one molecule
+TEST_F(IndigoCoreFormatsTest, multiple_val_atoms)
+{
+    const char* mol = "\n\n\n"
+                      "  0  0  0     0  0            999 V3000\n"
+                      "M  V30 BEGIN CTAB\n"
+                      "M  V30 COUNTS 3 2 0 0 0\n"
+                      "M  V30 BEGIN ATOM\n"
+                      "M  V30 1 C 0 0 0 0 VAL=4\n"
+                      "M  V30 2 O 1.2 0 0 0 VAL=2\n"
+                      "M  V30 3 N -1.2 0 0 0 VAL=3\n"
+                      "M  V30 END ATOM\n"
+                      "M  V30 BEGIN BOND\n"
+                      "M  V30 1 2 1 2\n"
+                      "M  V30 2 1 1 3\n"
+                      "M  V30 END BOND\n"
+                      "M  V30 END CTAB\n"
+                      "M  END\n";
+
+    QueryMolecule qmol;
+    BufferScanner scanner(mol);
+    MolfileLoader loader(scanner);
+    ASSERT_NO_THROW(loader.loadQueryMolecule(qmol));
+    ASSERT_EQ(qmol.vertexCount(), 3);
+    ASSERT_EQ(qmol.edgeCount(), 2);
+    ASSERT_FALSE(smiles(qmol).empty());
+}
+
+// Test 7: RAD= on one atom, VAL= on another — mixed properties across atoms
+TEST_F(IndigoCoreFormatsTest, rad_and_val_different_atoms)
+{
+    const char* mol = "\n\n\n"
+                      "  0  0  0     0  0            999 V3000\n"
+                      "M  V30 BEGIN CTAB\n"
+                      "M  V30 COUNTS 2 1 0 0 0\n"
+                      "M  V30 BEGIN ATOM\n"
+                      "M  V30 1 C 0 0 0 0 RAD=2\n"
+                      "M  V30 2 Si 1.5 0 0 0 VAL=4\n"
+                      "M  V30 END ATOM\n"
+                      "M  V30 BEGIN BOND\n"
+                      "M  V30 1 1 1 2\n"
+                      "M  V30 END BOND\n"
+                      "M  V30 END CTAB\n"
+                      "M  END\n";
+
+    QueryMolecule qmol;
+    BufferScanner scanner(mol);
+    MolfileLoader loader(scanner);
+    ASSERT_NO_THROW(loader.loadQueryMolecule(qmol));
+    ASSERT_EQ(qmol.vertexCount(), 2);
+    ASSERT_FALSE(smiles(qmol).empty());
+}
+
+// Test 8: Bond type 9 (coordination) without VAL= — control, should not regress
+TEST_F(IndigoCoreFormatsTest, coordination_bond_no_val)
+{
+    const char* mol = "\n\n\n"
+                      "  0  0  0     0  0            999 V3000\n"
+                      "M  V30 BEGIN CTAB\n"
+                      "M  V30 COUNTS 3 2 0 0 0\n"
+                      "M  V30 BEGIN ATOM\n"
+                      "M  V30 1 Cu 0 0 0 0 CHG=2\n"
+                      "M  V30 2 N 1.5 0 0 0\n"
+                      "M  V30 3 N -1.5 0 0 0\n"
+                      "M  V30 END ATOM\n"
+                      "M  V30 BEGIN BOND\n"
+                      "M  V30 1 9 1 2\n"
+                      "M  V30 2 9 1 3\n"
+                      "M  V30 END BOND\n"
+                      "M  V30 END CTAB\n"
+                      "M  END\n";
+
+    QueryMolecule qmol;
+    BufferScanner scanner(mol);
+    MolfileLoader loader(scanner);
+    ASSERT_NO_THROW(loader.loadQueryMolecule(qmol));
+    ASSERT_EQ(qmol.vertexCount(), 3);
+    ASSERT_EQ(qmol.edgeCount(), 2);
+    ASSERT_FALSE(smiles(qmol).empty());
+}
+
+// ============================================================================
+// Tests 9-10: Canonical SMILES on non-standard valence atoms.
+// calcValence fails → _hcount == -1 → hydro=0 fallback.
+// ============================================================================
+
+// V2000 molfile for SiF5^{2-}: [Si-2](F)(F)(F)(F)F
+// Si with 5 single bonds and charge -2: calcValence fails (hyd = 4-0-5-2 = -3)
+static const char* kSiF5_V2000 = "\n\n\n"
+                                 "  6  5  0  0  0  0  0  0  0  0999 V2000\n"
+                                 "   -1.0862   -0.0414    0.0000 Si  0  0  0  0  0  0  0  0  0  0  0  0\n"
+                                 "   -2.1862   -0.9552    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0\n"
+                                 "   -1.3241    1.3690    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0\n"
+                                 "    0.0172    0.8586    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0\n"
+                                 "   -2.4310    0.4552    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0\n"
+                                 "    0.2552   -0.5517    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0\n"
+                                 "  1  2  1  0  0  0  0\n"
+                                 "  1  3  1  0  0  0  0\n"
+                                 "  1  4  1  0  0  0  0\n"
+                                 "  1  5  1  0  0  0  0\n"
+                                 "  1  6  1  0  0  0  0\n"
+                                 "M  CHG  1   1  -2\n"
+                                 "M  END\n";
+
+// V2000 molfile for CF5: pentacoordinate carbon (C with 5 single bonds, charge 0)
+// calcValence fails: hyd = 4 - 0 - 5 - 0 = -1
+static const char* kCF5_V2000 = "\n\n\n"
+                                "  6  5  0  0  0  0  0  0  0  0999 V2000\n"
+                                "    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n"
+                                "    1.0000    0.0000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0\n"
+                                "   -1.0000    0.0000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0\n"
+                                "    0.0000    1.0000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0\n"
+                                "    0.0000   -1.0000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0\n"
+                                "    0.5000    0.5000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0\n"
+                                "  1  2  1  0  0  0  0\n"
+                                "  1  3  1  0  0  0  0\n"
+                                "  1  4  1  0  0  0  0\n"
+                                "  1  5  1  0  0  0  0\n"
+                                "  1  6  1  0  0  0  0\n"
+                                "M  END\n";
+
+// Test 9: Canonical SMILES on SiF5^{2-} with CMF roundtrip (original bug path)
+TEST_F(IndigoCoreFormatsTest, canonical_smiles_nonstandard_valence)
+{
+    Molecule molecule;
+    BufferScanner scanner(kSiF5_V2000);
+    MolfileLoader loader(scanner);
+    ASSERT_NO_THROW(loader.loadMolecule(molecule));
+    ASSERT_EQ(molecule.vertexCount(), 6);
+
+    // CMF roundtrip — exactly what Bingo Elastic Java does
+    Array<char> cmfBuf;
+    {
+        ArrayOutput cmfOut(cmfBuf);
+        CmfSaver cmfSaver(cmfOut);
+        cmfSaver.saveMolecule(molecule);
+    }
+
+    Molecule restored;
+    {
+        BufferScanner cmfScanner(cmfBuf);
+        CmfLoader cmfLoader(cmfScanner);
+        cmfLoader.loadMolecule(restored);
+    }
+
+    // Canonical SMILES — this is the call that threw "unsure hydrogen count"
+    std::string smilesStr = canonicalSmiles(restored);
+    EXPECT_EQ(smilesStr, "F[Si-2](F)(F)(F)F");
+}
+
+// Test 10: Canonical SMILES on SiF5^{2-} directly (no CMF roundtrip)
+TEST_F(IndigoCoreFormatsTest, canonical_smiles_direct_nonstandard_valence)
+{
+    Molecule molecule;
+    BufferScanner scanner(kSiF5_V2000);
+    MolfileLoader loader(scanner);
+    ASSERT_NO_THROW(loader.loadMolecule(molecule));
+
+    std::string smilesStr = canonicalSmiles(molecule);
+    EXPECT_EQ(smilesStr, "F[Si-2](F)(F)(F)F");
+}
+
+// ============================================================================
+// Tests 11+: Edge-case coverage for hydro=0 fallback (non-standard valence).
+// ============================================================================
+
+// Helper: load V2000 molfile -> Molecule, assert vertex count
+static void loadV2000(const char* molfile, int expectedVertexCount, Molecule& mol)
+{
+    BufferScanner scanner(molfile);
+    MolfileLoader loader(scanner);
+    loader.loadMolecule(mol);
+    EXPECT_EQ(mol.vertexCount(), expectedVertexCount);
+}
+
+// Helper: SMILES -> Molecule -> canonical SMILES roundtrip check
+static void assertSmilesRoundtrip(const std::string& smilesStr)
+{
+    Array<char> buf;
+    buf.copy(smilesStr.c_str(), static_cast<int>(smilesStr.size()));
+    BufferScanner scanner(buf);
+    SmilesLoader smilesLoader(scanner);
+    Molecule mol;
+    smilesLoader.loadMolecule(mol);
+
+    Array<char> result;
+    ArrayOutput output(result);
+    CanonicalSmilesSaver saver(output);
+    saver.saveMolecule(mol);
+    std::string roundtripped(result.ptr(), static_cast<std::size_t>(result.size()));
+    EXPECT_EQ(roundtripped, smilesStr) << "SMILES roundtrip mismatch";
+}
+
+// Test 11: Pentacoordinate carbon (C with 5 bonds, charge 0)
+// hyd = 4 - 0 - 5 - 0 = -1 -> calcValence fails -> hydro=0
+TEST_F(IndigoCoreFormatsTest, pentacoordinate_carbon)
+{
+    Molecule molecule;
+    loadV2000(kCF5_V2000, 6, molecule);
+    std::string smilesStr = canonicalSmiles(molecule);
+    EXPECT_FALSE(smilesStr.empty());
+    // C with 5 bonds > max valence 4: need_brackets=true, hydro=0 fallback
+    // No spurious H on the carbon
+    EXPECT_EQ(smilesStr.find("[CH"), std::string::npos) << "No hydrogen expected on pentacoordinate C: " << smilesStr;
+}
+
+// Test 12: Xe with 2 bonds (noble gas, no standard valence for Xe+bonds)
+TEST_F(IndigoCoreFormatsTest, noble_gas_with_bonds)
+{
+    // XeF2
+    const char* mol = "\n\n\n"
+                      "  3  2  0  0  0  0  0  0  0  0999 V2000\n"
+                      "    0.0000    0.0000    0.0000 Xe  0  0  0  0  0  0  0  0  0  0  0  0\n"
+                      "    1.5000    0.0000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0\n"
+                      "   -1.5000    0.0000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0\n"
+                      "  1  2  1  0  0  0  0\n"
+                      "  1  3  1  0  0  0  0\n"
+                      "M  END\n";
+
+    Molecule molecule;
+    loadV2000(mol, 3, molecule);
+    std::string smilesStr = canonicalSmiles(molecule);
+    EXPECT_FALSE(smilesStr.empty());
+    // Xe not in organic subset -> brackets mandatory, no spurious H
+    EXPECT_NE(smilesStr.find("[Xe]"), std::string::npos) << "Xe must be in brackets: " << smilesStr;
+    EXPECT_EQ(smilesStr.find("XeH"), std::string::npos) << "No hydrogen expected on XeF2: " << smilesStr;
+}
+
+// Test 13: Standard valence atom — verify hydro=0 fallback does NOT affect normal paths
+// Methane CH4: C has 4 implicit H, calcValence succeeds normally
+TEST_F(IndigoCoreFormatsTest, standard_valence_not_affected)
+{
+    const char* mol = "\n\n\n"
+                      "  1  0  0  0  0  0  0  0  0  0999 V2000\n"
+                      "    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n"
+                      "M  END\n";
+
+    Molecule molecule;
+    loadV2000(mol, 1, molecule);
+    std::string smilesStr = canonicalSmiles(molecule);
+    EXPECT_EQ(smilesStr, "C");
+}
+
+// Test 14: Si with 4 bonds and charge 0 — standard valence, should NOT trigger fallback
+TEST_F(IndigoCoreFormatsTest, standard_valence_si4)
+{
+    // SiF4
+    const char* mol = "\n\n\n"
+                      "  5  4  0  0  0  0  0  0  0  0999 V2000\n"
+                      "    0.0000    0.0000    0.0000 Si  0  0  0  0  0  0  0  0  0  0  0  0\n"
+                      "    1.5000    0.0000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0\n"
+                      "   -1.5000    0.0000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0\n"
+                      "    0.0000    1.5000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0\n"
+                      "    0.0000   -1.5000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0\n"
+                      "  1  2  1  0  0  0  0\n"
+                      "  1  3  1  0  0  0  0\n"
+                      "  1  4  1  0  0  0  0\n"
+                      "  1  5  1  0  0  0  0\n"
+                      "M  END\n";
+
+    Molecule molecule;
+    loadV2000(mol, 5, molecule);
+    std::string smilesStr = canonicalSmiles(molecule);
+    EXPECT_FALSE(smilesStr.empty());
+    // Si with 4 bonds, charge 0: standard valence, hyd=0 from normal path
+    // Si is NOT in organic subset -> brackets required
+    EXPECT_NE(smilesStr.find("[Si]"), std::string::npos) << "SiF4 with standard valence: [Si] expected: " << smilesStr;
+}
+
+// Test 15: Charged phosphorus with non-standard valence
+// [P-](=O)(=O)(=O): P(-1) with conn=6 (3 double bonds) -> hyd < 0
+TEST_F(IndigoCoreFormatsTest, charged_phosphorus_nonstandard)
+{
+    const char* mol = "\n\n\n"
+                      "  4  3  0  0  0  0  0  0  0  0999 V2000\n"
+                      "    0.0000    0.0000    0.0000 P   0  0  0  0  0  0  0  0  0  0  0  0\n"
+                      "    1.5000    0.0000    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n"
+                      "   -1.5000    0.0000    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n"
+                      "    0.0000    1.5000    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n"
+                      "  1  2  2  0  0  0  0\n"
+                      "  1  3  2  0  0  0  0\n"
+                      "  1  4  2  0  0  0  0\n"
+                      "M  CHG  1   1  -1\n"
+                      "M  END\n";
+
+    Molecule molecule;
+    loadV2000(mol, 4, molecule);
+    std::string smilesStr = canonicalSmiles(molecule);
+    EXPECT_FALSE(smilesStr.empty());
+    // P not in organic subset -> brackets, charge must be preserved
+    EXPECT_NE(smilesStr.find("[P-]"), std::string::npos) << "P with charge -1 must be in brackets with charge: " << smilesStr;
+    // No spurious H on phosphorus
+    EXPECT_EQ(smilesStr.find("PH"), std::string::npos) << "No hydrogen expected on P with 3 double bonds: " << smilesStr;
+}
+
+// Test 16: CMF roundtrip preserves non-standard valence correctly
+TEST_F(IndigoCoreFormatsTest, cmf_roundtrip_preserves_smiles)
+{
+    Molecule molecule;
+    loadV2000(kSiF5_V2000, 6, molecule);
+    std::string directSmiles = canonicalSmiles(molecule);
+
+    // CMF roundtrip
+    Array<char> cmfBuf;
+    {
+        ArrayOutput cmfOut(cmfBuf);
+        CmfSaver cmfSaver(cmfOut);
+        cmfSaver.saveMolecule(molecule);
+    }
+
+    Molecule restored;
+    {
+        BufferScanner cmfScanner(cmfBuf);
+        CmfLoader cmfLoader(cmfScanner);
+        cmfLoader.loadMolecule(restored);
+    }
+
+    std::string cmfSmiles = canonicalSmiles(restored);
+    EXPECT_EQ(directSmiles, cmfSmiles) << "CMF roundtrip must preserve canonical SMILES";
+}
+
+// Test 17: SMILES roundtrip on non-standard valence (SMILES->Mol->SMILES)
+TEST_F(IndigoCoreFormatsTest, smiles_roundtrip_nonstandard_valence)
+{
+    Molecule molecule;
+    loadV2000(kSiF5_V2000, 6, molecule);
+    std::string smilesStr = canonicalSmiles(molecule);
+    ASSERT_EQ(smilesStr, "F[Si-2](F)(F)(F)F");
+    assertSmilesRoundtrip(smilesStr);
+}
+
+// Test 18: Hypervalent S(+) with 5 bonds — non-standard for charged sulfur
+TEST_F(IndigoCoreFormatsTest, hypervalent_sulfur_charged)
+{
+    // [S+](F)(F)(F)(F)F
+    const char* mol = "\n\n\n"
+                      "  6  5  0  0  0  0  0  0  0  0999 V2000\n"
+                      "    0.0000    0.0000    0.0000 S   0  0  0  0  0  0  0  0  0  0  0  0\n"
+                      "    1.5000    0.0000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0\n"
+                      "   -1.5000    0.0000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0\n"
+                      "    0.0000    1.5000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0\n"
+                      "    0.0000   -1.5000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0\n"
+                      "    1.0000    1.0000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0\n"
+                      "  1  2  1  0  0  0  0\n"
+                      "  1  3  1  0  0  0  0\n"
+                      "  1  4  1  0  0  0  0\n"
+                      "  1  5  1  0  0  0  0\n"
+                      "  1  6  1  0  0  0  0\n"
+                      "M  CHG  1   1   1\n"
+                      "M  END\n";
+
+    Molecule molecule;
+    loadV2000(mol, 6, molecule);
+    std::string smilesStr = canonicalSmiles(molecule);
+    EXPECT_FALSE(smilesStr.empty());
+    // S with charge +1 -> brackets with charge, no spurious H
+    EXPECT_NE(smilesStr.find("[S+]"), std::string::npos) << "S+ must be in brackets with charge: " << smilesStr;
+    EXPECT_EQ(smilesStr.find("SH"), std::string::npos) << "No hydrogen expected on S+ with 5 bonds: " << smilesStr;
+}
+
+// Test 19: Verify NonStandardValenceInfo collector on pentacoordinate carbon
+// The CanonicalSmilesSaver (kFixAndRecord mode) must record the problematic atom.
+TEST_F(IndigoCoreFormatsTest, nonstandard_valence_collector)
+{
+    Molecule molecule;
+    loadV2000(kCF5_V2000, 6, molecule);
+
+    Array<char> buf;
+    ArrayOutput output(buf);
+    CanonicalSmilesSaver saver(output);
+    saver.saveMolecule(molecule);
+
+    // Collector must have recorded the problematic carbon
+    EXPECT_TRUE(saver.hasNonStandardValence());
+    const auto& atoms = saver.getNonStandardValenceAtoms();
+    ASSERT_GE(atoms.size(), 1u);
+
+    // Verify the diagnostic info — carbon (element 6), charge 0, connectivity 5
+    bool found_carbon = false;
+    for (const auto& info : atoms)
+    {
+        if (info.atom_number == 6 && info.charge == 0)
+        {
+            found_carbon = true;
+            EXPECT_EQ(info.connectivity, 5) << "Connectivity for pentacoordinate C: " << info.connectivity;
+            break;
+        }
+    }
+    EXPECT_TRUE(found_carbon) << "Expected pentacoordinate C in non-standard valence list";
+}
+
+// Test 20: Standard valence atom must NOT trigger the collector
+TEST_F(IndigoCoreFormatsTest, standard_valence_no_collector_entry)
+{
+    // Methane — standard valence, no issues
+    const char* mol = "\n\n\n"
+                      "  1  0  0  0  0  0  0  0  0  0999 V2000\n"
+                      "    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n"
+                      "M  END\n";
+
+    Molecule molecule;
+    loadV2000(mol, 1, molecule);
+
+    Array<char> buf;
+    ArrayOutput output(buf);
+    CanonicalSmilesSaver saver(output);
+    saver.saveMolecule(molecule);
+
+    EXPECT_FALSE(saver.hasNonStandardValence()) << "Standard valence atom should not appear in collector";
+    EXPECT_TRUE(saver.getNonStandardValenceAtoms().empty());
+}
+
+// Test 21: Forced brackets on organic subset atom with non-standard valence
+// When kFixAndRecord mode forces hydro=0, organic subset atoms (C, N, O, S, ...)
+// must get bracket notation [X] to preserve roundtrip correctness.
+TEST_F(IndigoCoreFormatsTest, forced_brackets_organic_subset)
+{
+    Molecule molecule;
+    loadV2000(kCF5_V2000, 6, molecule);
+    std::string smilesStr = canonicalSmiles(molecule);
+
+    // Carbon MUST be in brackets [C] to prevent reader from computing implicit H
+    EXPECT_NE(smilesStr.find("[C]"), std::string::npos) << "Pentacoordinate C must be in brackets for roundtrip safety: " << smilesStr;
+}
+
+// Test 22: SiF5^{2-} collector info — Si (element 14), charge -2, 5 bonds
+TEST_F(IndigoCoreFormatsTest, sif5_collector_info)
+{
+    Molecule molecule;
+    loadV2000(kSiF5_V2000, 6, molecule);
+
+    Array<char> buf;
+    ArrayOutput output(buf);
+    CanonicalSmilesSaver saver(output);
+    saver.saveMolecule(molecule);
+
+    // Si with -2 charge and 5 bonds triggers the collector
+    EXPECT_TRUE(saver.hasNonStandardValence());
+    const auto& atoms = saver.getNonStandardValenceAtoms();
+    ASSERT_GE(atoms.size(), 1u);
+
+    bool found_si = false;
+    for (const auto& info : atoms)
+    {
+        if (info.atom_number == 14 && info.charge == -2)
+        {
+            found_si = true;
+            break;
+        }
+    }
+    EXPECT_TRUE(found_si) << "Expected Si(-2) in non-standard valence list";
+
+    // SMILES must still be correct
+    std::string smilesStr(buf.ptr(), static_cast<std::size_t>(buf.size()));
+    EXPECT_EQ(smilesStr, "F[Si-2](F)(F)(F)F");
 }
 
 #ifdef _MSC_VER

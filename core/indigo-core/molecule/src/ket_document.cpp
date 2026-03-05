@@ -561,6 +561,8 @@ int KetDocument::moleculeIdxByRef(const std::string& ref)
 }
 
 KetDocument::KetDocument(BaseMolecule& bmol)
+    : _molecules(), original_format(0), _meta_objects(rapidjson::kArrayType), _r_groups(rapidjson::kArrayType), _json_molecules(rapidjson::kArrayType),
+      _json_document()
 {
     // save molecule to ket
     std::string json;
@@ -576,6 +578,8 @@ KetDocument::KetDocument(BaseMolecule& bmol)
 }
 
 KetDocument::KetDocument(BaseReaction& breact)
+    : _molecules(), original_format(0), _meta_objects(rapidjson::kArrayType), _r_groups(rapidjson::kArrayType), _json_molecules(rapidjson::kArrayType),
+      _json_document()
 {
     // save reaction to ket
     std::string json;

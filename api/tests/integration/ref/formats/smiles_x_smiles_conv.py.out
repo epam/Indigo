@@ -1,14 +1,14 @@
 TESTING ../../../../../data/molecules/basic/helma.smi
 0 structure-0 ON(=O)c1ccc(Cl)cc1
-ON(=O)c1ccc(Cl)cc1
-ON(=O)c1ccc(Cl)cc1
-ON(=O)c1ccc(Cl)cc1
-ON(=O)c1ccc(Cl)cc1
+O[N](=O)c1ccc(Cl)cc1
+O[N](=O)c1ccc(Cl)cc1
+O[N](=O)c1ccc(Cl)cc1
+O[N](=O)c1ccc(Cl)cc1
 1 structure-1 Nc1ccc(cc1)N(=O)O
-Nc1ccc(cc1)N(O)=O
-Nc1ccc(cc1)N(O)=O
-Nc1ccc(cc1)N(O)=O
-Nc1ccc(cc1)N(O)=O
+Nc1ccc(cc1)[N](O)=O
+Nc1ccc(cc1)[N](O)=O
+Nc1ccc(cc1)[N](O)=O
+Nc1ccc(cc1)[N](O)=O
 2 structure-2 C=CC1CCC=CC1
 C=CC1CC=CCC1
 C=CC1CC=CCC1
@@ -280,10 +280,10 @@ CN(C)CCO
 CN(C)CCO
 CN(C)CCO
 56 structure-56 CCCN(=O)O
-CCCN(O)=O
-CCCN(O)=O
-CCCN(O)=O
-CCCN(O)=O
+CCC[N](O)=O
+CCC[N](O)=O
+CCC[N](O)=O
+CCC[N](O)=O
 57 structure-57 CC(=O)OC=C
 CC(=O)OC=C
 CC(=O)OC=C
@@ -385,10 +385,10 @@ CC(=O)NNc1ccccc1
 CC(=O)NNc1ccccc1
 CC(=O)NNc1ccccc1
 77 structure-77 NC(COC(=O)C=N=[N-])C(=O)O
-[N-]=N=CC(=O)OCC(N)C(O)=O
-[N-]=N=CC(=O)OCC(N)C(O)=O
-[N-]=N=CC(=O)OCC(N)C(O)=O
-[N-]=N=CC(=O)OCC(N)C(O)=O
+[N-]=[N]=CC(=O)OCC(N)C(O)=O
+[N-]=[N]=CC(=O)OCC(N)C(O)=O
+[N-]=[N]=CC(=O)OCC(N)C(O)=O
+[N-]=[N]=CC(=O)OCC(N)C(O)=O
 78 structure-78 CC=C
 CC=C
 CC=C
@@ -465,10 +465,10 @@ Nc1ccccc1C(O)=O
 Nc1ccccc1C(O)=O
 Nc1ccccc1C(O)=O
 93 structure-93 Nc1ccc(O)c(c1)N(=O)O
-Nc1ccc(O)c(c1)N(O)=O
-Nc1ccc(O)c(c1)N(O)=O
-Nc1ccc(O)c(c1)N(O)=O
-Nc1ccc(O)c(c1)N(O)=O
+Nc1ccc(O)c(c1)[N](O)=O
+Nc1ccc(O)c(c1)[N](O)=O
+Nc1ccc(O)c(c1)[N](O)=O
+Nc1ccc(O)c(c1)[N](O)=O
 94 structure-94 OC(C(=O)c1ccccc1)c2ccccc2
 OC(C(=O)c1ccccc1)c1ccccc1
 OC(C(=O)c1ccccc1)c1ccccc1
@@ -520,15 +520,15 @@ Oc1ccc(Cl)cc1Cl
 Oc1ccc(Cl)cc1Cl
 Oc1ccc(Cl)cc1Cl
 104 structure-104 Cc1ccc(cc1N(=O)O)N(=O)O
-Cc1ccc(cc1N(O)=O)N(O)=O
-Cc1ccc(cc1N(O)=O)N(O)=O
-Cc1ccc(cc1N(O)=O)N(O)=O
-Cc1ccc(cc1N(O)=O)N(O)=O
+Cc1ccc(cc1[N](O)=O)[N](O)=O
+Cc1ccc(cc1[N](O)=O)[N](O)=O
+Cc1ccc(cc1[N](O)=O)[N](O)=O
+Cc1ccc(cc1[N](O)=O)[N](O)=O
 105 structure-105 Nc1ncc(s1)N(=O)O
-Nc1[n]cc([s]1)N(O)=O
-Nc1[n]cc([s]1)N(O)=O
-Nc1[n]cc([s]1)N(O)=O
-Nc1[n]cc([s]1)N(O)=O
+Nc1[n]cc([s]1)[N](O)=O
+Nc1[n]cc([s]1)[N](O)=O
+Nc1[n]cc([s]1)[N](O)=O
+Nc1[n]cc([s]1)[N](O)=O
 106 structure-106 CN(C)c1ccccc1
 CN(C)c1ccccc1
 CN(C)c1ccccc1
@@ -545,10 +545,10 @@ CCCOC(=O)c1cc(O)c(O)c(O)c1
 CCCOC(=O)c1cc(O)c(O)c(O)c1
 CCCOC(=O)c1cc(O)c(O)c(O)c1
 109 structure-109 Nc1ccc(cc1O)N(=O)O
-Nc1ccc(cc1O)N(O)=O
-Nc1ccc(cc1O)N(O)=O
-Nc1ccc(cc1O)N(O)=O
-Nc1ccc(cc1O)N(O)=O
+Nc1ccc(cc1O)[N](O)=O
+Nc1ccc(cc1O)[N](O)=O
+Nc1ccc(cc1O)[N](O)=O
+Nc1ccc(cc1O)[N](O)=O
 110 structure-110 S=C(NC1CCCCC1)NC2CCCCC2
 S=C(NC1CCCCC1)NC1CCCCC1
 S=C(NC1CCCCC1)NC1CCCCC1
@@ -640,10 +640,10 @@ O=c1c2ccccc2c2ccc3c4c2c1ccc4c1ccccc1c3=O
 O=c1c2ccccc2c2ccc3c4c2c1ccc4c1ccccc1c3=O
 O=c1c2ccccc2c2ccc3c4c2c1ccc4c1ccccc1c3=O
 128 structure-128 Cc1ccc2C(=O)c3ccccc3C(=O)c2c1N(=O)O
-Cc1ccc2c(c1N(O)=O)C(=O)c1ccccc1C2=O
-Cc1ccc2c(c1N(O)=O)C(=O)c1ccccc1C2=O
-Cc1ccc2c(c1N(O)=O)C(=O)c1ccccc1C2=O
-Cc1ccc2c(c1N(O)=O)C(=O)c1ccccc1C2=O
+Cc1ccc2c(c1[N](O)=O)C(=O)c1ccccc1C2=O
+Cc1ccc2c(c1[N](O)=O)C(=O)c1ccccc1C2=O
+Cc1ccc2c(c1[N](O)=O)C(=O)c1ccccc1C2=O
+Cc1ccc2c(c1[N](O)=O)C(=O)c1ccccc1C2=O
 129 structure-129 CCCN(N=O)C(=N)NN(O)O
 CCCN(N=O)C(=N)NN(O)O
 CCCN(N=O)C(=N)NN(O)O
@@ -790,10 +790,10 @@ Nc1ccc(cc1)Sc1ccc(N)cc1
 Nc1ccc(cc1)Sc1ccc(N)cc1
 Nc1ccc(cc1)Sc1ccc(N)cc1
 158 structure-158 CCNC(=O)Nc1ncc(s1)N(=O)O
-CCNC(=O)Nc1[n]cc([s]1)N(O)=O
-CCNC(=O)Nc1[n]cc([s]1)N(O)=O
-CCNC(=O)Nc1[n]cc([s]1)N(O)=O
-CCNC(=O)Nc1[n]cc([s]1)N(O)=O
+CCNC(=O)Nc1[n]cc([s]1)[N](O)=O
+CCNC(=O)Nc1[n]cc([s]1)[N](O)=O
+CCNC(=O)Nc1[n]cc([s]1)[N](O)=O
+CCNC(=O)Nc1[n]cc([s]1)[N](O)=O
 159 structure-159 CC(=O)OCc1ccccc1
 CC(=O)OCc1ccccc1
 CC(=O)OCc1ccccc1
@@ -945,10 +945,10 @@ Nc1cc(Cl)c(cc1Cl)-c1cc(Cl)c(N)cc1Cl
 Nc1cc(Cl)c(cc1Cl)-c1cc(Cl)c(N)cc1Cl
 Nc1cc(Cl)c(cc1Cl)-c1cc(Cl)c(N)cc1Cl
 189 structure-189 CCCN(CCC)c1c(cc(cc1N(=O)O)C(F)(F)F)N(=O)O
-CCCN(CCC)c1c(cc(cc1N(O)=O)C(F)(F)F)N(O)=O
-CCCN(CCC)c1c(cc(cc1N(O)=O)C(F)(F)F)N(O)=O
-CCCN(CCC)c1c(cc(cc1N(O)=O)C(F)(F)F)N(O)=O
-CCCN(CCC)c1c(cc(cc1N(O)=O)C(F)(F)F)N(O)=O
+CCCN(CCC)c1c(cc(cc1[N](O)=O)C(F)(F)F)[N](O)=O
+CCCN(CCC)c1c(cc(cc1[N](O)=O)C(F)(F)F)[N](O)=O
+CCCN(CCC)c1c(cc(cc1[N](O)=O)C(F)(F)F)[N](O)=O
+CCCN(CCC)c1c(cc(cc1[N](O)=O)C(F)(F)F)[N](O)=O
 190 structure-190 CN(C)NC(=O)CCC(=O)O
 CN(C)NC(=O)CCC(O)=O
 CN(C)NC(=O)CCC(O)=O
@@ -980,10 +980,10 @@ CCOC(=O)C(CC(=O)OCC)SP(=O)(OC)OC
 CCOC(=O)C(CC(=O)OCC)SP(=O)(OC)OC
 CCOC(=O)C(CC(=O)OCC)SP(=O)(OC)OC
 196 structure-196 OC(=O)c1ccccc1C2=c3cc(I)c(O)c(I)c3=Oc4c(I)c(O)c(I)cc24
-Oc1c(I)c2=Oc3c(cc(I)c(O)c3I)C(=c2cc1I)c1ccccc1C(O)=O
-Oc1c(I)c2=Oc3c(cc(I)c(O)c3I)C(=c2cc1I)c1ccccc1C(O)=O
-Oc1c(I)c2=Oc3c(cc(I)c(O)c3I)C(=c2cc1I)c1ccccc1C(O)=O
-Oc1c(I)c2=Oc3c(cc(I)c(O)c3I)C(=c2cc1I)c1ccccc1C(O)=O
+Oc1c(I)c2=[O]c3c(cc(I)c(O)c3I)C(=c2cc1I)c1ccccc1C(O)=O
+Oc1c(I)c2=[O]c3c(cc(I)c(O)c3I)C(=c2cc1I)c1ccccc1C(O)=O
+Oc1c(I)c2=[O]c3c(cc(I)c(O)c3I)C(=c2cc1I)c1ccccc1C(O)=O
+Oc1c(I)c2=[O]c3c(cc(I)c(O)c3I)C(=c2cc1I)c1ccccc1C(O)=O
 197 structure-197 CC=NN(C)C=O
 CC=NN(C)C=O
 CC=NN(C)C=O
@@ -995,10 +995,10 @@ O=C1CCN(N=O)C(=O)N1
 O=C1CCN(N=O)C(=O)N1
 O=C1CCN(N=O)C(=O)N1
 199 structure-199 CCN(Cc1cccc(c1)S(=O)(=O)O[Na])c2ccc(cc2)C(=C3C=CC(=N(CC)Cc4cccc(c4)S(=O)(=O)O)C=C3)c5ccc(cc5)N(C)C
-CN(C)c1ccc(cc1)C(c1ccc(cc1)N(Cc1cc(ccc1)S(=O)(=O)O[Na])CC)=C1C=CC(C=C1)=N(Cc1cc(ccc1)S(O)(=O)=O)CC
-CN(C)c1ccc(cc1)C(c1ccc(cc1)N(Cc1cc(ccc1)S(=O)(=O)O[Na])CC)=C1C=CC(C=C1)=N(Cc1cc(ccc1)S(O)(=O)=O)CC
-CN(C)c1ccc(cc1)C(c1ccc(cc1)N(Cc1cc(ccc1)S(=O)(=O)O[Na])CC)=C1C=CC(C=C1)=N(Cc1cc(ccc1)S(O)(=O)=O)CC
-CN(C)c1ccc(cc1)C(c1ccc(cc1)N(Cc1cc(ccc1)S(=O)(=O)O[Na])CC)=C1C=CC(C=C1)=N(Cc1cc(ccc1)S(O)(=O)=O)CC
+CN(C)c1ccc(cc1)C(c1ccc(cc1)N(Cc1cc(ccc1)S(=O)(=O)O[Na])CC)=C1C=CC(C=C1)=[N](Cc1cc(ccc1)S(O)(=O)=O)CC
+CN(C)c1ccc(cc1)C(c1ccc(cc1)N(Cc1cc(ccc1)S(=O)(=O)O[Na])CC)=C1C=CC(C=C1)=[N](Cc1cc(ccc1)S(O)(=O)=O)CC
+CN(C)c1ccc(cc1)C(c1ccc(cc1)N(Cc1cc(ccc1)S(=O)(=O)O[Na])CC)=C1C=CC(C=C1)=[N](Cc1cc(ccc1)S(O)(=O)=O)CC
+CN(C)c1ccc(cc1)C(c1ccc(cc1)N(Cc1cc(ccc1)S(=O)(=O)O[Na])CC)=C1C=CC(C=C1)=[N](Cc1cc(ccc1)S(O)(=O)=O)CC
 200 structure-200 CCOc1ccc(NC(=O)C)cc1N
 CC(=O)Nc1cc(N)c(cc1)OCC
 CC(=O)Nc1cc(N)c(cc1)OCC
@@ -1010,10 +1010,10 @@ Clc1cc2Oc3cc(Cl)c(Cl)cc3Oc2cc1Cl
 Clc1cc2Oc3cc(Cl)c(Cl)cc3Oc2cc1Cl
 Clc1cc2Oc3cc(Cl)c(Cl)cc3Oc2cc1Cl
 202 structure-202 CCOc1ccc(NC(=O)C)cc1N(=O)O
-CC(=O)Nc1cc(c(cc1)OCC)N(O)=O
-CC(=O)Nc1cc(c(cc1)OCC)N(O)=O
-CC(=O)Nc1cc(c(cc1)OCC)N(O)=O
-CC(=O)Nc1cc(c(cc1)OCC)N(O)=O
+CC(=O)Nc1cc(c(cc1)OCC)[N](O)=O
+CC(=O)Nc1cc(c(cc1)OCC)[N](O)=O
+CC(=O)Nc1cc(c(cc1)OCC)[N](O)=O
+CC(=O)Nc1cc(c(cc1)OCC)[N](O)=O
 203 structure-203 CC1CCCC(=O)CCCC=Cc2cc(O)cc(O)c2C(=O)O1
 CC1CCCC(=O)CCCC=Cc2cc(O)cc(O)c2C(=O)O1
 CC1CCCC(=O)CCCC=Cc2cc(O)cc(O)c2C(=O)O1
@@ -1025,10 +1025,10 @@ COc1c(Cl)c(Cl)c(Cl)c(Cl)c1Cl
 COc1c(Cl)c(Cl)c(Cl)c(Cl)c1Cl
 COc1c(Cl)c(Cl)c(Cl)c(Cl)c1Cl
 205 structure-205 ON(=O)c1ccc(Oc2ccc(Cl)cc2Cl)cc1
-ON(=O)c1ccc(cc1)Oc1ccc(Cl)cc1Cl
-ON(=O)c1ccc(cc1)Oc1ccc(Cl)cc1Cl
-ON(=O)c1ccc(cc1)Oc1ccc(Cl)cc1Cl
-ON(=O)c1ccc(cc1)Oc1ccc(Cl)cc1Cl
+O[N](=O)c1ccc(cc1)Oc1ccc(Cl)cc1Cl
+O[N](=O)c1ccc(cc1)Oc1ccc(Cl)cc1Cl
+O[N](=O)c1ccc(cc1)Oc1ccc(Cl)cc1Cl
+O[N](=O)c1ccc(cc1)Oc1ccc(Cl)cc1Cl
 206 structure-206 [Na]OC(=O)CN(CC(=O)O[Na])CC(=O)O[Na]
 O=C(CN(CC(=O)O[Na])CC(=O)O[Na])O[Na]
 O=C(CN(CC(=O)O[Na])CC(=O)O[Na])O[Na]
@@ -1125,10 +1125,10 @@ Cc1cc(N)c(C)cc1C
 Cc1cc(N)c(C)cc1C
 Cc1cc(N)c(C)cc1C
 225 structure-225 CC1CN(N=Cc2ccc(o2)N(=O)O)C(=O)N1
-CC1CN(N=Cc2ccc(o2)N(O)=O)C(=O)N1
-CC1CN(N=Cc2ccc(o2)N(O)=O)C(=O)N1
-CC1CN(N=Cc2ccc(o2)N(O)=O)C(=O)N1
-CC1CN(N=Cc2ccc(o2)N(O)=O)C(=O)N1
+CC1CN(N=Cc2ccc(o2)[N](O)=O)C(=O)N1
+CC1CN(N=Cc2ccc(o2)[N](O)=O)C(=O)N1
+CC1CN(N=Cc2ccc(o2)[N](O)=O)C(=O)N1
+CC1CN(N=Cc2ccc(o2)[N](O)=O)C(=O)N1
 226 structure-226 CN(C)C(=O)Nc1cccc(c1)C(F)(F)F
 CN(C)C(=O)Nc1cc(ccc1)C(F)(F)F
 CN(C)C(=O)Nc1cc(ccc1)C(F)(F)F
@@ -1170,10 +1170,10 @@ CC12C(OC(C)=O)C(O)C(OC3C=C(C)C(=O)C(O)C13CO)C12CO1
 CC12C(OC(C)=O)C(O)C(OC3C=C(C)C(=O)C(O)C13CO)C12CO1
 CC12C(OC(C)=O)C(O)C(OC3C=C(C)C(=O)C(O)C13CO)C12CO1
 234 structure-234 CCN(Cc1cccc(c1)S(=O)(=O)O)c2ccc(cc2)C(=C3C=CC(=N(CC)Cc4cccc(c4)S(=O)(=O)O)C=C3)c5ccc(O)cc5S(=O)(=O)O
-CCN(Cc1cc(ccc1)S(O)(=O)=O)c1ccc(cc1)C(c1ccc(O)cc1S(O)(=O)=O)=C1C=CC(C=C1)=N(Cc1cc(ccc1)S(O)(=O)=O)CC
-CCN(Cc1cc(ccc1)S(O)(=O)=O)c1ccc(cc1)C(c1ccc(O)cc1S(O)(=O)=O)=C1C=CC(C=C1)=N(Cc1cc(ccc1)S(O)(=O)=O)CC
-CCN(Cc1cc(ccc1)S(O)(=O)=O)c1ccc(cc1)C(c1ccc(O)cc1S(O)(=O)=O)=C1C=CC(C=C1)=N(Cc1cc(ccc1)S(O)(=O)=O)CC
-CCN(Cc1cc(ccc1)S(O)(=O)=O)c1ccc(cc1)C(c1ccc(O)cc1S(O)(=O)=O)=C1C=CC(C=C1)=N(Cc1cc(ccc1)S(O)(=O)=O)CC
+CCN(Cc1cc(ccc1)S(O)(=O)=O)c1ccc(cc1)C(c1ccc(O)cc1S(O)(=O)=O)=C1C=CC(C=C1)=[N](Cc1cc(ccc1)S(O)(=O)=O)CC
+CCN(Cc1cc(ccc1)S(O)(=O)=O)c1ccc(cc1)C(c1ccc(O)cc1S(O)(=O)=O)=C1C=CC(C=C1)=[N](Cc1cc(ccc1)S(O)(=O)=O)CC
+CCN(Cc1cc(ccc1)S(O)(=O)=O)c1ccc(cc1)C(c1ccc(O)cc1S(O)(=O)=O)=C1C=CC(C=C1)=[N](Cc1cc(ccc1)S(O)(=O)=O)CC
+CCN(Cc1cc(ccc1)S(O)(=O)=O)c1ccc(cc1)C(c1ccc(O)cc1S(O)(=O)=O)=C1C=CC(C=C1)=[N](Cc1cc(ccc1)S(O)(=O)=O)CC
 235 structure-235 ClC1(C2(Cl)C3(Cl)C4(Cl)C5(Cl)C1(Cl)C3(Cl)Cl)C5(Cl)C(Cl)(Cl)C24Cl
 ClC1(Cl)C2(Cl)C3(Cl)C4(Cl)C2(Cl)C2(Cl)C(Cl)(C3(Cl)C12Cl)C4(Cl)Cl
 ClC1(Cl)C2(Cl)C3(Cl)C4(Cl)C2(Cl)C2(Cl)C(Cl)(C3(Cl)C12Cl)C4(Cl)Cl
@@ -1185,10 +1185,10 @@ O=C1C2CC=CCC2C(=O)N1SC(Cl)(Cl)C(Cl)Cl
 O=C1C2CC=CCC2C(=O)N1SC(Cl)(Cl)C(Cl)Cl
 O=C1C2CC=CCC2C(=O)N1SC(Cl)(Cl)C(Cl)Cl
 237 structure-237 Cc1ccc(N=Nc2c(O)ccc3ccccc23)c(c1)N(=O)O
-Cc1cc(c(cc1)N=Nc1c2ccccc2ccc1O)N(O)=O
-Cc1cc(c(cc1)N=Nc1c2ccccc2ccc1O)N(O)=O
-Cc1cc(c(cc1)N=Nc1c2ccccc2ccc1O)N(O)=O
-Cc1cc(c(cc1)N=Nc1c2ccccc2ccc1O)N(O)=O
+Cc1cc(c(cc1)N=Nc1c2ccccc2ccc1O)[N](O)=O
+Cc1cc(c(cc1)N=Nc1c2ccccc2ccc1O)[N](O)=O
+Cc1cc(c(cc1)N=Nc1c2ccccc2ccc1O)[N](O)=O
+Cc1cc(c(cc1)N=Nc1c2ccccc2ccc1O)[N](O)=O
 238 structure-238 COc1cc(ccc1N=Nc2c(O)c3c(N)cc(cc3cc2S(=O)(=O)O[Na])S(=O)(=O)O[Na])c4ccc(N=Nc5c(O)c6c(N)cc(cc6cc5S(=O)(=O)O[Na])S(=O)(=O)O[Na])c(OC)c4
 COc1cc(ccc1N=Nc1c(cc2cc(cc(N)c2c1O)S(=O)(=O)O[Na])S(=O)(=O)O[Na])-c1cc(OC)c(cc1)N=Nc1c(cc2cc(cc(N)c2c1O)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
 COc1cc(ccc1N=Nc1c(cc2cc(cc(N)c2c1O)S(=O)(=O)O[Na])S(=O)(=O)O[Na])-c1cc(OC)c(cc1)N=Nc1c(cc2cc(cc(N)c2c1O)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
@@ -1200,10 +1200,10 @@ NCCCCCCCCCCC(O)=O
 NCCCCCCCCCCC(O)=O
 NCCCCCCCCCCC(O)=O
 240 structure-240 COc1c(Cl)c(Cl)c(N(=O)O)c(Cl)c1Cl
-COc1c(Cl)c(Cl)c(c(Cl)c1Cl)N(O)=O
-COc1c(Cl)c(Cl)c(c(Cl)c1Cl)N(O)=O
-COc1c(Cl)c(Cl)c(c(Cl)c1Cl)N(O)=O
-COc1c(Cl)c(Cl)c(c(Cl)c1Cl)N(O)=O
+COc1c(Cl)c(Cl)c(c(Cl)c1Cl)[N](O)=O
+COc1c(Cl)c(Cl)c(c(Cl)c1Cl)[N](O)=O
+COc1c(Cl)c(Cl)c(c(Cl)c1Cl)[N](O)=O
+COc1c(Cl)c(Cl)c(c(Cl)c1Cl)[N](O)=O
 241 structure-241 [Na]OC=CC=O
 O=CC=CO[Na]
 O=CC=CO[Na]
@@ -1215,10 +1215,10 @@ c1[n]ccc2c1[nH]c1ccccc21
 c1[n]ccc2c1[nH]c1ccccc21
 c1[n]ccc2c1[nH]c1ccccc21
 243 structure-243 ON(=O)c1ccc(o1)c2csc(NC=O)n2
-ON(=O)c1ccc(o1)-c1c[s]c(NC=O)[n]1
-ON(=O)c1ccc(o1)-c1c[s]c(NC=O)[n]1
-ON(=O)c1ccc(o1)-c1c[s]c(NC=O)[n]1
-ON(=O)c1ccc(o1)-c1c[s]c(NC=O)[n]1
+O[N](=O)c1ccc(o1)-c1c[s]c(NC=O)[n]1
+O[N](=O)c1ccc(o1)-c1c[s]c(NC=O)[n]1
+O[N](=O)c1ccc(o1)-c1c[s]c(NC=O)[n]1
+O[N](=O)c1ccc(o1)-c1c[s]c(NC=O)[n]1
 244 structure-244 CN(C)c1ccc(cc1)C(=N)c2ccc(cc2)N(C)C
 CN(C)c1ccc(cc1)C(=N)c1ccc(cc1)N(C)C
 CN(C)c1ccc(cc1)C(=N)c1ccc(cc1)N(C)C
@@ -1240,30 +1240,30 @@ CC(C)CCCCCOC(=O)COc1ccc(Cl)cc1Cl
 CC(C)CCCCCOC(=O)COc1ccc(Cl)cc1Cl
 CC(C)CCCCCOC(=O)COc1ccc(Cl)cc1Cl
 248 structure-248 Cc1ccc(cc1N(=O)O)N(=O)O
-Cc1ccc(cc1N(O)=O)N(O)=O
-Cc1ccc(cc1N(O)=O)N(O)=O
-Cc1ccc(cc1N(O)=O)N(O)=O
-Cc1ccc(cc1N(O)=O)N(O)=O
+Cc1ccc(cc1[N](O)=O)[N](O)=O
+Cc1ccc(cc1[N](O)=O)[N](O)=O
+Cc1ccc(cc1[N](O)=O)[N](O)=O
+Cc1ccc(cc1[N](O)=O)[N](O)=O
 249 structure-249 CC(=O)Nc1nnc(s1)c2ccc(o2)N(=O)O
-CC(=O)Nc1[n][n]c([s]1)-c1ccc(o1)N(O)=O
-CC(=O)Nc1[n][n]c([s]1)-c1ccc(o1)N(O)=O
-CC(=O)Nc1[n][n]c([s]1)-c1ccc(o1)N(O)=O
-CC(=O)Nc1[n][n]c([s]1)-c1ccc(o1)N(O)=O
+CC(=O)Nc1[n][n]c([s]1)-c1ccc(o1)[N](O)=O
+CC(=O)Nc1[n][n]c([s]1)-c1ccc(o1)[N](O)=O
+CC(=O)Nc1[n][n]c([s]1)-c1ccc(o1)[N](O)=O
+CC(=O)Nc1[n][n]c([s]1)-c1ccc(o1)[N](O)=O
 250 structure-250 CN=N(C)O
-CN=N(C)O
-CN=N(C)O
-CN=N(C)O
-CN=N(C)O
+CN=[N](C)O
+CN=[N](C)O
+CN=[N](C)O
+CN=[N](C)O
 251 structure-251 Nc1cc(cc2cc(c(N=Nc3ccc(cc3)c4ccc(N=Nc5c(O)c6c(N)cc(cc6cc5S(=O)(=O)O[Na])S(=O)(=O)O[Na])cc4)c(O)c12)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
 Nc1cc(cc2cc(c(N=Nc3ccc(cc3)-c3ccc(cc3)N=Nc3c(cc4cc(cc(N)c4c3O)S(=O)(=O)O[Na])S(=O)(=O)O[Na])c(O)c12)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
 Nc1cc(cc2cc(c(N=Nc3ccc(cc3)-c3ccc(cc3)N=Nc3c(cc4cc(cc(N)c4c3O)S(=O)(=O)O[Na])S(=O)(=O)O[Na])c(O)c12)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
 Nc1cc(cc2cc(c(N=Nc3ccc(cc3)-c3ccc(cc3)N=Nc3c(cc4cc(cc(N)c4c3O)S(=O)(=O)O[Na])S(=O)(=O)O[Na])c(O)c12)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
 Nc1cc(cc2cc(c(N=Nc3ccc(cc3)-c3ccc(cc3)N=Nc3c(cc4cc(cc(N)c4c3O)S(=O)(=O)O[Na])S(=O)(=O)O[Na])c(O)c12)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
 252 structure-252 CN(C)Nc1nc(cs1)c2ccc(o2)N(=O)O
-CN(C)Nc1[n]c(c[s]1)-c1ccc(o1)N(O)=O
-CN(C)Nc1[n]c(c[s]1)-c1ccc(o1)N(O)=O
-CN(C)Nc1[n]c(c[s]1)-c1ccc(o1)N(O)=O
-CN(C)Nc1[n]c(c[s]1)-c1ccc(o1)N(O)=O
+CN(C)Nc1[n]c(c[s]1)-c1ccc(o1)[N](O)=O
+CN(C)Nc1[n]c(c[s]1)-c1ccc(o1)[N](O)=O
+CN(C)Nc1[n]c(c[s]1)-c1ccc(o1)[N](O)=O
+CN(C)Nc1[n]c(c[s]1)-c1ccc(o1)[N](O)=O
 253 structure-253 Nc1ccc2c3ccccc3[nH]c2n1
 Nc1ccc2c([nH]c3ccccc23)[n]1
 Nc1ccc2c([nH]c3ccccc23)[n]1
@@ -1280,10 +1280,10 @@ O=NN1CCSCC1
 O=NN1CCSCC1
 O=NN1CCSCC1
 256 structure-256 [Na]N=N=[N-]
-[N-]=N=N[Na]
-[N-]=N=N[Na]
-[N-]=N=N[Na]
-[N-]=N=N[Na]
+[N-]=[N]=N[Na]
+[N-]=[N]=N[Na]
+[N-]=[N]=N[Na]
+[N-]=[N]=N[Na]
 257 structure-257 FC(F)OC(Cl)C(F)(F)F
 FC(F)OC(Cl)C(F)(F)F
 FC(F)OC(Cl)C(F)(F)F
@@ -1305,10 +1305,10 @@ Oc1ccc2cc(ccc2c1N=Nc1ccc(cc1)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
 Oc1ccc2cc(ccc2c1N=Nc1ccc(cc1)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
 Oc1ccc2cc(ccc2c1N=Nc1ccc(cc1)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
 261 structure-261 CNc1ccc(cc1N(=O)O)N(CCO)CCO
-CNc1ccc(cc1N(O)=O)N(CCO)CCO
-CNc1ccc(cc1N(O)=O)N(CCO)CCO
-CNc1ccc(cc1N(O)=O)N(CCO)CCO
-CNc1ccc(cc1N(O)=O)N(CCO)CCO
+CNc1ccc(cc1[N](O)=O)N(CCO)CCO
+CNc1ccc(cc1[N](O)=O)N(CCO)CCO
+CNc1ccc(cc1[N](O)=O)N(CCO)CCO
+CNc1ccc(cc1[N](O)=O)N(CCO)CCO
 262 structure-262 CC(=O)Nc1ccc(N=Nc2cc(C)ccc2O)cc1
 Cc1cc(N=Nc2ccc(cc2)NC(C)=O)c(O)cc1
 Cc1cc(N=Nc2ccc(cc2)NC(C)=O)c(O)cc1
@@ -1330,10 +1330,10 @@ Nc1cc(cc2cc(c3N=Nc4ccc(cc4O[Cu]Oc3c12)-c1cc2O[Cu]Oc3c4c(cc(cc4N)S(=O)(=O)O[Na])c
 Nc1cc(cc2cc(c3N=Nc4ccc(cc4O[Cu]Oc3c12)-c1cc2O[Cu]Oc3c4c(cc(cc4N)S(=O)(=O)O[Na])cc(c3N=Nc2cc1)S(=O)(=O)O[Na])S(=O)(=O)O[Na])S(=O)(=O)O[Na]
 Nc1cc(cc2cc(c3N=Nc4ccc(cc4O[Cu]Oc3c12)-c1cc2O[Cu]Oc3c4c(cc(cc4N)S(=O)(=O)O[Na])cc(c3N=Nc2cc1)S(=O)(=O)O[Na])S(=O)(=O)O[Na])S(=O)(=O)O[Na]
 266 structure-266 Nc1ccc(NCCO)c(c1)N(=O)O
-Nc1cc(c(cc1)NCCO)N(O)=O
-Nc1cc(c(cc1)NCCO)N(O)=O
-Nc1cc(c(cc1)NCCO)N(O)=O
-Nc1cc(c(cc1)NCCO)N(O)=O
+Nc1cc(c(cc1)NCCO)[N](O)=O
+Nc1cc(c(cc1)NCCO)[N](O)=O
+Nc1cc(c(cc1)NCCO)[N](O)=O
+Nc1cc(c(cc1)NCCO)[N](O)=O
 267 structure-267 CCOP(=S)(OCC)Oc1nc(Cl)c(Cl)cc1Cl
 CCOP(=S)(Oc1[n]c(Cl)c(Cl)cc1Cl)OCC
 CCOP(=S)(Oc1[n]c(Cl)c(Cl)cc1Cl)OCC
@@ -1345,10 +1345,10 @@ COc1cc2OC3OC=CC3c2c2oc(=O)c3C(O)CCc3c12
 COc1cc2OC3OC=CC3c2c2oc(=O)c3C(O)CCc3c12
 COc1cc2OC3OC=CC3c2c2oc(=O)c3C(O)CCc3c12
 269 structure-269 COP(=S)(OC)Oc1ccc(cc1)N(=O)O
-COP(=S)(Oc1ccc(cc1)N(O)=O)OC
-COP(=S)(Oc1ccc(cc1)N(O)=O)OC
-COP(=S)(Oc1ccc(cc1)N(O)=O)OC
-COP(=S)(Oc1ccc(cc1)N(O)=O)OC
+COP(=S)(Oc1ccc(cc1)[N](O)=O)OC
+COP(=S)(Oc1ccc(cc1)[N](O)=O)OC
+COP(=S)(Oc1ccc(cc1)[N](O)=O)OC
+COP(=S)(Oc1ccc(cc1)[N](O)=O)OC
 270 structure-270 C1OC1C2CO2
 C1OC1C1CO1
 C1OC1C1CO1
@@ -1440,25 +1440,25 @@ OC(=O)C=Cc1cc(O)c(O)cc1
 OC(=O)C=Cc1cc(O)c(O)cc1
 OC(=O)C=Cc1cc(O)c(O)cc1
 288 structure-288 OCCNc1ccc(cc1N(=O)O)N(CCO)CCO
-ON(=O)c1cc(ccc1NCCO)N(CCO)CCO
-ON(=O)c1cc(ccc1NCCO)N(CCO)CCO
-ON(=O)c1cc(ccc1NCCO)N(CCO)CCO
-ON(=O)c1cc(ccc1NCCO)N(CCO)CCO
+O[N](=O)c1cc(ccc1NCCO)N(CCO)CCO
+O[N](=O)c1cc(ccc1NCCO)N(CCO)CCO
+O[N](=O)c1cc(ccc1NCCO)N(CCO)CCO
+O[N](=O)c1cc(ccc1NCCO)N(CCO)CCO
 289 structure-289 CCOP(=S)(OCC)Oc1cc(C)nc(n1)C(C)C
 Cc1cc([n]c([n]1)C(C)C)OP(=S)(OCC)OCC
 Cc1cc([n]c([n]1)C(C)C)OP(=S)(OCC)OCC
 Cc1cc([n]c([n]1)C(C)C)OP(=S)(OCC)OCC
 Cc1cc([n]c([n]1)C(C)C)OP(=S)(OCC)OCC
 290 structure-290 ON(=O)c1ccc(s1)C2NC(=O)c3ccccc3N2
-ON(=O)c1ccc([s]1)C1NC(=O)c2ccccc2N1
-ON(=O)c1ccc([s]1)C1NC(=O)c2ccccc2N1
-ON(=O)c1ccc([s]1)C1NC(=O)c2ccccc2N1
-ON(=O)c1ccc([s]1)C1NC(=O)c2ccccc2N1
+O[N](=O)c1ccc([s]1)C1NC(=O)c2ccccc2N1
+O[N](=O)c1ccc([s]1)C1NC(=O)c2ccccc2N1
+O[N](=O)c1ccc([s]1)C1NC(=O)c2ccccc2N1
+O[N](=O)c1ccc([s]1)C1NC(=O)c2ccccc2N1
 291 structure-291 OCCNc1nc(nc2ccccc12)c3ccc(s3)N(=O)O
-OCCNc1[n]c([n]c2ccccc21)-c1ccc([s]1)N(O)=O
-OCCNc1[n]c([n]c2ccccc21)-c1ccc([s]1)N(O)=O
-OCCNc1[n]c([n]c2ccccc21)-c1ccc([s]1)N(O)=O
-OCCNc1[n]c([n]c2ccccc21)-c1ccc([s]1)N(O)=O
+OCCNc1[n]c([n]c2ccccc21)-c1ccc([s]1)[N](O)=O
+OCCNc1[n]c([n]c2ccccc21)-c1ccc([s]1)[N](O)=O
+OCCNc1[n]c([n]c2ccccc21)-c1ccc([s]1)[N](O)=O
+OCCNc1[n]c([n]c2ccccc21)-c1ccc([s]1)[N](O)=O
 292 structure-292 Clc1ccc2Oc3cc(Cl)ccc3Oc2c1
 Clc1cc2Oc3ccc(Cl)cc3Oc2cc1
 Clc1cc2Oc3ccc(Cl)cc3Oc2cc1
@@ -1495,25 +1495,25 @@ Oc1c2ccccc2c(cc1N=Nc1ccc(c2ccccc12)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
 Oc1c2ccccc2c(cc1N=Nc1ccc(c2ccccc12)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
 Oc1c2ccccc2c(cc1N=Nc1ccc(c2ccccc12)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
 299 structure-299 ON(=O)c1ccc(o1)c2csc(NNC=O)n2
-ON(=O)c1ccc(o1)-c1c[s]c(NNC=O)[n]1
-ON(=O)c1ccc(o1)-c1c[s]c(NNC=O)[n]1
-ON(=O)c1ccc(o1)-c1c[s]c(NNC=O)[n]1
-ON(=O)c1ccc(o1)-c1c[s]c(NNC=O)[n]1
+O[N](=O)c1ccc(o1)-c1c[s]c(NNC=O)[n]1
+O[N](=O)c1ccc(o1)-c1c[s]c(NNC=O)[n]1
+O[N](=O)c1ccc(o1)-c1c[s]c(NNC=O)[n]1
+O[N](=O)c1ccc(o1)-c1c[s]c(NNC=O)[n]1
 300 structure-300 CC(=O)NCc1nc(no1)c2ccc(o2)N(=O)O
-CC(=O)NCc1[n]c([n]o1)-c1ccc(o1)N(O)=O
-CC(=O)NCc1[n]c([n]o1)-c1ccc(o1)N(O)=O
-CC(=O)NCc1[n]c([n]o1)-c1ccc(o1)N(O)=O
-CC(=O)NCc1[n]c([n]o1)-c1ccc(o1)N(O)=O
+CC(=O)NCc1[n]c([n]o1)-c1ccc(o1)[N](O)=O
+CC(=O)NCc1[n]c([n]o1)-c1ccc(o1)[N](O)=O
+CC(=O)NCc1[n]c([n]o1)-c1ccc(o1)[N](O)=O
+CC(=O)NCc1[n]c([n]o1)-c1ccc(o1)[N](O)=O
 301 structure-301 CNNCc1ccc(cc1)C(=O)NC(C)C
 CNNCc1ccc(cc1)C(=O)NC(C)C
 CNNCc1ccc(cc1)C(=O)NC(C)C
 CNNCc1ccc(cc1)C(=O)NC(C)C
 CNNCc1ccc(cc1)C(=O)NC(C)C
 302 structure-302 NC(=O)C(=Cc1ccc(o1)N(=O)O)c2ccco2
-NC(=O)C(=Cc1ccc(o1)N(O)=O)c1ccco1
-NC(=O)C(=Cc1ccc(o1)N(O)=O)c1ccco1
-NC(=O)C(=Cc1ccc(o1)N(O)=O)c1ccco1
-NC(=O)C(=Cc1ccc(o1)N(O)=O)c1ccco1
+NC(=O)C(=Cc1ccc(o1)[N](O)=O)c1ccco1
+NC(=O)C(=Cc1ccc(o1)[N](O)=O)c1ccco1
+NC(=O)C(=Cc1ccc(o1)[N](O)=O)c1ccco1
+NC(=O)C(=Cc1ccc(o1)[N](O)=O)c1ccco1
 303 structure-303 Cc1ccc(N=Nc2c(O)c(cc3cc(ccc23)S(=O)(=O)O)S(=O)(=O)O)c(C)c1
 Cc1cc(C)c(cc1)N=Nc1c2ccc(cc2cc(c1O)S(O)(=O)=O)S(O)(=O)=O
 Cc1cc(C)c(cc1)N=Nc1c2ccc(cc2cc(c1O)S(O)(=O)=O)S(O)(=O)=O
@@ -1540,10 +1540,10 @@ CCN(C#N)N=O
 CCN(C#N)N=O
 CCN(C#N)N=O
 308 structure-308 Nc1nc(cs1)c2ccc(o2)N(=O)O
-Nc1[n]c(c[s]1)-c1ccc(o1)N(O)=O
-Nc1[n]c(c[s]1)-c1ccc(o1)N(O)=O
-Nc1[n]c(c[s]1)-c1ccc(o1)N(O)=O
-Nc1[n]c(c[s]1)-c1ccc(o1)N(O)=O
+Nc1[n]c(c[s]1)-c1ccc(o1)[N](O)=O
+Nc1[n]c(c[s]1)-c1ccc(o1)[N](O)=O
+Nc1[n]c(c[s]1)-c1ccc(o1)[N](O)=O
+Nc1[n]c(c[s]1)-c1ccc(o1)[N](O)=O
 309 structure-309 CC(C)Oc1ccccc1OC(=O)N(C)N=O
 CN(N=O)C(=O)Oc1ccccc1OC(C)C
 CN(N=O)C(=O)Oc1ccccc1OC(C)C
@@ -1575,10 +1575,10 @@ CC(N)(Cc1cc(O)c(O)cc1)C(O)=O
 CC(N)(Cc1cc(O)c(O)cc1)C(O)=O
 CC(N)(Cc1cc(O)c(O)cc1)C(O)=O
 315 structure-315 ON(=O)c1ccc(o1)c2csc(NC(=O)C(F)(F)F)n2
-ON(=O)c1ccc(o1)-c1c[s]c(NC(=O)C(F)(F)F)[n]1
-ON(=O)c1ccc(o1)-c1c[s]c(NC(=O)C(F)(F)F)[n]1
-ON(=O)c1ccc(o1)-c1c[s]c(NC(=O)C(F)(F)F)[n]1
-ON(=O)c1ccc(o1)-c1c[s]c(NC(=O)C(F)(F)F)[n]1
+O[N](=O)c1ccc(o1)-c1c[s]c(NC(=O)C(F)(F)F)[n]1
+O[N](=O)c1ccc(o1)-c1c[s]c(NC(=O)C(F)(F)F)[n]1
+O[N](=O)c1ccc(o1)-c1c[s]c(NC(=O)C(F)(F)F)[n]1
+O[N](=O)c1ccc(o1)-c1c[s]c(NC(=O)C(F)(F)F)[n]1
 316 structure-316 O=NN1CC(=O)NC1=O
 O=C1NC(=O)CN1N=O
 O=C1NC(=O)CN1N=O
@@ -1600,15 +1600,15 @@ CN1C(=O)CN=C(c2cc(Cl)ccc12)c1ccccc1
 CN1C(=O)CN=C(c2cc(Cl)ccc12)c1ccccc1
 CN1C(=O)CN=C(c2cc(Cl)ccc12)c1ccccc1
 320 structure-320 Cc1ncc(N(=O)O)n1CCO
-Cc1[n]cc(N(O)=O)[n]1CCO
-Cc1[n]cc(N(O)=O)[n]1CCO
-Cc1[n]cc(N(O)=O)[n]1CCO
-Cc1[n]cc(N(O)=O)[n]1CCO
+Cc1[n]cc([N](O)=O)[n]1CCO
+Cc1[n]cc([N](O)=O)[n]1CCO
+Cc1[n]cc([N](O)=O)[n]1CCO
+Cc1[n]cc([N](O)=O)[n]1CCO
 321 structure-321 Cn1cnc(N(=O)O)c1Sc2ncnc3[nH]cnc23
-C[n]1c[n]c(c1Sc1[n]c[n]c2[nH]c[n]c12)N(O)=O
-C[n]1c[n]c(c1Sc1[n]c[n]c2[nH]c[n]c12)N(O)=O
-C[n]1c[n]c(c1Sc1[n]c[n]c2[nH]c[n]c12)N(O)=O
-C[n]1c[n]c(c1Sc1[n]c[n]c2[nH]c[n]c12)N(O)=O
+C[n]1c[n]c(c1Sc1[n]c[n]c2[nH]c[n]c12)[N](O)=O
+C[n]1c[n]c(c1Sc1[n]c[n]c2[nH]c[n]c12)[N](O)=O
+C[n]1c[n]c(c1Sc1[n]c[n]c2[nH]c[n]c12)[N](O)=O
+C[n]1c[n]c(c1Sc1[n]c[n]c2[nH]c[n]c12)[N](O)=O
 322 structure-322 Cc1cc(C)c(N=Nc2cc(c3ccccc3c2O)S(=O)(=O)O)c(c1)S(=O)(=O)O
 Cc1cc(c(N=Nc2cc(c3ccccc3c2O)S(O)(=O)=O)c(C)c1)S(O)(=O)=O
 Cc1cc(c(N=Nc2cc(c3ccccc3c2O)S(O)(=O)=O)c(C)c1)S(O)(=O)=O
@@ -1695,20 +1695,20 @@ OC(CO)C1OC(=O)C(O)=C1O
 OC(CO)C1OC(=O)C(O)=C1O
 OC(CO)C1OC(=O)C(O)=C1O
 339 structure-339 OCCN1CCN(N=Cc2ccc(o2)N(=O)O)C1=O
-OCCN1CCN(N=Cc2ccc(o2)N(O)=O)C1=O
-OCCN1CCN(N=Cc2ccc(o2)N(O)=O)C1=O
-OCCN1CCN(N=Cc2ccc(o2)N(O)=O)C1=O
-OCCN1CCN(N=Cc2ccc(o2)N(O)=O)C1=O
+OCCN1CCN(N=Cc2ccc(o2)[N](O)=O)C1=O
+OCCN1CCN(N=Cc2ccc(o2)[N](O)=O)C1=O
+OCCN1CCN(N=Cc2ccc(o2)[N](O)=O)C1=O
+OCCN1CCN(N=Cc2ccc(o2)[N](O)=O)C1=O
 340 structure-340 OC(=O)CCN(=O)O
-OC(=O)CCN(O)=O
-OC(=O)CCN(O)=O
-OC(=O)CCN(O)=O
-OC(=O)CCN(O)=O
+OC(=O)CC[N](O)=O
+OC(=O)CC[N](O)=O
+OC(=O)CC[N](O)=O
+OC(=O)CC[N](O)=O
 341 structure-341 ON(=O)C(N(=O)O)(N(=O)O)N(=O)O
-ON(=O)C(N(O)=O)(N(O)=O)N(O)=O
-ON(=O)C(N(O)=O)(N(O)=O)N(O)=O
-ON(=O)C(N(O)=O)(N(O)=O)N(O)=O
-ON(=O)C(N(O)=O)(N(O)=O)N(O)=O
+O[N](=O)C([N](O)=O)([N](O)=O)[N](O)=O
+O[N](=O)C([N](O)=O)([N](O)=O)[N](O)=O
+O[N](=O)C([N](O)=O)([N](O)=O)[N](O)=O
+O[N](=O)C([N](O)=O)([N](O)=O)[N](O)=O
 342 structure-342 CC(C)NCC(O)c1ccc2ccccc2c1
 CC(C)NCC(O)c1ccc2ccccc2c1
 CC(C)NCC(O)c1ccc2ccccc2c1
@@ -1725,10 +1725,10 @@ Oc1[n]cc(F)c(O)[n]1
 Oc1[n]cc(F)c(O)[n]1
 Oc1[n]cc(F)c(O)[n]1
 345 structure-345 Oc1ccc(cc1N(=O)O)N(=O)O
-Oc1ccc(cc1N(O)=O)N(O)=O
-Oc1ccc(cc1N(O)=O)N(O)=O
-Oc1ccc(cc1N(O)=O)N(O)=O
-Oc1ccc(cc1N(O)=O)N(O)=O
+Oc1ccc(cc1[N](O)=O)[N](O)=O
+Oc1ccc(cc1[N](O)=O)[N](O)=O
+Oc1ccc(cc1[N](O)=O)[N](O)=O
+Oc1ccc(cc1[N](O)=O)[N](O)=O
 346 structure-346 CN(CCCl)CCCl
 CN(CCCl)CCCl
 CN(CCCl)CCCl
@@ -1760,15 +1760,15 @@ Nc1cc(N)c(Cl)cc1
 Nc1cc(N)c(Cl)cc1
 Nc1cc(N)c(Cl)cc1
 352 structure-352 CC(=O)Nc1nc(NC(=O)C)nc(n1)c2ccc(o2)N(=O)O
-CC(=O)Nc1[n]c([n]c(NC(C)=O)[n]1)-c1ccc(o1)N(O)=O
-CC(=O)Nc1[n]c([n]c(NC(C)=O)[n]1)-c1ccc(o1)N(O)=O
-CC(=O)Nc1[n]c([n]c(NC(C)=O)[n]1)-c1ccc(o1)N(O)=O
-CC(=O)Nc1[n]c([n]c(NC(C)=O)[n]1)-c1ccc(o1)N(O)=O
+CC(=O)Nc1[n]c([n]c(NC(C)=O)[n]1)-c1ccc(o1)[N](O)=O
+CC(=O)Nc1[n]c([n]c(NC(C)=O)[n]1)-c1ccc(o1)[N](O)=O
+CC(=O)Nc1[n]c([n]c(NC(C)=O)[n]1)-c1ccc(o1)[N](O)=O
+CC(=O)Nc1[n]c([n]c(NC(C)=O)[n]1)-c1ccc(o1)[N](O)=O
 353 structure-353 CCN(Cc1cccc(c1)S(=O)(=O)O)c2ccc(cc2)C(=C3C=CC(=N(CC)Cc4cccc(c4)S(=O)(=O)O)C=C3)c5ccc(cc5)S(=O)(=O)O
-CCN(Cc1cc(ccc1)S(O)(=O)=O)c1ccc(cc1)C(c1ccc(cc1)S(O)(=O)=O)=C1C=CC(C=C1)=N(Cc1cc(ccc1)S(O)(=O)=O)CC
-CCN(Cc1cc(ccc1)S(O)(=O)=O)c1ccc(cc1)C(c1ccc(cc1)S(O)(=O)=O)=C1C=CC(C=C1)=N(Cc1cc(ccc1)S(O)(=O)=O)CC
-CCN(Cc1cc(ccc1)S(O)(=O)=O)c1ccc(cc1)C(c1ccc(cc1)S(O)(=O)=O)=C1C=CC(C=C1)=N(Cc1cc(ccc1)S(O)(=O)=O)CC
-CCN(Cc1cc(ccc1)S(O)(=O)=O)c1ccc(cc1)C(c1ccc(cc1)S(O)(=O)=O)=C1C=CC(C=C1)=N(Cc1cc(ccc1)S(O)(=O)=O)CC
+CCN(Cc1cc(ccc1)S(O)(=O)=O)c1ccc(cc1)C(c1ccc(cc1)S(O)(=O)=O)=C1C=CC(C=C1)=[N](Cc1cc(ccc1)S(O)(=O)=O)CC
+CCN(Cc1cc(ccc1)S(O)(=O)=O)c1ccc(cc1)C(c1ccc(cc1)S(O)(=O)=O)=C1C=CC(C=C1)=[N](Cc1cc(ccc1)S(O)(=O)=O)CC
+CCN(Cc1cc(ccc1)S(O)(=O)=O)c1ccc(cc1)C(c1ccc(cc1)S(O)(=O)=O)=C1C=CC(C=C1)=[N](Cc1cc(ccc1)S(O)(=O)=O)CC
+CCN(Cc1cc(ccc1)S(O)(=O)=O)c1ccc(cc1)C(c1ccc(cc1)S(O)(=O)=O)=C1C=CC(C=C1)=[N](Cc1cc(ccc1)S(O)(=O)=O)CC
 354 structure-354 COc1ccc(cc1)C(O)C=C
 COc1ccc(cc1)C(O)C=C
 COc1ccc(cc1)C(O)C=C
@@ -1825,15 +1825,15 @@ CC(=O)Nc1cc2Cc3ccccc3-c2cc1
 CC(=O)Nc1cc2Cc3ccccc3-c2cc1
 CC(=O)Nc1cc2Cc3ccccc3-c2cc1
 365 structure-365 Nc1ccc(N)c(c1)N(=O)O
-Nc1cc(c(N)cc1)N(O)=O
-Nc1cc(c(N)cc1)N(O)=O
-Nc1cc(c(N)cc1)N(O)=O
-Nc1cc(c(N)cc1)N(O)=O
+Nc1cc(c(N)cc1)[N](O)=O
+Nc1cc(c(N)cc1)[N](O)=O
+Nc1cc(c(N)cc1)[N](O)=O
+Nc1cc(c(N)cc1)[N](O)=O
 366 structure-366 CC(=O)Nc1nc(cs1)c2ccc(o2)N(=O)O
-CC(=O)Nc1[n]c(c[s]1)-c1ccc(o1)N(O)=O
-CC(=O)Nc1[n]c(c[s]1)-c1ccc(o1)N(O)=O
-CC(=O)Nc1[n]c(c[s]1)-c1ccc(o1)N(O)=O
-CC(=O)Nc1[n]c(c[s]1)-c1ccc(o1)N(O)=O
+CC(=O)Nc1[n]c(c[s]1)-c1ccc(o1)[N](O)=O
+CC(=O)Nc1[n]c(c[s]1)-c1ccc(o1)[N](O)=O
+CC(=O)Nc1[n]c(c[s]1)-c1ccc(o1)[N](O)=O
+CC(=O)Nc1[n]c(c[s]1)-c1ccc(o1)[N](O)=O
 367 structure-367 Nc1ccc(cc1)c2ccc(N)cc2
 Nc1ccc(cc1)-c1ccc(N)cc1
 Nc1ccc(cc1)-c1ccc(N)cc1
@@ -1850,10 +1850,10 @@ CCc1cc(cc[n]1)C(N)=S
 CCc1cc(cc[n]1)C(N)=S
 CCc1cc(cc[n]1)C(N)=S
 370 structure-370 ON(=O)c1ccc(o1)c2cscn2
-ON(=O)c1ccc(o1)-c1c[s]c[n]1
-ON(=O)c1ccc(o1)-c1c[s]c[n]1
-ON(=O)c1ccc(o1)-c1c[s]c[n]1
-ON(=O)c1ccc(o1)-c1c[s]c[n]1
+O[N](=O)c1ccc(o1)-c1c[s]c[n]1
+O[N](=O)c1ccc(o1)-c1c[s]c[n]1
+O[N](=O)c1ccc(o1)-c1c[s]c[n]1
+O[N](=O)c1ccc(o1)-c1c[s]c[n]1
 371 structure-371 CN1CCCC1c2cccnc2
 CN1CCCC1c1c[n]ccc1
 CN1CCCC1c1c[n]ccc1
@@ -1910,10 +1910,10 @@ OCC(O)C(O)C(O)C(C=O)NC(=O)N(CCCl)N=O
 OCC(O)C(O)C(O)C(C=O)NC(=O)N(CCCl)N=O
 OCC(O)C(O)C(O)C(C=O)NC(=O)N(CCCl)N=O
 382 structure-382 CN(C)c1ccc(cc1)C(=C2C=CC(=N(C)C)C=C2)c3ccc(cc3)N(C)C
-CN(C)=C1C=CC(C=C1)=C(c1ccc(cc1)N(C)C)c1ccc(cc1)N(C)C
-CN(C)=C1C=CC(C=C1)=C(c1ccc(cc1)N(C)C)c1ccc(cc1)N(C)C
-CN(C)=C1C=CC(C=C1)=C(c1ccc(cc1)N(C)C)c1ccc(cc1)N(C)C
-CN(C)=C1C=CC(C=C1)=C(c1ccc(cc1)N(C)C)c1ccc(cc1)N(C)C
+C[N](C)=C1C=CC(C=C1)=C(c1ccc(cc1)N(C)C)c1ccc(cc1)N(C)C
+C[N](C)=C1C=CC(C=C1)=C(c1ccc(cc1)N(C)C)c1ccc(cc1)N(C)C
+C[N](C)=C1C=CC(C=C1)=C(c1ccc(cc1)N(C)C)c1ccc(cc1)N(C)C
+C[N](C)=C1C=CC(C=C1)=C(c1ccc(cc1)N(C)C)c1ccc(cc1)N(C)C
 383 structure-383 CCN(CC)N=O
 CCN(CC)N=O
 CCN(CC)N=O
@@ -1940,10 +1940,10 @@ CCCCCCCCCCCCN(C)N=O
 CCCCCCCCCCCCN(C)N=O
 CCCCCCCCCCCCN(C)N=O
 388 structure-388 Cc1ncc(N(=O)O)n1C
-Cc1[n]cc(N(O)=O)[n]1C
-Cc1[n]cc(N(O)=O)[n]1C
-Cc1[n]cc(N(O)=O)[n]1C
-Cc1[n]cc(N(O)=O)[n]1C
+Cc1[n]cc([N](O)=O)[n]1C
+Cc1[n]cc([N](O)=O)[n]1C
+Cc1[n]cc([N](O)=O)[n]1C
+Cc1[n]cc([N](O)=O)[n]1C
 389 structure-389 O=C(C1CCCCC1)N2CC3N(CCc4ccccc34)C(=O)C2
 O=C(C1CCCCC1)N1CC2c3ccccc3CCN2C(=O)C1
 O=C(C1CCCCC1)N1CC2c3ccccc3CCN2C(=O)C1
@@ -1970,10 +1970,10 @@ OCC1CO1
 OCC1CO1
 OCC1CO1
 394 structure-394 CN(C)CN=c1[nH]nc(C=Cc2ccc(o2)N(=O)O)o1
-CN(C)CN=c1[nH][n]c(C=Cc2ccc(o2)N(O)=O)o1
-CN(C)CN=c1[nH][n]c(C=Cc2ccc(o2)N(O)=O)o1
-CN(C)CN=c1[nH][n]c(C=Cc2ccc(o2)N(O)=O)o1
-CN(C)CN=c1[nH][n]c(C=Cc2ccc(o2)N(O)=O)o1
+CN(C)CN=c1[nH][n]c(C=Cc2ccc(o2)[N](O)=O)o1
+CN(C)CN=c1[nH][n]c(C=Cc2ccc(o2)[N](O)=O)o1
+CN(C)CN=c1[nH][n]c(C=Cc2ccc(o2)[N](O)=O)o1
+CN(C)CN=c1[nH][n]c(C=Cc2ccc(o2)[N](O)=O)o1
 395 structure-395 Cc1cc(O)nc(S)n1
 Cc1cc(O)[n]c(S)[n]1
 Cc1cc(O)[n]c(S)[n]1
@@ -1990,10 +1990,10 @@ CCCC[Sn](CCCC)(CCCC)O[Sn](CCCC)(CCCC)CCCC
 CCCC[Sn](CCCC)(CCCC)O[Sn](CCCC)(CCCC)CCCC
 CCCC[Sn](CCCC)(CCCC)O[Sn](CCCC)(CCCC)CCCC
 398 structure-398 CCOP(=S)(OCC)Oc1ccc(cc1)N(=O)O
-CCOP(=S)(Oc1ccc(cc1)N(O)=O)OCC
-CCOP(=S)(Oc1ccc(cc1)N(O)=O)OCC
-CCOP(=S)(Oc1ccc(cc1)N(O)=O)OCC
-CCOP(=S)(Oc1ccc(cc1)N(O)=O)OCC
+CCOP(=S)(Oc1ccc(cc1)[N](O)=O)OCC
+CCOP(=S)(Oc1ccc(cc1)[N](O)=O)OCC
+CCOP(=S)(Oc1ccc(cc1)[N](O)=O)OCC
+CCOP(=S)(Oc1ccc(cc1)[N](O)=O)OCC
 399 structure-399 Cc1ccc2cc3c(ccc4ccccc43)c5CCc1c52
 Cc1ccc2cc3c(ccc4ccccc43)c3CCc1c32
 Cc1ccc2cc3c(ccc4ccccc43)c3CCc1c32
@@ -2010,10 +2010,10 @@ Cc1c(Cl)c(=O)oc2cc(ccc12)OP(=S)(OCC)OCC
 Cc1c(Cl)c(=O)oc2cc(ccc12)OP(=S)(OCC)OCC
 Cc1c(Cl)c(=O)oc2cc(ccc12)OP(=S)(OCC)OCC
 402 structure-402 OCC(NC(=O)C(Cl)Cl)C(O)c1ccc(cc1)N(=O)O
-OC(C(CO)NC(=O)C(Cl)Cl)c1ccc(cc1)N(O)=O
-OC(C(CO)NC(=O)C(Cl)Cl)c1ccc(cc1)N(O)=O
-OC(C(CO)NC(=O)C(Cl)Cl)c1ccc(cc1)N(O)=O
-OC(C(CO)NC(=O)C(Cl)Cl)c1ccc(cc1)N(O)=O
+OC(C(CO)NC(=O)C(Cl)Cl)c1ccc(cc1)[N](O)=O
+OC(C(CO)NC(=O)C(Cl)Cl)c1ccc(cc1)[N](O)=O
+OC(C(CO)NC(=O)C(Cl)Cl)c1ccc(cc1)[N](O)=O
+OC(C(CO)NC(=O)C(Cl)Cl)c1ccc(cc1)[N](O)=O
 403 structure-403 NC(CCC(=O)O)C(=O)O
 NC(CCC(O)=O)C(O)=O
 NC(CCC(O)=O)C(O)=O
@@ -2145,10 +2145,10 @@ OCCN(CCO)c1[n]c([n]c2ccccc21)-c1ccc[s]1
 OCCN(CCO)c1[n]c([n]c2ccccc21)-c1ccc[s]1
 OCCN(CCO)c1[n]c([n]c2ccccc21)-c1ccc[s]1
 429 structure-429 ON(=O)c1ccc(s1)c2nc(N3CCOCC3)c4ccccc4n2
-ON(=O)c1ccc([s]1)-c1[n]c2ccccc2c([n]1)N1CCOCC1
-ON(=O)c1ccc([s]1)-c1[n]c2ccccc2c([n]1)N1CCOCC1
-ON(=O)c1ccc([s]1)-c1[n]c2ccccc2c([n]1)N1CCOCC1
-ON(=O)c1ccc([s]1)-c1[n]c2ccccc2c([n]1)N1CCOCC1
+O[N](=O)c1ccc([s]1)-c1[n]c2ccccc2c([n]1)N1CCOCC1
+O[N](=O)c1ccc([s]1)-c1[n]c2ccccc2c([n]1)N1CCOCC1
+O[N](=O)c1ccc([s]1)-c1[n]c2ccccc2c([n]1)N1CCOCC1
+O[N](=O)c1ccc([s]1)-c1[n]c2ccccc2c([n]1)N1CCOCC1
 430 structure-430 CN(Cc1cnc2nc(N)nc(N)c2n1)c3ccc(cc3)C(=O)NC(CCC(=O)O)C(=O)O
 CN(Cc1c[n]c2[n]c(N)[n]c(N)c2[n]1)c1ccc(cc1)C(=O)NC(CCC(O)=O)C(O)=O
 CN(Cc1c[n]c2[n]c(N)[n]c(N)c2[n]1)c1ccc(cc1)C(=O)NC(CCC(O)=O)C(O)=O
@@ -2165,10 +2165,10 @@ OC(=O)c1ccc[n]c1
 OC(=O)c1ccc[n]c1
 OC(=O)c1ccc[n]c1
 433 structure-433 NC(=O)NN=Cc1ccc(o1)N(=O)O
-NC(=O)NN=Cc1ccc(o1)N(O)=O
-NC(=O)NN=Cc1ccc(o1)N(O)=O
-NC(=O)NN=Cc1ccc(o1)N(O)=O
-NC(=O)NN=Cc1ccc(o1)N(O)=O
+NC(=O)NN=Cc1ccc(o1)[N](O)=O
+NC(=O)NN=Cc1ccc(o1)[N](O)=O
+NC(=O)NN=Cc1ccc(o1)[N](O)=O
+NC(=O)NN=Cc1ccc(o1)[N](O)=O
 434 structure-434 NNc1ccccc1
 NNc1ccccc1
 NNc1ccccc1
@@ -2190,10 +2190,10 @@ COC(N)=O
 COC(N)=O
 COC(N)=O
 438 structure-438 OCCN(CCO)c1ccc(cc1O)N(=O)O
-Oc1cc(ccc1N(CCO)CCO)N(O)=O
-Oc1cc(ccc1N(CCO)CCO)N(O)=O
-Oc1cc(ccc1N(CCO)CCO)N(O)=O
-Oc1cc(ccc1N(CCO)CCO)N(O)=O
+Oc1cc(ccc1N(CCO)CCO)[N](O)=O
+Oc1cc(ccc1N(CCO)CCO)[N](O)=O
+Oc1cc(ccc1N(CCO)CCO)[N](O)=O
+Oc1cc(ccc1N(CCO)CCO)[N](O)=O
 439 structure-439 CC(=C)C1CCC(=CC1)C
 CC1CCC(CC=1)C(C)=C
 CC1CCC(CC=1)C(C)=C
@@ -2240,20 +2240,20 @@ C[n]1c(C)cc(=O)[n]1-c1ccccc1
 C[n]1c(C)cc(=O)[n]1-c1ccccc1
 C[n]1c(C)cc(=O)[n]1-c1ccccc1
 448 structure-448 ON(=O)c1ccc2CCc3cccc1c32
-ON(=O)c1ccc2CCc3cccc1c32
-ON(=O)c1ccc2CCc3cccc1c32
-ON(=O)c1ccc2CCc3cccc1c32
-ON(=O)c1ccc2CCc3cccc1c32
+O[N](=O)c1ccc2CCc3cccc1c32
+O[N](=O)c1ccc2CCc3cccc1c32
+O[N](=O)c1ccc2CCc3cccc1c32
+O[N](=O)c1ccc2CCc3cccc1c32
 449 structure-449 NC(=O)N(CC(=O)O)N=O
 NC(=O)N(CC(O)=O)N=O
 NC(=O)N(CC(O)=O)N=O
 NC(=O)N(CC(O)=O)N=O
 NC(=O)N(CC(O)=O)N=O
 450 structure-450 ON(=O)c1cccc2cccnc12
-ON(=O)c1cccc2ccc[n]c21
-ON(=O)c1cccc2ccc[n]c21
-ON(=O)c1cccc2ccc[n]c21
-ON(=O)c1cccc2ccc[n]c21
+O[N](=O)c1cccc2ccc[n]c21
+O[N](=O)c1cccc2ccc[n]c21
+O[N](=O)c1cccc2ccc[n]c21
+O[N](=O)c1cccc2ccc[n]c21
 451 structure-451 Nc1cc(Cl)c(N)c(Cl)c1
 Nc1cc(Cl)c(N)c(Cl)c1
 Nc1cc(Cl)c(N)c(Cl)c1
@@ -2290,10 +2290,10 @@ Cc1cc(ccc1N)-c1cc(C)c(N)cc1
 Cc1cc(ccc1N)-c1cc(C)c(N)cc1
 Cc1cc(ccc1N)-c1cc(C)c(N)cc1
 458 structure-458 ON(=O)c1ccc2ncccc2c1
-ON(=O)c1cc2ccc[n]c2cc1
-ON(=O)c1cc2ccc[n]c2cc1
-ON(=O)c1cc2ccc[n]c2cc1
-ON(=O)c1cc2ccc[n]c2cc1
+O[N](=O)c1cc2ccc[n]c2cc1
+O[N](=O)c1cc2ccc[n]c2cc1
+O[N](=O)c1cc2ccc[n]c2cc1
+O[N](=O)c1cc2ccc[n]c2cc1
 459 structure-459 CCOC(=O)N(CC)N=O
 CCN(N=O)C(=O)OCC
 CCN(N=O)C(=O)OCC
@@ -2305,15 +2305,15 @@ Nc1ccc(cc1Cl)NOS(O)(=O)=O
 Nc1ccc(cc1Cl)NOS(O)(=O)=O
 Nc1ccc(cc1Cl)NOS(O)(=O)=O
 461 structure-461 Nc1cc(ccc1C(=O)O)N(=O)O
-Nc1cc(ccc1C(O)=O)N(O)=O
-Nc1cc(ccc1C(O)=O)N(O)=O
-Nc1cc(ccc1C(O)=O)N(O)=O
-Nc1cc(ccc1C(O)=O)N(O)=O
+Nc1cc(ccc1C(O)=O)[N](O)=O
+Nc1cc(ccc1C(O)=O)[N](O)=O
+Nc1cc(ccc1C(O)=O)[N](O)=O
+Nc1cc(ccc1C(O)=O)[N](O)=O
 462 structure-462 OC(=O)c1ccc(cc1)N(=O)O
-OC(=O)c1ccc(cc1)N(O)=O
-OC(=O)c1ccc(cc1)N(O)=O
-OC(=O)c1ccc(cc1)N(O)=O
-OC(=O)c1ccc(cc1)N(O)=O
+OC(=O)c1ccc(cc1)[N](O)=O
+OC(=O)c1ccc(cc1)[N](O)=O
+OC(=O)c1ccc(cc1)[N](O)=O
+OC(=O)c1ccc(cc1)[N](O)=O
 463 structure-463 NCCc1ccc(O)c(O)c1
 NCCc1cc(O)c(O)cc1
 NCCc1cc(O)c(O)cc1
@@ -2435,10 +2435,10 @@ Cc1cc(ccc1N)NOS(O)(=O)=O
 Cc1cc(ccc1N)NOS(O)(=O)=O
 Cc1cc(ccc1N)NOS(O)(=O)=O
 487 structure-487 ON(=O)c1ccc(Nc2ccc(Nc3ccccc3)c(c2)S(=O)(=O)O[Na])c(c1)N(=O)O
-ON(=O)c1cc(ccc1Nc1cc(c(cc1)Nc1ccccc1)S(=O)(=O)O[Na])N(O)=O
-ON(=O)c1cc(ccc1Nc1cc(c(cc1)Nc1ccccc1)S(=O)(=O)O[Na])N(O)=O
-ON(=O)c1cc(ccc1Nc1cc(c(cc1)Nc1ccccc1)S(=O)(=O)O[Na])N(O)=O
-ON(=O)c1cc(ccc1Nc1cc(c(cc1)Nc1ccccc1)S(=O)(=O)O[Na])N(O)=O
+O[N](=O)c1cc(ccc1Nc1cc(c(cc1)Nc1ccccc1)S(=O)(=O)O[Na])[N](O)=O
+O[N](=O)c1cc(ccc1Nc1cc(c(cc1)Nc1ccccc1)S(=O)(=O)O[Na])[N](O)=O
+O[N](=O)c1cc(ccc1Nc1cc(c(cc1)Nc1ccccc1)S(=O)(=O)O[Na])[N](O)=O
+O[N](=O)c1cc(ccc1Nc1cc(c(cc1)Nc1ccccc1)S(=O)(=O)O[Na])[N](O)=O
 488 structure-488 Cc1cccc(N)c1
 Cc1cc(N)ccc1
 Cc1cc(N)ccc1
@@ -2470,10 +2470,10 @@ Cc1ccc(cc1)S(=O)(=O)Oc1ccc(cc1)N=Nc1ccc(cc1C)-c1cc(C)c(cc1)N=Nc1c(O)ccc2cc(cc(c2
 Cc1ccc(cc1)S(=O)(=O)Oc1ccc(cc1)N=Nc1ccc(cc1C)-c1cc(C)c(cc1)N=Nc1c(O)ccc2cc(cc(c21)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
 Cc1ccc(cc1)S(=O)(=O)Oc1ccc(cc1)N=Nc1ccc(cc1C)-c1cc(C)c(cc1)N=Nc1c(O)ccc2cc(cc(c21)S(=O)(=O)O[Na])S(=O)(=O)O[Na]
 494 structure-494 COc1ccc(cc1N=Nc2c(O)c(cc3ccccc23)C(=O)Nc4cccc(c4)N(=O)O)N(=O)O
-COc1ccc(cc1N=Nc1c2ccccc2cc(C(=O)Nc2cccc(c2)N(O)=O)c1O)N(O)=O
-COc1ccc(cc1N=Nc1c2ccccc2cc(C(=O)Nc2cccc(c2)N(O)=O)c1O)N(O)=O
-COc1ccc(cc1N=Nc1c2ccccc2cc(C(=O)Nc2cccc(c2)N(O)=O)c1O)N(O)=O
-COc1ccc(cc1N=Nc1c2ccccc2cc(C(=O)Nc2cccc(c2)N(O)=O)c1O)N(O)=O
+COc1ccc(cc1N=Nc1c2ccccc2cc(C(=O)Nc2cccc(c2)[N](O)=O)c1O)[N](O)=O
+COc1ccc(cc1N=Nc1c2ccccc2cc(C(=O)Nc2cccc(c2)[N](O)=O)c1O)[N](O)=O
+COc1ccc(cc1N=Nc1c2ccccc2cc(C(=O)Nc2cccc(c2)[N](O)=O)c1O)[N](O)=O
+COc1ccc(cc1N=Nc1c2ccccc2cc(C(=O)Nc2cccc(c2)[N](O)=O)c1O)[N](O)=O
 495 structure-495 Oc1ccnc(O)n1
 Oc1cc[n]c(O)[n]1
 Oc1cc[n]c(O)[n]1
@@ -2485,20 +2485,20 @@ COS(C)(=O)=O
 COS(C)(=O)=O
 COS(C)(=O)=O
 497 structure-497 ON(=O)c1ccc(C=NN2CC(=O)NC2=O)o1
-ON(=O)c1ccc(C=NN2CC(=O)NC2=O)o1
-ON(=O)c1ccc(C=NN2CC(=O)NC2=O)o1
-ON(=O)c1ccc(C=NN2CC(=O)NC2=O)o1
-ON(=O)c1ccc(C=NN2CC(=O)NC2=O)o1
+O[N](=O)c1ccc(C=NN2CC(=O)NC2=O)o1
+O[N](=O)c1ccc(C=NN2CC(=O)NC2=O)o1
+O[N](=O)c1ccc(C=NN2CC(=O)NC2=O)o1
+O[N](=O)c1ccc(C=NN2CC(=O)NC2=O)o1
 498 structure-498 CCSCCC(N)C(=O)O
 CCSCCC(N)C(O)=O
 CCSCCC(N)C(O)=O
 CCSCCC(N)C(O)=O
 CCSCCC(N)C(O)=O
 499 structure-499 CN(C)(C)CCO
-CN(C)(C)CCO
-CN(C)(C)CCO
-CN(C)(C)CCO
-CN(C)(C)CCO
+C[N](C)(C)CCO
+C[N](C)(C)CCO
+C[N](C)(C)CCO
+C[N](C)(C)CCO
 500 structure-500 ClC(Cl)Cl
 ClC(Cl)Cl
 ClC(Cl)Cl
@@ -2615,10 +2615,10 @@ CCc1ccc(cc1)C(C(Cl)Cl)c1ccc(CC)cc1
 CCc1ccc(cc1)C(C(Cl)Cl)c1ccc(CC)cc1
 CCc1ccc(cc1)C(C(Cl)Cl)c1ccc(CC)cc1
 523 structure-523 Nc1nc(N)nc(n1)c2ccc(o2)N(=O)O
-Nc1[n]c([n]c(N)[n]1)-c1ccc(o1)N(O)=O
-Nc1[n]c([n]c(N)[n]1)-c1ccc(o1)N(O)=O
-Nc1[n]c([n]c(N)[n]1)-c1ccc(o1)N(O)=O
-Nc1[n]c([n]c(N)[n]1)-c1ccc(o1)N(O)=O
+Nc1[n]c([n]c(N)[n]1)-c1ccc(o1)[N](O)=O
+Nc1[n]c([n]c(N)[n]1)-c1ccc(o1)[N](O)=O
+Nc1[n]c([n]c(N)[n]1)-c1ccc(o1)[N](O)=O
+Nc1[n]c([n]c(N)[n]1)-c1ccc(o1)[N](O)=O
 524 structure-524 Cc1nc(N)cc2[nH]c3ccccc3c12
 Cc1[n]c(N)cc2[nH]c3ccccc3c21
 Cc1[n]c(N)cc2[nH]c3ccccc3c21
@@ -2755,10 +2755,10 @@ ClC(Cl)C(Cl)(Cl)Cl
 ClC(Cl)C(Cl)(Cl)Cl
 ClC(Cl)C(Cl)(Cl)Cl
 551 structure-551 ON(=O)C(Cl)(Cl)Cl
-ON(=O)C(Cl)(Cl)Cl
-ON(=O)C(Cl)(Cl)Cl
-ON(=O)C(Cl)(Cl)Cl
-ON(=O)C(Cl)(Cl)Cl
+O[N](=O)C(Cl)(Cl)Cl
+O[N](=O)C(Cl)(Cl)Cl
+O[N](=O)C(Cl)(Cl)Cl
+O[N](=O)C(Cl)(Cl)Cl
 552 structure-552 ClC1C=CC2C1C3(Cl)C(=C(Cl)C2(Cl)C3(Cl)Cl)Cl
 ClC1(Cl)C2(Cl)C3C=CC(Cl)C3C1(Cl)C(Cl)=C2Cl
 ClC1(Cl)C2(Cl)C3C=CC(Cl)C3C1(Cl)C(Cl)=C2Cl
@@ -2835,10 +2835,10 @@ Cc1cc2[n]cccc2c2[n]c(N)[n](C)c12
 Cc1cc2[n]cccc2c2[n]c(N)[n](C)c12
 Cc1cc2[n]cccc2c2[n]c(N)[n](C)c12
 567 structure-567 NC(=NO)c1ccc(o1)N(=O)O
-NC(=NO)c1ccc(o1)N(O)=O
-NC(=NO)c1ccc(o1)N(O)=O
-NC(=NO)c1ccc(o1)N(O)=O
-NC(=NO)c1ccc(o1)N(O)=O
+NC(=NO)c1ccc(o1)[N](O)=O
+NC(=NO)c1ccc(o1)[N](O)=O
+NC(=NO)c1ccc(o1)[N](O)=O
+NC(=NO)c1ccc(o1)[N](O)=O
 568 structure-568 OO
 OO
 OO
@@ -2865,10 +2865,10 @@ ClCl
 ClCl
 ClCl
 573 structure-573 ON(=O)OCC(CON(=O)O)(CON(=O)O)CON(=O)O
-ON(=O)OCC(CON(O)=O)(CON(O)=O)CON(O)=O
-ON(=O)OCC(CON(O)=O)(CON(O)=O)CON(O)=O
-ON(=O)OCC(CON(O)=O)(CON(O)=O)CON(O)=O
-ON(=O)OCC(CON(O)=O)(CON(O)=O)CON(O)=O
+O[N](=O)OCC(CO[N](O)=O)(CO[N](O)=O)CO[N](O)=O
+O[N](=O)OCC(CO[N](O)=O)(CO[N](O)=O)CO[N](O)=O
+O[N](=O)OCC(CO[N](O)=O)(CO[N](O)=O)CO[N](O)=O
+O[N](=O)OCC(CO[N](O)=O)(CO[N](O)=O)CO[N](O)=O
 574 structure-574 CCOP(=S)(OCC)SC1OCCOC1SP(=S)(OCC)OCC
 CCOP(=S)(OCC)SC1OCCOC1SP(=S)(OCC)OCC
 CCOP(=S)(OCC)SC1OCCOC1SP(=S)(OCC)OCC
@@ -2920,10 +2920,10 @@ CN(C)C(=O)Cl
 CN(C)C(=O)Cl
 CN(C)C(=O)Cl
 584 structure-584 CC(C)N(=O)O
-CC(C)N(O)=O
-CC(C)N(O)=O
-CC(C)N(O)=O
-CC(C)N(O)=O
+CC(C)[N](O)=O
+CC(C)[N](O)=O
+CC(C)[N](O)=O
+CC(C)[N](O)=O
 585 structure-585 CCCCCCCCCCCCCCCC(=O)OCC=C(C)C=CC=C(C)C=CC1=C(C)CCCC1(C)C
 CCCCCCCCCCCCCCCC(=O)OCC=C(C)C=CC=C(C)C=CC1=C(C)CCCC1(C)C
 CCCCCCCCCCCCCCCC(=O)OCC=C(C)C=CC=C(C)C=CC1=C(C)CCCC1(C)C
@@ -2965,10 +2965,10 @@ Cc1ccc2c(c1N)C(=O)c1ccccc1C2=O
 Cc1ccc2c(c1N)C(=O)c1ccccc1C2=O
 Cc1ccc2c(c1N)C(=O)c1ccccc1C2=O
 593 structure-593 ON(=O)c1c(Cl)c(Cl)c(Cl)c(Cl)c1Cl
-ON(=O)c1c(Cl)c(Cl)c(Cl)c(Cl)c1Cl
-ON(=O)c1c(Cl)c(Cl)c(Cl)c(Cl)c1Cl
-ON(=O)c1c(Cl)c(Cl)c(Cl)c(Cl)c1Cl
-ON(=O)c1c(Cl)c(Cl)c(Cl)c(Cl)c1Cl
+O[N](=O)c1c(Cl)c(Cl)c(Cl)c(Cl)c1Cl
+O[N](=O)c1c(Cl)c(Cl)c(Cl)c(Cl)c1Cl
+O[N](=O)c1c(Cl)c(Cl)c(Cl)c(Cl)c1Cl
+O[N](=O)c1c(Cl)c(Cl)c(Cl)c(Cl)c1Cl
 594 structure-594 CC1CC(OC(=O)C)OC(C)O1
 CC1OC(CC(C)O1)OC(C)=O
 CC1OC(CC(C)O1)OC(C)=O
@@ -3020,10 +3020,10 @@ COP(=S)(OC)SC[n]1[n][n]c2ccccc2c1=O
 COP(=S)(OC)SC[n]1[n][n]c2ccccc2c1=O
 COP(=S)(OC)SC[n]1[n][n]c2ccccc2c1=O
 604 structure-604 ON(=O)c1cccc2ccccc12
-ON(=O)c1cccc2ccccc21
-ON(=O)c1cccc2ccccc21
-ON(=O)c1cccc2ccccc21
-ON(=O)c1cccc2ccccc21
+O[N](=O)c1cccc2ccccc21
+O[N](=O)c1cccc2ccccc21
+O[N](=O)c1cccc2ccccc21
+O[N](=O)c1cccc2ccccc21
 605 structure-605 c1ccc2c(c1)[nH]c3ccccc32
 c1cccc2[nH]c3ccccc3c21
 c1cccc2[nH]c3ccccc3c21
@@ -3100,15 +3100,15 @@ Cc1ccccc1S(N)(=O)=O
 Cc1ccccc1S(N)(=O)=O
 Cc1ccccc1S(N)(=O)=O
 620 structure-620 ON(=O)c1ccccc1Cl
-ON(=O)c1ccccc1Cl
-ON(=O)c1ccccc1Cl
-ON(=O)c1ccccc1Cl
-ON(=O)c1ccccc1Cl
+O[N](=O)c1ccccc1Cl
+O[N](=O)c1ccccc1Cl
+O[N](=O)c1ccccc1Cl
+O[N](=O)c1ccccc1Cl
 621 structure-621 CCC(C)c1cc(cc(N(=O)O)c1O)N(=O)O
-CC(CC)c1cc(cc(c1O)N(O)=O)N(O)=O
-CC(CC)c1cc(cc(c1O)N(O)=O)N(O)=O
-CC(CC)c1cc(cc(c1O)N(O)=O)N(O)=O
-CC(CC)c1cc(cc(c1O)N(O)=O)N(O)=O
+CC(CC)c1cc(cc(c1O)[N](O)=O)[N](O)=O
+CC(CC)c1cc(cc(c1O)[N](O)=O)[N](O)=O
+CC(CC)c1cc(cc(c1O)[N](O)=O)[N](O)=O
+CC(CC)c1cc(cc(c1O)[N](O)=O)[N](O)=O
 622 structure-622 NC(=O)c1ccccc1C(=O)N
 NC(=O)c1ccccc1C(N)=O
 NC(=O)c1ccccc1C(N)=O
@@ -3135,10 +3135,10 @@ c1cccc2ccccc21
 c1cccc2ccccc21
 c1cccc2ccccc21
 627 structure-627 COc1ccccc1N(=O)O
-COc1ccccc1N(O)=O
-COc1ccccc1N(O)=O
-COc1ccccc1N(O)=O
-COc1ccccc1N(O)=O
+COc1ccccc1[N](O)=O
+COc1ccccc1[N](O)=O
+COc1ccccc1[N](O)=O
+COc1ccccc1[N](O)=O
 628 structure-628 CCOc1ccc2NC(C)(C)C=C(C)c2c1
 CC1=CC(C)(C)Nc2ccc(cc12)OCC
 CC1=CC(C)(C)Nc2ccc(cc12)OCC
@@ -3180,10 +3180,10 @@ c1ccccc1-c1ccccc1
 c1ccccc1-c1ccccc1
 c1ccccc1-c1ccccc1
 636 structure-636 CC(=O)OC(OC(=O)C)c1ccc(o1)N(=O)O
-CC(=O)OC(OC(C)=O)c1ccc(o1)N(O)=O
-CC(=O)OC(OC(C)=O)c1ccc(o1)N(O)=O
-CC(=O)OC(OC(C)=O)c1ccc(o1)N(O)=O
-CC(=O)OC(OC(C)=O)c1ccc(o1)N(O)=O
+CC(=O)OC(OC(C)=O)c1ccc(o1)[N](O)=O
+CC(=O)OC(OC(C)=O)c1ccc(o1)[N](O)=O
+CC(=O)OC(OC(C)=O)c1ccc(o1)[N](O)=O
+CC(=O)OC(OC(C)=O)c1ccc(o1)[N](O)=O
 637 structure-637 Nc1ccc(cc1)c2ccccc2
 Nc1ccc(cc1)-c1ccccc1
 Nc1ccc(cc1)-c1ccccc1
@@ -3240,10 +3240,10 @@ O=C(OOC(=O)c1ccccc1)c1ccccc1
 O=C(OOC(=O)c1ccccc1)c1ccccc1
 O=C(OOC(=O)c1ccccc1)c1ccccc1
 648 structure-648 ON(=O)c1ccc2nc[nH]c2c1
-ON(=O)c1cc2[nH]c[n]c2cc1
-ON(=O)c1cc2[nH]c[n]c2cc1
-ON(=O)c1cc2[nH]c[n]c2cc1
-ON(=O)c1cc2[nH]c[n]c2cc1
+O[N](=O)c1cc2[nH]c[n]c2cc1
+O[N](=O)c1cc2[nH]c[n]c2cc1
+O[N](=O)c1cc2[nH]c[n]c2cc1
+O[N](=O)c1cc2[nH]c[n]c2cc1
 649 structure-649 CCCc1ccc2OCOc2c1
 CCCc1cc2OCOc2cc1
 CCCc1cc2OCOc2cc1
@@ -3390,35 +3390,35 @@ Cc1cc2c(c3cc(C)c(cc3oc2cc1=NCC)NCC)-c1ccccc1C(=O)OCC
 Cc1cc2c(c3cc(C)c(cc3oc2cc1=NCC)NCC)-c1ccccc1C(=O)OCC
 Cc1cc2c(c3cc(C)c(cc3oc2cc1=NCC)NCC)-c1ccccc1C(=O)OCC
 678 structure-678 Nc1c(Cl)cc(cc1Cl)N(=O)O
-Nc1c(Cl)cc(cc1Cl)N(O)=O
-Nc1c(Cl)cc(cc1Cl)N(O)=O
-Nc1c(Cl)cc(cc1Cl)N(O)=O
-Nc1c(Cl)cc(cc1Cl)N(O)=O
+Nc1c(Cl)cc(cc1Cl)[N](O)=O
+Nc1c(Cl)cc(cc1Cl)[N](O)=O
+Nc1c(Cl)cc(cc1Cl)[N](O)=O
+Nc1c(Cl)cc(cc1Cl)[N](O)=O
 679 structure-679 Cc1ccc(cc1N)N(=O)O
-Cc1ccc(cc1N)N(O)=O
-Cc1ccc(cc1N)N(O)=O
-Cc1ccc(cc1N)N(O)=O
-Cc1ccc(cc1N)N(O)=O
+Cc1ccc(cc1N)[N](O)=O
+Cc1ccc(cc1N)[N](O)=O
+Cc1ccc(cc1N)[N](O)=O
+Cc1ccc(cc1N)[N](O)=O
 680 structure-680 Nc1ccc(cc1N)N(=O)O
-Nc1cc(ccc1N)N(O)=O
-Nc1cc(ccc1N)N(O)=O
-Nc1cc(ccc1N)N(O)=O
-Nc1cc(ccc1N)N(O)=O
+Nc1cc(ccc1N)[N](O)=O
+Nc1cc(ccc1N)[N](O)=O
+Nc1cc(ccc1N)[N](O)=O
+Nc1cc(ccc1N)[N](O)=O
 681 structure-681 Nc1cc(ccc1O)N(=O)O
-Nc1cc(ccc1O)N(O)=O
-Nc1cc(ccc1O)N(O)=O
-Nc1cc(ccc1O)N(O)=O
-Nc1cc(ccc1O)N(O)=O
+Nc1cc(ccc1O)[N](O)=O
+Nc1cc(ccc1O)[N](O)=O
+Nc1cc(ccc1O)[N](O)=O
+Nc1cc(ccc1O)[N](O)=O
 682 structure-682 COc1ccc(cc1N)N(=O)O
-COc1ccc(cc1N)N(O)=O
-COc1ccc(cc1N)N(O)=O
-COc1ccc(cc1N)N(O)=O
-COc1ccc(cc1N)N(O)=O
+COc1ccc(cc1N)[N](O)=O
+COc1ccc(cc1N)[N](O)=O
+COc1ccc(cc1N)[N](O)=O
+COc1ccc(cc1N)[N](O)=O
 683 structure-683 CN(C)(C)CCCl
-CN(C)(C)CCCl
-CN(C)(C)CCCl
-CN(C)(C)CCCl
-CN(C)(C)CCCl
+C[N](C)(C)CCCl
+C[N](C)(C)CCCl
+C[N](C)(C)CCCl
+C[N](C)(C)CCCl
 TESTING molecules/chemical-structures.smi
 383 : SMILES loader: atom without a label
 NC1(=C(C[N+]2=CS(H)(C(CCOC(C3C=CC=CC=3)=O)=C2C)C(C4C=CC=CC=4)=O)C=NC(C)=N1).[H]Cl.[Cl-]
@@ -10494,35 +10494,82 @@ TESTING molecules/pubchem_7m_err.sdf
 [F-].[F-].[F-].[F-].[F-].[F-].[Na+].[As+5]
 [F-].[F-].[F-].[F-].[F-].[F-].[Na+].[As+5]
 9 structure-28
-SMILES saver: unsure hydrogen count on atom #20
+CN1C(CC2C=CC=CC=2)C(=O)O[B+]1(F)C1C=CC=CC=1
+CN1C(CC2C=CC=CC=2)C(=O)O[B+]1(F)C1C=CC=CC=1
+CN1C(CC2C=CC=CC=2)C(=O)O[B+]1(F)C1C=CC=CC=1
+CN1C(CC2C=CC=CC=2)C(=O)O[B+]1(F)C1C=CC=CC=1
 10 structure-29
-SMILES saver: unsure hydrogen count on atom #20
+CN1C(CC2C=CC=CC=2)C(=[OH+])O[B+]1(F)C1C=CC=CC=1
+CN1C(CC2C=CC=CC=2)C(=[OH+])O[B+]1(F)C1C=CC=CC=1
+CN1C(CC2C=CC=CC=2)C(=[OH+])O[B+]1(F)C1C=CC=CC=1
+CN1C(CC2C=CC=CC=2)C(=[OH+])O[B+]1(F)C1C=CC=CC=1
 11 structure-30
-SMILES saver: unsure hydrogen count on atom #23
+C[N+](C)=CN1C(CC2C=CC=CC=2)C(=[OH+])O[B+]1(F)C1C=CC=CC=1
+C[N+](C)=CN1C(CC2C=CC=CC=2)C(=[OH+])O[B+]1(F)C1C=CC=CC=1
+C[N+](C)=CN1C(CC2C=CC=CC=2)C(=[OH+])O[B+]1(F)C1C=CC=CC=1
+C[N+](C)=CN1C(CC2C=CC=CC=2)C(=[OH+])O[B+]1(F)C1C=CC=CC=1
 12 structure-31
-SMILES saver: unsure hydrogen count on atom #23
+C[N+](C)=CN1C(CC2C=CC=CC=2)C(=O)O[B+]1(F)C1C=CC=CC=1
+C[N+](C)=CN1C(CC2C=CC=CC=2)C(=O)O[B+]1(F)C1C=CC=CC=1
+C[N+](C)=CN1C(CC2C=CC=CC=2)C(=O)O[B+]1(F)C1C=CC=CC=1
+C[N+](C)=CN1C(CC2C=CC=CC=2)C(=O)O[B+]1(F)C1C=CC=CC=1
 13 structure-32
-SMILES saver: unsure hydrogen count on atom #19
+CC(C)C1C(=[OH+])O[B+](F)(C2=CC=CC=C2)N1C=[N+](C)C
+CC(C)C1C(=[OH+])O[B+](F)(C2=CC=CC=C2)N1C=[N+](C)C
+CC(C)C1C(=[OH+])O[B+](F)(C2=CC=CC=C2)N1C=[N+](C)C
+CC(C)C1C(=[OH+])O[B+](F)(C2=CC=CC=C2)N1C=[N+](C)C
 14 structure-33
-SMILES saver: unsure hydrogen count on atom #19
+CC(C)C1C(=O)O[B+](F)(C2=CC=CC=C2)N1C=[N+](C)C
+CC(C)C1C(=O)O[B+](F)(C2=CC=CC=C2)N1C=[N+](C)C
+CC(C)C1C(=O)O[B+](F)(C2=CC=CC=C2)N1C=[N+](C)C
+CC(C)C1C(=O)O[B+](F)(C2=CC=CC=C2)N1C=[N+](C)C
 15 structure-34
-SMILES saver: unsure hydrogen count on atom #18
+OC(=O)CC1C(=[OH+])O[B+](F)(F)N1CC1C=CC=CC=1
+OC(=O)CC1C(=[OH+])O[B+](F)(F)N1CC1C=CC=CC=1
+OC(=O)CC1C(=[OH+])O[B+](F)(F)N1CC1C=CC=CC=1
+OC(=O)CC1C(=[OH+])O[B+](F)(F)N1CC1C=CC=CC=1
 16 structure-35
-SMILES saver: unsure hydrogen count on atom #18
+OC(=O)CC1C(=O)O[B+](F)(F)N1CC1C=CC=CC=1
+OC(=O)CC1C(=O)O[B+](F)(F)N1CC1C=CC=CC=1
+OC(=O)CC1C(=O)O[B+](F)(F)N1CC1C=CC=CC=1
+OC(=O)CC1C(=O)O[B+](F)(F)N1CC1C=CC=CC=1
 17 structure-36
-SMILES saver: unsure hydrogen count on atom #22
+CC1C2O[B+](OC=2C=C[N+]=1C)(C1C=CC=CC=1)C1C=CC=CC=1
+CC1C2O[B+](OC=2C=C[N+]=1C)(C1C=CC=CC=1)C1C=CC=CC=1
+CC1C2O[B+](OC=2C=C[N+]=1C)(C1C=CC=CC=1)C1C=CC=CC=1
+CC1C2O[B+](OC=2C=C[N+]=1C)(C1C=CC=CC=1)C1C=CC=CC=1
 18 structure-37
-SMILES saver: unsure hydrogen count on atom #20
+C1C=CC=C2C3CCCCN3[B+]3(C4CCCC3CCC4)N21
+C1C=CC=C2C3CCCCN3[B+]3(C4CCCC3CCC4)N21
+C1C=CC=C2C3CCCCN3[B+]3(C4CCCC3CCC4)N21
+C1C=CC=C2C3CCCCN3[B+]3(C4CCCC3CCC4)N21
 19 structure-38
-SMILES saver: unsure hydrogen count on atom #18
+CC(CC)C1C(=[OH+])O[B+](F)(F)N1CC1C=CC=CC=1
+CC(CC)C1C(=[OH+])O[B+](F)(F)N1CC1C=CC=CC=1
+CC(CC)C1C(=[OH+])O[B+](F)(F)N1CC1C=CC=CC=1
+CC(CC)C1C(=[OH+])O[B+](F)(F)N1CC1C=CC=CC=1
 20 structure-39
-SMILES saver: unsure hydrogen count on atom #18
+CC(CC)C1C(=O)O[B+](F)(F)N1CC1C=CC=CC=1
+CC(CC)C1C(=O)O[B+](F)(F)N1CC1C=CC=CC=1
+CC(CC)C1C(=O)O[B+](F)(F)N1CC1C=CC=CC=1
+CC(CC)C1C(=O)O[B+](F)(F)N1CC1C=CC=CC=1
 21 structure-40
-SMILES saver: unsure hydrogen count on atom #21
+CC1=NC=CC2O[B+](OC=21)(C1C=CC=CC=1)C1C=CC=CC=1
+CC1=NC=CC2O[B+](OC=21)(C1C=CC=CC=1)C1C=CC=CC=1
+CC1=NC=CC2O[B+](OC=21)(C1C=CC=CC=1)C1C=CC=CC=1
+CC1=NC=CC2O[B+](OC=21)(C1C=CC=CC=1)C1C=CC=CC=1
 22 structure-48
-SMILES saver: unsure hydrogen count on atom #0
+[B+]
+[B+]
+[BH3+]
+[B+]
+MISMATCH
 23 structure-49
-SMILES saver: unsure hydrogen count on atom #0
+[B+]
+[B+]
+[BH4+]
+[B+]
+MISMATCH
 24 structure-51
 [F-].[F-].[F-].[F-].[F-].[F-].[Si+4].[As+5].C/C(/[O-])=C/C(C)=O.C/C(/[O-])=C/C(C)=O.C/C(/[O-])=C/C(C)=O
 [F-].[F-].[F-].[F-].[F-].[F-].[Si+4].[As+5].C/C(/[O-])=C/C(C)=O.C/C(/[O-])=C/C(C)=O.C/C(/[O-])=C/C(C)=O
@@ -10534,7 +10581,10 @@ C[As@]1(O)CO1
 C[As@]1(O)CO1
 C[As@]1(O)CO1
 26 structure-59
-SMILES saver: unsure hydrogen count on atom #0
+C1COCCOCCOCCOCCOCCO1.C1=CC=CC=C1[P+]1(N[P+]([Se][Rb][Se]1)(C1C=CC=CC=1)C1C=CC=CC=1)C1C=CC=CC=1
+C1COCCOCCOCCOCCOCCO1.C1=CC=CC=C1[P+]1(N[P+]([Se][Rb][Se]1)(C1C=CC=CC=1)C1C=CC=CC=1)C1C=CC=CC=1
+C1COCCOCCOCCOCCOCCO1.C1=CC=CC=C1[P+]1(N[P+]([Se][Rb][Se]1)(C1C=CC=CC=1)C1C=CC=CC=1)C1C=CC=CC=1
+C1COCCOCCOCCOCCOCCO1.C1=CC=CC=C1[P+]1(N[P+]([Se][Rb][Se]1)(C1C=CC=CC=1)C1C=CC=CC=1)C1C=CC=CC=1
 27 structure-61
 NC(N)=NC1C=CC(=CC=1)[B@-]1(O)OC[C@@H](CO)O1
 NC(N)=NC1C=CC(=CC=1)[B@-]1(O)OC[C@@H](CO)O1
@@ -10834,97 +10884,112 @@ TESTING molecules/acd2d_err.sdf
 302 : stereocenters: stereo types of non-opposite bonds match near atom 0
 303 : stereocenters: stereo types of the opposite bonds mismatch near atom 12
 0 structure-28
-CC1(N=C(C2C=CC=CC=2N2C(=O)C3CCCN3(CC3C=CC=CC=3)[Ni]2OC1=O)C1C=CC=CC=1)C1CCCC=C1
-CC1(N=C(C2C=CC=CC=2N2C(=O)C3CCCN3(CC3C=CC=CC=3)[Ni]2OC1=O)C1C=CC=CC=1)C1CCCC=C1
-CC1(N=C(C2C=CC=CC=2N2C(=O)C3CCCN3(CC3C=CC=CC=3)[Ni]2OC1=O)C1C=CC=CC=1)C1CCCC=C1
-CC1(N=C(C2C=CC=CC=2N2C(=O)C3CCCN3(CC3C=CC=CC=3)[Ni]2OC1=O)C1C=CC=CC=1)C1CCCC=C1
+CC1(N=C(C2C=CC=CC=2N2C(=O)C3CCC[N]3(CC3C=CC=CC=3)[Ni]2OC1=O)C1C=CC=CC=1)C1CCCC=C1
+CC1(N=C(C2C=CC=CC=2N2C(=O)C3CCC[N]3(CC3C=CC=CC=3)[Ni]2OC1=O)C1C=CC=CC=1)C1CCCC=C1
+CC1(N=C(C2C=CC=CC=2N2C(=O)C3CCC[N]3(CC3C=CC=CC=3)[Ni]2OC1=O)C1C=CC=CC=1)C1CCCC=C1
+CC1(N=C(C2C=CC=CC=2N2C(=O)C3CCC[N]3(CC3C=CC=CC=3)[Ni]2OC1=O)C1C=CC=CC=1)C1CCCC=C1
 1 structure-58
-CN1C(=O)C2=C(N=CN2C)N(C)C1=O.III
-CN1C(=O)C2=C(N=CN2C)N(C)C1=O.III
-CN1C(=O)C2=C(N=CN2C)N(C)C1=O.III
-CN1C(=O)C2=C(N=CN2C)N(C)C1=O.III
+CN1C(=O)C2=C(N=CN2C)N(C)C1=O.I[I]I
+CN1C(=O)C2=C(N=CN2C)N(C)C1=O.I[I]I
+CN1C(=O)C2=C(N=CN2C)N(C)C1=O.I[I]I
+CN1C(=O)C2=C(N=CN2C)N(C)C1=O.I[I]I
 2 structure-65
-OC(=O)C1=CC=CC=C1C[Zn]Br(O)=O
-OC(=O)C1=CC=CC=C1C[Zn]Br(O)=O
-OC(=O)C1=CC=CC=C1C[Zn]Br(O)=O
-OC(=O)C1=CC=CC=C1C[Zn]Br(O)=O
+OC(=O)C1=CC=CC=C1C[Zn][Br](O)=O
+OC(=O)C1=CC=CC=C1C[Zn][Br](O)=O
+OC(=O)C1=CC=CC=C1C[Zn][Br](O)=O
+OC(=O)C1=CC=CC=C1C[Zn][Br](O)=O
 3 structure-66
 [Tl+].[Tl+].[Tl+].Cl[Tl-3](Cl)(Cl)(Cl)(Cl)Cl
 [Tl+].[Tl+].[Tl+].Cl[Tl-3](Cl)(Cl)(Cl)(Cl)Cl
 [Tl+].[Tl+].[Tl+].Cl[Tl-3](Cl)(Cl)(Cl)(Cl)Cl
 [Tl+].[Tl+].[Tl+].Cl[Tl-3](Cl)(Cl)(Cl)(Cl)Cl
 4 structure-68
-O[C@@H]1C[C@H](O[C@H]1CO)[N+]1C=CC(=O)=NC=1=O
-O[C@@H]1C[C@H](O[C@H]1CO)[N+]1C=CC(=O)=NC=1=O
-O[C@@H]1C[C@H](O[C@H]1CO)[N+]1C=CC(=O)=NC=1=O
-O[C@@H]1C[C@H](O[C@H]1CO)[N+]1C=CC(=O)=NC=1=O
+O[C@@H]1C[C@H](O[C@H]1CO)[N+]1C=C[C](=O)=N[C]=1=O
+O[C@@H]1C[C@H](O[C@H]1CO)[N+]1C=C[C](=O)=N[C]=1=O
+O[C@@H]1C[C@H](O[C@H]1CO)[N+]1C=C[C](=O)=N[C]=1=O
+O[C@@H]1C[C@H](O[C@H]1CO)[N+]1C=C[C](=O)=N[C]=1=O
 5 structure-84
 [Na+].[Na+].[Na+].[Na+].[Na+].F[Al-](F)(F)F.F[Al-2](F)(F)(F)F.F[Al-2](F)(F)(F)F
 [Na+].[Na+].[Na+].[Na+].[Na+].F[Al-](F)(F)F.F[Al-2](F)(F)(F)F.F[Al-2](F)(F)(F)F
 [Na+].[Na+].[Na+].[Na+].[Na+].F[Al-](F)(F)F.F[Al-2](F)(F)(F)F.F[Al-2](F)(F)(F)F
 [Na+].[Na+].[Na+].[Na+].[Na+].F[Al-](F)(F)F.F[Al-2](F)(F)(F)F.F[Al-2](F)(F)(F)F
 6 structure-86
-SMILES saver: unsure hydrogen count on atom #26
+O.O.O.OS(=O)(=O)C1=CC2C=C(C(/N=N/C3C=CC=CC=3[As](O)(=O)=O)=C(O)C=2C(O)=C1)S(O)(=O)=O
+O.O.O.OS(=O)(=O)C1=CC2C=C(C(/N=N/C3C=CC=CC=3[As](O)(=O)=O)=C(O)C=2C(O)=C1)S(O)(=O)=O
+O.O.O.OS(=O)(=O)C1=CC2C=C(C(/N=N/C3C=CC=CC=3[As](O)(=O)=O)=C(O)C=2C(O)=C1)S(O)(=O)=O
+O.O.O.OS(=O)(=O)C1=CC2C=C(C(/N=N/C3C=CC=CC=3[As](O)(=O)=O)=C(O)C=2C(O)=C1)S(O)(=O)=O
 7 structure-111
-CC1CC(C2C=CCl(=CC=2)C(Cl)(Cl)Cl)C(CC=1)(C(O)=O)C(=O)N1C(=O)C=CC1=O
-CC1CC(C2C=CCl(=CC=2)C(Cl)(Cl)Cl)C(CC=1)(C(O)=O)C(=O)N1C(=O)C=CC1=O
-CC1CC(C2C=CCl(=CC=2)C(Cl)(Cl)Cl)C(CC=1)(C(O)=O)C(=O)N1C(=O)C=CC1=O
-CC1CC(C2C=CCl(=CC=2)C(Cl)(Cl)Cl)C(CC=1)(C(O)=O)C(=O)N1C(=O)C=CC1=O
+CC1CC(C2C=C[Cl](=CC=2)C(Cl)(Cl)Cl)C(CC=1)(C(O)=O)C(=O)N1C(=O)C=CC1=O
+CC1CC(C2C=C[Cl](=CC=2)C(Cl)(Cl)Cl)C(CC=1)(C(O)=O)C(=O)N1C(=O)C=CC1=O
+CC1CC(C2C=C[Cl](=CC=2)C(Cl)(Cl)Cl)C(CC=1)(C(O)=O)C(=O)N1C(=O)C=CC1=O
+CC1CC(C2C=C[Cl](=CC=2)C(Cl)(Cl)Cl)C(CC=1)(C(O)=O)C(=O)N1C(=O)C=CC1=O
 8 structure-126
-[O-]Cl(O)(=O)=O.C1=CC=CC=C1C1=NC2=CC=CC=C2C(=N1)[NH2+]C1C=CC=CC=1
-[O-]Cl(O)(=O)=O.C1=CC=CC=C1C1=NC2=CC=CC=C2C(=N1)[NH2+]C1C=CC=CC=1
-[O-]Cl(O)(=O)=O.C1=CC=CC=C1C1=NC2=CC=CC=C2C(=N1)[NH2+]C1C=CC=CC=1
-[O-]Cl(O)(=O)=O.C1=CC=CC=C1C1=NC2=CC=CC=C2C(=N1)[NH2+]C1C=CC=CC=1
+[O-][Cl](O)(=O)=O.C1=CC=CC=C1C1=NC2=CC=CC=C2C(=N1)[NH2+]C1C=CC=CC=1
+[O-][Cl](O)(=O)=O.C1=CC=CC=C1C1=NC2=CC=CC=C2C(=N1)[NH2+]C1C=CC=CC=1
+[O-][Cl](O)(=O)=O.C1=CC=CC=C1C1=NC2=CC=CC=C2C(=N1)[NH2+]C1C=CC=CC=1
+[O-][Cl](O)(=O)=O.C1=CC=CC=C1C1=NC2=CC=CC=C2C(=N1)[NH2+]C1C=CC=CC=1
 9 structure-213
-SMILES saver: unsure hydrogen count on atom #0
+CC(C)(C)[P-](C(C)(C)C)C(C)(C)C.F[B-](F)(F)F
+CC(C)(C)[P-](C(C)(C)C)C(C)(C)C.F[B-](F)(F)F
+CC(C)(C)[P-](C(C)(C)C)C(C)(C)C.F[B-](F)(F)F
+CC(C)(C)[P-](C(C)(C)C)C(C)(C)C.F[B-](F)(F)F
 10 structure-218
-O=C1C2CCCN2(CC2C=CC=CC=2)[Ni]2OC(=O)C(N=C(C3C=CC=CC=3N21)C1C=CC=CC=1)C1CCCC=C1
-O=C1C2CCCN2(CC2C=CC=CC=2)[Ni]2OC(=O)C(N=C(C3C=CC=CC=3N21)C1C=CC=CC=1)C1CCCC=C1
-O=C1C2CCCN2(CC2C=CC=CC=2)[Ni]2OC(=O)C(N=C(C3C=CC=CC=3N21)C1C=CC=CC=1)C1CCCC=C1
-O=C1C2CCCN2(CC2C=CC=CC=2)[Ni]2OC(=O)C(N=C(C3C=CC=CC=3N21)C1C=CC=CC=1)C1CCCC=C1
+O=C1C2CCC[N]2(CC2C=CC=CC=2)[Ni]2OC(=O)C(N=C(C3C=CC=CC=3N21)C1C=CC=CC=1)C1CCCC=C1
+O=C1C2CCC[N]2(CC2C=CC=CC=2)[Ni]2OC(=O)C(N=C(C3C=CC=CC=3N21)C1C=CC=CC=1)C1CCCC=C1
+O=C1C2CCC[N]2(CC2C=CC=CC=2)[Ni]2OC(=O)C(N=C(C3C=CC=CC=3N21)C1C=CC=CC=1)C1CCCC=C1
+O=C1C2CCC[N]2(CC2C=CC=CC=2)[Ni]2OC(=O)C(N=C(C3C=CC=CC=3N21)C1C=CC=CC=1)C1CCCC=C1
 11 structure-221
 [K+].[K+].[K+].[K+].[I-].[I-].I[Bi-2](I)(I)(I)I
 [K+].[K+].[K+].[K+].[I-].[I-].I[Bi-2](I)(I)(I)I
 [K+].[K+].[K+].[K+].[I-].[I-].I[Bi-2](I)(I)(I)I
 [K+].[K+].[K+].[K+].[I-].[I-].I[Bi-2](I)(I)(I)I
 12 structure-228
-CC1CC(C2C=CCl(=CC=2)C(Cl)(Cl)Cl)C(CC=1)(C(N)=O)C(O)=O
-CC1CC(C2C=CCl(=CC=2)C(Cl)(Cl)Cl)C(CC=1)(C(N)=O)C(O)=O
-CC1CC(C2C=CCl(=CC=2)C(Cl)(Cl)Cl)C(CC=1)(C(N)=O)C(O)=O
-CC1CC(C2C=CCl(=CC=2)C(Cl)(Cl)Cl)C(CC=1)(C(N)=O)C(O)=O
+CC1CC(C2C=C[Cl](=CC=2)C(Cl)(Cl)Cl)C(CC=1)(C(N)=O)C(O)=O
+CC1CC(C2C=C[Cl](=CC=2)C(Cl)(Cl)Cl)C(CC=1)(C(N)=O)C(O)=O
+CC1CC(C2C=C[Cl](=CC=2)C(Cl)(Cl)Cl)C(CC=1)(C(N)=O)C(O)=O
+CC1CC(C2C=C[Cl](=CC=2)C(Cl)(Cl)Cl)C(CC=1)(C(N)=O)C(O)=O
 13 structure-240
-[O-][N+](=O)C1C=CC(CBrCBrC(O)=O)=C(C=1)[N+]([O-])=O
-[O-][N+](=O)C1C=CC(CBrCBrC(O)=O)=C(C=1)[N+]([O-])=O
-[O-][N+](=O)C1C=CC(CBrCBrC(O)=O)=C(C=1)[N+]([O-])=O
-[O-][N+](=O)C1C=CC(CBrCBrC(O)=O)=C(C=1)[N+]([O-])=O
+[O-][N+](=O)C1C=CC(C[Br]C[Br]C(O)=O)=C(C=1)[N+]([O-])=O
+[O-][N+](=O)C1C=CC(C[Br]C[Br]C(O)=O)=C(C=1)[N+]([O-])=O
+[O-][N+](=O)C1C=CC(C[Br]C[Br]C(O)=O)=C(C=1)[N+]([O-])=O
+[O-][N+](=O)C1C=CC(C[Br]C[Br]C(O)=O)=C(C=1)[N+]([O-])=O
 14 structure-243
-CC(=O)NC1CC(C)(C)N(O)C(C)(C)C1
-CC(=O)NC1CC(C)(C)N(O)C(C)(C)C1
-CC(=O)NC1CC(C)(C)N(O)C(C)(C)C1
-CC(=O)NC1CC(C)(C)N(O)C(C)(C)C1
+CC(=O)NC1CC(C)(C)N([O])C(C)(C)C1
+CC(=O)NC1CC(C)(C)N([O])C(C)(C)C1
+CC(=O)NC1CC(C)(C)N([O])C(C)(C)C1
+CC(=O)NC1CC(C)(C)N([O])C(C)(C)C1
 15 structure-267
 [Na+].[Na+].I[Bi-2](I)(I)(I)I
 [Na+].[Na+].I[Bi-2](I)(I)(I)I
 [Na+].[Na+].I[Bi-2](I)(I)(I)I
 [Na+].[Na+].I[Bi-2](I)(I)(I)I
 16 structure-268
-O=C1CCCN1.BrBrBr
-O=C1CCCN1.BrBrBr
-O=C1CCCN1.BrBrBr
-O=C1CCCN1.BrBrBr
+O=C1CCCN1.Br[Br]Br
+O=C1CCCN1.Br[Br]Br
+O=C1CCCN1.Br[Br]Br
+O=C1CCCN1.Br[Br]Br
 17 structure-270
-FI(F)(F)(F)(F)F
-FI(F)(F)(F)(F)F
-FI(F)(F)(F)(F)F
-FI(F)(F)(F)(F)F
+F[I](F)(F)(F)(F)F
+F[I](F)(F)(F)(F)F
+F[I](F)(F)(F)(F)F
+F[I](F)(F)(F)(F)F
 18 structure-274
-SMILES saver: unsure hydrogen count on atom #1
+[K+].[K+].[F-][Ge+4]([F-])([F-])([F-])([F-])[F-]
+[K+].[K+].[F-][Ge+4]([F-])([F-])([F-])([F-])[F-]
+[K+].[K+].[F-][Ge+4]([F-])([F-])([F-])([F-])[F-]
+[K+].[K+].[F-][Ge+4]([F-])([F-])([F-])([F-])[F-]
 19 structure-277
-O=Br(=O)=O
-O=Br(=O)=O
-O=Br(=O)=O
-O=Br(=O)=O
+O=[Br](=O)=O
+O=[Br](=O)=O
+O=[Br](=O)=O
+O=[Br](=O)=O
 20 structure-282
-SMILES saver: unsure hydrogen count on atom #30
+C[C@@H]1OC(OC[C@H]2O[C@@H](OC3=CC(OS(=O)(=O)O[Al-]4(O)[OH+][Al-](O)(O)[OH+]4)=C4C(=C3)OC(=CC4=O)C3C=C(OS(=O)(=O)O[Al-]4(O)[OH+][Al-](O)(O)[OH+]4)C(=CC=3)OC)[C@H](OS(=O)(=O)O[Al-]3(O)[OH+][Al-](O)(O)[OH+]3)[C@@H](OS(=O)(=O)O[Al-]3(O)[OH+][Al-](O)(O)[OH+]3)[C@@H]2OS(=O)(=O)O[Al]2(O)O[Al-](O)(O)[OH+]2)[C@H](OS(=O)(=O)O[Al]2(O)O[Al-](O)(O)[OH+]2)[C@H](OS(=O)(=O)O[Al]2(O)O[Al-](O)(O)[OH+]2)[C@H]1OS(=O)(=O)O[Al-]1(O)[OH+][Al-](O)(O)[OH+]1
+C[C@@H]1OC(OC[C@H]2O[C@@H](OC3=CC(OS(=O)(=O)O[Al-]4(O)[OH+][Al-](O)(O)[OH+]4)=C4C(=C3)OC(=CC4=O)C3C=C(OS(=O)(=O)O[Al-]4(O)[OH+][Al-](O)(O)[OH+]4)C(=CC=3)OC)[C@H](OS(=O)(=O)O[Al-]3(O)[OH+][Al-](O)(O)[OH+]3)[C@@H](OS(=O)(=O)O[Al-]3(O)[OH+][Al-](O)(O)[OH+]3)[C@@H]2OS(=O)(=O)O[Al]2(O)O[Al-](O)(O)[OH+]2)[C@H](OS(=O)(=O)O[Al]2(O)O[Al-](O)(O)[OH+]2)[C@H](OS(=O)(=O)O[Al]2(O)O[Al-](O)(O)[OH+]2)[C@H]1OS(=O)(=O)O[Al-]1(O)[OH+][Al-](O)(O)[OH+]1
+C[C@@H]1OC(OC[C@H]2O[C@@H](OC3=CC(OS(=O)(=O)O[Al-]4(O)[OH+][Al-](O)(O)[OH+]4)=C4C(=C3)OC(=CC4=O)C3C=C(OS(=O)(=O)O[Al-]4(O)[OH+][Al-](O)(O)[OH+]4)C(=CC=3)OC)[C@H](OS(=O)(=O)O[Al-]3(O)[OH+][Al-](O)(O)[OH+]3)[C@@H](OS(=O)(=O)O[Al-]3(O)[OH+][Al-](O)(O)[OH+]3)[C@@H]2OS(=O)(=O)O[Al]2(O)O[Al-](O)(O)[OH+]2)[C@H](OS(=O)(=O)O[Al]2(O)O[Al-](O)(O)[OH+]2)[C@H](OS(=O)(=O)O[Al]2(O)O[Al-](O)(O)[OH+]2)[C@H]1OS(=O)(=O)O[Al-]1(O)[OH+][Al-](O)(O)[OH+]1
+C[C@@H]1OC(OC[C@H]2O[C@@H](OC3=CC(OS(=O)(=O)O[Al-]4(O)[OH+][Al-](O)(O)[OH+]4)=C4C(=C3)OC(=CC4=O)C3C=C(OS(=O)(=O)O[Al-]4(O)[OH+][Al-](O)(O)[OH+]4)C(=CC=3)OC)[C@H](OS(=O)(=O)O[Al-]3(O)[OH+][Al-](O)(O)[OH+]3)[C@@H](OS(=O)(=O)O[Al-]3(O)[OH+][Al-](O)(O)[OH+]3)[C@@H]2OS(=O)(=O)O[Al]2(O)O[Al-](O)(O)[OH+]2)[C@H](OS(=O)(=O)O[Al]2(O)O[Al-](O)(O)[OH+]2)[C@H](OS(=O)(=O)O[Al]2(O)O[Al-](O)(O)[OH+]2)[C@H]1OS(=O)(=O)O[Al-]1(O)[OH+][Al-](O)(O)[OH+]1
 21 structure-292
-SMILES saver: unsure hydrogen count on atom #0
+[V]=[Ge](=[V])=[V]
+[V]=[Ge](=[V])=[V]
+[V]=[Ge](=[V])=[V]
+[V]=[Ge](=[V])=[V]

@@ -14,13 +14,13 @@ namespace com.epam.indigo
         public static extern int indigoInchiResetOptions();
 
         [DllImport("indigo-inchi"), SuppressUnmanagedCodeSecurity]
-        public static extern int indigoInchiLoadMolecule(String inchi_string);
+        public static extern int indigoInchiLoadMolecule([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string inchi_string);
 
         [DllImport("indigo-inchi"), SuppressUnmanagedCodeSecurity]
         public static extern byte* indigoInchiGetInchi(int molecule);
 
         [DllImport("indigo-inchi"), SuppressUnmanagedCodeSecurity]
-        public static extern byte* indigoInchiGetInchiKey(String inchi_string);
+        public static extern byte* indigoInchiGetInchiKey([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string inchi_string);
 
         [DllImport("indigo-inchi"), SuppressUnmanagedCodeSecurity]
         public static extern byte* indigoInchiGetWarning();

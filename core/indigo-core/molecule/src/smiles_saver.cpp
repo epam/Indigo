@@ -51,7 +51,7 @@ SmilesSaver::SmilesSaver(Output& output)
     _mol = nullptr;
     smarts_mode = false;
     inside_rsmiles = false;
-    ignore_invalid_hcount = true;
+    invalid_hcount_mode = InvalidHCountMode::kSkip;
     separate_rsites = true;
     rsite_indices_as_aam = true;
     _n_attachment_points = 0;
@@ -68,6 +68,7 @@ void SmilesSaver::saveMolecule(Molecule& mol)
     _bmol = &mol;
     _qmol = nullptr;
     _mol = &mol;
+    _nonstandard_valence_atoms.clear();
     _saveMolecule();
 }
 
@@ -76,6 +77,7 @@ void SmilesSaver::saveQueryMolecule(QueryMolecule& mol)
     _bmol = &mol;
     _qmol = &mol;
     _mol = nullptr;
+    _nonstandard_valence_atoms.clear();
     _saveMolecule();
 }
 
@@ -740,6 +742,33 @@ void SmilesSaver::_writeCycleNumber(int n) const
         throw Error("bad cycle number: %d", n);
 }
 
+bool SmilesSaver::hasNonStandardValence() const
+{
+    return !_nonstandard_valence_atoms.empty();
+}
+
+const std::vector<SmilesSaver::NonStandardValenceInfo>& SmilesSaver::getNonStandardValenceAtoms() const
+{
+    return _nonstandard_valence_atoms;
+}
+
+int SmilesSaver::_handleInvalidHCount(int idx, int atom_number, int charge) const
+{
+    if (!_mol)
+        return 0;
+    // _noImplH avoids getImplicitH which throws on non-standard valence.
+    int connectivity = -1;
+    try
+    {
+        connectivity = _mol->getAtomConnectivity_noImplH(idx);
+    }
+    catch (...)
+    {
+    }
+    _nonstandard_valence_atoms.push_back({idx, atom_number, charge, connectivity});
+    return 0;
+}
+
 void SmilesSaver::_writeAtom(int idx, bool /*aromatic*/, bool lowercase, int chirality) const
 {
     int i;
@@ -847,13 +876,13 @@ void SmilesSaver::_writeAtom(int idx, bool /*aromatic*/, bool lowercase, int chi
         if (Molecule::shouldWriteHCountEx(*_mol, idx, _hcount_ignored[idx]))
         {
             hydro = _hcount[idx];
-            if (hydro < 0 && !ignore_invalid_hcount && need_brackets)
-            {
-                // This function will throw better error message with a description
-                _mol->getImplicitH(idx);
-                // If not error was thrown then throw it explicitly
-                throw Error("unsure hydrogen count on atom #%d", idx);
-            }
+        }
+
+        // Undetermined implicit H: fix to 0 and force brackets in kFixAndRecord mode.
+        if (_hcount[idx] < 0 && invalid_hcount_mode == InvalidHCountMode::kFixAndRecord)
+        {
+            hydro = _handleInvalidHCount(idx, atom_number, charge);
+            need_brackets = true;
         }
     }
     else if (_qmol != 0)
@@ -874,8 +903,9 @@ void SmilesSaver::_writeAtom(int idx, bool /*aromatic*/, bool lowercase, int chi
         {
             hydro = _hcount[idx];
 
-            if (hydro < 0 && !ignore_invalid_hcount)
-                throw Error("unsure hydrogen count on atom #%d", idx);
+            // kFixAndRecord already handled above; kSkip defaults to 0 silently.
+            if (hydro < 0)
+                hydro = 0;
         }
         if (chirality > 0 && hydro > 1)
         {

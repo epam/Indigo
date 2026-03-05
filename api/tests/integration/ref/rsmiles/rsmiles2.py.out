@@ -51,7 +51,7 @@ CC/C(=C(/C1C=C(C(=CC=1)OCCN(C)C)[Sn](CCCC)(CCCC)CCCC)\C1C=CC=CC=1)/C1C=CC=CC=1>>
 [32PH3]>>[32PH3]
 *** 17 ***
 [29P-](S)(S)(OCC)OCC>>[29P](S)(OCC)(OCC)SCS[32P](=S)(OCC)OCC |^1:9|
-SMILES saver: unsure hydrogen count on atom #0
+CCO[29P-](S)(S)OCC>>CCO[29P](S)(OCC)SCS[32P](=S)(OCC)OCC |^1:12|
 *** 18 ***
 [3HH]>>[3HH].[3HH]
 [3HH]>>[3HH].[3HH] |f:1.2|
@@ -348,7 +348,7 @@ Cl.C=CC=O>>O=CCCCl |f:0.1|
 >>C1C2CCC21
 *** 116 ***
 C1=CC=C(N(=O)O)C=C1>>N#N
-ON(=O)C1C=CC=CC=1>>N#N
+O[N](=O)C1C=CC=CC=1>>N#N
 *** 117 ***
 N(=O)O>>N#N
 ON=O>>N#N
@@ -615,7 +615,7 @@ C[C:4](=O)[CH2:2][CH:3]=O.[O:1]=[C:5](C(F)(F)F)C(F)(F)F>>C[C:4](=O)[CH:2]([CH:3]
 [cH2:1]:[cH:2]Cl>>[cH2:1]:[cH:2]F
 *** 205 ***
 [c:1](:[c:4])(Cl):[c:2]>>[c:1](:[c:4])(F):[c:2]
-SMILES saver: unsure hydrogen count on atom #1
+[c:1]:[c:3](:[c:2])Cl>>[c:1]:[c:3](:[c:2])F
 *** 206 ***
 [C:1]1([CH:6]=[CH:5][C:4](Cl)=[CH:3][CH:2]=1)[C:7](=[O:8])[CH3:9]>>[C:1]1([CH:6]=[CH:5][C:4](C(=O)C)=[CH:3][CH:2]=1)[C:7](=[O:8])[CH3:9]
 [CH3:1][C:7](=[O:2])[C:9]1[CH:3]=[CH:6][C:8](Cl)=[CH:5][CH:4]=1>>[CH3:1][C:7](=[O:2])[C:9]1[CH:3]=[CH:6][C:8](=[CH:5][CH:4]=1)C(C)=O
@@ -639,7 +639,7 @@ C1=CC=CC=[C:2]1[C:7]([CH3:10])([CH3:9])[CH3:8]>>O[C:2](=O)[C:7]([CH3:10])([CH3:9
 [NH2:1][C:8]1[CH:7]=[CH:6][CH:5]=[CH:4][C:9]=1[CH:3]=[O:2]>>CS1=[N:1][C:8]2[CH:7]=[CH:6][CH:5]=[CH:4][C:9]=2[C:3](=[O:2])O1
 *** 213 ***
 [CH:1]1=[CH:2][CH:3]=[CH:4][C:5]([NH2:9])=[C:6]1[CH:7]=[O:8]>>[CH:1]1=[CH:2][CH:3]=[CH:4][C:5]2[N:9]=N(O[C:7](=[O:8])[C:6]=21)C
-[NH2:1][C:8]1[CH:7]=[CH:6][CH:5]=[CH:4][C:9]=1[CH:3]=[O:2]>>CN1=[N:1][C:8]2[CH:7]=[CH:6][CH:5]=[CH:4][C:9]=2[C:3](=[O:2])O1
+[NH2:1][C:8]1[CH:7]=[CH:6][CH:5]=[CH:4][C:9]=1[CH:3]=[O:2]>>C[N]1=[N:1][C:8]2[CH:7]=[CH:6][CH:5]=[CH:4][C:9]=2[C:3](=[O:2])O1
 *** 214 ***
 [CH3:1]/[C:4](/[CH:5]=[O:6])=[C:3](/[NH2:7])\[CH3:2]>>[CH3:1][C:4]1[C:5](=[O:6])OS(C)=[N:7][C:3]=1[CH3:2]
 [CH3:1]/[C:7](/[CH:5]=[O:4])=[C:6](\[CH3:2])/[NH2:3]>>[CH3:1][C:7]1[C:5](=[O:4])OS(C)=[N:3][C:6]=1[CH3:2]
@@ -966,7 +966,7 @@ Cl.C=CC=O>>O=CCCCl |f:0.1|
 >>C1C2CCC21
 *** 322 ***
 C1=CC=C(N(=O)O)C=C1>>N#N
-ON(=O)C1C=CC=CC=1>>N#N
+O[N](=O)C1C=CC=CC=1>>N#N
 *** 323 ***
 N(=O)O>>N#N
 ON=O>>N#N

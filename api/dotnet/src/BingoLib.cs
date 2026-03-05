@@ -8,10 +8,10 @@ namespace com.epam.indigo
     public unsafe class BingoLib
     {
         [DllImport("bingo-nosql"), SuppressUnmanagedCodeSecurity]
-        public static extern int bingoCreateDatabaseFile(string location, string type, string options);
+        public static extern int bingoCreateDatabaseFile([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string location, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string type, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string options);
 
         [DllImport("bingo-nosql"), SuppressUnmanagedCodeSecurity]
-        public static extern int bingoLoadDatabaseFile(string location, string options);
+        public static extern int bingoLoadDatabaseFile([MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string location, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string options);
 
         [DllImport("bingo-nosql"), SuppressUnmanagedCodeSecurity]
         public static extern int bingoCloseDatabase(int db);
@@ -36,25 +36,25 @@ namespace com.epam.indigo
         public static extern int bingoOptimize(int db);
 
         [DllImport("bingo-nosql"), SuppressUnmanagedCodeSecurity]
-        public static extern int bingoSearchSub(int db, int query_obj, string options);
+        public static extern int bingoSearchSub(int db, int query_obj, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string options);
 
         [DllImport("bingo-nosql"), SuppressUnmanagedCodeSecurity]
-        public static extern int bingoSearchSim(int db, int query_obj, float min, float max, string options);
+        public static extern int bingoSearchSim(int db, int query_obj, float min, float max, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string options);
 
         [DllImport("bingo-nosql"), SuppressUnmanagedCodeSecurity]
-        public static extern int bingoSearchSimWithExtFP(int db, int query_obj, float min, float max, int ext_fp, string options);
+        public static extern int bingoSearchSimWithExtFP(int db, int query_obj, float min, float max, int ext_fp, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string options);
 
         [DllImport("bingo-nosql"), SuppressUnmanagedCodeSecurity]
-        public static extern int bingoSearchSimTopN(int db, int query_obj, int limit, float minSim, string options);
+        public static extern int bingoSearchSimTopN(int db, int query_obj, int limit, float minSim, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string options);
 
         [DllImport("bingo-nosql"), SuppressUnmanagedCodeSecurity]
-        public static extern int bingoSearchSimTopNWithExtFP(int db, int query_obj, int limit, float minSim, int ext_fp, string options);
+        public static extern int bingoSearchSimTopNWithExtFP(int db, int query_obj, int limit, float minSim, int ext_fp, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string options);
 
         [DllImport("bingo-nosql"), SuppressUnmanagedCodeSecurity]
-        public static extern int bingoSearchExact(int db, int query_obj, string options);
+        public static extern int bingoSearchExact(int db, int query_obj, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string options);
 
         [DllImport("bingo-nosql"), SuppressUnmanagedCodeSecurity]
-        public static extern int bingoSearchMolFormula(int db, string query, string options);
+        public static extern int bingoSearchMolFormula(int db, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string query, [MarshalAs(UnmanagedType.CustomMarshaler, MarshalTypeRef = typeof(Utf8Marshaler))] string options);
 
         [DllImport("bingo-nosql"), SuppressUnmanagedCodeSecurity]
         public static extern int bingoEnumerateId(int db);

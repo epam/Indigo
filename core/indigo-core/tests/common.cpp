@@ -181,3 +181,12 @@ std::string IndigoCoreTest::smiles(QueryMolecule& m)
     saver.saveQueryMolecule(m);
     return {smiles.ptr(), static_cast<std::size_t>(smiles.size())};
 }
+
+std::string IndigoCoreTest::canonicalSmiles(Molecule& m)
+{
+    Array<char> buf;
+    ArrayOutput output(buf);
+    CanonicalSmilesSaver saver(output);
+    saver.saveMolecule(m);
+    return {buf.ptr(), static_cast<std::size_t>(buf.size())};
+}
