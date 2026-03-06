@@ -1168,7 +1168,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        postgres_major_version: [ "14", "15", "16", "17", "18" ]
+        # postgres_major_version: [ "14", "15", "16", "17", "18" ]
+        postgres_major_version: [ "18" ]
     runs-on: windows-latest
     # needs: [build_indigo_windows_mingw_x86_64, build_indigo_ketcher_cjk, build_bingo_oracle_linux_x86_64, build_bingo_oracle_windows_mingw_x86_64, build_bingo_oracle_windows_msvc_x86_64]
     steps:
@@ -1188,7 +1189,7 @@ jobs:
           Expand-Archive postgresql-${pg_version}-1-windows-x64-binaries.zip
           mv postgresql-${pg_version}-1-windows-x64-binaries/pgsql pgsql
       - name: Apply patch
-        if: ${{ matrix.postgres_major_version > 17 }}
+        if: ${{ matrix.postgres_major_version < 18 }}
         run: cp bingo/postgres/patches/generic-msvc.h pgsql/include/server/port/atomics/generic-msvc.h
       - name: Build bingo-postgres
         run: |
@@ -1203,7 +1204,7 @@ jobs:
           path: dist/bingo-postgres*.zip
 
   build_bingo_postgres_macos_x86_64:
-    # if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
+    if: ${{ startsWith(github.ref, 'refs/tags/indigo-') }}
     strategy:
       fail-fast: false
       matrix:

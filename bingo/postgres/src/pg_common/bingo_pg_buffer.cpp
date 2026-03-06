@@ -291,9 +291,9 @@ void BingoPgBuffer::formIndexTuple(void* map_data, int size)
 #endif
 
 #if PG_VERSION_NUM / 100 >= 1800
-        TupleDescAttr(index_desc, 0).attlen = size;
-        TupleDescAttr(index_desc, 0).attalign = 'c';
-        TupleDescAttr(index_desc, 0).attbyval = false;
+        TupleDescAttr(index_desc, 0)->attlen = size;
+        TupleDescAttr(index_desc, 0)->attalign = 'c';
+        TupleDescAttr(index_desc, 0)->attbyval = false;
 #elif PG_VERSION_NUM / 100 >= 1100
         index_desc->attrs[0].attlen = size;
         index_desc->attrs[0].attalign = 'c';
