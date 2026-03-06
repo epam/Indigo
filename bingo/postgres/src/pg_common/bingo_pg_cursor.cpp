@@ -201,7 +201,9 @@ unsigned int BingoPgCursor::getArgOid(int arg_idx)
         TupleDesc tupdesc = SPI_tuptable->tupdesc;
         if (arg_idx >= tupdesc->natts)
             elog(ERROR, "internal error: can not get argument %d natts = %d", arg_idx, tupdesc->natts);
-#if PG_VERSION_NUM / 100 >= 1100
+#if PG_VERSION_NUM / 100 >= 1800
+        result = TupleDescAttr(tupdesc, arg_idx).atttypid;
+#elif PG_VERSION_NUM / 100 >= 1100
         result = tupdesc->attrs[arg_idx].atttypid;
 #else
         result = tupdesc->attrs[arg_idx]->atttypid;
