@@ -31,6 +31,7 @@
 
 #include "common.h"
 #include "molecule/elements.h"
+#include "molecule/molfile_loader.h"
 #include "molecule/molfile_saver.h"
 #include "reaction/reaction.h"
 #include "reaction/reaction_auto_loader.h"
@@ -357,6 +358,72 @@ TEST_F(IndigoCoreMoleculeTest, dearomatize_smarts)
     saver.saveQueryMolecule(molecule);
     // printf("%s", sm.c_str());
     EXPECT_STREQ("c1-c=c-c=c-c=1", sm.c_str());
+}
+
+/*
+ * V3000 molfile roundtrip with add_implicit_h = true.
+ * Ensures SGROUP block is written before COLLECTION (CT file spec order) and
+ * that implicit H (e.g. MRV_IMPLICIT_H data sgroups) roundtrip correctly.
+ */
+TEST_F(IndigoCoreMoleculeTest, molfileV3000RoundtripImplicitH)
+{
+    Molecule mol;
+    loadMolecule("c1ccccc1O", mol); // phenol: aromatic carbons have implicit H
+
+    string molfileStr;
+    StringOutput out(molfileStr);
+    MolfileSaver saver(out);
+    saver.mode = MolfileSaver::MODE_3000;
+    saver.add_implicit_h = true;
+    saver.saveMolecule(mol);
+
+    // CT file order: SGROUP block must appear before COLLECTION block
+    size_t posSgroup = molfileStr.find("M  V30 BEGIN SGROUP");
+    size_t posCollection = molfileStr.find("M  V30 BEGIN COLLECTION");
+    if (posSgroup != string::npos && posCollection != string::npos)
+        EXPECT_LT(posSgroup, posCollection) << "SGROUP must be written before COLLECTION (CT file spec)";
+
+    BufferScanner scanner(molfileStr.c_str());
+    MolfileLoader loader(scanner);
+    Molecule mol2;
+    loader.loadMolecule(mol2);
+
+    EXPECT_EQ(mol.vertexCount(), mol2.vertexCount()) << "Roundtrip: atom count must match";
+    EXPECT_EQ(mol.edgeCount(), mol2.edgeCount()) << "Roundtrip: bond count must match";
+    // Same structure: roundtrip mol2 should match original as substructure and vice versa
+    EXPECT_TRUE(substructureMatch(smiles(mol2).c_str(), smiles(mol).c_str()));
+    EXPECT_TRUE(substructureMatch(smiles(mol).c_str(), smiles(mol2).c_str()));
+}
+
+/*
+ * V3000 molfile roundtrip with add_implicit_h = false (explicit H only).
+ * Ensures molecules without MRV_IMPLICIT_H sgroups roundtrip correctly.
+ */
+TEST_F(IndigoCoreMoleculeTest, molfileV3000RoundtripExplicitH)
+{
+    Molecule mol;
+    loadMolecule("CCO", mol);
+
+    string molfileStr;
+    StringOutput out(molfileStr);
+    MolfileSaver saver(out);
+    saver.mode = MolfileSaver::MODE_3000;
+    saver.add_implicit_h = false;
+    saver.saveMolecule(mol);
+
+    size_t posSgroup = molfileStr.find("M  V30 BEGIN SGROUP");
+    size_t posCollection = molfileStr.find("M  V30 BEGIN COLLECTION");
+    if (posSgroup != string::npos && posCollection != string::npos)
+        EXPECT_LT(posSgroup, posCollection) << "SGROUP must be written before COLLECTION (CT file spec)";
+
+    BufferScanner scanner(molfileStr.c_str());
+    MolfileLoader loader(scanner);
+    Molecule mol2;
+    loader.loadMolecule(mol2);
+
+    EXPECT_EQ(mol.vertexCount(), mol2.vertexCount()) << "Roundtrip: atom count must match";
+    EXPECT_EQ(mol.edgeCount(), mol2.edgeCount()) << "Roundtrip: bond count must match";
+    EXPECT_STREQ(smiles(mol).c_str(), smiles(mol2).c_str()) << "Roundtrip: SMILES must match";
 }
 
 TEST_F(IndigoCoreMoleculeTest, Reaction)
