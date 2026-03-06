@@ -39,6 +39,10 @@ else()
             PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/pg_core)
 
     if (WIN32)
+        if (PostgreSQL_VERSION_MAJOR GREATER 16)
+            set(CMAKE_CXX_STANDARD 20)
+        endif()
+
         string(REPLACE "libpq.lib" "postgres.lib" PostgreSQL_LIBRARIES ${PostgreSQL_LIBRARIES})
         if (MSVC)
             target_include_directories(${PROJECT_NAME}
