@@ -25,6 +25,7 @@ namespace bingo
         static void load(MMFPtr<ByteBufferStorage>& cf_ptr, MMFAddress offset);
 
         const byte* get(int idx, int& len);
+        bool is_record_ok(int idx);
         void add(const byte* data, int len, int idx);
         void remove(int idx);
         ~ByteBufferStorage();
@@ -32,9 +33,40 @@ namespace bingo
     private:
         struct _Addr
         {
-            unsigned long block_idx;
-            unsigned long offset;
-            long len;
+            uint64_t block_idx;
+            uint64_t offset;
+            int64_t len;
+        };
+
+        int _block_size;
+        int _free_pos;
+        MMFArray<MMFPtr<byte>> _blocks;
+        MMFArray<_Addr> _addresses;
+    };
+
+    // This class used to backward compatibility
+    // https://github.com/epam/Indigo/issues/3528
+    class ByteBufferStorageShort
+    {
+    public:
+        ByteBufferStorageShort(int block_size);
+
+        static MMFAddress create(MMFPtr<ByteBufferStorageShort>& cf_ptr, int block_size);
+
+        static void load(MMFPtr<ByteBufferStorageShort>& cf_ptr, MMFAddress offset);
+
+        const byte* get(int idx, int& len);
+        bool is_record_ok(int idx);
+        void add(const byte* data, int len, int idx);
+        void remove(int idx);
+        ~ByteBufferStorageShort();
+
+    private:
+        struct _Addr
+        {
+            uint32_t block_idx;
+            uint32_t offset;
+            int32_t len;
         };
 
         int _block_size;
