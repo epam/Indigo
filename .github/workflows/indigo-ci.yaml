@@ -1194,6 +1194,7 @@ jobs:
       - name: Apply patch 18
         if: ${{ matrix.postgres_major_version >= 18 }}
         run: cp bingo/postgres/patches/generic-msvc-18.h pgsql/include/server/port/atomics/generic-msvc.h
+      - name: Apply patch 17
         if: ${{ matrix.postgres_major_version >= 17 }}
         run: cp bingo/postgres/patches/port.h pgsql/include/server/port.h
       - name: Build bingo-postgres
