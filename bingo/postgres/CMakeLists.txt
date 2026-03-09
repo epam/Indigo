@@ -40,7 +40,7 @@ else()
 
     if (WIN32)
         if (PostgreSQL_VERSION_MAJOR GREATER 16)
-            set(CMAKE_CXX_STANDARD 20)
+            target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_20)
         endif()
 
         string(REPLACE "libpq.lib" "postgres.lib" PostgreSQL_LIBRARIES ${PostgreSQL_LIBRARIES})
