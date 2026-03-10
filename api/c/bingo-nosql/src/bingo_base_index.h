@@ -83,11 +83,15 @@ namespace bingo
 
         GrossStorage& getGrossStorage();
 
+        GrossStorageShort& getGrossStorageShort();
+
         MMFArray<int>& getIdMapping();
 
         MMFMapping& getBackIdMapping();
 
         ByteBufferStorage& getCfStorage();
+
+        ByteBufferStorageShort& getCfStorageShort();
 
         int getObjectsCount() const;
 
@@ -104,6 +108,11 @@ namespace bingo
         ObjectIndexData prepareIndexData(IndexObject& obj) const;
         ObjectIndexData prepareIndexDataWithExtFP(IndexObject& obj, IndigoObject& fp) const;
 
+        bool useShortBuffer()
+        {
+            return use_short;
+        }
+
     protected:
         BaseIndex(IndexType type);
         IndexType _type;
@@ -118,11 +127,17 @@ namespace bingo
         MMFPtr<ExactStorage> _exact_storage;
         MMFPtr<GrossStorage> _gross_storage;
         MMFPtr<ByteBufferStorage> _cf_storage;
+        // This two variables used to backward compatibility
+        // https://github.com/epam/Indigo/issues/3528
+        MMFPtr<GrossStorageShort> _gross_storage_short;
+        MMFPtr<ByteBufferStorageShort> _cf_storage_short;
+
         MMFPtr<Properties> _properties;
 
         MoleculeFingerprintParameters _fp_params;
         std::string _location;
         int _lock_fd = -1;
+        bool use_short = false;
 
         static void _checkOptions(std::map<std::string, std::string>& option_map, bool is_create);
 
