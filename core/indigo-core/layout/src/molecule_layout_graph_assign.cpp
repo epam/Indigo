@@ -1348,7 +1348,7 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
             if (lvx.is_inner_cycle)
                 inner_cycle_vertices.push_back(vx_idx);
         }
-        _reflectCycleVertices(inner_cycle_vertices, 1.0f);
+        _reflectCycleVertices(inner_cycle_vertices, LayoutOptions::DEFAULT_INNER_MACROCYCLE_BOND_LENGTH);
     }
 
     if (vertexCount() == 1)
