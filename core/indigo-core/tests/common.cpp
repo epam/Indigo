@@ -27,13 +27,6 @@ void IndigoCoreTest::loadMolecule(const char* buf, Molecule& molecule)
     loader.loadMolecule(molecule);
 }
 
-void IndigoCoreTest::loadReaction(const char* buf, Reaction& reaction)
-{
-    BufferScanner scanner(buf);
-    ReactionAutoLoader loader(scanner);
-    loader.loadReaction(reaction);
-}
-
 void IndigoCoreTest::loadQueryMolecule(const char* buf, QueryMolecule& queryMolecule)
 {
     BufferScanner scanner(buf);
