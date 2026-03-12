@@ -849,10 +849,11 @@ void SmilesSaver::_writeAtom(int idx, bool /*aromatic*/, bool lowercase, int chi
             hydro = _hcount[idx];
             if (hydro < 0 && !ignore_invalid_hcount && need_brackets)
             {
-                // This function will throw better error message with a description
+                // This function will throw a more descriptive error from calcValence
                 _mol->getImplicitH(idx);
-                // If not error was thrown then throw it explicitly
-                throw Error("unsure hydrogen count on atom #%d", idx);
+                // If getImplicitH didn't throw, throw with atom details
+                throw Error("unsure hydrogen count on atom #%d, element %s, charge %d, connectivity %d", idx, Element::toString(atom_number), charge,
+                            _mol->getAtomConnectivity_noImplH(idx));
             }
         }
     }
@@ -875,7 +876,20 @@ void SmilesSaver::_writeAtom(int idx, bool /*aromatic*/, bool lowercase, int chi
             hydro = _hcount[idx];
 
             if (hydro < 0 && !ignore_invalid_hcount)
-                throw Error("unsure hydrogen count on atom #%d", idx);
+            {
+                // Try to get a more informative error from getImplicitH
+                try
+                {
+                    _mol->getImplicitH(idx);
+                }
+                catch (Exception&)
+                {
+                    throw;
+                }
+                // If getImplicitH didn't throw, throw with atom details
+                throw Error("unsure hydrogen count on atom #%d, element %s, charge %d, connectivity %d", idx, Element::toString(atom_number), charge,
+                            _mol->getAtomConnectivity_noImplH(idx));
+            }
         }
         if (chirality > 0 && hydro > 1)
         {
