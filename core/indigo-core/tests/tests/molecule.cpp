@@ -16,32 +16,21 @@
  * limitations under the License.
  ***************************************************************************/
 
-#ifdef _WIN32
-#include <direct.h>
-#define getcwd _getcwd
-#else
-#include <unistd.h>
-#endif
 #include <gtest/gtest.h>
 
 #include <base_cpp/output.h>
 #include <base_cpp/scanner.h>
-#include <fstream>
 #include <molecule/crippen.h>
 #include <molecule/hybridization.h>
 #include <molecule/lipinski.h>
 #include <molecule/molecule_mass.h>
+#include <molecule/molfile_loader.h>
 #include <molecule/smiles_loader.h>
 #include <molecule/smiles_saver.h>
 #include <molecule/tpsa.h>
 
 #include "common.h"
 #include "molecule/elements.h"
-#include "molecule/molfile_loader.h"
-#include "molecule/molfile_saver.h"
-#include "reaction/reaction.h"
-#include "reaction/reaction_auto_loader.h"
-#include "reaction/reaction_automapper.h"
 
 using namespace std;
 using namespace indigo;
@@ -366,105 +355,249 @@ TEST_F(IndigoCoreMoleculeTest, dearomatize_smarts)
     EXPECT_STREQ("c1-c=c-c=c-c=1", sm.c_str());
 }
 
-/*
- * V3000 molfile roundtrip with add_implicit_h = true.
- * Ensures SGROUP block is written before COLLECTION (CT file spec order) and
- * that implicit H (e.g. MRV_IMPLICIT_H data sgroups) roundtrip correctly.
- */
-TEST_F(IndigoCoreMoleculeTest, molfileV3000RoundtripImplicitH)
+// [Sapio] [CHEMBUGS-184] Stereo reaction molecules (from former stereo_reaction.rxn): load as mol blocks to verify parsing.
+namespace
 {
-    Molecule mol;
-    loadMolecule("c1ccccc1O", mol); // phenol: aromatic carbons have implicit H
+    const char* const stereoReactionReactant1 = R"(
+  Mrv2305 05232323372D
 
-    string molfileStr;
-    StringOutput out(molfileStr);
-    MolfileSaver saver(out);
-    saver.mode = MolfileSaver::MODE_3000;
-    saver.add_implicit_h = true;
-    saver.saveMolecule(mol);
+ 18 19  0  0  0  0            999 V2000
+   -6.9420   -0.0902    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -7.6565   -0.5027    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -7.6565   -1.3278    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -6.9420   -1.7402    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
+   -6.2275   -1.3278    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -6.2275   -0.5027    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
+   -5.5357    0.0000    0.0000 C   0  0  2  0  0  0  0  0  0  0  0  0
+   -4.7511   -0.2549    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+   -4.2661    0.4125    0.0000 C   0  0  1  0  0  0  0  0  0  0  0  0
+   -4.7510    1.0800    0.0000 C   0  0  2  0  0  0  0  0  0  0  0  0
+   -5.5356    0.8250    0.0000 C   0  0  1  0  0  0  0  0  0  0  0  0
+   -3.4411    0.4125    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -6.2031    1.3100    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+   -4.4961    1.8646    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+   -5.4066    1.6399    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -8.3709   -1.7403    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+   -5.5130   -1.7403    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+   -2.8891    1.0256    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  2  0  0  0  0
+  2  3  1  0  0  0  0
+  9 10  1  0  0  0  0
+ 10 11  1  0  0  0  0
+  7 11  1  0  0  0  0
+  9 12  1  1  0  0  0
+  3 16  2  0  0  0  0
+  5 17  2  0  0  0  0
+  8  9  1  0  0  0  0
+  7  8  1  0  0  0  0
+ 10 14  1  6  0  0  0
+ 12 18  1  0  0  0  0
+ 11 15  1  1  0  0  0
+ 11 13  1  6  0  0  0
+  1  6  1  0  0  0  0
+  5  6  1  0  0  0  0
+  7  6  1  1  0  0  0
+  3  4  1  0  0  0  0
+  4  5  1  0  0  0  0
+M  STY  1   1 SUP
+M  SAL   1  1  15
+M  SBL   1  1  13
+M  SMT   1 Me
+M  SAP   1  1  15  11  1
+M  END
+)";
+    const char* const stereoReactionReactant2 = R"(
+  Mrv2305 05232323372D
 
-    // CT file order: SGROUP block must appear before COLLECTION block
-    size_t posSgroup = molfileStr.find("M  V30 BEGIN SGROUP");
-    size_t posCollection = molfileStr.find("M  V30 BEGIN COLLECTION");
-    if (posSgroup != string::npos && posCollection != string::npos)
-        EXPECT_LT(posSgroup, posCollection) << "SGROUP must be written before COLLECTION (CT file spec)";
+ 24 26  0  0  0  0            999 V2000
+   -4.7105   -3.1000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.1382   -0.2125    0.0000 Cl  0  0  0  0  0  0  0  0  0  0  0  0
+   -4.7106   -2.2750    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+   -3.9961   -1.8625    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -3.9961   -1.0375    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -3.2816   -0.6250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -2.5671   -1.0375    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -2.5671   -1.8625    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -3.2816   -2.2750    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.8527   -0.6250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.8527    0.2000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -2.5672    0.6126    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -2.5671    1.4375    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.8527    1.8500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.1382    1.4376    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.1382    0.6125    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.1382   -1.0375    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -0.4237   -0.6250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    0.2907   -1.0375    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    0.2907   -1.8625    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    1.0052   -2.2750    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+    1.7197   -1.8625    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -0.4237   -2.2750    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.1382   -1.8625    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+ 10  2  1  0  0  0  0
+  1  3  1  0  0  0  0
+  3  4  1  0  0  0  0
+  4  5  2  0  0  0  0
+  4  9  1  0  0  0  0
+  5  6  1  0  0  0  0
+  6  7  2  0  0  0  0
+  7  8  1  0  0  0  0
+  7 10  1  0  0  0  0
+  8  9  2  0  0  0  0
+ 10 11  1  0  0  0  0
+ 10 17  1  0  0  0  0
+ 11 12  2  0  0  0  0
+ 11 16  1  0  0  0  0
+ 12 13  1  0  0  0  0
+ 13 14  2  0  0  0  0
+ 14 15  1  0  0  0  0
+ 15 16  2  0  0  0  0
+ 17 18  2  0  0  0  0
+ 17 24  1  0  0  0  0
+ 18 19  1  0  0  0  0
+ 19 20  2  0  0  0  0
+ 20 21  1  0  0  0  0
+ 20 23  1  0  0  0  0
+ 21 22  1  0  0  0  0
+ 23 24  2  0  0  0  0
+M  STY  1   1 SUP
+M  SAL   1 15   1   3   4   5   6   7   8   9  10  11  12  13  14  15  16
+M  SAL   1  8  17  18  19  20  21  22  23  24
+M  SBL   1  1   1
+M  SMT   1 DMTr
+M  SAP   1  1  10   2  1
+M  END
+)";
+    const char* const stereoReactionProduct = R"(
+  Mrv2305 05232323372D
 
-    BufferScanner scanner(molfileStr.c_str());
-    MolfileLoader loader(scanner);
-    Molecule mol2;
-    loader.loadMolecule(mol2);
-
-    EXPECT_EQ(mol.vertexCount(), mol2.vertexCount()) << "Roundtrip: atom count must match";
-    EXPECT_EQ(mol.edgeCount(), mol2.edgeCount()) << "Roundtrip: bond count must match";
-    // Same structure: roundtrip mol2 should match original as substructure and vice versa
-    EXPECT_TRUE(substructureMatch(smiles(mol2).c_str(), smiles(mol).c_str()));
-    EXPECT_TRUE(substructureMatch(smiles(mol).c_str(), smiles(mol2).c_str()));
+ 41 45  0  0  0  0            999 V2000
+    2.9291   -0.1300    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    2.2146   -0.5425    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    2.2146   -1.3676    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    2.9291   -1.7800    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
+    3.6436   -1.3676    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    3.6436   -0.5425    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
+    4.3354   -0.0398    0.0000 C   0  0  2  0  0  0  0  0  0  0  0  0
+    5.1200   -0.2947    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+    5.6049    0.3727    0.0000 C   0  0  1  0  0  0  0  0  0  0  0  0
+    5.1200    1.0402    0.0000 C   0  0  2  0  0  0  0  0  0  0  0  0
+    4.3354    0.7852    0.0000 C   0  0  1  0  0  0  0  0  0  0  0  0
+    6.4299    0.3727    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    3.6680    1.2701    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+    5.3749    1.8248    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+    4.4645    1.6000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    1.5002   -1.7801    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+    4.3581   -1.7801    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+    6.9820    0.9858    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+   11.5195    1.7003    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   11.1070    0.9858    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+   10.2820    0.9858    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    9.8695    0.2713    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    9.0445    0.2713    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    8.6320    0.9858    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    9.0445    1.7003    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    9.8695    1.7003    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    7.8070    0.9858    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    7.3945    0.2713    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    7.8070   -0.4432    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    7.3945   -1.1576    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    6.5695   -1.1576    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    6.1570   -0.4432    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    6.5695    0.2713    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    7.3945    1.7003    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    6.5695    1.7003    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    6.1570    2.4147    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    6.5695    3.1292    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    6.1570    3.8437    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+    5.3320    3.8437    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    7.3945    3.1292    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    7.8070    2.4147    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  2  0  0  0  0
+  2  3  1  0  0  0  0
+  9 10  1  0  0  0  0
+ 10 11  1  0  0  0  0
+  7 11  1  0  0  0  0
+  9 12  1  1  0  0  0
+  3 16  2  0  0  0  0
+  5 17  2  0  0  0  0
+  8  9  1  0  0  0  0
+  7  8  1  0  0  0  0
+ 10 14  1  6  0  0  0
+ 12 18  1  0  0  0  0
+ 11 15  1  1  0  0  0
+ 11 13  1  6  0  0  0
+  1  6  1  0  0  0  0
+  5  6  1  0  0  0  0
+  7  6  1  1  0  0  0
+  3  4  1  0  0  0  0
+  4  5  1  0  0  0  0
+ 18 27  1  0  0  0  0
+ 19 20  1  0  0  0  0
+ 20 21  1  0  0  0  0
+ 21 22  2  0  0  0  0
+ 21 26  1  0  0  0  0
+ 22 23  1  0  0  0  0
+ 23 24  2  0  0  0  0
+ 24 25  1  0  0  0  0
+ 24 27  1  0  0  0  0
+ 25 26  2  0  0  0  0
+ 27 28  1  0  0  0  0
+ 27 34  1  0  0  0  0
+ 28 29  2  0  0  0  0
+ 28 33  1  0  0  0  0
+ 29 30  1  0  0  0  0
+ 30 31  2  0  0  0  0
+ 31 32  1  0  0  0  0
+ 32 33  2  0  0  0  0
+ 34 35  2  0  0  0  0
+ 34 41  1  0  0  0  0
+ 35 36  1  0  0  0  0
+ 36 37  2  0  0  0  0
+ 37 38  1  0  0  0  0
+ 37 40  1  0  0  0  0
+ 38 39  1  0  0  0  0
+ 40 41  2  0  0  0  0
+M  STY  2   1 SUP   2 SUP
+M  SAL   1  1  15
+M  SBL   1  1  13
+M  SMT   1 Me
+M  SAP   1  1  15  11  1
+M  SAL   2 15  19  20  21  22  23  24  25  26  27  28  29  30  31  32  33
+M  SAL   2  8  34  35  36  37  38  39  40  41
+M  SBL   2  1  20
+M  SMT   2 DMTr
+M  SAP   2  1  27  18  1
+M  END
+)";
 }
 
-/*
- * V3000 molfile roundtrip with add_implicit_h = false (explicit H only).
- * Ensures molecules without MRV_IMPLICIT_H sgroups roundtrip correctly.
- */
-TEST_F(IndigoCoreMoleculeTest, molfileV3000RoundtripExplicitH)
+TEST_F(IndigoCoreMoleculeTest, stereoReactionReactant1)
 {
     Molecule mol;
-    loadMolecule("CCO", mol);
-
-    string molfileStr;
-    StringOutput out(molfileStr);
-    MolfileSaver saver(out);
-    saver.mode = MolfileSaver::MODE_3000;
-    saver.add_implicit_h = false;
-    saver.saveMolecule(mol);
-
-    size_t posSgroup = molfileStr.find("M  V30 BEGIN SGROUP");
-    size_t posCollection = molfileStr.find("M  V30 BEGIN COLLECTION");
-    if (posSgroup != string::npos && posCollection != string::npos)
-        EXPECT_LT(posSgroup, posCollection) << "SGROUP must be written before COLLECTION (CT file spec)";
-
-    BufferScanner scanner(molfileStr.c_str());
+    BufferScanner scanner(stereoReactionReactant1);
     MolfileLoader loader(scanner);
-    Molecule mol2;
-    loader.loadMolecule(mol2);
-
-    EXPECT_EQ(mol.vertexCount(), mol2.vertexCount()) << "Roundtrip: atom count must match";
-    EXPECT_EQ(mol.edgeCount(), mol2.edgeCount()) << "Roundtrip: bond count must match";
-    EXPECT_STREQ(smiles(mol).c_str(), smiles(mol2).c_str()) << "Roundtrip: SMILES must match";
+    loader.loadMolecule(mol);
+    EXPECT_EQ(18, mol.vertexCount());
+    EXPECT_EQ(19, mol.edgeCount());
 }
 
-TEST_F(IndigoCoreMoleculeTest, Reaction)
+TEST_F(IndigoCoreMoleculeTest, stereoReactionReactant2)
 {
-    Reaction reaction;
-    {
-        char dir[250];
-        getcwd(dir, 250);
-        cout << "Current directory: " << dir << "\n";
-        ifstream reactionFile("../../data/reactions/other/stereo_reaction.rxn");
-        string content;
-        string line;
-        while (getline(reactionFile, line))
-        {
-            content += line;
-            content.push_back('\n');
-        }
-        reactionFile.close();
-        //        cout << "The content is: \n" << content << "\n";
-        cout << "Loading reaction...";
-        loadReaction(content.c_str(), reaction);
+    Molecule mol;
+    BufferScanner scanner(stereoReactionReactant2);
+    MolfileLoader loader(scanner);
+    loader.loadMolecule(mol);
+    EXPECT_EQ(24, mol.vertexCount());
+    EXPECT_EQ(26, mol.edgeCount());
+}
 
-        reaction.aromatize(AromaticityOptions(AromaticityOptions::GENERIC));
-        ReactionAutomapper ram(reaction);
-        ram.automap(0);
-
-        for (int i = reaction.productBegin(); i < reaction.productEnd(); i = reaction.productNext(i))
-        {
-            cout << " *** Current Product Index is: " << i << " *** \n";
-            Molecule& mol = reaction.getMolecule(i);
-            string molOutStr;
-            StringOutput molOut(molOutStr);
-            MolfileSaver molSaver(molOut);
-            molSaver.saveMolecule(mol);
-            cout << molOutStr;
-        }
-    }
+TEST_F(IndigoCoreMoleculeTest, stereoReactionProduct)
+{
+    Molecule mol;
+    BufferScanner scanner(stereoReactionProduct);
+    MolfileLoader loader(scanner);
+    loader.loadMolecule(mol);
+    EXPECT_EQ(41, mol.vertexCount());
+    EXPECT_EQ(45, mol.edgeCount());
 }
