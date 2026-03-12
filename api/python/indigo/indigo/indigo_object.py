@@ -4405,6 +4405,32 @@ class IndigoObject:
             self._lib().indigoExpandAbbreviations(self.id)
         )
 
+    # [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+    def expandedMonomersToAtoms(self):
+        """Molecule method converts expanded template atoms to regular atoms.
+
+        This method takes a molecule with expanded monomers (template atoms
+        marked as expanded) and converts them to fully expanded regular atoms.
+        This is required for:
+        - Accurate molecular weight calculations
+        - Clean molfile output without template metadata
+        - Compatibility with third-party tools without monomer libraries
+
+        The original molecule is not modified. A new molecule is returned.
+
+        Returns:
+            IndigoObject: New molecule with all expanded monomers converted to atoms
+
+        Raises:
+            IndigoException: If the operation fails
+        """
+        return IndigoObject(
+            self.session,
+            IndigoLib.checkResult(
+                self._lib().indigoExpandedMonomersToAtoms(self.id)
+            ),
+        )
+
     def dbgInternalType(self):
         """Object method returns type
 
