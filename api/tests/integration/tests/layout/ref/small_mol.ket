@@ -177,8 +177,8 @@
         "type": "monomer",
         "id": "0",
         "position": {
-            "x": 10.8713,
-            "y": 2.3713
+            "x": 1.6519,
+            "y": 0.2500
         },
         "alias": "A",
         "templateId": "A___Alanine"
@@ -187,8 +187,8 @@
         "type": "monomer",
         "id": "1",
         "position": {
-            "x": 9.8107,
-            "y": 1.3107
+            "x": 2.9510,
+            "y": -0.5000
         },
         "alias": "A",
         "templateId": "A___Alanine"
@@ -197,8 +197,8 @@
         "type": "monomer",
         "id": "2",
         "position": {
-            "x": 8.7500,
-            "y": 0.2500
+            "x": 4.2500,
+            "y": -1.2500
         },
         "alias": "N",
         "templateId": "N___Asparagine"
@@ -207,8 +207,8 @@
         "type": "monomer",
         "id": "3",
         "position": {
-            "x": 7.2500,
-            "y": 0.2500
+            "x": 5.6989,
+            "y": -0.8618
         },
         "alias": "N",
         "templateId": "N___Asparagine"
@@ -217,8 +217,8 @@
         "type": "monomer",
         "id": "4",
         "position": {
-            "x": 7.2500,
-            "y": -1.2500
+            "x": 6.0871,
+            "y": -2.3107
         },
         "alias": "N",
         "templateId": "N___Asparagine"
@@ -227,8 +227,8 @@
         "type": "monomer",
         "id": "5",
         "position": {
-            "x": 8.7500,
-            "y": -1.2500
+            "x": 4.6382,
+            "y": -2.6989
         },
         "alias": "N",
         "templateId": "N___Asparagine"
@@ -237,8 +237,8 @@
         "type": "monomer",
         "id": "6",
         "position": {
-            "x": 9.8107,
-            "y": -2.3107
+            "x": 3.8882,
+            "y": -3.9979
         },
         "alias": "E",
         "templateId": "E___Glutamic acid"
@@ -247,8 +247,8 @@
         "type": "monomer",
         "id": "7",
         "position": {
-            "x": 10.8713,
-            "y": -3.3713
+            "x": 3.1382,
+            "y": -5.2970
         },
         "alias": "E",
         "templateId": "E___Glutamic acid"
@@ -257,8 +257,8 @@
         "type": "monomer",
         "id": "8",
         "position": {
-            "x": 11.9320,
-            "y": -4.4320
+            "x": 2.3882,
+            "y": -6.5960
         },
         "alias": "E",
         "templateId": "E___Glutamic acid"
@@ -267,8 +267,8 @@
         "type": "monomer",
         "id": "9",
         "position": {
-            "x": 6.1893,
-            "y": 1.3107
+            "x": 6.4489,
+            "y": 0.4373
         },
         "alias": "M",
         "templateId": "M___Methionine"
@@ -1007,40 +1007,40 @@
             {
                 "label": "C",
                 "location": [
-                    6.1893,
-                    -2.3107,
+                    7.3862,
+                    -3.0607,
                     0.0000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    4.7078,
-                    -2.0760,
+                    7.5429,
+                    -4.5524,
                     0.0000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    4.0268,
-                    -3.4125,
+                    9.0102,
+                    -4.8643,
                     0.0000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    5.0875,
-                    -4.4732,
+                    9.7602,
+                    -3.5653,
                     0.0000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    6.4240,
-                    -3.7922,
+                    8.7565,
+                    -2.4506,
                     0.0000
                 ]
             }
