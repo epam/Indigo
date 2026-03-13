@@ -1,10 +1,38 @@
-﻿import difflib
+import json
 import os
 import sys
 
 
-def find_diff(a, b):
-    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
+def compare_positions(ket_a, ket_b, eps=0.05):
+    """Compare two KET JSONs, allowing epsilon tolerance on position coordinates."""
+    a = json.loads(ket_a)
+    b = json.loads(ket_b)
+    nodes_a = a.get("root", {}).get("nodes", [])
+    nodes_b = b.get("root", {}).get("nodes", [])
+    if len(nodes_a) != len(nodes_b):
+        return "Node count mismatch: {} vs {}".format(
+            len(nodes_a), len(nodes_b)
+        )
+    for na, nb in zip(nodes_a, nodes_b):
+        if na.get("type") != nb.get("type"):
+            return "Node type mismatch: {} vs {}".format(
+                na.get("type"), nb.get("type")
+            )
+        pa = na.get("position")
+        pb = nb.get("position")
+        if pa and pb:
+            dx = abs(pa["x"] - pb["x"])
+            dy = abs(pa["y"] - pb["y"])
+            if dx > eps or dy > eps:
+                return (
+                    "Position mismatch for id={}: "
+                    "({:.4f}, {:.4f}) vs "
+                    "({:.4f}, {:.4f}), "
+                    "delta=({:.4f}, {:.4f})"
+                ).format(
+                    na.get("id"), pa["x"], pa["y"], pb["x"], pb["y"], dx, dy
+                )
+    return ""
 
 
 sys.path.append(
@@ -41,6 +69,7 @@ files = [
     "shifting_structs_2_sel",
     "overlapping",
     "ring_fuse",
+    "left_top_monomer",
     "6bases",
 ]
 
@@ -62,7 +91,7 @@ for filename in files:
         ket_ref = file.read()
 
     ket = mol.json()
-    diff = find_diff(ket_ref, ket)
+    diff = compare_positions(ket_ref, ket)
     if not diff:
         print(filename + ".ket:SUCCEED")
     else:

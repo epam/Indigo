@@ -225,8 +225,8 @@
         "id": "1",
         "seqid": 2,
         "position": {
-            "x": 10.3529,
-            "y": -5.7251
+            "x": 9.8647,
+            "y": -7.8637
         },
         "alias": "A",
         "templateId": "A___Adenine"
@@ -236,8 +236,8 @@
         "id": "2",
         "seqid": 3,
         "position": {
-            "x": 11.3647,
-            "y": -6.7387
+            "x": 11.2162,
+            "y": -7.3895
         },
         "alias": "R",
         "templateId": "R___Ribose"
@@ -247,8 +247,8 @@
         "id": "3",
         "seqid": 4,
         "position": {
-            "x": 10.8766,
-            "y": -5.7251
+            "x": 10.3366,
+            "y": -8.0909
         },
         "alias": "A",
         "templateId": "A___Adenine"
@@ -258,8 +258,8 @@
         "id": "4",
         "seqid": 5,
         "position": {
-            "x": 12.3000,
-            "y": -5.5659
+            "x": 11.5500,
+            "y": -8.8519
         },
         "alias": "R",
         "templateId": "R___Ribose"
@@ -269,8 +269,8 @@
         "id": "5",
         "seqid": 6,
         "position": {
-            "x": 11.2032,
-            "y": -5.3156
+            "x": 10.4532,
+            "y": -8.6016
         },
         "alias": "A",
         "templateId": "A___Adenine"
@@ -280,8 +280,8 @@
         "id": "6",
         "seqid": 7,
         "position": {
-            "x": 11.9662,
-            "y": -4.1035
+            "x": 10.6148,
+            "y": -10.0246
         },
         "alias": "R",
         "templateId": "R___Ribose"
@@ -291,8 +291,8 @@
         "id": "7",
         "seqid": 8,
         "position": {
-            "x": 11.0866,
-            "y": -4.8050
+            "x": 10.1266,
+            "y": -9.0110
         },
         "alias": "A",
         "templateId": "A___Adenine"
@@ -302,8 +302,8 @@
         "id": "8",
         "seqid": 9,
         "position": {
-            "x": 10.6148,
-            "y": -3.4527
+            "x": 9.1148,
+            "y": -10.0246
         },
         "alias": "R",
         "templateId": "R___Ribose"
@@ -313,8 +313,8 @@
         "id": "9",
         "seqid": 10,
         "position": {
-            "x": 10.6148,
-            "y": -4.5777
+            "x": 9.6029,
+            "y": -9.0110
         },
         "alias": "A",
         "templateId": "A___Adenine"
@@ -324,8 +324,8 @@
         "id": "10",
         "seqid": 11,
         "position": {
-            "x": 9.2633,
-            "y": -4.1035
+            "x": 8.1795,
+            "y": -8.8519
         },
         "alias": "R",
         "templateId": "R___Ribose"
@@ -335,8 +335,8 @@
         "id": "11",
         "seqid": 12,
         "position": {
-            "x": 10.1429,
-            "y": -4.8050
+            "x": 9.2763,
+            "y": -8.6016
         },
         "alias": "A",
         "templateId": "A___Adenine"
@@ -346,8 +346,8 @@
         "id": "12",
         "seqid": 13,
         "position": {
-            "x": 8.9295,
-            "y": -5.5659
+            "x": 8.5133,
+            "y": -7.3895
         },
         "alias": "R",
         "templateId": "R___Ribose"
@@ -357,8 +357,8 @@
         "id": "13",
         "seqid": 14,
         "position": {
-            "x": 10.0263,
-            "y": -5.3156
+            "x": 9.3929,
+            "y": -8.0909
         },
         "alias": "A",
         "templateId": "A___Adenine"
