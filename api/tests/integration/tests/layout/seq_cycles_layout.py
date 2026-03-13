@@ -10,10 +10,14 @@ def compare_positions(ket_a, ket_b, eps=0.05):
     nodes_a = a.get("root", {}).get("nodes", [])
     nodes_b = b.get("root", {}).get("nodes", [])
     if len(nodes_a) != len(nodes_b):
-        return "Node count mismatch: {} vs {}".format(len(nodes_a), len(nodes_b))
+        return "Node count mismatch: {} vs {}".format(
+            len(nodes_a), len(nodes_b)
+        )
     for na, nb in zip(nodes_a, nodes_b):
         if na.get("type") != nb.get("type"):
-            return "Node type mismatch: {} vs {}".format(na.get('type'), nb.get('type'))
+            return "Node type mismatch: {} vs {}".format(
+                na.get("type"), nb.get("type")
+            )
         pa = na.get("position")
         pb = nb.get("position")
         if pa and pb:
@@ -26,10 +30,7 @@ def compare_positions(ket_a, ket_b, eps=0.05):
                     "({:.4f}, {:.4f}), "
                     "delta=({:.4f}, {:.4f})"
                 ).format(
-                    na.get('id'),
-                    pa['x'], pa['y'],
-                    pb['x'], pb['y'],
-                    dx, dy
+                    na.get("id"), pa["x"], pa["y"], pb["x"], pb["y"], dx, dy
                 )
     return ""
 
