@@ -32,6 +32,10 @@ bool BaseMoleculeQuery::buildFingerprint(const MoleculeFingerprintParameters& fp
 {
     MoleculeFingerprintBuilder fp_builder(_base_mol, fp_params);
     fp_builder.query = _needs_query_fingerprint;
+    if (sub_fp == nullptr)
+    {
+        fp_builder.skip_tau = true;
+    }
 
     fp_builder.process();
 
