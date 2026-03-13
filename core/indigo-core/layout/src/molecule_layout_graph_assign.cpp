@@ -586,7 +586,6 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
     // If there are fixed cycles, remaining cycles should be attached via _attachCycleOutside.
     float radius = (sequence_layout && supergraph._n_fixed) ? LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH : 1.0f;
 
-
     if (!found_fixed_cycle && sorted_cycles.size() > 0)
     {
         sorted_cycles.qsort(Cycle::compare_cb, &cycles);
@@ -774,7 +773,6 @@ void MoleculeLayoutGraphSimple::_assignFirstCycle(const Cycle& cycle, float radi
 
         _layout_vertices[cycle.getVertex((s + i + 1) % n)].pos.rotateAroundSegmentEnd(v1, v2, phi);
     }
-
 }
 
 // If vertices are already drawn
