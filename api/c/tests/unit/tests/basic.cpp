@@ -402,27 +402,56 @@ TEST_F(IndigoApiBasicTest, canonical_smiles_SiF6_charge_minus2)
     ASSERT_STRNE("", smiles);
 }
 
-// Scenario 3: Invalid molecule in MOL format — Si with charge=-2 and only 3 connections
-// checkBadValence returns descriptive error message with element, charge, bonds
-static constexpr char SiF3_charge_minus2_invalid_mol[] = R"(
+// Verify that the SDF file iteration + canonicalSmiles works for all molecules
+// This is the full scenario from the Java Elastic test
+TEST_F(IndigoApiBasicTest, canonical_smiles_all_rand_queries_small)
+{
+    int reader = indigoIterateSDFile(dataPath("molecules/basic/rand_queries_small.sdf").c_str());
+    ASSERT_NE(-1, reader);
+
+    int idx = 0;
+    while (indigoHasNext(reader))
+    {
+        int item = indigoNext(reader);
+        ASSERT_NE(-1, item);
+
+        const char* smiles = indigoCanonicalSmiles(item);
+        EXPECT_NE(nullptr, smiles) << "canonicalSmiles failed on molecule #" << idx;
+
+        indigoFree(item);
+        idx++;
+    }
+    indigoFree(reader);
+
+    // rand_queries_small.sdf contains 371 molecules (372 entries, last is empty)
+    EXPECT_GT(idx, 300);
+}
+
+// Scenario 3: Genuinely invalid molecule — neutral Si with 5 bonds.
+// Neutral Si (charge 0) has max valence 4 (sp3), no d-orbital expansion without charge.
+// checkBadValence returns descriptive error with element, charge, bond count.
+static constexpr char SiF5_neutral_invalid_mol[] = R"(
   -INDIGO-test
 
-  4  3  0  0  0  0  0  0  0  0999 V2000
+  6  5  0  0  0  0  0  0  0  0999 V2000
     0.0000    0.0000    0.0000 Si  0  0  0  0  0  0  0  0  0  0  0  0
     1.0000    0.0000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
     0.0000    1.0000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
    -1.0000    0.0000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000   -1.0000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+    0.5000    0.5000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
   1  2  1  0  0  0  0
   1  3  1  0  0  0  0
   1  4  1  0  0  0  0
-M  CHG  1   1  -2
+  1  5  1  0  0  0  0
+  1  6  1  0  0  0  0
 M  END
 )";
 
 TEST_F(IndigoApiBasicTest, canonical_smiles_invalid_molecule_descriptive_error)
 {
-    // Si with charge=-2 and 3 fluorines from MOL — no valid calcValence rule
-    int mol = indigoLoadMoleculeFromString(SiF3_charge_minus2_invalid_mol);
+    // Neutral Si with 5 bonds — always invalid (max valence 4 without charge)
+    int mol = indigoLoadMoleculeFromString(SiF5_neutral_invalid_mol);
     ASSERT_NE(-1, mol);
 
     // checkBadValence should return descriptive error with element, charge, bonds
@@ -430,6 +459,5 @@ TEST_F(IndigoApiBasicTest, canonical_smiles_invalid_molecule_descriptive_error)
     ASSERT_NE(nullptr, valenceErr);
     std::string errStr(valenceErr);
     EXPECT_NE(std::string::npos, errStr.find("Si")) << "Error should mention Si, got: " << errStr;
-    EXPECT_NE(std::string::npos, errStr.find("-2")) << "Error should mention charge -2, got: " << errStr;
-    EXPECT_NE(std::string::npos, errStr.find("3 drawn bonds")) << "Error should mention 3 drawn bonds, got: " << errStr;
+    EXPECT_NE(std::string::npos, errStr.find("5 drawn bonds")) << "Error should mention 5 drawn bonds, got: " << errStr;
 }

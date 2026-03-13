@@ -456,491 +456,203 @@ int Element::calcValenceOfAromaticAtom(int elem, int charge, int n_arom, int min
 
 bool Element::calcValence(int elem, int charge, int radical, int conn, int& valence, int& hyd, bool to_throw)
 {
-    int groupno = Element::group(elem);
-    int rad = radicalElectrons(radical);
+    const int g = Element::group(elem);
+    const int rad = radicalElectrons(radical);
 
     valence = conn;
     hyd = 0;
 
-    if (groupno == 1)
+    // ═══════════════════════════════════════════════════════════════════
+    // Hydrogen — explicit special cases (Biovia Draw convention)
+    // ═══════════════════════════════════════════════════════════════════
+    if (elem == ELEM_H)
     {
-        if (elem == ELEM_Li || elem == ELEM_Na || elem == ELEM_K || elem == ELEM_Rb || elem == ELEM_Cs || elem == ELEM_Fr)
-        {
-            valence = 1;
-            hyd = 1 - rad - conn - abs(charge);
-        }
-        if (elem == ELEM_H)
-        {
-            valence = 1;
-            if (charge == 1 && conn == 0)
-                hyd = 0;
-            else if (charge == -1 && conn == 0)
-                hyd = 0;
-            else if (charge == 0 && conn == 1)
-                hyd = 0;
-            else if (charge == 0 && conn == 0)
-                hyd = 1; // elemental hydrogen, hmm... well, OK -- behaviour changed
-                         // Allow implicit H for H, so single H is considered as molecule H2 now
-                         // in accordance with Biovia Draw model
-            else
-                hyd = -1;
-        }
-    }
-    else if (groupno == 2)
-    {
-        if (elem == ELEM_Be || elem == ELEM_Mg || elem == ELEM_Ca || elem == ELEM_Sr || elem == ELEM_Ba || elem == ELEM_Ra)
-        {
-            valence = 2;
-            if (conn != 0)
-            {
-                if (rad > 0 || abs(charge) > 0)
-                    hyd = -1;
-                else
-                    hyd = 2 - conn;
-            }
-            else if (rad > 0 || abs(charge) > 0)
-            {
-                hyd = 2 - rad - abs(charge);
-            }
-            else
-            {
-                hyd = 0;
-            }
+        valence = 1;
+        if (charge == 0 && rad == 0 && conn == 0)
+            hyd = 1; // Biovia: lone H → H₂
+        else if (conn == 0 && charge != 0)
+            hyd = 0; // bare ion: H⁺ / H⁻
+        else
+            hyd = 1 - rad - conn;
 
-            if (hyd != 0)
-                hyd = -1;
-        }
-    }
-    else if (groupno == 3)
-    {
-        if (elem == ELEM_B || elem == ELEM_Al || elem == ELEM_Ga || elem == ELEM_In)
-        {
-            if (charge == -1)
-            {
-                valence = 4;
-                hyd = 4 - rad - conn;
-            }
-            else if (charge == -3 && elem != ELEM_B && rad + conn <= 6)
-            {
-                valence = rad + conn;
-                hyd = 0;
-            }
-            else if (elem == ELEM_Al && charge == -2)
-            {
-                if (rad + conn == 5)
-                {
-                    valence = 5;
-                    hyd = 0;
-                }
-                else
-                    hyd = -1;
-            }
-            else
-            {
-                valence = 3;
-                hyd = 3 - rad - conn - abs(charge);
-            }
-        }
-        else if (elem == ELEM_Tl)
-        {
-            if (charge == -1)
-            {
-                if (rad + conn <= 2)
-                {
-                    valence = 2;
-                    hyd = 2 - rad - conn;
-                }
-                else
-                {
-                    valence = 4;
-                    hyd = 4 - rad - conn;
-                }
-            }
-            else if (charge == -2)
-            {
-                if (rad + conn <= 3)
-                {
-                    valence = 3;
-                    hyd = 3 - rad - conn;
-                }
-                else
-                {
-                    valence = 5;
-                    hyd = 5 - rad - conn;
-                }
-            }
-            else if (charge == -3 && rad + conn == 6)
-            { // ISIS Draw and Marvin allow this
-                valence = 6;
-                hyd = 0;
-            }
-            else
-            {
-                if (rad + conn + abs(charge) <= 1)
-                {
-                    valence = 1;
-                    hyd = 1 - rad - conn - abs(charge);
-                }
-                else
-                {
-                    valence = 3;
-                    hyd = 3 - rad - conn - abs(charge);
-                }
-            }
-        }
-    }
-    else if (groupno == 4)
-    {
-        if (elem == ELEM_C)
-        {
-            valence = 4;
-            hyd = 4 - rad - conn - abs(charge);
-        }
-        else if (elem == ELEM_Si || elem == ELEM_Ge || elem == ELEM_Sn || elem == ELEM_Pb)
-        {
-            if (charge == -2 && conn == 6 && rad == 0)
-            {
-                // Zinc fluorosilicate, hexafluorogermanium
-                valence = 6;
-                hyd = 0;
-            }
-            else if (charge == -2 && conn + rad == 5)
-            {
-                // Pentafluorosilicate(2-), [SiF5]2-
-                // Analogous to Bi(-2) with 5 connections in group 5
-                valence = 5;
-                hyd = 0;
-            }
-            else if (charge == -1 && conn + rad == 5)
-            {
-                // with radical:    [Ge-]: CID 18503269
-                // without radical: [Si-]: CID 358631
-                //                  [Ge-]: CID 19891516
-                valence = 5;
-                hyd = 0;
-            }
-            else if (charge == -1 && conn + rad == 4 && elem == ELEM_Si)
-            {
-                valence = 5; // CID 438107
-                hyd = 1;
-            }
-            else if ((elem == ELEM_Sn || elem == ELEM_Pb) && conn + rad + abs(charge) <= 2)
-            {
-                // [SnH2]: CID 23962
-                // [PbH2]: CID 23927
-                valence = 2;
-                hyd = 2 - rad - conn - abs(charge);
-            }
-            else
-            {
-                // 4-valent Pb with H: CID 24003
-                // 4-valent Sn with H: CID 5948
-                // 4-valent Ge with H2: CID 66239
-                // [GeH4]: CID 23984
-                valence = 4;
-                hyd = 4 - rad - conn - abs(charge);
-            }
-        }
-    }
-    else if (groupno == 5)
-    {
-        if (elem == ELEM_N || elem == ELEM_P)
-        {
-            if (charge == 1)
-            {
-                valence = 4;
-                hyd = 4 - rad - conn;
-            }
-            else if (charge == 2)
-            {
-                valence = 3;
-                hyd = 3 - rad - conn;
-            }
-            else if (charge == -1 && elem == ELEM_P)
-            {
-                if (rad + conn <= 2) // phosphanide
-                {
-                    valence = 2;
-                    hyd = 2 - rad - conn;
-                }
-                else if (rad + conn == 3) // no known examples with a hydrogen
-                    hyd = -1;
-                else if (rad + conn == 4)
-                {
-                    valence = 4;
-                    hyd = 0;
-                }
-                else if (rad + conn <= 6)
-                {
-                    // w/ hydrogen: CID 3084356, CID 2784547
-                    // w/o hydrogen: hexachlorophosphate
-                    valence = 6;
-                    hyd = 6 - rad - conn;
-                }
-            }
-            else
-            {
-                if (elem == ELEM_N || rad + conn + abs(charge) <= 3)
-                {
-                    valence = 3;
-                    hyd = 3 - rad - conn - abs(charge);
-                }
-                else // ELEM_P && rad + conn + abs(charge) > 3
-                {
-                    valence = 5;
-                    hyd = 5 - rad - conn - abs(charge);
-                }
-            }
-        }
-        else if (elem == ELEM_Bi || elem == ELEM_Sb || elem == ELEM_As)
-        {
-            if (charge == -1 && rad + conn == 6)
-            {
-                valence = 6;
-                hyd = 0;
-            }
-            else if (charge == 1)
-            {
-                if (rad + conn <= 2 && elem != ELEM_As)
-                {
-                    valence = 2;
-                    hyd = 2 - rad - conn;
-                }
-                else
-                {
-                    valence = 4;
-                    hyd = 4 - rad - conn;
-                }
-            }
-            else if (charge == 2)
-            {
-                valence = 3;
-                hyd = 3 - rad - conn;
-            }
-            else if (charge == -2 && rad + conn == 5)
-            {
-                // Bi: CID 45158489
-                valence = 5;
-                hyd = 0;
-            }
-            else
-            {
-                if (rad + conn + abs(charge) <= 3)
-                {
-                    valence = 3;
-                    hyd = 3 - rad - conn - abs(charge);
-                }
-                else
-                {
-                    valence = 5;
-                    hyd = 5 - rad - conn - abs(charge);
-                }
-            }
-        }
-    }
-    else if (groupno == 6)
-    {
-        if (elem == ELEM_O)
-        {
-            if (charge >= 1)
-            {
-                valence = 3;
-                hyd = 3 - rad - conn;
-            }
-            else
-            {
-                valence = 2;
-                hyd = 2 - rad - conn - abs(charge);
-            }
-        }
-        else if (elem == ELEM_S || elem == ELEM_Se || elem == ELEM_Po)
-        {
-            if (charge == 1)
-            {
-                if (conn <= 3)
-                {
-                    valence = 3;
-                    hyd = 3 - rad - conn;
-                }
-                else
-                {
-                    valence = 5;
-                    hyd = 5 - rad - conn;
-                }
-            }
-            else if (charge == -1)
-            {
-                if (conn + rad <= 1)
-                {
-                    valence = 1;
-                    hyd = 1 - rad - conn;
-                }
-                else if (conn + rad <= 3)
-                {
-                    valence = 3;
-                    hyd = 3 - rad - conn;
-                }
-                // no real examples for the other two cases, just following ISIS/Draw logic
-                else if (conn + rad <= 5)
-                {
-                    valence = 5;
-                    hyd = 5 - rad - conn;
-                }
-                else
-                {
-                    valence = 7;
-                    hyd = 7 - rad - conn;
-                }
-            }
-            else
-            {
-                if (conn + rad + abs(charge) <= 2)
-                {
-                    valence = 2;
-                    hyd = 2 - rad - conn - abs(charge);
-                }
-                else if (conn + rad + abs(charge) <= 4)
-                // See examples in PubChem
-                // [S] : CID 16684216
-                // [Se]: CID 5242252
-                // [Po]: no example, just following ISIS/Draw logic here
-                {
-                    valence = 4;
-                    hyd = 4 - rad - conn - abs(charge);
-                }
-                else
-                // See examples in PubChem
-                // [S] : CID 46937044
-                // [Se]: CID 59786
-                // [Po]: no example, just following ISIS/Draw logic here
-                {
-                    valence = 6;
-                    hyd = 6 - rad - conn - abs(charge);
-                }
-            }
-        }
-        else if (elem == ELEM_Te)
-        {
-            if (charge == -1)
-            {
-                if (rad + conn == 7) // CID 4191414
-                {
-                    valence = 7;
-                    hyd = 0;
-                }
-                else if (rad + conn == 5)
-                { // no example, but both Marvin and ISIS are OK with this configuration
-                    valence = 5;
-                    hyd = 0;
-                }
-                else
-                {
-                    valence = 1;
-                    hyd = 1 - rad - conn;
-                }
-            }
-            else if (charge == 1)
-            {
-                valence = 3;
-                hyd = 3 - rad - conn;
-                // no known cases of 5-connected [Te+]
-            }
-            else if (charge == 2)
-            {
-                if (conn + rad == 4)
-                {
-                    valence = conn + rad;
-                    hyd = 0;
-                }
-                else // ISIS Draw logic
-                {
-                    hyd = 2 - conn - rad;
-                    valence = 2;
-                }
-            }
-            else if (charge == 0)
-            {
-                if (conn + rad <= 2)
-                {
-                    hyd = 2 - conn - rad;
-                    valence = 2;
-                }
-                else if (conn + rad <= 4)
-                {
-                    hyd = 4 - conn - rad; // with hydrogen: CID 11968228
-                    valence = 4;
-                }
-                else
-                {
-                    hyd = 6 - conn - rad; // with hydrogen: CID 5231555, CID 6418860
-                    valence = 6;
-                }
-            }
-        }
-    }
-    else if (groupno == 7)
-    {
-        if (elem == ELEM_F)
-        {
-            valence = 1;
-            hyd = 1 - rad - conn - abs(charge);
-        }
-        else if (elem == ELEM_Cl || elem == ELEM_Br || elem == ELEM_I || elem == ELEM_At)
-        {
-            if (charge == 1)
-            {
-                if (conn <= 2)
-                {
-                    valence = 2;
-                    hyd = 2 - rad - conn;
-                }
-                else if (conn == 3 || conn == 5 || conn >= 7)
-                    hyd = -1;
-            }
-            else if (charge == 0)
-            {
-                if (conn <= 1)
-                {
-                    valence = 1;
-                    hyd = 1 - rad - conn;
-                }
-                // While the halogens can have valence 3, they can not have
-                // hydrogens in that case.
-                else if (conn == 2 || conn == 4 || conn == 6)
-                {
-                    if (rad == 1)
-                    {
-                        valence = conn;
-                        hyd = 0;
-                    }
-                    else
-                        hyd = -1; // will throw an error in the end
-                }
-                else if (conn > 7)
-                    hyd = -1; // will throw an error in the end
-            }
-        }
-    }
-    else if (groupno == 8)
-    {
-        if (elem == ELEM_He || elem == ELEM_Ne || elem == ELEM_Ar || elem == ELEM_Kr || elem == ELEM_Xe || elem == ELEM_Rn || elem == ELEM_Og)
-        {
-            valence = 0;
-            hyd = 0 - rad - conn - abs(charge);
-            if (hyd > 0)
-                hyd = 0;
-        }
+        if (hyd < 0)
+            goto invalid;
+        return true;
     }
 
-    if (hyd < 0)
+    // ═══════════════════════════════════════════════════════════════════
+    // Transition metals (d-block, f-block) — variable valence, no implicit H
+    // Their group() values overlap with main group (IB=1, IIB=2, etc.)
+    // so they must be intercepted before the main group paths.
+    // ═══════════════════════════════════════════════════════════════════
+    if ((elem >= ELEM_Sc && elem <= ELEM_Zn) ||  // 3d
+        (elem >= ELEM_Y  && elem <= ELEM_Cd) ||  // 4d
+        (elem >= ELEM_La && elem <= ELEM_Hg) ||  // 4f+5d
+        (elem >= ELEM_Ac && elem <= ELEM_Cn))    // 5f+6d
     {
-        if (to_throw)
-            throw Error("bad valence on %s having %d drawn bonds, charge %d, and %d radical electrons", toString(elem), conn, charge, rad);
         valence = conn;
         hyd = 0;
-        return false;
+        return true;
     }
-    return true;
+
+    // ═══════════════════════════════════════════════════════════════════
+    // Group 1 — Alkali metals: fixed valence = 1
+    // ═══════════════════════════════════════════════════════════════════
+    if (g == 1)
+    {
+        valence = 1;
+        hyd = 1 - rad - conn - abs(charge);
+        if (hyd < 0)
+            goto invalid;
+        return true;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // Group 2 — Alkaline earth metals: valence = 2, no implicit H
+    // ═══════════════════════════════════════════════════════════════════
+    if (g == 2)
+    {
+        valence = 2;
+        if (conn != 0)
+        {
+            if (rad > 0 || abs(charge) > 0)
+                hyd = -1;
+            else
+                hyd = 2 - conn;
+        }
+        else if (rad > 0 || abs(charge) > 0)
+        {
+            hyd = 2 - rad - abs(charge);
+        }
+        else
+        {
+            hyd = 0;
+        }
+        if (hyd != 0)
+            hyd = -1;
+
+        if (hyd < 0)
+            goto invalid;
+        return true;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // Groups 3–8 — Unified valence ladder formula
+    //
+    // Chemistry model:
+    //   eff  = group − charge          (effective valence electrons)
+    //   base = eff ≤ 4 ? eff : 8−eff  (octet-rule base valence)
+    //   Ladder: [base, base+2, …, eff] when d-orbitals available
+    //   hyd  = level − rad − conn      (implicit hydrogen count)
+    //
+    // Physical rules:
+    //   Halogen rule: Cl/Br/I/At — no implicit H on hypervalent levels
+    //   Noble gas rule: group 8 — no implicit H at any level
+    //   Inert pair: Tl/Sn/Pb/Sb/Bi/Te — try (eff−2) level first
+    // ═══════════════════════════════════════════════════════════════════
+    {
+        const int p = Element::period(elem);
+        const int eff = g - charge;
+
+        // Bare ions: charged atom with no connections and non-standard eff
+        if (conn == 0 && rad == 0 && charge != 0 && (eff <= 0 || eff > 8))
+        {
+            valence = 0;
+            hyd = 0;
+            return true;
+        }
+
+        if (eff <= 0 || eff > 8)
+        {
+            hyd = -1;
+            goto invalid;
+        }
+
+        const bool expand = (p >= 3 && g >= 3);
+        const bool inert_pair = (elem == ELEM_Tl || elem == ELEM_Sn || elem == ELEM_Pb ||
+                                 elem == ELEM_Sb || elem == ELEM_Bi || elem == ELEM_Te);
+        const bool halogen_no_hyper_h = (g == 7 && elem != ELEM_F);
+        const bool noble_no_h = (g == 8);
+
+        const int base = (eff <= 4) ? eff : (8 - eff);
+
+        // Inert pair effect: try (eff − 2) level before the main ladder.
+        // Covers Tl(I)/Tl+(0), Sn(II)/Sn2+(0), Pb(II)/Pb2+(0), Sb/Bi(III→I via +charge), Te(II)
+        if (inert_pair && eff >= 2)
+        {
+            const int ip_val = eff - 2;
+            const int h = ip_val - rad - conn;
+            if (h >= 0 && ip_val <= base)
+            {
+                if (!noble_no_h || h == 0)
+                {
+                    valence = ip_val;
+                    hyd = h;
+                    return true;
+                }
+            }
+        }
+
+        // Main valence ladder
+        if (expand && eff > base)
+        {
+            // Ladder levels: base, base+2, …, eff
+            for (int v = base; v <= eff; v += 2)
+            {
+                const int h = v - rad - conn;
+                if (h < 0)
+                    continue;
+                if (noble_no_h && h > 0)
+                    continue;
+                if (halogen_no_hyper_h && v > base && h > 0)
+                    continue;
+                valence = v;
+                hyd = h;
+                return true;
+            }
+
+            // Hypervalent fallback: exact connectivity with hyd = 0
+            // Requires same parity as base (electron-pairing constraint)
+            // for halogens and noble gases; any total for other elements.
+            const int total = conn + rad;
+            if (total > 0 && total <= eff)
+            {
+                if (halogen_no_hyper_h || noble_no_h)
+                {
+                    if ((total - base) % 2 == 0)
+                    {
+                        valence = total;
+                        hyd = 0;
+                        return true;
+                    }
+                }
+                else
+                {
+                    valence = total;
+                    hyd = 0;
+                    return true;
+                }
+            }
+        }
+        else
+        {
+            // No d-orbital expansion: single level = base
+            const int h = base - rad - conn;
+            if (h >= 0)
+            {
+                valence = base;
+                hyd = h;
+                return true;
+            }
+        }
+    }
+
+invalid:
+    if (to_throw)
+        throw Error("bad valence on %s having %d drawn bonds, charge %d, and %d radical electrons", toString(elem), conn, charge, rad);
+    valence = conn;
+    hyd = 0;
+    return false;
 }
 
 int Element::calcValenceMinusHyd(int elem, int charge, int radical, int conn)
