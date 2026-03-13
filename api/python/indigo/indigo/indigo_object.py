@@ -2991,6 +2991,24 @@ class IndigoObject:
             IndigoLib.checkResult(self._lib().indigoIsHighlighted(self.id))
         )
 
+    def select(self):
+        """Atom or bond method to add selection
+
+        Returns:
+            int: 1 if there are no errors
+        """
+
+        return IndigoLib.checkResult(self._lib().indigoSelect(self.id))
+
+    def unselect(self):
+        """Atom, bond, molecule, or reaction method to remove selection
+
+        Returns:
+            int: 1 if there are no errors
+        """
+
+        return IndigoLib.checkResult(self._lib().indigoUnselect(self.id))
+
     def isSelected(self):
         """Atom or bond method returns True if selected
 
