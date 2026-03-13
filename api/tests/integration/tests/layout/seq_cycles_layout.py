@@ -1,4 +1,4 @@
-﻿import difflib
+import difflib
 import os
 import sys
 
@@ -41,6 +41,7 @@ files = [
     "shifting_structs_2_sel",
     "overlapping",
     "ring_fuse",
+    "left_top_monomer",
     "6bases",
 ]
 

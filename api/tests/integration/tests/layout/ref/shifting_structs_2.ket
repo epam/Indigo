@@ -298,8 +298,8 @@
         "type": "monomer",
         "id": "0",
         "position": {
-            "x": 8.2919,
-            "y": 4.6588
+            "x": 2.6537,
+            "y": -5.1067
         },
         "alias": "A",
         "templateId": "A___Alanine"
@@ -308,8 +308,8 @@
         "type": "monomer",
         "id": "1",
         "position": {
-            "x": 8.0314,
-            "y": 3.1816
+            "x": 3.8028,
+            "y": -4.1425
         },
         "alias": "A",
         "templateId": "A___Alanine"
@@ -318,8 +318,8 @@
         "type": "monomer",
         "id": "2",
         "position": {
-            "x": 7.7709,
-            "y": 1.7044
+            "x": 4.9519,
+            "y": -3.1784
         },
         "alias": "A",
         "templateId": "A___Alanine"
@@ -328,8 +328,8 @@
         "type": "monomer",
         "id": "3",
         "position": {
-            "x": 7.5105,
-            "y": 0.2272
+            "x": 6.1009,
+            "y": -2.2142
         },
         "alias": "A",
         "templateId": "A___Alanine"
@@ -348,8 +348,8 @@
         "type": "monomer",
         "id": "5",
         "position": {
-            "x": 8.7500,
-            "y": -1.2500
+            "x": 8.0000,
+            "y": 0.0490
         },
         "alias": "E",
         "templateId": "E___Glutamic acid"
@@ -358,7 +358,7 @@
         "type": "monomer",
         "id": "6",
         "position": {
-            "x": 6.5000,
+            "x": 8.0000,
             "y": -2.5490
         },
         "alias": "E",
@@ -368,8 +368,8 @@
         "type": "monomer",
         "id": "7",
         "position": {
-            "x": 7.2500,
-            "y": -3.8481
+            "x": 9.5000,
+            "y": -2.5490
         },
         "alias": "E",
         "templateId": "E___Glutamic acid"
@@ -379,7 +379,7 @@
         "id": "8",
         "position": {
             "x": 9.5000,
-            "y": -2.5490
+            "y": 0.0490
         },
         "alias": "E",
         "templateId": "E___Glutamic acid"
@@ -388,8 +388,8 @@
         "type": "monomer",
         "id": "9",
         "position": {
-            "x": 8.7500,
-            "y": -3.8481
+            "x": 10.2500,
+            "y": -1.2500
         },
         "alias": "E",
         "templateId": "E___Glutamic acid"
@@ -398,8 +398,8 @@
         "type": "monomer",
         "id": "10",
         "position": {
-            "x": 11.0000,
-            "y": -5.1471
+            "x": 12.5000,
+            "y": -2.5490
         },
         "alias": "A",
         "templateId": "A___Adenine"
@@ -408,8 +408,8 @@
         "type": "monomer",
         "id": "11",
         "position": {
-            "x": 9.5000,
-            "y": -5.1471
+            "x": 11.7500,
+            "y": -1.2500
         },
         "alias": "R",
         "templateId": "R___Ribose"
@@ -418,8 +418,8 @@
         "type": "monomer",
         "id": "12",
         "position": {
-            "x": 8.7500,
-            "y": -6.4462
+            "x": 12.5000,
+            "y": 0.0490
         },
         "alias": "P",
         "templateId": "P___Phosphate"
@@ -428,8 +428,8 @@
         "type": "monomer",
         "id": "13",
         "position": {
-            "x": 6.5000,
-            "y": -7.7452
+            "x": 12.5000,
+            "y": 2.6471
         },
         "alias": "A",
         "templateId": "A___Adenine"
@@ -438,8 +438,8 @@
         "type": "monomer",
         "id": "14",
         "position": {
-            "x": 8.0000,
-            "y": -7.7452
+            "x": 13.2500,
+            "y": 1.3481
         },
         "alias": "R",
         "templateId": "R___Ribose"
@@ -448,8 +448,8 @@
         "type": "monomer",
         "id": "15",
         "position": {
-            "x": 8.7500,
-            "y": -9.0442
+            "x": 14.7500,
+            "y": 1.3481
         },
         "alias": "P",
         "templateId": "P___Phosphate"
@@ -458,8 +458,8 @@
         "type": "monomer",
         "id": "16",
         "position": {
-            "x": 5.8405,
-            "y": -0.7370
+            "x": 6.1009,
+            "y": -0.2858
         },
         "alias": "M",
         "templateId": "M___Methionine"
@@ -468,8 +468,8 @@
         "type": "monomer",
         "id": "17",
         "position": {
-            "x": 4.4309,
-            "y": -0.2239
+            "x": 4.9519,
+            "y": 0.6784
         },
         "alias": "M",
         "templateId": "M___Methionine"
@@ -478,8 +478,8 @@
         "type": "monomer",
         "id": "18",
         "position": {
-            "x": 3.0214,
-            "y": 0.2891
+            "x": 3.8028,
+            "y": 1.6425
         },
         "alias": "M",
         "templateId": "M___Methionine"
