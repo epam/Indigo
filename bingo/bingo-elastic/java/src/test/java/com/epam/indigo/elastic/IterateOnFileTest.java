@@ -42,7 +42,7 @@ public class IterateOnFileTest {
             }
             count++;
         }
-        assertEquals(370, succCount);
+        assertEquals(371, succCount);
         assertEquals(371, count);
     }
 
