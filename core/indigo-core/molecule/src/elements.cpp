@@ -604,6 +604,13 @@ bool Element::calcValence(int elem, int charge, int radical, int conn, int& vale
                 valence = 6;
                 hyd = 0;
             }
+            else if (charge == -2 && conn + rad == 5)
+            {
+                // Pentafluorosilicate(2-), [SiF5]2-
+                // Analogous to Bi(-2) with 5 connections in group 5
+                valence = 5;
+                hyd = 0;
+            }
             else if (charge == -1 && conn + rad == 5)
             {
                 // with radical:    [Ge-]: CID 18503269

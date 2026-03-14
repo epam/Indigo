@@ -328,8 +328,8 @@ TEST_F(IndigoApiBasicTest, molecule_iterate_components_and_render)
 {
     try
     {
-        int mol = indigoLoadMoleculeFromString(Mol);
-        int iterator = indigoIterateComponents(mol);
+        const int mol = indigoLoadMoleculeFromString(Mol);
+        const int iterator = indigoIterateComponents(mol);
 
         while (indigoHasNext(iterator))
         {
@@ -346,4 +346,90 @@ TEST_F(IndigoApiBasicTest, molecule_iterate_components_and_render)
     {
         ASSERT_STREQ("", e.message());
     }
+}
+
+// SiF5(2-) — silicon pentafluoride dianion from rand_queries_small.sdf molecule #50.
+// Element::calcValence now handles Si with charge=-2 for conn==5 (SiF5^2-)
+// in addition to conn==6 (SiF6^2-).
+// See: https://github.com/epam/Indigo — bingo-elastic FullUsageMoleculeTest.substructureSearch
+static constexpr char SiF5_charge_minus2_mol[] = R"(
+  -INDIGO-10082014522D
+
+  6  5  0  0  0  0  0  0  0  0999 V2000
+   -1.0862   -0.0414    0.0000 Si  0  0  0  0  0  0  0  0  0  0  0  0
+   -2.1862   -0.9552    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.3241    1.3690    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0172    0.8586    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+   -2.4310    0.4552    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+    0.2552   -0.5517    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0  0  0  0
+  1  3  1  0  0  0  0
+  1  4  1  0  0  0  0
+  1  5  1  0  0  0  0
+  1  6  1  0  0  0  0
+M  CHG  1   1  -2
+M  END
+)";
+
+// Reproduces the failing test from CI: FullUsageMoleculeTest.substructureSearch
+// After fix: SiF5^2- should produce valid canonical SMILES
+TEST_F(IndigoApiBasicTest, canonical_smiles_SiF5_charge_minus2)
+{
+    const int mol = indigoLoadMoleculeFromString(SiF5_charge_minus2_mol);
+    ASSERT_NE(-1, mol);
+
+    // Verify the molecule was loaded correctly
+    ASSERT_EQ(6, indigoCountAtoms(mol));
+    ASSERT_EQ(5, indigoCountBonds(mol));
+
+    // After fix: calcValence handles Si charge=-2, conn=5 → valence=5, hyd=0
+    const char* smiles = indigoCanonicalSmiles(mol);
+    ASSERT_NE(nullptr, smiles);
+    ASSERT_STRNE("", smiles);
+}
+
+// Verify that the related SiF6^2- (hexafluorosilicate) works correctly,
+// since Element::calcValence explicitly handles charge=-2, conn=6.
+TEST_F(IndigoApiBasicTest, canonical_smiles_SiF6_charge_minus2)
+{
+    // SiF6^2- — this case IS handled in Element::calcValence
+    int mol = indigoLoadMoleculeFromString("[Si-2](F)(F)(F)(F)(F)F");
+    ASSERT_NE(-1, mol);
+    ASSERT_EQ(7, indigoCountAtoms(mol));
+
+    const char* smiles = indigoCanonicalSmiles(mol);
+    ASSERT_NE(nullptr, smiles);
+    ASSERT_STRNE("", smiles);
+}
+
+// Scenario 3: Invalid molecule in MOL format — Si with charge=-2 and only 3 connections
+// checkBadValence returns descriptive error message with element, charge, bonds
+static constexpr char SiF3_charge_minus2_invalid_mol[] = R"(
+  -INDIGO-test
+
+  4  3  0  0  0  0  0  0  0  0999 V2000
+    0.0000    0.0000    0.0000 Si  0  0  0  0  0  0  0  0  0  0  0  0
+    1.0000    0.0000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    1.0000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.0000    0.0000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0  0  0  0
+  1  3  1  0  0  0  0
+  1  4  1  0  0  0  0
+M  CHG  1   1  -2
+M  END
+)";
+
+TEST_F(IndigoApiBasicTest, canonical_smiles_invalid_molecule_descriptive_error)
+{
+    // Si with charge=-2 and 3 fluorines from MOL — no valid calcValence rule
+    int mol = indigoLoadMoleculeFromString(SiF3_charge_minus2_invalid_mol);
+    ASSERT_NE(-1, mol);
+
+    // checkBadValence should return descriptive error with element, charge, bonds
+    const char* valenceErr = indigoCheckBadValence(mol);
+    ASSERT_NE(nullptr, valenceErr);
+    std::string errStr(valenceErr);
+    EXPECT_NE(std::string::npos, errStr.find("Si")) << "Error should mention Si, got: " << errStr;
+    EXPECT_NE(std::string::npos, errStr.find("-2")) << "Error should mention charge -2, got: " << errStr;
+    EXPECT_NE(std::string::npos, errStr.find("3 drawn bonds")) << "Error should mention 3 drawn bonds, got: " << errStr;
 }
