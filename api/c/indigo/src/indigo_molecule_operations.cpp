@@ -24,6 +24,7 @@
 #include "indigo_ket_document.h"
 #include "indigo_mapping.h"
 #include "indigo_molecule.h"
+#include "indigo_group_pseudoatoms_expand.h"
 #include "indigo_monomer_library.h"
 #include "molecule/canonical_smiles_saver.h"
 #include "molecule/elements.h"
@@ -3219,6 +3220,9 @@ CEXPORT int indigoExpandedMonomersToAtoms(int molecule)
         std::unique_ptr<IndigoMolecule> new_mol = std::make_unique<IndigoMolecule>();
         QS_DEF(Array<int>, mapping);
         new_mol->mol.clone(*expanded, 0, &mapping);
+
+        // Expand group pseudoatoms (OH, NH2, etc.) to explicit atoms for V3000 interoperability
+        expandGroupPseudoatomsInMolecule(new_mol->mol);
 
         // Copy properties from original molecule
         auto& props = self.getObject(molecule).getProperties();
