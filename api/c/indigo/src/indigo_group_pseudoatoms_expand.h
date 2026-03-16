@@ -21,45 +21,45 @@
 
 #include "molecule/molecule.h"
 
-namespace indigo {
+namespace indigo
+{
 
-/**
- * Table of group pseudoatom labels that are expanded for V3000/molfile
- * interoperability and for proper computation of properties within Indigo
- * (e.g. molecular weight; Indigo cannot compute mass for structures that
- * contain pseudoatoms). These labels (e.g. "OH", "NH2") appear as atom
- * labels in the default monomer library of Ketcher.
- * They are not valid single-atom symbols in MOL/V3000; toolkits like RDKit
- * expect element symbols only. Expanding them to explicit atoms (O+H, N+H+H)
- * allows the molfile to be read by strict parsers and enables property
- * calculations.
- *
- * This table is the single source of truth: add new labels here as they are
- * encountered in monomer libraries (e.g. Ketcher's default library). Do not
- * duplicate this list elsewhere.
- */
-static const char* const GROUP_PSEUDOATOM_EXPAND_LABELS[] = {
-    "OH",  /* hydroxyl: expand to O-H, attachment on O */
-    "NH2", /* primary amine: expand to N-H-H, attachment on N */
-    nullptr
-};
+    /**
+     * Table of group pseudoatom labels that are expanded for V3000/molfile
+     * interoperability and for proper computation of properties within Indigo
+     * (e.g. molecular weight; Indigo cannot compute mass for structures that
+     * contain pseudoatoms). These labels (e.g. "OH", "NH2") appear as atom
+     * labels in the default monomer library of Ketcher.
+     * They are not valid single-atom symbols in MOL/V3000; toolkits like RDKit
+     * expect element symbols only. Expanding them to explicit atoms (O+H,
+     * N+H+H) allows the molfile to be read by strict parsers and enables
+     * property calculations.
+     *
+     * This table is the single source of truth: add new labels here as they are
+     * encountered in monomer libraries (e.g. Ketcher's default library). Do not
+     * duplicate this list elsewhere.
+     */
+    static const char* const GROUP_PSEUDOATOM_EXPAND_LABELS[] = {
+        "OH",  /* hydroxyl: expand to O-H, attachment on O */
+        "NH2", /* primary amine: expand to N-H-H, attachment on N */
+        nullptr};
 
-/**
- * Expands group pseudoatoms (see GROUP_PSEUDOATOM_EXPAND_LABELS) in the given
- * molecule into explicit atoms and bonds, in place. These pseudoatoms are
- * handled because they are defined in Ketcher's default monomer
- * library. Expansion is needed both for proper computation of properties in
- * Indigo (e.g. molecular weight, which is not defined for pseudoatoms) and
- * for V3000/molfile interoperability with downstream toolkits (e.g. RDKit).
- * Used after expandedMonomersToAtoms() so that the result is valid for export
- * and for property calculations. Distinct from indigoExpandAbbreviations(),
- * which expands SMILES-style abbreviations (Me, Et, Ph, etc.) from
- * abbreviations.xml.
- *
- * @param mol Molecule to modify (must be Molecule, not QueryMolecule).
- * @return Number of group pseudoatoms expanded.
- */
-int expandGroupPseudoatomsInMolecule(Molecule& mol);
+    /**
+     * Expands group pseudoatoms (see GROUP_PSEUDOATOM_EXPAND_LABELS) in the
+     * given molecule into explicit atoms and bonds, in place. These pseudoatoms
+     * are handled because they are defined in Ketcher's default monomer library.
+     * Expansion is needed both for proper computation of properties in Indigo
+     * (e.g. molecular weight, which is not defined for pseudoatoms) and for
+     * V3000/molfile interoperability with downstream toolkits (e.g. RDKit).
+     * Used after expandedMonomersToAtoms() so that the result is valid for
+     * export and for property calculations. Distinct from
+     * indigoExpandAbbreviations(), which expands SMILES-style abbreviations (Me,
+     * Et, Ph, etc.) from abbreviations.xml.
+     *
+     * @param mol Molecule to modify (must be Molecule, not QueryMolecule).
+     * @return Number of group pseudoatoms expanded.
+     */
+    int expandGroupPseudoatomsInMolecule(Molecule& mol);
 
 } // namespace indigo
 

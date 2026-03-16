@@ -129,17 +129,15 @@ void MoleculeJsonLoader::parse_ket(Document& ket)
                         type_name = "string";
                     else if (template_node.IsArray())
                         type_name = "array";
-                    throw Error(
-                        "Template reference '%s' points to invalid value (expected object, got %s). "
-                        "This may indicate corrupted KET JSON data.",
-                        template_ref.c_str(), type_name);
+                    throw Error("Template reference '%s' points to invalid value (expected object, got %s). "
+                                "This may indicate corrupted KET JSON data.",
+                                template_ref.c_str(), type_name);
                 }
                 if (!template_node.HasMember("id"))
                 {
-                    throw Error(
-                        "Template reference '%s' points to object missing required 'id' field. "
-                        "This may indicate corrupted KET JSON data.",
-                        template_ref.c_str());
+                    throw Error("Template reference '%s' points to object missing required 'id' field. "
+                                "This may indicate corrupted KET JSON data.",
+                                template_ref.c_str());
                 }
                 std::string id = template_node["id"].GetString();
                 // [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
