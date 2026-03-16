@@ -21,8 +21,7 @@
 
 #include "molecule/molecule.h"
 
-namespace indigo
-{
+namespace indigo {
 
 /**
  * Table of group pseudoatom labels that are expanded for V3000/molfile
@@ -42,7 +41,8 @@ namespace indigo
 static const char* const GROUP_PSEUDOATOM_EXPAND_LABELS[] = {
     "OH",  /* hydroxyl: expand to O-H, attachment on O */
     "NH2", /* primary amine: expand to N-H-H, attachment on N */
-    nullptr};
+    nullptr
+};
 
 /**
  * Expands group pseudoatoms (see GROUP_PSEUDOATOM_EXPAND_LABELS) in the given

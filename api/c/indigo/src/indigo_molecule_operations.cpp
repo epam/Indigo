@@ -16,6 +16,8 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include "indigo_molecule.h"
+#include "indigo_group_pseudoatoms_expand.h"
 #include "base_c/bitarray.h"
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
@@ -23,8 +25,6 @@
 #include "indigo_io.h"
 #include "indigo_ket_document.h"
 #include "indigo_mapping.h"
-#include "indigo_molecule.h"
-#include "indigo_group_pseudoatoms_expand.h"
 #include "indigo_monomer_library.h"
 #include "molecule/canonical_smiles_saver.h"
 #include "molecule/elements.h"
@@ -3203,8 +3203,9 @@ CEXPORT int indigoExpandedMonomersToAtoms(int molecule)
             // If invalid, this indicates data corruption and we should fail rather than silently skip
             if (!work_mol->mol.isValidTemplateOccurrence(template_occur_idx))
             {
-                throw IndigoError("expandedMonomersToAtoms: template atom #%d has invalid occurrence index %d (data corruption detected)",
-                                 v_idx, template_occur_idx);
+                throw IndigoError(
+                    "expandedMonomersToAtoms: template atom #%d has invalid occurrence index %d (data corruption detected)",
+                    v_idx, template_occur_idx);
             }
 
             // Mark this template atom as expanded

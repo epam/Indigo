@@ -1,3 +1,5 @@
+import os
+
 from tests import TestIndigoBase
 
 
@@ -235,3 +237,35 @@ class TestIndigo(TestIndigoBase):
         self.assertEqual(m_no_rg.countRGroups(), 0)
         m_no_rg.copyRGroups(m_with_rg)
         self.assertEqual(m_no_rg.countRGroups(), 1)
+
+    def test_expanded_monomers_to_atoms_group_pseudoatoms_expanded(self) -> None:
+        # CHEMBUGS-79: expandedMonomersToAtoms expands group pseudoatoms (e.g. OH, NH2)
+        # so that molfile is valid for toolkits like RDKit and molecularWeight() works.
+        # Uses monomer library from project ref and basic_structure_peg4.ket (copy in tests/data).
+        project_root = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "..", "..", "..")
+        )
+        ref_dir = os.path.join(
+            project_root,
+            "api",
+            "tests",
+            "integration",
+            "tests",
+            "formats",
+            "ref",
+        )
+        tests_dir = os.path.dirname(__file__)
+        lib_path = os.path.join(ref_dir, "monomer_library.ket")
+        ket_path = os.path.join(tests_dir, "data", "basic_structure_peg4.ket")
+        self.assertTrue(os.path.isfile(lib_path), f"Library not found: {lib_path}")
+        self.assertTrue(os.path.isfile(ket_path), f"KET not found: {ket_path}")
+        lib = self.indigo.loadMonomerLibraryFromFile(lib_path)
+        mol = self.indigo.loadMoleculeWithLibFromFile(ket_path, lib)
+        expanded = mol.expandedMonomersToAtoms()
+        molfile = expanded.molfile()
+        self.assertNotIn(
+            " OH ",
+            molfile,
+            "Group pseudoatom OH should be expanded to explicit atoms in molfile",
+        )
+        _ = expanded.molecularWeight()

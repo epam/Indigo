@@ -912,7 +912,7 @@ namespace indigo
 
         for (int i = 0; i < pseudoatoms.size(); i++)
         {
-            //Step 1 Build fragment
+            // Step 1 Build fragment
             int v = pseudoatoms[i];
             const char* alias = mol.getPseudoAtom(v);
             Molecule fragment;
@@ -923,12 +923,13 @@ namespace indigo
             Vec3f pos = mol.getAtomXyz(v);
             const Vertex& vertex = mol.getVertex(v);
 
-            //Step 2 merge fragment into the main structure. Now we have a forest of atoms, disconnected.
+            // Step 2 merge fragment into the main structure. Now we have a
+            // forest of atoms, disconnected.
             QS_DEF(Array<int>, mapping);
             mol.mergeWithMolecule(fragment, &mapping);
             int ap_new = mapping[attachment_idx];
 
-            //Step 3 connect fragment to the main structure.
+            // Step 3 connect fragment to the main structure.
 
             for (int k = vertex.neiBegin(); k != vertex.neiEnd(); k = vertex.neiNext(k))
             {
