@@ -723,29 +723,55 @@ void MoleculeLayoutGraphSimple::_assignFirstCycle(const Cycle& cycle, float radi
         _layout_edges[cycle.getEdge(i)].type = ELEMENT_BOUNDARY;
     }
 
-    _first_vertex_idx = cycle.getVertex(0);
+    // For sequence layout, start from the top-left vertex (min x - y)
+    int s = 0;
+    if (sequence_layout)
+    {
+        float min_val = 1e10f;
+        for (i = 0; i < n; i++)
+        {
+            const Vec2f& pos = _layout_vertices[cycle.getVertex(i)].pos;
+            float val = pos.x - pos.y;
+            if (val < min_val)
+            {
+                min_val = val;
+                s = i;
+            }
+        }
+    }
+
+    _first_vertex_idx = cycle.getVertex(s);
 
     phi = (float)M_PI * (n - 2) / n;
 
-    Vec2f diff(_layout_vertices[cycle.getVertex(1)].pos - _layout_vertices[cycle.getVertex(0)].pos);
-    if (respect_cycles_direction && diff.normalize())
+    Vec2f diff(_layout_vertices[cycle.getVertex((s + 1) % n)].pos - _layout_vertices[cycle.getVertex(s)].pos);
+    if (sequence_layout)
+    {
+        // Place vertex s at 180 on the circumscribed circle (leftmost point),
+        // so the center of the circle is to the right of the top-left monomer.
+        float R = radius / (2.0f * sin((float)M_PI / n));
+        float step = 2.0f * (float)M_PI / n;
+        _layout_vertices[cycle.getVertex(s)].pos.set(-R, 0.f);
+        _layout_vertices[cycle.getVertex((s + 1) % n)].pos.set(R * cos((float)M_PI - step), R * sin((float)M_PI - step));
+    }
+    else if (respect_cycles_direction && diff.normalize())
     {
         phi *= _getCycleDirection(cycle);
         diff.scale(radius);
-        _layout_vertices[cycle.getVertex(1)].pos = _layout_vertices[cycle.getVertex(0)].pos + diff;
+        _layout_vertices[cycle.getVertex((s + 1) % n)].pos = _layout_vertices[cycle.getVertex(s)].pos + diff;
     }
     else
     {
-        _layout_vertices[cycle.getVertex(0)].pos.set(0.f, 0.f);
-        _layout_vertices[cycle.getVertex(1)].pos.set(radius, 0.f);
+        _layout_vertices[cycle.getVertex(s)].pos.set(0.f, 0.f);
+        _layout_vertices[cycle.getVertex((s + 1) % n)].pos.set(radius, 0.f);
     }
 
     for (i = 1; i < n - 1; i++)
     {
-        const Vec2f& v1 = _layout_vertices[cycle.getVertex(i - 1)].pos;
-        const Vec2f& v2 = _layout_vertices[cycle.getVertex(i)].pos;
+        const Vec2f& v1 = _layout_vertices[cycle.getVertex((s + i - 1) % n)].pos;
+        const Vec2f& v2 = _layout_vertices[cycle.getVertex((s + i) % n)].pos;
 
-        _layout_vertices[cycle.getVertex(i + 1)].pos.rotateAroundSegmentEnd(v1, v2, phi);
+        _layout_vertices[cycle.getVertex((s + i + 1) % n)].pos.rotateAroundSegmentEnd(v1, v2, phi);
     }
 }
 
@@ -1321,6 +1347,9 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                 _optimizeSelectedPartPlacement(bond_length, bridge_fixed_positions, all_fixed_vertices, bridge_connected_pairs, selected_centroid, sel_vertices,
                                                best_translation, best_rotation);
 
+                // Preserve circle orientation from _assignFirstCycle - only translate, don't rotate
+                best_rotation = 0.0f;
+
                 // Apply best rotation and translation to selected vertices
                 for (auto vx_idx : sel_vertices)
                 {
@@ -1357,8 +1386,8 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
         return;
     }
 
-    // Flip according to various rules
-    if (_molecule != 0 && _n_fixed == 0)
+    // Flip according to various rules (skip for sequence_layout - orientation is set in _assignFirstCycle)
+    if (!sequence_layout && _molecule != 0 && _n_fixed == 0)
     {
         if (_molecule->countRSites() > 1)
         {
@@ -1423,6 +1452,15 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
 
     _getAnchor(v1, v2, v3);
 
+    // For sequence layout, anchor on the top-left vertex chosen in _assignFirstCycle
+    if (sequence_layout)
+    {
+        v1 = _first_vertex_idx;
+        const Vertex& vert = getVertex(v1);
+        v2 = vert.neiVertex(vert.neiBegin());
+        v3 = (vert.degree() >= 2) ? vert.neiVertex(vert.neiNext(vert.neiBegin())) : -1;
+    }
+
     p1.diff(src_layout[v2], src_layout[v1]);
     p2.diff(getPos(v2), getPos(v1));
 
@@ -1456,17 +1494,19 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
     for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
         _layout_vertices[i].pos.sub(p);
 
-    // 4. Rotate CCW on Alpha angle between (first, second) edge and (first, second) edge in source graph
-    float phi1, phi2, alpha, sina, cosa;
+    // 4. Rotate CCW (skip for sequence_layout to preserve circle orientation from _assignFirstCycle)
+    float phi1 = 0, phi2 = 0, alpha = 0, sina = 0, cosa = 1;
+    if (!sequence_layout)
+    {
+        phi1 = p1.tiltAngle();
+        phi2 = p2.tiltAngle();
+        alpha = phi1 - phi2;
+        sina = sin(alpha);
+        cosa = cos(alpha);
 
-    phi1 = p1.tiltAngle();
-    phi2 = p2.tiltAngle();
-    alpha = phi1 - phi2;
-    sina = sin(alpha);
-    cosa = cos(alpha);
-
-    for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
-        _layout_vertices[i].pos.rotate(sina, cosa);
+        for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
+            _layout_vertices[i].pos.rotate(sina, cosa);
+    }
 
     // 5. Scale
     for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
@@ -1477,7 +1517,7 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
         _layout_vertices[i].pos.add(src_layout[v1]);
 
     // 7. If needed turn around (first, second)
-    if (vertexCount() > 2)
+    if (!sequence_layout && vertexCount() > 2)
     {
         float crit = 0.f;
         // If v3 lays on the other side of line (first, second) - turn
