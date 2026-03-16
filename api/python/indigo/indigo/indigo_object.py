@@ -4411,6 +4411,8 @@ class IndigoObject:
 
         This method takes a molecule with expanded monomers (template atoms
         marked as expanded) and converts them to fully expanded regular atoms.
+        Group pseudoatoms (e.g. OH, NH2) are also expanded to explicit atoms
+        for V3000/molfile interoperability with toolkits such as RDKit.
         This is required for:
         - Accurate molecular weight calculations
         - Clean molfile output without template metadata

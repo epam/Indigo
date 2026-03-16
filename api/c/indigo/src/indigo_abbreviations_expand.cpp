@@ -17,8 +17,10 @@
  ***************************************************************************/
 
 #include "indigo_abbreviations.h"
+#include "indigo_group_pseudoatoms_expand.h"
 
 #include "base_c/bitarray.h"
+#include "base_cpp/array.h"
 #include "base_cpp/scanner.h"
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
@@ -32,6 +34,7 @@
 #include "layout/molecule_layout.h"
 
 #include <algorithm>
+#include <cstring>
 
 namespace indigo
 {
@@ -850,4 +853,114 @@ namespace indigo
         }
 
     } // namespace abbreviations
+
+    static bool isGroupPseudoatomLabel(const char* alias)
+    {
+        for (const char* const* p = GROUP_PSEUDOATOM_EXPAND_LABELS; *p != nullptr; ++p)
+        {
+            if (strcmp(alias, *p) == 0)
+                return true;
+        }
+        return false;
+    }
+
+    static bool buildGroupFragment(const char* label, Molecule& fragment, int& attachment_idx)
+    {
+        fragment.clear();
+        attachment_idx = 0;
+
+        if (strcmp(label, "OH") == 0)
+        {
+            int o = fragment.addAtom(ELEM_O);
+            int h = fragment.addAtom(ELEM_H);
+            fragment.addBond(o, h, BOND_SINGLE);
+            fragment.setAtomXyz(o, 0, 0, 0);
+            fragment.setAtomXyz(h, 1, 0, 0);
+            attachment_idx = 0;
+            return true;
+        }
+        if (strcmp(label, "NH2") == 0)
+        {
+            int n = fragment.addAtom(ELEM_N);
+            int h1 = fragment.addAtom(ELEM_H);
+            int h2 = fragment.addAtom(ELEM_H);
+            fragment.addBond(n, h1, BOND_SINGLE);
+            fragment.addBond(n, h2, BOND_SINGLE);
+            fragment.setAtomXyz(n, 0, 0, 0);
+            fragment.setAtomXyz(h1, 1, 0, 0);
+            fragment.setAtomXyz(h2, -0.5f, 0.866f, 0);
+            attachment_idx = 0;
+            return true;
+        }
+        return false;
+    }
+
+    int expandGroupPseudoatomsInMolecule(Molecule& mol)
+    {
+        int count = 0;
+        QS_DEF(Array<int>, pseudoatoms);
+        pseudoatoms.clear();
+        for (int v = mol.vertexBegin(); v != mol.vertexEnd(); v = mol.vertexNext(v))
+        {
+            if (mol.isPseudoAtom(v) && isGroupPseudoatomLabel(mol.getPseudoAtom(v)))
+                pseudoatoms.push(v);
+        }
+        if (pseudoatoms.size() == 0)
+            return 0;
+
+        std::sort(pseudoatoms.ptr(), pseudoatoms.ptr() + pseudoatoms.size(), std::greater<int>());
+
+        for (int i = 0; i < pseudoatoms.size(); i++)
+        {
+            //Step 1 Build fragment
+            int v = pseudoatoms[i];
+            const char* alias = mol.getPseudoAtom(v);
+            Molecule fragment;
+            int attachment_idx = -1;
+            if (!buildGroupFragment(alias, fragment, attachment_idx))
+                continue;
+
+            Vec3f pos = mol.getAtomXyz(v);
+            const Vertex& vertex = mol.getVertex(v);
+
+            //Step 2 merge fragment into the main structure. Now we have a forest of atoms, disconnected.
+            QS_DEF(Array<int>, mapping);
+            mol.mergeWithMolecule(fragment, &mapping);
+            int ap_new = mapping[attachment_idx];
+
+            //Step 3 connect fragment to the main structure.
+
+            for (int k = vertex.neiBegin(); k != vertex.neiEnd(); k = vertex.neiNext(k))
+            {
+                int nei = vertex.neiVertex(k);
+                int edge_idx = mol.findEdgeIndex(v, nei);
+                int order = mol.getBondOrder(edge_idx);
+                mol.addBond_Silent(nei, ap_new, order);
+            }
+
+            for (int a = 0; a < fragment.vertexCount(); a++)
+            {
+                int mapped = mapping[a];
+                mol.setAtomXyz(mapped, pos.x, pos.y, pos.z);
+            }
+
+            mol.removeAtom(v);
+            count++;
+        }
+        return count;
+    }
+
 } // namespace indigo
+
+CEXPORT int indigoExpandGroupPseudoatoms(int molecule)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(molecule);
+        if (obj.type != IndigoObject::MOLECULE)
+            throw IndigoError("indigoExpandGroupPseudoatoms(): expected molecule, got %s", obj.debugInfo());
+        Molecule& mol = obj.getMolecule();
+        return expandGroupPseudoatomsInMolecule(mol);
+    }
+    INDIGO_END(-1);
+}

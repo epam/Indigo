@@ -1131,6 +1131,13 @@ CEXPORT int indigoRGroupComposition(int molecule, const char* options);
  */
 CEXPORT int indigoExpandAbbreviations(int molecule);
 
+/*
+ * Group pseudoatoms (OH, NH2, etc.): expand to explicit atoms for V3000/molfile
+ * interoperability. Call after expandedMonomersToAtoms(). See
+ * indigo_group_pseudoatoms_expand.h for the list of labels.
+ */
+CEXPORT int indigoExpandGroupPseudoatoms(int molecule);
+
 /* Other */
 
 CEXPORT const char* indigoToString(int handle);

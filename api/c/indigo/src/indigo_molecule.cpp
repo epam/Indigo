@@ -17,6 +17,7 @@
  ***************************************************************************/
 
 #include "indigo_molecule.h"
+#include "indigo_group_pseudoatoms_expand.h"
 #include "base_c/bitarray.h"
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"

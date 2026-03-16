@@ -1997,6 +1997,15 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResult(this, lib.indigoExpandAbbreviations(self));
     }
 
+    /**
+     * Converts expanded template atoms (monomers) to regular atoms.
+     * Returns a new molecule; the original is not modified.
+     */
+    public IndigoObject expandedMonomersToAtoms() {
+        dispatcher.setSessionID();
+        return new IndigoObject(dispatcher, Indigo.checkResult(this, lib.indigoExpandedMonomersToAtoms(self)));
+    }
+
     public String dbgInternalType() {
         dispatcher.setSessionID();
         return Indigo.checkResultString(this, lib.indigoDbgInternalType(self));

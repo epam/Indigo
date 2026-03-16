@@ -1151,6 +1151,8 @@ class IndigoLib:
         IndigoLib.lib.indigoStereocenterPyramid.argtypes = [c_int]
         IndigoLib.lib.indigoExpandAbbreviations.restype = c_int
         IndigoLib.lib.indigoExpandAbbreviations.argtypes = [c_int]
+        IndigoLib.lib.indigoExpandGroupPseudoatoms.restype = c_int
+        IndigoLib.lib.indigoExpandGroupPseudoatoms.argtypes = [c_int]
         # [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
         IndigoLib.lib.indigoExpandedMonomersToAtoms.restype = c_int
         IndigoLib.lib.indigoExpandedMonomersToAtoms.argtypes = [c_int]
