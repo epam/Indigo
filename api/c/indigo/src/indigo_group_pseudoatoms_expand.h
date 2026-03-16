@@ -39,10 +39,12 @@ namespace indigo
      * encountered in monomer libraries (e.g. Ketcher's default library). Do not
      * duplicate this list elsewhere.
      */
-    static const char* const GROUP_PSEUDOATOM_EXPAND_LABELS[] = {
-        "OH",  /* hydroxyl: expand to O-H, attachment on O */
-        "NH2", /* primary amine: expand to N-H-H, attachment on N */
-        nullptr};
+    static const char* const GROUP_PSEUDOATOM_EXPAND_LABELS[] =
+    {
+        "OH",
+        "NH2",
+        nullptr
+    };
 
     /**
      * Expands group pseudoatoms (see GROUP_PSEUDOATOM_EXPAND_LABELS) in the
