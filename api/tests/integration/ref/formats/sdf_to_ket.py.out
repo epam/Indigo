@@ -6,6 +6,7 @@ lib_alanine_expanded.ket:SUCCEED
 lib_default_type.ket:SUCCEED
 lib_empty.ket:SUCCEED
 lib_phos.ket:SUCCEED
+lib_rna_left_phosphate.ket:SUCCEED
 lib_rna_preset_from_lib.ket:SUCCEED
 lib_rna_preset_g.ket:SUCCEED
 lib_rna_preset_same.ket:SUCCEED

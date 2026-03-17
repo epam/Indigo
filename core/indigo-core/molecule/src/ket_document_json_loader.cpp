@@ -166,9 +166,10 @@ void KetDocumentJsonLoader::parseJson(const std::string& json_str, KetDocument& 
     }
     if (root.HasMember("connections"))
     {
-        parseConnections(root["connections"], [&document](const std::string& connection_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2) -> KetConnection& {
-            return document.addConnection(connection_type, ep1, ep2);
-        });
+        parseConnections(root["connections"],
+                         [&document](const std::string& connection_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2) -> KetConnection& {
+                             return document.addConnection(connection_type, ep1, ep2);
+                         });
     }
     if (root.HasMember("annotation"))
     {
@@ -253,11 +254,12 @@ void KetDocumentJsonLoader::parseMonomerGroupTemplate(const rapidjson::Value& mt
 
     if (mt_json.HasMember("connections"))
     {
-        parseConnections(mt_json["connections"], [&mon_group_template](const std::string& connection_type, KetConnectionEndPoint ep1,
-                                                                       KetConnectionEndPoint ep2) -> KetConnection& {
-            return mon_group_template.addConnection(connection_type, ep1, ep2);
-        },
-                         resolveTemplateId);
+        parseConnections(
+            mt_json["connections"],
+            [&mon_group_template](const std::string& connection_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2) -> KetConnection& {
+                return mon_group_template.addConnection(connection_type, ep1, ep2);
+            },
+            resolveTemplateId);
     }
 
     if (mt_json.HasMember("aliasAxoLabs"))

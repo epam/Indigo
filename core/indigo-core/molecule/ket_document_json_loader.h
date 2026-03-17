@@ -61,8 +61,7 @@ namespace indigo
         using template_group_add_func = std::function<MonomerGroupTemplate&(const std::string& id, const std::string& name, const std::string& monomer_class,
                                                                             IdtAlias idt_alias, const std::vector<std::string>& template_refs)>;
         using template_id_resolve_func = std::function<std::string(const std::string& template_ref_or_id)>;
-        using connection_add_func =
-            std::function<KetConnection&(const std::string& conn_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2)>;
+        using connection_add_func = std::function<KetConnection&(const std::string& conn_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2)>;
 
         static void parseMonomerTemplate(const rapidjson::Value& mt_json, template_add_func addMonomerTemplate);
         static void parseMonomerGroupTemplate(const rapidjson::Value& mt_json, template_group_add_func addMonomerTemplateGroup,

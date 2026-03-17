@@ -55,6 +55,7 @@ files = [
     "lib_alanine",
     "lib_alanine_expanded",
     "lib_phos",
+    "lib_rna_left_phosphate",
     "lib_rna_preset_g",
     "lib_rna_preset_same",
     "lib_default_type",
