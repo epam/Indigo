@@ -172,7 +172,7 @@ namespace indigo
         // read TGroup
         rapidjson::Document document;
         document.Parse(ket.c_str());
-        auto template_id = ref_prefix + _id;
+        auto template_id = _ref;
         auto& mon_template = document[template_id.c_str()];
         Molecule mol;
         QueryMolecule qmol;
@@ -206,7 +206,9 @@ namespace indigo
 
     void MonomerGroupTemplate::addTemplate(MonomerTemplateLibrary& library, const std::string& template_id)
     {
-        _monomer_templates.emplace(template_id, std::cref(library.getMonomerTemplateById(template_id)));
+        auto [it, inserted] = _monomer_templates.emplace(template_id, std::cref(library.getMonomerTemplateById(template_id)));
+        if (inserted)
+            _template_ids.push_back(template_id);
     };
 
     const MonomerTemplate& MonomerGroupTemplate::getTemplateByClass(MonomerClass monomer_class) const
@@ -331,6 +333,13 @@ namespace indigo
     }
 
     const MonomerTemplate& MonomerTemplateLibrary::getMonomerTemplateById(const std::string& monomer_template_id)
+    {
+        if (_monomer_templates.count(monomer_template_id) == 0)
+            throw Error("Monomer template with id %s not found.", monomer_template_id.c_str());
+        return _monomer_templates.at(monomer_template_id);
+    }
+
+    const MonomerTemplate& MonomerTemplateLibrary::getMonomerTemplateById(const std::string& monomer_template_id) const
     {
         if (_monomer_templates.count(monomer_template_id) == 0)
             throw Error("Monomer template with id %s not found.", monomer_template_id.c_str());
@@ -490,7 +499,10 @@ namespace indigo
         // read idtAliases
         if (properties.contains("idtAliases"))
         {
-            for (const auto& idt_alias_str : split(properties.at("idtAliases"), ','))
+            auto idt_alias_parts = split(properties.at("idtAliases"), ';');
+            if (idt_alias_parts.size() == 1)
+                idt_alias_parts = split(properties.at("idtAliases"), ',');
+            for (const auto& idt_alias_str : idt_alias_parts)
             {
                 auto kvp_vec = split(idt_alias_str, '=');
                 if (kvp_vec.size() == 2)
@@ -506,6 +518,7 @@ namespace indigo
                 }
             }
         }
+
         // single monomer template
         if (mon_type == "monomerTemplate")
         {
@@ -517,7 +530,11 @@ namespace indigo
             {
                 try
                 {
+                    if (properties.contains("templateId"))
+                        mol.tgroups.getTGroup(0).tgroup_text_id.readString(properties.at("templateId"), true);
                     auto& mt = addMonomerTemplate(mol.tgroups.getTGroup(0), idt_alias);
+                    if (properties.contains("templateRef"))
+                        mt.setRef(properties.at("templateRef"));
                     if (modification_types.size())
                     {
                         for (auto& modification_type : split(modification_types, ';'))
@@ -540,29 +557,113 @@ namespace indigo
         else // add multiple monomer templates
         {
             std::optional<std::reference_wrapper<MonomerGroupTemplate>> mgt;
+            std::unordered_map<int, std::string> template_id_by_tgroup_idx;
+            std::unordered_map<std::pair<std::string, std::string>, std::string, pair_hash> template_id_by_name_class;
             if (mon_type == "monomerGroupTemplate")
             {
-                std::string group_class, group_name;
+                std::string group_class, group_name, group_id;
                 // mandatory fields
                 if (properties.contains("groupClass") && properties.contains("groupName"))
                 {
                     group_class = properties.at("groupClass");
                     group_name = properties.at("groupName");
-                    std::string id = group_name;
-                    addMonomerGroupTemplate(MonomerGroupTemplate(id, group_name, group_class, idt_alias.hasModifications() ? idt_alias : idt_alias.getBase()));
-                    mgt = getMonomerGroupTemplateById(id);
+                    group_id = properties.contains("groupId") ? properties.at("groupId") : group_name;
+                    addMonomerGroupTemplate(
+                        MonomerGroupTemplate(group_id, group_name, group_class, idt_alias.hasModifications() ? idt_alias : idt_alias.getBase()));
+                    mgt = getMonomerGroupTemplateById(group_id);
+                    if (properties.contains("groupRef"))
+                        mgt->get().setRef(properties.at("groupRef"));
+                    if (properties.contains("aliasAxoLabs"))
+                        mgt->get().setAliasAxoLabs(properties.at("aliasAxoLabs"));
                 }
             }
             for (int i = mol.tgroups.begin(); i != mol.tgroups.end(); i = mol.tgroups.next(i))
             {
                 try
                 {
-                    auto& mt = addMonomerTemplate(mol.tgroups.getTGroup(i), IdtAlias());
+                    auto& tg = mol.tgroups.getTGroup(i);
+                    auto& mt = addMonomerTemplate(tg, IdtAlias());
+                    template_id_by_tgroup_idx.emplace(i, mt.id());
+                    if (tg.tgroup_name.size() && tg.tgroup_class.size())
+                        template_id_by_name_class.emplace(std::make_pair(std::string(tg.tgroup_name.ptr()), std::string(tg.tgroup_class.ptr())), mt.id());
+                    if (tg.tgroup_alias.size() && tg.tgroup_class.size())
+                        template_id_by_name_class.emplace(std::make_pair(std::string(tg.tgroup_alias.ptr()), std::string(tg.tgroup_class.ptr())), mt.id());
                     if (mgt.has_value())
                         mgt->get().addTemplate(*this, mt.id());
                 }
                 catch (const Error& /* e */) // ignore monomer if already exists
                 {
+                }
+            }
+
+            if (mgt.has_value())
+            {
+                auto resolve_template_id = [this, &mol, &template_id_by_tgroup_idx, &template_id_by_name_class](int atom_idx) -> std::string {
+                    int tg_idx = mol.getTemplateAtomTemplateIndex(atom_idx);
+                    auto tg_it = template_id_by_tgroup_idx.find(tg_idx);
+                    if (tg_it != template_id_by_tgroup_idx.end())
+                        return tg_it->second;
+
+                    auto* atom_class = mol.getTemplateAtomClass(atom_idx);
+                    std::string alias = mol.getTemplateAtom(atom_idx);
+                    std::string class_name = atom_class ? atom_class : "";
+                    auto name_class_it = template_id_by_name_class.find(std::make_pair(alias, class_name));
+                    if (name_class_it != template_id_by_name_class.end())
+                        return name_class_it->second;
+
+                    auto resolved = getMonomerTemplateIdByAlias(MonomerTemplate::StrToMonomerClass(atom_class ? atom_class : ""), alias);
+                    if (resolved.size())
+                        return resolved;
+
+                    if (tg_idx >= 0 && tg_idx < mol.tgroups.getTGroupCount())
+                    {
+                        auto& tg = mol.tgroups.getTGroup(tg_idx);
+                        auto [it, inserted] = template_id_by_tgroup_idx.emplace(tg_idx, monomerId(tg));
+                        return it->second;
+                    }
+
+                    throw Error("Template atom '%s' can not be resolved to monomer template id.", alias.c_str());
+                };
+
+                auto set_attachment_point = [&mol](int atom_idx, int other_idx, KetConnectionEndPoint& endpoint) {
+                    Array<char> ap_id;
+                    for (int order = 0; order < mol.getTemplateAtomAttachmentPointsCount(atom_idx); ++order)
+                    {
+                        if (mol.getTemplateAtomAttachmentPoint(atom_idx, order) != other_idx)
+                            continue;
+
+                        mol.getTemplateAtomAttachmentPointId(atom_idx, order, ap_id);
+                        setKetStrProp(endpoint, attachmentPointId, convertAPToHELM(ap_id.ptr()));
+                        return;
+                    }
+                };
+
+                auto get_connection_type = [&mol](int bond_idx) {
+                    auto bond_order = mol.getBondOrder(bond_idx);
+                    if (bond_order == BOND_SINGLE)
+                        return KetConnectionSingle;
+                    if (bond_order == _BOND_HYDROGEN)
+                        return KetConnectionHydro;
+                    throw Error("Unsupported bond type %d in monomer group template.", bond_order);
+                };
+
+                const auto& bond_annotations = mol.getBondAnnotations();
+                for (auto bond_idx : mol.edges())
+                {
+                    const auto& edge = mol.getEdge(bond_idx);
+                    if (!mol.isTemplateAtom(edge.beg) || !mol.isTemplateAtom(edge.end))
+                        continue;
+
+                    KetConnectionEndPoint ep1;
+                    KetConnectionEndPoint ep2;
+                    setKetStrProp(ep1, templateId, resolve_template_id(edge.beg));
+                    setKetStrProp(ep2, templateId, resolve_template_id(edge.end));
+                    set_attachment_point(edge.beg, edge.end, ep1);
+                    set_attachment_point(edge.end, edge.beg, ep2);
+
+                    auto& connection = mgt->get().addConnection(get_connection_type(bond_idx), ep1, ep2);
+                    if (bond_annotations.count(bond_idx))
+                        connection.setAnnotation(bond_annotations.at(bond_idx));
                 }
             }
         }

@@ -26,6 +26,7 @@
 #include "molecule/cml_saver.h"
 #include "molecule/ket_document_json_saver.h"
 #include "molecule/ket_obj_with_props.h"
+#include "molecule/meta_commons.h"
 #include "molecule/molecule_cdxml_saver.h"
 #include "molecule/molecule_json_saver.h"
 #include "molecule/molfile_loader.h"
@@ -43,6 +44,7 @@
 #include "reaction/rxnfile_saver.h"
 
 #include <memory>
+#include <unordered_map>
 
 #include "indigo_io.h"
 #include "indigo_ket_document.h"
@@ -257,6 +259,8 @@ void IndigoSdfSaver::saveMonomerLibrary(const MonomerTemplateLibrary& monomers_l
         mol.tgroups.getTGroup(0).copy(*tg);
         saver.saveBaseMolecule(mol);
         _output.printf(">  <%s>\n%s\n\n", "type", "monomerTemplate");
+        _output.printf(">  <%s>\n%s\n\n", "templateId", mt.id().c_str());
+        _output.printf(">  <%s>\n%s\n\n", "templateRef", mt.ref().c_str());
         if (mt.hasStringProp(toUType(MonomerTemplate::StringProps::aliasHELM)))
             _output.printf(">  <%s>\n%s\n\n", "aliasHELM", mt.getStringProp(toUType(MonomerTemplate::StringProps::aliasHELM)).c_str());
 
@@ -280,20 +284,66 @@ void IndigoSdfSaver::saveMonomerLibrary(const MonomerTemplateLibrary& monomers_l
     {
         auto& mgt = group_kvp.second;
         Molecule mol;
-        for (auto& template_kvp : mgt.monomerTemplates())
+        std::unordered_map<std::string, int> template_atom_idx_by_id;
+        for (const auto& template_id : mgt.templateIds())
         {
-            auto& mt = template_kvp.second;
-            auto tg = mt.get().getTGroup();
+            const auto& mt = monomers_library.getMonomerTemplateById(template_id);
+            auto tg = mt.getTGroup();
             mol.tgroups.addTGroup();
             mol.tgroups.getTGroup(mol.tgroups.getTGroupCount() - 1).copy(*tg);
             int tidx = mol.addTemplateAtom(tg->tgroup_name.ptr());
             mol.setTemplateAtomClass(tidx, tg->tgroup_class.ptr());
             mol.setTemplateAtomTemplateIndex(tidx, mol.tgroups.getTGroupCount() - 1);
+            template_atom_idx_by_id.emplace(mt.id(), tidx);
+        }
+
+        auto get_template_atom_idx = [&mgt, &template_atom_idx_by_id](const KetConnectionEndPoint& endpoint) -> int {
+            if (!hasKetStrProp(endpoint, templateId))
+                throw IndigoError("Monomer group template %s contains connection endpoint without templateId.", mgt.id().c_str());
+            const auto& template_id = getKetStrProp(endpoint, templateId);
+            auto it = template_atom_idx_by_id.find(template_id);
+            if (it == template_atom_idx_by_id.end())
+                throw IndigoError("Monomer group template %s contains connection to unknown template %s.", mgt.id().c_str(), template_id.c_str());
+            return it->second;
+        };
+
+        auto get_bond_order = [&mgt](const KetConnection& connection) -> int {
+            if (connection.connectionType() == KetConnectionSingle)
+                return BOND_SINGLE;
+            if (connection.connectionType() == KetConnectionHydro)
+                return _BOND_HYDROGEN;
+            throw IndigoError("Unsupported connection type '%s' in monomer group template %s.", connection.connectionType().c_str(), mgt.id().c_str());
+        };
+
+        for (const auto& connection : mgt.connections())
+        {
+            int beg_idx = get_template_atom_idx(connection.ep1());
+            int end_idx = get_template_atom_idx(connection.ep2());
+
+            if (hasKetStrProp(connection.ep1(), attachmentPointId))
+            {
+                auto ap_id = convertAPFromHELM(getKetStrProp(connection.ep1(), attachmentPointId));
+                mol.setTemplateAtomAttachmentOrder(beg_idx, end_idx, ap_id.c_str());
+            }
+
+            if (hasKetStrProp(connection.ep2(), attachmentPointId))
+            {
+                auto ap_id = convertAPFromHELM(getKetStrProp(connection.ep2(), attachmentPointId));
+                mol.setTemplateAtomAttachmentOrder(end_idx, beg_idx, ap_id.c_str());
+            }
+
+            int bond_idx = mol.addBond_Silent(beg_idx, end_idx, get_bond_order(connection));
+            if (connection.annotation().has_value())
+                mol.setBondAnnotation(bond_idx, connection.annotation().value());
         }
         saver.saveBaseMolecule(mol);
         _output.printf(">  <%s>\n%s\n\n", "type", "monomerGroupTemplate");
         _output.printf(">  <%s>\n%s\n\n", "groupClass", mgt.groupClass().c_str());
         _output.printf(">  <%s>\n%s\n\n", "groupName", mgt.name().c_str());
+        _output.printf(">  <%s>\n%s\n\n", "groupId", mgt.id().c_str());
+        _output.printf(">  <%s>\n%s\n\n", "groupRef", mgt.ref().c_str());
+        if (mgt.aliasAxoLabs().has_value())
+            _output.printf(">  <%s>\n%s\n\n", "aliasAxoLabs", mgt.aliasAxoLabs().value().c_str());
         printIdtAlias(mgt.idtAlias(), _output);
     }
     _output.flush();

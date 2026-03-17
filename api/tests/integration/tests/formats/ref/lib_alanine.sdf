@@ -47,6 +47,12 @@ M  END
 >  <type>
 monomerTemplate
 
+>  <templateId>
+Ala
+
+>  <templateRef>
+monomerTemplate-Ala
+
 >  <aliasHELM>
 A
 

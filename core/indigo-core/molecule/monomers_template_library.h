@@ -33,10 +33,11 @@ namespace indigo
         MonomerTemplate& operator=(const MonomerTemplate&) = delete;
 
         MonomerTemplate(const std::string& id, MonomerClass mt_class, IdtAlias idt_alias, bool unresolved)
-            : KetBaseMonomerTemplate(TemplateType::MonomerTemplate, id, mt_class, idt_alias), _unresolved(unresolved){};
+            : KetBaseMonomerTemplate(TemplateType::MonomerTemplate, id, mt_class, idt_alias), _ref(ref_prefix + id), _unresolved(unresolved){};
 
         MonomerTemplate(const std::string& id, std::string mt_class, IdtAlias idt_alias, bool unresolved)
-            : KetBaseMonomerTemplate(TemplateType::MonomerTemplate, id, MonomerTemplate::StrToMonomerClass(mt_class), idt_alias), _unresolved(unresolved){};
+            : KetBaseMonomerTemplate(TemplateType::MonomerTemplate, id, MonomerTemplate::StrToMonomerClass(mt_class), idt_alias), _ref(ref_prefix + id),
+              _unresolved(unresolved){};
 
         MonomerTemplate(MonomerTemplate&& other) = default;
 
@@ -108,6 +109,16 @@ namespace indigo
             return _unresolved;
         };
 
+        inline void setRef(const std::string& ref)
+        {
+            _ref = ref;
+        }
+
+        inline const std::string& ref() const
+        {
+            return _ref;
+        }
+
         using atom_ptr = std::shared_ptr<KetBaseAtomType>;
         using atoms_type = std::vector<atom_ptr>;
 
@@ -175,6 +186,7 @@ namespace indigo
         };
 
     private:
+        std::string _ref;
         bool _unresolved;
         atoms_type _atoms;
         std::vector<KetBond> _bonds;
@@ -190,18 +202,20 @@ namespace indigo
         MonomerGroupTemplate& operator=(const MonomerGroupTemplate&) = delete;
 
         MonomerGroupTemplate(MonomerGroupTemplate&& other)
-            : _id(other._id), _name(other._name), _class(other._class), _idt_alias(other._idt_alias), _monomer_templates(std::move(other._monomer_templates))
+            : _id(std::move(other._id)), _name(std::move(other._name)), _class(std::move(other._class)), _ref(std::move(other._ref)),
+              _alias_axolabs(std::move(other._alias_axolabs)), _idt_alias(std::move(other._idt_alias)),
+              _monomer_templates(std::move(other._monomer_templates)), _template_ids(std::move(other._template_ids)), _connections(std::move(other._connections))
 
                                                                                                           {};
 
         MonomerGroupTemplate(const std::string& id, const std::string& name, const std::string& template_class)
-            : _id(id), _name(name), _class(template_class){};
+            : _id(id), _name(name), _class(template_class), _ref(ref_prefix + id){};
 
         MonomerGroupTemplate(const std::string& id, const std::string& name, const std::string& template_class, const std::string& idt_alias_base)
-            : _id(id), _name(name), _class(template_class), _idt_alias(idt_alias_base){};
+            : _id(id), _name(name), _class(template_class), _ref(ref_prefix + id), _idt_alias(idt_alias_base){};
 
         MonomerGroupTemplate(const std::string& id, const std::string& name, const std::string& template_class, const IdtAlias& idt_alias)
-            : _id(id), _name(name), _class(template_class), _idt_alias(idt_alias){};
+            : _id(id), _name(name), _class(template_class), _ref(ref_prefix + id), _idt_alias(idt_alias){};
 
         void addTemplate(MonomerTemplateLibrary& library, const std::string& template_id);
 
@@ -235,12 +249,22 @@ namespace indigo
             return _idt_alias;
         }
 
+        inline void setRef(const std::string& ref)
+        {
+            _ref = ref;
+        }
+
+        inline const std::string& ref() const
+        {
+            return _ref;
+        }
+
         inline void setAliasAxoLabs(const std::string& aliasAxoLabs)
         {
             _alias_axolabs = aliasAxoLabs;
         }
 
-        inline const std::optional<std::string>& aliasAxoLabs()
+        inline const std::optional<std::string>& aliasAxoLabs() const
         {
             return _alias_axolabs;
         }
@@ -260,16 +284,35 @@ namespace indigo
             return _monomer_templates;
         };
 
+        inline const std::vector<std::string>& templateIds() const
+        {
+            return _template_ids;
+        }
+
+        inline KetConnection& addConnection(const std::string& conn_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2)
+        {
+            _connections.emplace_back(conn_type, ep1, ep2);
+            return *_connections.rbegin();
+        };
+
+        inline const std::vector<KetConnection>& connections() const
+        {
+            return _connections;
+        }
+
         static inline const std::string ref_prefix = "monomerGroupTemplate-";
 
     private:
         std::string _id;
         std::string _name;
         std::string _class;
+        std::string _ref;
 
         std::optional<std::string> _alias_axolabs;
         IdtAlias _idt_alias;
         std::map<std::string, std::reference_wrapper<const MonomerTemplate>> _monomer_templates;
+        std::vector<std::string> _template_ids;
+        std::vector<KetConnection> _connections;
     };
 
     class DLLEXPORT MonomerTemplateLibrary
@@ -304,6 +347,7 @@ namespace indigo
         }
 
         const MonomerTemplate& getMonomerTemplateById(const std::string& monomer_template_id);
+        const MonomerTemplate& getMonomerTemplateById(const std::string& monomer_template_id) const;
         const std::string& getMonomerTemplateIdByAlias(MonomerClass monomer_class, const std::string& monomer_template_alias);
         const std::string& getMonomerTemplateIdByAliasHELM(MonomerClass monomer_class, const std::string& alias);
         const std::string& getMonomerTemplateIdByAliasAxoLabs(const std::string& alias);

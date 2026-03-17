@@ -476,6 +476,7 @@ const std::map<std::string, int>& KetConnectionEndPoint::getStringPropStrToIdx()
 {
     static std::map<std::string, int> str_to_idx{
         {"groupId", toUType(StringProps::groupId)},
+        {"templateId", toUType(StringProps::templateId)},
         {"monomerId", toUType(StringProps::monomerId)},
         {"moleculeId", toUType(StringProps::moleculeId)},
         {"atomId", toUType(StringProps::atomId)},
