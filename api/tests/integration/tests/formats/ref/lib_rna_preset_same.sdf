@@ -46,12 +46,6 @@ M  END
 >  <type>
 monomerTemplate
 
->  <templateId>
-BaseX
-
->  <templateRef>
-monomerTemplate-BaseX
-
 $$$$
 
   -INDIGO-01000000002D
@@ -102,12 +96,6 @@ M  END
 >  <type>
 monomerTemplate
 
->  <templateId>
-Phosphate
-
->  <templateRef>
-monomerTemplate-Phosphate
-
 $$$$
 
   -INDIGO-01000000002D
@@ -156,12 +144,6 @@ M  V30 END TEMPLATE
 M  END
 >  <type>
 monomerTemplate
-
->  <templateId>
-Sugar
-
->  <templateRef>
-monomerTemplate-Sugar
 
 $$$$
 

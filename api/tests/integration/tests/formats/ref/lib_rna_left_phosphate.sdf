@@ -54,12 +54,6 @@ M  END
 >  <type>
 monomerTemplate
 
->  <templateId>
-A___Adenine
-
->  <templateRef>
-monomerTemplate-A___Adenine
-
 $$$$
 
   -INDIGO-01000000002D
@@ -105,12 +99,6 @@ M  V30 END TEMPLATE
 M  END
 >  <type>
 monomerTemplate
-
->  <templateId>
-P
-
->  <templateRef>
-monomerTemplate-P___Phosphate
 
 $$$$
 
@@ -177,12 +165,6 @@ M  V30 END TEMPLATE
 M  END
 >  <type>
 monomerTemplate
-
->  <templateId>
-Rib
-
->  <templateRef>
-monomerTemplate-R___Ribose
 
 $$$$
 

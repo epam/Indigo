@@ -56,12 +56,6 @@ M  END
 >  <type>
 monomerTemplate
 
->  <templateId>
-Gua
-
->  <templateRef>
-monomerTemplate-Gua
-
 $$$$
 
   -INDIGO-01000000002D
@@ -107,12 +101,6 @@ M  V30 END TEMPLATE
 M  END
 >  <type>
 monomerTemplate
-
->  <templateId>
-P
-
->  <templateRef>
-monomerTemplate-P
 
 $$$$
 
@@ -179,12 +167,6 @@ M  V30 END TEMPLATE
 M  END
 >  <type>
 monomerTemplate
-
->  <templateId>
-Rib
-
->  <templateRef>
-monomerTemplate-Rib
 
 $$$$
 

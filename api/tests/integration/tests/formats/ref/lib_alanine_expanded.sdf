@@ -47,12 +47,6 @@ M  END
 >  <type>
 monomerTemplate
 
->  <templateId>
-Alanine
-
->  <templateRef>
-monomerTemplate-Alanine
-
 >  <aliasHELM>
 A
 

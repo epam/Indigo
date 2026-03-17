@@ -43,12 +43,6 @@ M  END
 >  <type>
 monomerTemplate
 
->  <templateId>
-P
-
->  <templateRef>
-monomerTemplate-P
-
 >  <aliasHELM>
 p
 

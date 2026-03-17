@@ -68,12 +68,6 @@ M  END
 >  <type>
 monomerTemplate
 
->  <templateId>
-_Base3
-
->  <templateRef>
-monomerTemplate-_Base3
-
 >  <aliasHELM>
 _Base3_HELM***---
 
