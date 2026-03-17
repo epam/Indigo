@@ -284,12 +284,6 @@ RNA
 >  <groupName>
 Q
 
->  <groupId>
-Q
-
->  <groupRef>
-monomerGroupTemplate-Q
-
 >  <idtAliases>
 base=rQ
 

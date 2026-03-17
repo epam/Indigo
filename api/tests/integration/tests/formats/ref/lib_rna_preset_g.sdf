@@ -330,12 +330,6 @@ RNA
 >  <groupName>
 G
 
->  <groupId>
-G
-
->  <groupRef>
-monomerGroupTemplate-G
-
 >  <idtAliases>
 base=rG
 

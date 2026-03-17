@@ -327,12 +327,6 @@ RNA
 >  <groupName>
 A_left
 
->  <groupId>
-A_l
-
->  <groupRef>
-monomerGroupTemplate-A-left
-
 >  <aliasAxoLabs>
 A
 

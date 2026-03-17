@@ -259,8 +259,6 @@ void IndigoSdfSaver::saveMonomerLibrary(const MonomerTemplateLibrary& monomers_l
         mol.tgroups.getTGroup(0).copy(*tg);
         saver.saveBaseMolecule(mol);
         _output.printf(">  <%s>\n%s\n\n", "type", "monomerTemplate");
-        _output.printf(">  <%s>\n%s\n\n", "templateId", mt.id().c_str());
-        _output.printf(">  <%s>\n%s\n\n", "templateRef", mt.ref().c_str());
         if (mt.hasStringProp(toUType(MonomerTemplate::StringProps::aliasHELM)))
             _output.printf(">  <%s>\n%s\n\n", "aliasHELM", mt.getStringProp(toUType(MonomerTemplate::StringProps::aliasHELM)).c_str());
 
@@ -340,8 +338,6 @@ void IndigoSdfSaver::saveMonomerLibrary(const MonomerTemplateLibrary& monomers_l
         _output.printf(">  <%s>\n%s\n\n", "type", "monomerGroupTemplate");
         _output.printf(">  <%s>\n%s\n\n", "groupClass", mgt.groupClass().c_str());
         _output.printf(">  <%s>\n%s\n\n", "groupName", mgt.name().c_str());
-        _output.printf(">  <%s>\n%s\n\n", "groupId", mgt.id().c_str());
-        _output.printf(">  <%s>\n%s\n\n", "groupRef", mgt.ref().c_str());
         if (mgt.aliasAxoLabs().has_value())
             _output.printf(">  <%s>\n%s\n\n", "aliasAxoLabs", mgt.aliasAxoLabs().value().c_str());
         printIdtAlias(mgt.idtAlias(), _output);
