@@ -1234,8 +1234,9 @@ void MoleculeJsonLoader::addToLibMonomerGroupTemplate(MonomerTemplateLibrary& li
 {
     MonomerGroupTemplate* parsed_mgt = nullptr;
     KetDocumentJsonLoader::parseMonomerGroupTemplate(
-        monomer_group_template, [&library, &parsed_mgt](const std::string& id, const std::string& name, const std::string& monomer_class, IdtAlias idt_alias,
-                                                        const std::vector<std::string>& template_refs) -> MonomerGroupTemplate& {
+        monomer_group_template,
+        [&library, &parsed_mgt](const std::string& id, const std::string& name, const std::string& monomer_class, IdtAlias idt_alias,
+                                const std::vector<std::string>& template_refs) -> MonomerGroupTemplate& {
             library.addMonomerGroupTemplate(MonomerGroupTemplate(id, name, monomer_class, idt_alias));
             auto& mgt = library.getMonomerGroupTemplateById(id);
             for (const auto& template_id : template_refs)
