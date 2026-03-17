@@ -3203,9 +3203,8 @@ CEXPORT int indigoExpandedMonomersToAtoms(int molecule)
             // If invalid, this indicates data corruption and we should fail rather than silently skip
             if (!work_mol->mol.isValidTemplateOccurrence(template_occur_idx))
             {
-                throw IndigoError("expandedMonomersToAtoms: template atom #%d has invalid occurrence index %d (data "
-                    "corruption detected)",
-                    v_idx, template_occur_idx);
+                throw IndigoError("expandedMonomersToAtoms: template atom #%d has invalid occurrence index %d (data corruption detected)", v_idx,
+                                  template_occur_idx);
             }
 
             // Mark this template atom as expanded
