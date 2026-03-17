@@ -33,11 +33,11 @@ namespace indigo
         MonomerTemplate& operator=(const MonomerTemplate&) = delete;
 
         MonomerTemplate(const std::string& id, MonomerClass mt_class, IdtAlias idt_alias, bool unresolved)
-            : KetBaseMonomerTemplate(TemplateType::MonomerTemplate, id, mt_class, idt_alias), _ref(ref_prefix + id), _unresolved(unresolved){};
+            : KetBaseMonomerTemplate(TemplateType::MonomerTemplate, id, mt_class, idt_alias), _ref(ref_prefix + id), _unresolved(unresolved) {};
 
         MonomerTemplate(const std::string& id, std::string mt_class, IdtAlias idt_alias, bool unresolved)
             : KetBaseMonomerTemplate(TemplateType::MonomerTemplate, id, MonomerTemplate::StrToMonomerClass(mt_class), idt_alias), _ref(ref_prefix + id),
-              _unresolved(unresolved){};
+              _unresolved(unresolved) {};
 
         MonomerTemplate(MonomerTemplate&& other) = default;
 
@@ -203,19 +203,19 @@ namespace indigo
 
         MonomerGroupTemplate(MonomerGroupTemplate&& other)
             : _id(std::move(other._id)), _name(std::move(other._name)), _class(std::move(other._class)), _ref(std::move(other._ref)),
-              _alias_axolabs(std::move(other._alias_axolabs)), _idt_alias(std::move(other._idt_alias)),
-              _monomer_templates(std::move(other._monomer_templates)), _template_ids(std::move(other._template_ids)), _connections(std::move(other._connections))
+              _alias_axolabs(std::move(other._alias_axolabs)), _idt_alias(std::move(other._idt_alias)), _monomer_templates(std::move(other._monomer_templates)),
+              _template_ids(std::move(other._template_ids)), _connections(std::move(other._connections))
 
-                                                                                                          {};
+        {};
 
         MonomerGroupTemplate(const std::string& id, const std::string& name, const std::string& template_class)
-            : _id(id), _name(name), _class(template_class), _ref(ref_prefix + id){};
+            : _id(id), _name(name), _class(template_class), _ref(ref_prefix + id) {};
 
         MonomerGroupTemplate(const std::string& id, const std::string& name, const std::string& template_class, const std::string& idt_alias_base)
-            : _id(id), _name(name), _class(template_class), _ref(ref_prefix + id), _idt_alias(idt_alias_base){};
+            : _id(id), _name(name), _class(template_class), _ref(ref_prefix + id), _idt_alias(idt_alias_base) {};
 
         MonomerGroupTemplate(const std::string& id, const std::string& name, const std::string& template_class, const IdtAlias& idt_alias)
-            : _id(id), _name(name), _class(template_class), _ref(ref_prefix + id), _idt_alias(idt_alias){};
+            : _id(id), _name(name), _class(template_class), _ref(ref_prefix + id), _idt_alias(idt_alias) {};
 
         void addTemplate(MonomerTemplateLibrary& library, const std::string& template_id);
 
