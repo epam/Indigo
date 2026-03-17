@@ -119,7 +119,6 @@ static int _bingoCreateOrLoadDatabaseFile(const char* location, const char* opti
      *    - https://jiraeu.epam.com/browse/IND-603
      * */
     fp_params.ext = false;
-    fp_params.tau_qwords = 0;
 
     std::string loc_dir(location);
 
