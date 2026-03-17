@@ -25,6 +25,7 @@
 #endif
 
 #include <sstream>
+#include <string>
 
 #include "base_cpp/locale_guard.h"
 #include "base_cpp/output.h"
@@ -37,6 +38,8 @@
 
 namespace indigo
 {
+
+    void saveNativeFloat(JsonWriter& writer, float f_value, int precision = -1);
 
     class Molecule;
     class QueryMolecule;
