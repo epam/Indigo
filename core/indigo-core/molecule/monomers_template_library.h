@@ -33,7 +33,7 @@ namespace indigo
         MonomerTemplate& operator=(const MonomerTemplate&) = delete;
 
         MonomerTemplate(const std::string& id, MonomerClass mt_class, IdtAlias idt_alias, bool unresolved)
-            : KetBaseMonomerTemplate(TemplateType::MonomerTemplate, id, mt_class, idt_alias), _ref(ref_prefix + id), _unresolved(unresolved) {};
+            : KetBaseMonomerTemplate(TemplateType::MonomerTemplate, id, mt_class, idt_alias), _ref(ref_prefix + id), _unresolved(unresolved){};
 
         MonomerTemplate(const std::string& id, std::string mt_class, IdtAlias idt_alias, bool unresolved)
             : KetBaseMonomerTemplate(TemplateType::MonomerTemplate, id, MonomerTemplate::StrToMonomerClass(mt_class), idt_alias), _ref(ref_prefix + id),
