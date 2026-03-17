@@ -257,9 +257,17 @@ class TestIndigo(TestIndigoBase):
             "formats",
             "ref",
         )
-        tests_dir = os.path.dirname(__file__)
+        tests_dir = os.path.join(
+            project_root,
+            "api",
+            "tests",
+            "integration",
+            "tests",
+            "formats",
+            "serialized",
+        )
         lib_path = os.path.join(ref_dir, "monomer_library.ket")
-        ket_path = os.path.join(tests_dir, "data", "basic_structure_peg4.ket")
+        ket_path = os.path.join(tests_dir, "basic_structure_peg4.ket")
         self.assertTrue(
             os.path.isfile(lib_path), f"Library not found: {lib_path}"
         )
