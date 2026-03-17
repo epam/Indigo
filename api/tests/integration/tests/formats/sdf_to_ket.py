@@ -53,6 +53,7 @@ for filename in files:
 print("*** SDF-monomer library to KET ***")
 files = [
     "lib_alanine",
+    "lib_alanine_semicolon",
     "lib_alanine_expanded",
     "lib_phos",
     "lib_rna_preset_g",
