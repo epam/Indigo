@@ -37,7 +37,7 @@ namespace indigo
 
         MonomerTemplate(const std::string& id, std::string mt_class, IdtAlias idt_alias, bool unresolved)
             : KetBaseMonomerTemplate(TemplateType::MonomerTemplate, id, MonomerTemplate::StrToMonomerClass(mt_class), idt_alias), _ref(ref_prefix + id),
-              _unresolved(unresolved) {};
+              _unresolved(unresolved){};
 
         MonomerTemplate(MonomerTemplate&& other) = default;
 
