@@ -1120,6 +1120,9 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libaio1t64 || sudo apt-get install -y libaio1
+          if [ ! -e /usr/lib/x86_64-linux-gnu/libaio.so.1 ] && [ -e /usr/lib/x86_64-linux-gnu/libaio.so.1t64 ]; then
+            sudo ln -s libaio.so.1t64 /usr/lib/x86_64-linux-gnu/libaio.so.1
+          fi
           wget -q https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-basic-linux.x64-23.5.0.24.07.zip
           wget -q https://download.oracle.com/otn_software/linux/instantclient/2350000/instantclient-sqlplus-linux.x64-23.5.0.24.07.zip
           sudo mkdir -p /opt/oracle
