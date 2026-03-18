@@ -9,7 +9,9 @@ def find_diff(a, b):
 
 def expect_monomer_library_load_error(root, filename, expected_error):
     try:
-        indigo.loadMonomerLibraryFromFile(os.path.join(root, filename + ".ket"))
+        indigo.loadMonomerLibraryFromFile(
+            os.path.join(root, filename + ".ket")
+        )
         print(filename + ".ket:FAILED")
         print("Expected error '%s'" % expected_error)
     except IndigoException as e:
@@ -18,10 +20,7 @@ def expect_monomer_library_load_error(root, filename, expected_error):
             print(filename + ".ket:SUCCEED")
         else:
             print(filename + ".ket:FAILED")
-            print(
-                "Expected error '%s' but got '%s'"
-                % (expected_error, text)
-            )
+            print("Expected error '%s' but got '%s'" % (expected_error, text))
 
 
 sys.path.append(
