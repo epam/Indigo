@@ -1,10 +1,5 @@
-﻿import difflib
-import os
+﻿import os
 import sys
-
-
-def find_diff(a, b):
-    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
 
 
 def expect_monomer_library_load_error(root, filename, expected_error):
@@ -28,6 +23,7 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
+from common.util import compare_diff
 from env_indigo import *  # noqa
 
 indigo = Indigo()
@@ -63,17 +59,7 @@ for filename in files:
         sdfSaver.append(frag.clone())
     sdfSaver.close()
     sdf = buffer.toString()
-    # with open(os.path.join(ref_path, filename) + ".sdf", "w") as file:
-    #     file.write(sdf)
-
-    with open(os.path.join(ref_path, filename) + ".sdf", "r") as file:
-        sdf_ref = file.read()
-    diff = find_diff(sdf_ref, sdf)
-    if not diff:
-        print(filename + ".sdf:SUCCEED")
-    else:
-        print(filename + ".sdf:FAILED")
-        print(diff)
+    compare_diff(ref_path, filename + ".sdf", sdf)
 
 root = joinPathPy("reactions/", __file__)
 ref_path = joinPathPy("ref/", __file__)
@@ -100,17 +86,7 @@ for filename in files:
         sdfSaver.append(mol.clone())
     sdfSaver.close()
     sdf = buffer.toString()
-    # with open(os.path.join(ref_path, filename) + ".sdf", "w") as file:
-    #     file.write(sdf)
-
-    with open(os.path.join(ref_path, filename) + ".sdf", "r") as file:
-        sdf_ref = file.read()
-    diff = find_diff(sdf_ref, sdf)
-    if not diff:
-        print(filename + ".sdf:SUCCEED")
-    else:
-        print(filename + ".sdf:FAILED")
-        print(diff)
+    compare_diff(ref_path, filename + ".sdf", sdf)
 
 print("*** KET-monomer library to SDF ***")
 root = joinPathPy("molecules/", __file__)
@@ -130,17 +106,8 @@ for filename in files:
     lib = indigo.loadMonomerLibraryFromFile(
         os.path.join(root, filename + ".ket")
     )
-    # with open(os.path.join(ref_path, filename) + ".sdf", "w") as file:
-    #     file.write(lib.monomerLibrary())
-    with open(os.path.join(ref_path, filename) + ".sdf", "r") as file:
-        sdf_ref = file.read()
     sdf = lib.monomerLibrary()
-    diff = find_diff(sdf_ref, sdf)
-    if not diff:
-        print(filename + ".sdf:SUCCEED")
-    else:
-        print(filename + ".sdf:FAILED")
-        print(diff)
+    compare_diff(ref_path, filename + ".sdf", sdf)
 
 print("*** Invalid KET-monomer library to SDF ***")
 expect_monomer_library_load_error(

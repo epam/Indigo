@@ -7,6 +7,7 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
+from common.util import moleculeLayoutDiff
 from env_indigo import *  # noqa
 
 if not os.path.exists(joinPathPy("out", __file__)):

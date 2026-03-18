@@ -1,17 +1,12 @@
-import difflib
 import os
 import sys
-
-
-def find_diff(a, b):
-    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
-
 
 sys.path.append(
     os.path.normpath(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
+from common.util import compare_diff
 from env_indigo import *
 
 indigo = Indigo()
@@ -41,28 +36,22 @@ for filename in files:
 
     # aromatize check
     rxn.aromatize()
-    rxn_txt = rxn.json()
-    # with open(os.path.join(ref_path_arom, filename) + ".ket", "w") as file:
-    #     file.write(rxn_txt)
-
-    rxn_ref = open(os.path.join(ref_path_arom, filename) + ".ket", "r").read()
-    diff_arom = find_diff(rxn_ref, rxn_txt)
+    rxn_txt_arom = rxn.json()
+    diff_arom = compare_diff(
+        ref_path_arom, filename + ".ket", rxn_txt_arom, stdout=False
+    )
 
     # dearomatize check
     rxn.dearomatize()
-    rxn_txt = rxn.json()
-    # with open(os.path.join(ref_path_dearom, filename) + ".ket", "w") as file:
-    #     file.write(rxn_txt)
-
-    rxn_ref = open(
-        os.path.join(ref_path_dearom, filename) + ".ket", "r"
-    ).read()
-    diff_dearom = find_diff(rxn_ref, rxn_txt)
+    rxn_txt_dearom = rxn.json()
+    diff_dearom = compare_diff(
+        ref_path_dearom, filename + ".ket", rxn_txt_dearom, stdout=False
+    )
 
     diff = diff_arom and diff_dearom
 
     if not diff:
-        print(filename + ".rdf:SUCCEED")
+        print(filename + ".ket:SUCCEED")
     else:
-        print(filename + ".rdf:FAILED")
+        print(filename + ".ket:FAILED")
         print(diff)

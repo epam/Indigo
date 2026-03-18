@@ -1,17 +1,12 @@
-﻿import difflib
-import os
+﻿import os
 import sys
-
-
-def find_diff(a, b):
-    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
-
 
 sys.path.append(
     os.path.normpath(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
+from common.util import compare_diff, find_diff
 from env_indigo import Indigo, joinPathPy  # noqa
 
 indigo = Indigo()
@@ -80,46 +75,16 @@ for reaction, test_case_filename in reaction_types:
     )
     for format_name, format_postfix, get_format_func in output_formats:
         filename = test_case_filename + format_postfix
-
         parsed_format = get_format_func(rc)
-
         print("output format: " + format_name)
-
-        # with open(os.path.join(ref_path, filename), "w") as file:
-        #     file.write(parsed_format)
-
-        with open(os.path.join(ref_path, filename), "r") as file:
-            format_ref = file.read()
-
-        diff = find_diff(format_ref, parsed_format)
-        if not diff:
-            print(filename + ":SUCCEED")
-        else:
-            print(filename + ":FAILED")
-            print(diff)
+        compare_diff(ref_path, filename, parsed_format)
 
 print("issue 2318")
 indigo.setOption("json-use-native-precision", "1")
 filename = "ket_retro_arrow.ket"
 fname = os.path.join(root_rea, filename)
 rxn = indigo.loadReactionFromFile(fname)
-# with open(fname, "w") as file:
-#     file.write(rxn.json())
-with open(fname, "r") as file:
-    ref_json = file.read()
-diff = find_diff(ref_json, rxn.json())
-if not diff:
-    print(filename + ":SUCCEED")
-else:
-    print(filename + ":FAILED")
-    print(diff)
+compare_diff(ref_path, filename, rxn.json())
 print("issue 2417")
 rxn.layout()
-# with open(fname, "w") as file:
-#     file.write(rxn.json())
-diff = find_diff(ref_json, rxn.json())
-if not diff:
-    print(filename + ":SUCCEED")
-else:
-    print(filename + ":FAILED")
-    print(diff)
+compare_diff(ref_path, filename, rxn.json())

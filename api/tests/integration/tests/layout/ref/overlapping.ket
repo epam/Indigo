@@ -535,8 +535,8 @@
         "type": "monomer",
         "id": "17",
         "position": {
-            "x": -4.9337,
-            "y": -0.2210
+            "x": -4.6321,
+            "y": -2.8015
         },
         "alias": "D",
         "templateId": "D___Aspartic acid"
@@ -555,8 +555,8 @@
         "type": "monomer",
         "id": "19",
         "position": {
-            "x": -4.6321,
-            "y": -2.8015
+            "x": -4.9337,
+            "y": -0.2210
         },
         "alias": "D",
         "templateId": "D___Aspartic acid"

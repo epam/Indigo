@@ -180,6 +180,6 @@ tests = [
 ]
 for i in range(len(tests)):
     print("\n*** Test %d ***" % i)
-    (mol, q) = tests[i]
+    mol, q = tests[i]
     if mol and q:
         testSSS(mol, q)

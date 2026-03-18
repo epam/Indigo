@@ -7,6 +7,7 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
+from common.util import reactionLayoutDiff
 from env_indigo import *  # noqa
 
 if not os.path.exists(joinPathPy("out", __file__)):
@@ -20,8 +21,6 @@ indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", "1")
 indigo.setOption("treat-x-as-pseudoatom", "1")
 indigo.setOption("smart-layout", "1")
-
-upd = False
 
 saver_layout = indigo.writeFile(
     joinPathPy("out/reaction_layout.rdf", __file__)
@@ -51,7 +50,6 @@ for idx, item in enumerate(
             rxn,
             ref_layout.at(idx).rawData(),
             ref_is_file=False,
-            update=upd,
         )
         print("  Item #{}: Result of layout: {}".format(idx, res))
         saver_layout.rdfAppend(rxn)
@@ -71,7 +69,6 @@ for idx, item in enumerate(
             rxn,
             ref_clean2d.at(idx).rawData(),
             ref_is_file=False,
-            update=upd,
         )
         print("  Item #{}: Result of clean2d: {}".format(idx, res))
         saver_clean.rdfAppend(rxn)

@@ -1,0 +1,552 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "mol0"
+            },
+            {
+                "$ref": "monomer0"
+            }
+        ],
+        "connections": [],
+        "templates": [
+            {
+                "$ref": "ambiguousMonomerTemplate-alternatives__D___Aspartic acid__N___Asparagine_"
+            },
+            {
+                "$ref": "monomerTemplate-D___Aspartic acid"
+            },
+            {
+                "$ref": "monomerTemplate-N___Asparagine"
+            }
+        ]
+    },
+    "monomer0": {
+        "type": "ambiguousMonomer",
+        "id": "0",
+        "position": {
+            "x": 12.909951,
+            "y": -11.775532
+        },
+        "alias": "B",
+        "templateId": "alternatives__D___Aspartic acid__N___Asparagine_"
+    },
+    "ambiguousMonomerTemplate-alternatives__D___Aspartic acid__N___Asparagine_": {
+        "type": "ambiguousMonomerTemplate",
+        "subtype": "alternatives",
+        "id": "alternatives__D___Aspartic acid__N___Asparagine_",
+        "alias": "B",
+        "options": [
+            {
+                "templateId": "D___Aspartic acid"
+            },
+            {
+                "templateId": "N___Asparagine"
+            }
+        ]
+    },
+    "monomerTemplate-D___Aspartic acid": {
+        "type": "monomerTemplate",
+        "id": "D___Aspartic acid",
+        "class": "AminoAcid",
+        "classHELM": "PEPTIDE",
+        "alias": "D",
+        "name": "Asp",
+        "fullName": "Aspartic acid",
+        "naturalAnalogShort": "D",
+        "naturalAnalog": "Asp",
+        "attachmentPoints": [
+            {
+                "attachmentAtom": 3,
+                "leavingGroup": {
+                    "atoms": [
+                        4
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        9
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 8,
+                "leavingGroup": {
+                    "atoms": [
+                        10
+                    ]
+                }
+            }
+        ],
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    1.631000,
+                    -1.557800,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    1.632700,
+                    -2.739200,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.350700,
+                    -0.820100,
+                    0.000000
+                ],
+                "stereoLabel": "abs"
+            },
+            {
+                "label": "N",
+                "location": [
+                    -0.929500,
+                    -1.557800,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    -1.952500,
+                    -0.966900,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.348500,
+                    0.657500,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -0.931700,
+                    1.395200,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    -1.954200,
+                    0.803200,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    -0.933500,
+                    2.576600,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    2.653400,
+                    -0.965800,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    0.085100,
+                    3.175100,
+                    0.000000
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 2,
+                "atoms": [
+                    1,
+                    0
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    4
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    5
+                ],
+                "stereo": 1
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    5,
+                    6
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    6,
+                    7
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    6,
+                    8
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    9
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    8,
+                    10
+                ]
+            }
+        ]
+    },
+    "monomerTemplate-N___Asparagine": {
+        "type": "monomerTemplate",
+        "id": "N___Asparagine",
+        "class": "AminoAcid",
+        "classHELM": "PEPTIDE",
+        "alias": "N",
+        "name": "Asn",
+        "fullName": "Asparagine",
+        "naturalAnalogShort": "N",
+        "naturalAnalog": "Asn",
+        "attachmentPoints": [
+            {
+                "attachmentAtom": 3,
+                "leavingGroup": {
+                    "atoms": [
+                        4
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        9
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 7,
+                "leavingGroup": {
+                    "atoms": [
+                        10
+                    ]
+                }
+            }
+        ],
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    1.892900,
+                    -1.417500,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    1.894700,
+                    -2.598900,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.612700,
+                    -0.679900,
+                    0.000000
+                ],
+                "stereoLabel": "abs"
+            },
+            {
+                "label": "N",
+                "location": [
+                    -0.667600,
+                    -1.417500,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    -1.690700,
+                    -0.826600,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.610400,
+                    0.797800,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -0.669800,
+                    1.535400,
+                    0.000000
+                ]
+            },
+            {
+                "label": "N",
+                "location": [
+                    -1.692200,
+                    0.943400,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    -0.671600,
+                    2.716800,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    2.915300,
+                    -0.825500,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    -2.534100,
+                    1.772400,
+                    0.000000
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 2,
+                "atoms": [
+                    1,
+                    0
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    4
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    5
+                ],
+                "stereo": 1
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    5,
+                    6
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    6,
+                    7
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    6,
+                    8
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    9
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    7,
+                    10
+                ]
+            }
+        ]
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    8.156480,
+                    -12.083532,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    9.613665,
+                    -12.083124,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    8.886451,
+                    -11.662364,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    9.613665,
+                    -12.926074,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    8.156480,
+                    -12.929854,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    8.888289,
+                    -13.346732,
+                    0.000000
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 4,
+                "atoms": [
+                    2,
+                    0
+                ]
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    0,
+                    4
+                ]
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    4,
+                    5
+                ]
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    5,
+                    3
+                ]
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    3,
+                    1
+                ]
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    1,
+                    2
+                ]
+            }
+        ],
+        "stereoFlagPosition": {
+            "x": 9.613665,
+            "y": 10.662364,
+            "z": 0.000000
+        }
+    }
+}

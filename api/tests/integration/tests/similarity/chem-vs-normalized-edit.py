@@ -98,7 +98,7 @@ all_is_fine_flag = True
 
 if 1.0 * alarm_problems_counter / check_counter > 0.0001:
     all_is_fine_flag = False
-    (m1, m2, norm, chem) = worst_problem_data
+    m1, m2, norm, chem = worst_problem_data
     print("  ALARM!\n")
     print(
         "    Too many pairs (%d) were above the alarm problem threshold %f\n"

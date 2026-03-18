@@ -1,17 +1,12 @@
-﻿import difflib
-import os
+﻿import os
 import sys
-
-
-def find_diff(a, b):
-    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
-
 
 sys.path.append(
     os.path.normpath(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
+from common.util import find_diff
 from env_indigo import (  # noqa
     Indigo,
     IndigoException,
@@ -81,13 +76,12 @@ for filename in sorted(helm_data.keys()):
         continue
 
     helm_ref = helm_data[filename]
-    if helm_ref == helm:
+    diff = find_diff(helm_ref, helm)
+    if not diff:
         print(filename + ".ket:SUCCEED")
     else:
-        print(
-            "%s.ket FAILED : expected '%s', got '%s'"
-            % (filename, helm_ref, helm)
-        )
+        print(filename + ".ket:FAILED")
+        print(diff)
 
 helm_errors = {}
 for filename in sorted(helm_errors.keys()):
