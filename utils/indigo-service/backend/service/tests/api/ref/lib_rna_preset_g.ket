@@ -568,7 +568,7 @@
             },
             {
                 "$ref": "monomerTemplate-Rib"
-            }, 
+            },
             {
                 "$ref": "monomerTemplate-P"
             }
