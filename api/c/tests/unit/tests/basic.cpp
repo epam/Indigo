@@ -328,8 +328,8 @@ TEST_F(IndigoApiBasicTest, molecule_iterate_components_and_render)
 {
     try
     {
-        int mol = indigoLoadMoleculeFromString(Mol);
-        int iterator = indigoIterateComponents(mol);
+        const int mol = indigoLoadMoleculeFromString(Mol);
+        const int iterator = indigoIterateComponents(mol);
 
         while (indigoHasNext(iterator))
         {
@@ -346,4 +346,243 @@ TEST_F(IndigoApiBasicTest, molecule_iterate_components_and_render)
     {
         ASSERT_STREQ("", e.message());
     }
+}
+
+// =========================================================================
+// Group 4 valence tests (Si, Ge, Sn, Pb)
+// elements.cpp: calcValence for charge=-2/-1 with conn + rad combinations
+// =========================================================================
+
+static constexpr char SiF5_dianion_mol[] = R"(
+  -INDIGO-10082014522D
+
+  6  5  0  0  0  0  0  0  0  0999 V2000
+   -1.0862   -0.0414    0.0000 Si  0  0  0  0  0  0  0  0  0  0  0  0
+   -2.1862   -0.9552    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.3241    1.3690    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0172    0.8586    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+   -2.4310    0.4552    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+    0.2552   -0.5517    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0  0  0  0
+  1  3  1  0  0  0  0
+  1  4  1  0  0  0  0
+  1  5  1  0  0  0  0
+  1  6  1  0  0  0  0
+M  CHG  1   1  -2
+M  END
+)";
+
+static constexpr char SiF4_dianion_radical_mol[] = R"(
+  -INDIGO-test
+
+  5  4  0  0  0  0  0  0  0  0999 V2000
+    0.0000    0.0000    0.0000 Si  0  0  0  0  0  0  0  0  0  0  0  0
+    1.2000    0.0000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    1.2000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.2000    0.0000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000   -1.2000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0  0  0  0
+  1  3  1  0  0  0  0
+  1  4  1  0  0  0  0
+  1  5  1  0  0  0  0
+M  CHG  1   1  -2
+M  RAD  1   1   2
+M  END
+)";
+
+static constexpr char GeF5_dianion_mol[] = R"(
+  -INDIGO-test
+
+  6  5  0  0  0  0  0  0  0  0999 V2000
+    0.0000    0.0000    0.0000 Ge  0  0  0  0  0  0  0  0  0  0  0  0
+    1.2000    0.0000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    1.2000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.2000    0.0000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000   -1.2000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+    0.8485    0.8485    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0  0  0  0
+  1  3  1  0  0  0  0
+  1  4  1  0  0  0  0
+  1  5  1  0  0  0  0
+  1  6  1  0  0  0  0
+M  CHG  1   1  -2
+M  END
+)";
+
+static constexpr char GeF4_monoanion_radical_mol[] = R"(
+  -INDIGO-test
+
+  5  4  0  0  0  0  0  0  0  0999 V2000
+    0.0000    0.0000    0.0000 Ge  0  0  0  0  0  0  0  0  0  0  0  0
+    1.2000    0.0000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    1.2000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.2000    0.0000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000   -1.2000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0  0  0  0
+  1  3  1  0  0  0  0
+  1  4  1  0  0  0  0
+  1  5  1  0  0  0  0
+M  CHG  1   1  -1
+M  RAD  1   1   2
+M  END
+)";
+
+static constexpr char SiF3_dianion_invalid_mol[] = R"(
+  -INDIGO-test
+
+  4  3  0  0  0  0  0  0  0  0999 V2000
+    0.0000    0.0000    0.0000 Si  0  0  0  0  0  0  0  0  0  0  0  0
+    1.0000    0.0000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    1.0000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.0000    0.0000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0  0  0  0
+  1  3  1  0  0  0  0
+  1  4  1  0  0  0  0
+M  CHG  1   1  -2
+M  END
+)";
+
+static constexpr char Si4_cycle_radical_v3000[] = R"(
+  Mrv1805 07132505242D          
+
+  0  0  0     0  0            999 V3000
+M  V30 BEGIN CTAB
+M  V30 COUNTS 4 4 0 0 0
+M  V30 BEGIN ATOM
+M  V30 1 Si 0.77 1.859 0 0
+M  V30 2 Si 1.859 0.77 0 0 RAD=2
+M  V30 3 Si 0.77 -0.3189 0 0
+M  V30 4 Si -0.3189 0.77 0 0 VAL=2
+M  V30 END ATOM
+M  V30 BEGIN BOND
+M  V30 1 1 3 4
+M  V30 2 1 1 4
+M  V30 3 1 1 2
+M  V30 4 2 2 3
+M  V30 END BOND
+M  V30 END CTAB
+M  END
+)";
+
+static constexpr char Si29F5_dianion_isotope_mol[] = R"(
+  -INDIGO-test
+
+  6  5  0  0  0  0  0  0  0  0999 V2000
+    0.0000    0.0000    0.0000 Si  0  0  0  0  0  0  0  0  0  0  0  0
+    1.2000    0.0000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    1.2000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.2000    0.0000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000   -1.2000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+    0.8485    0.8485    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0  0  0  0
+  1  3  1  0  0  0  0
+  1  4  1  0  0  0  0
+  1  5  1  0  0  0  0
+  1  6  1  0  0  0  0
+M  CHG  1   1  -2
+M  ISO  1   1  29
+M  END
+)";
+
+TEST_F(IndigoApiBasicTest, valence_Si_pentafluoride_dianion)
+{
+    const int mol = indigoLoadMoleculeFromString(SiF5_dianion_mol);
+    ASSERT_NE(-1, mol);
+    ASSERT_EQ(6, indigoCountAtoms(mol));
+    ASSERT_EQ(5, indigoCountBonds(mol));
+
+    const char* smiles = indigoCanonicalSmiles(mol);
+    ASSERT_NE(nullptr, smiles);
+    ASSERT_STRNE("", smiles);
+}
+
+TEST_F(IndigoApiBasicTest, valence_Si_hexafluorosilicate)
+{
+    int mol = indigoLoadMoleculeFromString("[Si-2](F)(F)(F)(F)(F)F");
+    ASSERT_NE(-1, mol);
+    ASSERT_EQ(7, indigoCountAtoms(mol));
+
+    const char* smiles = indigoCanonicalSmiles(mol);
+    ASSERT_NE(nullptr, smiles);
+    ASSERT_STRNE("", smiles);
+}
+
+// charge=-2, conn=4, rad=1 → conn+rad=5 → valence=5 (radical path)
+TEST_F(IndigoApiBasicTest, valence_Si_dianion_radical)
+{
+    const int mol = indigoLoadMoleculeFromString(SiF4_dianion_radical_mol);
+    ASSERT_NE(-1, mol);
+    ASSERT_EQ(5, indigoCountAtoms(mol));
+
+    const char* smiles = indigoCanonicalSmiles(mol);
+    ASSERT_NE(nullptr, smiles);
+    ASSERT_STRNE("", smiles);
+}
+
+TEST_F(IndigoApiBasicTest, valence_Ge_pentafluoride_dianion)
+{
+    const int mol = indigoLoadMoleculeFromString(GeF5_dianion_mol);
+    ASSERT_NE(-1, mol);
+    ASSERT_EQ(6, indigoCountAtoms(mol));
+
+    const char* smiles = indigoCanonicalSmiles(mol);
+    ASSERT_NE(nullptr, smiles);
+    ASSERT_STRNE("", smiles);
+}
+
+// charge=-1, conn=5 → valence=5 (monoanion path)
+TEST_F(IndigoApiBasicTest, valence_Si_monoanion_pentacoordinate)
+{
+    int mol = indigoLoadMoleculeFromString("[Si-](F)(F)(F)(F)F");
+    ASSERT_NE(-1, mol);
+    ASSERT_EQ(6, indigoCountAtoms(mol));
+
+    const char* smiles = indigoCanonicalSmiles(mol);
+    ASSERT_NE(nullptr, smiles);
+    ASSERT_STRNE("", smiles);
+}
+
+TEST_F(IndigoApiBasicTest, valence_Ge_monoanion_radical)
+{
+    const int mol = indigoLoadMoleculeFromString(GeF4_monoanion_radical_mol);
+    ASSERT_NE(-1, mol);
+    ASSERT_EQ(5, indigoCountAtoms(mol));
+
+    const char* smiles = indigoCanonicalSmiles(mol);
+    ASSERT_NE(nullptr, smiles);
+    ASSERT_STRNE("", smiles);
+}
+
+TEST_F(IndigoApiBasicTest, valence_Si_dianion_invalid_bonds)
+{
+    int mol = indigoLoadMoleculeFromString(SiF3_dianion_invalid_mol);
+    ASSERT_NE(-1, mol);
+
+    const char* valenceErr = indigoCheckBadValence(mol);
+    ASSERT_NE(nullptr, valenceErr);
+    std::string errStr(valenceErr);
+    EXPECT_NE(std::string::npos, errStr.find("Si")) << "Error should mention Si, got: " << errStr;
+    EXPECT_NE(std::string::npos, errStr.find("-2")) << "Error should mention charge -2, got: " << errStr;
+    EXPECT_NE(std::string::npos, errStr.find("3 drawn bonds")) << "Error should mention 3 drawn bonds, got: " << errStr;
+}
+
+TEST_F(IndigoApiBasicTest, parse_Si_tetramer_cycle_radical)
+{
+    const int mol = indigoLoadMoleculeFromString(Si4_cycle_radical_v3000);
+    ASSERT_NE(-1, mol);
+    ASSERT_EQ(4, indigoCountAtoms(mol));
+    ASSERT_EQ(4, indigoCountBonds(mol));
+}
+
+// charge=-2, conn=5, isotope=29 → valence=5 (fix path with isotope annotation)
+TEST_F(IndigoApiBasicTest, valence_Si29_isotope_pentafluoride_dianion)
+{
+    const int mol = indigoLoadMoleculeFromString(Si29F5_dianion_isotope_mol);
+    ASSERT_NE(-1, mol);
+    ASSERT_EQ(6, indigoCountAtoms(mol));
+    ASSERT_EQ(5, indigoCountBonds(mol));
+
+    const char* smiles = indigoCanonicalSmiles(mol);
+    ASSERT_NE(nullptr, smiles);
+    ASSERT_STRNE("", smiles);
 }

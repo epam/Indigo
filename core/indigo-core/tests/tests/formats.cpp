@@ -762,6 +762,210 @@ TEST_F(IndigoCoreFormatsTest, best_allign)
     ASSERT_EQ(pairs.size(), 559);
 }
 
+// ============================================================================
+// Regression tests for issue #3496: loadQueryMolecule crash on V3000 molfiles
+// with VAL= property in ATOM block.
+//
+// Root cause: use-after-free in QueryMolecule::setExplicitValence() —
+// passed _atoms[idx] (raw pointer) into Atom::und() instead of releaseAtom(idx),
+// then resetAtom() deleted the old atom already captured as child of the new node.
+//
+// Each test uses a unique synthetic V3000 molfile (not a copy of user data).
+// Every test calls smiles() after loading to force traversal of the atom
+// constraint tree — this reliably crashes on the dangling pointer left by the bug.
+// ============================================================================
+
+// Test 1: Single atom with VAL= positive value — simplest crash trigger
+TEST_F(IndigoCoreFormatsTest, issue3496_val_positive_single_atom)
+{
+    const char* mol = "\n\n\n"
+                      "  0  0  0     0  0            999 V3000\n"
+                      "M  V30 BEGIN CTAB\n"
+                      "M  V30 COUNTS 1 0 0 0 0\n"
+                      "M  V30 BEGIN ATOM\n"
+                      "M  V30 1 N 0 0 0 0 VAL=3\n"
+                      "M  V30 END ATOM\n"
+                      "M  V30 END CTAB\n"
+                      "M  END\n";
+
+    QueryMolecule qmol;
+    BufferScanner scanner(mol);
+    MolfileLoader loader(scanner);
+    ASSERT_NO_THROW(loader.loadQueryMolecule(qmol));
+    ASSERT_EQ(qmol.vertexCount(), 1);
+    ASSERT_FALSE(smiles(qmol).empty());
+}
+
+// Test 2: VAL=-1 (special value → valence=0)
+TEST_F(IndigoCoreFormatsTest, issue3496_val_minus_one)
+{
+    const char* mol = "\n\n\n"
+                      "  0  0  0     0  0            999 V3000\n"
+                      "M  V30 BEGIN CTAB\n"
+                      "M  V30 COUNTS 1 0 0 0 0\n"
+                      "M  V30 BEGIN ATOM\n"
+                      "M  V30 1 Cl 1.5 -2.0 0 0 VAL=-1\n"
+                      "M  V30 END ATOM\n"
+                      "M  V30 END CTAB\n"
+                      "M  END\n";
+
+    QueryMolecule qmol;
+    BufferScanner scanner(mol);
+    MolfileLoader loader(scanner);
+    ASSERT_NO_THROW(loader.loadQueryMolecule(qmol));
+    ASSERT_EQ(qmol.vertexCount(), 1);
+    ASSERT_FALSE(smiles(qmol).empty());
+}
+
+// Test 3: CHG= and VAL= on the same atom — double resetAtom sequence
+TEST_F(IndigoCoreFormatsTest, issue3496_chg_and_val_same_atom)
+{
+    const char* mol = "\n\n\n"
+                      "  0  0  0     0  0            999 V3000\n"
+                      "M  V30 BEGIN CTAB\n"
+                      "M  V30 COUNTS 1 0 0 0 0\n"
+                      "M  V30 BEGIN ATOM\n"
+                      "M  V30 1 Fe 0 0 0 0 CHG=2 VAL=6\n"
+                      "M  V30 END ATOM\n"
+                      "M  V30 END CTAB\n"
+                      "M  END\n";
+
+    QueryMolecule qmol;
+    BufferScanner scanner(mol);
+    MolfileLoader loader(scanner);
+    ASSERT_NO_THROW(loader.loadQueryMolecule(qmol));
+    ASSERT_EQ(qmol.vertexCount(), 1);
+    ASSERT_FALSE(smiles(qmol).empty());
+}
+
+// Test 4: MASS= and VAL= on the same atom — isotope + valence
+TEST_F(IndigoCoreFormatsTest, issue3496_mass_and_val_same_atom)
+{
+    const char* mol = "\n\n\n"
+                      "  0  0  0     0  0            999 V3000\n"
+                      "M  V30 BEGIN CTAB\n"
+                      "M  V30 COUNTS 1 0 0 0 0\n"
+                      "M  V30 BEGIN ATOM\n"
+                      "M  V30 1 P 0 0 0 0 MASS=31 VAL=5\n"
+                      "M  V30 END ATOM\n"
+                      "M  V30 END CTAB\n"
+                      "M  END\n";
+
+    QueryMolecule qmol;
+    BufferScanner scanner(mol);
+    MolfileLoader loader(scanner);
+    ASSERT_NO_THROW(loader.loadQueryMolecule(qmol));
+    ASSERT_EQ(qmol.vertexCount(), 1);
+    ASSERT_FALSE(smiles(qmol).empty());
+}
+
+// Test 5: VAL= on atom connected by bond type 8 (any) — query bond + valence
+TEST_F(IndigoCoreFormatsTest, issue3496_val_with_any_bond)
+{
+    const char* mol = "\n\n\n"
+                      "  0  0  0     0  0            999 V3000\n"
+                      "M  V30 BEGIN CTAB\n"
+                      "M  V30 COUNTS 2 1 0 0 0\n"
+                      "M  V30 BEGIN ATOM\n"
+                      "M  V30 1 Ru 0 0 0 0 CHG=3 VAL=6\n"
+                      "M  V30 2 O 1.5 0 0 0 VAL=2\n"
+                      "M  V30 END ATOM\n"
+                      "M  V30 BEGIN BOND\n"
+                      "M  V30 1 8 1 2\n"
+                      "M  V30 END BOND\n"
+                      "M  V30 END CTAB\n"
+                      "M  END\n";
+
+    QueryMolecule qmol;
+    BufferScanner scanner(mol);
+    MolfileLoader loader(scanner);
+    ASSERT_NO_THROW(loader.loadQueryMolecule(qmol));
+    ASSERT_EQ(qmol.vertexCount(), 2);
+    ASSERT_EQ(qmol.edgeCount(), 1);
+    ASSERT_FALSE(smiles(qmol).empty());
+}
+
+// Test 6: Multiple atoms with VAL= in one molecule
+TEST_F(IndigoCoreFormatsTest, issue3496_multiple_val_atoms)
+{
+    const char* mol = "\n\n\n"
+                      "  0  0  0     0  0            999 V3000\n"
+                      "M  V30 BEGIN CTAB\n"
+                      "M  V30 COUNTS 3 2 0 0 0\n"
+                      "M  V30 BEGIN ATOM\n"
+                      "M  V30 1 C 0 0 0 0 VAL=4\n"
+                      "M  V30 2 O 1.2 0 0 0 VAL=2\n"
+                      "M  V30 3 N -1.2 0 0 0 VAL=3\n"
+                      "M  V30 END ATOM\n"
+                      "M  V30 BEGIN BOND\n"
+                      "M  V30 1 2 1 2\n"
+                      "M  V30 2 1 1 3\n"
+                      "M  V30 END BOND\n"
+                      "M  V30 END CTAB\n"
+                      "M  END\n";
+
+    QueryMolecule qmol;
+    BufferScanner scanner(mol);
+    MolfileLoader loader(scanner);
+    ASSERT_NO_THROW(loader.loadQueryMolecule(qmol));
+    ASSERT_EQ(qmol.vertexCount(), 3);
+    ASSERT_EQ(qmol.edgeCount(), 2);
+    ASSERT_FALSE(smiles(qmol).empty());
+}
+
+// Test 7: RAD= on one atom, VAL= on another — mixed properties across atoms
+TEST_F(IndigoCoreFormatsTest, issue3496_rad_and_val_different_atoms)
+{
+    const char* mol = "\n\n\n"
+                      "  0  0  0     0  0            999 V3000\n"
+                      "M  V30 BEGIN CTAB\n"
+                      "M  V30 COUNTS 2 1 0 0 0\n"
+                      "M  V30 BEGIN ATOM\n"
+                      "M  V30 1 C 0 0 0 0 RAD=2\n"
+                      "M  V30 2 Si 1.5 0 0 0 VAL=4\n"
+                      "M  V30 END ATOM\n"
+                      "M  V30 BEGIN BOND\n"
+                      "M  V30 1 1 1 2\n"
+                      "M  V30 END BOND\n"
+                      "M  V30 END CTAB\n"
+                      "M  END\n";
+
+    QueryMolecule qmol;
+    BufferScanner scanner(mol);
+    MolfileLoader loader(scanner);
+    ASSERT_NO_THROW(loader.loadQueryMolecule(qmol));
+    ASSERT_EQ(qmol.vertexCount(), 2);
+    ASSERT_FALSE(smiles(qmol).empty());
+}
+
+// Test 8: Bond type 9 (coordination) without VAL= — control, should not regress
+TEST_F(IndigoCoreFormatsTest, issue3496_coordination_bond_no_val)
+{
+    const char* mol = "\n\n\n"
+                      "  0  0  0     0  0            999 V3000\n"
+                      "M  V30 BEGIN CTAB\n"
+                      "M  V30 COUNTS 3 2 0 0 0\n"
+                      "M  V30 BEGIN ATOM\n"
+                      "M  V30 1 Cu 0 0 0 0 CHG=2\n"
+                      "M  V30 2 N 1.5 0 0 0\n"
+                      "M  V30 3 N -1.5 0 0 0\n"
+                      "M  V30 END ATOM\n"
+                      "M  V30 BEGIN BOND\n"
+                      "M  V30 1 9 1 2\n"
+                      "M  V30 2 9 1 3\n"
+                      "M  V30 END BOND\n"
+                      "M  V30 END CTAB\n"
+                      "M  END\n";
+
+    QueryMolecule qmol;
+    BufferScanner scanner(mol);
+    MolfileLoader loader(scanner);
+    ASSERT_NO_THROW(loader.loadQueryMolecule(qmol));
+    ASSERT_EQ(qmol.vertexCount(), 3);
+    ASSERT_EQ(qmol.edgeCount(), 2);
+    ASSERT_FALSE(smiles(qmol).empty());
+}
+
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif

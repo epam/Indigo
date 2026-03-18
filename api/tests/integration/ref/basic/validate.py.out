@@ -44,5 +44,5 @@ True
 True
 element: explicit valence 3 specified on H, but 4 bonds are drawn
 True
-Exception: SMILES saver: unsure hydrogen count on atom #0
+Exception: element: explicit valence 3 specified on H, but 4 bonds are drawn
 True
