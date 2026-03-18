@@ -283,6 +283,7 @@ void IndigoSdfSaver::saveMonomerLibrary(const MonomerTemplateLibrary& monomers_l
         auto& mgt = group_kvp.second;
         Molecule mol;
         std::unordered_map<std::string, int> template_atom_idx_by_id;
+        // Preserve the template order from the source library; monomerTemplates() is a map sorted by id.
         for (const auto& template_id : mgt.templateIds())
         {
             const auto& mt = monomers_library.getMonomerTemplateById(template_id);

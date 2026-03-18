@@ -1244,8 +1244,8 @@ void MoleculeJsonLoader::addToLibMonomerGroupTemplate(MonomerTemplateLibrary& li
                                 const std::vector<std::string>& template_refs) -> MonomerGroupTemplate& {
             library.addMonomerGroupTemplate(MonomerGroupTemplate(id, name, monomer_class, idt_alias));
             auto& mgt = library.getMonomerGroupTemplateById(id);
-            for (const auto& template_id : template_refs)
-                mgt.addTemplate(library, template_id);
+            for (const auto& template_ref : template_refs)
+                mgt.addTemplate(library, template_ref);
             parsed_mgt = &mgt;
             return mgt;
         },
@@ -1260,10 +1260,10 @@ void MoleculeJsonLoader::addToLibMonomerGroupTemplate(MonomerTemplateLibrary& li
 
     if (parsed_mgt != nullptr && monomer_group_template.HasMember("id"))
     {
-        const std::string group_id = monomer_group_template["id"].GetString();
-        for (const auto& [template_ref, id] : _template_ref_to_id)
+        const std::string id = monomer_group_template["id"].GetString();
+        for (const auto& [template_ref, ref_id] : _template_ref_to_id)
         {
-            if (id == group_id && template_ref.rfind(MonomerGroupTemplate::ref_prefix, 0) == 0)
+            if (ref_id == id && template_ref.rfind(MonomerGroupTemplate::ref_prefix, 0) == 0)
             {
                 parsed_mgt->setRef(template_ref);
                 break;

@@ -238,7 +238,7 @@ void KetDocumentJsonLoader::parseMonomerGroupTemplate(const rapidjson::Value& mt
             throw Error("Monomer template group %s contains IDT alias without base.", id.c_str());
     }
 
-    std::vector<std::string> template_ids;
+    std::vector<std::string> template_refs;
     if (mt_json.HasMember("templates"))
     {
         auto& templates = mt_json["templates"];
@@ -247,11 +247,11 @@ void KetDocumentJsonLoader::parseMonomerGroupTemplate(const rapidjson::Value& mt
             auto& template_el = templates[i];
             if (!template_el.HasMember("$ref"))
                 throw Error("Monomer template group %s contains template without $ref.", id.c_str());
-            template_ids.push_back(resolveMonomerTemplateId(template_el["$ref"].GetString(), resolveTemplateId));
+            template_refs.push_back(resolveMonomerTemplateId(template_el["$ref"].GetString(), resolveTemplateId));
         }
     }
 
-    auto& mon_group_template = addMonomerGroupTemplate(id, name, monomer_class, idt_alias, template_ids);
+    auto& mon_group_template = addMonomerGroupTemplate(id, name, monomer_class, idt_alias, template_refs);
 
     if (mt_json.HasMember("connections"))
     {
