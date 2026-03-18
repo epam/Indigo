@@ -298,6 +298,8 @@ namespace indigo
             return _connections;
         }
 
+        bool isValid() const;
+
         static inline const std::string ref_prefix = "monomerGroupTemplate-";
 
     private:

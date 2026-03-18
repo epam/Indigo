@@ -567,6 +567,17 @@
                     "templateId": "monomerTemplate-P",
                     "attachmentPointId": "R2"
                 }
+            },
+            {
+                "connectionType": "single",
+                "endpoint1": {
+                    "templateId": "monomerTemplate-Ade",
+                    "attachmentPointId": "R1"
+                },
+                "endpoint2": {
+                    "templateId": "monomerTemplate-Rib",
+                    "attachmentPointId": "R3"
+                }
             }
         ]
     }

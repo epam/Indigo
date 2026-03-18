@@ -635,17 +635,21 @@ CEXPORT int indigoLoadMonomerLibrary(int source)
     {
         IndigoObject& obj = self.getObject(source);
         std::unique_ptr<IndigoMonomerLibrary> libptr = std::make_unique<IndigoMonomerLibrary>();
-        try // try to load as json
+        Scanner& scanner = IndigoScanner::get(obj);
+        auto pos = scanner.tell();
+
+        try
         {
-            MoleculeJsonLoader loader(IndigoScanner::get(obj));
-            loader.stereochemistry_options.ignore_errors = true;
-            loader.loadMonomerLibrary(libptr->get());
-        }
-        catch (Exception& e) // trying as SDF
-        {
-            try
+            MoleculeJsonLoader loader(scanner);
+            if (loader.isParsed())
             {
-                SdfLoader sdf_loader(IndigoScanner::get(obj));
+                loader.stereochemistry_options.ignore_errors = true;
+                loader.loadMonomerLibrary(libptr->get());
+            }
+            else
+            {
+                scanner.seek(pos, SEEK_SET);
+                SdfLoader sdf_loader(scanner);
                 PropertiesMap properties;
                 while (!sdf_loader.isEOF())
                 {
@@ -667,10 +671,10 @@ CEXPORT int indigoLoadMonomerLibrary(int source)
                         libptr->get().addMonomersFromMolecule(mol, properties);
                 }
             }
-            catch (Exception& e)
-            {
-                throw IndigoError("Error loading monomer library: %s", e.message());
-            }
+        }
+        catch (Exception& e)
+        {
+            throw IndigoError("Error loading monomer library: %s", e.message());
         }
         return self.addObject(libptr.release());
     }

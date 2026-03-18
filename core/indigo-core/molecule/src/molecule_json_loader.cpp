@@ -31,9 +31,10 @@ IMPL_ERROR(MoleculeJsonLoader, "molecule json loader");
 MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
     : _mol_array(kArrayType), _mol_nodes(_mol_array), _meta_objects(kArrayType), _templates(kArrayType), _monomer_array(kArrayType),
       _connection_array(kArrayType), _monomer_shapes(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false), _components_count(0),
-      _document(), _annotation(kArrayType)
+      _parsed(false), _document(), _annotation(kArrayType)
 {
     parse_ket(ket);
+    _parsed = true;
 }
 
 void MoleculeJsonLoader::parse_ket(Document& ket)
@@ -129,7 +130,7 @@ void MoleculeJsonLoader::parse_ket(Document& ket)
 MoleculeJsonLoader::MoleculeJsonLoader(Scanner& scanner)
     : _mol_array(kArrayType), _mol_nodes(_mol_array), _meta_objects(kArrayType), _templates(kArrayType), _monomer_array(kArrayType),
       _connection_array(kArrayType), _monomer_shapes(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false), _components_count(0),
-      _document(), _annotation(kArrayType)
+      _parsed(false), _document(), _annotation(kArrayType)
 {
     if (scanner.lookNext() == '{')
     {
@@ -142,18 +143,22 @@ MoleculeJsonLoader::MoleculeJsonLoader(Scanner& scanner)
             if (_document.HasMember("root"))
             {
                 parse_ket(_document);
+                _parsed = true;
             }
         }
     }
-    else
-        throw Error("Invalid JSON input");
 }
 
 MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes)
     : _mol_nodes(mol_nodes), _meta_objects(kArrayType), _templates(kArrayType), _monomer_array(kArrayType), _connection_array(kArrayType),
       _monomer_shapes(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false), ignore_no_chiral_flag(false), skip_3d_chirality(false),
-      treat_x_as_pseudoatom(false), treat_stereo_as(0), _components_count(0), _document(), _annotation(kArrayType)
+      treat_x_as_pseudoatom(false), treat_stereo_as(0), _components_count(0), _parsed(true), _document(), _annotation(kArrayType)
 {
+}
+
+bool MoleculeJsonLoader::isParsed() const
+{
+    return _parsed;
 }
 
 int MoleculeJsonLoader::addBondToMoleculeQuery(int beg, int end, int order, int topology, int direction)
@@ -1269,6 +1274,9 @@ void MoleculeJsonLoader::addToLibMonomerGroupTemplate(MonomerTemplateLibrary& li
 
 void MoleculeJsonLoader::loadMonomerLibrary(MonomerTemplateLibrary& library)
 {
+    if (!_parsed)
+        throw Error("Invalid JSON input");
+
     // Add monomer teplates
     for (SizeType i = 0; i < _templates.Size(); i++)
     {
@@ -1605,6 +1613,9 @@ std::string MoleculeJsonLoader::monomerMolClass(const std::string& class_name)
 
 void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
 {
+    if (!_parsed)
+        throw Error("Invalid JSON input");
+
     ObjArray<Array<int>> mol_mappings;
     for (rapidjson::SizeType node_idx = 0; node_idx < _mol_nodes.Size(); ++node_idx)
     {

@@ -256,6 +256,75 @@ namespace indigo
         return false;
     }
 
+    bool MonomerGroupTemplate::isValid() const
+    {
+        if (_connections.empty())
+            return true;
+
+        // map template id to index in _template_ids for quick lookup
+        std::unordered_map<std::string, int> template_id_to_idx;
+        template_id_to_idx.reserve(_template_ids.size());
+        for (int i = 0; i < static_cast<int>(_template_ids.size()); ++i)
+            template_id_to_idx.emplace(_template_ids[i], i);
+
+        auto resolve_template_idx = [&template_id_to_idx](const KetConnectionEndPoint& endpoint) -> int {
+            if (!hasKetStrProp(endpoint, templateId))
+                return -1;
+
+            const auto& endpoint_template_id = getKetStrProp(endpoint, templateId);
+            if (auto it = template_id_to_idx.find(endpoint_template_id); it != template_id_to_idx.end())
+                return it->second;
+
+            if (endpoint_template_id.rfind(MonomerTemplate::ref_prefix, 0) == 0)
+            {
+                auto it = template_id_to_idx.find(endpoint_template_id.substr(MonomerTemplate::ref_prefix.size()));
+                if (it != template_id_to_idx.end())
+                    return it->second;
+            }
+
+            return -1;
+        };
+
+        std::vector<std::vector<int>> adjacency(_template_ids.size());
+        for (const auto& connection : _connections)
+        {
+            int ep1_idx = resolve_template_idx(connection.ep1());
+            int ep2_idx = resolve_template_idx(connection.ep2());
+            if (ep1_idx < 0 || ep2_idx < 0)
+                return false;
+
+            if (ep1_idx == ep2_idx)
+                continue;
+
+            adjacency[ep1_idx].push_back(ep2_idx);
+            adjacency[ep2_idx].push_back(ep1_idx);
+        }
+
+        // dfs to check connectivity
+        std::vector<bool> visited(_template_ids.size(), false);
+        std::vector<int> stack{0};
+        int visited_count = 1;
+        visited[0] = true;
+
+        while (!stack.empty())
+        {
+            int current = stack.back();
+            stack.pop_back();
+
+            for (int next : adjacency[current])
+            {
+                if (visited[next])
+                    continue;
+
+                visited[next] = true;
+                ++visited_count; // count visited templates
+                stack.push_back(next);
+            }
+        }
+
+        return visited_count == static_cast<int>(_template_ids.size());
+    }
+
     IMPL_ERROR(MonomerTemplateLibrary, "MonomerTemplateLibrary");
 
     MonomerTemplate& MonomerTemplateLibrary::addMonomerTemplate(TGroup& tg, const IdtAlias& idt_alias)
@@ -665,6 +734,9 @@ namespace indigo
                     if (bond_annotations.count(bond_idx))
                         connection.setAnnotation(bond_annotations.at(bond_idx));
                 }
+
+                if (!mgt->get().isValid())
+                    throw Error("Monomer template group %s has disconnected templates.", mgt->get().id().c_str());
             }
         }
     }

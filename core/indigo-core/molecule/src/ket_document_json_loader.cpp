@@ -57,6 +57,7 @@ namespace
         if (hasKetStrProp(endpoint, templateId))
             setKetStrProp(endpoint, templateId, resolveMonomerTemplateId(getKetStrProp(endpoint, templateId), resolveTemplateId));
     }
+
 } // namespace
 
 void KetDocumentJsonLoader::parseConnections(const rapidjson::Value& connections, connection_add_func addConnection, template_id_resolve_func resolveTemplateId)
@@ -264,6 +265,9 @@ void KetDocumentJsonLoader::parseMonomerGroupTemplate(const rapidjson::Value& mt
 
     if (mt_json.HasMember("aliasAxoLabs"))
         mon_group_template.setAliasAxoLabs(mt_json["aliasAxoLabs"].GetString());
+
+    if (!mon_group_template.isValid())
+        throw KetDocumentJsonLoader::Error("Monomer template group %s has disconnected templates.", mon_group_template.id().c_str());
 }
 
 void KetDocumentJsonLoader::parseMonomerTemplate(const rapidjson::Value& mt_json, template_add_func addMonomerTemplate)

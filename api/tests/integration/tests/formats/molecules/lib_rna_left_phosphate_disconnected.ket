@@ -52,17 +52,6 @@
           "templateId": "monomerTemplate-P___Phosphate",
           "attachmentPointId": "R2"
         }
-      },
-      {
-        "connectionType": "single",
-        "endpoint1": {
-          "templateId": "monomerTemplate-A___Adenine",
-          "attachmentPointId": "R1"
-        },
-        "endpoint2": {
-          "templateId": "monomerTemplate-R___Ribose",
-          "attachmentPointId": "R3"
-        }
       }
     ]
   },
