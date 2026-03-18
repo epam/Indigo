@@ -1137,8 +1137,8 @@ jobs:
         env:
           ORACLE_HOME: /opt/oracle/instantclient_23_5
           LD_LIBRARY_PATH: /opt/oracle/instantclient_23_5
-          PATH: /opt/oracle/instantclient_23_5:${{ env.PATH }}
         run: |
+          export PATH="/opt/oracle/instantclient_23_5:$PATH"
           mkdir -p /opt/bingo-oracle && cd /opt/bingo-oracle
           tar -xzf $GITHUB_WORKSPACE/dist/bingo-oracle*.tgz --strip-components=1
           sh ./bingo-oracle-install.sh \
