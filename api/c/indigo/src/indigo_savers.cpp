@@ -258,16 +258,23 @@ void IndigoSdfSaver::saveMonomerLibrary(const MonomerTemplateLibrary& monomers_l
         saver.saveBaseMolecule(mol);
         _output.printf(">  <%s>\n%s\n\n", "type", "monomerTemplate");
         if (mt.hasStringProp(toUType(MonomerTemplate::StringProps::aliasHELM)))
-            _output.printf(">  <%s>\n%s\n\n", "aliasHELM", mt.getStringProp(toUType(MonomerTemplate::StringProps::aliasHELM)).c_str());
+        {
+            std::string alias_helm = mt.getStringProp(toUType(MonomerTemplate::StringProps::aliasHELM));
+            auto first = alias_helm.find_first_not_of(" \t\n\r\f\v");
+            if (first == std::string::npos)
+                alias_helm.clear();
+            else
+                alias_helm = alias_helm.substr(first, alias_helm.find_last_not_of(" \t\n\r\f\v") - first + 1);
+            _output.printf(">  <%s>\n%s\n\n", "aliasHELM", alias_helm.c_str());
+        }
 
         printIdtAlias(mt.idtAlias(), _output);
 
         std::string modification_types;
         for (auto& mod_type : mt.modificationTypes())
         {
-            if (modification_types.size())
-                modification_types += ";";
             modification_types += mod_type;
+            modification_types += ";";
         }
 
         if (modification_types.size())
