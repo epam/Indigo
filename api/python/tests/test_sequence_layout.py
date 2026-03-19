@@ -14,6 +14,8 @@ import pytest
 from indigo import Indigo
 
 # ── Constants (mirror metalayout.h) ──────────────────
+
+DEFAULT_BOND_LENGTH = 1.0
 MONOMER_BOND_LENGTH = 1.5
 TOLERANCE = 0.25  # absolute tolerance for bond length comparisons
 
@@ -389,3 +391,24 @@ class TestEdgeCases:
 
         for i, length in enumerate(lengths):
             assert length > 0.1, f"Bond {i} is near-zero: {length:.3f}"
+
+
+class TestRegularMoleculeLayoutRegression:
+    """Regression for PR #3458: _calculatePos must use DEFAULT_BOND_LENGTH (1.0)
+    for regular (non-HELM) molecules, not MONOMER_BOND_LENGTH (1.5)."""
+
+    def test_benzene_bond_length_is_default(self, indigo):
+        """Regular SMILES layout should produce bonds ≈ 1.0, not 1.5."""
+        mol = indigo.loadMolecule("C1=CC=CC=C1")
+        mol.layout()
+
+        lengths = _bond_lengths(mol)
+        assert len(lengths) == 6, f"Expected 6 bonds, got {len(lengths)}"
+
+        for i, length in enumerate(lengths):
+            assert length == pytest.approx(
+                lengths[0], abs=0.2
+            ), f"Bond {i} differs from bond 0: {length:.3f} vs {lengths[0]:.3f}"
+            assert length == pytest.approx(
+                DEFAULT_BOND_LENGTH, abs=0.2
+            ), f"Bond {i} length {length:.3f} != DEFAULT_BOND_LENGTH ({DEFAULT_BOND_LENGTH})"

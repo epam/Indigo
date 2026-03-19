@@ -39,7 +39,7 @@ CEXPORT int indigoLayout(int object)
     {
         IndigoObject& obj = self.getObject(object);
 
-        if (IndigoBaseMolecule::is(obj))
+        if (IndigoBaseMolecule::is(obj) || IndigoKetDocument::is(obj))
         {
             BaseMolecule* mol = &obj.getBaseMolecule();
             Filter f;
@@ -126,42 +126,6 @@ CEXPORT int indigoLayout(int object)
                         }
                     }
                 }
-            }
-        }
-        else if (IndigoKetDocument::is(obj))
-        {
-            BaseMolecule& mol = obj.getBaseMolecule();
-
-            MoleculeLayout ml(mol, self.smart_layout);
-            ml.max_iterations = self.layout_max_iterations;
-            ml.bond_length = LayoutOptions::DEFAULT_BOND_LENGTH;
-            ml.layout_orientation = (LAYOUT_ORIENTATION)self.layout_orientation;
-            if (self.layout_preserve_existing || mol.hasAtropoStereoBonds())
-                ml.respect_existing_layout = true;
-
-            TimeoutCancellationHandler cancellation(self.cancellation_timeout);
-            ml.setCancellationHandler(&cancellation);
-
-            if (mol.tgroups.getTGroupCount())
-            {
-                ml.bond_length = LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH;
-                ml.respect_existing_layout = true;
-                ml.respect_cycles_direction = true;
-                ml.flexible_fixed_components = false;
-                ml.sequence_layout = true;
-                ml._smart_layout = false;
-            }
-
-            ml.make();
-
-            mol.clearBondDirections();
-            try
-            {
-                mol.markBondsStereocenters();
-                mol.markBondsAlleneStereo();
-            }
-            catch (Exception e)
-            {
             }
         }
         else if (IndigoBaseReaction::is(obj))

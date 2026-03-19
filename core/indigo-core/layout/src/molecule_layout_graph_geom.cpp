@@ -507,20 +507,16 @@ float MoleculeLayoutGraphSimple::calculateAngle(int v, int& v1, int& v2) const
 }
 
 // Calculate next vertex position at a given angle relative to the v1->v2 direction.
-// Pure geometric helper: caller decides the edge length.
-void MoleculeLayoutGraph::_calculatePos(float phi, const Vec2f& v1, const Vec2f& v2, Vec2f& v, float length)
+// Uses monomer bond length (1.5) for sequence layout with fixed atoms, default (1.0) otherwise.
+void MoleculeLayoutGraph::_calculatePos(float phi, const Vec2f& v1, const Vec2f& v2, Vec2f& v) const
 {
     Vec2f dir;
     dir.diff(v2, v1);
 
-    float alpha = dir.tiltAngle() + phi;
+    const float length = (sequence_layout && _n_fixed > 0) ? LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH : LayoutOptions::DEFAULT_BOND_LENGTH;
 
+    const float alpha = dir.tiltAngle() + phi;
     v.set(v1.x + cos(alpha) * length, v1.y + sin(alpha) * length);
-}
-
-float MoleculeLayoutGraph::_bondLength() const
-{
-    return (sequence_layout && _n_fixed > 0) ? LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH : 1.0f;
 }
 
 int MoleculeLayoutGraph::_getCycleDirection(const Cycle& cycle) const

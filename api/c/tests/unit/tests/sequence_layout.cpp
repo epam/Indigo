@@ -333,3 +333,31 @@ TEST_F(IndigoSequenceLayoutTest, MultipleRings_ConsistentBondLengths)
 
     indigoFree(mol);
 }
+
+// ==========================================================================
+//  PR #3458 Regression: regular (non-HELM) molecule must use DEFAULT_BOND_LENGTH
+// ==========================================================================
+TEST_F(IndigoSequenceLayoutTest, RegularMolecule_DefaultBondLength)
+{
+    // Regular SMILES — not HELM, no sequence layout
+    int mol = indigoLoadMoleculeFromString("C1=CC=CC=C1");
+    ASSERT_GE(mol, 0) << "Failed to load benzene: " << indigoGetLastError();
+
+    indigoLayout(mol);
+
+    auto lengths = collectBondLengths(mol);
+    ASSERT_FALSE(lengths.empty()) << "No bonds found in benzene";
+    ASSERT_EQ(lengths.size(), 6u) << "Expected 6 bonds in benzene";
+
+    for (size_t i = 0; i < lengths.size(); ++i)
+    {
+        EXPECT_NEAR(lengths[i], DEFAULT_BOND_LENGTH, TOLERANCE)
+            << "Bond " << i << " length " << lengths[i] << " != DEFAULT_BOND_LENGTH (" << DEFAULT_BOND_LENGTH << ")";
+    }
+
+    float minLen = *std::min_element(lengths.begin(), lengths.end());
+    float maxLen = *std::max_element(lengths.begin(), lengths.end());
+    EXPECT_NEAR(minLen, maxLen, TOLERANCE) << "Bond lengths are not uniform: min=" << minLen << " max=" << maxLen;
+
+    indigoFree(mol);
+}

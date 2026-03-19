@@ -619,14 +619,14 @@ void MoleculeLayoutGraph::_attachEars(int vert_idx, int drawn_idx, int* ears, co
 
     v1 = getPos(vert_idx);
     v2 = getPos(drawn_idx);
-    _calculatePos(phi, v1, rest_pos, v3, _bondLength());
-    _calculatePos(_2FLOAT(phi + 2. * M_PI / 3.), v1, rest_pos, v4, _bondLength());
+    _calculatePos(phi, v1, rest_pos, v3);
+    _calculatePos(_2FLOAT(phi + 2. * M_PI / 3.), v1, rest_pos, v4);
 
     if (Vec2f::dist(v3, v2) < Vec2f::dist(v4, v2))
         v3 = v4;
 
     _layout_vertices[ears[0]].pos = v3;
-    _calculatePos(_2FLOAT(M_PI / 4.), v1, v3, getPos(ears[1]), _bondLength());
+    _calculatePos(_2FLOAT(M_PI / 4.), v1, v3, getPos(ears[1]));
 }
 
 // Attach set of trivial components
@@ -947,10 +947,10 @@ void MoleculeLayoutGraph::_calculatePositionsManyNotDrawn(int vert_idx, Array<in
         if (splits[i].first > 0) // number of new edges in this agle
         {
             Vec2f pvert = getPos(angles[i].first); // splits index correspond to anges index
-            _calculatePos(splits[i].second, pstart, pvert, positions[calculated_positions++], _bondLength());
+            _calculatePos(splits[i].second, pstart, pvert, positions[calculated_positions++]);
             for (int j = 1; j < splits[i].first; j++)
             {
-                _calculatePos(splits[i].second, pstart, positions[calculated_positions - 1], positions[calculated_positions], _bondLength());
+                _calculatePos(splits[i].second, pstart, positions[calculated_positions - 1], positions[calculated_positions]);
                 calculated_positions++;
             }
         }
@@ -1007,12 +1007,12 @@ void MoleculeLayoutGraph::_calculatePositionsOneNotDrawn(Array<Vec2f>& positions
     {
         v2 = getPos(vert.neiVertex(edges[i]));
         phi = (angles[i + 1] - angles[i]) / 2;
-        _calculatePos(phi, v1, v2, positions[i], _bondLength());
+        _calculatePos(phi, v1, v2, positions[i]);
     }
 
     v2 = getPos(vert.neiVertex(edges.top()));
     phi = _2FLOAT((2. * M_PI + angles[0] - angles.top()) / 2.);
-    _calculatePos(phi, v1, v2, positions.top(), _bondLength());
+    _calculatePos(phi, v1, v2, positions.top());
 }
 
 void MoleculeLayoutGraph::_calculatePositionsSingleDrawn(int vert_idx, Array<int>& adjacent_list, int& n_pos, int drawn_idx, bool& two_ears,
@@ -1100,12 +1100,12 @@ void MoleculeLayoutGraph::_calculatePositionsSingleDrawn(int vert_idx, Array<int
     v1 = getPos(vert_idx);
     v2 = getPos(vert.neiVertex(drawn_idx));
 
-    _calculatePos(phi, v1, v2, positions[0], _bondLength());
+    _calculatePos(phi, v1, v2, positions[0]);
 
     for (int i = 1; i < n_pos; i++)
     {
         v2 = positions[i - 1];
-        _calculatePos(phi, v1, v2, positions[i], _bondLength());
+        _calculatePos(phi, v1, v2, positions[i]);
     }
 
     // Check cis/trans
