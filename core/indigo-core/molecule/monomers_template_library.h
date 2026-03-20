@@ -346,7 +346,6 @@ namespace indigo
                     }
         }
 
-        const MonomerTemplate& getMonomerTemplateById(const std::string& monomer_template_id);
         const MonomerTemplate& getMonomerTemplateById(const std::string& monomer_template_id) const;
         const std::string& getMonomerTemplateIdByAlias(MonomerClass monomer_class, const std::string& monomer_template_alias);
         const std::string& getMonomerTemplateIdByAliasHELM(MonomerClass monomer_class, const std::string& alias);

@@ -401,13 +401,6 @@ namespace indigo
         return res.first->second;
     }
 
-    const MonomerTemplate& MonomerTemplateLibrary::getMonomerTemplateById(const std::string& monomer_template_id)
-    {
-        if (_monomer_templates.count(monomer_template_id) == 0)
-            throw Error("Monomer template with id %s not found.", monomer_template_id.c_str());
-        return _monomer_templates.at(monomer_template_id);
-    }
-
     const MonomerTemplate& MonomerTemplateLibrary::getMonomerTemplateById(const std::string& monomer_template_id) const
     {
         if (_monomer_templates.count(monomer_template_id) == 0)
