@@ -7,6 +7,22 @@ def find_diff(a, b):
     return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
 
 
+def expect_monomer_library_load_error(root, filename, expected_error):
+    try:
+        indigo.loadMonomerLibraryFromFile(
+            os.path.join(root, filename + ".ket")
+        )
+        print(filename + ".ket:FAILED")
+        print("Expected error '%s'" % expected_error)
+    except IndigoException as e:
+        text = getIndigoExceptionText(e)
+        if expected_error in text:
+            print(filename + ".ket:SUCCEED")
+        else:
+            print(filename + ".ket:FAILED")
+            print("Expected error '%s' but got '%s'" % (expected_error, text))
+
+
 sys.path.append(
     os.path.normpath(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
@@ -103,6 +119,7 @@ files = [
     "lib_alanine",
     "lib_alanine_expanded",
     "lib_phos",
+    "lib_rna_left_phosphate",
     "lib_rna_preset_g",
     "lib_rna_preset_same",
     "lib_default_type",
@@ -124,3 +141,10 @@ for filename in files:
     else:
         print(filename + ".sdf:FAILED")
         print(diff)
+
+print("*** Invalid KET-monomer library to SDF ***")
+expect_monomer_library_load_error(
+    root,
+    "lib_rna_left_phosphate_disconnected",
+    "Monomer template group A_l has disconnected templates.",
+)

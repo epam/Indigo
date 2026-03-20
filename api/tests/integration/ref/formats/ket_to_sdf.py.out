@@ -11,5 +11,8 @@ lib_alanine.sdf:SUCCEED
 lib_alanine_expanded.sdf:SUCCEED
 lib_default_type.sdf:SUCCEED
 lib_phos.sdf:SUCCEED
+lib_rna_left_phosphate.sdf:SUCCEED
 lib_rna_preset_g.sdf:SUCCEED
 lib_rna_preset_same.sdf:SUCCEED
+*** Invalid KET-monomer library to SDF ***
+lib_rna_left_phosphate_disconnected.ket:SUCCEED
