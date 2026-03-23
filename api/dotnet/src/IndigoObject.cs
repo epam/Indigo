@@ -1413,6 +1413,18 @@ namespace com.epam.indigo
             return (dispatcher.checkResult(IndigoLib.indigoIsHighlighted(self)) == 1);
         }
 
+        public void select()
+        {
+            dispatcher.setSessionID();
+            dispatcher.checkResult(IndigoLib.indigoSelect(self));
+        }
+
+        public void unselect()
+        {
+            dispatcher.setSessionID();
+            dispatcher.checkResult(IndigoLib.indigoUnselect(self));
+        }
+
         public bool isSelected()
         {
             dispatcher.setSessionID();

@@ -147,8 +147,7 @@ std::unique_ptr<KetBaseMonomer>& KetDocument::addAmbiguousMonomer(const std::str
 
 BaseMolecule& KetDocument::getBaseMolecule()
 {
-    static thread_local std::optional<std::unique_ptr<Molecule>> molecule; // Temporary until direct conversion to molecule supported
-    if (!molecule.has_value())
+    if (!_cached_molecule)
     {
         // save to ket
         std::string json;
@@ -158,15 +157,13 @@ BaseMolecule& KetDocument::getBaseMolecule()
         // load molecule from ket
         rapidjson::Document data;
         std::ignore = data.Parse(json.c_str());
-        // auto& res = data.Parse(json.c_str());
-        // if res.hasParseError()
         MoleculeJsonLoader loader(data);
         loader.stereochemistry_options.ignore_errors = true;
         loader.ignore_noncritical_query_features = true;
-        molecule.emplace(std::make_unique<Molecule>());
-        loader.loadMolecule(*molecule.value().get());
+        _cached_molecule = std::make_unique<Molecule>();
+        loader.loadMolecule(*_cached_molecule);
     }
-    return *molecule.value().get();
+    return *_cached_molecule;
 }
 
 KetConnection& KetDocument::addConnection(const std::string& conn_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2)
@@ -558,6 +555,14 @@ int KetDocument::moleculeIdxByRef(const std::string& ref)
     if (it == _mol_ref_to_idx.end())
         throw Error("Molecule with ref %s not found", ref.c_str());
     return it->second;
+}
+
+KetDocument::~KetDocument() = default;
+
+KetDocument::KetDocument()
+    : _molecules(), original_format(0), _meta_objects(rapidjson::kArrayType), _r_groups(rapidjson::kArrayType), _json_molecules(rapidjson::kArrayType),
+      _json_document()
+{
 }
 
 KetDocument::KetDocument(BaseMolecule& bmol)

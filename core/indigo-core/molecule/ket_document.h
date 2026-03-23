@@ -37,15 +37,15 @@ namespace indigo
 {
     class BaseMolecule;
     class BaseReaction;
+    class Molecule;
     class Output;
 
     class DLLEXPORT KetDocument : public MonomerTemplateLibrary
     {
     public:
         DECL_ERROR;
-        KetDocument()
-            : _molecules(), original_format(0), _meta_objects(rapidjson::kArrayType), _r_groups(rapidjson::kArrayType), _json_molecules(rapidjson::kArrayType),
-              _json_document(){};
+        KetDocument();
+        ~KetDocument();
         KetDocument(const KetDocument& other) = delete;
         KetDocument(BaseMolecule& bmol);
         KetDocument(BaseReaction& breact);
@@ -248,6 +248,7 @@ namespace indigo
         std::vector<std::string> _fasta_properties;
         std::vector<KetMonomerShape> _monomer_shapes;
         std::optional<KetAnnotation> _annotation;
+        mutable std::unique_ptr<Molecule> _cached_molecule;
     };
 }
 

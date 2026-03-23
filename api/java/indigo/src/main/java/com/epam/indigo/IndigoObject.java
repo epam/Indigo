@@ -831,6 +831,16 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResult(this, lib.indigoIsHighlighted(self)) == 1;
     }
 
+    public void select() {
+        dispatcher.setSessionID();
+        Indigo.checkResult(this, lib.indigoSelect(self));
+    }
+
+    public void unselect() {
+        dispatcher.setSessionID();
+        Indigo.checkResult(this, lib.indigoUnselect(self));
+    }
+
     public boolean isSelected() {
         dispatcher.setSessionID();
         return Indigo.checkResult(this, lib.indigoIsSelected(self)) == 1;

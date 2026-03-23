@@ -907,6 +907,12 @@ namespace com.epam.indigo
         public static extern int indigoIsHighlighted(int item);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoSelect(int item);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoUnselect(int item);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoIsSelected(int item);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]

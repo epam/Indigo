@@ -20,6 +20,7 @@
 
 #include "base_cpp/cancellation_handler.h"
 #include "indigo_internal.h"
+#include "indigo_ket_document.h"
 #include "indigo_molecule.h"
 #include "indigo_reaction.h"
 #include "layout/molecule_cleaner_2d.h"
@@ -38,7 +39,7 @@ CEXPORT int indigoLayout(int object)
     {
         IndigoObject& obj = self.getObject(object);
 
-        if (IndigoBaseMolecule::is(obj))
+        if (IndigoBaseMolecule::is(obj) || IndigoKetDocument::is(obj))
         {
             BaseMolecule* mol = &obj.getBaseMolecule();
             Filter f;
