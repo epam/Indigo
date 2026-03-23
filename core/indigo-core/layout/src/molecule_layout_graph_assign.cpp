@@ -1809,7 +1809,7 @@ void MoleculeLayoutGraph::_assignRelativeSingleEdge(int fixed_component, const M
     _layout_vertices[idx2].type = ELEMENT_BOUNDARY;
 
     // Match ring edge length for sequence layout with selected vertices
-    const float edge_len = (sequence_layout && supergraph._n_fixed > 0) ? LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH : 1.0f;
+    const float edge_len = (sequence_layout && supergraph._n_fixed > 0) ? LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH : LayoutOptions::DEFAULT_BOND_LENGTH;
 
     if (fixed_component)
     {
