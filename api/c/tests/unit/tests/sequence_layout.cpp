@@ -192,6 +192,7 @@ TEST_F(IndigoSequenceLayoutTest, PureRing_UniformBondLength)
     indigoLayout(mol);
 
     auto lengths = collectBondLengths(mol);
+
     ASSERT_FALSE(lengths.empty()) << "No bonds found in pure ring";
 
     float minLen = *std::min_element(lengths.begin(), lengths.end());
@@ -334,9 +335,6 @@ TEST_F(IndigoSequenceLayoutTest, MultipleRings_ConsistentBondLengths)
     indigoFree(mol);
 }
 
-// ==========================================================================
-//  PR #3458 Regression: regular (non-HELM) molecule must use DEFAULT_BOND_LENGTH
-// ==========================================================================
 TEST_F(IndigoSequenceLayoutTest, RegularMolecule_DefaultBondLength)
 {
     // Regular SMILES — not HELM, no sequence layout

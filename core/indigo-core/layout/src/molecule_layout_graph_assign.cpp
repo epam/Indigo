@@ -1808,6 +1808,9 @@ void MoleculeLayoutGraph::_assignRelativeSingleEdge(int fixed_component, const M
     _layout_vertices[idx1].type = ELEMENT_BOUNDARY;
     _layout_vertices[idx2].type = ELEMENT_BOUNDARY;
 
+    // Match ring edge length for sequence layout with selected vertices
+    const float edge_len = (sequence_layout && supergraph._n_fixed > 0) ? LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH : 1.0f;
+
     if (fixed_component)
     {
         Vec2f pos1 = supergraph.getPos(getVertexExtIdx(idx1));
@@ -1819,6 +1822,7 @@ void MoleculeLayoutGraph::_assignRelativeSingleEdge(int fixed_component, const M
             pos1.set(0.f, 0.f);
             if (!pos2.normalize())
                 pos2.set(1.f, 0.f);
+            pos2.scale(edge_len);
         }
         else if (supergraph._fixed_vertices[getVertexExtIdx(idx1)] && supergraph._fixed_vertices[getVertexExtIdx(idx2)] == 0)
         {
@@ -1826,6 +1830,7 @@ void MoleculeLayoutGraph::_assignRelativeSingleEdge(int fixed_component, const M
             pos2.set(0.f, 0.f);
             if (!pos1.normalize())
                 pos1.set(1.f, 0.f);
+            pos1.scale(edge_len);
         }
 
         _layout_vertices[idx1].pos = pos1;
@@ -1834,7 +1839,7 @@ void MoleculeLayoutGraph::_assignRelativeSingleEdge(int fixed_component, const M
     else
     {
         _layout_vertices[idx1].pos.set(0.f, 0.f);
-        _layout_vertices[idx2].pos.set(0.f, 1.f);
+        _layout_vertices[idx2].pos.set(0.f, edge_len);
     }
 
     _layout_edges[edgeBegin()].type = ELEMENT_BOUNDARY;
