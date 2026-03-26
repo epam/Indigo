@@ -668,6 +668,17 @@ class IndigoLib:
             c_int,
             c_int,
         ]
+        IndigoLib.lib.indigoIterateSGroupAttachmentPoints.restype = c_int
+        IndigoLib.lib.indigoIterateSGroupAttachmentPoints.argtypes = [c_int]
+        IndigoLib.lib.indigoGetSGroupAttachmentPointAtomIdx.restype = c_int
+        IndigoLib.lib.indigoGetSGroupAttachmentPointAtomIdx.argtypes = [c_int]
+        IndigoLib.lib.indigoGetSGroupAttachmentPointLeaveAtom.restype = c_int
+        IndigoLib.lib.indigoGetSGroupAttachmentPointLeaveAtom.argtypes = [
+            c_int,
+            POINTER(c_int),
+        ]
+        IndigoLib.lib.indigoGetSGroupAttachmentPointLabel.restype = c_char_p
+        IndigoLib.lib.indigoGetSGroupAttachmentPointLabel.argtypes = [c_int]
         IndigoLib.lib.indigoGetSGroupDisplayOption.restype = c_int
         IndigoLib.lib.indigoGetSGroupDisplayOption.argtypes = [c_int]
         IndigoLib.lib.indigoSetSGroupDisplayOption.restype = c_int

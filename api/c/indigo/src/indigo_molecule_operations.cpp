@@ -1753,6 +1753,124 @@ CEXPORT int indigoDeleteSGroupAttachmentPoint(int sgroup, int ap_idx)
     INDIGO_END(-1);
 }
 
+//
+// IndigoSGroupAttachmentPoint
+//
+
+IndigoSGroupAttachmentPoint::IndigoSGroupAttachmentPoint(BaseMolecule& mol_, int sgroup_idx_, int ap_idx_)
+    : IndigoObject(SGROUP_ATTACHMENT_POINT), mol(mol_), sgroup_idx(sgroup_idx_), ap_idx(ap_idx_)
+{
+}
+
+IndigoSGroupAttachmentPoint::~IndigoSGroupAttachmentPoint()
+{
+}
+
+int IndigoSGroupAttachmentPoint::getIndex()
+{
+    return ap_idx;
+}
+
+IndigoSGroupAttachmentPoint& IndigoSGroupAttachmentPoint::cast(IndigoObject& obj)
+{
+    if (obj.type == IndigoObject::SGROUP_ATTACHMENT_POINT)
+        return (IndigoSGroupAttachmentPoint&)obj;
+
+    throw IndigoError("%s is not an SGroup attachment point", obj.debugInfo());
+}
+
+Superatom::_AttachmentPoint& IndigoSGroupAttachmentPoint::get()
+{
+    Superatom& sup = (Superatom&)mol.sgroups.getSGroup(sgroup_idx);
+    if (!sup.attachment_points.hasElement(ap_idx))
+        throw IndigoError("attachment point #%d is not an SGroup attachment point", ap_idx);
+
+    return sup.attachment_points[ap_idx];
+}
+
+//
+// IndigoSGroupAttachmentPointsIter
+//
+
+IndigoSGroupAttachmentPointsIter::IndigoSGroupAttachmentPointsIter(BaseMolecule& mol_, int sgroup_idx_)
+    : IndigoObject(SGROUP_ATTACHMENT_POINTS_ITER), _mol(mol_), _sgroup_idx(sgroup_idx_), _idx(-1)
+{
+}
+
+IndigoSGroupAttachmentPointsIter::~IndigoSGroupAttachmentPointsIter()
+{
+}
+
+bool IndigoSGroupAttachmentPointsIter::hasNext()
+{
+    Superatom& sup = (Superatom&)_mol.sgroups.getSGroup(_sgroup_idx);
+    if (_idx == -1)
+        return sup.attachment_points.begin() != sup.attachment_points.end();
+    return sup.attachment_points.next(_idx) != sup.attachment_points.end();
+}
+
+IndigoObject* IndigoSGroupAttachmentPointsIter::next()
+{
+    if (!hasNext())
+        return 0;
+
+    Superatom& sup = (Superatom&)_mol.sgroups.getSGroup(_sgroup_idx);
+    if (_idx == -1)
+        _idx = sup.attachment_points.begin();
+    else
+        _idx = sup.attachment_points.next(_idx);
+
+    std::unique_ptr<IndigoSGroupAttachmentPoint> ap = std::make_unique<IndigoSGroupAttachmentPoint>(_mol, _sgroup_idx, _idx);
+    return ap.release();
+}
+
+CEXPORT int indigoIterateSGroupAttachmentPoints(int sgroup)
+{
+    INDIGO_BEGIN
+    {
+        IndigoSuperatom& isup = IndigoSuperatom::cast(self.getObject(sgroup));
+        return self.addObject(new IndigoSGroupAttachmentPointsIter(isup.mol, isup.idx));
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoGetSGroupAttachmentPointAtomIdx(int ap)
+{
+    INDIGO_BEGIN
+    {
+        return IndigoSGroupAttachmentPoint::cast(self.getObject(ap)).get().aidx;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoGetSGroupAttachmentPointLeaveAtom(int ap, int* lvidx)
+{
+    INDIGO_BEGIN
+    {
+        int lv = IndigoSGroupAttachmentPoint::cast(self.getObject(ap)).get().lvidx;
+        if (lv == -1)
+        {
+            *lvidx = 0;
+            return 0;
+        }
+        *lvidx = lv;
+        return 1;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT const char* indigoGetSGroupAttachmentPointLabel(int ap)
+{
+    INDIGO_BEGIN
+    {
+        Superatom::_AttachmentPoint& apoint = IndigoSGroupAttachmentPoint::cast(self.getObject(ap)).get();
+        if (apoint.apid.size() < 1)
+            return "";
+        return apoint.apid.ptr();
+    }
+    INDIGO_END(0);
+}
+
 CEXPORT int indigoGetSGroupDisplayOption(int sgroup)
 {
     INDIGO_BEGIN

@@ -836,6 +836,36 @@ namespace com.epam.indigo
             return dispatcher.checkResult(IndigoLib.indigoDeleteSGroupAttachmentPoint(self, apidx));
         }
 
+        public IndigoObject iterateSGroupAttachmentPoints()
+        {
+            dispatcher.setSessionID();
+            return new IndigoObject(dispatcher, dispatcher.checkResult(IndigoLib.indigoIterateSGroupAttachmentPoints(self)), this);
+        }
+
+        public int getSGroupAttachmentPointAtomIdx()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoGetSGroupAttachmentPointAtomIdx(self));
+        }
+
+        public int? getSGroupAttachmentPointLeaveAtom()
+        {
+            int value;
+            dispatcher.setSessionID();
+            if (dispatcher.checkResult(IndigoLib.indigoGetSGroupAttachmentPointLeaveAtom(self, &value)) == 1)
+            {
+                return value;
+            }
+
+            return null;
+        }
+
+        public string getSGroupAttachmentPointLabel()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoGetSGroupAttachmentPointLabel(self));
+        }
+
         public int getSGroupDisplayOption()
         {
             dispatcher.setSessionID();
