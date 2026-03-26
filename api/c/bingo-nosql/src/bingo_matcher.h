@@ -1,6 +1,8 @@
 #ifndef __bingo_matcher__
 #define __bingo_matcher__
 
+#include <atomic>
+
 #include "bingo_base_index.h"
 #include "bingo_object.h"
 
@@ -9,6 +11,7 @@
 #include "indigo_molecule.h"
 #include "indigo_reaction.h"
 
+#include "base_cpp/os_thread_wrapper.h"
 #include "math/statistics.h"
 #include "molecule/molecule_exact_matcher.h"
 #include "molecule/molecule_substructure_matcher.h"
@@ -38,6 +41,8 @@ namespace bingo
 
     class SubstructureQueryData : public MatcherQueryData
     {
+    public:
+        int db_id;
     };
 
     class ExactQueryData : public MatcherQueryData
@@ -220,12 +225,86 @@ namespace bingo
 
         bool _isCurrentObjectExist();
 
-        bool _loadCurrentObject();
+        static bool _loadCurrentObject(BaseIndex& index, int current_id, IndigoObject*& current_obj);
 
         virtual void _setParameters(const char* params) = 0;
         virtual void _initPartition() = 0;
 
         ~BaseMatcher() override;
+    };
+
+    struct BaseSubstructureMatcherResult : public OsCommandResult
+    {
+        bool match = false;
+        int db_object_idx = -1;
+        std::unique_ptr<IndigoObject> indigo_obj;
+        void clear() override
+        {
+            match = false;
+            db_object_idx = -1;
+            indigo_obj.reset();
+        }
+    };
+
+    class BaseSubstructureMatcher;
+
+    struct BaseSubstructureMatcherCommand : public OsCommand
+    {
+    public:
+        int db_object_idx;
+
+        BaseSubstructureMatcherCommand(BaseSubstructureMatcher* matcher);
+        virtual ~BaseSubstructureMatcherCommand();
+
+        void clear() override
+        {
+            db_object_idx = -1;
+        }
+
+        void execute(OsCommandResult& res) override;
+
+    private:
+        BaseSubstructureMatcher* _matcher;
+    };
+
+    class BaseSubstructureMatcherDispatcher : public OsCommandDispatcher
+    {
+    public:
+        BaseSubstructureMatcherDispatcher(BaseSubstructureMatcher* matcher, std::deque<int>& src, std::mutex& i_mtx, std::atomic_bool& eod,
+                                          std::deque<std::pair<int, std::unique_ptr<IndigoObject>>>& results, std::mutex& r_mtx,
+                                          std::condition_variable& cv_results)
+            : OsCommandDispatcher(HANDLING_ORDER_SERIAL, true), _matcher(matcher), input_data(src), input_mtx(i_mtx), all_data_in_queue(eod), _results(results),
+              results_mtx(r_mtx), _cv_results(cv_results)
+        {
+        }
+
+        void operator()()
+        {
+            run();
+        }
+
+    protected:
+        OsCommand* _allocateCommand() override
+        {
+            return new BaseSubstructureMatcherCommand(_matcher);
+        }
+        OsCommandResult* _allocateResult() override
+        {
+            return new BaseSubstructureMatcherResult();
+        }
+
+        bool _setupCommand(OsCommand& command) override;
+
+        void _handleResult(OsCommandResult& result) override;
+
+    private:
+        std::deque<int>& input_data;
+        std::mutex& input_mtx;
+        std::atomic_bool& all_data_in_queue;
+        std::deque<std::pair<int, std::unique_ptr<IndigoObject>>>& _results;
+        std::mutex& results_mtx;
+        std::condition_variable& _cv_results;
+        BaseSubstructureMatcher* _matcher;
     };
 
     class BaseSubstructureMatcher : public BaseMatcher
@@ -236,6 +315,15 @@ namespace bingo
         bool next() override;
 
         void setQueryData(SubstructureQueryData* query_data);
+
+        virtual bool tryCurrent(int current_id, IndigoObject* current_obj) /* const */ = 0;
+
+        virtual IndigoObject* allocateObject() = 0;
+
+        int getDbId() const;
+
+        AromaticityOptions _arom_options;
+        PtrArray<TautomerRule>* _tautomer_rules;
 
     protected:
         int _fp_size;
@@ -248,14 +336,16 @@ namespace bingo
 
         void _findIncCandidates();
 
-        virtual bool _tryCurrent() /* const */ = 0;
-
         void _setParameters(const char* params) override;
 
         void _initPartition() override;
 
         bool _tautomer;
         IndigoTautomerParams _tautomer_params;
+
+        std::mutex load_mtx;
+        bool _multithread = true;
+        int _thread_count = -1;
 
     private:
         Array<int> _candidates;
@@ -264,6 +354,15 @@ namespace bingo
         int _final_pack;
         const TranspFpStorage& _fp_storage;
         int sub_cnt;
+        std::unique_ptr<BaseSubstructureMatcherDispatcher> disp;
+        std::optional<std::thread> t;
+        std::deque<int> input_data;
+        std::mutex input_mtx;
+        std::atomic_bool all_data_in_queue = false;
+        std::deque<std::pair<int, std::unique_ptr<IndigoObject>>> results;
+        std::mutex results_mtx;
+        std::atomic_bool finished_processing = false;
+        std::condition_variable _cv_results;
     };
 
     class MoleculeSubMatcher : public BaseSubstructureMatcher
@@ -273,10 +372,12 @@ namespace bingo
 
         const Array<int>& currentMapping();
 
+        virtual bool tryCurrent(int current_id, IndigoObject* current_obj) /*const*/ override;
+
+        virtual IndigoObject* allocateObject() override;
+
     private:
         Array<int> _mapping;
-
-        bool _tryCurrent() /*const*/ override;
 
         IndexCurrentMolecule* _current_mol;
     };
@@ -288,10 +389,12 @@ namespace bingo
 
         const ObjArray<Array<int>>& currentMapping();
 
+        virtual bool tryCurrent(int current_id, IndigoObject* current_obj) /*const*/ override;
+
+        virtual IndigoObject* allocateObject() override;
+
     private:
         ObjArray<Array<int>> _mapping;
-
-        bool _tryCurrent() /*const*/ override;
 
         IndexCurrentReaction* _current_rxn;
     };
