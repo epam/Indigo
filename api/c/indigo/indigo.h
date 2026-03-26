@@ -639,6 +639,8 @@ CEXPORT const char* indigoGetTGroupAlias(int tgroup);
 
 CEXPORT int indigoTransformSCSRtoCTAB(int item);
 CEXPORT int indigoTransformCTABtoSCSR(int molecule, int templates);
+// [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+CEXPORT int indigoExpandedMonomersToAtoms(int molecule);
 
 CEXPORT int indigoResetCharge(int atom);
 CEXPORT int indigoResetExplicitValence(int atom);
@@ -1128,6 +1130,13 @@ CEXPORT int indigoRGroupComposition(int molecule, const char* options);
  * Abbreviations
  */
 CEXPORT int indigoExpandAbbreviations(int molecule);
+
+/*
+ * Group pseudoatoms (OH, NH2, etc.): expand to explicit atoms for V3000/molfile
+ * interoperability. Call after expandedMonomersToAtoms(). See
+ * indigo_group_pseudoatoms_expand.h for the list of labels.
+ */
+CEXPORT int indigoExpandGroupPseudoatoms(int molecule);
 
 /* Other */
 

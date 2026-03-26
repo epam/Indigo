@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 
 namespace com.epam.indigo
@@ -2318,6 +2318,16 @@ namespace com.epam.indigo
         {
             dispatcher.setSessionID();
             return dispatcher.checkResult(IndigoLib.indigoExpandAbbreviations(self));
+        }
+
+        /// <summary>
+        /// Converts expanded template atoms (monomers) to regular atoms.
+        /// Returns a new molecule; the original is not modified.
+        /// </summary>
+        public IndigoObject expandedMonomersToAtoms()
+        {
+            dispatcher.setSessionID();
+            return new IndigoObject(dispatcher, dispatcher.checkResult(IndigoLib.indigoExpandedMonomersToAtoms(self)));
         }
 
         public int nameToStructure(string name, string parameters)

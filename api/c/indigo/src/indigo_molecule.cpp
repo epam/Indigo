@@ -21,6 +21,7 @@
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "indigo_array.h"
+#include "indigo_group_pseudoatoms_expand.h"
 #include "indigo_io.h"
 #include "indigo_ket_document.h"
 #include "indigo_mapping.h"

@@ -956,6 +956,10 @@ public interface IndigoLib extends Library {
 
     int indigoExpandAbbreviations(int structure);
 
+    int indigoExpandGroupPseudoatoms(int molecule);
+
+    int indigoExpandedMonomersToAtoms(int molecule);
+
     int indigoIterateTautomers(int structure, String params);
 
     int indigoNameToStructure(String name, String params);

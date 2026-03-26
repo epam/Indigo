@@ -1,4 +1,4 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 using System.Security;
 
 namespace com.epam.indigo
@@ -1334,6 +1334,12 @@ namespace com.epam.indigo
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoExpandAbbreviations(int structure);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoExpandGroupPseudoatoms(int molecule);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoExpandedMonomersToAtoms(int molecule);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoIterateTautomers(int structure, string parameters);
