@@ -169,7 +169,6 @@ def testSGroupAttachmentPointInvalidTarget():
 testIterateSGroupAttachmentPoints()
 testSGroupAttachmentPointStaleHandle()
 testSGroupAttachmentPointInvalidTarget()
-print()
 
 print("****** Get/Set Multiplier ********")
 indigo.setOption("molfile-saving-mode", "3000")

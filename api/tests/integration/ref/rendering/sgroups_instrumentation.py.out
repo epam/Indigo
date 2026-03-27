@@ -958,7 +958,6 @@ Attachment points count: 2
   ap_idx=1 atom_idx=1 leave_atom_idx=-1 label=Br
 Expected error for removed attachment point handle: core: attachment point #0 is not an SGroup attachment point
 Expected error for iterateSGroupAttachmentPoints on data SGroup: core: <DataSGroup> is not a superatom
-
 ****** Get/Set Multiplier ********
 
   -INDIGO-01000000002D
