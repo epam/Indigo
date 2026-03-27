@@ -6,8 +6,7 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
-from env_indigo import *
-
+from env_indigo import Indigo
 indigo = Indigo()
 structures = ["CN(c1ccccc1)C=O", "CN(c1ccc(O)cc1)C=OP"]
 

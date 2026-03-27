@@ -7,7 +7,7 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
-from env_indigo import *  # noqa
+from env_indigo import Indigo, IndigoException, joinPathPy
 
 
 class testThread(Thread):
