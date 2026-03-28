@@ -72,6 +72,31 @@ protected:
         indigoRendererDispose(_session);
         indigoReleaseSessionId(_session);
     }
+
+    std::string renderWithComment(const char* format, const char* font_family = nullptr)
+    {
+        indigoResetOptions();
+        indigoSetOption("render-comment", "Font comment");
+        indigoSetOption("render-output-format", format);
+        indigoSetOptionXY("render-image-size", 300, 200);
+        if (font_family != nullptr)
+            indigoSetOption("render-font-family", font_family);
+
+        int m = indigoLoadMoleculeFromString("C");
+        int buf = indigoWriteBuffer();
+        char* raw = nullptr;
+        int size = 0;
+
+        indigoRender(m, buf);
+        indigoToBuffer(buf, &raw, &size);
+
+        std::string output(raw, size);
+
+        indigoFree(buf);
+        indigoFree(m);
+
+        return output;
+    }
 };
 
 TEST_F(IndigoApiRendererTest, layout_rings)
@@ -131,4 +156,24 @@ TEST_F(IndigoApiRendererTest, render_superatoms)
     {
         thread.join();
     }
+}
+
+TEST_F(IndigoApiRendererTest, svg_font_family_option_changes_rendering)
+{
+    auto default_svg = renderWithComment("svg");
+    auto arial_svg = renderWithComment("svg", "Arial");
+    auto courier_svg = renderWithComment("svg", "Courier New");
+
+    ASSERT_EQ(default_svg, arial_svg);
+    ASSERT_NE(default_svg, courier_svg);
+}
+
+TEST_F(IndigoApiRendererTest, png_font_family_option_changes_rendering)
+{
+    auto default_png = renderWithComment("png");
+    auto arial_png = renderWithComment("png", "Arial");
+    auto courier_png = renderWithComment("png", "Courier New");
+
+    ASSERT_EQ(default_png, arial_png);
+    ASSERT_NE(default_png, courier_png);
 }

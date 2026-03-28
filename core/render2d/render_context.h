@@ -46,7 +46,7 @@ namespace indigo
 
         void checkPathNonEmpty() const;
 
-        RenderContext(const RenderOptions& opt, float relativeThickness, float bondLineWidthFactor);
+        RenderContext(const RenderOptions& opt, const CanvasOptions& cnvOpt, float relativeThickness, float bondLineWidthFactor);
         void setDefaultScale(float scale);
         void setHDC(PVOID hdc);
         int getMaxPageSize() const;
@@ -217,6 +217,7 @@ namespace indigo
         cairo_scaled_font_t* _scaled_fonts[FONT_SIZE_COUNT * 2];
 
         bool metafileFontsToCurves;
+        bool _hasCustomFontFamily;
         cairo_t* _cr;
         cairo_surface_t* _surface;
         void* _meta_hdc;
