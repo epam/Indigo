@@ -73,7 +73,7 @@ protected:
         indigoReleaseSessionId(_session);
     }
 
-    std::string renderWithComment(const char* format, const char* font_family = nullptr)
+    std::string renderWithFontFamily(const char* format, const char* font_family = nullptr)
     {
         indigoResetOptions();
         indigoSetOption("render-comment", "Font comment");
@@ -160,9 +160,9 @@ TEST_F(IndigoApiRendererTest, render_superatoms)
 
 TEST_F(IndigoApiRendererTest, svg_font_family_option_changes_rendering)
 {
-    auto default_svg = renderWithComment("svg");
-    auto arial_svg = renderWithComment("svg", "Arial");
-    auto courier_svg = renderWithComment("svg", "Courier New");
+    auto default_svg = renderWithFontFamily("svg");
+    auto arial_svg = renderWithFontFamily("svg", "Arial");
+    auto courier_svg = renderWithFontFamily("svg", "Courier New");
 
     ASSERT_EQ(default_svg, arial_svg);
     ASSERT_NE(default_svg, courier_svg);
@@ -170,9 +170,9 @@ TEST_F(IndigoApiRendererTest, svg_font_family_option_changes_rendering)
 
 TEST_F(IndigoApiRendererTest, png_font_family_option_changes_rendering)
 {
-    auto default_png = renderWithComment("png");
-    auto arial_png = renderWithComment("png", "Arial");
-    auto courier_png = renderWithComment("png", "Courier New");
+    auto default_png = renderWithFontFamily("png");
+    auto arial_png = renderWithFontFamily("png", "Arial");
+    auto courier_png = renderWithFontFamily("png", "Courier New");
 
     ASSERT_EQ(default_png, arial_png);
     ASSERT_NE(default_png, courier_png);
