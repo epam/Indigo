@@ -119,9 +119,9 @@ void RenderContext::storeAndDestroyMetafile(bool discard)
 
 CP_DEF(RenderContext);
 
-RenderContext::RenderContext(const RenderOptions& ropt, float relativeThickness, float bondLineWidthFactor)
-    : CP_INIT, TL_CP_GET(_fontfamily), TL_CP_GET(transforms), metafileFontsToCurves(false), _cr(NULL), _surface(NULL), _meta_hdc(NULL), opt(ropt),
-      _pattern(NULL), _settings()
+RenderContext::RenderContext(const RenderOptions& ropt, const CanvasOptions& cnvOpt, float relativeThickness, float bondLineWidthFactor)
+    : CP_INIT, TL_CP_GET(_fontfamily), TL_CP_GET(transforms), metafileFontsToCurves(false), _hasCustomFontFamily(cnvOpt.fontFamily.size() > 0),
+      _cr(NULL), _surface(NULL), _meta_hdc(NULL), opt(ropt), _pattern(NULL), _settings()
 {
     AcsOptions acs;
     if (ropt.fontSize > 0)
@@ -138,7 +138,10 @@ RenderContext::RenderContext(const RenderOptions& ropt, float relativeThickness,
         acs.bondSpacing = ropt.bondSpacing;
     _settings.init(relativeThickness, bondLineWidthFactor, &acs);
 
-    bprintf(_fontfamily, "Arial");
+    if (cnvOpt.fontFamily.size() > 0)
+        bprintf(_fontfamily, "%s", cnvOpt.fontFamily.ptr());
+    else
+        bprintf(_fontfamily, "Arial");
     bbmin.x = bbmin.y = 1;
     bbmax.x = bbmax.y = -1;
     _defaultScale = 0.0f;
