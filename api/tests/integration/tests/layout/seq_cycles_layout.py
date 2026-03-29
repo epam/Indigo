@@ -118,7 +118,11 @@ GEOM_TOL = 0.05
 def _get_monomer_positions(data):
     pos = {}
     for key, val in data.items():
-        if key.startswith("monomer") and isinstance(val, dict) and "position" in val:
+        if (
+            key.startswith("monomer")
+            and isinstance(val, dict)
+            and "position" in val
+        ):
             pos[key] = (val["position"]["x"], val["position"]["y"])
     return pos
 
@@ -136,8 +140,9 @@ def _get_adjacency(data):
 def _find_small_cycles(data):
     positions = _get_monomer_positions(data)
     adj = _get_adjacency(data)
-    monomers = sorted(positions.keys(),
-                      key=lambda m: int(m.replace("monomer", "")))
+    monomers = sorted(
+        positions.keys(), key=lambda m: int(m.replace("monomer", ""))
+    )
     all_cycles = set()
     for start in monomers:
         for neighbor in adj[start]:
@@ -167,8 +172,9 @@ def _find_small_cycles(data):
                 queue = next_queue
     cycles = []
     seen = []
-    for cs in sorted(all_cycles,
-                     key=lambda cs: sum(positions[m][0] for m in cs) / len(cs)):
+    for cs in sorted(
+        all_cycles, key=lambda cs: sum(positions[m][0] for m in cs) / len(cs)
+    ):
         if cs not in seen:
             seen.append(cs)
             cycles.append(list(cs))
@@ -193,7 +199,8 @@ def _do_layout(ket_data):
     ind.setOption("json-use-native-precision", True)
     ind.setOption("json-set-native-precision", 4)
     with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".ket", delete=False) as f:
+        mode="w", suffix=".ket", delete=False
+    ) as f:
         json.dump(ket_data, f, indent=4)
         tmp_in = f.name
     try:
@@ -209,12 +216,12 @@ def _dist(p1, p2):
 
 
 def _find_left_top(cycle_monomers, positions):
-    return min(cycle_monomers,
-               key=lambda m: positions[m][0] - positions[m][1])
+    return min(cycle_monomers, key=lambda m: positions[m][0] - positions[m][1])
 
 
-def _is_regular_polygon(cycle_monomers, positions,
-                        expected_edge=BOND_LENGTH, tol=GEOM_TOL):
+def _is_regular_polygon(
+    cycle_monomers, positions, expected_edge=BOND_LENGTH, tol=GEOM_TOL
+):
     n = len(cycle_monomers)
     if n < 3:
         return False, "too few vertices"
@@ -231,11 +238,13 @@ def _is_regular_polygon(cycle_monomers, positions,
     )
     ordered = [m for _, m in angles]
     for i in range(n):
-        edge_len = _dist(positions[ordered[i]],
-                         positions[ordered[(i + 1) % n]])
+        edge_len = _dist(
+            positions[ordered[i]], positions[ordered[(i + 1) % n]]
+        )
         if abs(edge_len - expected_edge) > tol:
             return False, "edge {}-{} len={:.4f}".format(
-                ordered[i], ordered[(i + 1) % n], edge_len)
+                ordered[i], ordered[(i + 1) % n], edge_len
+            )
     return True, "ok"
 
 
@@ -276,22 +285,25 @@ for idx in cycle_indices:
     if abs(cy - lt_pos[1]) > GEOM_TOL:
         multi_errors.append(
             "Cycle {} center not on same Y as left-top: cy={:.4f} lt_y={:.4f}".format(
-                idx, cy, lt_pos[1]))
+                idx, cy, lt_pos[1]
+            )
+        )
     if cx <= lt_pos[0]:
         multi_errors.append(
             "Cycle {} center not right of left-top: cx={:.4f} lt_x={:.4f}".format(
-                idx, cx, lt_pos[0]))
+                idx, cx, lt_pos[0]
+            )
+        )
 
     # Check previously laid-out cycles still regular
     for prev_idx in cycle_indices:
         if prev_idx >= idx:
             break
-        ok, msg = _is_regular_polygon(
-            cycle_history[prev_idx], positions_after)
+        ok, msg = _is_regular_polygon(cycle_history[prev_idx], positions_after)
         if not ok:
             multi_errors.append(
-                "Cycle {} broken after step {}: {}".format(
-                    prev_idx, idx, msg))
+                "Cycle {} broken after step {}: {}".format(prev_idx, idx, msg)
+            )
 
 if multi_errors:
     print("multi.ket:FAILED")
