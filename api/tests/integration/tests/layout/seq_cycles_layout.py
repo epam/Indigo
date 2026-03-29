@@ -268,13 +268,19 @@ for idx in cycle_indices:
     if not ok:
         multi_errors.append("Cycle {} not regular: {}".format(idx, msg))
 
-    # Check left-top preserved
-    dx = abs(lt_pos_before[0] - positions_after[lt_id][0])
-    dy = abs(lt_pos_before[1] - positions_after[lt_id][1])
-    if dx > GEOM_TOL or dy > GEOM_TOL:
+    # Check orientation: center must be right of left-top on same horizontal
+    n = len(selected)
+    cx = sum(positions_after[m][0] for m in selected) / n
+    cy = sum(positions_after[m][1] for m in selected) / n
+    lt_pos = positions_after[lt_id]
+    if abs(cy - lt_pos[1]) > GEOM_TOL:
         multi_errors.append(
-            "Cycle {} left-top {} moved: delta=({:.4f},{:.4f})".format(
-                idx, lt_id, dx, dy))
+            "Cycle {} center not on same Y as left-top: cy={:.4f} lt_y={:.4f}".format(
+                idx, cy, lt_pos[1]))
+    if cx <= lt_pos[0]:
+        multi_errors.append(
+            "Cycle {} center not right of left-top: cx={:.4f} lt_x={:.4f}".format(
+                idx, cx, lt_pos[0]))
 
     # Check previously laid-out cycles still regular
     for prev_idx in cycle_indices:

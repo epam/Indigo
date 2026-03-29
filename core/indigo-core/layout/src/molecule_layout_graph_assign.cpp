@@ -614,19 +614,7 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
             skip_first = _isRegularPolygon(cycles[sorted_cycles[0]], bond_length);
         if (!skip_first)
         {
-            const Cycle& first_cycle = cycles[sorted_cycles[0]];
-            // Remember left-top position to restore after _assignFirstCycle
-            int s = sequence_layout ? first_cycle.getVertex(_findCycleLeftTopIdx(first_cycle))
-                                    : first_cycle.getVertex(0);
-            Vec2f original_lt_pos(_layout_vertices[s].pos);
-            _assignFirstCycle(first_cycle, bond_length);
-            // Translate polygon back to preserve left-top absolute position
-            if (sequence_layout && supergraph._n_fixed > 0)
-            {
-                Vec2f offset(original_lt_pos - _layout_vertices[s].pos);
-                for (int j = 0; j < first_cycle.vertexCount(); j++)
-                    _layout_vertices[first_cycle.getVertex(j)].pos += offset;
-            }
+            _assignFirstCycle(cycles[sorted_cycles[0]], bond_length);
         }
         else
         {
@@ -1338,18 +1326,94 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
         // For sequence_layout mode: scale selected vertices to bond_length
         if (sequence_layout)
         {
+            Vec2f selected_centroid(0, 0);
+            std::vector<int> sel_vertices, fix_vertexes;
+
             for (auto vx_idx : vertices())
             {
                 auto& lvx = _layout_vertices[vx_idx];
                 int ext_idx = lvx.ext_idx;
+                auto& vx = getVertex(ext_idx);
                 bool is_fixed = ext_idx < _fixed_vertices.size() && _fixed_vertices[ext_idx];
+
                 if (lvx.is_inner_cycle && !is_fixed)
                     inner_cycle_vertices.push_back(vx_idx);
+
+                if ((is_fixed || lvx.is_nailed) || (vx.degree() == 1 && _layout_vertices[vx.neiVertex(vx.neiBegin())].is_nailed))
+                    fix_vertexes.push_back(vx_idx);
+                else
+                {
+                    selected_centroid.add(lvx.pos);
+                    sel_vertices.push_back(vx_idx);
+                }
             }
 
             _reflectCycleVertices(inner_cycle_vertices, bond_length);
 
-            // Vertices already positioned by _assignFirstCycle with left-top preserved
+            if (!sel_vertices.empty())
+            {
+                selected_centroid.scale(1.0f / sel_vertices.size());
+
+                // Build bridge bond info for translation optimization
+                std::vector<std::vector<Vec2f>> bridge_fixed_positions(vertexEnd());
+                std::vector<std::pair<int, Vec2f>> all_fixed_vertices;
+                std::unordered_set<int> bridge_connected_pairs;
+
+                for (auto fix_vx_idx : fix_vertexes)
+                    all_fixed_vertices.push_back(std::make_pair(fix_vx_idx, src_layout[fix_vx_idx]));
+
+                for (auto sel_vx_idx : sel_vertices)
+                {
+                    auto& vx = getVertex(_layout_vertices[sel_vx_idx].ext_idx);
+                    for (int nei_idx = vx.neiBegin(); nei_idx < vx.neiEnd(); nei_idx = vx.neiNext(nei_idx))
+                    {
+                        int nei_ext_idx = vx.neiVertex(nei_idx);
+                        int nei_layout_idx = findVertexByExtIdx(nei_ext_idx);
+                        if (nei_layout_idx < 0)
+                            continue;
+                        if (nei_ext_idx < _fixed_vertices.size() && _fixed_vertices[nei_ext_idx] != 0)
+                        {
+                            bridge_fixed_positions[sel_vx_idx].push_back(src_layout[nei_layout_idx]);
+                            int pair_key = sel_vx_idx < nei_layout_idx
+                                ? (sel_vx_idx * vertexEnd() + nei_layout_idx)
+                                : (nei_layout_idx * vertexEnd() + sel_vx_idx);
+                            bridge_connected_pairs.insert(pair_key);
+                        }
+                    }
+                }
+
+                // Align selected part centroid to src_layout position
+                Vec2f src_selected_centroid(0, 0);
+                for (auto vx_idx : sel_vertices)
+                    src_selected_centroid.add(src_layout[vx_idx]);
+                src_selected_centroid.scale(1.0f / sel_vertices.size());
+
+                Vec2f layout_selected_centroid(0, 0);
+                for (auto vx_idx : sel_vertices)
+                    layout_selected_centroid.add(_layout_vertices[vx_idx].pos);
+                layout_selected_centroid.scale(1.0f / sel_vertices.size());
+
+                Vec2f initial_offset;
+                initial_offset.diff(src_selected_centroid, layout_selected_centroid);
+                for (auto vx_idx : sel_vertices)
+                    _layout_vertices[vx_idx].pos.add(initial_offset);
+
+                selected_centroid = src_selected_centroid;
+
+                // Optimize translation only (no rotation — preserves polygon orientation)
+                Vec2f best_translation(0, 0);
+                float best_rotation = 0.0f;
+                _optimizeSelectedPartPlacement(bond_length, bridge_fixed_positions, all_fixed_vertices,
+                    bridge_connected_pairs, selected_centroid, sel_vertices,
+                    best_translation, best_rotation);
+                best_rotation = 0.0f;
+
+                for (auto vx_idx : sel_vertices)
+                {
+                    auto& pos = _layout_vertices[vx_idx].pos;
+                    pos.add(best_translation);
+                }
+            }
         }
         else
         {
