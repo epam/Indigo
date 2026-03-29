@@ -1356,9 +1356,11 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                 std::vector<std::pair<int, Vec2f>> all_fixed_vertices;
                 std::unordered_set<int> bridge_connected_pairs;
 
+                // Collect all fixed vertices with their positions
                 for (auto fix_vx_idx : fix_vertexes)
                     all_fixed_vertices.push_back(std::make_pair(fix_vx_idx, src_layout[fix_vx_idx]));
 
+                // For selected vertices, find bridge bonds to fixed vertices
                 for (auto sel_vx_idx : sel_vertices)
                 {
                     auto& vx = getVertex(_layout_vertices[sel_vx_idx].ext_idx);
@@ -1368,9 +1370,12 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                         int nei_layout_idx = findVertexByExtIdx(nei_ext_idx);
                         if (nei_layout_idx < 0)
                             continue;
+                        // Check if neighbor is fixed
                         if (nei_ext_idx < _fixed_vertices.size() && _fixed_vertices[nei_ext_idx] != 0)
                         {
+                            // Store fixed neighbor position for bridge bond
                             bridge_fixed_positions[sel_vx_idx].push_back(src_layout[nei_layout_idx]);
+                            // Mark this pair as bridge-connected
                             int pair_key =
                                 sel_vx_idx < nei_layout_idx ? (sel_vx_idx * vertexEnd() + nei_layout_idx) : (nei_layout_idx * vertexEnd() + sel_vx_idx);
                             bridge_connected_pairs.insert(pair_key);
@@ -1378,22 +1383,25 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                     }
                 }
 
-                // Align selected part centroid to src_layout position
+                // Calculate src_layout centroid for selected vertices
                 Vec2f src_selected_centroid(0, 0);
                 for (auto vx_idx : sel_vertices)
                     src_selected_centroid.add(src_layout[vx_idx]);
                 src_selected_centroid.scale(1.0f / sel_vertices.size());
 
+                // Recalculate _layout_vertices centroid after scaling
                 Vec2f layout_selected_centroid(0, 0);
                 for (auto vx_idx : sel_vertices)
                     layout_selected_centroid.add(_layout_vertices[vx_idx].pos);
                 layout_selected_centroid.scale(1.0f / sel_vertices.size());
 
+                // Shift selected vertices to align centroids (move to src_layout position)
                 Vec2f initial_offset;
                 initial_offset.diff(src_selected_centroid, layout_selected_centroid);
                 for (auto vx_idx : sel_vertices)
                     _layout_vertices[vx_idx].pos.add(initial_offset);
 
+                // Update selected_centroid to new position for optimization
                 selected_centroid = src_selected_centroid;
 
                 // Optimize translation only (no rotation — preserves polygon orientation)
