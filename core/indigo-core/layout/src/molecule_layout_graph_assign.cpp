@@ -757,8 +757,7 @@ bool MoleculeLayoutGraphSimple::_isRegularPolygon(const Cycle& cycle, float bond
     // Check all edge lengths match bond_length
     for (int i = 0; i < n; i++)
     {
-        float edge_len = Vec2f::dist(_layout_vertices[cycle.getVertex(i)].pos,
-                                      _layout_vertices[cycle.getVertex((i + 1) % n)].pos);
+        float edge_len = Vec2f::dist(_layout_vertices[cycle.getVertex(i)].pos, _layout_vertices[cycle.getVertex((i + 1) % n)].pos);
         if (fabs(edge_len - bond_length) > tol)
             return false;
     }
@@ -783,12 +782,10 @@ bool MoleculeLayoutGraphSimple::_isRegularPolygon(const Cycle& cycle, float bond
 int MoleculeLayoutGraphSimple::_findCycleLeftTopIdx(const Cycle& cycle) const
 {
     int best = 0;
-    float min_val = _layout_vertices[cycle.getVertex(0)].pos.x
-                  - _layout_vertices[cycle.getVertex(0)].pos.y;
+    float min_val = _layout_vertices[cycle.getVertex(0)].pos.x - _layout_vertices[cycle.getVertex(0)].pos.y;
     for (int i = 1; i < cycle.vertexCount(); i++)
     {
-        float val = _layout_vertices[cycle.getVertex(i)].pos.x
-                  - _layout_vertices[cycle.getVertex(i)].pos.y;
+        float val = _layout_vertices[cycle.getVertex(i)].pos.x - _layout_vertices[cycle.getVertex(i)].pos.y;
         if (val < min_val)
         {
             min_val = val;
@@ -1374,9 +1371,8 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                         if (nei_ext_idx < _fixed_vertices.size() && _fixed_vertices[nei_ext_idx] != 0)
                         {
                             bridge_fixed_positions[sel_vx_idx].push_back(src_layout[nei_layout_idx]);
-                            int pair_key = sel_vx_idx < nei_layout_idx
-                                ? (sel_vx_idx * vertexEnd() + nei_layout_idx)
-                                : (nei_layout_idx * vertexEnd() + sel_vx_idx);
+                            int pair_key =
+                                sel_vx_idx < nei_layout_idx ? (sel_vx_idx * vertexEnd() + nei_layout_idx) : (nei_layout_idx * vertexEnd() + sel_vx_idx);
                             bridge_connected_pairs.insert(pair_key);
                         }
                     }
@@ -1403,9 +1399,8 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                 // Optimize translation only (no rotation — preserves polygon orientation)
                 Vec2f best_translation(0, 0);
                 float best_rotation = 0.0f;
-                _optimizeSelectedPartPlacement(bond_length, bridge_fixed_positions, all_fixed_vertices,
-                    bridge_connected_pairs, selected_centroid, sel_vertices,
-                    best_translation, best_rotation);
+                _optimizeSelectedPartPlacement(bond_length, bridge_fixed_positions, all_fixed_vertices, bridge_connected_pairs, selected_centroid, sel_vertices,
+                                               best_translation, best_rotation);
                 best_rotation = 0.0f;
 
                 for (auto vx_idx : sel_vertices)
