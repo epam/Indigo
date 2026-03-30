@@ -1,6 +1,9 @@
 import json
+import math
 import os
 import sys
+import tempfile
+from collections import defaultdict
 
 
 def compare_positions(ket_a, ket_b, eps=0.05):
@@ -96,4 +99,226 @@ for filename in files:
         print(filename + ".ket:SUCCEED")
     else:
         print(filename + ".ket:FAILED")
+        print(diff)
+
+
+# ======================================================================
+# Sequential multi-cycle layout test (cycles 1, 3, 5, 7 in multi.ket)
+#
+# Applies layout to cycles one-by-one and verifies after each step:
+#   1. The cycle becomes a regular polygon (edge = 1.5)
+#   2. The left-top monomer preserves its position
+#   3. Previously laid-out cycles remain regular
+# ======================================================================
+
+BOND_LENGTH = 1.5  # LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH
+GEOM_TOL = 0.05
+
+
+def _get_monomer_positions(data):
+    pos = {}
+    for key, val in data.items():
+        if (
+            key.startswith("monomer")
+            and isinstance(val, dict)
+            and "position" in val
+        ):
+            pos[key] = (val["position"]["x"], val["position"]["y"])
+    return pos
+
+
+def _get_adjacency(data):
+    adj = defaultdict(set)
+    for c in data["root"].get("connections", []):
+        ep1 = c["endpoint1"]["monomerId"]
+        ep2 = c["endpoint2"]["monomerId"]
+        adj[ep1].add(ep2)
+        adj[ep2].add(ep1)
+    return adj
+
+
+def _find_small_cycles(data):
+    positions = _get_monomer_positions(data)
+    adj = _get_adjacency(data)
+    monomers = sorted(
+        positions.keys(), key=lambda m: int(m.replace("monomer", ""))
+    )
+    all_cycles = set()
+    for start in monomers:
+        for neighbor in adj[start]:
+            visited = {start: None}
+            queue = [start]
+            found = False
+            while queue and not found:
+                next_queue = []
+                for cur in queue:
+                    for nb in adj[cur]:
+                        if nb == neighbor and cur != start:
+                            path = []
+                            p = cur
+                            while p is not None:
+                                path.append(p)
+                                p = visited[p]
+                            path.append(neighbor)
+                            if len(path) <= 12:
+                                all_cycles.add(frozenset(path))
+                            found = True
+                            break
+                        if nb not in visited and nb != neighbor:
+                            visited[nb] = cur
+                            next_queue.append(nb)
+                    if found:
+                        break
+                queue = next_queue
+    cycles = []
+    seen = []
+    for cs in sorted(
+        all_cycles, key=lambda cs: sum(positions[m][0] for m in cs) / len(cs)
+    ):
+        if cs not in seen:
+            seen.append(cs)
+            cycles.append(list(cs))
+    return cycles
+
+
+def _select_monomers(data, monomer_ids):
+    for mid in monomer_ids:
+        if mid in data:
+            data[mid]["selected"] = True
+
+
+def _clear_selection(data):
+    for key, val in data.items():
+        if key.startswith("monomer") and isinstance(val, dict):
+            val.pop("selected", None)
+
+
+def _do_layout(ket_data):
+    ind = Indigo()
+    ind.setOption("json-saving-pretty", True)
+    ind.setOption("json-use-native-precision", True)
+    ind.setOption("json-set-native-precision", 4)
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix=".ket", delete=False
+    ) as f:
+        json.dump(ket_data, f, indent=4)
+        tmp_in = f.name
+    try:
+        mol = ind.loadMoleculeFromFile(tmp_in)
+        mol.layout()
+        return json.loads(mol.json())
+    finally:
+        os.unlink(tmp_in)
+
+
+def _dist(p1, p2):
+    return math.hypot(p1[0] - p2[0], p1[1] - p2[1])
+
+
+def _find_left_top(cycle_monomers, positions):
+    return min(cycle_monomers, key=lambda m: positions[m][0] - positions[m][1])
+
+
+def _is_regular_polygon(
+    cycle_monomers, positions, expected_edge=BOND_LENGTH, tol=GEOM_TOL
+):
+    n = len(cycle_monomers)
+    if n < 3:
+        return False, "too few vertices"
+    cx = sum(positions[m][0] for m in cycle_monomers) / n
+    cy = sum(positions[m][1] for m in cycle_monomers) / n
+    R = expected_edge / (2 * math.sin(math.pi / n))
+    for m in cycle_monomers:
+        d = _dist(positions[m], (cx, cy))
+        if abs(d - R) > tol:
+            return False, "vertex {} dist={:.4f}, R={:.4f}".format(m, d, R)
+    angles = sorted(
+        (math.atan2(positions[m][1] - cy, positions[m][0] - cx), m)
+        for m in cycle_monomers
+    )
+    ordered = [m for _, m in angles]
+    for i in range(n):
+        edge_len = _dist(
+            positions[ordered[i]], positions[ordered[(i + 1) % n]]
+        )
+        if abs(edge_len - expected_edge) > tol:
+            return False, "edge {}-{} len={:.4f}".format(
+                ordered[i], ordered[(i + 1) % n], edge_len
+            )
+    return True, "ok"
+
+
+print("\n*** Sequential multi-cycle layout (cycles 1,3,5,7) ***")
+multi_errors = []
+
+with open(os.path.join(root, "multi.ket")) as f:
+    current_data = json.load(f)
+
+cycle_indices = [1, 3, 5, 7]
+cycle_history = {}
+
+for idx in cycle_indices:
+    cycles = _find_small_cycles(current_data)
+    selected = cycles[idx - 1]
+    cycle_history[idx] = selected
+
+    positions_before = _get_monomer_positions(current_data)
+    lt_id = _find_left_top(selected, positions_before)
+    lt_pos_before = positions_before[lt_id]
+
+    _clear_selection(current_data)
+    _select_monomers(current_data, selected)
+    current_data = _do_layout(current_data)
+
+    positions_after = _get_monomer_positions(current_data)
+
+    # Check regular polygon
+    ok, msg = _is_regular_polygon(selected, positions_after)
+    if not ok:
+        multi_errors.append("Cycle {} not regular: {}".format(idx, msg))
+
+    # Check orientation: center must be right of left-top on same horizontal
+    n = len(selected)
+    cx = sum(positions_after[m][0] for m in selected) / n
+    cy = sum(positions_after[m][1] for m in selected) / n
+    lt_pos = positions_after[lt_id]
+    if abs(cy - lt_pos[1]) > GEOM_TOL:
+        multi_errors.append(
+            "Cycle {} center not on same Y as left-top: cy={:.4f} lt_y={:.4f}".format(
+                idx, cy, lt_pos[1]
+            )
+        )
+    if cx <= lt_pos[0]:
+        multi_errors.append(
+            "Cycle {} center not right of left-top: cx={:.4f} lt_x={:.4f}".format(
+                idx, cx, lt_pos[0]
+            )
+        )
+
+    # Check previously laid-out cycles still regular
+    for prev_idx in cycle_indices:
+        if prev_idx >= idx:
+            break
+        ok, msg = _is_regular_polygon(cycle_history[prev_idx], positions_after)
+        if not ok:
+            multi_errors.append(
+                "Cycle {} broken after step {}: {}".format(prev_idx, idx, msg)
+            )
+
+if multi_errors:
+    print("multi.ket:FAILED")
+    for e in multi_errors:
+        print("  " + e)
+else:
+    # Compare final result against ref
+    final_ket = json.dumps(current_data)
+    # with open(os.path.join(ref_path, "multi_seq_1357.ket"), "w") as file:
+    #     file.write(final_ket)
+    with open(getRefFilepath("multi_seq_1357.ket"), "r") as file:
+        ket_ref = file.read()
+    diff = compare_positions(ket_ref, final_ket)
+    if not diff:
+        print("multi.ket:SUCCEED")
+    else:
+        print("multi.ket:FAILED")
         print(diff)

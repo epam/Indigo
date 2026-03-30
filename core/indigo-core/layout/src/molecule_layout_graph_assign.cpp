@@ -32,6 +32,9 @@
 
 using namespace indigo;
 
+// Tolerance for regular polygon geometry checks (larger than EPSILON for trig/JSON roundtrips).
+constexpr float LAYOUT_GEOMETRY_TOLERANCE = 0.01f;
+
 enum
 {
     QUERY_BOND_SINGLE_OR_DOUBLE = 5,
@@ -508,7 +511,19 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
         ce.cb_handle_cycle = _border_cb;
 
         if (ce.process())
+        {
             return;
+        }
+
+        // CycleEnumerator can fail for fixed components with distorted grid geometry.
+        // Mark vertices as drawn and keep fixed_component = 1.
+        if (sequence_layout)
+        {
+            for (int j = vertexBegin(); j < vertexEnd(); j = vertexNext(j))
+                _layout_vertices[j].type = ELEMENT_BOUNDARY;
+            _first_vertex_idx = vertexBegin();
+            return;
+        }
 
         fixed_component = 0;
     }
@@ -534,7 +549,6 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
     }
 
     // Check cycles for fixed vertices and mark them as ELEMENT_BOUNDARY
-    bool found_fixed_cycle = false;
     if (sequence_layout)
     {
         QS_DEF(Array<int>, cycles_to_remove);
@@ -558,13 +572,16 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
 
             if (has_fixed)
             {
-                found_fixed_cycle = true;
-                // Mark all vertices and edges in this cycle as ELEMENT_BOUNDARY and set is_nailed
+                // Mark cycle as drawn; nail only actually fixed vertices
                 for (int j = 0; j < cycle.vertexCount(); j++)
                 {
-                    _layout_vertices[cycle.getVertex(j)].type = ELEMENT_BOUNDARY;
+                    int v_idx = cycle.getVertex(j);
+                    _layout_vertices[v_idx].type = ELEMENT_BOUNDARY;
                     _layout_edges[cycle.getEdge(j)].type = ELEMENT_BOUNDARY;
-                    _layout_vertices[cycle.getVertex(j)].is_nailed = true;
+                    if (_fixed_vertices.size() > v_idx && _fixed_vertices[v_idx] != 0)
+                    {
+                        _layout_vertices[v_idx].is_nailed = true;
+                    }
                 }
                 cycles_to_remove.push(i);
             }
@@ -582,14 +599,34 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
         sorted_cycles.push(i);
     }
 
-    // Assign first cycle: only if there are NO fixed cycles.
-    // If there are fixed cycles, remaining cycles should be attached via _attachCycleOutside.
-    float radius = (sequence_layout && supergraph._n_fixed) ? LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH : 1.0f;
+    // All cycles already positioned — nothing left to lay out
+    if (sequence_layout && sorted_cycles.size() == 0)
+        return;
 
-    if (!found_fixed_cycle && sorted_cycles.size() > 0)
+    float bond_length = (sequence_layout && supergraph._n_fixed) ? LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH : 1.0f;
+
+    if (sorted_cycles.size() > 0)
     {
         sorted_cycles.qsort(Cycle::compare_cb, &cycles);
-        _assignFirstCycle(cycles[sorted_cycles[0]], radius);
+        // Skip if cycle already has correct polygon geometry from previous layout step
+        bool skip_first = false;
+        if (sequence_layout)
+            skip_first = _isRegularPolygon(cycles[sorted_cycles[0]], bond_length);
+        if (!skip_first)
+        {
+            _assignFirstCycle(cycles[sorted_cycles[0]], bond_length);
+        }
+        else
+        {
+            // Already regular — just mark as drawn and set _first_vertex_idx
+            const Cycle& first_cycle = cycles[sorted_cycles[0]];
+            for (int j = 0; j < first_cycle.vertexCount(); j++)
+            {
+                _layout_vertices[first_cycle.getVertex(j)].type = ELEMENT_BOUNDARY;
+                _layout_edges[first_cycle.getEdge(j)].type = ELEMENT_BOUNDARY;
+            }
+            _first_vertex_idx = first_cycle.getVertex(_findCycleLeftTopIdx(first_cycle));
+        }
         cycles.remove(sorted_cycles[0]);
         sorted_cycles.remove(0);
     }
@@ -603,7 +640,7 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
 
         for (i = 0; !chain_attached && i < sorted_cycles.size();)
         {
-            if (_attachCycleOutside(cycles[sorted_cycles[i]], radius, 1))
+            if (_attachCycleOutside(cycles[sorted_cycles[i]], bond_length, 1))
             {
                 cycles.remove(sorted_cycles[i]);
                 sorted_cycles.remove(i);
@@ -615,7 +652,7 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
 
         for (i = 0; !chain_attached && i < sorted_cycles.size();)
         {
-            if (_attachCycleOutside(cycles[sorted_cycles[i]], radius, 2))
+            if (_attachCycleOutside(cycles[sorted_cycles[i]], bond_length, 2))
             {
                 cycles.remove(sorted_cycles[i]);
                 sorted_cycles.remove(i);
@@ -627,7 +664,7 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
 
         for (i = 0; !chain_attached && i < sorted_cycles.size();)
         {
-            if (_attachCycleOutside(cycles[sorted_cycles[i]], radius, 0))
+            if (_attachCycleOutside(cycles[sorted_cycles[i]], bond_length, 0))
             {
                 cycles.remove(sorted_cycles[i]);
                 sorted_cycles.remove(i);
@@ -641,7 +678,7 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
     // Try to attach chains inside
     for (i = 0; i < sorted_cycles.size();)
     {
-        if (_attachCycleInside(cycles[sorted_cycles[i]], radius))
+        if (_attachCycleInside(cycles[sorted_cycles[i]], bond_length))
         {
             cycles.remove(sorted_cycles[i]);
             sorted_cycles.remove(i);
@@ -686,7 +723,7 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
 
         for (i = 0; !chain_attached && i < sorted_cycles.size();)
         {
-            if (_attachCycleWithIntersections(cycles[sorted_cycles[i]], radius))
+            if (_attachCycleWithIntersections(cycles[sorted_cycles[i]], bond_length))
             {
                 cycles.remove(sorted_cycles[i]);
                 sorted_cycles.remove(i);
@@ -709,7 +746,56 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
     }
 }
 
-void MoleculeLayoutGraphSimple::_assignFirstCycle(const Cycle& cycle, float radius)
+bool MoleculeLayoutGraphSimple::_isRegularPolygon(const Cycle& cycle, float bond_length, float tolerance) const
+{
+    int n = cycle.vertexCount();
+    if (n < 3)
+        return false;
+
+    float tol = tolerance > 0 ? tolerance : LAYOUT_GEOMETRY_TOLERANCE;
+
+    // Check all edge lengths match bond_length
+    for (int i = 0; i < n; i++)
+    {
+        float edge_len = Vec2f::dist(_layout_vertices[cycle.getVertex(i)].pos, _layout_vertices[cycle.getVertex((i + 1) % n)].pos);
+        if (fabs(edge_len - bond_length) > tol)
+            return false;
+    }
+
+    // Check circumscribed radius consistency
+    float R = bond_length / (2.0f * sin((float)M_PI / n));
+    Vec2f center(0, 0);
+    for (int i = 0; i < n; i++)
+        center += _layout_vertices[cycle.getVertex(i)].pos;
+    center.scale(1.0f / n);
+
+    for (int i = 0; i < n; i++)
+    {
+        float dist = Vec2f::dist(_layout_vertices[cycle.getVertex(i)].pos, center);
+        if (fabs(dist - R) > tol)
+            return false;
+    }
+
+    return true;
+}
+
+int MoleculeLayoutGraphSimple::_findCycleLeftTopIdx(const Cycle& cycle) const
+{
+    int best = 0;
+    float min_val = _layout_vertices[cycle.getVertex(0)].pos.x - _layout_vertices[cycle.getVertex(0)].pos.y;
+    for (int i = 1; i < cycle.vertexCount(); i++)
+    {
+        float val = _layout_vertices[cycle.getVertex(i)].pos.x - _layout_vertices[cycle.getVertex(i)].pos.y;
+        if (val < min_val)
+        {
+            min_val = val;
+            best = i;
+        }
+    }
+    return best;
+}
+
+void MoleculeLayoutGraphSimple::_assignFirstCycle(const Cycle& cycle, float bond_length)
 {
     // TODO: Start drawing from vertex with maximum code and continue to the right with one of two which has maximum code
     int i, n;
@@ -724,21 +810,7 @@ void MoleculeLayoutGraphSimple::_assignFirstCycle(const Cycle& cycle, float radi
     }
 
     // For sequence layout, start from the top-left vertex (min x - y)
-    int s = 0;
-    if (sequence_layout)
-    {
-        float min_val = 1e10f;
-        for (i = 0; i < n; i++)
-        {
-            const Vec2f& pos = _layout_vertices[cycle.getVertex(i)].pos;
-            float val = pos.x - pos.y;
-            if (val < min_val)
-            {
-                min_val = val;
-                s = i;
-            }
-        }
-    }
+    int s = sequence_layout ? _findCycleLeftTopIdx(cycle) : 0;
 
     _first_vertex_idx = cycle.getVertex(s);
 
@@ -747,9 +819,9 @@ void MoleculeLayoutGraphSimple::_assignFirstCycle(const Cycle& cycle, float radi
     Vec2f diff(_layout_vertices[cycle.getVertex((s + 1) % n)].pos - _layout_vertices[cycle.getVertex(s)].pos);
     if (sequence_layout)
     {
-        // Place vertex s at 180 on the circumscribed circle (leftmost point),
+        // Place vertex s at 180° on the circumscribed circle (leftmost point),
         // so the center of the circle is to the right of the top-left monomer.
-        float R = radius / (2.0f * sin((float)M_PI / n));
+        float R = bond_length / (2.0f * sin((float)M_PI / n));
         float step = 2.0f * (float)M_PI / n;
         _layout_vertices[cycle.getVertex(s)].pos.set(-R, 0.f);
         _layout_vertices[cycle.getVertex((s + 1) % n)].pos.set(R * cos((float)M_PI - step), R * sin((float)M_PI - step));
@@ -757,13 +829,13 @@ void MoleculeLayoutGraphSimple::_assignFirstCycle(const Cycle& cycle, float radi
     else if (respect_cycles_direction && diff.normalize())
     {
         phi *= _getCycleDirection(cycle);
-        diff.scale(radius);
+        diff.scale(bond_length);
         _layout_vertices[cycle.getVertex((s + 1) % n)].pos = _layout_vertices[cycle.getVertex(s)].pos + diff;
     }
     else
     {
         _layout_vertices[cycle.getVertex(s)].pos.set(0.f, 0.f);
-        _layout_vertices[cycle.getVertex((s + 1) % n)].pos.set(radius, 0.f);
+        _layout_vertices[cycle.getVertex((s + 1) % n)].pos.set(bond_length, 0.f);
     }
 
     for (i = 1; i < n - 1; i++)
@@ -1254,23 +1326,18 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
             Vec2f selected_centroid(0, 0);
             std::vector<int> sel_vertices, fix_vertexes;
 
-            // Collect selected vertices (not fixed/nailed)
             for (auto vx_idx : vertices())
             {
                 auto& lvx = _layout_vertices[vx_idx];
                 int ext_idx = lvx.ext_idx;
                 auto& vx = getVertex(ext_idx);
-
-                // Skip if fixed, nailed, or single bond to nailed vertex
                 bool is_fixed = ext_idx < _fixed_vertices.size() && _fixed_vertices[ext_idx];
 
                 if (lvx.is_inner_cycle && !is_fixed)
                     inner_cycle_vertices.push_back(vx_idx);
 
                 if ((is_fixed || lvx.is_nailed) || (vx.degree() == 1 && _layout_vertices[vx.neiVertex(vx.neiBegin())].is_nailed))
-                {
                     fix_vertexes.push_back(vx_idx);
-                }
                 else
                 {
                     selected_centroid.add(lvx.pos);
@@ -1283,36 +1350,31 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
             if (!sel_vertices.empty())
             {
                 selected_centroid.scale(1.0f / sel_vertices.size());
-                // Build bridge bond information using already collected vertices
+
+                // Build bridge bond info for translation optimization
                 std::vector<std::vector<Vec2f>> bridge_fixed_positions(vertexEnd());
                 std::vector<std::pair<int, Vec2f>> all_fixed_vertices;
                 std::unordered_set<int> bridge_connected_pairs;
 
                 // Collect all fixed vertices with their positions
                 for (auto fix_vx_idx : fix_vertexes)
-                {
                     all_fixed_vertices.push_back(std::make_pair(fix_vx_idx, src_layout[fix_vx_idx]));
-                }
 
                 // For selected vertices, find bridge bonds to fixed vertices
                 for (auto sel_vx_idx : sel_vertices)
                 {
                     auto& vx = getVertex(_layout_vertices[sel_vx_idx].ext_idx);
-
                     for (int nei_idx = vx.neiBegin(); nei_idx < vx.neiEnd(); nei_idx = vx.neiNext(nei_idx))
                     {
                         int nei_ext_idx = vx.neiVertex(nei_idx);
                         int nei_layout_idx = findVertexByExtIdx(nei_ext_idx);
-
                         if (nei_layout_idx < 0)
                             continue;
-
                         // Check if neighbor is fixed
                         if (nei_ext_idx < _fixed_vertices.size() && _fixed_vertices[nei_ext_idx] != 0)
                         {
                             // Store fixed neighbor position for bridge bond
                             bridge_fixed_positions[sel_vx_idx].push_back(src_layout[nei_layout_idx]);
-
                             // Mark this pair as bridge-connected
                             int pair_key =
                                 sel_vx_idx < nei_layout_idx ? (sel_vx_idx * vertexEnd() + nei_layout_idx) : (nei_layout_idx * vertexEnd() + sel_vx_idx);
@@ -1342,22 +1404,61 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                 // Update selected_centroid to new position for optimization
                 selected_centroid = src_selected_centroid;
 
-                Vec2f best_translation(0, 0);
-                float best_rotation = 0.0f;
-                _optimizeSelectedPartPlacement(bond_length, bridge_fixed_positions, all_fixed_vertices, bridge_connected_pairs, selected_centroid, sel_vertices,
-                                               best_translation, best_rotation);
+                // Optimize translation only (no rotation — preserves polygon orientation).
+                // _optimizeSelectedPartPlacement searches rotation+translation jointly;
+                // applying only its translation at rotation=0 yields incorrect bridge lengths.
+                // Instead, do a simple gradient descent on (dx, dy) with angle fixed to 0.
+                float best_dx = 0.f, best_dy = 0.f;
+                float best_cost = 1e10f;
 
-                // Preserve circle orientation from _assignFirstCycle - only translate, don't rotate
-                best_rotation = 0.0f;
+                // Evaluate cost: sum of squared deviations of bridge bonds from bond_length
+                auto translation_cost = [&](float dx, float dy) -> float {
+                    float cost = 0;
+                    int count = 0;
+                    for (auto v : sel_vertices)
+                    {
+                        if (bridge_fixed_positions.size() <= size_t(v) || bridge_fixed_positions[v].empty())
+                            continue;
+                        Vec2f pos = _layout_vertices[v].pos;
+                        pos.x += dx;
+                        pos.y += dy;
+                        for (const Vec2f& fp : bridge_fixed_positions[v])
+                        {
+                            float d = Vec2f::dist(pos, fp) - bond_length;
+                            cost += d * d;
+                            count++;
+                        }
+                    }
+                    return count > 0 ? cost : 1e10f;
+                };
 
-                // Apply best rotation and translation to selected vertices
+                best_cost = translation_cost(0, 0);
+                float step = bond_length;
+                while (step > 0.01f * bond_length)
+                {
+                    bool improved = false;
+                    for (int ddx : {-1, 0, 1})
+                        for (int ddy : {-1, 0, 1})
+                        {
+                            if (ddx == 0 && ddy == 0)
+                                continue;
+                            float c = translation_cost(best_dx + ddx * step, best_dy + ddy * step);
+                            if (c < best_cost)
+                            {
+                                best_cost = c;
+                                best_dx += ddx * step;
+                                best_dy += ddy * step;
+                                improved = true;
+                            }
+                        }
+                    if (!improved)
+                        step *= 0.5f;
+                }
+
                 for (auto vx_idx : sel_vertices)
                 {
-                    auto& pos = _layout_vertices[vx_idx].pos;
-                    pos.sub(selected_centroid);
-                    pos.rotate(best_rotation);
-                    pos.add(selected_centroid);
-                    pos.add(best_translation);
+                    _layout_vertices[vx_idx].pos.x += best_dx;
+                    _layout_vertices[vx_idx].pos.y += best_dy;
                 }
             }
         }
@@ -1988,9 +2089,31 @@ void MoleculeLayoutGraph::_findFirstVertexIdx(int n_comp, Array<int>& fixed_comp
                 MoleculeLayoutGraph& component = *bc_components[i];
                 if (!component.isSingleEdge())
                 {
-                    if (nucleus_idx == -1 || component._total_morgan_code > bc_components[nucleus_idx]->_total_morgan_code)
-                        nucleus_idx = i;
+                    // Prefer non-fixed component as nucleus; fixed ones are propagated separately
+                    if (sequence_layout && _n_fixed > 0)
+                    {
+                        if (!fixed_components[i])
+                        {
+                            if (nucleus_idx == -1 || component._total_morgan_code > bc_components[nucleus_idx]->_total_morgan_code)
+                                nucleus_idx = i;
+                        }
+                    }
+                    else
+                    {
+                        if (nucleus_idx == -1 || component._total_morgan_code > bc_components[nucleus_idx]->_total_morgan_code)
+                            nucleus_idx = i;
+                    }
                 }
+            }
+            // Fallback: pick any nontrivial component
+            if (nucleus_idx < 0)
+            {
+                for (int i = 0; i < n_comp; i++)
+                    if (!bc_components[i]->isSingleEdge())
+                    {
+                        if (nucleus_idx == -1 || bc_components[i]->_total_morgan_code > bc_components[nucleus_idx]->_total_morgan_code)
+                            nucleus_idx = i;
+                    }
             }
             if (nucleus_idx < 0)
                 throw Error("Internal error: cannot find nontrivial component");
@@ -2001,6 +2124,14 @@ void MoleculeLayoutGraph::_findFirstVertexIdx(int n_comp, Array<int>& fixed_comp
                 _first_vertex_idx = nucleus._layout_vertices[nucleus._first_vertex_idx].ext_idx;
             else
                 _first_vertex_idx = vertexBegin();
+
+            // Propagate fixed components so their vertices don't stay ELEMENT_NOT_DRAWN
+            if (sequence_layout && _n_fixed > 0)
+            {
+                for (int i = 0; i < n_comp; i++)
+                    if (i != nucleus_idx && fixed_components[i])
+                        _copyLayout(*bc_components[i]);
+            }
 
             // Copy vertex types from single-edge components
             // This includes:
@@ -2097,7 +2228,10 @@ bool MoleculeLayoutGraph::_prepareAssignedList(Array<int>& assigned_list, Biconn
             if (_layout_vertices[i].type == ELEMENT_IGNORE)
                 _layout_vertices[i].type = ELEMENT_BOUNDARY;
 
-        _refineCoordinates(bc_decom, bc_components, bc_tree);
+        // Skip energy-based refinement for sequence_layout with fixed vertices
+        // (would corrupt polygon positions; first layout still refined normally)
+        if (!(sequence_layout && _n_fixed > 0))
+            _refineCoordinates(bc_decom, bc_components, bc_tree);
 
         return false;
     }

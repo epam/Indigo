@@ -412,7 +412,9 @@ namespace indigo
         // assigning coordinates
         void _assignRelativeCoordinates(int& fixed_component, const MoleculeLayoutGraph& supergraph) override;
         bool _tryToFindPattern(int& fixed_component);
-        void _assignFirstCycle(const Cycle& cycle, float radius);
+        void _assignFirstCycle(const Cycle& cycle, float bond_length);
+        bool _isRegularPolygon(const Cycle& cycle, float bond_length, float tolerance = 0) const;
+        int _findCycleLeftTopIdx(const Cycle& cycle) const;
 
         // attaching cycles
         bool _attachCycleOutside(const Cycle& cycle, float length, int n_common);
