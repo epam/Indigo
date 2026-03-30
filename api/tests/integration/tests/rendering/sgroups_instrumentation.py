@@ -84,6 +84,100 @@ sg = m.getSuperatom(0)
 sg.remove()
 print(m.molfile())
 
+print("****** SGroup Attachment Points ********")
+
+
+def testIterateSGroupAttachmentPoints():
+    """Test basic iteration and property access of SGroup attachment points."""
+    indigo.setOption("molfile-saving-mode", "2000")
+    m = indigo.loadMoleculeFromFile(
+        dataPath("molecules/sgroups/sgroups-base.mol")
+    )
+    t = indigo.loadQueryMoleculeFromFile(
+        dataPath("molecules/sgroups/sgroups-template.mol")
+    )
+    matcher = indigo.substructureMatcher(m)
+    for match in matcher.iterateMatches(t):
+        sg = m.createSGroup("SUP", match, "IterTest")
+        sg.addSGroupAttachmentPoint(0, -1, "Al")
+        sg.addSGroupAttachmentPoint(1, -1, "Br")
+        print(
+            "Iterating attachment points for SGroup '%s':" % sg.getSGroupName()
+        )
+        iterated = []
+        for ap in sg.iterateSGroupAttachmentPoints():
+            leave_atom_idx = ap.getSGroupAttachmentPointLeaveAtom()
+            if leave_atom_idx is None:
+                leave_atom_idx = -1
+            iterated.append(
+                (
+                    ap.index(),
+                    ap.getSGroupAttachmentPointAtomIdx(),
+                    leave_atom_idx,
+                    ap.getSGroupAttachmentPointLabel(),
+                )
+            )
+
+        print("Attachment points count: %d" % len(iterated))
+        for ap_idx, atom_idx, leave_atom_idx, label in sorted(
+            iterated, key=lambda x: x[3]
+        ):
+            print(
+                "  ap_idx=%d atom_idx=%d leave_atom_idx=%d label=%s"
+                % (ap_idx, atom_idx, leave_atom_idx, label)
+            )
+        break  # test with first match only
+
+
+def testSGroupAttachmentPointStaleHandle():
+    """Test that deleted AP handles throw clear errors."""
+    indigo.setOption("molfile-saving-mode", "2000")
+    m = indigo.loadMoleculeFromFile(
+        dataPath("molecules/sgroups/sgroups-base.mol")
+    )
+    t = indigo.loadQueryMoleculeFromFile(
+        dataPath("molecules/sgroups/sgroups-template.mol")
+    )
+    matcher = indigo.substructureMatcher(m)
+    for match in matcher.iterateMatches(t):
+        sg = m.createSGroup("SUP", match, "StaleHandleTest")
+        sg.addSGroupAttachmentPoint(0, -1, "Al")
+        sg.addSGroupAttachmentPoint(1, -1, "Br")
+
+        ap_objects = []
+        for ap in sg.iterateSGroupAttachmentPoints():
+            ap_objects.append(ap)
+
+        stale_ap = ap_objects[0]
+        sg.deleteSGroupAttachmentPoint(stale_ap.index())
+        try:
+            stale_ap.getSGroupAttachmentPointLabel()
+        except IndigoException as e:
+            print(
+                "Expected error for removed attachment point handle: %s"
+                % getIndigoExceptionText(e)
+            )
+        break  # test with first match only
+
+
+def testSGroupAttachmentPointInvalidTarget():
+    """Test that AP iteration is rejected for non-superatom S-group types."""
+    indigo.setOption("molfile-saving-mode", "2000")
+    m = indigo.loadMolecule("c1ccccc1")
+    data_sg = m.addDataSGroup([0, 1], [], "ID", "test")
+    try:
+        data_sg.iterateSGroupAttachmentPoints()
+    except IndigoException as e:
+        print(
+            "Expected error for iterateSGroupAttachmentPoints on data SGroup: %s"
+            % getIndigoExceptionText(e)
+        )
+
+
+testIterateSGroupAttachmentPoints()
+testSGroupAttachmentPointStaleHandle()
+testSGroupAttachmentPointInvalidTarget()
+
 print("****** Get/Set Multiplier ********")
 indigo.setOption("molfile-saving-mode", "3000")
 m = indigo.loadMoleculeFromFile(

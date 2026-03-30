@@ -405,6 +405,37 @@ protected:
     Array<int> _refs;
 };
 
+class IndigoSGroupAttachmentPoint : public IndigoObject
+{
+public:
+    IndigoSGroupAttachmentPoint(BaseMolecule& mol, int sgroup_idx, int ap_idx);
+    ~IndigoSGroupAttachmentPoint() override;
+
+    int getIndex() override;
+
+    static IndigoSGroupAttachmentPoint& cast(IndigoObject& obj);
+    Superatom::_AttachmentPoint& get();
+
+    BaseMolecule& mol;
+    int sgroup_idx;
+    int ap_idx;
+};
+
+class IndigoSGroupAttachmentPointsIter : public IndigoObject
+{
+public:
+    IndigoSGroupAttachmentPointsIter(BaseMolecule& mol, int sgroup_idx);
+    ~IndigoSGroupAttachmentPointsIter() override;
+
+    IndigoObject* next() override;
+    bool hasNext() override;
+
+protected:
+    BaseMolecule& _mol;
+    int _sgroup_idx;
+    int _idx;
+};
+
 class IndigoRepeatingUnit : public IndigoObject
 {
 public:

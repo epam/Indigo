@@ -2025,6 +2025,59 @@ class IndigoObject:
             self._lib().indigoDeleteSGroupAttachmentPoint(self.id, apidx)
         )
 
+    def iterateSGroupAttachmentPoints(self):
+        """SGroup method iterates attachment points of a superatom S-group
+
+        Returns:
+            IndigoObject: attachment points iterator
+        """
+
+        return IndigoObject(
+            self.session,
+            IndigoLib.checkResult(
+                self._lib().indigoIterateSGroupAttachmentPoints(self.id)
+            ),
+            self,
+        )
+
+    def getSGroupAttachmentPointAtomIdx(self):
+        """SGroup attachment point method returns the attachment atom index
+
+        Returns:
+            int: atom index
+        """
+
+        return IndigoLib.checkResult(
+            self._lib().indigoGetSGroupAttachmentPointAtomIdx(self.id)
+        )
+
+    def getSGroupAttachmentPointLeaveAtom(self):
+        """SGroup attachment point method returns the leaving atom index
+
+        Returns:
+            Optional[int]: leaving atom index, or None if not set
+        """
+        value = c_int()
+        res = IndigoLib.checkResult(
+            self._lib().indigoGetSGroupAttachmentPointLeaveAtom(
+                self.id, pointer(value)
+            )
+        )
+        if res == 0:
+            return None
+        return value.value
+
+    def getSGroupAttachmentPointLabel(self):
+        """SGroup attachment point method returns the attachment point label (e.g. 'Al', 'R1')
+
+        Returns:
+            str: attachment point label string
+        """
+
+        return IndigoLib.checkResultString(
+            self._lib().indigoGetSGroupAttachmentPointLabel(self.id)
+        )
+
     def getSGroupDisplayOption(self):
         """SGroup method returns display option
 
