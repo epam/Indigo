@@ -1404,17 +1404,61 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                 // Update selected_centroid to new position for optimization
                 selected_centroid = src_selected_centroid;
 
-                // Optimize translation only (no rotation — preserves polygon orientation)
-                Vec2f best_translation(0, 0);
-                float best_rotation = 0.0f;
-                _optimizeSelectedPartPlacement(bond_length, bridge_fixed_positions, all_fixed_vertices, bridge_connected_pairs, selected_centroid, sel_vertices,
-                                               best_translation, best_rotation);
-                best_rotation = 0.0f;
+                // Optimize translation only (no rotation — preserves polygon orientation).
+                // _optimizeSelectedPartPlacement searches rotation+translation jointly;
+                // applying only its translation at rotation=0 yields incorrect bridge lengths.
+                // Instead, do a simple gradient descent on (dx, dy) with angle fixed to 0.
+                float best_dx = 0.f, best_dy = 0.f;
+                float best_cost = 1e10f;
+
+                // Evaluate cost: sum of squared deviations of bridge bonds from bond_length
+                auto translation_cost = [&](float dx, float dy) -> float {
+                    float cost = 0;
+                    int count = 0;
+                    for (auto v : sel_vertices)
+                    {
+                        if (bridge_fixed_positions.size() <= size_t(v) || bridge_fixed_positions[v].empty())
+                            continue;
+                        Vec2f pos = _layout_vertices[v].pos;
+                        pos.x += dx;
+                        pos.y += dy;
+                        for (const Vec2f& fp : bridge_fixed_positions[v])
+                        {
+                            float d = Vec2f::dist(pos, fp) - bond_length;
+                            cost += d * d;
+                            count++;
+                        }
+                    }
+                    return count > 0 ? cost : 1e10f;
+                };
+
+                best_cost = translation_cost(0, 0);
+                float step = bond_length;
+                while (step > 0.01f * bond_length)
+                {
+                    bool improved = false;
+                    for (int ddx : {-1, 0, 1})
+                        for (int ddy : {-1, 0, 1})
+                        {
+                            if (ddx == 0 && ddy == 0)
+                                continue;
+                            float c = translation_cost(best_dx + ddx * step, best_dy + ddy * step);
+                            if (c < best_cost)
+                            {
+                                best_cost = c;
+                                best_dx += ddx * step;
+                                best_dy += ddy * step;
+                                improved = true;
+                            }
+                        }
+                    if (!improved)
+                        step *= 0.5f;
+                }
 
                 for (auto vx_idx : sel_vertices)
                 {
-                    auto& pos = _layout_vertices[vx_idx].pos;
-                    pos.add(best_translation);
+                    _layout_vertices[vx_idx].pos.x += best_dx;
+                    _layout_vertices[vx_idx].pos.y += best_dy;
                 }
             }
         }
