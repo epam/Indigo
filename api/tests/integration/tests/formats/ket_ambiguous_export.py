@@ -1,11 +1,5 @@
-﻿import difflib
-import os
+﻿import os
 import sys
-
-
-def find_diff(a, b):
-    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
-
 
 sys.path.append(
     os.path.normpath(

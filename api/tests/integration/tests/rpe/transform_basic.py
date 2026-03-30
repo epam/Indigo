@@ -24,7 +24,7 @@ def round(x):
 
 def printCoords(m):
     for atom in m.iterateAtoms():
-        (x, y, z) = atom.xyz()
+        x, y, z = atom.xyz()
         x = round(x)
         y = round(y)
         z = round(z)

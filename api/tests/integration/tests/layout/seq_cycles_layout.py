@@ -41,6 +41,7 @@ sys.path.append(
     )
 )
 
+from common.util import compare_diff
 from env_indigo import *  # noqa
 
 indigo = Indigo()
@@ -83,17 +84,6 @@ for filename in files:
         mol = indigo.loadQueryMoleculeFromFile(
             os.path.join(root, filename + ".ket")
         )
-
     mol.layout()
-    # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
-    #     file.write(mol.json())
-    with open(getRefFilepath(filename + ".ket"), "r") as file:
-        ket_ref = file.read()
-
     ket = mol.json()
-    diff = compare_positions(ket_ref, ket)
-    if not diff:
-        print(filename + ".ket:SUCCEED")
-    else:
-        print(filename + ".ket:FAILED")
-        print(diff)
+    compare_diff(ref_path, filename + ".ket", ket, diff_fn=compare_positions)

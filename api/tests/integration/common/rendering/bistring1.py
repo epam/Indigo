@@ -818,7 +818,7 @@ class _ConstBitString(object):
             if d is not None
         ]
         assert len(init) == 1
-        (d, func) = init[0]
+        d, func = init[0]
         if d == filename:
             byteoffset, offset = divmod(offset, 8)
             func(d, offset, length, byteoffset)

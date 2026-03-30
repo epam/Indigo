@@ -273,6 +273,6 @@ def testSSSWithSerializedAndAromatized(mol, q):
 
 for i in range(len(tests)):
     print("\n*** Test %d ***" % (i))
-    (mol, q) = tests[i]
+    mol, q = tests[i]
     if mol != None and q != None:
         testSSSWithSerializedAndAromatized(mol, q)

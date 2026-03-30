@@ -175,6 +175,17 @@ Befor running any test you have to build and install indigo-python
     python api/tests/integration/test.py -t 1 -p test_name
     ```
 
+    >to update all tests using -u
+    ```
+    python api/tests/integration/test.py -u
+    ```
+
+    >to update all tests without -u
+    ```
+    export INDIGO_UPDATE_TESTS="True"
+    python api/tests/integration/test.py
+    ```
+
 ### To run backend API test:
 1) Build and install indigo-python
 2) Set environment variable by running this command:

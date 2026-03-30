@@ -174,7 +174,7 @@ molfile loader: atom lists are allowed only for queries
         <scheme>
             <step ReactionStepReactants="4 18 24" ReactionStepProducts="28" ReactionStepArrows="43" ReactionStepAtomMap="5 29 6 30 7 31 8 34 9 33 10 32 11 38 12 35 14 39 19 36 20 42 25 41" ReactionStepAtomMapManual="5 29 6 30 7 31 8 34 9 33 10 32 11 38 12 35 14 39 19 36 20 42 25 41"/>
         </scheme>
-        <t p="35.493000 1.934999" Justification="Center" InterpretChemically="no">
+        <t p="35.493004 1.934999" Justification="Center" InterpretChemically="no">
             <s font="4" size="18" face="1">1,3-Quinazoline 2,4-dione formation</s>
         </t>
     </page>

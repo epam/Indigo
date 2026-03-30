@@ -1,7 +1,10 @@
+import difflib
 import os
 import platform
 import re
 import sys
+
+import env_indigo
 
 REPO_ROOT = os.path.normpath(
     os.path.join(
@@ -207,3 +210,130 @@ def download_jna(jna_version, path):
     except Exception as e:
         os.remove(output_path)
         raise e
+
+
+def find_diff(a, b):
+    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
+
+
+def compare_diff(ref_path, filename, data, stdout=True, diff_fn=find_diff):
+    path_to_file = os.path.join(ref_path, filename)
+
+    is_update_required = os.getenv("INDIGO_UPDATE_TESTS", "False") == "True"
+    if is_update_required:
+        with open(path_to_file, "w", encoding="utf-8") as file:
+            file.write(data)
+
+    with open(path_to_file, "r", encoding="utf-8") as file:
+        data_ref = file.read()
+
+    diff = diff_fn(data_ref, data)
+
+    if not stdout:
+        return diff
+
+    if not diff:
+        print(filename + ":SUCCEED")
+    else:
+        print(filename + ":FAILED")
+        print(diff)
+
+
+def reactionLayoutDiff(
+    indigo,
+    rxn,
+    ref,
+    delta=0.001,
+    ref_is_file=True,
+    update=os.getenv("INDIGO_UPDATE_TESTS", "False") == "True",
+    update_format="mol",
+):
+    if ref_is_file:
+        ref_name = env_indigo.getRefFilepath2(ref)
+        if update:
+            if update_format == "mol":
+                txt = rxn.rxnfile()
+            elif update_format == "ket":
+                txt = rxn.json()
+            with open(ref_name, "w") as file:
+                file.write(txt)
+        r2 = indigo.loadReactionFromFile(ref_name)
+    else:
+        if update:
+            if update_format == "mol":
+                print(rxn.rxnfile())
+            elif update_format == "ket":
+                print(rxn.json())
+            print("ref=\n", ref)
+        r2 = indigo.loadReaction(ref)
+    error_buf = []
+    for m in rxn.iterateMolecules():
+        res = moleculeLayoutDiff(
+            indigo,
+            m,
+            r2.getMolecule(m.index()).molfile(),
+            delta,
+            ref_is_file=False,
+            update=False,
+        )
+        error_buf.append("Molecule #{}: {}".format(m.index(), res))
+    return "\n   ".join(error_buf)
+
+
+def moleculeLayoutDiff(
+    indigo,
+    mol,
+    ref,
+    delta=0.01,
+    ref_is_file=True,
+    update=os.getenv("INDIGO_UPDATE_TESTS", "False") == "True",
+    update_format="mol",
+):
+    if ref_is_file:
+        ref_name = env_indigo.getRefFilepath2(ref)
+        if update:
+            if update_format == "mol":
+                txt = mol.molfile()
+            elif update_format == "ket":
+                txt = mol.json()
+            with open(ref_name, "w") as file:
+                file.write(txt)
+        m2 = indigo.loadMoleculeFromFile(ref_name)
+    else:
+        if update:
+            if update_format == "mol":
+                print(mol.molfile())
+            elif update_format == "ket":
+                print(mol.json())
+        m2 = indigo.loadMolecule(ref)
+
+    error_buf = []
+
+    for a1 in mol.iterateAtoms():
+        a2 = m2.getAtom(a1.index())
+        a = a1.xyz()
+        b = a2.xyz()
+        d = env_indigo.dist_vec(a, b)
+        if d > delta:
+            error_buf.append(
+                "atom #{} ({}) contains delta {} > {}".format(
+                    a1.index(), a1.symbol(), d, delta
+                )
+            )
+
+    for s in mol.iterateDataSGroups():
+        s2 = m2.getDataSGroup(s.index())
+        a = s.getSGroupCoords()
+        b = s2.getSGroupCoords()
+        d = env_indigo.dist_vec(a, b)
+        if d > delta:
+            error_buf.append(
+                "data sgroup #{} contains delta {} > {}".format(
+                    s.index(), d, delta
+                )
+            )
+
+    if len(error_buf) > 0:
+        return "Error: {}".format("\n   ".join(error_buf))
+
+    return "Success"
