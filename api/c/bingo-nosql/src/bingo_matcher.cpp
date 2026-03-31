@@ -432,7 +432,7 @@ void BaseSubstructureMatcherDispatcher::_handleResult(OsCommandResult& result)
     if (!r.match)
         return;
     _results.emplace_back(r.db_object_idx, r.indigo_obj.release());
-    _cv_results.notify_all();
+    _cv_results.notify_one();
 }
 
 BaseSubstructureMatcher::BaseSubstructureMatcher(/*const */ BaseIndex& index, IndigoObject*& current_obj)
@@ -457,7 +457,7 @@ void BaseSubstructureMatcher::run_dispatcher()
     {
         std::lock_guard<std::mutex> locker(_results_mtx);
         _finished_processing = true;
-        _cv_results.notify_all();
+        _cv_results.notify_one();
     }
 }
 
@@ -485,7 +485,7 @@ bool BaseSubstructureMatcher::next()
         _arom_options = indigo.arom_options;
         _tautomer_rules = &indigo.tautomer_rules;
 
-        _disp.reset(new BaseSubstructureMatcherDispatcher(this, _input_data, _input_mtx, _cv_input, _all_data_in_queue, results, _results_mtx, _cv_results));
+        _disp.reset(new BaseSubstructureMatcherDispatcher(this, _input_data, _input_mtx, _cv_input, _all_data_in_queue, _results, _results_mtx, _cv_results));
         _t.emplace([this]() { this->run_dispatcher(); });
     }
 
@@ -551,14 +551,14 @@ bool BaseSubstructureMatcher::next()
         {
             profTimerStart(lw, "sub_try_wait");
             std::unique_lock<std::mutex> lock(_results_mtx);
-            _cv_results.wait(lock, [this]() { return !results.empty() || _finished_processing; });
+            _cv_results.wait(lock, [this]() { return !_results.empty() || _finished_processing; });
             profTimerStop(lw);
-            if (!results.empty())
+            if (!_results.empty())
             {
                 if (_current_obj == nullptr)
                     throw Exception("BaseMatcher: Matcher's current object was destroyed");
 
-                auto& result = results.front();
+                auto& result = _results.front();
                 _current_id = result.first;
                 if (IndigoMolecule::is(*result.second))
                 {
@@ -573,7 +573,7 @@ bool BaseSubstructureMatcher::next()
                 else
                     throw Exception("BaseMatcher::unknown current object type");
 
-                results.pop_front();
+                _results.pop_front();
                 status = true;
             }
             else if (_finished_processing) // no more results and no more data processed

@@ -273,7 +273,7 @@ namespace bingo
         BaseSubstructureMatcherDispatcher(BaseSubstructureMatcher* matcher, std::deque<int>& src, std::mutex& i_mtx, std::condition_variable& cv_input,
                                           std::atomic_bool& eod, std::deque<std::pair<int, std::unique_ptr<IndigoObject>>>& results, std::mutex& r_mtx,
                                           std::condition_variable& cv_results)
-            : OsCommandDispatcher(HANDLING_ORDER_SERIAL, true), _matcher(matcher), _input_data(src), _input_mtx(i_mtx), _cv_input(cv_input),
+            : OsCommandDispatcher(HANDLING_ORDER_ANY, false), _matcher(matcher), _input_data(src), _input_mtx(i_mtx), _cv_input(cv_input),
               _all_data_in_queue(eod), _results(results), _results_mtx(r_mtx), _cv_results(cv_results)
         {
         }
@@ -364,10 +364,11 @@ namespace bingo
         std::mutex _input_mtx;
         std::condition_variable _cv_input;
         std::atomic_bool _all_data_in_queue = false;
-        std::deque<std::pair<int, std::unique_ptr<IndigoObject>>> results;
+        std::deque<std::pair<int, std::unique_ptr<IndigoObject>>> _results;
         std::mutex _results_mtx;
         std::atomic_bool _finished_processing = false;
         std::condition_variable _cv_results;
+        int _results_empty = 0;
     };
 
     class MoleculeSubMatcher : public BaseSubstructureMatcher
