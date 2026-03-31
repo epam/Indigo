@@ -486,7 +486,7 @@ bool BaseSubstructureMatcher::next()
         _tautomer_rules = &indigo.tautomer_rules;
 
         _disp.reset(new BaseSubstructureMatcherDispatcher(this, _input_data, _input_mtx, _cv_input, _all_data_in_queue, results, _results_mtx, _cv_results));
-        _t.emplace([this]() { this->run_dispatcher(_candidates.size()); });
+        _t.emplace([this]() { this->run_dispatcher(); });
     }
 
     while (!((_current_pack == _final_pack) && (_current_cand_id == _candidates.size())))
