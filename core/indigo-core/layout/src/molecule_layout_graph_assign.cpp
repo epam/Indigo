@@ -502,6 +502,23 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
     for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
         _layout_vertices[i].pos = supergraph.getPos(getVertexExtIdx(i));
 
+    // Copy fixed-vertex information from supergraph into this BC subgraph so that
+    // pre-marking and boundary traversal can distinguish selected vs. backbone vertices.
+    // Important: _fixed_vertices is indexed by the supergraph (molecule-level) atom index —
+    // the same key used by _assignFinalCoordinates (ext_idx = lvx.ext_idx).
+    // We simply copy the supergraph array; entries for vertices not in this BC are unused.
+    if (sequence_layout && supergraph._fixed_vertices.size() > 0)
+    {
+        _fixed_vertices.copy(supergraph._fixed_vertices);
+        _n_fixed = 0;
+        for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
+        {
+            int ext = getVertexExtIdx(i);
+            if (ext < _fixed_vertices.size() && _fixed_vertices[ext] != 0)
+                _n_fixed++;
+        }
+    }
+
     //	2.1. Use layout of fixed components and find border edges and vertices
     if (fixed_component)
     {
@@ -548,46 +565,79 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
         cycles[cycle_idx].canonize();
     }
 
-    // Check cycles for fixed vertices and mark them as ELEMENT_BOUNDARY
-    if (sequence_layout)
+    // Check cycles for fixed vertices and mark them as ELEMENT_BOUNDARY.
+    // Only apply when there's a previous fixed layout (supergraph._n_fixed > 0) so that
+    // already-drawn cycles aren't re-laid-out. For initial layout, skip this and let all
+    // cycles go through _assignFirstCycle + _attachCycleOutside for correct geometry.
+    if (sequence_layout && supergraph._n_fixed > 0)
     {
+        // Count fixed vertices per cycle.
+        // Pure-backbone cycles (ALL verts fixed): mark everything drawn + remove.
+        // Mixed cycles (some fixed, some selected): mark ONLY the backbone verts as
+        //   BOUNDARY/nailed, leave selected verts NOT_DRAWN so _attachCycleOutside
+        //   can draw them as a regular polygon arc anchored to the backbone verts.
         QS_DEF(Array<int>, cycles_to_remove);
         cycles_to_remove.clear();
-
         for (i = cycles.begin(); i < cycles.end(); i = cycles.next(i))
         {
             const Cycle& cycle = cycles[i];
-            bool has_fixed = false;
+            int n_fixed_v = 0;
 
-            // Check if cycle has any fixed vertices - use supergraph's fixed_vertices with ext_idx mapping
             for (int j = 0; j < cycle.vertexCount(); j++)
             {
                 int v_idx = cycle.getVertex(j);
-                if (_fixed_vertices.size() > v_idx && _fixed_vertices[v_idx] != 0)
-                {
-                    has_fixed = true;
-                    break;
-                }
+                int v_ext = getVertexExtIdx(v_idx);
+                if (v_ext < _fixed_vertices.size() && _fixed_vertices[v_ext] != 0)
+                    n_fixed_v++;
             }
 
-            if (has_fixed)
+            if (n_fixed_v == 0)
+                continue; // purely selected — handled by _assignFirstCycle normally
+
+            if (n_fixed_v == cycle.vertexCount())
             {
-                // Mark cycle as drawn; nail only actually fixed vertices
+                // Pure backbone cycle — mark all verts+edges drawn and remove.
                 for (int j = 0; j < cycle.vertexCount(); j++)
                 {
                     int v_idx = cycle.getVertex(j);
                     _layout_vertices[v_idx].type = ELEMENT_BOUNDARY;
                     _layout_edges[cycle.getEdge(j)].type = ELEMENT_BOUNDARY;
-                    if (_fixed_vertices.size() > v_idx && _fixed_vertices[v_idx] != 0)
+                    _layout_vertices[v_idx].is_nailed = true;
+                }
+                cycles_to_remove.push(i);
+            }
+            else
+            {
+                // Mixed cycle (some backbone, some selected):
+                // Mark ONLY backbone verts as BOUNDARY (nail their positions).
+                // Leave selected verts NOT_DRAWN — this prevents n_cv inflation
+                // when those verts are shared with a purely-selected SSSR cycle
+                // that will be processed by _assignFirstCycle/_attachCycleOutside.
+                // Remove from sorted_cycles to avoid _getBorder corrupted-border crash
+                // (NOT_DRAWN verts in a cycle make the border graph non-traversable).
+                // Circle placement fallback places any residual NOT_DRAWN verts.
+                for (int j = 0; j < cycle.vertexCount(); j++)
+                {
+                    int v_idx = cycle.getVertex(j);
+                    int v_ext = getVertexExtIdx(v_idx);
+                    bool is_fixed = (v_ext < _fixed_vertices.size() && _fixed_vertices[v_ext] != 0);
+                    if (is_fixed)
                     {
+                        _layout_vertices[v_idx].type = ELEMENT_BOUNDARY;
                         _layout_vertices[v_idx].is_nailed = true;
                     }
+                    // Mark edge BOUNDARY only between two backbone verts.
+                    int v_next = cycle.getVertex((j + 1) % cycle.vertexCount());
+                    int v_next_ext = getVertexExtIdx(v_next);
+                    bool next_fixed = (v_next_ext < _fixed_vertices.size() && _fixed_vertices[v_next_ext] != 0);
+                    if (is_fixed && next_fixed)
+                        _layout_edges[cycle.getEdge(j)].type = ELEMENT_BOUNDARY;
                 }
                 cycles_to_remove.push(i);
             }
         }
 
-        // Remove cycles with fixed vertices
+        // Remove pure-backbone cycles.
         for (i = 0; i < cycles_to_remove.size(); i++)
             cycles.remove(cycles_to_remove[i]);
     }
@@ -599,15 +649,25 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
         sorted_cycles.push(i);
     }
 
-    // All cycles already positioned — nothing left to lay out
+
+    // All cycles already positioned — nothing left to lay out.
+    // Run CycleEnumerator to correctly mark outer boundary vs internal edges.
     if (sequence_layout && sorted_cycles.size() == 0)
+    {
+        CycleEnumerator ce(*this);
+        ce.context = this;
+        ce.cb_handle_cycle = _border_cb;
+        ce.process(); // best-effort reclassification
         return;
+    }
+
 
     float bond_length = (sequence_layout && supergraph._n_fixed) ? LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH : 1.0f;
 
     if (sorted_cycles.size() > 0)
     {
         sorted_cycles.qsort(Cycle::compare_cb, &cycles);
+
         // Skip if cycle already has correct polygon geometry from previous layout step
         bool skip_first = false;
         if (sequence_layout)
@@ -627,6 +687,7 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
             }
             _first_vertex_idx = first_cycle.getVertex(_findCycleLeftTopIdx(first_cycle));
         }
+
         cycles.remove(sorted_cycles[0]);
         sorted_cycles.remove(0);
     }
@@ -732,7 +793,19 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
             else
                 i++;
         }
+
+        // After _attachCycleWithIntersections edges are ELEMENT_NOT_PLANAR, not BOUNDARY.
+        // Re-run CycleEnumerator to restore a valid simple boundary so that
+        // subsequent _attachCycleOutside / _getBorder calls don't crash.
+        if (chain_attached && sorted_cycles.size() > 0)
+        {
+            CycleEnumerator ce(*this);
+            ce.context = this;
+            ce.cb_handle_cycle = _border_cb;
+            ce.process(); // ignore return value — best-effort reclassification
+        }
     } while (chain_attached);
+
 
     _attachCrossingEdges();
 
@@ -809,15 +882,20 @@ void MoleculeLayoutGraphSimple::_assignFirstCycle(const Cycle& cycle, float bond
         _layout_edges[cycle.getEdge(i)].type = ELEMENT_BOUNDARY;
     }
 
-    // For sequence layout, start from the top-left vertex (min x - y)
-    int s = sequence_layout ? _findCycleLeftTopIdx(cycle) : 0;
+    // Left-top rule applies only when the entire molecule is selected (_n_fixed == 0):
+    // the polygon is placed with its top-left vertex at the origin for a consistent
+    // orientation without needing a rotation search.
+    // When there are fixed (unselected) backbone vertices, skip left-top and let
+    // _assignFinalCoordinates find the best orientation via rotation optimization.
+    bool use_left_top = sequence_layout && (_n_fixed == 0);
+    int s = use_left_top ? _findCycleLeftTopIdx(cycle) : 0;
 
     _first_vertex_idx = cycle.getVertex(s);
 
     phi = (float)M_PI * (n - 2) / n;
 
     Vec2f diff(_layout_vertices[cycle.getVertex((s + 1) % n)].pos - _layout_vertices[cycle.getVertex(s)].pos);
-    if (sequence_layout)
+    if (use_left_top)
     {
         // Place vertex s at 180° on the circumscribed circle (leftmost point),
         // so the center of the circle is to the right of the top-left monomer.
@@ -933,8 +1011,14 @@ void MoleculeLayoutGraph::_buildOutline(void)
     else
         _outline->clear();
 
+    int outer_iter = 0;
+    const int outer_max_iter = 4 * edgeCount() + 20;
+
     while (true)
     {
+        if (++outer_iter > outer_max_iter)
+            break; // Failsafe: outline traversal should complete within O(E) steps
+
         const Vertex& vert = getVertex(i);
 
         if (i != first_idx)
@@ -983,8 +1067,10 @@ void MoleculeLayoutGraph::_buildOutline(void)
         Vec2f cur_v2 = getPos(i);
         int prev_edge = -1;
         int cur_edge = vert.neiEdge(next_nei);
+        int outline_iter = 0;
+        const int outline_max_iter = 2 * edgeCount() + 10;
 
-        while (min_dist < 10000.f)
+        while (min_dist < 10000.f && outline_iter++ < outline_max_iter)
         {
             min_dist = 10001.f;
 
@@ -1336,7 +1422,16 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                 if (lvx.is_inner_cycle && !is_fixed)
                     inner_cycle_vertices.push_back(vx_idx);
 
-                if ((is_fixed || lvx.is_nailed) || (vx.degree() == 1 && _layout_vertices[vx.neiVertex(vx.neiBegin())].is_nailed))
+                // In sequence_layout mode, only truly backbone-fixed vertices are "fixed".
+                // is_nailed marks cycle vertices that have been attached (their relative
+                // positions are correctly computed) but they should translate with the
+                // selected block as a rigid body, not be pinned to src_layout positions.
+                bool treat_as_fixed = is_fixed;
+                if (!sequence_layout)
+                    treat_as_fixed = treat_as_fixed || lvx.is_nailed ||
+                                     (vx.degree() == 1 && _layout_vertices[vx.neiVertex(vx.neiBegin())].is_nailed);
+
+                if (treat_as_fixed)
                     fix_vertexes.push_back(vx_idx);
                 else
                 {
@@ -1404,62 +1499,97 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                 // Update selected_centroid to new position for optimization
                 selected_centroid = src_selected_centroid;
 
-                // Optimize translation only (no rotation — preserves polygon orientation).
-                // _optimizeSelectedPartPlacement searches rotation+translation jointly;
-                // applying only its translation at rotation=0 yields incorrect bridge lengths.
-                // Instead, do a simple gradient descent on (dx, dy) with angle fixed to 0.
-                float best_dx = 0.f, best_dy = 0.f;
-                float best_cost = 1e10f;
+                // Left-top rule is used only for full-molecule selection (_n_fixed==0),
+                // so rotation is not needed there (polygon orientation is fixed by left-top).
+                // For partial selection (backbone fixed), allow rotation+translation so
+                // the selected ring block connects correctly to the fixed backbone.
+                bool allow_rotation = sequence_layout && _n_fixed > 0;
 
-                // Evaluate cost: sum of squared deviations of bridge bonds from bond_length
-                auto translation_cost = [&](float dx, float dy) -> float {
-                    float cost = 0;
-                    int count = 0;
-                    for (auto v : sel_vertices)
-                    {
-                        if (bridge_fixed_positions.size() <= size_t(v) || bridge_fixed_positions[v].empty())
-                            continue;
-                        Vec2f pos = _layout_vertices[v].pos;
-                        pos.x += dx;
-                        pos.y += dy;
-                        for (const Vec2f& fp : bridge_fixed_positions[v])
-                        {
-                            float d = Vec2f::dist(pos, fp) - bond_length;
-                            cost += d * d;
-                            count++;
-                        }
-                    }
-                    return count > 0 ? cost : 1e10f;
-                };
-
-                best_cost = translation_cost(0, 0);
-                float step = bond_length;
-                while (step > 0.01f * bond_length)
+                if (allow_rotation)
                 {
-                    bool improved = false;
-                    for (int ddx : {-1, 0, 1})
-                        for (int ddy : {-1, 0, 1})
+                    Vec2f best_translation(0, 0);
+                    float best_rotation = 0.f;
+                    _optimizeSelectedPartPlacement(bond_length, bridge_fixed_positions, all_fixed_vertices,
+                                                   bridge_connected_pairs, selected_centroid, sel_vertices,
+                                                   best_translation, best_rotation);
+
+                    // Apply rotation around centroid, then translation
+                    for (auto vx_idx : sel_vertices)
+                    {
+                        Vec2f& pos = _layout_vertices[vx_idx].pos;
+                        pos.sub(selected_centroid);
+                        pos.rotate(best_rotation);
+                        pos.add(selected_centroid);
+                        pos.add(best_translation);
+                    }
+                }
+                else
+                {
+                    // Translation-only gradient descent (preserves left-top polygon orientation).
+                    float best_dx = 0.f, best_dy = 0.f;
+                    float best_cost = 1e10f;
+
+                    auto translation_cost = [&](float dx, float dy) -> float {
+                        float cost = 0;
+                        int count = 0;
+                        for (auto v : sel_vertices)
                         {
-                            if (ddx == 0 && ddy == 0)
+                            if (bridge_fixed_positions.size() <= size_t(v) || bridge_fixed_positions[v].empty())
                                 continue;
-                            float c = translation_cost(best_dx + ddx * step, best_dy + ddy * step);
-                            if (c < best_cost)
+                            Vec2f pos = _layout_vertices[v].pos;
+                            pos.x += dx;
+                            pos.y += dy;
+                            for (const Vec2f& fp : bridge_fixed_positions[v])
                             {
-                                best_cost = c;
-                                best_dx += ddx * step;
-                                best_dy += ddy * step;
-                                improved = true;
+                                float d = Vec2f::dist(pos, fp) - bond_length;
+                                cost += d * d;
+                                count++;
                             }
                         }
-                    if (!improved)
-                        step *= 0.5f;
-                }
+                        return count > 0 ? cost : 1e10f;
+                    };
 
-                for (auto vx_idx : sel_vertices)
-                {
-                    _layout_vertices[vx_idx].pos.x += best_dx;
-                    _layout_vertices[vx_idx].pos.y += best_dy;
+                    best_cost = translation_cost(0, 0);
+                    float step = bond_length;
+                    while (step > 0.01f * bond_length)
+                    {
+                        bool improved = false;
+                        for (int ddx : {-1, 0, 1})
+                            for (int ddy : {-1, 0, 1})
+                            {
+                                if (ddx == 0 && ddy == 0)
+                                    continue;
+                                float c = translation_cost(best_dx + ddx * step, best_dy + ddy * step);
+                                if (c < best_cost)
+                                {
+                                    best_cost = c;
+                                    best_dx += ddx * step;
+                                    best_dy += ddy * step;
+                                    improved = true;
+                                }
+                            }
+                        if (!improved)
+                            step *= 0.5f;
+                    }
+
+                    for (auto vx_idx : sel_vertices)
+                    {
+                        _layout_vertices[vx_idx].pos.x += best_dx;
+                        _layout_vertices[vx_idx].pos.y += best_dy;
+                    }
                 }
+            }
+
+            // Restore fixed (unselected) vertices to their original positions.
+            // During _assignRelativeCoordinates the BC subgraph shifts everything into
+            // a relative coordinate frame; after translation optimisation we must put
+            // fixed vertices back to their original molecule positions (src_layout).
+            for (auto fix_vx_idx : fix_vertexes)
+            {
+                int ext_idx = _layout_vertices[fix_vx_idx].ext_idx;
+                bool is_fixed = ext_idx < _fixed_vertices.size() && _fixed_vertices[ext_idx];
+                if (is_fixed)
+                    _layout_vertices[fix_vx_idx].pos = src_layout[fix_vx_idx];
             }
         }
         else

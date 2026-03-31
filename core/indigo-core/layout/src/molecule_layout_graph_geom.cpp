@@ -68,6 +68,9 @@ void MoleculeLayoutGraph::_findAngles(int k, float s, float& x, float& y)
     a0 = _2FLOAT(b0 - M_PI / 100.);
 
     bool repeat = true;
+    int find_iter = 0;
+    // At pi/100 step from pi to pi/2 needs ~50 steps; 200 is generous failsafe.
+    const int find_max_iter = 200;
 
     while (repeat)
     {
@@ -76,6 +79,9 @@ void MoleculeLayoutGraph::_findAngles(int k, float s, float& x, float& y)
 
         if ((a0 < M_PI / 2 + EPSILON) && k > 3)
             throw Error("there are no roots");
+
+        if (++find_iter > find_max_iter)
+            throw Error("_findAngles: no root found (k=%d, s=%.4f)", k, s);
 
         if (k % 2 == 0)
         {
