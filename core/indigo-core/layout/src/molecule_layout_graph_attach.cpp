@@ -454,11 +454,18 @@ bool MoleculeLayoutGraphSimple::_attachCycleOutside(const Cycle& cycle, float le
     QS_DEF(MoleculeLayoutGraphSimple, next_bc);
     QS_DEF(Array<int>, mapping);
 
-    // In sequence_layout with 3+ shared edges (fused multi-ring): the combined-boundary
-    // convexity checks (_checkBadTryChainOutside / _checkBadTryBorderIntersection) give
-    // false negatives because the attachment region is concave.  Use n_try=2 as a bypass
-    // path that skips those checks and forces ccw=true, then n_try=3 for ccw=false.
-    int max_try = (sequence_layout && n_common_e >= 3) ? 4 : 2;
+    // n_try iteration plan:
+    //   0 — ccw=true,  with convexity checks  (standard)
+    //   1 — ccw=false, with convexity checks  (standard)
+    //   2 — ccw=true,  bypass checks (sequence_layout concave fused ring)
+    //   3 — ccw=false, bypass checks
+    // Bypass passes are enabled when the shared boundary has 3+ edges, which
+    // indicates a fused multi-ring where the attachment region is concave and
+    // the convexity checks give false negatives.
+    static const int kMaxTryStandard = 2;       // passes 0-1
+    static const int kMaxTryWithBypass = 4;     // passes 0-3
+    static const int kBypassMinSharedEdges = 3; // shared edges threshold for bypass
+    int max_try = (sequence_layout && n_common_e >= kBypassMinSharedEdges) ? kMaxTryWithBypass : kMaxTryStandard;
 
     for (int n_try = 0; n_try < max_try && !is_attached; n_try++)
     {
