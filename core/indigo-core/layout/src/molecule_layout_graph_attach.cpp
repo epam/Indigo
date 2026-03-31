@@ -203,7 +203,6 @@ bool MoleculeLayoutGraphSimple::_attachCycleOutside(const Cycle& cycle, float le
             n_common_e++;
     }
 
-
     if (n_common_edges > 0 && n_common_e != n_common_edges)
         return false;
 
@@ -246,10 +245,12 @@ bool MoleculeLayoutGraphSimple::_attachCycleOutside(const Cycle& cycle, float le
                 if (cycle_vertex_types[di] > 0)
                     drawn_idx.push(di);
 
-            if (drawn_idx.size() < 2) return false;
+            if (drawn_idx.size() < 2)
+                return false;
 
             // Estimate bond_length from adjacent drawn-vertex pairs in the cycle.
-            float sum_bond = 0.f; int n_bond = 0;
+            float sum_bond = 0.f;
+            int n_bond = 0;
             int nc = cycle.vertexCount();
             for (int bi = 0; bi < drawn_idx.size(); bi++)
             {
@@ -257,9 +258,9 @@ bool MoleculeLayoutGraphSimple::_attachCycleOutside(const Cycle& cycle, float le
                 int di_next = (di + 1) % nc;
                 if (cycle_vertex_types[di_next] > 0)
                 {
-                    float d = Vec2f::dist(_layout_vertices[cycle.getVertex(di)].pos,
-                                         _layout_vertices[cycle.getVertex(di_next)].pos);
-                    sum_bond += d; n_bond++;
+                    float d = Vec2f::dist(_layout_vertices[cycle.getVertex(di)].pos, _layout_vertices[cycle.getVertex(di_next)].pos);
+                    sum_bond += d;
+                    n_bond++;
                 }
             }
             float est_bond = (n_bond > 0) ? sum_bond / n_bond : length;
@@ -282,21 +283,22 @@ bool MoleculeLayoutGraphSimple::_attachCycleOutside(const Cycle& cycle, float le
                 int di_next = (di + 1) % nc;
                 if (cycle_vertex_types[di_prev] > 0)
                 {
-                    float d = Vec2f::dist(_layout_vertices[cycle.getVertex(di)].pos,
-                                         _layout_vertices[cycle.getVertex(di_prev)].pos);
-                    if (d < est_bond * kArcBondTolerance) ok = true;
+                    float d = Vec2f::dist(_layout_vertices[cycle.getVertex(di)].pos, _layout_vertices[cycle.getVertex(di_prev)].pos);
+                    if (d < est_bond * kArcBondTolerance)
+                        ok = true;
                 }
                 if (!ok && cycle_vertex_types[di_next] > 0)
                 {
-                    float d = Vec2f::dist(_layout_vertices[cycle.getVertex(di)].pos,
-                                         _layout_vertices[cycle.getVertex(di_next)].pos);
-                    if (d < est_bond * kArcBondTolerance) ok = true;
+                    float d = Vec2f::dist(_layout_vertices[cycle.getVertex(di)].pos, _layout_vertices[cycle.getVertex(di_next)].pos);
+                    if (d < est_bond * kArcBondTolerance)
+                        ok = true;
                 }
                 if (ok)
                     arc_idx.push(di);
             }
 
-            if (arc_idx.size() < 2) return false;
+            if (arc_idx.size() < 2)
+                return false;
 
             // Compute centroid and mean radius from arc-consistent drawn verts only.
             float cx = 0.f, cy = 0.f;
@@ -305,17 +307,19 @@ bool MoleculeLayoutGraphSimple::_attachCycleOutside(const Cycle& cycle, float le
                 cx += _layout_vertices[cycle.getVertex(arc_idx[bi])].pos.x;
                 cy += _layout_vertices[cycle.getVertex(arc_idx[bi])].pos.y;
             }
-            cx /= arc_idx.size(); cy /= arc_idx.size();
+            cx /= arc_idx.size();
+            cy /= arc_idx.size();
 
             float radius = 0.f;
             for (int bi = 0; bi < arc_idx.size(); bi++)
             {
                 float dx = _layout_vertices[cycle.getVertex(arc_idx[bi])].pos.x - cx;
                 float dy = _layout_vertices[cycle.getVertex(arc_idx[bi])].pos.y - cy;
-                radius += sqrtf(dx*dx + dy*dy);
+                radius += sqrtf(dx * dx + dy * dy);
             }
             radius /= arc_idx.size();
-            if (radius < 0.01f) return false;
+            if (radius < 0.01f)
+                return false;
 
             // Check consistency: spread of radii of arc verts must be < 15% of radius.
             float rmin = radius, rmax = radius;
@@ -323,9 +327,11 @@ bool MoleculeLayoutGraphSimple::_attachCycleOutside(const Cycle& cycle, float le
             {
                 float dx = _layout_vertices[cycle.getVertex(arc_idx[bi])].pos.x - cx;
                 float dy = _layout_vertices[cycle.getVertex(arc_idx[bi])].pos.y - cy;
-                float r = sqrtf(dx*dx + dy*dy);
-                if (r < rmin) rmin = r;
-                if (r > rmax) rmax = r;
+                float r = sqrtf(dx * dx + dy * dy);
+                if (r < rmin)
+                    rmin = r;
+                if (r > rmax)
+                    rmax = r;
             }
             if (rmax - rmin > 0.15f * radius)
                 return false; // positions too inconsistent to derive a reliable circle
@@ -336,7 +342,8 @@ bool MoleculeLayoutGraphSimple::_attachCycleOutside(const Cycle& cycle, float le
             bool any_placed = false;
             for (int di = 0; di < nc; di++)
             {
-                if (cycle_vertex_types[di] != 0) continue; // already drawn
+                if (cycle_vertex_types[di] != 0)
+                    continue; // already drawn
 
                 // Find prev/next drawn neighbors (wrap around).
                 int prev_di = (di - 1 + nc) % nc;
@@ -355,23 +362,32 @@ bool MoleculeLayoutGraphSimple::_attachCycleOutside(const Cycle& cycle, float le
                 bool prev_arc = false, next_arc = false;
                 for (int bi = 0; bi < arc_idx.size(); bi++)
                 {
-                    if (arc_idx[bi] == prev_di) { prev_arc = true; break; }
+                    if (arc_idx[bi] == prev_di)
+                    {
+                        prev_arc = true;
+                        break;
+                    }
                 }
                 for (int bi = 0; bi < arc_idx.size(); bi++)
                 {
-                    if (arc_idx[bi] == next_di) { next_arc = true; break; }
+                    if (arc_idx[bi] == next_di)
+                    {
+                        next_arc = true;
+                        break;
+                    }
                 }
-                if (!prev_arc && !next_arc) continue;
+                if (!prev_arc && !next_arc)
+                    continue;
 
                 int vp = cycle.getVertex(prev_di);
                 int vn = cycle.getVertex(next_di);
-                float ap = atan2f(_layout_vertices[vp].pos.y - cy,
-                                  _layout_vertices[vp].pos.x - cx);
-                float an = atan2f(_layout_vertices[vn].pos.y - cy,
-                                  _layout_vertices[vn].pos.x - cx);
+                float ap = atan2f(_layout_vertices[vp].pos.y - cy, _layout_vertices[vp].pos.x - cx);
+                float an = atan2f(_layout_vertices[vn].pos.y - cy, _layout_vertices[vn].pos.x - cx);
                 float diff = an - ap;
-                while (diff >  (float)M_PI) diff -= 2.f * (float)M_PI;
-                while (diff < -(float)M_PI) diff += 2.f * (float)M_PI;
+                while (diff > (float)M_PI)
+                    diff -= 2.f * (float)M_PI;
+                while (diff < -(float)M_PI)
+                    diff += 2.f * (float)M_PI;
                 float a_mid = ap + 0.5f * diff;
 
                 int v = cycle.getVertex(di);
@@ -425,7 +441,7 @@ bool MoleculeLayoutGraphSimple::_attachCycleOutside(const Cycle& cycle, float le
         for (int bi = 0; bi + 1 < chain_int.size(); bi++)
         {
             const Vertex& bv = getVertex(chain_int[bi]);
-            int ei = bv.findNeiVertex(chain_int[bi+1]);
+            int ei = bv.findNeiVertex(chain_int[bi + 1]);
             border1e.push(ei >= 0 ? bv.neiEdge(ei) : -1);
         }
         // border2 = short/empty (just c_beg-c_end direct if exists, else empty)
@@ -466,7 +482,7 @@ bool MoleculeLayoutGraphSimple::_attachCycleOutside(const Cycle& cycle, float le
         else if (n_try == 1)
         {
             if (!next_bc._drawRegularCurveEx(chain_ext, c_beg, c_end, length, false, ELEMENT_BOUNDARY, mapping))
-                continue;   // try bypass modes
+                continue; // try bypass modes
         }
         else if (n_try == 2)
         {

@@ -371,14 +371,14 @@ void MoleculeLayoutGraphSimple::_getBorder(Cycle& border) const
 
                 Vec2f dir_out = getPos(nei_v) - getPos(edge.end);
                 float cross = Vec2f::cross(dir_in, dir_out);
-                float dot   = Vec2f::dot(dir_in, dir_out);
+                float dot = Vec2f::dot(dir_in, dir_out);
                 float angle = atan2f(cross, dot);
                 if (best_v == -1 || angle < best_ang)
                 {
                     best_ang = angle;
-                    best_v   = nei_v;
-                    best_e   = nei_e;
-                    found    = true;
+                    best_v = nei_v;
+                    best_e = nei_e;
+                    found = true;
                 }
             }
 
@@ -404,15 +404,17 @@ void MoleculeLayoutGraphSimple::_getBorder(Cycle& border) const
     // we trace the boundary of the most recently drawn cycle rather than the
     // outer boundary of the entire BC (which may include pre-marked backbone rings).
     int start_v = -1;
-    if (_first_vertex_idx >= 0 && _first_vertex_idx < vertexEnd() &&
-        _layout_vertices[_first_vertex_idx].type == ELEMENT_BOUNDARY)
+    if (_first_vertex_idx >= 0 && _first_vertex_idx < vertexEnd() && _layout_vertices[_first_vertex_idx].type == ELEMENT_BOUNDARY)
     {
         const Vertex& v = getVertex(_first_vertex_idx);
         for (int j = v.neiBegin(); j < v.neiEnd(); j = v.neiNext(j))
         {
             int ei = v.neiEdge(j);
             if (getEdgeType(ei) == ELEMENT_BOUNDARY && !isBackboneEdge(ei))
-            { start_v = _first_vertex_idx; break; }
+            {
+                start_v = _first_vertex_idx;
+                break;
+            }
         }
     }
 
@@ -433,7 +435,10 @@ void MoleculeLayoutGraphSimple::_getBorder(Cycle& border) const
             {
                 int ei = v.neiEdge(j);
                 if (getEdgeType(ei) == ELEMENT_BOUNDARY && !isBackboneEdge(ei))
-                { has_boundary_edge = true; break; }
+                {
+                    has_boundary_edge = true;
+                    break;
+                }
             }
             if (!has_boundary_edge)
                 continue;
@@ -464,7 +469,7 @@ void MoleculeLayoutGraphSimple::_getBorder(Cycle& border) const
             continue;
         Vec2f dir_out = getPos(nei_v) - getPos(start_v);
         float cross = Vec2f::cross(dir_down, dir_out);
-        float dot   = Vec2f::dot(dir_down, dir_out);
+        float dot = Vec2f::dot(dir_down, dir_out);
         float angle = atan2f(cross, dot);
         if (start_u == -1 || angle > best_start_angle)
         {
@@ -511,14 +516,14 @@ void MoleculeLayoutGraphSimple::_getBorder(Cycle& border) const
 
             Vec2f dir_out = getPos(nei_v) - getPos(edge.end);
             float cross = Vec2f::cross(dir_in, dir_out);
-            float dot   = Vec2f::dot(dir_in, dir_out);
+            float dot = Vec2f::dot(dir_in, dir_out);
             float angle = atan2f(cross, dot);
             if (best_v == -1 || angle < best_ang)
             {
                 best_ang = angle;
-                best_v   = nei_v;
-                best_e   = nei_e;
-                found    = true;
+                best_v = nei_v;
+                best_e = nei_e;
+                found = true;
             }
         }
 
