@@ -19,6 +19,7 @@
 #ifndef __ptr_pool__
 #define __ptr_pool__
 
+#include "base_cpp/non_copyable.h"
 #include "base_cpp/pool.h"
 
 #ifdef _WIN32
@@ -32,12 +33,15 @@ namespace indigo
     DECL_EXCEPTION(PtrPoolError);
 
     template <typename T>
-    class PtrPool
+    class PtrPool : public NonCopyable
     {
     public:
         explicit PtrPool()
         {
         }
+
+        PtrPool(PtrPool&&) = delete; // explicitly disable move operations
+        PtrPool& operator=(PtrPool&&) = delete;
 
         virtual ~PtrPool()
         {
@@ -122,9 +126,6 @@ namespace indigo
 
     protected:
         Pool<T*> _ptrpool;
-
-    private:
-        PtrPool(const PtrPool&); // no implicit copy
     };
 
 } // namespace indigo
