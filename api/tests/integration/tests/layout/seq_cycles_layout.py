@@ -318,7 +318,6 @@ else:
         print(diff)
 
 
-
 # ======================================================================
 # Multi-cycle simultaneous selection tests
 #
@@ -328,6 +327,7 @@ else:
 # geometric distortions due to shared edges — only checked loosely.
 # Fixed (unselected) monomers must not move.
 # ======================================================================
+
 
 def _run_multi_cycle_selection_test(label, cycle_groups, ref_filename):
     """Select union of given cycle groups simultaneously, layout once, verify."""
@@ -403,7 +403,11 @@ def _run_multi_cycle_selection_test(label, cycle_groups, ref_filename):
 
 
 print("\n*** Multi-cycle simultaneous layout (cycles 1+2+3) ***")
-_run_multi_cycle_selection_test("multi_123.ket", [1, 2, 3], "multi_sel_123.ket")
+_run_multi_cycle_selection_test(
+    "multi_123.ket", [1, 2, 3], "multi_sel_123.ket"
+)
 
 print("\n*** Multi-cycle simultaneous layout (cycles 2+3+4) ***")
-_run_multi_cycle_selection_test("multi_234.ket", [2, 3, 4], "multi_sel_234.ket")
+_run_multi_cycle_selection_test(
+    "multi_234.ket", [2, 3, 4], "multi_sel_234.ket"
+)
