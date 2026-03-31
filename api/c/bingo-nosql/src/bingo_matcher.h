@@ -270,11 +270,11 @@ namespace bingo
     class BaseSubstructureMatcherDispatcher : public OsCommandDispatcher
     {
     public:
-        BaseSubstructureMatcherDispatcher(BaseSubstructureMatcher* matcher, std::deque<int>& src, std::mutex& i_mtx, std::atomic_bool& eod,
-                                          std::deque<std::pair<int, std::unique_ptr<IndigoObject>>>& results, std::mutex& r_mtx,
+        BaseSubstructureMatcherDispatcher(BaseSubstructureMatcher* matcher, std::deque<int>& src, std::mutex& i_mtx, std::condition_variable& cv_input,
+                                          std::atomic_bool& eod, std::deque<std::pair<int, std::unique_ptr<IndigoObject>>>& results, std::mutex& r_mtx,
                                           std::condition_variable& cv_results)
-            : OsCommandDispatcher(HANDLING_ORDER_SERIAL, true), _matcher(matcher), input_data(src), input_mtx(i_mtx), all_data_in_queue(eod), _results(results),
-              results_mtx(r_mtx), _cv_results(cv_results)
+            : OsCommandDispatcher(HANDLING_ORDER_SERIAL, true), _matcher(matcher), _input_data(src), _input_mtx(i_mtx), _cv_input(cv_input),
+              _all_data_in_queue(eod), _results(results), _results_mtx(r_mtx), _cv_results(cv_results)
         {
         }
 
@@ -298,11 +298,12 @@ namespace bingo
         void _handleResult(OsCommandResult& result) override;
 
     private:
-        std::deque<int>& input_data;
-        std::mutex& input_mtx;
-        std::atomic_bool& all_data_in_queue;
+        std::deque<int>& _input_data;
+        std::mutex& _input_mtx;
+        std::condition_variable& _cv_input;
+        std::atomic_bool& _all_data_in_queue;
         std::deque<std::pair<int, std::unique_ptr<IndigoObject>>>& _results;
-        std::mutex& results_mtx;
+        std::mutex& _results_mtx;
         std::condition_variable& _cv_results;
         BaseSubstructureMatcher* _matcher;
     };
@@ -323,7 +324,7 @@ namespace bingo
 
         int getDbId() const;
 
-        void run_dispatcher(int max_count);
+        void run_dispatcher();
 
         AromaticityOptions _arom_options;
         PtrArray<TautomerRule>* _tautomer_rules;
@@ -346,8 +347,7 @@ namespace bingo
         bool _tautomer;
         IndigoTautomerParams _tautomer_params;
 
-        std::mutex load_mtx;
-        bool _multithread = true;
+        bool _multithread = false;
         int _thread_count = -1;
 
     private:
@@ -357,14 +357,16 @@ namespace bingo
         int _final_pack;
         const TranspFpStorage& _fp_storage;
         int sub_cnt;
-        std::unique_ptr<BaseSubstructureMatcherDispatcher> disp;
-        std::optional<std::thread> t;
-        std::deque<int> input_data;
-        std::mutex input_mtx;
-        std::atomic_bool all_data_in_queue = false;
+
+        std::unique_ptr<BaseSubstructureMatcherDispatcher> _disp;
+        std::optional<std::thread> _t;
+        std::deque<int> _input_data;
+        std::mutex _input_mtx;
+        std::condition_variable _cv_input;
+        std::atomic_bool _all_data_in_queue = false;
         std::deque<std::pair<int, std::unique_ptr<IndigoObject>>> results;
-        std::mutex results_mtx;
-        std::atomic_bool finished_processing = false;
+        std::mutex _results_mtx;
+        std::atomic_bool _finished_processing = false;
         std::condition_variable _cv_results;
     };
 

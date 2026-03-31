@@ -150,37 +150,6 @@ TEST_F(BingoNosqlTest, test_search_sim)
     }
 }
 
-TEST_F(BingoNosqlTest, test_subsearch_tau)
-{
-    indigoSetOptionInt("bingonosql-tau-sub-search-thread-count", -1);
-    indigoClearTautomerRules();
-    indigoSetTautomerRule(1, "N,O,P,S,As,Se,Sb,Te", "N,O,P,S,As,Se,Sb,Te");
-    indigoSetTautomerRule(2, "0C", "N,O,P,S");
-    indigoSetTautomerRule(3, "1C", "N,O");
-    int db = bingoLoadDatabaseFile("epam_structures50_1", "");
-    int query = indigoLoadQueryMoleculeFromFile("epam.mol");
-    // int query = indigoLoadQueryMoleculeFromFile("epam.smi");
-    int sub_matcher = bingoSearchSub(db, query, "TAU INNER R*");
-    // int sub_matcher = bingoSearchSub(db, query, "");
-    int count = 0;
-    auto start = std::chrono::high_resolution_clock::now();
-    int res = bingoGetObject(sub_matcher);
-    while (bingoNext(sub_matcher))
-    {
-        count++;
-        int id = bingoGetCurrentId(sub_matcher);
-        printf("id=%d smiles=%s\n", id, indigoSmiles(res));
-        // printf("id=%d %s\n", id, indigoSmiles(bingoGetRecordObj(db, id)));
-    }
-    auto end = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    printf("Total %d results in %zdms.\n", count, duration.count());
-    printf("%s", bingoProfilingGetStatistics(db));
-
-    bingoEndSearch(sub_matcher);
-    bingoCloseDatabase(db);
-}
-
 TEST_F(BingoNosqlTest, test_enumerate_id)
 {
     int db = bingoCreateDatabaseFile(::testing::UnitTest::GetInstance()->current_test_info()->name(), "molecule", "");
