@@ -308,8 +308,7 @@ void MoleculeLayoutGraphSimple::_getBorder(Cycle& border) const
 {
     QS_DEF(Array<int>, vertices);
     QS_DEF(Array<int>, edges);
-    int i;
-    size_t n = 0;
+    int i, n = 0;
 
     // Helper: returns true if this BOUNDARY edge is a "backbone" pre-marked edge —
     // i.e., both endpoints are fixed (unselected) backbone monomers.
@@ -324,7 +323,7 @@ void MoleculeLayoutGraphSimple::_getBorder(Cycle& border) const
         return beg_fixed && end_fixed;
     };
 
-    size_t n_total_boundary = 0;
+    int n_total_boundary = 0;
     for (i = edgeBegin(); i < edgeEnd(); i = edgeNext(i))
     {
         if (_layout_edges[i].type == ELEMENT_BOUNDARY)
@@ -391,7 +390,7 @@ void MoleculeLayoutGraphSimple::_getBorder(Cycle& border) const
                 edges.push(best_e);
             }
 
-            if (!found || vertices.size() > n_total_boundary)
+            if (!found || (int)vertices.size() > n_total_boundary)
                 throw Error("corrupted border");
         }
 
@@ -538,7 +537,7 @@ void MoleculeLayoutGraphSimple::_getBorder(Cycle& border) const
 
         // Guard: use n_total_boundary (all BOUNDARY edges) as the maximum possible
         // cycle length to detect infinite loops, since n is only non-backbone edges.
-        if (!found || vertices.size() > n_total_boundary)
+        if (!found || (int)vertices.size() > n_total_boundary)
             throw Error("corrupted border");
     }
 
