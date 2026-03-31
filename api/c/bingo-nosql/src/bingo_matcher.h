@@ -273,7 +273,7 @@ namespace bingo
         BaseSubstructureMatcherDispatcher(BaseSubstructureMatcher* matcher, std::deque<int>& src, std::mutex& i_mtx, std::condition_variable& cv_input,
                                           std::atomic_bool& eod, std::deque<std::pair<int, std::unique_ptr<IndigoObject>>>& results, std::mutex& r_mtx,
                                           std::condition_variable& cv_results)
-            : OsCommandDispatcher(HANDLING_ORDER_ANY, false), _matcher(matcher), _input_data(src), _input_mtx(i_mtx), _cv_input(cv_input),
+            : OsCommandDispatcher(HANDLING_ORDER_SERIAL, false), _matcher(matcher), _input_data(src), _input_mtx(i_mtx), _cv_input(cv_input),
               _all_data_in_queue(eod), _results(results), _results_mtx(r_mtx), _cv_results(cv_results)
         {
         }
