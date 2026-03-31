@@ -649,7 +649,6 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
         sorted_cycles.push(i);
     }
 
-
     // All cycles already positioned — nothing left to lay out.
     // Run CycleEnumerator to correctly mark outer boundary vs internal edges.
     if (sequence_layout && sorted_cycles.size() == 0)
@@ -660,7 +659,6 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
         ce.process(); // best-effort reclassification
         return;
     }
-
 
     float bond_length = (sequence_layout && supergraph._n_fixed) ? LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH : 1.0f;
 
@@ -805,7 +803,6 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
             ce.process(); // ignore return value — best-effort reclassification
         }
     } while (chain_attached);
-
 
     _attachCrossingEdges();
 
@@ -1428,8 +1425,7 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                 // selected block as a rigid body, not be pinned to src_layout positions.
                 bool treat_as_fixed = is_fixed;
                 if (!sequence_layout)
-                    treat_as_fixed = treat_as_fixed || lvx.is_nailed ||
-                                     (vx.degree() == 1 && _layout_vertices[vx.neiVertex(vx.neiBegin())].is_nailed);
+                    treat_as_fixed = treat_as_fixed || lvx.is_nailed || (vx.degree() == 1 && _layout_vertices[vx.neiVertex(vx.neiBegin())].is_nailed);
 
                 if (treat_as_fixed)
                     fix_vertexes.push_back(vx_idx);
@@ -1509,9 +1505,8 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                 {
                     Vec2f best_translation(0, 0);
                     float best_rotation = 0.f;
-                    _optimizeSelectedPartPlacement(bond_length, bridge_fixed_positions, all_fixed_vertices,
-                                                   bridge_connected_pairs, selected_centroid, sel_vertices,
-                                                   best_translation, best_rotation);
+                    _optimizeSelectedPartPlacement(bond_length, bridge_fixed_positions, all_fixed_vertices, bridge_connected_pairs, selected_centroid,
+                                                   sel_vertices, best_translation, best_rotation);
 
                     // Apply rotation around centroid, then translation
                     for (auto vx_idx : sel_vertices)
