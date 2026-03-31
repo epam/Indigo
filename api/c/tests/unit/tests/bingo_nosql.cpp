@@ -154,9 +154,9 @@ TEST_F(BingoNosqlTest, test_subsearch_tau)
 {
     indigoSetOptionInt("bingonosql-tau-sub-search-thread-count", -1);
     indigoClearTautomerRules();
-    // indigoSetTautomerRule(1, "N,O,P,S,As,Se,Sb,Te", "N,O,P,S,As,Se,Sb,Te");
-    // indigoSetTautomerRule(2, "0C", "N,O,P,S");
-    // indigoSetTautomerRule(3, "1C", "N,O");
+    indigoSetTautomerRule(1, "N,O,P,S,As,Se,Sb,Te", "N,O,P,S,As,Se,Sb,Te");
+    indigoSetTautomerRule(2, "0C", "N,O,P,S");
+    indigoSetTautomerRule(3, "1C", "N,O");
     int db = bingoLoadDatabaseFile("epam_structures50_1", "");
     int query = indigoLoadQueryMoleculeFromFile("epam.mol");
     // int query = indigoLoadQueryMoleculeFromFile("epam.smi");

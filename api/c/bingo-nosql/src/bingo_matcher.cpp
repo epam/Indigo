@@ -369,8 +369,7 @@ void BaseSubstructureMatcherCommand::execute(OsCommandResult& res)
     if (!indigoSelf().hasLocalCopy())
     {
         qword _session = indigoAllocSessionId();
-        Indigo& indigo = indigoSelf().createOrGetLocalCopy();
-        indigo.init();
+        Indigo& indigo = indigoSelf().createOrGetLocalCopy(_session);
         indigo.arom_options = _matcher->_arom_options;
         for (int i = 0; i < _matcher->_tautomer_rules->size(); i++)
         {
@@ -424,11 +423,9 @@ bool BaseSubstructureMatcherDispatcher::_setupCommand(OsCommand& command)
     }
     if (idx < 0 && input_data.empty() && all_data_in_queue)
     {
-        // printf("_setupCommand false\n");
         return false;
     }
 
-    // printf("_setupCommand for %d\n", idx);
     BaseSubstructureMatcherCommand& cmd = static_cast<BaseSubstructureMatcherCommand&>(command);
     cmd.db_object_idx = idx;
     return true;
@@ -438,7 +435,6 @@ void BaseSubstructureMatcherDispatcher::_handleResult(OsCommandResult& result)
 {
     BaseSubstructureMatcherResult& r = static_cast<BaseSubstructureMatcherResult&>(result);
     std::lock_guard<std::mutex> locker(results_mtx);
-    // printf("_handleResult for %d\n", r.db_object_idx);
     if (!r.match)
         return;
     _results.emplace_back(r.db_object_idx, r.indigo_obj.release());
@@ -458,36 +454,35 @@ BaseSubstructureMatcher::BaseSubstructureMatcher(/*const */ BaseIndex& index, In
     _cand_count = 0;
 }
 
+void BaseSubstructureMatcher::run_dispatcher(int max_count)
+{
+    if (_thread_count < 0)
+        disp->run(std::min(disp->defaultThreadCount(), max_count));
+    else
+        disp->run(std::min(_thread_count, max_count));
+    {
+        std::lock_guard<std::mutex> locker(results_mtx);
+        finished_processing = true;
+        _cv_results.notify_all();
+    }
+}
+
+BaseSubstructureMatcher::~BaseSubstructureMatcher()
+{
+    if (disp.get() != nullptr)
+    {
+        disp->markToTerminate();
+        t->join();
+    }
+}
+
 bool BaseSubstructureMatcher::next()
 {
     // int fp_size_in_bits = _fp_size * 8;
     // static int sub_cnt = 0;
-    constexpr int MAX_SIZE = 1000;
+    constexpr int MAX_SIZE = 100;
 
-    if (_multithread && disp.get() == nullptr) // first call
-    {
-        _current_cand_id++;
-        Indigo& indigo = indigoGetInstance();
-        _arom_options = indigo.arom_options;
-        _tautomer_rules = &indigo.tautomer_rules;
-
-        disp.reset(new BaseSubstructureMatcherDispatcher(this, input_data, input_mtx, all_data_in_queue, results, results_mtx, _cv_results));
-        t.emplace([this]() {
-            if (_thread_count < 0)
-                disp->run();
-            else
-                disp->run(_thread_count);
-            {
-                std::lock_guard<std::mutex> locker(results_mtx);
-                finished_processing = true;
-                _cv_results.notify_all();
-                // printf("finished_processing = true\n");
-            }
-        });
-        t->detach();
-    }
-
-    if (!_multithread)
+    if (!_multithread || disp.get() == nullptr)
         _current_cand_id++;
 
     while (!((_current_pack == _final_pack) && (_current_cand_id == _candidates.size())))
@@ -510,7 +505,6 @@ bool BaseSubstructureMatcher::next()
                 {
                     std::lock_guard<std::mutex> lock(input_mtx);
                     all_data_in_queue = true;
-                    // printf("no more data\n");
                 }
                 else
                 {
@@ -524,12 +518,20 @@ bool BaseSubstructureMatcher::next()
 
         if (_candidates.size() == 0)
         {
-            // printf("candidates.size()==0 continue\n");
             continue;
         }
 
         if (_multithread)
         {
+            if (disp.get() == nullptr) // first call
+            {
+                Indigo& indigo = indigoGetInstance();
+                _arom_options = indigo.arom_options;
+                _tautomer_rules = &indigo.tautomer_rules;
+
+                disp.reset(new BaseSubstructureMatcherDispatcher(this, input_data, input_mtx, all_data_in_queue, results, results_mtx, _cv_results));
+                t.emplace([this]() { this->run_dispatcher(_candidates.size()); });
+            }
 
             if (!all_data_in_queue)
             {
@@ -538,10 +540,11 @@ bool BaseSubstructureMatcher::next()
                 while (input_data.size() < MAX_SIZE && _current_cand_id < _candidates.size())
                 {
                     profTimerStart(tf, "input_data.push_back");
-                    // printf("size=%d add %d\n", input_data.size(), _candidates[_current_cand_id]);
                     input_data.push_back(_candidates[_current_cand_id++]);
                     profTimerStop(tf);
                 }
+                if (_current_cand_id >= _candidates.size()) // need more candidates
+                    continue;
             }
         }
         else
@@ -557,7 +560,6 @@ bool BaseSubstructureMatcher::next()
             _cv_results.wait(lock, [this]() { return !results.empty() || finished_processing; });
             if (!results.empty())
             {
-                // printf("!results.empty()\n");
                 if (_current_obj == nullptr)
                     throw Exception("BaseMatcher: Matcher's current object was destroyed");
 
@@ -581,7 +583,6 @@ bool BaseSubstructureMatcher::next()
             }
             else if (finished_processing) // no more results and no more data processed
             {
-                // printf("finished_processing return false\n");
                 return false;
             }
         }
@@ -610,7 +611,7 @@ bool BaseSubstructureMatcher::next()
 
     if (_multithread)
     {
-        // t->join();
+        t->join();
         disp.reset();
         t.reset();
     }
@@ -628,7 +629,7 @@ void BaseSubstructureMatcher::setQueryData(SubstructureQueryData* query_data)
 {
     auto& indigo = indigoGetInstance();
 
-    if (indigo.bingonosql_tau_sub_search_thread_count == 0)
+    if (!_tautomer || indigo.bingonosql_tau_sub_search_thread_count == 0)
     {
         _multithread = false;
     }
@@ -740,15 +741,9 @@ void BaseSubstructureMatcher::_findIncCandidates()
 void BaseSubstructureMatcher::_setParameters(const char* parameters)
 {
     if (_indigoParseTautomerFlags(parameters, _tautomer_params))
-    {
         _tautomer = true;
-        _multithread = true;
-    }
     else
-    {
         _tautomer = false;
-        _multithread = false;
-    }
 }
 
 void BaseSubstructureMatcher::_initPartition()
@@ -796,17 +791,7 @@ bool MoleculeSubMatcher::tryCurrent(int current_id, IndigoObject* current_obj) /
     SubstructureMoleculeQuery& query = (SubstructureMoleculeQuery&)(_query_data->getQueryObject());
     QueryMolecule& query_mol = (QueryMolecule&)(query.getMolecule());
 
-    bool loaded = false;
-    if (_multithread)
-    {
-        // std::lock_guard<std::mutex> lock(load_mtx);
-        loaded = _loadCurrentObject(_index, current_id, current_obj);
-    }
-    else
-    {
-        loaded = _loadCurrentObject(_index, current_id, current_obj);
-    }
-    if (!loaded)
+    if (!_loadCurrentObject(_index, current_id, current_obj))
         return false;
 
     if (current_obj == 0)

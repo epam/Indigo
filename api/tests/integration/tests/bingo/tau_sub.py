@@ -65,19 +65,18 @@ query_smiles = (
     "CCC",
 )
 
-for nthread in [0, -1, 5, -1]:
+for nthread in [0, -1, 5]:
     indigo.setOption("bingonosql-tau-sub-search-thread-count", nthread)
     print("bingonosql-tau-sub-search-thread-count=", nthread)
-
-for qsmile in query_smiles:
-    testSearchSub(bingo, qsmile)
-    testSearchSub(bingo, qsmile, "TAU")
-    testSearchSub(bingo, qsmile, "TAU R1")
-    testSearchSub(bingo, qsmile, "TAU R2")
-    testSearchSub(bingo, qsmile, "TAU R3")
-    testSearchSub(bingo, qsmile, "TAU R*")
-    testSearchSub(bingo, qsmile, "TAU R-C")
-    testSearchSub(bingo, qsmile, "TAU INNER")
+    for qsmile in query_smiles:
+        testSearchSub(bingo, qsmile)
+        testSearchSub(bingo, qsmile, "TAU")
+        testSearchSub(bingo, qsmile, "TAU R1")
+        testSearchSub(bingo, qsmile, "TAU R2")
+        testSearchSub(bingo, qsmile, "TAU R3")
+        testSearchSub(bingo, qsmile, "TAU R*")
+        testSearchSub(bingo, qsmile, "TAU R-C")
+        testSearchSub(bingo, qsmile, "TAU INNER")
 
 # test performance
 bingo.insert(

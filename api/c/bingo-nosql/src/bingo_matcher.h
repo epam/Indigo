@@ -311,6 +311,7 @@ namespace bingo
     {
     public:
         BaseSubstructureMatcher(/*const */ BaseIndex& index, IndigoObject*& current_obj);
+        virtual ~BaseSubstructureMatcher();
 
         bool next() override;
 
@@ -321,6 +322,8 @@ namespace bingo
         virtual IndigoObject* allocateObject() = 0;
 
         int getDbId() const;
+
+        void run_dispatcher(int max_count);
 
         AromaticityOptions _arom_options;
         PtrArray<TautomerRule>* _tautomer_rules;

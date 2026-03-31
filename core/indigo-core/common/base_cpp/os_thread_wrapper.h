@@ -82,6 +82,8 @@ namespace indigo
         void run();
         void run(int nthreads);
 
+        int defaultThreadCount();
+
         void terminate();
         void markToTerminate();
 
