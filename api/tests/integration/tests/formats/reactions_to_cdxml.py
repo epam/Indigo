@@ -1,17 +1,12 @@
-﻿import difflib
-import os
+﻿import os
 import sys
-
-
-def find_diff(a, b):
-    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
-
 
 sys.path.append(
     os.path.normpath(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
+from common.util import compare_diff
 from env_indigo import (  # noqa
     Indigo,
     IndigoException,
@@ -53,42 +48,19 @@ for filename in files:
         print("  %s" % (getIndigoExceptionText(e)))
 
     cdxml_text = ket.cdxml()
-    # with open(os.path.join(ref_path, filename + ".cdxml"), "w") as file:
-    #     file.write(cdxml_text)
-
-    with open(os.path.join(ref_path, filename) + ".cdxml", "r") as file:
-        cdxml_ref = file.read()
-
-    diff = find_diff(cdxml_ref, cdxml_text)
-    if not diff:
-        print(filename + ".cdxml:SUCCEED")
-    else:
-        print(filename + ".cdxml:FAILED")
-        print(diff)
-
-
-def compare_cdxml_with_reference(cdxml_text, reference_file):
-    with open(os.path.join(ref_path, reference_file), "r") as file:
-        cdxml_ref = file.read()
-    diff = find_diff(cdxml_ref, cdxml_text)
-    if not diff:
-        print(reference_file + ":SUCCEED")
-    else:
-        print(reference_file + ":FAILED")
-        print(diff)
-
+    compare_diff(ref_path, filename + ".cdxml", cdxml_text)
 
 reaction = indigo.loadReactionFromFile(
     os.path.join(root, "3261_cdxml_reaction_molecule.cdxml")
 )
 for reactant in reaction.iterateReactants():
     cdxml_text = reactant.cdxml()
-    compare_cdxml_with_reference(cdxml_text, "3261_ref1.cdxml")
+    compare_diff(ref_path, "3261_ref1.cdxml", cdxml_text)
 
 for catalyst in reaction.iterateCatalysts():
     cdxml_text = catalyst.cdxml()
-    compare_cdxml_with_reference(cdxml_text, "3261_ref2.cdxml")
+    compare_diff(ref_path, "3261_ref2.cdxml", cdxml_text)
 
 for product in reaction.iterateProducts():
     cdxml_text = product.cdxml()
-    compare_cdxml_with_reference(cdxml_text, "3261_ref3.cdxml")
+    compare_diff(ref_path, "3261_ref3.cdxml", cdxml_text)

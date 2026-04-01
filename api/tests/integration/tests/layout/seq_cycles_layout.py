@@ -44,6 +44,7 @@ sys.path.append(
     )
 )
 
+from common.util import compare_diff
 from env_indigo import *  # noqa
 
 indigo = Indigo()
@@ -88,18 +89,8 @@ for filename in files:
         )
 
     mol.layout()
-    # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
-    #     file.write(mol.json())
-    with open(getRefFilepath(filename + ".ket"), "r") as file:
-        ket_ref = file.read()
-
     ket = mol.json()
-    diff = compare_positions(ket_ref, ket)
-    if not diff:
-        print(filename + ".ket:SUCCEED")
-    else:
-        print(filename + ".ket:FAILED")
-        print(diff)
+    compare_diff(ref_path, filename + ".ket", ket, diff_fn=compare_positions)
 
 
 # ======================================================================
@@ -306,11 +297,13 @@ if multi_errors:
         print("  " + e)
 else:
     final_ket = json.dumps(current_data, indent=2)
-    # with open(os.path.join(ref_path, "multi_seq_1357.ket"), "w") as file:
-    #     file.write(final_ket)
-    with open(getRefFilepath("multi_seq_1357.ket"), "r") as file:
-        ket_ref = file.read()
-    diff = compare_positions(ket_ref, final_ket)
+    diff = compare_diff(
+        ref_path,
+        "multi_seq_1357.ket",
+        final_ket,
+        diff_fn=compare_positions,
+        stdout=False,
+    )
     if not diff:
         print("multi.ket:SUCCEED")
     else:
@@ -390,11 +383,13 @@ def _run_multi_cycle_selection_test(label, cycle_groups, ref_filename):
             print("  " + e)
     else:
         final_ket = json.dumps(data, indent=2)
-        with open(os.path.join(ref_path, ref_filename), "w") as file:
-            file.write(final_ket)
-        with open(getRefFilepath(ref_filename), "r") as file:
-            ket_ref = file.read()
-        diff = compare_positions(ket_ref, final_ket)
+        diff = compare_diff(
+            ref_path,
+            ref_filename,
+            final_ket,
+            diff_fn=compare_positions,
+            stdout=False,
+        )
         if not diff:
             print("{}:SUCCEED".format(label))
         else:

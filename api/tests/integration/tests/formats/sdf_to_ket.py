@@ -1,10 +1,5 @@
-﻿import difflib
-import os
+﻿import os
 import sys
-
-
-def find_diff(a, b):
-    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
 
 
 def expect_monomer_library_load_error(root, filename, expected_error):
@@ -28,6 +23,7 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
+from common.util import compare_diff
 from env_indigo import *  # noqa
 
 indigo = Indigo()
@@ -54,17 +50,8 @@ for filename in files:
             )
         except IndigoException as e:
             print("  %s" % (getIndigoExceptionText(e)))
-    # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
-    #    file.write(mol.json())
-    with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
-        ket_ref = file.read()
     ket = mol.json()
-    diff = find_diff(ket_ref, ket)
-    if not diff:
-        print(filename + ".ket:SUCCEED")
-    else:
-        print(filename + ".ket:FAILED")
-        print(diff)
+    compare_diff(ref_path, filename + ".ket", ket)
 
 print("*** SDF-monomer library to KET ***")
 files = [
@@ -86,17 +73,8 @@ for filename in files:
     lib = indigo.loadMonomerLibraryFromFile(
         os.path.join(root, filename + ".sdf")
     )
-    # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
-    #     file.write(lib.monomerLibrary())
-    with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
-        ket_ref = file.read()
     ket = lib.monomerLibrary()
-    diff = find_diff(ket_ref, ket)
-    if not diff:
-        print(filename + ".ket:SUCCEED")
-    else:
-        print(filename + ".ket:FAILED")
-        print(diff)
+    compare_diff(ref_path, filename + ".ket", ket)
 
 print("*** Invalid SDF-monomer library to KET ***")
 expect_monomer_library_load_error(

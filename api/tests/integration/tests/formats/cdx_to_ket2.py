@@ -1,18 +1,12 @@
-import difflib
-import io
 import os
 import sys
-
-
-def find_diff(a, b):
-    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
-
 
 sys.path.append(
     os.path.normpath(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
+from common.util import compare_diff
 from env_indigo import *  # noqa
 
 indigo = Indigo()
@@ -45,24 +39,5 @@ for filename in files:
                 os.path.join(root, filename)
             )
             ket = qmol.json()
-
-    # with open(
-    #     os.path.join(ref_path, os.path.splitext(filename)[0]) + ".ket",
-    #     "w",
-    #     encoding="utf-8",
-    # ) as file:
-    #     file.write(ket)
-
-    with io.open(
-        os.path.join(ref_path, os.path.splitext(filename)[0]) + ".ket",
-        "r",
-        encoding="utf-8",
-    ) as file:
-        ket_ref = file.read()
-
-    diff = find_diff(ket_ref, ket)
-    if not diff:
-        print(os.path.splitext(filename)[0] + ".ket:SUCCEED")
-    else:
-        print(os.path.splitext(filename)[0] + ".ket:FAILED")
-        print(diff)
+    ref_filename = os.path.splitext(filename)[0] + ".ket"
+    compare_diff(ref_path, ref_filename, ket)

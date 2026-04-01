@@ -1,17 +1,12 @@
-﻿import difflib
-import os
+﻿import os
 import sys
-
-
-def find_diff(a, b):
-    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
-
 
 sys.path.append(
     os.path.normpath(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
+from common.util import compare_diff
 from env_indigo import Indigo, joinPathPy  # noqa
 
 indigo = Indigo()
@@ -40,28 +35,8 @@ for filename in files:
         mol = indigo.loadQueryMoleculeFromFile(
             os.path.join(root, filename + ".ket")
         )
-
-    # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
-    #     file.write(mol.json())
-    with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
-        ket_ref = file.read()
     ket = mol.json()
-    diff = find_diff(ket_ref, ket)
-    if not diff:
-        print(filename + ".ket:SUCCEED")
-    else:
-        print(filename + ".ket:FAILED")
-        print(diff)
-
-
-def check_res(filename, format, ket_ref, ket):
-    diff = find_diff(ket_ref, ket)
-    if not diff:
-        print("{}.ket {}: SUCCEED".format(filename, format))
-    else:
-        print("{}.ket {}: FAILED".format(filename, format))
-        print(diff)
-
+    compare_diff(ref_path, filename + ".ket", ket)
 
 indigo.setOption("json-use-native-precision", True)
 files = [
@@ -79,15 +54,19 @@ savers = {
 }
 for filename in sorted(files):
     for format in sorted(savers.keys()):
-        file_path = os.path.join(ref_path, filename)
-        with open("{}_{}.ket".format(file_path, format), "r") as file:
+        _filename = "{}_{}.ket".format(filename, format)
+        file_path = os.path.join(ref_path, _filename)
+        with open(file_path, "r") as file:
             ket_ref = file.read()
         for loader in savers[format]:
             mol = loader(ket_ref)
-            # with open("{}_{}.ket".format(file_path, format), "w") as file:
-            #     file.write(mol.json())
             ket = mol.json()
-            check_res(filename, format + " " + loader.__name__, ket_ref, ket)
+            diff = compare_diff(ref_path, _filename, ket, stdout=False)
+            if not diff:
+                print("{} {}:SUCCEED".format(_filename, loader.__name__))
+            else:
+                print("{} {}:FAILED".format(_filename, loader.__name__))
+                print(diff)
 
 filename = "2707_subst_count"
 file_path = os.path.join(ref_path, filename)
@@ -95,11 +74,8 @@ mol = indigo.loadQueryMoleculeFromFile("{}.ket".format(file_path))
 savers = {"ket": mol.json, "mol": mol.molfile}
 for format in sorted(savers.keys()):
     data = savers[format]()
-    # with open("{}.{}".format(file_path, format), "w") as file:
-    #     file.write(data)
-    with open("{}.{}".format(file_path, format), "r") as file:
-        data_ref = file.read()
-    check_res(filename, format, data_ref, data)
+    _filename = filename + ".{}".format(format)
+    compare_diff(ref_path, _filename, data)
 
 files = ["multi_merge4", "3069-reaction"]
 
@@ -116,18 +92,8 @@ for filename in files:
             )
         except:
             print("bad reaction data")
-
-    # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
-    #     file.write(rea.json())
-    with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
-        ket_ref = file.read()
     ket = rea.json()
-    diff = find_diff(ket_ref, ket)
-    if not diff:
-        print(filename + ".ket:SUCCEED")
-    else:
-        print(filename + ".ket:FAILED")
-        print(diff)
+    compare_diff(ref_path, filename + ".ket", ket)
 
 # reaction data
 files = [
@@ -145,15 +111,5 @@ for filename in files:
     rea = indigo.loadReactionFromFile(
         os.path.join(root_rea, filename + ".ket")
     )
-
-    # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
-    #     file.write(rea.json())
-    with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
-        ket_ref = file.read()
     ket = rea.json()
-    diff = find_diff(ket_ref, ket)
-    if not diff:
-        print(filename + ".ket:SUCCEED")
-    else:
-        print(filename + ".ket:FAILED")
-        print(diff)
+    compare_diff(ref_path, filename + ".ket", ket)

@@ -1,17 +1,12 @@
-﻿import difflib
-import os
+﻿import os
 import sys
-
-
-def find_diff(a, b):
-    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
-
 
 sys.path.append(
     os.path.normpath(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
+from common.util import compare_diff
 from env_indigo import Indigo, joinPathPy  # noqa
 
 indigo = Indigo()
@@ -38,14 +33,5 @@ lib = indigo.loadMonomerLibraryFromFile(
 files.sort()
 for filename in files:
     mol = indigo.loadKetDocumentFromFile(os.path.join(root, filename + ".ket"))
-    # with open(os.path.join(ref_path, filename) + ".fasta", "w") as file:
-    #     file.write(mol.fasta(lib))
-    with open(os.path.join(ref_path, filename) + ".fasta", "r") as file:
-        seq_ref = file.read()
     seq = mol.fasta(lib)
-    diff = find_diff(seq_ref, seq)
-    if not diff:
-        print(filename + ".fasta:SUCCEED")
-    else:
-        print(filename + ".fasta:FAILED")
-        print(diff)
+    compare_diff(ref_path, filename + ".fasta", seq)
