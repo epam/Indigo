@@ -25,6 +25,10 @@
 
 #include <base_cpp/exception.h>
 
+#include <deque>
+#include <iostream>
+#include <vector>
+
 #include "common.h"
 
 using namespace indigo;

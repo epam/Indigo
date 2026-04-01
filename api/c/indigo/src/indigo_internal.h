@@ -349,6 +349,8 @@ public:
     bool embedding_edges_uniqueness, find_unique_embeddings;
     int max_embeddings;
 
+    int bingonosql_tau_sub_search_thread_count = 0;
+
     int layout_max_iterations = 0; // default is zero -- no limit
     bool smart_layout = false;
     bool layout_preserve_existing = false;
