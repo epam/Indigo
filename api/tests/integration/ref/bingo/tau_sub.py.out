@@ -1,6 +1,6 @@
 *** Creating temporary database ****
 v0.72
-bingonosql-tau-sub-search-thread-count=0
+bingonosql-sub-search-thread-count=0
 ** searchSub(OC1=CC=CNC1, ) **
 ** searchSub(OC1=CC=CNC1, TAU) **
 0 O=C1CNCc2ccccc12
@@ -106,7 +106,7 @@ bingonosql-tau-sub-search-thread-count=0
 ** searchSub(CCC, TAU INNER) **
 0 O=C1CNCc2ccccc12
 1 CC(C)=C1CCC(C)=CC1
-bingonosql-tau-sub-search-thread-count=-1
+bingonosql-sub-search-thread-count=-1
 ** searchSub(OC1=CC=CNC1, ) **
 ** searchSub(OC1=CC=CNC1, TAU) **
 0 O=C1CNCc2ccccc12
@@ -212,7 +212,7 @@ bingonosql-tau-sub-search-thread-count=-1
 ** searchSub(CCC, TAU INNER) **
 0 O=C1CNCc2ccccc12
 1 CC(C)=C1CCC(C)=CC1
-bingonosql-tau-sub-search-thread-count=5
+bingonosql-sub-search-thread-count=5
 ** searchSub(OC1=CC=CNC1, ) **
 ** searchSub(OC1=CC=CNC1, TAU) **
 0 O=C1CNCc2ccccc12

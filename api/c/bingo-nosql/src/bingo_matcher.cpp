@@ -624,7 +624,7 @@ void BaseSubstructureMatcher::setQueryData(SubstructureQueryData* query_data)
 {
     auto& indigo = indigoGetInstance();
 
-    if (!_tautomer || indigo.bingonosql_tau_sub_search_thread_count == 0)
+    if (indigo.bingonosql_tau_sub_search_thread_count == 0)
     {
         _multithread = false;
     }
@@ -665,7 +665,7 @@ void BaseSubstructureMatcher::_findPackCandidates(int pack_idx)
         return;
     }
 
-    profTimerStart(_t, "sub_find_cand_pack");
+    profTimerStart(t, "sub_find_cand_pack");
 
     _candidates.clear();
 
@@ -718,7 +718,7 @@ void BaseSubstructureMatcher::_findPackCandidates(int pack_idx)
 
 void BaseSubstructureMatcher::_findIncCandidates()
 {
-    profTimerStart(_t, "sub_find_cand_inc");
+    profTimerStart(t, "sub_find_cand_inc");
     _candidates.clear();
 
     const TranspFpStorage& fp_storage = _index.getSubStorage();

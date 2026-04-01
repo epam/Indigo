@@ -67,14 +67,9 @@ OsCommandDispatcher::OsCommandDispatcher(int handling_order, bool same_session_I
     _same_session_IDs = same_session_IDs;
 }
 
-int OsCommandDispatcher::defaultThreadCount()
-{
-    return 3 * std::thread::hardware_concurrency() / 2 + 1;
-}
-
 void OsCommandDispatcher::run()
 {
-    _run(defaultThreadCount());
+    _run(3 * std::thread::hardware_concurrency() / 2 + 1);
 }
 
 void OsCommandDispatcher::run(int nthreads)
