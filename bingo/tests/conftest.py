@@ -14,6 +14,7 @@ from .constants import (
 )
 from .dbc.BingoNoSQL import BingoNoSQL
 from .dbc.PostgresSQL import Postgres
+from .dbc.OracleDB import Oracle
 from .helpers import get_bingo_meta, get_query_entities
 from .logger import logger
 
@@ -67,7 +68,10 @@ def db(request, indigo):
         db = BingoElastic(indigo, index_name)
         db.import_data(meta["import_no_sql"], data_type)
     elif db_str == DB_ORACLE:
-        pass
+        db = Oracle()
+        ora_tables = db.create_data_tables(meta["tables"])
+        db.import_data(import_meta=meta["import"])
+        db.create_indices(meta["indices"])
     elif db_str == DB_MSSQL:
         pass
     yield db
@@ -82,6 +86,10 @@ def db(request, indigo):
         db.delete_base()
     elif db_str == DB_BINGO_ELASTIC:
         db.drop()
+    elif db_str == DB_ORACLE:
+        for table in ora_tables:
+            logger.info(f"Dropping Oracle table {table}")
+            table.drop(db.engine)
     logger.info(f"===== Finish of testing {function} =====")
 
 
