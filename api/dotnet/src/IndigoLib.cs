@@ -624,6 +624,18 @@ namespace com.epam.indigo
         public static extern int indigoDeleteSGroupAttachmentPoint(int sgroup, int apidx);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoIterateSGroupAttachmentPoints(int sgroup);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoGetSGroupAttachmentPointAtomIdx(int ap);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoGetSGroupAttachmentPointLeaveAtom(int ap, int* lvidx);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern byte* indigoGetSGroupAttachmentPointLabel(int ap);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoGetSGroupDisplayOption(int sgroup);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]

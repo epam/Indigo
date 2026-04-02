@@ -487,6 +487,14 @@ public interface IndigoLib extends Library {
 
     int indigoDeleteSGroupAttachmentPoint(int sgroup, int apidx);
 
+    int indigoIterateSGroupAttachmentPoints(int sgroup);
+
+    int indigoGetSGroupAttachmentPointAtomIdx(int ap);
+
+    int indigoGetSGroupAttachmentPointLeaveAtom(int ap, IntByReference lvidx);
+
+    Pointer indigoGetSGroupAttachmentPointLabel(int ap);
+
     int indigoGetSGroupDisplayOption(int sgroup);
 
     int indigoSetSGroupDisplayOption(int sgroup, int option);

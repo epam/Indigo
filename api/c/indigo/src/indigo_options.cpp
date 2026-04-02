@@ -351,6 +351,7 @@ void IndigoOptionHandlerSetter::setBasicOptionHandlers(const qword id)
     mgr->setOptionHandlerBool("aromatize-skip-superatoms", SETTER_GETTER_BOOL_OPTION(indigo.aromatize_skip_superatoms));
     mgr->setOptionHandlerBool("skip-3d-chirality", SETTER_GETTER_BOOL_OPTION(indigo.skip_3d_chirality));
     mgr->setOptionHandlerBool("deconvolution-aromatization", SETTER_GETTER_BOOL_OPTION(indigo.deconvolution_aromatization));
+    mgr->setOptionHandlerInt("bingonosql-sub-search-thread-count", SETTER_GETTER_INT_OPTION(indigo.bingonosql_tau_sub_search_thread_count));
     mgr->setOptionHandlerBool("deco-save-ap-bond-orders", SETTER_GETTER_BOOL_OPTION(indigo.deco_save_ap_bond_orders));
     mgr->setOptionHandlerBool("deco-ignore-errors", SETTER_GETTER_BOOL_OPTION(indigo.deco_ignore_errors));
     mgr->setOptionHandlerString("molfile-saving-mode", indigoSetMolfileSavingMode, indigoGetMolfileSavingMode);

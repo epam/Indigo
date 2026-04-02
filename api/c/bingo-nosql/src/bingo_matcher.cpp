@@ -3,6 +3,8 @@
 #include "bingo_tanimoto_coef.h"
 #include "bingo_tversky_coef.h"
 
+#include "indigo_savers.h"
+
 #include "molecule/molecule_substructure_matcher.h"
 
 #include "base_c/bitarray.h"
@@ -263,18 +265,18 @@ bool BaseMatcher::_isCurrentObjectExist()
     return true;
 }
 
-bool BaseMatcher::_loadCurrentObject()
+bool BaseMatcher::_loadCurrentObject(BaseIndex& index, int current_id, IndigoObject*& current_obj)
 {
     try
     {
-        if (_current_obj == nullptr)
+        if (current_obj == nullptr)
             throw Exception("BaseMatcher: Matcher's current object was destroyed");
 
         profTimerStart(t_get_cmf, "loadCurObj_get_cf");
 
         int cf_len;
-        const char* cf_str = _index.useShortBuffer() ? (const char*)_index.getCfStorageShort().get(_current_id, cf_len)
-                                                     : (const char*)_index.getCfStorage().get(_current_id, cf_len);
+        const char* cf_str =
+            index.useShortBuffer() ? (const char*)index.getCfStorageShort().get(current_id, cf_len) : (const char*)index.getCfStorage().get(current_id, cf_len);
 
         if (cf_len == -1)
             return false;
@@ -283,17 +285,17 @@ bool BaseMatcher::_loadCurrentObject()
         profTimerStart(t_load_cmf, "loadCurObj_load_cf");
         BufferScanner buf_scn(cf_str, cf_len);
 
-        if (IndigoMolecule::is(*_current_obj))
+        if (IndigoMolecule::is(*current_obj))
         {
-            Molecule& mol = _current_obj->getMolecule();
+            Molecule& mol = current_obj->getMolecule();
 
             CmfLoader cmf_loader(buf_scn);
 
             cmf_loader.loadMolecule(mol);
         }
-        else if (IndigoReaction::is(*_current_obj))
+        else if (IndigoReaction::is(*current_obj))
         {
-            Reaction& rxn = _current_obj->getReaction();
+            Reaction& rxn = current_obj->getReaction();
 
             CrfLoader crf_loader(buf_scn);
 
@@ -308,7 +310,7 @@ bool BaseMatcher::_loadCurrentObject()
     }
     catch (Exception& ex)
     {
-        const int db_id = _index.getIdMapping()[_current_id];
+        const int db_id = index.getIdMapping()[current_id];
         ex.appendMessage(" on id=%d", db_id);
         throw;
     }
@@ -343,6 +345,96 @@ float BaseMatcher::esimateRemainingTime(float& delta)
 // BaseSubstructureMatcher
 //
 
+void errorHandler(const char* message, void*)
+{
+    throw Exception(message);
+}
+
+BaseSubstructureMatcherCommand::BaseSubstructureMatcherCommand(BaseSubstructureMatcher* matcher) : _matcher(matcher)
+{
+}
+
+BaseSubstructureMatcherCommand::~BaseSubstructureMatcherCommand()
+{
+}
+
+void BaseSubstructureMatcherCommand::execute(OsCommandResult& res)
+{
+    BaseSubstructureMatcherResult& r = static_cast<BaseSubstructureMatcherResult&>(res);
+    std::unique_ptr<IndigoObject> new_obj;
+    r.db_object_idx = -1;
+    new_obj.reset(_matcher->allocateObject());
+    r.match = false;
+    MMFAllocator::setDatabaseId(_matcher->getDbId());
+    if (!indigoSelf().hasLocalCopy())
+    {
+        qword _session = indigoAllocSessionId();
+        Indigo& indigo = indigoSelf().createOrGetLocalCopy(_session);
+        indigo.arom_options = _matcher->_arom_options;
+        for (int i = 0; i < _matcher->_tautomer_rules->size(); i++)
+        {
+            auto t_rule = _matcher->_tautomer_rules->at(i);
+            if (t_rule == nullptr)
+                continue;
+            auto rule = std::make_unique<TautomerRule>();
+            rule->list1.copy(t_rule->list1);
+            rule->list2.copy(t_rule->list2);
+            rule->aromaticity1 = t_rule->aromaticity1;
+            rule->aromaticity2 = t_rule->aromaticity2;
+            indigo.tautomer_rules.expand(i + 1);
+            indigo.tautomer_rules.reset(i, rule.release());
+        }
+    }
+    r.db_object_idx = db_object_idx;
+    profTimerStart(tt, "sub_try_multi");
+    if (_matcher->tryCurrent(db_object_idx, new_obj.get()))
+    {
+        r.match = true;
+        Indigo& indigo = indigoGetInstance();
+        r.indigo_obj.reset(new_obj.release());
+    }
+    else
+    {
+        r.match = false;
+        r.indigo_obj.reset();
+    }
+    profTimerStop(tt);
+}
+
+constexpr int sleep_time_ms = 2;
+
+bool BaseSubstructureMatcherDispatcher::_setupCommand(OsCommand& command)
+{
+    int idx = -1;
+    {
+        std::unique_lock<std::mutex> lock(_input_mtx);
+        _cv_input.wait(lock, [this]() { return !_input_data.empty() || _all_data_in_queue; });
+        if (!_input_data.empty())
+        {
+            idx = _input_data.front();
+            _input_data.pop_front();
+        }
+    }
+    if (idx < 0 && _input_data.empty() && _all_data_in_queue)
+    {
+        return false;
+    }
+
+    BaseSubstructureMatcherCommand& cmd = static_cast<BaseSubstructureMatcherCommand&>(command);
+    cmd.db_object_idx = idx;
+    return true;
+}
+
+void BaseSubstructureMatcherDispatcher::_handleResult(OsCommandResult& result)
+{
+    BaseSubstructureMatcherResult& r = static_cast<BaseSubstructureMatcherResult&>(result);
+    std::lock_guard<std::mutex> locker(_results_mtx);
+    if (!r.match)
+        return;
+    _results.emplace_back(r.db_object_idx, r.indigo_obj.release());
+    _cv_results.notify_one();
+}
+
 BaseSubstructureMatcher::BaseSubstructureMatcher(/*const */ BaseIndex& index, IndigoObject*& current_obj)
     : BaseMatcher(index, current_obj), _fp_storage(_index.getSubStorage()), _tautomer(false)
 {
@@ -356,17 +448,52 @@ BaseSubstructureMatcher::BaseSubstructureMatcher(/*const */ BaseIndex& index, In
     _cand_count = 0;
 }
 
+void BaseSubstructureMatcher::run_dispatcher()
+{
+    if (_thread_count < 0)
+        _disp->run();
+    else
+        _disp->run(_thread_count);
+    {
+        std::lock_guard<std::mutex> locker(_results_mtx);
+        _finished_processing = true;
+        _cv_results.notify_one();
+    }
+}
+
+BaseSubstructureMatcher::~BaseSubstructureMatcher()
+{
+    if (_disp.get() != nullptr)
+    {
+        _disp->markToTerminate();
+        _t->join();
+    }
+}
+
 bool BaseSubstructureMatcher::next()
 {
     // int fp_size_in_bits = _fp_size * 8;
     // static int sub_cnt = 0;
+    constexpr int MAX_SIZE = 100;
 
-    _current_cand_id++;
+    if (!_multithread || _disp.get() == nullptr)
+        _current_cand_id++;
+
+    if (_multithread && _disp.get() == nullptr) // first call
+    {
+        Indigo& indigo = indigoGetInstance();
+        _arom_options = indigo.arom_options;
+        _tautomer_rules = &indigo.tautomer_rules;
+
+        _disp.reset(new BaseSubstructureMatcherDispatcher(this, _input_data, _input_mtx, _cv_input, _all_data_in_queue, _results, _results_mtx, _cv_results));
+        _t.emplace([this]() { this->run_dispatcher(); });
+    }
+
     while (!((_current_pack == _final_pack) && (_current_cand_id == _candidates.size())))
     {
         profTimerStart(tsingle, "sub_single");
 
-        if (_current_cand_id == _candidates.size())
+        if (_current_cand_id == _candidates.size() && (!_multithread || !_all_data_in_queue))
         {
             profTimerStart(tf, "sub_find_cand");
             _current_pack++;
@@ -375,20 +502,89 @@ bool BaseSubstructureMatcher::next()
                 _findPackCandidates(_current_pack);
                 _cand_count += _candidates.size();
             }
-            else
-                break;
+            else // no more candidates
+            {
+                if (_multithread)
+                {
+                    std::lock_guard<std::mutex> lock(_input_mtx);
+                    _all_data_in_queue = true;
+                    _cv_input.notify_all();
+                }
+                else
+                {
+                    break;
+                }
+            }
 
             _current_cand_id = 0;
             profTimerStop(tf);
         }
 
         if (_candidates.size() == 0)
+        {
             continue;
+        }
 
-        _current_id = _candidates[_current_cand_id];
+        if (_multithread)
+        {
+            if (!_all_data_in_queue)
+            {
+                std::lock_guard<std::mutex> lock(_input_mtx);
+                // while input queue not full - add candidates
+                while (_input_data.size() < MAX_SIZE && _current_cand_id < _candidates.size())
+                {
+                    _input_data.push_back(_candidates[_current_cand_id++]);
+                }
+                _cv_input.notify_all();
+                if (_current_cand_id >= _candidates.size()) // need more candidates
+                    continue;
+            }
+        }
+        else
+        {
+            _current_id = _candidates[_current_cand_id];
+        }
 
         profTimerStart(tt, "sub_try");
-        bool status = _tryCurrent();
+        bool status = false;
+        if (_multithread)
+        {
+            profTimerStart(lw, "sub_try_wait");
+            std::unique_lock<std::mutex> lock(_results_mtx);
+            _cv_results.wait(lock, [this]() { return !_results.empty() || _finished_processing; });
+            profTimerStop(lw);
+            if (!_results.empty())
+            {
+                if (_current_obj == nullptr)
+                    throw Exception("BaseMatcher: Matcher's current object was destroyed");
+
+                auto& result = _results.front();
+                _current_id = result.first;
+                if (IndigoMolecule::is(*result.second))
+                {
+                    Molecule& mol = result.second->getMolecule();
+                    _current_obj->getBaseMolecule().clone(mol);
+                }
+                else if (IndigoReaction::is(*result.second))
+                {
+                    Reaction& rxn = result.second->getReaction();
+                    _current_obj->getBaseReaction().clone(rxn);
+                }
+                else
+                    throw Exception("BaseMatcher::unknown current object type");
+
+                _results.pop_front();
+                status = true;
+            }
+            else if (_finished_processing) // no more results and no more data processed
+            {
+                return false;
+            }
+        }
+        else
+        {
+            status = tryCurrent(_current_id, _current_obj);
+        }
         profTimerStop(tt);
 
         if (status)
@@ -402,15 +598,41 @@ bool BaseSubstructureMatcher::next()
             sub_cnt++;
             return true;
         }
-        _current_cand_id++;
+        if (!_multithread)
+            _current_cand_id++;
+        else if (_finished_processing)
+            break;
+    }
+
+    if (_multithread)
+    {
+        _t->join();
+        _disp.reset();
+        _t.reset();
     }
 
     profIncCounter("sub_count_cand", _cand_count);
     return false;
 }
 
+int BaseSubstructureMatcher::getDbId() const
+{
+    return static_cast<const SubstructureQueryData*>(_query_data.get())->db_id;
+}
+
 void BaseSubstructureMatcher::setQueryData(SubstructureQueryData* query_data)
 {
+    auto& indigo = indigoGetInstance();
+
+    if (indigo.bingonosql_tau_sub_search_thread_count == 0)
+    {
+        _multithread = false;
+    }
+    else
+    {
+        _multithread = true;
+        _thread_count = indigo.bingonosql_tau_sub_search_thread_count;
+    }
     _query_data.reset(query_data);
 
     const MoleculeFingerprintParameters& fp_params = _index.getFingerprintParams();
@@ -549,26 +771,34 @@ MoleculeSubMatcher::MoleculeSubMatcher(/*const */ BaseIndex& index)
     _mapping.clear();
 }
 
+IndigoObject* MoleculeSubMatcher::allocateObject()
+{
+    return new IndigoMolecule();
+}
+
 const Array<int>& MoleculeSubMatcher::currentMapping()
 {
     return _mapping;
 }
 
-bool MoleculeSubMatcher::_tryCurrent() // const
+bool MoleculeSubMatcher::tryCurrent(int current_id, IndigoObject* current_obj) // const
 {
+    profTimerStart(l, "sub_try_cur_load");
     SubstructureMoleculeQuery& query = (SubstructureMoleculeQuery&)(_query_data->getQueryObject());
     QueryMolecule& query_mol = (QueryMolecule&)(query.getMolecule());
 
-    if (!_loadCurrentObject())
+    if (!_loadCurrentObject(_index, current_id, current_obj))
         return false;
+    profTimerStop(l);
 
-    if (_current_obj == 0)
+    if (current_obj == 0)
         throw Exception("MoleculeSubMatcher: Matcher's current object was destroyed");
 
-    Molecule& target_mol = _current_obj->getMolecule();
+    Molecule& target_mol = current_obj->getMolecule();
 
     if (_tautomer)
     {
+        profTimerStart(f, "sub_try_cur_find");
         MoleculeTautomerMatcher matcher(target_mol, true);
 
         Indigo& indigo = indigoGetInstance();
@@ -578,7 +808,9 @@ bool MoleculeSubMatcher::_tryCurrent() // const
         matcher.setRules(_tautomer_params.conditions, _tautomer_params.force_hydrogens, _tautomer_params.ring_chain, _tautomer_params.method,
                          _tautomer_params.inner);
         matcher.setQuery(query_mol);
-        return matcher.find();
+        bool res = matcher.find();
+        profTimerStop(f);
+        return res;
     }
     else
     {
@@ -609,17 +841,22 @@ ReactionSubMatcher::ReactionSubMatcher(/*const */ BaseIndex& index)
     _mapping.clear();
 }
 
+IndigoObject* ReactionSubMatcher::allocateObject()
+{
+    return new IndigoReaction();
+}
+
 const ObjArray<Array<int>>& ReactionSubMatcher::currentMapping()
 {
     return _mapping;
 }
 
-bool ReactionSubMatcher::_tryCurrent() // const
+bool ReactionSubMatcher::tryCurrent(int current_id, IndigoObject* current_obj) // const
 {
     SubstructureReactionQuery& query = (SubstructureReactionQuery&)_query_data->getQueryObject();
     QueryReaction& query_rxn = (QueryReaction&)(query.getReaction());
 
-    if (!_loadCurrentObject())
+    if (!_loadCurrentObject(_index, _current_id, _current_obj))
         return false;
 
     if (_current_obj == 0)
@@ -733,7 +970,7 @@ bool BaseSimilarityMatcher::next()
         }
 
         _match_time_esimate.addValue(profTimerGetTimeSec(tsingle));
-        _loadCurrentObject();
+        _loadCurrentObject(_index, _current_id, _current_obj);
         return true;
     }
 }
@@ -999,7 +1236,7 @@ bool TopNSimMatcher::next()
             return false;
         }
 
-        _loadCurrentObject();
+        _loadCurrentObject(_index, _current_id, _current_obj);
 
         return true;
     }
@@ -1399,7 +1636,7 @@ bool MolExactMatcher::_tryCurrent() /* const */
     SimilarityMoleculeQuery& query = (SimilarityMoleculeQuery&)(_query_data->getQueryObject());
     Molecule& query_mol = (Molecule&)(query.getMolecule());
 
-    if (!_loadCurrentObject())
+    if (!_loadCurrentObject(_index, _current_id, _current_obj))
         return false;
 
     if (_current_obj == 0)
@@ -1526,7 +1763,7 @@ bool RxnExactMatcher::_tryCurrent() /* const */
     SimilarityReactionQuery& query = (SimilarityReactionQuery&)_query_data->getQueryObject();
     Reaction& query_rxn = (Reaction&)(query.getReaction());
 
-    if (!_loadCurrentObject())
+    if (!_loadCurrentObject(_index, _current_id, _current_obj))
         return false;
 
     if (_current_obj == 0)
@@ -1617,7 +1854,7 @@ bool MolGrossMatcher::_tryCurrent() /* const */
 {
     GrossQuery& query = (GrossQuery&)(_query_data->getQueryObject());
 
-    if (!_loadCurrentObject())
+    if (!_loadCurrentObject(_index, _current_id, _current_obj))
         return false;
 
     if (_current_obj == 0)

@@ -606,6 +606,14 @@ CEXPORT int indigoGetSGroupNumCrossBonds(int sgroup);
 
 CEXPORT int indigoAddSGroupAttachmentPoint(int sgroup, int aidx, int lvidx, const char* apid);
 CEXPORT int indigoDeleteSGroupAttachmentPoint(int sgroup, int index);
+// Returns iterator of superatom attachment points (SAP entries) for a superatom S-group.
+CEXPORT int indigoIterateSGroupAttachmentPoints(int sgroup);
+// Returns index of the superatom atom that owns the attachment point.
+CEXPORT int indigoGetSGroupAttachmentPointAtomIdx(int ap);
+// Returns 1 and sets *lvidx if leaving atom is specified, 0 if not specified.
+CEXPORT int indigoGetSGroupAttachmentPointLeaveAtom(int ap, int* lvidx);
+// Returns attachment point label string (e.g. "R1", "Al").
+CEXPORT const char* indigoGetSGroupAttachmentPointLabel(int ap);
 CEXPORT int indigoGetSGroupDisplayOption(int sgroup);
 CEXPORT int indigoSetSGroupDisplayOption(int sgroup, int option);
 CEXPORT int indigoGetSGroupSeqId(int sgroup);

@@ -130,6 +130,8 @@ public:
         ATOM_NEIGHBORS_ITER,
         SUPERATOM,
         SUPERATOMS_ITER,
+        SGROUP_ATTACHMENT_POINT,
+        SGROUP_ATTACHMENT_POINTS_ITER,
         DATA_SGROUP,
         DATA_SGROUPS_ITER,
         REPEATING_UNIT,
@@ -346,6 +348,8 @@ public:
 
     bool embedding_edges_uniqueness, find_unique_embeddings;
     int max_embeddings;
+
+    int bingonosql_tau_sub_search_thread_count = 0;
 
     int layout_max_iterations = 0; // default is zero -- no limit
     bool smart_layout = false;

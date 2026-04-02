@@ -169,7 +169,16 @@ bool MoleculeLayoutGraphSimple::_isPointOutside(const Vec2f& p) const
             if (_layout_edges[i].type == ELEMENT_BOUNDARY)
             {
                 const Edge& edge = getEdge(i);
-
+                // Skip backbone pre-marked edges (both endpoints are fixed/unselected).
+                // Only relevant in sequence_layout mode — in standard layout, fixed vertices
+                // are H/substituents whose edges must be counted for correct ray-casting.
+                if (sequence_layout && _fixed_vertices.size() > 0)
+                {
+                    bool beg_fixed = _fixed_vertices[getVertexExtIdx(edge.beg)] != 0;
+                    bool end_fixed = _fixed_vertices[getVertexExtIdx(edge.end)] != 0;
+                    if (beg_fixed && end_fixed)
+                        continue;
+                }
                 if (_isRayIntersect(a, b, p, getPos(edge.beg), getPos(edge.end)))
                     count++;
             }
@@ -301,48 +310,234 @@ void MoleculeLayoutGraphSimple::_getBorder(Cycle& border) const
     QS_DEF(Array<int>, edges);
     int i, n = 0;
 
+    // Helper: returns true if this BOUNDARY edge is a "backbone" pre-marked edge —
+    // i.e., both endpoints are fixed (unselected) backbone monomers.
+    // Only active in sequence_layout mode; in standard layout all BOUNDARY edges
+    // must be included for correct traversal.
+    auto isBackboneEdge = [&](int ei) -> bool {
+        if (!sequence_layout || _fixed_vertices.size() == 0)
+            return false;
+        const Edge& e = getEdge(ei);
+        bool beg_fixed = _fixed_vertices[getVertexExtIdx(e.beg)] != 0;
+        bool end_fixed = _fixed_vertices[getVertexExtIdx(e.end)] != 0;
+        return beg_fixed && end_fixed;
+    };
+
+    int n_total_boundary = 0;
     for (i = edgeBegin(); i < edgeEnd(); i = edgeNext(i))
+    {
         if (_layout_edges[i].type == ELEMENT_BOUNDARY)
-            n++;
+        {
+            n_total_boundary++;
+            if (!isBackboneEdge(i))
+                n++;
+        }
+    }
 
     if (n == 0)
         return;
 
+    if (!sequence_layout)
+    {
+        // ── Original simple traversal (non-sequence layout) ─────────────────
+        // Start from the first BOUNDARY edge found and follow using rightmost-turn.
+        vertices.clear();
+        edges.clear();
+
+        for (i = edgeBegin(); i < edgeEnd(); i = edgeNext(i))
+            if (_layout_edges[i].type == ELEMENT_BOUNDARY)
+                break;
+
+        Edge edge = getEdge(i);
+
+        vertices.push(edge.beg);
+        edges.push(i);
+
+        while (edge.end != vertices[0])
+        {
+            const Vertex& vert = getVertex(edge.end);
+            bool found = false;
+
+            int best_v = -1, best_e = -1;
+            float best_ang = 1e20f;
+            Vec2f dir_in = getPos(edge.end) - getPos(edge.beg);
+
+            for (int j = vert.neiBegin(); j < vert.neiEnd(); j = vert.neiNext(j))
+            {
+                int nei_v = vert.neiVertex(j);
+                int nei_e = vert.neiEdge(j);
+                if (getEdgeType(nei_e) != ELEMENT_BOUNDARY || nei_v == edge.beg)
+                    continue;
+
+                Vec2f dir_out = getPos(nei_v) - getPos(edge.end);
+                float cross = Vec2f::cross(dir_in, dir_out);
+                float dot = Vec2f::dot(dir_in, dir_out);
+                float angle = atan2f(cross, dot);
+                if (best_v == -1 || angle < best_ang)
+                {
+                    best_ang = angle;
+                    best_v = nei_v;
+                    best_e = nei_e;
+                    found = true;
+                }
+            }
+
+            if (found)
+            {
+                edge.beg = edge.end;
+                edge.end = best_v;
+                vertices.push(edge.beg);
+                edges.push(best_e);
+            }
+
+            if (!found || (int)vertices.size() > n_total_boundary)
+                throw Error("corrupted border");
+        }
+
+        border.copy(vertices, edges);
+        border.canonize();
+        return;
+    }
+
+    // ── sequence_layout path: backbone-aware traversal ───────────────────────
+    // Prefer starting from _first_vertex_idx (set by _assignFirstCycle) so that
+    // we trace the boundary of the most recently drawn cycle rather than the
+    // outer boundary of the entire BC (which may include pre-marked backbone rings).
+    int start_v = -1;
+    if (_first_vertex_idx >= 0 && _first_vertex_idx < vertexEnd() && _layout_vertices[_first_vertex_idx].type == ELEMENT_BOUNDARY)
+    {
+        const Vertex& v = getVertex(_first_vertex_idx);
+        for (int j = v.neiBegin(); j < v.neiEnd(); j = v.neiNext(j))
+        {
+            int ei = v.neiEdge(j);
+            if (getEdgeType(ei) == ELEMENT_BOUNDARY && !isBackboneEdge(ei))
+            {
+                start_v = _first_vertex_idx;
+                break;
+            }
+        }
+    }
+
+    if (start_v == -1)
+    {
+        // Fallback: leftmost-bottom BOUNDARY vertex guaranteed on outer boundary.
+        float start_x = 1e20f, start_y = 1e20f;
+        for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
+        {
+            if (_layout_vertices[i].type != ELEMENT_BOUNDARY)
+                continue;
+            // Skip entirely-fixed vertices (backbone ring vertices not adjacent to selected).
+            if (_fixed_vertices.size() > 0 && _fixed_vertices[getVertexExtIdx(i)] != 0)
+                continue;
+            const Vertex& v = getVertex(i);
+            bool has_boundary_edge = false;
+            for (int j = v.neiBegin(); j < v.neiEnd(); j = v.neiNext(j))
+            {
+                int ei = v.neiEdge(j);
+                if (getEdgeType(ei) == ELEMENT_BOUNDARY && !isBackboneEdge(ei))
+                {
+                    has_boundary_edge = true;
+                    break;
+                }
+            }
+            if (!has_boundary_edge)
+                continue;
+            const Vec2f& pos = getPos(i);
+            if (start_v == -1 || pos.x < start_x || (fabs(pos.x - start_x) < 1e-6f && pos.y < start_y))
+            {
+                start_x = pos.x;
+                start_y = pos.y;
+                start_v = i;
+            }
+        }
+    }
+
+    if (start_v == -1)
+        return;
+
+    // From start_v, pick the BOUNDARY (non-backbone) neighbor that makes the largest clockwise
+    // angle from the downward direction — starts an outer (CCW) traversal.
+    int start_e = -1, start_u = -1;
+    float best_start_angle = -1e20f;
+    Vec2f dir_down(0.f, -1.f);
+    const Vertex& sv = getVertex(start_v);
+    for (int j = sv.neiBegin(); j < sv.neiEnd(); j = sv.neiNext(j))
+    {
+        int nei_v = sv.neiVertex(j);
+        int nei_e = sv.neiEdge(j);
+        if (getEdgeType(nei_e) != ELEMENT_BOUNDARY || isBackboneEdge(nei_e))
+            continue;
+        Vec2f dir_out = getPos(nei_v) - getPos(start_v);
+        float cross = Vec2f::cross(dir_down, dir_out);
+        float dot = Vec2f::dot(dir_down, dir_out);
+        float angle = atan2f(cross, dot);
+        if (start_u == -1 || angle > best_start_angle)
+        {
+            best_start_angle = angle;
+            start_u = nei_v;
+            start_e = nei_e;
+        }
+    }
+
+    if (start_u == -1)
+        return;
+
     vertices.clear();
     edges.clear();
+    vertices.push(start_v);
+    edges.push(start_e);
 
-    for (i = edgeBegin(); i < edgeEnd(); i = edgeNext(i))
-        if (_layout_edges[i].type == ELEMENT_BOUNDARY)
-            break;
-
-    Edge edge = getEdge(i);
-
-    vertices.push(edge.beg);
-    edges.push(i);
+    Edge edge;
+    edge.beg = start_v;
+    edge.end = start_u;
 
     while (edge.end != vertices[0])
     {
         const Vertex& vert = getVertex(edge.end);
         bool found = false;
 
-        for (int i = vert.neiBegin(); !found && i < vert.neiEnd(); i = vert.neiNext(i))
+        // At branch points (fused rings), choose the sharpest right turn — outer boundary.
+        int best_v = -1, best_e = -1;
+        float best_ang = 1e20f;
+        Vec2f dir_in = getPos(edge.end) - getPos(edge.beg);
+
+        for (int j = vert.neiBegin(); j < vert.neiEnd(); j = vert.neiNext(j))
         {
-            int nei_v = vert.neiVertex(i);
-            int nei_e = vert.neiEdge(i);
+            int nei_v = vert.neiVertex(j);
+            int nei_e = vert.neiEdge(j);
+            if (getEdgeType(nei_e) != ELEMENT_BOUNDARY || nei_v == edge.beg)
+                continue;
+            // Skip edges leading to fixed (backbone/unselected) vertices.
+            if (_fixed_vertices.size() > 0 && _fixed_vertices[getVertexExtIdx(nei_v)] != 0)
+                continue;
+            // Skip edges where both endpoints are fixed.
+            if (isBackboneEdge(nei_e))
+                continue;
 
-            if (getEdgeType(nei_e) == ELEMENT_BOUNDARY && nei_v != edge.beg)
+            Vec2f dir_out = getPos(nei_v) - getPos(edge.end);
+            float cross = Vec2f::cross(dir_in, dir_out);
+            float dot = Vec2f::dot(dir_in, dir_out);
+            float angle = atan2f(cross, dot);
+            if (best_v == -1 || angle < best_ang)
             {
-                edge.beg = edge.end;
-                edge.end = nei_v;
-
-                vertices.push(edge.beg);
-                edges.push(nei_e);
-
+                best_ang = angle;
+                best_v = nei_v;
+                best_e = nei_e;
                 found = true;
             }
         }
 
-        if (!found || vertices.size() > n)
+        if (found)
+        {
+            edge.beg = edge.end;
+            edge.end = best_v;
+            vertices.push(edge.beg);
+            edges.push(best_e);
+        }
+
+        // Guard: use n_total_boundary (all BOUNDARY edges) as the maximum possible
+        // cycle length to detect infinite loops, since n is only non-backbone edges.
+        if (!found || (int)vertices.size() > n_total_boundary)
             throw Error("corrupted border");
     }
 
