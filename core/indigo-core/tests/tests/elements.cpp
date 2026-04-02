@@ -160,243 +160,75 @@ TEST_F(ElementTest, ToStringOutOfRangeThrows)
 }
 
 // ============================================================================
-// 5. group() and period() — all 118 elements
+// 5. group() and period() — all 118 elements (data-driven)
 // ============================================================================
 
-TEST_F(ElementTest, GroupPeriod_Period1)
+TEST_F(ElementTest, GroupPeriod_AllElements)
 {
-    EXPECT_EQ(Element::group(ELEM_H), 1);
-    EXPECT_EQ(Element::period(ELEM_H), 1);
-    EXPECT_EQ(Element::group(ELEM_He), 8);
-    EXPECT_EQ(Element::period(ELEM_He), 1);
-}
-
-TEST_F(ElementTest, GroupPeriod_Period2)
-{
-    EXPECT_EQ(Element::group(ELEM_Li), 1);
-    EXPECT_EQ(Element::period(ELEM_Li), 2);
-    EXPECT_EQ(Element::group(ELEM_Be), 2);
-    EXPECT_EQ(Element::period(ELEM_Be), 2);
-    EXPECT_EQ(Element::group(ELEM_B), 3);
-    EXPECT_EQ(Element::period(ELEM_B), 2);
-    EXPECT_EQ(Element::group(ELEM_C), 4);
-    EXPECT_EQ(Element::period(ELEM_C), 2);
-    EXPECT_EQ(Element::group(ELEM_N), 5);
-    EXPECT_EQ(Element::period(ELEM_N), 2);
-    EXPECT_EQ(Element::group(ELEM_O), 6);
-    EXPECT_EQ(Element::period(ELEM_O), 2);
-    EXPECT_EQ(Element::group(ELEM_F), 7);
-    EXPECT_EQ(Element::period(ELEM_F), 2);
-    EXPECT_EQ(Element::group(ELEM_Ne), 8);
-    EXPECT_EQ(Element::period(ELEM_Ne), 2);
-}
-
-TEST_F(ElementTest, GroupPeriod_Period3)
-{
-    EXPECT_EQ(Element::group(ELEM_Na), 1);
-    EXPECT_EQ(Element::period(ELEM_Na), 3);
-    EXPECT_EQ(Element::group(ELEM_Mg), 2);
-    EXPECT_EQ(Element::period(ELEM_Mg), 3);
-    EXPECT_EQ(Element::group(ELEM_Al), 3);
-    EXPECT_EQ(Element::period(ELEM_Al), 3);
-    EXPECT_EQ(Element::group(ELEM_Si), 4);
-    EXPECT_EQ(Element::period(ELEM_Si), 3);
-    EXPECT_EQ(Element::group(ELEM_P), 5);
-    EXPECT_EQ(Element::period(ELEM_P), 3);
-    EXPECT_EQ(Element::group(ELEM_S), 6);
-    EXPECT_EQ(Element::period(ELEM_S), 3);
-    EXPECT_EQ(Element::group(ELEM_Cl), 7);
-    EXPECT_EQ(Element::period(ELEM_Cl), 3);
-    EXPECT_EQ(Element::group(ELEM_Ar), 8);
-    EXPECT_EQ(Element::period(ELEM_Ar), 3);
-}
-
-TEST_F(ElementTest, GroupPeriod_Period4_MainGroup)
-{
-    EXPECT_EQ(Element::group(ELEM_K), 1);
-    EXPECT_EQ(Element::period(ELEM_K), 4);
-    EXPECT_EQ(Element::group(ELEM_Ca), 2);
-    EXPECT_EQ(Element::period(ELEM_Ca), 4);
-    EXPECT_EQ(Element::group(ELEM_Ga), 3);
-    EXPECT_EQ(Element::period(ELEM_Ga), 4);
-    EXPECT_EQ(Element::group(ELEM_Ge), 4);
-    EXPECT_EQ(Element::period(ELEM_Ge), 4);
-    EXPECT_EQ(Element::group(ELEM_As), 5);
-    EXPECT_EQ(Element::period(ELEM_As), 4);
-    EXPECT_EQ(Element::group(ELEM_Se), 6);
-    EXPECT_EQ(Element::period(ELEM_Se), 4);
-    EXPECT_EQ(Element::group(ELEM_Br), 7);
-    EXPECT_EQ(Element::period(ELEM_Br), 4);
-    EXPECT_EQ(Element::group(ELEM_Kr), 8);
-    EXPECT_EQ(Element::period(ELEM_Kr), 4);
-}
-
-TEST_F(ElementTest, GroupPeriod_Period4_TransitionMetals)
-{
-    EXPECT_EQ(Element::group(ELEM_Sc), 3);
-    EXPECT_EQ(Element::period(ELEM_Sc), 4);
-    EXPECT_EQ(Element::group(ELEM_Ti), 4);
-    EXPECT_EQ(Element::period(ELEM_Ti), 4);
-    EXPECT_EQ(Element::group(ELEM_V), 5);
-    EXPECT_EQ(Element::period(ELEM_V), 4);
-    EXPECT_EQ(Element::group(ELEM_Cr), 6);
-    EXPECT_EQ(Element::period(ELEM_Cr), 4);
-    EXPECT_EQ(Element::group(ELEM_Mn), 7);
-    EXPECT_EQ(Element::period(ELEM_Mn), 4);
-    EXPECT_EQ(Element::group(ELEM_Fe), 8);
-    EXPECT_EQ(Element::period(ELEM_Fe), 4);
-    EXPECT_EQ(Element::group(ELEM_Co), 8);
-    EXPECT_EQ(Element::period(ELEM_Co), 4);
-    EXPECT_EQ(Element::group(ELEM_Ni), 8);
-    EXPECT_EQ(Element::period(ELEM_Ni), 4);
-    EXPECT_EQ(Element::group(ELEM_Cu), 1);
-    EXPECT_EQ(Element::period(ELEM_Cu), 4);
-    EXPECT_EQ(Element::group(ELEM_Zn), 2);
-    EXPECT_EQ(Element::period(ELEM_Zn), 4);
-}
-
-TEST_F(ElementTest, GroupPeriod_Period5)
-{
-    EXPECT_EQ(Element::group(ELEM_Rb), 1);
-    EXPECT_EQ(Element::period(ELEM_Rb), 5);
-    EXPECT_EQ(Element::group(ELEM_Sr), 2);
-    EXPECT_EQ(Element::period(ELEM_Sr), 5);
-    EXPECT_EQ(Element::group(ELEM_Y), 3);
-    EXPECT_EQ(Element::period(ELEM_Y), 5);
-    EXPECT_EQ(Element::group(ELEM_Zr), 4);
-    EXPECT_EQ(Element::period(ELEM_Zr), 5);
-    EXPECT_EQ(Element::group(ELEM_Nb), 5);
-    EXPECT_EQ(Element::period(ELEM_Nb), 5);
-    EXPECT_EQ(Element::group(ELEM_Mo), 6);
-    EXPECT_EQ(Element::period(ELEM_Mo), 5);
-    EXPECT_EQ(Element::group(ELEM_Tc), 7);
-    EXPECT_EQ(Element::period(ELEM_Tc), 5);
-    EXPECT_EQ(Element::group(ELEM_Ru), 8);
-    EXPECT_EQ(Element::period(ELEM_Ru), 5);
-    EXPECT_EQ(Element::group(ELEM_Rh), 8);
-    EXPECT_EQ(Element::period(ELEM_Rh), 5);
-    EXPECT_EQ(Element::group(ELEM_Pd), 8);
-    EXPECT_EQ(Element::period(ELEM_Pd), 5);
-    EXPECT_EQ(Element::group(ELEM_Ag), 1);
-    EXPECT_EQ(Element::period(ELEM_Ag), 5);
-    EXPECT_EQ(Element::group(ELEM_Cd), 2);
-    EXPECT_EQ(Element::period(ELEM_Cd), 5);
-    EXPECT_EQ(Element::group(ELEM_In), 3);
-    EXPECT_EQ(Element::period(ELEM_In), 5);
-    EXPECT_EQ(Element::group(ELEM_Sn), 4);
-    EXPECT_EQ(Element::period(ELEM_Sn), 5);
-    EXPECT_EQ(Element::group(ELEM_Sb), 5);
-    EXPECT_EQ(Element::period(ELEM_Sb), 5);
-    EXPECT_EQ(Element::group(ELEM_Te), 6);
-    EXPECT_EQ(Element::period(ELEM_Te), 5);
-    EXPECT_EQ(Element::group(ELEM_I), 7);
-    EXPECT_EQ(Element::period(ELEM_I), 5);
-    EXPECT_EQ(Element::group(ELEM_Xe), 8);
-    EXPECT_EQ(Element::period(ELEM_Xe), 5);
-}
-
-TEST_F(ElementTest, GroupPeriod_Period6_MainAndTransition)
-{
-    EXPECT_EQ(Element::group(ELEM_Cs), 1);
-    EXPECT_EQ(Element::period(ELEM_Cs), 6);
-    EXPECT_EQ(Element::group(ELEM_Ba), 2);
-    EXPECT_EQ(Element::period(ELEM_Ba), 6);
-    EXPECT_EQ(Element::group(ELEM_Hf), 4);
-    EXPECT_EQ(Element::period(ELEM_Hf), 6);
-    EXPECT_EQ(Element::group(ELEM_Ta), 5);
-    EXPECT_EQ(Element::period(ELEM_Ta), 6);
-    EXPECT_EQ(Element::group(ELEM_W), 6);
-    EXPECT_EQ(Element::period(ELEM_W), 6);
-    EXPECT_EQ(Element::group(ELEM_Re), 7);
-    EXPECT_EQ(Element::period(ELEM_Re), 6);
-    EXPECT_EQ(Element::group(ELEM_Os), 8);
-    EXPECT_EQ(Element::period(ELEM_Os), 6);
-    EXPECT_EQ(Element::group(ELEM_Ir), 8);
-    EXPECT_EQ(Element::period(ELEM_Ir), 6);
-    EXPECT_EQ(Element::group(ELEM_Pt), 8);
-    EXPECT_EQ(Element::period(ELEM_Pt), 6);
-    EXPECT_EQ(Element::group(ELEM_Au), 1);
-    EXPECT_EQ(Element::period(ELEM_Au), 6);
-    EXPECT_EQ(Element::group(ELEM_Hg), 2);
-    EXPECT_EQ(Element::period(ELEM_Hg), 6);
-    EXPECT_EQ(Element::group(ELEM_Tl), 3);
-    EXPECT_EQ(Element::period(ELEM_Tl), 6);
-    EXPECT_EQ(Element::group(ELEM_Pb), 4);
-    EXPECT_EQ(Element::period(ELEM_Pb), 6);
-    EXPECT_EQ(Element::group(ELEM_Bi), 5);
-    EXPECT_EQ(Element::period(ELEM_Bi), 6);
-    EXPECT_EQ(Element::group(ELEM_Po), 6);
-    EXPECT_EQ(Element::period(ELEM_Po), 6);
-    EXPECT_EQ(Element::group(ELEM_At), 7);
-    EXPECT_EQ(Element::period(ELEM_At), 6);
-    EXPECT_EQ(Element::group(ELEM_Rn), 8);
-    EXPECT_EQ(Element::period(ELEM_Rn), 6);
-}
-
-TEST_F(ElementTest, GroupPeriod_Lanthanides)
-{
-    // All lanthanides should be group 3, period 6
-    const int lanthanides[] = {ELEM_La, ELEM_Ce, ELEM_Pr, ELEM_Nd, ELEM_Pm, ELEM_Sm, ELEM_Eu, ELEM_Gd,
-                               ELEM_Tb, ELEM_Dy, ELEM_Ho, ELEM_Er, ELEM_Tm, ELEM_Yb, ELEM_Lu};
-    for (int elem : lanthanides)
+    struct Expected
     {
-        EXPECT_EQ(Element::group(elem), 3) << "Lanthanide " << Element::toString(elem) << " should be group 3";
-        EXPECT_EQ(Element::period(elem), 6) << "Lanthanide " << Element::toString(elem) << " should be period 6";
-    }
-}
+        int elem;
+        int group;
+        int period;
+    };
 
-TEST_F(ElementTest, GroupPeriod_Actinides)
-{
-    // All actinides (Ac-Lr) should be group 3, period 7
-    const int actinides[] = {ELEM_Ac, ELEM_Th, ELEM_Pa, ELEM_U,  ELEM_Np, ELEM_Pu, ELEM_Am, ELEM_Cm,
-                             ELEM_Bk, ELEM_Cf, ELEM_Es, ELEM_Fm, ELEM_Md, ELEM_No, ELEM_Lr};
-    for (int elem : actinides)
+    // clang-format off
+    static const Expected kExpected[] = {
+        // Period 1
+        {ELEM_H, 1, 1}, {ELEM_He, 8, 1},
+        // Period 2
+        {ELEM_Li, 1, 2}, {ELEM_Be, 2, 2}, {ELEM_B, 3, 2}, {ELEM_C, 4, 2},
+        {ELEM_N, 5, 2}, {ELEM_O, 6, 2}, {ELEM_F, 7, 2}, {ELEM_Ne, 8, 2},
+        // Period 3
+        {ELEM_Na, 1, 3}, {ELEM_Mg, 2, 3}, {ELEM_Al, 3, 3}, {ELEM_Si, 4, 3},
+        {ELEM_P, 5, 3}, {ELEM_S, 6, 3}, {ELEM_Cl, 7, 3}, {ELEM_Ar, 8, 3},
+        // Period 4
+        {ELEM_K, 1, 4}, {ELEM_Ca, 2, 4}, {ELEM_Sc, 3, 4}, {ELEM_Ti, 4, 4},
+        {ELEM_V, 5, 4}, {ELEM_Cr, 6, 4}, {ELEM_Mn, 7, 4}, {ELEM_Fe, 8, 4},
+        {ELEM_Co, 8, 4}, {ELEM_Ni, 8, 4}, {ELEM_Cu, 1, 4}, {ELEM_Zn, 2, 4},
+        {ELEM_Ga, 3, 4}, {ELEM_Ge, 4, 4}, {ELEM_As, 5, 4}, {ELEM_Se, 6, 4},
+        {ELEM_Br, 7, 4}, {ELEM_Kr, 8, 4},
+        // Period 5
+        {ELEM_Rb, 1, 5}, {ELEM_Sr, 2, 5}, {ELEM_Y, 3, 5}, {ELEM_Zr, 4, 5},
+        {ELEM_Nb, 5, 5}, {ELEM_Mo, 6, 5}, {ELEM_Tc, 7, 5}, {ELEM_Ru, 8, 5},
+        {ELEM_Rh, 8, 5}, {ELEM_Pd, 8, 5}, {ELEM_Ag, 1, 5}, {ELEM_Cd, 2, 5},
+        {ELEM_In, 3, 5}, {ELEM_Sn, 4, 5}, {ELEM_Sb, 5, 5}, {ELEM_Te, 6, 5},
+        {ELEM_I, 7, 5}, {ELEM_Xe, 8, 5},
+        // Period 6: s-block
+        {ELEM_Cs, 1, 6}, {ELEM_Ba, 2, 6},
+        // Period 6: lanthanides (all group 3)
+        {ELEM_La, 3, 6}, {ELEM_Ce, 3, 6}, {ELEM_Pr, 3, 6}, {ELEM_Nd, 3, 6},
+        {ELEM_Pm, 3, 6}, {ELEM_Sm, 3, 6}, {ELEM_Eu, 3, 6}, {ELEM_Gd, 3, 6},
+        {ELEM_Tb, 3, 6}, {ELEM_Dy, 3, 6}, {ELEM_Ho, 3, 6}, {ELEM_Er, 3, 6},
+        {ELEM_Tm, 3, 6}, {ELEM_Yb, 3, 6}, {ELEM_Lu, 3, 6},
+        // Period 6: d-block and p-block
+        {ELEM_Hf, 4, 6}, {ELEM_Ta, 5, 6}, {ELEM_W, 6, 6}, {ELEM_Re, 7, 6},
+        {ELEM_Os, 8, 6}, {ELEM_Ir, 8, 6}, {ELEM_Pt, 8, 6},
+        {ELEM_Au, 1, 6}, {ELEM_Hg, 2, 6},
+        {ELEM_Tl, 3, 6}, {ELEM_Pb, 4, 6}, {ELEM_Bi, 5, 6}, {ELEM_Po, 6, 6},
+        {ELEM_At, 7, 6}, {ELEM_Rn, 8, 6},
+        // Period 7: s-block
+        {ELEM_Fr, 1, 7}, {ELEM_Ra, 2, 7},
+        // Period 7: actinides (all group 3)
+        {ELEM_Ac, 3, 7}, {ELEM_Th, 3, 7}, {ELEM_Pa, 3, 7}, {ELEM_U, 3, 7},
+        {ELEM_Np, 3, 7}, {ELEM_Pu, 3, 7}, {ELEM_Am, 3, 7}, {ELEM_Cm, 3, 7},
+        {ELEM_Bk, 3, 7}, {ELEM_Cf, 3, 7}, {ELEM_Es, 3, 7}, {ELEM_Fm, 3, 7},
+        {ELEM_Md, 3, 7}, {ELEM_No, 3, 7}, {ELEM_Lr, 3, 7},
+        // Period 7: d-block (transactinides) and p-block
+        {ELEM_Rf, 4, 7}, {ELEM_Db, 5, 7}, {ELEM_Sg, 6, 7}, {ELEM_Bh, 7, 7},
+        {ELEM_Hs, 8, 7}, {ELEM_Mt, 8, 7}, {ELEM_Ds, 8, 7},
+        {ELEM_Rg, 1, 7}, {ELEM_Cn, 2, 7},
+        {ELEM_Nh, 3, 7}, {ELEM_Fl, 4, 7}, {ELEM_Mc, 5, 7}, {ELEM_Lv, 6, 7},
+        {ELEM_Ts, 7, 7}, {ELEM_Og, 8, 7},
+    };
+    // clang-format on
+
+    for (const auto& e : kExpected)
     {
-        EXPECT_EQ(Element::group(elem), 3) << "Actinide " << Element::toString(elem) << " should be group 3";
-        EXPECT_EQ(Element::period(elem), 7) << "Actinide " << Element::toString(elem) << " should be period 7";
+        SCOPED_TRACE(Element::toString(e.elem));
+        EXPECT_EQ(Element::group(e.elem), e.group);
+        EXPECT_EQ(Element::period(e.elem), e.period);
     }
-}
-
-// Transactinides follow the group pattern of their lighter homologs
-TEST_F(ElementTest, GroupPeriod_Period7_Transactinides)
-{
-    EXPECT_EQ(Element::group(ELEM_Rf), 4); // like Ti, Zr, Hf
-    EXPECT_EQ(Element::group(ELEM_Db), 5); // like V, Nb, Ta
-    EXPECT_EQ(Element::group(ELEM_Sg), 6); // like Cr, Mo, W
-    EXPECT_EQ(Element::group(ELEM_Bh), 7); // like Mn, Tc, Re
-    EXPECT_EQ(Element::group(ELEM_Hs), 8); // like Fe, Ru, Os
-    EXPECT_EQ(Element::group(ELEM_Mt), 8); // like Co, Rh, Ir
-    EXPECT_EQ(Element::group(ELEM_Ds), 8); // like Ni, Pd, Pt
-    EXPECT_EQ(Element::group(ELEM_Rg), 1); // like Cu, Ag, Au
-    EXPECT_EQ(Element::group(ELEM_Cn), 2); // like Zn, Cd, Hg
-    for (int elem = ELEM_Rf; elem <= ELEM_Cn; ++elem)
-    {
-        EXPECT_EQ(Element::period(elem), 7) << Element::toString(elem);
-    }
-}
-
-TEST_F(ElementTest, GroupPeriod_Period7_PostCn)
-{
-    EXPECT_EQ(Element::group(ELEM_Nh), 3);
-    EXPECT_EQ(Element::period(ELEM_Nh), 7);
-    EXPECT_EQ(Element::group(ELEM_Fl), 4);
-    EXPECT_EQ(Element::period(ELEM_Fl), 7);
-    EXPECT_EQ(Element::group(ELEM_Mc), 5);
-    EXPECT_EQ(Element::period(ELEM_Mc), 7);
-    EXPECT_EQ(Element::group(ELEM_Lv), 6);
-    EXPECT_EQ(Element::period(ELEM_Lv), 7);
-    EXPECT_EQ(Element::group(ELEM_Ts), 7);
-    EXPECT_EQ(Element::period(ELEM_Ts), 7);
-    EXPECT_EQ(Element::group(ELEM_Og), 8);
-    EXPECT_EQ(Element::period(ELEM_Og), 7);
-}
-
-TEST_F(ElementTest, GroupPeriod_Period7_AlkaliAlkalineEarth)
-{
-    EXPECT_EQ(Element::group(ELEM_Fr), 1);
-    EXPECT_EQ(Element::period(ELEM_Fr), 7);
-    EXPECT_EQ(Element::group(ELEM_Ra), 2);
-    EXPECT_EQ(Element::period(ELEM_Ra), 7);
 }
 
 // ============================================================================
@@ -1438,64 +1270,25 @@ TEST_F(ElementTest, CalcValenceMinusHyd_DefaultBehavior)
 // 21. canBeAromatic
 // ============================================================================
 
-TEST_F(ElementTest, CanBeAromatic_Period2)
+TEST_F(ElementTest, CanBeAromatic_AllAromaticElements)
 {
-    EXPECT_TRUE(Element::canBeAromatic(ELEM_B));
-    EXPECT_TRUE(Element::canBeAromatic(ELEM_C));
-    EXPECT_TRUE(Element::canBeAromatic(ELEM_N));
-    EXPECT_TRUE(Element::canBeAromatic(ELEM_O));
-    EXPECT_TRUE(Element::canBeAromatic(ELEM_F));
-}
-
-TEST_F(ElementTest, CanBeAromatic_Period3)
-{
-    EXPECT_TRUE(Element::canBeAromatic(ELEM_Al));
-    EXPECT_TRUE(Element::canBeAromatic(ELEM_Si));
-    EXPECT_TRUE(Element::canBeAromatic(ELEM_P));
-    EXPECT_TRUE(Element::canBeAromatic(ELEM_S));
-    EXPECT_TRUE(Element::canBeAromatic(ELEM_Cl));
-}
-
-TEST_F(ElementTest, CanBeAromatic_Period4)
-{
-    EXPECT_TRUE(Element::canBeAromatic(ELEM_Ga));
-    EXPECT_TRUE(Element::canBeAromatic(ELEM_Ge));
-    EXPECT_TRUE(Element::canBeAromatic(ELEM_As));
-    EXPECT_TRUE(Element::canBeAromatic(ELEM_Se));
-    EXPECT_TRUE(Element::canBeAromatic(ELEM_Br));
-}
-
-TEST_F(ElementTest, CanBeAromatic_Period5)
-{
-    EXPECT_TRUE(Element::canBeAromatic(ELEM_In));
-    EXPECT_TRUE(Element::canBeAromatic(ELEM_Sn));
-    EXPECT_TRUE(Element::canBeAromatic(ELEM_Sb));
-    EXPECT_TRUE(Element::canBeAromatic(ELEM_Te));
-    EXPECT_TRUE(Element::canBeAromatic(ELEM_I));
-}
-
-TEST_F(ElementTest, CanBeAromatic_Period6)
-{
-    EXPECT_TRUE(Element::canBeAromatic(ELEM_Tl));
-    EXPECT_TRUE(Element::canBeAromatic(ELEM_Pb));
-    EXPECT_TRUE(Element::canBeAromatic(ELEM_Bi));
-    EXPECT_TRUE(Element::canBeAromatic(ELEM_Po)); // homolog of Te/Se
-    EXPECT_TRUE(Element::canBeAromatic(ELEM_At)); // homolog of I/Br
+    // All elements that _initAromatic marks as aromatic-capable (B through At)
+    const int aromatic[] = {ELEM_B,  ELEM_C,  ELEM_N,  ELEM_O,  ELEM_F,  ELEM_Al, ELEM_Si, ELEM_P,  ELEM_S,  ELEM_Cl, ELEM_Ga, ELEM_Ge, ELEM_As,
+                            ELEM_Se, ELEM_Br, ELEM_In, ELEM_Sn, ELEM_Sb, ELEM_Te, ELEM_I,  ELEM_Tl, ELEM_Pb, ELEM_Bi, ELEM_Po, ELEM_At};
+    for (int elem : aromatic)
+    {
+        EXPECT_TRUE(Element::canBeAromatic(elem)) << Element::toString(elem) << " should be aromatic-capable";
+    }
 }
 
 TEST_F(ElementTest, CanBeAromatic_NotAromatic)
 {
-    EXPECT_FALSE(Element::canBeAromatic(ELEM_H));
-    EXPECT_FALSE(Element::canBeAromatic(ELEM_He));
-    EXPECT_FALSE(Element::canBeAromatic(ELEM_Li));
-    EXPECT_FALSE(Element::canBeAromatic(ELEM_Be));
-    EXPECT_FALSE(Element::canBeAromatic(ELEM_Ne));
-    EXPECT_FALSE(Element::canBeAromatic(ELEM_Na));
-    EXPECT_FALSE(Element::canBeAromatic(ELEM_Mg));
-    EXPECT_FALSE(Element::canBeAromatic(ELEM_Ar));
-    EXPECT_FALSE(Element::canBeAromatic(ELEM_Fe));
-    EXPECT_FALSE(Element::canBeAromatic(ELEM_Cu));
-    EXPECT_FALSE(Element::canBeAromatic(ELEM_Rn)); // noble gas
+    // Representative non-aromatic elements: H (period 1), noble gases, s-block metals, transition metal
+    const int non_aromatic[] = {ELEM_H, ELEM_He, ELEM_Li, ELEM_Be, ELEM_Ne, ELEM_Na, ELEM_Mg, ELEM_Ar, ELEM_Fe, ELEM_Cu, ELEM_Rn};
+    for (int elem : non_aromatic)
+    {
+        EXPECT_FALSE(Element::canBeAromatic(elem)) << Element::toString(elem) << " should not be aromatic-capable";
+    }
 }
 
 // ============================================================================
@@ -1696,14 +1489,9 @@ TEST_F(ElementTest, GetNumOuterElectrons_Period5)
     EXPECT_EQ(Element::getNumOuterElectrons(ELEM_Xe), 8);
 }
 
-TEST_F(ElementTest, GetNumOuterElectrons_LastCoveredElement)
-{
-    // Ce (Z=58) is the last covered element
-    EXPECT_EQ(Element::getNumOuterElectrons(ELEM_Ce), 4);
-}
-
 TEST_F(ElementTest, GetNumOuterElectrons_Lanthanides)
 {
+    EXPECT_EQ(Element::getNumOuterElectrons(ELEM_Ce), 4);
     EXPECT_EQ(Element::getNumOuterElectrons(ELEM_Pr), 5);
     EXPECT_EQ(Element::getNumOuterElectrons(ELEM_Gd), 10);
     EXPECT_EQ(Element::getNumOuterElectrons(ELEM_Yb), 2); // f14 core
@@ -1931,6 +1719,64 @@ TEST_F(ElementTest, CalcValence_Sulfur_HighConnNotNeutral)
     EXPECT_TRUE(Element::calcValence(ELEM_S, 1, 0, 4, valence, hyd, false));
     EXPECT_EQ(valence, 5);
     EXPECT_EQ(hyd, 1);
+}
+
+// ============================================================================
+// 31b. Missing branch coverage
+// ============================================================================
+
+TEST_F(ElementTest, CalcValence_Tellurium_PlusTwo_LowConn)
+{
+    int valence = 0, hyd = 0;
+    // Te(2+) with conn+rad < 4 -> fallback branch: valence=2, hyd=2-conn-rad
+    EXPECT_TRUE(Element::calcValence(ELEM_Te, 2, 0, 0, valence, hyd, false));
+    EXPECT_EQ(valence, 2);
+    EXPECT_EQ(hyd, 2);
+}
+
+TEST_F(ElementTest, CalcValence_Halogens_PlusOne_OddConn_BadValence)
+{
+    // Cl/Br/I/At with charge +1 and conn=3 -> hyd=-1 -> bad valence
+    const int halogens[] = {ELEM_Cl, ELEM_Br, ELEM_I, ELEM_At};
+    for (int elem : halogens)
+    {
+        int valence = 0, hyd = 0;
+        EXPECT_FALSE(Element::calcValence(elem, 1, 0, 3, valence, hyd, false)) << Element::toString(elem);
+    }
+}
+
+TEST_F(ElementTest, CalcValence_Aluminum_MinusThree)
+{
+    int valence = 0, hyd = 0;
+    // Al(-3) with rad+conn <= 6 -> valence = rad+conn, hyd = 0
+    EXPECT_TRUE(Element::calcValence(ELEM_Al, -3, 0, 6, valence, hyd, false));
+    EXPECT_EQ(valence, 6);
+    EXPECT_EQ(hyd, 0);
+}
+
+TEST_F(ElementTest, CalcValence_Thallium_MinusTwo_LowConn)
+{
+    int valence = 0, hyd = 0;
+    // Tl(-2), conn <= 3 -> valence 3
+    EXPECT_TRUE(Element::calcValence(ELEM_Tl, -2, 0, 3, valence, hyd, false));
+    EXPECT_EQ(valence, 3);
+    EXPECT_EQ(hyd, 0);
+}
+
+TEST_F(ElementTest, CalcValence_Thallium_MinusTwo_HighConn)
+{
+    int valence = 0, hyd = 0;
+    // Tl(-2), conn > 3 -> valence 5
+    EXPECT_TRUE(Element::calcValence(ELEM_Tl, -2, 0, 5, valence, hyd, false));
+    EXPECT_EQ(valence, 5);
+    EXPECT_EQ(hyd, 0);
+}
+
+TEST_F(ElementTest, CalcValence_Phosphorus_MinusOne_ThreeConn_BadValence)
+{
+    int valence = 0, hyd = 0;
+    // P(-1) with conn=3: no known examples with hydrogen -> hyd=-1 -> bad valence
+    EXPECT_FALSE(Element::calcValence(ELEM_P, -1, 0, 3, valence, hyd, false));
 }
 
 // ============================================================================
