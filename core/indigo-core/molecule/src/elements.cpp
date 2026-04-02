@@ -177,15 +177,15 @@ void Element::_initAllPeriodic()
     INIT(Md, 7, 3);
     INIT(No, 7, 3);
     INIT(Lr, 7, 3);
-    INIT(Rf, 7, 3);
-    INIT(Db, 7, 3);
-    INIT(Sg, 7, 3);
-    INIT(Bh, 7, 3);
-    INIT(Hs, 7, 3);
-    INIT(Mt, 7, 3);
-    INIT(Ds, 7, 3);
-    INIT(Rg, 7, 3);
-    INIT(Cn, 7, 3);
+    INIT(Rf, 7, 4);
+    INIT(Db, 7, 5);
+    INIT(Sg, 7, 6);
+    INIT(Bh, 7, 7);
+    INIT(Hs, 7, 8);
+    INIT(Mt, 7, 8);
+    INIT(Ds, 7, 8);
+    INIT(Rg, 7, 1);
+    INIT(Cn, 7, 2);
     INIT(Nh, 7, 3);
     INIT(Fl, 7, 4);
     INIT(Mc, 7, 5);
@@ -1244,7 +1244,7 @@ void Element::_initAromatic()
         _element_parameters.at(i).can_be_aromatic = true;
     for (i = ELEM_In; i <= ELEM_I; i++)
         _element_parameters.at(i).can_be_aromatic = true;
-    for (i = ELEM_Tl; i <= ELEM_Bi; i++)
+    for (i = ELEM_Tl; i <= ELEM_At; i++)
         _element_parameters.at(i).can_be_aromatic = true;
 }
 
@@ -1267,71 +1267,131 @@ double Element::_getRelativeIsotopicMass(int element, int isotope) const
 int Element::getNumOuterElectrons(int element)
 {
     // clang-format off
-    constexpr std::array<int, 59> outerElements{
-        0, // Pseudo-element
-        1, // H
-        2, // H3
-        1, // Li
-        2, // Be
-        3, // B
-        4, // C
-        5, // N
-        6, // O
-        7, // F
-        8, // Ne
-        1, // Na
-        2, // Mg
-        3, // Al
-        4, // Si
-        5, // P
-        6, // S
-        7, // Cl
-        8, // Ar
-        1, // K
-        2, // Ca
-        3, // Sc
-        4, // Ti
-        5, // V
-        6, // Cr
-        7, // Mn
-        8, // Fe
-        9, // Co
-        10, // Ni
-        1,  // Cu
-        2, // Zn
-        3, // Ga
-        4, // Ge
-        5, // As
-        6, // Se
-        7, // Br
-        8, // Kr
-        1, // Rb
-        2, // Sr
-        3, // Y
-        4, // Zr
-        5, // Nb
-        6, // Mo
-        7, // Tc
-        8, // Ru
-        9, // Rh
-        10, // Pd
-        1,  // Ag,
-        2, // Cd
-        3, // In
-        4, // Sn
-        5, // Sb
-        6, // Te
-        7, // I
-        8, // Xe
-        1, // Cs
-        2, // Ba
-        3, // La
-        4 // Ce
+    constexpr std::array<int, 119> outerElements{
+        0,  // [0]  Pseudo-element
+        1,  // [1]  H
+        2,  // [2]  He
+        1,  // [3]  Li
+        2,  // [4]  Be
+        3,  // [5]  B
+        4,  // [6]  C
+        5,  // [7]  N
+        6,  // [8]  O
+        7,  // [9]  F
+        8,  // [10] Ne
+        1,  // [11] Na
+        2,  // [12] Mg
+        3,  // [13] Al
+        4,  // [14] Si
+        5,  // [15] P
+        6,  // [16] S
+        7,  // [17] Cl
+        8,  // [18] Ar
+        1,  // [19] K
+        2,  // [20] Ca
+        3,  // [21] Sc
+        4,  // [22] Ti
+        5,  // [23] V
+        6,  // [24] Cr
+        7,  // [25] Mn
+        8,  // [26] Fe
+        9,  // [27] Co
+        10, // [28] Ni
+        1,  // [29] Cu
+        2,  // [30] Zn
+        3,  // [31] Ga
+        4,  // [32] Ge
+        5,  // [33] As
+        6,  // [34] Se
+        7,  // [35] Br
+        8,  // [36] Kr
+        1,  // [37] Rb
+        2,  // [38] Sr
+        3,  // [39] Y
+        4,  // [40] Zr
+        5,  // [41] Nb
+        6,  // [42] Mo
+        7,  // [43] Tc
+        8,  // [44] Ru
+        9,  // [45] Rh
+        10, // [46] Pd
+        1,  // [47] Ag
+        2,  // [48] Cd
+        3,  // [49] In
+        4,  // [50] Sn
+        5,  // [51] Sb
+        6,  // [52] Te
+        7,  // [53] I
+        8,  // [54] Xe
+        1,  // [55] Cs
+        2,  // [56] Ba
+        3,  // [57] La
+        4,  // [58] Ce  (4f1 5d1 6s2)
+        5,  // [59] Pr  (4f3 6s2)
+        6,  // [60] Nd  (4f4 6s2)
+        7,  // [61] Pm  (4f5 6s2)
+        8,  // [62] Sm  (4f6 6s2)
+        9,  // [63] Eu  (4f7 6s2)
+        10, // [64] Gd  (4f7 5d1 6s2)
+        11, // [65] Tb  (4f9 6s2)
+        12, // [66] Dy  (4f10 6s2)
+        13, // [67] Ho  (4f11 6s2)
+        14, // [68] Er  (4f12 6s2)
+        15, // [69] Tm  (4f13 6s2)
+        2,  // [70] Yb  (4f14 6s2, f14 core)
+        3,  // [71] Lu  (4f14 5d1 6s2, f14 core)
+        4,  // [72] Hf
+        5,  // [73] Ta
+        6,  // [74] W
+        7,  // [75] Re
+        8,  // [76] Os
+        9,  // [77] Ir
+        10, // [78] Pt  (5d9 6s1)
+        1,  // [79] Au  (5d10 6s1, d10 core)
+        2,  // [80] Hg
+        3,  // [81] Tl
+        4,  // [82] Pb
+        5,  // [83] Bi
+        6,  // [84] Po
+        7,  // [85] At
+        8,  // [86] Rn
+        1,  // [87] Fr
+        2,  // [88] Ra
+        3,  // [89] Ac  (6d1 7s2)
+        4,  // [90] Th  (6d2 7s2)
+        5,  // [91] Pa  (5f2 6d1 7s2)
+        6,  // [92] U   (5f3 6d1 7s2)
+        7,  // [93] Np  (5f4 6d1 7s2)
+        8,  // [94] Pu  (5f6 7s2)
+        9,  // [95] Am  (5f7 7s2)
+        10, // [96] Cm  (5f7 6d1 7s2)
+        11, // [97] Bk  (5f9 7s2)
+        12, // [98] Cf  (5f10 7s2)
+        13, // [99] Es  (5f11 7s2)
+        14, // [100] Fm (5f12 7s2)
+        15, // [101] Md (5f13 7s2)
+        2,  // [102] No (5f14 7s2, f14 core)
+        3,  // [103] Lr (5f14 7s2 7p1, f14 core)
+        4,  // [104] Rf
+        5,  // [105] Db
+        6,  // [106] Sg
+        7,  // [107] Bh
+        8,  // [108] Hs
+        9,  // [109] Mt
+        10, // [110] Ds
+        1,  // [111] Rg (homolog of Au)
+        2,  // [112] Cn (homolog of Hg)
+        3,  // [113] Nh
+        4,  // [114] Fl
+        5,  // [115] Mc
+        6,  // [116] Lv
+        7,  // [117] Ts
+        8   // [118] Og
     };
     // clang-format on
-    if (element > static_cast<int>(outerElements.size()))
+    if (element < 0 || element >= static_cast<int>(outerElements.size()))
     {
-        throw Error("outerElements are currently filled only for elements up to lantanoids");
+        throw Error("element number %d out of valid range for outer electrons", element);
     }
     return outerElements[element];
 }
