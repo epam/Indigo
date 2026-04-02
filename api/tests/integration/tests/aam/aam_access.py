@@ -6,8 +6,7 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
-from env_indigo import *
-
+from env_indigo import Indigo
 indigo = Indigo()
 reactions = [
     "CC1=CSC(C=C(N=[N+]=[N-])C(OCC)=O)=C1>>CC1=CSC2=C1NC(C(OCC)=O)=C2",

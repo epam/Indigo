@@ -7,7 +7,13 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
-from env_indigo import *  # noqa
+from env_indigo import (
+    Indigo,
+    IndigoException,
+    getIndigoExceptionText,
+    joinPathPy,
+    makedirs,
+)
 
 indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", "1")
