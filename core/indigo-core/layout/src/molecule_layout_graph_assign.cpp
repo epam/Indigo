@@ -574,8 +574,8 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
         // Count fixed vertices per cycle.
         // Pure-backbone cycles (ALL verts fixed): mark everything drawn + remove.
         // Mixed cycles (some fixed, some selected): mark ONLY the backbone verts as
-        //   BOUNDARY/nailed, leave selected verts NOT_DRAWN so _attachCycleOutside
-        //   can draw them as a regular polygon arc anchored to the backbone verts.
+        //   BOUNDARY/nailed, leave selected verts NOT_DRAWN. Residual NOT_DRAWN verts
+        //   are placed by _attachDandlingVertices after all cycle attachment loops.
         QS_DEF(Array<int>, cycles_to_remove);
         cycles_to_remove.clear();
         for (i = cycles.begin(); i < cycles.end(); i = cycles.next(i))
@@ -609,13 +609,9 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
             else
             {
                 // Mixed cycle (some backbone, some selected):
-                // Mark ONLY backbone verts as BOUNDARY (nail their positions).
-                // Leave selected verts NOT_DRAWN — this prevents n_cv inflation
-                // when those verts are shared with a purely-selected SSSR cycle
-                // that will be processed by _assignFirstCycle/_attachCycleOutside.
-                // Remove from sorted_cycles to avoid _getBorder corrupted-border crash
-                // (NOT_DRAWN verts in a cycle make the border graph non-traversable).
-                // Circle placement fallback places any residual NOT_DRAWN verts.
+                // Mark backbone verts as BOUNDARY (nail their positions).
+                // Remove from sorted_cycles — residual NOT_DRAWN verts
+                // will be placed by _attachDandlingVertices after cycle attachment.
                 for (int j = 0; j < cycle.vertexCount(); j++)
                 {
                     int v_idx = cycle.getVertex(j);
@@ -803,6 +799,44 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
             ce.process(); // ignore return value — best-effort reclassification
         }
     } while (chain_attached);
+
+    // Place residual NOT_DRAWN pendant vertices (e.g. bridge atoms from removed
+    // mixed cycles) using the standard energy-based _attachDandlingVertices.
+    if (sequence_layout && _n_fixed > 0)
+    {
+        QS_DEF(Array<int>, adj);
+        for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
+        {
+            if (_layout_vertices[i].type != ELEMENT_NOT_DRAWN)
+                continue;
+            const Vertex& vi = getVertex(i);
+            bool all_nei_drawn = true;
+            for (int nei = vi.neiBegin(); nei < vi.neiEnd(); nei = vi.neiNext(nei))
+            {
+                if (_layout_vertices[vi.neiVertex(nei)].type == ELEMENT_NOT_DRAWN)
+                {
+                    all_nei_drawn = false;
+                    break;
+                }
+            }
+            if (!all_nei_drawn)
+                continue;
+
+            // Find a drawn neighbor to use as the attachment center.
+            // _attachDandlingVertices considers ALL drawn neighbors of center,
+            // so the specific choice of center doesn't affect the result.
+            for (int nei = vi.neiBegin(); nei < vi.neiEnd(); nei = vi.neiNext(nei))
+            {
+                int center = vi.neiVertex(nei);
+                if (_layout_vertices[center].type == ELEMENT_NOT_DRAWN)
+                    continue;
+                adj.clear();
+                adj.push(i);
+                _attachDandlingVertices(center, adj);
+                break;
+            }
+        }
+    }
 
     _attachCrossingEdges();
 
@@ -1251,10 +1285,10 @@ void MoleculeLayoutGraph::_optimizeSelectedPartPlacement(float bond_length, cons
         }
         variance /= bridge_lengths.size();
 
-        // Calculate collision penalty:
-        // HIGHEST PRIORITY - must avoid overlaps at all costs
+        // Soft repulsion penalty for non-bridge (selected, fixed) pairs
+        // closer than bond_length. Empirical weight 5.0 << bridge-bond weight 10
+        // so bridge geometry drives placement, but overlaps are still penalized.
         float collision_penalty = 0;
-        float min_allowed_distance = bond_length;
 
         for (auto v : selected_vertices)
         {
@@ -1278,20 +1312,19 @@ void MoleculeLayoutGraph::_optimizeSelectedPartPlacement(float bond_length, cons
                     continue; // Skip bridge-connected pairs
 
                 float dist = Vec2f::dist(rotated_pos, fixed_pos);
-                if (dist < min_allowed_distance)
+                if (dist < bond_length)
                 {
-                    float overlap = min_allowed_distance - dist;
-                    // Very strong penalty for overlap to prevent fixed vertices inside selected cycles
-                    collision_penalty += overlap * overlap * 1000.0f;
+                    float overlap = bond_length - dist;
+                    collision_penalty += overlap * overlap * 5.0f;
                 }
             }
         }
 
-        // Cost function with prioritized components:
-        // 1. Collision penalty (highest priority) - weight: 1000.0
-        // 2. Deviation from ideal bond_length (medium priority) - weight: 10.0
-        // 3. Variance (balanced priority) - weight: 10.0
-        return collision_penalty + 10.0f * ideal_deviation + 10.0f * variance;
+        // Cost function components:
+        // 1. Deviation from ideal bond_length (high priority) - weight: 10.0
+        // 2. Variance across bridge lengths (high priority) - weight: 10.0
+        // 3. Collision penalty (soft repulsion) - weight: 5.0
+        return 10.0f * ideal_deviation + 10.0f * variance + collision_penalty;
     };
 
     // Multi-start gradient descent optimization (translation + rotation)
