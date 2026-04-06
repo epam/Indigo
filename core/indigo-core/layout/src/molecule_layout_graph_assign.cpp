@@ -1235,21 +1235,21 @@ void MoleculeLayoutGraph::_optimizeSelectedPartPlacement(float bond_length, cons
                                                          const std::vector<int>& selected_vertices, Vec2f& best_translation, float& best_rotation)
 {
     // ── Cost function weights ────────────────────────────────────────────
-    const float kInvalidCost        = 1e10f;  // returned when no bridge bonds exist
-    const float kBridgeDeviationW   = 10.0f;  // weight: deviation from ideal bond_length
-    const float kBridgeVarianceW    = 10.0f;  // weight: variance across bridge lengths
-    const float kCollisionW         = 5.0f;   // weight: soft repulsion (empirical)
+    const float kInvalidCost = 1e10f;      // returned when no bridge bonds exist
+    const float kBridgeDeviationW = 10.0f; // weight: deviation from ideal bond_length
+    const float kBridgeVarianceW = 10.0f;  // weight: variance across bridge lengths
+    const float kCollisionW = 5.0f;        // weight: soft repulsion (empirical)
 
     // ── Gradient descent parameters ──────────────────────────────────────
-    const int   kMaxIterations      = 15;
-    const float kStepDecay          = 0.95f;  // per-iteration step shrink
-    const float kStepBackoff        = 0.5f;   // step halving on cost increase
-    const float kMinStepFraction    = 0.01f;  // min_step = fraction * bond_length
-    const float kGradEpsilon        = 1e-4f;  // finite-difference delta
-    const float kGradNormMin        = 1e-8f;  // stop when gradient vanishes
-    const float kCostConvergence    = 1e-6f;  // stop when cost delta < this
-    const int   kAngleStarts        = 12;     // number of starting angles (360°/12 = 30°)
-    const float kAngleStep          = (float)M_PI / 6;  // 30 degrees
+    const int kMaxIterations = 15;
+    const float kStepDecay = 0.95f;           // per-iteration step shrink
+    const float kStepBackoff = 0.5f;          // step halving on cost increase
+    const float kMinStepFraction = 0.01f;     // min_step = fraction * bond_length
+    const float kGradEpsilon = 1e-4f;         // finite-difference delta
+    const float kGradNormMin = 1e-8f;         // stop when gradient vanishes
+    const float kCostConvergence = 1e-6f;     // stop when cost delta < this
+    const int kAngleStarts = 12;              // number of starting angles (360°/12 = 30°)
+    const float kAngleStep = (float)M_PI / 6; // 30 degrees
 
     // Lambda function to calculate cost for given transformation parameters (translation + rotation)
     auto calculate_cost = [&](float dx, float dy, float angle) -> float {
