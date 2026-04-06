@@ -297,18 +297,12 @@ if multi_errors:
         print("  " + e)
 else:
     final_ket = json.dumps(current_data, indent=2)
-    diff = compare_diff(
+    compare_diff(
         ref_path,
         "multi_seq_1357.ket",
         final_ket,
         diff_fn=compare_positions,
-        stdout=False,
     )
-    if not diff:
-        print("multi.ket:SUCCEED")
-    else:
-        print("multi.ket:FAILED")
-        print(diff)
 
 
 # ======================================================================
@@ -383,18 +377,12 @@ def _run_multi_cycle_selection_test(label, cycle_groups, ref_filename):
             print("  " + e)
     else:
         final_ket = json.dumps(data, indent=2)
-        diff = compare_diff(
+        compare_diff(
             ref_path,
             ref_filename,
             final_ket,
             diff_fn=compare_positions,
-            stdout=False,
         )
-        if not diff:
-            print("{}:SUCCEED".format(label))
-        else:
-            print("{}:FAILED".format(label))
-            print(diff)
 
 
 print("\n*** Multi-cycle simultaneous layout (cycles 1+2+3) ***")
@@ -535,11 +523,9 @@ if cp_errors:
         print("  " + e)
 else:
     cp_ket = json.dumps(cp_out, indent=2)
-    with open(getRefFilepath("cycle_part_sel.ket"), "r") as file:
-        ket_ref = file.read()
-    diff = compare_positions(ket_ref, cp_ket)
-    if not diff:
-        print("cycle_part_sel.ket:SUCCEED")
-    else:
-        print("cycle_part_sel.ket:FAILED")
-        print(diff)
+    compare_diff(
+        ref_path,
+        "cycle_part_sel.ket",
+        cp_ket,
+        diff_fn=compare_positions,
+    )
