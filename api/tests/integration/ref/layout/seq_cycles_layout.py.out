@@ -16,10 +16,13 @@ shifting_structs_2_sel.ket:SUCCEED
 small_mol.ket:SUCCEED
 
 *** Sequential multi-cycle layout (cycles 1,3,5,7) ***
-multi.ket:SUCCEED
+multi_seq_1357.ket:SUCCEED
 
 *** Multi-cycle simultaneous layout (cycles 1+2+3) ***
-multi_123.ket:SUCCEED
+multi_sel_123.ket:SUCCEED
 
 *** Multi-cycle simultaneous layout (cycles 2+3+4) ***
-multi_234.ket:SUCCEED
+multi_sel_234.ket:SUCCEED
+
+*** cycle_part_sel: ring + pendant phosphates + fixed backbone ***
+cycle_part_sel.ket:SUCCEED

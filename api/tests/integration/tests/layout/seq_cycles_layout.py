@@ -297,18 +297,12 @@ if multi_errors:
         print("  " + e)
 else:
     final_ket = json.dumps(current_data, indent=2)
-    diff = compare_diff(
+    compare_diff(
         ref_path,
         "multi_seq_1357.ket",
         final_ket,
         diff_fn=compare_positions,
-        stdout=False,
     )
-    if not diff:
-        print("multi.ket:SUCCEED")
-    else:
-        print("multi.ket:FAILED")
-        print(diff)
 
 
 # ======================================================================
@@ -383,18 +377,12 @@ def _run_multi_cycle_selection_test(label, cycle_groups, ref_filename):
             print("  " + e)
     else:
         final_ket = json.dumps(data, indent=2)
-        diff = compare_diff(
+        compare_diff(
             ref_path,
             ref_filename,
             final_ket,
             diff_fn=compare_positions,
-            stdout=False,
         )
-        if not diff:
-            print("{}:SUCCEED".format(label))
-        else:
-            print("{}:FAILED".format(label))
-            print(diff)
 
 
 print("\n*** Multi-cycle simultaneous layout (cycles 1+2+3) ***")
@@ -406,3 +394,138 @@ print("\n*** Multi-cycle simultaneous layout (cycles 2+3+4) ***")
 _run_multi_cycle_selection_test(
     "multi_234.ket", [2, 3, 4], "multi_sel_234.ket"
 )
+
+
+# ======================================================================
+# Partial-selection cycle layout: cycle_part_sel.ket
+#
+# A 10-vertex selected ring connected to a fixed backbone via two
+# pendant phosphates (P5, P12).  The layout must:
+#   1. Make the selected ring a regular 10-gon (all edges = 1.5)
+#   2. Place pendant P atoms OUTSIDE the ring (outward direction)
+#   3. Keep the fixed backbone atoms stationary
+# ======================================================================
+
+print("\n*** cycle_part_sel: ring + pendant phosphates + fixed backbone ***")
+
+with open(os.path.join(root, "cycle_part_sel.ket")) as f:
+    cp_data = json.load(f)
+
+cp_out = _do_layout(cp_data)
+
+cp_positions = _get_monomer_positions(cp_out)
+
+cp_errors = []
+
+# Ring0 vertices (atom indices 0,1,2,3,4,13,14,15,16,17 → monomer ids)
+# Discover them: all monomers that are selected and NOT pendant phosphates.
+# Selected monomers: those with "selected": true in the input.
+selected_ids = {
+    key
+    for key, val in cp_data.items()
+    if key.startswith("monomer")
+    and isinstance(val, dict)
+    and val.get("selected", False)
+}
+fixed_ids = {
+    key
+    for key, val in cp_data.items()
+    if key.startswith("monomer")
+    and isinstance(val, dict)
+    and not val.get("selected", False)
+}
+
+# Find the ring cycle among selected monomers via graph cycle detection.
+adj_cp = defaultdict(set)
+for c in cp_data["root"].get("connections", []):
+    ep1 = c["endpoint1"]["monomerId"]
+    ep2 = c["endpoint2"]["monomerId"]
+    if ep1 in selected_ids and ep2 in selected_ids:
+        adj_cp[ep1].add(ep2)
+        adj_cp[ep2].add(ep1)
+
+# Pendant atoms: selected monomers with only 1 selected neighbour.
+pendant_ids = {m for m in selected_ids if len(adj_cp[m]) <= 1}
+ring_ids = selected_ids - pendant_ids
+
+if len(pendant_ids) != 2:
+    cp_errors.append(
+        "Expected 2 pendant atoms, got {}".format(len(pendant_ids))
+    )
+
+if len(ring_ids) != 10:
+    cp_errors.append("Expected 10 ring vertices, got {}".format(len(ring_ids)))
+else:
+    ok, msg = _is_regular_polygon(list(ring_ids), cp_positions)
+    if not ok:
+        cp_errors.append("Ring not regular polygon: " + msg)
+    else:
+        # Compute ring center.
+        n = len(ring_ids)
+        cx = sum(cp_positions[m][0] for m in ring_ids) / n
+        cy = sum(cp_positions[m][1] for m in ring_ids) / n
+
+        # Each pendant P must be OUTSIDE the ring (dot product with
+        # outward radial direction at its ring neighbour > 0).
+        for p in pendant_ids:
+            # Find the ring-side neighbour of this pendant.
+            ring_nb = None
+            for c in cp_data["root"].get("connections", []):
+                ep1 = c["endpoint1"]["monomerId"]
+                ep2 = c["endpoint2"]["monomerId"]
+                if ep1 == p and ep2 in ring_ids:
+                    ring_nb = ep2
+                    break
+                if ep2 == p and ep1 in ring_ids:
+                    ring_nb = ep1
+                    break
+            if ring_nb is None:
+                cp_errors.append("Pendant {} has no ring neighbour".format(p))
+                continue
+
+            rn_pos = cp_positions[ring_nb]
+            p_pos = cp_positions[p]
+
+            # Outward direction at ring neighbour: from center through ring_nb.
+            outward_x = rn_pos[0] - cx
+            outward_y = rn_pos[1] - cy
+            # Direction ring_nb → P.
+            dp_x = p_pos[0] - rn_pos[0]
+            dp_y = p_pos[1] - rn_pos[1]
+
+            dot = outward_x * dp_x + outward_y * dp_y
+            if dot <= 0:
+                cp_errors.append(
+                    "Pendant {} points inward (dot={:.4f})".format(p, dot)
+                )
+
+# Fixed backbone atoms must not move.
+for m in fixed_ids:
+    pos_val = cp_data[m].get("position")
+    if pos_val is None:
+        continue
+    before = (pos_val["x"], pos_val["y"])
+    after = cp_positions.get(m)
+    if after is None:
+        continue
+    dx = abs(after[0] - before[0])
+    dy = abs(after[1] - before[1])
+    if dx > GEOM_TOL or dy > GEOM_TOL:
+        cp_errors.append(
+            "Fixed monomer {} moved: ({:.3f},{:.3f})->({:.3f},{:.3f})".format(
+                m, before[0], before[1], after[0], after[1]
+            )
+        )
+
+if cp_errors:
+    print("cycle_part_sel.ket:FAILED")
+    for e in cp_errors:
+        print("  " + e)
+else:
+    cp_ket = json.dumps(cp_out, indent=2)
+    compare_diff(
+        ref_path,
+        "cycle_part_sel.ket",
+        cp_ket,
+        diff_fn=compare_positions,
+    )
