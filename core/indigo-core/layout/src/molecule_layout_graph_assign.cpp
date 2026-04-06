@@ -1234,7 +1234,22 @@ void MoleculeLayoutGraph::_optimizeSelectedPartPlacement(float bond_length, cons
                                                          const std::unordered_set<int>& bridge_connected_pairs, const Vec2f& selected_center,
                                                          const std::vector<int>& selected_vertices, Vec2f& best_translation, float& best_rotation)
 {
-    const float INVALID_COST = 1e10f; // Cost returned when configuration is invalid (no bridge bonds)
+    // ── Cost function weights ────────────────────────────────────────────
+    const float kInvalidCost        = 1e10f;  // returned when no bridge bonds exist
+    const float kBridgeDeviationW   = 10.0f;  // weight: deviation from ideal bond_length
+    const float kBridgeVarianceW    = 10.0f;  // weight: variance across bridge lengths
+    const float kCollisionW         = 5.0f;   // weight: soft repulsion (empirical)
+
+    // ── Gradient descent parameters ──────────────────────────────────────
+    const int   kMaxIterations      = 15;
+    const float kStepDecay          = 0.95f;  // per-iteration step shrink
+    const float kStepBackoff        = 0.5f;   // step halving on cost increase
+    const float kMinStepFraction    = 0.01f;  // min_step = fraction * bond_length
+    const float kGradEpsilon        = 1e-4f;  // finite-difference delta
+    const float kGradNormMin        = 1e-8f;  // stop when gradient vanishes
+    const float kCostConvergence    = 1e-6f;  // stop when cost delta < this
+    const int   kAngleStarts        = 12;     // number of starting angles (360°/12 = 30°)
+    const float kAngleStep          = (float)M_PI / 6;  // 30 degrees
 
     // Lambda function to calculate cost for given transformation parameters (translation + rotation)
     auto calculate_cost = [&](float dx, float dy, float angle) -> float {
@@ -1264,7 +1279,7 @@ void MoleculeLayoutGraph::_optimizeSelectedPartPlacement(float bond_length, cons
         }
 
         if (bridge_lengths.size() == 0)
-            return INVALID_COST;
+            return kInvalidCost;
 
         // Calculate deviation from ideal bond_length and variance
         float ideal_deviation = 0;
@@ -1315,26 +1330,22 @@ void MoleculeLayoutGraph::_optimizeSelectedPartPlacement(float bond_length, cons
                 if (dist < bond_length)
                 {
                     float overlap = bond_length - dist;
-                    collision_penalty += overlap * overlap * 5.0f;
+                    collision_penalty += overlap * overlap * kCollisionW;
                 }
             }
         }
 
         // Cost function components:
-        // 1. Deviation from ideal bond_length (high priority) - weight: 10.0
-        // 2. Variance across bridge lengths (high priority) - weight: 10.0
-        // 3. Collision penalty (soft repulsion) - weight: 5.0
-        return 10.0f * ideal_deviation + 10.0f * variance + collision_penalty;
+        // 1. Deviation from ideal bond_length (high priority)
+        // 2. Variance across bridge lengths (high priority)
+        // 3. Collision penalty (soft repulsion)
+        return kBridgeDeviationW * ideal_deviation + kBridgeVarianceW * variance + collision_penalty;
     };
 
     // Multi-start gradient descent optimization (translation + rotation)
     // Try multiple starting angles to avoid local minima
-    const int max_iterations = 15;
     const float initial_step = bond_length;
-    const float min_step = 0.01f * bond_length;
-    const float step_decay = 0.95f;
-    const float epsilon = 1e-4f;
-    const float angle_step = (float)M_PI / 6; // 30 degrees
+    const float min_step = kMinStepFraction * bond_length;
 
     float best_dx = 0.0f;
     float best_dy = 0.0f;
@@ -1342,31 +1353,31 @@ void MoleculeLayoutGraph::_optimizeSelectedPartPlacement(float bond_length, cons
     float best_cost = calculate_cost(0, 0, 0);
 
     // Try different starting angles (0, 30, 60, ..., 330 degrees)
-    for (int angle_idx = 0; angle_idx < 12; angle_idx++)
+    for (int angle_idx = 0; angle_idx < kAngleStarts; angle_idx++)
     {
         float dx = 0.0f;
         float dy = 0.0f;
-        float angle = angle_idx * angle_step;
+        float angle = angle_idx * kAngleStep;
 
         float step_size = initial_step;
         float prev_cost = calculate_cost(dx, dy, angle);
 
-        for (int iter = 0; iter < max_iterations; iter++)
+        for (int iter = 0; iter < kMaxIterations; iter++)
         {
             float cost_center = prev_cost;
 
             // Calculate numerical gradient
-            float cost_dx_plus = calculate_cost(dx + epsilon, dy, angle);
-            float grad_dx = (cost_dx_plus - cost_center) / epsilon;
+            float cost_dx_plus = calculate_cost(dx + kGradEpsilon, dy, angle);
+            float grad_dx = (cost_dx_plus - cost_center) / kGradEpsilon;
 
-            float cost_dy_plus = calculate_cost(dx, dy + epsilon, angle);
-            float grad_dy = (cost_dy_plus - cost_center) / epsilon;
+            float cost_dy_plus = calculate_cost(dx, dy + kGradEpsilon, angle);
+            float grad_dy = (cost_dy_plus - cost_center) / kGradEpsilon;
 
-            float cost_angle_plus = calculate_cost(dx, dy, angle + epsilon);
-            float grad_angle = (cost_angle_plus - cost_center) / epsilon;
+            float cost_angle_plus = calculate_cost(dx, dy, angle + kGradEpsilon);
+            float grad_angle = (cost_angle_plus - cost_center) / kGradEpsilon;
 
             float grad_norm = sqrt(grad_dx * grad_dx + grad_dy * grad_dy + grad_angle * grad_angle);
-            if (grad_norm < 1e-8f)
+            if (grad_norm < kGradNormMin)
                 break;
 
             float new_dx = dx - step_size * grad_dx / grad_norm;
@@ -1377,7 +1388,7 @@ void MoleculeLayoutGraph::_optimizeSelectedPartPlacement(float bond_length, cons
 
             if (new_cost > cost_center)
             {
-                step_size *= 0.5f;
+                step_size *= kStepBackoff;
                 if (step_size < min_step)
                     break;
                 continue;
@@ -1388,9 +1399,9 @@ void MoleculeLayoutGraph::_optimizeSelectedPartPlacement(float bond_length, cons
             angle = new_angle;
             prev_cost = new_cost;
 
-            step_size *= step_decay;
+            step_size *= kStepDecay;
 
-            if (fabs(new_cost - cost_center) < 1e-6f)
+            if (fabs(new_cost - cost_center) < kCostConvergence)
                 break;
         }
 

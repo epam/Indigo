@@ -466,9 +466,7 @@ if len(pendant_ids) != 2:
     )
 
 if len(ring_ids) != 10:
-    cp_errors.append(
-        "Expected 10 ring vertices, got {}".format(len(ring_ids))
-    )
+    cp_errors.append("Expected 10 ring vertices, got {}".format(len(ring_ids)))
 else:
     ok, msg = _is_regular_polygon(list(ring_ids), cp_positions)
     if not ok:
@@ -545,4 +543,3 @@ else:
     else:
         print("cycle_part_sel.ket:FAILED")
         print(diff)
-
