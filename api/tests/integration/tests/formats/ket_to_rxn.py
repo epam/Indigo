@@ -1,17 +1,12 @@
-﻿import difflib
-import os
+﻿import os
 import sys
-
-
-def find_diff(a, b):
-    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
-
 
 sys.path.append(
     os.path.normpath(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
+from common.util import compare_diff
 from env_indigo import Indigo, joinPathPy  # noqa
 
 indigo = Indigo()
@@ -42,15 +37,5 @@ files = [
 files.sort()
 for filename in files:
     rea = indigo.loadReactionFromFile(os.path.join(root, filename + ".ket"))
-
-    # with open(os.path.join(ref_path, filename) + ".rxn", "w") as file:
-    #     file.write(rea.rxnfile())
-    with open(os.path.join(ref_path, filename) + ".rxn", "r") as file:
-        rxn_ref = file.read()
     rxn = rea.rxnfile()
-    diff = find_diff(rxn_ref, rxn)
-    if not diff:
-        print(filename + ".rxn:SUCCEED")
-    else:
-        print(filename + ".rxn:FAILED")
-        print(diff)
+    compare_diff(ref_path, filename + ".rxn", rxn)

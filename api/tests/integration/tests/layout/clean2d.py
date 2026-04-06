@@ -32,7 +32,11 @@ for idx, item in enumerate(
     try:
         item.clean2d()
         res = moleculeLayoutDiff(
-            indigo, item, ref.at(idx).rawData(), ref_is_file=False
+            indigo,
+            item,
+            ref.at(idx).rawData(),
+            ref_is_file=False,
+            update=False,
         )
         print("  Item #{}: Result: {}".format(idx, res))
         saver.sdfAppend(item.clone())
@@ -42,7 +46,7 @@ for idx, item in enumerate(
 print("***** Test cleand2d for SMILES 1 *****")
 m = indigo.loadMolecule("C1=CC=CC=C1")
 m.clean2d()
-res = moleculeLayoutDiff(indigo, m, "clean2d_test1.mol")
+res = moleculeLayoutDiff(indigo, m, "clean2d_test1.mol", update=False)
 print("  Result: {}".format(res))
 m.saveMolfile(joinPathPy("out/clean2d_test1.mol", __file__))
 
@@ -50,6 +54,6 @@ print("***** Test cleand2d for SMILES 1 *****")
 m = indigo.loadMolecule("C=C=C")
 sm = m.getSubmolecule([0, 1, 2])
 sm.clean2d()
-res = moleculeLayoutDiff(indigo, sm, "clean2d_test2.mol")
+res = moleculeLayoutDiff(indigo, sm, "clean2d_test2.mol", update=False)
 print("  Result: {}".format(res))
 sm.saveMolfile(joinPathPy("out/clean2d_test2.mol", __file__))

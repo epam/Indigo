@@ -1,17 +1,12 @@
-﻿import difflib
-import os
+﻿import os
 import sys
-
-
-def find_diff(a, b):
-    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
-
 
 sys.path.append(
     os.path.normpath(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
+from common.util import compare_diff
 from env_indigo import (  # noqa
     Indigo,
     IndigoException,
@@ -37,17 +32,8 @@ lib = indigo.loadMonomerLibraryFromFile(
 files.sort()
 for filename in files:
     doc = indigo.loadKetDocumentFromFile(os.path.join(refp, filename + ".ket"))
-    # with open(os.path.join(refp, filename) + ".seq3", "w") as file:
-    #     file.write(doc.sequence3Letter(lib))
-    with open(os.path.join(refp, filename) + ".seq3", "r") as file:
-        seq_ref = file.read()
     seq = doc.sequence3Letter(lib)
-    diff = find_diff(seq_ref, seq)
-    if not diff:
-        print(filename + " : SUCCEED")
-    else:
-        print(filename + " : FAILED")
-        print(diff)
+    compare_diff(refp, filename + ".seq3", seq)
 
 seq_errors = {
     "peptides_molecule": "Sequence saver: Can't save micro-molecules to sequence format",
