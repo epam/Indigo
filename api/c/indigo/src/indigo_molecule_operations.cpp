@@ -1627,7 +1627,8 @@ CEXPORT int indigoCreateSGroup(const char* type, int mapping, const char* name)
 
             for (auto i : temp.vertices())
             {
-                sgroup.atoms.push(m[i]);
+                if (m[i] >= 0)
+                    sgroup.atoms.push(m[i]);
             }
 
             for (auto i : mol.edges())

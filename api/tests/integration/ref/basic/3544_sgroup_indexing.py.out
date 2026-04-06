@@ -1,0 +1,11 @@
+****** Issue #3544: SGroup indexing with unfolded hydrogens ********
+Test 1: SUP sgroup from query with unfolded hydrogens
+SGroup atoms: C
+Test 2: SUP sgroup, both target and query with unfolded hydrogens
+SGroup atoms: C
+Test 3: DAT sgroup from query with unfolded hydrogens
+SGroup atoms: C
+Test 4: Control - SUP sgroup without unfolded hydrogens
+SGroup atoms: C
+Test 5: SUP sgroup from multi-atom query match with unfolded hydrogens
+SGroup atoms: C C
