@@ -405,33 +405,24 @@ constexpr int sleep_time_ms = 2;
 
 bool BaseSubstructureMatcherDispatcher::_setupCommand(OsCommand& command)
 {
-    int idx = -1;
+    std::unique_lock<std::mutex> lock(_input_mtx);
+    _cv_input.wait(lock, [this]() { return !_input_data.empty() || _all_data_in_queue; });
+    if (!_input_data.empty())
     {
-        std::unique_lock<std::mutex> lock(_input_mtx);
-        _cv_input.wait(lock, [this]() { return !_input_data.empty() || _all_data_in_queue; });
-        if (!_input_data.empty())
-        {
-            idx = _input_data.front();
-            _input_data.pop_front();
-        }
+        BaseSubstructureMatcherCommand& cmd = static_cast<BaseSubstructureMatcherCommand&>(command);
+        cmd.db_object_idx = _input_data.front();
+        _input_data.pop_front();
+        return true;
     }
-    if (idx < 0 && _input_data.empty() && _all_data_in_queue)
-    {
-        return false;
-    }
-
-    BaseSubstructureMatcherCommand& cmd = static_cast<BaseSubstructureMatcherCommand&>(command);
-    cmd.db_object_idx = idx;
-    return true;
+    return false; // _all_data_in_queue
 }
 
 void BaseSubstructureMatcherDispatcher::_handleResult(OsCommandResult& result)
 {
     BaseSubstructureMatcherResult& r = static_cast<BaseSubstructureMatcherResult&>(result);
     std::lock_guard<std::mutex> locker(_results_mtx);
-    if (!r.match)
-        return;
-    _results.emplace_back(r.db_object_idx, r.indigo_obj.release());
+    if (r.match)
+        _results.emplace_back(r.db_object_idx, r.indigo_obj.release());
     _cv_results.notify_one();
 }
 
@@ -506,7 +497,6 @@ bool BaseSubstructureMatcher::next()
             {
                 if (_multithread)
                 {
-                    std::lock_guard<std::mutex> lock(_input_mtx);
                     _all_data_in_queue = true;
                     _cv_input.notify_all();
                 }
@@ -534,8 +524,8 @@ bool BaseSubstructureMatcher::next()
                 while (_input_data.size() < MAX_SIZE && _current_cand_id < _candidates.size())
                 {
                     _input_data.push_back(_candidates[_current_cand_id++]);
+                    _cv_input.notify_one();
                 }
-                _cv_input.notify_all();
                 if (_current_cand_id >= _candidates.size()) // need more candidates
                     continue;
             }
@@ -551,7 +541,7 @@ bool BaseSubstructureMatcher::next()
         {
             profTimerStart(lw, "sub_try_wait");
             std::unique_lock<std::mutex> lock(_results_mtx);
-            _cv_results.wait(lock, [this]() { return !_results.empty() || _finished_processing; });
+            _cv_results.wait(lock, [this]() { return !_results.empty() || !_all_data_in_queue || _finished_processing; });
             profTimerStop(lw);
             if (!_results.empty())
             {
@@ -579,6 +569,10 @@ bool BaseSubstructureMatcher::next()
             else if (_finished_processing) // no more results and no more data processed
             {
                 return false;
+            }
+            else // !_all_data_in_queue
+            {
+                continue; // add data to queue
             }
         }
         else
@@ -624,7 +618,7 @@ void BaseSubstructureMatcher::setQueryData(SubstructureQueryData* query_data)
 {
     auto& indigo = indigoGetInstance();
 
-    if (indigo.bingonosql_tau_sub_search_thread_count == 0)
+    if (indigo.bingonosql_tau_sub_search_thread_count == 1)
     {
         _multithread = false;
     }
