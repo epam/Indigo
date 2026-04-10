@@ -441,7 +441,7 @@ BaseSubstructureMatcher::BaseSubstructureMatcher(/*const */ BaseIndex& index, In
 
 void BaseSubstructureMatcher::run_dispatcher()
 {
-    if (_thread_count < 0)
+    if (_thread_count <= 0)
         _disp->run();
     else
         _disp->run(_thread_count);
