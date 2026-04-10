@@ -27,6 +27,7 @@
 
 #include <deque>
 #include <iostream>
+#include <list>
 #include <vector>
 
 #include "common.h"
