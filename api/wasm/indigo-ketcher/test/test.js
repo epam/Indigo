@@ -542,6 +542,15 @@ M  END
             assert.equal(smarts, '[#6]1-[#6]-[#6]-[#6]-1.[#6]1-[#6]-[#6]-[#6]-[#6]-[#6]-[#6]-1>>[#6]1-[#6]-[#6]-1')
             options.delete();
         });
+        test("convert", "daylight-smiles-via-options", () => {
+            var fs = require('fs');
+            const ket_3580 = fs.readFileSync("issue_3580.ket").toString();
+            let options = new indigo.MapStringString();
+            options.set("outputFormat", "chemical/x-daylight-smiles");
+            const smiles = indigo.convert(ket_3580, "smiles", options);
+            assert.equal(smiles.indexOf("|"), -1, "Daylight SMILES should not contain extended SMILES block (issue #3580)");
+            options.delete();
+        });
     }
 
     // Convert explicit hydrogens

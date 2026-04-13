@@ -2859,6 +2859,30 @@ M  END
         # result = requests.get(self.url_prefix + "/convert", params=params)
         # self.assertEqual("CC%91.[*]%91", result.text)
 
+    def test_convert_daylight_smiles(self):
+        """Issue #3580: daylight SMILES must not contain extended SMILES block"""
+        ket_path = os.path.join(
+            joinPathPy("structures/", __file__), "issue_3580.ket"
+        )
+        with open(ket_path, "r") as f:
+            ket_3580 = f.read()
+        params = {
+            "struct": ket_3580,
+            "output_format": "chemical/x-daylight-smiles",
+        }
+        headers, data = self.get_headers(params)
+        result = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        result_data = json.loads(result.text)
+        self.assertEqual(200, result.status_code)
+        self.assertEqual("chemical/x-daylight-smiles", result_data["format"])
+        self.assertNotIn(
+            "|",
+            result_data["struct"],
+            "Daylight SMILES should not contain extended SMILES block",
+        )
+
     # TODO: Add validation checks for /calculate
 
     def test_stereo(self):

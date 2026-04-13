@@ -119,14 +119,23 @@ namespace indigo
         {
             print_js("toString:");
             std::string result;
-            if (outputFormat == "molfile" || outputFormat == "rxnfile" || outputFormat == "chemical/x-mdl-molfile" || outputFormat == "chemical/x-mdl-rxnfile")
+
+            std::string effectiveOutputFormat = outputFormat;
+            if (options.count("outputFormat") > 0)
+            {
+                effectiveOutputFormat = options.at("outputFormat");
+            }
+
+            if (effectiveOutputFormat == "molfile" || effectiveOutputFormat == "rxnfile" || effectiveOutputFormat == "chemical/x-mdl-molfile" ||
+                effectiveOutputFormat == "chemical/x-mdl-rxnfile")
             {
                 if (is_reaction())
                     result = _checkResultString(indigoRxnfile(id()));
                 else
                     result = _checkResultString(indigoMolfile(id()));
             }
-            else if (outputFormat == "smiles" || outputFormat == "chemical/x-daylight-smiles" || outputFormat == "chemical/x-chemaxon-cxsmiles")
+            else if (effectiveOutputFormat == "smiles" || effectiveOutputFormat == "chemical/x-daylight-smiles" ||
+                     effectiveOutputFormat == "chemical/x-chemaxon-cxsmiles")
             {
                 if (options.count("smiles") > 0 && options.at("smiles") == "canonical")
                 {
@@ -134,78 +143,78 @@ namespace indigo
                 }
                 else
                 {
-                    if (outputFormat == "chemical/x-chemaxon-cxsmiles")
+                    if (effectiveOutputFormat == "chemical/x-chemaxon-cxsmiles")
                         indigoSetOption("smiles-saving-format", "chemaxon");
-                    else if (outputFormat == "chemical/x-daylight-smiles")
+                    else if (effectiveOutputFormat == "chemical/x-daylight-smiles")
                         indigoSetOption("smiles-saving-format", "daylight");
 
                     result = _checkResultString(indigoSmiles(id()));
                 }
             }
-            else if (outputFormat == "sequence" || outputFormat == "chemical/x-sequence")
+            else if (effectiveOutputFormat == "sequence" || effectiveOutputFormat == "chemical/x-sequence")
             {
                 result = _checkResultString(indigoSequence(id(), library));
             }
-            else if (outputFormat == "peptide-sequence-3-letter" || outputFormat == "chemical/x-peptide-sequence-3-letter")
+            else if (effectiveOutputFormat == "peptide-sequence-3-letter" || effectiveOutputFormat == "chemical/x-peptide-sequence-3-letter")
             {
                 result = _checkResultString(indigoSequence3Letter(id(), library));
             }
-            else if (outputFormat == "fasta" || outputFormat == "chemical/x-fasta")
+            else if (effectiveOutputFormat == "fasta" || effectiveOutputFormat == "chemical/x-fasta")
             {
                 result = _checkResultString(indigoFasta(id(), library));
             }
-            else if (outputFormat == "idt" || outputFormat == "chemical/x-idt")
+            else if (effectiveOutputFormat == "idt" || effectiveOutputFormat == "chemical/x-idt")
             {
                 result = _checkResultString(indigoIdt(id(), library));
             }
-            else if (outputFormat == "helm" || outputFormat == "chemical/x-helm")
+            else if (effectiveOutputFormat == "helm" || effectiveOutputFormat == "chemical/x-helm")
             {
                 result = _checkResultString(indigoHelm(id(), library));
             }
-            else if (outputFormat == "axo-labs" || outputFormat == "chemical/x-axo-labs")
+            else if (effectiveOutputFormat == "axo-labs" || effectiveOutputFormat == "chemical/x-axo-labs")
             {
                 result = _checkResultString(indigoAxoLabs(id(), library));
             }
-            else if (outputFormat == "smarts" || outputFormat == "chemical/x-daylight-smarts")
+            else if (effectiveOutputFormat == "smarts" || effectiveOutputFormat == "chemical/x-daylight-smarts")
             {
                 if (options.count("smarts") > 0 && options.at("smarts") == "canonical")
                     result = _checkResultString(indigoCanonicalSmarts(id()));
                 else
                     result = _checkResultString(indigoSmarts(id()));
             }
-            else if (outputFormat == "cml" || outputFormat == "chemical/x-cml")
+            else if (effectiveOutputFormat == "cml" || effectiveOutputFormat == "chemical/x-cml")
             {
                 result = _checkResultString(indigoCml(id()));
             }
-            else if (outputFormat == "cdxml" || outputFormat == "chemical/x-cdxml")
+            else if (effectiveOutputFormat == "cdxml" || effectiveOutputFormat == "chemical/x-cdxml")
             {
                 result = _checkResultString(indigoCdxml(id()));
             }
-            else if (outputFormat == "cdx" || outputFormat == "chemical/x-cdx")
+            else if (effectiveOutputFormat == "cdx" || effectiveOutputFormat == "chemical/x-cdx")
             {
                 result = _checkResultString(indigoCdxBase64(id()));
             }
-            else if (outputFormat == "inchi" || outputFormat == "chemical/x-inchi")
+            else if (effectiveOutputFormat == "inchi" || effectiveOutputFormat == "chemical/x-inchi")
             {
                 result = _checkResultString(indigoInchiGetInchi(id()));
             }
-            else if (outputFormat == "inchi-key" || outputFormat == "chemical/x-inchi-key")
+            else if (effectiveOutputFormat == "inchi-key" || effectiveOutputFormat == "chemical/x-inchi-key")
             {
                 std::string inchi_str = _checkResultString(indigoInchiGetInchi(id()));
                 result = _checkResultString(indigoInchiGetInchiKey(inchi_str.c_str()));
             }
-            else if (outputFormat == "inchi-aux" || outputFormat == "chemical/x-inchi-aux")
+            else if (effectiveOutputFormat == "inchi-aux" || effectiveOutputFormat == "chemical/x-inchi-aux")
             {
                 std::stringstream ss;
                 ss << _checkResultString(indigoInchiGetInchi(id())) << '\n' << _checkResultString(indigoInchiGetAuxInfo());
                 result = ss.str();
             }
-            else if (outputFormat == "ket" || outputFormat == "chemical/x-indigo-ket")
+            else if (effectiveOutputFormat == "ket" || effectiveOutputFormat == "chemical/x-indigo-ket")
             {
-                print_js(outputFormat.c_str());
+                print_js(effectiveOutputFormat.c_str());
                 result = _checkResultString(indigoJson(id()));
             }
-            else if (outputFormat == "sdf" || outputFormat == "chemical/x-sdf")
+            else if (effectiveOutputFormat == "sdf" || effectiveOutputFormat == "chemical/x-sdf")
             {
                 auto buffer = IndigoObject(_checkResult(indigoWriteBuffer()));
                 auto comp_it = (objtype == EKETMolecule || objtype == EKETMoleculeQuery) ? IndigoObject(_checkResult(indigoIterateComponents(id())))
@@ -216,10 +225,10 @@ namespace indigo
                     const auto mol = IndigoObject(_checkResult(indigoClone(frag.id)));
                     indigoSdfAppend(buffer.id, mol.id);
                 }
-                print_js(outputFormat.c_str());
+                print_js(effectiveOutputFormat.c_str());
                 result = _checkResultString(indigoToString(buffer.id));
             }
-            else if (outputFormat == "rdf" || outputFormat == "chemical/x-rdf")
+            else if (effectiveOutputFormat == "rdf" || effectiveOutputFormat == "chemical/x-rdf")
             {
                 auto buffer = IndigoObject(_checkResult(indigoWriteBuffer()));
                 auto reac_it = IndigoObject(_checkResult(indigoIterateReactions(id())));
@@ -230,18 +239,18 @@ namespace indigo
                     const auto reac = IndigoObject(_checkResult(indigoClone(reac_obj.id)));
                     indigoRdfAppend(buffer.id, reac.id);
                 }
-                print_js(outputFormat.c_str());
+                print_js(effectiveOutputFormat.c_str());
                 result = _checkResultString(indigoToString(buffer.id));
             }
-            else if (outputFormat == "monomer-library" || outputFormat == "chemical/x-monomer-library")
+            else if (effectiveOutputFormat == "monomer-library" || effectiveOutputFormat == "chemical/x-monomer-library")
             {
-                print_js(outputFormat.c_str());
+                print_js(effectiveOutputFormat.c_str());
                 result = _checkResultString(indigoMonomerLibrary(id()));
             }
             else
             {
                 std::stringstream ss;
-                ss << "Unknown output format: " << outputFormat;
+                ss << "Unknown output format: " << effectiveOutputFormat;
                 jsThrow(ss.str().c_str());
                 return ""; // suppress warning
             }
@@ -287,7 +296,8 @@ namespace indigo
 
     void indigoSetOptions(const std::map<std::string, std::string>& options)
     {
-        std::set<std::string> to_skip{"smiles", "smarts", "input-format", "output-content-type", "monomerLibrary", "sequence-type", "upc", "nac"};
+        std::set<std::string> to_skip{"smiles",        "smarts", "input-format", "output-content-type", "outputFormat", "monomerLibrary",
+                                      "sequence-type", "upc",    "nac"};
         for (const auto& option : options)
         {
             if (to_skip.count(option.first) < 1)
@@ -624,7 +634,7 @@ namespace indigo
         std::map<std::string, std::string> options_copy;
         for (const auto& option : options)
         {
-            if (option.first != "monomerLibrary")
+            if (option.first != "monomerLibrary" && option.first != "outputFormat")
             {
                 options_copy[option.first] = option.second;
             }
