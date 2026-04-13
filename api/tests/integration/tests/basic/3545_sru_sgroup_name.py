@@ -10,7 +10,9 @@ from env_indigo import Indigo
 
 indigo = Indigo()
 
-print("****** Issue #3545: setSGroupName and getSGroupName for SRU sgroups ********")
+print(
+    "****** Issue #3545: setSGroupName and getSGroupName for SRU sgroups ********"
+)
 
 mol = indigo.createMolecule()
 mol.addAtom("C")
@@ -27,7 +29,7 @@ if match:
     # 2. Test get name
     name_before = sru.getSGroupName()
     print("SRU name before: {}".format(name_before))
-    
+
     # 3. Test set name
     sru.setSGroupName("NEW_TEST_SRU")
     name_after = sru.getSGroupName()
