@@ -1,0 +1,3 @@
+****** Issue #3545: setSGroupName and getSGroupName for SRU sgroups ********
+SRU name before: TEST_SRU
+SRU name after: NEW_TEST_SRU

@@ -1698,8 +1698,21 @@ CEXPORT int indigoSetSGroupName(int sgroup, const char* sgname)
 {
     INDIGO_BEGIN
     {
-        Superatom& sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
-        sup.subscript.readString(sgname, true);
+        IndigoObject& obj = self.getObject(sgroup);
+        if (obj.type == IndigoObject::SUPERATOM)
+        {
+            Superatom& sup = IndigoSuperatom::cast(obj).get();
+            sup.subscript.readString(sgname, true);
+        }
+        else if (obj.type == IndigoObject::REPEATING_UNIT)
+        {
+            RepeatingUnit& ru = IndigoRepeatingUnit::cast(obj).get();
+            ru.subscript.readString(sgname, true);
+        }
+        else
+        {
+            throw IndigoError("indigoSetSGroupName(): not a Superatom or RepeatingUnit");
+        }
 
         return 1;
     }
@@ -1710,10 +1723,22 @@ CEXPORT const char* indigoGetSGroupName(int sgroup)
 {
     INDIGO_BEGIN
     {
-        Superatom& sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
-        if (sup.subscript.size() < 1)
-            return "";
-        return sup.subscript.ptr();
+        IndigoObject& obj = self.getObject(sgroup);
+        if (obj.type == IndigoObject::SUPERATOM)
+        {
+            Superatom& sup = IndigoSuperatom::cast(obj).get();
+            if (sup.subscript.size() < 1)
+                return "";
+            return sup.subscript.ptr();
+        }
+        else if (obj.type == IndigoObject::REPEATING_UNIT)
+        {
+            RepeatingUnit& ru = IndigoRepeatingUnit::cast(obj).get();
+            if (ru.subscript.size() < 1)
+                return "";
+            return ru.subscript.ptr();
+        }
+        throw IndigoError("indigoGetSGroupName(): not a Superatom or RepeatingUnit");
     }
     INDIGO_END(0);
 }
