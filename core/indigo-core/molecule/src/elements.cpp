@@ -18,9 +18,11 @@
 
 #include <array>
 #include <cctype>
+#include <climits>
 #include <cmath>
 #include <cstdarg>
 #include <cstdio>
+#include <cstdlib>
 #include <vector>
 
 #include "base_cpp/array.h"

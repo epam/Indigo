@@ -37,6 +37,7 @@
 #include "molecule/meta_commons.h"
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/query_molecule.h"
+#include "molecule/valence_model.h"
 
 typedef unsigned short int UINT16;
 typedef int INT32;
