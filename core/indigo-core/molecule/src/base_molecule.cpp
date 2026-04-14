@@ -177,6 +177,7 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
         sg.parent_idx = supersg.parent_idx;
         sg.original_group = supersg.original_group;
         sg.parent_group = supersg.parent_group;
+        sg.subscript.copy(supersg.subscript);
 
         if (_mergeSGroupWithSubmolecule(sg, supersg, mol, mapping, edge_mapping))
         {
@@ -220,7 +221,6 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
                         }
                     }
                 }
-                sa.subscript.copy(supersa.subscript);
                 sa.sa_class.copy(supersa.sa_class);
                 sa.sa_natreplace.copy(supersa.sa_natreplace);
                 sa.contracted = supersa.contracted;
@@ -252,7 +252,6 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
                 RepeatingUnit& superru = (RepeatingUnit&)supersg;
 
                 ru.connectivity = superru.connectivity;
-                ru.subscript.copy(superru.subscript);
             }
             else if (sg.sgroup_type == SGroup::SG_TYPE_MUL)
             {

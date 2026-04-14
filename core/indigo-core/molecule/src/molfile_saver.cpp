@@ -905,12 +905,12 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                                    sup.bond_connections[j].bond_dir.y, 0.f);
                     }
                 }
-                if (sup.subscript.size() > 1)
+                if (sgroup.subscript.size() > 1)
                 {
-                    if (sup.subscript.find(' ') > -1)
-                        out.printf(" LABEL=\"%s\"", sup.subscript.ptr());
+                    if (sgroup.subscript.find(' ') > -1)
+                        out.printf(" LABEL=\"%s\"", sgroup.subscript.ptr());
                     else
-                        out.printf(" LABEL=%s", sup.subscript.ptr());
+                        out.printf(" LABEL=%s", sgroup.subscript.ptr());
                 }
                 // convert CHEM to LINKER for BIOVIA
                 if (sup.sa_class.size() > 1)
@@ -1022,12 +1022,12 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                     out.printf(" CONNECT=HT");
                 else
                     out.printf(" CONNECT=EU");
-                if (ru.subscript.size() > 1)
+                if (sgroup.subscript.size() > 1)
                 {
-                    if (ru.subscript.find(' ') > -1)
-                        out.printf(" LABEL=\"%s\"", ru.subscript.ptr());
+                    if (sgroup.subscript.find(' ') > -1)
+                        out.printf(" LABEL=\"%s\"", sgroup.subscript.ptr());
                     else
-                        out.printf(" LABEL=%s", ru.subscript.ptr());
+                        out.printf(" LABEL=%s", sgroup.subscript.ptr());
                 }
                 _writeMultiString(output, buf.ptr(), buf.size());
             }
@@ -1768,17 +1768,19 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                 output.writeCR();
             }
 
+            // Write SMT (subscript/label) for any SGroup type that has it
+            if (sgroup.sgroup_type != SGroup::SG_TYPE_MUL && sgroup.subscript.size() > 1)
+            {
+                if (sgroup.subscript.find(' ') > -1)
+                    output.printfCR("M  SMT %3d \"%s\"", sgroup.original_group, sgroup.subscript.ptr());
+                else
+                    output.printfCR("M  SMT %3d %s", sgroup.original_group, sgroup.subscript.ptr());
+            }
+
             if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
             {
                 Superatom& superatom = (Superatom&)sgroup;
 
-                if (superatom.subscript.size() > 1)
-                {
-                    if (superatom.subscript.find(' ') > -1)
-                        output.printfCR("M  SMT %3d \"%s\"", superatom.original_group, superatom.subscript.ptr());
-                    else
-                        output.printfCR("M  SMT %3d %s", superatom.original_group, superatom.subscript.ptr());
-                }
                 if (superatom.sa_class.size() > 1)
                     output.printfCR("M  SCL %3d %s", superatom.original_group, superatom.sa_class.ptr());
                 if (superatom.bond_connections.size() > 0)
@@ -1827,15 +1829,6 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             }
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_SRU)
             {
-                RepeatingUnit& sru = (RepeatingUnit&)sgroup;
-
-                if (sru.subscript.size() > 1)
-                {
-                    if (sru.subscript.find(' ') > -1)
-                        output.printfCR("M  SMT %3d \"%s\"", sru.original_group, sru.subscript.ptr());
-                    else
-                        output.printfCR("M  SMT %3d %s", sru.original_group, sru.subscript.ptr());
-                }
             }
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
             {

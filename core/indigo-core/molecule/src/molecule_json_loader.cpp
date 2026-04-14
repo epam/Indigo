@@ -1055,7 +1055,7 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
             RepeatingUnit& ru = (RepeatingUnit&)sgroup;
             if (s.HasMember("subscript"))
             {
-                ru.subscript.readString(s["subscript"].GetString(), true);
+                sgroup.subscript.readString(s["subscript"].GetString(), true);
             }
 
             if (s.HasMember("connectivity"))
@@ -1073,7 +1073,7 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
         case SGroup::SG_TYPE_SUP: {
             Superatom& sg = (Superatom&)sgroup;
             if (s.HasMember("name"))
-                sg.subscript.readString(s["name"].GetString(), true);
+                sgroup.subscript.readString(s["name"].GetString(), true);
             if (s.HasMember("expanded"))
                 sg.contracted = s["expanded"].GetBool() ? DisplayOption::Expanded : DisplayOption::Contracted;
             if (s.HasMember("class"))
