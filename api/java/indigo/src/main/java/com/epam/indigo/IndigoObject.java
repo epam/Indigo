@@ -831,6 +831,16 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResult(this, lib.indigoIsHighlighted(self)) == 1;
     }
 
+    public void select() {
+        dispatcher.setSessionID();
+        Indigo.checkResult(this, lib.indigoSelect(self));
+    }
+
+    public void unselect() {
+        dispatcher.setSessionID();
+        Indigo.checkResult(this, lib.indigoUnselect(self));
+    }
+
     public boolean isSelected() {
         dispatcher.setSessionID();
         return Indigo.checkResult(this, lib.indigoIsSelected(self)) == 1;
@@ -1220,6 +1230,32 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
     public int deleteSGroupAttachmentPoint(int apidx) {
         dispatcher.setSessionID();
         return Indigo.checkResult(this, lib.indigoDeleteSGroupAttachmentPoint(self, apidx));
+    }
+
+    public IndigoObject iterateSGroupAttachmentPoints() {
+        dispatcher.setSessionID();
+        return new IndigoObject(
+                dispatcher,
+                Indigo.checkResult(this, lib.indigoIterateSGroupAttachmentPoints(self)),
+                this);
+    }
+
+    public int getSGroupAttachmentPointAtomIdx() {
+        dispatcher.setSessionID();
+        return Indigo.checkResult(this, lib.indigoGetSGroupAttachmentPointAtomIdx(self));
+    }
+
+    public Integer getSGroupAttachmentPointLeaveAtom() {
+        IntByReference res = new IntByReference();
+        dispatcher.setSessionID();
+        if (Indigo.checkResult(this, lib.indigoGetSGroupAttachmentPointLeaveAtom(self, res)) == 1)
+            return res.getValue();
+        return null;
+    }
+
+    public String getSGroupAttachmentPointLabel() {
+        dispatcher.setSessionID();
+        return Indigo.checkResultString(this, lib.indigoGetSGroupAttachmentPointLabel(self));
     }
 
     public int getSGroupDisplayOption() {
@@ -1995,6 +2031,15 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
     public int expandAbbreviations() {
         dispatcher.setSessionID();
         return Indigo.checkResult(this, lib.indigoExpandAbbreviations(self));
+    }
+
+    /**
+     * Converts expanded template atoms (monomers) to regular atoms.
+     * Returns a new molecule; the original is not modified.
+     */
+    public IndigoObject expandedMonomersToAtoms() {
+        dispatcher.setSessionID();
+        return new IndigoObject(dispatcher, Indigo.checkResult(this, lib.indigoExpandedMonomersToAtoms(self)));
     }
 
     public String dbgInternalType() {

@@ -3,7 +3,7 @@
         "nodes": [],
         "templates": [
             {
-                "$ref": "monomerTemplate-Gua"
+                "$ref": "monomerTemplate-Ade"
             },
             {
                 "$ref": "monomerTemplate-P"
@@ -12,19 +12,19 @@
                 "$ref": "monomerTemplate-Rib"
             },
             {
-                "$ref": "monomerGroupTemplate-G"
+                "$ref": "monomerGroupTemplate-A_left"
             }
         ]
     },
-    "monomerTemplate-Gua": {
+    "monomerTemplate-Ade": {
         "type": "monomerTemplate",
-        "id": "Gua",
+        "id": "Ade",
         "class": "Base",
         "classHELM": "RNA",
-        "fullName": "Gua",
-        "alias": "G",
-        "naturalAnalog": "Gua",
-        "naturalAnalogShort": "G",
+        "fullName": "Adenine",
+        "alias": "A",
+        "naturalAnalog": "Ade",
+        "naturalAnalogShort": "A",
         "attachmentPoints": [
             {
                 "attachmentAtom": 8,
@@ -40,7 +40,7 @@
                 "label": "N",
                 "location": [
                     -0.438000,
-                    0.541000,
+                    1.041000,
                     0.000000
                 ]
             },
@@ -48,7 +48,7 @@
                 "label": "C",
                 "location": [
                     -0.438000,
-                    -0.459000,
+                    0.041000,
                     0.000000
                 ]
             },
@@ -56,7 +56,7 @@
                 "label": "C",
                 "location": [
                     0.428000,
-                    -0.959000,
+                    -0.459000,
                     0.000000
                 ]
             },
@@ -64,7 +64,7 @@
                 "label": "C",
                 "location": [
                     1.294000,
-                    -0.459000,
+                    0.041000,
                     0.000000
                 ]
             },
@@ -72,7 +72,7 @@
                 "label": "N",
                 "location": [
                     1.294000,
-                    0.541000,
+                    1.041000,
                     0.000000
                 ]
             },
@@ -80,7 +80,7 @@
                 "label": "C",
                 "location": [
                     0.428000,
-                    1.041000,
+                    1.541000,
                     0.000000
                 ]
             },
@@ -88,7 +88,7 @@
                 "label": "N",
                 "location": [
                     0.220000,
-                    -1.937000,
+                    -1.437000,
                     0.000000
                 ]
             },
@@ -96,7 +96,7 @@
                 "label": "C",
                 "location": [
                     -0.775000,
-                    -2.041000,
+                    -1.541000,
                     0.000000
                 ]
             },
@@ -104,15 +104,15 @@
                 "label": "N",
                 "location": [
                     -1.182000,
-                    -1.128000,
+                    -0.628000,
                     0.000000
                 ]
             },
             {
-                "label": "O",
+                "label": "N",
                 "location": [
                     2.160000,
-                    -0.959000,
+                    -0.459000,
                     0.000000
                 ]
             },
@@ -120,15 +120,7 @@
                 "label": "H",
                 "location": [
                     -2.160000,
-                    -0.920000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "N",
-                "location": [
-                    0.428000,
-                    2.041000,
+                    -0.420000,
                     0.000000
                 ]
             }
@@ -163,7 +155,7 @@
                 ]
             },
             {
-                "type": 1,
+                "type": 2,
                 "atoms": [
                     3,
                     4
@@ -205,7 +197,7 @@
                 ]
             },
             {
-                "type": 2,
+                "type": 1,
                 "atoms": [
                     3,
                     9
@@ -217,13 +209,6 @@
                     8,
                     10
                 ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    5,
-                    11
-                ]
             }
         ]
     },
@@ -232,7 +217,7 @@
         "id": "P",
         "class": "Phosphate",
         "classHELM": "RNA",
-        "fullName": "P",
+        "fullName": "Phosphate",
         "alias": "P",
         "naturalAnalogShort": "P",
         "attachmentPoints": [
@@ -331,7 +316,7 @@
         "id": "Rib",
         "class": "Sugar",
         "classHELM": "RNA",
-        "fullName": "Rib",
+        "fullName": "Ribose",
         "alias": "R",
         "naturalAnalog": "Rib",
         "naturalAnalogShort": "R",
@@ -368,8 +353,7 @@
                     1.499000,
                     1.176000,
                     0.000000
-                ],
-                "stereoLabel": "abs"
+                ]
             },
             {
                 "label": "C",
@@ -377,8 +361,7 @@
                     1.656000,
                     0.188000,
                     0.000000
-                ],
-                "stereoLabel": "abs"
+                ]
             },
             {
                 "label": "C",
@@ -386,8 +369,7 @@
                     0.765000,
                     -0.266000,
                     0.000000
-                ],
-                "stereoLabel": "abs"
+                ]
             },
             {
                 "label": "C",
@@ -395,8 +377,7 @@
                     0.058000,
                     0.441000,
                     0.000000
-                ],
-                "stereoLabel": "abs"
+                ]
             },
             {
                 "label": "O",
@@ -504,24 +485,21 @@
                 "atoms": [
                     0,
                     5
-                ],
-                "stereo": 1
+                ]
             },
             {
                 "type": 1,
                 "atoms": [
                     2,
                     6
-                ],
-                "stereo": 6
+                ]
             },
             {
                 "type": 1,
                 "atoms": [
                     1,
                     7
-                ],
-                "stereo": 1
+                ]
             },
             {
                 "type": 1,
@@ -535,8 +513,7 @@
                 "atoms": [
                     3,
                     9
-                ],
-                "stereo": 1
+                ]
             },
             {
                 "type": 1,
@@ -554,20 +531,26 @@
             }
         ]
     },
-    "monomerGroupTemplate-G": {
+    "monomerGroupTemplate-A_left": {
         "type": "monomerGroupTemplate",
-        "id": "G",
-        "name": "G",
+        "id": "A_left",
+        "name": "A_left",
         "class": "RNA",
         "idtAliases": {
-            "base": "rG"
+            "base": "rA",
+            "modifications": {
+                "endpoint5": "rA",
+                "internal": "rA",
+                "endpoint3": "rA"
+            }
         },
+        "aliasAxoLabs": "A",
         "templates": [
             {
-                "$ref": "monomerTemplate-Gua"
+                "$ref": "monomerTemplate-Rib"
             },
             {
-                "$ref": "monomerTemplate-Rib"
+                "$ref": "monomerTemplate-Ade"
             },
             {
                 "$ref": "monomerTemplate-P"
@@ -577,23 +560,23 @@
             {
                 "connectionType": "single",
                 "endpoint1": {
-                    "templateId": "monomerTemplate-Gua",
+                    "templateId": "monomerTemplate-Rib",
                     "attachmentPointId": "R1"
                 },
                 "endpoint2": {
-                    "templateId": "monomerTemplate-Rib",
-                    "attachmentPointId": "R3"
+                    "templateId": "monomerTemplate-P",
+                    "attachmentPointId": "R2"
                 }
             },
             {
                 "connectionType": "single",
                 "endpoint1": {
-                    "templateId": "monomerTemplate-Rib",
-                    "attachmentPointId": "R2"
+                    "templateId": "monomerTemplate-Ade",
+                    "attachmentPointId": "R1"
                 },
                 "endpoint2": {
-                    "templateId": "monomerTemplate-P",
-                    "attachmentPointId": "R1"
+                    "templateId": "monomerTemplate-Rib",
+                    "attachmentPointId": "R3"
                 }
             }
         ]

@@ -1,5 +1,6 @@
 # Setup enviroment for using Indigo both for Python, Jython and IronPython
 import inspect
+import io
 import os
 import shutil
 import sys
@@ -209,7 +210,7 @@ def moleculeLayoutDiff(
     ref,
     delta=0.01,
     ref_is_file=True,
-    update=False,
+    update=os.getenv("INDIGO_UPDATE_TESTS", "False") == "True",
     update_format="mol",
 ):
     if ref_is_file:
@@ -219,7 +220,7 @@ def moleculeLayoutDiff(
                 txt = mol.molfile()
             elif update_format == "ket":
                 txt = mol.json()
-            with open(ref_name, "w") as file:
+            with io.open(ref_name, "w", encoding="utf-8") as file:
                 file.write(txt)
         m2 = indigo.loadMoleculeFromFile(ref_name)
     else:
@@ -268,7 +269,7 @@ def reactionLayoutDiff(
     ref,
     delta=0.001,
     ref_is_file=True,
-    update=False,
+    update=os.getenv("INDIGO_UPDATE_TESTS", "False") == "True",
     update_format="mol",
 ):
     if ref_is_file:
@@ -278,7 +279,7 @@ def reactionLayoutDiff(
                 txt = rxn.rxnfile()
             elif update_format == "ket":
                 txt = rxn.json()
-            with open(ref_name, "w") as file:
+            with io.open(ref_name, "w", encoding="utf-8") as file:
                 file.write(txt)
         r2 = indigo.loadReactionFromFile(ref_name)
     else:
@@ -297,6 +298,7 @@ def reactionLayoutDiff(
             r2.getMolecule(m.index()).molfile(),
             delta,
             ref_is_file=False,
+            update=False,
         )
         error_buf.append("Molecule #{}: {}".format(m.index(), res))
     return "\n   ".join(error_buf)

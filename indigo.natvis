@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+	<Type Name="indigo::Array&lt;*&gt;">
+		<DisplayString>Array [{_length}]</DisplayString>
+		<Expand>
+			<Item Name="[size]">_length</Item>
+			<Item Name="[reserved]">_reserved</Item>
+			<ArrayItems>
+				<Size>_length</Size>
+				<ValuePointer>_array</ValuePointer>
+			</ArrayItems>
+		</Expand>
+	</Type>
+
+	<Type Name="indigo::Array&lt;char&gt;">
+		<DisplayString>{_array,s}</DisplayString>
+		<StringView>_array,s</StringView>
+		<Expand>
+			<Item Name="[length]">_length</Item>
+			<Item Name="[reserved]">_reserved</Item>
+			<ArrayItems>
+				<Size>_length</Size>
+				<ValuePointer>_array</ValuePointer>
+			</ArrayItems>
+		</Expand>
+	</Type>
+
+	<Type Name="indigo::PtrArray&lt;*&gt;">
+		<DisplayString>PtrArray [{_ptrarray._length}]</DisplayString>
+		<Expand>
+			<Item Name="[size]">_ptrarray._length</Item>
+			<Item Name="[reserved]">_ptrarray._reserved</Item>
+			<!--<ArrayItems> 
+				<Size>_ptrarray._length</Size> 
+				<ValuePointer>($T1*)_ptrarray._array</ValuePointer> 
+			</ArrayItems>-->
+			<IndexListItems>
+				<Size>_ptrarray._length</Size>
+				<ValueNode>_ptrarray._array[$i]</ValueNode>
+			</IndexListItems>
+		</Expand>
+	</Type>
+
+	<Type Name="indigo::ObjArray&lt;*&gt;">
+		<DisplayString>ObjArray [{_array._length}]</DisplayString>
+		<Expand>
+			<Item Name="[size]">_array._length</Item>
+			<Item Name="[reserved]">_array._reserved</Item>
+			<ArrayItems>
+				<Size>_array._length</Size>
+				<ValuePointer>_array._array</ValuePointer>
+			</ArrayItems>
+		</Expand>
+	</Type>
+
+	<Type Name="indigo::Obj&lt;*&gt;">
+		<DisplayString Condition="!_initialized">Uninitialized</DisplayString>
+		<Expand>
+			<ExpandedItem>($T1*)_storage</ExpandedItem>
+		</Expand>
+	</Type>
+
+	<Type Name="indigo::Pool&lt;*&gt;">
+		<DisplayString>Pool [{_size}]</DisplayString>
+		<Expand>
+			<Item Name="[size]">_size</Item>
+			<CustomListItems>
+				<Variable Name="idx" InitialValue="0"/>
+				<Size>_size</Size>
+				<Loop>
+					<Break Condition="idx &gt;= _array._length" />
+					<If Condition="_next._array[idx] == -2">
+						<Item Name="[{idx}]">_array._array[idx]</Item>
+					</If>
+					<Exec>idx++</Exec>
+				</Loop>
+			</CustomListItems>
+		</Expand>
+	</Type>
+
+	<Type Name="indigo::ObjPool&lt;*&gt;">
+		<DisplayString>ObjPool [{_pool._size}]</DisplayString>
+		<Expand>
+			<Item Name="[size]">_pool._size</Item>
+			<CustomListItems>
+				<Variable Name="idx" InitialValue="0"/>
+				<Size>_pool._size</Size>
+				<Loop>
+					<Break Condition="idx &gt;= _pool._array._length" />
+					<If Condition="_pool._next._array[idx] == -2">
+						<Item Name="[{idx}]">_pool._array._array[idx]</Item>
+					</If>
+					<Exec>idx++</Exec>
+				</Loop>
+			</CustomListItems>
+		</Expand>
+	</Type>
+
+	<Type Name="indigo::PtrPool&lt;*&gt;">
+		<DisplayString>PtrPool [{_ptrpool._size}]</DisplayString>
+		<Expand>
+			<Item Name="[size]">_ptrpool._size</Item>
+			<CustomListItems>
+				<Variable Name="idx" InitialValue="0"/>
+				<Size>_ptrpool._size</Size>
+				<Loop>
+					<Break Condition="idx &gt;= _ptrpool._array._length" />
+					<If Condition="_ptrpool._next._array[idx] == -2">
+						<Item Name="[{idx}]">_ptrpool._array._array[idx]</Item>
+					</If>
+					<Exec>idx++</Exec>
+				</Loop>
+			</CustomListItems>
+		</Expand>
+	</Type>
+
+	<Type Name="indigo::List&lt;*&gt;">
+		<DisplayString>List [{_size}]</DisplayString>
+		<Expand>
+			<Item Name="[size]">_size</Item>
+			<Item Name="[own_pool]">_own_pool</Item>
+			<CustomListItems MaxItemsPerView="5000">
+				<Variable Name="idx" InitialValue="0"/>
+				<Variable Name="current" InitialValue="_head"/>
+				<Size>_size</Size>
+				<Loop>
+					<Break Condition="idx &gt;= _size" />
+					<Item Name="[{idx}]">_pool-&gt;_array[current].item</Item>
+					<Exec>current=_pool-&gt;_array[current].next</Exec>
+					<Exec>idx++</Exec>
+				</Loop>
+			</CustomListItems>
+		</Expand>
+	</Type>
+
+	<Type Name="indigo::RedBlackSet&lt;*&gt;">
+		<DisplayString>RedBlackSet [{_size}]</DisplayString>
+		<Expand>
+			<Item Name="[size]">_size</Item>
+			<Item Name="[own_nodes]">_own_nodes</Item>
+			<CustomListItems MaxItemsPerView="5000">
+				<Variable Name="idx" InitialValue="0"/>
+				<Variable Name="current" InitialValue="_root"/>
+				<Variable Name="node" InitialValue="-1"/>
+				<Variable Name="to_right" InitialValue="-1"/>
+				<Variable Name="found" InitialValue="0"/>
+				<Variable Name="parent" InitialValue="-1"/>
+				<Size>_size</Size>
+				<Loop>
+					<Exec>node = _nodes-&gt;_array[current].left</Exec>
+					<Break Condition="node == -1" />
+					<Exec>current=node</Exec>
+				</Loop>
+				<Item Name="[{idx}]">_nodes-&gt;_array[current].key</Item>
+				<Exec>idx++</Exec>
+				<Loop>
+					<Break Condition="idx &gt;= _size" />
+					<Exec>to_right = 0</Exec>
+					<If Condition="_nodes-&gt;_array[current].right &gt;= 0">
+						<Exec>to_right = 1</Exec>
+					</If>
+					<If Condition="to_right == 1">
+						<Exec>current = _nodes-&gt;_array[current].right</Exec>
+						<Loop>
+							<Break Condition="_nodes-&gt;_array[current].left &lt; 0" />
+							<Exec>current = _nodes-&gt;_array[current].left</Exec>
+						</Loop>
+						<Item Name="[{idx}]">_nodes-&gt;_array[current].key</Item>
+					</If>
+					<If Condition="to_right == 0">
+						<Exec>found=0</Exec>
+						<Loop>
+							<Exec>parent = _nodes-&gt;_array[current].parent</Exec>
+							<Break Condition="parent== -1"/>
+							<Break Condition="found == 1"/>
+							<If Condition="_nodes-&gt;_array[parent].left == current">
+								<Item Name="[{idx}]">_nodes-&gt;_array[parent].key</Item>
+								<Exec>found = 1</Exec>
+							</If>
+							<Exec>current = parent</Exec>
+						</Loop>
+					</If>
+					<Exec>idx++</Exec>
+				</Loop>
+			</CustomListItems>
+		</Expand>
+	</Type>
+
+	<Type Name="indigo::RedBlackMap&lt;*,*&gt;">
+		<DisplayString>RedBlackMap [{_size}]</DisplayString>
+		<Expand>
+			<Item Name="[size]">_size</Item>
+			<Item Name="[own_nodes]">_own_nodes</Item>
+			<CustomListItems MaxItemsPerView="5000">
+				<Variable Name="idx" InitialValue="0"/>
+				<Variable Name="current" InitialValue="_root"/>
+				<Variable Name="node" InitialValue="-1"/>
+				<Variable Name="to_right" InitialValue="-1"/>
+				<Variable Name="found" InitialValue="0"/>
+				<Variable Name="parent" InitialValue="-1"/>
+				<Size>_size</Size>
+				<Loop>
+					<Exec>node = _nodes-&gt;_array[current].left</Exec>
+					<Break Condition="node == -1" />
+					<Exec>current=node</Exec>
+				</Loop>
+				<Item Name="[{_nodes-&gt;_array[current].key}]">_nodes-&gt;_array[current].value</Item>
+				<Exec>idx++</Exec>
+				<Loop>
+					<Break Condition="idx &gt;= _size" />
+					<Exec>to_right = 0</Exec>
+					<If Condition="_nodes-&gt;_array[current].right &gt;= 0">
+						<Exec>to_right = 1</Exec>
+					</If>
+					<If Condition="to_right == 1">
+						<Exec>current = _nodes-&gt;_array[current].right</Exec>
+						<Loop>
+							<Break Condition="_nodes-&gt;_array[current].left &lt; 0" />
+							<Exec>current = _nodes-&gt;_array[current].left</Exec>
+						</Loop>
+						<Item Name="[{_nodes-&gt;_array[current].key}]">_nodes-&gt;_array[current].value</Item>
+					</If>
+					<If Condition="to_right == 0">
+						<Exec>found=0</Exec>
+						<Loop>
+							<Exec>parent = _nodes-&gt;_array[current].parent</Exec>
+							<Break Condition="parent== -1"/>
+							<Break Condition="found == 1"/>
+							<If Condition="_nodes-&gt;_array[parent].left == current">
+								<Item Name="[{_nodes-&gt;_array[parent].key}]">_nodes-&gt;_array[parent].value</Item>
+								<Exec>found = 1</Exec>
+							</If>
+							<Exec>current = parent</Exec>
+						</Loop>
+					</If>
+					<Exec>idx++</Exec>
+				</Loop>
+			</CustomListItems>
+		</Expand>
+	</Type>
+
+	<Type Name="bingo::MMFArray&lt;*&gt;">
+		<DisplayString>MMFArray [{_size}]</DisplayString>
+		<Expand>
+			<Item Name="[size]">_size</Item>
+			<Item Name="[block_count]">_block_count</Item>
+			<Item Name="[block_size]">_block_size</Item>
+			<CustomListItems MaxItemsPerView="50">
+				<Variable Name="idx" InitialValue="0"/>
+				<Variable Name="block_num" InitialValue="0"/>
+				<Variable Name="block_offset" InitialValue="0"/>
+				<Variable Name="ptr" InitialValue="MMFAllocator::_current_allocator-&gt;_mm_files[0]-&gt;_ptr"/>
+				<Variable Name="file_id" InitialValue="0"/>
+				<Variable Name="offset" InitialValue="0"/>
+				<Size>_size</Size>
+				<Loop>
+					<Break Condition="idx &gt;= _size" />
+					<Exec>block_num = idx / _block_size</Exec>
+					<Exec>block_offset = idx % _block_size</Exec>
+					<Exec>file_id = _blocks[block_num]._addr.file_id</Exec>
+					<Exec>offset = _blocks[block_num]._addr.offset</Exec>
+					<Exec>ptr = static_cast&lt;$T1*&gt;(MMFAllocator::_current_allocator-&gt;_mm_files[file_id]-&gt;_ptr) +block_offset</Exec>
+					<Item Name="[{idx}]">static_cast&lt;$T1*&gt;(ptr)</Item>
+					<Exec>idx++</Exec>
+				</Loop>
+			</CustomListItems>
+		</Expand>
+	</Type>
+
+	<Type Name="bingo::ByteBufferStorage">
+		<DisplayString>ByteBufferStorage [{_addresses._size}]</DisplayString>
+		<Expand>
+			<Item Name="[size]">_addresses._size</Item>
+			<CustomListItems MaxItemsPerView="50">
+				<Variable Name="idx" InitialValue="0"/>
+				<Variable Name="a_block_num" InitialValue="0"/>
+				<Variable Name="a_block_offset" InitialValue="0"/>
+				<Variable Name="a_ptr" InitialValue="MMFAllocator::_current_allocator-&gt;_mm_files[0]-&gt;_ptr"/>
+				<Variable Name="a_file_id" InitialValue="0"/>
+				<Variable Name="a_offset" InitialValue="0"/>
+				<Variable Name="b_block_num" InitialValue="0"/>
+				<Variable Name="b_block_offset" InitialValue="0"/>
+				<Variable Name="b_ptr" InitialValue="MMFAllocator::_current_allocator-&gt;_mm_files[0]-&gt;_ptr"/>
+				<Variable Name="b_file_id" InitialValue="0"/>
+				<Variable Name="b_offset" InitialValue="0"/>
+				<Variable Name="block_idx" InitialValue="0"/>
+				<Variable Name="offset" InitialValue="0"/>
+				<Variable Name="len" InitialValue="0"/>
+				<Size>_addresses._size</Size>
+				<Loop>
+					<Break Condition="idx &gt;= _addresses._size" />
+					<Exec>a_block_num = idx / _addresses._block_size</Exec>
+					<Exec>a_block_offset = idx % _addresses._block_size</Exec>
+					<Exec>a_file_id = _addresses._blocks[a_block_num]._addr.file_id</Exec>
+					<Exec>a_offset = _addresses._blocks[a_block_num]._addr.offset</Exec>
+					<Exec>a_ptr = static_cast&lt;byte*&gt;(MMFAllocator::_current_allocator-&gt;_mm_files[a_file_id]-&gt;_ptr) + a_offset</Exec>
+					<Exec>block_idx = static_cast&lt;_Addr*&gt;(a_ptr)-&gt;block_idx</Exec>
+					<Exec>offset = static_cast&lt;_Addr*&gt;(a_ptr)-&gt;offset</Exec>
+					<Exec>len = static_cast&lt;_Addr*&gt;(a_ptr)-&gt;len</Exec>
+					<Exec>b_block_num = block_idx / _blocks._block_size</Exec>
+					<Exec>b_block_offset = block_idx % _blocks._block_size</Exec>
+					<Exec>b_file_id = _blocks._blocks[b_block_num]._addr.file_id</Exec>
+					<Exec>b_offset = _blocks._blocks[b_block_num]._addr.offset</Exec>
+					<Exec>b_ptr = static_cast&lt;byte*&gt;(MMFAllocator::_current_allocator-&gt;_mm_files[b_file_id]-&gt;_ptr) + b_offset</Exec>
+					<Exec>b_file_id = static_cast&lt;MMFAddress*&gt;(b_ptr)-&gt;file_id</Exec>
+					<Exec>b_offset = static_cast&lt;MMFAddress*&gt;(b_ptr)-&gt;offset</Exec>
+					<Exec>b_ptr = static_cast&lt;byte*&gt;(MMFAllocator::_current_allocator-&gt;_mm_files[b_file_id]-&gt;_ptr) + b_offset</Exec>
+					<Item Name="[{idx}]">static_cast&lt;byte*&gt;(static_cast&lt;byte*&gt;(b_ptr)+offset),[len]</Item>
+					<Exec>idx++</Exec>
+				</Loop>
+			</CustomListItems>
+		</Expand>
+	</Type>
+
+	<Type Name="bingo::MMFPtr&lt;*&gt;">
+		<DisplayString Condition="_addr.file_id==-1 &amp;&amp; _addr.offset==-1">MMFPtr::null</DisplayString>
+		<DisplayString>p{"$T1"} file{_addr.file_id}[{_addr.offset}]</DisplayString>
+		<Expand>
+			<ExpandedItem>reinterpret_cast&lt;$T1*&gt;(static_cast&lt;byte*&gt;(MMFAllocator::_current_allocator-&gt;_mm_files[_addr.file_id]-&gt;_ptr)+_addr.offset)</ExpandedItem>
+		</Expand>
+	</Type>
+
+	<Type Name="bingo::MMFAddress&lt;*&gt;">
+		<DisplayString>addr file{file_id}[{offset}]</DisplayString>
+		<Expand>
+			<Item Name="file_id">file_id</Item>
+			<Item Name="offset">offset</Item>
+		</Expand>
+	</Type>
+
+</AutoVisualizer>

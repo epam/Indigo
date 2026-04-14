@@ -487,6 +487,14 @@ public interface IndigoLib extends Library {
 
     int indigoDeleteSGroupAttachmentPoint(int sgroup, int apidx);
 
+    int indigoIterateSGroupAttachmentPoints(int sgroup);
+
+    int indigoGetSGroupAttachmentPointAtomIdx(int ap);
+
+    int indigoGetSGroupAttachmentPointLeaveAtom(int ap, IntByReference lvidx);
+
+    Pointer indigoGetSGroupAttachmentPointLabel(int ap);
+
     int indigoGetSGroupDisplayOption(int sgroup);
 
     int indigoSetSGroupDisplayOption(int sgroup, int option);
@@ -684,6 +692,10 @@ public interface IndigoLib extends Library {
     int indigoUnhighlight(int item);
 
     int indigoIsHighlighted(int item);
+
+    int indigoSelect(int item);
+
+    int indigoUnselect(int item);
     
     int indigoIsSelected(int item);
 
@@ -951,6 +963,10 @@ public interface IndigoLib extends Library {
     int indigoTransform(int reaction, int monomers);
 
     int indigoExpandAbbreviations(int structure);
+
+    int indigoExpandGroupPseudoatoms(int molecule);
+
+    int indigoExpandedMonomersToAtoms(int molecule);
 
     int indigoIterateTautomers(int structure, String params);
 
