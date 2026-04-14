@@ -804,6 +804,30 @@
             {
                 "$ref": "monomerTemplate-Sugar1"
             }
+        ],
+        "connections": [
+            {
+                "connectionType": "single",
+                "endpoint1": {
+                    "templateId": "monomerTemplate-Sugar1",
+                    "attachmentPointId": "R3"
+                },
+                "endpoint2": {
+                    "templateId": "monomerTemplate-Base1",
+                    "attachmentPointId": "R1"
+                }
+            },
+            {
+                "connectionType": "single",
+                "endpoint1": {
+                    "templateId": "monomerTemplate-Sugar1",
+                    "attachmentPointId": "R2"
+                },
+                "endpoint2": {
+                    "templateId": "monomerTemplate-Phosphate1",
+                    "attachmentPointId": "R1"
+                }
+            }
         ]
     },
     "monomerGroupTemplate-_A2": {
@@ -823,6 +847,30 @@
             },
             {
                 "$ref": "monomerTemplate-Sugar1"
+            }
+        ],
+        "connections": [
+            {
+                "connectionType": "single",
+                "endpoint1": {
+                    "templateId": "monomerTemplate-Sugar1",
+                    "attachmentPointId": "R3"
+                },
+                "endpoint2": {
+                    "templateId": "monomerTemplate-Base1",
+                    "attachmentPointId": "R1"
+                }
+            },
+            {
+                "connectionType": "single",
+                "endpoint1": {
+                    "templateId": "monomerTemplate-Sugar1",
+                    "attachmentPointId": "R2"
+                },
+                "endpoint2": {
+                    "templateId": "monomerTemplate-Phosphate1",
+                    "attachmentPointId": "R1"
+                }
             }
         ]
     }

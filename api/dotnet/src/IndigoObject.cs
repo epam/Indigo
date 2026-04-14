@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 
 namespace com.epam.indigo
@@ -836,6 +836,36 @@ namespace com.epam.indigo
             return dispatcher.checkResult(IndigoLib.indigoDeleteSGroupAttachmentPoint(self, apidx));
         }
 
+        public IndigoObject iterateSGroupAttachmentPoints()
+        {
+            dispatcher.setSessionID();
+            return new IndigoObject(dispatcher, dispatcher.checkResult(IndigoLib.indigoIterateSGroupAttachmentPoints(self)), this);
+        }
+
+        public int getSGroupAttachmentPointAtomIdx()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoGetSGroupAttachmentPointAtomIdx(self));
+        }
+
+        public int? getSGroupAttachmentPointLeaveAtom()
+        {
+            int value;
+            dispatcher.setSessionID();
+            if (dispatcher.checkResult(IndigoLib.indigoGetSGroupAttachmentPointLeaveAtom(self, &value)) == 1)
+            {
+                return value;
+            }
+
+            return null;
+        }
+
+        public string getSGroupAttachmentPointLabel()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoGetSGroupAttachmentPointLabel(self));
+        }
+
         public int getSGroupDisplayOption()
         {
             dispatcher.setSessionID();
@@ -1411,6 +1441,18 @@ namespace com.epam.indigo
         {
             dispatcher.setSessionID();
             return (dispatcher.checkResult(IndigoLib.indigoIsHighlighted(self)) == 1);
+        }
+
+        public void select()
+        {
+            dispatcher.setSessionID();
+            dispatcher.checkResult(IndigoLib.indigoSelect(self));
+        }
+
+        public void unselect()
+        {
+            dispatcher.setSessionID();
+            dispatcher.checkResult(IndigoLib.indigoUnselect(self));
         }
 
         public bool isSelected()
@@ -2306,6 +2348,16 @@ namespace com.epam.indigo
         {
             dispatcher.setSessionID();
             return dispatcher.checkResult(IndigoLib.indigoExpandAbbreviations(self));
+        }
+
+        /// <summary>
+        /// Converts expanded template atoms (monomers) to regular atoms.
+        /// Returns a new molecule; the original is not modified.
+        /// </summary>
+        public IndigoObject expandedMonomersToAtoms()
+        {
+            dispatcher.setSessionID();
+            return new IndigoObject(dispatcher, dispatcher.checkResult(IndigoLib.indigoExpandedMonomersToAtoms(self)));
         }
 
         public int nameToStructure(string name, string parameters)

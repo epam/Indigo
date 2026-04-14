@@ -27,6 +27,7 @@
 #include "molecule/monomers_lib.h"
 #include "molecule/monomers_template_library.h"
 #include "molecule/query_molecule.h"
+#include "molecule/valence_model.h"
 
 namespace indigo
 {
@@ -62,6 +63,7 @@ namespace indigo
         bool ignore_no_chiral_flag; // ignore chiral flag absence (treat stereo "as drawn")
                                     // (depricated, use treat_stereo-as instead of this option)
         bool ignore_bad_valence;    // ignore bad valence (default value is false)
+        ValenceMode valence_mode;   // pre-2014 (default) or BIOVIA post-2014
 
         // When true, the "bond topology", "stereo care", "ring bond count", and "unsaturation"
         // specifications are ignored when a non-query molecule is being loaded.

@@ -29,6 +29,7 @@
 #include "molecule/base_molecule.h"
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/query_molecule.h"
+#include "molecule/valence_model.h"
 
 namespace tinyxml2
 {
@@ -56,6 +57,7 @@ namespace indigo
 
         StereocentersOptions stereochemistry_options;
         bool ignore_bad_valence;
+        ValenceMode valence_mode;
 
     protected:
         Scanner* _scanner;

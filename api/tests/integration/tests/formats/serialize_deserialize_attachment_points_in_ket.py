@@ -1,17 +1,12 @@
-﻿import difflib
-import os
+﻿import os
 import sys
-
-
-def find_diff(a, b):
-    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
-
 
 sys.path.append(
     os.path.normpath(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
+from common.util import compare_diff
 from env_indigo import *  # noqa
 
 indigo = Indigo()
@@ -41,17 +36,8 @@ for filename in ket_files:
         ket_in = indigo.loadMoleculeFromFile(
             os.path.join(root, filename + ".ket")
         )
-        with open(
-            os.path.join(ref_path, filename) + "_out" + ".ket", "r"
-        ) as file:
-            ket_ref = file.read()
         ket = ket_in.json()
-        diff = find_diff(ket_ref, ket)
-        if not diff:
-            print(filename + ".ket:SUCCEED")
-        else:
-            print(filename + ".ket:FAILED")
-            print(diff)
+        compare_diff(ref_path, filename + "_out" + ".ket", ket)
     except IndigoException as e:
         print(getIndigoExceptionText(e))
 
@@ -59,11 +45,5 @@ print("*** MOL to MOL ***")
 mol_files.sort()
 for filename in mol_files:
     mol_in = indigo.loadMoleculeFromFile(os.path.join(root, filename + ".mol"))
-    with open(os.path.join(ref_path, filename) + "_out" + ".mol", "r") as file:
-        mol_ref = file.read()
-    diff = find_diff(mol_ref, mol_in.molfile())
-    if not diff:
-        print(filename + ".mol:SUCCEED")
-    else:
-        print(filename + ".mol:FAILED")
-        print(diff)
+    mol = mol_in.molfile()
+    compare_diff(ref_path, filename + "_out" + ".mol", mol)

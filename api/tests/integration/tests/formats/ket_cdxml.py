@@ -1,17 +1,12 @@
-import difflib
 import os
 import sys
-
-
-def find_diff(a, b):
-    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
-
 
 sys.path.append(
     os.path.normpath(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
+from common.util import compare_diff
 from env_indigo import *  # noqa
 
 indigo = Indigo()
@@ -52,6 +47,7 @@ for filename in files:
                     raise SystemExit
 
     cdxml_text = ket.cdxml()
+    compare_diff(ref_path, filename + ".cdxml", cdxml_text)
 
     try:
         ket = indigo.loadMolecule(cdxml_text)
@@ -59,28 +55,7 @@ for filename in files:
         ket = indigo.loadReaction(cdxml_text)
 
     ket_result = ket.json()
-
-    # with open(os.path.join(ref_path, filename + ".ket"), "w") as file:
-    #     file.write(ket_result)
-    # with open(os.path.join(ref_path, filename + ".cdxml"), "w") as file:
-    #     file.write(cdxml_text)
-
-    with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
-        ket_ref = file.read()
-    with open(os.path.join(ref_path, filename) + ".cdxml", "r") as file:
-        cdxml_ref = file.read()
-    diff = find_diff(cdxml_ref, cdxml_text)
-    if not diff:
-        print(filename + ".cdxml:SUCCEED")
-    else:
-        print(filename + ".cdxml:FAILED")
-        print(diff)
-    diff = find_diff(ket_ref, ket_result)
-    if not diff:
-        print(filename + ".ket:SUCCEED")
-    else:
-        print(filename + ".ket:FAILED")
-        print(diff)
+    compare_diff(ref_path, filename + ".ket", ket_result)
 
 print("*** KET to CDXML ***")
 
@@ -101,20 +76,10 @@ for filename in files:
             print(getIndigoExceptionText(e))
             raise SystemExit
     cdxml_text = ket.cdxml()
-    # with open(os.path.join(ref_path, filename) + ".cdxml", "w") as file:
-    #     file.write(cdxml_text)
-
     indigo.loadMolecule(
         cdxml_text
     )  # just check if cdxml is valid and loaded without an exception
-    with open(os.path.join(ref_path, filename) + ".cdxml", "r") as file:
-        cdxml_ref = file.read()
-    diff = find_diff(cdxml_ref, cdxml_text)
-    if not diff:
-        print(filename + ".cdxml:SUCCEED")
-    else:
-        print(filename + ".cdxml:FAILED")
-        print(diff)
+    compare_diff(ref_path, filename + ".cdxml", cdxml_text)
 
 print("*** Reaction CDXML to KET ***")
 indigo.setOption("ignore-stereochemistry-errors", True)
@@ -132,15 +97,6 @@ for filename in files:
     try:
         reaction = indigo.loadReaction(cdxml_str)
         ket_result = reaction.json()
-        # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
-        #     file.write(ket_result)
-        with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
-            ket_ref = file.read()
-        diff = find_diff(ket_ref, ket_result)
-        if not diff:
-            print(filename + ".ket:SUCCEED")
-        else:
-            print(filename + ".ket:FAILED")
-            print(diff)
+        compare_diff(ref_path, filename + ".ket", ket_result)
     except IndigoException as e:
         print(e)

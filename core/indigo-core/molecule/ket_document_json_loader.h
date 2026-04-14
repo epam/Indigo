@@ -39,6 +39,8 @@ namespace indigo
     class KetDocument;
     class KetMolecule;
     class KetMonomer;
+    class KetConnection;
+    class KetConnectionEndPoint;
     class MonomerTemplate;
     class MonomerTemplateLibrary;
     class MonomerGroupTemplate;
@@ -58,9 +60,14 @@ namespace indigo
         using template_add_func = std::function<MonomerTemplate&(const std::string& id, const std::string& monomer_class, IdtAlias idt_alias, bool unresolved)>;
         using template_group_add_func = std::function<MonomerGroupTemplate&(const std::string& id, const std::string& name, const std::string& monomer_class,
                                                                             IdtAlias idt_alias, const std::vector<std::string>& template_refs)>;
+        using template_id_resolve_func = std::function<std::string(const std::string& template_ref_or_id)>;
+        using connection_add_func = std::function<KetConnection&(const std::string& conn_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2)>;
 
         static void parseMonomerTemplate(const rapidjson::Value& mt_json, template_add_func addMonomerTemplate);
-        static void parseMonomerGroupTemplate(const rapidjson::Value& mt_json, template_group_add_func addMonomerTemplateGroup);
+        static void parseMonomerGroupTemplate(const rapidjson::Value& mt_json, template_group_add_func addMonomerTemplateGroup,
+                                              template_id_resolve_func resolveTemplateId = template_id_resolve_func{});
+        static void parseConnections(const rapidjson::Value& connections, connection_add_func addConnection,
+                                     template_id_resolve_func resolveTemplateId = template_id_resolve_func{});
 
     protected:
         void parseKetMolecule(std::string& ref, rapidjson::Value& json, KetDocument& document);

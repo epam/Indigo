@@ -45,12 +45,16 @@ CmlLoader::CmlLoader(Scanner& scanner)
 {
     _scanner = &scanner;
     _handle = 0;
+    ignore_bad_valence = false;
+    valence_mode = ValenceMode::DEFAULT;
 }
 
 CmlLoader::CmlLoader(XMLHandle& handle)
 {
     _handle = &handle;
     _scanner = 0;
+    ignore_bad_valence = false;
+    valence_mode = ValenceMode::DEFAULT;
 }
 
 void CmlLoader::loadMolecule(Molecule& mol)
@@ -62,6 +66,7 @@ void CmlLoader::loadMolecule(Molecule& mol)
     _loadMolecule();
 
     mol.setIgnoreBadValenceFlag(ignore_bad_valence);
+    mol.setValenceMode(valence_mode);
 }
 
 void CmlLoader::loadQueryMolecule(QueryMolecule& mol)

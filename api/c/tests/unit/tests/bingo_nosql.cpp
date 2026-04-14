@@ -25,6 +25,11 @@
 
 #include <base_cpp/exception.h>
 
+#include <deque>
+#include <iostream>
+#include <list>
+#include <vector>
+
 #include "common.h"
 
 using namespace indigo;
@@ -32,6 +37,42 @@ using namespace indigo;
 class BingoNosqlTest : public IndigoApiTest
 {
 };
+
+TEST_F(BingoNosqlTest, test_subsearch_tau)
+{
+    indigoClearTautomerRules();
+    indigoSetTautomerRule(1, "N,O,P,S,As,Se,Sb,Te", "N,O,P,S,As,Se,Sb,Te");
+    indigoSetTautomerRule(2, "0C", "N,O,P,S");
+    indigoSetTautomerRule(3, "1C", "N,O");
+    // create and fill Bingo DB
+    constexpr int MAX_ITEMS = 20000;
+    int db = bingoCreateDatabaseFile(::testing::UnitTest::GetInstance()->current_test_info()->name(), "molecule", "");
+    int item, count = 0, iter = indigoIterateSmilesFile(dataPath("molecules/basic/sample_100000.smi").c_str());
+    while (item = indigoNext(iter))
+    {
+        bingoInsertRecordObj(db, item);
+        if (count++ >= MAX_ITEMS)
+            break;
+    }
+    indigoSetOptionInt("bingonosql-sub-search-thread-count", -1);
+    int query = indigoLoadQueryMoleculeFromString("C/C(/O)=C/CC");
+    int sub_matcher = bingoSearchSub(db, query, "TAU INNER R*");
+    // auto start = std::chrono::high_resolution_clock::now();
+    int res = bingoGetObject(sub_matcher);
+    std::list<int> results;
+    while (bingoNext(sub_matcher))
+    {
+        int id = bingoGetCurrentId(sub_matcher);
+        results.emplace_back(id);
+    }
+    // auto end = std::chrono::high_resolution_clock::now();
+    // auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    EXPECT_EQ(results.size(), 57);
+    // printf("Total %d results in %zdms.\n", count, duration.count());
+    // printf("%s", bingoProfilingGetStatistics(db));
+    bingoEndSearch(sub_matcher);
+    bingoCloseDatabase(db);
+}
 
 TEST_F(BingoNosqlTest, test_enumerate_id)
 {

@@ -44,6 +44,7 @@ namespace indigo
 
         StereocentersOptions stereochemistry_options;
         bool ignore_bad_valence;
+        ValenceMode valence_mode;
         std::set<int> reactants_ids;
         std::set<int> products_ids;
         std::set<int> intermediates_ids;

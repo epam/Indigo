@@ -20,6 +20,7 @@
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "indigo_array.h"
+#include "indigo_group_pseudoatoms_expand.h"
 #include "indigo_io.h"
 #include "indigo_ket_document.h"
 #include "indigo_mapping.h"
@@ -1626,7 +1627,8 @@ CEXPORT int indigoCreateSGroup(const char* type, int mapping, const char* name)
 
             for (auto i : temp.vertices())
             {
-                sgroup.atoms.push(m[i]);
+                if (m[i] >= 0)
+                    sgroup.atoms.push(m[i]);
             }
 
             for (auto i : mol.edges())
@@ -1750,6 +1752,124 @@ CEXPORT int indigoDeleteSGroupAttachmentPoint(int sgroup, int ap_idx)
         return 1;
     }
     INDIGO_END(-1);
+}
+
+//
+// IndigoSGroupAttachmentPoint
+//
+
+IndigoSGroupAttachmentPoint::IndigoSGroupAttachmentPoint(BaseMolecule& mol_, int sgroup_idx_, int ap_idx_)
+    : IndigoObject(SGROUP_ATTACHMENT_POINT), mol(mol_), sgroup_idx(sgroup_idx_), ap_idx(ap_idx_)
+{
+}
+
+IndigoSGroupAttachmentPoint::~IndigoSGroupAttachmentPoint()
+{
+}
+
+int IndigoSGroupAttachmentPoint::getIndex()
+{
+    return ap_idx;
+}
+
+IndigoSGroupAttachmentPoint& IndigoSGroupAttachmentPoint::cast(IndigoObject& obj)
+{
+    if (obj.type == IndigoObject::SGROUP_ATTACHMENT_POINT)
+        return (IndigoSGroupAttachmentPoint&)obj;
+
+    throw IndigoError("%s is not an SGroup attachment point", obj.debugInfo());
+}
+
+Superatom::_AttachmentPoint& IndigoSGroupAttachmentPoint::get()
+{
+    Superatom& sup = (Superatom&)mol.sgroups.getSGroup(sgroup_idx);
+    if (!sup.attachment_points.hasElement(ap_idx))
+        throw IndigoError("attachment point #%d is not an SGroup attachment point", ap_idx);
+
+    return sup.attachment_points[ap_idx];
+}
+
+//
+// IndigoSGroupAttachmentPointsIter
+//
+
+IndigoSGroupAttachmentPointsIter::IndigoSGroupAttachmentPointsIter(BaseMolecule& mol_, int sgroup_idx_)
+    : IndigoObject(SGROUP_ATTACHMENT_POINTS_ITER), _mol(mol_), _sgroup_idx(sgroup_idx_), _idx(-1)
+{
+}
+
+IndigoSGroupAttachmentPointsIter::~IndigoSGroupAttachmentPointsIter()
+{
+}
+
+bool IndigoSGroupAttachmentPointsIter::hasNext()
+{
+    Superatom& sup = (Superatom&)_mol.sgroups.getSGroup(_sgroup_idx);
+    if (_idx == -1)
+        return sup.attachment_points.begin() != sup.attachment_points.end();
+    return sup.attachment_points.next(_idx) != sup.attachment_points.end();
+}
+
+IndigoObject* IndigoSGroupAttachmentPointsIter::next()
+{
+    if (!hasNext())
+        return 0;
+
+    Superatom& sup = (Superatom&)_mol.sgroups.getSGroup(_sgroup_idx);
+    if (_idx == -1)
+        _idx = sup.attachment_points.begin();
+    else
+        _idx = sup.attachment_points.next(_idx);
+
+    std::unique_ptr<IndigoSGroupAttachmentPoint> ap = std::make_unique<IndigoSGroupAttachmentPoint>(_mol, _sgroup_idx, _idx);
+    return ap.release();
+}
+
+CEXPORT int indigoIterateSGroupAttachmentPoints(int sgroup)
+{
+    INDIGO_BEGIN
+    {
+        IndigoSuperatom& isup = IndigoSuperatom::cast(self.getObject(sgroup));
+        return self.addObject(new IndigoSGroupAttachmentPointsIter(isup.mol, isup.idx));
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoGetSGroupAttachmentPointAtomIdx(int ap)
+{
+    INDIGO_BEGIN
+    {
+        return IndigoSGroupAttachmentPoint::cast(self.getObject(ap)).get().aidx;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoGetSGroupAttachmentPointLeaveAtom(int ap, int* lvidx)
+{
+    INDIGO_BEGIN
+    {
+        int lv = IndigoSGroupAttachmentPoint::cast(self.getObject(ap)).get().lvidx;
+        if (lv == -1)
+        {
+            *lvidx = 0;
+            return 0;
+        }
+        *lvidx = lv;
+        return 1;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT const char* indigoGetSGroupAttachmentPointLabel(int ap)
+{
+    INDIGO_BEGIN
+    {
+        Superatom::_AttachmentPoint& apoint = IndigoSGroupAttachmentPoint::cast(self.getObject(ap)).get();
+        if (apoint.apid.size() < 1)
+            return "";
+        return apoint.apid.ptr();
+    }
+    INDIGO_END(0);
 }
 
 CEXPORT int indigoGetSGroupDisplayOption(int sgroup)
@@ -3167,4 +3287,68 @@ CEXPORT int indigoExpandMonomers(int item)
         return 1;
     }
     INDIGO_END(0);
+}
+
+// [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+// This function fully expands all template atoms (monomers) in a macromolecule to regular atoms.
+// It creates a working copy of the molecule to avoid side effects, marks all template atoms as
+// expanded, then calls the internal expandedMonomersToAtoms() method to perform the actual
+// expansion. The result is a new molecule with all monomers fully expanded to their atomic
+// structures, suitable for molecular weight calculations and compatibility with third-party tools.
+CEXPORT int indigoExpandedMonomersToAtoms(int molecule)
+{
+    INDIGO_BEGIN
+    {
+        BaseMolecule& mol = self.getObject(molecule).getBaseMolecule();
+
+        // Create a working copy to avoid side effects on the original molecule
+        std::unique_ptr<IndigoMolecule> work_mol = std::make_unique<IndigoMolecule>();
+        QS_DEF(Array<int>, work_mapping);
+        work_mol->mol.clone(mol, 0, &work_mapping);
+
+        // Set display options on template atoms in the working copy
+        // This marks them as expanded so expandedMonomersToAtoms() will process them.
+        // We validate each template atom's occurrence index before accessing to detect
+        // data corruption issues early.
+        for (int v_idx = work_mol->mol.vertexBegin(); v_idx != work_mol->mol.vertexEnd(); v_idx = work_mol->mol.vertexNext(v_idx))
+        {
+            if (!work_mol->mol.isTemplateAtom(v_idx))
+                continue;
+
+            // Get the template occurrence index - this should not throw since we checked isTemplateAtom()
+            int template_occur_idx = work_mol->mol.getTemplateAtomOccurrence(v_idx);
+
+            // Validate that the occurrence index is valid in the pool
+            // If invalid, this indicates data corruption and we should fail rather than silently skip
+            if (!work_mol->mol.isValidTemplateOccurrence(template_occur_idx))
+            {
+                throw IndigoError("expandedMonomersToAtoms: template atom #%d has invalid occurrence index %d (data corruption detected)", v_idx,
+                                  template_occur_idx);
+            }
+
+            // Mark this template atom as expanded
+            work_mol->mol.setTemplateAtomDisplayOption(v_idx, DisplayOption::Expanded);
+        }
+
+        // Call expandedMonomersToAtoms on the working copy
+        // This method clones internally and returns a molecule with all expanded monomers
+        // converted to regular atoms.
+        std::unique_ptr<BaseMolecule> expanded = work_mol->mol.expandedMonomersToAtoms();
+
+        // Create new IndigoMolecule for the final result
+        std::unique_ptr<IndigoMolecule> new_mol = std::make_unique<IndigoMolecule>();
+        QS_DEF(Array<int>, mapping);
+        new_mol->mol.clone(*expanded, 0, &mapping);
+
+        // Expand group pseudoatoms (OH, NH2, etc.) to explicit atoms for V3000 interoperability
+        expandGroupPseudoatomsInMolecule(new_mol->mol);
+
+        // Copy properties from original molecule
+        auto& props = self.getObject(molecule).getProperties();
+        new_mol->copyProperties(props);
+
+        // Add to session and return ID
+        return self.addObject(new_mol.release());
+    }
+    INDIGO_END(-1);
 }

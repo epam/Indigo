@@ -28,6 +28,7 @@
 #include "layout/metalayout.h"
 #include "molecule/molecule_arom.h"
 #include "molecule/molecule_stereocenter_options.h"
+#include "molecule/valence_model.h"
 
 namespace indigo
 {
@@ -59,6 +60,7 @@ namespace indigo
         bool ignore_noncritical_query_features;
         bool ignore_no_chiral_flag;
         bool ignore_bad_valence;
+        ValenceMode valence_mode;
         bool dearomatize_on_load;
         int treat_stereo_as;
         AromaticityOptions arom_options;

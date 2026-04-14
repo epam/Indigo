@@ -55,6 +55,7 @@ void MoleculeAutoLoader::_init()
     ignore_cistrans_errors = false;
     ignore_no_chiral_flag = false;
     ignore_bad_valence = false;
+    valence_mode = ValenceMode::BIOVIA_2017;
     smiles_loading_strict_aliphatic = false;
     dearomatize_on_load = false;
     treat_stereo_as = 0;
@@ -283,6 +284,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, MonomerTemplateLibrary
             loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
             loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
             loader.treat_stereo_as = treat_stereo_as;
+            loader.valence_mode = valence_mode;
 
             if (query)
                 loader.loadQueryMolecule((QueryMolecule&)mol);
@@ -555,6 +557,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, MonomerTemplateLibrary
             loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
             loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
             loader.treat_stereo_as = treat_stereo_as;
+            loader.valence_mode = valence_mode;
 
             if (is_first && sdf_loader.isEOF())
             {

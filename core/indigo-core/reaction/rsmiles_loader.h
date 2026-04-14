@@ -21,6 +21,7 @@
 
 #include "base_cpp/exception.h"
 #include "molecule/molecule_stereocenter_options.h"
+#include "molecule/valence_model.h"
 
 namespace indigo
 {
@@ -45,6 +46,7 @@ namespace indigo
         bool smarts_mode;
         bool ignore_cistrans_errors;
         bool ignore_bad_valence;
+        ValenceMode valence_mode;
         StereocentersOptions stereochemistry_options;
 
     protected:

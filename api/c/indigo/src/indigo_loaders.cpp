@@ -149,6 +149,7 @@ Molecule& IndigoRdfMolecule::getMolecule()
         loader.ignore_no_chiral_flag = self.ignore_no_chiral_flag;
         loader.treat_stereo_as = self.treat_stereo_as;
         loader.ignore_bad_valence = self.ignore_bad_valence;
+        loader.valence_mode = self.valence_mode;
         loader.loadMolecule(_mol);
         _loaded = true;
     }
@@ -202,6 +203,7 @@ Reaction& IndigoRdfReaction::getReaction()
         loader.ignore_no_chiral_flag = self.ignore_no_chiral_flag;
         loader.treat_stereo_as = self.treat_stereo_as;
         loader.ignore_bad_valence = self.ignore_bad_valence;
+        loader.valence_mode = self.valence_mode;
         loader.loadReaction(_rxn);
         _loaded = true;
     }

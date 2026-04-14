@@ -41,6 +41,7 @@ SmilesLoader::SmilesLoader(Scanner& scanner) : _scanner(scanner)
     ignore_closing_bond_direction_mismatch = false;
     ignore_cistrans_errors = false;
     ignore_bad_valence = false;
+    valence_mode = ValenceMode::DEFAULT;
     ignore_no_chiral_flag = false;
     _mol = 0;
     _qmol = 0;
@@ -67,6 +68,7 @@ void SmilesLoader::loadMolecule(Molecule& mol)
     mol.original_format = BaseMolecule::SMILES;
     _loadMolecule();
     mol.setIgnoreBadValenceFlag(ignore_bad_valence);
+    mol.setValenceMode(valence_mode);
 }
 
 void SmilesLoader::loadQueryMolecule(QueryMolecule& mol)

@@ -927,6 +927,7 @@ namespace indigo
 
         StereocentersOptions stereochemistry_options;
         bool ignore_bad_valence;
+        ValenceMode valence_mode;
         Rect2f cdxml_bbox;
         AutoInt cdxml_bond_length;
         std::vector<CdxmlNode> nodes;

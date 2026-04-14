@@ -34,6 +34,7 @@ IMPL_ERROR(ReactionCdxmlLoader, "reaction CDXML loader");
 ReactionCdxmlLoader::ReactionCdxmlLoader(Scanner& scanner, bool is_binary) : _scanner(scanner), _is_binary(is_binary)
 {
     ignore_bad_valence = false;
+    valence_mode = ValenceMode::DEFAULT;
 }
 
 ReactionCdxmlLoader::~ReactionCdxmlLoader()
@@ -127,6 +128,8 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
     cdx_reader->process();
     MoleculeCdxmlLoader loader(_scanner, _is_binary);
     loader.stereochemistry_options = stereochemistry_options;
+    loader.ignore_bad_valence = ignore_bad_valence;
+    loader.valence_mode = valence_mode;
     loader.parseCDXMLAttributes(*cdx_reader->rootElement()->firstProperty());
 
     for (auto page_elem = cdx_reader->rootElement()->firstChildElement(); page_elem->hasContent(); page_elem = page_elem->nextSiblingElement())

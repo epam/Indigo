@@ -668,6 +668,17 @@ class IndigoLib:
             c_int,
             c_int,
         ]
+        IndigoLib.lib.indigoIterateSGroupAttachmentPoints.restype = c_int
+        IndigoLib.lib.indigoIterateSGroupAttachmentPoints.argtypes = [c_int]
+        IndigoLib.lib.indigoGetSGroupAttachmentPointAtomIdx.restype = c_int
+        IndigoLib.lib.indigoGetSGroupAttachmentPointAtomIdx.argtypes = [c_int]
+        IndigoLib.lib.indigoGetSGroupAttachmentPointLeaveAtom.restype = c_int
+        IndigoLib.lib.indigoGetSGroupAttachmentPointLeaveAtom.argtypes = [
+            c_int,
+            POINTER(c_int),
+        ]
+        IndigoLib.lib.indigoGetSGroupAttachmentPointLabel.restype = c_char_p
+        IndigoLib.lib.indigoGetSGroupAttachmentPointLabel.argtypes = [c_int]
         IndigoLib.lib.indigoGetSGroupDisplayOption.restype = c_int
         IndigoLib.lib.indigoGetSGroupDisplayOption.argtypes = [c_int]
         IndigoLib.lib.indigoSetSGroupDisplayOption.restype = c_int
@@ -841,6 +852,10 @@ class IndigoLib:
         IndigoLib.lib.indigoUnhighlight.argtypes = [c_int]
         IndigoLib.lib.indigoIsHighlighted.restype = c_int
         IndigoLib.lib.indigoIsHighlighted.argtypes = [c_int]
+        IndigoLib.lib.indigoSelect.restype = c_int
+        IndigoLib.lib.indigoSelect.argtypes = [c_int]
+        IndigoLib.lib.indigoUnselect.restype = c_int
+        IndigoLib.lib.indigoUnselect.argtypes = [c_int]
         IndigoLib.lib.indigoIsSelected.restype = c_int
         IndigoLib.lib.indigoIsSelected.argtypes = [c_int]
         IndigoLib.lib.indigoHasSelection.restype = c_int
@@ -1151,6 +1166,11 @@ class IndigoLib:
         IndigoLib.lib.indigoStereocenterPyramid.argtypes = [c_int]
         IndigoLib.lib.indigoExpandAbbreviations.restype = c_int
         IndigoLib.lib.indigoExpandAbbreviations.argtypes = [c_int]
+        IndigoLib.lib.indigoExpandGroupPseudoatoms.restype = c_int
+        IndigoLib.lib.indigoExpandGroupPseudoatoms.argtypes = [c_int]
+        # [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+        IndigoLib.lib.indigoExpandedMonomersToAtoms.restype = c_int
+        IndigoLib.lib.indigoExpandedMonomersToAtoms.argtypes = [c_int]
         IndigoLib.lib.indigoDbgInternalType.restype = c_char_p
         IndigoLib.lib.indigoDbgInternalType.argtypes = [c_int]
         IndigoLib.lib.indigoNameToStructure.restype = c_int

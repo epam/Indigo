@@ -46,6 +46,7 @@
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/molecule_tautomer.h"
 #include "molecule/smiles_saver.h"
+#include "molecule/valence_model.h"
 
 #include "option_manager.h"
 
@@ -130,6 +131,8 @@ public:
         ATOM_NEIGHBORS_ITER,
         SUPERATOM,
         SUPERATOMS_ITER,
+        SGROUP_ATTACHMENT_POINT,
+        SGROUP_ATTACHMENT_POINTS_ITER,
         DATA_SGROUP,
         DATA_SGROUPS_ITER,
         REPEATING_UNIT,
@@ -317,6 +320,8 @@ public:
     bool ignore_closing_bond_direction_mismatch;
     bool ignore_bad_valence;
 
+    ValenceMode valence_mode;
+
     bool deconvolution_aromatization;
     bool deco_save_ap_bond_orders;
     bool deco_ignore_errors;
@@ -346,6 +351,8 @@ public:
 
     bool embedding_edges_uniqueness, find_unique_embeddings;
     int max_embeddings;
+
+    int bingonosql_tau_sub_search_thread_count = 1; // default is 1 -- no multithread
 
     int layout_max_iterations = 0; // default is zero -- no limit
     bool smart_layout = false;

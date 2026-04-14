@@ -25,6 +25,7 @@
 #include "base_cpp/tlscont.h"
 #include "molecule/molecule_arom.h"
 #include "molecule/molecule_stereocenter_options.h"
+#include "molecule/valence_model.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -61,6 +62,7 @@ namespace indigo
         bool skip_3d_chirality;
         bool ignore_no_chiral_flag;
         bool ignore_bad_valence;
+        ValenceMode valence_mode;
         bool smiles_loading_strict_aliphatic;
         int treat_stereo_as;
         bool dearomatize_on_load;

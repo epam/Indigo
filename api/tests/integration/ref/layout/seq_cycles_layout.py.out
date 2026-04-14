@@ -1,4 +1,6 @@
 *** Sequence cycles layout ***
+6bases.ket:SUCCEED
+left_top_monomer.ket:SUCCEED
 n-agon1.ket:SUCCEED
 n-agon2.ket:SUCCEED
 overlapping.ket:SUCCEED
@@ -12,3 +14,15 @@ shifting_structs_1_sel.ket:SUCCEED
 shifting_structs_2.ket:SUCCEED
 shifting_structs_2_sel.ket:SUCCEED
 small_mol.ket:SUCCEED
+
+*** Sequential multi-cycle layout (cycles 1,3,5,7) ***
+multi_seq_1357.ket:SUCCEED
+
+*** Multi-cycle simultaneous layout (cycles 1+2+3) ***
+multi_sel_123.ket:SUCCEED
+
+*** Multi-cycle simultaneous layout (cycles 2+3+4) ***
+multi_sel_234.ket:SUCCEED
+
+*** cycle_part_sel: ring + pendant phosphates + fixed backbone ***
+cycle_part_sel.ket:SUCCEED

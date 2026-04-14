@@ -1,17 +1,12 @@
-﻿import difflib
-import os
+﻿import os
 import sys
-
-
-def find_diff(a, b):
-    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
-
 
 sys.path.append(
     os.path.normpath(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
+from common.util import compare_diff, find_diff
 from env_indigo import (  # noqa
     Indigo,
     IndigoException,
@@ -72,16 +67,7 @@ for filename in sorted(macro_data):
     except Exception as e:
         print("Test '%s' failed: %", (filename, e))
         continue
-    # with open(os.path.join(ref, filename) + ".json", "w") as file:
-    #     file.write(props)
-    with open(os.path.join(ref, filename) + ".json", "r") as file:
-        props_ref = file.read()
-    diff = find_diff(props_ref, props)
-    if not diff:
-        print(filename + ".json: SUCCEED")
-    else:
-        print(filename + ".json: FAILED")
-        print(diff)
+    compare_diff(ref, filename + ".json", props)
 
 filename = "props_double_dna_gc"
 mol = indigo.loadKetDocumentFromFile(os.path.join(root, filename + ".ket"))

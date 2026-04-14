@@ -1,4 +1,4 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 using System.Security;
 
 namespace com.epam.indigo
@@ -624,6 +624,18 @@ namespace com.epam.indigo
         public static extern int indigoDeleteSGroupAttachmentPoint(int sgroup, int apidx);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoIterateSGroupAttachmentPoints(int sgroup);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoGetSGroupAttachmentPointAtomIdx(int ap);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoGetSGroupAttachmentPointLeaveAtom(int ap, int* lvidx);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern byte* indigoGetSGroupAttachmentPointLabel(int ap);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoGetSGroupDisplayOption(int sgroup);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
@@ -905,6 +917,12 @@ namespace com.epam.indigo
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoIsHighlighted(int item);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoSelect(int item);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoUnselect(int item);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoIsSelected(int item);
@@ -1328,6 +1346,12 @@ namespace com.epam.indigo
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoExpandAbbreviations(int structure);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoExpandGroupPseudoatoms(int molecule);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoExpandedMonomersToAtoms(int molecule);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoIterateTautomers(int structure, string parameters);

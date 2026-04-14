@@ -25,6 +25,7 @@
 #include "molecule/molecule_dearom.h"
 #include "molecule/molecule_standardize.h"
 #include "molecule/monomer_commons.h"
+#include "molecule/valence_model.h"
 
 #ifdef _MSC_VER
 #pragma warning(push, 4)
@@ -36,6 +37,7 @@ Molecule::Molecule()
 {
     _aromatized = false;
     _ignore_bad_valence = false;
+    _valence_mode = ValenceMode::DEFAULT;
 }
 
 Molecule& Molecule::asMolecule()
@@ -59,6 +61,7 @@ void Molecule::clear()
 
     _aromatized = false;
     _ignore_bad_valence = false;
+    _valence_mode = ValenceMode::DEFAULT;
     updateEditRevision();
 }
 
@@ -75,6 +78,7 @@ void Molecule::_mergeWithSubmolecule(BaseMolecule& bmol, const Array<int>& verti
 {
     Molecule& mol = bmol.asMolecule();
     _ignore_bad_valence = mol.getIgnoreBadValenceFlag();
+    _valence_mode = mol.getValenceMode();
 
     int i;
 
@@ -808,11 +812,12 @@ int Molecule::_getImplicitHForConnectivity(int idx, int conn, bool use_cache)
             {
                 // no information about implicit H, not sure about radical either --
                 // this can happen exclusively in CML.
-                if (Element::calcValence(atom.number, atom.charge, 0, conn, valence, impl_h, false))
+                const auto& vm = ValenceModel::instance(_valence_mode);
+                if (vm.calcValence(atom.number, atom.charge, 0, conn, valence, impl_h, false))
                     radical = 0;
-                else if (Element::calcValence(atom.number, atom.charge, RADICAL_SINGLET, conn, valence, impl_h, false))
+                else if (vm.calcValence(atom.number, atom.charge, RADICAL_SINGLET, conn, valence, impl_h, false))
                     radical = RADICAL_SINGLET;
-                else if (Element::calcValence(atom.number, atom.charge, RADICAL_DOUBLET, conn, valence, impl_h, false))
+                else if (vm.calcValence(atom.number, atom.charge, RADICAL_DOUBLET, conn, valence, impl_h, false))
                     radical = RADICAL_DOUBLET;
                 else
                 {
@@ -830,9 +835,9 @@ int Molecule::_getImplicitHForConnectivity(int idx, int conn, bool use_cache)
                 // this is a commmon situtation for Molfiles or non-bracketed SMILES atoms.
                 // Will throw an error on 5-valent carbon and such.
                 if (_ignore_bad_valence)
-                    Element::calcValence(atom.number, atom.charge, radical, conn, valence, impl_h, false);
+                    ValenceModel::instance(_valence_mode).calcValence(atom.number, atom.charge, radical, conn, valence, impl_h, false);
                 else
-                    Element::calcValence(atom.number, atom.charge, radical, conn, valence, impl_h, true);
+                    ValenceModel::instance(_valence_mode).calcValence(atom.number, atom.charge, radical, conn, valence, impl_h, true);
             }
         }
     }
@@ -895,6 +900,19 @@ bool Molecule::getIgnoreBadValenceFlag()
 void Molecule::setIgnoreBadValenceFlag(bool flag)
 {
     _ignore_bad_valence = flag;
+}
+
+ValenceMode Molecule::getValenceMode() const
+{
+    return _valence_mode;
+}
+
+void Molecule::setValenceMode(ValenceMode mode)
+{
+    if (_valence_mode == mode)
+        return;
+    _valence_mode = mode;
+    invalidateHCounters();
 }
 
 int Molecule::getAtomValence(int idx)
@@ -966,25 +984,26 @@ int Molecule::getAtomValence(int idx)
         {
             // have implicit H count, but no information about radical. Frequently occurs in SMILES
             // expressions like [CH2] or [C]
-            if (Element::calcValence(atom.number, atom.charge, 0, conn, valence, normal_impl_h, false) && normal_impl_h == impl_h)
+            const auto& vm = ValenceModel::instance(_valence_mode);
+            if (vm.calcValence(atom.number, atom.charge, 0, conn, valence, normal_impl_h, false) && normal_impl_h == impl_h)
                 radical = 0; // [SiH4]
-            else if (Element::calcValence(atom.number, atom.charge, RADICAL_SINGLET, conn, valence, normal_impl_h, false) && normal_impl_h == impl_h)
+            else if (vm.calcValence(atom.number, atom.charge, RADICAL_SINGLET, conn, valence, normal_impl_h, false) && normal_impl_h == impl_h)
                 radical = RADICAL_SINGLET; // [CH2]
-            else if (Element::calcValence(atom.number, atom.charge, RADICAL_DOUBLET, conn, valence, normal_impl_h, false) && normal_impl_h == impl_h)
+            else if (vm.calcValence(atom.number, atom.charge, RADICAL_DOUBLET, conn, valence, normal_impl_h, false) && normal_impl_h == impl_h)
                 radical = RADICAL_DOUBLET; // [CH3]
-            else if (Element::calcValence(atom.number, atom.charge, 0, conn + impl_h, valence, normal_impl_h, false) && normal_impl_h == 0)
+            else if (vm.calcValence(atom.number, atom.charge, 0, conn + impl_h, valence, normal_impl_h, false) && normal_impl_h == 0)
             {
                 radical = 0; // [PH5]
                 valence = conn + impl_h;
                 unusual_valence = true;
             }
-            else if (Element::calcValence(atom.number, atom.charge, RADICAL_SINGLET, conn + impl_h, valence, normal_impl_h, false) && normal_impl_h == 0)
+            else if (vm.calcValence(atom.number, atom.charge, RADICAL_SINGLET, conn + impl_h, valence, normal_impl_h, false) && normal_impl_h == 0)
             {
                 radical = RADICAL_SINGLET;
                 valence = conn + impl_h;
                 unusual_valence = true;
             }
-            else if (Element::calcValence(atom.number, atom.charge, RADICAL_DOUBLET, conn + impl_h, valence, normal_impl_h, false) && normal_impl_h == 0)
+            else if (vm.calcValence(atom.number, atom.charge, RADICAL_DOUBLET, conn + impl_h, valence, normal_impl_h, false) && normal_impl_h == 0)
             {
                 radical = RADICAL_DOUBLET; // [PH4]
                 valence = conn + impl_h;
@@ -1012,7 +1031,8 @@ int Molecule::getAtomValence(int idx)
         else
         {
             // have both implicit H count and radicals -- can happen in CML or in extended SMILES
-            if (Element::calcValence(atom.number, atom.charge, radical, conn, valence, normal_impl_h, false) && normal_impl_h == impl_h)
+            if (ValenceModel::instance(_valence_mode).calcValence(atom.number, atom.charge, radical, conn, valence, normal_impl_h, false) &&
+                normal_impl_h == impl_h)
                 ;
             else
             {
@@ -1028,11 +1048,12 @@ int Molecule::getAtomValence(int idx)
         {
             // no information about implicit H, not sure about radical either --
             // this can happen exclusively in CML.
-            if (Element::calcValence(atom.number, atom.charge, 0, conn, valence, impl_h, false))
+            const auto& vm = ValenceModel::instance(_valence_mode);
+            if (vm.calcValence(atom.number, atom.charge, 0, conn, valence, impl_h, false))
                 radical = 0;
-            else if (Element::calcValence(atom.number, atom.charge, RADICAL_SINGLET, conn, valence, impl_h, false))
+            else if (vm.calcValence(atom.number, atom.charge, RADICAL_SINGLET, conn, valence, impl_h, false))
                 radical = RADICAL_SINGLET;
-            else if (Element::calcValence(atom.number, atom.charge, RADICAL_DOUBLET, conn, valence, impl_h, false))
+            else if (vm.calcValence(atom.number, atom.charge, RADICAL_DOUBLET, conn, valence, impl_h, false))
                 radical = RADICAL_DOUBLET;
             else
                 throw Element::Error("can not calculate valence on %s, charge %d, connectivity %d", Element::toString(atom.number), atom.charge, conn);
@@ -1046,11 +1067,11 @@ int Molecule::getAtomValence(int idx)
             // Will throw an error on 5-valent carbon and such.
             if (_ignore_bad_valence)
             {
-                Element::calcValence(atom.number, atom.charge, radical, conn, valence, impl_h, false);
+                ValenceModel::instance(_valence_mode).calcValence(atom.number, atom.charge, radical, conn, valence, impl_h, false);
             }
             else
             {
-                Element::calcValence(atom.number, atom.charge, radical, conn, valence, impl_h, true);
+                ValenceModel::instance(_valence_mode).calcValence(atom.number, atom.charge, radical, conn, valence, impl_h, true);
             }
         }
 

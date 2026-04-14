@@ -413,7 +413,8 @@ auto MoleculeCdxmlLoader::bboxLambda(Rect2f& bbox)
 }
 
 MoleculeCdxmlLoader::MoleculeCdxmlLoader(Scanner& scanner, bool is_binary, bool is_fragment)
-    : _scanner(scanner), _is_binary(is_binary), _is_fragment(is_fragment), _has_bounding_box(false), _pmol(nullptr), _pqmol(nullptr), ignore_bad_valence(false)
+    : _scanner(scanner), _is_binary(is_binary), _is_fragment(is_fragment), _has_bounding_box(false), _pmol(nullptr), _pqmol(nullptr), ignore_bad_valence(false),
+      valence_mode(ValenceMode::DEFAULT)
 {
 }
 
@@ -444,6 +445,7 @@ void MoleculeCdxmlLoader::_initMolecule(BaseMolecule& mol)
     {
         _pmol = &mol.asMolecule();
         _pmol->setIgnoreBadValenceFlag(ignore_bad_valence);
+        _pmol->setValenceMode(valence_mode);
     }
 }
 

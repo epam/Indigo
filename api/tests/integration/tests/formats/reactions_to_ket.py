@@ -1,17 +1,12 @@
-﻿import difflib
-import os
+﻿import os
 import sys
-
-
-def find_diff(a, b):
-    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
-
 
 sys.path.append(
     os.path.normpath(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
+from common.util import compare_diff
 from env_indigo import *  # noqa
 
 indigo = Indigo()
@@ -40,16 +35,5 @@ for test in tests:
         except:
             print("bad reaction data")
 
-    # with open(os.path.join(ref_path, test[1]) + ".ket", "w") as file:
-    #     file.write(reaction.json())
-
-    with open(os.path.join(ref_path, test[1]) + ".ket", "r") as file:
-        ket_ref = file.read()
-
     ket = reaction.json()
-    diff = find_diff(ket_ref, ket)
-    if not diff:
-        print(test[1] + ".ket:SUCCEED")
-    else:
-        print(test[1] + ".ket:FAILED")
-        print(diff)
+    compare_diff(ref_path, test[1] + ".ket", ket)

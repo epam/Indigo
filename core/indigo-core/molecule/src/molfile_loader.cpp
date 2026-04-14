@@ -56,6 +56,7 @@ MolfileLoader::MolfileLoader(Scanner& scanner, MonomerTemplateLibrary* monomer_l
     ignore_noncritical_query_features = false;
     ignore_no_chiral_flag = false;
     ignore_bad_valence = false;
+    valence_mode = ValenceMode::BIOVIA_2017;
     treat_stereo_as = 0;
     _monomer_library = monomer_library;
 }
@@ -69,6 +70,7 @@ void MolfileLoader::loadMolecule(Molecule& mol)
     _max_template_id = 0;
     _loadMolecule();
     mol.setIgnoreBadValenceFlag(ignore_bad_valence);
+    mol.setValenceMode(valence_mode);
     if (mol.stereocenters.size() == 0 && !skip_3d_chirality)
         mol.buildFrom3dCoordinatesStereocenters(stereochemistry_options);
 }
@@ -77,6 +79,7 @@ void MolfileLoader::copyProperties(const MolfileLoader& loader)
 {
     stereochemistry_options = loader.stereochemistry_options;
     ignore_bad_valence = loader.ignore_bad_valence;
+    valence_mode = loader.valence_mode;
     ignore_no_chiral_flag = loader.ignore_no_chiral_flag;
     skip_3d_chirality = loader.skip_3d_chirality;
     treat_stereo_as = loader.treat_stereo_as;

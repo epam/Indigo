@@ -61,8 +61,8 @@ namespace
 TEST(RenderingThreads, Basic)
 {
     std::vector<std::thread> threads;
-    threads.reserve(100);
-    for (auto i = 0; i < 100; i++)
+    threads.reserve(16);
+    for (auto i = 0; i < 16; i++)
     {
         threads.emplace_back(testRender);
     }

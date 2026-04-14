@@ -100,7 +100,6 @@ public class FullUsageMoleculeTest {
         }
     }
 
-
     @Test
     @DisplayName("Testing tversky match")
     public void tversky() {
@@ -114,7 +113,8 @@ public class FullUsageMoleculeTest {
             List<IndigoRecordMolecule> similarRecords = repository.stream()
                     .filter(new TverskySimilarityMatch<>(target, threshold, 0.5f, 0.5f))
                     .collect(Collectors.toList());
-            for (IndigoRecordMolecule similarRecord : similarRecords) assertTrue(similarRecord.getScore() >= threshold);
+            for (IndigoRecordMolecule similarRecord : similarRecords)
+                assertTrue(similarRecord.getScore() >= threshold);
         } catch (Exception exception) {
             Assertions.fail("Exception happened during test " + exception.getMessage());
         }
@@ -134,7 +134,8 @@ public class FullUsageMoleculeTest {
                     .filter(new EuclidSimilarityMatch<>(target, threshold))
                     .collect(Collectors.toList());
 
-            for (IndigoRecord similarRecord : similarRecords) assertTrue(similarRecord.getScore() >= threshold);
+            for (IndigoRecord similarRecord : similarRecords)
+                assertTrue(similarRecord.getScore() >= threshold);
         } catch (Exception exception) {
             Assertions.fail("Exception happened during test " + exception.getMessage());
         }
@@ -193,15 +194,35 @@ public class FullUsageMoleculeTest {
         }
     }
 
+    /**
+     * Verifies substructure search on a curated regression set from
+     * unique_query.sdf.
+     * <p>
+     * The dataset contains representative molecules selected to cover the main
+     * screening and
+     * exact-match dimensions described in substructure-search-analysis.md: acyclic
+     * and ring
+     * topologies, single/double/triple bonds, heteroatom combinations, charged
+     * structures,
+     * rare elements, and low/high fingerprint complexity.
+     * <p>
+     * The invariant is strict: each query molecule must survive fingerprint
+     * screening and the
+     * post-checker only as a self-match, with no false positives from other
+     * representatives.
+     */
     @Test
-    @DisplayName("Testing substructure search")
-    public void substructureSearch() {
-        try {
-            List<IndigoRecordMolecule> indigoRecordList = new ArrayList<>();
-            Helpers.iterateSdf("src/test/resources/rand_queries_small.sdf").forEach(indigoRecordList::add);
-            repository.indexRecords(indigoRecordList, indigoRecordList.size());
-            TimeUnit.SECONDS.sleep(10);
-            IndigoRecordMolecule target = indigoRecordList.get(random.nextInt(indigoRecordList.size()));
+    @DisplayName("Substructure search: each representative molecule matches only itself")
+    public void substructureSearch() throws Exception {
+        List<IndigoRecordMolecule> indigoRecordList = new ArrayList<>();
+        Helpers.iterateSdf("src/test/resources/unique_query.sdf").forEach(indigoRecordList::add);
+        assertFalse(indigoRecordList.isEmpty(), "unique_query.sdf must contain molecules");
+
+        repository.indexRecords(indigoRecordList, indigoRecordList.size());
+        TimeUnit.SECONDS.sleep(10);
+
+        for (int i = 0; i < indigoRecordList.size(); i++) {
+            IndigoRecordMolecule target = indigoRecordList.get(i);
             List<IndigoRecord> records = repository.stream()
                     .filter(new SubstructureMatch<>(target))
                     .limit(20)
@@ -210,9 +231,8 @@ public class FullUsageMoleculeTest {
                     .filter(SubstructureMatch.substructureMatchAfterChecker(target, indigo))
                     .collect(Collectors.toList());
 
-            assertEquals(1, records.size());
-        } catch (Exception exception) {
-            Assertions.fail("Exception happened during test " + exception.getMessage());
+            assertEquals(1, records.size(),
+                    "Molecule #" + i + " should match exactly 1 (itself), got " + records.size());
         }
     }
 

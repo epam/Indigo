@@ -300,7 +300,7 @@ namespace indigo
         static void _findAngles(int k, float s, float& x, float& y);
         static float _dichotomy1(float a0, float b0, int L, float s);
         static float _dichotomy2(float a0, float b0, int L, float s);
-        static void _calculatePos(float phi, const Vec2f& v1, const Vec2f& v2, Vec2f& v);
+        void _calculatePos(float phi, const Vec2f& v1, const Vec2f& v2, Vec2f& v) const;
 
         // border functions
         virtual void _getBorder(Cycle& border) const = 0;
@@ -412,7 +412,9 @@ namespace indigo
         // assigning coordinates
         void _assignRelativeCoordinates(int& fixed_component, const MoleculeLayoutGraph& supergraph) override;
         bool _tryToFindPattern(int& fixed_component);
-        void _assignFirstCycle(const Cycle& cycle, float radius);
+        void _assignFirstCycle(const Cycle& cycle, float bond_length);
+        bool _isRegularPolygon(const Cycle& cycle, float bond_length, float tolerance = 0) const;
+        int _findCycleLeftTopIdx(const Cycle& cycle) const;
 
         // attaching cycles
         bool _attachCycleOutside(const Cycle& cycle, float length, int n_common);

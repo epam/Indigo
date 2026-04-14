@@ -137,6 +137,8 @@ def main():
             python_exec = sys.argv[i + 1]
         elif sys.argv[i] == "-platform":
             overridePlatform(sys.argv[i + 1])
+        elif sys.argv[i] == "-u":
+            os.environ["INDIGO_UPDATE_TESTS"] = "True"
         else:
             print("Unexpected options: %s" % (sys.argv[i]))
             exit()
@@ -267,9 +269,22 @@ def run_analyze_test(args):
     module_filename = os.path.join(tests_dir, root, filename)
 
     tspent = run_test_module(module_filename)
+    stdout_thread = stdout_thread_printer.read_and_clean()
+    base_dir = os.path.join(output_dir_base, root)
+
+    # Update ref files
+    is_ref_update_required = (
+        os.getenv("INDIGO_UPDATE_TESTS", "False") == "True"
+    )
+    if is_ref_update_required:
+        ref_file_to_update = determine_path_based_on_platform(
+            base_dir, filename
+        )
+        with open(ref_file_to_update, "wb") as f:
+            f.write(stdout_thread)
 
     with open(out_filename, "wb") as f:
-        f.write(stdout_thread_printer.read_and_clean())
+        f.write(stdout_thread)
 
     with open(err_filename, "wb") as f:
         f.write(stderr_thredd_printer.read_and_clean())
@@ -279,34 +294,14 @@ def run_analyze_test(args):
         os.remove(err_filename)
     else:
         failed_stderr = True
-    base_dir = os.path.join(output_dir_base, root)
     base_output_file = os.path.join(base_dir, filename + ".out")
     base_exists = False
     ndiffcnt = 0
     diff_file = None
     if file_exists(base_output_file):
         diff_file = os.path.join(test_dir, filename + ".diff")
-        # copy reference file
-        if isJython() and file_exists(
-            os.path.join(base_dir, "jython", filename + ".out")
-        ):
-            base_output_file = os.path.join(
-                base_dir, "jython", filename + ".out"
-            )
-        elif isIronPython() and file_exists(
-            os.path.join(base_dir, "iron", filename + ".out")
-        ):
-            base_output_file = os.path.join(
-                base_dir, "iron", filename + ".out"
-            )
-        else:
-            sn = getPlatform()
-            if sn and file_exists(
-                os.path.join(base_dir, sn, filename + ".out")
-            ):
-                base_output_file = os.path.join(
-                    base_dir, sn, filename + ".out"
-                )
+        # determine platform and copy reference file
+        base_output_file = determine_path_based_on_platform(base_dir, filename)
         new_ref_file = os.path.join(test_dir, filename + ".std")
         if not os.path.normpath(
             os.path.abspath(base_output_file)
@@ -371,6 +366,24 @@ def run_test_module(module_filename):
         sys.stderr.write(traceback.format_exc())
     tspent = time.time() - t0
     return tspent
+
+
+def determine_path_based_on_platform(base_dir_path, file_name):
+    if isJython() and file_exists(
+        os.path.join(base_dir_path, "jython", file_name + ".out")
+    ):
+        return os.path.join(base_dir_path, "jython", file_name + ".out")
+    elif isIronPython() and file_exists(
+        os.path.join(base_dir_path, "iron", file_name + ".out")
+    ):
+        return os.path.join(base_dir_path, "iron", file_name + ".out")
+    else:
+        sn = getPlatform()
+        if sn and file_exists(
+            os.path.join(base_dir_path, sn, file_name + ".out")
+        ):
+            return os.path.join(base_dir_path, sn, file_name + ".out")
+    return os.path.join(base_dir_path, file_name + ".out")
 
 
 if __name__ == "__main__":

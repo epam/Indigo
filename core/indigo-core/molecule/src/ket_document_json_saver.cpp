@@ -42,6 +42,16 @@ const std::string get_ref(const T& obj)
     return T::ref_prefix + obj.id();
 }
 
+const std::string& get_ref(const MonomerTemplate& obj)
+{
+    return obj.ref();
+}
+
+const std::string& get_ref(const MonomerGroupTemplate& obj)
+{
+    return obj.ref();
+}
+
 static void saveNativeFloat(JsonWriter& writer, float f_value)
 {
     std::string val = std::to_string(f_value);
@@ -61,6 +71,70 @@ static void saveStr(JsonWriter& writer, const char* name, const std::string& str
 {
     writer.Key(name);
     writer.String(str);
+}
+
+static void saveOptionalAnnotation(JsonWriter& writer, const std::optional<KetObjectAnnotation>& annotation)
+{
+    if (annotation.has_value())
+    {
+        writer.Key("annotation");
+        writer.StartObject();
+        annotation->saveOptsToKet(writer);
+        writer.EndObject();
+    }
+}
+
+static void saveConnectionEndpoint(JsonWriter& writer, const KetConnectionEndPoint& endpoint)
+{
+    endpoint.saveOptsToKet(writer);
+}
+
+static void saveMonomerTemplateConnectionEndpoint(JsonWriter& writer, const KetConnectionEndPoint& endpoint, const MonomerGroupTemplate& monomer_group_template)
+{
+    KetConnectionEndPoint endpoint_to_save(endpoint);
+    if (hasKetStrProp(endpoint_to_save, templateId))
+    {
+        const auto& template_id = getKetStrProp(endpoint_to_save, templateId);
+        const auto& templates = monomer_group_template.monomerTemplates();
+        auto template_it = templates.find(template_id);
+        if (template_it != templates.end())
+            setKetStrProp(endpoint_to_save, templateId, get_ref(template_it->second.get()));
+        else
+            setKetStrProp(endpoint_to_save, templateId, MonomerTemplate::ref_prefix + template_id);
+    }
+    endpoint_to_save.saveOptsToKet(writer);
+}
+
+static void saveConnections(JsonWriter& writer, const std::vector<KetConnection>& connections, const MonomerGroupTemplate* monomer_group_template = nullptr)
+{
+    if (connections.empty())
+        return;
+
+    writer.Key("connections");
+    writer.StartArray();
+    for (const auto& connection : connections)
+    {
+        writer.StartObject();
+        saveStr(writer, "connectionType", connection.connectionType());
+        connection.saveOptsToKet(writer);
+        writer.Key("endpoint1");
+        writer.StartObject();
+        if (monomer_group_template != nullptr)
+            saveMonomerTemplateConnectionEndpoint(writer, connection.ep1(), *monomer_group_template);
+        else
+            saveConnectionEndpoint(writer, connection.ep1());
+        writer.EndObject();
+        writer.Key("endpoint2");
+        writer.StartObject();
+        if (monomer_group_template != nullptr)
+            saveMonomerTemplateConnectionEndpoint(writer, connection.ep2(), *monomer_group_template);
+        else
+            saveConnectionEndpoint(writer, connection.ep2());
+        writer.EndObject();
+        saveOptionalAnnotation(writer, connection.annotation());
+        writer.EndObject();
+    }
+    writer.EndArray();
 }
 
 static void saveMonomerTemplateAttachmentPoints(JsonWriter& writer, const MonomerTemplate& monomer_template)
@@ -291,15 +365,18 @@ void KetDocumentJsonSaver::saveMonomerTemplateGroup(JsonWriter& writer, const Mo
     saveStr(writer, "name", monomer_group_template.name());
     saveStr(writer, "class", monomer_group_template.groupClass());
     saveIdtAlias(writer, monomer_group_template.idtAlias());
+    if (monomer_group_template.aliasAxoLabs().has_value())
+        saveStr(writer, "aliasAxoLabs", monomer_group_template.aliasAxoLabs().value());
     writer.Key("templates");
     writer.StartArray();
-    for (auto& kvp : monomer_group_template.monomerTemplates())
+    for (const auto& template_id : monomer_group_template.templateIds())
     {
         writer.StartObject();
-        saveStr(writer, "$ref", MonomerTemplate::ref_prefix + kvp.second.get().id());
+        saveStr(writer, "$ref", get_ref(monomer_group_template.monomerTemplates().at(template_id).get()));
         writer.EndObject();
     }
     writer.EndArray();
+    saveConnections(writer, monomer_group_template.connections(), &monomer_group_template);
     writer.EndObject();
 }
 
@@ -571,28 +648,7 @@ void KetDocumentJsonSaver::saveKetDocument(JsonWriter& writer, const KetDocument
         }
         writer.EndObject();
     }
-    if (connections.size() > 0)
-    {
-        writer.Key("connections");
-        writer.StartArray();
-        for (auto it : connections)
-        {
-            writer.StartObject();
-            saveStr(writer, "connectionType", it.connectionType());
-            it.saveOptsToKet(writer);
-            writer.Key("endpoint1");
-            writer.StartObject();
-            it.ep1().saveOptsToKet(writer);
-            writer.EndObject();
-            writer.Key("endpoint2");
-            writer.StartObject();
-            it.ep2().saveOptsToKet(writer);
-            writer.EndObject();
-            saveAnnotation(writer, it.annotation());
-            writer.EndObject();
-        }
-        writer.EndArray(); // connections
-    }
+    saveConnections(writer, connections);
     if (document.templatesIds().size() + document.ambiguousTemplatesIds().size() > 0)
     {
         writer.Key("templates");

@@ -119,7 +119,6 @@ static int _bingoCreateOrLoadDatabaseFile(const char* location, const char* opti
      *    - https://jiraeu.epam.com/browse/IND-603
      * */
     fp_params.ext = false;
-    fp_params.tau_qwords = 0;
 
     std::string loc_dir(location);
 
@@ -562,6 +561,7 @@ CEXPORT int bingoSearchSub(int db, int query_obj, const char* options)
             obj.getBaseMolecule().aromatize(self.arom_options);
 
             std::unique_ptr<MoleculeSubstructureQueryData> query_data = std::make_unique<MoleculeSubstructureQueryData>(obj.getQueryMolecule());
+            query_data->db_id = db;
 
             auto matcher = [&]() {
                 const auto bingo_indexes = sf::slock_safe_ptr(_indexes());
@@ -581,6 +581,7 @@ CEXPORT int bingoSearchSub(int db, int query_obj, const char* options)
             obj.getBaseReaction().aromatize(self.arom_options);
 
             std::unique_ptr<ReactionSubstructureQueryData> query_data = std::make_unique<ReactionSubstructureQueryData>(obj.getQueryReaction());
+            query_data->db_id = db;
 
             auto matcher = [&]() {
                 const auto bingo_indexes = sf::slock_safe_ptr(_indexes());

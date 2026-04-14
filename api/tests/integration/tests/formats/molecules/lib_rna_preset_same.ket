@@ -311,6 +311,30 @@
             {
                 "$ref": "monomerTemplate-Sugar"
             }
+        ],
+        "connections": [
+            {
+                "connectionType": "single",
+                "endpoint1": {
+                    "templateId": "monomerTemplate-Sugar",
+                    "attachmentPointId": "R3"
+                },
+                "endpoint2": {
+                    "templateId": "monomerTemplate-BaseX",
+                    "attachmentPointId": "R1"
+                }
+            },
+            {
+                "connectionType": "single",
+                "endpoint1": {
+                    "templateId": "monomerTemplate-Sugar",
+                    "attachmentPointId": "R2"
+                },
+                "endpoint2": {
+                    "templateId": "monomerTemplate-Phosphate",
+                    "attachmentPointId": "R1"
+                }
+            }
         ]
     }
 }

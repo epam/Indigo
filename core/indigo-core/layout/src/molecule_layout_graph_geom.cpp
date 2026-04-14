@@ -16,6 +16,7 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include "layout/metalayout.h"
 #include "layout/molecule_layout_graph.h"
 
 using namespace indigo;
@@ -67,6 +68,9 @@ void MoleculeLayoutGraph::_findAngles(int k, float s, float& x, float& y)
     a0 = _2FLOAT(b0 - M_PI / 100.);
 
     bool repeat = true;
+    int find_iter = 0;
+    // At pi/100 step from pi to pi/2 needs ~50 steps; 200 is generous failsafe.
+    const int find_max_iter = 200;
 
     while (repeat)
     {
@@ -75,6 +79,9 @@ void MoleculeLayoutGraph::_findAngles(int k, float s, float& x, float& y)
 
         if ((a0 < M_PI / 2 + EPSILON) && k > 3)
             throw Error("there are no roots");
+
+        if (++find_iter > find_max_iter)
+            throw Error("_findAngles: no root found (k=%d, s=%.4f)", k, s);
 
         if (k % 2 == 0)
         {
@@ -505,18 +512,17 @@ float MoleculeLayoutGraphSimple::calculateAngle(int v, int& v1, int& v2) const
     return max_angle;
 }
 
-// Calculate position by adding one unit with given angle to the segment
-void MoleculeLayoutGraph::_calculatePos(float phi, const Vec2f& v1, const Vec2f& v2, Vec2f& v)
+// Calculate next vertex position at a given angle relative to the v1->v2 direction.
+// Uses monomer bond length (1.5) for sequence layout with fixed atoms, default (1.0) otherwise.
+void MoleculeLayoutGraph::_calculatePos(float phi, const Vec2f& v1, const Vec2f& v2, Vec2f& v) const
 {
-    float alpha;
     Vec2f dir;
-
     dir.diff(v2, v1);
 
-    alpha = dir.tiltAngle();
-    alpha += phi;
+    const float length = (sequence_layout && _n_fixed > 0) ? LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH : LayoutOptions::DEFAULT_BOND_LENGTH;
 
-    v.set(v1.x + cos(alpha), v1.y + sin(alpha));
+    const float alpha = dir.tiltAngle() + phi;
+    v.set(v1.x + cos(alpha) * length, v1.y + sin(alpha) * length);
 }
 
 int MoleculeLayoutGraph::_getCycleDirection(const Cycle& cycle) const

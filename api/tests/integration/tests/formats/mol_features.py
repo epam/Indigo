@@ -1,4 +1,3 @@
-import difflib
 import os
 import sys
 
@@ -7,6 +6,7 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
+from common.util import find_diff
 from env_indigo import (  # noqa
     Indigo,
     IndigoException,
@@ -31,19 +31,16 @@ def trim_sed(s):
         return s
 
 
-def find_diff(a, b):
-    return "\n".join(
-        difflib.unified_diff(
-            [trim_sed(s) for s in a.splitlines()],
-            [trim_sed(s) for s in b.splitlines()],
-        )
-    )
+def reconstruct_file(t):
+    return "\n".join(trim_sed(s) for s in t.splitlines())
 
 
 def testReload(mol):
-    molfile = mol.molfile()
-    mol2 = indigo.loadMolecule(molfile)
-    molfile2 = mol2.molfile()
+    molfile_with_sed = mol.molfile()
+    mol2 = indigo.loadMolecule(molfile_with_sed)
+    molfile2_with_sed = mol2.molfile()
+    molfile = reconstruct_file(molfile_with_sed)
+    molfile2 = reconstruct_file(molfile2_with_sed)
     diff = find_diff(molfile, molfile2)
     if diff:
         print("Molecule is different after resave")

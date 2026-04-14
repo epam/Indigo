@@ -219,12 +219,28 @@ namespace indigo
     void bfsPropagate(KetDocument& mol, const std::vector<float>& dimensions, const std::unordered_map<std::string, std::vector<NeighborSpec>>& adjacency,
                       std::unordered_map<std::string, Vec2f>& newPos, std::unordered_set<std::string>& placed)
     {
+        // [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+        // Guard at function entry: if there are no monomers, there's nothing to propagate.
+        // This prevents crashes when expandedMonomersToAtoms() has already converted all monomers to atoms.
+        const auto& monomer_ids = mol.monomersIds();
+        if (monomer_ids.size() == 0)
+        {
+            return; // No monomers, nothing to propagate
+        }
+
         std::queue<std::string> q;
         for (auto& id : placed)
             q.push(id);
         if (placed.empty())
         {
-            auto start = mol.monomersIds().front();
+            // [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+            // Additional safety check before accessing .front() - though we already checked at function entry,
+            // this provides defense-in-depth in case the function is called in unexpected ways.
+            if (monomer_ids.size() == 0)
+            {
+                return; // No monomers to process, nothing to do
+            }
+            auto start = monomer_ids.front();
             auto& m = static_cast<KetMonomer&>(*mol.getMonomerById(start));
             Vec2f p = m.position().value_or(Vec2f{0, 0});
             newPos[start] = p;
@@ -385,6 +401,16 @@ namespace indigo
 
     void indigoExpand(KetDocument& mol)
     {
+        // [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+        // Early return if there are no monomers to expand. This prevents crashes
+        // when expandedMonomersToAtoms() has already converted all monomers to atoms.
+        // This is a valid state - a molecule with no monomers has nothing to expand.
+        const auto& monomer_ids = mol.monomersIds();
+        if (monomer_ids.size() == 0)
+        {
+            return; // No monomers to expand, nothing to do
+        }
+
         // fill all required for calculations
         std::vector<float> dimensions;                                          // R1-R2 distance
         std::unordered_map<std::string, std::vector<NeighborSpec>> neighborMap; // monomerId -> neighbors with R-group info

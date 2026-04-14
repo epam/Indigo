@@ -365,8 +365,8 @@
         "type": "monomer",
         "id": "0",
         "position": {
-            "x": 10.9095,
-            "y": -4.9904
+            "x": 1.2500,
+            "y": -1.2500
         },
         "alias": "T",
         "templateId": "T___Threonine"
@@ -375,8 +375,8 @@
         "type": "monomer",
         "id": "1",
         "position": {
-            "x": 9.5000,
-            "y": -5.5035
+            "x": 1.5105,
+            "y": -2.7272
         },
         "alias": "T",
         "templateId": "T___Threonine"
@@ -385,8 +385,8 @@
         "type": "monomer",
         "id": "2",
         "position": {
-            "x": 8.0905,
-            "y": -4.9904
+            "x": 0.7605,
+            "y": -4.0262
         },
         "alias": "T",
         "templateId": "T___Threonine"
@@ -395,8 +395,8 @@
         "type": "monomer",
         "id": "3",
         "position": {
-            "x": 7.3405,
-            "y": -3.6914
+            "x": -0.6491,
+            "y": -4.5393
         },
         "alias": "T",
         "templateId": "T___Threonine"
@@ -405,8 +405,8 @@
         "type": "monomer",
         "id": "4",
         "position": {
-            "x": 7.6009,
-            "y": -2.2142
+            "x": -2.0586,
+            "y": -4.0263
         },
         "alias": "T",
         "templateId": "T___Threonine"
@@ -415,8 +415,8 @@
         "type": "monomer",
         "id": "5",
         "position": {
-            "x": 8.7500,
-            "y": -1.2500
+            "x": -2.8086,
+            "y": -2.7272
         },
         "alias": "T",
         "templateId": "T___Threonine"
@@ -425,8 +425,8 @@
         "type": "monomer",
         "id": "6",
         "position": {
-            "x": 11.3991,
-            "y": -2.2142
+            "x": -1.3991,
+            "y": -0.2858
         },
         "alias": "T",
         "templateId": "T___Threonine"
@@ -435,8 +435,8 @@
         "type": "monomer",
         "id": "7",
         "position": {
-            "x": 11.6595,
-            "y": -3.6914
+            "x": 0.1009,
+            "y": -0.2858
         },
         "alias": "T",
         "templateId": "T___Threonine"
@@ -445,8 +445,8 @@
         "type": "monomer",
         "id": "8",
         "position": {
-            "x": 7.3405,
-            "y": -6.2895
+            "x": 1.9095,
+            "y": -4.9904
         },
         "alias": "C",
         "templateId": "C___Cysteine"
@@ -455,8 +455,8 @@
         "type": "monomer",
         "id": "9",
         "position": {
-            "x": 8.0905,
-            "y": -7.5885
+            "x": 3.3191,
+            "y": -4.4774
         },
         "alias": "C",
         "templateId": "C___Cysteine"
@@ -465,8 +465,8 @@
         "type": "monomer",
         "id": "10",
         "position": {
-            "x": 5.8405,
-            "y": -6.2895
+            "x": 1.6491,
+            "y": -6.4676
         },
         "alias": "C",
         "templateId": "C___Cysteine"
@@ -475,8 +475,8 @@
         "type": "monomer",
         "id": "11",
         "position": {
-            "x": 5.3502,
-            "y": -5.3614
+            "x": 0.6500,
+            "y": -6.7893
         },
         "alias": "D",
         "templateId": "D___Aspartic acid"
@@ -485,8 +485,8 @@
         "type": "monomer",
         "id": "12",
         "position": {
-            "x": 5.8632,
-            "y": -3.9519
+            "x": -0.6491,
+            "y": -6.0393
         },
         "alias": "D",
         "templateId": "D___Aspartic acid"
@@ -495,8 +495,8 @@
         "type": "monomer",
         "id": "13",
         "position": {
-            "x": 4.8991,
-            "y": -2.8028
+            "x": -1.9481,
+            "y": -6.7893
         },
         "alias": "D",
         "templateId": "D___Aspartic acid"
@@ -505,8 +505,8 @@
         "type": "monomer",
         "id": "14",
         "position": {
-            "x": 7.6009,
-            "y": -0.2858
+            "x": -3.9577,
+            "y": -3.6914
         },
         "alias": "E",
         "templateId": "E___Glutamic acid"
@@ -515,8 +515,8 @@
         "type": "monomer",
         "id": "15",
         "position": {
-            "x": 6.4519,
-            "y": 0.6784
+            "x": -5.1067,
+            "y": -4.6556
         },
         "alias": "E",
         "templateId": "E___Glutamic acid"
@@ -525,8 +525,8 @@
         "type": "monomer",
         "id": "16",
         "position": {
-            "x": 5.3028,
-            "y": 1.6425
+            "x": -6.2558,
+            "y": -5.6198
         },
         "alias": "E",
         "templateId": "E___Glutamic acid"
@@ -535,8 +535,8 @@
         "type": "monomer",
         "id": "17",
         "position": {
-            "x": 10.8492,
-            "y": 1.2780
+            "x": -4.9337,
+            "y": -0.2210
         },
         "alias": "D",
         "templateId": "D___Aspartic acid"
@@ -545,8 +545,8 @@
         "type": "monomer",
         "id": "18",
         "position": {
-            "x": 9.8198,
-            "y": 0.1870
+            "x": -4.0380,
+            "y": -1.4241
         },
         "alias": "D",
         "templateId": "D___Aspartic acid"
@@ -555,8 +555,8 @@
         "type": "monomer",
         "id": "19",
         "position": {
-            "x": 8.3602,
-            "y": 0.5329
+            "x": -4.6321,
+            "y": -2.8015
         },
         "alias": "D",
         "templateId": "D___Aspartic acid"
@@ -565,7 +565,7 @@
         "type": "monomer",
         "id": "20",
         "position": {
-            "x": 10.2500,
+            "x": -2.5481,
             "y": -1.2500
         },
         "alias": "4aPEGMal",
@@ -575,8 +575,8 @@
         "type": "monomer",
         "id": "21",
         "position": {
-            "x": 11.8015,
-            "y": 0.8340
+            "x": -4.3310,
+            "y": 0.6398
         },
         "alias": "K",
         "templateId": "K___Lysine"
@@ -585,8 +585,8 @@
         "type": "monomer",
         "id": "22",
         "position": {
-            "x": 11.6273,
-            "y": -0.6559
+            "x": -2.8941,
+            "y": 0.2096
         },
         "alias": "K",
         "templateId": "K___Lysine"
@@ -595,8 +595,8 @@
         "type": "monomer",
         "id": "23",
         "position": {
-            "x": 12.8305,
-            "y": -1.5516
+            "x": -1.8030,
+            "y": 1.2389
         },
         "alias": "K",
         "templateId": "K___Lysine"

@@ -672,6 +672,11 @@ namespace indigo
             setKetStrProp(_annotation.value(), text, text);
         };
 
+        void setAnnotation(const KetObjectAnnotation& annotation)
+        {
+            _annotation = annotation;
+        };
+
         const std::optional<KetObjectAnnotation>& annotation() const
         {
             return _annotation;
@@ -746,6 +751,7 @@ namespace indigo
         enum class StringProps
         {
             groupId,
+            templateId,
             monomerId,
             moleculeId,
             atomId,
@@ -810,6 +816,11 @@ namespace indigo
         {
             _annotation.emplace();
             setKetStrProp(_annotation.value(), text, text);
+        };
+
+        void setAnnotation(const KetObjectAnnotation& annotation)
+        {
+            _annotation = annotation;
         };
 
         const std::optional<KetObjectAnnotation>& annotation() const

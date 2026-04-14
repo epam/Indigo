@@ -32,6 +32,7 @@ RxnfileLoader::RxnfileLoader(Scanner& scanner) : _scanner(scanner)
     ignore_noncritical_query_features = false;
     ignore_no_chiral_flag = false;
     ignore_bad_valence = false;
+    valence_mode = ValenceMode::BIOVIA_2017;
 }
 
 RxnfileLoader::~RxnfileLoader()
@@ -77,6 +78,7 @@ void RxnfileLoader::_loadReaction(MonomerTemplateLibrary* monomer_lib)
     molfileLoader.ignore_noncritical_query_features = ignore_noncritical_query_features;
     molfileLoader.ignore_no_chiral_flag = ignore_no_chiral_flag;
     molfileLoader.ignore_bad_valence = ignore_bad_valence;
+    molfileLoader.valence_mode = valence_mode;
     _readRxnHeader();
 
     if (_v3000)

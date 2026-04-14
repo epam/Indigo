@@ -2025,6 +2025,59 @@ class IndigoObject:
             self._lib().indigoDeleteSGroupAttachmentPoint(self.id, apidx)
         )
 
+    def iterateSGroupAttachmentPoints(self):
+        """SGroup method iterates attachment points of a superatom S-group
+
+        Returns:
+            IndigoObject: attachment points iterator
+        """
+
+        return IndigoObject(
+            self.session,
+            IndigoLib.checkResult(
+                self._lib().indigoIterateSGroupAttachmentPoints(self.id)
+            ),
+            self,
+        )
+
+    def getSGroupAttachmentPointAtomIdx(self):
+        """SGroup attachment point method returns the attachment atom index
+
+        Returns:
+            int: atom index
+        """
+
+        return IndigoLib.checkResult(
+            self._lib().indigoGetSGroupAttachmentPointAtomIdx(self.id)
+        )
+
+    def getSGroupAttachmentPointLeaveAtom(self):
+        """SGroup attachment point method returns the leaving atom index
+
+        Returns:
+            Optional[int]: leaving atom index, or None if not set
+        """
+        value = c_int()
+        res = IndigoLib.checkResult(
+            self._lib().indigoGetSGroupAttachmentPointLeaveAtom(
+                self.id, pointer(value)
+            )
+        )
+        if res == 0:
+            return None
+        return value.value
+
+    def getSGroupAttachmentPointLabel(self):
+        """SGroup attachment point method returns the attachment point label (e.g. 'Al', 'R1')
+
+        Returns:
+            str: attachment point label string
+        """
+
+        return IndigoLib.checkResultString(
+            self._lib().indigoGetSGroupAttachmentPointLabel(self.id)
+        )
+
     def getSGroupDisplayOption(self):
         """SGroup method returns display option
 
@@ -2990,6 +3043,24 @@ class IndigoObject:
         return bool(
             IndigoLib.checkResult(self._lib().indigoIsHighlighted(self.id))
         )
+
+    def select(self):
+        """Atom or bond method to add selection
+
+        Returns:
+            int: 1 if there are no errors
+        """
+
+        return IndigoLib.checkResult(self._lib().indigoSelect(self.id))
+
+    def unselect(self):
+        """Atom, bond, molecule, or reaction method to remove selection
+
+        Returns:
+            int: 1 if there are no errors
+        """
+
+        return IndigoLib.checkResult(self._lib().indigoUnselect(self.id))
 
     def isSelected(self):
         """Atom or bond method returns True if selected
@@ -4403,6 +4474,34 @@ class IndigoObject:
 
         return IndigoLib.checkResult(
             self._lib().indigoExpandAbbreviations(self.id)
+        )
+
+    # [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+    def expandedMonomersToAtoms(self):
+        """Molecule method converts expanded template atoms to regular atoms.
+
+        This method takes a molecule with expanded monomers (template atoms
+        marked as expanded) and converts them to fully expanded regular atoms.
+        Group pseudoatoms (e.g. OH, NH2) are also expanded to explicit atoms
+        for V3000/molfile interoperability with toolkits such as RDKit.
+        This is required for:
+        - Accurate molecular weight calculations
+        - Clean molfile output without template metadata
+        - Compatibility with third-party tools without monomer libraries
+
+        The original molecule is not modified. A new molecule is returned.
+
+        Returns:
+            IndigoObject: New molecule with all expanded monomers converted to atoms
+
+        Raises:
+            IndigoException: If the operation fails
+        """
+        return IndigoObject(
+            self.session,
+            IndigoLib.checkResult(
+                self._lib().indigoExpandedMonomersToAtoms(self.id)
+            ),
         )
 
     def dbgInternalType(self):

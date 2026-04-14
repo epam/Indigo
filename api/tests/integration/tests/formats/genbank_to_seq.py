@@ -1,17 +1,12 @@
-import difflib
 import os
 import sys
-
-
-def find_diff(a, b):
-    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
-
 
 sys.path.append(
     os.path.normpath(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
+from common.util import compare_diff
 from env_indigo import *  # noqa
 
 indigo = Indigo()
@@ -37,14 +32,5 @@ for infile in files:
     mol = indigo.loadSequenceFromFile(
         os.path.join(root, filename), infile["seq_type"], lib
     )
-    # with open(os.path.join(ref_path, filename), "w") as file:
-    #     file.write(mol.sequence(lib))
-    with open(os.path.join(ref_path, filename), "r") as file:
-        seq_ref = file.read()
     seq = mol.sequence(lib)
-    diff = find_diff(seq_ref, seq)
-    if not diff:
-        print(filename + ".seq:SUCCEED")
-    else:
-        print(filename + ".seq:FAILED")
-        print(diff)
+    compare_diff(ref_path, filename, seq)

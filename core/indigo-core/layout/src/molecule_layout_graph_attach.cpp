@@ -58,10 +58,19 @@ bool MoleculeLayoutGraphSimple::_splitCycle(const Cycle& cycle, const Array<int>
             if (cycle_vertex_types[k] == ELEMENT_NOT_DRAWN)
                 return false;
 
-        // 4. Check boundary vertices are marked as boundary
+        // 4. Check boundary vertices are marked as boundary.
+        // In sequence_layout, ELEMENT_NOT_PLANAR (set by _attachCycleWithIntersections)
+        // is also treated as a valid drawn boundary.  In standard layout, only
+        // ELEMENT_BOUNDARY is accepted to preserve the original strict semantics.
         if (check_boundary)
-            if (cycle_vertex_types[i - 1] != ELEMENT_BOUNDARY || cycle_vertex_types[(j + 1) % cycle.vertexCount()] != ELEMENT_BOUNDARY)
+        {
+            int t_beg = cycle_vertex_types[i - 1];
+            int t_end = cycle_vertex_types[(j + 1) % cycle.vertexCount()];
+            bool beg_ok = (t_beg == ELEMENT_BOUNDARY) || (sequence_layout && t_beg == ELEMENT_NOT_PLANAR);
+            bool end_ok = (t_end == ELEMENT_BOUNDARY) || (sequence_layout && t_end == ELEMENT_NOT_PLANAR);
+            if (!beg_ok || !end_ok)
                 return false;
+        }
 
         // 5. Make internal and external chains
         c_beg = cycle.getVertex(i - 1);
@@ -94,10 +103,17 @@ bool MoleculeLayoutGraphSimple::_splitCycle(const Cycle& cycle, const Array<int>
             if (cycle_vertex_types[k] == ELEMENT_NOT_DRAWN)
                 return false;
 
-        // 4. Check boundary vertices are marked as boundary
+        // 4. Check boundary vertices are marked as boundary.
+        // Same logic as above: ELEMENT_NOT_PLANAR allowed only in sequence_layout.
         if (check_boundary)
-            if (cycle_vertex_types[i] != ELEMENT_BOUNDARY || cycle_vertex_types[j] != ELEMENT_BOUNDARY)
+        {
+            int t_beg2 = cycle_vertex_types[i];
+            int t_end2 = cycle_vertex_types[j];
+            bool beg_ok2 = (t_beg2 == ELEMENT_BOUNDARY) || (sequence_layout && t_beg2 == ELEMENT_NOT_PLANAR);
+            bool end_ok2 = (t_end2 == ELEMENT_BOUNDARY) || (sequence_layout && t_end2 == ELEMENT_NOT_PLANAR);
+            if (!beg_ok2 || !end_ok2)
                 return false;
+        }
 
         // 5. Make internal and external chains
         c_beg = cycle.getVertex(i);
@@ -212,7 +228,179 @@ bool MoleculeLayoutGraphSimple::_attachCycleOutside(const Cycle& cycle, float le
     int c_beg, c_end;
 
     if (!_splitCycle(cycle, cycle_vertex_types, true, chain_ext, chain_int, c_beg, c_end))
+    {
+        if (sequence_layout)
+        {
+            // Multiple separated NOT_DRAWN blocks (or isolated NOT_DRAWN vertices).
+            // Robust strategy: identify only the "arc-consistent" drawn vertices —
+            // those that look like they belong to the same regular-polygon arc
+            // (mutual distances ≈ bond multiples of bond_length).  Use only those
+            // to compute the circumscribed circle, then place each NOT_DRAWN vertex
+            // at the angular midpoint between its drawn neighbors on that circle.
+
+            // Collect drawn vertices and their positions.
+            QS_DEF(Array<int>, drawn_idx); // index into cycle
+            drawn_idx.clear();
+            for (int di = 0; di < cycle.vertexCount(); di++)
+                if (cycle_vertex_types[di] > 0)
+                    drawn_idx.push(di);
+
+            if (drawn_idx.size() < 2)
+                return false;
+
+            // Estimate bond_length from adjacent drawn-vertex pairs in the cycle.
+            float sum_bond = 0.f;
+            int n_bond = 0;
+            int nc = cycle.vertexCount();
+            for (int bi = 0; bi < drawn_idx.size(); bi++)
+            {
+                int di = drawn_idx[bi];
+                int di_next = (di + 1) % nc;
+                if (cycle_vertex_types[di_next] > 0)
+                {
+                    float d = Vec2f::dist(_layout_vertices[cycle.getVertex(di)].pos, _layout_vertices[cycle.getVertex(di_next)].pos);
+                    sum_bond += d;
+                    n_bond++;
+                }
+            }
+            float est_bond = (n_bond > 0) ? sum_bond / n_bond : length;
+
+            // Keep only drawn verts whose bond-distance to a drawn cycle-neighbor
+            // is ≤ est_bond × kArcBondTolerance.
+            // Rationale: adjacent ring vertices have d ≈ bond_length (= est_bond).
+            // Backbone-grid vertices can sit at an oblique angle where the in-cycle
+            // distance to the next drawn vertex ≈ sqrt(2) × bond_length ≈ 1.41.
+            // A threshold of 1.3 sits between these two cases: arc neighbours pass,
+            // non-arc backbone neighbours are rejected.
+            const float kArcBondTolerance = 1.3f;
+            QS_DEF(Array<int>, arc_idx);
+            arc_idx.clear();
+            for (int bi = 0; bi < drawn_idx.size(); bi++)
+            {
+                int di = drawn_idx[bi];
+                bool ok = false;
+                int di_prev = (di - 1 + nc) % nc;
+                int di_next = (di + 1) % nc;
+                if (cycle_vertex_types[di_prev] > 0)
+                {
+                    float d = Vec2f::dist(_layout_vertices[cycle.getVertex(di)].pos, _layout_vertices[cycle.getVertex(di_prev)].pos);
+                    if (d < est_bond * kArcBondTolerance)
+                        ok = true;
+                }
+                if (!ok && cycle_vertex_types[di_next] > 0)
+                {
+                    float d = Vec2f::dist(_layout_vertices[cycle.getVertex(di)].pos, _layout_vertices[cycle.getVertex(di_next)].pos);
+                    if (d < est_bond * kArcBondTolerance)
+                        ok = true;
+                }
+                if (ok)
+                    arc_idx.push(di);
+            }
+
+            if (arc_idx.size() < 2)
+                return false;
+
+            // Compute centroid and mean radius from arc-consistent drawn verts only.
+            float cx = 0.f, cy = 0.f;
+            for (int bi = 0; bi < arc_idx.size(); bi++)
+            {
+                cx += _layout_vertices[cycle.getVertex(arc_idx[bi])].pos.x;
+                cy += _layout_vertices[cycle.getVertex(arc_idx[bi])].pos.y;
+            }
+            cx /= arc_idx.size();
+            cy /= arc_idx.size();
+
+            float radius = 0.f;
+            for (int bi = 0; bi < arc_idx.size(); bi++)
+            {
+                float dx = _layout_vertices[cycle.getVertex(arc_idx[bi])].pos.x - cx;
+                float dy = _layout_vertices[cycle.getVertex(arc_idx[bi])].pos.y - cy;
+                radius += sqrtf(dx * dx + dy * dy);
+            }
+            radius /= arc_idx.size();
+            if (radius < 0.01f)
+                return false;
+
+            // Check consistency: spread of radii of arc verts must be < 15% of radius.
+            float rmin = radius, rmax = radius;
+            for (int bi = 0; bi < arc_idx.size(); bi++)
+            {
+                float dx = _layout_vertices[cycle.getVertex(arc_idx[bi])].pos.x - cx;
+                float dy = _layout_vertices[cycle.getVertex(arc_idx[bi])].pos.y - cy;
+                float r = sqrtf(dx * dx + dy * dy);
+                if (r < rmin)
+                    rmin = r;
+                if (r > rmax)
+                    rmax = r;
+            }
+            if (rmax - rmin > 0.15f * radius)
+                return false; // positions too inconsistent to derive a reliable circle
+
+            // Place each NOT_DRAWN vertex at angular midpoint between its drawn
+            // cycle-neighbors (using the full drawn_idx set — backbone verts are OK
+            // as angular references, they just can't define the circle).
+            bool any_placed = false;
+            for (int di = 0; di < nc; di++)
+            {
+                if (cycle_vertex_types[di] != 0)
+                    continue; // already drawn
+
+                // Find prev/next drawn neighbors (wrap around).
+                int prev_di = (di - 1 + nc) % nc;
+                int next_di = (di + 1) % nc;
+                int steps = 0;
+                while (cycle_vertex_types[prev_di] == 0 && steps++ < nc)
+                    prev_di = (prev_di - 1 + nc) % nc;
+                steps = 0;
+                while (cycle_vertex_types[next_di] == 0 && steps++ < nc)
+                    next_di = (next_di + 1) % nc;
+                if (cycle_vertex_types[prev_di] == 0 || cycle_vertex_types[next_di] == 0)
+                    continue;
+
+                // Use only arc-consistent neighbors to compute angle.
+                // Prefer arc_idx neighbors; if neither is in arc_idx, skip.
+                bool prev_arc = false, next_arc = false;
+                for (int bi = 0; bi < arc_idx.size(); bi++)
+                {
+                    if (arc_idx[bi] == prev_di)
+                    {
+                        prev_arc = true;
+                        break;
+                    }
+                }
+                for (int bi = 0; bi < arc_idx.size(); bi++)
+                {
+                    if (arc_idx[bi] == next_di)
+                    {
+                        next_arc = true;
+                        break;
+                    }
+                }
+                if (!prev_arc && !next_arc)
+                    continue;
+
+                int vp = cycle.getVertex(prev_di);
+                int vn = cycle.getVertex(next_di);
+                float ap = atan2f(_layout_vertices[vp].pos.y - cy, _layout_vertices[vp].pos.x - cx);
+                float an = atan2f(_layout_vertices[vn].pos.y - cy, _layout_vertices[vn].pos.x - cx);
+                float diff = an - ap;
+                while (diff > (float)M_PI)
+                    diff -= 2.f * (float)M_PI;
+                while (diff < -(float)M_PI)
+                    diff += 2.f * (float)M_PI;
+                float a_mid = ap + 0.5f * diff;
+
+                int v = cycle.getVertex(di);
+                _layout_vertices[v].pos.x = cx + radius * cosf(a_mid);
+                _layout_vertices[v].pos.y = cy + radius * sinf(a_mid);
+                _layout_vertices[v].type = ELEMENT_BOUNDARY;
+                _layout_vertices[v].is_nailed = true;
+                any_placed = true;
+            }
+            return any_placed;
+        }
         return false;
+    }
 
     int i, k;
     bool is_attached = false;
@@ -226,18 +414,60 @@ bool MoleculeLayoutGraphSimple::_attachCycleOutside(const Cycle& cycle, float le
     // First check that both vertices are on the border
     Cycle border;
     _getBorder(border);
+
+    bool use_chain_int_border = false;
     if (border.findVertex(c_beg) == -1 || border.findVertex(c_end) == -1)
     {
-        // One or both vertices are not on the border - cannot attach this way
-        return false;
+        // _getBorder returned a border that doesn't include our attachment points.
+        // This can happen when pre-marked backbone cycles confuse the boundary traversal.
+        // Fall back to using chain_int as border1 directly. chain_int = the drawn path
+        // through the already-laid-out cycle (exactly what we need for attachment).
+        if (sequence_layout)
+            use_chain_int_border = true;
+        else
+            return false;
     }
 
-    _splitBorder(c_beg, c_end, border1v, border1e, border2v, border2e);
+    if (!use_chain_int_border)
+        _splitBorder(c_beg, c_end, border1v, border1e, border2v, border2e);
+    else
+    {
+        // Use chain_int as border1 (direct path through the drawn cycle).
+        border1v.copy(chain_int);
+        border1e.clear();
+        // Build border1e from chain_int vertices using edge lookups.
+        // chain_int is a path through the drawn cycle so adjacent vertices
+        // are guaranteed to share an edge; nei == -1 would be a bug.
+        for (int bi = 0; bi + 1 < chain_int.size(); bi++)
+        {
+            const Vertex& bv = getVertex(chain_int[bi]);
+            int ei = bv.findNeiVertex(chain_int[bi + 1]);
+            border1e.push(ei >= 0 ? bv.neiEdge(ei) : -1);
+        }
+        // border2 = short/empty (just c_beg-c_end direct if exists, else empty)
+        border2v.clear();
+        border2e.clear();
+        border2v.push(c_beg);
+        border2v.push(c_end);
+    }
 
     QS_DEF(MoleculeLayoutGraphSimple, next_bc);
     QS_DEF(Array<int>, mapping);
 
-    for (int n_try = 0; n_try < 2 && !is_attached; n_try++)
+    // n_try iteration plan:
+    //   0 — ccw=true,  with convexity checks  (standard)
+    //   1 — ccw=false, with convexity checks  (standard)
+    //   2 — ccw=true,  bypass checks (sequence_layout concave fused ring)
+    //   3 — ccw=false, bypass checks
+    // Bypass passes are enabled when the shared boundary has 3+ edges, which
+    // indicates a fused multi-ring where the attachment region is concave and
+    // the convexity checks give false negatives.
+    static const int kMaxTryStandard = 2;       // passes 0-1
+    static const int kMaxTryWithBypass = 4;     // passes 0-3
+    static const int kBypassMinSharedEdges = 3; // shared edges threshold for bypass
+    int max_try = (sequence_layout && n_common_e >= kBypassMinSharedEdges) ? kMaxTryWithBypass : kMaxTryStandard;
+
+    for (int n_try = 0; n_try < max_try && !is_attached; n_try++)
     {
         // Complete regular polygon by chain_ext (on the one side if n_try == 1 and other side if n_try == 2
         next_bc.cloneLayoutGraph(*this, &mapping);
@@ -256,17 +486,31 @@ bool MoleculeLayoutGraphSimple::_attachCycleOutside(const Cycle& cycle, float le
             if (!next_bc._drawRegularCurveEx(chain_ext, c_beg, c_end, length, true, ELEMENT_BOUNDARY, mapping))
                 return false;
         }
-        else // (n_try == 1)
+        else if (n_try == 1)
         {
             if (!next_bc._drawRegularCurveEx(chain_ext, c_beg, c_end, length, false, ELEMENT_BOUNDARY, mapping))
-                return false;
+                continue; // try bypass modes
+        }
+        else if (n_try == 2)
+        {
+            // Bypass mode: force ccw=true, skip convexity checks below
+            if (!next_bc._drawRegularCurveEx(chain_ext, c_beg, c_end, length, true, ELEMENT_BOUNDARY, mapping))
+                continue;
+        }
+        else // n_try == 3
+        {
+            // Bypass mode: force ccw=false, skip convexity checks below
+            if (!next_bc._drawRegularCurveEx(chain_ext, c_beg, c_end, length, false, ELEMENT_BOUNDARY, mapping))
+                continue;
         }
 
-        if (!_checkBadTryChainOutside(chain_ext, next_bc, mapping))
+        bool bypass_checks = (n_try >= 2);
+
+        if (!bypass_checks && !_checkBadTryChainOutside(chain_ext, next_bc, mapping))
             continue;
 
         // Check edges from chain_ext intersect previous border other than in the ends
-        if (!_checkBadTryBorderIntersection(chain_ext, next_bc, mapping))
+        if (!bypass_checks && !_checkBadTryBorderIntersection(chain_ext, next_bc, mapping))
             continue;
 
         // If Border1 lays inside cycle [chain_ext,border2] than it becomes internal and Border2 becomes boundary
@@ -315,7 +559,9 @@ bool MoleculeLayoutGraphSimple::_attachCycleOutside(const Cycle& cycle, float le
         }
         // Check if border1, border2 are outside cycle
         // (draw cycle outside not inside)
-        if (n_try == 0)
+        // n_try=2 is ccw=true bypass (same check as n_try=0)
+        // n_try=3 is ccw=false bypass (always accepted like n_try=1)
+        if (n_try == 0 || n_try == 2)
         {
             for (i = 1; i < border1v.size() - 1 && !is_attached; i++)
                 if (next_bc._isPointOutsideCycleEx(cycle, next_bc._layout_vertices[mapping[border1v[i]]].pos, mapping))
@@ -329,12 +575,61 @@ bool MoleculeLayoutGraphSimple::_attachCycleOutside(const Cycle& cycle, float le
             is_attached = true;
     }
 
-    // Copy new layout
+    // Copy the new layout back.
+    // We use a full copyLayoutTo (needed to keep the border graph valid), but
+    // then restore NOT_DRAWN status for any vertex that (a) was NOT_DRAWN before
+    // this attachment and (b) does NOT belong to the current cycle.
+    // Without this, border1v/border2v type mutations (IGNORE → INTERNAL → BOUNDARY)
+    // propagate to future cycles and inflate n_cv (causing layout failures).
     if (is_attached)
     {
-        for (int i = 0; i < cycle.vertexCount(); i++)
-            _layout_vertices[cycle.getVertex(i)].is_nailed = true;
-        next_bc.copyLayoutTo(*this, mapping);
+        // Mark cycle vertices as nailed before the copy (original behaviour).
+        // Without this, copyLayoutTo may reposition already-drawn atoms.
+        for (int ci = 0; ci < cycle.vertexCount(); ci++)
+        {
+            int cv = cycle.getVertex(ci);
+            _layout_vertices[cv].is_nailed = true;
+            _layout_vertices[cv].is_inside = true;
+        }
+
+        if (sequence_layout)
+        {
+            // In sequence_layout, border1v/border2v type mutations (IGNORE → INTERNAL)
+            // from copyLayoutTo propagate to vertices that belong to future cycles,
+            // incorrectly pre-marking them as drawn (n_cv inflation).
+            // Fix: snapshot which vertices are NOT_DRAWN before the copy, then
+            // restore that status for any vertex outside the just-attached cycle.
+
+            // Record which vertices were NOT_DRAWN (future cycles).
+            QS_DEF(Array<int>, was_not_drawn);
+            was_not_drawn.clear();
+            for (int vi = vertexBegin(); vi < vertexEnd(); vi = vertexNext(vi))
+                if (_layout_vertices[vi].type == ELEMENT_NOT_DRAWN)
+                    was_not_drawn.push(vi);
+
+            // Build a set of current-cycle vertex indices for O(1) lookup.
+            QS_DEF(Array<byte>, in_cycle);
+            in_cycle.resize(vertexEnd());
+            in_cycle.zerofill();
+            for (int ci = 0; ci < cycle.vertexCount(); ci++)
+                in_cycle[cycle.getVertex(ci)] = 1;
+
+            // Full copy — restores all positions, types, and edge types correctly.
+            next_bc.copyLayoutTo(*this, mapping);
+
+            // Restore NOT_DRAWN for vertices outside the just-attached cycle.
+            for (int k = 0; k < was_not_drawn.size(); k++)
+            {
+                int vi = was_not_drawn[k];
+                if (vi < (int)in_cycle.size() && !in_cycle[vi])
+                    _layout_vertices[vi].type = ELEMENT_NOT_DRAWN;
+            }
+        }
+        else
+        {
+            // Standard layout: plain copy is correct.
+            next_bc.copyLayoutTo(*this, mapping);
+        }
     }
 
     return is_attached;
@@ -536,8 +831,12 @@ bool MoleculeLayoutGraphSimple::_attachCycleWithIntersections(const Cycle& cycle
         {
             attached = true;
 
-            while (!_drawRegularCurve(chain_ext, c_beg, c_end, length, true, ELEMENT_NOT_PLANAR))
+            while (!_drawRegularCurve(chain_ext, c_beg, c_end, length, true, ELEMENT_NOT_PLANAR) && length < max_length)
                 length *= 1.2f;
+
+            // If we hit max_length without success, give up on this chain
+            if (length >= max_length)
+                break;
 
             // Choose position with minimal energy
             Vec2f& pos1 = getPos(chain_ext[1]);
@@ -600,6 +899,19 @@ bool MoleculeLayoutGraphSimple::_attachCycleWithIntersections(const Cycle& cycle
                 }
             }
         }
+    }
+
+    // In sequence_layout, reclassify NOT_PLANAR vertices/edges to BOUNDARY so that
+    // subsequent _attachCycleOutside/_getBorder can find them as valid attachment anchors.
+    // In standard layout NOT_PLANAR is the intended final state — do not change it.
+    if (sequence_layout)
+    {
+        for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
+            if (_layout_vertices[i].type == ELEMENT_NOT_PLANAR)
+                _layout_vertices[i].type = ELEMENT_BOUNDARY;
+        for (i = edgeBegin(); i < edgeEnd(); i = edgeNext(i))
+            if (_layout_edges[i].type == ELEMENT_NOT_PLANAR)
+                _layout_edges[i].type = ELEMENT_BOUNDARY;
     }
 
     return true;

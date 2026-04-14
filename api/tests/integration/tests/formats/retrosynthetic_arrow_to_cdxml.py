@@ -1,17 +1,12 @@
-﻿import difflib
-import os
+﻿import os
 import sys
-
-
-def find_diff(a, b):
-    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
-
 
 sys.path.append(
     os.path.normpath(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
+from common.util import compare_diff
 from env_indigo import Indigo, joinPathPy  # noqa
 
 indigo = Indigo()
@@ -47,20 +42,5 @@ for reaction, test_case_filename in reaction_types:
     rc = indigo.loadReactionFromFile(
         os.path.join(root_rea, test_case_filename + ".ket")
     )
-
-    filename = test_case_filename + ".cdxml"
-
     cdxml_text = rc.cdxml()
-
-    # with open(os.path.join(ref_path, filename), "w") as file:
-    #     file.write(cdxml_text)
-
-    with open(os.path.join(ref_path, filename), "r") as file:
-        format_ref = file.read()
-
-    diff = find_diff(format_ref, cdxml_text)
-    if not diff:
-        print(filename + ":SUCCEED")
-    else:
-        print(filename + ":FAILED")
-        print(diff)
+    compare_diff(ref_path, test_case_filename + ".cdxml", cdxml_text)

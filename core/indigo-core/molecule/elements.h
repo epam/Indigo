@@ -166,10 +166,8 @@ namespace indigo
 
     inline bool ElementHygrodenOnLeft(int el)
     {
-        if (el == ELEM_O || el == ELEM_F || el == ELEM_S || el == ELEM_Cl || el == ELEM_Se || el == ELEM_Br || el == ELEM_I)
-            return true;
-        return false;
-    };
+        return el == ELEM_O || el == ELEM_F || el == ELEM_S || el == ELEM_Cl || el == ELEM_Se || el == ELEM_Br || el == ELEM_I;
+    }
 
     enum LABEL_MODE
     {
@@ -191,6 +189,13 @@ namespace indigo
         HYDROGEN = 1,
         DEUTERIUM = 2,
         TRITIUM = 3
+    };
+
+    struct DLLEXPORT ValenceResult
+    {
+        int valence = 0;
+        int implicit_h = 0;
+        bool valid = false;
     };
 
     class DLLEXPORT Element
@@ -219,6 +224,8 @@ namespace indigo
         static int getMaximumConnectivity(int elem, int charge, int radical, bool use_d_orbital);
         static int orbitals(int elem, bool use_d_orbital);
         static int electrons(int elem, int charge);
+        static int baseValence(int eff);
+        static ValenceResult calcValenceResult(int elem, int charge, int radical, int conn);
 
         static int group(int element);
         static int period(int period);
@@ -256,7 +263,6 @@ namespace indigo
         void _addElementIsotope(int element, int isotope, double mass, double isotopic_composition);
         void _initAllIsotopes();
         void _initDefaultIsotopes();
-        void _initAromatic();
 
         double _getStandardAtomicWeight(int element) const;
         double _getRelativeIsotopicMass(int element, int isotope) const;
@@ -276,8 +282,6 @@ namespace indigo
             int most_abundant_isotope;
             // Minimum and maximum isotope index
             int min_isotope_index, max_isotope_index;
-
-            bool can_be_aromatic;
         };
 
         // Isotopes mass key
