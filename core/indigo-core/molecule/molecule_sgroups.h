@@ -208,6 +208,7 @@ namespace indigo
         ~RepeatingUnit() override;
 
         int connectivity;
+
     private:
         RepeatingUnit(const RepeatingUnit&);
     };
