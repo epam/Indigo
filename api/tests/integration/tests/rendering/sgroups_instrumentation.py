@@ -35,6 +35,22 @@ def testSGroupsInstrumentation():
     sgroup3 = mol.addDataSGroup([10], [], "ID", "c")
     sgroup4 = mol.addDataSGroup([11], [], "ID", "d")
     print(mol.molfile())
+    print(
+        "sgroup1 counts: atoms=%d bonds=%d"
+        % (sgroup1.countAtoms(), sgroup1.countBonds())
+    )
+    print(
+        "sgroup2 counts: atoms=%d bonds=%d"
+        % (sgroup2.countAtoms(), sgroup2.countBonds())
+    )
+    print(
+        "sgroup3 counts: atoms=%d bonds=%d"
+        % (sgroup3.countAtoms(), sgroup3.countBonds())
+    )
+    print(
+        "sgroup4 counts: atoms=%d bonds=%d"
+        % (sgroup4.countAtoms(), sgroup4.countBonds())
+    )
     saver.append(mol)
 
     mol2 = indigo.unserialize(mol.serialize())

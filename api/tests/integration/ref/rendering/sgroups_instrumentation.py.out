@@ -43,6 +43,11 @@ M  SDD   4     0.0000    0.0000    AA    ALL  1       1
 M  SED   4 d
 M  END
 
+sgroup1 counts: atoms=3 bonds=2
+sgroup2 counts: atoms=1 bonds=0
+sgroup3 counts: atoms=1 bonds=0
+sgroup4 counts: atoms=1 bonds=0
+
 
   -INDIGO-01000000002D
 

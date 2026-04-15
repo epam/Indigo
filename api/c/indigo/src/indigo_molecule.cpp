@@ -1268,6 +1268,27 @@ CEXPORT int indigoIterateBonds(int molecule)
     INDIGO_END(-1);
 }
 
+static SGroup* _getSGroupFromObject(IndigoObject& obj)
+{
+    switch (obj.type)
+    {
+    case IndigoObject::DATA_SGROUP:
+        return &IndigoDataSGroup::cast(obj).get();
+    case IndigoObject::SUPERATOM:
+        return &IndigoSuperatom::cast(obj).get();
+    case IndigoObject::REPEATING_UNIT:
+        return &IndigoRepeatingUnit::cast(obj).get();
+    case IndigoObject::MULTIPLE_GROUP:
+        return &IndigoMultipleGroup::cast(obj).get();
+    case IndigoObject::GENERIC_SGROUP:
+        return &IndigoGenericSGroup::cast(obj).get();
+    case IndigoObject::SGROUP:
+        return &IndigoSGroup::cast(obj).get();
+    default:
+        return nullptr;
+    }
+}
+
 CEXPORT int indigoCountAtoms(int molecule)
 {
     INDIGO_BEGIN
@@ -1284,16 +1305,10 @@ CEXPORT int indigoCountAtoms(int molecule)
             IndigoSubmolecule& sm = (IndigoSubmolecule&)obj;
             return sm.vertices.size();
         }
-        if (obj.type == IndigoObject::DATA_SGROUP)
-        {
-            IndigoDataSGroup& dsg = IndigoDataSGroup::cast(obj);
-            return dsg.get().atoms.size();
-        }
-        if (obj.type == IndigoObject::SUPERATOM)
-        {
-            IndigoSuperatom& sa = IndigoSuperatom::cast(obj);
-            return sa.get().atoms.size();
-        }
+
+        SGroup* sg = _getSGroupFromObject(obj);
+        if (sg != nullptr)
+            return sg->atoms.size();
 
         BaseMolecule& mol = obj.getBaseMolecule();
 
@@ -1318,16 +1333,10 @@ CEXPORT int indigoCountBonds(int molecule)
             IndigoSubmolecule& sm = (IndigoSubmolecule&)obj;
             return sm.edges.size();
         }
-        if (obj.type == IndigoObject::DATA_SGROUP)
-        {
-            IndigoDataSGroup& dsg = IndigoDataSGroup::cast(obj);
-            return dsg.get().bonds.size();
-        }
-        if (obj.type == IndigoObject::SUPERATOM)
-        {
-            IndigoSuperatom& sa = IndigoSuperatom::cast(obj);
-            return sa.get().bonds.size();
-        }
+
+        SGroup* sg = _getSGroupFromObject(obj);
+        if (sg != nullptr)
+            return sg->bonds.size();
 
         BaseMolecule& mol = obj.getBaseMolecule();
 
