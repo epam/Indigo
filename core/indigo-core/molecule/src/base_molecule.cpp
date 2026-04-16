@@ -18,6 +18,7 @@
 
 #include <algorithm>
 #include <numeric>
+#include <unordered_set>
 
 #include "base_cpp/crc32.h"
 #include "base_cpp/output.h"
@@ -1275,6 +1276,64 @@ int BaseMolecule::getSingleAllowedRGroup(int atom_idx)
     }
 
     throw Error("getSingleAllowedRGroup(): no r-groups defined on atom #%d", atom_idx);
+}
+
+void BaseMolecule::removeUnusedRGroups()
+{
+    std::unordered_set<int> used_rgroups;
+    bool changed = true;
+
+    for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
+    {
+        if (isRSite(i))
+        {
+            QS_DEF(Array<int>, allowed);
+            getAllowedRGroups(i, allowed);
+            for (int j = 0; j < allowed.size(); ++j)
+                used_rgroups.insert(allowed[j]);
+        }
+    }
+
+    while (changed)
+    {
+        changed = false;
+        for (auto rg_idx : used_rgroups)
+        {
+            if (rg_idx > rgroups.getRGroupCount() || rg_idx < 1)
+                continue;
+
+            auto& rg = rgroups.getRGroup(rg_idx);
+            for (int f = rg.fragments.begin(); f != rg.fragments.end(); f = rg.fragments.next(f))
+            {
+                BaseMolecule& frag = *rg.fragments[f];
+                for (int k = frag.vertexBegin(); k < frag.vertexEnd(); k = frag.vertexNext(k))
+                {
+                    if (frag.isRSite(k))
+                    {
+                        QS_DEF(Array<int>, allowed);
+                        frag.getAllowedRGroups(k, allowed);
+                        for (int j = 0; j < allowed.size(); ++j)
+                        {
+                            if (used_rgroups.find(allowed[j]) == used_rgroups.end())
+                            {
+                                used_rgroups.insert(allowed[j]);
+                                changed = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    for (int i = 1; i <= rgroups.getRGroupCount(); ++i)
+    {
+        if (used_rgroups.find(i) == used_rgroups.end())
+        {
+            rgroups.getRGroup(i).fragments.clear();
+            rgroups.getRGroup(i).clear();
+        }
+    }
 }
 
 int BaseMolecule::countRSites()

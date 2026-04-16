@@ -142,6 +142,7 @@ void MolfileLoader::loadMolBlock3000(Molecule& mol)
     _qmol = 0;
     _mol = &mol;
     _readCtab3000();
+    _readRGroups3000();
     _readTGroups3000();
     _checkEndOfMolBlock3000();
     _postLoad();
@@ -153,6 +154,7 @@ void MolfileLoader::loadQueryMolBlock3000(QueryMolecule& mol)
     _qmol = &mol;
     _mol = 0;
     _readCtab3000();
+    _readRGroups3000();
     _readTGroups3000();
     _checkEndOfMolBlock3000();
     _postLoad();

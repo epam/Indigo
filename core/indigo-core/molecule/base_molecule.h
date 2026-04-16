@@ -328,6 +328,7 @@ namespace indigo
 
         void getAllowedRGroups(int atom_idx, Array<int>& rgroup_list);
         int getSingleAllowedRGroup(int atom_idx);
+        void removeUnusedRGroups();
         int getRSiteAttachmentPointByOrder(int idx, int order) const;
         void setRSiteAttachmentOrder(int atom_idx, int att_atom_idx, int order);
 

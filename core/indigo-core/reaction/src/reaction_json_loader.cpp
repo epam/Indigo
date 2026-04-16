@@ -127,6 +127,7 @@ void ReactionJsonLoader::parseOneArrowReaction(BaseReaction& rxn)
         Filter filter(_pmol->getDecomposition().ptr(), Filter::EQ, index);
 
         mol->makeSubmolecule(*_pmol, filter, 0, 0);
+        mol->removeUnusedRGroups();
         Rect2f bbox;
         mol->getBoundingBox(bbox);
         components.emplace_back(bbox, ReactionFragmentType::MOLECULE, std::move(mol));

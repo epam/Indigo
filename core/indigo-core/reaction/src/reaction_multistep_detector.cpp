@@ -251,6 +251,7 @@ std::unique_ptr<BaseMolecule> ReactionMultistepDetector::extractComponent(int in
     else
         component = std::make_unique<Molecule>();
     component->makeSubmolecule(_bmol, filter, 0, 0);
+    component->removeUnusedRGroups();
     return component;
 }
 

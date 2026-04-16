@@ -1,4 +1,4 @@
-﻿import os
+import os
 import sys
 
 sys.path.append(
@@ -24,6 +24,7 @@ files = [
     "rxn3000-with-macro",
     "2591-up-down",
     "quoted_subscript",
+    "rxn_unused_rgroups",
 ]
 
 files.sort()

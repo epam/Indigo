@@ -1124,7 +1124,8 @@ void MolfileLoader::_readRGroups3000()
                     throw Error("unexpected string in rgroup: %s", str.ptr());
             }
         }
-        else if ((strncmp(str.ptr(), "M  END", 6) == 0) || (strncmp(str.ptr(), "M  V30 BEGIN TEMPLATE", 21) == 0))
+        else if ((strncmp(str.ptr(), "M  END", 6) == 0) || (strncmp(str.ptr(), "M  V30 BEGIN TEMPLATE", 21) == 0) ||
+                 (strncmp(str.ptr(), "M  V30 END ", 11) == 0) || (strncmp(str.ptr(), "M  V30 BEGIN CTAB", 15) == 0))
         {
             _scanner.seek(next_block_pos, SEEK_SET);
             break;
