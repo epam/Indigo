@@ -841,11 +841,11 @@ void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chi
     case ATOM_RSITE: {
         int bits = atom->value_min;
         int min_rgroup = 0;
-        for (int i = 0; i < 32; i++)
+        for (int bit_idx = 0; bit_idx < 32; bit_idx++)
         {
-            if (bits & (1 << i))
+            if (bits & (1 << bit_idx))
             {
-                min_rgroup = i + 1;
+                min_rgroup = bit_idx + 1;
                 break;
             }
         }
