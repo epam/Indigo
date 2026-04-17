@@ -350,6 +350,9 @@ void errorHandler(const char* message, void*)
     throw Exception(message);
 }
 
+constexpr int MAX_INPUT_QUEUE_SIZE = 1000;
+constexpr int THREAD_INPUT_CHUNK_SIZE = 100;
+
 void threadFunc(BaseSubstructureMatcher* matcher)
 {
     std::mutex& input_mtx = matcher->_input_mtx;
@@ -367,6 +370,7 @@ void threadFunc(BaseSubstructureMatcher* matcher)
     bool match = false;
     std::unique_ptr<IndigoObject> molecule_obj;
     MMFAllocator::setDatabaseId(matcher->getDbId());
+
     if (!indigoSelf().hasLocalCopy())
     {
         qword _session = indigoAllocSessionId();
@@ -386,6 +390,8 @@ void threadFunc(BaseSubstructureMatcher* matcher)
             indigo.tautomer_rules.reset(i, rule.release());
         }
     }
+    std::deque<int> input_chunk;
+    results_queue results_chunk;
 
     while (true)
     {
@@ -396,22 +402,41 @@ void threadFunc(BaseSubstructureMatcher* matcher)
             profTimerStop(inp_mtx_cv);
             if (input_data.empty())
                 break;
-            db_object_idx = input_data.front();
-            input_data.pop_front();
+            for (int i = 0; i < THREAD_INPUT_CHUNK_SIZE && input_data.size() != 0)
+            {
+                input_chunk.emplace_back(input_data.front());
+                input_data.pop_front();
+            }
         }
         profTimerStart(tt, "sub_try_multi");
         molecule_obj.reset(matcher->allocateObject());
-        match = matcher->tryCurrent(db_object_idx, molecule_obj.get());
+        while (input_chunk.size() > 0)
+        {
+            db_object_idx = input_chunk.front();
+            input_chunk.pop_front();
+            match = matcher->tryCurrent(db_object_idx, molecule_obj.get());
+            if (match)
+            {
+                results_chunk.emplace_back(db_object_idx, molecule_obj.release());
+                molecule_obj.reset(matcher->allocateObject());
+            }
+        }
         profTimerStop(tt);
         { // write result
             std::lock_guard<std::mutex> locker(results_mtx);
-            if (match)
+            if (results_chunk.size() > 0)
             {
-                results.emplace_back(db_object_idx, molecule_obj.release());
-                matched++;
+                while (results_chunk.size() > 0)
+                {
+                    auto& res = results_chunk.front();
+                    results.emplace_back(res.first, res.second.release());
+                    results_chunk.pop_front();
+                }
             }
-            else
+            else // no data - add empty result
+            {
                 results.emplace_back(-1, nullptr);
+            }
             cv_results.notify_one();
         }
     }
@@ -457,7 +482,6 @@ bool BaseSubstructureMatcher::next()
 {
     // int fp_size_in_bits = _fp_size * 8;
     // static int sub_cnt = 0;
-    constexpr int MAX_SIZE = 100;
 
     if (!_multithread || !_t.has_value())
         _current_cand_id++;
@@ -511,7 +535,7 @@ bool BaseSubstructureMatcher::next()
             {
                 std::lock_guard<std::mutex> lock(_input_mtx);
                 // while input queue not full - add candidates
-                while (_input_data.size() < MAX_SIZE && _current_cand_id < _candidates.size())
+                while (_input_data.size() < MAX_INPUT_QUEUE_SIZE && _current_cand_id < _candidates.size())
                 {
                     _input_data.push_back(_candidates[_current_cand_id++]);
                     _cv_input.notify_one();

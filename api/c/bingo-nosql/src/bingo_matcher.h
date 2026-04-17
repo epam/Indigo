@@ -233,6 +233,7 @@ namespace bingo
         ~BaseMatcher() override;
     };
 
+    using results_queue = std::deque<std::pair<int, std::unique_ptr<IndigoObject>>>;
     class BaseSubstructureMatcher : public BaseMatcher
     {
     public:
@@ -287,7 +288,7 @@ namespace bingo
         std::mutex _input_mtx;
         std::condition_variable _cv_input;
         std::atomic_bool _all_data_in_queue = false;
-        std::deque<std::pair<int, std::unique_ptr<IndigoObject>>> _results;
+        results_queue _results;
         std::mutex _results_mtx;
         std::atomic_bool _finished_processing = false;
         std::condition_variable _cv_results;
