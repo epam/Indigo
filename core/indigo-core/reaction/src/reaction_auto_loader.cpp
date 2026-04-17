@@ -101,6 +101,7 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::loadReaction(bool query, Monom
 
 std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query, MonomerTemplateLibrary* monomer_lib)
 {
+    bool allow_all = input_format.empty() || input_format == "auto";
     auto local_scanner = _scanner;
     // chack for base64
     uint8_t base64_id[] = "base64::";
@@ -154,6 +155,7 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query, Mono
         }
     }
 
+    if (allow_all || input_format == "cdxml")
     {
         if (local_scanner->findWord(kCDX_HeaderString))
         {
@@ -166,9 +168,12 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query, Mono
             loader.loadReaction(*reaction);
             return reaction;
         }
+        else if (!allow_all && input_format == "cdxml")
+            throw Error("Provided structure doesn't match cdxml format");
     }
 
     // check for MDLCT format
+    if (allow_all || input_format == "mol" || input_format == "rxn" || input_format == "sdf")
     {
         QS_DEF(Array<char>, buf);
         if (MoleculeAutoLoader::tryMDLCT(*_scanner, buf))
@@ -193,6 +198,7 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query, Mono
                 return reaction;
             }
         }
+        // If tryMDLCT failed, fall through to normal rxnfile/molfile parser below
     }
 
     // check for ICM format
@@ -216,6 +222,7 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query, Mono
     }
 
     // check for CML format
+    if (allow_all || input_format == "cml")
     {
         long long pos = _scanner->tell();
         _scanner->skipSpace();
@@ -235,9 +242,12 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query, Mono
             }
         }
         _scanner->seek(pos, SEEK_SET);
+        if (!allow_all && input_format == "cml")
+            throw Error("Provided structure doesn't match cml format");
     }
 
     // check for CDXML format
+    if (allow_all || input_format == "cdxml")
     {
         long long pos = _scanner->tell();
         _scanner->skipSpace();
@@ -261,10 +271,13 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query, Mono
             }
         }
         _scanner->seek(pos, SEEK_SET);
+        if (!allow_all && input_format == "cdxml")
+            throw Error("Provided structure doesn't match cdxml format");
     }
 
     // check for JSON-KET format
 
+    if (allow_all || input_format == "ket")
     {
         long long pos = _scanner->tell();
         bool hasbom = false;
@@ -330,11 +343,15 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query, Mono
                             return reaction;
                         }
                     }
+                    if (!allow_all && input_format == "ket")
+                        throw Error("JSON object has no 'root' or 'nodes' members expected for ket format");
                     return nullptr;
                 }
             }
         }
         _scanner->seek(pos, SEEK_SET);
+        if (!allow_all && input_format == "ket")
+            throw Error("Input is not a valid JSON object expected for ket format");
     }
 
     // check for RDF format
@@ -373,40 +390,56 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query, Mono
     // check for SMILES format
     if (Scanner::isSingleLine(*_scanner))
     {
-        long long pos = _scanner->tell();
-        RSmilesLoader loader(*_scanner);
-
-        loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
-        loader.ignore_cistrans_errors = ignore_cistrans_errors;
-        loader.stereochemistry_options = stereochemistry_options;
-        loader.ignore_bad_valence = ignore_bad_valence;
-
-        if (query)
+        if (allow_all || input_format == "smi" || input_format == "smarts")
         {
-            // Try to load query as SMILES, if error occured - try to load as SMARTS
-            auto reaction = std::make_unique<QueryReaction>();
-            try
+            long long pos = _scanner->tell();
+            RSmilesLoader loader(*_scanner);
+
+            loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
+            loader.ignore_cistrans_errors = ignore_cistrans_errors;
+            loader.stereochemistry_options = stereochemistry_options;
+            loader.ignore_bad_valence = ignore_bad_valence;
+
+            if (query)
             {
-                loader.loadQueryReaction(*reaction);
+                // Try to load query as SMILES, if error occured - try to load as SMARTS
+                auto reaction = std::make_unique<QueryReaction>();
+                try
+                {
+                    loader.loadQueryReaction(*reaction);
+                }
+                catch (Exception&)
+                {
+                    loader.smarts_mode = true;
+                    _scanner->seek(pos, SEEK_SET);
+                    try
+                    {
+                        loader.loadQueryReaction(*reaction);
+                    }
+                    catch (Exception&)
+                    {
+                        throw;
+                    }
+                }
+                return reaction;
             }
-            catch (Exception&)
+            else
             {
-                loader.smarts_mode = true;
-                _scanner->seek(pos, SEEK_SET);
-                loader.loadQueryReaction(*reaction);
+                auto reaction = std::make_unique<Reaction>();
+                try
+                {
+                    loader.loadReaction(*reaction);
+                }
+                catch (Exception&)
+                {
+                    throw;
+                }
+                return reaction;
             }
-            return reaction;
-        }
-        else
-        {
-            auto reaction = std::make_unique<Reaction>();
-            loader.loadReaction(*reaction);
-            return reaction;
         }
     }
 
     // default is Rxnfile format
-    else
     {
         RxnfileLoader loader(*_scanner);
         loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;

@@ -802,6 +802,15 @@ M  END
             options.delete();
         });
 
+        test("throws", "wrong_input_format_3220", () => {
+            let options = new indigo.MapStringString();
+            options.set("input-format", "chemical/x-mdl-molfile");
+            assert.throws(() => {
+                indigo.convert("sdfsdfsd", "ket", options);
+            }, /Provided structure doesn't match mol format/);
+            options.delete();
+        });
+
         test("throws", "wrong_selected", () => {
             let options = new indigo.MapStringString();
             const selected = [1, 2];

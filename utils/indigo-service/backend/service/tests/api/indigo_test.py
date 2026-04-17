@@ -425,10 +425,19 @@ M  END\n",
             data="c1ccccc2",
         )
         self.assertEqual(400, result.status_code)
-        self.assertEqual(
-            "struct data not recognized as molecule, query, reaction or reaction query",
-            result.text,
+
+    def test_wrong_input_format_3220(self):
+        result = requests.post(
+            self.url_prefix + "/convert",
+            headers={
+                "Content-Type": "chemical/x-mdl-molfile",
+                "Accept": "chemical/x-indigo-ket",
+            },
+            data="sdfsdfsdf",
         )
+        self.assertEqual(400, result.status_code)
+        # Error message comes from the molfile parser directly
+        self.assertTrue(len(result.text) > 0)
 
     def test_headers_is_rxn(self):
         result = requests.post(

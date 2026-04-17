@@ -66,6 +66,8 @@ namespace indigo
         bool dearomatize_on_load;
         AromaticityOptions arom_options;
 
+        std::string input_format;
+
         // Loaded properties
         // CP_DECL;
         // TL_CP_DECL(PropertiesMap, properties);

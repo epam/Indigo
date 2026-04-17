@@ -504,6 +504,7 @@ CEXPORT int indigoLoadMoleculeWithLib(int source, int monomer_library)
         loader.smiles_loading_strict_aliphatic = self.smiles_loading_strict_aliphatic;
         loader.dearomatize_on_load = self.dearomatize_on_load;
         loader.arom_options = self.arom_options;
+        loader.input_format = self.input_format;
 
         std::unique_ptr<IndigoMolecule> molptr = std::make_unique<IndigoMolecule>();
 
@@ -614,6 +615,7 @@ CEXPORT int indigoLoadQueryMoleculeWithLib(int source, int monomer_library)
         loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
         loader.dearomatize_on_load = self.dearomatize_on_load;
         loader.arom_options = self.arom_options;
+        loader.input_format = self.input_format;
 
         std::unique_ptr<IndigoQueryMolecule> molptr = std::make_unique<IndigoQueryMolecule>();
 

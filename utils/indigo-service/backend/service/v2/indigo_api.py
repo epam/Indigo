@@ -71,12 +71,26 @@ def indigo_init(options={}):
         tls.indigo.renderer = IndigoRenderer(tls.indigo)
         for option, value in indigo_api.indigo_defaults.items():
             tls.indigo.setOption(option, value)
+            
+        format_mapping = {
+            "chemical/x-mdl-molfile": "mol",
+            "chemical/x-mdl-rxnfile": "rxn",
+            "chemical/x-daylight-smiles": "smi",
+            "chemical/x-daylight-smarts": "smarts",
+            "chemical/x-indigo-ket": "ket",
+            "chemical/x-cml": "cml",
+            "chemical/x-cdxml": "cdxml",
+            "chemical/x-sdf": "sdf",
+            "chemical/x-unknown": "auto",
+            "auto": "auto",
+            "": "auto"
+        }
+            
         for option, value in options.items():
             # TODO: Remove this when Indigo API supports smiles type option
             if option in (
                 "smiles",
                 "smarts",
-                "input-format",
                 "output-content-type",
                 "monomerLibrary",
                 "sequence-type",
@@ -84,6 +98,13 @@ def indigo_init(options={}):
                 "nac",
             ):
                 continue
+                
+            if option == "input-format":
+                val = format_mapping.get(value, value)
+                if val and val != "auto":
+                    tls.indigo.setOption("input-format", val)
+                continue
+                
             tls.indigo.setOption(option, value)
         return tls.indigo
     except Exception as e:
@@ -348,6 +369,27 @@ def load_moldata(
     input_format = mime_type
     if "input-format" in options:
         input_format = options["input-format"]
+        
+    format_mapping = {
+        "chemical/x-mdl-molfile": "mol",
+        "chemical/x-mdl-rxnfile": "rxn",
+        "chemical/x-daylight-smiles": "smi",
+        "chemical/x-daylight-smarts": "smarts",
+        "chemical/x-indigo-ket": "ket",
+        "chemical/x-cml": "cml",
+        "chemical/x-cdxml": "cdxml",
+        "chemical/x-sdf": "sdf",
+        "chemical/x-unknown": "auto",
+        "chemical/x-iupac": "auto",
+        "auto": "auto",
+        "": "auto"
+    }
+    
+    if input_format:
+        val = format_mapping.get(input_format, input_format)
+        if val and val != "auto":
+            indigo.setOption("input-format", val)
+
     if input_format in ("smarts", "chemical/x-daylight-smarts"):
         md.struct = indigo.loadSmarts(molstr)
         md.is_query = True
@@ -413,11 +455,15 @@ def load_moldata(
             else:
                 md.struct = indigo.loadQueryMoleculeWithLib(molstr, library)
                 md.is_query = True
-        except IndigoException:
+        except IndigoException as e:
+            if "Provided structure doesn't match" in str(e):
+                raise
             try:
                 md.struct = indigo.loadQueryMoleculeWithLib(molstr, library)
                 md.is_query = True
-            except IndigoException:
+            except IndigoException as e2:
+                if "Provided structure doesn't match" in str(e2):
+                    raise
                 md.is_rxn = True
                 try:
                     if query:
@@ -426,7 +472,9 @@ def load_moldata(
                                 molstr, library
                             )
                             md.is_query = True
-                        except IndigoException:
+                        except IndigoException as e_rx:
+                            if "Provided structure doesn't match" in str(e_rx):
+                                raise
                             md.struct = indigo.loadReactionWithLib(
                                 molstr, library
                             )
@@ -434,13 +482,17 @@ def load_moldata(
                     else:
                         md.struct = indigo.loadReactionWithLib(molstr, library)
                         md.is_query = False
-                except IndigoException:
+                except IndigoException as e3:
+                    if "Provided structure doesn't match" in str(e3):
+                        raise
                     try:
                         md.struct = indigo.loadQueryReactionWithLib(
                             molstr, library
                         )
                         md.is_query = True
-                    except IndigoException:
+                    except IndigoException as e4:
+                        if "Provided structure doesn't match" in str(e4):
+                            raise
                         if library is None:
                             raise HttpException(
                                 "struct data not recognized as molecule, query, reaction or reaction query",

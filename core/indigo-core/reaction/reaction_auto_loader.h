@@ -63,6 +63,7 @@ namespace indigo
         int treat_stereo_as;
         AromaticityOptions arom_options;
         LayoutOptions layout_options;
+        std::string input_format;
 
         DECL_ERROR;
 

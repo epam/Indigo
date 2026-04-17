@@ -296,13 +296,29 @@ namespace indigo
 
     void indigoSetOptions(const std::map<std::string, std::string>& options)
     {
-        std::set<std::string> to_skip{"smiles",        "smarts", "input-format", "output-content-type", "outputFormat", "monomerLibrary",
-                                      "sequence-type", "upc",    "nac"};
+        std::set<std::string> to_skip{"smiles", "smarts", "output-content-type", "outputFormat", "monomerLibrary", "sequence-type", "upc", "nac"};
         for (const auto& option : options)
         {
             if (to_skip.count(option.first) < 1)
             {
-                _checkResult(indigoSetOption(option.first.c_str(), option.second.c_str()));
+                if (option.first == "input-format")
+                {
+                    static const std::unordered_map<std::string, std::string> format_mapping = {
+                        {"chemical/x-mdl-molfile", "mol"},     {"chemical/x-mdl-rxnfile", "rxn"},
+                        {"chemical/x-daylight-smiles", "smi"}, {"chemical/x-daylight-smarts", "smarts"},
+                        {"chemical/x-indigo-ket", "ket"},      {"chemical/x-cml", "cml"},
+                        {"chemical/x-cdxml", "cdxml"},         {"chemical/x-sdf", "sdf"}};
+                    std::string val = option.second;
+                    if (auto it = format_mapping.find(val); it != format_mapping.end())
+                    {
+                        val = it->second;
+                    }
+                    _checkResult(indigoSetOption(option.first.c_str(), val.c_str()));
+                }
+                else
+                {
+                    _checkResult(indigoSetOption(option.first.c_str(), option.second.c_str()));
+                }
             }
         }
     }
