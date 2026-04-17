@@ -350,30 +350,31 @@ void errorHandler(const char* message, void*)
     throw Exception(message);
 }
 
-BaseSubstructureMatcherCommand::BaseSubstructureMatcherCommand(BaseSubstructureMatcher* matcher) : _matcher(matcher)
+void threadFunc(BaseSubstructureMatcher* matcher)
 {
-}
+    std::mutex& input_mtx = matcher->_input_mtx;
+    std::condition_variable& cv_input = matcher->_cv_input;
+    std::deque<int>& input_data = matcher->_input_data;
+    std::atomic_bool& all_data_in_queue = matcher->_all_data_in_queue;
 
-BaseSubstructureMatcherCommand::~BaseSubstructureMatcherCommand()
-{
-}
+    std::deque<std::pair<int, std::unique_ptr<IndigoObject>>>& results = matcher->_results;
+    std::mutex& results_mtx = matcher->_results_mtx;
+    std::condition_variable& cv_results = matcher->_cv_results;
+    std::atomic_bool& finished_processing = matcher->_finished_processing;
 
-void BaseSubstructureMatcherCommand::execute(OsCommandResult& res)
-{
-    BaseSubstructureMatcherResult& r = static_cast<BaseSubstructureMatcherResult&>(res);
-    std::unique_ptr<IndigoObject> new_obj;
-    r.db_object_idx = -1;
-    new_obj.reset(_matcher->allocateObject());
-    r.match = false;
-    MMFAllocator::setDatabaseId(_matcher->getDbId());
+    int matched = 0;
+    int db_object_idx = -1;
+    bool match = false;
+    std::unique_ptr<IndigoObject> molecule_obj;
+    MMFAllocator::setDatabaseId(matcher->getDbId());
     if (!indigoSelf().hasLocalCopy())
     {
         qword _session = indigoAllocSessionId();
         Indigo& indigo = indigoSelf().createOrGetLocalCopy(_session);
-        indigo.arom_options = _matcher->_arom_options;
-        for (int i = 0; i < _matcher->_tautomer_rules->size(); i++)
+        indigo.arom_options = matcher->_arom_options;
+        for (int i = 0; i < matcher->_tautomer_rules->size(); i++)
         {
-            auto t_rule = _matcher->_tautomer_rules->at(i);
+            auto t_rule = matcher->_tautomer_rules->at(i);
             if (t_rule == nullptr)
                 continue;
             auto rule = std::make_unique<TautomerRule>();
@@ -385,45 +386,52 @@ void BaseSubstructureMatcherCommand::execute(OsCommandResult& res)
             indigo.tautomer_rules.reset(i, rule.release());
         }
     }
-    r.db_object_idx = db_object_idx;
-    profTimerStart(tt, "sub_try_multi");
-    if (_matcher->tryCurrent(db_object_idx, new_obj.get()))
+
+    while (true)
     {
-        r.match = true;
-        Indigo& indigo = indigoGetInstance();
-        r.indigo_obj.reset(new_obj.release());
+        { // read idx
+            profTimerStart(inp_mtx_cv, "input_mtx_cv");
+            std::unique_lock<std::mutex> lock(input_mtx);
+            cv_input.wait(lock, [&input_data, &all_data_in_queue]() { return !input_data.empty() || all_data_in_queue; });
+            profTimerStop(inp_mtx_cv);
+            if (input_data.empty())
+                break;
+            db_object_idx = input_data.front();
+            input_data.pop_front();
+        }
+        profTimerStart(tt, "sub_try_multi");
+        molecule_obj.reset(matcher->allocateObject());
+        match = matcher->tryCurrent(db_object_idx, molecule_obj.get());
+        profTimerStop(tt);
+        { // write result
+            std::lock_guard<std::mutex> locker(results_mtx);
+            if (match)
+            {
+                results.emplace_back(db_object_idx, molecule_obj.release());
+                matched++;
+            }
+            else
+                results.emplace_back(-1, nullptr);
+            cv_results.notify_one();
+        }
     }
-    else
-    {
-        r.match = false;
-        r.indigo_obj.reset();
-    }
-    profTimerStop(tt);
 }
 
-constexpr int sleep_time_ms = 2;
-
-bool BaseSubstructureMatcherDispatcher::_setupCommand(OsCommand& command)
+void run_threads(BaseSubstructureMatcher* matcher, int count)
 {
-    std::unique_lock<std::mutex> lock(_input_mtx);
-    _cv_input.wait(lock, [this]() { return !_input_data.empty() || _all_data_in_queue; });
-    if (!_input_data.empty())
+    std::deque<std::thread> threads;
+    if (count < 0)
+        count = 3 * std::thread::hardware_concurrency() / 2 + 1;
+    for (int i = 0; i < count; i++)
+        threads.emplace_back(threadFunc, matcher);
+    while (threads.size() > 0)
     {
-        BaseSubstructureMatcherCommand& cmd = static_cast<BaseSubstructureMatcherCommand&>(command);
-        cmd.db_object_idx = _input_data.front();
-        _input_data.pop_front();
-        return true;
+        threads.front().join();
+        threads.pop_front();
     }
-    return false; // _all_data_in_queue
-}
-
-void BaseSubstructureMatcherDispatcher::_handleResult(OsCommandResult& result)
-{
-    BaseSubstructureMatcherResult& r = static_cast<BaseSubstructureMatcherResult&>(result);
-    std::lock_guard<std::mutex> locker(_results_mtx);
-    if (r.match)
-        _results.emplace_back(r.db_object_idx, r.indigo_obj.release());
-    _cv_results.notify_one();
+    std::lock_guard<std::mutex> locker(matcher->_results_mtx);
+    matcher->_finished_processing = true;
+    matcher->_cv_results.notify_one();
 }
 
 BaseSubstructureMatcher::BaseSubstructureMatcher(/*const */ BaseIndex& index, IndigoObject*& current_obj)
@@ -439,26 +447,10 @@ BaseSubstructureMatcher::BaseSubstructureMatcher(/*const */ BaseIndex& index, In
     _cand_count = 0;
 }
 
-void BaseSubstructureMatcher::run_dispatcher()
-{
-    if (_thread_count <= 0)
-        _disp->run();
-    else
-        _disp->run(_thread_count);
-    {
-        std::lock_guard<std::mutex> locker(_results_mtx);
-        _finished_processing = true;
-        _cv_results.notify_one();
-    }
-}
-
 BaseSubstructureMatcher::~BaseSubstructureMatcher()
 {
-    if (_disp.get() != nullptr)
-    {
-        _disp->markToTerminate();
+    if (_t.has_value())
         _t->join();
-    }
 }
 
 bool BaseSubstructureMatcher::next()
@@ -467,17 +459,15 @@ bool BaseSubstructureMatcher::next()
     // static int sub_cnt = 0;
     constexpr int MAX_SIZE = 100;
 
-    if (!_multithread || _disp.get() == nullptr)
+    if (!_multithread || !_t.has_value())
         _current_cand_id++;
 
-    if (_multithread && _disp.get() == nullptr) // first call
+    if (_multithread && !_t.has_value()) // first call
     {
         Indigo& indigo = indigoGetInstance();
         _arom_options = indigo.arom_options;
         _tautomer_rules = &indigo.tautomer_rules;
-
-        _disp.reset(new BaseSubstructureMatcherDispatcher(this, _input_data, _input_mtx, _cv_input, _all_data_in_queue, _results, _results_mtx, _cv_results));
-        _t.emplace([this]() { this->run_dispatcher(); });
+        _t.emplace(run_threads, this, _thread_count);
     }
 
     while (!((_current_pack == _final_pack) && (_current_cand_id == _candidates.size())))
@@ -541,7 +531,7 @@ bool BaseSubstructureMatcher::next()
         {
             profTimerStart(lw, "sub_try_wait");
             std::unique_lock<std::mutex> lock(_results_mtx);
-            _cv_results.wait(lock, [this]() { return !_results.empty() || !_all_data_in_queue || _finished_processing; });
+            _cv_results.wait(lock, [this]() { return !_results.empty() || _finished_processing; });
             profTimerStop(lw);
             if (!_results.empty())
             {
@@ -549,6 +539,11 @@ bool BaseSubstructureMatcher::next()
                     throw Exception("BaseMatcher: Matcher's current object was destroyed");
 
                 auto& result = _results.front();
+                if (result.first < 0)
+                {
+                    _results.pop_front();
+                    continue;
+                }
                 _current_id = result.first;
                 if (IndigoMolecule::is(*result.second))
                 {
@@ -569,10 +564,6 @@ bool BaseSubstructureMatcher::next()
             else if (_finished_processing) // no more results and no more data processed
             {
                 return false;
-            }
-            else // !_all_data_in_queue
-            {
-                continue; // add data to queue
             }
         }
         else
@@ -601,7 +592,6 @@ bool BaseSubstructureMatcher::next()
     if (_multithread)
     {
         _t->join();
-        _disp.reset();
         _t.reset();
     }
 

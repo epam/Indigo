@@ -233,81 +233,6 @@ namespace bingo
         ~BaseMatcher() override;
     };
 
-    struct BaseSubstructureMatcherResult : public OsCommandResult
-    {
-        bool match = false;
-        int db_object_idx = -1;
-        std::unique_ptr<IndigoObject> indigo_obj;
-        void clear() override
-        {
-            match = false;
-            db_object_idx = -1;
-            indigo_obj.reset();
-        }
-    };
-
-    class BaseSubstructureMatcher;
-
-    struct BaseSubstructureMatcherCommand : public OsCommand
-    {
-    public:
-        int db_object_idx;
-
-        BaseSubstructureMatcherCommand(BaseSubstructureMatcher* matcher);
-        virtual ~BaseSubstructureMatcherCommand();
-
-        void clear() override
-        {
-            db_object_idx = -1;
-        }
-
-        void execute(OsCommandResult& res) override;
-
-    private:
-        BaseSubstructureMatcher* _matcher;
-    };
-
-    class BaseSubstructureMatcherDispatcher : public OsCommandDispatcher
-    {
-    public:
-        BaseSubstructureMatcherDispatcher(BaseSubstructureMatcher* matcher, std::deque<int>& src, std::mutex& i_mtx, std::condition_variable& cv_input,
-                                          std::atomic_bool& eod, std::deque<std::pair<int, std::unique_ptr<IndigoObject>>>& results, std::mutex& r_mtx,
-                                          std::condition_variable& cv_results)
-            : OsCommandDispatcher(HANDLING_ORDER_SERIAL, false), _matcher(matcher), _input_data(src), _input_mtx(i_mtx), _cv_input(cv_input),
-              _all_data_in_queue(eod), _results(results), _results_mtx(r_mtx), _cv_results(cv_results)
-        {
-        }
-
-        void operator()()
-        {
-            run();
-        }
-
-    protected:
-        OsCommand* _allocateCommand() override
-        {
-            return new BaseSubstructureMatcherCommand(_matcher);
-        }
-        OsCommandResult* _allocateResult() override
-        {
-            return new BaseSubstructureMatcherResult();
-        }
-
-        bool _setupCommand(OsCommand& command) override;
-
-        void _handleResult(OsCommandResult& result) override;
-
-    private:
-        std::deque<int>& _input_data;
-        std::mutex& _input_mtx;
-        std::condition_variable& _cv_input;
-        std::atomic_bool& _all_data_in_queue;
-        std::deque<std::pair<int, std::unique_ptr<IndigoObject>>>& _results;
-        std::mutex& _results_mtx;
-        std::condition_variable& _cv_results;
-        BaseSubstructureMatcher* _matcher;
-    };
-
     class BaseSubstructureMatcher : public BaseMatcher
     {
     public:
@@ -323,8 +248,6 @@ namespace bingo
         virtual IndigoObject* allocateObject() = 0;
 
         int getDbId() const;
-
-        void run_dispatcher();
 
         AromaticityOptions _arom_options;
         PtrArray<TautomerRule>* _tautomer_rules;
@@ -358,7 +281,7 @@ namespace bingo
         const TranspFpStorage& _fp_storage;
         int sub_cnt;
 
-        std::unique_ptr<BaseSubstructureMatcherDispatcher> _disp;
+    public:
         std::optional<std::thread> _t;
         std::deque<int> _input_data;
         std::mutex _input_mtx;
