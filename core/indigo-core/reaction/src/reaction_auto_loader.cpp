@@ -412,28 +412,14 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query, Mono
                 {
                     loader.smarts_mode = true;
                     _scanner->seek(pos, SEEK_SET);
-                    try
-                    {
-                        loader.loadQueryReaction(*reaction);
-                    }
-                    catch (Exception&)
-                    {
-                        throw;
-                    }
+                    loader.loadQueryReaction(*reaction);
                 }
                 return reaction;
             }
             else
             {
                 auto reaction = std::make_unique<Reaction>();
-                try
-                {
-                    loader.loadReaction(*reaction);
-                }
-                catch (Exception&)
-                {
-                    throw;
-                }
+                loader.loadReaction(*reaction);
                 return reaction;
             }
         }

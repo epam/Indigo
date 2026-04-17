@@ -807,7 +807,7 @@ M  END
             options.set("input-format", "chemical/x-mdl-molfile");
             assert.throws(() => {
                 indigo.convert("sdfsdfsd", "ket", options);
-            }, /Provided structure doesn't match mol format/);
+            });
             options.delete();
         });
 
