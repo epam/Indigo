@@ -71,7 +71,7 @@ def indigo_init(options={}):
         tls.indigo.renderer = IndigoRenderer(tls.indigo)
         for option, value in indigo_api.indigo_defaults.items():
             tls.indigo.setOption(option, value)
-            
+
         format_mapping = {
             "chemical/x-mdl-molfile": "mol",
             "chemical/x-mdl-rxnfile": "rxn",
@@ -83,9 +83,9 @@ def indigo_init(options={}):
             "chemical/x-sdf": "sdf",
             "chemical/x-unknown": "auto",
             "auto": "auto",
-            "": "auto"
+            "": "auto",
         }
-            
+
         for option, value in options.items():
             # TODO: Remove this when Indigo API supports smiles type option
             if option in (
@@ -98,13 +98,13 @@ def indigo_init(options={}):
                 "nac",
             ):
                 continue
-                
+
             if option == "input-format":
                 val = format_mapping.get(value, value)
                 if val and val != "auto":
                     tls.indigo.setOption("input-format", val)
                 continue
-                
+
             tls.indigo.setOption(option, value)
         return tls.indigo
     except Exception as e:
@@ -369,7 +369,7 @@ def load_moldata(
     input_format = mime_type
     if "input-format" in options:
         input_format = options["input-format"]
-        
+
     format_mapping = {
         "chemical/x-mdl-molfile": "mol",
         "chemical/x-mdl-rxnfile": "rxn",
@@ -382,9 +382,9 @@ def load_moldata(
         "chemical/x-unknown": "auto",
         "chemical/x-iupac": "auto",
         "auto": "auto",
-        "": "auto"
+        "": "auto",
     }
-    
+
     if input_format:
         val = format_mapping.get(input_format, input_format)
         if val and val != "auto":
