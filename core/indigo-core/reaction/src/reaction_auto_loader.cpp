@@ -169,7 +169,7 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query, Mono
             return reaction;
         }
         else if (!allow_all && input_format == "cdxml")
-            throw Error("Provided structure doesn't match cdxml format");
+            throw Error("expected CDX binary header but not found");
     }
 
     // check for MDLCT format
@@ -243,7 +243,7 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query, Mono
         }
         _scanner->seek(pos, SEEK_SET);
         if (!allow_all && input_format == "cml")
-            throw Error("Provided structure doesn't match cml format");
+            throw Error("expected '<molecule' tag for CML format but not found");
     }
 
     // check for CDXML format
@@ -272,7 +272,7 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query, Mono
         }
         _scanner->seek(pos, SEEK_SET);
         if (!allow_all && input_format == "cdxml")
-            throw Error("Provided structure doesn't match cdxml format");
+            throw Error("expected 'CDXML' tag for CDXML format but not found");
     }
 
     // check for JSON-KET format

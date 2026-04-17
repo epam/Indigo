@@ -272,7 +272,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, MonomerTemplateLibrary
             return;
         }
         else if (!allow_all && input_format == "cdxml")
-            throw Error("Provided structure doesn't match cdxml format");
+            throw Error("expected CDX binary header but not found");
     }
 
     _scanner->skipBom();
@@ -342,7 +342,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, MonomerTemplateLibrary
 
         _scanner->seek(pos, SEEK_SET);
         if (!allow_all && input_format == "cml")
-            throw Error("Provided structure doesn't match cml format");
+            throw Error("expected '<molecule' tag for CML format but not found");
     }
 
     // check for CDXML format
@@ -360,7 +360,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, MonomerTemplateLibrary
         }
         _scanner->seek(pos, SEEK_SET);
         if (!allow_all && input_format == "cdxml")
-            throw Error("Provided structure doesn't match cdxml format");
+            throw Error("expected 'CDXML' tag for CDXML format but not found");
     }
 
     // check json format
@@ -399,7 +399,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, MonomerTemplateLibrary
         }
         _scanner->seek(pos, SEEK_SET);
         if (!allow_all && input_format == "ket")
-            throw Error("Provided structure doesn't match ket format");
+            throw Error("expected JSON with 'root' member for KET format");
     }
 
     // check for single line formats
@@ -492,7 +492,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, MonomerTemplateLibrary
                 return;
             }
             else if (!allow_all && input_format == "inchi")
-                throw Error("Provided structure doesn't match inchi format");
+                throw Error("expected 'InChI=' prefix for InChI format but not found");
         }
 
         // If not InChI then SMILES or IUPAC name

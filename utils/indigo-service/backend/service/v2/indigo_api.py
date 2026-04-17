@@ -442,15 +442,11 @@ def load_moldata(
             else:
                 md.struct = indigo.loadQueryMoleculeWithLib(molstr, library)
                 md.is_query = True
-        except IndigoException as e:
-            if "Provided structure doesn't match" in str(e):
-                raise
+        except IndigoException:
             try:
                 md.struct = indigo.loadQueryMoleculeWithLib(molstr, library)
                 md.is_query = True
-            except IndigoException as e2:
-                if "Provided structure doesn't match" in str(e2):
-                    raise
+            except IndigoException:
                 md.is_rxn = True
                 try:
                     if query:
@@ -459,9 +455,7 @@ def load_moldata(
                                 molstr, library
                             )
                             md.is_query = True
-                        except IndigoException as e_rx:
-                            if "Provided structure doesn't match" in str(e_rx):
-                                raise
+                        except IndigoException:
                             md.struct = indigo.loadReactionWithLib(
                                 molstr, library
                             )
@@ -469,17 +463,13 @@ def load_moldata(
                     else:
                         md.struct = indigo.loadReactionWithLib(molstr, library)
                         md.is_query = False
-                except IndigoException as e3:
-                    if "Provided structure doesn't match" in str(e3):
-                        raise
+                except IndigoException:
                     try:
                         md.struct = indigo.loadQueryReactionWithLib(
                             molstr, library
                         )
                         md.is_query = True
-                    except IndigoException as e4:
-                        if "Provided structure doesn't match" in str(e4):
-                            raise
+                    except IndigoException:
                         if library is None:
                             raise HttpException(
                                 "struct data not recognized as molecule, query, reaction or reaction query",
