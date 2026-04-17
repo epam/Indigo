@@ -838,9 +838,20 @@ void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chi
         _getAtomChiralityDescription(atom, output);
         break;
     }
-    case ATOM_RSITE:
-        output.printf("*:%d", atom->value_min);
+    case ATOM_RSITE: {
+        int bits = atom->value_min;
+        int min_rgroup = 0;
+        for (int i = 0; i < 32; i++)
+        {
+            if (bits & (1 << i))
+            {
+                min_rgroup = i + 1;
+                break;
+            }
+        }
+        output.printf("*:%d", min_rgroup);
         break;
+    }
     default: {
         throw Error("Unknown atom attribute %d", atom->type);
         break;
