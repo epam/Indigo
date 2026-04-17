@@ -303,13 +303,18 @@ namespace indigo
             {
                 if (option.first == "input-format")
                 {
-                    static const std::unordered_map<std::string, std::string> format_mapping = {
-                        {"chemical/x-mdl-molfile", "mol"},     {"chemical/x-mdl-rxnfile", "rxn"},
-                        {"chemical/x-daylight-smiles", "smi"}, {"chemical/x-daylight-smarts", "smarts"},
-                        {"chemical/x-indigo-ket", "ket"},      {"chemical/x-cml", "cml"},
-                        {"chemical/x-cdxml", "cdxml"},         {"chemical/x-sdf", "sdf"},
-                        {"chemical/x-unknown", "auto"},        {"auto", "auto"},
-                        {"", "auto"},                          {"chemical/x-iupac", "auto"}};
+                    static const std::unordered_map<std::string, std::string> format_mapping = {{"chemical/x-mdl-molfile", "mol"},
+                                                                                                {"chemical/x-mdl-rxnfile", "rxn"},
+                                                                                                {"chemical/x-daylight-smiles", "smi"},
+                                                                                                {"chemical/x-daylight-smarts", "smarts"},
+                                                                                                {"chemical/x-indigo-ket", "ket"},
+                                                                                                {"chemical/x-cml", "cml"},
+                                                                                                {"chemical/x-cdxml", "cdxml"},
+                                                                                                {"chemical/x-sdf", "sdf"},
+                                                                                                {"chemical/x-unknown", "auto"},
+                                                                                                {"auto", "auto"},
+                                                                                                {"", "auto"},
+                                                                                                {"chemical/x-iupac", "auto"}};
                     std::string val = option.second;
                     if (auto it = format_mapping.find(val); it != format_mapping.end())
                     {
