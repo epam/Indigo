@@ -103,6 +103,69 @@ void RefinementState::calcEnergy()
         }
 }
 
+void RefinementState::calcEnergyDelta(const RefinementState& old_state)
+{
+    energy = old_state.energy;
+
+    int i, j;
+    float r_old, r_new;
+    Vec2f d;
+
+    int vertex_count = _graph.vertexEnd();
+    QS_DEF(Array<bool>, moved);
+    moved.clear_resize(vertex_count);
+    moved.zerofill();
+
+    int moved_count = 0;
+    for (i = _graph.vertexBegin(); i < vertex_count; i = _graph.vertexNext(i))
+    {
+        if (layout[i].x != old_state.layout[i].x || layout[i].y != old_state.layout[i].y)
+        {
+            moved[i] = true;
+            moved_count++;
+        }
+    }
+
+    if (moved_count == 0)
+        return;
+
+    for (i = _graph.vertexBegin(); i < vertex_count; i = _graph.vertexNext(i))
+    {
+        if (!moved[i])
+            continue;
+
+        for (j = _graph.vertexBegin(); j < vertex_count; j = _graph.vertexNext(j))
+        {
+            if (i == j)
+                continue;
+
+            // Avoid double counting for pairs that both moved
+            if (moved[j] && j < i)
+                continue;
+
+            // old interaction
+            d.diff(old_state.layout[i], old_state.layout[j]);
+            r_old = d.lengthSqr();
+
+            if (r_old < 0.0001f)
+                r_old = 5000000.f;
+            else
+                r_old = 1.0f / r_old;
+
+            // new interaction
+            d.diff(layout[i], layout[j]);
+            r_new = d.lengthSqr();
+
+            if (r_new < 0.0001f)
+                r_new = 5000000.f;
+            else
+                r_new = 1.0f / r_new;
+
+            energy += (r_new - r_old);
+        }
+    }
+}
+
 // Flip all verices from branch around (v1,v2)
 void RefinementState::flipBranch(const Filter& branch, const RefinementState& state, int v1_idx, int v2_idx)
 {
