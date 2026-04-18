@@ -109,6 +109,17 @@ namespace indigo
 
         using ambiguous_template_opts = std::pair<bool, std::vector<std::pair<std::string, std::optional<float>>>>;
         using MonomerInfo = std::tuple<std::string, bool, std::string, std::string, ambiguous_template_opts>;
+        using polymer_map = std::map<std::string, std::map<int, size_t>>;
+
+        struct PairedStrands
+        {
+            std::string anchor;
+            std::string paired;
+            int anchor_mon_idx;
+            int paired_mon_idx;
+        };
+
+        void applyDoubleStrandLayout(KetDocument& document, const std::vector<PairedStrands>& paired_strands, const polymer_map& used_polymer_nums);
 
         const std::string checkAddAmbiguousMonomerTemplate(KetDocument& document, const std::string& alias, MonomerClass monomer_class,
                                                            ambiguous_template_opts& options);

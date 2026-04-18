@@ -601,10 +601,10 @@ void SequenceLoader::loadHELM(KetDocument& document)
     int unknown_count = 0;
     size_t last_rna_branch_monomer = 0;
     _unknown_ambiguous_count = 0;
-    using polymer_map = std::map<std::string, std::map<int, size_t>>;
     polymer_map used_polymer_nums;
     polymer_map::iterator cur_polymer_map;
     _opts_to_template_id.clear();
+    std::vector<PairedStrands> paired_strands;
     enum class helm_parts
     {
         ListOfSimplePolymers,
@@ -858,6 +858,16 @@ void SequenceLoader::loadHELM(KetDocument& document)
                 throw Error("Polymer '%s' does not contains monomer with number %d.", right_polymer.c_str(), right_monomer_idx);
             auto& connection = document.addConnection(document.monomers().at(std::to_string(left_mon_it->second))->ref(), left_ap,
                                                       document.monomers().at(std::to_string(right_mon_it->second))->ref(), right_ap);
+            if (left_ap == "pair" || right_ap == "pair" || left_ap == "hydrogen" || right_ap == "hydrogen")
+            {
+                // Accumulate only the first bond per unique polymer pair to avoid redundant transforms
+                bool already_paired = std::any_of(paired_strands.begin(), paired_strands.end(), [&](const PairedStrands& p) {
+                    return (p.anchor == left_polymer && p.paired == right_polymer) ||
+                           (p.anchor == right_polymer && p.paired == left_polymer);
+                });
+                if (!already_paired)
+                    paired_strands.push_back({left_polymer, right_polymer, left_monomer_idx, right_monomer_idx});
+            }
             if (_scanner.isEOF())
                 throw Error(unexpected_eod);
             ch = _scanner.lookNext();
@@ -911,11 +921,106 @@ void SequenceLoader::loadHELM(KetDocument& document)
             // if (signature != "v2.0")
             //     throw Error("Expected HELM V2.0 but got '%s'.", signature.c_str());
             // check that left part is valid json - TODO
+
+            if (!paired_strands.empty())
+                applyDoubleStrandLayout(document, paired_strands, used_polymer_nums);
+
+
             helm_part = helm_parts::End;
         }
     }
     if (helm_part != helm_parts::End)
         throw Error(unexpected_eod);
+}
+
+void SequenceLoader::applyDoubleStrandLayout(KetDocument& document, const std::vector<PairedStrands>& paired_strands,
+                                             const polymer_map& used_polymer_nums)
+{
+    // Extract the letter prefix of a polymer name (e.g. "RNA" from "RNA1") for type checking
+    auto get_polymer_type = [](const std::string& name) -> std::string {
+        std::string type;
+        for (char c : name)
+        {
+            if (std::isalpha(c))
+                type += static_cast<char>(std::toupper(c));
+            else
+                break;
+        }
+        return type;
+    };
+
+    std::set<std::string> transformed_polymers;
+    for (const auto& pair : paired_strands)
+    {
+        const std::string& anchor_name = pair.anchor;
+        const std::string& paired_name = pair.paired;
+
+        // Only RNA-RNA connections form double-strand helices
+        if (get_polymer_type(anchor_name) != kHELMPolymerTypeRNA || get_polymer_type(paired_name) != kHELMPolymerTypeRNA)
+            continue;
+
+        if (!used_polymer_nums.count(anchor_name) || !used_polymer_nums.count(paired_name))
+            continue;
+        if (transformed_polymers.count(anchor_name) || transformed_polymers.count(paired_name))
+            continue;
+
+        const auto& anchor_map = used_polymer_nums.at(anchor_name);
+        const auto& paired_map = used_polymer_nums.at(paired_name);
+
+        const auto& anchor_mon = document.monomers().at(std::to_string(anchor_map.at(pair.anchor_mon_idx)));
+        if (!anchor_mon->position().has_value()) continue;
+        float anchor_x = anchor_mon->position().value().x;
+        float anchor_y = anchor_mon->position().value().y;
+
+        const auto& paired_mon = document.monomers().at(std::to_string(paired_map.at(pair.paired_mon_idx)));
+        if (!paired_mon->position().has_value()) continue;
+        float paired_x = paired_mon->position().value().x;
+        float paired_y = paired_mon->position().value().y;
+
+        // In KET coordinate system Y grows downward (smaller Y = visually higher).
+        // The loader assigns row=0 to the first polymer, row=1 to the second, so
+        // anchor_y <= paired_y reliably identifies the top (first) chain.
+        bool anchor_is_top = (anchor_y <= paired_y);
+
+        const std::string& top_name = anchor_is_top ? anchor_name : paired_name;
+        const std::string& bottom_name = anchor_is_top ? paired_name : anchor_name;
+        const auto& top_map = anchor_is_top ? anchor_map : paired_map;
+        const auto& bottom_map = anchor_is_top ? paired_map : anchor_map;
+
+        float top_x = anchor_is_top ? anchor_x : paired_x;
+        float top_y = anchor_is_top ? anchor_y : paired_y;
+        float bottom_x = anchor_is_top ? paired_x : anchor_x;
+
+        float x_offset = top_x + bottom_x;
+        float y_flip_sum = 2.0f * top_y + LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH;
+
+        // Apply Y-flip to TOP chain (bases point DOWN, 5'->3' left-to-right is preserved)
+        for (const auto& kv : top_map)
+        {
+            auto& mon = document.monomers().at(std::to_string(kv.second));
+            if (mon->position().has_value())
+            {
+                Vec2f pos = mon->position().value();
+                pos.y = y_flip_sum - pos.y;
+                mon->setPosition(pos);
+            }
+        }
+
+        // Apply X-flip to BOTTOM chain (3'->5' left-to-right, bases point UP natively)
+        for (const auto& kv : bottom_map)
+        {
+            auto& mon = document.monomers().at(std::to_string(kv.second));
+            if (mon->position().has_value())
+            {
+                Vec2f pos = mon->position().value();
+                pos.x = x_offset - pos.x;
+                mon->setPosition(pos);
+            }
+        }
+
+        transformed_polymers.insert(top_name);
+        transformed_polymers.insert(bottom_name);
+    }
 }
 
 #ifdef _MSC_VER
