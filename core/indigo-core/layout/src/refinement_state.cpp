@@ -89,11 +89,8 @@ void RefinementState::calcEnergy()
     energy = 0;
 
     for (i = _graph.vertexBegin(); i < _graph.vertexEnd(); i = _graph.vertexNext(i))
-        for (j = _graph.vertexBegin(); j < _graph.vertexEnd(); j = _graph.vertexNext(j))
+        for (j = _graph.vertexNext(i); j < _graph.vertexEnd(); j = _graph.vertexNext(j))
         {
-            if (i == j)
-                continue;
-
             d.diff(layout[i], layout[j]);
             r = d.lengthSqr();
 
@@ -104,8 +101,6 @@ void RefinementState::calcEnergy()
 
             energy += r;
         }
-
-    energy /= 2;
 }
 
 // Flip all verices from branch around (v1,v2)
