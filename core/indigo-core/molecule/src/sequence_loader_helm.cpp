@@ -860,10 +860,9 @@ void SequenceLoader::loadHELM(KetDocument& document)
                                                       document.monomers().at(std::to_string(right_mon_it->second))->ref(), right_ap);
             if (left_ap == "pair" || right_ap == "pair" || left_ap == "hydrogen" || right_ap == "hydrogen")
             {
-                // Accumulate only the first bond per unique polymer pair to avoid redundant transforms
+                // Accumulate only the first bond per unique strand pair to avoid redundant transforms
                 bool already_paired = std::any_of(paired_strands.begin(), paired_strands.end(), [&](const PairedStrands& p) {
-                    return (p.anchor == left_polymer && p.paired == right_polymer) ||
-                           (p.anchor == right_polymer && p.paired == left_polymer);
+                    return (p.anchor == left_polymer && p.paired == right_polymer) || (p.anchor == right_polymer && p.paired == left_polymer);
                 });
                 if (!already_paired)
                     paired_strands.push_back({left_polymer, right_polymer, left_monomer_idx, right_monomer_idx});
@@ -925,7 +924,6 @@ void SequenceLoader::loadHELM(KetDocument& document)
             if (!paired_strands.empty())
                 applyDoubleStrandLayout(document, paired_strands, used_polymer_nums);
 
-
             helm_part = helm_parts::End;
         }
     }
@@ -933,19 +931,13 @@ void SequenceLoader::loadHELM(KetDocument& document)
         throw Error(unexpected_eod);
 }
 
-void SequenceLoader::applyDoubleStrandLayout(KetDocument& document, const std::vector<PairedStrands>& paired_strands,
-                                             const polymer_map& used_polymer_nums)
+void SequenceLoader::applyDoubleStrandLayout(KetDocument& document, const std::vector<PairedStrands>& paired_strands, const polymer_map& used_polymer_nums)
 {
     // Extract the letter prefix of a polymer name (e.g. "RNA" from "RNA1") for type checking
-    auto get_polymer_type = [](const std::string& name) -> std::string {
-        std::string type;
-        for (char c : name)
-        {
-            if (std::isalpha(c))
-                type += static_cast<char>(std::toupper(c));
-            else
-                break;
-        }
+    auto get_polymer_type = [](const std::string& name) {
+        auto it = std::find_if_not(name.begin(), name.end(), [](unsigned char c) { return std::isalpha(c); });
+        std::string type(name.begin(), it);
+        std::transform(type.begin(), type.end(), type.begin(), [](unsigned char c) { return static_cast<char>(std::toupper(c)); });
         return type;
     };
 
@@ -968,12 +960,14 @@ void SequenceLoader::applyDoubleStrandLayout(KetDocument& document, const std::v
         const auto& paired_map = used_polymer_nums.at(paired_name);
 
         const auto& anchor_mon = document.monomers().at(std::to_string(anchor_map.at(pair.anchor_mon_idx)));
-        if (!anchor_mon->position().has_value()) continue;
+        if (!anchor_mon->position().has_value())
+            continue;
         float anchor_x = anchor_mon->position().value().x;
         float anchor_y = anchor_mon->position().value().y;
 
         const auto& paired_mon = document.monomers().at(std::to_string(paired_map.at(pair.paired_mon_idx)));
-        if (!paired_mon->position().has_value()) continue;
+        if (!paired_mon->position().has_value())
+            continue;
         float paired_x = paired_mon->position().value().x;
         float paired_y = paired_mon->position().value().y;
 
