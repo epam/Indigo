@@ -20,6 +20,11 @@
 
 using namespace indigo;
 
+// Minimum squared distance before enforcing a massive repulsion penalty
+constexpr float MIN_DIST_SQR = 0.0001f;
+// Massive repulsion energy for heavily overlapping vertices
+constexpr float MAX_REPULSION_ENERGY = 5000000.f;
+
 IMPL_ERROR(RefinementState, "refinement");
 
 CP_DEF(RefinementState);
@@ -94,8 +99,8 @@ void RefinementState::calcEnergy()
             d.diff(layout[i], layout[j]);
             r = d.lengthSqr();
 
-            if (r < 0.0001f)
-                r = 5000000.f;
+            if (r < MIN_DIST_SQR)
+                r = MAX_REPULSION_ENERGY;
             else
                 r = 1 / r;
 
@@ -147,8 +152,8 @@ void RefinementState::calcEnergyDelta(const RefinementState& old_state)
             d.diff(old_state.layout[i], old_state.layout[j]);
             r_old = d.lengthSqr();
 
-            if (r_old < 0.0001f)
-                r_old = 5000000.f;
+            if (r_old < MIN_DIST_SQR)
+                r_old = MAX_REPULSION_ENERGY;
             else
                 r_old = 1.0f / r_old;
 
@@ -156,8 +161,8 @@ void RefinementState::calcEnergyDelta(const RefinementState& old_state)
             d.diff(layout[i], layout[j]);
             r_new = d.lengthSqr();
 
-            if (r_new < 0.0001f)
-                r_new = 5000000.f;
+            if (r_new < MIN_DIST_SQR)
+                r_new = MAX_REPULSION_ENERGY;
             else
                 r_new = 1.0f / r_new;
 
