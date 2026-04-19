@@ -49,8 +49,7 @@ Error: order has been changed:x[2]=1.0000, x[1]=0.0000 vs nx[2]=0.0000, nx[1]=3.
   Result: Molecule #0: Success
    Molecule #1: Success
 *** Check issue 468 ***
-  Result: Error: atom #2 (H) contains delta 1.5760493551528876 > 0.01
-   atom #3 (H) contains delta 1.5760578585079048 > 0.01
+  Result: Success
 *** Test aromatic ***
   Result: Success
 *** IND-617: fixed ends ***
