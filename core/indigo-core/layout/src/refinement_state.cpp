@@ -88,7 +88,7 @@ void RefinementState::applyToGraph()
 void RefinementState::calcEnergy()
 {
     int i, j;
-    float r;
+    double r;
     Vec2f d;
 
     energy = 0;
@@ -102,7 +102,7 @@ void RefinementState::calcEnergy()
             if (r < MIN_DIST_SQR)
                 r = MAX_REPULSION_ENERGY;
             else
-                r = 1 / r;
+                r = 1.0 / r;
 
             energy += r;
         }
@@ -113,8 +113,12 @@ void RefinementState::calcEnergyDelta(const RefinementState& old_state)
     energy = old_state.energy;
 
     int i, j;
-    float r_old, r_new;
+    double r_old, r_new;
     Vec2f d;
+
+    // Kahan summation initialization
+    double delta_energy = 0.0;
+    double c = 0.0;
 
     int vertex_count = _graph.vertexEnd();
     QS_DEF(Array<bool>, moved);
@@ -155,7 +159,7 @@ void RefinementState::calcEnergyDelta(const RefinementState& old_state)
             if (r_old < MIN_DIST_SQR)
                 r_old = MAX_REPULSION_ENERGY;
             else
-                r_old = 1.0f / r_old;
+                r_old = 1.0 / r_old;
 
             // new interaction
             d.diff(layout[i], layout[j]);
@@ -164,11 +168,16 @@ void RefinementState::calcEnergyDelta(const RefinementState& old_state)
             if (r_new < MIN_DIST_SQR)
                 r_new = MAX_REPULSION_ENERGY;
             else
-                r_new = 1.0f / r_new;
+                r_new = 1.0 / r_new;
 
-            energy += (r_new - r_old);
+            double term = r_new - r_old;
+            double y = term - c;
+            double t = delta_energy + y;
+            c = (t - delta_energy) - y;
+            delta_energy = t;
         }
     }
+    energy += delta_energy;
 }
 
 // Flip all verices from branch around (v1,v2)

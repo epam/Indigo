@@ -397,7 +397,7 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates(float bond_length)
                         return v2.is_cyclic;
                     return v1.morgan_code < v2.morgan_code;
                 };
-                std::sort(adjacent_list.begin(), adjacent_list.end(), vertex_cmp_less);
+                std::stable_sort(adjacent_list.begin(), adjacent_list.end(), vertex_cmp_less);
                 _attachDandlingVertices(k, adjacent_list);
             }
             else
@@ -2427,6 +2427,6 @@ bool MoleculeLayoutGraph::_prepareAssignedList(Array<int>& assigned_list, Biconn
             return v2.is_cyclic;
         return v1.morgan_code < v2.morgan_code;
     };
-    std::sort(assigned_list.begin(), assigned_list.end(), vertex_cmp_less);
+    std::stable_sort(assigned_list.begin(), assigned_list.end(), vertex_cmp_less);
     return true;
 }
