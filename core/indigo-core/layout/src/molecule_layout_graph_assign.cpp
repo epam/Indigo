@@ -349,8 +349,12 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates(float bond_length)
         if (cancellation && cancellation->isCancelled())
             throw Error("Molecule layout has been cancelled: %s", cancellation->cancelledRequestMessage());
 
-        if (!_prepareAssignedList(assigned_list, bc_decom, bc_components, bc_tree))
+        bool has_assigned = _prepareAssignedList(assigned_list, bc_decom, bc_components, bc_tree);
+
+        if (!has_assigned)
+        {
             return;
+        }
 
         // ( 3.i] let k = 0  ( top of the list];;
         while (assigned_list.size() != 0)
@@ -386,7 +390,14 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates(float bond_length)
 
             if (all_trivial && !sequence_layout)
             {
-                adjacent_list.qsort(_vertex_cmp, this);
+                auto vertex_cmp_less = [this](int n1, int n2) -> bool {
+                    const LayoutVertex& v1 = getLayoutVertex(n1);
+                    const LayoutVertex& v2 = getLayoutVertex(n2);
+                    if (v1.is_cyclic != v2.is_cyclic)
+                        return v2.is_cyclic;
+                    return v1.morgan_code < v2.morgan_code;
+                };
+                std::sort(adjacent_list.begin(), adjacent_list.end(), vertex_cmp_less);
                 _attachDandlingVertices(k, adjacent_list);
             }
             else
@@ -401,7 +412,6 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates(float bond_length)
         }
         // ( 4] repeat steps 1-3 until all atoms have been assigned absolute coordinates.;
     }
-    //
 }
 
 void MoleculeLayoutGraphSimple::_layout_component(BiconnectedDecomposer& bc_decom, PtrArray<MoleculeLayoutGraph>& bc_components, Array<int>& bc_tree,
@@ -2400,7 +2410,9 @@ bool MoleculeLayoutGraph::_prepareAssignedList(Array<int>& assigned_list, Biconn
         // Skip energy-based refinement for sequence_layout with fixed vertices
         // (would corrupt polygon positions; first layout still refined normally)
         if (!(sequence_layout && _n_fixed > 0))
+        {
             _refineCoordinates(bc_decom, bc_components, bc_tree);
+        }
 
         return false;
     }
@@ -2408,6 +2420,13 @@ bool MoleculeLayoutGraph::_prepareAssignedList(Array<int>& assigned_list, Biconn
     // ( 2] the list is ordered with cyclic atoms at the top of the list;
     //   with descending ATCD numbers and acyclic atoms at the bottom;
     //   of the list with descending ATCD numbers;;
-    assigned_list.qsort(_vertex_cmp, this);
+    auto vertex_cmp_less = [this](int n1, int n2) -> bool {
+        const LayoutVertex& v1 = getLayoutVertex(n1);
+        const LayoutVertex& v2 = getLayoutVertex(n2);
+        if (v1.is_cyclic != v2.is_cyclic)
+            return v2.is_cyclic;
+        return v1.morgan_code < v2.morgan_code;
+    };
+    std::sort(assigned_list.begin(), assigned_list.end(), vertex_cmp_less);
     return true;
 }

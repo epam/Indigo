@@ -94,6 +94,12 @@ if (EMSCRIPTEN)
     set(BUILD_BINGO_ORACLE OFF)
     set(BUILD_BINGO_ELASTIC OFF)
     set(USE_FONT_MANAGER ON)
+    # Skip Array/Pool bounds-check throws in release WASM builds to allow inlining.
+    # emscripten's JS-based exception handling wraps every throw-containing function
+    # in invoke_* shims, preventing inlining and causing ~80x overhead in hot loops.
+    if (NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+        add_definitions(-DINDIGO_UNCHECKED_ACCESS)
+    endif()
 endif()
 
 if (BUILD_INDIGO OR BUILD_INDIGO_UTILS OR BUILD_BINGO_SQLSERVER OR BUILD_BINGO_ORACLE OR BUILD_BINGO_POSTGRES OR EMSCRIPTEN)

@@ -1540,6 +1540,23 @@ M  END
         });
     }
 
+    // Layout performance test for large peptide
+    {
+        test("layout", "big_peptide_performance", () => {
+            var fs = require('fs');
+            const smiles = fs.readFileSync("big_peptide.smi").toString().trim();
+            let options = new indigo.MapStringString();
+            const startTime = process.hrtime();
+            const result = indigo.layout(smiles, "ket", options);
+            const elapsed = process.hrtime(startTime);
+            const elapsedSeconds = (elapsed[0] + elapsed[1] / 1e9).toFixed(3);
+            console.log(`    Layout of big peptide took ${elapsedSeconds}s`);
+            assert(result.length > 0, "Layout result should not be empty");
+            assert(parseFloat(elapsedSeconds) < 30, `Layout took too long: ${elapsedSeconds}s (limit: 30s)`);
+            options.delete();
+        });
+    }
+
     // Run tests
     run();
 });

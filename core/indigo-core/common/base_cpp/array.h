@@ -128,17 +128,19 @@ namespace indigo
 
         const T& operator[](int index) const
         {
+#ifndef INDIGO_UNCHECKED_ACCESS
             if (index < 0 || _length - index <= 0)
                 throw Error("invalid index %d (size=%d)", index, _length);
-
+#endif
             return _array[index];
         }
 
         T& operator[](int index)
         {
+#ifndef INDIGO_UNCHECKED_ACCESS
             if (index < 0 || _length - index <= 0)
                 throw Error("invalid index %d (size=%d)", index, _length);
-
+#endif
             return _array[index];
         }
 
