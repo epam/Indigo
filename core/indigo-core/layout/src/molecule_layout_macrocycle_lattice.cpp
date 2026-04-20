@@ -149,7 +149,10 @@ void MoleculeLayoutMacrocyclesLattice::doLayout()
     int best_number = -1;
     float best_rating = preliminary_layout(cl);
 
-    points.qsort(&AnswerField::_cmp_answer_points, &answfld);
+    std::stable_sort(points.begin(), points.end(), [&answfld](const answer_point& a, const answer_point& b) {
+        int qa = a.quality(answfld), qb = b.quality(answfld);
+        return qa != qb ? qa < qb : a.rot != b.rot ? a.rot < b.rot : a.p != b.p ? a.p < b.p : a.x != b.x ? a.x < b.x : a.y < b.y;
+    });
 
     Array<answer_point> path;
     path.clear_resize(length + 1);
