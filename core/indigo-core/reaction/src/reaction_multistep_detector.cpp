@@ -305,9 +305,8 @@ void ReactionMultistepDetector::distributeOrphanRGroups()
             }
             else
             {
-                rg_bbox = Rect2f(
-                    Vec2f(std::min(rg_bbox.left(), frag_bbox.left()), std::min(rg_bbox.bottom(), frag_bbox.bottom())),
-                    Vec2f(std::max(rg_bbox.right(), frag_bbox.right()), std::max(rg_bbox.top(), frag_bbox.top())));
+                rg_bbox = Rect2f(Vec2f(std::min(rg_bbox.left(), frag_bbox.left()), std::min(rg_bbox.bottom(), frag_bbox.bottom())),
+                                 Vec2f(std::max(rg_bbox.right(), frag_bbox.right()), std::max(rg_bbox.top(), frag_bbox.top())));
             }
         }
         if (!rg_bbox_init)
