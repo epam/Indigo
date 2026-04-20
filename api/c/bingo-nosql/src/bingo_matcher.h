@@ -11,6 +11,7 @@
 #include "indigo_molecule.h"
 #include "indigo_reaction.h"
 
+#include "base_cpp/fixed_deque.h"
 #include "base_cpp/os_thread_wrapper.h"
 #include "math/statistics.h"
 #include "molecule/molecule_exact_matcher.h"
@@ -233,7 +234,12 @@ namespace bingo
         ~BaseMatcher() override;
     };
 
+    constexpr int MAX_INPUT_QUEUE_SIZE = 1000;
+    constexpr int THREAD_INPUT_CHUNK_SIZE = 100;
+
+    // using results_queue = std::deque<std::pair<int, std::unique_ptr<IndigoObject>>>;
     using results_queue = std::deque<std::pair<int, std::unique_ptr<IndigoObject>>>;
+
     class BaseSubstructureMatcher : public BaseMatcher
     {
     public:
@@ -284,7 +290,7 @@ namespace bingo
 
     public:
         std::optional<std::thread> _t;
-        std::deque<int> _input_data;
+        FixedDeque<int> _input_data;
         std::mutex _input_mtx;
         std::condition_variable _cv_input;
         std::atomic_bool _all_data_in_queue = false;

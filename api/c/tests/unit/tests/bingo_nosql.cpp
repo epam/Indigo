@@ -38,6 +38,32 @@ class BingoNosqlTest : public IndigoApiTest
 {
 };
 
+// 2do remove before commit
+TEST_F(BingoNosqlTest, test_subsearch_tau_multi)
+{
+    indigoSetOptionInt("bingonosql-sub-search-thread-count", -1);
+    indigoClearTautomerRules();
+    indigoSetTautomerRule(1, "N,O,P,S,As,Se,Sb,Te", "N,O,P,S,As,Se,Sb,Te");
+    indigoSetTautomerRule(2, "0C", "N,O,P,S");
+    indigoSetTautomerRule(3, "1C", "N,O");
+    int db = bingoLoadDatabaseFile("epam_structures50_1", "");
+    int query = indigoLoadQueryMoleculeFromString("C/C(/O)=C/CC");
+    int sub_matcher = bingoSearchSub(db, query, "TAU INNER R*");
+    auto start = std::chrono::high_resolution_clock::now();
+    std::list<int> results;
+    while (bingoNext(sub_matcher))
+    {
+        int id = bingoGetCurrentId(sub_matcher);
+        results.emplace_back(id);
+    }
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    printf("Total %d results in %zdms.\n", results.size(), duration.count());
+    printf("%s", bingoProfilingGetStatistics(db));
+    bingoEndSearch(sub_matcher);
+    bingoCloseDatabase(db);
+}
+
 TEST_F(BingoNosqlTest, test_subsearch_tau)
 {
     indigoClearTautomerRules();
