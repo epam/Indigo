@@ -35,22 +35,6 @@ def testSGroupsInstrumentation():
     sgroup3 = mol.addDataSGroup([10], [], "ID", "c")
     sgroup4 = mol.addDataSGroup([11], [], "ID", "d")
     print(mol.molfile())
-    print(
-        "sgroup1 counts: atoms=%d bonds=%d"
-        % (sgroup1.countAtoms(), sgroup1.countBonds())
-    )
-    print(
-        "sgroup2 counts: atoms=%d bonds=%d"
-        % (sgroup2.countAtoms(), sgroup2.countBonds())
-    )
-    print(
-        "sgroup3 counts: atoms=%d bonds=%d"
-        % (sgroup3.countAtoms(), sgroup3.countBonds())
-    )
-    print(
-        "sgroup4 counts: atoms=%d bonds=%d"
-        % (sgroup4.countAtoms(), sgroup4.countBonds())
-    )
     saver.append(mol)
 
     mol2 = indigo.unserialize(mol.serialize())
@@ -391,6 +375,101 @@ renderer.renderToFile(m, joinPathPy("out/result_2.png", __file__))
 data_group = m.getDataSGroup(0)
 print("data s-group description = %s" % data_group.description())
 print("data s-group data = %s" % data_group.data())
+
+print("****** Iterate and Count Atoms/Bonds on SGroups ********")
+
+
+def _collect_indices(iterator):
+    result = []
+    for item in iterator:
+        result.append(item.index())
+    return result
+
+
+def testIterateAtomsBondsOnSGroups():
+    # 1) DataSGroup: deterministic hand-crafted case
+    m = indigo.loadMolecule("CCCO")
+    dsg = m.addDataSGroup([0, 1, 2], [0, 1], "ID", "iter")
+    dsg_atoms = _collect_indices(dsg.iterateAtoms())
+    dsg_bonds = _collect_indices(dsg.iterateBonds())
+    print(
+        "DataSGroup iterate: countAtoms=%d iterAtoms=%d atoms=%s"
+        % (dsg.countAtoms(), len(dsg_atoms), dsg_atoms)
+    )
+    print(
+        "DataSGroup iterate: countBonds=%d iterBonds=%d bonds=%s"
+        % (dsg.countBonds(), len(dsg_bonds), dsg_bonds)
+    )
+
+    # 2) Common SGroup
+    for sg in m.iterateSGroups():
+        sg_atoms = _collect_indices(sg.iterateAtoms())
+        sg_bonds = _collect_indices(sg.iterateBonds())
+        print(
+            "SGroup iterate: countAtoms=%d iterAtoms=%d"
+            % (sg.countAtoms(), len(sg_atoms))
+        )
+        print(
+           "SGroup iterate: countBonds=%d iterBonds=%d"
+            % (sg.countBonds(), len(sg_bonds))
+        )
+
+    # 3) Superatom typed object
+    indigo.setOption("molfile-saving-mode", "2000")
+    # 3a) Try explicit empty superatom
+    m_empty = indigo.loadMolecule("CC")
+    try:
+        empty_sup = m_empty.addSuperatom([], "EMPTY")
+        empty_atoms = _collect_indices(empty_sup.iterateAtoms())
+        empty_bonds = _collect_indices(empty_sup.iterateBonds())
+        print(
+            "Empty Superatom iterate: countAtoms=%d iterAtoms=%d"
+            % (empty_sup.countAtoms(), len(empty_atoms))
+        )
+        print(
+            "Empty Superatom iterate: countBonds=%d iterBonds=%d"
+            % (empty_sup.countBonds(), len(empty_bonds))
+        )
+    except IndigoException as e:
+        print("%s" % (getIndigoExceptionText(e)))
+
+    # 3b) Superatom from template match
+    m2 = indigo.loadMoleculeFromFile(dataPath("molecules/sgroups/sgroups-base.mol"))
+    t2 = indigo.loadQueryMoleculeFromFile(
+        dataPath("molecules/sgroups/sgroups-template.mol")
+    )
+    matcher2 = indigo.substructureMatcher(m2)
+    for match in matcher2.iterateMatches(t2):
+        sup = m2.createSGroup("SUP", match, "IterAtomsBonds")
+        sup_atoms = _collect_indices(sup.iterateAtoms())
+        sup_bonds = _collect_indices(sup.iterateBonds())
+        print(
+            "Superatom iterate: countAtoms=%d iterAtoms=%d"
+            % (sup.countAtoms(), len(sup_atoms))
+        )
+        print(
+            "Superatom iterate: countBonds=%d iterBonds=%d"
+            % (sup.countBonds(), len(sup_bonds))
+        )
+        break # test with first match only
+
+    # 4) MultipleGroup from fixture
+    m3 = indigo.loadMoleculeFromFile(dataPath("molecules/sgroups/rep-dat.mol"))
+    mul = m3.getMultipleGroup(1)
+    mul_atoms = _collect_indices(mul.iterateAtoms())
+    mul_bonds = _collect_indices(mul.iterateBonds())
+    print(
+        "MultipleGroup iterate: countAtoms=%d iterAtoms=%d"
+        % (mul.countAtoms(), len(mul_atoms))
+    )
+    print(
+        "MultipleGroup iterate: countBonds=%d iterBonds=%d"
+        % (mul.countBonds(), len(mul_bonds))
+    )
+
+
+testIterateAtomsBondsOnSGroups()
+
 if isIronPython():
     saver.Dispose()
     renderer.Dispose()
