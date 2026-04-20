@@ -62,7 +62,7 @@ bool ReactionLayout::hasAnyIntersect(const std::vector<Rect2f>& bblist)
         events.emplace_back(SweepEvent{rect.left(), true, rect.bottom(), rect.top()});
         events.emplace_back(SweepEvent{rect.left() + rect.width(), false, rect.bottom(), rect.top()});
     }
-    std::sort(events.begin(), events.end());
+    std::stable_sort(events.begin(), events.end());
     std::set<std::pair<float, float>> active;
     for (const auto& event : events)
     {
