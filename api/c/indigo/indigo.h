@@ -603,6 +603,8 @@ CEXPORT const char* indigoGetSGroupName(int sgroup);
 CEXPORT int indigoSetSGroupClass(int sgroup, const char* sgclass);
 CEXPORT int indigoSetSGroupName(int sgroup, const char* sgname);
 CEXPORT int indigoGetSGroupNumCrossBonds(int sgroup);
+CEXPORT int indigoCreateCrossBonds(int sgroup);
+CEXPORT int indigoClearSGroupCrossBonds(int sgroup);
 
 CEXPORT int indigoAddSGroupAttachmentPoint(int sgroup, int aidx, int lvidx, const char* apid);
 CEXPORT int indigoDeleteSGroupAttachmentPoint(int sgroup, int index);

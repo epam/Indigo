@@ -1728,6 +1728,46 @@ CEXPORT int indigoGetSGroupNumCrossBonds(int sgroup)
     INDIGO_END(-1);
 }
 
+CEXPORT int indigoCreateCrossBonds(int sgroup)
+{
+    INDIGO_BEGIN
+    {
+        IndigoSuperatom& isup = IndigoSuperatom::cast(self.getObject(sgroup));
+        Superatom& sup = isup.get();
+        BaseMolecule& mol = isup.mol;
+
+        sup.bonds.clear();
+
+        for (auto atom_idx : sup.atoms)
+        {
+            const Vertex& vx = mol.getVertex(atom_idx);
+            for (auto nei_idx = vx.neiBegin(); nei_idx != vx.neiEnd(); nei_idx = vx.neiNext(nei_idx))
+            {
+                if (sup.atoms.find(vx.neiVertex(nei_idx)) == -1)
+                {
+                    int edge_idx = vx.neiEdge(nei_idx);
+                    if (sup.bonds.find(edge_idx) == -1)
+                        sup.bonds.push(edge_idx);
+                }
+            }
+        }
+
+        return 1;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoClearSGroupCrossBonds(int sgroup)
+{
+    INDIGO_BEGIN
+    {
+        Superatom& sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
+        sup.bonds.clear();
+        return 1;
+    }
+    INDIGO_END(-1);
+}
+
 CEXPORT int indigoAddSGroupAttachmentPoint(int sgroup, int aidx, int lvidx, const char* apid)
 {
     INDIGO_BEGIN

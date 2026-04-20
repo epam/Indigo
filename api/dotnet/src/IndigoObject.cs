@@ -824,6 +824,18 @@ namespace com.epam.indigo
             return dispatcher.checkResult(IndigoLib.indigoGetSGroupNumCrossBonds(self));
         }
 
+        public int createCrossBonds()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoCreateCrossBonds(self));
+        }
+
+        public int clearSGroupCrossBonds()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoClearSGroupCrossBonds(self));
+        }
+
         public int addSGroupAttachmentPoint(int aidx, int lvidx, string apid)
         {
             dispatcher.setSessionID();

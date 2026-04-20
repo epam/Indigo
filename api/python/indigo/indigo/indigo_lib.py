@@ -656,6 +656,10 @@ class IndigoLib:
         IndigoLib.lib.indigoGetSGroupName.argtypes = [c_int]
         IndigoLib.lib.indigoGetSGroupNumCrossBonds.restype = c_int
         IndigoLib.lib.indigoGetSGroupNumCrossBonds.argtypes = [c_int]
+        IndigoLib.lib.indigoCreateCrossBonds.restype = c_int
+        IndigoLib.lib.indigoCreateCrossBonds.argtypes = [c_int]
+        IndigoLib.lib.indigoClearSGroupCrossBonds.restype = c_int
+        IndigoLib.lib.indigoClearSGroupCrossBonds.argtypes = [c_int]
         IndigoLib.lib.indigoAddSGroupAttachmentPoint.restype = c_int
         IndigoLib.lib.indigoAddSGroupAttachmentPoint.argtypes = [
             c_int,

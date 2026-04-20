@@ -483,6 +483,10 @@ public interface IndigoLib extends Library {
 
     int indigoGetSGroupNumCrossBonds(int sgroup);
 
+    int indigoCreateCrossBonds(int sgroup);
+
+    int indigoClearSGroupCrossBonds(int sgroup);
+
     int indigoAddSGroupAttachmentPoint(int sgroup, int aidx, int lvidx, String apid);
 
     int indigoDeleteSGroupAttachmentPoint(int sgroup, int apidx);

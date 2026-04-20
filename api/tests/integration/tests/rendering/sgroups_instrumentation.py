@@ -173,10 +173,63 @@ def testSGroupAttachmentPointInvalidTarget():
             % getIndigoExceptionText(e)
         )
 
-
 testIterateSGroupAttachmentPoints()
 testSGroupAttachmentPointStaleHandle()
 testSGroupAttachmentPointInvalidTarget()
+
+def testClearSGroupCrossBonds():
+    """Test clearing cross bonds and invalid target error path."""
+    indigo.setOption("molfile-saving-mode", "2000")
+
+    def _cross_bond_indices(sg):
+        return sorted([bond.index() for bond in sg.iterateBonds()])
+
+    # Build a deterministic superatom with >1 crossing bond
+    # Chain: 0-1-2-3-4, superatom atoms = [1,2,3]
+    # Crossing bonds expected: (0-1) and (3-4)
+    m = indigo.loadMolecule("CSOCC")
+    t = indigo.loadQueryMolecule("SOC")
+
+    matcher = indigo.substructureMatcher(m)
+    for match in matcher.iterateMatches(t):
+        sg = m.createSGroup("SUP", match, "MID")
+
+        before_count = sg.getSGroupNumCrossBonds()
+        before_indices = _cross_bond_indices(sg)
+        print("Cross bonds before clear: %d" % before_count)
+        print("Cross bond indices before clear: %s" % before_indices)
+
+        sg.clearSGroupCrossBonds()
+        after_clear_count = sg.getSGroupNumCrossBonds()
+        after_clear_indices = _cross_bond_indices(sg)
+        print("Cross bonds after clear: %d" % after_clear_count)
+        print("Cross bond indices after clear: %s" % after_clear_indices)
+
+        sg.createCrossBonds()
+        after_create_count = sg.getSGroupNumCrossBonds()
+        after_create_indices = _cross_bond_indices(sg)
+        print("Cross bonds after create: %d" % after_create_count)
+        print("Cross bond indices after create: %s" % after_create_indices)
+        break  # test with first match only
+
+    data_sg = m.addDataSGroup([0, 1], [], "ID", "test")
+    try:
+        data_sg.clearSGroupCrossBonds()
+    except IndigoException as e:
+        print(
+            "Expected error for clearSGroupCrossBonds on data SGroup: %s"
+            % getIndigoExceptionText(e)
+        )
+    try:
+        data_sg.createCrossBonds()
+    except IndigoException as e:
+        print(
+            "Expected error for createCrossBonds on data SGroup: %s"
+            % getIndigoExceptionText(e)
+        )
+
+print("****** SGroup Cross Bonds ********")
+testClearSGroupCrossBonds()
 
 print("****** Get/Set Multiplier ********")
 indigo.setOption("molfile-saving-mode", "3000")

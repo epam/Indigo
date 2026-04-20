@@ -618,6 +618,12 @@ namespace com.epam.indigo
         public static extern int indigoGetSGroupNumCrossBonds(int sgroup);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoCreateCrossBonds(int sgroup);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoClearSGroupCrossBonds(int sgroup);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoAddSGroupAttachmentPoint(int sgroup, int aidx, int lvidx, string apid);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
