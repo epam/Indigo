@@ -74,6 +74,7 @@ namespace indigo
         bool is_inside;
         bool is_nailed;
         int type;
+        int inner_cycle_size; // 0 if not inner; otherwise the n-agon vertex count
 
         Vec2f pos;
     };
