@@ -173,9 +173,11 @@ def testSGroupAttachmentPointInvalidTarget():
             % getIndigoExceptionText(e)
         )
 
+
 testIterateSGroupAttachmentPoints()
 testSGroupAttachmentPointStaleHandle()
 testSGroupAttachmentPointInvalidTarget()
+
 
 def testClearSGroupCrossBonds():
     """Test clearing cross bonds and invalid target error path."""
@@ -227,6 +229,7 @@ def testClearSGroupCrossBonds():
             "Expected error for createCrossBonds on data SGroup: %s"
             % getIndigoExceptionText(e)
         )
+
 
 print("****** SGroup Cross Bonds ********")
 testClearSGroupCrossBonds()
@@ -463,7 +466,7 @@ def testIterateAtomsBondsOnSGroups():
             % (sg.countAtoms(), len(sg_atoms))
         )
         print(
-           "SGroup iterate: countBonds=%d iterBonds=%d"
+            "SGroup iterate: countBonds=%d iterBonds=%d"
             % (sg.countBonds(), len(sg_bonds))
         )
 
@@ -487,7 +490,9 @@ def testIterateAtomsBondsOnSGroups():
         print("%s" % (getIndigoExceptionText(e)))
 
     # 3b) Superatom from template match
-    m2 = indigo.loadMoleculeFromFile(dataPath("molecules/sgroups/sgroups-base.mol"))
+    m2 = indigo.loadMoleculeFromFile(
+        dataPath("molecules/sgroups/sgroups-base.mol")
+    )
     t2 = indigo.loadQueryMoleculeFromFile(
         dataPath("molecules/sgroups/sgroups-template.mol")
     )
@@ -504,7 +509,7 @@ def testIterateAtomsBondsOnSGroups():
             "Superatom iterate: countBonds=%d iterBonds=%d"
             % (sup.countBonds(), len(sup_bonds))
         )
-        break # test with first match only
+        break  # test with first match only
 
     # 4) MultipleGroup from fixture
     m3 = indigo.loadMoleculeFromFile(dataPath("molecules/sgroups/rep-dat.mol"))

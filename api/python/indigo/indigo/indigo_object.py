@@ -2004,7 +2004,6 @@ class IndigoObject:
             self._lib().indigoCreateCrossBonds(self.id)
         )
 
-
     def clearSGroupCrossBonds(self):
         """SGroup method removes all cross bonds for a superatom S-group
 
@@ -2015,6 +2014,7 @@ class IndigoObject:
         return IndigoLib.checkResult(
             self._lib().indigoClearSGroupCrossBonds(self.id)
         )
+
     def addSGroupAttachmentPoint(self, aidx, lvidx, apid):
         """SGroup method sets attachment point info
 
