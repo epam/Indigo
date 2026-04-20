@@ -670,9 +670,7 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
 
     if (sorted_cycles.size() > 0)
     {
-        std::stable_sort(sorted_cycles.begin(), sorted_cycles.end(), [&cycles](int idx1, int idx2) {
-            return Cycle::compare_cb(idx1, idx2, &cycles) < 0;
-        });
+        std::stable_sort(sorted_cycles.begin(), sorted_cycles.end(), [&cycles](int idx1, int idx2) { return Cycle::compare_cb(idx1, idx2, &cycles) < 0; });
 
         // Skip if cycle already has correct polygon geometry from previous layout step
         bool skip_first = false;
