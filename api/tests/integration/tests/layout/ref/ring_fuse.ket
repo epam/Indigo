@@ -350,8 +350,8 @@
         "type": "monomer",
         "id": "7",
         "position": {
-            "x": 29.6044,
-            "y": -13.9372
+            "x": 29.6163,
+            "y": -14.0902
         },
         "selected": true,
         "alias": "D",
@@ -361,8 +361,8 @@
         "type": "monomer",
         "id": "8",
         "position": {
-            "x": 30.5848,
-            "y": -12.8019
+            "x": 29.4605,
+            "y": -12.5983
         },
         "selected": true,
         "alias": "D",
@@ -372,8 +372,8 @@
         "type": "monomer",
         "id": "9",
         "position": {
-            "x": 30.5848,
-            "y": -11.3019
+            "x": 30.4053,
+            "y": -11.4332
         },
         "selected": true,
         "alias": "D",
@@ -403,8 +403,8 @@
         "type": "monomer",
         "id": "12",
         "position": {
-            "x": 32.0842,
-            "y": -11.2600
+            "x": 31.8971,
+            "y": -11.2774
         },
         "selected": true,
         "alias": "F",
@@ -414,8 +414,8 @@
         "type": "monomer",
         "id": "13",
         "position": {
-            "x": 33.1777,
-            "y": -12.2869
+            "x": 33.0622,
+            "y": -12.2221
         },
         "selected": true,
         "alias": "F",
@@ -425,8 +425,8 @@
         "type": "monomer",
         "id": "14",
         "position": {
-            "x": 33.2299,
-            "y": -13.7860
+            "x": 33.2180,
+            "y": -13.7140
         },
         "selected": true,
         "alias": "F",
@@ -436,8 +436,8 @@
         "type": "monomer",
         "id": "15",
         "position": {
-            "x": 32.2106,
-            "y": -14.8864
+            "x": 32.2733,
+            "y": -14.8791
         },
         "selected": true,
         "alias": "F",
@@ -447,8 +447,8 @@
         "type": "monomer",
         "id": "16",
         "position": {
-            "x": 30.7119,
-            "y": -14.9489
+            "x": 30.7814,
+            "y": -15.0349
         },
         "selected": true,
         "alias": "F",

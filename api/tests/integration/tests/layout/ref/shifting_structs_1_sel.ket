@@ -202,8 +202,8 @@
         "type": "monomer",
         "id": "0",
         "position": {
-            "x": 2.7661,
-            "y": -0.4694
+            "x": 3.1001,
+            "y": -5.1453
         },
         "selected": true,
         "alias": "E",
@@ -213,8 +213,8 @@
         "type": "monomer",
         "id": "1",
         "position": {
-            "x": 3.3401,
-            "y": 0.9164
+            "x": 2.8042,
+            "y": -3.6748
         },
         "selected": true,
         "alias": "E",
@@ -224,8 +224,8 @@
         "type": "monomer",
         "id": "2",
         "position": {
-            "x": 4.7260,
-            "y": 1.4904
+            "x": 3.6348,
+            "y": -2.4257
         },
         "selected": true,
         "alias": "E",
@@ -235,8 +235,8 @@
         "type": "monomer",
         "id": "3",
         "position": {
-            "x": 6.1118,
-            "y": 0.9164
+            "x": 5.1053,
+            "y": -2.1298
         },
         "selected": true,
         "alias": "E",
@@ -246,8 +246,8 @@
         "type": "monomer",
         "id": "4",
         "position": {
-            "x": 6.6858,
-            "y": -0.4694
+            "x": 6.3543,
+            "y": -2.9603
         },
         "selected": true,
         "alias": "E",
@@ -257,8 +257,8 @@
         "type": "monomer",
         "id": "5",
         "position": {
-            "x": 6.1118,
-            "y": -1.8553
+            "x": 6.6503,
+            "y": -4.4308
         },
         "selected": true,
         "alias": "E",
@@ -268,8 +268,8 @@
         "type": "monomer",
         "id": "6",
         "position": {
-            "x": 4.7260,
-            "y": -2.4293
+            "x": 5.8197,
+            "y": -5.6799
         },
         "selected": true,
         "alias": "E",
@@ -279,8 +279,8 @@
         "type": "monomer",
         "id": "7",
         "position": {
-            "x": 3.3401,
-            "y": -1.8553
+            "x": 4.3492,
+            "y": -5.9759
         },
         "selected": true,
         "alias": "E",
