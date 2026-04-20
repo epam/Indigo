@@ -38,9 +38,8 @@ namespace indigo
     {
         SKIP_3D_CONSTRAINTS = 0x0100,
         SKIP_FIXED_ATOMS = 0x0200,
-        SKIP_RGROUPS = 0x0400,
-        SKIP_AROMATICITY = 0x0800,
-        SKIP_COMPONENTS = 0x1000
+        SKIP_AROMATICITY = 0x0400,
+        SKIP_COMPONENTS = 0x0800
     };
 
     enum

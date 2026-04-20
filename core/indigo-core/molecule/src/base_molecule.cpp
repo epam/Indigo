@@ -1336,6 +1336,44 @@ void BaseMolecule::removeUnusedRGroups()
     }
 }
 
+void BaseMolecule::copyUsedRGroupsFrom(BaseMolecule& src)
+{
+    // Collect R-group indices referenced by R-sites present in *this.
+    std::unordered_set<int> used;
+    for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
+    {
+        if (!isRSite(i))
+            continue;
+        QS_DEF(Array<int>, allowed);
+        getAllowedRGroups(i, allowed);
+        for (int j = 0; j < allowed.size(); ++j)
+            used.insert(allowed[j]);
+    }
+
+    // Deep-copy only the R-groups that are actually referenced.
+    for (int rg_idx : used)
+    {
+        if (rg_idx < 1 || rg_idx > src.rgroups.getRGroupCount())
+            continue;
+        RGroup& src_rg = src.rgroups.getRGroup(rg_idx);
+        if (src_rg.fragments.size() > 0)
+            rgroups.getRGroup(rg_idx).copy(src_rg);
+    }
+
+    // Copy R-site attachment points for the R-sites present in *this.
+    for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
+    {
+        if (!isRSite(i))
+            continue;
+        if (src._rsite_attachment_points.size() <= i)
+            continue;
+        Array<int>& ap = src._rsite_attachment_points[i];
+        for (int j = 0; j < ap.size(); ++j)
+            if (ap[j] >= 0)
+                setRSiteAttachmentOrder(i, ap[j], j);
+    }
+}
+
 int BaseMolecule::countRSites()
 {
     int i, sum = 0;
