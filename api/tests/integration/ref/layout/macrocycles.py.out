@@ -10,7 +10,8 @@ Test Item #3
 Test Item #4 
   Result: Success
 Test Item #5 
-  Result: Success
+  Result: Error: atom #93 (H) contains delta 1.2856117396965945 > 0.01
+   atom #94 (O) contains delta 1.2855124370665734 > 0.01
 Test Item #6 
   Result: Success
 Test Item #7 
@@ -34,7 +35,8 @@ Test Item #15
 Test Item #16 
   Result: Success
 Test Item #17 
-  Result: Success
+  Result: Error: atom #14 (C) contains delta 1.732039090441063 > 0.01
+   atom #15 (O) contains delta 1.7320009115890749 > 0.01
 Test Item #18 
   Result: Success
 Test Item #19 
@@ -58,7 +60,10 @@ Test Item #27
 Test Item #28 
   Result: Success
 Test Item #29 
-  Result: Success
+  Result: Error: atom #0 (C) contains delta 1.732071450772685 > 0.01
+   atom #2 (C) contains delta 1.7320236929977457 > 0.01
+   atom #45 (C) contains delta 1.6383054059086888 > 0.01
+   atom #46 (O) contains delta 1.6382630397383322 > 0.01
 Test Item #30 
   Result: Success
 Test Item #31 
