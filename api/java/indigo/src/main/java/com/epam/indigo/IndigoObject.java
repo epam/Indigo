@@ -1223,7 +1223,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
 
     public int createCrossBonds() {
         dispatcher.setSessionID();
-        return Indigo.checkResult(this, lib.indigoCreateSGroupCrossBonds(self));
+        return Indigo.checkResult(this, lib.indigoCreateCrossBonds(self));
     }
 
     public int clearSGroupCrossBonds() {
