@@ -348,10 +348,10 @@ void threadFunc(BaseSubstructureMatcher* matcher)
 {
     std::mutex& input_mtx = matcher->_input_mtx;
     std::condition_variable& cv_input = matcher->_cv_input;
-    FixedDeque<int>& input_data = matcher->_input_data;
+    auto& input_data = matcher->_input_data;
     std::atomic_bool& all_data_in_queue = matcher->_all_data_in_queue;
 
-    results_queue& results = matcher->_results;
+    auto& results = matcher->_results;
     std::mutex& results_mtx = matcher->_results_mtx;
     std::condition_variable& cv_results = matcher->_cv_results;
     std::atomic_bool& finished_processing = matcher->_finished_processing;
@@ -387,14 +387,19 @@ void threadFunc(BaseSubstructureMatcher* matcher)
     while (true)
     {
         { // read idx
-            std::unique_lock<std::mutex> lock(input_mtx);
-            cv_input.wait(lock, [&input_data, &all_data_in_queue]() { return !input_data.empty() || all_data_in_queue; });
-            if (input_data.empty())
+            // std::unique_lock<std::mutex> lock(input_mtx);
+            // cv_input.wait(lock, [&input_data, &all_data_in_queue]() { return !input_data.empty() || all_data_in_queue; });
+            // for (int i = 0; input_data->empty() && !all_data_in_queue; i++)
+            //     if ((i & 0xff) == 0)
+            //         std::this_thread::yield();
+            std::lock_guard<decltype(input_data)> lock(input_data);
+            // if (input_data.empty()) // all_data_in_queue
+            if (all_data_in_queue)
                 break;
-            for (int i = 0; i < THREAD_INPUT_CHUNK_SIZE && input_data.size() > 0; i++)
+            for (int i = 0; i < THREAD_INPUT_CHUNK_SIZE && input_data->size() > 0; i++)
             {
-                input_chunk.push_back(input_data.front());
-                input_data.pop_front();
+                input_chunk.push_back(input_data->front());
+                input_data->pop_front();
             }
         }
         molecule_obj.reset(matcher->allocateObject());
@@ -410,18 +415,19 @@ void threadFunc(BaseSubstructureMatcher* matcher)
         }
         input_chunk.clear();
         { // write result
-            std::lock_guard<std::mutex> locker(results_mtx);
+            // std::lock_guard<std::mutex> locker(results_mtx);
+            std::lock_guard<decltype(results)> lock(results);
             if (results_chunk.size() > 0)
             {
                 for (int i = 0; i < results_chunk.size(); i++)
                 {
-                    results.emplace_back(results_chunk[i].first, results_chunk[i].second.release());
+                    results->emplace_back(results_chunk[i].first, results_chunk[i].second.release());
                 }
                 results_chunk.clear();
             }
             else // no data - add empty result
             {
-                results.emplace_back(-1, nullptr);
+                results->emplace_back(-1, nullptr);
             }
             cv_results.notify_one();
         }
@@ -518,17 +524,19 @@ bool BaseSubstructureMatcher::next()
         if (_multithread)
         {
             int rsize = 0;
+            // {
+            //     std::lock_guard<std::mutex> rlock(_results_mtx);
+            //     rsize = _results.size();
+            // }
+            // if (!_all_data_in_queue && rsize < MAX_INPUT_QUEUE_SIZE)
+            if (!_all_data_in_queue && _results->size() < MAX_INPUT_QUEUE_SIZE)
             {
-                std::lock_guard<std::mutex> rlock(_results_mtx);
-                rsize = _results.size();
-            }
-            if (!_all_data_in_queue && rsize < MAX_INPUT_QUEUE_SIZE)
-            {
-                std::lock_guard<std::mutex> lock(_input_mtx);
+                // std::lock_guard<std::mutex> lock(_input_mtx);
+                std::lock_guard<decltype(_input_data)> lock(_input_data);
                 // while input queue not full - add candidates
-                while (_input_data.size() < MAX_INPUT_QUEUE_SIZE && _current_cand_id < _candidates.size())
+                while (_input_data->size() < MAX_INPUT_QUEUE_SIZE && _current_cand_id < _candidates.size())
                 {
-                    _input_data.push_back(_candidates[_current_cand_id++]);
+                    _input_data->push_back(_candidates[_current_cand_id++]);
                     _cv_input.notify_one();
                 }
                 if (_current_cand_id >= _candidates.size()) // need more candidates
@@ -544,17 +552,23 @@ bool BaseSubstructureMatcher::next()
         bool status = false;
         if (_multithread)
         {
-            std::unique_lock<std::mutex> lock(_results_mtx);
-            _cv_results.wait(lock, [this]() { return !_results.empty() || _finished_processing; });
-            if (!_results.empty())
+            // std::unique_lock<std::mutex> lock(_results_mtx);
+            // _cv_results.wait(lock, [this]() { return !_results.empty() || _finished_processing; });
+
+            // while (_results->empty() && !_finished_processing)
+            //     ;
+            for (int i = 0; _results->empty() && !_finished_processing; i++)
+                if ((i & 0xFF) == 0)
+                    std::this_thread::yield();
+            if (!_results->empty())
             {
                 if (_current_obj == nullptr)
                     throw Exception("BaseMatcher: Matcher's current object was destroyed");
 
-                auto& result = _results.front();
+                auto& result = _results->front();
                 if (result.first < 0)
                 {
-                    _results.pop_front();
+                    _results->pop_front();
                     continue;
                 }
                 _current_id = result.first;
@@ -571,7 +585,7 @@ bool BaseSubstructureMatcher::next()
                 else
                     throw Exception("BaseMatcher::unknown current object type");
 
-                _results.pop_front();
+                _results->pop_front();
                 status = true;
             }
             else if (_finished_processing) // no more results and no more data processed

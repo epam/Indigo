@@ -3,6 +3,8 @@
 
 #include <atomic>
 
+#include "safe_ptr.h"
+
 #include "bingo_base_index.h"
 #include "bingo_object.h"
 
@@ -235,7 +237,7 @@ namespace bingo
     };
 
     constexpr int MAX_INPUT_QUEUE_SIZE = 1000;
-    constexpr int THREAD_INPUT_CHUNK_SIZE = 100;
+    constexpr int THREAD_INPUT_CHUNK_SIZE = 10;
 
     // using results_queue = std::deque<std::pair<int, std::unique_ptr<IndigoObject>>>;
     using results_queue = std::deque<std::pair<int, std::unique_ptr<IndigoObject>>>;
@@ -290,11 +292,11 @@ namespace bingo
 
     public:
         std::optional<std::thread> _t;
-        FixedDeque<int> _input_data;
+        sf::contfree_safe_ptr<FixedDeque<int>> _input_data;
         std::mutex _input_mtx;
         std::condition_variable _cv_input;
         std::atomic_bool _all_data_in_queue = false;
-        results_queue _results;
+        sf::contfree_safe_ptr<results_queue> _results;
         std::mutex _results_mtx;
         std::atomic_bool _finished_processing = false;
         std::condition_variable _cv_results;
