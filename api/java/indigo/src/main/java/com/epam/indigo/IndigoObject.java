@@ -1184,6 +1184,19 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return addDataSGroup(Indigo.toIntArray(atoms), Indigo.toIntArray(bonds), description, data);
     }
 
+    public IndigoObject addSuperatom(int[] atoms, String name) {
+        if (name == null) name = "";
+        dispatcher.setSessionID();
+        return new IndigoObject(
+                dispatcher,
+                Indigo.checkResult(this, lib.indigoAddSuperatom(self, atoms.length, atoms, name)),
+                this);
+    }
+
+    public IndigoObject addSuperatom(Collection<Integer> atoms, String name) {
+        return addSuperatom(Indigo.toIntArray(atoms), name);
+    }
+
     public IndigoObject createSGroup(String type, IndigoObject mapping, String name) {
         dispatcher.setSessionID();
         return new IndigoObject(

@@ -469,6 +469,8 @@ public interface IndigoLib extends Library {
             String description,
             String data);
 
+    int indigoAddSuperatom(int molecule, int natoms, int[] atoms, String name);
+
     int indigoSetDataSGroupXY(int sgroup, float x, float y, String options);
 
     int indigoCreateSGroup(String type, int mapping, String name);
