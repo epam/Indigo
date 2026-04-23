@@ -1,7 +1,7 @@
 name: Indigo CI
 
 env:
-  OS_NAME_MAPPING_JSON: '{"ubuntu-latest": "linux", "windows-latest": "windows", "macos-13": "macos"}'
+  OS_NAME_MAPPING_JSON: '{"ubuntu-latest": "linux", "windows-latest": "windows", "macos-15": "macos"}'
 
 on:
   push:
@@ -37,7 +37,7 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          # - macos-13
+          - macos-15
           - ubuntu-latest
           # - windows-latest
     runs-on: ${{ matrix.os }}
@@ -121,7 +121,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos-13, ubuntu-latest ]
+        os: [ macos-15, ubuntu-latest ]
     runs-on: ${{ matrix.os }}
     needs: static_analysis
     steps:
@@ -276,7 +276,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos-13, ubuntu-latest, windows-latest ]
+        os: [ macos-15, ubuntu-latest, windows-latest ]
     runs-on: ${{ matrix.os }}
     needs: merge_indigo_wrappers
     steps:
@@ -413,7 +413,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos-13, ubuntu-latest, windows-latest ]
+        os: [ macos-15, ubuntu-latest, windows-latest ]
     runs-on: ${{ matrix.os }}
     needs: merge_indigo_wrappers
     steps:
@@ -547,7 +547,7 @@ jobs:
       fail-fast: false
       matrix:
         # os: [ macos-13, ubuntu-latest, windows-latest ]
-        os: [ macos-13, windows-latest ]
+        os: [ macos-15, windows-latest ]
     runs-on: ${{ matrix.os }}
     needs: merge_indigo_wrappers
     steps:
@@ -896,7 +896,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ macos-13, ubuntu-latest, windows-latest ]
+        os: [ macos-15, ubuntu-latest, windows-latest ]
     runs-on: ${{ matrix.os }}
     needs: [build_bingo_postgres_linux_x86_64, build_bingo_postgres_windows_msvc_x86_64, build_bingo_postgres_macos_x86_64]
     steps:
