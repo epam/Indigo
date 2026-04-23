@@ -44,21 +44,21 @@ static void indigoGetMolfileSavingMode(Array<char>& value)
 static void indigoSetValenceMode(const char* mode)
 {
     Indigo& self = indigoGetInstance();
-    if (strcmp(mode, "pre-2014") == 0 || strcmp(mode, "default") == 0)
-        self.valence_mode = ValenceMode::DEFAULT;
-    else if (strcmp(mode, "post-2014") == 0)
+    if (strcmp(mode, "biovia-2009") == 0 || strcmp(mode, "pre-2014") == 0 || strcmp(mode, "default") == 0)
+        self.valence_mode = ValenceMode::BIOVIA_2009;
+    else if (strcmp(mode, "biovia-2017") == 0 || strcmp(mode, "post-2014") == 0)
         self.valence_mode = ValenceMode::BIOVIA_2017;
     else
-        throw IndigoError("invalid valence mode: '%s' (expected 'default', 'pre-2014', or 'post-2014')", mode);
+        throw IndigoError("invalid valence mode: '%s' (expected 'biovia-2009', 'biovia-2017', 'pre-2014', or 'post-2014')", mode);
 }
 
 static void indigoGetValenceMode(Array<char>& value)
 {
     Indigo& self = indigoGetInstance();
     if (self.valence_mode == ValenceMode::BIOVIA_2017)
-        value.readString("post-2014", true);
+        value.readString("biovia-2017", true);
     else
-        value.readString("default", true);
+        value.readString("biovia-2009", true);
 }
 
 static void indigoSetMonomerLibrarySavingMode(const char* mode)

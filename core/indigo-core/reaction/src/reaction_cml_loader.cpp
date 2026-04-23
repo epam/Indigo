@@ -33,7 +33,7 @@ IMPL_ERROR(ReactionCmlLoader, "reaction CML loader");
 ReactionCmlLoader::ReactionCmlLoader(Scanner& scanner) : _scanner(scanner)
 {
     ignore_bad_valence = false;
-    valence_mode = ValenceMode::DEFAULT;
+    valence_mode = ValenceMode::BIOVIA_2009;
 }
 
 ReactionCmlLoader::~ReactionCmlLoader()

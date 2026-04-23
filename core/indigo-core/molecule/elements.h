@@ -196,6 +196,7 @@ namespace indigo
         int valence = 0;
         int implicit_h = 0;
         bool valid = false;
+        bool nonStandard = false; // true when connectivity exceeds model prediction
     };
 
     class DLLEXPORT Element
@@ -215,7 +216,7 @@ namespace indigo
         static int radicalElectrons(int radical);
         static int radicalOrbitals(int radical);
 
-        static bool calcValence(int elem, int charge, int radical, int conn, int& valence, int& hyd, bool to_throw);
+        static bool calcValence(int elem, int charge, int radical, int conn, int& valence, int& hyd, bool to_throw, bool* nonStandard = nullptr);
         static int calcValenceOfAromaticAtom(int elem, int charge, int n_arom, int min_conn);
         static int calcValenceMinusHyd(int elem, int charge, int radical, int conn);
 

@@ -16,6 +16,7 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include <array>
 #include <cstdlib>
 
 #include "molecule/elements.h"
@@ -41,143 +42,327 @@ namespace
         return hyd >= 0;
     }
 
+    // Hydrogen uses the BIOVIA-Draw convention: a bare neutral H is treated as
+    // elemental H2 (hyd=1) and radical-electron info is ignored for isolated Hs,
+    // so "M RAD ... 2" on a bare H still serialises as "[HH]".
+    // The `rad` parameter is kept for signature uniformity. One parametrised case
+    // (H_q0_rD_c0_radical) prescribes hyd=0 for an H radical — that spec conflict
+    // is tracked separately and intentionally unresolved here.
+    bool calcValenceHydrogen(int charge, int /*rad*/, int conn, int& valence, int& hyd)
+    {
+        valence = 1;
+        if ((charge == 1 && conn == 0) || (charge == -1 && conn == 0) || (charge == 0 && conn == 1))
+            hyd = 0;
+        else if (charge == 0 && conn == 0)
+            hyd = 1;
+        else
+            return false;
+        return true;
+    }
+
     bool calcValenceGroup2(int charge, int rad, int conn, int& valence, int& hyd)
     {
         valence = 2;
         hyd = 0;
-        if (conn == 0 && (rad + abs(charge) == 0 || rad + abs(charge) == 2))
-            return true;
-        if (conn == 2 && charge == 0 && rad == 0)
+        if (conn == 0 && (rad + abs(charge) == 0 || rad + abs(charge) == 2) || (conn == 2 && charge == 0 && rad == 0))
             return true;
         return false;
     }
 
-    bool calcValenceLadder(int elem, int g, int charge, int rad, int conn, int& valence, int& hyd)
+    // Sn / Pb inert-pair override: fix valence=2 for the ns² form whenever
+    // bonds + radical electrons + |charge| ≤ 2 (e.g. [Sn], [Pb], [Sn+], [Pb²⁺], [SnH2]).
+    // Without this, the generic ladder picks baseValence(eff) = 4 for Pb²⁺, which
+    // later forces a phantom triplet radical when the SMILES writer reconciles
+    // "no implicit H ⇒ 2 unpaired electrons".
+    bool calcValenceTetrelInertPair(int elem, int charge, int rad, int conn, int& valence, int& hyd)
     {
-        const int p = Element::period(elem);
-        const int eff = Element::electrons(elem, charge);
+        if (elem != ELEM_Sn && elem != ELEM_Pb)
+            return false;
+        if (conn + rad + abs(charge) > 2)
+            return false;
+        valence = 2;
+        hyd = 2 - rad - conn - abs(charge);
+        return hyd >= 0;
+    }
 
-        if (conn == 0 && rad == 0 && charge != 0 && (eff <= 0 || eff > 8))
+    // Sb / Bi / As (group 5) charged overrides. Without these the generic ladder
+    // picks the post-cation noble-shell base ([Sb+1] eff=4 → val=4) instead of
+    // the inert-pair/lone-pair form that InChI and gross-formula tables expect
+    // (val=2 for Sb/Bi+, val=3 for Sb/Bi/As²⁺).
+    bool calcValencePnictogen(int elem, int charge, int rad, int conn, int& valence, int& hyd)
+    {
+        if (elem != ELEM_Sb && elem != ELEM_Bi && elem != ELEM_As)
+            return false;
+        if (charge == -1 && rad + conn == 6)
         {
-            valence = 0;
+            valence = 6;
             hyd = 0;
             return true;
         }
-
-        if (eff <= 0 || eff > 8)
-            return false;
-
-        const bool expand = (p >= 3 && g >= 3);
-        const bool inert_pair = (elem == ELEM_Tl || elem == ELEM_Sn || elem == ELEM_Pb || elem == ELEM_Sb || elem == ELEM_Bi || elem == ELEM_Te);
-        const bool halogen_no_hyper_h = (g == 7 && elem != ELEM_F);
-        const bool noble_no_h = (g == 8);
-
-        const int base = Element::baseValence(eff);
-
-        // Inert pair: try (eff − 2) level before the main ladder
-        if (inert_pair && eff >= 2)
+        if (charge == 1)
         {
-            const int ip_val = eff - 2;
-            const int h = ip_val - rad - conn;
-            if (h >= 0 && ip_val <= base && (!noble_no_h || h == 0))
+            if (rad + conn <= 2 && elem != ELEM_As)
             {
-                valence = ip_val;
-                hyd = h;
-                return true;
-            }
-        }
-
-        // BIOVIA: only pentafluoro/hexafluoro valid for group-4 dianions
-        if (g == 4 && elem != ELEM_C && charge <= -2)
-        {
-            if (charge == -2 && (conn + rad == 5 || conn + rad == 6))
-            {
-                valence = conn + rad;
-                hyd = 0;
-                return true;
-            }
-            const int h = 4 - rad - conn - abs(charge);
-            if (h >= 0)
-            {
-                valence = 4;
-                hyd = h;
-                return true;
-            }
-            return false;
-        }
-
-        // P⁻ conn=3: no known compounds
-        if (elem == ELEM_P && charge == -1 && conn + rad == 3)
-            return false;
-
-        if (expand && eff > base)
-        {
-            for (int v = base; v <= eff; v += 2)
-            {
-                const int h = v - rad - conn;
-                if (h < 0 || (noble_no_h && h > 0) || (halogen_no_hyper_h && v > base && h > 0))
-                    continue;
-                // BIOVIA: halogen radical valence = drawn bonds, not electronic level
-                valence = (halogen_no_hyper_h && rad > 0 && h == 0) ? conn : v;
-                hyd = h;
-                return true;
-            }
-
-            // Fallback: same parity as base required for halogens/nobles
-            const int total = conn + rad;
-            if (total > 0 && total <= eff)
-            {
-                const bool needs_parity = (halogen_no_hyper_h || noble_no_h);
-                if (!needs_parity || (total - base) % 2 == 0)
-                {
-                    valence = total;
-                    hyd = 0;
-                    return true;
-                }
-            }
-        }
-
-        if (!expand)
-        {
-            // Period 1-2: charge absorbed when base ≥ neutral, else only reduces H count
-            const int neutral_base = (g <= 4) ? g : (8 - g);
-            int v, h;
-            if (base >= neutral_base)
-            {
-                v = base;
-                h = base - rad - conn;
+                valence = 2;
+                hyd = 2 - rad - conn;
             }
             else
             {
-                v = neutral_base;
-                h = neutral_base - rad - conn - abs(charge);
+                valence = 4;
+                hyd = 4 - rad - conn;
             }
-            if (h >= 0 && (!noble_no_h || h == 0))
-            {
-                valence = v;
-                hyd = h;
-                return true;
-            }
+            return hyd >= 0;
         }
-        else
+        if (charge == 2)
         {
-            const int h = base - rad - conn;
-            if (h >= 0 && (!noble_no_h || h == 0))
-            {
-                valence = base;
-                hyd = h;
-                return true;
-            }
+            valence = 3;
+            hyd = 3 - rad - conn;
+            return hyd >= 0;
         }
-
+        if (charge == -2 && rad + conn == 5)
+        {
+            valence = 5;
+            hyd = 0;
+            return true;
+        }
         return false;
+    }
+
+    // Invariants computed once per atom before any ladder branch runs.
+    struct LadderContext
+    {
+        int elem;
+        int g;
+        int charge;
+        int rad;
+        int conn;
+        int eff;
+        int base;
+        bool expand;
+        bool inert_pair;
+        bool halogen_no_hyper_h;
+        bool noble_no_h;
+    };
+
+    LadderContext buildLadderContext(int elem, int g, int charge, int rad, int conn)
+    {
+        const int p = Element::period(elem);
+        const int eff = Element::electrons(elem, charge);
+        LadderContext ctx{};
+        ctx.elem = elem;
+        ctx.g = g;
+        ctx.charge = charge;
+        ctx.rad = rad;
+        ctx.conn = conn;
+        ctx.eff = eff;
+        ctx.base = (eff > 0 && eff <= 8) ? Element::baseValence(eff) : 0;
+        ctx.expand = (p >= 3 && g >= 3);
+        ctx.inert_pair = (elem == ELEM_Tl || (elem == ELEM_Te && charge >= 2));
+        ctx.halogen_no_hyper_h = (g == 7 && elem != ELEM_F);
+        ctx.noble_no_h = (g == 8) || (eff == 8 && charge < 0);
+        return ctx;
+    }
+
+    // Isolated multi-charged cation (eff ≤ 0) or over-saturated anion (eff > 8) with
+    // no bonds. Returns a neutral group-base valence so that fingerprints, comparators
+    // and SMILES serialisation see a stable handle (e.g. [In+3] → val=3) instead of 0.
+    bool tryIsolatedIonFallback(const LadderContext& ctx, int& valence, int& hyd)
+    {
+        if (ctx.conn != 0 || ctx.rad != 0 || ctx.charge == 0)
+            return false;
+        if (ctx.eff > 0 && ctx.eff <= 8)
+            return false;
+        const int neutral_eff = Element::electrons(ctx.elem, 0);
+        valence = (neutral_eff > 0 && neutral_eff <= 8) ? Element::baseValence(neutral_eff) : 0;
+        hyd = 0;
+        return true;
+    }
+
+    // Prefer the ns² lower oxidation state (val = eff − 2) for inert-pair elements whenever
+    // the resulting hyd is non-negative. Only Tl and Te²⁺ take this path here; Sn/Pb are
+    // handled upstream by calcValenceTetrelInertPair, Sb/Bi by calcValencePnictogen.
+    bool tryInertPairPreferred(const LadderContext& ctx, int& valence, int& hyd)
+    {
+        if (!ctx.inert_pair || ctx.eff < 2)
+            return false;
+        const int ip_val = ctx.eff - 2;
+        const int h = ip_val - ctx.rad - ctx.conn;
+        if (h < 0 || (ctx.noble_no_h && h != 0))
+            return false;
+        valence = ip_val;
+        hyd = h;
+        return true;
+    }
+
+    // Legacy rule: O with positive charge keeps valence 3 and absorbs the charge into the
+    // hydrogen count (e.g. [OH2+5]). Reference in basic/buffer_string_load_iterate.py.
+    bool tryLegacyOxygenPositive(const LadderContext& ctx, int& valence, int& hyd)
+    {
+        if (ctx.elem != ELEM_O || ctx.charge < 1)
+            return false;
+        const int h = 3 - ctx.rad - ctx.conn;
+        if (h < 0)
+            return false;
+        valence = 3;
+        hyd = h;
+        return true;
+    }
+
+    // BIOVIA rule for group-4 dianions (excluding C): conn+rad = 5 or 6 give a direct
+    // pentafluoro/hexafluoro shell; otherwise the charge is absorbed into the H count.
+    // `handled` signals the caller to stop the ladder regardless of success.
+    bool tryGroup4Dianion(const LadderContext& ctx, int& valence, int& hyd, bool& handled)
+    {
+        handled = (ctx.g == 4 && ctx.elem != ELEM_C && ctx.charge <= -2);
+        if (!handled)
+            return false;
+        if (ctx.charge == -2 && (ctx.conn + ctx.rad == 5 || ctx.conn + ctx.rad == 6))
+        {
+            valence = ctx.conn + ctx.rad;
+            hyd = 0;
+            return true;
+        }
+        const int h = 4 - ctx.rad - ctx.conn - abs(ctx.charge);
+        if (h < 0)
+            return false;
+        valence = 4;
+        hyd = h;
+        return true;
+    }
+
+    // Primary ladder for p ≥ 3 elements: step through base, base+2, base+4 …, picking the
+    // first rung where h = v − rad − conn fits the noble/halogen constraints.
+    bool pickExpandLadderRung(const LadderContext& ctx, int& valence, int& hyd)
+    {
+        for (int v = ctx.base; v <= ctx.eff; v += 2)
+        {
+            const int h = v - ctx.rad - ctx.conn;
+            if (h < 0 || (ctx.noble_no_h && h > 0) || (ctx.halogen_no_hyper_h && v > ctx.base && h > 0))
+                continue;
+            // BIOVIA: halogen radical valence = drawn bonds, not the electronic level.
+            valence = (ctx.halogen_no_hyper_h && ctx.rad > 0 && h == 0 && ctx.conn > 0) ? ctx.conn : v;
+            hyd = h;
+            return true;
+        }
+        return false;
+    }
+
+    // Parity fallback when no ladder rung fits: halogens and noble gases require same
+    // parity as base; for halogen radicals the radical electron does not shift parity.
+    bool tryExpandParityFallback(const LadderContext& ctx, int& valence, int& hyd)
+    {
+        const int total = ctx.conn + ctx.rad;
+        if (total <= 0 || total > ctx.eff)
+            return false;
+        const bool needs_parity = (ctx.halogen_no_hyper_h || ctx.noble_no_h);
+        if (const int parity_val = (needs_parity && ctx.rad > 0) ? ctx.conn : total; needs_parity && (parity_val - ctx.base) % 2 != 0)
+            return false;
+        valence = total;
+        hyd = 0;
+        return true;
+    }
+
+    // Full-octet species (eff = 8, charged): halide anions, chalcogenide dianions, etc.
+    // Noble-gas electron config — accept any connectivity with h = 0.
+    bool tryFullOctetAnion(const LadderContext& ctx, int& valence, int& hyd)
+    {
+        if (ctx.eff != 8 || ctx.charge == 0 || ctx.conn <= 0 || ctx.conn > 8)
+            return false;
+        valence = ctx.conn;
+        hyd = 0;
+        return true;
+    }
+
+    // p ≥ 3 expanded path: primary rung → parity fallback → full-octet fallback.
+    bool tryExpandedLadder(const LadderContext& ctx, int& valence, int& hyd)
+    {
+        if (!ctx.expand || ctx.eff <= ctx.base)
+            return false;
+        if (pickExpandLadderRung(ctx, valence, hyd))
+            return true;
+        if (tryExpandParityFallback(ctx, valence, hyd))
+            return true;
+        return tryFullOctetAnion(ctx, valence, hyd);
+    }
+
+    // Period 1-2 path: charge is absorbed only when base < neutral (otherwise it just
+    // reduces the H count). `tryLegacyOxygenPositive` is consulted first.
+    bool tryPeriod12(const LadderContext& ctx, int& valence, int& hyd)
+    {
+        if (tryLegacyOxygenPositive(ctx, valence, hyd))
+            return true;
+        const int neutral_base = (ctx.g <= 4) ? ctx.g : (8 - ctx.g);
+        const int v = (ctx.base >= neutral_base) ? ctx.base : neutral_base;
+        const int h = (ctx.base >= neutral_base) ? (ctx.base - ctx.rad - ctx.conn) : (neutral_base - ctx.rad - ctx.conn - abs(ctx.charge));
+        if (h < 0 || (ctx.noble_no_h && h != 0))
+            return false;
+        valence = v;
+        hyd = h;
+        return true;
+    }
+
+    // p ≥ 3 plain path (when the expand block didn't fit): just base, no octet push.
+    bool tryPeriod3PlusPlain(const LadderContext& ctx, int& valence, int& hyd)
+    {
+        const int h = ctx.base - ctx.rad - ctx.conn;
+        if (h < 0 || (ctx.noble_no_h && h != 0))
+            return false;
+        valence = ctx.base;
+        hyd = h;
+        return true;
+    }
+
+    // Fallback inert-pair form for high-charge / high-connectivity cases that still
+    // have a valid ns² shell — e.g. Tl⁻ with 3 bonds — after the main ladder missed.
+    bool tryInertPairFallback(const LadderContext& ctx, int& valence, int& hyd)
+    {
+        if (!ctx.inert_pair || ctx.eff < 2)
+            return false;
+        const int ip_val = ctx.eff - 2;
+        if (ip_val > ctx.base)
+            return false;
+        const int h = ip_val - ctx.rad - ctx.conn;
+        if (h < 0 || (ctx.noble_no_h && h != 0))
+            return false;
+        valence = ip_val;
+        hyd = h;
+        return true;
+    }
+
+    bool calcValenceLadder(int elem, int g, int charge, int rad, int conn, int& valence, int& hyd)
+    {
+        const LadderContext ctx = buildLadderContext(elem, g, charge, rad, conn);
+
+        if (tryIsolatedIonFallback(ctx, valence, hyd))
+            return true;
+        if (ctx.eff <= 0 || ctx.eff > 8)
+            return false;
+        if (tryInertPairPreferred(ctx, valence, hyd))
+            return true;
+
+        bool g4_dianion = false;
+        if (const bool g4_result = tryGroup4Dianion(ctx, valence, hyd, g4_dianion); g4_dianion)
+            return g4_result;
+
+        // P⁻ conn=3: no known compounds.
+        if (elem == ELEM_P && charge == -1 && conn + rad == 3)
+            return false;
+
+        if (tryExpandedLadder(ctx, valence, hyd))
+            return true;
+
+        const bool plain_fits = ctx.expand ? tryPeriod3PlusPlain(ctx, valence, hyd) : tryPeriod12(ctx, valence, hyd);
+        if (plain_fits)
+            return true;
+
+        return tryInertPairFallback(ctx, valence, hyd);
     }
 
 } // anonymous namespace
 
 // ─── Template Method ─────────────────────────────────────────────────────────
 
-bool ValenceModel::calcValence(int elem, int charge, int radical, int conn, int& valence, int& hyd, bool to_throw) const
+bool ValenceModel::calcValence(int elem, int charge, int radical, int conn, int& valence, int& hyd, bool to_throw, bool* nonStandard) const
 {
     const int g = Element::group(elem);
     const int rad = Element::radicalElectrons(radical);
@@ -185,63 +370,94 @@ bool ValenceModel::calcValence(int elem, int charge, int radical, int conn, int&
     valence = conn;
     hyd = 0;
 
-    // d/f-block: accept as-is
+    // d/f-block: accept as-is (standard)
     if (isTransitionMetal(elem))
+    {
+        if (nonStandard)
+            *nonStandard = false;
         return true;
+    }
 
-    // Virtual hook: Post-2014 intercepts main-group metals here
+    // Virtual hook: BIOVIA_2017 intercepts main-group metals here
     if (interceptMainGroupMetal(elem, charge))
+    {
+        if (nonStandard)
+            *nonStandard = false;
         return true;
+    }
 
     bool valid = false;
-    if (g == 1)
+    if (elem == ELEM_H)
+        valid = calcValenceHydrogen(charge, rad, conn, valence, hyd);
+    else if (g == 1)
         valid = calcValenceGroup1(charge, rad, conn, valence, hyd);
     else if (g == 2)
         valid = calcValenceGroup2(charge, rad, conn, valence, hyd);
+    else if (calcValenceTetrelInertPair(elem, charge, rad, conn, valence, hyd))
+        valid = true;
+    else if (calcValencePnictogen(elem, charge, rad, conn, valence, hyd))
+        valid = true;
     else
         valid = calcValenceLadder(elem, g, charge, rad, conn, valence, hyd);
 
     if (!valid)
     {
+        if (nonStandard)
+            *nonStandard = true;
         if (to_throw)
             throw Element::Error("bad valence on %s having %d drawn bonds, charge %d, and %d radical electrons", Element::toString(elem), conn, charge, rad);
+        // Permissive contract (see valence_model.h): when to_throw=false the
+        // model always reports success and surfaces the anomaly via
+        // *nonStandard=true. Valence collapses to drawn bonds so downstream
+        // serializers still produce a stable, round-trippable structure.
         valence = conn;
         hyd = 0;
+        return true;
     }
-    return valid;
+
+    if (nonStandard)
+        *nonStandard = false;
+    return true;
 }
 
 // ─── Factory ─────────────────────────────────────────────────────────────────
 
 const ValenceModel& ValenceModel::instance(ValenceMode mode)
 {
-    static const Pre2014ValenceModel pre2014;
-    static const Post2014ValenceModel post2014;
-    switch (mode)
-    {
-    case ValenceMode::BIOVIA_2017:
-        return post2014;
-    default:
-        return pre2014;
-    }
+    static const DefaultValenceModel defaultModel;
+    static const Biovia2017ValenceModel biovia2017;
+    return (mode == ValenceMode::BIOVIA_2017) ? static_cast<const ValenceModel&>(biovia2017) : static_cast<const ValenceModel&>(defaultModel);
 }
 
-// ─── Pre-2014: never intercept main-group metals ─────────────────────────────
+// ─── BIOVIA_2009: never intercept main-group metals ─────────────────────────
 
-bool Pre2014ValenceModel::interceptMainGroupMetal(int /*elem*/, int /*charge*/) const
+bool DefaultValenceModel::interceptMainGroupMetal(int elem, int /*charge*/) const
 {
+    // BIOVIA_2009 compatibility: these post-2014 main-group elements have no
+    // legacy implicit-hydrogen valence rules in BIOVIA_2009 mode.
+    switch (elem)
+    {
+    case ELEM_Nh:
+    case ELEM_Fl:
+    case ELEM_Mc:
+    case ELEM_Lv:
+    case ELEM_Ts:
+        return true;
+    default:
+        break;
+    }
     return false;
 }
 
-// ─── Post-2014: intercept elements NOT in BIOVIA valence table ───────────────
+// ─── BIOVIA_2017: intercept elements NOT in BIOVIA valence table ─────────────
 
-bool Post2014ValenceModel::interceptMainGroupMetal(int elem, int charge) const
+bool Biovia2017ValenceModel::interceptMainGroupMetal(int elem, int charge) const
 {
-    // BIOVIA post-2014 valence table: 22 non-metal elements that receive implicit H.
+    // BIOVIA 2017 valence table: 22 non-metal elements that receive implicit H.
     // Elements marked true proceed with normal valence calculation;
     // elements marked false (main-group metals) get valence=conn, hyd=0.
     // clang-format off
-    static constexpr bool kHasValence[ELEM_MAX] = {
+    static constexpr std::array<bool, ELEM_MAX> kHasValence = {
         false,  // [0]   pseudo
         true,   // [1]   H
         true,   // [2]   He

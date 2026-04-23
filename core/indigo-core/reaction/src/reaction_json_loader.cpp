@@ -40,7 +40,7 @@ ReactionJsonLoader::ReactionJsonLoader(Document& ket, const LayoutOptions& optio
     : _loader(ket), _molecule(kArrayType), ignore_noncritical_query_features(false), _layout_options(options)
 {
     ignore_bad_valence = false;
-    valence_mode = ValenceMode::DEFAULT;
+    valence_mode = ValenceMode::BIOVIA_2009;
 }
 
 ReactionJsonLoader::~ReactionJsonLoader()

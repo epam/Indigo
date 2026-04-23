@@ -586,10 +586,8 @@ TEST_F(IndigoApiBasicTest, valence_Si29_isotope_pentafluoride_dianion)
     ASSERT_NE(nullptr, smiles);
     ASSERT_STRNE("", smiles);
 }
-// SiF5(2-) — silicon pentafluoride dianion from rand_queries_small.sdf molecule #50.
-// Element::calcValence now handles Si with charge=-2 for conn==5 (SiF5^2-)
-// in addition to conn==6 (SiF6^2-).
-// See: https://github.com/epam/Indigo — bingo-elastic FullUsageMoleculeTest.substructureSearch
+// SiF5²⁻: silicon pentafluoride dianion. Si carries the −2 charge, which must extend
+// the valence ladder to accept conn=5 (not only the more common conn=6 SiF6²⁻).
 static constexpr char SiF5_charge_minus2_mol[] = R"(
   -INDIGO-10082014522D
 
@@ -609,28 +607,23 @@ M  CHG  1   1  -2
 M  END
 )";
 
-// Reproduces the failing test from CI: FullUsageMoleculeTest.substructureSearch
-// After fix: SiF5^2- should produce valid canonical SMILES
 TEST_F(IndigoApiBasicTest, canonical_smiles_SiF5_charge_minus2)
 {
     const int mol = indigoLoadMoleculeFromString(SiF5_charge_minus2_mol);
     ASSERT_NE(-1, mol);
 
-    // Verify the molecule was loaded correctly
     ASSERT_EQ(6, indigoCountAtoms(mol));
     ASSERT_EQ(5, indigoCountBonds(mol));
 
-    // After fix: calcValence handles Si charge=-2, conn=5 → valence=5, hyd=0
+    // Si with charge=-2, conn=5 must yield valence=5, hyd=0.
     const char* smiles = indigoCanonicalSmiles(mol);
     ASSERT_NE(nullptr, smiles);
     ASSERT_STRNE("", smiles);
 }
 
-// Verify that the related SiF6^2- (hexafluorosilicate) works correctly,
-// since Element::calcValence explicitly handles charge=-2, conn=6.
+// SiF6²⁻ (hexafluorosilicate) — the conn=6 counterpart of the SiF5 test above.
 TEST_F(IndigoApiBasicTest, canonical_smiles_SiF6_charge_minus2)
 {
-    // SiF6^2- — this case IS handled in Element::calcValence
     int mol = indigoLoadMoleculeFromString("[Si-2](F)(F)(F)(F)(F)F");
     ASSERT_NE(-1, mol);
     ASSERT_EQ(7, indigoCountAtoms(mol));
@@ -640,8 +633,8 @@ TEST_F(IndigoApiBasicTest, canonical_smiles_SiF6_charge_minus2)
     ASSERT_STRNE("", smiles);
 }
 
-// Verify that the SDF file iteration + canonicalSmiles works for all molecules
-// This is the full scenario from the Java Elastic test
+// End-to-end SDF iteration + canonicalSmiles on a broad query set, to catch
+// per-molecule regressions that aren't surfaced by targeted cases.
 TEST_F(IndigoApiBasicTest, canonical_smiles_all_rand_queries_small)
 {
     int reader = indigoIterateSDFile(dataPath("molecules/basic/rand_queries_small.sdf").c_str());
@@ -661,13 +654,12 @@ TEST_F(IndigoApiBasicTest, canonical_smiles_all_rand_queries_small)
     }
     indigoFree(reader);
 
-    // rand_queries_small.sdf contains 371 molecules (372 entries, last is empty)
+    // File holds 372 entries, last is empty; lower bound 300 tolerates churn.
     EXPECT_GT(idx, 300);
 }
 
-// Scenario 3: Genuinely invalid molecule — neutral Si with 5 bonds.
-// Neutral Si (charge 0) has max valence 4 (sp3), no d-orbital expansion without charge.
-// checkBadValence returns descriptive error with element, charge, bond count.
+// Neutral Si cannot expand past valence 4 without charge, so 5 bonds must be reported
+// as an invalid valence with a descriptive error message.
 static constexpr char SiF5_neutral_invalid_mol[] = R"(
   -INDIGO-test
 
@@ -688,11 +680,9 @@ M  END
 
 TEST_F(IndigoApiBasicTest, canonical_smiles_invalid_molecule_descriptive_error)
 {
-    // Neutral Si with 5 bonds — always invalid (max valence 4 without charge)
     int mol = indigoLoadMoleculeFromString(SiF5_neutral_invalid_mol);
     ASSERT_NE(-1, mol);
 
-    // checkBadValence should return descriptive error with element, charge, bonds
     const char* valenceErr = indigoCheckBadValence(mol);
     ASSERT_NE(nullptr, valenceErr);
     std::string errStr(valenceErr);

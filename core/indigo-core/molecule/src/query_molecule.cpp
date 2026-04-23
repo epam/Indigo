@@ -1071,7 +1071,10 @@ int QueryMolecule::calcAtomMaxH(int idx, int conn)
             else
             {
                 int h, val;
-                if (Element::calcValence(number, charge, radical, conn, val, h, false))
+                // Only count radical states the model accepts as standard; otherwise the
+                // permissive collapse contributes h=0 and drags max_h down.
+                bool nonStandard = false;
+                if (Element::calcValence(number, charge, radical, conn, val, h, false, &nonStandard) && !nonStandard)
                 {
                     if (h > max_h)
                         max_h = h;

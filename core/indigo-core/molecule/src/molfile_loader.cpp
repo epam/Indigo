@@ -68,9 +68,11 @@ void MolfileLoader::loadMolecule(Molecule& mol)
     _mol = &mol;
     _qmol = 0;
     _max_template_id = 0;
-    _loadMolecule();
+    // Order matters: atom parsing infers implicit H using the molecule's current valence
+    // model, so a post-parse setValenceMode would leave the caller's request unapplied.
     mol.setIgnoreBadValenceFlag(ignore_bad_valence);
     mol.setValenceMode(valence_mode);
+    _loadMolecule();
     if (mol.stereocenters.size() == 0 && !skip_3d_chirality)
         mol.buildFrom3dCoordinatesStereocenters(stereochemistry_options);
 }

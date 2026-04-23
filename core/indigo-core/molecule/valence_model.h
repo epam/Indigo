@@ -32,8 +32,8 @@ namespace indigo
     // Valence specification mode: pre-2014 (legacy) vs BIOVIA post-2014
     enum class ValenceMode
     {
-        DEFAULT,    // Pre-2014: all main-group elements get full valence calculation
-        BIOVIA_2017 // BIOVIA post-2014: only 22 listed non-metals + Al⁻ exception
+        BIOVIA_2009, // BIOVIA 2009: all main-group elements get full valence calculation
+        BIOVIA_2017  // BIOVIA 2017: only 22 listed non-metals + Al⁻ exception
     };
 
     // Abstract base for valence calculation strategies.
@@ -44,11 +44,14 @@ namespace indigo
     public:
         virtual ~ValenceModel() = default;
 
-        // Template Method: shared valence logic with one virtual hook
-        bool calcValence(int elem, int charge, int radical, int conn, int& valence, int& hyd, bool to_throw) const;
+        // Template Method: shared valence logic with one virtual hook.
+        // Permissive model: always returns true when to_throw=false.
+        // When the connectivity exceeds the model prediction, sets
+        // valence=conn, hyd=0 and *nonStandard=true (if provided).
+        bool calcValence(int elem, int charge, int radical, int conn, int& valence, int& hyd, bool to_throw, bool* nonStandard = nullptr) const;
 
         // Factory: returns singleton for the given mode
-        static const ValenceModel& instance(ValenceMode mode = ValenceMode::DEFAULT);
+        static const ValenceModel& instance(ValenceMode mode = ValenceMode::BIOVIA_2009);
 
         ValenceModel(const ValenceModel&) = delete;
         ValenceModel& operator=(const ValenceModel&) = delete;
@@ -61,15 +64,15 @@ namespace indigo
         virtual bool interceptMainGroupMetal(int elem, int charge) const = 0;
     };
 
-    // Pre-2014 behaviour: all main-group elements go through normal valence calculation
-    class DLLEXPORT Pre2014ValenceModel final : public ValenceModel
+    // DEFAULT mode: all main-group elements go through normal valence calculation
+    class DLLEXPORT DefaultValenceModel final : public ValenceModel
     {
     protected:
         bool interceptMainGroupMetal(int elem, int charge) const override;
     };
 
-    // BIOVIA post-2014: only 22 non-metals have valence entries; metals get hyd=0
-    class DLLEXPORT Post2014ValenceModel final : public ValenceModel
+    // BIOVIA_2017 mode: only 22 non-metals have valence entries; metals get hyd=0
+    class DLLEXPORT Biovia2017ValenceModel final : public ValenceModel
     {
     protected:
         bool interceptMainGroupMetal(int elem, int charge) const override;

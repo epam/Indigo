@@ -36,7 +36,7 @@ RSmilesLoader::RSmilesLoader(Scanner& scanner) : _scanner(scanner)
     smarts_mode = false;
     ignore_cistrans_errors = false;
     ignore_bad_valence = false;
-    valence_mode = ValenceMode::DEFAULT;
+    valence_mode = ValenceMode::BIOVIA_2009;
 }
 
 int RSmilesLoader::_selectGroupByPair(int& lead_idx, int& idx, int rcnt, int ccnt, int pcnt) const

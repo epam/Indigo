@@ -157,7 +157,7 @@ void Indigo::init()
 
     ignore_closing_bond_direction_mismatch = false;
     ignore_bad_valence = false;
-    valence_mode = ValenceMode::BIOVIA_2017;
+    valence_mode = ValenceMode::BIOVIA_2009;
 
     // Update global index
     static std::atomic<int> global_id;

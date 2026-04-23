@@ -335,9 +335,9 @@ int Element::calcValenceOfAromaticAtom(int elem, int charge, int n_arom, int min
     return -1;
 }
 
-bool Element::calcValence(int elem, int charge, int radical, int conn, int& valence, int& hyd, bool to_throw)
+bool Element::calcValence(int elem, int charge, int radical, int conn, int& valence, int& hyd, bool to_throw, bool* nonStandard)
 {
-    return ValenceModel::instance().calcValence(elem, charge, radical, conn, valence, hyd, to_throw);
+    return ValenceModel::instance().calcValence(elem, charge, radical, conn, valence, hyd, to_throw, nonStandard);
 }
 
 int Element::calcValenceMinusHyd(int elem, int charge, int radical, int conn)
@@ -576,7 +576,7 @@ int Element::baseValence(int eff)
 ValenceResult Element::calcValenceResult(int elem, int charge, int radical, int conn)
 {
     ValenceResult r;
-    r.valid = calcValence(elem, charge, radical, conn, r.valence, r.implicit_h, false);
+    r.valid = calcValence(elem, charge, radical, conn, r.valence, r.implicit_h, false, &r.nonStandard);
     return r;
 }
 

@@ -34,7 +34,7 @@ IMPL_ERROR(ReactionCdxmlLoader, "reaction CDXML loader");
 ReactionCdxmlLoader::ReactionCdxmlLoader(Scanner& scanner, bool is_binary) : _scanner(scanner), _is_binary(is_binary)
 {
     ignore_bad_valence = false;
-    valence_mode = ValenceMode::DEFAULT;
+    valence_mode = ValenceMode::BIOVIA_2009;
 }
 
 ReactionCdxmlLoader::~ReactionCdxmlLoader()
