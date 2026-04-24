@@ -20,7 +20,9 @@ indigo.setOption("ignore-stereochemistry-errors", True)
 print("*** BILN interop ***")
 
 ref = joinPathPy("ref/", __file__)
-lib = indigo.loadMonomerLibraryFromFile(os.path.join(ref, "monomer_library.ket"))
+lib = indigo.loadMonomerLibraryFromFile(
+    os.path.join(ref, "monomer_library.ket")
+)
 
 biln_to_helm = {
     "biln_cap": (
