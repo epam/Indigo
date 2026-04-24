@@ -108,6 +108,10 @@ namespace indigo
 
         KetConnection& addConnection(KetConnectionEndPoint ep1, KetConnectionEndPoint ep2);
 
+        KetConnection& addNonSequenceConnection(const std::string& conn_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2);
+
+        KetConnection& addNonSequenceConnection(KetConnectionEndPoint ep1, KetConnectionEndPoint ep2);
+
         KetConnection& addConnection(const std::string& mon1, const std::string& ap1, const std::string& mon2, const std::string& ap2);
 
         void connectMonomerTo(const std::string& mon1, const std::string& ap1, const std::string& mon2, const std::string& ap2);
@@ -239,6 +243,7 @@ namespace indigo
         std::vector<std::string> _ambiguous_templates_ids;
         std::vector<KetConnection> _connections;
         std::vector<KetConnection> _non_sequence_connections;
+        std::set<size_t> _forced_non_sequence_connections;
         std::map<std::string, KetBaseMonomerTemplate::TemplateType> _template_id_to_type;
         rapidjson::Value _meta_objects;
         rapidjson::Value _r_groups;

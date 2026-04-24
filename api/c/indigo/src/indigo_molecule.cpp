@@ -908,6 +908,56 @@ CEXPORT int indigoLoadHelmFromFile(const char* filename, int library)
     INDIGO_END(-1);
 }
 
+CEXPORT int indigoLoadBiln(int source, int library)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(source);
+        IndigoObject& lib_obj = self.getObject(library);
+        SequenceLoader loader(IndigoScanner::get(obj), IndigoMonomerLibrary::get(lib_obj));
+
+        std::unique_ptr<IndigoKetDocument> docptr = std::make_unique<IndigoKetDocument>();
+
+        loader.loadBILN(docptr->get());
+        return self.addObject(docptr.release());
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoLoadBilnFromString(const char* string, int library)
+{
+    INDIGO_BEGIN
+    {
+        int source = indigoReadString(string);
+        int result;
+
+        if (source <= 0)
+            return -1;
+
+        result = indigoLoadBiln(source, library);
+        indigoFree(source);
+        return result;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoLoadBilnFromFile(const char* filename, int library)
+{
+    INDIGO_BEGIN
+    {
+        int source = indigoReadFile(filename);
+        int result;
+
+        if (source < 0)
+            return -1;
+
+        result = indigoLoadBiln(source, library);
+        indigoFree(source);
+        return result;
+    }
+    INDIGO_END(-1);
+}
+
 CEXPORT int indigoLoadAxoLabs(int source, int library)
 {
     INDIGO_BEGIN

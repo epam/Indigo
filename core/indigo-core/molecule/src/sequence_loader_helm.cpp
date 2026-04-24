@@ -591,6 +591,181 @@ size_t SequenceLoader::addHelmMonomer(KetDocument& document, MonomerInfo info, M
     return monomer_idx;
 }
 
+void SequenceLoader::loadBILN(KetDocument& document)
+{
+    std::string biln;
+    _scanner.readAll(biln);
+
+    auto is_space = [](char ch) { return std::isspace(static_cast<unsigned char>(ch)) != 0; };
+    auto begin = biln.begin();
+    while (begin != biln.end() && is_space(*begin))
+        ++begin;
+    auto end = biln.end();
+    while (end != begin && is_space(*(end - 1)))
+        --end;
+    biln = std::string(begin, end);
+
+    if (biln.empty())
+        throw Error("Empty BILN string.");
+
+    struct BilnEndpoint
+    {
+        std::string monomer_id;
+        int attachment_idx;
+    };
+
+    std::map<int, std::vector<BilnEndpoint>> bond_endpoints;
+    std::vector<int> bond_order;
+
+    size_t data_pos = 0;
+    auto skip_spaces = [&]() {
+        while (data_pos < biln.size() && is_space(biln[data_pos]))
+            data_pos++;
+    };
+    auto read_positive_int = [&](const char* field_name) -> int {
+        skip_spaces();
+        if (data_pos >= biln.size() || !std::isdigit(static_cast<unsigned char>(biln[data_pos])))
+            throw Error("Invalid BILN bond annotation: expected %s number.", field_name);
+        int value = 0;
+        while (data_pos < biln.size() && std::isdigit(static_cast<unsigned char>(biln[data_pos])))
+        {
+            value = value * 10 + (biln[data_pos] - '0');
+            data_pos++;
+        }
+        if (value <= 0)
+            throw Error("Invalid BILN bond annotation: %s number should be positive.", field_name);
+        return value;
+    };
+    auto remember_bond_endpoint = [&](int bond_idx, const std::string& monomer_id, int attachment_idx) {
+        auto& endpoints = bond_endpoints[bond_idx];
+        if (endpoints.empty())
+            bond_order.emplace_back(bond_idx);
+        endpoints.push_back({monomer_id, attachment_idx});
+    };
+
+    _row = 0;
+    _col = 0;
+    _seq_id = 1;
+    _last_monomer_idx = -1;
+    _unknown_ambiguous_count = 0;
+    _opts_to_template_id.clear();
+
+    while (data_pos < biln.size())
+    {
+        skip_spaces();
+        if (data_pos >= biln.size())
+            break;
+        if (biln[data_pos] == '.')
+            throw Error("Invalid BILN string: empty chain.");
+
+        _col = 0;
+        size_t previous_monomer_idx = 0;
+        int chain_monomer_count = 0;
+
+        while (data_pos < biln.size())
+        {
+            skip_spaces();
+            if (data_pos >= biln.size())
+                break;
+            if (biln[data_pos] == '-' || biln[data_pos] == '.')
+                throw Error("Invalid BILN string: empty monomer.");
+
+            std::string monomer_alias;
+            while (data_pos < biln.size() && biln[data_pos] != '(' && biln[data_pos] != '-' && biln[data_pos] != '.' && !is_space(biln[data_pos]))
+            {
+                if (biln[data_pos] == ')' || biln[data_pos] == ',')
+                    throw Error("Invalid BILN string: unexpected symbol '%c'.", biln[data_pos]);
+                monomer_alias += biln[data_pos++];
+            }
+            if (monomer_alias.empty())
+                throw Error("Invalid BILN string: empty monomer.");
+
+            Vec3f monomer_pos(_col * LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, -LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH * _row, 0);
+            ambiguous_template_opts options;
+            auto monomer_idx = addHelmMonomer(document, std::make_tuple(monomer_alias, false, std::string(), std::string(), options),
+                                              MonomerClass::AminoAcid, monomer_pos);
+            if (chain_monomer_count > 0)
+                addMonomerConnection(document, previous_monomer_idx, monomer_idx);
+            previous_monomer_idx = monomer_idx;
+            std::string monomer_id = std::to_string(monomer_idx);
+
+            skip_spaces();
+            while (data_pos < biln.size() && biln[data_pos] == '(')
+            {
+                data_pos++;
+                int bond_idx = read_positive_int("bond");
+                skip_spaces();
+                if (data_pos >= biln.size() || biln[data_pos] != ',')
+                    throw Error("Invalid BILN bond annotation: expected ','.");
+                data_pos++;
+                int attachment_idx = read_positive_int("attachment point");
+                skip_spaces();
+                if (data_pos >= biln.size() || biln[data_pos] != ')')
+                    throw Error("Invalid BILN bond annotation: expected ')'.");
+                data_pos++;
+                remember_bond_endpoint(bond_idx, monomer_id, attachment_idx);
+                skip_spaces();
+            }
+
+            chain_monomer_count++;
+            _col++;
+            skip_spaces();
+            if (data_pos >= biln.size())
+                break;
+            if (biln[data_pos] == '-')
+            {
+                data_pos++;
+                continue;
+            }
+            if (biln[data_pos] == '.')
+            {
+                data_pos++;
+                skip_spaces();
+                if (data_pos >= biln.size())
+                    throw Error("Invalid BILN string: empty chain.");
+                break;
+            }
+            throw Error("Invalid BILN string: unexpected symbol '%c'.", biln[data_pos]);
+        }
+
+        if (chain_monomer_count == 0)
+            throw Error("Invalid BILN string: empty chain.");
+        _row++;
+    }
+
+    std::set<std::pair<std::string, std::string>> used_biln_endpoints;
+    for (auto bond_idx : bond_order)
+    {
+        const auto& endpoints = bond_endpoints.at(bond_idx);
+        if (endpoints.size() != 2)
+            throw Error("Invalid BILN bond %d: expected two endpoints but found %d.", bond_idx, static_cast<int>(endpoints.size()));
+        const auto& ep1 = endpoints[0];
+        const auto& ep2 = endpoints[1];
+        auto validate_endpoint = [&](const BilnEndpoint& ep) {
+            auto ap = std::string("R") + std::to_string(ep.attachment_idx);
+            const auto& monomer = document.monomers().at(ep.monomer_id);
+            if (monomer->attachmentPoints().count(ap) == 0)
+                throw Error("Unknown attachment point '%s' in monomer '%s(%s)'", ap.c_str(), monomer->alias().c_str(), monomer->ref().c_str());
+            if (monomer->connections().count(ap) > 0)
+            {
+                const auto& connection = monomer->connections().at(ap);
+                throw Error("Monomer '%s(%s)' attachment point '%s' already connected to monomer'%s' attachment point '%s'", monomer->alias().c_str(),
+                            monomer->ref().c_str(), ap.c_str(), connection.first.c_str(), connection.second.c_str());
+            }
+            if (!used_biln_endpoints.emplace(ep.monomer_id, ap).second)
+                throw Error("Monomer '%s(%s)' attachment point '%s' already connected.", monomer->alias().c_str(), monomer->ref().c_str(), ap.c_str());
+        };
+        validate_endpoint(ep1);
+        validate_endpoint(ep2);
+        KetConnectionEndPoint endpoint1, endpoint2;
+        setKetStrProp(endpoint1, monomerId, document.monomers().at(ep1.monomer_id)->ref());
+        setKetStrProp(endpoint1, attachmentPointId, std::string("R") + std::to_string(ep1.attachment_idx));
+        setKetStrProp(endpoint2, monomerId, document.monomers().at(ep2.monomer_id)->ref());
+        setKetStrProp(endpoint2, attachmentPointId, std::string("R") + std::to_string(ep2.attachment_idx));
+        document.addNonSequenceConnection(endpoint1, endpoint2);
+    }
+}
+
 void SequenceLoader::loadHELM(KetDocument& document)
 {
     _row = 0;
@@ -605,6 +780,7 @@ void SequenceLoader::loadHELM(KetDocument& document)
     polymer_map::iterator cur_polymer_map;
     _opts_to_template_id.clear();
     std::vector<PairedStrands> paired_strands;
+    std::set<std::pair<std::string, std::string>> used_helm_connection_endpoints;
     enum class helm_parts
     {
         ListOfSimplePolymers,
@@ -856,16 +1032,46 @@ void SequenceLoader::loadHELM(KetDocument& document)
             auto right_mon_it = right_polymer_nums->second.find(right_monomer_idx);
             if (right_mon_it == right_polymer_nums->second.end())
                 throw Error("Polymer '%s' does not contains monomer with number %d.", right_polymer.c_str(), right_monomer_idx);
-            auto& connection = document.addConnection(document.monomers().at(std::to_string(left_mon_it->second))->ref(), left_ap,
-                                                      document.monomers().at(std::to_string(right_mon_it->second))->ref(), right_ap);
-            if (left_ap == "pair" || right_ap == "pair" || left_ap == "hydrogen" || right_ap == "hydrogen")
+            auto left_monomer_id = std::to_string(left_mon_it->second);
+            auto right_monomer_id = std::to_string(right_mon_it->second);
+            auto& left_monomer = document.monomers().at(left_monomer_id);
+            auto& right_monomer = document.monomers().at(right_monomer_id);
+            KetConnection* connection = nullptr;
+            const bool hydrogen_pair_connection = left_ap == HelmHydrogenPair || right_ap == HelmHydrogenPair || left_ap == "hydrogen" || right_ap == "hydrogen";
+            if (hydrogen_pair_connection)
             {
+                connection = &document.addConnection(left_monomer->ref(), left_ap, right_monomer->ref(), right_ap);
                 // Accumulate only the first bond per unique strand pair to avoid redundant transforms
                 bool already_paired = std::any_of(paired_strands.begin(), paired_strands.end(), [&](const PairedStrands& p) {
                     return (p.anchor == left_polymer && p.paired == right_polymer) || (p.anchor == right_polymer && p.paired == left_polymer);
                 });
                 if (!already_paired)
                     paired_strands.push_back({left_polymer, right_polymer, left_monomer_idx, right_monomer_idx});
+            }
+            else
+            {
+                auto validate_endpoint = [&](const std::unique_ptr<KetBaseMonomer>& monomer, const std::string& ap) {
+                    if (monomer->attachmentPoints().count(ap) == 0)
+                        throw Error("Unknown attachment point '%s' in monomer '%s(%s)'", ap.c_str(), monomer->alias().c_str(), monomer->ref().c_str());
+                    if (monomer->connections().count(ap) > 0)
+                    {
+                        const auto& monomer_connection = monomer->connections().at(ap);
+                        throw Error("Monomer '%s(%s)' attachment point '%s' already connected to monomer'%s' attachment point '%s'",
+                                    monomer->alias().c_str(), monomer->ref().c_str(), ap.c_str(), monomer_connection.first.c_str(),
+                                    monomer_connection.second.c_str());
+                    }
+                    if (!used_helm_connection_endpoints.emplace(monomer->ref(), ap).second)
+                        throw Error("Monomer '%s(%s)' attachment point '%s' already connected.", monomer->alias().c_str(), monomer->ref().c_str(), ap.c_str());
+                };
+                validate_endpoint(left_monomer, left_ap);
+                validate_endpoint(right_monomer, right_ap);
+
+                KetConnectionEndPoint endpoint1, endpoint2;
+                setKetStrProp(endpoint1, monomerId, left_monomer->ref());
+                setKetStrProp(endpoint1, attachmentPointId, left_ap);
+                setKetStrProp(endpoint2, monomerId, right_monomer->ref());
+                setKetStrProp(endpoint2, attachmentPointId, right_ap);
+                connection = &document.addNonSequenceConnection(endpoint1, endpoint2);
             }
             if (_scanner.isEOF())
                 throw Error(unexpected_eod);
@@ -882,7 +1088,7 @@ void SequenceLoader::loadHELM(KetDocument& document)
                 _scanner.skip(1); // skip '"'
                 if (_scanner.isEOF())
                     throw Error(unexpected_eod);
-                connection.setTextAnnotation(annotation);
+                connection->setTextAnnotation(annotation);
                 ch = _scanner.lookNext();
             }
             if (ch == '|')

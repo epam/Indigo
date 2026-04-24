@@ -102,6 +102,11 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResultString(this, lib.indigoHelm(self, library.self));
     }
 
+    public String biln(IndigoObject library) {
+        dispatcher.setSessionID();
+        return Indigo.checkResultString(this, lib.indigoBiln(self, library.self));
+    }
+
     public String axolabs(IndigoObject library) {
         dispatcher.setSessionID();
         return Indigo.checkResultString(this, lib.indigoAxoLabs(self, library.self));

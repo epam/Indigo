@@ -1,0 +1,10 @@
+*** BILN interop ***
+biln_cap:BILN->HELM SUCCEED
+biln_disulfides:BILN->HELM SUCCEED
+biln_three_chains:BILN->HELM SUCCEED
+helm_cap:HELM->BILN SUCCEED
+helm_cycle:HELM->BILN SUCCEED
+helm_three_chains:HELM->BILN SUCCEED
+Test 'A(1,3)-C': got expected error 'Invalid BILN bond 1: expected two endpoints but found 1.'
+Test 'A--C': got expected error 'Invalid BILN string: empty monomer.'
+Test 'A-C(1,4)': got expected error 'Invalid BILN bond 1: expected two endpoints but found 1.'

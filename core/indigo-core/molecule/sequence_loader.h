@@ -72,6 +72,7 @@ namespace indigo
         void loadFasta(KetDocument& document, SeqType seq_type);
         void loadIdt(KetDocument& document);
         void loadHELM(KetDocument& document);
+        void loadBILN(KetDocument& document);
         void load3LetterSequence(KetDocument& document);
         void loadAxoLabs(KetDocument& document);
 
