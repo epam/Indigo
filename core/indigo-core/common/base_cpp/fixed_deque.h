@@ -17,7 +17,7 @@
  ***************************************************************************/
 
 #ifndef __fixed_deque_h__
-#define __fixed_deque
+#define __fixed_deque_h__
 
 #include <vector>
 

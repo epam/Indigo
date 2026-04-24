@@ -362,7 +362,7 @@ void threadFunc(BaseSubstructureMatcher* matcher)
     std::unique_ptr<IndigoObject> molecule_obj;
     MMFAllocator::setDatabaseId(matcher->getDbId());
     std::vector<int> input_chunk(THREAD_INPUT_CHUNK_SIZE);
-    std::vector<std::pair<int, std::unique_ptr<IndigoObject>>> results_chunk;
+    std::vector<int> results_chunk;
 
     if (!indigoSelf().hasLocalCopy())
     {
@@ -387,19 +387,14 @@ void threadFunc(BaseSubstructureMatcher* matcher)
     while (true)
     {
         { // read idx
-            // std::unique_lock<std::mutex> lock(input_mtx);
-            // cv_input.wait(lock, [&input_data, &all_data_in_queue]() { return !input_data.empty() || all_data_in_queue; });
-            // for (int i = 0; input_data->empty() && !all_data_in_queue; i++)
-            //     if ((i & 0xff) == 0)
-            //         std::this_thread::yield();
-            std::lock_guard<decltype(input_data)> lock(input_data);
-            // if (input_data.empty()) // all_data_in_queue
-            if (all_data_in_queue)
+            std::unique_lock<std::mutex> lock(input_mtx);
+            cv_input.wait(lock, [&input_data, &all_data_in_queue]() { return !input_data.empty() || all_data_in_queue; });
+            if (input_data.empty())
                 break;
-            for (int i = 0; i < THREAD_INPUT_CHUNK_SIZE && input_data->size() > 0; i++)
+            for (int i = 0; i < THREAD_INPUT_CHUNK_SIZE && input_data.size() > 0; i++)
             {
-                input_chunk.push_back(input_data->front());
-                input_data->pop_front();
+                input_chunk.push_back(input_data.front());
+                input_data.pop_front();
             }
         }
         molecule_obj.reset(matcher->allocateObject());
@@ -409,25 +404,23 @@ void threadFunc(BaseSubstructureMatcher* matcher)
             match = matcher->tryCurrent(db_object_idx, molecule_obj.get());
             if (match)
             {
-                results_chunk.emplace_back(db_object_idx, molecule_obj.release());
-                molecule_obj.reset(matcher->allocateObject());
+                results_chunk.emplace_back(db_object_idx);
             }
         }
         input_chunk.clear();
         { // write result
-            // std::lock_guard<std::mutex> locker(results_mtx);
-            std::lock_guard<decltype(results)> lock(results);
+            std::lock_guard<std::mutex> locker(results_mtx);
             if (results_chunk.size() > 0)
             {
                 for (int i = 0; i < results_chunk.size(); i++)
                 {
-                    results->emplace_back(results_chunk[i].first, results_chunk[i].second.release());
+                    results.push_back(results_chunk[i]);
                 }
                 results_chunk.clear();
             }
             else // no data - add empty result
             {
-                results->emplace_back(-1, nullptr);
+                results.push_back(-1);
             }
             cv_results.notify_one();
         }
@@ -452,7 +445,7 @@ void run_threads(BaseSubstructureMatcher* matcher, int count)
 }
 
 BaseSubstructureMatcher::BaseSubstructureMatcher(/*const */ BaseIndex& index, IndigoObject*& current_obj)
-    : BaseMatcher(index, current_obj), _fp_storage(_index.getSubStorage()), _tautomer(false), _input_data(MAX_INPUT_QUEUE_SIZE)
+    : BaseMatcher(index, current_obj), _fp_storage(_index.getSubStorage()), _tautomer(false), _input_data(MAX_INPUT_QUEUE_SIZE),_results(MAX_INPUT_QUEUE_SIZE*3)
 {
     _fp_size = _index.getFingerprintParams().fingerprintSize();
 
@@ -524,19 +517,17 @@ bool BaseSubstructureMatcher::next()
         if (_multithread)
         {
             int rsize = 0;
-            // {
-            //     std::lock_guard<std::mutex> rlock(_results_mtx);
-            //     rsize = _results.size();
-            // }
-            // if (!_all_data_in_queue && rsize < MAX_INPUT_QUEUE_SIZE)
-            if (!_all_data_in_queue && _results->size() < MAX_INPUT_QUEUE_SIZE)
             {
-                // std::lock_guard<std::mutex> lock(_input_mtx);
-                std::lock_guard<decltype(_input_data)> lock(_input_data);
+                std::lock_guard<std::mutex> rlock(_results_mtx);
+                rsize = _results.size();
+            }
+            if (!_all_data_in_queue && rsize < MAX_INPUT_QUEUE_SIZE)
+            {
+                std::lock_guard<std::mutex> lock(_input_mtx);
                 // while input queue not full - add candidates
-                while (_input_data->size() < MAX_INPUT_QUEUE_SIZE && _current_cand_id < _candidates.size())
+                while (_input_data.size() < MAX_INPUT_QUEUE_SIZE && _current_cand_id < _candidates.size())
                 {
-                    _input_data->push_back(_candidates[_current_cand_id++]);
+                    _input_data.push_back(_candidates[_current_cand_id++]);
                     _cv_input.notify_one();
                 }
                 if (_current_cand_id >= _candidates.size()) // need more candidates
@@ -552,40 +543,19 @@ bool BaseSubstructureMatcher::next()
         bool status = false;
         if (_multithread)
         {
-            // std::unique_lock<std::mutex> lock(_results_mtx);
-            // _cv_results.wait(lock, [this]() { return !_results.empty() || _finished_processing; });
-
-            // while (_results->empty() && !_finished_processing)
-            //     ;
-            for (int i = 0; _results->empty() && !_finished_processing; i++)
-                if ((i & 0xFF) == 0)
-                    std::this_thread::yield();
-            if (!_results->empty())
+            std::unique_lock<std::mutex> lock(_results_mtx);
+            _cv_results.wait(lock, [this]() { return !_results.empty() || _finished_processing; });
+            if (!_results.empty())
             {
                 if (_current_obj == nullptr)
                     throw Exception("BaseMatcher: Matcher's current object was destroyed");
 
-                auto& result = _results->front();
-                if (result.first < 0)
-                {
-                    _results->pop_front();
+                auto result = _results.front();
+                _results.pop_front();
+                if (result < 0)
                     continue;
-                }
-                _current_id = result.first;
-                if (IndigoMolecule::is(*result.second))
-                {
-                    Molecule& mol = result.second->getMolecule();
-                    _current_obj->getBaseMolecule().clone(mol);
-                }
-                else if (IndigoReaction::is(*result.second))
-                {
-                    Reaction& rxn = result.second->getReaction();
-                    _current_obj->getBaseReaction().clone(rxn);
-                }
-                else
-                    throw Exception("BaseMatcher::unknown current object type");
-
-                _results->pop_front();
+		_current_id=result;
+		_loadCurrentObject(_index, _current_id, _current_obj);
                 status = true;
             }
             else if (_finished_processing) // no more results and no more data processed
@@ -822,14 +792,14 @@ bool MoleculeSubMatcher::tryCurrent(int current_id, IndigoObject* current_obj) /
     else
     {
 
-        profTimerStart(tr_m, "sub_try_matching");
+        // profTimerStart(tr_m, "sub_try_matching");
         MoleculeSubstructureMatcher msm(target_mol);
 
         msm.setQuery(query_mol);
 
         bool find_res = msm.find();
 
-        profTimerStop(tr_m);
+        // profTimerStop(tr_m);
 
         if (find_res)
         {
