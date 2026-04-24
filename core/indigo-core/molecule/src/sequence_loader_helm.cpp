@@ -682,8 +682,8 @@ void SequenceLoader::loadBILN(KetDocument& document)
 
             Vec3f monomer_pos(_col * LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, -LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH * _row, 0);
             ambiguous_template_opts options;
-            auto monomer_idx = addHelmMonomer(document, std::make_tuple(monomer_alias, false, std::string(), std::string(), options),
-                                              MonomerClass::AminoAcid, monomer_pos);
+            auto monomer_idx =
+                addHelmMonomer(document, std::make_tuple(monomer_alias, false, std::string(), std::string(), options), MonomerClass::AminoAcid, monomer_pos);
             if (chain_monomer_count > 0)
                 addMonomerConnection(document, previous_monomer_idx, monomer_idx);
             previous_monomer_idx = monomer_idx;
@@ -1056,9 +1056,8 @@ void SequenceLoader::loadHELM(KetDocument& document)
                     if (monomer->connections().count(ap) > 0)
                     {
                         const auto& monomer_connection = monomer->connections().at(ap);
-                        throw Error("Monomer '%s(%s)' attachment point '%s' already connected to monomer'%s' attachment point '%s'",
-                                    monomer->alias().c_str(), monomer->ref().c_str(), ap.c_str(), monomer_connection.first.c_str(),
-                                    monomer_connection.second.c_str());
+                        throw Error("Monomer '%s(%s)' attachment point '%s' already connected to monomer'%s' attachment point '%s'", monomer->alias().c_str(),
+                                    monomer->ref().c_str(), ap.c_str(), monomer_connection.first.c_str(), monomer_connection.second.c_str());
                     }
                     if (!used_helm_connection_endpoints.emplace(monomer->ref(), ap).second)
                         throw Error("Monomer '%s(%s)' attachment point '%s' already connected.", monomer->alias().c_str(), monomer->ref().c_str(), ap.c_str());
