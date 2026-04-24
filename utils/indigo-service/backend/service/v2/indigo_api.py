@@ -28,22 +28,6 @@ from .validation import (
 
 tls = local()
 
-# MIME type to short format mapping for input-format option
-MIME_TO_FORMAT = {
-    "chemical/x-mdl-molfile": "mol",
-    "chemical/x-mdl-rxnfile": "rxn",
-    "chemical/x-daylight-smiles": "smi",
-    "chemical/x-daylight-smarts": "smarts",
-    "chemical/x-indigo-ket": "ket",
-    "chemical/x-cml": "cml",
-    "chemical/x-cdxml": "cdxml",
-    "chemical/x-sdf": "sdf",
-    "chemical/x-unknown": "auto",
-    "chemical/x-iupac": "auto",
-    "auto": "auto",
-    "": "auto",
-}
-
 indigo_api = Blueprint("indigo_api", __name__)
 indigo_api.indigo_defaults = {  # type: ignore
     "ignore-stereochemistry-errors": "true",
@@ -101,10 +85,7 @@ def indigo_init(options={}):
             ):
                 continue
 
-            if option == "input-format":
-                val = MIME_TO_FORMAT.get(value, value)
-                if val and val != "auto":
-                    tls.indigo.setOption("input-format", val)
+            if option == "input-format" and value is None:
                 continue
 
             tls.indigo.setOption(option, value)
@@ -372,10 +353,8 @@ def load_moldata(
     if "input-format" in options:
         input_format = options["input-format"]
 
-    if input_format:
-        val = MIME_TO_FORMAT.get(input_format, input_format)
-        if val and val != "auto":
-            indigo.setOption("input-format", val)
+    if input_format is not None:
+        indigo.setOption("input-format", input_format)
 
     if input_format in ("smarts", "chemical/x-daylight-smarts"):
         md.struct = indigo.loadSmarts(molstr)
