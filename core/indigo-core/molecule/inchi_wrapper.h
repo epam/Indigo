@@ -24,6 +24,7 @@
 
 #include "inchi_api.h"
 
+#include <optional>
 #include <string>
 
 #ifdef _WIN32
@@ -56,11 +57,12 @@ namespace indigo
         void loadMoleculeFromInchi(const char* inchi, Molecule& mol);
         void loadMoleculeFromAux(const char* aux, Molecule& mol);
 
-        void saveMoleculeIntoInchi(Molecule& mol, Array<char>& inchi);
+        void saveMoleculeIntoInchi(Molecule& mol, Array<char>& inchi, const char* forceOptions = nullptr);
 
         void parseInchiOutput(const InchiOutput& inchi_output, Molecule& mol);
 
-        void generateInchiInput(Molecule& input_mol, inchi_Input& input, Array<inchi_Atom>& atoms, Array<inchi_Stereo0D>& stereo);
+        void generateInchiInput(Molecule& input_mol, inchi_Input& input, Array<inchi_Atom>& atoms, Array<inchi_Stereo0D>& stereo,
+                                const char* forcedOptions = nullptr);
 
         void neutralizeV5Nitrogen(Molecule& mol);
 
@@ -81,6 +83,7 @@ namespace indigo
     private:
         void _validate(BaseMolecule& bmol);
         Array<char> options;
+        Array<char> sanitizedForcedOptions;
         int _stereo_opt;
     };
 

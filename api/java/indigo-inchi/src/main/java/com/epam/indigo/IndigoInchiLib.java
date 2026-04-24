@@ -32,7 +32,7 @@ public interface IndigoInchiLib extends Library {
 
     int indigoInchiLoadMolecule(String inchi_string);
 
-    Pointer indigoInchiGetInchi(int molecule);
+    Pointer indigoInchiGetInchiWithForcedOptions(int molecule, String forceOptions);
 
     Pointer indigoInchiGetInchiKey(String inchi_string);
 
