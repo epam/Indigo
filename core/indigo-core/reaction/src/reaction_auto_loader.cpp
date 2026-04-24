@@ -101,6 +101,7 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::loadReaction(bool query, Monom
 
 std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query, MonomerTemplateLibrary* monomer_lib)
 {
+    const std::string input_format = MoleculeAutoLoader::normalizeInputFormat(this->input_format);
     bool allow_all = input_format.empty() || input_format == "auto";
     auto local_scanner = _scanner;
     // chack for base64

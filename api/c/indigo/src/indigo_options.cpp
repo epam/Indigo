@@ -63,35 +63,10 @@ static void indigoSetJsonSavingVersion(const char* version)
     MoleculeJsonSaver::parseFormatMode(version, self.ket_saving_version);
 }
 
-static const char* indigoNormalizeInputFormat(const char* format)
-{
-    if (format == nullptr || format[0] == '\0')
-        return "auto";
-    if (strcmp(format, "chemical/x-mdl-molfile") == 0)
-        return "mol";
-    if (strcmp(format, "chemical/x-mdl-rxnfile") == 0)
-        return "rxn";
-    if (strcmp(format, "chemical/x-daylight-smiles") == 0)
-        return "smi";
-    if (strcmp(format, "chemical/x-daylight-smarts") == 0)
-        return "smarts";
-    if (strcmp(format, "chemical/x-indigo-ket") == 0)
-        return "ket";
-    if (strcmp(format, "chemical/x-cml") == 0)
-        return "cml";
-    if (strcmp(format, "chemical/x-cdxml") == 0)
-        return "cdxml";
-    if (strcmp(format, "chemical/x-sdf") == 0)
-        return "sdf";
-    if (strcmp(format, "chemical/x-unknown") == 0 || strcmp(format, "chemical/x-iupac") == 0)
-        return "auto";
-    return format;
-}
-
 static void indigoSetInputFormat(const char* format)
 {
     Indigo& self = indigoGetInstance();
-    self.input_format = indigoNormalizeInputFormat(format);
+    self.input_format = format;
 }
 
 static void indigoGetInputFormat(Array<char>& value)

@@ -19,6 +19,7 @@
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
 #include <regex>
+#include <unordered_map>
 
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
@@ -61,6 +62,26 @@ void MoleculeAutoLoader::_init()
 }
 
 IMPL_ERROR(MoleculeAutoLoader, "molecule auto loader");
+
+std::string MoleculeAutoLoader::normalizeInputFormat(const std::string& input_format)
+{
+    static const std::unordered_map<std::string, std::string> format_mapping = {{"chemical/x-mdl-molfile", "mol"},
+                                                                                {"chemical/x-mdl-rxnfile", "rxn"},
+                                                                                {"chemical/x-daylight-smiles", "smi"},
+                                                                                {"chemical/x-daylight-smarts", "smarts"},
+                                                                                {"chemical/x-indigo-ket", "ket"},
+                                                                                {"chemical/x-cml", "cml"},
+                                                                                {"chemical/x-cdxml", "cdxml"},
+                                                                                {"chemical/x-sdf", "sdf"},
+                                                                                {"chemical/x-unknown", "auto"},
+                                                                                {"chemical/x-iupac", "auto"},
+                                                                                {"auto", "auto"},
+                                                                                {"", "auto"}};
+
+    if (const auto it = format_mapping.find(input_format); it != format_mapping.end())
+        return it->second;
+    return input_format;
+}
 
 MoleculeAutoLoader::MoleculeAutoLoader(Scanner& scanner)
 {
@@ -204,6 +225,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, MonomerTemplateLibrary
     bool query = mol.isQueryMolecule();
     properties.clear();
 
+    const std::string input_format = normalizeInputFormat(this->input_format);
     bool allow_all = input_format.empty() || input_format == "auto";
 
     auto local_scanner = _scanner; // local scanner only for binary format
