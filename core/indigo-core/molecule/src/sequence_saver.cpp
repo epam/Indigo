@@ -17,7 +17,6 @@
  ***************************************************************************/
 
 #include "molecule/sequence_saver.h"
-#include <cctype>
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "layout/sequence_layout.h"
@@ -31,6 +30,7 @@
 #include "molecule/monomer_commons.h"
 #include "molecule/monomers_template_library.h"
 #include "molecule/smiles_saver.h"
+#include <cctype>
 
 #ifdef _MSC_VER
 #pragma warning(push, 4)

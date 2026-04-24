@@ -1037,7 +1037,8 @@ void SequenceLoader::loadHELM(KetDocument& document)
             auto& left_monomer = document.monomers().at(left_monomer_id);
             auto& right_monomer = document.monomers().at(right_monomer_id);
             KetConnection* connection = nullptr;
-            const bool hydrogen_pair_connection = left_ap == HelmHydrogenPair || right_ap == HelmHydrogenPair || left_ap == "hydrogen" || right_ap == "hydrogen";
+            const bool hydrogen_pair_connection =
+                left_ap == HelmHydrogenPair || right_ap == HelmHydrogenPair || left_ap == "hydrogen" || right_ap == "hydrogen";
             if (hydrogen_pair_connection)
             {
                 connection = &document.addConnection(left_monomer->ref(), left_ap, right_monomer->ref(), right_ap);
