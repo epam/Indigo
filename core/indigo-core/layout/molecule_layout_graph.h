@@ -352,6 +352,25 @@ namespace indigo
                                             const std::vector<std::pair<int, Vec2f>>& all_fixed_vertices, const std::unordered_set<int>& bridge_connected_pairs,
                                             const Vec2f& selected_center, const std::vector<int>& selected_vertices, Vec2f& best_translation,
                                             float& best_rotation);
+
+        // #3599 Option B: anchor-based rigid translation for single-bridge partial selections.
+        // When a selected sub-graph has exactly one selected↔fixed boundary edge ("bridge"),
+        // pin the bridge's selected endpoint at fix_pos + dir * bond_length and translate the
+        // whole selected block so that the bridge length equals bond_length by construction.
+        // For 0 or ≥2 bridges the caller falls back to centroid-based optimisation.
+        struct SelectionBridge
+        {
+            int sel_layout_idx; // index into _layout_vertices for the selected endpoint
+            int sel_ext_idx;    // external (molecule) index of the selected endpoint
+            int fix_layout_idx; // index into _layout_vertices for the fixed endpoint
+            int fix_ext_idx;    // external (molecule) index of the fixed endpoint
+            Vec2f fix_pos;      // position of the fixed endpoint in src_layout coordinates
+        };
+
+        std::vector<SelectionBridge> _detectSelectionBridges(const std::vector<int>& sel_vertices, const Array<Vec2f>& src_layout) const;
+        Vec2f _computeAnchorDirection(const SelectionBridge& bridge, const Array<Vec2f>& src_layout) const;
+        void _applyAnchoredRigidTransform(const SelectionBridge& bridge, const std::vector<int>& sel_vertices, const Array<Vec2f>& src_layout,
+                                          float bond_length);
         void _copyLayout(MoleculeLayoutGraph& component);
         void _getAnchor(int& v1, int& v2, int& v3) const;
 

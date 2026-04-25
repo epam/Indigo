@@ -965,6 +965,32 @@ void MoleculeLayoutGraph::_attachDandlingVertices(int vert_idx, Array<int>& adja
             not_drawn_idx = i;
     }
 
+    // #3599: when src has NO drawn neighbours (pathologic terminus case that can
+    // arise after the forbidden-edge fix in _findFirstVertexIdx), place the
+    // not-drawn neighbours in a default fan around src. Uses monomer bond length
+    // under sequence_layout to stay consistent with the rest of the chain.
+    if (n_pos == 0)
+    {
+        // Matches LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH / DEFAULT_BOND_LENGTH from
+        // metalayout.h. Kept as literals here to avoid pulling the metalayout header into
+        // this translation unit (it is not currently included).
+        const float length = (sequence_layout && _n_fixed > 0) ? 1.5f : 1.0f;
+        const Vec2f base = getPos(vert_idx);
+        const int n = adjacent_list.size();
+        const float step = (n > 0) ? _2FLOAT(2.0 * M_PI / n) : 0.f;
+        for (int i = 0; i < n; i++)
+        {
+            const float angle = step * i;
+            Vec2f pos(base.x + length * cos(angle), base.y + length * sin(angle));
+            int nei_layout_idx = adjacent_list[i];
+            _layout_vertices[nei_layout_idx].pos = pos;
+            _layout_vertices[nei_layout_idx].type = ELEMENT_BOUNDARY;
+            int edge_idx = vert.neiEdge(vert.findNeiVertex(nei_layout_idx));
+            _layout_edges[edge_idx].type = ELEMENT_BOUNDARY;
+        }
+        return;
+    }
+
     if (n_pos > 1)
     {
         if (adjacent_list.size() == 1)

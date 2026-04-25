@@ -343,9 +343,13 @@ void LayoutChooser::_makeLayout()
                     cur_pos.sum(p1, _layout._graph.getPos(v));
                 }
                 else if (is_nailed)
+                {
                     cur_pos.copy(comp.getPos(j));
+                }
                 else // fixed components or fixed vertex in graph
+                {
                     cur_pos.copy(_layout._graph.getPos(v1));
+                }
 
                 _layout._new_vertices[k] = comp.getVertexExtIdx(j);
             }
@@ -354,6 +358,15 @@ void LayoutChooser::_makeLayout()
     }
 
     // respect cis/trans
+    //
+    // #3599: cis/trans handling below dereferences _attached_bc[0] AND _attached_bc[1].
+    // With a partial-selection fix in _findFirstVertexIdx the set of drawn components
+    // at a src_vertex may shrink to a single trivial BC — _n_components becomes 0 and
+    // _attached_bc.size() becomes 1 (the lone "drawn" component). No new vertex to
+    // place, no cis/trans to evaluate, and index [1] is out-of-bounds. Bail out safely.
+    if (_layout._attached_bc.size() < 2)
+        return;
+
     const int* molecule_edge_mapping = 0;
     const BaseMolecule* molecule = _layout._graph.getMolecule(&molecule_edge_mapping);
     const MoleculeLayoutGraph& drawn_comp = *_layout._bc_components[_layout._attached_bc[1]];
