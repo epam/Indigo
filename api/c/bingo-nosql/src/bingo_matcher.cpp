@@ -265,6 +265,31 @@ bool BaseMatcher::_isCurrentObjectExist()
     return true;
 }
 
+void BaseMatcher::_loadObject(const char* cf_str, int cf_len, IndigoObject*& current_obj)
+{
+    std::string cmf(cf_str, cf_len);
+    BufferScanner buf_scn(cf_str, cf_len);
+
+    if (IndigoMolecule::is(*current_obj))
+    {
+        Molecule& mol = current_obj->getMolecule();
+
+        CmfLoader cmf_loader(buf_scn);
+
+        cmf_loader.loadMolecule(mol);
+    }
+    else if (IndigoReaction::is(*current_obj))
+    {
+        Reaction& rxn = current_obj->getReaction();
+
+        CrfLoader crf_loader(buf_scn);
+
+        crf_loader.loadReaction(rxn);
+    }
+    else
+        throw Exception("BaseMatcher::unknown current object type");
+}
+
 bool BaseMatcher::_loadCurrentObject(BaseIndex& index, int current_id, IndigoObject*& current_obj)
 {
     try
@@ -278,27 +303,8 @@ bool BaseMatcher::_loadCurrentObject(BaseIndex& index, int current_id, IndigoObj
 
         if (cf_len == -1)
             return false;
-        std::string cmf(cf_str, cf_len);
-        BufferScanner buf_scn(cf_str, cf_len);
 
-        if (IndigoMolecule::is(*current_obj))
-        {
-            Molecule& mol = current_obj->getMolecule();
-
-            CmfLoader cmf_loader(buf_scn);
-
-            cmf_loader.loadMolecule(mol);
-        }
-        else if (IndigoReaction::is(*current_obj))
-        {
-            Reaction& rxn = current_obj->getReaction();
-
-            CrfLoader crf_loader(buf_scn);
-
-            crf_loader.loadReaction(rxn);
-        }
-        else
-            throw Exception("BaseMatcher::unknown current object type");
+        _loadObject(cf_str, cf_len, current_obj);
 
         return true;
     }
@@ -346,15 +352,18 @@ void errorHandler(const char* message, void*)
 
 void threadFunc(BaseSubstructureMatcher* matcher)
 {
+#ifndef USE_SAFE_PTR
     std::mutex& input_mtx = matcher->_input_mtx;
     std::condition_variable& cv_input = matcher->_cv_input;
+    std::mutex& results_mtx = matcher->_results_mtx;
+    std::condition_variable& cv_results = matcher->_cv_results;
+#endif
     auto& input_data = matcher->_input_data;
     std::atomic_bool& all_data_in_queue = matcher->_all_data_in_queue;
 
     auto& results = matcher->_results;
-    std::mutex& results_mtx = matcher->_results_mtx;
-    std::condition_variable& cv_results = matcher->_cv_results;
     std::atomic_bool& finished_processing = matcher->_finished_processing;
+    std::atomic_bool& stop_request = matcher->_stop_request;
 
     int matched = 0;
     int db_object_idx = -1;
@@ -384,11 +393,26 @@ void threadFunc(BaseSubstructureMatcher* matcher)
         }
     }
 
-    while (true)
+    while (!stop_request)
     {
         { // read idx
+#ifdef USE_SAFE_PTR
+            while (input_data->empty() && !all_data_in_queue)
+                std::this_thread::sleep_for(std::chrono::microseconds(1));
+            if (input_data->empty())
+                break;
+            std::lock_guard<decltype(input_data)> lock(input_data);
+            for (int i = 0; i < THREAD_INPUT_CHUNK_SIZE && input_data->size() > 0; i++)
+            {
+                input_chunk.push_back(input_data->front());
+                input_data->pop_front();
+            }
+#else
             std::unique_lock<std::mutex> lock(input_mtx);
             cv_input.wait(lock, [&input_data, &all_data_in_queue]() { return !input_data.empty() || all_data_in_queue; });
+            if (input_data.empty())
+                // std::this_thread::yield();
+                std::this_thread::sleep_for(std::chrono::microseconds(1));
             if (input_data.empty())
                 break;
             for (int i = 0; i < THREAD_INPUT_CHUNK_SIZE && input_data.size() > 0; i++)
@@ -396,10 +420,13 @@ void threadFunc(BaseSubstructureMatcher* matcher)
                 input_chunk.push_back(input_data.front());
                 input_data.pop_front();
             }
+#endif
         }
         molecule_obj.reset(matcher->allocateObject());
         for (int i = 0; i < input_chunk.size(); i++)
         {
+            if (stop_request)
+                return;
             db_object_idx = input_chunk[i];
             match = matcher->tryCurrent(db_object_idx, molecule_obj.get());
             if (match)
@@ -409,6 +436,21 @@ void threadFunc(BaseSubstructureMatcher* matcher)
         }
         input_chunk.clear();
         { // write result
+#ifdef USE_SAFE_PTR
+            if (results_chunk.size() > 0)
+            {
+                std::lock_guard<decltype(results)> lock(results);
+                for (int i = 0; i < results_chunk.size(); i++)
+                {
+                    results->push_back(results_chunk[i]);
+                }
+                results_chunk.clear();
+            }
+            else // no data - add empty result
+            {
+                results->push_back(-1);
+            }
+#else
             std::lock_guard<std::mutex> locker(results_mtx);
             if (results_chunk.size() > 0)
             {
@@ -423,6 +465,7 @@ void threadFunc(BaseSubstructureMatcher* matcher)
                 results.push_back(-1);
             }
             cv_results.notify_one();
+#endif
         }
     }
 }
@@ -439,13 +482,14 @@ void run_threads(BaseSubstructureMatcher* matcher, int count)
         threads.front().join();
         threads.pop_front();
     }
-    std::lock_guard<std::mutex> locker(matcher->_results_mtx);
+    // std::lock_guard<std::mutex> locker(matcher->_results_mtx);
     matcher->_finished_processing = true;
-    matcher->_cv_results.notify_one();
+    // matcher->_cv_results.notify_one();
 }
 
 BaseSubstructureMatcher::BaseSubstructureMatcher(/*const */ BaseIndex& index, IndigoObject*& current_obj)
-    : BaseMatcher(index, current_obj), _fp_storage(_index.getSubStorage()), _tautomer(false), _input_data(MAX_INPUT_QUEUE_SIZE),_results(MAX_INPUT_QUEUE_SIZE*3)
+    : BaseMatcher(index, current_obj), _fp_storage(_index.getSubStorage()), _tautomer(false), _input_data(MAX_INPUT_QUEUE_SIZE),
+      _results(MAX_INPUT_QUEUE_SIZE * 3)
 {
     _fp_size = _index.getFingerprintParams().fingerprintSize();
 
@@ -460,7 +504,44 @@ BaseSubstructureMatcher::BaseSubstructureMatcher(/*const */ BaseIndex& index, In
 BaseSubstructureMatcher::~BaseSubstructureMatcher()
 {
     if (_t.has_value())
+    {
+        _stop_request = true;
+        {
+#ifdef USE_SAFE_PTR
+            _input_data->empty();
+            _all_data_in_queue = true;
+#else
+            std::lock_guard<std::mutex> lock(_input_mtx);
+            _input_data.empty();
+            _all_data_in_queue = true;
+            _cv_input.notify_all();
+#endif
+        }
+        while (!_finished_processing)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }
         _t->join();
+    }
+}
+
+bool BaseSubstructureMatcher::_find_candidates()
+{
+    profTimerStart(tf, "sub_find_cand");
+    _current_pack++;
+    if (_current_pack < _final_pack)
+    {
+        _findPackCandidates(_current_pack);
+        _cand_count += _candidates.size();
+    }
+    else // no more candidates
+    {
+        return true;
+    }
+
+    _current_cand_id = 0;
+    profTimerStop(tf);
+    return false;
 }
 
 bool BaseSubstructureMatcher::next()
@@ -471,125 +552,181 @@ bool BaseSubstructureMatcher::next()
     if (!_multithread || !_t.has_value())
         _current_cand_id++;
 
-    if (_multithread && !_t.has_value()) // first call
+    if (_multithread)
     {
-        Indigo& indigo = indigoGetInstance();
-        _arom_options = indigo.arom_options;
-        _tautomer_rules = &indigo.tautomer_rules;
-        _t.emplace(run_threads, this, _thread_count);
-    }
-
-    while (!((_current_pack == _final_pack) && (_current_cand_id == _candidates.size())))
-    {
-        profTimerStart(tsingle, "sub_single");
-
-        if (_current_cand_id == _candidates.size() && (!_multithread || !_all_data_in_queue))
+        if (!_t.has_value()) // first call
         {
-            profTimerStart(tf, "sub_find_cand");
-            _current_pack++;
-            if (_current_pack < _final_pack)
+            Indigo& indigo = indigoGetInstance();
+            _arom_options = indigo.arom_options;
+            _tautomer_rules = &indigo.tautomer_rules;
+            _t.emplace(run_threads, this, _thread_count);
             {
-                _findPackCandidates(_current_pack);
-                _cand_count += _candidates.size();
+                int cf_len;
+                const char* cf_str;
+                int total_len = 0;
+                int max_len = 0;
+                int count = 0;
+                auto start = std::chrono::high_resolution_clock::now();
+                // start
+                std::vector<char> buffer(8192);                 // 8kb initial buffer
+                std::vector<std::pair<size_t, size_t>> offsets; // vector of pair<buffer_offset, cf_size>
+                size_t buffer_offset = 0;
+
+                for (int id = 0; id < _index.getIdMapping().size(); id++)
+                {
+                    cf_str =
+                        _index.useShortBuffer() ? (const char*)_index.getCfStorageShort().get(id, cf_len) : (const char*)_index.getCfStorage().get(id, cf_len);
+                    total_len += cf_len;
+                    max_len = std::max(max_len, cf_len);
+                    count++;
+
+                    // Ensure buffer has enough space
+                    if (buffer_offset + cf_len > buffer.size())
+                    {
+                        buffer.resize(buffer.size() * 2);
+                    }
+
+                    // Copy cf_len bytes from cf_str to end of buffer
+                    std::memcpy(buffer.data() + buffer_offset, cf_str, cf_len);
+
+                    // Store offset and size in vector
+                    offsets.emplace_back(buffer_offset, cf_len);
+
+                    buffer_offset += cf_len;
+                }
+                // end
+                auto end = std::chrono::high_resolution_clock::now();
+                auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+                printf("\n---\ncount=%d total_len=%d max_len=%d in %zdms\n", count, total_len, max_len, duration.count());
             }
-            else // no more candidates
+        }
+
+        profTimerStart(tsingle_m, "sub_single");
+        while (!_finished_processing)
+        {
+            if ((_current_cand_id == _candidates.size()) && !_all_data_in_queue)
             {
-                if (_multithread)
+                if (_find_candidates())
                 {
                     _all_data_in_queue = true;
+#ifndef USE_SAFE_PTR
                     _cv_input.notify_all();
-                }
-                else
-                {
-                    break;
+#endif
                 }
             }
-
-            _current_cand_id = 0;
-            profTimerStop(tf);
-        }
-
-        if (_candidates.size() == 0)
-        {
-            continue;
-        }
-
-        if (_multithread)
-        {
             int rsize = 0;
             {
+#ifdef USE_SAFE_PTR
+                rsize = _results->size();
+#else
                 std::lock_guard<std::mutex> rlock(_results_mtx);
                 rsize = _results.size();
+#endif
             }
             if (!_all_data_in_queue && rsize < MAX_INPUT_QUEUE_SIZE)
             {
+                // input queue not full - add candidates
+#ifdef USE_SAFE_PTR
+                std::lock_guard<decltype(_input_data)> lock(_input_data);
+                while (_input_data->size() < MAX_INPUT_QUEUE_SIZE && _current_cand_id < _candidates.size())
+                {
+                    _input_data->push_back(_candidates[_current_cand_id++]);
+                }
+#else
                 std::lock_guard<std::mutex> lock(_input_mtx);
-                // while input queue not full - add candidates
                 while (_input_data.size() < MAX_INPUT_QUEUE_SIZE && _current_cand_id < _candidates.size())
                 {
                     _input_data.push_back(_candidates[_current_cand_id++]);
                     _cv_input.notify_one();
                 }
+#endif
                 if (_current_cand_id >= _candidates.size()) // need more candidates
                     continue;
             }
-        }
-        else
-        {
-            _current_id = _candidates[_current_cand_id];
-        }
 
-        profTimerStart(tt, "sub_try");
-        bool status = false;
-        if (_multithread)
-        {
+            // wait for results
+            bool status = false;
+#ifdef USE_SAFE_PTR
+            while (_results->empty() && !_finished_processing)
+                // std::this_thread::yield();
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            if (!_results->empty())
+#else
             std::unique_lock<std::mutex> lock(_results_mtx);
             _cv_results.wait(lock, [this]() { return !_results.empty() || _finished_processing; });
             if (!_results.empty())
+#endif
             {
-                if (_current_obj == nullptr)
-                    throw Exception("BaseMatcher: Matcher's current object was destroyed");
-
-                auto result = _results.front();
-                _results.pop_front();
-                if (result < 0)
-                    continue;
-		_current_id=result;
-		_loadCurrentObject(_index, _current_id, _current_obj);
+                {
+                    if (_current_obj == nullptr)
+                        throw Exception("BaseMatcher: Matcher's current object was destroyed");
+#ifdef USE_SAFE_PTR
+                    std::lock_guard<decltype(_results)> lock(_results);
+                    auto result = _results->front();
+                    _results->pop_front();
+#else
+                    auto result = _results.front();
+                    _results.pop_front();
+#endif
+                    if (result < 0)
+                        continue;
+                    _current_id = result;
+                }
+                _loadCurrentObject(_index, _current_id, _current_obj);
                 status = true;
             }
-            else if (_finished_processing) // no more results and no more data processed
+            if (status)
+                profIncCounter("sub_found", 1);
+
+            _match_probability_esimate.addValue((float)status);
+            _match_time_esimate.addValue(profTimerGetTimeSec(tsingle_m));
+
+            if (status)
             {
-                return false;
+                sub_cnt++;
+                return true;
             }
         }
-        else
-        {
-            status = tryCurrent(_current_id, _current_obj);
-        }
-        profTimerStop(tt);
-
-        if (status)
-            profIncCounter("sub_found", 1);
-
-        _match_probability_esimate.addValue((float)status);
-        _match_time_esimate.addValue(profTimerGetTimeSec(tsingle));
-
-        if (status)
-        {
-            sub_cnt++;
-            return true;
-        }
-        if (!_multithread)
-            _current_cand_id++;
-        else if (_finished_processing)
-            break;
-    }
-
-    if (_multithread)
-    {
         _t->join();
         _t.reset();
+    }
+    else
+    {
+        while (!((_current_pack == _final_pack) && (_current_cand_id == _candidates.size())))
+        {
+            profTimerStart(tsingle, "sub_single");
+
+            if (_current_cand_id == _candidates.size())
+            {
+                if (_find_candidates())
+                    break;
+            }
+
+            if (_candidates.size() == 0)
+            {
+                continue;
+            }
+
+            _current_id = _candidates[_current_cand_id];
+
+            profTimerStart(tt, "sub_try");
+            bool status = false;
+            status = tryCurrent(_current_id, _current_obj);
+            profTimerStop(tt);
+
+            if (status)
+                profIncCounter("sub_found", 1);
+
+            _match_probability_esimate.addValue((float)status);
+            _match_time_esimate.addValue(profTimerGetTimeSec(tsingle));
+
+            if (status)
+            {
+                sub_cnt++;
+                return true;
+            }
+            _current_cand_id++;
+        }
     }
 
     profIncCounter("sub_count_cand", _cand_count);
@@ -764,11 +901,15 @@ const Array<int>& MoleculeSubMatcher::currentMapping()
 
 bool MoleculeSubMatcher::tryCurrent(int current_id, IndigoObject* current_obj) // const
 {
-    SubstructureMoleculeQuery& query = (SubstructureMoleculeQuery&)(_query_data->getQueryObject());
-    QueryMolecule& query_mol = (QueryMolecule&)(query.getMolecule());
-
     if (!_loadCurrentObject(_index, current_id, current_obj))
         return false;
+    return tryObject(current_obj);
+}
+
+bool MoleculeSubMatcher::tryObject(IndigoObject* current_obj)
+{
+    SubstructureMoleculeQuery& query = (SubstructureMoleculeQuery&)(_query_data->getQueryObject());
+    QueryMolecule& query_mol = (QueryMolecule&)(query.getMolecule());
 
     if (current_obj == 0)
         throw Exception("MoleculeSubMatcher: Matcher's current object was destroyed");
@@ -830,11 +971,15 @@ const ObjArray<Array<int>>& ReactionSubMatcher::currentMapping()
 
 bool ReactionSubMatcher::tryCurrent(int current_id, IndigoObject* current_obj) // const
 {
+    if (!_loadCurrentObject(_index, current_id, current_obj))
+        return false;
+    return tryObject(current_obj);
+}
+
+bool ReactionSubMatcher::tryObject(IndigoObject* current_obj)
+{
     SubstructureReactionQuery& query = (SubstructureReactionQuery&)_query_data->getQueryObject();
     QueryReaction& query_rxn = (QueryReaction&)(query.getReaction());
-
-    if (!_loadCurrentObject(_index, _current_id, _current_obj))
-        return false;
 
     if (_current_obj == 0)
         throw Exception("ReactionSubMatcher: Matcher's current object was destroyed");

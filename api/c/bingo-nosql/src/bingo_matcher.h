@@ -3,6 +3,11 @@
 
 #include <atomic>
 
+#define USE_SAFE_PTR
+#ifdef USE_SAFE_PTR
+#include "safe_ptr.h"
+#endif
+
 #include "bingo_base_index.h"
 #include "bingo_object.h"
 
@@ -226,6 +231,7 @@ namespace bingo
 
         bool _isCurrentObjectExist();
 
+        static void _loadObject(const char* cf_str, int cf_len, IndigoObject*& current_obj);
         static bool _loadCurrentObject(BaseIndex& index, int current_id, IndigoObject*& current_obj);
 
         virtual void _setParameters(const char* params) = 0;
@@ -235,9 +241,8 @@ namespace bingo
     };
 
     constexpr int MAX_INPUT_QUEUE_SIZE = 10000;
-    constexpr int THREAD_INPUT_CHUNK_SIZE = 1000;
+    constexpr int THREAD_INPUT_CHUNK_SIZE = 500;
 
-    // using results_queue = std::deque<std::pair<int, std::unique_ptr<IndigoObject>>>;
     // using results_queue = std::deque<std::pair<int, std::unique_ptr<IndigoObject>>>;
 
     class BaseSubstructureMatcher : public BaseMatcher
@@ -251,6 +256,7 @@ namespace bingo
         void setQueryData(SubstructureQueryData* query_data);
 
         virtual bool tryCurrent(int current_id, IndigoObject* current_obj) /* const */ = 0;
+        virtual bool tryObject(IndigoObject* current_obj) = 0;
 
         virtual IndigoObject* allocateObject() = 0;
 
@@ -270,6 +276,8 @@ namespace bingo
 
         void _findIncCandidates();
 
+        bool _find_candidates();
+
         void _setParameters(const char* params) override;
 
         void _initPartition() override;
@@ -287,20 +295,24 @@ namespace bingo
         int _final_pack;
         const TranspFpStorage& _fp_storage;
         int sub_cnt;
+        std::optional<std::thread> _t;
 
     public:
-        std::optional<std::thread> _t;
+#ifdef USE_SAFE_PTR
+        sf::contfree_safe_ptr<FixedDeque<int>> _input_data;
+        sf::contfree_safe_ptr<FixedDeque<int>> _results;
+#else
         FixedDeque<int> _input_data;
-        // std::deque<int> _input_data;
+        FixedDeque<int> _results;
+        // results_queue _results;
         std::mutex _input_mtx;
         std::condition_variable _cv_input;
-        std::atomic_bool _all_data_in_queue = false;
-        // results_queue _results;
-        FixedDeque<int> _results;
-        // std::deque<int> _results;
         std::mutex _results_mtx;
-        std::atomic_bool _finished_processing = false;
         std::condition_variable _cv_results;
+#endif
+        std::atomic_bool _all_data_in_queue = false;
+        std::atomic_bool _finished_processing = false;
+        std::atomic_bool _stop_request = false;
         int _results_empty = 0;
     };
 
@@ -312,6 +324,7 @@ namespace bingo
         const Array<int>& currentMapping();
 
         virtual bool tryCurrent(int current_id, IndigoObject* current_obj) /*const*/ override;
+        virtual bool tryObject(IndigoObject* current_obj) override;
 
         virtual IndigoObject* allocateObject() override;
 
@@ -329,6 +342,7 @@ namespace bingo
         const ObjArray<Array<int>>& currentMapping();
 
         virtual bool tryCurrent(int current_id, IndigoObject* current_obj) /*const*/ override;
+        virtual bool tryObject(IndigoObject* current_obj) override;
 
         virtual IndigoObject* allocateObject() override;
 
