@@ -145,10 +145,7 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
         std::vector<std::deque<std::string>> sequences;
         KetDocument doc(mol);
         doc.parseSimplePolymers(sequences, false);
-        if (sf == SeqFormat::HELM)
-            seq_text = saveHELM(doc, sequences);
-        else
-            seq_text = saveBILN(doc, sequences);
+        seq_text = sf == SeqFormat::HELM ? saveHELM(doc, sequences) : saveBILN(doc, sequences);
     }
     else if (sf == SeqFormat::IDT)
     {
@@ -295,10 +292,7 @@ void SequenceSaver::saveKetDocument(KetDocument& doc, SeqFormat sf)
     if (sf == SeqFormat::HELM || sf == SeqFormat::BILN)
     {
         doc.parseSimplePolymers(sequences, false);
-        if (sf == SeqFormat::HELM)
-            seq_text = saveHELM(doc, sequences);
-        else
-            seq_text = saveBILN(doc, sequences);
+        seq_text = sf == SeqFormat::HELM ? saveHELM(doc, sequences) : saveBILN(doc, sequences);
     }
     else if (sf == SeqFormat::IDT)
     {

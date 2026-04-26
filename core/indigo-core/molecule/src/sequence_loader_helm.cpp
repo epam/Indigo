@@ -1036,21 +1036,22 @@ void SequenceLoader::loadHELM(KetDocument& document)
             auto right_monomer_id = std::to_string(right_mon_it->second);
             auto& left_monomer = document.monomers().at(left_monomer_id);
             auto& right_monomer = document.monomers().at(right_monomer_id);
-            KetConnection* connection = nullptr;
             const bool hydrogen_pair_connection =
                 left_ap == HelmHydrogenPair || right_ap == HelmHydrogenPair || left_ap == "hydrogen" || right_ap == "hydrogen";
-            if (hydrogen_pair_connection)
-            {
-                connection = &document.addConnection(left_monomer->ref(), left_ap, right_monomer->ref(), right_ap);
-                // Accumulate only the first bond per unique strand pair to avoid redundant transforms
-                bool already_paired = std::any_of(paired_strands.begin(), paired_strands.end(), [&](const PairedStrands& p) {
-                    return (p.anchor == left_polymer && p.paired == right_polymer) || (p.anchor == right_polymer && p.paired == left_polymer);
-                });
-                if (!already_paired)
-                    paired_strands.push_back({left_polymer, right_polymer, left_monomer_idx, right_monomer_idx});
-            }
-            else
-            {
+            KetConnection& connection = [&]() -> KetConnection& {
+                if (hydrogen_pair_connection)
+                {
+                    auto& hydrogen_connection = document.addConnection(left_monomer->ref(), left_ap, right_monomer->ref(), right_ap);
+                    // Accumulate only the first bond per unique strand pair to avoid redundant transforms
+                    bool already_paired = std::any_of(paired_strands.begin(), paired_strands.end(), [&](const PairedStrands& p) {
+                        return (p.anchor == left_polymer && p.paired == right_polymer) || (p.anchor == right_polymer && p.paired == left_polymer);
+                    });
+                    if (!already_paired)
+                        paired_strands.push_back({left_polymer, right_polymer, left_monomer_idx, right_monomer_idx});
+                    return hydrogen_connection;
+                }
+
+                // HELM connection-section links are explicit extra links; keep them out of simple polymer backbone traversal.
                 auto validate_endpoint = [&](const std::unique_ptr<KetBaseMonomer>& monomer, const std::string& ap) {
                     if (monomer->attachmentPoints().count(ap) == 0)
                         throw Error("Unknown attachment point '%s' in monomer '%s(%s)'", ap.c_str(), monomer->alias().c_str(), monomer->ref().c_str());
@@ -1071,8 +1072,8 @@ void SequenceLoader::loadHELM(KetDocument& document)
                 setKetStrProp(endpoint1, attachmentPointId, left_ap);
                 setKetStrProp(endpoint2, monomerId, right_monomer->ref());
                 setKetStrProp(endpoint2, attachmentPointId, right_ap);
-                connection = &document.addExplicitConnection(endpoint1, endpoint2);
-            }
+                return document.addExplicitConnection(endpoint1, endpoint2);
+            }();
             if (_scanner.isEOF())
                 throw Error(unexpected_eod);
             ch = _scanner.lookNext();
@@ -1088,7 +1089,7 @@ void SequenceLoader::loadHELM(KetDocument& document)
                 _scanner.skip(1); // skip '"'
                 if (_scanner.isEOF())
                     throw Error(unexpected_eod);
-                connection->setTextAnnotation(annotation);
+                connection.setTextAnnotation(annotation);
                 ch = _scanner.lookNext();
             }
             if (ch == '|')
