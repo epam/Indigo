@@ -108,6 +108,12 @@ namespace indigo
 
         KetConnection& addConnection(KetConnectionEndPoint ep1, KetConnectionEndPoint ep2);
 
+        // Explicit format-level connections, such as HELM connection-section links
+        // and BILN bond annotations, must not be folded into simple polymer chains.
+        KetConnection& addExplicitConnection(const std::string& conn_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2);
+
+        KetConnection& addExplicitConnection(KetConnectionEndPoint ep1, KetConnectionEndPoint ep2);
+
         KetConnection& addNonSequenceConnection(const std::string& conn_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2);
 
         KetConnection& addNonSequenceConnection(KetConnectionEndPoint ep1, KetConnectionEndPoint ep2);
@@ -156,7 +162,7 @@ namespace indigo
         // Monomers connected from m[i] R2 to m[i+1] R1 for peptides
         // For RNA/DNA monomer placed in order Sugar-Base-Phosphate-Sugar... with standard connections
         // Each CHEM returned as separate simple polymer
-        // Also store non-standard or creating cycle connections in nonSequenceConnections list
+        // Also store non-standard, explicit, or cycle-forming connections in nonSequenceConnections list
         void parseSimplePolymers(std::vector<std::deque<std::string>>& sequences, bool for_idt = false);
 
         MonomerClass getMonomerClass(const KetBaseMonomer& monomer) const;

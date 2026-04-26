@@ -148,7 +148,7 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
         if (sf == SeqFormat::HELM)
             seq_text = saveHELM(doc, sequences);
         else
-            saveBILN(doc, sequences, seq_text);
+            seq_text = saveBILN(doc, sequences);
     }
     else if (sf == SeqFormat::IDT)
     {
@@ -298,7 +298,7 @@ void SequenceSaver::saveKetDocument(KetDocument& doc, SeqFormat sf)
         if (sf == SeqFormat::HELM)
             seq_text = saveHELM(doc, sequences);
         else
-            saveBILN(doc, sequences, seq_text);
+            seq_text = saveBILN(doc, sequences);
     }
     else if (sf == SeqFormat::IDT)
     {
@@ -860,11 +860,12 @@ static void check_biln_alias(const std::string& monomer_alias)
     }
 }
 
-void SequenceSaver::saveBILN(KetDocument& doc, std::vector<std::deque<std::string>> sequences, std::string& seq_text)
+std::string SequenceSaver::saveBILN(KetDocument& doc, const std::vector<std::deque<std::string>>& sequences)
 {
     if (doc.moleculesRefs().size() > 0)
         throw Error("Cannot save micro-molecules to BILN format.");
 
+    std::string biln_string;
     std::vector<std::vector<std::string>> chains;
     std::map<std::string, std::pair<size_t, size_t>> monomer_to_chain_pos;
     const auto& monomers = doc.monomers();
@@ -913,14 +914,15 @@ void SequenceSaver::saveBILN(KetDocument& doc, std::vector<std::deque<std::strin
     for (size_t chain_idx = 0; chain_idx < chains.size(); chain_idx++)
     {
         if (chain_idx > 0)
-            seq_text += '.';
+            biln_string += '.';
         for (size_t monomer_idx = 0; monomer_idx < chains[chain_idx].size(); monomer_idx++)
         {
             if (monomer_idx > 0)
-                seq_text += '-';
-            seq_text += chains[chain_idx][monomer_idx];
+                biln_string += '-';
+            biln_string += chains[chain_idx][monomer_idx];
         }
     }
+    return biln_string;
 }
 
 static const char* get_helm_class(MonomerClass monomer_class)
@@ -986,7 +988,7 @@ void SequenceSaver::add_monomer(KetDocument& document, const std::unique_ptr<Ket
         helm_string += '[' + monomer_str + ']';
 }
 
-std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::deque<std::string>> sequences)
+std::string SequenceSaver::saveHELM(KetDocument& document, const std::vector<std::deque<std::string>>& sequences)
 {
     std::string helm_string = "";
     int peptide_idx = 0;

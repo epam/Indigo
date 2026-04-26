@@ -177,16 +177,26 @@ KetConnection& KetDocument::addConnection(KetConnectionEndPoint ep1, KetConnecti
     return addConnection(KetConnectionSingle, ep1, ep2);
 }
 
-KetConnection& KetDocument::addNonSequenceConnection(const std::string& conn_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2)
+KetConnection& KetDocument::addExplicitConnection(const std::string& conn_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2)
 {
     auto& connection = addConnection(conn_type, ep1, ep2);
     _forced_non_sequence_connections.emplace(_connections.size() - 1);
     return connection;
 }
 
+KetConnection& KetDocument::addExplicitConnection(KetConnectionEndPoint ep1, KetConnectionEndPoint ep2)
+{
+    return addExplicitConnection(KetConnectionSingle, ep1, ep2);
+}
+
+KetConnection& KetDocument::addNonSequenceConnection(const std::string& conn_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2)
+{
+    return addExplicitConnection(conn_type, ep1, ep2);
+}
+
 KetConnection& KetDocument::addNonSequenceConnection(KetConnectionEndPoint ep1, KetConnectionEndPoint ep2)
 {
-    return addNonSequenceConnection(KetConnectionSingle, ep1, ep2);
+    return addExplicitConnection(ep1, ep2);
 }
 
 KetConnection& KetDocument::addConnection(const std::string& mon1, const std::string& ap1, const std::string& mon2, const std::string& ap2)

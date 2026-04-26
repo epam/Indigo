@@ -762,7 +762,7 @@ void SequenceLoader::loadBILN(KetDocument& document)
         setKetStrProp(endpoint1, attachmentPointId, std::string("R") + std::to_string(ep1.attachment_idx));
         setKetStrProp(endpoint2, monomerId, document.monomers().at(ep2.monomer_id)->ref());
         setKetStrProp(endpoint2, attachmentPointId, std::string("R") + std::to_string(ep2.attachment_idx));
-        document.addNonSequenceConnection(endpoint1, endpoint2);
+        document.addExplicitConnection(endpoint1, endpoint2);
     }
 }
 
@@ -1071,7 +1071,7 @@ void SequenceLoader::loadHELM(KetDocument& document)
                 setKetStrProp(endpoint1, attachmentPointId, left_ap);
                 setKetStrProp(endpoint2, monomerId, right_monomer->ref());
                 setKetStrProp(endpoint2, attachmentPointId, right_ap);
-                connection = &document.addNonSequenceConnection(endpoint1, endpoint2);
+                connection = &document.addExplicitConnection(endpoint1, endpoint2);
             }
             if (_scanner.isEOF())
                 throw Error(unexpected_eod);

@@ -64,8 +64,8 @@ namespace indigo
     protected:
         TGroup& getTGroup();
         void saveIdt(KetDocument& doc, std::vector<std::deque<std::string>> sequences, std::string& seq_text);
-        std::string saveHELM(KetDocument& mol, std::vector<std::deque<std::string>> sequences);
-        void saveBILN(KetDocument& doc, std::vector<std::deque<std::string>> sequences, std::string& seq_text);
+        std::string saveHELM(KetDocument& mol, const std::vector<std::deque<std::string>>& sequences);
+        std::string saveBILN(KetDocument& doc, const std::vector<std::deque<std::string>>& sequences);
         void saveAxoLabs(KetDocument& doc, std::vector<std::deque<std::string>> sequences, std::string& seq_text);
         void _validateSequence(BaseMolecule& bmol);
 
