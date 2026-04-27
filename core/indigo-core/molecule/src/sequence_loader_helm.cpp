@@ -17,6 +17,7 @@
  ***************************************************************************/
 
 #include <cctype>
+#include <limits>
 #include <memory>
 #include <regex>
 #include <unordered_set>
@@ -613,9 +614,14 @@ void SequenceLoader::loadBILN(KetDocument& document)
         std::string monomer_id;
         int attachment_idx;
     };
+    struct BilnBond
+    {
+        int bond_idx;
+        std::vector<BilnEndpoint> endpoints;
+    };
 
-    std::map<int, std::vector<BilnEndpoint>> bond_endpoints;
-    std::vector<int> bond_order;
+    std::vector<BilnBond> bonds;
+    std::unordered_map<int, size_t> bond_to_idx;
 
     size_t data_pos = 0;
     auto skip_spaces = [&]() {
@@ -629,7 +635,10 @@ void SequenceLoader::loadBILN(KetDocument& document)
         int value = 0;
         while (data_pos < biln.size() && std::isdigit(static_cast<unsigned char>(biln[data_pos])))
         {
-            value = value * 10 + (biln[data_pos] - '0');
+            const int digit = biln[data_pos] - '0';
+            if (value > (std::numeric_limits<int>::max() - digit) / 10)
+                throw Error("Invalid BILN bond annotation: %s number is too large.", field_name);
+            value = value * 10 + digit;
             data_pos++;
         }
         if (value <= 0)
@@ -637,10 +646,10 @@ void SequenceLoader::loadBILN(KetDocument& document)
         return value;
     };
     auto remember_bond_endpoint = [&](int bond_idx, const std::string& monomer_id, int attachment_idx) {
-        auto& endpoints = bond_endpoints[bond_idx];
-        if (endpoints.empty())
-            bond_order.emplace_back(bond_idx);
-        endpoints.push_back({monomer_id, attachment_idx});
+        auto [it, inserted] = bond_to_idx.emplace(bond_idx, bonds.size());
+        if (inserted)
+            bonds.push_back({bond_idx, {}});
+        bonds.at(it->second).endpoints.push_back({monomer_id, attachment_idx});
     };
 
     _row = 0;
@@ -734,15 +743,15 @@ void SequenceLoader::loadBILN(KetDocument& document)
     }
 
     std::set<std::pair<std::string, std::string>> used_biln_endpoints;
-    for (auto bond_idx : bond_order)
+    auto attachment_point = [](const BilnEndpoint& ep) { return std::string("R") + std::to_string(ep.attachment_idx); };
+    for (const auto& bond : bonds)
     {
-        const auto& endpoints = bond_endpoints.at(bond_idx);
+        const auto& endpoints = bond.endpoints;
         if (endpoints.size() != 2)
-            throw Error("Invalid BILN bond %d: expected two endpoints but found %d.", bond_idx, static_cast<int>(endpoints.size()));
+            throw Error("Invalid BILN bond %d: expected two endpoints but found %d.", bond.bond_idx, static_cast<int>(endpoints.size()));
         const auto& ep1 = endpoints[0];
         const auto& ep2 = endpoints[1];
-        auto validate_endpoint = [&](const BilnEndpoint& ep) {
-            auto ap = std::string("R") + std::to_string(ep.attachment_idx);
+        auto validate_endpoint = [&](const BilnEndpoint& ep, const std::string& ap) -> const std::unique_ptr<KetBaseMonomer>& {
             const auto& monomer = document.monomers().at(ep.monomer_id);
             if (monomer->attachmentPoints().count(ap) == 0)
                 throw Error("Unknown attachment point '%s' in monomer '%s(%s)'", ap.c_str(), monomer->alias().c_str(), monomer->ref().c_str());
@@ -754,14 +763,17 @@ void SequenceLoader::loadBILN(KetDocument& document)
             }
             if (!used_biln_endpoints.emplace(ep.monomer_id, ap).second)
                 throw Error("Monomer '%s(%s)' attachment point '%s' already connected.", monomer->alias().c_str(), monomer->ref().c_str(), ap.c_str());
+            return monomer;
         };
-        validate_endpoint(ep1);
-        validate_endpoint(ep2);
+        const auto ap1 = attachment_point(ep1);
+        const auto ap2 = attachment_point(ep2);
+        const auto& monomer1 = validate_endpoint(ep1, ap1);
+        const auto& monomer2 = validate_endpoint(ep2, ap2);
         KetConnectionEndPoint endpoint1, endpoint2;
-        setKetStrProp(endpoint1, monomerId, document.monomers().at(ep1.monomer_id)->ref());
-        setKetStrProp(endpoint1, attachmentPointId, std::string("R") + std::to_string(ep1.attachment_idx));
-        setKetStrProp(endpoint2, monomerId, document.monomers().at(ep2.monomer_id)->ref());
-        setKetStrProp(endpoint2, attachmentPointId, std::string("R") + std::to_string(ep2.attachment_idx));
+        setKetStrProp(endpoint1, monomerId, monomer1->ref());
+        setKetStrProp(endpoint1, attachmentPointId, ap1);
+        setKetStrProp(endpoint2, monomerId, monomer2->ref());
+        setKetStrProp(endpoint2, attachmentPointId, ap2);
         document.addExplicitConnection(endpoint1, endpoint2);
     }
 }
