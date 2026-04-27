@@ -3,7 +3,7 @@
 
 #include <atomic>
 
-#define USE_SAFE_PTR
+// #define USE_SAFE_PTR
 #ifdef USE_SAFE_PTR
 #include "safe_ptr.h"
 #endif

@@ -562,6 +562,8 @@ bool BaseSubstructureMatcher::next()
             _arom_options = indigo.arom_options;
             _tautomer_rules = &indigo.tautomer_rules;
             _t.emplace(run_threads, this, _thread_count);
+// #def CHECK_CF_SIZE
+#ifdef CHECK_CF_SIZE
             {
                 int cf_len;
                 const char* cf_str;
@@ -569,7 +571,7 @@ bool BaseSubstructureMatcher::next()
                 int max_len = 0;
                 int count = 0;
                 auto start = std::chrono::high_resolution_clock::now();
-                // start
+
                 std::vector<char> buffer(8192);                 // 8kb initial buffer
                 std::vector<std::pair<size_t, size_t>> offsets; // vector of pair<buffer_offset, cf_size>
                 size_t buffer_offset = 0;
@@ -596,7 +598,7 @@ bool BaseSubstructureMatcher::next()
 
                     buffer_offset += cf_len;
                 }
-                // end
+#endif
                 auto end = std::chrono::high_resolution_clock::now();
                 auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
                 printf("\n---\ncount=%d total_len=%d max_len=%d in %zdms\n", count, total_len, max_len, duration.count());
@@ -621,8 +623,8 @@ bool BaseSubstructureMatcher::next()
 #ifdef USE_SAFE_PTR
                 rsize = _results->size();
 #else
-                std::lock_guard<std::mutex> rlock(_results_mtx);
-                rsize = _results.size();
+            std::lock_guard<std::mutex> rlock(_results_mtx);
+            rsize = _results.size();
 #endif
             }
             if (!_all_data_in_queue && rsize < MAX_INPUT_QUEUE_SIZE)
@@ -635,12 +637,12 @@ bool BaseSubstructureMatcher::next()
                     _input_data->push_back(_candidates[_current_cand_id++]);
                 }
 #else
-                std::lock_guard<std::mutex> lock(_input_mtx);
-                while (_input_data.size() < MAX_INPUT_QUEUE_SIZE && _current_cand_id < _candidates.size())
-                {
-                    _input_data.push_back(_candidates[_current_cand_id++]);
-                    _cv_input.notify_one();
-                }
+            std::lock_guard<std::mutex> lock(_input_mtx);
+            while (_input_data.size() < MAX_INPUT_QUEUE_SIZE && _current_cand_id < _candidates.size())
+            {
+                _input_data.push_back(_candidates[_current_cand_id++]);
+                _cv_input.notify_one();
+            }
 #endif
                 if (_current_cand_id >= _candidates.size()) // need more candidates
                     continue;
@@ -654,9 +656,9 @@ bool BaseSubstructureMatcher::next()
                 std::this_thread::sleep_for(std::chrono::milliseconds(1));
             if (!_results->empty())
 #else
-            std::unique_lock<std::mutex> lock(_results_mtx);
-            _cv_results.wait(lock, [this]() { return !_results.empty() || _finished_processing; });
-            if (!_results.empty())
+        std::unique_lock<std::mutex> lock(_results_mtx);
+        _cv_results.wait(lock, [this]() { return !_results.empty() || _finished_processing; });
+        if (!_results.empty())
 #endif
             {
                 {
@@ -667,8 +669,8 @@ bool BaseSubstructureMatcher::next()
                     auto result = _results->front();
                     _results->pop_front();
 #else
-                    auto result = _results.front();
-                    _results.pop_front();
+                auto result = _results.front();
+                _results.pop_front();
 #endif
                     if (result < 0)
                         continue;
