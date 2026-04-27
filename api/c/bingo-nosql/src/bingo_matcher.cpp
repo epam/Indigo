@@ -1,5 +1,7 @@
-#include "bingo_matcher.h"
+#include <chrono>
+
 #include "bingo_euclid_coef.h"
+#include "bingo_matcher.h"
 #include "bingo_tanimoto_coef.h"
 #include "bingo_tversky_coef.h"
 
