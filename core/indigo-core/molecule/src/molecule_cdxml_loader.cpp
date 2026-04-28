@@ -836,8 +836,9 @@ void MoleculeCdxmlLoader::_parseCDXMLElements(BaseCDXElement& first_elem, bool n
             {
                 auto it = std::upper_bound(fragment_node.inner_nodes.cbegin(), fragment_node.inner_nodes.cend(), fragment_node.id,
                                            [](int a, int b) { return a > b; });
-                if (nodes[i].pos.x == 0 && nodes[i].pos.y == 0) // if no coord - copy from parent
-                    nodes[i].pos = fragment_node.pos;
+                // Inner atom coords are from the hidden/expanded structure in an unrelated coordinate space.
+                // Always use the parent node's page position for all inner atoms.
+                nodes[i].pos = fragment_node.pos;
                 fragment_node.inner_nodes.insert(it, nodes[i].id);
             }
         }
