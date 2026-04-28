@@ -484,9 +484,13 @@ void run_threads(BaseSubstructureMatcher* matcher, int count)
         threads.front().join();
         threads.pop_front();
     }
-    // std::lock_guard<std::mutex> locker(matcher->_results_mtx);
+#ifdef USE_SAFE_PTR
     matcher->_finished_processing = true;
-    // matcher->_cv_results.notify_one();
+#else
+    std::lock_guard<std::mutex> locker(matcher->_results_mtx);
+    matcher->_finished_processing = true;
+    matcher->_cv_results.notify_one();
+#endif
 }
 
 BaseSubstructureMatcher::BaseSubstructureMatcher(/*const */ BaseIndex& index, IndigoObject*& current_obj)
