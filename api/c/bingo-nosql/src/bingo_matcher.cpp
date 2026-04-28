@@ -372,8 +372,11 @@ void threadFunc(BaseSubstructureMatcher* matcher)
     bool match = false;
     std::unique_ptr<IndigoObject> molecule_obj;
     MMFAllocator::setDatabaseId(matcher->getDbId());
-    std::vector<int> input_chunk(THREAD_INPUT_CHUNK_SIZE);
+    std::vector<int> input_chunk;
     std::vector<int> results_chunk;
+
+    input_chunk.reserve(THREAD_INPUT_CHUNK_SIZE);
+    results_chunk.reserve(THREAD_INPUT_CHUNK_SIZE / 8);
 
     if (!indigoSelf().hasLocalCopy())
     {

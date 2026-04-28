@@ -65,7 +65,7 @@ query_smiles = (
     "CCC",
 )
 
-for nthread in [0, -1, 5]:
+for nthread in [1, -1, 5]:
     indigo.setOption("bingonosql-sub-search-thread-count", nthread)
     print("bingonosql-sub-search-thread-count=%s" % nthread)
     for qsmile in query_smiles:

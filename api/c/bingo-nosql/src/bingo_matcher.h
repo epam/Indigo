@@ -240,8 +240,8 @@ namespace bingo
         ~BaseMatcher() override;
     };
 
-    constexpr int MAX_INPUT_QUEUE_SIZE = 10000;
-    constexpr int THREAD_INPUT_CHUNK_SIZE = 500;
+    constexpr int MAX_INPUT_QUEUE_SIZE = 10240;
+    constexpr int THREAD_INPUT_CHUNK_SIZE = 512;
 
     // using results_queue = std::deque<std::pair<int, std::unique_ptr<IndigoObject>>>;
 
