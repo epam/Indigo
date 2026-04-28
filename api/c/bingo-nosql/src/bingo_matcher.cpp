@@ -613,7 +613,7 @@ bool BaseSubstructureMatcher::next()
         }
 
         profTimerStart(tsingle_m, "sub_single");
-        while (!_finished_processing)
+        while (true)
         {
             if ((_current_cand_id == _candidates.size()) && !_all_data_in_queue)
             {
@@ -686,6 +686,8 @@ bool BaseSubstructureMatcher::next()
                 _loadCurrentObject(_index, _current_id, _current_obj);
                 status = true;
             }
+            else if (_finished_processing)
+                break;
             if (status)
                 profIncCounter("sub_found", 1);
 
