@@ -965,8 +965,8 @@ Cross bonds after clear: 0
 Cross bond indices after clear: []
 Cross bonds after create: 2
 Cross bond indices after create: [0, 3]
-Expected error for clearSGroupCrossBonds on data SGroup: core: <DataSGroup> is not a superatom
-Expected error for createCrossBonds on data SGroup: core: <DataSGroup> is not a superatom
+clearSGroupCrossBonds on data SGroup: OK
+createCrossBonds on data SGroup: OK
 ****** Get/Set Multiplier ********
 
   -INDIGO-01000000002D
