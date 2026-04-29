@@ -117,7 +117,6 @@ namespace indigo
 
         Array<int> atoms;       // represented with SAL in Molfile format
         Array<int> bonds;       // represented with SBL in Molfile format (CBONDS for DAT, XBONDS for others)
-        Array<int> cross_bonds; // explicit cross bonds storage (#3604) — for DAT type to separate CBONDS from XBONDS
 
         Array<char> subscript;    // SMT in Molfile format (LABEL in V3000)
         int brk_style;            // represented with SBT in Molfile format
