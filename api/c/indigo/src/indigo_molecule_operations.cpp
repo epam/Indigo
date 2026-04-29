@@ -56,9 +56,14 @@ CEXPORT int indigoResetRadical(int atom)
         BaseMolecule& mol = ia.mol;
 
         if (mol.isQueryMolecule())
+        {
             mol.asQueryMolecule().getAtom(ia.idx).removeConstraints(QueryMolecule::ATOM_RADICAL);
+            mol.asQueryMolecule().invalidateAtom(ia.idx, BaseMolecule::CHANGED_ALL);
+        }
         else
+        {
             mol.asMolecule().setAtomRadical(ia.idx, 0);
+        }
         return 1;
     }
     INDIGO_END(-1);
@@ -72,9 +77,14 @@ CEXPORT int indigoResetIsotope(int atom)
         BaseMolecule& mol = ia.mol;
 
         if (mol.isQueryMolecule())
+        {
             mol.asQueryMolecule().getAtom(ia.idx).removeConstraints(QueryMolecule::ATOM_ISOTOPE);
+            mol.asQueryMolecule().invalidateAtom(ia.idx, BaseMolecule::CHANGED_ALL);
+        }
         else
+        {
             mol.asMolecule().setAtomIsotope(ia.idx, 0);
+        }
         return 1;
     }
     INDIGO_END(-1);
