@@ -489,6 +489,15 @@ public interface IndigoLib extends Library {
 
     int indigoClearSGroupCrossBonds(int sgroup);
 
+    // Issue #3604: New SGroup API methods
+    int indigoAddSGroup(int molecule, String type, int extindex);
+
+    int indigoSetSGroupAtoms(int sgroup, int natoms, int[] atoms);
+
+    int indigoSetSGroupBonds(int sgroup, int nbonds, int[] bonds);
+
+    int indigoIterateSGroupCrossBonds(int sgroup);
+
     int indigoAddSGroupAttachmentPoint(int sgroup, int aidx, int lvidx, String apid);
 
     int indigoDeleteSGroupAttachmentPoint(int sgroup, int apidx);

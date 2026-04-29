@@ -623,6 +623,19 @@ namespace com.epam.indigo
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoClearSGroupCrossBonds(int sgroup);
 
+        // Issue #3604: New SGroup API methods
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoAddSGroup(int molecule, string type, int extindex);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoSetSGroupAtoms(int sgroup, int natoms, int[] atoms);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoSetSGroupBonds(int sgroup, int nbonds, int[] bonds);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoIterateSGroupCrossBonds(int sgroup);
+
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoAddSGroupAttachmentPoint(int sgroup, int aidx, int lvidx, string apid);
 
