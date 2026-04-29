@@ -498,7 +498,7 @@ namespace indigo
                 }
                 exceptionMessages.emplace_back(indigoGetLastError());
 
-                if (library >= 0)
+                if (library >= 0 && input_format == options.end())
                 {
                     auto sequence_type = options.find("sequence-type");
                     print_js("try as PEPTIDE-3-LETTER");
