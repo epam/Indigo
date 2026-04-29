@@ -317,6 +317,13 @@ def try_load_macromol(indigo, md, molstr, library, options):
     except IndigoException:
         pass
     try:
+        md.struct = indigo.loadBiln(molstr, library)
+        md.is_rxn = False
+        md.is_query = False
+        return
+    except IndigoException:
+        pass
+    try:
         md.struct = indigo.loadAxoLabs(molstr, library)
         md.is_rxn = False
         md.is_query = False
@@ -353,7 +360,29 @@ def load_moldata(
     if "input-format" in options:
         input_format = options["input-format"]
 
-    if input_format is not None:
+    # Only propagate input-format to the core for formats handled by
+    # the autoloader (mol, smi, ket, cml, cdxml, sdf, etc.).
+    # Macromolecular formats (sequence, fasta, IDT, HELM, BILN, AxoLabs)
+    # are dispatched via explicit load functions below and must not
+    # leak their MIME type into the core option.
+    _explicit_formats = {
+        "smarts",
+        "chemical/x-daylight-smarts",
+        "chemical/x-peptide-sequence",
+        "chemical/x-peptide-sequence-3-letter",
+        "chemical/x-rna-sequence",
+        "chemical/x-dna-sequence",
+        "chemical/x-peptide-fasta",
+        "chemical/x-rna-fasta",
+        "chemical/x-dna-fasta",
+        "chemical/x-idt",
+        "chemical/x-helm",
+        "chemical/x-biln",
+        "chemical/x-axo-labs",
+        "monomer-library",
+        "chemical/x-monomer-library",
+    }
+    if input_format is not None and input_format not in _explicit_formats:
         indigo.setOption("input-format", input_format)
 
     if input_format in ("smarts", "chemical/x-daylight-smarts"):
@@ -393,6 +422,10 @@ def load_moldata(
         md.is_query = False
     elif input_format == "chemical/x-helm":
         md.struct = indigo.loadHelm(molstr, library)
+        md.is_rxn = False
+        md.is_query = False
+    elif input_format == "chemical/x-biln":
+        md.struct = indigo.loadBiln(molstr, library)
         md.is_rxn = False
         md.is_query = False
     elif input_format == "chemical/x-axo-labs":
@@ -480,6 +513,8 @@ def save_moldata(
         return md.struct.idt(library)
     elif output_format == "chemical/x-helm":
         return md.struct.helm(library)
+    elif output_format == "chemical/x-biln":
+        return md.struct.biln(library)
     elif output_format == "chemical/x-axo-labs":
         return md.struct.axolabs(library)
     elif output_format == "chemical/x-daylight-smiles":
@@ -974,6 +1009,7 @@ def convert():
             "chemical/x-fasta",
             "chemical/x-idt",
             "chemical/x-helm",
+            "chemical/x-biln",
             "chemical/x-peptide-sequence-3-letter",
             "chemical/x-axo-labs",
         ):

@@ -171,6 +171,10 @@ namespace indigo
             {
                 result = _checkResultString(indigoHelm(id(), library));
             }
+            else if (effectiveOutputFormat == "biln" || effectiveOutputFormat == "chemical/x-biln")
+            {
+                result = _checkResultString(indigoBiln(id(), library));
+            }
             else if (effectiveOutputFormat == "axo-labs" || effectiveOutputFormat == "chemical/x-axo-labs")
             {
                 result = _checkResultString(indigoAxoLabs(id(), library));
@@ -434,6 +438,13 @@ namespace indigo
                 return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
             exceptionMessages.emplace_back(indigoGetLastError());
         }
+        else if (input_format != options.end() && input_format->second == "chemical/x-biln")
+        {
+            objectId = indigoLoadBilnFromString(data.c_str(), library);
+            if (objectId >= 0)
+                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
+            exceptionMessages.emplace_back(indigoGetLastError());
+        }
         else if (input_format != options.end() && input_format->second == "chemical/x-axo-labs")
         {
             objectId = indigoLoadAxoLabsFromString(data.c_str(), library);
@@ -561,6 +572,12 @@ namespace indigo
                     {
                         return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
                     }
+                    print_js("try as BILN");
+                    objectId = indigoLoadBilnFromString(data.c_str(), library);
+                    if (objectId >= 0)
+                    {
+                        return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
+                    }
                     print_js("try as AxoLabs");
                     objectId = indigoLoadAxoLabsFromString(data.c_str(), library);
                     if (objectId >= 0)
@@ -672,6 +689,8 @@ namespace indigo
             "chemical/x-idt",
             "helm",
             "chemical/x-helm",
+            "biln",
+            "chemical/x-biln",
             "axo-labs",
             "chemical/x-axo-labs",
         };

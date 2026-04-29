@@ -1180,6 +1180,48 @@ M  END
     }
 
     {
+        test("BILN", "basic", () => {
+            var fs = require('fs');
+            let options = new indigo.MapStringString();
+            const monomersLib = fs.readFileSync("monomer_library.ket");
+            options.set("output-content-type", "application/json");
+            options.set("input-format", "chemical/x-biln");
+            options.set("monomerLibrary", monomersLib);
+            const biln = "A-K";
+            const res = indigo.convert(biln, "ket", options);
+            const res_ket = JSON.parse(res).struct;
+            // round-trip: KET -> BILN
+            let save_options = new indigo.MapStringString();
+            save_options.set("output-content-type", "application/json");
+            save_options.set("input-format", "chemical/x-indigo-ket");
+            save_options.set("monomerLibrary", monomersLib);
+            const res_biln = JSON.parse(indigo.convert(res_ket, "biln", save_options)).struct;
+            assert.equal(res_biln, biln);
+            // round-trip: KET -> HELM
+            const res_helm = JSON.parse(indigo.convert(res_ket, "helm", save_options)).struct;
+            assert.equal(res_helm, "PEPTIDE1{A.K}$$$$V2.0");
+            options.delete();
+            save_options.delete();
+        });
+    }
+
+    {
+        test("BILN", "cross_links", () => {
+            var fs = require('fs');
+            let options = new indigo.MapStringString();
+            const monomersLib = fs.readFileSync("monomer_library.ket");
+            options.set("output-content-type", "application/json");
+            options.set("input-format", "chemical/x-biln");
+            options.set("monomerLibrary", monomersLib);
+            const biln = "Ac(1,2).A-K(1,3)";
+            const res = indigo.convert(biln, "helm", options);
+            const res_helm = JSON.parse(res).struct;
+            assert.equal(res_helm, "PEPTIDE1{[Ac]}|PEPTIDE2{A.K}$PEPTIDE1,PEPTIDE2,1:R2-2:R3$$$V2.0");
+            options.delete();
+        });
+    }
+
+    {
         test("AxoLabs", "basic", () => {
             var fs = require('fs');
             let options = new indigo.MapStringString();
