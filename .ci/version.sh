@@ -86,28 +86,35 @@ new_hash_sum=$(echo "${new_base_version}${new_suffix}${new_revision}${new_java_s
 # version.txt
 printf "${new_base_version}\n${new_suffix}\n${new_revision}\n${new_java_snapshot}\n${new_hash_sum}" > ${root}/.ci/version.txt
 
+# Portable sed in-place: BSD sed (macOS) requires -i '', GNU sed (Linux) uses -i
+if sed --version 2>/dev/null | grep -q GNU; then
+  sedi() { sed -i "$@"; }
+else
+  sedi() { sed -i '' "$@"; }
+fi
+
 # C
-sed -i "s/${old_version}/${new_version}/g" ${root}/api/indigo-version.cmake
+sedi "s/${old_version}/${new_version}/g" ${root}/api/indigo-version.cmake
 
 # .NET
-sed -i "s/${old_version}/${new_version}/g" ${root}/api/dotnet/src/Indigo.Net.csproj
+sedi "s/${old_version}/${new_version}/g" ${root}/api/dotnet/src/Indigo.Net.csproj
 
 # Java
-sed -i "s/${old_version_java}/${new_version_java}/g" ${root}/api/java/pom.xml
-sed -i "s/${old_version_java}/${new_version_java}/g" ${root}/bingo/bingo-elastic/java/pom.xml
+sedi "s/${old_version_java}/${new_version_java}/g" ${root}/api/java/pom.xml
+sedi "s/${old_version_java}/${new_version_java}/g" ${root}/bingo/bingo-elastic/java/pom.xml
 
 # Python
-sed -i "s/${old_version_python}/${new_version_python}/g" ${root}/api/http/setup.py
-sed -i "s/${old_version_python}/${new_version_python}/g" ${root}/api/http/requirements.txt
-sed -i "s/${old_version_python}/${new_version_python}/g" ${root}/api/python/setup.py
-sed -i "s/${old_version_python}/${new_version_python}/g" ${root}/api/python/indigo/__init__.py
-sed -i "s/${old_version_python}/${new_version_python}/g" ${root}/bingo/bingo-elastic/python/setup.py
-sed -i "s/${old_version_python}/${new_version_python}/g" ${root}/bingo/bingo-elastic/python/bingo_elastic/__init__.py
-sed -i "s/${old_version_python}/${new_version_python}/g" ${root}/utils/indigo-ml/setup.py
+sedi "s/${old_version_python}/${new_version_python}/g" ${root}/api/http/setup.py
+sedi "s/${old_version_python}/${new_version_python}/g" ${root}/api/http/requirements.txt
+sedi "s/${old_version_python}/${new_version_python}/g" ${root}/api/python/setup.py
+sedi "s/${old_version_python}/${new_version_python}/g" ${root}/api/python/indigo/__init__.py
+sedi "s/${old_version_python}/${new_version_python}/g" ${root}/bingo/bingo-elastic/python/setup.py
+sedi "s/${old_version_python}/${new_version_python}/g" ${root}/bingo/bingo-elastic/python/bingo_elastic/__init__.py
+sedi "s/${old_version_python}/${new_version_python}/g" ${root}/utils/indigo-ml/setup.py
 
 # R
-sed -i "s/${old_version}/${new_version}/g" ${root}/api/r/DESCRIPTION
+sedi "s/${old_version}/${new_version}/g" ${root}/api/r/DESCRIPTION
 
 # JS
-sed -i "s/${old_version}/${new_version}/g" ${root}/api/wasm/indigo-ketcher/package.json
-sed -i "s/${old_version}/${new_version}/g" ${root}/utils/indigo-service/frontend/ui/package.json
+sedi "s/${old_version}/${new_version}/g" ${root}/api/wasm/indigo-ketcher/package.json
+sedi "s/${old_version}/${new_version}/g" ${root}/utils/indigo-service/frontend/ui/package.json
