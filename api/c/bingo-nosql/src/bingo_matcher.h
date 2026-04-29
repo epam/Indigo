@@ -3,6 +3,11 @@
 
 #include <atomic>
 
+// #define USE_SAFE_PTR
+#ifdef USE_SAFE_PTR
+#include "safe_ptr.h"
+#endif
+
 #include "bingo_base_index.h"
 #include "bingo_object.h"
 
@@ -11,6 +16,7 @@
 #include "indigo_molecule.h"
 #include "indigo_reaction.h"
 
+#include "base_cpp/fixed_deque.h"
 #include "base_cpp/os_thread_wrapper.h"
 #include "math/statistics.h"
 #include "molecule/molecule_exact_matcher.h"
@@ -225,6 +231,7 @@ namespace bingo
 
         bool _isCurrentObjectExist();
 
+        static void _loadObject(const char* cf_str, int cf_len, IndigoObject*& current_obj);
         static bool _loadCurrentObject(BaseIndex& index, int current_id, IndigoObject*& current_obj);
 
         virtual void _setParameters(const char* params) = 0;
@@ -233,80 +240,10 @@ namespace bingo
         ~BaseMatcher() override;
     };
 
-    struct BaseSubstructureMatcherResult : public OsCommandResult
-    {
-        bool match = false;
-        int db_object_idx = -1;
-        std::unique_ptr<IndigoObject> indigo_obj;
-        void clear() override
-        {
-            match = false;
-            db_object_idx = -1;
-            indigo_obj.reset();
-        }
-    };
+    constexpr int MAX_INPUT_QUEUE_SIZE = 10240;
+    constexpr int THREAD_INPUT_CHUNK_SIZE = 512;
 
-    class BaseSubstructureMatcher;
-
-    struct BaseSubstructureMatcherCommand : public OsCommand
-    {
-    public:
-        int db_object_idx;
-
-        BaseSubstructureMatcherCommand(BaseSubstructureMatcher* matcher);
-        virtual ~BaseSubstructureMatcherCommand();
-
-        void clear() override
-        {
-            db_object_idx = -1;
-        }
-
-        void execute(OsCommandResult& res) override;
-
-    private:
-        BaseSubstructureMatcher* _matcher;
-    };
-
-    class BaseSubstructureMatcherDispatcher : public OsCommandDispatcher
-    {
-    public:
-        BaseSubstructureMatcherDispatcher(BaseSubstructureMatcher* matcher, std::deque<int>& src, std::mutex& i_mtx, std::condition_variable& cv_input,
-                                          std::atomic_bool& eod, std::deque<std::pair<int, std::unique_ptr<IndigoObject>>>& results, std::mutex& r_mtx,
-                                          std::condition_variable& cv_results)
-            : OsCommandDispatcher(HANDLING_ORDER_SERIAL, false), _matcher(matcher), _input_data(src), _input_mtx(i_mtx), _cv_input(cv_input),
-              _all_data_in_queue(eod), _results(results), _results_mtx(r_mtx), _cv_results(cv_results)
-        {
-        }
-
-        void operator()()
-        {
-            run();
-        }
-
-    protected:
-        OsCommand* _allocateCommand() override
-        {
-            return new BaseSubstructureMatcherCommand(_matcher);
-        }
-        OsCommandResult* _allocateResult() override
-        {
-            return new BaseSubstructureMatcherResult();
-        }
-
-        bool _setupCommand(OsCommand& command) override;
-
-        void _handleResult(OsCommandResult& result) override;
-
-    private:
-        std::deque<int>& _input_data;
-        std::mutex& _input_mtx;
-        std::condition_variable& _cv_input;
-        std::atomic_bool& _all_data_in_queue;
-        std::deque<std::pair<int, std::unique_ptr<IndigoObject>>>& _results;
-        std::mutex& _results_mtx;
-        std::condition_variable& _cv_results;
-        BaseSubstructureMatcher* _matcher;
-    };
+    // using results_queue = std::deque<std::pair<int, std::unique_ptr<IndigoObject>>>;
 
     class BaseSubstructureMatcher : public BaseMatcher
     {
@@ -319,12 +256,11 @@ namespace bingo
         void setQueryData(SubstructureQueryData* query_data);
 
         virtual bool tryCurrent(int current_id, IndigoObject* current_obj) /* const */ = 0;
+        virtual bool tryObject(IndigoObject* current_obj) = 0;
 
         virtual IndigoObject* allocateObject() = 0;
 
         int getDbId() const;
-
-        void run_dispatcher();
 
         AromaticityOptions _arom_options;
         PtrArray<TautomerRule>* _tautomer_rules;
@@ -339,6 +275,8 @@ namespace bingo
         void _findPackCandidates(int pack_idx);
 
         void _findIncCandidates();
+
+        bool _find_candidates();
 
         void _setParameters(const char* params) override;
 
@@ -357,17 +295,24 @@ namespace bingo
         int _final_pack;
         const TranspFpStorage& _fp_storage;
         int sub_cnt;
-
-        std::unique_ptr<BaseSubstructureMatcherDispatcher> _disp;
         std::optional<std::thread> _t;
-        std::deque<int> _input_data;
+
+    public:
+#ifdef USE_SAFE_PTR
+        sf::contfree_safe_ptr<FixedDeque<int>> _input_data;
+        sf::contfree_safe_ptr<FixedDeque<int>> _results;
+#else
+        FixedDeque<int> _input_data;
+        FixedDeque<int> _results;
+        // results_queue _results;
         std::mutex _input_mtx;
         std::condition_variable _cv_input;
-        std::atomic_bool _all_data_in_queue = false;
-        std::deque<std::pair<int, std::unique_ptr<IndigoObject>>> _results;
         std::mutex _results_mtx;
-        std::atomic_bool _finished_processing = false;
         std::condition_variable _cv_results;
+#endif
+        std::atomic_bool _all_data_in_queue = false;
+        std::atomic_bool _finished_processing = false;
+        std::atomic_bool _stop_request = false;
         int _results_empty = 0;
     };
 
@@ -379,6 +324,7 @@ namespace bingo
         const Array<int>& currentMapping();
 
         virtual bool tryCurrent(int current_id, IndigoObject* current_obj) /*const*/ override;
+        virtual bool tryObject(IndigoObject* current_obj) override;
 
         virtual IndigoObject* allocateObject() override;
 
@@ -396,6 +342,7 @@ namespace bingo
         const ObjArray<Array<int>>& currentMapping();
 
         virtual bool tryCurrent(int current_id, IndigoObject* current_obj) /*const*/ override;
+        virtual bool tryObject(IndigoObject* current_obj) override;
 
         virtual IndigoObject* allocateObject() override;
 

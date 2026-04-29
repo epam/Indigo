@@ -1,6 +1,6 @@
 *** Creating temporary database ****
 v0.72
-bingonosql-sub-search-thread-count=0
+bingonosql-sub-search-thread-count=1
 ** searchSub(OC1=CC=CNC1, ) **
 ** searchSub(OC1=CC=CNC1, TAU) **
 0 O=C1CNCc2ccccc12
