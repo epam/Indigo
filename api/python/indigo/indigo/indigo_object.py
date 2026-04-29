@@ -1720,9 +1720,7 @@ class IndigoObject:
         return IndigoObject(
             self.session,
             IndigoLib.checkResult(
-                self._lib().indigoAddSGroup(
-                    self.id, sgtype.encode(), extindex
-                )
+                self._lib().indigoAddSGroup(self.id, sgtype.encode(), extindex)
             ),
         )
 
