@@ -1732,36 +1732,36 @@ CEXPORT int indigoGetSGroupNumCrossBonds(int sgroup)
 {
     INDIGO_BEGIN
     {
-        Superatom& sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
-        return sup.bonds.size();
+        IndigoSGroup& isg = IndigoSGroup::cast(self.getObject(sgroup));
+        return isg.get().bonds.size();
     }
     INDIGO_END(-1);
+}
+
+static void _fillCrossBonds(BaseMolecule& mol, SGroup& sg)
+{
+    sg.bonds.clear();
+    for (auto atom_idx : sg.atoms)
+    {
+        const Vertex& vx = mol.getVertex(atom_idx);
+        for (auto nei_idx = vx.neiBegin(); nei_idx != vx.neiEnd(); nei_idx = vx.neiNext(nei_idx))
+        {
+            if (sg.atoms.find(vx.neiVertex(nei_idx)) == -1)
+            {
+                int edge_idx = vx.neiEdge(nei_idx);
+                if (sg.bonds.find(edge_idx) == -1)
+                    sg.bonds.push(edge_idx);
+            }
+        }
+    }
 }
 
 CEXPORT int indigoCreateCrossBonds(int sgroup)
 {
     INDIGO_BEGIN
     {
-        IndigoSuperatom& isup = IndigoSuperatom::cast(self.getObject(sgroup));
-        Superatom& sup = isup.get();
-        BaseMolecule& mol = isup.mol;
-
-        sup.bonds.clear();
-
-        for (auto atom_idx : sup.atoms)
-        {
-            const Vertex& vx = mol.getVertex(atom_idx);
-            for (auto nei_idx = vx.neiBegin(); nei_idx != vx.neiEnd(); nei_idx = vx.neiNext(nei_idx))
-            {
-                if (sup.atoms.find(vx.neiVertex(nei_idx)) == -1)
-                {
-                    int edge_idx = vx.neiEdge(nei_idx);
-                    if (sup.bonds.find(edge_idx) == -1)
-                        sup.bonds.push(edge_idx);
-                }
-            }
-        }
-
+        IndigoSGroup& isg = IndigoSGroup::cast(self.getObject(sgroup));
+        _fillCrossBonds(isg.mol, isg.get());
         return 1;
     }
     INDIGO_END(-1);
@@ -1771,12 +1771,103 @@ CEXPORT int indigoClearSGroupCrossBonds(int sgroup)
 {
     INDIGO_BEGIN
     {
-        Superatom& sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
-        sup.bonds.clear();
+        IndigoSGroup& isg = IndigoSGroup::cast(self.getObject(sgroup));
+        isg.get().bonds.clear();
         return 1;
     }
     INDIGO_END(-1);
 }
+
+static IndigoObject* _wrapSGroup(BaseMolecule& mol, int idx)
+{
+    SGroup& sgroup = mol.sgroups.getSGroup(idx);
+    if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
+        return new IndigoSuperatom(mol, idx);
+    else if (sgroup.sgroup_type == SGroup::SG_TYPE_SRU)
+        return new IndigoRepeatingUnit(mol, idx);
+    else if (sgroup.sgroup_type == SGroup::SG_TYPE_MUL)
+        return new IndigoMultipleGroup(mol, idx);
+    else if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
+        return new IndigoDataSGroup(mol, idx);
+    else
+        return new IndigoGenericSGroup(mol, idx);
+}
+
+CEXPORT int indigoAddSGroup(int molecule, const char* type, int extindex)
+{
+    INDIGO_BEGIN
+    {
+        BaseMolecule& mol = self.getObject(molecule).getBaseMolecule();
+        int idx = mol.sgroups.addSGroup(type);
+        if (idx == -1)
+            throw IndigoError("indigoAddSGroup: cannot add SGroup of type '%s'", type);
+
+        SGroup& sgroup = mol.sgroups.getSGroup(idx);
+        if (extindex > 0)
+            sgroup.original_group = extindex;
+
+        return self.addObject(_wrapSGroup(mol, idx));
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoSetSGroupAtoms(int sgroup, int natoms, int* atoms)
+{
+    INDIGO_BEGIN
+    {
+        IndigoSGroup& isg = IndigoSGroup::cast(self.getObject(sgroup));
+        SGroup& s = isg.get();
+
+        s.atoms.clear();
+        if (atoms != nullptr && natoms > 0)
+        {
+            for (int i = 0; i < natoms; i++)
+            {
+                if (atoms[i] < 0 || atoms[i] >= isg.mol.vertexEnd())
+                    throw IndigoError("indigoSetSGroupAtoms: atom index %d out of range", atoms[i]);
+                s.atoms.push(atoms[i]);
+            }
+        }
+        return 1;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoSetSGroupBonds(int sgroup, int nbonds, int* bonds)
+{
+    INDIGO_BEGIN
+    {
+        IndigoSGroup& isg = IndigoSGroup::cast(self.getObject(sgroup));
+        SGroup& s = isg.get();
+
+        if (s.sgroup_type != SGroup::SG_TYPE_DAT)
+            throw IndigoError("indigoSetSGroupBonds: only DAT SGroups support explicit bond assignment");
+
+        s.bonds.clear();
+        if (bonds != nullptr && nbonds > 0)
+        {
+            for (int i = 0; i < nbonds; i++)
+            {
+                if (bonds[i] < 0 || bonds[i] >= isg.mol.edgeEnd())
+                    throw IndigoError("indigoSetSGroupBonds: bond index %d out of range", bonds[i]);
+                s.bonds.push(bonds[i]);
+            }
+        }
+        return 1;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoIterateSGroupCrossBonds(int sgroup)
+{
+    INDIGO_BEGIN
+    {
+        IndigoSGroup& isg = IndigoSGroup::cast(self.getObject(sgroup));
+        return self.addObject(new IndigoSGroupBondsIter(isg.mol, isg.get()));
+    }
+    INDIGO_END(-1);
+}
+
 
 CEXPORT int indigoAddSGroupAttachmentPoint(int sgroup, int aidx, int lvidx, const char* apid)
 {

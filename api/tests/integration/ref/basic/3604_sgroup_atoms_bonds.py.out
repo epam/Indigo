@@ -1,0 +1,59 @@
+****** addSGroup: create empty SGroups of each type ********
+SUP type: 2
+SUP atoms: 0
+SUP bonds: 0
+DAT type: 1
+DAT atoms: 0
+DAT bonds: 0
+SRU type: 3
+SRU atoms: 0
+MUL type: 4
+MUL atoms: 0
+GEN type: 0
+GEN atoms: 0
+****** addSGroup: with explicit extindex ********
+extindex: 42
+****** setSGroupAtoms: set atoms on empty SGroup ********
+atoms after set: 3
+atom symbols: C C C
+****** setSGroupAtoms: replace existing atoms ********
+atoms after replace: 3
+atom indices: 3 4 5
+****** setSGroupAtoms: clear atoms ********
+atoms after clear: 0
+****** setSGroupAtoms: works for all SGroup types ********
+SUP atoms: 2
+DAT atoms: 2
+SRU atoms: 2
+GEN atoms: 2
+****** setSGroupBonds: set bonds on DAT SGroup ********
+DAT bonds: 2
+****** setSGroupBonds: error on SUP SGroup ********
+Expected error: core: indigoSetSGroupBonds: only DAT SGroups support explicit bond assignment
+****** setSGroupBonds: error on SRU SGroup ********
+Expected error: core: indigoSetSGroupBonds: only DAT SGroups support explicit bond assignment
+****** iterateSGroupCrossBonds ********
+cross bonds: 0 3
+****** iterateSGroupCrossBonds: empty ********
+cross bonds when all atoms inside: 0
+****** Updated countBonds: DAT returns CBONDS, others return cross bonds ********
+DAT countBonds (CBONDS): 2
+SUP countBonds (cross): 2
+SRU countBonds (cross): 2
+****** createCrossBonds: works for all SGroup types ********
+SUP createCrossBonds count: 2
+SRU createCrossBonds count: 2
+GEN createCrossBonds count: 2
+MUL createCrossBonds count: 2
+****** clearSGroupCrossBonds: works for all SGroup types ********
+SUP before clear: 2
+SUP after clear: 0
+SRU before clear: 2
+SRU after clear: 0
+GEN before clear: 2
+GEN after clear: 0
+****** Molfile roundtrip: SUP with cross bonds ********
+type: 2
+atoms: 3
+bonds: 2
+sgroup count: 1
