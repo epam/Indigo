@@ -115,8 +115,8 @@ namespace indigo
         int parent_idx;     // parent group number; represented with index in the array
         // TODO: leave only parent_idx
 
-        Array<int> atoms;       // represented with SAL in Molfile format
-        Array<int> bonds;       // represented with SBL in Molfile format (CBONDS for DAT, XBONDS for others)
+        Array<int> atoms; // represented with SAL in Molfile format
+        Array<int> bonds; // represented with SBL in Molfile format (CBONDS for DAT, XBONDS for others)
 
         Array<char> subscript;    // SMT in Molfile format (LABEL in V3000)
         int brk_style;            // represented with SBT in Molfile format

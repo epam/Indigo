@@ -10,6 +10,7 @@ This test covers new and updated SGroup API methods:
   - Updated iterateBonds/countBonds behavior
   - Updated createCrossBonds/clearSGroupCrossBonds for all types
 """
+
 import os
 import sys
 
@@ -190,9 +191,7 @@ for stype in ["SUP", "SRU", "GEN", "MUL"]:
     sg = mol.addSGroup(stype, 0)
     sg.setSGroupAtoms([1, 2, 3])
     sg.createCrossBonds()
-    print(
-        "{0} createCrossBonds count: {1}".format(stype, sg.countBonds())
-    )
+    print("{0} createCrossBonds count: {1}".format(stype, sg.countBonds()))
 
 
 # ===== clearSGroupCrossBonds for all types =====
@@ -204,13 +203,9 @@ for stype in ["SUP", "SRU", "GEN"]:
     sg = mol.addSGroup(stype, 0)
     sg.setSGroupAtoms([1, 2, 3])
     sg.createCrossBonds()
-    print(
-        "{0} before clear: {1}".format(stype, sg.countBonds())
-    )
+    print("{0} before clear: {1}".format(stype, sg.countBonds()))
     sg.clearSGroupCrossBonds()
-    print(
-        "{0} after clear: {1}".format(stype, sg.countBonds())
-    )
+    print("{0} after clear: {1}".format(stype, sg.countBonds()))
 
 
 # ===== Molfile roundtrip =====
