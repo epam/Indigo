@@ -17,7 +17,6 @@
  ***************************************************************************/
 
 #include <cctype>
-#include <limits>
 #include <memory>
 #include <regex>
 #include <unordered_set>
@@ -623,6 +622,8 @@ void SequenceLoader::loadBILN(KetDocument& document)
     std::vector<BilnBond> bonds;
     std::unordered_map<int, size_t> bond_to_idx;
 
+    constexpr int kMaxBilnIndex = 1000;
+
     size_t data_pos = 0;
     auto skip_spaces = [&]() {
         while (data_pos < biln.size() && is_space(biln[data_pos]))
@@ -635,13 +636,12 @@ void SequenceLoader::loadBILN(KetDocument& document)
         int value = 0;
         while (data_pos < biln.size() && std::isdigit(static_cast<unsigned char>(biln[data_pos])))
         {
-            const int digit = biln[data_pos] - '0';
-            if (value > (std::numeric_limits<int>::max() - digit) / 10)
+            value = value * 10 + (biln[data_pos] - '0');
+            if (value > kMaxBilnIndex)
                 throw Error("Invalid BILN bond annotation: %s number is too large.", field_name);
-            value = value * 10 + digit;
             data_pos++;
         }
-        if (value <= 0)
+        if (value == 0)
             throw Error("Invalid BILN bond annotation: %s number should be positive.", field_name);
         return value;
     };
@@ -1049,7 +1049,7 @@ void SequenceLoader::loadHELM(KetDocument& document)
             auto& left_monomer = document.monomers().at(left_monomer_id);
             auto& right_monomer = document.monomers().at(right_monomer_id);
             const bool hydrogen_pair_connection =
-                left_ap == HelmHydrogenPair || right_ap == HelmHydrogenPair || left_ap == "hydrogen" || right_ap == "hydrogen";
+                left_ap == HelmHydrogenPair || right_ap == HelmHydrogenPair || left_ap == KetConnectionHydro || right_ap == KetConnectionHydro;
             KetConnection& connection = [&]() -> KetConnection& {
                 if (hydrogen_pair_connection)
                 {
