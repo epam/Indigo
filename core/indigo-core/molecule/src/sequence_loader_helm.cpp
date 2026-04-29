@@ -682,8 +682,9 @@ void SequenceLoader::loadBILN(KetDocument& document)
             std::string monomer_alias;
             while (data_pos < biln.size() && biln[data_pos] != '(' && biln[data_pos] != '-' && biln[data_pos] != '.' && !is_space(biln[data_pos]))
             {
-                if (biln[data_pos] == ')' || biln[data_pos] == ',')
-                    throw Error("Invalid BILN string: unexpected symbol '%c'.", biln[data_pos]);
+                char ch = biln[data_pos];
+                if (!std::isalnum(static_cast<unsigned char>(ch)) && ch != '[' && ch != ']' && ch != '#')
+                    throw Error("Invalid BILN string: unexpected symbol '%c'.", ch);
                 monomer_alias += biln[data_pos++];
             }
             if (monomer_alias.empty())

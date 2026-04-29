@@ -353,6 +353,7 @@ def load_moldata(
             )
     md = MolData()
 
+    has_explicit_library = library is not None
     if library is None:
         library = indigo.loadMonomerLibrary('{"root":{}}')
 
@@ -482,7 +483,10 @@ def load_moldata(
                         )
                         md.is_query = True
                     except IndigoException:
-                        if library is None:
+                        if (
+                            not has_explicit_library
+                            or input_format is not None
+                        ):
                             raise HttpException(
                                 "struct data not recognized as molecule, query, reaction or reaction query",
                                 400,
