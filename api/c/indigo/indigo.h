@@ -606,6 +606,12 @@ CEXPORT int indigoGetSGroupNumCrossBonds(int sgroup);
 CEXPORT int indigoCreateCrossBonds(int sgroup);
 CEXPORT int indigoClearSGroupCrossBonds(int sgroup);
 
+// Issue #3604: New SGroup API methods
+CEXPORT int indigoAddSGroup(int molecule, const char* type, int extindex);
+CEXPORT int indigoSetSGroupAtoms(int sgroup, int natoms, int* atoms);
+CEXPORT int indigoSetSGroupBonds(int sgroup, int nbonds, int* bonds);
+CEXPORT int indigoIterateSGroupCrossBonds(int sgroup);
+
 CEXPORT int indigoAddSGroupAttachmentPoint(int sgroup, int aidx, int lvidx, const char* apid);
 CEXPORT int indigoDeleteSGroupAttachmentPoint(int sgroup, int index);
 // Returns iterator of superatom attachment points (SAP entries) for a superatom S-group.
