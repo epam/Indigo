@@ -1770,17 +1770,19 @@ CEXPORT int indigoClearSGroupCrossBonds(int sgroup)
 
 static IndigoObject* _wrapSGroup(BaseMolecule& mol, int idx)
 {
-    SGroup& sgroup = mol.sgroups.getSGroup(idx);
-    if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
+    switch (mol.sgroups.getSGroup(idx).sgroup_type)
+    {
+    case SGroup::SG_TYPE_SUP:
         return new IndigoSuperatom(mol, idx);
-    else if (sgroup.sgroup_type == SGroup::SG_TYPE_SRU)
+    case SGroup::SG_TYPE_SRU:
         return new IndigoRepeatingUnit(mol, idx);
-    else if (sgroup.sgroup_type == SGroup::SG_TYPE_MUL)
+    case SGroup::SG_TYPE_MUL:
         return new IndigoMultipleGroup(mol, idx);
-    else if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
+    case SGroup::SG_TYPE_DAT:
         return new IndigoDataSGroup(mol, idx);
-    else
+    default:
         return new IndigoGenericSGroup(mol, idx);
+    }
 }
 
 CEXPORT int indigoAddSGroup(int molecule, const char* type, int extindex)
@@ -1857,7 +1859,6 @@ CEXPORT int indigoIterateSGroupCrossBonds(int sgroup)
     }
     INDIGO_END(-1);
 }
-
 
 CEXPORT int indigoAddSGroupAttachmentPoint(int sgroup, int aidx, int lvidx, const char* apid)
 {
