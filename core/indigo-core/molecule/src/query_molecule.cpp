@@ -1392,7 +1392,7 @@ int QueryMolecule::addBond(int beg, int end, int order)
 
 int QueryMolecule::getImplicitH(int idx, bool /*impl_h_no_throw*/)
 {
-    if (_implicit_h.size() > idx && _implicit_h[idx] >= MAXH_UNKNOWN)
+    if (_implicit_h.size() > idx && _implicit_h[idx] >= 0)
         return _implicit_h[idx];
 
     std::vector<std::unique_ptr<Atom>> atoms;
