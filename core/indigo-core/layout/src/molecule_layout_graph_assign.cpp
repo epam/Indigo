@@ -77,7 +77,11 @@ static int _vertex_cmp(int& n1, int& n2, void* context)
         return -1;
     }
 
-    return v1.morgan_code - v2.morgan_code;
+    if (v1.morgan_code != v2.morgan_code)
+        return v1.morgan_code - v2.morgan_code;
+
+    // Tie-break by ext_idx for deterministic order
+    return v1.ext_idx - v2.ext_idx;
 }
 
 // Specialized BiconnectedDecomposer for molecule layout
@@ -397,7 +401,10 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates(float bond_length)
                     const LayoutVertex& v2 = getLayoutVertex(n2);
                     if (v1.is_cyclic != v2.is_cyclic)
                         return v2.is_cyclic;
-                    return v1.morgan_code < v2.morgan_code;
+                    if (v1.morgan_code != v2.morgan_code)
+                        return v1.morgan_code < v2.morgan_code;
+                    // Tie-break by ext_idx for deterministic order
+                    return v1.ext_idx < v2.ext_idx;
                 };
                 std::stable_sort(adjacent_list.begin(), adjacent_list.end(), vertex_cmp_less);
                 _attachDandlingVertices(k, adjacent_list);
