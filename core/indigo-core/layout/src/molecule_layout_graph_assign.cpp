@@ -388,11 +388,8 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates(float bond_length)
             if (all_trivial && bc_tree[k] != -1 && !bc_components[bc_tree[k]]->isSingleEdge())
                 all_trivial = false;
 
-            // #3599: when sequence_layout leaves a vertex with only one incoming BC
-            // (size<2 in AttachmentLayout), AttachmentLayout has no "drawn component" to
-            // anchor against — it would hit an out-of-bounds access in cis/trans handling.
-            // Use the non-sequence dandling path which is designed for exactly this:
-            // one drawn neighbour, one not-drawn neighbour.
+            // AttachmentLayout requires ≥2 attached BCs; with a single incoming BC
+            // it has no anchor pair to work with. The dandling path is the right fit.
             const int n_incoming_bc = bc_decom.getIncomingCount(k) + (bc_tree[k] != -1 ? 1 : 0);
             const bool force_dandling = all_trivial && sequence_layout && n_incoming_bc < 2;
 
@@ -1437,11 +1434,10 @@ void MoleculeLayoutGraph::_optimizeSelectedPartPlacement(float bond_length, cons
     best_rotation = best_angle;
 }
 
-// =============================================================================
-// #3599 Option B — anchor-based rigid translation for single-bridge partial
-// selections. See molecule_layout_graph.h::SelectionBridge for the contract and
-// Task/3599/ARCH-STRATEGY-3599.md for design rationale.
-// =============================================================================
+namespace
+{
+    constexpr float kZeroLengthSqr = 1e-8f;
+}
 
 std::vector<MoleculeLayoutGraph::SelectionBridge> MoleculeLayoutGraph::_detectSelectionBridges(const std::vector<int>& sel_vertices,
                                                                                                const Array<Vec2f>& src_layout) const
@@ -1471,12 +1467,10 @@ std::vector<MoleculeLayoutGraph::SelectionBridge> MoleculeLayoutGraph::_detectSe
     return bridges;
 }
 
+// Average tangent of the fixed backbone at the bridge endpoint, pointing away from
+// the selected side. Returns the zero vector when the direction is degenerate.
 Vec2f MoleculeLayoutGraph::_computeAnchorDirection(const SelectionBridge& bridge, const Array<Vec2f>& src_layout) const
 {
-    // Tangent of the fixed chain at the bridge's fixed endpoint:
-    // average direction *from each non-bridge neighbour of fix TO fix*. Extending the
-    // selected chain in this direction continues the existing backbone naturally.
-    constexpr float kEpsDirSqr = 1e-8f;
     const Vertex& fix_vx = getVertex(bridge.fix_ext_idx);
     Vec2f acc(0.f, 0.f);
     int count = 0;
@@ -1490,14 +1484,14 @@ Vec2f MoleculeLayoutGraph::_computeAnchorDirection(const SelectionBridge& bridge
             continue;
         Vec2f d;
         d.diff(src_layout[bridge.fix_layout_idx], src_layout[nei_layout_idx]);
-        if (d.lengthSqr() <= kEpsDirSqr)
+        if (d.lengthSqr() <= kZeroLengthSqr)
             continue;
         d.normalize();
         acc.add(d);
         count++;
     }
-    if (count == 0 || acc.lengthSqr() <= kEpsDirSqr)
-        return Vec2f(0.f, 0.f); // signals degenerate — caller picks a fallback
+    if (count == 0 || acc.lengthSqr() <= kZeroLengthSqr)
+        return Vec2f(0.f, 0.f);
     acc.normalize();
     return acc;
 }
@@ -1505,18 +1499,15 @@ Vec2f MoleculeLayoutGraph::_computeAnchorDirection(const SelectionBridge& bridge
 void MoleculeLayoutGraph::_applyAnchoredRigidTransform(const SelectionBridge& bridge, const std::vector<int>& sel_vertices, const Array<Vec2f>& src_layout,
                                                        float bond_length)
 {
-    constexpr float kEpsDirSqr = 1e-8f;
-
     Vec2f dir = _computeAnchorDirection(bridge, src_layout);
-    if (dir.lengthSqr() <= kEpsDirSqr)
+    if (dir.lengthSqr() <= kZeroLengthSqr)
     {
-        // Fallback 1: keep current orientation between sel and fix (extends in same direction).
-        const Vec2f sel_pos_cur = _layout_vertices[bridge.sel_layout_idx].pos;
-        dir.diff(sel_pos_cur, bridge.fix_pos);
-        if (dir.lengthSqr() > kEpsDirSqr)
+        // Backbone tangent is undefined; preserve the existing sel→fix orientation.
+        dir.diff(_layout_vertices[bridge.sel_layout_idx].pos, bridge.fix_pos);
+        if (dir.lengthSqr() > kZeroLengthSqr)
             dir.normalize();
         else
-            dir.set(1.0f, 0.0f); // Fallback 2: deterministic last resort.
+            dir.set(1.0f, 0.0f);
     }
 
     Vec2f anchor_target = bridge.fix_pos;
@@ -1658,12 +1649,9 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
 
                 if (allow_rotation)
                 {
-                    // #3599 Option B: when there is exactly one selected↔fixed bridge,
-                    // pin the bridge selected endpoint at fix_pos + dir * bond_length.
-                    // This makes the bridge length = bond_length by construction —
-                    // the centroid-based optimiser cannot guarantee that. Falls back to
-                    // centroid optimisation for 0 or ≥2 bridges (rare with compact loader,
-                    // common today, addressed structurally by Option D).
+                    // A single bridge admits a closed-form anchor that makes the bridge
+                    // length exactly bond_length; the centroid optimiser only minimises
+                    // residuals and is reserved for the multi-bridge fallback.
                     auto bridges = _detectSelectionBridges(sel_vertices, src_layout);
                     if (bridges.size() == 1)
                     {
@@ -1676,7 +1664,6 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                         _optimizeSelectedPartPlacement(bond_length, bridge_fixed_positions, all_fixed_vertices, bridge_connected_pairs, selected_centroid,
                                                        sel_vertices, best_translation, best_rotation);
 
-                        // Apply rotation around centroid, then translation
                         for (auto vx_idx : sel_vertices)
                         {
                             Vec2f& pos = _layout_vertices[vx_idx].pos;
@@ -2183,18 +2170,9 @@ bool MoleculeLayoutGraph::_assignComponentsRelativeCoordinates(PtrArray<Molecule
             }
         }
 
-        // 2. Distribute is_nailed flag from supergraph to all components (including
-        //    single-edge BCs) so AttachmentLayout and related paths can query it.
-        //
-        // #3599: For single-edge BCs we only propagate the is_nailed FLAG; we do NOT
-        // overwrite the local pos from nailed_positions. Single-edge BCs are laid out
-        // by _assignRelativeSingleEdge in a local frame (vertex1 at origin, vertex2 at
-        // (0, edge_len)), and AttachmentLayout::_makeLayout relies on that invariant
-        // when shift-rotating the component into the supergraph. Overwriting pos with
-        // absolute supergraph coordinates for nailed-but-selected endpoints breaks the
-        // invariant, leaving the other endpoint stranded at (0, edge_len) — which
-        // produces spurious long bonds between neighbouring selected atoms in
-        // partial-tail "Arrange as a Ring" scenarios.
+        // Propagate is_nailed into every component, then restore nailed positions.
+        // Single-edge BCs are kept in their local frame (origin / edge_len) — the
+        // AttachmentLayout shift-rotation relies on that, so do not overwrite pos.
         for (int i = 0; i < n_comp; i++)
         {
             MoleculeLayoutGraph& component = *bc_components[i];
@@ -2465,16 +2443,9 @@ void MoleculeLayoutGraph::_findFirstVertexIdx(int n_comp, Array<int>& fixed_comp
                     if ((v1_fixed != v2_fixed) || (v1_fixed && v2_fixed))
                     {
                         const bool forbidden_edge = (v1_fixed != v2_fixed);
-                        // #3599: For forbidden (sel↔fix) single-edge BCs, copy type only
-                        // for the FIXED endpoint. The fixed endpoint already has its correct
-                        // supergraph position (from HELM load / src_layout) and is a valid
-                        // anchor for AttachmentLayout. The SELECTED endpoint at this point
-                        // is still in the HELM src position — if we also mark it drawn, the
-                        // main layout loop treats it as a ready anchor and propagates that
-                        // wrong position to its selected neighbours (observed: atom 10 ends
-                        // up at (15,0), atom 9 becomes (13.5,0), bond 8-9 ≈ 13.7 instead of
-                        // 1.5). Keeping it NOT_DRAWN forces AttachmentLayout to lay it out
-                        // from the fixed anchor — producing correct 1.5 bond lengths.
+                        // On a sel↔fix boundary edge only the fixed endpoint is a valid
+                        // anchor. Marking the selected endpoint as drawn would propagate
+                        // its stale source-layout position to selected neighbours.
                         for (int j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
                         {
                             LayoutVertex& vert = component._layout_vertices[j];
@@ -2528,6 +2499,16 @@ bool MoleculeLayoutGraph::_prepareAssignedList(Array<int>& assigned_list, Biconn
 {
     assigned_list.clear();
 
+    // In partial-selection sequence layout the BC walk must enter the selected
+    // fragment from the selected side only. A fixed anchor that reaches the
+    // fragment from the opposite end would grow the chain from both directions
+    // and push the mismatch onto an interior bond instead of the bridge bond.
+    const bool partial_seq = sequence_layout && _n_fixed > 0;
+    auto is_fixed = [this, partial_seq](int v) -> bool { return partial_seq && v < _fixed_vertices.size() && _fixed_vertices[v] != 0; };
+
+    QS_DEF(Array<int>, deferred_fixed);
+    deferred_fixed.clear();
+
     for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
     {
         if (_layout_vertices[i].type == ELEMENT_NOT_DRAWN)
@@ -2535,14 +2516,33 @@ bool MoleculeLayoutGraph::_prepareAssignedList(Array<int>& assigned_list, Biconn
 
         const Vertex& vert = getVertex(i);
 
+        bool has_not_drawn = false;
+        bool has_not_drawn_fixed = false;
         for (int j = vert.neiBegin(); j < vert.neiEnd(); j = vert.neiNext(j))
         {
-            if (_layout_vertices[vert.neiVertex(j)].type == ELEMENT_NOT_DRAWN)
-            {
-                assigned_list.push(i);
-                break;
-            }
+            const int nei = vert.neiVertex(j);
+            if (_layout_vertices[nei].type != ELEMENT_NOT_DRAWN)
+                continue;
+            has_not_drawn = true;
+            if (is_fixed(nei))
+                has_not_drawn_fixed = true;
         }
+
+        if (!has_not_drawn)
+            continue;
+
+        const bool defer = is_fixed(i) && !has_not_drawn_fixed;
+        if (defer)
+            deferred_fixed.push(i);
+        else
+            assigned_list.push(i);
+    }
+
+    // Fallback: an isolated selected fragment touches only fixed vertices.
+    if (assigned_list.size() == 0)
+    {
+        for (int j = 0; j < deferred_fixed.size(); j++)
+            assigned_list.push(deferred_fixed[j]);
     }
 
     if (assigned_list.size() == 0)
