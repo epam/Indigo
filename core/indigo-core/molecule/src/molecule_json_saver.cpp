@@ -501,12 +501,12 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
         break;
     }
 
-    if (sgroup.bonds.size())
+    if (sgroup.getBonds().size())
     {
         writer.Key("bonds");
         writer.StartArray();
-        for (int i = 0; i < sgroup.bonds.size(); ++i)
-            writer.Int(sgroup.bonds[i]);
+        for (int i = 0; i < sgroup.getBonds().size(); ++i)
+            writer.Int(sgroup.getBonds()[i]);
         writer.EndArray();
     }
 

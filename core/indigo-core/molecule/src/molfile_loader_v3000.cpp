@@ -1194,7 +1194,7 @@ void MolfileLoader::_readSGroup3000(const char* str)
             n = scanner.readInt1();
             while (n-- > 0)
             {
-                sgroup->bonds.push(scanner.readInt() - 1);
+                sgroup->getBonds().push(scanner.readInt() - 1);
                 scanner.skipSpace();
             }
             scanner.skip(1); // )

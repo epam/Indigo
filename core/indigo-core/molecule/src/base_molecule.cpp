@@ -490,9 +490,9 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
 
 void BaseMolecule::_flipSGroupBond(SGroup& sgroup, int src_bond_idx, int new_bond_idx)
 {
-    int idx = sgroup.bonds.find(src_bond_idx);
+    int idx = sgroup.getBonds().find(src_bond_idx);
     if (idx != -1)
-        sgroup.bonds[idx] = new_bond_idx;
+        sgroup.getBonds()[idx] = new_bond_idx;
 }
 
 void BaseMolecule::_flipSuperatomBond(Superatom& sa, int src_bond_idx, int new_bond_idx)
