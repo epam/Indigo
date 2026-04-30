@@ -884,7 +884,7 @@ void CmfLoader::_readUIntArray(Array<int>& dest)
 void CmfLoader::_readGeneralSGroup(SGroup& sgroup)
 {
     _readUIntArray(sgroup.atoms);
-    _readUIntArray(sgroup.bonds);
+    _readUIntArray(sgroup.getBonds());
 }
 
 void CmfLoader::_readExtSection(Molecule& mol)

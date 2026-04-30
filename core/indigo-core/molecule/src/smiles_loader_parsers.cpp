@@ -1698,7 +1698,7 @@ void SmilesLoader::_handlePolymerRepetition(int i)
         if (_atoms[edge.beg].polymer_index != i && _atoms[edge.end].polymer_index != i)
             continue;
         if (_atoms[edge.beg].polymer_index == i && _atoms[edge.end].polymer_index == i)
-            sgroup->bonds.push(j);
+            sgroup->xbonds.push(j);
         else
         {
             // bond going out of the sgroup
@@ -1748,7 +1748,7 @@ void SmilesLoader::_handlePolymerRepetition(int i)
             for (k = rep->edgeBegin(); k != rep->edgeEnd(); k = rep->edgeNext(k))
             {
                 const Edge& edge = rep->getEdge(k);
-                sgroup->bonds.push(_bmol->findEdgeIndex(mapping[edge.beg], mapping[edge.end]));
+                sgroup->xbonds.push(_bmol->findEdgeIndex(mapping[edge.beg], mapping[edge.end]));
             }
 
             if (rep_end >= 0 && end_bond >= 0)

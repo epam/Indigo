@@ -1118,14 +1118,14 @@ void MolfileSaver::_writeGenericSGroup3000(SGroup& sgroup, int idx, Output& outp
             output.printf(" %d", _atom_mapping[sgroup.atoms[i]]);
         output.printf(")");
     }
-    if (sgroup.bonds.size() > 0)
+    if (sgroup.getBonds().size() > 0)
     {
         if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
-            output.printf(" CBONDS=(%d", sgroup.bonds.size());
+            output.printf(" CBONDS=(%d", sgroup.getBonds().size());
         else
-            output.printf(" XBONDS=(%d", sgroup.bonds.size());
-        for (i = 0; i < sgroup.bonds.size(); i++)
-            output.printf(" %d", _bond_mapping[sgroup.bonds[i]]);
+            output.printf(" XBONDS=(%d", sgroup.getBonds().size());
+        for (i = 0; i < sgroup.getBonds().size(); i++)
+            output.printf(" %d", _bond_mapping[sgroup.getBonds()[i]]);
         output.printf(")");
     }
     if (sgroup.sgroup_subtype > 0)
@@ -1759,12 +1759,12 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                     output.printf(" %3d", _atom_mapping[sgroup.atoms[k]]);
                 output.writeCR();
             }
-            for (j = 0; j < sgroup.bonds.size(); j += 8)
+            for (j = 0; j < sgroup.getBonds().size(); j += 8)
             {
                 int k;
-                output.printf("M  SBL %3d%3d", sgroup.original_group, std::min(sgroup.bonds.size(), j + 8) - j);
-                for (k = j; k < std::min(sgroup.bonds.size(), j + 8); k++)
-                    output.printf(" %3d", _bond_mapping[sgroup.bonds[k]]);
+                output.printf("M  SBL %3d%3d", sgroup.original_group, std::min(sgroup.getBonds().size(), j + 8) - j);
+                for (k = j; k < std::min(sgroup.getBonds().size(), j + 8); k++)
+                    output.printf(" %3d", _bond_mapping[sgroup.getBonds()[k]]);
                 output.writeCR();
             }
 

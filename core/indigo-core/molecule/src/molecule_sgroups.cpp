@@ -681,7 +681,7 @@ void MoleculeSGroups::findSGroups(int property, Array<int>& indices, Array<int>&
         for (i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
         {
             SGroup& sg = *_sgroups.at(i);
-            if (_cmpIndices(sg.bonds, indices))
+            if (_cmpIndices(sg.getBonds(), indices))
             {
                 sgs.push(i);
             }

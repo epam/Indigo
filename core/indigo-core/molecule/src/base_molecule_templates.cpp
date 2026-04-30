@@ -414,8 +414,8 @@ int BaseMolecule::_transformTGroupToSGroup(int idx, int t_idx)
                 int bond_idx = findEdgeIndex(att_atoms[i], mapping[tg_atoms[i]]);
                 if (bond_idx > -1)
                 {
-                    if (su.bonds.find(bond_idx) == -1)
-                        su.bonds.push(bond_idx);
+                    if (su.xbonds.find(bond_idx) == -1)
+                        su.xbonds.push(bond_idx);
                 }
             }
         }
@@ -452,9 +452,9 @@ void BaseMolecule::_collectSuparatomAttachmentPoints(Superatom& sa, std::unorder
     }
     else // Try to create attachment points from crossing bond information
     {
-        for (int k = 0; k < sa.bonds.size(); k++)
+        for (int k = 0; k < sa.xbonds.size(); k++)
         {
-            const Edge& edge = getEdge(sa.bonds[k]);
+            const Edge& edge = getEdge(sa.xbonds[k]);
             int ap_aidx = -1;
             int ap_lvidx = -1;
             if (sa.atoms.find(edge.beg) != -1)
@@ -498,7 +498,7 @@ void BaseMolecule::_connectTemplateAtom(Superatom& sa, int t_idx, Array<int>& or
         if (ap.lvidx < 0)
         {
             int edge_idx = -1;
-            for (auto xbond_idx : sa.bonds)
+            for (auto xbond_idx : sa.xbonds)
             {
                 const Edge& e = getEdge(xbond_idx);
                 int dest_atom = e.beg == ap.aidx ? e.end : (e.end == ap.aidx ? e.beg : -1);
@@ -834,7 +834,7 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
     ap_points_ids.clear();
     ap_ids.clear();
 
-    if (su.attachment_points.size() == 0 && su.bonds.size() == 0)
+    if (su.attachment_points.size() == 0 && su.xbonds.size() == 0)
         return -1;
 
     if (su.attachment_points.size() > 0)
@@ -1183,7 +1183,7 @@ int BaseMolecule::_createSGroupFromFragment(Array<int>& sg_atoms, const TGroup& 
                         int t_xbond_idx = findEdgeIndex(att_point_idx, v.neiVertex(k));
                         if (fragment.getBondOrder(q_xbond_idx) == getBondOrder(t_xbond_idx))
                         {
-                            su_new.bonds.push(t_xbond_idx);
+                            su_new.xbonds.push(t_xbond_idx);
                             int idap = su_new.attachment_points.add();
                             Superatom::_AttachmentPoint& ap = su_new.attachment_points.at(idap);
                             ap.aidx = att_point_idx;
@@ -1208,11 +1208,11 @@ void BaseMolecule::_removeAtomsFromSGroup(SGroup& sgroup, Array<int>& mapping)
         if (mapping[sgroup.atoms[i]] == -1)
             sgroup.atoms.remove(i);
     }
-    for (i = sgroup.bonds.size() - 1; i >= 0; i--)
+    for (i = sgroup.xbonds.size() - 1; i >= 0; i--)
     {
-        const Edge& edge = getEdge(sgroup.bonds[i]);
+        const Edge& edge = getEdge(sgroup.xbonds[i]);
         if (mapping[edge.beg] == -1 || mapping[edge.end] == -1)
-            sgroup.bonds.remove(i);
+            sgroup.xbonds.remove(i);
     }
     updateEditRevision();
 }
@@ -1260,10 +1260,10 @@ void BaseMolecule::_removeBondsFromSGroup(SGroup& sgroup, Array<int>& mapping)
 {
     int i;
 
-    for (i = sgroup.bonds.size() - 1; i >= 0; i--)
+    for (i = sgroup.xbonds.size() - 1; i >= 0; i--)
     {
-        if (mapping[sgroup.bonds[i]] == -1)
-            sgroup.bonds.remove(i);
+        if (mapping[sgroup.xbonds[i]] == -1)
+            sgroup.xbonds.remove(i);
     }
     updateEditRevision();
 }
@@ -1312,17 +1312,17 @@ bool BaseMolecule::_mergeSGroupWithSubmolecule(SGroup& sgroup, SGroup& super, Ba
             merged = true;
         }
     }
-    for (i = 0; i < super.bonds.size(); i++)
+    for (i = 0; i < super.xbonds.size(); i++)
     {
-        const Edge& edge = supermol.getEdge(super.bonds[i]);
+        const Edge& edge = supermol.getEdge(super.xbonds[i]);
 
-        if (edge_mapping[super.bonds[i]] < 0)
+        if (edge_mapping[super.xbonds[i]] < 0)
             continue;
 
         if (mapping[edge.beg] < 0 || mapping[edge.end] < 0)
             throw Error("internal: edge is not mapped");
 
-        sgroup.bonds.push(edge_mapping[super.bonds[i]]);
+        sgroup.xbonds.push(edge_mapping[super.xbonds[i]]);
         merged = true;
     }
 
