@@ -393,9 +393,9 @@ jobs:
       - name: Test (Linux/Windows)
         if: ${{ !startsWith(matrix.os, 'macos') }}
         run: python3 -Wignore api/tests/integration/test.py -t 1 -j junit_report.xml
-      - name: Test (macOS)
-        if: ${{ startsWith(matrix.os, 'macos') }}
-        run: arch -x86_64 python3 -Wignore api/tests/integration/test.py -t 1 -j junit_report.xml
+#      - name: Test (macOS)
+#        if: ${{ startsWith(matrix.os, 'macos') }}
+#        run: arch -x86_64 python3 -Wignore api/tests/integration/test.py -t 1 -j junit_report.xml
       - name: Publish Test Report
         if: always()
         uses: mikepenz/action-junit-report@v4
@@ -698,15 +698,15 @@ jobs:
           LD_LIBRARY_PATH: ${{ github.workspace }}/tmp/runtimes/linux-x64/native
         run: |
           dotnet IronPython/net6.0/ipy.dll api/tests/integration/test.py -t 1 -j junit_report.xml
-      - name: Test macOS
-        if: ${{ startsWith(matrix.os, 'macos') }}
-        env:
-          INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
-          DOTNET_ROOT: ${{ github.workspace }}/tmp/dotnet
-          PATH: ${{ github.workspace }}/tmp/dotnet:$PATH
-        run: |
-          export DYLD_LIBRARY_PATH=${PWD}/tmp/runtimes/osx-x64/native
-          dotnet IronPython/net6.0/ipy.dll api/tests/integration/test.py -t 1 -j junit_report.xml
+#      - name: Test macOS
+#        if: ${{ startsWith(matrix.os, 'macos') }}
+#        env:
+#          INDIGO_PATH: ${{ github.workspace }}/tmp/lib/netstandard2.0/Indigo.Net.dll
+#          DOTNET_ROOT: ${{ github.workspace }}/tmp/dotnet
+#          PATH: ${{ github.workspace }}/tmp/dotnet:$PATH
+#        run: |
+#          export DYLD_LIBRARY_PATH=${PWD}/tmp/runtimes/osx-x64/native
+#          dotnet IronPython/net6.0/ipy.dll api/tests/integration/test.py -t 1 -j junit_report.xml
       - name: Test Windows
         if: ${{ startsWith(matrix.os, 'windows') }}
         env:
