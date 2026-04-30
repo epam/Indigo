@@ -1,6 +1,24 @@
 #!/bin/bash
 set -eux
 
+# Portable sed -i: macOS (BSD) requires '' as backup suffix, GNU does not
+sedi() {
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    sed -i '' "$@"
+  else
+    sed -i "$@"
+  fi
+}
+
+# Portable sha256sum: macOS uses shasum -a 256
+sha256() {
+  if command -v sha256sum &>/dev/null; then
+    sha256sum | awk '{print $1}'
+  else
+    shasum -a 256 | awk '{print $1}'
+  fi
+}
+
 if [ "${1:-}" == "" ]; then
   echo "Usage: ${0} MAJOR.MINOR.PATCH[.BUILD] [suffix] [<revision_number>]"
   exit 1
@@ -20,7 +38,7 @@ old_revision=$(sed -n 3p ${root}/.ci/version.txt)
 old_java_snapshot=$(sed -n 4p ${root}/.ci/version.txt)
 old_hash_sum=$(sed -n 5p ${root}/.ci/version.txt)
 
-check_hash_sum=$(echo "${old_base_version}${old_suffix}${old_revision}${old_java_snapshot}" | sha256sum | awk '{print $1}')
+check_hash_sum=$(echo "${old_base_version}${old_suffix}${old_revision}${old_java_snapshot}" | sha256)
 if [ "${check_hash_sum}" != "${old_hash_sum}" ]; then
   echo ".ci/version.txt hash sum check failed! Probably file was manually edited. Cannot continue."
   exit 3
@@ -81,33 +99,33 @@ else
   new_version_python="${new_version}"
 fi 
 
-new_hash_sum=$(echo "${new_base_version}${new_suffix}${new_revision}${new_java_snapshot}" | sha256sum | awk '{print $1}')
+new_hash_sum=$(echo "${new_base_version}${new_suffix}${new_revision}${new_java_snapshot}" | sha256)
 
 # version.txt
 printf "${new_base_version}\n${new_suffix}\n${new_revision}\n${new_java_snapshot}\n${new_hash_sum}" > ${root}/.ci/version.txt
 
 # C
-sed -i "s/${old_version}/${new_version}/g" ${root}/api/indigo-version.cmake
+sedi "s/${old_version}/${new_version}/g" ${root}/api/indigo-version.cmake
 
 # .NET
-sed -i "s/${old_version}/${new_version}/g" ${root}/api/dotnet/src/Indigo.Net.csproj
+sedi "s/${old_version}/${new_version}/g" ${root}/api/dotnet/src/Indigo.Net.csproj
 
 # Java
-sed -i "s/${old_version_java}/${new_version_java}/g" ${root}/api/java/pom.xml
-sed -i "s/${old_version_java}/${new_version_java}/g" ${root}/bingo/bingo-elastic/java/pom.xml
+sedi "s/${old_version_java}/${new_version_java}/g" ${root}/api/java/pom.xml
+sedi "s/${old_version_java}/${new_version_java}/g" ${root}/bingo/bingo-elastic/java/pom.xml
 
 # Python
-sed -i "s/${old_version_python}/${new_version_python}/g" ${root}/api/http/setup.py
-sed -i "s/${old_version_python}/${new_version_python}/g" ${root}/api/http/requirements.txt
-sed -i "s/${old_version_python}/${new_version_python}/g" ${root}/api/python/setup.py
-sed -i "s/${old_version_python}/${new_version_python}/g" ${root}/api/python/indigo/__init__.py
-sed -i "s/${old_version_python}/${new_version_python}/g" ${root}/bingo/bingo-elastic/python/setup.py
-sed -i "s/${old_version_python}/${new_version_python}/g" ${root}/bingo/bingo-elastic/python/bingo_elastic/__init__.py
-sed -i "s/${old_version_python}/${new_version_python}/g" ${root}/utils/indigo-ml/setup.py
+sedi "s/${old_version_python}/${new_version_python}/g" ${root}/api/http/setup.py
+sedi "s/${old_version_python}/${new_version_python}/g" ${root}/api/http/requirements.txt
+sedi "s/${old_version_python}/${new_version_python}/g" ${root}/api/python/setup.py
+sedi "s/${old_version_python}/${new_version_python}/g" ${root}/api/python/indigo/__init__.py
+sedi "s/${old_version_python}/${new_version_python}/g" ${root}/bingo/bingo-elastic/python/setup.py
+sedi "s/${old_version_python}/${new_version_python}/g" ${root}/bingo/bingo-elastic/python/bingo_elastic/__init__.py
+sedi "s/${old_version_python}/${new_version_python}/g" ${root}/utils/indigo-ml/setup.py
 
 # R
-sed -i "s/${old_version}/${new_version}/g" ${root}/api/r/DESCRIPTION
+sedi "s/${old_version}/${new_version}/g" ${root}/api/r/DESCRIPTION
 
 # JS
-sed -i "s/${old_version}/${new_version}/g" ${root}/api/wasm/indigo-ketcher/package.json
-sed -i "s/${old_version}/${new_version}/g" ${root}/utils/indigo-service/frontend/ui/package.json
+sedi "s/${old_version}/${new_version}/g" ${root}/api/wasm/indigo-ketcher/package.json
+sedi "s/${old_version}/${new_version}/g" ${root}/utils/indigo-service/frontend/ui/package.json
