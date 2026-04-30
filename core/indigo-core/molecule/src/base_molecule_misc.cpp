@@ -677,8 +677,8 @@ int BaseMolecule::transformHELMtoSGroups(Array<char>& helm_class, Array<char>& h
                 {
                     ap_idx = v.neiVertex(k);
                     int b_idx = findEdgeIndex(v.neiVertex(k), i);
-                    sg.bonds.push(b_idx);
-                    lvsg.bonds.push(b_idx);
+                    sg.xbonds.push(b_idx);
+                    lvsg.xbonds.push(b_idx);
                 }
             }
 

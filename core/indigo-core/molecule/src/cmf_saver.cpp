@@ -271,7 +271,7 @@ void CmfSaver::_encodeUIntArraySkipNegative(const Array<int>& data)
 void CmfSaver::_encodeBaseSGroup(Molecule& /* mol */, SGroup& sgroup, const Mapping& mapping)
 {
     _encodeUIntArray(sgroup.atoms, *mapping.atom_mapping);
-    _encodeUIntArray(sgroup.bonds, *mapping.bond_mapping);
+    _encodeUIntArray(sgroup.getBonds(), *mapping.bond_mapping);
 }
 
 void CmfSaver::_encodeExtSection(Molecule& mol, const Mapping& mapping)

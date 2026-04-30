@@ -1190,7 +1190,7 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
             const Value& bonds = s["bonds"];
             for (rapidjson::SizeType j = 0; j < bonds.Size(); ++j)
             {
-                sgroup.bonds.push(bonds[j].GetInt());
+                sgroup.getBonds().push(bonds[j].GetInt());
             }
         }
     }
@@ -1226,7 +1226,7 @@ void MoleculeJsonLoader::fillXBondsAndBrackets(Superatom& sa, BaseMolecule& mol)
             if (atoms.find(target_atom) == atoms.end())
             {
                 const auto& target_pos = mol.getAtomXyz(target_atom);
-                sa.bonds.push(vx.neiEdge(i));
+                sa.xbonds.push(vx.neiEdge(i));
                 brackets.emplace_back((target_pos.x - src_pos.x) / 2, (target_pos.y - src_pos.y) / 2);
             }
         }

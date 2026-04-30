@@ -920,7 +920,7 @@ void MolfileLoader::_readCtab2000()
                             if (strncmp(chars, "SAL", 3) == 0)
                                 sgroup->atoms.push(_scanner.readIntFix(3) - 1);
                             else // SBL
-                                sgroup->bonds.push(_scanner.readIntFix(3) - 1);
+                                sgroup->getBonds().push(_scanner.readIntFix(3) - 1);
                         }
                 }
                 _scanner.skipLine();

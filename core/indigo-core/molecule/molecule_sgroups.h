@@ -115,8 +115,11 @@ namespace indigo
         int parent_idx;     // parent group number; represented with index in the array
         // TODO: leave only parent_idx
 
-        Array<int> atoms; // represented with SAL in Molfile format
-        Array<int> bonds; // represented with SBL in Molfile format (CBONDS for DAT, XBONDS for others)
+        Array<int> atoms;  // represented with SAL in Molfile format
+        Array<int> xbonds; // crossing bonds, represented with XBONDS/SBL in Molfile format
+
+        virtual const Array<int>& getBonds() const { return xbonds; }
+        virtual Array<int>& getBonds() { return xbonds; }
 
         Array<char> subscript;    // SMT in Molfile format (LABEL in V3000)
         int brk_style;            // represented with SBT in Molfile format
@@ -135,6 +138,11 @@ namespace indigo
     public:
         DataSGroup();
         ~DataSGroup() override;
+
+        Array<int> cbonds; // chemical bonds, represented with CBONDS/SBL in Molfile format
+
+        const Array<int>& getBonds() const override { return cbonds; }
+        Array<int>& getBonds() override { return cbonds; }
 
         Array<char> description;   // SDT in Molfile format (filed units or format)
         Array<char> name;          // SDT in Molfile format (field name)
