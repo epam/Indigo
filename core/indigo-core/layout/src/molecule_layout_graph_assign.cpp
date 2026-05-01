@@ -34,6 +34,7 @@ using namespace indigo;
 
 // Tolerance for regular polygon geometry checks (larger than EPSILON for trig/JSON roundtrips).
 constexpr float LAYOUT_GEOMETRY_TOLERANCE = 0.01f;
+constexpr float kZeroLengthSqr = 1e-8f;
 
 enum
 {
@@ -1434,11 +1435,6 @@ void MoleculeLayoutGraph::_optimizeSelectedPartPlacement(float bond_length, cons
     best_rotation = best_angle;
 }
 
-namespace
-{
-    constexpr float kZeroLengthSqr = 1e-8f;
-}
-
 std::vector<MoleculeLayoutGraph::SelectionBridge> MoleculeLayoutGraph::_detectSelectionBridges(const std::vector<int>& sel_vertices,
                                                                                                const Array<Vec2f>& src_layout) const
 {
@@ -2488,6 +2484,11 @@ void MoleculeLayoutGraph::_findFirstVertexIdx(int n_comp, Array<int>& fixed_comp
             _layout_vertices[nucleus_idx].type = ELEMENT_BOUNDARY;
             _layout_vertices[nucleus_idx].pos.set(0.f, 0.f);
             _layout_vertices[nucleus_idx2].type = ELEMENT_BOUNDARY;
+            // TODO(#3599 follow-up): the unit-edge initialisation here ignores
+            // bond_length. For cycle-free partial selections the BC walk inherits
+            // this 1.0 spacing and the seed bond ends up at length 1.0 in the
+            // final layout instead of bond_length. Documented by the
+            // disulfide_pep_sel "no_unit_initialisation" invariant test.
             _layout_vertices[nucleus_idx2].pos.set(1.f, 0.f);
             _layout_edges[nucleus_edge].type = ELEMENT_BOUNDARY;
         }

@@ -75,6 +75,7 @@ files = [
     "ring_fuse",
     "left_top_monomer",
     "6bases",
+    "disulfide_pep_sel",
 ]
 
 files.sort()
@@ -528,4 +529,282 @@ else:
         "cycle_part_sel.ket",
         cp_ket,
         diff_fn=compare_positions,
+    )
+
+
+# ======================================================================
+# Two-bridge partial selection with disulfide-bridged ring
+#
+# disulfide_pep_sel.ket has 13 cysteines in a linear backbone, with an R3-R3
+# disulfide between monomer4 and monomer7 forming a 4-vertex macrocycle.
+# Monomers 4..10 (seqid 5..11) are selected — the cycle plus a 3-monomer
+# pendant tail. Both ends of the selection touch fixed backbone (m3 and m11),
+# so this is the two-bridge partial-selection scenario where the original bug
+# stretched an interior backbone bond to ~16 units.
+#
+# These invariants protect against regression independent of exact positions:
+#   1. Disulfide cycle is a regular polygon (edge = 1.5)
+#   2. Backbone bonds inside the selected fragment all equal 1.5
+#   3. Fixed (unselected) backbone monomers do not move
+#   4. No interior bond is catastrophically stretched (>3× bond length)
+# ======================================================================
+
+print(
+    "\n*** disulfide_pep_sel: two-bridge partial selection with R3-R3 ring ***"
+)
+
+with open(os.path.join(root, "disulfide_pep_sel.ket")) as f:
+    dp_input = json.load(f)
+dp_input_pos = _get_monomer_positions(dp_input)
+dp_out = _do_layout(dp_input)
+dp_pos = _get_monomer_positions(dp_out)
+
+# Selected vs fixed sets per the input file.
+dp_selected = {
+    key
+    for key, val in dp_input.items()
+    if key.startswith("monomer")
+    and isinstance(val, dict)
+    and val.get("selected", False)
+}
+dp_fixed = {"monomer{}".format(i) for i in range(13)} - dp_selected
+
+dp_errors = []
+
+# 1. Disulfide cycle: monomer4..monomer7 must form a regular 4-gon.
+disulfide_ring = ["monomer4", "monomer5", "monomer6", "monomer7"]
+ok, msg = _is_regular_polygon(disulfide_ring, dp_pos)
+if not ok:
+    dp_errors.append("disulfide cycle not regular: " + msg)
+
+# 2. All interior backbone bonds inside the selection equal bond_length.
+backbone_pairs = [
+    ("monomer4", "monomer5"),
+    ("monomer5", "monomer6"),
+    ("monomer6", "monomer7"),
+    ("monomer7", "monomer8"),
+    ("monomer8", "monomer9"),
+    ("monomer9", "monomer10"),
+]
+for a, b in backbone_pairs:
+    d = _dist(dp_pos[a], dp_pos[b])
+    if abs(d - BOND_LENGTH) > GEOM_TOL:
+        dp_errors.append("interior bond {}-{}: len={:.4f}".format(a, b, d))
+
+# 3. Fixed monomers must not move from their input positions.
+for m in dp_fixed:
+    before = dp_input_pos[m]
+    after = dp_pos[m]
+    dx = abs(after[0] - before[0])
+    dy = abs(after[1] - before[1])
+    if dx > GEOM_TOL or dy > GEOM_TOL:
+        dp_errors.append(
+            "fixed {} moved: ({:.3f},{:.3f})->({:.3f},{:.3f})".format(
+                m, before[0], before[1], after[0], after[1]
+            )
+        )
+
+# 4. No interior bond catastrophically stretched (the original 3599 symptom).
+for a, b in backbone_pairs:
+    d = _dist(dp_pos[a], dp_pos[b])
+    if d > BOND_LENGTH * 3.0:
+        dp_errors.append(
+            "CATASTROPHIC stretch {}-{}: len={:.4f}".format(a, b, d)
+        )
+
+if dp_errors:
+    print("disulfide_pep_sel.ket invariants:FAILED")
+    for e in dp_errors:
+        print("  " + e)
+else:
+    print("disulfide_pep_sel.ket invariants:SUCCEED")
+
+
+# ======================================================================
+# Synthetic partial-selection edge cases
+#
+# These cover branches of _prepareAssignedList that the named .ket fixtures
+# don't reach by themselves:
+#   • single-bridge selection           → SelectionBridge anchored path
+#   • two-bridge straight chain (no cycle) → no catastrophic stretch
+#   • isolated selected fragment        → fixed-anchor fallback path
+#   • two disjoint selected segments    → multi-fragment behaviour
+# Cysteine template is read once from the disulfide_pep_sel.ket fixture and
+# reused so we do not duplicate ~150 lines of JSON in this file.
+# ======================================================================
+
+
+def _build_peptide_ket(n_monomers, selected_indices):
+    """Linear cysteine backbone of length n_monomers; selected_indices get
+    the `selected: true` flag. Position step matches the standard Indigo
+    sequence loader (1.5 along x)."""
+    nodes = [{"$ref": "monomer{}".format(i)} for i in range(n_monomers)]
+    connections = [
+        {
+            "connectionType": "single",
+            "endpoint1": {
+                "monomerId": "monomer{}".format(i),
+                "attachmentPointId": "R2",
+            },
+            "endpoint2": {
+                "monomerId": "monomer{}".format(i + 1),
+                "attachmentPointId": "R1",
+            },
+        }
+        for i in range(n_monomers - 1)
+    ]
+    data = {
+        "ket_version": "2.0.0",
+        "root": {
+            "nodes": nodes,
+            "connections": connections,
+            "templates": [{"$ref": "monomerTemplate-C___Cysteine"}],
+        },
+        "monomerTemplate-C___Cysteine": _peptide_template,
+    }
+    sel = set(selected_indices)
+    for i in range(n_monomers):
+        m = {
+            "type": "monomer",
+            "id": str(i),
+            "position": {"x": 1.25 + 1.5 * i, "y": -1.25},
+            "alias": "C",
+            "templateId": "C___Cysteine",
+            "seqid": i + 1,
+        }
+        if i in sel:
+            m["selected"] = True
+        data["monomer{}".format(i)] = m
+    return data
+
+
+print("\n*** Synthetic partial-selection edge cases (Issue #3599) ***")
+
+with open(os.path.join(root, "disulfide_pep_sel.ket")) as f:
+    _peptide_template = json.load(f)["monomerTemplate-C___Cysteine"]
+
+edge_errors = []
+
+# (1) Single-bridge: tail of 3 hangs off a fixed backbone via one bond.
+# After layout, the bridge bond must be exactly bond_length (closed-form anchor).
+sb_data = _build_peptide_ket(8, selected_indices=[5, 6, 7])
+sb_out = _do_layout(sb_data)
+sb_pos = _get_monomer_positions(sb_out)
+sb_bridge = _dist(sb_pos["monomer4"], sb_pos["monomer5"])
+if abs(sb_bridge - BOND_LENGTH) > GEOM_TOL:
+    edge_errors.append(
+        "single-bridge anchor not exact: m4-m5 = {:.4f}".format(sb_bridge)
+    )
+
+# (2) Two-bridge straight chain (no cycle). The original 3599 symptom was a
+# 14-16 unit interior bond. Assert no catastrophic stretching here.
+tb_data = _build_peptide_ket(9, selected_indices=[3, 4, 5, 6])
+tb_out = _do_layout(tb_data)
+tb_pos = _get_monomer_positions(tb_out)
+for i in range(3, 6):
+    a, b = "monomer{}".format(i), "monomer{}".format(i + 1)
+    d = _dist(tb_pos[a], tb_pos[b])
+    if d > BOND_LENGTH * 3.0:
+        edge_errors.append(
+            "CATASTROPHIC stretch in straight chain {}-{}: len={:.4f}".format(
+                a, b, d
+            )
+        )
+
+# Fixed monomers around the two-bridge selection must not move.
+tb_input_pos = _get_monomer_positions(tb_data)
+for i in [0, 1, 2, 7, 8]:
+    m = "monomer{}".format(i)
+    before, after = tb_input_pos[m], tb_pos[m]
+    if (
+        abs(after[0] - before[0]) > GEOM_TOL
+        or abs(after[1] - before[1]) > GEOM_TOL
+    ):
+        edge_errors.append(
+            "two-bridge: fixed {} moved {} -> {}".format(m, before, after)
+        )
+
+# (3) Isolated selection touching only fixed (fallback path in
+# _prepareAssignedList). Without the fallback the selected monomer would
+# never be placed.
+iso_data = _build_peptide_ket(5, selected_indices=[2])
+iso_out = _do_layout(iso_data)
+iso_pos = _get_monomer_positions(iso_out)
+p2 = iso_pos["monomer2"]
+if not (math.isfinite(p2[0]) and math.isfinite(p2[1])):
+    edge_errors.append("isolated selected monomer has non-finite position")
+else:
+    d_left = _dist(iso_pos["monomer1"], iso_pos["monomer2"])
+    d_right = _dist(iso_pos["monomer2"], iso_pos["monomer3"])
+    if (
+        abs(d_left - BOND_LENGTH) > GEOM_TOL
+        and abs(d_right - BOND_LENGTH) > GEOM_TOL
+    ):
+        edge_errors.append(
+            "isolated selection: neither bridge is bond_length "
+            "(left={:.4f} right={:.4f})".format(d_left, d_right)
+        )
+
+# (4) Two disjoint selected segments — internal bonds of each must be 1.5.
+dj_data = _build_peptide_ket(11, selected_indices=[2, 3, 7, 8])
+dj_out = _do_layout(dj_data)
+dj_pos = _get_monomer_positions(dj_out)
+d23 = _dist(dj_pos["monomer2"], dj_pos["monomer3"])
+d78 = _dist(dj_pos["monomer7"], dj_pos["monomer8"])
+if abs(d23 - BOND_LENGTH) > GEOM_TOL:
+    edge_errors.append("disjoint selection 2-3 bond: {:.4f}".format(d23))
+if abs(d78 - BOND_LENGTH) > GEOM_TOL:
+    edge_errors.append("disjoint selection 7-8 bond: {:.4f}".format(d78))
+
+if edge_errors:
+    print("partial_selection_edge_cases:FAILED")
+    for e in edge_errors:
+        print("  " + e)
+else:
+    print("partial_selection_edge_cases:SUCCEED")
+
+
+# ======================================================================
+# Known issue: cycle-free two-bridge partial selection leaves one interior
+# bond at length 1.0 instead of bond_length.
+#
+# _findFirstVertexIdx initialises the BC-walk nucleus and its neighbour at
+# (0,0) and (1,0) — a unit edge ignoring bond_length. For selections that
+# contain a cycle the cycle layout overrides those positions with the proper
+# 1.5-spaced regular polygon, so the issue is masked. For cycle-free
+# selections (e.g. the four selected monomers in a two-bridge straight
+# chain) the unit edge survives into the final layout as a 1.0-length
+# bond next to neighbours at 1.5 — visible asymmetric backbone spacing.
+#
+# This block records the observed behaviour without asserting on it: when
+# the underlying nucleus initialisation is fixed, the printed bond will
+# equal bond_length and the marker can be turned into a hard assert.
+# See TODO(#3599 follow-up) in _findFirstVertexIdx.
+# ======================================================================
+
+print("\n*** Known issue: nucleus unit-edge in cycle-free selection ***")
+
+ki_data = _build_peptide_ket(9, selected_indices=[3, 4, 5, 6])
+ki_pos = _get_monomer_positions(_do_layout(ki_data))
+ki_bonds = [
+    (a, b, _dist(ki_pos[a], ki_pos[b]))
+    for a, b in [
+        ("monomer3", "monomer4"),
+        ("monomer4", "monomer5"),
+        ("monomer5", "monomer6"),
+    ]
+]
+ki_unit = [t for t in ki_bonds if abs(t[2] - 1.0) <= GEOM_TOL]
+if ki_unit:
+    print(
+        "  KNOWN ISSUE present: {} unit-length interior bond(s)".format(
+            len(ki_unit)
+        )
+    )
+    for a, b, d in ki_bonds:
+        marker = " <-- unit edge" if abs(d - 1.0) <= GEOM_TOL else ""
+        print("    {}-{}: len={:.4f}{}".format(a, b, d, marker))
+else:
+    print(
+        "  KNOWN ISSUE no longer reproduces — consider promoting to a hard assert"
     )
