@@ -533,20 +533,14 @@ else:
 
 
 # ======================================================================
-# Two-bridge partial selection with disulfide-bridged ring
+# Two-bridge partial selection with disulfide-bridged ring.
 #
-# disulfide_pep_sel.ket has 13 cysteines in a linear backbone, with an R3-R3
-# disulfide between monomer4 and monomer7 forming a 4-vertex macrocycle.
-# Monomers 4..10 (seqid 5..11) are selected — the cycle plus a 3-monomer
-# pendant tail. Both ends of the selection touch fixed backbone (m3 and m11),
-# so this is the two-bridge partial-selection scenario where the original bug
-# stretched an interior backbone bond to ~16 units.
-#
-# These invariants protect against regression independent of exact positions:
-#   1. Disulfide cycle is a regular polygon (edge = 1.5)
-#   2. Backbone bonds inside the selected fragment all equal 1.5
-#   3. Fixed (unselected) backbone monomers do not move
-#   4. No interior bond is catastrophically stretched (>3× bond length)
+# 13 cysteines in a linear backbone with an R3-R3 disulfide between
+# monomer4 and monomer7 forming a 4-vertex macrocycle. Monomers 4..10
+# are selected (the cycle plus a 3-monomer pendant tail); m3 and m11 are
+# the fixed boundaries on either side. The position-equality check above
+# pins the exact post-layout coordinates; the invariants below capture
+# the structural guarantees that must hold regardless of layout drift.
 # ======================================================================
 
 print(
@@ -604,7 +598,7 @@ for m in dp_fixed:
             )
         )
 
-# 4. No interior bond catastrophically stretched (the original 3599 symptom).
+# 4. No interior bond catastrophically stretched (the regression guard).
 for a, b in backbone_pairs:
     d = _dist(dp_pos[a], dp_pos[b])
     if d > BOND_LENGTH * 3.0:
@@ -621,16 +615,11 @@ else:
 
 
 # ======================================================================
-# Synthetic partial-selection edge cases
+# Synthetic partial-selection edge cases.
 #
-# These cover branches of _prepareAssignedList that the named .ket fixtures
-# don't reach by themselves:
-#   • single-bridge selection           → SelectionBridge anchored path
-#   • two-bridge straight chain (no cycle) → no catastrophic stretch
-#   • isolated selected fragment        → fixed-anchor fallback path
-#   • two disjoint selected segments    → multi-fragment behaviour
-# Cysteine template is read once from the disulfide_pep_sel.ket fixture and
-# reused so we do not duplicate ~150 lines of JSON in this file.
+# Each numbered subtest below targets one branch of _prepareAssignedList
+# that the named .ket fixtures do not reach. Cysteine template is read
+# once from disulfide_pep_sel.ket so we don't duplicate ~150 lines of JSON.
 # ======================================================================
 
 
@@ -696,8 +685,8 @@ if abs(sb_bridge - BOND_LENGTH) > GEOM_TOL:
         "single-bridge anchor not exact: m4-m5 = {:.4f}".format(sb_bridge)
     )
 
-# (2) Two-bridge straight chain (no cycle). The original 3599 symptom was a
-# 14-16 unit interior bond. Assert no catastrophic stretching here.
+# (2) Two-bridge straight chain (no cycle). Interior bonds must not be
+# catastrophically stretched between the two fixed anchors.
 tb_data = _build_peptide_ket(9, selected_indices=[3, 4, 5, 6])
 tb_out = _do_layout(tb_data)
 tb_pos = _get_monomer_positions(tb_out)
@@ -765,46 +754,31 @@ else:
 
 
 # ======================================================================
-# Known issue: cycle-free two-bridge partial selection leaves one interior
-# bond at length 1.0 instead of bond_length.
+# Nucleus seed-edge invariant.
 #
-# _findFirstVertexIdx initialises the BC-walk nucleus and its neighbour at
-# (0,0) and (1,0) — a unit edge ignoring bond_length. For selections that
-# contain a cycle the cycle layout overrides those positions with the proper
-# 1.5-spaced regular polygon, so the issue is masked. For cycle-free
-# selections (e.g. the four selected monomers in a two-bridge straight
-# chain) the unit edge survives into the final layout as a 1.0-length
-# bond next to neighbours at 1.5 — visible asymmetric backbone spacing.
-#
-# This block records the observed behaviour without asserting on it: when
-# the underlying nucleus initialisation is fixed, the printed bond will
-# equal bond_length and the marker can be turned into a hard assert.
-# See TODO(#3599 follow-up) in _findFirstVertexIdx.
+# _findFirstVertexIdx seeds the BC walk at (0,0) and (bond_length,0). In a
+# cycle-free partial selection the seed survives into the final layout, so
+# the seed edge must already be at bond_length — a unit-length seed would
+# leave one interior backbone bond at 1.0 next to neighbours at bond_length.
 # ======================================================================
 
-print("\n*** Known issue: nucleus unit-edge in cycle-free selection ***")
+print("\n*** Nucleus seed-edge invariant (cycle-free partial selection) ***")
 
-ki_data = _build_peptide_ket(9, selected_indices=[3, 4, 5, 6])
-ki_pos = _get_monomer_positions(_do_layout(ki_data))
-ki_bonds = [
-    (a, b, _dist(ki_pos[a], ki_pos[b]))
-    for a, b in [
-        ("monomer3", "monomer4"),
-        ("monomer4", "monomer5"),
-        ("monomer5", "monomer6"),
-    ]
-]
-ki_unit = [t for t in ki_bonds if abs(t[2] - 1.0) <= GEOM_TOL]
-if ki_unit:
-    print(
-        "  KNOWN ISSUE present: {} unit-length interior bond(s)".format(
-            len(ki_unit)
-        )
-    )
-    for a, b, d in ki_bonds:
-        marker = " <-- unit edge" if abs(d - 1.0) <= GEOM_TOL else ""
-        print("    {}-{}: len={:.4f}{}".format(a, b, d, marker))
+seed_data = _build_peptide_ket(9, selected_indices=[3, 4, 5, 6])
+seed_pos = _get_monomer_positions(_do_layout(seed_data))
+seed_errors = []
+for a, b in [
+    ("monomer3", "monomer4"),
+    ("monomer4", "monomer5"),
+    ("monomer5", "monomer6"),
+]:
+    d = _dist(seed_pos[a], seed_pos[b])
+    if abs(d - BOND_LENGTH) > GEOM_TOL:
+        seed_errors.append("{}-{}: len={:.4f}".format(a, b, d))
+
+if seed_errors:
+    print("nucleus_seed_edge:FAILED")
+    for e in seed_errors:
+        print("  " + e)
 else:
-    print(
-        "  KNOWN ISSUE no longer reproduces — consider promoting to a hard assert"
-    )
+    print("nucleus_seed_edge:SUCCEED")

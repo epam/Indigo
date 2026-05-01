@@ -332,7 +332,7 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates(float bond_length)
 
     all_trivial = _assignComponentsRelativeCoordinates(bc_components, fixed_components, bc_decom);
 
-    _findFirstVertexIdx(n_comp, fixed_components, bc_components, all_trivial);
+    _findFirstVertexIdx(n_comp, fixed_components, bc_components, all_trivial, bond_length);
     int i, j = -1;
 
     // ( 1] atoms assigned absolute coordinates and adjacent to atoms not;
@@ -1435,6 +1435,10 @@ void MoleculeLayoutGraph::_optimizeSelectedPartPlacement(float bond_length, cons
     best_rotation = best_angle;
 }
 
+// Collect every selected↔fixed boundary edge in the supergraph: for each selected
+// vertex enumerate its fixed neighbours and emit a SelectionBridge per such pair.
+// Returns one bridge per boundary edge; the caller may treat 0/1/many cases
+// differently (e.g. closed-form anchor for the single-bridge case).
 std::vector<MoleculeLayoutGraph::SelectionBridge> MoleculeLayoutGraph::_detectSelectionBridges(const std::vector<int>& sel_vertices,
                                                                                                const Array<Vec2f>& src_layout) const
 {
@@ -1492,6 +1496,10 @@ Vec2f MoleculeLayoutGraph::_computeAnchorDirection(const SelectionBridge& bridge
     return acc;
 }
 
+// Translate every selected vertex so that the bridge's selected endpoint lands at
+// `bridge.fix_pos + dir * bond_length`, where `dir` is the backbone tangent at
+// the fixed endpoint. The result makes the bridge bond exactly bond_length by
+// construction; internal distances of the selected fragment are preserved.
 void MoleculeLayoutGraph::_applyAnchoredRigidTransform(const SelectionBridge& bridge, const std::vector<int>& sel_vertices, const Array<Vec2f>& src_layout,
                                                        float bond_length)
 {
@@ -2336,7 +2344,8 @@ bool MoleculeLayoutGraphSimple::_tryToFindPattern(int& fixed_component)
     return false;
 }
 
-void MoleculeLayoutGraph::_findFirstVertexIdx(int n_comp, Array<int>& fixed_components, PtrArray<MoleculeLayoutGraph>& bc_components, bool all_trivial)
+void MoleculeLayoutGraph::_findFirstVertexIdx(int n_comp, Array<int>& fixed_components, PtrArray<MoleculeLayoutGraph>& bc_components, bool all_trivial,
+                                              float bond_length)
 {
     if (_n_fixed > 0 && !sequence_layout)
     {
@@ -2484,26 +2493,28 @@ void MoleculeLayoutGraph::_findFirstVertexIdx(int n_comp, Array<int>& fixed_comp
             _layout_vertices[nucleus_idx].type = ELEMENT_BOUNDARY;
             _layout_vertices[nucleus_idx].pos.set(0.f, 0.f);
             _layout_vertices[nucleus_idx2].type = ELEMENT_BOUNDARY;
-            // TODO(#3599 follow-up): the unit-edge initialisation here ignores
-            // bond_length. For cycle-free partial selections the BC walk inherits
-            // this 1.0 spacing and the seed bond ends up at length 1.0 in the
-            // final layout instead of bond_length. Documented by the
-            // disulfide_pep_sel "no_unit_initialisation" invariant test.
-            _layout_vertices[nucleus_idx2].pos.set(1.f, 0.f);
+            // Full-molecule layout post-scales positions by bond_length, so a
+            // unit seed produces the right distance there. Partial-selection
+            // sequence layout skips that scaling, so the seed must already
+            // equal bond_length to keep the interior bond uniform.
+            const float seed_length = (sequence_layout && _n_fixed > 0) ? bond_length : 1.f;
+            _layout_vertices[nucleus_idx2].pos.set(seed_length, 0.f);
             _layout_edges[nucleus_edge].type = ELEMENT_BOUNDARY;
         }
     }
 }
 
+// Build the queue of drawn vertices that have at least one NOT_DRAWN neighbour to
+// place. In partial-selection sequence layout fixed anchors are deferred so the
+// BC walk enters the selected fragment from the selected side only; walking from
+// both ends would push the bond-length mismatch onto an interior bond instead of
+// the bridge bond. Fixed anchors are still used as a fallback when no non-fixed
+// anchor reaches the NOT_DRAWN vertices.
 bool MoleculeLayoutGraph::_prepareAssignedList(Array<int>& assigned_list, BiconnectedDecomposer& bc_decom, PtrArray<MoleculeLayoutGraph>& bc_components,
                                                Array<int>& bc_tree)
 {
     assigned_list.clear();
 
-    // In partial-selection sequence layout the BC walk must enter the selected
-    // fragment from the selected side only. A fixed anchor that reaches the
-    // fragment from the opposite end would grow the chain from both directions
-    // and push the mismatch onto an interior bond instead of the bridge bond.
     const bool partial_seq = sequence_layout && _n_fixed > 0;
     auto is_fixed = [this, partial_seq](int v) -> bool { return partial_seq && v < _fixed_vertices.size() && _fixed_vertices[v] != 0; };
 

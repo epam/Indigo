@@ -344,7 +344,7 @@ namespace indigo
         void _calculatePositionsManyNotDrawn(int vert_idx, Array<int>& adjacent_list, Array<Vec2f>& positions);
         void _orderByEnergy(Array<Vec2f>& positions);
         void _assignRelativeSingleEdge(int fixed_component, const MoleculeLayoutGraph& supergraph);
-        void _findFirstVertexIdx(int n_comp, Array<int>& fixed_components, PtrArray<MoleculeLayoutGraph>& bc_components, bool all_trivial);
+        void _findFirstVertexIdx(int n_comp, Array<int>& fixed_components, PtrArray<MoleculeLayoutGraph>& bc_components, bool all_trivial, float bond_length);
         bool _prepareAssignedList(Array<int>& assigned_list, BiconnectedDecomposer& bc_decom, PtrArray<MoleculeLayoutGraph>& bc_components,
                                   Array<int>& bc_tree);
         void _assignFinalCoordinates(float bond_length, const Array<Vec2f>& src_layout);
