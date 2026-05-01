@@ -463,7 +463,15 @@ namespace indigo
         static bool _isAtomList(Atom* qa, AtomList list);
         static bool _tryToConvertToList(Atom* p_query_atom, std::vector<std::unique_ptr<Atom>>& atoms, std::map<int, std::unique_ptr<Atom>>& properties);
 
+        enum MaxHState
+        {
+            MAXH_UNSET = -2,
+            MAXH_UNKNOWN = -1
+        };
+
         Array<int> _min_h;
+        Array<int> _max_h;
+        Array<int> _implicit_h;
 
         Array<bool> _bond_stereo_care;
 

@@ -66,6 +66,8 @@ namespace indigo
         bool dearomatize_on_load;
         AromaticityOptions arom_options;
 
+        std::string input_format;
+
         // Loaded properties
         // CP_DECL;
         // TL_CP_DECL(PropertiesMap, properties);
@@ -75,6 +77,7 @@ namespace indigo
 
         static bool tryMDLCT(Scanner& scanner, Array<char>& outbuf);
         static void readAllDataToString(Scanner& scanner, Array<char>& dataBuf);
+        static std::string normalizeInputFormat(const std::string& input_format);
 
     protected:
         Scanner* _scanner;

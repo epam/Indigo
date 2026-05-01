@@ -375,6 +375,8 @@ public:
     // This option is moved out of arom_options because it should be used only in indigoDearomatize method
     bool unique_dearomatization;
 
+    std::string input_format;
+
     StandardizeOptions standardize_options;
 
     IonizeOptions ionize_options;

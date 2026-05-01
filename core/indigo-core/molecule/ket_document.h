@@ -108,6 +108,16 @@ namespace indigo
 
         KetConnection& addConnection(KetConnectionEndPoint ep1, KetConnectionEndPoint ep2);
 
+        // Explicit format-level connections, such as HELM connection-section links
+        // and BILN bond annotations, must not be folded into simple polymer chains.
+        KetConnection& addExplicitConnection(const std::string& conn_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2);
+
+        KetConnection& addExplicitConnection(KetConnectionEndPoint ep1, KetConnectionEndPoint ep2);
+
+        KetConnection& addNonSequenceConnection(const std::string& conn_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2);
+
+        KetConnection& addNonSequenceConnection(KetConnectionEndPoint ep1, KetConnectionEndPoint ep2);
+
         KetConnection& addConnection(const std::string& mon1, const std::string& ap1, const std::string& mon2, const std::string& ap2);
 
         void connectMonomerTo(const std::string& mon1, const std::string& ap1, const std::string& mon2, const std::string& ap2);
@@ -152,7 +162,7 @@ namespace indigo
         // Monomers connected from m[i] R2 to m[i+1] R1 for peptides
         // For RNA/DNA monomer placed in order Sugar-Base-Phosphate-Sugar... with standard connections
         // Each CHEM returned as separate simple polymer
-        // Also store non-standard or creating cycle connections in nonSequenceConnections list
+        // Also store non-standard, explicit, or cycle-forming connections in nonSequenceConnections list
         void parseSimplePolymers(std::vector<std::deque<std::string>>& sequences, bool for_idt = false);
 
         MonomerClass getMonomerClass(const KetBaseMonomer& monomer) const;
@@ -239,6 +249,7 @@ namespace indigo
         std::vector<std::string> _ambiguous_templates_ids;
         std::vector<KetConnection> _connections;
         std::vector<KetConnection> _non_sequence_connections;
+        std::set<size_t> _forced_non_sequence_connections;
         std::map<std::string, KetBaseMonomerTemplate::TemplateType> _template_id_to_type;
         rapidjson::Value _meta_objects;
         rapidjson::Value _r_groups;

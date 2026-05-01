@@ -168,6 +168,9 @@ namespace com.epam.indigo
         public static extern int indigoLoadHelmFromString(string str, int library);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoLoadBilnFromString(string str, int library);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoLoadAxoLabsFromString(string str, int library);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
@@ -187,6 +190,9 @@ namespace com.epam.indigo
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoLoadHelmFromFile(string filename, int library);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoLoadBilnFromFile(string filename, int library);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoLoadAxoLabsFromFile(string filename, int library);
@@ -232,6 +238,9 @@ namespace com.epam.indigo
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern byte* indigoHelm(int molecule, int library);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern byte* indigoBiln(int molecule, int library);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern byte* indigoAxoLabs(int molecule, int library);

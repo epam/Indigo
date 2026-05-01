@@ -76,6 +76,11 @@ files = [
     "left_top_monomer",
     "6bases",
     "disulfide_pep_sel",
+    # Issue #3606: inner base bond length for n-agon rings
+    "rna_ring_6",
+    "rna_ring_11",
+    "rna_ring_12",
+    "rna_ring_24",
 ]
 
 files.sort()

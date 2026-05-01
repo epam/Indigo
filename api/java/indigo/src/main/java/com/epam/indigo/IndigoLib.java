@@ -171,6 +171,12 @@ public interface IndigoLib extends Library {
 
     int indigoLoadHelmFromFile(String filename, int library);
 
+    int indigoLoadBiln(int source, int library);
+
+    int indigoLoadBilnFromString(String str, int library);
+
+    int indigoLoadBilnFromFile(String filename, int library);
+
     int indigoLoadAxoLabs(int source, int library);
 
     int indigoLoadAxoLabsFromString(String str, int library);
@@ -204,6 +210,8 @@ public interface IndigoLib extends Library {
     Pointer indigoIdt(int molecule, int library);
 
     Pointer indigoHelm(int molecule, int library);
+
+    Pointer indigoBiln(int molecule, int library);
 
     Pointer indigoAxoLabs(int molecule, int library);
 
