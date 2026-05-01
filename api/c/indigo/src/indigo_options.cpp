@@ -63,6 +63,18 @@ static void indigoSetJsonSavingVersion(const char* version)
     MoleculeJsonSaver::parseFormatMode(version, self.ket_saving_version);
 }
 
+static void indigoSetInputFormat(const char* format)
+{
+    Indigo& self = indigoGetInstance();
+    self.input_format = format;
+}
+
+static void indigoGetInputFormat(Array<char>& value)
+{
+    Indigo& self = indigoGetInstance();
+    value.readString(self.input_format.c_str(), true);
+}
+
 static void indigoSetSmilesSavingFormat(const char* mode)
 {
     Indigo& self = indigoGetInstance();
@@ -370,6 +382,7 @@ void IndigoOptionHandlerSetter::setBasicOptionHandlers(const qword id)
     mgr->setOptionHandlerInt("json-set-native-precision", SETTER_GETTER_INT_OPTION(indigo.json_native_precision));
     mgr->setOptionHandlerBool("molfile-saving-add-implicit-h", SETTER_GETTER_BOOL_OPTION(indigo.molfile_saving_add_implicit_h));
     mgr->setOptionHandlerBool("molfile-saving-add-mrv-sma", SETTER_GETTER_BOOL_OPTION(indigo.molfile_saving_add_mrv_sma));
+    mgr->setOptionHandlerString("input-format", indigoSetInputFormat, indigoGetInputFormat);
     mgr->setOptionHandlerBool("smiles-saving-write-name", SETTER_GETTER_BOOL_OPTION(indigo.smiles_saving_write_name));
     mgr->setOptionHandlerBool("smiles-loading-strict-aliphatic", SETTER_GETTER_BOOL_OPTION(indigo.smiles_loading_strict_aliphatic));
     mgr->setOptionHandlerString("filename-encoding", indigoSetFilenameEncoding, indigoGetFilenameEncoding);

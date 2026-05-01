@@ -504,6 +504,7 @@ CEXPORT int indigoLoadMoleculeWithLib(int source, int monomer_library)
         loader.smiles_loading_strict_aliphatic = self.smiles_loading_strict_aliphatic;
         loader.dearomatize_on_load = self.dearomatize_on_load;
         loader.arom_options = self.arom_options;
+        loader.input_format = self.input_format;
 
         std::unique_ptr<IndigoMolecule> molptr = std::make_unique<IndigoMolecule>();
 
@@ -614,6 +615,7 @@ CEXPORT int indigoLoadQueryMoleculeWithLib(int source, int monomer_library)
         loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
         loader.dearomatize_on_load = self.dearomatize_on_load;
         loader.arom_options = self.arom_options;
+        loader.input_format = self.input_format;
 
         std::unique_ptr<IndigoQueryMolecule> molptr = std::make_unique<IndigoQueryMolecule>();
 
@@ -900,6 +902,56 @@ CEXPORT int indigoLoadHelmFromFile(const char* filename, int library)
             return -1;
 
         result = indigoLoadHelm(source, library);
+        indigoFree(source);
+        return result;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoLoadBiln(int source, int library)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(source);
+        IndigoObject& lib_obj = self.getObject(library);
+        SequenceLoader loader(IndigoScanner::get(obj), IndigoMonomerLibrary::get(lib_obj));
+
+        std::unique_ptr<IndigoKetDocument> docptr = std::make_unique<IndigoKetDocument>();
+
+        loader.loadBILN(docptr->get());
+        return self.addObject(docptr.release());
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoLoadBilnFromString(const char* string, int library)
+{
+    INDIGO_BEGIN
+    {
+        int source = indigoReadString(string);
+        int result;
+
+        if (source <= 0)
+            return -1;
+
+        result = indigoLoadBiln(source, library);
+        indigoFree(source);
+        return result;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoLoadBilnFromFile(const char* filename, int library)
+{
+    INDIGO_BEGIN
+    {
+        int source = indigoReadFile(filename);
+        int result;
+
+        if (source < 0)
+            return -1;
+
+        result = indigoLoadBiln(source, library);
         indigoFree(source);
         return result;
     }
@@ -1913,9 +1965,14 @@ CEXPORT int indigoResetCharge(int atom)
         BaseMolecule& mol = ia.mol;
 
         if (mol.isQueryMolecule())
+        {
             mol.asQueryMolecule().getAtom(ia.idx).removeConstraints(QueryMolecule::ATOM_CHARGE);
+            mol.asQueryMolecule().invalidateAtom(ia.idx, BaseMolecule::CHANGED_ALL);
+        }
         else
+        {
             mol.asMolecule().setAtomCharge(ia.idx, 0);
+        }
         return 1;
     }
     INDIGO_END(-1);
@@ -1929,9 +1986,14 @@ CEXPORT int indigoResetExplicitValence(int atom)
         BaseMolecule& mol = ia.mol;
 
         if (mol.isQueryMolecule())
+        {
             mol.asQueryMolecule().getAtom(ia.idx).removeConstraints(QueryMolecule::ATOM_VALENCE);
+            mol.asQueryMolecule().invalidateAtom(ia.idx, BaseMolecule::CHANGED_ALL);
+        }
         else
+        {
             mol.asMolecule().resetExplicitValence(ia.idx);
+        }
         return 1;
     }
     INDIGO_END(-1);

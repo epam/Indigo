@@ -177,6 +177,28 @@ KetConnection& KetDocument::addConnection(KetConnectionEndPoint ep1, KetConnecti
     return addConnection(KetConnectionSingle, ep1, ep2);
 }
 
+KetConnection& KetDocument::addExplicitConnection(const std::string& conn_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2)
+{
+    auto& connection = addConnection(conn_type, ep1, ep2);
+    _forced_non_sequence_connections.emplace(_connections.size() - 1);
+    return connection;
+}
+
+KetConnection& KetDocument::addExplicitConnection(KetConnectionEndPoint ep1, KetConnectionEndPoint ep2)
+{
+    return addExplicitConnection(KetConnectionSingle, ep1, ep2);
+}
+
+KetConnection& KetDocument::addNonSequenceConnection(const std::string& conn_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2)
+{
+    return addExplicitConnection(conn_type, ep1, ep2);
+}
+
+KetConnection& KetDocument::addNonSequenceConnection(KetConnectionEndPoint ep1, KetConnectionEndPoint ep2)
+{
+    return addExplicitConnection(ep1, ep2);
+}
+
 KetConnection& KetDocument::addConnection(const std::string& mon1, const std::string& ap1, const std::string& mon2, const std::string& ap2)
 {
     KetConnectionEndPoint ep1, ep2;
@@ -437,6 +459,8 @@ bool is_backbone_class(MonomerClass monomer_class)
 
 void KetDocument::parseSimplePolymers(std::vector<std::deque<std::string>>& sequences, bool for_idt)
 {
+    _non_sequence_connections.clear();
+
     std::map<std::string, MonomerClass> id_to_class;
     std::set<std::string> monomers;
     std::set<std::string> used_monomers;
@@ -449,8 +473,10 @@ void KetDocument::parseSimplePolymers(std::vector<std::deque<std::string>>& sequ
 
     std::map<std::pair<std::string, std::string>, const KetConnection&> ap_to_connection;
 
-    for (auto& connection : _connections)
+    for (size_t connection_idx = 0; connection_idx < _connections.size(); connection_idx++)
     {
+        auto& connection = _connections[connection_idx];
+        bool force_non_sequence = _forced_non_sequence_connections.count(connection_idx) > 0;
         auto& ep1 = connection.ep1();
         auto& ep2 = connection.ep2();
         bool has_mol_1 = hasKetStrProp(ep1, moleculeId);
@@ -498,7 +524,7 @@ void KetDocument::parseSimplePolymers(std::vector<std::deque<std::string>>& sequ
         ap_to_connection.emplace(std::make_pair(mon_id_2, ap_id_2), connection);
 
         bool sequence_connection = false;
-        if (has_mon_1 && has_mon_2) // any connection to molecule is not in sequence
+        if (!force_non_sequence && has_mon_1 && has_mon_2) // any connection to molecule is not in sequence
             if (for_idt)
                 sequence_connection = isIdtConnection(mon1_class, ap_id_1, mon2_class, ap_id_2);
             else

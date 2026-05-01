@@ -3777,6 +3777,33 @@ class IndigoObject:
             self._lib().indigoHelm(self.id, library.id)
         )
 
+    def saveBiln(self, filename, library):
+        """Saves macromolecule to BILN file
+
+        Args:
+            filename (str): full file path to the output file
+
+        Returns:
+            int: 1 if file is saved successfully
+        """
+
+        return IndigoLib.checkResult(
+            self._lib().indigoSaveBilnToFile(
+                self.id, filename.encode(), library.id
+            )
+        )
+
+    def biln(self, library):
+        """Molecule or reaction method returns BILN for the structure
+
+        Returns:
+            str: BILN string
+        """
+
+        return IndigoLib.checkResultString(
+            self._lib().indigoBiln(self.id, library.id)
+        )
+
     def saveAxoLabs(self, filename, library):
         """Saves macromolecule to AxoLabs file
 

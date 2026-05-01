@@ -36,6 +36,7 @@ class InputFormatSchema(Schema):
         "chemical/x-fasta",
         "chemical/x-idt",
         "chemical/x-helm",
+        "chemical/x-biln",
         "chemical/x-monomer-library",
         "chemical/x-axo-labs",
     )

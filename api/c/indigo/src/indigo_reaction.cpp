@@ -477,6 +477,7 @@ CEXPORT int indigoLoadReactionWithLib(int source, int monomer_library)
         loader.dearomatize_on_load = self.dearomatize_on_load;
         loader.arom_options = self.arom_options;
         loader.layout_options = self.layout_options;
+        loader.input_format = self.input_format;
         auto rxn = loader.loadReaction(false);
         std::unique_ptr<IndigoBaseReaction> rxnptr;
         if (rxn->isPathwayReaction())
@@ -554,6 +555,7 @@ CEXPORT int indigoLoadQueryReactionWithLib(int source, int monomer_library)
         loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
         loader.dearomatize_on_load = self.dearomatize_on_load;
         loader.arom_options = self.arom_options;
+        loader.input_format = self.input_format;
 
         MonomerTemplateLibrary* monomer_lib = nullptr;
         if (monomer_library >= 0)

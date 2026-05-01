@@ -35,6 +35,8 @@ using namespace indigo;
 // Tolerance for regular polygon geometry checks (larger than EPSILON for trig/JSON roundtrips).
 constexpr float LAYOUT_GEOMETRY_TOLERANCE = 0.01f;
 constexpr float kZeroLengthSqr = 1e-8f;
+constexpr int MAX_NAGON_SIZE_WITHOUT_INNER_CYCLE = 5;
+constexpr int MIN_NAGON_SIZE_FOR_STANDARD_BOND_LENGTH = 12;
 
 enum
 {
@@ -1757,13 +1759,22 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
     }
     else if (sequence_layout)
     {
+        // Requirement #3196 §6.3: for n-agon >= 12 bases must keep the full
+        // standard bond length; only smaller rings use the shortened 0.75 value.
+        std::vector<int> large_inner_cycle_vertices;
         for (auto vx_idx : vertices())
         {
             auto& lvx = _layout_vertices[vx_idx];
             if (lvx.is_inner_cycle)
-                inner_cycle_vertices.push_back(vx_idx);
+            {
+                if (lvx.inner_cycle_size >= MIN_NAGON_SIZE_FOR_STANDARD_BOND_LENGTH)
+                    large_inner_cycle_vertices.push_back(vx_idx);
+                else
+                    inner_cycle_vertices.push_back(vx_idx);
+            }
         }
         _reflectCycleVertices(inner_cycle_vertices, LayoutOptions::DEFAULT_INNER_MACROCYCLE_BOND_LENGTH);
+        _reflectCycleVertices(large_inner_cycle_vertices, bond_length);
     }
 
     if (vertexCount() == 1)
@@ -2222,8 +2233,11 @@ void MoleculeLayoutGraph::_markInnerVertices(const MoleculeLayoutGraph& componen
                 int nei_count = 0;
                 for (int k = vx_nei.neiBegin(); k < vx_nei.neiEnd(); k = vx_nei.neiNext(k), ++nei_count)
                     ;
-                if (nei_count == 1 && component.vertexCount() > 5)
+                if (nei_count == 1 && component.vertexCount() > MAX_NAGON_SIZE_WITHOUT_INNER_CYCLE)
+                {
                     _layout_vertices[nei_idx].is_inner_cycle = true;
+                    _layout_vertices[nei_idx].inner_cycle_size = component.vertexCount();
+                }
             }
         }
     }

@@ -171,6 +171,10 @@ namespace indigo
             {
                 result = _checkResultString(indigoHelm(id(), library));
             }
+            else if (effectiveOutputFormat == "biln" || effectiveOutputFormat == "chemical/x-biln")
+            {
+                result = _checkResultString(indigoBiln(id(), library));
+            }
             else if (effectiveOutputFormat == "axo-labs" || effectiveOutputFormat == "chemical/x-axo-labs")
             {
                 result = _checkResultString(indigoAxoLabs(id(), library));
@@ -296,8 +300,7 @@ namespace indigo
 
     void indigoSetOptions(const std::map<std::string, std::string>& options)
     {
-        std::set<std::string> to_skip{"smiles",        "smarts", "input-format", "output-content-type", "outputFormat", "monomerLibrary",
-                                      "sequence-type", "upc",    "nac"};
+        std::set<std::string> to_skip{"smiles", "smarts", "output-content-type", "outputFormat", "monomerLibrary", "sequence-type", "upc", "nac"};
         for (const auto& option : options)
         {
             if (to_skip.count(option.first) < 1)
@@ -435,6 +438,13 @@ namespace indigo
                 return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
             exceptionMessages.emplace_back(indigoGetLastError());
         }
+        else if (input_format != options.end() && input_format->second == "chemical/x-biln")
+        {
+            objectId = indigoLoadBilnFromString(data.c_str(), library);
+            if (objectId >= 0)
+                return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
+            exceptionMessages.emplace_back(indigoGetLastError());
+        }
         else if (input_format != options.end() && input_format->second == "chemical/x-axo-labs")
         {
             objectId = indigoLoadAxoLabsFromString(data.c_str(), library);
@@ -488,7 +498,7 @@ namespace indigo
                 }
                 exceptionMessages.emplace_back(indigoGetLastError());
 
-                if (library >= 0)
+                if (library >= 0 && input_format == options.end())
                 {
                     auto sequence_type = options.find("sequence-type");
                     print_js("try as PEPTIDE-3-LETTER");
@@ -558,6 +568,12 @@ namespace indigo
                     }
                     print_js("try as HELM");
                     objectId = indigoLoadHelmFromString(data.c_str(), library);
+                    if (objectId >= 0)
+                    {
+                        return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
+                    }
+                    print_js("try as BILN");
+                    objectId = indigoLoadBilnFromString(data.c_str(), library);
                     if (objectId >= 0)
                     {
                         return IndigoKetcherObject(objectId, IndigoKetcherObject::EKETDocument);
@@ -673,6 +689,8 @@ namespace indigo
             "chemical/x-idt",
             "helm",
             "chemical/x-helm",
+            "biln",
+            "chemical/x-biln",
             "axo-labs",
             "chemical/x-axo-labs",
         };

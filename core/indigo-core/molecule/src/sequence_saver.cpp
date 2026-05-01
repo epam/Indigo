@@ -30,6 +30,7 @@
 #include "molecule/monomer_commons.h"
 #include "molecule/monomers_template_library.h"
 #include "molecule/smiles_saver.h"
+#include <cctype>
 
 #ifdef _MSC_VER
 #pragma warning(push, 4)
@@ -139,12 +140,12 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
         mol.getTemplatesMap(_templates);
 
     std::string seq_text;
-    if (sf == SeqFormat::HELM)
+    if (sf == SeqFormat::HELM || sf == SeqFormat::BILN)
     {
         std::vector<std::deque<std::string>> sequences;
         KetDocument doc(mol);
         doc.parseSimplePolymers(sequences, false);
-        seq_text = saveHELM(doc, sequences);
+        seq_text = sf == SeqFormat::HELM ? saveHELM(doc, sequences) : saveBILN(doc, sequences);
     }
     else if (sf == SeqFormat::IDT)
     {
@@ -288,10 +289,10 @@ void SequenceSaver::saveKetDocument(KetDocument& doc, SeqFormat sf)
     std::vector<std::deque<std::string>> sequences;
     int seq_idx = 0;
     std::string seq_text;
-    if (sf == SeqFormat::HELM)
+    if (sf == SeqFormat::HELM || sf == SeqFormat::BILN)
     {
         doc.parseSimplePolymers(sequences, false);
-        seq_text = saveHELM(doc, sequences);
+        seq_text = sf == SeqFormat::HELM ? saveHELM(doc, sequences) : saveBILN(doc, sequences);
     }
     else if (sf == SeqFormat::IDT)
     {
@@ -823,6 +824,101 @@ void SequenceSaver::saveAxoLabs(KetDocument& doc, std::vector<std::deque<std::st
     }
 }
 
+static std::string get_biln_attachment_idx(const KetConnectionEndPoint& ep)
+{
+    if (!hasKetStrProp(ep, monomerId))
+        throw SequenceSaver::Error("Cannot save in BILN format - only monomer connections are supported.");
+    if (!hasKetStrProp(ep, attachmentPointId))
+        throw SequenceSaver::Error("Cannot save in BILN format - attachment point is required.");
+    const auto& ap = getKetStrProp(ep, attachmentPointId);
+    if (ap.size() < 2 || ap[0] != 'R')
+        throw SequenceSaver::Error("Cannot save in BILN format - unsupported attachment point '%s'.", ap.c_str());
+    for (size_t i = 1; i < ap.size(); i++)
+    {
+        if (!std::isdigit(static_cast<unsigned char>(ap[i])))
+            throw SequenceSaver::Error("Cannot save in BILN format - unsupported attachment point '%s'.", ap.c_str());
+    }
+    if (ap == "R0")
+        throw SequenceSaver::Error("Cannot save in BILN format - unsupported attachment point '%s'.", ap.c_str());
+    return ap.substr(1);
+}
+
+static void check_biln_alias(const std::string& monomer_alias)
+{
+    if (monomer_alias.empty())
+        throw SequenceSaver::Error("Cannot save empty monomer alias in BILN format.");
+    for (auto ch : monomer_alias)
+    {
+        if (ch == '-' || ch == '.' || ch == '(' || ch == ')' || ch == ',' || std::isspace(static_cast<unsigned char>(ch)))
+            throw SequenceSaver::Error("Cannot save monomer alias '%s' in BILN format.", monomer_alias.c_str());
+    }
+}
+
+std::string SequenceSaver::saveBILN(KetDocument& doc, const std::vector<std::deque<std::string>>& sequences)
+{
+    if (doc.moleculesRefs().size() > 0)
+        throw Error("Cannot save micro-molecules to BILN format.");
+
+    std::string biln_string;
+    std::vector<std::vector<std::string>> chains;
+    std::map<std::string, std::pair<size_t, size_t>> monomer_to_chain_pos;
+    const auto& monomers = doc.monomers();
+
+    for (auto& sequence : sequences)
+    {
+        std::vector<std::string> chain;
+        for (const auto& monomer_id : sequence)
+        {
+            auto monomer_class = doc.getMonomerClass(monomer_id);
+            const auto& monomer = monomers.at(monomer_id);
+            if (monomer_class != MonomerClass::AminoAcid)
+                throw Error("Cannot save in BILN format - expected AminoAcid monomer but found %s monomer %s.",
+                            MonomerTemplate::MonomerClassToStr(monomer_class).c_str(), monomer->alias().c_str());
+            check_biln_alias(monomer->alias());
+            monomer_to_chain_pos.emplace(monomer_id, std::make_pair(chains.size(), chain.size()));
+            chain.emplace_back(monomer->alias());
+        }
+        if (!chain.empty())
+            chains.emplace_back(chain);
+    }
+
+    int bond_idx = 1;
+    for (const auto& connection : doc.nonSequenceConnections())
+    {
+        const auto& ep1 = connection.ep1();
+        const auto& ep2 = connection.ep2();
+        if (!hasKetStrProp(ep1, monomerId) || !hasKetStrProp(ep2, monomerId))
+            throw Error("Cannot save in BILN format - only monomer connections are supported.");
+
+        auto add_bond = [&](const KetConnectionEndPoint& ep) {
+            const auto& monomer_ref = getKetStrProp(ep, monomerId);
+            const auto& monomer_id = doc.monomerIdByRef(monomer_ref);
+            const auto pos_it = monomer_to_chain_pos.find(monomer_id);
+            if (pos_it == monomer_to_chain_pos.end())
+                throw Error("Cannot save in BILN format - connection endpoint '%s' is not in a peptide sequence.", monomer_ref.c_str());
+            auto [chain_idx, monomer_idx] = pos_it->second;
+            chains.at(chain_idx).at(monomer_idx) += "(" + std::to_string(bond_idx) + "," + get_biln_attachment_idx(ep) + ")";
+        };
+
+        add_bond(ep1);
+        add_bond(ep2);
+        bond_idx++;
+    }
+
+    for (size_t chain_idx = 0; chain_idx < chains.size(); chain_idx++)
+    {
+        if (chain_idx > 0)
+            biln_string += '.';
+        for (size_t monomer_idx = 0; monomer_idx < chains[chain_idx].size(); monomer_idx++)
+        {
+            if (monomer_idx > 0)
+                biln_string += '-';
+            biln_string += chains[chain_idx][monomer_idx];
+        }
+    }
+    return biln_string;
+}
+
 static const char* get_helm_class(MonomerClass monomer_class)
 {
     switch (monomer_class)
@@ -886,7 +982,7 @@ void SequenceSaver::add_monomer(KetDocument& document, const std::unique_ptr<Ket
         helm_string += '[' + monomer_str + ']';
 }
 
-std::string SequenceSaver::saveHELM(KetDocument& document, std::vector<std::deque<std::string>> sequences)
+std::string SequenceSaver::saveHELM(KetDocument& document, const std::vector<std::deque<std::string>>& sequences)
 {
     std::string helm_string = "";
     int peptide_idx = 0;

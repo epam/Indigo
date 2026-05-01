@@ -1,4 +1,4 @@
-﻿import os
+import os
 import sys
 
 sys.path.append(
@@ -54,6 +54,7 @@ helm_data = {
     "helm_alias_ambiguous": "RNA1{[Sm5moe]([m2nprn2A]+[nobn6pur]+[nC6n2G]+[nC6n8A])[mepo2]}$$$$V2.0",
     "helm_rsite_no_brackets": "PEPTIDE1{[dF].C.F.[dW].K.T.C.[*N[C@H](CO)[C@@H](C)O|$_R1;;;;;;;$|]}$PEPTIDE1,PEPTIDE1,2:R3-7:R3$$$",
     "helm_smiles_first": "RNA1{[C([*:3])[C@@H](O[*:2])CO[*:1]].p}$$$$V2.0",
+    "helm_double_strand": "RNA1{r(A)p.r(A)p.r(A)p}|RNA2{p.d(T)p.d(T)p.d(T)}$RNA1,RNA2,5:pair-6:pair|RNA1,RNA2,2:pair-9:pair|RNA1,RNA2,8:pair-3:pair$$$V2.0",
 }
 
 lib = indigo.loadMonomerLibraryFromFile(

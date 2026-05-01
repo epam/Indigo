@@ -204,6 +204,20 @@ CEXPORT int indigoSaveHelmToFile(int item, const char* filename, int library)
     return res;
 }
 
+CEXPORT int indigoSaveBilnToFile(int item, const char* filename, int library)
+{
+    int f = indigoWriteFile(filename);
+    int res;
+
+    if (f == -1)
+        return -1;
+
+    res = indigoSaveBiln(item, f, library);
+
+    indigoFree(f);
+    return res;
+}
+
 CEXPORT int indigoSaveAxoLabsToFile(int item, const char* filename, int library)
 {
     int f = indigoWriteFile(filename);
@@ -321,6 +335,22 @@ CEXPORT const char* indigoHelm(int molecule, int library)
         return 0;
 
     if (indigoSaveHelm(molecule, b, library) == -1)
+        return 0;
+
+    res = indigoToString(b);
+    indigoFree(b);
+    return res;
+}
+
+CEXPORT const char* indigoBiln(int molecule, int library)
+{
+    int b = indigoWriteBuffer();
+    const char* res;
+
+    if (b == -1)
+        return 0;
+
+    if (indigoSaveBiln(molecule, b, library) == -1)
         return 0;
 
     res = indigoToString(b);
