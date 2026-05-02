@@ -35,7 +35,7 @@ cycle_part_sel.ket:SUCCEED
 *** disulfide_pep_sel: two-bridge partial selection with R3-R3 ring ***
 disulfide_pep_sel.ket invariants:SUCCEED
 
-*** Synthetic partial-selection edge cases (Issue #3599) ***
+*** Synthetic partial-selection edge cases ***
 partial_selection_edge_cases:SUCCEED
 
 *** Nucleus seed-edge invariant (cycle-free partial selection) ***

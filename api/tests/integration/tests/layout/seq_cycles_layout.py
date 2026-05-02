@@ -672,7 +672,7 @@ def _build_peptide_ket(n_monomers, selected_indices):
     return data
 
 
-print("\n*** Synthetic partial-selection edge cases (Issue #3599) ***")
+print("\n*** Synthetic partial-selection edge cases ***")
 
 with open(os.path.join(root, "disulfide_pep_sel.ket")) as f:
     _peptide_template = json.load(f)["monomerTemplate-C___Cysteine"]
@@ -725,7 +725,13 @@ iso_data = _build_peptide_ket(5, selected_indices=[2])
 iso_out = _do_layout(iso_data)
 iso_pos = _get_monomer_positions(iso_out)
 p2 = iso_pos["monomer2"]
-if not (math.isfinite(p2[0]) and math.isfinite(p2[1])):
+# Jython 2.7's math lacks isfinite; combine isnan and isinf instead.
+if (
+    math.isnan(p2[0])
+    or math.isnan(p2[1])
+    or math.isinf(p2[0])
+    or math.isinf(p2[1])
+):
     edge_errors.append("isolated selected monomer has non-finite position")
 else:
     d_left = _dist(iso_pos["monomer1"], iso_pos["monomer2"])
