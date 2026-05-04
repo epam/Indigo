@@ -1081,7 +1081,7 @@ void MolfileLoader::_readCtab2000()
                 {
                     SGroup& sgroup = _bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
                     _scanner.skip(1);
-                    _scanner.readQuotedLine(sgroup.subscript, true);
+                    _scanner.readQuotedLine(sgroup.label, true);
                 }
             }
             else if (strncmp(chars, "SCL", 3) == 0)

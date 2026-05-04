@@ -121,7 +121,7 @@ namespace indigo
         virtual const Array<int>& getBonds() const { return xbonds; }
         virtual Array<int>& getBonds() { return xbonds; }
 
-        Array<char> subscript;    // SMT in Molfile format (LABEL in V3000)
+        Array<char> label;    // SMT in Molfile format (LABEL in V3000)
         int brk_style;            // represented with SBT in Molfile format
         Array<Vec2f[2]> brackets; // represented with SDI in Molfile format
         DisplayOption contracted; // display option (-1 if undefined, 0 - expanded, 1 - contracted)

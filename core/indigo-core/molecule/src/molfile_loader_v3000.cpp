@@ -1341,9 +1341,9 @@ void MolfileLoader::_readSGroup3000(const char* str)
                 }
                 if (c == ' ' && !has_quote)
                     break;
-                sgroup->subscript.push(c);
+                sgroup->label.push(c);
             }
-            sgroup->subscript.push(0);
+            sgroup->label.push(0);
         }
         else if (strcmp(entity.ptr(), "CLASS") == 0)
         {

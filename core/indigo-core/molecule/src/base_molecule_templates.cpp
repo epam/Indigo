@@ -709,7 +709,7 @@ bool BaseMolecule::_replaceExpandedMonomerWithTemplate(int sg_idx, int& tg_id, M
                                                        std::unordered_map<std::string, int>& added_templates, Array<int>& remove_atoms)
 {
     auto& sa = static_cast<Superatom&>(sgroups.getSGroup(sg_idx));
-    if (!sgroups.hasSGroup(sg_idx) || sa.subscript.size() == 0 || sa.sa_class.size() == 0)
+    if (!sgroups.hasSGroup(sg_idx) || sa.label.size() == 0 || sa.sa_class.size() == 0)
         return false;
 
     // skip LGRP
@@ -734,7 +734,7 @@ bool BaseMolecule::_replaceExpandedMonomerWithTemplate(int sg_idx, int& tg_id, M
     }
 
     // find or create template group for residue
-    auto template_inchi_id = monomerNameByAlias(sa.sa_class.ptr(), sa.subscript.ptr()) + "/" + std::string(sa.sa_class.ptr()) + "/" + residue_inchi_str;
+    auto template_inchi_id = monomerNameByAlias(sa.sa_class.ptr(), sa.label.ptr()) + "/" + std::string(sa.sa_class.ptr()) + "/" + residue_inchi_str;
     auto it_added = added_templates.find(template_inchi_id);
     bool is_added = it_added == added_templates.end();
     int tg_index = is_added ? tgroups.addTGroup() : it_added->second;
@@ -744,8 +744,8 @@ bool BaseMolecule::_replaceExpandedMonomerWithTemplate(int sg_idx, int& tg_id, M
     {
         tg.tgroup_id = ++tg_id;
         tg.tgroup_class.copy(sa.sa_class);
-        if (sa.subscript.size())
-            tg.tgroup_name.copy(sa.subscript);
+        if (sa.label.size())
+            tg.tgroup_name.copy(sa.label);
         if (sa.sa_natreplace.size() > 0)
             tg.tgroup_natreplace.copy(sa.sa_natreplace);
         res = _restoreTemplateFromLibrary(tg, mtl, residue_inchi_str);
@@ -765,7 +765,7 @@ bool BaseMolecule::_replaceExpandedMonomerWithTemplate(int sg_idx, int& tg_id, M
             Transformation tform;
             if (affine && tform.fromAffineMatrix(transform))
             {
-                int ta_idx = addTemplateAtom(sa.subscript.ptr());
+                int ta_idx = addTemplateAtom(sa.label.ptr());
                 setAtomXyz(ta_idx, tform.shift);
                 tform.shift.clear();
                 if (tform.hasTransformation())
@@ -811,7 +811,7 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
 
     Superatom& su = (Superatom&)sgroups.getSGroup(sg_idx);
 
-    if (su.subscript.size() == 0)
+    if (su.label.size() == 0)
         return -1;
 
     if (su.sa_class.size() && std::string(su.sa_class.ptr()) == "LGRP")
@@ -918,8 +918,8 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
 
     tg.tgroup_class.copy(su.sa_class);
 
-    if (su.subscript.size() > 0)
-        tg.tgroup_name.copy(su.subscript);
+    if (su.label.size() > 0)
+        tg.tgroup_name.copy(su.label);
     tg.tgroup_alias.clear();
     tg.tgroup_comment.clear();
     tg.tgroup_full_name.clear();
@@ -956,7 +956,7 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
         else
         {
             Superatom& sup_new = (Superatom&)sg;
-            if ((strcmp(su.subscript.ptr(), sup_new.subscript.ptr()) == 0) && (su.attachment_points.size() == sup_new.attachment_points.size()))
+            if ((strcmp(su.label.ptr(), sup_new.label.ptr()) == 0) && (su.attachment_points.size() == sup_new.attachment_points.size()))
             {
                 residue_sg_idx = fragment_sgroups[j];
             }
@@ -1163,7 +1163,7 @@ int BaseMolecule::_createSGroupFromFragment(Array<int>& sg_atoms, const TGroup& 
     Superatom& su_new = (Superatom&)sgroups.getSGroup(new_sg_idx);
 
     su_new.atoms.copy(sg_atoms);
-    su_new.subscript.copy(tg.tgroup_name);
+    su_new.label.copy(tg.tgroup_name);
     su_new.sa_class.copy(tg.tgroup_class);
     su_new.sa_natreplace.copy(tg.tgroup_natreplace);
 
@@ -1208,11 +1208,11 @@ void BaseMolecule::_removeAtomsFromSGroup(SGroup& sgroup, Array<int>& mapping)
         if (mapping[sgroup.atoms[i]] == -1)
             sgroup.atoms.remove(i);
     }
-    for (i = sgroup.xbonds.size() - 1; i >= 0; i--)
+    for (i = sgroup.getBonds().size() - 1; i >= 0; i--)
     {
-        const Edge& edge = getEdge(sgroup.xbonds[i]);
+        const Edge& edge = getEdge(sgroup.getBonds()[i]);
         if (mapping[edge.beg] == -1 || mapping[edge.end] == -1)
-            sgroup.xbonds.remove(i);
+            sgroup.getBonds().remove(i);
     }
     updateEditRevision();
 }
@@ -1260,10 +1260,10 @@ void BaseMolecule::_removeBondsFromSGroup(SGroup& sgroup, Array<int>& mapping)
 {
     int i;
 
-    for (i = sgroup.xbonds.size() - 1; i >= 0; i--)
+    for (i = sgroup.getBonds().size() - 1; i >= 0; i--)
     {
-        if (mapping[sgroup.xbonds[i]] == -1)
-            sgroup.xbonds.remove(i);
+        if (mapping[sgroup.getBonds()[i]] == -1)
+            sgroup.getBonds().remove(i);
     }
     updateEditRevision();
 }
@@ -1312,17 +1312,17 @@ bool BaseMolecule::_mergeSGroupWithSubmolecule(SGroup& sgroup, SGroup& super, Ba
             merged = true;
         }
     }
-    for (i = 0; i < super.xbonds.size(); i++)
+    for (i = 0; i < super.getBonds().size(); i++)
     {
-        const Edge& edge = supermol.getEdge(super.xbonds[i]);
+        const Edge& edge = supermol.getEdge(super.getBonds()[i]);
 
-        if (edge_mapping[super.xbonds[i]] < 0)
+        if (edge_mapping[super.getBonds()[i]] < 0)
             continue;
 
         if (mapping[edge.beg] < 0 || mapping[edge.end] < 0)
             throw Error("internal: edge is not mapped");
 
-        sgroup.xbonds.push(edge_mapping[super.xbonds[i]]);
+        sgroup.getBonds().push(edge_mapping[super.getBonds()[i]]);
         merged = true;
     }
 

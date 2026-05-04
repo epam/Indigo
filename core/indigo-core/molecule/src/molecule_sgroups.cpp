@@ -510,7 +510,7 @@ void MoleculeSGroups::findSGroups(int property, const char* str, Array<int>& sgs
         for (i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
         {
             SGroup& sg = *_sgroups.at(i);
-            BufferScanner sc(sg.subscript);
+            BufferScanner sc(sg.label);
             if (sc.findWordIgnoreCase(str))
             {
                 sgs.push(i);

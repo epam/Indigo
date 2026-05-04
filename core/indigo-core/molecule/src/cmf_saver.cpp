@@ -351,7 +351,7 @@ void CmfSaver::_encodeExtSection(Molecule& mol, const Mapping& mapping)
             Superatom& sa = (Superatom&)sg;
             _encode(CMF_SUPERATOM);
             _encodeBaseSGroup(mol, sa, mapping);
-            _encodeString(sa.subscript);
+            _encodeString(sa.label);
             _encodeString(sa.sa_class);
             byte packed = static_cast<byte>(((int)sa.contracted & 0x01) | (sa.bond_connections.size() << 1));
             _output->writeByte(packed);
@@ -368,7 +368,7 @@ void CmfSaver::_encodeExtSection(Molecule& mol, const Mapping& mapping)
             RepeatingUnit& su = (RepeatingUnit&)sg;
             _encode(CMF_REPEATINGUNIT);
             _encodeBaseSGroup(mol, su, mapping);
-            _encodeString(su.subscript);
+            _encodeString(su.label);
             _output->writePackedUInt(su.connectivity);
         }
         else if (sg.sgroup_type == SGroup::SG_TYPE_MUL)

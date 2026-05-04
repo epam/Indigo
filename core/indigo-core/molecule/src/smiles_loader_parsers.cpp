@@ -848,7 +848,7 @@ void SmilesLoader::_readOtherStuff()
                 {
                     RepeatingUnit& ru = static_cast<RepeatingUnit&>(sgroup);
                     if (subscript.size())
-                        ru.subscript.readString(subscript.ptr(), true);
+                        ru.label.readString(subscript.ptr(), true);
                     if (connectivity == "ht")
                         ru.connectivity = RepeatingUnit::HEAD_TO_TAIL;
                     else if (connectivity == "hh")

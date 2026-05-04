@@ -1203,7 +1203,7 @@ void MoleculeCdxmlLoader::_addBracket(BaseMolecule& mol, const CdxmlBracket& bra
         {
             Superatom& sa = (Superatom&)sgroup;
             sa.contracted = DisplayOption::Contracted;
-            sa.subscript.readString(bracket.label.c_str(), true);
+            sa.label.readString(bracket.label.c_str(), true);
             sa.display_position.copy(bracket.superatom_position);
         }
         else
@@ -1212,7 +1212,7 @@ void MoleculeCdxmlLoader::_addBracket(BaseMolecule& mol, const CdxmlBracket& bra
             case kCDXBracketUsage_SRU: {
                 RepeatingUnit& ru = (RepeatingUnit&)sgroup;
                 ru.connectivity = bracket.repeat_pattern;
-                ru.subscript.readString(bracket.label.c_str(), true);
+                ru.label.readString(bracket.label.c_str(), true);
             }
             break;
             case kCDXBracketUsage_MultipleGroup: {
