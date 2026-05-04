@@ -1588,9 +1588,12 @@ bool Molecule::shouldWriteHCountEx(Molecule& mol, int idx, int h_to_ignore)
 
         // Non-standard valence must round-trip through SMILES explicit H count; otherwise
         // organometallic aromatic atoms lose their H on save. The `nonStandard` flag — not
-        // the return value — is the authoritative signal here.
+        // the return value — is the authoritative signal here. Use this molecule's own
+        // ValenceMode so save-time analysis matches load-time impl_h calculation
+        // (otherwise bare main-group metals like [Li] mismatch and emit hydrogenCount="0").
         bool nonStandard = false;
-        if (!Element::calcValence(atom_number, charge, 0, conn, normal_val, normal_hyd, false, &nonStandard) || nonStandard)
+        const auto& vm = ValenceModel::instance(mol.getValenceMode());
+        if (!vm.calcValence(atom_number, charge, 0, conn, normal_val, normal_hyd, false, &nonStandard) || nonStandard)
             return true;
     }
 

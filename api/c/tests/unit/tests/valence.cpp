@@ -45,7 +45,11 @@ TEST_P(CalcValenceTest, VerifyValenceResult)
     int valence = 0, hyd = 0;
     bool nonStd = false;
     bool result = Element::calcValence(tc.elem, tc.charge, tc.radical, tc.conn, valence, hyd, false, &nonStd);
-    EXPECT_TRUE(result) << "  case: " << tc.label << " — permissive model must always return true";
+    // Hybrid contract: result==true iff valence is standard. Tolerant callers can
+    // still consume the collapsed value by checking nonStd, but the bool return
+    // must match `!expect_nonStandard` so legacy `if (!calcValence(...))` callers
+    // (e.g. shouldWriteHCountEx) detect bad valence again.
+    EXPECT_EQ(!tc.expect_nonStandard, result) << "  case: " << tc.label << " (valid mismatch)";
     EXPECT_EQ(tc.expect_nonStandard, nonStd) << "  case: " << tc.label << " (nonStandard mismatch)";
     EXPECT_EQ(tc.expect_hyd, hyd) << "  case: " << tc.label << " (hyd mismatch)";
 }
@@ -417,8 +421,10 @@ TEST(CalcValenceResultTest, ValidCarbon)
 TEST(CalcValenceResultTest, InvalidCarbon)
 {
     auto r = Element::calcValenceResult(ELEM_C, 0, 0, 5);
-    EXPECT_TRUE(r.valid);       // permissive model: always valid
-    EXPECT_TRUE(r.nonStandard); // but flagged as non-standard
+    // Hybrid contract: bad valence -> valid=false, nonStandard=true,
+    // collapses to valence=conn, implicit_h=0.
+    EXPECT_FALSE(r.valid);
+    EXPECT_TRUE(r.nonStandard);
     EXPECT_EQ(r.valence, 5);
     EXPECT_EQ(r.implicit_h, 0);
 }

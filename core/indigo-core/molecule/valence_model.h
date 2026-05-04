@@ -45,9 +45,10 @@ namespace indigo
         virtual ~ValenceModel() = default;
 
         // Template Method: shared valence logic with one virtual hook.
-        // Permissive model: always returns true when to_throw=false.
-        // When the connectivity exceeds the model prediction, sets
-        // valence=conn, hyd=0 and *nonStandard=true (if provided).
+        // Hybrid contract: returns false on bad valence when to_throw=false
+        // (legacy semantics for callers checking `if (!calcValence(...))`).
+        // On bad valence sets valence=conn, hyd=0 (legacy fallthrough) and
+        // *nonStandard=true (if provided) so tolerant callers can keep the result.
         bool calcValence(int elem, int charge, int radical, int conn, int& valence, int& hyd, bool to_throw, bool* nonStandard = nullptr) const;
 
         // Factory: returns singleton for the given mode

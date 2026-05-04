@@ -213,7 +213,7 @@ void BaseMolecule::getAtomBoundingBox(int atom_idx, float font_size, LABEL_MODE 
                 bool h_at_right = true;
                 if (vertex.degree() == 0)
                 {
-                    if (ElementHygrodenOnLeft(label))
+                    if (ElementHydrogenOnLeft(label))
                         h_at_right = false;
                 }
                 else

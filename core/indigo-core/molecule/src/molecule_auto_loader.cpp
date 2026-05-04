@@ -55,7 +55,7 @@ void MoleculeAutoLoader::_init()
     ignore_cistrans_errors = false;
     ignore_no_chiral_flag = false;
     ignore_bad_valence = false;
-    valence_mode = ValenceMode::BIOVIA_2017;
+    valence_mode = ValenceMode::BIOVIA_2009;
     smiles_loading_strict_aliphatic = false;
     dearomatize_on_load = false;
     treat_stereo_as = 0;

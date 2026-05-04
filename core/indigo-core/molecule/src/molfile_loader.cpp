@@ -56,7 +56,7 @@ MolfileLoader::MolfileLoader(Scanner& scanner, MonomerTemplateLibrary* monomer_l
     ignore_noncritical_query_features = false;
     ignore_no_chiral_flag = false;
     ignore_bad_valence = false;
-    valence_mode = ValenceMode::BIOVIA_2017;
+    valence_mode = ValenceMode::BIOVIA_2009;
     treat_stereo_as = 0;
     _monomer_library = monomer_library;
 }

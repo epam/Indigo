@@ -71,8 +71,9 @@ TEST_F(ElementTest, CalcValence_Hydrogen_BadValence)
 {
     int valence = 0, hyd = 0;
     bool nonStd = false;
-    // H with 2 connections and no charge — non-standard valence (permissive model)
-    EXPECT_TRUE(Element::calcValence(ELEM_H, 0, 0, 2, valence, hyd, false, &nonStd));
+    // H with 2 connections and no charge — bad valence: hybrid contract returns false,
+    // collapses to valence=conn/hyd=0, and surfaces the anomaly via nonStandard=true.
+    EXPECT_FALSE(Element::calcValence(ELEM_H, 0, 0, 2, valence, hyd, false, &nonStd));
     EXPECT_TRUE(nonStd);
     EXPECT_EQ(hyd, 0);
 }
@@ -137,13 +138,14 @@ TEST_F(ElementTest, CalcValence_AlkalineEarth_TwoConn)
 
 TEST_F(ElementTest, CalcValence_AlkalineEarth_OneConn_BadValence)
 {
-    // One connection with no charge/radical — non-standard valence (permissive model)
+    // One connection with no charge/radical — bad valence under hybrid contract:
+    // returns false, collapses, marks nonStandard=true.
     const int alkalineEarth[] = {ELEM_Be, ELEM_Mg, ELEM_Ca, ELEM_Sr, ELEM_Ba, ELEM_Ra};
     for (int elem : alkalineEarth)
     {
         int valence = 0, hyd = 0;
         bool nonStd = false;
-        EXPECT_TRUE(Element::calcValence(elem, 0, 0, 1, valence, hyd, false, &nonStd)) << Element::toString(elem) << " with 1 conn";
+        EXPECT_FALSE(Element::calcValence(elem, 0, 0, 1, valence, hyd, false, &nonStd)) << Element::toString(elem) << " with 1 conn";
         EXPECT_TRUE(nonStd) << Element::toString(elem) << " should be non-standard";
         EXPECT_EQ(hyd, 0) << Element::toString(elem);
     }
@@ -268,7 +270,8 @@ TEST_F(ElementTest, CalcValence_Carbon_TooManyBonds)
 {
     int valence = 0, hyd = 0;
     bool nonStd = false;
-    EXPECT_TRUE(Element::calcValence(ELEM_C, 0, 0, 5, valence, hyd, false, &nonStd));
+    // Hybrid contract: 5-valent carbon is bad valence -> false, nonStandard=true.
+    EXPECT_FALSE(Element::calcValence(ELEM_C, 0, 0, 5, valence, hyd, false, &nonStd));
     EXPECT_TRUE(nonStd);
     EXPECT_EQ(hyd, 0);
 }
@@ -701,13 +704,13 @@ TEST_F(ElementTest, CalcValence_Halogens_Neutral_OddConnWithRadical)
 
 TEST_F(ElementTest, CalcValence_Halogens_EvenConn_NoRadical_BadValence)
 {
-    // Even connections without radical — non-standard valence for group 7 (permissive)
+    // Even connections without radical — bad valence for group 7 under hybrid contract.
     const int halogens[] = {ELEM_Cl, ELEM_Br, ELEM_I, ELEM_At};
     for (int elem : halogens)
     {
         int valence = 0, hyd = 0;
         bool nonStd = false;
-        EXPECT_TRUE(Element::calcValence(elem, 0, 0, 2, valence, hyd, false, &nonStd)) << Element::toString(elem) << " with 2 conn, no radical";
+        EXPECT_FALSE(Element::calcValence(elem, 0, 0, 2, valence, hyd, false, &nonStd)) << Element::toString(elem) << " with 2 conn, no radical";
         EXPECT_TRUE(nonStd) << Element::toString(elem) << " should be non-standard";
         EXPECT_EQ(hyd, 0) << Element::toString(elem);
     }

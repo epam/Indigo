@@ -565,35 +565,22 @@ KetDocument::KetDocument()
 {
 }
 
-KetDocument::KetDocument(BaseMolecule& bmol)
-    : _molecules(), original_format(0), _meta_objects(rapidjson::kArrayType), _r_groups(rapidjson::kArrayType), _json_molecules(rapidjson::kArrayType),
-      _json_document()
+KetDocument::KetDocument(BaseMolecule& bmol) : KetDocument()
 {
-    // save molecule to ket
     std::string json;
     StringOutput out(json);
     MoleculeJsonSaver saver(out);
     saver.saveMolecule(bmol);
-    // load document from ket
-    rapidjson::Document data;
-    /*auto& res*/ std::ignore = data.Parse(json.c_str());
-    // if res.hasParseError()
     KetDocumentJsonLoader loader{};
     loader.parseJson(json, *this);
 }
 
-KetDocument::KetDocument(BaseReaction& breact)
-    : _molecules(), original_format(0), _meta_objects(rapidjson::kArrayType), _r_groups(rapidjson::kArrayType), _json_molecules(rapidjson::kArrayType),
-      _json_document()
+KetDocument::KetDocument(BaseReaction& breact) : KetDocument()
 {
-    // save reaction to ket
     std::string json;
     StringOutput out(json);
     ReactionJsonSaver saver(out);
     saver.saveReaction(breact);
-    // load document from ket
-    rapidjson::Document data;
-    std::ignore = data.Parse(json.c_str());
     KetDocumentJsonLoader loader{};
     loader.parseJson(json, *this);
 }

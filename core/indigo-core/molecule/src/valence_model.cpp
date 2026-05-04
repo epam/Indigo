@@ -885,13 +885,14 @@ bool ValenceModel::calcValence(int elem, int charge, int radical, int conn, int&
             *nonStandard = true;
         if (to_throw)
             throw Element::Error("bad valence on %s having %d drawn bonds, charge %d, and %d radical electrons", Element::toString(elem), conn, charge, rad);
-        // Permissive contract (see valence_model.h): when to_throw=false the
-        // model always reports success and surfaces the anomaly via
-        // *nonStandard=true. Valence collapses to drawn bonds so downstream
-        // serializers still produce a stable, round-trippable structure.
+        // Hybrid contract: collapse valence to drawn bonds so downstream serializers
+        // still produce a stable, round-trippable structure, but signal the anomaly
+        // via the bool return (legacy callers in molecule.cpp/molecule_arom.cpp/
+        // query_molecule.cpp depend on `false = bad valence`). Tolerant new callers
+        // can opt into `*nonStandard=true` and treat the result as accepted.
         valence = conn;
         hyd = 0;
-        return true;
+        return false;
     }
 
     if (nonStandard)

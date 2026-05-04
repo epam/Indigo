@@ -366,32 +366,32 @@ TEST_F(ElementTest, GetNumOuterElectrons_InvalidElementThrows)
 }
 
 // ============================================================================
-// 27. ElementHygrodenOnLeft (inline function)
+// 27. ElementHydrogenOnLeft (inline function)
 // ============================================================================
 
 TEST_F(ElementTest, ElementHydrogenOnLeft_IncludedElements)
 {
-    EXPECT_TRUE(ElementHygrodenOnLeft(ELEM_O));
-    EXPECT_TRUE(ElementHygrodenOnLeft(ELEM_F));
-    EXPECT_TRUE(ElementHygrodenOnLeft(ELEM_S));
-    EXPECT_TRUE(ElementHygrodenOnLeft(ELEM_Cl));
-    EXPECT_TRUE(ElementHygrodenOnLeft(ELEM_Se));
-    EXPECT_TRUE(ElementHygrodenOnLeft(ELEM_Br));
-    EXPECT_TRUE(ElementHygrodenOnLeft(ELEM_I));
+    EXPECT_TRUE(ElementHydrogenOnLeft(ELEM_O));
+    EXPECT_TRUE(ElementHydrogenOnLeft(ELEM_F));
+    EXPECT_TRUE(ElementHydrogenOnLeft(ELEM_S));
+    EXPECT_TRUE(ElementHydrogenOnLeft(ELEM_Cl));
+    EXPECT_TRUE(ElementHydrogenOnLeft(ELEM_Se));
+    EXPECT_TRUE(ElementHydrogenOnLeft(ELEM_Br));
+    EXPECT_TRUE(ElementHydrogenOnLeft(ELEM_I));
 }
 
 TEST_F(ElementTest, ElementHydrogenOnLeft_ExcludedElements)
 {
-    EXPECT_FALSE(ElementHygrodenOnLeft(ELEM_C));
-    EXPECT_FALSE(ElementHygrodenOnLeft(ELEM_N));
-    EXPECT_FALSE(ElementHygrodenOnLeft(ELEM_P));
-    EXPECT_FALSE(ElementHygrodenOnLeft(ELEM_B));
-    EXPECT_FALSE(ElementHygrodenOnLeft(ELEM_H));
-    EXPECT_FALSE(ElementHygrodenOnLeft(ELEM_Si));
-    EXPECT_FALSE(ElementHygrodenOnLeft(ELEM_Fe));
+    EXPECT_FALSE(ElementHydrogenOnLeft(ELEM_C));
+    EXPECT_FALSE(ElementHydrogenOnLeft(ELEM_N));
+    EXPECT_FALSE(ElementHydrogenOnLeft(ELEM_P));
+    EXPECT_FALSE(ElementHydrogenOnLeft(ELEM_B));
+    EXPECT_FALSE(ElementHydrogenOnLeft(ELEM_H));
+    EXPECT_FALSE(ElementHydrogenOnLeft(ELEM_Si));
+    EXPECT_FALSE(ElementHydrogenOnLeft(ELEM_Fe));
     // Note: At and Te are not included despite being same group as I and Se
-    EXPECT_FALSE(ElementHygrodenOnLeft(ELEM_At));
-    EXPECT_FALSE(ElementHygrodenOnLeft(ELEM_Te));
+    EXPECT_FALSE(ElementHydrogenOnLeft(ELEM_At));
+    EXPECT_FALSE(ElementHydrogenOnLeft(ELEM_Te));
 }
 
 // ============================================================================
@@ -572,13 +572,13 @@ TEST_F(ElementTest, CalcValence_Tellurium_PlusTwo_LowConn)
 
 TEST_F(ElementTest, CalcValence_Halogens_PlusOne_OddConn_BadValence)
 {
-    // Cl/Br/I/At with charge +1 and conn=3 -> non-standard valence (permissive)
+    // Cl/Br/I/At with charge +1 and conn=3 -> bad valence under hybrid contract.
     const int halogens[] = {ELEM_Cl, ELEM_Br, ELEM_I, ELEM_At};
     for (int elem : halogens)
     {
         int valence = 0, hyd = 0;
         bool nonStd = false;
-        EXPECT_TRUE(Element::calcValence(elem, 1, 0, 3, valence, hyd, false, &nonStd)) << Element::toString(elem);
+        EXPECT_FALSE(Element::calcValence(elem, 1, 0, 3, valence, hyd, false, &nonStd)) << Element::toString(elem);
         EXPECT_TRUE(nonStd) << Element::toString(elem) << " should be non-standard";
         EXPECT_EQ(hyd, 0) << Element::toString(elem);
     }
@@ -615,8 +615,8 @@ TEST_F(ElementTest, CalcValence_Phosphorus_MinusOne_ThreeConn_BadValence)
 {
     int valence = 0, hyd = 0;
     bool nonStd = false;
-    // P(-1) with conn=3: non-standard valence (permissive model)
-    EXPECT_TRUE(Element::calcValence(ELEM_P, -1, 0, 3, valence, hyd, false, &nonStd));
+    // P(-1) with conn=3: bad valence under hybrid contract.
+    EXPECT_FALSE(Element::calcValence(ELEM_P, -1, 0, 3, valence, hyd, false, &nonStd));
     EXPECT_TRUE(nonStd);
     EXPECT_EQ(hyd, 0);
 }
