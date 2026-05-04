@@ -155,7 +155,7 @@ std::unique_ptr<GROSS_UNITS> MoleculeGrossFormula::collect(BaseMolecule& mol, bo
     {
         RepeatingUnit* ru = (RepeatingUnit*)&mol.sgroups.getSGroup(i - 1, SGroup::SG_TYPE_SRU);
         filters[i].copy(ru->atoms);
-        indices[i].copy(ru->subscript.ptr(), ru->subscript.size() - 1); // Remove '0' symbol at the end
+        indices[i].copy(ru->label.ptr(), ru->label.size() - 1); // Remove '0' symbol at the end
         // Filter polymer atoms
         for (int j = 0; j < filters[i].size(); j++)
         {

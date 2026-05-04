@@ -1055,7 +1055,7 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
             RepeatingUnit& ru = (RepeatingUnit&)sgroup;
             if (s.HasMember("subscript"))
             {
-                sgroup.subscript.readString(s["subscript"].GetString(), true);
+                sgroup.label.readString(s["subscript"].GetString(), true);
             }
 
             if (s.HasMember("connectivity"))
@@ -1073,7 +1073,7 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
         case SGroup::SG_TYPE_SUP: {
             Superatom& sg = (Superatom&)sgroup;
             if (s.HasMember("name"))
-                sgroup.subscript.readString(s["name"].GetString(), true);
+                sgroup.label.readString(s["name"].GetString(), true);
             if (s.HasMember("expanded"))
                 sg.contracted = s["expanded"].GetBool() ? DisplayOption::Expanded : DisplayOption::Contracted;
             if (s.HasMember("class"))
@@ -1518,7 +1518,7 @@ int MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_tem
                         }
                     }
                     sa.sa_class.appendString("LGRP", true);
-                    sa.subscript.appendString(group_name.c_str(), true);
+                    sa.label.appendString(group_name.c_str(), true);
 
                     att_desc.leaving_group = grp_idx;
                     fillXBondsAndBrackets(sa, monomer_mol);
@@ -1559,7 +1559,7 @@ int MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_tem
                 sa.sa_class.appendString(mclass.c_str(), true);
 
             if (alias.size())
-                sa.subscript.appendString(alias.c_str(), true);
+                sa.label.appendString(alias.c_str(), true);
 
             if (natreplace.size())
                 sa.sa_natreplace.appendString(natreplace.c_str(), true);

@@ -1130,7 +1130,7 @@ void MoleculeCdxmlSaver::addFragmentNodes(BaseMolecule& mol, tinyxml2::XMLElemen
         }
 
         auto& sa = (Superatom&)mol.sgroups.getSGroup(kvp.first);
-        if (sa.subscript.size())
+        if (sa.label.size())
         {
             XMLElement* t = _doc->NewElement("t");
             node->LinkEndChild(t);
@@ -1147,7 +1147,7 @@ void MoleculeCdxmlSaver::addFragmentNodes(BaseMolecule& mol, tinyxml2::XMLElemen
             t->SetAttribute("LabelAlignment", "Above");
             XMLElement* s = _doc->NewElement("s");
             t->LinkEndChild(s);
-            XMLText* txt = _doc->NewText(sa.subscript.ptr());
+            XMLText* txt = _doc->NewText(sa.label.ptr());
             s->LinkEndChild(txt);
         }
     }
@@ -2172,7 +2172,7 @@ void MoleculeCdxmlSaver::deleteNamelessSGroups(BaseMolecule& bmol)
         if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
         {
             auto& sa = static_cast<Superatom&>(sg);
-            if (sa.subscript.size() == 0 || std::string(sa.subscript.ptr()).size() == 0)
+            if (sa.label.size() == 0 || std::string(sa.label.ptr()).size() == 0)
                 bmol.sgroups.remove(j);
         }
     }

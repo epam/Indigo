@@ -770,8 +770,8 @@ int BaseMolecule::transformFullCTABtoSCSR(ObjArray<TGroup>& templates)
 
              if (use_scsr_name)
              {
-                if ( (tg.tgroup_name.memcmp(su.subscript) == -1) &&
-                     (tg.tgroup_alias.memcmp(su.subscript) == -1) )
+                if ( (tg.tgroup_name.memcmp(su.label) == -1) &&
+                     (tg.tgroup_alias.memcmp(su.label) == -1) )
                 {
                    continue;
                 }

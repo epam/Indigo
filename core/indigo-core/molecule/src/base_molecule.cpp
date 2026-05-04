@@ -178,7 +178,7 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
         sg.parent_idx = supersg.parent_idx;
         sg.original_group = supersg.original_group;
         sg.parent_group = supersg.parent_group;
-        sg.subscript.copy(supersg.subscript);
+        sg.label.copy(supersg.label);
 
         if (_mergeSGroupWithSubmolecule(sg, supersg, mol, mapping, edge_mapping))
         {

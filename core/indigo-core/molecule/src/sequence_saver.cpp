@@ -1141,7 +1141,7 @@ std::string SequenceSaver::saveHELM(KetDocument& document, const std::vector<std
             if (sgroup.sgroup_type != SGroup::SG_TYPE_SUP)
                 continue;
             Superatom& sa = static_cast<Superatom&>(sgroup);
-            if (sa.subscript.size() != 0 && sa.subscript.ptr()[0] != 0)
+            if (sa.label.size() != 0 && sa.label.ptr()[0] != 0)
                 continue;
             // convert leaving atom H to rg-ref
             auto res = mol_atom_to_ap.try_emplace(mol_id);
