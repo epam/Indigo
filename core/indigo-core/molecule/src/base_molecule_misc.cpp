@@ -644,7 +644,7 @@ int BaseMolecule::transformHELMtoSGroups(Array<char>& helm_class, Array<char>& h
     int idx = sgroups.addSGroup("SUP");
     Superatom& sg = (Superatom&)sgroups.getSGroup(idx);
     sg.atoms.copy(sg_atoms);
-    sg.subscript.copy(helm_name);
+    sg.label.copy(helm_name);
     if (helm_class.size() > 6 && strncmp(helm_class.ptr(), "PEPTIDE", 7) == 0)
         sg.sa_class.readString("AA", true);
     else
@@ -663,9 +663,9 @@ int BaseMolecule::transformHELMtoSGroups(Array<char>& helm_class, Array<char>& h
             Superatom& lvsg = (Superatom&)sgroups.getSGroup(lvidx);
             lvsg.atoms.push(i);
             if (strncmp(r_names.at(r_num), "O", 1) == 0 && strlen(r_names.at(r_num)) == 1)
-                lvsg.subscript.readString("OH", true);
+                lvsg.label.readString("OH", true);
             else
-                lvsg.subscript.readString(r_names.at(r_num), true);
+                lvsg.label.readString(r_names.at(r_num), true);
             lvsg.sa_class.readString("LGRP", true);
             asMolecule().resetAtom(i, Element::fromString(r_names.at(r_num)));
 

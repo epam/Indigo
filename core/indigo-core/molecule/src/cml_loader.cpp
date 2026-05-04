@@ -1569,7 +1569,7 @@ void CmlLoader::_loadSGroupElement(XMLElement* elem, std::unordered_map<std::str
 
             const char* title = elem->Attribute("title");
             if (title != 0)
-                sru->subscript.readString(title, true);
+                sru->label.readString(title, true);
 
             const char* connect = elem->Attribute("connect");
             if (connect != 0)
@@ -1793,7 +1793,7 @@ void CmlLoader::_loadSGroupElement(XMLElement* elem, std::unordered_map<std::str
 
             const char* title = elem->Attribute("title");
             if (title != 0)
-                sup->subscript.readString(title, true);
+                sup->label.readString(title, true);
 
             XMLNode* pChild;
             for (pChild = elem->FirstChild(); pChild != 0; pChild = pChild->NextSibling())

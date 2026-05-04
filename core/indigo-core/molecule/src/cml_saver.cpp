@@ -715,7 +715,7 @@ void CmlSaver::_addSgroupElement(XMLElement* molecule, BaseMolecule& mol, SGroup
 
         Superatom& sup = (Superatom&)sgroup;
 
-        const char* name = sup.subscript.ptr();
+        const char* name = sup.label.ptr();
         if (name != 0 && strlen(name) > 0)
         {
             sg->SetAttribute("title", name);
@@ -737,7 +737,7 @@ void CmlSaver::_addSgroupElement(XMLElement* molecule, BaseMolecule& mol, SGroup
 
         RepeatingUnit& sru = (RepeatingUnit&)sgroup;
 
-        const char* name = sru.subscript.ptr();
+        const char* name = sru.label.ptr();
         if (name != 0 && strlen(name) > 0)
         {
             sg->SetAttribute("title", name);

@@ -905,12 +905,12 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                                    sup.bond_connections[j].bond_dir.y, 0.f);
                     }
                 }
-                if (sgroup.subscript.size() > 1)
+                if (sgroup.label.size() > 1)
                 {
-                    if (sgroup.subscript.find(' ') > -1)
-                        out.printf(" LABEL=\"%s\"", sgroup.subscript.ptr());
+                    if (sgroup.label.find(' ') > -1)
+                        out.printf(" LABEL=\"%s\"", sgroup.label.ptr());
                     else
-                        out.printf(" LABEL=%s", sgroup.subscript.ptr());
+                        out.printf(" LABEL=%s", sgroup.label.ptr());
                 }
                 // convert CHEM to LINKER for BIOVIA
                 if (sup.sa_class.size() > 1)
@@ -1022,12 +1022,12 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                     out.printf(" CONNECT=HT");
                 else
                     out.printf(" CONNECT=EU");
-                if (sgroup.subscript.size() > 1)
+                if (sgroup.label.size() > 1)
                 {
-                    if (sgroup.subscript.find(' ') > -1)
-                        out.printf(" LABEL=\"%s\"", sgroup.subscript.ptr());
+                    if (sgroup.label.find(' ') > -1)
+                        out.printf(" LABEL=\"%s\"", sgroup.label.ptr());
                     else
-                        out.printf(" LABEL=%s", sgroup.subscript.ptr());
+                        out.printf(" LABEL=%s", sgroup.label.ptr());
                 }
                 _writeMultiString(output, buf.ptr(), buf.size());
             }
@@ -1769,12 +1769,12 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             }
 
             // Write SMT (subscript/label) for any SGroup type that has it
-            if (sgroup.sgroup_type != SGroup::SG_TYPE_MUL && sgroup.subscript.size() > 1)
+            if (sgroup.sgroup_type != SGroup::SG_TYPE_MUL && sgroup.label.size() > 1)
             {
-                if (sgroup.subscript.find(' ') > -1)
-                    output.printfCR("M  SMT %3d \"%s\"", sgroup.original_group, sgroup.subscript.ptr());
+                if (sgroup.label.find(' ') > -1)
+                    output.printfCR("M  SMT %3d \"%s\"", sgroup.original_group, sgroup.label.ptr());
                 else
-                    output.printfCR("M  SMT %3d %s", sgroup.original_group, sgroup.subscript.ptr());
+                    output.printfCR("M  SMT %3d %s", sgroup.original_group, sgroup.label.ptr());
             }
 
             if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)

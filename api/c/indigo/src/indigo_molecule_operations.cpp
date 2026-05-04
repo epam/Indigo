@@ -778,7 +778,7 @@ void IndigoSuperatom::remove()
 
 const char* IndigoSuperatom::getName()
 {
-    return ((Superatom&)mol.sgroups.getSGroup(idx)).subscript.ptr();
+    return ((Superatom&)mol.sgroups.getSGroup(idx)).label.ptr();
 }
 
 IndigoSuperatom& IndigoSuperatom::cast(IndigoObject& obj)
@@ -1375,7 +1375,7 @@ CEXPORT int indigoAddSuperatom(int molecule, int natoms, int* atoms, const char*
         BaseMolecule& mol = self.getObject(molecule).getBaseMolecule();
         int idx = mol.sgroups.addSGroup(SGroup::SG_TYPE_SUP);
         Superatom& satom = (Superatom&)mol.sgroups.getSGroup(idx);
-        satom.subscript.appendString(name, true);
+        satom.label.appendString(name, true);
         if (atoms == nullptr)
             throw IndigoError("indigoAddSuperatom(): atoms were not specified");
 
@@ -1641,7 +1641,7 @@ CEXPORT int indigoCreateSGroup(const char* type, int mapping, const char* name)
                 }
             }
 
-            sgroup.subscript.appendString(name, true);
+            sgroup.label.appendString(name, true);
 
             if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
             {
@@ -1698,7 +1698,7 @@ CEXPORT int indigoSetSGroupName(int sgroup, const char* sgname)
     {
         IndigoObject& obj = self.getObject(sgroup);
         SGroup& sg = IndigoSGroup::cast(obj).get();
-        sg.subscript.readString(sgname, true);
+        sg.label.readString(sgname, true);
 
         return 1;
     }
@@ -1711,9 +1711,9 @@ CEXPORT const char* indigoGetSGroupName(int sgroup)
     {
         IndigoObject& obj = self.getObject(sgroup);
         SGroup& sg = IndigoSGroup::cast(obj).get();
-        if (sg.subscript.size() < 1)
+        if (sg.label.size() < 1)
             return "";
-        return sg.subscript.ptr();
+        return sg.label.ptr();
     }
     INDIGO_END(0);
 }
@@ -2073,7 +2073,7 @@ CEXPORT const char* indigoGetRepeatingUnitSubscript(int sgroup)
     INDIGO_BEGIN
     {
         RepeatingUnit& ru = IndigoRepeatingUnit::cast(self.getObject(sgroup)).get();
-        return ru.subscript.ptr();
+        return ru.label.ptr();
     }
     INDIGO_END(0);
 }
