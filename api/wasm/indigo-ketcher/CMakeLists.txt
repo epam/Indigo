@@ -35,6 +35,7 @@ set(EMCC_COMMON_FLAGS
         -s ALLOW_MEMORY_GROWTH=1
         -s DISABLE_EXCEPTION_CATCHING=0
         -s DYNAMIC_EXECUTION=0
+        -s ENVIRONMENT=web,worker
         -s MODULARIZE=1
         -s FILESYSTEM=1
         ${EMCC_ASSERTIONS}
@@ -53,6 +54,7 @@ set(EMCC_FLAGS_SEPARATE
 set(EMCC_FLAGS
         ${EMCC_COMMON_FLAGS}
         -s SINGLE_FILE=1
+        -s SINGLE_FILE_BINARY_ENCODE=0
         )
 
 set(TARGET_FILES
