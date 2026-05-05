@@ -102,6 +102,11 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResultString(this, lib.indigoHelm(self, library.self));
     }
 
+    public String biln(IndigoObject library) {
+        dispatcher.setSessionID();
+        return Indigo.checkResultString(this, lib.indigoBiln(self, library.self));
+    }
+
     public String axolabs(IndigoObject library) {
         dispatcher.setSessionID();
         return Indigo.checkResultString(this, lib.indigoAxoLabs(self, library.self));
@@ -1184,6 +1189,19 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return addDataSGroup(Indigo.toIntArray(atoms), Indigo.toIntArray(bonds), description, data);
     }
 
+    public IndigoObject addSuperatom(int[] atoms, String name) {
+        if (name == null) name = "";
+        dispatcher.setSessionID();
+        return new IndigoObject(
+                dispatcher,
+                Indigo.checkResult(this, lib.indigoAddSuperatom(self, atoms.length, atoms, name)),
+                this);
+    }
+
+    public IndigoObject addSuperatom(Collection<Integer> atoms, String name) {
+        return addSuperatom(Indigo.toIntArray(atoms), name);
+    }
+
     public IndigoObject createSGroup(String type, IndigoObject mapping, String name) {
         dispatcher.setSessionID();
         return new IndigoObject(
@@ -1219,6 +1237,16 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
     public int getSGroupNumCrossBonds() {
         dispatcher.setSessionID();
         return Indigo.checkResult(this, lib.indigoGetSGroupNumCrossBonds(self));
+    }
+
+    public int createCrossBonds() {
+        dispatcher.setSessionID();
+        return Indigo.checkResult(this, lib.indigoCreateCrossBonds(self));
+    }
+
+    public int clearSGroupCrossBonds() {
+        dispatcher.setSessionID();
+        return Indigo.checkResult(this, lib.indigoClearSGroupCrossBonds(self));
     }
 
     public int addSGroupAttachmentPoint(int aidx, int lvidx, String apid) {

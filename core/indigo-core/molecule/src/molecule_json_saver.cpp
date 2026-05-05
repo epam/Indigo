@@ -360,7 +360,7 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
     case SGroup::SG_TYPE_SUP: {
         Superatom& sa = (Superatom&)sgroup;
         writer.Key("name");
-        writer.String(sa.subscript.size() ? sa.subscript.ptr() : "");
+        writer.String(sgroup.subscript.size() ? sgroup.subscript.ptr() : "");
         if (sa.contracted == DisplayOption::Expanded)
         {
             writer.Key("expanded");
@@ -402,10 +402,10 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
     break;
     case SGroup::SG_TYPE_SRU: {
         RepeatingUnit& ru = (RepeatingUnit&)sgroup;
-        if (ru.subscript.size())
+        if (sgroup.subscript.size())
         {
             writer.Key("subscript");
-            writer.String(ru.subscript.ptr());
+            writer.String(sgroup.subscript.ptr());
         }
 
         writer.Key("connectivity");

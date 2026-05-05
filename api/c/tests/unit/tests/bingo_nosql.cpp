@@ -25,6 +25,7 @@
 
 #include <base_cpp/exception.h>
 
+#include <chrono>
 #include <deque>
 #include <iostream>
 #include <list>

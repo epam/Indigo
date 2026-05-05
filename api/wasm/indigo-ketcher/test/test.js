@@ -542,6 +542,15 @@ M  END
             assert.equal(smarts, '[#6]1-[#6]-[#6]-[#6]-1.[#6]1-[#6]-[#6]-[#6]-[#6]-[#6]-[#6]-1>>[#6]1-[#6]-[#6]-1')
             options.delete();
         });
+        test("convert", "daylight-smiles-via-options", () => {
+            var fs = require('fs');
+            const ket_3580 = fs.readFileSync("issue_3580.ket").toString();
+            let options = new indigo.MapStringString();
+            options.set("outputFormat", "chemical/x-daylight-smiles");
+            const smiles = indigo.convert(ket_3580, "smiles", options);
+            assert.equal(smiles.indexOf("|"), -1, "Daylight SMILES should not contain extended SMILES block (issue #3580)");
+            options.delete();
+        });
     }
 
     // Convert explicit hydrogens
@@ -789,6 +798,15 @@ M  END
             options.set("bool", "1");
             assert.throws(() => {
                 indigo.convert(mol_smiles, "smiles", options);
+            });
+            options.delete();
+        });
+
+        test("throws", "wrong_input_format_3220", () => {
+            let options = new indigo.MapStringString();
+            options.set("input-format", "chemical/x-mdl-molfile");
+            assert.throws(() => {
+                indigo.convert("sdfsdfsd", "ket", options);
             });
             options.delete();
         });
@@ -1162,6 +1180,48 @@ M  END
     }
 
     {
+        test("BILN", "basic", () => {
+            var fs = require('fs');
+            let options = new indigo.MapStringString();
+            const monomersLib = fs.readFileSync("monomer_library.ket");
+            options.set("output-content-type", "application/json");
+            options.set("input-format", "chemical/x-biln");
+            options.set("monomerLibrary", monomersLib);
+            const biln = "A-K";
+            const res = indigo.convert(biln, "ket", options);
+            const res_ket = JSON.parse(res).struct;
+            // round-trip: KET -> BILN
+            let save_options = new indigo.MapStringString();
+            save_options.set("output-content-type", "application/json");
+            save_options.set("input-format", "chemical/x-indigo-ket");
+            save_options.set("monomerLibrary", monomersLib);
+            const res_biln = JSON.parse(indigo.convert(res_ket, "biln", save_options)).struct;
+            assert.equal(res_biln, biln);
+            // round-trip: KET -> HELM
+            const res_helm = JSON.parse(indigo.convert(res_ket, "helm", save_options)).struct;
+            assert.equal(res_helm, "PEPTIDE1{A.K}$$$$V2.0");
+            options.delete();
+            save_options.delete();
+        });
+    }
+
+    {
+        test("BILN", "cross_links", () => {
+            var fs = require('fs');
+            let options = new indigo.MapStringString();
+            const monomersLib = fs.readFileSync("monomer_library.ket");
+            options.set("output-content-type", "application/json");
+            options.set("input-format", "chemical/x-biln");
+            options.set("monomerLibrary", monomersLib);
+            const biln = "Ac(1,2).A-K(1,3)";
+            const res = indigo.convert(biln, "helm", options);
+            const res_helm = JSON.parse(res).struct;
+            assert.equal(res_helm, "PEPTIDE1{[Ac]}|PEPTIDE2{A.K}$PEPTIDE1,PEPTIDE2,1:R2-2:R3$$$V2.0");
+            options.delete();
+        });
+    }
+
+    {
         test("AxoLabs", "basic", () => {
             var fs = require('fs');
             let options = new indigo.MapStringString();
@@ -1527,6 +1587,23 @@ M  END
             let options = new indigo.MapStringString();
             const values = JSON.parse(indigo.check(mol_smiles, "", options));
             assert.equal(values.coord, 'Structure has no atoms coordinates');
+            options.delete();
+        });
+    }
+
+    // Layout performance test for large peptide
+    {
+        test("layout", "big_peptide_performance", () => {
+            var fs = require('fs');
+            const smiles = fs.readFileSync("big_peptide.smi").toString().trim();
+            let options = new indigo.MapStringString();
+            const startTime = process.hrtime();
+            const result = indigo.layout(smiles, "ket", options);
+            const elapsed = process.hrtime(startTime);
+            const elapsedSeconds = (elapsed[0] + elapsed[1] / 1e9).toFixed(3);
+            console.log(`    Layout of big peptide took ${elapsedSeconds}s`);
+            assert(result.length > 0, "Layout result should not be empty");
+            assert(parseFloat(elapsedSeconds) < 30, `Layout took too long: ${elapsedSeconds}s (limit: 30s)`);
             options.delete();
         });
     }

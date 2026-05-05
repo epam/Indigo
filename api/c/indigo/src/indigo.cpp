@@ -144,6 +144,8 @@ void Indigo::init()
     smiles_loading_strict_aliphatic = false;
     smiles_saving_smarts_mode = false;
 
+    input_format = "auto";
+
     aam_cancellation_timeout = 0;
     cancellation_timeout = 0;
 

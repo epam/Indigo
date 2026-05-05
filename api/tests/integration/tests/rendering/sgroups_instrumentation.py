@@ -178,6 +178,62 @@ testIterateSGroupAttachmentPoints()
 testSGroupAttachmentPointStaleHandle()
 testSGroupAttachmentPointInvalidTarget()
 
+
+def testClearSGroupCrossBonds():
+    """Test clearing cross bonds and invalid target error path."""
+    indigo.setOption("molfile-saving-mode", "2000")
+
+    def _cross_bond_indices(sg):
+        return sorted([bond.index() for bond in sg.iterateBonds()])
+
+    # Build a deterministic superatom with >1 crossing bond
+    # Chain: 0-1-2-3-4, superatom atoms = [1,2,3]
+    # Crossing bonds expected: (0-1) and (3-4)
+    m = indigo.loadMolecule("CSOCC")
+    t = indigo.loadQueryMolecule("SOC")
+
+    matcher = indigo.substructureMatcher(m)
+    for match in matcher.iterateMatches(t):
+        sg = m.createSGroup("SUP", match, "MID")
+
+        before_count = sg.getSGroupNumCrossBonds()
+        before_indices = _cross_bond_indices(sg)
+        print("Cross bonds before clear: %d" % before_count)
+        print("Cross bond indices before clear: %s" % before_indices)
+
+        sg.clearSGroupCrossBonds()
+        after_clear_count = sg.getSGroupNumCrossBonds()
+        after_clear_indices = _cross_bond_indices(sg)
+        print("Cross bonds after clear: %d" % after_clear_count)
+        print("Cross bond indices after clear: %s" % after_clear_indices)
+
+        sg.createCrossBonds()
+        after_create_count = sg.getSGroupNumCrossBonds()
+        after_create_indices = _cross_bond_indices(sg)
+        print("Cross bonds after create: %d" % after_create_count)
+        print("Cross bond indices after create: %s" % after_create_indices)
+        break  # test with first match only
+
+    data_sg = m.addDataSGroup([0, 1], [], "ID", "test")
+    try:
+        data_sg.clearSGroupCrossBonds()
+    except IndigoException as e:
+        print(
+            "Expected error for clearSGroupCrossBonds on data SGroup: %s"
+            % getIndigoExceptionText(e)
+        )
+    try:
+        data_sg.createCrossBonds()
+    except IndigoException as e:
+        print(
+            "Expected error for createCrossBonds on data SGroup: %s"
+            % getIndigoExceptionText(e)
+        )
+
+
+print("****** SGroup Cross Bonds ********")
+testClearSGroupCrossBonds()
+
 print("****** Get/Set Multiplier ********")
 indigo.setOption("molfile-saving-mode", "3000")
 m = indigo.loadMoleculeFromFile(
@@ -375,6 +431,103 @@ renderer.renderToFile(m, joinPathPy("out/result_2.png", __file__))
 data_group = m.getDataSGroup(0)
 print("data s-group description = %s" % data_group.description())
 print("data s-group data = %s" % data_group.data())
+
+print("****** Iterate and Count Atoms/Bonds on SGroups ********")
+
+
+def _collect_indices(iterator):
+    result = []
+    for item in iterator:
+        result.append(item.index())
+    return result
+
+
+def testIterateAtomsBondsOnSGroups():
+    # 1) DataSGroup: deterministic hand-crafted case
+    m = indigo.loadMolecule("CCCO")
+    dsg = m.addDataSGroup([0, 1, 2], [0, 1], "ID", "iter")
+    dsg_atoms = _collect_indices(dsg.iterateAtoms())
+    dsg_bonds = _collect_indices(dsg.iterateBonds())
+    print(
+        "DataSGroup iterate: countAtoms=%d iterAtoms=%d atoms=%s"
+        % (dsg.countAtoms(), len(dsg_atoms), dsg_atoms)
+    )
+    print(
+        "DataSGroup iterate: countBonds=%d iterBonds=%d bonds=%s"
+        % (dsg.countBonds(), len(dsg_bonds), dsg_bonds)
+    )
+
+    # 2) Common SGroup
+    for sg in m.iterateSGroups():
+        sg_atoms = _collect_indices(sg.iterateAtoms())
+        sg_bonds = _collect_indices(sg.iterateBonds())
+        print(
+            "SGroup iterate: countAtoms=%d iterAtoms=%d"
+            % (sg.countAtoms(), len(sg_atoms))
+        )
+        print(
+            "SGroup iterate: countBonds=%d iterBonds=%d"
+            % (sg.countBonds(), len(sg_bonds))
+        )
+
+    # 3) Superatom typed object
+    indigo.setOption("molfile-saving-mode", "2000")
+    # 3a) Try explicit empty superatom
+    m_empty = indigo.loadMolecule("CC")
+    try:
+        empty_sup = m_empty.addSuperatom([], "EMPTY")
+        empty_atoms = _collect_indices(empty_sup.iterateAtoms())
+        empty_bonds = _collect_indices(empty_sup.iterateBonds())
+        print(
+            "Empty Superatom iterate: countAtoms=%d iterAtoms=%d"
+            % (empty_sup.countAtoms(), len(empty_atoms))
+        )
+        print(
+            "Empty Superatom iterate: countBonds=%d iterBonds=%d"
+            % (empty_sup.countBonds(), len(empty_bonds))
+        )
+    except IndigoException as e:
+        print("%s" % (getIndigoExceptionText(e)))
+
+    # 3b) Superatom from template match
+    m2 = indigo.loadMoleculeFromFile(
+        dataPath("molecules/sgroups/sgroups-base.mol")
+    )
+    t2 = indigo.loadQueryMoleculeFromFile(
+        dataPath("molecules/sgroups/sgroups-template.mol")
+    )
+    matcher2 = indigo.substructureMatcher(m2)
+    for match in matcher2.iterateMatches(t2):
+        sup = m2.createSGroup("SUP", match, "IterAtomsBonds")
+        sup_atoms = _collect_indices(sup.iterateAtoms())
+        sup_bonds = _collect_indices(sup.iterateBonds())
+        print(
+            "Superatom iterate: countAtoms=%d iterAtoms=%d"
+            % (sup.countAtoms(), len(sup_atoms))
+        )
+        print(
+            "Superatom iterate: countBonds=%d iterBonds=%d"
+            % (sup.countBonds(), len(sup_bonds))
+        )
+        break  # test with first match only
+
+    # 4) MultipleGroup from fixture
+    m3 = indigo.loadMoleculeFromFile(dataPath("molecules/sgroups/rep-dat.mol"))
+    mul = m3.getMultipleGroup(1)
+    mul_atoms = _collect_indices(mul.iterateAtoms())
+    mul_bonds = _collect_indices(mul.iterateBonds())
+    print(
+        "MultipleGroup iterate: countAtoms=%d iterAtoms=%d"
+        % (mul.countAtoms(), len(mul_atoms))
+    )
+    print(
+        "MultipleGroup iterate: countBonds=%d iterBonds=%d"
+        % (mul.countBonds(), len(mul_bonds))
+    )
+
+
+testIterateAtomsBondsOnSGroups()
+
 if isIronPython():
     saver.Dispose()
     renderer.Dispose()

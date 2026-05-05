@@ -16,8 +16,8 @@ namespace com.epam.indigo
         [DllImport("indigo-inchi"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoInchiLoadMolecule(String inchi_string);
 
-        [DllImport("indigo-inchi"), SuppressUnmanagedCodeSecurity]
-        public static extern byte* indigoInchiGetInchi(int molecule);
+        [DllImport("indigo-inchi", EntryPoint = "indigoInchiGetInchiWithForcedOptions"), SuppressUnmanagedCodeSecurity]
+        public static extern byte* indigoInchiGetInchi(int molecule, String forceOptions = null);
 
         [DllImport("indigo-inchi"), SuppressUnmanagedCodeSecurity]
         public static extern byte* indigoInchiGetInchiKey(String inchi_string);

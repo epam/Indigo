@@ -1124,7 +1124,8 @@ void MolfileLoader::_readRGroups3000()
                     throw Error("unexpected string in rgroup: %s", str.ptr());
             }
         }
-        else if ((strncmp(str.ptr(), "M  END", 6) == 0) || (strncmp(str.ptr(), "M  V30 BEGIN TEMPLATE", 21) == 0))
+        else if ((strncmp(str.ptr(), "M  END", 6) == 0) || (strncmp(str.ptr(), "M  V30 BEGIN TEMPLATE", 21) == 0) ||
+                 (strncmp(str.ptr(), "M  V30 END ", 11) == 0) || (strncmp(str.ptr(), "M  V30 BEGIN CTAB", 15) == 0))
         {
             _scanner.seek(next_block_pos, SEEK_SET);
             break;
@@ -1340,15 +1341,9 @@ void MolfileLoader::_readSGroup3000(const char* str)
                 }
                 if (c == ' ' && !has_quote)
                     break;
-                if (sup != 0)
-                    sup->subscript.push(c);
-                if (sru != 0)
-                    sru->subscript.push(c);
+                sgroup->subscript.push(c);
             }
-            if (sup != 0)
-                sup->subscript.push(0);
-            if (sru != 0)
-                sru->subscript.push(0);
+            sgroup->subscript.push(0);
         }
         else if (strcmp(entity.ptr(), "CLASS") == 0)
         {

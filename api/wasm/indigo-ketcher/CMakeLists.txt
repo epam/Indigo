@@ -18,8 +18,15 @@ if (CMAKE_BUILD_TYPE STREQUAL Debug)
             )
 else ()
     set(EMCC_FLAGS
-            -Oz
+            -O3
+            -msimd128
             )
+endif ()
+
+if (CMAKE_BUILD_TYPE STREQUAL Debug)
+    set(EMCC_ASSERTIONS -s ASSERTIONS=1)
+else ()
+    set(EMCC_ASSERTIONS -s ASSERTIONS=0)
 endif ()
 
 set(EMCC_COMMON_FLAGS
@@ -29,7 +36,7 @@ set(EMCC_COMMON_FLAGS
         -s DISABLE_EXCEPTION_CATCHING=0
         -s MODULARIZE=1
         -s FILESYSTEM=1
-        -s ASSERTIONS=1
+        ${EMCC_ASSERTIONS}
         -s USE_SDL=0 -s USE_SDL_IMAGE=0 -s USE_SDL_TTF=0 -s USE_SDL_NET=0
         --no-entry
         ${EMCC_FLAGS}

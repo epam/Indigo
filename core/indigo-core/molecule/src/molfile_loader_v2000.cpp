@@ -1070,27 +1070,19 @@ void MolfileLoader::_readCtab2000()
             {
                 _scanner.skip(1);
                 int sgroup_idx = _scanner.readIntFix(3) - 1;
-                if (_sgroup_types[sgroup_idx] == SGroup::SG_TYPE_SUP)
-                {
-                    _scanner.skip(1);
-                    Superatom& sup = (Superatom&)_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
-                    _scanner.readQuotedLine(sup.subscript, true);
-                }
-                else if (_sgroup_types[sgroup_idx] == SGroup::SG_TYPE_MUL)
+                if (_sgroup_types[sgroup_idx] == SGroup::SG_TYPE_MUL)
                 {
                     _scanner.skip(1);
                     MultipleGroup& mg = (MultipleGroup&)_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
                     mg.multiplier = _scanner.readInt();
                     _scanner.skipLine();
                 }
-                else if (_sgroup_types[sgroup_idx] == SGroup::SG_TYPE_SRU)
-                {
-                    _scanner.skip(1);
-                    RepeatingUnit& sru = (RepeatingUnit&)_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
-                    _scanner.readQuotedLine(sru.subscript, true);
-                }
                 else
-                    _scanner.skipLine();
+                {
+                    SGroup& sgroup = _bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
+                    _scanner.skip(1);
+                    _scanner.readQuotedLine(sgroup.subscript, true);
+                }
             }
             else if (strncmp(chars, "SCL", 3) == 0)
             {

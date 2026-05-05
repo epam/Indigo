@@ -754,8 +754,8 @@
     "type": "monomer",
     "id": "0",
     "position": {
-      "x": 0.5339,
-      "y": -2.7252
+      "x": 0.5445,
+      "y": -2.6633
     },
     "alias": "C",
     "templateId": "C___Cytosine"
@@ -764,8 +764,8 @@
     "type": "monomer",
     "id": "1",
     "position": {
-      "x": 1.4125,
-      "y": -1.5094
+      "x": 1.4135,
+      "y": -1.4406
     },
     "alias": "R",
     "templateId": "R___Ribose"
@@ -774,8 +774,8 @@
     "type": "monomer",
     "id": "2",
     "position": {
-      "x": 2.8379,
-      "y": -1.0422
+      "x": 2.8351,
+      "y": -0.9622
     },
     "alias": "P",
     "templateId": "P___Phosphate"
@@ -784,8 +784,8 @@
     "type": "monomer",
     "id": "3",
     "position": {
-      "x": 5.1504,
-      "y": -2.7133
+      "x": 5.1608,
+      "y": -2.615
     },
     "alias": "G",
     "templateId": "G___Guanine"
@@ -794,8 +794,8 @@
     "type": "monomer",
     "id": "4",
     "position": {
-      "x": 4.2656,
-      "y": -1.5021
+      "x": 4.2665,
+      "y": -1.4108
     },
     "alias": "R",
     "templateId": "R___Ribose"
@@ -814,8 +814,8 @@
     "type": "monomer",
     "id": "6",
     "position": {
-      "x": 6.6197,
-      "y": -2.9502
+      "x": 6.4729,
+      "y": -2.7666
     },
     "alias": "T",
     "templateId": "T___Thymine"
@@ -824,8 +824,8 @@
     "type": "monomer",
     "id": "7",
     "position": {
-      "x": 7.4622,
-      "y": -1.7091
+      "x": 7.3487,
+      "y": -1.5489
     },
     "alias": "R",
     "templateId": "R___Ribose"
@@ -834,8 +834,8 @@
     "type": "monomer",
     "id": "8",
     "position": {
-      "x": 8.8732,
-      "y": -1.2003
+      "x": 8.7731,
+      "y": -1.0785
     },
     "alias": "P",
     "templateId": "P___Phosphate"
@@ -844,8 +844,8 @@
     "type": "monomer",
     "id": "9",
     "position": {
-      "x": 11.2338,
-      "y": -2.8029
+      "x": 11.0894,
+      "y": -2.7445
     },
     "alias": "U",
     "templateId": "U___Uracil"
@@ -854,8 +854,8 @@
     "type": "monomer",
     "id": "10",
     "position": {
-      "x": 10.3139,
-      "y": -1.6181
+      "x": 10.2019,
+      "y": -1.5352
     },
     "alias": "R",
     "templateId": "R___Ribose"
@@ -874,8 +874,8 @@
     "type": "monomer",
     "id": "12",
     "position": {
-      "x": 12.6958,
-      "y": -3.0711
+      "x": 12.4673,
+      "y": -2.7432
     },
     "alias": "A",
     "templateId": "A___Adenine"
@@ -884,8 +884,8 @@
     "type": "monomer",
     "id": "13",
     "position": {
-      "x": 13.5026,
-      "y": -1.8066
+      "x": 13.3502,
+      "y": -1.5306
     },
     "alias": "R",
     "templateId": "R___Ribose"
@@ -894,8 +894,8 @@
     "type": "monomer",
     "id": "14",
     "position": {
-      "x": 14.8986,
-      "y": -1.2578
+      "x": 14.7773,
+      "y": -1.0686
     },
     "alias": "P",
     "templateId": "P___Phosphate"
@@ -904,8 +904,8 @@
     "type": "monomer",
     "id": "15",
     "position": {
-      "x": 17.3039,
-      "y": -2.7925
+      "x": 17.0838,
+      "y": -2.7481
     },
     "alias": "C",
     "templateId": "C___Cytosine"
@@ -914,8 +914,8 @@
     "type": "monomer",
     "id": "16",
     "position": {
-      "x": 16.3506,
-      "y": -1.6344
+      "x": 16.2034,
+      "y": -1.5337
     },
     "alias": "R",
     "templateId": "R___Ribose"
@@ -934,8 +934,8 @@
     "type": "monomer",
     "id": "18",
     "position": {
-      "x": 18.9154,
-      "y": -2.2204
+      "x": 18.4637,
+      "y": -2.7551
     },
     "selected": true,
     "alias": "T",
@@ -945,8 +945,8 @@
     "type": "monomer",
     "id": "19",
     "position": {
-      "x": 19.9219,
-      "y": -1.1082
+      "x": 19.3441,
+      "y": -1.5407
     },
     "selected": true,
     "alias": "R",
@@ -956,8 +956,8 @@
     "type": "monomer",
     "id": "20",
     "position": {
-      "x": 21.3899,
-      "y": -0.8
+      "x": 20.7703,
+      "y": -1.0757
     },
     "selected": true,
     "alias": "P",
@@ -967,8 +967,8 @@
     "type": "monomer",
     "id": "21",
     "position": {
-      "x": 23.5055,
-      "y": -2.7144
+      "x": 23.0802,
+      "y": -2.7504
     },
     "selected": true,
     "alias": "U",
@@ -978,8 +978,8 @@
     "type": "monomer",
     "id": "22",
     "position": {
-      "x": 22.7587,
-      "y": -1.4135
+      "x": 22.1973,
+      "y": -1.5378
     },
     "selected": true,
     "alias": "R",
@@ -1009,8 +1009,8 @@
     "type": "monomer",
     "id": "25",
     "position": {
-      "x": 22.3385,
-      "y": -5.318
+      "x": 22.2013,
+      "y": -5.4648
     },
     "selected": true,
     "alias": "R",
@@ -1020,8 +1020,8 @@
     "type": "monomer",
     "id": "26",
     "position": {
-      "x": 23.3449,
-      "y": -4.2058
+      "x": 23.0818,
+      "y": -4.2504
     },
     "selected": true,
     "alias": "A",
@@ -1031,8 +1031,8 @@
     "type": "monomer",
     "id": "27",
     "position": {
-      "x": 19.5017,
-      "y": -5.0127
+      "x": 19.3482,
+      "y": -5.4677
     },
     "selected": true,
     "alias": "R",
@@ -1042,8 +1042,8 @@
     "type": "monomer",
     "id": "28",
     "position": {
-      "x": 18.7549,
-      "y": -3.7118
+      "x": 18.4652,
+      "y": -4.2551
     },
     "selected": true,
     "alias": "A",
@@ -1053,8 +1053,8 @@
     "type": "monomer",
     "id": "29",
     "position": {
-      "x": 20.8705,
-      "y": -5.6262
+      "x": 20.7752,
+      "y": -5.9298
     },
     "selected": true,
     "alias": "P",
@@ -1064,8 +1064,8 @@
     "type": "monomer",
     "id": "30",
     "position": {
-      "x": 16.5876,
-      "y": -5.5543
+      "x": 16.1992,
+      "y": -5.4607
     },
     "alias": "R",
     "templateId": "R___Ribose"
@@ -1074,8 +1074,8 @@
     "type": "monomer",
     "id": "31",
     "position": {
-      "x": 17.3944,
-      "y": -4.2898
+      "x": 17.0822,
+      "y": -4.2481
     },
     "alias": "G",
     "templateId": "G___Guanine"
@@ -1094,8 +1094,8 @@
     "type": "monomer",
     "id": "33",
     "position": {
-      "x": 13.7396,
-      "y": -5.7265
+      "x": 13.3461,
+      "y": -5.4577
     },
     "alias": "R",
     "templateId": "R___Ribose"
@@ -1104,8 +1104,8 @@
     "type": "monomer",
     "id": "34",
     "position": {
-      "x": 12.7863,
-      "y": -4.5683
+      "x": 12.4657,
+      "y": -4.2432
     },
     "alias": "U",
     "templateId": "U___Uracil"
@@ -1114,8 +1114,8 @@
     "type": "monomer",
     "id": "35",
     "position": {
-      "x": 15.1916,
-      "y": -6.103
+      "x": 14.7722,
+      "y": -5.9227
     },
     "alias": "P",
     "templateId": "P___Phosphate"
@@ -1124,8 +1124,8 @@
     "type": "monomer",
     "id": "36",
     "position": {
-      "x": 10.4392,
-      "y": -5.5432
+      "x": 10.2207,
+      "y": -5.4622
     },
     "alias": "R",
     "templateId": "R___Ribose"
@@ -1134,8 +1134,8 @@
     "type": "monomer",
     "id": "37",
     "position": {
-      "x": 11.2817,
-      "y": -4.3021
+      "x": 11.0966,
+      "y": -4.2445
     },
     "alias": "A",
     "templateId": "A___Adenine"
@@ -1154,8 +1154,8 @@
     "type": "monomer",
     "id": "39",
     "position": {
-      "x": 7.5874,
-      "y": -5.6342
+      "x": 7.3676,
+      "y": -5.4759
     },
     "alias": "R",
     "templateId": "R___Ribose"
@@ -1164,8 +1164,8 @@
     "type": "monomer",
     "id": "40",
     "position": {
-      "x": 6.6675,
-      "y": -4.4494
+      "x": 6.4801,
+      "y": -4.2666
     },
     "alias": "A",
     "templateId": "A___Adenine"
@@ -1174,8 +1174,8 @@
     "type": "monomer",
     "id": "41",
     "position": {
-      "x": 9.0281,
-      "y": -6.052
+      "x": 8.7964,
+      "y": -5.9326
     },
     "alias": "P",
     "templateId": "P___Phosphate"
@@ -1184,8 +1184,8 @@
     "type": "monomer",
     "id": "42",
     "position": {
-      "x": 4.2758,
-      "y": -5.4291
+      "x": 4.3075,
+      "y": -5.3376
     },
     "alias": "R",
     "templateId": "R___Ribose"
@@ -1194,8 +1194,8 @@
     "type": "monomer",
     "id": "43",
     "position": {
-      "x": 5.1543,
-      "y": -4.2133
+      "x": 5.1765,
+      "y": -4.115
     },
     "alias": "C",
     "templateId": "C___Cytosine"
@@ -1214,8 +1214,8 @@
     "type": "monomer",
     "id": "45",
     "position": {
-      "x": 1.4226,
-      "y": -5.4365
+      "x": 1.4545,
+      "y": -5.3674
     },
     "alias": "R",
     "templateId": "R___Ribose"
@@ -1224,8 +1224,8 @@
     "type": "monomer",
     "id": "46",
     "position": {
-      "x": 0.5378,
-      "y": -4.2252
+      "x": 0.5602,
+      "y": -4.1632
     },
     "alias": "G",
     "templateId": "G___Guanine"
@@ -1234,8 +1234,8 @@
     "type": "monomer",
     "id": "47",
     "position": {
-      "x": 2.8504,
-      "y": -5.8963
+      "x": 2.8859,
+      "y": -5.816
     },
     "alias": "P",
     "templateId": "P___Phosphate"

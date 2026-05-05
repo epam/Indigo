@@ -127,7 +127,10 @@ void ReactionJsonLoader::parseOneArrowReaction(BaseReaction& rxn)
 
         Filter filter(_pmol->getDecomposition().ptr(), Filter::EQ, index);
 
-        mol->makeSubmolecule(*_pmol, filter, 0, 0);
+        // Extract component atoms/bonds without R-groups, then add only those
+        // R-groups referenced by R-sites present in this component.
+        mol->makeSubmolecule(*_pmol, filter, 0, 0, SKIP_RGROUPS);
+        mol->copyUsedRGroupsFrom(*_pmol);
         Rect2f bbox;
         mol->getBoundingBox(bbox);
         components.emplace_back(bbox, ReactionFragmentType::MOLECULE, std::move(mol));

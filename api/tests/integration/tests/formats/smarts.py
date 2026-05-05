@@ -261,3 +261,9 @@ test_smarts_load_save_through_ket(
     "[C;@@?]",
     '"atoms":[{"label":"A","location":[0.0,0.0,0.0],"queryProperties":{"customQuery":"[C;@@?]"}}]',
 )
+
+print("#3215 R-group index in SMARTS")
+mol = indigo.loadMolecule(
+    "[*:3]%87%88.[*:2]%89%87.[*:1]%87%89.[*:6]%89%87.[*:5]%87%89.[*:4]%88%87 |$_R3;_R2;_R1;_R6;_R5;_R4$|"
+)
+print(mol.smarts())

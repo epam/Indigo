@@ -18,6 +18,7 @@
 
 #include <gtest/gtest.h>
 
+#include <molecule/molecule_auto_loader.h>
 #include <molecule/molecule_mass.h>
 
 #include <indigo-renderer.h>
@@ -219,6 +220,28 @@ TEST_F(IndigoApiBasicTest, test_getter_function)
     ASSERT_STREQ(chXY, "[250, 400]");
 
     indigoRendererDispose(session);
+}
+
+TEST_F(IndigoApiBasicTest, test_input_format_mime_mapping)
+{
+    ASSERT_EQ("mol", MoleculeAutoLoader::normalizeInputFormat("chemical/x-mdl-molfile"));
+    ASSERT_EQ("rxn", MoleculeAutoLoader::normalizeInputFormat("chemical/x-mdl-rxnfile"));
+    ASSERT_EQ("smi", MoleculeAutoLoader::normalizeInputFormat("chemical/x-daylight-smiles"));
+    ASSERT_EQ("smarts", MoleculeAutoLoader::normalizeInputFormat("chemical/x-daylight-smarts"));
+    ASSERT_EQ("ket", MoleculeAutoLoader::normalizeInputFormat("chemical/x-indigo-ket"));
+    ASSERT_EQ("cml", MoleculeAutoLoader::normalizeInputFormat("chemical/x-cml"));
+    ASSERT_EQ("cdxml", MoleculeAutoLoader::normalizeInputFormat("chemical/x-cdxml"));
+    ASSERT_EQ("sdf", MoleculeAutoLoader::normalizeInputFormat("chemical/x-sdf"));
+    ASSERT_EQ("auto", MoleculeAutoLoader::normalizeInputFormat("chemical/x-unknown"));
+    ASSERT_EQ("auto", MoleculeAutoLoader::normalizeInputFormat("chemical/x-iupac"));
+    ASSERT_EQ("auto", MoleculeAutoLoader::normalizeInputFormat(""));
+
+    indigoSetOption("input-format", "chemical/x-daylight-smiles");
+    ASSERT_STREQ("chemical/x-daylight-smiles", indigoGetOption("input-format"));
+
+    int mol = indigoLoadMoleculeFromString("C");
+    ASSERT_NE(-1, mol);
+    ASSERT_STREQ("C", indigoCanonicalSmiles(mol));
 }
 
 TEST_F(IndigoApiBasicTest, test_exact_match)

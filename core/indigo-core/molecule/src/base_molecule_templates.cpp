@@ -824,11 +824,8 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
         {
             if (su.atoms.find(vx.neiVertex(nei_idx)) == -1)
             {
-                if (su.atoms.find(vx.neiVertex(nei_idx)) == -1)
-                {
-                    if (getBondDirection(vx.neiEdge(nei_idx)))
-                        return -1;
-                }
+                if (getBondDirection(vx.neiEdge(nei_idx)))
+                    return -1;
             }
         }
     }

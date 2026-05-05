@@ -18,6 +18,7 @@
 
 #include <algorithm>
 #include <numeric>
+#include <unordered_set>
 
 #include "base_cpp/crc32.h"
 #include "base_cpp/output.h"
@@ -177,6 +178,7 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
         sg.parent_idx = supersg.parent_idx;
         sg.original_group = supersg.original_group;
         sg.parent_group = supersg.parent_group;
+        sg.subscript.copy(supersg.subscript);
 
         if (_mergeSGroupWithSubmolecule(sg, supersg, mol, mapping, edge_mapping))
         {
@@ -220,7 +222,6 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
                         }
                     }
                 }
-                sa.subscript.copy(supersa.subscript);
                 sa.sa_class.copy(supersa.sa_class);
                 sa.sa_natreplace.copy(supersa.sa_natreplace);
                 sa.contracted = supersa.contracted;
@@ -252,7 +253,6 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
                 RepeatingUnit& superru = (RepeatingUnit&)supersg;
 
                 ru.connectivity = superru.connectivity;
-                ru.subscript.copy(superru.subscript);
             }
             else if (sg.sgroup_type == SGroup::SG_TYPE_MUL)
             {
@@ -1276,6 +1276,102 @@ int BaseMolecule::getSingleAllowedRGroup(int atom_idx)
     }
 
     throw Error("getSingleAllowedRGroup(): no r-groups defined on atom #%d", atom_idx);
+}
+
+void BaseMolecule::removeUnusedRGroups()
+{
+    std::unordered_set<int> used_rgroups;
+    bool changed = true;
+
+    for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
+    {
+        if (isRSite(i))
+        {
+            QS_DEF(Array<int>, allowed);
+            getAllowedRGroups(i, allowed);
+            for (int j = 0; j < allowed.size(); ++j)
+                used_rgroups.insert(allowed[j]);
+        }
+    }
+
+    while (changed)
+    {
+        changed = false;
+        for (auto rg_idx : used_rgroups)
+        {
+            if (rg_idx > rgroups.getRGroupCount() || rg_idx < 1)
+                continue;
+
+            auto& rg = rgroups.getRGroup(rg_idx);
+            for (int f = rg.fragments.begin(); f != rg.fragments.end(); f = rg.fragments.next(f))
+            {
+                BaseMolecule& frag = *rg.fragments[f];
+                for (int k = frag.vertexBegin(); k < frag.vertexEnd(); k = frag.vertexNext(k))
+                {
+                    if (frag.isRSite(k))
+                    {
+                        QS_DEF(Array<int>, allowed);
+                        frag.getAllowedRGroups(k, allowed);
+                        for (int j = 0; j < allowed.size(); ++j)
+                        {
+                            if (used_rgroups.find(allowed[j]) == used_rgroups.end())
+                            {
+                                used_rgroups.insert(allowed[j]);
+                                changed = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    for (int i = 1; i <= rgroups.getRGroupCount(); ++i)
+    {
+        if (used_rgroups.find(i) == used_rgroups.end())
+        {
+            rgroups.getRGroup(i).fragments.clear();
+            rgroups.getRGroup(i).clear();
+        }
+    }
+}
+
+void BaseMolecule::copyUsedRGroupsFrom(BaseMolecule& src)
+{
+    // Collect R-group indices referenced by R-sites present in *this.
+    std::unordered_set<int> used;
+    for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
+    {
+        if (!isRSite(i))
+            continue;
+        QS_DEF(Array<int>, allowed);
+        getAllowedRGroups(i, allowed);
+        for (int j = 0; j < allowed.size(); ++j)
+            used.insert(allowed[j]);
+    }
+
+    // Deep-copy only the R-groups that are actually referenced.
+    for (int rg_idx : used)
+    {
+        if (rg_idx < 1 || rg_idx > src.rgroups.getRGroupCount())
+            continue;
+        RGroup& src_rg = src.rgroups.getRGroup(rg_idx);
+        if (src_rg.fragments.size() > 0)
+            rgroups.getRGroup(rg_idx).copy(src_rg);
+    }
+
+    // Copy R-site attachment points for the R-sites present in *this.
+    for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
+    {
+        if (!isRSite(i))
+            continue;
+        if (src._rsite_attachment_points.size() <= i)
+            continue;
+        Array<int>& ap = src._rsite_attachment_points[i];
+        for (int j = 0; j < ap.size(); ++j)
+            if (ap[j] >= 0)
+                setRSiteAttachmentOrder(i, ap[j], j);
+    }
 }
 
 int BaseMolecule::countRSites()

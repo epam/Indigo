@@ -1,4 +1,4 @@
-﻿import os
+import os
 import sys
 
 sys.path.append(
@@ -32,6 +32,7 @@ files = [
     "merge_test7",
     "merge_test8",
     "merge_test9",
+    "rxn_unused_rgroups",
 ]
 
 files.sort()

@@ -198,6 +198,10 @@ class IndigoLib:
         IndigoLib.lib.indigoLoadHelmFromString.argtypes = [c_char_p, c_int]
         IndigoLib.lib.indigoLoadHelmFromFile.restype = c_int
         IndigoLib.lib.indigoLoadHelmFromFile.argtypes = [c_char_p, c_int]
+        IndigoLib.lib.indigoLoadBilnFromString.restype = c_int
+        IndigoLib.lib.indigoLoadBilnFromString.argtypes = [c_char_p, c_int]
+        IndigoLib.lib.indigoLoadBilnFromFile.restype = c_int
+        IndigoLib.lib.indigoLoadBilnFromFile.argtypes = [c_char_p, c_int]
         IndigoLib.lib.indigoLoadAxoLabsFromString.restype = c_int
         IndigoLib.lib.indigoLoadAxoLabsFromString.argtypes = [c_char_p, c_int]
         IndigoLib.lib.indigoLoadAxoLabsFromFile.restype = c_int
@@ -656,6 +660,10 @@ class IndigoLib:
         IndigoLib.lib.indigoGetSGroupName.argtypes = [c_int]
         IndigoLib.lib.indigoGetSGroupNumCrossBonds.restype = c_int
         IndigoLib.lib.indigoGetSGroupNumCrossBonds.argtypes = [c_int]
+        IndigoLib.lib.indigoCreateCrossBonds.restype = c_int
+        IndigoLib.lib.indigoCreateCrossBonds.argtypes = [c_int]
+        IndigoLib.lib.indigoClearSGroupCrossBonds.restype = c_int
+        IndigoLib.lib.indigoClearSGroupCrossBonds.argtypes = [c_int]
         IndigoLib.lib.indigoAddSGroupAttachmentPoint.restype = c_int
         IndigoLib.lib.indigoAddSGroupAttachmentPoint.argtypes = [
             c_int,
@@ -1020,6 +1028,10 @@ class IndigoLib:
         IndigoLib.lib.indigoHelm.argtypes = [c_int, c_int]
         IndigoLib.lib.indigoSaveHelmToFile.restype = c_int
         IndigoLib.lib.indigoSaveHelmToFile.argtypes = [c_int, c_char_p, c_int]
+        IndigoLib.lib.indigoBiln.restype = c_char_p
+        IndigoLib.lib.indigoBiln.argtypes = [c_int, c_int]
+        IndigoLib.lib.indigoSaveBilnToFile.restype = c_int
+        IndigoLib.lib.indigoSaveBilnToFile.argtypes = [c_int, c_char_p, c_int]
         IndigoLib.lib.indigoAxoLabs.restype = c_char_p
         IndigoLib.lib.indigoAxoLabs.argtypes = [c_int, c_int]
         IndigoLib.lib.indigoSaveAxoLabsToFile.restype = c_int

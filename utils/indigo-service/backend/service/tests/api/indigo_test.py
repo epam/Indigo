@@ -425,10 +425,19 @@ M  END\n",
             data="c1ccccc2",
         )
         self.assertEqual(400, result.status_code)
-        self.assertEqual(
-            "struct data not recognized as molecule, query, reaction or reaction query",
-            result.text,
+
+    def test_wrong_input_format_3220(self):
+        result = requests.post(
+            self.url_prefix + "/convert",
+            headers={
+                "Content-Type": "chemical/x-mdl-molfile",
+                "Accept": "chemical/x-indigo-ket",
+            },
+            data="sdfsdfsdf",
         )
+        self.assertEqual(400, result.status_code)
+        # Error message comes from the molfile parser directly
+        self.assertTrue(len(result.text) > 0)
 
     def test_headers_is_rxn(self):
         result = requests.post(
@@ -480,7 +489,7 @@ chemical/x-iupac, chemical/x-daylight-smarts, chemical/x-inchi-aux, chemical/x-c
 chemical/x-cdxml, chemical/x-cdx, chemical/x-sdf, chemical/x-rdf, chemical/x-peptide-sequence, \
 chemical/x-peptide-sequence-3-letter, chemical/x-rna-sequence, chemical/x-dna-sequence, chemical/x-sequence, \
 chemical/x-peptide-fasta, chemical/x-rna-fasta, chemical/x-dna-fasta, chemical/x-fasta, \
-chemical/x-idt, chemical/x-helm, chemical/x-monomer-library, chemical/x-axo-labs."
+chemical/x-idt, chemical/x-helm, chemical/x-biln, chemical/x-monomer-library, chemical/x-axo-labs."
         expected_text = (
             "ValidationError: {'input_format': ['Must be one of: %s']}"
             % formats
@@ -2859,6 +2868,30 @@ M  END
         # result = requests.get(self.url_prefix + "/convert", params=params)
         # self.assertEqual("CC%91.[*]%91", result.text)
 
+    def test_convert_daylight_smiles(self):
+        """Issue #3580: daylight SMILES must not contain extended SMILES block"""
+        ket_path = os.path.join(
+            joinPathPy("structures/", __file__), "issue_3580.ket"
+        )
+        with open(ket_path, "r") as f:
+            ket_3580 = f.read()
+        params = {
+            "struct": ket_3580,
+            "output_format": "chemical/x-daylight-smiles",
+        }
+        headers, data = self.get_headers(params)
+        result = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        result_data = json.loads(result.text)
+        self.assertEqual(200, result.status_code)
+        self.assertEqual("chemical/x-daylight-smiles", result_data["format"])
+        self.assertNotIn(
+            "|",
+            result_data["struct"],
+            "Daylight SMILES should not contain extended SMILES block",
+        )
+
     # TODO: Add validation checks for /calculate
 
     def test_stereo(self):
@@ -3826,6 +3859,83 @@ M  END
         )
         result_helm = json.loads(result.text)["struct"]
         self.assertEqual(helm_struct, result_helm)
+
+    def test_convert_biln(self):
+        lib_file = "monomer_library.ket"
+        lib_path = os.path.join(joinPathPy("structures/", __file__), lib_file)
+        with open(lib_path, "r") as file:
+            monomer_library = file.read()
+
+        biln_struct = "A-K"
+        helm_ref = "PEPTIDE1{A.K}$$$$V2.0"
+
+        # BILN to KET
+        headers, data = self.get_headers(
+            {
+                "struct": biln_struct,
+                "options": {"monomerLibrary": monomer_library},
+                "input_format": "chemical/x-biln",
+                "output_format": "chemical/x-indigo-ket",
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        self.assertEqual(200, result.status_code)
+        result_ket = json.loads(result.text)["struct"]
+
+        # KET to BILN
+        headers, data = self.get_headers(
+            {
+                "struct": result_ket,
+                "options": {"monomerLibrary": monomer_library},
+                "input_format": "chemical/x-indigo-ket",
+                "output_format": "chemical/x-biln",
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        self.assertEqual(200, result.status_code)
+        result_biln = json.loads(result.text)["struct"]
+        self.assertEqual(biln_struct, result_biln)
+
+        # KET to HELM (verify via HELM round-trip)
+        headers, data = self.get_headers(
+            {
+                "struct": result_ket,
+                "options": {"monomerLibrary": monomer_library},
+                "input_format": "chemical/x-indigo-ket",
+                "output_format": "chemical/x-helm",
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        self.assertEqual(200, result.status_code)
+        result_helm = json.loads(result.text)["struct"]
+        self.assertEqual(helm_ref, result_helm)
+
+        # BILN with cross-links
+        biln_cross = "Ac(1,2).A-K(1,3)"
+        helm_cross_ref = (
+            "PEPTIDE1{[Ac]}|PEPTIDE2{A.K}"
+            "$PEPTIDE1,PEPTIDE2,1:R2-2:R3$$$V2.0"
+        )
+        headers, data = self.get_headers(
+            {
+                "struct": biln_cross,
+                "options": {"monomerLibrary": monomer_library},
+                "input_format": "chemical/x-biln",
+                "output_format": "chemical/x-helm",
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        self.assertEqual(200, result.status_code)
+        result_helm = json.loads(result.text)["struct"]
+        self.assertEqual(helm_cross_ref, result_helm)
 
     def test_macro_props(self):
         structs_path = joinPathPy("structures/", __file__)

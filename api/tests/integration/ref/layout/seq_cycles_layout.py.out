@@ -8,6 +8,10 @@ pep_sel.ket:SUCCEED
 ring_fuse.ket:SUCCEED
 rna_bicyclic.ket:SUCCEED
 rna_bicyclic_sel_2.ket:SUCCEED
+rna_ring_11.ket:SUCCEED
+rna_ring_12.ket:SUCCEED
+rna_ring_24.ket:SUCCEED
+rna_ring_6.ket:SUCCEED
 rna_sel.ket:SUCCEED
 shifting_structs_1.ket:SUCCEED
 shifting_structs_1_sel.ket:SUCCEED

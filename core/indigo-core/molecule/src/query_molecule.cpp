@@ -838,9 +838,24 @@ void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chi
         _getAtomChiralityDescription(atom, output);
         break;
     }
-    case ATOM_RSITE:
-        output.printf("*:%d", atom->value_min);
+    case ATOM_RSITE: {
+        // value_min encodes the set of allowed R-group numbers as a bitmask:
+        // bit (N-1) is set if R-group N is permitted. Scan all bits to find
+        // the lowest-numbered R-group and emit it in SMARTS notation (*:N).
+        static const int RSITE_BITMASK_WIDTH = 32; // one bit per R-group, max 32 R-groups
+        int bits = atom->value_min;
+        int min_rgroup = 0;
+        for (int bit_idx = 0; bit_idx < RSITE_BITMASK_WIDTH; bit_idx++)
+        {
+            if (bits & (1 << bit_idx))
+            {
+                min_rgroup = bit_idx + 1;
+                break;
+            }
+        }
+        output.printf("*:%d", min_rgroup);
         break;
+    }
     default: {
         throw Error("Unknown atom attribute %d", atom->type);
         break;
@@ -1087,17 +1102,22 @@ int QueryMolecule::calcAtomMaxH(int idx, int conn)
 
 int QueryMolecule::getAtomMaxH(int idx)
 {
-    int total;
+    if (_max_h.size() > idx && _max_h[idx] >= MAXH_UNKNOWN)
+        return _max_h[idx];
 
-    if (_atoms[idx]->sureValue(ATOM_TOTAL_H, total))
-        return total;
+    int max_h = MAXH_UNKNOWN;
 
-    int max_h = calcAtomMaxH(idx, _calcAtomConnectivity(idx));
-    if (max_h < 0)
-        return -1;
+    if (!_atoms[idx]->sureValue(ATOM_TOTAL_H, max_h))
+    {
+        max_h = calcAtomMaxH(idx, _calcAtomConnectivity(idx));
+        if (max_h < 0)
+            max_h = MAXH_UNKNOWN;
+        else
+            max_h += getAtomConnectedH(idx);
+    }
 
-    max_h += getAtomConnectedH(idx);
-
+    _max_h.expandFill(idx + 1, MAXH_UNSET);
+    _max_h[idx] = max_h;
     return max_h;
 }
 
@@ -1318,6 +1338,10 @@ void QueryMolecule::invalidateAtom(int index, int mask)
     BaseMolecule::invalidateAtom(index, mask);
     if (_min_h.size() > index)
         _min_h[index] = -1;
+    if (_max_h.size() > index)
+        _max_h[index] = MAXH_UNSET;
+    if (_implicit_h.size() > index)
+        _implicit_h[index] = -1;
 }
 
 void QueryMolecule::optimize()
@@ -1386,38 +1410,48 @@ int QueryMolecule::addBond(int beg, int end, int order)
 
 int QueryMolecule::getImplicitH(int idx, bool /*impl_h_no_throw*/)
 {
+    if (_implicit_h.size() > idx && _implicit_h[idx] >= 0)
+        return _implicit_h[idx];
+
     std::vector<std::unique_ptr<Atom>> atoms;
     std::map<int, std::unique_ptr<Atom>> properties;
 
     int query_atom_type = QueryMolecule::parseQueryAtomSmarts(*this, idx, atoms, properties);
 
+    int max_h = -1;
+
     if (query_atom_type == QUERY_ATOM_UNKNOWN)
-        return 0; // Complex query cannot calculate implicit H
-
-    if (properties.count(ATOM_IMPLICIT_H) > 0)
-        return properties[ATOM_IMPLICIT_H]->value_min; // Implicit H set in properties
-
-    // If implicit h is not set - calculate it
-    int max_h = 0;
-    int conn = _calcAtomConnectivity(idx);
-    if (conn < 0) // can't calculate - no implicit H
-        return 0;
-    if (properties.count(ATOM_TOTAL_H) > 0)
-        max_h = properties[ATOM_TOTAL_H]->value_min - getAtomConnectedH(idx);
-    else
-        max_h = calcAtomMaxH(idx, conn); // count of H that can be added ( valence - conn )
-
-    if (properties.count(ATOM_TOTAL_BOND_ORDER) > 0)
     {
-        int max_conn = max_h + conn;
-        int valence = properties[ATOM_TOTAL_BOND_ORDER]->value_min;
-        if (max_conn > valence)
-            max_h -= max_conn - valence;
+        max_h = 0; // Complex query cannot calculate implicit H
     }
+    else if (properties.count(ATOM_IMPLICIT_H) > 0)
+    {
+        max_h = properties[ATOM_IMPLICIT_H]->value_min; // Implicit H set in properties
+    }
+    else
+    {
+        // If implicit h is not set - calculate it
+        int conn = _calcAtomConnectivity(idx);
+        if (conn < 0) // can't calculate - no implicit H
+            return 0;
+        if (properties.count(ATOM_TOTAL_H) > 0)
+            max_h = properties[ATOM_TOTAL_H]->value_min - getAtomConnectedH(idx);
+        else
+            max_h = calcAtomMaxH(idx, conn); // count of H that can be added ( valence - conn )
 
-    if (max_h < 0)
-        max_h = 0;
+        if (properties.count(ATOM_TOTAL_BOND_ORDER) > 0)
+        {
+            int max_conn = max_h + conn;
+            int valence = properties[ATOM_TOTAL_BOND_ORDER]->value_min;
+            if (max_conn > valence)
+                max_h -= max_conn - valence;
+        }
 
+        if (max_h < 0)
+            max_h = 0;
+    }
+    _implicit_h.expandFill(idx + 1, -1);
+    _implicit_h[idx] = max_h;
     return max_h;
 }
 

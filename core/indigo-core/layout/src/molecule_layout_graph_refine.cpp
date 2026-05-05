@@ -286,7 +286,7 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
 
             _makeBranches(branch, edges.key(i), filter);
             new_state.flipBranch(filter, beg_state, edge.beg, edge.end);
-            new_state.calcEnergy();
+            new_state.calcEnergyDelta(beg_state);
 
             if (new_state.energy < best_state.energy - EPSILON_ENERGY)
             {
@@ -327,7 +327,7 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
             {
                 new_state.rotateBranch(filter, beg_state, edge.beg, ANGLE_10);
                 new_state.calcDistance(v1c, v2c);
-                new_state.calcEnergy();
+                new_state.calcEnergyDelta(beg_state);
 
                 if (new_state.dist > beg_state.dist && new_state.energy < best_state.energy - EPSILON_ENERGY)
                 {
@@ -337,7 +337,7 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
 
                 new_state.rotateBranch(filter, beg_state, edge.beg, -ANGLE_10);
                 new_state.calcDistance(v1c, v2c);
-                new_state.calcEnergy();
+                new_state.calcEnergyDelta(beg_state);
 
                 if (new_state.dist > beg_state.dist && new_state.energy < best_state.energy - EPSILON_ENERGY)
                 {
@@ -350,7 +350,7 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
             {
                 new_state.rotateBranch(filter, beg_state, edge.end, ANGLE_10);
                 new_state.calcDistance(v1c, v2c);
-                new_state.calcEnergy();
+                new_state.calcEnergyDelta(beg_state);
 
                 if (new_state.dist > beg_state.dist && new_state.energy < best_state.energy - EPSILON_ENERGY)
                 {
@@ -360,7 +360,7 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
 
                 new_state.rotateBranch(filter, beg_state, edge.end, -ANGLE_10);
                 new_state.calcDistance(v1c, v2c);
-                new_state.calcEnergy();
+                new_state.calcEnergyDelta(beg_state);
 
                 if (new_state.dist > beg_state.dist && new_state.energy < best_state.energy - EPSILON_ENERGY)
                 {
@@ -375,7 +375,7 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
             {
                 new_state.stretchBranch(filter, beg_state, edge.beg, edge.end, 6);
                 new_state.calcDistance(v1c, v2c);
-                new_state.calcEnergy();
+                new_state.calcEnergyDelta(beg_state);
 
                 if (new_state.dist > beg_state.dist && new_state.energy + 20 < beg_state.energy && new_state.energy < best_state.energy - EPSILON_ENERGY)
                 {
@@ -407,7 +407,7 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
                 for (float angle = -ANGLE_90; angle < ANGLE_90 + EPSILON; angle += ANGLE_30)
                 {
                     new_state.rotateLayout(beg_state, selected_center, angle);
-                    new_state.calcEnergy();
+                    new_state.calcEnergyDelta(beg_state);
                     if (new_state.energy < beg_state.energy - EPSILON_ENERGY)
                     {
                         improved = true;
@@ -420,7 +420,7 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
                     Vec2f dir(0.1f, 0);
                     dir.rotate(angle);
                     new_state.translateLayout(beg_state, dir); // try different directions
-                    new_state.calcEnergy();
+                    new_state.calcEnergyDelta(beg_state);
                     if (new_state.energy < best_state.energy - EPSILON_ENERGY)
                     {
                         best_state.copy(new_state);

@@ -56,9 +56,14 @@ CEXPORT int indigoResetRadical(int atom)
         BaseMolecule& mol = ia.mol;
 
         if (mol.isQueryMolecule())
+        {
             mol.asQueryMolecule().getAtom(ia.idx).removeConstraints(QueryMolecule::ATOM_RADICAL);
+            mol.asQueryMolecule().invalidateAtom(ia.idx, BaseMolecule::CHANGED_ALL);
+        }
         else
+        {
             mol.asMolecule().setAtomRadical(ia.idx, 0);
+        }
         return 1;
     }
     INDIGO_END(-1);
@@ -72,9 +77,14 @@ CEXPORT int indigoResetIsotope(int atom)
         BaseMolecule& mol = ia.mol;
 
         if (mol.isQueryMolecule())
+        {
             mol.asQueryMolecule().getAtom(ia.idx).removeConstraints(QueryMolecule::ATOM_ISOTOPE);
+            mol.asQueryMolecule().invalidateAtom(ia.idx, BaseMolecule::CHANGED_ALL);
+        }
         else
+        {
             mol.asMolecule().setAtomIsotope(ia.idx, 0);
+        }
         return 1;
     }
     INDIGO_END(-1);
@@ -1641,16 +1651,14 @@ CEXPORT int indigoCreateSGroup(const char* type, int mapping, const char* name)
                 }
             }
 
+            sgroup.subscript.appendString(name, true);
+
             if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
             {
-                Superatom& sa = (Superatom&)sgroup;
-                sa.subscript.appendString(name, true);
                 return self.addObject(new IndigoSuperatom(mol, idx));
             }
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_SRU)
             {
-                RepeatingUnit& ru = (RepeatingUnit&)sgroup;
-                ru.subscript.appendString(name, true);
                 return self.addObject(new IndigoRepeatingUnit(mol, idx));
             }
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_MUL)
@@ -1698,8 +1706,9 @@ CEXPORT int indigoSetSGroupName(int sgroup, const char* sgname)
 {
     INDIGO_BEGIN
     {
-        Superatom& sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
-        sup.subscript.readString(sgname, true);
+        IndigoObject& obj = self.getObject(sgroup);
+        SGroup& sg = IndigoSGroup::cast(obj).get();
+        sg.subscript.readString(sgname, true);
 
         return 1;
     }
@@ -1710,10 +1719,11 @@ CEXPORT const char* indigoGetSGroupName(int sgroup)
 {
     INDIGO_BEGIN
     {
-        Superatom& sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
-        if (sup.subscript.size() < 1)
+        IndigoObject& obj = self.getObject(sgroup);
+        SGroup& sg = IndigoSGroup::cast(obj).get();
+        if (sg.subscript.size() < 1)
             return "";
-        return sup.subscript.ptr();
+        return sg.subscript.ptr();
     }
     INDIGO_END(0);
 }
@@ -1724,6 +1734,46 @@ CEXPORT int indigoGetSGroupNumCrossBonds(int sgroup)
     {
         Superatom& sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
         return sup.bonds.size();
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoCreateCrossBonds(int sgroup)
+{
+    INDIGO_BEGIN
+    {
+        IndigoSuperatom& isup = IndigoSuperatom::cast(self.getObject(sgroup));
+        Superatom& sup = isup.get();
+        BaseMolecule& mol = isup.mol;
+
+        sup.bonds.clear();
+
+        for (auto atom_idx : sup.atoms)
+        {
+            const Vertex& vx = mol.getVertex(atom_idx);
+            for (auto nei_idx = vx.neiBegin(); nei_idx != vx.neiEnd(); nei_idx = vx.neiNext(nei_idx))
+            {
+                if (sup.atoms.find(vx.neiVertex(nei_idx)) == -1)
+                {
+                    int edge_idx = vx.neiEdge(nei_idx);
+                    if (sup.bonds.find(edge_idx) == -1)
+                        sup.bonds.push(edge_idx);
+                }
+            }
+        }
+
+        return 1;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoClearSGroupCrossBonds(int sgroup)
+{
+    INDIGO_BEGIN
+    {
+        Superatom& sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
+        sup.bonds.clear();
+        return 1;
     }
     INDIGO_END(-1);
 }

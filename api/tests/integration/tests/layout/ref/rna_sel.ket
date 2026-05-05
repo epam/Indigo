@@ -1094,8 +1094,8 @@
         "type": "monomer",
         "id": "30",
         "position": {
-            "x": 13.9637,
-            "y": -8.1651
+            "x": 14.8124,
+            "y": -7.9540
         },
         "selected": true,
         "alias": "c7A",
@@ -1105,8 +1105,8 @@
         "type": "monomer",
         "id": "31",
         "position": {
-            "x": 15.6337,
-            "y": -9.1293
+            "x": 16.1482,
+            "y": -8.4219
         },
         "selected": true,
         "alias": "c7A",
@@ -1116,8 +1116,8 @@
         "type": "monomer",
         "id": "32",
         "position": {
-            "x": 17.5327,
-            "y": -8.7944
+            "x": 17.4722,
+            "y": -7.9219
         },
         "selected": true,
         "alias": "c7A",
@@ -1127,8 +1127,8 @@
         "type": "monomer",
         "id": "33",
         "position": {
-            "x": 14.7137,
-            "y": -3.9116
+            "x": 14.7742,
+            "y": -4.7842
         },
         "selected": true,
         "alias": "c7A",
@@ -1138,8 +1138,8 @@
         "type": "monomer",
         "id": "34",
         "position": {
-            "x": 16.6127,
-            "y": -3.5768
+            "x": 16.0982,
+            "y": -4.2841
         },
         "selected": true,
         "alias": "c7A",
@@ -1149,8 +1149,8 @@
         "type": "monomer",
         "id": "35",
         "position": {
-            "x": 18.2827,
-            "y": -4.5410
+            "x": 17.4340,
+            "y": -4.7521
         },
         "selected": true,
         "alias": "c7A",
@@ -1160,8 +1160,8 @@
         "type": "monomer",
         "id": "36",
         "position": {
-            "x": 12.8146,
-            "y": -9.1293
+            "x": 13.3871,
+            "y": -9.6949
         },
         "selected": true,
         "alias": "tR",
@@ -1171,8 +1171,8 @@
         "type": "monomer",
         "id": "37",
         "position": {
-            "x": 15.3732,
-            "y": -10.6065
+            "x": 16.1753,
+            "y": -10.6718
         },
         "selected": true,
         "alias": "tR",
@@ -1182,8 +1182,8 @@
         "type": "monomer",
         "id": "38",
         "position": {
-            "x": 18.2827,
-            "y": -10.0934
+            "x": 18.9392,
+            "y": -9.6279
         },
         "selected": true,
         "alias": "tR",
@@ -1193,8 +1193,8 @@
         "type": "monomer",
         "id": "39",
         "position": {
-            "x": 20.1818,
-            "y": -7.8302
+            "x": 20.3854,
+            "y": -7.0516
         },
         "selected": true,
         "alias": "tR",
@@ -1204,8 +1204,8 @@
         "type": "monomer",
         "id": "40",
         "position": {
-            "x": 11.8041,
-            "y": -6.3530
+            "x": 11.8791,
+            "y": -7.1543
         },
         "selected": true,
         "alias": "tR",
@@ -1215,8 +1215,8 @@
         "type": "monomer",
         "id": "41",
         "position": {
-            "x": 12.0646,
-            "y": -4.8758
+            "x": 11.8610,
+            "y": -5.6544
         },
         "selected": true,
         "alias": "tR",
@@ -1226,8 +1226,8 @@
         "type": "monomer",
         "id": "42",
         "position": {
-            "x": 13.9637,
-            "y": -2.6126
+            "x": 13.3072,
+            "y": -3.0782
         },
         "selected": true,
         "alias": "tR",
@@ -1237,8 +1237,8 @@
         "type": "monomer",
         "id": "43",
         "position": {
-            "x": 16.8732,
-            "y": -2.0996
+            "x": 16.0711,
+            "y": -2.0343
         },
         "selected": true,
         "alias": "tR",
@@ -1248,8 +1248,8 @@
         "type": "monomer",
         "id": "44",
         "position": {
-            "x": 19.4318,
-            "y": -3.5768
+            "x": 18.8593,
+            "y": -3.0112
         },
         "selected": true,
         "alias": "tR",
@@ -1259,8 +1259,8 @@
         "type": "monomer",
         "id": "45",
         "position": {
-            "x": 20.4423,
-            "y": -6.3530
+            "x": 20.3673,
+            "y": -5.5518
         },
         "selected": true,
         "alias": "tR",
@@ -1270,8 +1270,8 @@
         "type": "monomer",
         "id": "46",
         "position": {
-            "x": 12.0646,
-            "y": -7.8302
+            "x": 12.4091,
+            "y": -8.5575
         },
         "selected": true,
         "alias": "bP",
@@ -1281,8 +1281,8 @@
         "type": "monomer",
         "id": "47",
         "position": {
-            "x": 13.9637,
-            "y": -10.0935
+            "x": 14.6951,
+            "y": -10.4292
         },
         "selected": true,
         "alias": "bP",
@@ -1292,8 +1292,8 @@
         "type": "monomer",
         "id": "48",
         "position": {
-            "x": 16.8732,
-            "y": -10.6065
+            "x": 17.6493,
+            "y": -10.3935
         },
         "selected": true,
         "alias": "bP",
@@ -1303,8 +1303,8 @@
         "type": "monomer",
         "id": "49",
         "position": {
-            "x": 19.4318,
-            "y": -9.1293
+            "x": 19.8894,
+            "y": -8.4673
         },
         "selected": true,
         "alias": "bP",
@@ -1314,8 +1314,8 @@
         "type": "monomer",
         "id": "50",
         "position": {
-            "x": 12.8146,
-            "y": -3.5768
+            "x": 12.3570,
+            "y": -4.2388
         },
         "selected": true,
         "alias": "bP",
@@ -1325,8 +1325,8 @@
         "type": "monomer",
         "id": "51",
         "position": {
-            "x": 15.3732,
-            "y": -2.0996
+            "x": 14.5971,
+            "y": -2.3125
         },
         "selected": true,
         "alias": "bP",
@@ -1336,8 +1336,8 @@
         "type": "monomer",
         "id": "52",
         "position": {
-            "x": 18.2827,
-            "y": -2.6126
+            "x": 17.5513,
+            "y": -2.2769
         },
         "selected": true,
         "alias": "bP",
@@ -1347,8 +1347,8 @@
         "type": "monomer",
         "id": "53",
         "position": {
-            "x": 20.1818,
-            "y": -4.8758
+            "x": 19.8373,
+            "y": -4.1485
         },
         "selected": true,
         "alias": "bP",

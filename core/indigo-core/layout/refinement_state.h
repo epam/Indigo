@@ -31,6 +31,7 @@ namespace indigo
         void calcHeight();
         void calcDistance(int v1, int v2);
         void calcEnergy();
+        void calcEnergyDelta(const RefinementState& old_state);
 
         void copy(const RefinementState& other); // existing states
         void copyFromGraph();

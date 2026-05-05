@@ -510,23 +510,10 @@ void MoleculeSGroups::findSGroups(int property, const char* str, Array<int>& sgs
         for (i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
         {
             SGroup& sg = *_sgroups.at(i);
-            if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
+            BufferScanner sc(sg.subscript);
+            if (sc.findWordIgnoreCase(str))
             {
-                Superatom& sa = (Superatom&)sg;
-                BufferScanner sc(sa.subscript);
-                if (sc.findWordIgnoreCase(str))
-                {
-                    sgs.push(i);
-                }
-            }
-            else if (sg.sgroup_type == SGroup::SG_TYPE_SRU)
-            {
-                RepeatingUnit& ru = (RepeatingUnit&)sg;
-                BufferScanner sc(ru.subscript);
-                if (sc.findWordIgnoreCase(str))
-                {
-                    sgs.push(i);
-                }
+                sgs.push(i);
             }
         }
     }

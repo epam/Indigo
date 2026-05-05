@@ -887,7 +887,7 @@ jobs:
   build_indigo_ketcher:
     runs-on: ubuntu-latest
     needs: [ static_analysis, test_indigo_python_x86_64 ]
-    container: emscripten/emsdk:3.1.60
+    container: emscripten/emsdk:5.0.6
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -919,7 +919,7 @@ jobs:
   build_indigo_ketcher_cjk:
     runs-on: ubuntu-latest
     needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_java_i386, test_indigo_dotnet_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, merge_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64, build_indigo_ketcher]
-    container: emscripten/emsdk:3.1.60
+    container: emscripten/emsdk:5.0.6
     steps:
       - name: Checkout
         uses: actions/checkout@v4

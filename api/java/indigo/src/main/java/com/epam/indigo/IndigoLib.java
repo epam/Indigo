@@ -171,6 +171,12 @@ public interface IndigoLib extends Library {
 
     int indigoLoadHelmFromFile(String filename, int library);
 
+    int indigoLoadBiln(int source, int library);
+
+    int indigoLoadBilnFromString(String str, int library);
+
+    int indigoLoadBilnFromFile(String filename, int library);
+
     int indigoLoadAxoLabs(int source, int library);
 
     int indigoLoadAxoLabsFromString(String str, int library);
@@ -204,6 +210,8 @@ public interface IndigoLib extends Library {
     Pointer indigoIdt(int molecule, int library);
 
     Pointer indigoHelm(int molecule, int library);
+
+    Pointer indigoBiln(int molecule, int library);
 
     Pointer indigoAxoLabs(int molecule, int library);
 
@@ -469,6 +477,8 @@ public interface IndigoLib extends Library {
             String description,
             String data);
 
+    int indigoAddSuperatom(int molecule, int natoms, int[] atoms, String name);
+
     int indigoSetDataSGroupXY(int sgroup, float x, float y, String options);
 
     int indigoCreateSGroup(String type, int mapping, String name);
@@ -482,6 +492,10 @@ public interface IndigoLib extends Library {
     Pointer indigoGetSGroupName(int sgroup);
 
     int indigoGetSGroupNumCrossBonds(int sgroup);
+
+    int indigoCreateCrossBonds(int sgroup);
+
+    int indigoClearSGroupCrossBonds(int sgroup);
 
     int indigoAddSGroupAttachmentPoint(int sgroup, int aidx, int lvidx, String apid);
 

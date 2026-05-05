@@ -118,6 +118,7 @@ namespace indigo
         Array<int> atoms; // represented with SAL in Molfile format
         Array<int> bonds; // represented with SBL in Molfile format
 
+        Array<char> subscript;    // SMT in Molfile format (LABEL in V3000)
         int brk_style;            // represented with SBT in Molfile format
         Array<Vec2f[2]> brackets; // represented with SDI in Molfile format
         DisplayOption contracted; // display option (-1 if undefined, 0 - expanded, 1 - contracted)
@@ -165,7 +166,6 @@ namespace indigo
         Superatom();
         ~Superatom() override;
 
-        Array<char> subscript;     // SMT in Molfile format
         Array<char> sa_class;      // SCL in Molfile format
                                    // SDS in Molfile format
         int seqid;                 // SEQID (V3000 - 2017)
@@ -208,7 +208,7 @@ namespace indigo
         ~RepeatingUnit() override;
 
         int connectivity;
-        Array<char> subscript; // SMT in Molfile format
+
     private:
         RepeatingUnit(const RepeatingUnit&);
     };

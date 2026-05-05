@@ -38,9 +38,8 @@ namespace indigo
     {
         SKIP_3D_CONSTRAINTS = 0x0100,
         SKIP_FIXED_ATOMS = 0x0200,
-        SKIP_RGROUPS = 0x0400,
-        SKIP_AROMATICITY = 0x0800,
-        SKIP_COMPONENTS = 0x1000
+        SKIP_AROMATICITY = 0x0400,
+        SKIP_COMPONENTS = 0x0800
     };
 
     enum
@@ -464,7 +463,15 @@ namespace indigo
         static bool _isAtomList(Atom* qa, AtomList list);
         static bool _tryToConvertToList(Atom* p_query_atom, std::vector<std::unique_ptr<Atom>>& atoms, std::map<int, std::unique_ptr<Atom>>& properties);
 
+        enum MaxHState
+        {
+            MAXH_UNSET = -2,
+            MAXH_UNKNOWN = -1
+        };
+
         Array<int> _min_h;
+        Array<int> _max_h;
+        Array<int> _implicit_h;
 
         Array<bool> _bond_stereo_care;
 

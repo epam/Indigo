@@ -341,14 +341,14 @@ def getRefFilepath2(filename):
     with inspectStackLock:
         frm = inspect.stack()[2][1]
     ref_path = os.path.abspath(os.path.join(os.path.dirname(frm), "ref"))
-    if file_exists(os.path.join(ref_path, filename)):
-        return os.path.normpath(
-            os.path.abspath(os.path.join(ref_path, filename))
-        )
     sys_name = getPlatform()
     if file_exists(os.path.join(ref_path, sys_name, filename)):
         return os.path.normpath(
             os.path.abspath(os.path.join(ref_path, sys_name, filename))
+        )
+    if file_exists(os.path.join(ref_path, filename)):
+        return os.path.normpath(
+            os.path.abspath(os.path.join(ref_path, filename))
         )
 
     raise RuntimeError(

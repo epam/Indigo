@@ -101,6 +101,9 @@ AttachmentLayoutSmart::AttachmentLayoutSmart(const BiconnectedDecomposer& bc_dec
 }
 
 // Calculate energy of the drawn part of graph
+// Optimization: only compute interactions involving at least one _new_ vertex.
+// drawn↔drawn energy is constant across permutations (positions unchanged),
+// so we skip it. This reduces O(V²) to O(n_new × V).
 float AttachmentLayout::calculateEnergy()
 {
     int i, j;
@@ -145,6 +148,9 @@ float AttachmentLayout::calculateEnergy()
     for (i = _graph.vertexBegin(); i < _graph.vertexEnd(); i = _graph.vertexNext(i))
         if (drawn_vertices[i] > 0)
         {
+            // Skip drawn↔drawn pairs: only process if at least one vertex is new
+            bool i_is_new = (drawn_vertices[i] >= 2);
+
             if (drawn_vertices[i] == 1)
                 pos_i = &_graph.getPos(i);
             else
@@ -153,6 +159,10 @@ float AttachmentLayout::calculateEnergy()
             for (j = _graph.vertexBegin(); j < _graph.vertexEnd(); j = _graph.vertexNext(j))
                 if (drawn_vertices[j] > 0 && i != j)
                 {
+                    // Skip if both are already-drawn (their interaction is constant)
+                    if (!i_is_new && drawn_vertices[j] < 2)
+                        continue;
+
                     if (drawn_vertices[j] == 1)
                         pos_j = &_graph.getPos(j);
                     else

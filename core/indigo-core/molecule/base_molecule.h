@@ -111,7 +111,7 @@ namespace indigo
     // merging with molecule and cloning procedures
     enum
     {
-        SKIP_ALL = 0x7F,
+        SKIP_ALL = 0xFF,
         SKIP_CIS_TRANS = 0x01,
         SKIP_STEREOCENTERS = 0x02,
         SKIP_XYZ = 0x04,
@@ -119,6 +119,9 @@ namespace indigo
         SKIP_ATTACHMENT_POINTS = 0x10,
         SKIP_TGROUPS = 0x20,
         SKIP_TEMPLATE_ATTACHMENT_POINTS = 0x40,
+        // Skip copying ALL R-group data (fragments + attachment points on R-sites).
+        // Use this when you want to populate R-groups manually afterwards.
+        SKIP_RGROUPS = 0x80,
     };
 
     class Molecule;
@@ -328,6 +331,10 @@ namespace indigo
 
         void getAllowedRGroups(int atom_idx, Array<int>& rgroup_list);
         int getSingleAllowedRGroup(int atom_idx);
+        void removeUnusedRGroups();
+        // Copy only the R-groups from `src` that are referenced by R-sites
+        // already present in *this. Leaves all other R-groups in `src` untouched.
+        void copyUsedRGroupsFrom(BaseMolecule& src);
         int getRSiteAttachmentPointByOrder(int idx, int order) const;
         void setRSiteAttachmentOrder(int atom_idx, int att_atom_idx, int order);
 

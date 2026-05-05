@@ -958,6 +958,15 @@ Attachment points count: 2
   ap_idx=1 atom_idx=1 leave_atom_idx=-1 label=Br
 Expected error for removed attachment point handle: core: attachment point #0 is not an SGroup attachment point
 Expected error for iterateSGroupAttachmentPoints on data SGroup: core: <DataSGroup> is not a superatom
+****** SGroup Cross Bonds ********
+Cross bonds before clear: 2
+Cross bond indices before clear: [0, 3]
+Cross bonds after clear: 0
+Cross bond indices after clear: []
+Cross bonds after create: 2
+Cross bond indices after create: [0, 3]
+Expected error for clearSGroupCrossBonds on data SGroup: core: <DataSGroup> is not a superatom
+Expected error for createCrossBonds on data SGroup: core: <DataSGroup> is not a superatom
 ****** Get/Set Multiplier ********
 
   -INDIGO-01000000002D
@@ -6259,3 +6268,14 @@ Multiple group # 1 atoms:
    10
 data s-group description = dataname
 data s-group data = datavalue
+****** Iterate and Count Atoms/Bonds on SGroups ********
+DataSGroup iterate: countAtoms=3 iterAtoms=3 atoms=[0, 1, 2]
+DataSGroup iterate: countBonds=2 iterBonds=2 bonds=[0, 1]
+SGroup iterate: countAtoms=3 iterAtoms=3
+SGroup iterate: countBonds=2 iterBonds=2
+Empty Superatom iterate: countAtoms=0 iterAtoms=0
+Empty Superatom iterate: countBonds=0 iterBonds=0
+Superatom iterate: countAtoms=8 iterAtoms=8
+Superatom iterate: countBonds=1 iterBonds=1
+MultipleGroup iterate: countAtoms=9 iterAtoms=9
+MultipleGroup iterate: countBonds=2 iterBonds=2

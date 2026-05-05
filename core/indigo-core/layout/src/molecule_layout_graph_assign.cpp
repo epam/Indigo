@@ -34,6 +34,8 @@ using namespace indigo;
 
 // Tolerance for regular polygon geometry checks (larger than EPSILON for trig/JSON roundtrips).
 constexpr float LAYOUT_GEOMETRY_TOLERANCE = 0.01f;
+constexpr int MAX_NAGON_SIZE_WITHOUT_INNER_CYCLE = 5;
+constexpr int MIN_NAGON_SIZE_FOR_STANDARD_BOND_LENGTH = 12;
 
 enum
 {
@@ -263,7 +265,7 @@ private:
         for (size_t i = 0; i < cycles.size(); i++)
             indices[i] = i;
 
-        std::sort(indices.begin(), indices.end(), [&cycles](size_t a, size_t b) { return cycles[a].geom_length < cycles[b].geom_length; });
+        std::stable_sort(indices.begin(), indices.end(), [&cycles](size_t a, size_t b) { return cycles[a].geom_length < cycles[b].geom_length; });
 
         // Select minimum basis using XOR
         QS_DEF(Array<uint64_t>, basis);
@@ -349,8 +351,12 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates(float bond_length)
         if (cancellation && cancellation->isCancelled())
             throw Error("Molecule layout has been cancelled: %s", cancellation->cancelledRequestMessage());
 
-        if (!_prepareAssignedList(assigned_list, bc_decom, bc_components, bc_tree))
+        bool has_assigned = _prepareAssignedList(assigned_list, bc_decom, bc_components, bc_tree);
+
+        if (!has_assigned)
+        {
             return;
+        }
 
         // ( 3.i] let k = 0  ( top of the list];;
         while (assigned_list.size() != 0)
@@ -386,7 +392,14 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates(float bond_length)
 
             if (all_trivial && !sequence_layout)
             {
-                adjacent_list.qsort(_vertex_cmp, this);
+                auto vertex_cmp_less = [this](int n1, int n2) -> bool {
+                    const LayoutVertex& v1 = getLayoutVertex(n1);
+                    const LayoutVertex& v2 = getLayoutVertex(n2);
+                    if (v1.is_cyclic != v2.is_cyclic)
+                        return v2.is_cyclic;
+                    return v1.morgan_code < v2.morgan_code;
+                };
+                std::stable_sort(adjacent_list.begin(), adjacent_list.end(), vertex_cmp_less);
                 _attachDandlingVertices(k, adjacent_list);
             }
             else
@@ -401,7 +414,6 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates(float bond_length)
         }
         // ( 4] repeat steps 1-3 until all atoms have been assigned absolute coordinates.;
     }
-    //
 }
 
 void MoleculeLayoutGraphSimple::_layout_component(BiconnectedDecomposer& bc_decom, PtrArray<MoleculeLayoutGraph>& bc_components, Array<int>& bc_tree,
@@ -660,7 +672,7 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
 
     if (sorted_cycles.size() > 0)
     {
-        sorted_cycles.qsort(Cycle::compare_cb, &cycles);
+        std::stable_sort(sorted_cycles.begin(), sorted_cycles.end(), [&cycles](int idx1, int idx2) { return Cycle::compare_cb(idx1, idx2, &cycles) < 0; });
 
         // Skip if cycle already has correct polygon geometry from previous layout step
         bool skip_first = false;
@@ -1641,13 +1653,22 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
     }
     else if (sequence_layout)
     {
+        // Requirement #3196 §6.3: for n-agon >= 12 bases must keep the full
+        // standard bond length; only smaller rings use the shortened 0.75 value.
+        std::vector<int> large_inner_cycle_vertices;
         for (auto vx_idx : vertices())
         {
             auto& lvx = _layout_vertices[vx_idx];
             if (lvx.is_inner_cycle)
-                inner_cycle_vertices.push_back(vx_idx);
+            {
+                if (lvx.inner_cycle_size >= MIN_NAGON_SIZE_FOR_STANDARD_BOND_LENGTH)
+                    large_inner_cycle_vertices.push_back(vx_idx);
+                else
+                    inner_cycle_vertices.push_back(vx_idx);
+            }
         }
         _reflectCycleVertices(inner_cycle_vertices, LayoutOptions::DEFAULT_INNER_MACROCYCLE_BOND_LENGTH);
+        _reflectCycleVertices(large_inner_cycle_vertices, bond_length);
     }
 
     if (vertexCount() == 1)
@@ -2102,8 +2123,11 @@ void MoleculeLayoutGraph::_markInnerVertices(const MoleculeLayoutGraph& componen
                 int nei_count = 0;
                 for (int k = vx_nei.neiBegin(); k < vx_nei.neiEnd(); k = vx_nei.neiNext(k), ++nei_count)
                     ;
-                if (nei_count == 1 && component.vertexCount() > 5)
+                if (nei_count == 1 && component.vertexCount() > MAX_NAGON_SIZE_WITHOUT_INNER_CYCLE)
+                {
                     _layout_vertices[nei_idx].is_inner_cycle = true;
+                    _layout_vertices[nei_idx].inner_cycle_size = component.vertexCount();
+                }
             }
         }
     }
@@ -2400,7 +2424,9 @@ bool MoleculeLayoutGraph::_prepareAssignedList(Array<int>& assigned_list, Biconn
         // Skip energy-based refinement for sequence_layout with fixed vertices
         // (would corrupt polygon positions; first layout still refined normally)
         if (!(sequence_layout && _n_fixed > 0))
+        {
             _refineCoordinates(bc_decom, bc_components, bc_tree);
+        }
 
         return false;
     }
@@ -2408,6 +2434,13 @@ bool MoleculeLayoutGraph::_prepareAssignedList(Array<int>& assigned_list, Biconn
     // ( 2] the list is ordered with cyclic atoms at the top of the list;
     //   with descending ATCD numbers and acyclic atoms at the bottom;
     //   of the list with descending ATCD numbers;;
-    assigned_list.qsort(_vertex_cmp, this);
+    auto vertex_cmp_less = [this](int n1, int n2) -> bool {
+        const LayoutVertex& v1 = getLayoutVertex(n1);
+        const LayoutVertex& v2 = getLayoutVertex(n2);
+        if (v1.is_cyclic != v2.is_cyclic)
+            return v2.is_cyclic;
+        return v1.morgan_code < v2.morgan_code;
+    };
+    std::stable_sort(assigned_list.begin(), assigned_list.end(), vertex_cmp_less);
     return true;
 }

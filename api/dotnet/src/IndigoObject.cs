@@ -116,6 +116,12 @@ namespace com.epam.indigo
             return dispatcher.checkResult(IndigoLib.indigoHelm(self, library.self));
         }
 
+        public string biln(IndigoObject library)
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoBiln(self, library.self));
+        }
+
         public string axolabs(IndigoObject library)
         {
             dispatcher.setSessionID();
@@ -822,6 +828,18 @@ namespace com.epam.indigo
         {
             dispatcher.setSessionID();
             return dispatcher.checkResult(IndigoLib.indigoGetSGroupNumCrossBonds(self));
+        }
+
+        public int createCrossBonds()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoCreateCrossBonds(self));
+        }
+
+        public int clearSGroupCrossBonds()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoClearSGroupCrossBonds(self));
         }
 
         public int addSGroupAttachmentPoint(int aidx, int lvidx, string apid)

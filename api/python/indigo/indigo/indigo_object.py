@@ -1993,6 +1993,28 @@ class IndigoObject:
             self._lib().indigoGetSGroupNumCrossBonds(self.id)
         )
 
+    def createCrossBonds(self):
+        """SGroup method automatically detects and adds crossing bonds according to the current atoms in Sgroup
+
+        Returns:
+            int: 1 if there are no errors
+        """
+
+        return IndigoLib.checkResult(
+            self._lib().indigoCreateCrossBonds(self.id)
+        )
+
+    def clearSGroupCrossBonds(self):
+        """SGroup method removes all cross bonds for a superatom S-group
+
+        Returns:
+            int: 1 if there are no errors
+        """
+
+        return IndigoLib.checkResult(
+            self._lib().indigoClearSGroupCrossBonds(self.id)
+        )
+
     def addSGroupAttachmentPoint(self, aidx, lvidx, apid):
         """SGroup method sets attachment point info
 
@@ -3753,6 +3775,33 @@ class IndigoObject:
 
         return IndigoLib.checkResultString(
             self._lib().indigoHelm(self.id, library.id)
+        )
+
+    def saveBiln(self, filename, library):
+        """Saves macromolecule to BILN file
+
+        Args:
+            filename (str): full file path to the output file
+
+        Returns:
+            int: 1 if file is saved successfully
+        """
+
+        return IndigoLib.checkResult(
+            self._lib().indigoSaveBilnToFile(
+                self.id, filename.encode(), library.id
+            )
+        )
+
+    def biln(self, library):
+        """Molecule or reaction method returns BILN for the structure
+
+        Returns:
+            str: BILN string
+        """
+
+        return IndigoLib.checkResultString(
+            self._lib().indigoBiln(self.id, library.id)
         )
 
     def saveAxoLabs(self, filename, library):
