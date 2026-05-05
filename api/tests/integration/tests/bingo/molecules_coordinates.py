@@ -63,4 +63,4 @@ while enumerate.next():
             mol.hasCoord(),
         )
 
-print("Loaded", count, "molecules with coordinates from bingo db")
+print("Loaded %s molecules with coordinates from bingo db" % count)
