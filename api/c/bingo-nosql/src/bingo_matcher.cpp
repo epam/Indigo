@@ -9,6 +9,11 @@
 
 #include "molecule/molecule_substructure_matcher.h"
 
+#include "molecule/cmf_loader.h"
+#include "molecule/icm_loader.h"
+#include "reaction/crf_loader.h"
+#include "reaction/icr_loader.h"
+
 #include "base_c/bitarray.h"
 #include "base_cpp/profiling.h"
 
@@ -267,26 +272,38 @@ bool BaseMatcher::_isCurrentObjectExist()
     return true;
 }
 
-void BaseMatcher::_loadObject(const char* cf_str, int cf_len, IndigoObject*& current_obj)
+void BaseMatcher::_loadObject(const char* cf_str, int cf_len, IndigoObject*& current_obj, bool is_old_db)
 {
-    std::string cmf(cf_str, cf_len);
     BufferScanner buf_scn(cf_str, cf_len);
 
     if (IndigoMolecule::is(*current_obj))
     {
         Molecule& mol = current_obj->getMolecule();
-
-        CmfLoader cmf_loader(buf_scn);
-
-        cmf_loader.loadMolecule(mol);
+        if (is_old_db)
+        {
+            CmfLoader cmf_loader(buf_scn);
+            cmf_loader.loadMolecule(mol);
+        }
+        else
+        {
+            IcmLoader icm_loader(buf_scn);
+            icm_loader.loadMolecule(mol);
+        }
     }
     else if (IndigoReaction::is(*current_obj))
     {
         Reaction& rxn = current_obj->getReaction();
 
-        CrfLoader crf_loader(buf_scn);
-
-        crf_loader.loadReaction(rxn);
+        if (is_old_db)
+        {
+            CrfLoader crf_loader(buf_scn);
+            crf_loader.loadReaction(rxn);
+        }
+        else
+        {
+            IcrLoader icr_loader(buf_scn);
+            icr_loader.loadReaction(rxn);
+        }
     }
     else
         throw Exception("BaseMatcher::unknown current object type");
@@ -306,7 +323,7 @@ bool BaseMatcher::_loadCurrentObject(BaseIndex& index, int current_id, IndigoObj
         if (cf_len == -1)
             return false;
 
-        _loadObject(cf_str, cf_len, current_obj);
+        _loadObject(cf_str, cf_len, current_obj, index.isOldDB());
 
         return true;
     }

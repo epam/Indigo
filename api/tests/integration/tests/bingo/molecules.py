@@ -111,7 +111,10 @@ for mol in indigo.iterateSDFile(
     dataPath("molecules/basic/rand_queries_small.sdf")
 ):
     qmol = indigo.loadQueryMolecule(mol.rawData())
-    searchSub(bingo, qmol)
+    try:
+        searchSub(bingo, qmol)
+    except BingoException as e:
+        print(qmol.smiles(), getIndigoExceptionText(e))
     searchSim(bingo, mol, 0.9, 1, "tanimoto")
     searchSim(bingo, mol, 0.9, 1, "tversky 0.3 0.7")
     searchSim(bingo, mol, 0.9, 1, "euclid-sub")

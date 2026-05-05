@@ -231,7 +231,7 @@ namespace bingo
 
         bool _isCurrentObjectExist();
 
-        static void _loadObject(const char* cf_str, int cf_len, IndigoObject*& current_obj);
+        static void _loadObject(const char* cf_str, int cf_len, IndigoObject*& current_obj, bool is_old_db);
         static bool _loadCurrentObject(BaseIndex& index, int current_id, IndigoObject*& current_obj);
 
         virtual void _setParameters(const char* params) = 0;
