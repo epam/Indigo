@@ -43,12 +43,10 @@ namespace
     }
 
     // Hydrogen uses the BIOVIA-Draw convention: a bare neutral H is treated as
-    // elemental H2 (hyd=1) and radical-electron info is ignored for isolated Hs,
-    // so "M RAD ... 2" on a bare H still serialises as "[HH]".
-    // The `rad` parameter is kept for signature uniformity. One parametrised case
-    // (H_q0_rD_c0_radical) prescribes hyd=0 for an H radical — that spec conflict
-    // is tracked separately and intentionally unresolved here.
-    bool calcValenceHydrogen(int charge, int /*rad*/, int conn, int& valence, int& hyd)
+    // elemental H2 (hyd=1), so "M RAD ... 2" on a bare H still serialises as "[HH]".
+    // Radical-electron info is intentionally ignored for isolated Hs; the parametrised
+    // case H_q0_rD_c0_radical (which would prescribe hyd=0) is a documented spec conflict.
+    bool calcValenceHydrogen(int charge, int conn, int& valence, int& hyd)
     {
         valence = 1;
         if ((charge == 1 && conn == 0) || (charge == -1 && conn == 0) || (charge == 0 && conn == 1))
@@ -344,16 +342,6 @@ namespace
     {
         if (elem != ELEM_S && elem != ELEM_Se && elem != ELEM_Po)
             return false;
-        // Dianion full-octet override (eff=8): bare coordination form keeps the lone pairs
-        // intact, matching the Regression_ChalcogenideDianion branch spec for conn≤2.
-        // Master's ladder happened to yield hyd=1 here; bingo/molecules.py never probes it,
-        // so both sets stay green.
-        if (charge == -2 && rad == 0 && conn >= 1 && conn <= 2)
-        {
-            valence = conn;
-            hyd = 0;
-            return true;
-        }
         if (charge == 1)
         {
             if (conn <= 3)
@@ -417,19 +405,35 @@ namespace
     {
         if (elem != ELEM_Te)
             return false;
-        if (charge == -1 || charge == 1)
+        // Master's Te branch (groupno==6, ELEM_Te) is INTENTIONALLY narrower than the
+        // S/Se/Po ladder. Tracking each charge case keeps bingo's full-periodic-table
+        // tests (Q798/Q814) numerically identical to master.
+        if (charge == -1)
         {
-            const int start = (charge == -1) ? 1 : 3;
-            for (int v = start; v <= 7; v += 2)
+            // Only the documented PubChem cases: TeF7⁻ (CID 4191414), TeF5⁻ pseudo, and
+            // bare/single-coord Te⁻. Anything else master rejects via hyd=-1.
+            if (rad + conn == 7)
             {
-                if (const int h = v - rad - conn; h >= 0)
-                {
-                    valence = v;
-                    hyd = h;
-                    return true;
-                }
+                valence = 7;
+                hyd = 0;
+                return true;
             }
-            return false;
+            if (rad + conn == 5)
+            {
+                valence = 5;
+                hyd = 0;
+                return true;
+            }
+            valence = 1;
+            hyd = 1 - rad - conn;
+            return hyd >= 0;
+        }
+        if (charge == 1)
+        {
+            // Master allows only val=3 here ("no known cases of 5-connected [Te+]").
+            valence = 3;
+            hyd = 3 - rad - conn;
+            return hyd >= 0;
         }
         if (charge == 2)
         {
@@ -494,7 +498,12 @@ namespace
                 hyd = 2 - rad - conn;
                 return hyd >= 0;
             }
-            return false; // conn in {3,5,≥7} with charge=+1 is rejected in master
+            if (conn == 3 || conn == 5 || conn >= 7)
+                return false; // master sets hyd=-1 → bad valence
+            // conn in {4, 6} — master falls through with valence=conn, hyd=0 default.
+            valence = conn;
+            hyd = 0;
+            return rad == 0;
         }
         if (charge == 0)
         {
@@ -529,7 +538,10 @@ namespace
 
     // Noble gases — neutral atoms are inert; hypervalent even-bonded species (XeF2/4/6,
     // KrF2, etc.) are accepted via the ladder v ∈ {base, base+2, …, eff} with hyd≡0.
-    // Charged forms require the drawn ladder to fit exactly; otherwise bare is NONSTD.
+    // The hypervalent ladder requires DRAWN bonds (conn > 0): bare radical or charged
+    // noble-gas atoms have no chemistry — master's formula `hyd = -rad - conn - |q|`
+    // rejects them, and we mirror that by returning false when conn == 0 with any
+    // anomaly. checkmolecule then surfaces "bad valence on Ar...2 radical electrons" etc.
     bool calcValenceNobleGas(int elem, int charge, int rad, int conn, int& valence, int& hyd)
     {
         if (elem != ELEM_He && elem != ELEM_Ne && elem != ELEM_Ar && elem != ELEM_Kr && elem != ELEM_Xe && elem != ELEM_Rn && elem != ELEM_Og)
@@ -540,6 +552,9 @@ namespace
             hyd = 0;
             return true;
         }
+        // Bare anomaly (no drawn bonds) — reject so checkmolecule reports it.
+        if (conn == 0)
+            return false;
         const int eff = Element::electrons(elem, charge);
         if (eff <= 0 || eff > 8)
             return false; // extreme overcharge is handled upstream by tryBareIsolatedIon
@@ -790,11 +805,13 @@ namespace
 
     // Bare isolated ion with eff outside [1, 8] (e.g. [N+5], [B-6]) — use the neutral
     // group-base valence as a stable handle so downstream consumers see a well-defined
-    // value instead of zero. Applied BEFORE per-element rules because the element
-    // helpers would reject these extreme charges as invalid.
+    // value instead of zero. Noble gases are excluded: master rejects [Ar-]/[Xe+] as
+    // bad valence (no chemistry justifies them) and checkmolecule must surface that.
     bool tryBareIsolatedIon(int elem, int charge, int rad, int conn, int& valence, int& hyd)
     {
         if (conn != 0 || rad != 0 || charge == 0)
+            return false;
+        if (Element::group(elem) == 8)
             return false;
         if (const int eff = Element::electrons(elem, charge); eff > 0 && eff <= 8)
             return false;
@@ -810,7 +827,7 @@ namespace
     bool dispatchElementSpecificRule(int elem, int g, int charge, int rad, int conn, int& valence, int& hyd)
     {
         if (elem == ELEM_H)
-            return calcValenceHydrogen(charge, rad, conn, valence, hyd);
+            return calcValenceHydrogen(charge, conn, valence, hyd);
         if (g == 1)
             return calcValenceGroup1(charge, rad, conn, valence, hyd);
         if (g == 2)
@@ -842,13 +859,13 @@ namespace
         return calcValenceLadder(elem, g, charge, rad, conn, valence, hyd);
     }
 
-    // Main-group dispatch: element-specific rule first, then the extreme-charge bare ion
-    // fallback (e.g. [N+5], [B-6], [Xe-1]) so those still get a sensible base valence.
+    // Main-group dispatch: element-specific rule only. Extreme bare ions (e.g. [N+5],
+    // [B-6], [H+2]) intentionally have NO fallback — master rejects them and bingo
+    // checkmolecule expects "bad valence on …" to surface. Use indigoSetOption
+    // ("ignore-bad-valence", "true") to suppress the throw at higher level if needed.
     bool dispatchMainGroupRule(int elem, int g, int charge, int rad, int conn, int& valence, int& hyd)
     {
-        if (dispatchElementSpecificRule(elem, g, charge, rad, conn, valence, hyd))
-            return true;
-        return tryBareIsolatedIon(elem, charge, rad, conn, valence, hyd);
+        return dispatchElementSpecificRule(elem, g, charge, rad, conn, valence, hyd);
     }
 
 } // anonymous namespace

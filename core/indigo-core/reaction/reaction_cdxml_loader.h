@@ -20,6 +20,7 @@
 #define __reaction_cdxml_loader__
 
 #include "base_cpp/exception.h"
+#include "molecule/loader_options.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_cdxml_loader.h"
 #include "molecule/molecule_stereocenter_options.h"
@@ -45,6 +46,11 @@ namespace indigo
         StereocentersOptions stereochemistry_options;
         bool ignore_bad_valence;
         ValenceMode valence_mode;
+
+        // Bulk options propagation. See LoaderOptions doc for the field set.
+        void setOptions(const LoaderOptions& opts);
+        LoaderOptions getOptions() const;
+
         std::set<int> reactants_ids;
         std::set<int> products_ids;
         std::set<int> intermediates_ids;

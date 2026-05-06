@@ -209,12 +209,15 @@ INSTANTIATE_TEST_SUITE_P(
     Group6_Te, CalcValenceTest,
     ::testing::Values(ValenceTestCase{ELEM_Te, 0, 0, 0, false, 2, "Te_q0_r0_c0"}, ValenceTestCase{ELEM_Te, 0, 0, 2, false, 0, "Te_q0_r0_c2"},
                       ValenceTestCase{ELEM_Te, 0, 0, 4, false, 0, "Te_q0_r0_c4"}, ValenceTestCase{ELEM_Te, 0, 0, 6, false, 0, "Te_q0_r0_c6"},
-                      ValenceTestCase{ELEM_Te, -1, 0, 1, false, 0, "Te_q-1_r0_c1"}, ValenceTestCase{ELEM_Te, -1, 0, 3, false, 0, "Te_q-1_r0_c3_IMPROVED"},
-                      ValenceTestCase{ELEM_Te, -1, 0, 5, false, 0, "Te_q-1_r0_c5"}, ValenceTestCase{ELEM_Te, -1, 0, 7, false, 0, "Te_q-1_r0_c7"},
-                      ValenceTestCase{ELEM_Te, -1, 0, 4, false, 1, "Te_q-1_r0_c4"}, ValenceTestCase{ELEM_Te, 1, 0, 0, false, 3, "Te_q+1_r0_c0"},
-                      ValenceTestCase{ELEM_Te, 1, 0, 3, false, 0, "Te_q+1_r0_c3"}, ValenceTestCase{ELEM_Te, 1, 0, 4, false, 1, "Te_q+1_r0_c4"},
-                      ValenceTestCase{ELEM_Te, 2, 0, 0, false, 2, "Te_q+2_r0_c0_inert"}, ValenceTestCase{ELEM_Te, 2, 0, 2, false, 0, "Te_q+2_r0_c2"},
-                      ValenceTestCase{ELEM_Te, 2, 0, 4, false, 0, "Te_q+2_r0_c4"}));
+                      ValenceTestCase{ELEM_Te, -1, 0, 1, false, 0, "Te_q-1_r0_c1"},
+                      // Te⁻ has master rule only for rad+conn ∈ {1, 5, 7}; conn∈{3,4} are
+                      // bad valence (master sets hyd=-1 → bingo bingo postgres collapses to 0).
+                      ValenceTestCase{ELEM_Te, -1, 0, 3, true, 0, "Te_q-1_r0_c3_BAD"}, ValenceTestCase{ELEM_Te, -1, 0, 5, false, 0, "Te_q-1_r0_c5"},
+                      ValenceTestCase{ELEM_Te, -1, 0, 7, false, 0, "Te_q-1_r0_c7"}, ValenceTestCase{ELEM_Te, -1, 0, 4, true, 0, "Te_q-1_r0_c4_BAD"},
+                      ValenceTestCase{ELEM_Te, 1, 0, 0, false, 3, "Te_q+1_r0_c0"}, ValenceTestCase{ELEM_Te, 1, 0, 3, false, 0, "Te_q+1_r0_c3"},
+                      // Te⁺ master allows only val=3; conn=4 yields hyd=-1 → bad valence.
+                      ValenceTestCase{ELEM_Te, 1, 0, 4, true, 0, "Te_q+1_r0_c4_BAD"}, ValenceTestCase{ELEM_Te, 2, 0, 0, false, 2, "Te_q+2_r0_c0_inert"},
+                      ValenceTestCase{ELEM_Te, 2, 0, 2, false, 0, "Te_q+2_r0_c2"}, ValenceTestCase{ELEM_Te, 2, 0, 4, false, 0, "Te_q+2_r0_c4"}));
 
 // Group 7 — Fluorine
 INSTANTIATE_TEST_SUITE_P(Group7_F, CalcValenceTest,
@@ -273,8 +276,9 @@ INSTANTIATE_TEST_SUITE_P(Group8_Xe_Charged, CalcValenceTest,
                              // Xe⁴⁺ conn=0: eff=4, base=4, noble_no_h blocks h=4 → NONSTD
                              ValenceTestCase{ELEM_Xe, 4, 0, 0, true, 0, "Xe_q+4_r0_c0_NONSTD"},
                              ValenceTestCase{ELEM_Xe, 4, 0, 2, true, 0, "Xe_q+4_r0_c2_NONSTD"},
-                             // Xe⁻: eff=9>8, ion early-return
-                             ValenceTestCase{ELEM_Xe, -1, 0, 0, false, 0, "Xe_q-1_r0_c0"}, ValenceTestCase{ELEM_Xe, -2, 0, 0, false, 0, "Xe_q-2_r0_c0"}));
+                             // Xe⁻ / Xe²⁻: bare noble-gas anions have no chemistry — bingo
+                             // checkmolecule expects "bad valence on Xe..." for these.
+                             ValenceTestCase{ELEM_Xe, -1, 0, 0, true, 0, "Xe_q-1_r0_c0"}, ValenceTestCase{ELEM_Xe, -2, 0, 0, true, 0, "Xe_q-2_r0_c0"}));
 
 // Group 8 — Kr with connectivity
 INSTANTIATE_TEST_SUITE_P(Group8_Kr_Expanded, CalcValenceTest,
@@ -306,13 +310,17 @@ INSTANTIATE_TEST_SUITE_P(
                       ValenceTestCase{ELEM_I, -1, 0, 0, false, 0, "I_q-1_r0_c0"}, ValenceTestCase{ELEM_I, -1, 0, 1, false, 0, "I_q-1_r0_c1_coord"},
                       ValenceTestCase{ELEM_I, -1, 0, 3, false, 0, "I_q-1_r0_c3_coord"}));
 
-// BUG-4: Chalcogenide dianions (eff=8) — noble-gas config, no implicit H
+// BUG-4: Chalcogenide dianions — match master's general-charge ladder.
+// S/Se/Po dianions follow master's groupno==6 else branch:
+//   conn+rad+|q| <= 2 → val=2, hyd=2-rad-conn-|q|   (e.g. [S²⁻] bare → hyd=0)
+//   conn+rad+|q| <= 4 → val=4, hyd=4-rad-conn-|q|   (e.g. [S²⁻]−R → hyd=1, matches bingo Q814)
+// Te has no master dianion rule → falls through with valence=conn, hyd=0.
 INSTANTIATE_TEST_SUITE_P(Regression_ChalcogenideDianion, CalcValenceTest,
                          ::testing::Values(ValenceTestCase{ELEM_S, -2, 0, 0, false, 0, "S_q-2_r0_c0_sulfide"},
-                                           ValenceTestCase{ELEM_S, -2, 0, 1, false, 0, "S_q-2_r0_c1_coord"},
+                                           ValenceTestCase{ELEM_S, -2, 0, 1, false, 1, "S_q-2_r0_c1_coord"},
                                            ValenceTestCase{ELEM_S, -2, 0, 2, false, 0, "S_q-2_r0_c2_coord"},
                                            ValenceTestCase{ELEM_Se, -2, 0, 0, false, 0, "Se_q-2_r0_c0_selenide"},
-                                           ValenceTestCase{ELEM_Se, -2, 0, 1, false, 0, "Se_q-2_r0_c1_coord"},
+                                           ValenceTestCase{ELEM_Se, -2, 0, 1, false, 1, "Se_q-2_r0_c1_coord"},
                                            ValenceTestCase{ELEM_Te, -2, 0, 0, false, 0, "Te_q-2_r0_c0_telluride"},
                                            ValenceTestCase{ELEM_Te, -2, 0, 1, false, 0, "Te_q-2_r0_c1_coord"}));
 
@@ -326,15 +334,16 @@ INSTANTIATE_TEST_SUITE_P(Regression_HalogenRadical, CalcValenceTest,
                                            ValenceTestCase{ELEM_Br, 0, RADICAL_DOUBLET, 3, false, 0, "Br_q0_rD_c3_odd"},
                                            ValenceTestCase{ELEM_I, 0, RADICAL_DOUBLET, 0, false, 0, "I_q0_rD_c0_radical"}));
 
-// Boundary eff values
+// Boundary eff values — extreme bare ions are bad valence (no chemistry justifies them).
+// Master throws "bad valence on …", and bingo checkmolecule must surface that.
 INSTANTIATE_TEST_SUITE_P(Boundary_Eff, CalcValenceTest,
                          ::testing::Values(
-                             // eff=0: N⁵⁺ (g=5, q=5 → eff=0) — ion early-return
-                             ValenceTestCase{ELEM_N, 5, 0, 0, false, 0, "N_q+5_r0_c0_eff0"},
-                             // eff<0: N⁶⁺ (g=5, q=6 → eff=-1) — ion early-return
-                             ValenceTestCase{ELEM_N, 6, 0, 0, false, 0, "N_q+6_r0_c0_effNeg"},
-                             // eff>8: B⁶⁻ (g=3, q=-6 → eff=9) — ion early-return
-                             ValenceTestCase{ELEM_B, -6, 0, 0, false, 0, "B_q-6_r0_c0_eff9"},
+                             // eff=0: N⁵⁺ — bare cation, no chemistry → bad valence
+                             ValenceTestCase{ELEM_N, 5, 0, 0, true, 0, "N_q+5_r0_c0_eff0"},
+                             // eff<0: N⁶⁺ — bare cation, no chemistry → bad valence
+                             ValenceTestCase{ELEM_N, 6, 0, 0, true, 0, "N_q+6_r0_c0_effNeg"},
+                             // eff>8: B⁶⁻ — bare anion, no chemistry → bad valence
+                             ValenceTestCase{ELEM_B, -6, 0, 0, true, 0, "B_q-6_r0_c0_eff9"},
                              // O⁺⁵ with no bonds: legacy O⁺ rule fixes valence=3 and absorbs the charge into
                              // the hydrogen count (hyd=3), matching the reference in
                              // basic/buffer_string_load_iterate.py (conn=1 case yields [OH2+5] there).

@@ -27,6 +27,7 @@
 #include "base_cpp/array.h"
 #include "base_cpp/exception.h"
 #include "molecule/base_molecule.h"
+#include "molecule/loader_options.h"
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/query_molecule.h"
 #include "molecule/valence_model.h"
@@ -54,6 +55,10 @@ namespace indigo
 
         void loadMolecule(Molecule& mol);
         void loadQueryMolecule(QueryMolecule& mol);
+
+        // Bulk options propagation. See LoaderOptions doc for the field set.
+        void setOptions(const LoaderOptions& opts);
+        LoaderOptions getOptions() const;
 
         StereocentersOptions stereochemistry_options;
         bool ignore_bad_valence;

@@ -23,6 +23,7 @@
 #include "base_cpp/exception.h"
 #include "base_cpp/tlscont.h"
 #include "molecule/base_molecule.h"
+#include "molecule/loader_options.h"
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/monomers_lib.h"
 #include "molecule/monomers_template_library.h"
@@ -56,6 +57,12 @@ namespace indigo
         // for Rxnfiles v3000
         void loadMolBlock3000(Molecule& mol);
         void loadQueryMolBlock3000(QueryMolecule& mol);
+
+        // Bulk options propagation. Replaces the historical pattern of copying
+        // each public field individually (see Indigo::loadMolecule). New options
+        // added to LoaderOptions are picked up automatically by every loader.
+        void setOptions(const LoaderOptions& opts);
+        LoaderOptions getOptions() const;
 
         StereocentersOptions stereochemistry_options;
         bool treat_x_as_pseudoatom; // normally 'X' means 'any halogen'

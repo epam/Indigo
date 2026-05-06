@@ -60,6 +60,22 @@ int RSmilesLoader::_selectGroup(int& idx, int rcnt, int ccnt, int pcnt) const
     return _selectGroupByPair(iidx, idx, rcnt, ccnt, pcnt);
 }
 
+void RSmilesLoader::setOptions(const LoaderOptions& opts)
+{
+    stereochemistry_options = opts.stereochemistry_options;
+    ignore_bad_valence = opts.ignore_bad_valence;
+    valence_mode = opts.valence_mode;
+}
+
+LoaderOptions RSmilesLoader::getOptions() const
+{
+    LoaderOptions opts;
+    opts.stereochemistry_options = stereochemistry_options;
+    opts.ignore_bad_valence = ignore_bad_valence;
+    opts.valence_mode = valence_mode;
+    return opts;
+}
+
 void RSmilesLoader::loadReaction(Reaction& reaction)
 {
     _rxn = &reaction;

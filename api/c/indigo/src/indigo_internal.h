@@ -37,6 +37,7 @@
 #include "layout/reaction_layout.h"
 
 #include "molecule/ket_document.h"
+#include "molecule/loader_options.h"
 #include "molecule/molecule_fingerprint.h"
 #include "molecule/molecule_gross_formula.h"
 #include "molecule/molecule_ionize.h"
@@ -301,6 +302,12 @@ public:
 
     // Method that returns temporary buffer that can be returned from Indigo C API methods
     static TmpData& getThreadTmpData();
+
+    // Snapshot of loader-shared options as a single value object. Loader call-sites
+    // (indigo_loaders.cpp, indigo_molecule.cpp) propagate via loader.setOptions(...)
+    // instead of copying each field individually — adding a new option to LoaderOptions
+    // does not require touching those call-sites again.
+    LoaderOptions loaderOptions() const;
 
     ProductEnumeratorParams rpe_params;
     MoleculeFingerprintParameters fp_params;

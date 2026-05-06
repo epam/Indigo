@@ -41,6 +41,22 @@ ReactionCdxmlLoader::~ReactionCdxmlLoader()
 {
 }
 
+void ReactionCdxmlLoader::setOptions(const LoaderOptions& opts)
+{
+    stereochemistry_options = opts.stereochemistry_options;
+    ignore_bad_valence = opts.ignore_bad_valence;
+    valence_mode = opts.valence_mode;
+}
+
+LoaderOptions ReactionCdxmlLoader::getOptions() const
+{
+    LoaderOptions opts;
+    opts.stereochemistry_options = stereochemistry_options;
+    opts.ignore_bad_valence = ignore_bad_valence;
+    opts.valence_mode = valence_mode;
+    return opts;
+}
+
 void ReactionCdxmlLoader::_initReaction(BaseReaction& rxn)
 {
     rxn.clear();

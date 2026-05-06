@@ -57,6 +57,22 @@ CmlLoader::CmlLoader(XMLHandle& handle)
     valence_mode = ValenceMode::BIOVIA_2009;
 }
 
+void CmlLoader::setOptions(const LoaderOptions& opts)
+{
+    stereochemistry_options = opts.stereochemistry_options;
+    ignore_bad_valence = opts.ignore_bad_valence;
+    valence_mode = opts.valence_mode;
+}
+
+LoaderOptions CmlLoader::getOptions() const
+{
+    LoaderOptions opts;
+    opts.stereochemistry_options = stereochemistry_options;
+    opts.ignore_bad_valence = ignore_bad_valence;
+    opts.valence_mode = valence_mode;
+    return opts;
+}
+
 void CmlLoader::loadMolecule(Molecule& mol)
 {
     mol.clear();

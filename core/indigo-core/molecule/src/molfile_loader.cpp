@@ -79,14 +79,33 @@ void MolfileLoader::loadMolecule(Molecule& mol)
 
 void MolfileLoader::copyProperties(const MolfileLoader& loader)
 {
-    stereochemistry_options = loader.stereochemistry_options;
-    ignore_bad_valence = loader.ignore_bad_valence;
-    valence_mode = loader.valence_mode;
-    ignore_no_chiral_flag = loader.ignore_no_chiral_flag;
-    skip_3d_chirality = loader.skip_3d_chirality;
+    setOptions(loader.getOptions());
     treat_stereo_as = loader.treat_stereo_as;
-    treat_x_as_pseudoatom = loader.treat_x_as_pseudoatom;
     _monomer_library = loader._monomer_library;
+}
+
+void MolfileLoader::setOptions(const LoaderOptions& opts)
+{
+    stereochemistry_options = opts.stereochemistry_options;
+    valence_mode = opts.valence_mode;
+    ignore_bad_valence = opts.ignore_bad_valence;
+    ignore_no_chiral_flag = opts.ignore_no_chiral_flag;
+    ignore_noncritical_query_features = opts.ignore_noncritical_query_features;
+    skip_3d_chirality = opts.skip_3d_chirality;
+    treat_x_as_pseudoatom = opts.treat_x_as_pseudoatom;
+}
+
+LoaderOptions MolfileLoader::getOptions() const
+{
+    LoaderOptions opts;
+    opts.stereochemistry_options = stereochemistry_options;
+    opts.valence_mode = valence_mode;
+    opts.ignore_bad_valence = ignore_bad_valence;
+    opts.ignore_no_chiral_flag = ignore_no_chiral_flag;
+    opts.ignore_noncritical_query_features = ignore_noncritical_query_features;
+    opts.skip_3d_chirality = skip_3d_chirality;
+    opts.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+    return opts;
 }
 
 void MolfileLoader::loadQueryMolecule(QueryMolecule& mol)

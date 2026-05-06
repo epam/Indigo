@@ -26,6 +26,7 @@
 
 #include "base_cpp/array.h"
 #include "layout/metalayout.h"
+#include "molecule/loader_options.h"
 #include "molecule/molecule_arom.h"
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/valence_model.h"
@@ -66,6 +67,10 @@ namespace indigo
         AromaticityOptions arom_options;
         LayoutOptions layout_options;
         std::string input_format;
+
+        // Bulk options propagation. See LoaderOptions doc for the field set.
+        void setOptions(const LoaderOptions& opts);
+        LoaderOptions getOptions() const;
 
         DECL_ERROR;
 

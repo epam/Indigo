@@ -34,6 +34,7 @@
 #include "common/utils/emf_utils.h"
 #include "elements.h"
 #include "molecule/base_molecule.h"
+#include "molecule/loader_options.h"
 #include "molecule/meta_commons.h"
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/query_molecule.h"
@@ -925,6 +926,10 @@ namespace indigo
         void parseFontTable(BaseCDXElement& elem);
 
         std::unordered_map<int, int> idToAtomIndexMap() const;
+
+        // Bulk options propagation. See LoaderOptions doc for the field set.
+        void setOptions(const LoaderOptions& opts);
+        LoaderOptions getOptions() const;
 
         StereocentersOptions stereochemistry_options;
         bool ignore_bad_valence;
