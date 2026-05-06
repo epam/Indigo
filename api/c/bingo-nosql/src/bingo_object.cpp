@@ -2,15 +2,13 @@
 #include "bingo_exact_storage.h"
 #include "bingo_gross_storage.h"
 
-#include "reaction/crf_loader.h"
-#include "reaction/crf_saver.h"
+#include "reaction/icr_saver.h"
 #include "reaction/query_reaction.h"
 #include "reaction/reaction.h"
 #include "reaction/reaction_fingerprint.h"
 #include "reaction/reaction_substructure_matcher.h"
 
-#include "molecule/cmf_loader.h"
-#include "molecule/cmf_saver.h"
+#include "molecule/icm_saver.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_fingerprint.h"
 #include "molecule/molecule_gross_formula.h"
@@ -171,9 +169,10 @@ bool IndexMolecule::buildGrossString(Array<char>& gross) /* const */
 bool IndexMolecule::buildCfString(Array<char>& cf) // const
 {
     ArrayOutput arr_out(cf);
-    CmfSaver cmf_saver(arr_out);
-
-    cmf_saver.saveMolecule(_mol);
+    IcmSaver icm_saver(arr_out);
+    icm_saver.save_xyz = _mol.have_xyz;
+    icm_saver.save_bond_dirs = true;
+    icm_saver.saveMolecule(_mol);
 
     return true;
 }
@@ -215,9 +214,10 @@ bool IndexReaction::buildGrossString(Array<char>& gross) /* const */
 bool IndexReaction::buildCfString(Array<char>& cf) // const
 {
     ArrayOutput arr_out(cf);
-    CrfSaver crf_saver(arr_out);
-
-    crf_saver.saveReaction(_rxn);
+    IcrSaver icr_saver(arr_out);
+    icr_saver.save_xyz = BaseReaction::haveCoord(_rxn);
+    icr_saver.save_bond_dirs = true;
+    icr_saver.saveReaction(_rxn);
 
     return true;
 }
