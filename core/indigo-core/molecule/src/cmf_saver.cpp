@@ -340,7 +340,7 @@ void CmfSaver::_encodeExtSection(Molecule& mol, const Mapping& mapping)
             _encodeString(sd.data);
             // Pack detached, relative, display_units, and sd.dasp_pos into one byte
             if (sd.dasp_pos < 0 || sd.dasp_pos > 9)
-                throw Error("DataSGroup dasp_pos field should be less than 10: %d", sd.dasp_pos);
+                throw Error("DataSGroup dasp_pos field should be less than 10: %d", sd.dasp_pos.get());
             byte packed = (sd.dasp_pos & 0x0F) | (sd.detached << 4) | (sd.relative << 5) | (sd.display_units << 6);
             _output->writeByte(packed);
             _output->writePackedUInt(sd.num_chars);
@@ -353,7 +353,8 @@ void CmfSaver::_encodeExtSection(Molecule& mol, const Mapping& mapping)
             _encodeBaseSGroup(mol, sa, mapping);
             _encodeString(sa.label);
             _encodeString(sa.sa_class);
-            byte packed = static_cast<byte>(((int)sa.contracted & 0x01) | (sa.bond_connections.size() << 1));
+            byte packed = static_cast<byte>(((int)(sa.contracted.hasValue() ? sa.contracted.get() : DisplayOption::Undefined) & 0x01) |
+                                            (sa.bond_connections.size() << 1));
             _output->writeByte(packed);
             if (sa.bond_connections.size() > 0)
             {
@@ -378,7 +379,7 @@ void CmfSaver::_encodeExtSection(Molecule& mol, const Mapping& mapping)
             _encodeBaseSGroup(mol, sm, mapping);
             _encodeUIntArray(sm.parent_atoms, *mapping.atom_mapping);
             if (sm.multiplier < 0)
-                throw Error("internal error: SGroup multiplier is negative: %d", sm.multiplier);
+                throw Error("internal error: SGroup multiplier is negative: %d", sm.multiplier.get());
             _output->writePackedUInt(sm.multiplier);
         }
     }
@@ -824,7 +825,7 @@ void CmfSaver::_updateSGroupsXyzMinMax(Molecule& mol, Vec3f& min, Vec3f& max)
             DataSGroup& s = (DataSGroup&)sg;
             _updateBaseSGroupXyzMinMax(s, min, max);
 
-            Vec3f display_pos(s.display_pos.x, s.display_pos.y, 0);
+            Vec3f display_pos(s.display_pos->x, s.display_pos->y, 0);
 
             min.min(display_pos);
             max.max(display_pos);

@@ -320,9 +320,9 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
         }
 
         writer.Key("x");
-        writeFloat(writer, dsg.display_pos.x);
+        writeFloat(writer, dsg.display_pos->x);
         writer.Key("y");
-        writeFloat(writer, dsg.display_pos.y);
+        writeFloat(writer, dsg.display_pos->y);
 
         if (!dsg.detached)
         {

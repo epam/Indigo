@@ -325,8 +325,8 @@ void Metalayout::adjustMol(BaseMolecule& mol, const Vec2f& min, const Vec2f& pos
             {
                 Vec2f new_center;
                 mol.getSGroupAtomsCenterPoint(group, new_center);
-                group.display_pos.add(new_center);
-                group.display_pos.sub(data_centers[i]);
+                group.display_pos->add(new_center);
+                group.display_pos->sub(data_centers[i]);
             }
         }
     }

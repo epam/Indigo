@@ -565,7 +565,7 @@ KetDocument::KetDocument()
 {
 }
 
-KetDocument::KetDocument(BaseMolecule& bmol)
+KetDocument::KetDocument(BaseMolecule& bmol) : KetDocument()
 {
     // save molecule to ket
     std::string json;
@@ -580,7 +580,7 @@ KetDocument::KetDocument(BaseMolecule& bmol)
     loader.parseJson(json, *this);
 }
 
-KetDocument::KetDocument(BaseReaction& breact)
+KetDocument::KetDocument(BaseReaction& breact) : KetDocument()
 {
     // save reaction to ket
     std::string json;

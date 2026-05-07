@@ -359,7 +359,7 @@ void MoleculeLayout::_updateDataSGroups()
 
                 Vec2f delta;
                 delta.diff(after, before);
-                group.display_pos.add(delta);
+                group.display_pos->add(delta);
             }
         }
     }
