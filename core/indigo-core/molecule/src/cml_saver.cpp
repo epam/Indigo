@@ -582,7 +582,7 @@ void CmlSaver::_addSgroupElement(XMLElement* molecule, BaseMolecule& mol, SGroup
 
     QS_DEF(Array<char>, buf);
     ArrayOutput out(buf);
-    out.printf("sg%d", sgroup.original_group);
+    out.printf("sg%d", sgroup.original_group.hasValue() ? sgroup.original_group.get() : 0);
     buf.push(0);
     sg->SetAttribute("id", buf.ptr());
 
@@ -651,8 +651,8 @@ void CmlSaver::_addSgroupElement(XMLElement* molecule, BaseMolecule& mol, SGroup
             sg->SetAttribute("queryOp", queryoper);
         }
 
-        sg->SetAttribute("x", dsg.display_pos.x);
-        sg->SetAttribute("y", dsg.display_pos.y);
+        sg->SetAttribute("x", dsg.display_pos->x);
+        sg->SetAttribute("y", dsg.display_pos->y);
 
         if (!dsg.detached)
         {
