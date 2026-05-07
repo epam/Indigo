@@ -157,7 +157,7 @@ struct Atom
 
 // This methods splits a space-separated string and writes each values into an arbitrary string
 // property of Atom structure for each atom in the specified list
-static void splitStringIntoProperties(const char* s, std::vector<Atom>& atoms, std::string Atom::* property)
+static void splitStringIntoProperties(const char* s, std::vector<Atom>& atoms, std::string Atom::*property)
 {
     if (s == 0)
         return;
