@@ -996,7 +996,6 @@ int Molecule::getAtomValence(int idx)
     if (_implicit_h.size() > idx && _implicit_h[idx] >= 0)
     {
         impl_h = _implicit_h[idx];
-        int normal_impl_h;
 
         if (radical == -1)
         {
