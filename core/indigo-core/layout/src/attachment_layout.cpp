@@ -343,15 +343,24 @@ void LayoutChooser::_makeLayout()
                     cur_pos.sum(p1, _layout._graph.getPos(v));
                 }
                 else if (is_nailed)
+                {
                     cur_pos.copy(comp.getPos(j));
+                }
                 else // fixed components or fixed vertex in graph
+                {
                     cur_pos.copy(_layout._graph.getPos(v1));
+                }
 
                 _layout._new_vertices[k] = comp.getVertexExtIdx(j);
             }
         }
         cur_angle += _layout._bc_angles[comp_idx];
     }
+
+    // cis/trans resolution below dereferences _attached_bc[1]; with a single
+    // attached BC there is nothing to resolve and the index is out of bounds.
+    if (_layout._attached_bc.size() < 2)
+        return;
 
     // respect cis/trans
     const int* molecule_edge_mapping = 0;

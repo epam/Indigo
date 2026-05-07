@@ -1,5 +1,6 @@
 *** Sequence cycles layout ***
 6bases.ket:SUCCEED
+disulfide_pep_sel.ket:SUCCEED
 left_top_monomer.ket:SUCCEED
 n-agon1.ket:SUCCEED
 n-agon2.ket:SUCCEED
@@ -30,3 +31,12 @@ multi_sel_234.ket:SUCCEED
 
 *** cycle_part_sel: ring + pendant phosphates + fixed backbone ***
 cycle_part_sel.ket:SUCCEED
+
+*** disulfide_pep_sel: two-bridge partial selection with R3-R3 ring ***
+disulfide_pep_sel.ket invariants:SUCCEED
+
+*** Synthetic partial-selection edge cases ***
+partial_selection_edge_cases:SUCCEED
+
+*** Nucleus seed-edge invariant (cycle-free partial selection) ***
+nucleus_seed_edge:SUCCEED

@@ -16,6 +16,7 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include "layout/metalayout.h"
 #include "layout/molecule_layout_graph.h"
 
 using namespace indigo;
@@ -963,6 +964,27 @@ void MoleculeLayoutGraph::_attachDandlingVertices(int vert_idx, Array<int>& adja
         }
         else
             not_drawn_idx = i;
+    }
+
+    // No drawn neighbours: arrange not-drawn neighbours in a uniform fan around
+    // vert_idx. Reachable from terminus vertices in partial selections.
+    if (n_pos == 0)
+    {
+        const float length = (sequence_layout && _n_fixed > 0) ? LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH : LayoutOptions::DEFAULT_BOND_LENGTH;
+        const Vec2f base = getPos(vert_idx);
+        const int n = adjacent_list.size();
+        const float step = (n > 0) ? _2FLOAT(2.0 * M_PI / n) : 0.f;
+        for (int i = 0; i < n; i++)
+        {
+            const float angle = step * i;
+            Vec2f pos(base.x + length * cos(angle), base.y + length * sin(angle));
+            int nei_layout_idx = adjacent_list[i];
+            _layout_vertices[nei_layout_idx].pos = pos;
+            _layout_vertices[nei_layout_idx].type = ELEMENT_BOUNDARY;
+            int edge_idx = vert.neiEdge(vert.findNeiVertex(nei_layout_idx));
+            _layout_edges[edge_idx].type = ELEMENT_BOUNDARY;
+        }
+        return;
     }
 
     if (n_pos > 1)

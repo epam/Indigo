@@ -345,7 +345,7 @@ namespace indigo
         void _calculatePositionsManyNotDrawn(int vert_idx, Array<int>& adjacent_list, Array<Vec2f>& positions);
         void _orderByEnergy(Array<Vec2f>& positions);
         void _assignRelativeSingleEdge(int fixed_component, const MoleculeLayoutGraph& supergraph);
-        void _findFirstVertexIdx(int n_comp, Array<int>& fixed_components, PtrArray<MoleculeLayoutGraph>& bc_components, bool all_trivial);
+        void _findFirstVertexIdx(int n_comp, Array<int>& fixed_components, PtrArray<MoleculeLayoutGraph>& bc_components, bool all_trivial, float bond_length);
         bool _prepareAssignedList(Array<int>& assigned_list, BiconnectedDecomposer& bc_decom, PtrArray<MoleculeLayoutGraph>& bc_components,
                                   Array<int>& bc_tree);
         void _assignFinalCoordinates(float bond_length, const Array<Vec2f>& src_layout);
@@ -353,6 +353,23 @@ namespace indigo
                                             const std::vector<std::pair<int, Vec2f>>& all_fixed_vertices, const std::unordered_set<int>& bridge_connected_pairs,
                                             const Vec2f& selected_center, const std::vector<int>& selected_vertices, Vec2f& best_translation,
                                             float& best_rotation);
+
+        // Boundary edge between a selected and a fixed vertex. Anchoring the rigid
+        // translation of the selected block on this edge makes the bridge bond
+        // length equal to bond_length by construction.
+        struct SelectionBridge
+        {
+            int sel_layout_idx;
+            int sel_ext_idx;
+            int fix_layout_idx;
+            int fix_ext_idx;
+            Vec2f fix_pos;
+        };
+
+        std::vector<SelectionBridge> _detectSelectionBridges(const std::vector<int>& sel_vertices, const Array<Vec2f>& src_layout) const;
+        Vec2f _computeAnchorDirection(const SelectionBridge& bridge, const Array<Vec2f>& src_layout) const;
+        void _applyAnchoredRigidTransform(const SelectionBridge& bridge, const std::vector<int>& sel_vertices, const Array<Vec2f>& src_layout,
+                                          float bond_length);
         void _copyLayout(MoleculeLayoutGraph& component);
         void _getAnchor(int& v1, int& v2, int& v3) const;
 
