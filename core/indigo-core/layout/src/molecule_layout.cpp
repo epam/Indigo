@@ -340,7 +340,7 @@ void MoleculeLayout::_updateDataSGroups()
         if (sg.sgroup_type == SGroup::SG_TYPE_DAT)
         {
             DataSGroup& group = (DataSGroup&)sg;
-            if (!group.relative)
+            if (!group.relative && group.display_pos.hasValue())
             {
                 Vec2f before;
                 _molecule.getSGroupAtomsCenterPoint(group, before);
@@ -359,7 +359,9 @@ void MoleculeLayout::_updateDataSGroups()
 
                 Vec2f delta;
                 delta.diff(after, before);
-                group.display_pos->add(delta);
+                Vec2f dp = group.display_pos.get();
+                dp.add(delta);
+                group.display_pos.set(dp);
             }
         }
     }

@@ -802,14 +802,16 @@ void SmilesLoader::_readOtherStuff()
                     _scanner.seek(pos, SEEK_SET);
                 }
                 _scanner.skip(1); // Skip (
-                dsg.display_pos->x = _scanner.readFloat();
+                Vec2f dp;
+                dp.x = _scanner.readFloat();
                 c = _scanner.readChar();
                 if (c != ',')
                     throw Error("Data S-group coord error");
-                dsg.display_pos->y = _scanner.readFloat();
+                dp.y = _scanner.readFloat();
                 c = _scanner.readChar();
                 if (c != ')')
                     throw Error("Data S-group coord error");
+                dsg.display_pos.set(dp);
             }
             else
             {

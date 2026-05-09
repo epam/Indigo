@@ -70,9 +70,8 @@ namespace indigo
         }
 
         operator T&()
-
         {
-            return get();
+            return _value;
         }
 
         const T* operator->() const
@@ -82,7 +81,7 @@ namespace indigo
 
         T* operator->()
         {
-            return &get();
+            return &_value;
         }
 
         Nullable<T>& operator=(const T& value)
