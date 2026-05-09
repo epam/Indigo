@@ -843,7 +843,9 @@ void CmfLoader::_readSGroupXYZ(Scanner& scanner, int idx, Molecule& mol, const C
     {
         DataSGroup& s = (DataSGroup&)sg;
         _readBaseSGroupXyz(scanner, s, range);
-        _readVec2f(scanner, s.display_pos, range);
+        Vec2f dp;
+        _readVec2f(scanner, dp, range);
+        s.display_pos.set(dp);
     }
     else if (sg_type == SGroup::SG_TYPE_SUP)
     {

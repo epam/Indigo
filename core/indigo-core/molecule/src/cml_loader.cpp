@@ -157,7 +157,7 @@ struct Atom
 
 // This methods splits a space-separated string and writes each values into an arbitrary string
 // property of Atom structure for each atom in the specified list
-static void splitStringIntoProperties(const char* s, std::vector<Atom>& atoms, std::string Atom::*property)
+static void splitStringIntoProperties(const char* s, std::vector<Atom>& atoms, std::string Atom::* property)
 {
     if (s == 0)
         return;
@@ -1361,17 +1361,21 @@ void CmlLoader::_loadSGroupElement(XMLElement* elem, std::unordered_map<std::str
                 dsg->description.readString(fieldtype, true);
 
             const char* disp_x = elem->Attribute("x");
-            if (disp_x != 0)
-            {
-                BufferScanner strscan(disp_x);
-                dsg->display_pos->x = strscan.readFloat();
-            }
-
             const char* disp_y = elem->Attribute("y");
-            if (disp_y != 0)
+            if (disp_x != 0 || disp_y != 0)
             {
-                BufferScanner strscan(disp_y);
-                dsg->display_pos->y = strscan.readFloat();
+                Vec2f dp;
+                if (disp_x != 0)
+                {
+                    BufferScanner strscan(disp_x);
+                    dp.x = strscan.readFloat();
+                }
+                if (disp_y != 0)
+                {
+                    BufferScanner strscan(disp_y);
+                    dp.y = strscan.readFloat();
+                }
+                dsg->display_pos.set(dp);
             }
 
             const char* detached = elem->Attribute("dataDetached");

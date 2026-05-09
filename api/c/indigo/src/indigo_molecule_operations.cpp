@@ -1403,8 +1403,7 @@ CEXPORT int indigoSetDataSGroupXY(int sgroup, float x, float y, const char* opti
     {
         DataSGroup& dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
 
-        dsg.display_pos->x = x;
-        dsg.display_pos->y = y;
+        dsg.display_pos.set(Vec2f(x, y));
         dsg.detached = true;
 
         if (options != 0 && options[0] != 0)
@@ -1442,8 +1441,7 @@ CEXPORT int indigoSetSGroupCoords(int sgroup, float x, float y)
     {
         DataSGroup& dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
 
-        dsg.display_pos->x = x;
-        dsg.display_pos->y = y;
+        dsg.display_pos.set(Vec2f(x, y));
 
         return 1;
     }
@@ -1602,7 +1600,9 @@ CEXPORT int indigoSetSGroupXCoord(int sgroup, float x)
     {
         DataSGroup& dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
 
-        dsg.display_pos->x = x;
+        Vec2f dp = dsg.display_pos.get();
+        dp.x = x;
+        dsg.display_pos.set(dp);
 
         return 1;
     }
@@ -1615,7 +1615,9 @@ CEXPORT int indigoSetSGroupYCoord(int sgroup, float y)
     {
         DataSGroup& dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
 
-        dsg.display_pos->y = y;
+        Vec2f dp = dsg.display_pos.get();
+        dp.y = y;
+        dsg.display_pos.set(dp);
 
         return 1;
     }

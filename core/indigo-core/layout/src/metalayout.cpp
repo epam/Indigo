@@ -321,12 +321,14 @@ void Metalayout::adjustMol(BaseMolecule& mol, const Vec2f& min, const Vec2f& pos
         if (sg.sgroup_type == SGroup::SG_TYPE_DAT)
         {
             DataSGroup& group = (DataSGroup&)sg;
-            if (!group.relative)
+            if (!group.relative && group.display_pos.hasValue())
             {
                 Vec2f new_center;
                 mol.getSGroupAtomsCenterPoint(group, new_center);
-                group.display_pos->add(new_center);
-                group.display_pos->sub(data_centers[i]);
+                Vec2f dp = group.display_pos.get();
+                dp.add(new_center);
+                dp.sub(data_centers[i]);
+                group.display_pos.set(dp);
             }
         }
     }
