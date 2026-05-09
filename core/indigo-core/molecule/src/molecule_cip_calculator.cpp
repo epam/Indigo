@@ -206,8 +206,7 @@ void MoleculeCIPCalculator::addCIPSgroups(BaseMolecule& mol)
         }
 
         sgroup.name.readString("INDIGO_CIP_DESC", true);
-        sgroup.display_pos->x = 0.0;
-        sgroup.display_pos->y = 0.0;
+        sgroup.display_pos.set(Vec2f(0.0f, 0.0f));
         sgroup.detached = true;
         sgroup.relative = true;
     }
@@ -229,8 +228,7 @@ void MoleculeCIPCalculator::addCIPSgroups(BaseMolecule& mol)
             sgroup.data.readString("(Z)", true);
 
         sgroup.name.readString("INDIGO_CIP_DESC", true);
-        sgroup.display_pos->x = 0.0;
-        sgroup.display_pos->y = 0.0;
+        sgroup.display_pos.set(Vec2f(0.0f, 0.0f));
         sgroup.detached = true;
         sgroup.relative = true;
     }

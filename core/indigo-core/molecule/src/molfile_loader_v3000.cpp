@@ -1657,8 +1657,10 @@ void MolfileLoader::_readSGroupDisplay(Scanner& scanner, DataSGroup& dsg)
     {
         int constexpr MIN_SDD_SIZE = 36;
         bool well_formatted = scanner.length() >= MIN_SDD_SIZE;
-        dsg.display_pos->x = scanner.readFloatFix(10);
-        dsg.display_pos->y = scanner.readFloatFix(10);
+        Vec2f dp;
+        dp.x = scanner.readFloatFix(10);
+        dp.y = scanner.readFloatFix(10);
+        dsg.display_pos.set(dp);
         int ch = ' ';
         if (well_formatted)
         {
