@@ -17,6 +17,7 @@
  ***************************************************************************/
 
 #include "layout/attachment_layout.h"
+#include <climits>
 
 using namespace indigo;
 
@@ -74,6 +75,38 @@ AttachmentLayout::AttachmentLayout(const BiconnectedDecomposer& bc_decom, const 
             _vertices_l.swap(i, _attached_bc.size() - 1);
 
             break;
+        }
+    }
+
+    // Sort undrawn components by non-source ext_idx for deterministic cross-platform order
+    int n_undrawn = _attached_bc.size() - 1;
+    if (n_undrawn > 1)
+    {
+        for (i = 0; i < n_undrawn - 1; i++)
+        {
+            for (int j = i + 1; j < n_undrawn; j++)
+            {
+
+                auto min_ext_idx = [&](int comp_slot) -> int {
+                    const MoleculeLayoutGraph& comp = *bc_components[_attached_bc[comp_slot]];
+                    int min_idx = INT_MAX;
+                    for (int k = comp.vertexBegin(); k < comp.vertexEnd(); k = comp.vertexNext(k))
+                    {
+                        int ext = comp.getVertexExtIdx(k);
+                        if (ext != _src_vertex && ext < min_idx)
+                            min_idx = ext;
+                    }
+                    return min_idx;
+                };
+
+                if (min_ext_idx(j) < min_ext_idx(i))
+                {
+                    _src_vertex_map.swap(i, j);
+                    _attached_bc.swap(i, j);
+                    _bc_angles.swap(i, j);
+                    _vertices_l.swap(i, j);
+                }
+            }
         }
     }
 
@@ -254,8 +287,32 @@ void LayoutChooser::_perform(int level)
         // Draw new components on vertex
         _makeLayout();
 
-        // Check if new layout is better
-        if (_layout.calculateEnergy() < _cur_energy - EPSILON)
+        float energy = _layout.calculateEnergy();
+
+        // Check if new layout is better; on equal energy prefer ascending permutation
+        // for deterministic cross-platform results (exact == is intentional here).
+        bool adopt = false;
+        if (energy < _cur_energy - EPSILON)
+        {
+            adopt = true;
+        }
+        else if (energy == _cur_energy)
+        {
+            // Tie-break: prefer ascending _comp_permutation
+            bool cur_is_ascending = true;
+            for (int ni = 0; ni + 1 < _n_components; ni++)
+            {
+                if (_comp_permutation[ni] > _comp_permutation[ni + 1])
+                {
+                    cur_is_ascending = false;
+                    break;
+                }
+            }
+            if (cur_is_ascending)
+                adopt = true;
+        }
+
+        if (adopt)
         {
             _layout.applyLayout();
             _cur_energy = _layout._energy;
