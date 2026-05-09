@@ -21,6 +21,7 @@
 #include <ctime>
 #include <map>
 #include <sstream>
+#include <string>
 
 #include "base_cpp/locale_guard.h"
 #include "base_cpp/output.h"
@@ -787,11 +788,29 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
 
     output.writeStringCR("M  V30 END BOND");
 
-    MoleculeStereocenters& stereocenters = mol.stereocenters;
+    QS_DEF(Array<int>, sgs_sorted);
+    _checkSGroupIndices(mol, sgs_sorted);
 
-    if (stereocenters.begin() != stereocenters.end() || mol.hasHighlighting())
+    //[Sapio] [CHEMBUGS-184] S-GROUP needs to be before COLLECTION when S GROUP is used.
+    const bool has_sgroups = (mol.countSGroups() > 0);
+    MoleculeStereocenters& stereocenters = mol.stereocenters;
+    const bool has_collection = (stereocenters.begin() != stereocenters.end() || mol.hasHighlighting() || mol.custom_collections.size() > 0);
+    const bool sgroup_collection_order_reversed = (has_sgroups && has_collection);
+
+    // Default order: COLLECTION before SGROUP.
+    // When sgroup_collection_order_reversed, write SGROUP then COLLECTION (CT spec) page 22.
+    std::string collection_str;
+    StringOutput collection_buf(collection_str);
+    Output* collection_dest_ptr;
+    if (sgroup_collection_order_reversed)
+        collection_dest_ptr = static_cast<Output*>(&collection_buf);
+    else
+        collection_dest_ptr = &output;
+    Output& collection_dest = *collection_dest_ptr;
+
+    if (has_collection)
     {
-        output.writeStringCR("M  V30 BEGIN COLLECTION");
+        collection_dest.writeStringCR("M  V30 BEGIN COLLECTION");
 
         QS_DEF(Array<int>, processed);
 
@@ -832,7 +851,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                 out.printf(" %d", _atom_mapping[list[j]]);
             out.writeChar(')');
 
-            _writeMultiString(output, buf.ptr(), buf.size());
+            _writeMultiString(collection_dest, buf.ptr(), buf.size());
         }
 
         if (mol.hasHighlighting())
@@ -848,7 +867,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                         out.printf(" %d", _bond_mapping[i]);
                 out.writeChar(')');
 
-                _writeMultiString(output, buf.ptr(), buf.size());
+                _writeMultiString(collection_dest, buf.ptr(), buf.size());
             }
             if (mol.countHighlightedAtoms() > 0)
             {
@@ -859,7 +878,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                         out.printf(" %d", _atom_mapping[i]);
                 out.writeChar(')');
 
-                _writeMultiString(output, buf.ptr(), buf.size());
+                _writeMultiString(collection_dest, buf.ptr(), buf.size());
             }
         }
         if (mol.custom_collections.size() > 0)
@@ -868,17 +887,14 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
             {
                 ArrayOutput out(buf);
                 out.printf("%s", mol.custom_collections.at(i));
-                _writeMultiString(output, buf.ptr(), buf.size());
+                _writeMultiString(collection_dest, buf.ptr(), buf.size());
             }
         }
 
-        output.writeStringCR("M  V30 END COLLECTION");
+        collection_dest.writeStringCR("M  V30 END COLLECTION");
     }
 
-    QS_DEF(Array<int>, sgs_sorted);
-    _checkSGroupIndices(mol, sgs_sorted);
-
-    if (mol.countSGroups() > 0)
+    if (has_sgroups)
     {
         MoleculeSGroups* sgroups = &mol.sgroups;
         int idx = 1;
@@ -1073,6 +1089,9 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         output.writeStringCR("M  V30 END SGROUP");
         _removeImplicitSGroups(mol, implicit_sgroups_indexes);
     }
+
+    if (sgroup_collection_order_reversed)
+        output.write(collection_str.data(), static_cast<int>(collection_str.size()));
 
     output.writeStringCR("M  V30 END CTAB");
 
