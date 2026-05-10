@@ -39,14 +39,14 @@ IMPL_ERROR(RenderContext, "render context");
 #include "cairo-win32.h"
 #include <windows.h>
 
-cairo_surface_t* RenderContext::createWin32PrintingSurfaceForHDC()
+void* RenderContext::createWin32PrintingSurfaceForHDC()
 {
     cairo_surface_t* surface = cairo_win32_printing_surface_create((HDC)opt.hdc);
     backendCheckStatus();
     return surface;
 }
 
-cairo_surface_t* RenderContext::createWin32Surface()
+void* RenderContext::createWin32Surface()
 {
     cairo_surface_t* surface = cairo_win32_surface_create((HDC)opt.hdc);
     backendCheckStatus();
@@ -71,7 +71,7 @@ static void _init_language_pack()
     }
 }
 
-cairo_surface_t* RenderContext::createWin32PrintingSurfaceForMetafile(bool& isLarge)
+void* RenderContext::createWin32PrintingSurfaceForMetafile(bool& isLarge)
 {
     HDC dc = GetDC(NULL);
     int hr = GetDeviceCaps(dc, HORZRES);
@@ -98,12 +98,19 @@ cairo_surface_t* RenderContext::createWin32PrintingSurfaceForMetafile(bool& isLa
 
 void RenderContext::storeAndDestroyMetafile(bool discard)
 {
-    cairo_surface_show_page(_surface);
-    backendCheckStatus();
+    auto* cairoBackend = dynamic_cast<CairoRenderBackend*>(_backend.get());
+    cairo_surface_t* surface = cairoBackend ? cairoBackend->getSurface() : nullptr;
+    if (surface)
+    {
+        cairo_surface_show_page(surface);
+        backendCheckStatus();
+    }
     EndPage((HDC)_meta_hdc);
-    cairo_surface_destroy(_surface);
-    backendCheckStatus();
-    _surface = NULL;
+    if (surface)
+    {
+        cairo_surface_destroy(surface);
+        backendCheckStatus();
+    }
     HENHMETAFILE hemf = CloseEnhMetaFile((HDC)_meta_hdc);
     if (!discard)
     {
@@ -459,7 +466,7 @@ void RenderContext::drawTextItemText(const TextItem& ti, const Vec3f& color, boo
 
 void RenderContext::drawPng(const std::string& pngData, const Rect2f& bbox)
 {
-    _backend->drawPngImage(pngData.data(), pngData.size(), bbox.left(), bbox.bottom(), bbox.width(), bbox.height());
+    _backend->drawPngImage(pngData.data(), static_cast<int>(pngData.size()), bbox.left(), bbox.bottom(), bbox.width(), bbox.height());
     bbIncludePoint(bbox.leftTop());
     bbIncludePoint(bbox.rightBottom());
 }

@@ -29,7 +29,7 @@ using namespace indigo;
 
 // ============================================================================
 // EM_JS: SVG builder - all drawing operations build SVG XML in JavaScript
-// ============================================================================
+// ===================================================
 
 EM_JS(void, js_rb_init, (int w, int h, int mode), {
     Module._rb = {
@@ -81,28 +81,28 @@ EM_JS(void, js_rb_beginPath, (), {
     r.pathEmpty = true;
 });
 EM_JS(void, js_rb_closePath, (), { Module._rb.pd += 'Z '; });
-EM_JS(void, js_rb_moveTo, (float x, float y), {
+EM_JS(void, js_rb_moveTo, (double x, double y), {
     var r = Module._rb;
     r.pd += 'M' + x + ' ' + y + ' ';
     r.cx = x;
     r.cy = y;
     r.pathEmpty = false;
 });
-EM_JS(void, js_rb_lineTo, (float x, float y), {
+EM_JS(void, js_rb_lineTo, (double x, double y), {
     var r = Module._rb;
     r.pd += 'L' + x + ' ' + y + ' ';
     r.cx = x;
     r.cy = y;
     r.pathEmpty = false;
 });
-EM_JS(void, js_rb_curveTo, (float x1, float y1, float x2, float y2, float x3, float y3), {
+EM_JS(void, js_rb_curveTo, (double x1, double y1, double x2, double y2, double x3, double y3), {
     var r = Module._rb;
     r.pd += 'C' + x1 + ' ' + y1 + ' ' + x2 + ' ' + y2 + ' ' + x3 + ' ' + y3 + ' ';
     r.cx = x3;
     r.cy = y3;
     r.pathEmpty = false;
 });
-EM_JS(void, js_rb_arc, (float cx, float cy, float rad, float a0, float a1, int ccw), {
+EM_JS(void, js_rb_arc, (double cx, double cy, double rad, double a0, double a1, int ccw), {
     // Convert arc to SVG path segments
     var r = Module._rb;
     if (rad < 0.001)
@@ -132,7 +132,7 @@ EM_JS(void, js_rb_arc, (float cx, float cy, float rad, float a0, float a1, int c
     r.cx = ex;
     r.cy = ey;
 });
-EM_JS(void, js_rb_rect, (float x, float y, float w, float h), {
+EM_JS(void, js_rb_rect, (double x, double y, double w, double h), {
     var r = Module._rb;
     r.pd += 'M' + x + ' ' + y + 'L' + (x + w) + ' ' + y + 'L' + (x + w) + ' ' + (y + h) + 'L' + x + ' ' + (y + h) + 'Z ';
     r.pathEmpty = false;
@@ -205,7 +205,7 @@ EM_JS(void, js_rb_paint, (), {
 });
 
 // -- Style --
-EM_JS(void, js_rb_setColor, (float cr, float cg, float cb, float ca), {
+EM_JS(void, js_rb_setColor, (double cr, double cg, double cb, double ca), {
     var s = Module._rb.s;
     s.r = cr;
     s.g = cg;
@@ -213,7 +213,7 @@ EM_JS(void, js_rb_setColor, (float cr, float cg, float cb, float ca), {
     s.a = ca;
     s.gradId = null;
 });
-EM_JS(void, js_rb_setLineWidth, (float w), { Module._rb.s.lw = w; });
+EM_JS(void, js_rb_setLineWidth, (double w), { Module._rb.s.lw = w; });
 EM_JS(void, js_rb_setLineJoin, (int j), { Module._rb.s.lj = [ 'miter', 'round', 'bevel' ][j] || 'miter'; });
 EM_JS(void, js_rb_setDash, (const double* p, int n, double off), {
     var s = Module._rb.s;
@@ -281,14 +281,14 @@ EM_JS(void, js_rb_getMatrix, (double* out), {
 });
 
 // -- Text --
-EM_JS(void, js_rb_setFont, (const char* fam, float sz, int bold, int ital), {
+EM_JS(void, js_rb_setFont, (const char* fam, double sz, int bold, int ital), {
     var s = Module._rb.s;
     s.ffam = UTF8ToString(fam);
     s.fsz = sz;
     s.fbold = !!bold;
     s.fital = !!ital;
 });
-EM_JS(void, js_rb_fillText, (const char* text, float x, float y), {
+EM_JS(void, js_rb_fillText, (const char* text, double x, double y), {
     var r = Module._rb;
     var s = r.s;
     var m = s.ctm;
@@ -298,13 +298,13 @@ EM_JS(void, js_rb_fillText, (const char* text, float x, float y), {
     for (var i = 0; i < t.length; i++)
     {
         var c = t.charAt(i);
-        if (c == = '&')
+        if (c == '&')
             esc += '&amp;';
-        else if (c == = '<')
+        else if (c == '<')
             esc += '&lt;';
-        else if (c == = '>')
+        else if (c == '>')
             esc += '&gt;';
-        else if (c == = '"')
+        else if (c == '"')
             esc += '&quot;';
         else
             esc += c;
@@ -339,10 +339,10 @@ EM_JS(void, js_rb_fillText, (const char* text, float x, float y), {
 });
 
 // Text metrics approximation (works without Canvas2D)
-EM_JS(float, js_rb_measureWidth, (const char* text, float fontSize), {
+EM_JS(double, js_rb_measureWidth, (const char* text, double fontSize), {
     var t = UTF8ToString(text);
     // Try browser Canvas2D if available
-    if (typeof document != = 'undefined')
+    if (typeof document != 'undefined')
     {
         try
         {
@@ -363,15 +363,15 @@ EM_JS(float, js_rb_measureWidth, (const char* text, float fontSize), {
             w += 0.60; // digits
         else if (ch >= 65 && ch <= 90)
             w += 0.72; // uppercase
-        else if (ch == = 77 || ch == = 87)
+        else if (ch == 77 || ch == 87)
             w += 0.88; // M, W
-        else if (ch == = 73 || ch == = 108)
+        else if (ch == 73 || ch == 108)
             w += 0.33; // I, l
         else if (ch >= 97 && ch <= 122)
             w += 0.55; // lowercase
-        else if (ch == = 32)
+        else if (ch == 32)
             w += 0.30; // space
-        else if (ch == = 43 || ch == = 45)
+        else if (ch == 43 || ch == 45)
             w += 0.55; // +, -
         else
             w += 0.60;
@@ -380,7 +380,7 @@ EM_JS(float, js_rb_measureWidth, (const char* text, float fontSize), {
 });
 
 // -- Gradient --
-EM_JS(void, js_rb_setGradient, (float x0, float y0, float x1, float y1, float r1, float g1, float b1, float r2, float g2, float b2), {
+EM_JS(void, js_rb_setGradient, (double x0, double y0, double x1, double y1, double r1, double g1, double b1, double r2, double g2, double b2), {
     var r = Module._rb;
     var id = 'grad' + (r.gradCnt++);
     var c1 = 'rgb(' + Math.round(r1 * 255) + ',' + Math.round(g1 * 255) + ',' + Math.round(b1 * 255) + ')';
@@ -418,7 +418,7 @@ EM_JS(int, js_rb_finalize, (int mode), {
     // Helper: encode string to Uint8Array
     function toBytes(s)
     {
-        if (typeof TextEncoder != = 'undefined')
+        if (typeof TextEncoder != 'undefined')
             return new TextEncoder().encode(s);
         // Node.js fallback
         var buf = new Uint8Array(s.length);
@@ -427,15 +427,15 @@ EM_JS(int, js_rb_finalize, (int mode), {
         return buf;
     }
 
-    if (mode == = 1)
+    if (mode == 1)
     { // SVG - output SVG XML directly
         r.out = toBytes(svg);
         return r.out.length;
     }
-    else if (mode == = 0)
+    else if (mode == 0)
     { // PNG - rasterize SVG
         // Node.js: use sharp (npm dependency) for SVG→PNG
-        if (typeof require != = 'undefined')
+        if (typeof require != 'undefined')
         {
             try
             {
@@ -477,9 +477,9 @@ EM_JS(void, js_rb_copyOutput, (uint8_t * dst, int len), {
 
 EM_JS(int, js_rb_isPathEmpty, (), { return Module._rb ? Module._rb.pathEmpty : 1; });
 
-// ============================================================================
+// ===================================================
 // JSRenderBackend implementation
-// ============================================================================
+// ===================================================
 
 JSRenderBackend::JSRenderBackend() : _width(0), _height(0), _mode(0), _fontSize(12), _fontBold(false), _fontItalic(false), _curX(0), _curY(0)
 {
@@ -540,45 +540,45 @@ void JSRenderBackend::closePath()
 {
     js_rb_closePath();
 }
-void JSRenderBackend::moveTo(float x, float y)
+void JSRenderBackend::moveTo(double x, double y)
 {
     _curX = x;
     _curY = y;
     js_rb_moveTo(x, y);
 }
-void JSRenderBackend::lineTo(float x, float y)
+void JSRenderBackend::lineTo(double x, double y)
 {
     _curX = x;
     _curY = y;
     js_rb_lineTo(x, y);
 }
-void JSRenderBackend::relMoveTo(float dx, float dy)
+void JSRenderBackend::relMoveTo(double dx, double dy)
 {
     _curX += dx;
     _curY += dy;
     js_rb_moveTo(_curX, _curY);
 }
-void JSRenderBackend::relLineTo(float dx, float dy)
+void JSRenderBackend::relLineTo(double dx, double dy)
 {
     _curX += dx;
     _curY += dy;
     js_rb_lineTo(_curX, _curY);
 }
-void JSRenderBackend::curveTo(float x1, float y1, float x2, float y2, float x3, float y3)
+void JSRenderBackend::curveTo(double x1, double y1, double x2, double y2, double x3, double y3)
 {
     _curX = x3;
     _curY = y3;
     js_rb_curveTo(x1, y1, x2, y2, x3, y3);
 }
-void JSRenderBackend::arc(float cx, float cy, float r, float a0, float a1)
+void JSRenderBackend::arc(double cx, double cy, double r, double a0, double a1)
 {
     js_rb_arc(cx, cy, r, a0, a1, 0);
 }
-void JSRenderBackend::arcNegative(float cx, float cy, float r, float a0, float a1)
+void JSRenderBackend::arcNegative(double cx, double cy, double r, double a0, double a1)
 {
     js_rb_arc(cx, cy, r, a0, a1, 1);
 }
-void JSRenderBackend::rect(float x, float y, float w, float h)
+void JSRenderBackend::rect(double x, double y, double w, double h)
 {
     js_rb_rect(x, y, w, h);
 }
@@ -598,15 +598,15 @@ void JSRenderBackend::paint()
 }
 
 // Style
-void JSRenderBackend::setSourceRGB(float r, float g, float b)
+void JSRenderBackend::setSourceRGB(double r, double g, double b)
 {
     js_rb_setColor(r, g, b, 1);
 }
-void JSRenderBackend::setSourceRGBA(float r, float g, float b, float a)
+void JSRenderBackend::setSourceRGBA(double r, double g, double b, double a)
 {
     js_rb_setColor(r, g, b, a);
 }
-void JSRenderBackend::setLineWidth(float w)
+void JSRenderBackend::setLineWidth(double w)
 {
     js_rb_setLineWidth(w);
 }
@@ -634,15 +634,15 @@ void JSRenderBackend::restore()
 {
     js_rb_restore();
 }
-void JSRenderBackend::translate(float dx, float dy)
+void JSRenderBackend::translate(double dx, double dy)
 {
     js_rb_mmul(1, 0, 0, 1, dx, dy);
 }
-void JSRenderBackend::scale(float sx, float sy)
+void JSRenderBackend::scale(double sx, double sy)
 {
     js_rb_mmul(sx, 0, 0, sy, 0, 0);
 }
-void JSRenderBackend::rotate(float a)
+void JSRenderBackend::rotate(double a)
 {
     js_rb_mmul(cos(a), sin(a), -sin(a), cos(a), 0, 0);
 }
@@ -712,18 +712,18 @@ void JSRenderBackend::selectFontFace(const char* family, bool italic, bool bold)
     js_rb_setFont(_fontFamily, _fontSize, bold ? 1 : 0, italic ? 1 : 0);
 }
 
-void JSRenderBackend::setFontSize(float size)
+void JSRenderBackend::setFontSize(double size)
 {
     _fontSize = size;
     js_rb_setFont(_fontFamily, _fontSize, _fontBold ? 1 : 0, _fontItalic ? 1 : 0);
 }
 
-void JSRenderBackend::textExtents(const char* text, float& width, float& height, float& x_bearing, float& y_bearing)
+void JSRenderBackend::textExtents(const char* text, double& width, double& height, double& x_bearing, double& y_bearing)
 {
     width = js_rb_measureWidth(text, _fontSize);
     height = _fontSize;
     x_bearing = 0;
-    y_bearing = -_fontSize * 0.8f;
+    y_bearing = -_fontSize * 0.8;
 }
 
 void JSRenderBackend::fontExtents(double& height)
@@ -759,7 +759,7 @@ void JSRenderBackend::applyFontOptions()
 }
 
 // Gradient
-void JSRenderBackend::setLinearGradient(float x0, float y0, float x1, float y1, float r1, float g1, float b1, float r2, float g2, float b2)
+void JSRenderBackend::setLinearGradient(double x0, double y0, double x1, double y1, double r1, double g1, double b1, double r2, double g2, double b2)
 {
     js_rb_setGradient(x0, y0, x1, y1, r1, g1, b1, r2, g2, b2);
 }
@@ -769,7 +769,7 @@ void JSRenderBackend::clearPattern()
 }
 
 // Image
-void JSRenderBackend::drawPngImage(const void*, int, float, float, float, float)
+void JSRenderBackend::drawPngImage(const void*, int, double, double, double, double)
 {
     // TODO: embed PNG as base64 data URI in SVG <image> element
 }
@@ -789,7 +789,7 @@ bool JSRenderBackend::isPathEmpty()
 {
     return js_rb_isPathEmpty();
 }
-void JSRenderBackend::setSourceSurface(float, float)
+void JSRenderBackend::setSourceSurface(double, double)
 {
 }
 

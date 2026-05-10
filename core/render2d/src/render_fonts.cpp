@@ -89,18 +89,20 @@ void RenderContext::fontsSetFont(const TextItem& ti)
 
 void RenderContext::fontsGetTextExtents(const char* text, int /*size*/, float& dx, float& dy, float& rx, float& ry)
 {
-    float x_bearing, y_bearing;
-    _backend->textExtents(text, dx, dy, x_bearing, y_bearing);
-    rx = -x_bearing;
-    ry = -y_bearing;
+    double w, h, x_bearing, y_bearing;
+    _backend->textExtents(text, w, h, x_bearing, y_bearing);
+    dx = (float)w;
+    dy = (float)h;
+    rx = (float)-x_bearing;
+    ry = (float)-y_bearing;
 }
 
 float RenderContext::getSpaceWidth()
 {
-    float w1, h1, xb1, yb1, w2, h2, xb2, yb2;
+    double w1, h1, xb1, yb1, w2, h2, xb2, yb2;
     _backend->textExtents(". .", w1, h1, xb1, yb1);
     _backend->textExtents("..", w2, h2, xb2, yb2);
-    return w1 - w2;
+    return (float)(w1 - w2);
 }
 
 void RenderContext::fontsDrawText(const TextItem& ti, const Vec3f& color, bool idle)

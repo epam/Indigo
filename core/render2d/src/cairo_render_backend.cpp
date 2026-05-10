@@ -121,42 +121,42 @@ void CairoRenderBackend::closePath()
     cairo_close_path(_cr);
 }
 
-void CairoRenderBackend::moveTo(float x, float y)
+void CairoRenderBackend::moveTo(double x, double y)
 {
     cairo_move_to(_cr, x, y);
 }
 
-void CairoRenderBackend::lineTo(float x, float y)
+void CairoRenderBackend::lineTo(double x, double y)
 {
     cairo_line_to(_cr, x, y);
 }
 
-void CairoRenderBackend::relMoveTo(float dx, float dy)
+void CairoRenderBackend::relMoveTo(double dx, double dy)
 {
     cairo_rel_move_to(_cr, dx, dy);
 }
 
-void CairoRenderBackend::relLineTo(float dx, float dy)
+void CairoRenderBackend::relLineTo(double dx, double dy)
 {
     cairo_rel_line_to(_cr, dx, dy);
 }
 
-void CairoRenderBackend::curveTo(float x1, float y1, float x2, float y2, float x3, float y3)
+void CairoRenderBackend::curveTo(double x1, double y1, double x2, double y2, double x3, double y3)
 {
     cairo_curve_to(_cr, x1, y1, x2, y2, x3, y3);
 }
 
-void CairoRenderBackend::arc(float cx, float cy, float r, float a0, float a1)
+void CairoRenderBackend::arc(double cx, double cy, double r, double a0, double a1)
 {
     cairo_arc(_cr, cx, cy, r, a0, a1);
 }
 
-void CairoRenderBackend::arcNegative(float cx, float cy, float r, float a0, float a1)
+void CairoRenderBackend::arcNegative(double cx, double cy, double r, double a0, double a1)
 {
     cairo_arc_negative(_cr, cx, cy, r, a0, a1);
 }
 
-void CairoRenderBackend::rect(float x, float y, float w, float h)
+void CairoRenderBackend::rect(double x, double y, double w, double h)
 {
     cairo_rectangle(_cr, x, y, w, h);
 }
@@ -180,17 +180,17 @@ void CairoRenderBackend::paint()
 
 // ---- Style ----
 
-void CairoRenderBackend::setSourceRGB(float r, float g, float b)
+void CairoRenderBackend::setSourceRGB(double r, double g, double b)
 {
     cairo_set_source_rgb(_cr, r, g, b);
 }
 
-void CairoRenderBackend::setSourceRGBA(float r, float g, float b, float a)
+void CairoRenderBackend::setSourceRGBA(double r, double g, double b, double a)
 {
     cairo_set_source_rgba(_cr, r, g, b, a);
 }
 
-void CairoRenderBackend::setLineWidth(float w)
+void CairoRenderBackend::setLineWidth(double w)
 {
     cairo_set_line_width(_cr, w);
 }
@@ -240,17 +240,17 @@ void CairoRenderBackend::restore()
     cairo_restore(_cr);
 }
 
-void CairoRenderBackend::translate(float dx, float dy)
+void CairoRenderBackend::translate(double dx, double dy)
 {
     cairo_translate(_cr, dx, dy);
 }
 
-void CairoRenderBackend::scale(float sx, float sy)
+void CairoRenderBackend::scale(double sx, double sy)
 {
     cairo_scale(_cr, sx, sy);
 }
 
-void CairoRenderBackend::rotate(float angle)
+void CairoRenderBackend::rotate(double angle)
 {
     cairo_rotate(_cr, angle);
 }
@@ -321,20 +321,20 @@ void CairoRenderBackend::selectFontFace(const char* family, bool italic, bool bo
     cairo_select_font_face(_cr, family, italic ? CAIRO_FONT_SLANT_ITALIC : CAIRO_FONT_SLANT_NORMAL, bold ? CAIRO_FONT_WEIGHT_BOLD : CAIRO_FONT_WEIGHT_NORMAL);
 }
 
-void CairoRenderBackend::setFontSize(float size)
+void CairoRenderBackend::setFontSize(double size)
 {
     cairo_set_font_size(_cr, size);
 }
 
-void CairoRenderBackend::textExtents(const char* text, float& width, float& height, float& x_bearing, float& y_bearing)
+void CairoRenderBackend::textExtents(const char* text, double& width, double& height, double& x_bearing, double& y_bearing)
 {
     std::lock_guard<std::mutex> lock(_mutex);
     cairo_text_extents_t te;
     cairo_text_extents(_cr, text, &te);
-    width = (float)te.width;
-    height = (float)te.height;
-    x_bearing = (float)te.x_bearing;
-    y_bearing = (float)te.y_bearing;
+    width = te.width;
+    height = te.height;
+    x_bearing = te.x_bearing;
+    y_bearing = te.y_bearing;
 }
 
 void CairoRenderBackend::fontExtents(double& height)
@@ -386,7 +386,7 @@ void CairoRenderBackend::applyFontOptions()
 
 // ---- Gradient ----
 
-void CairoRenderBackend::setLinearGradient(float x0, float y0, float x1, float y1, float r1, float g1, float b1, float r2, float g2, float b2)
+void CairoRenderBackend::setLinearGradient(double x0, double y0, double x1, double y1, double r1, double g1, double b1, double r2, double g2, double b2)
 {
     if (_pattern)
     {
@@ -427,7 +427,7 @@ static cairo_status_t _pngReadFunc(void* closure, unsigned char* data, unsigned 
     return CAIRO_STATUS_SUCCESS;
 }
 
-void CairoRenderBackend::drawPngImage(const void* data, int dataLen, float x, float y, float w, float h)
+void CairoRenderBackend::drawPngImage(const void* data, int dataLen, double x, double y, double w, double h)
 {
     PngReadCtx ctx = {(const unsigned char*)data, (size_t)dataLen, 0};
     cairo_surface_t* image = cairo_image_surface_create_from_png_stream(_pngReadFunc, &ctx);
@@ -466,7 +466,7 @@ bool CairoRenderBackend::isPathEmpty()
 
 // ---- Surface source ----
 
-void CairoRenderBackend::setSourceSurface(float x, float y)
+void CairoRenderBackend::setSourceSurface(double x, double y)
 {
     if (_pngImage)
         cairo_set_source_surface(_cr, _pngImage, x, y);

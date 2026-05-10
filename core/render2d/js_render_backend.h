@@ -43,14 +43,14 @@ namespace indigo
         // ---- Path operations ----
         void beginPath() override;
         void closePath() override;
-        void moveTo(float x, float y) override;
-        void lineTo(float x, float y) override;
-        void relMoveTo(float dx, float dy) override;
-        void relLineTo(float dx, float dy) override;
-        void curveTo(float x1, float y1, float x2, float y2, float x3, float y3) override;
-        void arc(float cx, float cy, float r, float a0, float a1) override;
-        void arcNegative(float cx, float cy, float r, float a0, float a1) override;
-        void rect(float x, float y, float w, float h) override;
+        void moveTo(double x, double y) override;
+        void lineTo(double x, double y) override;
+        void relMoveTo(double dx, double dy) override;
+        void relLineTo(double dx, double dy) override;
+        void curveTo(double x1, double y1, double x2, double y2, double x3, double y3) override;
+        void arc(double cx, double cy, double r, double a0, double a1) override;
+        void arcNegative(double cx, double cy, double r, double a0, double a1) override;
+        void rect(double x, double y, double w, double h) override;
 
         // ---- Drawing operations ----
         void fill() override;
@@ -58,9 +58,9 @@ namespace indigo
         void paint() override;
 
         // ---- Style ----
-        void setSourceRGB(float r, float g, float b) override;
-        void setSourceRGBA(float r, float g, float b, float a) override;
-        void setLineWidth(float w) override;
+        void setSourceRGB(double r, double g, double b) override;
+        void setSourceRGBA(double r, double g, double b, double a) override;
+        void setLineWidth(double w) override;
         void setLineJoin(int join) override;
         void setDash(const double* pattern, int count, double offset) override;
         void setOperator(int op) override;
@@ -69,9 +69,9 @@ namespace indigo
         // ---- Transform ----
         void save() override;
         void restore() override;
-        void translate(float dx, float dy) override;
-        void scale(float sx, float sy) override;
-        void rotate(float angle) override;
+        void translate(double dx, double dy) override;
+        void scale(double sx, double sy) override;
+        void rotate(double angle) override;
         void getMatrix(double m[6]) override;
         void setMatrix(const double m[6]) override;
         void initIdentityMatrix(double m[6]) override;
@@ -84,8 +84,8 @@ namespace indigo
 
         // ---- Text ----
         void selectFontFace(const char* family, bool italic, bool bold) override;
-        void setFontSize(float size) override;
-        void textExtents(const char* text, float& width, float& height, float& x_bearing, float& y_bearing) override;
+        void setFontSize(double size) override;
+        void textExtents(const char* text, double& width, double& height, double& x_bearing, double& y_bearing) override;
         void fontExtents(double& height) override;
         void showText(const char* text) override;
         void textPath(const char* text) override;
@@ -97,18 +97,18 @@ namespace indigo
         void applyFontOptions() override;
 
         // ---- Gradient ----
-        void setLinearGradient(float x0, float y0, float x1, float y1, float r1, float g1, float b1, float r2, float g2, float b2) override;
+        void setLinearGradient(double x0, double y0, double x1, double y1, double r1, double g1, double b1, double r2, double g2, double b2) override;
         void clearPattern() override;
 
         // ---- Image ----
-        void drawPngImage(const void* data, int dataLen, float x, float y, float w, float h) override;
+        void drawPngImage(const void* data, int dataLen, double x, double y, double w, double h) override;
         void writeSurfaceToPng(void* output) override;
 
         // ---- Path debugging ----
         bool isPathEmpty() override;
 
         // ---- Surface source ----
-        void setSourceSurface(float x, float y) override;
+        void setSourceSurface(double x, double y) override;
 
     private:
         int _width;
@@ -119,13 +119,13 @@ namespace indigo
         double _matrix[6]; // [xx, yx, xy, yy, x0, y0]
 
         // Font state
-        float _fontSize;
+        double _fontSize;
         bool _fontBold;
         bool _fontItalic;
         char _fontFamily[256];
 
         // Current position (for relMoveTo/relLineTo)
-        float _curX, _curY;
+        double _curX, _curY;
     };
 
 } // namespace indigo
