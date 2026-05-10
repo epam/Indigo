@@ -111,9 +111,10 @@ namespace indigo
 
         int sgroup_type;              // group type, represnted with STY in Molfile format
         Nullable<int> sgroup_subtype; // group subtype, represnted with SST in Molfile format
-        Nullable<int> original_group; // original group number
-        Nullable<int> parent_group;   // parent group number; represented with SPL in Molfile format
-        Nullable<int> parent_idx;     // parent group number; represented with index in the array
+        int index;                    // internal SGroup index; V3000 field 1, V2000 M STY sss. Used for cross-refs (PARENT, SPL).
+        Nullable<int> ext_index;      // external SGroup index; V3000 field 3 (extindex), V2000 M SLB vvv. Not set = auto-assign per spec.
+        Nullable<int> parent_group;   // parent group index; represented with PARENT in V3000, SPL in V2000
+        Nullable<int> parent_idx;     // parent group array position; resolved from parent_group
         // TODO: leave only parent_idx
 
         Array<int> atoms;  // represented with SAL in Molfile format

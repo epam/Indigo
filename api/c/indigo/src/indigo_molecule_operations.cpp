@@ -1808,7 +1808,7 @@ CEXPORT int indigoAddSGroup(int molecule, const char* type, int extindex)
 
         SGroup& sgroup = mol.sgroups.getSGroup(idx);
         if (extindex > 0)
-            sgroup.original_group = extindex;
+            sgroup.ext_index = extindex;
 
         return self.addObject(_wrapSGroup(mol, idx));
     }
@@ -2181,7 +2181,7 @@ CEXPORT int indigoGetSGroupOriginalId(int sgroup)
     INDIGO_BEGIN
     {
         IndigoSGroup& sg = IndigoSGroup::cast(self.getObject(sgroup));
-        return sg.get().original_group;
+        return sg.get().index;
     }
     INDIGO_END(-1);
 }
@@ -2195,11 +2195,11 @@ CEXPORT int indigoSetSGroupOriginalId(int sgroup, int new_original)
         for (auto i = sgr.mol.sgroups.begin(); i != sgr.mol.sgroups.end(); i = sgr.mol.sgroups.next(i))
         {
             SGroup& sg = sgr.mol.sgroups.getSGroup(i);
-            if (sg.original_group == new_original && i != sgr.idx)
+            if (sg.index == new_original && i != sgr.idx)
                 throw IndigoError("indigoSetSGroupOriginalId: duplicated sgroup id %d )", new_original);
         }
 
-        int old_original = sgr.get().original_group;
+        int old_original = sgr.get().index;
         if (old_original > 0)
         {
             for (auto i = sgr.mol.sgroups.begin(); i != sgr.mol.sgroups.end(); i = sgr.mol.sgroups.next(i))
@@ -2209,7 +2209,7 @@ CEXPORT int indigoSetSGroupOriginalId(int sgroup, int new_original)
                     sg.parent_group = new_original;
             }
         }
-        sgr.get().original_group = new_original;
+        sgr.get().index = new_original;
 
         return 1;
     }
@@ -2236,7 +2236,7 @@ CEXPORT int indigoSetSGroupParentId(int sgroup, int parent)
         for (auto i = sgr.mol.sgroups.begin(); i != sgr.mol.sgroups.end(); i = sgr.mol.sgroups.next(i))
         {
             SGroup& sg = sgr.mol.sgroups.getSGroup(i);
-            if (sg.original_group == parent)
+            if (sg.index == parent)
                 original_found = true;
         }
         if (!original_found)

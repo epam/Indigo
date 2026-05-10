@@ -176,7 +176,7 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
         int idx = sgroups.addSGroup(supersg.sgroup_type);
         SGroup& sg = sgroups.getSGroup(idx);
         sg.parent_idx = supersg.parent_idx;
-        sg.original_group = supersg.original_group;
+        sg.index = supersg.index;
         sg.parent_group = supersg.parent_group;
         sg.label.copy(supersg.label);
 
@@ -1064,7 +1064,7 @@ void BaseMolecule::removeBond(int idx)
 void BaseMolecule::removeSGroup(int idx)
 {
     SGroup& sg = sgroups.getSGroup(idx);
-    _checkSgroupHierarchy(sg.parent_group, sg.original_group);
+    _checkSgroupHierarchy(sg.parent_group, sg.index);
 
     sgroups.remove(idx);
 }
@@ -1073,7 +1073,7 @@ void BaseMolecule::removeSGroupWithBasis(int idx)
 {
     QS_DEF(Array<int>, sg_atoms);
     SGroup& sg = sgroups.getSGroup(idx);
-    _checkSgroupHierarchy(sg.parent_group, sg.original_group);
+    _checkSgroupHierarchy(sg.parent_group, sg.index);
     sg_atoms.copy(sg.atoms);
     removeAtoms(sg_atoms);
 }

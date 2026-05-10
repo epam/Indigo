@@ -1249,6 +1249,10 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResult(this, lib.indigoClearSGroupCrossBonds(self));
     }
 
+    public IndigoObject addSGroup(String type) {
+        return addSGroup(type, 0);
+    }
+
     public IndigoObject addSGroup(String type, int extindex) {
         dispatcher.setSessionID();
         return new IndigoObject(
