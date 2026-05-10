@@ -26,12 +26,7 @@
 
 using namespace indigo;
 
-void RenderContext::backendCheckStatus() const
-{
-#ifdef DEBUG
-    // Status checking is handled internally by the backend
-#endif
-}
+
 
 void RenderContext::fontsClear()
 {
