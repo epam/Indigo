@@ -114,8 +114,14 @@ namespace indigo
         void setSourceSurface(float x, float y) override;
 
         // Access raw cairo objects (needed during transition)
-        cairo_t* getCr() { return _cr; }
-        cairo_surface_t* getSurface() { return _surface; }
+        cairo_t* getCr()
+        {
+            return _cr;
+        }
+        cairo_surface_t* getSurface()
+        {
+            return _surface;
+        }
 
     private:
         static cairo_status_t _writer(void* closure, const unsigned char* data, unsigned int length);

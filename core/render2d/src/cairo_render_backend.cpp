@@ -318,8 +318,7 @@ void CairoRenderBackend::pathExtents(double& x1, double& y1, double& x2, double&
 void CairoRenderBackend::selectFontFace(const char* family, bool italic, bool bold)
 {
     std::lock_guard<std::mutex> lock(_mutex);
-    cairo_select_font_face(_cr, family, italic ? CAIRO_FONT_SLANT_ITALIC : CAIRO_FONT_SLANT_NORMAL,
-                           bold ? CAIRO_FONT_WEIGHT_BOLD : CAIRO_FONT_WEIGHT_NORMAL);
+    cairo_select_font_face(_cr, family, italic ? CAIRO_FONT_SLANT_ITALIC : CAIRO_FONT_SLANT_NORMAL, bold ? CAIRO_FONT_WEIGHT_BOLD : CAIRO_FONT_WEIGHT_NORMAL);
 }
 
 void CairoRenderBackend::setFontSize(float size)

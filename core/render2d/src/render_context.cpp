@@ -223,8 +223,6 @@ int RenderContext::getMaxPageSize() const
     return INT_MAX;
 }
 
-
-
 void RenderContext::createSurface(int /*width*/, int /*height*/)
 {
     int rbMode = RBMODE_PNG;
@@ -458,8 +456,6 @@ void RenderContext::drawTextItemText(const TextItem& ti, const Vec3f& color, boo
     fontsSetFont(ti_mod);
     fontsDrawText(ti_mod, color, idle);
 }
-
-
 
 void RenderContext::drawPng(const std::string& pngData, const Rect2f& bbox)
 {

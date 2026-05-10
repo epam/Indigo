@@ -26,8 +26,6 @@
 
 using namespace indigo;
 
-
-
 void RenderContext::fontsClear()
 {
     // scaled fonts managed by backend
@@ -36,7 +34,7 @@ void RenderContext::fontsClear()
 
     // matrix init managed by backend
     backendCheckStatus();
-    
+
     backendCheckStatus();
 }
 
@@ -77,7 +75,8 @@ void RenderContext::fontsSetFont(const TextItem& ti)
     std::lock_guard<std::mutex> _lock(_mutex);
     cairo_font_face_t* _cairo_face = _font_face_manager.selectCairoFontFace(ti);
     auto* cairoBackend = dynamic_cast<CairoRenderBackend*>(_backend.get());
-    if (cairoBackend) {
+    if (cairoBackend)
+    {
         cairo_set_font_face(cairoBackend->getCr(), _cairo_face);
         cairo_set_font_size(cairoBackend->getCr(), ti.size > 0 ? ti.size : fontGetSize(ti.fontsize));
     }
