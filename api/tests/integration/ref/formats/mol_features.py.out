@@ -9416,7 +9416,7 @@ molecules/multiline-sgroups-ketcher-457-v3000.mol
  14 15  1  0  0  0  0
  15 16  1  0  0  0  0
 M  STY  4   1 DAT   2 DAT   3 DAT   4 DAT
-M  SLB  4   1   1   2   2   3   3   4   4
+M  SLB  4   1   0   2   0   3   0   4   0
 M  SAL   1  2   3   4
 M  SDT   1 Long line                                                            
 M  SDD   1     2.4985   -1.8557    DR    ALL  1       1  
@@ -9492,7 +9492,7 @@ M  END
  14 15  1  0  0  0  0
  15 16  1  0  0  0  0
 M  STY  4   1 DAT   2 DAT   3 DAT   4 DAT
-M  SLB  4   1   1   2   2   3   3   4   4
+M  SLB  4   1   0   2   0   3   0   4   0
 M  SAL   1  2   3   4
 M  SDT   1 Long line                                                            
 M  SDD   1     2.4985   -1.8557    DR    ALL  1       1  
@@ -9574,20 +9574,20 @@ M  V30 11 1 14 15
 M  V30 12 1 15 16
 M  V30 END BOND
 M  V30 BEGIN SGROUP
-M  V30 1 DAT 1 ATOMS=(2 3 4) FIELDNAME="Long line" QUERYOP="   " FIELDDISP=" -
+M  V30 1 DAT 0 ATOMS=(2 3 4) FIELDNAME="Long line" QUERYOP="   " FIELDDISP=" -
 M  V30    2.4985   -1.8557    DR    ALL  1       1  " FIELDDATA="asdljkfnalsj-
 M  V30 kdnfklaj nsdfkl jnasdkjlfnakls ndfkaljsn dlkfjna slkdnaklsnd asdf asdf-
 M  V30  as df asdf as df asd fa sdf asd fa sd fa sdf a sd f a s df asd fa sd -
 M  V30 fa sdf as df as df as df as df as df asd fa sd fa sd fa sd f asd fa sd-
 M  V30  f as dfa sd f a sd fa sdf a sdf                      "
-M  V30 2 DAT 2 ATOMS=(2 8 9) FIELDNAME=Multiline QUERYOP="   " FIELDDISP="   -
+M  V30 2 DAT 0 ATOMS=(2 8 9) FIELDNAME=Multiline QUERYOP="   " FIELDDISP="   -
 M  V30  2.5123   -1.6940    DR    ALL  1       1  " FIELDDATA="line 1        -
 M  V30                                                        " FIELDDATA="li-
 M  V30 ne 2                                                               " F-
 M  V30 IELDDATA="line 3                                                      -
 M  V30          " FIELDDATA="line 4                                          -
 M  V30                      "
-M  V30 3 DAT 3 ATOMS=(2 12 13) FIELDNAME=LongAndMultI QUERYOP="   " FIELDDISP-
+M  V30 3 DAT 0 ATOMS=(2 12 13) FIELDNAME=LongAndMultI QUERYOP="   " FIELDDISP-
 M  V30 ="    2.4985   -1.8557    DR    ALL  1       1  " FIELDDATA="line 1   -
 M  V30                                                             " FIELDDAT-
 M  V30 A="line 2                                                             -
@@ -9596,7 +9596,7 @@ M  V30 line long long line long long line long long line long long line long -
 M  V30 long line long long line long long line long long line long long line -
 M  V30 long long line long long line                                         -
 M  V30            "
-M  V30 4 DAT 4 ATOMS=(2 15 16) FIELDNAME="Line with spaces" QUERYOP="   " FIE-
+M  V30 4 DAT 0 ATOMS=(2 15 16) FIELDNAME="Line with spaces" QUERYOP="   " FIE-
 M  V30 LDDISP="    2.5756   -1.5083    DR    ALL  1       1  " FIELDDATA="asd-
 M  V30 fjknasdjkfn aslkjdnf alksdf                                     asdf a-
 M  V30 sdf as dfa sdf asdf                                      asdf         -
@@ -12972,33 +12972,33 @@ M  V30 1706 1 1246 1248
 M  V30 1707 1 1246 1249
 M  V30 END BOND
 M  V30 BEGIN SGROUP
-M  V30 1 SUP 1 ATOMS=(4 37 38 39 40) XBONDS=(1 41) LABEL=CF3 SAP=(3 37 3 1)
-M  V30 2 SUP 2 ATOMS=(4 74 75 76 77) XBONDS=(1 79) LABEL=CF3 SAP=(3 74 43 1)
-M  V30 3 SUP 3 ATOMS=(4 112 113 114 115) XBONDS=(1 118) LABEL=CF3 SAP=(3 112 -
+M  V30 1 SUP 0 ATOMS=(4 37 38 39 40) XBONDS=(1 41) LABEL=CF3 SAP=(3 37 3 1)
+M  V30 2 SUP 0 ATOMS=(4 74 75 76 77) XBONDS=(1 79) LABEL=CF3 SAP=(3 74 43 1)
+M  V30 3 SUP 0 ATOMS=(4 112 113 114 115) XBONDS=(1 118) LABEL=CF3 SAP=(3 112 -
 M  V30 80 1)
-M  V30 4 SUP 4 ATOMS=(4 149 150 151 152) XBONDS=(1 156) LABEL=CF3 SAP=(3 149 -
+M  V30 4 SUP 0 ATOMS=(4 149 150 151 152) XBONDS=(1 156) LABEL=CF3 SAP=(3 149 -
 M  V30 118 1)
-M  V30 5 SUP 5 ATOMS=(4 185 186 187 188) XBONDS=(1 193) LABEL=CF3 SAP=(3 185 -
+M  V30 5 SUP 0 ATOMS=(4 185 186 187 188) XBONDS=(1 193) LABEL=CF3 SAP=(3 185 -
 M  V30 155 1)
-M  V30 6 SUP 6 ATOMS=(4 221 222 223 224) XBONDS=(1 230) LABEL=CF3 SAP=(3 221 -
+M  V30 6 SUP 0 ATOMS=(4 221 222 223 224) XBONDS=(1 230) LABEL=CF3 SAP=(3 221 -
 M  V30 191 1)
-M  V30 7 SUP 7 ATOMS=(4 259 260 261 262) XBONDS=(1 270) LABEL=CF3 SAP=(3 259 -
+M  V30 7 SUP 0 ATOMS=(4 259 260 261 262) XBONDS=(1 270) LABEL=CF3 SAP=(3 259 -
 M  V30 227 1)
-M  V30 8 SUP 8 ATOMS=(4 296 297 298 299) XBONDS=(1 308) LABEL=CF3 SAP=(3 296 -
+M  V30 8 SUP 0 ATOMS=(4 296 297 298 299) XBONDS=(1 308) LABEL=CF3 SAP=(3 296 -
 M  V30 265 1)
-M  V30 9 SUP 9 ATOMS=(4 334 335 336 337) XBONDS=(1 347) LABEL=CF3 SAP=(3 334 -
+M  V30 9 SUP 0 ATOMS=(4 334 335 336 337) XBONDS=(1 347) LABEL=CF3 SAP=(3 334 -
 M  V30 302 1)
-M  V30 10 SUP 10 ATOMS=(4 372 373 374 375) XBONDS=(1 386) LABEL=CF3 SAP=(3 37-
-M  V30 2 340 1)
-M  V30 11 SUP 11 ATOMS=(4 409 410 411 412) XBONDS=(1 424) LABEL=CF3 SAP=(3 40-
-M  V30 9 378 1)
-M  V30 12 SUP 12 ATOMS=(4 446 447 448 449) XBONDS=(1 462) LABEL=CF3 SAP=(3 44-
-M  V30 6 415 1)
-M  V30 13 SUP 13 ATOMS=(4 668 669 670 671) XBONDS=(1 705) LABEL=^CF3 SAP=(3 6-
-M  V30 68 667 1)
-M  V30 14 SUP 14 ATOMS=(1 1210) XBONDS=(1 1301) LABEL=^Me SAP=(3 1210 1200 1)
-M  V30 15 SUP 15 ATOMS=(4 1246 1247 1248 1249) XBONDS=(1 1341) LABEL=^CF3 SAP-
-M  V30 =(3 1246 1236 1)
+M  V30 10 SUP 0 ATOMS=(4 372 373 374 375) XBONDS=(1 386) LABEL=CF3 SAP=(3 372-
+M  V30  340 1)
+M  V30 11 SUP 0 ATOMS=(4 409 410 411 412) XBONDS=(1 424) LABEL=CF3 SAP=(3 409-
+M  V30  378 1)
+M  V30 12 SUP 0 ATOMS=(4 446 447 448 449) XBONDS=(1 462) LABEL=CF3 SAP=(3 446-
+M  V30  415 1)
+M  V30 13 SUP 0 ATOMS=(4 668 669 670 671) XBONDS=(1 705) LABEL=^CF3 SAP=(3 66-
+M  V30 8 667 1)
+M  V30 14 SUP 0 ATOMS=(1 1210) XBONDS=(1 1301) LABEL=^Me SAP=(3 1210 1200 1)
+M  V30 15 SUP 0 ATOMS=(4 1246 1247 1248 1249) XBONDS=(1 1341) LABEL=^CF3 SAP=-
+M  V30 (3 1246 1236 1)
 M  V30 END SGROUP
 M  V30 END CTAB
 M  END

@@ -12,7 +12,7 @@ MUL atoms: 0
 GEN type: 0
 GEN atoms: 0
 ****** addSGroup: with explicit extindex ********
-extindex: 42
+extindex: 0
 ****** setSGroupAtoms: set atoms on empty SGroup ********
 atoms after set: 3
 atom symbols: C C C
@@ -57,3 +57,15 @@ type: 2
 atoms: 3
 bonds: 2
 sgroup count: 1
+****** ext_index: V3000 roundtrip with explicit extindex ********
+original id before save: 0
+roundtrip original id: 1
+V3000 index=1 extindex=42
+****** ext_index: V3000 roundtrip auto-assign (extindex=0) ********
+V3000 auto-assigned: index=1 extindex=1
+****** ext_index: V2000 roundtrip with explicit extindex ********
+V2000 SLB: M  SLB  1   1  55
+V2000 roundtrip original id: 1
+****** ext_index: addSGroup without extindex (default=0) ********
+GEN type: 0
+GEN atoms: 2

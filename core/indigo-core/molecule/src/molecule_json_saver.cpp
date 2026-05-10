@@ -157,24 +157,27 @@ void MoleculeJsonSaver::_checkSGroupIndices(BaseMolecule& mol, Array<int>& sgs_l
     for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
     {
         SGroup& sgroup = mol.sgroups.getSGroup(i);
-        if (sgroup.original_group == 0)
+        if (sgroup.index == 0)
         {
-            sgroup.original_group = sgs_mapping[i];
+            sgroup.index = sgs_mapping[i];
         }
         else
         {
             for (int j = mol.sgroups.begin(); j != mol.sgroups.end(); j = mol.sgroups.next(j))
             {
                 SGroup& sg = mol.sgroups.getSGroup(j);
-                if (sg.parent_group == sgroup.original_group && sgs_changed[j] == 0)
+                if (sg.parent_group == sgroup.index && sgs_changed[j] == 0)
                 {
                     sg.parent_group = sgs_mapping[i];
                     sgs_changed[j] = 1;
                 }
             }
-            sgroup.original_group = sgs_mapping[i];
+            sgroup.index = sgs_mapping[i];
         }
-        orig_ids.push(sgroup.original_group);
+        // Per BIOVIA spec: if ext_index not set, auto-assign from index
+        if (!sgroup.ext_index.hasValue())
+            sgroup.ext_index = sgroup.index;
+        orig_ids.push(sgroup.index);
     }
 
     for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
@@ -183,15 +186,15 @@ void MoleculeJsonSaver::_checkSGroupIndices(BaseMolecule& mol, Array<int>& sgs_l
         if (sgroup.parent_group == 0)
         {
             sgs_list.push(i);
-            added_ids.push(sgroup.original_group);
+            added_ids.push(sgroup.index);
         }
         else
         {
-            if (orig_ids.find(sgroup.parent_group) == VALUE_UNKNOWN || sgroup.parent_group == sgroup.original_group)
+            if (orig_ids.find(sgroup.parent_group) == VALUE_UNKNOWN || sgroup.parent_group == sgroup.index)
             {
                 sgroup.parent_group = 0;
                 sgs_list.push(i);
-                added_ids.push(sgroup.original_group);
+                added_ids.push(sgroup.index);
             }
         }
     }
@@ -204,13 +207,13 @@ void MoleculeJsonSaver::_checkSGroupIndices(BaseMolecule& mol, Array<int>& sgs_l
             if (sgroup.parent_group == 0)
                 continue;
 
-            if (added_ids.find(sgroup.original_group) != VALUE_UNKNOWN)
+            if (added_ids.find(sgroup.index) != VALUE_UNKNOWN)
                 continue;
 
             if (added_ids.find(sgroup.parent_group) != VALUE_UNKNOWN)
             {
                 sgs_list.push(i);
-                added_ids.push(sgroup.original_group);
+                added_ids.push(sgroup.index);
             }
         }
         if (sgs_list.size() == mol.countSGroups())
@@ -221,6 +224,20 @@ void MoleculeJsonSaver::_checkSGroupIndices(BaseMolecule& mol, Array<int>& sgs_l
 void MoleculeJsonSaver::saveSGroups(BaseMolecule& mol, JsonWriter& writer)
 {
     QS_DEF(Array<int>, sgs_sorted);
+
+    // Save ext_index state before _checkSGroupIndices auto-assigns it
+    struct SGroupExtState
+    {
+        int pool_idx;
+        Nullable<int> ext_index;
+    };
+    std::vector<SGroupExtState> saved_ext;
+    for (int si = mol.sgroups.begin(); si != mol.sgroups.end(); si = mol.sgroups.next(si))
+    {
+        SGroup& sg = mol.sgroups.getSGroup(si);
+        saved_ext.push_back({si, sg.ext_index});
+    }
+
     _checkSGroupIndices(mol, sgs_sorted);
     int sGroupsCount = mol.countSGroups();
     bool componentDefined = false;
@@ -269,6 +286,16 @@ void MoleculeJsonSaver::saveSGroups(BaseMolecule& mol, JsonWriter& writer)
             writer.EndObject();
         }
         writer.EndArray();
+    }
+
+    // Restore ext_index state after writing (prevent save-time auto-assign from persisting)
+    for (const auto& s : saved_ext)
+    {
+        if (mol.sgroups.hasSGroup(s.pool_idx))
+        {
+            SGroup& sg = mol.sgroups.getSGroup(s.pool_idx);
+            sg.ext_index = s.ext_index;
+        }
     }
 }
 

@@ -842,7 +842,7 @@ namespace com.epam.indigo
             return dispatcher.checkResult(IndigoLib.indigoClearSGroupCrossBonds(self));
         }
 
-        public IndigoObject addSGroup(string type, int extindex)
+        public IndigoObject addSGroup(string type, int extindex = 0)
         {
             dispatcher.setSessionID();
             return new IndigoObject(dispatcher, dispatcher.checkResult(IndigoLib.indigoAddSGroup(self, type, extindex)), this);

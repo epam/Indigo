@@ -57,7 +57,7 @@ SGroup::SGroup()
     sgroup_type = SGroup::SG_TYPE_GEN;
     sgroup_subtype = 0;
     brk_style = 0;
-    original_group = 0;
+    index = 0;
     parent_group = 0;
     parent_idx = -1;
     contracted = DisplayOption::Undefined;
@@ -708,7 +708,7 @@ int MoleculeSGroups::findSGroupById(int id)
     for (int i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
     {
         SGroup& sg = *_sgroups.at(i);
-        if (sg.original_group == id)
+        if (sg.index == id)
         {
             return i;
         }
