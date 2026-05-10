@@ -582,7 +582,7 @@ void CmlSaver::_addSgroupElement(XMLElement* molecule, BaseMolecule& mol, SGroup
 
     QS_DEF(Array<char>, buf);
     ArrayOutput out(buf);
-    out.printf("sg%d", sgroup.original_group.hasValue() ? sgroup.original_group.get() : 0);
+    out.printf("sg%d", sgroup.index);
     buf.push(0);
     sg->SetAttribute("id", buf.ptr());
 
@@ -691,7 +691,7 @@ void CmlSaver::_addSgroupElement(XMLElement* molecule, BaseMolecule& mol, SGroup
         {
             SGroup& sg_child = sgroups->getSGroup(i);
 
-            if ((sg_child.parent_group != 0) && (sg_child.parent_group == sgroup.original_group))
+            if ((sg_child.parent_group != 0) && (sg_child.parent_group == sgroup.index))
                 _addSgroupElement(sg, mol, sg_child);
         }
     }
@@ -705,7 +705,7 @@ void CmlSaver::_addSgroupElement(XMLElement* molecule, BaseMolecule& mol, SGroup
         {
             SGroup& sg_child = sgroups->getSGroup(i);
 
-            if ((sg_child.parent_group != 0) && (sg_child.parent_group == sgroup.original_group))
+            if ((sg_child.parent_group != 0) && (sg_child.parent_group == sgroup.index))
                 _addSgroupElement(sg, mol, sg_child);
         }
     }
@@ -727,7 +727,7 @@ void CmlSaver::_addSgroupElement(XMLElement* molecule, BaseMolecule& mol, SGroup
         {
             SGroup& sg_child = sgroups->getSGroup(i);
 
-            if ((sg_child.parent_group != 0) && (sg_child.parent_group == sgroup.original_group))
+            if ((sg_child.parent_group != 0) && (sg_child.parent_group == sgroup.index))
                 _addSgroupElement(sg, mol, sg_child);
         }
     }
@@ -758,7 +758,7 @@ void CmlSaver::_addSgroupElement(XMLElement* molecule, BaseMolecule& mol, SGroup
         {
             SGroup& sg_child = sgroups->getSGroup(i);
 
-            if ((sg_child.parent_group != 0) && (sg_child.parent_group == sgroup.original_group))
+            if ((sg_child.parent_group != 0) && (sg_child.parent_group == sgroup.index))
                 _addSgroupElement(sg, mol, sg_child);
         }
     }
@@ -793,7 +793,7 @@ void CmlSaver::_addSgroupElement(XMLElement* molecule, BaseMolecule& mol, SGroup
         {
             SGroup& sg_child = sgroups->getSGroup(i);
 
-            if ((sg_child.parent_group != 0) && (sg_child.parent_group == sgroup.original_group))
+            if ((sg_child.parent_group != 0) && (sg_child.parent_group == sgroup.index))
                 _addSgroupElement(sg, mol, sg_child);
         }
     }

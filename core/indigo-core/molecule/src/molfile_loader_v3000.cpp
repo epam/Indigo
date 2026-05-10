@@ -861,7 +861,7 @@ void MolfileLoader::_fillSGroupsParentIndices()
     for (auto i = sgroups.begin(); i != sgroups.end(); i++)
     {
         SGroup& sgroup = sgroups.getSGroup(i);
-        indices.emplace(sgroup.original_group, i);
+        indices.emplace(sgroup.index, i);
     }
 
     // TODO: replace parent_group with parent_idx
@@ -1151,12 +1151,13 @@ void MolfileLoader::_readSGroup3000(const char* str)
     scanner.readWord(type, 0);
     type.push(0);
     scanner.skipSpace();
-    scanner.readInt();
+    int ext_idx = scanner.readInt();
     scanner.skipSpace();
 
     int idx = sgroups->addSGroup(type.ptr());
     SGroup* sgroup = &sgroups->getSGroup(idx);
-    sgroup->original_group = sgroup_idx;
+    sgroup->index = sgroup_idx;
+    sgroup->ext_index = ext_idx;
 
     DataSGroup* dsg = 0;
     Superatom* sup = 0;
