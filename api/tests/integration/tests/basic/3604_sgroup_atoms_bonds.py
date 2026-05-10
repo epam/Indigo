@@ -255,7 +255,11 @@ for l in lines:
     # Find the SUP line: M V30 <index> SUP <extindex> ...
     if "SUP" in parts:
         sup_idx = parts.index("SUP")
-        print("V3000 index={0} extindex={1}".format(parts[sup_idx - 1], parts[sup_idx + 1]))
+        print(
+            "V3000 index={0} extindex={1}".format(
+                parts[sup_idx - 1], parts[sup_idx + 1]
+            )
+        )
 
 
 print("****** ext_index: V3000 roundtrip auto-assign (extindex=0) ********")
@@ -271,7 +275,11 @@ for l in lines:
     parts = l.strip().split()
     if "SUP" in parts:
         sup_idx = parts.index("SUP")
-        print("V3000 auto-assigned: index={0} extindex={1}".format(parts[sup_idx - 1], parts[sup_idx + 1]))
+        print(
+            "V3000 auto-assigned: index={0} extindex={1}".format(
+                parts[sup_idx - 1], parts[sup_idx + 1]
+            )
+        )
 
 
 # ===== ext_index roundtrip V2000 =====
