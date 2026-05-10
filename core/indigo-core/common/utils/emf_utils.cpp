@@ -1,3 +1,4 @@
+#ifndef __EMSCRIPTEN__
 #include <png.h>
 #include <sstream>
 #include <vector>
@@ -342,3 +343,4 @@ std::string indigo::createEMFFromBitmap(const std::string& bmpData)
     emfData.replace(0, sizeof(emfHeader), reinterpret_cast<const char*>(&emfHeader), sizeof(emfHeader));
     return emfData;
 }
+#endif // !__EMSCRIPTEN__
