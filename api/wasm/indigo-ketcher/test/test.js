@@ -773,6 +773,58 @@ M  END
             assert(equal);
             options.delete();
         });
+
+        test("render", "multi_reaction", async () => {
+            let options = new indigo.MapStringString();
+            options.set("render-output-format", "png");
+            options.set("render-background-color", "1,1,1");
+            var fs = require('fs');
+            const ket_data = fs.readFileSync("multi.ket");
+            const png = Buffer.from(indigo.render(ket_data, options), "base64");
+            fs.writeFileSync("multi_reaction_out.png", png);
+            const { equal } = await looksSame('multi_reaction_ref.png', 'multi_reaction_out.png');
+            assert(equal);
+            options.delete();
+        });
+
+        test("render", "retro_arrow", async () => {
+            let options = new indigo.MapStringString();
+            options.set("render-output-format", "png");
+            options.set("render-background-color", "1,1,1");
+            var fs = require('fs');
+            const ket_data = fs.readFileSync("retro.ket");
+            const png = Buffer.from(indigo.render(ket_data, options), "base64");
+            fs.writeFileSync("retro_arrow_out.png", png);
+            const { equal } = await looksSame('retro_arrow_ref.png', 'retro_arrow_out.png');
+            assert(equal);
+            options.delete();
+        });
+
+        test("render", "issue_2513_elliptical_arc", async () => {
+            let options = new indigo.MapStringString();
+            options.set("render-output-format", "png");
+            options.set("render-background-color", "1,1,1");
+            var fs = require('fs');
+            const ket_data = fs.readFileSync("issue_2513.ket");
+            const png = Buffer.from(indigo.render(ket_data, options), "base64");
+            fs.writeFileSync("issue_2513_out.png", png);
+            const { equal } = await looksSame('issue_2513_ref.png', 'issue_2513_out.png');
+            assert(equal);
+            options.delete();
+        });
+
+        test("render", "bonds", async () => {
+            let options = new indigo.MapStringString();
+            options.set("render-output-format", "png");
+            options.set("render-background-color", "1,1,1");
+            var fs = require('fs');
+            const mol_data = fs.readFileSync("bonds.mol");
+            const png = Buffer.from(indigo.render(mol_data, options), "base64");
+            fs.writeFileSync("bonds_out.png", png);
+            const { equal } = await looksSame('bonds_ref.png', 'bonds_out.png');
+            assert(equal);
+            options.delete();
+        });
     }
 
     // Throws
