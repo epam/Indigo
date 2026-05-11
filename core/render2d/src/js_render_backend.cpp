@@ -63,6 +63,11 @@ EM_JS(void, js_rb_init, (int w, int h, int mode), {
         bby0 : 1e9,
         bbx1 : -1e9,
         bby1 : -1e9,
+        // Per-path bbox (reset on each emitPath)
+        pbbx0 : 1e9,
+        pbby0 : 1e9,
+        pbbx1 : -1e9,
+        pbby1 : -1e9,
         // SVG output
         elems : [],
         defs : '',
@@ -81,61 +86,105 @@ EM_JS(void, js_rb_beginPath, (), {
     r.pathEmpty = true;
 });
 EM_JS(void, js_rb_closePath, (), { Module._rb.pd += 'Z '; });
+
+// Helper: transform point through current CTM and track per-path bbox
+// m = [a, b, c, d, e, f] => x' = a*x + c*y + e, y' = b*x + d*y + f
 EM_JS(void, js_rb_moveTo, (double x, double y), {
-    var r = Module._rb;
-    r.pd += 'M' + x + ' ' + y + ' ';
-    r.cx = x;
-    r.cy = y;
+    var r = Module._rb, m = r.s.ctm;
+    var tx = m[0] * x + m[2] * y + m[4];
+    var ty = m[1] * x + m[3] * y + m[5];
+    r.pd += 'M' + tx + ' ' + ty + ' ';
+    r.cx = tx;
+    r.cy = ty;
     r.pathEmpty = false;
+    if (tx < r.pbbx0) r.pbbx0 = tx;
+    if (ty < r.pbby0) r.pbby0 = ty;
+    if (tx > r.pbbx1) r.pbbx1 = tx;
+    if (ty > r.pbby1) r.pbby1 = ty;
 });
 EM_JS(void, js_rb_lineTo, (double x, double y), {
-    var r = Module._rb;
-    r.pd += 'L' + x + ' ' + y + ' ';
-    r.cx = x;
-    r.cy = y;
+    var r = Module._rb, m = r.s.ctm;
+    var tx = m[0] * x + m[2] * y + m[4];
+    var ty = m[1] * x + m[3] * y + m[5];
+    r.pd += 'L' + tx + ' ' + ty + ' ';
+    r.cx = tx;
+    r.cy = ty;
     r.pathEmpty = false;
+    if (tx < r.pbbx0) r.pbbx0 = tx;
+    if (ty < r.pbby0) r.pbby0 = ty;
+    if (tx > r.pbbx1) r.pbbx1 = tx;
+    if (ty > r.pbby1) r.pbby1 = ty;
 });
 EM_JS(void, js_rb_curveTo, (double x1, double y1, double x2, double y2, double x3, double y3), {
-    var r = Module._rb;
-    r.pd += 'C' + x1 + ' ' + y1 + ' ' + x2 + ' ' + y2 + ' ' + x3 + ' ' + y3 + ' ';
-    r.cx = x3;
-    r.cy = y3;
+    var r = Module._rb, m = r.s.ctm;
+    var tx1 = m[0] * x1 + m[2] * y1 + m[4], ty1 = m[1] * x1 + m[3] * y1 + m[5];
+    var tx2 = m[0] * x2 + m[2] * y2 + m[4], ty2 = m[1] * x2 + m[3] * y2 + m[5];
+    var tx3 = m[0] * x3 + m[2] * y3 + m[4], ty3 = m[1] * x3 + m[3] * y3 + m[5];
+    r.pd += 'C' + tx1 + ' ' + ty1 + ' ' + tx2 + ' ' + ty2 + ' ' + tx3 + ' ' + ty3 + ' ';
+    r.cx = tx3;
+    r.cy = ty3;
     r.pathEmpty = false;
+    var pts = [tx1, ty1, tx2, ty2, tx3, ty3];
+    for (var k = 0; k < 6; k += 2) {
+        if (pts[k] < r.pbbx0) r.pbbx0 = pts[k];
+        if (pts[k+1] < r.pbby0) r.pbby0 = pts[k+1];
+        if (pts[k] > r.pbbx1) r.pbbx1 = pts[k];
+        if (pts[k+1] > r.pbby1) r.pbby1 = pts[k+1];
+    }
 });
 EM_JS(void, js_rb_arc, (double cx, double cy, double rad, double a0, double a1, int ccw), {
-    // Convert arc to SVG path segments
-    var r = Module._rb;
+    // Convert arc to line segments (polyline approximation)
+    // This correctly handles non-uniform CTM transforms (e.g. scale(1, 2*h/w) for ellipses)
+    var r = Module._rb, m = r.s.ctm;
     if (rad < 0.001)
         return;
-    var step = ccw ? -0.5 : 0.5;
-    var angle = a0;
-    var sx = cx + rad * Math.cos(a0), sy = cy + rad * Math.sin(a0);
-    if (r.pathEmpty)
-    {
-        r.pd += 'M' + sx + ' ' + sy + ' ';
-        r.pathEmpty = false;
-    }
-    else
-    {
-        r.pd += 'L' + sx + ' ' + sy + ' ';
-    }
-    // Use SVG arc command
     var da = a1 - a0;
     if (ccw && da > 0)
         da -= 2 * Math.PI;
     if (!ccw && da < 0)
         da += 2 * Math.PI;
-    var large = Math.abs(da) > Math.PI ? 1 : 0;
-    var sweep = da > 0 ? 1 : 0;
-    var ex = cx + rad * Math.cos(a1), ey = cy + rad * Math.sin(a1);
-    r.pd += 'A' + rad + ' ' + rad + ' 0 ' + large + ' ' + sweep + ' ' + ex + ' ' + ey + ' ';
-    r.cx = ex;
-    r.cy = ey;
+    // Approximate with line segments: ~1 degree per step for smooth curves
+    var steps = Math.max(8, Math.ceil(Math.abs(da) / 0.02));
+    for (var i = 0; i <= steps; i++)
+    {
+        var t = a0 + da * (i / steps);
+        var px = cx + rad * Math.cos(t);
+        var py = cy + rad * Math.sin(t);
+        var tx = m[0] * px + m[2] * py + m[4];
+        var ty = m[1] * px + m[3] * py + m[5];
+        if (i == 0 && r.pathEmpty)
+        {
+            r.pd += 'M' + tx + ' ' + ty + ' ';
+            r.pathEmpty = false;
+        }
+        else
+        {
+            r.pd += 'L' + tx + ' ' + ty + ' ';
+        }
+        r.cx = tx;
+        r.cy = ty;
+        if (tx < r.pbbx0) r.pbbx0 = tx;
+        if (ty < r.pbby0) r.pbby0 = ty;
+        if (tx > r.pbbx1) r.pbbx1 = tx;
+        if (ty > r.pbby1) r.pbby1 = ty;
+    }
 });
 EM_JS(void, js_rb_rect, (double x, double y, double w, double h), {
-    var r = Module._rb;
-    r.pd += 'M' + x + ' ' + y + 'L' + (x + w) + ' ' + y + 'L' + (x + w) + ' ' + (y + h) + 'L' + x + ' ' + (y + h) + 'Z ';
+    var r = Module._rb, m = r.s.ctm;
+    var x0 = x, y0 = y, x1 = x + w, y1 = y + h;
+    var t00x = m[0]*x0+m[2]*y0+m[4], t00y = m[1]*x0+m[3]*y0+m[5];
+    var t10x = m[0]*x1+m[2]*y0+m[4], t10y = m[1]*x1+m[3]*y0+m[5];
+    var t11x = m[0]*x1+m[2]*y1+m[4], t11y = m[1]*x1+m[3]*y1+m[5];
+    var t01x = m[0]*x0+m[2]*y1+m[4], t01y = m[1]*x0+m[3]*y1+m[5];
+    r.pd += 'M'+t00x+' '+t00y+'L'+t10x+' '+t10y+'L'+t11x+' '+t11y+'L'+t01x+' '+t01y+'Z ';
     r.pathEmpty = false;
+    var pts = [t00x, t00y, t10x, t10y, t11x, t11y, t01x, t01y];
+    for (var k = 0; k < 8; k += 2) {
+        if (pts[k] < r.pbbx0) r.pbbx0 = pts[k];
+        if (pts[k+1] < r.pbby0) r.pbby0 = pts[k+1];
+        if (pts[k] > r.pbbx1) r.pbbx1 = pts[k];
+        if (pts[k+1] > r.pbby1) r.pbby1 = pts[k+1];
+    }
 });
 
 // -- Helpers --
@@ -143,28 +192,19 @@ EM_JS(void, js_rb_emitPath, (int doFill, int doStroke), {
     var r = Module._rb, s = r.s;
     if (!r.pd)
         return;
-    var m = s.ctm;
-    // Track bbox: parse path coords and transform
-    var nums = r.pd.match(/-?[0-9]*\.?[0-9]+/g);
-    if (nums)
+    // Merge per-path bbox into global bbox (skip background-colored fill-only shapes)
+    var isBgFill = doFill && !doStroke && r.bgColor &&
+                   r.bgColor == 'rgb(' + Math.round(s.r * 255) + ',' + Math.round(s.g * 255) + ',' + Math.round(s.b * 255) + ')';
+    if (!isBgFill)
     {
-        for (var i = 0; i + 1 < nums.length; i += 2)
-        {
-            var px = parseFloat(nums[i]);
-            var py = parseFloat(nums[i + 1]);
-            var tx = m[0] * px + m[2] * py + m[4];
-            var ty = m[1] * px + m[3] * py + m[5];
-            if (tx < r.bbx0)
-                r.bbx0 = tx;
-            if (ty < r.bby0)
-                r.bby0 = ty;
-            if (tx > r.bbx1)
-                r.bbx1 = tx;
-            if (ty > r.bby1)
-                r.bby1 = ty;
-        }
+        if (r.pbbx0 < r.bbx0) r.bbx0 = r.pbbx0;
+        if (r.pbby0 < r.bby0) r.bby0 = r.pbby0;
+        if (r.pbbx1 > r.bbx1) r.bbx1 = r.pbbx1;
+        if (r.pbby1 > r.bby1) r.bby1 = r.pbby1;
     }
-    var e = '<path d="' + r.pd + '" transform="matrix(' + m[0] + ',' + m[1] + ',' + m[2] + ',' + m[3] + ',' + m[4] + ',' + m[5] + ')"';
+    // Reset per-path bbox for next path
+    r.pbbx0 = 1e9; r.pbby0 = 1e9; r.pbbx1 = -1e9; r.pbby1 = -1e9;
+    var e = '<path d="' + r.pd + '"';
     if (doFill)
     {
         var fc = s.gradId ? 'url(#' + s.gradId + ')' : 'rgb(' + Math.round(s.r * 255) + ',' + Math.round(s.g * 255) + ',' + Math.round(s.b * 255) + ')';
@@ -200,8 +240,8 @@ EM_JS(void, js_rb_fill, (), { js_rb_emitPath(1, 0); });
 EM_JS(void, js_rb_stroke, (), { js_rb_emitPath(0, 1); });
 EM_JS(void, js_rb_paint, (), {
     var r = Module._rb, s = r.s;
-    var c = 'rgb(' + Math.round(s.r * 255) + ',' + Math.round(s.g * 255) + ',' + Math.round(s.b * 255) + ')';
-    r.elems.push('<rect x="0" y="0" width="' + r.w + '" height="' + r.h + '" fill="' + c + '"/>');
+    // Store background color; the rect will be emitted in finalize at viewBox coords
+    r.bgColor = 'rgb(' + Math.round(s.r * 255) + ',' + Math.round(s.g * 255) + ',' + Math.round(s.b * 255) + ')';
 });
 
 // -- Style --
@@ -395,7 +435,7 @@ EM_JS(int, js_rb_finalize, (int mode), {
     var r = Module._rb;
     if (!r)
         return 0;
-    // Build SVG with viewBox from tracked bounding box
+    // Use canvas dimensions from createSurface as viewBox (same as Cairo surface size)
     var vx = 0;
     var vy = 0;
     var vw = r.w;
@@ -412,6 +452,9 @@ EM_JS(int, js_rb_finalize, (int mode), {
               ' ' + vh + '">';
     if (r.defs)
         svg += '<defs>' + r.defs + '</defs>';
+    // Emit background rect at viewBox coordinates
+    if (r.bgColor)
+        svg += '<rect x="' + vx + '" y="' + vy + '" width="' + vw + '" height="' + vh + '" fill="' + r.bgColor + '"/>';
     svg += r.elems.join('');
     svg += '</svg>';
 
