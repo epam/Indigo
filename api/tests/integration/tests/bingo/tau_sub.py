@@ -29,7 +29,7 @@ def testSearchSub(bingo, smile, options=""):
 indigo = Indigo()
 indigo.setOption("aromaticity-model", "generic")
 
-db_dir = joinPathPy("out/basic", __file__)
+db_dir = joinPathPy("out/tau_sub", __file__)
 if dir_exists(db_dir):
     rmdir(db_dir)
 makedirs(db_dir)
