@@ -342,13 +342,13 @@ bool Element::calcValence(int elem, int charge, int radical, int conn, int& vale
 
 int Element::calcValenceMinusHyd(int elem, int charge, int radical, int conn)
 {
-    const int g = Element::group(elem);
+    const int group = Element::group(elem);
     const int rad = radicalElectrons(radical);
 
     // Certain charges are absorbed by electronic structure, not consuming a valence slot
     bool absorbed = false;
 
-    switch (g)
+    switch (group)
     {
     case 3:
         if ((elem == ELEM_B || elem == ELEM_Al || elem == ELEM_Ga || elem == ELEM_In) && charge == -1 && rad + conn <= 4)

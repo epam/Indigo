@@ -169,11 +169,6 @@ namespace indigo
         return el == ELEM_O || el == ELEM_F || el == ELEM_S || el == ELEM_Cl || el == ELEM_Se || el == ELEM_Br || el == ELEM_I;
     }
 
-    [[deprecated("Misspelled, use ElementHydrogenOnLeft instead")]] inline bool ElementHygrodenOnLeft(int el)
-    {
-        return ElementHydrogenOnLeft(el);
-    }
-
     enum LABEL_MODE
     {
         LABEL_MODE_NONE,
