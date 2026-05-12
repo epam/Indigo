@@ -646,9 +646,36 @@ EM_JS(int, js_rb_finalize, (int mode), {
         return buf;
     }
 
-    if (mode == 1 || mode == 0)
-    { // SVG or PNG - output SVG XML directly
-      // PNG conversion is now handled asynchronously in JS via post.js renderAsync()
+    if (mode == 1)
+    { // SVG - output SVG XML directly
+        r.out = toBytes(svg);
+        return r.out.length;
+    }
+    else if (mode == 0)
+    { // PNG - rasterize SVG
+        // Node.js: use sharp (npm dependency) for SVG to PNG
+        if (typeof require != 'undefined')
+        {
+            try
+            {
+                var sharp = require('sharp');
+                var fs = require('fs');
+                var os = require('os');
+                var svgBuf = Buffer.from(svg);
+                var pngPath = os.tmpdir() + '/_indigo_render.png';
+                var cp = require('child_process');
+                var svgPath = os.tmpdir() + '/_indigo_render.svg';
+                fs.writeFileSync(svgPath, svgBuf);
+                cp.execSync('node -e "require(\'sharp\')(\'' + svgPath + '\').png().toFile(\'' + pngPath + '\').then(()=>process.exit(0))"');
+                var pngData = fs.readFileSync(pngPath);
+                r.out = new Uint8Array(pngData);
+                return r.out.length;
+            }
+            catch (e)
+            {
+            }
+        }
+        // Browser fallback: output SVG (use renderAsync for real PNG in browser)
         r.out = toBytes(svg);
         return r.out.length;
     }
