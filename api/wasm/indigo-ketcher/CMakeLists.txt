@@ -113,6 +113,7 @@ if (NOT RENDER_ENABLE_CJK)
             WORKING_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
             COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_LIST_DIR}/patch.cmake
             COMMAND npm test
+            COMMAND npm run test_browser
             COMMAND npm pack
             COMMAND ${CMAKE_COMMAND} -E make_directory ${DIST_DIRECTORY}
             COMMAND ${COPY_COMMAND} ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}${SEP}${PROJECT_NAME}*.tgz ${NATIVE_DIST_DIRECTORY}${SEP}
@@ -129,6 +130,7 @@ else ()
             WORKING_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
             COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_LIST_DIR}/patch.cmake
             COMMAND npm test
+            COMMAND npm run test_browser
             COMMAND npm run test_cjk
             COMMAND npm pack
             COMMAND ${CMAKE_COMMAND} -E make_directory ${DIST_DIRECTORY}
