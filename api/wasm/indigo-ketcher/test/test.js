@@ -888,7 +888,7 @@ M  END
             options.set("render-output-format", "png");
             options.set("render-background-color", "1,1,1");
             var fs = require('fs');
-            const ket_data = fs.readFileSync("multitail_arrow.ket");
+            const ket_data = fs.readFileSync(getIntegrationTestPath("rendering/reactions/multitail_arrow.ket"));
             const png = Buffer.from(indigo.render(ket_data, options), "base64");
             fs.writeFileSync("multitail_arrow_out.png", png);
             const { equal } = await looksSame('multitail_arrow_ref.png', 'multitail_arrow_out.png');
@@ -901,7 +901,7 @@ M  END
             options.set("render-output-format", "png");
             options.set("render-background-color", "1,1,1");
             var fs = require('fs');
-            const ket_data = fs.readFileSync("pathway11.ket");
+            const ket_data = fs.readFileSync(getIntegrationTestPath("formats/reactions/pathway11.ket"));
             const png = Buffer.from(indigo.render(ket_data, options), "base64");
             fs.writeFileSync("pathway11_out.png", png);
             const { equal } = await looksSame('pathway11_ref.png', 'pathway11_out.png');
