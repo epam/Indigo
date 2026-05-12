@@ -869,6 +869,45 @@ M  END
             assert(equal);
             options.delete();
         });
+
+        test("render", "multitail_arrow", async () => {
+            let options = new indigo.MapStringString();
+            options.set("render-output-format", "png");
+            options.set("render-background-color", "1,1,1");
+            var fs = require('fs');
+            const ket_data = fs.readFileSync("multitail_arrow.ket");
+            const png = Buffer.from(indigo.render(ket_data, options), "base64");
+            fs.writeFileSync("multitail_arrow_out.png", png);
+            const { equal } = await looksSame('multitail_arrow_ref.png', 'multitail_arrow_out.png');
+            assert(equal);
+            options.delete();
+        });
+
+        test("render", "pathway11_multitail_text", async () => {
+            let options = new indigo.MapStringString();
+            options.set("render-output-format", "png");
+            options.set("render-background-color", "1,1,1");
+            var fs = require('fs');
+            const ket_data = fs.readFileSync("pathway11.ket");
+            const png = Buffer.from(indigo.render(ket_data, options), "base64");
+            fs.writeFileSync("pathway11_out.png", png);
+            const { equal } = await looksSame('pathway11_ref.png', 'pathway11_out.png');
+            assert(equal);
+            options.delete();
+        });
+
+        test("render", "text_test5", async () => {
+            let options = new indigo.MapStringString();
+            options.set("render-output-format", "png");
+            options.set("render-background-color", "1,1,1");
+            var fs = require('fs');
+            const ket_data = fs.readFileSync("text_test5.ket");
+            const png = Buffer.from(indigo.render(ket_data, options), "base64");
+            fs.writeFileSync("text_test5_out.png", png);
+            const { equal } = await looksSame('text_test5_ref.png', 'text_test5_out.png');
+            assert(equal);
+            options.delete();
+        });
     }
 
     // Throws

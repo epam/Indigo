@@ -98,10 +98,14 @@ EM_JS(void, js_rb_moveTo, (double x, double y), {
     r.cx = tx;
     r.cy = ty;
     r.pathEmpty = false;
-    if (tx < r.pbbx0) r.pbbx0 = tx;
-    if (ty < r.pbby0) r.pbby0 = ty;
-    if (tx > r.pbbx1) r.pbbx1 = tx;
-    if (ty > r.pbby1) r.pbby1 = ty;
+    if (tx < r.pbbx0)
+        r.pbbx0 = tx;
+    if (ty < r.pbby0)
+        r.pbby0 = ty;
+    if (tx > r.pbbx1)
+        r.pbbx1 = tx;
+    if (ty > r.pbby1)
+        r.pbby1 = ty;
 });
 EM_JS(void, js_rb_lineTo, (double x, double y), {
     var r = Module._rb, m = r.s.ctm;
@@ -111,10 +115,14 @@ EM_JS(void, js_rb_lineTo, (double x, double y), {
     r.cx = tx;
     r.cy = ty;
     r.pathEmpty = false;
-    if (tx < r.pbbx0) r.pbbx0 = tx;
-    if (ty < r.pbby0) r.pbby0 = ty;
-    if (tx > r.pbbx1) r.pbbx1 = tx;
-    if (ty > r.pbby1) r.pbby1 = ty;
+    if (tx < r.pbbx0)
+        r.pbbx0 = tx;
+    if (ty < r.pbby0)
+        r.pbby0 = ty;
+    if (tx > r.pbbx1)
+        r.pbbx1 = tx;
+    if (ty > r.pbby1)
+        r.pbby1 = ty;
 });
 EM_JS(void, js_rb_curveTo, (double x1, double y1, double x2, double y2, double x3, double y3), {
     var r = Module._rb, m = r.s.ctm;
@@ -125,12 +133,17 @@ EM_JS(void, js_rb_curveTo, (double x1, double y1, double x2, double y2, double x
     r.cx = tx3;
     r.cy = ty3;
     r.pathEmpty = false;
-    var pts = [tx1, ty1, tx2, ty2, tx3, ty3];
-    for (var k = 0; k < 6; k += 2) {
-        if (pts[k] < r.pbbx0) r.pbbx0 = pts[k];
-        if (pts[k+1] < r.pbby0) r.pbby0 = pts[k+1];
-        if (pts[k] > r.pbbx1) r.pbbx1 = pts[k];
-        if (pts[k+1] > r.pbby1) r.pbby1 = pts[k+1];
+    var pts = [ tx1, ty1, tx2, ty2, tx3, ty3 ];
+    for (var k = 0; k < 6; k += 2)
+    {
+        if (pts[k] < r.pbbx0)
+            r.pbbx0 = pts[k];
+        if (pts[k + 1] < r.pbby0)
+            r.pbby0 = pts[k + 1];
+        if (pts[k] > r.pbbx1)
+            r.pbbx1 = pts[k];
+        if (pts[k + 1] > r.pbby1)
+            r.pbby1 = pts[k + 1];
     }
 });
 EM_JS(void, js_rb_arc, (double cx, double cy, double rad, double a0, double a1, int ccw), {
@@ -148,10 +161,7 @@ EM_JS(void, js_rb_arc, (double cx, double cy, double rad, double a0, double a1, 
 
     function transformPoint(x, y)
     {
-        return {
-            x : m[0] * x + m[2] * y + m[4],
-            y : m[1] * x + m[3] * y + m[5]
-        };
+        return {x : m[0] * x + m[2] * y + m[4], y : m[1] * x + m[3] * y + m[5]};
     }
 
     function includePoint(p)
@@ -236,18 +246,23 @@ EM_JS(void, js_rb_arc, (double cx, double cy, double rad, double a0, double a1, 
 EM_JS(void, js_rb_rect, (double x, double y, double w, double h), {
     var r = Module._rb, m = r.s.ctm;
     var x0 = x, y0 = y, x1 = x + w, y1 = y + h;
-    var t00x = m[0]*x0+m[2]*y0+m[4], t00y = m[1]*x0+m[3]*y0+m[5];
-    var t10x = m[0]*x1+m[2]*y0+m[4], t10y = m[1]*x1+m[3]*y0+m[5];
-    var t11x = m[0]*x1+m[2]*y1+m[4], t11y = m[1]*x1+m[3]*y1+m[5];
-    var t01x = m[0]*x0+m[2]*y1+m[4], t01y = m[1]*x0+m[3]*y1+m[5];
-    r.pd += 'M'+t00x+' '+t00y+'L'+t10x+' '+t10y+'L'+t11x+' '+t11y+'L'+t01x+' '+t01y+'Z ';
+    var t00x = m[0] * x0 + m[2] * y0 + m[4], t00y = m[1] * x0 + m[3] * y0 + m[5];
+    var t10x = m[0] * x1 + m[2] * y0 + m[4], t10y = m[1] * x1 + m[3] * y0 + m[5];
+    var t11x = m[0] * x1 + m[2] * y1 + m[4], t11y = m[1] * x1 + m[3] * y1 + m[5];
+    var t01x = m[0] * x0 + m[2] * y1 + m[4], t01y = m[1] * x0 + m[3] * y1 + m[5];
+    r.pd += 'M' + t00x + ' ' + t00y + 'L' + t10x + ' ' + t10y + 'L' + t11x + ' ' + t11y + 'L' + t01x + ' ' + t01y + 'Z ';
     r.pathEmpty = false;
-    var pts = [t00x, t00y, t10x, t10y, t11x, t11y, t01x, t01y];
-    for (var k = 0; k < 8; k += 2) {
-        if (pts[k] < r.pbbx0) r.pbbx0 = pts[k];
-        if (pts[k+1] < r.pbby0) r.pbby0 = pts[k+1];
-        if (pts[k] > r.pbbx1) r.pbbx1 = pts[k];
-        if (pts[k+1] > r.pbby1) r.pbby1 = pts[k+1];
+    var pts = [ t00x, t00y, t10x, t10y, t11x, t11y, t01x, t01y ];
+    for (var k = 0; k < 8; k += 2)
+    {
+        if (pts[k] < r.pbbx0)
+            r.pbbx0 = pts[k];
+        if (pts[k + 1] < r.pbby0)
+            r.pbby0 = pts[k + 1];
+        if (pts[k] > r.pbbx1)
+            r.pbbx1 = pts[k];
+        if (pts[k + 1] > r.pbby1)
+            r.pbby1 = pts[k + 1];
     }
 });
 
@@ -257,17 +272,24 @@ EM_JS(void, js_rb_emitPath, (int doFill, int doStroke), {
     if (!r.pd)
         return;
     // Merge per-path bbox into global bbox (skip background-colored fill-only shapes)
-    var isBgFill = doFill && !doStroke && r.bgColor &&
-                   r.bgColor == 'rgb(' + Math.round(s.r * 255) + ',' + Math.round(s.g * 255) + ',' + Math.round(s.b * 255) + ')';
+    var isBgFill =
+        doFill && !doStroke && r.bgColor && r.bgColor == 'rgb(' + Math.round(s.r * 255) + ',' + Math.round(s.g * 255) + ',' + Math.round(s.b * 255) + ')';
     if (!isBgFill)
     {
-        if (r.pbbx0 < r.bbx0) r.bbx0 = r.pbbx0;
-        if (r.pbby0 < r.bby0) r.bby0 = r.pbby0;
-        if (r.pbbx1 > r.bbx1) r.bbx1 = r.pbbx1;
-        if (r.pbby1 > r.bby1) r.bby1 = r.pbby1;
+        if (r.pbbx0 < r.bbx0)
+            r.bbx0 = r.pbbx0;
+        if (r.pbby0 < r.bby0)
+            r.bby0 = r.pbby0;
+        if (r.pbbx1 > r.bbx1)
+            r.bbx1 = r.pbbx1;
+        if (r.pbby1 > r.bby1)
+            r.bby1 = r.pbby1;
     }
     // Reset per-path bbox for next path
-    r.pbbx0 = 1e9; r.pbby0 = 1e9; r.pbbx1 = -1e9; r.pbby1 = -1e9;
+    r.pbbx0 = 1e9;
+    r.pbby0 = 1e9;
+    r.pbbx1 = -1e9;
+    r.pbby1 = -1e9;
     var e = '<path d="' + r.pd + '"';
     if (doFill)
     {
@@ -285,9 +307,20 @@ EM_JS(void, js_rb_emitPath, (int doFill, int doStroke), {
         e += ' stroke="rgb(' + Math.round(s.r * 255) + ',' + Math.round(s.g * 255) + ',' + Math.round(s.b * 255) + ')"';
         if (s.a < 1)
             e += ' stroke-opacity="' + s.a + '"';
-        e += ' stroke-width="' + s.lw + '" stroke-linejoin="' + s.lj + '"';
+        // Scale stroke-width and dash through CTM since coordinates are pre-transformed
+        var m = s.ctm;
+        var scl = Math.sqrt(Math.abs(m[0] * m[3] - m[1] * m[2]));
+        if (scl < 1e-9)
+            scl = 1;
+        var sw = s.lw * scl;
+        e += ' stroke-width="' + sw + '" stroke-linejoin="' + s.lj + '"';
         if (s.dash.length)
-            e += ' stroke-dasharray="' + s.dash.join(',') + '" stroke-dashoffset="' + s.doff + '"';
+        {
+            var sd = [];
+            for (var di = 0; di < s.dash.length; di++)
+                sd.push(s.dash[di] * scl);
+            e += ' stroke-dasharray="' + sd.join(',') + '" stroke-dashoffset="' + (s.doff * scl) + '"';
+        }
     }
     else if (!doFill)
     {
@@ -480,7 +513,7 @@ EM_JS(double, js_rb_measureWidth, (const char* text, double fontSize), {
         else
             w += 0.60;
     }
-    return w * fontSize;
+    return w * fontSize * 1.15;
 });
 
 // -- Gradient --
@@ -654,7 +687,7 @@ EM_JS(int, js_rb_finalize, (int mode), {
     }
 });
 
-EM_JS(void, js_rb_copyOutput, (uint8_t * dst, int len), {
+EM_JS(void, js_rb_copyOutput, (uint8_t* dst, int len), {
     var r = Module._rb;
     if (!r || !r.out)
         return;
@@ -907,9 +940,9 @@ void JSRenderBackend::setFontSize(double size)
 void JSRenderBackend::textExtents(const char* text, double& width, double& height, double& x_bearing, double& y_bearing)
 {
     width = js_rb_measureWidth(text, _fontSize);
-    height = _fontSize;
+    height = _fontSize * 0.75; // Fix line spacing
     x_bearing = 0;
-    y_bearing = -_fontSize * 0.8;
+    y_bearing = -_fontSize * 0.8; // Maintain perfect sub/superscripts
 }
 
 void JSRenderBackend::fontExtents(double& height)
@@ -919,7 +952,8 @@ void JSRenderBackend::fontExtents(double& height)
 
 void JSRenderBackend::showText(const char* text)
 {
-    js_rb_fillText(text, _curX, _curY);
+    // Shift the text down vertically to emulate Cairo's bounding box placement
+    js_rb_fillText(text, _curX, _curY + _fontSize * 0.85);
     // Advance current position
     _curX += js_rb_measureWidth(text, _fontSize);
 }
