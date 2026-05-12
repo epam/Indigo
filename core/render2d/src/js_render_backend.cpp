@@ -687,12 +687,14 @@ EM_JS(int, js_rb_finalize, (int mode), {
     }
 });
 
-EM_JS(void, js_rb_copyOutput, (uint8_t *dst, int len), {
+// clang-format off
+EM_JS(void, js_rb_copyOutput, (uint8_t* dst, int len), {
     var r = Module._rb;
     if (!r || !r.out)
         return;
     HEAPU8.set(r.out.subarray(0, len), dst);
 });
+// clang-format on
 
 EM_JS(int, js_rb_isPathEmpty, (), { return Module._rb ? Module._rb.pathEmpty : 1; });
 
