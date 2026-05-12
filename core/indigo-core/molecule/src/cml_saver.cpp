@@ -565,24 +565,26 @@ void CmlSaver::_addMoleculeElement(XMLElement* elem, BaseMolecule& mol, bool que
 
     if (_mol->countSGroups() > 0)
     {
-        for (i = _mol->sgroups.begin(); i != _mol->sgroups.end(); i = _mol->sgroups.next(i))
+        auto entries = getOrderedSGroups(_mol->sgroups);
+        for (auto& entry : entries)
         {
-            SGroup& sgroup = _mol->sgroups.getSGroup(i);
-
-            if (sgroup.parent_group == 0)
-                _addSgroupElement(molecule, *_mol, sgroup);
+            if (entry.write_parent == 0)
+            {
+                SGroup& sgroup = _mol->sgroups.getSGroup(entry.pool_idx);
+                _addSgroupElement(molecule, *_mol, sgroup, entry.write_index, entries);
+            }
         }
     }
 }
 
-void CmlSaver::_addSgroupElement(XMLElement* molecule, BaseMolecule& mol, SGroup& sgroup)
+void CmlSaver::_addSgroupElement(XMLElement* molecule, BaseMolecule& mol, SGroup& sgroup, int write_index, const std::vector<SGroupWriteEntry>& entries)
 {
     XMLElement* sg = _doc->NewElement("molecule");
     molecule->LinkEndChild(sg);
 
     QS_DEF(Array<char>, buf);
     ArrayOutput out(buf);
-    out.printf("sg%d", sgroup.index);
+    out.printf("sg%d", write_index);
     buf.push(0);
     sg->SetAttribute("id", buf.ptr());
 
@@ -651,8 +653,11 @@ void CmlSaver::_addSgroupElement(XMLElement* molecule, BaseMolecule& mol, SGroup
             sg->SetAttribute("queryOp", queryoper);
         }
 
-        sg->SetAttribute("x", dsg.display_pos->x);
-        sg->SetAttribute("y", dsg.display_pos->y);
+        if (dsg.display_pos.hasValue())
+        {
+            sg->SetAttribute("x", dsg.display_pos->x);
+            sg->SetAttribute("y", dsg.display_pos->y);
+        }
 
         if (!dsg.detached)
         {
@@ -685,28 +690,26 @@ void CmlSaver::_addSgroupElement(XMLElement* molecule, BaseMolecule& mol, SGroup
             sg->SetAttribute("fieldData", dsg.data.ptr());
         }
 
-        MoleculeSGroups* sgroups = &mol.sgroups;
-
-        for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
+        for (auto& child_entry : entries)
         {
-            SGroup& sg_child = sgroups->getSGroup(i);
-
-            if ((sg_child.parent_group != 0) && (sg_child.parent_group == sgroup.index))
-                _addSgroupElement(sg, mol, sg_child);
+            if (child_entry.write_parent == write_index)
+            {
+                SGroup& sg_child = mol.sgroups.getSGroup(child_entry.pool_idx);
+                _addSgroupElement(sg, mol, sg_child, child_entry.write_index, entries);
+            }
         }
     }
     else if (sgroup.sgroup_type == SGroup::SG_TYPE_GEN)
     {
         sg->SetAttribute("role", "GenericSgroup");
 
-        MoleculeSGroups* sgroups = &mol.sgroups;
-
-        for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
+        for (auto& child_entry : entries)
         {
-            SGroup& sg_child = sgroups->getSGroup(i);
-
-            if ((sg_child.parent_group != 0) && (sg_child.parent_group == sgroup.index))
-                _addSgroupElement(sg, mol, sg_child);
+            if (child_entry.write_parent == write_index)
+            {
+                SGroup& sg_child = mol.sgroups.getSGroup(child_entry.pool_idx);
+                _addSgroupElement(sg, mol, sg_child, child_entry.write_index, entries);
+            }
         }
     }
     else if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
@@ -721,14 +724,13 @@ void CmlSaver::_addSgroupElement(XMLElement* molecule, BaseMolecule& mol, SGroup
             sg->SetAttribute("title", name);
         }
 
-        MoleculeSGroups* sgroups = &mol.sgroups;
-
-        for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
+        for (auto& child_entry : entries)
         {
-            SGroup& sg_child = sgroups->getSGroup(i);
-
-            if ((sg_child.parent_group != 0) && (sg_child.parent_group == sgroup.index))
-                _addSgroupElement(sg, mol, sg_child);
+            if (child_entry.write_parent == write_index)
+            {
+                SGroup& sg_child = mol.sgroups.getSGroup(child_entry.pool_idx);
+                _addSgroupElement(sg, mol, sg_child, child_entry.write_index, entries);
+            }
         }
     }
     else if (sgroup.sgroup_type == SGroup::SG_TYPE_SRU)
@@ -752,14 +754,13 @@ void CmlSaver::_addSgroupElement(XMLElement* molecule, BaseMolecule& mol, SGroup
             sg->SetAttribute("connect", "hh");
         }
 
-        MoleculeSGroups* sgroups = &mol.sgroups;
-
-        for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
+        for (auto& child_entry : entries)
         {
-            SGroup& sg_child = sgroups->getSGroup(i);
-
-            if ((sg_child.parent_group != 0) && (sg_child.parent_group == sgroup.index))
-                _addSgroupElement(sg, mol, sg_child);
+            if (child_entry.write_parent == write_index)
+            {
+                SGroup& sg_child = mol.sgroups.getSGroup(child_entry.pool_idx);
+                _addSgroupElement(sg, mol, sg_child, child_entry.write_index, entries);
+            }
         }
     }
     else if (sgroup.sgroup_type == SGroup::SG_TYPE_MUL)
@@ -787,14 +788,13 @@ void CmlSaver::_addSgroupElement(XMLElement* molecule, BaseMolecule& mol, SGroup
             sg->SetAttribute("patoms", pbuf.ptr());
         }
 
-        MoleculeSGroups* sgroups = &mol.sgroups;
-
-        for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
+        for (auto& child_entry : entries)
         {
-            SGroup& sg_child = sgroups->getSGroup(i);
-
-            if ((sg_child.parent_group != 0) && (sg_child.parent_group == sgroup.index))
-                _addSgroupElement(sg, mol, sg_child);
+            if (child_entry.write_parent == write_index)
+            {
+                SGroup& sg_child = mol.sgroups.getSGroup(child_entry.pool_idx);
+                _addSgroupElement(sg, mol, sg_child, child_entry.write_index, entries);
+            }
         }
     }
 }

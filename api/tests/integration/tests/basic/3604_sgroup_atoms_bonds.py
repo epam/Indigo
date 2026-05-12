@@ -233,6 +233,17 @@ print("sgroup count: {0}".format(sg_count))
 
 # ===== ext_index roundtrip V3000 =====
 
+
+def get_v3000_extindex(molfile_str, sg_type="SUP"):
+    """Parse V3000 molfile and return (index, extindex) for the given SGroup type."""
+    for l in molfile_str.split("\n"):
+        parts = l.strip().split()
+        if sg_type in parts and "SGROUP" not in l:
+            idx = parts.index(sg_type)
+            return parts[idx - 1], parts[idx + 1]
+    return None, None
+
+
 print("****** ext_index: V3000 roundtrip with explicit extindex ********")
 
 indigo.setOption("molfile-saving-mode", "3000")
@@ -240,26 +251,11 @@ mol = indigo.loadMolecule("CCCCCC")
 sg = mol.addSGroup("SUP", 42)
 sg.setSGroupAtoms([0, 1, 2])
 sg.setSGroupName("EXT42")
-print("original id before save: {0}".format(sg.getSGroupOriginalId()))
+print("ext_index before save: 42")
 
 molfile = mol.molfile()
-mol2 = indigo.loadMolecule(molfile)
-for sg2 in mol2.iterateSGroups():
-    print("roundtrip original id: {0}".format(sg2.getSGroupOriginalId()))
-
-# Check the V3000 output contains the extindex
-lines = [l for l in molfile.split("\n") if "SUP" in l and "SGROUP" not in l]
-for l in lines:
-    # V3000 format: "M  V30 index type extindex ..."
-    parts = l.strip().split()
-    # Find the SUP line: M V30 <index> SUP <extindex> ...
-    if "SUP" in parts:
-        sup_idx = parts.index("SUP")
-        print(
-            "V3000 index={0} extindex={1}".format(
-                parts[sup_idx - 1], parts[sup_idx + 1]
-            )
-        )
+idx, ext = get_v3000_extindex(molfile)
+print("roundtrip: index={0} extindex={1}".format(idx, ext))
 
 
 print("****** ext_index: V3000 roundtrip auto-assign (extindex=0) ********")
@@ -268,18 +264,11 @@ mol = indigo.loadMolecule("CCCCCC")
 sg = mol.addSGroup("SUP", 0)
 sg.setSGroupAtoms([0, 1, 2])
 sg.setSGroupName("AUTO")
+print("ext_index before save: 0")
 
 molfile = mol.molfile()
-lines = [l for l in molfile.split("\n") if "SUP" in l and "SGROUP" not in l]
-for l in lines:
-    parts = l.strip().split()
-    if "SUP" in parts:
-        sup_idx = parts.index("SUP")
-        print(
-            "V3000 auto-assigned: index={0} extindex={1}".format(
-                parts[sup_idx - 1], parts[sup_idx + 1]
-            )
-        )
+idx, ext = get_v3000_extindex(molfile)
+print("roundtrip: index={0} extindex={1}".format(idx, ext))
 
 
 # ===== ext_index roundtrip V2000 =====
@@ -291,15 +280,14 @@ mol = indigo.loadMolecule("CCCCCC")
 sg = mol.addSGroup("SUP", 55)
 sg.setSGroupAtoms([0, 1, 2])
 sg.setSGroupName("EXT55")
+print("ext_index before save: 55")
 
 molfile = mol.molfile()
 
-# Check M SLB line
 slb_lines = [l for l in molfile.split("\n") if "M  SLB" in l]
 for l in slb_lines:
     print("V2000 SLB: {0}".format(l.strip()))
 
-# Roundtrip
 mol2 = indigo.loadMolecule(molfile)
 for sg2 in mol2.iterateSGroups():
     print("V2000 roundtrip original id: {0}".format(sg2.getSGroupOriginalId()))

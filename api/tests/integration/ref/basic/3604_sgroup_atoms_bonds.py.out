@@ -58,12 +58,13 @@ atoms: 3
 bonds: 2
 sgroup count: 1
 ****** ext_index: V3000 roundtrip with explicit extindex ********
-original id before save: 0
-roundtrip original id: 1
-V3000 index=1 extindex=42
+ext_index before save: 42
+roundtrip: index=1 extindex=42
 ****** ext_index: V3000 roundtrip auto-assign (extindex=0) ********
-V3000 auto-assigned: index=1 extindex=1
+ext_index before save: 0
+roundtrip: index=1 extindex=1
 ****** ext_index: V2000 roundtrip with explicit extindex ********
+ext_index before save: 55
 V2000 SLB: M  SLB  1   1  55
 V2000 roundtrip original id: 1
 ****** ext_index: addSGroup without extindex (default=0) ********

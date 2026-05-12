@@ -825,10 +825,13 @@ void CmfSaver::_updateSGroupsXyzMinMax(Molecule& mol, Vec3f& min, Vec3f& max)
             DataSGroup& s = (DataSGroup&)sg;
             _updateBaseSGroupXyzMinMax(s, min, max);
 
-            Vec3f display_pos(s.display_pos->x, s.display_pos->y, 0);
+            if (s.display_pos.hasValue())
+            {
+                Vec3f display_pos(s.display_pos->x, s.display_pos->y, 0);
 
-            min.min(display_pos);
-            max.max(display_pos);
+                min.min(display_pos);
+                max.max(display_pos);
+            }
         }
     }
 }

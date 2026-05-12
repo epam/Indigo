@@ -20,6 +20,7 @@
 #define __cml_saver_h__
 
 #include "molecule/base_molecule.h"
+#include "molecule/molecule_sgroups.h"
 
 namespace tinyxml2
 {
@@ -51,7 +52,7 @@ namespace indigo
         void _validate(BaseMolecule& bmol);
 
         void _addMoleculeElement(tinyxml2::XMLElement* elem, BaseMolecule& mol, bool query);
-        void _addSgroupElement(tinyxml2::XMLElement* elem, BaseMolecule& mol, SGroup& sgroup);
+        void _addSgroupElement(tinyxml2::XMLElement* elem, BaseMolecule& mol, SGroup& sgroup, int write_index, const std::vector<SGroupWriteEntry>& entries);
         void _addRgroups(tinyxml2::XMLElement* elem, BaseMolecule& mol, bool query);
         void _addRgroupElement(tinyxml2::XMLElement* elem, RGroup& rgroup, bool query);
 
