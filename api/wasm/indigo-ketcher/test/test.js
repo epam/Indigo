@@ -664,7 +664,8 @@ M  END
             let options = new indigo.MapStringString();
             options.set("render-output-format", "svg");
             var fs = require('fs');
-            const ket_data = fs.readFileSync("issue_2513.ket");
+            var path = require('path');
+            const ket_data = fs.readFileSync(path.join(__dirname, "issue_2513.ket"));
             const svg = Buffer.from(indigo.render(ket_data, options), "base64").toString();
             assert(/<path d="[^"]*A/.test(svg));
             options.delete();
@@ -673,9 +674,13 @@ M  END
         const getIntegrationTestPath = (subpath) => {
             var fs = require('fs');
             var path = require('path');
-            let p = path.join(__dirname, "../../../tests/integration/tests", subpath);
-            if (!fs.existsSync(p)) p = path.join(__dirname, "../../../../tests/integration/tests", subpath);
-            return p;
+            let currentDir = __dirname;
+            while (currentDir !== path.parse(currentDir).root) {
+                let candidate = path.join(currentDir, "api/tests/integration/tests", subpath);
+                if (fs.existsSync(candidate)) return candidate;
+                currentDir = path.dirname(currentDir);
+            }
+            throw new Error("Could not find integration test file: " + subpath);
         };
 
         test("render", "embedded_images_svg", () => {
