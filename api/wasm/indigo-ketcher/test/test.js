@@ -670,11 +670,19 @@ M  END
             options.delete();
         });
 
+        const getIntegrationTestPath = (subpath) => {
+            var fs = require('fs');
+            var path = require('path');
+            let p = path.join(__dirname, "../../../tests/integration/tests", subpath);
+            if (!fs.existsSync(p)) p = path.join(__dirname, "../../../../tests/integration/tests", subpath);
+            return p;
+        };
+
         test("render", "embedded_images_svg", () => {
             let options = new indigo.MapStringString();
             options.set("render-output-format", "svg");
             var fs = require('fs');
-            const ket_data = fs.readFileSync(__dirname + "/../../../tests/integration/tests/rendering/molecules/images.ket");
+            const ket_data = fs.readFileSync(getIntegrationTestPath("rendering/molecules/images.ket"));
             const svg = Buffer.from(indigo.render(ket_data, options), "base64").toString();
             assert(svg.indexOf("<image") !== -1);
             assert(svg.indexOf("data:image/png;base64,") !== -1);
@@ -686,7 +694,7 @@ M  END
             let options = new indigo.MapStringString();
             options.set("render-output-format", "svg");
             var fs = require('fs');
-            const cdxml_data = fs.readFileSync(__dirname + "/../../../tests/integration/tests/formats/ref/images.cdxml");
+            const cdxml_data = fs.readFileSync(getIntegrationTestPath("formats/ref/images.cdxml"));
             const svg = Buffer.from(indigo.render(cdxml_data, options), "base64").toString();
             assert(svg.indexOf("<image") !== -1);
             assert(svg.indexOf("data:image/png;base64,") !== -1);
@@ -697,7 +705,7 @@ M  END
             let options = new indigo.MapStringString();
             options.set("render-output-format", "svg");
             var fs = require('fs');
-            const cdx_data = fs.readFileSync(__dirname + "/../../../tests/integration/tests/formats/molecules/cdx/image.cdx");
+            const cdx_data = fs.readFileSync(getIntegrationTestPath("formats/molecules/cdx/image.cdx"));
             const svg = Buffer.from(indigo.render("base64::" + cdx_data.toString("base64"), options), "base64").toString();
             assert(svg.indexOf("<image") !== -1);
             assert(svg.indexOf("data:image/png;base64,") !== -1);
