@@ -24,6 +24,7 @@
 #include "base_cpp/obj_pool.h"
 #include "base_cpp/ptr_pool.h"
 #include "math/algebra.h"
+#include <vector>
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -112,7 +113,7 @@ namespace indigo
         int sgroup_type;              // group type, represnted with STY in Molfile format
         Nullable<int> sgroup_subtype; // group subtype, represnted with SST in Molfile format
         int index;                    // internal SGroup index; V3000 field 1, V2000 M STY sss. Used for cross-refs (PARENT, SPL).
-        Nullable<int> ext_index;      // external SGroup index; V3000 field 3 (extindex), V2000 M SLB vvv. Not set = auto-assign per spec.
+        int ext_index;                // external SGroup index; V3000 field 3 (extindex), V2000 M SLB vvv. 0 = auto-assign per spec.
         Nullable<int> parent_group;   // parent group index; represented with PARENT in V3000, SPL in V2000
         Nullable<int> parent_idx;     // parent group array position; resolved from parent_group
         // TODO: leave only parent_idx
@@ -313,6 +314,19 @@ namespace indigo
     private:
         bool _cmpIndices(Array<int>& t_inds, Array<int>& q_inds);
     };
+
+    // Read-only write-order entry for serialization. Replaces the old mutating _checkSGroupIndices pattern.
+    struct SGroupWriteEntry
+    {
+        int pool_idx;        // original pool index in mol.sgroups
+        int write_index;     // sequential 1,2,3... for CTFile output
+        int write_ext_index; // ext_index or auto-assigned from write_index (0→write_index per spec)
+        int write_parent;    // remapped parent_group (0 if root)
+    };
+
+    // Returns topologically-sorted SGroup list with sequential indices for serialization.
+    // Does NOT mutate the molecule — returns a mapping table.
+    DLLEXPORT std::vector<SGroupWriteEntry> getOrderedSGroups(MoleculeSGroups& sgroups);
 
 } // namespace indigo
 
