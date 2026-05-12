@@ -687,7 +687,7 @@ EM_JS(int, js_rb_finalize, (int mode), {
     }
 });
 
-EM_JS(void, js_rb_copyOutput, (uint8_t* dst, int len), {
+EM_JS(void, js_rb_copyOutput, (uint8_t *dst, int len), {
     var r = Module._rb;
     if (!r || !r.out)
         return;
