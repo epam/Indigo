@@ -660,6 +660,50 @@ M  END
             options.delete();
         });
 
+        test("render", "svg_arc_commands", () => {
+            let options = new indigo.MapStringString();
+            options.set("render-output-format", "svg");
+            var fs = require('fs');
+            const ket_data = fs.readFileSync("issue_2513.ket");
+            const svg = Buffer.from(indigo.render(ket_data, options), "base64").toString();
+            assert(/<path d="[^"]*A/.test(svg));
+            options.delete();
+        });
+
+        test("render", "embedded_images_svg", () => {
+            let options = new indigo.MapStringString();
+            options.set("render-output-format", "svg");
+            var fs = require('fs');
+            const ket_data = fs.readFileSync(__dirname + "/../../../tests/integration/tests/rendering/molecules/images.ket");
+            const svg = Buffer.from(indigo.render(ket_data, options), "base64").toString();
+            assert(svg.indexOf("<image") !== -1);
+            assert(svg.indexOf("data:image/png;base64,") !== -1);
+            assert(svg.indexOf("data:image/svg+xml;base64,") !== -1);
+            options.delete();
+        });
+
+        test("render", "embedded_cdxml_images_svg", () => {
+            let options = new indigo.MapStringString();
+            options.set("render-output-format", "svg");
+            var fs = require('fs');
+            const cdxml_data = fs.readFileSync(__dirname + "/../../../tests/integration/tests/formats/ref/images.cdxml");
+            const svg = Buffer.from(indigo.render(cdxml_data, options), "base64").toString();
+            assert(svg.indexOf("<image") !== -1);
+            assert(svg.indexOf("data:image/png;base64,") !== -1);
+            options.delete();
+        });
+
+        test("render", "embedded_cdx_images_svg", () => {
+            let options = new indigo.MapStringString();
+            options.set("render-output-format", "svg");
+            var fs = require('fs');
+            const cdx_data = fs.readFileSync(__dirname + "/../../../tests/integration/tests/formats/molecules/cdx/image.cdx");
+            const svg = Buffer.from(indigo.render("base64::" + cdx_data.toString("base64"), options), "base64").toString();
+            assert(svg.indexOf("<image") !== -1);
+            assert(svg.indexOf("data:image/png;base64,") !== -1);
+            options.delete();
+        });
+
         test("render", "png", () => {
             let options = new indigo.MapStringString();
             options.set("render-output-format", "png");

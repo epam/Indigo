@@ -21,6 +21,7 @@
 #include "js_render_backend.h"
 #include "base_cpp/output.h"
 #include <cmath>
+#include <cstdint>
 #include <cstring>
 #include <emscripten.h>
 #include <vector>
@@ -133,40 +134,103 @@ EM_JS(void, js_rb_curveTo, (double x1, double y1, double x2, double y2, double x
     }
 });
 EM_JS(void, js_rb_arc, (double cx, double cy, double rad, double a0, double a1, int ccw), {
-    // Convert arc to line segments (polyline approximation)
-    // This correctly handles non-uniform CTM transforms (e.g. scale(1, 2*h/w) for ellipses)
     var r = Module._rb, m = r.s.ctm;
     if (rad < 0.001)
         return;
+
     var da = a1 - a0;
     if (ccw && da > 0)
         da -= 2 * Math.PI;
     if (!ccw && da < 0)
         da += 2 * Math.PI;
-    // Approximate with line segments: ~1 degree per step for smooth curves
-    var steps = Math.max(8, Math.ceil(Math.abs(da) / 0.02));
-    for (var i = 0; i <= steps; i++)
+    if (Math.abs(da) < 1e-12)
+        return;
+
+    function transformPoint(x, y)
     {
-        var t = a0 + da * (i / steps);
-        var px = cx + rad * Math.cos(t);
-        var py = cy + rad * Math.sin(t);
-        var tx = m[0] * px + m[2] * py + m[4];
-        var ty = m[1] * px + m[3] * py + m[5];
-        if (i == 0 && r.pathEmpty)
+        return {
+            x : m[0] * x + m[2] * y + m[4],
+            y : m[1] * x + m[3] * y + m[5]
+        };
+    }
+
+    function includePoint(p)
+    {
+        if (p.x < r.pbbx0)
+            r.pbbx0 = p.x;
+        if (p.y < r.pbby0)
+            r.pbby0 = p.y;
+        if (p.x > r.pbbx1)
+            r.pbbx1 = p.x;
+        if (p.y > r.pbby1)
+            r.pbby1 = p.y;
+    }
+
+    var ax = m[0] * rad, ay = m[1] * rad;
+    var bx = m[2] * rad, by = m[3] * rad;
+    var q00 = ax * ax + bx * bx;
+    var q01 = ax * ay + bx * by;
+    var q11 = ay * ay + by * by;
+    var trace = q00 + q11;
+    var diff = q00 - q11;
+    var root = Math.sqrt(Math.max(0, diff * diff + 4 * q01 * q01));
+    var rx = Math.sqrt(Math.max(0, (trace + root) / 2));
+    var ry = Math.sqrt(Math.max(0, (trace - root) / 2));
+    var rotation = 0.5 * Math.atan2(2 * q01, diff) * 180 / Math.PI;
+    var det = m[0] * m[3] - m[1] * m[2];
+
+    if (rx < 1e-9 || ry < 1e-9)
+    {
+        var first = transformPoint(cx + rad * Math.cos(a0), cy + rad * Math.sin(a0));
+        var end = transformPoint(cx + rad * Math.cos(a1), cy + rad * Math.sin(a1));
+        if (r.pathEmpty)
         {
-            r.pd += 'M' + tx + ' ' + ty + ' ';
+            r.pd += 'M' + first.x + ' ' + first.y + ' ';
             r.pathEmpty = false;
         }
         else
         {
-            r.pd += 'L' + tx + ' ' + ty + ' ';
+            r.pd += 'L' + first.x + ' ' + first.y + ' ';
         }
-        r.cx = tx;
-        r.cy = ty;
-        if (tx < r.pbbx0) r.pbbx0 = tx;
-        if (ty < r.pbby0) r.pbby0 = ty;
-        if (tx > r.pbbx1) r.pbbx1 = tx;
-        if (ty > r.pbby1) r.pbby1 = ty;
+        r.pd += 'L' + end.x + ' ' + end.y + ' ';
+        r.cx = end.x;
+        r.cy = end.y;
+        includePoint(first);
+        includePoint(end);
+        return;
+    }
+
+    var first = transformPoint(cx + rad * Math.cos(a0), cy + rad * Math.sin(a0));
+    if (r.pathEmpty)
+    {
+        r.pd += 'M' + first.x + ' ' + first.y + ' ';
+        r.pathEmpty = false;
+    }
+    else
+    {
+        r.pd += 'L' + first.x + ' ' + first.y + ' ';
+    }
+
+    var segments = Math.max(1, Math.ceil(Math.abs(da) / Math.PI));
+    var prev = a0;
+    for (var si = 1; si <= segments; si++)
+    {
+        var next = a0 + da * (si / segments);
+        var delta = next - prev;
+        var end = transformPoint(cx + rad * Math.cos(next), cy + rad * Math.sin(next));
+        var largeArc = Math.abs(delta) > Math.PI ? 1 : 0;
+        var sweep = (delta >= 0) == (det >= 0) ? 1 : 0;
+        r.pd += 'A' + rx + ' ' + ry + ' ' + rotation + ' ' + largeArc + ' ' + sweep + ' ' + end.x + ' ' + end.y + ' ';
+        r.cx = end.x;
+        r.cy = end.y;
+        prev = next;
+    }
+
+    var steps = Math.max(8, Math.ceil(Math.abs(da) / 0.02));
+    for (var i = 0; i <= steps; i++)
+    {
+        var t = a0 + da * (i / steps);
+        includePoint(transformPoint(cx + rad * Math.cos(t), cy + rad * Math.sin(t)));
     }
 });
 EM_JS(void, js_rb_rect, (double x, double y, double w, double h), {
@@ -428,6 +492,85 @@ EM_JS(void, js_rb_setGradient, (double x0, double y0, double x1, double y1, doub
     r.defs += '<linearGradient id="' + id + '" x1="' + x0 + '" y1="' + y0 + '" x2="' + x1 + '" y2="' + y1 +
               '" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="' + c1 + '"/><stop offset="1" stop-color="' + c2 + '"/></linearGradient>';
     r.s.gradId = id;
+});
+
+// -- Image --
+EM_JS(void, js_rb_drawImage, (const uint8_t* data, int dataLen, double x, double y, double w, double h), {
+    var r = Module._rb;
+    if (!r || !data || dataLen <= 0 || w <= 0 || h <= 0)
+        return;
+
+    var ptr = data >>> 0;
+
+    function bytesToBase64()
+    {
+        var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+        var out = "";
+        var i = 0;
+        for (; i + 2 < dataLen; i += 3)
+        {
+            var n = (HEAPU8[ptr + i] << 16) | (HEAPU8[ptr + i + 1] << 8) | HEAPU8[ptr + i + 2];
+            out += chars[(n >> 18) & 63] + chars[(n >> 12) & 63] + chars[(n >> 6) & 63] + chars[n & 63];
+        }
+        if (i < dataLen)
+        {
+            var b0 = HEAPU8[ptr + i];
+            var b1 = i + 1 < dataLen ? HEAPU8[ptr + i + 1] : 0;
+            var n = (b0 << 16) | (b1 << 8);
+            out += chars[(n >> 18) & 63] + chars[(n >> 12) & 63] + (i + 1 < dataLen ? chars[(n >> 6) & 63] : '=') + '=';
+        }
+        return out;
+    }
+
+    function isSvg()
+    {
+        var i = 0;
+        if (dataLen >= 3 && HEAPU8[ptr] == 0xEF && HEAPU8[ptr + 1] == 0xBB && HEAPU8[ptr + 2] == 0xBF)
+            i = 3;
+        while (i < dataLen)
+        {
+            var ch = HEAPU8[ptr + i];
+            if (ch != 9 && ch != 10 && ch != 13 && ch != 32)
+                break;
+            i++;
+        }
+        var header = "";
+        var end = Math.min(dataLen, i + 512);
+        for (var j = i; j < end; j++)
+        {
+            var c = HEAPU8[ptr + j];
+            if (c == 0)
+                break;
+            header += String.fromCharCode(c).toLowerCase();
+        }
+        return header.indexOf('<svg') == 0 || (header.indexOf('<?xml') == 0 && header.indexOf('<svg') != -1);
+    }
+
+    function includePoint(px, py)
+    {
+        if (px < r.bbx0)
+            r.bbx0 = px;
+        if (py < r.bby0)
+            r.bby0 = py;
+        if (px > r.bbx1)
+            r.bbx1 = px;
+        if (py > r.bby1)
+            r.bby1 = py;
+    }
+
+    var m = r.s.ctm;
+    var pts = [ x, y, x + w, y, x + w, y + h, x, y + h ];
+    for (var k = 0; k < pts.length; k += 2)
+    {
+        includePoint(m[0] * pts[k] + m[2] * pts[k + 1] + m[4], m[1] * pts[k] + m[3] * pts[k + 1] + m[5]);
+    }
+
+    var mime = isSvg() ? 'image/svg+xml' : 'image/png';
+    var href = 'data:' + mime + ';base64,' + bytesToBase64();
+    var e = '<image x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" preserveAspectRatio="none" href="' + href + '"';
+    e += ' transform="matrix(' + m[0] + ' ' + m[1] + ' ' + m[2] + ' ' + m[3] + ' ' + m[4] + ' ' + m[5] + ')"';
+    e += '/>';
+    r.elems.push(e);
 });
 
 // -- Finalize: build SVG string and optionally convert to PNG --
@@ -812,9 +955,9 @@ void JSRenderBackend::clearPattern()
 }
 
 // Image
-void JSRenderBackend::drawPngImage(const void*, int, double, double, double, double)
+void JSRenderBackend::drawPngImage(const void* data, int dataLen, double x, double y, double w, double h)
 {
-    // TODO: embed PNG as base64 data URI in SVG <image> element
+    js_rb_drawImage(static_cast<const uint8_t*>(data), dataLen, x, y, w, h);
 }
 void JSRenderBackend::writeSurfaceToPng(void* output)
 {

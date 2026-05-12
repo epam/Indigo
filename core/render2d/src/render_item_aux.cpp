@@ -602,9 +602,11 @@ void RenderItemAuxiliary::_drawImage(const EmbeddedImageObject& img)
     scale(v2);
     if (img.getFormat() == EmbeddedImageObject::EKETPNG)
         _rc.drawPng(img.getData(), Rect2f(v1, v2));
-#ifndef __EMSCRIPTEN__
     else if (img.getFormat() == EmbeddedImageObject::EKETSVG)
     {
+#ifdef __EMSCRIPTEN__
+        _rc.drawPng(img.getData(), Rect2f(v1, v2));
+#else
         auto document = lunasvg::Document::loadFromData(img.getData());
         if (!document)
             throw Error("RenderItemAuxiliary::_drawImage: loadFromData error");
@@ -618,8 +620,8 @@ void RenderItemAuxiliary::_drawImage(const EmbeddedImageObject& img)
             throw Error("RenderItemAuxiliary::_drawImage: writeToPng error");
 
         _rc.drawPng(lunasvgClosure, Rect2f(v1, v2));
-    }
 #endif
+    }
 }
 
 void RenderItemAuxiliary::_renderSimpleObject(const SimpleGraphicsObject& simple)
