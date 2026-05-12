@@ -594,7 +594,8 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
             }
             else if (group.relative)
             {
-                _objDistTransform(ti.bbp, group.display_pos.get());
+                if (group.display_pos.hasValue())
+                    _objDistTransform(ti.bbp, group.display_pos.get());
                 if (group.atoms.size() > 0)
                 {
                     ti.bbp.add(_ad(group.atoms[0]).pos);
@@ -606,7 +607,8 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
             }
             else
             {
-                _objCoordTransform(ti.bbp, group.display_pos.get());
+                if (group.display_pos.hasValue())
+                    _objCoordTransform(ti.bbp, group.display_pos.get());
             }
 
             parent = ILLEGAL_RECT();
