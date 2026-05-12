@@ -41,6 +41,7 @@ set(EMCC_COMMON_FLAGS
         ${EMCC_ASSERTIONS}
         -s USE_SDL=0 -s USE_SDL_IMAGE=0 -s USE_SDL_TTF=0 -s USE_SDL_NET=0
         --no-entry
+        --post-js ${CMAKE_CURRENT_SOURCE_DIR}/post.js
         ${EMCC_FLAGS}
         )
 
