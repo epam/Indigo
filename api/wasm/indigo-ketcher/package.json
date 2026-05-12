@@ -68,7 +68,9 @@
     "@fontsource/noto-sans-jp": "^5.0.0",
     "@fontsource/noto-sans-kr": "^5.0.0",
     "@fontsource/noto-sans-sc": "^5.0.0",
-    "@fontsource/noto-sans-tc": "^5.0.0",
+    "@fontsource/noto-sans-tc": "^5.0.0"
+  },
+  "optionalDependencies": {
     "sharp": "^0.34.5"
   }
 }
