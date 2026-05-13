@@ -136,7 +136,7 @@ namespace indigo
         std::vector<unsigned int> utf8_indexes(const TextItem& ti)
         {
             std::vector<unsigned int> indexes;
-            for (unsigned int i = 0; i < ti.text.size();)
+            for (int i = 0; i < ti.text.size();)
             {
                 unsigned int utf8_char = static_cast<unsigned char>(ti.text[i]);
                 ++i;
