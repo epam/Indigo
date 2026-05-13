@@ -1,11 +1,11 @@
 // Based on https://pythonextensionpatterns.readthedocs.io/en/latest/debugging/debug_in_ide.html
 
 #ifdef _DEBUG
-  #undef _DEBUG
-  #include <Python.h>
-  #define _DEBUG
+#undef _DEBUG
+#include <Python.h>
+#define _DEBUG
 #else
-  #include <Python.h>
+#include <Python.h>
 #endif
 
 #ifdef _WIN32
@@ -20,7 +20,6 @@ int import_call_execute(int argc, const char* argv[])
     PyObject* pModule = NULL;
     PyObject* pFunc = NULL;
     PyObject* pResult = NULL;
-
 
     size_t python_sys_path_len = strlen(PYTHON_SYS_PATH);
     Py_SetPath(Py_DecodeLocale(PYTHON_SYS_PATH, &python_sys_path_len));

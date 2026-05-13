@@ -395,43 +395,40 @@ void MoleculeRenderInternal::_bondSingle(BondDescr& bd, const BondEnd& be1, cons
 
     switch (bd.stereodir)
     {
-    case BOND_UP:
+    case BOND_UP: {
+        if (_ad(be2.aid).showLabel == false && !bd.isShort)
         {
-            if (_ad(be2.aid).showLabel == false && !bd.isShort)
-            {
-                _adjustAngle(l, be1, be2, true);
-                _adjustAngle(r, be1, be2, false);
-                _cw.fillPentagon(r0, r, be2.p, l, l0);
-            }
-            else
-            {
-                _cw.fillQuad(r0, r, l, l0);
-            }
+            _adjustAngle(l, be1, be2, true);
+            _adjustAngle(r, be1, be2, false);
+            _cw.fillPentagon(r0, r, be2.p, l, l0);
         }
-        break;
+        else
+        {
+            _cw.fillQuad(r0, r, l, l0);
+        }
+    }
+    break;
 
-    case BOND_DOWN:
+    case BOND_DOWN: {
+        int constexpr min_count = 4;
+        auto count = len / (_settings.hashSpacing > 0 ? _settings.hashSpacing : (lw * 2));
+        if (_settings.hashSpacing > 0 && count > min_count)
         {
-            int constexpr min_count = 4;
-            auto count = len / (_settings.hashSpacing > 0 ? _settings.hashSpacing : (lw * 2));
-            if (_settings.hashSpacing > 0 && count > min_count)
-            {
-                _cw.fillQuadStripesSpacing(r0, l0, r, l, _settings.hashSpacing);
-            }
-            else
-            {
-                int stripeCnt = std::max((int)count, min_count);
-                _cw.fillQuadStripes(r0, l0, r, l, stripeCnt);
-            }
+            _cw.fillQuadStripesSpacing(r0, l0, r, l, _settings.hashSpacing);
         }
-        break;
+        else
+        {
+            int stripeCnt = std::max((int)count, min_count);
+            _cw.fillQuadStripes(r0, l0, r, l, stripeCnt);
+        }
+    }
+    break;
 
-    case BOND_EITHER:
-        {
-            int stripeCnt = std::max((int)((len) / lw / 1.5), 5);
-            _cw.drawTriangleZigzag(be1.p, r, l, stripeCnt);
-        }
-        break;
+    case BOND_EITHER: {
+        int stripeCnt = std::max((int)((len) / lw / 1.5), 5);
+        _cw.drawTriangleZigzag(be1.p, r, l, stripeCnt);
+    }
+    break;
 
     case BOND_DIRECTION_MONO:
         [[fallthrough]];
@@ -439,21 +436,19 @@ void MoleculeRenderInternal::_bondSingle(BondDescr& bd, const BondEnd& be1, cons
         [[fallthrough]];
     case BOND_DOWN_OR_UNSPECIFIED:
         [[fallthrough]];
-    case BOND_STEREO_BOLD:
-        {
-            std::string msg = "Unexpected single bond stereo type: ";
-            msg.append(std::to_string(bd.stereodir));
-            throw Error(msg.data());
-        }
-        break;
+    case BOND_STEREO_BOLD: {
+        std::string msg = "Unexpected single bond stereo type: ";
+        msg.append(std::to_string(bd.stereodir));
+        throw Error(msg.data());
+    }
+    break;
 
-    default: 
-        {
-            std::string msg = "Unknown single bond stereo type: ";
-            msg.append(std::to_string(bd.stereodir));
-            throw Error(msg.data());
-        }
-        break;
+    default: {
+        std::string msg = "Unknown single bond stereo type: ";
+        msg.append(std::to_string(bd.stereodir));
+        throw Error(msg.data());
+    }
+    break;
     }
 }
 
