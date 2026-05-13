@@ -34,6 +34,28 @@ using namespace indigo;
 
 IMPL_ERROR(Element, "element");
 
+namespace
+{
+    // Provider hook installed by api/c so that core-level static valence
+    // calculations can pick up the current Indigo TLS session's valence_mode
+    // when the caller has no molecule reference to read it from.
+    Element::ValenceModeProvider g_default_mode_provider = nullptr;
+
+    ValenceMode resolveValenceMode(std::optional<ValenceMode> explicit_mode)
+    {
+        if (explicit_mode)
+            return *explicit_mode;
+        if (g_default_mode_provider)
+            return g_default_mode_provider();
+        return ValenceMode::BIOVIA_2009;
+    }
+} // namespace
+
+void Element::setDefaultValenceModeProvider(ValenceModeProvider provider)
+{
+    g_default_mode_provider = provider;
+}
+
 const Element& Element::_instance()
 {
     static Element instance;
@@ -335,9 +357,10 @@ int Element::calcValenceOfAromaticAtom(int elem, int charge, int n_arom, int min
     return -1;
 }
 
-bool Element::calcValence(int elem, int charge, int radical, int conn, int& valence, int& hyd, bool to_throw, bool* nonStandard)
+bool Element::calcValence(int elem, int charge, int radical, int conn, int& valence, int& hyd, bool to_throw, bool* nonStandard,
+                          std::optional<ValenceMode> mode)
 {
-    return ValenceModel::instance().calcValence(elem, charge, radical, conn, valence, hyd, to_throw, nonStandard);
+    return ValenceModel::instance(resolveValenceMode(mode)).calcValence(elem, charge, radical, conn, valence, hyd, to_throw, nonStandard);
 }
 
 int Element::calcValenceMinusHyd(int elem, int charge, int radical, int conn)
@@ -573,10 +596,10 @@ int Element::baseValence(int eff)
     return (eff <= 4) ? eff : (8 - eff);
 }
 
-ValenceResult Element::calcValenceResult(int elem, int charge, int radical, int conn)
+ValenceResult Element::calcValenceResult(int elem, int charge, int radical, int conn, std::optional<ValenceMode> mode)
 {
     ValenceResult r;
-    r.valid = calcValence(elem, charge, radical, conn, r.valence, r.implicit_h, false, &r.nonStandard);
+    r.valid = calcValence(elem, charge, radical, conn, r.valence, r.implicit_h, false, &r.nonStandard, mode);
     return r;
 }
 

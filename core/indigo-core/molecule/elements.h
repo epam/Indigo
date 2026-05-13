@@ -21,9 +21,11 @@
 
 #include <array>
 #include <map>
+#include <optional>
 
 #include "base_c/defs.h"
 #include "base_cpp/exception.h"
+#include "molecule/valence_model.h"
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -216,7 +218,19 @@ namespace indigo
         static int radicalElectrons(int radical);
         static int radicalOrbitals(int radical);
 
-        static bool calcValence(int elem, int charge, int radical, int conn, int& valence, int& hyd, bool to_throw, bool* nonStandard = nullptr);
+        // Static valence calculation. Optional `mode` overrides the model:
+        //   - explicit value  → that ValenceModel is used
+        //   - std::nullopt    → ValenceModeProvider hook (registered by api/c
+        //                       at init to read the current TLS Indigo session),
+        //                       falling back to BIOVIA_2009 if no provider set
+        // Callers with molecule context should pass the molecule's stored mode
+        // explicitly; callers without context (parsers, query atoms, etc.)
+        // rely on the provider to follow the current Indigo session.
+        static bool calcValence(int elem, int charge, int radical, int conn, int& valence, int& hyd, bool to_throw, bool* nonStandard = nullptr,
+                                std::optional<ValenceMode> mode = std::nullopt);
+        static ValenceResult calcValenceResult(int elem, int charge, int radical, int conn, std::optional<ValenceMode> mode = std::nullopt);
+
+        // Mode-independent electron-counting helpers (do not consult ValenceModel).
         static int calcValenceOfAromaticAtom(int elem, int charge, int n_arom, int min_conn);
         static int calcValenceMinusHyd(int elem, int charge, int radical, int conn);
 
@@ -226,7 +240,12 @@ namespace indigo
         static int orbitals(int elem, bool use_d_orbital);
         static int electrons(int elem, int charge);
         static int baseValence(int eff);
-        static ValenceResult calcValenceResult(int elem, int charge, int radical, int conn);
+
+        // Provider hook used by calcValence/calcValenceResult when no explicit
+        // mode is passed. api/c registers a function reading the current TLS
+        // session's valence_mode. nullptr (default) → BIOVIA_2009.
+        using ValenceModeProvider = ValenceMode (*)();
+        static void setDefaultValenceModeProvider(ValenceModeProvider provider);
 
         static int group(int element);
         static int period(int period);
