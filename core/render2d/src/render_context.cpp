@@ -150,7 +150,7 @@ RenderContext::RenderContext(const RenderOptions& ropt, float relativeThickness,
         acs.bondSpacing = ropt.bondSpacing;
     _settings.init(relativeThickness, bondLineWidthFactor, &acs);
 
-    bprintf(_fontfamily, "Arial");
+    bprintf(_fontfamily, "Noto Sans");
     bbmin.x = bbmin.y = 1;
     bbmax.x = bbmax.y = -1;
     _defaultScale = 0.0f;
