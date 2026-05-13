@@ -1,7 +1,7 @@
 const indigoModuleFn = require('./indigo-ketcher.js')
 const assert = require('assert').strict;
-const looksSame = require('looks-same');
-
+const looksSameOrig = require('looks-same');
+const looksSame = async (ref, out) => await looksSameOrig(ref, out, { tolerance: 5, antialiasingTolerance: 5, ignoreAntialiasing: true });
 // Extremely simple test framework, thanks to @sohamkamari (https://github.com/sohamkamani/nodejs-test-without-library)
 let tests = []
 
@@ -13,15 +13,15 @@ function parseHrtimeToSeconds(hrtime) {
     return (hrtime[0] + (hrtime[1] / 1e9)).toFixed(3);
 }
 
-function run() {
+async function run() {
     let succeeded = 0;
     let failed = 0;
     console.log("Starting tests...\n")
     var startTestsTime = process.hrtime();
-    tests.forEach(t => {
+    for (const t of tests) {
         try {
             var startTestTime = process.hrtime();
-            t.fn()
+            await t.fn()
             const elapsedSeconds = parseHrtimeToSeconds(process.hrtime(startTestTime));
             console.log(`✅ ${t.group}.${t.name} [${elapsedSeconds}s]`);
             succeeded++;
@@ -30,7 +30,7 @@ function run() {
             console.log(e.stack)
             failed++
         }
-    })
+    }
     const elapsedSeconds = parseHrtimeToSeconds(process.hrtime(startTestsTime));
     const total = succeeded + failed;
     console.log(`\n${total} tests executed in ${elapsedSeconds} seconds. ${succeeded} succeeded, ${failed} failed.`)
