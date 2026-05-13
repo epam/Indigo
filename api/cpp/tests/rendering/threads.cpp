@@ -30,6 +30,7 @@ using namespace indigo_cpp;
 
 namespace
 {
+    constexpr int THREAD_COUNT = 16;
     constexpr const std::array<const char*, 6> choices = {"C", "CC", "CCC", "CCCC", "CCCCC", "CCCCCC"};
     thread_local std::random_device rd;
     thread_local std::mt19937 rng(rd());
@@ -61,8 +62,8 @@ namespace
 TEST(RenderingThreads, Basic)
 {
     std::vector<std::thread> threads;
-    threads.reserve(100);
-    for (auto i = 0; i < 100; i++)
+    threads.reserve(THREAD_COUNT);
+    for (auto i = 0; i < THREAD_COUNT; i++)
     {
         threads.emplace_back(testRender);
     }

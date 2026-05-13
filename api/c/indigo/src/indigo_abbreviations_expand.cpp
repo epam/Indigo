@@ -402,12 +402,14 @@ namespace indigo
                     conn += next.multiplier;
                 }
 
-                if (!Element::calcValence(cur.index, 0, 0, conn, valence, hyd, false))
+                bool ns1 = false;
+                if (!Element::calcValence(cur.index, 0, 0, conn, valence, hyd, false, &ns1) || ns1)
                 {
                     // Ignore next atom
                     // Appear in the OH3C case when H3 is belong to C
                     conn = attach_to.order;
-                    if (!Element::calcValence(cur.index, 0, 0, conn, valence, hyd, false))
+                    bool ns2 = false;
+                    if (!Element::calcValence(cur.index, 0, 0, conn, valence, hyd, false, &ns2) || ns2)
                         return false;
                 }
 

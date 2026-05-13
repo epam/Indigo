@@ -37,6 +37,7 @@
 #include "layout/reaction_layout.h"
 
 #include "molecule/ket_document.h"
+#include "molecule/loader_options.h"
 #include "molecule/molecule_fingerprint.h"
 #include "molecule/molecule_gross_formula.h"
 #include "molecule/molecule_ionize.h"
@@ -46,6 +47,7 @@
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/molecule_tautomer.h"
 #include "molecule/smiles_saver.h"
+#include "molecule/valence_model.h"
 
 #include "option_manager.h"
 
@@ -301,6 +303,12 @@ public:
     // Method that returns temporary buffer that can be returned from Indigo C API methods
     static TmpData& getThreadTmpData();
 
+    // Snapshot of loader-shared options as a single value object. Loader call-sites
+    // (indigo_loaders.cpp, indigo_molecule.cpp) propagate via loader.setOptions(...)
+    // instead of copying each field individually — adding a new option to LoaderOptions
+    // does not require touching those call-sites again.
+    LoaderOptions loaderOptions() const;
+
     ProductEnumeratorParams rpe_params;
     MoleculeFingerprintParameters fp_params;
     PtrArray<TautomerRule> tautomer_rules;
@@ -318,6 +326,8 @@ public:
 
     bool ignore_closing_bond_direction_mismatch;
     bool ignore_bad_valence;
+
+    ValenceMode valence_mode;
 
     bool deconvolution_aromatization;
     bool deco_save_ap_bond_orders;

@@ -56,9 +56,34 @@ void MoleculeAutoLoader::_init()
     ignore_cistrans_errors = false;
     ignore_no_chiral_flag = false;
     ignore_bad_valence = false;
+    valence_mode = ValenceMode::BIOVIA_2009;
     smiles_loading_strict_aliphatic = false;
     dearomatize_on_load = false;
     treat_stereo_as = 0;
+}
+
+void MoleculeAutoLoader::setOptions(const LoaderOptions& opts)
+{
+    stereochemistry_options = opts.stereochemistry_options;
+    valence_mode = opts.valence_mode;
+    ignore_bad_valence = opts.ignore_bad_valence;
+    ignore_no_chiral_flag = opts.ignore_no_chiral_flag;
+    ignore_noncritical_query_features = opts.ignore_noncritical_query_features;
+    skip_3d_chirality = opts.skip_3d_chirality;
+    treat_x_as_pseudoatom = opts.treat_x_as_pseudoatom;
+}
+
+LoaderOptions MoleculeAutoLoader::getOptions() const
+{
+    LoaderOptions opts;
+    opts.stereochemistry_options = stereochemistry_options;
+    opts.valence_mode = valence_mode;
+    opts.ignore_bad_valence = ignore_bad_valence;
+    opts.ignore_no_chiral_flag = ignore_no_chiral_flag;
+    opts.ignore_noncritical_query_features = ignore_noncritical_query_features;
+    opts.skip_3d_chirality = skip_3d_chirality;
+    opts.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+    return opts;
 }
 
 IMPL_ERROR(MoleculeAutoLoader, "molecule auto loader");
@@ -313,6 +338,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, MonomerTemplateLibrary
             loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
             loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
             loader.treat_stereo_as = treat_stereo_as;
+            loader.valence_mode = valence_mode;
 
             if (query)
                 loader.loadQueryMolecule((QueryMolecule&)mol);
@@ -610,6 +636,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, MonomerTemplateLibrary
             loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
             loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
             loader.treat_stereo_as = treat_stereo_as;
+            loader.valence_mode = valence_mode;
 
             if (is_first && sdf_loader.isEOF())
             {

@@ -1540,7 +1540,7 @@ void MoleculeRenderInternal::_initHydroPos(int aid)
 {
     AtomDesc& ad = _ad(aid);
     const Vertex& v = _mol->getVertex(aid);
-    if (v.degree() == 0 && ElementHygrodenOnLeft(ad.label))
+    if (v.degree() == 0 && ElementHydrogenOnLeft(ad.label))
     {
         ad.implHPosWeights[HYDRO_POS_RIGHT] = 0.2f; // weights are relative, absoute values don't matter
         ad.implHPosWeights[HYDRO_POS_LEFT] = 0.3f;

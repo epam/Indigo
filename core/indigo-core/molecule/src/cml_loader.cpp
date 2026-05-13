@@ -45,12 +45,32 @@ CmlLoader::CmlLoader(Scanner& scanner)
 {
     _scanner = &scanner;
     _handle = 0;
+    ignore_bad_valence = false;
+    valence_mode = ValenceMode::BIOVIA_2009;
 }
 
 CmlLoader::CmlLoader(XMLHandle& handle)
 {
     _handle = &handle;
     _scanner = 0;
+    ignore_bad_valence = false;
+    valence_mode = ValenceMode::BIOVIA_2009;
+}
+
+void CmlLoader::setOptions(const LoaderOptions& opts)
+{
+    stereochemistry_options = opts.stereochemistry_options;
+    ignore_bad_valence = opts.ignore_bad_valence;
+    valence_mode = opts.valence_mode;
+}
+
+LoaderOptions CmlLoader::getOptions() const
+{
+    LoaderOptions opts;
+    opts.stereochemistry_options = stereochemistry_options;
+    opts.ignore_bad_valence = ignore_bad_valence;
+    opts.valence_mode = valence_mode;
+    return opts;
 }
 
 void CmlLoader::loadMolecule(Molecule& mol)
@@ -59,9 +79,11 @@ void CmlLoader::loadMolecule(Molecule& mol)
     _bmol = &mol;
     _mol = &mol;
     _qmol = 0;
-    _loadMolecule();
-
+    // Order matters: _loadMolecule() infers implicit H using the molecule's current
+    // valence model, so the mode must be set first.
     mol.setIgnoreBadValenceFlag(ignore_bad_valence);
+    mol.setValenceMode(valence_mode);
+    _loadMolecule();
 }
 
 void CmlLoader::loadQueryMolecule(QueryMolecule& mol)

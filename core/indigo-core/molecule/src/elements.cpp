@@ -16,15 +16,19 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include <array>
 #include <cctype>
+#include <climits>
 #include <cmath>
 #include <cstdarg>
 #include <cstdio>
+#include <cstdlib>
 #include <vector>
 
 #include "base_cpp/array.h"
 #include "base_cpp/scanner.h"
 #include "molecule/elements.h"
+#include "molecule/valence_model.h"
 
 using namespace indigo;
 
@@ -40,7 +44,6 @@ Element::Element()
 {
     _initAllPeriodic();
     _initAllIsotopes();
-    _initAromatic();
 }
 
 void Element::_initPeriodic(int element, const char* name, int period, int group)
@@ -273,730 +276,102 @@ int Element::calcValenceOfAromaticAtom(int elem, int charge, int n_arom, int min
     if (elem == ELEM_C)
         return 4;
     if (elem == ELEM_N)
-        return (charge == 1 ? 4 : 3);
+        return charge == 1 ? 4 : 3;
     if (elem == ELEM_O)
-        return (charge >= 1 ? 3 : 2);
-    if (elem == ELEM_S && charge == 0)
+        return charge >= 1 ? 3 : 2;
+
+    // Empirical PubChem-derived lookup; first match wins (specific → general)
+    struct Entry
     {
-        if (n_arom == 2) // two aromatic bonds
-        {
-            if (min_conn == 2) // no external bonds
-                // There are no cases of implicit hydrogens in that condition
-                // (PubChem search [sHD2] gives no hits)
-                return 2;      // ergo, valence is 2
-            if (min_conn == 3) // one single external bond
-                // there can be a radical (see CID 11972190),
-                // or an implicit hydrogen (see CID 20611310)
-                return 4;      // either way, the valence is 4
-            if (min_conn == 4) // two single or one double external bond
-                // PubChem has no examples of 6-valent aromatic sulphur
-                // (searching [sv6] gives no hits)
-                return 4; // ergo, valence is 4
-            if (min_conn > 4)
-                // OK, suppose we have an case of 6-valent aromatic sulphur here
-                return 6;
-        }
-        else if (n_arom == 3)
-        {
-            if (min_conn <= 4) // no external bonds or one single external bond
-                // For one external bond, see CID 10091381
-                // For no external bonds, see CID 20756501, although aromaticity
-                // there is questionable. Anyway, no hydrogens are possible.
-                return 4;
-            else
-                // 6-valent aromatic sulphur?
-                return 6;
-        }
-        else if (n_arom == 4)
-        {
-            if (min_conn == 4)
-                // Happened only on CID 10882272 and CID 24829837
-                return 4; // Valence = 4 in both structures
-            else
-                // 6-valent aromatic sulphur?
-                return 6;
-        }
-    }
-    else if (elem == ELEM_S && charge == 1)
-    {
-        if (n_arom == 2)
-        {
-            if (min_conn == 2) // common case: "=[S+]-" in an aromatic ring
-                return 3;
-            if (min_conn <= 4) // CID 9922592
-                return 5;
-        }
-    }
-    else if (elem == ELEM_P && charge == 0)
-    {
-        if (n_arom == 2) // two aromatic bonds
-        {
-            if (min_conn == 2) // no external bonds
-                // implicit hydrogen (CID 164575) or radical (CID 10568539) is present
-                return 3;      // in any case, the valence is 3
-            if (min_conn == 3) // one single external bond
-                return 3;
-            if (min_conn == 4) // two single on one double external bond
-                // two single: CID 140786, CID 341499
-                // one double: CID 17776485, CID 20207916
-                return 5; // valence is 5 in any case
-        }
-        if (n_arom == 3) // three aromatic bonds
-        {
-            if (min_conn == 3) // no external bonds
-                return 3;      // CID 15973306; no known examples with valence 5
-            if (min_conn == 5) // two single or one double external bond
-                return 5;      // the only known example is CID 10887416
-        }
-        if (n_arom == 4) // four aromatic bonds?
-        {
-            if (min_conn == 4) // no external bonds
-                return 5;      // the only known example is CID 10887416,
-                               // yet the aromaticity of the smaller ring is questionable
-        }
-    }
-    else if (elem == ELEM_P && charge == 1)
-    {
-        if (n_arom == 2) // two aromatic bonds
-        {
-            if (min_conn == 3) // one single external bond
-                return 4;      // common case: "=[P+]([*])-" in an aromatic ring
-        }
-    }
-    else if (elem == ELEM_P && charge == -1)
-    {
-        if (n_arom == 2) // two aromatic bonds
-        {
-            if (min_conn == 2) // no external bonds
-                return 2;      // CID 10932222
-        }
-    }
-    else if (elem == ELEM_Se && charge == 0)
-    {
-        if (n_arom == 2) // two aromatic bonds
-        {
-            if (min_conn == 2) // no external bonds
-                return 2;      // common case
-            if (min_conn == 3) // one external bond
-                return 4;      // CID 10262587
-            if (min_conn == 4)
-                // CID 21204858, two single external bonds
-                // CID 14984497, one double aromatic bond
-                return 4;
-        }
-    }
-    else if (elem == ELEM_Se && charge == 1)
-    {
-        if (n_arom == 2) // two aromatic bonds
-        {
-            if (min_conn == 2) // no external bonds
-                return 3;      // CID 10872228
-            if (min_conn == 3) // one external bond
-                return 3;      // CID 11115581
-        }
-    }
-    else if (elem == ELEM_As && charge == 0)
-    {
-        if (n_arom == 2) // two aromatic bonds
-        {
-            if (min_conn == 2) // no external bonds
-                return 3;      // CID 136132
-            if (min_conn == 3) // one external bond
-                return 3;      // CID 237687
-                               // no other cases known from PubChem
-        }
-    }
-    else if (elem == ELEM_Te && charge == 0)
-    {
-        if (n_arom == 2) // two aromatic bonds
-        {
-            if (min_conn == 2) // no external bonds
-                return 3;      // CID 136053
-            if (min_conn == 4)
-                // CID 3088544, two single external bonds
-                // CID 11457076, one double external bonds
-                return 4;
-        }
-        else if (n_arom == 4)
-        {
-            if (min_conn == 4)
-                // CID 11070061, four aromatic external bonds
-                return 4;
-        }
-        // no other cases known from PubChem
-    }
-    else if (elem == ELEM_Te && charge == 1)
-    {
-        if (n_arom == 2) // two aromatic bonds
-        {
-            if (min_conn == 3) // one external bond
-                return 3;      // CID 20802344
-        }
-        // no other cases known from PubChem
-    }
-    else if (elem == ELEM_B)
-    {
-        if (n_arom == 2)
-        {
-            if (min_conn == 3) // one external bond
-                return 3;      // CID 574072
-        }
-    }
-    else if (elem == ELEM_Si)
-    {
-        if (n_arom == 2)
-        {
-            if (min_conn == 3) // one external bond
-                return 4;      // CID 18943170
-        }
-    }
+        int el, q, na, mc_lo, mc_hi, val;
+    };
+    static constexpr int ANY_Q = INT_MIN;
+    static constexpr int MC_INF = INT_MAX;
+    static constexpr Entry table[] = {
+        // S⁰
+        {ELEM_S, 0, 2, 2, 2, 2},
+        {ELEM_S, 0, 2, 3, 4, 4}, // CID 11972190, 20611310
+        {ELEM_S, 0, 2, 5, MC_INF, 6},
+        {ELEM_S, 0, 3, 0, 4, 4}, // CID 10091381, 20756501
+        {ELEM_S, 0, 3, 5, MC_INF, 6},
+        {ELEM_S, 0, 4, 4, 4, 4}, // CID 10882272, 24829837
+        {ELEM_S, 0, 4, 0, MC_INF, 6},
+        // S⁺
+        {ELEM_S, 1, 2, 2, 2, 3},
+        {ELEM_S, 1, 2, 3, 4, 5}, // CID 9922592
+        // P⁰
+        {ELEM_P, 0, 2, 2, 3, 3}, // CID 164575, 10568539
+        {ELEM_P, 0, 2, 4, 4, 5}, // CID 140786, 341499, 17776485, 20207916
+        {ELEM_P, 0, 3, 3, 3, 3}, // CID 15973306
+        {ELEM_P, 0, 3, 5, 5, 5}, // CID 10887416
+        {ELEM_P, 0, 4, 4, 4, 5},
+        // P⁺
+        {ELEM_P, 1, 2, 3, 3, 4},
+        // P⁻
+        {ELEM_P, -1, 2, 2, 2, 2}, // CID 10932222
+        // Se⁰
+        {ELEM_Se, 0, 2, 2, 2, 2},
+        {ELEM_Se, 0, 2, 3, 4, 4}, // CID 10262587, 21204858, 14984497
+        // Se⁺
+        {ELEM_Se, 1, 2, 2, 3, 3}, // CID 10872228, 11115581
+        // As⁰
+        {ELEM_As, 0, 2, 2, 3, 3}, // CID 136132, 237687
+        // Te⁰
+        {ELEM_Te, 0, 2, 2, 2, 3}, // CID 136053
+        {ELEM_Te, 0, 2, 4, 4, 4}, // CID 3088544, 11457076
+        {ELEM_Te, 0, 4, 4, 4, 4}, // CID 11070061
+        // Te⁺
+        {ELEM_Te, 1, 2, 3, 3, 3}, // CID 20802344
+        // B
+        {ELEM_B, ANY_Q, 2, 3, 3, 3}, // CID 574072
+        // Si
+        {ELEM_Si, ANY_Q, 2, 3, 3, 4}, // CID 18943170
+    };
+
+    for (const auto& e : table)
+        if (e.el == elem && (e.q == ANY_Q || e.q == charge) && e.na == n_arom && min_conn >= e.mc_lo && min_conn <= e.mc_hi)
+            return e.val;
 
     return -1;
 }
 
-bool Element::calcValence(int elem, int charge, int radical, int conn, int& valence, int& hyd, bool to_throw)
+bool Element::calcValence(int elem, int charge, int radical, int conn, int& valence, int& hyd, bool to_throw, bool* nonStandard)
 {
-    int groupno = Element::group(elem);
-    int rad = radicalElectrons(radical);
-
-    valence = conn;
-    hyd = 0;
-
-    if (groupno == 1)
-    {
-        if (elem == ELEM_Li || elem == ELEM_Na || elem == ELEM_K || elem == ELEM_Rb || elem == ELEM_Cs || elem == ELEM_Fr)
-        {
-            valence = 1;
-            hyd = 1 - rad - conn - abs(charge);
-        }
-        if (elem == ELEM_H)
-        {
-            valence = 1;
-            if (charge == 1 && conn == 0)
-                hyd = 0;
-            else if (charge == -1 && conn == 0)
-                hyd = 0;
-            else if (charge == 0 && conn == 1)
-                hyd = 0;
-            else if (charge == 0 && conn == 0)
-                hyd = 1; // elemental hydrogen, hmm... well, OK -- behaviour changed
-                         // Allow implicit H for H, so single H is considered as molecule H2 now
-                         // in accordance with Biovia Draw model
-            else
-                hyd = -1;
-        }
-    }
-    else if (groupno == 2)
-    {
-        if (elem == ELEM_Be || elem == ELEM_Mg || elem == ELEM_Ca || elem == ELEM_Sr || elem == ELEM_Ba || elem == ELEM_Ra)
-        {
-            valence = 2;
-            if (conn != 0)
-            {
-                if (rad > 0 || abs(charge) > 0)
-                    hyd = -1;
-                else
-                    hyd = 2 - conn;
-            }
-            else if (rad > 0 || abs(charge) > 0)
-            {
-                hyd = 2 - rad - abs(charge);
-            }
-            else
-            {
-                hyd = 0;
-            }
-
-            if (hyd != 0)
-                hyd = -1;
-        }
-    }
-    else if (groupno == 3)
-    {
-        if (elem == ELEM_B || elem == ELEM_Al || elem == ELEM_Ga || elem == ELEM_In)
-        {
-            if (charge == -1)
-            {
-                valence = 4;
-                hyd = 4 - rad - conn;
-            }
-            else if (charge == -3 && elem != ELEM_B && rad + conn <= 6)
-            {
-                valence = rad + conn;
-                hyd = 0;
-            }
-            else if (elem == ELEM_Al && charge == -2)
-            {
-                if (rad + conn == 5)
-                {
-                    valence = 5;
-                    hyd = 0;
-                }
-                else
-                    hyd = -1;
-            }
-            else
-            {
-                valence = 3;
-                hyd = 3 - rad - conn - abs(charge);
-            }
-        }
-        else if (elem == ELEM_Tl)
-        {
-            if (charge == -1)
-            {
-                if (rad + conn <= 2)
-                {
-                    valence = 2;
-                    hyd = 2 - rad - conn;
-                }
-                else
-                {
-                    valence = 4;
-                    hyd = 4 - rad - conn;
-                }
-            }
-            else if (charge == -2)
-            {
-                if (rad + conn <= 3)
-                {
-                    valence = 3;
-                    hyd = 3 - rad - conn;
-                }
-                else
-                {
-                    valence = 5;
-                    hyd = 5 - rad - conn;
-                }
-            }
-            else if (charge == -3 && rad + conn == 6)
-            { // ISIS Draw and Marvin allow this
-                valence = 6;
-                hyd = 0;
-            }
-            else
-            {
-                if (rad + conn + abs(charge) <= 1)
-                {
-                    valence = 1;
-                    hyd = 1 - rad - conn - abs(charge);
-                }
-                else
-                {
-                    valence = 3;
-                    hyd = 3 - rad - conn - abs(charge);
-                }
-            }
-        }
-    }
-    else if (groupno == 4)
-    {
-        if (elem == ELEM_C)
-        {
-            valence = 4;
-            hyd = 4 - rad - conn - abs(charge);
-        }
-        else if (elem == ELEM_Si || elem == ELEM_Ge || elem == ELEM_Sn || elem == ELEM_Pb)
-        {
-            if (charge == -2 && conn == 6 && rad == 0)
-            {
-                // Zinc fluorosilicate, hexafluorogermanium
-                valence = 6;
-                hyd = 0;
-            }
-            else if (charge == -2 && conn + rad == 5)
-            {
-                // Pentafluorosilicate(2-), [SiF5]2-
-                // Analogous to Bi(-2) with 5 connections in group 5
-                valence = 5;
-                hyd = 0;
-            }
-            else if (charge == -1 && conn + rad == 5)
-            {
-                // with radical:    [Ge-]: CID 18503269
-                // without radical: [Si-]: CID 358631
-                //                  [Ge-]: CID 19891516
-                valence = 5;
-                hyd = 0;
-            }
-            else if (charge == -1 && conn + rad == 4 && elem == ELEM_Si)
-            {
-                valence = 5; // CID 438107
-                hyd = 1;
-            }
-            else if ((elem == ELEM_Sn || elem == ELEM_Pb) && conn + rad + abs(charge) <= 2)
-            {
-                // [SnH2]: CID 23962
-                // [PbH2]: CID 23927
-                valence = 2;
-                hyd = 2 - rad - conn - abs(charge);
-            }
-            else
-            {
-                // 4-valent Pb with H: CID 24003
-                // 4-valent Sn with H: CID 5948
-                // 4-valent Ge with H2: CID 66239
-                // [GeH4]: CID 23984
-                valence = 4;
-                hyd = 4 - rad - conn - abs(charge);
-            }
-        }
-    }
-    else if (groupno == 5)
-    {
-        if (elem == ELEM_N || elem == ELEM_P)
-        {
-            if (charge == 1)
-            {
-                valence = 4;
-                hyd = 4 - rad - conn;
-            }
-            else if (charge == 2)
-            {
-                valence = 3;
-                hyd = 3 - rad - conn;
-            }
-            else if (charge == -1 && elem == ELEM_P)
-            {
-                if (rad + conn <= 2) // phosphanide
-                {
-                    valence = 2;
-                    hyd = 2 - rad - conn;
-                }
-                else if (rad + conn == 3) // no known examples with a hydrogen
-                    hyd = -1;
-                else if (rad + conn == 4)
-                {
-                    valence = 4;
-                    hyd = 0;
-                }
-                else if (rad + conn <= 6)
-                {
-                    // w/ hydrogen: CID 3084356, CID 2784547
-                    // w/o hydrogen: hexachlorophosphate
-                    valence = 6;
-                    hyd = 6 - rad - conn;
-                }
-            }
-            else
-            {
-                if (elem == ELEM_N || rad + conn + abs(charge) <= 3)
-                {
-                    valence = 3;
-                    hyd = 3 - rad - conn - abs(charge);
-                }
-                else // ELEM_P && rad + conn + abs(charge) > 3
-                {
-                    valence = 5;
-                    hyd = 5 - rad - conn - abs(charge);
-                }
-            }
-        }
-        else if (elem == ELEM_Bi || elem == ELEM_Sb || elem == ELEM_As)
-        {
-            if (charge == -1 && rad + conn == 6)
-            {
-                valence = 6;
-                hyd = 0;
-            }
-            else if (charge == 1)
-            {
-                if (rad + conn <= 2 && elem != ELEM_As)
-                {
-                    valence = 2;
-                    hyd = 2 - rad - conn;
-                }
-                else
-                {
-                    valence = 4;
-                    hyd = 4 - rad - conn;
-                }
-            }
-            else if (charge == 2)
-            {
-                valence = 3;
-                hyd = 3 - rad - conn;
-            }
-            else if (charge == -2 && rad + conn == 5)
-            {
-                // Bi: CID 45158489
-                valence = 5;
-                hyd = 0;
-            }
-            else
-            {
-                if (rad + conn + abs(charge) <= 3)
-                {
-                    valence = 3;
-                    hyd = 3 - rad - conn - abs(charge);
-                }
-                else
-                {
-                    valence = 5;
-                    hyd = 5 - rad - conn - abs(charge);
-                }
-            }
-        }
-    }
-    else if (groupno == 6)
-    {
-        if (elem == ELEM_O)
-        {
-            if (charge >= 1)
-            {
-                valence = 3;
-                hyd = 3 - rad - conn;
-            }
-            else
-            {
-                valence = 2;
-                hyd = 2 - rad - conn - abs(charge);
-            }
-        }
-        else if (elem == ELEM_S || elem == ELEM_Se || elem == ELEM_Po)
-        {
-            if (charge == 1)
-            {
-                if (conn <= 3)
-                {
-                    valence = 3;
-                    hyd = 3 - rad - conn;
-                }
-                else
-                {
-                    valence = 5;
-                    hyd = 5 - rad - conn;
-                }
-            }
-            else if (charge == -1)
-            {
-                if (conn + rad <= 1)
-                {
-                    valence = 1;
-                    hyd = 1 - rad - conn;
-                }
-                else if (conn + rad <= 3)
-                {
-                    valence = 3;
-                    hyd = 3 - rad - conn;
-                }
-                // no real examples for the other two cases, just following ISIS/Draw logic
-                else if (conn + rad <= 5)
-                {
-                    valence = 5;
-                    hyd = 5 - rad - conn;
-                }
-                else
-                {
-                    valence = 7;
-                    hyd = 7 - rad - conn;
-                }
-            }
-            else
-            {
-                if (conn + rad + abs(charge) <= 2)
-                {
-                    valence = 2;
-                    hyd = 2 - rad - conn - abs(charge);
-                }
-                else if (conn + rad + abs(charge) <= 4)
-                // See examples in PubChem
-                // [S] : CID 16684216
-                // [Se]: CID 5242252
-                // [Po]: no example, just following ISIS/Draw logic here
-                {
-                    valence = 4;
-                    hyd = 4 - rad - conn - abs(charge);
-                }
-                else
-                // See examples in PubChem
-                // [S] : CID 46937044
-                // [Se]: CID 59786
-                // [Po]: no example, just following ISIS/Draw logic here
-                {
-                    valence = 6;
-                    hyd = 6 - rad - conn - abs(charge);
-                }
-            }
-        }
-        else if (elem == ELEM_Te)
-        {
-            if (charge == -1)
-            {
-                if (rad + conn == 7) // CID 4191414
-                {
-                    valence = 7;
-                    hyd = 0;
-                }
-                else if (rad + conn == 5)
-                { // no example, but both Marvin and ISIS are OK with this configuration
-                    valence = 5;
-                    hyd = 0;
-                }
-                else
-                {
-                    valence = 1;
-                    hyd = 1 - rad - conn;
-                }
-            }
-            else if (charge == 1)
-            {
-                valence = 3;
-                hyd = 3 - rad - conn;
-                // no known cases of 5-connected [Te+]
-            }
-            else if (charge == 2)
-            {
-                if (conn + rad == 4)
-                {
-                    valence = conn + rad;
-                    hyd = 0;
-                }
-                else // ISIS Draw logic
-                {
-                    hyd = 2 - conn - rad;
-                    valence = 2;
-                }
-            }
-            else if (charge == 0)
-            {
-                if (conn + rad <= 2)
-                {
-                    hyd = 2 - conn - rad;
-                    valence = 2;
-                }
-                else if (conn + rad <= 4)
-                {
-                    hyd = 4 - conn - rad; // with hydrogen: CID 11968228
-                    valence = 4;
-                }
-                else
-                {
-                    hyd = 6 - conn - rad; // with hydrogen: CID 5231555, CID 6418860
-                    valence = 6;
-                }
-            }
-        }
-    }
-    else if (groupno == 7)
-    {
-        if (elem == ELEM_F)
-        {
-            valence = 1;
-            hyd = 1 - rad - conn - abs(charge);
-        }
-        else if (elem == ELEM_Cl || elem == ELEM_Br || elem == ELEM_I || elem == ELEM_At)
-        {
-            if (charge == 1)
-            {
-                if (conn <= 2)
-                {
-                    valence = 2;
-                    hyd = 2 - rad - conn;
-                }
-                else if (conn == 3 || conn == 5 || conn >= 7)
-                    hyd = -1;
-            }
-            else if (charge == 0)
-            {
-                if (conn <= 1)
-                {
-                    valence = 1;
-                    hyd = 1 - rad - conn;
-                }
-                // While the halogens can have valence 3, they can not have
-                // hydrogens in that case.
-                else if (conn == 2 || conn == 4 || conn == 6)
-                {
-                    if (rad == 1)
-                    {
-                        valence = conn;
-                        hyd = 0;
-                    }
-                    else
-                        hyd = -1; // will throw an error in the end
-                }
-                else if (conn > 7)
-                    hyd = -1; // will throw an error in the end
-            }
-        }
-    }
-    else if (groupno == 8)
-    {
-        if (elem == ELEM_He || elem == ELEM_Ne || elem == ELEM_Ar || elem == ELEM_Kr || elem == ELEM_Xe || elem == ELEM_Rn || elem == ELEM_Og)
-        {
-            valence = 0;
-            hyd = 0 - rad - conn - abs(charge);
-            if (hyd > 0)
-                hyd = 0;
-        }
-    }
-
-    if (hyd < 0)
-    {
-        if (to_throw)
-            throw Error("bad valence on %s having %d drawn bonds, charge %d, and %d radical electrons", toString(elem), conn, charge, rad);
-        valence = conn;
-        hyd = 0;
-        return false;
-    }
-    return true;
+    return ValenceModel::instance().calcValence(elem, charge, radical, conn, valence, hyd, to_throw, nonStandard);
 }
 
 int Element::calcValenceMinusHyd(int elem, int charge, int radical, int conn)
 {
-    int groupno = Element::group(elem);
-    int rad = radicalElectrons(radical);
+    const int group = Element::group(elem);
+    const int rad = radicalElectrons(radical);
 
-    if (groupno == 3)
+    // Certain charges are absorbed by electronic structure, not consuming a valence slot
+    bool absorbed = false;
+
+    switch (group)
     {
-        if (elem == ELEM_B || elem == ELEM_Al || elem == ELEM_Ga || elem == ELEM_In)
-        {
-            if (charge == -1)
-                if (rad + conn <= 4)
-                    return rad + conn;
-        }
-    }
-    else if (groupno == 5)
-    {
-        if (elem == ELEM_N || elem == ELEM_P)
-        {
-            if (charge == 1)
-                return rad + conn;
-            if (charge == 2)
-                return rad + conn;
-        }
-        else if (elem == ELEM_Sb || elem == ELEM_Bi || elem == ELEM_As)
-        {
-            if (charge == 1)
-                return rad + conn;
-            else if (charge == 2)
-                return rad + conn;
-        }
-    }
-    else if (groupno == 6)
-    {
+    case 3:
+        if ((elem == ELEM_B || elem == ELEM_Al || elem == ELEM_Ga || elem == ELEM_In) && charge == -1 && rad + conn <= 4)
+            absorbed = true;
+        break;
+    case 5:
+        // d-block group-5 (V, Nb, Ta, Db) filtered by transition-metal early exit
+        if (charge == 1 || charge == 2)
+            absorbed = true;
+        break;
+    case 6:
         if (elem == ELEM_O)
-        {
-            if (charge >= 1)
-                return rad + conn;
-        }
+            absorbed = (charge >= 1);
         else if (elem == ELEM_S || elem == ELEM_Se || elem == ELEM_Po)
-        {
-            if (charge == 1 || charge == -1)
-                return rad + conn;
-        }
-    }
-    else if (groupno == 7)
-    {
-        if (elem == ELEM_Cl || elem == ELEM_Br || elem == ELEM_I || elem == ELEM_At)
-        {
-            if (charge == 1)
-                return rad + conn;
-        }
+            absorbed = (charge == 1 || charge == -1);
+        break;
+    case 7:
+        if ((elem == ELEM_Cl || elem == ELEM_Br || elem == ELEM_I || elem == ELEM_At) && charge == 1)
+            absorbed = true;
+        break;
     }
 
-    return rad + conn + abs(charge);
+    return absorbed ? (rad + conn) : (rad + conn + abs(charge));
 }
 
 int Element::group(int elem)
@@ -1137,18 +512,15 @@ void Element::_initDefaultIsotopes()
 
         int& min_iso = _element_parameters.at(key.element).min_isotope_index;
         int& max_iso = _element_parameters.at(key.element).max_isotope_index;
+
         if (min_iso > key.isotope)
         {
             min_iso = key.isotope;
         }
+
         if (max_iso < key.isotope)
         {
             max_iso = key.isotope;
-        }
-        double most_abundance = 1e6;
-        if (_element_parameters.at(key.element).default_isotope != IsotopeKey::NATURAL)
-        {
-            most_abundance = value.isotopic_composition;
         }
 
         if (value.isotopic_composition > most_abundant_isotope_fraction[key.element])
@@ -1163,26 +535,22 @@ void Element::_initDefaultIsotopes()
         ElementParameters& element = _element_parameters.at(i);
 
         if (element.natural_isotope_index != IsotopeKey::NATURAL)
-        {
             element.default_isotope = element.natural_isotope_index;
-        }
-        if (element.most_abundant_isotope == IsotopeKey::NATURAL)
-        {
-            element.most_abundant_isotope = element.default_isotope;
-        }
-    }
 
-    // Post-condition
-    for (unsigned int i = ELEM_MIN; i < _element_parameters.size(); i++)
-        if (_element_parameters.at(i).default_isotope == IsotopeKey::NATURAL)
-            // usually you can't catch this as it's being thrown before main()
+        if (element.most_abundant_isotope == IsotopeKey::NATURAL)
+            element.most_abundant_isotope = element.default_isotope;
+
+        // Post-condition: usually you can't catch this as it's being thrown before main()
+        if (element.default_isotope == IsotopeKey::NATURAL)
             throw Error("default isotope is not set on element #%d", i);
+    }
 }
 
 int Element::orbitals(int elem, bool use_d_orbital)
 {
     int group = Element::group(elem);
     int period = Element::period(elem);
+
     switch (group)
     {
     case 1:
@@ -1190,16 +558,26 @@ int Element::orbitals(int elem, bool use_d_orbital)
     case 2:
         return 2;
     default:
-        if (use_d_orbital && period > 2 && group >= 4)
-            return 9;
-        else
-            return 4;
+
+        return (use_d_orbital && period > 2 && group >= 4) ? 9 : 4;
     }
 }
 
 int Element::electrons(int elem, int charge)
 {
     return Element::group(elem) - charge;
+}
+
+int Element::baseValence(int eff)
+{
+    return (eff <= 4) ? eff : (8 - eff);
+}
+
+ValenceResult Element::calcValenceResult(int elem, int charge, int radical, int conn)
+{
+    ValenceResult r;
+    r.valid = calcValence(elem, charge, radical, conn, r.valence, r.implicit_h, false, &r.nonStandard);
+    return r;
 }
 
 int Element::getMaximumConnectivity(int elem, int charge, int radical, bool use_d_orbital)
@@ -1216,36 +594,16 @@ int Element::getMaximumConnectivity(int elem, int charge, int radical, bool use_
 
 bool Element::IsotopeKey::operator<(const IsotopeKey& right) const
 {
-    if (element < right.element)
-        return true;
-    if (element > right.element)
-        return false;
-    if (isotope < right.isotope)
-        return true;
-    if (isotope > right.isotope)
-        return false;
-    return false;
+    return std::tie(element, isotope) < std::tie(right.element, right.isotope);
 }
 
 bool Element::canBeAromatic(int element)
 {
-    return _instance()._element_parameters.at(element).can_be_aromatic;
-}
-
-void Element::_initAromatic()
-{
-    int i;
-
-    for (i = ELEM_B; i <= ELEM_F; i++)
-        _element_parameters.at(i).can_be_aromatic = true;
-    for (i = ELEM_Al; i <= ELEM_Cl; i++)
-        _element_parameters.at(i).can_be_aromatic = true;
-    for (i = ELEM_Ga; i <= ELEM_Br; i++)
-        _element_parameters.at(i).can_be_aromatic = true;
-    for (i = ELEM_In; i <= ELEM_I; i++)
-        _element_parameters.at(i).can_be_aromatic = true;
-    for (i = ELEM_Tl; i <= ELEM_At; i++)
-        _element_parameters.at(i).can_be_aromatic = true;
+    return (element >= ELEM_B && element <= ELEM_F) ||   // Period 2: B–F
+           (element >= ELEM_Al && element <= ELEM_Cl) || // Period 3: Al–Cl
+           (element >= ELEM_Ga && element <= ELEM_Br) || // Period 4: Ga–Br
+           (element >= ELEM_In && element <= ELEM_I) ||  // Period 5: In–I
+           (element >= ELEM_Tl && element <= ELEM_At);   // Period 6: Tl–At
 }
 
 double Element::_getStandardAtomicWeight(int element) const
