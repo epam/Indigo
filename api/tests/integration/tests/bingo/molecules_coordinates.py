@@ -17,7 +17,7 @@ from env_indigo import (  # noqa
 )
 
 indigo = Indigo()
-db_name = joinPathPy("out/db_molecule", __file__)
+db_name = joinPathPy("out/db_molecule_coords", __file__)
 bingo = Bingo.createDatabaseFile(indigo, db_name, "molecule")
 
 index = 0
