@@ -953,8 +953,8 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJSON(needs.set_matrix.outputs.matrix) }}
     runs-on: ${{ matrix.os }}
-    # needs: [build_bingo_postgres_linux_x86_64, build_bingo_postgres_windows_msvc_x86_64, build_bingo_postgres_macos_x86_64]
-    needs: [build_bingo_postgres_linux_x86_64, build_bingo_postgres_windows_msvc_x86_64, set_matrix ]
+    needs: [build_bingo_postgres_linux_x86_64, build_bingo_postgres_windows_msvc_x86_64, build_bingo_postgres_macos_x86_64]
+    # needs: [build_bingo_postgres_linux_x86_64, build_bingo_postgres_windows_msvc_x86_64, set_matrix ]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -1239,8 +1239,8 @@ jobs:
       matrix:
         os: [ windows-latest ]
     runs-on: ${{ matrix.os }}
-    #needs: [build_bingo_postgres_linux_x86_64, build_bingo_postgres_windows_msvc_x86_64, build_bingo_postgres_macos_x86_64]
-    needs: [build_bingo_postgres_linux_x86_64, build_bingo_postgres_windows_msvc_x86_64]
+    needs: [build_bingo_postgres_linux_x86_64, build_bingo_postgres_windows_msvc_x86_64, build_bingo_postgres_macos_x86_64]
+    # needs: [build_bingo_postgres_linux_x86_64, build_bingo_postgres_windows_msvc_x86_64]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
