@@ -19,12 +19,42 @@
 #ifndef __ptr_array__
 #define __ptr_array__
 
-#include "base_cpp/array.h"
+#include <memory>
+#include <utility>
+#include <vector>
 
-#ifdef _WIN32
-#pragma warning(push)
-#pragma warning(disable : 4251)
-#endif
+#include "base_cpp/exception.h"
+
+// PtrArray<T> — owning, heterogeneous, nullable-slot array of T pointers.
+//
+// Thread safety: NOT thread-safe. Callers must serialize access externally.
+// The underlying `std::vector<std::unique_ptr<T>>` provides no synchronization.
+//
+// History: previously implemented as `Array<T*>` with manual `delete` in the
+// destructor. As part of milestone-19 (issue #783) the internal storage was
+// migrated to `std::vector<std::unique_ptr<T>>`. The public API was kept
+// source-compatible with one exception: `operator[]` and `at()` now return
+// `T*` by value rather than `T*&` (lvalue reference). Direct assignment via
+// `arr[i] = ptr` must be replaced with `arr.set(i, ptr)` / `arr.reset(i, ptr)`.
+//
+// PR-1 (issue #3691) adds ownership-correct overloads and marks the raw-pointer
+// overloads deprecated. Migration guide:
+//   arr.add(new T(x))         →  arr.emplace(x)  or  arr.add(std::make_unique<T>(x))
+//   arr.set(i, new T(x))      →  arr.set(i, std::make_unique<T>(x))
+//   arr.reset(i, new T(x))    →  arr.reset(i, std::make_unique<T>(x))
+//   T* p = arr.pop()          →  auto p = arr.pop()   (std::unique_ptr<T>)
+// NEW in PR-1: arr.release(i) — transfers ownership of slot i out as unique_ptr.
+//
+// Ownership model: PtrArray owns the pointees. `add()`, `set()`, `reset(idx, p)`
+// take ownership of the raw pointer / unique_ptr they receive. `release(idx)`,
+// `pop()` transfer ownership out as `std::unique_ptr<T>`. Slots may legally be
+// `nullptr` (holes); destruction, clear(), and shrink-resize skip null slots.
+//
+// Move/copy: nothrow-movable, non-copyable. Use `clone(const PtrArray&)` if a
+// deep copy is genuinely needed (must be added explicitly per T).
+//
+// See also: tests in core/indigo-core/tests/tests/ptr_array.cpp — they pin
+// the observable contract.
 
 namespace indigo
 {
@@ -32,160 +62,227 @@ namespace indigo
     DECL_EXCEPTION(PtrArrayError);
 
     template <typename T>
-    class PtrArray
+    class PtrArray final
     {
     public:
-        explicit PtrArray()
-        {
-        }
-
-        virtual ~PtrArray()
-        {
-            clear();
-        }
-
         DECL_TPL_ERROR(PtrArrayError);
 
-        T& add(T* obj)
+        PtrArray() = default;
+        ~PtrArray() = default;
+
+        PtrArray(PtrArray&&) noexcept = default;
+        PtrArray& operator=(PtrArray&&) noexcept = default;
+
+        PtrArray(const PtrArray&) = delete;
+        PtrArray& operator=(const PtrArray&) = delete;
+
+        // ----------------------------------------------------------------
+        // add() — owning overload (preferred): takes ownership via unique_ptr.
+        // Precondition: obj != nullptr. Use expand() if you need null slots.
+        // Exception safety: if emplace_back throws (OOM), `obj` is still
+        // owned by the caller's unique_ptr and will be destroyed cleanly.
+        // ----------------------------------------------------------------
+        T& add(std::unique_ptr<T> obj)
         {
-            _ptrarray.push(obj);
-            return *obj;
+            if (!obj)
+                throw Error("add(): null unique_ptr is not allowed; use expand() for null slots");
+            T* raw = obj.get();
+            // emplace_back may throw (OOM) only before the move takes place
+            // (vector growth path). unique_ptr's move constructor is noexcept,
+            // so if we reach the move step the ownership transfer is atomic.
+            // On throw, obj is still intact — its destructor cleans up.
+            _items.emplace_back(std::move(obj));
+            return *raw;
         }
 
-        T* pop(void)
+        // add() — deprecated raw-pointer overload kept for source compatibility.
+        // Prefer add(std::unique_ptr<T>) or emplace(args...) for new code.
+        // Wraps obj into unique_ptr immediately, then delegates to the owning
+        // overload — this closes the OOM-window where a thrown emplace_back
+        // would leak obj (the historical `add(new T())` anti-pattern risk).
+        [[deprecated("use add(std::unique_ptr<T>) or emplace(...)")]] T& add(T* obj)
         {
-            return _ptrarray.pop();
+            return add(std::unique_ptr<T>(obj));
         }
 
-        T* top(void)
+        // emplace() — constructs T in-place and takes ownership.
+        // Strong exception safety: make_unique may throw; the vector is not
+        // modified in that case.
+        template <class... Args>
+        T& emplace(Args&&... args)
         {
-            return at(size() - 1);
+            return add(std::make_unique<T>(std::forward<Args>(args)...));
         }
 
+        // push() / push(args...) — ObjArray-compatible alias for emplace().
+        // Provided to enable a drop-in source-compatible migration of
+        // ObjArray<T> call sites to PtrArray<T> in milestone-19 Step 2:
+        // existing `arr.push(a, b)` works unchanged, the object is now
+        // heap-allocated and owned by PtrArray.
+        template <class... Args>
+        T& push(Args&&... args)
+        {
+            return emplace(std::forward<Args>(args)...);
+        }
+
+        // ----------------------------------------------------------------
+        // pop() — transfers ownership of the last slot to the caller.
+        // The slot is removed from the array. Throws if the array is empty.
+        // [[nodiscard]]: discarding the return value would silently leak.
+        // ----------------------------------------------------------------
+        [[nodiscard]] std::unique_ptr<T> pop()
+        {
+            if (_items.empty())
+                throw Error("stack underflow");
+            std::unique_ptr<T> result = std::move(_items.back());
+            _items.pop_back();
+            return result;
+        }
+
+        // Raw pointer to the last slot (does not transfer ownership). Throws
+        // if the array is empty — symmetric with pop().
+        T* top()
+        {
+            if (_items.empty())
+                throw Error("top(): array is empty");
+            return _items.back().get();
+        }
+
+        // Grow up to `newsize`, filling new slots with nullptr. Smaller
+        // `newsize` is a no-op (does NOT shrink) — matches the historical
+        // contract used by some clients to pre-allocate sparse arrays.
         void expand(int newsize)
         {
-            while (_ptrarray.size() < newsize)
-                _ptrarray.push(0);
+            if (newsize > static_cast<int>(_items.size()))
+                _items.resize(static_cast<std::size_t>(newsize));
         }
 
-        void clear(void)
+        // Destroys all owned objects; size becomes 0. Null slots are skipped
+        // (delete-on-nullptr is well-defined). Safe on an already-empty
+        // array.
+        void clear() noexcept
         {
-            int i;
-
-            for (i = 0; i < _ptrarray.size(); i++)
-            {
-                if (_ptrarray[i] == 0)
-                    continue;
-
-                delete _ptrarray[i];
-                _ptrarray[i] = 0;
-            }
-            _ptrarray.clear();
+            _items.clear();
         }
 
-        int size() const
+        int size() const noexcept
         {
-            return _ptrarray.size();
+            return static_cast<int>(_items.size());
         }
 
-        void resize(const int newsize)
+        // Grow or shrink to `newsize`. On shrink, deletes the trailing
+        // pointees (skipping nulls). On grow, fills new slots with nullptr.
+        void resize(int newsize)
         {
-            int i, oldsize = _ptrarray.size();
-            for (int i = newsize; i < oldsize; i++)
-            {
-                if (_ptrarray[i] == 0)
-                    continue;
-
-                delete _ptrarray[i];
-                _ptrarray[i] = 0;
-            }
-            _ptrarray.resize(newsize);
-            for (i = oldsize; i < newsize; i++)
-                _ptrarray[i] = 0;
+            _items.resize(static_cast<std::size_t>(newsize));
         }
 
         void removeLast()
         {
-            delete _ptrarray.pop();
+            _items.pop_back();
         }
 
+        // Delete the pointee at `idx` (skipping if null) and shift later
+        // elements left, preserving order.
         void remove(int idx)
         {
-            delete _ptrarray[idx];
-
-            _ptrarray.remove(idx);
+            _check_bounds(idx, "remove");
+            _items.erase(_items.begin() + idx);
         }
 
-        void set(int idx, T* obj)
+        // ----------------------------------------------------------------
+        // set() — owning overload (preferred): places `obj` at slot `idx`.
+        // The slot MUST be currently null (throws otherwise).
+        // ----------------------------------------------------------------
+        void set(int idx, std::unique_ptr<T> obj)
         {
-            if (_ptrarray[idx] != 0)
+            _check_bounds(idx, "set");
+            if (_items[idx] != nullptr)
                 throw Error("object #%d already set", idx);
-
-            _ptrarray[idx] = obj;
+            _items[idx] = std::move(obj);
         }
 
+        // set() — deprecated raw-pointer overload kept for source compatibility.
+        // Wraps obj into unique_ptr before delegating, so a throw from the
+        // owning overload cleans up obj automatically.
+        [[deprecated("use set(int, std::unique_ptr<T>)")]] void set(int idx, T* obj)
+        {
+            set(idx, std::unique_ptr<T>(obj));
+        }
+
+        // Delete the pointee at `idx` (idempotent on null) and null the slot.
         void reset(int idx)
         {
-            delete _ptrarray[idx];
-            _ptrarray[idx] = 0;
+            _check_bounds(idx, "reset");
+            _items[idx].reset();
         }
 
-        void reset(int idx, T* obj)
+        // ----------------------------------------------------------------
+        // reset() with replacement — owning overload (preferred): deletes
+        // the pointee at `idx` and takes ownership of `obj`.
+        // ----------------------------------------------------------------
+        void reset(int idx, std::unique_ptr<T> obj)
         {
-            reset(idx);
-            set(idx, obj);
+            _check_bounds(idx, "reset");
+            _items[idx] = std::move(obj);
         }
 
-        T* release(int idx)
+        // reset() — deprecated raw-pointer overload kept for source compatibility.
+        // Wraps obj into unique_ptr before delegating, so a throw from the
+        // owning overload cleans up obj automatically.
+        [[deprecated("use reset(int, std::unique_ptr<T>)")]] void reset(int idx, T* obj)
         {
-            T* result = _ptrarray[idx];
-            _ptrarray[idx] = 0;
-            return result;
+            reset(idx, std::unique_ptr<T>(obj));
         }
 
-        void qsort(int (*cmp)(T* const&, T* const&, const void*), const void* context)
+        // ----------------------------------------------------------------
+        // release() — transfers ownership of slot `idx` to the caller as a
+        // unique_ptr. The slot becomes null but is NOT removed; size is
+        // unchanged. Returns a null unique_ptr if the slot was already null.
+        // [[nodiscard]]: discarding the return value would silently leak the
+        // pointee (the slot is cleared unconditionally).
+        // ----------------------------------------------------------------
+        [[nodiscard]] std::unique_ptr<T> release(int idx)
         {
-            _ptrarray.qsort(cmp, context);
+            _check_bounds(idx, "release");
+            return std::move(_items[idx]);
         }
 
-        const T* operator[](int index) const
+        const T* operator[](int idx) const
         {
-            return _ptrarray[index];
-        }
-        T*& operator[](int index)
-        {
-            return _ptrarray[index];
+            return _items[idx].get();
         }
 
-        const T* at(int index) const
+        // NOTE: returns `T*` by value, not by `T*&` (lvalue reference), unlike
+        // the historical implementation. Direct `arr[i] = newPtr` is no longer
+        // valid — use `arr.set(i, newPtr)` or `arr.reset(i, newPtr)`.
+        T* operator[](int idx)
         {
-            return _ptrarray[index];
-        }
-        T*& at(int index)
-        {
-            return _ptrarray[index];
-        }
-
-        const T* const* ptr() const
-        {
-            return _ptrarray.ptr();
-        }
-        T** ptr()
-        {
-            return _ptrarray.ptr();
+            return _items[idx].get();
         }
 
-    protected:
-        Array<T*> _ptrarray;
+        const T* at(int idx) const
+        {
+            _check_bounds(idx, "at");
+            return _items[idx].get();
+        }
+
+        T* at(int idx)
+        {
+            _check_bounds(idx, "at");
+            return _items[idx].get();
+        }
 
     private:
-        PtrArray(const PtrArray&); // no implicit copy
+        std::vector<std::unique_ptr<T>> _items;
+
+        void _check_bounds(int idx, const char* method) const
+        {
+            if (idx < 0 || idx >= static_cast<int>(_items.size()))
+                throw Error("%s(): invalid index %d (size=%d)", method, idx, size());
+        }
     };
 
 } // namespace indigo
-
-#ifdef _WIN32
-#pragma warning(pop)
-#endif
 
 #endif
