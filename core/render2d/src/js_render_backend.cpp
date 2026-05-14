@@ -425,6 +425,7 @@ EM_JS(void, js_rb_setFont, (const char* fam, double sz, int bold, int ital), {
     s.fbold = !!bold;
     s.fital = !!ital;
 });
+// clang-format off
 EM_JS(void, js_rb_fillText, (const char* text, double x, double y), {
     var r = Module._rb;
     var s = r.s;
@@ -450,9 +451,21 @@ EM_JS(void, js_rb_fillText, (const char* text, double x, double y), {
     // Track bbox: transform text anchor through CTM
     var tx = m[0] * x + m[2] * y + m[4];
     var ty = m[1] * x + m[3] * y + m[5];
-    // Estimate text extent (use char count * fontSize * scale as rough width)
-    var tw = t.length * s.fsz * 0.6 * Math.abs(m[0]);
-    var th = s.fsz * Math.abs(m[3]);
+    // Measure text extent via Canvas2D for accurate bbox
+    var tw, th;
+    try {
+        var ctx = r._ncCtx || (typeof document != 'undefined' && document.createElement('canvas').getContext('2d'));
+        if (ctx) {
+            var qfam = s.ffam.split(',').map(function(f){return "'" + f.trim() + "'";}).join(', ');
+            ctx.font = (s.fital ? 'italic ' : '') + (s.fbold ? 'bold ' : '') + s.fsz + 'px ' + qfam;
+            tw = ctx.measureText(t).width * Math.abs(m[0]);
+        } else {
+            tw = t.length * s.fsz * 0.6 * Math.abs(m[0]);
+        }
+    } catch(ex) {
+        tw = t.length * s.fsz * 0.6 * Math.abs(m[0]);
+    }
+    th = s.fsz * Math.abs(m[3]);
     if (tx < r.bbx0)
         r.bbx0 = tx;
     if (ty - th < r.bby0)
@@ -474,12 +487,14 @@ EM_JS(void, js_rb_fillText, (const char* text, double x, double y), {
     e += '>' + t + '</text>';
     r.elems.push(e);
 });
+// clang-format on
 
 // Text metrics approximation (works without Canvas2D)
+// clang-format off
 EM_JS(double, js_rb_measureWidth, (const char* text, double fontSize), {
     var t = UTF8ToString(text);
     var r = Module._rb;
-    var qfam = r.s.ffam.split(',').map(function(f){return "'" + f.trim() + "'";}).join(', ');
+    var qfam = r.s.ffam.split(',').map(function(f) { return "'" + f.trim() + "'"; }).join(', ');
     var style = (r.s.fital ? 'italic ' : '') + (r.s.fbold ? 'bold ' : '');
     // Measure at effective (CTM-scaled) font size to match SVG rendering
     var scale = Math.abs(r.s.ctm[0]) || 1;
@@ -522,13 +537,8 @@ EM_JS(double, js_rb_measureWidth, (const char* text, double fontSize), {
     {
         var ch = t.charCodeAt(i);
         // CJK full-width characters
-        if ((ch >= 0x2E80 && ch <= 0x9FFF) ||
-            (ch >= 0xAC00 && ch <= 0xD7AF) ||
-            (ch >= 0xF900 && ch <= 0xFAFF) ||
-            (ch >= 0x3000 && ch <= 0x303F) ||
-            (ch >= 0x3040 && ch <= 0x30FF) ||
-            (ch >= 0x31F0 && ch <= 0x31FF) ||
-            (ch >= 0xFF00 && ch <= 0xFFEF))
+        if ((ch >= 0x2E80 && ch <= 0x9FFF) || (ch >= 0xAC00 && ch <= 0xD7AF) || (ch >= 0xF900 && ch <= 0xFAFF) || (ch >= 0x3000 && ch <= 0x303F) ||
+            (ch >= 0x3040 && ch <= 0x30FF) || (ch >= 0x31F0 && ch <= 0x31FF) || (ch >= 0xFF00 && ch <= 0xFFEF))
             w += 1.00; // CJK full-width
         else if (ch >= 48 && ch <= 57)
             w += 0.60; // digits
@@ -552,14 +562,16 @@ EM_JS(double, js_rb_measureWidth, (const char* text, double fontSize), {
         else
             w += 0.60;
     }
-    return w * fontSize * 1.15;
+    return w * fontSize;
 });
+// clang-format on
 
 // Measure text ascent via Canvas2D (browser or node-canvas)
+// clang-format off
 EM_JS(double, js_rb_measureAscent, (const char* text, double fontSize), {
     var t = UTF8ToString(text);
     var r = Module._rb;
-    var qfam = r.s.ffam.split(',').map(function(f){return "'" + f.trim() + "'";}).join(', ');
+    var qfam = r.s.ffam.split(',').map(function(f) { return "'" + f.trim() + "'"; }).join(', ');
     var style = (r.s.fital ? 'italic ' : '') + (r.s.fbold ? 'bold ' : '');
     var font = style + fontSize + 'px ' + qfam;
     // Try browser Canvas2D
@@ -596,8 +608,9 @@ EM_JS(double, js_rb_measureAscent, (const char* text, double fontSize), {
         {
         }
     }
-    return fontSize * 0.8;
+    return fontSize * 0.75;
 });
+// clang-format on
 
 // -- Gradient --
 EM_JS(void, js_rb_setGradient, (double x0, double y0, double x1, double y1, double r1, double g1, double b1, double r2, double g2, double b2), {
@@ -611,6 +624,7 @@ EM_JS(void, js_rb_setGradient, (double x0, double y0, double x1, double y1, doub
 });
 
 // -- Image --
+// clang-format off
 EM_JS(void, js_rb_drawImage, (const uint8_t* data, int dataLen, double x, double y, double w, double h), {
     var r = Module._rb;
     if (!r || !data || dataLen <= 0 || w <= 0 || h <= 0)
@@ -1024,20 +1038,22 @@ void JSRenderBackend::setFontSize(double size)
 void JSRenderBackend::textExtents(const char* text, double& width, double& height, double& x_bearing, double& y_bearing)
 {
     width = js_rb_measureWidth(text, _fontSize);
-    height = _fontSize * 1.0;
+    double ascent = js_rb_measureAscent(text, _fontSize);
+    height = ascent;
     x_bearing = 0;
-    y_bearing = -_fontSize * 0.8;
+    y_bearing = -ascent;
 }
 
 void JSRenderBackend::fontExtents(double& height)
 {
-    height = _fontSize * 1.2;
+    height = _fontSize;
 }
 
 void JSRenderBackend::showText(const char* text)
 {
-    // Shift the text down vertically to emulate Cairo's bounding box placement
-    js_rb_fillText(text, _curX, _curY + _fontSize * 0.85);
+    // SVG <text> y is the baseline; offset from bounding box top by ascent
+    double ascent = js_rb_measureAscent(text, _fontSize);
+    js_rb_fillText(text, _curX, _curY + ascent);
     // Advance current position
     _curX += js_rb_measureWidth(text, _fontSize);
 }
