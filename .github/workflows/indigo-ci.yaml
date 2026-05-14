@@ -54,7 +54,7 @@ jobs:
       matrix-aarch64: ${{ steps.set-matrix.outputs.matrix-aarch64 }}
       matrix-dotnet: ${{ steps.set-matrix.outputs.matrix-dotnet }}
     needs: test_macos_x86_64
-    if: ${{ needs.test_macos_x86_64.result == 'success' || needs.test_macos_x86_64.result == 'skipped' }}
+    if: ${{ always() && (needs.test_macos_x86_64.result == 'success' || needs.test_macos_x86_64.result == 'skipped') }}
     steps:
       - name: set matrix env
         run: |
