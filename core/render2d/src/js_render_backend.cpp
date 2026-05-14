@@ -478,17 +478,42 @@ EM_JS(void, js_rb_fillText, (const char* text, double x, double y), {
 // Text metrics approximation (works without Canvas2D)
 EM_JS(double, js_rb_measureWidth, (const char* text, double fontSize), {
     var t = UTF8ToString(text);
-    // Try browser Canvas2D if available
+    var r = Module._rb;
+    var qfam = r.s.ffam.split(',').map(function(f){return "'" + f.trim() + "'";}).join(', ');
+    var style = (r.s.fital ? 'italic ' : '') + (r.s.fbold ? 'bold ' : '');
+    // Measure at effective (CTM-scaled) font size to match SVG rendering
+    var scale = Math.abs(r.s.ctm[0]) || 1;
+    var effSize = fontSize * scale;
+    var font = style + effSize + 'px ' + qfam;
+    // Try browser Canvas2D
     if (typeof document != 'undefined')
     {
         try
         {
             var c = document.createElement('canvas').getContext('2d');
-            c.font = fontSize + 'px ' + Module._rb.s.ffam;
-            return c.measureText(t).width;
+            c.font = font;
+            return c.measureText(t).width / scale;
         }
         catch (e)
         {
+        }
+    }
+    // Try node-canvas (Cairo-backed Canvas2D for Node.js)
+    if (typeof require !== 'undefined')
+    {
+        try
+        {
+            if (!r._ncCtx)
+            {
+                var createCanvas = require('canvas').createCanvas;
+                r._ncCtx = createCanvas(1, 1).getContext('2d');
+            }
+            r._ncCtx.font = font;
+            return r._ncCtx.measureText(t).width / scale;
+        }
+        catch (e)
+        {
+            // node-canvas not installed, use fallback
         }
     }
     // Fallback: approximate char widths for sans-serif (NotoSans-like)
@@ -496,24 +521,82 @@ EM_JS(double, js_rb_measureWidth, (const char* text, double fontSize), {
     for (var i = 0; i < t.length; i++)
     {
         var ch = t.charCodeAt(i);
-        if (ch >= 48 && ch <= 57)
+        // CJK full-width characters
+        if ((ch >= 0x2E80 && ch <= 0x9FFF) ||
+            (ch >= 0xAC00 && ch <= 0xD7AF) ||
+            (ch >= 0xF900 && ch <= 0xFAFF) ||
+            (ch >= 0x3000 && ch <= 0x303F) ||
+            (ch >= 0x3040 && ch <= 0x30FF) ||
+            (ch >= 0x31F0 && ch <= 0x31FF) ||
+            (ch >= 0xFF00 && ch <= 0xFFEF))
+            w += 1.00; // CJK full-width
+        else if (ch >= 48 && ch <= 57)
             w += 0.60; // digits
-        else if (ch >= 65 && ch <= 90)
-            w += 0.72; // uppercase
         else if (ch == 77 || ch == 87)
             w += 0.88; // M, W
         else if (ch == 73 || ch == 108)
             w += 0.33; // I, l
+        else if (ch >= 65 && ch <= 90)
+            w += 0.72; // uppercase
         else if (ch >= 97 && ch <= 122)
             w += 0.55; // lowercase
         else if (ch == 32)
             w += 0.30; // space
         else if (ch == 43 || ch == 45)
             w += 0.55; // +, -
+        // Greek, Cyrillic, symbols
+        else if (ch >= 0x0370 && ch <= 0x03FF)
+            w += 0.62; // Greek
+        else if (ch >= 0x0400 && ch <= 0x04FF)
+            w += 0.62; // Cyrillic
         else
             w += 0.60;
     }
     return w * fontSize * 1.15;
+});
+
+// Measure text ascent via Canvas2D (browser or node-canvas)
+EM_JS(double, js_rb_measureAscent, (const char* text, double fontSize), {
+    var t = UTF8ToString(text);
+    var r = Module._rb;
+    var qfam = r.s.ffam.split(',').map(function(f){return "'" + f.trim() + "'";}).join(', ');
+    var style = (r.s.fital ? 'italic ' : '') + (r.s.fbold ? 'bold ' : '');
+    var font = style + fontSize + 'px ' + qfam;
+    // Try browser Canvas2D
+    if (typeof document != 'undefined')
+    {
+        try
+        {
+            var c = document.createElement('canvas').getContext('2d');
+            c.font = font;
+            var m = c.measureText(t);
+            if (m.actualBoundingBoxAscent !== undefined)
+                return m.actualBoundingBoxAscent;
+        }
+        catch (e)
+        {
+        }
+    }
+    // Try node-canvas
+    if (typeof require !== 'undefined')
+    {
+        try
+        {
+            if (!r._ncCtx)
+            {
+                var createCanvas = require('canvas').createCanvas;
+                r._ncCtx = createCanvas(1, 1).getContext('2d');
+            }
+            r._ncCtx.font = font;
+            var m = r._ncCtx.measureText(t);
+            if (m.actualBoundingBoxAscent !== undefined)
+                return m.actualBoundingBoxAscent;
+        }
+        catch (e)
+        {
+        }
+    }
+    return fontSize * 0.8;
 });
 
 // -- Gradient --
@@ -941,9 +1024,9 @@ void JSRenderBackend::setFontSize(double size)
 void JSRenderBackend::textExtents(const char* text, double& width, double& height, double& x_bearing, double& y_bearing)
 {
     width = js_rb_measureWidth(text, _fontSize);
-    height = _fontSize * 0.75; // Fix line spacing
+    height = _fontSize * 1.0;
     x_bearing = 0;
-    y_bearing = -_fontSize * 0.8; // Maintain perfect sub/superscripts
+    y_bearing = -_fontSize * 0.8;
 }
 
 void JSRenderBackend::fontExtents(double& height)
@@ -961,8 +1044,11 @@ void JSRenderBackend::showText(const char* text)
 
 void JSRenderBackend::textPath(const char* text)
 {
-    // SVG doesn't have textPath in the Cairo sense. Just render the text.
-    js_rb_fillText(text, _curX, _curY);
+    // In Cairo, textPath adds glyphs to the current path without rendering.
+    // In SVG, we must NOT emit a <text> element here — this is only used
+    // for bounding box calculation (the "idle" pass in fontsDrawText).
+    // Only advance the cursor so that subsequent extent queries are correct.
+    _curX += js_rb_measureWidth(text, _fontSize);
 }
 
 // Font options - no-op for SVG

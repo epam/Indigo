@@ -73,6 +73,6 @@
     "@fontsource/noto-sans-tc": "^5.0.0"
   },
   "optionalDependencies": {
-    "sharp": "^0.34.5"
+    "canvas": "^3.1.0"
   }
 }

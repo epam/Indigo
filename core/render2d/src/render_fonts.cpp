@@ -65,14 +65,28 @@ double RenderContext::fontGetSize(FONT_SIZE size)
 #ifndef RENDER_USE_FONT_MANAGER
 void RenderContext::fontsSetFont(const TextItem& ti)
 {
+#if defined(__EMSCRIPTEN__) && defined(RENDER_ENABLE_CJK)
+    // For WASM/Emscripten builds with CJK enabled, detect CJK characters
+    // and select the appropriate Noto Sans CJK font family for the SVG output.
+    std::string family = _fontfamily.ptr();
+    FontLangDetector detector;
+    auto lang = detector.detectLang(ti);
+    if (lang == FONT_LANG::JAPANESE)
+        family = "Noto Sans CJK JP, Noto Sans JP";
+    else if (lang == FONT_LANG::KOREAN)
+        family = "Noto Sans CJK KR, Noto Sans KR";
+    else if (lang == FONT_LANG::CJK)
+        family = "Noto Sans CJK SC, Noto Sans SC";
+    _backend->selectFontFace(family.c_str(), ti.italic, ti.bold);
+#else
     _backend->selectFontFace(_fontfamily.ptr(), ti.italic, ti.bold);
+#endif
     _backend->setFontSize(ti.size > 0 ? ti.size : fontGetSize(ti.fontsize));
 }
 #else
 void RenderContext::fontsSetFont(const TextItem& ti)
 {
     // Font manager uses cairo directly - only available on desktop
-#ifndef __EMSCRIPTEN__
     std::lock_guard<std::mutex> _lock(_mutex);
     cairo_font_face_t* _cairo_face = _font_face_manager.selectCairoFontFace(ti);
     auto* cairoBackend = dynamic_cast<CairoRenderBackend*>(_backend.get());
@@ -81,23 +95,6 @@ void RenderContext::fontsSetFont(const TextItem& ti)
         cairo_set_font_face(cairoBackend->getCr(), _cairo_face);
         cairo_set_font_size(cairoBackend->getCr(), ti.size > 0 ? ti.size : fontGetSize(ti.fontsize));
     }
-#else
-    // For WASM/Emscripten builds, detect CJK characters and select
-    // the appropriate Noto Sans CJK font family for the SVG output.
-    std::string family = _fontfamily.ptr();
-#ifdef RENDER_ENABLE_CJK
-    FontLangDetector detector;
-    auto lang = detector.detectLang(ti);
-    if (lang == FONT_LANG::JAPANESE)
-        family = "Noto Sans JP";
-    else if (lang == FONT_LANG::KOREAN)
-        family = "Noto Sans KR";
-    else if (lang == FONT_LANG::CJK)
-        family = "Noto Sans SC";
-#endif
-    _backend->selectFontFace(family.c_str(), ti.italic, ti.bold);
-    _backend->setFontSize(ti.size > 0 ? ti.size : fontGetSize(ti.fontsize));
-#endif
 }
 #endif
 
