@@ -1125,6 +1125,7 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
             if (s.HasMember("queryOp"))
                 dsg.queryoper.readString(s["queryOp"].GetString(), true);
 
+            if (s.HasMember("x") || s.HasMember("y"))
             {
                 Vec2f dp;
                 if (s.HasMember("x"))

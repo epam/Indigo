@@ -1858,7 +1858,7 @@ CEXPORT int indigoIterateSGroupCrossBonds(int sgroup)
     INDIGO_BEGIN
     {
         IndigoSGroup& isg = IndigoSGroup::cast(self.getObject(sgroup));
-        return self.addObject(new IndigoSGroupBondsIter(isg.mol, isg.get()));
+        return self.addObject(new IndigoSGroupXBondsIter(isg.mol, isg.get()));
     }
     INDIGO_END(-1);
 }

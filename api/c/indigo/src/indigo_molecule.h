@@ -559,6 +559,22 @@ protected:
     int _idx;
 };
 
+// Iterates xbonds (crossing bonds) directly, not polymorphic getBonds()
+class IndigoSGroupXBondsIter : public IndigoObject
+{
+public:
+    IndigoSGroupXBondsIter(BaseMolecule& mol, SGroup& sgroup);
+    ~IndigoSGroupXBondsIter() override;
+
+    IndigoObject* next() override;
+    bool hasNext() override;
+
+protected:
+    BaseMolecule& _mol;
+    SGroup& _sgroup;
+    int _idx;
+};
+
 class IndigoMoleculeComponent : public IndigoObject
 {
 public:

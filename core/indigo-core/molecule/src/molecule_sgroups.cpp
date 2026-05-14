@@ -819,6 +819,7 @@ std::vector<SGroupWriteEntry> indigo::getOrderedSGroups(MoleculeSGroups& sgroups
     // Then iteratively add children whose parents are already added
     while (result.size() < all_entries.size())
     {
+        size_t prev_size = result.size();
         for (auto& e : all_entries)
         {
             if (added_indices.count(e.write_index))
@@ -828,6 +829,20 @@ std::vector<SGroupWriteEntry> indigo::getOrderedSGroups(MoleculeSGroups& sgroups
                 result.push_back(e);
                 added_indices.insert(e.write_index);
             }
+        }
+        // No progress — cyclic or orphan refs; break cycles by adding as roots
+        if (result.size() == prev_size)
+        {
+            for (auto& e : all_entries)
+            {
+                if (!added_indices.count(e.write_index))
+                {
+                    e.write_parent = 0;
+                    result.push_back(e);
+                    added_indices.insert(e.write_index);
+                }
+            }
+            break;
         }
     }
 
