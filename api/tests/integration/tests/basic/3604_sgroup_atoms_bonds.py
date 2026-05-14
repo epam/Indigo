@@ -231,6 +231,29 @@ for sg in mol2.iterateSGroups():
 print("sgroup count: {0}".format(sg_count))
 
 
+print("****** Molfile roundtrip: DAT with containment and cross bonds ********")
+
+indigo.setOption("molfile-saving-mode", "auto")
+mol = indigo.loadMolecule("CCCCCC")
+sg = mol.addSGroup("DAT", 0)
+sg.setSGroupAtoms([1, 2, 3])
+sg.setSGroupBonds([1, 2])
+sg.createCrossBonds()
+
+molfile = mol.molfile()
+print("DAT molfile V3000: {0}".format("V3000" in molfile))
+sgroup_lines = [l.strip() for l in molfile.split("\n") if " DAT " in l]
+for l in sgroup_lines:
+    print("DAT line: {0}".format(l))
+
+mol2 = indigo.loadMolecule(molfile)
+for sg in mol2.iterateDataSGroups():
+    cbonds = sorted([str(b.index()) for b in sg.iterateBonds()])
+    xbonds = sorted([str(b.index()) for b in sg.iterateSGroupCrossBonds()])
+    print("DAT containment bonds: {0}".format(" ".join(cbonds)))
+    print("DAT cross bonds: {0}".format(" ".join(xbonds)))
+
+
 # ===== ext_index roundtrip V3000 =====
 
 

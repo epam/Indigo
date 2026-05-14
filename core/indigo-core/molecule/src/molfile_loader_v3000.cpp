@@ -1191,11 +1191,19 @@ void MolfileLoader::_readSGroup3000(const char* str)
         }
         else if ((strcmp(entity.ptr(), "XBONDS") == 0) || (strcmp(entity.ptr(), "CBONDS") == 0))
         {
+            Array<int>* bonds = 0;
+            if (strcmp(entity.ptr(), "XBONDS") == 0)
+                bonds = &sgroup->xbonds;
+            else if (dsg != 0)
+                bonds = &dsg->cbonds;
+            else
+                bonds = &sgroup->getBonds();
+
             scanner.skip(1); // (
             n = scanner.readInt1();
             while (n-- > 0)
             {
-                sgroup->getBonds().push(scanner.readInt() - 1);
+                bonds->push(scanner.readInt() - 1);
                 scanner.skipSpace();
             }
             scanner.skip(1); // )
