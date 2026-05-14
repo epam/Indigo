@@ -206,6 +206,18 @@ void MolfileSaver::_saveMolecule(BaseMolecule& bmol, bool query)
     BaseMolecule* pmol = &bmol;
     std::unique_ptr<BaseMolecule> mol(bmol.neu());
     mol->clone_KeepIndices(bmol);
+
+    bool has_dat_xbonds = false;
+    for (int i = pmol->sgroups.begin(); i != pmol->sgroups.end(); i = pmol->sgroups.next(i))
+    {
+        SGroup& sgroup = pmol->sgroups.getSGroup(i);
+        if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT && sgroup.xbonds.size() > 0)
+        {
+            has_dat_xbonds = true;
+            break;
+        }
+    }
+
     if (mode == MODE_2000)
     {
         _v2000 = true;
@@ -219,7 +231,7 @@ void MolfileSaver::_saveMolecule(BaseMolecule& bmol, bool query)
         // auto-detect the format: save to v3000 molfile only
         // if v2000 is not enough
         _v2000 = !(pmol->hasHighlighting() || pmol->stereocenters.haveEnhancedStereocenter() ||
-                   (pmol->vertexCount() > 999 || pmol->edgeCount() > 999 || pmol->tgroups.getTGroupCount()));
+                   (pmol->vertexCount() > 999 || pmol->edgeCount() > 999 || pmol->tgroups.getTGroupCount()) || has_dat_xbonds);
     }
 
     if (mol->tgroups.getTGroupCount() && mol->convertTemplateAtomsToSuperatoms(!_v2000))
@@ -1116,15 +1128,23 @@ void MolfileSaver::_writeGenericSGroup3000(SGroup& sgroup, const SGroupWriteEntr
             output.printf(" %d", _atom_mapping[sgroup.atoms[i]]);
         output.printf(")");
     }
-    if (sgroup.getBonds().size() > 0)
+    if (sgroup.xbonds.size() > 0)
     {
-        if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
-            output.printf(" CBONDS=(%d", sgroup.getBonds().size());
-        else
-            output.printf(" XBONDS=(%d", sgroup.getBonds().size());
-        for (i = 0; i < sgroup.getBonds().size(); i++)
-            output.printf(" %d", _bond_mapping[sgroup.getBonds()[i]]);
+        output.printf(" XBONDS=(%d", sgroup.xbonds.size());
+        for (i = 0; i < sgroup.xbonds.size(); i++)
+            output.printf(" %d", _bond_mapping[sgroup.xbonds[i]]);
         output.printf(")");
+    }
+    if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
+    {
+        DataSGroup& dsgroup = (DataSGroup&)sgroup;
+        if (dsgroup.cbonds.size() > 0)
+        {
+            output.printf(" CBONDS=(%d", dsgroup.cbonds.size());
+            for (i = 0; i < dsgroup.cbonds.size(); i++)
+                output.printf(" %d", _bond_mapping[dsgroup.cbonds[i]]);
+            output.printf(")");
+        }
     }
     if (sgroup.sgroup_subtype > 0)
     {

@@ -57,6 +57,11 @@ type: 2
 atoms: 3
 bonds: 2
 sgroup count: 1
+****** Molfile roundtrip: DAT with containment and cross bonds ********
+DAT molfile V3000: True
+DAT line: M  V30 1 DAT 1 ATOMS=(3 2 3 4) XBONDS=(2 1 4) CBONDS=(2 2 3) FIELDDISP="    0-
+DAT containment bonds: 1 2
+DAT cross bonds: 0 3
 ****** ext_index: V3000 roundtrip with explicit extindex ********
 ext_index before save: 42
 roundtrip: index=1 extindex=42
