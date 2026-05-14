@@ -23,8 +23,10 @@
 #include "base_cpp/properties_map.h"
 #include "base_cpp/red_black.h"
 #include "base_cpp/tlscont.h"
+#include "molecule/loader_options.h"
 #include "molecule/molecule_arom.h"
 #include "molecule/molecule_stereocenter_options.h"
+#include "molecule/valence_model.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -53,6 +55,10 @@ namespace indigo
         // to keep C++ API compatible
         void loadQueryMolecule(QueryMolecule& qmol, MonomerTemplateLibrary* monomer_lib = nullptr);
 
+        // Bulk options propagation. See LoaderOptions doc for the field set.
+        void setOptions(const LoaderOptions& opts);
+        LoaderOptions getOptions() const;
+
         StereocentersOptions stereochemistry_options;
         bool ignore_cistrans_errors;
         bool ignore_closing_bond_direction_mismatch;
@@ -61,6 +67,7 @@ namespace indigo
         bool skip_3d_chirality;
         bool ignore_no_chiral_flag;
         bool ignore_bad_valence;
+        ValenceMode valence_mode;
         bool smiles_loading_strict_aliphatic;
         int treat_stereo_as;
         bool dearomatize_on_load;

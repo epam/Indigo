@@ -21,6 +21,7 @@
 
 #include "base_cpp/exception.h"
 #include "base_cpp/tlscont.h"
+#include "molecule/loader_options.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/query_molecule.h"
@@ -65,8 +66,13 @@ namespace indigo
         StereocentersOptions stereochemistry_options;
         bool ignore_cistrans_errors;
         bool ignore_bad_valence;
+        ValenceMode valence_mode;
         bool strict_aliphatic;
         bool ignore_no_chiral_flag{false};
+
+        // Bulk options propagation. See LoaderOptions doc for the field set.
+        void setOptions(const LoaderOptions& opts);
+        LoaderOptions getOptions() const;
 
         static void readSmartsAtomStr(const std::string& atom_str, std::unique_ptr<QueryMolecule::Atom>& qatom);
         static void readSmartsBondStr(const std::string& bond_str, std::unique_ptr<QueryMolecule::Bond>& qbond);

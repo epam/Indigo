@@ -36,6 +36,7 @@ RSmilesLoader::RSmilesLoader(Scanner& scanner) : _scanner(scanner)
     smarts_mode = false;
     ignore_cistrans_errors = false;
     ignore_bad_valence = false;
+    valence_mode = ValenceMode::BIOVIA_2009;
 }
 
 int RSmilesLoader::_selectGroupByPair(int& lead_idx, int& idx, int rcnt, int ccnt, int pcnt) const
@@ -57,6 +58,22 @@ int RSmilesLoader::_selectGroup(int& idx, int rcnt, int ccnt, int pcnt) const
 {
     int iidx = idx;
     return _selectGroupByPair(iidx, idx, rcnt, ccnt, pcnt);
+}
+
+void RSmilesLoader::setOptions(const LoaderOptions& opts)
+{
+    stereochemistry_options = opts.stereochemistry_options;
+    ignore_bad_valence = opts.ignore_bad_valence;
+    valence_mode = opts.valence_mode;
+}
+
+LoaderOptions RSmilesLoader::getOptions() const
+{
+    LoaderOptions opts;
+    opts.stereochemistry_options = stereochemistry_options;
+    opts.ignore_bad_valence = ignore_bad_valence;
+    opts.valence_mode = valence_mode;
+    return opts;
 }
 
 void RSmilesLoader::loadReaction(Reaction& reaction)
@@ -125,6 +142,7 @@ void RSmilesLoader::_loadReaction()
     r_loader.ignore_cistrans_errors = ignore_cistrans_errors;
     r_loader.stereochemistry_options = stereochemistry_options;
     r_loader.ignore_bad_valence = ignore_bad_valence;
+    r_loader.valence_mode = valence_mode;
 
     if (_rxn != 0)
     {
@@ -159,6 +177,7 @@ void RSmilesLoader::_loadReaction()
     c_loader.ignore_cistrans_errors = ignore_cistrans_errors;
     c_loader.stereochemistry_options = stereochemistry_options;
     c_loader.ignore_bad_valence = ignore_bad_valence;
+    c_loader.valence_mode = valence_mode;
 
     if (_rxn != 0)
     {
@@ -199,6 +218,7 @@ void RSmilesLoader::_loadReaction()
     p_loader.ignore_cistrans_errors = ignore_cistrans_errors;
     p_loader.stereochemistry_options = stereochemistry_options;
     p_loader.ignore_bad_valence = ignore_bad_valence;
+    p_loader.valence_mode = valence_mode;
 
     if (_rxn != 0)
     {

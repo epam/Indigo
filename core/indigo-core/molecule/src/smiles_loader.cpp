@@ -41,6 +41,7 @@ SmilesLoader::SmilesLoader(Scanner& scanner) : _scanner(scanner)
     ignore_closing_bond_direction_mismatch = false;
     ignore_cistrans_errors = false;
     ignore_bad_valence = false;
+    valence_mode = ValenceMode::BIOVIA_2009;
     ignore_no_chiral_flag = false;
     _mol = 0;
     _qmol = 0;
@@ -57,6 +58,24 @@ SmilesLoader::~SmilesLoader()
     _atoms.clear();
 }
 
+void SmilesLoader::setOptions(const LoaderOptions& opts)
+{
+    stereochemistry_options = opts.stereochemistry_options;
+    ignore_bad_valence = opts.ignore_bad_valence;
+    valence_mode = opts.valence_mode;
+    ignore_no_chiral_flag = opts.ignore_no_chiral_flag;
+}
+
+LoaderOptions SmilesLoader::getOptions() const
+{
+    LoaderOptions opts;
+    opts.stereochemistry_options = stereochemistry_options;
+    opts.ignore_bad_valence = ignore_bad_valence;
+    opts.valence_mode = valence_mode;
+    opts.ignore_no_chiral_flag = ignore_no_chiral_flag;
+    return opts;
+}
+
 void SmilesLoader::loadMolecule(Molecule& mol)
 {
     mol.clear();
@@ -65,8 +84,11 @@ void SmilesLoader::loadMolecule(Molecule& mol)
     _qmol = 0;
     _has_atom_coordinates = false;
     mol.original_format = BaseMolecule::SMILES;
-    _loadMolecule();
+    // Order matters: _loadMolecule() infers implicit H using the molecule's current
+    // valence model, so the mode must be set first.
     mol.setIgnoreBadValenceFlag(ignore_bad_valence);
+    mol.setValenceMode(valence_mode);
+    _loadMolecule();
 }
 
 void SmilesLoader::loadQueryMolecule(QueryMolecule& mol)

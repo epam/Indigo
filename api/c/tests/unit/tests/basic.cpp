@@ -466,7 +466,7 @@ M  END
 )";
 
 static constexpr char Si4_cycle_radical_v3000[] = R"(
-  Mrv1805 07132505242D          
+  Mrv1805 07132505242D
 
   0  0  0     0  0            999 V3000
 M  V30 BEGIN CTAB
@@ -608,4 +608,107 @@ TEST_F(IndigoApiBasicTest, valence_Si29_isotope_pentafluoride_dianion)
     const char* smiles = indigoCanonicalSmiles(mol);
     ASSERT_NE(nullptr, smiles);
     ASSERT_STRNE("", smiles);
+}
+// SiF5²⁻: silicon pentafluoride dianion. Si carries the −2 charge, which must extend
+// the valence ladder to accept conn=5 (not only the more common conn=6 SiF6²⁻).
+static constexpr char SiF5_charge_minus2_mol[] = R"(
+  -INDIGO-10082014522D
+
+  6  5  0  0  0  0  0  0  0  0999 V2000
+   -1.0862   -0.0414    0.0000 Si  0  0  0  0  0  0  0  0  0  0  0  0
+   -2.1862   -0.9552    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.3241    1.3690    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0172    0.8586    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+   -2.4310    0.4552    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+    0.2552   -0.5517    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0  0  0  0
+  1  3  1  0  0  0  0
+  1  4  1  0  0  0  0
+  1  5  1  0  0  0  0
+  1  6  1  0  0  0  0
+M  CHG  1   1  -2
+M  END
+)";
+
+TEST_F(IndigoApiBasicTest, canonical_smiles_SiF5_charge_minus2)
+{
+    const int mol = indigoLoadMoleculeFromString(SiF5_charge_minus2_mol);
+    ASSERT_NE(-1, mol);
+
+    ASSERT_EQ(6, indigoCountAtoms(mol));
+    ASSERT_EQ(5, indigoCountBonds(mol));
+
+    // Si with charge=-2, conn=5 must yield valence=5, hyd=0.
+    const char* smiles = indigoCanonicalSmiles(mol);
+    ASSERT_NE(nullptr, smiles);
+    ASSERT_STRNE("", smiles);
+}
+
+// SiF6²⁻ (hexafluorosilicate) — the conn=6 counterpart of the SiF5 test above.
+TEST_F(IndigoApiBasicTest, canonical_smiles_SiF6_charge_minus2)
+{
+    int mol = indigoLoadMoleculeFromString("[Si-2](F)(F)(F)(F)(F)F");
+    ASSERT_NE(-1, mol);
+    ASSERT_EQ(7, indigoCountAtoms(mol));
+
+    const char* smiles = indigoCanonicalSmiles(mol);
+    ASSERT_NE(nullptr, smiles);
+    ASSERT_STRNE("", smiles);
+}
+
+// End-to-end SDF iteration + canonicalSmiles on a broad query set, to catch
+// per-molecule regressions that aren't surfaced by targeted cases.
+TEST_F(IndigoApiBasicTest, canonical_smiles_all_rand_queries_small)
+{
+    int reader = indigoIterateSDFile(dataPath("molecules/basic/rand_queries_small.sdf").c_str());
+    ASSERT_NE(-1, reader);
+
+    int idx = 0;
+    while (indigoHasNext(reader))
+    {
+        int item = indigoNext(reader);
+        ASSERT_NE(-1, item);
+
+        const char* smiles = indigoCanonicalSmiles(item);
+        EXPECT_NE(nullptr, smiles) << "canonicalSmiles failed on molecule #" << idx;
+
+        indigoFree(item);
+        idx++;
+    }
+    indigoFree(reader);
+
+    // File holds 372 entries, last is empty; lower bound 300 tolerates churn.
+    EXPECT_GT(idx, 300);
+}
+
+// Neutral Si cannot expand past valence 4 without charge, so 5 bonds must be reported
+// as an invalid valence with a descriptive error message.
+static constexpr char SiF5_neutral_invalid_mol[] = R"(
+  -INDIGO-test
+
+  6  5  0  0  0  0  0  0  0  0999 V2000
+    0.0000    0.0000    0.0000 Si  0  0  0  0  0  0  0  0  0  0  0  0
+    1.0000    0.0000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    1.0000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.0000    0.0000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000   -1.0000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+    0.5000    0.5000    0.0000 F   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0  0  0  0
+  1  3  1  0  0  0  0
+  1  4  1  0  0  0  0
+  1  5  1  0  0  0  0
+  1  6  1  0  0  0  0
+M  END
+)";
+
+TEST_F(IndigoApiBasicTest, canonical_smiles_invalid_molecule_descriptive_error)
+{
+    int mol = indigoLoadMoleculeFromString(SiF5_neutral_invalid_mol);
+    ASSERT_NE(-1, mol);
+
+    const char* valenceErr = indigoCheckBadValence(mol);
+    ASSERT_NE(nullptr, valenceErr);
+    std::string errStr(valenceErr);
+    EXPECT_NE(std::string::npos, errStr.find("Si")) << "Error should mention Si, got: " << errStr;
+    EXPECT_NE(std::string::npos, errStr.find("5 drawn bonds")) << "Error should mention 5 drawn bonds, got: " << errStr;
 }

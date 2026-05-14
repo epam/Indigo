@@ -20,6 +20,8 @@
 #include "indigo_savers.h"
 #include "molecule/molfile_saver.h"
 
+#include <cstring>
+
 static void setStrValue(const char* source, char* dest, int len)
 {
     if (strlen(source) > len)
@@ -37,6 +39,26 @@ static void indigoGetMolfileSavingMode(Array<char>& value)
 {
     Indigo& self = indigoGetInstance();
     MolfileSaver::saveFormatMode(self.molfile_saving_mode, value);
+}
+
+static void indigoSetValenceMode(const char* mode)
+{
+    Indigo& self = indigoGetInstance();
+    if (strcmp(mode, "biovia-2009") == 0 || strcmp(mode, "pre-2014") == 0 || strcmp(mode, "default") == 0)
+        self.valence_mode = ValenceMode::BIOVIA_2009;
+    else if (strcmp(mode, "biovia-2017") == 0 || strcmp(mode, "post-2014") == 0)
+        self.valence_mode = ValenceMode::BIOVIA_2017;
+    else
+        throw IndigoError("invalid valence mode: '%s' (expected 'biovia-2009', 'biovia-2017', 'pre-2014', or 'post-2014')", mode);
+}
+
+static void indigoGetValenceMode(Array<char>& value)
+{
+    Indigo& self = indigoGetInstance();
+    if (self.valence_mode == ValenceMode::BIOVIA_2017)
+        value.readString("biovia-2017", true);
+    else
+        value.readString("biovia-2009", true);
 }
 
 static void indigoSetMonomerLibrarySavingMode(const char* mode)
@@ -358,6 +380,7 @@ void IndigoOptionHandlerSetter::setBasicOptionHandlers(const qword id)
     mgr->setOptionHandlerString("treat-stereo-as", indigoSetStereoOption, indigoGetStereoOption);
     mgr->setOptionHandlerBool("ignore-closing-bond-direction-mismatch", SETTER_GETTER_BOOL_OPTION(indigo.ignore_closing_bond_direction_mismatch));
     mgr->setOptionHandlerBool("ignore-bad-valence", SETTER_GETTER_BOOL_OPTION(indigo.ignore_bad_valence));
+    mgr->setOptionHandlerString("valence-mode", indigoSetValenceMode, indigoGetValenceMode);
     mgr->setOptionHandlerBool("treat-x-as-pseudoatom", SETTER_GETTER_BOOL_OPTION(indigo.treat_x_as_pseudoatom));
     mgr->setOptionHandlerBool("dearomatize-on-load", SETTER_GETTER_BOOL_OPTION(indigo.dearomatize_on_load));
     mgr->setOptionHandlerBool("aromatize-skip-superatoms", SETTER_GETTER_BOOL_OPTION(indigo.aromatize_skip_superatoms));

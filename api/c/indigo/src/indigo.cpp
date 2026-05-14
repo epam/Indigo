@@ -159,6 +159,7 @@ void Indigo::init()
 
     ignore_closing_bond_direction_mismatch = false;
     ignore_bad_valence = false;
+    valence_mode = ValenceMode::BIOVIA_2009;
 
     // Update global index
     static std::atomic<int> global_id;
@@ -248,6 +249,19 @@ void Indigo::initRxnfileSaver(RxnfileSaver& saver)
 Indigo::~Indigo()
 {
     removeAllObjects();
+}
+
+LoaderOptions Indigo::loaderOptions() const
+{
+    LoaderOptions opts;
+    opts.stereochemistry_options = stereochemistry_options;
+    opts.valence_mode = valence_mode;
+    opts.ignore_bad_valence = ignore_bad_valence;
+    opts.ignore_no_chiral_flag = ignore_no_chiral_flag;
+    opts.ignore_noncritical_query_features = ignore_noncritical_query_features;
+    opts.skip_3d_chirality = skip_3d_chirality;
+    opts.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+    return opts;
 }
 
 int Indigo::getId() const

@@ -493,14 +493,9 @@ CEXPORT int indigoLoadMoleculeWithLib(int source, int monomer_library)
 
         MoleculeAutoLoader loader(IndigoScanner::get(obj));
 
-        loader.stereochemistry_options = self.stereochemistry_options;
-        loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
-        loader.ignore_noncritical_query_features = self.ignore_noncritical_query_features;
-        loader.skip_3d_chirality = self.skip_3d_chirality;
+        loader.setOptions(self.loaderOptions());
         loader.ignore_closing_bond_direction_mismatch = self.ignore_closing_bond_direction_mismatch;
-        loader.ignore_no_chiral_flag = self.ignore_no_chiral_flag;
         loader.treat_stereo_as = self.treat_stereo_as;
-        loader.ignore_bad_valence = self.ignore_bad_valence;
         loader.smiles_loading_strict_aliphatic = self.smiles_loading_strict_aliphatic;
         loader.dearomatize_on_load = self.dearomatize_on_load;
         loader.arom_options = self.arom_options;
@@ -611,8 +606,7 @@ CEXPORT int indigoLoadQueryMoleculeWithLib(int source, int monomer_library)
         IndigoObject& obj = self.getObject(source);
         MoleculeAutoLoader loader(IndigoScanner::get(obj));
 
-        loader.stereochemistry_options = self.stereochemistry_options;
-        loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
+        loader.setOptions(self.loaderOptions());
         loader.dearomatize_on_load = self.dearomatize_on_load;
         loader.arom_options = self.arom_options;
         loader.input_format = self.input_format;
@@ -661,11 +655,7 @@ CEXPORT int indigoLoadMonomerLibrary(int source)
                     properties.copy(sdf_loader.properties);
                     BufferScanner scanner2(sdf_loader.data);
                     MolfileLoader loader(scanner2, &libptr->get());
-                    loader.stereochemistry_options = self.stereochemistry_options;
-                    loader.ignore_noncritical_query_features = self.ignore_noncritical_query_features;
-                    loader.skip_3d_chirality = self.skip_3d_chirality;
-                    loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
-                    loader.ignore_no_chiral_flag = self.ignore_no_chiral_flag;
+                    loader.setOptions(self.loaderOptions());
                     loader.treat_stereo_as = self.treat_stereo_as;
                     Molecule mol;
                     loader.loadMolecule(mol);

@@ -352,7 +352,7 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
     reaction_atom_inversion.expandFill(vertexEnd(), 0);
     reaction_atom_exact_change.expandFill(vertexEnd(), 0);
     reaction_bond_reacting_center.expandFill(edgeEnd(), 0);
-    _bond_directions.expandFill(edgeEnd(), -1);
+    _bond_directions.expandFill(edgeEnd(), BOND_DIRECTION_MONO);
 
     // Copy atom properties
     for (auto i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))

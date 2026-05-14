@@ -471,9 +471,7 @@ CEXPORT int indigoLoadReactionWithLib(int source, int monomer_library)
 
         ReactionAutoLoader loader(scanner);
 
-        loader.stereochemistry_options = self.stereochemistry_options;
-        loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
-        loader.ignore_noncritical_query_features = self.ignore_noncritical_query_features;
+        loader.setOptions(self.loaderOptions());
         loader.dearomatize_on_load = self.dearomatize_on_load;
         loader.arom_options = self.arom_options;
         loader.layout_options = self.layout_options;
@@ -551,8 +549,7 @@ CEXPORT int indigoLoadQueryReactionWithLib(int source, int monomer_library)
 
         ReactionAutoLoader loader(scanner);
 
-        loader.stereochemistry_options = self.stereochemistry_options;
-        loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
+        loader.setOptions(self.loaderOptions());
         loader.dearomatize_on_load = self.dearomatize_on_load;
         loader.arom_options = self.arom_options;
         loader.input_format = self.input_format;
