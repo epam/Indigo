@@ -749,30 +749,26 @@ EM_JS(int, js_rb_finalize, (int mode), {
         return r.out.length;
     }
     else if (mode == 0)
-    { // PNG - rasterize SVG
-        // Node.js: use sharp (npm dependency) for SVG to PNG
+    { // PNG - rasterize SVG via Canvas2D
+        // Node.js: use node-canvas (synchronous SVG-to-PNG)
         if (typeof require != 'undefined')
         {
             try
             {
-                var sharp = require('sharp');
-                var fs = require('fs');
-                var os = require('os');
-                var svgBuf = Buffer.from(svg);
-                var pngPath = os.tmpdir() + '/_indigo_render.png';
-                var cp = require('child_process');
-                var svgPath = os.tmpdir() + '/_indigo_render.svg';
-                fs.writeFileSync(svgPath, svgBuf);
-                cp.execSync('node -e "require(\'sharp\')(\'' + svgPath + '\').png().toFile(\'' + pngPath + '\').then(()=>process.exit(0))"');
-                var pngData = fs.readFileSync(pngPath);
-                r.out = new Uint8Array(pngData);
+                var canvasMod = require('canvas');
+                var img = new canvasMod.Image();
+                img.src = Buffer.from(svg);
+                var pngCanvas = canvasMod.createCanvas(img.width, img.height);
+                var pngCtx = pngCanvas.getContext('2d');
+                pngCtx.drawImage(img, 0, 0);
+                r.out = new Uint8Array(pngCanvas.toBuffer('image/png'));
                 return r.out.length;
             }
             catch (e)
             {
             }
         }
-        // Browser fallback: output SVG (use renderAsync for real PNG in browser)
+        // Browser fallback: output SVG bytes
         r.out = toBytes(svg);
         return r.out.length;
     }
