@@ -1211,6 +1211,29 @@ IndigoObject* IndigoSGroupBondsIter::next()
     return new IndigoBond(_mol, _sgroup.getBonds()[_idx]);
 }
 
+IndigoSGroupXBondsIter::IndigoSGroupXBondsIter(BaseMolecule& mol, SGroup& sgroup) : IndigoObject(SGROUP_ATOMS_ITER), _mol(mol), _sgroup(sgroup)
+{
+    _idx = -1;
+}
+
+IndigoSGroupXBondsIter::~IndigoSGroupXBondsIter()
+{
+}
+
+bool IndigoSGroupXBondsIter::hasNext()
+{
+    return _idx + 1 < _sgroup.xbonds.size();
+}
+
+IndigoObject* IndigoSGroupXBondsIter::next()
+{
+    if (!hasNext())
+        return 0;
+
+    _idx++;
+    return new IndigoBond(_mol, _sgroup.xbonds[_idx]);
+}
+
 int _indigoIterateAtoms(Indigo& self, int molecule, int type)
 {
     return self.addObject(new IndigoAtomsIter(&self.getObject(molecule).getBaseMolecule(), type));
