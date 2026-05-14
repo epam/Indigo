@@ -1242,10 +1242,11 @@ jobs:
           name: bingo-postgres-${{ matrix.postgres_major_version }}-macos-x86_64
           path: dist/bingo-postgres*.tgz
       - id: set-success
-        run: echo "build_bingo_postgres_macos_x86_64=\"success\"" >> $GITHUB_OUTPUT
+        if: ${{ success() }}
+        run: echo "build_bingo_postgres_macos_x86_64=success" >> $GITHUB_OUTPUT
 
   build_bingo_sqlserver_windows_msvc_x86_64:
-    if: ${{ !startsWith(github.ref, 'refs/tags/indigo-') || build_bingo_postgres_macos_x86_64 == "success"}}
+    if: ${{ !startsWith(github.ref, 'refs/tags/indigo-') || build_bingo_postgres_macos_x86_64 == 'success' }}
     strategy:
       fail-fast: false
       matrix:
