@@ -1,3 +1,57 @@
+# Indigo 1.43.0
+Released 2026-05-13
+
+## Features
+* #3526 - Update SDF and KET format to include information about preset phosphate position
+* #3525 - Expose ability to calculate fully expanded large molecule into chemical structures
+* #3562 – Add api to iterate through attachments points of S-groups of 'SUP' type
+* #3554 - Implement multi-threading in Bingo NoSQL substructure search
+
+## Bugfixes and improvements
+* #3307 - If the selected group is forming an n-agon with 6 or more than 6 points, then the bases should be located inside of the circular structure
+* #3308 - If the selected group is forming an n-agon with 12 or more than 12 points, the bases should be located inside of the circular structure
+* #3304, #3305 Fixed monomer of cycle on layout should be top left monomer
+* #3496 - Fixing the issue during reading of the molecule data and parse it.
+* #3301 - System provides invalid SDF content (missing semicolon) on mono…
+* #3449 - Bond length become wrong after Arrange as a Ring option applied
+* #3329 - Sequential application of “Create cyclic structure” to different segments of one chain leads to overlapping and distorted topology
+* #3584 - Deadlock in multithread subsearch.
+* #3622 - Fix Bingo-nosql matcher sub tau speed issue
+* #3268 - Cyclic layout issues
+* #3353 - System ignores Implicit H count value in export to SVG/PNG
+* #3303 - Wrong monomer re-layout
+
+
+**Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.42.0-rc.1...indigo-1.43.0
+
+# Indigo 1.42.0
+Released 2026-05-13
+
+## Features
+* #3461 - Export/import multi-tailed arrows to/from CDX/CDXML
+* Enable tau fingerprints in Bingo NoSQL
+
+## Bugfixes and improvements
+* #3528 - Bingo NoSQL database format different in Windows and Linux
+
+
+**Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.41.0-rc.1...indigo-1.42.0
+
+# Indigo 1.41.0
+Released 2026-05-13
+
+## Features
+* Run sonarqube only by request
+
+## Bugfixes and improvements
+* #3437 - Turn off specific indigo wrappers using cmake
+* #3352 - System should count O and U peptides in Amino Acid natural analog grid
+* #3465 - Substructure match: add parameter to limit tautomer chain search only by matched struct
+* #3446 - Export to CDXML replaces multi-line text labels to many one-line text labels stacked one over another
+
+
+**Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.40.0-rc.1...indigo-1.41.0
+
 # Indigo 1.40.0
 Released 2026-02-23
 
