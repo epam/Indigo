@@ -33,6 +33,22 @@ biln_to_helm = {
         "Ac(1,2).A-K(1,3)(2,2).Me(2,1)",
         "PEPTIDE1{[Ac]}|PEPTIDE2{A.K}|PEPTIDE3{[Me]}$PEPTIDE1,PEPTIDE2,1:R2-2:R3|PEPTIDE2,PEPTIDE3,2:R2-1:R1$$$V2.0",
     ),
+    "biln_underscore_alias": (
+        "A-1Nal-Cys_Bn-C",
+        "PEPTIDE1{A.[1Nal].[Cys_Bn].C}$$$$V2.0",
+    ),
+    "biln_bracketed_alias": (
+        "A-[D-1Nal]-[Cys_Bn]-[C]",
+        "PEPTIDE1{A.[D-1Nal].[Cys_Bn].C}$$$$V2.0",
+    ),
+    "biln_star_alias": (
+        "A-D*-C",
+        "PEPTIDE1{A.[D*].C}$$$$V2.0",
+    ),
+    "biln_large_bond_id": (
+        "A-C(7563,3).C(7563,3)",
+        "PEPTIDE1{A.C}|PEPTIDE2{C}$PEPTIDE1,PEPTIDE2,2:R3-1:R3$$$V2.0",
+    ),
     "biln_disulfides": (
         "D-T-H-F-P-I-C(1,3)-I-F-C(2,3)-C(3,3)-G-C(2,3)-C(4,3)-H-R-S-K-C(3,3)-G-M-C(4,3)-C(1,3)-K-T",
         "PEPTIDE1{D.T.H.F.P.I.C.I.F.C.C.G.C.C.H.R.S.K.C.G.M.C.C.K.T}$PEPTIDE1,PEPTIDE1,7:R3-23:R3|PEPTIDE1,PEPTIDE1,10:R3-13:R3|PEPTIDE1,PEPTIDE1,11:R3-19:R3|PEPTIDE1,PEPTIDE1,14:R3-22:R3$$$V2.0",
@@ -65,6 +81,18 @@ helm_to_biln = {
     "helm_cycle": (
         "PEPTIDE1{[Abu].[Sar].[NMeL].V.[NMeL].A.[DAla].[NMeL].[NMeL].[NMeV].[NMeThr4RBut2enyl]}$PEPTIDE1,PEPTIDE1,1:R1-11:R2$$$V2.0",
         "Abu(1,1)-Sar-NMeL-V-NMeL-A-DAla-NMeL-NMeL-NMeV-NMeThr4RBut2enyl(1,2)",
+    ),
+    "helm_underscore_alias": (
+        "PEPTIDE1{A.[1Nal].[Cys_Bn].C}$$$$V2.0",
+        "A-1Nal-Cys_Bn-C",
+    ),
+    "helm_bracketed_alias": (
+        "PEPTIDE1{A.[D-1Nal].[Cys_Bn].C}$$$$V2.0",
+        "A-[D-1Nal]-Cys_Bn-C",
+    ),
+    "helm_star_alias": (
+        "PEPTIDE1{A.[D*].C}$$$$V2.0",
+        "A-D*-C",
     ),
 }
 

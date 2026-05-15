@@ -1206,6 +1206,38 @@ M  END
     }
 
     {
+        test("BILN", "underscore_alias", () => {
+            var fs = require('fs');
+            let options = new indigo.MapStringString();
+            const monomersLib = fs.readFileSync("monomer_library.ket");
+            options.set("output-content-type", "application/json");
+            options.set("input-format", "chemical/x-biln");
+            options.set("monomerLibrary", monomersLib);
+            const biln = "A-1Nal-Cys_Bn-C";
+            const res = indigo.convert(biln, "helm", options);
+            const res_helm = JSON.parse(res).struct;
+            assert.equal(res_helm, "PEPTIDE1{A.[1Nal].[Cys_Bn].C}$$$$V2.0");
+            options.delete();
+        });
+    }
+
+    {
+        test("BILN", "bracketed_alias", () => {
+            var fs = require('fs');
+            let options = new indigo.MapStringString();
+            const monomersLib = fs.readFileSync("monomer_library.ket");
+            options.set("output-content-type", "application/json");
+            options.set("input-format", "chemical/x-biln");
+            options.set("monomerLibrary", monomersLib);
+            const biln = "A-[D-1Nal]-[Cys_Bn]-[C]";
+            const res = indigo.convert(biln, "helm", options);
+            const res_helm = JSON.parse(res).struct;
+            assert.equal(res_helm, "PEPTIDE1{A.[D-1Nal].[Cys_Bn].C}$$$$V2.0");
+            options.delete();
+        });
+    }
+
+    {
         test("BILN", "cross_links", () => {
             var fs = require('fs');
             let options = new indigo.MapStringString();

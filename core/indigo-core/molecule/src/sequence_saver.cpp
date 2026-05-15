@@ -843,15 +843,22 @@ static std::string get_biln_attachment_idx(const KetConnectionEndPoint& ep)
     return ap.substr(1);
 }
 
-static void check_biln_alias(const std::string& monomer_alias)
+static std::string format_biln_alias(const std::string& monomer_alias)
 {
     if (monomer_alias.empty())
         throw SequenceSaver::Error("Cannot save empty monomer alias in BILN format.");
+    bool needs_brackets = false;
     for (auto ch : monomer_alias)
     {
-        if (ch == '-' || ch == '.' || ch == '(' || ch == ')' || ch == ',' || std::isspace(static_cast<unsigned char>(ch)))
+        if (ch == '-')
+        {
+            needs_brackets = true;
+            continue;
+        }
+        if (ch == '.' || ch == '(' || ch == ')' || ch == ',' || ch == '[' || ch == ']' || std::isspace(static_cast<unsigned char>(ch)))
             throw SequenceSaver::Error("Cannot save monomer alias '%s' in BILN format.", monomer_alias.c_str());
     }
+    return needs_brackets ? "[" + monomer_alias + "]" : monomer_alias;
 }
 
 std::string SequenceSaver::saveBILN(KetDocument& doc, const std::vector<std::deque<std::string>>& sequences)
@@ -874,9 +881,8 @@ std::string SequenceSaver::saveBILN(KetDocument& doc, const std::vector<std::deq
             if (monomer_class != MonomerClass::AminoAcid)
                 throw Error("Cannot save in BILN format - expected AminoAcid monomer but found %s monomer %s.",
                             MonomerTemplate::MonomerClassToStr(monomer_class).c_str(), monomer->alias().c_str());
-            check_biln_alias(monomer->alias());
             monomer_to_chain_pos.emplace(monomer_id, std::make_pair(chains.size(), chain.size()));
-            chain.emplace_back(monomer->alias());
+            chain.emplace_back(format_biln_alias(monomer->alias()));
         }
         if (!chain.empty())
             chains.emplace_back(chain);

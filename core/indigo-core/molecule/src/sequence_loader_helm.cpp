@@ -17,6 +17,7 @@
  ***************************************************************************/
 
 #include <cctype>
+#include <limits>
 #include <memory>
 #include <regex>
 #include <unordered_set>
@@ -622,8 +623,6 @@ void SequenceLoader::loadBILN(KetDocument& document)
     std::vector<BilnBond> bonds;
     std::unordered_map<int, size_t> bond_to_idx;
 
-    constexpr int kMaxBilnIndex = 1000;
-
     size_t data_pos = 0;
     auto skip_spaces = [&]() {
         while (data_pos < biln.size() && is_space(biln[data_pos]))
@@ -636,9 +635,10 @@ void SequenceLoader::loadBILN(KetDocument& document)
         int value = 0;
         while (data_pos < biln.size() && std::isdigit(static_cast<unsigned char>(biln[data_pos])))
         {
-            value = value * 10 + (biln[data_pos] - '0');
-            if (value > kMaxBilnIndex)
+            const int digit = biln[data_pos] - '0';
+            if (value > (std::numeric_limits<int>::max() - digit) / 10)
                 throw Error("Invalid BILN bond annotation: %s number is too large.", field_name);
+            value = value * 10 + digit;
             data_pos++;
         }
         if (value == 0)
@@ -680,12 +680,29 @@ void SequenceLoader::loadBILN(KetDocument& document)
                 throw Error("Invalid BILN string: empty monomer.");
 
             std::string monomer_alias;
-            while (data_pos < biln.size() && biln[data_pos] != '(' && biln[data_pos] != '-' && biln[data_pos] != '.' && !is_space(biln[data_pos]))
+            if (biln[data_pos] == '[')
             {
-                char ch = biln[data_pos];
-                if (!std::isalnum(static_cast<unsigned char>(ch)) && ch != '[' && ch != ']' && ch != '#')
-                    throw Error("Invalid BILN string: unexpected symbol '%c'.", ch);
-                monomer_alias += biln[data_pos++];
+                data_pos++;
+                while (data_pos < biln.size() && biln[data_pos] != ']')
+                {
+                    char ch = biln[data_pos];
+                    if (ch == '.' || ch == '(' || ch == ')' || ch == ',' || ch == '[' || is_space(ch))
+                        throw Error("Invalid BILN string: unexpected symbol '%c'.", ch);
+                    monomer_alias += biln[data_pos++];
+                }
+                if (data_pos >= biln.size())
+                    throw Error("Invalid BILN string: unexpected end of bracketed monomer.");
+                data_pos++;
+            }
+            else
+            {
+                while (data_pos < biln.size() && biln[data_pos] != '(' && biln[data_pos] != '-' && biln[data_pos] != '.' && !is_space(biln[data_pos]))
+                {
+                    char ch = biln[data_pos];
+                    if (ch == ')' || ch == ',' || ch == '[' || ch == ']')
+                        throw Error("Invalid BILN string: unexpected symbol '%c'.", ch);
+                    monomer_alias += biln[data_pos++];
+                }
             }
             if (monomer_alias.empty())
                 throw Error("Invalid BILN string: empty monomer.");
