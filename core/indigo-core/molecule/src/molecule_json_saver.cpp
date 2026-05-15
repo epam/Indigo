@@ -227,10 +227,14 @@ void MoleculeJsonSaver::saveSGroups(BaseMolecule& mol, JsonWriter& writer)
     if (mol.isQueryMolecule())
     {
         QueryMolecule& qmol = static_cast<QueryMolecule&>(mol);
-        if (qmol.components.size() > 0 && qmol.components[0])
+        for (int i = 0; i < qmol.components.size(); ++i)
         {
-            componentDefined = true;
-            sGroupsCount++;
+            if (qmol.components[i] > 0)
+            {
+                componentDefined = true;
+                sGroupsCount++;
+                break;
+            }
         }
     }
 
@@ -256,7 +260,7 @@ void MoleculeJsonSaver::saveSGroups(BaseMolecule& mol, JsonWriter& writer)
             writer.StartArray();
             for (int i = 0; i < qmol.vertexCount(); i++)
             {
-                if (qmol.components[i])
+                if (i < qmol.components.size() && qmol.components[i] > 0)
                 {
                     writer.Int(i);
                 }
