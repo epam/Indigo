@@ -236,7 +236,7 @@ sg.setSGroupBonds([1, 2])
 sg.createCrossBonds()
 
 molfile = mol.molfile()
-print("DAT molfile V3000: {0}".format("V3000" in molfile))
+print("DAT molfile V3000: {0}".format(int("V3000" in molfile)))
 sgroup_lines = [l.strip() for l in molfile.split("\n") if " DAT " in l]
 for l in sgroup_lines:
     print("DAT line: {0}".format(l))
