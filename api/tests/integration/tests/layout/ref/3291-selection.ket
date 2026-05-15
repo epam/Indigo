@@ -564,8 +564,6 @@
                 ],
                 "fieldName": "MDLBG_STEREO_KEY",
                 "fieldData": "SR",
-                "x": -24.4893,
-                "y": 15.9961,
                 "display": true
             },
             {
@@ -575,8 +573,6 @@
                 ],
                 "fieldName": "MDLBG_STEREO_KEY",
                 "fieldData": "SR",
-                "x": -24.3783,
-                "y": 15.0602,
                 "display": true
             },
             {
@@ -586,8 +582,6 @@
                 ],
                 "fieldName": "MDLBG_STEREO_KEY",
                 "fieldData": "SR",
-                "x": -24.2673,
-                "y": 16.7372,
                 "display": true
             },
             {
@@ -597,8 +591,6 @@
                 ],
                 "fieldName": "MDLBG_STEREO_KEY",
                 "fieldData": "SR",
-                "x": -24.1645,
-                "y": 14.4936,
                 "display": true
             }
         ]
