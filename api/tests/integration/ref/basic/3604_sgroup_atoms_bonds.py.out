@@ -11,8 +11,6 @@ MUL type: 4
 MUL atoms: 0
 GEN type: 0
 GEN atoms: 0
-****** addSGroup: with explicit extindex ********
-extindex: 0
 ****** setSGroupAtoms: set atoms on empty SGroup ********
 atoms after set: 3
 atom symbols: C C C
