@@ -224,7 +224,9 @@ for sg in mol2.iterateSGroups():
 print("sgroup count: {0}".format(sg_count))
 
 
-print("****** Molfile roundtrip: DAT with containment and cross bonds ********")
+print(
+    "****** Molfile roundtrip: DAT with containment and cross bonds ********"
+)
 
 indigo.setOption("molfile-saving-mode", "auto")
 mol = indigo.loadMolecule("CCCCCC")
