@@ -959,7 +959,7 @@ jobs:
   build_indigo_utils_x86_64:
     strategy:
       fail-fast: false
-      matrix: ${{ fromJSON(needs.set_matrix.outputs.matrix) }}
+      matrix: ${{ fromJSON(needs.set_matrix.outputs.matrix || '{"os":["ubuntu-latest","windows-latest"]}') }}
     runs-on: ${{ matrix.os }}
     # needs: [build_bingo_postgres_linux_x86_64, build_bingo_postgres_windows_msvc_x86_64, build_bingo_postgres_macos_x86_64]
     needs: [build_bingo_postgres_linux_x86_64, build_bingo_postgres_windows_msvc_x86_64, set_matrix ]
