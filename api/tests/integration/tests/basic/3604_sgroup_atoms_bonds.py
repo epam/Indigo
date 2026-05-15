@@ -53,13 +53,6 @@ sg_gen = mol.addSGroup("GEN", 0)
 print("GEN type: {0}".format(sg_gen.getSGroupType()))
 print("GEN atoms: {0}".format(sg_gen.countAtoms()))
 
-print("****** addSGroup: with explicit extindex ********")
-
-mol2 = indigo.loadMolecule("CCCCCC")
-sg = mol2.addSGroup("SUP", 42)
-print("extindex: {0}".format(sg.getSGroupOriginalId()))
-
-
 # ===== setSGroupAtoms =====
 
 print("****** setSGroupAtoms: set atoms on empty SGroup ********")
