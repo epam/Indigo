@@ -3919,8 +3919,7 @@ M  END
         # BILN with cross-links
         biln_cross = "A-C(1,3).C(1,3)"
         helm_cross_ref = (
-            "PEPTIDE1{A.C}|PEPTIDE2{C}"
-            "$PEPTIDE1,PEPTIDE2,2:R3-1:R3$$$V2.0"
+            "PEPTIDE1{A.C}|PEPTIDE2{C}" "$PEPTIDE1,PEPTIDE2,2:R3-1:R3$$$V2.0"
         )
         headers, data = self.get_headers(
             {
