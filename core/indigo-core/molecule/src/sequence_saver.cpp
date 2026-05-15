@@ -1145,8 +1145,8 @@ std::string SequenceSaver::saveBILN(KetDocument& doc, const std::vector<std::deq
                     best_reverse = true;
                 }
             }
-            explicit_connections.push_back(
-                {best_nodes.front(), best_reverse ? kAttachmentPointR2 : kAttachmentPointR1, best_nodes.back(), best_reverse ? kAttachmentPointR1 : kAttachmentPointR2});
+            explicit_connections.push_back({best_nodes.front(), best_reverse ? kAttachmentPointR2 : kAttachmentPointR1, best_nodes.back(),
+                                            best_reverse ? kAttachmentPointR1 : kAttachmentPointR2});
             chains.push_back(finish_chain(best_nodes));
         }
         else
