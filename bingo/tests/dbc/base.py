@@ -1,5 +1,6 @@
 from abc import abstractmethod
 from configparser import ConfigParser
+import os
 from os import path
 from os.path import abspath, join
 from typing import Dict, List
@@ -37,13 +38,19 @@ def get_config():
             "test_schema": parser.get("common", "test_schema"),
         },
         DB_POSTGRES: {
-            "host": parser.get(DB_POSTGRES, "host"),
+            "host": os.environ.get("DB_POSTGRES_HOST", parser.get(DB_POSTGRES, "host")),
             "port": parser.get(DB_POSTGRES, "port"),
             "database": parser.get(DB_POSTGRES, "database"),
             "user": parser.get(DB_POSTGRES, "user"),
             "password": parser.get(DB_POSTGRES, "password"),
         },
-        DB_ORACLE: None,
+        DB_ORACLE: {
+            "host": os.environ.get("DB_ORACLE_HOST", parser.get(DB_ORACLE, "host")),
+            "port": parser.get(DB_ORACLE, "port"),
+            "database": parser.get(DB_ORACLE, "database"),
+            "user": parser.get(DB_ORACLE, "user"),
+            "password": parser.get(DB_ORACLE, "password"),
+        },
         DB_MSSQL: None,
         DB_BINGO: {
             "db_name": parser.get(DB_BINGO, "db_name"),
@@ -161,7 +168,7 @@ class SQLAdapter(DBAdapter):
         if self.dbms == "postgres":
             dialect, driver = "postgresql", "psycopg2"
         if self.dbms == "oracle":
-            pass
+            dialect, driver = "oracle", "oracledb"
         if self.dbms == "mssql":
             pass
 
