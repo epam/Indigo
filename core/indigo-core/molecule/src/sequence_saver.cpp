@@ -30,7 +30,10 @@
 #include "molecule/monomer_commons.h"
 #include "molecule/monomers_template_library.h"
 #include "molecule/smiles_saver.h"
+#include <algorithm>
 #include <cctype>
+#include <set>
+#include <tuple>
 
 #ifdef _MSC_VER
 #pragma warning(push, 4)
@@ -863,63 +866,391 @@ static std::string format_biln_alias(const std::string& monomer_alias)
 
 std::string SequenceSaver::saveBILN(KetDocument& doc, const std::vector<std::deque<std::string>>& sequences)
 {
+    (void)sequences;
+    static const char* biln_export_error = "Only amino acids and CHEMs with BILN codes can get exported to BILN.";
+
     if (doc.moleculesRefs().size() > 0)
-        throw Error("Cannot save micro-molecules to BILN format.");
+        throw Error(biln_export_error);
 
-    std::string biln_string;
-    std::vector<std::vector<std::string>> chains;
-    std::map<std::string, std::pair<size_t, size_t>> monomer_to_chain_pos;
-    const auto& monomers = doc.monomers();
-
-    for (auto& sequence : sequences)
+    struct BilnNode
     {
-        std::vector<std::string> chain;
-        for (const auto& monomer_id : sequence)
-        {
-            auto monomer_class = doc.getMonomerClass(monomer_id);
-            const auto& monomer = monomers.at(monomer_id);
-            if (monomer_class != MonomerClass::AminoAcid)
-                throw Error("Cannot save in BILN format - expected AminoAcid monomer but found %s monomer %s.",
-                            MonomerTemplate::MonomerClassToStr(monomer_class).c_str(), monomer->alias().c_str());
-            monomer_to_chain_pos.emplace(monomer_id, std::make_pair(chains.size(), chain.size()));
-            chain.emplace_back(format_biln_alias(monomer->alias()));
-        }
-        if (!chain.empty())
-            chains.emplace_back(chain);
+        std::string monomer_id;
+        std::string monomer_ref;
+        std::string alias;
+        std::string biln_alias;
+        MonomerClass monomer_class;
+    };
+    struct BilnConnection
+    {
+        int node1;
+        std::string ap1;
+        int node2;
+        std::string ap2;
+        int bond_idx = 0;
+    };
+    struct BilnChain
+    {
+        std::vector<int> nodes;
+        std::string sort_key;
+        int amino_acid_count = 0;
+        int effective_amino_acid_count = 0;
+        int monomer_count = 0;
+    };
+
+    std::vector<BilnNode> nodes;
+    std::map<std::string, int> monomer_ref_to_node;
+    const auto& monomers = doc.monomers();
+    const auto& monomer_ids = doc.monomersIds();
+    auto get_biln_alias = [&](MonomerClass monomer_class, const std::string& monomer_alias) {
+        std::string template_id = _library.getMonomerTemplateIdByAlias(monomer_class, monomer_alias);
+        if (template_id.empty())
+            template_id = _library.getMonomerTemplateIdByAliasHELM(monomer_class, monomer_alias);
+        if (template_id.empty())
+            throw Error(biln_export_error);
+        return format_biln_alias(getKetStrProp(_library.getMonomerTemplateById(template_id), alias));
+    };
+    for (const auto& monomer_id : monomer_ids)
+    {
+        auto monomer_class = doc.getMonomerClass(monomer_id);
+        const auto& monomer = monomers.at(monomer_id);
+        if (monomer_class != MonomerClass::AminoAcid && monomer_class != MonomerClass::CHEM)
+            throw Error(biln_export_error);
+        auto biln_alias = get_biln_alias(monomer_class, monomer->alias());
+        const int node_idx = static_cast<int>(nodes.size());
+        nodes.push_back({monomer_id, monomer->ref(), monomer->alias(), biln_alias, monomer_class});
+        monomer_ref_to_node.emplace(monomer->ref(), node_idx);
     }
 
-    int bond_idx = 1;
-    for (const auto& connection : doc.nonSequenceConnections())
+    std::vector<int> next(nodes.size(), -1);
+    std::vector<int> prev(nodes.size(), -1);
+    std::vector<BilnConnection> explicit_connections;
+    std::set<std::pair<int, std::string>> used_connection_endpoints;
+
+    auto is_biln_backbone_connection = [](const std::string& ap1, const std::string& ap2) {
+        return (ap1 == kAttachmentPointR1 && ap2 == kAttachmentPointR2) || (ap1 == kAttachmentPointR2 && ap2 == kAttachmentPointR1);
+    };
+    auto read_endpoint = [&](const KetConnectionEndPoint& ep) -> std::pair<int, std::string> {
+        if (!hasKetStrProp(ep, monomerId) || !hasKetStrProp(ep, attachmentPointId))
+            throw Error(biln_export_error);
+        if (hasKetStrProp(ep, moleculeId) || hasKetStrProp(ep, atomId))
+            throw Error(biln_export_error);
+        const auto& monomer_ref = getKetStrProp(ep, monomerId);
+        const auto node_it = monomer_ref_to_node.find(monomer_ref);
+        if (node_it == monomer_ref_to_node.end())
+            throw Error(biln_export_error);
+        const auto& ap = getKetStrProp(ep, attachmentPointId);
+        std::ignore = get_biln_attachment_idx(ep);
+        if (monomers.at(nodes.at(node_it->second).monomer_id)->attachmentPoints().count(ap) == 0)
+            throw Error("Cannot save in BILN format - unsupported attachment point '%s'.", ap.c_str());
+        if (!used_connection_endpoints.emplace(node_it->second, ap).second)
+            throw Error("Cannot save in BILN format - attachment point '%s' of monomer '%s' is used more than once.", ap.c_str(),
+                        nodes.at(node_it->second).alias.c_str());
+        return {node_it->second, ap};
+    };
+
+    for (const auto& connection : doc.connections())
     {
+        if (connection.connType() != KetConnection::TYPE::SINGLE)
+            throw Error(biln_export_error);
         const auto& ep1 = connection.ep1();
         const auto& ep2 = connection.ep2();
-        if (!hasKetStrProp(ep1, monomerId) || !hasKetStrProp(ep2, monomerId))
-            throw Error("Cannot save in BILN format - only monomer connections are supported.");
-
-        auto add_bond = [&](const KetConnectionEndPoint& ep) {
-            const auto& monomer_ref = getKetStrProp(ep, monomerId);
-            const auto& monomer_id = doc.monomerIdByRef(monomer_ref);
-            const auto pos_it = monomer_to_chain_pos.find(monomer_id);
-            if (pos_it == monomer_to_chain_pos.end())
-                throw Error("Cannot save in BILN format - connection endpoint '%s' is not in a peptide sequence.", monomer_ref.c_str());
-            auto [chain_idx, monomer_idx] = pos_it->second;
-            chains.at(chain_idx).at(monomer_idx) += "(" + std::to_string(bond_idx) + "," + get_biln_attachment_idx(ep) + ")";
-        };
-
-        add_bond(ep1);
-        add_bond(ep2);
-        bond_idx++;
+        auto [node1, ap1] = read_endpoint(ep1);
+        auto [node2, ap2] = read_endpoint(ep2);
+        if (is_biln_backbone_connection(ap1, ap2))
+        {
+            int left = ap1 == kAttachmentPointR2 ? node1 : node2;
+            int right = ap1 == kAttachmentPointR2 ? node2 : node1;
+            if (next.at(left) != -1 || prev.at(right) != -1)
+                throw Error("Cannot save in BILN format - branched backbones are not supported.");
+            next.at(left) = right;
+            prev.at(right) = left;
+        }
+        else
+        {
+            explicit_connections.push_back({node1, ap1, node2, ap2});
+        }
     }
 
+    auto make_sort_key = [&](const std::vector<int>& chain_nodes) {
+        std::string key;
+        for (size_t idx = 0; idx < chain_nodes.size(); idx++)
+        {
+            if (idx > 0)
+                key += '-';
+            key += nodes.at(chain_nodes[idx]).biln_alias;
+        }
+        return key;
+    };
+    auto finish_chain = [&](std::vector<int> chain_nodes) {
+        BilnChain chain;
+        chain.nodes = std::move(chain_nodes);
+        chain.monomer_count = static_cast<int>(chain.nodes.size());
+        for (int node_idx : chain.nodes)
+            if (nodes.at(node_idx).monomer_class == MonomerClass::AminoAcid)
+                chain.amino_acid_count++;
+        chain.effective_amino_acid_count = chain.monomer_count <= 5 ? chain.monomer_count : chain.amino_acid_count;
+        chain.sort_key = make_sort_key(chain.nodes);
+        return chain;
+    };
+    auto make_cycle_key = [&](const std::vector<int>& chain_nodes, bool reverse) {
+        std::map<int, int> node_to_pos;
+        std::set<int> chain_node_set;
+        for (int idx = 0; idx < static_cast<int>(chain_nodes.size()); idx++)
+        {
+            node_to_pos.emplace(chain_nodes[idx], idx);
+            chain_node_set.emplace(chain_nodes[idx]);
+        }
+
+        std::vector<BilnConnection> candidate_connections;
+        for (const auto& connection : explicit_connections)
+        {
+            if (chain_node_set.count(connection.node1) && chain_node_set.count(connection.node2))
+                candidate_connections.push_back(connection);
+        }
+        candidate_connections.push_back(
+            {chain_nodes.front(), reverse ? kAttachmentPointR2 : kAttachmentPointR1, chain_nodes.back(), reverse ? kAttachmentPointR1 : kAttachmentPointR2});
+
+        std::vector<std::vector<int>> node_to_bonds(chain_nodes.size());
+        for (int bond_idx = 0; bond_idx < static_cast<int>(candidate_connections.size()); bond_idx++)
+        {
+            auto pos1 = node_to_pos.at(candidate_connections[bond_idx].node1);
+            node_to_bonds.at(pos1).push_back(bond_idx);
+            if (candidate_connections[bond_idx].node2 != candidate_connections[bond_idx].node1)
+            {
+                auto pos2 = node_to_pos.at(candidate_connections[bond_idx].node2);
+                node_to_bonds.at(pos2).push_back(bond_idx);
+            }
+        }
+
+        int next_bond_idx = 1;
+        auto endpoint_position = [&](int node_idx) { return node_to_pos.at(node_idx); };
+        auto append_bond_endpoint = [&](std::string& monomer_text, BilnConnection& bond, int node_idx) {
+            if (bond.bond_idx == 0)
+                bond.bond_idx = next_bond_idx++;
+            if (bond.node1 == node_idx)
+                monomer_text += "(" + std::to_string(bond.bond_idx) + "," + bond.ap1.substr(1) + ")";
+            if (bond.node2 == node_idx)
+                monomer_text += "(" + std::to_string(bond.bond_idx) + "," + bond.ap2.substr(1) + ")";
+        };
+
+        std::string key;
+        for (int monomer_idx = 0; monomer_idx < static_cast<int>(chain_nodes.size()); monomer_idx++)
+        {
+            if (monomer_idx > 0)
+                key += '-';
+            const int node_idx = chain_nodes[monomer_idx];
+            std::string monomer_text = nodes.at(node_idx).biln_alias;
+            auto& incident_bonds = node_to_bonds.at(monomer_idx);
+            std::sort(incident_bonds.begin(), incident_bonds.end(), [&](int left_idx, int right_idx) {
+                auto other_pos = [&](const BilnConnection& bond, int current_node) {
+                    if (bond.node1 == current_node && bond.node2 != current_node)
+                        return endpoint_position(bond.node2);
+                    return endpoint_position(bond.node1);
+                };
+                const auto& left_bond = candidate_connections.at(left_idx);
+                const auto& right_bond = candidate_connections.at(right_idx);
+                if ((left_bond.bond_idx == 0) != (right_bond.bond_idx == 0))
+                    return left_bond.bond_idx != 0;
+                if (left_bond.bond_idx != 0 && right_bond.bond_idx != 0)
+                    return left_bond.bond_idx < right_bond.bond_idx;
+                auto left_pos = other_pos(left_bond, node_idx);
+                auto right_pos = other_pos(right_bond, node_idx);
+                if (left_pos != right_pos)
+                    return left_pos < right_pos;
+                return std::tie(left_bond.node1, left_bond.ap1, left_bond.node2, left_bond.ap2) <
+                       std::tie(right_bond.node1, right_bond.ap1, right_bond.node2, right_bond.ap2);
+            });
+            for (int bond_idx : incident_bonds)
+                append_bond_endpoint(monomer_text, candidate_connections.at(bond_idx), node_idx);
+            key += monomer_text;
+        }
+        return key;
+    };
+
+    std::vector<BilnChain> chains;
+    std::vector<bool> visited(nodes.size(), false);
+    for (int start_node = 0; start_node < static_cast<int>(nodes.size()); start_node++)
+    {
+        if (visited.at(start_node))
+            continue;
+        std::vector<int> component;
+        std::vector<int> stack = {start_node};
+        visited.at(start_node) = true;
+        while (!stack.empty())
+        {
+            int node = stack.back();
+            stack.pop_back();
+            component.push_back(node);
+            for (int adjacent : {next.at(node), prev.at(node)})
+            {
+                if (adjacent != -1 && !visited.at(adjacent))
+                {
+                    visited.at(adjacent) = true;
+                    stack.push_back(adjacent);
+                }
+            }
+        }
+
+        bool is_cycle = component.size() > 1;
+        for (int node : component)
+        {
+            if (next.at(node) == -1 || prev.at(node) == -1)
+            {
+                is_cycle = false;
+                break;
+            }
+        }
+
+        if (is_cycle)
+        {
+            std::vector<int> directed_cycle;
+            int node = component.front();
+            do
+            {
+                if (std::find(directed_cycle.begin(), directed_cycle.end(), node) != directed_cycle.end())
+                    throw Error("Cannot save in BILN format - invalid cyclic backbone.");
+                directed_cycle.push_back(node);
+                node = next.at(node);
+                if (node == -1)
+                    throw Error("Cannot save in BILN format - invalid cyclic backbone.");
+            } while (node != component.front());
+            if (directed_cycle.size() != component.size())
+                throw Error("Cannot save in BILN format - invalid cyclic backbone.");
+
+            std::string best_key;
+            std::vector<int> best_nodes;
+            bool best_reverse = false;
+            const int cycle_size = static_cast<int>(directed_cycle.size());
+            for (int offset = 0; offset < cycle_size; offset++)
+            {
+                std::vector<int> candidate;
+                for (int idx = 0; idx < cycle_size; idx++)
+                    candidate.push_back(directed_cycle.at((offset + idx) % cycle_size));
+                auto candidate_key = make_cycle_key(candidate, false);
+                if (best_nodes.empty() || candidate_key < best_key)
+                {
+                    best_key = candidate_key;
+                    best_nodes = candidate;
+                    best_reverse = false;
+                }
+
+                candidate.clear();
+                for (int idx = 0; idx < cycle_size; idx++)
+                    candidate.push_back(directed_cycle.at((offset - idx + cycle_size) % cycle_size));
+                candidate_key = make_cycle_key(candidate, true);
+                if (candidate_key < best_key)
+                {
+                    best_key = candidate_key;
+                    best_nodes = candidate;
+                    best_reverse = true;
+                }
+            }
+            explicit_connections.push_back(
+                {best_nodes.front(), best_reverse ? kAttachmentPointR2 : kAttachmentPointR1, best_nodes.back(), best_reverse ? kAttachmentPointR1 : kAttachmentPointR2});
+            chains.push_back(finish_chain(best_nodes));
+        }
+        else
+        {
+            int start = -1;
+            for (int node : component)
+            {
+                if (prev.at(node) == -1)
+                {
+                    if (start != -1)
+                        throw Error("Cannot save in BILN format - invalid backbone.");
+                    start = node;
+                }
+            }
+            if (start == -1)
+                start = component.front();
+            std::vector<int> chain_nodes;
+            int node = start;
+            while (node != -1)
+            {
+                if (std::find(chain_nodes.begin(), chain_nodes.end(), node) != chain_nodes.end())
+                    throw Error("Cannot save in BILN format - invalid backbone.");
+                chain_nodes.push_back(node);
+                node = next.at(node);
+            }
+            if (chain_nodes.size() != component.size())
+                throw Error("Cannot save in BILN format - invalid backbone.");
+            chains.push_back(finish_chain(chain_nodes));
+        }
+    }
+
+    std::sort(chains.begin(), chains.end(), [](const BilnChain& left, const BilnChain& right) {
+        if (left.effective_amino_acid_count != right.effective_amino_acid_count)
+            return left.effective_amino_acid_count > right.effective_amino_acid_count;
+        if (left.monomer_count != right.monomer_count)
+            return left.monomer_count > right.monomer_count;
+        return left.sort_key < right.sort_key;
+    });
+
+    std::map<int, std::pair<int, int>> node_to_chain_pos;
+    for (int chain_idx = 0; chain_idx < static_cast<int>(chains.size()); chain_idx++)
+        for (int monomer_idx = 0; monomer_idx < static_cast<int>(chains[chain_idx].nodes.size()); monomer_idx++)
+            node_to_chain_pos.emplace(chains[chain_idx].nodes[monomer_idx], std::make_pair(chain_idx, monomer_idx));
+
+    auto endpoint_position = [&](int node_idx) { return node_to_chain_pos.at(node_idx); };
+    std::vector<std::vector<std::vector<int>>> node_to_bonds(chains.size());
     for (size_t chain_idx = 0; chain_idx < chains.size(); chain_idx++)
+        node_to_bonds.at(chain_idx).resize(chains[chain_idx].nodes.size());
+    for (int bond_idx = 0; bond_idx < static_cast<int>(explicit_connections.size()); bond_idx++)
+    {
+        auto pos1 = endpoint_position(explicit_connections[bond_idx].node1);
+        node_to_bonds.at(pos1.first).at(pos1.second).push_back(bond_idx);
+        if (explicit_connections[bond_idx].node2 != explicit_connections[bond_idx].node1)
+        {
+            auto pos2 = endpoint_position(explicit_connections[bond_idx].node2);
+            node_to_bonds.at(pos2.first).at(pos2.second).push_back(bond_idx);
+        }
+    }
+
+    int next_bond_idx = 1;
+    auto append_bond_endpoint = [&](std::string& monomer_text, BilnConnection& bond, int node_idx) {
+        if (bond.bond_idx == 0)
+            bond.bond_idx = next_bond_idx++;
+        if (bond.node1 == node_idx)
+            monomer_text += "(" + std::to_string(bond.bond_idx) + "," + bond.ap1.substr(1) + ")";
+        if (bond.node2 == node_idx)
+            monomer_text += "(" + std::to_string(bond.bond_idx) + "," + bond.ap2.substr(1) + ")";
+    };
+
+    std::string biln_string;
+    for (int chain_idx = 0; chain_idx < static_cast<int>(chains.size()); chain_idx++)
     {
         if (chain_idx > 0)
             biln_string += '.';
-        for (size_t monomer_idx = 0; monomer_idx < chains[chain_idx].size(); monomer_idx++)
+        const auto& chain = chains[chain_idx];
+        for (int monomer_idx = 0; monomer_idx < static_cast<int>(chain.nodes.size()); monomer_idx++)
         {
             if (monomer_idx > 0)
                 biln_string += '-';
-            biln_string += chains[chain_idx][monomer_idx];
+            const int node_idx = chain.nodes[monomer_idx];
+            std::string monomer_text = nodes.at(node_idx).biln_alias;
+            auto& incident_bonds = node_to_bonds.at(chain_idx).at(monomer_idx);
+            std::sort(incident_bonds.begin(), incident_bonds.end(), [&](int left_idx, int right_idx) {
+                auto other_pos = [&](const BilnConnection& bond, int current_node) {
+                    if (bond.node1 == current_node && bond.node2 != current_node)
+                        return endpoint_position(bond.node2);
+                    return endpoint_position(bond.node1);
+                };
+                const auto& left_bond = explicit_connections.at(left_idx);
+                const auto& right_bond = explicit_connections.at(right_idx);
+                if ((left_bond.bond_idx == 0) != (right_bond.bond_idx == 0))
+                    return left_bond.bond_idx != 0;
+                if (left_bond.bond_idx != 0 && right_bond.bond_idx != 0)
+                    return left_bond.bond_idx < right_bond.bond_idx;
+                auto left_pos = other_pos(left_bond, node_idx);
+                auto right_pos = other_pos(right_bond, node_idx);
+                if (left_pos != right_pos)
+                    return left_pos < right_pos;
+                return std::tie(left_bond.node1, left_bond.ap1, left_bond.node2, left_bond.ap2) <
+                       std::tie(right_bond.node1, right_bond.ap1, right_bond.node2, right_bond.ap2);
+            });
+            for (int bond_idx : incident_bonds)
+                append_bond_endpoint(monomer_text, explicit_connections.at(bond_idx), node_idx);
+            biln_string += monomer_text;
         }
     }
     return biln_string;
