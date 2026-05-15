@@ -1125,9 +1125,10 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
             if (s.HasMember("queryOp"))
                 dsg.queryoper.readString(s["queryOp"].GetString(), true);
 
-            if (s.HasMember("x") || s.HasMember("y"))
+            bool display_units = s.HasMember("display") && s["display"].GetBool();
+            if (s.HasMember("x") || s.HasMember("y") || display_units)
             {
-                Vec2f dp;
+                Vec2f dp(0.0f, 0.0f);
                 if (s.HasMember("x"))
                     dp.x = s["x"].GetFloat();
 
@@ -1145,7 +1146,7 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
                 dsg.relative = s["placement"].GetBool();
 
             if (s.HasMember("display"))
-                dsg.display_units = s["display"].GetBool();
+                dsg.display_units = display_units;
 
             if (s.HasMember("tag"))
             {
