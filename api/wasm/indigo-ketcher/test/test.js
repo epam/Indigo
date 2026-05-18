@@ -1206,7 +1206,174 @@ M  END
     }
 
     {
-        test("BILN", "cross_links", () => {
+        test("BILN", "underscore_alias", () => {
+            var fs = require('fs');
+            let options = new indigo.MapStringString();
+            const monomersLib = fs.readFileSync("monomer_library.ket");
+            options.set("output-content-type", "application/json");
+            options.set("input-format", "chemical/x-biln");
+            options.set("monomerLibrary", monomersLib);
+            const biln = "A-1Nal-Cys_Bn-C";
+            const res = indigo.convert(biln, "helm", options);
+            const res_helm = JSON.parse(res).struct;
+            assert.equal(res_helm, "PEPTIDE1{A.[1Nal].[Cys_Bn].C}$$$$V2.0");
+            options.delete();
+        });
+    }
+
+    {
+        test("BILN", "bracketed_alias", () => {
+            var fs = require('fs');
+            let options = new indigo.MapStringString();
+            const monomersLib = fs.readFileSync("monomer_library.ket");
+            options.set("output-content-type", "application/json");
+            options.set("input-format", "chemical/x-biln");
+            options.set("monomerLibrary", monomersLib);
+            const biln = "A-[D-1Nal]-[Cys_Bn]-[C]";
+            const res = indigo.convert(biln, "helm", options);
+            const res_helm = JSON.parse(res).struct;
+            assert.equal(res_helm, "PEPTIDE1{A.[D-1Nal].[Cys_Bn].C}$$$$V2.0");
+            options.delete();
+        });
+    }
+
+    {
+        test("BILN", "cycle_canonical", () => {
+            var fs = require('fs');
+            let options = new indigo.MapStringString();
+            const monomersLib = fs.readFileSync("monomer_library.ket");
+            options.set("output-content-type", "application/json");
+            options.set("input-format", "chemical/x-biln");
+            options.set("monomerLibrary", monomersLib);
+            const biln = "D(1,2)-C-A-E(1,1)";
+            const ket = JSON.parse(indigo.convert(biln, "ket", options)).struct;
+            let save_options = new indigo.MapStringString();
+            save_options.set("output-content-type", "application/json");
+            save_options.set("input-format", "chemical/x-indigo-ket");
+            save_options.set("monomerLibrary", monomersLib);
+            const res_biln = JSON.parse(indigo.convert(ket, "biln", save_options)).struct;
+            assert.equal(res_biln, "A(1,1)-C-D-E(1,2)");
+            options.delete();
+            save_options.delete();
+        });
+    }
+
+    {
+        test("BILN", "nonbackbone_bond_order", () => {
+            var fs = require('fs');
+            let options = new indigo.MapStringString();
+            const monomersLib = fs.readFileSync("monomer_library.ket");
+            options.set("output-content-type", "application/json");
+            options.set("input-format", "chemical/x-biln");
+            options.set("monomerLibrary", monomersLib);
+            const biln = "A-[Test-6-Ch](1,4)(2,3)-C.D(2,1).E(1,2)";
+            const ket = JSON.parse(indigo.convert(biln, "ket", options)).struct;
+            let save_options = new indigo.MapStringString();
+            save_options.set("output-content-type", "application/json");
+            save_options.set("input-format", "chemical/x-indigo-ket");
+            save_options.set("monomerLibrary", monomersLib);
+            const res_biln = JSON.parse(indigo.convert(ket, "biln", save_options)).struct;
+            assert.equal(res_biln, "A-[Test-6-Ch](1,3)(2,4)-C.D(1,1).E(2,2)");
+            options.delete();
+            save_options.delete();
+        });
+    }
+
+    {
+        test("BILN", "cycle_with_extra_bond_order", () => {
+            var fs = require('fs');
+            let options = new indigo.MapStringString();
+            const monomersLib = fs.readFileSync("monomer_library.ket");
+            options.set("output-content-type", "application/json");
+            options.set("input-format", "chemical/x-biln");
+            options.set("monomerLibrary", monomersLib);
+            const biln = "C(1,1)(2,3)-C-C(2,3)-C(1,2)";
+            const ket = JSON.parse(indigo.convert(biln, "ket", options)).struct;
+            let save_options = new indigo.MapStringString();
+            save_options.set("output-content-type", "application/json");
+            save_options.set("input-format", "chemical/x-indigo-ket");
+            save_options.set("monomerLibrary", monomersLib);
+            const res_biln = JSON.parse(indigo.convert(ket, "biln", save_options)).struct;
+            assert.equal(res_biln, "C(1,1)-C(2,3)-C-C(1,2)(2,3)");
+            options.delete();
+            save_options.delete();
+        });
+    }
+
+    {
+        test("BILN", "valid_large_bond_ids", () => {
+            var fs = require('fs');
+            let options = new indigo.MapStringString();
+            const monomersLib = fs.readFileSync("monomer_library.ket");
+            options.set("output-content-type", "application/json");
+            options.set("input-format", "chemical/x-biln");
+            options.set("monomerLibrary", monomersLib);
+            const biln = "A-C(7563,3)-D(3,3)-E.F-G-H(7563,3)-I-K(3,3)";
+            const ket = JSON.parse(indigo.convert(biln, "ket", options)).struct;
+            let save_options = new indigo.MapStringString();
+            save_options.set("output-content-type", "application/json");
+            save_options.set("input-format", "chemical/x-indigo-ket");
+            save_options.set("monomerLibrary", monomersLib);
+            const res_biln = JSON.parse(indigo.convert(ket, "biln", save_options)).struct;
+            assert.equal(res_biln, "F-G-H(1,3)-I-K(2,3).A-C(1,3)-D(2,3)-E");
+            options.delete();
+            save_options.delete();
+        });
+    }
+
+    {
+        test("BILN", "custom_chem_without_biln_code_error", () => {
+            var fs = require('fs');
+            let options = new indigo.MapStringString();
+            const monomersLib = fs.readFileSync("monomer_library.ket");
+            options.set("output-content-type", "application/json");
+            options.set("input-format", "chemical/x-helm");
+            options.set("monomerLibrary", monomersLib);
+            const ket = JSON.parse(indigo.convert("CHEM1{[qweqwe]}$$$$V2.0", "ket", options)).struct;
+            let save_options = new indigo.MapStringString();
+            save_options.set("output-content-type", "application/json");
+            save_options.set("input-format", "chemical/x-indigo-ket");
+            save_options.set("monomerLibrary", monomersLib);
+            assert.throws(() => {
+                indigo.convert(ket, "biln", save_options);
+            }, /Only amino acids and CHEMs with BILN codes/);
+            options.delete();
+            save_options.delete();
+        });
+    }
+
+    {
+        test("BILN", "chem_with_biln_code", () => {
+            var fs = require('fs');
+            let options = new indigo.MapStringString();
+            const monomersLib = fs.readFileSync("monomer_library.ket");
+            options.set("output-content-type", "application/json");
+            options.set("input-format", "chemical/x-helm");
+            options.set("monomerLibrary", monomersLib);
+            const res = indigo.convert("CHEM1{[PEG-2]}$$$$V2.0", "biln", options);
+            const res_biln = JSON.parse(res).struct;
+            assert.equal(res_biln, "[PEG-2]");
+            options.delete();
+        });
+    }
+
+    {
+        test("BILN", "helm_alias_to_biln_alias", () => {
+            var fs = require('fs');
+            let options = new indigo.MapStringString();
+            const monomersLib = fs.readFileSync("monomer_library.ket");
+            options.set("output-content-type", "application/json");
+            options.set("input-format", "chemical/x-helm");
+            options.set("monomerLibrary", monomersLib);
+            const res = indigo.convert("PEPTIDE1{[Cys_SEt]}$$$$V2.0", "biln", options);
+            const res_biln = JSON.parse(res).struct;
+            assert.equal(res_biln, "Edc");
+            options.delete();
+        });
+    }
+
+    {
+        test("BILN", "cap_cross_links", () => {
             var fs = require('fs');
             let options = new indigo.MapStringString();
             const monomersLib = fs.readFileSync("monomer_library.ket");
@@ -1216,8 +1383,86 @@ M  END
             const biln = "Ac(1,2).A-K(1,3)";
             const res = indigo.convert(biln, "helm", options);
             const res_helm = JSON.parse(res).struct;
-            assert.equal(res_helm, "PEPTIDE1{[Ac]}|PEPTIDE2{A.K}$PEPTIDE1,PEPTIDE2,1:R2-2:R3$$$V2.0");
+            assert.equal(res_helm, "PEPTIDE1{[ac]}|PEPTIDE2{A.K}$PEPTIDE1,PEPTIDE2,1:R2-2:R3$$$V2.0");
             options.delete();
+        });
+    }
+
+    {
+        test("BILN", "cap_invalid_attachment", () => {
+            var fs = require('fs');
+            let options = new indigo.MapStringString();
+            const monomersLib = fs.readFileSync("monomer_library.ket");
+            options.set("output-content-type", "application/json");
+            options.set("input-format", "chemical/x-biln");
+            options.set("monomerLibrary", monomersLib);
+            assert.throws(() => {
+                indigo.convert("Ac(1,1).K(1,3)", "ket", options);
+            }, /The string cannot be interpreted as a valid BILN string/);
+            options.delete();
+        });
+    }
+
+    {
+        test("BILN", "helm_cap_invalid_attachment", () => {
+            var fs = require('fs');
+            let options = new indigo.MapStringString();
+            const monomersLib = fs.readFileSync("monomer_library.ket");
+            const helm = "PEPTIDE1{[Ac]}|PEPTIDE2{K}$PEPTIDE1,PEPTIDE2,1:R1-1:R3$$$V2.0";
+            options.set("output-content-type", "application/json");
+            options.set("input-format", "chemical/x-helm");
+            options.set("monomerLibrary", monomersLib);
+            const ket = JSON.parse(indigo.convert(helm, "ket", options)).struct;
+            assert.throws(() => {
+                indigo.convert(helm, "biln", options);
+            }, /unsupported attachment point 'R1'/);
+
+            let save_options = new indigo.MapStringString();
+            save_options.set("output-content-type", "application/json");
+            save_options.set("input-format", "chemical/x-indigo-ket");
+            save_options.set("monomerLibrary", monomersLib);
+            assert.throws(() => {
+                indigo.convert(ket, "biln", save_options);
+            }, /unsupported attachment point 'R1'/);
+            options.delete();
+            save_options.delete();
+        });
+    }
+
+    {
+        test("BILN", "cross_links", () => {
+            var fs = require('fs');
+            let options = new indigo.MapStringString();
+            const monomersLib = fs.readFileSync("monomer_library.ket");
+            options.set("output-content-type", "application/json");
+            options.set("input-format", "chemical/x-biln");
+            options.set("monomerLibrary", monomersLib);
+            const biln = "A-C(1,3)-A.C(1,3)";
+            const res = indigo.convert(biln, "helm", options);
+            const res_helm = JSON.parse(res).struct;
+            assert.equal(res_helm, "PEPTIDE1{A.C.A}|PEPTIDE2{C}$PEPTIDE1,PEPTIDE2,2:R3-1:R3$$$V2.0");
+            options.delete();
+        });
+    }
+
+    {
+        test("BILN", "equal_chain_topology_order", () => {
+            var fs = require('fs');
+            let options = new indigo.MapStringString();
+            const monomersLib = fs.readFileSync("monomer_library.ket");
+            options.set("output-content-type", "application/json");
+            options.set("input-format", "chemical/x-biln");
+            options.set("monomerLibrary", monomersLib);
+            const biln = "C(1,3).C(1,1)";
+            const ket = JSON.parse(indigo.convert(biln, "ket", options)).struct;
+            let save_options = new indigo.MapStringString();
+            save_options.set("output-content-type", "application/json");
+            save_options.set("input-format", "chemical/x-indigo-ket");
+            save_options.set("monomerLibrary", monomersLib);
+            const res_biln = JSON.parse(indigo.convert(ket, "biln", save_options)).struct;
+            assert.equal(res_biln, "C(1,1).C(1,3)");
+            options.delete();
+            save_options.delete();
         });
     }
 

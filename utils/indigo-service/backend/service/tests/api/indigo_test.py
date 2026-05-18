@@ -3916,11 +3916,31 @@ M  END
         result_helm = json.loads(result.text)["struct"]
         self.assertEqual(helm_ref, result_helm)
 
-        # BILN with cross-links
+        # BILN with terminal cap cross-link
         biln_cross = "Ac(1,2).A-K(1,3)"
         helm_cross_ref = (
-            "PEPTIDE1{[Ac]}|PEPTIDE2{A.K}"
+            "PEPTIDE1{[ac]}|PEPTIDE2{A.K}"
             "$PEPTIDE1,PEPTIDE2,1:R2-2:R3$$$V2.0"
+        )
+        headers, data = self.get_headers(
+            {
+                "struct": biln_cross,
+                "options": {"monomerLibrary": monomer_library},
+                "input_format": "chemical/x-biln",
+                "output_format": "chemical/x-helm",
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/convert", headers=headers, data=data
+        )
+        self.assertEqual(200, result.status_code)
+        result_helm = json.loads(result.text)["struct"]
+        self.assertEqual(helm_cross_ref, result_helm)
+
+        # BILN with cross-links
+        biln_cross = "A-C(1,3).C(1,3)"
+        helm_cross_ref = (
+            "PEPTIDE1{A.C}|PEPTIDE2{C}" "$PEPTIDE1,PEPTIDE2,2:R3-1:R3$$$V2.0"
         )
         headers, data = self.get_headers(
             {
