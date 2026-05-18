@@ -25,6 +25,16 @@ lib = indigo.loadMonomerLibraryFromFile(
 )
 
 biln_to_helm = {
+    # Legacy integration coverage: terminal caps must keep their explicit
+    # non-backbone BILN bonds during import/export roundtrip.
+    "biln_cap": (
+        "Ac(1,2).A-K(1,3)",
+        "PEPTIDE1{[Ac]}|PEPTIDE2{A.K}$PEPTIDE1,PEPTIDE2,1:R2-2:R3$$$V2.0",
+    ),
+    "biln_three_chains": (
+        "Ac(1,2).A-K(1,3)(2,2).Me(2,1)",
+        "PEPTIDE1{[Ac]}|PEPTIDE2{A.K}|PEPTIDE3{[Me]}$PEPTIDE1,PEPTIDE2,1:R2-2:R3|PEPTIDE2,PEPTIDE3,2:R2-1:R1$$$V2.0",
+    ),
     "biln_two_backbones": (
         "A-C-D.E-F-G",
         "PEPTIDE1{A.C.D}|PEPTIDE2{E.F.G}$$$$V2.0",
@@ -110,6 +120,10 @@ biln_to_biln = {
         "C(1,1)(2,3)-C-C(2,3)-C(1,2)",
         "C(1,1)-C(2,3)-C-C(1,2)(2,3)",
     ),
+    "biln_cycle_with_external_bond_order": (
+        "C(1,1)-C(2,3)-C(1,2).C(2,3)",
+        "C(1,1)(2,3)-C-C(1,2).C(2,3)",
+    ),
     "biln_library_alias": (
         "Edc",
         "Edc",
@@ -135,6 +149,14 @@ for name in sorted(biln_to_biln.keys()):
         print(name + ":FAILED - " + getIndigoExceptionText(e))
 
 helm_to_biln = {
+    "helm_cap": (
+        "PEPTIDE1{[Ac]}|PEPTIDE2{A.K}$PEPTIDE1,PEPTIDE2,1:R2-2:R3$$$V2.0",
+        "Ac(1,2).A-K(1,3)",
+    ),
+    "helm_three_chains": (
+        "PEPTIDE1{[Ac]}|PEPTIDE2{A.K}|PEPTIDE3{[Me]}$PEPTIDE1,PEPTIDE2,1:R2-2:R3|PEPTIDE2,PEPTIDE3,2:R2-1:R1$$$V2.0",
+        "Ac(1,2).A-K(1,3)(2,2).Me(2,1)",
+    ),
     "helm_underscore_alias": (
         "PEPTIDE1{A.[1Nal].[Cys_Bn].C}$$$$V2.0",
         "A-1Nal-Cys_Bn-C",
@@ -182,6 +204,9 @@ for name in sorted(helm_to_biln.keys()):
 helm_errors = {
     "CHEM1{[qweqwe]}$$$$V2.0": "Only amino acids and CHEMs with BILN codes can get exported to BILN.",
     "PEPTIDE1{A}|RNA1{R(A)P}$$$$V2.0": "Only amino acids and CHEMs with BILN codes can get exported to BILN.",
+    # Legacy integration input retained as an error expectation. #3541 export
+    # requirement 1 forbids exporting PEPTIDE monomers without BILN codes.
+    "PEPTIDE1{[Abu].[Sar].[NMeL].V.[NMeL].A.[DAla].[NMeL].[NMeL].[NMeV].[NMeThr4RBut2enyl]}$PEPTIDE1,PEPTIDE1,1:R1-11:R2$$$V2.0": "Only amino acids and CHEMs with BILN codes can get exported to BILN.",
 }
 
 for helm in sorted(helm_errors.keys()):
@@ -225,6 +250,9 @@ for name in sorted(ket_errors.keys()):
             )
 
 biln_errors = {
+    # #3541 import requirement 1: any invalid BILN string must return the
+    # generic error text below. This intentionally replaces older detailed
+    # error expectations for the pre-existing invalid integration cases.
     "A(1,3)-C": "The string cannot be interpreted as a valid BILN string.",
     "A--C": "The string cannot be interpreted as a valid BILN string.",
     "A-C(1,4)": "The string cannot be interpreted as a valid BILN string.",

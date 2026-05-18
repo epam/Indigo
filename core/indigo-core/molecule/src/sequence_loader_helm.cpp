@@ -665,6 +665,8 @@ void SequenceLoader::loadBILN(KetDocument& document)
             return MonomerClass::AminoAcid;
         if (_library.getMonomerTemplateIdByAlias(MonomerClass::CHEM, monomer_alias).size() > 0)
             return MonomerClass::CHEM;
+        if (_library.getMonomerTemplateIdByAlias(MonomerClass::AminoAcid, monomer_alias + "-").size() > 0)
+            return MonomerClass::AminoAcid;
         throw_invalid_biln();
         return MonomerClass::Unknown;
     };
@@ -777,6 +779,17 @@ void SequenceLoader::loadBILN(KetDocument& document)
 
     std::set<std::pair<std::string, std::string>> used_biln_endpoints;
     auto attachment_point = [](const BilnEndpoint& ep) { return std::string("R") + std::to_string(ep.attachment_idx); };
+    auto is_terminal_cap_alias = [&](const std::string& monomer_alias) {
+        auto template_id = _library.getMonomerTemplateIdByAlias(MonomerClass::AminoAcid, monomer_alias);
+        if (template_id.empty())
+            template_id = _library.getMonomerTemplateIdByAlias(MonomerClass::AminoAcid, monomer_alias + "-");
+        if (template_id.empty())
+            return false;
+        const auto& monomer_template = _library.getMonomerTemplateById(template_id);
+        const auto& template_alias = getKetStrProp(monomer_template, alias);
+        return template_alias.size() > 1 && template_alias.back() == '-' && monomer_template.attachmentPoints().size() == 1;
+    };
+    auto is_terminal_cap = [&](const std::unique_ptr<KetBaseMonomer>& monomer) { return is_terminal_cap_alias(monomer->alias()); };
     auto validate_endpoint = [&](const BilnEndpoint& ep, const std::string& ap) -> const std::unique_ptr<KetBaseMonomer>& {
         const auto& monomer = document.monomers().at(ep.monomer_id);
         if (monomer->attachmentPoints().count(ap) == 0)
@@ -864,7 +877,8 @@ void SequenceLoader::loadBILN(KetDocument& document)
         setKetStrProp(endpoint1, attachmentPointId, ap1);
         setKetStrProp(endpoint2, monomerId, monomer2->ref());
         setKetStrProp(endpoint2, attachmentPointId, ap2);
-        if ((ap1 == kAttachmentPointR1 && ap2 == kAttachmentPointR2) || (ap1 == kAttachmentPointR2 && ap2 == kAttachmentPointR1))
+        if (((ap1 == kAttachmentPointR1 && ap2 == kAttachmentPointR2) || (ap1 == kAttachmentPointR2 && ap2 == kAttachmentPointR1)) &&
+            !is_terminal_cap(monomer1) && !is_terminal_cap(monomer2))
             document.addConnection(monomer1->ref(), ap1, monomer2->ref(), ap2);
         else
             document.addExplicitConnection(endpoint1, endpoint2);
