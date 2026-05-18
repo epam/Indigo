@@ -361,7 +361,7 @@ namespace indigo
 
         enum class StringProps
         {
-            subscript
+            label
         };
 
     private:

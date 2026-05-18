@@ -743,7 +743,7 @@ void CmfLoader::_readSGroup(int code, Molecule& mol)
         Superatom& s = (Superatom&)mol.sgroups.getSGroup(idx);
         _readGeneralSGroup(s);
 
-        _readString(s.subscript);
+        _readString(s.label);
         _readString(s.sa_class);
         byte bits = _scanner->readByte();
         if (bits & 0x01) // -1 and 1 are the same from here
@@ -768,9 +768,9 @@ void CmfLoader::_readSGroup(int code, Molecule& mol)
         _readGeneralSGroup(s);
 
         if (version >= 2)
-            _readString(s.subscript);
+            _readString(s.label);
         else
-            s.subscript.readString("n", true);
+            s.label.readString("n", true);
 
         s.connectivity = _scanner->readPackedUInt();
     }
@@ -843,7 +843,9 @@ void CmfLoader::_readSGroupXYZ(Scanner& scanner, int idx, Molecule& mol, const C
     {
         DataSGroup& s = (DataSGroup&)sg;
         _readBaseSGroupXyz(scanner, s, range);
-        _readVec2f(scanner, s.display_pos, range);
+        Vec2f dp;
+        _readVec2f(scanner, dp, range);
+        s.display_pos.set(dp);
     }
     else if (sg_type == SGroup::SG_TYPE_SUP)
     {
@@ -884,7 +886,7 @@ void CmfLoader::_readUIntArray(Array<int>& dest)
 void CmfLoader::_readGeneralSGroup(SGroup& sgroup)
 {
     _readUIntArray(sgroup.atoms);
-    _readUIntArray(sgroup.bonds);
+    _readUIntArray(sgroup.getBonds());
 }
 
 void CmfLoader::_readExtSection(Molecule& mol)

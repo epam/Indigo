@@ -176,9 +176,10 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
         int idx = sgroups.addSGroup(supersg.sgroup_type);
         SGroup& sg = sgroups.getSGroup(idx);
         sg.parent_idx = supersg.parent_idx;
-        sg.original_group = supersg.original_group;
+        sg.index = supersg.index;
+        sg.ext_index = supersg.ext_index;
         sg.parent_group = supersg.parent_group;
-        sg.subscript.copy(supersg.subscript);
+        sg.label.copy(supersg.label);
 
         if (_mergeSGroupWithSubmolecule(sg, supersg, mol, mapping, edge_mapping))
         {
@@ -245,7 +246,7 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
                         ap.apid.copy(supersa.attachment_points[j].apid);
                     }
                 }
-                sa.display_position.copy(supersa.display_position);
+                sa.display_position = supersa.display_position;
             }
             else if (sg.sgroup_type == SGroup::SG_TYPE_SRU)
             {
@@ -490,9 +491,9 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
 
 void BaseMolecule::_flipSGroupBond(SGroup& sgroup, int src_bond_idx, int new_bond_idx)
 {
-    int idx = sgroup.bonds.find(src_bond_idx);
+    int idx = sgroup.getBonds().find(src_bond_idx);
     if (idx != -1)
-        sgroup.bonds[idx] = new_bond_idx;
+        sgroup.getBonds()[idx] = new_bond_idx;
 }
 
 void BaseMolecule::_flipSuperatomBond(Superatom& sa, int src_bond_idx, int new_bond_idx)
@@ -1064,7 +1065,7 @@ void BaseMolecule::removeBond(int idx)
 void BaseMolecule::removeSGroup(int idx)
 {
     SGroup& sg = sgroups.getSGroup(idx);
-    _checkSgroupHierarchy(sg.parent_group, sg.original_group);
+    _checkSgroupHierarchy(sg.parent_group, sg.index);
 
     sgroups.remove(idx);
 }
@@ -1073,7 +1074,7 @@ void BaseMolecule::removeSGroupWithBasis(int idx)
 {
     QS_DEF(Array<int>, sg_atoms);
     SGroup& sg = sgroups.getSGroup(idx);
-    _checkSgroupHierarchy(sg.parent_group, sg.original_group);
+    _checkSgroupHierarchy(sg.parent_group, sg.index);
     sg_atoms.copy(sg.atoms);
     removeAtoms(sg_atoms);
 }

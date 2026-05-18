@@ -99,7 +99,7 @@ void BaseMolecule::collapse(BaseMolecule& bm, int id, Mapping& mapAtom, Mapping&
 
     const MultipleGroup& group = (MultipleGroup&)sg;
 
-    if (group.atoms.size() != group.multiplier * group.parent_atoms.size())
+    if (group.atoms.size() != group.multiplier.get() * group.parent_atoms.size())
         throw Error("The group is already collapsed or invalid");
 
     QS_DEF(Array<int>, toRemove);
@@ -770,8 +770,8 @@ int BaseMolecule::transformFullCTABtoSCSR(ObjArray<TGroup>& templates)
 
              if (use_scsr_name)
              {
-                if ( (tg.tgroup_name.memcmp(su.subscript) == -1) &&
-                     (tg.tgroup_alias.memcmp(su.subscript) == -1) )
+                if ( (tg.tgroup_name.memcmp(su.label) == -1) &&
+                     (tg.tgroup_alias.memcmp(su.label) == -1) )
                 {
                    continue;
                 }

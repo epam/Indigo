@@ -565,7 +565,7 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
             TextItem& ti = _data.textitems[tii];
             if (group.tag != ' ')
             {
-                ti.text.push(group.tag);
+                ti.text.push(group.tag.get());
                 ti.text.appendString(" = ", false);
             }
 
@@ -594,7 +594,8 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
             }
             else if (group.relative)
             {
-                _objDistTransform(ti.bbp, group.display_pos);
+                if (group.display_pos.hasValue())
+                    _objDistTransform(ti.bbp, group.display_pos.get());
                 if (group.atoms.size() > 0)
                 {
                     ti.bbp.add(_ad(group.atoms[0]).pos);
@@ -606,7 +607,8 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
             }
             else
             {
-                _objCoordTransform(ti.bbp, group.display_pos);
+                if (group.display_pos.hasValue())
+                    _objCoordTransform(ti.bbp, group.display_pos.get());
             }
 
             parent = ILLEGAL_RECT();
@@ -620,7 +622,7 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
             int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
             TextItem& index = _data.textitems[tiIndex];
             index.fontsize = FONT_SIZE_ATTR;
-            bprintf(index.text, group.subscript.size() > 0 ? group.subscript.ptr() : "n");
+            bprintf(index.text, group.label.size() > 0 ? group.label.ptr() : "n");
             _positionIndex(sg, tiIndex, true);
             if (group.connectivity != RepeatingUnit::HEAD_TO_TAIL)
             {
@@ -655,7 +657,7 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
             int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
             TextItem& index = _data.textitems[tiIndex];
             index.fontsize = FONT_SIZE_ATTR;
-            bprintf(index.text, "%d", group.multiplier);
+            bprintf(index.text, "%d", group.multiplier.get());
             _positionIndex(sg, tiIndex, true);
             parent = ILLEGAL_RECT();
         }
@@ -668,12 +670,12 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
             _placeBrackets(sg, group.atoms, brackets);
             _loadBrackets(sg, brackets);
 
-            if (group.subscript.size() == 0 || std::string(group.subscript.ptr()).empty())
+            if (group.label.size() == 0 || std::string(group.label.ptr()).empty())
                 sg.hide_brackets = true;
             int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
             TextItem& index = _data.textitems[tiIndex];
             index.fontsize = FONT_SIZE_ATTR;
-            bprintf(index.text, "%s", group.subscript.ptr());
+            bprintf(index.text, "%s", group.label.ptr());
             _positionIndex(sg, tiIndex, true);
 
             parent = ILLEGAL_RECT();
@@ -829,7 +831,7 @@ void MoleculeRenderInternal::_prepareSGroups(bool collapseAtLeastOneSuperatom)
                 if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
                 {
                     const Superatom& group = (Superatom&)sgroup;
-                    Vec3f displayPosition = group.display_position;
+                    Vec3f displayPosition = group.display_position.get();
                     bool useDisplayPosition = false;
                     if (fabs(displayPosition.x) > EPSILON || fabs(displayPosition.y) > EPSILON || fabs(displayPosition.z) > EPSILON)
                     {
@@ -850,13 +852,13 @@ void MoleculeRenderInternal::_prepareSGroups(bool collapseAtLeastOneSuperatom)
 
                     if (mol.isQueryMolecule())
                     {
-                        superAtomID = mol.asQueryMolecule().addAtom(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, group.subscript.ptr()));
+                        superAtomID = mol.asQueryMolecule().addAtom(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, group.label.ptr()));
                     }
                     else
                     {
                         Molecule& amol = mol.asMolecule();
                         superAtomID = amol.addAtom(ELEM_PSEUDO);
-                        amol.setPseudoAtom(superAtomID, group.subscript.ptr());
+                        amol.setPseudoAtom(superAtomID, group.label.ptr());
                     }
                     QS_DEF(RedBlackSet<int>, groupAtoms);
                     groupAtoms.clear();

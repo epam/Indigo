@@ -664,6 +664,22 @@ class IndigoLib:
         IndigoLib.lib.indigoCreateCrossBonds.argtypes = [c_int]
         IndigoLib.lib.indigoClearSGroupCrossBonds.restype = c_int
         IndigoLib.lib.indigoClearSGroupCrossBonds.argtypes = [c_int]
+        IndigoLib.lib.indigoAddSGroup.restype = c_int
+        IndigoLib.lib.indigoAddSGroup.argtypes = [c_int, c_char_p, c_int]
+        IndigoLib.lib.indigoSetSGroupAtoms.restype = c_int
+        IndigoLib.lib.indigoSetSGroupAtoms.argtypes = [
+            c_int,
+            c_int,
+            POINTER(c_int),
+        ]
+        IndigoLib.lib.indigoSetSGroupBonds.restype = c_int
+        IndigoLib.lib.indigoSetSGroupBonds.argtypes = [
+            c_int,
+            c_int,
+            POINTER(c_int),
+        ]
+        IndigoLib.lib.indigoIterateSGroupCrossBonds.restype = c_int
+        IndigoLib.lib.indigoIterateSGroupCrossBonds.argtypes = [c_int]
         IndigoLib.lib.indigoAddSGroupAttachmentPoint.restype = c_int
         IndigoLib.lib.indigoAddSGroupAttachmentPoint.argtypes = [
             c_int,

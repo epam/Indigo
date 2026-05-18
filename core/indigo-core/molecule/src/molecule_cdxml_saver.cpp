@@ -1130,24 +1130,27 @@ void MoleculeCdxmlSaver::addFragmentNodes(BaseMolecule& mol, tinyxml2::XMLElemen
         }
 
         auto& sa = (Superatom&)mol.sgroups.getSGroup(kvp.first);
-        if (sa.subscript.size())
+        if (sa.label.size())
         {
             XMLElement* t = _doc->NewElement("t");
             node->LinkEndChild(t);
-            Vec2f pos(sa.display_position.x + offset.x, -sa.display_position.y - offset.y);
-            pos.scale(_bond_length);
-            Vec2f v1(pos.x - _bond_length / 2, pos.y - _bond_length / 2);
-            Vec2f v2(pos.x + _bond_length / 2, pos.y + _bond_length / 2);
-            std::string pos_str = std::to_string(pos.x) + " " + std::to_string(pos.y);
-            Rect2f bbox(v1, v2);
-            std::string bbox_str = boundingBoxToString(bbox);
-            if (sa.display_position.x != 0.0f && sa.display_position.y != 0.0f)
-                node->SetAttribute("p", pos_str.c_str());
+            if (sa.display_position.hasValue())
+            {
+                Vec2f pos(sa.display_position->x + offset.x, -sa.display_position->y - offset.y);
+                pos.scale(_bond_length);
+                Vec2f v1(pos.x - _bond_length / 2, pos.y - _bond_length / 2);
+                Vec2f v2(pos.x + _bond_length / 2, pos.y + _bond_length / 2);
+                std::string pos_str = std::to_string(pos.x) + " " + std::to_string(pos.y);
+                Rect2f bbox(v1, v2);
+                std::string bbox_str = boundingBoxToString(bbox);
+                if (sa.display_position->x != 0.0f && sa.display_position->y != 0.0f)
+                    node->SetAttribute("p", pos_str.c_str());
+            }
             t->SetAttribute("LabelJustification", "Left");
             t->SetAttribute("LabelAlignment", "Above");
             XMLElement* s = _doc->NewElement("s");
             t->LinkEndChild(s);
-            XMLText* txt = _doc->NewText(sa.subscript.ptr());
+            XMLText* txt = _doc->NewText(sa.label.ptr());
             s->LinkEndChild(txt);
         }
     }
@@ -2172,7 +2175,7 @@ void MoleculeCdxmlSaver::deleteNamelessSGroups(BaseMolecule& bmol)
         if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
         {
             auto& sa = static_cast<Superatom&>(sg);
-            if (sa.subscript.size() == 0 || std::string(sa.subscript.ptr()).size() == 0)
+            if (sa.label.size() == 0 || std::string(sa.label.ptr()).size() == 0)
                 bmol.sgroups.remove(j);
         }
     }

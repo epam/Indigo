@@ -1874,7 +1874,7 @@ void SmilesSaver::_writeSGroups()
             RepeatingUnit& ru = static_cast<RepeatingUnit&>(sg);
             _output.writeString("n:");
             _writeSGroupAtoms(sg);
-            _output.printf(":%s:", ru.subscript.ptr() ? ru.subscript.ptr() : "");
+            _output.printf(":%s:", ru.label.ptr() ? ru.label.ptr() : "");
             switch (ru.connectivity)
             {
             case SGroup::HEAD_TO_TAIL:

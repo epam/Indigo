@@ -214,21 +214,12 @@ def testClearSGroupCrossBonds():
         print("Cross bond indices after create: %s" % after_create_indices)
         break  # test with first match only
 
+    # #3604: clearSGroupCrossBonds and createCrossBonds now work for all SGroup types
     data_sg = m.addDataSGroup([0, 1], [], "ID", "test")
-    try:
-        data_sg.clearSGroupCrossBonds()
-    except IndigoException as e:
-        print(
-            "Expected error for clearSGroupCrossBonds on data SGroup: %s"
-            % getIndigoExceptionText(e)
-        )
-    try:
-        data_sg.createCrossBonds()
-    except IndigoException as e:
-        print(
-            "Expected error for createCrossBonds on data SGroup: %s"
-            % getIndigoExceptionText(e)
-        )
+    data_sg.clearSGroupCrossBonds()
+    print("clearSGroupCrossBonds on data SGroup: OK")
+    data_sg.createCrossBonds()
+    print("createCrossBonds on data SGroup: OK")
 
 
 print("****** SGroup Cross Bonds ********")

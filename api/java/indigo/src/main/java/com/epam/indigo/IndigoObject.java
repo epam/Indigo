@@ -1249,6 +1249,40 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResult(this, lib.indigoClearSGroupCrossBonds(self));
     }
 
+    public IndigoObject addSGroup(String type) {
+        return addSGroup(type, 0);
+    }
+
+    public IndigoObject addSGroup(String type, int extindex) {
+        dispatcher.setSessionID();
+        return new IndigoObject(
+                dispatcher, Indigo.checkResult(this, lib.indigoAddSGroup(self, type, extindex)), this);
+    }
+
+    public int setSGroupAtoms(int[] atoms) {
+        dispatcher.setSessionID();
+        return Indigo.checkResult(this, lib.indigoSetSGroupAtoms(self, atoms.length, atoms));
+    }
+
+    public int setSGroupAtoms(Collection<Integer> atoms) {
+        return setSGroupAtoms(Indigo.toIntArray(atoms));
+    }
+
+    public int setSGroupBonds(int[] bonds) {
+        dispatcher.setSessionID();
+        return Indigo.checkResult(this, lib.indigoSetSGroupBonds(self, bonds.length, bonds));
+    }
+
+    public int setSGroupBonds(Collection<Integer> bonds) {
+        return setSGroupBonds(Indigo.toIntArray(bonds));
+    }
+
+    public IndigoObject iterateSGroupCrossBonds() {
+        dispatcher.setSessionID();
+        return new IndigoObject(
+                dispatcher, Indigo.checkResult(this, lib.indigoIterateSGroupCrossBonds(self)), this);
+    }
+
     public int addSGroupAttachmentPoint(int aidx, int lvidx, String apid) {
         dispatcher.setSessionID();
         return Indigo.checkResult(

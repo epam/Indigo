@@ -22,6 +22,10 @@
 #include "base_cpp/tree.h"
 #include "molecule/molecule_sgroups.h"
 
+#include <algorithm>
+#include <map>
+#include <set>
+
 using namespace indigo;
 
 static SGroup::SgType mappingForSgTypes[] = {
@@ -57,7 +61,8 @@ SGroup::SGroup()
     sgroup_type = SGroup::SG_TYPE_GEN;
     sgroup_subtype = 0;
     brk_style = 0;
-    original_group = 0;
+    index = 0;
+    ext_index = 0;
     parent_group = 0;
     parent_idx = -1;
     contracted = DisplayOption::Undefined;
@@ -105,7 +110,7 @@ Superatom::Superatom() : unresolved(false)
     seqid = -1;
     attachment_points.clear();
     bond_connections.clear();
-    display_position.clear();
+    display_position.set(Vec3f(0, 0, 0));
 }
 
 Superatom::~Superatom()
@@ -510,7 +515,7 @@ void MoleculeSGroups::findSGroups(int property, const char* str, Array<int>& sgs
         for (i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
         {
             SGroup& sg = *_sgroups.at(i);
-            BufferScanner sc(sg.subscript);
+            BufferScanner sc(sg.label);
             if (sc.findWordIgnoreCase(str))
             {
                 sgs.push(i);
@@ -681,7 +686,7 @@ void MoleculeSGroups::findSGroups(int property, Array<int>& indices, Array<int>&
         for (i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
         {
             SGroup& sg = *_sgroups.at(i);
-            if (_cmpIndices(sg.bonds, indices))
+            if (_cmpIndices(sg.getBonds(), indices))
             {
                 sgs.push(i);
             }
@@ -708,7 +713,7 @@ int MoleculeSGroups::findSGroupById(int id)
     for (int i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
     {
         SGroup& sg = *_sgroups.at(i);
-        if (sg.original_group == id)
+        if (sg.index == id)
         {
             return i;
         }
@@ -724,4 +729,122 @@ bool MoleculeSGroups::_cmpIndices(Array<int>& t_inds, Array<int>& q_inds)
             return false;
     }
     return true;
+}
+
+std::vector<SGroupWriteEntry> indigo::getOrderedSGroups(MoleculeSGroups& sgroups)
+{
+    // Phase 1: Build pool_idx → write_index mapping (sequential, roots first)
+    std::vector<int> pool_indices;
+    for (int i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
+        pool_indices.push_back(i);
+
+    int pool_end = pool_indices.empty() ? 0 : (*std::max_element(pool_indices.begin(), pool_indices.end()) + 1);
+
+    std::vector<int> sgs_mapping(pool_end, 0);
+
+    // Roots first (parent_group == 0 or not set)
+    int iw = 1;
+    for (int i : pool_indices)
+    {
+        SGroup& sg = sgroups.getSGroup(i);
+        int pg = sg.parent_group.hasValue() ? sg.parent_group.get() : 0;
+        if (pg == 0)
+        {
+            sgs_mapping[i] = iw++;
+        }
+    }
+    // Then children
+    for (int i : pool_indices)
+    {
+        if (sgs_mapping[i] == 0)
+        {
+            sgs_mapping[i] = iw++;
+        }
+    }
+    // Phase 2: Build old_index → write_index remap for parent_group resolution
+    std::map<int, int> index_remap;
+    for (int i : pool_indices)
+    {
+        SGroup& sg = sgroups.getSGroup(i);
+        int key = (sg.index != 0) ? sg.index : sgs_mapping[i];
+        index_remap[key] = sgs_mapping[i];
+    }
+
+    // Phase 3: Build entries with write fields
+    std::vector<SGroupWriteEntry> all_entries;
+    all_entries.reserve(pool_indices.size());
+    for (int i : pool_indices)
+    {
+        SGroup& sg = sgroups.getSGroup(i);
+        SGroupWriteEntry entry;
+        entry.pool_idx = i;
+        entry.write_index = sgs_mapping[i];
+
+        // ext_index: use explicit value if set, otherwise auto-assign from write_index
+        entry.write_ext_index = (sg.ext_index != 0) ? sg.ext_index : entry.write_index;
+
+        // parent_group: remap to new write indices
+        int pg = sg.parent_group.hasValue() ? sg.parent_group.get() : 0;
+        if (pg == 0)
+        {
+            entry.write_parent = 0;
+        }
+        else
+        {
+            auto it = index_remap.find(pg);
+            if (it != index_remap.end() && it->second != entry.write_index)
+                entry.write_parent = it->second;
+            else
+                entry.write_parent = 0; // orphan or self-ref → root
+        }
+        all_entries.push_back(entry);
+    }
+
+    // Phase 4: Topological sort — parents before children
+    std::vector<SGroupWriteEntry> result;
+    result.reserve(all_entries.size());
+
+    std::set<int> added_indices;
+
+    // Add roots first
+    for (auto& e : all_entries)
+    {
+        if (e.write_parent == 0)
+        {
+            result.push_back(e);
+            added_indices.insert(e.write_index);
+        }
+    }
+
+    // Then iteratively add children whose parents are already added
+    while (result.size() < all_entries.size())
+    {
+        size_t prev_size = result.size();
+        for (auto& e : all_entries)
+        {
+            if (added_indices.count(e.write_index))
+                continue;
+            if (added_indices.count(e.write_parent))
+            {
+                result.push_back(e);
+                added_indices.insert(e.write_index);
+            }
+        }
+        // No progress — cyclic or orphan refs; break cycles by adding as roots
+        if (result.size() == prev_size)
+        {
+            for (auto& e : all_entries)
+            {
+                if (!added_indices.count(e.write_index))
+                {
+                    e.write_parent = 0;
+                    result.push_back(e);
+                    added_indices.insert(e.write_index);
+                }
+            }
+            break;
+        }
+    }
+
+    return result;
 }
