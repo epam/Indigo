@@ -29,11 +29,11 @@ biln_to_helm = {
     # non-backbone BILN bonds during import/export roundtrip.
     "biln_cap": (
         "Ac(1,2).A-K(1,3)",
-        "PEPTIDE1{[Ac]}|PEPTIDE2{A.K}$PEPTIDE1,PEPTIDE2,1:R2-2:R3$$$V2.0",
+        "PEPTIDE1{[ac]}|PEPTIDE2{A.K}$PEPTIDE1,PEPTIDE2,1:R2-2:R3$$$V2.0",
     ),
     "biln_three_chains": (
         "Ac(1,2).A-K(1,3)(2,2).Me(2,1)",
-        "PEPTIDE1{[Ac]}|PEPTIDE2{A.K}|PEPTIDE3{[Me]}$PEPTIDE1,PEPTIDE2,1:R2-2:R3|PEPTIDE2,PEPTIDE3,2:R2-1:R1$$$V2.0",
+        "PEPTIDE1{[ac]}|PEPTIDE2{A.K}|PEPTIDE3{[-Me]}$PEPTIDE1,PEPTIDE2,1:R2-2:R3|PEPTIDE2,PEPTIDE3,2:R2-1:R1$$$V2.0",
     ),
     "biln_two_backbones": (
         "A-C-D.E-F-G",
@@ -124,6 +124,10 @@ biln_to_biln = {
         "C(1,1)-C(2,3)-C(1,2).C(2,3)",
         "C(1,1)(2,3)-C-C(1,2).C(2,3)",
     ),
+    "biln_equal_chain_topology_order": (
+        "C(1,3).C(1,1)",
+        "C(1,1).C(1,3)",
+    ),
     "biln_library_alias": (
         "Edc",
         "Edc",
@@ -203,6 +207,9 @@ for name in sorted(helm_to_biln.keys()):
 
 helm_errors = {
     "CHEM1{[qweqwe]}$$$$V2.0": "Only amino acids and CHEMs with BILN codes can get exported to BILN.",
+    # Unresolved HELM aliases that map to real BILN terminal caps must still be
+    # validated against the resolved library template attachment points.
+    "PEPTIDE1{[Ac]}|PEPTIDE2{K}$PEPTIDE1,PEPTIDE2,1:R1-1:R3$$$V2.0": "Cannot save in BILN format - unsupported attachment point 'R1'.",
     "PEPTIDE1{A}|RNA1{R(A)P}$$$$V2.0": "Only amino acids and CHEMs with BILN codes can get exported to BILN.",
     # Legacy integration input retained as an error expectation. #3541 export
     # requirement 1 forbids exporting PEPTIDE monomers without BILN codes.
@@ -229,6 +236,10 @@ ket_errors = {
     "custom_chem_without_biln_code": (
         "CHEM1{[qweqwe]}$$$$V2.0",
         "Only amino acids and CHEMs with BILN codes can get exported to BILN.",
+    ),
+    "unresolved_cap_invalid_attachment": (
+        "PEPTIDE1{[Ac]}|PEPTIDE2{K}$PEPTIDE1,PEPTIDE2,1:R1-1:R3$$$V2.0",
+        "Cannot save in BILN format - unsupported attachment point 'R1'.",
     ),
 }
 
@@ -262,6 +273,10 @@ biln_errors = {
     "A-C(1.25,3)-D(2,3)-E.F-G-H(1.25,3)-I-K(2,3)": "The string cannot be interpreted as a valid BILN string.",
     "A-C(1,3)-D(1,3)-E.F-G-H(1,3)-I-K(2,3)": "The string cannot be interpreted as a valid BILN string.",
     "A-C(1,4)-D(2,3)-E.F-G-H(1,3)-I-K(2,3)": "The string cannot be interpreted as a valid BILN string.",
+    # Terminal caps must be resolved against their real templates, not imported
+    # as unresolved monomers with synthetic R1..R4 attachment points.
+    "Ac(1,1).K(1,3)": "The string cannot be interpreted as a valid BILN string.",
+    "Ac(1,4).K(1,3)": "The string cannot be interpreted as a valid BILN string.",
     "Cys_SEt": "The string cannot be interpreted as a valid BILN string.",
 }
 

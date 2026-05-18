@@ -621,6 +621,11 @@ void SequenceLoader::loadBILN(KetDocument& document)
         int bond_idx;
         std::vector<BilnEndpoint> endpoints;
     };
+    struct PendingBilnEndpoint
+    {
+        int bond_idx;
+        int attachment_idx;
+    };
     struct BilnChain
     {
         std::vector<size_t> monomer_indices;
@@ -660,15 +665,52 @@ void SequenceLoader::loadBILN(KetDocument& document)
             bonds.push_back({bond_idx, {}});
         bonds.at(it->second).endpoints.push_back({monomer_idx, monomer_id, attachment_idx});
     };
-    auto get_biln_monomer_class = [&](const std::string& monomer_alias) {
+    auto resolve_biln_monomer = [&](const std::string& monomer_alias, const std::vector<PendingBilnEndpoint>& endpoints, bool has_prev_in_chain,
+                                     bool has_next_in_chain) {
         if (_library.getMonomerTemplateIdByAlias(MonomerClass::AminoAcid, monomer_alias).size() > 0)
-            return MonomerClass::AminoAcid;
+            return std::make_pair(MonomerClass::AminoAcid, monomer_alias);
         if (_library.getMonomerTemplateIdByAlias(MonomerClass::CHEM, monomer_alias).size() > 0)
-            return MonomerClass::CHEM;
-        if (_library.getMonomerTemplateIdByAlias(MonomerClass::AminoAcid, monomer_alias + "-").size() > 0)
-            return MonomerClass::AminoAcid;
+            return std::make_pair(MonomerClass::CHEM, monomer_alias);
+
+        bool uses_r1 = false;
+        bool uses_r2 = false;
+        bool uses_other = false;
+        for (const auto& endpoint : endpoints)
+        {
+            if (endpoint.attachment_idx == 1)
+                uses_r1 = true;
+            else if (endpoint.attachment_idx == 2)
+                uses_r2 = true;
+            else
+                uses_other = true;
+        }
+
+        auto right_cap_alias = monomer_alias + "-";
+        auto left_cap_alias = "-" + monomer_alias;
+        const bool has_right_cap = _library.getMonomerTemplateIdByAlias(MonomerClass::AminoAcid, right_cap_alias).size() > 0;
+        const bool has_left_cap = _library.getMonomerTemplateIdByAlias(MonomerClass::AminoAcid, left_cap_alias).size() > 0;
+        if (has_right_cap && !has_left_cap)
+            return std::make_pair(MonomerClass::AminoAcid, right_cap_alias);
+        if (has_left_cap && !has_right_cap)
+            return std::make_pair(MonomerClass::AminoAcid, left_cap_alias);
+        if (has_right_cap && has_left_cap)
+        {
+            if (uses_other || (uses_r1 && uses_r2))
+                throw_invalid_biln();
+            if (uses_r1)
+                return std::make_pair(MonomerClass::AminoAcid, left_cap_alias);
+            if (uses_r2)
+                return std::make_pair(MonomerClass::AminoAcid, right_cap_alias);
+            if (has_prev_in_chain && has_next_in_chain)
+                throw_invalid_biln();
+            if (has_prev_in_chain)
+                return std::make_pair(MonomerClass::AminoAcid, left_cap_alias);
+            if (has_next_in_chain)
+                return std::make_pair(MonomerClass::AminoAcid, right_cap_alias);
+            return std::make_pair(MonomerClass::AminoAcid, right_cap_alias);
+        }
         throw_invalid_biln();
-        return MonomerClass::Unknown;
+        return std::make_pair(MonomerClass::Unknown, monomer_alias);
     };
 
     _row = 0;
@@ -725,14 +767,8 @@ void SequenceLoader::loadBILN(KetDocument& document)
             if (monomer_alias.empty())
                 throw_invalid_biln();
 
-            Vec3f monomer_pos(_col * LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, -LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH * _row, 0);
-            ambiguous_template_opts options;
-            const auto monomer_class = get_biln_monomer_class(monomer_alias);
-            auto monomer_idx =
-                addHelmMonomer(document, std::make_tuple(monomer_alias, false, std::string(), std::string(), options), monomer_class, monomer_pos);
-            std::string monomer_id = std::to_string(monomer_idx);
-            chain.monomer_indices.push_back(monomer_idx);
-
+            const bool has_prev_in_chain = !chain.monomer_indices.empty();
+            std::vector<PendingBilnEndpoint> pending_endpoints;
             skip_spaces();
             while (data_pos < biln.size() && biln[data_pos] == '(')
             {
@@ -747,9 +783,20 @@ void SequenceLoader::loadBILN(KetDocument& document)
                 if (data_pos >= biln.size() || biln[data_pos] != ')')
                     throw_invalid_biln();
                 data_pos++;
-                remember_bond_endpoint(bond_idx, monomer_idx, monomer_id, attachment_idx);
+                pending_endpoints.push_back({bond_idx, attachment_idx});
                 skip_spaces();
             }
+
+            Vec3f monomer_pos(_col * LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, -LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH * _row, 0);
+            ambiguous_template_opts options;
+            const bool has_next_in_chain = data_pos < biln.size() && biln[data_pos] == '-';
+            const auto [monomer_class, monomer_load_alias] = resolve_biln_monomer(monomer_alias, pending_endpoints, has_prev_in_chain, has_next_in_chain);
+            auto monomer_idx =
+                addHelmMonomer(document, std::make_tuple(monomer_load_alias, false, std::string(), std::string(), options), monomer_class, monomer_pos);
+            std::string monomer_id = std::to_string(monomer_idx);
+            chain.monomer_indices.push_back(monomer_idx);
+            for (const auto& endpoint : pending_endpoints)
+                remember_bond_endpoint(endpoint.bond_idx, monomer_idx, monomer_id, endpoint.attachment_idx);
 
             _col++;
             skip_spaces();
@@ -787,7 +834,8 @@ void SequenceLoader::loadBILN(KetDocument& document)
             return false;
         const auto& monomer_template = _library.getMonomerTemplateById(template_id);
         const auto& template_alias = getKetStrProp(monomer_template, alias);
-        return template_alias.size() > 1 && template_alias.back() == '-' && monomer_template.attachmentPoints().size() == 1;
+        return template_alias.size() > 1 && (template_alias.back() == '-' || template_alias.front() == '-') &&
+               monomer_template.attachmentPoints().size() == 1;
     };
     auto is_terminal_cap = [&](const std::unique_ptr<KetBaseMonomer>& monomer) { return is_terminal_cap_alias(monomer->alias()); };
     auto validate_endpoint = [&](const BilnEndpoint& ep, const std::string& ap) -> const std::unique_ptr<KetBaseMonomer>& {

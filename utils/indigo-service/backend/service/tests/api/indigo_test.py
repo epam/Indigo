@@ -3919,7 +3919,7 @@ M  END
         # BILN with terminal cap cross-link
         biln_cross = "Ac(1,2).A-K(1,3)"
         helm_cross_ref = (
-            "PEPTIDE1{[Ac]}|PEPTIDE2{A.K}"
+            "PEPTIDE1{[ac]}|PEPTIDE2{A.K}"
             "$PEPTIDE1,PEPTIDE2,1:R2-2:R3$$$V2.0"
         )
         headers, data = self.get_headers(
