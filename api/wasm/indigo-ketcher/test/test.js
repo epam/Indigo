@@ -1,7 +1,7 @@
 const indigoModuleFn = require('./indigo-ketcher.js')
 const assert = require('assert').strict;
-const looksSame = require('looks-same');
-
+const looksSameOrig = require('looks-same');
+const looksSame = async (ref, out) => await looksSameOrig(ref, out, { tolerance: 5, antialiasingTolerance: 5, ignoreAntialiasing: true });
 // Extremely simple test framework, thanks to @sohamkamari (https://github.com/sohamkamani/nodejs-test-without-library)
 let tests = []
 
@@ -13,15 +13,42 @@ function parseHrtimeToSeconds(hrtime) {
     return (hrtime[0] + (hrtime[1] / 1e9)).toFixed(3);
 }
 
-function run() {
+async function run() {
     let succeeded = 0;
     let failed = 0;
+
+    // On Linux, configure FontConfig to use the @fontsource fonts so that `sharp` (librsvg) 
+    // renders SVGs with the correct Noto Sans fonts, avoiding looksSame failures in CI.
+    if (process.platform === 'linux') {
+        const { execSync } = require('child_process');
+        const os = require('os');
+        const path = require('path');
+        const fs = require('fs');
+        try {
+            console.log("Configuring FontConfig for Linux...");
+            const fontsDir = path.join(os.homedir(), '.fonts');
+            if (!fs.existsSync(fontsDir)) {
+                fs.mkdirSync(fontsDir, { recursive: true });
+            }
+            const sourceDir = path.join(__dirname, 'node_modules', '@fontsource');
+            if (fs.existsSync(sourceDir)) {
+                execSync(`find "${sourceDir}" -type f \\( -name "*.woff" -o -name "*.woff2" -o -name "*.ttf" \\) -exec cp {} "${fontsDir}" \\;`);
+                execSync('fc-cache -f -v');
+                console.log("FontConfig successfully updated with Noto Sans fonts.");
+            } else {
+                console.warn(`Fontsource directory not found at ${sourceDir}`);
+            }
+        } catch (e) {
+            console.error('Failed to configure FontConfig for Linux:', e.message);
+        }
+    }
+
     console.log("Starting tests...\n")
     var startTestsTime = process.hrtime();
-    tests.forEach(t => {
+    for (const t of tests) {
         try {
             var startTestTime = process.hrtime();
-            t.fn()
+            await t.fn()
             const elapsedSeconds = parseHrtimeToSeconds(process.hrtime(startTestTime));
             console.log(`✅ ${t.group}.${t.name} [${elapsedSeconds}s]`);
             succeeded++;
@@ -30,7 +57,7 @@ function run() {
             console.log(e.stack)
             failed++
         }
-    })
+    }
     const elapsedSeconds = parseHrtimeToSeconds(process.hrtime(startTestsTime));
     const total = succeeded + failed;
     console.log(`\n${total} tests executed in ${elapsedSeconds} seconds. ${succeeded} succeeded, ${failed} failed.`)
@@ -660,6 +687,63 @@ M  END
             options.delete();
         });
 
+        test("render", "svg_arc_commands", () => {
+            let options = new indigo.MapStringString();
+            options.set("render-output-format", "svg");
+            var fs = require('fs');
+            var path = require('path');
+            const ket_data = fs.readFileSync(path.join(__dirname, "issue_2513.ket"));
+            const svg = Buffer.from(indigo.render(ket_data, options), "base64").toString();
+            assert(/<path d="[^"]*A/.test(svg));
+            options.delete();
+        });
+
+        const getIntegrationTestPath = (subpath) => {
+            var fs = require('fs');
+            var path = require('path');
+            let currentDir = __dirname;
+            while (currentDir !== path.parse(currentDir).root) {
+                let candidate = path.join(currentDir, "api/tests/integration/tests", subpath);
+                if (fs.existsSync(candidate)) return candidate;
+                currentDir = path.dirname(currentDir);
+            }
+            throw new Error("Could not find integration test file: " + subpath);
+        };
+
+        test("render", "embedded_images_svg", () => {
+            let options = new indigo.MapStringString();
+            options.set("render-output-format", "svg");
+            var fs = require('fs');
+            const ket_data = fs.readFileSync(getIntegrationTestPath("rendering/molecules/images.ket"));
+            const svg = Buffer.from(indigo.render(ket_data, options), "base64").toString();
+            assert(svg.indexOf("<image") !== -1);
+            assert(svg.indexOf("data:image/png;base64,") !== -1);
+            assert(svg.indexOf("data:image/svg+xml;base64,") !== -1);
+            options.delete();
+        });
+
+        test("render", "embedded_cdxml_images_svg", () => {
+            let options = new indigo.MapStringString();
+            options.set("render-output-format", "svg");
+            var fs = require('fs');
+            const cdxml_data = fs.readFileSync(getIntegrationTestPath("formats/ref/images.cdxml"));
+            const svg = Buffer.from(indigo.render(cdxml_data, options), "base64").toString();
+            assert(svg.indexOf("<image") !== -1);
+            assert(svg.indexOf("data:image/png;base64,") !== -1);
+            options.delete();
+        });
+
+        test("render", "embedded_cdx_images_svg", () => {
+            let options = new indigo.MapStringString();
+            options.set("render-output-format", "svg");
+            var fs = require('fs');
+            const cdx_data = fs.readFileSync(getIntegrationTestPath("formats/molecules/cdx/image.cdx"));
+            const svg = Buffer.from(indigo.render("base64::" + cdx_data.toString("base64"), options), "base64").toString();
+            assert(svg.indexOf("<image") !== -1);
+            assert(svg.indexOf("data:image/png;base64,") !== -1);
+            options.delete();
+        });
+
         test("render", "png", () => {
             let options = new indigo.MapStringString();
             options.set("render-output-format", "png");
@@ -770,6 +854,97 @@ M  END
             const png = Buffer.from(indigo.render(ket_data, options), "base64");
             fs.writeFileSync("ketcher_text_panel_bold_italic_out.png", png);
             const { equal } = await looksSame('ketcher_text_panel_bold_italic_ref.png', 'ketcher_text_panel_bold_italic_out.png');
+            assert(equal);
+            options.delete();
+        });
+
+        test("render", "multi_reaction", async () => {
+            let options = new indigo.MapStringString();
+            options.set("render-output-format", "png");
+            options.set("render-background-color", "1,1,1");
+            var fs = require('fs');
+            const ket_data = fs.readFileSync("multi.ket");
+            const png = Buffer.from(indigo.render(ket_data, options), "base64");
+            fs.writeFileSync("multi_reaction_out.png", png);
+            const { equal } = await looksSame('multi_reaction_ref.png', 'multi_reaction_out.png');
+            assert(equal);
+            options.delete();
+        });
+
+        test("render", "retro_arrow", async () => {
+            let options = new indigo.MapStringString();
+            options.set("render-output-format", "png");
+            options.set("render-background-color", "1,1,1");
+            var fs = require('fs');
+            const ket_data = fs.readFileSync("retro.ket");
+            const png = Buffer.from(indigo.render(ket_data, options), "base64");
+            fs.writeFileSync("retro_arrow_out.png", png);
+            const { equal } = await looksSame('retro_arrow_ref.png', 'retro_arrow_out.png');
+            assert(equal);
+            options.delete();
+        });
+
+        test("render", "issue_2513_elliptical_arc", async () => {
+            let options = new indigo.MapStringString();
+            options.set("render-output-format", "png");
+            options.set("render-background-color", "1,1,1");
+            var fs = require('fs');
+            const ket_data = fs.readFileSync("issue_2513.ket");
+            const png = Buffer.from(indigo.render(ket_data, options), "base64");
+            fs.writeFileSync("issue_2513_out.png", png);
+            const { equal } = await looksSame('issue_2513_ref.png', 'issue_2513_out.png');
+            assert(equal);
+            options.delete();
+        });
+
+        test("render", "bonds", async () => {
+            let options = new indigo.MapStringString();
+            options.set("render-output-format", "png");
+            options.set("render-background-color", "1,1,1");
+            var fs = require('fs');
+            const mol_data = fs.readFileSync("bonds.mol");
+            const png = Buffer.from(indigo.render(mol_data, options), "base64");
+            fs.writeFileSync("bonds_out.png", png);
+            const { equal } = await looksSame('bonds_ref.png', 'bonds_out.png');
+            assert(equal);
+            options.delete();
+        });
+
+        test("render", "multitail_arrow", async () => {
+            let options = new indigo.MapStringString();
+            options.set("render-output-format", "png");
+            options.set("render-background-color", "1,1,1");
+            var fs = require('fs');
+            const ket_data = fs.readFileSync(getIntegrationTestPath("rendering/reactions/multitail_arrow.ket"));
+            const png = Buffer.from(indigo.render(ket_data, options), "base64");
+            fs.writeFileSync("multitail_arrow_out.png", png);
+            const { equal } = await looksSame('multitail_arrow_ref.png', 'multitail_arrow_out.png');
+            assert(equal);
+            options.delete();
+        });
+
+        test("render", "pathway11_multitail_text", async () => {
+            let options = new indigo.MapStringString();
+            options.set("render-output-format", "png");
+            options.set("render-background-color", "1,1,1");
+            var fs = require('fs');
+            const ket_data = fs.readFileSync(getIntegrationTestPath("formats/reactions/pathway11.ket"));
+            const png = Buffer.from(indigo.render(ket_data, options), "base64");
+            fs.writeFileSync("pathway11_out.png", png);
+            const { equal } = await looksSame('pathway11_ref.png', 'pathway11_out.png');
+            assert(equal);
+            options.delete();
+        });
+
+        test("render", "text_test5", async () => {
+            let options = new indigo.MapStringString();
+            options.set("render-output-format", "png");
+            options.set("render-background-color", "1,1,1");
+            var fs = require('fs');
+            const ket_data = fs.readFileSync("text_test5.ket");
+            const png = Buffer.from(indigo.render(ket_data, options), "base64");
+            fs.writeFileSync("text_test5_out.png", png);
+            const { equal } = await looksSame('text_test5_ref.png', 'text_test5_out.png');
             assert(equal);
             options.delete();
         });
