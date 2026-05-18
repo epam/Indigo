@@ -850,8 +850,11 @@ static std::string format_biln_alias(const std::string& monomer_alias)
 {
     if (monomer_alias.empty())
         throw SequenceSaver::Error("Cannot save empty monomer alias in BILN format.");
+    auto biln_alias = monomer_alias;
+    if (biln_alias.size() > 1 && biln_alias.back() == '-')
+        biln_alias.pop_back();
     bool needs_brackets = false;
-    for (auto ch : monomer_alias)
+    for (auto ch : biln_alias)
     {
         if (ch == '-')
         {
@@ -861,7 +864,7 @@ static std::string format_biln_alias(const std::string& monomer_alias)
         if (ch == '.' || ch == '(' || ch == ')' || ch == ',' || ch == '[' || ch == ']' || std::isspace(static_cast<unsigned char>(ch)))
             throw SequenceSaver::Error("Cannot save monomer alias '%s' in BILN format.", monomer_alias.c_str());
     }
-    return needs_brackets ? "[" + monomer_alias + "]" : monomer_alias;
+    return needs_brackets ? "[" + biln_alias + "]" : biln_alias;
 }
 
 std::string SequenceSaver::saveBILN(KetDocument& doc, const std::vector<std::deque<std::string>>& sequences)
@@ -905,6 +908,8 @@ std::string SequenceSaver::saveBILN(KetDocument& doc, const std::vector<std::deq
         std::string template_id = _library.getMonomerTemplateIdByAlias(monomer_class, monomer_alias);
         if (template_id.empty())
             template_id = _library.getMonomerTemplateIdByAliasHELM(monomer_class, monomer_alias);
+        if (template_id.empty() && monomer_class == MonomerClass::AminoAcid)
+            template_id = _library.getMonomerTemplateIdByAlias(monomer_class, monomer_alias + "-");
         if (template_id.empty())
             throw Error(biln_export_error);
         return format_biln_alias(getKetStrProp(_library.getMonomerTemplateById(template_id), alias));
@@ -926,6 +931,20 @@ std::string SequenceSaver::saveBILN(KetDocument& doc, const std::vector<std::deq
     std::vector<BilnConnection> explicit_connections;
     std::set<std::pair<int, std::string>> used_connection_endpoints;
 
+    auto is_terminal_cap_alias = [&](const std::string& monomer_alias) {
+        auto template_id = _library.getMonomerTemplateIdByAlias(MonomerClass::AminoAcid, monomer_alias);
+        if (template_id.empty())
+            template_id = _library.getMonomerTemplateIdByAlias(MonomerClass::AminoAcid, monomer_alias + "-");
+        if (template_id.empty())
+            return false;
+        const auto& monomer_template = _library.getMonomerTemplateById(template_id);
+        const auto& template_alias = getKetStrProp(monomer_template, alias);
+        return template_alias.size() > 1 && template_alias.back() == '-' && monomer_template.attachmentPoints().size() == 1;
+    };
+    auto is_terminal_cap_node = [&](int node_idx) {
+        const auto& node = nodes.at(node_idx);
+        return node.monomer_class == MonomerClass::AminoAcid && (is_terminal_cap_alias(node.alias) || is_terminal_cap_alias(node.biln_alias));
+    };
     auto is_biln_backbone_connection = [](const std::string& ap1, const std::string& ap2) {
         return (ap1 == kAttachmentPointR1 && ap2 == kAttachmentPointR2) || (ap1 == kAttachmentPointR2 && ap2 == kAttachmentPointR1);
     };
@@ -956,7 +975,7 @@ std::string SequenceSaver::saveBILN(KetDocument& doc, const std::vector<std::deq
         const auto& ep2 = connection.ep2();
         auto [node1, ap1] = read_endpoint(ep1);
         auto [node2, ap2] = read_endpoint(ep2);
-        if (is_biln_backbone_connection(ap1, ap2))
+        if (is_biln_backbone_connection(ap1, ap2) && !is_terminal_cap_node(node1) && !is_terminal_cap_node(node2))
         {
             int left = ap1 == kAttachmentPointR2 ? node1 : node2;
             int right = ap1 == kAttachmentPointR2 ? node2 : node1;
@@ -1004,7 +1023,7 @@ std::string SequenceSaver::saveBILN(KetDocument& doc, const std::vector<std::deq
         std::vector<BilnConnection> candidate_connections;
         for (const auto& connection : explicit_connections)
         {
-            if (chain_node_set.count(connection.node1) && chain_node_set.count(connection.node2))
+            if (chain_node_set.count(connection.node1) || chain_node_set.count(connection.node2))
                 candidate_connections.push_back(connection);
         }
         candidate_connections.push_back(
@@ -1013,17 +1032,17 @@ std::string SequenceSaver::saveBILN(KetDocument& doc, const std::vector<std::deq
         std::vector<std::vector<int>> node_to_bonds(chain_nodes.size());
         for (int bond_idx = 0; bond_idx < static_cast<int>(candidate_connections.size()); bond_idx++)
         {
-            auto pos1 = node_to_pos.at(candidate_connections[bond_idx].node1);
-            node_to_bonds.at(pos1).push_back(bond_idx);
-            if (candidate_connections[bond_idx].node2 != candidate_connections[bond_idx].node1)
+            auto pos1 = node_to_pos.find(candidate_connections[bond_idx].node1);
+            if (pos1 != node_to_pos.end())
+                node_to_bonds.at(pos1->second).push_back(bond_idx);
+            auto pos2 = node_to_pos.find(candidate_connections[bond_idx].node2);
+            if (pos2 != node_to_pos.end() && candidate_connections[bond_idx].node2 != candidate_connections[bond_idx].node1)
             {
-                auto pos2 = node_to_pos.at(candidate_connections[bond_idx].node2);
-                node_to_bonds.at(pos2).push_back(bond_idx);
+                node_to_bonds.at(pos2->second).push_back(bond_idx);
             }
         }
 
         int next_bond_idx = 1;
-        auto endpoint_position = [&](int node_idx) { return node_to_pos.at(node_idx); };
         auto append_bond_endpoint = [&](std::string& monomer_text, BilnConnection& bond, int node_idx) {
             if (bond.bond_idx == 0)
                 bond.bond_idx = next_bond_idx++;
@@ -1042,10 +1061,12 @@ std::string SequenceSaver::saveBILN(KetDocument& doc, const std::vector<std::deq
             std::string monomer_text = nodes.at(node_idx).biln_alias;
             auto& incident_bonds = node_to_bonds.at(monomer_idx);
             std::sort(incident_bonds.begin(), incident_bonds.end(), [&](int left_idx, int right_idx) {
-                auto other_pos = [&](const BilnConnection& bond, int current_node) {
-                    if (bond.node1 == current_node && bond.node2 != current_node)
-                        return endpoint_position(bond.node2);
-                    return endpoint_position(bond.node1);
+                auto other_key = [&](const BilnConnection& bond, int current_node) {
+                    int other_node = bond.node1 == current_node && bond.node2 != current_node ? bond.node2 : bond.node1;
+                    auto pos_it = node_to_pos.find(other_node);
+                    if (pos_it != node_to_pos.end())
+                        return std::make_tuple(0, pos_it->second, nodes.at(other_node).biln_alias, other_node);
+                    return std::make_tuple(1, 0, nodes.at(other_node).biln_alias, other_node);
                 };
                 const auto& left_bond = candidate_connections.at(left_idx);
                 const auto& right_bond = candidate_connections.at(right_idx);
@@ -1053,10 +1074,10 @@ std::string SequenceSaver::saveBILN(KetDocument& doc, const std::vector<std::deq
                     return left_bond.bond_idx != 0;
                 if (left_bond.bond_idx != 0 && right_bond.bond_idx != 0)
                     return left_bond.bond_idx < right_bond.bond_idx;
-                auto left_pos = other_pos(left_bond, node_idx);
-                auto right_pos = other_pos(right_bond, node_idx);
-                if (left_pos != right_pos)
-                    return left_pos < right_pos;
+                auto left_key = other_key(left_bond, node_idx);
+                auto right_key = other_key(right_bond, node_idx);
+                if (left_key != right_key)
+                    return left_key < right_key;
                 return std::tie(left_bond.node1, left_bond.ap1, left_bond.node2, left_bond.ap2) <
                        std::tie(right_bond.node1, right_bond.ap1, right_bond.node2, right_bond.ap2);
             });
@@ -1178,7 +1199,36 @@ std::string SequenceSaver::saveBILN(KetDocument& doc, const std::vector<std::deq
         }
     }
 
-    std::sort(chains.begin(), chains.end(), [](const BilnChain& left, const BilnChain& right) {
+    std::sort(chains.begin(), chains.end(), [&](const BilnChain& left, const BilnChain& right) {
+        auto terminal_cap_rank = [&](const BilnChain& chain) {
+            if (chain.monomer_count != 1 || chain.nodes.empty())
+                return 0;
+            int node_idx = chain.nodes.front();
+            if (!is_terminal_cap_node(node_idx))
+                return 0;
+            for (const auto& connection : explicit_connections)
+            {
+                if (connection.node1 == node_idx)
+                {
+                    if (connection.ap1 == kAttachmentPointR2)
+                        return -1;
+                    if (connection.ap1 == kAttachmentPointR1)
+                        return 1;
+                }
+                if (connection.node2 == node_idx)
+                {
+                    if (connection.ap2 == kAttachmentPointR2)
+                        return -1;
+                    if (connection.ap2 == kAttachmentPointR1)
+                        return 1;
+                }
+            }
+            return 0;
+        };
+        auto left_cap_rank = terminal_cap_rank(left);
+        auto right_cap_rank = terminal_cap_rank(right);
+        if (left_cap_rank != right_cap_rank)
+            return left_cap_rank < right_cap_rank;
         if (left.effective_amino_acid_count != right.effective_amino_acid_count)
             return left.effective_amino_acid_count > right.effective_amino_acid_count;
         if (left.monomer_count != right.monomer_count)
