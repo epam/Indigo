@@ -1,9 +1,11 @@
 *** BILN interop ***
 biln_bracketed_alias:BILN->HELM SUCCEED
+biln_cap:BILN->HELM SUCCEED
 biln_disulfides:BILN->HELM SUCCEED
 biln_explicit_backbone:BILN->HELM SUCCEED
 biln_large_bond_id:BILN->HELM SUCCEED
 biln_star_alias:BILN->HELM SUCCEED
+biln_three_chains:BILN->HELM SUCCEED
 biln_two_backbones:BILN->HELM SUCCEED
 biln_underscore_alias:BILN->HELM SUCCEED
 biln_alphabetic_order:BILN->BILN SUCCEED
@@ -13,6 +15,7 @@ biln_bracketed_no_hyphen:BILN->BILN SUCCEED
 biln_cycle_best:BILN->BILN SUCCEED
 biln_cycle_reverse_rotation:BILN->BILN SUCCEED
 biln_cycle_rotation:BILN->BILN SUCCEED
+biln_cycle_with_external_bond_order:BILN->BILN SUCCEED
 biln_cycle_with_extra_bond_order:BILN->BILN SUCCEED
 biln_library_alias:BILN->BILN SUCCEED
 biln_multiple_nonbackbone_order:BILN->BILN SUCCEED
@@ -20,13 +23,16 @@ biln_short_chain_order:BILN->BILN SUCCEED
 biln_valid_large_bond_ids:BILN->BILN SUCCEED
 helm_alias_to_biln_alias:HELM->BILN SUCCEED
 helm_bracketed_alias:HELM->BILN SUCCEED
+helm_cap:HELM->BILN SUCCEED
 helm_chem_backbone:HELM->BILN SUCCEED
 helm_chem_with_biln_code:HELM->BILN SUCCEED
 helm_cycle:HELM->BILN SUCCEED
 helm_star_alias:HELM->BILN SUCCEED
+helm_three_chains:HELM->BILN SUCCEED
 helm_underscore_alias:HELM->BILN SUCCEED
 Test 'CHEM1{[qweqwe]}$$$$V2.0': got expected error 'Only amino acids and CHEMs with BILN codes can get exported to BILN.'
 Test 'PEPTIDE1{A}|RNA1{R(A)P}$$$$V2.0': got expected error 'Only amino acids and CHEMs with BILN codes can get exported to BILN.'
+Test 'PEPTIDE1{[Abu].[Sar].[NMeL].V.[NMeL].A.[DAla].[NMeL].[NMeL].[NMeV].[NMeThr4RBut2enyl]}$PEPTIDE1,PEPTIDE1,1:R1-11:R2$$$V2.0': got expected error 'Only amino acids and CHEMs with BILN codes can get exported to BILN.'
 Test KET 'custom_chem_without_biln_code': got expected error 'Only amino acids and CHEMs with BILN codes can get exported to BILN.'
 Test 'A(1,3)-C': got expected error 'The string cannot be interpreted as a valid BILN string.'
 Test 'A--C': got expected error 'The string cannot be interpreted as a valid BILN string.'
