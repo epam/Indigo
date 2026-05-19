@@ -122,6 +122,9 @@ void BingoOracleContext::_loadConfigParameters(OracleEnv& env)
     configGetIntDef(env, "IGNORE_BAD_VALENCE", val, 0);
     ignore_bad_valence = (val != 0);
 
+    configGetIntDef(env, "CT_FORMAT_SAVE_DATE", val, 1);
+    ct_format_save_date = (val != 0);
+
     QS_DEF(Array<char>, cmfdict);
 
     if (configGetBlob(env, "CMFDICT", cmfdict))
