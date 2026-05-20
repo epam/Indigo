@@ -1,5 +1,6 @@
 from __future__ import print_function
 
+import json
 import os
 import sys
 
@@ -131,6 +132,77 @@ def testFoldUnfoldWithExplicitRadicals(smiles):
     print(mol.smiles())
 
 
+def _get_query_component_atoms(ket):
+    node_ref = ket["root"]["nodes"][0]["$ref"]
+    sgroups = ket[node_ref].get("sgroups", [])
+    for sgroup in sgroups:
+        if sgroup.get("type") == "queryComponent":
+            return sgroup.get("atoms", [])
+    return []
+
+
+def testFoldUnfoldQueryComponentKet():
+    print("testing queryComponent ket")
+    ket = """{
+    "ket_version": "2.0.0",
+    "root": {
+        "nodes": [
+            {
+                "$ref": "mol0"
+            }
+        ],
+        "connections": [],
+        "templates": []
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [6.007318933201196, -6.390262781767463, 0]
+            },
+            {
+                "label": "C",
+                "location": [7.00731896607563, -6.390262781767463, 0]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 3,
+                "atoms": [0, 1]
+            }
+        ],
+        "sgroups": [
+            {
+                "type": "queryComponent",
+                "atoms": [0, 1]
+            }
+        ],
+        "stereoFlagPosition": {
+            "x": 7.00731896607563,
+            "y": 5.390262781767463,
+            "z": 0
+        }
+    }
+}"""
+
+    mol = indigo.loadQueryMolecule(ket)
+
+    unfolded = mol.clone()
+    unfolded.unfoldHydrogens()
+    unfolded_ket = json.loads(unfolded.json())
+    unfolded_ref = unfolded_ket["root"]["nodes"][0]["$ref"]
+    print(len(unfolded_ket[unfolded_ref]["atoms"]))
+    print(_get_query_component_atoms(unfolded_ket))
+
+    auto = mol.clone()
+    auto.foldUnfoldHydrogens()
+    auto_ket = json.loads(auto.json())
+    auto_ref = auto_ket["root"]["nodes"][0]["$ref"]
+    print(len(auto_ket[auto_ref]["atoms"]))
+    print(_get_query_component_atoms(auto_ket))
+
+
 testFoldUnfoldSDF(
     joinPathPy("../../../../../data/molecules/basic/sugars.sdf", __file__)
 )
@@ -209,3 +281,4 @@ testFoldUnfoldWithExplicitRadicals("[CH2] |^3:0|")
 testFoldUnfoldWithExplicitRadicals("[CH2] |^4:0|")
 testFoldUnfoldWithExplicitRadicals("[CH]C1=CC=CO1 |^4:0|")
 testFoldUnfoldWithExplicitRadicals("C1C=CC=C([CH])C=1 |^4:5|")
+testFoldUnfoldQueryComponentKet()
