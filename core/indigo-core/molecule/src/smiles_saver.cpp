@@ -31,6 +31,8 @@
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/query_molecule.h"
 
+#include <cstring>
+
 using namespace indigo;
 
 IMPL_ERROR(SmilesSaver, "SMILES saver");
@@ -1832,6 +1834,20 @@ void SmilesSaver::_writeSGroupAtoms(const SGroup& sgroup)
     }
 }
 
+static void writeSgEscapedField(Output& output, const char* field)
+{
+    if (field == nullptr)
+        return;
+
+    for (const char* c = field; *c != 0; ++c)
+    {
+        if (strchr(",;:|{}", *c) != nullptr)
+            output.printf("&#%d;", static_cast<unsigned char>(*c));
+        else
+            output.writeChar(*c);
+    }
+}
+
 void SmilesSaver::_writeSGroups()
 {
     for (int i = _bmol->sgroups.begin(); i != _bmol->sgroups.end(); i = _bmol->sgroups.next(i))
@@ -1849,16 +1865,16 @@ void SmilesSaver::_writeSGroups()
             {
                 DataSGroup& dsg = static_cast<DataSGroup&>(sg);
                 if (dsg.name.size() > 0)
-                    _output.writeString(dsg.name.ptr());
+                    writeSgEscapedField(_output, dsg.name.ptr());
                 _output.writeChar(':');
                 if (dsg.data.size() > 0)
-                    _output.writeString(dsg.data.ptr());
+                    writeSgEscapedField(_output, dsg.data.ptr());
                 _output.writeChar(':');
                 if (dsg.queryoper.size() > 0)
-                    _output.writeString(dsg.queryoper.ptr());
+                    writeSgEscapedField(_output, dsg.queryoper.ptr());
                 _output.writeChar(':');
                 if (dsg.description.size() > 0)
-                    _output.writeString(dsg.description.ptr());
+                    writeSgEscapedField(_output, dsg.description.ptr());
                 _output.writeChar(':');
                 _output.writeChar(dsg.tag);
                 _output.writeChar(':');
@@ -1874,7 +1890,9 @@ void SmilesSaver::_writeSGroups()
             RepeatingUnit& ru = static_cast<RepeatingUnit&>(sg);
             _output.writeString("n:");
             _writeSGroupAtoms(sg);
-            _output.printf(":%s:", ru.subscript.ptr() ? ru.subscript.ptr() : "");
+            _output.writeChar(':');
+            writeSgEscapedField(_output, ru.subscript.ptr());
+            _output.writeChar(':');
             switch (ru.connectivity)
             {
             case SGroup::HEAD_TO_TAIL:
