@@ -577,8 +577,14 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
     for (auto fidx : _fragment_nodes)
     {
         auto& frag_node = nodes[fidx];
+        // Exclude ExternalConnectionPoint nodes — their bonds bridge the
+        // inner fragment to the outer molecule and must be preserved.
+        std::unordered_set<int> ext_conn_ids(frag_node.ext_connections.begin(), frag_node.ext_connections.end());
         for (auto inner_id : frag_node.inner_nodes)
-            all_inner_node_ids.insert(inner_id);
+        {
+            if (ext_conn_ids.count(inner_id) == 0)
+                all_inner_node_ids.insert(inner_id);
+        }
     }
 
     // Filter out bonds where both endpoints are inner nodes of a collapsed
