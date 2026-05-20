@@ -993,6 +993,8 @@ int QueryMolecule::addAtom(Atom* atom)
 
     _atoms.expand(idx + 1);
     _atoms.set(idx, atom);
+    // Keep queryComponent metadata aligned with vertex indices.
+    components.expandFill(idx + 1, 0);
 
     updateEditRevision();
     return idx;
