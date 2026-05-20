@@ -923,8 +923,7 @@ std::string SequenceSaver::saveBILN(KetDocument& doc, const std::vector<std::deq
             const auto& monomer_template = _library.getMonomerTemplateById(template_ids.front());
             const auto& template_alias = getKetStrProp(monomer_template, alias);
             const bool strip_terminal_cap = monomer_class == MonomerClass::AminoAcid && template_alias.size() > 1 &&
-                                            (template_alias.back() == '-' || template_alias.front() == '-') &&
-                                            monomer_template.attachmentPoints().size() == 1;
+                                            (template_alias.back() == '-' || template_alias.front() == '-') && monomer_template.attachmentPoints().size() == 1;
             return BilnAlias{format_biln_alias(template_alias, strip_terminal_cap), template_ids};
         };
 
@@ -976,14 +975,12 @@ std::string SequenceSaver::saveBILN(KetDocument& doc, const std::vector<std::deq
             return false;
         const auto& monomer_template = _library.getMonomerTemplateById(template_id);
         const auto& template_alias = getKetStrProp(monomer_template, alias);
-        return template_alias.size() > 1 && (template_alias.back() == '-' || template_alias.front() == '-') &&
-               monomer_template.attachmentPoints().size() == 1;
+        return template_alias.size() > 1 && (template_alias.back() == '-' || template_alias.front() == '-') && monomer_template.attachmentPoints().size() == 1;
     };
     auto is_terminal_cap_template = [&](const std::string& template_id) {
         const auto& monomer_template = _library.getMonomerTemplateById(template_id);
         const auto& template_alias = getKetStrProp(monomer_template, alias);
-        return template_alias.size() > 1 && (template_alias.back() == '-' || template_alias.front() == '-') &&
-               monomer_template.attachmentPoints().size() == 1;
+        return template_alias.size() > 1 && (template_alias.back() == '-' || template_alias.front() == '-') && monomer_template.attachmentPoints().size() == 1;
     };
     auto is_terminal_cap_node = [&](int node_idx) {
         const auto& node = nodes.at(node_idx);
@@ -1021,8 +1018,7 @@ std::string SequenceSaver::saveBILN(KetDocument& doc, const std::vector<std::deq
         if (monomers.at(node.monomer_id)->attachmentPoints().count(ap) == 0 || !supported_by_biln_template)
             throw Error("Cannot save in BILN format - unsupported attachment point '%s'.", ap.c_str());
         if (!used_connection_endpoints.emplace(node_it->second, ap).second)
-            throw Error("Cannot save in BILN format - attachment point '%s' of monomer '%s' is used more than once.", ap.c_str(),
-                        node.alias.c_str());
+            throw Error("Cannot save in BILN format - attachment point '%s' of monomer '%s' is used more than once.", ap.c_str(), node.alias.c_str());
         node_used_attachment_points[node_it->second].emplace(ap);
         return {node_it->second, ap};
     };
