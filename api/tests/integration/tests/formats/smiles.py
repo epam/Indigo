@@ -97,6 +97,7 @@ mols_smiles = [
     "CCCC |Sg:n:0,1,2:3-6:eu|",
     "CCCC |Sg:n:0,1,2::ht|",
     "CCCCC |Sg:n:1,2,3::hh|",
+    "CCCC* |$;;;;_AP1$,Sg:n:2:2&#44;6-7:ht|",
 ]
 for sm in mols_smiles:
     print("default smiles:")
