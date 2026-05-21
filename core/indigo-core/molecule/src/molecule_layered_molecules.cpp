@@ -649,7 +649,7 @@ void LayeredMolecules::_calcPiLabels(int layerFrom, int layerTo)
             int conn = _connectivity[v_idx][l];
             int valence;
             int impl_h;
-            Element::calcValence(_proto.getAtomNumber(v_idx), _proto.getAtomCharge(v_idx), 0, conn, valence, impl_h, false);
+            Element::calcValence(_proto.getAtomNumber(v_idx), _proto.getAtomCharge(v_idx), 0, conn, valence, impl_h, false, nullptr, _proto.getValenceMode());
             conn += impl_h;
 
             if (arom_bonds[l] != 0)
