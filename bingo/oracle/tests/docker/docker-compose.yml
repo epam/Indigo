@@ -1,0 +1,66 @@
+# Local Docker harness for Bingo Oracle tests. Mirrors the
+# test_bingo_oracle_linux_x86_64 CI job; same image, same install path.
+#
+# Two-step invocation (compose can't order image builds by another service's
+# runtime output, so the .tgz must exist before `oracle` is built):
+#   docker compose -f bingo/oracle/tests/docker/docker-compose.yml run --rm builder
+#   docker compose -f bingo/oracle/tests/docker/docker-compose.yml up --build \
+#       --abort-on-container-exit --exit-code-from tests oracle tests
+#
+# All services are linux/amd64 — Oracle XE has no arm64 image.
+
+name: bingo-oracle-tests
+
+services:
+  builder:
+    image: epmlsop/buildpack-centos7:latest
+    platform: linux/amd64
+    working_dir: /repo
+    volumes:
+      - ../../../..:/repo
+    command: >
+      /bin/sh -c "
+      set -eux &&
+      rm -rf build &&
+      mkdir build &&
+      cd build &&
+      cmake .. -DBUILD_BINGO_ORACLE=ON -DBUILD_BINGO_SQLSERVER=OFF -DBUILD_BINGO_POSTGRES=OFF -DBUILD_INDIGO=OFF -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_INDIGO_UTILS=OFF -DBUILD_BINGO_ELASTIC=OFF &&
+      cmake --build . --config Release --target package-bingo-oracle -- -j $$(nproc)
+      "
+
+  # Healthcheck probes the test user, so `service_healthy` only flips after
+  # initdb-bingo.sh finishes — exactly when `tests` should start.
+  oracle:
+    build:
+      context: ../../../..
+      dockerfile: bingo/oracle/Dockerfile
+    platform: linux/amd64
+    environment:
+      ORACLE_PASSWORD: password
+    ports:
+      - "1521:1521"
+    healthcheck:
+      test:
+        - "CMD-SHELL"
+        - "echo 'SELECT 1 FROM dual; EXIT;' | sqlplus -s -L test/test@localhost:1521/XEPDB1 > /dev/null 2>&1"
+      interval: 30s
+      timeout: 10s
+      retries: 30
+      start_period: 120s
+
+  # Runs over the bridge network as oracle:1521 — no Docker port proxy in the
+  # path, so OOB packets flow. CI uses --network host for the same reason.
+  tests:
+    build:
+      context: ../../../..
+      dockerfile: bingo/oracle/tests/docker/Dockerfile.oracle-client
+    platform: linux/amd64
+    depends_on:
+      oracle:
+        condition: service_healthy
+    environment:
+      DB_ORACLE_HOST: oracle
+    volumes:
+      - ../../../..:/repo
+    working_dir: /repo/bingo/tests
+    command: pytest -s --tb=short --db oracle --junit-xml=junit_report.xml
