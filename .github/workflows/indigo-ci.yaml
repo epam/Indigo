@@ -154,7 +154,7 @@ jobs:
           mkdir build
           cd build
           cmake .. -G "MinGW Makefiles" -DBUILD_INDIGO_WRAPPERS=OFF -DBUILD_BINGO=OFF -DBUILD_BINGO_ELASTIC=OFF -DPython3_ROOT_DIR=/mingw64 -DCMAKE_C_FLAGS="-Wno-error"
-          cmake --build . --config Release --target all --parallel
+          cmake --build . --config Release --target all --parallel 2
       - name: Test native libs
         run: |
           cd build
