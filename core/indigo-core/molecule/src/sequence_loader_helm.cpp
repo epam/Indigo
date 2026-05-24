@@ -826,9 +826,7 @@ void SequenceLoader::loadBILN(KetDocument& document)
 
     std::set<std::pair<std::string, std::string>> used_biln_endpoints;
     auto attachment_point = [](const BilnEndpoint& ep) { return std::string("R") + std::to_string(ep.attachment_idx); };
-    auto is_terminal_cap = [&](const std::unique_ptr<KetBaseMonomer>& monomer) {
-        return _library.isTerminalCapAlias(monomer->alias());
-    };
+    auto is_terminal_cap = [&](const std::unique_ptr<KetBaseMonomer>& monomer) { return _library.isTerminalCapAlias(monomer->alias()); };
     auto validate_endpoint = [&](const BilnEndpoint& ep, const std::string& ap) -> const std::unique_ptr<KetBaseMonomer>& {
         const auto& monomer = document.monomers().at(ep.monomer_id);
         if (monomer->attachmentPoints().count(ap) == 0)
