@@ -19,7 +19,9 @@ biln_cycle_with_external_bond_order:BILN->BILN SUCCEED
 biln_cycle_with_extra_bond_order:BILN->BILN SUCCEED
 biln_equal_chain_topology_order:BILN->BILN SUCCEED
 biln_library_alias:BILN->BILN SUCCEED
+biln_mid_chain_chem:BILN->BILN SUCCEED
 biln_multiple_nonbackbone_order:BILN->BILN SUCCEED
+biln_multi_chain_chem_cross_link:BILN->BILN SUCCEED
 biln_short_chain_order:BILN->BILN SUCCEED
 biln_valid_large_bond_ids:BILN->BILN SUCCEED
 helm_alias_to_biln_alias:HELM->BILN SUCCEED
