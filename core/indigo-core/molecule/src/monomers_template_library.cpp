@@ -438,6 +438,26 @@ namespace indigo
         return EMPTY_STRING;
     }
 
+    bool MonomerTemplateLibrary::isTerminalCapTemplate(const std::string& monomer_template_id) const
+    {
+        const auto& monomer_template = getMonomerTemplateById(monomer_template_id);
+        if (monomer_template.monomerClass() != MonomerClass::AminoAcid || !hasKetStrProp(monomer_template, alias))
+            return false;
+        const auto& template_alias = getKetStrProp(monomer_template, alias);
+        return template_alias.size() > 1 && (template_alias.back() == '-' || template_alias.front() == '-') &&
+               monomer_template.attachmentPoints().size() == 1;
+    }
+
+    bool MonomerTemplateLibrary::isTerminalCapAlias(const std::string& monomer_alias)
+    {
+        auto template_id = getMonomerTemplateIdByAlias(MonomerClass::AminoAcid, monomer_alias);
+        if (template_id.empty())
+            template_id = getMonomerTemplateIdByAlias(MonomerClass::AminoAcid, monomer_alias + "-");
+        if (template_id.empty())
+            template_id = getMonomerTemplateIdByAlias(MonomerClass::AminoAcid, "-" + monomer_alias);
+        return !template_id.empty() && isTerminalCapTemplate(template_id);
+    }
+
     MonomerGroupTemplate& MonomerTemplateLibrary::getMonomerGroupTemplateById(const std::string& monomer_group_template_id)
     {
         if (_monomer_group_templates.count(monomer_group_template_id) == 0)

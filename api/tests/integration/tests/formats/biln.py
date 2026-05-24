@@ -132,6 +132,14 @@ biln_to_biln = {
         "Edc",
         "Edc",
     ),
+    "biln_mid_chain_chem": (
+        "A-[PEG-2]-A",
+        "A-[PEG-2]-A",
+    ),
+    "biln_multi_chain_chem_cross_link": (
+        "A-[PEG-2]-C(1,3).D-[PEG-2]-E(1,3)",
+        "A-[PEG-2]-C(1,3).D-[PEG-2]-E(1,3)",
+    ),
     "biln_valid_large_bond_ids": (
         "A-C(7563,3)-D(3,3)-E.F-G-H(7563,3)-I-K(3,3)",
         "F-G-H(1,3)-I-K(2,3).A-C(1,3)-D(2,3)-E",

@@ -826,17 +826,9 @@ void SequenceLoader::loadBILN(KetDocument& document)
 
     std::set<std::pair<std::string, std::string>> used_biln_endpoints;
     auto attachment_point = [](const BilnEndpoint& ep) { return std::string("R") + std::to_string(ep.attachment_idx); };
-    auto is_terminal_cap_alias = [&](const std::string& monomer_alias) {
-        auto template_id = _library.getMonomerTemplateIdByAlias(MonomerClass::AminoAcid, monomer_alias);
-        if (template_id.empty())
-            template_id = _library.getMonomerTemplateIdByAlias(MonomerClass::AminoAcid, monomer_alias + "-");
-        if (template_id.empty())
-            return false;
-        const auto& monomer_template = _library.getMonomerTemplateById(template_id);
-        const auto& template_alias = getKetStrProp(monomer_template, alias);
-        return template_alias.size() > 1 && (template_alias.back() == '-' || template_alias.front() == '-') && monomer_template.attachmentPoints().size() == 1;
+    auto is_terminal_cap = [&](const std::unique_ptr<KetBaseMonomer>& monomer) {
+        return _library.isTerminalCapAlias(monomer->alias());
     };
-    auto is_terminal_cap = [&](const std::unique_ptr<KetBaseMonomer>& monomer) { return is_terminal_cap_alias(monomer->alias()); };
     auto validate_endpoint = [&](const BilnEndpoint& ep, const std::string& ap) -> const std::unique_ptr<KetBaseMonomer>& {
         const auto& monomer = document.monomers().at(ep.monomer_id);
         if (monomer->attachmentPoints().count(ap) == 0)

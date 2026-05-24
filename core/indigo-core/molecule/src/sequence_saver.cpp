@@ -148,7 +148,7 @@ void SequenceSaver::saveMolecule(BaseMolecule& mol, SeqFormat sf)
         std::vector<std::deque<std::string>> sequences;
         KetDocument doc(mol);
         doc.parseSimplePolymers(sequences, false);
-        seq_text = sf == SeqFormat::HELM ? saveHELM(doc, sequences) : saveBILN(doc, sequences);
+        seq_text = sf == SeqFormat::HELM ? saveHELM(doc, sequences) : saveBILN(doc);
     }
     else if (sf == SeqFormat::IDT)
     {
@@ -295,7 +295,7 @@ void SequenceSaver::saveKetDocument(KetDocument& doc, SeqFormat sf)
     if (sf == SeqFormat::HELM || sf == SeqFormat::BILN)
     {
         doc.parseSimplePolymers(sequences, false);
-        seq_text = sf == SeqFormat::HELM ? saveHELM(doc, sequences) : saveBILN(doc, sequences);
+        seq_text = sf == SeqFormat::HELM ? saveHELM(doc, sequences) : saveBILN(doc);
     }
     else if (sf == SeqFormat::IDT)
     {
@@ -872,9 +872,8 @@ static std::string format_biln_alias(const std::string& monomer_alias, bool stri
     return needs_brackets ? "[" + biln_alias + "]" : biln_alias;
 }
 
-std::string SequenceSaver::saveBILN(KetDocument& doc, const std::vector<std::deque<std::string>>& sequences)
+std::string SequenceSaver::saveBILN(KetDocument& doc)
 {
-    (void)sequences;
     static const char* biln_export_error = "Only amino acids and CHEMs with BILN codes can get exported to BILN.";
 
     if (doc.moleculesRefs().size() > 0)
@@ -922,8 +921,7 @@ std::string SequenceSaver::saveBILN(KetDocument& doc, const std::vector<std::deq
                 throw Error(biln_export_error);
             const auto& monomer_template = _library.getMonomerTemplateById(template_ids.front());
             const auto& template_alias = getKetStrProp(monomer_template, alias);
-            const bool strip_terminal_cap = monomer_class == MonomerClass::AminoAcid && template_alias.size() > 1 &&
-                                            (template_alias.back() == '-' || template_alias.front() == '-') && monomer_template.attachmentPoints().size() == 1;
+            const bool strip_terminal_cap = _library.isTerminalCapTemplate(template_ids.front());
             return BilnAlias{format_biln_alias(template_alias, strip_terminal_cap), template_ids};
         };
 
@@ -967,29 +965,14 @@ std::string SequenceSaver::saveBILN(KetDocument& doc, const std::vector<std::deq
     std::set<std::pair<int, std::string>> used_connection_endpoints;
     std::map<int, std::set<std::string>> node_used_attachment_points;
 
-    auto is_terminal_cap_alias = [&](const std::string& monomer_alias) {
-        auto template_id = _library.getMonomerTemplateIdByAlias(MonomerClass::AminoAcid, monomer_alias);
-        if (template_id.empty())
-            template_id = _library.getMonomerTemplateIdByAlias(MonomerClass::AminoAcid, monomer_alias + "-");
-        if (template_id.empty())
-            return false;
-        const auto& monomer_template = _library.getMonomerTemplateById(template_id);
-        const auto& template_alias = getKetStrProp(monomer_template, alias);
-        return template_alias.size() > 1 && (template_alias.back() == '-' || template_alias.front() == '-') && monomer_template.attachmentPoints().size() == 1;
-    };
-    auto is_terminal_cap_template = [&](const std::string& template_id) {
-        const auto& monomer_template = _library.getMonomerTemplateById(template_id);
-        const auto& template_alias = getKetStrProp(monomer_template, alias);
-        return template_alias.size() > 1 && (template_alias.back() == '-' || template_alias.front() == '-') && monomer_template.attachmentPoints().size() == 1;
-    };
     auto is_terminal_cap_node = [&](int node_idx) {
         const auto& node = nodes.at(node_idx);
         if (node.monomer_class != MonomerClass::AminoAcid)
             return false;
         for (const auto& template_id : node.biln_template_ids)
-            if (is_terminal_cap_template(template_id))
+            if (_library.isTerminalCapTemplate(template_id))
                 return true;
-        return is_terminal_cap_alias(node.alias) || is_terminal_cap_alias(node.biln_alias);
+        return _library.isTerminalCapAlias(node.alias) || _library.isTerminalCapAlias(node.biln_alias);
     };
     auto is_biln_backbone_connection = [](const std::string& ap1, const std::string& ap2) {
         return (ap1 == kAttachmentPointR1 && ap2 == kAttachmentPointR2) || (ap1 == kAttachmentPointR2 && ap2 == kAttachmentPointR1);
@@ -1207,11 +1190,13 @@ std::string SequenceSaver::saveBILN(KetDocument& doc, const std::vector<std::deq
         if (is_cycle)
         {
             std::vector<int> directed_cycle;
+            std::vector<bool> in_directed_cycle(nodes.size(), false);
             int node = component.front();
             do
             {
-                if (std::find(directed_cycle.begin(), directed_cycle.end(), node) != directed_cycle.end())
+                if (in_directed_cycle.at(node))
                     throw Error("Cannot save in BILN format - invalid cyclic backbone.");
+                in_directed_cycle.at(node) = true;
                 directed_cycle.push_back(node);
                 node = next.at(node);
                 if (node == -1)
@@ -1267,11 +1252,13 @@ std::string SequenceSaver::saveBILN(KetDocument& doc, const std::vector<std::deq
             if (start == -1)
                 start = component.front();
             std::vector<int> chain_nodes;
+            std::vector<bool> in_chain(nodes.size(), false);
             int node = start;
             while (node != -1)
             {
-                if (std::find(chain_nodes.begin(), chain_nodes.end(), node) != chain_nodes.end())
+                if (in_chain.at(node))
                     throw Error("Cannot save in BILN format - invalid backbone.");
+                in_chain.at(node) = true;
                 chain_nodes.push_back(node);
                 node = next.at(node);
             }
