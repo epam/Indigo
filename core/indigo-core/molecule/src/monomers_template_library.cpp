@@ -444,8 +444,7 @@ namespace indigo
         if (monomer_template.monomerClass() != MonomerClass::AminoAcid || !hasKetStrProp(monomer_template, alias))
             return false;
         const auto& template_alias = getKetStrProp(monomer_template, alias);
-        return template_alias.size() > 1 && (template_alias.back() == '-' || template_alias.front() == '-') &&
-               monomer_template.attachmentPoints().size() == 1;
+        return template_alias.size() > 1 && (template_alias.back() == '-' || template_alias.front() == '-') && monomer_template.attachmentPoints().size() == 1;
     }
 
     bool MonomerTemplateLibrary::isTerminalCapAlias(const std::string& monomer_alias)
