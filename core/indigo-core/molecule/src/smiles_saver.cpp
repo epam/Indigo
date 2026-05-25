@@ -2125,6 +2125,9 @@ void SmilesSaver::_checkRGroupsAndAttachmentPoints()
         for (int idx = 0; _bmol->getAttachmentPoint(i, idx) != -1; idx++)
             _n_attachment_points++;
 
+    if (_n_attachment_points && !chemaxon)
+        throw Error("can not write attachment points in Daylight SMILES format");
+
     if (_n_attachment_points && !write_extra_info)
         throw Error("can not write attachment points without permission to write "
                     "the Extended SMILES block (probably because you are saving reaction SMILES)");

@@ -68,7 +68,7 @@ SMILES saver: repeating units must have exactly two outgoing bonds, has 1
 daylight:
 CC{-}CC{+n}C
 daylight:
-CCC{-}{+n}C%91
+SMILES saver: can not write attachment points in Daylight SMILES format
 chemaxon:
 CCCC |Sg:gen:0,1,2:|
 chemaxon:
