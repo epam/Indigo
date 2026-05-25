@@ -481,10 +481,6 @@ void MangoPgSearchEngine::_prepareGrossSearch(PG_OBJECT scan_desc_ptr)
 void MangoPgSearchEngine::_prepareSmartsSearch(PG_OBJECT scan_desc_ptr)
 {
     _prepareSubSearch(scan_desc_ptr);
-    if (_deferred_finish)
-    {
-        _searchCursor->finishOnTransactionEnd();
-    }
 }
 
 void MangoPgSearchEngine::_prepareMassSearch(PG_OBJECT scan_desc_ptr)
