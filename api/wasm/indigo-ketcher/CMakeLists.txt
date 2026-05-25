@@ -18,7 +18,7 @@ if (CMAKE_BUILD_TYPE STREQUAL Debug)
             )
 else ()
     set(EMCC_FLAGS
-            -O3
+            -Oz
             -msimd128
             )
 endif ()
