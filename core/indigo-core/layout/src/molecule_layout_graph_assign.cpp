@@ -1527,24 +1527,37 @@ void MoleculeLayoutGraph::_applyAnchoredRigidTransform(const SelectionBridge& br
         _layout_vertices[vx_idx].pos.add(translation);
 }
 
-// Reflect inner cycle vertices through their single neighbor
+void MoleculeLayoutGraph::_reflectCycleVertex(int vx_inner_idx, float bond_length)
+{
+    auto& vx = getVertex(_layout_vertices[vx_inner_idx].ext_idx);
+    int nei_vx_idx = vx.neiVertex(vx.neiBegin()); // Only one neighbor
+
+    auto& inner_pos = _layout_vertices[vx_inner_idx].pos;
+    auto& nei_pos = _layout_vertices[nei_vx_idx].pos;
+
+    // Reflect inner_pos through nei_pos: inner_pos = 2*nei_pos - inner_pos
+    inner_pos.sub(nei_pos);
+    inner_pos.scale(bond_length);
+    if (!_layout_vertices[nei_vx_idx].is_inside)
+        inner_pos.negate();
+    inner_pos.add(nei_pos);
+}
+
 void MoleculeLayoutGraph::_reflectCycleVertices(const std::vector<int>& cycle_vertices, float bond_length)
 {
-    // Reflect inner cycle vertices through their single neighbor
+    for (auto vx_inner_idx : cycle_vertices)
+        _reflectCycleVertex(vx_inner_idx, bond_length);
+}
+
+void MoleculeLayoutGraph::_reflectSequenceCycleVertices(const std::vector<int>& cycle_vertices)
+{
+    // No-fixed sequence layouts are scaled by bond_length later. Use relative lengths here.
     for (auto vx_inner_idx : cycle_vertices)
     {
-        auto& vx = getVertex(_layout_vertices[vx_inner_idx].ext_idx);
-        int nei_vx_idx = vx.neiVertex(vx.neiBegin()); // Only one neighbor
-
-        auto& inner_pos = _layout_vertices[vx_inner_idx].pos;
-        auto& nei_pos = _layout_vertices[nei_vx_idx].pos;
-
-        // Reflect inner_pos through nei_pos: inner_pos = 2*nei_pos - inner_pos
-        inner_pos.sub(nei_pos);
-        inner_pos.scale(bond_length);
-        if (!_layout_vertices[nei_vx_idx].is_inside)
-            inner_pos.negate();
-        inner_pos.add(nei_pos);
+        float inner_bond_length = LayoutOptions::DEFAULT_INNER_MACROCYCLE_BOND_LENGTH;
+        if (_layout_vertices[vx_inner_idx].inner_cycle_size >= MIN_NAGON_SIZE_FOR_STANDARD_BOND_LENGTH)
+            inner_bond_length = LayoutOptions::DEFAULT_BOND_LENGTH;
+        _reflectCycleVertex(vx_inner_idx, inner_bond_length);
     }
 }
 
@@ -1759,22 +1772,13 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
     }
     else if (sequence_layout)
     {
-        // Requirement #3196 §6.3: for n-agon >= 12 bases must keep the full
-        // standard bond length; only smaller rings use the shortened 0.75 value.
-        std::vector<int> large_inner_cycle_vertices;
         for (auto vx_idx : vertices())
         {
             auto& lvx = _layout_vertices[vx_idx];
             if (lvx.is_inner_cycle)
-            {
-                if (lvx.inner_cycle_size >= MIN_NAGON_SIZE_FOR_STANDARD_BOND_LENGTH)
-                    large_inner_cycle_vertices.push_back(vx_idx);
-                else
-                    inner_cycle_vertices.push_back(vx_idx);
-            }
+                inner_cycle_vertices.push_back(vx_idx);
         }
-        _reflectCycleVertices(inner_cycle_vertices, LayoutOptions::DEFAULT_INNER_MACROCYCLE_BOND_LENGTH);
-        _reflectCycleVertices(large_inner_cycle_vertices, bond_length);
+        _reflectSequenceCycleVertices(inner_cycle_vertices);
     }
 
     if (vertexCount() == 1)

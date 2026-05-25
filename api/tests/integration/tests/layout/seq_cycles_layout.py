@@ -38,6 +38,52 @@ def compare_positions(ket_a, ket_b, eps=0.05):
     return ""
 
 
+def _monomer_positions_by_alias(data):
+    return {
+        key: (
+            val.get("alias"),
+            (val["position"]["x"], val["position"]["y"]),
+        )
+        for key, val in data.items()
+        if key.startswith("monomer")
+        and isinstance(val, dict)
+        and "position" in val
+    }
+
+
+def _assert_connection_lengths(ket_data, filename):
+    if not filename.startswith("rna_ring_"):
+        return
+
+    standard_bond_length = 1.5
+    geom_tol = 0.05
+    expected_base_sugar = (
+        1.5 if filename in ("rna_ring_12", "rna_ring_24") else 1.125
+    )
+    positions = _monomer_positions_by_alias(ket_data)
+    for connection in ket_data["root"].get("connections", []):
+        monomer1 = connection["endpoint1"]["monomerId"]
+        monomer2 = connection["endpoint2"]["monomerId"]
+        if monomer1 not in positions or monomer2 not in positions:
+            continue
+
+        alias1, pos1 = positions[monomer1]
+        alias2, pos2 = positions[monomer2]
+        length = math.hypot(pos1[0] - pos2[0], pos1[1] - pos2[1])
+        if {alias1, alias2} == {"R", "A"}:
+            assert (
+                abs(length - expected_base_sugar) <= geom_tol
+            ), "{} base-sugar length: {:.4f}, expected {:.4f}".format(
+                filename, length, expected_base_sugar
+            )
+        elif alias1 == alias2 == "R":
+            assert (
+                abs(length - standard_bond_length) <= geom_tol
+            ), "{} sugar-sugar length: {:.4f}, expected {:.4f}".format(
+                filename, length, standard_bond_length
+            )
+
+
 sys.path.append(
     os.path.normpath(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
@@ -96,6 +142,7 @@ for filename in files:
 
     mol.layout()
     ket = mol.json()
+    _assert_connection_lengths(json.loads(ket), filename)
     compare_diff(ref_path, filename + ".ket", ket, diff_fn=compare_positions)
 
 
