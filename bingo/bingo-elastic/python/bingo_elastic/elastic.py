@@ -110,19 +110,39 @@ def get_client(
     return client_type(**arguments)  # type: ignore
 
 
-index_body = {
-    "mappings": {
-        "properties": {
-            "sim_fingerprint": {"type": "keyword", "similarity": "boolean"},
-            "sim_fingerprint_len": {"type": "integer"},
-            "sub_fingerprint": {"type": "keyword", "similarity": "boolean"},
-            "sub_fingerprint_len": {"type": "integer"},
-            "cmf": {"type": "binary"},
-            "hash": {"type": "unsigned_long"},
-            "has_error": {"type": "integer"},
+def build_index_body(tau_search: bool = False) -> Dict:
+    index_body = {
+        "mappings": {
+            "properties": {
+                "sim_fingerprint": {
+                    "type": "keyword",
+                    "similarity": "boolean",
+                },
+                "sim_fingerprint_len": {"type": "integer"},
+                "sub_fingerprint": {
+                    "type": "keyword",
+                    "similarity": "boolean",
+                },
+                "sub_fingerprint_len": {"type": "integer"},
+                "cmf": {"type": "binary"},
+                "hash": {"type": "unsigned_long"},
+                "has_error": {"type": "integer"},
+            }
         }
     }
-}
+
+    if tau_search:
+        index_body["mappings"]["properties"].update(
+            {
+                "tau_fingerprint": {
+                    "type": "keyword",
+                    "similarity": "boolean",
+                },
+                "tau_fingerprint_len": {"type": "integer"},
+            }
+        )
+
+    return index_body
 
 
 def check_index_exception(err_: RequestError) -> None:
@@ -137,7 +157,12 @@ def check_index_exception(err_: RequestError) -> None:
     raise err_
 
 
-def create_index(index_name: str, el_client: Elasticsearch) -> None:
+def create_index(
+    index_name: str,
+    el_client: Elasticsearch,
+    *,
+    index_body: Optional[Dict] = None,
+) -> None:
     try:
         el_client.indices.create(index=index_name, body=index_body)
     except RequestError as err_:
@@ -145,7 +170,10 @@ def create_index(index_name: str, el_client: Elasticsearch) -> None:
 
 
 async def a_create_index(
-    index_name: str, el_client: "AsyncElasticsearch"
+    index_name: str,
+    el_client: "AsyncElasticsearch",
+    *,
+    index_body: Optional[Dict] = None,
 ) -> None:
     try:
         await el_client.indices.create(index=index_name, body=index_body)
@@ -199,6 +227,7 @@ class AsyncElasticRepository:
         ssl_context: Any = None,
         request_timeout: int = 60,
         retry_on_timeout: bool = True,
+        tau_search: bool = False,
     ) -> None:
         """
         :param index_name: use function  get_index_name for setting this argument
@@ -209,8 +238,13 @@ class AsyncElasticRepository:
         :param ssl_context:
         :param timeout:
         :param retry_on_timeout:
+        :param tau_search: declare tau_fingerprint in the index mapping so
+            tautomer-aware substructure search is available via
+            filter(..., options="TAU ...")
         """
         self.index_name = index_name.value
+        self.tau_search = tau_search
+        self.index_body = build_index_body(tau_search)
 
         self.el_client = get_client(
             client_type=AsyncElasticsearch,
@@ -230,7 +264,9 @@ class AsyncElasticRepository:
         return await self.index_records(gen(), chunk_size=1)
 
     async def index_records(self, records: Generator, chunk_size: int = 500):
-        await a_create_index(self.index_name, self.el_client)
+        await a_create_index(
+            self.index_name, self.el_client, index_body=self.index_body
+        )
         # pylint: disable=unused-variable
         async for is_ok, action in async_streaming_bulk(
             self.el_client,
@@ -304,6 +340,8 @@ class AsyncElasticRepository:
             query_subject=query_subject,
             limit=page_size,
             postprocess_actions=postprocess_actions,
+            options=options,
+            tau_search=self.tau_search,
             **kwargs,
         )
         try:
@@ -367,6 +405,7 @@ class ElasticRepository:
         ssl_context: Any = None,
         request_timeout: int = 60,
         retry_on_timeout: bool = True,
+        tau_search: bool = False,
     ) -> None:
         """
         :param index_name: use function  get_index_name for setting this argument
@@ -377,8 +416,13 @@ class ElasticRepository:
         :param ssl_context:
         :param timeout:
         :param retry_on_timeout:
+        :param tau_search: declare tau_fingerprint in the index mapping so
+            tautomer-aware substructure search is available via
+            filter(..., options="TAU ...")
         """
         self.index_name = index_name.value
+        self.tau_search = tau_search
+        self.index_body = build_index_body(tau_search)
 
         self.el_client = get_client(
             client_type=Elasticsearch,
@@ -398,7 +442,9 @@ class ElasticRepository:
         return self.index_records(gen(), chunk_size=1)
 
     def index_records(self, records: Generator, chunk_size: int = 500):
-        create_index(self.index_name, self.el_client)
+        create_index(
+            self.index_name, self.el_client, index_body=self.index_body
+        )
         # pylint: disable=unused-variable
         for is_ok, action in streaming_bulk(
             self.el_client,
@@ -477,6 +523,8 @@ class ElasticRepository:
             query_subject=query_subject,
             limit=min(limit, page_size),
             postprocess_actions=postprocess_actions,
+            options=options,
+            tau_search=self.tau_search,
             **kwargs,
         )
 
@@ -526,6 +574,8 @@ def compile_query(
     ] = None,
     limit: int = 10,
     postprocess_actions: Optional[PostprocessType] = None,
+    options: str = "",
+    tau_search: bool = False,
     **kwargs,
 ) -> Dict:
     query = {
@@ -537,9 +587,21 @@ def compile_query(
                 "sim_fingerprint_len",
                 "sub_fingerprint_len",
                 "sub_fingerprint",
+                "tau_fingerprint",
+                "tau_fingerprint_len",
             ],
         },
     }
+
+    tau_mode = "TAU" in options.split()
+    if tau_mode and not tau_search:
+        raise ValueError(
+            "TAU search requires tau_search=True on the repository "
+            "(and on the indexed records). The tau_fingerprint field "
+            "is not present on this index."
+        )
+
+    substructure_key = "tautomer" if tau_mode else "substructure"
 
     if isinstance(query_subject, BaseMatch):
         query_subject.compile(query, postprocess_actions)
@@ -548,11 +610,13 @@ def compile_query(
             query, postprocess_actions
         )
     elif isinstance(query_subject, IndigoObject):
-        query_factory("substructure", query_subject).compile(
+        query_factory(substructure_key, query_subject).compile(
             query, postprocess_actions
         )
 
     for key, value in kwargs.items():
+        if tau_mode and key == "substructure":
+            key = "tautomer"
         query_factory(key, value).compile(query, postprocess_actions)
 
     return query

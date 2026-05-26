@@ -42,24 +42,20 @@ class WithIndigoObject:
             return
 
         value_dup.aromatize()
-        fingerprints = (
-            "sim",
-            "sub",
-        )
+        fingerprints = [("sim", "sim"), ("sub", "sub")]
+        if instance.tau_search:
+            fingerprints += [("sub-tau", "tau")]
 
-        for f_print in fingerprints:
+        for fp_type, prefix in fingerprints:
             try:
-                setattr(instance, f"{f_print}_fingerprint", [])
-                setattr(instance, f"{f_print}_fingerprint_len", 0)
-
-                fp_list = value_dup.fingerprint(f_print).oneBitsList()
+                setattr(instance, f"{prefix}_fingerprint", [])
+                setattr(instance, f"{prefix}_fingerprint_len", 0)
+                fp_list = value_dup.fingerprint(fp_type).oneBitsList()
                 if fp_list:
-                    fp_ = [int(feature) for feature in fp_list.split(" ")]
-                    setattr(instance, f"{f_print}_fingerprint", fp_)
-                    setattr(instance, f"{f_print}_fingerprint_len", len(fp_))
-            except ValueError as err_:
-                check_error(instance, err_)
-            except IndigoException as err_:
+                    fp_ = [int(b) for b in fp_list.split(" ")]
+                    setattr(instance, f"{prefix}_fingerprint", fp_)
+                    setattr(instance, f"{prefix}_fingerprint_len", len(fp_))
+            except (ValueError, IndigoException) as err_:
                 check_error(instance, err_)
 
         try:
@@ -109,6 +105,9 @@ class IndigoRecord:
     cmf: Optional[str] = None
     name: Optional[str] = None
     rawData: Optional[str] = None
+    tau_search: bool = False
+    tau_fingerprint: Optional[List[int]] = None
+    tau_fingerprint_len: Optional[int] = None
     sim_fingerprint: Optional[List[str]] = None
     sub_fingerprint: Optional[List[str]] = None
     indigo_object = WithIndigoObject()
@@ -131,6 +130,10 @@ class IndigoRecord:
         :type indigo_object: IndigoObject
         :param name: — add name. Rewrites name from IndigoObject
         :type name: str
+        :param tau_search: include tautomers in the search
+        :type tau_search: boolean
+        :param tau_fingerprint: tautomer fingerprint (sub-tau)
+        :type tau_fingerprint: List[int]
         :param sim_fingerprint: similarity fingerprint (sim)
         :type sim_fingerprint: List[int]
         :param sub_fingerprint: similarity fingerprint (sub)
@@ -150,12 +153,14 @@ class IndigoRecord:
             self.error_handler = kwargs.get("error_handler", None)
 
         self.record_id = uuid4().hex
+
+        self.tau_search = kwargs.pop("tau_search", False)
         for arg, val in kwargs.items():
             setattr(self, arg, val)
 
     def as_dict(self) -> Dict:
         # Add system fields here to exclude from indexing
-        filtered_fields = {"error_handler", "skip_errors"}
+        filtered_fields = {"error_handler", "skip_errors", "tau_search"}
         return {
             key: value
             for key, value in self.__dict__.items()
