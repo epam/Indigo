@@ -1415,7 +1415,7 @@ M  END
     }
 
     {
-        test("BILN", "cap_cross_links", () => {
+        test("BILN", "terminal_hyphen_cross_links", () => {
             var fs = require('fs');
             let options = new indigo.MapStringString();
             const monomersLib = fs.readFileSync("monomer_library.ket");
@@ -1431,7 +1431,7 @@ M  END
     }
 
     {
-        test("BILN", "cap_invalid_attachment", () => {
+        test("BILN", "terminal_hyphen_invalid_attachment", () => {
             var fs = require('fs');
             let options = new indigo.MapStringString();
             const monomersLib = fs.readFileSync("monomer_library.ket");
@@ -1446,7 +1446,7 @@ M  END
     }
 
     {
-        test("BILN", "helm_cap_invalid_attachment", () => {
+        test("BILN", "helm_terminal_hyphen_invalid_attachment", () => {
             var fs = require('fs');
             let options = new indigo.MapStringString();
             const monomersLib = fs.readFileSync("monomer_library.ket");
