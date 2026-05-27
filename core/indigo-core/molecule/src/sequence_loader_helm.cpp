@@ -641,8 +641,7 @@ void SequenceLoader::loadBILN(KetDocument& document)
         while (data_pos < biln.size() && is_space(biln[data_pos]))
             data_pos++;
     };
-    auto read_positive_int = [&](const char* field_name) -> int {
-        (void)field_name;
+    auto read_positive_int = [&]() -> int {
         skip_spaces();
         if (data_pos >= biln.size() || !std::isdigit(static_cast<unsigned char>(biln[data_pos])))
             throw_invalid_biln();
@@ -773,12 +772,12 @@ void SequenceLoader::loadBILN(KetDocument& document)
             while (data_pos < biln.size() && biln[data_pos] == '(')
             {
                 data_pos++;
-                int bond_idx = read_positive_int("bond");
+                int bond_idx = read_positive_int();
                 skip_spaces();
                 if (data_pos >= biln.size() || biln[data_pos] != ',')
                     throw_invalid_biln();
                 data_pos++;
-                int attachment_idx = read_positive_int("attachment point");
+                int attachment_idx = read_positive_int();
                 skip_spaces();
                 if (data_pos >= biln.size() || biln[data_pos] != ')')
                     throw_invalid_biln();
