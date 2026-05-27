@@ -846,12 +846,12 @@ static std::string get_biln_attachment_idx(const KetConnectionEndPoint& ep)
     return ap.substr(1);
 }
 
-static std::string format_biln_alias(const std::string& monomer_alias, bool strip_terminal_cap = false)
+static std::string format_biln_alias(const std::string& monomer_alias, bool strip_terminal_hyphen = false)
 {
     if (monomer_alias.empty())
         throw SequenceSaver::Error("Cannot save empty monomer alias in BILN format.");
     auto biln_alias = monomer_alias;
-    if (strip_terminal_cap && biln_alias.size() > 1)
+    if (strip_terminal_hyphen && biln_alias.size() > 1)
     {
         if (biln_alias.back() == '-')
             biln_alias.pop_back();
@@ -921,8 +921,8 @@ std::string SequenceSaver::saveBILN(KetDocument& doc)
                 throw Error(biln_export_error);
             const auto& monomer_template = _library.getMonomerTemplateById(template_ids.front());
             const auto& template_alias = getKetStrProp(monomer_template, alias);
-            const bool strip_terminal_cap = _library.isTerminalCapTemplate(template_ids.front());
-            return BilnAlias{format_biln_alias(template_alias, strip_terminal_cap), template_ids};
+            const bool strip_terminal_hyphen = _library.hasTerminalHyphenAlias(template_ids.front());
+            return BilnAlias{format_biln_alias(template_alias, strip_terminal_hyphen), template_ids};
         };
 
         std::string template_id = _library.getMonomerTemplateIdByAlias(monomer_class, monomer_alias);
@@ -933,15 +933,16 @@ std::string SequenceSaver::saveBILN(KetDocument& doc)
 
         if (monomer_class == MonomerClass::AminoAcid)
         {
-            std::vector<std::string> cap_template_ids;
+            std::vector<std::string> terminal_hyphen_template_ids;
             template_id = _library.getMonomerTemplateIdByAlias(monomer_class, monomer_alias + "-");
             if (!template_id.empty())
-                cap_template_ids.push_back(template_id);
+                terminal_hyphen_template_ids.push_back(template_id);
             template_id = _library.getMonomerTemplateIdByAlias(monomer_class, "-" + monomer_alias);
-            if (!template_id.empty() && std::find(cap_template_ids.begin(), cap_template_ids.end(), template_id) == cap_template_ids.end())
-                cap_template_ids.push_back(template_id);
-            if (!cap_template_ids.empty())
-                return make_biln_alias(cap_template_ids);
+            if (!template_id.empty() &&
+                std::find(terminal_hyphen_template_ids.begin(), terminal_hyphen_template_ids.end(), template_id) == terminal_hyphen_template_ids.end())
+                terminal_hyphen_template_ids.push_back(template_id);
+            if (!terminal_hyphen_template_ids.empty())
+                return make_biln_alias(terminal_hyphen_template_ids);
         }
 
         throw Error(biln_export_error);
@@ -965,14 +966,14 @@ std::string SequenceSaver::saveBILN(KetDocument& doc)
     std::set<std::pair<int, std::string>> used_connection_endpoints;
     std::map<int, std::set<std::string>> node_used_attachment_points;
 
-    auto is_terminal_cap_node = [&](int node_idx) {
+    auto is_terminal_hyphen_node = [&](int node_idx) {
         const auto& node = nodes.at(node_idx);
         if (node.monomer_class != MonomerClass::AminoAcid)
             return false;
         for (const auto& template_id : node.biln_template_ids)
-            if (_library.isTerminalCapTemplate(template_id))
+            if (_library.hasTerminalHyphenAlias(template_id))
                 return true;
-        return _library.isTerminalCapAlias(node.alias) || _library.isTerminalCapAlias(node.biln_alias);
+        return _library.isTerminalHyphenAlias(node.alias) || _library.isTerminalHyphenAlias(node.biln_alias);
     };
     auto is_biln_backbone_connection = [](const std::string& ap1, const std::string& ap2) {
         return (ap1 == kAttachmentPointR1 && ap2 == kAttachmentPointR2) || (ap1 == kAttachmentPointR2 && ap2 == kAttachmentPointR1);
@@ -1014,7 +1015,7 @@ std::string SequenceSaver::saveBILN(KetDocument& doc)
         const auto& ep2 = connection.ep2();
         auto [node1, ap1] = read_endpoint(ep1);
         auto [node2, ap2] = read_endpoint(ep2);
-        if (is_biln_backbone_connection(ap1, ap2) && !is_terminal_cap_node(node1) && !is_terminal_cap_node(node2))
+        if (is_biln_backbone_connection(ap1, ap2) && !is_terminal_hyphen_node(node1) && !is_terminal_hyphen_node(node2))
         {
             int left = ap1 == kAttachmentPointR2 ? node1 : node2;
             int right = ap1 == kAttachmentPointR2 ? node2 : node1;
@@ -1311,11 +1312,11 @@ std::string SequenceSaver::saveBILN(KetDocument& doc)
         chain.topology_sort_key = make_chain_topology_key(chain);
 
     std::sort(chains.begin(), chains.end(), [&](const BilnChain& left, const BilnChain& right) {
-        auto terminal_cap_rank = [&](const BilnChain& chain) {
+        auto terminal_hyphen_rank = [&](const BilnChain& chain) {
             if (chain.monomer_count != 1 || chain.nodes.empty())
                 return 0;
             int node_idx = chain.nodes.front();
-            if (!is_terminal_cap_node(node_idx))
+            if (!is_terminal_hyphen_node(node_idx))
                 return 0;
             for (const auto& connection : explicit_connections)
             {
@@ -1336,10 +1337,10 @@ std::string SequenceSaver::saveBILN(KetDocument& doc)
             }
             return 0;
         };
-        auto left_cap_rank = terminal_cap_rank(left);
-        auto right_cap_rank = terminal_cap_rank(right);
-        if (left_cap_rank != right_cap_rank)
-            return left_cap_rank < right_cap_rank;
+        auto left_hyphen_rank = terminal_hyphen_rank(left);
+        auto right_hyphen_rank = terminal_hyphen_rank(right);
+        if (left_hyphen_rank != right_hyphen_rank)
+            return left_hyphen_rank < right_hyphen_rank;
         if (left.effective_amino_acid_count != right.effective_amino_acid_count)
             return left.effective_amino_acid_count > right.effective_amino_acid_count;
         if (left.monomer_count != right.monomer_count)

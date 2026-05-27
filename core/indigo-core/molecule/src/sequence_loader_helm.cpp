@@ -685,29 +685,29 @@ void SequenceLoader::loadBILN(KetDocument& document)
                 uses_other = true;
         }
 
-        auto right_cap_alias = monomer_alias + "-";
-        auto left_cap_alias = "-" + monomer_alias;
-        const bool has_right_cap = _library.getMonomerTemplateIdByAlias(MonomerClass::AminoAcid, right_cap_alias).size() > 0;
-        const bool has_left_cap = _library.getMonomerTemplateIdByAlias(MonomerClass::AminoAcid, left_cap_alias).size() > 0;
-        if (has_right_cap && !has_left_cap)
-            return std::make_pair(MonomerClass::AminoAcid, right_cap_alias);
-        if (has_left_cap && !has_right_cap)
-            return std::make_pair(MonomerClass::AminoAcid, left_cap_alias);
-        if (has_right_cap && has_left_cap)
+        auto right_hyphen_alias = monomer_alias + "-";
+        auto left_hyphen_alias = "-" + monomer_alias;
+        const bool has_right_hyphen_alias = _library.getMonomerTemplateIdByAlias(MonomerClass::AminoAcid, right_hyphen_alias).size() > 0;
+        const bool has_left_hyphen_alias = _library.getMonomerTemplateIdByAlias(MonomerClass::AminoAcid, left_hyphen_alias).size() > 0;
+        if (has_right_hyphen_alias && !has_left_hyphen_alias)
+            return std::make_pair(MonomerClass::AminoAcid, right_hyphen_alias);
+        if (has_left_hyphen_alias && !has_right_hyphen_alias)
+            return std::make_pair(MonomerClass::AminoAcid, left_hyphen_alias);
+        if (has_right_hyphen_alias && has_left_hyphen_alias)
         {
             if (uses_other || (uses_r1 && uses_r2))
                 throw_invalid_biln();
             if (uses_r1)
-                return std::make_pair(MonomerClass::AminoAcid, left_cap_alias);
+                return std::make_pair(MonomerClass::AminoAcid, left_hyphen_alias);
             if (uses_r2)
-                return std::make_pair(MonomerClass::AminoAcid, right_cap_alias);
+                return std::make_pair(MonomerClass::AminoAcid, right_hyphen_alias);
             if (has_prev_in_chain && has_next_in_chain)
                 throw_invalid_biln();
             if (has_prev_in_chain)
-                return std::make_pair(MonomerClass::AminoAcid, left_cap_alias);
+                return std::make_pair(MonomerClass::AminoAcid, left_hyphen_alias);
             if (has_next_in_chain)
-                return std::make_pair(MonomerClass::AminoAcid, right_cap_alias);
-            return std::make_pair(MonomerClass::AminoAcid, right_cap_alias);
+                return std::make_pair(MonomerClass::AminoAcid, right_hyphen_alias);
+            return std::make_pair(MonomerClass::AminoAcid, right_hyphen_alias);
         }
         throw_invalid_biln();
         return std::make_pair(MonomerClass::Unknown, monomer_alias);
@@ -826,7 +826,7 @@ void SequenceLoader::loadBILN(KetDocument& document)
 
     std::set<std::pair<std::string, std::string>> used_biln_endpoints;
     auto attachment_point = [](const BilnEndpoint& ep) { return std::string("R") + std::to_string(ep.attachment_idx); };
-    auto is_terminal_cap = [&](const std::unique_ptr<KetBaseMonomer>& monomer) { return _library.isTerminalCapAlias(monomer->alias()); };
+    auto has_terminal_hyphen_alias = [&](const std::unique_ptr<KetBaseMonomer>& monomer) { return _library.isTerminalHyphenAlias(monomer->alias()); };
     auto validate_endpoint = [&](const BilnEndpoint& ep, const std::string& ap) -> const std::unique_ptr<KetBaseMonomer>& {
         const auto& monomer = document.monomers().at(ep.monomer_id);
         if (monomer->attachmentPoints().count(ap) == 0)
@@ -915,7 +915,7 @@ void SequenceLoader::loadBILN(KetDocument& document)
         setKetStrProp(endpoint2, monomerId, monomer2->ref());
         setKetStrProp(endpoint2, attachmentPointId, ap2);
         if (((ap1 == kAttachmentPointR1 && ap2 == kAttachmentPointR2) || (ap1 == kAttachmentPointR2 && ap2 == kAttachmentPointR1)) &&
-            !is_terminal_cap(monomer1) && !is_terminal_cap(monomer2))
+            !has_terminal_hyphen_alias(monomer1) && !has_terminal_hyphen_alias(monomer2))
             document.addConnection(monomer1->ref(), ap1, monomer2->ref(), ap2);
         else
             document.addExplicitConnection(endpoint1, endpoint2);
