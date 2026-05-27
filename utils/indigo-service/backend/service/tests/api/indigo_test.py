@@ -3916,7 +3916,7 @@ M  END
         result_helm = json.loads(result.text)["struct"]
         self.assertEqual(helm_ref, result_helm)
 
-        # BILN with terminal cap cross-link
+        # BILN with terminal hyphen cross-link
         biln_cross = "Ac(1,2).A-K(1,3)"
         helm_cross_ref = (
             "PEPTIDE1{[ac]}|PEPTIDE2{A.K}"

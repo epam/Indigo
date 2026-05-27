@@ -438,7 +438,7 @@ namespace indigo
         return EMPTY_STRING;
     }
 
-    bool MonomerTemplateLibrary::isTerminalCapTemplate(const std::string& monomer_template_id) const
+    bool MonomerTemplateLibrary::hasTerminalHyphenAlias(const std::string& monomer_template_id) const
     {
         const auto& monomer_template = getMonomerTemplateById(monomer_template_id);
         if (monomer_template.monomerClass() != MonomerClass::AminoAcid || !hasKetStrProp(monomer_template, alias))
@@ -447,14 +447,14 @@ namespace indigo
         return template_alias.size() > 1 && (template_alias.back() == '-' || template_alias.front() == '-') && monomer_template.attachmentPoints().size() == 1;
     }
 
-    bool MonomerTemplateLibrary::isTerminalCapAlias(const std::string& monomer_alias)
+    bool MonomerTemplateLibrary::isTerminalHyphenAlias(const std::string& monomer_alias)
     {
         auto template_id = getMonomerTemplateIdByAlias(MonomerClass::AminoAcid, monomer_alias);
         if (template_id.empty())
             template_id = getMonomerTemplateIdByAlias(MonomerClass::AminoAcid, monomer_alias + "-");
         if (template_id.empty())
             template_id = getMonomerTemplateIdByAlias(MonomerClass::AminoAcid, "-" + monomer_alias);
-        return !template_id.empty() && isTerminalCapTemplate(template_id);
+        return !template_id.empty() && hasTerminalHyphenAlias(template_id);
     }
 
     MonomerGroupTemplate& MonomerTemplateLibrary::getMonomerGroupTemplateById(const std::string& monomer_group_template_id)
