@@ -488,7 +488,7 @@ void SmilesSaver::_saveMolecule()
     QS_DEF(Array<int>, cycle_numbers);
 
     int rsites_closures_starting_num = 91;
-    int rbonds = _countRBonds() + _n_attachment_points;
+    int rbonds = _countRBonds() + (chemaxon ? _n_attachment_points : 0);
 
     if (rbonds > 9)
         rsites_closures_starting_num = 99 - rbonds;
@@ -622,7 +622,7 @@ void SmilesSaver::_saveMolecule()
 
             walk.getNeighborsClosing(v_idx, closing);
 
-            for (int ap = 1; ap <= _bmol->attachmentPointCount(); ap++)
+            for (int ap = 1; chemaxon && ap <= _bmol->attachmentPointCount(); ap++)
             {
                 int idx = 0, atom_idx;
 
@@ -2124,9 +2124,6 @@ void SmilesSaver::_checkRGroupsAndAttachmentPoints()
     for (int i = 1; i <= _bmol->attachmentPointCount(); i++)
         for (int idx = 0; _bmol->getAttachmentPoint(i, idx) != -1; idx++)
             _n_attachment_points++;
-
-    if (_n_attachment_points && !chemaxon)
-        throw Error("can not write attachment points in Daylight SMILES format");
 
     if (_n_attachment_points && !write_extra_info)
         throw Error("can not write attachment points without permission to write "
