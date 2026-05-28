@@ -488,7 +488,7 @@ void SmilesSaver::_saveMolecule()
     QS_DEF(Array<int>, cycle_numbers);
 
     int rsites_closures_starting_num = 91;
-    int rbonds = _countRBonds() + _n_attachment_points;
+    int rbonds = _countRBonds() + (chemaxon ? _n_attachment_points : 0);
 
     if (rbonds > 9)
         rsites_closures_starting_num = 99 - rbonds;
@@ -622,32 +622,21 @@ void SmilesSaver::_saveMolecule()
 
             walk.getNeighborsClosing(v_idx, closing);
 
-            const bool write_terminal_attachment_point = chemaxon && walk.numBranches(v_idx) == 0 && i == v_seq.size() - 1;
-
-            for (int ap = 1; ap <= _bmol->attachmentPointCount(); ap++)
+            for (int ap = 1; chemaxon && ap <= _bmol->attachmentPointCount(); ap++)
             {
                 int idx = 0, atom_idx;
 
                 for (idx = 0; (atom_idx = _bmol->getAttachmentPoint(ap, idx)) != -1; idx++)
                     if (atom_idx == v_idx)
                     {
-                        if (write_terminal_attachment_point)
-                        {
-                            _output.writeChar('*');
-                            _attachment_indices.push(ap);
-                            _attachment_cycle_numbers.push(-1);
-                        }
-                        else
-                        {
-                            // Here is the problem: if we have an attachment point, the resulting
-                            // SMILES is supposed to contain an extra atom not present in the given
-                            // molecule. For example, chlorine with an attachment point will
-                            // become Cl%91.[*:1]%91 |;_AP1| (two atoms).
-                            // We can not modify the given molecule, but we want the closure to
-                            // be here. To achieve that, we add a link to an imagimary atom with
-                            // incredibly big number.
-                            closing.push(10000 + ap);
-                        }
+                        // Here is the problem: if we have an attachment point, the resulting
+                        // SMILES is supposed to contain an extra atom not present in the given
+                        // molecule. For example, chlorine with an attachment point will
+                        // become Cl%91.[*:1]%91 |;_AP1| (two atoms).
+                        // We can not modify the given molecule, but we want the closure to
+                        // be here. To achieve that, we add a link to an imagimary atom with
+                        // incredibly big number.
+                        closing.push(10000 + ap);
                     }
             }
 
@@ -703,8 +692,6 @@ void SmilesSaver::_saveMolecule()
         // attachment points.
         for (i = 0; i < _attachment_indices.size(); i++)
         {
-            if (_attachment_cycle_numbers[i] < 0)
-                continue;
             _output.printf(".[*:%d]", _attachment_indices[i]);
             _writeCycleNumber(_attachment_cycle_numbers[i]);
         }
@@ -2137,9 +2124,6 @@ void SmilesSaver::_checkRGroupsAndAttachmentPoints()
     for (int i = 1; i <= _bmol->attachmentPointCount(); i++)
         for (int idx = 0; _bmol->getAttachmentPoint(i, idx) != -1; idx++)
             _n_attachment_points++;
-
-    if (_n_attachment_points && !chemaxon)
-        throw Error("can not write attachment points in Daylight SMILES format");
 
     if (_n_attachment_points && !write_extra_info)
         throw Error("can not write attachment points without permission to write "

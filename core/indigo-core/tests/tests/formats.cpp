@@ -221,6 +221,55 @@ TEST_F(IndigoCoreFormatsTest, smiles_data_sgroups_short)
     ASSERT_STREQ(str.c_str(), "c1ccccc1 |SgD:1,2,0:name:::: :|");
 }
 
+TEST_F(IndigoCoreFormatsTest, smiles_sgroups_escaped_fields)
+{
+    Molecule t_mol;
+
+    loadMolecule("CCCC* |$;;;;_AP1$,Sg:n:2:2&#44;6-7:ht|", t_mol);
+    ASSERT_EQ(t_mol.sgroups.getSGroupCount(), 1);
+    SGroup& sg = t_mol.sgroups.getSGroup(0);
+    ASSERT_EQ(sg.sgroup_type, SGroup::SG_TYPE_SRU);
+    RepeatingUnit& ru = static_cast<RepeatingUnit&>(sg);
+    ASSERT_EQ(ru.atoms.size(), 1);
+    ASSERT_EQ(ru.atoms.at(0), 2);
+    ASSERT_STREQ(ru.subscript.ptr(), "2,6-7");
+    ASSERT_EQ(ru.connectivity, RepeatingUnit::HEAD_TO_TAIL);
+}
+
+TEST_F(IndigoCoreFormatsTest, smiles_data_sgroups_escaped_fields)
+{
+    Molecule t_mol;
+
+    loadMolecule("CCCCC |SgD:1,2,3:a&#44;b:c&#44;d::: :|", t_mol);
+    ASSERT_EQ(t_mol.sgroups.getSGroupCount(), 1);
+    SGroup& sg = t_mol.sgroups.getSGroup(0);
+    ASSERT_EQ(sg.sgroup_type, SGroup::SG_TYPE_DAT);
+    DataSGroup& dsg = static_cast<DataSGroup&>(sg);
+    ASSERT_STREQ(dsg.name.ptr(), "a,b");
+    ASSERT_STREQ(dsg.data.ptr(), "c,d");
+    ASSERT_STREQ(dsg.queryoper.ptr(), "");
+    ASSERT_STREQ(dsg.description.ptr(), "");
+    ASSERT_EQ(dsg.tag, ' ');
+    ASSERT_EQ(dsg.atoms.size(), 3);
+    ASSERT_EQ(dsg.atoms.at(0), 1);
+    ASSERT_EQ(dsg.atoms.at(1), 2);
+    ASSERT_EQ(dsg.atoms.at(2), 3);
+}
+
+TEST_F(IndigoCoreFormatsTest, smiles_daylight_ignores_attachment_points)
+{
+    Molecule t_mol;
+
+    loadMolecule("CCCC* |$;;;;_AP1$,Sg:n:2:2&#44;6-7:ht|", t_mol);
+    Array<char> out;
+    ArrayOutput std_out(out);
+    SmilesSaver saver(std_out);
+    saver.chemaxon = false;
+    saver.saveMolecule(t_mol);
+    std::string str{out.ptr(), static_cast<std::size_t>(out.size())};
+    ASSERT_STREQ(str.c_str(), "CCC{-}{+n}C");
+}
+
 TEST_F(IndigoCoreFormatsTest, smiles_pol_sgroups_conn_and_flip)
 {
     Molecule t_mol;

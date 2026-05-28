@@ -120,13 +120,6 @@ for sm in mols_smiles:
     print("chemaxon:")
     print(indigo.loadMolecule(sm).smiles())
 
-print("escaped S-Group field:")
-sgroup_smiles = "CCCC* |$;;;;_AP1$,Sg:n:2:2&#44;6-7:ht|"
-sgroup_saved = indigo.loadMolecule(sgroup_smiles).smiles()
-sgroup_reloaded = indigo.loadMolecule(sgroup_saved).smiles()
-print(sgroup_saved)
-print(sgroup_reloaded)
-
 print("*** Atropisomers ***")
 mols_smiles = [
     "C1C(O)=C(C2C=CC(C)=CC=2N)C(C)=CC=1 |o1:3,r,wU:3.12|",
