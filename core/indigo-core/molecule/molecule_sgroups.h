@@ -315,18 +315,15 @@ namespace indigo
         bool _cmpIndices(Array<int>& t_inds, Array<int>& q_inds);
     };
 
-    // Read-only write-order entry for serialization. Replaces the old mutating _checkSGroupIndices pattern.
-    struct SGroupWriteEntry
+    struct SGroupInfo
     {
-        int pool_idx;        // original pool index in mol.sgroups
-        int write_index;     // sequential 1,2,3... for CTFile output
-        int write_ext_index; // ext_index or auto-assigned from write_index (0→write_index per spec)
-        int write_parent;    // remapped parent_group (0 if root)
+        SGroup& sgroup;
+        int index;
+        int external_index;
+        int parent_index;
     };
 
-    // Returns topologically-sorted SGroup list with sequential indices for serialization.
-    // Does NOT mutate the molecule — returns a mapping table.
-    DLLEXPORT std::vector<SGroupWriteEntry> getOrderedSGroups(MoleculeSGroups& sgroups);
+    DLLEXPORT std::vector<SGroupInfo> getOrderedSGroups(MoleculeSGroups& sgroups);
 
 } // namespace indigo
 

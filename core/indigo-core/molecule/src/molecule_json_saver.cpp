@@ -122,8 +122,8 @@ void MoleculeJsonSaver::saveFormatMode(KETVersion& version, Array<char>& output)
 
 void MoleculeJsonSaver::saveSGroups(BaseMolecule& mol, JsonWriter& writer)
 {
-    auto write_order = getOrderedSGroups(mol.sgroups);
-    int sGroupsCount = static_cast<int>(write_order.size());
+    auto sgroup_infos = getOrderedSGroups(mol.sgroups);
+    int sGroupsCount = static_cast<int>(sgroup_infos.size());
     bool componentDefined = false;
     if (mol.isQueryMolecule())
     {
@@ -143,9 +143,9 @@ void MoleculeJsonSaver::saveSGroups(BaseMolecule& mol, JsonWriter& writer)
     {
         writer.Key("sgroups");
         writer.StartArray();
-        for (const auto& entry : write_order)
+        for (const auto& info : sgroup_infos)
         {
-            auto& sgrp = mol.sgroups.getSGroup(entry.pool_idx);
+            SGroup& sgrp = info.sgroup;
             saveSGroup(sgrp, writer);
         }
         // save queryComponent

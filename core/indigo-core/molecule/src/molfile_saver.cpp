@@ -887,19 +887,16 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         output.writeStringCR("M  V30 END COLLECTION");
     }
 
-    auto write_order = getOrderedSGroups(mol.sgroups);
+    auto sgroup_infos = getOrderedSGroups(mol.sgroups);
 
-    if (write_order.size() > 0)
+    if (sgroup_infos.size() > 0)
     {
-        MoleculeSGroups* sgroups = &mol.sgroups;
-        int idx = 1;
-
         output.writeStringCR("M  V30 BEGIN SGROUP");
-        for (const auto& entry : write_order)
+        for (const auto& info : sgroup_infos)
         {
             ArrayOutput out(buf);
-            SGroup& sgroup = sgroups->getSGroup(entry.pool_idx);
-            _writeGenericSGroup3000(sgroup, entry, idx++, out);
+            SGroup& sgroup = info.sgroup;
+            _writeGenericSGroup3000(sgroup, info, out);
             if (sgroup.sgroup_type == SGroup::SG_TYPE_GEN)
             {
                 _writeMultiString(output, buf.ptr(), buf.size());
@@ -1115,11 +1112,11 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
     }
 }
 
-void MolfileSaver::_writeGenericSGroup3000(SGroup& sgroup, const SGroupWriteEntry& entry, int idx, Output& output)
+void MolfileSaver::_writeGenericSGroup3000(SGroup& sgroup, const SGroupInfo& info, Output& output)
 {
     int i;
 
-    output.printf("%d %s %d", entry.write_index, SGroup::typeToString(sgroup.sgroup_type), entry.write_ext_index);
+    output.printf("%d %s %d", info.index, SGroup::typeToString(sgroup.sgroup_type), info.external_index);
 
     if (sgroup.atoms.size() > 0)
     {
@@ -1155,9 +1152,9 @@ void MolfileSaver::_writeGenericSGroup3000(SGroup& sgroup, const SGroupWriteEntr
         else if (sgroup.sgroup_subtype == SGroup::SG_SUBTYPE_BLO)
             output.printf(" SUBTYPE=BLO");
     }
-    if (entry.write_parent > 0)
+    if (info.parent_index > 0)
     {
-        output.printf(" PARENT=%d", entry.write_parent);
+        output.printf(" PARENT=%d", info.parent_index);
     }
     for (i = 0; i < sgroup.brackets.size(); i++)
     {
@@ -1687,47 +1684,34 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
         }
     }
 
-    QS_DEF(Array<int>, sgroup_ids);
     QS_DEF(Array<int>, child_ids);
     QS_DEF(Array<int>, parent_ids);
 
-    sgroup_ids.clear();
     child_ids.clear();
     parent_ids.clear();
 
-    for (i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
-    {
-        /*SGroup& sgroup =*/std::ignore = mol.sgroups.getSGroup(i);
-        sgroup_ids.push(i);
-    }
+    auto sgroup_infos = getOrderedSGroups(mol.sgroups);
+    int sgroup_count = static_cast<int>(sgroup_infos.size());
 
-    auto write_order = getOrderedSGroups(mol.sgroups);
-
-    // Build pool_idx → entry lookup for random access
-    std::map<int, const SGroupWriteEntry*> entry_map;
-    for (const auto& e : write_order)
-        entry_map[e.pool_idx] = &e;
-
-    if (sgroup_ids.size() > 0)
+    if (sgroup_count > 0)
     {
         int j;
-        for (j = 0; j < sgroup_ids.size(); j += 8)
+        for (j = 0; j < sgroup_count; j += 8)
         {
-            output.printf("M  STY%3d", std::min(sgroup_ids.size(), j + 8) - j);
-            for (i = j; i < std::min(sgroup_ids.size(), j + 8); i++)
+            output.printf("M  STY%3d", std::min(sgroup_count, j + 8) - j);
+            for (i = j; i < std::min(sgroup_count, j + 8); i++)
             {
-                SGroup* sgroup = &mol.sgroups.getSGroup(sgroup_ids[i]);
-                output.printf(" %3d %s", entry_map[sgroup_ids[i]]->write_index, SGroup::typeToString(sgroup->sgroup_type));
+                SGroup* sgroup = &sgroup_infos[i].sgroup;
+                output.printf(" %3d %s", sgroup_infos[i].index, SGroup::typeToString(sgroup->sgroup_type));
             }
             output.writeCR();
         }
-        for (j = 0; j < sgroup_ids.size(); j++)
+        for (const auto& info : sgroup_infos)
         {
-            auto* entry = entry_map[sgroup_ids[j]];
-            if (entry->write_parent > 0)
+            if (info.parent_index > 0)
             {
-                child_ids.push(entry->write_index);
-                parent_ids.push(entry->write_parent);
+                child_ids.push(info.index);
+                parent_ids.push(info.parent_index);
             }
         }
         for (j = 0; j < child_ids.size(); j += 8)
@@ -1739,35 +1723,32 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             }
             output.writeCR();
         }
-        for (j = 0; j < sgroup_ids.size(); j += 8)
+        for (j = 0; j < sgroup_count; j += 8)
         {
-            output.printf("M  SLB%3d", std::min(sgroup_ids.size(), j + 8) - j);
-            for (i = j; i < std::min(sgroup_ids.size(), j + 8); i++)
+            output.printf("M  SLB%3d", std::min(sgroup_count, j + 8) - j);
+            for (i = j; i < std::min(sgroup_count, j + 8); i++)
             {
-                auto* entry = entry_map[sgroup_ids[i]];
-                output.printf(" %3d %3d", entry->write_index, entry->write_ext_index);
+                const auto& info = sgroup_infos[i];
+                output.printf(" %3d %3d", info.index, info.external_index);
             }
             output.writeCR();
         }
 
-        int sru_count = mol.sgroups.getSGroupCount(SGroup::SG_TYPE_SRU);
+        std::vector<const SGroupInfo*> sru_infos;
+        for (const auto& info : sgroup_infos)
+        {
+            if (info.sgroup.sgroup_type == SGroup::SG_TYPE_SRU)
+                sru_infos.push_back(&info);
+        }
+        int sru_count = static_cast<int>(sru_infos.size());
         for (j = 0; j < sru_count; j += 8)
         {
             output.printf("M  SCN%3d", std::min(sru_count, j + 8) - j);
             for (i = j; i < std::min(sru_count, j + 8); i++)
             {
-                RepeatingUnit* ru = (RepeatingUnit*)&mol.sgroups.getSGroup(i, SGroup::SG_TYPE_SRU);
-                // Find write_index for this SRU by pointer match
-                int ru_wi = 0;
-                for (const auto& e : write_order)
-                {
-                    if (&mol.sgroups.getSGroup(e.pool_idx) == ru)
-                    {
-                        ru_wi = e.write_index;
-                        break;
-                    }
-                }
-                output.printf(" %3d ", ru_wi);
+                const SGroupInfo& info = *sru_infos[i];
+                RepeatingUnit* ru = (RepeatingUnit*)&info.sgroup;
+                output.printf(" %3d ", info.index);
 
                 if (ru->connectivity == SGroup::HEAD_TO_HEAD)
                     output.printf("HH ");
@@ -1779,10 +1760,10 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             output.writeCR();
         }
 
-        for (i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
+        for (const auto& info : sgroup_infos)
         {
-            SGroup& sgroup = mol.sgroups.getSGroup(i);
-            int wi = entry_map[i]->write_index;
+            SGroup& sgroup = info.sgroup;
+            int wi = info.index;
             for (j = 0; j < sgroup.atoms.size(); j += 8)
             {
                 int k;

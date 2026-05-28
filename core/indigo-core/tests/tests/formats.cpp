@@ -378,6 +378,57 @@ M  END
     ASSERT_EQ(sg.atoms.at(2), 4);
 }
 
+TEST_F(IndigoCoreFormatsTest, mol_saver_nested_sgroups_parent_order)
+{
+    Molecule mol;
+
+    const char* molfile = R"(Nested SGroups
+  Indigo    052826
+
+  0  0  0     0  0            999 V3000
+M  V30 BEGIN CTAB
+M  V30 COUNTS 3 2 3 0 0
+M  V30 BEGIN ATOM
+M  V30 1 C 0 0 0 0
+M  V30 2 C 1 0 0 0
+M  V30 3 C 2 0 0 0
+M  V30 END ATOM
+M  V30 BEGIN BOND
+M  V30 1 1 1 2
+M  V30 2 1 2 3
+M  V30 END BOND
+M  V30 BEGIN SGROUP
+M  V30 3 GEN 0 ATOMS=(1 3) PARENT=2
+M  V30 1 GEN 0 ATOMS=(1 1)
+M  V30 2 GEN 0 ATOMS=(1 2) PARENT=1
+M  V30 END SGROUP
+M  V30 END CTAB
+M  END
+)";
+
+    BufferScanner scanner(molfile);
+    MolfileLoader loader(scanner);
+    loader.loadMolecule(mol);
+
+    Array<char> out;
+    ArrayOutput std_out(out);
+    MolfileSaver saver(std_out);
+    saver.mode = MolfileSaver::MODE_3000;
+    saver.skip_date = true;
+    saver.saveMolecule(mol);
+
+    std::string saved{out.ptr(), static_cast<std::size_t>(out.size())};
+    const auto root_pos = saved.find("M  V30 1 GEN 1 ATOMS=(1 1)");
+    const auto child_pos = saved.find("M  V30 2 GEN 2 ATOMS=(1 2) PARENT=1");
+    const auto grandchild_pos = saved.find("M  V30 3 GEN 3 ATOMS=(1 3) PARENT=2");
+
+    ASSERT_NE(std::string::npos, root_pos) << saved;
+    ASSERT_NE(std::string::npos, child_pos) << saved;
+    ASSERT_NE(std::string::npos, grandchild_pos) << saved;
+    EXPECT_LT(root_pos, child_pos);
+    EXPECT_LT(child_pos, grandchild_pos);
+}
+
 TEST_F(IndigoCoreFormatsTest, smarts_load_save)
 {
     QueryMolecule q_mol;

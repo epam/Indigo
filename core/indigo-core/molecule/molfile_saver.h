@@ -101,7 +101,7 @@ namespace indigo
         void _writeCtab2000(Output& output, BaseMolecule& mol, bool query);
         void _writeRGroupIndices2000(Output& output, BaseMolecule& mol);
         void _writeAttachmentValues2000(Output& output, BaseMolecule& fragment);
-        void _writeGenericSGroup3000(SGroup& sgroup, const SGroupWriteEntry& entry, int idx, Output& output);
+        void _writeGenericSGroup3000(SGroup& sgroup, const SGroupInfo& info, Output& output);
         void _writeDataSGroupDisplay(DataSGroup& datasgroup, Output& out);
         void _writeFormattedString(Output& output, Array<char>& str, int length);
         static bool _checkAttPointOrder(BaseMolecule& mol, int rsite);
