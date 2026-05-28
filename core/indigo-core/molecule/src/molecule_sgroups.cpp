@@ -23,8 +23,8 @@
 #include "molecule/molecule_sgroups.h"
 
 #include <algorithm>
+#include <functional>
 #include <map>
-#include <set>
 
 using namespace indigo;
 
@@ -731,120 +731,101 @@ bool MoleculeSGroups::_cmpIndices(Array<int>& t_inds, Array<int>& q_inds)
     return true;
 }
 
-std::vector<SGroupWriteEntry> indigo::getOrderedSGroups(MoleculeSGroups& sgroups)
+std::vector<SGroupInfo> indigo::getOrderedSGroups(MoleculeSGroups& sgroups)
 {
-    // Phase 1: Build pool_idx → write_index mapping (sequential, roots first)
-    std::vector<int> pool_indices;
+    std::vector<SGroupInfo> infos;
+    std::map<int, int> pool_index_to_info_index;
+    std::map<int, int> original_index_to_info_index;
+
     for (int i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
-        pool_indices.push_back(i);
-
-    int pool_end = pool_indices.empty() ? 0 : (*std::max_element(pool_indices.begin(), pool_indices.end()) + 1);
-
-    std::vector<int> sgs_mapping(pool_end, 0);
-
-    // Roots first (parent_group == 0 or not set)
-    int iw = 1;
-    for (int i : pool_indices)
     {
         SGroup& sg = sgroups.getSGroup(i);
-        int pg = sg.parent_group.hasValue() ? sg.parent_group.get() : 0;
-        if (pg == 0)
+        SGroupInfo info = {sg, 0, 0, 0};
+        int info_index = static_cast<int>(infos.size());
+
+        infos.push_back(info);
+        pool_index_to_info_index[i] = info_index;
+
+        if (sg.index > 0)
         {
-            sgs_mapping[i] = iw++;
-        }
-    }
-    // Then children
-    for (int i : pool_indices)
-    {
-        if (sgs_mapping[i] == 0)
-        {
-            sgs_mapping[i] = iw++;
-        }
-    }
-    // Phase 2: Build old_index → write_index remap for parent_group resolution
-    std::map<int, int> index_remap;
-    for (int i : pool_indices)
-    {
-        SGroup& sg = sgroups.getSGroup(i);
-        int key = (sg.index != 0) ? sg.index : sgs_mapping[i];
-        index_remap[key] = sgs_mapping[i];
-    }
-
-    // Phase 3: Build entries with write fields
-    std::vector<SGroupWriteEntry> all_entries;
-    all_entries.reserve(pool_indices.size());
-    for (int i : pool_indices)
-    {
-        SGroup& sg = sgroups.getSGroup(i);
-        SGroupWriteEntry entry;
-        entry.pool_idx = i;
-        entry.write_index = sgs_mapping[i];
-
-        // ext_index: use explicit value if set, otherwise auto-assign from write_index
-        entry.write_ext_index = (sg.ext_index != 0) ? sg.ext_index : entry.write_index;
-
-        // parent_group: remap to new write indices
-        int pg = sg.parent_group.hasValue() ? sg.parent_group.get() : 0;
-        if (pg == 0)
-        {
-            entry.write_parent = 0;
-        }
-        else
-        {
-            auto it = index_remap.find(pg);
-            if (it != index_remap.end() && it->second != entry.write_index)
-                entry.write_parent = it->second;
-            else
-                entry.write_parent = 0; // orphan or self-ref → root
-        }
-        all_entries.push_back(entry);
-    }
-
-    // Phase 4: Topological sort — parents before children
-    std::vector<SGroupWriteEntry> result;
-    result.reserve(all_entries.size());
-
-    std::set<int> added_indices;
-
-    // Add roots first
-    for (auto& e : all_entries)
-    {
-        if (e.write_parent == 0)
-        {
-            result.push_back(e);
-            added_indices.insert(e.write_index);
+            auto inserted = original_index_to_info_index.emplace(sg.index, info_index);
+            if (!inserted.second)
+                inserted.first->second = -1;
         }
     }
 
-    // Then iteratively add children whose parents are already added
-    while (result.size() < all_entries.size())
+    std::vector<int> parent_info_index(infos.size(), -1);
+    for (int info_index = 0; info_index < static_cast<int>(infos.size()); info_index++)
     {
-        size_t prev_size = result.size();
-        for (auto& e : all_entries)
+        SGroup& sg = infos[info_index].sgroup;
+
+        if (sg.parent_idx.hasValue())
         {
-            if (added_indices.count(e.write_index))
+            auto it = pool_index_to_info_index.find(sg.parent_idx.get());
+            if (it != pool_index_to_info_index.end() && it->second != info_index)
+            {
+                parent_info_index[info_index] = it->second;
                 continue;
-            if (added_indices.count(e.write_parent))
-            {
-                result.push_back(e);
-                added_indices.insert(e.write_index);
             }
         }
-        // No progress — cyclic or orphan refs; break cycles by adding as roots
-        if (result.size() == prev_size)
+
+        int parent_id = sg.parent_group.hasValue() ? sg.parent_group.get() : 0;
+        if (parent_id <= 0)
+            continue;
+
+        auto original_it = original_index_to_info_index.find(parent_id);
+        if (original_it != original_index_to_info_index.end() && original_it->second >= 0 && original_it->second != info_index)
         {
-            for (auto& e : all_entries)
-            {
-                if (!added_indices.count(e.write_index))
-                {
-                    e.write_parent = 0;
-                    result.push_back(e);
-                    added_indices.insert(e.write_index);
-                }
-            }
-            break;
+            parent_info_index[info_index] = original_it->second;
+            continue;
         }
+
+        // CML loader stores nested parent as pool index + 1 and leaves SGroup::index unset.
+        auto pool_it = pool_index_to_info_index.find(parent_id - 1);
+        if (pool_it != pool_index_to_info_index.end() && pool_it->second != info_index && infos[pool_it->second].sgroup.index == 0)
+            parent_info_index[info_index] = pool_it->second;
     }
 
+    std::vector<int> state(infos.size(), 0);
+    std::vector<int> ordered_info_indexes;
+    ordered_info_indexes.reserve(infos.size());
+
+    std::function<void(int)> addWithParents = [&](int info_index) {
+        if (state[info_index] == 2)
+            return;
+        if (state[info_index] == 1)
+        {
+            parent_info_index[info_index] = -1;
+            return;
+        }
+
+        state[info_index] = 1;
+        int parent_index = parent_info_index[info_index];
+        if (parent_index >= 0)
+        {
+            if (state[parent_index] == 1)
+                parent_info_index[info_index] = -1;
+            else
+                addWithParents(parent_index);
+        }
+        state[info_index] = 2;
+        ordered_info_indexes.push_back(info_index);
+    };
+
+    for (int info_index = 0; info_index < static_cast<int>(infos.size()); info_index++)
+        addWithParents(info_index);
+
+    for (int i = 0; i < static_cast<int>(ordered_info_indexes.size()); i++)
+        infos[ordered_info_indexes[i]].index = i + 1;
+
+    std::vector<SGroupInfo> result;
+    result.reserve(ordered_info_indexes.size());
+    for (int info_index : ordered_info_indexes)
+    {
+        SGroupInfo& info = infos[info_index];
+        info.external_index = info.sgroup.ext_index != 0 ? info.sgroup.ext_index : info.index;
+        info.parent_index = parent_info_index[info_index] >= 0 ? infos[parent_info_index[info_index]].index : 0;
+        result.push_back(info);
+    }
     return result;
 }
