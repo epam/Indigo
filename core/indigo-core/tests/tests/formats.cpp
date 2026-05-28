@@ -234,6 +234,13 @@ TEST_F(IndigoCoreFormatsTest, smiles_sgroups_escaped_fields)
     ASSERT_EQ(ru.atoms.at(0), 2);
     ASSERT_STREQ(ru.subscript.ptr(), "2,6-7");
     ASSERT_EQ(ru.connectivity, RepeatingUnit::HEAD_TO_TAIL);
+
+    Array<char> out;
+    ArrayOutput std_out(out);
+    SmilesSaver saver(std_out);
+    saver.saveMolecule(t_mol);
+    std::string str{out.ptr(), static_cast<std::size_t>(out.size())};
+    ASSERT_STREQ(str.c_str(), "CCCC* |$;;;;_AP1$,Sg:n:2:2&#44;6-7:ht|");
 }
 
 TEST_F(IndigoCoreFormatsTest, smiles_data_sgroups_escaped_fields)

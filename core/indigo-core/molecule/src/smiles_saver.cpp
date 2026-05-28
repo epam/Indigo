@@ -621,6 +621,7 @@ void SmilesSaver::_saveMolecule()
             QS_DEF(Array<int>, closing);
 
             walk.getNeighborsClosing(v_idx, closing);
+            const bool write_terminal_attachment_point = chemaxon && walk.numBranches(v_idx) == 0 && i == v_seq.size() - 1;
 
             for (int ap = 1; chemaxon && ap <= _bmol->attachmentPointCount(); ap++)
             {
@@ -629,14 +630,23 @@ void SmilesSaver::_saveMolecule()
                 for (idx = 0; (atom_idx = _bmol->getAttachmentPoint(ap, idx)) != -1; idx++)
                     if (atom_idx == v_idx)
                     {
-                        // Here is the problem: if we have an attachment point, the resulting
-                        // SMILES is supposed to contain an extra atom not present in the given
-                        // molecule. For example, chlorine with an attachment point will
-                        // become Cl%91.[*:1]%91 |;_AP1| (two atoms).
-                        // We can not modify the given molecule, but we want the closure to
-                        // be here. To achieve that, we add a link to an imagimary atom with
-                        // incredibly big number.
-                        closing.push(10000 + ap);
+                        if (write_terminal_attachment_point)
+                        {
+                            _output.writeChar('*');
+                            _attachment_indices.push(ap);
+                            _attachment_cycle_numbers.push(-1);
+                        }
+                        else
+                        {
+                            // Here is the problem: if we have an attachment point, the resulting
+                            // SMILES is supposed to contain an extra atom not present in the given
+                            // molecule. For example, chlorine with an attachment point will
+                            // become Cl%91.[*:1]%91 |;_AP1| (two atoms).
+                            // We can not modify the given molecule, but we want the closure to
+                            // be here. To achieve that, we add a link to an imagimary atom with
+                            // incredibly big number.
+                            closing.push(10000 + ap);
+                        }
                     }
             }
 
@@ -692,6 +702,8 @@ void SmilesSaver::_saveMolecule()
         // attachment points.
         for (i = 0; i < _attachment_indices.size(); i++)
         {
+            if (_attachment_cycle_numbers[i] < 0)
+                continue;
             _output.printf(".[*:%d]", _attachment_indices[i]);
             _writeCycleNumber(_attachment_cycle_numbers[i]);
         }
