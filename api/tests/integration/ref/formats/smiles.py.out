@@ -55,10 +55,6 @@ default smiles:
 CCCCC |Sg:n:1,2,3::hh|
 canonical smiles:
 canonical SMILES saver: can not canonicalize a polymer
-default smiles:
-CCCC%91.[*:1]%91 |$;;;;_AP1$,Sg:n:2:2&#44;6-7:ht|
-canonical smiles:
-canonical SMILES saver: can not canonicalize a polymer
 daylight:
 CCCC
 daylight:
@@ -67,8 +63,6 @@ daylight:
 SMILES saver: repeating units must have exactly two outgoing bonds, has 1
 daylight:
 CC{-}CC{+n}C
-daylight:
-SMILES saver: can not write attachment points in Daylight SMILES format
 chemaxon:
 CCCC |Sg:gen:0,1,2:|
 chemaxon:
@@ -77,8 +71,9 @@ chemaxon:
 CCCC |Sg:n:0,1,2::ht|
 chemaxon:
 CCCCC |Sg:n:1,2,3::hh|
-chemaxon:
-CCCC%91.[*:1]%91 |$;;;;_AP1$,Sg:n:2:2&#44;6-7:ht|
+escaped S-Group field:
+CCCC* |$;;;;_AP1$,Sg:n:2:2&#44;6-7:ht|
+CCCC* |$;;;;_AP1$,Sg:n:2:2&#44;6-7:ht|
 *** Atropisomers ***
 atropisomer:
 C1=CC=C(C)C(C2=C(N)C=C(C)C=C2)=C1O |o1:5,r,wU:5.4|

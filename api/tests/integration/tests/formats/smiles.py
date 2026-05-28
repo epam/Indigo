@@ -97,7 +97,6 @@ mols_smiles = [
     "CCCC |Sg:n:0,1,2:3-6:eu|",
     "CCCC |Sg:n:0,1,2::ht|",
     "CCCCC |Sg:n:1,2,3::hh|",
-    "CCCC* |$;;;;_AP1$,Sg:n:2:2&#44;6-7:ht|",
 ]
 for sm in mols_smiles:
     print("default smiles:")
@@ -120,6 +119,13 @@ indigo.setOption("smiles-saving-format", "chemaxon")
 for sm in mols_smiles:
     print("chemaxon:")
     print(indigo.loadMolecule(sm).smiles())
+
+print("escaped S-Group field:")
+sgroup_smiles = "CCCC* |$;;;;_AP1$,Sg:n:2:2&#44;6-7:ht|"
+sgroup_saved = indigo.loadMolecule(sgroup_smiles).smiles()
+sgroup_reloaded = indigo.loadMolecule(sgroup_saved).smiles()
+print(sgroup_saved)
+print(sgroup_reloaded)
 
 print("*** Atropisomers ***")
 mols_smiles = [
