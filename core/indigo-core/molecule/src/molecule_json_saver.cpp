@@ -224,10 +224,11 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
 
         if (dsg.display_pos.hasValue())
         {
+            const Vec2f& display_pos = dsg.display_pos.get();
             writer.Key("x");
-            writeFloat(writer, dsg.display_pos->x);
+            writeFloat(writer, display_pos.x);
             writer.Key("y");
-            writeFloat(writer, dsg.display_pos->y);
+            writeFloat(writer, display_pos.y);
         }
 
         if (!dsg.detached)
@@ -267,7 +268,7 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
         Superatom& sa = (Superatom&)sgroup;
         writer.Key("name");
         writer.String(sgroup.label.size() ? sgroup.label.ptr() : "");
-        if (sa.contracted == DisplayOption::Expanded)
+        if (sa.contracted.hasValue() && sa.contracted.get() == DisplayOption::Expanded)
         {
             writer.Key("expanded");
             writer.Bool(true);

@@ -147,8 +147,7 @@ TEST_F(IndigoCoreFormatsTest, smiles_data_sgroups)
     ASSERT_STREQ(dsg.queryoper.ptr(), "like");
     ASSERT_STREQ(dsg.description.ptr(), "unit");
     ASSERT_EQ(dsg.tag, 't');
-    ASSERT_EQ(dsg.display_pos->x, 0.0f);
-    ASSERT_EQ(dsg.display_pos->y, 0.0f);
+    ASSERT_FALSE(dsg.display_pos.hasValue());
     ASSERT_EQ(dsg.atoms.size(), 4);
     ASSERT_EQ(dsg.atoms.at(0), 3);
     ASSERT_EQ(dsg.atoms.at(1), 2);
@@ -177,8 +176,9 @@ TEST_F(IndigoCoreFormatsTest, smiles_data_sgroups_coords)
     ASSERT_STREQ(dsg.queryoper.ptr(), "");
     ASSERT_STREQ(dsg.description.ptr(), "");
     ASSERT_EQ(dsg.tag, 's');
-    ASSERT_EQ(dsg.display_pos->x, -1.5f);
-    ASSERT_EQ(dsg.display_pos->y, 7.8f);
+    ASSERT_TRUE(dsg.display_pos.hasValue());
+    ASSERT_EQ(dsg.display_pos.get().x, -1.5f);
+    ASSERT_EQ(dsg.display_pos.get().y, 7.8f);
     ASSERT_EQ(dsg.atoms.size(), 3);
     ASSERT_EQ(dsg.atoms.at(0), 1);
     ASSERT_EQ(dsg.atoms.at(1), 2);
@@ -206,8 +206,7 @@ TEST_F(IndigoCoreFormatsTest, smiles_data_sgroups_short)
     ASSERT_EQ(dsg.queryoper.size(), 0);
     ASSERT_EQ(dsg.description.size(), 0);
     ASSERT_EQ(dsg.tag, ' ');
-    ASSERT_EQ(dsg.display_pos->x, 0.0f);
-    ASSERT_EQ(dsg.display_pos->y, 0.0f);
+    ASSERT_FALSE(dsg.display_pos.hasValue());
     ASSERT_EQ(dsg.atoms.size(), 3);
     ASSERT_EQ(dsg.atoms.at(0), 1);
     ASSERT_EQ(dsg.atoms.at(1), 2);

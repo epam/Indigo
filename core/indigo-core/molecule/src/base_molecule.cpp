@@ -47,6 +47,18 @@ using namespace indigo;
 
 IMPL_ERROR(BaseMolecule, "molecule");
 
+namespace
+{
+    template <typename T>
+    void copyNullable(Nullable<T>& dst, const Nullable<T>& src)
+    {
+        if (src.hasValue())
+            dst = src.get();
+        else
+            dst.reset();
+    }
+} // namespace
+
 BaseMolecule::BaseMolecule() : original_format(BaseMolecule::UNKNOWN), _edit_revision(0)
 {
 }
@@ -175,10 +187,10 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
         SGroup& supersg = mol.sgroups.getSGroup(i);
         int idx = sgroups.addSGroup(supersg.sgroup_type);
         SGroup& sg = sgroups.getSGroup(idx);
-        sg.parent_idx = supersg.parent_idx;
+        copyNullable(sg.parent_idx, supersg.parent_idx);
         sg.index = supersg.index;
         sg.ext_index = supersg.ext_index;
-        sg.parent_group = supersg.parent_group;
+        copyNullable(sg.parent_group, supersg.parent_group);
         sg.label.copy(supersg.label);
 
         if (_mergeSGroupWithSubmolecule(sg, supersg, mol, mapping, edge_mapping))
@@ -192,10 +204,10 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
                 DataSGroup& superdg = (DataSGroup&)supersg;
 
                 dg.detached = superdg.detached;
-                dg.display_pos = superdg.display_pos;
+                copyNullable(dg.display_pos, superdg.display_pos);
                 dg.data.copy(superdg.data);
                 dg.sa_natreplace.copy(superdg.sa_natreplace);
-                dg.dasp_pos = superdg.dasp_pos;
+                copyNullable(dg.dasp_pos, superdg.dasp_pos);
                 dg.relative = superdg.relative;
                 dg.display_units = superdg.display_units;
                 dg.description.copy(superdg.description);
@@ -203,8 +215,8 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
                 dg.type.copy(superdg.type);
                 dg.querycode.copy(superdg.querycode);
                 dg.queryoper.copy(superdg.queryoper);
-                dg.num_chars = superdg.num_chars;
-                dg.tag = superdg.tag;
+                copyNullable(dg.num_chars, superdg.num_chars);
+                copyNullable(dg.tag, superdg.tag);
             }
             else if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
             {
@@ -225,7 +237,7 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
                 }
                 sa.sa_class.copy(supersa.sa_class);
                 sa.sa_natreplace.copy(supersa.sa_natreplace);
-                sa.contracted = supersa.contracted;
+                copyNullable(sa.contracted, supersa.contracted);
                 if (supersa.attachment_points.size() > 0)
                 {
                     for (int j = supersa.attachment_points.begin(); j < supersa.attachment_points.end(); j = supersa.attachment_points.next(j))
@@ -246,21 +258,21 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
                         ap.apid.copy(supersa.attachment_points[j].apid);
                     }
                 }
-                sa.display_position = supersa.display_position;
+                copyNullable(sa.display_position, supersa.display_position);
             }
             else if (sg.sgroup_type == SGroup::SG_TYPE_SRU)
             {
                 RepeatingUnit& ru = (RepeatingUnit&)sg;
                 RepeatingUnit& superru = (RepeatingUnit&)supersg;
 
-                ru.connectivity = superru.connectivity;
+                copyNullable(ru.connectivity, superru.connectivity);
             }
             else if (sg.sgroup_type == SGroup::SG_TYPE_MUL)
             {
                 MultipleGroup& mg = (MultipleGroup&)sg;
                 MultipleGroup& supermg = (MultipleGroup&)supersg;
 
-                mg.multiplier = supermg.multiplier;
+                copyNullable(mg.multiplier, supermg.multiplier);
                 for (int j = 0; j != supermg.parent_atoms.size(); j++)
                     if (mapping[supermg.parent_atoms[j]] >= 0)
                         mg.parent_atoms.push(mapping[supermg.parent_atoms[j]]);

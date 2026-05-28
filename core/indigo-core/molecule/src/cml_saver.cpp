@@ -655,8 +655,9 @@ void CmlSaver::_addSgroupElement(XMLElement* molecule, BaseMolecule& mol, SGroup
 
         if (dsg.display_pos.hasValue())
         {
-            sg->SetAttribute("x", dsg.display_pos->x);
-            sg->SetAttribute("y", dsg.display_pos->y);
+            const Vec2f& display_pos = dsg.display_pos.get();
+            sg->SetAttribute("x", display_pos.x);
+            sg->SetAttribute("y", display_pos.y);
         }
 
         if (!dsg.detached)

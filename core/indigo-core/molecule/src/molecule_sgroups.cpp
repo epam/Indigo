@@ -301,7 +301,7 @@ bool MoleculeSGroups::getParentAtoms(SGroup& sgroup, Array<int>& target)
 {
     if (sgroup.parent_idx < 0)
         return false;
-    auto pidx = sgroup.parent_idx;
+    int pidx = sgroup.parent_idx.get();
     if (!hasSGroup(sgroup.parent_idx))
     {
         pidx = findSGroupById(sgroup.parent_group);
@@ -456,7 +456,7 @@ void MoleculeSGroups::findSGroups(int property, int value, Array<int>& sgs)
             if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
             {
                 Superatom& sup = (Superatom&)sg;
-                if (sup.contracted == (DisplayOption)value)
+                if (sup.contracted.hasValue() && sup.contracted.get() == (DisplayOption)value)
                 {
                     sgs.push(i);
                 }

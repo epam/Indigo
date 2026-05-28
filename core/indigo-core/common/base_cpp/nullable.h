@@ -31,57 +31,21 @@ namespace indigo
     class Nullable
     {
     public:
-        Nullable() : _has_value(false), _value{}
+        Nullable() : _has_value(false)
         {
             variable_name.readString("<Undefined>", true);
         }
 
-        Nullable(const Nullable<T>& other) : _has_value(other._has_value), _value(other._value)
-        {
-            variable_name.copy(other.variable_name);
-        }
-
-        Nullable<T>& operator=(const Nullable<T>& other)
-        {
-            _has_value = other._has_value;
-            _value = other._value;
-            variable_name.copy(other.variable_name);
-            return *this;
-        }
-
         const T& get() const
         {
+            if (!_has_value)
+                throw Error("\"%s\" variable was not set", variable_name.ptr());
             return _value;
         }
 
-        T& get()
+        operator const T&() const
         {
-            return _value;
-        }
-
-        bool operator==(const T& other) const
-        {
-            return _value == other;
-        }
-
-        bool operator!=(const T& other) const
-        {
-            return _value != other;
-        }
-
-        operator T&()
-        {
-            return _value;
-        }
-
-        const T* operator->() const
-        {
-            return &get();
-        }
-
-        T* operator->()
-        {
-            return &_value;
+            return get();
         }
 
         Nullable<T>& operator=(const T& value)
