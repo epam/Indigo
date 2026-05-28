@@ -1600,7 +1600,7 @@ CEXPORT int indigoSetSGroupXCoord(int sgroup, float x)
     {
         DataSGroup& dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
 
-        Vec2f dp = dsg.display_pos.get();
+        Vec2f dp = dsg.display_pos.hasValue() ? dsg.display_pos.get() : Vec2f(0, 0);
         dp.x = x;
         dsg.display_pos.set(dp);
 
@@ -1615,7 +1615,7 @@ CEXPORT int indigoSetSGroupYCoord(int sgroup, float y)
     {
         DataSGroup& dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
 
-        Vec2f dp = dsg.display_pos.get();
+        Vec2f dp = dsg.display_pos.hasValue() ? dsg.display_pos.get() : Vec2f(0, 0);
         dp.y = y;
         dsg.display_pos.set(dp);
 
@@ -2022,8 +2022,9 @@ CEXPORT int indigoGetSGroupDisplayOption(int sgroup)
     INDIGO_BEGIN
     {
         Superatom& sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
-        if (sup.contracted > DisplayOption::Undefined)
-            return (int)(sup.contracted.hasValue() ? sup.contracted.get() : DisplayOption::Undefined);
+        const auto option = sup.contracted.hasValue() ? sup.contracted.get() : DisplayOption::Undefined;
+        if (option > DisplayOption::Undefined)
+            return static_cast<int>(option);
 
         return 0;
     }
@@ -2061,9 +2062,9 @@ CEXPORT float* indigoGetSGroupCoords(int sgroup)
         IndigoDataSGroup& ds = IndigoDataSGroup::cast(self.getObject(sgroup));
 
         auto& tmp = self.getThreadTmpData();
-        auto& xy = ds.get().display_pos;
-        tmp.xyz[0] = xy->x;
-        tmp.xyz[1] = xy->y;
+        const Vec2f& xy = ds.get().display_pos.get();
+        tmp.xyz[0] = xy.x;
+        tmp.xyz[1] = xy.y;
         tmp.xyz[2] = 0.f;
         return tmp.xyz;
     }

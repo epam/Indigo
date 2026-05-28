@@ -149,7 +149,8 @@ void MoleculeRenderInternal::setMolecule(BaseMolecule* mol)
         for (int i = bmol.sgroups.begin(); i != bmol.sgroups.end(); i = bmol.sgroups.next(i))
         {
             SGroup& sgroup = bmol.sgroups.getSGroup(i);
-            if (sgroup.contracted == DisplayOption::Contracted || sgroup.contracted == DisplayOption::Undefined)
+            const auto contracted = sgroup.contracted.hasValue() ? sgroup.contracted.get() : DisplayOption::Undefined;
+            if (contracted == DisplayOption::Contracted || contracted == DisplayOption::Undefined)
             {
                 isThereAtLeastOneContracted = true;
                 break;
@@ -826,7 +827,8 @@ void MoleculeRenderInternal::_prepareSGroups(bool collapseAtLeastOneSuperatom)
         for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
         {
             SGroup& sgroup = mol.sgroups.getSGroup(i);
-            if (sgroup.contracted == DisplayOption::Contracted || sgroup.contracted == DisplayOption::Undefined)
+            const auto contracted = sgroup.contracted.hasValue() ? sgroup.contracted.get() : DisplayOption::Undefined;
+            if (contracted == DisplayOption::Contracted || contracted == DisplayOption::Undefined)
             {
                 if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
                 {

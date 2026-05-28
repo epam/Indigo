@@ -925,7 +925,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                 // convert CHEM to LINKER for BIOVIA
                 if (sup.sa_class.size() > 1)
                     out.printf(" CLASS=%s", sup.sa_class.ptr() == std::string(kMonomerClassCHEM) ? kMonomerClassLINKER : sup.sa_class.ptr());
-                if (sup.contracted == DisplayOption::Expanded)
+                if (sup.contracted.hasValue() && sup.contracted.get() == DisplayOption::Expanded)
                     out.printf(" ESTATE=E");
                 if (sup.attachment_points.size() > 0)
                 {
@@ -1823,7 +1823,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                                         superatom.bond_connections[j].bond_dir.x, superatom.bond_connections[j].bond_dir.y);
                     }
                 }
-                if (superatom.contracted == DisplayOption::Expanded)
+                if (superatom.contracted.hasValue() && superatom.contracted.get() == DisplayOption::Expanded)
                 {
                     output.printfCR("M  SDS EXP  1 %3d", wi);
                 }
@@ -2131,8 +2131,14 @@ bool MolfileSaver::_checkAttPointOrder(BaseMolecule& mol, int rsite)
 
 void MolfileSaver::_writeDataSGroupDisplay(DataSGroup& datasgroup, Output& out)
 {
-    float dp_x = datasgroup.display_pos.hasValue() ? datasgroup.display_pos->x : 0.0f;
-    float dp_y = datasgroup.display_pos.hasValue() ? datasgroup.display_pos->y : 0.0f;
+    float dp_x = 0.0f;
+    float dp_y = 0.0f;
+    if (datasgroup.display_pos.hasValue())
+    {
+        const Vec2f& display_pos = datasgroup.display_pos.get();
+        dp_x = display_pos.x;
+        dp_y = display_pos.y;
+    }
     out.printf("%10.4f%10.4f    %c%c%c", dp_x, dp_y, datasgroup.detached ? 'D' : 'A', datasgroup.relative ? 'R' : 'A', datasgroup.display_units ? 'U' : ' ');
     if (datasgroup.num_chars == 0)
         out.printf("   ALL  1    %c  %1d  ", (datasgroup.tag.hasValue() ? datasgroup.tag.get() : 0),

@@ -1286,8 +1286,14 @@ bool BaseMolecule::_mergeSGroupWithSubmolecule(SGroup& sgroup, SGroup& super, Ba
 {
     int i;
     bool merged = false;
-    sgroup.parent_group = super.parent_group;
-    sgroup.sgroup_subtype = super.sgroup_subtype;
+    if (super.parent_group.hasValue())
+        sgroup.parent_group = super.parent_group.get();
+    else
+        sgroup.parent_group.reset();
+    if (super.sgroup_subtype.hasValue())
+        sgroup.sgroup_subtype = super.sgroup_subtype.get();
+    else
+        sgroup.sgroup_subtype.reset();
     sgroup.brackets.copy(super.brackets);
 
     QS_DEF(Array<int>, parent_atoms);
