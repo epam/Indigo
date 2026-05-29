@@ -1690,7 +1690,19 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
     child_ids.clear();
     parent_ids.clear();
 
-    auto sgroup_infos = getOrderedSGroups(mol.sgroups);
+    auto ordered_sgroup_infos = getOrderedSGroups(mol.sgroups);
+    std::map<const SGroup*, const SGroupInfo*> sgroup_info_by_ptr;
+    for (const auto& info : ordered_sgroup_infos)
+        sgroup_info_by_ptr[&info.sgroup] = &info;
+
+    std::vector<const SGroupInfo*> sgroup_infos;
+    sgroup_infos.reserve(ordered_sgroup_infos.size());
+    for (i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
+    {
+        SGroup& sgroup = mol.sgroups.getSGroup(i);
+        sgroup_infos.push_back(sgroup_info_by_ptr[&sgroup]);
+    }
+
     int sgroup_count = static_cast<int>(sgroup_infos.size());
 
     if (sgroup_count > 0)
@@ -1701,17 +1713,17 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             output.printf("M  STY%3d", std::min(sgroup_count, j + 8) - j);
             for (i = j; i < std::min(sgroup_count, j + 8); i++)
             {
-                SGroup* sgroup = &sgroup_infos[i].sgroup;
-                output.printf(" %3d %s", sgroup_infos[i].index, SGroup::typeToString(sgroup->sgroup_type));
+                const auto& info = *sgroup_infos[i];
+                output.printf(" %3d %s", info.index, SGroup::typeToString(info.sgroup.sgroup_type));
             }
             output.writeCR();
         }
-        for (const auto& info : sgroup_infos)
+        for (const auto* info : sgroup_infos)
         {
-            if (info.parent_index > 0)
+            if (info->parent_index > 0)
             {
-                child_ids.push(info.index);
-                parent_ids.push(info.parent_index);
+                child_ids.push(info->index);
+                parent_ids.push(info->parent_index);
             }
         }
         for (j = 0; j < child_ids.size(); j += 8)
@@ -1728,17 +1740,17 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             output.printf("M  SLB%3d", std::min(sgroup_count, j + 8) - j);
             for (i = j; i < std::min(sgroup_count, j + 8); i++)
             {
-                const auto& info = sgroup_infos[i];
+                const auto& info = *sgroup_infos[i];
                 output.printf(" %3d %3d", info.index, info.external_index);
             }
             output.writeCR();
         }
 
         std::vector<const SGroupInfo*> sru_infos;
-        for (const auto& info : sgroup_infos)
+        for (const auto* info : sgroup_infos)
         {
-            if (info.sgroup.sgroup_type == SGroup::SG_TYPE_SRU)
-                sru_infos.push_back(&info);
+            if (info->sgroup.sgroup_type == SGroup::SG_TYPE_SRU)
+                sru_infos.push_back(info);
         }
         int sru_count = static_cast<int>(sru_infos.size());
         for (j = 0; j < sru_count; j += 8)
@@ -1760,10 +1772,10 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             output.writeCR();
         }
 
-        for (const auto& info : sgroup_infos)
+        for (const auto* info : sgroup_infos)
         {
-            SGroup& sgroup = info.sgroup;
-            int wi = info.index;
+            SGroup& sgroup = info->sgroup;
+            int wi = info->index;
             for (j = 0; j < sgroup.atoms.size(); j += 8)
             {
                 int k;

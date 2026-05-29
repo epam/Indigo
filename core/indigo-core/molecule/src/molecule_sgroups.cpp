@@ -23,7 +23,6 @@
 #include "molecule/molecule_sgroups.h"
 
 #include <algorithm>
-#include <functional>
 #include <map>
 
 using namespace indigo;
@@ -786,34 +785,40 @@ std::vector<SGroupInfo> indigo::getOrderedSGroups(MoleculeSGroups& sgroups)
             parent_info_index[info_index] = pool_it->second;
     }
 
-    std::vector<int> state(infos.size(), 0);
     std::vector<int> ordered_info_indexes;
     ordered_info_indexes.reserve(infos.size());
+    std::vector<bool> added(infos.size(), false);
 
-    std::function<void(int)> addWithParents = [&](int info_index) {
-        if (state[info_index] == 2)
-            return;
-        if (state[info_index] == 1)
+    while (ordered_info_indexes.size() < infos.size())
+    {
+        std::size_t added_count = ordered_info_indexes.size();
+        std::vector<bool> added_before_pass = added;
+        for (int info_index = 0; info_index < static_cast<int>(infos.size()); info_index++)
         {
-            parent_info_index[info_index] = -1;
-            return;
+            if (added[info_index])
+                continue;
+
+            int parent_index = parent_info_index[info_index];
+            if (parent_index < 0 || added_before_pass[parent_index])
+            {
+                ordered_info_indexes.push_back(info_index);
+                added[info_index] = true;
+            }
         }
 
-        state[info_index] = 1;
-        int parent_index = parent_info_index[info_index];
-        if (parent_index >= 0)
+        if (ordered_info_indexes.size() == added_count)
         {
-            if (state[parent_index] == 1)
-                parent_info_index[info_index] = -1;
-            else
-                addWithParents(parent_index);
+            for (int info_index = 0; info_index < static_cast<int>(infos.size()); info_index++)
+            {
+                if (!added[info_index])
+                {
+                    parent_info_index[info_index] = -1;
+                    ordered_info_indexes.push_back(info_index);
+                    added[info_index] = true;
+                }
+            }
         }
-        state[info_index] = 2;
-        ordered_info_indexes.push_back(info_index);
-    };
-
-    for (int info_index = 0; info_index < static_cast<int>(infos.size()); info_index++)
-        addWithParents(info_index);
+    }
 
     for (int i = 0; i < static_cast<int>(ordered_info_indexes.size()); i++)
         infos[ordered_info_indexes[i]].index = i + 1;
