@@ -25,13 +25,13 @@ lib = indigo.loadMonomerLibraryFromFile(
 )
 
 biln_to_helm = {
-    # Legacy integration coverage: terminal hyphen aliases must keep their
+    # Legacy integration coverage: terminal aliases must keep their
     # explicit non-backbone BILN bonds during import/export roundtrip.
-    "biln_terminal_hyphen": (
+    "biln_terminal_alias": (
         "Ac(1,2).A-K(1,3)",
         "PEPTIDE1{[ac]}|PEPTIDE2{A.K}$PEPTIDE1,PEPTIDE2,1:R2-2:R3$$$V2.0",
     ),
-    "biln_terminal_hyphen_right_alias": (
+    "biln_terminal_alias_right": (
         "Bua(1,2).A-K(1,3)",
         "PEPTIDE1{[Bua]}|PEPTIDE2{A.K}$PEPTIDE1,PEPTIDE2,1:R2-2:R3$$$V2.0",
     ),
@@ -165,7 +165,7 @@ for name in sorted(biln_to_biln.keys()):
         print(name + ":FAILED - " + getIndigoExceptionText(e))
 
 helm_to_biln = {
-    "helm_terminal_hyphen": (
+    "helm_terminal_alias": (
         "PEPTIDE1{[Ac]}|PEPTIDE2{A.K}$PEPTIDE1,PEPTIDE2,1:R2-2:R3$$$V2.0",
         "Ac(1,2).A-K(1,3)",
     ),
@@ -223,7 +223,7 @@ for name in sorted(helm_to_biln.keys()):
 
 helm_errors = {
     "CHEM1{[qweqwe]}$$$$V2.0": "Only amino acids and CHEMs with BILN codes can get exported to BILN.",
-    # Unresolved HELM aliases that map to real BILN terminal hyphen aliases
+    # Unresolved HELM aliases that map to real BILN terminal aliases
     # must still be validated against the resolved library template attachment points.
     "PEPTIDE1{[Ac]}|PEPTIDE2{K}$PEPTIDE1,PEPTIDE2,1:R1-1:R3$$$V2.0": "Cannot save in BILN format - unsupported attachment point 'R1'.",
     "PEPTIDE1{A}|RNA1{R(A)P}$$$$V2.0": "Only amino acids and CHEMs with BILN codes can get exported to BILN.",
@@ -253,7 +253,7 @@ ket_errors = {
         "CHEM1{[qweqwe]}$$$$V2.0",
         "Only amino acids and CHEMs with BILN codes can get exported to BILN.",
     ),
-    "unresolved_terminal_hyphen_invalid_attachment": (
+    "unresolved_terminal_alias_invalid_attachment": (
         "PEPTIDE1{[Ac]}|PEPTIDE2{K}$PEPTIDE1,PEPTIDE2,1:R1-1:R3$$$V2.0",
         "Cannot save in BILN format - unsupported attachment point 'R1'.",
     ),
@@ -289,7 +289,7 @@ biln_errors = {
     "A-C(1.25,3)-D(2,3)-E.F-G-H(1.25,3)-I-K(2,3)": "The string cannot be interpreted as a valid BILN string.",
     "A-C(1,3)-D(1,3)-E.F-G-H(1,3)-I-K(2,3)": "The string cannot be interpreted as a valid BILN string.",
     "A-C(1,4)-D(2,3)-E.F-G-H(1,3)-I-K(2,3)": "The string cannot be interpreted as a valid BILN string.",
-    # Terminal hyphen aliases must be resolved against their real templates,
+    # Terminal aliases must be resolved against their real templates,
     # not imported as unresolved monomers with synthetic R1..R4 attachment points.
     "Ac(1,1).K(1,3)": "The string cannot be interpreted as a valid BILN string.",
     "Ac(1,4).K(1,3)": "The string cannot be interpreted as a valid BILN string.",
