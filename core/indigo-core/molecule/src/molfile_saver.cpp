@@ -887,7 +887,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         output.writeStringCR("M  V30 END COLLECTION");
     }
 
-    auto sgroup_infos = getOrderedSGroups(mol.sgroups);
+    auto sgroup_infos = mol.sgroups.getOrderedSGroups();
 
     if (sgroup_infos.size() > 0)
     {
@@ -1690,7 +1690,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
     child_ids.clear();
     parent_ids.clear();
 
-    auto ordered_sgroup_infos = getOrderedSGroups(mol.sgroups);
+    auto ordered_sgroup_infos = mol.sgroups.getOrderedSGroups();
     std::map<const SGroup*, const SGroupInfo*> sgroup_info_by_ptr;
     for (const auto& info : ordered_sgroup_infos)
         sgroup_info_by_ptr[&info.sgroup] = &info;
