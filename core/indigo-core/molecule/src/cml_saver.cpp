@@ -565,7 +565,7 @@ void CmlSaver::_addMoleculeElement(XMLElement* elem, BaseMolecule& mol, bool que
 
     if (_mol->countSGroups() > 0)
     {
-        auto sgroup_infos = getOrderedSGroups(_mol->sgroups);
+        auto sgroup_infos = _mol->sgroups.getOrderedSGroups();
         for (const auto& info : sgroup_infos)
         {
             if (info.parent_index == 0)

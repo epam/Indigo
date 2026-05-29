@@ -261,6 +261,14 @@ namespace indigo
         MultipleGroup(const MultipleGroup&);
     };
 
+    struct SGroupInfo
+    {
+        SGroup& sgroup;
+        int index;
+        int external_index;
+        int parent_index;
+    };
+
     class Tree;
     class DLLEXPORT MoleculeSGroups
     {
@@ -282,6 +290,7 @@ namespace indigo
         void buildTree(Tree& tree);
         bool getParentAtoms(int idx, Array<int>& target);
         bool getParentAtoms(SGroup& sgroup, Array<int>& target);
+        std::vector<SGroupInfo> getOrderedSGroups();
 
         void remove(int idx);
         void clear();
@@ -314,16 +323,6 @@ namespace indigo
     private:
         bool _cmpIndices(Array<int>& t_inds, Array<int>& q_inds);
     };
-
-    struct SGroupInfo
-    {
-        SGroup& sgroup;
-        int index;
-        int external_index;
-        int parent_index;
-    };
-
-    DLLEXPORT std::vector<SGroupInfo> getOrderedSGroups(MoleculeSGroups& sgroups);
 
 } // namespace indigo
 

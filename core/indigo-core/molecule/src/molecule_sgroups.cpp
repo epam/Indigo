@@ -730,15 +730,15 @@ bool MoleculeSGroups::_cmpIndices(Array<int>& t_inds, Array<int>& q_inds)
     return true;
 }
 
-std::vector<SGroupInfo> indigo::getOrderedSGroups(MoleculeSGroups& sgroups)
+std::vector<SGroupInfo> MoleculeSGroups::getOrderedSGroups()
 {
     std::vector<SGroupInfo> infos;
     std::map<int, int> pool_index_to_info_index;
     std::map<int, int> original_index_to_info_index;
 
-    for (int i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
+    for (int i = begin(); i != end(); i = next(i))
     {
-        SGroup& sg = sgroups.getSGroup(i);
+        SGroup& sg = getSGroup(i);
         SGroupInfo info = {sg, 0, 0, 0};
         int info_index = static_cast<int>(infos.size());
 

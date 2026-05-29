@@ -122,7 +122,7 @@ void MoleculeJsonSaver::saveFormatMode(KETVersion& version, Array<char>& output)
 
 void MoleculeJsonSaver::saveSGroups(BaseMolecule& mol, JsonWriter& writer)
 {
-    auto sgroup_infos = getOrderedSGroups(mol.sgroups);
+    auto sgroup_infos = mol.sgroups.getOrderedSGroups();
     int sGroupsCount = static_cast<int>(sgroup_infos.size());
     bool componentDefined = false;
     if (mol.isQueryMolecule())
