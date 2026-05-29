@@ -31,6 +31,10 @@ biln_to_helm = {
         "Ac(1,2).A-K(1,3)",
         "PEPTIDE1{[ac]}|PEPTIDE2{A.K}$PEPTIDE1,PEPTIDE2,1:R2-2:R3$$$V2.0",
     ),
+    "biln_terminal_hyphen_right_alias": (
+        "Bua(1,2).A-K(1,3)",
+        "PEPTIDE1{[Bua]}|PEPTIDE2{A.K}$PEPTIDE1,PEPTIDE2,1:R2-2:R3$$$V2.0",
+    ),
     "biln_three_chains": (
         "Ac(1,2).A-K(1,3)(2,2).Me(2,1)",
         "PEPTIDE1{[ac]}|PEPTIDE2{A.K}|PEPTIDE3{[-Me]}$PEPTIDE1,PEPTIDE2,1:R2-2:R3|PEPTIDE2,PEPTIDE3,2:R2-1:R1$$$V2.0",
@@ -164,6 +168,10 @@ helm_to_biln = {
     "helm_terminal_hyphen": (
         "PEPTIDE1{[Ac]}|PEPTIDE2{A.K}$PEPTIDE1,PEPTIDE2,1:R2-2:R3$$$V2.0",
         "Ac(1,2).A-K(1,3)",
+    ),
+    "helm_terminal_hyphen_left_alias": (
+        "PEPTIDE1{A.K}|PEPTIDE2{[-OMe]}$PEPTIDE1,PEPTIDE2,2:R2-1:R1$$$V2.0",
+        "A-K(1,2).OMe(1,1)",
     ),
     "helm_three_chains": (
         "PEPTIDE1{[Ac]}|PEPTIDE2{A.K}|PEPTIDE3{[Me]}$PEPTIDE1,PEPTIDE2,1:R2-2:R3|PEPTIDE2,PEPTIDE3,2:R2-1:R1$$$V2.0",

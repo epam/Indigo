@@ -5,6 +5,7 @@ biln_explicit_backbone:BILN->HELM SUCCEED
 biln_large_bond_id:BILN->HELM SUCCEED
 biln_star_alias:BILN->HELM SUCCEED
 biln_terminal_hyphen:BILN->HELM SUCCEED
+biln_terminal_hyphen_right_alias:BILN->HELM SUCCEED
 biln_three_chains:BILN->HELM SUCCEED
 biln_two_backbones:BILN->HELM SUCCEED
 biln_underscore_alias:BILN->HELM SUCCEED
@@ -31,6 +32,7 @@ helm_chem_with_biln_code:HELM->BILN SUCCEED
 helm_cycle:HELM->BILN SUCCEED
 helm_star_alias:HELM->BILN SUCCEED
 helm_terminal_hyphen:HELM->BILN SUCCEED
+helm_terminal_hyphen_left_alias:HELM->BILN SUCCEED
 helm_three_chains:HELM->BILN SUCCEED
 helm_underscore_alias:HELM->BILN SUCCEED
 Test 'CHEM1{[qweqwe]}$$$$V2.0': got expected error 'Only amino acids and CHEMs with BILN codes can get exported to BILN.'
