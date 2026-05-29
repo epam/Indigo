@@ -423,7 +423,8 @@ void CmfSaver::_writeSGroupsXyz(Molecule& mol, Output& output, const VecRange& r
         {
             DataSGroup& sd = (DataSGroup&)sg;
             _writeBaseSGroupXyz(output, sd, range);
-            _writeVec2f(output, sd.display_pos, range);
+            Vec2f display_pos = sd.display_pos.hasValue() ? sd.display_pos.get() : Vec2f(0, 0);
+            _writeVec2f(output, display_pos, range);
         }
         else if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
         {
@@ -825,14 +826,11 @@ void CmfSaver::_updateSGroupsXyzMinMax(Molecule& mol, Vec3f& min, Vec3f& max)
             DataSGroup& s = (DataSGroup&)sg;
             _updateBaseSGroupXyzMinMax(s, min, max);
 
-            if (s.display_pos.hasValue())
-            {
-                const Vec2f& display_pos_2d = s.display_pos.get();
-                Vec3f display_pos(display_pos_2d.x, display_pos_2d.y, 0);
+            Vec2f display_pos_2d = s.display_pos.hasValue() ? s.display_pos.get() : Vec2f(0, 0);
+            Vec3f display_pos(display_pos_2d.x, display_pos_2d.y, 0);
 
-                min.min(display_pos);
-                max.max(display_pos);
-            }
+            min.min(display_pos);
+            max.max(display_pos);
         }
     }
 }
