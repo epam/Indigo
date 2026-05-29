@@ -621,7 +621,8 @@ void SmilesSaver::_saveMolecule()
             QS_DEF(Array<int>, closing);
 
             walk.getNeighborsClosing(v_idx, closing);
-            const bool write_terminal_attachment_point = chemaxon && walk.numBranches(v_idx) == 0 && i == v_seq.size() - 1;
+            const bool write_terminal_attachment_point =
+                chemaxon && _bmol->sgroups.getSGroupCount() > 0 && walk.numBranches(v_idx) == 0 && i == v_seq.size() - 1;
 
             for (int ap = 1; chemaxon && ap <= _bmol->attachmentPointCount(); ap++)
             {
