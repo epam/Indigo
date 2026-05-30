@@ -63,6 +63,14 @@ default smiles:
 CCCCC |SgD:1,2,3:a&#44;b:c&#44;d::: :|
 canonical smiles:
 CCCCC
+default smiles:
+CCCCC |SgD:1,2,3:name&#44;&#59;&#58;&#124;&#123;&#125;&#36;field:data&#44;&#59;&#58;&#124;&#123;&#125;&#36;value:query&#44;&#59;&#58;&#124;&#123;&#125;&#36;op:unit&#44;&#59;&#58;&#124;&#123;&#125;&#36;text: :|
+canonical smiles:
+CCCCC
+default smiles:
+CCCCC |Sg:n:1,2,3:sub&#44;&#59;&#58;&#124;&#123;&#125;&#36;script:hh|
+canonical smiles:
+canonical SMILES saver: can not canonicalize a polymer
 daylight:
 CCCC
 daylight:
@@ -75,6 +83,10 @@ daylight:
 CCC{-}{+n}C
 daylight:
 CCCCC
+daylight:
+CCCCC
+daylight:
+CC{-}CC{+n}C
 chemaxon:
 CCCC |Sg:gen:0,1,2:|
 chemaxon:
@@ -87,6 +99,209 @@ chemaxon:
 CCCC* |$;;;;_AP1$,Sg:n:2:2&#44;6-7:ht|
 chemaxon:
 CCCCC |SgD:1,2,3:a&#44;b:c&#44;d::: :|
+chemaxon:
+CCCCC |SgD:1,2,3:name&#44;&#59;&#58;&#124;&#123;&#125;&#36;field:data&#44;&#59;&#58;&#124;&#123;&#125;&#36;value:query&#44;&#59;&#58;&#124;&#123;&#125;&#36;op:unit&#44;&#59;&#58;&#124;&#123;&#125;&#36;text: :|
+chemaxon:
+CCCCC |Sg:n:1,2,3:sub&#44;&#59;&#58;&#124;&#123;&#125;&#36;script:hh|
+ket:
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "mol0"
+            }
+        ]
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    -1.7320506572723389,
+                    -5.960464477539063e-8,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -0.8660253882408142,
+                    0.5,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.866025447845459,
+                    0.4999999701976776,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    1.7320506572723389,
+                    -2.980232238769531e-7,
+                    0.0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    4
+                ]
+            }
+        ],
+        "sgroups": [
+            {
+                "type": "DAT",
+                "atoms": [
+                    1,
+                    2,
+                    3
+                ],
+                "fieldName": "name,;:|{}$field",
+                "fieldData": "data,;:|{}$value",
+                "fieldType": "unit,;:|{}$text",
+                "queryOp": "query,;:|{}$op",
+                "x": 1.9868215517249156e-8,
+                "y": 0.3333333432674408,
+                "dataDetached": false
+            }
+        ]
+    }
+}
+ket:
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "mol0"
+            }
+        ]
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    -1.7320506572723389,
+                    -5.960464477539063e-8,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -0.8660253882408142,
+                    0.5,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.866025447845459,
+                    0.4999999701976776,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    1.7320506572723389,
+                    -2.980232238769531e-7,
+                    0.0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    4
+                ]
+            }
+        ],
+        "sgroups": [
+            {
+                "type": "SRU",
+                "atoms": [
+                    1,
+                    2,
+                    3
+                ],
+                "subscript": "sub,;:|{}$script",
+                "connectivity": "HH"
+            }
+        ]
+    }
+}
 *** Atropisomers ***
 atropisomer:
 C1=CC=C(C)C(C2=C(N)C=C(C)C=C2)=C1O |o1:5,r,wU:5.4|
