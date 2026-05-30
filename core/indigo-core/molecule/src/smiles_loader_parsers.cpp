@@ -43,8 +43,8 @@ static char readSgChar(Scanner& scanner)
         int code = scanner.tryReadUnsigned();
         if (code >= min_ascii && code <= max_ascii && scanner.lookNext() == ';')
         {
-            std::string sgroup_field_sep = ",;:|{}";
-            // Decode only ,;:|{}
+            std::string sgroup_field_sep = ",;:|{}$";
+            // Decode only S-group field separators and CXSMILES '$' delimiters
             if (sgroup_field_sep.find(static_cast<char>(code)) != std::string::npos)
             {
                 scanner.skip(1);                // skip ';'

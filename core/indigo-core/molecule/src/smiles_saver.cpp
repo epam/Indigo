@@ -1854,7 +1854,7 @@ static void writeSgEscapedField(Output& output, const char* field)
 
     for (const char* c = field; *c != 0; ++c)
     {
-        if (strchr(",;:|{}", *c) != nullptr)
+        if (strchr(",;:|{}$", *c) != nullptr)
             output.printf("&#%d;", static_cast<unsigned char>(*c));
         else
             output.writeChar(*c);
