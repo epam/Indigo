@@ -134,12 +134,6 @@ for sm in mols_smiles:
     print("chemaxon:")
     print(indigo.loadMolecule(sm).smiles())
 
-ket_indigo = Indigo()
-ket_indigo.setOption("json-saving-pretty", True)
-for sm in [sgroup_data_all_fields, sgroup_sru_subscript]:
-    print("ket:")
-    print(ket_indigo.loadMolecule(sm).json())
-
 print("*** Atropisomers ***")
 mols_smiles = [
     "C1C(O)=C(C2C=CC(C)=CC=2N)C(C)=CC=1 |o1:3,r,wU:3.12|",
