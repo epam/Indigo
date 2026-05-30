@@ -23,7 +23,7 @@
 #include "molecule/molecule_sgroups.h"
 
 #include <algorithm>
-#include <map>
+#include <unordered_map>
 
 using namespace indigo;
 
@@ -287,7 +287,7 @@ void MoleculeSGroups::buildTree(Tree& tree)
     for (auto i = begin(); i != end(); i = next(i))
     {
         SGroup& sgroup = getSGroup(i);
-        tree.insert(i, sgroup.parent_idx);
+        tree.insert(i, sgroup.parent_idx.hasValue() ? sgroup.parent_idx.get() : -1);
     }
 }
 
@@ -298,12 +298,14 @@ bool MoleculeSGroups::getParentAtoms(int idx, Array<int>& target)
 
 bool MoleculeSGroups::getParentAtoms(SGroup& sgroup, Array<int>& target)
 {
-    if (sgroup.parent_idx < 0)
+    if (!sgroup.parent_idx.hasValue() || sgroup.parent_idx.get() < 0)
         return false;
     int pidx = sgroup.parent_idx.get();
-    if (!hasSGroup(sgroup.parent_idx))
+    if (!hasSGroup(pidx))
     {
-        pidx = findSGroupById(sgroup.parent_group);
+        if (!sgroup.parent_group.hasValue())
+            return false;
+        pidx = findSGroupById(sgroup.parent_group.get());
         if (pidx < 0)
             return false;
     }
@@ -441,7 +443,7 @@ void MoleculeSGroups::findSGroups(int property, int value, Array<int>& sgs)
         for (i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
         {
             SGroup& sg = *_sgroups.at(i);
-            if (sg.brk_style == value)
+            if (sg.brk_style.hasValue() && sg.brk_style.get() == value)
             {
                 sgs.push(i);
             }
@@ -467,7 +469,7 @@ void MoleculeSGroups::findSGroups(int property, int value, Array<int>& sgs)
         for (i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
         {
             SGroup& sg = *_sgroups.at(i);
-            if (sg.parent_group == value)
+            if (sg.parent_group.hasValue() && sg.parent_group.get() == value)
             {
                 sgs.push(i);
             }
@@ -479,9 +481,9 @@ void MoleculeSGroups::findSGroups(int property, int value, Array<int>& sgs)
             return;
 
         SGroup& sg = *_sgroups.at(value);
-        if (sg.parent_group != 0)
+        if (sg.parent_group.hasValue() && sg.parent_group.get() != 0)
         {
-            int idx = findSGroupById(sg.parent_group);
+            int idx = findSGroupById(sg.parent_group.get());
             if (idx != -1)
                 sgs.push(idx);
         }
@@ -623,7 +625,7 @@ void MoleculeSGroups::findSGroups(int property, const char* str, Array<int>& sgs
             if (sg.sgroup_type == SGroup::SG_TYPE_DAT)
             {
                 DataSGroup& dg = (DataSGroup&)sg;
-                if ((strlen(str) == 1) && str[0] == dg.tag)
+                if ((strlen(str) == 1) && dg.tag.hasValue() && str[0] == dg.tag.get())
                 {
                     sgs.push(i);
                 }
@@ -730,16 +732,24 @@ bool MoleculeSGroups::_cmpIndices(Array<int>& t_inds, Array<int>& q_inds)
     return true;
 }
 
+// Returns SGroups in serialization order: roots first, then descendants by depth.
+// The order is stable inside each depth level, and new_parent_index is resolved after
+// the final serialized indexes are known.
 std::vector<SGroupInfo> MoleculeSGroups::getOrderedSGroups()
 {
     std::vector<SGroupInfo> infos;
-    std::map<int, int> pool_index_to_info_index;
-    std::map<int, int> original_index_to_info_index;
+    std::unordered_map<int, int> pool_index_to_info_index;
+    std::unordered_map<int, int> original_index_to_info_index;
+    const int sgroup_count = getSGroupCount();
+    infos.reserve(sgroup_count);
+    pool_index_to_info_index.reserve(sgroup_count);
+    original_index_to_info_index.reserve(sgroup_count);
 
+    // Phase 1: collect SGroups in pool order and build lookup tables for parent resolution.
     for (int i = begin(); i != end(); i = next(i))
     {
         SGroup& sg = getSGroup(i);
-        SGroupInfo info = {sg, 0, 0, 0};
+        SGroupInfo info = {sg, 0, 0};
         int info_index = static_cast<int>(infos.size());
 
         infos.push_back(info);
@@ -753,17 +763,25 @@ std::vector<SGroupInfo> MoleculeSGroups::getOrderedSGroups()
         }
     }
 
+    // Phase 2: resolve each parent reference to an entry in the collected info array.
     std::vector<int> parent_info_index(infos.size(), -1);
+    auto resolve_pool_index = [&](int pool_index) -> int {
+        auto it = pool_index_to_info_index.find(pool_index);
+        if (it == pool_index_to_info_index.end())
+            return -1;
+        return it->second;
+    };
+
     for (int info_index = 0; info_index < static_cast<int>(infos.size()); info_index++)
     {
         SGroup& sg = infos[info_index].sgroup;
 
         if (sg.parent_idx.hasValue())
         {
-            auto it = pool_index_to_info_index.find(sg.parent_idx.get());
-            if (it != pool_index_to_info_index.end() && it->second != info_index)
+            int parent_info = resolve_pool_index(sg.parent_idx.get());
+            if (parent_info >= 0)
             {
-                parent_info_index[info_index] = it->second;
+                parent_info_index[info_index] = parent_info;
                 continue;
             }
         }
@@ -773,63 +791,77 @@ std::vector<SGroupInfo> MoleculeSGroups::getOrderedSGroups()
             continue;
 
         auto original_it = original_index_to_info_index.find(parent_id);
-        if (original_it != original_index_to_info_index.end() && original_it->second >= 0 && original_it->second != info_index)
+        if (original_it != original_index_to_info_index.end() && original_it->second >= 0)
         {
             parent_info_index[info_index] = original_it->second;
             continue;
         }
 
-        // CML loader stores nested parent as pool index + 1 and leaves SGroup::index unset.
-        auto pool_it = pool_index_to_info_index.find(parent_id - 1);
-        if (pool_it != pool_index_to_info_index.end() && pool_it->second != info_index && infos[pool_it->second].sgroup.index == 0)
-            parent_info_index[info_index] = pool_it->second;
+        // Some inputs have no persisted SGroup index and refer to parents by one-based pool position.
+        int parent_info = resolve_pool_index(parent_id - 1);
+        if (parent_info >= 0 && infos[parent_info].sgroup.index == 0)
+            parent_info_index[info_index] = parent_info;
     }
 
+    // Phase 3: resolve nesting depth. DFS is used only to compute depth; emission stays
+    // level-ordered so all roots are written before all children, then grandchildren.
+    std::vector<int> depth(infos.size(), -1);
+    std::vector<int> chain_pos(infos.size(), -1);
+
+    auto clear_chain_positions = [&](const std::vector<int>& chain) {
+        for (int info_index : chain)
+            chain_pos[info_index] = -1;
+    };
+
+    for (int info_index = 0; info_index < static_cast<int>(infos.size()); info_index++)
+    {
+        if (depth[info_index] >= 0)
+            continue;
+
+        std::vector<int> chain;
+        int current = info_index;
+
+        // Walk through parents until a root, a memoized parent, or a cycle is found.
+        while (current >= 0 && depth[current] < 0)
+        {
+            if (chain_pos[current] >= 0)
+            {
+                clear_chain_positions(chain);
+                throw Error("SGroup parent hierarchy contains a cycle");
+            }
+
+            chain_pos[current] = static_cast<int>(chain.size());
+            chain.push_back(current);
+            current = parent_info_index[current];
+        }
+
+        if (chain.empty())
+            continue;
+
+        int current_depth = current >= 0 ? depth[current] : -1;
+        for (auto it = chain.rbegin(); it != chain.rend(); ++it)
+            depth[*it] = ++current_depth;
+        clear_chain_positions(chain);
+    }
+
+    // Phase 4: emit by depth while preserving source order for SGroups at the same depth.
     std::vector<int> ordered_info_indexes;
     ordered_info_indexes.reserve(infos.size());
-    std::vector<bool> added(infos.size(), false);
+    for (int info_index = 0; info_index < static_cast<int>(infos.size()); info_index++)
+        ordered_info_indexes.push_back(info_index);
 
-    while (ordered_info_indexes.size() < infos.size())
-    {
-        std::size_t added_count = ordered_info_indexes.size();
-        std::vector<bool> added_before_pass = added;
-        for (int info_index = 0; info_index < static_cast<int>(infos.size()); info_index++)
-        {
-            if (added[info_index])
-                continue;
+    std::stable_sort(ordered_info_indexes.begin(), ordered_info_indexes.end(), [&](int left, int right) { return depth[left] < depth[right]; });
 
-            int parent_index = parent_info_index[info_index];
-            if (parent_index < 0 || added_before_pass[parent_index])
-            {
-                ordered_info_indexes.push_back(info_index);
-                added[info_index] = true;
-            }
-        }
-
-        if (ordered_info_indexes.size() == added_count)
-        {
-            for (int info_index = 0; info_index < static_cast<int>(infos.size()); info_index++)
-            {
-                if (!added[info_index])
-                {
-                    parent_info_index[info_index] = -1;
-                    ordered_info_indexes.push_back(info_index);
-                    added[info_index] = true;
-                }
-            }
-        }
-    }
-
+    // Phase 5: assign serialized indexes and materialize result entries.
     for (int i = 0; i < static_cast<int>(ordered_info_indexes.size()); i++)
-        infos[ordered_info_indexes[i]].index = i + 1;
+        infos[ordered_info_indexes[i]].new_index = i + 1;
 
     std::vector<SGroupInfo> result;
     result.reserve(ordered_info_indexes.size());
     for (int info_index : ordered_info_indexes)
     {
         SGroupInfo& info = infos[info_index];
-        info.external_index = info.sgroup.ext_index != 0 ? info.sgroup.ext_index : info.index;
-        info.parent_index = parent_info_index[info_index] >= 0 ? infos[parent_info_index[info_index]].index : 0;
+        info.new_parent_index = parent_info_index[info_index] >= 0 ? infos[parent_info_index[info_index]].new_index : 0;
         result.push_back(info);
     }
     return result;

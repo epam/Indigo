@@ -17,6 +17,8 @@
  ***************************************************************************/
 
 #include <memory>
+#include <unordered_map>
+#include <vector>
 
 #include "../layout/molecule_layout.h"
 #include "base_cpp/output.h"
@@ -858,7 +860,7 @@ void MolfileLoader::_fillSGroupsParentIndices()
     std::multimap<int, int> indices;
     // original index can be arbitrary, sometimes key is used multiple times
 
-    for (auto i = sgroups.begin(); i != sgroups.end(); i++)
+    for (auto i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
     {
         SGroup& sgroup = sgroups.getSGroup(i);
         indices.emplace(sgroup.index, i);
@@ -868,9 +870,9 @@ void MolfileLoader::_fillSGroupsParentIndices()
     for (auto i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
     {
         SGroup& sgroup = sgroups.getSGroup(i);
-        if (indices.count(sgroup.parent_group) == 1)
+        if (sgroup.parent_group.hasValue() && indices.count(sgroup.parent_group.get()) == 1)
         {
-            const auto it = indices.find(sgroup.parent_group);
+            const auto it = indices.find(sgroup.parent_group.get());
             // TODO: check fix
             auto parent_idx = it->second;
             SGroup& parent_sgroup = sgroups.getSGroup(parent_idx);
@@ -880,13 +882,44 @@ void MolfileLoader::_fillSGroupsParentIndices()
             }
             else
             {
-                sgroup.parent_idx = -1;
+                throw Error("SGroup parent hierarchy contains a cycle");
             }
         }
         else
         {
             sgroup.parent_idx = -1;
         }
+    }
+
+    std::unordered_map<int, int> state;
+    state.reserve(sgroups.getSGroupCount());
+    for (auto i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
+        state.emplace(i, 0);
+
+    for (auto i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
+    {
+        std::vector<int> chain;
+        int current = i;
+
+        while (true)
+        {
+            auto state_it = state.find(current);
+            if (state_it == state.end() || state_it->second == 2)
+                break;
+            if (state_it->second == 1)
+                throw Error("SGroup parent hierarchy contains a cycle");
+
+            state_it->second = 1;
+            chain.push_back(current);
+
+            SGroup& sgroup = sgroups.getSGroup(current);
+            if (!sgroup.parent_idx.hasValue() || sgroup.parent_idx.get() < 0)
+                break;
+            current = sgroup.parent_idx.get();
+        }
+
+        for (int chain_idx : chain)
+            state[chain_idx] = 2;
     }
 }
 

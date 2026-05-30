@@ -49,7 +49,7 @@ void BaseMolecule::_checkSgroupHierarchy(int pidx, int oidx)
     for (int i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
     {
         SGroup& sg = sgroups.getSGroup(i);
-        if (sg.parent_group == oidx)
+        if (sg.parent_group.hasValue() && sg.parent_group.get() == oidx)
             sg.parent_group = pidx;
     }
 }
@@ -99,7 +99,8 @@ void BaseMolecule::collapse(BaseMolecule& bm, int id, Mapping& mapAtom, Mapping&
 
     const MultipleGroup& group = (MultipleGroup&)sg;
 
-    if (group.atoms.size() != group.multiplier.get() * group.parent_atoms.size())
+    const int multiplier = group.multiplier.hasValue() ? group.multiplier.get() : 0;
+    if (group.atoms.size() != multiplier * group.parent_atoms.size())
         throw Error("The group is already collapsed or invalid");
 
     QS_DEF(Array<int>, toRemove);
