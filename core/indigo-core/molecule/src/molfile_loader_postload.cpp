@@ -95,9 +95,9 @@ void MolfileLoader::_postLoad()
         if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
         {
             DataSGroup& dsg = static_cast<DataSGroup&>(sgroup);
-            if (dsg.parent_idx > -1 && std::string(dsg.name.ptr()) == "SMMX:class")
+            if (dsg.parent_idx.hasValue() && dsg.parent_idx.get() > -1 && std::string(dsg.name.ptr()) == "SMMX:class")
             {
-                SGroup& parent_sgroup = _bmol->sgroups.getSGroup(dsg.parent_idx);
+                SGroup& parent_sgroup = _bmol->sgroups.getSGroup(dsg.parent_idx.get());
                 if (parent_sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
                 {
                     auto& sa = static_cast<Superatom&>(parent_sgroup);

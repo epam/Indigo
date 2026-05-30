@@ -264,9 +264,8 @@ namespace indigo
     struct SGroupInfo
     {
         SGroup& sgroup;
-        int index;
-        int external_index;
-        int parent_index;
+        int new_index;
+        int new_parent_index;
     };
 
     class Tree;

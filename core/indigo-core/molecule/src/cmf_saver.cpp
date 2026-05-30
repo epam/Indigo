@@ -339,12 +339,13 @@ void CmfSaver::_encodeExtSection(Molecule& mol, const Mapping& mapping)
             _encodeString(sd.queryoper);
             _encodeString(sd.data);
             // Pack detached, relative, display_units, and sd.dasp_pos into one byte
-            if (sd.dasp_pos < 0 || sd.dasp_pos > 9)
-                throw Error("DataSGroup dasp_pos field should be less than 10: %d", sd.dasp_pos.get());
-            byte packed = (sd.dasp_pos & 0x0F) | (sd.detached << 4) | (sd.relative << 5) | (sd.display_units << 6);
+            const int dasp_pos = sd.dasp_pos.hasValue() ? sd.dasp_pos.get() : 0;
+            if (dasp_pos < 0 || dasp_pos > 9)
+                throw Error("DataSGroup dasp_pos field should be less than 10: %d", dasp_pos);
+            byte packed = (dasp_pos & 0x0F) | (sd.detached << 4) | (sd.relative << 5) | (sd.display_units << 6);
             _output->writeByte(packed);
-            _output->writePackedUInt(sd.num_chars);
-            _output->writeChar(sd.tag);
+            _output->writePackedUInt(sd.num_chars.hasValue() ? sd.num_chars.get() : 0);
+            _output->writeChar(sd.tag.hasValue() ? sd.tag.get() : 0);
         }
         else if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
         {
@@ -370,7 +371,7 @@ void CmfSaver::_encodeExtSection(Molecule& mol, const Mapping& mapping)
             _encode(CMF_REPEATINGUNIT);
             _encodeBaseSGroup(mol, su, mapping);
             _encodeString(su.label);
-            _output->writePackedUInt(su.connectivity);
+            _output->writePackedUInt(su.connectivity.hasValue() ? su.connectivity.get() : SGroup::HEAD_TO_TAIL);
         }
         else if (sg.sgroup_type == SGroup::SG_TYPE_MUL)
         {
@@ -378,9 +379,10 @@ void CmfSaver::_encodeExtSection(Molecule& mol, const Mapping& mapping)
             _encode(CMF_MULTIPLEGROUP);
             _encodeBaseSGroup(mol, sm, mapping);
             _encodeUIntArray(sm.parent_atoms, *mapping.atom_mapping);
-            if (sm.multiplier < 0)
-                throw Error("internal error: SGroup multiplier is negative: %d", sm.multiplier.get());
-            _output->writePackedUInt(sm.multiplier);
+            const int multiplier = sm.multiplier.hasValue() ? sm.multiplier.get() : 0;
+            if (multiplier < 0)
+                throw Error("internal error: SGroup multiplier is negative: %d", multiplier);
+            _output->writePackedUInt(multiplier);
         }
     }
 

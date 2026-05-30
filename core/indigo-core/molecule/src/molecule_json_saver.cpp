@@ -249,7 +249,7 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
             writer.Bool(true);
         }
 
-        char tag = dsg.tag;
+        char tag = dsg.tag.hasValue() ? dsg.tag.get() : 0;
         if (tag != 0 && tag != ' ')
         {
             writer.Key("tag");
@@ -257,10 +257,11 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
             writer.String(tag_s.c_str());
         }
 
-        if (dsg.num_chars > 0)
+        const int num_chars = dsg.num_chars.hasValue() ? dsg.num_chars.get() : 0;
+        if (num_chars > 0)
         {
             writer.Key("displayedChars");
-            writer.Int(dsg.num_chars);
+            writer.Int(num_chars);
         }
     }
     break;
@@ -316,7 +317,8 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
         }
 
         writer.Key("connectivity");
-        switch (ru.connectivity)
+        const int connectivity = ru.connectivity.hasValue() ? ru.connectivity.get() : SGroup::HEAD_TO_TAIL;
+        switch (connectivity)
         {
         case SGroup::HEAD_TO_TAIL:
             writer.String("HT");
@@ -340,7 +342,7 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
             writer.EndArray();
         }
         writer.Key("mul");
-        writer.Int(mg.multiplier);
+        writer.Int(mg.multiplier.hasValue() ? mg.multiplier.get() : 0);
     }
     break;
     case SGroup::SG_TYPE_MON:
@@ -351,25 +353,27 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
         break;
     case SGroup::SG_TYPE_COP: {
         CopolymerGroup& ru = (CopolymerGroup&)sgroup;
-        if (ru.sgroup_subtype != 0)
+        const int subtype = ru.sgroup_subtype.hasValue() ? ru.sgroup_subtype.get() : 0;
+        if (subtype != 0)
         {
             writer.Key("subtype");
-            if (ru.sgroup_subtype == SGroup::SG_SUBTYPE_ALT)
+            if (subtype == SGroup::SG_SUBTYPE_ALT)
             {
                 writer.String("ALT");
             }
-            else if (ru.sgroup_subtype == SGroup::SG_SUBTYPE_RAN)
+            else if (subtype == SGroup::SG_SUBTYPE_RAN)
             {
                 writer.String("RAN");
             }
-            else if (ru.sgroup_subtype == SGroup::SG_SUBTYPE_BLO)
+            else if (subtype == SGroup::SG_SUBTYPE_BLO)
             {
                 writer.String("BLO");
             }
         }
 
         writer.Key("connectivity");
-        switch (ru.connectivity)
+        const int connectivity = ru.connectivity.hasValue() ? ru.connectivity.get() : SGroup::HEAD_TO_TAIL;
+        switch (connectivity)
         {
         case SGroup::HEAD_TO_TAIL:
             writer.String("HT");

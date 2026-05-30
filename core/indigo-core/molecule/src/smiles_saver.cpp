@@ -1860,7 +1860,7 @@ void SmilesSaver::_writeSGroups()
                 if (dsg.description.size() > 0)
                     _output.writeString(dsg.description.ptr());
                 _output.writeChar(':');
-                _output.writeChar(dsg.tag);
+                _output.writeChar(dsg.tag.hasValue() ? dsg.tag.get() : 0);
                 _output.writeChar(':');
                 // No coords output for now
             }
@@ -1875,7 +1875,8 @@ void SmilesSaver::_writeSGroups()
             _output.writeString("n:");
             _writeSGroupAtoms(sg);
             _output.printf(":%s:", ru.label.ptr() ? ru.label.ptr() : "");
-            switch (ru.connectivity)
+            const int connectivity = ru.connectivity.hasValue() ? ru.connectivity.get() : RepeatingUnit::HEAD_TO_TAIL;
+            switch (connectivity)
             {
             case SGroup::HEAD_TO_TAIL:
                 _output.writeString("ht");

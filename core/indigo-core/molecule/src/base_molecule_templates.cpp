@@ -771,8 +771,8 @@ bool BaseMolecule::_replaceExpandedMonomerWithTemplate(int sg_idx, int& tg_id, M
                 if (tform.hasTransformation())
                     setTemplateAtomTransform(ta_idx, tform);
                 setTemplateAtomClass(ta_idx, sa.sa_class.ptr());
-                setTemplateAtomSeqid(ta_idx, sa.seqid);
-                setTemplateAtomDisplayOption(ta_idx, sa.contracted);
+                setTemplateAtomSeqid(ta_idx, sa.seqid.hasValue() ? sa.seqid.get() : -1);
+                setTemplateAtomDisplayOption(ta_idx, sa.contracted.hasValue() ? sa.contracted.get() : DisplayOption::Undefined);
                 setTemplateAtomTemplateIndex(ta_idx, tg_index);
                 added_templates.emplace(template_inchi_id, tg_index);
                 _connectTemplateAtom(sa, ta_idx, remove_atoms);
@@ -977,8 +977,8 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
 
     int idx = addTemplateAtom(tg.tgroup_name.ptr());
     setTemplateAtomClass(idx, tg.tgroup_class.ptr());
-    setTemplateAtomSeqid(idx, su.seqid);
-    setTemplateAtomDisplayOption(idx, su.contracted);
+    setTemplateAtomSeqid(idx, su.seqid.hasValue() ? su.seqid.get() : -1);
+    setTemplateAtomDisplayOption(idx, su.contracted.hasValue() ? su.contracted.get() : DisplayOption::Undefined);
     setTemplateAtomTemplateIndex(idx, tg_idx);
 
     for (int j = 0; j < ap_points_atoms.size(); j++)
