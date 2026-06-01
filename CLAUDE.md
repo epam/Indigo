@@ -11,6 +11,7 @@ Cheminformatics library suite: a C++ core (`core/`, `api/`) with Python/Java/.NE
 | Oracle       | [.claude/claude-docs/oracle.md](.claude/claude-docs/oracle.md)           | Oracle Docker harness, host-venv setup, extproc/install/cx_Oracle gotchas  |
 | Architecture | [.claude/claude-docs/architecture.md](.claude/claude-docs/architecture.md) | Bingo test adapter pattern, project layout                              |
 | Conventions  | [.claude/claude-docs/conventions.md](.claude/claude-docs/conventions.md) | Python style and linting tools                                             |
+| Bingo-Elastic (Python) | [.claude/claude-docs/bingo-elastic-python.md](.claude/claude-docs/bingo-elastic-python.md) | Standalone Python library: API, fingerprint pre-filter + postprocess pattern, own test suite |
 
 ## Key Rules
 

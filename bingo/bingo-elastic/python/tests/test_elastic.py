@@ -405,6 +405,11 @@ def test_range_search(
     ):
         item.ind_number = i  # type: ignore
         elastic_repository_molecule.index_record(item)
+
+    # Force a refresh so the just-indexed docs are visible to the immediate range query
+    elastic_repository_molecule.el_client.indices.refresh(
+        index=IndexName.BINGO_MOLECULE.value
+    )
     result = elastic_repository_molecule.filter(ind_number=RangeQuery(1, 10))
     i = 0
     for _ in result:
@@ -426,6 +431,10 @@ async def test_a_range_search(
         ):
             item.ind_number = i  # type: ignore
             await rep.index_record(item)
+        # Force a refresh so the second `async with` block can see the docs we just indexed
+        await rep.el_client.indices.refresh(
+            index=IndexName.BINGO_MOLECULE.value
+        )
 
     async with a_elastic_repository_molecule() as rep:
         result = rep.filter(ind_number=RangeQuery(1, 10))
@@ -847,3 +856,155 @@ async def test_a_reaction_exact_search(
     assert (
         10 == results["CCCO>>CC=C"]
     ), f"Expected 10 CCCO>>CC=C reactions, got {results['CCCO>>CC=C']}"
+
+
+def _index_tau_record(repo, indigo, smiles):
+    record = IndigoRecordMolecule(
+        indigo_object=indigo.loadMolecule(smiles), tau_search=True
+    )
+    repo.index_record(record)
+    repo.el_client.indices.refresh(index=IndexName.BINGO_MOLECULE.value)
+    return record
+
+
+def test_molecule_tautomer_substructure_search(
+    elastic_repository_molecule_tau: ElasticRepository,
+    indigo_fixture: Indigo,
+):
+    _index_tau_record(
+        elastic_repository_molecule_tau, indigo_fixture, "CC(=O)C"
+    )
+
+    query = indigo_fixture.loadQueryMolecule("CC(O)=C")
+
+    tau_hits = list(
+        elastic_repository_molecule_tau.filter(
+            substructure=query,
+            indigo_session=indigo_fixture,
+            options="TAU R*",
+        )
+    )
+    assert (
+        len(tau_hits) == 1
+    ), f"Expected 1 hit with TAU R*, got {len(tau_hits)}"
+
+    plain_hits = list(
+        elastic_repository_molecule_tau.filter(
+            substructure=query, indigo_session=indigo_fixture
+        )
+    )
+    assert plain_hits == [], (
+        "Expected 0 hits without TAU options — enol query should not "
+        "match keto record via plain sub fingerprint"
+    )
+
+
+def test_molecule_tautomer_exact_search(
+    elastic_repository_molecule_tau: ElasticRepository,
+    indigo_fixture: Indigo,
+):
+    keto_record = _index_tau_record(
+        elastic_repository_molecule_tau, indigo_fixture, "CC(=O)C"
+    )
+
+    matches = list(
+        elastic_repository_molecule_tau.filter(
+            exact=keto_record,
+            indigo_session=indigo_fixture,
+            options="TAU",
+        )
+    )
+    assert len(matches) == 1, f"Expected 1 exact-TAU hit, got {len(matches)}"
+
+    other = IndigoRecordMolecule(
+        indigo_object=indigo_fixture.loadMolecule("CCO"), tau_search=True
+    )
+    misses = list(
+        elastic_repository_molecule_tau.filter(
+            exact=other,
+            indigo_session=indigo_fixture,
+            options="TAU",
+        )
+    )
+    assert misses == [], "Non-tautomer must not match exact + TAU"
+
+
+def test_tautomer_repo_mapping(
+    elastic_repository_molecule_tau: ElasticRepository,
+    elastic_repository_molecule: ElasticRepository,
+    indigo_fixture: Indigo,
+):
+    _index_tau_record(
+        elastic_repository_molecule_tau, indigo_fixture, "CC(=O)C"
+    )
+    mapping = elastic_repository_molecule_tau.el_client.indices.get_mapping(
+        index=IndexName.BINGO_MOLECULE.value
+    )
+    props = mapping[IndexName.BINGO_MOLECULE.value]["mappings"]["properties"]
+    assert "tau_fingerprint" in props
+    assert "tau_fingerprint_len" in props
+
+    # Negative: plain repo never declares tau_fingerprint in build_index_body.
+    plain_body = elastic_repository_molecule.index_body
+    plain_props = plain_body["mappings"]["properties"]
+    assert "tau_fingerprint" not in plain_props
+
+
+def test_tau_query_against_non_tau_repo(
+    elastic_repository_molecule: ElasticRepository,
+    indigo_fixture: Indigo,
+):
+    query = indigo_fixture.loadQueryMolecule("CC(O)=C")
+    with pytest.raises(ValueError, match="tau_search=True"):
+        list(
+            elastic_repository_molecule.filter(
+                substructure=query,
+                indigo_session=indigo_fixture,
+                options="TAU R*",
+            )
+        )
+
+
+@pytest.mark.asyncio
+async def test_a_molecule_tautomer_substructure_search(
+    elastic_repository_molecule_tau: ElasticRepository,
+    a_elastic_repository_molecule_tau: Callable[[], AsyncElasticRepository],
+    indigo_fixture: Indigo,
+):
+    _index_tau_record(
+        elastic_repository_molecule_tau, indigo_fixture, "CC(=O)C"
+    )
+
+    query = indigo_fixture.loadQueryMolecule("CC(O)=C")
+    async with a_elastic_repository_molecule_tau() as rep:
+        tau_hits = [
+            r
+            async for r in rep.filter(
+                substructure=query,
+                indigo_session=indigo_fixture,
+                options="TAU R*",
+            )
+        ]
+    assert len(tau_hits) == 1
+
+
+@pytest.mark.asyncio
+async def test_a_molecule_tautomer_exact_search(
+    elastic_repository_molecule_tau: ElasticRepository,
+    a_elastic_repository_molecule_tau: Callable[[], AsyncElasticRepository],
+    indigo_fixture: Indigo,
+):
+    keto_record = _index_tau_record(
+        elastic_repository_molecule_tau, indigo_fixture, "CC(=O)C"
+    )
+
+    async with a_elastic_repository_molecule_tau() as rep:
+        matches = [
+            r
+            async for r in rep.filter(
+                exact=keto_record,
+                indigo_session=indigo_fixture,
+                options="TAU",
+            )
+        ]
+    assert len(matches) == 1
