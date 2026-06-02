@@ -230,7 +230,7 @@ RedBlackSet<V>& MultiMap<K, V>::_provide_set(const K& k)
     _keys.insert(k);
     _map.insert(k, _sets.size());
     CHECK_KEYS;
-    return _sets.add(new RedBlackSet<V>());
+    return _sets.emplace();
 }
 
 #endif

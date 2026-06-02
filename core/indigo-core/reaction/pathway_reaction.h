@@ -258,7 +258,10 @@ namespace indigo
         {
             std::unique_ptr<BaseMolecule> mol_copy(mol.neu());
             mol_copy->clone(mol);
-            _molecules.add(mol_copy.release());
+            // issue #3691: pass ownership directly through the
+            // owning add() overload — avoids the deprecated add(T*) path that
+            // would emit a C4996 warning on MSVC.
+            _molecules.add(std::move(mol_copy));
             return static_cast<int>(_molecules.size() - 1);
         }
 

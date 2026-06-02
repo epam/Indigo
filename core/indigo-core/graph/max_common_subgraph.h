@@ -187,7 +187,7 @@ namespace indigo
             // adds new RePoint to nodes set
             void addPoint(int id1, int id2)
             {
-                _graph.add(new RePoint(id1, id2));
+                _graph.emplace(id1, id2);
             };
 
             // main method to perform a query
