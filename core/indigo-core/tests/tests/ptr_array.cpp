@@ -275,7 +275,7 @@ TEST_F(PtrArrayTest, Pop_TransfersOwnership_NoDelete)
 TEST_F(PtrArrayTest, Pop_OnEmpty_Throws)
 {
     PtrArray<Tracked> arr;
-    EXPECT_ANY_THROW(arr.pop());
+    EXPECT_ANY_THROW((void)arr.pop());
 }
 
 TEST_F(PtrArrayTest, RemoveLast_DeletesObject)
