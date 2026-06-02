@@ -7,7 +7,7 @@ The standalone Python library at `bingo/bingo-elastic/python/` that indexes Indi
 - `bingo_elastic/elastic.py` — `ElasticRepository` and `AsyncElasticRepository` (parallel sync/async classes, both take a `tau_search: bool` flag), `IndexName` enum (`BINGO_MOLECULE`, `BINGO_REACTION`, `BINGO_CUSTOM`), `build_index_body(tau_search)` builder for the index mapping, and `compile_query` (dispatches a query subject + kwargs to the right query class; reroutes substructure to the tautomer path when `options` contains `TAU`).
 - `bingo_elastic/queries.py` — `CompilableQuery` hierarchy: `SubstructureQuery`, `TautomerSubstructureQuery` (subclass swapping in the `sub-tau` fingerprint and `tau_fingerprint` field), `ExactMatch`, similarity matches (`TanimotoSimilarityMatch`, `EuclidSimilarityMatch`, `TverskySimilarityMatch`), plus `KeywordQuery`, `RangeQuery`, `WildcardQuery` for non-chemical fields. `query_factory` maps kwarg keys (`"substructure"`, `"tautomer"`, `"exact"`, …) to a class.
 - `bingo_elastic/model/record.py` — `IndigoRecord` (abstract), `IndigoRecordMolecule`, `IndigoRecordReaction`, and the `WithIndigoObject` descriptor that extracts fingerprints + `cmf` + `hash` from an `IndigoObject` at construction time. The descriptor also computes the `sub-tau` fingerprint when the record was built with `tau_search=True`.
-- `bingo_elastic/model/helpers.py` — file iterators (`iterate_file`, `load_reaction`).
+- `bingo_elastic/model/helpers.py` — file iterators (`iterate_file` generic dispatcher plus format-specific wrappers `iterate_sdf` / `iterate_smiles` / `iterate_cml`) and single-file loaders (`load_molecule`, `load_reaction`).
 - `tests/` — its own pytest suite with `conftest.py` fixtures that connect to `localhost:9200`.
 
 ## Core flow (the non-obvious bit)

@@ -12,7 +12,7 @@ from bingo_elastic.elastic import (
     ElasticRepository,
     IndexName,
 )
-from bingo_elastic.model.helpers import iterate_file
+from bingo_elastic.model.helpers import iterate_file, iterate_sdf
 from bingo_elastic.model.record import (
     IndigoRecord,
     IndigoRecordMolecule,
@@ -525,6 +525,39 @@ async def test_a_custom_fields(
         async for item in result:
             iupac_inch = item.PUBCHEM_IUPAC_INCHIKEY  # type: ignore
             assert iupac_inch == "RDHQFKQIGNGIED-UHFFFAOYSA-N"
+
+
+def test_sdf_custom_properties(
+    elastic_repository_molecule: ElasticRepository,
+    resource_loader,
+):
+    for rec in iterate_sdf(
+        resource_loader("molecules/rand_queries_small.sdf")
+    ):
+        elastic_repository_molecule.index_record(rec)
+    time.sleep(1)
+    result = elastic_repository_molecule.filter(n="1")
+    hits = [item for item in result]
+    assert len(hits) >= 1
+    assert hits[0].n == "1"  # type: ignore
+
+
+@pytest.mark.asyncio
+async def test_a_sdf_custom_properties(
+    a_elastic_repository_molecule: AsyncRepositoryT,
+    resource_loader,
+):
+    async with a_elastic_repository_molecule() as rep:
+        for rec in iterate_sdf(
+            resource_loader("molecules/rand_queries_small.sdf")
+        ):
+            await rep.index_record(rec)
+
+    async with a_elastic_repository_molecule() as rep:
+        result = rep.filter(n="1")
+        hits = [item async for item in result]
+        assert len(hits) >= 1
+        assert hits[0].n == "1"  # type: ignore
 
 
 def test_search_empty_fingerprint(

@@ -7,6 +7,27 @@ from indigo import Indigo, IndigoException, IndigoObject  # type: ignore
 
 MOL_TYPES = ["#02: <molecule>", "#03: <query reaction>", "#12: <RDFMolecule>"]
 REAC_TYPES = ["#04: <reaction>", "#05: <query reaction>"]
+RESERVED_FIELDS = frozenset(
+    {
+        "cmf",
+        "name",
+        "hash",
+        "has_error",
+        "rawData",
+        "sim_fingerprint",
+        "sim_fingerprint_len",
+        "sub_fingerprint",
+        "sub_fingerprint_len",
+        "tau_fingerprint",
+        "tau_fingerprint_len",
+        "record_id",
+        "error_handler",
+        "skip_errors",
+        "tau_search",
+        "indigo_object",
+        "elastic_response",
+    }
+)
 
 
 # pylint: disable=unused-argument
@@ -31,7 +52,7 @@ class WithElasticResponse:
 
 
 class WithIndigoObject:
-    def __set__(  # pylint: disable=too-many-branches
+    def __set__(  # pylint: disable=too-many-statements, too-many-branches
         self, instance: IndigoRecord, value: IndigoObject
     ) -> None:
         try:
@@ -92,6 +113,15 @@ class WithIndigoObject:
         except IndigoException as err_:
             check_error(instance, err_)
 
+        try:
+            for prop in value_dup.iterateProperties():
+                prop_name = prop.name()
+                if prop_name in RESERVED_FIELDS:
+                    continue
+                setattr(instance, prop_name, prop.rawData())
+        except IndigoException as err_:
+            check_error(instance, err_)
+
 
 class IndigoRecord:
     """
@@ -143,6 +173,7 @@ class IndigoRecord:
         :param skip_errors: if True, all errors will be skipped,
                             no error_handler is required
         :type skip_errors: bool
+        SDF tags are auto populated as attributes
         """
 
         # First check if skip_errors flag passed
