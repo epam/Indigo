@@ -359,7 +359,9 @@ void BingoOracleContext::tautomerLoadRules(OracleEnv& env)
             bingoGetTauCondition(param2, rule->aromaticity2, rule->list2);
 
             tautomer_rules.expand(n);
-            tautomer_rules[n - 1] = rule.release();
+            // PtrArray<T>::operator[] no longer returns T*&; use set() for
+            // sparse slot fill. (milestone-19 / issue #783 — ptr_array rewrite)
+            tautomer_rules.set(n - 1, rule.release());
         } while (statement.fetch());
 }
 

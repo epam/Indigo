@@ -191,7 +191,7 @@ QueryMolecule::Node* QueryMolecule::Node::_nicht(QueryMolecule::Node* node)
 {
     if (node->type == QueryMolecule::OP_NOT)
     {
-        Node* res = (Node*)node->children.pop();
+        Node* res = node->children.pop().release();
         delete node;
         return res;
     }
@@ -1008,14 +1008,18 @@ QueryMolecule::Atom& QueryMolecule::getAtom(int idx)
 QueryMolecule::Atom* QueryMolecule::releaseAtom(int idx)
 {
     updateEditRevision();
-    return _atoms.release(idx);
+    return _atoms.release(idx).release();
 }
 
 void QueryMolecule::resetAtom(int idx, QueryMolecule::Atom* atom)
 {
+    // milestone-19 / issue #783: PtrArray::operator[] no longer returns T*&.
+    // The original code deleted the old slot conditionally then assigned.
+    // reset(idx, atom) collapses both into one well-defined operation; the
+    // identity guard prevents reset() from deleting `atom` if it already
+    // owns it (which would yield a dangling pointer).
     if (atom != _atoms[idx])
-        _atoms.reset(idx);
-    _atoms[idx] = atom;
+        _atoms.reset(idx, atom);
     updateEditRevision();
 }
 
@@ -1061,13 +1065,14 @@ QueryMolecule::Bond& QueryMolecule::getBond(int idx)
 QueryMolecule::Bond* QueryMolecule::releaseBond(int idx)
 {
     updateEditRevision();
-    return _bonds.release(idx);
+    return _bonds.release(idx).release();
 }
 
 void QueryMolecule::resetBond(int idx, QueryMolecule::Bond* bond)
 {
-    _bonds.reset(idx);
-    _bonds[idx] = bond;
+    // milestone-19 / issue #783: PtrArray::operator[] no longer returns T*&.
+    // Collapsed `reset(idx); arr[idx] = bond;` into `reset(idx, bond)`.
+    _bonds.reset(idx, bond);
     _min_h.clear();
     updateEditRevision();
 }

@@ -446,8 +446,9 @@ void Molecule3dConstraints::removeAtoms(const int* mapping)
 
     for (i = 0; i < new_constraints.size(); i++)
     {
-        _constraints.add(new_constraints.at(i));
-        new_constraints.release(i);
+        // issue #3691: PtrArray::release now returns
+        // unique_ptr<T>; pass ownership directly into the owning add().
+        _constraints.add(new_constraints.release(i));
     }
 }
 
