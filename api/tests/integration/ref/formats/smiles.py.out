@@ -80,7 +80,7 @@ SMILES saver: repeating units must have exactly two outgoing bonds, has 1
 daylight:
 CC{-}CC{+n}C
 daylight:
-CCC{-}{+n}C
+CCC{-}{+n}C%91.[*:1]%91
 daylight:
 CCCCC
 daylight:

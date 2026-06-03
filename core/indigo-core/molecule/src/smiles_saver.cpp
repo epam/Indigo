@@ -488,7 +488,7 @@ void SmilesSaver::_saveMolecule()
     QS_DEF(Array<int>, cycle_numbers);
 
     int rsites_closures_starting_num = 91;
-    int rbonds = _countRBonds() + (chemaxon ? _n_attachment_points : 0);
+    int rbonds = _countRBonds() + _n_attachment_points;
 
     if (rbonds > 9)
         rsites_closures_starting_num = 99 - rbonds;
@@ -624,7 +624,7 @@ void SmilesSaver::_saveMolecule()
             const bool write_terminal_attachment_point =
                 chemaxon && _bmol->sgroups.getSGroupCount() > 0 && walk.numBranches(v_idx) == 0 && i == v_seq.size() - 1;
 
-            for (int ap = 1; chemaxon && ap <= _bmol->attachmentPointCount(); ap++)
+            for (int ap = 1; ap <= _bmol->attachmentPointCount(); ap++)
             {
                 int idx = 0, atom_idx;
 
@@ -692,6 +692,17 @@ void SmilesSaver::_saveMolecule()
     }
     if (smarts_mode && v_to_comp_group[i - 1] > 0) // if group set for last fragment - add finish )
         _output.writeChar(')');
+
+    if (!chemaxon && !smarts_mode)
+    {
+        for (i = 0; i < _attachment_indices.size(); i++)
+        {
+            if (_attachment_cycle_numbers[i] < 0)
+                continue;
+            _output.printf(".[*:%d]", _attachment_indices[i]);
+            _writeCycleNumber(_attachment_cycle_numbers[i]);
+        }
+    }
 
     if (write_extra_info && chemaxon && !smarts_mode) // no extended block in SMARTS
     {
