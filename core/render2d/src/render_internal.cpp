@@ -680,10 +680,10 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
         }
     }
 
-    ObjArray<Tree>& children = sgroups.children();
+    PtrArray<Tree>& children = sgroups.children();
     for (int i = 0; i < children.size(); i++)
     {
-        _initSGroups(children[i], parent);
+        _initSGroups(*children[i], parent);
     }
 }
 

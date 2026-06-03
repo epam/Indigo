@@ -20,7 +20,7 @@
 #define __tree_h__
 
 #include "non_copyable.h"
-#include "obj_array.h"
+#include "ptr_array.h"
 
 namespace indigo
 {
@@ -55,12 +55,12 @@ namespace indigo
             insert(nlabel, -1);
         }
 
-        ObjArray<Tree>& children()
+        PtrArray<Tree>& children()
         {
             return _children;
         }
 
-        inline const ObjArray<Tree>& children() const
+        inline const PtrArray<Tree>& children() const
         {
             return _children;
         }
@@ -86,7 +86,7 @@ namespace indigo
             }
             for (auto i = 0; i < _children.size(); i++)
             {
-                Tree& child = _children[i];
+                Tree& child = *_children[i];
                 if (child.label == nlabel)
                 {
                     return &child;
@@ -100,7 +100,7 @@ namespace indigo
             return nullptr;
         }
 
-        ObjArray<Tree> _children;
+        PtrArray<Tree> _children;
     };
 
 } // namespace indigo

@@ -39,14 +39,14 @@ int StringPool::_add(const char* str, int size)
     // Save self into to the pool to check used items
     _pool[idx] = idx;
 
-    if (idx >= _storage.size())
-        _storage.resize(idx + 1);
+    while (_storage.size() <= idx)
+        _storage.add(std::make_unique<Array<char>>());
     if (size == -1 && str == 0)
         throw Error("Internal error: size == -1 && str == 0");
 
     if (size == -1)
         size = static_cast<int>(strlen(str));
-    _storage.at(idx).resize(size + 1);
+    _storage.at(idx)->resize(size + 1);
     if (str != 0 && size != 0)
         memcpy(at(idx), str, size);
     at(idx)[size] = 0;
@@ -56,7 +56,7 @@ int StringPool::_add(const char* str, int size)
 void StringPool::set(int idx, const char* str)
 {
     int size = static_cast<int>(strlen(str));
-    _storage.at(idx).resize(size + 1);
+    _storage.at(idx)->resize(size + 1);
     if (str != 0 && size != 0)
         memcpy(at(idx), str, size);
     at(idx)[size] = 0;
@@ -84,12 +84,12 @@ void StringPool::remove(int idx)
 
 char* StringPool::at(int idx)
 {
-    return _storage[_pool[idx]].ptr();
+    return _storage[_pool[idx]]->ptr();
 }
 
 const char* StringPool::at(int idx) const
 {
-    return _storage[_pool[idx]].ptr();
+    return _storage[_pool[idx]]->ptr();
 }
 
 int StringPool::size() const

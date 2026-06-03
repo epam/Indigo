@@ -91,7 +91,7 @@ int ProfilingSystem::getNameIndex(const char* name, bool add_if_not_exists)
 {
     for (int i = 0; i < _names.size(); i++)
     {
-        if (strcmp(_names.at(i).ptr(), name) == 0)
+        if (strcmp(_names.at(i)->ptr(), name) == 0)
         {
             return i;
         }
@@ -109,7 +109,7 @@ int ProfilingSystem::getNameIndex(const char* name, bool add_if_not_exists)
 void ProfilingSystem::addTimer(const int name_index, const qword dt)
 {
     _ensureRecordExistanceLocked(name_index);
-    Record& rec = _records[name_index];
+    Record& rec = *_records[name_index];
     rec.type = Record::RecordType::TYPE_TIMER;
     rec.current.add(dt);
     rec.total.add(dt);
@@ -118,7 +118,7 @@ void ProfilingSystem::addTimer(const int name_index, const qword dt)
 void ProfilingSystem::addCounter(const int name_index, const int value)
 {
     _ensureRecordExistanceLocked(name_index);
-    Record& rec = _records[name_index];
+    Record& rec = *_records[name_index];
     rec.type = Record::RecordType::TYPE_COUNTER;
     rec.current.add(value);
     rec.total.add(value);
@@ -128,14 +128,14 @@ void ProfilingSystem::reset(const bool all)
 {
     for (int i = 0; i < _records.size(); i++)
     {
-        _records[i].reset(all);
+        _records[i]->reset(all);
     }
 }
 
 int ProfilingSystem::_recordsCmp(const int idx1, const int idx2, void* context)
 {
     auto* this_ = static_cast<ProfilingSystem*>(context);
-    return strcmp(this_->_names.at(idx1).ptr(), this_->_names.at(idx2).ptr());
+    return strcmp(this_->_names.at(idx1)->ptr(), this_->_names.at(idx2)->ptr());
 }
 
 void ProfilingSystem::getStatistics(Output& output, const bool get_all)
@@ -156,9 +156,9 @@ void ProfilingSystem::getStatistics(Output& output, const bool get_all)
             continue;
         }
 
-        if (_names.at(i).size() > max_len)
+        if (_names.at(i)->size() > max_len)
         {
-            max_len = _names.at(i).size();
+            max_len = _names.at(i)->size();
         }
     }
 
@@ -178,11 +178,11 @@ void ProfilingSystem::getStatistics(Output& output, const bool get_all)
         int idx = _sorted_records[i];
         if (!_hasLabelIndex(idx))
             continue;
-        Record& rec = _records[idx];
+        Record& rec = *_records[idx];
         if (!get_all && rec.current.count == 0)
             continue;
 
-        table_output.printf("%s\t", _names.at(idx).ptr());
+        table_output.printf("%s\t", _names.at(idx)->ptr());
 
         if (rec.type == Record::RecordType::TYPE_TIMER)
         {
@@ -244,7 +244,7 @@ bool ProfilingSystem::_hasLabelIndex(const int name_index) const
     {
         return false;
     }
-    return _records[name_index].total.count > 0;
+    return _records[name_index]->total.count > 0;
 }
 
 bool ProfilingSystem::hasLabel(const char* name)
@@ -272,9 +272,9 @@ float ProfilingSystem::getLabelExecTime(const char* name, const bool total)
 
     if (total)
     {
-        return static_cast<float>(_records[idx].total.value) / 1e9f;
+        return static_cast<float>(_records[idx]->total.value) / 1e9f;
     }
-    return static_cast<float>(_records[idx].current.value) / 1e9f;
+    return static_cast<float>(_records[idx]->current.value) / 1e9f;
 }
 
 qword ProfilingSystem::getLabelValue(const char* name, const bool total)
@@ -283,9 +283,9 @@ qword ProfilingSystem::getLabelValue(const char* name, const bool total)
     _ensureRecordExistanceLocked(idx);
     if (total)
     {
-        return _records[idx].total.value;
+        return _records[idx]->total.value;
     }
-    return _records[idx].current.value;
+    return _records[idx]->current.value;
 }
 
 qword ProfilingSystem::getLabelCallCount(const char* name, const bool total)
@@ -294,9 +294,9 @@ qword ProfilingSystem::getLabelCallCount(const char* name, const bool total)
     _ensureRecordExistanceLocked(idx);
     if (total)
     {
-        return _records[idx].total.count;
+        return _records[idx]->total.count;
     }
-    return _records[idx].current.count;
+    return _records[idx]->current.count;
 }
 
 //

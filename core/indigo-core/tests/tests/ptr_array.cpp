@@ -477,14 +477,122 @@ TEST_F(PtrArrayTest, Release_NullSlot_ReturnsNullptr)
 }
 
 // =====================================================================
-// qsort: intentionally NOT tested.
-//
-// PtrArray::qsort(cmp, context) declares `const void* context` and forwards
-// it to Array<T*>::qsort which expects `void* context`. This produces a
-// hard compile error at instantiation time (function-pointer signature
-// mismatch). No call site in the codebase instantiates it — it is dead
-// code. After Phase 1 refactor we will simply drop the method.
+// reserve / qsort: ObjArray-compatible aliases added in PR-2 (#3703) so
+// ObjArray<T> client call sites migrate to PtrArray<T> mechanically.
 // =====================================================================
+
+namespace
+{
+    // Free comparators matching the `int(*)(T&, T&, void*)` contract that the
+    // legacy ObjArray<T>::qsort call sites already use.
+    int cmp_tracked_asc(Tracked& a, Tracked& b, void*)
+    {
+        return a.id - b.id;
+    }
+    int cmp_tracked_desc(Tracked& a, Tracked& b, void*)
+    {
+        return b.id - a.id;
+    }
+    // Context-driven direction: ctx points at an int (+1 asc, -1 desc).
+    int cmp_tracked_ctx(Tracked& a, Tracked& b, void* ctx)
+    {
+        return *static_cast<const int*>(ctx) * (a.id - b.id);
+    }
+} // namespace
+
+TEST_F(PtrArrayTest, Reserve_DoesNotChangeSizeOrElements)
+{
+    PtrArray<Tracked> arr;
+    arr.emplace(1);
+    arr.emplace(2);
+    arr.reserve(128);
+    EXPECT_EQ(2, arr.size()) << "reserve must not change size";
+    EXPECT_EQ(1, arr[0]->id);
+    EXPECT_EQ(2, arr[1]->id);
+    EXPECT_EQ(2, Tracked::s_live) << "reserve must not construct pointees";
+}
+
+TEST_F(PtrArrayTest, Reserve_NonPositive_IsNoOp)
+{
+    PtrArray<Tracked> arr;
+    arr.emplace(5);
+    arr.reserve(0);
+    arr.reserve(-10);
+    EXPECT_EQ(1, arr.size());
+    EXPECT_EQ(5, arr[0]->id);
+    EXPECT_EQ(1, Tracked::s_live);
+}
+
+TEST_F(PtrArrayTest, Qsort_SortsAscending)
+{
+    PtrArray<Tracked> arr;
+    arr.emplace(3);
+    arr.emplace(1);
+    arr.emplace(2);
+    arr.qsort(cmp_tracked_asc, nullptr);
+    ASSERT_EQ(3, arr.size());
+    EXPECT_EQ(1, arr[0]->id);
+    EXPECT_EQ(2, arr[1]->id);
+    EXPECT_EQ(3, arr[2]->id);
+    EXPECT_EQ(3, Tracked::s_live) << "qsort must not create or destroy pointees";
+}
+
+TEST_F(PtrArrayTest, Qsort_SortsDescending)
+{
+    PtrArray<Tracked> arr;
+    arr.emplace(1);
+    arr.emplace(3);
+    arr.emplace(2);
+    arr.qsort(cmp_tracked_desc, nullptr);
+    ASSERT_EQ(3, arr.size());
+    EXPECT_EQ(3, arr[0]->id);
+    EXPECT_EQ(2, arr[1]->id);
+    EXPECT_EQ(1, arr[2]->id);
+}
+
+TEST_F(PtrArrayTest, Qsort_PassesContextToComparator)
+{
+    PtrArray<Tracked> arr;
+    arr.emplace(2);
+    arr.emplace(1);
+    arr.emplace(3);
+    int desc = -1;
+    arr.qsort(cmp_tracked_ctx, &desc);
+    EXPECT_EQ(3, arr[0]->id);
+    EXPECT_EQ(2, arr[1]->id);
+    EXPECT_EQ(1, arr[2]->id);
+    int asc = 1;
+    arr.qsort(cmp_tracked_ctx, &asc);
+    EXPECT_EQ(1, arr[0]->id);
+    EXPECT_EQ(2, arr[1]->id);
+    EXPECT_EQ(3, arr[2]->id);
+}
+
+TEST_F(PtrArrayTest, Qsort_EmptyAndSingle_AreNoOps)
+{
+    PtrArray<Tracked> empty;
+    empty.qsort(cmp_tracked_asc, nullptr);
+    EXPECT_EQ(0, empty.size());
+
+    PtrArray<Tracked> single;
+    single.emplace(42);
+    single.qsort(cmp_tracked_asc, nullptr);
+    ASSERT_EQ(1, single.size());
+    EXPECT_EQ(42, single[0]->id);
+}
+
+TEST_F(PtrArrayTest, Qsort_PreservesOwnershipNoLeak)
+{
+    PtrArray<Tracked> arr;
+    for (int i = 9; i >= 0; --i)
+        arr.emplace(i);
+    EXPECT_EQ(10, Tracked::s_live);
+    arr.qsort(cmp_tracked_asc, nullptr);
+    EXPECT_EQ(10, arr.size());
+    EXPECT_EQ(10, Tracked::s_live);
+    for (int i = 0; i < 10; ++i)
+        EXPECT_EQ(i, arr[i]->id);
+}
 
 // =====================================================================
 // ptr(): intentionally NOT tested.

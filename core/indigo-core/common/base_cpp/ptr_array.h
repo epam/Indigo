@@ -19,6 +19,7 @@
 #ifndef __ptr_array__
 #define __ptr_array__
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -44,6 +45,9 @@
 //   arr.reset(i, new T(x))    →  arr.reset(i, std::make_unique<T>(x))
 //   T* p = arr.pop()          →  auto p = arr.pop()   (std::unique_ptr<T>)
 // NEW in PR-1: arr.release(i) — transfers ownership of slot i out as unique_ptr.
+//
+// PR-2 (issue #3703) adds reserve()/qsort() as ObjArray-compatible aliases so
+// ObjArray<T> client call sites migrate to PtrArray<T> mechanically.
 //
 // Ownership model: PtrArray owns the pointees. `add()`, `set()`, `reset(idx, p)`
 // take ownership of the raw pointer / unique_ptr they receive. `release(idx)`,
@@ -271,6 +275,34 @@ namespace indigo
         {
             _check_bounds(idx, "at");
             return _items[idx].get();
+        }
+
+        // ----------------------------------------------------------------
+        // reserve() — ObjArray-compatible alias for milestone-19 (#3703)
+        // ObjArray<T>::reserve call sites. Pre-allocates capacity for the
+        // unique_ptr slots; does not construct any pointees and does not
+        // change size(). No-op for non-positive `to_reserve`.
+        // ----------------------------------------------------------------
+        void reserve(int to_reserve)
+        {
+            if (to_reserve > 0)
+                _items.reserve(static_cast<std::size_t>(to_reserve));
+        }
+
+        // ----------------------------------------------------------------
+        // qsort() — ObjArray-compatible sort for milestone-19 (#3703)
+        // ObjArray<T>::qsort call sites. Sorts the owned pointees in place
+        // using the same `int cmp(T&, T&, void*)` contract as the legacy
+        // container (negative => first orders before second). The comparator
+        // receives dereferenced pointees, so existing comparators that take
+        // `T&`/`const T&` work unchanged. Preserves ownership (only the
+        // unique_ptr slots are permuted). Null slots are not expected here —
+        // ObjArray never produced them — and would dereference in `cmp`.
+        // ----------------------------------------------------------------
+        template <typename T1, typename T2>
+        void qsort(int (*cmp)(T1, T2, void*), void* context)
+        {
+            std::sort(_items.begin(), _items.end(), [cmp, context](const std::unique_ptr<T>& a, const std::unique_ptr<T>& b) { return cmp(*a, *b, context) < 0; });
         }
 
     private:
