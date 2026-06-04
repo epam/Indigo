@@ -4,10 +4,10 @@ The standalone Python library at `bingo/bingo-elastic/python/` that indexes Indi
 
 ## Module map
 
-- `bingo_elastic/elastic.py` — `ElasticRepository` and `AsyncElasticRepository` (parallel sync/async classes, both take a `tau_search: bool` flag), `IndexName` enum (`BINGO_MOLECULE`, `BINGO_REACTION`, `BINGO_CUSTOM`), `build_index_body(tau_search)` builder for the index mapping, and `compile_query` (dispatches a query subject + kwargs to the right query class; reroutes substructure to the tautomer path when `options` contains `TAU`).
+- `bingo_elastic/elastic.py` — `ElasticRepository` and `AsyncElasticRepository` (parallel sync/async classes, both take `tau_search: bool` and `custom_properties: CustomPropertiesMapping` flags), `IndexName` enum (`BINGO_MOLECULE`, `BINGO_REACTION`, `BINGO_CUSTOM`), `build_index_body(tau_search, custom_properties)` builder for the index mapping (merges `custom_properties` into `mappings.properties` and rejects collisions with `RESERVED_FIELDS`), and `compile_query` (dispatches a query subject + kwargs to the right query class; reroutes substructure to the tautomer path when `options` contains `TAU`). `CustomPropertiesMapping = Dict[str, Dict[str, Any]]`: keys are field names, values are ES property-mapping fragments (e.g. `{"n": {"type": "integer"}}`).
 - `bingo_elastic/queries.py` — `CompilableQuery` hierarchy: `SubstructureQuery`, `TautomerSubstructureQuery` (subclass swapping in the `sub-tau` fingerprint and `tau_fingerprint` field), `ExactMatch`, similarity matches (`TanimotoSimilarityMatch`, `EuclidSimilarityMatch`, `TverskySimilarityMatch`), plus `KeywordQuery`, `RangeQuery`, `WildcardQuery` for non-chemical fields. `query_factory` maps kwarg keys (`"substructure"`, `"tautomer"`, `"exact"`, …) to a class.
-- `bingo_elastic/model/record.py` — `IndigoRecord` (abstract), `IndigoRecordMolecule`, `IndigoRecordReaction`, and the `WithIndigoObject` descriptor that extracts fingerprints + `cmf` + `hash` from an `IndigoObject` at construction time. The descriptor also computes the `sub-tau` fingerprint when the record was built with `tau_search=True`.
-- `bingo_elastic/model/helpers.py` — file iterators (`iterate_file` generic dispatcher plus format-specific wrappers `iterate_sdf` / `iterate_smiles` / `iterate_cml`) and single-file loaders (`load_molecule`, `load_reaction`).
+- `bingo_elastic/model/record.py` — `IndigoRecord` (abstract), `IndigoRecordMolecule`, `IndigoRecordReaction`, and the `WithIndigoObject` descriptor that extracts fingerprints + `cmf` + `hash` from an `IndigoObject` at construction time. The descriptor also computes the `sub-tau` fingerprint when the record was built with `tau_search=True`, and copies non-reserved properties from `iterateProperties()` (SDF tags) onto the record. `IndigoRecord(custom_properties=…)` accepts an iterable of property names used as a per-record allowlist; `RESERVED_FIELDS` lists names the extractor never overwrites (`cmf`, `hash`, fingerprints, etc.).
+- `bingo_elastic/model/helpers.py` — file iterators (`iterate_file` generic dispatcher plus format-specific wrappers `iterate_sdf` / `iterate_smiles` / `iterate_cml`) and single-file loaders (`load_molecule`, `load_reaction`). All iterators accept `custom_properties=` (an iterable of allowed property names) and forward it to the records they yield — pass the keys of the repo's `custom_properties` mapping so extraction and the ES mapping stay aligned.
 - `tests/` — its own pytest suite with `conftest.py` fixtures that connect to `localhost:9200`.
 
 ## Core flow (the non-obvious bit)
@@ -29,6 +29,21 @@ The tautomer path is opt-in on **both sides**: `tau_search=True` on the record g
 
 Side effect to remember: fingerprints are computed at **record construction time** in the `WithIndigoObject` descriptor, not at `index_records()` time. By the time records reach the repo, the fingerprint is already frozen on the instance.
 
+## Custom SDF properties
+
+SDF `> <TAG>` lines (and any kwargs passed to `IndigoRecord(**kwargs)`) become record attributes via `WithIndigoObject` calling `iterateProperties()`. Tag capture is **opt-in**: with no `custom_properties` configured, `WithIndigoObject` skips the `iterateProperties()` loop entirely, so no SDF tags are extracted or indexed. To capture tags, pass a `custom_properties` mapping to the repo **and** the matching keys to the iterator:
+
+```python
+mapping = {"n": {"type": "integer"}, "CAS": {"type": "keyword"}}
+repo = ElasticRepository(IndexName.BINGO_MOLECULE, custom_properties=mapping)
+for rec in iterate_sdf("file.sdf", custom_properties=mapping):  # keys-only OK too
+    repo.index_record(rec)
+```
+
+The same dict drives both consumers: keys are the extraction allowlist, values are the ES `properties` fragments. `build_index_body` raises `ValueError` if a key clashes with `RESERVED_FIELDS`. Leaving `custom_properties=None` (default on both sides) means no SDF tags are extracted or indexed — only fingerprints, `cmf`, `name`, `hash`, and `has_error`. Forgetting to pass `custom_properties` to the iterator side silently drops every tag even when the repo has a typed mapping declared.
+
+Caveat: ES mappings are immutable after first index creation. Changing `custom_properties` later requires `ElasticRepository.delete_all_records()` first — `create_index` swallows `resource_already_exists_exception` and keeps the old mapping otherwise.
+
 ## Tests
 
 Run from `bingo/bingo-elastic/python/`:
@@ -45,7 +60,7 @@ For spinning up Elasticsearch see [claude-docs/testing.md](testing.md).
 
 ## Sync/Async parity
 
-`ElasticRepository` and `AsyncElasticRepository` are independent classes — there is no shared base. Any signature or behavior change on one must be mirrored on the other (constructors, `filter`, `index_records`, `index_record`). Tests pair every sync `test_*` with an async `test_a_*`; follow that pattern.
+`ElasticRepository` and `AsyncElasticRepository` are independent classes — there is no shared base. Any signature or behavior change on one must be mirrored on the other (constructors — including `tau_search` and `custom_properties`, `filter`, `index_records`, `index_record`). Tests pair every sync `test_*` with an async `test_a_*`; follow that pattern. Note `delete_all_records` currently exists only on the sync class; the autouse `clear_index` fixture in `tests/conftest.py` uses it to wipe both indices before every test.
 
 ## Java sibling
 

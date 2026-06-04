@@ -527,43 +527,110 @@ async def test_a_custom_fields(
             assert iupac_inch == "RDHQFKQIGNGIED-UHFFFAOYSA-N"
 
 
-def test_sdf_custom_properties(
-    elastic_repository_molecule: ElasticRepository,
-    resource_loader,
-):
+def test_sdf_custom_properties(resource_loader):
+    custom_properties = {"n": {"type": "integer"}}
+    repo = ElasticRepository(
+        IndexName.BINGO_MOLECULE,
+        host="127.0.0.1",
+        port=9200,
+        custom_properties=custom_properties,
+    )
+    repo.delete_all_records()
     for rec in iterate_sdf(
-        resource_loader("molecules/rand_queries_small.sdf")
+        resource_loader("molecules/rand_queries_small.sdf"),
+        custom_properties=custom_properties,
     ):
-        elastic_repository_molecule.index_record(rec)
+        repo.index_record(rec)
     time.sleep(1)
-    result = elastic_repository_molecule.filter(n="1")
-    hits = [item for item in result]
+
+    hits = list(repo.filter(n="1"))
     assert len(hits) >= 1
-    assert hits[0].n == "1"  # type: ignore
+    assert hits[0].n == "1"
+
+    # The integer mapping enables a numeric range query that would silently
+    # misbehave if `n` were left as a dynamically mapped text field.
+    range_hits = list(repo.filter(n=RangeQuery(2, 4)))
+    assert {hit.n for hit in range_hits} == {"2", "3", "4"}  # type: ignore
 
 
 @pytest.mark.asyncio
-async def test_a_sdf_custom_properties(
-    a_elastic_repository_molecule: AsyncRepositoryT,
-    resource_loader,
-):
-    async with a_elastic_repository_molecule() as rep:
+async def test_a_sdf_custom_properties(resource_loader):
+    custom_properties = {"n": {"type": "integer"}}
+
+    def make_repo():
+        return AsyncElasticRepository(
+            IndexName.BINGO_MOLECULE,
+            host="127.0.0.1",
+            port=9200,
+            custom_properties=custom_properties,
+        )
+
+    async with make_repo() as rep:
         for rec in iterate_sdf(
-            resource_loader("molecules/rand_queries_small.sdf")
+            resource_loader("molecules/rand_queries_small.sdf"),
+            custom_properties=custom_properties,
         ):
             await rep.index_record(rec)
+        await rep.el_client.indices.refresh(
+            index=IndexName.BINGO_MOLECULE.value
+        )
 
-    async with a_elastic_repository_molecule() as rep:
+    async with make_repo() as rep:
         result = rep.filter(n="1")
         hits = [item async for item in result]
         assert len(hits) >= 1
-        assert hits[0].n == "1"  # type: ignore
+        assert hits[0].n == "1"
+
+    async with make_repo() as rep:
+        result = rep.filter(n=RangeQuery(2, 4))
+        range_hits = [item async for item in result]
+        assert {hit.n for hit in range_hits} == {"2", "3", "4"}  # type: ignore
+
+
+def test_sdf_no_custom_properties_default(resource_loader):
+    repo = ElasticRepository(
+        IndexName.BINGO_MOLECULE, host="127.0.0.1", port=9200
+    )
+    repo.delete_all_records()
+    records = list(
+        iterate_sdf(resource_loader("molecules/rand_queries_small.sdf"))
+    )
+    for rec in records:
+        repo.index_record(rec)
+    time.sleep(1)
+
+    assert not any(hasattr(rec, "n") for rec in records)
+    assert list(repo.filter(n="1")) == []
+
+
+@pytest.mark.asyncio
+async def test_a_sdf_no_custom_properties_default(resource_loader):
+    def make_repo():
+        return AsyncElasticRepository(
+            IndexName.BINGO_MOLECULE, host="127.0.0.1", port=9200
+        )
+
+    records = list(
+        iterate_sdf(resource_loader("molecules/rand_queries_small.sdf"))
+    )
+    async with make_repo() as rep:
+        for rec in records:
+            await rep.index_record(rec)
+        await rep.el_client.indices.refresh(
+            index=IndexName.BINGO_MOLECULE.value
+        )
+
+    assert not any(hasattr(rec, "n") for rec in records)
+
+    async with make_repo() as rep:
+        result = rep.filter(n="1")
+        hits = [item async for item in result]
+        assert hits == []
 
 
 def test_search_empty_fingerprint(
     elastic_repository_molecule: ElasticRepository,
     indigo_fixture: Indigo,
-    resource_loader,
 ):
     for smile in ["[H][H]", "[H][F]"]:
         rec = IndigoRecordMolecule(
@@ -591,7 +658,6 @@ def test_search_empty_fingerprint(
 async def test_a_search_empty_fingerprint(
     a_elastic_repository_molecule: AsyncRepositoryT,
     indigo_fixture: Indigo,
-    resource_loader,
 ):
     async with a_elastic_repository_molecule() as rep:
         for smile in ["[H][H]", "[H][F]"]:

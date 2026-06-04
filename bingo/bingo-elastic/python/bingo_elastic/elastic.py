@@ -25,6 +25,7 @@ except ImportError:
 from indigo import Indigo, IndigoObject  # type: ignore
 
 from bingo_elastic.model.record import (
+    RESERVED_FIELDS,
     IndigoRecord,
     IndigoRecordMolecule,
     IndigoRecordReaction,
@@ -33,6 +34,9 @@ from bingo_elastic.queries import BaseMatch, query_factory
 from bingo_elastic.utils import PostprocessType
 
 ElasticRepositoryT = TypeVar("ElasticRepositoryT")
+
+# Mapping of custom (e.g. SDF tag) field name -> ES property mapping fragment
+CustomPropertiesMapping = Dict[str, Dict[str, Any]]
 
 MAX_ALLOWED_SIZE = 1000
 
@@ -110,7 +114,10 @@ def get_client(
     return client_type(**arguments)  # type: ignore
 
 
-def build_index_body(tau_search: bool = False) -> Dict:
+def build_index_body(
+    tau_search: bool = False,
+    custom_properties: Optional[CustomPropertiesMapping] = None,
+) -> Dict:
     index_body = {
         "mappings": {
             "properties": {
@@ -141,6 +148,15 @@ def build_index_body(tau_search: bool = False) -> Dict:
                 "tau_fingerprint_len": {"type": "integer"},
             }
         )
+
+    if custom_properties:
+        collisions = set(custom_properties).intersection(RESERVED_FIELDS)
+        if collisions:
+            raise ValueError(
+                "custom_properties uses reserved field name(s): "
+                f"{sorted(collisions)}"
+            )
+        index_body["mappings"]["properties"].update(custom_properties)
 
     return index_body
 
@@ -216,7 +232,7 @@ def response_to_records(
 
 
 class AsyncElasticRepository:
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         index_name: IndexName,
         *,
@@ -228,6 +244,7 @@ class AsyncElasticRepository:
         request_timeout: int = 60,
         retry_on_timeout: bool = True,
         tau_search: bool = False,
+        custom_properties: Optional[CustomPropertiesMapping] = None,
     ) -> None:
         """
         :param index_name: use function  get_index_name for setting this argument
@@ -241,10 +258,18 @@ class AsyncElasticRepository:
         :param tau_search: declare tau_fingerprint in the index mapping so
             tautomer-aware substructure search is available via
             filter(..., options="TAU ...")
+        :param custom_properties: ES mapping fragments for caller-defined
+            fields (SDF tags or kwargs passed to IndigoRecord). Keys are field
+            names; values are ES property mappings, e.g.
+            {"MolecularWeight": {"type": "float"}, "CAS": {"type": "keyword"}}.
+            The same keys must also be passed as ``custom_properties=`` to
+            iterate_sdf/iterate_file — without that, no SDF tags are
+            extracted and the typed mapping has nothing to populate.
         """
         self.index_name = index_name.value
         self.tau_search = tau_search
-        self.index_body = build_index_body(tau_search)
+        self.custom_properties = custom_properties
+        self.index_body = build_index_body(tau_search, custom_properties)
 
         self.el_client = get_client(
             client_type=AsyncElasticsearch,
@@ -394,7 +419,7 @@ class AsyncElasticRepository:
 
 
 class ElasticRepository:
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         index_name: IndexName,
         *,
@@ -406,6 +431,7 @@ class ElasticRepository:
         request_timeout: int = 60,
         retry_on_timeout: bool = True,
         tau_search: bool = False,
+        custom_properties: Optional[CustomPropertiesMapping] = None,
     ) -> None:
         """
         :param index_name: use function  get_index_name for setting this argument
@@ -419,10 +445,18 @@ class ElasticRepository:
         :param tau_search: declare tau_fingerprint in the index mapping so
             tautomer-aware substructure search is available via
             filter(..., options="TAU ...")
+        :param custom_properties: ES mapping fragments for caller-defined
+            fields (SDF tags or kwargs passed to IndigoRecord). Keys are field
+            names; values are ES property mappings, e.g.
+            {"MolecularWeight": {"type": "float"}, "CAS": {"type": "keyword"}}.
+            The same keys must also be passed as ``custom_properties=`` to
+            iterate_sdf/iterate_file — without that, no SDF tags are
+            extracted and the typed mapping has nothing to populate.
         """
         self.index_name = index_name.value
         self.tau_search = tau_search
-        self.index_body = build_index_body(tau_search)
+        self.custom_properties = custom_properties
+        self.index_body = build_index_body(tau_search, custom_properties)
 
         self.el_client = get_client(
             client_type=Elasticsearch,
