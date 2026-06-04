@@ -19,8 +19,8 @@
 #include "molecule/cml_saver.h"
 
 #include <cfloat>
-#include <vector>
 #include <tinyxml2.h>
+#include <vector>
 
 #include "base_cpp/locale_guard.h"
 #include "base_cpp/output.h"
