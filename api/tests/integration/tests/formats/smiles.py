@@ -134,6 +134,16 @@ for sm in mols_smiles:
     print("chemaxon:")
     print(indigo.loadMolecule(sm).smiles())
 
+print("*** S-Group AP closure roundtrip ***")
+sgroup_ap_closure = "CCCC* |$;;;;_AP1$,Sg:n:2:2&#44;6-7:ht|"
+indigo.setOption("smiles-saving-format", "chemaxon")
+print("chemaxon roundtrip:")
+print(indigo.loadMolecule(sgroup_ap_closure).smiles())
+indigo.setOption("smiles-saving-format", "daylight")
+print("daylight closure:")
+print(indigo.loadMolecule(sgroup_ap_closure).smiles())
+indigo.setOption("smiles-saving-format", "chemaxon")
+
 print("*** Atropisomers ***")
 mols_smiles = [
     "C1C(O)=C(C2C=CC(C)=CC=2N)C(C)=CC=1 |o1:3,r,wU:3.12|",

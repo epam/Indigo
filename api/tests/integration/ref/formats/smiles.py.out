@@ -103,6 +103,11 @@ chemaxon:
 CCCCC |SgD:1,2,3:name&#44;&#59;&#58;&#124;&#123;&#125;&#36;field:data&#44;&#59;&#58;&#124;&#123;&#125;&#36;value:query&#44;&#59;&#58;&#124;&#123;&#125;&#36;op:unit&#44;&#59;&#58;&#124;&#123;&#125;&#36;text: :|
 chemaxon:
 CCCCC |Sg:n:1,2,3:sub&#44;&#59;&#58;&#124;&#123;&#125;&#36;script:hh|
+*** S-Group AP closure roundtrip ***
+chemaxon roundtrip:
+CCCC* |$;;;;_AP1$,Sg:n:2:2&#44;6-7:ht|
+daylight closure:
+CCC{-}{+n}C%91.[*:1]%91
 *** Atropisomers ***
 atropisomer:
 C1=CC=C(C)C(C2=C(N)C=C(C)C=C2)=C1O |o1:5,r,wU:5.4|

@@ -633,6 +633,8 @@ void SmilesSaver::_saveMolecule()
                     {
                         if (write_terminal_attachment_point)
                         {
+                            // Restore terminal '*' used by CXSMILES S-group AP roundtrip
+                            // instead of expanding it to a separate .[*:n] component.
                             _output.writeChar('*');
                             _attachment_indices.push(ap);
                             _attachment_cycle_numbers.push(-1);
