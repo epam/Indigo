@@ -484,26 +484,50 @@ M  END
     EXPECT_LT(second_root_pos, child_pos);
 }
 
-TEST_F(IndigoCoreFormatsTest, mol_loader_sgroups_parent_cycle)
+TEST_F(IndigoCoreFormatsTest, mol_sgroups_order_by_depth_across_hierarchies)
 {
     Molecule mol;
 
     const char* molfile = R"(Nested SGroups
-  Indigo    052826
+  Indigo    060326
 
   0  0  0     0  0            999 V3000
 M  V30 BEGIN CTAB
-M  V30 COUNTS 2 1 2 0 0
+M  V30 COUNTS 10 9 10 0 0
 M  V30 BEGIN ATOM
 M  V30 1 C 0 0 0 0
 M  V30 2 C 1 0 0 0
+M  V30 3 C 2 0 0 0
+M  V30 4 C 3 0 0 0
+M  V30 5 C 4 0 0 0
+M  V30 6 C 5 0 0 0
+M  V30 7 C 6 0 0 0
+M  V30 8 C 7 0 0 0
+M  V30 9 C 8 0 0 0
+M  V30 10 C 9 0 0 0
 M  V30 END ATOM
 M  V30 BEGIN BOND
 M  V30 1 1 1 2
+M  V30 2 1 2 3
+M  V30 3 1 3 4
+M  V30 4 1 4 5
+M  V30 5 1 5 6
+M  V30 6 1 6 7
+M  V30 7 1 7 8
+M  V30 8 1 8 9
+M  V30 9 1 9 10
 M  V30 END BOND
 M  V30 BEGIN SGROUP
-M  V30 1 GEN 0 ATOMS=(1 1) PARENT=2
-M  V30 2 GEN 0 ATOMS=(1 2) PARENT=1
+M  V30 13 GEN 0 ATOMS=(1 4) PARENT=12
+M  V30 20 GEN 0 ATOMS=(1 5)
+M  V30 11 GEN 0 ATOMS=(1 2) PARENT=10
+M  V30 30 GEN 0 ATOMS=(1 7)
+M  V30 10 GEN 0 ATOMS=(1 1)
+M  V30 32 GEN 0 ATOMS=(1 9) PARENT=31
+M  V30 21 GEN 0 ATOMS=(1 6) PARENT=20
+M  V30 31 GEN 0 ATOMS=(1 8) PARENT=30
+M  V30 40 GEN 0 ATOMS=(1 10)
+M  V30 12 GEN 0 ATOMS=(1 3) PARENT=11
 M  V30 END SGROUP
 M  V30 END CTAB
 M  END
@@ -511,7 +535,20 @@ M  END
 
     BufferScanner scanner(molfile);
     MolfileLoader loader(scanner);
-    EXPECT_THROW(loader.loadMolecule(mol), Exception);
+    loader.loadMolecule(mol);
+
+    auto infos = mol.sgroups.getOrderedSGroups();
+
+    const std::vector<int> expected_original_indexes = {20, 30, 10, 40, 11, 21, 31, 32, 12, 13};
+    const std::vector<int> expected_new_parent_indexes = {0, 0, 0, 0, 3, 1, 2, 7, 5, 9};
+    ASSERT_EQ(infos.size(), expected_original_indexes.size());
+
+    for (int i = 0; i < static_cast<int>(infos.size()); i++)
+    {
+        EXPECT_EQ(infos[i].sgroup.index, expected_original_indexes[i]);
+        EXPECT_EQ(infos[i].new_index, i + 1);
+        EXPECT_EQ(infos[i].new_parent_index, expected_new_parent_indexes[i]);
+    }
 }
 
 TEST_F(IndigoCoreFormatsTest, mol_sgroups_parent_idx_cycle)

@@ -19,6 +19,7 @@
 #include "molecule/cml_saver.h"
 
 #include <cfloat>
+#include <vector>
 #include <tinyxml2.h>
 
 #include "base_cpp/locale_guard.h"
@@ -566,15 +567,62 @@ void CmlSaver::_addMoleculeElement(XMLElement* elem, BaseMolecule& mol, bool que
     if (_mol->countSGroups() > 0)
     {
         auto sgroup_infos = _mol->sgroups.getOrderedSGroups();
-        for (const auto& info : sgroup_infos)
+        const int sgroup_count = static_cast<int>(sgroup_infos.size());
+        std::vector<int> info_index_by_new_index(sgroup_count + 1, -1);
+        std::vector<int> root_info_indexes;
+        std::vector<std::vector<int>> children_by_info_index(sgroup_count);
+
+        // CML stores nested SGroups as nested molecule elements, so build the
+        // parent-child links once and emit the tree iteratively.
+        for (int info_index = 0; info_index < sgroup_count; info_index++)
         {
-            if (info.new_parent_index == 0)
-                _addSgroupElement(molecule, info, sgroup_infos);
+            const int new_index = sgroup_infos[info_index].new_index;
+            if (new_index > 0 && new_index <= sgroup_count)
+                info_index_by_new_index[new_index] = info_index;
+        }
+
+        for (int info_index = 0; info_index < sgroup_count; info_index++)
+        {
+            const int new_parent_index = sgroup_infos[info_index].new_parent_index;
+            if (new_parent_index == 0)
+            {
+                root_info_indexes.push_back(info_index);
+                continue;
+            }
+
+            int parent_info_index = -1;
+            if (new_parent_index > 0 && new_parent_index <= sgroup_count)
+                parent_info_index = info_index_by_new_index[new_parent_index];
+            if (parent_info_index < 0)
+                throw Error("internal error: unresolved SGroup parent index: %d", new_parent_index);
+
+            children_by_info_index[parent_info_index].push_back(info_index);
+        }
+
+        struct SGroupFrame
+        {
+            XMLElement* parent;
+            int info_index;
+        };
+        std::vector<SGroupFrame> stack;
+        stack.reserve(sgroup_count);
+        for (int i = static_cast<int>(root_info_indexes.size()) - 1; i >= 0; i--)
+            stack.push_back({molecule, root_info_indexes[i]});
+
+        while (!stack.empty())
+        {
+            SGroupFrame frame = stack.back();
+            stack.pop_back();
+
+            XMLElement* sgroup_element = _addSgroupElement(frame.parent, sgroup_infos[frame.info_index]);
+            const auto& children = children_by_info_index[frame.info_index];
+            for (auto it = children.rbegin(); it != children.rend(); ++it)
+                stack.push_back({sgroup_element, *it});
         }
     }
 }
 
-void CmlSaver::_addSgroupElement(XMLElement* molecule, const SGroupInfo& info, const std::vector<SGroupInfo>& sgroup_infos)
+XMLElement* CmlSaver::_addSgroupElement(XMLElement* molecule, const SGroupInfo& info)
 {
     SGroup& sgroup = info.sgroup;
     XMLElement* sg = _doc->NewElement("molecule");
@@ -585,14 +633,6 @@ void CmlSaver::_addSgroupElement(XMLElement* molecule, const SGroupInfo& info, c
     out.printf("sg%d", info.new_index);
     buf.push(0);
     sg->SetAttribute("id", buf.ptr());
-
-    auto addChildren = [&]() {
-        for (const auto& child_info : sgroup_infos)
-        {
-            if (child_info.new_parent_index == info.new_index)
-                _addSgroupElement(sg, child_info, sgroup_infos);
-        }
-    };
 
     if (sgroup.atoms.size() > 0)
     {
@@ -698,14 +738,10 @@ void CmlSaver::_addSgroupElement(XMLElement* molecule, const SGroupInfo& info, c
         {
             sg->SetAttribute("fieldData", dsg.data.ptr());
         }
-
-        addChildren();
     }
     else if (sgroup.sgroup_type == SGroup::SG_TYPE_GEN)
     {
         sg->SetAttribute("role", "GenericSgroup");
-
-        addChildren();
     }
     else if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
     {
@@ -718,8 +754,6 @@ void CmlSaver::_addSgroupElement(XMLElement* molecule, const SGroupInfo& info, c
         {
             sg->SetAttribute("title", name);
         }
-
-        addChildren();
     }
     else if (sgroup.sgroup_type == SGroup::SG_TYPE_SRU)
     {
@@ -742,8 +776,6 @@ void CmlSaver::_addSgroupElement(XMLElement* molecule, const SGroupInfo& info, c
         {
             sg->SetAttribute("connect", "hh");
         }
-
-        addChildren();
     }
     else if (sgroup.sgroup_type == SGroup::SG_TYPE_MUL)
     {
@@ -770,9 +802,8 @@ void CmlSaver::_addSgroupElement(XMLElement* molecule, const SGroupInfo& info, c
 
             sg->SetAttribute("patoms", pbuf.ptr());
         }
-
-        addChildren();
     }
+    return sg;
 }
 
 void CmlSaver::_addRgroups(XMLElement* elem, BaseMolecule& mol, bool query)
