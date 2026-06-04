@@ -52,7 +52,7 @@ namespace indigo
         void _validate(BaseMolecule& bmol);
 
         void _addMoleculeElement(tinyxml2::XMLElement* elem, BaseMolecule& mol, bool query);
-        void _addSgroupElement(tinyxml2::XMLElement* elem, const SGroupInfo& info, const std::vector<SGroupInfo>& sgroup_infos);
+        tinyxml2::XMLElement* _addSgroupElement(tinyxml2::XMLElement* elem, const SGroupInfo& info);
         void _addRgroups(tinyxml2::XMLElement* elem, BaseMolecule& mol, bool query);
         void _addRgroupElement(tinyxml2::XMLElement* elem, RGroup& rgroup, bool query);
 

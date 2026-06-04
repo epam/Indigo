@@ -17,8 +17,6 @@
  ***************************************************************************/
 
 #include <memory>
-#include <unordered_map>
-#include <vector>
 
 #include "../layout/molecule_layout.h"
 #include "base_cpp/output.h"
@@ -882,44 +880,13 @@ void MolfileLoader::_fillSGroupsParentIndices()
             }
             else
             {
-                throw Error("SGroup parent hierarchy contains a cycle");
+                sgroup.parent_idx = -1;
             }
         }
         else
         {
             sgroup.parent_idx = -1;
         }
-    }
-
-    std::unordered_map<int, int> state;
-    state.reserve(sgroups.getSGroupCount());
-    for (auto i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
-        state.emplace(i, 0);
-
-    for (auto i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
-    {
-        std::vector<int> chain;
-        int current = i;
-
-        while (true)
-        {
-            auto state_it = state.find(current);
-            if (state_it == state.end() || state_it->second == 2)
-                break;
-            if (state_it->second == 1)
-                throw Error("SGroup parent hierarchy contains a cycle");
-
-            state_it->second = 1;
-            chain.push_back(current);
-
-            SGroup& sgroup = sgroups.getSGroup(current);
-            if (!sgroup.parent_idx.hasValue() || sgroup.parent_idx.get() < 0)
-                break;
-            current = sgroup.parent_idx.get();
-        }
-
-        for (int chain_idx : chain)
-            state[chain_idx] = 2;
     }
 }
 
