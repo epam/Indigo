@@ -346,7 +346,7 @@ void PathwayLayout::applyLayout()
         _reaction.meta().addMetaObject(arrow.second.release());
 }
 
-void PathwayLayout::generateTextBlocks(SimpleTextObjectBuilder& tob, const ObjArray<Array<char>>& props, const std::string& style, float& height)
+void PathwayLayout::generateTextBlocks(SimpleTextObjectBuilder& tob, const PtrArray<Array<char>>& props, const std::string& style, float& height)
 {
     for (int i = 0; i < props.size(); ++i)
     {
@@ -354,7 +354,7 @@ void PathwayLayout::generateTextBlocks(SimpleTextObjectBuilder& tob, const ObjAr
         {
             height -= _text_line_height;
             SimpleTextLine textLine;
-            textLine.text = props[i].ptr();
+            textLine.text = props[i]->ptr();
             if (std::round(height * ROUNDING_FACTOR) < std::round(_text_line_height * ROUNDING_FACTOR) && props.size() - i > 1)
             {
                 const std::string ellipsis = "...";
