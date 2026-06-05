@@ -215,7 +215,7 @@ MoleculeLayoutGraphSimple::~MoleculeLayoutGraphSimple()
 {
 }
 
-ObjArray<PatternLayout>& MoleculeLayoutGraphSimple::getPatterns()
+PtrArray<PatternLayout>& MoleculeLayoutGraphSimple::getPatterns()
 {
     static LayoutPatternHolder _patternHolder;
     return _patternHolder.getPatterns();

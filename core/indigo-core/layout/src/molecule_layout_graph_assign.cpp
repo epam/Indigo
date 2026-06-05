@@ -2316,16 +2316,16 @@ bool MoleculeLayoutGraphSimple::_tryToFindPattern(int& fixed_component)
     {
         if (right - left == 1)
         {
-            if (_pattern_cmp2(_patterns[left], vertexCount(), edgeCount(), morgan_code) == 0)
+            if (_pattern_cmp2(*_patterns[left], vertexCount(), edgeCount(), morgan_code) == 0)
                 pat_idx = left;
-            else if (_pattern_cmp2(_patterns[right], vertexCount(), edgeCount(), morgan_code) == 0)
+            else if (_pattern_cmp2(*_patterns[right], vertexCount(), edgeCount(), morgan_code) == 0)
                 pat_idx = right;
             break;
         }
 
         pat_idx = (right + left) / 2;
 
-        cmp = _pattern_cmp2(_patterns[pat_idx], vertexCount(), edgeCount(), morgan_code);
+        cmp = _pattern_cmp2(*_patterns[pat_idx], vertexCount(), edgeCount(), morgan_code);
 
         if (cmp < 0)
             left = pat_idx;
@@ -2333,14 +2333,14 @@ bool MoleculeLayoutGraphSimple::_tryToFindPattern(int& fixed_component)
             right = pat_idx;
     }
 
-    while (pat_idx > 0 && _pattern_cmp2(_patterns[pat_idx - 1], vertexCount(), edgeCount(), morgan_code) == 0)
+    while (pat_idx > 0 && _pattern_cmp2(*_patterns[pat_idx - 1], vertexCount(), edgeCount(), morgan_code) == 0)
         pat_idx--;
 
-    while (pat_idx < _patterns.size() && _pattern_cmp2(_patterns[pat_idx], vertexCount(), edgeCount(), morgan_code) == 0)
+    while (pat_idx < _patterns.size() && _pattern_cmp2(*_patterns[pat_idx], vertexCount(), edgeCount(), morgan_code) == 0)
     {
         // Match pattern
         // TODO: check different attachment points
-        PatternLayout& pattern = _patterns[pat_idx];
+        PatternLayout& pattern = *_patterns[pat_idx];
 
         EmbeddingEnumerator ee(*this);
 
