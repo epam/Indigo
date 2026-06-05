@@ -97,7 +97,7 @@ void Metalayout::process()
 
         for (int j = 0; j < line.items.size(); ++j)
         {
-            LayoutItem& item = line.items[j];
+            LayoutItem& item = *line.items[j];
             Vec2f offset(pos);
             auto shiftToAlignAboveVerticalCenter = line.top_height / 2;
             switch (item.verticalAlign)
@@ -129,8 +129,8 @@ void Metalayout::calcContentSize()
         LayoutLine& line = _layout[i];
         for (int j = 0; j < line.items.size(); ++j)
         {
-            line.width += line.items[j].scaledSize.x;
-            Metalayout::LayoutItem& item = line.items[j];
+            line.width += line.items[j]->scaledSize.x;
+            Metalayout::LayoutItem& item = *line.items[j];
             switch (item.verticalAlign)
             {
             case LayoutItem::ItemVerticalAlign::ECenter:
@@ -159,7 +159,7 @@ void Metalayout::scaleMoleculesSize()
     {
         for (int j = 0; j < _layout[i].items.size(); ++j)
         {
-            LayoutItem& item = _layout[i].items[j];
+            LayoutItem& item = *_layout[i].items[j];
             if (item.isMoleculeFragment)
             {
                 item.scaledSize.diff(item.max, item.min);
@@ -180,7 +180,7 @@ float Metalayout::_getAverageBondLength()
         LayoutLine& line = _layout[i];
         for (int j = 0; j < line.items.size(); ++j)
         {
-            LayoutItem& item = line.items[j];
+            LayoutItem& item = *line.items[j];
             if (item.isMoleculeFragment)
             {
                 BaseMolecule& mol = cb_getMol(item.id, context);
@@ -202,7 +202,7 @@ float Metalayout::_getAverageBondLength()
         LayoutLine& line = _layout[i];
         for (int j = 0; j < line.items.size(); ++j)
         {
-            LayoutItem& item = line.items[j];
+            LayoutItem& item = *line.items[j];
             if (item.isMoleculeFragment)
             {
                 BaseMolecule& mol = cb_getMol(item.id, context);
