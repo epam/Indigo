@@ -27,7 +27,7 @@ using namespace indigo;
 
 IMPL_ERROR(MoleculeScaffoldDetection, "Molecule Scaffold detection");
 
-MoleculeScaffoldDetection::MoleculeScaffoldDetection(ObjArray<Molecule>* mol_set) : ScaffoldDetection(0), searchStructures(mol_set), basketStructures(0)
+MoleculeScaffoldDetection::MoleculeScaffoldDetection(PtrArray<Molecule>* mol_set) : ScaffoldDetection(0), searchStructures(mol_set), basketStructures(0)
 {
     cbEdgeWeight = matchBonds;
     cbVerticesColor = matchAtoms;
@@ -35,7 +35,7 @@ MoleculeScaffoldDetection::MoleculeScaffoldDetection(ObjArray<Molecule>* mol_set
 
 void MoleculeScaffoldDetection::_searchScaffold(QueryMolecule& scaffold, bool approximate)
 {
-    QS_DEF(ObjArray<QueryMolecule>, temp_set);
+    QS_DEF(PtrArray<QueryMolecule>, temp_set);
     if (basketStructures == 0)
     {
         basketStructures = &temp_set;
@@ -54,9 +54,9 @@ void MoleculeScaffoldDetection::_searchScaffold(QueryMolecule& scaffold, bool ap
 
     // clear all stereocenters
     for (int i = 0; i < basketStructures->size(); ++i)
-        basketStructures->at(i).stereocenters.clear();
+        basketStructures->at(i)->stereocenters.clear();
     // get max scaffold from basket
-    scaffold.clone(basketStructures->at(max_index), 0, 0);
+    scaffold.clone(*basketStructures->at(max_index), 0, 0);
 }
 
 void MoleculeScaffoldDetection::clone(QueryMolecule& mol, Molecule& other)
@@ -177,7 +177,7 @@ MoleculeScaffoldDetection::MoleculeBasket::~MoleculeBasket()
 {
 }
 
-void MoleculeScaffoldDetection::MoleculeBasket::initBasket(ObjArray<Molecule>* mol_set, ObjArray<QueryMolecule>* basket_set, int max_number)
+void MoleculeScaffoldDetection::MoleculeBasket::initBasket(PtrArray<Molecule>* mol_set, PtrArray<QueryMolecule>* basket_set, int max_number)
 {
 
     if (mol_set == 0)
@@ -199,7 +199,7 @@ void MoleculeScaffoldDetection::MoleculeBasket::initBasket(ObjArray<Molecule>* m
     _reverseIterator.resize(max_number);
     _reverseIterator.set();
 
-    clone(_basketStructures->at(0), _searchStructures->at(_orderArray[0]));
+    clone(*_basketStructures->at(0), *_searchStructures->at(_orderArray[0]));
     _reverseIterator.set(0, false);
     _directIterator.set(0);
 }
@@ -221,7 +221,7 @@ QueryMolecule& MoleculeScaffoldDetection::MoleculeBasket::pickOutNextMolecule()
     }
 
     _reverseIterator.set(empty_index, false);
-    return _basketStructures->at(empty_index);
+    return *_basketStructures->at(empty_index);
 }
 
 void MoleculeScaffoldDetection::MoleculeBasket::addToNextEmptySpot(Graph& graph, Array<int>& v_list, Array<int>& e_list)
@@ -236,7 +236,7 @@ int MoleculeScaffoldDetection::MoleculeBasket::getMaxGraphIndex()
 
     for (int x = _reverseIterator.nextSetBit(0); x >= 0; x = _reverseIterator.nextSetBit(x + 1))
     {
-        QueryMolecule& mol_basket = _basketStructures->at(x);
+        QueryMolecule& mol_basket = *_basketStructures->at(x);
 
         if (mol_basket.vertexCount() > 0)
             mol_basket.clear();
@@ -247,8 +247,8 @@ int MoleculeScaffoldDetection::MoleculeBasket::getMaxGraphIndex()
     else
         _basketStructures->qsort(cbSortSolutions, userdata);
 
-    while (_basketStructures->size() && _basketStructures->top().vertexCount() == 0)
-        _basketStructures->pop();
+    while (_basketStructures->size() && _basketStructures->top()->vertexCount() == 0)
+        _basketStructures->removeLast();
 
     return 0;
 }
@@ -257,7 +257,7 @@ Graph& MoleculeScaffoldDetection::MoleculeBasket::getGraph(int index) const
 {
     if (index >= _basketStructures->size())
         throw Error("basket size < index");
-    return (Graph&)_basketStructures->at(index);
+    return (Graph&)*_basketStructures->at(index);
 }
 
 void MoleculeScaffoldDetection::MoleculeBasket::_sortGraphsInSet()
@@ -270,7 +270,7 @@ void MoleculeScaffoldDetection::MoleculeBasket::_sortGraphsInSet()
     _orderArray.clear();
     for (int i = 0; i < set_size; i++)
     {
-        if (_searchStructures->at(i).vertexCount() > 0)
+        if (_searchStructures->at(i)->vertexCount() > 0)
         {
             _orderArray.push(i);
             ++_graphSetSize;
@@ -283,8 +283,8 @@ void MoleculeScaffoldDetection::MoleculeBasket::_sortGraphsInSet()
 
 int MoleculeScaffoldDetection::MoleculeBasket::_compareEdgeCount(int& i1, int& i2, void* context)
 {
-    ObjArray<Molecule>& graph_set = *(ObjArray<Molecule>*)context;
-    return graph_set.at(i1).edgeCount() - graph_set.at(i2).edgeCount();
+    PtrArray<Molecule>& graph_set = *(PtrArray<Molecule>*)context;
+    return graph_set.at(i1)->edgeCount() - graph_set.at(i2)->edgeCount();
 }
 
 int MoleculeScaffoldDetection::MoleculeBasket::_compareRingsCount(BaseMolecule& g1, BaseMolecule& g2, void*)
