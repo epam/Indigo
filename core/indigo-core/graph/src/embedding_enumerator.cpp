@@ -108,7 +108,7 @@ void EmbeddingEnumerator::_terminatePreviousMatch()
 
     _term2.clear();
     _unterm2.clear();
-    _enumerators[0].reset();
+    _enumerators[0]->reset();
     _query_match_state.clear();
 }
 
@@ -119,12 +119,12 @@ void EmbeddingEnumerator::setEquivalenceHandler(GraphVertexEquivalence* equivale
 
 bool EmbeddingEnumerator::fix(int node1, int node2)
 {
-    return _enumerators[0].fix(node1, node2, true);
+    return _enumerators[0]->fix(node1, node2, true);
 }
 
 bool EmbeddingEnumerator::unsafeFix(int node1, int node2)
 {
-    return _enumerators[0].fix(node1, node2, false);
+    return _enumerators[0]->fix(node1, node2, false);
 }
 
 int EmbeddingEnumerator::process()
@@ -146,13 +146,13 @@ void EmbeddingEnumerator::processStart()
         _equivalence_handler->prepareForQueries();
 
     if (_equivalence_handler != NULL)
-        _enumerators[0].setUseEquivalence(_equivalence_handler->useHeuristicFurther());
+        _enumerators[0]->setUseEquivalence(_equivalence_handler->useHeuristicFurther());
     else
-        _enumerators[0].setUseEquivalence(false);
+        _enumerators[0]->setUseEquivalence(false);
 
     // Restore enumerators stack
     while (_enumerators.size() > 1)
-        _enumerators.pop();
+        _enumerators.removeLast();
 
     //
     // Save query indices ordered by preserving connectivity by walk
@@ -192,7 +192,7 @@ void EmbeddingEnumerator::processStart()
     // Restore core_1
     _core_1.copy(core1_pre);
     _t1_len_pre = t1_len_saved;
-    _enumerators[0].initForFirstSearch(_t1_len_pre);
+    _enumerators[0]->initForFirstSearch(_t1_len_pre);
 }
 
 void EmbeddingEnumerator::_fixNode1(int node1, int node2)
@@ -232,32 +232,32 @@ bool EmbeddingEnumerator::processNext()
 {
     if (_enumerators.size() > 1)
     {
-        _enumerators.top().restore();
-        _enumerators.pop();
+        _enumerators.top()->restore();
+        _enumerators.removeLast();
     }
 
     while (1)
     {
-        int command = _enumerators.top().nextPair();
+        int command = _enumerators.top()->nextPair();
 
         if (command == _NOWAY)
         {
             if (_enumerators.size() > 1)
             {
-                _enumerators.top().restore();
-                _enumerators.pop();
+                _enumerators.top()->restore();
+                _enumerators.removeLast();
             }
             else
                 break;
         }
         else if (command == _ADD_PAIR)
         {
-            int node1 = _enumerators.top()._current_node1;
-            int node2 = _enumerators.top()._current_node2;
+            int node1 = _enumerators.top()->_current_node1;
+            int node2 = _enumerators.top()->_current_node2;
 
             _enumerators.reserve(_enumerators.size() + 1);
-            _enumerators.push(_enumerators.top());
-            _enumerators.top().addPair(node1, node2);
+            _enumerators.push(*_enumerators.top());
+            _enumerators.top()->addPair(node1, node2);
         }
         else if (command == _RETURN0)
             return true;
@@ -273,7 +273,7 @@ bool EmbeddingEnumerator::processNext()
     }
 
     while (_enumerators.size() > 1)
-        _enumerators.pop();
+        _enumerators.removeLast();
 
     return false;
 }

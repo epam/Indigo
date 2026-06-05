@@ -782,14 +782,14 @@ List<int>& Graph::sssrEdges(int idx)
 {
     if (!_sssr_valid)
         _calculateSSSR();
-    return _sssr_edges[idx];
+    return *_sssr_edges[idx];
 }
 
 List<int>& Graph::sssrVertices(int idx)
 {
     if (!_sssr_valid)
         _calculateSSSR();
-    return _sssr_vertices[idx];
+    return *_sssr_vertices[idx];
 }
 
 int Graph::sssrCount()

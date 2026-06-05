@@ -255,8 +255,8 @@ namespace indigo
         Array<int> _v_smallest_ring_size, _e_smallest_ring_size;
         Array<int> _v_sssr_count;
         Pool<List<int>::Elem>* _sssr_pool;
-        ObjArray<List<int>> _sssr_vertices;
-        ObjArray<List<int>> _sssr_edges;
+        PtrArray<List<int>> _sssr_vertices;
+        PtrArray<List<int>> _sssr_edges;
         bool _sssr_valid;
 
         Array<int> _component_numbers;

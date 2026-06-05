@@ -22,7 +22,7 @@
 #include <map>
 
 #include "base_cpp/array.h"
-#include "base_cpp/obj_array.h"
+#include "base_cpp/ptr_array.h"
 #include "base_cpp/red_black.h"
 #include "graph/graph.h"
 
@@ -42,17 +42,17 @@ namespace indigo
         }
         const Array<int>& getCycle(int num) const
         {
-            return _cycles[num];
+            return *_cycles[num];
         }
 
-        ObjArray<Array<int>> _cycles;
+        PtrArray<Array<int>> _cycles;
 
     private:
-        static void constructKernelVector(Array<bool>& u, ObjArray<Array<bool>>& a, int i);
+        static void constructKernelVector(Array<bool>& u, PtrArray<Array<bool>>& a, int i);
         SimpleCycleBasis(SimpleCycleBasis&); // no implicit copy
         bool _getParentVertex(const Graph& graph, int vertex, int& parent_vertex);
         void _minimize(int startIndex);
-        void _getCycleEdgeIncidenceMatrix(ObjArray<Array<bool>>& a);
+        void _getCycleEdgeIncidenceMatrix(PtrArray<Array<bool>>& a);
         void _createEdgeIndexMap();
         int _getEdgeIndex(int edge) const;
 
