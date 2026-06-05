@@ -92,7 +92,7 @@ namespace indigo
         // this method sorts solutions and maximizes number of the rings in graph
         static int ringsSolutionTerm(Array<int>&, Array<int>&, void*);
         // returns all maps-solutions-mcs
-        void getSolutionMaps(ObjArray<Array<int>>* v_maps, ObjArray<Array<int>>* e_maps) const;
+        void getSolutionMaps(PtrArray<Array<int>>* v_maps, PtrArray<Array<int>>* e_maps) const;
         // returns first element in sorted solution array
         void getMaxSolutionMap(Array<int>* v_map, Array<int>* e_map) const;
         // callback for sorting solutions (see _vertEdgeSolMap)
@@ -312,8 +312,8 @@ namespace indigo
             int createSolutionMaps();
 
             // retruns all solutions edge and vertices lists
-            void getSolutionListsSub(ObjArray<Array<int>>& v_lists, ObjArray<Array<int>>& e_lists) const;
-            void getSolutionListsSuper(ObjArray<Array<int>>& v_lists, ObjArray<Array<int>>& e_lists) const;
+            void getSolutionListsSub(PtrArray<Array<int>>& v_lists, PtrArray<Array<int>>& e_lists) const;
+            void getSolutionListsSuper(PtrArray<Array<int>>& v_lists, PtrArray<Array<int>>& e_lists) const;
 
         protected:
             // resolution graph to work with
@@ -420,7 +420,7 @@ namespace indigo
                 return _y.ptr();
             }
 
-            void getSolutions(ObjArray<Array<int>>& v_maps);
+            void getSolutions(PtrArray<Array<int>>& v_maps);
 
             // returns correspondence parameters between each vertex and vertex in other graph with the same label
             int getFLSize(int i)
@@ -745,11 +745,11 @@ namespace indigo
         bool _getEdgeColorCondition(Graph& graph1, Graph& graph2, int i, int j) const;
 
         // returns all solutions
-        void _getSolutionMaps(int count, ObjArray<Array<int>>& v_maps, ObjArray<Array<int>>& e_maps) const;
+        void _getSolutionMaps(int count, PtrArray<Array<int>>& v_maps, PtrArray<Array<int>>& e_maps) const;
 
         // array for keeping all solutions. In each subarray element[0] = vertex size, [1] = edge size, and
         // next '[0]' elements for vertex map, next '[1]' for edge map (in sum 2+vertexEnd()+edgeEnd() elements)
-        ObjArray<Array<int>> _vertEdgeSolMap;
+        PtrArray<Array<int>> _vertEdgeSolMap;
 
         RandomHandler _random;
 
