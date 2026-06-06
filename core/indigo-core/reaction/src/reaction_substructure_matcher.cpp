@@ -50,8 +50,10 @@ bool ReactionSubstructureMatcher::_match_atoms(BaseReaction& query_, Reaction& t
     ReactionSubstructureMatcher& self = *(ReactionSubstructureMatcher*)context;
 
     self._fmcaches.expand(sub_mol_idx + 1);
+    if (self._fmcaches[sub_mol_idx] == nullptr)
+        self._fmcaches.set(sub_mol_idx, std::make_unique<MoleculeSubstructureMatcher::FragmentMatchCache>());
 
-    if (!MoleculeSubstructureMatcher::matchQueryAtom(&submol.getAtom(sub_atom_idx), supermol, super_atom_idx, &self._fmcaches[sub_mol_idx], 0xFFFFFFFFUL))
+    if (!MoleculeSubstructureMatcher::matchQueryAtom(&submol.getAtom(sub_atom_idx), supermol, super_atom_idx, self._fmcaches[sub_mol_idx], 0xFFFFFFFFUL))
         return false;
 
     if (submol.stereocenters.getType(sub_atom_idx) > supermol.stereocenters.getType(super_atom_idx))

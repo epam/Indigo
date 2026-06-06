@@ -480,7 +480,9 @@ bool MoleculeSubstructureMatcher::matchQueryAtom(QueryMolecule::Atom* query, Bas
         if (smarts != 0 && strlen(smarts) > 0)
         {
             fmcache->expand(super_idx + 1);
-            int* value = fmcache->at(super_idx).at2(smarts);
+            if (fmcache->at(super_idx) == nullptr)
+                fmcache->set(super_idx, std::make_unique<RedBlackStringMap<int>>());
+            int* value = fmcache->at(super_idx)->at2(smarts);
 
             if (value != 0)
                 return *value != 0;
@@ -500,7 +502,9 @@ bool MoleculeSubstructureMatcher::matchQueryAtom(QueryMolecule::Atom* query, Bas
         if (smarts != 0 && strlen(smarts) > 0)
         {
             fmcache->expand(super_idx + 1);
-            fmcache->at(super_idx).insert(smarts, result ? 1 : 0);
+            if (fmcache->at(super_idx) == nullptr)
+                fmcache->set(super_idx, std::make_unique<RedBlackStringMap<int>>());
+            fmcache->at(super_idx)->insert(smarts, result ? 1 : 0);
         }
 
         return result;

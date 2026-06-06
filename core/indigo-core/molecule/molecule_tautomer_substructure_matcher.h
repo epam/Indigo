@@ -45,7 +45,7 @@ namespace indigo
             CONFORMATION = 2
         };
 
-        typedef ObjArray<RedBlackStringMap<int>> FragmentMatchCache;
+        typedef PtrArray<RedBlackStringMap<int>> FragmentMatchCache;
 
         MoleculeTautomerSubstructureMatcher(BaseMolecule& target, TautomerMethod method);
         ~MoleculeTautomerSubstructureMatcher();
