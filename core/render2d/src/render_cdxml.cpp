@@ -224,7 +224,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
             RenderCdxmlContext& context = *params.rOpt.cdxml_context;
             if (context.enabled)
             {
-                RenderCdxmlContext::PropertyData& data = context.property_data.at(mol_idx);
+                RenderCdxmlContext::PropertyData& data = *context.property_data.at(mol_idx);
                 float letter_width = context.propertyFontSize / 1.5f;
                 int longest_line = _getLongestLineXml(data.propertyName);
 
@@ -291,7 +291,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
             RenderCdxmlContext& context = *params.rOpt.cdxml_context;
             if (context.enabled)
             {
-                RenderCdxmlContext::PropertyData& data = context.property_data.at(mol_idx);
+                RenderCdxmlContext::PropertyData& data = *context.property_data.at(mol_idx);
                 int lines = data.propertyName.count('\n') + 1;
 
                 float letter_height = params.rOpt.titleFontFactor / MoleculeCdxmlSaver::SCALE;
@@ -436,7 +436,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
             RenderCdxmlContext& context = *params.rOpt.cdxml_context;
             if (context.enabled)
             {
-                RenderCdxmlContext::PropertyData& data = context.property_data.at(mol_idx);
+                RenderCdxmlContext::PropertyData& data = *context.property_data.at(mol_idx);
                 float prop_width = prop_widths[mol_idx];
                 float key_width = key_widths[mol_idx];
                 float prop_offset_y = p.title_offset_y - title_heights[mol_idx];
