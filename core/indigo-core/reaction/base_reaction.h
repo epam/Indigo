@@ -27,6 +27,7 @@
 #include "base_cpp/auto_iter.h"
 #include "base_cpp/non_copyable.h"
 #include "base_cpp/obj_array.h"
+#include "base_cpp/ptr_array.h"
 #include "base_cpp/ptr_pool.h"
 #include "molecule/base_molecule.h"
 
@@ -210,7 +211,7 @@ namespace indigo
             int i = 0;
             for (; i < _reactionBlocks.size(); ++i)
             {
-                auto& rb = _reactionBlocks[i];
+                auto& rb = *_reactionBlocks[i];
                 if (rb.products.size() || rb.reactants.size())
                     break;
             }
@@ -228,7 +229,7 @@ namespace indigo
         {
             while (++i < _reactionBlocks.size())
             {
-                auto& rb = _reactionBlocks[i];
+                auto& rb = *_reactionBlocks[i];
                 if (rb.products.size() || rb.reactants.size())
                     break;
             }
@@ -284,7 +285,7 @@ namespace indigo
 
         ReactionBlock& reactionBlock(int index)
         {
-            return _reactionBlocks[index];
+            return *_reactionBlocks[index];
         }
 
         ReactionBlock& addReactionBlock()
@@ -388,7 +389,7 @@ namespace indigo
 
         PtrPool<BaseMolecule> _allMolecules;
 
-        ObjArray<ReactionBlock> _reactionBlocks; // for multistep reactions only
+        PtrArray<ReactionBlock> _reactionBlocks; // for multistep reactions only
 
         Array<int> _types;
         Array<SpecialCondition> _specialConditions;

@@ -92,7 +92,7 @@ std::unique_ptr<BaseReaction> Reaction::getBaseReaction(int index)
     std::unique_ptr<BaseReaction> reaction(neu());
     if (_reactionBlocks.size())
     {
-        auto& rb = _reactionBlocks[index];
+        auto& rb = *_reactionBlocks[index];
         for (auto ridx : rb.reactants)
             reaction->addReactantCopy(getBaseMolecule(ridx), 0, 0);
 
