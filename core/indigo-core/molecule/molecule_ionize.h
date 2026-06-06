@@ -19,7 +19,7 @@
 #ifndef __molecule_ionize_h__
 #define __molecule_ionize_h__
 
-#include "base_cpp/obj_array.h"
+#include "base_cpp/ptr_array.h"
 #include "base_cpp/red_black.h"
 #include "base_cpp/tlscont.h"
 #include "base_molecule.h"
@@ -82,8 +82,8 @@ namespace indigo
         static void _checkCanonicalOrder(Molecule& mol, Molecule& can_mol, Array<int>& order);
         static void _removeExtraHydrogens(Molecule& mol);
 
-        ObjArray<QueryMolecule> acids;
-        ObjArray<QueryMolecule> basics;
+        PtrArray<QueryMolecule> acids;
+        PtrArray<QueryMolecule> basics;
         Array<float> a_pkas;
         Array<float> b_pkas;
         bool simple_model_ready = false;
