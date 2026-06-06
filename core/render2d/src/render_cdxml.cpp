@@ -205,7 +205,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
         // Check titles width
         if (mol_idx < params.titles.size())
         {
-            const Array<char>& title = params.titles[mol_idx];
+            const Array<char>& title = *params.titles[mol_idx];
 
             if (title.size() > 0)
             {
@@ -274,7 +274,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
 
         if (mol_idx < params.titles.size())
         {
-            const Array<char>& title = params.titles[mol_idx];
+            const Array<char>& title = *params.titles[mol_idx];
             if (title.size() > 0)
             {
                 int lines = title.count('\n') + 1;
@@ -406,7 +406,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
 
         if (mol_idx < params.titles.size())
         {
-            const Array<char>& title = params.titles[mol_idx];
+            const Array<char>& title = *params.titles[mol_idx];
 
             if (title.size() > 0)
             {

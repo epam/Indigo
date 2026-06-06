@@ -229,7 +229,7 @@ void RenderParamInterface::render(RenderParams& params)
 
                 if (params.titles.size() > 0)
                 {
-                    titles.push(multilineTextUnit(factory, RenderItemAuxiliary::AUX_TITLE, params.titles[i],
+                    titles.push(multilineTextUnit(factory, RenderItemAuxiliary::AUX_TITLE, *params.titles[i],
                                                   params.rOpt.titleSpacing * params.rOpt.titleFontFactor, params.cnvOpt.titleAlign.inbox_alignment));
                 }
             }
@@ -257,7 +257,7 @@ void RenderParamInterface::render(RenderParams& params)
 
                 if (params.titles.size() > 0)
                 {
-                    titles.push(multilineTextUnit(factory, RenderItemAuxiliary::AUX_TITLE, params.titles[i],
+                    titles.push(multilineTextUnit(factory, RenderItemAuxiliary::AUX_TITLE, *params.titles[i],
                                                   params.rOpt.titleSpacing * params.rOpt.titleFontFactor, params.cnvOpt.titleAlign.inbox_alignment));
                 }
             }
