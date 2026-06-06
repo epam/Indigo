@@ -127,8 +127,8 @@ void MoleculeTautomerSubstructureMatcher::_edgeAddHyper(Graph& subgraph, Graph& 
     int sub_bond_order = query.getBondOrder(sub_idx);
     const Dbitset& mask = layeredMolecules.getBondMask(super_idx, sub_bond_order);
 
-    breadcrumps.maskHistory.expand(breadcrumps.maskHistory.size() + 1);
-    breadcrumps.maskHistory.top().copy(breadcrumps.mask);
+    breadcrumps.maskHistory.push();
+    breadcrumps.maskHistory.top()->copy(breadcrumps.mask);
 
     breadcrumps.mask.andWith(mask);
 }
@@ -138,8 +138,8 @@ void MoleculeTautomerSubstructureMatcher::_vertexRemoveHyper(Graph& subgraph, in
     SubstructureSearchBreadcrumps& breadcrumps = *(SubstructureSearchBreadcrumps*)userdata;
     if (breadcrumps.maskHistory.size())
     {
-        breadcrumps.mask.copy(breadcrumps.maskHistory.top());
-        breadcrumps.maskHistory.pop();
+        breadcrumps.mask.copy(*breadcrumps.maskHistory.top());
+        breadcrumps.maskHistory.removeLast();
     }
 }
 
@@ -236,23 +236,23 @@ int MoleculeTautomerSubstructureMatcher::_embedding_common(int* core_sub, int* c
             // This match has already been handled
             return 1;
         _masks.push();
-        _masks.top().copy(mask);
+        _masks.top()->copy(mask);
         if (_needAromatize)
         {
-            int layer = _masks.top().nextSetBit(0);
+            int layer = _masks.top()->nextSetBit(0);
             _tautomerEnumerator.beginAromatized();
             while (layer != -1)
             {
                 // Magic! layer is a non-negative number. We know that we enumerate aromatized tautomers. That means that the range is [-1, -2, -3, ...]
                 if (!_tautomerEnumerator.isValid(-1 - layer))
                 {
-                    _masks.top().reset(layer);
+                    _masks.top()->reset(layer);
                 }
                 else
                 {
                     _tautomerEnumerator.next(-1 - layer);
                 }
-                layer = _masks.top().nextSetBit(layer + 1);
+                layer = _masks.top()->nextSetBit(layer + 1);
             }
         }
     }
@@ -277,12 +277,12 @@ const GraphEmbeddingsStorage& MoleculeTautomerSubstructureMatcher::getEmbeddings
 
 const Dbitset& MoleculeTautomerSubstructureMatcher::getMask(int ind) const
 {
-    return _masks.at(ind);
+    return *_masks.at(ind);
 }
 
 void MoleculeTautomerSubstructureMatcher::getTautomerFound(Molecule& mol, int enumInd, int tauInd) const
 {
-    const Dbitset& mask = _masks.at(enumInd);
+    const Dbitset& mask = *_masks.at(enumInd);
     int layer = mask.nextSetBit(tauInd);
 
     return _tautomerEnumerator.constructMolecule(mol, layer, _needAromatize);

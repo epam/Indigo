@@ -84,7 +84,7 @@ namespace indigo
         // It can be stored as TL_CP_*** if memory allocations will
         // be critical
         std::unique_ptr<GraphEmbeddingsStorage> _embeddings_storage;
-        ObjArray<Dbitset> _masks;
+        PtrArray<Dbitset> _masks;
 
         CP_DECL;
 
@@ -93,7 +93,7 @@ namespace indigo
         struct SubstructureSearchBreadcrumps
         {
             Dbitset mask;
-            ObjArray<Dbitset> maskHistory;
+            PtrArray<Dbitset> maskHistory;
             MoleculeTautomerSubstructureMatcher* self;
         };
 
