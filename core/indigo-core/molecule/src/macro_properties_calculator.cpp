@@ -388,16 +388,16 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
         bool calculate_mass = true;
         std::map<char, size_t> atoms_count;
         GROSS_UNITS gross_units;
-        gross_units.resize(1);
+        gross_units.add(std::make_unique<GrossFormulaUnit>());
         auto merge_gross_data = [&gross_units](const GROSS_UNITS& gross) {
             for (int i = 0; i < gross.size(); i++)
             {
-                for (auto it : gross.at(i).isotopes)
+                for (auto it : gross.at(i)->isotopes)
                 {
-                    if (gross_units[0].isotopes.count(it.first) == 0)
-                        gross_units[0].isotopes[it.first] = it.second;
+                    if (gross_units[0]->isotopes.count(it.first) == 0)
+                        gross_units[0]->isotopes[it.first] = it.second;
                     else
-                        gross_units[0].isotopes[it.first] += it.second;
+                        gross_units[0]->isotopes[it.first] += it.second;
                 }
             }
         };
