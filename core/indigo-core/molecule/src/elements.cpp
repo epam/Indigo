@@ -273,6 +273,12 @@ bool Element::isHalogen(int element)
     return element == ELEM_F || element == ELEM_Cl || element == ELEM_Br || element == ELEM_I || element == ELEM_At;
 }
 
+bool Element::isMetal(int element)
+{
+    return (element >= ELEM_Li && element <= ELEM_Be) || (element >= ELEM_Na && element <= ELEM_Mg) || (element >= ELEM_K && element <= ELEM_Zn) ||
+           (element >= ELEM_Rb && element <= ELEM_Cd) || (element >= ELEM_Cs && element <= ELEM_Hg) || (element >= ELEM_Fr && element <= ELEM_Cn);
+}
+
 const char* Element::toString(int element)
 {
     if (element < 0 || element > ELEM_MAX)

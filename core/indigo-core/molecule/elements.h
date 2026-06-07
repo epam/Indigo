@@ -252,6 +252,7 @@ namespace indigo
         static int read(Scanner& scanner);
 
         static bool isHalogen(int element);
+        static bool isMetal(int element);
 
         // Returns isotope that has weight most close to the atomic weight
         static int getDefaultIsotope(int element);
