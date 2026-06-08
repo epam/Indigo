@@ -1,10 +1,55 @@
 *** BILN interop ***
-biln_cap:BILN->HELM SUCCEED
+biln_bracketed_alias:BILN->HELM SUCCEED
 biln_disulfides:BILN->HELM SUCCEED
+biln_explicit_backbone:BILN->HELM SUCCEED
+biln_large_bond_id:BILN->HELM SUCCEED
+biln_star_alias:BILN->HELM SUCCEED
+biln_terminal_alias:BILN->HELM SUCCEED
+biln_terminal_alias_right:BILN->HELM SUCCEED
 biln_three_chains:BILN->HELM SUCCEED
-helm_cap:HELM->BILN SUCCEED
+biln_two_backbones:BILN->HELM SUCCEED
+biln_underscore_alias:BILN->HELM SUCCEED
+biln_alphabetic_order:BILN->BILN SUCCEED
+biln_amino_acid_count_order:BILN->BILN SUCCEED
+biln_backbone_order:BILN->BILN SUCCEED
+biln_bracketed_no_hyphen:BILN->BILN SUCCEED
+biln_cycle_best:BILN->BILN SUCCEED
+biln_cycle_reverse_rotation:BILN->BILN SUCCEED
+biln_cycle_rotation:BILN->BILN SUCCEED
+biln_cycle_with_external_bond_order:BILN->BILN SUCCEED
+biln_cycle_with_extra_bond_order:BILN->BILN SUCCEED
+biln_equal_chain_topology_order:BILN->BILN SUCCEED
+biln_library_alias:BILN->BILN SUCCEED
+biln_mid_chain_chem:BILN->BILN SUCCEED
+biln_multi_chain_chem_cross_link:BILN->BILN SUCCEED
+biln_multiple_nonbackbone_order:BILN->BILN SUCCEED
+biln_short_chain_order:BILN->BILN SUCCEED
+biln_valid_large_bond_ids:BILN->BILN SUCCEED
+helm_alias_to_biln_alias:HELM->BILN SUCCEED
+helm_bracketed_alias:HELM->BILN SUCCEED
+helm_chem_backbone:HELM->BILN SUCCEED
+helm_chem_with_biln_code:HELM->BILN SUCCEED
 helm_cycle:HELM->BILN SUCCEED
+helm_star_alias:HELM->BILN SUCCEED
+helm_terminal_alias:HELM->BILN SUCCEED
+helm_terminal_hyphen_left_alias:HELM->BILN SUCCEED
 helm_three_chains:HELM->BILN SUCCEED
-Test 'A(1,3)-C': got expected error 'Invalid BILN bond 1: expected two endpoints but found 1.'
-Test 'A--C': got expected error 'Invalid BILN string: empty monomer.'
-Test 'A-C(1,4)': got expected error 'Invalid BILN bond 1: expected two endpoints but found 1.'
+helm_underscore_alias:HELM->BILN SUCCEED
+Test 'CHEM1{[qweqwe]}$$$$V2.0': got expected error 'Only amino acids and CHEMs with BILN codes can get exported to BILN.'
+Test 'PEPTIDE1{A}|RNA1{R(A)P}$$$$V2.0': got expected error 'Only amino acids and CHEMs with BILN codes can get exported to BILN.'
+Test 'PEPTIDE1{[Abu].[Sar].[NMeL].V.[NMeL].A.[DAla].[NMeL].[NMeL].[NMeV].[NMeThr4RBut2enyl]}$PEPTIDE1,PEPTIDE1,1:R1-11:R2$$$V2.0': got expected error 'Only amino acids and CHEMs with BILN codes can get exported to BILN.'
+Test 'PEPTIDE1{[Ac]}|PEPTIDE2{K}$PEPTIDE1,PEPTIDE2,1:R1-1:R3$$$V2.0': got expected error 'Cannot save in BILN format - unsupported attachment point 'R1'.'
+Test KET 'custom_chem_without_biln_code': got expected error 'Only amino acids and CHEMs with BILN codes can get exported to BILN.'
+Test KET 'unresolved_terminal_alias_invalid_attachment': got expected error 'Cannot save in BILN format - unsupported attachment point 'R1'.'
+Test 'A(1,3)-C': got expected error 'The string cannot be interpreted as a valid BILN string.'
+Test 'A--C': got expected error 'The string cannot be interpreted as a valid BILN string.'
+Test 'A-C(-1,3)-D(2,3)-E.F-G-H(-1,3)-I-K(2,3)': got expected error 'The string cannot be interpreted as a valid BILN string.'
+Test 'A-C(1,3)-D(1,3)-E.F-G-H(1,3)-I-K(2,3)': got expected error 'The string cannot be interpreted as a valid BILN string.'
+Test 'A-C(1,4)': got expected error 'The string cannot be interpreted as a valid BILN string.'
+Test 'A-C(1,4)-D(2,3)-E.F-G-H(1,3)-I-K(2,3)': got expected error 'The string cannot be interpreted as a valid BILN string.'
+Test 'A-C(1.25,3)-D(2,3)-E.F-G-H(1.25,3)-I-K(2,3)': got expected error 'The string cannot be interpreted as a valid BILN string.'
+Test 'Ac(1,1).K(1,3)': got expected error 'The string cannot be interpreted as a valid BILN string.'
+Test 'Ac(1,4).K(1,3)': got expected error 'The string cannot be interpreted as a valid BILN string.'
+Test 'Cys_SEt': got expected error 'The string cannot be interpreted as a valid BILN string.'
+Test 'D-2Thi-D-D-gGlu-meF-G-Lys-al': got expected error 'The string cannot be interpreted as a valid BILN string.'
+Test '[D-Cit](1,2)-aThr(1,1)(2,2)-meS(2,1)': got expected error 'The string cannot be interpreted as a valid BILN string.'

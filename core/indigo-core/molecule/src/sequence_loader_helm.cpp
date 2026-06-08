@@ -17,6 +17,7 @@
  ***************************************************************************/
 
 #include <cctype>
+#include <limits>
 #include <memory>
 #include <regex>
 #include <unordered_set>
@@ -596,6 +597,7 @@ void SequenceLoader::loadBILN(KetDocument& document)
     std::string biln;
     _scanner.readAll(biln);
 
+    auto throw_invalid_biln = []() -> void { throw Error("The string cannot be interpreted as a valid BILN string."); };
     auto is_space = [](char ch) { return std::isspace(static_cast<unsigned char>(ch)) != 0; };
     auto begin = biln.begin();
     while (begin != biln.end() && is_space(*begin))
@@ -606,10 +608,11 @@ void SequenceLoader::loadBILN(KetDocument& document)
     biln = std::string(begin, end);
 
     if (biln.empty())
-        throw Error("Empty BILN string.");
+        throw_invalid_biln();
 
     struct BilnEndpoint
     {
+        size_t monomer_idx;
         std::string monomer_id;
         int attachment_idx;
     };
@@ -618,38 +621,95 @@ void SequenceLoader::loadBILN(KetDocument& document)
         int bond_idx;
         std::vector<BilnEndpoint> endpoints;
     };
+    struct PendingBilnEndpoint
+    {
+        int bond_idx;
+        int attachment_idx;
+    };
+    struct BilnChain
+    {
+        std::vector<size_t> monomer_indices;
+        bool reverse = false;
+    };
 
+    std::vector<BilnChain> chains;
     std::vector<BilnBond> bonds;
     std::unordered_map<int, size_t> bond_to_idx;
-
-    constexpr int kMaxBilnIndex = 1000;
 
     size_t data_pos = 0;
     auto skip_spaces = [&]() {
         while (data_pos < biln.size() && is_space(biln[data_pos]))
             data_pos++;
     };
-    auto read_positive_int = [&](const char* field_name) -> int {
+    auto read_positive_int = [&]() -> int {
         skip_spaces();
         if (data_pos >= biln.size() || !std::isdigit(static_cast<unsigned char>(biln[data_pos])))
-            throw Error("Invalid BILN bond annotation: expected %s number.", field_name);
+            throw_invalid_biln();
         int value = 0;
         while (data_pos < biln.size() && std::isdigit(static_cast<unsigned char>(biln[data_pos])))
         {
-            value = value * 10 + (biln[data_pos] - '0');
-            if (value > kMaxBilnIndex)
-                throw Error("Invalid BILN bond annotation: %s number is too large.", field_name);
+            const int digit = biln[data_pos] - '0';
+            if (value > (std::numeric_limits<int>::max() - digit) / 10)
+                throw_invalid_biln();
+            value = value * 10 + digit;
             data_pos++;
         }
         if (value == 0)
-            throw Error("Invalid BILN bond annotation: %s number should be positive.", field_name);
+            throw_invalid_biln();
         return value;
     };
-    auto remember_bond_endpoint = [&](int bond_idx, const std::string& monomer_id, int attachment_idx) {
+    auto remember_bond_endpoint = [&](int bond_idx, size_t monomer_idx, const std::string& monomer_id, int attachment_idx) {
         auto [it, inserted] = bond_to_idx.emplace(bond_idx, bonds.size());
         if (inserted)
             bonds.push_back({bond_idx, {}});
-        bonds.at(it->second).endpoints.push_back({monomer_id, attachment_idx});
+        bonds.at(it->second).endpoints.push_back({monomer_idx, monomer_id, attachment_idx});
+    };
+    auto resolve_biln_monomer = [&](const std::string& monomer_alias, const std::vector<PendingBilnEndpoint>& endpoints, bool has_prev_in_chain,
+                                    bool has_next_in_chain) {
+        if (_library.getMonomerTemplateIdByAlias(MonomerClass::AminoAcid, monomer_alias).size() > 0)
+            return std::make_pair(MonomerClass::AminoAcid, monomer_alias);
+        if (_library.getMonomerTemplateIdByAlias(MonomerClass::CHEM, monomer_alias).size() > 0)
+            return std::make_pair(MonomerClass::CHEM, monomer_alias);
+
+        bool uses_r1 = false;
+        bool uses_r2 = false;
+        bool uses_other = false;
+        for (const auto& endpoint : endpoints)
+        {
+            if (endpoint.attachment_idx == 1)
+                uses_r1 = true;
+            else if (endpoint.attachment_idx == 2)
+                uses_r2 = true;
+            else
+                uses_other = true;
+        }
+
+        auto right_hyphen_alias = monomer_alias + "-";
+        auto left_hyphen_alias = "-" + monomer_alias;
+        const bool has_right_hyphen_alias = _library.getMonomerTemplateIdByAlias(MonomerClass::AminoAcid, right_hyphen_alias).size() > 0;
+        const bool has_left_hyphen_alias = _library.getMonomerTemplateIdByAlias(MonomerClass::AminoAcid, left_hyphen_alias).size() > 0;
+        if (has_right_hyphen_alias && !has_left_hyphen_alias)
+            return std::make_pair(MonomerClass::AminoAcid, right_hyphen_alias);
+        if (has_left_hyphen_alias && !has_right_hyphen_alias)
+            return std::make_pair(MonomerClass::AminoAcid, left_hyphen_alias);
+        if (has_right_hyphen_alias && has_left_hyphen_alias)
+        {
+            if (uses_other || (uses_r1 && uses_r2))
+                throw_invalid_biln();
+            if (uses_r1)
+                return std::make_pair(MonomerClass::AminoAcid, left_hyphen_alias);
+            if (uses_r2)
+                return std::make_pair(MonomerClass::AminoAcid, right_hyphen_alias);
+            if (has_prev_in_chain && has_next_in_chain)
+                throw_invalid_biln();
+            if (has_prev_in_chain)
+                return std::make_pair(MonomerClass::AminoAcid, left_hyphen_alias);
+            if (has_next_in_chain)
+                return std::make_pair(MonomerClass::AminoAcid, right_hyphen_alias);
+            return std::make_pair(MonomerClass::AminoAcid, right_hyphen_alias);
+        }
+        throw_invalid_biln();
+        return std::make_pair(MonomerClass::Unknown, monomer_alias);
     };
 
     _row = 0;
@@ -665,11 +725,10 @@ void SequenceLoader::loadBILN(KetDocument& document)
         if (data_pos >= biln.size())
             break;
         if (biln[data_pos] == '.')
-            throw Error("Invalid BILN string: empty chain.");
+            throw_invalid_biln();
 
         _col = 0;
-        size_t previous_monomer_idx = 0;
-        int chain_monomer_count = 0;
+        BilnChain chain;
 
         while (data_pos < biln.size())
         {
@@ -677,47 +736,67 @@ void SequenceLoader::loadBILN(KetDocument& document)
             if (data_pos >= biln.size())
                 break;
             if (biln[data_pos] == '-' || biln[data_pos] == '.')
-                throw Error("Invalid BILN string: empty monomer.");
+                throw_invalid_biln();
 
             std::string monomer_alias;
-            while (data_pos < biln.size() && biln[data_pos] != '(' && biln[data_pos] != '-' && biln[data_pos] != '.' && !is_space(biln[data_pos]))
+            if (biln[data_pos] == '[')
             {
-                char ch = biln[data_pos];
-                if (!std::isalnum(static_cast<unsigned char>(ch)) && ch != '[' && ch != ']' && ch != '#')
-                    throw Error("Invalid BILN string: unexpected symbol '%c'.", ch);
-                monomer_alias += biln[data_pos++];
+                data_pos++;
+                while (data_pos < biln.size() && biln[data_pos] != ']')
+                {
+                    char ch = biln[data_pos];
+                    if (ch == '.' || ch == '(' || ch == ')' || ch == ',' || ch == '[' || is_space(ch))
+                        throw_invalid_biln();
+                    monomer_alias += biln[data_pos++];
+                }
+                if (data_pos >= biln.size())
+                    throw_invalid_biln();
+                data_pos++;
+            }
+            else
+            {
+                while (data_pos < biln.size() && biln[data_pos] != '(' && biln[data_pos] != '-' && biln[data_pos] != '.' && !is_space(biln[data_pos]))
+                {
+                    char ch = biln[data_pos];
+                    if (ch == ')' || ch == ',' || ch == '[' || ch == ']')
+                        throw_invalid_biln();
+                    monomer_alias += biln[data_pos++];
+                }
             }
             if (monomer_alias.empty())
-                throw Error("Invalid BILN string: empty monomer.");
+                throw_invalid_biln();
 
-            Vec3f monomer_pos(_col * LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, -LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH * _row, 0);
-            ambiguous_template_opts options;
-            auto monomer_idx =
-                addHelmMonomer(document, std::make_tuple(monomer_alias, false, std::string(), std::string(), options), MonomerClass::AminoAcid, monomer_pos);
-            if (chain_monomer_count > 0)
-                addMonomerConnection(document, previous_monomer_idx, monomer_idx);
-            previous_monomer_idx = monomer_idx;
-            std::string monomer_id = std::to_string(monomer_idx);
-
+            const bool has_prev_in_chain = !chain.monomer_indices.empty();
+            std::vector<PendingBilnEndpoint> pending_endpoints;
             skip_spaces();
             while (data_pos < biln.size() && biln[data_pos] == '(')
             {
                 data_pos++;
-                int bond_idx = read_positive_int("bond");
+                int bond_idx = read_positive_int();
                 skip_spaces();
                 if (data_pos >= biln.size() || biln[data_pos] != ',')
-                    throw Error("Invalid BILN bond annotation: expected ','.");
+                    throw_invalid_biln();
                 data_pos++;
-                int attachment_idx = read_positive_int("attachment point");
+                int attachment_idx = read_positive_int();
                 skip_spaces();
                 if (data_pos >= biln.size() || biln[data_pos] != ')')
-                    throw Error("Invalid BILN bond annotation: expected ')'.");
+                    throw_invalid_biln();
                 data_pos++;
-                remember_bond_endpoint(bond_idx, monomer_id, attachment_idx);
+                pending_endpoints.push_back({bond_idx, attachment_idx});
                 skip_spaces();
             }
 
-            chain_monomer_count++;
+            Vec3f monomer_pos(_col * LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, -LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH * _row, 0);
+            ambiguous_template_opts options;
+            const bool has_next_in_chain = data_pos < biln.size() && biln[data_pos] == '-';
+            const auto [monomer_class, monomer_load_alias] = resolve_biln_monomer(monomer_alias, pending_endpoints, has_prev_in_chain, has_next_in_chain);
+            auto monomer_idx =
+                addHelmMonomer(document, std::make_tuple(monomer_load_alias, false, std::string(), std::string(), options), monomer_class, monomer_pos);
+            std::string monomer_id = std::to_string(monomer_idx);
+            chain.monomer_indices.push_back(monomer_idx);
+            for (const auto& endpoint : pending_endpoints)
+                remember_bond_endpoint(endpoint.bond_idx, monomer_idx, monomer_id, endpoint.attachment_idx);
+
             _col++;
             skip_spaces();
             if (data_pos >= biln.size())
@@ -732,50 +811,113 @@ void SequenceLoader::loadBILN(KetDocument& document)
                 data_pos++;
                 skip_spaces();
                 if (data_pos >= biln.size())
-                    throw Error("Invalid BILN string: empty chain.");
+                    throw_invalid_biln();
                 break;
             }
-            throw Error("Invalid BILN string: unexpected symbol '%c'.", biln[data_pos]);
+            throw_invalid_biln();
         }
 
-        if (chain_monomer_count == 0)
-            throw Error("Invalid BILN string: empty chain.");
+        if (chain.monomer_indices.empty())
+            throw_invalid_biln();
+        chains.push_back(chain);
         _row++;
     }
 
     std::set<std::pair<std::string, std::string>> used_biln_endpoints;
     auto attachment_point = [](const BilnEndpoint& ep) { return std::string("R") + std::to_string(ep.attachment_idx); };
+    auto has_terminal_hyphen_alias = [&](const std::unique_ptr<KetBaseMonomer>& monomer) { return _library.isTerminalHyphenAlias(monomer->alias()); };
+    auto validate_endpoint = [&](const BilnEndpoint& ep, const std::string& ap) -> const std::unique_ptr<KetBaseMonomer>& {
+        const auto& monomer = document.monomers().at(ep.monomer_id);
+        if (monomer->attachmentPoints().count(ap) == 0)
+            throw_invalid_biln();
+        if (!used_biln_endpoints.emplace(ep.monomer_id, ap).second)
+            throw_invalid_biln();
+        return monomer;
+    };
     for (const auto& bond : bonds)
     {
         const auto& endpoints = bond.endpoints;
         if (endpoints.size() != 2)
-            throw Error("Invalid BILN bond %d: expected two endpoints but found %d.", bond.bond_idx, static_cast<int>(endpoints.size()));
+            throw_invalid_biln();
         const auto& ep1 = endpoints[0];
         const auto& ep2 = endpoints[1];
-        auto validate_endpoint = [&](const BilnEndpoint& ep, const std::string& ap) -> const std::unique_ptr<KetBaseMonomer>& {
-            const auto& monomer = document.monomers().at(ep.monomer_id);
-            if (monomer->attachmentPoints().count(ap) == 0)
-                throw Error("Unknown attachment point '%s' in monomer '%s(%s)'", ap.c_str(), monomer->alias().c_str(), monomer->ref().c_str());
-            if (monomer->connections().count(ap) > 0)
-            {
-                const auto& connection = monomer->connections().at(ap);
-                throw Error("Monomer '%s(%s)' attachment point '%s' already connected to monomer'%s' attachment point '%s'", monomer->alias().c_str(),
-                            monomer->ref().c_str(), ap.c_str(), connection.first.c_str(), connection.second.c_str());
-            }
-            if (!used_biln_endpoints.emplace(ep.monomer_id, ap).second)
-                throw Error("Monomer '%s(%s)' attachment point '%s' already connected.", monomer->alias().c_str(), monomer->ref().c_str(), ap.c_str());
-            return monomer;
-        };
         const auto ap1 = attachment_point(ep1);
         const auto ap2 = attachment_point(ep2);
-        const auto& monomer1 = validate_endpoint(ep1, ap1);
-        const auto& monomer2 = validate_endpoint(ep2, ap2);
+        std::ignore = validate_endpoint(ep1, ap1);
+        std::ignore = validate_endpoint(ep2, ap2);
+    }
+
+    std::set<std::pair<std::string, std::string>> used_implicit_endpoints = used_biln_endpoints;
+    auto reserve_implicit_endpoint = [&](size_t monomer_idx, const std::string& ap, std::set<std::pair<std::string, std::string>>& endpoints) -> bool {
+        const auto monomer_id = std::to_string(monomer_idx);
+        const auto& monomer = document.monomers().at(monomer_id);
+        if (monomer->attachmentPoints().count(ap) == 0)
+            return false;
+        return endpoints.emplace(monomer_id, ap).second;
+    };
+    auto can_apply_chain_orientation = [&](const BilnChain& chain, bool reverse) {
+        auto endpoints = used_implicit_endpoints;
+        for (size_t idx = 1; idx < chain.monomer_indices.size(); idx++)
+        {
+            auto left_idx = chain.monomer_indices[idx - 1];
+            auto right_idx = chain.monomer_indices[idx];
+            if (!reserve_implicit_endpoint(left_idx, reverse ? kAttachmentPointR1 : kAttachmentPointR2, endpoints))
+                return false;
+            if (!reserve_implicit_endpoint(right_idx, reverse ? kAttachmentPointR2 : kAttachmentPointR1, endpoints))
+                return false;
+        }
+        return true;
+    };
+    auto apply_chain_orientation = [&](BilnChain& chain) {
+        if (chain.monomer_indices.size() < 2)
+            return;
+        if (can_apply_chain_orientation(chain, false))
+            chain.reverse = false;
+        else if (can_apply_chain_orientation(chain, true))
+            chain.reverse = true;
+        else
+            throw_invalid_biln();
+        for (size_t idx = 1; idx < chain.monomer_indices.size(); idx++)
+        {
+            auto left_idx = chain.monomer_indices[idx - 1];
+            auto right_idx = chain.monomer_indices[idx];
+            if (!reserve_implicit_endpoint(left_idx, chain.reverse ? kAttachmentPointR1 : kAttachmentPointR2, used_implicit_endpoints))
+                throw_invalid_biln();
+            if (!reserve_implicit_endpoint(right_idx, chain.reverse ? kAttachmentPointR2 : kAttachmentPointR1, used_implicit_endpoints))
+                throw_invalid_biln();
+        }
+    };
+    for (auto& chain : chains)
+        apply_chain_orientation(chain);
+    for (const auto& chain : chains)
+    {
+        for (size_t idx = 1; idx < chain.monomer_indices.size(); idx++)
+        {
+            const auto& left_monomer = document.monomers().at(std::to_string(chain.monomer_indices[idx - 1]));
+            const auto& right_monomer = document.monomers().at(std::to_string(chain.monomer_indices[idx]));
+            document.addConnection(left_monomer->ref(), chain.reverse ? kAttachmentPointR1 : kAttachmentPointR2, right_monomer->ref(),
+                                   chain.reverse ? kAttachmentPointR2 : kAttachmentPointR1);
+        }
+    }
+
+    for (const auto& bond : bonds)
+    {
+        const auto& ep1 = bond.endpoints[0];
+        const auto& ep2 = bond.endpoints[1];
+        const auto ap1 = attachment_point(ep1);
+        const auto ap2 = attachment_point(ep2);
+        const auto& monomer1 = document.monomers().at(ep1.monomer_id);
+        const auto& monomer2 = document.monomers().at(ep2.monomer_id);
         KetConnectionEndPoint endpoint1, endpoint2;
         setKetStrProp(endpoint1, monomerId, monomer1->ref());
         setKetStrProp(endpoint1, attachmentPointId, ap1);
         setKetStrProp(endpoint2, monomerId, monomer2->ref());
         setKetStrProp(endpoint2, attachmentPointId, ap2);
-        document.addExplicitConnection(endpoint1, endpoint2);
+        if (((ap1 == kAttachmentPointR1 && ap2 == kAttachmentPointR2) || (ap1 == kAttachmentPointR2 && ap2 == kAttachmentPointR1)) &&
+            !has_terminal_hyphen_alias(monomer1) && !has_terminal_hyphen_alias(monomer2))
+            document.addConnection(monomer1->ref(), ap1, monomer2->ref(), ap2);
+        else
+            document.addExplicitConnection(endpoint1, endpoint2);
     }
 }
 
