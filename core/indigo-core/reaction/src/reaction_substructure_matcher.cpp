@@ -179,8 +179,8 @@ bool ReactionSubstructureMatcher::_checkAAM()
     if (!use_daylight_aam_mode)
         return BaseReactionSubstructureMatcher::_checkAAM();
 
-    QS_DEF(ObjArray<RedBlackSet<int>>, classes_mapping_left);
-    QS_DEF(ObjArray<RedBlackSet<int>>, classes_mapping_right);
+    QS_DEF(PtrArray<RedBlackSet<int>>, classes_mapping_left);
+    QS_DEF(PtrArray<RedBlackSet<int>>, classes_mapping_right);
     int i;
 
     classes_mapping_left.clear();
@@ -193,7 +193,7 @@ bool ReactionSubstructureMatcher::_checkAAM()
         int qmol_idx = _matchers[i]->_current_molecule_1;
         int tmol_idx = _matchers[i]->_current_molecule_2;
         BaseMolecule& qmol = _query->getBaseMolecule(qmol_idx);
-        ObjArray<RedBlackSet<int>>* cm;
+        PtrArray<RedBlackSet<int>>* cm;
         int j;
 
         if (_query->getSideType(qmol_idx) == BaseReaction::REACTANT)
@@ -221,8 +221,9 @@ bool ReactionSubstructureMatcher::_checkAAM()
             if (taam == 0)
                 return false;
 
-            cm->expand(qaam + 1);
-            cm->at(qaam).find_or_insert(taam);
+            while (cm->size() <= qaam)
+                cm->add(std::make_unique<RedBlackSet<int>>());
+            cm->at(qaam)->find_or_insert(taam);
         }
     }
 
@@ -237,8 +238,8 @@ bool ReactionSubstructureMatcher::_checkAAM()
             // "When a query class is not found on both sides of the query, it is ignored"
             break;
 
-        RedBlackSet<int>& right = classes_mapping_right[i];
-        RedBlackSet<int>& left = classes_mapping_left[i];
+        RedBlackSet<int>& right = *classes_mapping_right[i];
+        RedBlackSet<int>& left = *classes_mapping_left[i];
 
         for (int j = right.begin(); j != right.end(); j = right.next(j))
         {
