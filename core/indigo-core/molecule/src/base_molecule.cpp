@@ -423,7 +423,11 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
 
                 for (j = 0; (att_idx = mol.getAttachmentPoint(i, j)) != -1; j++)
                     if (mapping[att_idx] != -1)
+                    {
                         this->addAttachmentPoint(i, mapping[att_idx]);
+                        if (mol.isAttachmentPointStar(i, att_idx))
+                            this->markAttachmentPointAsStar(i, mapping[att_idx]);
+                    }
             }
         }
     }
@@ -1530,9 +1534,33 @@ void BaseMolecule::addAttachmentPoint(int order, int atom_index)
     updateEditRevision();
 }
 
+void BaseMolecule::markAttachmentPointAsStar(int order, int atom_index)
+{
+    if (order < 1)
+        throw Error("attachment point order %d no allowed (should start from 1)", order);
+
+    if (_attachment_point_stars.size() < order)
+        _attachment_point_stars.resize(order);
+
+    if (_attachment_point_stars[order - 1].find(atom_index) == -1)
+        _attachment_point_stars[order - 1].push(atom_index);
+    updateEditRevision();
+}
+
+bool BaseMolecule::isAttachmentPointStar(int order, int atom_index) const
+{
+    if (order < 1)
+        throw Error("attachment point order %d no allowed (should start from 1)", order);
+
+    if (_attachment_point_stars.size() < order)
+        return false;
+    return _attachment_point_stars[order - 1].find(atom_index) != -1;
+}
+
 void BaseMolecule::removeAttachmentPoints()
 {
     _attachment_index.clear();
+    _attachment_point_stars.clear();
     updateEditRevision();
 }
 
@@ -1547,6 +1575,14 @@ void BaseMolecule::removeAttachmentPointsFromAtom(int atom_index)
                 _attachment_index[i].pop();
             else
                 _attachment_index[i][j] = _attachment_index[i].pop();
+        }
+    for (i = 0; i < _attachment_point_stars.size(); i++)
+        if ((j = _attachment_point_stars[i].find(atom_index)) != -1)
+        {
+            if (j == _attachment_point_stars[i].size() - 1)
+                _attachment_point_stars[i].pop();
+            else
+                _attachment_point_stars[i][j] = _attachment_point_stars[i].pop();
         }
     updateEditRevision();
 }

@@ -349,6 +349,8 @@ namespace indigo
         std::optional<std::pair<int, std::reference_wrapper<ObjPool<int>>>> getTemplateAtomAttachmentPointIdxs(int atom_idx, int att_point_idx);
 
         void addAttachmentPoint(int order, int atom_index);
+        void markAttachmentPointAsStar(int order, int atom_index);
+        bool isAttachmentPointStar(int order, int atom_index) const;
 
         int getAttachmentPoint(int order, int index) const;
         void removeAttachmentPointsFromAtom(int atom_index);
@@ -758,6 +760,7 @@ namespace indigo
         bool _rGroupFragment;
 
         ObjArray<Array<int>> _attachment_index;
+        ObjArray<Array<int>> _attachment_point_stars;
 
         int _chiral_flag = -1;
 

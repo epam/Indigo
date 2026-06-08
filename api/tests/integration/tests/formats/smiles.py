@@ -134,6 +134,15 @@ for sm in mols_smiles:
     print("chemaxon:")
     print(indigo.loadMolecule(sm).smiles())
 
+print("*** Attachment point chemaxon roundtrip ***")
+attachment_point_star = "CCCCC* |$;;;;;_AP1$|"
+attachment_point_closure = "CCCCC%91.[*:1]%91 |$;;;;;_AP1$|"
+indigo.setOption("smiles-saving-format", "chemaxon")
+print("chemaxon star roundtrip:")
+print(indigo.loadMolecule(attachment_point_star).smiles())
+print("chemaxon closure:")
+print(indigo.loadMolecule(attachment_point_closure).smiles())
+
 print("*** S-Group AP closure roundtrip ***")
 sgroup_ap_closure = "CCCC* |$;;;;_AP1$,Sg:n:2:2&#44;6-7:ht|"
 indigo.setOption("smiles-saving-format", "chemaxon")

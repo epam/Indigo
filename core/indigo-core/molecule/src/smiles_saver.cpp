@@ -621,8 +621,7 @@ void SmilesSaver::_saveMolecule()
             QS_DEF(Array<int>, closing);
 
             walk.getNeighborsClosing(v_idx, closing);
-            const bool write_terminal_attachment_point =
-                chemaxon && _bmol->sgroups.getSGroupCount() > 0 && walk.numBranches(v_idx) == 0 && i == v_seq.size() - 1;
+            const bool write_terminal_attachment_point = chemaxon && walk.numBranches(v_idx) == 0 && i == v_seq.size() - 1;
 
             for (int ap = 1; ap <= _bmol->attachmentPointCount(); ap++)
             {
@@ -631,10 +630,10 @@ void SmilesSaver::_saveMolecule()
                 for (idx = 0; (atom_idx = _bmol->getAttachmentPoint(ap, idx)) != -1; idx++)
                     if (atom_idx == v_idx)
                     {
-                        if (write_terminal_attachment_point)
+                        if (write_terminal_attachment_point && _bmol->isAttachmentPointStar(ap, atom_idx))
                         {
-                            // Restore terminal '*' used by CXSMILES S-group AP roundtrip
-                            // instead of expanding it to a separate .[*:n] component.
+                            // Keep a terminal '*' only when the loader saw it in the
+                            // source CXSMILES; generated APs still use closure notation.
                             _output.writeChar('*');
                             _attachment_indices.push(ap);
                             _attachment_cycle_numbers.push(-1);
