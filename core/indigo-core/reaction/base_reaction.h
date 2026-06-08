@@ -361,8 +361,8 @@ namespace indigo
 
         static bool haveCoord(BaseReaction& reaction);
 
-        void clone(BaseReaction& other, Array<int>* mol_mapping = nullptr, ObjArray<Array<int>>* mappings = nullptr,
-                   ObjArray<Array<int>>* inv_mappings = nullptr);
+        void clone(BaseReaction& other, Array<int>* mol_mapping = nullptr, PtrArray<Array<int>>* mappings = nullptr,
+                   PtrArray<Array<int>>* inv_mappings = nullptr);
 
         Array<char> name;
 
@@ -406,7 +406,7 @@ namespace indigo
         MetaDataStorage _meta;
         bool isRetrosynthetic = false;
 
-        virtual void _clone(BaseReaction& other, int index, int i, ObjArray<Array<int>>* mol_mappings);
+        virtual void _clone(BaseReaction& other, int index, int i, PtrArray<Array<int>>* mol_mappings);
         virtual void _cloneSub(BaseReaction& other);
     };
 
