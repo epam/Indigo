@@ -52,7 +52,7 @@ int Reaction::_addBaseMolecule(int side)
     return idx;
 }
 
-void Reaction::saveBondOrders(Reaction& reaction, ObjArray<Array<int>>& bond_types)
+void Reaction::saveBondOrders(Reaction& reaction, PtrArray<Array<int>>& bond_types)
 {
 
     while (bond_types.size() < reaction.end())
@@ -60,15 +60,15 @@ void Reaction::saveBondOrders(Reaction& reaction, ObjArray<Array<int>>& bond_typ
 
     for (int i = reaction.begin(); i != reaction.end(); i = reaction.next(i))
     {
-        Molecule::saveBondOrders(reaction.getMolecule(i), bond_types[i]);
+        Molecule::saveBondOrders(reaction.getMolecule(i), *bond_types[i]);
     }
 }
 
-void Reaction::loadBondOrders(Reaction& reaction, ObjArray<Array<int>>& bond_types)
+void Reaction::loadBondOrders(Reaction& reaction, PtrArray<Array<int>>& bond_types)
 {
     for (int i = reaction.begin(); i != reaction.end(); i = reaction.next(i))
     {
-        Molecule::loadBondOrders(reaction.getMolecule(i), bond_types[i]);
+        Molecule::loadBondOrders(reaction.getMolecule(i), *bond_types[i]);
     }
 }
 
