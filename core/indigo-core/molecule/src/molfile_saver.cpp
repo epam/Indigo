@@ -922,7 +922,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                 // convert CHEM to LINKER for BIOVIA
                 if (sup.sa_class.size() > 1)
                     out.printf(" CLASS=%s", sup.sa_class.ptr() == std::string(kMonomerClassCHEM) ? kMonomerClassLINKER : sup.sa_class.ptr());
-                if (sup.contracted.hasValue() && sup.contracted.get() == DisplayOption::Expanded)
+                if (sup.contracted == DisplayOption::Expanded)
                     out.printf(" ESTATE=E");
                 if (sup.attachment_points.size() > 0)
                 {
@@ -935,7 +935,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                         out.printf(" SAP=(3 %d %d %s)", _atom_mapping[sup.attachment_points[j].aidx], leave_idx, sup.attachment_points[j].apid.ptr());
                     }
                 }
-                const int seqid = sup.seqid.hasValue() ? sup.seqid.get() : 0;
+                const int seqid = sup.seqid.value_or(0);
                 if (seqid > 0)
                     out.printf(" SEQID=%d", seqid);
 
@@ -1024,7 +1024,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_SRU)
             {
                 RepeatingUnit& ru = static_cast<RepeatingUnit&>(sgroup);
-                const int connectivity = ru.connectivity.hasValue() ? ru.connectivity.get() : SGroup::HEAD_TO_TAIL;
+                const int connectivity = ru.connectivity.value_or(SGroup::HEAD_TO_TAIL);
                 if (connectivity == SGroup::HEAD_TO_HEAD)
                     out.printf(" CONNECT=HH");
                 else if (connectivity == SGroup::HEAD_TO_TAIL)
@@ -1043,14 +1043,14 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_COP)
             {
                 CopolymerGroup& cg = static_cast<CopolymerGroup&>(sgroup);
-                const int connectivity = cg.connectivity.hasValue() ? cg.connectivity.get() : SGroup::HEAD_TO_TAIL;
+                const int connectivity = cg.connectivity.value_or(SGroup::HEAD_TO_TAIL);
                 if (connectivity == SGroup::HEAD_TO_HEAD)
                     out.printf(" CONNECT=HH");
                 else if (connectivity == SGroup::HEAD_TO_TAIL)
                     out.printf(" CONNECT=HT");
                 else
                     out.printf(" CONNECT=EU");
-                const int subtype = cg.sgroup_subtype.hasValue() ? cg.sgroup_subtype.get() : 0;
+                const int subtype = cg.sgroup_subtype.value_or(0);
                 if (subtype != 0)
                 {
                     if (subtype == SGroup::SG_SUBTYPE_ALT)
@@ -1073,7 +1073,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                         out.printf(" %d", _atom_mapping[mg.parent_atoms[j]]);
                     out.printf(")");
                 }
-                out.printf(" MULT=%d", (mg.multiplier.hasValue() ? mg.multiplier.get() : 0));
+                out.printf(" MULT=%d", mg.multiplier.value_or(0));
                 _writeMultiString(output, buf.ptr(), buf.size());
             }
             else
@@ -1148,7 +1148,7 @@ void MolfileSaver::_writeGenericSGroup3000(SGroup& sgroup, const SGroupInfo& inf
             output.printf(")");
         }
     }
-    const int subtype = sgroup.sgroup_subtype.hasValue() ? sgroup.sgroup_subtype.get() : 0;
+    const int subtype = sgroup.sgroup_subtype.value_or(0);
     if (subtype > 0)
     {
         if (subtype == SGroup::SG_SUBTYPE_ALT)
@@ -1167,7 +1167,7 @@ void MolfileSaver::_writeGenericSGroup3000(SGroup& sgroup, const SGroupInfo& inf
         Vec2f* brackets = sgroup.brackets[i];
         output.printf(" BRKXYZ=(9 %f %f %f %f %f %f %f %f %f)", brackets[0].x, brackets[0].y, 0.f, brackets[1].x, brackets[1].y, 0.f, 0.f, 0.f, 0.f);
     }
-    const int brk_style = sgroup.brk_style.hasValue() ? sgroup.brk_style.get() : 0;
+    const int brk_style = sgroup.brk_style.value_or(0);
     if (sgroup.brackets.size() > 0 && brk_style > 0)
     {
         output.printf(" BRKTYP=PAREN");
@@ -1770,7 +1770,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                 RepeatingUnit* ru = (RepeatingUnit*)&info.sgroup;
                 output.printf(" %3d ", info.new_index);
 
-                const int connectivity = ru->connectivity.hasValue() ? ru->connectivity.get() : SGroup::HEAD_TO_TAIL;
+                const int connectivity = ru->connectivity.value_or(SGroup::HEAD_TO_TAIL);
                 if (connectivity == SGroup::HEAD_TO_HEAD)
                     output.printf("HH ");
                 else if (connectivity == SGroup::HEAD_TO_TAIL)
@@ -1825,7 +1825,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                                         superatom.bond_connections[j].bond_dir.x, superatom.bond_connections[j].bond_dir.y);
                     }
                 }
-                if (superatom.contracted.hasValue() && superatom.contracted.get() == DisplayOption::Expanded)
+                if (superatom.contracted == DisplayOption::Expanded)
                 {
                     output.printfCR("M  SDS EXP  1 %3d", wi);
                 }
@@ -1922,19 +1922,19 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                     output.writeCR();
                 }
 
-                output.printf("M  SMT %3d %d\n", wi, (mg.multiplier.hasValue() ? mg.multiplier.get() : 0));
+                output.printf("M  SMT %3d %d\n", wi, mg.multiplier.value_or(0));
             }
             for (j = 0; j < sgroup.brackets.size(); j++)
             {
                 output.printf("M  SDI %3d  4 %9.4f %9.4f %9.4f %9.4f\n", wi, sgroup.brackets[j][0].x, sgroup.brackets[j][0].y, sgroup.brackets[j][1].x,
                               sgroup.brackets[j][1].y);
             }
-            const int brk_style = sgroup.brk_style.hasValue() ? sgroup.brk_style.get() : 0;
+            const int brk_style = sgroup.brk_style.value_or(0);
             if (sgroup.brackets.size() > 0 && brk_style > 0)
             {
                 output.printf("M  SBT  1 %3d %3d\n", wi, brk_style);
             }
-            const int subtype = sgroup.sgroup_subtype.hasValue() ? sgroup.sgroup_subtype.get() : 0;
+            const int subtype = sgroup.sgroup_subtype.value_or(0);
             if (subtype > 0)
             {
                 if (subtype == SGroup::SG_SUBTYPE_ALT)
@@ -2137,16 +2137,16 @@ void MolfileSaver::_writeDataSGroupDisplay(DataSGroup& datasgroup, Output& out)
 {
     float dp_x = 0.0f;
     float dp_y = 0.0f;
-    if (datasgroup.display_pos.hasValue())
+    if (datasgroup.display_pos.has_value())
     {
-        const Vec2f& display_pos = datasgroup.display_pos.get();
+        const Vec2f& display_pos = datasgroup.display_pos.value();
         dp_x = display_pos.x;
         dp_y = display_pos.y;
     }
     out.printf("%10.4f%10.4f    %c%c%c", dp_x, dp_y, datasgroup.detached ? 'D' : 'A', datasgroup.relative ? 'R' : 'A', datasgroup.display_units ? 'U' : ' ');
-    const int num_chars = datasgroup.num_chars.hasValue() ? datasgroup.num_chars.get() : 0;
-    const char tag = datasgroup.tag.hasValue() ? datasgroup.tag.get() : 0;
-    const int dasp_pos = datasgroup.dasp_pos.hasValue() ? datasgroup.dasp_pos.get() : 0;
+    const int num_chars = datasgroup.num_chars.value_or(0);
+    const char tag = datasgroup.tag.value_or(0);
+    const int dasp_pos = datasgroup.dasp_pos.value_or(0);
     if (num_chars == 0)
         out.printf("   ALL  1    %c  %1d  ", tag, dasp_pos);
     else

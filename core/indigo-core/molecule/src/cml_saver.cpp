@@ -653,7 +653,7 @@ XMLElement* CmlSaver::_addSgroupElement(XMLElement* molecule, const SGroupInfo& 
         XMLElement* brks = _doc->NewElement("MBracket");
         sg->LinkEndChild(brks);
 
-        const int brk_style = sgroup.brk_style.hasValue() ? sgroup.brk_style.get() : 0;
+        const int brk_style = sgroup.brk_style.value_or(0);
         if (brk_style == 0)
             brks->SetAttribute("type", "SQUARE");
         else
@@ -700,9 +700,9 @@ XMLElement* CmlSaver::_addSgroupElement(XMLElement* molecule, const SGroupInfo& 
             sg->SetAttribute("queryOp", queryoper);
         }
 
-        if (dsg.display_pos.hasValue())
+        if (dsg.display_pos.has_value())
         {
-            const Vec2f& display_pos = dsg.display_pos.get();
+            const Vec2f& display_pos = dsg.display_pos.value();
             sg->SetAttribute("x", display_pos.x);
             sg->SetAttribute("y", display_pos.y);
         }
@@ -722,13 +722,13 @@ XMLElement* CmlSaver::_addSgroupElement(XMLElement* molecule, const SGroupInfo& 
             sg->SetAttribute("unitsDisplayed", "Unit displayed");
         }
 
-        char tag = dsg.tag.hasValue() ? dsg.tag.get() : 0;
+        char tag = dsg.tag.value_or(0);
         if (tag != 0 && tag != ' ')
         {
             sg->SetAttribute("tag", tag);
         }
 
-        const int num_chars = dsg.num_chars.hasValue() ? dsg.num_chars.get() : 0;
+        const int num_chars = dsg.num_chars.value_or(0);
         if (num_chars > 0)
         {
             sg->SetAttribute("displayedChars", num_chars);
@@ -767,7 +767,7 @@ XMLElement* CmlSaver::_addSgroupElement(XMLElement* molecule, const SGroupInfo& 
             sg->SetAttribute("title", name);
         }
 
-        const int connectivity = sru.connectivity.hasValue() ? sru.connectivity.get() : SGroup::HEAD_TO_TAIL;
+        const int connectivity = sru.connectivity.value_or(SGroup::HEAD_TO_TAIL);
         if (connectivity == SGroup::HEAD_TO_TAIL)
         {
             sg->SetAttribute("connect", "ht");
@@ -783,7 +783,7 @@ XMLElement* CmlSaver::_addSgroupElement(XMLElement* molecule, const SGroupInfo& 
 
         MultipleGroup& mul = (MultipleGroup&)sgroup;
 
-        const int multiplier = mul.multiplier.hasValue() ? mul.multiplier.get() : 0;
+        const int multiplier = mul.multiplier.value_or(0);
         if (multiplier > 0)
         {
             sg->SetAttribute("title", multiplier);

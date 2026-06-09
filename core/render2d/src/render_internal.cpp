@@ -149,7 +149,7 @@ void MoleculeRenderInternal::setMolecule(BaseMolecule* mol)
         for (int i = bmol.sgroups.begin(); i != bmol.sgroups.end(); i = bmol.sgroups.next(i))
         {
             SGroup& sgroup = bmol.sgroups.getSGroup(i);
-            const auto contracted = sgroup.contracted.hasValue() ? sgroup.contracted.get() : DisplayOption::Undefined;
+            const auto contracted = sgroup.contracted.value_or(DisplayOption::Undefined);
             if (contracted == DisplayOption::Contracted || contracted == DisplayOption::Undefined)
             {
                 isThereAtLeastOneContracted = true;
@@ -564,7 +564,7 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
             Sgroup& sg = _data.sgroups.push();
             int tii = _pushTextItem(sg, RenderItem::RIT_DATASGROUP);
             TextItem& ti = _data.textitems[tii];
-            const char tag = group.tag.hasValue() ? group.tag.get() : 0;
+            const char tag = group.tag.value_or(0);
             if (tag != 0 && tag != ' ')
             {
                 ti.text.push(tag);
@@ -596,8 +596,8 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
             }
             else if (group.relative)
             {
-                if (group.display_pos.hasValue())
-                    _objDistTransform(ti.bbp, group.display_pos.get());
+                if (group.display_pos.has_value())
+                    _objDistTransform(ti.bbp, group.display_pos.value());
                 if (group.atoms.size() > 0)
                 {
                     ti.bbp.add(_ad(group.atoms[0]).pos);
@@ -609,8 +609,8 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
             }
             else
             {
-                if (group.display_pos.hasValue())
-                    _objCoordTransform(ti.bbp, group.display_pos.get());
+                if (group.display_pos.has_value())
+                    _objCoordTransform(ti.bbp, group.display_pos.value());
             }
 
             parent = ILLEGAL_RECT();
@@ -626,7 +626,7 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
             index.fontsize = FONT_SIZE_ATTR;
             bprintf(index.text, group.label.size() > 0 ? group.label.ptr() : "n");
             _positionIndex(sg, tiIndex, true);
-            const int connectivity = group.connectivity.hasValue() ? group.connectivity.get() : RepeatingUnit::HEAD_TO_TAIL;
+            const int connectivity = group.connectivity.value_or(RepeatingUnit::HEAD_TO_TAIL);
             if (connectivity != RepeatingUnit::HEAD_TO_TAIL)
             {
                 int tiConn = _pushTextItem(sg, RenderItem::RIT_SGROUP);
@@ -660,7 +660,7 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
             int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
             TextItem& index = _data.textitems[tiIndex];
             index.fontsize = FONT_SIZE_ATTR;
-            const int multiplier = group.multiplier.hasValue() ? group.multiplier.get() : 0;
+            const int multiplier = group.multiplier.value_or(0);
             bprintf(index.text, "%d", multiplier);
             _positionIndex(sg, tiIndex, true);
             parent = ILLEGAL_RECT();
@@ -830,13 +830,13 @@ void MoleculeRenderInternal::_prepareSGroups(bool collapseAtLeastOneSuperatom)
         for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
         {
             SGroup& sgroup = mol.sgroups.getSGroup(i);
-            const auto contracted = sgroup.contracted.hasValue() ? sgroup.contracted.get() : DisplayOption::Undefined;
+            const auto contracted = sgroup.contracted.value_or(DisplayOption::Undefined);
             if (contracted == DisplayOption::Contracted || contracted == DisplayOption::Undefined)
             {
                 if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
                 {
                     const Superatom& group = (Superatom&)sgroup;
-                    Vec3f displayPosition = group.display_position.hasValue() ? group.display_position.get() : Vec3f(0, 0, 0);
+                    Vec3f displayPosition = group.display_position.value_or(Vec3f(0, 0, 0));
                     bool useDisplayPosition = false;
                     if (fabs(displayPosition.x) > EPSILON || fabs(displayPosition.y) > EPSILON || fabs(displayPosition.z) > EPSILON)
                     {

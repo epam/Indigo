@@ -771,8 +771,8 @@ bool BaseMolecule::_replaceExpandedMonomerWithTemplate(int sg_idx, int& tg_id, M
                 if (tform.hasTransformation())
                     setTemplateAtomTransform(ta_idx, tform);
                 setTemplateAtomClass(ta_idx, sa.sa_class.ptr());
-                setTemplateAtomSeqid(ta_idx, sa.seqid.hasValue() ? sa.seqid.get() : -1);
-                setTemplateAtomDisplayOption(ta_idx, sa.contracted.hasValue() ? sa.contracted.get() : DisplayOption::Undefined);
+                setTemplateAtomSeqid(ta_idx, sa.seqid.value_or(-1));
+                setTemplateAtomDisplayOption(ta_idx, sa.contracted.value_or(DisplayOption::Undefined));
                 setTemplateAtomTemplateIndex(ta_idx, tg_index);
                 added_templates.emplace(template_inchi_id, tg_index);
                 _connectTemplateAtom(sa, ta_idx, remove_atoms);
@@ -977,8 +977,8 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
 
     int idx = addTemplateAtom(tg.tgroup_name.ptr());
     setTemplateAtomClass(idx, tg.tgroup_class.ptr());
-    setTemplateAtomSeqid(idx, su.seqid.hasValue() ? su.seqid.get() : -1);
-    setTemplateAtomDisplayOption(idx, su.contracted.hasValue() ? su.contracted.get() : DisplayOption::Undefined);
+    setTemplateAtomSeqid(idx, su.seqid.value_or(-1));
+    setTemplateAtomDisplayOption(idx, su.contracted.value_or(DisplayOption::Undefined));
     setTemplateAtomTemplateIndex(idx, tg_idx);
 
     for (int j = 0; j < ap_points_atoms.size(); j++)
@@ -1286,12 +1286,12 @@ bool BaseMolecule::_mergeSGroupWithSubmolecule(SGroup& sgroup, SGroup& super, Ba
 {
     int i;
     bool merged = false;
-    if (super.parent_group.hasValue())
-        sgroup.parent_group = super.parent_group.get();
+    if (super.parent_group.has_value())
+        sgroup.parent_group = super.parent_group.value();
     else
         sgroup.parent_group.reset();
-    if (super.sgroup_subtype.hasValue())
-        sgroup.sgroup_subtype = super.sgroup_subtype.get();
+    if (super.sgroup_subtype.has_value())
+        sgroup.sgroup_subtype = super.sgroup_subtype.value();
     else
         sgroup.sgroup_subtype.reset();
     sgroup.brackets.copy(super.brackets);

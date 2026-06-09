@@ -339,13 +339,13 @@ void CmfSaver::_encodeExtSection(Molecule& mol, const Mapping& mapping)
             _encodeString(sd.queryoper);
             _encodeString(sd.data);
             // Pack detached, relative, display_units, and sd.dasp_pos into one byte
-            const int dasp_pos = sd.dasp_pos.hasValue() ? sd.dasp_pos.get() : 0;
+            const int dasp_pos = sd.dasp_pos.value_or(0);
             if (dasp_pos < 0 || dasp_pos > 9)
                 throw Error("DataSGroup dasp_pos field should be less than 10: %d", dasp_pos);
             byte packed = (dasp_pos & 0x0F) | (sd.detached << 4) | (sd.relative << 5) | (sd.display_units << 6);
             _output->writeByte(packed);
-            _output->writePackedUInt(sd.num_chars.hasValue() ? sd.num_chars.get() : 0);
-            _output->writeChar(sd.tag.hasValue() ? sd.tag.get() : 0);
+            _output->writePackedUInt(sd.num_chars.value_or(0));
+            _output->writeChar(sd.tag.value_or(0));
         }
         else if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
         {
@@ -354,7 +354,7 @@ void CmfSaver::_encodeExtSection(Molecule& mol, const Mapping& mapping)
             _encodeBaseSGroup(mol, sa, mapping);
             _encodeString(sa.label);
             _encodeString(sa.sa_class);
-            byte packed = static_cast<byte>(((int)(sa.contracted.hasValue() ? sa.contracted.get() : DisplayOption::Undefined) & 0x01) |
+            byte packed = static_cast<byte>(((int)(sa.contracted.value_or(DisplayOption::Undefined)) & 0x01) |
                                             (sa.bond_connections.size() << 1));
             _output->writeByte(packed);
             if (sa.bond_connections.size() > 0)
@@ -371,7 +371,7 @@ void CmfSaver::_encodeExtSection(Molecule& mol, const Mapping& mapping)
             _encode(CMF_REPEATINGUNIT);
             _encodeBaseSGroup(mol, su, mapping);
             _encodeString(su.label);
-            _output->writePackedUInt(su.connectivity.hasValue() ? su.connectivity.get() : SGroup::HEAD_TO_TAIL);
+            _output->writePackedUInt(su.connectivity.value_or(SGroup::HEAD_TO_TAIL));
         }
         else if (sg.sgroup_type == SGroup::SG_TYPE_MUL)
         {
@@ -379,7 +379,7 @@ void CmfSaver::_encodeExtSection(Molecule& mol, const Mapping& mapping)
             _encode(CMF_MULTIPLEGROUP);
             _encodeBaseSGroup(mol, sm, mapping);
             _encodeUIntArray(sm.parent_atoms, *mapping.atom_mapping);
-            const int multiplier = sm.multiplier.hasValue() ? sm.multiplier.get() : 0;
+            const int multiplier = sm.multiplier.value_or(0);
             if (multiplier < 0)
                 throw Error("internal error: SGroup multiplier is negative: %d", multiplier);
             _output->writePackedUInt(multiplier);
@@ -425,7 +425,7 @@ void CmfSaver::_writeSGroupsXyz(Molecule& mol, Output& output, const VecRange& r
         {
             DataSGroup& sd = (DataSGroup&)sg;
             _writeBaseSGroupXyz(output, sd, range);
-            Vec2f display_pos = sd.display_pos.hasValue() ? sd.display_pos.get() : Vec2f(0, 0);
+            Vec2f display_pos = sd.display_pos.value_or(Vec2f(0, 0));
             _writeVec2f(output, display_pos, range);
         }
         else if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
@@ -828,7 +828,7 @@ void CmfSaver::_updateSGroupsXyzMinMax(Molecule& mol, Vec3f& min, Vec3f& max)
             DataSGroup& s = (DataSGroup&)sg;
             _updateBaseSGroupXyzMinMax(s, min, max);
 
-            Vec2f display_pos_2d = s.display_pos.hasValue() ? s.display_pos.get() : Vec2f(0, 0);
+            Vec2f display_pos_2d = s.display_pos.value_or(Vec2f(0, 0));
             Vec3f display_pos(display_pos_2d.x, display_pos_2d.y, 0);
 
             min.min(display_pos);

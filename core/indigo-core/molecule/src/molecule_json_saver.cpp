@@ -222,9 +222,9 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
             writer.String(query_oper);
         }
 
-        if (dsg.display_pos.hasValue())
+        if (dsg.display_pos.has_value())
         {
-            const Vec2f& display_pos = dsg.display_pos.get();
+            const Vec2f& display_pos = dsg.display_pos.value();
             writer.Key("x");
             writeFloat(writer, display_pos.x);
             writer.Key("y");
@@ -249,7 +249,7 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
             writer.Bool(true);
         }
 
-        char tag = dsg.tag.hasValue() ? dsg.tag.get() : 0;
+        char tag = dsg.tag.value_or(0);
         if (tag != 0 && tag != ' ')
         {
             writer.Key("tag");
@@ -257,7 +257,7 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
             writer.String(tag_s.c_str());
         }
 
-        const int num_chars = dsg.num_chars.hasValue() ? dsg.num_chars.get() : 0;
+        const int num_chars = dsg.num_chars.value_or(0);
         if (num_chars > 0)
         {
             writer.Key("displayedChars");
@@ -269,7 +269,7 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
         Superatom& sa = (Superatom&)sgroup;
         writer.Key("name");
         writer.String(sgroup.label.size() ? sgroup.label.ptr() : "");
-        if (sa.contracted.hasValue() && sa.contracted.get() == DisplayOption::Expanded)
+        if (sa.contracted == DisplayOption::Expanded)
         {
             writer.Key("expanded");
             writer.Bool(true);
@@ -317,7 +317,7 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
         }
 
         writer.Key("connectivity");
-        const int connectivity = ru.connectivity.hasValue() ? ru.connectivity.get() : SGroup::HEAD_TO_TAIL;
+        const int connectivity = ru.connectivity.value_or(SGroup::HEAD_TO_TAIL);
         switch (connectivity)
         {
         case SGroup::HEAD_TO_TAIL:
@@ -342,7 +342,7 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
             writer.EndArray();
         }
         writer.Key("mul");
-        writer.Int(mg.multiplier.hasValue() ? mg.multiplier.get() : 0);
+        writer.Int(mg.multiplier.value_or(0));
     }
     break;
     case SGroup::SG_TYPE_MON:
@@ -353,7 +353,7 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
         break;
     case SGroup::SG_TYPE_COP: {
         CopolymerGroup& ru = (CopolymerGroup&)sgroup;
-        const int subtype = ru.sgroup_subtype.hasValue() ? ru.sgroup_subtype.get() : 0;
+        const int subtype = ru.sgroup_subtype.value_or(0);
         if (subtype != 0)
         {
             writer.Key("subtype");
@@ -372,7 +372,7 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
         }
 
         writer.Key("connectivity");
-        const int connectivity = ru.connectivity.hasValue() ? ru.connectivity.get() : SGroup::HEAD_TO_TAIL;
+        const int connectivity = ru.connectivity.value_or(SGroup::HEAD_TO_TAIL);
         switch (connectivity)
         {
         case SGroup::HEAD_TO_TAIL:

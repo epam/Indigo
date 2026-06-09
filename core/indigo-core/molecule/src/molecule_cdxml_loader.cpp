@@ -1186,7 +1186,7 @@ void MoleculeCdxmlLoader::_addBracket(BaseMolecule& mol, const CdxmlBracket& bra
                 if (bracket.usage == kCDXBracketUsage_MultipleGroup)
                 {
                     MultipleGroup& mg = (MultipleGroup&)sgroup;
-                    if (mg.multiplier.hasValue() && mg.multiplier.get())
+                    if (mg.multiplier != 0)
                         mg.parent_atoms.push(atom_idx);
                 }
             }
@@ -1290,7 +1290,7 @@ void MoleculeCdxmlLoader::_handleSGroup(SGroup& sgroup, const std::unordered_set
         int rep_start = mapping[start];
         int rep_end = mapping[end];
         MultipleGroup& mg = (MultipleGroup&)sgroup;
-        const int multiplier = mg.multiplier.hasValue() ? mg.multiplier.get() : 0;
+        const int multiplier = mg.multiplier.value_or(0);
         if (multiplier > 1)
         {
             int start_order = start_bond > 0 ? bmol.getBondOrder(start_bond) : -1;

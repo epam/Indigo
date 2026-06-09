@@ -287,7 +287,7 @@ void MoleculeSGroups::buildTree(Tree& tree)
     for (auto i = begin(); i != end(); i = next(i))
     {
         SGroup& sgroup = getSGroup(i);
-        tree.insert(i, sgroup.parent_idx.hasValue() ? sgroup.parent_idx.get() : -1);
+        tree.insert(i, sgroup.parent_idx.value_or(-1));
     }
 }
 
@@ -298,14 +298,14 @@ bool MoleculeSGroups::getParentAtoms(int idx, Array<int>& target)
 
 bool MoleculeSGroups::getParentAtoms(SGroup& sgroup, Array<int>& target)
 {
-    if (!sgroup.parent_idx.hasValue() || sgroup.parent_idx.get() < 0)
+    int pidx = sgroup.parent_idx.value_or(-1);
+    if (pidx < 0)
         return false;
-    int pidx = sgroup.parent_idx.get();
     if (!hasSGroup(pidx))
     {
-        if (!sgroup.parent_group.hasValue())
+        if (!sgroup.parent_group.has_value())
             return false;
-        pidx = findSGroupById(sgroup.parent_group.get());
+        pidx = findSGroupById(sgroup.parent_group.value());
         if (pidx < 0)
             return false;
     }
@@ -443,7 +443,7 @@ void MoleculeSGroups::findSGroups(int property, int value, Array<int>& sgs)
         for (i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
         {
             SGroup& sg = *_sgroups.at(i);
-            if (sg.brk_style.hasValue() && sg.brk_style.get() == value)
+            if (sg.brk_style == value)
             {
                 sgs.push(i);
             }
@@ -457,7 +457,7 @@ void MoleculeSGroups::findSGroups(int property, int value, Array<int>& sgs)
             if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
             {
                 Superatom& sup = (Superatom&)sg;
-                if (sup.contracted.hasValue() && sup.contracted.get() == (DisplayOption)value)
+                if (sup.contracted == (DisplayOption)value)
                 {
                     sgs.push(i);
                 }
@@ -469,7 +469,7 @@ void MoleculeSGroups::findSGroups(int property, int value, Array<int>& sgs)
         for (i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
         {
             SGroup& sg = *_sgroups.at(i);
-            if (sg.parent_group.hasValue() && sg.parent_group.get() == value)
+            if (sg.parent_group == value)
             {
                 sgs.push(i);
             }
@@ -481,9 +481,9 @@ void MoleculeSGroups::findSGroups(int property, int value, Array<int>& sgs)
             return;
 
         SGroup& sg = *_sgroups.at(value);
-        if (sg.parent_group.hasValue() && sg.parent_group.get() != 0)
+        if (sg.parent_group != 0)
         {
-            int idx = findSGroupById(sg.parent_group.get());
+            int idx = findSGroupById(sg.parent_group.value());
             if (idx != -1)
                 sgs.push(idx);
         }
@@ -625,7 +625,7 @@ void MoleculeSGroups::findSGroups(int property, const char* str, Array<int>& sgs
             if (sg.sgroup_type == SGroup::SG_TYPE_DAT)
             {
                 DataSGroup& dg = (DataSGroup&)sg;
-                if ((strlen(str) == 1) && dg.tag.hasValue() && str[0] == dg.tag.get())
+                if ((strlen(str) == 1) && dg.tag == str[0])
                 {
                     sgs.push(i);
                 }
@@ -776,9 +776,9 @@ std::vector<SGroupInfo> MoleculeSGroups::getOrderedSGroups()
     {
         SGroup& sg = infos[info_index].sgroup;
 
-        if (sg.parent_idx.hasValue())
+        if (sg.parent_idx.has_value())
         {
-            int parent_info = resolve_pool_index(sg.parent_idx.get());
+            int parent_info = resolve_pool_index(sg.parent_idx.value());
             if (parent_info >= 0)
             {
                 parent_info_index[info_index] = parent_info;
@@ -786,7 +786,7 @@ std::vector<SGroupInfo> MoleculeSGroups::getOrderedSGroups()
             }
         }
 
-        int parent_id = sg.parent_group.hasValue() ? sg.parent_group.get() : 0;
+        int parent_id = sg.parent_group.value_or(0);
         if (parent_id <= 0)
             continue;
 

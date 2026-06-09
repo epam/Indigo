@@ -278,10 +278,11 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
         for (i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
         {
             SGroup& sgroup = sgroups.getSGroup(i);
-            if (!sgroup.parent_idx.hasValue() || sgroup.parent_idx.get() < 0)
+            const int parent_idx = sgroup.parent_idx.value_or(-1);
+            if (parent_idx < 0)
                 continue;
 
-            const auto it = old_idx_to_new.find(sgroup.parent_idx.get());
+            const auto it = old_idx_to_new.find(parent_idx);
             if (it != old_idx_to_new.end())
                 sgroup.parent_idx = it->second;
         }
@@ -1065,7 +1066,7 @@ void BaseMolecule::removeBond(int idx)
 void BaseMolecule::removeSGroup(int idx)
 {
     SGroup& sg = sgroups.getSGroup(idx);
-    _checkSgroupHierarchy(sg.parent_group.hasValue() ? sg.parent_group.get() : 0, sg.index);
+    _checkSgroupHierarchy(sg.parent_group.value_or(0), sg.index);
 
     sgroups.remove(idx);
 }
@@ -1074,7 +1075,7 @@ void BaseMolecule::removeSGroupWithBasis(int idx)
 {
     QS_DEF(Array<int>, sg_atoms);
     SGroup& sg = sgroups.getSGroup(idx);
-    _checkSgroupHierarchy(sg.parent_group.hasValue() ? sg.parent_group.get() : 0, sg.index);
+    _checkSgroupHierarchy(sg.parent_group.value_or(0), sg.index);
     sg_atoms.copy(sg.atoms);
     removeAtoms(sg_atoms);
 }

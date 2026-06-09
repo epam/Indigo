@@ -80,16 +80,61 @@ namespace indigo
             return *this;
         }
 
-        const T& get() const
+        T& value()
         {
             if (!_has_value)
                 throw Error("\"%s\" variable was not set", variable_name.ptr());
             return _value;
         }
 
-        operator const T&() const
+        const T& value() const
         {
-            return get();
+            if (!_has_value)
+                throw Error("\"%s\" variable was not set", variable_name.ptr());
+            return _value;
+        }
+
+        template <typename U>
+        T value_or(U&& default_value) const
+        {
+            return _has_value ? _value : static_cast<T>(std::forward<U>(default_value));
+        }
+
+        explicit operator bool() const
+        {
+            return _has_value;
+        }
+
+        bool operator==(const Nullable<T>& other) const
+        {
+            if (_has_value != other._has_value)
+                return false;
+            return !_has_value || _value == other._value;
+        }
+
+        bool operator!=(const Nullable<T>& other) const
+        {
+            return !(*this == other);
+        }
+
+        bool operator==(const T& value) const
+        {
+            return _has_value && _value == value;
+        }
+
+        bool operator!=(const T& value) const
+        {
+            return !(*this == value);
+        }
+
+        friend bool operator==(const T& value, const Nullable<T>& nullable)
+        {
+            return nullable == value;
+        }
+
+        friend bool operator!=(const T& value, const Nullable<T>& nullable)
+        {
+            return !(nullable == value);
         }
 
         Nullable<T>& operator=(const T& value)
@@ -109,7 +154,7 @@ namespace indigo
             _has_value = false;
         }
 
-        bool hasValue() const
+        bool has_value() const
         {
             return _has_value;
         }

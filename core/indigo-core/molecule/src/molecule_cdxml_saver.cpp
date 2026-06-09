@@ -1134,9 +1134,9 @@ void MoleculeCdxmlSaver::addFragmentNodes(BaseMolecule& mol, tinyxml2::XMLElemen
         {
             XMLElement* t = _doc->NewElement("t");
             node->LinkEndChild(t);
-            if (sa.display_position.hasValue())
+            if (sa.display_position.has_value())
             {
-                const Vec3f& display_position = sa.display_position.get();
+                const Vec3f& display_position = sa.display_position.value();
                 Vec2f pos(display_position.x + offset.x, -display_position.y - offset.y);
                 pos.scale(_bond_length);
                 Vec2f v1(pos.x - _bond_length / 2, pos.y - _bond_length / 2);

@@ -868,9 +868,10 @@ void MolfileLoader::_fillSGroupsParentIndices()
     for (auto i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
     {
         SGroup& sgroup = sgroups.getSGroup(i);
-        if (sgroup.parent_group.hasValue() && indices.count(sgroup.parent_group.get()) == 1)
+        const int parent_group = sgroup.parent_group.value_or(0);
+        if (parent_group != 0 && indices.count(parent_group) == 1)
         {
-            const auto it = indices.find(sgroup.parent_group.get());
+            const auto it = indices.find(parent_group);
             // TODO: check fix
             auto parent_idx = it->second;
             SGroup& parent_sgroup = sgroups.getSGroup(parent_idx);
