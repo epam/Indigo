@@ -320,15 +320,11 @@ void SmilesLoader::_readOtherStuff()
                         // markers on its neighbors.
                         int k;
                         const Vertex& v = _bmol->getVertex(i);
-                        const bool source_star_attachment_point = _atoms[i].star_atom && !_atoms[i].brackets;
 
                         Array<int> bondsToRemove;
                         for (k = v.neiBegin(); k != v.neiEnd(); k = v.neiNext(k))
                         {
-                            int nei = v.neiVertex(k);
-                            _bmol->addAttachmentPoint(rnum, nei);
-                            if (source_star_attachment_point)
-                                _bmol->markAttachmentPointAsStar(rnum, nei);
+                            _bmol->addAttachmentPoint(rnum, v.neiVertex(k));
                             if (_bmol->findEdgeIndex(i, v.neiVertex(k)) >= 0)
                             {
                                 bondsToRemove.push(_bmol->findEdgeIndex(i, v.neiVertex(k)));
