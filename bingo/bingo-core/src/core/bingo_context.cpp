@@ -220,44 +220,44 @@ void bingoGetName(Scanner& scanner, Array<char>& result)
 StereocentersOptions BingoContext::getStereocentersOptions()
 {
     StereocentersOptions opt;
-    opt.ignore_errors = ignore_stereocenter_errors;
-    opt.bidirectional_mode = stereochemistry_bidirectional_mode;
-    opt.detect_haworth_projection = stereochemistry_detect_haworth_projection;
+    opt.ignore_errors = ignore_stereocenter_errors.value();
+    opt.bidirectional_mode = stereochemistry_bidirectional_mode.value();
+    opt.detect_haworth_projection = stereochemistry_detect_haworth_projection.value();
     return opt;
 }
 
 void BingoContext::setLoaderSettings(MoleculeAutoLoader& loader)
 {
-    loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
-    loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
+    loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom.value();
+    loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch.value();
     loader.stereochemistry_options = getStereocentersOptions();
-    loader.ignore_cistrans_errors = ignore_cistrans_errors;
-    loader.ignore_bad_valence = ignore_bad_valence;
+    loader.ignore_cistrans_errors = ignore_cistrans_errors.value();
+    loader.ignore_bad_valence = ignore_bad_valence.value();
 }
 
 void BingoContext::setLoaderSettings(SmilesLoader& loader)
 {
-    loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
+    loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch.value();
     loader.stereochemistry_options = getStereocentersOptions();
-    loader.ignore_cistrans_errors = ignore_cistrans_errors;
-    loader.ignore_bad_valence = ignore_bad_valence;
+    loader.ignore_cistrans_errors = ignore_cistrans_errors.value();
+    loader.ignore_bad_valence = ignore_bad_valence.value();
 }
 
 void BingoContext::setLoaderSettings(ReactionAutoLoader& loader)
 {
-    loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
-    loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
+    loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom.value();
+    loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch.value();
     loader.stereochemistry_options = getStereocentersOptions();
-    loader.ignore_cistrans_errors = ignore_cistrans_errors;
-    loader.ignore_bad_valence = ignore_bad_valence;
+    loader.ignore_cistrans_errors = ignore_cistrans_errors.value();
+    loader.ignore_bad_valence = ignore_bad_valence.value();
 }
 
 void BingoContext::setLoaderSettings(RSmilesLoader& loader)
 {
-    loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
+    loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch.value();
     loader.stereochemistry_options = getStereocentersOptions();
-    loader.ignore_cistrans_errors = ignore_cistrans_errors;
-    loader.ignore_bad_valence = ignore_bad_valence;
+    loader.ignore_cistrans_errors = ignore_cistrans_errors.value();
+    loader.ignore_bad_valence = ignore_bad_valence.value();
 }
 
 void BingoContext::setSaverSettings(MolfileSaver& saver)
