@@ -1305,7 +1305,7 @@ void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
         writer.StartArray();
         for (int i = 0; i < tg.modification_types.size(); i++)
         {
-            writer.String(tg.modification_types[i].ptr());
+            writer.String(tg.modification_types[i]->ptr());
         }
         writer.EndArray();
     }
@@ -1354,7 +1354,7 @@ void MoleculeJsonSaver::saveAmbiguousMonomerTemplate(TGroup& tg, JsonWriter& wri
     {
         writer.StartObject();
         writer.Key("templateId");
-        writer.String(tg.aliases[i].ptr());
+        writer.String(tg.aliases[i]->ptr());
         writer.EndObject();
         if (tg.ratios[i] >= 0)
         {

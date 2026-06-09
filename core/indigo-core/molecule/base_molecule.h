@@ -24,6 +24,7 @@
 #include <set>
 
 #include "base_cpp/obj_array.h"
+#include "base_cpp/ptr_array.h"
 #include "base_cpp/properties_map.h"
 #include "base_cpp/red_black.h"
 #include "graph/graph.h"
@@ -320,7 +321,7 @@ namespace indigo
         static void collapse(BaseMolecule& bm);
 
         int transformSCSRtoFullCTAB();
-        int transformFullCTABtoSCSR(ObjArray<TGroup>& templates);
+        int transformFullCTABtoSCSR(PtrArray<TGroup>& templates);
         int transformHELMtoSGroups(Array<char>& helm_class, Array<char>& helm_name, Array<char>& code, Array<char>& natreplace, StringPool& r_names);
         void transformSuperatomsToTemplates(int template_id, MonomerTemplateLibrary* mtl = nullptr);
         void transformTemplatesToSuperatoms();
@@ -482,7 +483,7 @@ namespace indigo
         };
 
         ObjPool<TemplateAttPoint> template_attachment_points; // All used APs -
-        ObjArray<ObjPool<int>> template_attachment_indexes;   //
+        PtrArray<ObjPool<int>> template_attachment_indexes;   //
 
         MoleculeSGroups sgroups;
 
@@ -754,10 +755,10 @@ namespace indigo
         RedBlackMap<int, bool> _show_cip_atoms;
         RedBlackMap<int, CIPDesc> _cip_bonds;
 
-        ObjArray<Array<int>> _rsite_attachment_points;
+        PtrArray<Array<int>> _rsite_attachment_points;
         bool _rGroupFragment;
 
-        ObjArray<Array<int>> _attachment_index;
+        PtrArray<Array<int>> _attachment_index;
 
         int _chiral_flag = -1;
 

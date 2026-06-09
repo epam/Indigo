@@ -419,7 +419,7 @@ void QueryMolecule::_removeAtoms(const Array<int>& indices, const int* mapping)
         int idx = indices[i];
         _atoms.reset(idx);
         if (idx < _rsite_attachment_points.size())
-            _rsite_attachment_points[idx].clear();
+            _rsite_attachment_points[idx]->clear();
     }
 
     // Collect bonds to remove
