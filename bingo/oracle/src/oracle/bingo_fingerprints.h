@@ -148,7 +148,7 @@ namespace indigo
         static int _cmp_optimize_counters(int a, int b, void* context);
 
         // when screening
-        ObjArray<Block> _all_blocks;
+        PtrArray<Block> _all_blocks;
 
         static int _cmp_counters(int a, int b, void* context);
         static int _cmp_int(int a, int b, void* context);
