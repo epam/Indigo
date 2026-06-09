@@ -23,7 +23,7 @@ public:
     ~RingoPgBuildEngine() override;
 
     bool processStructure(StructCache& struct_cache) override;
-    void processStructures(indigo::ObjArray<StructCache>& struct_cache) override;
+    void processStructures(indigo::PtrArray<StructCache>& struct_cache) override;
 
     int getFpSize() override;
     int getType() const override

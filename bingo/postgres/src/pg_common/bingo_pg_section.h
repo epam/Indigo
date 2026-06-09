@@ -99,7 +99,7 @@ private:
     indigo::Array<int> _offsetMap;
     indigo::Array<int> _offsetBin;
 
-    indigo::ObjArray<BingoPgBuffer> _bitsCountBuffers;
+    indigo::PtrArray<BingoPgBuffer> _bitsCountBuffers;
 };
 
 #endif /* BINGO_PG_SECTION1_H */

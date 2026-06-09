@@ -86,11 +86,11 @@ int BingoPgBuildEngine::_getNextRecordCb(void* context)
     BingoPgBuildEngine* engine = (BingoPgBuildEngine*)context;
 
     int& cache_idx = engine->_currentCache;
-    ObjArray<StructCache>& struct_caches = *(engine->_structCaches);
+    PtrArray<StructCache>& struct_caches = *(engine->_structCaches);
     if (cache_idx >= struct_caches.size())
         return 0;
 
-    StructCache& struct_cache = struct_caches[cache_idx];
+    StructCache& struct_cache = *struct_caches[cache_idx];
 
     int struct_size;
     const char* struct_ptr = struct_cache.text->getText(struct_size);
@@ -106,8 +106,8 @@ int BingoPgBuildEngine::_getNextRecordCb(void* context)
 void BingoPgBuildEngine::_processErrorCb(int id, void* context)
 {
     BingoPgBuildEngine* engine = (BingoPgBuildEngine*)context;
-    ObjArray<StructCache>& struct_caches = *(engine->_structCaches);
-    ItemPointer item_ptr = &(struct_caches[id].ptr);
+    PtrArray<StructCache>& struct_caches = *(engine->_structCaches);
+    ItemPointer item_ptr = &(struct_caches[id]->ptr);
     int block_number = ItemPointerGetBlockNumber(item_ptr);
     int offset_number = ItemPointerGetOffsetNumber(item_ptr);
     elog(WARNING, "build engine: error while processing record with ctid='(%d,%d)'::tid: %s", block_number, offset_number, engine->bingoCore.warning.ptr());

@@ -64,7 +64,7 @@ private:
      */
     bool _buildingState;
 
-    indigo::ObjArray<BingoPgBuildEngine::StructCache> _parrallelCache;
+    indigo::PtrArray<BingoPgBuildEngine::StructCache> _parrallelCache;
 
     // #ifdef BINGO_PG_INTEGRITY_DEBUG
     //    indigo::std::unique_ptr<FileOutput> debug_fileoutput;

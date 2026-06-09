@@ -10,6 +10,7 @@
 #include "base_c/bitarray.h"
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
+#include "base_cpp/ptr_array.h"
 #include "base_cpp/tlscont.h"
 #include "bingo_core_c_internal.h"
 #include "bingo_postgres.h"
@@ -103,15 +104,16 @@ public:
         }
 
         template <typename T>
-        static void handleDArray(indigo::ObjArray<indigo::Array<T>>& data, indigo::Scanner* scanner, indigo::Output* output)
+        static void handleDArray(indigo::PtrArray<indigo::Array<T>>& data, indigo::Scanner* scanner, indigo::Output* output)
         {
             int size = data.size();
             handleNumber(size, scanner, output);
             if (scanner)
-                data.resize(size);
+                while (data.size() < size)
+                    data.push();
             for (int i = 0; i < size; ++i)
             {
-                handleArray(data[i], scanner, output);
+                handleArray(*data[i], scanner, output);
             }
         }
 

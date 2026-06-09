@@ -26,7 +26,7 @@ public:
     ~MangoPgBuildEngine() override;
 
     bool processStructure(StructCache& struct_cache) override;
-    void processStructures(indigo::ObjArray<StructCache>& struct_caches) override;
+    void processStructures(indigo::PtrArray<StructCache>& struct_caches) override;
 
     int getFpSize() override;
     int getType() const override

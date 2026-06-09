@@ -282,7 +282,7 @@ void BingoPgSection::readSectionBitsCount(indigo::Array<int>& bits_number)
     bits_number.zerofill();
 
     if (_bitsCountBuffers.size() == 0)
-        _bitsCountBuffers.resize(SECTION_BITSNUMBER_PAGES);
+        while (_bitsCountBuffers.size() < SECTION_BITSNUMBER_PAGES) _bitsCountBuffers.push();
 
     int data_len, str_idx;
     unsigned short* buffer_data;
@@ -291,7 +291,7 @@ void BingoPgSection::readSectionBitsCount(indigo::Array<int>& bits_number)
         if (buf_idx * SECTION_BITS_PER_BLOCK >= _sectionInfo.n_structures)
             break;
 
-        BingoPgBuffer& bits_buffer = _bitsCountBuffers[buf_idx];
+        BingoPgBuffer& bits_buffer = *_bitsCountBuffers[buf_idx];
         bits_buffer.readBuffer(_index, _offset + buf_idx + SECTION_META_PAGES, BINGO_PG_READ);
         buffer_data = (unsigned short*)bits_buffer.getIndexData(data_len);
         for (int page_str_idx = 0; page_str_idx < SECTION_BITS_PER_BLOCK; ++page_str_idx)
@@ -392,13 +392,13 @@ void BingoPgSection::_setBitsCountData(unsigned short bits_count)
 {
 
     if (_bitsCountBuffers.size() == 0)
-        _bitsCountBuffers.resize(SECTION_BITSNUMBER_PAGES);
+        while (_bitsCountBuffers.size() < SECTION_BITSNUMBER_PAGES) _bitsCountBuffers.push();
 
     int data_len;
     int buf_idx = _sectionInfo.n_structures / SECTION_BITS_PER_BLOCK;
     int page_str_idx = _sectionInfo.n_structures % SECTION_BITS_PER_BLOCK;
 
-    BingoPgBuffer& bits_buffer = _bitsCountBuffers[buf_idx];
+    BingoPgBuffer& bits_buffer = *_bitsCountBuffers[buf_idx];
     bits_buffer.readBuffer(_index, _offset + buf_idx + SECTION_META_PAGES, BINGO_PG_WRITE);
     unsigned short* buffer_data = (unsigned short*)bits_buffer.getIndexData(data_len);
     buffer_data[page_str_idx] = bits_count;
