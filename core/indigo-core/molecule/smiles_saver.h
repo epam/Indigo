@@ -23,6 +23,7 @@
 #include "base_cpp/exception.h"
 #include "base_cpp/list.h"
 #include "base_cpp/obj_array.h"
+#include "base_cpp/ptr_array.h"
 #include "base_cpp/tlscont.h"
 #include "molecule/query_molecule.h"
 
@@ -155,7 +156,7 @@ namespace indigo
 
         CP_DECL;
         TL_CP_DECL(Pool<List<int>::Elem>, _neipool);
-        TL_CP_DECL(ObjArray<_Atom>, _atoms);
+        TL_CP_DECL(PtrArray<_Atom>, _atoms);
         TL_CP_DECL(Array<int>, _hcount);
         TL_CP_DECL(Array<int>, _hcount_ignored);
         TL_CP_DECL(Array<_DBond>, _dbonds);
