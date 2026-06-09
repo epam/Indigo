@@ -440,6 +440,7 @@ void BaseMolecule::unfoldHydrogens(Array<int>* markers_out, int max_h_cnt, bool 
                 cis_trans.registerUnfoldedHydrogen(*this, i, new_h_idx);
                 allene_stereo.registerUnfoldedHydrogen(i, new_h_idx);
                 sgroups.registerUnfoldedHydrogen(i, new_h_idx);
+                registerUnfoldedHydrogenQueryComponent(i, new_h_idx);
             }
 
             setImplicitH(i, impl_h - h_cnt);

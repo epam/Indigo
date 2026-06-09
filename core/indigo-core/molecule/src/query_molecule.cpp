@@ -1379,6 +1379,12 @@ void QueryMolecule::getQueryAtomLabel(int qa, Array<char>& result)
         result.readString(it->second.c_str(), true);
 }
 
+void QueryMolecule::registerUnfoldedHydrogenQueryComponent(int atom_idx, int added_hydrogen)
+{
+    components.expandFill(added_hydrogen + 1, 0);
+    components[added_hydrogen] = components[atom_idx];
+}
+
 void QueryMolecule::getComponentNeighbors(std::list<std::unordered_set<int>>& componentNeighbors)
 {
     std::unordered_map<int, std::unordered_set<int>> componentAtoms;
