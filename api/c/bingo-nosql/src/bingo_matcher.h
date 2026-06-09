@@ -17,6 +17,7 @@
 #include "indigo_reaction.h"
 
 #include "base_cpp/fixed_deque.h"
+#include "base_cpp/ptr_array.h"
 #include "base_cpp/os_thread_wrapper.h"
 #include "math/statistics.h"
 #include "molecule/molecule_exact_matcher.h"
@@ -339,7 +340,7 @@ namespace bingo
     public:
         ReactionSubMatcher(/*const */ BaseIndex& index);
 
-        const ObjArray<Array<int>>& currentMapping();
+        const PtrArray<Array<int>>& currentMapping();
 
         virtual bool tryCurrent(int current_id, IndigoObject* current_obj) /*const*/ override;
         virtual bool tryObject(IndigoObject* current_obj) override;
@@ -347,7 +348,7 @@ namespace bingo
         virtual IndigoObject* allocateObject() override;
 
     private:
-        ObjArray<Array<int>> _mapping;
+        PtrArray<Array<int>> _mapping;
 
         IndexCurrentReaction* _current_rxn;
     };
