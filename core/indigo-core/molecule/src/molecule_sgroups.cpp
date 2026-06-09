@@ -803,45 +803,36 @@ std::vector<SGroupInfo> MoleculeSGroups::getOrderedSGroups()
             parent_info_index[info_index] = parent_info;
     }
 
-    // Phase 3: resolve nesting depth. DFS is used only to compute depth; emission stays
-    // level-ordered so all roots are written before all children, then grandchildren.
+    // Phase 3: run DFS over parent links to resolve depth and reject cycles.
+    // Emission remains level-ordered: roots first, then children, then grandchildren.
     std::vector<int> depth(infos.size(), -1);
-    std::vector<int> chain_pos(infos.size(), -1);
+    enum class VisitState
+    {
+        NotVisited,
+        Visiting,
+        Visited
+    };
+    std::vector<VisitState> state(infos.size(), VisitState::NotVisited);
 
-    auto clear_chain_positions = [&](const std::vector<int>& chain) {
-        for (int info_index : chain)
-            chain_pos[info_index] = -1;
+    auto resolve_depth = [&](auto&& self, int info_index) -> int {
+        if (state[info_index] == VisitState::Visiting)
+            throw Error("SGroup parent hierarchy contains a cycle");
+        if (state[info_index] == VisitState::Visited)
+            return depth[info_index];
+
+        state[info_index] = VisitState::Visiting;
+        const int parent_info = parent_info_index[info_index];
+        depth[info_index] = parent_info >= 0 ? self(self, parent_info) + 1 : 0;
+        state[info_index] = VisitState::Visited;
+        return depth[info_index];
     };
 
     for (int info_index = 0; info_index < static_cast<int>(infos.size()); info_index++)
     {
-        if (depth[info_index] >= 0)
-            continue;
-
-        std::vector<int> chain;
-        int current = info_index;
-
-        // Walk through parents until a root, a memoized parent, or a cycle is found.
-        while (current >= 0 && depth[current] < 0)
+        if (state[info_index] == VisitState::NotVisited)
         {
-            if (chain_pos[current] >= 0)
-            {
-                clear_chain_positions(chain);
-                throw Error("SGroup parent hierarchy contains a cycle");
-            }
-
-            chain_pos[current] = static_cast<int>(chain.size());
-            chain.push_back(current);
-            current = parent_info_index[current];
+            resolve_depth(resolve_depth, info_index);
         }
-
-        if (chain.empty())
-            continue;
-
-        int current_depth = current >= 0 ? depth[current] : -1;
-        for (auto it = chain.rbegin(); it != chain.rend(); ++it)
-            depth[*it] = ++current_depth;
-        clear_chain_positions(chain);
     }
 
     // Phase 4: emit by depth while preserving source order for SGroups at the same depth.

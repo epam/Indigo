@@ -564,6 +564,38 @@ TEST_F(IndigoCoreFormatsTest, mol_sgroups_parent_idx_cycle)
     EXPECT_THROW(mol.sgroups.getOrderedSGroups(), Exception);
 }
 
+TEST_F(IndigoCoreFormatsTest, mol_sgroups_parent_group_cycle)
+{
+    Molecule mol;
+
+    const char* molfile = R"(SGroup Parent Cycle
+  Indigo    060926
+
+  0  0  0     0  0            999 V3000
+M  V30 BEGIN CTAB
+M  V30 COUNTS 2 1 2 0 0
+M  V30 BEGIN ATOM
+M  V30 1 C 0 0 0 0
+M  V30 2 C 1 0 0 0
+M  V30 END ATOM
+M  V30 BEGIN BOND
+M  V30 1 1 1 2
+M  V30 END BOND
+M  V30 BEGIN SGROUP
+M  V30 1 GEN 0 ATOMS=(1 1) PARENT=2
+M  V30 2 GEN 0 ATOMS=(1 2) PARENT=1
+M  V30 END SGROUP
+M  V30 END CTAB
+M  END
+)";
+
+    BufferScanner scanner(molfile);
+    MolfileLoader loader(scanner);
+    loader.loadMolecule(mol);
+
+    EXPECT_THROW(mol.sgroups.getOrderedSGroups(), Exception);
+}
+
 TEST_F(IndigoCoreFormatsTest, smarts_load_save)
 {
     QueryMolecule q_mol;
