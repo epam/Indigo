@@ -82,10 +82,10 @@ void MoleculeLayoutGraphSmart::makeLayoutSubgraph(MoleculeLayoutGraph& graph, Fi
     for (int i = 0; i < vertices.size(); i++)
     {
         new_vertex.ext_idx = vertices[i];
-        new_vertex.orig_idx = graph._layout_vertices[vertices[i]].orig_idx;
-        new_vertex.type = graph._layout_vertices[vertices[i]].type;
-        new_vertex.morgan_code = graph._layout_vertices[vertices[i]].morgan_code;
-        new_vertex.pos.copy(graph._layout_vertices[vertices[i]].pos);
+        new_vertex.orig_idx = graph._layout_vertices[vertices[i]]->orig_idx;
+        new_vertex.type = graph._layout_vertices[vertices[i]]->type;
+        new_vertex.morgan_code = graph._layout_vertices[vertices[i]]->morgan_code;
+        new_vertex.pos.copy(graph._layout_vertices[vertices[i]]->pos);
         registerLayoutVertex(vertex_mapping[vertices[i]], new_vertex);
     }
 
@@ -96,8 +96,8 @@ void MoleculeLayoutGraphSmart::makeLayoutSubgraph(MoleculeLayoutGraph& graph, Fi
         int ext_idx = graph.findEdgeIndex(vertices[edge.beg], vertices[edge.end]);
 
         new_edge.ext_idx = ext_idx;
-        new_edge.orig_idx = graph._layout_edges[ext_idx].orig_idx;
-        new_edge.type = graph._layout_edges[ext_idx].type;
+        new_edge.orig_idx = graph._layout_edges[ext_idx]->orig_idx;
+        new_edge.type = graph._layout_edges[ext_idx]->type;
         registerLayoutEdge(i, new_edge);
     }
 

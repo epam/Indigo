@@ -546,7 +546,7 @@ AnswerField::AnswerField(int len, int target_x, int target_y, float /* target_ro
             _coord_diff_reminder[i] = (_coord_diff_reminder[i - 1] + 1) % 3;
     }
 
-    ObjArray<Array<rectangle>> border_sample_array;
+    PtrArray<Array<rectangle>> border_sample_array;
     border_sample_array.clear();
     for (int i = 0; i <= length; i++)
     {
@@ -556,7 +556,7 @@ AnswerField::AnswerField(int len, int target_x, int target_y, float /* target_ro
     border_sample.clear_resize(length + 1);
     for (int i = 0; i <= length; i++)
     {
-        border_sample[i] = border_sample_array[i].ptr() + i;
+        border_sample[i] = border_sample_array[i]->ptr() + i;
     }
 
     border_sample[0][0].set(0, 0, 0, 0);
@@ -581,7 +581,7 @@ AnswerField::AnswerField(int len, int target_x, int target_y, float /* target_ro
     border.clear_resize(length + 1);
     for (int i = 0; i <= length; i++)
     {
-        border[i] = border_array[i].ptr() + i;
+        border[i] = border_array[i]->ptr() + i;
     }
 
     for (int l = 0; l <= length; l++)
@@ -630,16 +630,16 @@ AnswerField::AnswerField(int len, int target_x, int target_y, float /* target_ro
         _lattices.push();
         for (int rot = -l; rot <= l; rot++)
         {
-            _lattices.top().push();
+            _lattices.top()->push();
             for (int p = 0; p < 2; p++)
             {
                 if (abs(rot) % 2 == _rotation_parity[l])
                 {
-                    _lattices.top().top().push(border[l][rot], _coord_diff_reminder[l], free_area);
+                    _lattices.top()->top()->push(border[l][rot], _coord_diff_reminder[l], free_area);
                     free_area += TriangleLattice::getAllocationSize(border[l][rot]);
                 }
                 else
-                    _lattices.top().top().push();
+                    _lattices.top()->top()->push();
             }
         }
     }
@@ -667,7 +667,7 @@ TriangleLattice& AnswerField::getLattice(int l, int rot, int p)
     if (l < 0 || l > length || rot < -l || rot > l || !!p != p)
         return _sink_lattice;
 
-    return _lattices[l][rot + l][p];
+    return *(*(*_lattices[l])[rot + l])[p];
 }
 
 void AnswerField::fill()
@@ -828,7 +828,7 @@ void MoleculeLayoutMacrocyclesLattice::CycleLayout::init(int* up_point)
 
 float MoleculeLayoutMacrocyclesLattice::preliminary_layout(CycleLayout& cl)
 {
-    QS_DEF(ObjArray<ObjArray<Array<bool>>>, can);
+    QS_DEF(PtrArray<PtrArray<Array<bool>>>, can);
 
     can.clear();
     int maxrot = 19;    // |[0, 18]|
@@ -836,11 +836,11 @@ float MoleculeLayoutMacrocyclesLattice::preliminary_layout(CycleLayout& cl)
     for (int i = 0; i <= length; i++)
     {
         can.push();
-        can.top().clear();
+        can.top()->clear();
         for (int j = 0; j < maxrot; j++)
         {
-            can.top().push();
-            can.top().top().clear_resize(mask_count);
+            can.top()->push();
+            can.top()->top()->clear_resize(mask_count);
         }
     }
 
@@ -865,11 +865,11 @@ float MoleculeLayoutMacrocyclesLattice::preliminary_layout(CycleLayout& cl)
             for (int j = 0; j < maxrot; j++)
             {
                 for (int k = 0; k < mask_count; k++)
-                    can[i][j][k] = false;
+                    (*(*can[i])[j])[k] = false;
             }
         }
 
-        can[0][6][start_mask] = true;
+        (*(*can[0])[6])[start_mask] = true;
         int curr_mask;
 
         for (int i = 0; i < length; i++)
@@ -877,7 +877,7 @@ float MoleculeLayoutMacrocyclesLattice::preliminary_layout(CycleLayout& cl)
             for (int j = 0; j < maxrot; j++)
             {
                 for (int mask = 0; mask < mask_count; mask++)
-                    if (can[i][j][mask])
+                    if ((*(*can[i])[j])[mask])
                     {
                         for (int iup = 0; iup <= 1; iup++)
                         {
@@ -890,7 +890,7 @@ float MoleculeLayoutMacrocyclesLattice::preliminary_layout(CycleLayout& cl)
                                 else
                                     rot--;
                                 if (rot >= 0 && rot < maxrot)
-                                    can[i + 1][rot][curr_mask & 7] = true;
+                                    (*(*can[i + 1])[rot])[curr_mask & 7] = true;
                             }
                         }
                     }
@@ -898,7 +898,7 @@ float MoleculeLayoutMacrocyclesLattice::preliminary_layout(CycleLayout& cl)
         }
 
         for (int rot = 0; rot < maxrot; rot++)
-            if (can[length][rot][start_mask])
+            if ((*(*can[length])[rot])[start_mask])
             {
                 if (abs(best_rot - 12) > abs(rot - 12))
                 {
@@ -921,7 +921,7 @@ float MoleculeLayoutMacrocyclesLattice::preliminary_layout(CycleLayout& cl)
                             int previ = i ? i - 1 : length - 1;
                             if (_edge_stereo[previ] == 0 || _edge_stereo[previ] == is_cis[mask])
                             {
-                                if (can[i][newrot][mask >> 1])
+                                if ((*(*can[i])[newrot])[mask >> 1])
                                 {
                                     curr_rot = newrot;
                                     curr_mask = mask >> 1;

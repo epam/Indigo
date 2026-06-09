@@ -913,7 +913,7 @@ float MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool /* profi */)
         }
     };
 
-    QS_DEF(ObjArray<point>, points);
+    QS_DEF(PtrArray<point>, points);
     points.clear();
 
     int critical_diff_grid = infinity - 1;
@@ -1026,10 +1026,10 @@ float MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool /* profi */)
     for (int index = 0; index < points.size(); index++)
     {
         profTimerStart(tt, "selector.for");
-        x_result[length] = points[index].x;
-        y_result[length] = points[index].y;
-        rot_result[length] = points[index].rot;
-        p_result[length] = points[index].p;
+        x_result[length] = points[index]->x;
+        y_result[length] = points[index]->y;
+        rot_result[length] = points[index]->rot;
+        p_result[length] = points[index]->p;
 
         for (int k = length - 1; k > 0; k--)
         {
@@ -1179,7 +1179,7 @@ float MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool /* profi */)
         for (int i = ind; i >= 0; i--)
             p[i] -= p[0];
 
-        if (points[index].type == CIRCLE_TYPE)
+        if (points[index]->type == CIRCLE_TYPE)
         {
             if (p[ind].lengthSqr() < EPSILON)
                 continue;
@@ -1208,7 +1208,7 @@ float MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool /* profi */)
         // for (int i = 0; i <= ind; i++ ) printf("%5.5f %5.5f\n", p[i].x, p[i].y);
         smoothing2(ind, length, rotateAngle, edgeLenght, vertexNumber, p);
 
-        int diff = minRotates[length][points[index].rot][points[index].p][points[index].x][points[index].y];
+        int diff = minRotates[length][points[index]->rot][points[index]->p][points[index]->x][points[index]->y];
         for (int i = 0; i < length - 1; i++)
         {
             if (rotateAngle[i] == 1 && rotateAngle[i + 1] == 1)

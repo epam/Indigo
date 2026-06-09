@@ -52,16 +52,16 @@ void MoleculeLayoutGraph::_copyLayout(MoleculeLayoutGraph& component)
     int i;
     for (i = component.vertexBegin(); i < component.vertexEnd(); i = component.vertexNext(i))
     {
-        LayoutVertex& vert = component._layout_vertices[i];
-        _layout_vertices[vert.ext_idx].pos.copy(vert.pos);
-        _layout_vertices[vert.ext_idx].type = vert.type;
+        LayoutVertex& vert = *component._layout_vertices[i];
+        _layout_vertices[vert.ext_idx]->pos.copy(vert.pos);
+        _layout_vertices[vert.ext_idx]->type = vert.type;
     }
 
     for (i = component.edgeBegin(); i < component.edgeEnd(); i = component.edgeNext(i))
     {
-        LayoutEdge& edge = component._layout_edges[i];
+        LayoutEdge& edge = *component._layout_edges[i];
 
-        _layout_edges[edge.ext_idx].type = edge.type;
+        _layout_edges[edge.ext_idx]->type = edge.type;
     }
 }
 
@@ -372,7 +372,7 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates(float bond_length)
             adjacent_list.clear();
 
             for (i = vert_k.neiBegin(); i < vert_k.neiEnd(); i = vert_k.neiNext(i))
-                if (_layout_vertices[vert_k.neiVertex(i)].type == ELEMENT_NOT_DRAWN)
+                if (_layout_vertices[vert_k.neiVertex(i)]->type == ELEMENT_NOT_DRAWN)
                     adjacent_list.push(vert_k.neiVertex(i));
 
             if (adjacent_list.size() == 0)
@@ -491,12 +491,12 @@ int MoleculeLayoutGraphSimple::_pattern_embedding(Graph& subgraph, Graph& superg
     // TODO: correct element marking (internal and non-planar)?
     for (i = layout_graph.vertexBegin(); i < layout_graph.vertexEnd(); i = layout_graph.vertexNext(i))
     {
-        layout_graph._layout_vertices[i].pos = pattern_graph.getAtom(core_super[i]).pos;
-        layout_graph._layout_vertices[i].type = ELEMENT_BOUNDARY;
+        layout_graph._layout_vertices[i]->pos = pattern_graph.getAtom(core_super[i]).pos;
+        layout_graph._layout_vertices[i]->type = ELEMENT_BOUNDARY;
     }
 
     for (i = layout_graph.edgeBegin(); i < layout_graph.edgeEnd(); i = layout_graph.edgeNext(i))
-        layout_graph._layout_edges[i].type = ELEMENT_BOUNDARY;
+        layout_graph._layout_edges[i]->type = ELEMENT_BOUNDARY;
 
     layout_graph._first_vertex_idx = layout_graph.vertexBegin();
 
@@ -518,7 +518,7 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
     }
 
     for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
-        _layout_vertices[i].pos = supergraph.getPos(getVertexExtIdx(i));
+        _layout_vertices[i]->pos = supergraph.getPos(getVertexExtIdx(i));
 
     // Copy fixed-vertex information from supergraph into this BC subgraph so that
     // pre-marking and boundary traversal can distinguish selected vs. backbone vertices.
@@ -555,7 +555,7 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
         if (sequence_layout)
         {
             for (int j = vertexBegin(); j < vertexEnd(); j = vertexNext(j))
-                _layout_vertices[j].type = ELEMENT_BOUNDARY;
+                _layout_vertices[j]->type = ELEMENT_BOUNDARY;
             _first_vertex_idx = vertexBegin();
             return;
         }
@@ -618,9 +618,9 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
                 for (int j = 0; j < cycle.vertexCount(); j++)
                 {
                     int v_idx = cycle.getVertex(j);
-                    _layout_vertices[v_idx].type = ELEMENT_BOUNDARY;
-                    _layout_edges[cycle.getEdge(j)].type = ELEMENT_BOUNDARY;
-                    _layout_vertices[v_idx].is_nailed = true;
+                    _layout_vertices[v_idx]->type = ELEMENT_BOUNDARY;
+                    _layout_edges[cycle.getEdge(j)]->type = ELEMENT_BOUNDARY;
+                    _layout_vertices[v_idx]->is_nailed = true;
                 }
                 cycles_to_remove.push(i);
             }
@@ -637,15 +637,15 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
                     bool is_fixed = (v_ext < _fixed_vertices.size() && _fixed_vertices[v_ext] != 0);
                     if (is_fixed)
                     {
-                        _layout_vertices[v_idx].type = ELEMENT_BOUNDARY;
-                        _layout_vertices[v_idx].is_nailed = true;
+                        _layout_vertices[v_idx]->type = ELEMENT_BOUNDARY;
+                        _layout_vertices[v_idx]->is_nailed = true;
                     }
                     // Mark edge BOUNDARY only between two backbone verts.
                     int v_next = cycle.getVertex((j + 1) % cycle.vertexCount());
                     int v_next_ext = getVertexExtIdx(v_next);
                     bool next_fixed = (v_next_ext < _fixed_vertices.size() && _fixed_vertices[v_next_ext] != 0);
                     if (is_fixed && next_fixed)
-                        _layout_edges[cycle.getEdge(j)].type = ELEMENT_BOUNDARY;
+                        _layout_edges[cycle.getEdge(j)]->type = ELEMENT_BOUNDARY;
                 }
                 cycles_to_remove.push(i);
             }
@@ -694,8 +694,8 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
             const Cycle& first_cycle = cycles[sorted_cycles[0]];
             for (int j = 0; j < first_cycle.vertexCount(); j++)
             {
-                _layout_vertices[first_cycle.getVertex(j)].type = ELEMENT_BOUNDARY;
-                _layout_edges[first_cycle.getEdge(j)].type = ELEMENT_BOUNDARY;
+                _layout_vertices[first_cycle.getVertex(j)]->type = ELEMENT_BOUNDARY;
+                _layout_edges[first_cycle.getEdge(j)]->type = ELEMENT_BOUNDARY;
             }
             _first_vertex_idx = first_cycle.getVertex(_findCycleLeftTopIdx(first_cycle));
         }
@@ -825,13 +825,13 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
         QS_DEF(Array<int>, adj);
         for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
         {
-            if (_layout_vertices[i].type != ELEMENT_NOT_DRAWN)
+            if (_layout_vertices[i]->type != ELEMENT_NOT_DRAWN)
                 continue;
             const Vertex& vi = getVertex(i);
             bool all_nei_drawn = true;
             for (int nei = vi.neiBegin(); nei < vi.neiEnd(); nei = vi.neiNext(nei))
             {
-                if (_layout_vertices[vi.neiVertex(nei)].type == ELEMENT_NOT_DRAWN)
+                if (_layout_vertices[vi.neiVertex(nei)]->type == ELEMENT_NOT_DRAWN)
                 {
                     all_nei_drawn = false;
                     break;
@@ -846,7 +846,7 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
             for (int nei = vi.neiBegin(); nei < vi.neiEnd(); nei = vi.neiNext(nei))
             {
                 int center = vi.neiVertex(nei);
-                if (_layout_vertices[center].type == ELEMENT_NOT_DRAWN)
+                if (_layout_vertices[center]->type == ELEMENT_NOT_DRAWN)
                     continue;
                 adj.clear();
                 adj.push(i);
@@ -860,7 +860,7 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
 
     for (i = edgeBegin(); i < edgeEnd(); i = edgeNext(i))
     {
-        if (_layout_edges[i].type == ELEMENT_NOT_PLANAR)
+        if (_layout_edges[i]->type == ELEMENT_NOT_PLANAR)
         {
             _buildOutline();
             break;
@@ -879,7 +879,7 @@ bool MoleculeLayoutGraphSimple::_isRegularPolygon(const Cycle& cycle, float bond
     // Check all edge lengths match bond_length
     for (int i = 0; i < n; i++)
     {
-        float edge_len = Vec2f::dist(_layout_vertices[cycle.getVertex(i)].pos, _layout_vertices[cycle.getVertex((i + 1) % n)].pos);
+        float edge_len = Vec2f::dist(_layout_vertices[cycle.getVertex(i)]->pos, _layout_vertices[cycle.getVertex((i + 1) % n)]->pos);
         if (fabs(edge_len - bond_length) > tol)
             return false;
     }
@@ -888,12 +888,12 @@ bool MoleculeLayoutGraphSimple::_isRegularPolygon(const Cycle& cycle, float bond
     float R = bond_length / (2.0f * sin((float)M_PI / n));
     Vec2f center(0, 0);
     for (int i = 0; i < n; i++)
-        center += _layout_vertices[cycle.getVertex(i)].pos;
+        center += _layout_vertices[cycle.getVertex(i)]->pos;
     center.scale(1.0f / n);
 
     for (int i = 0; i < n; i++)
     {
-        float dist = Vec2f::dist(_layout_vertices[cycle.getVertex(i)].pos, center);
+        float dist = Vec2f::dist(_layout_vertices[cycle.getVertex(i)]->pos, center);
         if (fabs(dist - R) > tol)
             return false;
     }
@@ -904,10 +904,10 @@ bool MoleculeLayoutGraphSimple::_isRegularPolygon(const Cycle& cycle, float bond
 int MoleculeLayoutGraphSimple::_findCycleLeftTopIdx(const Cycle& cycle) const
 {
     int best = 0;
-    float min_val = _layout_vertices[cycle.getVertex(0)].pos.x - _layout_vertices[cycle.getVertex(0)].pos.y;
+    float min_val = _layout_vertices[cycle.getVertex(0)]->pos.x - _layout_vertices[cycle.getVertex(0)]->pos.y;
     for (int i = 1; i < cycle.vertexCount(); i++)
     {
-        float val = _layout_vertices[cycle.getVertex(i)].pos.x - _layout_vertices[cycle.getVertex(i)].pos.y;
+        float val = _layout_vertices[cycle.getVertex(i)]->pos.x - _layout_vertices[cycle.getVertex(i)]->pos.y;
         if (val < min_val)
         {
             min_val = val;
@@ -927,8 +927,8 @@ void MoleculeLayoutGraphSimple::_assignFirstCycle(const Cycle& cycle, float bond
 
     for (i = 0; i < n; i++)
     {
-        _layout_vertices[cycle.getVertex(i)].type = ELEMENT_BOUNDARY;
-        _layout_edges[cycle.getEdge(i)].type = ELEMENT_BOUNDARY;
+        _layout_vertices[cycle.getVertex(i)]->type = ELEMENT_BOUNDARY;
+        _layout_edges[cycle.getEdge(i)]->type = ELEMENT_BOUNDARY;
     }
 
     // Left-top rule applies only when the entire molecule is selected (_n_fixed == 0):
@@ -943,34 +943,34 @@ void MoleculeLayoutGraphSimple::_assignFirstCycle(const Cycle& cycle, float bond
 
     phi = (float)M_PI * (n - 2) / n;
 
-    Vec2f diff(_layout_vertices[cycle.getVertex((s + 1) % n)].pos - _layout_vertices[cycle.getVertex(s)].pos);
+    Vec2f diff(_layout_vertices[cycle.getVertex((s + 1) % n)]->pos - _layout_vertices[cycle.getVertex(s)]->pos);
     if (use_left_top)
     {
         // Place vertex s at 180° on the circumscribed circle (leftmost point),
         // so the center of the circle is to the right of the top-left monomer.
         float R = bond_length / (2.0f * sin((float)M_PI / n));
         float step = 2.0f * (float)M_PI / n;
-        _layout_vertices[cycle.getVertex(s)].pos.set(-R, 0.f);
-        _layout_vertices[cycle.getVertex((s + 1) % n)].pos.set(R * cos((float)M_PI - step), R * sin((float)M_PI - step));
+        _layout_vertices[cycle.getVertex(s)]->pos.set(-R, 0.f);
+        _layout_vertices[cycle.getVertex((s + 1) % n)]->pos.set(R * cos((float)M_PI - step), R * sin((float)M_PI - step));
     }
     else if (respect_cycles_direction && diff.normalize())
     {
         phi *= _getCycleDirection(cycle);
         diff.scale(bond_length);
-        _layout_vertices[cycle.getVertex((s + 1) % n)].pos = _layout_vertices[cycle.getVertex(s)].pos + diff;
+        _layout_vertices[cycle.getVertex((s + 1) % n)]->pos = _layout_vertices[cycle.getVertex(s)]->pos + diff;
     }
     else
     {
-        _layout_vertices[cycle.getVertex(s)].pos.set(0.f, 0.f);
-        _layout_vertices[cycle.getVertex((s + 1) % n)].pos.set(bond_length, 0.f);
+        _layout_vertices[cycle.getVertex(s)]->pos.set(0.f, 0.f);
+        _layout_vertices[cycle.getVertex((s + 1) % n)]->pos.set(bond_length, 0.f);
     }
 
     for (i = 1; i < n - 1; i++)
     {
-        const Vec2f& v1 = _layout_vertices[cycle.getVertex((s + i - 1) % n)].pos;
-        const Vec2f& v2 = _layout_vertices[cycle.getVertex((s + i) % n)].pos;
+        const Vec2f& v1 = _layout_vertices[cycle.getVertex((s + i - 1) % n)]->pos;
+        const Vec2f& v2 = _layout_vertices[cycle.getVertex((s + i) % n)]->pos;
 
-        _layout_vertices[cycle.getVertex((s + i + 1) % n)].pos.rotateAroundSegmentEnd(v1, v2, phi);
+        _layout_vertices[cycle.getVertex((s + i + 1) % n)]->pos.rotateAroundSegmentEnd(v1, v2, phi);
     }
 }
 
@@ -985,8 +985,8 @@ void MoleculeLayoutGraph::_attachCrossingEdges()
     {
         const Edge& edge_i = getEdge(i);
 
-        if (_layout_vertices[edge_i.beg].type != ELEMENT_NOT_DRAWN && _layout_vertices[edge_i.end].type != ELEMENT_NOT_DRAWN &&
-            _layout_edges[i].type == ELEMENT_NOT_DRAWN)
+        if (_layout_vertices[edge_i.beg]->type != ELEMENT_NOT_DRAWN && _layout_vertices[edge_i.end]->type != ELEMENT_NOT_DRAWN &&
+            _layout_edges[i]->type == ELEMENT_NOT_DRAWN)
         {
             intersection = true;
 
@@ -996,7 +996,7 @@ void MoleculeLayoutGraph::_attachCrossingEdges()
 
                 for (j = edgeBegin(); j < edgeEnd(); j = edgeNext(j))
                 {
-                    if (_layout_edges[j].type != ELEMENT_NOT_DRAWN)
+                    if (_layout_edges[j]->type != ELEMENT_NOT_DRAWN)
                     {
                         pr = _calcIntersection(i, j);
                         // 1. If the edge 1 ends on the edge 2
@@ -1023,7 +1023,7 @@ void MoleculeLayoutGraph::_attachCrossingEdges()
                     }
                 }
             }
-            _layout_edges[i].type = ELEMENT_NOT_PLANAR;
+            _layout_edges[i]->type = ELEMENT_NOT_PLANAR;
         }
     }
 }
@@ -1206,7 +1206,7 @@ void MoleculeLayoutGraph::_getAnchor(int& v1, int& v2, int& v3) const
         v2 = vertexNext(v1);
         v3 = -1;
 
-        if (_layout_vertices[v1].morgan_code < _layout_vertices[v2].morgan_code)
+        if (_layout_vertices[v1]->morgan_code < _layout_vertices[v2]->morgan_code)
         {
             v2 = vertexBegin();
             v1 = vertexNext(v2);
@@ -1216,14 +1216,14 @@ void MoleculeLayoutGraph::_getAnchor(int& v1, int& v2, int& v3) const
 
     v1 = vertexBegin();
     for (i = vertexNext(v1); i < vertexEnd(); i = vertexNext(i))
-        if (_layout_vertices[i].morgan_code > _layout_vertices[v1].morgan_code)
+        if (_layout_vertices[i]->morgan_code > _layout_vertices[v1]->morgan_code)
             v1 = i;
 
     const Vertex& vert = getVertex(v1);
 
     v2 = vert.neiBegin();
     for (i = vert.neiNext(v2); i < vert.neiEnd(); i = vert.neiNext(i))
-        if (_layout_vertices[vert.neiVertex(i)].morgan_code > _layout_vertices[vert.neiVertex(v2)].morgan_code)
+        if (_layout_vertices[vert.neiVertex(i)]->morgan_code > _layout_vertices[vert.neiVertex(v2)]->morgan_code)
             v2 = i;
 
     if (vert.degree() < 2)
@@ -1239,7 +1239,7 @@ void MoleculeLayoutGraph::_getAnchor(int& v1, int& v2, int& v3) const
         v3 = vert.neiNext(v2);
 
     for (i = vert.neiBegin(); i < vert.neiEnd(); i = vert.neiNext(i))
-        if (i != v2 && _layout_vertices[vert.neiVertex(i)].morgan_code > _layout_vertices[vert.neiVertex(v3)].morgan_code)
+        if (i != v2 && _layout_vertices[vert.neiVertex(i)]->morgan_code > _layout_vertices[vert.neiVertex(v3)]->morgan_code)
             v3 = i;
 
     v2 = vert.neiVertex(v2);
@@ -1280,7 +1280,7 @@ void MoleculeLayoutGraph::_optimizeSelectedPartPlacement(float bond_length, cons
             if (bridge_fixed_positions.size() > size_t(v) && bridge_fixed_positions[v].size() > 0)
             {
                 // Apply rotation around selected_center, then translation
-                Vec2f rotated_pos = _layout_vertices[v].pos;
+                Vec2f rotated_pos = _layout_vertices[v]->pos;
                 rotated_pos.sub(selected_center); // Move to origin
                 rotated_pos.rotate(angle);
                 rotated_pos.add(selected_center);
@@ -1326,7 +1326,7 @@ void MoleculeLayoutGraph::_optimizeSelectedPartPlacement(float bond_length, cons
         for (auto v : selected_vertices)
         {
             // This is a selected vertex - apply rotation around selected_center, then translation
-            Vec2f rotated_pos = _layout_vertices[v].pos;
+            Vec2f rotated_pos = _layout_vertices[v]->pos;
             rotated_pos.sub(selected_center); // Move to origin
             rotated_pos.rotate(angle);
             rotated_pos.add(selected_center); // Move back
@@ -1447,7 +1447,7 @@ std::vector<MoleculeLayoutGraph::SelectionBridge> MoleculeLayoutGraph::_detectSe
     std::vector<SelectionBridge> bridges;
     for (auto sel_layout_idx : sel_vertices)
     {
-        const int sel_ext_idx = _layout_vertices[sel_layout_idx].ext_idx;
+        const int sel_ext_idx = _layout_vertices[sel_layout_idx]->ext_idx;
         const Vertex& vx = getVertex(sel_ext_idx);
         for (int nei = vx.neiBegin(); nei < vx.neiEnd(); nei = vx.neiNext(nei))
         {
@@ -1509,7 +1509,7 @@ void MoleculeLayoutGraph::_applyAnchoredRigidTransform(const SelectionBridge& br
     if (dir.lengthSqr() <= kZeroLengthSqr)
     {
         // Backbone tangent is undefined; preserve the existing sel→fix orientation.
-        dir.diff(_layout_vertices[bridge.sel_layout_idx].pos, bridge.fix_pos);
+        dir.diff(_layout_vertices[bridge.sel_layout_idx]->pos, bridge.fix_pos);
         if (dir.lengthSqr() > kZeroLengthSqr)
             dir.normalize();
         else
@@ -1521,24 +1521,24 @@ void MoleculeLayoutGraph::_applyAnchoredRigidTransform(const SelectionBridge& br
     anchor_target.y += dir.y * bond_length;
 
     Vec2f translation;
-    translation.diff(anchor_target, _layout_vertices[bridge.sel_layout_idx].pos);
+    translation.diff(anchor_target, _layout_vertices[bridge.sel_layout_idx]->pos);
 
     for (auto vx_idx : sel_vertices)
-        _layout_vertices[vx_idx].pos.add(translation);
+        _layout_vertices[vx_idx]->pos.add(translation);
 }
 
 void MoleculeLayoutGraph::_reflectCycleVertex(int vx_inner_idx, float bond_length)
 {
-    auto& vx = getVertex(_layout_vertices[vx_inner_idx].ext_idx);
+    auto& vx = getVertex(_layout_vertices[vx_inner_idx]->ext_idx);
     int nei_vx_idx = vx.neiVertex(vx.neiBegin()); // Only one neighbor
 
-    auto& inner_pos = _layout_vertices[vx_inner_idx].pos;
-    auto& nei_pos = _layout_vertices[nei_vx_idx].pos;
+    auto& inner_pos = _layout_vertices[vx_inner_idx]->pos;
+    auto& nei_pos = _layout_vertices[nei_vx_idx]->pos;
 
     // Reflect inner_pos through nei_pos: inner_pos = 2*nei_pos - inner_pos
     inner_pos.sub(nei_pos);
     inner_pos.scale(bond_length);
-    if (!_layout_vertices[nei_vx_idx].is_inside)
+    if (!_layout_vertices[nei_vx_idx]->is_inside)
         inner_pos.negate();
     inner_pos.add(nei_pos);
 }
@@ -1555,7 +1555,7 @@ void MoleculeLayoutGraph::_reflectSequenceCycleVertices(const std::vector<int>& 
     for (auto vx_inner_idx : cycle_vertices)
     {
         float inner_bond_length = LayoutOptions::DEFAULT_INNER_MACROCYCLE_BOND_LENGTH;
-        if (_layout_vertices[vx_inner_idx].inner_cycle_size >= MIN_NAGON_SIZE_FOR_STANDARD_BOND_LENGTH)
+        if (_layout_vertices[vx_inner_idx]->inner_cycle_size >= MIN_NAGON_SIZE_FOR_STANDARD_BOND_LENGTH)
             inner_bond_length = LayoutOptions::DEFAULT_BOND_LENGTH;
         _reflectCycleVertex(vx_inner_idx, inner_bond_length);
     }
@@ -1576,7 +1576,7 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
 
             for (auto vx_idx : vertices())
             {
-                auto& lvx = _layout_vertices[vx_idx];
+                auto& lvx = *_layout_vertices[vx_idx];
                 int ext_idx = lvx.ext_idx;
                 auto& vx = getVertex(ext_idx);
                 bool is_fixed = ext_idx < _fixed_vertices.size() && _fixed_vertices[ext_idx];
@@ -1590,7 +1590,7 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                 // selected block as a rigid body, not be pinned to src_layout positions.
                 bool treat_as_fixed = is_fixed;
                 if (!sequence_layout)
-                    treat_as_fixed = treat_as_fixed || lvx.is_nailed || (vx.degree() == 1 && _layout_vertices[vx.neiVertex(vx.neiBegin())].is_nailed);
+                    treat_as_fixed = treat_as_fixed || lvx.is_nailed || (vx.degree() == 1 && _layout_vertices[vx.neiVertex(vx.neiBegin())]->is_nailed);
 
                 if (treat_as_fixed)
                     fix_vertexes.push_back(vx_idx);
@@ -1619,7 +1619,7 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                 // For selected vertices, find bridge bonds to fixed vertices
                 for (auto sel_vx_idx : sel_vertices)
                 {
-                    auto& vx = getVertex(_layout_vertices[sel_vx_idx].ext_idx);
+                    auto& vx = getVertex(_layout_vertices[sel_vx_idx]->ext_idx);
                     for (int nei_idx = vx.neiBegin(); nei_idx < vx.neiEnd(); nei_idx = vx.neiNext(nei_idx))
                     {
                         int nei_ext_idx = vx.neiVertex(nei_idx);
@@ -1648,14 +1648,14 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                 // Recalculate _layout_vertices centroid after scaling
                 Vec2f layout_selected_centroid(0, 0);
                 for (auto vx_idx : sel_vertices)
-                    layout_selected_centroid.add(_layout_vertices[vx_idx].pos);
+                    layout_selected_centroid.add(_layout_vertices[vx_idx]->pos);
                 layout_selected_centroid.scale(1.0f / sel_vertices.size());
 
                 // Shift selected vertices to align centroids (move to src_layout position)
                 Vec2f initial_offset;
                 initial_offset.diff(src_selected_centroid, layout_selected_centroid);
                 for (auto vx_idx : sel_vertices)
-                    _layout_vertices[vx_idx].pos.add(initial_offset);
+                    _layout_vertices[vx_idx]->pos.add(initial_offset);
 
                 // Update selected_centroid to new position for optimization
                 selected_centroid = src_selected_centroid;
@@ -1685,7 +1685,7 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
 
                         for (auto vx_idx : sel_vertices)
                         {
-                            Vec2f& pos = _layout_vertices[vx_idx].pos;
+                            Vec2f& pos = _layout_vertices[vx_idx]->pos;
                             pos.sub(selected_centroid);
                             pos.rotate(best_rotation);
                             pos.add(selected_centroid);
@@ -1706,7 +1706,7 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                         {
                             if (bridge_fixed_positions.size() <= size_t(v) || bridge_fixed_positions[v].empty())
                                 continue;
-                            Vec2f pos = _layout_vertices[v].pos;
+                            Vec2f pos = _layout_vertices[v]->pos;
                             pos.x += dx;
                             pos.y += dy;
                             for (const Vec2f& fp : bridge_fixed_positions[v])
@@ -1744,8 +1744,8 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
 
                     for (auto vx_idx : sel_vertices)
                     {
-                        _layout_vertices[vx_idx].pos.x += best_dx;
-                        _layout_vertices[vx_idx].pos.y += best_dy;
+                        _layout_vertices[vx_idx]->pos.x += best_dx;
+                        _layout_vertices[vx_idx]->pos.y += best_dy;
                     }
                 }
             }
@@ -1756,16 +1756,16 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
             // fixed vertices back to their original molecule positions (src_layout).
             for (auto fix_vx_idx : fix_vertexes)
             {
-                int ext_idx = _layout_vertices[fix_vx_idx].ext_idx;
+                int ext_idx = _layout_vertices[fix_vx_idx]->ext_idx;
                 bool is_fixed = ext_idx < _fixed_vertices.size() && _fixed_vertices[ext_idx];
                 if (is_fixed)
-                    _layout_vertices[fix_vx_idx].pos = src_layout[fix_vx_idx];
+                    _layout_vertices[fix_vx_idx]->pos = src_layout[fix_vx_idx];
             }
         }
         else
         {
             for (auto vx_idx : vertices())
-                _layout_vertices[vx_idx].pos.scale(bond_length);
+                _layout_vertices[vx_idx]->pos.scale(bond_length);
         }
 
         return;
@@ -1774,7 +1774,7 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
     {
         for (auto vx_idx : vertices())
         {
-            auto& lvx = _layout_vertices[vx_idx];
+            auto& lvx = *_layout_vertices[vx_idx];
             if (lvx.is_inner_cycle)
                 inner_cycle_vertices.push_back(vx_idx);
         }
@@ -1801,20 +1801,20 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
 
             for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
             {
-                if (_molecule->isRSite(_layout_vertices[i].ext_idx))
+                if (_molecule->isRSite(_layout_vertices[i]->ext_idx))
                 {
-                    _molecule->getAllowedRGroups(_layout_vertices[i].ext_idx, rgroup_list);
+                    _molecule->getAllowedRGroups(_layout_vertices[i]->ext_idx, rgroup_list);
                     if (rgroup_list.size() == 1 && rgroup_list[0] == 1)
                     {
-                        r1_pos = _layout_vertices[i].pos;
+                        r1_pos = _layout_vertices[i]->pos;
                         r1_exist = true;
                     }
-                    else if (_layout_vertices[i].pos.y > highest_pos.y)
+                    else if (_layout_vertices[i]->pos.y > highest_pos.y)
                     {
-                        highest_pos = _layout_vertices[i].pos;
+                        highest_pos = _layout_vertices[i]->pos;
                     }
                 }
-                center_x += _layout_vertices[i].pos.x;
+                center_x += _layout_vertices[i]->pos.x;
             }
 
             center_x /= vertexCount();
@@ -1823,10 +1823,10 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
             {
                 if (r1_pos.y < highest_pos.y)
                     for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
-                        _layout_vertices[i].pos.y *= -1;
+                        _layout_vertices[i]->pos.y *= -1;
                 if (r1_pos.x > center_x)
                     for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
-                        _layout_vertices[i].pos.x *= -1;
+                        _layout_vertices[i]->pos.x *= -1;
             }
         }
         else
@@ -1838,11 +1838,11 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                 last = i;
 
             const float EPS = 0.0001f;
-            float diff = _layout_vertices[first].pos.x - _layout_vertices[last].pos.x;
+            float diff = _layout_vertices[first]->pos.x - _layout_vertices[last]->pos.x;
 
             if (diff > EPS)
                 for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
-                    _layout_vertices[i].pos.x *= -1;
+                    _layout_vertices[i]->pos.x *= -1;
         }
     }
 
@@ -1881,7 +1881,7 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
         {
             p.diff(getPos(i), p2);
             p.scale(scale);
-            _layout_vertices[i].pos.sum(p1, p);
+            _layout_vertices[i]->pos.sum(p1, p);
         }
         return;
     }
@@ -1893,7 +1893,7 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
     // 3. Move first vertex to (0,0)
     p = getPos(v1);
     for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
-        _layout_vertices[i].pos.sub(p);
+        _layout_vertices[i]->pos.sub(p);
 
     // 4. Rotate CCW (skip for sequence_layout to preserve circle orientation from _assignFirstCycle)
     float phi1 = 0, phi2 = 0, alpha = 0, sina = 0, cosa = 1;
@@ -1906,16 +1906,16 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
         cosa = cos(alpha);
 
         for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
-            _layout_vertices[i].pos.rotate(sina, cosa);
+            _layout_vertices[i]->pos.rotate(sina, cosa);
     }
 
     // 5. Scale
     for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
-        _layout_vertices[i].pos.scale(scale);
+        _layout_vertices[i]->pos.scale(scale);
 
     // 6. Match first vertices - shift by vector Pos(first)
     for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
-        _layout_vertices[i].pos.add(src_layout[v1]);
+        _layout_vertices[i]->pos.add(src_layout[v1]);
 
     // 7. If needed turn around (first, second)
     if (!sequence_layout && vertexCount() > 2)
@@ -1949,23 +1949,23 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
         {
             // Move first vertex to (0,0)
             for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
-                _layout_vertices[i].pos.sub(p1);
+                _layout_vertices[i]->pos.sub(p1);
 
             // Turn by -phi1 and flip vertically
             sina = -sin(phi1);
             cosa = cos(phi1);
             for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
             {
-                _layout_vertices[i].pos.rotate(sina, cosa);
-                _layout_vertices[i].pos.y *= -1;
+                _layout_vertices[i]->pos.rotate(sina, cosa);
+                _layout_vertices[i]->pos.y *= -1;
             }
 
             // Turn by phi1 and translate back
             sina = -sina;
             for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
             {
-                _layout_vertices[i].pos.rotate(sina, cosa);
-                _layout_vertices[i].pos.add(p1);
+                _layout_vertices[i]->pos.rotate(sina, cosa);
+                _layout_vertices[i]->pos.add(p1);
             }
         }
     }
@@ -2005,8 +2005,8 @@ void MoleculeLayoutGraph::_findFixedComponents(BiconnectedDecomposer& bc_decom, 
         fixed_graph.makeSubgraph(*this, fixed_filter, &fixed_mapping, &fixed_inv_mapping);
         const Array<int>& decomposition = fixed_graph.getDecomposition();
         _fixed_decomposition.copy(decomposition);
-        _fixed_subgraphs_ext_vertices.clear_resize(fixed_graph.countComponents());
-        _fixed_subgraphs_int_vertices.clear_resize(fixed_graph.countComponents());
+        _fixed_subgraphs_ext_vertices.clear(); while (_fixed_subgraphs_ext_vertices.size() < fixed_graph.countComponents()) _fixed_subgraphs_ext_vertices.push();
+        _fixed_subgraphs_int_vertices.clear(); while (_fixed_subgraphs_int_vertices.size() < fixed_graph.countComponents()) _fixed_subgraphs_int_vertices.push();
 
         for (auto v_idx = 0; v_idx < decomposition.size(); ++v_idx)
         {
@@ -2019,14 +2019,14 @@ void MoleculeLayoutGraph::_findFixedComponents(BiconnectedDecomposer& bc_decom, 
                 int nei = v.neiVertex(nei_idx);
                 if (!fixed_filter.valid(nei)) // neighbor is not fixed
                 {
-                    _fixed_subgraphs_ext_vertices[decomposition[v_idx]].push(orig_v_idx);
+                    _fixed_subgraphs_ext_vertices[decomposition[v_idx]]->push(orig_v_idx);
                     _fixed_vertices[orig_v_idx] = 2; // 2 - mark as external fixed vertex
                     has_non_fixed_nei = true;
                     break;
                 }
             }
             if (!has_non_fixed_nei)
-                _fixed_subgraphs_int_vertices[decomposition[v_idx]].push(orig_v_idx);
+                _fixed_subgraphs_int_vertices[decomposition[v_idx]]->push(orig_v_idx);
         }
     }
     else
@@ -2124,7 +2124,7 @@ bool MoleculeLayoutGraph::_assignComponentsRelativeCoordinates(PtrArray<Molecule
         component._total_morgan_code = 0;
 
         for (int j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
-            component._total_morgan_code += _layout_vertices[component.getLayoutVertex(j).ext_idx].morgan_code;
+            component._total_morgan_code += _layout_vertices[component.getLayoutVertex(j).ext_idx]->morgan_code;
 
         // Mark cyclic atoms
         if (!component.isSingleEdge())
@@ -2133,14 +2133,14 @@ bool MoleculeLayoutGraph::_assignComponentsRelativeCoordinates(PtrArray<Molecule
 
             for (int j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
             {
-                component._layout_vertices[j].is_cyclic = true;
-                _layout_vertices[component._layout_vertices[j].ext_idx].is_cyclic = true;
+                component._layout_vertices[j]->is_cyclic = true;
+                _layout_vertices[component._layout_vertices[j]->ext_idx]->is_cyclic = true;
             }
 
             for (int j = component.edgeBegin(); j < component.edgeEnd(); j = component.edgeNext(j))
             {
-                component._layout_edges[j].is_cyclic = true;
-                _layout_edges[component._layout_edges[j].ext_idx].is_cyclic = true;
+                component._layout_edges[j]->is_cyclic = true;
+                _layout_edges[component._layout_edges[j]->ext_idx]->is_cyclic = true;
             }
         }
         int fixed = fixed_components[i];
@@ -2183,9 +2183,9 @@ bool MoleculeLayoutGraph::_assignComponentsRelativeCoordinates(PtrArray<Molecule
             for (int j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
             {
                 int ext_idx = component.getVertexExtIdx(j);
-                _layout_vertices[ext_idx].is_inside = component._layout_vertices[j].is_inside;
-                if (component._layout_vertices[j].is_nailed)
-                    _layout_vertices[ext_idx].is_nailed = true;
+                _layout_vertices[ext_idx]->is_inside = component._layout_vertices[j]->is_inside;
+                if (component._layout_vertices[j]->is_nailed)
+                    _layout_vertices[ext_idx]->is_nailed = true;
             }
         }
 
@@ -2199,14 +2199,14 @@ bool MoleculeLayoutGraph::_assignComponentsRelativeCoordinates(PtrArray<Molecule
             for (int j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
             {
                 int ext_idx = component.getVertexExtIdx(j);
-                if (_layout_vertices[ext_idx].is_nailed)
+                if (_layout_vertices[ext_idx]->is_nailed)
                 {
-                    component._layout_vertices[j].is_nailed = true;
+                    component._layout_vertices[j]->is_nailed = true;
                     if (is_single_edge)
                         continue;
                     auto it = nailed_positions.find(ext_idx);
                     if (it != nailed_positions.end())
-                        component._layout_vertices[j].pos = it->second;
+                        component._layout_vertices[j]->pos = it->second;
                 }
             }
         }
@@ -2225,13 +2225,13 @@ void MoleculeLayoutGraph::_markInnerVertices(const MoleculeLayoutGraph& componen
 {
     for (int i = component.vertexBegin(); i < component.vertexEnd(); i = component.vertexNext(i))
     {
-        auto vidx = component._layout_vertices[i].ext_idx;
-        auto& lv = _layout_vertices[vidx];
+        auto vidx = component._layout_vertices[i]->ext_idx;
+        auto& lv = *_layout_vertices[vidx];
         auto& vx = getVertex(vidx);
         for (int j = vx.neiBegin(); j < vx.neiEnd(); j = vx.neiNext(j))
         {
             auto nei_idx = vx.neiVertex(j);
-            if (!_layout_vertices[nei_idx].is_cyclic)
+            if (!_layout_vertices[nei_idx]->is_cyclic)
             {
                 auto& vx_nei = getVertex(nei_idx);
                 int nei_count = 0;
@@ -2239,8 +2239,8 @@ void MoleculeLayoutGraph::_markInnerVertices(const MoleculeLayoutGraph& componen
                     ;
                 if (nei_count == 1 && component.vertexCount() > MAX_NAGON_SIZE_WITHOUT_INNER_CYCLE)
                 {
-                    _layout_vertices[nei_idx].is_inner_cycle = true;
-                    _layout_vertices[nei_idx].inner_cycle_size = component.vertexCount();
+                    _layout_vertices[nei_idx]->is_inner_cycle = true;
+                    _layout_vertices[nei_idx]->inner_cycle_size = component.vertexCount();
                 }
             }
         }
@@ -2253,8 +2253,8 @@ void MoleculeLayoutGraph::_assignRelativeSingleEdge(int fixed_component, const M
     int idx1 = vertexBegin();
     int idx2 = vertexNext(idx1);
 
-    _layout_vertices[idx1].type = ELEMENT_BOUNDARY;
-    _layout_vertices[idx2].type = ELEMENT_BOUNDARY;
+    _layout_vertices[idx1]->type = ELEMENT_BOUNDARY;
+    _layout_vertices[idx2]->type = ELEMENT_BOUNDARY;
 
     // Match ring edge length for sequence layout with selected vertices
     const float edge_len = (sequence_layout && supergraph._n_fixed > 0) ? LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH : LayoutOptions::DEFAULT_BOND_LENGTH;
@@ -2281,16 +2281,16 @@ void MoleculeLayoutGraph::_assignRelativeSingleEdge(int fixed_component, const M
             pos1.scale(edge_len);
         }
 
-        _layout_vertices[idx1].pos = pos1;
-        _layout_vertices[idx2].pos = pos2;
+        _layout_vertices[idx1]->pos = pos1;
+        _layout_vertices[idx2]->pos = pos2;
     }
     else
     {
-        _layout_vertices[idx1].pos.set(0.f, 0.f);
-        _layout_vertices[idx2].pos.set(0.f, edge_len);
+        _layout_vertices[idx1]->pos.set(0.f, 0.f);
+        _layout_vertices[idx2]->pos.set(0.f, edge_len);
     }
 
-    _layout_edges[edgeBegin()].type = ELEMENT_BOUNDARY;
+    _layout_edges[edgeBegin()]->type = ELEMENT_BOUNDARY;
 }
 
 bool MoleculeLayoutGraphSimple::_tryToFindPattern(int& fixed_component)
@@ -2380,7 +2380,7 @@ void MoleculeLayoutGraph::_findFirstVertexIdx(int n_comp, Array<int>& fixed_comp
 
         MoleculeLayoutGraph& component = *bc_components[j];
 
-        _first_vertex_idx = component._layout_vertices[component.vertexBegin()].ext_idx;
+        _first_vertex_idx = component._layout_vertices[component.vertexBegin()]->ext_idx;
     }
     else
     {
@@ -2429,7 +2429,7 @@ void MoleculeLayoutGraph::_findFirstVertexIdx(int n_comp, Array<int>& fixed_comp
             MoleculeLayoutGraph& nucleus = *bc_components[nucleus_idx];
             _copyLayout(nucleus);
             if (nucleus._first_vertex_idx >= 0 && nucleus._first_vertex_idx < nucleus._layout_vertices.size())
-                _first_vertex_idx = nucleus._layout_vertices[nucleus._first_vertex_idx].ext_idx;
+                _first_vertex_idx = nucleus._layout_vertices[nucleus._first_vertex_idx]->ext_idx;
             else
                 _first_vertex_idx = vertexBegin();
 
@@ -2454,8 +2454,8 @@ void MoleculeLayoutGraph::_findFirstVertexIdx(int n_comp, Array<int>& fixed_comp
                     int v1_idx = component.vertexBegin();
                     int v2_idx = component.vertexNext(v1_idx);
 
-                    int v1_ext = component._layout_vertices[v1_idx].ext_idx;
-                    int v2_ext = component._layout_vertices[v2_idx].ext_idx;
+                    int v1_ext = component._layout_vertices[v1_idx]->ext_idx;
+                    int v2_ext = component._layout_vertices[v2_idx]->ext_idx;
 
                     bool v1_fixed = (v1_ext >= 0 && v1_ext < _fixed_vertices.size() && _fixed_vertices[v1_ext] != 0);
                     bool v2_fixed = (v2_ext >= 0 && v2_ext < _fixed_vertices.size() && _fixed_vertices[v2_ext] != 0);
@@ -2471,7 +2471,7 @@ void MoleculeLayoutGraph::_findFirstVertexIdx(int n_comp, Array<int>& fixed_comp
                         // its stale source-layout position to selected neighbours.
                         for (int j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
                         {
-                            LayoutVertex& vert = component._layout_vertices[j];
+                            LayoutVertex& vert = *component._layout_vertices[j];
                             const int ext = vert.ext_idx;
                             if (forbidden_edge)
                             {
@@ -2479,13 +2479,13 @@ void MoleculeLayoutGraph::_findFirstVertexIdx(int n_comp, Array<int>& fixed_comp
                                 if (!is_fixed)
                                     continue;
                             }
-                            _layout_vertices[ext].type = vert.type;
+                            _layout_vertices[ext]->type = vert.type;
                         }
                         // Copy edge types too
                         for (int j = component.edgeBegin(); j < component.edgeEnd(); j = component.edgeNext(j))
                         {
-                            LayoutEdge& edge = component._layout_edges[j];
-                            _layout_edges[edge.ext_idx].type = edge.type;
+                            LayoutEdge& edge = *component._layout_edges[j];
+                            _layout_edges[edge.ext_idx]->type = edge.type;
                         }
                     }
                 }
@@ -2494,30 +2494,30 @@ void MoleculeLayoutGraph::_findFirstVertexIdx(int n_comp, Array<int>& fixed_comp
         else
         {
             for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
-                if (_layout_vertices[i].morgan_code > _layout_vertices[nucleus_idx].morgan_code)
+                if (_layout_vertices[i]->morgan_code > _layout_vertices[nucleus_idx]->morgan_code)
                     nucleus_idx = i;
 
             const Vertex& nucleus = getVertex(nucleus_idx);
             int nucleus_idx2 = nucleus.neiBegin();
 
             for (int j = nucleus.neiNext(nucleus_idx2); j < nucleus.neiEnd(); j = nucleus.neiNext(j))
-                if (_layout_vertices[nucleus.neiVertex(j)].morgan_code > _layout_vertices[nucleus.neiVertex(nucleus_idx2)].morgan_code)
+                if (_layout_vertices[nucleus.neiVertex(j)]->morgan_code > _layout_vertices[nucleus.neiVertex(nucleus_idx2)]->morgan_code)
                     nucleus_idx2 = j;
 
             int nucleus_edge = nucleus.neiEdge(nucleus_idx2);
             nucleus_idx2 = nucleus.neiVertex(nucleus_idx2);
 
             _first_vertex_idx = nucleus_idx;
-            _layout_vertices[nucleus_idx].type = ELEMENT_BOUNDARY;
-            _layout_vertices[nucleus_idx].pos.set(0.f, 0.f);
-            _layout_vertices[nucleus_idx2].type = ELEMENT_BOUNDARY;
+            _layout_vertices[nucleus_idx]->type = ELEMENT_BOUNDARY;
+            _layout_vertices[nucleus_idx]->pos.set(0.f, 0.f);
+            _layout_vertices[nucleus_idx2]->type = ELEMENT_BOUNDARY;
             // Full-molecule layout post-scales positions by bond_length, so a
             // unit seed produces the right distance there. Partial-selection
             // sequence layout skips that scaling, so the seed must already
             // equal bond_length to keep the interior bond uniform.
             const float seed_length = (sequence_layout && _n_fixed > 0) ? bond_length : 1.f;
-            _layout_vertices[nucleus_idx2].pos.set(seed_length, 0.f);
-            _layout_edges[nucleus_edge].type = ELEMENT_BOUNDARY;
+            _layout_vertices[nucleus_idx2]->pos.set(seed_length, 0.f);
+            _layout_edges[nucleus_edge]->type = ELEMENT_BOUNDARY;
         }
     }
 }
@@ -2541,7 +2541,7 @@ bool MoleculeLayoutGraph::_prepareAssignedList(Array<int>& assigned_list, Biconn
 
     for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
     {
-        if (_layout_vertices[i].type == ELEMENT_NOT_DRAWN)
+        if (_layout_vertices[i]->type == ELEMENT_NOT_DRAWN)
             continue;
 
         const Vertex& vert = getVertex(i);
@@ -2551,7 +2551,7 @@ bool MoleculeLayoutGraph::_prepareAssignedList(Array<int>& assigned_list, Biconn
         for (int j = vert.neiBegin(); j < vert.neiEnd(); j = vert.neiNext(j))
         {
             const int nei = vert.neiVertex(j);
-            if (_layout_vertices[nei].type != ELEMENT_NOT_DRAWN)
+            if (_layout_vertices[nei]->type != ELEMENT_NOT_DRAWN)
                 continue;
             has_not_drawn = true;
             if (is_fixed(nei))
@@ -2579,8 +2579,8 @@ bool MoleculeLayoutGraph::_prepareAssignedList(Array<int>& assigned_list, Biconn
     {
         // restore ignored ears in chains
         for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
-            if (_layout_vertices[i].type == ELEMENT_IGNORE)
-                _layout_vertices[i].type = ELEMENT_BOUNDARY;
+            if (_layout_vertices[i]->type == ELEMENT_IGNORE)
+                _layout_vertices[i]->type = ELEMENT_BOUNDARY;
 
         // Skip energy-based refinement for sequence_layout with fixed vertices
         // (would corrupt polygon positions; first layout still refined normally)

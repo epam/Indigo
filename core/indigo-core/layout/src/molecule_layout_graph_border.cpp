@@ -127,7 +127,7 @@ bool MoleculeLayoutGraphSimple::_isPointOutside(const Vec2f& p) const
             {
                 const Vec2f& pos = getPos(i);
 
-                if (_layout_vertices[i].type == ELEMENT_BOUNDARY && fabs((pos.x - p.x) / a - (pos.y - p.y) / b) < 0.1f)
+                if (_layout_vertices[i]->type == ELEMENT_BOUNDARY && fabs((pos.x - p.x) / a - (pos.y - p.y) / b) < 0.1f)
                 {
                     count++;
 
@@ -166,7 +166,7 @@ bool MoleculeLayoutGraphSimple::_isPointOutside(const Vec2f& p) const
     {
         for (i = edgeBegin(); i < edgeEnd(); i = edgeNext(i))
         {
-            if (_layout_edges[i].type == ELEMENT_BOUNDARY)
+            if (_layout_edges[i]->type == ELEMENT_BOUNDARY)
             {
                 const Edge& edge = getEdge(i);
                 // Skip backbone pre-marked edges (both endpoints are fixed/unselected).
@@ -326,7 +326,7 @@ void MoleculeLayoutGraphSimple::_getBorder(Cycle& border) const
     int n_total_boundary = 0;
     for (i = edgeBegin(); i < edgeEnd(); i = edgeNext(i))
     {
-        if (_layout_edges[i].type == ELEMENT_BOUNDARY)
+        if (_layout_edges[i]->type == ELEMENT_BOUNDARY)
         {
             n_total_boundary++;
             if (!isBackboneEdge(i))
@@ -345,7 +345,7 @@ void MoleculeLayoutGraphSimple::_getBorder(Cycle& border) const
         edges.clear();
 
         for (i = edgeBegin(); i < edgeEnd(); i = edgeNext(i))
-            if (_layout_edges[i].type == ELEMENT_BOUNDARY)
+            if (_layout_edges[i]->type == ELEMENT_BOUNDARY)
                 break;
 
         Edge edge = getEdge(i);
@@ -404,7 +404,7 @@ void MoleculeLayoutGraphSimple::_getBorder(Cycle& border) const
     // we trace the boundary of the most recently drawn cycle rather than the
     // outer boundary of the entire BC (which may include pre-marked backbone rings).
     int start_v = -1;
-    if (_first_vertex_idx >= 0 && _first_vertex_idx < vertexEnd() && _layout_vertices[_first_vertex_idx].type == ELEMENT_BOUNDARY)
+    if (_first_vertex_idx >= 0 && _first_vertex_idx < vertexEnd() && _layout_vertices[_first_vertex_idx]->type == ELEMENT_BOUNDARY)
     {
         const Vertex& v = getVertex(_first_vertex_idx);
         for (int j = v.neiBegin(); j < v.neiEnd(); j = v.neiNext(j))
@@ -424,7 +424,7 @@ void MoleculeLayoutGraphSimple::_getBorder(Cycle& border) const
         float start_x = 1e20f, start_y = 1e20f;
         for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
         {
-            if (_layout_vertices[i].type != ELEMENT_BOUNDARY)
+            if (_layout_vertices[i]->type != ELEMENT_BOUNDARY)
                 continue;
             // Skip entirely-fixed vertices (backbone ring vertices not adjacent to selected).
             if (_fixed_vertices.size() > 0 && _fixed_vertices[getVertexExtIdx(i)] != 0)
@@ -639,15 +639,15 @@ bool MoleculeLayoutGraph::_border_cb(Graph& graph, const Array<int>& vertices, c
 
     // Mark edges and bonds
     for (i = self.vertexBegin(); i < self.vertexEnd(); i = self.vertexNext(i))
-        self._layout_vertices[i].type = ELEMENT_INTERNAL;
+        self._layout_vertices[i]->type = ELEMENT_INTERNAL;
 
     for (i = self.edgeBegin(); i < self.edgeEnd(); i = self.edgeNext(i))
-        self._layout_edges[i].type = ELEMENT_INTERNAL;
+        self._layout_edges[i]->type = ELEMENT_INTERNAL;
 
     for (i = 0; i < cycle.vertexCount(); i++)
     {
-        self._layout_vertices[cycle.getVertex(i)].type = ELEMENT_BOUNDARY;
-        self._layout_edges[cycle.getEdge(i)].type = ELEMENT_BOUNDARY;
+        self._layout_vertices[cycle.getVertex(i)]->type = ELEMENT_BOUNDARY;
+        self._layout_edges[cycle.getEdge(i)]->type = ELEMENT_BOUNDARY;
     }
 
     return false;
@@ -677,7 +677,7 @@ bool MoleculeLayoutGraphSmart::_isPointOutsideCycle(const Cycle& cycle, const Ve
     int size = cycle.vertexCount();
     point.resize(size + 1);
     for (int i = 0; i <= size; i++)
-        point[i] = _layout_vertices[cycle.getVertexC(i)].pos - p;
+        point[i] = _layout_vertices[cycle.getVertexC(i)]->pos - p;
     for (int i = 0; i < size; i++)
     {
         float cs = Vec2f::dot(point[i], point[i + 1]) / (point[i].length() * point[i + 1].length());
@@ -722,9 +722,9 @@ void MoleculeLayoutGraphSmart::_getBorder(Cycle& border) const
 {
     Vec2f outside_point(0, 0);
     for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
-        if (_layout_vertices[i].type != ELEMENT_NOT_DRAWN)
+        if (_layout_vertices[i]->type != ELEMENT_NOT_DRAWN)
         {
-            outside_point.max(_layout_vertices[i].pos);
+            outside_point.max(_layout_vertices[i]->pos);
         }
 
     outside_point += Vec2f(1, 1);
@@ -741,7 +741,7 @@ void MoleculeLayoutGraphSmart::_getSurroundCycle(Cycle& cycle, Vec2f p) const
 
     Random rand(SOME_MAGIC_INT_FOR_RANDOM_3);
     /*   for (i = edgeBegin(); i < edgeEnd(); i = edgeNext(i))
-    if  (_layout_edges[i].type == ELEMENT_BOUNDARY)
+    if  (_layout_edges[i]->type == ELEMENT_BOUNDARY)
     n++;
 
     if (n == 0)
@@ -777,7 +777,7 @@ void MoleculeLayoutGraphSmart::_getSurroundCycle(Cycle& cycle, Vec2f p) const
     int first_edge = -1;
     float first_edge_x = 1e20f;
     for (int i = edgeBegin(); i != edgeEnd(); i = edgeNext(i))
-        if (_layout_edges[i].type != ELEMENT_NOT_DRAWN)
+        if (_layout_edges[i]->type != ELEMENT_NOT_DRAWN)
         {
             Edge e = getEdge(i);
             if (pos[e.beg].y * pos[e.end].y <= 0)
@@ -807,7 +807,7 @@ void MoleculeLayoutGraphSmart::_getSurroundCycle(Cycle& cycle, Vec2f p) const
         // and we can take the lowest vertex as the start vertex for searching of surround cycle
         float first_vertex_y;
         for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
-            if (_layout_vertices[i].type != ELEMENT_NOT_DRAWN)
+            if (_layout_vertices[i]->type != ELEMENT_NOT_DRAWN)
                 if (firts_vertex == -1 || pos[i].y < first_vertex_y)
                 {
                     first_vertex_y = pos[i].y;
