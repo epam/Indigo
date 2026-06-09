@@ -20,6 +20,7 @@
 #define __molecule_layered_molecules_h__
 
 #include "common/base_cpp/d_bitset.h"
+#include "base_cpp/ptr_array.h"
 #include "molecule/base_molecule.h"
 #include "molecule/molecule.h"
 
@@ -144,9 +145,9 @@ namespace indigo
         };
 
         Molecule _proto;
-        ObjArray<Dbitset> _bond_masks[BOND_TYPES_NUMBER];
+        PtrArray<Dbitset> _bond_masks[BOND_TYPES_NUMBER];
         Array<bool> _mobilePositions;
-        ObjArray<Dbitset> _mobilePositionsOccupied;
+        PtrArray<Dbitset> _mobilePositionsOccupied;
 
         void _mergeWithSubmolecule(BaseMolecule& bmol, const Array<int>& vertices, const Array<int>* edges, const Array<int>& mapping, int skip_flags) override;
 
@@ -162,8 +163,8 @@ namespace indigo
 
     private:
         LayeredMolecules(const LayeredMolecules&); // no implicit copy
-        ObjArray<Array<int>> _piLabels;
-        ObjArray<Array<int>> _connectivity;
+        PtrArray<Array<int>> _piLabels;
+        PtrArray<Array<int>> _connectivity;
         int _layersAromatized;
 
         struct TrieNode
