@@ -354,8 +354,7 @@ void CmfSaver::_encodeExtSection(Molecule& mol, const Mapping& mapping)
             _encodeBaseSGroup(mol, sa, mapping);
             _encodeString(sa.label);
             _encodeString(sa.sa_class);
-            byte packed = static_cast<byte>(((int)(sa.contracted.value_or(DisplayOption::Undefined)) & 0x01) |
-                                            (sa.bond_connections.size() << 1));
+            byte packed = static_cast<byte>(((int)(sa.contracted.value_or(DisplayOption::Undefined)) & 0x01) | (sa.bond_connections.size() << 1));
             _output->writeByte(packed);
             if (sa.bond_connections.size() > 0)
             {
