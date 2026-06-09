@@ -64,14 +64,14 @@ int BingoCore::mangoIndexProcessSingleRecord()
         }
         catch (CmfSaver::Error& e)
         {
-            if (self.bingo_context->reject_invalid_structures)
+            if (self.bingo_context->reject_invalid_structures.value())
                 throw;
             self.warning.readString(e.message(), true);
             return 0;
         }
     }
     CATCH_READ_TARGET_MOL({
-        if (self.bingo_context->reject_invalid_structures)
+        if (self.bingo_context->reject_invalid_structures.value())
             throw;
 
         self.warning.readString(e.message(), true);
