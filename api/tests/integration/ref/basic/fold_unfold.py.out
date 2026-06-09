@@ -1405,6 +1405,6 @@ testing C1C=CC=C([CH])C=1 |^4:5|
 C1([H])=C([H])C([C][H])=C([H])C([H])=C1[H] |^4:5|
 testing queryComponent ket
 4
-[0, 1]
+[0, 1, 2, 3]
 4
-[0, 1]
+[0, 1, 2, 3]
