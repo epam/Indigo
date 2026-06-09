@@ -219,7 +219,7 @@ IndigoReactionMolecule::IndigoReactionMolecule(BaseReaction& reaction, MonomersP
 {
     if (index < map.size())
     {
-        _properties.copy(map.at(index));
+        _properties.copy(*map.at(index));
     }
 }
 
@@ -391,7 +391,7 @@ IndigoReaction* IndigoReaction::cloneFrom(IndigoObject& obj)
         MonomersProperties& mprops = obj.getMonomersProperties();
         for (auto i = 0; i < mprops.size(); i++)
         {
-            rxnptr->_monomersProperties.push().copy(mprops[i]);
+            rxnptr->_monomersProperties.push().copy(*mprops[i]);
         }
     }
     catch (Exception&)
@@ -415,7 +415,7 @@ IndigoQueryReaction* IndigoQueryReaction::cloneFrom(IndigoObject& obj)
         MonomersProperties& mprops = obj.getMonomersProperties();
         for (auto i = 0; i < mprops.size(); i++)
         {
-            rxnptr->_monomersProperties.push().copy(mprops[i]);
+            rxnptr->_monomersProperties.push().copy(*mprops[i]);
         }
     }
     catch (Exception&)

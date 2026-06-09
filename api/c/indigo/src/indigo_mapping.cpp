@@ -57,7 +57,7 @@ IndigoObject* IndigoReactionMapping::clone()
     res_ptr->mol_mapping.copy(mol_mapping);
     for (int i = 0; i < mappings.size(); ++i)
     {
-        res_ptr->mappings.push().copy(mappings[i]);
+        res_ptr->mappings.push().copy(*mappings[i]);
     }
     return res_ptr.release();
 }
@@ -92,7 +92,7 @@ CEXPORT int indigoMapAtom(int handle, int atom)
                 return 0;
 
             BaseMolecule& mol = mapping.to.getBaseMolecule(mapping.mol_mapping[mol_idx]);
-            int idx = mapping.mappings[mol_idx][ia.idx];
+            int idx = (*mapping.mappings[mol_idx])[ia.idx];
 
             if (idx < 0)
                 return 0;
@@ -146,8 +146,8 @@ CEXPORT int indigoMapBond(int handle, int bond)
             BaseMolecule& mol = mapping.to.getBaseMolecule(mapping.mol_mapping[mol_idx]);
             const Edge& edge = ib.mol.getEdge(ib.idx);
 
-            int beg = mapping.mappings[mol_idx][edge.beg];
-            int end = mapping.mappings[mol_idx][edge.end];
+            int beg = (*mapping.mappings[mol_idx])[edge.beg];
+            int end = (*mapping.mappings[mol_idx])[edge.end];
 
             if (beg < 0 || end < 0)
                 return 0;
@@ -210,7 +210,7 @@ CEXPORT int indigoHighlightedTarget(int item)
         {
             IndigoReactionMapping& im = (IndigoReactionMapping&)obj;
             std::unique_ptr<IndigoReaction> rxn = std::make_unique<IndigoReaction>();
-            QS_DEF(ObjArray<Array<int>>, mappings);
+            QS_DEF(PtrArray<Array<int>>, mappings);
             QS_DEF(Array<int>, mol_mapping);
             rxn->rxn->clone(im.to, &mol_mapping, 0, &mappings);
             for (int i = im.from.begin(); i != im.from.end(); i = im.from.next(i))
@@ -218,8 +218,8 @@ CEXPORT int indigoHighlightedTarget(int item)
                 if (im.mol_mapping[i] < 0)
                     // can happen with catalysts
                     continue;
-                _indigoHighlightSubstructure(im.from.getBaseMolecule(i), rxn->rxn->getBaseMolecule(mol_mapping[im.mol_mapping[i]]), im.mappings[i],
-                                             mappings[im.mol_mapping[i]]);
+                _indigoHighlightSubstructure(im.from.getBaseMolecule(i), rxn->rxn->getBaseMolecule(mol_mapping[im.mol_mapping[i]]), *im.mappings[i],
+                                             *mappings[im.mol_mapping[i]]);
             }
             return self.addObject(rxn.release());
         }

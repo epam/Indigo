@@ -2989,7 +2989,7 @@ IndigoObject* IndigoSubtreesIter::next()
         return 0;
 
     _idx++;
-    std::unique_ptr<IndigoSubmolecule> res = std::make_unique<IndigoSubmolecule>(_mol, _vertices[_idx], _edges[_idx]);
+    std::unique_ptr<IndigoSubmolecule> res = std::make_unique<IndigoSubmolecule>(_mol, *_vertices[_idx], *_edges[_idx]);
     res->idx = _idx;
     return res.release();
 }
@@ -3039,7 +3039,7 @@ IndigoObject* IndigoRingsIter::next()
         return 0;
 
     _idx++;
-    std::unique_ptr<IndigoSubmolecule> res = std::make_unique<IndigoSubmolecule>(_mol, _vertices[_idx], _edges[_idx]);
+    std::unique_ptr<IndigoSubmolecule> res = std::make_unique<IndigoSubmolecule>(_mol, *_vertices[_idx], *_edges[_idx]);
     res->idx = _idx;
     return res.release();
 }
@@ -3092,7 +3092,7 @@ IndigoObject* IndigoEdgeSubmoleculeIter::next()
         return 0;
 
     _idx++;
-    std::unique_ptr<IndigoSubmolecule> res = std::make_unique<IndigoSubmolecule>(_mol, _vertices[_idx], _edges[_idx]);
+    std::unique_ptr<IndigoSubmolecule> res = std::make_unique<IndigoSubmolecule>(_mol, *_vertices[_idx], *_edges[_idx]);
     res->idx = _idx;
     return res.release();
 }
