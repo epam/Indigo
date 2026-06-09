@@ -277,32 +277,32 @@ void MoleculeRenderInternal::render()
 
 BondEnd& MoleculeRenderInternal::_be(int beid)
 {
-    return _data.bondends[beid];
+    return *_data.bondends[beid];
 }
 
 const BondEnd& MoleculeRenderInternal::_be(int beid) const
 {
-    return _data.bondends[beid];
+    return *_data.bondends[beid];
 }
 
 BondDescr& MoleculeRenderInternal::_bd(int bid)
 {
-    return _data.bonds[bid];
+    return *_data.bonds[bid];
 }
 
 const BondDescr& MoleculeRenderInternal::_bd(int bid) const
 {
-    return _data.bonds[bid];
+    return *_data.bonds[bid];
 }
 
 AtomDesc& MoleculeRenderInternal::_ad(int aid)
 {
-    return _data.atoms[aid];
+    return *_data.atoms[aid];
 }
 
 const AtomDesc& MoleculeRenderInternal::_ad(int aid) const
 {
-    return _data.atoms[aid];
+    return *_data.atoms[aid];
 }
 
 int MoleculeRenderInternal::_getOpposite(int beid) const
@@ -333,8 +333,8 @@ void MoleculeRenderInternal::_determineDoubleBondShift()
                 bd.lineOnTheRight = false;
             else
             {
-                const Ring& r1 = _data.rings[be1.lRing];
-                const Ring& r2 = _data.rings[be2.lRing];
+                const Ring& r1 = *_data.rings[be1.lRing];
+                const Ring& r2 = *_data.rings[be2.lRing];
                 // compare the ratios of double bonds in the two rings
                 bd.lineOnTheRight = r1.dblBondCount * r2.bondEnds.size() < r2.dblBondCount * r1.bondEnds.size();
             }
@@ -562,7 +562,7 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
             }
             Sgroup& sg = _data.sgroups.push();
             int tii = _pushTextItem(sg, RenderItem::RIT_DATASGROUP);
-            TextItem& ti = _data.textitems[tii];
+            TextItem& ti = *_data.textitems[tii];
             if (group.tag != ' ')
             {
                 ti.text.push(group.tag);
@@ -618,14 +618,14 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
             Sgroup& sg = _data.sgroups.push();
             _loadBracketsAuto(group, sg);
             int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
-            TextItem& index = _data.textitems[tiIndex];
+            TextItem& index = *_data.textitems[tiIndex];
             index.fontsize = FONT_SIZE_ATTR;
             bprintf(index.text, group.subscript.size() > 0 ? group.subscript.ptr() : "n");
             _positionIndex(sg, tiIndex, true);
             if (group.connectivity != RepeatingUnit::HEAD_TO_TAIL)
             {
                 int tiConn = _pushTextItem(sg, RenderItem::RIT_SGROUP);
-                TextItem& conn = _data.textitems[tiConn];
+                TextItem& conn = *_data.textitems[tiConn];
                 conn.fontsize = FONT_SIZE_ATTR;
                 if (group.connectivity == RepeatingUnit::HEAD_TO_HEAD)
                 {
@@ -653,7 +653,7 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
             Sgroup& sg = _data.sgroups.push();
             _loadBracketsAuto(group, sg);
             int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
-            TextItem& index = _data.textitems[tiIndex];
+            TextItem& index = *_data.textitems[tiIndex];
             index.fontsize = FONT_SIZE_ATTR;
             bprintf(index.text, "%d", group.multiplier);
             _positionIndex(sg, tiIndex, true);
@@ -671,7 +671,7 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
             if (group.subscript.size() == 0 || std::string(group.subscript.ptr()).empty())
                 sg.hide_brackets = true;
             int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
-            TextItem& index = _data.textitems[tiIndex];
+            TextItem& index = *_data.textitems[tiIndex];
             index.fontsize = FONT_SIZE_ATTR;
             bprintf(index.text, "%s", group.subscript.ptr());
             _positionIndex(sg, tiIndex, true);
@@ -757,8 +757,8 @@ void MoleculeRenderInternal::_loadBracketsAuto(const SGroup& group, Sgroup& sg)
 
 void MoleculeRenderInternal::_positionIndex(Sgroup& sg, int ti, bool lower)
 {
-    RenderItemBracket& bracket = _data.brackets[sg.bibegin + sg.bicount - 1];
-    TextItem& index = _data.textitems[ti];
+    RenderItemBracket& bracket = *_data.brackets[sg.bibegin + sg.bicount - 1];
+    TextItem& index = *_data.textitems[ti];
     if (bracket.invertUpperLowerIndex)
         lower = !lower;
     _cw.setTextItemSize(index, lower ? bracket.p1 : bracket.p0);
@@ -1195,7 +1195,7 @@ void MoleculeRenderInternal::_findRings()
         mask.clear();
         int rid = _data.rings.size();
         _data.rings.push();
-        Ring& ring = _data.rings[rid];
+        Ring& ring = *_data.rings[rid];
         ring.bondEnds.push(i);
 
         int j = be.next;
@@ -1224,7 +1224,7 @@ void MoleculeRenderInternal::_findRings()
         {
             for (int k = 0; k < ring.bondEnds.size(); ++k)
                 _be(ring.bondEnds[k]).lRing = -2;
-            _data.rings.pop();
+            _data.rings.removeLast();
             continue;
         }
 
@@ -1233,7 +1233,7 @@ void MoleculeRenderInternal::_findRings()
         {
             for (int k = 0; k < ring.bondEnds.size(); ++k)
                 _be(ring.bondEnds[k]).lRing = -2;
-            _data.rings.pop();
+            _data.rings.removeLast();
             continue;
         }
 
@@ -1256,7 +1256,7 @@ void MoleculeRenderInternal::_findRings()
         {
             for (int k = 0; k < ring.bondEnds.size(); ++k)
                 _be(ring.bondEnds[k]).lRing = -2;
-            _data.rings.pop();
+            _data.rings.removeLast();
             continue;
         }
 
@@ -1285,7 +1285,7 @@ void MoleculeRenderInternal::_findRings()
 
     for (int i = 0; i < _data.rings.size(); ++i)
     {
-        Ring& ring = _data.rings[i];
+        Ring& ring = *_data.rings[i];
 
         Array<Vec2f> pp;
         for (int j = 0; j < ring.bondEnds.size(); ++j)
@@ -1336,7 +1336,7 @@ void MoleculeRenderInternal::_findRings()
         BondEnd& be1 = _be(bd.be1);
         BondEnd& be2 = _be(bd.be2);
         bd.inRing = (be1.lRing >= 0 || be2.lRing >= 0);
-        bd.aromRing = ((be1.lRing >= 0) ? _data.rings[be1.lRing].aromatic : false) || ((be2.lRing >= 0) ? _data.rings[be2.lRing].aromatic : false);
+        bd.aromRing = ((be1.lRing >= 0) ? _data.rings[be1.lRing]->aromatic : false) || ((be2.lRing >= 0) ? _data.rings[be2.lRing]->aromatic : false);
     }
 }
 
@@ -1402,7 +1402,7 @@ void MoleculeRenderInternal::_determineStereoGroupsMode()
         if (allAbs && !none)
         {
 
-            TextItem& tiChiral = _data.textitems[_pushTextItem(RenderItem::RIT_CHIRAL, CWC_BASE, false)];
+            TextItem& tiChiral = *_data.textitems[_pushTextItem(RenderItem::RIT_CHIRAL, CWC_BASE, false)];
             bprintf(tiChiral.text, "Chiral");
             tiChiral.fontsize = FONT_SIZE_LABEL;
             _cw.setTextItemSize(tiChiral);

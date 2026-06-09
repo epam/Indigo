@@ -102,7 +102,7 @@ void MoleculeRenderInternal::_renderAtomIds()
             const AtomDesc& desc = _ad(i);
             for (int j = 0; j < desc.ticount; ++j)
             {
-                const TextItem& ti = _data.textitems[j + desc.tibegin];
+                const TextItem& ti = (*_data.textitems[j + desc.tibegin]);
                 if (ti.ritype == RenderItem::RIT_ATOMID)
                 {
                     _cw.drawItemBackground(ti);
@@ -144,7 +144,7 @@ void MoleculeRenderInternal::_renderEmptyRFragment()
     }
     _cw.setSingleSource(CWC_BASE);
     for (int i = 0; i < attachmentPointCount; ++i)
-        _cw.drawAttachmentPoint(_data.attachmentPoints[attachmentPointBegin + i], _idle);
+        _cw.drawAttachmentPoint((*_data.attachmentPoints[attachmentPointBegin + i]), _idle);
 }
 
 void MoleculeRenderInternal::_renderLabels()
@@ -157,7 +157,7 @@ void MoleculeRenderInternal::_renderRings()
 {
     for (int i = 0; i < _data.rings.size(); ++i)
     {
-        const Ring& ring = _data.rings[i];
+        const Ring& ring = (*_data.rings[i]);
         if (ring.aromatic)
         {
             float r = 0.75f * ring.radius;
@@ -188,14 +188,14 @@ void MoleculeRenderInternal::_renderSGroups()
 {
     for (int i = 0; i < _data.sgroups.size(); ++i)
     {
-        const Sgroup& sg = _data.sgroups[i];
+        const Sgroup& sg = (*_data.sgroups[i]);
         for (int j = 0; j < sg.ticount; ++j)
-            _cw.drawTextItemText(_data.textitems[j + sg.tibegin], _idle);
+            _cw.drawTextItemText((*_data.textitems[j + sg.tibegin]), _idle);
         for (int j = 0; j < sg.gicount; ++j)
-            _cw.drawGraphItem(_data.graphitems[j + sg.gibegin]);
+            _cw.drawGraphItem((*_data.graphitems[j + sg.gibegin]));
         for (int j = 0; j < sg.bicount; ++j)
             if (!sg.hide_brackets)
-                _cw.drawBracket(_data.brackets[j + sg.bibegin]);
+                _cw.drawBracket((*_data.brackets[j + sg.bibegin]));
     }
 
     /*
@@ -211,7 +211,7 @@ void MoleculeRenderInternal::_renderSGroups()
             const AtomDesc& desc = _ad(i);
             for (int j = 0; j < desc.ticount; ++j)
             {
-                const TextItem& ti = _data.textitems[j + desc.tibegin];
+                const TextItem& ti = (*_data.textitems[j + desc.tibegin]);
                 _cw.drawItemBackground(ti);
             }
         }
@@ -352,7 +352,7 @@ float MoleculeRenderInternal::_getBondOffset(int aid, const Vec2f& pos, const Ve
     float maxOffset = 0, offset = 0;
     for (int k = 0; k < _ad(aid).ticount; ++k)
     {
-        TextItem& item = _data.textitems[_ad(aid).tibegin + k];
+        TextItem& item = (*_data.textitems[_ad(aid).tibegin + k]);
         if (item.noBondOffset)
             continue;
         if (_clipRayBox(offset, pos, dir, item.bbp, item.bbsz, bondWidth))
@@ -360,7 +360,7 @@ float MoleculeRenderInternal::_getBondOffset(int aid, const Vec2f& pos, const Ve
     }
     for (int k = 0; k < _ad(aid).gicount; ++k)
     {
-        GraphItem& item = _data.graphitems[_ad(aid).gibegin + k];
+        GraphItem& item = (*_data.graphitems[_ad(aid).gibegin + k]);
         if (item.noBondOffset)
             continue;
         if (_clipRayBox(offset, pos, dir, item.bbp, item.bbsz, bondWidth))
@@ -541,9 +541,9 @@ void MoleculeRenderInternal::_initBondEndData()
 void MoleculeRenderInternal::_extendRenderItems()
 {
     for (int i = 0; i < _data.textitems.size(); ++i)
-        _extendRenderItem(_data.textitems[i], _settings.boundExtent);
+        _extendRenderItem((*_data.textitems[i]), _settings.boundExtent);
     for (int i = 0; i < _data.graphitems.size(); ++i)
-        _extendRenderItem(_data.graphitems[i], _settings.boundExtent);
+        _extendRenderItem((*_data.graphitems[i]), _settings.boundExtent);
 }
 
 BondEnd& MoleculeRenderInternal::_getBondEnd(int aid, int nei)
@@ -562,29 +562,29 @@ void MoleculeRenderInternal::_drawAtom(const AtomDesc& desc)
 {
 #ifdef RENDER_SHOW_BACKGROUND
     for (int i = 0; i < desc.ticount; ++i)
-        _cw.drawItemBackground(_data.textitems[i + desc.tibegin]);
+        _cw.drawItemBackground((*_data.textitems[i + desc.tibegin]));
     for (int i = 0; i < desc.gicount; ++i)
-        _cw.drawItemBackground(_data.graphitems[i + desc.gibegin]);
+        _cw.drawItemBackground((*_data.graphitems[i + desc.gibegin]));
 #endif
 
     _cw.setSingleSource(desc.color);
     for (int i = 0; i < desc.ticount; ++i)
     {
         if (desc.hcolorSet)
-            _cw.drawTextItemText(_data.textitems[i + desc.tibegin], desc.hcolor, _idle);
+            _cw.drawTextItemText((*_data.textitems[i + desc.tibegin]), desc.hcolor, _idle);
         else
-            _cw.drawTextItemText(_data.textitems[i + desc.tibegin], _idle);
+            _cw.drawTextItemText((*_data.textitems[i + desc.tibegin]), _idle);
     }
     for (int i = 0; i < desc.attachmentPointCount; ++i)
-        _cw.drawAttachmentPoint(_data.attachmentPoints[desc.attachmentPointBegin + i], _idle);
+        _cw.drawAttachmentPoint((*_data.attachmentPoints[desc.attachmentPointBegin + i]), _idle);
     for (int i = 0; i < desc.rSiteAttachmentIndexCount; ++i)
-        _cw.drawRSiteAttachmentIndex(_data.rSiteAttachmentIndices[desc.rSiteAttachmentIndexBegin + i]);
+        _cw.drawRSiteAttachmentIndex((*_data.rSiteAttachmentIndices[desc.rSiteAttachmentIndexBegin + i]));
     for (int i = 0; i < desc.gicount; ++i)
     {
         if (desc.hcolorSet)
-            _cw.drawGraphItem(_data.graphitems[i + desc.gibegin], desc.hcolor);
+            _cw.drawGraphItem((*_data.graphitems[i + desc.gibegin]), desc.hcolor);
         else
-            _cw.drawGraphItem(_data.graphitems[i + desc.gibegin]);
+            _cw.drawGraphItem((*_data.graphitems[i + desc.gibegin]));
     }
 }
 
@@ -1025,7 +1025,7 @@ void MoleculeRenderInternal::_preparePseudoAtom(int aid, int color, bool highlig
     {
         int id = _pushTextItem(ad, RenderItem::RIT_PSEUDO, color, highlighted);
         tis.push(id);
-        TextItem& item = _data.textitems[id];
+        TextItem& item = (*_data.textitems[id]);
         item.fontsize = FONT_SIZE_ATTR;
         item.text.copy(str, len);
         item.text.push((char)0);
@@ -1123,7 +1123,7 @@ void MoleculeRenderInternal::_preparePseudoAtom(int aid, int color, bool highlig
                 {
                     int id = _pushGraphItem(ad, RenderItem::RIT_CHARGESIGN, color, highlighted);
                     gis.push(id);
-                    GraphItem& sign = _data.graphitems[id];
+                    GraphItem& sign = (*_data.graphitems[id]);
                     _cw.setGraphItemSizeSign(sign, signType);
 
                     totalwdt += offset;
@@ -1140,7 +1140,7 @@ void MoleculeRenderInternal::_preparePseudoAtom(int aid, int color, bool highlig
                     float shift = (script == SUB) ? downshift : ((script == SUPER) ? upshift : 0);
                     int id = _pushTextItem(ad, RenderItem::RIT_PSEUDO, color, highlighted);
                     tis.push(id);
-                    TextItem& item = _data.textitems[id];
+                    TextItem& item = (*_data.textitems[id]);
                     item.fontsize = (script == MAIN) ? FONT_SIZE_LABEL : FONT_SIZE_ATTR;
                     item.text.copy(str + i0, i1 - i0);
                     item.text.push((char)0);
@@ -1163,9 +1163,9 @@ void MoleculeRenderInternal::_preparePseudoAtom(int aid, int color, bool highlig
     {
         float dx = totalwdt - width;
         for (int i = 0; i < tis.size(); ++i)
-            _data.textitems[tis[i]].bbp.x -= dx;
+            (*_data.textitems[tis[i]]).bbp.x -= dx;
         for (int i = 0; i < gis.size(); ++i)
-            _data.graphitems[gis[i]].bbp.x -= dx;
+            (*_data.graphitems[gis[i]]).bbp.x -= dx;
         ad.leftMargin -= dx;
         ad.rightMargin -= dx;
     }
@@ -1184,7 +1184,7 @@ void MoleculeRenderInternal::_prepareChargeLabel(int aid, int color, bool highli
         {
             int tiChargeValue = _pushTextItem(ad, RenderItem::RIT_CHARGEVAL, color, highlighted);
 
-            TextItem& itemChargeValue = _data.textitems[tiChargeValue];
+            TextItem& itemChargeValue = (*_data.textitems[tiChargeValue]);
             itemChargeValue.fontsize = FONT_SIZE_ATTR;
             bprintf(itemChargeValue.text, "%i", abs(charge));
             _cw.setTextItemSize(itemChargeValue);
@@ -1197,7 +1197,7 @@ void MoleculeRenderInternal::_prepareChargeLabel(int aid, int color, bool highli
         GraphItem::TYPE type = charge > 0 ? GraphItem::PLUS : GraphItem::MINUS;
         int giChargeSign = _pushGraphItem(ad, RenderItem::RIT_CHARGESIGN, color, highlighted);
 
-        GraphItem& itemChargeSign = _data.graphitems[giChargeSign];
+        GraphItem& itemChargeSign = (*_data.graphitems[giChargeSign]);
         _cw.setGraphItemSizeSign(itemChargeSign, type);
 
         itemChargeSign.bbp.set(ad.rightMargin, ad.ypos + _settings.upperIndexShift * ad.height);
@@ -1216,7 +1216,7 @@ void MoleculeRenderInternal::_prepareCIPLabel(const int aid, int& skip)
         AtomDesc& ad = _ad(aid);
         int tiCIP = _pushTextItem(ad, RenderItem::RIT_CIP, CWC_BASE, false);
 
-        TextItem& itemCIP = _data.textitems[tiCIP];
+        TextItem& itemCIP = (*_data.textitems[tiCIP]);
         itemCIP.fontsize = FONT_SIZE_ATTR;
         bprintf(itemCIP.text, "(%s)", CIPToString(cip).c_str());
         _cw.setTextItemSize(itemCIP);
@@ -1265,7 +1265,7 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
         bool chargeSignAdded = false;
         for (auto i = 0; i < _data.graphitems.size(); i++)
         {
-            if (_data.graphitems[i].ritype == RenderItem::RIT_CHARGESIGN)
+            if ((*_data.graphitems[i]).ritype == RenderItem::RIT_CHARGESIGN)
             {
                 chargeSignAdded = true;
                 break;
@@ -1281,7 +1281,7 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
     {
         tilabel = _pushTextItem(ad, RenderItem::RIT_LABEL, color, highlighted);
         {
-            TextItem& label = _data.textitems[tilabel];
+            TextItem& label = (*_data.textitems[tilabel]);
             label.fontsize = FONT_SIZE_LABEL;
             ArrayOutput output(label.text);
             if (ad.type == AtomDesc::TYPE_REGULAR)
@@ -1335,7 +1335,7 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
                     int i = v.findNeiVertex(apIdx);
                     BondEnd& be = _getBondEnd(aid, i);
                     int tii = _pushTextItem(ad, RenderItem::RIT_ATTACHMENTPOINT, CWC_BASE, false);
-                    TextItem& ti = _data.textitems[tii];
+                    TextItem& ti = (*_data.textitems[tii]);
                     RenderItemRSiteAttachmentIndex& item = _data.rSiteAttachmentIndices.push();
                     item.number = j + 1;
                     item.radius = 0.7f * _settings.fzz[FONT_SIZE_RSITE_ATTACHMENT_INDEX];
@@ -1348,7 +1348,7 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
                     ti.fontsize = FONT_SIZE_RSITE_ATTACHMENT_INDEX;
                     ti.noBondOffset = true;
                     _cw.setTextItemSize(ti, ad.pos);
-                    TextItem& label = _data.textitems[tilabel];
+                    TextItem& label = (*_data.textitems[tilabel]);
                     // this is just an upper bound, it won't be used
                     float shift = item.bbsz.length() + label.bbsz.length();
                     // one of the next conditions should be satisfied
@@ -1369,7 +1369,7 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
         {
             tiIsotope = _pushTextItem(ad, RenderItem::RIT_ISOTOPE, color, highlighted);
 
-            TextItem& itemIsotope = _data.textitems[tiIsotope];
+            TextItem& itemIsotope = (*_data.textitems[tiIsotope]);
             itemIsotope.fontsize = FONT_SIZE_ATTR;
             bprintf(itemIsotope.text, "%i", isotope);
             _cw.setTextItemSize(itemIsotope);
@@ -1396,7 +1396,7 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
                 Vec2f hydrogenGroupSz;
                 {
 
-                    TextItem& itemHydrogen = _data.textitems[tihydro];
+                    TextItem& itemHydrogen = (*_data.textitems[tihydro]);
                     itemHydrogen.fontsize = FONT_SIZE_LABEL;
                     bprintf(itemHydrogen.text, "H");
                     _cw.setTextItemSize(itemHydrogen, ad.pos);
@@ -1408,8 +1408,8 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
                 {
                     tiHydroIndex = _pushTextItem(ad, RenderItem::RIT_HYDROINDEX, color, highlighted);
 
-                    TextItem& itemHydroIndex = _data.textitems[tiHydroIndex];
-                    TextItem& itemHydrogen = _data.textitems[tihydro];
+                    TextItem& itemHydroIndex = (*_data.textitems[tiHydroIndex]);
+                    TextItem& itemHydrogen = (*_data.textitems[tihydro]);
                     itemHydroIndex.fontsize = FONT_SIZE_ATTR;
                     bprintf(itemHydroIndex.text, "%i", implicit_h);
                     _cw.setTextItemSize(itemHydroIndex, ad.pos);
@@ -1418,7 +1418,7 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
                 }
 
                 // take new reference, old one may be corrupted after adding 'tiHydroIndex'
-                TextItem& itemHydrogen = _data.textitems[tihydro];
+                TextItem& itemHydrogen = (*_data.textitems[tihydro]);
                 if (ad.hydroPos == HYDRO_POS_LEFT)
                 {
                     ad.leftMargin -= hydrogenGroupSz.x;
@@ -1445,9 +1445,9 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
                 _expandBoundRect(ad, itemHydrogen);
                 if (tiHydroIndex > 0)
                 {
-                    _data.textitems[tiHydroIndex].bbp.set(itemHydrogen.bbp.x + itemHydrogen.bbsz.x + _settings.labelInternalOffset,
+                    (*_data.textitems[tiHydroIndex]).bbp.set(itemHydrogen.bbp.x + itemHydrogen.bbsz.x + _settings.labelInternalOffset,
                                                           itemHydrogen.bbp.y + _settings.lowerIndexShift * itemHydrogen.bbsz.y);
-                    _expandBoundRect(ad, _data.textitems[tiHydroIndex]);
+                    _expandBoundRect(ad, (*_data.textitems[tiHydroIndex]));
                 }
             }
         }
@@ -1462,7 +1462,7 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
         {
             tiValence = _pushTextItem(ad, RenderItem::RIT_VALENCE, color, highlighted);
 
-            TextItem& itemValence = _data.textitems[tiValence];
+            TextItem& itemValence = (*_data.textitems[tiValence]);
             itemValence.fontsize = FONT_SIZE_ATTR;
             bprintf(itemValence.text, _valenceText(valence));
             _cw.setTextItemSize(itemValence);
@@ -1481,13 +1481,13 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
 
         if (radical > 0)
         {
-            const TextItem& label = _data.textitems[tilabel];
+            const TextItem& label = (*_data.textitems[tilabel]);
             Vec2f ltc(label.bbp);
 
             if (radical == RADICAL_DOUBLET)
             {
                 giRadical = _pushGraphItem(ad, RenderItem::RIT_RADICAL, color, highlighted);
-                GraphItem& itemRadical = _data.graphitems[giRadical];
+                GraphItem& itemRadical = (*_data.graphitems[giRadical]);
                 _cw.setGraphItemSizeDot(itemRadical);
 
                 if (!(ad.showHydro && ad.hydroPos == HYDRO_POS_RIGHT) && giChargeSign < 0 && tiValence < 0)
@@ -1509,8 +1509,8 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
                 giRadical1 = _pushGraphItem(ad, RenderItem::RIT_RADICAL, color, highlighted);
                 giRadical2 = _pushGraphItem(ad, RenderItem::RIT_RADICAL, color, highlighted);
 
-                GraphItem& itemRadical1 = _data.graphitems[giRadical1];
-                GraphItem& itemRadical2 = _data.graphitems[giRadical2];
+                GraphItem& itemRadical1 = (*_data.graphitems[giRadical1]);
+                GraphItem& itemRadical2 = (*_data.graphitems[giRadical2]);
 
                 float dist;
                 if (radical == RADICAL_SINGLET)
@@ -1543,7 +1543,7 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
     {
         int tiStereoGroup = _pushTextItem(ad, RenderItem::RIT_STEREOGROUP, CWC_BASE, false);
 
-        TextItem& itemStereoGroup = _data.textitems[tiStereoGroup];
+        TextItem& itemStereoGroup = (*_data.textitems[tiStereoGroup]);
         itemStereoGroup.fontsize = FONT_SIZE_ATTR;
         ArrayOutput itemOutput(itemStereoGroup.text);
         if (ad.stereoGroupType > 0 && ad.stereoGroupType != MoleculeStereocenters::ATOM_ANY)
@@ -1605,7 +1605,7 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
     {
         int tiAAM = _pushTextItem(ad, RenderItem::RIT_AAM, CWC_BASE, false);
 
-        TextItem& itemAAM = _data.textitems[tiAAM];
+        TextItem& itemAAM = (*_data.textitems[tiAAM]);
         itemAAM.fontsize = FONT_SIZE_ATTR;
         bprintf(itemAAM.text, "%i", abs(ad.aam));
         _cw.setTextItemSize(itemAAM);
@@ -1736,7 +1736,7 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
     {
         tiindex = _pushTextItem(ad, RenderItem::RIT_ATOMID, CWC_BLUE, false);
 
-        TextItem& index = _data.textitems[tiindex];
+        TextItem& index = (*_data.textitems[tiindex]);
         index.fontsize = FONT_SIZE_INDICES;
 
         int base = _opt.atomBondIdsFromOne ? 1 : 0;
@@ -1805,10 +1805,10 @@ std::vector<std::string> MoleculeRenderInternal::_splitLabelText(const std::stri
 int MoleculeRenderInternal::_pushTextItem(RenderItem::TYPE ritype, int color, bool highlighted)
 {
     _data.textitems.push();
-    _data.textitems.top().clear();
-    _data.textitems.top().ritype = ritype;
-    _data.textitems.top().color = color;
-    _data.textitems.top().highlighted = highlighted;
+    _data.textitems.top()->clear();
+    _data.textitems.top()->ritype = ritype;
+    _data.textitems.top()->color = color;
+    _data.textitems.top()->highlighted = highlighted;
     return _data.textitems.size() - 1;
 }
 
@@ -1833,10 +1833,10 @@ int MoleculeRenderInternal::_pushTextItem(Sgroup& sg, RenderItem::TYPE ritype, i
 int MoleculeRenderInternal::_pushGraphItem(RenderItem::TYPE ritype, int color, bool highlighted)
 {
     _data.graphitems.push();
-    _data.graphitems.top().clear();
-    _data.graphitems.top().ritype = ritype;
-    _data.graphitems.top().color = color;
-    _data.graphitems.top().highlighted = highlighted;
+    _data.graphitems.top()->clear();
+    _data.graphitems.top()->ritype = ritype;
+    _data.graphitems.top()->color = color;
+    _data.graphitems.top()->highlighted = highlighted;
     return _data.graphitems.size() - 1;
 }
 
