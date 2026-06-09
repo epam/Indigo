@@ -978,7 +978,7 @@ int evcmp(const Event& a, const Event& b, void* /*context*/)
     return 0;
 }
 
-float getFreeAngle(const ObjArray<Vec2f>& pp)
+float getFreeAngle(const PtrArray<Vec2f>& pp)
 {
     QS_DEF(Array<float>, angle);
     angle.clear();
@@ -986,7 +986,7 @@ float getFreeAngle(const ObjArray<Vec2f>& pp)
     for (int j = 0; j < len; ++j)
     {
         Vec2f d;
-        d.diff(pp[(j + 1) % len], pp[j]);
+        d.diff(*pp[(j + 1) % len], *pp[j]);
         angle.push(atan2f(d.y, d.x));
     }
     angle.qsort(dblcmp, NULL);
@@ -1019,7 +1019,7 @@ int loopDist(int i, int j, int len)
 class SegmentList : protected RedBlackSet<int>
 {
 public:
-    SegmentList(ObjArray<Segment>& ss) : segments(ss)
+    SegmentList(PtrArray<Segment>& ss) : segments(ss)
     {
         xPos = 0;
     }
@@ -1033,14 +1033,14 @@ public:
         int curId = insert(seg);
         int nextId = next(curId);
         int prevId = nextPost(curId);
-        Segment& segmentCurrent = segments[seg];
+        Segment& segmentCurrent = *segments[seg];
         segmentCurrent.pos = curId;
         if (nextId < end())
         {
             int nextSeg = key(nextId);
             if (loopDist(seg, nextSeg, segments.size()) > 1)
             {
-                const Segment& segmentNext = segments[nextSeg];
+                const Segment& segmentNext = *segments[nextSeg];
                 bool intersectNext = Vec2f::segmentsIntersect(segmentCurrent.p0, segmentCurrent.p1, segmentNext.p0, segmentNext.p1);
                 if (intersectNext)
                     return false;
@@ -1051,7 +1051,7 @@ public:
             int prevSeg = key(prevId);
             if (loopDist(seg, prevSeg, segments.size()) > 1)
             {
-                const Segment& segmentPrev = segments[prevSeg];
+                const Segment& segmentPrev = *segments[prevSeg];
                 bool intersectPrev = Vec2f::segmentsIntersect(segmentCurrent.p0, segmentCurrent.p1, segmentPrev.p0, segmentPrev.p1);
                 if (intersectPrev)
                     return false;
@@ -1062,7 +1062,7 @@ public:
 
     void removeSegment(int segmentId)
     {
-        _removeNode(segments[segmentId].pos);
+        _removeNode(segments[segmentId]->pos);
     }
 
     double xPos;
@@ -1070,27 +1070,27 @@ public:
 protected:
     int _compare(int key, const Node& node) const override
     {
-        const Segment& a = segments[key];
-        const Segment& b = segments[node.key];
+        const Segment& a = *segments[key];
+        const Segment& b = *segments[node.key];
         double ya = a.p0.y + (xPos - a.p0.x) * (a.p1.y - a.p0.y) / (a.p1.x - a.p0.x);
         double yb = b.p0.y + (xPos - b.p0.x) * (b.p1.y - b.p0.y) / (b.p1.x - b.p0.x);
         return ya > yb ? 1 : (ya < yb ? -1 : 0);
     }
 
 private:
-    ObjArray<Segment>& segments;
+    PtrArray<Segment>& segments;
 
     SegmentList(const SegmentList& other);
 };
 
-float getMinDotProduct(const ObjArray<Vec2f>& pp, float tilt)
+float getMinDotProduct(const PtrArray<Vec2f>& pp, float tilt)
 {
     float minDot = 1.0;
     for (int j = 0; j < pp.size(); ++j)
     {
         Vec2f a, b, d;
-        a.copy(pp[j]);
-        b.copy(pp[(j + 1) % pp.size()]);
+        a.copy(*pp[j]);
+        b.copy(*pp[(j + 1) % pp.size()]);
         a.rotate(tilt);
         b.rotate(tilt);
         d.diff(b, a);
@@ -1124,7 +1124,7 @@ bool MoleculeRenderInternal::_ringHasSelfIntersectionsSimple(const Ring& ring)
 
 bool MoleculeRenderInternal::_ringHasSelfIntersections(const Ring& ring)
 {
-    QS_DEF(ObjArray<Vec2f>, pp);
+    QS_DEF(PtrArray<Vec2f>, pp);
     pp.clear();
     int len = ring.bondEnds.size();
     for (int j = 0; j < len; ++j)
@@ -1134,17 +1134,17 @@ bool MoleculeRenderInternal::_ringHasSelfIntersections(const Ring& ring)
 
     float tilt = getFreeAngle(pp) + (float)(M_PI / 2);
 
-    QS_DEF(ObjArray<Event>, events);
+    QS_DEF(PtrArray<Event>, events);
     events.clear();
     events.reserve(2 * len);
-    QS_DEF(ObjArray<Segment>, segments);
+    QS_DEF(PtrArray<Segment>, segments);
     segments.clear();
     segments.reserve(len);
     for (int j = 0; j < len; ++j)
     {
         Vec2f p1, p2;
-        p1.copy(pp[j]);
-        p2.copy(pp[(j + 1) % len]);
+        p1.copy(*pp[j]);
+        p2.copy(*pp[(j + 1) % len]);
         p1.rotate(tilt);
         p2.rotate(tilt);
         bool revOrder = (p1.x > p2.x) || (p1.x == p2.x && p1.y > p2.y);
@@ -1169,7 +1169,7 @@ bool MoleculeRenderInternal::_ringHasSelfIntersections(const Ring& ring)
     SegmentList sl(segments);
     for (int i = 0; i < events.size(); ++i)
     {
-        Event& ev = events[i];
+        Event& ev = *events[i];
         if (ev.begin)
         {
             if (!sl.insertSegment(ev.p.x + 1e-4, ev.id))

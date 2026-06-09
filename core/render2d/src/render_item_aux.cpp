@@ -396,7 +396,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                         indent = text_item.indent;
 
                     FONT_STYLE_SET current_styles;
-                    ObjArray<ObjArray<TextItem>> ti_lines;
+                    PtrArray<PtrArray<TextItem>> ti_lines;
                     std::vector<std::pair<int, float>> spaces_widths;
                     std::pair<int, float> trailing_spaces{};
                     TextItem ti;
@@ -445,7 +445,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                                     spaces_widths.emplace_back(0, 0.0f);
                                 }
 
-                                auto& ti_line = ti_lines.top();
+                                auto& ti_line = *ti_lines.top();
                                 auto splitted_spaces = split_spaces(*line_it);
 
                                 for (auto& line_str : splitted_spaces)
@@ -492,7 +492,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                         first_index = second_index;
                     }
 
-                    if (ti_lines.size() && !ti_lines[ti_lines.size() - 1].size())
+                    if (ti_lines.size() && !ti_lines[ti_lines.size() - 1]->size())
                     {
                         text_offset_y -= text_max_height + _settings.boundExtent;
                         ti_lines.remove(ti_lines.size() - 1);
@@ -500,7 +500,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
 
                     for (int j = 0; j < ti_lines.size(); ++j)
                     {
-                        auto& ti_line = ti_lines[j];
+                        auto& ti_line = *ti_lines[j];
                         float align_offset = 0;
                         float indent_offset = (j == 0 && indent.has_value()) ? indent.value() : 0.0f;
 
@@ -510,9 +510,9 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                             float line_width = 0;
                             for (int k = 0; k < ti_line.size(); ++k)
                             {
-                                auto& ti_rc = ti_line[k];
+                                auto& ti_rc = *ti_line[k];
                                 line_width += ((k + 1) < ti_line.size() && text_item.alignment.value() != SimpleTextObject::TextAlignment::EFull)
-                                                  ? (ti_line[k + 1].bbp.x - ti_rc.bbp.x)
+                                                  ? (ti_line[k + 1]->bbp.x - ti_rc.bbp.x)
                                                   : ti_rc.bbsz.x;
                             }
 
@@ -535,7 +535,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                                     // iterate line elements and calculate new positions
                                     for (int k = 0; k < ti_line.size(); ++k)
                                     {
-                                        auto& ti_rc = ti_line[k];
+                                        auto& ti_rc = *ti_line[k];
                                         ti_rc.bbp.x = static_cast<float>(text_origin.x - ti_rc.relpos.x + text_offset_x);
                                         text_offset_x += ti_rc.bbsz.x;
                                         if (std::string(ti_rc.text.ptr()) == " ")
@@ -549,7 +549,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                         // draw text
                         for (int k = 0; k < ti_line.size(); ++k)
                         {
-                            auto& ti_rc = ti_line[k];
+                            auto& ti_rc = *ti_line[k];
                             ti_rc.bbp.x += align_offset + indent_offset;
                             _rc.drawTextItemText(ti_rc, ti_rc.rgb_color, idle);
                         }
