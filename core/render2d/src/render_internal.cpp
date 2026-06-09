@@ -162,14 +162,16 @@ void MoleculeRenderInternal::setMolecule(BaseMolecule* mol)
     }
 
     _data.atoms.clear();
-    _data.atoms.resize(_mol->vertexEnd());
+    while (_data.atoms.size() < _mol->vertexEnd())
+        _data.atoms.push();
     for (auto i = _mol->vertexBegin(); i != _mol->vertexEnd(); i = _mol->vertexNext(i))
     {
         _ad(i).clear();
     }
 
     _data.bonds.clear();
-    _data.bonds.resize(_mol->edgeEnd());
+    while (_data.bonds.size() < _mol->edgeEnd())
+        _data.bonds.push();
     for (auto i = _mol->edgeBegin(); i != _mol->edgeEnd(); i = _mol->edgeNext(i))
     {
         _bd(i).clear();

@@ -1207,8 +1207,8 @@ void SmilesLoader::_parseMolecule()
                     if (_qmol != 0)
                         bond->index = _qmol->addBond(bond->beg, bond->end, new QueryMolecule::Bond());
 
-                    _atoms[bond->beg].neighbors.add(bond->end);
-                    _atoms[bond->end].closure(number, bond->beg);
+                    _atoms[bond->beg]->neighbors.add(bond->end);
+                    _atoms[bond->end]->closure(number, bond->beg);
 
                     break;
                 }
@@ -1218,8 +1218,8 @@ void SmilesLoader::_parseMolecule()
                     bond = &_bonds[_cycles[number].pending_bond];
                     bond->end = _atom_stack.top();
                     added_bond = true;
-                    _atoms[bond->end].neighbors.add(bond->beg);
-                    _atoms[bond->beg].closure(number, bond->end);
+                    _atoms[bond->end]->neighbors.add(bond->beg);
+                    _atoms[bond->beg]->closure(number, bond->end);
 
                     if (_qmol != 0)
                     {
@@ -1240,7 +1240,7 @@ void SmilesLoader::_parseMolecule()
                 {
                     _cycles[number].beg = _atom_stack.top();
                     _cycles[number].pending_bond = -1;
-                    _atoms[_cycles[number].beg].pending(number);
+                    _atoms[_cycles[number].beg]->pending(number);
                 }
                 next = _scanner.lookNext();
             }
@@ -1351,7 +1351,7 @@ void SmilesLoader::_parseMolecule()
                     {
                         // Aromatic bonds can be a part of cis-trans configuration
                         // For example in Cn1c2ccccc2c(-c2ccccc2)n/c(=N\O)c1=O or O\N=c1/c(=O)c2ccccc2c(=O)/c/1=N\O
-                        if (_atoms[bond->beg].aromatic && bond_str.size() == 1)
+                        if (_atoms[bond->beg]->aromatic && bond_str.size() == 1)
                         {
                             // Erase bond type info
                             bond_str[i] = '?';
@@ -1382,8 +1382,8 @@ void SmilesLoader::_parseMolecule()
                         if (_qmol != 0)
                             bond->index = _qmol->addBond(bond->beg, bond->end, qbond.release());
 
-                        _atoms[bond->end].closure(number, bond->beg);
-                        _atoms[bond->beg].neighbors.add(bond->end);
+                        _atoms[bond->end]->closure(number, bond->beg);
+                        _atoms[bond->beg]->neighbors.add(bond->end);
 
                         _cycles[number].clear();
                         continue;
@@ -1428,8 +1428,8 @@ void SmilesLoader::_parseMolecule()
                             pending_bond.index = _qmol->addBond(pending_bond.beg, bond->beg, qbond.release());
 
                         pending_bond.end = bond->beg;
-                        _atoms[pending_bond.end].neighbors.add(pending_bond.beg);
-                        _atoms[pending_bond.beg].closure(number, pending_bond.end);
+                        _atoms[pending_bond.end]->neighbors.add(pending_bond.beg);
+                        _atoms[pending_bond.beg]->closure(number, pending_bond.end);
 
                         // forget the closing bond but move its index here
                         // Bond order should correspons to atoms order
@@ -1455,7 +1455,7 @@ void SmilesLoader::_parseMolecule()
                         _cycles[number].pending_bond = _bonds.size() - 1;
                         _cycles[number].pending_bond_str = _pending_bonds_pool.add(bond_str);
                         _cycles[number].beg = -1; // have it already in the bond
-                        _atoms[bond->beg].pending(number);
+                        _atoms[bond->beg]->pending(number);
 
                         continue;
                     }
@@ -1526,17 +1526,17 @@ void SmilesLoader::_parseMolecule()
 
         if (added_bond)
         {
-            _atoms[bond->beg].neighbors.add(bond->end);
-            _atoms[bond->end].neighbors.add(bond->beg);
-            _atoms[bond->end].parent = bond->beg;
+            _atoms[bond->beg]->neighbors.add(bond->end);
+            _atoms[bond->end]->neighbors.add(bond->beg);
+            _atoms[bond->end]->parent = bond->beg;
             // when going from a polymer atom, make the new atom belong
             // to the same polymer
-            if (_atoms[bond->beg].polymer_index >= 0)
+            if (_atoms[bond->beg]->polymer_index >= 0)
             {
                 // ... unless it goes from the polymer end
                 // and is not in braces
-                if (!_atoms[bond->beg].ends_polymer || (_atom_stack.size() >= 2 && _atom_stack.top() == _atom_stack[_atom_stack.size() - 2]))
-                    _atoms[bond->end].polymer_index = _atoms[bond->beg].polymer_index;
+                if (!_atoms[bond->beg]->ends_polymer || (_atom_stack.size() >= 2 && _atom_stack.top() == _atom_stack[_atom_stack.size() - 2]))
+                    _atoms[bond->end]->polymer_index = _atoms[bond->beg]->polymer_index;
             }
         }
 
@@ -1672,14 +1672,14 @@ void SmilesLoader::_handlePolymerRepetition(int i)
     }
     for (j = 0; j < _atoms.size(); j++)
     {
-        if (_atoms[j].polymer_index != i)
+        if (_atoms[j]->polymer_index != i)
             continue;
         sgroup->atoms.push(j);
         if (_polymer_repetitions[i] > 0)
             ((MultipleGroup*)sgroup)->parent_atoms.push(j);
-        if (_atoms[j].starts_polymer)
+        if (_atoms[j]->starts_polymer)
             start = j;
-        if (_atoms[j].ends_polymer)
+        if (_atoms[j]->ends_polymer)
             end = j;
     }
     if (start == -1)
@@ -1695,9 +1695,9 @@ void SmilesLoader::_handlePolymerRepetition(int i)
 
         const Edge& edge = _bmol->getEdge(j);
 
-        if (_atoms[edge.beg].polymer_index != i && _atoms[edge.end].polymer_index != i)
+        if (_atoms[edge.beg]->polymer_index != i && _atoms[edge.end]->polymer_index != i)
             continue;
-        if (_atoms[edge.beg].polymer_index == i && _atoms[edge.end].polymer_index == i)
+        if (_atoms[edge.beg]->polymer_index == i && _atoms[edge.end]->polymer_index == i)
             sgroup->bonds.push(j);
         else
         {

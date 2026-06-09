@@ -567,7 +567,7 @@ CEXPORT int indigoRenderGrid(int objects, int* refAtoms, int nColumns, int outpu
         bool hasNonemptyTitles = false;
         for (int i = 0; i < rp.titles.size(); ++i)
         {
-            if (rp.titles[i].size() > 0)
+            if (rp.titles[i]->size() > 0)
             {
                 hasNonemptyTitles = true;
                 break;
