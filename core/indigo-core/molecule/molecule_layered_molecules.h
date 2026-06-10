@@ -19,8 +19,8 @@
 #ifndef __molecule_layered_molecules_h__
 #define __molecule_layered_molecules_h__
 
-#include "common/base_cpp/d_bitset.h"
 #include "base_cpp/ptr_array.h"
+#include "common/base_cpp/d_bitset.h"
 #include "molecule/base_molecule.h"
 #include "molecule/molecule.h"
 

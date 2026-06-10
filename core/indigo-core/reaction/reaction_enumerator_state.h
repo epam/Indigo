@@ -19,8 +19,8 @@
 #ifndef __reaction_enumerator_state__
 #define __reaction_enumerator_state__
 
-#include "base_cpp/red_black.h"
 #include "base_cpp/ptr_array.h"
+#include "base_cpp/red_black.h"
 #include "base_cpp/reusable_obj_array.h"
 #include "graph/embedding_enumerator.h"
 #include "molecule/molecule.h"

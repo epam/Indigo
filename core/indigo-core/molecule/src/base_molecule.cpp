@@ -1398,7 +1398,8 @@ int BaseMolecule::getRSiteAttachmentPointByOrder(int idx, int order) const
 
 void BaseMolecule::setRSiteAttachmentOrder(int atom_idx, int att_atom_idx, int order)
 {
-    while (_rsite_attachment_points.size() < atom_idx + 1) _rsite_attachment_points.push();
+    while (_rsite_attachment_points.size() < atom_idx + 1)
+        _rsite_attachment_points.push();
     _rsite_attachment_points[atom_idx]->expandFill(order + 1, -1);
     (*_rsite_attachment_points[atom_idx])[order] = att_atom_idx;
     updateEditRevision();
@@ -1413,7 +1414,8 @@ void BaseMolecule::setTemplateAtomAttachmentOrder(int atom_idx, int att_atom_idx
     ap.ap_id.readString(att_id, false);
     ap.ap_id.push(0);
     if (atom_idx >= template_attachment_indexes.size())
-        while (template_attachment_indexes.size() < atom_idx + 1) template_attachment_indexes.push();
+        while (template_attachment_indexes.size() < atom_idx + 1)
+            template_attachment_indexes.push();
     template_attachment_indexes.at(atom_idx)->add(att_idx);
     updateEditRevision();
 }
@@ -1524,7 +1526,8 @@ void BaseMolecule::addAttachmentPoint(int order, int atom_index)
         throw Error("attachment point order %d no allowed (should start from 1)", order);
 
     if (_attachment_index.size() < order)
-        while (_attachment_index.size() < order) _attachment_index.push();
+        while (_attachment_index.size() < order)
+            _attachment_index.push();
 
     _attachment_index[order - 1]->push(atom_index);
     updateEditRevision();

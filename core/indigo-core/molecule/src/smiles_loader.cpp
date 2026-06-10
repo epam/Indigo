@@ -384,7 +384,7 @@ void SmilesLoader::_setRadicalsAndHCounts()
 
         if (_atoms[i]->hydrogens >= 0)
             _mol->setImplicitH(idx, _atoms[i]->hydrogens);
-        else if (_atoms[i]->brackets)    // no hydrogens in brackets?
+        else if (_atoms[i]->brackets)   // no hydrogens in brackets?
             _mol->setImplicitH(idx, 0); // no implicit hydrogens on atom then
         else if (_atoms[i]->aromatic && _mol->getAtomAromaticity(i) == ATOM_AROMATIC)
         {

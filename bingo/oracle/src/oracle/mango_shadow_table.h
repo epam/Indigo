@@ -19,8 +19,8 @@
 #ifndef __mango_shadow_table__
 #define __mango_shadow_table__
 
-#include "base_cpp/queue.h"
 #include "base_cpp/ptr_array.h"
+#include "base_cpp/queue.h"
 #include "base_cpp/tlscont.h"
 #include "core/mango_matchers.h"
 #include "oracle/bingo_fetch_engine.h"

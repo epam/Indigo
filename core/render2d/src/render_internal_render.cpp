@@ -1445,8 +1445,9 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
                 _expandBoundRect(ad, itemHydrogen);
                 if (tiHydroIndex > 0)
                 {
-                    (*_data.textitems[tiHydroIndex]).bbp.set(itemHydrogen.bbp.x + itemHydrogen.bbsz.x + _settings.labelInternalOffset,
-                                                          itemHydrogen.bbp.y + _settings.lowerIndexShift * itemHydrogen.bbsz.y);
+                    (*_data.textitems[tiHydroIndex])
+                        .bbp.set(itemHydrogen.bbp.x + itemHydrogen.bbsz.x + _settings.labelInternalOffset,
+                                 itemHydrogen.bbp.y + _settings.lowerIndexShift * itemHydrogen.bbsz.y);
                     _expandBoundRect(ad, (*_data.textitems[tiHydroIndex]));
                 }
             }

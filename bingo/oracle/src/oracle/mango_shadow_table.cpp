@@ -108,7 +108,8 @@ void MangoShadowTable::addMolecule(OracleEnv& env, const char* rowid, int blockn
     _pending_fragcount.push(fragments_count);
 
     if (_pending_counters.size() != counters.size())
-        while (_pending_counters.size() < counters.size()) _pending_counters.push();
+        while (_pending_counters.size() < counters.size())
+            _pending_counters.push();
 
     for (i = 0; i < counters.size(); i++)
         _pending_counters[i]->push(counters[i]);

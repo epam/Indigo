@@ -16,8 +16,8 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "base_cpp/array.h"
 #include "base_cpp/d_bitset.h"
+#include "base_cpp/array.h"
 #include "base_cpp/ptr_array.h"
 #include <algorithm>
 

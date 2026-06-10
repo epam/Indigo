@@ -302,7 +302,8 @@ namespace indigo
         template <typename T1, typename T2>
         void qsort(int (*cmp)(T1, T2, void*), void* context)
         {
-            std::sort(_items.begin(), _items.end(), [cmp, context](const std::unique_ptr<T>& a, const std::unique_ptr<T>& b) { return cmp(*a, *b, context) < 0; });
+            std::sort(_items.begin(), _items.end(),
+                      [cmp, context](const std::unique_ptr<T>& a, const std::unique_ptr<T>& b) { return cmp(*a, *b, context) < 0; });
         }
 
     private:

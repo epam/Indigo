@@ -17,8 +17,8 @@ extern "C"
 #include "bingo_pg_fix_post.h"
 
 #include "base_cpp/array.h"
-#include "base_cpp/ptr_array.h"
 #include "base_cpp/output.h"
+#include "base_cpp/ptr_array.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/tlscont.h"
 

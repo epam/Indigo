@@ -17,8 +17,8 @@
 #include "indigo_reaction.h"
 
 #include "base_cpp/fixed_deque.h"
-#include "base_cpp/ptr_array.h"
 #include "base_cpp/os_thread_wrapper.h"
+#include "base_cpp/ptr_array.h"
 #include "math/statistics.h"
 #include "molecule/molecule_exact_matcher.h"
 #include "molecule/molecule_substructure_matcher.h"

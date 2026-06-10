@@ -2005,8 +2005,12 @@ void MoleculeLayoutGraph::_findFixedComponents(BiconnectedDecomposer& bc_decom, 
         fixed_graph.makeSubgraph(*this, fixed_filter, &fixed_mapping, &fixed_inv_mapping);
         const Array<int>& decomposition = fixed_graph.getDecomposition();
         _fixed_decomposition.copy(decomposition);
-        _fixed_subgraphs_ext_vertices.clear(); while (_fixed_subgraphs_ext_vertices.size() < fixed_graph.countComponents()) _fixed_subgraphs_ext_vertices.push();
-        _fixed_subgraphs_int_vertices.clear(); while (_fixed_subgraphs_int_vertices.size() < fixed_graph.countComponents()) _fixed_subgraphs_int_vertices.push();
+        _fixed_subgraphs_ext_vertices.clear();
+        while (_fixed_subgraphs_ext_vertices.size() < fixed_graph.countComponents())
+            _fixed_subgraphs_ext_vertices.push();
+        _fixed_subgraphs_int_vertices.clear();
+        while (_fixed_subgraphs_int_vertices.size() < fixed_graph.countComponents())
+            _fixed_subgraphs_int_vertices.push();
 
         for (auto v_idx = 0; v_idx < decomposition.size(); ++v_idx)
         {

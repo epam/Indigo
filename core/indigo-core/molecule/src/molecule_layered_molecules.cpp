@@ -52,7 +52,8 @@ LayeredMolecules::LayeredMolecules(BaseMolecule& molecule) : _layersAromatized(0
     }
 
     _mobilePositions.expandFill(_proto.vertexCount(), false);
-    while (_mobilePositionsOccupied.size() < _proto.vertexCount()) _mobilePositionsOccupied.push();
+    while (_mobilePositionsOccupied.size() < _proto.vertexCount())
+        _mobilePositionsOccupied.push();
 
     layers = 1;
 
@@ -244,11 +245,16 @@ bool LayeredMolecules::addLayerFromMolecule(const Molecule& molecule, Array<int>
             e1_idx = addEdge(u1, v1);
             _proto.addEdge(u1, v1);
             _proto.setBondOrder(e1_idx, BOND_ZERO, false);
-            while (_bond_masks[BOND_ZERO].size() < e1_idx + 1) _bond_masks[BOND_ZERO].push();
-            while (_bond_masks[BOND_SINGLE].size() < e1_idx + 1) _bond_masks[BOND_SINGLE].push();
-            while (_bond_masks[BOND_DOUBLE].size() < e1_idx + 1) _bond_masks[BOND_DOUBLE].push();
-            while (_bond_masks[BOND_TRIPLE].size() < e1_idx + 1) _bond_masks[BOND_TRIPLE].push();
-            while (_bond_masks[BOND_AROMATIC].size() < e1_idx + 1) _bond_masks[BOND_AROMATIC].push();
+            while (_bond_masks[BOND_ZERO].size() < e1_idx + 1)
+                _bond_masks[BOND_ZERO].push();
+            while (_bond_masks[BOND_SINGLE].size() < e1_idx + 1)
+                _bond_masks[BOND_SINGLE].push();
+            while (_bond_masks[BOND_DOUBLE].size() < e1_idx + 1)
+                _bond_masks[BOND_DOUBLE].push();
+            while (_bond_masks[BOND_TRIPLE].size() < e1_idx + 1)
+                _bond_masks[BOND_TRIPLE].push();
+            while (_bond_masks[BOND_AROMATIC].size() < e1_idx + 1)
+                _bond_masks[BOND_AROMATIC].push();
         }
         int order = const_cast<Molecule&>(molecule).getBondOrder(e2_idx);
         _bond_masks[order][e1_idx]->set(newTautomerIndex);
@@ -515,7 +521,8 @@ void LayeredMolecules::_resizeLayers(int newSize)
 
 void LayeredMolecules::_calcConnectivity(int layerFrom, int layerTo)
 {
-    while (_connectivity.size() < _proto.vertexEnd()) _connectivity.push();
+    while (_connectivity.size() < _proto.vertexEnd())
+        _connectivity.push();
     for (auto v_idx : _proto.vertices())
     {
         _connectivity[v_idx]->expandFill(layerTo, 0);
@@ -544,7 +551,8 @@ void LayeredMolecules::_calcConnectivity(int layerFrom, int layerTo)
 
 void LayeredMolecules::_calcPiLabels(int layerFrom, int layerTo)
 {
-    while (_piLabels.size() < _proto.vertexEnd()) _piLabels.push();
+    while (_piLabels.size() < _proto.vertexEnd())
+        _piLabels.push();
     QS_DEF(Dbitset, skip);
     skip.resize(layers);
     QS_DEF(Array<int>, non_arom_conn);

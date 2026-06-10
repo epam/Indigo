@@ -513,7 +513,8 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
             }
             else if ((prev_layout_component < 0) ^ (next_layout_component < 0))
             {
-                const MoleculeLayoutSmoothingSegment& calc_segment = prev_layout_component < 0 ? *segment[s] : *segment[(s + segment_count - 1) % segment_count];
+                const MoleculeLayoutSmoothingSegment& calc_segment =
+                    prev_layout_component < 0 ? *segment[s] : *segment[(s + segment_count - 1) % segment_count];
                 int calc_vertex = prev_layout_component < 0 ? calc_segment.get_start() : calc_segment.get_finish();
 
                 Cycle border;
@@ -630,7 +631,8 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
 
             for (int v = segment[i]->_graph.vertexBegin(); v != segment[i]->_graph.vertexEnd(); v = segment[i]->_graph.vertexNext(v))
             {
-                if ((!segment[i]->is_finish(v) && !segment[i]->is_start(v) && segment[i]->isVertexUp(v) ^ !up) || (is_segment_trivial && !segment[i]->is_finish(v)))
+                if ((!segment[i]->is_finish(v) && !segment[i]->is_start(v) && segment[i]->isVertexUp(v) ^ !up) ||
+                    (is_segment_trivial && !segment[i]->is_finish(v)))
                 {
 
                     int ext_v = segment[i]->_graph.getVertexExtIdx(v);
@@ -1450,7 +1452,7 @@ void MoleculeLayoutGraphSmart::_segment_smoothing_prepearing(const Cycle& cycle,
             segment.push(*segment_graph[number_of_segment[i]], rotation_point[current_number], rotation_point[(1 + current_number) % segments_count]);
             segment.top()->set_layout_component_number(segment_component_number[number_of_segment[i]]);
             segment.top()->set_start_finish_number(cycle.getVertex(rotation_vertex[current_number]),
-                                                  cycle.getVertex(rotation_vertex[(current_number + 1) % segments_count]));
+                                                   cycle.getVertex(rotation_vertex[(current_number + 1) % segments_count]));
             current_number++;
         }
 }

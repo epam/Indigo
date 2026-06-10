@@ -31,9 +31,9 @@
 #include "indigo_abbreviations.h"
 
 #include "base_cpp/cancellation_handler.h"
-#include "base_cpp/ptr_array.h"
 #include "base_cpp/exception.h"
 #include "base_cpp/io_base.h"
+#include "base_cpp/ptr_array.h"
 
 #include "layout/reaction_layout.h"
 

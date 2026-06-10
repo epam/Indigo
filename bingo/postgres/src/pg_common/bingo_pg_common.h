@@ -9,8 +9,8 @@
 
 #include "base_c/bitarray.h"
 #include "base_cpp/output.h"
-#include "base_cpp/scanner.h"
 #include "base_cpp/ptr_array.h"
+#include "base_cpp/scanner.h"
 #include "base_cpp/tlscont.h"
 #include "bingo_core_c_internal.h"
 #include "bingo_postgres.h"
