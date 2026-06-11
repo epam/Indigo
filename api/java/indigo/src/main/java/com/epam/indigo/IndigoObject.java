@@ -880,6 +880,27 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
     }
 
     /**
+     * Verifies whether the structure contains a disconnected inorganic component ("salt").
+     *
+     * @return {@code true} if the structure contains a salt
+     */
+    public boolean checkSalt() {
+        dispatcher.setSessionID();
+
+        for (IndigoObject component : iterateComponents()) {
+            IndigoObject targetFragment = component.clone();
+            for (String salt : Salts.SALTS) {
+                IndigoObject querySalt = dispatcher.loadSmarts(salt);
+                IndigoObject matcher = dispatcher.substructureMatcher(targetFragment);
+                if (matcher.match(querySalt) != null) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * Strips all disconnected inorganic components ("salts") from the molecule.
      *
      * <p>Returns a copy of the molecule without its inorganic components.
