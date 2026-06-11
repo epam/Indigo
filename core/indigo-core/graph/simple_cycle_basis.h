@@ -42,7 +42,7 @@ namespace indigo
         }
         const Array<int>& getCycle(int num) const
         {
-            return *_cycles[num];
+            return _cycles[num];
         }
 
         PtrArray<Array<int>> _cycles;

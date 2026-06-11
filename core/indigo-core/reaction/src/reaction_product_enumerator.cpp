@@ -165,8 +165,7 @@ void ReactionProductEnumerator::_buildTubesGrid(void)
     for (int i = _reaction.reactantBegin(); i != _reaction.reactantEnd(); i = _reaction.reactantNext(i))
         tubes_count *= getMonomersCount(i);
     _tubes_monomers.clear();
-    while (_tubes_monomers.size() < tubes_count)
-        _tubes_monomers.add(std::make_unique<Array<int>>());
+    _tubes_monomers.resize(tubes_count);
 
     for (int i = 0; i < tubes_count; i++)
     {
@@ -180,7 +179,7 @@ void ReactionProductEnumerator::_buildTubesGrid(void)
             val = cur_tube_code % monomers_count;
             cur_tube_code /= monomers_count;
 
-            _tubes_monomers[i]->push((*digits[code_pos])[val]);
+            _tubes_monomers[i].push((digits[code_pos])[val]);
 
             dev *= getMonomersCount(j);
             code_pos++;

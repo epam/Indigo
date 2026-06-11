@@ -392,12 +392,12 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
         auto merge_gross_data = [&gross_units](const GROSS_UNITS& gross) {
             for (int i = 0; i < gross.size(); i++)
             {
-                for (auto it : gross.at(i)->isotopes)
+                for (auto it : gross.at(i).isotopes)
                 {
-                    if (gross_units[0]->isotopes.count(it.first) == 0)
-                        gross_units[0]->isotopes[it.first] = it.second;
+                    if (gross_units[0].isotopes.count(it.first) == 0)
+                        gross_units[0].isotopes[it.first] = it.second;
                     else
-                        gross_units[0]->isotopes[it.first] += it.second;
+                        gross_units[0].isotopes[it.first] += it.second;
                 }
             }
         };

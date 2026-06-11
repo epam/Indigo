@@ -354,7 +354,7 @@ void PathwayLayout::generateTextBlocks(SimpleTextObjectBuilder& tob, const PtrAr
         {
             height -= _text_line_height;
             SimpleTextLine textLine;
-            textLine.text = props[i]->ptr();
+            textLine.text = props[i].ptr();
             if (std::round(height * ROUNDING_FACTOR) < std::round(_text_line_height * ROUNDING_FACTOR) && props.size() - i > 1)
             {
                 const std::string ellipsis = "...";

@@ -78,9 +78,9 @@ namespace indigo
                 precursorReactionIndexes.copy(other.precursorReactionIndexes);
 
                 for (int i = 0; i < other.name_text.size(); ++i)
-                    name_text.push().copy(*other.name_text[i]);
+                    name_text.push().copy(other.name_text[i]);
                 for (int i = 0; i < other.conditions_text.size(); ++i)
-                    conditions_text.push().copy(*other.conditions_text[i]);
+                    conditions_text.push().copy(other.conditions_text[i]);
             }
             int reactionIdx;
             // vector of successor reactions indexes and their corresponding reactant indexes
@@ -101,11 +101,11 @@ namespace indigo
         std::unique_ptr<BaseReaction> getBaseReaction(int index) override
         {
             std::unique_ptr<BaseReaction> reaction(new Reaction());
-            auto& sr = *_reactions[index];
+            auto& sr = _reactions[index];
             for (auto pidx : sr.productIndexes)
-                reaction->addProductCopy(*_molecules[pidx], 0, 0);
+                reaction->addProductCopy(_molecules[pidx], 0, 0);
             for (auto ridx : sr.reactantIndexes)
-                reaction->addReactantCopy(*_molecules[ridx], 0, 0);
+                reaction->addReactantCopy(_molecules[ridx], 0, 0);
             reaction->properties().copy(sr.properties);
             return reaction;
         }
@@ -114,7 +114,7 @@ namespace indigo
 
         auto& getReactionNode(int node_idx)
         {
-            return *_reactionNodes[node_idx];
+            return _reactionNodes[node_idx];
         }
 
         int getReactionNodeCount() const
@@ -124,7 +124,7 @@ namespace indigo
 
         auto& getMolecule(int mol_idx)
         {
-            return *_molecules[mol_idx];
+            return _molecules[mol_idx];
         }
 
         int getMoleculeCount() const
@@ -134,7 +134,7 @@ namespace indigo
 
         auto& getReaction(int reaction_idx)
         {
-            return *_reactions[reaction_idx];
+            return _reactions[reaction_idx];
         }
 
         int getReactionCount() const
@@ -175,7 +175,7 @@ namespace indigo
 
         BaseMolecule& getBaseMolecule(int index) override
         {
-            return *_molecules[index];
+            return _molecules[index];
         }
 
         void copyToReaction(BaseReaction& reaction)
@@ -186,7 +186,7 @@ namespace indigo
             std::map<int, int> mol_roles;
             for (int i = 0; i < _reactions.size(); ++i)
             {
-                auto& reac = *_reactions[i];
+                auto& reac = _reactions[i];
                 for (auto mol_idx : reac.productIndexes)
                 {
                     auto product_it = mol_roles.find(mol_idx);
@@ -218,19 +218,19 @@ namespace indigo
                 switch (kvp.second)
                 {
                 case PRODUCT:
-                    reaction.addProductCopy(*_molecules[kvp.first], 0, 0);
+                    reaction.addProductCopy(_molecules[kvp.first], 0, 0);
                     break;
                 case REACTANT:
-                    reaction.addReactantCopy(*_molecules[kvp.first], 0, 0);
+                    reaction.addReactantCopy(_molecules[kvp.first], 0, 0);
                     break;
                 case INTERMEDIATE:
-                    reaction.addIntermediateCopy(*_molecules[kvp.first], 0, 0);
+                    reaction.addIntermediateCopy(_molecules[kvp.first], 0, 0);
                     break;
                 case CATALYST:
-                    reaction.addCatalystCopy(*_molecules[kvp.first], 0, 0);
+                    reaction.addCatalystCopy(_molecules[kvp.first], 0, 0);
                     break;
                 case UNDEFINED:
-                    reaction.addUndefinedCopy(*_molecules[kvp.first], 0, 0);
+                    reaction.addUndefinedCopy(_molecules[kvp.first], 0, 0);
                     break;
                 }
             }
@@ -251,7 +251,7 @@ namespace indigo
             ReactionNode rn;
             rn.reactionIdx = static_cast<int>(_reactionNodes.size());
             _reactionNodes.push(rn);
-            return *_reactionNodes[_reactionNodes.size() - 1];
+            return _reactionNodes[_reactionNodes.size() - 1];
         }
 
         int addMolecule(BaseMolecule& mol)
@@ -269,7 +269,7 @@ namespace indigo
         {
             SimpleReaction sr;
             _reactions.push(sr);
-            return {static_cast<int>(_reactions.size() - 1), *_reactions[_reactions.size() - 1]};
+            return {static_cast<int>(_reactions.size() - 1), _reactions[_reactions.size() - 1]};
         }
 
         BaseReaction* neu() override;

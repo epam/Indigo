@@ -222,14 +222,14 @@ void RenderParamInterface::render(RenderParams& params)
             for (int i = 0; i < params.mols.size(); ++i)
             {
                 int mol = factory.addItemMolecule();
-                BaseMolecule& bm = *params.mols[i];
+                BaseMolecule& bm = params.mols[i];
                 _prepareMolecule(params, bm);
                 factory.getItemMolecule(mol).mol = &bm;
                 objs.push(mol);
 
                 if (params.titles.size() > 0)
                 {
-                    titles.push(multilineTextUnit(factory, RenderItemAuxiliary::AUX_TITLE, *params.titles[i],
+                    titles.push(multilineTextUnit(factory, RenderItemAuxiliary::AUX_TITLE, params.titles[i],
                                                   params.rOpt.titleSpacing * params.rOpt.titleFontFactor, params.cnvOpt.titleAlign.inbox_alignment));
                 }
             }
@@ -250,14 +250,14 @@ void RenderParamInterface::render(RenderParams& params)
             for (int i = 0; i < params.rxns.size(); ++i)
             {
                 int rxn = factory.addItemReaction();
-                BaseReaction& br = *params.rxns[i];
+                BaseReaction& br = params.rxns[i];
                 _prepareReaction(params, br);
                 factory.getItemReaction(rxn).rxn = &br;
                 objs.push(rxn);
 
                 if (params.titles.size() > 0)
                 {
-                    titles.push(multilineTextUnit(factory, RenderItemAuxiliary::AUX_TITLE, *params.titles[i],
+                    titles.push(multilineTextUnit(factory, RenderItemAuxiliary::AUX_TITLE, params.titles[i],
                                                   params.rOpt.titleSpacing * params.rOpt.titleFontFactor, params.cnvOpt.titleAlign.inbox_alignment));
                 }
             }

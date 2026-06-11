@@ -34,9 +34,9 @@
 // History: previously implemented as `Array<T*>` with manual `delete` in the
 // destructor. As part of milestone-19 (issue #783) the internal storage was
 // migrated to `std::vector<std::unique_ptr<T>>`. The public API was kept
-// source-compatible with one exception: `operator[]` and `at()` now return
-// `T*` by value rather than `T*&` (lvalue reference). Direct assignment via
-// `arr[i] = ptr` must be replaced with `arr.set(i, ptr)` / `arr.reset(i, ptr)`.
+// source-compatible. operator[]/at()/top() return `T&` (ObjArray-compatible
+// value semantics); use getPtr(i) for nullable-slot (sparse) access. Direct
+// assignment `arr[i] = ptr` is invalid — use `arr.set(i, ptr)` / `arr.reset(i, ptr)`.
 //
 // PR-1 (issue #3691) adds ownership-correct overloads and marks the raw-pointer
 // overloads deprecated. Migration guide:
@@ -143,18 +143,27 @@ namespace indigo
             return result;
         }
 
-        // Raw pointer to the last slot (does not transfer ownership). Throws
-        // if the array is empty — symmetric with pop().
-        T* top()
+        // Reference to the last pointee (does not transfer ownership). Throws
+        // if the array is empty — symmetric with pop(). Use getPtr(size() - 1)
+        // if the last slot may legally be null.
+        T& top()
         {
             if (_items.empty())
                 throw Error("top(): array is empty");
-            return _items.back().get();
+            return *_items.back();
         }
 
-        // Grow up to `newsize`, filling new slots with nullptr. Smaller
-        // `newsize` is a no-op (does NOT shrink) — matches the historical
-        // contract used by some clients to pre-allocate sparse arrays.
+        const T& top() const
+        {
+            if (_items.empty())
+                throw Error("top(): array is empty");
+            return *_items.back();
+        }
+
+        // Grow up to `newsize`, filling new slots with nullptr. A smaller or
+        // non-positive `newsize` is a no-op (does NOT shrink) — matches the
+        // historical contract used by some clients to pre-allocate sparse
+        // arrays. Use resize() to grow with default-constructed pointees.
         void expand(int newsize)
         {
             if (newsize > static_cast<int>(_items.size()))
@@ -174,15 +183,32 @@ namespace indigo
             return static_cast<int>(_items.size());
         }
 
-        // Grow or shrink to `newsize`. On shrink, deletes the trailing
-        // pointees (skipping nulls). On grow, fills new slots with nullptr.
+        // Grow or shrink to `newsize`, ObjArray-compatible semantics. On
+        // shrink, deletes the trailing pointees (skipping nulls). On grow,
+        // DEFAULT-CONSTRUCTS new pointees (not nullptr) so element access via
+        // operator[]/at() is immediately valid. Requires T to be default-
+        // constructible (only when resize() is instantiated) — same constraint
+        // as the legacy ObjArray<T>::resize. Use expand() for nullptr slots.
+        // Throws on negative `newsize`. Basic exception guarantee: if T's
+        // default constructor throws while growing, slots past the old size may
+        // remain nullptr (use getPtr() to probe after a throwing T).
         void resize(int newsize)
         {
-            _items.resize(static_cast<std::size_t>(newsize));
+            if (newsize < 0)
+                throw Error("resize(): negative size %d", newsize);
+            const std::size_t target = static_cast<std::size_t>(newsize);
+            const std::size_t old = _items.size();
+            _items.resize(target);
+            for (std::size_t i = old; i < target; ++i)
+                _items[i] = std::make_unique<T>();
         }
 
+        // Removes the last slot (deleting its pointee, if any). Throws if the
+        // array is empty — symmetric with pop().
         void removeLast()
         {
+            if (_items.empty())
+                throw Error("removeLast(): array is empty");
             _items.pop_back();
         }
 
@@ -196,7 +222,8 @@ namespace indigo
 
         // ----------------------------------------------------------------
         // set() — owning overload (preferred): places `obj` at slot `idx`.
-        // The slot MUST be currently null (throws otherwise).
+        // The slot MUST be currently null (throws otherwise). Passing a null
+        // `obj` leaves the slot null (use reset(idx) to explicitly clear).
         // ----------------------------------------------------------------
         void set(int idx, std::unique_ptr<T> obj)
         {
@@ -252,28 +279,47 @@ namespace indigo
             return std::move(_items[idx]);
         }
 
-        const T* operator[](int idx) const
+        // operator[]/at() return a reference to the pointee (ObjArray-
+        // compatible value semantics). The slot is assumed non-null — for
+        // nullable slots (expand()/set()/reset() lifecycle) use getPtr(),
+        // which returns the raw pointer and may be null.
+        const T& operator[](int idx) const
         {
-            return _items[idx].get();
+            return *_items[idx];
         }
 
-        // NOTE: returns `T*` by value, not by `T*&` (lvalue reference), unlike
-        // the historical implementation. Direct `arr[i] = newPtr` is no longer
-        // valid — use `arr.set(i, newPtr)` or `arr.reset(i, newPtr)`.
-        T* operator[](int idx)
+        T& operator[](int idx)
         {
-            return _items[idx].get();
+            return *_items[idx];
         }
 
-        const T* at(int idx) const
+        const T& at(int idx) const
         {
             _check_bounds(idx, "at");
+            return *_items[idx];
+        }
+
+        T& at(int idx)
+        {
+            _check_bounds(idx, "at");
+            return *_items[idx];
+        }
+
+        // ----------------------------------------------------------------
+        // getPtr() — non-owning raw pointer to slot `idx`; may be nullptr for
+        // a hole created by expand()/reset(). This is the null-aware accessor
+        // for the sparse-array pattern (expand + lazy set), since operator[]/
+        // at() dereference and would be UB on a null slot.
+        // ----------------------------------------------------------------
+        T* getPtr(int idx)
+        {
+            _check_bounds(idx, "getPtr");
             return _items[idx].get();
         }
 
-        T* at(int idx)
+        const T* getPtr(int idx) const
         {
-            _check_bounds(idx, "at");
+            _check_bounds(idx, "getPtr");
             return _items[idx].get();
         }
 

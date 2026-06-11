@@ -381,19 +381,19 @@ void BaseReaction::clone(BaseReaction& other, Array<int>* mol_mapping, PtrArray<
         switch (other._types[i])
         {
         case REACTANT:
-            index = addReactantCopy(rmol, mappings->at(i), &inv_mapping);
+            index = addReactantCopy(rmol, &mappings->at(i), &inv_mapping);
             break;
         case PRODUCT:
-            index = addProductCopy(rmol, mappings->at(i), &inv_mapping);
+            index = addProductCopy(rmol, &mappings->at(i), &inv_mapping);
             break;
         case CATALYST:
-            index = addCatalystCopy(rmol, mappings->at(i), &inv_mapping);
+            index = addCatalystCopy(rmol, &mappings->at(i), &inv_mapping);
             break;
         case INTERMEDIATE:
-            index = addIntermediateCopy(rmol, mappings->at(i), &inv_mapping);
+            index = addIntermediateCopy(rmol, &mappings->at(i), &inv_mapping);
             break;
         case UNDEFINED:
-            index = addUndefinedCopy(rmol, mappings->at(i), &inv_mapping);
+            index = addUndefinedCopy(rmol, &mappings->at(i), &inv_mapping);
             break;
         }
 
@@ -401,7 +401,7 @@ void BaseReaction::clone(BaseReaction& other, Array<int>* mol_mapping, PtrArray<
         {
             while (inv_mappings->size() <= index)
                 inv_mappings->add(std::make_unique<Array<int>>());
-            inv_mappings->at(index)->copy(inv_mapping);
+            inv_mappings->at(index).copy(inv_mapping);
         }
         if (mol_mapping != 0)
             mol_mapping->at(i) = index;

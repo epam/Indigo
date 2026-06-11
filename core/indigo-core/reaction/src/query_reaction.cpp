@@ -56,10 +56,9 @@ int QueryReaction::getExactChange(int index, int atom)
 void QueryReaction::_addedBaseMolecule(int idx, int side, BaseMolecule& mol)
 {
     BaseReaction::_addedBaseMolecule(idx, side, mol);
-    while (_ignorableAAM.size() <= idx)
-        _ignorableAAM.add(std::make_unique<Array<int>>());
-    _ignorableAAM[idx]->clear_resize(mol.vertexEnd());
-    _ignorableAAM[idx]->zerofill();
+    _ignorableAAM.resize((idx) + 1);
+    _ignorableAAM[idx].clear_resize(mol.vertexEnd());
+    _ignorableAAM[idx].zerofill();
 }
 
 void QueryReaction::makeTransposedForSubstructure(QueryReaction& other)
@@ -208,7 +207,7 @@ void QueryReaction::_clone(BaseReaction& other, int index, int i, PtrArray<Array
     {
         for (int j = rmol.vertexBegin(); j < rmol.vertexEnd(); j = rmol.vertexNext(j))
         {
-            getExactChangeArray(index).at(j) = other.asQueryReaction().getExactChange(i, (*mol_mappings->at(i))[j]);
+            getExactChangeArray(index).at(j) = other.asQueryReaction().getExactChange(i, mol_mappings->at(i)[j]);
         }
     }
 }
@@ -230,12 +229,12 @@ BaseReaction* QueryReaction::neu()
 
 Array<int>& QueryReaction::getIgnorableAAMArray(int index)
 {
-    return *_ignorableAAM[index];
+    return _ignorableAAM[index];
 }
 
 int QueryReaction::getIgnorableAAM(int index, int atom)
 {
-    return (*_ignorableAAM[index])[atom];
+    return (_ignorableAAM[index])[atom];
 }
 
 void QueryReaction::optimize()

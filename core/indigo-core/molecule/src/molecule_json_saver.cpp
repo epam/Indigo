@@ -1305,7 +1305,7 @@ void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
         writer.StartArray();
         for (int i = 0; i < tg.modification_types.size(); i++)
         {
-            writer.String(tg.modification_types[i]->ptr());
+            writer.String(tg.modification_types[i].ptr());
         }
         writer.EndArray();
     }
@@ -1354,7 +1354,7 @@ void MoleculeJsonSaver::saveAmbiguousMonomerTemplate(TGroup& tg, JsonWriter& wri
     {
         writer.StartObject();
         writer.Key("templateId");
-        writer.String(tg.aliases[i]->ptr());
+        writer.String(tg.aliases[i].ptr());
         writer.EndObject();
         if (tg.ratios[i] >= 0)
         {
@@ -1554,7 +1554,7 @@ void MoleculeJsonSaver::saveEndpoint(BaseMolecule& mol, const std::string& ep, i
             writer.Key("moleculeId");
             writer.String((std::string("mol") + std::to_string(mol_id)).c_str());
             writer.Key("atomId");
-            writer.String(std::to_string((*_mappings[mol_id])[beg_idx]).c_str());
+            writer.String(std::to_string((_mappings[mol_id])[beg_idx]).c_str());
         }
         else
             throw Error("Atom %d not found", beg_idx);
@@ -1569,7 +1569,7 @@ void MoleculeJsonSaver::saveMoleculeReference(int mol_id, JsonWriter& writer)
     std::string mol_node = std::string("mol") + std::to_string(mol_id);
     writer.String(mol_node.c_str());
     writer.EndObject();
-    auto& mapping = *_mappings[mol_id];
+    auto& mapping = _mappings[mol_id];
     // printf("mol id:%d\n", mol_id);
     for (auto atom_idx = 0; atom_idx < mapping.size(); ++atom_idx)
     {
@@ -2105,7 +2105,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
     // save monomer shapes
     for (int shape_idx = 0; shape_idx < mol->monomer_shapes.size(); ++shape_idx)
     {
-        auto& monomer_shape = *mol->monomer_shapes[shape_idx];
+        auto& monomer_shape = mol->monomer_shapes[shape_idx];
         writer.Key((KetMonomerShape::ref_prefix + std::to_string(shape_idx)).c_str());
         writer.StartObject();
         writer.Key("type");

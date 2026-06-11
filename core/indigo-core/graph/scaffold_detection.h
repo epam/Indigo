@@ -94,7 +94,7 @@ namespace indigo
 
             virtual Graph& getGraphFromSet(int idx)
             {
-                return *_searchStructures->at(_orderArray[idx]);
+                return _searchStructures->at(_orderArray[idx]);
             }
             virtual int getGraphSetSize() const
             {

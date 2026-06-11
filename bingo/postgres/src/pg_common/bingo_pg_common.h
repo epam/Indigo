@@ -109,8 +109,7 @@ public:
             int size = data.size();
             handleNumber(size, scanner, output);
             if (scanner)
-                while (data.size() < size)
-                    data.push();
+                data.resize(size);
             for (int i = 0; i < size; ++i)
             {
                 handleArray(*data[i], scanner, output);

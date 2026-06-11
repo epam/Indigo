@@ -37,7 +37,7 @@ void SmilesLoader::_calcStereocenters()
 
     for (i = 0; i < _atoms.size(); i++)
     {
-        if (_atoms[i]->chirality == 0)
+        if (_atoms[i].chirality == 0)
             continue;
 
         if (_bmol->getVertex(i).degree() == 2) // allene stereo center
@@ -54,7 +54,7 @@ void SmilesLoader::_calcStereocenters()
                 continue;
             }
 
-            int parity = 3 - _atoms[i]->chirality;
+            int parity = 3 - _atoms[i].chirality;
 
             for (j = 0; j < 4; j++)
                 if (subst[j] == -1)
@@ -105,18 +105,18 @@ void SmilesLoader::_calcStereocenters()
             int counter = 0;
             int h_index = -1;
 
-            if (_atoms[i]->parent != -1)
-                pyramid[counter++] = _atoms[i]->parent;
+            if (_atoms[i].parent != -1)
+                pyramid[counter++] = _atoms[i].parent;
 
-            if (_atoms[i]->neighbors.size() == 3)
+            if (_atoms[i].neighbors.size() == 3)
             {
                 h_index = counter;
                 pyramid[counter++] = -1;
             }
 
-            for (j = _atoms[i]->neighbors.begin(); j != _atoms[i]->neighbors.end(); j = _atoms[i]->neighbors.next(j))
+            for (j = _atoms[i].neighbors.begin(); j != _atoms[i].neighbors.end(); j = _atoms[i].neighbors.next(j))
             {
-                int nei = _atoms[i]->neighbors.at(j);
+                int nei = _atoms[i].neighbors.at(j);
 
                 if (counter >= 4)
                 {
@@ -125,11 +125,11 @@ void SmilesLoader::_calcStereocenters()
                     break;
                 }
 
-                if (nei != _atoms[i]->parent)
+                if (nei != _atoms[i].parent)
                     pyramid[counter++] = nei;
             }
 
-            if (j != _atoms[i]->neighbors.end())
+            if (j != _atoms[i].neighbors.end())
                 continue;
 
             if (counter < 3)
@@ -174,7 +174,7 @@ void SmilesLoader::_calcStereocenters()
                     std::swap(pyramid[0], pyramid[1]);
             }
 
-            if (_atoms[i]->chirality == 2)
+            if (_atoms[i].chirality == 2)
                 std::swap(pyramid[0], pyramid[1]);
 
             if (!_bmol->isPossibleStereocenter(i))
@@ -228,7 +228,7 @@ void SmilesLoader::_addExplicitHForStereo()
 {
     for (int i = 0; i < _atoms.size(); i++)
     {
-        if ((_atoms[i]->chirality > 0) && (_bmol->getVertex(i).degree() == 2) && (_atoms[i]->hydrogens == 1))
+        if ((_atoms[i].chirality > 0) && (_bmol->getVertex(i).degree() == 2) && (_atoms[i].hydrogens == 1))
         {
             _AtomDesc& atom = _atoms.push(_neipool);
             _BondDesc* bond = &_bonds.push();
@@ -241,11 +241,11 @@ void SmilesLoader::_addExplicitHForStereo()
             bond->type = BOND_SINGLE;
             bond->index = _mol->addBond_Silent(bond->beg, bond->end, bond->type);
 
-            _atoms[i]->neighbors.add(exp_h_idx);
-            _atoms[exp_h_idx]->neighbors.add(i);
-            _atoms[exp_h_idx]->parent = i;
+            _atoms[i].neighbors.add(exp_h_idx);
+            _atoms[exp_h_idx].neighbors.add(i);
+            _atoms[exp_h_idx].parent = i;
 
-            _atoms[i]->hydrogens = 0;
+            _atoms[i].hydrogens = 0;
         }
     }
 }
@@ -257,12 +257,12 @@ void SmilesLoader::_addLigandsForStereo()
 
     for (int i = 0; i < _atoms.size(); i++)
     {
-        if ((_atoms[i]->chirality > 0) && (_bmol->getVertex(i).degree() < 3) && !_isAlleneLike(i))
+        if ((_atoms[i].chirality > 0) && (_bmol->getVertex(i).degree() < 3) && !_isAlleneLike(i))
         {
-            if (_atoms[i]->hydrogens == 1)
+            if (_atoms[i].hydrogens == 1)
             {
                 add_explicit_h = true;
-                num_ligands = 3 - _bmol->getVertex(i).degree() - _atoms[i]->hydrogens;
+                num_ligands = 3 - _bmol->getVertex(i).degree() - _atoms[i].hydrogens;
             }
             else
                 num_ligands = 3 - _bmol->getVertex(i).degree();
@@ -291,12 +291,12 @@ void SmilesLoader::_addLigandsForStereo()
                 bond->topology = 0;
                 bond->index = _qmol->addBond(i, any_atom_idx, qbond.release());
 
-                _atoms[i]->neighbors.add(any_atom_idx);
-                _atoms[any_atom_idx]->neighbors.add(i);
-                _atoms[any_atom_idx]->parent = i;
+                _atoms[i].neighbors.add(any_atom_idx);
+                _atoms[any_atom_idx].neighbors.add(i);
+                _atoms[any_atom_idx].parent = i;
             }
 
-            if (_atoms[i]->hydrogens == 1)
+            if (_atoms[i].hydrogens == 1)
             {
                 _AtomDesc& atom = _atoms.push(_neipool);
                 _BondDesc* bond = &_bonds.push();
@@ -314,11 +314,11 @@ void SmilesLoader::_addLigandsForStereo()
                 bond->topology = 0;
                 bond->index = _qmol->addBond(i, exp_h_idx, qbond.release());
 
-                _atoms[i]->neighbors.add(exp_h_idx);
-                _atoms[exp_h_idx]->neighbors.add(i);
-                _atoms[exp_h_idx]->parent = i;
+                _atoms[i].neighbors.add(exp_h_idx);
+                _atoms[exp_h_idx].neighbors.add(i);
+                _atoms[exp_h_idx].parent = i;
 
-                _atoms[i]->hydrogens = 0;
+                _atoms[i].hydrogens = 0;
                 _qmol->getAtom(i).removeConstraints(QueryMolecule::ATOM_TOTAL_H);
             }
         }

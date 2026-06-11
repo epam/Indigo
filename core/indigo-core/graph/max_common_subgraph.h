@@ -212,7 +212,7 @@ namespace indigo
             // gets RePoint with index i
             RePoint* getPoint(int i)
             {
-                return _graph[i];
+                return &_graph[i];
             };
 
             // solution getters
@@ -366,16 +366,16 @@ namespace indigo
             // returns element with input indexes of adjacency matrix of second graph
             bool getSecondElement(int i, int j)
             {
-                return _aj2[i]->at(j);
+                return _aj2[i].at(j);
             }
             // retruns elements of utilites matrices which are stored matched edges
             int getFirstIdxEdge(int i, int j)
             {
-                return _ajEdge1[i]->at(j);
+                return _ajEdge1[i].at(j);
             }
             int getSecondIdxEdge(int i, int j)
             {
-                return _ajEdge2[i]->at(j);
+                return _ajEdge2[i].at(j);
             }
             // retruns degree of vertex in first graph adj matrix
             int getFirstVDegree(int i)
@@ -402,12 +402,12 @@ namespace indigo
             // returns dbitset represent row in adjacency matrix of first graph
             Dbitset* getFirstRow(int i)
             {
-                return _daj1[i];
+                return &_daj1[i];
             }
             // returns dbitset represent row in adjacency matrix of first graph
             Dbitset* getSecondRow(int i)
             {
-                return _daj2[i];
+                return &_daj2[i];
             }
 
             // retruns solution correspondings between two graphs
@@ -425,11 +425,11 @@ namespace indigo
             // returns correspondence parameters between each vertex and vertex in other graph with the same label
             int getFLSize(int i)
             {
-                return _mLabel1[i]->size();
+                return _mLabel1[i].size();
             }
             int getFLV(int i, int j)
             {
-                return _mLabel1[i]->at(j);
+                return _mLabel1[i].at(j);
             }
 
             // context includes input parameters and output solution

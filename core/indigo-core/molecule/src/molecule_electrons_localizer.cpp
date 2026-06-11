@@ -113,20 +113,19 @@ void MoleculeElectronsLocalizer::_constructBMatchingFinder()
 {
     QS_DEF(PtrArray<Array<int>>, nodes_per_set);
     nodes_per_set.clear();
-    while (nodes_per_set.size() < _SET_MAX)
-        nodes_per_set.add(std::make_unique<Array<int>>());
+    nodes_per_set.resize(_SET_MAX);
 
     for (int v = _skeleton.vertexBegin(); v != _skeleton.vertexEnd(); v = _skeleton.vertexNext(v))
     {
         _AtomInfo& info = _atom_info[v];
 
-        nodes_per_set[_PRIMARY_ATOMS_SET]->push(info.atom_node);
-        nodes_per_set[_SECONDARY_ATOMS_SET]->push(info.atom_node);
-        nodes_per_set[_CONSTRAINED_ATOMS_SET]->push(info.atom_node);
+        nodes_per_set[_PRIMARY_ATOMS_SET].push(info.atom_node);
+        nodes_per_set[_SECONDARY_ATOMS_SET].push(info.atom_node);
+        nodes_per_set[_CONSTRAINED_ATOMS_SET].push(info.atom_node);
 
-        nodes_per_set[_PRIMARY_LONEPAIRS_SET]->push(info.orbitals_node);
-        nodes_per_set[_SECONDARY_LONEPAIRS_SET]->push(info.orbitals_node);
-        nodes_per_set[_CONSTRAINED_LONEPAIRS_SET]->push(info.orbitals_node);
+        nodes_per_set[_PRIMARY_LONEPAIRS_SET].push(info.orbitals_node);
+        nodes_per_set[_SECONDARY_LONEPAIRS_SET].push(info.orbitals_node);
+        nodes_per_set[_CONSTRAINED_LONEPAIRS_SET].push(info.orbitals_node);
     }
 
     QS_DEF(Array<int>, set_per_set);

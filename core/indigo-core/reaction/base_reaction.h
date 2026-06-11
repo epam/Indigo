@@ -211,7 +211,7 @@ namespace indigo
             int i = 0;
             for (; i < _reactionBlocks.size(); ++i)
             {
-                auto& rb = *_reactionBlocks[i];
+                auto& rb = _reactionBlocks[i];
                 if (rb.products.size() || rb.reactants.size())
                     break;
             }
@@ -229,7 +229,7 @@ namespace indigo
         {
             while (++i < _reactionBlocks.size())
             {
-                auto& rb = *_reactionBlocks[i];
+                auto& rb = _reactionBlocks[i];
                 if (rb.products.size() || rb.reactants.size())
                     break;
             }
@@ -285,7 +285,7 @@ namespace indigo
 
         ReactionBlock& reactionBlock(int index)
         {
-            return *_reactionBlocks[index];
+            return _reactionBlocks[index];
         }
 
         ReactionBlock& addReactionBlock()

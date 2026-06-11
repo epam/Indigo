@@ -229,7 +229,7 @@ int BaseMolecule::transformFullCTABtoSCSR(PtrArray<TGroup>& templates)
 
     for (auto i = 0; i < templates.size(); i++)
     {
-        const TGroup& tg = *templates.at(i);
+        const TGroup& tg = templates.at(i);
 
         fragment.clear();
         // ambiguous templates have no fragment
@@ -988,7 +988,7 @@ int BaseMolecule::transformFullCTABtoSCSR(PtrArray<TGroup>& templates)
     {
         for (auto i = 0; i < added_templates.size(); i++)
         {
-            addTemplate(*templates.at(added_templates[i]));
+            addTemplate(templates.at(added_templates[i]));
         }
         return result;
     }
@@ -998,7 +998,7 @@ int BaseMolecule::transformFullCTABtoSCSR(PtrArray<TGroup>& templates)
 
     for (auto i = 0; i < templates.size(); i++)
     {
-        const TGroup& tg = *templates.at(i);
+        const TGroup& tg = templates.at(i);
 
         fragment.clear();
         // ambiguous templates have no fragment
@@ -1443,7 +1443,7 @@ int BaseMolecule::transformFullCTABtoSCSR(PtrArray<TGroup>& templates)
 
     for (auto i = 0; i < added_templates.size(); i++)
     {
-        addTemplate(*templates.at(added_templates[i]));
+        addTemplate(templates.at(added_templates[i]));
     }
 
     /*

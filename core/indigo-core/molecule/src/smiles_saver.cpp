@@ -167,13 +167,13 @@ void SmilesSaver::_saveMolecule()
 
         if (_bmol->getAtomAromaticity(i) == ATOM_AROMATIC)
         {
-            _atoms[i]->aromatic = true;
+            _atoms[i].aromatic = true;
             // From the SMILES specification:
             // Please note that only atoms on the following list
             // can be considered aromatic: C, N, O, P, S, As, Se, and * (wildcard).
             static int allowed_lowercase[] = {ELEM_C, ELEM_N, ELEM_O, ELEM_P, ELEM_S, ELEM_Se, ELEM_As};
             if (_bmol->atomNumberBelongs(i, allowed_lowercase, NELEM(allowed_lowercase)))
-                _atoms[i]->lowercase = true;
+                _atoms[i].lowercase = true;
         }
     }
 
@@ -251,7 +251,7 @@ void SmilesSaver::_saveMolecule()
         int e_idx = v_seq[i].parent_edge;
         int v_prev_idx = v_seq[i].parent_vertex;
 
-        _Atom& atom = *_atoms[v_idx];
+        _Atom& atom = _atoms[v_idx];
 
         if (e_idx >= 0)
         {
@@ -273,7 +273,7 @@ void SmilesSaver::_saveMolecule()
                 atom.neighbors.add(v_prev_idx);
                 atom.parent = v_prev_idx;
             }
-            _atoms[v_prev_idx]->neighbors.add(v_idx);
+            _atoms[v_prev_idx].neighbors.add(v_idx);
         }
 
         if (e_idx < 0 || !walk.isClosure(e_idx))
@@ -289,7 +289,7 @@ void SmilesSaver::_saveMolecule()
             atom.starts_polymer = true;
 
         if (v_prev_idx >= 0 && _polymer_indices[v_prev_idx] >= 0 && _polymer_indices[v_prev_idx] != _polymer_indices[v_idx])
-            _atoms[v_prev_idx]->ends_polymer = true;
+            _atoms[v_prev_idx].ends_polymer = true;
     }
 
     _written_atoms_inv.clear_resize(_bmol->vertexEnd());
@@ -337,7 +337,7 @@ void SmilesSaver::_saveMolecule()
         int pyramid_mapping[4];
         int counter = 0;
 
-        _Atom& atom = *_atoms[atom_idx];
+        _Atom& atom = _atoms[atom_idx];
 
         if (atom.parent != -1)
             for (k = 0; k < 4; k++)
@@ -378,9 +378,9 @@ void SmilesSaver::_saveMolecule()
             throw Error("cannot calculate chirality");
 
         if (MoleculeStereocenters::isPyramidMappingRigid(pyramid_mapping))
-            _atoms[atom_idx]->chirality = 1;
+            _atoms[atom_idx].chirality = 1;
         else
-            _atoms[atom_idx]->chirality = 2;
+            _atoms[atom_idx].chirality = 2;
     }
 
     MoleculeAlleneStereo& allene_stereo = _bmol->allene_stereo;
@@ -421,7 +421,7 @@ void SmilesSaver::_saveMolecule()
             parity = 3 - parity;
         }
 
-        _atoms[atom_idx]->chirality = 3 - parity;
+        _atoms[atom_idx].chirality = 3 - parity;
     }
 
     if (canonize_chiralities)
@@ -440,7 +440,7 @@ void SmilesSaver::_saveMolecule()
 
             int idx = _written_atoms[i];
 
-            if (_atoms[idx]->chirality == 0 || !stereocenters.isTetrahydral(idx))
+            if (_atoms[idx].chirality == 0 || !stereocenters.isTetrahydral(idx))
                 continue;
 
             int type = stereocenters.getType(idx);
@@ -460,7 +460,7 @@ void SmilesSaver::_saveMolecule()
 
                 int idx2 = _written_atoms[j];
 
-                if (_atoms[idx2]->chirality == 0)
+                if (_atoms[idx2].chirality == 0)
                     continue;
 
                 int type2 = stereocenters.getType(idx2);
@@ -473,9 +473,9 @@ void SmilesSaver::_saveMolecule()
                 }
             }
 
-            if (_atoms[ids[0]]->chirality == 1)
+            if (_atoms[ids[0]].chirality == 1)
                 for (j = 0; j < ids.size(); j++)
-                    _atoms[ids[j]]->chirality = 3 - _atoms[ids[j]]->chirality;
+                    _atoms[ids[j]].chirality = 3 - _atoms[ids[j]].chirality;
         }
     }
 
@@ -508,7 +508,7 @@ void SmilesSaver::_saveMolecule()
             int branches = walk.numBranches(v_prev_idx);
 
             if (branches > 1)
-                if (_atoms[v_prev_idx]->branch_cnt > 0 && _atoms[v_prev_idx]->paren_written)
+                if (_atoms[v_prev_idx].branch_cnt > 0 && _atoms[v_prev_idx].paren_written)
                     _output.writeChar(')');
             /*
              * Fix IND-673 unused if-statement
@@ -517,20 +517,20 @@ void SmilesSaver::_saveMolecule()
             //         {
 
             if (branches > 1)
-                if (_atoms[v_prev_idx]->branch_cnt < branches - 1)
+                if (_atoms[v_prev_idx].branch_cnt < branches - 1)
                 {
                     if (walk.isClosure(e_idx))
-                        _atoms[v_prev_idx]->paren_written = false;
+                        _atoms[v_prev_idx].paren_written = false;
                     else
                     {
                         _output.writeChar('(');
-                        _atoms[v_prev_idx]->paren_written = true;
+                        _atoms[v_prev_idx].paren_written = true;
                     }
                 }
 
-            _atoms[v_prev_idx]->branch_cnt++;
+            _atoms[v_prev_idx].branch_cnt++;
 
-            if (_atoms[v_prev_idx]->branch_cnt > branches)
+            if (_atoms[v_prev_idx].branch_cnt > branches)
                 throw Error("unexpected branch");
             /*
              * Fix IND-673 unused if-statement
@@ -560,7 +560,7 @@ void SmilesSaver::_saveMolecule()
                 _output.writeChar('#');
             else if (bond_order == BOND_AROMATIC && _shouldWriteAromaticBond(e_idx))
                 _output.writeChar(':');
-            else if (bond_order == BOND_SINGLE && _atoms[edge.beg]->aromatic && _atoms[edge.end]->aromatic)
+            else if (bond_order == BOND_SINGLE && _atoms[edge.beg].aromatic && _atoms[edge.end].aromatic)
                 _output.writeChar('-');
             else
                 bond_written = false;
@@ -607,11 +607,11 @@ void SmilesSaver::_saveMolecule()
         if (write_atom)
         {
             if (!smarts_mode)
-                _writeAtom(v_idx, _atoms[v_idx]->aromatic, _atoms[v_idx]->lowercase, _atoms[v_idx]->chirality);
+                _writeAtom(v_idx, _atoms[v_idx].aromatic, _atoms[v_idx].lowercase, _atoms[v_idx].chirality);
             else if (_qmol != 0)
             {
                 int aam = _bmol->reaction_atom_mapping[v_idx];
-                QueryMolecule::writeSmartsAtom(_output, &_qmol->getAtom(v_idx), aam, _atoms[v_idx]->chirality, 0, false, false, _qmol->original_format);
+                QueryMolecule::writeSmartsAtom(_output, &_qmol->getAtom(v_idx), aam, _atoms[v_idx].chirality, 0, false, false, _qmol->original_format);
             }
             else
                 throw Error("SMARTS format available for query only!");
@@ -671,9 +671,9 @@ void SmilesSaver::_saveMolecule()
                 _writeCycleNumber(k);
             }
 
-            if (_atoms[v_idx]->starts_polymer)
+            if (_atoms[v_idx].starts_polymer)
                 _output.writeString("{-}");
-            if (_atoms[v_idx]->ends_polymer)
+            if (_atoms[v_idx].ends_polymer)
                 _output.writeString("{+n}");
         }
     }
@@ -721,7 +721,7 @@ bool SmilesSaver::_shouldWriteAromaticBond(int e_idx)
     if (_mol == 0)
         return true;
 
-    if (!_atoms[edge.beg]->lowercase || !_atoms[edge.end]->lowercase)
+    if (!_atoms[edge.beg].lowercase || !_atoms[edge.end].lowercase)
         return true;
 
     if (_bmol->getBondTopology(e_idx) != TOPOLOGY_RING)

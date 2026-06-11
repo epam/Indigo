@@ -55,12 +55,12 @@ int Reaction::_addBaseMolecule(int side)
 void Reaction::saveBondOrders(Reaction& reaction, PtrArray<Array<int>>& bond_types)
 {
 
-    while (bond_types.size() < reaction.end())
-        bond_types.push();
+    if (bond_types.size() < reaction.end())
+        bond_types.resize(reaction.end());
 
     for (int i = reaction.begin(); i != reaction.end(); i = reaction.next(i))
     {
-        Molecule::saveBondOrders(reaction.getMolecule(i), *bond_types[i]);
+        Molecule::saveBondOrders(reaction.getMolecule(i), bond_types[i]);
     }
 }
 
@@ -68,7 +68,7 @@ void Reaction::loadBondOrders(Reaction& reaction, PtrArray<Array<int>>& bond_typ
 {
     for (int i = reaction.begin(); i != reaction.end(); i = reaction.next(i))
     {
-        Molecule::loadBondOrders(reaction.getMolecule(i), *bond_types[i]);
+        Molecule::loadBondOrders(reaction.getMolecule(i), bond_types[i]);
     }
 }
 
@@ -92,7 +92,7 @@ std::unique_ptr<BaseReaction> Reaction::getBaseReaction(int index)
     std::unique_ptr<BaseReaction> reaction(neu());
     if (_reactionBlocks.size())
     {
-        auto& rb = *_reactionBlocks[index];
+        auto& rb = _reactionBlocks[index];
         for (auto ridx : rb.reactants)
             reaction->addReactantCopy(getBaseMolecule(ridx), 0, 0);
 

@@ -279,12 +279,12 @@ bool MoleculeLayoutGraph::_drawRegularCurveEx(const Array<int>& chain, int v1, i
         int beg = mapping[chain[i]];
 
         if (i > 0)
-            _layout_vertices[beg]->type = type;
+            _layout_vertices[beg].type = type;
 
         const Vertex& vert = getVertex(beg);
         int edge_idx = vert.neiEdge(vert.findNeiVertex(mapping[chain[i + 1]]));
 
-        _layout_edges[edge_idx]->type = type;
+        _layout_edges[edge_idx].type = type;
     }
 
     return true;
@@ -359,7 +359,7 @@ bool MoleculeLayoutGraph::_isVertexOnSomeEdge(int vert_idx) const
 
     for (i = edgeBegin(); i < edgeEnd(); i = edgeNext(i))
     {
-        int type = _layout_edges[i]->type;
+        int type = _layout_edges[i].type;
 
         if (type == ELEMENT_INTERNAL || type == ELEMENT_BOUNDARY)
         {
@@ -532,8 +532,8 @@ int MoleculeLayoutGraph::_getCycleDirection(const Cycle& cycle) const
     for (int i = 0; i < n; i++)
     {
         int next_i = (i + 1) % n;
-        const Vec2f& p1 = _layout_vertices[cycle.getVertex(i)]->pos;
-        const Vec2f& p2 = _layout_vertices[cycle.getVertex(next_i)]->pos;
+        const Vec2f& p1 = _layout_vertices[cycle.getVertex(i)].pos;
+        const Vec2f& p2 = _layout_vertices[cycle.getVertex(next_i)].pos;
         signed_area += Vec2f::cross(p1, p2);
     }
     return signed_area > 0 ? -1 : 1;

@@ -282,8 +282,7 @@ void BingoPgSection::readSectionBitsCount(indigo::Array<int>& bits_number)
     bits_number.zerofill();
 
     if (_bitsCountBuffers.size() == 0)
-        while (_bitsCountBuffers.size() < SECTION_BITSNUMBER_PAGES)
-            _bitsCountBuffers.push();
+        _bitsCountBuffers.resize(SECTION_BITSNUMBER_PAGES);
 
     int data_len, str_idx;
     unsigned short* buffer_data;
@@ -393,8 +392,7 @@ void BingoPgSection::_setBitsCountData(unsigned short bits_count)
 {
 
     if (_bitsCountBuffers.size() == 0)
-        while (_bitsCountBuffers.size() < SECTION_BITSNUMBER_PAGES)
-            _bitsCountBuffers.push();
+        _bitsCountBuffers.resize(SECTION_BITSNUMBER_PAGES);
 
     int data_len;
     int buf_idx = _sectionInfo.n_structures / SECTION_BITS_PER_BLOCK;

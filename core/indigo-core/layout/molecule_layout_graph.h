@@ -103,36 +103,36 @@ namespace indigo
 
         inline const Vec2f& getPos(int idx) const
         {
-            return _layout_vertices[idx]->pos;
+            return _layout_vertices[idx].pos;
         }
         inline Vec2f& getPos(int idx)
         {
-            return _layout_vertices[idx]->pos;
+            return _layout_vertices[idx].pos;
         }
         inline int getVertexExtIdx(int idx) const
         {
-            return _layout_vertices[idx]->ext_idx;
+            return _layout_vertices[idx].ext_idx;
         }
         inline int getVertexType(int idx) const
         {
-            return _layout_vertices[idx]->type;
+            return _layout_vertices[idx].type;
         }
         inline int getEdgeExtIdx(int idx) const
         {
-            return _layout_edges[idx]->ext_idx;
+            return _layout_edges[idx].ext_idx;
         }
         inline int getEdgeType(int idx) const
         {
-            return _layout_edges[idx]->type;
+            return _layout_edges[idx].type;
         }
 
         void setVertexType(int idx, int type)
         {
-            _layout_vertices[idx]->type = type;
+            _layout_vertices[idx].type = type;
         }
         void setEdgeType(int idx, int type)
         {
-            _layout_edges[idx]->type = type;
+            _layout_edges[idx].type = type;
         }
 
         void clear() override;
@@ -562,15 +562,15 @@ namespace indigo
 
         bool is_simple_component(int i) const
         {
-            return segment == 0 || (*segment)[i]->get_layout_component_number() < 0;
+            return segment == 0 || (*segment)[i].get_layout_component_number() < 0;
         }
         float get_radius(int i)
         {
-            return segment == 0 ? (point[(i + 1) % cycle_length] - point[i]).length() / 2 : (*segment)[i]->get_radius();
+            return segment == 0 ? (point[(i + 1) % cycle_length] - point[i]).length() / 2 : (*segment)[i].get_radius();
         }
         Vec2f get_center(int i)
         {
-            return segment == 0 ? (point[(i + 1) % cycle_length] + point[i]) / 2 : (*segment)[i]->getCenter();
+            return segment == 0 ? (point[(i + 1) % cycle_length] + point[i]) / 2 : (*segment)[i].getCenter();
         }
         float get_length(int i)
         {
@@ -600,19 +600,19 @@ namespace indigo
 
         inline int getVertexOrigIdx(int idx) const
         {
-            return _layout_vertices[idx]->orig_idx;
+            return _layout_vertices[idx].orig_idx;
         }
         inline int getEdgeOrigIdx(int idx) const
         {
-            return _layout_edges[idx]->orig_idx;
+            return _layout_edges[idx].orig_idx;
         }
         inline bool isEdgeDrawn(int idx) const
         {
-            return _layout_edges[idx]->type != ELEMENT_NOT_DRAWN;
+            return _layout_edges[idx].type != ELEMENT_NOT_DRAWN;
         }
         inline bool isVertexDrawn(int idx) const
         {
-            return _layout_vertices[idx]->type != ELEMENT_NOT_DRAWN;
+            return _layout_vertices[idx].type != ELEMENT_NOT_DRAWN;
         }
 
         float calculateAngle(int v, int& v1, int& v2) const override;

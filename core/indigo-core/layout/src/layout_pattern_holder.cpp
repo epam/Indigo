@@ -89,7 +89,7 @@ void LayoutPatternHolder::_initPatterns()
 #undef END_PATTERN
 
         for (int i = 0; i < _patterns.size(); i++)
-            _patterns[i]->calcMorganCode();
+            _patterns[i].calcMorganCode();
         _patterns.qsort(_pattern_cmp, 0);
     }
 }

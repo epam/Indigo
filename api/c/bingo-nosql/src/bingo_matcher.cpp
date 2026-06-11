@@ -402,7 +402,7 @@ void threadFunc(BaseSubstructureMatcher* matcher)
         indigo.arom_options = matcher->_arom_options;
         for (int i = 0; i < matcher->_tautomer_rules->size(); i++)
         {
-            auto t_rule = matcher->_tautomer_rules->at(i);
+            auto t_rule = matcher->_tautomer_rules->getPtr(i);
             if (t_rule == nullptr)
                 continue;
             auto rule = std::make_unique<TautomerRule>();
@@ -1022,17 +1022,15 @@ bool ReactionSubMatcher::tryObject(IndigoObject* current_obj)
 
     if (rsm.find())
     {
-        _mapping.clear();
-        while (_mapping.size() < target_rxn.end())
-            _mapping.push();
+        _mapping.resize(target_rxn.end());
         for (int i = target_rxn.begin(); i != target_rxn.end(); i = target_rxn.next(i))
-            _mapping[i]->clear();
+            _mapping[i].clear();
 
         for (int i = query_rxn.begin(); i != query_rxn.end(); i = query_rxn.next(i))
         {
             int target_mol_idx = rsm.getTargetMoleculeIndex(i);
 
-            _mapping[target_mol_idx]->copy(rsm.getQueryMoleculeMapping(i), query_rxn.getQueryMolecule(i).vertexCount());
+            _mapping[target_mol_idx].copy(rsm.getQueryMoleculeMapping(i), query_rxn.getQueryMolecule(i).vertexCount());
         }
 
         return true;

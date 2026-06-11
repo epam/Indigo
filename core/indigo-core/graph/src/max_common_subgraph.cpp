@@ -132,7 +132,7 @@ void MaxCommonSubgraph::_addSolutionMap(Array<int>& v_map, Array<int>& e_map)
     int e_size = e_map.size();
     _vertEdgeSolMap.push().resize(v_size + e_size + 2);
 
-    Array<int>& ve_map = *_vertEdgeSolMap.top();
+    Array<int>& ve_map = _vertEdgeSolMap.top();
     for (int i = 0; i < ve_map.size(); ++i)
         ve_map[i] = -1;
 
@@ -240,9 +240,9 @@ void MaxCommonSubgraph::getMaxSolutionMap(Array<int>* v_map, Array<int>* e_map) 
     if (tmp_v.size() > 0)
     {
         if (v_map)
-            v_map->copy(*tmp_v[0]);
+            v_map->copy(tmp_v[0]);
         if (e_map)
-            e_map->copy(*tmp_e[0]);
+            e_map->copy(tmp_e[0]);
     }
 }
 
@@ -718,49 +718,49 @@ void MaxCommonSubgraph::ReGraph::parse(bool findAllStructure)
         allowed_g2.push(_secondGraphSize);
         xk[i] = -1;
     }
-    extension[0]->set();
-    allowed_g1[0]->set();
-    allowed_g2[0]->set();
+    extension[0].set();
+    allowed_g1[0].set();
+    allowed_g2[0].set();
 
     int level = 0;
     int next_level = 1, xk_level;
 
     while (1)
     {
-        for (xk[level] = extension[level]->nextSetBit(xk[level] + 1); xk[level] >= 0 && !_stop; xk[level] = extension[level]->nextSetBit(xk[level] + 1))
+        for (xk[level] = extension[level].nextSetBit(xk[level] + 1); xk[level] >= 0 && !_stop; xk[level] = extension[level].nextSetBit(xk[level] + 1))
         {
             next_level = level + 1;
             xk_level = xk[level];
 
-            forbidden[next_level]->bsOrBs(*forbidden[level], _graph.at(xk_level)->forbidden);
-            allowed_g1[next_level]->bsAndBs(*allowed_g1[level], _graph.at(xk_level)->allowed_g1);
-            allowed_g2[next_level]->bsAndBs(*allowed_g2[level], _graph.at(xk_level)->allowed_g2);
+            forbidden[next_level].bsOrBs(forbidden[level], _graph.at(xk_level).forbidden);
+            allowed_g1[next_level].bsAndBs(allowed_g1[level], _graph.at(xk_level).allowed_g1);
+            allowed_g2[next_level].bsAndBs(allowed_g2[level], _graph.at(xk_level).allowed_g2);
 
-            if (traversed[level]->isEmpty())
+            if (traversed[level].isEmpty())
             {
-                extension[next_level]->bsAndNotBs(_graph.at(xk_level)->extension, *forbidden[next_level]);
+                extension[next_level].bsAndNotBs(_graph.at(xk_level).extension, forbidden[next_level]);
             }
             else
             {
-                extension[next_level]->bsOrBs(*extension[level], _graph.at(xk_level)->extension);
-                extension[next_level]->andNotWith(*forbidden[next_level]);
+                extension[next_level].bsOrBs(extension[level], _graph.at(xk_level).extension);
+                extension[next_level].andNotWith(forbidden[next_level]);
             }
 
-            traversed[next_level]->copy(*traversed[level]);
-            traversed[next_level]->set(xk_level);
+            traversed[next_level].copy(traversed[level]);
+            traversed[next_level].set(xk_level);
 
-            traversed_g1[next_level]->copy(*traversed_g1[level]);
-            traversed_g2[next_level]->copy(*traversed_g2[level]);
-            traversed_g1[next_level]->set(_graph.at(xk_level)->getid1());
-            traversed_g2[next_level]->set(_graph.at(xk_level)->getid2());
+            traversed_g1[next_level].copy(traversed_g1[level]);
+            traversed_g2[next_level].copy(traversed_g2[level]);
+            traversed_g1[next_level].set(_graph.at(xk_level).getid1());
+            traversed_g2[next_level].set(_graph.at(xk_level).getid2());
 
-            forbidden[level]->set(xk_level);
+            forbidden[level].set(xk_level);
 
             ++level;
 
-            if (extension[level]->isEmpty())
+            if (extension[level].isEmpty())
             {
-                _solution(*traversed[level], *traversed_g1[level], *traversed_g2[level]);
+                _solution(traversed[level], traversed_g1[level], traversed_g2[level]);
                 xk[level] = -1;
                 --level;
                 if (level <= -1)
@@ -769,8 +769,8 @@ void MaxCommonSubgraph::ReGraph::parse(bool findAllStructure)
             else
             {
 
-                pnode_g1.bsOrBs(*allowed_g1[level], *traversed_g1[level]);
-                pnode_g2.bsOrBs(*allowed_g2[level], *traversed_g2[level]);
+                pnode_g1.bsOrBs(allowed_g1[level], traversed_g1[level]);
+                pnode_g2.bsOrBs(allowed_g2[level], traversed_g2[level]);
 
                 if (_mustContinue(pnode_g1, pnode_g2))
                 {
@@ -835,7 +835,7 @@ void MaxCommonSubgraph::ReGraph::insertSolution(int ins_index, bool ins_after, c
 
         for (int x = sol.nextSetBit(0); x >= 0; x = sol.nextSetBit(x + 1))
         {
-            sub_edge_map[_graph.at(x)->getid1()] = _graph.at(x)->getid2();
+            sub_edge_map[_graph.at(x).getid1()] = _graph.at(x).getid2();
         }
         if (!cbEmbedding(0, sub_edge_map.ptr(), 0, userdata))
             _stop = true;
@@ -932,7 +932,7 @@ int MaxCommonSubgraph::ReGraph::getPointIndex(int i, int j) const
 {
     for (int x = 0; x < _graph.size(); x++)
     {
-        if ((_graph.at(x)->getid1() == i && _graph.at(x)->getid2() == j))
+        if ((_graph.at(x).getid1() == i && _graph.at(x).getid2() == j))
         {
             return x;
         }
@@ -962,13 +962,13 @@ MaxCommonSubgraph::AdjMatricesStore::AdjMatricesStore(MaxCommonSubgraph& context
     for (int i = 0; i < maxsize; i++)
     {
         _ajEdge1.add(new Array<int>());
-        _ajEdge1[i]->resize(maxsize);
+        _ajEdge1[i].resize(maxsize);
         _ajEdge2.add(new Array<int>());
-        _ajEdge2[i]->resize(maxsize);
+        _ajEdge2[i].resize(maxsize);
         _aj2.add(new Array<bool>());
-        _aj2[i]->resize(maxsize);
+        _aj2[i].resize(maxsize);
         _errorEdgesMatrix.add(new Array<int>());
-        _errorEdgesMatrix[i]->resize(maxsize);
+        _errorEdgesMatrix[i].resize(maxsize);
         _daj1.add(new Dbitset(maxsize));
         _daj2.add(new Dbitset(maxsize));
     }
@@ -1020,7 +1020,7 @@ int MaxCommonSubgraph::AdjMatricesStore::createSolutionMaps()
         new_map[0] = v_size;
         new_map[1] = e_size;
         for (int i = 0; i < v_size; ++i)
-            new_map[2 + i] = v_maps[sol]->at(i);
+            new_map[2 + i] = v_maps[sol].at(i);
         for (int i = 0; i < e_size; ++i)
             new_map[2 + i + v_size] = SubstructureMcs::UNMAPPED;
 
@@ -1028,8 +1028,8 @@ int MaxCommonSubgraph::AdjMatricesStore::createSolutionMaps()
         {
             sub_beg = _context._subgraph->getEdge(sub_edge).beg;
             sub_end = _context._subgraph->getEdge(sub_edge).end;
-            super_beg = v_maps[sol]->at(sub_beg);
-            super_end = v_maps[sol]->at(sub_end);
+            super_beg = v_maps[sol].at(sub_beg);
+            super_end = v_maps[sol].at(sub_end);
 
             if (super_beg >= 0 && super_end >= 0)
             {
@@ -1054,29 +1054,29 @@ int MaxCommonSubgraph::AdjMatricesStore::createSolutionMaps()
 
 void MaxCommonSubgraph::AdjMatricesStore::_setFirstElement(int i, int j, int value)
 {
-    _ajEdge1[i]->at(j) = value;
+    _ajEdge1[i].at(j) = value;
     if (value >= 0)
     {
-        _daj1[i]->set(j, true);
+        _daj1[i].set(j, true);
     }
     else
     {
-        _daj1[i]->set(j, false);
+        _daj1[i].set(j, false);
     }
 }
 
 void MaxCommonSubgraph::AdjMatricesStore::_setSecondElement(int i, int j, int value)
 {
-    _ajEdge2[i]->at(j) = value;
+    _ajEdge2[i].at(j) = value;
     if (value >= 0)
     {
-        _aj2[i]->at(j) = true;
-        _daj2[i]->set(j, true);
+        _aj2[i].at(j) = true;
+        _daj2[i].set(j, true);
     }
     else
     {
-        _daj2[i]->set(j, false);
-        _aj2[i]->at(j) = false;
+        _daj2[i].set(j, false);
+        _aj2[i].at(j) = false;
     }
 }
 
@@ -1086,7 +1086,7 @@ void MaxCommonSubgraph::AdjMatricesStore::_createAdjacencyMatrices()
 
     for (i = 0; i < _size1; i++)
     {
-        _daj1[i]->zeroFill();
+        _daj1[i].zeroFill();
         for (j = 0; j < _size1; j++)
         {
             _setFirstElement(i, j, -1);
@@ -1113,7 +1113,7 @@ void MaxCommonSubgraph::AdjMatricesStore::_createAdjacencyMatrices()
 
     for (i = 0; i < _size2; i++)
     {
-        _daj2[i]->zeroFill();
+        _daj2[i].zeroFill();
         for (j = 0; j < _size2; j++)
         {
             _setSecondElement(i, j, -1);
@@ -1154,7 +1154,7 @@ void MaxCommonSubgraph::AdjMatricesStore::_createLabelMatrices()
         {
             if (getVerticesColorCondition(i, j))
             {
-                _mLabel1[i]->push(j);
+                _mLabel1[i].push(j);
             }
         }
     }
@@ -1165,14 +1165,14 @@ void MaxCommonSubgraph::AdjMatricesStore::_createErrorEdgesMatrix()
 
     for (int i = 0; i < _maxsize; i++)
     {
-        _errorEdgesMatrix[i]->zerofill();
+        _errorEdgesMatrix[i].zerofill();
     }
     for (int i = _graph1->edgeBegin(); i < _graph1->edgeEnd(); i = _graph1->edgeNext(i))
     {
         for (int j = _graph2->edgeBegin(); j < _graph2->edgeEnd(); j = _graph2->edgeNext(j))
         {
             if (!_context._getEdgeColorCondition(*_graph1, *_graph2, i, j))
-                _errorEdgesMatrix[i]->at(j) = 1;
+                _errorEdgesMatrix[i].at(j) = 1;
         }
     }
 }
@@ -1388,7 +1388,7 @@ int MaxCommonSubgraph::AdjMatricesStore::countErrorAtEdges(int i, int j)
     if (!getSecondElement(_x[i], _x[j]))
         return 1;
     else
-        return _errorEdgesMatrix[getFirstIdxEdge(i, j)]->at(getSecondIdxEdge(_x[i], _x[j]));
+        return _errorEdgesMatrix[getFirstIdxEdge(i, j)].at(getSecondIdxEdge(_x[i], _x[j]));
 }
 
 bool MaxCommonSubgraph::AdjMatricesStore::getEdgeWeightCondition(int i, int j)
@@ -1522,24 +1522,24 @@ void MaxCommonSubgraph::AdjMatricesStore::getSolutions(PtrArray<Array<int>>& v_m
                 if (decomposition[i] == cur_comp)
                     tmp_map[map_gr[i]] = _map[map_gr[i]];
             }
-            v_maps[cur_comp]->resize(_graph2->vertexEnd());
+            v_maps[cur_comp].resize(_graph2->vertexEnd());
             for (j = 0; j < _graph2->vertexEnd(); j++)
-                v_maps[cur_comp]->at(j) = SubstructureMcs::UNMAPPED;
+                v_maps[cur_comp].at(j) = SubstructureMcs::UNMAPPED;
 
-            _makeInvertMap(tmp_map, *v_maps[cur_comp]);
+            _makeInvertMap(tmp_map, v_maps[cur_comp]);
         }
     }
     else
     {
         for (int cur_comp = 0; cur_comp < ncomp; ++cur_comp)
         {
-            v_maps[cur_comp]->resize(size_g1);
+            v_maps[cur_comp].resize(size_g1);
             for (j = 0; j < size_g1; j++)
-                v_maps[cur_comp]->at(j) = SubstructureMcs::UNMAPPED;
+                v_maps[cur_comp].at(j) = SubstructureMcs::UNMAPPED;
             for (i = 0; i < decomposition.size(); i++)
             {
                 if (decomposition[i] == cur_comp)
-                    v_maps[cur_comp]->at(map_gr[i]) = _map[map_gr[i]];
+                    v_maps[cur_comp].at(map_gr[i]) = _map[map_gr[i]];
             }
         }
     }
@@ -1581,17 +1581,17 @@ void MaxCommonSubgraph::Greedy::greedyMethod()
     int i1 = _unsignVert1.size() - 1;
     int p = _unsignVert1[i1];
 
-    int i20 = _unsignVert2[0]->at(p);
-    int i2 = _unsignVert2[i20]->size() - 1;
+    int i20 = _unsignVert2[0].at(p);
+    int i2 = _unsignVert2[i20].size() - 1;
 
-    int q = _unsignVert2[i20]->at(i2);
+    int q = _unsignVert2[i20].at(i2);
     while (true)
     {
         _x[p] = q;
         _y[q] = p;
 
         _unsignVert1.remove(i1);
-        _unsignVert2[i20]->remove(i2);
+        _unsignVert2[i20].remove(i2);
 
         if (_unsignVert1.size() == 0)
             break;
@@ -1621,22 +1621,22 @@ void MaxCommonSubgraph::Greedy::greedyMethod()
         }
         p = _unsignVert1[i1];
         ssmax = 0;
-        i20 = _unsignVert2[0]->at(p);
-        i2 = _unsignVert2[i20]->size() - 1;
+        i20 = _unsignVert2[0].at(p);
+        i2 = _unsignVert2[i20].size() - 1;
         if (i2 == -1)
         {
             ssmax = 1 << 16;
             for (int i = 1; i < _unsignVert2.size(); i++)
             {
-                if (_unsignVert2[i]->size() > 0)
+                if (_unsignVert2[i].size() > 0)
                 {
                     i20 = i;
                     break;
                 }
             }
-            for (int iter = 0; iter < _unsignVert2[i20]->size(); iter++)
+            for (int iter = 0; iter < _unsignVert2[i20].size(); iter++)
             {
-                _x[p] = _unsignVert2[i20]->at(iter);
+                _x[p] = _unsignVert2[i20].at(iter);
                 ss = _matchedEdges();
                 if (ss < ssmax)
                 {
@@ -1648,11 +1648,11 @@ void MaxCommonSubgraph::Greedy::greedyMethod()
         }
         else
         {
-            for (int iter = 0; iter < _unsignVert2[i20]->size(); iter++)
+            for (int iter = 0; iter < _unsignVert2[i20].size(); iter++)
             {
-                _x[p] = _unsignVert2[i20]->at(iter);
+                _x[p] = _unsignVert2[i20].at(iter);
                 ss = _matchedEdges();
-                if (ss > ssmax || (ss >= ssmax && _adjStatus[_unsignVert2[i20]->at(iter)] == 1))
+                if (ss > ssmax || (ss >= ssmax && _adjStatus[_unsignVert2[i20].at(iter)] == 1))
                 {
                     i2 = iter;
                     ssmax = ss;
@@ -1660,7 +1660,7 @@ void MaxCommonSubgraph::Greedy::greedyMethod()
                 _x[p] = -1;
             }
         }
-        q = _unsignVert2[i20]->at(i2);
+        q = _unsignVert2[i20].at(i2);
     }
 }
 
@@ -1679,12 +1679,12 @@ void MaxCommonSubgraph::Greedy::_createLgLh()
     for (i = 0; i < _n; i++)
     {
         nfind = true;
-        for (j = 0; j < _unsignVert2[0]->size(); j++)
+        for (j = 0; j < _unsignVert2[0].size(); j++)
         {
             if (_adjMstore.getVColorOneCondition(i, j))
             {
                 nfind = false;
-                _unsignVert2[0]->push(_unsignVert2[0]->at(j));
+                _unsignVert2[0].push(_unsignVert2[0].at(j));
                 break;
             }
         }
@@ -1692,19 +1692,19 @@ void MaxCommonSubgraph::Greedy::_createLgLh()
         {
             _unsignVert2.add(new Array<int>());
             int last = _unsignVert2.size() - 1;
-            _unsignVert2[last]->clear_resize(_adjMstore.getFLSize(i));
+            _unsignVert2[last].clear_resize(_adjMstore.getFLSize(i));
             for (j = 0; j < _adjMstore.getFLSize(i); j++)
             {
-                _unsignVert2[last]->at(j) = _adjMstore.getFLV(i, j);
+                _unsignVert2[last].at(j) = _adjMstore.getFLV(i, j);
             }
-            _unsignVert2[0]->push(last);
+            _unsignVert2[0].push(last);
         }
     }
 
     _unsignVert1.qsort(_compareFirstDegree, &_adjMstore);
     for (i = 1; i < _unsignVert2.size(); i++)
     {
-        _unsignVert2[i]->qsort(_compareSecondDegree, &_adjMstore);
+        _unsignVert2[i].qsort(_compareSecondDegree, &_adjMstore);
     }
 }
 
@@ -2023,17 +2023,17 @@ void MaxCommonSubgraph::_getSolutionMaps(int count, PtrArray<Array<int>>& v_maps
 
     for (int i = 0; (i < count) && (i < _vertEdgeSolMap.size()); ++i)
     {
-        int v_size = _vertEdgeSolMap[i]->at(0);
-        int e_size = _vertEdgeSolMap[i]->at(1);
+        int v_size = _vertEdgeSolMap[i].at(0);
+        int e_size = _vertEdgeSolMap[i].at(1);
         Array<int>& v_arr = v_maps.push();
         Array<int>& e_arr = e_maps.push();
         v_arr.resize(v_size);
         e_arr.resize(e_size);
 
         for (int j = 0; j < v_size; ++j)
-            v_arr[j] = _vertEdgeSolMap[i]->at(2 + j);
+            v_arr[j] = _vertEdgeSolMap[i].at(2 + j);
         for (int j = 0; j < e_size; ++j)
-            e_arr[j] = _vertEdgeSolMap[i]->at(2 + v_size + j);
+            e_arr[j] = _vertEdgeSolMap[i].at(2 + v_size + j);
     }
 }
 

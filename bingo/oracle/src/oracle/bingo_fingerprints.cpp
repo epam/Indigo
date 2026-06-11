@@ -272,7 +272,7 @@ bool BingoFingerprints::screenPart_Init(OracleEnv& env, Screening& screening)
         if (screening.part >= _all_blocks.size())
             return false;
 
-        screening.block = _all_blocks[screening.part];
+        screening.block = &_all_blocks[screening.part];
 
         screening.statement = std::make_unique<OracleStatement>(env);
         screening.bits_lob = std::make_unique<OracleLOB>(env);
@@ -437,7 +437,7 @@ int BingoFingerprints::_cmp_counters(int a, int b, void* context)
     if (screening.part == self._part_adding)
         return self._pending_block.counters[a] - self._pending_block.counters[b];
 
-    const Block& block = *self._all_blocks[screening.part];
+    const Block& block = self._all_blocks[screening.part];
     return block.counters[a] - block.counters[b];
 }
 
@@ -469,7 +469,7 @@ bool BingoFingerprints::countOnes_Init(OracleEnv& env, Screening& screening)
         screening.statement->defineBlobByPos(1, *screening.bits_lob);
         screening.statement->execute();
 
-        screening.block = _all_blocks[screening.part];
+        screening.block = &_all_blocks[screening.part];
     }
     else
         screening.block = &_pending_block;
@@ -683,7 +683,7 @@ int BingoFingerprints::getTotalCount(OracleEnv& env)
     if (_all_blocks.size() > 0)
     {
         for (int i = 0; i < _all_blocks.size(); i++)
-            _total_count_cached += _all_blocks[i]->used;
+            _total_count_cached += _all_blocks[i].used;
     }
     else
     {

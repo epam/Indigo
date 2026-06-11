@@ -72,7 +72,7 @@ MangoOracleContext& MangoOracleContext::get(OracleEnv& env, int id, bool lock)
         TL_GET(PtrArray<MangoContext>, _instances);
 
         _instances.add(res.release());
-        return *(MangoOracleContext*)_instances.top();
+        return *(MangoOracleContext*)&_instances.top();
     }
 
     return *moc;

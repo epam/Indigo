@@ -50,10 +50,10 @@ bool ReactionSubstructureMatcher::_match_atoms(BaseReaction& query_, Reaction& t
     ReactionSubstructureMatcher& self = *(ReactionSubstructureMatcher*)context;
 
     self._fmcaches.expand(sub_mol_idx + 1);
-    if (self._fmcaches[sub_mol_idx] == nullptr)
+    if (self._fmcaches.getPtr(sub_mol_idx) == nullptr)
         self._fmcaches.set(sub_mol_idx, std::make_unique<MoleculeSubstructureMatcher::FragmentMatchCache>());
 
-    if (!MoleculeSubstructureMatcher::matchQueryAtom(&submol.getAtom(sub_atom_idx), supermol, super_atom_idx, self._fmcaches[sub_mol_idx], 0xFFFFFFFFUL))
+    if (!MoleculeSubstructureMatcher::matchQueryAtom(&submol.getAtom(sub_atom_idx), supermol, super_atom_idx, self._fmcaches.getPtr(sub_mol_idx), 0xFFFFFFFFUL))
         return false;
 
     if (submol.stereocenters.getType(sub_atom_idx) > supermol.stereocenters.getType(super_atom_idx))
@@ -190,8 +190,8 @@ bool ReactionSubstructureMatcher::_checkAAM()
     // the reactands and products
     for (i = 0; i < _matchers.size() - 1; i++)
     {
-        int qmol_idx = _matchers[i]->_current_molecule_1;
-        int tmol_idx = _matchers[i]->_current_molecule_2;
+        int qmol_idx = _matchers[i]._current_molecule_1;
+        int tmol_idx = _matchers[i]._current_molecule_2;
         BaseMolecule& qmol = _query->getBaseMolecule(qmol_idx);
         PtrArray<RedBlackSet<int>>* cm;
         int j;
@@ -211,7 +211,7 @@ bool ReactionSubstructureMatcher::_checkAAM()
             if (_query->asQueryReaction().getIgnorableAAM(qmol_idx, j))
                 continue;
 
-            int mapped = _matchers[i]->_current_core_1[j];
+            int mapped = _matchers[i]._current_core_1[j];
 
             if (mapped < 0)
                 throw Error("internal error: can not call atom with negative number %d", mapped);
@@ -223,7 +223,7 @@ bool ReactionSubstructureMatcher::_checkAAM()
 
             while (cm->size() <= qaam)
                 cm->add(std::make_unique<RedBlackSet<int>>());
-            cm->at(qaam)->find_or_insert(taam);
+            cm->at(qaam).find_or_insert(taam);
         }
     }
 
@@ -238,8 +238,8 @@ bool ReactionSubstructureMatcher::_checkAAM()
             // "When a query class is not found on both sides of the query, it is ignored"
             break;
 
-        RedBlackSet<int>& right = *classes_mapping_right[i];
-        RedBlackSet<int>& left = *classes_mapping_left[i];
+        RedBlackSet<int>& right = classes_mapping_right[i];
+        RedBlackSet<int>& left = classes_mapping_left[i];
 
         for (int j = right.begin(); j != right.end(); j = right.next(j))
         {

@@ -49,8 +49,8 @@ MangoFetchContext& MangoFetchContext::get(int id)
     TL_GET(PtrArray<MangoFetchContext>, _instances);
 
     for (int i = 0; i < _instances.size(); i++)
-        if (_instances[i]->id == id)
-            return *_instances[i];
+        if (_instances[i].id == id)
+            return _instances[i];
 
     throw Error("context #%d not found", id);
 }
@@ -63,8 +63,8 @@ MangoFetchContext& MangoFetchContext::create(MangoOracleContext& context, const 
     int id = 1;
 
     for (int i = 0; i < _instances.size(); i++)
-        if (_instances[i]->id >= id)
-            id = _instances[i]->id + 1;
+        if (_instances[i].id >= id)
+            id = _instances[i].id + 1;
 
     std::unique_ptr<MangoFetchContext> new_context = std::make_unique<MangoFetchContext>(id, context, query_id);
 
@@ -73,7 +73,7 @@ MangoFetchContext& MangoFetchContext::create(MangoOracleContext& context, const 
     new_context->id = id;
 
     _instances.add(new_context.release());
-    return *_instances.top();
+    return _instances.top();
 }
 
 MangoFetchContext* MangoFetchContext::findFresh(int context_id, const Array<char>& query_id)
@@ -85,7 +85,7 @@ MangoFetchContext* MangoFetchContext::findFresh(int context_id, const Array<char
 
     for (i = 0; i < _instances.size(); i++)
     {
-        MangoFetchContext* instance = _instances[i];
+        MangoFetchContext* instance = &_instances[i];
 
         if (!instance->fresh)
             continue;
@@ -109,7 +109,7 @@ void MangoFetchContext::remove(int id)
     int i;
 
     for (i = 0; i < _instances.size(); i++)
-        if (_instances[i]->id == id)
+        if (_instances[i].id == id)
             break;
 
     if (i == _instances.size())
@@ -125,6 +125,6 @@ void MangoFetchContext::removeByContextID(int id)
     int i;
 
     for (i = _instances.size() - 1; i >= 0; i--)
-        if (_instances[i]->context_id == id)
+        if (_instances[i].context_id == id)
             _instances.remove(i);
 }

@@ -978,7 +978,7 @@ void BaseMolecule::_processMonomerAttachmentPoints(int monomer_id, BaseMolecule&
                 // for all used AP mark leaving atom to remove, all leaving atom are leafs - so bonds will be removed automatically
                 if (monomer_id < result.template_attachment_indexes.size()) // check if monomer has attachment points in use
                 {
-                    auto& indexes = *result.template_attachment_indexes.at(monomer_id);
+                    auto& indexes = result.template_attachment_indexes.at(monomer_id);
                     for (int att_idx = indexes.begin(); att_idx != indexes.end(); att_idx = indexes.next(att_idx))
                     {
                         // [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
@@ -1015,7 +1015,7 @@ std::pair<int, bool> BaseMolecule::_getNeighborLeavingBondDir(
     bool leaving_bond_is_beg2 = false;
     if (other < result.template_attachment_indexes.size())
     {
-        auto& b_indexes = *result.template_attachment_indexes.at(other);
+        auto& b_indexes = result.template_attachment_indexes.at(other);
         for (int att_idx = b_indexes.begin(); att_idx != b_indexes.end(); att_idx = b_indexes.next(att_idx))
         {
             // [Sapio] FR-48004 Validate attachment point index before access to prevent pool errors.
@@ -1129,7 +1129,7 @@ void BaseMolecule::_connectMonomerToNeighbors(int monomer_id, BaseMolecule& resu
                 // We need to find which attachment point of 'other' is connected to 'monomer_id'.
                 if (other < result.template_attachment_indexes.size())
                 {
-                    auto& indexes = *result.template_attachment_indexes.at(other);
+                    auto& indexes = result.template_attachment_indexes.at(other);
                     for (int att_idx = indexes.begin(); att_idx != indexes.end(); att_idx = indexes.next(att_idx))
                     {
                         // [Sapio] FR-48004 Validate attachment point index before access to prevent pool errors.
@@ -1151,7 +1151,7 @@ void BaseMolecule::_connectMonomerToNeighbors(int monomer_id, BaseMolecule& resu
                 // fix neighbor template_attachment_points
                 if (other < result.template_attachment_indexes.size())
                 {
-                    auto& indexes = *result.template_attachment_indexes.at(other);
+                    auto& indexes = result.template_attachment_indexes.at(other);
                     for (int att_idx = indexes.begin(); att_idx != indexes.end(); att_idx = indexes.next(att_idx))
                     {
                         // [Sapio] FR-48004 Validate attachment point index before access to prevent pool errors.

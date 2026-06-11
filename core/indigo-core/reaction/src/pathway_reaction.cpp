@@ -39,7 +39,7 @@ std::vector<int> PathwayReaction::getRootReactions() const
 {
     std::vector<int> root_reactions;
     for (int i = 0; i < _reactionNodes.size(); ++i)
-        if (_reactionNodes[i]->successorReactionIndexes.size() == 0)
+        if (_reactionNodes[i].successorReactionIndexes.size() == 0)
             root_reactions.push_back(i);
     return root_reactions;
 }
@@ -50,7 +50,7 @@ void PathwayReaction::_cloneSub(BaseReaction& other)
     PathwayReaction& other_pwr = other.asPathwayReaction();
     for (int i = 0; i < other_pwr._reactionNodes.size(); ++i)
     {
-        auto& other_rnode = *other_pwr._reactionNodes[i];
+        auto& other_rnode = other_pwr._reactionNodes[i];
         auto& rn = _reactionNodes.push();
         rn.reactionIdx = other_rnode.reactionIdx;
         rn.precursorReactionIndexes.copy(other_rnode.precursorReactionIndexes);
@@ -63,7 +63,7 @@ void PathwayReaction::_cloneSub(BaseReaction& other)
 
     for (int i = 0; i < other_pwr._reactions.size(); ++i)
     {
-        auto& other_reaction = *other_pwr._reactions[i];
+        auto& other_reaction = other_pwr._reactions[i];
         auto& rc = _reactions.push();
         rc.productIndexes.copy(other_reaction.productIndexes);
         rc.reactantIndexes.copy(other_reaction.reactantIndexes);
@@ -71,8 +71,8 @@ void PathwayReaction::_cloneSub(BaseReaction& other)
 
     for (int i = 0; i < other_pwr._molecules.size(); ++i)
     {
-        auto other_molecule = other_pwr._molecules[i];
-        addMolecule(*other_molecule);
+        auto& other_molecule = other_pwr._molecules[i];
+        addMolecule(other_molecule);
     }
 }
 
@@ -101,7 +101,7 @@ bool PathwayReaction::aromatize(const AromaticityOptions& options)
 {
     bool arom_found = false;
     for (int i = 0; i < _molecules.size(); ++i)
-        arom_found |= _molecules[i]->aromatize(options);
+        arom_found |= _molecules[i].aromatize(options);
     return arom_found;
 }
 
@@ -109,6 +109,6 @@ bool PathwayReaction::dearomatize(const AromaticityOptions& options)
 {
     bool arom_found = false;
     for (int i = 0; i < _molecules.size(); ++i)
-        arom_found |= _molecules[i]->dearomatize(options);
+        arom_found |= _molecules[i].dearomatize(options);
     return arom_found;
 }

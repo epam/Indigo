@@ -216,7 +216,7 @@ void BingoStorage::validate(OracleEnv& env)
 
         _shmem_array.add(new SharedMemory(block_name.ptr(), length, state->state == _STATE_READY));
 
-        void* ptr = _shmem_array.top()->ptr();
+        void* ptr = _shmem_array.top().ptr();
 
         if (ptr == 0)
         {
@@ -241,7 +241,7 @@ void BingoStorage::validate(OracleEnv& env)
             if ((length % sizeof(_Addr)) != 0)
                 throw Error("LOB size %d (expected a multiple of %d)", length, sizeof(_Addr));
             if (length > 0)
-                _index.copy((_Addr*)_shmem_array[0]->ptr(), length / sizeof(_Addr));
+                _index.copy((_Addr*)_shmem_array[0].ptr(), length / sizeof(_Addr));
         }
 
         _Block& block = _blocks.push();
@@ -351,7 +351,7 @@ void BingoStorage::get(int n, Array<char>& out)
 {
     const _Addr& addr = _index[n];
 
-    const char* ptr = (const char*)_shmem_array[addr.blockno + 1]->ptr();
+    const char* ptr = (const char*)_shmem_array[addr.blockno + 1].ptr();
 
     out.copy(ptr + addr.offset, addr.length);
 }

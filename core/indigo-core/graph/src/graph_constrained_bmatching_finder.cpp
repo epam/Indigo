@@ -100,7 +100,7 @@ void GraphConstrainedBMatchingFinder::_connectVerticesWithSets(const PtrArray<Ar
     {
         int cs_root = _constraint_sets[s].node;
 
-        const Array<int>& nodes = *nodes_per_set[s];
+        const Array<int>& nodes = nodes_per_set[s];
         for (int i = 0; i < nodes.size(); i++)
         {
             int vertex = nodes[i];

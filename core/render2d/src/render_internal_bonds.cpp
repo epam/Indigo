@@ -135,7 +135,7 @@ void MoleculeRenderInternal::_drawTopology(BondDescr& bd)
     if (bd.topology < 0)
         return;
     bd.tiTopology = _pushTextItem(RenderItem::RIT_TOPOLOGY, CWC_BASE, false);
-    TextItem& ti = (*_data.textitems[bd.tiTopology]);
+    TextItem& ti = (_data.textitems[bd.tiTopology]);
     ti.fontsize = FONT_SIZE_ATTR;
     if (bd.topology == TOPOLOGY_RING)
         bprintf(ti.text, "rng");

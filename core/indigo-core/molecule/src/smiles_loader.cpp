@@ -120,11 +120,11 @@ void SmilesLoader::_loadParsedMolecule()
     {
         for (i = 0; i < _atoms.size(); i++)
         {
-            if (_atoms[i]->label == 0)
+            if (_atoms[i].label == 0)
                 throw Error("atom without a label");
-            int idx = _mol->addAtom(_atoms[i]->label);
-            _mol->setAtomCharge(idx, _atoms[i]->charge);
-            _mol->setAtomIsotope(idx, _atoms[i]->isotope);
+            int idx = _mol->addAtom(_atoms[i].label);
+            _mol->setAtomCharge(idx, _atoms[i].charge);
+            _mol->setAtomIsotope(idx, _atoms[i].isotope);
         }
 
         for (i = 0; i < _bonds.size(); i++)
@@ -151,21 +151,21 @@ void SmilesLoader::_loadParsedMolecule()
     {
         for (i = 0; i < _atoms.size(); i++)
         {
-            if (_atoms[i]->aam != 0)
+            if (_atoms[i].aam != 0)
             {
-                if (_atoms[i]->star_atom)
+                if (_atoms[i].star_atom)
                 {
                     if (_qmol != 0)
                         _qmol->resetAtom(i, new QueryMolecule::Atom(QueryMolecule::ATOM_RSITE, 0));
-                    _bmol->allowRGroupOnRSite(i, _atoms[i]->aam);
+                    _bmol->allowRGroupOnRSite(i, _atoms[i].aam);
                 }
                 else
-                    _bmol->reaction_atom_mapping[i] = _atoms[i]->aam;
+                    _bmol->reaction_atom_mapping[i] = _atoms[i].aam;
             }
-            else if (_atoms[i]->label == ELEM_RSITE)
+            else if (_atoms[i].label == ELEM_RSITE)
             {
-                if (_atoms[i]->rsite_num != 0)
-                    _bmol->allowRGroupOnRSite(i, _atoms[i]->rsite_num);
+                if (_atoms[i].rsite_num != 0)
+                    _bmol->allowRGroupOnRSite(i, _atoms[i].rsite_num);
             }
         }
     }
@@ -174,7 +174,7 @@ void SmilesLoader::_loadParsedMolecule()
     {
         for (i = 0; i < _atoms.size(); i++)
         {
-            if (_atoms[i]->star_atom && _atoms[i]->label == ELEM_PSEUDO)
+            if (_atoms[i].star_atom && _atoms[i].label == ELEM_PSEUDO)
             {
                 _mol->setPseudoAtom(i, "*");
             }
@@ -230,7 +230,7 @@ void SmilesLoader::_loadParsedMolecule()
         _bmol->reaction_atom_mapping.clear_resize(_bmol->vertexCount() + 1);
         _bmol->reaction_atom_mapping.zerofill();
         for (i = 0; i < _atoms.size(); i++)
-            _bmol->reaction_atom_mapping[i] = _atoms[i]->aam;
+            _bmol->reaction_atom_mapping[i] = _atoms[i].aam;
     }
     _bmol->reaction_atom_inversion.clear_resize(_bmol->vertexCount() + 1);
     _bmol->reaction_atom_inversion.zerofill();
@@ -244,7 +244,7 @@ void SmilesLoader::_loadParsedMolecule()
         ignorable_aam->clear_resize(_bmol->vertexCount());
         ignorable_aam->zerofill();
         for (i = 0; i < _atoms.size(); i++)
-            ignorable_aam->at(i) = _atoms[i]->ignorable_aam ? 1 : 0;
+            ignorable_aam->at(i) = _atoms[i].ignorable_aam ? 1 : 0;
     }
 
     // handle the polymers (part of the CurlySMILES specification)
@@ -273,7 +273,7 @@ void SmilesLoader::_markAromaticBonds()
             int idx = cycle[j];
             const Edge& edge = _bmol->getEdge(idx);
 
-            if (!_atoms[edge.beg]->aromatic || !_atoms[edge.end]->aromatic)
+            if (!_atoms[edge.beg].aromatic || !_atoms[edge.end].aromatic)
                 break;
             if (_bonds[idx].type == BOND_SINGLE || _bonds[idx].type == BOND_DOUBLE || _bonds[idx].type == BOND_TRIPLE)
                 break;
@@ -316,7 +316,7 @@ void SmilesLoader::_markAromaticBonds()
             int idx = cycle[j];
             const Edge& edge = _bmol->getEdge(idx);
 
-            if (!_atoms[edge.beg]->aromatic || !_atoms[edge.end]->aromatic)
+            if (!_atoms[edge.beg].aromatic || !_atoms[edge.end].aromatic)
             {
                 needs_modification = false;
                 break;
@@ -335,7 +335,7 @@ void SmilesLoader::_markAromaticBonds()
             {
                 int idx = cycle[j];
                 const Edge& edge = _bmol->getEdge(idx);
-                if ((_bonds[idx].type == -1) && (_atoms[edge.beg]->aromatic && _atoms[edge.end]->aromatic))
+                if ((_bonds[idx].type == -1) && (_atoms[edge.beg].aromatic && _atoms[edge.end].aromatic))
                 {
                     _bonds[idx].type = BOND_AROMATIC;
                     int bond_index = _bonds[idx].index;
@@ -377,20 +377,20 @@ void SmilesLoader::_setRadicalsAndHCounts()
         // if the number of attached hydrogens conforms to the lowest normal
         // valence consistent with explicit bonds. We assume that there are
         // no radicals in that case.
-        if (!_atoms[i]->brackets)
+        if (!_atoms[i].brackets)
             // We set zero radicals explicitly to properly detect errors like FClF
             // (while F[Cl]F is correct)
             _mol->setAtomRadical(idx, 0);
 
-        if (_atoms[i]->hydrogens >= 0)
-            _mol->setImplicitH(idx, _atoms[i]->hydrogens);
-        else if (_atoms[i]->brackets)   // no hydrogens in brackets?
+        if (_atoms[i].hydrogens >= 0)
+            _mol->setImplicitH(idx, _atoms[i].hydrogens);
+        else if (_atoms[i].brackets)    // no hydrogens in brackets?
             _mol->setImplicitH(idx, 0); // no implicit hydrogens on atom then
-        else if (_atoms[i]->aromatic && _mol->getAtomAromaticity(i) == ATOM_AROMATIC)
+        else if (_atoms[i].aromatic && _mol->getAtomAromaticity(i) == ATOM_AROMATIC)
         {
             // Additional check for _mol->getAtomAromaticity(i) is required because
             // a cycle can be non-aromatic while atom letters are small
-            if (_atoms[i]->label == ELEM_C)
+            if (_atoms[i].label == ELEM_C)
             {
                 // here we are basing on the fact that
                 // aromatic uncharged carbon always has a double bond

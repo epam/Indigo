@@ -161,14 +161,14 @@ void TGroup::copy_without_fragment(const TGroup& other)
     mixture = other.mixture;
     for (int i = 0; i < other.aliases.size(); i++)
     {
-        aliases.push().copy(*other.aliases[i]);
+        aliases.push().copy(other.aliases[i]);
     }
     ratios.copy(other.ratios);
     different_aliasHELM = other.different_aliasHELM;
     aliasHELM.copy(other.aliasHELM);
     for (int i = 0; i < other.modification_types.size(); i++)
     {
-        modification_types.push().copy(*other.modification_types[i]);
+        modification_types.push().copy(other.modification_types[i]);
     }
     aliasAxoLabs.copy(other.aliasAxoLabs);
 }

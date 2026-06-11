@@ -81,7 +81,7 @@ BingoOracleContext& BingoOracleContext::get(OracleEnv& env, int id, bool lock, b
 
     _instances.add(res.release());
 
-    return *(BingoOracleContext*)_instances.top();
+    return *(BingoOracleContext*)&_instances.top();
 }
 
 void BingoOracleContext::_loadConfigParameters(OracleEnv& env)

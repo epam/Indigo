@@ -298,15 +298,14 @@ CEXPORT int indigoExactMatch(int handler1, int handler2, const char* flags)
             auto mapping = std::make_unique<IndigoReactionMapping>(rxn1, rxn2);
             mapping->mol_mapping.clear_resize(rxn1.end());
             mapping->mol_mapping.fffill();
-            while (mapping->mappings.size() < rxn1.end())
-                mapping->mappings.push();
+            mapping->mappings.resize(rxn1.end());
 
             for (int i = rxn1.begin(); i != rxn1.end(); i = rxn1.next(i))
             {
                 if (rxn1.getSideType(i) == BaseReaction::CATALYST)
                     continue;
                 mapping->mol_mapping[i] = matcher.getTargetMoleculeIndex(i);
-                mapping->mappings[i]->copy(matcher.getQueryMoleculeMapping(i), rxn1.getBaseMolecule(i).vertexEnd());
+                mapping->mappings[i].copy(matcher.getQueryMoleculeMapping(i), rxn1.getBaseMolecule(i).vertexEnd());
             }
 
             return self.addObject(mapping.release());
@@ -900,7 +899,7 @@ CEXPORT int indigoMatch(int target_matcher, int query)
                 matcher.target.unfoldHydrogens();
                 // expand mappings to include unfolded hydrogens
                 for (i = matcher.target.begin(); i != matcher.target.end(); i = matcher.target.next(i))
-                    matcher.mappings[i]->expandFill(matcher.target.getBaseMolecule(i).vertexEnd(), -1);
+                    matcher.mappings[i].expandFill(matcher.target.getBaseMolecule(i).vertexEnd(), -1);
             }
 
             if (matcher.matcher.get() == 0)
@@ -916,8 +915,7 @@ CEXPORT int indigoMatch(int target_matcher, int query)
             auto mapping = std::make_unique<IndigoReactionMapping>(qrxn, matcher.original_target);
             mapping->mol_mapping.clear_resize(qrxn.end());
             mapping->mol_mapping.fffill();
-            while (mapping->mappings.size() < qrxn.end())
-                mapping->mappings.push();
+            mapping->mappings.resize(qrxn.end());
 
             for (i = qrxn.begin(); i != qrxn.end(); i = qrxn.next(i))
             {
@@ -926,14 +924,14 @@ CEXPORT int indigoMatch(int target_matcher, int query)
                 int tmol_idx = matcher.matcher->getTargetMoleculeIndex(i);
                 mapping->mol_mapping[i] = matcher.mol_mapping[tmol_idx];
                 BaseMolecule& qm = qrxn.getBaseMolecule(i);
-                mapping->mappings[i]->clear_resize(qm.vertexEnd());
-                mapping->mappings[i]->fffill();
+                mapping->mappings[i].clear_resize(qm.vertexEnd());
+                mapping->mappings[i].fffill();
                 for (j = qm.vertexBegin(); j != qm.vertexEnd(); j = qm.vertexNext(j))
                 {
                     int mapped = matcher.matcher->getQueryMoleculeMapping(i)[j];
 
                     if (mapped >= 0) // hydrogens are ignored
-                        (*mapping->mappings[i])[j] = (*matcher.mappings[tmol_idx])[mapped];
+                        (mapping->mappings[i])[j] = (matcher.mappings[tmol_idx])[mapped];
                 }
             }
 

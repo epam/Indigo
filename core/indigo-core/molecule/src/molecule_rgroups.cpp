@@ -166,15 +166,15 @@ void MoleculeRGroups::clear()
 
 RGroup& MoleculeRGroups::getRGroup(int idx)
 {
-    while (_rgroups.size() < idx)
-        _rgroups.push();
+    if (_rgroups.size() < idx)
+        _rgroups.resize(idx);
 
-    return *_rgroups[idx - 1];
+    return _rgroups[idx - 1];
 }
 
 const RGroup& MoleculeRGroups::getRGroup(int idx) const
 {
-    return *_rgroups[idx - 1];
+    return _rgroups[idx - 1];
 }
 
 int MoleculeRGroups::getRGroupCount() const

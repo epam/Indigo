@@ -41,7 +41,7 @@ namespace indigo
         }
         const Array<int>& getCycle(int num) const
         {
-            return *_cycles[num];
+            return _cycles[num];
         }
 
         bool containsVertex(int vertex) const;

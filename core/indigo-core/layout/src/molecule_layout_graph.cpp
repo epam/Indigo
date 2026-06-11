@@ -57,12 +57,12 @@ void MoleculeLayoutGraph::clear()
 
 const LayoutVertex& MoleculeLayoutGraph::getLayoutVertex(int idx) const
 {
-    return *_layout_vertices[idx];
+    return _layout_vertices[idx];
 }
 
 const LayoutEdge& MoleculeLayoutGraph::getLayoutEdge(int idx) const
 {
-    return *_layout_edges[idx];
+    return _layout_edges[idx];
 }
 
 bool MoleculeLayoutGraph::isSingleEdge() const
@@ -72,16 +72,14 @@ bool MoleculeLayoutGraph::isSingleEdge() const
 
 void MoleculeLayoutGraph::registerLayoutVertex(int idx, const LayoutVertex& vertex)
 {
-    while (_layout_vertices.size() < idx + 1)
-        _layout_vertices.push();
-    *_layout_vertices[idx] = vertex;
+    _layout_vertices.resize(idx + 1);
+    _layout_vertices[idx] = vertex;
 }
 
 void MoleculeLayoutGraph::registerLayoutEdge(int idx, const LayoutEdge& edge)
 {
-    while (_layout_edges.size() < idx + 1)
-        _layout_edges.push();
-    *_layout_edges[idx] = edge;
+    _layout_edges.resize(idx + 1);
+    _layout_edges[idx] = edge;
 }
 
 int MoleculeLayoutGraph::addLayoutVertex(int ext_idx, int type)
@@ -158,8 +156,8 @@ void MoleculeLayoutGraph::copyLayoutTo(MoleculeLayoutGraph& other, const Array<i
 {
     for (int i = other.vertexBegin(); i < other.vertexEnd(); i = other.vertexNext(i))
     {
-        other._layout_vertices[i]->type = _layout_vertices[mapping[i]]->type;
-        other._layout_vertices[i]->pos = _layout_vertices[mapping[i]]->pos;
+        other._layout_vertices[i].type = _layout_vertices[mapping[i]].type;
+        other._layout_vertices[i].pos = _layout_vertices[mapping[i]].pos;
     }
 
     for (int i = other.edgeBegin(); i < other.edgeEnd(); i = other.edgeNext(i))
@@ -168,7 +166,7 @@ void MoleculeLayoutGraph::copyLayoutTo(MoleculeLayoutGraph& other, const Array<i
         const Vertex& vert = other.getVertex(mapping[edge.beg]);
         int edge_idx = vert.neiEdge(vert.findNeiVertex(mapping[edge.end]));
 
-        other._layout_edges[i]->type = _layout_edges[edge_idx]->type;
+        other._layout_edges[i].type = _layout_edges[edge_idx].type;
     }
 }
 
@@ -260,8 +258,8 @@ void MoleculeLayoutGraphSimple::makeLayoutSubgraph(MoleculeLayoutGraph& graph, F
         int v_int = mapping[v_ext]; // internal index in this subgraph
 
         new_vertex.ext_idx = v_ext;
-        new_vertex.type = graph._layout_vertices[v_ext]->type;
-        new_vertex.morgan_code = graph._layout_vertices[v_ext]->morgan_code;
+        new_vertex.type = graph._layout_vertices[v_ext].type;
+        new_vertex.morgan_code = graph._layout_vertices[v_ext].morgan_code;
         registerLayoutVertex(v_int, new_vertex);
         if (graph._fixed_vertices.size() > v_ext)
         {
@@ -275,7 +273,7 @@ void MoleculeLayoutGraphSimple::makeLayoutSubgraph(MoleculeLayoutGraph& graph, F
         int ext_idx = graph.findEdgeIndex(vertices[edge.beg], vertices[edge.end]);
 
         new_edge.ext_idx = ext_idx;
-        new_edge.type = graph._layout_edges[ext_idx]->type;
+        new_edge.type = graph._layout_edges[ext_idx].type;
         registerLayoutEdge(i, new_edge);
     }
 }
@@ -307,7 +305,7 @@ void MoleculeLayoutGraph::_calcMorganCodes()
     _total_morgan_code = 0;
     for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
     {
-        _layout_vertices[i]->morgan_code = morgan_codes[i];
+        _layout_vertices[i].morgan_code = morgan_codes[i];
         _total_morgan_code += morgan_codes[i];
     }
 }
@@ -322,9 +320,9 @@ void MoleculeLayoutGraph::_makeComponentsTree(BiconnectedDecomposer& decon, PtrA
 
     for (i = 0; i < components.size(); i++)
     {
-        for (k = components[i]->vertexBegin(); k < components[i]->vertexEnd(); k = components[i]->vertexNext(k))
+        for (k = components[i].vertexBegin(); k < components[i].vertexEnd(); k = components[i].vertexNext(k))
         {
-            v = components[i]->getLayoutVertex(k).ext_idx;
+            v = components[i].getLayoutVertex(k).ext_idx;
 
             if (decon.isArticulationPoint(v))
             {
@@ -394,7 +392,7 @@ void MoleculeLayoutGraph::_layoutMultipleComponents(BaseMolecule& molecule, bool
 
         std::unique_ptr<MoleculeLayoutGraph> current_component(getInstance());
         components.add(current_component.release());
-        MoleculeLayoutGraph& component = *components.top();
+        MoleculeLayoutGraph& component = components.top();
 
         component.cancellation = cancellation;
 
@@ -424,7 +422,7 @@ void MoleculeLayoutGraph::_layoutMultipleComponents(BaseMolecule& molecule, bool
                 {
                     component._fixed_vertices[j] = 1;
                     component._n_fixed++;
-                    component._layout_vertices[j]->pos = getPos(component.getVertexExtIdx(j));
+                    component._layout_vertices[j].pos = getPos(component.getVertexExtIdx(j));
                 }
         }
 
@@ -443,7 +441,7 @@ void MoleculeLayoutGraph::_layoutMultipleComponents(BaseMolecule& molecule, bool
     {
         for (int i = 0; i < n_components; i++)
         {
-            copyCoordsFromComponent(*components[i]);
+            copyCoordsFromComponent(components[i]);
         }
     }
     else // Move fixed componets to touch (0,0), layout rest of components in grid
@@ -461,7 +459,7 @@ void MoleculeLayoutGraph::_layoutMultipleComponents(BaseMolecule& molecule, bool
             // find left bottom corner and top of fixed components
             for (i = 0; i < n_components; i++)
             {
-                MoleculeLayoutGraph& component = *components[i];
+                MoleculeLayoutGraph& component = components[i];
 
                 if (component._n_fixed > 0)
                 {
@@ -487,7 +485,7 @@ void MoleculeLayoutGraph::_layoutMultipleComponents(BaseMolecule& molecule, bool
                 shift.negate();
                 for (i = 0; i < n_components; i++)
                 {
-                    MoleculeLayoutGraph& component = *components[i];
+                    MoleculeLayoutGraph& component = components[i];
                     if (component._n_fixed > 0)
                         copyCoordsFromComponent(component, shift);
                 }
@@ -503,7 +501,7 @@ void MoleculeLayoutGraph::_layoutMultipleComponents(BaseMolecule& molecule, bool
 
         for (i = 0, k = 0; i < n_components; i++)
         {
-            MoleculeLayoutGraph& component = *components[i];
+            MoleculeLayoutGraph& component = components[i];
 
             if (component._n_fixed > 0)
                 continue;
@@ -551,7 +549,7 @@ void MoleculeLayoutGraph::copyCoordsFromComponent(MoleculeLayoutGraph& component
 {
     for (int i = component.vertexBegin(); i < component.vertexEnd(); i = component.vertexNext(i))
     {
-        _layout_vertices[component.getVertexExtIdx(i)]->pos.sum(component.getPos(i), shift);
+        _layout_vertices[component.getVertexExtIdx(i)].pos.sum(component.getPos(i), shift);
     }
 }
 

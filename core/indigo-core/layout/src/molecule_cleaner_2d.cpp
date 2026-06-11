@@ -97,7 +97,7 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition)
     for (int i = 0; i < vertex_size; i++)
     {
         coef.push();
-        coef.top()->clear();
+        coef.top().clear();
     }
 
     if (use_beconnected_decomposition)
@@ -108,8 +108,8 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition)
         for (int i = 0; i < component_count; i++)
         {
             in.push();
-            in.top()->clear_resize(vertex_size);
-            in.top()->zerofill();
+            in.top().clear_resize(vertex_size);
+            in.top().zerofill();
         }
 
         Filter filter;
@@ -122,8 +122,8 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition)
             int cnt = 0;
             for (int j = _mol.vertexBegin(); j != _mol.vertexEnd(); j = _mol.vertexNext(j))
             {
-                (*in[i])[j] = filter.valid(j);
-                cnt += (*in[i])[j];
+                (in[i])[j] = filter.valid(j);
+                cnt += (in[i])[j];
             }
             if (cnt == 2)
                 _is_trivial[i] = true;
@@ -136,8 +136,8 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition)
         for (int i = 0; i < component_count; i++)
         {
             in.push();
-            in.top()->clear_resize(vertex_size);
-            in.top()->zerofill();
+            in.top().clear_resize(vertex_size);
+            in.top().zerofill();
         }
 
         _is_trivial.clear_resize(component_count);
@@ -145,8 +145,8 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition)
         for (int i = 0, e = _mol.edgeBegin(); e != _mol.edgeEnd(); i++, e = _mol.edgeNext(e))
         {
             const Edge& edge = _mol.getEdge(e);
-            (*in[i])[edge.beg] = true;
-            (*in[i])[edge.end] = true;
+            (in[i])[edge.beg] = true;
+            (in[i])[edge.end] = true;
             _is_trivial[i] = true;
         }
     }
@@ -165,7 +165,7 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition)
     for (int i = 0; i < component_count; i++)
     {
         definiting_points.push();
-        definiting_points.top()->clear();
+        definiting_points.top().clear();
     }
 
     if (use_beconnected_decomposition)
@@ -191,7 +191,7 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition)
 
                 int ver = -1;
                 for (int i = _mol.vertexBegin(); i != _mol.vertexEnd(); i = _mol.vertexNext(i))
-                    if ((*in[c])[i])
+                    if ((in[c])[i])
                         if (is_valid_base[i])
                         {
                             ver = i;
@@ -200,7 +200,7 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition)
                 if (ver == -1)
                 {
                     for (int i = _mol.vertexBegin(); i != _mol.vertexEnd(); i = _mol.vertexNext(i))
-                        if ((*in[c])[i])
+                        if ((in[c])[i])
                         {
                             ver = i;
                             break;
@@ -221,7 +221,7 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition)
                     int comp = component_list[index];
                     ver = -1;
                     for (int j = _mol.vertexBegin(); j != _mol.vertexEnd(); j = _mol.vertexNext(j))
-                        if ((*in[comp])[j] && !block_vertex[j] && is_art_point[j])
+                        if ((in[comp])[j] && !block_vertex[j] && is_art_point[j])
                         {
                             ver = j;
                             break;
@@ -229,7 +229,7 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition)
                     if (ver == -1)
                     {
                         for (int j = _mol.vertexBegin(); j != _mol.vertexEnd(); j = _mol.vertexNext(j))
-                            if ((*in[comp])[j] && !block_vertex[j] && is_valid_base[j])
+                            if ((in[comp])[j] && !block_vertex[j] && is_valid_base[j])
                             {
                                 ver = j;
                                 break;
@@ -238,7 +238,7 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition)
                     if (ver == -1)
                     {
                         for (int j = _mol.vertexBegin(); j != _mol.vertexEnd(); j = _mol.vertexNext(j))
-                            if ((*in[comp])[j] && !block_vertex[j])
+                            if ((in[comp])[j] && !block_vertex[j])
                             {
                                 ver = j;
                                 break;
@@ -247,7 +247,7 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition)
                     if (ver == -1)
                     {
                         for (int j = _mol.vertexBegin(); j != _mol.vertexEnd(); j = _mol.vertexNext(j))
-                            if ((*in[comp])[j] && is_valid_base[j])
+                            if ((in[comp])[j] && is_valid_base[j])
                             {
                                 ver = j;
                                 break;
@@ -260,41 +260,41 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition)
                     // 2. Add yet another defining point if it is need
 
                     for (int j = 0; j < base_point.size(); j++)
-                        if ((*in[comp])[base_point[j]])
-                            definiting_points[comp]->push(base_point[j]);
-                    if (definiting_points[comp]->size() < 2)
+                        if ((in[comp])[base_point[j]])
+                            definiting_points[comp].push(base_point[j]);
+                    if (definiting_points[comp].size() < 2)
                     {
                         int newver = -1;
                         for (int j = _mol.vertexBegin(); j != _mol.vertexEnd(); j = _mol.vertexNext(j))
-                            if (block_vertex[j] && (*in[comp])[j])
+                            if (block_vertex[j] && (in[comp])[j])
                             {
                                 newver = j;
                                 break;
                             }
 
-                        definiting_points[comp]->push(newver);
+                        definiting_points[comp].push(newver);
                     }
 
                     // 3. Calculation coefficients
 
                     for (int j = _mol.vertexBegin(); j != _mol.vertexEnd(); j = _mol.vertexNext(j))
-                        if ((*in[comp])[j] && j != (*definiting_points[comp])[0] && j != (*definiting_points[comp])[1] && !block_vertex[j])
-                            _calcCoef(j, (*definiting_points[comp])[0], (*definiting_points[comp])[1]);
+                        if ((in[comp])[j] && j != (definiting_points[comp])[0] && j != (definiting_points[comp])[1] && !block_vertex[j])
+                            _calcCoef(j, (definiting_points[comp])[0], (definiting_points[comp])[1]);
 
                     // 4. Add new components to list
 
                     for (int v = _mol.vertexBegin(); v != _mol.vertexEnd(); v = _mol.vertexNext(v))
-                        if ((*in[comp])[v] && is_art_point[v])
+                        if ((in[comp])[v] && is_art_point[v])
                         {
                             for (int j = 0; j < component_count; j++)
-                                if ((*in[j])[v] && !has_component[j])
+                                if ((in[j])[v] && !has_component[j])
                                 {
                                     component_list.push(j);
                                     has_component[j] = true;
                                 }
                         }
                     for (int v = _mol.vertexBegin(); v != _mol.vertexEnd(); v = _mol.vertexNext(v))
-                        if ((*in[comp])[v])
+                        if ((in[comp])[v])
                             block_vertex[v] = true;
                 }
             }
@@ -314,7 +314,7 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition)
         {
             vertex_list.clear();
             for (int v = _mol.vertexBegin(); v != _mol.vertexEnd(); v = _mol.vertexNext(v))
-                if ((*in[c])[v] && is_valid_base[v])
+                if ((in[c])[v] && is_valid_base[v])
                 {
                     vertex_list.push(v);
                     break;
@@ -330,7 +330,7 @@ void MoleculeCleaner2d::_initComponents(bool use_beconnected_decomposition)
                 for (int n = vert.neiBegin(); n != vert.neiEnd() && !found; n = vert.neiNext(n))
                 {
                     _mol.getAtomSymbol(vert.neiVertex(n), debug_atoms);
-                    if ((*in[c])[vert.neiVertex(n)] && vertices.count(vert.neiVertex(n)) < 1)
+                    if ((in[c])[vert.neiVertex(n)] && vertices.count(vert.neiVertex(n)) < 1)
                     {
                         found = true;
                         vertex_list.push(vert.neiVertex(n));
@@ -368,7 +368,7 @@ void MoleculeCleaner2d::_uniteBondsOnLine()
     for (int i = 0; i < component_count; i++)
     {
         unite_to.push();
-        unite_to.top()->clear();
+        unite_to.top().clear();
     }
     for (int v = _mol.vertexBegin(); v != _mol.vertexEnd(); v = _mol.vertexNext(v))
         if (_mol.getVertex(v).degree() == 2)
@@ -380,7 +380,7 @@ void MoleculeCleaner2d::_uniteBondsOnLine()
 
             bool in_triv_comp = false;
             for (int c = 0; c < component_count; c++)
-                if ((*in[c])[v])
+                if ((in[c])[v])
                     if (_is_trivial[c])
                         in_triv_comp = true;
             if (!in_triv_comp)
@@ -420,27 +420,27 @@ void MoleculeCleaner2d::_uniteBondsOnLine()
 
                 int c1 = -1, c2 = -1;
                 for (int c = 0; c < component_count; c++)
-                    if ((*in[c])[v])
+                    if ((in[c])[v])
                     {
                         c2 = c1;
                         c1 = c;
                     }
 
-                unite_to[c1]->push(c2);
-                unite_to[c2]->push(c1);
+                unite_to[c1].push(c2);
+                unite_to[c2].push(c1);
             }
         }
 
     for (int c = 0; c < component_count; c++)
-        if (unite_with[c] == c && unite_to[c]->size() == 1)
+        if (unite_with[c] == c && unite_to[c].size() == 1)
         {
             int cc = c;
             while (true)
             {
                 int cc1 = -1;
-                for (int i = 0; i < unite_to[cc]->size(); i++)
-                    if (unite_with[(*unite_to[cc])[i]] != c)
-                        cc1 = (*unite_to[cc])[i];
+                for (int i = 0; i < unite_to[cc].size(); i++)
+                    if (unite_with[(unite_to[cc])[i]] != c)
+                        cc1 = (unite_to[cc])[i];
                 if (cc1 == -1)
                     break;
                 cc = cc1;
@@ -476,21 +476,21 @@ void MoleculeCleaner2d::_uniteBondsOnLine()
     for (int i = 0; i < new_component_count; i++)
     {
         new_in.push();
-        new_in.top()->clear_resize(vertex_size);
-        new_in.top()->zerofill();
+        new_in.top().clear_resize(vertex_size);
+        new_in.top().zerofill();
     }
 
     for (int c = 0; c < component_count; c++)
     {
         for (int v = _mol.vertexBegin(); v != _mol.vertexEnd(); v = _mol.vertexNext(v))
         {
-            (*new_in[valid_index[unite_with[c]]])[v] |= (*in[c])[v];
+            new_in[valid_index[unite_with[c]]][v] |= in[c][v];
         }
     }
 
     for (int c = 0; c < new_component_count; c++)
         for (int v = _mol.vertexBegin(); v != _mol.vertexEnd(); v = _mol.vertexNext(v))
-            (*in[c])[v] = (*new_in[c])[v];
+            (in[c])[v] = (new_in[c])[v];
     in.resize(new_component_count);
 
     for (int i = 0; i < new_component_count; i++)
@@ -526,7 +526,7 @@ void MoleculeCleaner2d::_initArtPoints()
         int cnt = 0;
         for (int j = 0; j < component_count; j++)
         {
-            cnt += (*in[j])[i];
+            cnt += (in[j])[i];
         }
         if (cnt > 1)
             is_art_point[i] = true;
@@ -539,13 +539,13 @@ void MoleculeCleaner2d::_initAdjMatrix()
     for (int i = 0; i < vertex_size; i++)
     {
         adj_matrix.push();
-        adj_matrix.top()->clear_resize(vertex_size);
-        adj_matrix.top()->zerofill();
+        adj_matrix.top().clear_resize(vertex_size);
+        adj_matrix.top().zerofill();
     }
     for (int e = _mol.edgeBegin(); e != _mol.edgeEnd(); e = _mol.edgeNext(e))
     {
         Edge Ed = _mol.getEdge(e);
-        (*adj_matrix[Ed.beg])[Ed.end] = (*adj_matrix[Ed.end])[Ed.beg] = true;
+        (adj_matrix[Ed.beg])[Ed.end] = (adj_matrix[Ed.end])[Ed.beg] = true;
     }
 }
 
@@ -566,12 +566,12 @@ void MoleculeCleaner2d::_initCommonComp()
     for (int i = 0; i < vertex_size; i++)
     {
         common_comp.push();
-        common_comp.top()->clear_resize(vertex_size);
-        common_comp.top()->fffill();
+        common_comp.top().clear_resize(vertex_size);
+        common_comp.top().fffill();
         for (int j = _mol.vertexBegin(); j != _mol.vertexEnd(); j = _mol.vertexNext(j))
             for (int c = 0; c < component_count; c++)
-                if ((*in[c])[i] && (*in[c])[j])
-                    (*common_comp[i])[j] = c;
+                if ((in[c])[i] && (in[c])[j])
+                    (common_comp[i])[j] = c;
     }
 
     edge_comp.clear_resize(_mol.edgeEnd());
@@ -579,7 +579,7 @@ void MoleculeCleaner2d::_initCommonComp()
     for (int e = _mol.edgeBegin(); e != _mol.edgeEnd(); e = _mol.edgeNext(e))
     {
         int v = _mol.getEdge(e).beg, u = _mol.getEdge(e).end;
-        edge_comp[e] = (*common_comp[v])[u];
+        edge_comp[e] = (common_comp[v])[u];
     }
 }
 
@@ -598,26 +598,26 @@ void MoleculeCleaner2d::_initCommonBiconnectedComp()
     {
         decomposer.getComponent(i, filter);
         b_in.push();
-        b_in[i]->clear_resize(vertex_size);
-        b_in[i]->zerofill();
+        b_in[i].clear_resize(vertex_size);
+        b_in[i].zerofill();
         for (int j = _mol.vertexBegin(); j != _mol.vertexEnd(); j = _mol.vertexNext(j))
         {
-            (*b_in[i])[j] = filter.valid(j);
+            (b_in[i])[j] = filter.valid(j);
         }
     }
 
     for (int i = 0; i < vertex_size; i++)
     {
         common_bicon_comp.push();
-        common_bicon_comp.top()->clear_resize(vertex_size);
-        common_bicon_comp.top()->fffill();
+        common_bicon_comp.top().clear_resize(vertex_size);
+        common_bicon_comp.top().fffill();
     }
 
     for (int v1 = _mol.vertexBegin(); v1 != _mol.vertexEnd(); v1 = _mol.vertexNext(v1))
         for (int v2 = _mol.vertexBegin(); v2 != _mol.vertexEnd(); v2 = _mol.vertexNext(v2))
             for (int c = 0; c < b_component_count; c++)
-                if ((*b_in[c])[v1] && (*b_in[c])[v2])
-                    (*common_bicon_comp[v1])[v2] = c;
+                if ((b_in[c])[v1] && (b_in[c])[v2])
+                    (common_bicon_comp[v1])[v2] = c;
 }
 
 bool MoleculeCleaner2d::_isBasePoint(int i)
@@ -627,9 +627,9 @@ bool MoleculeCleaner2d::_isBasePoint(int i)
 
 void MoleculeCleaner2d::_addCoef(int ver, int index, Vec2f value)
 {
-    while (coef[ver]->size() <= index)
-        coef[ver]->push(ZERO);
-    (*coef[ver])[index] += value;
+    while (coef[ver].size() <= index)
+        coef[ver].push(ZERO);
+    (coef[ver])[index] += value;
 }
 
 void MoleculeCleaner2d::_calcCoef(int to, int from0, int from1)
@@ -646,36 +646,36 @@ void MoleculeCleaner2d::_calcCoef(int to, int from0, int from1)
 
     Vec2f _coef = Vec2f(dot, cross) / dist2;
 
-    int len = std::max(coef[from0]->size(), coef[from1]->size());
+    int len = std::max(coef[from0].size(), coef[from1].size());
     _addCoef(from0, len - 1, ZERO);
     _addCoef(from1, len - 1, ZERO);
 
     for (int i = 0; i < len; i++)
     {
-        _addCoef(to, i, mult(_coef, (*coef[from1])[i]));
+        _addCoef(to, i, mult(_coef, (coef[from1])[i]));
         Vec2f one_minus_coef = ONE - _coef;
-        _addCoef(to, i, mult(one_minus_coef, (*coef[from0])[i]));
+        _addCoef(to, i, mult(one_minus_coef, (coef[from0])[i]));
     }
 }
 
 void MoleculeCleaner2d::_calcCoef(int to, int from0, int from1, float alpha)
 {
-    int len = std::max(coef[from0]->size(), coef[from1]->size());
+    int len = std::max(coef[from0].size(), coef[from1].size());
 
     _addCoef(from0, len - 1, ZERO);
     _addCoef(from1, len - 1, ZERO);
 
     for (int i = 0; i < len; i++)
     {
-        _addCoef(to, i, (*coef[from0])[i] * alpha + (*coef[from1])[i] * (1.f - alpha));
+        _addCoef(to, i, (coef[from0])[i] * alpha + (coef[from1])[i] * (1.f - alpha));
     }
 }
 
 void MoleculeCleaner2d::_updatePosition(int i)
 {
     pos[i] = ZERO;
-    for (int j = 0; j < coef[i]->size(); j++)
-        pos[i] += mult((*coef[i])[j], pos[base_point[j]]);
+    for (int j = 0; j < coef[i].size(); j++)
+        pos[i] += mult((coef[i])[j], pos[base_point[j]]);
 }
 
 void MoleculeCleaner2d::_updatePositions()
@@ -712,7 +712,7 @@ void MoleculeCleaner2d::_updateGradient()
     if (1)
         for (int i = _mol.vertexBegin(); i != _mol.vertexEnd(); i = _mol.vertexNext(i))
             for (int j = _mol.vertexBegin(); j < i; j = _mol.vertexNext(j))
-                if ((*common_comp[i])[j] == -1)
+                if ((common_comp[i])[j] == -1)
                 {
                     float dist2 = Vec2f::distSqr(pos[i], pos[j]);
                     if (dist2 < target_len * target_len)
@@ -737,7 +737,7 @@ void MoleculeCleaner2d::_updateGradient()
                     {
                         int v1 = vert.neiVertex(n1);
                         int v2 = vert.neiVertex(n2);
-                        if ((*common_comp[v1])[v2] >= 0)
+                        if ((common_comp[v1])[v2] >= 0)
                             continue;
 
                         Vec2f vec1 = pos[v1] - pos[i];
@@ -785,8 +785,8 @@ void MoleculeCleaner2d::_updateGradient()
 
     gradient.zerofill();
     for (int i = _mol.vertexBegin(); i != _mol.vertexEnd(); i = _mol.vertexNext(i))
-        for (int j = 0; j < coef[i]->size(); j++)
-            gradient[j] += mult(pregradient[i], (*coef[i])[j]);
+        for (int j = 0; j < coef[i].size(); j++)
+            gradient[j] += mult(pregradient[i], (coef[i])[j]);
 }
 
 void MoleculeCleaner2d::_updateGradient2()
@@ -906,7 +906,7 @@ float MoleculeCleaner2d::_energy()
     if (1)
         for (int i = _mol.vertexBegin(); i != _mol.vertexEnd(); i = _mol.vertexNext(i))
             for (int j = _mol.vertexBegin(); j < i; j = _mol.vertexNext(j))
-                if ((*common_comp[i])[j] == -1)
+                if ((common_comp[i])[j] == -1)
                 {
                     float dist2 = Vec2f::distSqr(pos[i], pos[j]);
                     if (dist2 < target_len * target_len)
@@ -973,9 +973,9 @@ float MoleculeCleaner2d::_energy()
                     {
                         int v1 = vert.neiVertex(n1);
                         int v2 = vert.neiVertex(n2);
-                        if ((*common_comp[v1])[v2] >= 0)
+                        if ((common_comp[v1])[v2] >= 0)
                             continue;
-                        if ((*common_bicon_comp[v1])[v2] == -1)
+                        if ((common_bicon_comp[v1])[v2] == -1)
                             continue;
 
                         // printf("%d %d %d\n", i, v1, v2);
@@ -1073,7 +1073,7 @@ float MoleculeCleaner2d::_edgeEnergy(int i, int j)
     profTimerStart(t, "Edge enegry");
     float len = Vec2f::distSqr(pos[i], pos[j]);
 
-    if (len < target_len * target_len || (*adj_matrix[i])[j])
+    if (len < target_len * target_len || (adj_matrix[i])[j])
     {
         len = sqrt(len);
         float diff = (len - target_len) / target_len;
@@ -1086,7 +1086,7 @@ float MoleculeCleaner2d::_angleEnergy(int i, int v1, int v2)
 {
 
     profTimerStart(t, "Angle enegry");
-    if (!clean_external_angles && (*common_bicon_comp[v1])[v2] == -1)
+    if (!clean_external_angles && (common_bicon_comp[v1])[v2] == -1)
         return 0;
     Vec2f vec1 = pos[v1] - pos[i];
     Vec2f vec2 = pos[v2] - pos[i];

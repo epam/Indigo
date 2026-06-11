@@ -45,7 +45,7 @@ namespace indigo
 
             Graph& getGraphFromSet(int idx) override
             {
-                return (Graph&)*_searchStructures->at(_orderArray[idx]);
+                return (Graph&)_searchStructures->at(_orderArray[idx]);
             }
 
             int getMaxGraphIndex() override;

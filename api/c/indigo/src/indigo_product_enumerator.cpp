@@ -84,12 +84,12 @@ CEXPORT int indigoReactionProductEnumerate(int reaction, int monomers)
         PtrArray<PropertiesMap> monomers_properties;
         for (int i = query_rxn.reactantBegin(); i != query_rxn.reactantEnd(); i = query_rxn.reactantNext(i))
         {
-            IndigoArray& reactant_monomers_object = IndigoArray::cast(*monomers_object.objects[i]);
+            IndigoArray& reactant_monomers_object = IndigoArray::cast(monomers_object.objects[i]);
 
             auto size = reactant_monomers_object.objects.size();
             for (int j = 0; j < size; j++)
             {
-                IndigoObject& object = *reactant_monomers_object.objects[j];
+                IndigoObject& object = reactant_monomers_object.objects[j];
                 monomers_properties.push().copy(object.getProperties());
 
                 Molecule& monomer = object.getMolecule();
@@ -122,7 +122,7 @@ CEXPORT int indigoReactionProductEnumerate(int reaction, int monomers)
 
         for (int k = 0; k < out_reactions.size(); k++)
         {
-            Reaction& out_reaction = *out_reactions[k];
+            Reaction& out_reaction = out_reactions[k];
             if (has_coord && self.rpe_params.is_layout)
             {
                 ReactionLayout layout(out_reaction, self.smart_layout, self.layout_options);
@@ -136,13 +136,13 @@ CEXPORT int indigoReactionProductEnumerate(int reaction, int monomers)
             indigo_rxn.rxn->clone(out_reaction, NULL, NULL, NULL);
 
             int properties_count = monomers_properties.size();
-            Array<int>& out_indices = *out_indices_all[k];
+            Array<int>& out_indices = out_indices_all[k];
             for (auto m = 0; m < out_indices.size(); m++)
             {
                 int index = out_indices[m];
                 if (index < properties_count)
                 {
-                    PropertiesMap& properties = *monomers_properties[index];
+                    PropertiesMap& properties = monomers_properties[index];
                     indigo_rxn._monomersProperties.push().copy(properties);
                 }
             }
@@ -214,7 +214,7 @@ CEXPORT int indigoTransform(int reaction, int monomers)
                 Molecule input_mol;
                 input_mol.clone(mol, 0, 0);
 
-                if (rt.transform(monomers_array.objects[i]->getMolecule(), query_rxn, &mapping))
+                if (rt.transform(monomers_array.objects[i].getMolecule(), query_rxn, &mapping))
                     transformed_flag = true;
 
                 std::unique_ptr<IndigoMapping> mptr = std::make_unique<IndigoMapping>(input_mol, mol);

@@ -125,8 +125,8 @@ bool MoleculeLayoutGraph::_allowRotateAroundVertex(int idx) const
         {
             int first_nei = v.neiBegin();
 
-            int type1 = _molecule->getBondOrder(_molecule_edge_mapping[_layout_edges[v.neiEdge(first_nei)]->ext_idx]);
-            int type2 = _molecule->getBondOrder(_molecule_edge_mapping[_layout_edges[v.neiEdge(v.neiNext(first_nei))]->ext_idx]);
+            int type1 = _molecule->getBondOrder(_molecule_edge_mapping[_layout_edges[v.neiEdge(first_nei)].ext_idx]);
+            int type2 = _molecule->getBondOrder(_molecule_edge_mapping[_layout_edges[v.neiEdge(v.neiNext(first_nei))].ext_idx]);
 
             if (type1 == BOND_TRIPLE || type2 == BOND_TRIPLE || (type1 == BOND_DOUBLE && type2 == BOND_DOUBLE))
                 return false;
@@ -208,7 +208,7 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
                         int comp1 = components1[i];
                         int comp2 = components2[j];
 
-                        if (comp1 == comp2 && !bc_components[comp1]->isSingleEdge() && !bc_components[comp2]->isSingleEdge())
+                        if (comp1 == comp2 && !bc_components[comp1].isSingleEdge() && !bc_components[comp2].isSingleEdge())
                         {
                             next_pair = true;
                             break;
@@ -276,7 +276,7 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
             // Try to flip branch
             const Edge& edge = getEdge(edges.key(i));
 
-            if (_molecule != 0 && _molecule->cis_trans.getParity(_molecule_edge_mapping[_layout_edges[edges.key(i)]->ext_idx]) != 0)
+            if (_molecule != 0 && _molecule->cis_trans.getParity(_molecule_edge_mapping[_layout_edges[edges.key(i)].ext_idx]) != 0)
                 continue;
 
             if (getVertex(edge.beg).degree() == 1 || getVertex(edge.end).degree() == 1)
@@ -313,7 +313,7 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
             // Try to rotate one branch by 10 degrees in both directions around both vertices
             const Edge& edge = getEdge(edges.key(i));
 
-            if (_molecule != 0 && _molecule->cis_trans.getParity(_molecule_edge_mapping[_layout_edges[edges.key(i)]->ext_idx]) != 0)
+            if (_molecule != 0 && _molecule->cis_trans.getParity(_molecule_edge_mapping[_layout_edges[edges.key(i)].ext_idx]) != 0)
                 continue;
 
             Filter filter;

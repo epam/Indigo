@@ -86,7 +86,7 @@ namespace indigo
             }
             for (auto i = 0; i < _children.size(); i++)
             {
-                Tree& child = *_children[i];
+                Tree& child = _children[i];
                 if (child.label == nlabel)
                 {
                     return &child;

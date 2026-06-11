@@ -193,7 +193,7 @@ void MoleculeLayoutGraphSmart::_assignRelativeCoordinates(int& fixed_component, 
     if (fixed_component)
     {
         for (i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
-            _layout_vertices[i]->pos = supergraph.getPos(getVertexExtIdx(i));
+            _layout_vertices[i].pos = supergraph.getPos(getVertexExtIdx(i));
 
         CycleEnumerator ce(*this);
 
@@ -296,7 +296,7 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
 
     if (size <= 6)
         for (int i = 0; i < size; i++)
-            _molecule->cis_trans.setParity(_layout_edges[cycle.getEdge(i)]->orig_idx, 0);
+            _molecule->cis_trans.setParity(_layout_edges[cycle.getEdge(i)].orig_idx, 0);
 
     for (int i = 0; i < size; i++)
     {
@@ -306,7 +306,7 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
         // !!
         int order_next = 0;
         int edge_number = cycle.getEdge(i);
-        LayoutEdge edge = *_layout_edges[edge_number];
+        LayoutEdge edge = _layout_edges[edge_number];
         int ext_edge_number = edge.orig_idx;
         int order = _molecule->getBondOrder(ext_edge_number);
         switch (order)
@@ -324,7 +324,7 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
             order_next = 1;
         }
         int order_prev;
-        int ext_edge_number_prev = _layout_edges[cycle.getEdgeC(i - 1)]->orig_idx;
+        int ext_edge_number_prev = _layout_edges[cycle.getEdgeC(i - 1)].orig_idx;
         switch (_molecule->getBondOrder(ext_edge_number_prev))
         {
         case BOND_SINGLE:
@@ -343,8 +343,8 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
         layout.setVertexEdgeParallel(i, order_next + order_prev >= 4);
 
         // tras-cis configuration
-        int next_vertex = _layout_vertices[cycle.getEdgeFinish(i + 1)]->orig_idx;
-        int prev_vertex = _layout_vertices[cycle.getEdgeStart(i - 1)]->orig_idx;
+        int next_vertex = _layout_vertices[cycle.getEdgeFinish(i + 1)].orig_idx;
+        int prev_vertex = _layout_vertices[cycle.getEdgeStart(i - 1)].orig_idx;
 
         if (_molecule->cis_trans.getParity(ext_edge_number))
         {
@@ -358,37 +358,37 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
         {
             //         if (_layout_vertices[cycle.getVertex(i)]->type != ELEMENT_NOT_DRAWN &&
             //          _layout_vertices[cycle.getVertex((i + 1) % size)]->type != ELEMENT_NOT_DRAWN) {
-            if (_layout_edges[cycle.getEdge(i)]->type != ELEMENT_NOT_DRAWN)
+            if (_layout_edges[cycle.getEdge(i)].type != ELEMENT_NOT_DRAWN)
             {
 
                 Vec2f prev_point;
-                if (_layout_edges[cycle.getEdgeC(i - 1)]->type != ELEMENT_NOT_DRAWN)
-                    prev_point = _layout_vertices[cycle.getVertexC(i - 1)]->pos;
+                if (_layout_edges[cycle.getEdgeC(i - 1)].type != ELEMENT_NOT_DRAWN)
+                    prev_point = _layout_vertices[cycle.getVertexC(i - 1)].pos;
                 else
                 {
                     for (int j = getVertex(cycle.getVertex(i)).neiBegin(); j != getVertex(cycle.getVertex(i)).neiEnd();
                          j = getVertex(cycle.getVertex(i)).neiNext(j))
-                        if (_layout_edges[getVertex(cycle.getVertex(i)).neiEdge(j)]->type != ELEMENT_NOT_DRAWN &&
+                        if (_layout_edges[getVertex(cycle.getVertex(i)).neiEdge(j)].type != ELEMENT_NOT_DRAWN &&
                             getVertex(cycle.getVertex(i)).neiVertex(j) != cycle.getVertexC(i + 1))
-                            prev_point = _layout_vertices[getVertex(cycle.getVertex(i)).neiVertex(j)]->pos;
+                            prev_point = _layout_vertices[getVertex(cycle.getVertex(i)).neiVertex(j)].pos;
                 }
 
                 Vec2f next_point;
-                if (_layout_edges[cycle.getEdgeC(i + 1)]->type != ELEMENT_NOT_DRAWN)
-                    next_point = _layout_vertices[cycle.getVertexC(i + 2)]->pos;
+                if (_layout_edges[cycle.getEdgeC(i + 1)].type != ELEMENT_NOT_DRAWN)
+                    next_point = _layout_vertices[cycle.getVertexC(i + 2)].pos;
                 else
                 {
                     for (int j = getVertex(cycle.getVertexC(i + 1)).neiBegin(); j != getVertex(cycle.getVertexC(i + 1)).neiEnd();
                          j = getVertex(cycle.getVertexC(i + 1)).neiNext(j))
-                        if (_layout_edges[getVertex(cycle.getVertexC(i + 1)).neiEdge(j)]->type != ELEMENT_NOT_DRAWN &&
+                        if (_layout_edges[getVertex(cycle.getVertexC(i + 1)).neiEdge(j)].type != ELEMENT_NOT_DRAWN &&
                             getVertex(cycle.getVertexC(i + 1)).neiVertex(j) != cycle.getVertex(i))
-                            next_point = _layout_vertices[getVertex(cycle.getVertexC(i + 1)).neiVertex(j)]->pos;
+                            next_point = _layout_vertices[getVertex(cycle.getVertexC(i + 1)).neiVertex(j)].pos;
                 }
 
                 int _sameside =
-                    _isCisConfiguratuin(prev_point, _layout_vertices[cycle.getVertexC(i)]->pos, _layout_vertices[cycle.getVertexC(i + 1)]->pos, next_point);
+                    _isCisConfiguratuin(prev_point, _layout_vertices[cycle.getVertexC(i)].pos, _layout_vertices[cycle.getVertexC(i + 1)].pos, next_point);
 
-                if (_layout_edges[cycle.getEdgeC(i - 1)]->type != ELEMENT_NOT_DRAWN && _layout_edges[cycle.getEdgeC(i + 1)]->type != ELEMENT_NOT_DRAWN)
+                if (_layout_edges[cycle.getEdgeC(i - 1)].type != ELEMENT_NOT_DRAWN && _layout_edges[cycle.getEdgeC(i + 1)].type != ELEMENT_NOT_DRAWN)
                 {
                     if (_sameside)
                         layout.setEdgeStereo(i, MoleculeCisTrans::CIS);
@@ -397,7 +397,7 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
                 }
                 else
                 {
-                    if ((_layout_edges[cycle.getEdgeC(i - 1)]->type != ELEMENT_NOT_DRAWN) ^ (_layout_edges[cycle.getEdgeC(i + 1)]->type != ELEMENT_NOT_DRAWN))
+                    if ((_layout_edges[cycle.getEdgeC(i - 1)].type != ELEMENT_NOT_DRAWN) ^ (_layout_edges[cycle.getEdgeC(i + 1)].type != ELEMENT_NOT_DRAWN))
                     {
                         if (_sameside)
                             layout.setEdgeStereo(i, MoleculeCisTrans::TRANS);
@@ -410,7 +410,7 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
             }
         }
 
-        layout.setVertexDrawn(i, _layout_vertices[cycle.getVertex(i)]->type != ELEMENT_NOT_DRAWN);
+        layout.setVertexDrawn(i, _layout_vertices[cycle.getVertex(i)].type != ELEMENT_NOT_DRAWN);
 
         // trees sizes
     }
@@ -436,13 +436,13 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
 
     for (int i = 0; i < segment_count; i++)
     {
-        for (int v = segment[i]->_graph.vertexBegin(); v != segment[i]->_graph.vertexEnd(); v = segment[i]->_graph.vertexNext(v))
+        for (int v = segment[i]._graph.vertexBegin(); v != segment[i]._graph.vertexEnd(); v = segment[i]._graph.vertexNext(v))
         {
-            if (segment[i]->is_start(v))
-                if (segment[i]->_graph.getVertex(v).degree() > 2)
+            if (segment[i].is_start(v))
+                if (segment[i]._graph.getVertex(v).degree() > 2)
                     layout.setEdgeStereo(rotation_vertex[i], 0);
-            if (segment[i]->is_finish(v))
-                if (segment[i]->_graph.getVertex(v).degree() > 2)
+            if (segment[i].is_finish(v))
+                if (segment[i]._graph.getVertex(v).degree() > 2)
                     layout.setEdgeStereo((rotation_vertex[(i + 1) % segment_count] - 1 + size) % size, 0);
         }
     }
@@ -513,8 +513,7 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
             }
             else if ((prev_layout_component < 0) ^ (next_layout_component < 0))
             {
-                const MoleculeLayoutSmoothingSegment& calc_segment =
-                    prev_layout_component < 0 ? *segment[s] : *segment[(s + segment_count - 1) % segment_count];
+                const MoleculeLayoutSmoothingSegment& calc_segment = prev_layout_component < 0 ? segment[s] : segment[(s + segment_count - 1) % segment_count];
                 int calc_vertex = prev_layout_component < 0 ? calc_segment.get_start() : calc_segment.get_finish();
 
                 Cycle border;
@@ -627,15 +626,14 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
             _list_of_vertex.clear_resize(0);
 
             bool is_segment_trivial =
-                segment[i]->get_layout_component_number() == -1 && segment[(i + segment_count - 1) % segment_count]->get_layout_component_number() == -1 && up;
+                segment[i].get_layout_component_number() == -1 && segment[(i + segment_count - 1) % segment_count].get_layout_component_number() == -1 && up;
 
-            for (int v = segment[i]->_graph.vertexBegin(); v != segment[i]->_graph.vertexEnd(); v = segment[i]->_graph.vertexNext(v))
+            for (int v = segment[i]._graph.vertexBegin(); v != segment[i]._graph.vertexEnd(); v = segment[i]._graph.vertexNext(v))
             {
-                if ((!segment[i]->is_finish(v) && !segment[i]->is_start(v) && segment[i]->isVertexUp(v) ^ !up) ||
-                    (is_segment_trivial && !segment[i]->is_finish(v)))
+                if ((!segment[i].is_finish(v) && !segment[i].is_start(v) && segment[i].isVertexUp(v) ^ !up) || (is_segment_trivial && !segment[i].is_finish(v)))
                 {
 
-                    int ext_v = segment[i]->_graph.getVertexExtIdx(v);
+                    int ext_v = segment[i]._graph.getVertexExtIdx(v);
                     _is_vertex_taken[getVertexExtIdx(ext_v)] = IN_LIST;
                     _list_of_vertex.push(ext_v);
                 }
@@ -659,7 +657,7 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
                         {
                             if (_is_layout_component_incoming[_layout_component_number[getVertex(vn).neiEdge(n2)]])
                                 is_this_comp = true;
-                            if (!is_segment_trivial && _layout_component_number[getVertex(vn).neiEdge(n2)] != segment[i]->get_layout_component_number() &&
+                            if (!is_segment_trivial && _layout_component_number[getVertex(vn).neiEdge(n2)] != segment[i].get_layout_component_number() &&
                                 _layout_component_number[getVertex(vn).neiEdge(n2)] != _layout_component_count - 1)
                                 touch_to_another_segment = true;
                         }
@@ -704,28 +702,28 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
 
     for (int i = 0; i < segment_count; i++)
     {
-        if (segment[i]->get_layout_component_number() < 0 && segment[(i + segment_count - 1) % segment_count]->get_layout_component_number() < 0)
+        if (segment[i].get_layout_component_number() < 0 && segment[(i + segment_count - 1) % segment_count].get_layout_component_number() < 0)
             layout.addVertexOutsideWeight(rotation_vertex[i], _segment_weight_outside[i] - 1);
         else
         {
             layout.setComponentFinish(rotation_vertex[i], rotation_vertex[(i + 1) % segment_count]);
-            layout.setVertexAddedSquare(rotation_vertex[i], segment[i]->get_square());
+            layout.setVertexAddedSquare(rotation_vertex[i], segment[i].get_square());
 
             Cycle border;
-            if (segment[i]->get_layout_component_number() >= 0)
-                segment[i]->_graph._getBorder(border);
+            if (segment[i].get_layout_component_number() >= 0)
+                segment[i]._graph._getBorder(border);
 
             int count_neibourhoods_outside = 0;
 
-            if (segment[i]->get_layout_component_number() >= 0 && border.vertexCount() != 0)
+            if (segment[i].get_layout_component_number() >= 0 && border.vertexCount() != 0)
             {
                 int start_in_border = -1;
                 int finish_in_border = -1;
                 for (int j = 0; j < border.vertexCount(); j++)
                 {
-                    if (border.getVertex(j) == segment[i]->get_start())
+                    if (border.getVertex(j) == segment[i].get_start())
                         start_in_border = j;
-                    if (border.getVertex(j) == segment[i]->get_finish())
+                    if (border.getVertex(j) == segment[i].get_finish())
                         finish_in_border = j;
                 }
 
@@ -733,18 +731,18 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
                 {
                     for (int j = (start_in_border + 1) % border.vertexCount(); j != finish_in_border; j = (j + 1) % border.vertexCount())
                     {
-                        if (_index_in_cycle[segment[i]->_graph.getVertexExtIdx(border.getVertex(j))] == (rotation_vertex[i] + 1) % size)
+                        if (_index_in_cycle[segment[i]._graph.getVertexExtIdx(border.getVertex(j))] == (rotation_vertex[i] + 1) % size)
                             count_neibourhoods_outside++;
-                        if (_index_in_cycle[segment[i]->_graph.getVertexExtIdx(border.getVertex(j))] ==
+                        if (_index_in_cycle[segment[i]._graph.getVertexExtIdx(border.getVertex(j))] ==
                             (rotation_vertex[(i + 1) % segment_count] - 1 + size) % size)
                             count_neibourhoods_outside++;
                     }
 
                     for (int j = (finish_in_border + 1) % border.vertexCount(); j != start_in_border; j = (j + 1) % border.vertexCount())
                     {
-                        if (_index_in_cycle[segment[i]->_graph.getVertexExtIdx(border.getVertex(j))] == (rotation_vertex[i] + 1) % size)
+                        if (_index_in_cycle[segment[i]._graph.getVertexExtIdx(border.getVertex(j))] == (rotation_vertex[i] + 1) % size)
                             count_neibourhoods_outside--;
-                        if (_index_in_cycle[segment[i]->_graph.getVertexExtIdx(border.getVertex(j))] ==
+                        if (_index_in_cycle[segment[i]._graph.getVertexExtIdx(border.getVertex(j))] ==
                             (rotation_vertex[(i + 1) % segment_count] - 1 + size) % size)
                             count_neibourhoods_outside--;
                     }
@@ -759,19 +757,19 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
             else
             {
                 float y1 = 0, y2 = 0;
-                for (int v = segment[i]->_graph.vertexBegin(); v != segment[i]->_graph.vertexEnd(); v = segment[i]->_graph.vertexNext(v))
+                for (int v = segment[i]._graph.vertexBegin(); v != segment[i]._graph.vertexEnd(); v = segment[i]._graph.vertexNext(v))
                 {
-                    if (_index_in_cycle[segment[i]->_graph.getVertexExtIdx(v)] == (rotation_vertex[i] + 1) % size)
+                    if (_index_in_cycle[segment[i]._graph.getVertexExtIdx(v)] == (rotation_vertex[i] + 1) % size)
                     {
-                        y1 = segment[i]->getIntPosition(v).y;
+                        y1 = segment[i].getIntPosition(v).y;
                     }
-                    if (_index_in_cycle[segment[i]->_graph.getVertexExtIdx(v)] == (rotation_vertex[(i + 1) % segment_count] + size - 1) % size)
+                    if (_index_in_cycle[segment[i]._graph.getVertexExtIdx(v)] == (rotation_vertex[(i + 1) % segment_count] + size - 1) % size)
                     {
-                        y2 = segment[i]->getIntPosition(v).y;
+                        y2 = segment[i].getIntPosition(v).y;
                     }
                 }
 
-                if ((y1 + y2) / 2 > EPSILON || ((std::fabs((y1 + y2) / 2) <= EPSILON) && (y1 + y2) / 2 > segment[i]->getIntCenter().y))
+                if ((y1 + y2) / 2 > EPSILON || ((std::fabs((y1 + y2) / 2) <= EPSILON) && (y1 + y2) / 2 > segment[i].getIntCenter().y))
                 {
                     right_orientation = true;
                 }
@@ -814,7 +812,7 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
     need_to_insert.zerofill();
 
     for (int i = 0; i < size; i++)
-        need_to_insert[i] = _layout_vertices[cycle.getVertex(i)]->type != ELEMENT_NOT_DRAWN;
+        need_to_insert[i] = _layout_vertices[cycle.getVertex(i)].type != ELEMENT_NOT_DRAWN;
 
     // int start = 0;
 
@@ -842,7 +840,7 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
                 for (int j = getVertex(insideVertex[i]).neiBegin(); j != getVertex(insideVertex[i]).neiEnd(); j = getVertex(insideVertex[i]).neiNext(j))
                 {
                     int vertj = getVertex(insideVertex[i]).neiVertex(j);
-                    if (_layout_edges[getVertex(insideVertex[i]).neiEdge(j)]->type != ELEMENT_NOT_DRAWN && !takenVertex[vertj])
+                    if (_layout_edges[getVertex(insideVertex[i]).neiEdge(j)].type != ELEMENT_NOT_DRAWN && !takenVertex[vertj])
                     {
                         _is_component_touch[_layout_component_number[getVertex(insideVertex[i]).neiEdge(j)]] = true;
                         insideVertex.push(vertj);
@@ -944,8 +942,8 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
                     getPos(insideVertex[i]).x *= -1;
 
                 for (int i = 0; i < segment.size(); i++)
-                    if (segment[i]->get_layout_component_number() >= 0 && _is_component_touch[segment[i]->get_layout_component_number()])
-                        segment[i]->inverse();
+                    if (segment[i].get_layout_component_number() >= 0 && _is_component_touch[segment[i].get_layout_component_number()])
+                        segment[i].inverse();
             }
 
             // 3. shift
@@ -955,7 +953,7 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
             int countVertex = 0;
             for (int i = startIndex; i != endIndex; i = (i + 1) % size)
             {
-                middle_host += _layout_vertices[cycle.getVertex(i)]->pos;
+                middle_host += _layout_vertices[cycle.getVertex(i)].pos;
                 middle_new += layout.getPos(i);
                 countVertex++;
             }
@@ -963,7 +961,7 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
             middle_new /= _2FLOAT(countVertex);
 
             for (int i = 0; i < insideVertex.size(); i++)
-                _layout_vertices[insideVertex[i]]->pos += middle_new - middle_host;
+                _layout_vertices[insideVertex[i]].pos += middle_new - middle_host;
 
             // 4. rotate
 
@@ -976,12 +974,12 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
                 {
                     if (2 * currentIndex < countVertex - 1)
                     {
-                        direction_host += _layout_vertices[cycle.getVertex(i)]->pos;
+                        direction_host += _layout_vertices[cycle.getVertex(i)].pos;
                         direction_new += layout.getPos(i);
                     }
                     else if (2 * currentIndex > countVertex - 1)
                     {
-                        direction_host -= _layout_vertices[cycle.getVertex(i)]->pos;
+                        direction_host -= _layout_vertices[cycle.getVertex(i)].pos;
                         direction_new -= layout.getPos(i);
                     }
                     currentIndex++;
@@ -996,7 +994,7 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
                 if (Vec2f::cross(direction_host, direction_new) < 0)
                     angle = -angle;
                 for (int i = 0; i < insideVertex.size(); i++)
-                    _layout_vertices[insideVertex[i]]->pos.rotateAroundSegmentEnd(_layout_vertices[insideVertex[i]]->pos, middle_new, angle);
+                    _layout_vertices[insideVertex[i]].pos.rotateAroundSegmentEnd(_layout_vertices[insideVertex[i]].pos, middle_new, angle);
             }
         }
 
@@ -1041,7 +1039,7 @@ void MoleculeLayoutGraphSmart::_segment_update_rotation_points(const Cycle& cycl
         rotation_point[i] = getPos(cycle.getVertex(rotation_vertex[i]));
 
     for (int i = 0; i < segment.size(); i++)
-        segment[i]->updateStartFinish();
+        segment[i].updateStartFinish();
 }
 
 void MoleculeLayoutGraphSmart::_segment_calculate_target_angle(const MoleculeLayoutMacrocyclesLattice& layout, Array<int>& rotation_vertex,
@@ -1062,13 +1060,13 @@ void MoleculeLayoutGraphSmart::_segment_calculate_target_angle(const MoleculeLay
     }
 
     for (int i = 0; i < segments_count; i++)
-        for (int v = segment[i]->_graph.vertexBegin(); v != segment[i]->_graph.vertexEnd(); v = segment[i]->_graph.vertexNext(v))
+        for (int v = segment[i]._graph.vertexBegin(); v != segment[i]._graph.vertexEnd(); v = segment[i]._graph.vertexNext(v))
         {
-            if (segment[i]->is_start(v))
-                if (segment[i]->_graph.getVertex(v).degree() > 2)
+            if (segment[i].is_start(v))
+                if (segment[i]._graph.getVertex(v).degree() > 2)
                     target_angle[i] = _2FLOAT(M_PI);
-            if (segment[i]->is_finish(v))
-                if (segment[i]->_graph.getVertex(v).degree() > 2)
+            if (segment[i].is_finish(v))
+                if (segment[i]._graph.getVertex(v).degree() > 2)
                     target_angle[(i + 1) % segments_count] = _2FLOAT(M_PI);
         }
 }
@@ -1083,22 +1081,22 @@ void MoleculeLayoutGraphSmart::_segment_smoothing_unstick(PtrArray<MoleculeLayou
     QS_DEF(Array<float>, min_x);
     min_x.clear_resize(segment_count);
     for (int i = 0; i < segment_count; i++)
-        min_x[i] = segment[i]->get_min_x();
+        min_x[i] = segment[i].get_min_x();
 
     QS_DEF(Array<float>, max_x);
     max_x.clear_resize(segment_count);
     for (int i = 0; i < segment_count; i++)
-        max_x[i] = segment[i]->get_max_x();
+        max_x[i] = segment[i].get_max_x();
 
     QS_DEF(Array<float>, min_y);
     min_y.clear_resize(segment_count);
     for (int i = 0; i < segment_count; i++)
-        min_y[i] = segment[i]->get_min_y();
+        min_y[i] = segment[i].get_min_y();
 
     QS_DEF(Array<float>, max_y);
     max_y.clear_resize(segment_count);
     for (int i = 0; i < segment_count; i++)
-        max_y[i] = segment[i]->get_max_y();
+        max_y[i] = segment[i].get_max_y();
 
     QS_DEF(Array<int>, component1);
     QS_DEF(Array<int>, component2);
@@ -1119,11 +1117,11 @@ void MoleculeLayoutGraphSmart::_segment_smoothing_unstick(PtrArray<MoleculeLayou
 
             if (min_x[i] <= max_x[j] && min_x[j] <= max_x[i] && min_y[i] <= max_y[j] && min_y[j] <= max_y[i])
             {
-                for (int v1 = segment[i]->_graph.vertexBegin(); v1 != segment[i]->_graph.vertexEnd(); v1 = segment[i]->_graph.vertexNext(v1))
-                    for (int v2 = segment[j]->_graph.vertexBegin(); v2 != segment[j]->_graph.vertexEnd(); v2 = segment[j]->_graph.vertexNext(v2))
+                for (int v1 = segment[i]._graph.vertexBegin(); v1 != segment[i]._graph.vertexEnd(); v1 = segment[i]._graph.vertexNext(v1))
+                    for (int v2 = segment[j]._graph.vertexBegin(); v2 != segment[j]._graph.vertexEnd(); v2 = segment[j]._graph.vertexNext(v2))
                     {
-                        if (Vec2f::distSqr(segment[i]->getPosition(v1), segment[j]->getPosition(v2)) < 0.1)
-                            if ((i + 1) % segment_count != j || !segment[i]->is_finish(v1))
+                        if (Vec2f::distSqr(segment[i].getPosition(v1), segment[j].getPosition(v2)) < 0.1)
+                            if ((i + 1) % segment_count != j || !segment[i].is_finish(v1))
                             {
                                 component1.push(i);
                                 component2.push(j);
@@ -1150,13 +1148,13 @@ void MoleculeLayoutGraphSmart::_segment_smoothing_unstick(PtrArray<MoleculeLayou
             int v1 = vertex1[index];
             int v2 = vertex2[index];
 
-            if (Vec2f::distSqr(segment[i]->getPosition(v1), segment[j]->getPosition(v2)) < EPSILON)
+            if (Vec2f::distSqr(segment[i].getPosition(v1), segment[j].getPosition(v2)) < EPSILON)
             {
                 something_to_do = true;
 
                 bool exist_sepatate_vertex = false;
-                const Vertex& vert1 = segment[i]->_graph.getVertex(v1);
-                const Vertex& vert2 = segment[j]->_graph.getVertex(v2);
+                const Vertex& vert1 = segment[i]._graph.getVertex(v1);
+                const Vertex& vert2 = segment[j]._graph.getVertex(v2);
 
                 for (int u1 = vert1.neiBegin(); u1 != vert1.neiEnd() && !exist_sepatate_vertex; u1 = vert1.neiNext(u1))
                 {
@@ -1165,7 +1163,7 @@ void MoleculeLayoutGraphSmart::_segment_smoothing_unstick(PtrArray<MoleculeLayou
                     for (int u2 = vert2.neiBegin(); u2 != vert2.neiEnd() && !exist_same_vertex; u2 = vert2.neiNext(u2))
                     {
                         int nei2 = vert2.neiVertex(u2);
-                        if (Vec2f::dist(segment[i]->getPosition(nei1), segment[j]->getPosition(nei2)) < EPSILON)
+                        if (Vec2f::dist(segment[i].getPosition(nei1), segment[j].getPosition(nei2)) < EPSILON)
                             exist_same_vertex = true;
                     }
                     if (!exist_same_vertex)
@@ -1177,28 +1175,28 @@ void MoleculeLayoutGraphSmart::_segment_smoothing_unstick(PtrArray<MoleculeLayou
                     Vec2f direction;
                     if (vert1.degree() == 2)
                     {
-                        direction = (segment[i]->getPosition(vert1.neiVertex(vert1.neiBegin())) +
-                                     segment[i]->getPosition(vert1.neiVertex(vert1.neiNext(vert1.neiBegin())))) /
+                        direction = (segment[i].getPosition(vert1.neiVertex(vert1.neiBegin())) +
+                                     segment[i].getPosition(vert1.neiVertex(vert1.neiNext(vert1.neiBegin())))) /
                                     2;
-                        direction -= segment[i]->getPosition(v1);
+                        direction -= segment[i].getPosition(v1);
                     }
                     else if (vert2.degree() == 2)
                     {
-                        direction = (segment[j]->getPosition(vert2.neiVertex(vert2.neiBegin())) +
-                                     segment[j]->getPosition(vert2.neiVertex(vert2.neiNext(vert2.neiBegin())))) /
+                        direction = (segment[j].getPosition(vert2.neiVertex(vert2.neiBegin())) +
+                                     segment[j].getPosition(vert2.neiVertex(vert2.neiNext(vert2.neiBegin())))) /
                                     2;
-                        direction -= segment[i]->getPosition(v1);
+                        direction -= segment[i].getPosition(v1);
                     }
                     else if (vert1.degree() == 1)
                     {
-                        direction = segment[i]->getPosition(vert1.neiVertex(vert1.neiBegin()));
-                        direction -= segment[i]->getPosition(v1);
+                        direction = segment[i].getPosition(vert1.neiVertex(vert1.neiBegin()));
+                        direction -= segment[i].getPosition(v1);
                         direction.rotate(1, 0);
                     }
                     else if (vert2.degree() == 1)
                     {
-                        direction = segment[j]->getPosition(vert2.neiVertex(vert2.neiBegin()));
-                        direction -= segment[i]->getPosition(v1);
+                        direction = segment[j].getPosition(vert2.neiVertex(vert2.neiBegin()));
+                        direction -= segment[i].getPosition(v1);
                         direction.rotate(1, 0);
                     }
                     else
@@ -1210,7 +1208,7 @@ void MoleculeLayoutGraphSmart::_segment_smoothing_unstick(PtrArray<MoleculeLayou
                     for (int sign = 1; sign >= -1 && !moved; sign -= 2)
                     {
 
-                        Vec2f newpos = segment[i]->getPosition(v1) + (direction * _2FLOAT(sign));
+                        Vec2f newpos = segment[i].getPosition(v1) + (direction * _2FLOAT(sign));
                         bool can_to_move = true;
 
                         for (int u1 = vert1.neiBegin(); u1 != vert1.neiEnd() && can_to_move; u1 = vert1.neiNext(u1))
@@ -1219,8 +1217,8 @@ void MoleculeLayoutGraphSmart::_segment_smoothing_unstick(PtrArray<MoleculeLayou
                             for (int u2 = vert2.neiBegin(); u2 != vert2.neiEnd() && can_to_move; u2 = vert2.neiNext(u2))
                             {
                                 int nei2 = vert2.neiVertex(u2);
-                                if (Vec2f::segmentsIntersectInternal(newpos, segment[i]->getPosition(nei1), segment[j]->getPosition(v2),
-                                                                     segment[j]->getPosition(nei2)))
+                                if (Vec2f::segmentsIntersectInternal(newpos, segment[i].getPosition(nei1), segment[j].getPosition(v2),
+                                                                     segment[j].getPosition(nei2)))
                                     can_to_move = false;
                             }
                         }
@@ -1230,11 +1228,11 @@ void MoleculeLayoutGraphSmart::_segment_smoothing_unstick(PtrArray<MoleculeLayou
                             something_done = true;
                             moved = true;
 
-                            segment[i]->shiftStartBy(direction * _2FLOAT(sign) / 2.f);
-                            segment[i]->shiftFinishBy(direction * _2FLOAT(sign) / 2.f);
+                            segment[i].shiftStartBy(direction * _2FLOAT(sign) / 2.f);
+                            segment[i].shiftFinishBy(direction * _2FLOAT(sign) / 2.f);
 
-                            segment[j]->shiftStartBy(direction * _2FLOAT(-sign) / 2.f);
-                            segment[j]->shiftFinishBy(direction * _2FLOAT(-sign) / 2.f);
+                            segment[j].shiftStartBy(direction * _2FLOAT(-sign) / 2.f);
+                            segment[j].shiftFinishBy(direction * _2FLOAT(-sign) / 2.f);
                         }
                     }
                 }
@@ -1243,8 +1241,8 @@ void MoleculeLayoutGraphSmart::_segment_smoothing_unstick(PtrArray<MoleculeLayou
     }
 
     for (int i = 0; i < segment_count; i++)
-        for (int v = segment[i]->_graph.vertexBegin(); v != segment[i]->_graph.vertexEnd(); v = segment[i]->_graph.vertexNext(v))
-            getPos(segment[i]->_graph.getVertexExtIdx(v)).copy(segment[i]->getPosition(v));
+        for (int v = segment[i]._graph.vertexBegin(); v != segment[i]._graph.vertexEnd(); v = segment[i]._graph.vertexNext(v))
+            getPos(segment[i]._graph.getVertexExtIdx(v)).copy(segment[i].getPosition(v));
 }
 
 void MoleculeLayoutGraphSmart::_update_touching_segments(Array<local_pair_ii>& pairs, PtrArray<MoleculeLayoutSmoothingSegment>& segment)
@@ -1257,15 +1255,15 @@ void MoleculeLayoutGraphSmart::_update_touching_segments(Array<local_pair_ii>& p
         for (int j = i + 2; j < segments_count; j++)
             if (i != 0 || j != segments_count - 1)
             {
-                if (segment[i]->get_layout_component_number() >= 0 || segment[j]->get_layout_component_number() >= 0)
+                if (segment[i].get_layout_component_number() >= 0 || segment[j].get_layout_component_number() >= 0)
                     continue;
                 bool interseced = false;
 
-                for (int v1 = segment[j]->_graph.vertexBegin(); v1 != segment[j]->_graph.vertexEnd() && !interseced; v1 = segment[j]->_graph.vertexNext(v1))
+                for (int v1 = segment[j]._graph.vertexBegin(); v1 != segment[j]._graph.vertexEnd() && !interseced; v1 = segment[j]._graph.vertexNext(v1))
                 {
-                    for (int v2 = segment[i]->_graph.vertexBegin(); v2 != segment[i]->_graph.vertexEnd() && !interseced; v2 = segment[i]->_graph.vertexNext(v2))
+                    for (int v2 = segment[i]._graph.vertexBegin(); v2 != segment[i]._graph.vertexEnd() && !interseced; v2 = segment[i]._graph.vertexNext(v2))
                     {
-                        if (Vec2f::distSqr(segment[j]->getPosition(v1), segment[i]->getPosition(v2)) < min_dist * min_dist)
+                        if (Vec2f::distSqr(segment[j].getPosition(v1), segment[i].getPosition(v2)) < min_dist * min_dist)
                             interseced = true;
                     }
                 }
@@ -1305,8 +1303,8 @@ void MoleculeLayoutGraphSmart::_do_segment_smoothing(Array<Vec2f>& rotation_poin
     }
 
     for (int i = 0; i < segments_count; i++)
-        for (int v = segment[i]->_graph.vertexBegin(); v != segment[i]->_graph.vertexEnd(); v = segment[i]->_graph.vertexNext(v))
-            getPos(segment[i]->_graph.getVertexExtIdx(v)).copy(segment[i]->getPosition(v));
+        for (int v = segment[i]._graph.vertexBegin(); v != segment[i]._graph.vertexEnd(); v = segment[i]._graph.vertexNext(v))
+            getPos(segment[i]._graph.getVertexExtIdx(v)).copy(segment[i].getPosition(v));
 }
 
 void MoleculeLayoutGraphSmart::_segment_smoothing_prepearing(const Cycle& cycle, Array<int>& rotation_vertex, Array<Vec2f>& rotation_point,
@@ -1382,12 +1380,12 @@ void MoleculeLayoutGraphSmart::_segment_smoothing_prepearing(const Cycle& cycle,
             if (start != finish)
             {
                 segments_filter.push();
-                segments_filter.top()->initNone(vertexEnd());
+                segments_filter.top().initNone(vertexEnd());
                 for (int e = edgeBegin(); e != edgeEnd(); e = edgeNext(e))
                     if (_layout_component_number[e] == i)
                     {
-                        segments_filter.top()->unhide(getEdge(e).beg);
-                        segments_filter.top()->unhide(getEdge(e).end);
+                        segments_filter.top().unhide(getEdge(e).beg);
+                        segments_filter.top().unhide(getEdge(e).end);
                     }
 
                 segment_start.push(start);
@@ -1408,9 +1406,9 @@ void MoleculeLayoutGraphSmart::_segment_smoothing_prepearing(const Cycle& cycle,
             segment_start.push(i);
 
             segments_filter.push();
-            segments_filter.top()->initNone(vertexEnd());
+            segments_filter.top().initNone(vertexEnd());
             for (int v = i; v != (last + 2) % cycle_size; v = (v + 1) % cycle_size)
-                segments_filter.top()->unhide(cycle.getVertex(v));
+                segments_filter.top().unhide(cycle.getVertex(v));
             // segments_filter.top()->unhide(cycle.getVertex(i));
             // segments_filter.top()->unhide(cycle.getVertexC(i + 1));
 
@@ -1440,7 +1438,7 @@ void MoleculeLayoutGraphSmart::_segment_smoothing_prepearing(const Cycle& cycle,
     segment_graph.clear();
     for (int i = 0; i < segments_count; i++)
     {
-        segment_graph.push().makeLayoutSubgraph(*this, *segments_filter[i]);
+        segment_graph.push().makeLayoutSubgraph(*this, segments_filter[i]);
     }
 
     // int segment_count = segment_graph.size();
@@ -1449,10 +1447,10 @@ void MoleculeLayoutGraphSmart::_segment_smoothing_prepearing(const Cycle& cycle,
     for (int i = 0; i < cycle_size; i++)
         if (number_of_segment[i] != -1)
         {
-            segment.push(*segment_graph[number_of_segment[i]], rotation_point[current_number], rotation_point[(1 + current_number) % segments_count]);
-            segment.top()->set_layout_component_number(segment_component_number[number_of_segment[i]]);
-            segment.top()->set_start_finish_number(cycle.getVertex(rotation_vertex[current_number]),
-                                                   cycle.getVertex(rotation_vertex[(current_number + 1) % segments_count]));
+            segment.push(segment_graph[number_of_segment[i]], rotation_point[current_number], rotation_point[(1 + current_number) % segments_count]);
+            segment.top().set_layout_component_number(segment_component_number[number_of_segment[i]]);
+            segment.top().set_start_finish_number(cycle.getVertex(rotation_vertex[current_number]),
+                                                  cycle.getVertex(rotation_vertex[(current_number + 1) % segments_count]));
             current_number++;
         }
 }
@@ -1471,13 +1469,13 @@ void MoleculeLayoutGraphSmart::_segment_improoving(Array<Vec2f>& point, Array<fl
             float min_dist = 0.7f;
             // float dist2 = min_dist;
             bool interseced = false;
-            for (int v1 = segment[move_vertex]->_graph.vertexBegin(); !interseced && v1 != segment[move_vertex]->_graph.vertexEnd();
-                 v1 = segment[move_vertex]->_graph.vertexNext(v1))
+            for (int v1 = segment[move_vertex]._graph.vertexBegin(); !interseced && v1 != segment[move_vertex]._graph.vertexEnd();
+                 v1 = segment[move_vertex]._graph.vertexNext(v1))
             {
-                for (int v2 = segment[another_segment]->_graph.vertexBegin(); !interseced && v2 != segment[another_segment]->_graph.vertexEnd();
-                     v2 = segment[another_segment]->_graph.vertexNext(v2))
+                for (int v2 = segment[another_segment]._graph.vertexBegin(); !interseced && v2 != segment[another_segment]._graph.vertexEnd();
+                     v2 = segment[another_segment]._graph.vertexNext(v2))
                 {
-                    if ((segment[move_vertex]->getPosition(v1) - segment[another_segment]->getPosition(v2)).lengthSqr() < min_dist * min_dist)
+                    if ((segment[move_vertex].getPosition(v1) - segment[another_segment].getPosition(v2)).lengthSqr() < min_dist * min_dist)
                         interseced = true;
                     // dist2 = min(dist2, (segment[move_vertex]->getPosition(v1) - segment[another_segment]->getPosition(v2)).lengthSqr());
                 }
@@ -1485,8 +1483,8 @@ void MoleculeLayoutGraphSmart::_segment_improoving(Array<Vec2f>& point, Array<fl
             // dist2 = max(dist2, 0.25f);
             if (interseced)
             {
-                Vec2f shift1(segment[move_vertex]->getCenter());
-                Vec2f shift2(segment[touching_segments[i].right]->getCenter());
+                Vec2f shift1(segment[move_vertex].getCenter());
+                Vec2f shift2(segment[touching_segments[i].right].getCenter());
                 Vec2f shift(shift1 - shift2);
                 shift.normalize();
                 move_vector += shift;
@@ -1515,8 +1513,8 @@ void MoleculeLayoutGraphSmart::_segment_improoving(Array<Vec2f>& point, Array<fl
     }
     else
     {
-        float l1 = segment[(move_vertex + segments_count - 1) % segments_count]->getLength();
-        float l2 = segment[move_vertex]->getLength();
+        float l1 = segment[(move_vertex + segments_count - 1) % segments_count].getLength();
+        float l2 = segment[move_vertex].getLength();
         Vec2f center(prev_point * l2 + next_point * l1);
 
         center /= l1 + l2;
@@ -1529,8 +1527,8 @@ void MoleculeLayoutGraphSmart::_segment_improoving(Array<Vec2f>& point, Array<fl
     }
 
     // fix distance to neighborhoods
-    move_vector += (this_point - next_point) * segment[move_vertex]->getLengthCoef();
-    move_vector += (this_point - prev_point) * segment[(move_vertex + segments_count - 1) % segments_count]->getLengthCoef();
+    move_vector += (this_point - next_point) * segment[move_vertex].getLengthCoef();
+    move_vector += (this_point - prev_point) * segment[(move_vertex + segments_count - 1) % segments_count].getLengthCoef();
     //   move_vector += get_move_vector(this_point, prev_point, segment[(move_vertex + segments_count - 1) % segments_count]->getLength());
     //   move_vector += get_move_vector(this_point, next_point, segment[move_vertex]->getLength());
 
@@ -1545,8 +1543,8 @@ void MoleculeLayoutGraphSmart::_do_segment_smoothing_gradient(Array<Vec2f>& rota
     cycle._do_smoothing(100);
 
     for (int i = 0; i < cycle.cycle_length; i++)
-        for (int v = segment[i]->_graph.vertexBegin(); v != segment[i]->_graph.vertexEnd(); v = segment[i]->_graph.vertexNext(v))
-            getPos(segment[i]->_graph.getVertexExtIdx(v)).copy(segment[i]->getPosition(v));
+        for (int v = segment[i]._graph.vertexBegin(); v != segment[i]._graph.vertexEnd(); v = segment[i]._graph.vertexNext(v))
+            getPos(segment[i]._graph.getVertexExtIdx(v)).copy(segment[i].getPosition(v));
 }
 
 CP_DEF(SmoothingCycle);
@@ -1569,7 +1567,7 @@ SmoothingCycle::SmoothingCycle(Array<Vec2f>& p, Array<float>& t_a, PtrArray<Mole
     cycle_length = s.size();
     edge_length.clear_resize(cycle_length);
     for (int i = 0; i < cycle_length; i++)
-        edge_length[i] = _2FLOAT(s[i]->getLength());
+        edge_length[i] = _2FLOAT(s[i].getLength());
 }
 
 void SmoothingCycle::_do_smoothing(int /* iter_count */)

@@ -403,7 +403,7 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
                 continue;
             if (mol._rsite_attachment_points.size() <= vertices[i])
                 continue;
-            Array<int>& ap = *mol._rsite_attachment_points[vertices[i]];
+            Array<int>& ap = mol._rsite_attachment_points[vertices[i]];
             int j;
 
             for (j = 0; j < ap.size(); j++)
@@ -857,7 +857,7 @@ void BaseMolecule::clone(BaseMolecule& other, Array<int>* mapping, Array<int>* i
     original_format = other.original_format;
     copyProperties(other, *mapping);
     for (int i = 0; i < other.monomer_shapes.size(); ++i)
-        monomer_shapes.add(new KetMonomerShape(*other.monomer_shapes[i]));
+        monomer_shapes.add(new KetMonomerShape(other.monomer_shapes[i]));
     for (int i = 0; i < other._template_occurrences.size(); ++i)
         std::ignore = _template_occurrences.add(other._template_occurrences[i]);
     for (int i = 0; i < other._template_names.size(); ++i)
@@ -903,7 +903,7 @@ void BaseMolecule::clone_KeepIndices(BaseMolecule& other, int skip_flags)
     original_format = other.original_format;
     copyProperties(other, mapping);
     for (int j = 0; j < other.monomer_shapes.size(); ++j)
-        monomer_shapes.add(new KetMonomerShape(*other.monomer_shapes[j]));
+        monomer_shapes.add(new KetMonomerShape(other.monomer_shapes[j]));
     for (i = 0; i < other._template_occurrences.size(); ++i)
         std::ignore = _template_occurrences.add(other._template_occurrences[i]);
     for (i = 0; i < other._template_names.size(); ++i)
@@ -1367,7 +1367,7 @@ void BaseMolecule::copyUsedRGroupsFrom(BaseMolecule& src)
             continue;
         if (src._rsite_attachment_points.size() <= i)
             continue;
-        Array<int>& ap = *src._rsite_attachment_points[i];
+        Array<int>& ap = src._rsite_attachment_points[i];
         for (int j = 0; j < ap.size(); ++j)
             if (ap[j] >= 0)
                 setRSiteAttachmentOrder(i, ap[j], j);
@@ -1390,18 +1390,18 @@ int BaseMolecule::getRSiteAttachmentPointByOrder(int idx, int order) const
     if (idx >= _rsite_attachment_points.size())
         return -1;
 
-    if (order >= _rsite_attachment_points[idx]->size())
+    if (order >= _rsite_attachment_points[idx].size())
         return -1;
 
-    return (*_rsite_attachment_points[idx])[order];
+    return (_rsite_attachment_points[idx])[order];
 }
 
 void BaseMolecule::setRSiteAttachmentOrder(int atom_idx, int att_atom_idx, int order)
 {
-    while (_rsite_attachment_points.size() < atom_idx + 1)
-        _rsite_attachment_points.push();
-    _rsite_attachment_points[atom_idx]->expandFill(order + 1, -1);
-    (*_rsite_attachment_points[atom_idx])[order] = att_atom_idx;
+    if (_rsite_attachment_points.size() < atom_idx + 1)
+        _rsite_attachment_points.resize(atom_idx + 1);
+    _rsite_attachment_points[atom_idx].expandFill(order + 1, -1);
+    (_rsite_attachment_points[atom_idx])[order] = att_atom_idx;
     updateEditRevision();
 }
 
@@ -1414,9 +1414,8 @@ void BaseMolecule::setTemplateAtomAttachmentOrder(int atom_idx, int att_atom_idx
     ap.ap_id.readString(att_id, false);
     ap.ap_id.push(0);
     if (atom_idx >= template_attachment_indexes.size())
-        while (template_attachment_indexes.size() < atom_idx + 1)
-            template_attachment_indexes.push();
-    template_attachment_indexes.at(atom_idx)->add(att_idx);
+        template_attachment_indexes.resize(atom_idx + 1);
+    template_attachment_indexes.at(atom_idx).add(att_idx);
     updateEditRevision();
 }
 
@@ -1424,7 +1423,7 @@ int BaseMolecule::getTemplateAtomAttachmentPoint(int atom_idx, int order)
 {
     if (atom_idx < template_attachment_indexes.size())
     {
-        auto& att_indexes = *template_attachment_indexes.at(atom_idx);
+        auto& att_indexes = template_attachment_indexes.at(atom_idx);
         if (att_indexes.size() && order < att_indexes.size())
             return template_attachment_points.at(att_indexes[order]).ap_aidx;
     }
@@ -1435,7 +1434,7 @@ void BaseMolecule::getTemplateAtomAttachmentPointId(int atom_idx, int order, Arr
 {
     if (atom_idx < template_attachment_indexes.size())
     {
-        auto& att_indexes = *template_attachment_indexes.at(atom_idx);
+        auto& att_indexes = template_attachment_indexes.at(atom_idx);
         if (att_indexes.size() && order < att_indexes.size())
         {
             apid.copy(template_attachment_points.at(att_indexes[order]).ap_id);
@@ -1449,7 +1448,7 @@ std::optional<std::pair<int, std::reference_wrapper<ObjPool<int>>>> BaseMolecule
 {
     if (atom_idx < template_attachment_indexes.size())
     {
-        auto& att_idxs = *template_attachment_indexes[atom_idx];
+        auto& att_idxs = template_attachment_indexes[atom_idx];
         for (int k = att_idxs.begin(); k != att_idxs.end(); k = att_idxs.next(k))
             if (att_idxs.at(k) == att_point_idx)
                 return std::make_pair(k, std::ref(att_idxs));
@@ -1462,7 +1461,7 @@ int BaseMolecule::getTemplateAtomAttachmentPointById(int atom_idx, Array<char>& 
     QS_DEF(Array<char>, tmp);
     if (atom_idx < template_attachment_indexes.size())
     {
-        auto& att_idxs = *template_attachment_indexes[atom_idx];
+        auto& att_idxs = template_attachment_indexes[atom_idx];
         for (int k = att_idxs.begin(); k != att_idxs.end(); k = att_idxs.next(k))
         {
             auto& ap = template_attachment_points.at(att_idxs.at(k));
@@ -1477,7 +1476,7 @@ bool BaseMolecule::updateTemplateAtomAttachmentDestination(int atom_idx, int old
 {
     if (atom_idx < template_attachment_indexes.size())
     {
-        auto& att_idxs = *template_attachment_indexes[atom_idx];
+        auto& att_idxs = template_attachment_indexes[atom_idx];
         for (int k = att_idxs.begin(); k != att_idxs.end(); k = att_idxs.next(k))
         {
             auto& ap = template_attachment_points.at(att_idxs.at(k));
@@ -1495,7 +1494,7 @@ void BaseMolecule::setTemplateAtomAttachmentDestination(int atom_idx, int new_de
 {
     if (atom_idx < template_attachment_indexes.size())
     {
-        auto& att_idxs = *template_attachment_indexes[atom_idx];
+        auto& att_idxs = template_attachment_indexes[atom_idx];
         for (int k = att_idxs.begin(); k != att_idxs.end(); k = att_idxs.next(k))
         {
             auto& ap = template_attachment_points.at(att_idxs.at(k));
@@ -1512,7 +1511,7 @@ void BaseMolecule::setTemplateAtomAttachmentDestination(int atom_idx, int new_de
 
 int BaseMolecule::getTemplateAtomAttachmentPointsCount(int atom_idx)
 {
-    return atom_idx < template_attachment_indexes.size() ? template_attachment_indexes.at(atom_idx)->size() : 0;
+    return atom_idx < template_attachment_indexes.size() ? template_attachment_indexes.at(atom_idx).size() : 0;
 }
 
 int BaseMolecule::attachmentPointCount() const
@@ -1526,10 +1525,9 @@ void BaseMolecule::addAttachmentPoint(int order, int atom_index)
         throw Error("attachment point order %d no allowed (should start from 1)", order);
 
     if (_attachment_index.size() < order)
-        while (_attachment_index.size() < order)
-            _attachment_index.push();
+        _attachment_index.resize(order);
 
-    _attachment_index[order - 1]->push(atom_index);
+    _attachment_index[order - 1].push(atom_index);
     updateEditRevision();
 }
 
@@ -1544,12 +1542,12 @@ void BaseMolecule::removeAttachmentPointsFromAtom(int atom_index)
     int i, j;
 
     for (i = 0; i < _attachment_index.size(); i++)
-        if ((j = _attachment_index[i]->find(atom_index)) != -1)
+        if ((j = _attachment_index[i].find(atom_index)) != -1)
         {
-            if (j == _attachment_index[i]->size() - 1)
-                _attachment_index[i]->pop();
+            if (j == _attachment_index[i].size() - 1)
+                _attachment_index[i].pop();
             else
-                (*_attachment_index[i])[j] = _attachment_index[i]->pop();
+                (_attachment_index[i])[j] = _attachment_index[i].pop();
         }
     updateEditRevision();
 }
@@ -1559,7 +1557,7 @@ int BaseMolecule::getAttachmentPoint(int order, int index) const
     if (order < 1)
         throw Error("attachment point order %d no allowed (should start from 1)", order);
 
-    return index < _attachment_index[order - 1]->size() ? (*_attachment_index[order - 1])[index] : -1;
+    return index < _attachment_index[order - 1].size() ? (_attachment_index[order - 1])[index] : -1;
 }
 
 #ifdef _MSC_VER

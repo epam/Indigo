@@ -56,7 +56,7 @@ int Molecule3dConstraints::next(int idx) const
 
 const Molecule3dConstraints::Base& Molecule3dConstraints::at(int idx) const
 {
-    return *_constraints[idx];
+    return _constraints[idx];
 }
 
 Molecule3dConstraints::Base& Molecule3dConstraints::add(Molecule3dConstraints::Base* constraint)
@@ -68,7 +68,7 @@ bool Molecule3dConstraints::haveConstraints()
 {
     for (int i = 0; i < _constraints.size(); i++)
     {
-        const Base& base = *_constraints.at(i);
+        const Base& base = _constraints.at(i);
 
         switch (base.type)
         {
@@ -109,7 +109,7 @@ void Molecule3dConstraints::_buildSub(PtrArray<Base>& sub, const PtrArray<Base>&
             if (cmapping[i] >= 0)
                 continue;
 
-            const Base& base = *super.at(i);
+            const Base& base = super.at(i);
 
             switch (base.type)
             {

@@ -1973,7 +1973,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         else if (ep1.HasMember("moleculeId") && ep1.HasMember("atomId"))
         {
             int mol_id = extract_id(ep1["moleculeId"].GetString(), "mol");
-            id1 = (*mol_mappings[mol_id])[atoi(ep1["atomId"].GetString())];
+            id1 = (mol_mappings[mol_id])[atoi(ep1["atomId"].GetString())];
         }
         else
             throw Error("Invalid endpoint");
@@ -1987,7 +1987,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         else if (ep2.HasMember("moleculeId") && ep2.HasMember("atomId"))
         {
             int mol_id = extract_id(ep2["moleculeId"].GetString(), "mol");
-            id2 = (*mol_mappings[mol_id])[atoi(ep2["atomId"].GetString())];
+            id2 = (mol_mappings[mol_id])[atoi(ep2["atomId"].GetString())];
         }
         else
             throw Error("Invalid endpoint");

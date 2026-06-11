@@ -107,7 +107,7 @@ void ScaffoldDetection::_searchExactScaffold(GraphBasket& basket)
 
             for (int i = 0; i < e_lists.size(); i++)
             {
-                basket.addToNextEmptySpot(graph_set, *v_lists[i], *e_lists[i]);
+                basket.addToNextEmptySpot(graph_set, v_lists[i], e_lists[i]);
             }
 
             basket.removeGraph(bgraph);
@@ -185,14 +185,14 @@ void ScaffoldDetection::_searchApproximateScaffold(GraphBasket& basket)
             for (int i = 0; i < e_maps.size(); ++i)
             {
                 v_list.clear();
-                for (int j = 0; j < v_maps[i]->size(); ++j)
-                    if (v_maps[i]->at(j) != SubstructureMcs::UNMAPPED)
-                        v_list.push(v_maps[i]->at(j));
+                for (int j = 0; j < v_maps[i].size(); ++j)
+                    if (v_maps[i].at(j) != SubstructureMcs::UNMAPPED)
+                        v_list.push(v_maps[i].at(j));
 
                 e_list.clear();
-                for (int j = 0; j < e_maps[i]->size(); ++j)
-                    if (e_maps[i]->at(j) != SubstructureMcs::UNMAPPED)
-                        e_list.push(e_maps[i]->at(j));
+                for (int j = 0; j < e_maps[i].size(); ++j)
+                    if (e_maps[i].at(j) != SubstructureMcs::UNMAPPED)
+                        e_list.push(e_maps[i].at(j));
 
                 if (v_list.size() > 1)
                     basket.addToNextEmptySpot(graph_set, v_list, e_list);
@@ -219,7 +219,7 @@ void ScaffoldDetection::GraphBasket::_sortGraphsInSet()
     _orderArray.clear();
     for (int i = 0; i < set_size; i++)
     {
-        if (_searchStructures->at(i)->vertexCount() > 0)
+        if (_searchStructures->at(i).vertexCount() > 0)
         {
             _orderArray.push(i);
             ++_graphSetSize;
@@ -232,7 +232,7 @@ void ScaffoldDetection::GraphBasket::_sortGraphsInSet()
 int ScaffoldDetection::GraphBasket::_compareEdgeCount(int i1, int i2, void* context)
 {
     PtrArray<Graph>& graph_set = *(PtrArray<Graph>*)context;
-    return graph_set.at(i1)->edgeCount() - graph_set.at(i2)->edgeCount();
+    return graph_set.at(i1).edgeCount() - graph_set.at(i2).edgeCount();
 }
 
 int ScaffoldDetection::GraphBasket::_copmpareRingsCount(Graph& g1, Graph& g2, void*)
@@ -277,7 +277,7 @@ void ScaffoldDetection::GraphBasket::initBasket(PtrArray<Graph>* graph_set, PtrA
     _reverseIterator.resize(max_number);
     _reverseIterator.set();
 
-    _basketStructures->at(0)->cloneGraph(*_searchStructures->at(_orderArray[0]), 0);
+    _basketStructures->at(0).cloneGraph(_searchStructures->at(_orderArray[0]), 0);
     _reverseIterator.set(0, false);
     _directIterator.set(0);
 }
@@ -340,7 +340,7 @@ Graph& ScaffoldDetection::GraphBasket::getGraph(int index) const
 {
     if (index >= _basketStructures->size())
         throw Error("basket size < index");
-    return *_basketStructures->at(index);
+    return _basketStructures->at(index);
 }
 
 Graph& ScaffoldDetection::GraphBasket::pickOutNextGraph()
@@ -360,7 +360,7 @@ Graph& ScaffoldDetection::GraphBasket::pickOutNextGraph()
     }
 
     _reverseIterator.set(empty_index, false);
-    return *_basketStructures->at(empty_index);
+    return _basketStructures->at(empty_index);
 }
 
 int ScaffoldDetection::GraphBasket::getMaxGraphIndex()
@@ -368,7 +368,7 @@ int ScaffoldDetection::GraphBasket::getMaxGraphIndex()
 
     for (int x = _reverseIterator.nextSetBit(0); x >= 0; x = _reverseIterator.nextSetBit(x + 1))
     {
-        Graph& graph_basket = *_basketStructures->at(x);
+        Graph& graph_basket = _basketStructures->at(x);
 
         if (graph_basket.vertexCount() > 0)
             graph_basket.clear();
@@ -379,7 +379,7 @@ int ScaffoldDetection::GraphBasket::getMaxGraphIndex()
     else
         _basketStructures->qsort(cbSortSolutions, userdata);
 
-    while (_basketStructures->size() && _basketStructures->top()->vertexCount() == 0)
+    while (_basketStructures->size() && _basketStructures->top().vertexCount() == 0)
         _basketStructures->removeLast();
 
     return 0;

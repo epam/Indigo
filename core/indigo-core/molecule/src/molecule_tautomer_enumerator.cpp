@@ -550,9 +550,9 @@ void TautomerEnumerator::edgeAdd(Graph& /* subgraph */, Graph& supergraph, int /
 
     breadcrumps.edgesHistory.push(super_idx);
     breadcrumps.forwardEdgesHistory.push();
-    breadcrumps.forwardEdgesHistory.top()->copy(breadcrumps.forwardMask);
+    breadcrumps.forwardEdgesHistory.top().copy(breadcrumps.forwardMask);
     breadcrumps.backwardEdgesHistory.push();
-    breadcrumps.backwardEdgesHistory.top()->copy(breadcrumps.backwardMask);
+    breadcrumps.backwardEdgesHistory.top().copy(breadcrumps.backwardMask);
 
     breadcrumps.forwardMask.andWith(forwardMask);
     breadcrumps.backwardMask.andWith(backwardMask);
@@ -594,9 +594,9 @@ void TautomerEnumerator::vertexRemove(Graph& /* subgraph */, int /* sub_idx */, 
     if (breadcrumps.backwardEdgesHistory.size() > 0)
     {
         breadcrumps.edgesHistory.pop();
-        breadcrumps.forwardMask.copy(*breadcrumps.forwardEdgesHistory.top());
+        breadcrumps.forwardMask.copy(breadcrumps.forwardEdgesHistory.top());
         breadcrumps.forwardEdgesHistory.removeLast();
-        breadcrumps.backwardMask.copy(*breadcrumps.backwardEdgesHistory.top());
+        breadcrumps.backwardMask.copy(breadcrumps.backwardEdgesHistory.top());
         breadcrumps.backwardEdgesHistory.removeLast();
     }
     breadcrumps.nodesHistory.pop();

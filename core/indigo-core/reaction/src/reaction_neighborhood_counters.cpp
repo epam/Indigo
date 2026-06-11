@@ -28,11 +28,10 @@ void ReactionAtomNeighbourhoodCounters::calculate(Reaction& reac)
     int i;
 
     _counters.clear();
-    while (_counters.size() < reac.count())
-        _counters.add(std::make_unique<MoleculeAtomNeighbourhoodCounters>());
+    _counters.resize(reac.count());
 
     for (i = reac.begin(); i < reac.end(); i = reac.next(i))
-        _counters[i]->calculate(reac.getMolecule(i));
+        _counters[i].calculate(reac.getMolecule(i));
 }
 
 void ReactionAtomNeighbourhoodCounters::calculate(QueryReaction& reac)
@@ -40,14 +39,13 @@ void ReactionAtomNeighbourhoodCounters::calculate(QueryReaction& reac)
     int i;
 
     _counters.clear();
-    while (_counters.size() < reac.count())
-        _counters.add(std::make_unique<MoleculeAtomNeighbourhoodCounters>());
+    _counters.resize(reac.count());
 
     for (i = reac.begin(); i < reac.end(); i = reac.next(i))
-        _counters[i]->calculate(reac.getQueryMolecule(i));
+        _counters[i].calculate(reac.getQueryMolecule(i));
 }
 
 const MoleculeAtomNeighbourhoodCounters& ReactionAtomNeighbourhoodCounters::getCounters(int idx) const
 {
-    return *_counters[idx];
+    return _counters[idx];
 }
