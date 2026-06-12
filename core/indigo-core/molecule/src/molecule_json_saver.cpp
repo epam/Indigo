@@ -938,7 +938,6 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
         int mapping = mol.reaction_atom_mapping[i];
         int inv_ret = mol.reaction_atom_inversion[i];
         bool ecflag = mol.reaction_atom_exact_change[i];
-        int hcount = MoleculeSavers::getHCount(mol, i, anum, charge);
 
         if (_pqmol && !is_rSite) // No custom query for RSite
         {
@@ -1019,6 +1018,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                 writer.Bool(true);
             }
 
+            int hcount = MoleculeSavers::getHCount(mol, i, anum, charge);
             if (hcount == VALUE_UNKNOWN)
                 hcount = 0;
             else
@@ -1036,10 +1036,15 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
         }
         else if (_pmol)
         {
-            if (Molecule::shouldWriteHCount(mol.asMolecule(), i) && hcount > 0)
+            if (Molecule::shouldWriteHCount(mol.asMolecule(), i))
             {
-                writer.Key("implicitHCount");
-                writer.Int(hcount);
+                const bool metal = Element::isMetal(anum);
+                const int hcount = metal ? mol.asMolecule().getImplicitH_NoThrow(i, -1) : MoleculeSavers::getHCount(mol, i, anum, charge);
+                if (hcount > 0 || (metal && hcount == 0))
+                {
+                    writer.Key("implicitHCount");
+                    writer.Int(hcount);
+                }
             }
         }
 
