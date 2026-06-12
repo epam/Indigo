@@ -22,6 +22,7 @@ import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -876,6 +877,77 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         dispatcher.setSessionID();
         return new IndigoObject(
                 dispatcher, Indigo.checkResult(this, lib.indigoComponent(self, index)), this);
+    }
+
+    /**
+     * Verifies whether the structure contains a disconnected inorganic component ("salt").
+     *
+     * @return {@code true} if the structure contains a salt
+     */
+    public boolean checkSalt() {
+        dispatcher.setSessionID();
+
+        for (IndigoObject component : iterateComponents()) {
+            IndigoObject targetFragment = component.clone();
+            for (String salt : Salts.SALTS) {
+                IndigoObject querySalt = dispatcher.loadSmarts(salt);
+                IndigoObject matcher = dispatcher.substructureMatcher(targetFragment);
+                if (matcher.match(querySalt) != null) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Strips all disconnected inorganic components ("salts") from the molecule.
+     *
+     * <p>Returns a copy of the molecule without its inorganic components.
+     *
+     * @return a new molecule without inorganic components
+     */
+    public IndigoObject stripSalt() {
+        return stripSalt(false);
+    }
+
+    /**
+     * Strips all disconnected inorganic components ("salts") from the molecule.
+     *
+     * @param inplace if {@code false} - returns a copy of the molecule without inorganic
+     *     components; if {@code true} - strips inorganic components from the molecule itself
+     * @return if {@code inplace} is {@code false} - a new molecule without inorganic components;
+     *     if {@code inplace} is {@code true} - this molecule, without inorganic components
+     */
+    public IndigoObject stripSalt(boolean inplace) {
+        dispatcher.setSessionID();
+
+        ArrayList<Integer> saltAtoms = new ArrayList<>();
+        int idx = 0;
+        for (IndigoObject component : iterateComponents()) {
+            IndigoObject targetFragment = component.clone();
+            int nAtoms = targetFragment.countAtoms();
+
+            for (String salt : Salts.SALTS) {
+                IndigoObject querySalt = dispatcher.loadQueryMolecule(salt);
+                IndigoObject matcher = dispatcher.substructureMatcher(targetFragment);
+                if (matcher.match(querySalt) != null) {
+                    for (int i = idx; i < idx + nAtoms; i++) {
+                        saltAtoms.add(i);
+                    }
+                }
+            }
+            idx += nAtoms;
+        }
+
+        if (!inplace) {
+            IndigoObject saltlessFragment = clone();
+            saltlessFragment.removeAtoms(saltAtoms);
+            return saltlessFragment;
+        } else {
+            removeAtoms(saltAtoms);
+            return this;
+        }
     }
 
     public int countSSSR() {
