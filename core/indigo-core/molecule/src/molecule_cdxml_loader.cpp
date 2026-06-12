@@ -1185,7 +1185,7 @@ void MoleculeCdxmlLoader::_addBracket(BaseMolecule& mol, const CdxmlBracket& bra
                 if (bracket.usage == kCDXBracketUsage_MultipleGroup)
                 {
                     MultipleGroup& mg = (MultipleGroup&)sgroup;
-                    if (mg.multiplier)
+                    if (mg.multiplier != 0)
                         mg.parent_atoms.push(atom_idx);
                 }
             }
@@ -1202,8 +1202,8 @@ void MoleculeCdxmlLoader::_addBracket(BaseMolecule& mol, const CdxmlBracket& bra
         {
             Superatom& sa = (Superatom&)sgroup;
             sa.contracted = DisplayOption::Contracted;
-            sa.subscript.readString(bracket.label.c_str(), true);
-            sa.display_position.copy(bracket.superatom_position);
+            sa.label.readString(bracket.label.c_str(), true);
+            sa.display_position.set(Vec3f(bracket.superatom_position.x, bracket.superatom_position.y, bracket.superatom_position.z));
         }
         else
             switch (bracket.usage)
@@ -1211,7 +1211,7 @@ void MoleculeCdxmlLoader::_addBracket(BaseMolecule& mol, const CdxmlBracket& bra
             case kCDXBracketUsage_SRU: {
                 RepeatingUnit& ru = (RepeatingUnit&)sgroup;
                 ru.connectivity = bracket.repeat_pattern;
-                ru.subscript.readString(bracket.label.c_str(), true);
+                ru.label.readString(bracket.label.c_str(), true);
             }
             break;
             case kCDXBracketUsage_MultipleGroup: {
@@ -1289,11 +1289,12 @@ void MoleculeCdxmlLoader::_handleSGroup(SGroup& sgroup, const std::unordered_set
         int rep_start = mapping[start];
         int rep_end = mapping[end];
         MultipleGroup& mg = (MultipleGroup&)sgroup;
-        if (mg.multiplier > 1)
+        const int multiplier = mg.multiplier.value_or(0);
+        if (multiplier > 1)
         {
             int start_order = start_bond > 0 ? bmol.getBondOrder(start_bond) : -1;
             int end_order = end_bond > 0 ? bmol.getBondOrder(end_bond) : -1;
-            for (int j = 0; j < mg.multiplier - 1; j++)
+            for (int j = 0; j < multiplier - 1; j++)
             {
                 bmol.mergeWithMolecule(*rep, &mapping, 0);
                 int k;

@@ -836,7 +836,7 @@ void MolfileLoader::_readCtab2000()
 
                     int idx = _bmol->sgroups.addSGroup(type);
                     SGroup* sgroup = &_bmol->sgroups.getSGroup(idx);
-                    sgroup->original_group = sgroup_idx + 1;
+                    sgroup->index = sgroup_idx + 1;
                     _sgroup_types[sgroup_idx] = sgroup->sgroup_type;
                     _sgroup_mapping[sgroup_idx] = idx;
                 }
@@ -860,6 +860,24 @@ void MolfileLoader::_readCtab2000()
                         sgroup->parent_group = value;
                     else
                         sgroup->brk_style = value;
+                }
+                _scanner.skipLine();
+            }
+            else if (strncmp(chars, "SLB", 3) == 0)
+            {
+                int n = _scanner.readIntFix(3);
+
+                while (n-- > 0)
+                {
+                    _scanner.skip(1);
+                    int sgroup_idx = _scanner.readIntFix(3) - 1;
+
+                    SGroup* sgroup = &_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
+
+                    _scanner.skip(1);
+                    int vvv = _scanner.readIntFix(3);
+
+                    sgroup->ext_index = vvv;
                 }
                 _scanner.skipLine();
             }
@@ -920,7 +938,7 @@ void MolfileLoader::_readCtab2000()
                             if (strncmp(chars, "SAL", 3) == 0)
                                 sgroup->atoms.push(_scanner.readIntFix(3) - 1);
                             else // SBL
-                                sgroup->bonds.push(_scanner.readIntFix(3) - 1);
+                                sgroup->getBonds().push(_scanner.readIntFix(3) - 1);
                         }
                 }
                 _scanner.skipLine();
@@ -1081,7 +1099,7 @@ void MolfileLoader::_readCtab2000()
                 {
                     SGroup& sgroup = _bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
                     _scanner.skip(1);
-                    _scanner.readQuotedLine(sgroup.subscript, true);
+                    _scanner.readQuotedLine(sgroup.label, true);
                 }
             }
             else if (strncmp(chars, "SCL", 3) == 0)

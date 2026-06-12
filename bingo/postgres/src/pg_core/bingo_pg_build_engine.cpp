@@ -70,7 +70,7 @@ int BingoPgBuildEngine::getNthreads()
     // TO DISABLE THREADS UNCOMMENT THIS
     //   return 1;
 
-    if (!nThreads.hasValue())
+    if (!nThreads.has_value())
     {
         // _setBingoContext();
         int result;
@@ -78,7 +78,7 @@ int BingoPgBuildEngine::getNthreads()
         nThreads.set(result);
     }
 
-    return nThreads.get();
+    return nThreads.value();
 }
 
 int BingoPgBuildEngine::_getNextRecordCb(void* context)

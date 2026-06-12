@@ -20,9 +20,11 @@
 #define __molecule_sgroups__
 
 #include "base_cpp/array.h"
+#include "base_cpp/nullable.h"
 #include "base_cpp/obj_pool.h"
 #include "base_cpp/ptr_pool.h"
 #include "math/algebra.h"
+#include <vector>
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -108,20 +110,30 @@ namespace indigo
         SGroup();
         virtual ~SGroup();
 
-        int sgroup_type;    // group type, represnted with STY in Molfile format
-        int sgroup_subtype; // group subtype, represnted with SST in Molfile format
-        int original_group; // original group number
-        int parent_group;   // parent group number; represented with SPL in Molfile format
-        int parent_idx;     // parent group number; represented with index in the array
+        int sgroup_type;              // group type, represnted with STY in Molfile format
+        Nullable<int> sgroup_subtype; // group subtype, represnted with SST in Molfile format
+        int index;                    // internal SGroup index; V3000 field 1, V2000 M STY sss. Used for cross-refs (PARENT, SPL).
+        int ext_index;                // external SGroup index; V3000 field 3 (extindex), V2000 M SLB vvv. 0 = auto-assign per spec.
+        Nullable<int> parent_group;   // parent group index; represented with PARENT in V3000, SPL in V2000
+        Nullable<int> parent_idx;     // parent group array position; resolved from parent_group
         // TODO: leave only parent_idx
 
-        Array<int> atoms; // represented with SAL in Molfile format
-        Array<int> bonds; // represented with SBL in Molfile format
+        Array<int> atoms;  // represented with SAL in Molfile format
+        Array<int> xbonds; // crossing bonds, represented with XBONDS/SBL in Molfile format
 
-        Array<char> subscript;    // SMT in Molfile format (LABEL in V3000)
-        int brk_style;            // represented with SBT in Molfile format
-        Array<Vec2f[2]> brackets; // represented with SDI in Molfile format
-        DisplayOption contracted; // display option (-1 if undefined, 0 - expanded, 1 - contracted)
+        virtual const Array<int>& getBonds() const
+        {
+            return xbonds;
+        }
+        virtual Array<int>& getBonds()
+        {
+            return xbonds;
+        }
+
+        Array<char> label;                  // SMT in Molfile format (LABEL in V3000)
+        Nullable<int> brk_style;            // represented with SBT in Molfile format
+        Array<Vec2f[2]> brackets;           // represented with SDI in Molfile format
+        Nullable<DisplayOption> contracted; // display option (-1 if undefined, 0 - expanded, 1 - contracted)
 
         static const char* typeToString(int sg_type);
         static int getType(const char* sg_type);
@@ -136,20 +148,31 @@ namespace indigo
         DataSGroup();
         ~DataSGroup() override;
 
-        Array<char> description;   // SDT in Molfile format (filed units or format)
-        Array<char> name;          // SDT in Molfile format (field name)
-        Array<char> type;          // SDT in Molfile format (field type)
-        Array<char> querycode;     // SDT in Molfile format (query code)
-        Array<char> queryoper;     // SDT in Molfile format (query operator)
-        Array<char> data;          // SCD/SED in Molfile format (field data)
-        Array<char> sa_natreplace; // NATREPLACE (V3000 - 2017)
-        Vec2f display_pos;         // SDD in Molfile format
-        bool detached;             // or attached
-        bool relative;             // or absolute
+        Array<int> cbonds; // chemical bonds, represented with CBONDS/SBL in Molfile format
+
+        const Array<int>& getBonds() const override
+        {
+            return cbonds;
+        }
+        Array<int>& getBonds() override
+        {
+            return cbonds;
+        }
+
+        Array<char> description;     // SDT in Molfile format (filed units or format)
+        Array<char> name;            // SDT in Molfile format (field name)
+        Array<char> type;            // SDT in Molfile format (field type)
+        Array<char> querycode;       // SDT in Molfile format (query code)
+        Array<char> queryoper;       // SDT in Molfile format (query operator)
+        Array<char> data;            // SCD/SED in Molfile format (field data)
+        Array<char> sa_natreplace;   // NATREPLACE (V3000 - 2017)
+        Nullable<Vec2f> display_pos; // SDD in Molfile format
+        bool detached;               // or attached
+        bool relative;               // or absolute
         bool display_units;
-        int num_chars; // number of characters
-        int dasp_pos;
-        char tag; // tag
+        Nullable<int> num_chars; // number of characters
+        Nullable<int> dasp_pos;
+        Nullable<char> tag; // tag
         static constexpr char mrv_implicit_h[] = "MRV_IMPLICIT_H";
         static constexpr char impl_prefix[] = "IMPL_H";
         static constexpr size_t impl_prefix_len = sizeof(impl_prefix) - 1;
@@ -168,7 +191,7 @@ namespace indigo
 
         Array<char> sa_class;      // SCL in Molfile format
                                    // SDS in Molfile format
-        int seqid;                 // SEQID (V3000 - 2017)
+        Nullable<int> seqid;       // SEQID (V3000 - 2017)
         Array<char> sa_natreplace; // NATREPLACE (V3000 - 2017)
 
         bool unresolved;
@@ -195,7 +218,7 @@ namespace indigo
         };
         Array<_BondConnection> bond_connections; // SBV in Molfile format
 
-        Vec3f display_position;
+        Nullable<Vec3f> display_position;
 
     private:
         Superatom(const Superatom&);
@@ -207,7 +230,7 @@ namespace indigo
         RepeatingUnit();
         ~RepeatingUnit() override;
 
-        int connectivity;
+        Nullable<int> connectivity;
 
     private:
         RepeatingUnit(const RepeatingUnit&);
@@ -219,7 +242,7 @@ namespace indigo
         CopolymerGroup();
         ~CopolymerGroup() override;
 
-        int connectivity;
+        Nullable<int> connectivity;
 
     private:
         CopolymerGroup(const CopolymerGroup&);
@@ -232,10 +255,17 @@ namespace indigo
         ~MultipleGroup() override;
 
         Array<int> parent_atoms;
-        int multiplier;
+        Nullable<int> multiplier;
 
     private:
         MultipleGroup(const MultipleGroup&);
+    };
+
+    struct SGroupInfo
+    {
+        SGroup& sgroup;
+        int new_index;
+        int new_parent_index;
     };
 
     class Tree;
@@ -259,6 +289,7 @@ namespace indigo
         void buildTree(Tree& tree);
         bool getParentAtoms(int idx, Array<int>& target);
         bool getParentAtoms(SGroup& sgroup, Array<int>& target);
+        std::vector<SGroupInfo> getOrderedSGroups();
 
         void remove(int idx);
         void clear();
