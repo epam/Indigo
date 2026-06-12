@@ -405,6 +405,7 @@ namespace indigo
         virtual int addBond_Silent(int beg, int end, int order) = 0;
 
         void unfoldHydrogens(Array<int>* markers_out, int max_h_cnt = -1, bool impl_h_no_throw = false, bool only_selected = false);
+        virtual void registerUnfoldedHydrogenQueryComponent(int /*atom_idx*/, int /*added_hydrogen*/){}; // QueryMolecule only
 
         virtual int getImplicitH(int idx, bool impl_h_no_throw) = 0;
         virtual void setImplicitH(int idx, int impl_h) = 0;
