@@ -350,6 +350,8 @@ namespace indigo
         const std::string& getMonomerTemplateIdByAlias(MonomerClass monomer_class, const std::string& monomer_template_alias);
         const std::string& getMonomerTemplateIdByAliasHELM(MonomerClass monomer_class, const std::string& alias);
         const std::string& getMonomerTemplateIdByAliasAxoLabs(const std::string& alias);
+        bool hasTerminalHyphenAlias(const std::string& monomer_template_id) const;
+        bool isTerminalHyphenAlias(const std::string& monomer_alias);
         MonomerGroupTemplate& getMonomerGroupTemplateById(const std::string& monomer_template_id);
 
         const std::string& getMonomerTemplateIdByIdtAliasBase(const std::string& alias_base);
