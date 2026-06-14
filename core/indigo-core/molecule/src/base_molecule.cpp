@@ -1393,7 +1393,7 @@ int BaseMolecule::getRSiteAttachmentPointByOrder(int idx, int order) const
     if (order >= _rsite_attachment_points[idx].size())
         return -1;
 
-    return (_rsite_attachment_points[idx])[order];
+    return _rsite_attachment_points[idx][order];
 }
 
 void BaseMolecule::setRSiteAttachmentOrder(int atom_idx, int att_atom_idx, int order)
@@ -1401,7 +1401,7 @@ void BaseMolecule::setRSiteAttachmentOrder(int atom_idx, int att_atom_idx, int o
     if (_rsite_attachment_points.size() < atom_idx + 1)
         _rsite_attachment_points.resize(atom_idx + 1);
     _rsite_attachment_points[atom_idx].expandFill(order + 1, -1);
-    (_rsite_attachment_points[atom_idx])[order] = att_atom_idx;
+    _rsite_attachment_points[atom_idx][order] = att_atom_idx;
     updateEditRevision();
 }
 
@@ -1547,7 +1547,7 @@ void BaseMolecule::removeAttachmentPointsFromAtom(int atom_index)
             if (j == _attachment_index[i].size() - 1)
                 _attachment_index[i].pop();
             else
-                (_attachment_index[i])[j] = _attachment_index[i].pop();
+                _attachment_index[i][j] = _attachment_index[i].pop();
         }
     updateEditRevision();
 }
@@ -1557,7 +1557,7 @@ int BaseMolecule::getAttachmentPoint(int order, int index) const
     if (order < 1)
         throw Error("attachment point order %d no allowed (should start from 1)", order);
 
-    return index < _attachment_index[order - 1].size() ? (_attachment_index[order - 1])[index] : -1;
+    return index < _attachment_index[order - 1].size() ? _attachment_index[order - 1][index] : -1;
 }
 
 #ifdef _MSC_VER

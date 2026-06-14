@@ -1554,7 +1554,7 @@ void MoleculeJsonSaver::saveEndpoint(BaseMolecule& mol, const std::string& ep, i
             writer.Key("moleculeId");
             writer.String((std::string("mol") + std::to_string(mol_id)).c_str());
             writer.Key("atomId");
-            writer.String(std::to_string((_mappings[mol_id])[beg_idx]).c_str());
+            writer.String(std::to_string(_mappings[mol_id][beg_idx]).c_str());
         }
         else
             throw Error("Atom %d not found", beg_idx);

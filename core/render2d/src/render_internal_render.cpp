@@ -1265,7 +1265,7 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
         bool chargeSignAdded = false;
         for (auto i = 0; i < _data.graphitems.size(); i++)
         {
-            if ((_data.graphitems[i]).ritype == RenderItem::RIT_CHARGESIGN)
+            if (_data.graphitems[i].ritype == RenderItem::RIT_CHARGESIGN)
             {
                 chargeSignAdded = true;
                 break;

@@ -92,7 +92,7 @@ CEXPORT int indigoMapAtom(int handle, int atom)
                 return 0;
 
             BaseMolecule& mol = mapping.to.getBaseMolecule(mapping.mol_mapping[mol_idx]);
-            int idx = (mapping.mappings[mol_idx])[ia.idx];
+            int idx = mapping.mappings[mol_idx][ia.idx];
 
             if (idx < 0)
                 return 0;
@@ -146,8 +146,8 @@ CEXPORT int indigoMapBond(int handle, int bond)
             BaseMolecule& mol = mapping.to.getBaseMolecule(mapping.mol_mapping[mol_idx]);
             const Edge& edge = ib.mol.getEdge(ib.idx);
 
-            int beg = (mapping.mappings[mol_idx])[edge.beg];
-            int end = (mapping.mappings[mol_idx])[edge.end];
+            int beg = mapping.mappings[mol_idx][edge.beg];
+            int end = mapping.mappings[mol_idx][edge.end];
 
             if (beg < 0 || end < 0)
                 return 0;

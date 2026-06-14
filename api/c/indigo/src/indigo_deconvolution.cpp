@@ -634,14 +634,14 @@ void IndigoDecompositionMatch::renumber(Array<int>& map, Array<int>& inv_map)
     {
         for (int j = 0; j < attachmentIndex[i].size(); ++j)
         {
-            (attachmentIndex[i])[j] = inv_map.at((attachmentIndex[i])[j]);
+            attachmentIndex[i][j] = inv_map.at(attachmentIndex[i][j]);
         }
     }
     for (int i = 0; i < attachmentOrder.size(); ++i)
     {
         for (int j = 0; j < attachmentOrder[i].size(); ++j)
         {
-            (attachmentOrder[i])[j] = inv_map.at((attachmentOrder[i])[j]);
+            attachmentOrder[i][j] = inv_map.at(attachmentOrder[i][j]);
         }
     }
 }

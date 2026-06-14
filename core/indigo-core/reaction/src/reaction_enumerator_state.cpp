@@ -788,8 +788,8 @@ void ReactionEnumeratorState::_cleanFragments(void)
 
         for (int i = 0; i < _att_points.size(); i++)
             for (int j = 0; j < _att_points[i].size(); j++)
-                if (_fragments.getAtomNumber((_att_points[i])[j]) == ELEM_H)
-                    is_attached_hydrogen[(_att_points[i])[j]] = 1;
+                if (_fragments.getAtomNumber(_att_points[i][j]) == ELEM_H)
+                    is_attached_hydrogen[_att_points[i][j]] = 1;
 
         for (int i = _fragments.vertexBegin(); i != _fragments.vertexEnd(); i = _fragments.vertexNext(i))
         {
@@ -1142,18 +1142,18 @@ void ReactionEnumeratorState::_buildMolProduct(QueryMolecule& product, Molecule&
             {
                 if (product.isRSite(pr_edge.end))
                 {
-                    frags_end = (_att_points[pr_edge.end])[0];
+                    frags_end = _att_points[pr_edge.end][0];
                     if (uncleaned_fragments.findEdgeIndex(frags_beg, frags_end) == -1)
-                        frags_end = (_att_points[pr_edge.end])[1];
+                        frags_end = _att_points[pr_edge.end][1];
                 }
             }
             else if (frags_beg == -1 && frags_end != -1)
             {
                 if (product.isRSite(pr_edge.beg))
                 {
-                    frags_beg = (_att_points[pr_edge.beg])[0];
+                    frags_beg = _att_points[pr_edge.beg][0];
                     if (uncleaned_fragments.findEdgeIndex(frags_beg, frags_end) == -1)
-                        frags_beg = (_att_points[pr_edge.beg])[1];
+                        frags_beg = _att_points[pr_edge.beg][1];
                 }
             }
 
@@ -1461,18 +1461,18 @@ bool ReactionEnumeratorState::_attachFragments(Molecule& ready_product_out, Arra
 
         bool is_valid = false;
 
-        if (is_transform && _att_points[i].size() != 0 && _checkValence(mol_product, frags_mapping[(_att_points[i])[0]]))
+        if (is_transform && _att_points[i].size() != 0 && _checkValence(mol_product, frags_mapping[_att_points[i][0]]))
             is_valid = true;
 
         if (_is_rg_exist)
         {
             for (int j = 0; j < pr_neibours.size(); j++)
             {
-                if (mol_product.findEdgeIndex(pr_neibours[j], frags_mapping[(_att_points[i])[j]]) != -1)
+                if (mol_product.findEdgeIndex(pr_neibours[j], frags_mapping[_att_points[i][j]]) != -1)
                     return false;
 
                 int atom_from = mapping[i];
-                int atom_to = frags_mapping[(_att_points[i])[j]];
+                int atom_to = frags_mapping[_att_points[i][j]];
 
                 if (mol_product.stereocenters.exists(atom_from) && mol_product.stereocenters.getPyramid(atom_from)[3] == -1)
                     return false;
@@ -1495,7 +1495,7 @@ bool ReactionEnumeratorState::_attachFragments(Molecule& ready_product_out, Arra
         {
             for (int j = 0; j < _att_points[i].size(); j++)
             {
-                int mon_atom = frags_mapping[(_att_points[i])[j]];
+                int mon_atom = frags_mapping[_att_points[i][j]];
                 int pr_atom = mapping[i];
                 const Vertex& mon_v = mol_product.getVertex(mon_atom);
                 // const Vertex& pr_v = mol_product.getVertex(pr_atom);
@@ -1515,14 +1515,14 @@ bool ReactionEnumeratorState::_attachFragments(Molecule& ready_product_out, Arra
                     if (mol_product.findEdgeIndex(neighbors[k], pr_atom) == -1)
                         mol_product.flipBond(neighbors[k], mon_atom, pr_atom);
 
-                frags_mapping[(_att_points[i])[j]] = pr_atom;
+                frags_mapping[_att_points[i][j]] = pr_atom;
                 mol_product.removeAtom(mon_atom);
                 // if (mol_product.mergeAtoms(frags_mapping[(*_att_points[i])[0]], mapping[i]) == -1)
                 //   return false;
             }
         }
 
-        product_mapping[mapping[i]] = frags_mapping[(_att_points[i])[0]];
+        product_mapping[mapping[i]] = frags_mapping[_att_points[i][0]];
 
         /*
         if (is_transform && _att_points[i]->size() != 0 && is_valid && !_checkValence(mol_product, mapping[i]))
@@ -1536,10 +1536,10 @@ bool ReactionEnumeratorState::_attachFragments(Molecule& ready_product_out, Arra
         int nv_idx = 0;
         for (int j = 0; j < _att_points[i].size(); j++)
         {
-            if (uncleaned_fragments.stereocenters.exists((_att_points[i])[j]) && !mol_product.stereocenters.exists(frags_mapping[(_att_points[i])[j]]))
+            if (uncleaned_fragments.stereocenters.exists(_att_points[i][j]) && !mol_product.stereocenters.exists(frags_mapping[_att_points[i][j]]))
             {
                 int type, group, pyramid[4];
-                uncleaned_fragments.stereocenters.get((_att_points[i])[j], type, group, pyramid);
+                uncleaned_fragments.stereocenters.get(_att_points[i][j], type, group, pyramid);
 
                 int new_pyramid[4];
 
@@ -1562,7 +1562,7 @@ bool ReactionEnumeratorState::_attachFragments(Molecule& ready_product_out, Arra
                 }
 
                 if (!invalid_stereocenter)
-                    mol_product.addStereocenters(frags_mapping[(_att_points[i])[j]], type, group, new_pyramid);
+                    mol_product.addStereocenters(frags_mapping[_att_points[i][j]], type, group, new_pyramid);
             }
 
             if (nv_idx == 2)
@@ -1670,7 +1670,7 @@ bool ReactionEnumeratorState::_checkFragment(QueryMolecule& submolecule, Molecul
 
     for (int i = 0; i < attachment_pairs.size(); i++)
         if (attachment_pairs[i].size() == 2)
-            if (!fragment.findPath((attachment_pairs[i])[0], (attachment_pairs[i])[1], path))
+            if (!fragment.findPath(attachment_pairs[i][0], attachment_pairs[i][1], path))
                 return false;
 
     return true;
@@ -1852,7 +1852,7 @@ bool ReactionEnumeratorState::_addFragment(Molecule& fragment, QueryMolecule& su
             _att_points[pr_i].push(frag_rg_idx);
             if (_att_points[pr_i].size() == 2)
             {
-                int another_sub_v_idx = core_super[frag_mapping.find((_att_points[pr_i])[0])];
+                int another_sub_v_idx = core_super[frag_mapping.find(_att_points[pr_i][0])];
 
                 /* RGroup atom that have neighbor with less AAM is first */
                 const Vertex& another_sub_v = submolecule.getVertex(another_sub_v_idx);
@@ -1863,9 +1863,9 @@ bool ReactionEnumeratorState::_addFragment(Molecule& fragment, QueryMolecule& su
 
                 if (reactant_aam_array[another_sub_nv_idx] > reactant_aam_array[sub_nv_idx])
                 {
-                    int tmp = (_att_points[pr_i])[0];
-                    (_att_points[pr_i])[0] = (_att_points[pr_i])[1];
-                    (_att_points[pr_i])[1] = tmp;
+                    int tmp = _att_points[pr_i][0];
+                    _att_points[pr_i][0] = _att_points[pr_i][1];
+                    _att_points[pr_i][1] = tmp;
                 }
             }
         }

@@ -307,17 +307,17 @@ void SimpleCycleBasis::_minimize(int startIndex)
         // insert the new cycle into the matrix
         for (int j = 1; j < _edgeList.size(); j++)
         {
-            (a[cur_cycle])[j] = (current_cycle.find(_edgeList.at(j)) != -1);
+            a[cur_cycle][j] = (current_cycle.find(_edgeList.at(j)) != -1);
         }
 
         // perform gaussian elimination on the inserted row
         for (int j = 0; j < cur_cycle; j++)
         {
-            if ((a[cur_cycle])[j])
+            if (a[cur_cycle][j])
             {
                 for (int k = 0; k < _edgeList.size(); k++)
                 {
-                    (a[cur_cycle])[k] = ((a[cur_cycle])[k] != (a[j])[k]);
+                    a[cur_cycle][k] = (a[cur_cycle][k] != a[j][k]);
                 }
             }
         }
@@ -335,7 +335,7 @@ void SimpleCycleBasis::_getCycleEdgeIncidenceMatrix(PtrArray<Array<bool>>& resul
         Array<int>& cycle = _cycles[i];
         for (int j = 0; j < _edgeList.size(); ++j)
         {
-            (result[i])[j] = (cycle.find(_edgeList[j]) != -1);
+            result[i][j] = (cycle.find(_edgeList[j]) != -1);
         }
     }
 }
@@ -359,7 +359,7 @@ void SimpleCycleBasis::constructKernelVector(Array<bool>& u, PtrArray<Array<bool
         u[j] = false;
         for (int k = i; k > j; k--)
         {
-            u[j] = (u[j] != ((a[j])[k] && u[k]));
+            u[j] = (u[j] != (a[j][k] && u[k]));
         }
     }
 }

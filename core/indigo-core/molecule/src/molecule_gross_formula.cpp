@@ -161,7 +161,7 @@ std::unique_ptr<GROSS_UNITS> MoleculeGrossFormula::collect(BaseMolecule& mol, bo
         // Filter polymer atoms
         for (int j = 0; j < filters[i].size(); j++)
         {
-            int found_idx = filters[0].find((filters[i])[j]);
+            int found_idx = filters[0].find(filters[i][j]);
             if (found_idx > -1)
             {
                 filters[0].remove(found_idx);
@@ -179,19 +179,19 @@ std::unique_ptr<GROSS_UNITS> MoleculeGrossFormula::collect(BaseMolecule& mol, bo
 
         for (int j = 0; j < filters[i].size(); j++)
         {
-            if (mol.isPseudoAtom((filters[i])[j]) || mol.isTemplateAtom((filters[i])[j]))
+            if (mol.isPseudoAtom(filters[i][j]) || mol.isTemplateAtom(filters[i][j]))
             {
                 continue;
             }
 
-            if (selected_atoms.size() && selected_atoms.find((filters[i])[j]) == selected_atoms.end())
+            if (selected_atoms.size() && selected_atoms.find(filters[i][j]) == selected_atoms.end())
                 continue;
 
-            int number = mol.getAtomNumber((filters[i])[j]);
+            int number = mol.getAtomNumber(filters[i][j]);
 
             int isotope = 0;
             if (add_isotopes)
-                isotope = mol.getAtomIsotope((filters[i])[j]);
+                isotope = mol.getAtomIsotope(filters[i][j]);
 
             int key;
             int* val;
@@ -211,13 +211,13 @@ std::unique_ptr<GROSS_UNITS> MoleculeGrossFormula::collect(BaseMolecule& mol, bo
             else
                 *val += 1;
 
-            if (!mol.isRSite((filters[i])[j]))
+            if (!mol.isRSite(filters[i][j]))
             {
                 int implicit_h = -1;
                 if (mol.isQueryMolecule())
-                    implicit_h = mol.asQueryMolecule().getImplicitH((filters[i])[j], true);
+                    implicit_h = mol.asQueryMolecule().getImplicitH(filters[i][j], true);
                 else
-                    implicit_h = mol.asMolecule().getImplicitH_NoThrow((filters[i])[j], -1);
+                    implicit_h = mol.asMolecule().getImplicitH_NoThrow(filters[i][j], -1);
 
                 if (implicit_h >= 0)
                 {

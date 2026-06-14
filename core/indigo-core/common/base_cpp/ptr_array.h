@@ -24,6 +24,7 @@
 #include <utility>
 #include <vector>
 
+#include "base_cpp/array.h"
 #include "base_cpp/exception.h"
 
 // PtrArray<T> — owning, heterogeneous, nullable-slot array of T pointers.
@@ -344,12 +345,32 @@ namespace indigo
         // `T&`/`const T&` work unchanged. Preserves ownership (only the
         // unique_ptr slots are permuted). Null slots are not expected here —
         // ObjArray never produced them — and would dereference in `cmp`.
+        //
+        // Implementation note: ObjArray<T>::qsort delegated to Array<T>::qsort,
+        // Indigo's own deterministic introsort. std::sort must NOT be used here:
+        // its order for equal-key elements (cmp == 0) is STL-implementation
+        // defined, so it diverges between libstdc++ and MSVC and produced
+        // platform-dependent layouts / R-group decompositions in CI. We instead
+        // sort an index array with the SAME Array<int>::qsort and permute the
+        // owning slots, reproducing the ObjArray order on every platform.
         // ----------------------------------------------------------------
         template <typename T1, typename T2>
         void qsort(int (*cmp)(T1, T2, void*), void* context)
         {
-            std::sort(_items.begin(), _items.end(),
-                      [cmp, context](const std::unique_ptr<T>& a, const std::unique_ptr<T>& b) { return cmp(*a, *b, context) < 0; });
+            const int n = static_cast<int>(_items.size());
+            if (n < 2)
+                return;
+            Array<int> order;
+            order.resize(n);
+            for (int i = 0; i < n; ++i)
+                order[i] = i;
+            _QsortCtx<T1, T2> ctx{cmp, context, &_items};
+            order.qsort(&_qsortIndexCmp<T1, T2>, &ctx);
+            std::vector<std::unique_ptr<T>> sorted;
+            sorted.reserve(static_cast<std::size_t>(n));
+            for (int i = 0; i < n; ++i)
+                sorted.push_back(std::move(_items[order[i]]));
+            _items.swap(sorted);
         }
 
     private:
@@ -359,6 +380,23 @@ namespace indigo
         {
             if (idx < 0 || idx >= static_cast<int>(_items.size()))
                 throw Error("%s(): invalid index %d (size=%d)", method, idx, size());
+        }
+
+        // Context + comparator used by qsort() to sort an index array while
+        // delegating the actual comparison to the caller's pointee comparator.
+        template <typename T1, typename T2>
+        struct _QsortCtx
+        {
+            int (*cmp)(T1, T2, void*);
+            void* context;
+            std::vector<std::unique_ptr<T>>* items;
+        };
+
+        template <typename T1, typename T2>
+        static int _qsortIndexCmp(int a, int b, void* c)
+        {
+            _QsortCtx<T1, T2>* ctx = static_cast<_QsortCtx<T1, T2>*>(c);
+            return ctx->cmp(*(*ctx->items)[a], *(*ctx->items)[b], ctx->context);
         }
     };
 

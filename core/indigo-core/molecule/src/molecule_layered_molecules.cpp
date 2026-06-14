@@ -542,8 +542,8 @@ void LayeredMolecules::_calcConnectivity(int layerFrom, int layerTo)
                 order = 2;
             if (bs3.get(l))
                 order = 3;
-            (_connectivity[edge.beg])[l] += order;
-            (_connectivity[edge.end])[l] += order;
+            _connectivity[edge.beg][l] += order;
+            _connectivity[edge.end][l] += order;
         }
     }
 }
@@ -632,11 +632,11 @@ void LayeredMolecules::_calcPiLabels(int layerFrom, int layerTo)
                 // TBD
             }
             if (n_double_ring[l] > 0)
-                (_piLabels[v_idx])[l] = 1;
+                _piLabels[v_idx][l] = 1;
 
             if (n_double_ext[l] > 1)
             {
-                (_piLabels[v_idx])[l] = -1;
+                _piLabels[v_idx][l] = -1;
                 skip.set(l);
             }
             else if (n_double_ext[l] == 1)
@@ -645,14 +645,14 @@ void LayeredMolecules::_calcPiLabels(int layerFrom, int layerTo)
                 // It means that it is C=S, C=O, or C=N, like in O=C1NC=CC(=O)N1
                 int atom_number = _proto.getAtomNumber(v_idx);
                 if (atom_number == ELEM_S)
-                    (_piLabels[v_idx])[l] = 2;
-                (_piLabels[v_idx])[l] = 0;
+                    _piLabels[v_idx][l] = 2;
+                _piLabels[v_idx][l] = 0;
             }
 
-            if ((_piLabels[v_idx])[l] != -1)
+            if (_piLabels[v_idx][l] != -1)
                 continue;
 
-            int conn = (_connectivity[v_idx])[l];
+            int conn = _connectivity[v_idx][l];
             int valence;
             int impl_h;
             Element::calcValence(_proto.getAtomNumber(v_idx), _proto.getAtomCharge(v_idx), 0, conn, valence, impl_h, false, nullptr, _proto.getValenceMode());
@@ -671,9 +671,9 @@ void LayeredMolecules::_calcPiLabels(int layerFrom, int layerTo)
             int radical = 0; // getAtomRadical(atom_idx);
             int lonepairs = 0;
             if (BaseMolecule::getVacantPiOrbitals(group, charge, radical, conn, &lonepairs) > 0)
-                (_piLabels[v_idx])[l] = 0;
+                _piLabels[v_idx][l] = 0;
             else if (lonepairs > 0)
-                (_piLabels[v_idx])[l] = 2;
+                _piLabels[v_idx][l] = 2;
         }
     }
 }
@@ -770,9 +770,9 @@ void LayeredMolecules::_registerAromatizedLayers(int layerFrom, int layerTo)
             for (auto i : _proto.vertices())
             {
                 int piLabel = 0;
-                if ((_piLabels[i])[l] != -1)
+                if (_piLabels[i][l] != -1)
                 {
-                    piLabel = (_piLabels[i])[l];
+                    piLabel = _piLabels[i][l];
                 }
                 node = _trie.add(node, piLabel, unique);
             }

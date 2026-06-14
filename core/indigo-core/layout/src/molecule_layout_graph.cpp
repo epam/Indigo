@@ -72,13 +72,15 @@ bool MoleculeLayoutGraph::isSingleEdge() const
 
 void MoleculeLayoutGraph::registerLayoutVertex(int idx, const LayoutVertex& vertex)
 {
-    _layout_vertices.resize(idx + 1);
+    if (_layout_vertices.size() < idx + 1)
+        _layout_vertices.resize(idx + 1);
     _layout_vertices[idx] = vertex;
 }
 
 void MoleculeLayoutGraph::registerLayoutEdge(int idx, const LayoutEdge& edge)
 {
-    _layout_edges.resize(idx + 1);
+    if (_layout_edges.size() < idx + 1)
+        _layout_edges.resize(idx + 1);
     _layout_edges[idx] = edge;
 }
 

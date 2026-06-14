@@ -931,7 +931,7 @@ CEXPORT int indigoMatch(int target_matcher, int query)
                     int mapped = matcher.matcher->getQueryMoleculeMapping(i)[j];
 
                     if (mapped >= 0) // hydrogens are ignored
-                        (mapping->mappings[i])[j] = (matcher.mappings[tmol_idx])[mapped];
+                        mapping->mappings[i][j] = matcher.mappings[tmol_idx][mapped];
                 }
             }
 

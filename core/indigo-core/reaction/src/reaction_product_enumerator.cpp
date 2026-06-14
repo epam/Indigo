@@ -179,7 +179,7 @@ void ReactionProductEnumerator::_buildTubesGrid(void)
             val = cur_tube_code % monomers_count;
             cur_tube_code /= monomers_count;
 
-            _tubes_monomers[i].push((digits[code_pos])[val]);
+            _tubes_monomers[i].push(digits[code_pos][val]);
 
             dev *= getMonomersCount(j);
             code_pos++;
