@@ -20,7 +20,6 @@
 #define __bingo_fingerprints__
 
 #include "base_cpp/array.h"
-#include "base_cpp/obj_array.h"
 #include "base_cpp/ptr_array.h"
 #include "base_cpp/tlscont.h"
 #include "core/bingo_context.h"

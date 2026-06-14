@@ -23,7 +23,6 @@
 #include <optional>
 #include <set>
 
-#include "base_cpp/obj_array.h"
 #include "base_cpp/properties_map.h"
 #include "base_cpp/ptr_array.h"
 #include "base_cpp/red_black.h"

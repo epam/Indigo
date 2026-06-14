@@ -20,7 +20,6 @@
 #define __molecule_neighbourhood_counters_h__
 
 #include "base_cpp/array.h"
-#include "base_cpp/obj_array.h"
 
 namespace indigo
 {

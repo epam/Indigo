@@ -19,7 +19,6 @@
 #ifndef __molecule_tgroups__
 #define __molecule_tgroups__
 
-#include "base_cpp/obj_array.h"
 #include "base_cpp/ptr_array.h"
 #include "base_cpp/ptr_pool.h"
 #include "base_cpp/red_black.h"

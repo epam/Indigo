@@ -3,7 +3,6 @@
 #include "bingo_pg_fix_post.h"
 
 #include "base_c/bitarray.h"
-#include "base_cpp/obj_array.h"
 #include "base_cpp/ptr_array.h"
 #include "bingo_pg_ext_bitset.h"
 #include <algorithm>

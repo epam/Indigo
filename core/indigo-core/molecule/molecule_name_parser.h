@@ -40,7 +40,7 @@
 #include "molecule/trivial.inc"
 
 #include "base_cpp/non_copyable.h"
-#include "base_cpp/obj_array.h"
+#include "base_cpp/array.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/tree.h"
 #include "base_cpp/trie.h"

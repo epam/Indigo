@@ -26,7 +26,6 @@
 
 #include "base_cpp/array.h"
 #include "base_cpp/io_base.h"
-#include "base_cpp/obj_array.h"
 #include "base_cpp/reusable_obj_array.h"
 #include <stdio.h>
 

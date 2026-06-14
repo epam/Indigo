@@ -26,7 +26,6 @@
 
 #include "base_cpp/auto_iter.h"
 #include "base_cpp/non_copyable.h"
-#include "base_cpp/obj_array.h"
 #include "base_cpp/ptr_array.h"
 #include "base_cpp/ptr_pool.h"
 #include "molecule/base_molecule.h"

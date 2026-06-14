@@ -5,7 +5,7 @@
 #include <new>
 #include <vector>
 
-#include "base_cpp/obj_array.h"
+#include "base_cpp/array.h"
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/tlscont.h"

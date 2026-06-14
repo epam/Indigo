@@ -3,7 +3,6 @@
 
 #include "base_cpp/array.h"
 #include "base_cpp/exception.h"
-#include "base_cpp/obj_array.h"
 #include "base_cpp/ptr_array.h"
 #include "bingo_pg_buffer_cache.h"
 #include "bingo_postgres.h"

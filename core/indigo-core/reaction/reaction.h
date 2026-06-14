@@ -20,7 +20,6 @@
 #define __reaction_h__
 
 #include "base_cpp/array.h"
-#include "base_cpp/obj_array.h"
 #include "molecule/molecule.h"
 #include "reaction/base_reaction.h"
 

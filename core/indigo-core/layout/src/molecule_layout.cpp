@@ -18,7 +18,6 @@
 
 #include "layout/molecule_layout.h"
 #include "base_cpp/array.h"
-#include "base_cpp/obj_array.h"
 #include "graph/filter.h"
 #include <vector>
 

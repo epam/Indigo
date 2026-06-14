@@ -18,7 +18,6 @@
 
 #include "indigo_deconvolution.h"
 #include "base_cpp/array.h"
-#include "base_cpp/obj_array.h"
 #include "base_cpp/obj_list.h"
 #include "base_cpp/red_black.h"
 #include "base_cpp/tlscont.h"

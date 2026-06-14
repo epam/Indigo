@@ -18,7 +18,7 @@
 
 #include "molecule/molecule_electrons_localizer.h"
 
-#include "base_cpp/obj_array.h"
+#include "base_cpp/array.h"
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 

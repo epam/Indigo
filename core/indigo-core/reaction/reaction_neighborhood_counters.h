@@ -19,7 +19,6 @@
 #ifndef __reaction_neighborhood_counters_h__
 #define __reaction_neighborhood_counters_h__
 
-#include "base_cpp/obj_array.h"
 #include "base_cpp/ptr_array.h"
 #include "molecule/molecule_neighbourhood_counters.h"
 
