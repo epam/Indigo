@@ -78,7 +78,7 @@ bool mangoPrepareMolecule(OracleEnv& env, const char* rowid, const Array<char>& 
         }
         catch (CmfSaver::Error& e)
         {
-            if (context.context().reject_invalid_structures)
+            if (context.context().reject_invalid_structures.value())
                 throw; // Rethrow this exception further
 
             auto locker = lock_for_exclusive_access ? std::unique_lock<std::mutex>(*lock_for_exclusive_access) : std::unique_lock<std::mutex>();
@@ -89,7 +89,7 @@ bool mangoPrepareMolecule(OracleEnv& env, const char* rowid, const Array<char>& 
         }
     }
     CATCH_READ_TARGET_MOL_ROWID(rowid, {
-        if (context.context().reject_invalid_structures)
+        if (context.context().reject_invalid_structures.value())
             throw; // Rethrow this exception further
         failure_message = e.message();
         return false;

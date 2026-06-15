@@ -1361,17 +1361,21 @@ void CmlLoader::_loadSGroupElement(XMLElement* elem, std::unordered_map<std::str
                 dsg->description.readString(fieldtype, true);
 
             const char* disp_x = elem->Attribute("x");
-            if (disp_x != 0)
-            {
-                BufferScanner strscan(disp_x);
-                dsg->display_pos.x = strscan.readFloat();
-            }
-
             const char* disp_y = elem->Attribute("y");
-            if (disp_y != 0)
+            if (disp_x != 0 || disp_y != 0)
             {
-                BufferScanner strscan(disp_y);
-                dsg->display_pos.y = strscan.readFloat();
+                Vec2f dp;
+                if (disp_x != 0)
+                {
+                    BufferScanner strscan(disp_x);
+                    dp.x = strscan.readFloat();
+                }
+                if (disp_y != 0)
+                {
+                    BufferScanner strscan(disp_y);
+                    dp.y = strscan.readFloat();
+                }
+                dsg->display_pos.set(dp);
             }
 
             const char* detached = elem->Attribute("dataDetached");
@@ -1591,7 +1595,7 @@ void CmlLoader::_loadSGroupElement(XMLElement* elem, std::unordered_map<std::str
 
             const char* title = elem->Attribute("title");
             if (title != 0)
-                sru->subscript.readString(title, true);
+                sru->label.readString(title, true);
 
             const char* connect = elem->Attribute("connect");
             if (connect != 0)
@@ -1815,7 +1819,7 @@ void CmlLoader::_loadSGroupElement(XMLElement* elem, std::unordered_map<std::str
 
             const char* title = elem->Attribute("title");
             if (title != 0)
-                sup->subscript.readString(title, true);
+                sup->label.readString(title, true);
 
             XMLNode* pChild;
             for (pChild = elem->FirstChild(); pChild != 0; pChild = pChild->NextSibling())

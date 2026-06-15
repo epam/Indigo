@@ -819,14 +819,16 @@ void SmilesLoader::_readOtherStuff()
                     _scanner.seek(pos, SEEK_SET);
                 }
                 _scanner.skip(1); // Skip (
-                dsg.display_pos.x = _scanner.readFloat();
+                Vec2f dp;
+                dp.x = _scanner.readFloat();
                 c = _scanner.readChar();
                 if (c != ',')
                     throw Error("Data S-group coord error");
-                dsg.display_pos.y = _scanner.readFloat();
+                dp.y = _scanner.readFloat();
                 c = _scanner.readChar();
                 if (c != ')')
                     throw Error("Data S-group coord error");
+                dsg.display_pos.set(dp);
             }
             else
             {
@@ -857,7 +859,7 @@ void SmilesLoader::_readOtherStuff()
                 {
                     RepeatingUnit& ru = static_cast<RepeatingUnit&>(sgroup);
                     if (subscript.size())
-                        ru.subscript.readString(subscript.ptr(), true);
+                        ru.label.readString(subscript.ptr(), true);
                     if (connectivity == "ht")
                         ru.connectivity = RepeatingUnit::HEAD_TO_TAIL;
                     else if (connectivity == "hh")
@@ -1707,7 +1709,7 @@ void SmilesLoader::_handlePolymerRepetition(int i)
         if (_atoms[edge.beg].polymer_index != i && _atoms[edge.end].polymer_index != i)
             continue;
         if (_atoms[edge.beg].polymer_index == i && _atoms[edge.end].polymer_index == i)
-            sgroup->bonds.push(j);
+            sgroup->xbonds.push(j);
         else
         {
             // bond going out of the sgroup
@@ -1757,7 +1759,7 @@ void SmilesLoader::_handlePolymerRepetition(int i)
             for (k = rep->edgeBegin(); k != rep->edgeEnd(); k = rep->edgeNext(k))
             {
                 const Edge& edge = rep->getEdge(k);
-                sgroup->bonds.push(_bmol->findEdgeIndex(mapping[edge.beg], mapping[edge.end]));
+                sgroup->xbonds.push(_bmol->findEdgeIndex(mapping[edge.beg], mapping[edge.end]));
             }
 
             if (rep_end >= 0 && end_bond >= 0)

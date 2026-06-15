@@ -1706,6 +1706,73 @@ class IndigoObject:
             ),
         )
 
+    def addSGroup(self, sgtype, extindex=0):
+        """Molecule method adds an empty SGroup
+
+        Args:
+            sgtype (str): sgroup type (e.g. "SUP", "DAT", "SRU", "MUL", "GEN")
+            extindex (int): external index; 0 for auto-generation
+
+        Returns:
+            IndigoObject: SGroup object
+        """
+
+        return IndigoObject(
+            self.session,
+            IndigoLib.checkResult(
+                self._lib().indigoAddSGroup(self.id, sgtype.encode(), extindex)
+            ),
+        )
+
+    def setSGroupAtoms(self, atoms):
+        """SGroup method replaces atoms with the given list
+
+        Args:
+            atoms (list): atom index list
+
+        Returns:
+            int: 1 if there are no errors
+        """
+        arr = (c_int * len(atoms))()
+        for i in range(len(atoms)):
+            arr[i] = atoms[i]
+
+        return IndigoLib.checkResult(
+            self._lib().indigoSetSGroupAtoms(self.id, len(arr), arr)
+        )
+
+    def setSGroupBonds(self, bonds):
+        """SGroup method replaces bonds with the given list (DAT only)
+
+        Args:
+            bonds (list): bond index list
+
+        Returns:
+            int: 1 if there are no errors
+        """
+        arr = (c_int * len(bonds))()
+        for i in range(len(bonds)):
+            arr[i] = bonds[i]
+
+        return IndigoLib.checkResult(
+            self._lib().indigoSetSGroupBonds(self.id, len(arr), arr)
+        )
+
+    def iterateSGroupCrossBonds(self):
+        """SGroup method iterates cross bonds
+
+        Returns:
+            IndigoObject: bonds iterator
+        """
+
+        return IndigoObject(
+            self.session,
+            IndigoLib.checkResult(
+                self._lib().indigoIterateSGroupCrossBonds(self.id)
+            ),
+            self,
+        )
+
     def setDataSGroupXY(self, x, y, options=""):
         """SGroup method sets coordinates
 

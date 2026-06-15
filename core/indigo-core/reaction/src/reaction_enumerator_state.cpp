@@ -109,7 +109,7 @@ void ReactionEnumeratorState::ReactionMonomers::removeMonomer(int idx)
     }
 
     _reactant_indexes.pop();
-    delete (_monomers.pop());
+    (void)_monomers.pop(); // unique_ptr destroys the popped molecule
     _deep_levels.pop();
     _tube_indexes.pop();
 }

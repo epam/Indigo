@@ -1013,12 +1013,11 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
                 _pmol->setExplicitValence(atom_idx, atom.valence);
             _pmol->setAtomRadical(atom_idx, atom.radical);
             _pmol->setAtomIsotope(atom_idx, atom.isotope);
-            if (atom.hydrogens >= 0)
+            if (atom.hydrogens > 0)
                 _pmol->setImplicitH(atom_idx, atom.hydrogens);
             const int element = atom.element;
             // All metals up to group 13, set implicit hydrogens to 0 if set in the cdxml file (and valence to avoid (0) labels)
-            if ((element >= 3 && element <= 4) || (element >= 11 && element <= 12) || (element >= 19 && element <= 30) || (element >= 37 && element <= 48) ||
-                (element >= 55 && element <= 80) || (element >= 87 && element <= 112))
+            if (Element::isMetal(element))
             {
                 if (atom.hydrogens == 0)
                 {
@@ -1186,7 +1185,7 @@ void MoleculeCdxmlLoader::_addBracket(BaseMolecule& mol, const CdxmlBracket& bra
                 if (bracket.usage == kCDXBracketUsage_MultipleGroup)
                 {
                     MultipleGroup& mg = (MultipleGroup&)sgroup;
-                    if (mg.multiplier)
+                    if (mg.multiplier != 0)
                         mg.parent_atoms.push(atom_idx);
                 }
             }
@@ -1203,8 +1202,8 @@ void MoleculeCdxmlLoader::_addBracket(BaseMolecule& mol, const CdxmlBracket& bra
         {
             Superatom& sa = (Superatom&)sgroup;
             sa.contracted = DisplayOption::Contracted;
-            sa.subscript.readString(bracket.label.c_str(), true);
-            sa.display_position.copy(bracket.superatom_position);
+            sa.label.readString(bracket.label.c_str(), true);
+            sa.display_position.set(Vec3f(bracket.superatom_position.x, bracket.superatom_position.y, bracket.superatom_position.z));
         }
         else
             switch (bracket.usage)
@@ -1212,7 +1211,7 @@ void MoleculeCdxmlLoader::_addBracket(BaseMolecule& mol, const CdxmlBracket& bra
             case kCDXBracketUsage_SRU: {
                 RepeatingUnit& ru = (RepeatingUnit&)sgroup;
                 ru.connectivity = bracket.repeat_pattern;
-                ru.subscript.readString(bracket.label.c_str(), true);
+                ru.label.readString(bracket.label.c_str(), true);
             }
             break;
             case kCDXBracketUsage_MultipleGroup: {
@@ -1290,11 +1289,12 @@ void MoleculeCdxmlLoader::_handleSGroup(SGroup& sgroup, const std::unordered_set
         int rep_start = mapping[start];
         int rep_end = mapping[end];
         MultipleGroup& mg = (MultipleGroup&)sgroup;
-        if (mg.multiplier > 1)
+        const int multiplier = mg.multiplier.value_or(0);
+        if (multiplier > 1)
         {
             int start_order = start_bond > 0 ? bmol.getBondOrder(start_bond) : -1;
             int end_order = end_bond > 0 ? bmol.getBondOrder(end_bond) : -1;
-            for (int j = 0; j < mg.multiplier - 1; j++)
+            for (int j = 0; j < multiplier - 1; j++)
             {
                 bmol.mergeWithMolecule(*rep, &mapping, 0);
                 int k;

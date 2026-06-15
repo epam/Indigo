@@ -206,6 +206,18 @@ void MolfileSaver::_saveMolecule(BaseMolecule& bmol, bool query)
     BaseMolecule* pmol = &bmol;
     std::unique_ptr<BaseMolecule> mol(bmol.neu());
     mol->clone_KeepIndices(bmol);
+
+    bool has_dat_xbonds = false;
+    for (int i = pmol->sgroups.begin(); i != pmol->sgroups.end(); i = pmol->sgroups.next(i))
+    {
+        SGroup& sgroup = pmol->sgroups.getSGroup(i);
+        if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT && sgroup.xbonds.size() > 0)
+        {
+            has_dat_xbonds = true;
+            break;
+        }
+    }
+
     if (mode == MODE_2000)
     {
         _v2000 = true;
@@ -219,7 +231,7 @@ void MolfileSaver::_saveMolecule(BaseMolecule& bmol, bool query)
         // auto-detect the format: save to v3000 molfile only
         // if v2000 is not enough
         _v2000 = !(pmol->hasHighlighting() || pmol->stereocenters.haveEnhancedStereocenter() ||
-                   (pmol->vertexCount() > 999 || pmol->edgeCount() > 999 || pmol->tgroups.getTGroupCount()));
+                   (pmol->vertexCount() > 999 || pmol->edgeCount() > 999 || pmol->tgroups.getTGroupCount()) || has_dat_xbonds);
     }
 
     if (mol->tgroups.getTGroupCount() && mol->convertTemplateAtomsToSuperatoms(!_v2000))
@@ -875,21 +887,16 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         output.writeStringCR("M  V30 END COLLECTION");
     }
 
-    QS_DEF(Array<int>, sgs_sorted);
-    _checkSGroupIndices(mol, sgs_sorted);
+    auto sgroup_infos = mol.sgroups.getOrderedSGroups();
 
-    if (mol.countSGroups() > 0)
+    if (sgroup_infos.size() > 0)
     {
-        MoleculeSGroups* sgroups = &mol.sgroups;
-        int idx = 1;
-
         output.writeStringCR("M  V30 BEGIN SGROUP");
-        for (i = 0; i < sgs_sorted.size(); i++)
+        for (const auto& info : sgroup_infos)
         {
             ArrayOutput out(buf);
-            int sg_idx = sgs_sorted[i];
-            SGroup& sgroup = sgroups->getSGroup(sg_idx);
-            _writeGenericSGroup3000(sgroup, idx++, out);
+            SGroup& sgroup = info.sgroup;
+            _writeGenericSGroup3000(sgroup, info, out);
             if (sgroup.sgroup_type == SGroup::SG_TYPE_GEN)
             {
                 _writeMultiString(output, buf.ptr(), buf.size());
@@ -905,12 +912,12 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                                    sup.bond_connections[j].bond_dir.y, 0.f);
                     }
                 }
-                if (sgroup.subscript.size() > 1)
+                if (sgroup.label.size() > 1)
                 {
-                    if (sgroup.subscript.find(' ') > -1)
-                        out.printf(" LABEL=\"%s\"", sgroup.subscript.ptr());
+                    if (sgroup.label.find(' ') > -1)
+                        out.printf(" LABEL=\"%s\"", sgroup.label.ptr());
                     else
-                        out.printf(" LABEL=%s", sgroup.subscript.ptr());
+                        out.printf(" LABEL=%s", sgroup.label.ptr());
                 }
                 // convert CHEM to LINKER for BIOVIA
                 if (sup.sa_class.size() > 1)
@@ -928,8 +935,9 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                         out.printf(" SAP=(3 %d %d %s)", _atom_mapping[sup.attachment_points[j].aidx], leave_idx, sup.attachment_points[j].apid.ptr());
                     }
                 }
-                if (sup.seqid > 0)
-                    out.printf(" SEQID=%d", sup.seqid);
+                const int seqid = sup.seqid.value_or(0);
+                if (seqid > 0)
+                    out.printf(" SEQID=%d", seqid);
 
                 if (sup.sa_natreplace.size() > 1)
                     out.printf(" NATREPLACE=%s", sup.sa_natreplace.ptr());
@@ -1016,37 +1024,40 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_SRU)
             {
                 RepeatingUnit& ru = static_cast<RepeatingUnit&>(sgroup);
-                if (ru.connectivity == SGroup::HEAD_TO_HEAD)
+                const int connectivity = ru.connectivity.value_or(SGroup::HEAD_TO_TAIL);
+                if (connectivity == SGroup::HEAD_TO_HEAD)
                     out.printf(" CONNECT=HH");
-                else if (ru.connectivity == SGroup::HEAD_TO_TAIL)
+                else if (connectivity == SGroup::HEAD_TO_TAIL)
                     out.printf(" CONNECT=HT");
                 else
                     out.printf(" CONNECT=EU");
-                if (sgroup.subscript.size() > 1)
+                if (sgroup.label.size() > 1)
                 {
-                    if (sgroup.subscript.find(' ') > -1)
-                        out.printf(" LABEL=\"%s\"", sgroup.subscript.ptr());
+                    if (sgroup.label.find(' ') > -1)
+                        out.printf(" LABEL=\"%s\"", sgroup.label.ptr());
                     else
-                        out.printf(" LABEL=%s", sgroup.subscript.ptr());
+                        out.printf(" LABEL=%s", sgroup.label.ptr());
                 }
                 _writeMultiString(output, buf.ptr(), buf.size());
             }
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_COP)
             {
                 CopolymerGroup& cg = static_cast<CopolymerGroup&>(sgroup);
-                if (cg.connectivity == SGroup::HEAD_TO_HEAD)
+                const int connectivity = cg.connectivity.value_or(SGroup::HEAD_TO_TAIL);
+                if (connectivity == SGroup::HEAD_TO_HEAD)
                     out.printf(" CONNECT=HH");
-                else if (cg.connectivity == SGroup::HEAD_TO_TAIL)
+                else if (connectivity == SGroup::HEAD_TO_TAIL)
                     out.printf(" CONNECT=HT");
                 else
                     out.printf(" CONNECT=EU");
-                if (cg.sgroup_subtype != 0)
+                const int subtype = cg.sgroup_subtype.value_or(0);
+                if (subtype != 0)
                 {
-                    if (cg.sgroup_subtype == SGroup::SG_SUBTYPE_ALT)
+                    if (subtype == SGroup::SG_SUBTYPE_ALT)
                         out.printf(" SUBTYPE=ALT");
-                    else if (cg.sgroup_subtype == SGroup::SG_SUBTYPE_RAN)
+                    else if (subtype == SGroup::SG_SUBTYPE_RAN)
                         out.printf(" SUBTYPE=RAN");
-                    else if (cg.sgroup_subtype == SGroup::SG_SUBTYPE_BLO)
+                    else if (subtype == SGroup::SG_SUBTYPE_BLO)
                         out.printf(" SUBTYPE=BLO");
                 }
                 _writeMultiString(output, buf.ptr(), buf.size());
@@ -1062,7 +1073,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                         out.printf(" %d", _atom_mapping[mg.parent_atoms[j]]);
                     out.printf(")");
                 }
-                out.printf(" MULT=%d", mg.multiplier);
+                out.printf(" MULT=%d", mg.multiplier.value_or(0));
                 _writeMultiString(output, buf.ptr(), buf.size());
             }
             else
@@ -1105,11 +1116,12 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
     }
 }
 
-void MolfileSaver::_writeGenericSGroup3000(SGroup& sgroup, int idx, Output& output)
+void MolfileSaver::_writeGenericSGroup3000(SGroup& sgroup, const SGroupInfo& info, Output& output)
 {
     int i;
 
-    output.printf("%d %s %d", sgroup.original_group, SGroup::typeToString(sgroup.sgroup_type), idx);
+    const int external_index = sgroup.ext_index != 0 ? sgroup.ext_index : info.new_index;
+    output.printf("%d %s %d", info.new_index, SGroup::typeToString(sgroup.sgroup_type), external_index);
 
     if (sgroup.atoms.size() > 0)
     {
@@ -1118,35 +1130,45 @@ void MolfileSaver::_writeGenericSGroup3000(SGroup& sgroup, int idx, Output& outp
             output.printf(" %d", _atom_mapping[sgroup.atoms[i]]);
         output.printf(")");
     }
-    if (sgroup.bonds.size() > 0)
+    if (sgroup.xbonds.size() > 0)
     {
-        if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
-            output.printf(" CBONDS=(%d", sgroup.bonds.size());
-        else
-            output.printf(" XBONDS=(%d", sgroup.bonds.size());
-        for (i = 0; i < sgroup.bonds.size(); i++)
-            output.printf(" %d", _bond_mapping[sgroup.bonds[i]]);
+        output.printf(" XBONDS=(%d", sgroup.xbonds.size());
+        for (i = 0; i < sgroup.xbonds.size(); i++)
+            output.printf(" %d", _bond_mapping[sgroup.xbonds[i]]);
         output.printf(")");
     }
-    if (sgroup.sgroup_subtype > 0)
+    if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
     {
-        if (sgroup.sgroup_subtype == SGroup::SG_SUBTYPE_ALT)
+        DataSGroup& dsgroup = (DataSGroup&)sgroup;
+        if (dsgroup.cbonds.size() > 0)
+        {
+            output.printf(" CBONDS=(%d", dsgroup.cbonds.size());
+            for (i = 0; i < dsgroup.cbonds.size(); i++)
+                output.printf(" %d", _bond_mapping[dsgroup.cbonds[i]]);
+            output.printf(")");
+        }
+    }
+    const int subtype = sgroup.sgroup_subtype.value_or(0);
+    if (subtype > 0)
+    {
+        if (subtype == SGroup::SG_SUBTYPE_ALT)
             output.printf(" SUBTYPE=ALT");
-        else if (sgroup.sgroup_subtype == SGroup::SG_SUBTYPE_RAN)
+        else if (subtype == SGroup::SG_SUBTYPE_RAN)
             output.printf(" SUBTYPE=RAN");
-        else if (sgroup.sgroup_subtype == SGroup::SG_SUBTYPE_BLO)
+        else if (subtype == SGroup::SG_SUBTYPE_BLO)
             output.printf(" SUBTYPE=BLO");
     }
-    if (sgroup.parent_group > 0)
+    if (info.new_parent_index > 0)
     {
-        output.printf(" PARENT=%d", sgroup.parent_group);
+        output.printf(" PARENT=%d", info.new_parent_index);
     }
     for (i = 0; i < sgroup.brackets.size(); i++)
     {
         Vec2f* brackets = sgroup.brackets[i];
         output.printf(" BRKXYZ=(9 %f %f %f %f %f %f %f %f %f)", brackets[0].x, brackets[0].y, 0.f, brackets[1].x, brackets[1].y, 0.f, 0.f, 0.f, 0.f);
     }
-    if (sgroup.brackets.size() > 0 && sgroup.brk_style > 0)
+    const int brk_style = sgroup.brk_style.value_or(0);
+    if (sgroup.brackets.size() > 0 && brk_style > 0)
     {
         output.printf(" BRKTYP=PAREN");
     }
@@ -1669,43 +1691,46 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
         }
     }
 
-    QS_DEF(Array<int>, sgroup_ids);
     QS_DEF(Array<int>, child_ids);
     QS_DEF(Array<int>, parent_ids);
 
-    sgroup_ids.clear();
     child_ids.clear();
     parent_ids.clear();
 
+    auto ordered_sgroup_infos = mol.sgroups.getOrderedSGroups();
+    std::map<const SGroup*, const SGroupInfo*> sgroup_info_by_ptr;
+    for (const auto& info : ordered_sgroup_infos)
+        sgroup_info_by_ptr[&info.sgroup] = &info;
+
+    std::vector<const SGroupInfo*> sgroup_infos;
+    sgroup_infos.reserve(ordered_sgroup_infos.size());
     for (i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
     {
-        /*SGroup& sgroup =*/std::ignore = mol.sgroups.getSGroup(i);
-        sgroup_ids.push(i);
+        SGroup& sgroup = mol.sgroups.getSGroup(i);
+        sgroup_infos.push_back(sgroup_info_by_ptr[&sgroup]);
     }
 
-    QS_DEF(Array<int>, sgs_sorted);
-    _checkSGroupIndices(mol, sgs_sorted);
+    int sgroup_count = static_cast<int>(sgroup_infos.size());
 
-    if (sgroup_ids.size() > 0)
+    if (sgroup_count > 0)
     {
         int j;
-        for (j = 0; j < sgroup_ids.size(); j += 8)
+        for (j = 0; j < sgroup_count; j += 8)
         {
-            output.printf("M  STY%3d", std::min(sgroup_ids.size(), j + 8) - j);
-            for (i = j; i < std::min(sgroup_ids.size(), j + 8); i++)
+            output.printf("M  STY%3d", std::min(sgroup_count, j + 8) - j);
+            for (i = j; i < std::min(sgroup_count, j + 8); i++)
             {
-                SGroup* sgroup = &mol.sgroups.getSGroup(sgroup_ids[i]);
-                output.printf(" %3d %s", sgroup->original_group, SGroup::typeToString(sgroup->sgroup_type));
+                const auto& info = *sgroup_infos[i];
+                output.printf(" %3d %s", info.new_index, SGroup::typeToString(info.sgroup.sgroup_type));
             }
             output.writeCR();
         }
-        for (j = 0; j < sgroup_ids.size(); j++)
+        for (const auto* info : sgroup_infos)
         {
-            SGroup* sgroup = &mol.sgroups.getSGroup(sgroup_ids[j]);
-            if (sgroup->parent_group > 0)
+            if (info->new_parent_index > 0)
             {
-                child_ids.push(sgroup->original_group);
-                parent_ids.push(sgroup->parent_group);
+                child_ids.push(info->new_index);
+                parent_ids.push(info->new_parent_index);
             }
         }
         for (j = 0; j < child_ids.size(); j += 8)
@@ -1717,30 +1742,38 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             }
             output.writeCR();
         }
-        for (j = 0; j < sgroup_ids.size(); j += 8)
+        for (j = 0; j < sgroup_count; j += 8)
         {
-            output.printf("M  SLB%3d", std::min(sgroup_ids.size(), j + 8) - j);
-            for (i = j; i < std::min(sgroup_ids.size(), j + 8); i++)
+            output.printf("M  SLB%3d", std::min(sgroup_count, j + 8) - j);
+            for (i = j; i < std::min(sgroup_count, j + 8); i++)
             {
-                SGroup* sgroup = &mol.sgroups.getSGroup(sgroup_ids[i]);
-                output.printf(" %3d %3d", sgroup->original_group, sgroup->original_group);
+                const auto& info = *sgroup_infos[i];
+                const int external_index = info.sgroup.ext_index != 0 ? info.sgroup.ext_index : info.new_index;
+                output.printf(" %3d %3d", info.new_index, external_index);
             }
             output.writeCR();
         }
 
-        int sru_count = mol.sgroups.getSGroupCount(SGroup::SG_TYPE_SRU);
+        std::vector<const SGroupInfo*> sru_infos;
+        for (const auto* info : sgroup_infos)
+        {
+            if (info->sgroup.sgroup_type == SGroup::SG_TYPE_SRU)
+                sru_infos.push_back(info);
+        }
+        int sru_count = static_cast<int>(sru_infos.size());
         for (j = 0; j < sru_count; j += 8)
         {
             output.printf("M  SCN%3d", std::min(sru_count, j + 8) - j);
             for (i = j; i < std::min(sru_count, j + 8); i++)
             {
-                RepeatingUnit* ru = (RepeatingUnit*)&mol.sgroups.getSGroup(i, SGroup::SG_TYPE_SRU);
+                const SGroupInfo& info = *sru_infos[i];
+                RepeatingUnit* ru = (RepeatingUnit*)&info.sgroup;
+                output.printf(" %3d ", info.new_index);
 
-                output.printf(" %3d ", ru->original_group);
-
-                if (ru->connectivity == SGroup::HEAD_TO_HEAD)
+                const int connectivity = ru->connectivity.value_or(SGroup::HEAD_TO_TAIL);
+                if (connectivity == SGroup::HEAD_TO_HEAD)
                     output.printf("HH ");
-                else if (ru->connectivity == SGroup::HEAD_TO_TAIL)
+                else if (connectivity == SGroup::HEAD_TO_TAIL)
                     output.printf("HT ");
                 else
                     output.printf("EU ");
@@ -1748,33 +1781,34 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             output.writeCR();
         }
 
-        for (i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
+        for (const auto* info : sgroup_infos)
         {
-            SGroup& sgroup = mol.sgroups.getSGroup(i);
+            SGroup& sgroup = info->sgroup;
+            int wi = info->new_index;
             for (j = 0; j < sgroup.atoms.size(); j += 8)
             {
                 int k;
-                output.printf("M  SAL %3d%3d", sgroup.original_group, std::min(sgroup.atoms.size(), j + 8) - j);
+                output.printf("M  SAL %3d%3d", wi, std::min(sgroup.atoms.size(), j + 8) - j);
                 for (k = j; k < std::min(sgroup.atoms.size(), j + 8); k++)
                     output.printf(" %3d", _atom_mapping[sgroup.atoms[k]]);
                 output.writeCR();
             }
-            for (j = 0; j < sgroup.bonds.size(); j += 8)
+            for (j = 0; j < sgroup.getBonds().size(); j += 8)
             {
                 int k;
-                output.printf("M  SBL %3d%3d", sgroup.original_group, std::min(sgroup.bonds.size(), j + 8) - j);
-                for (k = j; k < std::min(sgroup.bonds.size(), j + 8); k++)
-                    output.printf(" %3d", _bond_mapping[sgroup.bonds[k]]);
+                output.printf("M  SBL %3d%3d", wi, std::min(sgroup.getBonds().size(), j + 8) - j);
+                for (k = j; k < std::min(sgroup.getBonds().size(), j + 8); k++)
+                    output.printf(" %3d", _bond_mapping[sgroup.getBonds()[k]]);
                 output.writeCR();
             }
 
             // Write SMT (subscript/label) for any SGroup type that has it
-            if (sgroup.sgroup_type != SGroup::SG_TYPE_MUL && sgroup.subscript.size() > 1)
+            if (sgroup.sgroup_type != SGroup::SG_TYPE_MUL && sgroup.label.size() > 1)
             {
-                if (sgroup.subscript.find(' ') > -1)
-                    output.printfCR("M  SMT %3d \"%s\"", sgroup.original_group, sgroup.subscript.ptr());
+                if (sgroup.label.find(' ') > -1)
+                    output.printfCR("M  SMT %3d \"%s\"", wi, sgroup.label.ptr());
                 else
-                    output.printfCR("M  SMT %3d %s", sgroup.original_group, sgroup.subscript.ptr());
+                    output.printfCR("M  SMT %3d %s", wi, sgroup.label.ptr());
             }
 
             if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
@@ -1782,18 +1816,18 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                 Superatom& superatom = (Superatom&)sgroup;
 
                 if (superatom.sa_class.size() > 1)
-                    output.printfCR("M  SCL %3d %s", superatom.original_group, superatom.sa_class.ptr());
+                    output.printfCR("M  SCL %3d %s", wi, superatom.sa_class.ptr());
                 if (superatom.bond_connections.size() > 0)
                 {
                     for (j = 0; j < superatom.bond_connections.size(); j++)
                     {
-                        output.printfCR("M  SBV %3d %3d %9.4f %9.4f", superatom.original_group, _bond_mapping[superatom.bond_connections[j].bond_idx],
+                        output.printfCR("M  SBV %3d %3d %9.4f %9.4f", wi, _bond_mapping[superatom.bond_connections[j].bond_idx],
                                         superatom.bond_connections[j].bond_dir.x, superatom.bond_connections[j].bond_dir.y);
                     }
                 }
                 if (superatom.contracted == DisplayOption::Expanded)
                 {
-                    output.printfCR("M  SDS EXP  1 %3d", superatom.original_group);
+                    output.printfCR("M  SDS EXP  1 %3d", wi);
                 }
                 if (superatom.attachment_points.size() > 0)
                 {
@@ -1804,7 +1838,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                     {
                         if (next_line)
                         {
-                            output.printf("M  SAP %3d%3d", superatom.original_group, std::min(nrem, 6));
+                            output.printf("M  SAP %3d%3d", wi, std::min(nrem, 6));
                             next_line = false;
                         }
 
@@ -1834,21 +1868,17 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             {
                 DataSGroup& datasgroup = (DataSGroup&)sgroup;
 
-                output.printf("M  SDT %3d ", datasgroup.original_group);
+                output.printf("M  SDT %3d ", wi);
 
                 _writeFormattedString(output, datasgroup.name, 30);
-
                 _writeFormattedString(output, datasgroup.type, 2);
-
                 _writeFormattedString(output, datasgroup.description, 20);
-
                 _writeFormattedString(output, datasgroup.querycode, 2);
-
                 _writeFormattedString(output, datasgroup.queryoper, 15);
 
                 output.writeCR();
 
-                output.printf("M  SDD %3d ", datasgroup.original_group);
+                output.printf("M  SDD %3d ", wi);
                 _writeDataSGroupDisplay(datasgroup, output);
                 output.writeCR();
 
@@ -1863,13 +1893,12 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                         if (ptr[j] == '\n')
                             break;
 
-                    // Print ptr[0..i]
                     output.writeString("M  ");
                     if (j != 69 || j == k)
                         output.writeString("SED ");
                     else
                         output.writeString("SCD ");
-                    output.printf("%3d ", datasgroup.original_group);
+                    output.printf("%3d ", wi);
 
                     output.write(ptr, j);
                     if (ptr[j] == '\n')
@@ -1887,31 +1916,33 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                 for (j = 0; j < mg.parent_atoms.size(); j += 8)
                 {
                     int k;
-                    output.printf("M  SPA %3d%3d", mg.original_group, std::min(mg.parent_atoms.size(), j + 8) - j);
+                    output.printf("M  SPA %3d%3d", wi, std::min(mg.parent_atoms.size(), j + 8) - j);
                     for (k = j; k < std::min(mg.parent_atoms.size(), j + 8); k++)
                         output.printf(" %3d", _atom_mapping[mg.parent_atoms[k]]);
                     output.writeCR();
                 }
 
-                output.printf("M  SMT %3d %d\n", mg.original_group, mg.multiplier);
+                output.printf("M  SMT %3d %d\n", wi, mg.multiplier.value_or(0));
             }
             for (j = 0; j < sgroup.brackets.size(); j++)
             {
-                output.printf("M  SDI %3d  4 %9.4f %9.4f %9.4f %9.4f\n", sgroup.original_group, sgroup.brackets[j][0].x, sgroup.brackets[j][0].y,
-                              sgroup.brackets[j][1].x, sgroup.brackets[j][1].y);
+                output.printf("M  SDI %3d  4 %9.4f %9.4f %9.4f %9.4f\n", wi, sgroup.brackets[j][0].x, sgroup.brackets[j][0].y, sgroup.brackets[j][1].x,
+                              sgroup.brackets[j][1].y);
             }
-            if (sgroup.brackets.size() > 0 && sgroup.brk_style > 0)
+            const int brk_style = sgroup.brk_style.value_or(0);
+            if (sgroup.brackets.size() > 0 && brk_style > 0)
             {
-                output.printf("M  SBT  1 %3d %3d\n", sgroup.original_group, sgroup.brk_style);
+                output.printf("M  SBT  1 %3d %3d\n", wi, brk_style);
             }
-            if (sgroup.sgroup_subtype > 0)
+            const int subtype = sgroup.sgroup_subtype.value_or(0);
+            if (subtype > 0)
             {
-                if (sgroup.sgroup_subtype == SGroup::SG_SUBTYPE_ALT)
-                    output.printf("M  SST  1 %3d ALT\n", sgroup.original_group);
-                else if (sgroup.sgroup_subtype == SGroup::SG_SUBTYPE_RAN)
-                    output.printf("M  SST  1 %3d RAN\n", sgroup.original_group);
-                else if (sgroup.sgroup_subtype == SGroup::SG_SUBTYPE_BLO)
-                    output.printf("M  SST  1 %3d BLO\n", sgroup.original_group);
+                if (subtype == SGroup::SG_SUBTYPE_ALT)
+                    output.printf("M  SST  1 %3d ALT\n", wi);
+                else if (subtype == SGroup::SG_SUBTYPE_RAN)
+                    output.printf("M  SST  1 %3d RAN\n", wi);
+                else if (subtype == SGroup::SG_SUBTYPE_BLO)
+                    output.printf("M  SST  1 %3d BLO\n", wi);
             }
         }
     }
@@ -1941,104 +1972,6 @@ void MolfileSaver::_writeFormattedString(Output& output, Array<char>& str, int l
     else
         while (k-- > 0)
             output.writeChar(' ');
-}
-
-void MolfileSaver::_checkSGroupIndices(BaseMolecule& mol, Array<int>& sgs_list)
-{
-    QS_DEF(Array<int>, orig_ids);
-    QS_DEF(Array<int>, added_ids);
-    QS_DEF(Array<int>, sgs_mapping);
-    QS_DEF(Array<int>, sgs_changed);
-
-    sgs_list.clear();
-    orig_ids.clear();
-    added_ids.clear();
-    sgs_mapping.clear_resize(mol.sgroups.end());
-    sgs_mapping.zerofill();
-    sgs_changed.clear_resize(mol.sgroups.end());
-    sgs_changed.zerofill();
-
-    int iw = 1;
-    for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
-    {
-        SGroup& sgroup = mol.sgroups.getSGroup(i);
-        if (sgroup.parent_group == 0)
-        {
-            sgs_mapping[i] = iw;
-            iw++;
-        }
-    }
-    for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
-    {
-        if (sgs_mapping[i] == 0)
-        {
-            sgs_mapping[i] = iw;
-            iw++;
-        }
-    }
-
-    for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
-    {
-        SGroup& sgroup = mol.sgroups.getSGroup(i);
-        if (sgroup.original_group == 0)
-        {
-            sgroup.original_group = sgs_mapping[i];
-        }
-        else
-        {
-            for (int j = mol.sgroups.begin(); j != mol.sgroups.end(); j = mol.sgroups.next(j))
-            {
-                SGroup& sg = mol.sgroups.getSGroup(j);
-                if (sg.parent_group == sgroup.original_group && sgs_changed[j] == 0)
-                {
-                    sg.parent_group = sgs_mapping[i];
-                    sgs_changed[j] = 1;
-                }
-            }
-            sgroup.original_group = sgs_mapping[i];
-        }
-        orig_ids.push(sgroup.original_group);
-    }
-
-    for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
-    {
-        SGroup& sgroup = mol.sgroups.getSGroup(i);
-        if (sgroup.parent_group == 0)
-        {
-            sgs_list.push(i);
-            added_ids.push(sgroup.original_group);
-        }
-        else
-        {
-            if (orig_ids.find(sgroup.parent_group) == -1 || sgroup.parent_group == sgroup.original_group)
-            {
-                sgroup.parent_group = 0;
-                sgs_list.push(i);
-                added_ids.push(sgroup.original_group);
-            }
-        }
-    }
-
-    for (;;)
-    {
-        for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
-        {
-            SGroup& sgroup = mol.sgroups.getSGroup(i);
-            if (sgroup.parent_group == 0)
-                continue;
-
-            if (added_ids.find(sgroup.original_group) != -1)
-                continue;
-
-            if (added_ids.find(sgroup.parent_group) != -1)
-            {
-                sgs_list.push(i);
-                added_ids.push(sgroup.original_group);
-            }
-        }
-        if (sgs_list.size() == mol.countSGroups())
-            break;
-    }
 }
 
 int MolfileSaver::_getStereocenterParity(BaseMolecule& mol, int idx)
@@ -2202,12 +2135,22 @@ bool MolfileSaver::_checkAttPointOrder(BaseMolecule& mol, int rsite)
 
 void MolfileSaver::_writeDataSGroupDisplay(DataSGroup& datasgroup, Output& out)
 {
-    out.printf("%10.4f%10.4f    %c%c%c", datasgroup.display_pos.x, datasgroup.display_pos.y, datasgroup.detached ? 'D' : 'A', datasgroup.relative ? 'R' : 'A',
-               datasgroup.display_units ? 'U' : ' ');
-    if (datasgroup.num_chars == 0)
-        out.printf("   ALL  1    %c  %1d  ", datasgroup.tag, datasgroup.dasp_pos);
+    float dp_x = 0.0f;
+    float dp_y = 0.0f;
+    if (datasgroup.display_pos.has_value())
+    {
+        const Vec2f& display_pos = datasgroup.display_pos.value();
+        dp_x = display_pos.x;
+        dp_y = display_pos.y;
+    }
+    out.printf("%10.4f%10.4f    %c%c%c", dp_x, dp_y, datasgroup.detached ? 'D' : 'A', datasgroup.relative ? 'R' : 'A', datasgroup.display_units ? 'U' : ' ');
+    const int num_chars = datasgroup.num_chars.value_or(0);
+    const char tag = datasgroup.tag.value_or(0);
+    const int dasp_pos = datasgroup.dasp_pos.value_or(0);
+    if (num_chars == 0)
+        out.printf("   ALL  1    %c  %1d  ", tag, dasp_pos);
     else
-        out.printf("   %3d  1    %c  %1d  ", datasgroup.num_chars, datasgroup.tag, datasgroup.dasp_pos);
+        out.printf("   %3d  1    %c  %1d  ", num_chars, tag, dasp_pos);
 }
 
 bool MolfileSaver::_hasNeighborEitherBond(BaseMolecule& mol, int edge_idx)
