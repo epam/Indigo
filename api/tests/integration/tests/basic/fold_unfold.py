@@ -282,3 +282,9 @@ testFoldUnfoldWithExplicitRadicals("[CH2] |^4:0|")
 testFoldUnfoldWithExplicitRadicals("[CH]C1=CC=CO1 |^4:0|")
 testFoldUnfoldWithExplicitRadicals("C1C=CC=C([CH])C=1 |^4:5|")
 testFoldUnfoldQueryComponentKet()
+
+# 3702 Unfold hydrogens makes monoradical from Helium with odd valence
+indigo.setOption("molfile-saving-skip-date", "1")
+mol = indigo.loadMolecule("[HeH]")
+mol.unfoldHydrogens()
+print(mol.molfile())
