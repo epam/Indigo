@@ -588,6 +588,8 @@ int Element::orbitals(int elem, bool use_d_orbital)
 
 int Element::electrons(int elem, int charge)
 {
+    if (elem == ELEM_He) // Helium in group 8 but has only two electrons
+        return 2 - charge;
     return Element::group(elem) - charge;
 }
 
