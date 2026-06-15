@@ -92,8 +92,6 @@
                 "fieldData": "data,;:|{}$value",
                 "fieldType": "unit,;:|{}$text",
                 "queryOp": "query,;:|{}$op",
-                "x": 1.9868215517249156e-8,
-                "y": 0.3333333432674408,
                 "dataDetached": false
             }
         ]
