@@ -1,8 +1,8 @@
 #ifndef _BINGO_PG_INDEX_H__
 #define _BINGO_PG_INDEX_H__
 
-#include "base_cpp/exception.h"
 #include "base_cpp/array.h"
+#include "base_cpp/exception.h"
 #include <memory>
 
 #include "bingo_pg_buffer.h"

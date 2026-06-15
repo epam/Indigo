@@ -19,8 +19,8 @@
 #ifndef __graph_subtree_enumerator__
 #define __graph_subtree_enumerator__
 
-#include "base_cpp/list.h"
 #include "base_cpp/array.h"
+#include "base_cpp/list.h"
 #include "base_cpp/tlscont.h"
 #include "graph/graph.h"
 
