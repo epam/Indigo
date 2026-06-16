@@ -571,20 +571,21 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
         }
     }
 
-    // Build a set of inner node IDs for each fragment node so we can
-    // identify bonds that are entirely internal to a collapsed fragment.
+    // Build a set of inner node IDs for fragment nodes where internal collapsed
+    // bonds should be filtered. For fragments connected to the outer molecule,
+    // preserve all internal bonds so chemistry remains intact.
     std::unordered_set<int> all_inner_node_ids;
     for (auto fidx : _fragment_nodes)
     {
         auto& frag_node = nodes[fidx];
-        // Exclude ExternalConnectionPoint nodes — their bonds bridge the
-        // inner fragment to the outer molecule and must be preserved.
-        std::unordered_set<int> ext_conn_ids(frag_node.ext_connections.begin(), frag_node.ext_connections.end());
+
+        // Connected fragments (via ExternalConnectionPoint) encode real
+        // substituent structure, so dropping their inner bonds breaks valence.
+        if (!frag_node.ext_connections.empty())
+            continue;
+
         for (auto inner_id : frag_node.inner_nodes)
-        {
-            if (ext_conn_ids.count(inner_id) == 0)
-                all_inner_node_ids.insert(inner_id);
-        }
+            all_inner_node_ids.insert(inner_id);
     }
 
     // Filter out bonds where both endpoints are inner nodes of a collapsed
