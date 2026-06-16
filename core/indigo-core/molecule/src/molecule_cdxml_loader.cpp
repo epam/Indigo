@@ -495,43 +495,13 @@ void MoleculeCdxmlLoader::_parseCollections(BaseMolecule& mol)
         }
     }
 
-    // Build a set of inner node IDs for each fragment node so we can
-    // identify bonds that are entirely internal to a collapsed fragment.
-    std::unordered_set<int> all_inner_node_ids;
-    for (auto fidx : _fragment_nodes)
-    {
-        auto& frag_node = nodes[fidx];
-        // Exclude ExternalConnectionPoint nodes — their bonds bridge the
-        // inner fragment to the outer molecule and must be preserved.
-        std::unordered_set<int> ext_conn_ids(frag_node.ext_connections.begin(), frag_node.ext_connections.end());
-        for (auto inner_id : frag_node.inner_nodes)
-        {
-            if (ext_conn_ids.count(inner_id) == 0)
-                all_inner_node_ids.insert(inner_id);
-        }
-    }
-
-    // Filter out bonds where both endpoints are inner nodes of a collapsed
-    // fragment. These bonds are zero-length (all inner atoms share the parent
-    // node's position) and keeping them skews Ketcher's average-bond-length
-    // calculation, causing incorrect scale.
-    std::vector<CdxmlBond> filtered_bonds;
     for (const auto& bond : bonds)
-    {
-        bool first_inner = all_inner_node_ids.count(bond.be.first) > 0;
-        bool second_inner = all_inner_node_ids.count(bond.be.second) > 0;
-        if (first_inner && second_inner)
-            continue;
-        filtered_bonds.push_back(bond);
-    }
-
-    for (const auto& bond : filtered_bonds)
     {
         _checkFragmentConnection(bond.be.first, bond.id);
         _checkFragmentConnection(bond.be.second, bond.id);
     }
 
-    _addAtomsAndBonds(mol, atoms, filtered_bonds);
+    _addAtomsAndBonds(mol, atoms, bonds);
 
     _processEnhancedStereo(mol);
 
