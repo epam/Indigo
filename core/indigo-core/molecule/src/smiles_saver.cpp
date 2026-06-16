@@ -621,9 +621,9 @@ void SmilesSaver::_saveMolecule()
             QS_DEF(Array<int>, closing);
 
             walk.getNeighborsClosing(v_idx, closing);
-            const bool write_terminal_attachment_point =
-                chemaxon && _bmol->sgroups.getSGroupCount() > 0 && walk.numBranches(v_idx) == 0 && i == v_seq.size() - 1;
+            const bool write_terminal_attachment_point = chemaxon && walk.numBranches(v_idx) == 0 && i == v_seq.size() - 1;
 
+            constexpr int IMAGINARY_SHIFT = 10000;
             for (int ap = 1; ap <= _bmol->attachmentPointCount(); ap++)
             {
                 int idx = 0, atom_idx;
@@ -648,14 +648,14 @@ void SmilesSaver::_saveMolecule()
                             // We can not modify the given molecule, but we want the closure to
                             // be here. To achieve that, we add a link to an imagimary atom with
                             // incredibly big number.
-                            closing.push(10000 + ap);
+                            closing.push(IMAGINARY_SHIFT + ap);
                         }
                     }
             }
 
             for (j = 0; j < closing.size(); j++)
             {
-                bool ap = (closing[j] >= 10000);
+                bool ap = (closing[j] >= IMAGINARY_SHIFT);
                 bool rsite = !ap && (separate_rsites && _bmol->isRSite(closing[j]));
 
                 if (ap || rsite)
@@ -674,7 +674,7 @@ void SmilesSaver::_saveMolecule()
 
                 if (ap)
                 {
-                    _attachment_indices.push(closing[j] - 10000);
+                    _attachment_indices.push(closing[j] - IMAGINARY_SHIFT);
                     _attachment_cycle_numbers.push(k);
                 }
 

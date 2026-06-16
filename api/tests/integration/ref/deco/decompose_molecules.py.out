@@ -88,7 +88,7 @@ Format: auto
 M  END
 
 CCC(C)C |ha:0,1,2,hb:0,1|
-Smiles: CCC%91%92.[*:1]%91.[*:2]%92 |$;;;_R1;_R2$,RG:_R1={C%91.[*:1]%91 |$;_AP1$|},_R2={C%91.[*:1]%91 |$;_AP1$|}|
+Smiles: CCC%91%92.[*:1]%91.[*:2]%92 |$;;;_R1;_R2$,RG:_R1={C* |$;_AP1$|},_R2={C* |$;_AP1$|}|
 Format: 2000
 $MDL  REV  1 0100000000
 $MOL
@@ -223,7 +223,7 @@ $END RGP
 $END MOL
 
 RGROUP # 1
-Smiles: C%91.[*:1]%91 |$;_AP1$|
+Smiles: C* |$;_AP1$|
 Format: 2000
 
   -INDIGO-01000000002D
@@ -258,7 +258,7 @@ M  APO  1   1   1
 M  END
 
 RGROUP # 2
-Smiles: C%91.[*:1]%91 |$;_AP1$|
+Smiles: C* |$;_AP1$|
 Format: 2000
 
   -INDIGO-01000000002D
@@ -509,7 +509,7 @@ M  APO  2   1   1   4   2
 M  END
 
 ON1NCCC1 |ha:1,2,3,4,5,hb:1,2,3,4,5|
-Smiles: N1%91NCCC1.[*:2]%91 |$;;;;;_R2$,RG:_R2={O%91.[*:1]%91 |$;_AP1$|}|
+Smiles: N1%91NCCC1.[*:2]%91 |$;;;;;_R2$,RG:_R2={O* |$;_AP1$|}|
 Format: 2000
 $MDL  REV  1 0100000000
 $MOL
@@ -622,7 +622,7 @@ $END RGP
 $END MOL
 
 RGROUP # 2
-Smiles: O%91.[*:1]%91 |$;_AP1$|
+Smiles: O* |$;_AP1$|
 Format: 2000
 
   -INDIGO-01000000002D
@@ -682,7 +682,7 @@ M  RGP  3   6   1   7   2   8   3
 M  END
 
 ClP1NCCC1 |ha:1,2,3,4,5,hb:1,2,3,4,5|
-Smiles: P1%91NCCC1.[*:1]%91 |$;;;;;_R1$,RG:_R1={Cl%91.[*:1]%91 |$;_AP1$|}|
+Smiles: P1%91NCCC1.[*:1]%91 |$;;;;;_R1$,RG:_R1={Cl* |$;_AP1$|}|
 Format: 2000
 $MDL  REV  1 0100000000
 $MOL
@@ -795,7 +795,7 @@ $END RGP
 $END MOL
 
 RGROUP # 1
-Smiles: Cl%91.[*:1]%91 |$;_AP1$|
+Smiles: Cl* |$;_AP1$|
 Format: 2000
 
   -INDIGO-01000000002D
@@ -1025,7 +1025,7 @@ M  APO  2   1   2   4   1
 M  END
 
 OP1(NCCC1)O |ha:1,2,3,4,5,hb:1,2,3,4,5|
-Smiles: P1%91%92NCCC1.[*:1]%91.[*:3]%92 |$;;;;;_R1;_R3$,RG:_R1={O%91.[*:1]%91 |$;_AP1$|},_R3={O%91.[*:1]%91 |$;_AP1$|}|
+Smiles: P1%91%92NCCC1.[*:1]%91.[*:3]%92 |$;;;;;_R1;_R3$,RG:_R1={O* |$;_AP1$|},_R3={O* |$;_AP1$|}|
 Format: 2000
 $MDL  REV  1 0100000000
 $MOL
@@ -1175,7 +1175,7 @@ $END RGP
 $END MOL
 
 RGROUP # 1
-Smiles: O%91.[*:1]%91 |$;_AP1$|
+Smiles: O* |$;_AP1$|
 Format: 2000
 
   -INDIGO-01000000002D
@@ -1210,7 +1210,7 @@ M  APO  1   1   1
 M  END
 
 RGROUP # 3
-Smiles: O%91.[*:1]%91 |$;_AP1$|
+Smiles: O* |$;_AP1$|
 Format: 2000
 
   -INDIGO-01000000002D
@@ -1267,7 +1267,7 @@ M  RGP  2   6   1   7   2
 M  END
 
 ClP1NCCC1 |ha:1,2,3,4,5,hb:1,2,3,4,5|
-Smiles: P1%91NCCC1.[*:1]%91 |$;;;;;_R1$,RG:_R1={Cl%91.[*:1]%91 |$;_AP1$|}|
+Smiles: P1%91NCCC1.[*:1]%91 |$;;;;;_R1$,RG:_R1={Cl* |$;_AP1$|}|
 Format: 2000
 $MDL  REV  1 0100000000
 $MOL
@@ -1380,7 +1380,7 @@ $END RGP
 $END MOL
 
 RGROUP # 1
-Smiles: Cl%91.[*:1]%91 |$;_AP1$|
+Smiles: Cl* |$;_AP1$|
 Format: 2000
 
   -INDIGO-01000000002D
@@ -1605,7 +1605,7 @@ M  APO  2   1   1   4   1
 M  END
 
 OP1(NCCC1)O |ha:1,2,3,4,5,hb:1,2,3,4,5|
-Smiles: P1%91%92NCCC1.[*:1]%91.[*:2]%92 |$;;;;;_R1;_R2$,RG:_R1={O%91.[*:1]%91 |$;_AP1$|},_R2={O%91.[*:1]%91 |$;_AP1$|}|
+Smiles: P1%91%92NCCC1.[*:1]%91.[*:2]%92 |$;;;;;_R1;_R2$,RG:_R1={O* |$;_AP1$|},_R2={O* |$;_AP1$|}|
 Format: 2000
 $MDL  REV  1 0100000000
 $MOL
@@ -1755,7 +1755,7 @@ $END RGP
 $END MOL
 
 RGROUP # 1
-Smiles: O%91.[*:1]%91 |$;_AP1$|
+Smiles: O* |$;_AP1$|
 Format: 2000
 
   -INDIGO-01000000002D
@@ -1790,7 +1790,7 @@ M  APO  1   1   1
 M  END
 
 RGROUP # 2
-Smiles: O%91.[*:1]%91 |$;_AP1$|
+Smiles: O* |$;_AP1$|
 Format: 2000
 
   -INDIGO-01000000002D
@@ -1993,7 +1993,7 @@ Format: auto
 M  END
 
 CC1CCCCC1 |ha:0,1,2,3,5,6,hb:0,1,2,5,6|
-Smiles: CC(CC%91)CC%92.[*:1]%92%91 |$;;;;;;_R1$,RG:_R1={C%91%92.[*:1]%91.[*:2]%92 |$;_AP1;_AP2$|}|
+Smiles: CC(CC%91)CC%92.[*:1]%92%91 |$;;;;;;_R1$,RG:_R1={C** |$;_AP1;_AP2$|}|
 Format: 2000
 $MDL  REV  1 0100000000
 $MOL
@@ -2112,7 +2112,7 @@ $END RGP
 $END MOL
 
 RGROUP # 1
-Smiles: C%91%92.[*:1]%91.[*:2]%92 |$;_AP1;_AP2$|
+Smiles: C** |$;_AP1;_AP2$|
 Format: 2000
 
   -INDIGO-01000000002D
@@ -2169,7 +2169,7 @@ M  RGP  1   7   1
 M  END
 
 CC1CC2C(NCO2)CC1 |ha:0,1,2,3,8,9,hb:0,1,2,9,10|
-Smiles: CC(CC%91)CC%92.[*:1]%92%91 |$;;;;;;_R1$,RG:_R1={C%91%92NCO%93.[*:1]%91.[*:2]%92.[*:2]%93 |$;;;;_AP1;_AP2;_AP2$|}|
+Smiles: CC(CC%91)CC%92.[*:1]%92%91 |$;;;;;;_R1$,RG:_R1={C%91%92NCO*.[*:1]%91.[*:2]%92 |$;;;;_AP1;_AP2;_AP2$|}|
 Format: 2000
 $MDL  REV  1 0100000000
 $MOL
@@ -2306,7 +2306,7 @@ $END RGP
 $END MOL
 
 RGROUP # 1
-Smiles: C%91%92NCO%93.[*:1]%91.[*:2]%92.[*:2]%93 |$;;;;_AP1;_AP2;_AP2$|
+Smiles: C%91%92NCO*.[*:1]%91.[*:2]%92 |$;;;;_AP1;_AP2;_AP2$|
 Format: 2000
 
   -INDIGO-01000000002D
@@ -2446,7 +2446,7 @@ M  RGP  1   7   1
 M  END
 
 C1C2C3C(C2)CC13 |ha:0,1,3,4,5,6,hb:0,3,4,5,6,7|
-Smiles: C1C%91CC%92CC%931.[*:1]%91%93%92 |$;;;;;;_R1$,RG:_R1={C%91%92%93.[*:1]%91.[*:2]%92.[*:3]%93 |$;_AP1;_AP2;_AP3$|}|
+Smiles: C1C%91CC%92CC%931.[*:1]%91%93%92 |$;;;;;;_R1$,RG:_R1={C*** |$;_AP1;_AP2;_AP3$|}|
 Format: 2000
 $MDL  REV  1 0100000000
 $MOL
@@ -2573,7 +2573,7 @@ $END RGP
 $END MOL
 
 RGROUP # 1
-Smiles: C%91%92%93.[*:1]%91.[*:2]%92.[*:3]%93 |$;_AP1;_AP2;_AP3$|
+Smiles: C*** |$;_AP1;_AP2;_AP3$|
 Format: 2000
 
   -INDIGO-01000000002D
@@ -2989,7 +2989,7 @@ M  RGP  4   8   1   9   2  10   3  11   4
 M  END
 
 C1C2C3C4C(C2)CC1C34 |ha:0,2,3,4,6,7,8,hb:2,3,6,7,8,9,10|
-Smiles: C%91C1C%92C%93C%94C%95C1.[*:1]%91%93%95.[*:2]%94%92 |$;;;;;;;_R1;_R2$,RG:_R1={C%91C%92%93.[*:3]%91.[*:1]%92.[*:2]%93 |$;;_AP3;_AP1;_AP2$|},|
+Smiles: C%91C1C%92C%93C%94C%95C1.[*:1]%91%93%95.[*:2]%94%92 |$;;;;;;;_R1;_R2$,RG:_R1={C%91C**.[*:3]%91 |$;;_AP3;_AP1;_AP2$|},|
 Format: 2000
 $MDL  REV  1 0100000000
 $MOL
@@ -3165,7 +3165,7 @@ $END RGP
 $END MOL
 
 RGROUP # 1
-Smiles: C%91C%92%93.[*:3]%91.[*:1]%92.[*:2]%93 |$;;_AP3;_AP1;_AP2$|
+Smiles: C%91C**.[*:3]%91 |$;;_AP3;_AP1;_AP2$|
 Format: 2000
 
   -INDIGO-01000000002D
@@ -3669,7 +3669,7 @@ M  APO  3   1   2   2   1   3   4
 M  END
 
 C1C2C3C(C2)CC13 |ha:0,1,3,4,5,6,hb:0,3,4,5,6,7|
-Smiles: C1C%91CC%92CC%931.[*:1]%91%93%92 |$;;;;;;_R1$,RG:_R1={C%91%92%93.[*:1]%91.[*:2]%92.[*:3]%93 |$;_AP1;_AP2;_AP3$|}|
+Smiles: C1C%91CC%92CC%931.[*:1]%91%93%92 |$;;;;;;_R1$,RG:_R1={C*** |$;_AP1;_AP2;_AP3$|}|
 Format: 2000
 $MDL  REV  1 0100000000
 $MOL
@@ -3796,7 +3796,7 @@ $END RGP
 $END MOL
 
 RGROUP # 1
-Smiles: C%91%92%93.[*:1]%91.[*:2]%92.[*:3]%93 |$;_AP1;_AP2;_AP3$|
+Smiles: C*** |$;_AP1;_AP2;_AP3$|
 Format: 2000
 
   -INDIGO-01000000002D
