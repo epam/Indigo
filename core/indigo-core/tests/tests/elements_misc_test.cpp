@@ -177,7 +177,7 @@ TEST_F(ElementTest, Electrons_Neutral)
     EXPECT_EQ(Element::electrons(ELEM_N, 0), 5);  // Group 5
     EXPECT_EQ(Element::electrons(ELEM_O, 0), 6);  // Group 6
     EXPECT_EQ(Element::electrons(ELEM_H, 0), 1);  // Group 1
-    EXPECT_EQ(Element::electrons(ELEM_He, 0), 8); // Group 8
+    EXPECT_EQ(Element::electrons(ELEM_He, 0), 2); // Group 8
 }
 
 TEST_F(ElementTest, Electrons_Charged)
