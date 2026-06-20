@@ -247,7 +247,7 @@ bool BingoPgSection::isStructureRemoved(int mol_idx)
 
 BingoPgBufferCacheFp& BingoPgSection::getFpBufferCache(int fp_idx)
 {
-    BingoPgBufferCacheFp* elem = _buffersFp.at(fp_idx);
+    BingoPgBufferCacheFp* elem = _buffersFp.getPtr(fp_idx);
     if (elem == 0)
     {
         bool write = (_idxStrategy == BingoPgIndex::BUILDING_STRATEGY);
@@ -260,7 +260,7 @@ BingoPgBufferCacheFp& BingoPgSection::getFpBufferCache(int fp_idx)
 
 BingoPgBufferCacheMap& BingoPgSection::getMapBufferCache(int map_idx)
 {
-    BingoPgBufferCacheMap* elem = _buffersMap.at(map_idx);
+    BingoPgBufferCacheMap* elem = _buffersMap.getPtr(map_idx);
     if (elem == 0)
     {
         bool write = (_idxStrategy == BingoPgIndex::BUILDING_STRATEGY);
@@ -291,7 +291,7 @@ void BingoPgSection::readSectionBitsCount(indigo::Array<int>& bits_number)
         if (buf_idx * SECTION_BITS_PER_BLOCK >= _sectionInfo.n_structures)
             break;
 
-        BingoPgBuffer& bits_buffer = *_bitsCountBuffers[buf_idx];
+        BingoPgBuffer& bits_buffer = _bitsCountBuffers[buf_idx];
         bits_buffer.readBuffer(_index, _offset + buf_idx + SECTION_META_PAGES, BINGO_PG_READ);
         buffer_data = (unsigned short*)bits_buffer.getIndexData(data_len);
         for (int page_str_idx = 0; page_str_idx < SECTION_BITS_PER_BLOCK; ++page_str_idx)
@@ -398,7 +398,7 @@ void BingoPgSection::_setBitsCountData(unsigned short bits_count)
     int buf_idx = _sectionInfo.n_structures / SECTION_BITS_PER_BLOCK;
     int page_str_idx = _sectionInfo.n_structures % SECTION_BITS_PER_BLOCK;
 
-    BingoPgBuffer& bits_buffer = *_bitsCountBuffers[buf_idx];
+    BingoPgBuffer& bits_buffer = _bitsCountBuffers[buf_idx];
     bits_buffer.readBuffer(_index, _offset + buf_idx + SECTION_META_PAGES, BINGO_PG_WRITE);
     unsigned short* buffer_data = (unsigned short*)bits_buffer.getIndexData(data_len);
     buffer_data[page_str_idx] = bits_count;
@@ -407,7 +407,7 @@ void BingoPgSection::_setBitsCountData(unsigned short bits_count)
 
 BingoPgBufferCacheBin* BingoPgSection::_getBufferBin(int idx)
 {
-    BingoPgBufferCacheBin* elem = _buffersBin.at(idx);
+    BingoPgBufferCacheBin* elem = _buffersBin.getPtr(idx);
     if (elem == 0)
     {
         bool write = (_idxStrategy == BingoPgIndex::BUILDING_STRATEGY);

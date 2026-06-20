@@ -543,7 +543,7 @@ int BingoPgExternalBitset::Iterator::next()
             if (from_byte == 0)
                 continue;
 
-            _fromIndexes = all_indexes.at(from_byte);
+            _fromIndexes = &all_indexes.at(from_byte);
 
             _fromBitIdx = 0;
             _shiftByte = _fromByteIdx << 3;
@@ -563,7 +563,7 @@ int BingoPgExternalBitset::Iterator::next()
             if (from_byte == 0)
                 continue;
 
-            _fromIndexes = all_indexes.at(from_byte);
+            _fromIndexes = &all_indexes.at(from_byte);
 
             _fromBitIdx = 0;
             _shiftByte = _fromByteIdx << 3;

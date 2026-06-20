@@ -286,7 +286,7 @@ public:
         {
             if (i != 0)
                 column_names.appendString(", ", true);
-            column_names.appendString(_importColumns[i]->columnName.ptr(), true);
+            column_names.appendString(_importColumns[i].columnName.ptr(), true);
         }
         /*
          * Make a query for types definition
@@ -299,7 +299,7 @@ public:
         for (int i = 0; i < _importColumns.size(); ++i)
         {
             int arg_type = table_first.getArgOid(i);
-            ImportColumn& dataCol = *_importColumns.at(i);
+            ImportColumn& dataCol = _importColumns.at(i);
 
             if ((arg_type != INT4OID) && (arg_type != INT8OID) && (arg_type != TEXTOID) && (arg_type != BYTEAOID))
                 throw BingoPgError("can not import a structure: unsupported column '%s' type; supported values: 'text', 'bytea', 'integer'",
@@ -312,7 +312,7 @@ public:
     void _addData(const char* data, int col_idx)
     {
         std::unique_ptr<ImportData> import_data;
-        ImportColumn& import_column = *_importColumns[col_idx];
+        ImportColumn& import_column = _importColumns[col_idx];
         /*
          * Detect the types and correspond class
          */
@@ -364,7 +364,7 @@ public:
         for (int col_idx = 0; col_idx < _importColumns.size(); ++col_idx)
         {
             q_nulls.push(0);
-            q_oids.push(_importColumns[col_idx]->type);
+            q_oids.push(_importColumns[col_idx].type);
 
             if (col_idx != 0)
                 query_string.printf(", ");
@@ -408,7 +408,7 @@ public:
             q_values.clear();
             for (int q_idx = 0; q_idx < _importData.size(); ++q_idx)
             {
-                q_values.push(_importData[q_idx]->getDatum());
+                q_values.push(_importData[q_idx].getDatum());
                 if (q_values[q_idx] == 0)
                 {
                     q_nulls[q_idx] = 'n';

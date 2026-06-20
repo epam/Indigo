@@ -167,7 +167,7 @@ void RingoPgBuildEngine::_processResultCb(void* context)
      */
     if (engine->_readPreparedInfo(&cache_idx, *fp_data, engine->_fpSize))
     {
-        StructCache& struct_cache = *struct_caches[cache_idx];
+        StructCache& struct_cache = struct_caches[cache_idx];
         struct_cache.data.reset(fp_data.release());
         struct_cache.data->setTidItem(&struct_cache.ptr);
     }
@@ -175,7 +175,7 @@ void RingoPgBuildEngine::_processResultCb(void* context)
     {
         if (cache_idx != -1)
         {
-            ItemPointer item_ptr = &(struct_caches[cache_idx]->ptr);
+            ItemPointer item_ptr = &(struct_caches[cache_idx].ptr);
             int block_number = ItemPointerGetBlockNumber(item_ptr);
             int offset_number = ItemPointerGetOffsetNumber(item_ptr);
             elog(WARNING, "reaction build engine: internal error while processing record with ctid='(%d,%d)'::tid: see at the previous warning", block_number,

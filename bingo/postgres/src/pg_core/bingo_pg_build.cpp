@@ -232,7 +232,7 @@ void BingoPgBuild::flush()
     for (int c_idx = 0; c_idx < _parrallelCache.size(); ++c_idx)
     {
         // profTimerStart(t1, "bingo_pg.insert_idx");
-        BingoPgBuildEngine::StructCache& struct_cache = *_parrallelCache[c_idx];
+        BingoPgBuildEngine::StructCache& struct_cache = _parrallelCache[c_idx];
         if (struct_cache.data.get() == 0)
         {
             continue;
