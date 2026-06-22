@@ -528,8 +528,12 @@ def save_moldata(
     elif output_format == "chemical/x-sdf":
         buffer = indigo.writeBuffer()
         sdfSaver = indigo.createSaver(buffer, "sdf")
-        for frag in md.struct.iterateComponents():
-            sdfSaver.append(frag.clone())
+        if md.is_rxn:
+            for mol in md.struct.iterateMolecules():
+                sdfSaver.append(mol.clone())
+        else:
+            for frag in md.struct.iterateComponents():
+                sdfSaver.append(frag.clone())
         sdfSaver.close()
         return buffer.toString()
     elif output_format == "chemical/x-rdf":
