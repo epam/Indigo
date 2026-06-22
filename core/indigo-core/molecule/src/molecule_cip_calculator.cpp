@@ -156,8 +156,15 @@ bool MoleculeCIPCalculator::addCIPStereoDescriptors(BaseMolecule& mol)
 
     for (atom_idx = 0; atom_idx < atom_cip_desc.size(); ++atom_idx)
     {
-        if (atom_cip_desc[atom_idx] > CIPDesc::UNKNOWN)
-            mol._cip_atoms.insert(atom_idx, atom_cip_desc[atom_idx]);
+        CIPDesc desc = atom_cip_desc[atom_idx];
+        if (desc > CIPDesc::UNKNOWN)
+        {
+            // An "&" (AND) group center is racemic: both enantiomers are present, so a true R/S
+            // center is both R and S. Report RS. Pseudoasymmetric r/s is reflection-invariant: keep it.
+            if ((desc == CIPDesc::R || desc == CIPDesc::S) && mol.stereocenters.getType(atom_idx) == MoleculeStereocenters::ATOM_AND)
+                desc = CIPDesc::RS;
+            mol._cip_atoms.insert(atom_idx, desc);
+        }
     }
 
     for (auto bond_idx = 0; bond_idx < bond_cip_desc.size(); ++bond_idx)
@@ -202,6 +209,9 @@ void MoleculeCIPCalculator::addCIPSgroups(BaseMolecule& mol)
             break;
         case CIPDesc::s:
             sgroup.data.readString("(s)", true);
+            break;
+        case CIPDesc::RS:
+            sgroup.data.readString("(RS)", true);
             break;
         }
 
@@ -270,6 +280,7 @@ void MoleculeCIPCalculator::convertSGroupsToCIP(BaseMolecule& mol)
                     case CIPDesc::r:
                     case CIPDesc::S:
                     case CIPDesc::R:
+                    case CIPDesc::RS:
                         // atoms
                         for (auto atom_idx : dsg.atoms)
                             mol.setAtomCIP(atom_idx, cip_it->second);
