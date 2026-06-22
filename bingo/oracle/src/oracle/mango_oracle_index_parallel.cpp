@@ -62,7 +62,7 @@ void MangoRegisterDispatcher::_handleResult(OsCommandResult& result)
         const char* rowid = (const char*)res.rowids.get(i);
         prepared_data.copy((char*)res.per_molecule_data.get(i), res.per_molecule_data.getSize(i));
 
-        mangoRegisterMolecule(_env, rowid, _context, (res.per_molecule_index[i]), fingerprints, prepared_data, true);
+        mangoRegisterMolecule(_env, rowid, _context, res.per_molecule_index[i], fingerprints, prepared_data, true);
 
         _molecules_saved++;
 
@@ -128,7 +128,7 @@ void MangoRegisterCommand::execute(OsCommandResult& result)
                 // Push new MangoIndex
                 res.per_molecule_index.push();
             }
-            MangoIndex& index = (res.per_molecule_index[res.valid_molecules]);
+            MangoIndex& index = res.per_molecule_index[res.valid_molecules];
             index.init(_context.context());
 
             if (mangoPrepareMolecule(_env, rowid, molfile_buf, _context, index, prepared_data, &_lock_for_exclusive_access, failure_message))

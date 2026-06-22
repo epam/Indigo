@@ -112,7 +112,7 @@ public:
                 data.resize(size);
             for (int i = 0; i < size; ++i)
             {
-                handleArray(*data[i], scanner, output);
+                handleArray(data[i], scanner, output);
             }
         }
 
