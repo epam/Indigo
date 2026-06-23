@@ -83,9 +83,8 @@ namespace indigo
         void removeCIPSgroups(BaseMolecule& mol);
         void convertSGroupsToCIP(BaseMolecule& mol);
 
-        const std::unordered_map<std::string, CIPDesc> KSGroupToCIP = {{"(R)", CIPDesc::R}, {"(S)", CIPDesc::S},   {"(r)", CIPDesc::r},
-                                                                       {"(s)", CIPDesc::s}, {"(RS)", CIPDesc::RS}, {"(E)", CIPDesc::E},
-                                                                       {"(Z)", CIPDesc::Z}};
+        const std::unordered_map<std::string, CIPDesc> KSGroupToCIP = {{"(R)", CIPDesc::R},   {"(S)", CIPDesc::S}, {"(r)", CIPDesc::r}, {"(s)", CIPDesc::s},
+                                                                       {"(RS)", CIPDesc::RS}, {"(E)", CIPDesc::E}, {"(Z)", CIPDesc::Z}};
 
     private:
         void _calcRSStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfolded_h_mol, int idx, Array<CIPDesc>& atom_cip_desc, Array<int>& stereo_passed,
