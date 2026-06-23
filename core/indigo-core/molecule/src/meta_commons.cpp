@@ -138,8 +138,8 @@ namespace indigo
 
     CIPDesc stringToCIP(const std::string& cip_str)
     {
-        static const std::unordered_map<std::string, CIPDesc> KStringToCIP = {{"R", CIPDesc::R}, {"S", CIPDesc::S}, {"r", CIPDesc::r},
-                                                                              {"s", CIPDesc::s}, {"E", CIPDesc::E}, {"Z", CIPDesc::Z}};
+        static const std::unordered_map<std::string, CIPDesc> KStringToCIP = {{"R", CIPDesc::R}, {"S", CIPDesc::S},   {"r", CIPDesc::r}, {"s", CIPDesc::s},
+                                                                              {"E", CIPDesc::E}, {"RS", CIPDesc::RS}, {"Z", CIPDesc::Z}};
         auto cip_it = KStringToCIP.find(cip_str);
         if (cip_it != KStringToCIP.end())
             return cip_it->second;
@@ -148,8 +148,9 @@ namespace indigo
 
     std::string CIPToString(CIPDesc cip)
     {
-        static const std::unordered_map<int, std::string> KCIPToString = {{(int)CIPDesc::R, "R"}, {(int)CIPDesc::S, "S"}, {(int)CIPDesc::r, "r"},
-                                                                          {(int)CIPDesc::s, "s"}, {(int)CIPDesc::E, "E"}, {(int)CIPDesc::Z, "Z"}};
+        static const std::unordered_map<int, std::string> KCIPToString = {{(int)CIPDesc::R, "R"}, {(int)CIPDesc::S, "S"},   {(int)CIPDesc::r, "r"},
+                                                                          {(int)CIPDesc::s, "s"}, {(int)CIPDesc::RS, "RS"}, {(int)CIPDesc::E, "E"},
+                                                                          {(int)CIPDesc::Z, "Z"}};
         auto cip_it = KCIPToString.find((int)cip);
         std::string res;
         if (cip_it != KCIPToString.end())
