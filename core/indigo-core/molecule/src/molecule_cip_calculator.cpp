@@ -159,8 +159,6 @@ bool MoleculeCIPCalculator::addCIPStereoDescriptors(BaseMolecule& mol)
         CIPDesc desc = atom_cip_desc[atom_idx];
         if (desc > CIPDesc::UNKNOWN)
         {
-            // An "&" (AND) group center is racemic: both enantiomers are present, so a true R/S
-            // center is both R and S. Report RS. Pseudoasymmetric r/s is reflection-invariant: keep it.
             if ((desc == CIPDesc::R || desc == CIPDesc::S) && mol.stereocenters.getType(atom_idx) == MoleculeStereocenters::ATOM_AND)
                 desc = CIPDesc::RS;
             mol._cip_atoms.insert(atom_idx, desc);
