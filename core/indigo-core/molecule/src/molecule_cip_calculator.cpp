@@ -67,6 +67,16 @@ bool MoleculeCIPCalculator::addCIPStereoDescriptors(BaseMolecule& mol)
 
     for (auto i = mol.stereocenters.begin(); i != mol.stereocenters.end(); i = mol.stereocenters.next(i))
     {
+        int sc_atom = mol.stereocenters.getAtomIndex(i);
+        if (mol.stereocenters.isAtropisomeric(sc_atom) && !mol.stereocenters.isTetrahydral(sc_atom))
+        {
+            int axis_bond = -1;
+            CIPDesc axial = _calcAxialStereoDescriptor(mol, *unfolded_h_mol, sc_atom, axis_bond, atom_cip_desc);
+            if (axial != CIPDesc::NONE && axis_bond >= 0)
+                bond_cip_desc[axis_bond] = axial;
+            continue;
+        }
+
         bool digraph_cip_used = false;
 
         _calcRSStereoDescriptor(mol, *unfolded_h_mol, i, atom_cip_desc, stereo_passed, false, equiv_ligands, digraph_cip_used);
@@ -235,6 +245,10 @@ void MoleculeCIPCalculator::addCIPSgroups(BaseMolecule& mol)
             sgroup.data.readString("(E)", true);
         else if (mol._cip_bonds.value(i) == CIPDesc::Z)
             sgroup.data.readString("(Z)", true);
+        else if (mol._cip_bonds.value(i) == CIPDesc::P)
+            sgroup.data.readString("(P)", true);
+        else if (mol._cip_bonds.value(i) == CIPDesc::M)
+            sgroup.data.readString("(M)", true);
 
         sgroup.name.readString("INDIGO_CIP_DESC", true);
         sgroup.display_pos.x = 0.0;
@@ -285,6 +299,8 @@ void MoleculeCIPCalculator::convertSGroupsToCIP(BaseMolecule& mol)
                         break;
                     case CIPDesc::E:
                     case CIPDesc::Z:
+                    case CIPDesc::P:
+                    case CIPDesc::M:
                         // bonds
                         for (int idx = 0; idx < dsg.atoms.size() - 1; idx += 2)
                         {
@@ -988,6 +1004,137 @@ void MoleculeCIPCalculator::_calcEZStereoDescriptor(BaseMolecule& mol, BaseMolec
         }
     }
     return;
+}
+
+CIPDesc MoleculeCIPCalculator::_calcAxialStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfolded_h_mol, int atom_idx, int& axis_bond_idx,
+                                                          Array<CIPDesc>& cip_desc)
+{
+    int axis_bond = mol.stereocenters.getAtropisomericBond(atom_idx);
+    if (axis_bond < 0)
+        return CIPDesc::NONE;
+
+    const Edge& axis_edge = mol.getEdge(axis_bond);
+    int near_atom = atom_idx;
+    int far_atom = (axis_edge.beg == near_atom) ? axis_edge.end : axis_edge.beg;
+    if (far_atom == near_atom)
+        return CIPDesc::NONE;
+
+    // ortho substituents are the ring-bond neighbors of each axis atom (the axis
+    // bond itself is acyclic); the wedge marks the near ring and originates at
+    // the axis (stereocenter) atom
+    Array<int> near_orthos;
+    Array<int> far_orthos;
+    near_orthos.clear();
+    far_orthos.clear();
+
+    int wedged_atom = -1;
+    int wedge_dir = 0;
+
+    const Vertex& near_v = mol.getVertex(near_atom);
+    for (int i = near_v.neiBegin(); i != near_v.neiEnd(); i = near_v.neiNext(i))
+    {
+        int edge_idx = near_v.neiEdge(i);
+        if (mol.getBondTopology(edge_idx) != TOPOLOGY_RING)
+            continue;
+        int nei = near_v.neiVertex(i);
+        near_orthos.push(nei);
+        int dir = mol.getBondDirection(edge_idx);
+        if ((dir == BOND_UP || dir == BOND_DOWN) && mol.getEdge(edge_idx).beg == near_atom)
+        {
+            wedged_atom = nei;
+            wedge_dir = dir;
+        }
+    }
+
+    const Vertex& far_v = mol.getVertex(far_atom);
+    for (int i = far_v.neiBegin(); i != far_v.neiEnd(); i = far_v.neiNext(i))
+    {
+        int edge_idx = far_v.neiEdge(i);
+        if (mol.getBondTopology(edge_idx) != TOPOLOGY_RING)
+            continue;
+        far_orthos.push(far_v.neiVertex(i));
+    }
+
+    // MVP scope: a single axis with exactly two ortho substituents at each end,
+    // marked by one wedge originating at the axis atom
+    if (near_orthos.size() != 2 || far_orthos.size() != 2 || wedged_atom < 0)
+        return CIPDesc::NONE;
+
+    // order the two substituents at each axis end by CIP priority; near-beats-far
+    // is structural (handled by the dihedral below), so we only rank within each end
+    auto rank_pair = [&](int origin, Array<int>& pair, int& hi, int& lo) -> bool {
+        Array<int> used1;
+        Array<int> used2;
+        used1.clear();
+        used2.clear();
+        used1.push(origin);
+        used2.push(origin);
+        CIPContext context;
+        context.mol = &unfolded_h_mol;
+        context.cip_desc = &cip_desc;
+        context.used1 = &used1;
+        context.used2 = &used2;
+        context.next_level = true;
+        context.isotope_check = false;
+        context.use_stereo = false;
+        context.use_rule_4 = false;
+        context.ref_cip1 = CIPDesc::NONE;
+        context.ref_cip2 = CIPDesc::NONE;
+        context.use_rule_5 = false;
+        int cmp = _cip_rules_cmp(pair[0], pair[1], &context);
+        if (cmp == 0)
+            return false; // CIP-equivalent substituents: not a stereogenic axis
+        hi = (cmp < 0) ? pair[0] : pair[1];
+        lo = (cmp < 0) ? pair[1] : pair[0];
+        return true;
+    };
+
+    int near_hi, near_lo, far_hi, far_lo;
+    if (!rank_pair(near_atom, near_orthos, near_hi, near_lo))
+        return CIPDesc::NONE;
+    if (!rank_pair(far_atom, far_orthos, far_hi, far_lo))
+        return CIPDesc::NONE;
+
+    // The wedge lifts one near ortho out of the plane (BOND_UP toward the viewer,
+    // BOND_DOWN away). The two near orthos sit on opposite sides of the axis, so
+    // near_hi takes the wedge sign if it is the wedged atom, or the opposite sign
+    // if the lower-priority ortho carries the wedge.
+    Vec3f near_pos = mol.getAtomXyz(near_atom);
+    Vec3f far_pos = mol.getAtomXyz(far_atom);
+    Vec3f axis_vec;
+    axis_vec.diff(far_pos, near_pos);
+
+    Vec3f vec_near_hi;
+    vec_near_hi.diff(mol.getAtomXyz(near_hi), near_pos);
+    Vec3f vec_wedged;
+    vec_wedged.diff(mol.getAtomXyz(wedged_atom), near_pos);
+
+    int ss = MoleculeAlleneStereo::sameside(vec_near_hi, vec_wedged, axis_vec);
+    if (ss == 0)
+        return CIPDesc::NONE;
+
+    float wedge_sign = (wedge_dir == BOND_UP) ? 1.0f : -1.0f;
+
+    // signed dihedral near_hi - near - far - far_hi, with near_hi lifted out of plane
+    Vec3f p0 = mol.getAtomXyz(near_hi);
+    p0.z = wedge_sign * ss;
+    Vec3f p1 = near_pos;
+    Vec3f p2 = far_pos;
+    Vec3f p3 = mol.getAtomXyz(far_hi);
+
+    Vec3f b0, b1, b2, n1, n2, m;
+    b0.diff(p0, p1);
+    b1.diff(p2, p1);
+    b2.diff(p3, p2);
+    n1.cross(b0, b1);
+    n2.cross(b1, b2);
+    m.cross(n1, b1);
+    float torsion_sign = Vec3f::dot(m, n2);
+    if (torsion_sign == 0)
+        return CIPDesc::NONE;
+
+    axis_bond_idx = axis_bond;
+    return (torsion_sign > 0) ? CIPDesc::P : CIPDesc::M;
 }
 
 inline void MoleculeCIPCalculator::cipSort(Array<int>& array, CIPContext* context)
