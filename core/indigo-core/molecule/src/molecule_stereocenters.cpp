@@ -883,6 +883,13 @@ bool MoleculeStereocenters::isAtropisomeric(int idx) const
     return _stereocenters.at(idx).is_atropisomeric;
 }
 
+int MoleculeStereocenters::getAtropisomericBond(int idx) const
+{
+    if (!_atropocenters.find(idx))
+        return -1;
+    return _atropocenters.at(idx).atropo_bond;
+}
+
 void MoleculeStereocenters::setTetrahydral(int idx, bool val)
 {
     _stereocenters.at(idx).is_tetrahydral = val;

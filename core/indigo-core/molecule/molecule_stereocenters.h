@@ -87,6 +87,7 @@ namespace indigo
         void setType(int idx, int type);
         void setAtropisomeric(int idx, bool val);
         bool isAtropisomeric(int idx) const;
+        int getAtropisomericBond(int idx) const;
         void setTetrahydral(int idx, bool val);
         bool isTetrahydral(int idx) const;
 
