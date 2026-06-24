@@ -161,6 +161,15 @@ bool MoleculeCIPCalculator::addCIPStereoDescriptors(BaseMolecule& mol)
         _calcEZStereoDescriptor(mol, *unfolded_h_mol, i, bond_cip_desc);
     }
 
+    for (auto i = mol.allene_stereo.begin(); i != mol.allene_stereo.end(); i = mol.allene_stereo.next(i))
+    {
+        int center_atom, left, right, allene_subst[4], parity;
+        mol.allene_stereo.get(i, center_atom, left, right, allene_subst, parity);
+        CIPDesc axial = _calcAlleneStereoDescriptor(mol, *unfolded_h_mol, left, right, allene_subst, parity, atom_cip_desc);
+        if (axial != CIPDesc::NONE)
+            atom_cip_desc[center_atom] = axial;
+    }
+
     mol._cip_atoms.clear();
     mol._cip_bonds.clear();
 
@@ -220,6 +229,12 @@ void MoleculeCIPCalculator::addCIPSgroups(BaseMolecule& mol)
             break;
         case CIPDesc::RS:
             sgroup.data.readString("(RS)", true);
+            break;
+        case CIPDesc::P:
+            sgroup.data.readString("(P)", true);
+            break;
+        case CIPDesc::M:
+            sgroup.data.readString("(M)", true);
             break;
         }
 
@@ -286,29 +301,25 @@ void MoleculeCIPCalculator::convertSGroupsToCIP(BaseMolecule& mol)
                 auto cip_it = KSGroupToCIP.find(dsg.data.ptr());
                 if (cip_it != KSGroupToCIP.end())
                 {
-                    switch (cip_it->second)
+                    CIPDesc desc = cip_it->second;
+                    // R/S-family descriptors are atom-attached and E/Z are bond-attached;
+                    // axial P/M are atom-attached for allenes (single-atom sgroup) and
+                    // bond-attached for biaryl atropisomers (two-atom sgroup)
+                    bool atom_descriptor = desc == CIPDesc::s || desc == CIPDesc::r || desc == CIPDesc::S || desc == CIPDesc::R || desc == CIPDesc::RS ||
+                                           ((desc == CIPDesc::P || desc == CIPDesc::M) && dsg.atoms.size() == 1);
+                    if (atom_descriptor)
                     {
-                    case CIPDesc::s:
-                    case CIPDesc::r:
-                    case CIPDesc::S:
-                    case CIPDesc::R:
-                    case CIPDesc::RS:
-                        // atoms
                         for (auto atom_idx : dsg.atoms)
-                            mol.setAtomCIP(atom_idx, cip_it->second);
-                        break;
-                    case CIPDesc::E:
-                    case CIPDesc::Z:
-                    case CIPDesc::P:
-                    case CIPDesc::M:
-                        // bonds
+                            mol.setAtomCIP(atom_idx, desc);
+                    }
+                    else
+                    {
                         for (int idx = 0; idx < dsg.atoms.size() - 1; idx += 2)
                         {
                             int bond_idx = mol.findEdgeIndex(dsg.atoms[idx], dsg.atoms[idx + 1]);
                             if (bond_idx != -1)
-                                mol.setBondCIP(bond_idx, cip_it->second);
+                                mol.setBondCIP(bond_idx, desc);
                         }
-                        break;
                     }
                 }
                 mol.sgroups.remove(i);
@@ -1135,6 +1146,87 @@ CIPDesc MoleculeCIPCalculator::_calcAxialStereoDescriptor(BaseMolecule& mol, Bas
 
     axis_bond_idx = axis_bond;
     return (torsion_sign > 0) ? CIPDesc::P : CIPDesc::M;
+}
+
+CIPDesc MoleculeCIPCalculator::_calcAlleneStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfolded_h_mol, int left, int right, int subst[4], int parity,
+                                                           Array<CIPDesc>& cip_desc)
+{
+    // rank the two substituents at one allene terminal; slot [1]/[3] may be an
+    // implicit hydrogen (-1, lowest priority). Returns the higher slot (a or b).
+    auto rank_end = [&](int origin, int a, int b, int& hi_slot) -> bool {
+        if (subst[a] == -1)
+            return false; // [0]/[2] are never implicit per the perception contract
+        if (subst[b] == -1)
+        {
+            hi_slot = a;
+            return true;
+        }
+        Array<int> used1;
+        Array<int> used2;
+        used1.push(origin);
+        used2.push(origin);
+        CIPContext context;
+        context.mol = &unfolded_h_mol;
+        context.cip_desc = &cip_desc;
+        context.used1 = &used1;
+        context.used2 = &used2;
+        context.next_level = true;
+        context.isotope_check = false;
+        context.use_stereo = false;
+        context.use_rule_4 = false;
+        context.ref_cip1 = CIPDesc::NONE;
+        context.ref_cip2 = CIPDesc::NONE;
+        context.use_rule_5 = false;
+        int cmp = _cip_rules_cmp(subst[a], subst[b], &context);
+        if (cmp == 0)
+            return false; // CIP-equivalent substituents: not a stereogenic axis
+        hi_slot = (cmp < 0) ? a : b;
+        return true;
+    };
+
+    int left_hi_slot, right_hi_slot;
+    if (!rank_end(left, 0, 1, left_hi_slot))
+        return CIPDesc::NONE;
+    if (!rank_end(right, 2, 3, right_hi_slot))
+        return CIPDesc::NONE;
+
+    // Project the substituents onto the plane perpendicular to the C=C=C axis,
+    // viewed from the "left" terminal toward the "right". The left pair lies on
+    // one projected axis, the right pair (rotated 90 deg) on the other; allene
+    // parity == 1 means subst[2] is CCW from subst[0], == 2 means CW.
+    auto slot_dir = [&](int slot, float& x, float& y) {
+        switch (slot)
+        {
+        case 0:
+            x = 1.0f;
+            y = 0.0f;
+            break;
+        case 1:
+            x = -1.0f;
+            y = 0.0f;
+            break;
+        case 2:
+            x = 0.0f;
+            y = (parity == 1) ? 1.0f : -1.0f;
+            break;
+        default:
+            x = 0.0f;
+            y = (parity == 1) ? -1.0f : 1.0f;
+            break;
+        }
+    };
+
+    float lx, ly, rx, ry;
+    slot_dir(left_hi_slot, lx, ly);
+    slot_dir(right_hi_slot, rx, ry);
+
+    // signed turn from the near (left) high-priority substituent to the far
+    // (right) high-priority substituent, looking down the axis
+    float turn = lx * ry - ly * rx;
+    if (turn == 0.0f)
+        return CIPDesc::NONE;
+
+    return (turn > 0.0f) ? CIPDesc::M : CIPDesc::P;
 }
 
 inline void MoleculeCIPCalculator::cipSort(Array<int>& array, CIPContext* context)
