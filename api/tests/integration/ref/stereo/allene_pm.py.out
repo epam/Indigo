@@ -1,5 +1,5 @@
 Allene P/M CIP descriptors
-case17-A.mol: ket cip=['P'] molfile sgroup=['P']
-case17-B.mol: ket cip=['M'] molfile sgroup=['M']
-case18-A.mol: ket cip=['P'] molfile sgroup=['P']
-case18-B.mol: ket cip=['M'] molfile sgroup=['M']
+case17-A.mol -> P
+case17-B.mol -> M
+case18-A.mol -> P
+case18-B.mol -> M
