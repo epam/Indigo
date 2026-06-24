@@ -65,9 +65,23 @@ bool MoleculeCIPCalculator::addCIPStereoDescriptors(BaseMolecule& mol)
     stereo_passed.clear();
     equiv_ligands.clear();
 
+    Array<int> allene_atoms;
+    allene_atoms.clear_resize(mol.vertexEnd());
+    allene_atoms.zerofill();
+    for (auto i = mol.allene_stereo.begin(); i != mol.allene_stereo.end(); i = mol.allene_stereo.next(i))
+    {
+        int center_atom, left, right, allene_subst[4], parity;
+        mol.allene_stereo.get(i, center_atom, left, right, allene_subst, parity);
+        allene_atoms[center_atom] = 1;
+        allene_atoms[left] = 1;
+        allene_atoms[right] = 1;
+    }
+
     for (auto i = mol.stereocenters.begin(); i != mol.stereocenters.end(); i = mol.stereocenters.next(i))
     {
         int sc_atom = mol.stereocenters.getAtomIndex(i);
+        if (allene_atoms[sc_atom])
+            continue;
         if (mol.stereocenters.isAtropisomeric(sc_atom) && !mol.stereocenters.isTetrahydral(sc_atom))
         {
             int axis_bond = -1;
@@ -302,9 +316,6 @@ void MoleculeCIPCalculator::convertSGroupsToCIP(BaseMolecule& mol)
                 if (cip_it != KSGroupToCIP.end())
                 {
                     CIPDesc desc = cip_it->second;
-                    // R/S-family descriptors are atom-attached and E/Z are bond-attached;
-                    // axial P/M are atom-attached for allenes (single-atom sgroup) and
-                    // bond-attached for biaryl atropisomers (two-atom sgroup)
                     bool atom_descriptor = desc == CIPDesc::s || desc == CIPDesc::r || desc == CIPDesc::S || desc == CIPDesc::R || desc == CIPDesc::RS ||
                                            ((desc == CIPDesc::P || desc == CIPDesc::M) && dsg.atoms.size() == 1);
                     if (atom_descriptor)
@@ -1131,11 +1142,9 @@ CIPDesc MoleculeCIPCalculator::_calcAxialStereoDescriptor(BaseMolecule& mol, Bas
 CIPDesc MoleculeCIPCalculator::_calcAlleneStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfolded_h_mol, int left, int right, int subst[4], int parity,
                                                            Array<CIPDesc>& cip_desc)
 {
-    // rank the two substituents at one allene terminal; slot [1]/[3] may be an
-    // implicit hydrogen (-1, lowest priority). Returns the higher slot (a or b).
-    auto rank_end = [&](int origin, int a, int b, int& hi_slot) -> bool {
+    auto higher_priority_slot = [&](int origin, int a, int b, int& hi_slot) -> bool {
         if (subst[a] == -1)
-            return false; // [0]/[2] are never implicit per the perception contract
+            return false;
         if (subst[b] == -1)
         {
             hi_slot = a;
@@ -1159,21 +1168,17 @@ CIPDesc MoleculeCIPCalculator::_calcAlleneStereoDescriptor(BaseMolecule& mol, Ba
         context.use_rule_5 = false;
         int cmp = _cip_rules_cmp(subst[a], subst[b], &context);
         if (cmp == 0)
-            return false; // CIP-equivalent substituents: not a stereogenic axis
+            return false;
         hi_slot = (cmp < 0) ? a : b;
         return true;
     };
 
     int left_hi_slot, right_hi_slot;
-    if (!rank_end(left, 0, 1, left_hi_slot))
+    if (!higher_priority_slot(left, 0, 1, left_hi_slot))
         return CIPDesc::NONE;
-    if (!rank_end(right, 2, 3, right_hi_slot))
+    if (!higher_priority_slot(right, 2, 3, right_hi_slot))
         return CIPDesc::NONE;
 
-    // Project the substituents onto the plane perpendicular to the C=C=C axis,
-    // viewed from the "left" terminal toward the "right". The left pair lies on
-    // one projected axis, the right pair (rotated 90 deg) on the other; allene
-    // parity == 1 means subst[2] is CCW from subst[0], == 2 means CW.
     auto slot_dir = [&](int slot, float& x, float& y) {
         switch (slot)
         {
@@ -1200,8 +1205,6 @@ CIPDesc MoleculeCIPCalculator::_calcAlleneStereoDescriptor(BaseMolecule& mol, Ba
     slot_dir(left_hi_slot, lx, ly);
     slot_dir(right_hi_slot, rx, ry);
 
-    // signed turn from the near (left) high-priority substituent to the far
-    // (right) high-priority substituent, looking down the axis
     float turn = lx * ry - ly * rx;
     if (turn == 0.0f)
         return CIPDesc::NONE;
