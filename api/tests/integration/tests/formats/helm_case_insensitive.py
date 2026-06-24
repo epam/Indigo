@@ -1,13 +1,4 @@
 #!/usr/bin/env python3
-import os
-import sys
-
-sys.path.append(
-    os.path.normpath(
-        os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
-    )
-)
-
 from common.util import compare_diff  # noqa
 
 from env_indigo import (  # noqa
@@ -15,6 +6,15 @@ from env_indigo import (  # noqa
     IndigoException,
     getIndigoExceptionText,
     joinPathPy,
+)
+
+import os
+import sys
+
+sys.path.append(
+    os.path.normpath(
+        os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
+    )
 )
 
 
