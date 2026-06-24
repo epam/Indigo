@@ -1019,14 +1019,8 @@ CIPDesc MoleculeCIPCalculator::_calcAxialStereoDescriptor(BaseMolecule& mol, Bas
     if (far_atom == near_atom)
         return CIPDesc::NONE;
 
-    // ortho substituents are the ring-bond neighbors of each axis atom (the axis
-    // bond itself is acyclic); the wedge marks the near ring and originates at
-    // the axis (stereocenter) atom
     Array<int> near_orthos;
     Array<int> far_orthos;
-    near_orthos.clear();
-    far_orthos.clear();
-
     int wedged_atom = -1;
     int wedge_dir = 0;
 
@@ -1055,18 +1049,12 @@ CIPDesc MoleculeCIPCalculator::_calcAxialStereoDescriptor(BaseMolecule& mol, Bas
         far_orthos.push(far_v.neiVertex(i));
     }
 
-    // MVP scope: a single axis with exactly two ortho substituents at each end,
-    // marked by one wedge originating at the axis atom
     if (near_orthos.size() != 2 || far_orthos.size() != 2 || wedged_atom < 0)
         return CIPDesc::NONE;
 
-    // order the two substituents at each axis end by CIP priority; near-beats-far
-    // is structural (handled by the dihedral below), so we only rank within each end
-    auto rank_pair = [&](int origin, Array<int>& pair, int& hi, int& lo) -> bool {
+    auto higher_priority_ortho = [&](int origin, Array<int>& pair, int& hi) -> bool {
         Array<int> used1;
         Array<int> used2;
-        used1.clear();
-        used2.clear();
         used1.push(origin);
         used2.push(origin);
         CIPContext context;
@@ -1083,22 +1071,17 @@ CIPDesc MoleculeCIPCalculator::_calcAxialStereoDescriptor(BaseMolecule& mol, Bas
         context.use_rule_5 = false;
         int cmp = _cip_rules_cmp(pair[0], pair[1], &context);
         if (cmp == 0)
-            return false; // CIP-equivalent substituents: not a stereogenic axis
+            return false;
         hi = (cmp < 0) ? pair[0] : pair[1];
-        lo = (cmp < 0) ? pair[1] : pair[0];
         return true;
     };
 
-    int near_hi, near_lo, far_hi, far_lo;
-    if (!rank_pair(near_atom, near_orthos, near_hi, near_lo))
+    int near_hi, far_hi;
+    if (!higher_priority_ortho(near_atom, near_orthos, near_hi))
         return CIPDesc::NONE;
-    if (!rank_pair(far_atom, far_orthos, far_hi, far_lo))
+    if (!higher_priority_ortho(far_atom, far_orthos, far_hi))
         return CIPDesc::NONE;
 
-    // The wedge lifts one near ortho out of the plane (BOND_UP toward the viewer,
-    // BOND_DOWN away). The two near orthos sit on opposite sides of the axis, so
-    // near_hi takes the wedge sign if it is the wedged atom, or the opposite sign
-    // if the lower-priority ortho carries the wedge.
     Vec3f near_pos = mol.getAtomXyz(near_atom);
     Vec3f far_pos = mol.getAtomXyz(far_atom);
     Vec3f axis_vec;
@@ -1113,11 +1096,8 @@ CIPDesc MoleculeCIPCalculator::_calcAxialStereoDescriptor(BaseMolecule& mol, Bas
     if (ss == 0)
         return CIPDesc::NONE;
 
-    float wedge_sign = (wedge_dir == BOND_UP) ? 1.0f : -1.0f;
-
-    // signed dihedral near_hi - near - far - far_hi, with near_hi lifted out of plane
     Vec3f p0 = mol.getAtomXyz(near_hi);
-    p0.z = wedge_sign * ss;
+    p0.z = (wedge_dir == BOND_UP ? 1.0f : -1.0f) * ss;
     Vec3f p1 = near_pos;
     Vec3f p2 = far_pos;
     Vec3f p3 = mol.getAtomXyz(far_hi);
