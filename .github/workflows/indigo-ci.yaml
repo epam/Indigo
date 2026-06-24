@@ -1497,7 +1497,7 @@ jobs:
   build_test_publish_indigo_service_old:
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    needs: [build_bingo_postgres_linux_x86_64, build_bingo_postgres_windows_msvc_x86_64, build_bingo_postgres_macos_x86_64]
+    needs: [build_bingo_postgres_linux_x86_64, build_bingo_postgres_windows_msvc_x86_64, build_bingo_postgres_macos_x86_64, set_matrix]
     if: ${{ always() && (needs.build_bingo_postgres_macos_x86_64.result == 'success' || needs.build_bingo_postgres_macos_x86_64.result == 'skipped') }}
     steps:
       - name: Checkout
@@ -1555,7 +1555,7 @@ jobs:
   build_test_publish_indigo_service_new:
     timeout-minutes: 60
     runs-on: ubuntu-latest
-    needs: [build_bingo_postgres_linux_x86_64, build_bingo_postgres_windows_msvc_x86_64, build_bingo_postgres_macos_x86_64]
+    needs: [build_bingo_postgres_linux_x86_64, build_bingo_postgres_windows_msvc_x86_64, build_bingo_postgres_macos_x86_64, set_matrix]
     if: ${{ always() && (needs.build_bingo_postgres_macos_x86_64.result == 'success' || needs.build_bingo_postgres_macos_x86_64.result == 'skipped') }}
     steps:
       - name: Checkout

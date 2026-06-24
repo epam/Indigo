@@ -429,12 +429,9 @@ namespace indigo
             {
                 const std::string& template_helm_alias = getKetStrProp(it.second, aliasHELM);
                 // Compare case-insensitively
-                if (alias.size() == template_helm_alias.size() &&
-                    std::equal(alias.begin(), alias.end(), template_helm_alias.begin(),
-                        [](char a, char b) {
-                            return std::tolower(static_cast<unsigned char>(a)) ==
-                                   std::tolower(static_cast<unsigned char>(b));
-                        }))
+                if (alias.size() == template_helm_alias.size() && std::equal(alias.begin(), alias.end(), template_helm_alias.begin(), [](char a, char b) {
+                        return std::tolower(static_cast<unsigned char>(a)) == std::tolower(static_cast<unsigned char>(b));
+                    }))
                 {
                     return it.second.id();
                 }
