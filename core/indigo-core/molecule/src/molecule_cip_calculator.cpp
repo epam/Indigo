@@ -84,10 +84,9 @@ bool MoleculeCIPCalculator::addCIPStereoDescriptors(BaseMolecule& mol)
             continue;
         if (mol.stereocenters.isAtropisomeric(sc_atom) && !mol.stereocenters.isTetrahydral(sc_atom))
         {
-            int axis_bond = -1;
-            CIPDesc axial = _calcAxialStereoDescriptor(mol, *unfolded_h_mol, sc_atom, axis_bond, atom_cip_desc);
-            if (axial != CIPDesc::NONE && axis_bond >= 0)
-                bond_cip_desc[axis_bond] = axial;
+            CIPDesc axial = _calcAxialStereoDescriptor(mol, *unfolded_h_mol, sc_atom, atom_cip_desc);
+            if (axial != CIPDesc::NONE)
+                atom_cip_desc[sc_atom] = axial;
             continue;
         }
 
@@ -274,10 +273,6 @@ void MoleculeCIPCalculator::addCIPSgroups(BaseMolecule& mol)
             sgroup.data.readString("(E)", true);
         else if (mol._cip_bonds.value(i) == CIPDesc::Z)
             sgroup.data.readString("(Z)", true);
-        else if (mol._cip_bonds.value(i) == CIPDesc::P)
-            sgroup.data.readString("(P)", true);
-        else if (mol._cip_bonds.value(i) == CIPDesc::M)
-            sgroup.data.readString("(M)", true);
 
         sgroup.name.readString("INDIGO_CIP_DESC", true);
         sgroup.display_pos.x = 0.0;
@@ -1028,8 +1023,7 @@ void MoleculeCIPCalculator::_calcEZStereoDescriptor(BaseMolecule& mol, BaseMolec
     return;
 }
 
-CIPDesc MoleculeCIPCalculator::_calcAxialStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfolded_h_mol, int atom_idx, int& axis_bond_idx,
-                                                          Array<CIPDesc>& cip_desc)
+CIPDesc MoleculeCIPCalculator::_calcAxialStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfolded_h_mol, int atom_idx, Array<CIPDesc>& cip_desc)
 {
     int axis_bond = mol.stereocenters.getAtropisomericBond(atom_idx);
     if (axis_bond < 0)
@@ -1137,7 +1131,6 @@ CIPDesc MoleculeCIPCalculator::_calcAxialStereoDescriptor(BaseMolecule& mol, Bas
     if (torsion_sign == 0)
         return CIPDesc::NONE;
 
-    axis_bond_idx = axis_bond;
     return (torsion_sign > 0) ? CIPDesc::P : CIPDesc::M;
 }
 
