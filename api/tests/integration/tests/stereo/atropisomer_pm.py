@@ -9,42 +9,40 @@ sys.path.append(
 )
 from env_indigo import *  # noqa
 
-# Atropisomer (biaryl axial) stereo: a wedge on an ortho ring bond at a
-# stereogenic single bond between two rings is labelled P or M during CIP
-# calculation. The reference structures (Case 13/14 of MAT-75503) come in
-# enantiomeric A/B pairs; flipping the wedge flips the descriptor.
+EXPECTED = {
+    "case13-A.mol": "P",
+    "case13-B.mol": "M",
+    "case14-A.mol": "P",
+    "case14-B.mol": "M",
+}
 
 indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", "1")
 
-
-def bond_cips(json_str):
-    return re.findall(r'"cip"\s*:\s*"([^"]+)"', json_str)
-
-
-def cip_sgroups(molfile_str):
-    return re.findall(r"\((P|M)\)", molfile_str)
-
-
 fixtures = "../../../../../data/molecules/atropisomers"
 print("Atropisomer P/M CIP descriptors")
-for filename in sorted(os.listdir(joinPathPy(fixtures, __file__))):
-    if not filename.endswith(".mol"):
-        continue
+for filename in sorted(EXPECTED):
+    expected = EXPECTED[filename]
+    path = joinPathPy(fixtures + "/" + filename, __file__)
 
     indigo.setOption("json-saving-add-stereo-desc", "1")
-    mol_ket = indigo.loadMoleculeFromFile(
-        joinPathPy(fixtures + "/" + filename, __file__)
+    ket_cips = re.findall(
+        r'"cip"\s*:\s*"([^"]+)"', indigo.loadMoleculeFromFile(path).json()
     )
-    ket_cips = bond_cips(mol_ket.json())
 
     indigo.setOption("molfile-saving-add-stereo-desc", "1")
-    mol_mol = indigo.loadMoleculeFromFile(
-        joinPathPy(fixtures + "/" + filename, __file__)
+    molfile_cips = re.findall(
+        r"\((P|M)\)", indigo.loadMoleculeFromFile(path).molfile()
     )
-    mol_descs = cip_sgroups(mol_mol.molfile())
 
-    print(
-        "%s: ket cip=%s molfile sgroup=%s"
-        % (filename, ket_cips, mol_descs)
+    print("%s -> %s" % (filename, expected))
+    assert ket_cips == [expected], "%s: KET cip %s, expected [%s]" % (
+        filename,
+        ket_cips,
+        expected,
+    )
+    assert molfile_cips == [expected], "%s: molfile cip %s, expected [%s]" % (
+        filename,
+        molfile_cips,
+        expected,
     )

@@ -1044,7 +1044,7 @@ CIPDesc MoleculeCIPCalculator::_calcAxialStereoDescriptor(BaseMolecule& mol, Bas
     Array<int> near_orthos;
     Array<int> far_orthos;
     int wedged_atom = -1;
-    int wedge_dir = 0;
+    float wedged_z = 0.0f;
 
     const Vertex& near_v = mol.getVertex(near_atom);
     for (int i = near_v.neiBegin(); i != near_v.neiEnd(); i = near_v.neiNext(i))
@@ -1055,10 +1055,12 @@ CIPDesc MoleculeCIPCalculator::_calcAxialStereoDescriptor(BaseMolecule& mol, Bas
         int nei = near_v.neiVertex(i);
         near_orthos.push(nei);
         int dir = mol.getBondDirection(edge_idx);
-        if ((dir == BOND_UP || dir == BOND_DOWN) && mol.getEdge(edge_idx).beg == near_atom)
+        if (dir == BOND_UP || dir == BOND_DOWN)
         {
             wedged_atom = nei;
-            wedge_dir = dir;
+            wedged_z = (dir == BOND_UP) ? 1.0f : -1.0f;
+            if (mol.getEdge(edge_idx).beg != near_atom)
+                wedged_z = -wedged_z;
         }
     }
 
@@ -1119,7 +1121,7 @@ CIPDesc MoleculeCIPCalculator::_calcAxialStereoDescriptor(BaseMolecule& mol, Bas
         return CIPDesc::NONE;
 
     Vec3f p0 = mol.getAtomXyz(near_hi);
-    p0.z = (wedge_dir == BOND_UP ? 1.0f : -1.0f) * ss;
+    p0.z = wedged_z * ss;
     Vec3f p1 = near_pos;
     Vec3f p2 = far_pos;
     Vec3f p3 = mol.getAtomXyz(far_hi);

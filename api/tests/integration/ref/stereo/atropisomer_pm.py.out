@@ -1,5 +1,5 @@
 Atropisomer P/M CIP descriptors
-case13-A.mol: ket cip=['P'] molfile sgroup=['P']
-case13-B.mol: ket cip=['M'] molfile sgroup=['M']
-case14-A.mol: ket cip=['P'] molfile sgroup=['P']
-case14-B.mol: ket cip=['M'] molfile sgroup=['M']
+case13-A.mol -> P
+case13-B.mol -> M
+case14-A.mol -> P
+case14-B.mol -> M
