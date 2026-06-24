@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
-from common.util import compare_diff  # noqa
+import os
+import sys
 
+from common.util import compare_diff  # noqa
 from env_indigo import (  # noqa
     Indigo,
     IndigoException,
     getIndigoExceptionText,
     joinPathPy,
 )
-
-import os
-import sys
 
 sys.path.append(
     os.path.normpath(
