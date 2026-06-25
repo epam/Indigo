@@ -93,7 +93,7 @@ namespace indigo
         void _calcRSStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfolded_h_mol, int idx, Array<CIPDesc>& atom_cip_desc, Array<int>& stereo_passed,
                                      bool use_stereo, Array<EquivLigand>& equiv_ligands, bool& digraph_cip_used);
         void _calcEZStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfolded_h_mol, int idx, Array<CIPDesc>& bond_cip_desc);
-        CIPDesc _calcAxialStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfolded_h_mol, int atom_idx, int& axis_bond_idx, Array<CIPDesc>& cip_desc);
+        CIPDesc _calcAxialStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfolded_h_mol, int atom_idx, Array<CIPDesc>& cip_desc);
         CIPDesc _calcAlleneStereoDescriptor(BaseMolecule& mol, BaseMolecule& unfolded_h_mol, int left, int right, int subst[4], int parity,
                                             Array<CIPDesc>& cip_desc);
         bool _checkLigandsEquivalence(Array<int>& ligands, Array<EquivLigand>& equiv_ligands, CIPContext& context);

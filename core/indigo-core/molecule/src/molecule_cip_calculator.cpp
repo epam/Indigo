@@ -310,22 +310,29 @@ void MoleculeCIPCalculator::convertSGroupsToCIP(BaseMolecule& mol)
                 auto cip_it = KSGroupToCIP.find(dsg.data.ptr());
                 if (cip_it != KSGroupToCIP.end())
                 {
-                    CIPDesc desc = cip_it->second;
-                    bool atom_descriptor = desc == CIPDesc::s || desc == CIPDesc::r || desc == CIPDesc::S || desc == CIPDesc::R || desc == CIPDesc::RS ||
-                                           ((desc == CIPDesc::P || desc == CIPDesc::M) && dsg.atoms.size() == 1);
-                    if (atom_descriptor)
+                    switch (cip_it->second)
                     {
+                    case CIPDesc::s:
+                    case CIPDesc::r:
+                    case CIPDesc::S:
+                    case CIPDesc::R:
+                    case CIPDesc::RS:
+                    case CIPDesc::P:
+                    case CIPDesc::M:
+                        // atoms
                         for (auto atom_idx : dsg.atoms)
-                            mol.setAtomCIP(atom_idx, desc);
-                    }
-                    else
-                    {
+                            mol.setAtomCIP(atom_idx, cip_it->second);
+                        break;
+                    case CIPDesc::E:
+                    case CIPDesc::Z:
+                        // bonds
                         for (int idx = 0; idx < dsg.atoms.size() - 1; idx += 2)
                         {
                             int bond_idx = mol.findEdgeIndex(dsg.atoms[idx], dsg.atoms[idx + 1]);
                             if (bond_idx != -1)
-                                mol.setBondCIP(bond_idx, desc);
+                                mol.setBondCIP(bond_idx, cip_it->second);
                         }
+                        break;
                     }
                 }
                 mol.sgroups.remove(i);
