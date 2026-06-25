@@ -64,8 +64,8 @@ def test_helm_case_insensitive():
             ket = mol.json()
             compare_diff(ref_path, filename + ".ket", ket)
         except IndigoException as e:
-            print(f"✗ FAIL: {helm_string}")
-            print(f"  Error: {getIndigoExceptionText(e)}")
+            print(f"FAIL: {helm_string}")
+            print(f"Error: {getIndigoExceptionText(e)}")
         print()
 
     return
