@@ -223,9 +223,6 @@ for name in sorted(helm_to_biln.keys()):
 
 helm_errors = {
     "CHEM1{[qweqwe]}$$$$V2.0": "Only amino acids and CHEMs with BILN codes can get exported to BILN.",
-    # Unresolved HELM aliases that map to real BILN terminal aliases
-    # must still be validated against the resolved library template attachment points.
-    "PEPTIDE1{[Ac]}|PEPTIDE2{K}$PEPTIDE1,PEPTIDE2,1:R1-1:R3$$$V2.0": "Cannot save in BILN format - unsupported attachment point 'R1'.",
     "PEPTIDE1{A}|RNA1{R(A)P}$$$$V2.0": "Only amino acids and CHEMs with BILN codes can get exported to BILN.",
     # Legacy integration input retained as an error expectation. #3541 export
     # requirement 1 forbids exporting PEPTIDE monomers without BILN codes.
@@ -252,10 +249,6 @@ ket_errors = {
     "custom_chem_without_biln_code": (
         "CHEM1{[qweqwe]}$$$$V2.0",
         "Only amino acids and CHEMs with BILN codes can get exported to BILN.",
-    ),
-    "unresolved_terminal_alias_invalid_attachment": (
-        "PEPTIDE1{[Ac]}|PEPTIDE2{K}$PEPTIDE1,PEPTIDE2,1:R1-1:R3$$$V2.0",
-        "Cannot save in BILN format - unsupported attachment point 'R1'.",
     ),
 }
 

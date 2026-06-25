@@ -125,7 +125,7 @@ std::string SequenceLoader::readHelmMonomerAlias(KetDocument& document, MonomerC
             auto& mon_template = document.addMonomerTemplate(monomer_alias, MonomerTemplate::MonomerClassToStr(monomer_class), IdtAlias());
             setKetStrProp(mon_template, alias, monomer_alias);
             _added_templates.emplace(monomer_class, monomer_alias);
-            _alias_to_id.emplace(std::make_pair(monomer_class, monomer_alias), mon_template.id());
+            _alias_to_id.emplace(std::make_pair(monomer_class, to_lower(monomer_alias)), mon_template.id());
             std::map<int, int> rgroups;
             std::map<int, int> rg_to_attatom;
             std::vector<KetBond> bonds;
@@ -474,7 +474,7 @@ const std::string SequenceLoader::checkAddAmbiguousMonomerTemplate(KetDocument& 
                         for (auto ap : {"R1", "R2", "R3", "R4"})
                             monomer_template.AddAttachmentPoint(ap, -1);
                         checkAddTemplate(document, monomer_template);
-                        _alias_to_id.emplace(make_pair(monomer_class, opt_alias), monomer_template.id());
+                        _alias_to_id.emplace(make_pair(monomer_class, to_lower(opt_alias)), monomer_template.id());
                         opt_template_id = monomer_template.id();
                     }
                 }
@@ -587,7 +587,7 @@ size_t SequenceLoader::addHelmMonomer(KetDocument& document, MonomerInfo info, M
                     }
                 }
             }
-            _alias_to_id.emplace(make_pair(monomer_class, alias), template_id);
+            _alias_to_id.emplace(make_pair(monomer_class, to_lower(alias)), template_id);
         }
         auto& monomer = document.addMonomer(helm_alias, template_id);
         monomer->setAttachmentPoints(document.templates().at(template_id).attachmentPoints());
@@ -1010,7 +1010,7 @@ void SequenceLoader::loadHELM(KetDocument& document)
                             monomer_template.AddAttachmentPoint(ap, -1);
                         checkAddTemplate(document, monomer_template);
                         _added_templates.emplace(monomer_class, alias);
-                        _alias_to_id.emplace(std::make_pair(monomer_class, alias), monomer_template.id());
+                        _alias_to_id.emplace(std::make_pair(monomer_class, to_lower(alias)), monomer_template.id());
                     }
                     cur_polymer_map->second[monomer_idx] = addHelmMonomer(document, monomer_info, monomer_class, pos);
                 }
