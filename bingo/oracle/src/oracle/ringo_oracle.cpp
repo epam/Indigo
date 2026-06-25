@@ -71,7 +71,7 @@ RingoOracleContext& RingoOracleContext::get(OracleEnv& env, int id, bool lock)
         TL_GET(PtrArray<RingoContext>, _instances);
 
         _instances.add(res.release());
-        return *(RingoOracleContext*)&_instances.top();
+        return static_cast<RingoOracleContext&>(_instances.top());
     }
 
     return *roc;
