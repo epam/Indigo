@@ -562,9 +562,9 @@ void MoleculeRenderInternal::_drawAtom(const AtomDesc& desc)
 {
 #ifdef RENDER_SHOW_BACKGROUND
     for (int i = 0; i < desc.ticount; ++i)
-        _cw.drawItemBackground(*_data.textitems[i + desc.tibegin]);
+        _cw.drawItemBackground(_data.textitems[i + desc.tibegin]);
     for (int i = 0; i < desc.gicount; ++i)
-        _cw.drawItemBackground(*_data.graphitems[i + desc.gibegin]);
+        _cw.drawItemBackground(_data.graphitems[i + desc.gibegin]);
 #endif
 
     _cw.setSingleSource(desc.color);
