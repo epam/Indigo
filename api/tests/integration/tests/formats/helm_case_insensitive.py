@@ -66,7 +66,6 @@ def test_helm_case_insensitive():
         except IndigoException as e:
             print("FAIL: %s" % helm_string)
             print("Error: %s" % getIndigoExceptionText(e))
-        print()
 
     return
 

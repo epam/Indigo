@@ -1,26 +1,14 @@
 Testing HELM case-insensitive alias support...
 ============================================================
 helm_cysteic_acid_1.ket:SUCCEED
-
 helm_cysteic_acid_2.ket:SUCCEED
-
 helm_cysteic_acid_3.ket:SUCCEED
-
 helm_cysteic_acid_4.ket:SUCCEED
-
 helm_cysteic_acid_5.ket:SUCCEED
-
 helm_peptide_chain_1.ket:SUCCEED
-
 helm_peptide_chain_2.ket:SUCCEED
-
 helm_peptide_chain_3.ket:SUCCEED
-
 helm_rna_base_a_1.ket:SUCCEED
-
 helm_rna_base_a_2.ket:SUCCEED
-
 helm_sugar_r_1.ket:SUCCEED
-
 helm_sugar_r_2.ket:SUCCEED
-
