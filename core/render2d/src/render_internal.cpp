@@ -162,14 +162,12 @@ void MoleculeRenderInternal::setMolecule(BaseMolecule* mol)
         _prepareSGroups(isThereAtLeastOneContracted);
     }
 
-    _data.atoms.clear();
     _data.atoms.resize(_mol->vertexEnd());
     for (auto i = _mol->vertexBegin(); i != _mol->vertexEnd(); i = _mol->vertexNext(i))
     {
         _ad(i).clear();
     }
 
-    _data.bonds.clear();
     _data.bonds.resize(_mol->edgeEnd());
     for (auto i = _mol->edgeBegin(); i != _mol->edgeEnd(); i = _mol->edgeNext(i))
     {
@@ -686,7 +684,7 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
         }
     }
 
-    ObjArray<Tree>& children = sgroups.children();
+    PtrArray<Tree>& children = sgroups.children();
     for (int i = 0; i < children.size(); i++)
     {
         _initSGroups(children[i], parent);
@@ -985,7 +983,7 @@ int evcmp(const Event& a, const Event& b, void* /*context*/)
     return 0;
 }
 
-float getFreeAngle(const ObjArray<Vec2f>& pp)
+float getFreeAngle(const PtrArray<Vec2f>& pp)
 {
     QS_DEF(Array<float>, angle);
     angle.clear();
@@ -1026,7 +1024,7 @@ int loopDist(int i, int j, int len)
 class SegmentList : protected RedBlackSet<int>
 {
 public:
-    SegmentList(ObjArray<Segment>& ss) : segments(ss)
+    SegmentList(PtrArray<Segment>& ss) : segments(ss)
     {
         xPos = 0;
     }
@@ -1085,12 +1083,12 @@ protected:
     }
 
 private:
-    ObjArray<Segment>& segments;
+    PtrArray<Segment>& segments;
 
     SegmentList(const SegmentList& other);
 };
 
-float getMinDotProduct(const ObjArray<Vec2f>& pp, float tilt)
+float getMinDotProduct(const PtrArray<Vec2f>& pp, float tilt)
 {
     float minDot = 1.0;
     for (int j = 0; j < pp.size(); ++j)
@@ -1131,7 +1129,7 @@ bool MoleculeRenderInternal::_ringHasSelfIntersectionsSimple(const Ring& ring)
 
 bool MoleculeRenderInternal::_ringHasSelfIntersections(const Ring& ring)
 {
-    QS_DEF(ObjArray<Vec2f>, pp);
+    QS_DEF(PtrArray<Vec2f>, pp);
     pp.clear();
     int len = ring.bondEnds.size();
     for (int j = 0; j < len; ++j)
@@ -1141,10 +1139,10 @@ bool MoleculeRenderInternal::_ringHasSelfIntersections(const Ring& ring)
 
     float tilt = getFreeAngle(pp) + (float)(M_PI / 2);
 
-    QS_DEF(ObjArray<Event>, events);
+    QS_DEF(PtrArray<Event>, events);
     events.clear();
     events.reserve(2 * len);
-    QS_DEF(ObjArray<Segment>, segments);
+    QS_DEF(PtrArray<Segment>, segments);
     segments.clear();
     segments.reserve(len);
     for (int j = 0; j < len; ++j)
@@ -1231,7 +1229,7 @@ void MoleculeRenderInternal::_findRings()
         {
             for (int k = 0; k < ring.bondEnds.size(); ++k)
                 _be(ring.bondEnds[k]).lRing = -2;
-            _data.rings.pop();
+            _data.rings.removeLast();
             continue;
         }
 
@@ -1240,7 +1238,7 @@ void MoleculeRenderInternal::_findRings()
         {
             for (int k = 0; k < ring.bondEnds.size(); ++k)
                 _be(ring.bondEnds[k]).lRing = -2;
-            _data.rings.pop();
+            _data.rings.removeLast();
             continue;
         }
 
@@ -1263,7 +1261,7 @@ void MoleculeRenderInternal::_findRings()
         {
             for (int k = 0; k < ring.bondEnds.size(); ++k)
                 _be(ring.bondEnds[k]).lRing = -2;
-            _data.rings.pop();
+            _data.rings.removeLast();
             continue;
         }
 

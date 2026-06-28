@@ -222,7 +222,7 @@ void RenderParamInterface::render(RenderParams& params)
             for (int i = 0; i < params.mols.size(); ++i)
             {
                 int mol = factory.addItemMolecule();
-                BaseMolecule& bm = *params.mols[i];
+                BaseMolecule& bm = params.mols[i];
                 _prepareMolecule(params, bm);
                 factory.getItemMolecule(mol).mol = &bm;
                 objs.push(mol);
@@ -250,7 +250,7 @@ void RenderParamInterface::render(RenderParams& params)
             for (int i = 0; i < params.rxns.size(); ++i)
             {
                 int rxn = factory.addItemReaction();
-                BaseReaction& br = *params.rxns[i];
+                BaseReaction& br = params.rxns[i];
                 _prepareReaction(params, br);
                 factory.getItemReaction(rxn).rxn = &br;
                 objs.push(rxn);

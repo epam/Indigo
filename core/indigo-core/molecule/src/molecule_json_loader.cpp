@@ -1663,7 +1663,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     if (!_parsed)
         throw Error("Invalid JSON input");
 
-    ObjArray<Array<int>> mol_mappings;
+    PtrArray<Array<int>> mol_mappings;
     for (rapidjson::SizeType node_idx = 0; node_idx < _mol_nodes.Size(); ++node_idx)
     {
         std::vector<EnhancedStereoCenter> stereo_centers;

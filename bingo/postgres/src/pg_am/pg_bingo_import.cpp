@@ -18,6 +18,7 @@ extern "C"
 
 #include "base_cpp/array.h"
 #include "base_cpp/output.h"
+#include "base_cpp/ptr_array.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/tlscont.h"
 
@@ -407,7 +408,7 @@ public:
             q_values.clear();
             for (int q_idx = 0; q_idx < _importData.size(); ++q_idx)
             {
-                q_values.push(_importData[q_idx]->getDatum());
+                q_values.push(_importData[q_idx].getDatum());
                 if (q_values[q_idx] == 0)
                 {
                     q_nulls[q_idx] = 'n';
@@ -442,7 +443,7 @@ protected:
     bool _parseColumns;
     Array<char> _columnNames;
 
-    ObjArray<ImportColumn> _importColumns;
+    PtrArray<ImportColumn> _importColumns;
     PtrArray<ImportData> _importData;
 
 private:

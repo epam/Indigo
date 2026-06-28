@@ -859,7 +859,7 @@ void BaseMolecule::clone(BaseMolecule& other, Array<int>* mapping, Array<int>* i
     original_format = other.original_format;
     copyProperties(other, *mapping);
     for (int i = 0; i < other.monomer_shapes.size(); ++i)
-        monomer_shapes.add(new KetMonomerShape(*other.monomer_shapes[i]));
+        monomer_shapes.add(new KetMonomerShape(other.monomer_shapes[i]));
     for (int i = 0; i < other._template_occurrences.size(); ++i)
         std::ignore = _template_occurrences.add(other._template_occurrences[i]);
     for (int i = 0; i < other._template_names.size(); ++i)
@@ -905,7 +905,7 @@ void BaseMolecule::clone_KeepIndices(BaseMolecule& other, int skip_flags)
     original_format = other.original_format;
     copyProperties(other, mapping);
     for (int j = 0; j < other.monomer_shapes.size(); ++j)
-        monomer_shapes.add(new KetMonomerShape(*other.monomer_shapes[j]));
+        monomer_shapes.add(new KetMonomerShape(other.monomer_shapes[j]));
     for (i = 0; i < other._template_occurrences.size(); ++i)
         std::ignore = _template_occurrences.add(other._template_occurrences[i]);
     for (i = 0; i < other._template_names.size(); ++i)
@@ -1400,7 +1400,8 @@ int BaseMolecule::getRSiteAttachmentPointByOrder(int idx, int order) const
 
 void BaseMolecule::setRSiteAttachmentOrder(int atom_idx, int att_atom_idx, int order)
 {
-    _rsite_attachment_points.expand(atom_idx + 1);
+    if (_rsite_attachment_points.size() < atom_idx + 1)
+        _rsite_attachment_points.resize(atom_idx + 1);
     _rsite_attachment_points[atom_idx].expandFill(order + 1, -1);
     _rsite_attachment_points[atom_idx][order] = att_atom_idx;
     updateEditRevision();
@@ -1415,7 +1416,7 @@ void BaseMolecule::setTemplateAtomAttachmentOrder(int atom_idx, int att_atom_idx
     ap.ap_id.readString(att_id, false);
     ap.ap_id.push(0);
     if (atom_idx >= template_attachment_indexes.size())
-        template_attachment_indexes.expand(atom_idx + 1);
+        template_attachment_indexes.resize(atom_idx + 1);
     template_attachment_indexes.at(atom_idx).add(att_idx);
     updateEditRevision();
 }

@@ -402,7 +402,7 @@ void threadFunc(BaseSubstructureMatcher* matcher)
         indigo.arom_options = matcher->_arom_options;
         for (int i = 0; i < matcher->_tautomer_rules->size(); i++)
         {
-            auto t_rule = matcher->_tautomer_rules->at(i);
+            auto t_rule = matcher->_tautomer_rules->getPtr(i);
             if (t_rule == nullptr)
                 continue;
             auto rule = std::make_unique<TautomerRule>();
@@ -994,7 +994,7 @@ IndigoObject* ReactionSubMatcher::allocateObject()
     return new IndigoReaction();
 }
 
-const ObjArray<Array<int>>& ReactionSubMatcher::currentMapping()
+const PtrArray<Array<int>>& ReactionSubMatcher::currentMapping()
 {
     return _mapping;
 }

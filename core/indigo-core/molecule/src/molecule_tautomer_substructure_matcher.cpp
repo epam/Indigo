@@ -127,7 +127,7 @@ void MoleculeTautomerSubstructureMatcher::_edgeAddHyper(Graph& subgraph, Graph& 
     int sub_bond_order = query.getBondOrder(sub_idx);
     const Dbitset& mask = layeredMolecules.getBondMask(super_idx, sub_bond_order);
 
-    breadcrumps.maskHistory.expand(breadcrumps.maskHistory.size() + 1);
+    breadcrumps.maskHistory.push();
     breadcrumps.maskHistory.top().copy(breadcrumps.mask);
 
     breadcrumps.mask.andWith(mask);
@@ -139,7 +139,7 @@ void MoleculeTautomerSubstructureMatcher::_vertexRemoveHyper(Graph& subgraph, in
     if (breadcrumps.maskHistory.size())
     {
         breadcrumps.mask.copy(breadcrumps.maskHistory.top());
-        breadcrumps.maskHistory.pop();
+        breadcrumps.maskHistory.removeLast();
     }
 }
 

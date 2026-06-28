@@ -19,6 +19,7 @@
 #ifndef __reaction_product_enumerator__
 #define __reaction_product_enumerator__
 
+#include "base_cpp/ptr_array.h"
 #include "base_cpp/reusable_obj_array.h"
 #include "molecule/molecule.h"
 #include "reaction/reaction.h"
@@ -80,7 +81,7 @@ namespace indigo
         CP_DECL;
         TL_CP_DECL(Array<int>, _product_aam_array);
         TL_CP_DECL(RedBlackStringMap<int>, _smiles_array);
-        TL_CP_DECL(ObjArray<Array<int>>, _tubes_monomers);
+        TL_CP_DECL(PtrArray<Array<int>>, _tubes_monomers);
 
         void _buildTubesGrid(void);
     };

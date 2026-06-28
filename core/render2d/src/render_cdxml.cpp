@@ -152,7 +152,7 @@ void RenderParamCdxmlInterface::_renderRxns(RenderParams& params)
     ReactionCdxmlSaver saver(*params.rOpt.output);
     if (params.rxns.size() != 0)
         for (int i = 0; i < params.rxns.size(); ++i)
-            saver.saveReaction(*params.rxns[i]);
+            saver.saveReaction(params.rxns[i]);
     else if (params.rxn)
         saver.saveReaction(*params.rxn);
 }
@@ -166,7 +166,7 @@ void RenderParamCdxmlInterface::_renderMols(RenderParams& params)
 
     if (params.mols.size() != 0)
         for (int i = 0; i < params.mols.size(); ++i)
-            mols.push(params.mols[i]);
+            mols.push(&params.mols[i]);
     else if (params.mol.get() != 0)
         mols.push(params.mol.get());
 

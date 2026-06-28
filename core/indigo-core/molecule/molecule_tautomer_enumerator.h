@@ -19,6 +19,7 @@
 #ifndef __molecule_tautomer_enumerator__
 #define __molecule_tautomer_enumerator__
 
+#include "base_cpp/ptr_array.h"
 #include "base_cpp/reusable_obj_array.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_layered_molecules.h"
@@ -51,8 +52,8 @@ namespace indigo
         {
             Dbitset forwardMask;
             Dbitset backwardMask;
-            ObjArray<Dbitset> forwardEdgesHistory;
-            ObjArray<Dbitset> backwardEdgesHistory;
+            PtrArray<Dbitset> forwardEdgesHistory;
+            PtrArray<Dbitset> backwardEdgesHistory;
             Array<int> nodesHistory;
             Array<int> edgesHistory;
         };

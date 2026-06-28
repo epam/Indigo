@@ -93,7 +93,7 @@ int BiconnectedDecomposer::componentsCount()
 
 void BiconnectedDecomposer::getComponent(int idx, Filter& filter) const
 {
-    filter.init(_components[idx]->ptr(), Filter::EQ, 1);
+    filter.init(_components[idx].ptr(), Filter::EQ, 1);
 }
 
 bool BiconnectedDecomposer::isArticulationPoint(int idx) const
@@ -118,7 +118,7 @@ void BiconnectedDecomposer::getVertexComponents(int idx, Array<int>& components)
         components.clear();
 
         for (i = 0; i < _components.size(); i++)
-            if (_components[i]->at(idx) == 1)
+            if (_components[i].at(idx) == 1)
             {
                 components.push(i);
                 break;
@@ -270,12 +270,12 @@ void BiconnectedDecomposer::_processIfNotPushed(Array<int>& dfs_stack, int w, co
             Edge e = _edges_stack.top();
             _edges_stack.pop();
             // All edges in stack are permitted (forbidden edges don't go into stack)
-            _components[cur_comp]->at(e.beg) = 1;
-            _components[cur_comp]->at(e.end) = 1;
+            _components[cur_comp].at(e.beg) = 1;
+            _components[cur_comp].at(e.end) = 1;
         }
         // add the final tree edge (v,w)
-        _components[cur_comp]->at(v) = 1;
-        _components[cur_comp]->at(w) = 1;
+        _components[cur_comp].at(v) = 1;
+        _components[cur_comp].at(w) = 1;
         _edges_stack.pop();
     }
 }

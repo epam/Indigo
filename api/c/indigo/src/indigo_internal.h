@@ -33,6 +33,7 @@
 #include "base_cpp/cancellation_handler.h"
 #include "base_cpp/exception.h"
 #include "base_cpp/io_base.h"
+#include "base_cpp/ptr_array.h"
 
 #include "layout/reaction_layout.h"
 
@@ -74,7 +75,7 @@ namespace indigo
     class ReactionJsonSaver;
     class PathwayReactionJsonSaver;
 
-    typedef ObjArray<PropertiesMap> MonomersProperties;
+    typedef PtrArray<PropertiesMap> MonomersProperties;
 } // namespace indigo
 
 extern DLLEXPORT sf::safe_shared_hide_obj<IndigoOptionManager>& indigoGetOptionManager(const qword id = TL_GET_SESSION_ID());

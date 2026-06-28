@@ -47,8 +47,8 @@ RingoFetchContext& RingoFetchContext::get(int id)
     TL_GET(PtrArray<RingoFetchContext>, _instances);
 
     for (int i = 0; i < _instances.size(); i++)
-        if (_instances[i]->id == id)
-            return *_instances[i];
+        if (_instances[i].id == id)
+            return _instances[i];
 
     throw Error("context #%d not found", id);
 }
@@ -61,8 +61,8 @@ RingoFetchContext& RingoFetchContext::create(RingoOracleContext& context, const 
     int id = 1;
 
     for (int i = 0; i < _instances.size(); i++)
-        if (_instances[i]->id >= id)
-            id = _instances[i]->id + 1;
+        if (_instances[i].id >= id)
+            id = _instances[i].id + 1;
 
     std::unique_ptr<RingoFetchContext> new_context = std::make_unique<RingoFetchContext>(id, context, query_id);
     const BingoOracleContext& boc = context.context();
@@ -70,7 +70,7 @@ RingoFetchContext& RingoFetchContext::create(RingoOracleContext& context, const 
     new_context->id = id;
 
     _instances.add(new_context.release());
-    return *_instances.top();
+    return _instances.top();
 }
 
 RingoFetchContext* RingoFetchContext::findFresh(int context_id, const Array<char>& query_id)
@@ -82,7 +82,7 @@ RingoFetchContext* RingoFetchContext::findFresh(int context_id, const Array<char
 
     for (i = 0; i < _instances.size(); i++)
     {
-        RingoFetchContext* instance = _instances[i];
+        RingoFetchContext* instance = &_instances[i];
 
         if (!instance->fresh)
             continue;
@@ -106,7 +106,7 @@ void RingoFetchContext::remove(int id)
     int i;
 
     for (i = 0; i < _instances.size(); i++)
-        if (_instances[i]->id == id)
+        if (_instances[i].id == id)
             break;
 
     if (i == _instances.size())
@@ -122,6 +122,6 @@ void RingoFetchContext::removeByContextID(int id)
     int i;
 
     for (i = _instances.size() - 1; i >= 0; i--)
-        if (_instances[i]->context_id == id)
+        if (_instances[i].context_id == id)
             _instances.remove(i);
 }

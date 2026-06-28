@@ -27,7 +27,7 @@ namespace indigo
     class ScaffoldDetection
     {
     public:
-        ScaffoldDetection(ObjArray<Graph>* graph_set);
+        ScaffoldDetection(PtrArray<Graph>* graph_set);
         // two main methods for extracting scaffolds
         // extracting exact scaffold from graphs set
         void extractExactScaffold(Graph& scaffold)
@@ -52,8 +52,8 @@ namespace indigo
         int (*cbEmbedding)(const int* sub_vert_map, const int* sub_edge_map, const void* info, void* userdata);
         void* embeddingUserdata;
 
-        ObjArray<Graph>* searchStructures;
-        ObjArray<Graph>* basketStructures;
+        PtrArray<Graph>* searchStructures;
+        PtrArray<Graph>* basketStructures;
 
         int maxIterations;
 
@@ -74,7 +74,7 @@ namespace indigo
             virtual ~GraphBasket();
 
             // initializes graphs basket
-            void initBasket(ObjArray<Graph>* graph_set, ObjArray<Graph>* basket_set, int max_number);
+            void initBasket(PtrArray<Graph>* graph_set, PtrArray<Graph>* basket_set, int max_number);
             // returns index of first graph in basket
             int graphBegin();
             // returns next index of graph after input index
@@ -114,8 +114,8 @@ namespace indigo
             // reverse iterator for looking next not empty graphs in set
             Dbitset _reverseIterator;
 
-            ObjArray<Graph>* _searchStructures;
-            ObjArray<Graph>* _basketStructures;
+            PtrArray<Graph>* _searchStructures;
+            PtrArray<Graph>* _basketStructures;
 
             virtual void _sortGraphsInSet();
 

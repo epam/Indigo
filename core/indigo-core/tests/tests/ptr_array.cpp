@@ -160,8 +160,8 @@ TEST_F(PtrArrayTest, MoveCtor_TransfersOwnership)
     EXPECT_EQ(2, dst.size());
     EXPECT_EQ(0, src.size());      // moved-from is empty
     EXPECT_EQ(2, Tracked::s_live); // nothing destroyed by the move
-    EXPECT_EQ(1, dst[0]->id);
-    EXPECT_EQ(2, dst[1]->id);
+    EXPECT_EQ(1, dst[0].id);
+    EXPECT_EQ(2, dst[1].id);
 }
 
 TEST_F(PtrArrayTest, MoveAssign_ReplacesOwnedObjects)
@@ -175,8 +175,8 @@ TEST_F(PtrArrayTest, MoveAssign_ReplacesOwnedObjects)
     dst = std::move(src);
     // dst's old object (id=100) must be destroyed; dst now owns id=200, 300.
     EXPECT_EQ(2, dst.size());
-    EXPECT_EQ(200, dst[0]->id);
-    EXPECT_EQ(300, dst[1]->id);
+    EXPECT_EQ(200, dst[0].id);
+    EXPECT_EQ(300, dst[1].id);
     EXPECT_EQ(0, src.size());
     EXPECT_EQ(2, Tracked::s_live);
 }
@@ -208,9 +208,9 @@ TEST_F(PtrArrayTest, Add_Multiple_PreservesInsertionOrder)
     arr.emplace(2);
     arr.emplace(3);
     ASSERT_EQ(3, arr.size());
-    EXPECT_EQ(1, arr[0]->id);
-    EXPECT_EQ(2, arr[1]->id);
-    EXPECT_EQ(3, arr[2]->id);
+    EXPECT_EQ(1, arr[0].id);
+    EXPECT_EQ(2, arr[1].id);
+    EXPECT_EQ(3, arr[2].id);
     EXPECT_EQ(3, Tracked::s_live);
 }
 
@@ -230,8 +230,8 @@ TEST_F(PtrArrayTest, At_EquivalentToBracket)
     PtrArray<Tracked> arr;
     arr.emplace(7);
     arr.emplace(8);
-    EXPECT_EQ(arr.at(0)->id, arr[0]->id);
-    EXPECT_EQ(arr.at(1)->id, arr[1]->id);
+    EXPECT_EQ(arr.at(0).id, arr[0].id);
+    EXPECT_EQ(arr.at(1).id, arr[1].id);
 }
 
 TEST_F(PtrArrayTest, At_ConstOverload_ReturnsConstPointer)
@@ -239,7 +239,7 @@ TEST_F(PtrArrayTest, At_ConstOverload_ReturnsConstPointer)
     PtrArray<Tracked> arr;
     arr.emplace(11);
     const PtrArray<Tracked>& cref = arr;
-    const Tracked* p = cref.at(0);
+    const Tracked* p = &cref.at(0);
     EXPECT_EQ(11, p->id);
 }
 
@@ -248,7 +248,7 @@ TEST_F(PtrArrayTest, Top_ReturnsLastElement)
     PtrArray<Tracked> arr;
     arr.emplace(100);
     arr.emplace(200);
-    EXPECT_EQ(200, arr.top()->id);
+    EXPECT_EQ(200, arr.top().id);
 }
 
 // =====================================================================
@@ -286,7 +286,7 @@ TEST_F(PtrArrayTest, RemoveLast_DeletesObject)
     arr.removeLast();
     EXPECT_EQ(1, arr.size());
     EXPECT_EQ(1, Tracked::s_live);
-    EXPECT_EQ(1, arr[0]->id);
+    EXPECT_EQ(1, arr[0].id);
 }
 
 TEST_F(PtrArrayTest, Remove_DeletesAndShifts)
@@ -297,8 +297,8 @@ TEST_F(PtrArrayTest, Remove_DeletesAndShifts)
     arr.emplace(30);
     arr.remove(1);
     EXPECT_EQ(2, arr.size());
-    EXPECT_EQ(10, arr[0]->id);
-    EXPECT_EQ(30, arr[1]->id);
+    EXPECT_EQ(10, arr[0].id);
+    EXPECT_EQ(30, arr[1].id);
     EXPECT_EQ(2, Tracked::s_live);
 }
 
@@ -339,26 +339,31 @@ TEST_F(PtrArrayTest, Expand_FillsWithNull_DoesNotShrink)
     arr.emplace(1);
     arr.expand(4);
     EXPECT_EQ(4, arr.size());
-    EXPECT_EQ(1, arr[0]->id);
-    EXPECT_EQ(nullptr, arr[1]);
-    EXPECT_EQ(nullptr, arr[2]);
-    EXPECT_EQ(nullptr, arr[3]);
+    EXPECT_EQ(1, arr[0].id);
+    EXPECT_EQ(nullptr, arr.getPtr(1));
+    EXPECT_EQ(nullptr, arr.getPtr(2));
+    EXPECT_EQ(nullptr, arr.getPtr(3));
 
     // expand to smaller size must be no-op (contract from current impl).
     arr.expand(2);
     EXPECT_EQ(4, arr.size());
 }
 
-TEST_F(PtrArrayTest, Resize_Grow_FillsWithNull)
+TEST_F(PtrArrayTest, Resize_Grow_FillsWithDefaultConstructed)
 {
     PtrArray<Tracked> arr;
     arr.emplace(1);
     arr.resize(4);
     EXPECT_EQ(4, arr.size());
-    EXPECT_EQ(1, arr[0]->id);
-    EXPECT_EQ(nullptr, arr[1]);
-    EXPECT_EQ(nullptr, arr[2]);
-    EXPECT_EQ(nullptr, arr[3]);
+    EXPECT_EQ(1, arr[0].id);
+    // resize() default-constructs the new slots (ObjArray-compatible value
+    // semantics); use expand() when null holes are wanted instead.
+    ASSERT_NE(nullptr, arr.getPtr(1));
+    ASSERT_NE(nullptr, arr.getPtr(2));
+    ASSERT_NE(nullptr, arr.getPtr(3));
+    EXPECT_EQ(0, arr[1].id);
+    EXPECT_EQ(0, arr[2].id);
+    EXPECT_EQ(0, arr[3].id);
 }
 
 TEST_F(PtrArrayTest, Resize_Shrink_DeletesExcess)
@@ -371,7 +376,7 @@ TEST_F(PtrArrayTest, Resize_Shrink_DeletesExcess)
     arr.resize(1);
     EXPECT_EQ(1, arr.size());
     EXPECT_EQ(1, Tracked::s_live);
-    EXPECT_EQ(10, arr[0]->id);
+    EXPECT_EQ(10, arr[0].id);
 }
 
 TEST_F(PtrArrayTest, Resize_ToZero_EmptiesArray)
@@ -403,7 +408,7 @@ TEST_F(PtrArrayTest, Set_OnNullSlot_TakesOwnership)
     PtrArray<Tracked> arr;
     arr.expand(3);
     arr.set(1, std::make_unique<Tracked>(42));
-    EXPECT_EQ(42, arr[1]->id);
+    EXPECT_EQ(42, arr[1].id);
     EXPECT_EQ(1, Tracked::s_live);
 }
 
@@ -418,7 +423,7 @@ TEST_F(PtrArrayTest, Set_OnOccupiedSlot_Throws)
     // fires before _items[idx] is modified, so arr still holds id=1.
     // The parameter unique_ptr (holding id=2) is destroyed during stack
     // unwind — so id=2 object is gone, s_live == 1.
-    EXPECT_EQ(1, arr[0]->id);
+    EXPECT_EQ(1, arr[0].id);
     EXPECT_EQ(1, Tracked::s_live);
 }
 
@@ -428,7 +433,7 @@ TEST_F(PtrArrayTest, Reset_NullSlot_IsIdempotent)
     arr.expand(2);
     arr.reset(0); // delete nullptr is OK
     arr.reset(0); // again, still OK
-    EXPECT_EQ(nullptr, arr[0]);
+    EXPECT_EQ(nullptr, arr.getPtr(0));
 }
 
 TEST_F(PtrArrayTest, Reset_OccupiedSlot_DeletesAndNulls)
@@ -437,7 +442,7 @@ TEST_F(PtrArrayTest, Reset_OccupiedSlot_DeletesAndNulls)
     arr.emplace(99);
     arr.reset(0);
     EXPECT_EQ(1, arr.size());
-    EXPECT_EQ(nullptr, arr[0]);
+    EXPECT_EQ(nullptr, arr.getPtr(0));
     EXPECT_EQ(0, Tracked::s_live);
 }
 
@@ -446,7 +451,7 @@ TEST_F(PtrArrayTest, Reset_WithReplacement_DeletesOldTakesNew)
     PtrArray<Tracked> arr;
     arr.emplace(100);
     arr.reset(0, std::make_unique<Tracked>(200));
-    EXPECT_EQ(200, arr[0]->id);
+    EXPECT_EQ(200, arr[0].id);
     EXPECT_EQ(1, Tracked::s_live);
 }
 
@@ -459,7 +464,7 @@ TEST_F(PtrArrayTest, Release_TransfersOwnership_NoDelete)
     auto released = arr.release(0); // std::unique_ptr<Tracked>
     ASSERT_NE(nullptr, released);
     EXPECT_EQ(7, released->id);
-    EXPECT_EQ(nullptr, arr[0]) << "Released slot must become null";
+    EXPECT_EQ(nullptr, arr.getPtr(0)) << "Released slot must become null";
     EXPECT_EQ(2, arr.size()) << "Release must NOT shrink the array";
     EXPECT_EQ(2, Tracked::s_live) << "Released object must NOT be deleted";
 
@@ -477,14 +482,122 @@ TEST_F(PtrArrayTest, Release_NullSlot_ReturnsNullptr)
 }
 
 // =====================================================================
-// qsort: intentionally NOT tested.
-//
-// PtrArray::qsort(cmp, context) declares `const void* context` and forwards
-// it to Array<T*>::qsort which expects `void* context`. This produces a
-// hard compile error at instantiation time (function-pointer signature
-// mismatch). No call site in the codebase instantiates it — it is dead
-// code. After Phase 1 refactor we will simply drop the method.
+// reserve / qsort: ObjArray-compatible aliases added in PR-2 (#3703) so
+// ObjArray<T> client call sites migrate to PtrArray<T> mechanically.
 // =====================================================================
+
+namespace
+{
+    // Free comparators matching the `int(*)(T&, T&, void*)` contract that the
+    // legacy ObjArray<T>::qsort call sites already use.
+    int cmp_tracked_asc(Tracked& a, Tracked& b, void*)
+    {
+        return a.id - b.id;
+    }
+    int cmp_tracked_desc(Tracked& a, Tracked& b, void*)
+    {
+        return b.id - a.id;
+    }
+    // Context-driven direction: ctx points at an int (+1 asc, -1 desc).
+    int cmp_tracked_ctx(Tracked& a, Tracked& b, void* ctx)
+    {
+        return *static_cast<const int*>(ctx) * (a.id - b.id);
+    }
+} // namespace
+
+TEST_F(PtrArrayTest, Reserve_DoesNotChangeSizeOrElements)
+{
+    PtrArray<Tracked> arr;
+    arr.emplace(1);
+    arr.emplace(2);
+    arr.reserve(128);
+    EXPECT_EQ(2, arr.size()) << "reserve must not change size";
+    EXPECT_EQ(1, arr[0].id);
+    EXPECT_EQ(2, arr[1].id);
+    EXPECT_EQ(2, Tracked::s_live) << "reserve must not construct pointees";
+}
+
+TEST_F(PtrArrayTest, Reserve_NonPositive_IsNoOp)
+{
+    PtrArray<Tracked> arr;
+    arr.emplace(5);
+    arr.reserve(0);
+    arr.reserve(-10);
+    EXPECT_EQ(1, arr.size());
+    EXPECT_EQ(5, arr[0].id);
+    EXPECT_EQ(1, Tracked::s_live);
+}
+
+TEST_F(PtrArrayTest, Qsort_SortsAscending)
+{
+    PtrArray<Tracked> arr;
+    arr.emplace(3);
+    arr.emplace(1);
+    arr.emplace(2);
+    arr.qsort(cmp_tracked_asc, nullptr);
+    ASSERT_EQ(3, arr.size());
+    EXPECT_EQ(1, arr[0].id);
+    EXPECT_EQ(2, arr[1].id);
+    EXPECT_EQ(3, arr[2].id);
+    EXPECT_EQ(3, Tracked::s_live) << "qsort must not create or destroy pointees";
+}
+
+TEST_F(PtrArrayTest, Qsort_SortsDescending)
+{
+    PtrArray<Tracked> arr;
+    arr.emplace(1);
+    arr.emplace(3);
+    arr.emplace(2);
+    arr.qsort(cmp_tracked_desc, nullptr);
+    ASSERT_EQ(3, arr.size());
+    EXPECT_EQ(3, arr[0].id);
+    EXPECT_EQ(2, arr[1].id);
+    EXPECT_EQ(1, arr[2].id);
+}
+
+TEST_F(PtrArrayTest, Qsort_PassesContextToComparator)
+{
+    PtrArray<Tracked> arr;
+    arr.emplace(2);
+    arr.emplace(1);
+    arr.emplace(3);
+    int desc = -1;
+    arr.qsort(cmp_tracked_ctx, &desc);
+    EXPECT_EQ(3, arr[0].id);
+    EXPECT_EQ(2, arr[1].id);
+    EXPECT_EQ(1, arr[2].id);
+    int asc = 1;
+    arr.qsort(cmp_tracked_ctx, &asc);
+    EXPECT_EQ(1, arr[0].id);
+    EXPECT_EQ(2, arr[1].id);
+    EXPECT_EQ(3, arr[2].id);
+}
+
+TEST_F(PtrArrayTest, Qsort_EmptyAndSingle_AreNoOps)
+{
+    PtrArray<Tracked> empty;
+    empty.qsort(cmp_tracked_asc, nullptr);
+    EXPECT_EQ(0, empty.size());
+
+    PtrArray<Tracked> single;
+    single.emplace(42);
+    single.qsort(cmp_tracked_asc, nullptr);
+    ASSERT_EQ(1, single.size());
+    EXPECT_EQ(42, single[0].id);
+}
+
+TEST_F(PtrArrayTest, Qsort_PreservesOwnershipNoLeak)
+{
+    PtrArray<Tracked> arr;
+    for (int i = 9; i >= 0; --i)
+        arr.emplace(i);
+    EXPECT_EQ(10, Tracked::s_live);
+    arr.qsort(cmp_tracked_asc, nullptr);
+    EXPECT_EQ(10, arr.size());
+    EXPECT_EQ(10, Tracked::s_live);
+    for (int i = 0; i < 10; ++i)
+        EXPECT_EQ(i, arr[i].id);
+}
 
 // =====================================================================
 // ptr(): intentionally NOT tested.
@@ -548,17 +661,17 @@ TEST_F(PtrArrayTest, StressSequence_NoLeaksNoDoubleFree)
     auto released = arr.release(2);
     EXPECT_EQ(2, released->id);
     EXPECT_EQ(8, arr.size()); // released slot is null, size unchanged
-    EXPECT_EQ(nullptr, arr[2]);
+    EXPECT_EQ(nullptr, arr.getPtr(2));
     EXPECT_EQ(8, Tracked::s_live);
 
     // resize down
     arr.resize(4);
     EXPECT_EQ(4, arr.size());
     // surviving: id=0,1,nullptr,4
-    EXPECT_EQ(0, arr[0]->id);
-    EXPECT_EQ(1, arr[1]->id);
-    EXPECT_EQ(nullptr, arr[2]);
-    EXPECT_EQ(4, arr[3]->id);
+    EXPECT_EQ(0, arr[0].id);
+    EXPECT_EQ(1, arr[1].id);
+    EXPECT_EQ(nullptr, arr.getPtr(2));
+    EXPECT_EQ(4, arr[3].id);
 
     released.reset();
     // clear destroys remaining 3 owned objects
@@ -584,7 +697,7 @@ TEST_F(PtrArrayTest, Add_FromUniquePtr_TakesOwnership)
     EXPECT_EQ(55, ref.id);
     EXPECT_EQ(1, arr.size());
     EXPECT_EQ(1, Tracked::s_live);
-    EXPECT_EQ(raw, arr[0]) << "container must store the same pointer";
+    EXPECT_EQ(raw, arr.getPtr(0)) << "container must store the same pointer";
 }
 
 // emplace(): constructs in-place, returns reference to the new element.
@@ -597,7 +710,7 @@ TEST_F(PtrArrayTest, Emplace_ConstructsInPlace)
     EXPECT_EQ(77, ref.id);
     EXPECT_EQ(1, arr.size());
     EXPECT_EQ(1, Tracked::s_live);
-    EXPECT_EQ(&ref, arr[0]) << "returned reference must alias the stored element";
+    EXPECT_EQ(&ref, &arr[0]) << "returned reference must alias the stored element";
     EXPECT_EQ(1, Tracked::s_constructed_total);
 }
 
@@ -615,8 +728,8 @@ TEST_F(PtrArrayTest, Push_IsAliasForEmplace)
     EXPECT_EQ(42, b.id);
     EXPECT_EQ(2, arr.size());
     EXPECT_EQ(2, Tracked::s_live);
-    EXPECT_EQ(&a, arr[0]);
-    EXPECT_EQ(&b, arr[1]);
+    EXPECT_EQ(&a, &arr[0]);
+    EXPECT_EQ(&b, &arr[1]);
     EXPECT_EQ(2, Tracked::s_constructed_total);
 }
 
@@ -651,7 +764,7 @@ TEST_F(PtrArrayTest, Release_NodiscardWarning_DoesNotLeak)
         auto p = arr.release(0);
         ASSERT_NE(nullptr, p);
         EXPECT_EQ(33, p->id);
-        EXPECT_EQ(nullptr, arr[0]) << "slot must be null after release";
+        EXPECT_EQ(nullptr, arr.getPtr(0)) << "slot must be null after release";
         EXPECT_EQ(2, arr.size()) << "size must not change after release";
         EXPECT_EQ(2, Tracked::s_live) << "object must be alive while unique_ptr holds it";
     }
@@ -703,7 +816,7 @@ TEST_F(PtrArrayTest, Emplace_ExceptionInCtor_ContainerUnchanged)
 
     // Container must be exactly as before the failed emplace.
     EXPECT_EQ(1, arr.size()) << "size must not change after failed emplace";
-    EXPECT_EQ(1, arr[0]->id) << "existing element must be unaffected";
+    EXPECT_EQ(1, arr[0].id) << "existing element must be unaffected";
     EXPECT_EQ(1, ThrowOnConstruct::s_live) << "no partially-constructed objects must survive";
 }
 
@@ -720,7 +833,7 @@ TEST_F(PtrArrayTest, Add_NullUniquePtr_Throws)
 
     EXPECT_ANY_THROW(arr.add(std::move(null_ptr)));
     EXPECT_EQ(1, arr.size()) << "size must not change on rejected add";
-    EXPECT_EQ(1, arr[0]->id);
+    EXPECT_EQ(1, arr[0].id);
     EXPECT_EQ(1, Tracked::s_live);
 }
 
@@ -739,7 +852,7 @@ TEST_F(PtrArrayTest, Set_FromDeprecatedRaw_StillWorks)
     PtrArray<Tracked> arr;
     arr.expand(2);
     arr.set(1, new Tracked(77));
-    EXPECT_EQ(77, arr[1]->id);
+    EXPECT_EQ(77, arr[1].id);
     EXPECT_EQ(1, Tracked::s_live);
 
 #if defined(__GNUC__) || defined(__clang__)
@@ -764,7 +877,7 @@ TEST_F(PtrArrayTest, Reset_FromDeprecatedRaw_StillWorks)
     PtrArray<Tracked> arr;
     arr.emplace(10);
     arr.reset(0, new Tracked(20));
-    EXPECT_EQ(20, arr[0]->id);
+    EXPECT_EQ(20, arr[0].id);
     EXPECT_EQ(1, Tracked::s_live) << "previous occupant must be destroyed";
 
 #if defined(__GNUC__) || defined(__clang__)

@@ -112,7 +112,7 @@ namespace indigo
         std::unordered_map<std::pair<int, int>, std::string, pair_int_hash> _monomer_connections;
         std::map<int, int> _monomers_enum;
         std::vector<std::unique_ptr<BaseMolecule>> _no_template_molecules;
-        ObjArray<Array<int>> _mappings;
+        PtrArray<Array<int>> _mappings;
         std::unordered_map<int, int> _atom_to_mol_id;
         std::optional<std::reference_wrapper<ReactionMultistepDetector>> _rmd;
 

@@ -18,7 +18,8 @@
 
 #ifndef _CYCLE_BASIS_H_
 #define _CYCLE_BASIS_H_
-#include "base_cpp/obj_array.h"
+#include "base_cpp/array.h"
+#include "base_cpp/ptr_array.h"
 #include "base_cpp/red_black.h"
 
 namespace indigo
@@ -53,7 +54,7 @@ namespace indigo
     private:
         CycleBasis(const CycleBasis&); // no implicit copy
 
-        ObjArray<Array<int>> _cycles;
+        PtrArray<Array<int>> _cycles;
 
         RedBlackSet<int> _cycleVertices;
     };

@@ -28,8 +28,8 @@
 #include <safe_ptr.h>
 
 #include "base_cpp/array.h"
-#include "base_cpp/obj_array.h"
 #include "base_cpp/os_sync_wrapper.h"
+#include "base_cpp/ptr_array.h"
 
 #define PROF_GET_NAME_INDEX(var_name, name)                                                                                                                    \
     static std::atomic<int> var_name##_name_index;                                                                                                             \
@@ -129,8 +129,8 @@ namespace indigo
         bool _hasLabelIndex(int name_index) const;
         void _ensureRecordExistanceLocked(int name_index);
 
-        ObjArray<Array<char>> _names;
-        ObjArray<Record> _records;
+        PtrArray<Array<char>> _names;
+        PtrArray<Record> _records;
         Array<int> _sorted_records;
     };
 

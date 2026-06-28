@@ -50,8 +50,10 @@ bool ReactionSubstructureMatcher::_match_atoms(BaseReaction& query_, Reaction& t
     ReactionSubstructureMatcher& self = *(ReactionSubstructureMatcher*)context;
 
     self._fmcaches.expand(sub_mol_idx + 1);
+    if (self._fmcaches.getPtr(sub_mol_idx) == nullptr)
+        self._fmcaches.set(sub_mol_idx, std::make_unique<MoleculeSubstructureMatcher::FragmentMatchCache>());
 
-    if (!MoleculeSubstructureMatcher::matchQueryAtom(&submol.getAtom(sub_atom_idx), supermol, super_atom_idx, &self._fmcaches[sub_mol_idx], 0xFFFFFFFFUL))
+    if (!MoleculeSubstructureMatcher::matchQueryAtom(&submol.getAtom(sub_atom_idx), supermol, super_atom_idx, self._fmcaches.getPtr(sub_mol_idx), 0xFFFFFFFFUL))
         return false;
 
     if (submol.stereocenters.getType(sub_atom_idx) > supermol.stereocenters.getType(super_atom_idx))
@@ -177,8 +179,8 @@ bool ReactionSubstructureMatcher::_checkAAM()
     if (!use_daylight_aam_mode)
         return BaseReactionSubstructureMatcher::_checkAAM();
 
-    QS_DEF(ObjArray<RedBlackSet<int>>, classes_mapping_left);
-    QS_DEF(ObjArray<RedBlackSet<int>>, classes_mapping_right);
+    QS_DEF(PtrArray<RedBlackSet<int>>, classes_mapping_left);
+    QS_DEF(PtrArray<RedBlackSet<int>>, classes_mapping_right);
     int i;
 
     classes_mapping_left.clear();
@@ -188,10 +190,10 @@ bool ReactionSubstructureMatcher::_checkAAM()
     // the reactands and products
     for (i = 0; i < _matchers.size() - 1; i++)
     {
-        int qmol_idx = _matchers[i]->_current_molecule_1;
-        int tmol_idx = _matchers[i]->_current_molecule_2;
+        int qmol_idx = _matchers[i]._current_molecule_1;
+        int tmol_idx = _matchers[i]._current_molecule_2;
         BaseMolecule& qmol = _query->getBaseMolecule(qmol_idx);
-        ObjArray<RedBlackSet<int>>* cm;
+        PtrArray<RedBlackSet<int>>* cm;
         int j;
 
         if (_query->getSideType(qmol_idx) == BaseReaction::REACTANT)
@@ -209,7 +211,7 @@ bool ReactionSubstructureMatcher::_checkAAM()
             if (_query->asQueryReaction().getIgnorableAAM(qmol_idx, j))
                 continue;
 
-            int mapped = _matchers[i]->_current_core_1[j];
+            int mapped = _matchers[i]._current_core_1[j];
 
             if (mapped < 0)
                 throw Error("internal error: can not call atom with negative number %d", mapped);
@@ -219,7 +221,8 @@ bool ReactionSubstructureMatcher::_checkAAM()
             if (taam == 0)
                 return false;
 
-            cm->expand(qaam + 1);
+            while (cm->size() <= qaam)
+                cm->add(std::make_unique<RedBlackSet<int>>());
             cm->at(qaam).find_or_insert(taam);
         }
     }

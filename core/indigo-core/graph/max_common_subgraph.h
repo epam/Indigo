@@ -92,7 +92,7 @@ namespace indigo
         // this method sorts solutions and maximizes number of the rings in graph
         static int ringsSolutionTerm(Array<int>&, Array<int>&, void*);
         // returns all maps-solutions-mcs
-        void getSolutionMaps(ObjArray<Array<int>>* v_maps, ObjArray<Array<int>>* e_maps) const;
+        void getSolutionMaps(PtrArray<Array<int>>* v_maps, PtrArray<Array<int>>* e_maps) const;
         // returns first element in sorted solution array
         void getMaxSolutionMap(Array<int>* v_map, Array<int>* e_map) const;
         // callback for sorting solutions (see _vertEdgeSolMap)
@@ -212,7 +212,7 @@ namespace indigo
             // gets RePoint with index i
             RePoint* getPoint(int i)
             {
-                return _graph[i];
+                return &_graph[i];
             };
 
             // solution getters
@@ -312,8 +312,8 @@ namespace indigo
             int createSolutionMaps();
 
             // retruns all solutions edge and vertices lists
-            void getSolutionListsSub(ObjArray<Array<int>>& v_lists, ObjArray<Array<int>>& e_lists) const;
-            void getSolutionListsSuper(ObjArray<Array<int>>& v_lists, ObjArray<Array<int>>& e_lists) const;
+            void getSolutionListsSub(PtrArray<Array<int>>& v_lists, PtrArray<Array<int>>& e_lists) const;
+            void getSolutionListsSuper(PtrArray<Array<int>>& v_lists, PtrArray<Array<int>>& e_lists) const;
 
         protected:
             // resolution graph to work with
@@ -366,16 +366,16 @@ namespace indigo
             // returns element with input indexes of adjacency matrix of second graph
             bool getSecondElement(int i, int j)
             {
-                return _aj2[i]->at(j);
+                return _aj2[i].at(j);
             }
             // retruns elements of utilites matrices which are stored matched edges
             int getFirstIdxEdge(int i, int j)
             {
-                return _ajEdge1[i]->at(j);
+                return _ajEdge1[i].at(j);
             }
             int getSecondIdxEdge(int i, int j)
             {
-                return _ajEdge2[i]->at(j);
+                return _ajEdge2[i].at(j);
             }
             // retruns degree of vertex in first graph adj matrix
             int getFirstVDegree(int i)
@@ -402,12 +402,12 @@ namespace indigo
             // returns dbitset represent row in adjacency matrix of first graph
             Dbitset* getFirstRow(int i)
             {
-                return _daj1[i];
+                return &_daj1[i];
             }
             // returns dbitset represent row in adjacency matrix of first graph
             Dbitset* getSecondRow(int i)
             {
-                return _daj2[i];
+                return &_daj2[i];
             }
 
             // retruns solution correspondings between two graphs
@@ -420,16 +420,16 @@ namespace indigo
                 return _y.ptr();
             }
 
-            void getSolutions(ObjArray<Array<int>>& v_maps);
+            void getSolutions(PtrArray<Array<int>>& v_maps);
 
             // returns correspondence parameters between each vertex and vertex in other graph with the same label
             int getFLSize(int i)
             {
-                return _mLabel1[i]->size();
+                return _mLabel1[i].size();
             }
             int getFLV(int i, int j)
             {
-                return _mLabel1[i]->at(j);
+                return _mLabel1[i].at(j);
             }
 
             // context includes input parameters and output solution
@@ -745,11 +745,11 @@ namespace indigo
         bool _getEdgeColorCondition(Graph& graph1, Graph& graph2, int i, int j) const;
 
         // returns all solutions
-        void _getSolutionMaps(int count, ObjArray<Array<int>>& v_maps, ObjArray<Array<int>>& e_maps) const;
+        void _getSolutionMaps(int count, PtrArray<Array<int>>& v_maps, PtrArray<Array<int>>& e_maps) const;
 
         // array for keeping all solutions. In each subarray element[0] = vertex size, [1] = edge size, and
         // next '[0]' elements for vertex map, next '[1]' for edge map (in sum 2+vertexEnd()+edgeEnd() elements)
-        ObjArray<Array<int>> _vertEdgeSolMap;
+        PtrArray<Array<int>> _vertEdgeSolMap;
 
         RandomHandler _random;
 

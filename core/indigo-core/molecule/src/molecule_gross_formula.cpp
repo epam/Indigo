@@ -140,8 +140,10 @@ std::unique_ptr<GROSS_UNITS> MoleculeGrossFormula::collect(BaseMolecule& mol, bo
 
     // basic structure and all polymers
     int grossFormulaSize = mol.sgroups.getSGroupCount(SGroup::SG_TYPE_SRU) + 1;
-    QS_DEF_RES(ObjArray<Array<int>>, filters, grossFormulaSize);
-    QS_DEF_RES(ObjArray<Array<char>>, indices, grossFormulaSize);
+    PtrArray<Array<int>> filters;
+    filters.resize(grossFormulaSize);
+    PtrArray<Array<char>> indices;
+    indices.resize(grossFormulaSize);
 
     // first element is for old-style gross formula
     indices[0].appendString(" ", true);
@@ -166,7 +168,7 @@ std::unique_ptr<GROSS_UNITS> MoleculeGrossFormula::collect(BaseMolecule& mol, bo
             }
         }
     }
-    // init ObjArray
+    // init gross units
     gross.resize(grossFormulaSize);
 
     for (int i = 0; i < grossFormulaSize; i++)

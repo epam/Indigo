@@ -176,7 +176,7 @@ int BaseMolecule::transformSCSRtoFullCTAB()
     return result;
 }
 
-int BaseMolecule::transformFullCTABtoSCSR(ObjArray<TGroup>& templates)
+int BaseMolecule::transformFullCTABtoSCSR(PtrArray<TGroup>& templates)
 {
     int result = 0;
     QS_DEF(Molecule, fragment);

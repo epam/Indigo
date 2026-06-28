@@ -351,12 +351,12 @@ int BaseReaction::addUndefinedCopy(BaseMolecule& mol, Array<int>* mapping, Array
     return idx;
 }
 
-void BaseReaction::clone(BaseReaction& other, Array<int>* mol_mapping, ObjArray<Array<int>>* mappings, ObjArray<Array<int>>* inv_mappings)
+void BaseReaction::clone(BaseReaction& other, Array<int>* mol_mapping, PtrArray<Array<int>>* mappings, PtrArray<Array<int>>* inv_mappings)
 {
     clear();
 
     int i, index = 0;
-    QS_DEF(ObjArray<Array<int>>, tmp_mappings);
+    QS_DEF(PtrArray<Array<int>>, tmp_mappings);
 
     if (mol_mapping != 0)
     {
@@ -399,7 +399,8 @@ void BaseReaction::clone(BaseReaction& other, Array<int>* mol_mapping, ObjArray<
 
         if (inv_mappings != 0)
         {
-            inv_mappings->expand(index + 1);
+            while (inv_mappings->size() <= index)
+                inv_mappings->add(std::make_unique<Array<int>>());
             inv_mappings->at(index).copy(inv_mapping);
         }
         if (mol_mapping != 0)
@@ -416,7 +417,7 @@ void BaseReaction::clone(BaseReaction& other, Array<int>* mol_mapping, ObjArray<
     _cloneSub(other);
 }
 
-void BaseReaction::_clone(BaseReaction& other, int index, int i, ObjArray<Array<int>>* mol_mappings)
+void BaseReaction::_clone(BaseReaction& other, int index, int i, PtrArray<Array<int>>* mol_mappings)
 {
 }
 
