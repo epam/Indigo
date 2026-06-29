@@ -29,22 +29,22 @@ def test_helm_case_insensitive():
 
     test_cases = [
         # (HELM string, description)
-        ("PEPTIDE1{cya}$$$$V2.0", "helm_cysteic_acid_1"),
-        ("PEPTIDE1{CYA}$$$$V2.0", "helm_cysteic_acid_2"),
-        ("PEPTIDE1{Cya}$$$$V2.0", "helm_cysteic_acid_3"),
-        ("PEPTIDE1{cYa}$$$$V2.0", "helm_cysteic_acid_4"),
-        ("PEPTIDE1{CyA}$$$$V2.0", "helm_cysteic_acid_5"),
+        ("PEPTIDE1{[cya]}$$$$V2.0", "helm_cysteic_acid_1"),
+        ("PEPTIDE1{[CYA]}$$$$V2.0", "helm_cysteic_acid_2"),
+        ("PEPTIDE1{[Cya]}$$$$V2.0", "helm_cysteic_acid_3"),
+        ("PEPTIDE1{[cYa]}$$$$V2.0", "helm_cysteic_acid_4"),
+        ("PEPTIDE1{[CyA]}$$$$V2.0", "helm_cysteic_acid_5"),
         # Test with multiple residues
         (
-            "PEPTIDE1{cya.cya.cya.meg.iva}$$$$V2.0",
+            "PEPTIDE1{[cya].[cya].[cya].[meg].[iva]}$$$$V2.0",
             "helm_peptide_chain_1",
         ),
         (
-            "PEPTIDE1{CYA.CYA.CYA.MEG.IVA}$$$$V2.0",
+            "PEPTIDE1{[CYA].[CYA].[CYA].[MEG].[IVA]}$$$$V2.0",
             "helm_peptide_chain_2",
         ),
         (
-            "PEPTIDE1{Cya.cya.CYA.Meg.Iva}$$$$V2.0",
+            "PEPTIDE1{[Cya].[cya].[CYA].[Meg].[Iva]}$$$$V2.0",
             "helm_peptide_chain_3",
         ),
         # Test RNA bases
