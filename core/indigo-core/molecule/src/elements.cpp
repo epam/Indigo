@@ -34,6 +34,28 @@ using namespace indigo;
 
 IMPL_ERROR(Element, "element");
 
+namespace
+{
+    // Provider hook installed by api/c so that core-level static valence
+    // calculations can pick up the current Indigo TLS session's valence_mode
+    // when the caller has no molecule reference to read it from.
+    Element::ValenceModeProvider g_default_mode_provider = nullptr;
+
+    ValenceMode resolveValenceMode(std::optional<ValenceMode> explicit_mode)
+    {
+        if (explicit_mode)
+            return *explicit_mode;
+        if (g_default_mode_provider)
+            return g_default_mode_provider();
+        return ValenceMode::BIOVIA_2009;
+    }
+} // namespace
+
+void Element::setDefaultValenceModeProvider(ValenceModeProvider provider)
+{
+    g_default_mode_provider = provider;
+}
+
 const Element& Element::_instance()
 {
     static Element instance;
@@ -251,6 +273,12 @@ bool Element::isHalogen(int element)
     return element == ELEM_F || element == ELEM_Cl || element == ELEM_Br || element == ELEM_I || element == ELEM_At;
 }
 
+bool Element::isMetal(int element)
+{
+    return (element >= ELEM_Li && element <= ELEM_Be) || (element >= ELEM_Na && element <= ELEM_Mg) || (element >= ELEM_K && element <= ELEM_Zn) ||
+           (element >= ELEM_Rb && element <= ELEM_Cd) || (element >= ELEM_Cs && element <= ELEM_Hg) || (element >= ELEM_Fr && element <= ELEM_Cn);
+}
+
 const char* Element::toString(int element)
 {
     if (element < 0 || element > ELEM_MAX)
@@ -335,9 +363,10 @@ int Element::calcValenceOfAromaticAtom(int elem, int charge, int n_arom, int min
     return -1;
 }
 
-bool Element::calcValence(int elem, int charge, int radical, int conn, int& valence, int& hyd, bool to_throw, bool* nonStandard)
+bool Element::calcValence(int elem, int charge, int radical, int conn, int& valence, int& hyd, bool to_throw, bool* nonStandard,
+                          std::optional<ValenceMode> mode)
 {
-    return ValenceModel::instance().calcValence(elem, charge, radical, conn, valence, hyd, to_throw, nonStandard);
+    return ValenceModel::instance(resolveValenceMode(mode)).calcValence(elem, charge, radical, conn, valence, hyd, to_throw, nonStandard);
 }
 
 int Element::calcValenceMinusHyd(int elem, int charge, int radical, int conn)
@@ -565,6 +594,8 @@ int Element::orbitals(int elem, bool use_d_orbital)
 
 int Element::electrons(int elem, int charge)
 {
+    if (elem == ELEM_He) // Helium in group 8 but has only two electrons
+        return 2 - charge;
     return Element::group(elem) - charge;
 }
 
@@ -573,10 +604,10 @@ int Element::baseValence(int eff)
     return (eff <= 4) ? eff : (8 - eff);
 }
 
-ValenceResult Element::calcValenceResult(int elem, int charge, int radical, int conn)
+ValenceResult Element::calcValenceResult(int elem, int charge, int radical, int conn, std::optional<ValenceMode> mode)
 {
     ValenceResult r;
-    r.valid = calcValence(elem, charge, radical, conn, r.valence, r.implicit_h, false, &r.nonStandard);
+    r.valid = calcValence(elem, charge, radical, conn, r.valence, r.implicit_h, false, &r.nonStandard, mode);
     return r;
 }
 

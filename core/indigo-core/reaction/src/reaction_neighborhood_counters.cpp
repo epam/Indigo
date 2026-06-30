@@ -27,6 +27,7 @@ void ReactionAtomNeighbourhoodCounters::calculate(Reaction& reac)
 {
     int i;
 
+    _counters.clear();
     _counters.resize(reac.count());
 
     for (i = reac.begin(); i < reac.end(); i = reac.next(i))
@@ -37,6 +38,7 @@ void ReactionAtomNeighbourhoodCounters::calculate(QueryReaction& reac)
 {
     int i;
 
+    _counters.clear();
     _counters.resize(reac.count());
 
     for (i = reac.begin(); i < reac.end(); i = reac.next(i))

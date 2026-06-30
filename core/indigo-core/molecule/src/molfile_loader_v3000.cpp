@@ -858,19 +858,20 @@ void MolfileLoader::_fillSGroupsParentIndices()
     std::multimap<int, int> indices;
     // original index can be arbitrary, sometimes key is used multiple times
 
-    for (auto i = sgroups.begin(); i != sgroups.end(); i++)
+    for (auto i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
     {
         SGroup& sgroup = sgroups.getSGroup(i);
-        indices.emplace(sgroup.original_group, i);
+        indices.emplace(sgroup.index, i);
     }
 
     // TODO: replace parent_group with parent_idx
     for (auto i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
     {
         SGroup& sgroup = sgroups.getSGroup(i);
-        if (indices.count(sgroup.parent_group) == 1)
+        const int parent_group = sgroup.parent_group.value_or(0);
+        if (parent_group != 0 && indices.count(parent_group) == 1)
         {
-            const auto it = indices.find(sgroup.parent_group);
+            const auto it = indices.find(parent_group);
             // TODO: check fix
             auto parent_idx = it->second;
             SGroup& parent_sgroup = sgroups.getSGroup(parent_idx);
@@ -1151,12 +1152,13 @@ void MolfileLoader::_readSGroup3000(const char* str)
     scanner.readWord(type, 0);
     type.push(0);
     scanner.skipSpace();
-    scanner.readInt();
+    int ext_idx = scanner.readInt();
     scanner.skipSpace();
 
     int idx = sgroups->addSGroup(type.ptr());
     SGroup* sgroup = &sgroups->getSGroup(idx);
-    sgroup->original_group = sgroup_idx;
+    sgroup->index = sgroup_idx;
+    sgroup->ext_index = ext_idx;
 
     DataSGroup* dsg = 0;
     Superatom* sup = 0;
@@ -1190,11 +1192,19 @@ void MolfileLoader::_readSGroup3000(const char* str)
         }
         else if ((strcmp(entity.ptr(), "XBONDS") == 0) || (strcmp(entity.ptr(), "CBONDS") == 0))
         {
+            Array<int>* bonds = 0;
+            if (strcmp(entity.ptr(), "XBONDS") == 0)
+                bonds = &sgroup->xbonds;
+            else if (dsg != 0)
+                bonds = &dsg->cbonds;
+            else
+                bonds = &sgroup->getBonds();
+
             scanner.skip(1); // (
             n = scanner.readInt1();
             while (n-- > 0)
             {
-                sgroup->bonds.push(scanner.readInt() - 1);
+                bonds->push(scanner.readInt() - 1);
                 scanner.skipSpace();
             }
             scanner.skip(1); // )
@@ -1341,9 +1351,9 @@ void MolfileLoader::_readSGroup3000(const char* str)
                 }
                 if (c == ' ' && !has_quote)
                     break;
-                sgroup->subscript.push(c);
+                sgroup->label.push(c);
             }
-            sgroup->subscript.push(0);
+            sgroup->label.push(0);
         }
         else if (strcmp(entity.ptr(), "CLASS") == 0)
         {
@@ -1657,8 +1667,10 @@ void MolfileLoader::_readSGroupDisplay(Scanner& scanner, DataSGroup& dsg)
     {
         int constexpr MIN_SDD_SIZE = 36;
         bool well_formatted = scanner.length() >= MIN_SDD_SIZE;
-        dsg.display_pos.x = scanner.readFloatFix(10);
-        dsg.display_pos.y = scanner.readFloatFix(10);
+        Vec2f dp;
+        dp.x = scanner.readFloatFix(10);
+        dp.y = scanner.readFloatFix(10);
+        dsg.display_pos.set(dp);
         int ch = ' ';
         if (well_formatted)
         {

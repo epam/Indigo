@@ -172,7 +172,7 @@ IMPL_ERROR(KetRUSGroup, "Ket RU SGroup")
 const std::map<std::string, int>& KetRUSGroup::getStringPropStrToIdx() const
 {
     static std::map<std::string, int> str_to_idx{
-        {"subscript", toUType(StringProps::subscript)},
+        {"subscript", toUType(StringProps::label)},
     };
     return str_to_idx;
 };

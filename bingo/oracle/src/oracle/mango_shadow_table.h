@@ -19,6 +19,7 @@
 #ifndef __mango_shadow_table__
 #define __mango_shadow_table__
 
+#include "base_cpp/ptr_array.h"
 #include "base_cpp/queue.h"
 #include "base_cpp/tlscont.h"
 #include "core/mango_matchers.h"
@@ -79,11 +80,11 @@ namespace indigo
         Array<int> _pending_blockno;
         Array<int> _pending_offset;
         Array<char[512]> _pending_gross;
-        ObjArray<OracleRaw> _pending_cmf;
-        ObjArray<OracleRaw> _pending_xyz;
+        PtrArray<OracleRaw> _pending_cmf;
+        PtrArray<OracleRaw> _pending_xyz;
         Array<float> _pending_mass;
         Array<int> _pending_fragcount;
-        ObjArray<Array<int>> _pending_counters;
+        PtrArray<Array<int>> _pending_counters;
 
         Array<char[19]> _pending_comp_rid;
         Array<char[9]> _pending_comp_hash;

@@ -167,7 +167,7 @@ namespace indigo
                 int best_abbreviation = -1;
                 for (int i = 0; i < abbreviations.size(); i++)
                 {
-                    const Abbreviation* cur = abbreviations[i];
+                    const Abbreviation* cur = &abbreviations[i];
 
                     const std::vector<std::string>* aliases[2] = {NULL, NULL};
                     if (tokenize_direction == LEFT)
@@ -419,7 +419,7 @@ namespace indigo
             else if (cur.type == Token::Pattern)
             {
                 // Add pattern
-                BufferScanner scanner(abbreviations[cur.index]->expansion.c_str());
+                BufferScanner scanner(abbreviations[cur.index].expansion.c_str());
                 SmilesLoader loader(scanner);
 
                 Molecule abbr;
@@ -437,7 +437,7 @@ namespace indigo
                         int id1 = bitGetOneHOIndex(bits);
                         int id2 = bitGetOneHOIndex(bits);
                         if (id1 != id2)
-                            throw Exception("Invalid abbreviations specification: %s", abbreviations[cur.index]->expansion.c_str());
+                            throw Exception("Invalid abbreviations specification: %s", abbreviations[cur.index].expansion.c_str());
                         if (id1 != 0)
                             id1--; // R == R1
 
@@ -762,7 +762,7 @@ namespace indigo
 
             int sid = mol.sgroups.addSGroup(SGroup::SG_TYPE_SUP);
             Superatom& super = (Superatom&)mol.sgroups.getSGroup(sid);
-            super.subscript.readString(mol.getPseudoAtom(v), true);
+            super.label.readString(mol.getPseudoAtom(v), true);
             for (int ve = expanded.vertexBegin(); ve != expanded.vertexEnd(); ve = expanded.vertexNext(ve))
                 super.atoms.push(mapping[ve]);
 

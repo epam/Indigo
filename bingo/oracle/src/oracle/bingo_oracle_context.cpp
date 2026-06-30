@@ -81,7 +81,7 @@ BingoOracleContext& BingoOracleContext::get(OracleEnv& env, int id, bool lock, b
 
     _instances.add(res.release());
 
-    return *(BingoOracleContext*)_instances.top();
+    return static_cast<BingoOracleContext&>(_instances.top());
 }
 
 void BingoOracleContext::_loadConfigParameters(OracleEnv& env)
@@ -121,6 +121,9 @@ void BingoOracleContext::_loadConfigParameters(OracleEnv& env)
 
     configGetIntDef(env, "IGNORE_BAD_VALENCE", val, 0);
     ignore_bad_valence = (val != 0);
+
+    configGetIntDef(env, "CT_FORMAT_SAVE_DATE", val, 1);
+    ct_format_save_date = (val != 0);
 
     QS_DEF(Array<char>, cmfdict);
 
@@ -356,7 +359,9 @@ void BingoOracleContext::tautomerLoadRules(OracleEnv& env)
             bingoGetTauCondition(param2, rule->aromaticity2, rule->list2);
 
             tautomer_rules.expand(n);
-            tautomer_rules[n - 1] = rule.release();
+            // PtrArray<T>::operator[] no longer returns T*&; use set() for
+            // sparse slot fill. (milestone-19 / issue #783 — ptr_array rewrite)
+            tautomer_rules.set(n - 1, rule.release());
         } while (statement.fetch());
 }
 

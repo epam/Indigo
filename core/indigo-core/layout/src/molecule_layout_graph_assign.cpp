@@ -382,13 +382,13 @@ void MoleculeLayoutGraph::_assignAbsoluteCoordinates(float bond_length)
             all_trivial = true;
 
             for (i = 0; i < bc_decom.getIncomingCount(k); i++)
-                if (!bc_components[bc_decom.getIncomingComponents(k)[i]]->isSingleEdge())
+                if (!bc_components[bc_decom.getIncomingComponents(k)[i]].isSingleEdge())
                 {
                     all_trivial = false;
                     break;
                 }
 
-            if (all_trivial && bc_tree[k] != -1 && !bc_components[bc_tree[k]]->isSingleEdge())
+            if (all_trivial && bc_tree[k] != -1 && !bc_components[bc_tree[k]].isSingleEdge())
                 all_trivial = false;
 
             // AttachmentLayout requires ≥2 attached BCs; with a single incoming BC
@@ -1527,24 +1527,37 @@ void MoleculeLayoutGraph::_applyAnchoredRigidTransform(const SelectionBridge& br
         _layout_vertices[vx_idx].pos.add(translation);
 }
 
-// Reflect inner cycle vertices through their single neighbor
+void MoleculeLayoutGraph::_reflectCycleVertex(int vx_inner_idx, float bond_length)
+{
+    auto& vx = getVertex(_layout_vertices[vx_inner_idx].ext_idx);
+    int nei_vx_idx = vx.neiVertex(vx.neiBegin()); // Only one neighbor
+
+    auto& inner_pos = _layout_vertices[vx_inner_idx].pos;
+    auto& nei_pos = _layout_vertices[nei_vx_idx].pos;
+
+    // Reflect inner_pos through nei_pos: inner_pos = 2*nei_pos - inner_pos
+    inner_pos.sub(nei_pos);
+    inner_pos.scale(bond_length);
+    if (!_layout_vertices[nei_vx_idx].is_inside)
+        inner_pos.negate();
+    inner_pos.add(nei_pos);
+}
+
 void MoleculeLayoutGraph::_reflectCycleVertices(const std::vector<int>& cycle_vertices, float bond_length)
 {
-    // Reflect inner cycle vertices through their single neighbor
+    for (auto vx_inner_idx : cycle_vertices)
+        _reflectCycleVertex(vx_inner_idx, bond_length);
+}
+
+void MoleculeLayoutGraph::_reflectSequenceCycleVertices(const std::vector<int>& cycle_vertices)
+{
+    // No-fixed sequence layouts are scaled by bond_length later. Use relative lengths here.
     for (auto vx_inner_idx : cycle_vertices)
     {
-        auto& vx = getVertex(_layout_vertices[vx_inner_idx].ext_idx);
-        int nei_vx_idx = vx.neiVertex(vx.neiBegin()); // Only one neighbor
-
-        auto& inner_pos = _layout_vertices[vx_inner_idx].pos;
-        auto& nei_pos = _layout_vertices[nei_vx_idx].pos;
-
-        // Reflect inner_pos through nei_pos: inner_pos = 2*nei_pos - inner_pos
-        inner_pos.sub(nei_pos);
-        inner_pos.scale(bond_length);
-        if (!_layout_vertices[nei_vx_idx].is_inside)
-            inner_pos.negate();
-        inner_pos.add(nei_pos);
+        float inner_bond_length = LayoutOptions::DEFAULT_INNER_MACROCYCLE_BOND_LENGTH;
+        if (_layout_vertices[vx_inner_idx].inner_cycle_size >= MIN_NAGON_SIZE_FOR_STANDARD_BOND_LENGTH)
+            inner_bond_length = LayoutOptions::DEFAULT_BOND_LENGTH;
+        _reflectCycleVertex(vx_inner_idx, inner_bond_length);
     }
 }
 
@@ -1759,22 +1772,13 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
     }
     else if (sequence_layout)
     {
-        // Requirement #3196 §6.3: for n-agon >= 12 bases must keep the full
-        // standard bond length; only smaller rings use the shortened 0.75 value.
-        std::vector<int> large_inner_cycle_vertices;
         for (auto vx_idx : vertices())
         {
             auto& lvx = _layout_vertices[vx_idx];
             if (lvx.is_inner_cycle)
-            {
-                if (lvx.inner_cycle_size >= MIN_NAGON_SIZE_FOR_STANDARD_BOND_LENGTH)
-                    large_inner_cycle_vertices.push_back(vx_idx);
-                else
-                    inner_cycle_vertices.push_back(vx_idx);
-            }
+                inner_cycle_vertices.push_back(vx_idx);
         }
-        _reflectCycleVertices(inner_cycle_vertices, LayoutOptions::DEFAULT_INNER_MACROCYCLE_BOND_LENGTH);
-        _reflectCycleVertices(large_inner_cycle_vertices, bond_length);
+        _reflectSequenceCycleVertices(inner_cycle_vertices);
     }
 
     if (vertexCount() == 1)
@@ -2001,8 +2005,8 @@ void MoleculeLayoutGraph::_findFixedComponents(BiconnectedDecomposer& bc_decom, 
         fixed_graph.makeSubgraph(*this, fixed_filter, &fixed_mapping, &fixed_inv_mapping);
         const Array<int>& decomposition = fixed_graph.getDecomposition();
         _fixed_decomposition.copy(decomposition);
-        _fixed_subgraphs_ext_vertices.clear_resize(fixed_graph.countComponents());
-        _fixed_subgraphs_int_vertices.clear_resize(fixed_graph.countComponents());
+        _fixed_subgraphs_ext_vertices.resize(fixed_graph.countComponents());
+        _fixed_subgraphs_int_vertices.resize(fixed_graph.countComponents());
 
         for (auto v_idx = 0; v_idx < decomposition.size(); ++v_idx)
         {
@@ -2035,7 +2039,7 @@ void MoleculeLayoutGraph::_findFixedComponents(BiconnectedDecomposer& bc_decom, 
             if (!fixed_components[i])
                 continue;
 
-            MoleculeLayoutGraph& component = *bc_components[i];
+            MoleculeLayoutGraph& component = bc_components[i];
 
             for (int j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
                 _fixed_vertices[component.getVertexExtIdx(j)] = 1;
@@ -2087,7 +2091,7 @@ void MoleculeLayoutGraph::_findFixedComponents(BiconnectedDecomposer& bc_decom, 
                 if (!fixed_components[i])
                     continue;
 
-                MoleculeLayoutGraph& component = *bc_components[i];
+                MoleculeLayoutGraph& component = bc_components[i];
 
                 int comp_v = component.getVertexExtIdx(component.vertexBegin());
                 int mapped = fixed_inv_mapping[comp_v];
@@ -2112,7 +2116,7 @@ bool MoleculeLayoutGraph::_assignComponentsRelativeCoordinates(PtrArray<Molecule
     // Initially was 1a and 2b then changed to 1b and 2b
     for (int i = 0; i < n_comp; i++)
     {
-        MoleculeLayoutGraph& component = *bc_components[i];
+        MoleculeLayoutGraph& component = bc_components[i];
         component.max_iterations = max_iterations;
         component.layout_orientation = layout_orientation;
 
@@ -2175,7 +2179,7 @@ bool MoleculeLayoutGraph::_assignComponentsRelativeCoordinates(PtrArray<Molecule
         std::unordered_map<int, Vec2f> nailed_positions;
         for (int i = 0; i < n_comp; i++)
         {
-            MoleculeLayoutGraph& component = *bc_components[i];
+            MoleculeLayoutGraph& component = bc_components[i];
             for (int j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
             {
                 int ext_idx = component.getVertexExtIdx(j);
@@ -2190,7 +2194,7 @@ bool MoleculeLayoutGraph::_assignComponentsRelativeCoordinates(PtrArray<Molecule
         // AttachmentLayout shift-rotation relies on that, so do not overwrite pos.
         for (int i = 0; i < n_comp; i++)
         {
-            MoleculeLayoutGraph& component = *bc_components[i];
+            MoleculeLayoutGraph& component = bc_components[i];
             const bool is_single_edge = component.isSingleEdge();
             for (int j = component.vertexBegin(); j < component.vertexEnd(); j = component.vertexNext(j))
             {
@@ -2210,7 +2214,7 @@ bool MoleculeLayoutGraph::_assignComponentsRelativeCoordinates(PtrArray<Molecule
 
     for (int i = 0; i < n_comp; i++)
     {
-        MoleculeLayoutGraph& component = *bc_components[i];
+        MoleculeLayoutGraph& component = bc_components[i];
         if (!component.isSingleEdge())
             _markInnerVertices(component);
     }
@@ -2367,14 +2371,14 @@ void MoleculeLayoutGraph::_findFirstVertexIdx(int n_comp, Array<int>& fixed_comp
         for (int i = 0; i < n_comp; i++)
             if (fixed_components[i])
             {
-                _copyLayout(*bc_components[i]);
+                _copyLayout(bc_components[i]);
                 j = i;
             }
 
         if (j == -1)
             throw Error("Internal error: cannot find a fixed component with fixed vertices");
 
-        MoleculeLayoutGraph& component = *bc_components[j];
+        MoleculeLayoutGraph& component = bc_components[j];
 
         _first_vertex_idx = component._layout_vertices[component.vertexBegin()].ext_idx;
     }
@@ -2390,7 +2394,7 @@ void MoleculeLayoutGraph::_findFirstVertexIdx(int n_comp, Array<int>& fixed_comp
             nucleus_idx = -1;
             for (int i = 0; i < n_comp; i++)
             {
-                MoleculeLayoutGraph& component = *bc_components[i];
+                MoleculeLayoutGraph& component = bc_components[i];
                 if (!component.isSingleEdge())
                 {
                     // Prefer non-fixed component as nucleus; fixed ones are propagated separately
@@ -2398,13 +2402,13 @@ void MoleculeLayoutGraph::_findFirstVertexIdx(int n_comp, Array<int>& fixed_comp
                     {
                         if (!fixed_components[i])
                         {
-                            if (nucleus_idx == -1 || component._total_morgan_code > bc_components[nucleus_idx]->_total_morgan_code)
+                            if (nucleus_idx == -1 || component._total_morgan_code > bc_components[nucleus_idx]._total_morgan_code)
                                 nucleus_idx = i;
                         }
                     }
                     else
                     {
-                        if (nucleus_idx == -1 || component._total_morgan_code > bc_components[nucleus_idx]->_total_morgan_code)
+                        if (nucleus_idx == -1 || component._total_morgan_code > bc_components[nucleus_idx]._total_morgan_code)
                             nucleus_idx = i;
                     }
                 }
@@ -2413,16 +2417,16 @@ void MoleculeLayoutGraph::_findFirstVertexIdx(int n_comp, Array<int>& fixed_comp
             if (nucleus_idx < 0)
             {
                 for (int i = 0; i < n_comp; i++)
-                    if (!bc_components[i]->isSingleEdge())
+                    if (!bc_components[i].isSingleEdge())
                     {
-                        if (nucleus_idx == -1 || bc_components[i]->_total_morgan_code > bc_components[nucleus_idx]->_total_morgan_code)
+                        if (nucleus_idx == -1 || bc_components[i]._total_morgan_code > bc_components[nucleus_idx]._total_morgan_code)
                             nucleus_idx = i;
                     }
             }
             if (nucleus_idx < 0)
                 throw Error("Internal error: cannot find nontrivial component");
 
-            MoleculeLayoutGraph& nucleus = *bc_components[nucleus_idx];
+            MoleculeLayoutGraph& nucleus = bc_components[nucleus_idx];
             _copyLayout(nucleus);
             if (nucleus._first_vertex_idx >= 0 && nucleus._first_vertex_idx < nucleus._layout_vertices.size())
                 _first_vertex_idx = nucleus._layout_vertices[nucleus._first_vertex_idx].ext_idx;
@@ -2434,7 +2438,7 @@ void MoleculeLayoutGraph::_findFirstVertexIdx(int n_comp, Array<int>& fixed_comp
             {
                 for (int i = 0; i < n_comp; i++)
                     if (i != nucleus_idx && fixed_components[i])
-                        _copyLayout(*bc_components[i]);
+                        _copyLayout(bc_components[i]);
             }
 
             // Copy vertex types from single-edge components
@@ -2443,9 +2447,9 @@ void MoleculeLayoutGraph::_findFirstVertexIdx(int n_comp, Array<int>& fixed_comp
             // 2. Fixed-to-fixed edges that aren't part of the nucleus
             for (int i = 0; i < n_comp; i++)
             {
-                if (i != nucleus_idx && bc_components[i]->isSingleEdge())
+                if (i != nucleus_idx && bc_components[i].isSingleEdge())
                 {
-                    MoleculeLayoutGraph& component = *bc_components[i];
+                    MoleculeLayoutGraph& component = bc_components[i];
                     // Get the two vertices in this single-edge component
                     int v1_idx = component.vertexBegin();
                     int v2_idx = component.vertexNext(v1_idx);

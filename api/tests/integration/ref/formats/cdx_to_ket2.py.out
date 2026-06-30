@@ -17,6 +17,9 @@ issue_1683.ket:SUCCEED
 issue_2603.ket:SUCCEED
 marvin.ket:SUCCEED
 simple_rgrp64.ket:SUCCEED
+CDXML loader: Not a molecule. Found 1 arrows.
+*** Try as Reaction ***
+sodium_hydroxide.ket:SUCCEED
 CDXML loader: Not a molecule. Found 14 arrows.
 *** Try as Reaction ***
 test_zero_id.ket:SUCCEED

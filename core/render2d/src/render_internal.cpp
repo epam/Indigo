@@ -149,7 +149,8 @@ void MoleculeRenderInternal::setMolecule(BaseMolecule* mol)
         for (int i = bmol.sgroups.begin(); i != bmol.sgroups.end(); i = bmol.sgroups.next(i))
         {
             SGroup& sgroup = bmol.sgroups.getSGroup(i);
-            if (sgroup.contracted == DisplayOption::Contracted || sgroup.contracted == DisplayOption::Undefined)
+            const auto contracted = sgroup.contracted.value_or(DisplayOption::Undefined);
+            if (contracted == DisplayOption::Contracted || contracted == DisplayOption::Undefined)
             {
                 isThereAtLeastOneContracted = true;
                 break;
@@ -161,14 +162,12 @@ void MoleculeRenderInternal::setMolecule(BaseMolecule* mol)
         _prepareSGroups(isThereAtLeastOneContracted);
     }
 
-    _data.atoms.clear();
     _data.atoms.resize(_mol->vertexEnd());
     for (auto i = _mol->vertexBegin(); i != _mol->vertexEnd(); i = _mol->vertexNext(i))
     {
         _ad(i).clear();
     }
 
-    _data.bonds.clear();
     _data.bonds.resize(_mol->edgeEnd());
     for (auto i = _mol->edgeBegin(); i != _mol->edgeEnd(); i = _mol->edgeNext(i))
     {
@@ -563,9 +562,10 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
             Sgroup& sg = _data.sgroups.push();
             int tii = _pushTextItem(sg, RenderItem::RIT_DATASGROUP);
             TextItem& ti = _data.textitems[tii];
-            if (group.tag != ' ')
+            const char tag = group.tag.value_or(0);
+            if (tag != 0 && tag != ' ')
             {
-                ti.text.push(group.tag);
+                ti.text.push(tag);
                 ti.text.appendString(" = ", false);
             }
 
@@ -594,7 +594,8 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
             }
             else if (group.relative)
             {
-                _objDistTransform(ti.bbp, group.display_pos);
+                if (group.display_pos.has_value())
+                    _objDistTransform(ti.bbp, group.display_pos.value());
                 if (group.atoms.size() > 0)
                 {
                     ti.bbp.add(_ad(group.atoms[0]).pos);
@@ -606,7 +607,8 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
             }
             else
             {
-                _objCoordTransform(ti.bbp, group.display_pos);
+                if (group.display_pos.has_value())
+                    _objCoordTransform(ti.bbp, group.display_pos.value());
             }
 
             parent = ILLEGAL_RECT();
@@ -620,14 +622,15 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
             int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
             TextItem& index = _data.textitems[tiIndex];
             index.fontsize = FONT_SIZE_ATTR;
-            bprintf(index.text, group.subscript.size() > 0 ? group.subscript.ptr() : "n");
+            bprintf(index.text, group.label.size() > 0 ? group.label.ptr() : "n");
             _positionIndex(sg, tiIndex, true);
-            if (group.connectivity != RepeatingUnit::HEAD_TO_TAIL)
+            const int connectivity = group.connectivity.value_or(RepeatingUnit::HEAD_TO_TAIL);
+            if (connectivity != RepeatingUnit::HEAD_TO_TAIL)
             {
                 int tiConn = _pushTextItem(sg, RenderItem::RIT_SGROUP);
                 TextItem& conn = _data.textitems[tiConn];
                 conn.fontsize = FONT_SIZE_ATTR;
-                if (group.connectivity == RepeatingUnit::HEAD_TO_HEAD)
+                if (connectivity == RepeatingUnit::HEAD_TO_HEAD)
                 {
                     bprintf(conn.text, "hh");
                 }
@@ -655,7 +658,8 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
             int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
             TextItem& index = _data.textitems[tiIndex];
             index.fontsize = FONT_SIZE_ATTR;
-            bprintf(index.text, "%d", group.multiplier);
+            const int multiplier = group.multiplier.value_or(0);
+            bprintf(index.text, "%d", multiplier);
             _positionIndex(sg, tiIndex, true);
             parent = ILLEGAL_RECT();
         }
@@ -668,19 +672,19 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
             _placeBrackets(sg, group.atoms, brackets);
             _loadBrackets(sg, brackets);
 
-            if (group.subscript.size() == 0 || std::string(group.subscript.ptr()).empty())
+            if (group.label.size() == 0 || std::string(group.label.ptr()).empty())
                 sg.hide_brackets = true;
             int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
             TextItem& index = _data.textitems[tiIndex];
             index.fontsize = FONT_SIZE_ATTR;
-            bprintf(index.text, "%s", group.subscript.ptr());
+            bprintf(index.text, "%s", group.label.ptr());
             _positionIndex(sg, tiIndex, true);
 
             parent = ILLEGAL_RECT();
         }
     }
 
-    ObjArray<Tree>& children = sgroups.children();
+    PtrArray<Tree>& children = sgroups.children();
     for (int i = 0; i < children.size(); i++)
     {
         _initSGroups(children[i], parent);
@@ -824,12 +828,13 @@ void MoleculeRenderInternal::_prepareSGroups(bool collapseAtLeastOneSuperatom)
         for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
         {
             SGroup& sgroup = mol.sgroups.getSGroup(i);
-            if (sgroup.contracted == DisplayOption::Contracted || sgroup.contracted == DisplayOption::Undefined)
+            const auto contracted = sgroup.contracted.value_or(DisplayOption::Undefined);
+            if (contracted == DisplayOption::Contracted || contracted == DisplayOption::Undefined)
             {
                 if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
                 {
                     const Superatom& group = (Superatom&)sgroup;
-                    Vec3f displayPosition = group.display_position;
+                    Vec3f displayPosition = group.display_position.value_or(Vec3f(0, 0, 0));
                     bool useDisplayPosition = false;
                     if (fabs(displayPosition.x) > EPSILON || fabs(displayPosition.y) > EPSILON || fabs(displayPosition.z) > EPSILON)
                     {
@@ -850,13 +855,13 @@ void MoleculeRenderInternal::_prepareSGroups(bool collapseAtLeastOneSuperatom)
 
                     if (mol.isQueryMolecule())
                     {
-                        superAtomID = mol.asQueryMolecule().addAtom(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, group.subscript.ptr()));
+                        superAtomID = mol.asQueryMolecule().addAtom(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, group.label.ptr()));
                     }
                     else
                     {
                         Molecule& amol = mol.asMolecule();
                         superAtomID = amol.addAtom(ELEM_PSEUDO);
-                        amol.setPseudoAtom(superAtomID, group.subscript.ptr());
+                        amol.setPseudoAtom(superAtomID, group.label.ptr());
                     }
                     QS_DEF(RedBlackSet<int>, groupAtoms);
                     groupAtoms.clear();
@@ -978,7 +983,7 @@ int evcmp(const Event& a, const Event& b, void* /*context*/)
     return 0;
 }
 
-float getFreeAngle(const ObjArray<Vec2f>& pp)
+float getFreeAngle(const PtrArray<Vec2f>& pp)
 {
     QS_DEF(Array<float>, angle);
     angle.clear();
@@ -1019,7 +1024,7 @@ int loopDist(int i, int j, int len)
 class SegmentList : protected RedBlackSet<int>
 {
 public:
-    SegmentList(ObjArray<Segment>& ss) : segments(ss)
+    SegmentList(PtrArray<Segment>& ss) : segments(ss)
     {
         xPos = 0;
     }
@@ -1078,12 +1083,12 @@ protected:
     }
 
 private:
-    ObjArray<Segment>& segments;
+    PtrArray<Segment>& segments;
 
     SegmentList(const SegmentList& other);
 };
 
-float getMinDotProduct(const ObjArray<Vec2f>& pp, float tilt)
+float getMinDotProduct(const PtrArray<Vec2f>& pp, float tilt)
 {
     float minDot = 1.0;
     for (int j = 0; j < pp.size(); ++j)
@@ -1124,7 +1129,7 @@ bool MoleculeRenderInternal::_ringHasSelfIntersectionsSimple(const Ring& ring)
 
 bool MoleculeRenderInternal::_ringHasSelfIntersections(const Ring& ring)
 {
-    QS_DEF(ObjArray<Vec2f>, pp);
+    QS_DEF(PtrArray<Vec2f>, pp);
     pp.clear();
     int len = ring.bondEnds.size();
     for (int j = 0; j < len; ++j)
@@ -1134,10 +1139,10 @@ bool MoleculeRenderInternal::_ringHasSelfIntersections(const Ring& ring)
 
     float tilt = getFreeAngle(pp) + (float)(M_PI / 2);
 
-    QS_DEF(ObjArray<Event>, events);
+    QS_DEF(PtrArray<Event>, events);
     events.clear();
     events.reserve(2 * len);
-    QS_DEF(ObjArray<Segment>, segments);
+    QS_DEF(PtrArray<Segment>, segments);
     segments.clear();
     segments.reserve(len);
     for (int j = 0; j < len; ++j)
@@ -1224,7 +1229,7 @@ void MoleculeRenderInternal::_findRings()
         {
             for (int k = 0; k < ring.bondEnds.size(); ++k)
                 _be(ring.bondEnds[k]).lRing = -2;
-            _data.rings.pop();
+            _data.rings.removeLast();
             continue;
         }
 
@@ -1233,7 +1238,7 @@ void MoleculeRenderInternal::_findRings()
         {
             for (int k = 0; k < ring.bondEnds.size(); ++k)
                 _be(ring.bondEnds[k]).lRing = -2;
-            _data.rings.pop();
+            _data.rings.removeLast();
             continue;
         }
 
@@ -1256,7 +1261,7 @@ void MoleculeRenderInternal::_findRings()
         {
             for (int k = 0; k < ring.bondEnds.size(); ++k)
                 _be(ring.bondEnds[k]).lRing = -2;
-            _data.rings.pop();
+            _data.rings.removeLast();
             continue;
         }
 

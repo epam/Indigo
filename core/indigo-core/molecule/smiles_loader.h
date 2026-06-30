@@ -20,6 +20,7 @@
 #define __smiles_loader__
 
 #include "base_cpp/exception.h"
+#include "base_cpp/ptr_array.h"
 #include "base_cpp/tlscont.h"
 #include "molecule/loader_options.h"
 #include "molecule/molecule.h"
@@ -159,7 +160,7 @@ namespace indigo
         Array<_CycleDesc> _cycles;
         StringPool _pending_bonds_pool;
         Pool<List<int>::Elem> _neipool;
-        ObjArray<_AtomDesc> _atoms;
+        PtrArray<_AtomDesc> _atoms;
         Array<_BondDesc> _bonds;
         Array<int> _polymer_repetitions;
 

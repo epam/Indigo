@@ -90,7 +90,7 @@ bool MangoPgBuildEngine::processStructure(StructCache& struct_cache)
     return true;
 }
 
-void MangoPgBuildEngine::processStructures(ObjArray<StructCache>& struct_caches)
+void MangoPgBuildEngine::processStructures(PtrArray<StructCache>& struct_caches)
 {
     _currentCache = 0;
     _structCaches = &struct_caches;
@@ -126,7 +126,7 @@ void MangoPgBuildEngine::processStructures(ObjArray<StructCache>& struct_caches)
     //         }
     //         if (id_n < struct_caches.size() && id_n >= 0)
     //         {
-    //             ItemPointer item_ptr = &(struct_caches[id_n].ptr);
+    //             ItemPointer item_ptr = &(struct_caches[id_n]->ptr);
     //             int block_number = ItemPointerGetBlockNumber(item_ptr);
     //             int offset_number = ItemPointerGetOffsetNumber(item_ptr);
     //             CORE_HANDLE_ERROR_TID_NO_INDEX(bingo_res, 0, "molecule build engine: error while processing records", block_number, offset_number,
@@ -228,7 +228,7 @@ void MangoPgBuildEngine::finishShadowProcessing()
 void MangoPgBuildEngine::_processResultCb(void* context)
 {
     MangoPgBuildEngine* engine = (MangoPgBuildEngine*)context;
-    ObjArray<StructCache>& struct_caches = *(engine->_structCaches);
+    PtrArray<StructCache>& struct_caches = *(engine->_structCaches);
     int cache_idx = -1;
     std::unique_ptr<MangoPgFpData> fp_data = std::make_unique<MangoPgFpData>();
     /*

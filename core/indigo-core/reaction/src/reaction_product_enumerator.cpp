@@ -145,7 +145,7 @@ void ReactionProductEnumerator::buildProducts(void)
 
 void ReactionProductEnumerator::_buildTubesGrid(void)
 {
-    QS_DEF(ObjArray<Array<int>>, digits);
+    QS_DEF(PtrArray<Array<int>>, digits);
     digits.clear();
 
     int digit_idx = 0;
@@ -164,6 +164,7 @@ void ReactionProductEnumerator::_buildTubesGrid(void)
     int tubes_count = 1;
     for (int i = _reaction.reactantBegin(); i != _reaction.reactantEnd(); i = _reaction.reactantNext(i))
         tubes_count *= getMonomersCount(i);
+    _tubes_monomers.clear();
     _tubes_monomers.resize(tubes_count);
 
     for (int i = 0; i < tubes_count; i++)

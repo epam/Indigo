@@ -941,11 +941,12 @@ void MoleculeJsonLoader::handleSGroup(SGroup& sgroup, const std::unordered_set<i
             rep_end = mapping[end];
 
         MultipleGroup& mg = (MultipleGroup&)sgroup;
-        if (mg.multiplier > 1)
+        const int multiplier = mg.multiplier.value_or(0);
+        if (multiplier > 1)
         {
             int start_order = start_bond >= 0 ? bmol.getBondOrder(start_bond) : -1;
             int end_order = end_bond >= 0 ? bmol.getBondOrder(end_bond) : -1;
-            for (int j = 0; j < mg.multiplier - 1; j++)
+            for (int j = 0; j < multiplier - 1; j++)
             {
                 bmol.mergeWithMolecule(*rep, &mapping, 0);
                 int k;
@@ -1023,7 +1024,7 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
             if (sg_type == SGroup::SG_TYPE_MUL)
             {
                 MultipleGroup& mg = (MultipleGroup&)sgroup;
-                if (mg.multiplier)
+                if (mg.multiplier != 0)
                     mg.parent_atoms.push(atom_idx);
             }
         }
@@ -1055,7 +1056,7 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
             RepeatingUnit& ru = (RepeatingUnit&)sgroup;
             if (s.HasMember("subscript"))
             {
-                sgroup.subscript.readString(s["subscript"].GetString(), true);
+                sgroup.label.readString(s["subscript"].GetString(), true);
             }
 
             if (s.HasMember("connectivity"))
@@ -1073,7 +1074,7 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
         case SGroup::SG_TYPE_SUP: {
             Superatom& sg = (Superatom&)sgroup;
             if (s.HasMember("name"))
-                sgroup.subscript.readString(s["name"].GetString(), true);
+                sgroup.label.readString(s["name"].GetString(), true);
             if (s.HasMember("expanded"))
                 sg.contracted = s["expanded"].GetBool() ? DisplayOption::Expanded : DisplayOption::Contracted;
             if (s.HasMember("class"))
@@ -1125,11 +1126,17 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
             if (s.HasMember("queryOp"))
                 dsg.queryoper.readString(s["queryOp"].GetString(), true);
 
-            if (s.HasMember("x"))
-                dsg.display_pos.x = s["x"].GetFloat();
+            bool display_units = s.HasMember("display") && s["display"].GetBool();
+            if (s.HasMember("x") || s.HasMember("y") || display_units)
+            {
+                Vec2f dp(0.0f, 0.0f);
+                if (s.HasMember("x"))
+                    dp.x = s["x"].GetFloat();
 
-            if (s.HasMember("y"))
-                dsg.display_pos.y = s["y"].GetFloat();
+                if (s.HasMember("y"))
+                    dp.y = s["y"].GetFloat();
+                dsg.display_pos.set(dp);
+            }
 
             if (s.HasMember("dataDetached"))
                 dsg.detached = s["dataDetached"].GetBool();
@@ -1140,7 +1147,7 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
                 dsg.relative = s["placement"].GetBool();
 
             if (s.HasMember("display"))
-                dsg.display_units = s["display"].GetBool();
+                dsg.display_units = display_units;
 
             if (s.HasMember("tag"))
             {
@@ -1190,7 +1197,7 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
             const Value& bonds = s["bonds"];
             for (rapidjson::SizeType j = 0; j < bonds.Size(); ++j)
             {
-                sgroup.bonds.push(bonds[j].GetInt());
+                sgroup.getBonds().push(bonds[j].GetInt());
             }
         }
     }
@@ -1226,7 +1233,7 @@ void MoleculeJsonLoader::fillXBondsAndBrackets(Superatom& sa, BaseMolecule& mol)
             if (atoms.find(target_atom) == atoms.end())
             {
                 const auto& target_pos = mol.getAtomXyz(target_atom);
-                sa.bonds.push(vx.neiEdge(i));
+                sa.xbonds.push(vx.neiEdge(i));
                 brackets.emplace_back((target_pos.x - src_pos.x) / 2, (target_pos.y - src_pos.y) / 2);
             }
         }
@@ -1518,7 +1525,7 @@ int MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_tem
                         }
                     }
                     sa.sa_class.appendString("LGRP", true);
-                    sa.subscript.appendString(group_name.c_str(), true);
+                    sa.label.appendString(group_name.c_str(), true);
 
                     att_desc.leaving_group = grp_idx;
                     fillXBondsAndBrackets(sa, monomer_mol);
@@ -1559,7 +1566,7 @@ int MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_tem
                 sa.sa_class.appendString(mclass.c_str(), true);
 
             if (alias.size())
-                sa.subscript.appendString(alias.c_str(), true);
+                sa.label.appendString(alias.c_str(), true);
 
             if (natreplace.size())
                 sa.sa_natreplace.appendString(natreplace.c_str(), true);
@@ -1656,7 +1663,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     if (!_parsed)
         throw Error("Invalid JSON input");
 
-    ObjArray<Array<int>> mol_mappings;
+    PtrArray<Array<int>> mol_mappings;
     for (rapidjson::SizeType node_idx = 0; node_idx < _mol_nodes.Size(); ++node_idx)
     {
         std::vector<EnhancedStereoCenter> stereo_centers;

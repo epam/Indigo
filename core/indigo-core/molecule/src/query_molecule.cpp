@@ -57,7 +57,7 @@ bool QueryMolecule::isQueryMolecule()
 int QueryMolecule::getAtomNumber(int idx)
 {
     int res;
-    QueryMolecule::Atom* atom = _atoms[idx];
+    QueryMolecule::Atom* atom = &_atoms[idx];
 
     if (atom->sureValue(ATOM_NUMBER, res))
         return res;
@@ -69,7 +69,7 @@ int QueryMolecule::getAtomIsotope(int idx)
 {
     int res;
 
-    if (_atoms[idx]->sureValue(ATOM_ISOTOPE, res))
+    if (_atoms[idx].sureValue(ATOM_ISOTOPE, res))
         return res;
 
     return -1;
@@ -79,7 +79,7 @@ int QueryMolecule::getAtomCharge(int idx)
 {
     int res;
 
-    if (_atoms[idx]->sureValue(ATOM_CHARGE, res))
+    if (_atoms[idx].sureValue(ATOM_CHARGE, res))
         return res;
 
     return CHARGE_UNKNOWN;
@@ -89,7 +89,7 @@ int QueryMolecule::getAtomRadical(int idx)
 {
     int res;
 
-    if (_atoms[idx]->sureValue(ATOM_RADICAL, res))
+    if (_atoms[idx].sureValue(ATOM_RADICAL, res))
         return res;
 
     return -1;
@@ -100,7 +100,7 @@ int QueryMolecule::getAtomRadical(int idx)
 int QueryMolecule::getExplicitValence(int idx)
 {
     int res;
-    if (_atoms[idx]->sureValue(ATOM_TOTAL_BOND_ORDER, res))
+    if (_atoms[idx].sureValue(ATOM_TOTAL_BOND_ORDER, res))
         return res;
 
     return -1;
@@ -115,7 +115,7 @@ int QueryMolecule::getAtomAromaticity(int idx)
 {
     int res;
 
-    if (_atoms[idx]->sureValue(ATOM_AROMATICITY, res))
+    if (_atoms[idx].sureValue(ATOM_AROMATICITY, res))
         return res;
 
     return -1;
@@ -125,7 +125,7 @@ int QueryMolecule::getBondOrder(int idx) const
 {
     int res;
 
-    if (_bonds[idx]->sureValue(BOND_ORDER, res))
+    if (_bonds[idx].sureValue(BOND_ORDER, res))
         return res;
 
     return -1;
@@ -138,7 +138,7 @@ int QueryMolecule::getBondTopology(int idx)
     if (getEdgeTopology(idx) == TOPOLOGY_RING)
         return TOPOLOGY_RING;
 
-    if (_bonds[idx]->sureValue(BOND_TOPOLOGY, res))
+    if (_bonds[idx].sureValue(BOND_TOPOLOGY, res))
         return res;
 
     return -1;
@@ -153,12 +153,12 @@ int QueryMolecule::getAtomSubstCount(int idx)
 {
     int res;
 
-    if (_atoms[idx]->sureValue(ATOM_SUBSTITUENTS, res))
+    if (_atoms[idx].sureValue(ATOM_SUBSTITUENTS, res))
         return res;
-    if (_atoms[idx]->sureValue(ATOM_SUBSTITUENTS_AS_DRAWN, res))
+    if (_atoms[idx].sureValue(ATOM_SUBSTITUENTS_AS_DRAWN, res))
         return res;
     // Some data stored as min=value, max=100(e.g. MOL format)
-    auto atom = _atoms[idx]->sureConstraint(ATOM_SUBSTITUENTS);
+    auto atom = _atoms[idx].sureConstraint(ATOM_SUBSTITUENTS);
     if (atom != nullptr)
         return atom->value_min;
 
@@ -169,9 +169,9 @@ int QueryMolecule::getAtomRingBondsCount(int idx)
 {
     int res;
 
-    if (_atoms[idx]->sureValue(ATOM_RING_BONDS, res))
+    if (_atoms[idx].sureValue(ATOM_RING_BONDS, res))
         return res;
-    if (_atoms[idx]->sureValue(ATOM_RING_BONDS_AS_DRAWN, res))
+    if (_atoms[idx].sureValue(ATOM_RING_BONDS_AS_DRAWN, res))
         return res;
 
     return -1;
@@ -214,12 +214,12 @@ int QueryMolecule::getAtomConnectivity(int /*idx*/)
 
 bool QueryMolecule::atomNumberBelongs(int idx, const int* numbers, int count)
 {
-    return _atoms[idx]->sureValueBelongs(ATOM_NUMBER, numbers, count);
+    return _atoms[idx].sureValueBelongs(ATOM_NUMBER, numbers, count);
 }
 
 bool QueryMolecule::possibleAtomNumber(int idx, int number)
 {
-    QueryMolecule::Atom* atom = _atoms[idx];
+    QueryMolecule::Atom* atom = &_atoms[idx];
 
     if (!atom->possibleValue(ATOM_NUMBER, number))
         return false;
@@ -229,30 +229,30 @@ bool QueryMolecule::possibleAtomNumber(int idx, int number)
 
 bool QueryMolecule::possibleAtomNumberAndCharge(int idx, int number, int charge)
 {
-    return _atoms[idx]->possibleValuePair(ATOM_NUMBER, number, ATOM_CHARGE, charge);
+    return _atoms[idx].possibleValuePair(ATOM_NUMBER, number, ATOM_CHARGE, charge);
 }
 
 bool QueryMolecule::possibleAtomNumberAndIsotope(int idx, int number, int isotope)
 {
-    return _atoms[idx]->possibleValuePair(ATOM_NUMBER, number, ATOM_ISOTOPE, isotope);
+    return _atoms[idx].possibleValuePair(ATOM_NUMBER, number, ATOM_ISOTOPE, isotope);
 }
 
 bool QueryMolecule::possibleAtomIsotope(int idx, int isotope)
 {
-    return _atoms[idx]->possibleValue(ATOM_ISOTOPE, isotope);
+    return _atoms[idx].possibleValue(ATOM_ISOTOPE, isotope);
 }
 
 bool QueryMolecule::possibleAtomCharge(int idx, int charge)
 {
-    if (_atoms[idx]->hasConstraint(ATOM_CHARGE))
-        return _atoms[idx]->possibleValue(ATOM_CHARGE, charge);
+    if (_atoms[idx].hasConstraint(ATOM_CHARGE))
+        return _atoms[idx].possibleValue(ATOM_CHARGE, charge);
     return 0 == charge; // No charge set - means charge 0
 }
 
 bool QueryMolecule::possibleAtomRadical(int idx, int radical)
 {
-    if (_atoms[idx]->hasConstraint(ATOM_RADICAL))
-        return _atoms[idx]->possibleValue(ATOM_RADICAL, radical);
+    if (_atoms[idx].hasConstraint(ATOM_RADICAL))
+        return _atoms[idx].possibleValue(ATOM_RADICAL, radical);
     return 0 == radical; // No radical set - means radical 0
 }
 
@@ -261,7 +261,7 @@ void QueryMolecule::getAtomDescription(int idx, Array<char>& description)
     ArrayOutput out(description);
 
     // out.writeChar('[');
-    writeSmartsAtom(out, _atoms[idx], -1, -1, 0, false, false, original_format);
+    writeSmartsAtom(out, &_atoms[idx], -1, -1, 0, false, false, original_format);
     // out.writeChar(']');
     out.writeChar(0);
 }
@@ -282,7 +282,7 @@ void QueryMolecule::_getAtomDescription(Atom* atom, Output& out, int depth)
         {
             if (i > 0)
                 out.writeString(";");
-            _getAtomDescription((Atom*)atom->children[i], out, depth + 1);
+            _getAtomDescription((Atom*)&atom->children[i], out, depth + 1);
         }
         if (depth > 0)
             out.writeChar(')');
@@ -295,7 +295,7 @@ void QueryMolecule::_getAtomDescription(Atom* atom, Output& out, int depth)
         {
             if (i > 0)
                 out.writeString(",");
-            _getAtomDescription((Atom*)atom->children[i], out, depth + 1);
+            _getAtomDescription((Atom*)&atom->children[i], out, depth + 1);
         }
         if (depth > 0)
             out.writeChar(')');
@@ -303,7 +303,7 @@ void QueryMolecule::_getAtomDescription(Atom* atom, Output& out, int depth)
     }
     case OP_NOT:
         out.writeString("!");
-        _getAtomDescription((Atom*)atom->children[0], out, depth + 1);
+        _getAtomDescription((Atom*)&atom->children[0], out, depth + 1);
         return;
     case ATOM_NUMBER:
         out.writeString(Element::toString(atom->value_min));
@@ -657,12 +657,12 @@ void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chi
         long long cur_pos = output.tell();
         for (i = 0; i < atom->children.size(); i++)
         {
-            if (isAromaticByCaseAtom(atom->children[i]))
+            if (isAromaticByCaseAtom(&atom->children[i]))
             {
                 has_number = true;
                 strncpy(atom_name, Element::toString(atom->child(i)->value_max), sizeof(atom_name));
             }
-            if (atom->children[i]->type == ATOM_AROMATICITY)
+            if (atom->children[i].type == ATOM_AROMATICITY)
             {
                 has_aromatic = true;
                 aromatic = atom->child(i)->value_min == ATOM_AROMATIC;
@@ -676,11 +676,11 @@ void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chi
         }
         for (i = 0; i < atom->children.size(); i++)
         {
-            if (has_aromatic && has_number && (atom->children[i]->type == ATOM_AROMATICITY || atom->children[i]->type == ATOM_NUMBER))
+            if (has_aromatic && has_number && (atom->children[i].type == ATOM_AROMATICITY || atom->children[i].type == ATOM_NUMBER))
             {
                 continue;
             }
-            if (atom->children[i]->type == ATOM_RADICAL || atom->children[i]->type == ATOM_VALENCE)
+            if (atom->children[i].type == ATOM_RADICAL || atom->children[i].type == ATOM_VALENCE)
             {
                 continue;
             }
@@ -697,7 +697,7 @@ void QueryMolecule::writeSmartsAtom(Output& output, Atom* atom, int aam, int chi
     case OP_OR: {
         for (i = 0; i < atom->children.size(); i++)
         {
-            if (atom->children[i]->type == QueryMolecule::ATOM_RADICAL || atom->children[i]->type == QueryMolecule::ATOM_VALENCE)
+            if (atom->children[i].type == QueryMolecule::ATOM_RADICAL || atom->children[i].type == QueryMolecule::ATOM_VALENCE)
             {
                 continue;
             }
@@ -870,7 +870,7 @@ void QueryMolecule::getBondDescription(int idx, Array<char>& description)
 {
     ArrayOutput out(description);
 
-    _getBondDescription(_bonds[idx], out);
+    _getBondDescription(&_bonds[idx], out);
     out.writeChar(0);
 }
 
@@ -889,7 +889,7 @@ void QueryMolecule::_getBondDescription(Bond* bond, Output& out)
         {
             if (i > 0)
                 out.writeString(" & ");
-            _getBondDescription((Bond*)bond->children[i], out);
+            _getBondDescription((Bond*)&bond->children[i], out);
         }
         out.writeChar(')');
         return;
@@ -900,14 +900,14 @@ void QueryMolecule::_getBondDescription(Bond* bond, Output& out)
         {
             if (i > 0)
                 out.writeString(" | ");
-            _getBondDescription((Bond*)bond->children[i], out);
+            _getBondDescription((Bond*)&bond->children[i], out);
         }
         out.writeChar(')');
         return;
     }
     case OP_NOT:
         out.writeString("!(");
-        _getBondDescription((Bond*)bond->children[0], out);
+        _getBondDescription((Bond*)&bond->children[0], out);
         out.writeChar(')');
         return;
     case BOND_ORDER:
@@ -942,7 +942,7 @@ bool QueryMolecule::possibleAromaticBond(int idx)
 
 bool QueryMolecule::possibleBondOrder(int idx, int order)
 {
-    return _bonds[idx]->possibleValue(BOND_ORDER, order);
+    return _bonds[idx].possibleValue(BOND_ORDER, order);
 }
 
 bool QueryMolecule::possibleNitrogenV5(int idx)
@@ -968,15 +968,15 @@ bool QueryMolecule::isPseudoAtom(int idx)
     // format limitations. If they could, we would have to implement
     // sureValue() for ATOM_PSEUDO
 
-    if (_atoms[idx]->type == ATOM_PSEUDO)
+    if (_atoms[idx].type == ATOM_PSEUDO)
         return true;
 
-    if (_atoms[idx]->type == OP_AND)
+    if (_atoms[idx].type == OP_AND)
     {
         int i;
 
-        for (i = 0; i < _atoms[idx]->children.size(); i++)
-            if (_atoms[idx]->children[i]->type == ATOM_PSEUDO)
+        for (i = 0; i < _atoms[idx].children.size(); i++)
+            if (_atoms[idx].children[i].type == ATOM_PSEUDO)
                 return true;
     }
 
@@ -987,16 +987,16 @@ const char* QueryMolecule::getPseudoAtom(int idx)
 {
     // see the comment above in isPseudoAtom()
 
-    if (_atoms[idx]->type == ATOM_PSEUDO)
-        return _atoms[idx]->alias.ptr();
+    if (_atoms[idx].type == ATOM_PSEUDO)
+        return _atoms[idx].alias.ptr();
 
-    if (_atoms[idx]->type == OP_AND)
+    if (_atoms[idx].type == OP_AND)
     {
         int i;
 
-        for (i = 0; i < _atoms[idx]->children.size(); i++)
-            if (_atoms[idx]->children[i]->type == ATOM_PSEUDO)
-                return ((Atom*)_atoms[idx]->children[i])->alias.ptr();
+        for (i = 0; i < _atoms[idx].children.size(); i++)
+            if (_atoms[idx].children[i].type == ATOM_PSEUDO)
+                return ((Atom*)&_atoms[idx].children[i])->alias.ptr();
     }
 
     throw Error("getPseudoAtom() applied to something that is not a pseudo-atom");
@@ -1022,15 +1022,15 @@ bool QueryMolecule::isTemplateAtom(int idx) const
     // format limitations. If they could, we would have to implement
     // sureValue() for ATOM_TEMPLATE
 
-    if (_atoms[idx]->type == ATOM_TEMPLATE)
+    if (_atoms[idx].type == ATOM_TEMPLATE)
         return true;
 
-    if (_atoms[idx]->type == OP_AND)
+    if (_atoms[idx].type == OP_AND)
     {
         int i;
 
-        for (i = 0; i < _atoms[idx]->children.size(); i++)
-            if (_atoms[idx]->children[i]->type == ATOM_TEMPLATE)
+        for (i = 0; i < _atoms[idx].children.size(); i++)
+            if (_atoms[idx].children[i].type == ATOM_TEMPLATE)
                 return true;
     }
 
@@ -1043,7 +1043,7 @@ int QueryMolecule::getTemplateAtomOccurrence(int idx) const
     if (!isTemplateAtom(idx))
         throw Error("getTemplateAtomOccurrence() applied to something that is not a template atom");
 
-    return _atoms[idx]->occurrence_idx;
+    return _atoms[idx].occurrence_idx;
 }
 
 bool QueryMolecule::isSaturatedAtom(int /*idx*/)
@@ -1107,7 +1107,7 @@ int QueryMolecule::getAtomMaxH(int idx)
 
     int max_h = MAXH_UNKNOWN;
 
-    if (!_atoms[idx]->sureValue(ATOM_TOTAL_H, max_h))
+    if (!_atoms[idx].sureValue(ATOM_TOTAL_H, max_h))
     {
         max_h = calcAtomMaxH(idx, _calcAtomConnectivity(idx));
         if (max_h < 0)
@@ -1139,7 +1139,7 @@ int QueryMolecule::getAtomMinH(int idx)
     if (_min_h.size() > idx && _min_h[idx] >= 0)
         return _min_h[idx];
 
-    int i, min_h = _getAtomMinH(_atoms[idx]);
+    int i, min_h = _getAtomMinH(&_atoms[idx]);
 
     if (min_h >= 0)
     {
@@ -1168,7 +1168,7 @@ int QueryMolecule::getAtomMaxExteralConnectivity(int idx)
     if (number == -1)
         return -1;
 
-    int min_local_h = _getAtomMinH(_atoms[idx]);
+    int min_local_h = _getAtomMinH(&_atoms[idx]);
     if (min_local_h == -1)
         min_local_h = 0;
     int min_conn = _calcAtomConnectivity(idx);
@@ -1209,7 +1209,7 @@ int QueryMolecule::_getAtomMinH(QueryMolecule::Atom* atom)
 
         for (i = 0; i < atom->children.size(); i++)
         {
-            int h = _getAtomMinH((Atom*)atom->children[i]);
+            int h = _getAtomMinH((Atom*)&atom->children[i]);
 
             if (h >= 0)
                 return h;
@@ -1223,7 +1223,7 @@ int QueryMolecule::getAtomTotalH(int idx)
 {
     int value;
 
-    if (_atoms[idx]->sureValue(ATOM_TOTAL_H, value))
+    if (_atoms[idx].sureValue(ATOM_TOTAL_H, value))
         return value;
 
     int minh = getAtomMinH(idx);
@@ -1287,14 +1287,14 @@ bool QueryMolecule::isRSite(int atom_idx)
 {
     int bits;
 
-    return _atoms[atom_idx]->sureValue(ATOM_RSITE, bits);
+    return _atoms[atom_idx].sureValue(ATOM_RSITE, bits);
 }
 
 dword QueryMolecule::getRSiteBits(int atom_idx)
 {
     int bits;
 
-    if (!_atoms[atom_idx]->sureValue(ATOM_RSITE, bits))
+    if (!_atoms[atom_idx].sureValue(ATOM_RSITE, bits))
         throw Error("getRSiteBits(): atom #%d is not an r-site", atom_idx);
 
     return (dword)bits;
@@ -1311,22 +1311,22 @@ void QueryMolecule::allowRGroupOnRSite(int atom_idx, int rg_idx)
     // can not be present in deep query trees due to Molfile
     // format limitations.
 
-    if (_atoms[atom_idx]->type == ATOM_RSITE)
+    if (_atoms[atom_idx].type == ATOM_RSITE)
     {
-        _atoms[atom_idx]->value_max |= (1 << rg_idx);
-        _atoms[atom_idx]->value_min |= (1 << rg_idx);
+        _atoms[atom_idx].value_max |= (1 << rg_idx);
+        _atoms[atom_idx].value_min |= (1 << rg_idx);
         return;
     }
 
-    if (_atoms[atom_idx]->type == OP_AND)
+    if (_atoms[atom_idx].type == OP_AND)
     {
         int i;
 
-        for (i = 0; i < _atoms[atom_idx]->children.size(); i++)
-            if (_atoms[atom_idx]->children[i]->type == ATOM_RSITE)
+        for (i = 0; i < _atoms[atom_idx].children.size(); i++)
+            if (_atoms[atom_idx].children[i].type == ATOM_RSITE)
             {
-                ((Atom*)_atoms[atom_idx]->children[i])->value_max |= (1 << rg_idx);
-                ((Atom*)_atoms[atom_idx]->children[i])->value_min |= (1 << rg_idx);
+                ((Atom*)&_atoms[atom_idx].children[i])->value_max |= (1 << rg_idx);
+                ((Atom*)&_atoms[atom_idx].children[i])->value_min |= (1 << rg_idx);
             }
     }
 
@@ -1377,6 +1377,12 @@ void QueryMolecule::getQueryAtomLabel(int qa, Array<char>& result)
     auto it = query_atom_labels.find(qa);
     if (it != query_atom_labels.end())
         result.readString(it->second.c_str(), true);
+}
+
+void QueryMolecule::registerUnfoldedHydrogenQueryComponent(int atom_idx, int added_hydrogen)
+{
+    components.expandFill(added_hydrogen + 1, 0);
+    components[added_hydrogen] = components[atom_idx];
 }
 
 void QueryMolecule::getComponentNeighbors(std::list<std::unordered_set<int>>& componentNeighbors)

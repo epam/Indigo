@@ -9,7 +9,7 @@ LayoutPatternHolder::LayoutPatternHolder()
     _initPatterns();
 }
 
-ObjArray<PatternLayout>& LayoutPatternHolder::getPatterns()
+PtrArray<PatternLayout>& LayoutPatternHolder::getPatterns()
 {
     return _patterns;
 }

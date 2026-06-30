@@ -20,7 +20,6 @@
 #define __bingo_fingerprints__
 
 #include "base_cpp/array.h"
-#include "base_cpp/obj_array.h"
 #include "base_cpp/ptr_array.h"
 #include "base_cpp/tlscont.h"
 #include "core/bingo_context.h"
@@ -148,7 +147,7 @@ namespace indigo
         static int _cmp_optimize_counters(int a, int b, void* context);
 
         // when screening
-        ObjArray<Block> _all_blocks;
+        PtrArray<Block> _all_blocks;
 
         static int _cmp_counters(int a, int b, void* context);
         static int _cmp_int(int a, int b, void* context);

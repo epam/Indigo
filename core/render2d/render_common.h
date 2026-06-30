@@ -379,16 +379,16 @@ namespace indigo
         MoleculeRenderData();
         void clear();
 
-        ObjArray<Sgroup> sgroups;
-        ObjArray<AtomDesc> atoms;
-        ObjArray<BondDescr> bonds;
-        ObjArray<Ring> rings;
-        ObjArray<BondEnd> bondends;
-        ObjArray<TextItem> textitems;
-        ObjArray<GraphItem> graphitems;
-        ObjArray<RenderItemAttachmentPoint> attachmentPoints;
-        ObjArray<RenderItemRSiteAttachmentIndex> rSiteAttachmentIndices;
-        ObjArray<RenderItemBracket> brackets;
+        PtrArray<Sgroup> sgroups;
+        PtrArray<AtomDesc> atoms;
+        PtrArray<BondDescr> bonds;
+        PtrArray<Ring> rings;
+        PtrArray<BondEnd> bondends;
+        PtrArray<TextItem> textitems;
+        PtrArray<GraphItem> graphitems;
+        PtrArray<RenderItemAttachmentPoint> attachmentPoints;
+        PtrArray<RenderItemRSiteAttachmentIndex> rSiteAttachmentIndices;
+        PtrArray<RenderItemBracket> brackets;
         Array<int> aam;
         Array<int> reactingCenters;
         Array<int> inversions;

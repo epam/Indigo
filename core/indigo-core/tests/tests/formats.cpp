@@ -146,9 +146,9 @@ TEST_F(IndigoCoreFormatsTest, smiles_data_sgroups)
     ASSERT_STREQ(dsg.data.ptr(), "data");
     ASSERT_STREQ(dsg.queryoper.ptr(), "like");
     ASSERT_STREQ(dsg.description.ptr(), "unit");
-    ASSERT_EQ(dsg.tag, 't');
-    ASSERT_EQ(dsg.display_pos.x, 0.0f);
-    ASSERT_EQ(dsg.display_pos.y, 0.0f);
+    ASSERT_TRUE(dsg.tag.has_value());
+    ASSERT_EQ(dsg.tag.value(), 't');
+    ASSERT_FALSE(dsg.display_pos.has_value());
     ASSERT_EQ(dsg.atoms.size(), 4);
     ASSERT_EQ(dsg.atoms.at(0), 3);
     ASSERT_EQ(dsg.atoms.at(1), 2);
@@ -176,9 +176,11 @@ TEST_F(IndigoCoreFormatsTest, smiles_data_sgroups_coords)
     ASSERT_STREQ(dsg.data.ptr(), "");
     ASSERT_STREQ(dsg.queryoper.ptr(), "");
     ASSERT_STREQ(dsg.description.ptr(), "");
-    ASSERT_EQ(dsg.tag, 's');
-    ASSERT_EQ(dsg.display_pos.x, -1.5f);
-    ASSERT_EQ(dsg.display_pos.y, 7.8f);
+    ASSERT_TRUE(dsg.tag.has_value());
+    ASSERT_EQ(dsg.tag.value(), 's');
+    ASSERT_TRUE(dsg.display_pos.has_value());
+    ASSERT_EQ(dsg.display_pos.value().x, -1.5f);
+    ASSERT_EQ(dsg.display_pos.value().y, 7.8f);
     ASSERT_EQ(dsg.atoms.size(), 3);
     ASSERT_EQ(dsg.atoms.at(0), 1);
     ASSERT_EQ(dsg.atoms.at(1), 2);
@@ -205,9 +207,9 @@ TEST_F(IndigoCoreFormatsTest, smiles_data_sgroups_short)
     ASSERT_EQ(dsg.data.size(), 0);
     ASSERT_EQ(dsg.queryoper.size(), 0);
     ASSERT_EQ(dsg.description.size(), 0);
-    ASSERT_EQ(dsg.tag, ' ');
-    ASSERT_EQ(dsg.display_pos.x, 0.0f);
-    ASSERT_EQ(dsg.display_pos.y, 0.0f);
+    ASSERT_TRUE(dsg.tag.has_value());
+    ASSERT_EQ(dsg.tag.value(), ' ');
+    ASSERT_FALSE(dsg.display_pos.has_value());
     ASSERT_EQ(dsg.atoms.size(), 3);
     ASSERT_EQ(dsg.atoms.at(0), 1);
     ASSERT_EQ(dsg.atoms.at(1), 2);
@@ -235,7 +237,8 @@ TEST_F(IndigoCoreFormatsTest, smiles_pol_sgroups_conn_and_flip)
     ASSERT_EQ(ru.atoms.at(1), 1);
     ASSERT_EQ(ru.atoms.at(2), 2);
     ASSERT_EQ(ru.atoms.at(3), 4);
-    ASSERT_EQ(ru.connectivity, RepeatingUnit::HEAD_TO_HEAD);
+    ASSERT_TRUE(ru.connectivity.has_value());
+    ASSERT_EQ(ru.connectivity.value(), RepeatingUnit::HEAD_TO_HEAD);
     Array<char> out;
     ArrayOutput std_out(out);
     SmilesSaver saver(std_out);
@@ -377,6 +380,220 @@ M  END
     ASSERT_EQ(sg.atoms.at(0), 1);
     ASSERT_EQ(sg.atoms.at(1), 3);
     ASSERT_EQ(sg.atoms.at(2), 4);
+}
+
+TEST_F(IndigoCoreFormatsTest, mol_saver_nested_sgroups_parent_order)
+{
+    Molecule mol;
+
+    const char* molfile = R"(Nested SGroups
+  Indigo    052826
+
+  0  0  0     0  0            999 V3000
+M  V30 BEGIN CTAB
+M  V30 COUNTS 3 2 3 0 0
+M  V30 BEGIN ATOM
+M  V30 1 C 0 0 0 0
+M  V30 2 C 1 0 0 0
+M  V30 3 C 2 0 0 0
+M  V30 END ATOM
+M  V30 BEGIN BOND
+M  V30 1 1 1 2
+M  V30 2 1 2 3
+M  V30 END BOND
+M  V30 BEGIN SGROUP
+M  V30 3 GEN 0 ATOMS=(1 3) PARENT=2
+M  V30 1 GEN 0 ATOMS=(1 1)
+M  V30 2 GEN 0 ATOMS=(1 2) PARENT=1
+M  V30 END SGROUP
+M  V30 END CTAB
+M  END
+)";
+
+    BufferScanner scanner(molfile);
+    MolfileLoader loader(scanner);
+    loader.loadMolecule(mol);
+
+    Array<char> out;
+    ArrayOutput std_out(out);
+    MolfileSaver saver(std_out);
+    saver.mode = MolfileSaver::MODE_3000;
+    saver.skip_date = true;
+    saver.saveMolecule(mol);
+
+    std::string saved{out.ptr(), static_cast<std::size_t>(out.size())};
+    const auto root_pos = saved.find("M  V30 1 GEN 1 ATOMS=(1 1)");
+    const auto child_pos = saved.find("M  V30 2 GEN 2 ATOMS=(1 2) PARENT=1");
+    const auto grandchild_pos = saved.find("M  V30 3 GEN 3 ATOMS=(1 3) PARENT=2");
+
+    ASSERT_NE(std::string::npos, root_pos) << saved;
+    ASSERT_NE(std::string::npos, child_pos) << saved;
+    ASSERT_NE(std::string::npos, grandchild_pos) << saved;
+    EXPECT_LT(root_pos, child_pos);
+    EXPECT_LT(child_pos, grandchild_pos);
+}
+
+TEST_F(IndigoCoreFormatsTest, mol_saver_sgroups_roots_before_children)
+{
+    Molecule mol;
+
+    const char* molfile = R"(Nested SGroups
+  Indigo    052826
+
+  0  0  0     0  0            999 V3000
+M  V30 BEGIN CTAB
+M  V30 COUNTS 3 2 3 0 0
+M  V30 BEGIN ATOM
+M  V30 1 C 0 0 0 0
+M  V30 2 C 1 0 0 0
+M  V30 3 C 2 0 0 0
+M  V30 END ATOM
+M  V30 BEGIN BOND
+M  V30 1 1 1 2
+M  V30 2 1 2 3
+M  V30 END BOND
+M  V30 BEGIN SGROUP
+M  V30 1 GEN 0 ATOMS=(1 1)
+M  V30 3 GEN 0 ATOMS=(1 3) PARENT=1
+M  V30 2 GEN 0 ATOMS=(1 2)
+M  V30 END SGROUP
+M  V30 END CTAB
+M  END
+)";
+
+    BufferScanner scanner(molfile);
+    MolfileLoader loader(scanner);
+    loader.loadMolecule(mol);
+
+    Array<char> out;
+    ArrayOutput std_out(out);
+    MolfileSaver saver(std_out);
+    saver.mode = MolfileSaver::MODE_3000;
+    saver.skip_date = true;
+    saver.saveMolecule(mol);
+
+    std::string saved{out.ptr(), static_cast<std::size_t>(out.size())};
+    const auto first_root_pos = saved.find("M  V30 1 GEN 1 ATOMS=(1 1)");
+    const auto second_root_pos = saved.find("M  V30 2 GEN 2 ATOMS=(1 2)");
+    const auto child_pos = saved.find("M  V30 3 GEN 3 ATOMS=(1 3) PARENT=1");
+
+    ASSERT_NE(std::string::npos, first_root_pos) << saved;
+    ASSERT_NE(std::string::npos, second_root_pos) << saved;
+    ASSERT_NE(std::string::npos, child_pos) << saved;
+    EXPECT_LT(first_root_pos, second_root_pos);
+    EXPECT_LT(second_root_pos, child_pos);
+}
+
+TEST_F(IndigoCoreFormatsTest, mol_sgroups_order_by_depth_across_hierarchies)
+{
+    Molecule mol;
+
+    const char* molfile = R"(Nested SGroups
+  Indigo    060326
+
+  0  0  0     0  0            999 V3000
+M  V30 BEGIN CTAB
+M  V30 COUNTS 10 9 10 0 0
+M  V30 BEGIN ATOM
+M  V30 1 C 0 0 0 0
+M  V30 2 C 1 0 0 0
+M  V30 3 C 2 0 0 0
+M  V30 4 C 3 0 0 0
+M  V30 5 C 4 0 0 0
+M  V30 6 C 5 0 0 0
+M  V30 7 C 6 0 0 0
+M  V30 8 C 7 0 0 0
+M  V30 9 C 8 0 0 0
+M  V30 10 C 9 0 0 0
+M  V30 END ATOM
+M  V30 BEGIN BOND
+M  V30 1 1 1 2
+M  V30 2 1 2 3
+M  V30 3 1 3 4
+M  V30 4 1 4 5
+M  V30 5 1 5 6
+M  V30 6 1 6 7
+M  V30 7 1 7 8
+M  V30 8 1 8 9
+M  V30 9 1 9 10
+M  V30 END BOND
+M  V30 BEGIN SGROUP
+M  V30 13 GEN 0 ATOMS=(1 4) PARENT=12
+M  V30 20 GEN 0 ATOMS=(1 5)
+M  V30 11 GEN 0 ATOMS=(1 2) PARENT=10
+M  V30 30 GEN 0 ATOMS=(1 7)
+M  V30 10 GEN 0 ATOMS=(1 1)
+M  V30 32 GEN 0 ATOMS=(1 9) PARENT=31
+M  V30 21 GEN 0 ATOMS=(1 6) PARENT=20
+M  V30 31 GEN 0 ATOMS=(1 8) PARENT=30
+M  V30 40 GEN 0 ATOMS=(1 10)
+M  V30 12 GEN 0 ATOMS=(1 3) PARENT=11
+M  V30 END SGROUP
+M  V30 END CTAB
+M  END
+)";
+
+    BufferScanner scanner(molfile);
+    MolfileLoader loader(scanner);
+    loader.loadMolecule(mol);
+
+    auto infos = mol.sgroups.getOrderedSGroups();
+
+    const std::vector<int> expected_original_indexes = {20, 30, 10, 40, 11, 21, 31, 32, 12, 13};
+    const std::vector<int> expected_new_parent_indexes = {0, 0, 0, 0, 3, 1, 2, 7, 5, 9};
+    ASSERT_EQ(infos.size(), expected_original_indexes.size());
+
+    for (int i = 0; i < static_cast<int>(infos.size()); i++)
+    {
+        EXPECT_EQ(infos[i].sgroup.index, expected_original_indexes[i]);
+        EXPECT_EQ(infos[i].new_index, i + 1);
+        EXPECT_EQ(infos[i].new_parent_index, expected_new_parent_indexes[i]);
+    }
+}
+
+TEST_F(IndigoCoreFormatsTest, mol_sgroups_parent_idx_cycle)
+{
+    Molecule mol;
+
+    int first_idx = mol.sgroups.addSGroup(SGroup::SG_TYPE_GEN);
+    int second_idx = mol.sgroups.addSGroup(SGroup::SG_TYPE_GEN);
+
+    mol.sgroups.getSGroup(first_idx).parent_idx = second_idx;
+    mol.sgroups.getSGroup(second_idx).parent_idx = first_idx;
+
+    EXPECT_THROW(mol.sgroups.getOrderedSGroups(), Exception);
+}
+
+TEST_F(IndigoCoreFormatsTest, mol_sgroups_parent_group_cycle)
+{
+    Molecule mol;
+
+    const char* molfile = R"(SGroup Parent Cycle
+  Indigo    060926
+
+  0  0  0     0  0            999 V3000
+M  V30 BEGIN CTAB
+M  V30 COUNTS 2 1 2 0 0
+M  V30 BEGIN ATOM
+M  V30 1 C 0 0 0 0
+M  V30 2 C 1 0 0 0
+M  V30 END ATOM
+M  V30 BEGIN BOND
+M  V30 1 1 1 2
+M  V30 END BOND
+M  V30 BEGIN SGROUP
+M  V30 1 GEN 0 ATOMS=(1 1) PARENT=2
+M  V30 2 GEN 0 ATOMS=(1 2) PARENT=1
+M  V30 END SGROUP
+M  V30 END CTAB
+M  END
+)";
+
+    BufferScanner scanner(molfile);
+    MolfileLoader loader(scanner);
+    loader.loadMolecule(mol);
+
+    EXPECT_THROW(mol.sgroups.getOrderedSGroups(), Exception);
 }
 
 TEST_F(IndigoCoreFormatsTest, smarts_load_save)

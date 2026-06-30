@@ -35,7 +35,7 @@ void SimpleCycleBasis::create()
 {
     QS_DEF(Array<int>, vert_mapping);
 
-    QS_DEF(ObjArray<Array<int>>, subgraph_cycles);
+    QS_DEF(PtrArray<Array<int>>, subgraph_cycles);
 
     subgraph_cycles.clear();
 
@@ -221,7 +221,7 @@ void SimpleCycleBasis::_minimize(int startIndex)
 
     // Implementation of "Algorithm 1" from [BGdV04]
 
-    QS_DEF(ObjArray<Array<bool>>, a);
+    QS_DEF(PtrArray<Array<bool>>, a);
     a.clear();
 
     _getCycleEdgeIncidenceMatrix(a);
@@ -241,7 +241,7 @@ void SimpleCycleBasis::_minimize(int startIndex)
 
         AuxPathFinder path_finder(gu, _graph.vertexEnd() * 2);
 
-        QS_DEF(ObjArray<Array<int>>, all_new_cycles);
+        QS_DEF(PtrArray<Array<int>>, all_new_cycles);
         all_new_cycles.clear();
 
         for (int v = _graph.vertexBegin(); v < _graph.vertexEnd(); v = _graph.vertexNext(v))
@@ -326,7 +326,7 @@ void SimpleCycleBasis::_minimize(int startIndex)
     _isMinimized = true;
 }
 
-void SimpleCycleBasis::_getCycleEdgeIncidenceMatrix(ObjArray<Array<bool>>& result)
+void SimpleCycleBasis::_getCycleEdgeIncidenceMatrix(PtrArray<Array<bool>>& result)
 {
     for (int i = 0; i < _cycles.size(); ++i)
     {
@@ -340,7 +340,7 @@ void SimpleCycleBasis::_getCycleEdgeIncidenceMatrix(ObjArray<Array<bool>>& resul
     }
 }
 
-void SimpleCycleBasis::constructKernelVector(Array<bool>& u, ObjArray<Array<bool>>& a, int i)
+void SimpleCycleBasis::constructKernelVector(Array<bool>& u, PtrArray<Array<bool>>& a, int i)
 {
     for (int j = 0; j < u.size(); ++j)
     {

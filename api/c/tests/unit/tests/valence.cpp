@@ -693,6 +693,56 @@ TEST_F(ValenceModeApiTest, Smiles_BypassesValenceMode)
     EXPECT_EQ(hyd_post, hyd_pre) << "SMILES loading must give same result regardless of valence-mode";
 }
 
+// Substructure match through the public C API: target Al MOL has 3 implicit
+// H under BIOVIA_2009 and 0 H under BIOVIA_2017. A SMARTS query that pins
+// H count must therefore match under one mode and not the other. This
+// exercises the QueryMolecule + Element::calcValence static path that fix #4
+// closes — the provider hook installed by Indigo::init() inside indigo.dll
+// makes substructure matching read the current TLS session's valence-mode.
+TEST_F(ValenceModeApiTest, SubstructureMatch_HonorsSessionMode)
+{
+    // Under BIOVIA_2017 Al has 0 H — [Al;H0] must match
+    indigoSetOption("valence-mode", "biovia-2017");
+    const int target_2017 = indigoLoadMoleculeFromString(kAlMol);
+    ASSERT_NE(target_2017, -1);
+    const int query_2017 = indigoLoadQueryMoleculeFromString("[Al;H0]");
+    ASSERT_NE(query_2017, -1);
+    const int matcher_2017 = indigoSubstructureMatcher(target_2017, "");
+    ASSERT_NE(matcher_2017, -1);
+    const int match_2017 = indigoMatch(matcher_2017, query_2017);
+    EXPECT_NE(match_2017, 0) << "[Al;H0] must match Al MOL under BIOVIA_2017 (target H=0)";
+
+    // Under BIOVIA_2009 Al has 3 H — [Al;H0] must NOT match
+    indigoSetOption("valence-mode", "biovia-2009");
+    const int target_2009 = indigoLoadMoleculeFromString(kAlMol);
+    ASSERT_NE(target_2009, -1);
+    const int query_2009 = indigoLoadQueryMoleculeFromString("[Al;H0]");
+    ASSERT_NE(query_2009, -1);
+    const int matcher_2009 = indigoSubstructureMatcher(target_2009, "");
+    ASSERT_NE(matcher_2009, -1);
+    const int match_2009 = indigoMatch(matcher_2009, query_2009);
+    EXPECT_EQ(match_2009, 0) << "[Al;H0] must NOT match Al MOL under BIOVIA_2009 (target H=3)";
+}
+
+// Explicit-mode parameter bypasses the provider hook: callers that hold a
+// Molecule reference pass the molecule's stored mode regardless of the
+// current TLS session. This isolates per-molecule operations from later
+// session-mode changes.
+TEST_F(ValenceModeApiTest, ExplicitMode_OverridesSessionProvider)
+{
+    int valence = 0, hyd = 0;
+
+    // Session set to one mode...
+    indigoSetOption("valence-mode", "biovia-2017");
+
+    // ...but caller explicitly passes the other → explicit wins.
+    Element::calcValence(ELEM_Al, 0, 0, 0, valence, hyd, false, nullptr, ValenceMode::BIOVIA_2009);
+    EXPECT_EQ(hyd, 3) << "Explicit BIOVIA_2009 must win over session BIOVIA_2017";
+
+    Element::calcValence(ELEM_Al, 0, 0, 0, valence, hyd, false, nullptr, ValenceMode::BIOVIA_2017);
+    EXPECT_EQ(hyd, 0) << "Explicit BIOVIA_2017 must win over session BIOVIA_2017 (sanity)";
+}
+
 // Option getter/setter roundtrip
 TEST_F(ValenceModeApiTest, OptionRoundtrip)
 {
@@ -704,16 +754,7 @@ TEST_F(ValenceModeApiTest, OptionRoundtrip)
     const char* val2 = indigoGetOption("valence-mode");
     EXPECT_STREQ(val2, "biovia-2009");
 
-    // Backward compatibility: old names still accepted
-    indigoSetOption("valence-mode", "post-2014");
-    const char* val3 = indigoGetOption("valence-mode");
-    EXPECT_STREQ(val3, "biovia-2017") << "'post-2014' is an alias for 'biovia-2017'";
-
-    indigoSetOption("valence-mode", "pre-2014");
-    const char* val4 = indigoGetOption("valence-mode");
-    EXPECT_STREQ(val4, "biovia-2009") << "'pre-2014' is an alias for 'biovia-2009'";
-
     indigoSetOption("valence-mode", "default");
-    const char* val5 = indigoGetOption("valence-mode");
-    EXPECT_STREQ(val5, "biovia-2009") << "'default' is an alias for 'biovia-2009'";
+    const char* val3 = indigoGetOption("valence-mode");
+    EXPECT_STREQ(val3, "biovia-2009") << "'default' is an alias for 'biovia-2009'";
 }

@@ -23,8 +23,8 @@
 #include <optional>
 #include <set>
 
-#include "base_cpp/obj_array.h"
 #include "base_cpp/properties_map.h"
+#include "base_cpp/ptr_array.h"
 #include "base_cpp/red_black.h"
 #include "graph/graph.h"
 #include "math/algebra.h"
@@ -320,7 +320,7 @@ namespace indigo
         static void collapse(BaseMolecule& bm);
 
         int transformSCSRtoFullCTAB();
-        int transformFullCTABtoSCSR(ObjArray<TGroup>& templates);
+        int transformFullCTABtoSCSR(PtrArray<TGroup>& templates);
         int transformHELMtoSGroups(Array<char>& helm_class, Array<char>& helm_name, Array<char>& code, Array<char>& natreplace, StringPool& r_names);
         void transformSuperatomsToTemplates(int template_id, MonomerTemplateLibrary* mtl = nullptr);
         void transformTemplatesToSuperatoms();
@@ -405,6 +405,7 @@ namespace indigo
         virtual int addBond_Silent(int beg, int end, int order) = 0;
 
         void unfoldHydrogens(Array<int>* markers_out, int max_h_cnt = -1, bool impl_h_no_throw = false, bool only_selected = false);
+        virtual void registerUnfoldedHydrogenQueryComponent(int /*atom_idx*/, int /*added_hydrogen*/){}; // QueryMolecule only
 
         virtual int getImplicitH(int idx, bool impl_h_no_throw) = 0;
         virtual void setImplicitH(int idx, int impl_h) = 0;
@@ -482,7 +483,7 @@ namespace indigo
         };
 
         ObjPool<TemplateAttPoint> template_attachment_points; // All used APs -
-        ObjArray<ObjPool<int>> template_attachment_indexes;   //
+        PtrArray<ObjPool<int>> template_attachment_indexes;   //
 
         MoleculeSGroups sgroups;
 
@@ -754,10 +755,10 @@ namespace indigo
         RedBlackMap<int, bool> _show_cip_atoms;
         RedBlackMap<int, CIPDesc> _cip_bonds;
 
-        ObjArray<Array<int>> _rsite_attachment_points;
+        PtrArray<Array<int>> _rsite_attachment_points;
         bool _rGroupFragment;
 
-        ObjArray<Array<int>> _attachment_index;
+        PtrArray<Array<int>> _attachment_index;
 
         int _chiral_flag = -1;
 

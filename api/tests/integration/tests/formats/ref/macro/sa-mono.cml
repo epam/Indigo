@@ -39,7 +39,7 @@
             <bond atomRefs2="a10 a11" order="2"/>
             <bond atomRefs2="a10 a12" order="1"/>
         </bondArray>
-        <molecule id="sg0" atomRefs="a2 a0 a4 a5 a3 a1" role="SuperatomSgroup">
+        <molecule id="sg1" atomRefs="a2 a0 a4 a5 a3 a1" role="SuperatomSgroup">
             <MBracket type="SQUARE">
                 <MPoint x="0" y="0"/>
                 <MPoint x="0" y="0"/>
@@ -47,13 +47,13 @@
                 <MPoint x="0" y="0"/>
             </MBracket>
         </molecule>
-        <molecule id="sg0" atomRefs="a12" role="SuperatomSgroup" title="OH">
+        <molecule id="sg2" atomRefs="a12" role="SuperatomSgroup" title="OH">
             <MBracket type="SQUARE">
                 <MPoint x="-0.38404" y="-0.256014"/>
                 <MPoint x="0" y="0"/>
             </MBracket>
         </molecule>
-        <molecule id="sg0" atomRefs="a7 a8 a9 a10 a11" role="SuperatomSgroup" title="A">
+        <molecule id="sg3" atomRefs="a7 a8 a9 a10 a11" role="SuperatomSgroup" title="A">
             <MBracket type="SQUARE">
                 <MPoint x="-0.42135" y="0.188504"/>
                 <MPoint x="0.38404" y="0.256014"/>

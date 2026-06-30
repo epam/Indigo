@@ -22,6 +22,9 @@
 #include "base_cpp/tree.h"
 #include "molecule/molecule_sgroups.h"
 
+#include <algorithm>
+#include <unordered_map>
+
 using namespace indigo;
 
 static SGroup::SgType mappingForSgTypes[] = {
@@ -57,7 +60,8 @@ SGroup::SGroup()
     sgroup_type = SGroup::SG_TYPE_GEN;
     sgroup_subtype = 0;
     brk_style = 0;
-    original_group = 0;
+    index = 0;
+    ext_index = 0;
     parent_group = 0;
     parent_idx = -1;
     contracted = DisplayOption::Undefined;
@@ -105,7 +109,7 @@ Superatom::Superatom() : unresolved(false)
     seqid = -1;
     attachment_points.clear();
     bond_connections.clear();
-    display_position.clear();
+    display_position.set(Vec3f(0, 0, 0));
 }
 
 Superatom::~Superatom()
@@ -283,7 +287,7 @@ void MoleculeSGroups::buildTree(Tree& tree)
     for (auto i = begin(); i != end(); i = next(i))
     {
         SGroup& sgroup = getSGroup(i);
-        tree.insert(i, sgroup.parent_idx);
+        tree.insert(i, sgroup.parent_idx.value_or(-1));
     }
 }
 
@@ -294,12 +298,14 @@ bool MoleculeSGroups::getParentAtoms(int idx, Array<int>& target)
 
 bool MoleculeSGroups::getParentAtoms(SGroup& sgroup, Array<int>& target)
 {
-    if (sgroup.parent_idx < 0)
+    int pidx = sgroup.parent_idx.value_or(-1);
+    if (pidx < 0)
         return false;
-    auto pidx = sgroup.parent_idx;
-    if (!hasSGroup(sgroup.parent_idx))
+    if (!hasSGroup(pidx))
     {
-        pidx = findSGroupById(sgroup.parent_group);
+        if (!sgroup.parent_group.has_value())
+            return false;
+        pidx = findSGroupById(sgroup.parent_group.value());
         if (pidx < 0)
             return false;
     }
@@ -477,7 +483,7 @@ void MoleculeSGroups::findSGroups(int property, int value, Array<int>& sgs)
         SGroup& sg = *_sgroups.at(value);
         if (sg.parent_group != 0)
         {
-            int idx = findSGroupById(sg.parent_group);
+            int idx = findSGroupById(sg.parent_group.value());
             if (idx != -1)
                 sgs.push(idx);
         }
@@ -510,7 +516,7 @@ void MoleculeSGroups::findSGroups(int property, const char* str, Array<int>& sgs
         for (i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
         {
             SGroup& sg = *_sgroups.at(i);
-            BufferScanner sc(sg.subscript);
+            BufferScanner sc(sg.label);
             if (sc.findWordIgnoreCase(str))
             {
                 sgs.push(i);
@@ -619,7 +625,7 @@ void MoleculeSGroups::findSGroups(int property, const char* str, Array<int>& sgs
             if (sg.sgroup_type == SGroup::SG_TYPE_DAT)
             {
                 DataSGroup& dg = (DataSGroup&)sg;
-                if ((strlen(str) == 1) && str[0] == dg.tag)
+                if ((strlen(str) == 1) && dg.tag == str[0])
                 {
                     sgs.push(i);
                 }
@@ -681,7 +687,7 @@ void MoleculeSGroups::findSGroups(int property, Array<int>& indices, Array<int>&
         for (i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
         {
             SGroup& sg = *_sgroups.at(i);
-            if (_cmpIndices(sg.bonds, indices))
+            if (_cmpIndices(sg.getBonds(), indices))
             {
                 sgs.push(i);
             }
@@ -708,7 +714,7 @@ int MoleculeSGroups::findSGroupById(int id)
     for (int i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
     {
         SGroup& sg = *_sgroups.at(i);
-        if (sg.original_group == id)
+        if (sg.index == id)
         {
             return i;
         }
@@ -724,4 +730,130 @@ bool MoleculeSGroups::_cmpIndices(Array<int>& t_inds, Array<int>& q_inds)
             return false;
     }
     return true;
+}
+
+// Returns SGroups in serialization order: roots first, then descendants by depth.
+// The order is stable inside each depth level, and new_parent_index is resolved after
+// the final serialized indexes are known.
+std::vector<SGroupInfo> MoleculeSGroups::getOrderedSGroups()
+{
+    std::vector<SGroupInfo> infos;
+    std::unordered_map<int, int> pool_index_to_info_index;
+    std::unordered_map<int, int> original_index_to_info_index;
+    const int sgroup_count = getSGroupCount();
+    infos.reserve(sgroup_count);
+    pool_index_to_info_index.reserve(sgroup_count);
+    original_index_to_info_index.reserve(sgroup_count);
+
+    // Phase 1: collect SGroups in pool order and build lookup tables for parent resolution.
+    for (int i = begin(); i != end(); i = next(i))
+    {
+        SGroup& sg = getSGroup(i);
+        SGroupInfo info = {sg, 0, 0};
+        int info_index = static_cast<int>(infos.size());
+
+        infos.push_back(info);
+        pool_index_to_info_index[i] = info_index;
+
+        if (sg.index > 0)
+        {
+            auto inserted = original_index_to_info_index.emplace(sg.index, info_index);
+            if (!inserted.second)
+                inserted.first->second = -1;
+        }
+    }
+
+    // Phase 2: resolve each parent reference to an entry in the collected info array.
+    std::vector<int> parent_info_index(infos.size(), -1);
+    auto resolve_pool_index = [&](int pool_index) -> int {
+        auto it = pool_index_to_info_index.find(pool_index);
+        if (it == pool_index_to_info_index.end())
+            return -1;
+        return it->second;
+    };
+
+    for (int info_index = 0; info_index < static_cast<int>(infos.size()); info_index++)
+    {
+        SGroup& sg = infos[info_index].sgroup;
+
+        if (sg.parent_idx.has_value())
+        {
+            int parent_info = resolve_pool_index(sg.parent_idx.value());
+            if (parent_info >= 0)
+            {
+                parent_info_index[info_index] = parent_info;
+                continue;
+            }
+        }
+
+        int parent_id = sg.parent_group.value_or(0);
+        if (parent_id <= 0)
+            continue;
+
+        auto original_it = original_index_to_info_index.find(parent_id);
+        if (original_it != original_index_to_info_index.end() && original_it->second >= 0)
+        {
+            parent_info_index[info_index] = original_it->second;
+            continue;
+        }
+
+        // Some inputs have no persisted SGroup index and refer to parents by one-based pool position.
+        int parent_info = resolve_pool_index(parent_id - 1);
+        if (parent_info >= 0 && infos[parent_info].sgroup.index == 0)
+            parent_info_index[info_index] = parent_info;
+    }
+
+    // Phase 3: run DFS over parent links to resolve depth and reject cycles.
+    // Emission remains level-ordered: roots first, then children, then grandchildren.
+    std::vector<int> depth(infos.size(), -1);
+    enum class VisitState
+    {
+        NotVisited,
+        Visiting,
+        Visited
+    };
+    std::vector<VisitState> state(infos.size(), VisitState::NotVisited);
+
+    auto resolve_depth = [&](auto&& self, int info_index) -> int {
+        if (state[info_index] == VisitState::Visiting)
+            throw Error("SGroup parent hierarchy contains a cycle");
+        if (state[info_index] == VisitState::Visited)
+            return depth[info_index];
+
+        state[info_index] = VisitState::Visiting;
+        const int parent_info = parent_info_index[info_index];
+        depth[info_index] = parent_info >= 0 ? self(self, parent_info) + 1 : 0;
+        state[info_index] = VisitState::Visited;
+        return depth[info_index];
+    };
+
+    for (int info_index = 0; info_index < static_cast<int>(infos.size()); info_index++)
+    {
+        if (state[info_index] == VisitState::NotVisited)
+        {
+            resolve_depth(resolve_depth, info_index);
+        }
+    }
+
+    // Phase 4: emit by depth while preserving source order for SGroups at the same depth.
+    std::vector<int> ordered_info_indexes;
+    ordered_info_indexes.reserve(infos.size());
+    for (int info_index = 0; info_index < static_cast<int>(infos.size()); info_index++)
+        ordered_info_indexes.push_back(info_index);
+
+    std::stable_sort(ordered_info_indexes.begin(), ordered_info_indexes.end(), [&](int left, int right) { return depth[left] < depth[right]; });
+
+    // Phase 5: assign serialized indexes and materialize result entries.
+    for (int i = 0; i < static_cast<int>(ordered_info_indexes.size()); i++)
+        infos[ordered_info_indexes[i]].new_index = i + 1;
+
+    std::vector<SGroupInfo> result;
+    result.reserve(ordered_info_indexes.size());
+    for (int info_index : ordered_info_indexes)
+    {
+        SGroupInfo& info = infos[info_index];
+        info.new_parent_index = parent_info_index[info_index] >= 0 ? infos[parent_info_index[info_index]].new_index : 0;
+        result.push_back(info);
+    }
+    return result;
 }

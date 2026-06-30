@@ -27,7 +27,7 @@ using namespace indigo;
 
 IMPL_ERROR(MoleculeScaffoldDetection, "Molecule Scaffold detection");
 
-MoleculeScaffoldDetection::MoleculeScaffoldDetection(ObjArray<Molecule>* mol_set) : ScaffoldDetection(0), searchStructures(mol_set), basketStructures(0)
+MoleculeScaffoldDetection::MoleculeScaffoldDetection(PtrArray<Molecule>* mol_set) : ScaffoldDetection(0), searchStructures(mol_set), basketStructures(0)
 {
     cbEdgeWeight = matchBonds;
     cbVerticesColor = matchAtoms;
@@ -35,7 +35,7 @@ MoleculeScaffoldDetection::MoleculeScaffoldDetection(ObjArray<Molecule>* mol_set
 
 void MoleculeScaffoldDetection::_searchScaffold(QueryMolecule& scaffold, bool approximate)
 {
-    QS_DEF(ObjArray<QueryMolecule>, temp_set);
+    QS_DEF(PtrArray<QueryMolecule>, temp_set);
     if (basketStructures == 0)
     {
         basketStructures = &temp_set;
@@ -177,7 +177,7 @@ MoleculeScaffoldDetection::MoleculeBasket::~MoleculeBasket()
 {
 }
 
-void MoleculeScaffoldDetection::MoleculeBasket::initBasket(ObjArray<Molecule>* mol_set, ObjArray<QueryMolecule>* basket_set, int max_number)
+void MoleculeScaffoldDetection::MoleculeBasket::initBasket(PtrArray<Molecule>* mol_set, PtrArray<QueryMolecule>* basket_set, int max_number)
 {
 
     if (mol_set == 0)
@@ -248,7 +248,7 @@ int MoleculeScaffoldDetection::MoleculeBasket::getMaxGraphIndex()
         _basketStructures->qsort(cbSortSolutions, userdata);
 
     while (_basketStructures->size() && _basketStructures->top().vertexCount() == 0)
-        _basketStructures->pop();
+        _basketStructures->removeLast();
 
     return 0;
 }
@@ -283,7 +283,7 @@ void MoleculeScaffoldDetection::MoleculeBasket::_sortGraphsInSet()
 
 int MoleculeScaffoldDetection::MoleculeBasket::_compareEdgeCount(int& i1, int& i2, void* context)
 {
-    ObjArray<Molecule>& graph_set = *(ObjArray<Molecule>*)context;
+    PtrArray<Molecule>& graph_set = *(PtrArray<Molecule>*)context;
     return graph_set.at(i1).edgeCount() - graph_set.at(i2).edgeCount();
 }
 

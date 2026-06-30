@@ -41,8 +41,8 @@
 struct ProductEnumeratorCallbackData
 {
     ReactionProductEnumerator* rpe;
-    ObjArray<Reaction>* out_reactions;
-    ObjArray<Array<int>>* out_indices;
+    PtrArray<Reaction>* out_reactions;
+    PtrArray<Array<int>>* out_indices;
 };
 
 static void product_proc(Molecule& product, Array<int>& monomers_indices, Array<int>& mapping, void* userdata)
@@ -81,15 +81,15 @@ CEXPORT int indigoReactionProductEnumerate(int reaction, int monomers)
         if (monomers_object.objects.size() < query_rxn.reactantsCount())
             throw IndigoError("Too small monomers array");
 
-        ObjArray<PropertiesMap> monomers_properties;
+        PtrArray<PropertiesMap> monomers_properties;
         for (int i = query_rxn.reactantBegin(); i != query_rxn.reactantEnd(); i = query_rxn.reactantNext(i))
         {
-            IndigoArray& reactant_monomers_object = IndigoArray::cast(*monomers_object.objects[i]);
+            IndigoArray& reactant_monomers_object = IndigoArray::cast(monomers_object.objects[i]);
 
             auto size = reactant_monomers_object.objects.size();
             for (int j = 0; j < size; j++)
             {
-                IndigoObject& object = *reactant_monomers_object.objects[j];
+                IndigoObject& object = reactant_monomers_object.objects[j];
                 monomers_properties.push().copy(object.getProperties());
 
                 Molecule& monomer = object.getMolecule();
@@ -107,8 +107,8 @@ CEXPORT int indigoReactionProductEnumerate(int reaction, int monomers)
 
         rpe.product_proc = product_proc;
 
-        ObjArray<Reaction> out_reactions;
-        ObjArray<Array<int>> out_indices_all;
+        PtrArray<Reaction> out_reactions;
+        PtrArray<Array<int>> out_indices_all;
 
         ProductEnumeratorCallbackData rpe_data;
         rpe_data.out_reactions = &out_reactions;
@@ -214,7 +214,7 @@ CEXPORT int indigoTransform(int reaction, int monomers)
                 Molecule input_mol;
                 input_mol.clone(mol, 0, 0);
 
-                if (rt.transform(monomers_array.objects[i]->getMolecule(), query_rxn, &mapping))
+                if (rt.transform(monomers_array.objects[i].getMolecule(), query_rxn, &mapping))
                     transformed_flag = true;
 
                 std::unique_ptr<IndigoMapping> mptr = std::make_unique<IndigoMapping>(input_mol, mol);

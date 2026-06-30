@@ -22,7 +22,6 @@
 #include "base_cpp/array.h"
 #include "base_cpp/list.h"
 #include "base_cpp/non_copyable.h"
-#include "base_cpp/obj_array.h"
 #include "base_cpp/obj_pool.h"
 #include "base_cpp/ptr_array.h"
 #include "graph/filter.h"
@@ -255,8 +254,8 @@ namespace indigo
         Array<int> _v_smallest_ring_size, _e_smallest_ring_size;
         Array<int> _v_sssr_count;
         Pool<List<int>::Elem>* _sssr_pool;
-        ObjArray<List<int>> _sssr_vertices;
-        ObjArray<List<int>> _sssr_edges;
+        PtrArray<List<int>> _sssr_vertices;
+        PtrArray<List<int>> _sssr_edges;
         bool _sssr_valid;
 
         Array<int> _component_numbers;

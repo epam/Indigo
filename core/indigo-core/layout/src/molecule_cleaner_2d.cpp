@@ -50,18 +50,18 @@ MoleculeCleaner2d::MoleculeCleaner2d(BaseMolecule& mol, bool use_biconnected_dec
         printf("%d components\n", component_count);
         for (int i = 0; i < component_count; i++) {
             printf("%d: ", i);
-            for (int v = _mol.vertexBegin(); v != _mol.vertexEnd(); v = _mol.vertexNext(v)) if (in[i][v]) printf("%d, ", v);
+            for (int v = _mol.vertexBegin(); v != _mol.vertexEnd(); v = _mol.vertexNext(v)) if ((*in[i])[v]) printf("%d, ", v);
             printf("|| ");
-            printf("%d: ", definiting_points[i].size());
-            for (int j = 0; j < definiting_points[i].size(); j++) printf("%d, ", definiting_points[i][j]);
+            printf("%d: ", definiting_points[i]->size());
+            for (int j = 0; j < definiting_points[i]->size(); j++) printf("%d, ", (*definiting_points[i])[j]);
             printf("\n");
         }
 
         for (int v = _mol.vertexBegin(); v != _mol.vertexEnd(); v = _mol.vertexNext(v)) {
             printf("%d = ", v);
-            for (int j = 0; j < coef[v].size(); j++) if (coef[v][j].lengthSqr() > 0)
+            for (int j = 0; j < coef[v]->size(); j++) if ((*coef[v])[j].lengthSqr() > 0)
             {
-                printf(" + %d * (%.2f, %.2f)", base_point[j], coef[v][j].x, coef[v][j].y);
+                printf(" + %d * (%.2f, %.2f)", base_point[j], (*coef[v])[j].x, (*coef[v])[j].y);
             }
             printf("\n");
         }
@@ -363,7 +363,7 @@ void MoleculeCleaner2d::_uniteBondsOnLine()
     _is_straightline_vertex.clear_resize(vertex_size);
     _is_straightline_vertex.zerofill();
 
-    QS_DEF(ObjArray<Array<int>>, unite_to);
+    QS_DEF(PtrArray<Array<int>>, unite_to);
     unite_to.clear();
     for (int i = 0; i < component_count; i++)
     {
@@ -470,7 +470,7 @@ void MoleculeCleaner2d::_uniteBondsOnLine()
     for (int i = 0; i < valid_list.size(); i++)
         valid_index[valid_list[i]] = i;
 
-    QS_DEF(ObjArray<Array<bool>>, new_in);
+    QS_DEF(PtrArray<Array<bool>>, new_in);
     new_in.clear();
 
     for (int i = 0; i < new_component_count; i++)
@@ -590,7 +590,7 @@ void MoleculeCleaner2d::_initCommonBiconnectedComp()
 
     common_bicon_comp.clear();
 
-    QS_DEF(ObjArray<Array<bool>>, b_in);
+    QS_DEF(PtrArray<Array<bool>>, b_in);
     Filter filter;
     int b_component_count = decomposer.componentsCount();
 
@@ -798,7 +798,7 @@ void MoleculeCleaner2d::_updateGradient2()
 
         gradient.zerofill();
         for (int v = _mol.vertexBegin(); v != _mol.vertexEnd(); v = _mol.vertexNext(v))
-            for (int j = 0; j < coef[v].size(); j++) gradient[j] += mult(pregradient[v], coef[v][j]);*/
+            for (int j = 0; j < coef[v]->size(); j++) gradient[j] += mult(pregradient[v], (*coef[v])[j]);*/
 
     gradient.zerofill();
     for (int i = 0; i < base_point.size(); i++)

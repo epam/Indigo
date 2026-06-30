@@ -23,7 +23,6 @@
 
 #include "base_cpp/array.h"
 #include "base_cpp/exception.h"
-#include "base_cpp/obj_array.h"
 
 namespace indigo
 {

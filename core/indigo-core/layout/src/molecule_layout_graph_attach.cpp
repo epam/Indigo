@@ -134,7 +134,7 @@ bool MoleculeLayoutGraphSimple::_splitCycle(const Cycle& cycle, const Array<int>
 }
 
 // Split cycle into separate chains which are not drawn
-void MoleculeLayoutGraphSimple::_splitCycle2(const Cycle& cycle, const Array<int>& cycle_vertex_types, ObjArray<Array<int>>& chains_ext) const
+void MoleculeLayoutGraphSimple::_splitCycle2(const Cycle& cycle, const Array<int>& cycle_vertex_types, PtrArray<Array<int>>& chains_ext) const
 {
     int i;
 
@@ -802,7 +802,7 @@ bool MoleculeLayoutGraphSimple::_attachCycleWithIntersections(const Cycle& cycle
     if (n_common_v < 2)
         return false;
 
-    QS_DEF(ObjArray<Array<int>>, chains_ext);
+    QS_DEF(PtrArray<Array<int>>, chains_ext);
 
     // Split cycle into separate external (not drawn) chains
     _splitCycle2(cycle, cycle_vertex_types, chains_ext);

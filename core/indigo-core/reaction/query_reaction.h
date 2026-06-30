@@ -80,9 +80,9 @@ namespace indigo
 
         static int _compare(int& i1, int& i2, void* c);
 
-        ObjArray<Array<int>> _ignorableAAM;
+        PtrArray<Array<int>> _ignorableAAM;
 
-        void _clone(BaseReaction& other, int index, int i, ObjArray<Array<int>>* mol_mappings) override;
+        void _clone(BaseReaction& other, int index, int i, PtrArray<Array<int>>* mol_mappings) override;
 
     private:
         QueryReaction(const QueryReaction&); // no implicit copy

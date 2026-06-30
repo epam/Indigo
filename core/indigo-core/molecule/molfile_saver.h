@@ -27,6 +27,7 @@
 #include "base_cpp/array.h"
 #include "base_cpp/tlscont.h"
 #include "molecule/base_molecule.h"
+#include "molecule/molecule_sgroups.h"
 
 namespace indigo
 {
@@ -98,10 +99,9 @@ namespace indigo
         void _writeTGroup(Output& output, BaseMolecule& mol, int tg_idx);
         void _writeCtabHeader2000(Output& output, BaseMolecule& mol);
         void _writeCtab2000(Output& output, BaseMolecule& mol, bool query);
-        void _checkSGroupIndices(BaseMolecule& mol, Array<int>& sgs);
         void _writeRGroupIndices2000(Output& output, BaseMolecule& mol);
         void _writeAttachmentValues2000(Output& output, BaseMolecule& fragment);
-        void _writeGenericSGroup3000(SGroup& sgroup, int idx, Output& output);
+        void _writeGenericSGroup3000(SGroup& sgroup, const SGroupInfo& info, Output& output);
         void _writeDataSGroupDisplay(DataSGroup& datasgroup, Output& out);
         void _writeFormattedString(Output& output, Array<char>& str, int length);
         static bool _checkAttPointOrder(BaseMolecule& mol, int rsite);

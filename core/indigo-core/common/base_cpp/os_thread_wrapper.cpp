@@ -155,7 +155,7 @@ OsCommand* OsCommandDispatcher::_getVacantCommand()
         command->unique_id = _last_unique_command_id++;
     }
     else
-        command = _availableCommands.pop();
+        command = _availableCommands.pop().release();
 
     command->clear();
 
@@ -169,7 +169,7 @@ OsCommandResult* OsCommandDispatcher::_getVacantResult()
     if (_availableResults.size() == 0)
         result = _allocateResult();
     else
-        result = _availableResults.pop();
+        result = _availableResults.pop().release();
     result->clear();
 
     return result;
