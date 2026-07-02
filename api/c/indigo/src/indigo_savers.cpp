@@ -19,6 +19,10 @@
 #include "indigo_savers.h"
 
 #include <ctime>
+#include <memory>
+
+#include "indigo_molecule.h"
+#include "indigo_reaction.h"
 
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
@@ -353,6 +357,61 @@ void IndigoSdfSaver::saveMonomerLibrary(const MonomerTemplateLibrary& monomers_l
     _output.flush();
 }
 
+// Counts atoms that live outside the main molecule graph. R-groups are stored
+// independently of the molecule's connected components: an R-group fragment is a
+// separate sub-molecule whose atoms are not vertices of the main graph, so the
+// component iteration never visits them on its own. Returns the number of such
+// out-of-graph atoms (currently those held by R-group fragments).
+static int countOutOfGraphAtoms(BaseMolecule& mol)
+{
+    int count = 0;
+    for (int i = 1; i <= mol.rgroups.getRGroupCount(); i++)
+    {
+        RGroup& rgroup = mol.rgroups.getRGroup(i);
+        for (int j = rgroup.fragments.begin(); j != rgroup.fragments.end(); j = rgroup.fragments.next(j))
+            count += rgroup.fragments[j]->vertexCount();
+    }
+    return count;
+}
+
+void IndigoSdfSaver::appendFragments(Output& output, IndigoObject& object)
+{
+    if (IndigoBaseReaction::is(object))
+    {
+        // A reaction is split into its constituent molecules.
+        IndigoReactionIter fragments(object.getBaseReaction(), IndigoReactionIter::MOLECULES);
+        while (fragments.hasNext())
+        {
+            std::unique_ptr<IndigoObject> fragment(fragments.next());
+            std::unique_ptr<IndigoObject> clone(fragment->clone());
+            IndigoSdfSaver::append(output, *clone);
+        }
+        return;
+    }
+
+    // A molecule is split into the connected components of its main graph. Each
+    // component clone also carries the molecule's R-groups, so once at least one
+    // component is written the out-of-graph (R-group) atoms are written with it.
+    BaseMolecule& mol = object.getBaseMolecule();
+    int written_atoms = 0;
+    IndigoComponentsIter fragments(mol);
+    while (fragments.hasNext())
+    {
+        std::unique_ptr<IndigoObject> fragment(fragments.next());
+        std::unique_ptr<IndigoObject> clone(fragment->clone());
+        written_atoms += clone->getBaseMolecule().vertexCount();
+        IndigoSdfSaver::append(output, *clone);
+    }
+
+    // R-groups and the connected components are independent: an R-group may or may
+    // not be pulled into a component record. If, after writing every component,
+    // atoms remain that were not part of any written fragment (e.g. a free R-group
+    // whose atoms live outside the main graph), emit the whole molecule as one more
+    // record so the owning structure is preserved instead of being lost. (#1256)
+    if (written_atoms == 0 && countOutOfGraphAtoms(mol) > 0)
+        IndigoSdfSaver::append(output, object);
+}
+
 CEXPORT int indigoSdfAppend(int output, int molecule)
 {
     INDIGO_BEGIN
@@ -363,6 +422,20 @@ CEXPORT int indigoSdfAppend(int output, int molecule)
         return 1;
     }
     INDIGO_END(-1);
+}
+
+CEXPORT const char* indigoGetFragmentSdf(int item)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(item);
+        auto& tmp = self.getThreadTmpData();
+        ArrayOutput out(tmp.string);
+        IndigoSdfSaver::appendFragments(out, obj);
+        tmp.string.push(0);
+        return tmp.string.ptr();
+    }
+    INDIGO_END(0);
 }
 
 //

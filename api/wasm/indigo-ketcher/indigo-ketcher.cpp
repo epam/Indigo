@@ -220,17 +220,8 @@ namespace indigo
             }
             else if (effectiveOutputFormat == "sdf" || effectiveOutputFormat == "chemical/x-sdf")
             {
-                auto buffer = IndigoObject(_checkResult(indigoWriteBuffer()));
-                auto comp_it = (objtype == EKETMolecule || objtype == EKETMoleculeQuery) ? IndigoObject(_checkResult(indigoIterateComponents(id())))
-                                                                                         : IndigoObject(_checkResult(indigoIterateMolecules(id())));
-                while (indigoHasNext(comp_it.id))
-                {
-                    const auto frag = IndigoObject(_checkResult(indigoNext(comp_it.id)));
-                    const auto mol = IndigoObject(_checkResult(indigoClone(frag.id)));
-                    indigoSdfAppend(buffer.id, mol.id);
-                }
                 print_js(effectiveOutputFormat.c_str());
-                result = _checkResultString(indigoToString(buffer.id));
+                result = _checkResultString(indigoGetFragmentSdf(id()));
             }
             else if (effectiveOutputFormat == "rdf" || effectiveOutputFormat == "chemical/x-rdf")
             {

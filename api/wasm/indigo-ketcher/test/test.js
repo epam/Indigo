@@ -1642,6 +1642,28 @@ M  END
     }
 
     {
+        // A structure that is only a free R-group (no main-graph atoms) used to be
+        // dropped on SDF export because it has no connected components. It must now
+        // be written as an RGP block and survive a round-trip. (#1256)
+        test("rgroup molecule to sdf", "1256", () => {
+            var fs = require('fs');
+            const ket = fs.readFileSync("1256-ketR20-from2815.ket");
+            let options = new indigo.MapStringString();
+            options.set('molfile-saving-skip-date', 'true');
+            options.set('ignore-stereochemistry-errors', 'true');
+            const sdf = indigo.convert(ket, "sdf", options);
+            assert.ok(sdf.length > 0, "SDF must not be empty for a free R-group");
+            assert.ok(sdf.includes("$RGP"), "SDF must contain the R-group (RGP) block");
+            // Lossless: the R-group survives an SDF -> KET -> SDF round-trip.
+            const ket_back = indigo.convert(sdf, "ket", options);
+            const sdf2 = indigo.convert(ket_back, "sdf", options);
+            assert.ok(sdf2.includes("$RGP"), "R-group must survive the round-trip");
+            options.delete();
+            assert(true);
+        });
+    }
+
+    {
         test("calculate pka", "PKa", () => {
             let options = new indigo.MapStringString();
             let pka = indigo.pka('C([C@@H](C(=O)O)N)S', options);

@@ -53,12 +53,7 @@ for filename in files:
         except IndigoException as e:
             print("  %s" % (getIndigoExceptionText(e)))
 
-    buffer = indigo.writeBuffer()
-    sdfSaver = indigo.createSaver(buffer, "sdf")
-    for frag in ket.iterateComponents():
-        sdfSaver.append(frag.clone())
-    sdfSaver.close()
-    sdf = buffer.toString()
+    sdf = ket.getFragmentSdf()
     compare_diff(ref_path, filename + ".sdf", sdf)
 
 root = joinPathPy("reactions/", __file__)
@@ -80,12 +75,7 @@ for filename in files:
         except IndigoException as e:
             print("  %s" % (getIndigoExceptionText(e)))
 
-    buffer = indigo.writeBuffer()
-    sdfSaver = indigo.createSaver(buffer, "sdf")
-    for mol in ket.iterateMolecules():
-        sdfSaver.append(mol.clone())
-    sdfSaver.close()
-    sdf = buffer.toString()
+    sdf = ket.getFragmentSdf()
     compare_diff(ref_path, filename + ".sdf", sdf)
 
 print("*** KET-monomer library to SDF ***")
