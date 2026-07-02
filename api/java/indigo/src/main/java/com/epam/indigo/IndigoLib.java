@@ -223,6 +223,8 @@ public interface IndigoLib extends Library {
 
     Pointer indigoJson(int object);
 
+    Pointer indigoGetFragmentSdf(int item);
+
     Pointer indigoMonomerLibrary(int object);
 
     @SuppressWarnings("checkstyle:Indentation")
