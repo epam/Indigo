@@ -3,6 +3,7 @@ from typing import (
     Any,
     AsyncGenerator,
     Dict,
+    FrozenSet,
     Generator,
     List,
     Optional,
@@ -161,6 +162,38 @@ def build_index_body(
     return index_body
 
 
+def non_indexed_fields(
+    custom_properties: Optional[CustomPropertiesMapping],
+) -> FrozenSet[str]:
+    """Field names mapped with "index": false.
+
+    Such fields are stored in _source (returned on retrieved records) but
+    are not searchable, so filter() must reject queries against them.
+    """
+    if not custom_properties:
+        return frozenset()
+    return frozenset(
+        name
+        for name, fragment in custom_properties.items()
+        if str(fragment.get("index", True)).lower() == "false"
+    )
+
+
+def validate_custom_properties(
+    custom_properties: Optional[CustomPropertiesMapping],
+) -> None:
+    """custom_properties must map field names to ES mapping-fragment dicts."""
+    if custom_properties is None:
+        return
+    if not isinstance(custom_properties, dict) or not all(
+        isinstance(fragment, dict) for fragment in custom_properties.values()
+    ):
+        raise TypeError(
+            "custom_properties must be a Dict[str, Dict[str, Any]] mapping "
+            "field names to Elasticsearch property fragments"
+        )
+
+
 def check_index_exception(err_: RequestError) -> None:
     if not isinstance(err_.info, dict):
         raise err_
@@ -265,10 +298,16 @@ class AsyncElasticRepository:
             The same keys must also be passed as ``custom_properties=`` to
             iterate_sdf/iterate_file — without that, no SDF tags are
             extracted and the typed mapping has nothing to populate.
+            Add ``"index": False`` to a fragment (e.g.
+            {"comment": {"type": "keyword", "index": False}}) to store the
+            value on records without making it searchable; filter() raises
+            ValueError if such a field is queried.
         """
         self.index_name = index_name.value
         self.tau_search = tau_search
         self.custom_properties = custom_properties
+        validate_custom_properties(custom_properties)
+        self._non_indexed_fields = non_indexed_fields(custom_properties)
         self.index_body = build_index_body(tau_search, custom_properties)
 
         self.el_client = get_client(
@@ -301,7 +340,7 @@ class AsyncElasticRepository:
         ):
             pass
 
-    async def filter(
+    async def filter(  # pylint: disable=too-many-locals
         self,
         query_subject: Optional[
             Union[BaseMatch, IndigoObject, IndigoRecord]
@@ -357,6 +396,13 @@ class AsyncElasticRepository:
         if page_size > MAX_ALLOWED_SIZE:
             raise ValueError(
                 f"page_size should less or equal to {MAX_ALLOWED_SIZE}"
+            )
+        forbidden = self._non_indexed_fields.intersection(kwargs)
+        if forbidden:
+            raise ValueError(
+                f"Field(s) {sorted(forbidden)} are mapped with index=false: "
+                "stored on records but not searchable, so they cannot be "
+                "used in filter()."
             )
         # actions needed to be called on elastic_search result
         postprocess_actions: PostprocessType = []
@@ -452,10 +498,16 @@ class ElasticRepository:
             The same keys must also be passed as ``custom_properties=`` to
             iterate_sdf/iterate_file — without that, no SDF tags are
             extracted and the typed mapping has nothing to populate.
+            Add ``"index": False`` to a fragment (e.g.
+            {"comment": {"type": "keyword", "index": False}}) to store the
+            value on records without making it searchable; filter() raises
+            ValueError if such a field is queried.
         """
         self.index_name = index_name.value
         self.tau_search = tau_search
         self.custom_properties = custom_properties
+        validate_custom_properties(custom_properties)
+        self._non_indexed_fields = non_indexed_fields(custom_properties)
         self.index_body = build_index_body(tau_search, custom_properties)
 
         self.el_client = get_client(
@@ -494,7 +546,7 @@ class ElasticRepository:
         except NotFoundError:
             pass
 
-    def filter(
+    def filter(  # pylint: disable=too-many-locals
         self,
         query_subject: Optional[
             Union[BaseMatch, IndigoObject, IndigoRecord]
@@ -550,6 +602,13 @@ class ElasticRepository:
         if page_size > MAX_ALLOWED_SIZE:
             raise ValueError(
                 f"page_size should less or equal to {MAX_ALLOWED_SIZE}"
+            )
+        forbidden = self._non_indexed_fields.intersection(kwargs)
+        if forbidden:
+            raise ValueError(
+                f"Field(s) {sorted(forbidden)} are mapped with index=false: "
+                "stored on records but not searchable, so they cannot be "
+                "used in filter()."
             )
         # actions needed to be called on elastic_search result
         postprocess_actions: PostprocessType = []

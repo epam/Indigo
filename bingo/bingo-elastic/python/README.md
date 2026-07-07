@@ -300,3 +300,65 @@ from bingo_elastic.queries import RangeQuery
 result = elastic_repository.filter(internal_id=RangeQuery(1000, 100000))
 
 ```
+
+#### Custom properties from SDF files
+
+SDF files can carry extra `> <TAG>` data blocks alongside each molecule. By
+default these tags are **not** read. To capture them, pass a `custom_properties`
+mapping. Its keys are the tag names to extract; its values are Elasticsearch
+[property mapping](https://www.elastic.co/guide/en/elasticsearch/reference/7.17/mapping-params.html)
+fragments, so you control how each field is stored and searched (`keyword`,
+`integer`, `float`, `text` with an `analyzer`, etc.).
+
+The same mapping must be given to **both** the repository (so the field is
+declared in the index) **and** the iterator (so the tag is extracted from the
+file). Passing it to only one side means the tag is silently dropped.
+
+```
+from bingo_elastic.model import helpers
+from bingo_elastic.elastic import ElasticRepository, IndexName
+
+custom_properties = {
+    "molecular_weight": {"type": "float"},
+    "cas_number": {"type": "keyword"},
+}
+
+repository = ElasticRepository(
+    IndexName.BINGO_MOLECULE, host="127.0.0.1", port=9200,
+    custom_properties=custom_properties,
+)
+sdf = helpers.iterate_sdf("compounds.sdf", custom_properties=custom_properties)
+repository.index_records(sdf)
+
+# Now the typed fields are searchable like any other custom field
+from bingo_elastic.queries import RangeQuery
+result = repository.filter(molecular_weight=RangeQuery(100, 500))
+```
+
+##### Storing a property without indexing it
+
+Add `"index": False` to a field's fragment to **store** the value with the
+record (it is returned when the record is retrieved) but keep it **out of the
+search index** — useful for bulky notes or metadata you never query on. Any
+attempt to `filter()` on such a field raises a `ValueError`.
+
+```
+custom_properties = {
+    "cas_number": {"type": "keyword"},                 # searchable
+    "comment": {"type": "keyword", "index": False},    # stored, not searchable
+}
+
+repository = ElasticRepository(
+    IndexName.BINGO_MOLECULE, host="127.0.0.1", port=9200,
+    custom_properties=custom_properties,
+)
+sdf = helpers.iterate_sdf("compounds.sdf", custom_properties=custom_properties)
+repository.index_records(sdf)
+
+# `comment` still comes back on retrieved records, e.g. via a similarity search,
+# but repository.filter(comment="...") raises ValueError.
+```
+
+*CAVEAT*: an index mapping is fixed once the index is first created. Changing
+`custom_properties` for an existing index has no effect until you drop it with
+`ElasticRepository.delete_all_records()` and re-index.

@@ -42,6 +42,10 @@ for rec in iterate_sdf("file.sdf", custom_properties=mapping):  # keys-only OK t
 
 The same dict drives both consumers: keys are the extraction allowlist, values are the ES `properties` fragments. `build_index_body` raises `ValueError` if a key clashes with `RESERVED_FIELDS`. Leaving `custom_properties=None` (default on both sides) means no SDF tags are extracted or indexed — only fingerprints, `cmf`, `name`, `hash`, and `has_error`. Forgetting to pass `custom_properties` to the iterator side silently drops every tag even when the repo has a typed mapping declared.
 
+Add `"index": False` to a fragment (e.g. `{"comment": {"type": "keyword", "index": False}}`) to store a value on records without making it searchable — the value stays in `_source` and is returned on retrieved records, but the field is not indexed. `build_index_body` passes the flag straight through to the ES mapping; `non_indexed_fields` (elastic.py) records which names carry it, and both repositories' `filter()` raise `ValueError` if you query one, instead of letting Elasticsearch return an opaque `search_phase_execution_exception`.
+
+`custom_properties` is validated at construction time (`validate_custom_properties`): it must be a `Dict[str, Dict]` (field name → ES fragment) or a `TypeError` is raised. A value that violates its declared ES type is not caught here — it surfaces as an `elasticsearch.helpers.BulkIndexError` at index time (`streaming_bulk` defaults to `raise_on_error=True`) rather than being silently dropped.
+
 Caveat: ES mappings are immutable after first index creation. Changing `custom_properties` later requires `ElasticRepository.delete_all_records()` first — `create_index` swallows `resource_already_exists_exception` and keeps the old mapping otherwise.
 
 ## Tests
