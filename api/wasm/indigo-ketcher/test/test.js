@@ -1642,9 +1642,6 @@ M  END
     }
 
     {
-        // A structure that is only a free R-group (no main-graph atoms) used to be
-        // dropped on SDF export because it has no connected components. It must now
-        // be written as an RGP block and survive a round-trip. (#1256)
         test("rgroup molecule to sdf", "1256", () => {
             var fs = require('fs');
             const ket = fs.readFileSync("1256-ketR20-from2815.ket");

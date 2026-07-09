@@ -223,7 +223,7 @@ public interface IndigoLib extends Library {
 
     Pointer indigoJson(int object);
 
-    Pointer indigoGetFragmentSdf(int item);
+    Pointer indigoFragmentedSdf(int item);
 
     Pointer indigoMonomerLibrary(int object);
 

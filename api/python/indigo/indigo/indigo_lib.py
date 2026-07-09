@@ -1112,8 +1112,8 @@ class IndigoLib:
         IndigoLib.lib.indigoTell.argtypes = [c_int]
         IndigoLib.lib.indigoSdfAppend.restype = c_int
         IndigoLib.lib.indigoSdfAppend.argtypes = [c_int, c_int]
-        IndigoLib.lib.indigoGetFragmentSdf.restype = c_char_p
-        IndigoLib.lib.indigoGetFragmentSdf.argtypes = [c_int]
+        IndigoLib.lib.indigoFragmentedSdf.restype = c_char_p
+        IndigoLib.lib.indigoFragmentedSdf.argtypes = [c_int]
         IndigoLib.lib.indigoSmilesAppend.restype = c_int
         IndigoLib.lib.indigoSmilesAppend.argtypes = [c_int, c_int]
         IndigoLib.lib.indigoRdfHeader.restype = c_int

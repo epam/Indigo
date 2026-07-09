@@ -53,7 +53,7 @@ for filename in files:
         except IndigoException as e:
             print("  %s" % (getIndigoExceptionText(e)))
 
-    sdf = ket.getFragmentSdf()
+    sdf = ket.fragmentedSdf()
     compare_diff(ref_path, filename + ".sdf", sdf)
 
 root = joinPathPy("reactions/", __file__)
@@ -75,7 +75,7 @@ for filename in files:
         except IndigoException as e:
             print("  %s" % (getIndigoExceptionText(e)))
 
-    sdf = ket.getFragmentSdf()
+    sdf = ket.fragmentedSdf()
     compare_diff(ref_path, filename + ".sdf", sdf)
 
 print("*** KET-monomer library to SDF ***")

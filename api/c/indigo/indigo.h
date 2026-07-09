@@ -1002,10 +1002,12 @@ CEXPORT long long indigoTell64(int handle);
 
 // Saves the molecule to an SDF output stream
 CEXPORT int indigoSdfAppend(int output, int item);
+
 // Splits the item into fragments (connected components for a molecule,
 // constituent molecules for a reaction) and returns the whole multi-record
 // SDF as a string. Single entry point for SDF-by-fragments serialization.
-CEXPORT const char* indigoGetFragmentSdf(int item);
+CEXPORT const char* indigoFragmentedSdf(int item);
+
 // Saves the molecule to a multiline SMILES output stream
 CEXPORT int indigoSmilesAppend(int output, int item);
 

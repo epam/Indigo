@@ -158,9 +158,9 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResultString(this, lib.indigoMonomerLibrary(self));
     }
 
-    public String getFragmentSdf() {
+    public String fragmentedSdf() {
         dispatcher.setSessionID();
-        return Indigo.checkResultString(this, lib.indigoGetFragmentSdf(self));
+        return Indigo.checkResultString(this, lib.indigoFragmentedSdf(self));
     }
 
     public void saveCml(String filename) {

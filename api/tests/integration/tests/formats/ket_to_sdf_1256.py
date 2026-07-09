@@ -19,7 +19,12 @@ print("*** KET to SDF ***")
 root = joinPathPy("molecules/", __file__)
 ref_path = joinPathPy("ref/", __file__)
 
-files = ["1256-ketR20-from2815"]
+files = [
+    "1256-ketR20-from2815",
+    "1256-salt-attached-rgroup",
+    "1256-two-independent-rgroups",
+    "1256-standard-plus-two-independent",
+]
 
 files.sort()
 for filename in files:
@@ -32,5 +37,27 @@ for filename in files:
             os.path.join(root, filename + ".ket")
         )
 
-    sdf = ket.getFragmentSdf()
+    sdf = ket.fragmentedSdf()
+    compare_diff(ref_path, filename + ".sdf", sdf)
+
+root = joinPathPy("reactions/", __file__)
+ref_path = joinPathPy("ref/", __file__)
+
+files = [
+    "1256-reaction-one-independent-rgroup",
+    "1256-reaction-two-independent-rgroups",
+]
+
+files.sort()
+for filename in files:
+    try:
+        ket = indigo.loadReactionFromFile(
+            os.path.join(root, filename + ".ket")
+        )
+    except IndigoException:
+        ket = indigo.loadQueryReactionFromFile(
+            os.path.join(root, filename + ".ket")
+        )
+
+    sdf = ket.fragmentedSdf()
     compare_diff(ref_path, filename + ".sdf", sdf)

@@ -20,6 +20,7 @@
 
 #include <ctime>
 #include <memory>
+#include <unordered_set>
 
 #include "indigo_molecule.h"
 #include "indigo_reaction.h"
@@ -357,21 +358,41 @@ void IndigoSdfSaver::saveMonomerLibrary(const MonomerTemplateLibrary& monomers_l
     _output.flush();
 }
 
-// Counts atoms that live outside the main molecule graph. R-groups are stored
-// independently of the molecule's connected components: an R-group fragment is a
-// separate sub-molecule whose atoms are not vertices of the main graph, so the
-// component iteration never visits them on its own. Returns the number of such
-// out-of-graph atoms (currently those held by R-group fragments).
-static int countOutOfGraphAtoms(BaseMolecule& mol)
+// A component clone unconditionally carries every R-group in `mol` (see
+// BaseMolecule::mergeWithSubmolecule), so callers must trim it with
+// copyUsedRGroupsFrom() or R-group content gets duplicated across records.
+//
+// Builds a record holding only R-group `keep_idx` from `mol`, with zero
+// main-graph atoms.
+static IndigoObject* makeSingleRGroupObject(BaseMolecule& mol, int keep_idx)
 {
-    int count = 0;
-    for (int i = 1; i <= mol.rgroups.getRGroupCount(); i++)
+    std::unique_ptr<IndigoBaseMolecule> res;
+    BaseMolecule* newmol;
+    if (mol.isQueryMolecule())
     {
-        RGroup& rgroup = mol.rgroups.getRGroup(i);
-        for (int j = rgroup.fragments.begin(); j != rgroup.fragments.end(); j = rgroup.fragments.next(j))
-            count += rgroup.fragments[j]->vertexCount();
+        res = std::make_unique<IndigoQueryMolecule>();
+        newmol = &(((IndigoQueryMolecule*)res.get())->qmol);
     }
-    return count;
+    else
+    {
+        res = std::make_unique<IndigoMolecule>();
+        newmol = &(((IndigoMolecule*)res.get())->mol);
+    }
+
+    QS_DEF(Array<int>, no_vertices);
+    no_vertices.clear();
+    newmol->makeSubmolecule(mol, no_vertices, 0, 0);
+
+    for (int i = 1; i <= newmol->rgroups.getRGroupCount(); i++)
+    {
+        if (i != keep_idx)
+        {
+            newmol->rgroups.getRGroup(i).fragments.clear();
+            newmol->rgroups.getRGroup(i).clear();
+        }
+    }
+
+    return res.release();
 }
 
 void IndigoSdfSaver::appendFragments(Output& output, IndigoObject& object)
@@ -389,27 +410,33 @@ void IndigoSdfSaver::appendFragments(Output& output, IndigoObject& object)
         return;
     }
 
-    // A molecule is split into the connected components of its main graph. Each
-    // component clone also carries the molecule's R-groups, so once at least one
-    // component is written the out-of-graph (R-group) atoms are written with it.
+    // A molecule is split into the connected components of its main graph.
     BaseMolecule& mol = object.getBaseMolecule();
-    int written_atoms = 0;
+    std::unordered_set<int> written_rgroups;
     IndigoComponentsIter fragments(mol);
     while (fragments.hasNext())
     {
         std::unique_ptr<IndigoObject> fragment(fragments.next());
         std::unique_ptr<IndigoObject> clone(fragment->clone());
-        written_atoms += clone->getBaseMolecule().vertexCount();
+        BaseMolecule& clone_mol = clone->getBaseMolecule();
+        clone_mol.rgroups.clear();
+        clone_mol.copyUsedRGroupsFrom(mol);
+        for (int i = 1; i <= clone_mol.rgroups.getRGroupCount(); i++)
+            if (clone_mol.rgroups.getRGroup(i).fragments.size() > 0)
+                written_rgroups.insert(i);
         IndigoSdfSaver::append(output, *clone);
     }
 
-    // R-groups and the connected components are independent: an R-group may or may
-    // not be pulled into a component record. If, after writing every component,
-    // atoms remain that were not part of any written fragment (e.g. a free R-group
-    // whose atoms live outside the main graph), emit the whole molecule as one more
-    // record so the owning structure is preserved instead of being lost. (#1256)
-    if (written_atoms == 0 && countOutOfGraphAtoms(mol) > 0)
-        IndigoSdfSaver::append(output, object);
+    // Any R-group no component claimed (e.g. a free R-group with no r-site
+    // reference) does not belong to another structure, so each one is emitted
+    // independently as its own atom-less record. (#1256)
+    for (int i = 1; i <= mol.rgroups.getRGroupCount(); i++)
+    {
+        if (mol.rgroups.getRGroup(i).fragments.size() == 0 || written_rgroups.count(i))
+            continue;
+        std::unique_ptr<IndigoObject> leftover(makeSingleRGroupObject(mol, i));
+        IndigoSdfSaver::append(output, *leftover);
+    }
 }
 
 CEXPORT int indigoSdfAppend(int output, int molecule)
@@ -424,7 +451,7 @@ CEXPORT int indigoSdfAppend(int output, int molecule)
     INDIGO_END(-1);
 }
 
-CEXPORT const char* indigoGetFragmentSdf(int item)
+CEXPORT const char* indigoFragmentedSdf(int item)
 {
     INDIGO_BEGIN
     {

@@ -221,7 +221,7 @@ namespace indigo
             else if (effectiveOutputFormat == "sdf" || effectiveOutputFormat == "chemical/x-sdf")
             {
                 print_js(effectiveOutputFormat.c_str());
-                result = _checkResultString(indigoGetFragmentSdf(id()));
+                result = _checkResultString(indigoFragmentedSdf(id()));
             }
             else if (effectiveOutputFormat == "rdf" || effectiveOutputFormat == "chemical/x-rdf")
             {

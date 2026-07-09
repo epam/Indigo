@@ -304,18 +304,15 @@ class IndigoObject:
 
         return IndigoLib.checkResultString(self._lib().indigoCml(self.id))
 
-    def getFragmentSdf(self):
+    def fragmentedSdf(self):
         """Structure method returns the structure as a string in SDF format,
-        splitting it into fragments: connected components for a molecule or
-        constituent molecules for a reaction. Each fragment is written as a
-        separate SDF record.
+        splitting it into fragments.
 
         Returns:
             str: SDF string
         """
-
         return IndigoLib.checkResultString(
-            self._lib().indigoGetFragmentSdf(self.id)
+            self._lib().indigoFragmentedSdf(self.id)
         )
 
     def saveCdxml(self, filename):

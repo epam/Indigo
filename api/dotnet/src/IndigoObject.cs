@@ -174,10 +174,10 @@ namespace com.epam.indigo
             return dispatcher.checkResult(IndigoLib.indigoMonomerLibrary(self));
         }
 
-        public string getFragmentSdf()
+        public string fragmentedSdf()
         {
             dispatcher.setSessionID();
-            return dispatcher.checkResult(IndigoLib.indigoGetFragmentSdf(self));
+            return dispatcher.checkResult(IndigoLib.indigoFragmentedSdf(self));
         }
 
         public void saveCml(string filename)

@@ -550,7 +550,7 @@ def save_moldata(
         aux = indigo.inchi.getAuxInfo()
         return "{}\n{}".format(res, aux)
     elif output_format == "chemical/x-sdf":
-        return md.struct.getFragmentSdf()
+        return md.struct.fragmentedSdf()
     elif output_format == "chemical/x-rdf":
         buffer = indigo.writeBuffer()
         rdfSaver = indigo.createSaver(buffer, "rdf")
