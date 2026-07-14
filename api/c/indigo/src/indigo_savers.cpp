@@ -358,10 +358,32 @@ void IndigoSdfSaver::saveMonomerLibrary(const MonomerTemplateLibrary& monomers_l
     _output.flush();
 }
 
-// A component clone unconditionally carries every R-group in `mol` (see
-// BaseMolecule::mergeWithSubmolecule), so callers must trim it with
-// copyUsedRGroupsFrom() or R-group content gets duplicated across records.
-//
+// Build the component directly with SKIP_RGROUPS and copyUsedRGroupsFrom()
+// instead, so each R-group is copied at most once.
+static IndigoObject* makeComponentObject(BaseMolecule& mol, int index)
+{
+    std::unique_ptr<IndigoBaseMolecule> res;
+    BaseMolecule* newmol;
+    if (mol.isQueryMolecule())
+    {
+        res = std::make_unique<IndigoQueryMolecule>();
+        newmol = &(((IndigoQueryMolecule*)res.get())->qmol);
+    }
+    else
+    {
+        res = std::make_unique<IndigoMolecule>();
+        newmol = &(((IndigoMolecule*)res.get())->mol);
+    }
+
+    Filter filter(mol.getDecomposition().ptr(), Filter::EQ, index);
+    newmol->makeSubmolecule(mol, filter, 0, 0, SKIP_RGROUPS);
+    newmol->copyUsedRGroupsFrom(mol);
+    for (auto it = newmol->properties().begin(); it != newmol->properties().end(); ++it)
+        res->getProperties().merge(newmol->properties().value(it));
+
+    return res.release();
+}
+
 // Builds a record holding only R-group `keep_idx` from `mol`, with zero
 // main-graph atoms.
 static IndigoObject* makeSingleRGroupObject(BaseMolecule& mol, int keep_idx)
@@ -417,10 +439,8 @@ void IndigoSdfSaver::appendFragments(Output& output, IndigoObject& object)
     while (fragments.hasNext())
     {
         std::unique_ptr<IndigoObject> fragment(fragments.next());
-        std::unique_ptr<IndigoObject> clone(fragment->clone());
+        std::unique_ptr<IndigoObject> clone(makeComponentObject(mol, fragment->getIndex()));
         BaseMolecule& clone_mol = clone->getBaseMolecule();
-        clone_mol.rgroups.clear();
-        clone_mol.copyUsedRGroupsFrom(mol);
         for (int i = 1; i <= clone_mol.rgroups.getRGroupCount(); i++)
             if (clone_mol.rgroups.getRGroup(i).fragments.size() > 0)
                 written_rgroups.insert(i);
