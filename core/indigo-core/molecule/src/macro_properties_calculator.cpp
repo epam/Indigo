@@ -156,7 +156,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
         }
         polymers[source_polymer].deleted = true;
     };
-    for (auto connection : document.nonSequenceConnections())
+    for (auto& connection : document.nonSequenceConnections())
     {
         auto& ep1 = connection.ep1();
         auto& ep2 = connection.ep2();

@@ -260,7 +260,7 @@ void KetDocument::processAmbiguousMonomerTemplates()
         it.second.setMonomerClass(monomer_class);
         // calc attachment points
         std::map<std::string, KetAttachmentPoint> var_att_points;
-        for (auto opt_it : options)
+        for (auto& opt_it : options)
         {
             if ((opt_it.ratio().has_value() && opt_it.ratio().value() == 0) || (opt_it.probability().has_value() && opt_it.probability().value() == 0))
                 continue;

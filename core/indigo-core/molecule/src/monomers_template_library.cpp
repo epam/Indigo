@@ -145,7 +145,7 @@ namespace indigo
         { // Replace leaving groups with RSites
             MonomerTemplate tmpl(_id, _monomer_class, IdtAlias(), _unresolved);
             tmpl.copy(*this);
-            for (auto att_point : _attachment_points)
+            for (auto& att_point : _attachment_points)
             {
                 std::string label = getKetStrProp(att_point.second, label);
                 label.replace(0, 1, "rg-");

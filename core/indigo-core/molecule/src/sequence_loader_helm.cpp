@@ -532,7 +532,7 @@ size_t SequenceLoader::addHelmMonomer(KetDocument& document, MonomerInfo info, M
     if (options.second.size() > 0) // ambiguous monomer
     {
         std::string template_id = checkAddAmbiguousMonomerTemplate(document, helm_alias, monomer_class, options);
-        const auto var_templ = document.ambiguousTemplates().at(template_id);
+        const auto& var_templ = document.ambiguousTemplates().at(template_id);
         helm_alias = var_templ.alias();
         auto& monomer = document.addAmbiguousMonomer(helm_alias, template_id);
         monomer->setAttachmentPoints(var_templ.attachmentPoints());
