@@ -24,6 +24,7 @@ files = [
     "1256-salt-attached-rgroup",
     "1256-two-independent-rgroups",
     "1256-standard-plus-two-independent",
+    "1256-query-independent-rgroup",
 ]
 
 files.sort()

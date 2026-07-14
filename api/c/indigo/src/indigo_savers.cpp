@@ -403,16 +403,8 @@ static IndigoObject* makeSingleRGroupObject(BaseMolecule& mol, int keep_idx)
 
     QS_DEF(Array<int>, no_vertices);
     no_vertices.clear();
-    newmol->makeSubmolecule(mol, no_vertices, 0, 0);
-
-    for (int i = 1; i <= newmol->rgroups.getRGroupCount(); i++)
-    {
-        if (i != keep_idx)
-        {
-            newmol->rgroups.getRGroup(i).fragments.clear();
-            newmol->rgroups.getRGroup(i).clear();
-        }
-    }
+    newmol->makeSubmolecule(mol, no_vertices, 0, SKIP_RGROUPS);
+    newmol->rgroups.getRGroup(keep_idx).copy(mol.rgroups.getRGroup(keep_idx));
 
     return res.release();
 }
