@@ -21,7 +21,7 @@
 
 #include "base_cpp/array.h"
 #include "base_cpp/exception.h"
-#include "base_cpp/obj_array.h"
+#include "base_cpp/ptr_array.h"
 #include "base_cpp/reusable_obj_array.h"
 #include "base_cpp/tlscont.h"
 
@@ -59,7 +59,7 @@ namespace indigo
          * constrained set
          * Initially all arc capacities are set to zero.
          */
-        GraphConstrainedBMatchingFinder(const Graph& g, const ObjArray<Array<int>>& nodes_per_set, const Array<int>* per_set_set_id);
+        GraphConstrainedBMatchingFinder(const Graph& g, const PtrArray<Array<int>>& nodes_per_set, const Array<int>* per_set_set_id);
 
         void setNodeCapacity(int node, int capacity, int set_id);
         int getNodeCapacity(int node, int set_id) const;
@@ -93,7 +93,7 @@ namespace indigo
         void _createSet(int idx, int root, const Array<int>* per_set_set_id);
         void _createVertices();
         void _createEdges();
-        void _connectVerticesWithSets(const ObjArray<Array<int>>& nodes_per_set);
+        void _connectVerticesWithSets(const PtrArray<Array<int>>& nodes_per_set);
 
         const Graph& _g;
 

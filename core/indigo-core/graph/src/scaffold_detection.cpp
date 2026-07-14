@@ -25,7 +25,7 @@ using namespace indigo;
 
 IMPL_ERROR(ScaffoldDetection, "Scaffold detection");
 
-ScaffoldDetection::ScaffoldDetection(ObjArray<Graph>* graph_set)
+ScaffoldDetection::ScaffoldDetection(PtrArray<Graph>* graph_set)
     : cbEdgeWeight(0), cbVerticesColor(0), cbSortSolutions(0), userdata(0), cbEmbedding(0), embeddingUserdata(0), searchStructures(graph_set),
       basketStructures(0), maxIterations(0)
 {
@@ -34,7 +34,7 @@ ScaffoldDetection::ScaffoldDetection(ObjArray<Graph>* graph_set)
 void ScaffoldDetection::_searchScaffold(Graph& scaffold, bool approximate)
 {
     GraphBasket graph_basket;
-    QS_DEF(ObjArray<Graph>, temp_set);
+    QS_DEF(PtrArray<Graph>, temp_set);
     if (basketStructures == 0)
     {
         basketStructures = &temp_set;
@@ -55,8 +55,8 @@ void ScaffoldDetection::_searchScaffold(Graph& scaffold, bool approximate)
 
 void ScaffoldDetection::_searchExactScaffold(GraphBasket& basket)
 {
-    ObjArray<Array<int>> v_lists;
-    ObjArray<Array<int>> e_lists;
+    PtrArray<Array<int>> v_lists;
+    PtrArray<Array<int>> e_lists;
 
     int graphset_size = basket.getGraphSetSize();
     int first_graph_num = 0;
@@ -124,8 +124,8 @@ void ScaffoldDetection::_searchExactScaffold(GraphBasket& basket)
 
 void ScaffoldDetection::_searchApproximateScaffold(GraphBasket& basket)
 {
-    ObjArray<Array<int>> v_maps;
-    ObjArray<Array<int>> e_maps;
+    PtrArray<Array<int>> v_maps;
+    PtrArray<Array<int>> e_maps;
     Array<int> v_list;
     Array<int> e_list;
 
@@ -231,7 +231,7 @@ void ScaffoldDetection::GraphBasket::_sortGraphsInSet()
 
 int ScaffoldDetection::GraphBasket::_compareEdgeCount(int i1, int i2, void* context)
 {
-    ObjArray<Graph>& graph_set = *(ObjArray<Graph>*)context;
+    PtrArray<Graph>& graph_set = *(PtrArray<Graph>*)context;
     return graph_set.at(i1).edgeCount() - graph_set.at(i2).edgeCount();
 }
 
@@ -255,7 +255,7 @@ ScaffoldDetection::GraphBasket::~GraphBasket()
 {
 }
 
-void ScaffoldDetection::GraphBasket::initBasket(ObjArray<Graph>* graph_set, ObjArray<Graph>* basket_set, int max_number)
+void ScaffoldDetection::GraphBasket::initBasket(PtrArray<Graph>* graph_set, PtrArray<Graph>* basket_set, int max_number)
 {
 
     if (graph_set == 0)
@@ -380,7 +380,7 @@ int ScaffoldDetection::GraphBasket::getMaxGraphIndex()
         _basketStructures->qsort(cbSortSolutions, userdata);
 
     while (_basketStructures->size() && _basketStructures->top().vertexCount() == 0)
-        _basketStructures->pop();
+        _basketStructures->removeLast();
 
     return 0;
 }

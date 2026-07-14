@@ -19,7 +19,7 @@
 #ifndef __molecule_rgroups__
 #define __molecule_rgroups__
 
-#include "base_cpp/obj_array.h"
+#include "base_cpp/ptr_array.h"
 #include "base_cpp/ptr_pool.h"
 #include "base_cpp/red_black.h"
 #include <cstdint>
@@ -80,7 +80,7 @@ namespace indigo
         void clear();
 
     protected:
-        ObjArray<RGroup> _rgroups;
+        PtrArray<RGroup> _rgroups;
     };
 
 } // namespace indigo

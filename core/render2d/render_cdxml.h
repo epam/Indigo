@@ -19,7 +19,7 @@
 #ifndef __render_cdxml_h__
 #define __render_cdxml_h__
 #include "base_cpp/array.h"
-#include "base_cpp/obj_array.h"
+#include "base_cpp/ptr_array.h"
 
 namespace indigo
 {
@@ -57,7 +57,7 @@ namespace indigo
         Array<char> colortable;
         Array<char> propertyNameCaption;
         Array<char> propertyValueCaption;
-        ObjArray<PropertyData> property_data;
+        PtrArray<PropertyData> property_data;
 
         void clear()
         {

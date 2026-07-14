@@ -3,7 +3,7 @@
 #include "bingo_pg_fix_post.h"
 
 #include "base_c/bitarray.h"
-#include "base_cpp/obj_array.h"
+#include "base_cpp/ptr_array.h"
 #include "bingo_pg_ext_bitset.h"
 #include <algorithm>
 
@@ -501,7 +501,7 @@ BingoPgExternalBitset::Iterator::Iterator(BingoPgExternalBitset& self) : _fromWo
     _wordsInUse = *self._lastWordPtr;
 }
 
-static indigo::ObjArray<indigo::Array<int>> all_indexes;
+static indigo::PtrArray<indigo::Array<int>> all_indexes;
 
 int BingoPgExternalBitset::Iterator::begin()
 {
@@ -543,7 +543,7 @@ int BingoPgExternalBitset::Iterator::next()
             if (from_byte == 0)
                 continue;
 
-            _fromIndexes = &(all_indexes.at(from_byte));
+            _fromIndexes = &all_indexes.at(from_byte);
 
             _fromBitIdx = 0;
             _shiftByte = _fromByteIdx << 3;
@@ -563,7 +563,7 @@ int BingoPgExternalBitset::Iterator::next()
             if (from_byte == 0)
                 continue;
 
-            _fromIndexes = &(all_indexes.at(from_byte));
+            _fromIndexes = &all_indexes.at(from_byte);
 
             _fromBitIdx = 0;
             _shiftByte = _fromByteIdx << 3;

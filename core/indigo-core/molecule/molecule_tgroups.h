@@ -19,7 +19,7 @@
 #ifndef __molecule_tgroups__
 #define __molecule_tgroups__
 
-#include "base_cpp/obj_array.h"
+#include "base_cpp/ptr_array.h"
 #include "base_cpp/ptr_pool.h"
 #include "base_cpp/red_black.h"
 #include "base_cpp/tlscont.h"
@@ -51,11 +51,11 @@ namespace indigo
         Array<char> idt_alias;
         bool ambiguous;
         bool mixture;
-        ObjArray<Array<char>> aliases;
+        PtrArray<Array<char>> aliases;
         Array<float> ratios;
         bool different_aliasHELM;
         Array<char> aliasHELM;
-        ObjArray<Array<char>> modification_types;
+        PtrArray<Array<char>> modification_types;
         Array<char> aliasAxoLabs;
 
         TGroup();

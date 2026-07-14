@@ -346,7 +346,7 @@ void PathwayLayout::applyLayout()
         _reaction.meta().addMetaObject(arrow.second.release());
 }
 
-void PathwayLayout::generateTextBlocks(SimpleTextObjectBuilder& tob, const ObjArray<Array<char>>& props, const std::string& style, float& height)
+void PathwayLayout::generateTextBlocks(SimpleTextObjectBuilder& tob, const PtrArray<Array<char>>& props, const std::string& style, float& height)
 {
     for (int i = 0; i < props.size(); ++i)
     {

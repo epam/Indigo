@@ -247,7 +247,7 @@ bool BingoPgSection::isStructureRemoved(int mol_idx)
 
 BingoPgBufferCacheFp& BingoPgSection::getFpBufferCache(int fp_idx)
 {
-    BingoPgBufferCacheFp* elem = _buffersFp.at(fp_idx);
+    BingoPgBufferCacheFp* elem = _buffersFp.getPtr(fp_idx);
     if (elem == 0)
     {
         bool write = (_idxStrategy == BingoPgIndex::BUILDING_STRATEGY);
@@ -260,7 +260,7 @@ BingoPgBufferCacheFp& BingoPgSection::getFpBufferCache(int fp_idx)
 
 BingoPgBufferCacheMap& BingoPgSection::getMapBufferCache(int map_idx)
 {
-    BingoPgBufferCacheMap* elem = _buffersMap.at(map_idx);
+    BingoPgBufferCacheMap* elem = _buffersMap.getPtr(map_idx);
     if (elem == 0)
     {
         bool write = (_idxStrategy == BingoPgIndex::BUILDING_STRATEGY);
@@ -407,7 +407,7 @@ void BingoPgSection::_setBitsCountData(unsigned short bits_count)
 
 BingoPgBufferCacheBin* BingoPgSection::_getBufferBin(int idx)
 {
-    BingoPgBufferCacheBin* elem = _buffersBin.at(idx);
+    BingoPgBufferCacheBin* elem = _buffersBin.getPtr(idx);
     if (elem == 0)
     {
         bool write = (_idxStrategy == BingoPgIndex::BUILDING_STRATEGY);

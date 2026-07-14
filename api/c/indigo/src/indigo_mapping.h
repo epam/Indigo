@@ -47,7 +47,7 @@ public:
     BaseReaction& to;
 
     Array<int> mol_mapping;
-    ObjArray<Array<int>> mappings;
+    PtrArray<Array<int>> mappings;
 
     IndigoObject* clone() override;
 };

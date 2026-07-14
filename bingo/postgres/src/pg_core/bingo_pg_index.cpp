@@ -307,13 +307,13 @@ BingoPgBuffer& BingoPgIndex::_getOffsetBuffer(int section_idx)
     if (section_buf_idx >= BINGO_SECTION_OFFSET_BLOCKS_NUM)
         throw Error("internal error: can not add new section, max limit reached: %d", section_idx * BINGO_MOLS_PER_SECTION);
     BingoPgBuffer* buffer = 0;
-    if (_sectionOffsetBuffers.at(section_buf_idx) == 0)
+    if (_sectionOffsetBuffers.getPtr(section_buf_idx) == 0)
     {
         _sectionOffsetBuffers.set(section_buf_idx, new BingoPgBuffer());
-        buffer = _sectionOffsetBuffers.at(section_buf_idx);
+        buffer = _sectionOffsetBuffers.getPtr(section_buf_idx);
         buffer->readBuffer(_index, section_buf_idx + BINGO_METABLOCKS_NUM, BINGO_PG_NOLOCK);
     }
-    buffer = _sectionOffsetBuffers.at(section_buf_idx);
+    buffer = _sectionOffsetBuffers.getPtr(section_buf_idx);
 
     return *buffer;
 }

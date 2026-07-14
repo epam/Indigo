@@ -86,7 +86,7 @@ int BingoPgBuildEngine::_getNextRecordCb(void* context)
     BingoPgBuildEngine* engine = (BingoPgBuildEngine*)context;
 
     int& cache_idx = engine->_currentCache;
-    ObjArray<StructCache>& struct_caches = *(engine->_structCaches);
+    PtrArray<StructCache>& struct_caches = *(engine->_structCaches);
     if (cache_idx >= struct_caches.size())
         return 0;
 
@@ -106,7 +106,7 @@ int BingoPgBuildEngine::_getNextRecordCb(void* context)
 void BingoPgBuildEngine::_processErrorCb(int id, void* context)
 {
     BingoPgBuildEngine* engine = (BingoPgBuildEngine*)context;
-    ObjArray<StructCache>& struct_caches = *(engine->_structCaches);
+    PtrArray<StructCache>& struct_caches = *(engine->_structCaches);
     ItemPointer item_ptr = &(struct_caches[id].ptr);
     int block_number = ItemPointerGetBlockNumber(item_ptr);
     int offset_number = ItemPointerGetOffsetNumber(item_ptr);

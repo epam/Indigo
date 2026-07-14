@@ -17,7 +17,8 @@
  ***************************************************************************/
 
 #include "base_cpp/d_bitset.h"
-#include "base_cpp/obj_array.h"
+#include "base_cpp/array.h"
+#include "base_cpp/ptr_array.h"
 #include <algorithm>
 
 using namespace indigo;
@@ -480,7 +481,7 @@ Dbitset::Iterator::Iterator(Dbitset& self) : _fromWordIdx(0), _fromByteIdx(-1), 
     _wordsInUse = self._wordsInUse;
 }
 
-static ObjArray<Array<int>> all_indexes;
+static PtrArray<Array<int>> all_indexes;
 
 int Dbitset::Iterator::begin()
 {
@@ -522,7 +523,7 @@ int Dbitset::Iterator::next()
             if (from_byte == 0)
                 continue;
 
-            _fromIndexes = &(all_indexes.at(from_byte));
+            _fromIndexes = &all_indexes.at(from_byte);
 
             _fromBitIdx = 0;
             _shiftByte = _fromByteIdx << 3;
@@ -542,7 +543,7 @@ int Dbitset::Iterator::next()
             if (from_byte == 0)
                 continue;
 
-            _fromIndexes = &(all_indexes.at(from_byte));
+            _fromIndexes = &all_indexes.at(from_byte);
 
             _fromBitIdx = 0;
             _shiftByte = _fromByteIdx << 3;

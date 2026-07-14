@@ -90,8 +90,8 @@ namespace indigo
             // utility information
             RedBlackMap<int, int> connectedReactants; // where the precursors' products are connected to
             int multiTailMetaIndex;
-            ObjArray<Array<char>> name_text;
-            ObjArray<Array<char>> conditions_text;
+            PtrArray<Array<char>> name_text;
+            PtrArray<Array<char>> conditions_text;
             float text_width;
         };
 
@@ -103,9 +103,9 @@ namespace indigo
             std::unique_ptr<BaseReaction> reaction(new Reaction());
             auto& sr = _reactions[index];
             for (auto pidx : sr.productIndexes)
-                reaction->addProductCopy(*_molecules[pidx], 0, 0);
+                reaction->addProductCopy(_molecules[pidx], 0, 0);
             for (auto ridx : sr.reactantIndexes)
-                reaction->addReactantCopy(*_molecules[ridx], 0, 0);
+                reaction->addReactantCopy(_molecules[ridx], 0, 0);
             reaction->properties().copy(sr.properties);
             return reaction;
         }
@@ -124,7 +124,7 @@ namespace indigo
 
         auto& getMolecule(int mol_idx)
         {
-            return *_molecules[mol_idx];
+            return _molecules[mol_idx];
         }
 
         int getMoleculeCount() const
@@ -175,7 +175,7 @@ namespace indigo
 
         BaseMolecule& getBaseMolecule(int index) override
         {
-            return *_molecules[index];
+            return _molecules[index];
         }
 
         void copyToReaction(BaseReaction& reaction)
@@ -218,19 +218,19 @@ namespace indigo
                 switch (kvp.second)
                 {
                 case PRODUCT:
-                    reaction.addProductCopy(*_molecules[kvp.first], 0, 0);
+                    reaction.addProductCopy(_molecules[kvp.first], 0, 0);
                     break;
                 case REACTANT:
-                    reaction.addReactantCopy(*_molecules[kvp.first], 0, 0);
+                    reaction.addReactantCopy(_molecules[kvp.first], 0, 0);
                     break;
                 case INTERMEDIATE:
-                    reaction.addIntermediateCopy(*_molecules[kvp.first], 0, 0);
+                    reaction.addIntermediateCopy(_molecules[kvp.first], 0, 0);
                     break;
                 case CATALYST:
-                    reaction.addCatalystCopy(*_molecules[kvp.first], 0, 0);
+                    reaction.addCatalystCopy(_molecules[kvp.first], 0, 0);
                     break;
                 case UNDEFINED:
-                    reaction.addUndefinedCopy(*_molecules[kvp.first], 0, 0);
+                    reaction.addUndefinedCopy(_molecules[kvp.first], 0, 0);
                     break;
                 }
             }
@@ -300,9 +300,9 @@ namespace indigo
         void _cloneSub(BaseReaction& other) override;
 
     private:
-        ObjArray<ReactionNode> _reactionNodes;
+        PtrArray<ReactionNode> _reactionNodes;
         PtrArray<BaseMolecule> _molecules;
-        ObjArray<SimpleReaction> _reactions;
+        PtrArray<SimpleReaction> _reactions;
         Reaction _rootReaction; // copy of root reaction
     };
 

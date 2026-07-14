@@ -19,7 +19,7 @@
 #ifndef __metalayout_h__
 #define __metalayout_h__
 
-#include "base_cpp/obj_array.h"
+#include "base_cpp/ptr_array.h"
 #include "base_cpp/reusable_obj_array.h"
 
 #include "math/algebra.h"
@@ -88,7 +88,7 @@ namespace indigo
             ~LayoutLine();
             void clear();
 
-            ObjArray<LayoutItem> items;
+            PtrArray<LayoutItem> items;
             float height;
             float top_height;
             float bottom_height;

@@ -741,7 +741,7 @@ void MoleculeLayoutGraphSmart::_getSurroundCycle(Cycle& cycle, Vec2f p) const
 
     Random rand(SOME_MAGIC_INT_FOR_RANDOM_3);
     /*   for (i = edgeBegin(); i < edgeEnd(); i = edgeNext(i))
-    if  (_layout_edges[i].type == ELEMENT_BOUNDARY)
+    if  (_layout_edges[i]->type == ELEMENT_BOUNDARY)
     n++;
 
     if (n == 0)

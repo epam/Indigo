@@ -724,8 +724,8 @@ protected:
     BaseMolecule& _mol;
     GraphSubtreeEnumerator _enumerator;
     int _idx;
-    ObjArray<Array<int>> _vertices;
-    ObjArray<Array<int>> _edges;
+    PtrArray<Array<int>> _vertices;
+    PtrArray<Array<int>> _edges;
 };
 
 class IndigoRingsIter : public IndigoObject
@@ -743,8 +743,8 @@ protected:
     BaseMolecule& _mol;
     CycleEnumerator _enumerator;
     int _idx;
-    ObjArray<Array<int>> _vertices;
-    ObjArray<Array<int>> _edges;
+    PtrArray<Array<int>> _vertices;
+    PtrArray<Array<int>> _edges;
 };
 
 class IndigoEdgeSubmoleculeIter : public IndigoObject
@@ -762,8 +762,8 @@ protected:
     BaseMolecule& _mol;
     EdgeSubgraphEnumerator _enumerator;
     int _idx;
-    ObjArray<Array<int>> _vertices;
-    ObjArray<Array<int>> _edges;
+    PtrArray<Array<int>> _vertices;
+    PtrArray<Array<int>> _edges;
 };
 
 class IndigoAttachmentPointsIter : public IndigoObject

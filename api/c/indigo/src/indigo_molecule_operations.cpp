@@ -2351,7 +2351,7 @@ CEXPORT int indigoTransformCTABtoSCSR(int molecule, int templates)
 {
     INDIGO_BEGIN
     {
-        QS_DEF(ObjArray<TGroup>, tgs);
+        QS_DEF(PtrArray<TGroup>, tgs);
         tgs.clear();
         BaseMolecule& mol = self.getObject(molecule).getBaseMolecule();
         BaseMolecule& temp = self.getObject(templates).getBaseMolecule();

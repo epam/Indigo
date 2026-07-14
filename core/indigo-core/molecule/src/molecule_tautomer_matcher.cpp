@@ -223,12 +223,12 @@ void MoleculeTautomerMatcher::parseConditions(const char* tautomer_text, int& ru
 bool MoleculeTautomerMatcher::_checkRules(TautomerSearchContext& context, int first1, int first2, int last1, int last2)
 {
     for (int i = 0; i < context.rules_list.size(); i++)
-        if (context.rules & (1 << i) && context.rules_list[i] != 0)
+        if (context.rules & (1 << i) && context.rules_list.getPtr(i) != 0)
         {
-            if (context.rules_list[i]->check(context.g1, first1, last1, TautomerRule::atomInAromaticRing(context.g2, first2),
-                                             TautomerRule::atomInAromaticRing(context.g2, last2)) &&
-                context.rules_list[i]->check(context.g2, first2, last2, TautomerRule::atomInAromaticRing(context.g1, first1),
-                                             TautomerRule::atomInAromaticRing(context.g1, last1)))
+            if (context.rules_list[i].check(context.g1, first1, last1, TautomerRule::atomInAromaticRing(context.g2, first2),
+                                            TautomerRule::atomInAromaticRing(context.g2, last2)) &&
+                context.rules_list[i].check(context.g2, first2, last2, TautomerRule::atomInAromaticRing(context.g1, first1),
+                                            TautomerRule::atomInAromaticRing(context.g1, last1)))
                 return true;
         }
 

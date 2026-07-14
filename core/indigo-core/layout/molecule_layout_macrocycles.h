@@ -337,7 +337,7 @@ namespace indigo
         int length;
 
         uint8_t* _hidden_data_field;
-        ObjArray<Array<rectangle>> border_array;
+        PtrArray<Array<rectangle>> border_array;
         Array<rectangle*> border;
 
         TL_CP_DECL(Array<int>, _vertex_weight);
@@ -345,7 +345,7 @@ namespace indigo
         TL_CP_DECL(Array<int>, _edge_stereo);
         TL_CP_DECL(Array<int>, _rotation_parity);
         TL_CP_DECL(Array<int>, _coord_diff_reminder); // (x - y) % 3
-        TL_CP_DECL(ObjArray<ObjArray<ObjArray<TriangleLattice>>>, _lattices);
+        TL_CP_DECL(PtrArray<PtrArray<PtrArray<TriangleLattice>>>, _lattices);
         TL_CP_DECL(Array<uint8_t>, _hidden_data_field_array);
 
         TriangleLattice _sink_lattice;

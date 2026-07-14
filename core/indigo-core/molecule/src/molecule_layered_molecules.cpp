@@ -52,7 +52,8 @@ LayeredMolecules::LayeredMolecules(BaseMolecule& molecule) : _layersAromatized(0
     }
 
     _mobilePositions.expandFill(_proto.vertexCount(), false);
-    _mobilePositionsOccupied.expand(_proto.vertexCount());
+    if (_mobilePositionsOccupied.size() < _proto.vertexCount())
+        _mobilePositionsOccupied.resize(_proto.vertexCount());
 
     layers = 1;
 
@@ -244,11 +245,16 @@ bool LayeredMolecules::addLayerFromMolecule(const Molecule& molecule, Array<int>
             e1_idx = addEdge(u1, v1);
             _proto.addEdge(u1, v1);
             _proto.setBondOrder(e1_idx, BOND_ZERO, false);
-            _bond_masks[BOND_ZERO].resize(e1_idx + 1);
-            _bond_masks[BOND_SINGLE].resize(e1_idx + 1);
-            _bond_masks[BOND_DOUBLE].resize(e1_idx + 1);
-            _bond_masks[BOND_TRIPLE].resize(e1_idx + 1);
-            _bond_masks[BOND_AROMATIC].resize(e1_idx + 1);
+            while (_bond_masks[BOND_ZERO].size() < e1_idx + 1)
+                _bond_masks[BOND_ZERO].push();
+            while (_bond_masks[BOND_SINGLE].size() < e1_idx + 1)
+                _bond_masks[BOND_SINGLE].push();
+            while (_bond_masks[BOND_DOUBLE].size() < e1_idx + 1)
+                _bond_masks[BOND_DOUBLE].push();
+            while (_bond_masks[BOND_TRIPLE].size() < e1_idx + 1)
+                _bond_masks[BOND_TRIPLE].push();
+            while (_bond_masks[BOND_AROMATIC].size() < e1_idx + 1)
+                _bond_masks[BOND_AROMATIC].push();
         }
         int order = const_cast<Molecule&>(molecule).getBondOrder(e2_idx);
         _bond_masks[order][e1_idx].set(newTautomerIndex);
@@ -578,7 +584,7 @@ void LayeredMolecules::_calcPiLabels(int layerFrom, int layerTo)
         for (int i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
         {
             int bond_idx = vertex.neiEdge(i);
-            // const Dbitset &bs1 = _bond_masks[BOND_SINGLE][bond_idx];
+            // const Dbitset &bs1 = *_bond_masks[BOND_SINGLE][bond_idx];
             const Dbitset& bs2 = _bond_masks[BOND_DOUBLE][bond_idx];
             const Dbitset& bs3 = _bond_masks[BOND_TRIPLE][bond_idx];
             const Dbitset& bsArom = _bond_masks[BOND_AROMATIC][bond_idx];
@@ -723,10 +729,10 @@ void LayeredMolecules::_aromatizeCycle(const Array<int>& cycle, const Dbitset& m
             int bond_idx = vertex.neiEdge(j);
             _bond_masks[BOND_AROMATIC][bond_idx].orWith(mask);
             // We are able to store both aromatic and non-aromatic bonds. But in case we need to store only one type, uncomment next lines.
-            //_bond_masks[BOND_ZERO][bond_idx].andNotWith(mask);
-            //_bond_masks[BOND_SINGLE][bond_idx].andNotWith(mask);
-            //_bond_masks[BOND_DOUBLE][bond_idx].andNotWith(mask);
-            //_bond_masks[BOND_TRIPLE][bond_idx].andNotWith(mask);
+            //_bond_masks[BOND_ZERO][bond_idx]->andNotWith(mask);
+            //_bond_masks[BOND_SINGLE][bond_idx]->andNotWith(mask);
+            //_bond_masks[BOND_DOUBLE][bond_idx]->andNotWith(mask);
+            //_bond_masks[BOND_TRIPLE][bond_idx]->andNotWith(mask);
         }
     }
 }

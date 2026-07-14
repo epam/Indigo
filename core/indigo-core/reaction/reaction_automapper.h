@@ -66,9 +66,9 @@ namespace indigo
         BaseReaction& _reaction;
 
         // array to set correspondence between atoms due to input mapping
-        ObjArray<Array<int>> _vertexMatchingArray;
+        PtrArray<Array<int>> _vertexMatchingArray;
         // array to set correspondence between bonds due to input mapping
-        ObjArray<Array<int>> _edgeMatchingArray;
+        PtrArray<Array<int>> _edgeMatchingArray;
 
         int _getVertexId(int mol_idx, int vert) const;
         int _getEdgeId(int mol_idx, int edge) const;
@@ -122,8 +122,8 @@ namespace indigo
         {
             _MIN_VERTEX_SUB = 3
         };
-        void _createReactionCopy(Array<int>& mol_mapping, ObjArray<Array<int>>& mappings);
-        void _createMoleculeCopy(int mol_idx, bool reactant, Array<int>& mol_mapping, ObjArray<Array<int>>& mappings);
+        void _createReactionCopy(Array<int>& mol_mapping, PtrArray<Array<int>>& mappings);
+        void _createMoleculeCopy(int mol_idx, bool reactant, Array<int>& mol_mapping, PtrArray<Array<int>>& mappings);
         void _makeInvertMap(Array<int>& map, Array<int>& invmap);
         // sets up input mapping
         void _initMappings(BaseReaction& reaction);
@@ -139,8 +139,8 @@ namespace indigo
         bool _checkAtomMapping(bool change_rc, bool change_aam, bool change_rc_null);
 
         // arranges all maps to AAM
-        void _setupReactionMap(Array<int>& mol_mapping, ObjArray<Array<int>>& mappings);
-        void _setupReactionInvMap(Array<int>& mol_mapping, ObjArray<Array<int>>& mappings);
+        void _setupReactionMap(Array<int>& mol_mapping, PtrArray<Array<int>>& mappings);
+        void _setupReactionInvMap(Array<int>& mol_mapping, PtrArray<Array<int>>& mappings);
         // takes account of possibility for molecule dissociation
         void _considerDissociation();
 
@@ -150,9 +150,9 @@ namespace indigo
         int _validMapFound(BaseReaction& reaction, int react, int prod, Array<int>& sub_map) const;
         void _removeUnusedInfo(BaseReaction& reaction, int mol_idx, bool aam_presented) const;
         void _removeSmallComponents(BaseMolecule& mol) const;
-        void _createPermutations(BaseReaction& reaction, ObjArray<Array<int>>&);
+        void _createPermutations(BaseReaction& reaction, PtrArray<Array<int>>&);
         // all permutation
-        static void _permutation(Array<int>&, ObjArray<Array<int>>&);
+        static void _permutation(Array<int>&, PtrArray<Array<int>>&);
 
         BaseReaction& _initReaction;
         std::unique_ptr<BaseReaction> _reactionCopy;
@@ -247,7 +247,7 @@ namespace indigo
         int _subReactNumber;
         int _superProductNumber;
 
-        ObjArray<Array<int>> _autoMaps;
+        PtrArray<Array<int>> _autoMaps;
 
         std::unique_ptr<BaseMolecule> _transposedQuery;
         Array<int> _transposition;

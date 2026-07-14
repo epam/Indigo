@@ -1,7 +1,7 @@
 #ifndef __sim_storage__
 #define __sim_storage__
 
-#include "base_cpp/obj_array.h"
+#include "base_cpp/array.h"
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/tlscont.h"

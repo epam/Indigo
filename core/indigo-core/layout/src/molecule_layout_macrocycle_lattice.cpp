@@ -546,7 +546,7 @@ AnswerField::AnswerField(int len, int target_x, int target_y, float /* target_ro
             _coord_diff_reminder[i] = (_coord_diff_reminder[i - 1] + 1) % 3;
     }
 
-    ObjArray<Array<rectangle>> border_sample_array;
+    PtrArray<Array<rectangle>> border_sample_array;
     border_sample_array.clear();
     for (int i = 0; i <= length; i++)
     {
@@ -828,7 +828,7 @@ void MoleculeLayoutMacrocyclesLattice::CycleLayout::init(int* up_point)
 
 float MoleculeLayoutMacrocyclesLattice::preliminary_layout(CycleLayout& cl)
 {
-    QS_DEF(ObjArray<ObjArray<Array<bool>>>, can);
+    QS_DEF(PtrArray<PtrArray<Array<bool>>>, can);
 
     can.clear();
     int maxrot = 19;    // |[0, 18]|

@@ -16,6 +16,8 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include <algorithm>
+#include <cctype>
 #include <functional>
 #include <rapidjson/document.h>
 #include <string>
@@ -420,10 +422,20 @@ namespace indigo
 
     const std::string& MonomerTemplateLibrary::getMonomerTemplateIdByAliasHELM(MonomerClass monomer_class, const std::string& alias)
     {
+        // Case-insensitive comparison for HELM aliases
         for (auto& it : _monomer_templates)
         {
-            if (it.second.monomerClass() == monomer_class && hasKetStrProp(it.second, aliasHELM) && getKetStrProp(it.second, aliasHELM) == alias)
-                return it.second.id();
+            if (it.second.monomerClass() == monomer_class && hasKetStrProp(it.second, aliasHELM))
+            {
+                const std::string& template_helm_alias = getKetStrProp(it.second, aliasHELM);
+                // Compare case-insensitively
+                if (alias.size() == template_helm_alias.size() && std::equal(alias.begin(), alias.end(), template_helm_alias.begin(), [](char a, char b) {
+                        return std::tolower(static_cast<unsigned char>(a)) == std::tolower(static_cast<unsigned char>(b));
+                    }))
+                {
+                    return it.second.id();
+                }
+            }
         }
         return EMPTY_STRING;
     }
