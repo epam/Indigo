@@ -1,0 +1,40 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "mol0"
+            },
+            {
+                "$ref": "rg1"
+            }
+        ],
+        "connections": [],
+        "templates": []
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [0, 0, 0],
+                "queryProperties": {
+                    "customQuery": "*"
+                }
+            }
+        ],
+        "bonds": []
+    },
+    "rg1": {
+        "rlogic": {
+            "number": 1
+        },
+        "type": "rgroup",
+        "atoms": [
+            {
+                "label": "O",
+                "location": [0, -2, 0]
+            }
+        ],
+        "bonds": []
+    }
+}

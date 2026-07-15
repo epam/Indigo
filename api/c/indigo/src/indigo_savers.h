@@ -82,6 +82,10 @@ public:
     const char* debugInfo() const override;
     static void append(Output& output, IndigoObject& object);
     static void appendMolfile(Output& output, IndigoObject& object);
+    // Splits the object into fragments (connected components for a molecule,
+    // constituent molecules for a reaction) and writes each one as a separate
+    // SDF record. Single entry point shared by all SDF-by-fragments consumers.
+    static void appendFragments(Output& output, IndigoObject& object);
     void saveMonomerLibrary(const MonomerTemplateLibrary& monomers_library);
 
 protected:

@@ -1,0 +1,78 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "rg1"
+            },
+            {
+                "$ref": "mol0"
+            },
+            {
+                "type": "arrow",
+                "data": {
+                    "mode": "open-angle",
+                    "pos": [
+                        {"x": 0, "y": 0, "z": 0},
+                        {"x": 5, "y": 0, "z": 0}
+                    ]
+                }
+            },
+            {
+                "$ref": "mol1"
+            }
+        ],
+        "connections": [],
+        "templates": []
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [0, 1, 0]
+            },
+            {
+                "label": "C",
+                "location": [1, 1, 0]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [0, 1]
+            }
+        ]
+    },
+    "mol1": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "N",
+                "location": [6, 1, 0]
+            },
+            {
+                "label": "N",
+                "location": [7, 1, 0]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [0, 1]
+            }
+        ]
+    },
+    "rg1": {
+        "rlogic": {
+            "number": 1
+        },
+        "type": "rgroup",
+        "atoms": [
+            {
+                "label": "O",
+                "location": [3, -2, 0]
+            }
+        ],
+        "bonds": []
+    }
+}

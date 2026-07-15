@@ -19,6 +19,11 @@
 #include "indigo_savers.h"
 
 #include <ctime>
+#include <memory>
+#include <unordered_set>
+
+#include "indigo_molecule.h"
+#include "indigo_reaction.h"
 
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
@@ -353,6 +358,99 @@ void IndigoSdfSaver::saveMonomerLibrary(const MonomerTemplateLibrary& monomers_l
     _output.flush();
 }
 
+// Build the component directly with SKIP_RGROUPS and copyUsedRGroupsFrom()
+// instead, so each R-group is copied at most once.
+static IndigoObject* makeComponentObject(BaseMolecule& mol, int index)
+{
+    std::unique_ptr<IndigoBaseMolecule> res;
+    BaseMolecule* newmol;
+    if (mol.isQueryMolecule())
+    {
+        res = std::make_unique<IndigoQueryMolecule>();
+        newmol = &(((IndigoQueryMolecule*)res.get())->qmol);
+    }
+    else
+    {
+        res = std::make_unique<IndigoMolecule>();
+        newmol = &(((IndigoMolecule*)res.get())->mol);
+    }
+
+    Filter filter(mol.getDecomposition().ptr(), Filter::EQ, index);
+    newmol->makeSubmolecule(mol, filter, 0, 0, SKIP_RGROUPS);
+    newmol->copyUsedRGroupsFrom(mol);
+    for (auto it = newmol->properties().begin(); it != newmol->properties().end(); ++it)
+        res->getProperties().merge(newmol->properties().value(it));
+
+    return res.release();
+}
+
+// Builds a record holding only R-group `keep_idx` from `mol`, with zero
+// main-graph atoms.
+static IndigoObject* makeSingleRGroupObject(BaseMolecule& mol, int keep_idx)
+{
+    std::unique_ptr<IndigoBaseMolecule> res;
+    BaseMolecule* newmol;
+    if (mol.isQueryMolecule())
+    {
+        res = std::make_unique<IndigoQueryMolecule>();
+        newmol = &(((IndigoQueryMolecule*)res.get())->qmol);
+    }
+    else
+    {
+        res = std::make_unique<IndigoMolecule>();
+        newmol = &(((IndigoMolecule*)res.get())->mol);
+    }
+
+    QS_DEF(Array<int>, no_vertices);
+    no_vertices.clear();
+    newmol->makeSubmolecule(mol, no_vertices, 0, SKIP_RGROUPS);
+    newmol->rgroups.getRGroup(keep_idx).copy(mol.rgroups.getRGroup(keep_idx));
+
+    return res.release();
+}
+
+void IndigoSdfSaver::appendFragments(Output& output, IndigoObject& object)
+{
+    if (IndigoBaseReaction::is(object))
+    {
+        // A reaction is split into its constituent molecules.
+        IndigoReactionIter fragments(object.getBaseReaction(), IndigoReactionIter::MOLECULES);
+        while (fragments.hasNext())
+        {
+            std::unique_ptr<IndigoObject> fragment(fragments.next());
+            std::unique_ptr<IndigoObject> clone(fragment->clone());
+            IndigoSdfSaver::append(output, *clone);
+        }
+        return;
+    }
+
+    // A molecule is split into the connected components of its main graph.
+    BaseMolecule& mol = object.getBaseMolecule();
+    std::unordered_set<int> written_rgroups;
+    IndigoComponentsIter fragments(mol);
+    while (fragments.hasNext())
+    {
+        std::unique_ptr<IndigoObject> fragment(fragments.next());
+        std::unique_ptr<IndigoObject> clone(makeComponentObject(mol, fragment->getIndex()));
+        BaseMolecule& clone_mol = clone->getBaseMolecule();
+        for (int i = 1; i <= clone_mol.rgroups.getRGroupCount(); i++)
+            if (clone_mol.rgroups.getRGroup(i).fragments.size() > 0)
+                written_rgroups.insert(i);
+        IndigoSdfSaver::append(output, *clone);
+    }
+
+    // Any R-group no component claimed (e.g. a free R-group with no r-site
+    // reference) does not belong to another structure, so each one is emitted
+    // independently as its own atom-less record. (#1256)
+    for (int i = 1; i <= mol.rgroups.getRGroupCount(); i++)
+    {
+        if (mol.rgroups.getRGroup(i).fragments.size() == 0 || written_rgroups.count(i))
+            continue;
+        std::unique_ptr<IndigoObject> leftover(makeSingleRGroupObject(mol, i));
+        IndigoSdfSaver::append(output, *leftover);
+    }
+}
+
 CEXPORT int indigoSdfAppend(int output, int molecule)
 {
     INDIGO_BEGIN
@@ -363,6 +461,20 @@ CEXPORT int indigoSdfAppend(int output, int molecule)
         return 1;
     }
     INDIGO_END(-1);
+}
+
+CEXPORT const char* indigoFragmentedSdf(int item)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(item);
+        auto& tmp = self.getThreadTmpData();
+        ArrayOutput out(tmp.string);
+        IndigoSdfSaver::appendFragments(out, obj);
+        tmp.string.push(0);
+        return tmp.string.ptr();
+    }
+    INDIGO_END(0);
 }
 
 //
