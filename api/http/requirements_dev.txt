@@ -14,7 +14,7 @@ pylint==2.17.4
 pyparsing==3.0.9
 PyPDF2==3.0.1
 pyproject-flake8==6.0.0.post1
-pytest==7.3.1
+pytest==9.0.3
 requests==2.33.0
 toml==0.10.2
 types-Pillow==9.5.0.4
