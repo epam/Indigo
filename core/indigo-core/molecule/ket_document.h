@@ -122,7 +122,7 @@ namespace indigo
 
         void connectMonomerTo(const std::string& mon1, const std::string& ap1, const std::string& mon2, const std::string& ap2);
 
-        const std::vector<KetConnection> connections() const
+        const std::vector<KetConnection>& connections() const
         {
             return _connections;
         };
@@ -131,7 +131,7 @@ namespace indigo
         // i.e. non-backbone and not sugar-base connections
         // connections that create a cycle place here too
         // parseSimplePolymers should be called to fill this list
-        const std::vector<KetConnection> nonSequenceConnections() const
+        const std::vector<KetConnection>& nonSequenceConnections() const
         {
             return _non_sequence_connections;
         };

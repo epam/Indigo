@@ -127,7 +127,7 @@ namespace indigo
             return _atoms;
         }
 
-        const std::vector<KetBond> bonds() const
+        const std::vector<KetBond>& bonds() const
         {
             return _bonds;
         }
