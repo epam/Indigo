@@ -1,0 +1,66 @@
+CREATE OR REPLACE FUNCTION bingo_handler(internal)
+RETURNS index_am_handler
+AS 'BINGO_PATHNAME'
+LANGUAGE C STRICT VOLATILE;
+
+CREATE ACCESS METHOD bingo_idx TYPE INDEX HANDLER bingo_handler;
+
+
+--**************************** MANGO OPERATOR CLASS *********************
+CREATE OPERATOR CLASS molecule
+FOR TYPE text USING bingo_idx
+AS
+        OPERATOR        1       public.@ (text, sub),
+        OPERATOR        2       public.@ (text, exact),
+        OPERATOR        3       public.@ (text, smarts),
+        OPERATOR        4       public.@ (text, gross),
+        OPERATOR        5       public.< (text, mass),
+        OPERATOR        6       public.> (text, mass),
+        OPERATOR        7       public.@ (text, sim),
+        FUNCTION	1	matchSub(text, sub),
+        FUNCTION	2	matchExact(text, exact),
+        FUNCTION	3	matchSmarts(text, smarts),
+        FUNCTION	4	matchGross(text, gross),
+        FUNCTION	5	_match_mass_less(text, mass),
+        FUNCTION	6	_match_mass_great(text, mass),
+        FUNCTION	7	matchSim(text, sim);
+		
+CREATE OPERATOR CLASS bmolecule
+FOR TYPE bytea USING bingo_idx
+AS
+        OPERATOR        1       public.@ (bytea, sub),
+        OPERATOR        2       public.@ (bytea, exact),
+        OPERATOR        3       public.@ (bytea, smarts),
+        OPERATOR        4       public.@ (bytea, gross),
+        OPERATOR        5       public.< (bytea, mass),
+        OPERATOR        6       public.> (bytea, mass),
+        OPERATOR        7       public.@ (bytea, sim),
+        FUNCTION	1	matchSub(bytea, sub),
+        FUNCTION	2	matchExact(bytea, exact),
+        FUNCTION	3	matchSmarts(bytea, smarts),
+        FUNCTION	4	matchGross(bytea, gross),
+        FUNCTION	5	_match_mass_less(bytea, mass),
+        FUNCTION	6	_match_mass_great(bytea, mass),
+        FUNCTION	7	matchSim(bytea, sim);
+        
+--**************************** RINGO OPERATOR CLASS *********************
+CREATE OPERATOR CLASS reaction
+FOR TYPE text USING bingo_idx
+AS
+        OPERATOR        1       public.@ (text, rsub),
+        OPERATOR        2       public.@ (text, rexact),
+        OPERATOR        3       public.@ (text, rsmarts),
+        FUNCTION	1	matchRSub(text, rsub),
+        FUNCTION	2	matchRExact(text, rexact),
+        FUNCTION	3	matchRSmarts(text, rsmarts);
+               
+CREATE OPERATOR CLASS breaction
+FOR TYPE bytea USING bingo_idx
+AS
+        OPERATOR        1       public.@ (bytea, rsub),
+        OPERATOR        2       public.@ (bytea, rexact),
+        OPERATOR        3       public.@ (bytea, rsmarts),
+        FUNCTION	1	matchRSub(bytea, rsub),
+        FUNCTION	2	matchRExact(bytea, rexact),
+        FUNCTION	3	matchRSmarts(bytea, rsmarts);
+		
