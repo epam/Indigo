@@ -6,7 +6,7 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
-from env_indigo import *
+from env_indigo import Indigo, IndigoException, getIndigoExceptionText
 
 indigo = Indigo()
 
@@ -92,11 +92,25 @@ for idx, sm in enumerate(mols_qsmiles):
             print(getIndigoExceptionText(e))
 
 print("*** S-Groups ***")
+sgroup_data_all_fields = (
+    "CCCCC |SgD:1,2,3:"
+    "name&#44;&#59;&#58;&#124;&#123;&#125;&#36;field:"
+    "data&#44;&#59;&#58;&#124;&#123;&#125;&#36;value:"
+    "query&#44;&#59;&#58;&#124;&#123;&#125;&#36;op:"
+    "unit&#44;&#59;&#58;&#124;&#123;&#125;&#36;text: :|"
+)
+sgroup_sru_subscript = (
+    "CCCCC |Sg:n:1,2,3:sub&#44;&#59;&#58;&#124;&#123;&#125;&#36;script:hh|"
+)
 mols_smiles = [
     "CCCC |Sg:gen:0,1,2:|",
     "CCCC |Sg:n:0,1,2:3-6:eu|",
     "CCCC |Sg:n:0,1,2::ht|",
     "CCCCC |Sg:n:1,2,3::hh|",
+    "CCCC* |$;;;;_AP1$,Sg:n:2:2&#44;6-7:ht|",
+    "CCCCC |SgD:1,2,3:a&#44;b:c&#44;d::: :|",
+    sgroup_data_all_fields,
+    sgroup_sru_subscript,
 ]
 for sm in mols_smiles:
     print("default smiles:")
@@ -119,6 +133,16 @@ indigo.setOption("smiles-saving-format", "chemaxon")
 for sm in mols_smiles:
     print("chemaxon:")
     print(indigo.loadMolecule(sm).smiles())
+
+print("*** S-Group AP closure roundtrip ***")
+sgroup_ap_closure = "CCCC* |$;;;;_AP1$,Sg:n:2:2&#44;6-7:ht|"
+indigo.setOption("smiles-saving-format", "chemaxon")
+print("chemaxon roundtrip:")
+print(indigo.loadMolecule(sgroup_ap_closure).smiles())
+indigo.setOption("smiles-saving-format", "daylight")
+print("daylight closure:")
+print(indigo.loadMolecule(sgroup_ap_closure).smiles())
+indigo.setOption("smiles-saving-format", "chemaxon")
 
 print("*** Atropisomers ***")
 mols_smiles = [

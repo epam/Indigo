@@ -43,8 +43,8 @@ static char readSgChar(Scanner& scanner)
         int code = scanner.tryReadUnsigned();
         if (code >= min_ascii && code <= max_ascii && scanner.lookNext() == ';')
         {
-            std::string sgroup_field_sep = ",;:|{}";
-            // Decode only ,;:|{}
+            std::string sgroup_field_sep = ",;:|{}$";
+            // Decode only S-group field separators and CXSMILES '$' delimiters
             if (sgroup_field_sep.find(static_cast<char>(code)) != std::string::npos)
             {
                 scanner.skip(1);                // skip ';'
@@ -55,6 +55,19 @@ static char readSgChar(Scanner& scanner)
         scanner.seek(pos, SEEK_SET);
     }
     return c;
+}
+
+static void decodeSgField(Array<char>& field)
+{
+    if (field.size() == 0)
+        return;
+
+    QS_DEF(Array<char>, decoded);
+    BufferScanner scanner(field);
+    while (!scanner.isEOF() && scanner.lookNext() != 0)
+        decoded.push(readSgChar(scanner));
+    decoded.push(0);
+    field.readString(decoded.ptr(), true);
 }
 
 void SmilesLoader::_readOtherStuff()
@@ -758,21 +771,25 @@ void SmilesLoader::_readOtherStuff()
                 DataSGroup& dsg = static_cast<DataSGroup&>(sgroup);
                 // field_name
                 _scanner.readWord(dsg.name, word_delimiter);
+                decodeSgField(dsg.name);
                 if (_scanner.lookNext() != ':') // No more fields
                     continue;
                 _scanner.skip(1); // Skip :
                 // data_value
                 _scanner.readWord(dsg.data, word_delimiter);
+                decodeSgField(dsg.data);
                 if (_scanner.lookNext() != ':') // No more fields
                     continue;
                 _scanner.skip(1); // Skip :
                 // query_op
                 _scanner.readWord(dsg.queryoper, word_delimiter);
+                decodeSgField(dsg.queryoper);
                 if (_scanner.lookNext() != ':') // No more fields
                     continue;
                 _scanner.skip(1); // Skip :
                 // unit
                 _scanner.readWord(dsg.description, word_delimiter);
+                decodeSgField(dsg.description);
                 if (_scanner.lookNext() != ':') // No more fields
                     continue;
                 _scanner.skip(1); // Skip :
@@ -821,21 +838,13 @@ void SmilesLoader::_readOtherStuff()
                 subscript.clear();
                 conn_arr.clear();
                 _scanner.readWord(subscript, word_delimiter);
+                decodeSgField(subscript);
                 if (_scanner.lookNext() == ':')
                 {
                     _scanner.skip(1);
                     _scanner.readWord(conn_arr, word_delimiter);
-                    if (conn_arr.find('#') >= 0)
-                    {
-                        // Possible encoded symbols. Try to decode
-                        BufferScanner word_scan{conn_arr};
-                        while (!word_scan.isEOF())
-                            connectivity += readSgChar(word_scan);
-                    }
-                    else
-                    {
-                        connectivity = conn_arr.ptr();
-                    }
+                    decodeSgField(conn_arr);
+                    connectivity = conn_arr.ptr();
                     // If ',' in field - it is both connectivity and flip
                     std::size_t pos = connectivity.find(',');
                     if (pos != std::string::npos)
