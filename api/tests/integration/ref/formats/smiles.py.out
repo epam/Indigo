@@ -56,7 +56,7 @@ CCCCC |Sg:n:1,2,3::hh|
 canonical smiles:
 canonical SMILES saver: can not canonicalize a polymer
 default smiles:
-CCCC* |$;;;;_AP1$,Sg:n:2:2&#44;6-7:ht|
+CCCC%91.[*:1]%91 |$;;;;_AP1$,Sg:n:2:2&#44;6-7:ht|
 canonical smiles:
 canonical SMILES saver: can not canonicalize a polymer
 default smiles:
@@ -96,7 +96,7 @@ CCCC |Sg:n:0,1,2::ht|
 chemaxon:
 CCCCC |Sg:n:1,2,3::hh|
 chemaxon:
-CCCC* |$;;;;_AP1$,Sg:n:2:2&#44;6-7:ht|
+CCCC%91.[*:1]%91 |$;;;;_AP1$,Sg:n:2:2&#44;6-7:ht|
 chemaxon:
 CCCCC |SgD:1,2,3:a&#44;b:c&#44;d::: :|
 chemaxon:
@@ -105,7 +105,7 @@ chemaxon:
 CCCCC |Sg:n:1,2,3:sub&#44;&#59;&#58;&#124;&#123;&#125;&#36;script:hh|
 *** S-Group AP closure roundtrip ***
 chemaxon roundtrip:
-CCCC* |$;;;;_AP1$,Sg:n:2:2&#44;6-7:ht|
+CCCC%91.[*:1]%91 |$;;;;_AP1$,Sg:n:2:2&#44;6-7:ht|
 daylight closure:
 CCC{-}{+n}C%91.[*:1]%91
 *** Atropisomers ***

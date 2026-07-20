@@ -44,7 +44,7 @@ molecules/rgroup_all.mol
 
 molecules/recursive1.mol
 
-  SMILES    :  C1=C%91N=C%92C=C%931.[*:1]%93.[*:1]%91.[*:1]%92 |$;;;;;;_R1;_R1;_R1$,RG:_R1={C%91C%92.[*:2]%92.[*:1]%91 |$;;_R2;_AP1$|},{C%91C%92.[*:3]%92.[*:1]%91 |$;;_R3;_AP1$|},_R2={F* |$;_AP1$|},_R3={Cl* |$;_AP1$|},LOG={_R1:;;>0._R2:;;>0._R3:;;>0}|
+  SMILES    :  C1=C%91N=C%92C=C%931.[*:1]%93.[*:1]%91.[*:1]%92 |$;;;;;;_R1;_R1;_R1$,RG:_R1={C%91C%92.[*:2]%92.[*:1]%91 |$;;_R2;_AP1$|},{C%91C%92.[*:3]%92.[*:1]%91 |$;;_R3;_AP1$|},_R2={F%91.[*:1]%91 |$;_AP1$|},_R3={Cl%91.[*:1]%91 |$;_AP1$|},LOG={_R1:;;>0._R2:;;>0._R3:;;>0}|
   CanSMILES :  caught SMILES saver: can not write attachment points without permission to write the Extended SMILES block (probably because you are saving reaction SMILES)
 
   Rgroup #1
@@ -53,15 +53,15 @@ molecules/recursive1.mol
     SMILES    :  C%91C%92.[*:3]%92.[*:1]%91 |$;;_R3;_AP1$|
     CanSMILES :  caught SMILES saver: can not write attachment points without permission to write the Extended SMILES block (probably because you are saving reaction SMILES)
   Rgroup #2
-    SMILES    :  F* |$;_AP1$|
+    SMILES    :  F%91.[*:1]%91 |$;_AP1$|
     CanSMILES :  caught SMILES saver: can not write attachment points without permission to write the Extended SMILES block (probably because you are saving reaction SMILES)
   Rgroup #3
-    SMILES    :  Cl* |$;_AP1$|
+    SMILES    :  Cl%91.[*:1]%91 |$;_AP1$|
     CanSMILES :  caught SMILES saver: can not write attachment points without permission to write the Extended SMILES block (probably because you are saving reaction SMILES)
 
 molecules/recursive2.mol
 
-  SMILES    :  C1=C%91N=C%92C=C%931.[*:1]%93.[*:1]%91.[*:1]%92 |$;;;;;;_R1;_R1;_R1$,RG:_R1={C%91C%92.[*:2]%92.[*:1]%91 |$;;_R2;_AP1$|},{C%91C%92.[*:1]%92.[*:1]%91 |$;;_R1;_AP1$|},_R2={F* |$;_AP1$|},LOG={_R1:;;>0._R2:;;>0}|
+  SMILES    :  C1=C%91N=C%92C=C%931.[*:1]%93.[*:1]%91.[*:1]%92 |$;;;;;;_R1;_R1;_R1$,RG:_R1={C%91C%92.[*:2]%92.[*:1]%91 |$;;_R2;_AP1$|},{C%91C%92.[*:1]%92.[*:1]%91 |$;;_R1;_AP1$|},_R2={F%91.[*:1]%91 |$;_AP1$|},LOG={_R1:;;>0._R2:;;>0}|
   CanSMILES :  caught SMILES saver: can not write attachment points without permission to write the Extended SMILES block (probably because you are saving reaction SMILES)
 
   Rgroup #1
@@ -70,5 +70,5 @@ molecules/recursive2.mol
     SMILES    :  C%91C%92.[*:1]%92.[*:1]%91 |$;;_R1;_AP1$|
     CanSMILES :  caught SMILES saver: can not write attachment points without permission to write the Extended SMILES block (probably because you are saving reaction SMILES)
   Rgroup #2
-    SMILES    :  F* |$;_AP1$|
+    SMILES    :  F%91.[*:1]%91 |$;_AP1$|
     CanSMILES :  caught SMILES saver: can not write attachment points without permission to write the Extended SMILES block (probably because you are saving reaction SMILES)

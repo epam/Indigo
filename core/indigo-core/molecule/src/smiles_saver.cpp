@@ -33,6 +33,11 @@
 
 #include <cstring>
 
+#ifdef _MSC_VER
+#pragma warning(push, 4)
+#pragma warning(error : 4100 4101 4189 4244 4456 4458 4715)
+#endif
+
 using namespace indigo;
 
 IMPL_ERROR(SmilesSaver, "SMILES saver");
@@ -621,7 +626,6 @@ void SmilesSaver::_saveMolecule()
             QS_DEF(Array<int>, closing);
 
             walk.getNeighborsClosing(v_idx, closing);
-            const bool write_terminal_attachment_point = chemaxon && walk.numBranches(v_idx) == 0 && i == v_seq.size() - 1;
 
             constexpr int IMAGINARY_SHIFT = 10000;
             for (int ap = 1; ap <= _bmol->attachmentPointCount(); ap++)
@@ -631,25 +635,14 @@ void SmilesSaver::_saveMolecule()
                 for (idx = 0; (atom_idx = _bmol->getAttachmentPoint(ap, idx)) != -1; idx++)
                     if (atom_idx == v_idx)
                     {
-                        if (write_terminal_attachment_point)
-                        {
-                            // Restore terminal '*' used by CXSMILES S-group AP roundtrip
-                            // instead of expanding it to a separate .[*:n] component.
-                            _output.writeChar('*');
-                            _attachment_indices.push(ap);
-                            _attachment_cycle_numbers.push(-1);
-                        }
-                        else
-                        {
-                            // Here is the problem: if we have an attachment point, the resulting
-                            // SMILES is supposed to contain an extra atom not present in the given
-                            // molecule. For example, chlorine with an attachment point will
-                            // become Cl%91.[*:1]%91 |;_AP1| (two atoms).
-                            // We can not modify the given molecule, but we want the closure to
-                            // be here. To achieve that, we add a link to an imagimary atom with
-                            // incredibly big number.
-                            closing.push(IMAGINARY_SHIFT + ap);
-                        }
+                        // Here is the problem: if we have an attachment point, the resulting
+                        // SMILES is supposed to contain an extra atom not present in the given
+                        // molecule. For example, chlorine with an attachment point will
+                        // become Cl%91.[*:1]%91 |;_AP1| (two atoms).
+                        // We can not modify the given molecule, but we want the closure to
+                        // be here. To achieve that, we add a link to an imagimary atom with
+                        // incredibly big number.
+                        closing.push(IMAGINARY_SHIFT + ap);
                     }
             }
 
@@ -1473,7 +1466,6 @@ int SmilesSaver::writeRadicals(int atoms_offset, int prev_radical)
     int i, j;
     marked.clear_resize(_written_atoms.size());
     marked.zerofill();
-    int radical = -1;
     for (i = 0; i < _written_atoms.size(); i++)
     {
         if (marked[i] || mol.isRSite(_written_atoms[i]) || mol.isPseudoAtom(_written_atoms[i]))
@@ -2291,3 +2283,7 @@ void SmilesSaver::_validate(BaseMolecule& bmol)
     if (bmol.getUnresolvedTemplatesList(bmol, unresolved))
         throw Error("%s cannot be written in SMILES/SMARTS format.", unresolved.c_str());
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
