@@ -15,9 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
+#include <algorithm>
+#include "base_cpp/exception.h"
 #include <functional>
 #include <numeric>
 #include <stdio.h>
+#include <cctype>
+#include <codecvt>
+#include <cwctype>
+#include <locale>
 
 #include "layout/molecule_layout.h"
 #include "layout/reaction_layout.h"
@@ -34,10 +40,106 @@
 using namespace std::placeholders;
 using namespace indigo;
 
+namespace
+{
+    const char* const kArrowAnnotationsProperty = "indigo:reaction-arrow-annotations";
+    constexpr float kDefaultAnnotationFontSize = 0.4f;
+    constexpr float kAnnotationLineSpacingFactor = 0.22f;
+    constexpr float kAnnotationPaddingFactor = 0.35f;
+    constexpr float kAnnotationArrowGapFactor = 0.5f;
+    constexpr float kAnnotationArrowGapMin = 0.2f;
+
+    std::wstring _utf8ToWide(const std::string& text)
+    {
+        std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+        return converter.from_bytes(text);
+    }
+
+    std::string _trimCopy(const std::string& text)
+    {
+        const auto begin = std::find_if_not(text.begin(), text.end(), [](unsigned char c) { return std::isspace(c) != 0; });
+        const auto end = std::find_if_not(text.rbegin(), text.rend(), [](unsigned char c) { return std::isspace(c) != 0; }).base();
+        if (begin >= end)
+            return {};
+        return std::string(begin, end);
+    }
+
+    bool _looksLikeFormula(const std::string& text)
+    {
+        const auto wide = _utf8ToWide(text);
+        if (wide.find(L' ') != std::wstring::npos || wide.empty())
+            return false;
+        return std::any_of(wide.begin(), wide.end(), [](wchar_t ch) { return std::iswdigit(ch) != 0; });
+    }
+
+    float _glyphWidthFactor(wchar_t ch, bool formula_text)
+    {
+        if (std::iswdigit(ch) != 0)
+            return formula_text ? 0.36f : 0.52f;
+        if (std::iswalpha(ch) != 0)
+            return 0.62f;
+        switch (ch)
+        {
+        case L' ':
+            return 0.30f;
+        case L'(':
+        case L')':
+        case L'[':
+        case L']':
+        case L'{':
+        case L'}':
+        case L'/':
+        case L'\\':
+        case L'+':
+        case L'-':
+        case L'.':
+        case L'·':
+        case L',':
+        case L';':
+        case L':':
+        case L'=':
+            return 0.34f;
+        default:
+            return 0.62f;
+        }
+    }
+
+    void _appendStyledTextLine(SimpleTextObjectBuilder& builder, const std::string& text, bool formula_text)
+    {
+        SimpleTextLine line;
+        line.text = text;
+
+        if (formula_text)
+        {
+            auto wide = _utf8ToWide(text);
+            std::size_t i = 0;
+            while (i < wide.size())
+            {
+                if (std::iswdigit(wide[i]) != 0)
+                {
+                    std::size_t begin = i;
+                    while (i < wide.size() && std::iswdigit(wide[i]) != 0)
+                        ++i;
+                    SimpleTextStyle style;
+                    style.offset = begin;
+                    style.size = i - begin;
+                    style.styles.push_back(KFontSubscriptStrV1);
+                    line.text_styles.push_back(style);
+                }
+                else
+                    ++i;
+            }
+        }
+
+        builder.addLine(line);
+    }
+
+}
+
 ReactionLayout::ReactionLayout(BaseReaction& r, bool smart_layout)
     : bond_length(LayoutOptions::DEFAULT_BOND_LENGTH), default_plus_size(1), default_arrow_size(2), preserve_molecule_layout(false), _r(r),
       _smart_layout(smart_layout), reaction_margin_size(DEFAULT_HOR_INTERVAL_FACTOR), atom_label_margin(1.3f), layout_orientation(UNCPECIFIED),
-      max_iterations(0), _font_size(-1)
+      max_iterations(0), _font_size(-1), _annotation_arrow_width(default_arrow_size)
 {
     _options.bondLength = bond_length;
     _options.reactionComponentMarginSize = reaction_margin_size;
@@ -49,7 +151,7 @@ ReactionLayout::ReactionLayout(BaseReaction& r, bool smart_layout, const LayoutO
       reaction_margin_size(options.fontSize > EPSILON ? options.getMarginSizeInAngstroms()
                                                       : LayoutOptions::DEFAULT_BOND_LENGTH * options.getMarginSizeInAngstroms()),
       atom_label_margin(LayoutOptions::DEFAULT_BOND_LENGTH / 2), layout_orientation(UNCPECIFIED), max_iterations(0), _options(options),
-      _font_size(options.getFontSizeInAngstroms())
+      _font_size(options.getFontSizeInAngstroms()), _annotation_arrow_width(default_arrow_size)
 {
 }
 
@@ -95,6 +197,124 @@ bool ReactionLayout::validVerticalRange(const std::vector<Rect2f>& bblist)
     float max_start = std::max_element(bblist.begin(), bblist.end(), [](const Rect2f& a, const Rect2f& b) { return a.bottom() < b.bottom(); })->bottom();
     float min_end = std::min_element(bblist.begin(), bblist.end(), [](const Rect2f& a, const Rect2f& b) { return a.top() < b.top(); })->top();
     return max_start <= min_end;
+}
+
+bool ReactionLayout::_hasArrowAnnotations() const
+{
+    return !_arrow_annotations.top.empty() || !_arrow_annotations.bottom.empty();
+}
+
+float ReactionLayout::_estimateAnnotationLineHeight() const
+{
+    return _font_size > EPSILON ? _font_size : kDefaultAnnotationFontSize;
+}
+
+float ReactionLayout::_estimateAnnotationLineSpacing() const
+{
+    return _estimateAnnotationLineHeight() * kAnnotationLineSpacingFactor;
+}
+
+float ReactionLayout::_estimateAnnotationTextWidth(const std::string& text) const
+{
+    const float font_height = _estimateAnnotationLineHeight();
+    const float padding = font_height * kAnnotationPaddingFactor;
+    const bool formula_text = _looksLikeFormula(text);
+    const auto wide = _utf8ToWide(text);
+
+    float width = 0.0f;
+    for (wchar_t ch : wide)
+        width += font_height * _glyphWidthFactor(ch, formula_text);
+    return width + 2.0f * padding;
+}
+
+void ReactionLayout::_loadArrowAnnotations()
+{
+    _arrow_annotations.top.clear();
+    _arrow_annotations.bottom.clear();
+    _annotation_arrow_width = default_arrow_size;
+
+    if (!_r.properties().contains(kArrowAnnotationsProperty))
+        return;
+
+    const char* raw = _r.properties().at(kArrowAnnotationsProperty);
+    if (raw == nullptr || !raw[0])
+        return;
+
+    rapidjson::Document doc;
+    doc.Parse(raw);
+    if (doc.HasParseError() || !doc.IsObject())
+        throw Metalayout::Error("Invalid reaction arrow annotations property");
+
+    auto readLines = [this, &doc](const char* key, std::vector<std::string>& dst) {
+        if (!doc.HasMember(key) || !doc[key].IsArray())
+            return;
+        for (const auto& item : doc[key].GetArray())
+        {
+            if (!item.IsString())
+                continue;
+            auto text = _trimCopy(item.GetString());
+            if (text.empty())
+                continue;
+            dst.push_back(text);
+            _annotation_arrow_width = std::max(_annotation_arrow_width, _estimateAnnotationTextWidth(text));
+        }
+    };
+
+    readLines("top", _arrow_annotations.top);
+    readLines("bottom", _arrow_annotations.bottom);
+}
+
+void ReactionLayout::_addArrowAnnotations(const Vec2f& arrow_center, const Rect2f& react_box, const Rect2f& product_box)
+{
+    if (!_hasArrowAnnotations())
+        return;
+
+    const float line_height = _estimateAnnotationLineHeight();
+    const float line_spacing = _estimateAnnotationLineSpacing();
+    const float gap = std::max(kAnnotationArrowGapMin, line_height * kAnnotationArrowGapFactor);
+    const bool has_react_box = _r.reactantsCount() > 0;
+    const bool has_product_box = _r.productsCount() > 0;
+    auto intersectsMolecules = [&](const Rect2f& rect) {
+        if (has_react_box && rect.intersects(react_box))
+            return true;
+        if (has_product_box && rect.intersects(product_box))
+            return true;
+        return false;
+    };
+
+    float current_top = arrow_center.y + gap;
+    for (const auto& label : _arrow_annotations.top)
+    {
+        const float text_width = _estimateAnnotationTextWidth(label);
+        Rect2f rect(Vec2f(arrow_center.x - text_width / 2.0f, current_top), Vec2f(arrow_center.x + text_width / 2.0f, current_top + line_height));
+        while (intersectsMolecules(rect))
+        {
+            current_top += line_height + line_spacing;
+            rect = Rect2f(Vec2f(arrow_center.x - text_width / 2.0f, current_top), Vec2f(arrow_center.x + text_width / 2.0f, current_top + line_height));
+        }
+        SimpleTextObjectBuilder builder;
+        _appendStyledTextLine(builder, label, _looksLikeFormula(label));
+        builder.finalize();
+        _r.meta().addMetaObject(new SimpleTextObject(rect, builder.getJsonString()), true);
+        current_top += line_height + line_spacing;
+    }
+
+    float current_bottom = arrow_center.y - gap;
+    for (const auto& label : _arrow_annotations.bottom)
+    {
+        const float text_width = _estimateAnnotationTextWidth(label);
+        Rect2f rect(Vec2f(arrow_center.x - text_width / 2.0f, current_bottom - line_height), Vec2f(arrow_center.x + text_width / 2.0f, current_bottom));
+        while (intersectsMolecules(rect))
+        {
+            current_bottom -= line_height + line_spacing;
+            rect = Rect2f(Vec2f(arrow_center.x - text_width / 2.0f, current_bottom - line_height), Vec2f(arrow_center.x + text_width / 2.0f, current_bottom));
+        }
+        SimpleTextObjectBuilder builder;
+        _appendStyledTextLine(builder, label, false);
+        builder.finalize();
+        _r.meta().addMetaObject(new SimpleTextObject(rect, builder.getJsonString()), true);
+        current_bottom -= line_height + line_spacing;
+    }
 }
 
 void ReactionLayout::fixLayout()
@@ -188,15 +408,18 @@ void ReactionLayout::_updateMetadata()
 {
     float arrow_height = 0;
     int arrow_type = ReactionArrowObject::EOpenAngle;
+    bool need_rebuild = _hasArrowAnnotations();
     if (_r.meta().getMetaCount(ReactionArrowObject::CID) > 0)
     {
         auto& ra = static_cast<const ReactionArrowObject&>(_r.meta().getMetaObject(ReactionArrowObject::CID, 0));
         // remember arrow type & height
         arrow_type = ra.getArrowType();
         arrow_height = ra.getHeight();
-        // reset pluses and arrows
-        _r.meta().resetReactionData();
+        need_rebuild = true;
     }
+
+    if (need_rebuild)
+        _r.meta().resetReactionData();
 
     std::vector<Vec2f> pluses;
     Rect2f react_box, product_box, catalyst_box;
@@ -233,11 +456,11 @@ void ReactionLayout::_updateMetadata()
         }
     }
 
-    float arrow_length = default_arrow_size;
+    float arrow_length = std::max(default_arrow_size, _annotation_arrow_width);
     if (_r.catalystCount() > 0)
     {
         processSideBoxes(pluses, catalyst_box, BaseReaction::CATALYST);
-        arrow_length = catalyst_box.width();
+        arrow_length = std::max(arrow_length, catalyst_box.width());
     }
 
     for (const auto& plus_offset : pluses)
@@ -280,6 +503,12 @@ void ReactionLayout::_updateMetadata()
         }
     }
     _r.meta().addMetaObject(new ReactionArrowObject(arrow_type, arrow_tail, arrow_head, arrow_height));
+
+    if (_hasArrowAnnotations())
+    {
+        const Vec2f arrow_center(0.5f * (arrow_tail.x + arrow_head.x), 0.5f * (arrow_tail.y + arrow_head.y));
+        _addArrowAnnotations(arrow_center, react_box, product_box);
+    }
 }
 
 void ReactionLayout::processSideBoxes(std::vector<Vec2f>& pluses, Rect2f& type_box, int side)
@@ -340,6 +569,7 @@ void ReactionLayout::makePathwayFromSimple()
 
 void ReactionLayout::make()
 {
+    _loadArrowAnnotations();
     int arrows_count = _r.meta().getMetaCount(ReactionArrowObject::CID);
     int simple_count = _r.meta().getNonChemicalMetaCount();
     if (simple_count)
@@ -394,21 +624,28 @@ void ReactionLayout::make()
         processReactionElements(_r.reactantBegin(), _r.reactantEnd(), &BaseReaction::reactantNext);
     }
 
+    std::vector<Vec2f> pluses;
+    Rect2f catalyst_box;
+    if (_r.catalystCount())
+        processSideBoxes(pluses, catalyst_box, BaseReaction::CATALYST);
+
+    const float arrow_space = std::max(default_arrow_size, _annotation_arrow_width);
+    const float catalyst_extra = _r.catalystCount() > 0 ? std::max(0.0f, 0.5f * (arrow_space - catalyst_box.width())) : 0.0f;
     if (_r.catalystCount())
     {
         _pushSpace(line, reaction_margin_size);
-        _pushSpace(line, reaction_margin_size);
+        _pushSpace(line, reaction_margin_size + catalyst_extra);
         for (int i = _r.catalystBegin(); i < _r.catalystEnd(); i = _r.catalystNext(i))
         {
             if (i != _r.catalystBegin())
                 _pushSpace(line, reaction_margin_size);
             _pushMol(line, i, true);
         }
-        _pushSpace(line, reaction_margin_size);
+        _pushSpace(line, reaction_margin_size + catalyst_extra);
         _pushSpace(line, reaction_margin_size);
     }
     else
-        _pushSpace(line, default_arrow_size + reaction_margin_size * 2);
+        _pushSpace(line, arrow_space + reaction_margin_size * 2);
 
     if (_r.isRetrosyntetic())
     {
