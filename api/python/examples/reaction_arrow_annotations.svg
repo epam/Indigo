@@ -1,0 +1,24 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="900" height="280" viewBox="0 0 900 280">
+  <rect width="100%" height="100%" fill="white"/>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L10,5 L0,10 z" fill="#111"/>
+    </marker>
+    <style>
+      .chem { font: 22px Arial, sans-serif; fill: #111; }
+      .label { font: 20px Arial, sans-serif; fill: #111; text-anchor: middle; }
+      .small { font: 18px Arial, sans-serif; fill: #111; text-anchor: middle; }
+      .arrow { stroke: #111; stroke-width: 3; marker-end: url(#arrow); }
+    </style>
+  </defs>
+
+  <text class="label" x="450" y="52">Na</text>
+  <text class="label" x="450" y="80">Dry Ether</text>
+
+  <text class="chem" x="80" y="145">Ph-Br + CH<tspan baseline-shift="sub" font-size="70%">3</tspan>Br</text>
+  <line class="arrow" x1="345" y1="140" x2="640" y2="140" />
+  <text class="chem" x="665" y="145">Ph-CH<tspan baseline-shift="sub" font-size="70%">3</tspan></text>
+
+  <text class="small" x="450" y="185">150°C</text>
+  <text class="small" x="450" y="212">20 psi</text>
+</svg>
