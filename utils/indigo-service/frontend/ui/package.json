@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "axios": "^1.16.0",
-    "ketcher-react": "^2.25.0-rc.5",
+    "ketcher-react": "^3.17.1",
     "ketcher-standalone": "^2.25.0-rc.5",
     "ketcher-core": "^2.25.0-rc.5",
     "normalize.css": "^8.0.1",
