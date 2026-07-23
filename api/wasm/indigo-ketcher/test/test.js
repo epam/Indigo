@@ -281,7 +281,7 @@ M  END
                     "stereo": "Structure contains stereocenters with undefined stereo configuration",
                     "query": "Structure contains query features",
                     "charge": "Structure has non-zero charge",
-                    "isotope": 'Structure contains atoms with impossible isotopic number: (5,6)',
+                    "isotopes": 'Structure contains atoms with impossible isotopic number: (5,6)',
                     "ambiguous_h": "Structure contains query features, so ambiguous H could not be checked"
                 }
             );

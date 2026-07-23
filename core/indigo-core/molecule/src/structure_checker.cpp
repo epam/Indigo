@@ -449,8 +449,8 @@ static void check_v3000(BaseMolecule& mol, const std::unordered_set<int>& /*sele
     }
 }
 
-static void check_isotope(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& /*selected_bonds*/,
-                          StructureChecker::CheckResult& result)
+static void check_isotopes(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& /*selected_bonds*/,
+                           StructureChecker::CheckResult& result)
 {
     static constexpr std::array<std::pair<int, int>, ELEM_MAX> valid_isotopes = {{
         {0, 0},     // [0]   pseudo
@@ -574,7 +574,7 @@ static void check_isotope(BaseMolecule& mol, const std::unordered_set<int>& sele
         {293, 295}, // [118] Og
     }};
 
-    FILTER_ATOMS_DEFAULT(StructureChecker::CheckMessageCode::CHECK_MSG_ISOTOPE, [](BaseMolecule& mol, int idx) -> bool {
+    FILTER_ATOMS_DEFAULT(StructureChecker::CheckMessageCode::CHECK_MSG_ISOTOPES, [](BaseMolecule& mol, int idx) -> bool {
         auto isotope = mol.getAtomIsotope(idx);
         if (isotope <= 0)
             return false;
@@ -712,10 +712,10 @@ static const std::unordered_map<std::string, CheckType> check_type_map = {
       &check_v3000,
       {{StructureChecker::CheckMessageCode::CHECK_MSG_V3000, "Structure supports only Molfile V3000"}}}},
 
-    {"isotope",
-     {StructureChecker::CheckTypeCode::CHECK_ISOTOPE,
-      &check_isotope,
-      {{StructureChecker::CheckMessageCode::CHECK_MSG_ISOTOPE, "Structure contains atoms with impossible isotopic number"}}}}};
+    {"isotopes",
+     {StructureChecker::CheckTypeCode::CHECK_ISOTOPES,
+      &check_isotopes,
+      {{StructureChecker::CheckMessageCode::CHECK_MSG_ISOTOPES, "Structure contains atoms with impossible isotopic number"}}}}};
 
 static const struct CheckNamesMap
 {

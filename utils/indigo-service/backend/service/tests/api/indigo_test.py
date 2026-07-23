@@ -1682,7 +1682,7 @@ M  END
         self.assertEqual(200, result.status_code)
         result_data = result.text
         self.assertEqual(
-            '{"isotope":"Structure contains atoms with impossible isotopic number: (0,1)"}',
+            '{"isotopes":"Structure contains atoms with impossible isotopic number: (0,1)"}',
             result_data,
         )
 
