@@ -1619,9 +1619,7 @@ M  END""",
                     )
 
     def test_check(self):
-        headers, data = self.get_headers(
-            {
-                "struct": """
+        headers, data = self.get_headers({"struct": """
   Ketcher 08121615592D 1   1.00000     0.00000     0
 
  13 12  0     0  0            999 V2000
@@ -1652,9 +1650,7 @@ M  END""",
   1 13  1  0     0  0
 M  END
 
-"""
-            }
-        )
+"""})
         result = requests.post(
             self.url_prefix + "/check", headers=headers, data=data
         )
@@ -1662,6 +1658,31 @@ M  END
         result_data = result.text
         self.assertEqual(
             '{"valence":"Structure contains atoms with unusual valence: (0)"}',
+            result_data,
+        )
+
+    def test_check_isotope(self):
+        headers, data = self.get_headers({"struct": """
+  Ketcher  7232618 42D 1   1.00000     0.00000     0
+
+  3  3  0  0  0  0  0  0  0  0999 V2000
+    8.9744   -8.3325    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    9.9756   -8.3325    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    9.4751   -7.4675    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0     0  0
+  2  3  1  0     0  0
+  3  1  1  0     0  0
+M  ISO  2   1   7   2  24
+M  END
+                                          
+"""})
+        result = requests.post(
+            self.url_prefix + "/check", headers=headers, data=data
+        )
+        self.assertEqual(200, result.status_code)
+        result_data = result.text
+        self.assertEqual(
+            '{"isotope":"Structure contains atoms with impossible isotopic number: (0,1)"}',
             result_data,
         )
 
@@ -2146,18 +2167,14 @@ M  END
         )
 
     def test_check_atoms(self):
-        headers, data = self.get_headers(
-            {
-                "struct": """
+        headers, data = self.get_headers({"struct": """
   Ketcher 10311615312D 1   1.00000     0.00000     0
 
   2  0  0     0  0            999 V2000
     0.0000    0.0000    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
     1.0000    0.0000    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
 M  END
-"""
-            }
-        )
+"""})
         result = requests.post(
             self.url_prefix + "/check", headers=headers, data=data
         )

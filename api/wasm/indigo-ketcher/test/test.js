@@ -265,7 +265,7 @@ indigoModuleFn().then(indigo => {
  27 T    5   6   7   5  13  31
 M  CHG  1   1   1
 M  RAD  3  14   3  16   1  18   2
-M  ISO  4   6  24   7   7  24  13
+M  ISO  3   6  24   7   7  24  13
 M  RBC  4   6  -1  21   4  23   3  25   2
 M  SUB  1  12   2
 M  UNS  1   8   1
@@ -281,6 +281,7 @@ M  END
                     "stereo": "Structure contains stereocenters with undefined stereo configuration",
                     "query": "Structure contains query features",
                     "charge": "Structure has non-zero charge",
+                    "isotope": 'Structure contains atoms with impossible isotopic number: (5,6)',
                     "ambiguous_h": "Structure contains query features, so ambiguous H could not be checked"
                 }
             );

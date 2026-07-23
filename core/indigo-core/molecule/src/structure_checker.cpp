@@ -576,11 +576,12 @@ static void check_isotope(BaseMolecule& mol, const std::unordered_set<int>& sele
 
     FILTER_ATOMS_DEFAULT(StructureChecker::CheckMessageCode::CHECK_MSG_ISOTOPE, [](BaseMolecule& mol, int idx) -> bool {
         auto isotope = mol.getAtomIsotope(idx);
-        if (isotope < 0)
+        if (isotope <= 0)
             return false;
         auto number = mol.getAtomNumber(idx);
         if (number <= 0)
             return false;
+        printf("Atom %d element %d isotope %d\n", idx, number, isotope);
         return isotope < valid_isotopes[number].first || isotope > valid_isotopes[number].second;
     });
 }
@@ -714,7 +715,7 @@ static const std::unordered_map<std::string, CheckType> check_type_map = {
     {"isotope",
      {StructureChecker::CheckTypeCode::CHECK_ISOTOPE,
       &check_isotope,
-      {{StructureChecker::CheckMessageCode::CHECK_MSG_ISOTOPE, "Structure contains query features"}}}}};
+      {{StructureChecker::CheckMessageCode::CHECK_MSG_ISOTOPE, "Structure contains atoms with impossible isotopic number"}}}}};
 
 static const struct CheckNamesMap
 {
