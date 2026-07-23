@@ -1665,6 +1665,35 @@ M  END
             result_data,
         )
 
+    def test_check_isotope(self):
+        headers, data = self.get_headers(
+            {
+                "struct": """
+  Ketcher  7232618 42D 1   1.00000     0.00000     0
+
+  3  3  0  0  0  0  0  0  0  0999 V2000
+    8.9744   -8.3325    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    9.9756   -8.3325    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    9.4751   -7.4675    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0     0  0
+  2  3  1  0     0  0
+  3  1  1  0     0  0
+M  ISO  2   1   7   2  24
+M  END
+
+"""
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/check", headers=headers, data=data
+        )
+        self.assertEqual(200, result.status_code)
+        result_data = result.text
+        self.assertEqual(
+            '{"isotopes":"Structure contains atoms with impossible isotopic number: (0,1)"}',
+            result_data,
+        )
+
     def test_check_overlap(self):
         headers, data = self.get_headers(
             {
