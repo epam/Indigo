@@ -58,7 +58,8 @@ namespace indigo
             CHECK_SALT,         // Check possible salt structure
             CHECK_AMBIGUOUS_H,  // Check ambiguous H existence
             CHECK_COORD,        // Check coordinates existence
-            CHECK_V3000         // Check v3000 format
+            CHECK_V3000,        // Check v3000 format
+            CHECK_ISOTOPE,      // Check isotope mass number
         };
 
         enum class CheckMessageCode
@@ -94,7 +95,8 @@ namespace indigo
             CHECK_MSG_REACTION,
             CHECK_MSG_CHIRALITY,
             CHECK_MSG_SALT_NOT_IMPL,
-            CHECK_MSG_V3000
+            CHECK_MSG_V3000,
+            CHECK_MSG_ISOTOPE,
         };
 
         struct DLLEXPORT CheckMessage;

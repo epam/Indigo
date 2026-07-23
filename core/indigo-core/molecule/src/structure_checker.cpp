@@ -448,6 +448,143 @@ static void check_v3000(BaseMolecule& mol, const std::unordered_set<int>& /*sele
         message(result, StructureChecker::CheckMessageCode::CHECK_MSG_V3000);
     }
 }
+
+static void check_isotope(BaseMolecule& mol, const std::unordered_set<int>& selected_atoms, const std::unordered_set<int>& /*selected_bonds*/,
+                          StructureChecker::CheckResult& result)
+{
+    static constexpr std::array<std::pair<int, int>, ELEM_MAX> valid_isotopes = {{
+        {0, 0},     // [0]   pseudo
+        {1, 7},     // [1]   H
+        {3, 10},    // [2]   He
+        {3, 13},    // [3]   Li
+        {5, 16},    // [4]   Be
+        {6, 21},    // [5]   B
+        {8, 23},    // [6]   C
+        {10, 25},   // [7]   N
+        {12, 28},   // [8]   O
+        {14, 31},   // [9]   F
+        {16, 34},   // [10]  Ne
+        {18, 37},   // [11]  Na
+        {19, 40},   // [12]  Mg
+        {21, 43},   // [13]  Al  (exception: Al⁻ handled below)
+        {22, 45},   // [14]  Si
+        {24, 47},   // [15]  P
+        {26, 49},   // [16]  S
+        {28, 51},   // [17]  Cl
+        {30, 53},   // [18]  Ar
+        {32, 56},   // [19]  K
+        {34, 58},   // [20]  Ca
+        {36, 61},   // [21]  Sc  (transition metals — already handled upstream)
+        {38, 63},   // [22]  Ti
+        {40, 66},   // [23]  V
+        {42, 68},   // [24]  Cr
+        {44, 71},   // [25]  Mn
+        {45, 74},   // [26]  Fe
+        {47, 76},   // [27]  Co
+        {48, 79},   // [28]  Ni
+        {52, 82},   // [29]  Cu
+        {54, 85},   // [30]  Zn
+        {56, 87},   // [31]  Ga
+        {58, 90},   // [32]  Ge
+        {60, 92},   // [33]  As
+        {64, 95},   // [34]  Se
+        {67, 98},   // [35]  Br
+        {69, 101},  // [36]  Kr
+        {71, 103},  // [37]  Rb
+        {73, 107},  // [38]  Sr
+        {76, 109},  // [39]  Y   (transition metals)
+        {78, 112},  // [40]  Zr
+        {81, 115},  // [41]  Nb
+        {83, 117},  // [42]  Mo
+        {85, 120},  // [43]  Tc
+        {87, 124},  // [44]  Ru
+        {89, 126},  // [45]  Rh
+        {91, 128},  // [46]  Pd
+        {93, 130},  // [47]  Ag
+        {95, 132},  // [48]  Cd
+        {97, 135},  // [49]  In
+        {99, 138},  // [50]  Sn
+        {103, 140}, // [51]  Sb
+        {105, 143}, // [52]  Te
+        {107, 145}, // [53]  I
+        {109, 148}, // [54]  Xe
+        {112, 151}, // [55]  Cs
+        {114, 153}, // [56]  Ba
+        {116, 155}, // [57]  La  (transition metals / lanthanides)
+        {119, 157}, // [58]  Ce
+        {121, 159}, // [59]  Pr
+        {124, 161}, // [60]  Nd
+        {126, 163}, // [61]  Pm
+        {128, 165}, // [62]  Sm
+        {130, 167}, // [63]  Eu
+        {133, 169}, // [64]  Gd
+        {135, 171}, // [65]  Tb
+        {138, 173}, // [66]  Dy
+        {140, 175}, // [67]  Ho
+        {142, 177}, // [68]  Er
+        {144, 179}, // [69]  Tm
+        {148, 181}, // [70]  Yb
+        {150, 185}, // [71]  Lu
+        {153, 189}, // [72]  Hf
+        {155, 192}, // [73]  Ta
+        {157, 194}, // [74]  W
+        {159, 198}, // [75]  Re
+        {161, 202}, // [76]  Os
+        {164, 204}, // [77]  Ir
+        {166, 206}, // [78]  Pt
+        {169, 210}, // [79]  Au
+        {171, 216}, // [80]  Hg
+        {176, 218}, // [81]  Tl
+        {178, 220}, // [82]  Pb
+        {184, 224}, // [83]  Bi
+        {186, 227}, // [84]  Po
+        {191, 229}, // [85]  At
+        {193, 231}, // [86]  Rn
+        {199, 233}, // [87]  Fr
+        {201, 235}, // [88]  Ra
+        {206, 237}, // [89]  Ac  (transition metals / actinides)
+        {208, 239}, // [90]  Th
+        {212, 241}, // [91]  Pa
+        {217, 243}, // [92]  U
+        {219, 245}, // [93]  Np
+        {228, 247}, // [94]  Pu
+        {230, 249}, // [95]  Am
+        {232, 252}, // [96]  Cm
+        {234, 254}, // [97]  Bk
+        {237, 256}, // [98]  Cf
+        {239, 258}, // [99]  Es
+        {241, 260}, // [100] Fm
+        {245, 262}, // [101] Md
+        {248, 264}, // [102] No
+        {251, 266}, // [103] Lr
+        {253, 268}, // [104] Rf
+        {255, 270}, // [105] Db
+        {258, 273}, // [106] Sg
+        {260, 275}, // [107] Bh
+        {263, 277}, // [108] Hs
+        {265, 279}, // [109] Mt
+        {267, 281}, // [110] Ds
+        {272, 283}, // [111] Rg
+        {276, 285}, // [112] Cn
+        {278, 287}, // [113] Nh
+        {285, 289}, // [114] Fl
+        {287, 291}, // [115] Mc
+        {289, 293}, // [116] Lv
+        {291, 294}, // [117] Ts
+        {293, 295}, // [118] Og
+    }};
+
+    FILTER_ATOMS_DEFAULT(StructureChecker::CheckMessageCode::CHECK_MSG_ISOTOPE, [](BaseMolecule& mol, int idx) -> bool {
+        auto isotope = mol.getAtomIsotope(idx);
+        if (isotope < 0)
+            return false;
+        auto number = mol.getAtomNumber(idx);
+        if (number <= 0)
+            return false;
+        return isotope < valid_isotopes[number].first || isotope > valid_isotopes[number].second;
+    });
+}
+
 #undef FILTER_ATOMS
 #undef FILTER_ATOMS_DEFAULT
 
@@ -572,7 +709,12 @@ static const std::unordered_map<std::string, CheckType> check_type_map = {
     {"v3000",
      {StructureChecker::CheckTypeCode::CHECK_V3000,
       &check_v3000,
-      {{StructureChecker::CheckMessageCode::CHECK_MSG_V3000, "Structure supports only Molfile V3000"}}}}};
+      {{StructureChecker::CheckMessageCode::CHECK_MSG_V3000, "Structure supports only Molfile V3000"}}}},
+
+    {"isotope",
+     {StructureChecker::CheckTypeCode::CHECK_ISOTOPE,
+      &check_isotope,
+      {{StructureChecker::CheckMessageCode::CHECK_MSG_ISOTOPE, "Structure contains query features"}}}}};
 
 static const struct CheckNamesMap
 {
