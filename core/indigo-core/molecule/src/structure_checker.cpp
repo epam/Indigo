@@ -575,10 +575,10 @@ static void check_isotopes(BaseMolecule& mol, const std::unordered_set<int>& sel
     }};
 
     FILTER_ATOMS_DEFAULT(StructureChecker::CheckMessageCode::CHECK_MSG_ISOTOPES, [](BaseMolecule& mol, int idx) -> bool {
-        auto isotope = mol.getAtomIsotope(idx);
+        int isotope = mol.getAtomIsotope(idx);
         if (isotope <= 0)
             return false;
-        auto number = mol.getAtomNumber(idx);
+        int number = mol.getAtomNumber(idx);
         if (number < ELEM_MIN || number >= valid_isotopes.size())
             return false;
         return isotope < valid_isotopes[number].first || isotope > valid_isotopes[number].second;
