@@ -17,16 +17,18 @@
  ***************************************************************************/
 
 // Characterization tests for indigo::RGroup (RGroup::fragments is a
-// PtrPool<BaseMolecule>) with focus on RGroup::clear().
+// PtrReusablePool<BaseMolecule>, hetero adopt-flow) with focus on RGroup::clear().
 //
 // Rationale (task #3766): RGroup::clear() is the only existing "reset an object
 // in place" method in the affected surface and is the closest prototype of the
-// future Resettable::reset() contract — yet it has 0 direct test calls. Locking
+// future Reusable::reset() contract — yet it has 0 direct test calls. Locking
 // its exact reset semantics (all scalar fields zeroed, occurrence emptied,
 // fragments pool cleared and reusable) gives the golden master that the
-// Resettable-based reset-on-remove reuse must reproduce.
+// Reusable-based reset-on-remove reuse must reproduce.
 
 #include <gtest/gtest.h>
+
+#include <memory>
 
 #include <molecule/molecule.h>
 #include <molecule/molecule_rgroups.h>
@@ -39,8 +41,8 @@ TEST(RGroupContract, ClearResetsAllFields)
     rg.if_then = 5;
     rg.rest_h = 3;
     rg.occurrence.push(42);
-    rg.fragments.add(new Molecule());
-    rg.fragments.add(new Molecule());
+    rg.fragments.adopt(std::make_unique<Molecule>());
+    rg.fragments.adopt(std::make_unique<Molecule>());
     ASSERT_EQ(2, rg.fragments.size());
 
     rg.clear();
@@ -56,10 +58,10 @@ TEST(RGroupContract, ClearResetsAllFields)
 TEST(RGroupContract, ReusableAfterClear)
 {
     RGroup rg;
-    rg.fragments.add(new Molecule());
+    rg.fragments.adopt(std::make_unique<Molecule>());
     rg.clear();
 
-    int idx = rg.fragments.add(new Molecule());
+    int idx = rg.fragments.adopt(std::make_unique<Molecule>());
     EXPECT_EQ(0, idx);
     EXPECT_EQ(1, rg.fragments.size());
 }

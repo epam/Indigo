@@ -21,6 +21,7 @@
 
 #include "base_cpp/cancellation_handler.h"
 #include "base_cpp/ptr_array.h"
+#include "base_cpp/ptr_reusable_pool.h"
 #include "base_cpp/tlscont.h"
 #include "graph/filter.h"
 #include "graph/graph.h"
@@ -202,7 +203,7 @@ namespace indigo
         BaseMolecule* _molecule;
         const int* _molecule_edge_mapping;
 
-        struct Cycle
+        struct Cycle : public Reusable
         {
             explicit Cycle();
             explicit Cycle(const List<int>& edges, const MoleculeLayoutGraph& graph);
@@ -210,6 +211,24 @@ namespace indigo
 
             void copy(const List<int>& edges, const MoleculeLayoutGraph& graph);
             void copy(const Array<int>& vertices, const Array<int>& edges);
+
+            // Initialize an already-constructed (pooled) cycle exactly as the
+            // corresponding two-argument constructor would. Used by the
+            // PtrReusablePool call sites, which push() a default cycle and then
+            // fill it, since the pool default-constructs its elements.
+            void init(const List<int>& edges, const MoleculeLayoutGraph& graph);
+            void init(const Array<int>& vertices, const Array<int>& edges);
+
+            // Non-destructive reset for PtrReusablePool reuse: restore the
+            // default-constructed state (buffers retained).
+            void reuse() override
+            {
+                _vertices.clear();
+                _edges.clear();
+                _attached_weight.clear();
+                _max_idx = 0;
+                _morgan_code_calculated = false;
+            }
 
             int vertexCount() const
             {

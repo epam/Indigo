@@ -24,6 +24,8 @@
 #include "base_cpp/non_copyable.h"
 #include "base_cpp/obj_pool.h"
 #include "base_cpp/ptr_array.h"
+#include "base_cpp/ptr_reusable_pool.h"
+#include "base_cpp/reusable.h"
 #include "graph/filter.h"
 #include "graph/graph_iterators.h"
 #include <list>
@@ -63,17 +65,34 @@ namespace indigo
         int e;
     };
 
-    class DLLEXPORT Vertex
+    class DLLEXPORT Vertex : public Reusable
     {
     public:
-        Vertex(Pool<List<VertexEdge>::Elem>& pool) : neighbors_list(pool)
+        Vertex()
         {
         }
-        ~Vertex()
+        ~Vertex() override
         {
         }
 
         List<VertexEdge> neighbors_list;
+
+        // Rebind the neighbor list onto a shared element pool so that all
+        // vertices of a Graph share one Pool (the memory optimization the
+        // legacy Vertex(pool) ctor provided). A default-constructed Vertex owns
+        // a private list pool; move-assigning a shared-pool list frees that
+        // private pool and switches to the shared one.
+        void bind(Pool<List<VertexEdge>::Elem>& pool)
+        {
+            neighbors_list = List<VertexEdge>(pool);
+        }
+
+        // Non-destructive reset for PtrReusablePool reuse: clear the neighbor
+        // list (the pool binding and backing slots are retained).
+        void reuse() override
+        {
+            neighbors_list.clear();
+        }
 
         NeighborsAuto neighbors() const;
 
@@ -128,7 +147,7 @@ namespace indigo
 
     class CycleBasis;
 
-    class DLLEXPORT Graph : public NonCopyable
+    class DLLEXPORT Graph : public NonCopyable, public Reusable
     {
     public:
         DECL_ERROR;
@@ -142,6 +161,17 @@ namespace indigo
 
         virtual void clear();
         virtual void changed();
+
+        // Reusable: a graph is reused by resetting it to the empty state, which
+        // is exactly clear(). Virtual dispatch routes to the most-derived
+        // clear() (BaseMolecule/Molecule/QueryMolecule), so a pooled molecule is
+        // fully emptied on reuse. reuseTypeId() (from Reusable) keys the pool's
+        // per-type reserve by the concrete molecule type (Molecule vs
+        // QueryMolecule), which is required for heterogeneous slot reuse.
+        void reuse() override
+        {
+            clear();
+        }
 
         const Vertex& getVertex(int idx) const;
 
@@ -245,7 +275,7 @@ namespace indigo
         void _mergeWithSubgraph(const Graph& other, const Array<int>& vertices, const Array<int>* edges, Array<int>* mapping, Array<int>* edge_mapping);
 
         Pool<List<VertexEdge>::Elem>* _neighbors_pool;
-        ObjPool<Vertex>* _vertices;
+        PtrReusablePool<Vertex>* _vertices;
         Pool<Edge> _edges;
 
         Array<int> _topology; // for each edge: TOPOLOGY_RING, TOPOLOGY_CHAIN, or -1 (not calculated)

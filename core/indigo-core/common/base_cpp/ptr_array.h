@@ -325,6 +325,61 @@ namespace indigo
         }
 
         // ----------------------------------------------------------------
+        // Sparse index-walk API — mirrors the begin()/next()/end()/
+        // hasElement() contract of Pool<T> / ObjPool<T> / PtrPool<T> so that
+        // consumers migrating off those pools (milestone-19 #3766) keep their
+        //     for (int i = c.begin(); i != c.end(); i = c.next(i))
+        // loops unchanged. A slot is "live" iff it is in range and non-null;
+        // null holes (produced by expand() / reset() / release()) are skipped,
+        // exactly as Pool skips freed slots.
+        //
+        // IMPORTANT divergence from Pool: end() returns the backing slot count
+        // (== size(), the sentinel one past the last slot), which is NOT the
+        // number of live elements. Pool<T>::size() returns the LIVE count; the
+        // equivalent here is liveCount(). PtrArray::size() counts slots
+        // including holes. Consumers that relied on Pool::size() as a live
+        // count must migrate to liveCount(), not size().
+        // ----------------------------------------------------------------
+        int begin() const
+        {
+            int i = 0;
+            const int n = size();
+            while (i < n && _items[i] == nullptr)
+                ++i;
+            return i;
+        }
+
+        int next(int i) const
+        {
+            const int n = size();
+            for (++i; i < n; ++i)
+                if (_items[i] != nullptr)
+                    break;
+            return i;
+        }
+
+        int end() const
+        {
+            return size();
+        }
+
+        bool hasElement(int idx) const
+        {
+            return idx >= 0 && idx < size() && _items[idx] != nullptr;
+        }
+
+        // Number of live (non-null) slots — the analogue of Pool<T>::size().
+        // Distinct from size(), which counts backing slots including null holes.
+        int liveCount() const
+        {
+            int count = 0;
+            for (const auto& slot : _items)
+                if (slot != nullptr)
+                    ++count;
+            return count;
+        }
+
+        // ----------------------------------------------------------------
         // reserve() — ObjArray-compatible alias for milestone-19 (#3703)
         // ObjArray<T>::reserve call sites. Pre-allocates capacity for the
         // unique_ptr slots; does not construct any pointees and does not

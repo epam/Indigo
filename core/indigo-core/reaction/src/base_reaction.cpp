@@ -123,37 +123,37 @@ void BaseReaction::clear()
 
 int BaseReaction::getAAM(int index, int atom)
 {
-    BaseMolecule& mol = *_allMolecules.at(index);
+    BaseMolecule& mol = _allMolecules.at(index);
     return mol.reaction_atom_mapping[atom];
 }
 
 int BaseReaction::getReactingCenter(int index, int bond)
 {
-    BaseMolecule& mol = *_allMolecules.at(index);
+    BaseMolecule& mol = _allMolecules.at(index);
     return mol.reaction_bond_reacting_center[bond];
 }
 
 int BaseReaction::getInversion(int index, int atom)
 {
-    BaseMolecule& mol = *_allMolecules.at(index);
+    BaseMolecule& mol = _allMolecules.at(index);
     return mol.reaction_atom_inversion[atom];
 }
 
 Array<int>& BaseReaction::getAAMArray(int index)
 {
-    BaseMolecule& mol = *_allMolecules.at(index);
+    BaseMolecule& mol = _allMolecules.at(index);
     return mol.reaction_atom_mapping;
 }
 
 Array<int>& BaseReaction::getReactingCenterArray(int index)
 {
-    BaseMolecule& mol = *_allMolecules.at(index);
+    BaseMolecule& mol = _allMolecules.at(index);
     return mol.reaction_bond_reacting_center;
 }
 
 Array<int>& BaseReaction::getInversionArray(int index)
 {
-    BaseMolecule& mol = *_allMolecules.at(index);
+    BaseMolecule& mol = _allMolecules.at(index);
     return mol.reaction_atom_inversion;
 }
 
@@ -208,7 +208,7 @@ void BaseReaction::_addedBaseMolecule(int idx, int side, BaseMolecule& mol)
 
 int BaseReaction::findAtomByAAM(int mol_idx, int aam)
 {
-    BaseMolecule& mol = *_allMolecules.at(mol_idx);
+    BaseMolecule& mol = _allMolecules.at(mol_idx);
 
     for (int i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i))
         if (getAAM(mol_idx, i) == aam)
@@ -220,7 +220,7 @@ int BaseReaction::findAtomByAAM(int mol_idx, int aam)
 int BaseReaction::findAamNumber(BaseMolecule* mol, int atom_number)
 {
     for (int i = begin(); i < end(); i = next(i))
-        if (mol == _allMolecules.at(i))
+        if (mol == &_allMolecules.at(i))
             return getAAM(i, atom_number);
 
     throw Error("cannot find aam number");
@@ -229,7 +229,7 @@ int BaseReaction::findAamNumber(BaseMolecule* mol, int atom_number)
 int BaseReaction::findReactingCenter(BaseMolecule* mol, int bond_number)
 {
     for (int i = begin(); i < end(); i = next(i))
-        if (mol == _allMolecules.at(i))
+        if (mol == &_allMolecules.at(i))
             return getReactingCenter(i, bond_number);
 
     throw Error("cannot find reacting center");
@@ -239,9 +239,9 @@ void BaseReaction::markStereocenterBonds()
 {
     for (int i = begin(); i < end(); i = next(i))
     {
-        _allMolecules[i]->clearBondDirections();
-        _allMolecules[i]->markBondsStereocenters();
-        _allMolecules[i]->markBondsAlleneStereo();
+        _allMolecules[i].clearBondDirections();
+        _allMolecules[i].markBondsStereocenters();
+        _allMolecules[i].markBondsAlleneStereo();
     }
 }
 
@@ -280,7 +280,7 @@ void BaseReaction::clearAAM()
 {
     for (int i = begin(); i < end(); i = next(i))
     {
-        BaseMolecule& mol = *_allMolecules.at(i);
+        BaseMolecule& mol = _allMolecules.at(i);
         mol.reaction_atom_mapping.zerofill();
     }
 }
@@ -308,46 +308,46 @@ const SpecialCondition& BaseReaction::specialCondition(int idx) const
 
 int BaseReaction::addReactantCopy(BaseMolecule& mol, Array<int>* mapping, Array<int>* inv_mapping)
 {
-    int idx = _allMolecules.add(mol.neu());
+    int idx = _allMolecules.add(std::type_index(typeid(mol)), [&] { return std::unique_ptr<BaseMolecule>(mol.neu()); });
 
-    _allMolecules[idx]->clone(mol, mapping, inv_mapping);
-    _addedBaseMolecule(idx, REACTANT, *_allMolecules[idx]);
+    _allMolecules[idx].clone(mol, mapping, inv_mapping);
+    _addedBaseMolecule(idx, REACTANT, _allMolecules[idx]);
     return idx;
 }
 
 int BaseReaction::addProductCopy(BaseMolecule& mol, Array<int>* mapping, Array<int>* inv_mapping)
 {
-    int idx = _allMolecules.add(mol.neu());
+    int idx = _allMolecules.add(std::type_index(typeid(mol)), [&] { return std::unique_ptr<BaseMolecule>(mol.neu()); });
 
-    _allMolecules[idx]->clone(mol, mapping, inv_mapping);
-    _addedBaseMolecule(idx, PRODUCT, *_allMolecules[idx]);
+    _allMolecules[idx].clone(mol, mapping, inv_mapping);
+    _addedBaseMolecule(idx, PRODUCT, _allMolecules[idx]);
     return idx;
 }
 
 int BaseReaction::addCatalystCopy(BaseMolecule& mol, Array<int>* mapping, Array<int>* inv_mapping)
 {
-    int idx = _allMolecules.add(mol.neu());
+    int idx = _allMolecules.add(std::type_index(typeid(mol)), [&] { return std::unique_ptr<BaseMolecule>(mol.neu()); });
 
-    _allMolecules[idx]->clone(mol, mapping, inv_mapping);
-    _addedBaseMolecule(idx, CATALYST, *_allMolecules[idx]);
+    _allMolecules[idx].clone(mol, mapping, inv_mapping);
+    _addedBaseMolecule(idx, CATALYST, _allMolecules[idx]);
     return idx;
 }
 
 int BaseReaction::addIntermediateCopy(BaseMolecule& mol, Array<int>* mapping, Array<int>* inv_mapping)
 {
-    int idx = _allMolecules.add(mol.neu());
+    int idx = _allMolecules.add(std::type_index(typeid(mol)), [&] { return std::unique_ptr<BaseMolecule>(mol.neu()); });
 
-    _allMolecules[idx]->clone(mol, mapping, inv_mapping);
-    _addedBaseMolecule(idx, INTERMEDIATE, *_allMolecules[idx]);
+    _allMolecules[idx].clone(mol, mapping, inv_mapping);
+    _addedBaseMolecule(idx, INTERMEDIATE, _allMolecules[idx]);
     return idx;
 }
 
 int BaseReaction::addUndefinedCopy(BaseMolecule& mol, Array<int>* mapping, Array<int>* inv_mapping)
 {
-    int idx = _allMolecules.add(mol.neu());
+    int idx = _allMolecules.add(std::type_index(typeid(mol)), [&] { return std::unique_ptr<BaseMolecule>(mol.neu()); });
 
-    _allMolecules[idx]->clone(mol, mapping, inv_mapping);
-    _addedBaseMolecule(idx, UNDEFINED, *_allMolecules[idx]);
+    _allMolecules[idx].clone(mol, mapping, inv_mapping);
+    _addedBaseMolecule(idx, UNDEFINED, _allMolecules[idx]);
     return idx;
 }
 
@@ -375,7 +375,7 @@ void BaseReaction::clone(BaseReaction& other, Array<int>* mol_mapping, PtrArray<
 
     for (int i = other._allMolecules.begin(); i < other._allMolecules.end(); i = other._allMolecules.next(i))
     {
-        BaseMolecule& rmol = *other._allMolecules[i];
+        BaseMolecule& rmol = other._allMolecules[i];
         QS_DEF(Array<int>, inv_mapping);
 
         switch (other._types[i])
@@ -452,7 +452,7 @@ bool BaseReaction::isPathwayReaction()
 
 BaseMolecule& BaseReaction::getBaseMolecule(int index)
 {
-    return *_allMolecules.at(index);
+    return _allMolecules.at(index);
 }
 
 void BaseReaction::remove(int i)
@@ -513,7 +513,7 @@ bool BaseReaction::dearomatize(const AromaticityOptions& options)
     bool all_dearomatized = true;
     for (int i = begin(); i < end(); i = next(i))
     {
-        all_dearomatized &= MoleculeDearomatizer::dearomatizeMolecule(*_allMolecules[i], options);
+        all_dearomatized &= MoleculeDearomatizer::dearomatizeMolecule(_allMolecules[i], options);
     }
     return all_dearomatized;
 }

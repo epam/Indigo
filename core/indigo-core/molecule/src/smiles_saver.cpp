@@ -1913,10 +1913,10 @@ void SmilesSaver::_writeRGroups()
                 continue;
 
             bool empty_fragments = true;
-            PtrPool<BaseMolecule>& frags = rgroup.fragments;
+            PtrReusablePool<BaseMolecule>& frags = rgroup.fragments;
             for (int j = frags.begin(); j != frags.end(); j = frags.next(j))
             {
-                BaseMolecule* fragment = frags[j];
+                BaseMolecule* fragment = &frags[j];
                 if (fragment->vertexCount() > 0)
                     empty_fragments = false;
             }
@@ -1940,7 +1940,7 @@ void SmilesSaver::_writeRGroups()
                 else
                     first_fr = false;
 
-                BaseMolecule* fragment = frags[j];
+                BaseMolecule* fragment = &frags[j];
                 Array<char> out_buffer;
                 ArrayOutput fr_out(out_buffer);
 

@@ -486,7 +486,7 @@ void MolfileLoader::_readRGroups2000()
                         loader._readRGroups2000();
                     loader._postLoad();
 
-                    rgroup.fragments.add(fragment.release());
+                    rgroup.fragments.adopt(std::move(fragment));
                 }
                 else if (strncmp(rgp_chars, "$END ", 5) == 0)
                 {

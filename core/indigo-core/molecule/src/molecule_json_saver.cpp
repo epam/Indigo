@@ -1401,7 +1401,7 @@ void MoleculeJsonSaver::saveRGroup(RGroup& rgroup, int rgnum, JsonWriter& writer
     {
         if (fmode)
             writer.StartObject();
-        saveFragment(*rgroup.fragments[i], writer);
+        saveFragment(rgroup.fragments[i], writer);
         if (fmode)
             writer.EndObject();
     }
@@ -2120,9 +2120,9 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
 
     const auto& meta_objects = meta.metaData();
     int arrow_id = 0, plus_id = 0, text_id = 0, multi_arrow_id = meta.getMetaCount(ReactionArrowObject::CID);
-    for (int meta_index = 0; meta_index < meta_objects.size(); ++meta_index)
+    for (int meta_index = meta_objects.begin(); meta_index != meta_objects.end(); meta_index = meta_objects.next(meta_index))
     {
-        auto pobj = meta_objects[meta_index];
+        auto pobj = &meta_objects[meta_index];
         switch (pobj->_class_id)
         {
         case ReactionArrowObject::CID: {

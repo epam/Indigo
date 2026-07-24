@@ -213,14 +213,15 @@ void MoleculeLayoutGraphSmart::_assignRelativeCoordinates(int& fixed_component, 
 
     // TODO: repair exception with vec2f
 
-    QS_DEF(ObjPool<Cycle>, cycles);
+    QS_DEF(PtrReusablePool<Cycle>, cycles);
 
     cycles.clear();
     int n_cycles = sssrCount();
 
     for (i = 0; i < n_cycles; i++)
     {
-        int cycle_idx = cycles.add(sssrEdges(i), *this);
+        int cycle_idx = cycles.push();
+        cycles[cycle_idx].init(sssrEdges(i), *this);
 
         cycles[cycle_idx].canonize();
     }
@@ -274,7 +275,7 @@ void MoleculeLayoutGraphSmart::_assignRelativeCoordinates(int& fixed_component, 
                         int e = findEdgeIndex(verts[j], verts[(j + 1) % verts.size()]);
                         edges.push(e);
                     }
-                    cycles.add(verts, edges);
+                    cycles[cycles.push()].init(verts, edges);
                 }
             }
             else

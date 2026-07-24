@@ -20,10 +20,11 @@
 #define __molecule_rgroups__
 
 #include "base_cpp/ptr_array.h"
-#include "base_cpp/ptr_pool.h"
+#include "base_cpp/ptr_reusable_pool.h"
 #include "base_cpp/red_black.h"
 #include <cstdint>
 #include <limits>
+#include <typeindex>
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -46,7 +47,7 @@ namespace indigo
 
         bool occurrenceSatisfied(int value);
 
-        PtrPool<BaseMolecule> fragments;
+        PtrReusablePool<BaseMolecule> fragments;
         int if_then;
         int rest_h;
         Array<int> occurrence;

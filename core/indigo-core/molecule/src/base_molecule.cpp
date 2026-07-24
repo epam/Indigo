@@ -861,7 +861,10 @@ void BaseMolecule::clone(BaseMolecule& other, Array<int>* mapping, Array<int>* i
     for (int i = 0; i < other.monomer_shapes.size(); ++i)
         monomer_shapes.add(new KetMonomerShape(other.monomer_shapes[i]));
     for (int i = 0; i < other._template_occurrences.size(); ++i)
-        std::ignore = _template_occurrences.add(other._template_occurrences[i]);
+        {
+            int occ_idx = _template_occurrences.push();
+            _template_occurrences[occ_idx].copy(other._template_occurrences[i]);
+        }
     for (int i = 0; i < other._template_names.size(); ++i)
         _template_names.add(other._template_names.at(i));
     for (int i = 0; i < other._template_classes.size(); ++i)
@@ -907,7 +910,10 @@ void BaseMolecule::clone_KeepIndices(BaseMolecule& other, int skip_flags)
     for (int j = 0; j < other.monomer_shapes.size(); ++j)
         monomer_shapes.add(new KetMonomerShape(other.monomer_shapes[j]));
     for (i = 0; i < other._template_occurrences.size(); ++i)
-        std::ignore = _template_occurrences.add(other._template_occurrences[i]);
+        {
+            int occ_idx = _template_occurrences.push();
+            _template_occurrences[occ_idx].copy(other._template_occurrences[i]);
+        }
     for (i = 0; i < other._template_names.size(); ++i)
         _template_names.add(other._template_names.at(i));
     for (i = 0; i < other._template_classes.size(); ++i)
@@ -1307,7 +1313,7 @@ void BaseMolecule::removeUnusedRGroups()
             auto& rg = rgroups.getRGroup(rg_idx);
             for (int f = rg.fragments.begin(); f != rg.fragments.end(); f = rg.fragments.next(f))
             {
-                BaseMolecule& frag = *rg.fragments[f];
+                BaseMolecule& frag = rg.fragments[f];
                 for (int k = frag.vertexBegin(); k < frag.vertexEnd(); k = frag.vertexNext(k))
                 {
                     if (frag.isRSite(k))
@@ -1409,7 +1415,7 @@ void BaseMolecule::setRSiteAttachmentOrder(int atom_idx, int att_atom_idx, int o
 
 void BaseMolecule::setTemplateAtomAttachmentOrder(int atom_idx, int att_atom_idx, const char* att_id)
 {
-    int att_idx = template_attachment_points.add();
+    int att_idx = template_attachment_points.push();
     auto& ap = template_attachment_points.at(att_idx);
     ap.ap_occur_idx = atom_idx;
     ap.ap_aidx = att_atom_idx;

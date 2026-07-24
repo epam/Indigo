@@ -1164,7 +1164,7 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& bmol, const Vec2f& o
     saveMoleculeFragment(bmol, offset, scale, -1, id, atom_ids);
 }
 
-void MoleculeCdxmlSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, const Vec2f& offset, int rgnum, Rect2f& doc_bbox)
+void MoleculeCdxmlSaver::saveRGroup(PtrReusablePool<BaseMolecule>& fragments, const Vec2f& offset, int rgnum, Rect2f& doc_bbox)
 {
     // XMLElement* parent = _current;
     XMLElement* fragment = _doc->NewElement("altgroup");
@@ -1176,7 +1176,7 @@ void MoleculeCdxmlSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, const Vec2
     for (int i = fragments.begin(); i != fragments.end(); i = fragments.next(i))
     {
         Vec2f min_coord, max_coord;
-        fragments[i]->getBoundingBox(min_coord, max_coord);
+        fragments[i].getBoundingBox(min_coord, max_coord);
         if (i == fragments.begin())
         {
             rmin.copy(min_coord);
@@ -1187,8 +1187,8 @@ void MoleculeCdxmlSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, const Vec2
             rmin.min(min_coord);
             rmax.max(max_coord);
         }
-        saveMoleculeFragment(*fragments[i], offset, 1);
-        valence += fragments[i]->attachmentPointCount();
+        saveMoleculeFragment(fragments[i], offset, 1);
+        valence += fragments[i].attachmentPointCount();
     }
     doc_bbox.extend(Rect2f(rmin, rmax));
     std::string rg_name("R");
@@ -2131,10 +2131,10 @@ void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& bmol)
     if (bmol.have_xyz)
         bmol.getBoundingBox(bbox);
 
-    for (int i = 0; i < bmol.meta().metaData().size(); ++i)
+    for (int i = bmol.meta().metaData().begin(); i != bmol.meta().metaData().end(); i = bmol.meta().metaData().next(i))
     {
         Rect2f bb;
-        auto& mo = *bmol.meta().metaData()[i];
+        auto& mo = bmol.meta().metaData()[i];
         mo.getBoundingBox(bb);
         bbox.extend(bb);
     }
@@ -2153,10 +2153,10 @@ void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& bmol)
             saveRGroup(rgrp.fragments, offset, i, bbox);
     }
 
-    for (int i = 0; i < bmol.meta().metaData().size(); ++i)
+    for (int i = bmol.meta().metaData().begin(); i != bmol.meta().metaData().end(); i = bmol.meta().metaData().next(i))
     {
-        auto& mo = *bmol.meta().metaData()[i];
-        addMetaObject(*bmol.meta().metaData()[i], ++_id, offset);
+        auto& mo = bmol.meta().metaData()[i];
+        addMetaObject(bmol.meta().metaData()[i], ++_id, offset);
     }
 
     QS_DEF(Array<char>, buf);

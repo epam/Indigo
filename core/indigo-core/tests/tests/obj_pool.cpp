@@ -16,12 +16,12 @@
  * limitations under the License.
  ***************************************************************************/
 
-// Characterization tests for indigo::Pool<T>, indigo::ObjPool<T> and
-// indigo::PtrPool<T>.
+// Characterization tests for indigo::Pool<T> and indigo::ObjPool<T>
+// legacy ObjPool<T> (both retained; PtrPool<T> removed in #3766).
 //
 // Purpose: lock the current observable behavior of the three sparse-owning
 // pool containers BEFORE they are replaced by PtrReusablePool<T> + the
-// Resettable interface (task #3766, milestone 19). These tests capture the
+// Reusable interface (task #3766, milestone 19). These tests capture the
 // contract that the replacement MUST preserve: index allocation order, the
 // LIFO slot-reuse semantics of the free list, throw-on-misuse behavior,
 // iteration that skips freed holes, and object lifetime (construct on add,
@@ -41,7 +41,6 @@
 #include <base_cpp/exception.h>
 #include <base_cpp/obj_pool.h>
 #include <base_cpp/pool.h>
-#include <base_cpp/ptr_pool.h>
 
 #include <type_traits>
 
@@ -106,7 +105,6 @@ TEST(PoolTraits, NotCopyable)
 {
     static_assert(!std::is_copy_constructible_v<Pool<int>>, "Pool must not be copy-constructible");
     static_assert(!std::is_copy_constructible_v<ObjPool<Tracked>>, "ObjPool must not be copy-constructible");
-    static_assert(!std::is_copy_constructible_v<PtrPool<Tracked>>, "PtrPool must not be copy-constructible");
 }
 
 // =====================================================================
@@ -324,74 +322,5 @@ TEST_F(PoolLifetimeTest, ObjPoolIterationAndIndexedAccess)
     ASSERT_EQ(2u, ids.size());
     EXPECT_EQ(10, ids[0]);
     EXPECT_EQ(12, ids[1]);
-    pool.clear();
-}
-
-// =====================================================================
-// PtrPool<T> — owns raw pointers; delete on remove/clear.
-// =====================================================================
-
-TEST_F(PoolLifetimeTest, PtrPoolDeletesOwnedPointerOnRemove)
-{
-    PtrPool<Tracked> pool;
-    int i = pool.add(new Tracked(5));
-    EXPECT_EQ(1, Tracked::s_live);
-    EXPECT_EQ(5, pool.ref(i).id);
-    pool.remove(i);
-    EXPECT_EQ(0, Tracked::s_live);
-}
-
-TEST_F(PoolLifetimeTest, PtrPoolClearDeletesAllOwnedPointers)
-{
-    PtrPool<Tracked> pool;
-    pool.add(new Tracked(1));
-    pool.add(new Tracked(2));
-    pool.add(new Tracked(3));
-    EXPECT_EQ(3, Tracked::s_live);
-    pool.clear();
-    EXPECT_EQ(0, Tracked::s_live);
-    EXPECT_EQ(0, pool.size());
-}
-
-TEST_F(PoolLifetimeTest, PtrPoolDestructorDeletesRemaining)
-{
-    {
-        PtrPool<Tracked> pool;
-        pool.add(new Tracked(1));
-        pool.add(new Tracked(2));
-        EXPECT_EQ(2, Tracked::s_live);
-    }
-    EXPECT_EQ(0, Tracked::s_live);
-}
-
-TEST_F(PoolLifetimeTest, PtrPoolReusesIndexLIFO)
-{
-    PtrPool<Tracked> pool;
-    int i0 = pool.add(new Tracked(0));
-    int i1 = pool.add(new Tracked(1));
-    ASSERT_EQ(0, i0);
-    ASSERT_EQ(1, i1);
-    pool.remove(i1);
-    // Reused slot gets the newly added pointer.
-    int i2 = pool.add(new Tracked(2));
-    EXPECT_EQ(1, i2);
-    EXPECT_EQ(2, pool.ref(i2).id);
-    pool.clear();
-}
-
-// The pointee identity is stable: removing/reusing OTHER slots must not move
-// the object referenced by a surviving slot (only the pointer table changes).
-TEST_F(PoolLifetimeTest, PtrPoolPointeeIdentityStableAcrossOtherReuse)
-{
-    PtrPool<Tracked> pool;
-    int keep = pool.add(new Tracked(100));
-    Tracked* kept_addr = &pool.ref(keep);
-
-    int tmp = pool.add(new Tracked(200));
-    pool.remove(tmp);
-    pool.add(new Tracked(300)); // reuses tmp's slot
-
-    EXPECT_EQ(kept_addr, &pool.ref(keep)); // survivor object not moved
-    EXPECT_EQ(100, pool.ref(keep).id);
     pool.clear();
 }

@@ -992,7 +992,7 @@ void SmilesLoader::_readOtherStuff()
                                     rg_loader.loadMolecule(fragment.get()->asMolecule());
                                 }
 
-                                rgroup.fragments.add(fragment.release());
+                                rgroup.fragments.adopt(std::move(fragment));
                             }
                         }
                     }

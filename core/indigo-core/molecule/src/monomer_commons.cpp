@@ -241,11 +241,14 @@ namespace indigo
     {
         std::string name;
         std::string monomer_class;
-        if (tg.tgroup_text_id.ptr())
+        // Test presence with size(), not ptr(): a reused pool slot retains the
+        // backing buffer after Array::clear() (which only zeroes _length), so
+        // ptr() stays non-null and would leak a prior occupant's stale text_id.
+        if (tg.tgroup_text_id.size())
             return tg.tgroup_text_id.ptr();
-        if (tg.tgroup_name.ptr())
+        if (tg.tgroup_name.size())
             name = tg.tgroup_name.ptr();
-        if (tg.tgroup_class.ptr())
+        if (tg.tgroup_class.size())
             monomer_class = tg.tgroup_class.ptr();
         if (name.size())
             name = monomerNameByAlias(monomer_class, name) + "_" + std::to_string(tg.tgroup_id);
@@ -258,11 +261,13 @@ namespace indigo
     {
         std::string name;
         std::string monomer_class;
-        if (tg.tgroup_text_id.ptr())
+        // See monomerId(): size() presence-test avoids leaking a reused slot's
+        // stale buffer through the retained Array pointer.
+        if (tg.tgroup_text_id.size())
             return tg.tgroup_text_id.ptr();
-        if (tg.tgroup_name.ptr())
+        if (tg.tgroup_name.size())
             name = tg.tgroup_name.ptr();
-        if (tg.tgroup_class.ptr())
+        if (tg.tgroup_class.size())
             monomer_class = tg.tgroup_class.ptr();
 
         return monomerNameByAlias(monomer_class, name);

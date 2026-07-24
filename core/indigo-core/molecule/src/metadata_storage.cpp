@@ -13,7 +13,7 @@ bool isReactionObject(uint32_t class_id)
 
 int MetaDataStorage::addMetaObject(MetaObject* pobj, bool explicit_reaction_object)
 {
-    int index = _meta_data.add(pobj);
+    int index = _meta_data.adopt(std::unique_ptr<MetaObject>(pobj));
 
     switch (pobj->_class_id)
     {
@@ -46,8 +46,8 @@ int MetaDataStorage::addMetaObject(MetaObject* pobj, bool explicit_reaction_obje
 void MetaDataStorage::append(const MetaDataStorage& other)
 {
     const auto& meta = other.metaData();
-    for (int i = 0; i < meta.size(); i++)
-        addMetaObject(meta[i]->clone());
+    for (int i = meta.begin(); i != meta.end(); i = meta.next(i))
+        addMetaObject(meta[i].clone());
     for (auto it = other._explicit_reaction_object_indexes.begin(); it != other._explicit_reaction_object_indexes.end();
          it = other._explicit_reaction_object_indexes.next(it))
     {
@@ -95,7 +95,7 @@ void MetaDataStorage::addExplicitReactionObjectIndex(int index)
 
 const MetaObject& MetaDataStorage::getMetaObject(uint32_t meta_type, int index) const
 {
-    return *_meta_data[getMetaObjectIndex(meta_type, index)];
+    return _meta_data[getMetaObjectIndex(meta_type, index)];
 }
 
 int MetaDataStorage::getNonChemicalMetaCount() const
@@ -137,7 +137,7 @@ void MetaDataStorage::resetReactionData()
     _arrow_indexes.clear();
     _multi_tail_indexes.clear();
     for (int i = _meta_data.size() - 1; i >= 0; i--)
-        if (isReactionObject(_meta_data[i]->_class_id))
+        if (isReactionObject(_meta_data[i]._class_id))
             _meta_data.remove(i);
 
     for (auto it = _explicit_reaction_object_indexes.begin(); it != _explicit_reaction_object_indexes.end(); it = _explicit_reaction_object_indexes.next(it))

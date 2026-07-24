@@ -311,7 +311,7 @@ void MolfileSaver::_saveMolecule(BaseMolecule& bmol, bool query)
 
         for (i = 1; i <= n_rgroups; i++)
         {
-            PtrPool<BaseMolecule>& frags = rgroups.getRGroup(i).fragments;
+            PtrReusablePool<BaseMolecule>& frags = rgroups.getRGroup(i).fragments;
 
             if (frags.size() == 0)
                 continue;
@@ -321,7 +321,7 @@ void MolfileSaver::_saveMolecule(BaseMolecule& bmol, bool query)
 
             for (j = frags.begin(); j != frags.end(); j = frags.next(j))
             {
-                BaseMolecule* fragment = frags[j];
+                BaseMolecule* fragment = &frags[j];
 
                 _output.writeStringCR("$CTAB");
                 _writeCtabHeader2000(_output, *fragment);
@@ -1188,9 +1188,9 @@ void MolfileSaver::_writeRGroup(Output& output, BaseMolecule& mol, int rg_idx)
 
     _writeMultiString(output, buf.ptr(), buf.size());
 
-    PtrPool<BaseMolecule>& frags = rgroup.fragments;
+    PtrReusablePool<BaseMolecule>& frags = rgroup.fragments;
     for (int j = frags.begin(); j != frags.end(); j = frags.next(j))
-        _writeCtab(output, *rgroup.fragments[j], mol.isQueryMolecule());
+        _writeCtab(output, rgroup.fragments[j], mol.isQueryMolecule());
 
     output.writeStringCR("M  V30 END RGROUP");
 }

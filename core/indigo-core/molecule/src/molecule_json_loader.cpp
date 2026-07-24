@@ -1765,7 +1765,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
                 MoleculeJsonLoader loader(one_rnode);
                 loader.stereochemistry_options = stereochemistry_options;
                 loader.loadMolecule(*fragment.get());
-                rgroup.fragments.add(fragment.release());
+                rgroup.fragments.adopt(std::move(fragment));
                 one_rnode.Clear();
             }
         }
@@ -1776,7 +1776,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
             MoleculeJsonLoader loader(one_rnode);
             loader.stereochemistry_options = stereochemistry_options;
             loader.loadMolecule(*fragment.get());
-            rgroup.fragments.add(fragment.release());
+            rgroup.fragments.adopt(std::move(fragment));
         }
     }
 

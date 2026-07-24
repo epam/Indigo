@@ -92,8 +92,8 @@ void PathwayReaction::clear()
 
 int PathwayReaction::_addBaseMolecule(int side)
 {
-    int idx = _allMolecules.add(new Molecule());
-    _addedBaseMolecule(idx, side, *_allMolecules[idx]);
+    int idx = _allMolecules.add(std::type_index(typeid(Molecule)), [] { return std::unique_ptr<BaseMolecule>(std::make_unique<Molecule>()); });
+    _addedBaseMolecule(idx, side, _allMolecules[idx]);
     return idx;
 }
 

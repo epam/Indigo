@@ -21,13 +21,16 @@
 #include <cstdint>
 
 #include "base_cpp/ptr_array.h"
-#include "base_cpp/ptr_pool.h"
+#include "base_cpp/ptr_reusable_pool.h"
 #include "base_cpp/red_black.h"
+#include "base_cpp/reusable.h"
 #include "common/math/algebra.h"
+
+#include <memory>
 
 namespace indigo
 {
-    class MetaObject
+    class MetaObject : public Reusable
     {
     public:
         explicit MetaObject(uint32_t class_id) : _class_id(class_id)
@@ -37,7 +40,15 @@ namespace indigo
         virtual MetaObject* clone() const = 0;
         virtual void getBoundingBox(Rect2f& bbox) const = 0;
         virtual void offset(const Vec2f& offset) = 0;
-        virtual ~MetaObject(){};
+        ~MetaObject() override{};
+
+        // Reusable: _meta_data is an adopt-only pool (addMetaObject takes a
+        // caller-constructed object). Freed slots are never handed back out via
+        // reuse — objects are destroyed on purge()/dtor — so reuse() is a no-op;
+        // reuseTypeId() (from Reusable) keys the per-type reserve by dynamic type.
+        void reuse() override
+        {
+        }
     };
 
     class MetaDataStorage
@@ -66,7 +77,7 @@ namespace indigo
 
         void resetReactionData();
 
-        const PtrPool<MetaObject>& metaData() const
+        const PtrReusablePool<MetaObject>& metaData() const
         {
             return _meta_data;
         }
@@ -79,7 +90,7 @@ namespace indigo
         void addExplicitReactionObjectIndex(int index);
 
     protected:
-        PtrPool<MetaObject> _meta_data; // TODO: should be replaced with list of unique_ptr
+        PtrReusablePool<MetaObject> _meta_data;
         Array<int> _plus_indexes;
         Array<int> _arrow_indexes;
         Array<int> _multi_tail_indexes;

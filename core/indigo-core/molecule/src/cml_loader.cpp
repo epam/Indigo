@@ -1907,7 +1907,7 @@ void CmlLoader::_loadRgroupElement(XMLHandle& handle)
                 _bmol = _bmol_save;
                 _qmol = _qmol_save;
 
-                rgroup.fragments.add(fragment.release());
+                rgroup.fragments.adopt(std::move(fragment));
             }
         }
     }

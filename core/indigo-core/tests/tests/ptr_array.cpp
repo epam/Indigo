@@ -32,6 +32,7 @@
 
 #include <stdexcept>
 #include <type_traits>
+#include <vector>
 
 using namespace indigo;
 
@@ -915,4 +916,116 @@ TEST_F(PtrArrayTest, Top_OnEmpty_Throws)
 {
     PtrArray<Tracked> arr;
     EXPECT_ANY_THROW((void)arr.top());
+}
+
+// =====================================================================
+// Sparse index-walk API (begin/next/end/hasElement/liveCount) added for
+// milestone-19 #3766 so Pool<T>/ObjPool<T>/PtrPool<T> consumers migrate
+// their index-walk loops unchanged. The contract these tests pin is
+// PARITY with Pool<T>: live slots are visited in ascending order, null
+// holes are skipped, end() is the backing slot count (NOT the live
+// count), and liveCount() is the analogue of Pool<T>::size().
+// =====================================================================
+
+TEST_F(PtrArrayTest, Sparse_EmptyArray_BeginEqualsEnd)
+{
+    PtrArray<Tracked> arr;
+    EXPECT_EQ(arr.end(), arr.begin());
+    EXPECT_EQ(0, arr.end());
+    EXPECT_EQ(0, arr.liveCount());
+}
+
+TEST_F(PtrArrayTest, Sparse_Dense_WalksEveryIndexInOrder)
+{
+    PtrArray<Tracked> arr;
+    for (int i = 0; i < 5; ++i)
+        arr.emplace(i * 10);
+
+    int expected = 0;
+    for (int i = arr.begin(); i != arr.end(); i = arr.next(i))
+    {
+        EXPECT_EQ(expected, i);
+        EXPECT_EQ(expected * 10, arr[i].id);
+        ++expected;
+    }
+    EXPECT_EQ(5, expected);
+    EXPECT_EQ(5, arr.end());
+    EXPECT_EQ(5, arr.liveCount());
+}
+
+// The core requirement: holes produced by reset()/release()/expand() are
+// skipped by begin()/next(), exactly as Pool skips freed slots.
+TEST_F(PtrArrayTest, Sparse_SkipsHolesLikePool)
+{
+    PtrArray<Tracked> arr;
+    for (int i = 0; i < 6; ++i)
+        arr.emplace(i); // ids 0..5 at slots 0..5
+
+    arr.reset(0);           // hole at 0 (leading)
+    arr.reset(2);           // hole at 2 (middle)
+    auto rel = arr.release(5); // hole at 5 (trailing)
+    (void)rel;
+
+    // Live slots now: 1, 3, 4.
+    std::vector<int> visited;
+    for (int i = arr.begin(); i != arr.end(); i = arr.next(i))
+        visited.push_back(i);
+
+    ASSERT_EQ(3u, visited.size());
+    EXPECT_EQ(1, visited[0]);
+    EXPECT_EQ(3, visited[1]);
+    EXPECT_EQ(4, visited[2]);
+
+    EXPECT_EQ(6, arr.end()) << "end() is the backing slot count, holes included";
+    EXPECT_EQ(3, arr.liveCount()) << "liveCount() counts only non-null slots";
+    EXPECT_EQ(6, arr.size()) << "size() still counts backing slots incl. holes";
+}
+
+TEST_F(PtrArrayTest, Sparse_AllHoles_BeginEqualsEnd)
+{
+    PtrArray<Tracked> arr;
+    arr.expand(4); // 4 null slots, no live element
+    EXPECT_EQ(arr.end(), arr.begin());
+    EXPECT_EQ(4, arr.end());
+    EXPECT_EQ(0, arr.liveCount());
+
+    int count = 0;
+    for (int i = arr.begin(); i != arr.end(); i = arr.next(i))
+        ++count;
+    EXPECT_EQ(0, count);
+}
+
+TEST_F(PtrArrayTest, Sparse_HasElement_ReflectsLiveness)
+{
+    PtrArray<Tracked> arr;
+    arr.emplace(10); // slot 0 live
+    arr.expand(3);   // slots 1,2 null
+    arr.emplace(40); // slot 3 live
+
+    EXPECT_TRUE(arr.hasElement(0));
+    EXPECT_FALSE(arr.hasElement(1));
+    EXPECT_FALSE(arr.hasElement(2));
+    EXPECT_TRUE(arr.hasElement(3));
+
+    // Out-of-range indices are not live and must not throw.
+    EXPECT_FALSE(arr.hasElement(-1));
+    EXPECT_FALSE(arr.hasElement(4));
+    EXPECT_FALSE(arr.hasElement(1000));
+}
+
+// A trailing hole must not extend iteration: next() past the last live
+// slot lands exactly on end().
+TEST_F(PtrArrayTest, Sparse_TrailingHole_TerminatesAtEnd)
+{
+    PtrArray<Tracked> arr;
+    arr.emplace(1);
+    arr.emplace(2);
+    arr.expand(5); // slots 2,3,4 null (trailing holes)
+
+    int last = -1;
+    for (int i = arr.begin(); i != arr.end(); i = arr.next(i))
+        last = i;
+    EXPECT_EQ(1, last) << "iteration must stop after the last LIVE slot";
+    EXPECT_EQ(5, arr.end());
+    EXPECT_EQ(2, arr.liveCount());
 }

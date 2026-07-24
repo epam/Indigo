@@ -1273,9 +1273,17 @@ void MoleculeCdxmlLoader::_handleSGroup(SGroup& sgroup, const std::unordered_set
     if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP && start >= 0)
     {
         Superatom& sa = static_cast<Superatom&>(sgroup);
-        sa.attachment_points.add(start);
+        {
+            auto& ap = sa.attachment_points[sa.attachment_points.push()];
+            ap.aidx = start;
+            ap.apid.push(0);
+        }
         if (end >= 0)
-            sa.attachment_points.add(end);
+        {
+            auto& ap = sa.attachment_points[sa.attachment_points.push()];
+            ap.aidx = end;
+            ap.apid.push(0);
+        }
     }
     else if (sgroup.sgroup_type == SGroup::SG_TYPE_MUL)
     {
@@ -1624,7 +1632,7 @@ void MoleculeCdxmlLoader::_parseAltGroup(BaseCDXElement& elem)
             alt_loader.loadMoleculeFromFragment(*fragment, *r_fragments.front());
             MoleculeRGroups& rgroups = mol.rgroups;
             RGroup& rgroup = rgroups.getRGroup(r_labels.front());
-            rgroup.fragments.add(fragment.release());
+            rgroup.fragments.adopt(std::move(fragment));
         }
     }
 }

@@ -1117,7 +1117,7 @@ void MolfileLoader::_readRGroups3000()
                     }
                     loader._readCtab3000();
                     loader._postLoad();
-                    rgroup.fragments.add(fragment.release());
+                    rgroup.fragments.adopt(std::move(fragment));
                 }
                 else if (strcmp(str.ptr(), "M  V30 END RGROUP") == 0)
                     break;

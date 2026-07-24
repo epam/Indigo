@@ -25,6 +25,7 @@
 
 #include "base_cpp/properties_map.h"
 #include "base_cpp/ptr_array.h"
+#include "base_cpp/ptr_reusable_pool.h"
 #include "base_cpp/red_black.h"
 #include "graph/graph.h"
 #include "math/algebra.h"
@@ -152,11 +153,21 @@ namespace indigo
             BaseMolecule& _mol;
         };
 
-        struct TemplateAttPoint // Monomer connection info
+        struct TemplateAttPoint : public Reusable // Monomer connection info
         {
-            int ap_occur_idx;  // Index of the attachment point occurrence
-            int ap_aidx;       // Molecule atom index of the connection
-            Array<char> ap_id; // Attachment point id
+            int ap_occur_idx = 0; // Index of the attachment point occurrence
+            int ap_aidx = 0;      // Molecule atom index of the connection
+            Array<char> ap_id;    // Attachment point id
+
+            // Non-destructive reset for PtrReusablePool reuse: restore the
+            // value-initialized state a fresh ObjPool<TemplateAttPoint>::add()
+            // used to produce (zeroed indices, empty id), buffer retained.
+            void reuse() override
+            {
+                ap_occur_idx = 0;
+                ap_aidx = 0;
+                ap_id.clear();
+            }
         };
 
         BaseMolecule();
@@ -228,7 +239,7 @@ namespace indigo
             Array<char> ap_id;
         };
 
-        struct _TemplateOccurrence
+        struct _TemplateOccurrence : public Reusable
         {
             int name_idx;              // index in _template_names
             int class_idx;             // index in _template_classes
@@ -248,8 +259,36 @@ namespace indigo
                 seq_name.copy(other.seq_name);
                 order.copy(other.order);
             }
+
+            // Deep field copy into an existing occurrence, used where the legacy
+            // ObjPool add(copy) call sites cloned an occurrence.
+            void copy(const _TemplateOccurrence& other)
+            {
+                name_idx = other.name_idx;
+                class_idx = other.class_idx;
+                seq_id = other.seq_id;
+                template_idx = other.template_idx;
+                contracted = other.contracted;
+                transform = other.transform;
+                seq_name.copy(other.seq_name);
+                order.copy(other.order);
+            }
+
+            // Non-destructive reset for PtrReusablePool reuse: restore the
+            // default-constructed state.
+            void reuse() override
+            {
+                name_idx = -1;
+                class_idx = -1;
+                seq_id = -1;
+                template_idx = -1;
+                contracted = DisplayOption::Undefined;
+                seq_name.clear();
+                order.clear();
+                transform = Transformation();
+            }
         };
-        ObjPool<_TemplateOccurrence> _template_occurrences; // monomer info. each template atom contains index of it occurence in this array
+        PtrReusablePool<_TemplateOccurrence> _template_occurrences; // monomer info. each template atom contains index of it occurence in this array
 
         StringPool _template_classes;
         StringPool _template_names;
@@ -482,7 +521,7 @@ namespace indigo
             return _annotation;
         };
 
-        ObjPool<TemplateAttPoint> template_attachment_points; // All used APs -
+        PtrReusablePool<TemplateAttPoint> template_attachment_points; // All used APs -
         PtrArray<ObjPool<int>> template_attachment_indexes;   //
 
         MoleculeSGroups sgroups;

@@ -22,7 +22,8 @@
 #include "base_cpp/array.h"
 #include "base_cpp/nullable.h"
 #include "base_cpp/obj_pool.h"
-#include "base_cpp/ptr_pool.h"
+#include "base_cpp/ptr_reusable_pool.h"
+#include "base_cpp/reusable.h"
 #include "math/algebra.h"
 #include <vector>
 
@@ -43,7 +44,7 @@ namespace indigo
         Contracted = 1
     };
 
-    class DLLEXPORT SGroup
+    class DLLEXPORT SGroup : public Reusable
     {
     public:
         enum
@@ -110,6 +111,13 @@ namespace indigo
         SGroup();
         virtual ~SGroup();
 
+        // Reusable: restore the exact default-constructed state so a pooled slot
+        // can be handed back out (HETERO-POOL-DESIGN). MUST mirror the ctor
+        // field-by-field — a missed field would leak stale data into the reused
+        // SGroup. Subclass overrides call SGroup::reuse() then restore their own
+        // ctor defaults (including re-setting sgroup_type).
+        void reuse() override;
+
         int sgroup_type;              // group type, represnted with STY in Molfile format
         Nullable<int> sgroup_subtype; // group subtype, represnted with SST in Molfile format
         int index;                    // internal SGroup index; V3000 field 1, V2000 M STY sss. Used for cross-refs (PARENT, SPL).
@@ -147,6 +155,8 @@ namespace indigo
     public:
         DataSGroup();
         ~DataSGroup() override;
+
+        void reuse() override;
 
         Array<int> cbonds; // chemical bonds, represented with CBONDS/SBL in Molfile format
 
@@ -189,6 +199,8 @@ namespace indigo
         Superatom();
         ~Superatom() override;
 
+        void reuse() override;
+
         Array<char> sa_class;      // SCL in Molfile format
                                    // SDS in Molfile format
         Nullable<int> seqid;       // SEQID (V3000 - 2017)
@@ -196,20 +208,25 @@ namespace indigo
 
         bool unresolved;
 
-        struct _AttachmentPoint
+        struct _AttachmentPoint : public Reusable
         {
             _AttachmentPoint() : aidx(-1), lvidx(-1)
             {
             }
-            _AttachmentPoint(int atom_id) : aidx(atom_id), lvidx(-1)
-            {
-                apid.push(0);
-            }
             int aidx;
             int lvidx;
             Array<char> apid;
+
+            // Non-destructive reset for PtrReusablePool reuse: restore the
+            // default-constructed state (matches a fresh ObjPool add()).
+            void reuse() override
+            {
+                aidx = -1;
+                lvidx = -1;
+                apid.clear();
+            }
         };
-        ObjPool<_AttachmentPoint> attachment_points; // SAP in Molfile format
+        PtrReusablePool<_AttachmentPoint> attachment_points; // SAP in Molfile format
 
         struct _BondConnection
         {
@@ -230,6 +247,8 @@ namespace indigo
         RepeatingUnit();
         ~RepeatingUnit() override;
 
+        void reuse() override;
+
         Nullable<int> connectivity;
 
     private:
@@ -242,6 +261,8 @@ namespace indigo
         CopolymerGroup();
         ~CopolymerGroup() override;
 
+        void reuse() override;
+
         Nullable<int> connectivity;
 
     private:
@@ -253,6 +274,8 @@ namespace indigo
     public:
         MultipleGroup();
         ~MultipleGroup() override;
+
+        void reuse() override;
 
         Array<int> parent_atoms;
         Nullable<int> multiplier;
@@ -317,7 +340,7 @@ namespace indigo
         int findSGroupById(int id);
 
     protected:
-        PtrPool<SGroup> _sgroups;
+        PtrReusablePool<SGroup> _sgroups;
 
     private:
         bool _cmpIndices(Array<int>& t_inds, Array<int>& q_inds);

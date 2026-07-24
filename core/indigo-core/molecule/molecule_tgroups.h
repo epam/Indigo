@@ -20,7 +20,7 @@
 #define __molecule_tgroups__
 
 #include "base_cpp/ptr_array.h"
-#include "base_cpp/ptr_pool.h"
+#include "base_cpp/ptr_reusable_pool.h"
 #include "base_cpp/red_black.h"
 #include "base_cpp/tlscont.h"
 #include "molecule/idt_alias.h"
@@ -36,7 +36,7 @@ namespace indigo
     class BaseMolecule;
     class Transformation;
 
-    class TGroup
+    class TGroup : public Reusable
     {
     public:
         Array<char> tgroup_class;
@@ -67,6 +67,14 @@ namespace indigo
         void clear();
         static int cmp(TGroup& tg1, TGroup& tg2, void* context);
 
+        // Non-destructive reset for PtrReusablePool reuse. Restores the full
+        // default-constructed state a fresh TGroup() had (the legacy pool did
+        // add(new TGroup())), NOT the partial TGroup::clear() (which only resets
+        // three flags). Array buffers are retained; the owned fragment molecule
+        // is released. Defined in the .cpp because releasing the fragment needs
+        // the complete BaseMolecule type.
+        void reuse() override;
+
         std::unique_ptr<BaseMolecule> fragment;
 
     private:
@@ -96,7 +104,7 @@ namespace indigo
         int next(int i);
 
     protected:
-        PtrPool<TGroup> _tgroups;
+        PtrReusablePool<TGroup> _tgroups;
     };
 
 } // namespace indigo

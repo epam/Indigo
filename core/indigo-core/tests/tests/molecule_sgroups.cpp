@@ -109,19 +109,33 @@ TEST(MoleculeSGroupsContract, ClearRemovesAll)
     EXPECT_EQ(sg.begin(), sg.end());
 }
 
-// ---- Superatom::attachment_points (ObjPool<_AttachmentPoint>) -------------
+// ---- Superatom::attachment_points (PtrReusablePool<_AttachmentPoint>) ------
+
+namespace
+{
+    // Adds an attachment point the way the loaders do after migration:
+    // push() then fill (equivalent to the legacy _AttachmentPoint(int) ctor).
+    int addAp(Superatom& sup, int atom_id)
+    {
+        int idx = sup.attachment_points.push();
+        auto& ap = sup.attachment_points[idx];
+        ap.aidx = atom_id;
+        ap.apid.push(0);
+        return idx;
+    }
+} // namespace
 
 TEST(SuperatomAttachmentPointsContract, AddRemoveReuseWithNonTrivialElement)
 {
     Superatom sup;
     int a0 = 10, a1 = 11, a2 = 12;
-    EXPECT_EQ(0, sup.attachment_points.add(a0));
-    int i1 = sup.attachment_points.add(a1);
+    EXPECT_EQ(0, addAp(sup, a0));
+    int i1 = addAp(sup, a1);
     EXPECT_EQ(1, i1);
-    EXPECT_EQ(2, sup.attachment_points.add(a2));
+    EXPECT_EQ(2, addAp(sup, a2));
     EXPECT_EQ(3, sup.attachment_points.size());
 
-    // _AttachmentPoint(int) sets aidx and pushes one apid entry.
+    // aidx set, one apid entry pushed.
     EXPECT_EQ(11, sup.attachment_points[i1].aidx);
     EXPECT_EQ(1, sup.attachment_points[i1].apid.size());
 
@@ -129,7 +143,7 @@ TEST(SuperatomAttachmentPointsContract, AddRemoveReuseWithNonTrivialElement)
     EXPECT_EQ(2, sup.attachment_points.size());
     EXPECT_FALSE(sup.attachment_points.hasElement(i1));
 
-    int reused = sup.attachment_points.add(a1);
+    int reused = addAp(sup, a1);
     EXPECT_EQ(i1, reused);                          // LIFO reuse
     EXPECT_EQ(11, sup.attachment_points[reused].aidx);
     EXPECT_EQ(1, sup.attachment_points[reused].apid.size()); // fresh element
