@@ -579,7 +579,7 @@ static void check_isotopes(BaseMolecule& mol, const std::unordered_set<int>& sel
         if (isotope <= 0)
             return false;
         int number = mol.getAtomNumber(idx);
-        if (number < ELEM_MIN || number >= valid_isotopes.size())
+        if (number < ELEM_MIN || static_cast<size_t>(number) >= valid_isotopes.size())
             return false;
         return isotope < valid_isotopes[number].first || isotope > valid_isotopes[number].second;
     });
