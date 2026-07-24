@@ -581,7 +581,6 @@ static void check_isotopes(BaseMolecule& mol, const std::unordered_set<int>& sel
         auto number = mol.getAtomNumber(idx);
         if (number <= 0)
             return false;
-        printf("Atom %d element %d isotope %d\n", idx, number, isotope);
         return isotope < valid_isotopes[number].first || isotope > valid_isotopes[number].second;
     });
 }
