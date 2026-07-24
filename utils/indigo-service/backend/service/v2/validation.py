@@ -118,7 +118,7 @@ class IndigoCheckSchema(IndigoBaseSchema):
         "v3000",
         "rgroups",
         "chiral",
-        "isotope",
+        "isotopes",
     )
     types = fields.List(
         fields.Str,
@@ -135,7 +135,7 @@ class IndigoCheckSchema(IndigoBaseSchema):
             "sgroups",
             "v3000",
             "rgroups",
-            "isotope",
+            "isotopes",
         ],
     )
 

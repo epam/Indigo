@@ -1680,8 +1680,9 @@ M  END
   3  1  1  0     0  0
 M  ISO  2   1   7   2  24
 M  END
-
-"""
+                                          
+""",
+                "types": ["isotopes"],
             }
         )
         result = requests.post(
