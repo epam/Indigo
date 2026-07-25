@@ -30,10 +30,35 @@
 
 #include <memory>
 
+#include <molecule/elements.h>
+#include <molecule/ket_monomer_shape.h>
 #include <molecule/molecule.h>
 #include <molecule/molecule_rgroups.h>
 
 using namespace indigo;
+
+// Regression (task #3766, review C3): BaseMolecule::reuse() (the pool hand-back
+// hook) must wipe the residual state that clear() intentionally leaves for its
+// many direct callers. Otherwise a molecule pulled from the pool reserve and
+// re-populated via clone() inherits the previous occupant's data (clone()
+// appends to monomer_shapes and only sets original_format/properties it copies).
+TEST(BaseMoleculeReuseContract, ReuseWipesResidualState)
+{
+    Molecule mol;
+    mol.addAtom(ELEM_C);
+    mol.original_format = BaseMolecule::KET;
+    mol.properties().findOrInsert(0); // a per-atom property entry
+    mol.monomer_shapes.add(new KetMonomerShape("shape-1", false, "generic", Vec2f(0, 0), {}));
+    ASSERT_GT(mol.properties().size(), 0);
+    ASSERT_EQ(1, mol.monomer_shapes.size());
+
+    mol.reuse();
+
+    EXPECT_EQ(0, mol.vertexCount());
+    EXPECT_EQ(BaseMolecule::UNKNOWN, mol.original_format);
+    EXPECT_EQ(0, mol.properties().size());
+    EXPECT_EQ(0, mol.monomer_shapes.size());
+}
 
 TEST(RGroupContract, ClearResetsAllFields)
 {

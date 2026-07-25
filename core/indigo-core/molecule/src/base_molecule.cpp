@@ -91,9 +91,9 @@ void BaseMolecule::clear()
     _attachment_index.clear();
     sgroups.clear();
     tgroups.clear();
-    template_attachment_points.clear();
+    template_attachment_points.reuse();
     template_attachment_indexes.clear();
-    _template_occurrences.clear();
+    _template_occurrences.reuse();
     _template_names.clear();
     _template_classes.clear();
 
@@ -117,6 +117,24 @@ void BaseMolecule::clear()
     _meta.resetMetaData();
     clearCIP();
     aliases.clear();
+}
+
+void BaseMolecule::reuse()
+{
+    clear();
+    // Residual state clear() leaves behind (see header note). Without this a
+    // molecule pulled from the pool's reserve and re-populated via clone()
+    // would carry the previous occupant's data:
+    //   - monomer_shapes: clone() appends, never clears -> unbounded growth;
+    //   - _properties / annotations: clone() merges by source key -> stale
+    //     entries under other atom indices survive;
+    //   - original_format: only the ctor resets it to UNKNOWN.
+    _properties.clear();
+    monomer_shapes.clear();
+    _atom_annotations.clear();
+    _bond_annotations.clear();
+    _annotation.reset();
+    original_format = UNKNOWN;
 }
 
 bool BaseMolecule::hasCoord(BaseMolecule& mol)
@@ -230,7 +248,7 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
                 {
                     for (int j = supersa.attachment_points.begin(); j < supersa.attachment_points.end(); j = supersa.attachment_points.next(j))
                     {
-                        int ap_idx = sa.attachment_points.add();
+                        int ap_idx = sa.attachment_points.push();
                         Superatom::_AttachmentPoint& ap = sa.attachment_points.at(ap_idx);
                         int a_idx = supersa.attachment_points[j].aidx;
                         if (a_idx > -1)
@@ -730,21 +748,21 @@ int BaseMolecule::flipBondWithDirection(int atom_parent, int atom_from, int atom
 
         // 3. Update Adjacency Lists
         // A. Pivot (stays connected): change neighbor ref from old to new
-        Vertex& v_pivot = _vertices->at(pivot);
+        Vertex& v_pivot = _vertices.at(pivot);
         int item_pivot = v_pivot.findNeiEdge(edge_idx);
         if (item_pivot == -1)
             throw Error("flipBondWithDirection: inconsistency at pivot %d", pivot);
         v_pivot.neighbors_list[item_pivot].v = new_neighbor;
 
         // B. Old Neighbor (loses connection): remove edge from adjacency list
-        Vertex& v_old = _vertices->at(old_neighbor);
+        Vertex& v_old = _vertices.at(old_neighbor);
         int item_old = v_old.findNeiEdge(edge_idx);
         if (item_old == -1)
             throw Error("flipBondWithDirection: inconsistency at old neighbor %d", old_neighbor);
         v_old.neighbors_list.remove(item_old);
 
         // C. New Neighbor (gains connection): add edge to adjacency list
-        Vertex& v_new = _vertices->at(new_neighbor);
+        Vertex& v_new = _vertices.at(new_neighbor);
         int item_new = v_new.neighbors_list.add();
         VertexEdge& ve_new = v_new.neighbors_list[item_new];
         ve_new.e = edge_idx;
@@ -1338,7 +1356,7 @@ void BaseMolecule::removeUnusedRGroups()
     {
         if (used_rgroups.find(i) == used_rgroups.end())
         {
-            rgroups.getRGroup(i).fragments.clear();
+            rgroups.getRGroup(i).fragments.reuse();
             rgroups.getRGroup(i).clear();
         }
     }

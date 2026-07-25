@@ -114,7 +114,7 @@ void BaseReaction::clear()
     _intermediateCount = 0;
     _undefinedCount = 0;
     _specialCount = 0;
-    _allMolecules.clear();
+    _allMolecules.reuse();
     _reactionBlocks.clear();
     _specialConditions.clear();
     _types.clear();

@@ -112,10 +112,10 @@ namespace indigo
         virtual ~SGroup();
 
         // Reusable: restore the exact default-constructed state so a pooled slot
-        // can be handed back out (HETERO-POOL-DESIGN). MUST mirror the ctor
-        // field-by-field — a missed field would leak stale data into the reused
-        // SGroup. Subclass overrides call SGroup::reuse() then restore their own
-        // ctor defaults (including re-setting sgroup_type).
+        // can be handed back out. MUST mirror the constructor field by field — a
+        // missed field would leak stale data into the reused SGroup. Subclass
+        // overrides call SGroup::reuse() and then restore their own constructor
+        // defaults (including re-setting sgroup_type).
         void reuse() override;
 
         int sgroup_type;              // group type, represnted with STY in Molfile format

@@ -77,7 +77,7 @@ bool Reaction::aromatize(const AromaticityOptions& options)
     bool arom_found = false;
     for (int i = begin(); i < end(); i = next(i))
     {
-        arom_found |= MoleculeAromatizer::aromatizeBonds((Molecule&)_allMolecules[i], options);
+        arom_found |= MoleculeAromatizer::aromatizeBonds(static_cast<Molecule&>(_allMolecules[i]), options);
     }
     return arom_found;
 }

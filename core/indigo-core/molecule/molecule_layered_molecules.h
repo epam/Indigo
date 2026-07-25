@@ -193,7 +193,7 @@ namespace indigo
             Trie()
             {
                 // Adding root (index == 0)
-                _nodes->add();
+                _nodes->push();
             }
             unsigned getRoot()
             {
@@ -211,7 +211,7 @@ namespace indigo
                     return _nodes->at(nodeInd).next[key];
                 }
                 newlyAdded = true;
-                int ind = _nodes->add();
+                int ind = _nodes->push();
                 _nodes->at(nodeInd).next[key] = ind;
                 return ind;
             }

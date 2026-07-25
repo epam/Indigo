@@ -1732,7 +1732,11 @@ CEXPORT int indigoCountAttachmentPoints(int rgroup)
 
         IndigoRGroup& rgp = IndigoRGroup::cast(object);
 
-        return rgp.mol->rgroups.getRGroup(rgp.idx).fragments[0].attachmentPointCount();
+        // fragments is a sparse reuse pool: slot 0 may be a permanent hole after
+        // a fragment removal (adopt-only never refills it), so take the first
+        // live slot instead of hard-coding [0].
+        auto& fragments = rgp.mol->rgroups.getRGroup(rgp.idx).fragments;
+        return fragments[fragments.begin()].attachmentPointCount();
     }
     INDIGO_END(-1);
 }

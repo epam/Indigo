@@ -73,7 +73,7 @@ void QueryReaction::makeTransposedForSubstructure(QueryReaction& other)
         other._transposeMoleculeForSubstructure(i, transposition);
         int index = _allMolecules.add(std::type_index(typeid(QueryMolecule)), [] { return std::unique_ptr<BaseMolecule>(std::make_unique<QueryMolecule>()); });
 
-        QueryMolecule& qmol = (QueryMolecule&)_allMolecules[index];
+        QueryMolecule& qmol = static_cast<QueryMolecule&>(_allMolecules[index]);
 
         qmol.makeSubmolecule(other.getQueryMolecule(i), transposition, 0);
 
@@ -98,7 +98,7 @@ void QueryReaction::makeTransposedForSubstructure(QueryReaction& other)
 void QueryReaction::_transposeMoleculeForSubstructure(int index, Array<int>& transposition)
 {
     QS_DEF(Array<int>, has_reacting_info);
-    QueryMolecule& mol = (QueryMolecule&)_allMolecules[index];
+    QueryMolecule& mol = static_cast<QueryMolecule&>(_allMolecules[index]);
 
     Array<int>& aam = getAAMArray(index);
     Array<int>& rc = getReactingCenterArray(index);
@@ -193,7 +193,7 @@ bool QueryReaction::aromatize(const AromaticityOptions& options)
     bool arom_found = false;
     for (int i = begin(); i < end(); i = next(i))
     {
-        arom_found |= QueryMoleculeAromatizer::aromatizeBonds((QueryMolecule&)_allMolecules[i], options);
+        arom_found |= QueryMoleculeAromatizer::aromatizeBonds(static_cast<QueryMolecule&>(_allMolecules[i]), options);
     }
 
     return arom_found;

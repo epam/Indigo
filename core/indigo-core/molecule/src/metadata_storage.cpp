@@ -136,12 +136,25 @@ void MetaDataStorage::resetReactionData()
     _plus_indexes.clear();
     _arrow_indexes.clear();
     _multi_tail_indexes.clear();
-    for (int i = _meta_data.size() - 1; i >= 0; i--)
+    // _meta_data is a sparse reuse pool: adopt() never refills freed slots, so
+    // size() is the live count, NOT a dense index bound, and stale slots leave
+    // holes. Walk live slots via begin()/next() and collect victims before
+    // removing (removing mid-walk would invalidate the iteration index).
+    Array<int> to_remove;
+    for (int i = _meta_data.begin(); i != _meta_data.end(); i = _meta_data.next(i))
         if (isReactionObject(_meta_data[i]._class_id))
-            _meta_data.remove(i);
+            to_remove.push(i);
+    for (int j = 0; j < to_remove.size(); j++)
+        _meta_data.remove(to_remove[j]);
 
     for (auto it = _explicit_reaction_object_indexes.begin(); it != _explicit_reaction_object_indexes.end(); it = _explicit_reaction_object_indexes.next(it))
-        _meta_data.remove(_explicit_reaction_object_indexes.key(it));
+    {
+        int idx = _explicit_reaction_object_indexes.key(it);
+        // Guard against double-remove: an explicit index may already have been
+        // freed above (reaction object) or point at an out-of-range/stale slot.
+        if (_meta_data.hasElement(idx))
+            _meta_data.remove(idx);
+    }
 
     _explicit_reaction_object_indexes.clear();
 }

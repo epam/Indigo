@@ -686,7 +686,7 @@ int BaseMolecule::transformHELMtoSGroups(Array<char>& helm_class, Array<char>& h
             {
                 throw Error("internal error: attachment point was not found");
             }
-            int idap = sg.attachment_points.add();
+            int idap = sg.attachment_points.push();
             Superatom::_AttachmentPoint& ap = sg.attachment_points.at(idap);
             ap.aidx = ap_idx;
             ap.lvidx = i;

@@ -68,7 +68,13 @@ namespace indigo
     class DLLEXPORT Vertex : public Reusable
     {
     public:
-        Vertex()
+        // Construct the neighbor list UNBOUND (no pool, no allocation): every
+        // Vertex is created by Graph::addVertex(), which binds it to the
+        // graph-wide shared pool immediately afterwards. This avoids a throwaway
+        // private-pool allocation per vertex on the hottest allocation path. The
+        // list must not be touched before that binding, which is why bind() is
+        // private to Graph.
+        Vertex() : neighbors_list(List<VertexEdge>::Unbound{})
         {
         }
         ~Vertex() override
@@ -76,16 +82,6 @@ namespace indigo
         }
 
         List<VertexEdge> neighbors_list;
-
-        // Rebind the neighbor list onto a shared element pool so that all
-        // vertices of a Graph share one Pool (the memory optimization the
-        // legacy Vertex(pool) ctor provided). A default-constructed Vertex owns
-        // a private list pool; move-assigning a shared-pool list frees that
-        // private pool and switches to the shared one.
-        void bind(Pool<List<VertexEdge>::Elem>& pool)
-        {
-            neighbors_list = List<VertexEdge>(pool);
-        }
 
         // Non-destructive reset for PtrReusablePool reuse: clear the neighbor
         // list (the pool binding and backing slots are retained).
@@ -127,6 +123,18 @@ namespace indigo
         }
 
     private:
+        friend class Graph;
+
+        // Bind the neighbor list onto the graph-wide shared element pool so all
+        // vertices of a Graph share one Pool. Move-assigning a shared-pool list
+        // swaps in the shared pool (and frees any private pool the list held).
+        // Only Graph::addVertex() may call this, and it must do so before the
+        // vertex is handed out.
+        void bind(Pool<List<VertexEdge>::Elem>& pool)
+        {
+            neighbors_list = List<VertexEdge>(pool);
+        }
+
         Vertex(const Vertex&); // no implicit copy
     };
 
@@ -179,19 +187,19 @@ namespace indigo
 
         int vertexBegin() const
         {
-            return _vertices->begin();
+            return _vertices.begin();
         }
         int vertexEnd() const
         {
-            return _vertices->end();
+            return _vertices.end();
         }
         int vertexNext(int i) const
         {
-            return _vertices->next(i);
+            return _vertices.next(i);
         }
         int vertexCount() const
         {
-            return _vertices->size();
+            return _vertices.size();
         }
 
         int edgeBegin() const
@@ -274,8 +282,12 @@ namespace indigo
     protected:
         void _mergeWithSubgraph(const Graph& other, const Array<int>& vertices, const Array<int>* edges, Array<int>* mapping, Array<int>* edge_mapping);
 
-        Pool<List<VertexEdge>::Elem>* _neighbors_pool;
-        PtrReusablePool<Vertex>* _vertices;
+        // By value (no per-Graph heap allocation for the containers themselves).
+        // Declaration order is load-bearing: _neighbors_pool is declared BEFORE
+        // _vertices so it is destroyed AFTER — Vertex destructors clear their
+        // neighbor lists, which reference this shared pool.
+        Pool<List<VertexEdge>::Elem> _neighbors_pool;
+        PtrReusablePool<Vertex> _vertices;
         Pool<Edge> _edges;
 
         Array<int> _topology; // for each edge: TOPOLOGY_RING, TOPOLOGY_CHAIN, or -1 (not calculated)

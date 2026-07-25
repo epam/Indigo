@@ -108,7 +108,7 @@ Superatom::Superatom() : unresolved(false)
 {
     sgroup_type = SGroup::SG_TYPE_SUP;
     seqid = -1;
-    attachment_points.clear();
+    attachment_points.reuse();
     bond_connections.clear();
     display_position.set(Vec3f(0, 0, 0));
 }
@@ -199,7 +199,7 @@ void Superatom::reuse()
     // Mirror Superatom::Superatom() ...
     sgroup_type = SGroup::SG_TYPE_SUP;
     seqid = -1;
-    attachment_points.clear();
+    attachment_points.reuse();
     bond_connections.clear();
     display_position.set(Vec3f(0, 0, 0));
     unresolved = false;
@@ -234,17 +234,17 @@ IMPL_ERROR(MoleculeSGroups, "molecule sgroups");
 
 MoleculeSGroups::MoleculeSGroups()
 {
-    _sgroups.clear();
+    _sgroups.reuse();
 }
 
 MoleculeSGroups::~MoleculeSGroups()
 {
-    _sgroups.clear();
+    _sgroups.reuse();
 }
 
 void MoleculeSGroups::clear()
 {
-    _sgroups.clear();
+    _sgroups.reuse();
 }
 
 void MoleculeSGroups::clear(int sg_type)
@@ -289,7 +289,7 @@ int MoleculeSGroups::addSGroup(const char* sg_type)
 int MoleculeSGroups::addSGroup(int sg_type)
 {
     // Heterogeneous PtrReusablePool: the slot type is keyed by the C++ class
-    // (Reusable::getType()), and a freed slot is reused only by a same-type
+    // (Reusable::reuseTypeId()), and a freed slot is reused only by a same-type
     // request. The factory is lazy — it runs only when no reusable slot of the
     // requested type exists — so reuse constructs nothing.
     switch (sg_type)

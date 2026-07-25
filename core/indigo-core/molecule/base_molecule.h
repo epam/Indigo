@@ -204,6 +204,13 @@ namespace indigo
         virtual bool isQueryMolecule();
 
         void clear() override;
+        // Pool reuse hook (PtrReusablePool). clear() intentionally preserves some
+        // per-atom / document-level state for its many direct callers (master
+        // behaviour), but a pooled slot handed back out must be pristine — clone()
+        // appends to monomer_shapes and merges properties/annotations by source
+        // key, so leftovers from a prior occupant would accumulate/leak. reuse()
+        // runs clear() then wipes exactly those residual fields.
+        void reuse() override;
         virtual void changed() override;
 
         // 'neu' means 'new' in German

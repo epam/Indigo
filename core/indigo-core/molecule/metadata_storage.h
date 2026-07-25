@@ -66,7 +66,7 @@ namespace indigo
 
         void resetMetaData()
         {
-            _meta_data.clear();
+            _meta_data.reuse();
             _plus_indexes.clear();
             _arrow_indexes.clear();
             _simple_object_indexes.clear();

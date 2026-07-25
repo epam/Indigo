@@ -27,14 +27,15 @@
 namespace indigo
 {
     // Reusable — the interface an element type must implement to be stored in
-    // PtrReusablePool<T> (milestone 19, RFC §4.4, task #3766).
+    // PtrReusablePool<T> (issue #3766).
     //
     // reuse() must perform a NON-destructive reset: it returns the object to a
     // freshly-constructed logical state while keeping the object alive and its
-    // internal buffers retained for reuse. It is invoked by the pool on remove
-    // (reuse-on-remove) and again when the freed slot is handed back out by
-    // push(). It is the semantic equivalent of destroying and default-
-    // constructing the object, minus the deallocation/reallocation.
+    // internal buffers retained for reuse. It is the semantic equivalent of
+    // destroying and default-constructing the object, minus the deallocation
+    // and reallocation. The pool calls it exactly once per retirement — when a
+    // slot is freed by remove() or retired by reuse() — so an implementation
+    // must leave the object usable, not merely consistent.
     //
     // The method is a pure virtual so the language itself guarantees every
     // element type declares and defines it (a compile-time marker could not).
@@ -45,10 +46,10 @@ namespace indigo
     public:
         virtual void reuse() = 0;
 
-        // reuseTypeId() — the slot-type identity used by the heterogeneous mode of
-        // PtrReusablePool (per-type free lists, HETERO-POOL-DESIGN §2.3): a
-        // freed slot may be reused only by a request for the SAME type, since
-        // reuse() cannot change an object's dynamic type.
+        // reuseTypeId() — the slot-type identity used by the heterogeneous mode
+        // of PtrReusablePool (per-type free lists): a freed slot may be reused
+        // only by a request for the SAME type, since reuse() cannot change an
+        // object's dynamic type.
         //
         // The default implementation derives the identity from the dynamic
         // type: Reusable is polymorphic (virtual dtor), so typeid(*this) on it
@@ -70,7 +71,7 @@ namespace indigo
     // Compile-time gate used by PtrReusablePool and its consumers to require
     // that T actually implements the Reusable interface. Primitive and
     // non-Reusable types (e.g. int) yield false and are rejected by the
-    // pool's static_assert (carve-outs, RFC §0/§4.4).
+    // pool's static_assert.
     template <typename T>
     inline constexpr bool is_reusable_v = std::is_base_of<Reusable, T>::value;
 

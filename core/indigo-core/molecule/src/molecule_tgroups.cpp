@@ -200,17 +200,17 @@ IMPL_ERROR(MoleculeTGroups, "molecule tgroups");
 
 MoleculeTGroups::MoleculeTGroups()
 {
-    _tgroups.clear();
+    _tgroups.reuse();
 }
 
 MoleculeTGroups::~MoleculeTGroups()
 {
-    _tgroups.clear();
+    _tgroups.reuse();
 }
 
 void MoleculeTGroups::clear()
 {
-    _tgroups.clear();
+    _tgroups.reuse();
 }
 
 int MoleculeTGroups::begin()

@@ -553,7 +553,7 @@ void BaseMolecule::transformTemplatesToSuperatoms()
         }
     }
     tgroups.clear();
-    template_attachment_points.clear();
+    template_attachment_points.reuse();
     template_attachment_indexes.clear();
 }
 

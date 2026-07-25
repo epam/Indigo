@@ -374,7 +374,7 @@ int Molecule::addTemplateAtom(const char* text)
 void Molecule::setTemplateAtom(int idx, const char* text)
 {
     _atoms[idx].number = ELEM_TEMPLATE;
-    _atoms[idx].template_occur_idx = _template_occurrences.add();
+    _atoms[idx].template_occur_idx = _template_occurrences.push();
     _TemplateOccurrence& occur = _template_occurrences.at(_atoms[idx].template_occur_idx);
     occur.name_idx = _template_names.add(text);
     occur.seq_id = -1;

@@ -36,7 +36,7 @@ void RGroup::clear()
     if_then = 0;
     rest_h = 0;
     occurrence.clear();
-    fragments.clear();
+    fragments.reuse();
 }
 
 void RGroup::copy(RGroup& other)
@@ -44,7 +44,7 @@ void RGroup::copy(RGroup& other)
     if_then = other.if_then;
     rest_h = other.rest_h;
     occurrence.copy(other.occurrence);
-    fragments.clear();
+    fragments.reuse();
 
     PtrReusablePool<BaseMolecule>& frags = other.fragments;
     for (int i = frags.begin(); i != frags.end(); i = frags.next(i))

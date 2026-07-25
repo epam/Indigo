@@ -1792,7 +1792,7 @@ void CmlLoader::_loadSGroupElement(XMLElement* elem, std::unordered_map<std::str
                            if (strncmp(aPoint->Value(), "attachmentPoint", 15) != 0)
                               continue;
 
-                           int idap = sup->attachment_points.add();
+                           int idap = sup->attachment_points.push();
                            Superatom::_AttachmentPoint &ap = sup->attachment_points.at(idap);
 
                            const char *a_idx = aPoint->Attribute("atom");

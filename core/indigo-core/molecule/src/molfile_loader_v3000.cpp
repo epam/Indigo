@@ -1447,7 +1447,7 @@ void MolfileLoader::_readSGroup3000(const char* str)
                     throw Error("SAP number is %d (must be 3)", n);
                 scanner.skipSpace();
                 idx = scanner.readInt() - 1;
-                int idap = sup->attachment_points.add();
+                int idap = sup->attachment_points.push();
                 Superatom::_AttachmentPoint& ap = sup->attachment_points.at(idap);
                 ap.aidx = idx;
                 scanner.skipSpace();

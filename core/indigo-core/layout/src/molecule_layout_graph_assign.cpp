@@ -573,7 +573,7 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
     QS_DEF(PtrReusablePool<Cycle>, cycles);
     QS_DEF(Array<int>, sorted_cycles);
 
-    cycles.clear();
+    cycles.reuse();
     int n_cycles = sssrCount();
 
     for (i = 0; i < n_cycles; i++)

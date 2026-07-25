@@ -104,6 +104,27 @@ TEST(MetaDataStorageContract, AddAfterResetReactionDataReusesFreedSlot)
     EXPECT_EQ(1, meta.getMetaCount(ReactionPlusObject::CID));
 }
 
+// Regression (task #3766, review C1): resetReactionData() must iterate the
+// sparse reuse pool via begin()/next(), not a dense 0..size()-1 loop. Once any
+// slot is freed (adopt-only never refills it) the live objects sit at sparse
+// indices; a dense loop indexes a freed slot and throws "access to unused
+// element". Reproduce by leaving a hole below the survivor, then resetting again.
+TEST(MetaDataStorageContract, ResetReactionDataOnSparsePoolDoesNotThrow)
+{
+    MetaDataStorage meta;
+    meta.addMetaObject(new TestMeta(ReactionArrowObject::CID)); // index 0 (reaction)
+    meta.addMetaObject(new TestMeta(SimpleTextObject::CID));    // index 1 (survivor)
+
+    meta.resetReactionData(); // frees slot 0 -> hole below the live survivor at 1
+    ASSERT_EQ(1, meta.metaData().size());
+
+    // A dense 0..size()-1 loop would touch the freed slot 0 here and throw.
+    EXPECT_NO_THROW(meta.resetReactionData());
+    EXPECT_EQ(1, meta.metaData().size());
+    EXPECT_EQ(1, meta.getMetaCount(SimpleTextObject::CID));
+    EXPECT_EQ(SimpleTextObject::CID, meta.getMetaObject(SimpleTextObject::CID, 0)._class_id);
+}
+
 TEST(MetaDataStorageContract, ResetMetaDataClearsEverythingAndIsReusable)
 {
     MetaDataStorage meta;

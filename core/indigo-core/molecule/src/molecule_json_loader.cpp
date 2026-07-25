@@ -1100,7 +1100,7 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
                     {
                         attachmentId = attachmentPoints[j]["attachmentId"].GetString();
                     }
-                    int ap_idx = sg.attachment_points.add();
+                    int ap_idx = sg.attachment_points.push();
                     Superatom::_AttachmentPoint& ap = sg.attachment_points.at(ap_idx);
                     ap.aidx = attachmentAtom;
                     ap.lvidx = leavingAtom;
@@ -1573,7 +1573,7 @@ int MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_tem
 
             for (const auto& att_desc : attachment_descs)
             {
-                int atp_index = sa.attachment_points.add();
+                int atp_index = sa.attachment_points.push();
                 auto& atp = sa.attachment_points[atp_index];
                 atp.aidx = att_desc.attachment_atom;
                 if (att_desc.leaving_group >= 0)
