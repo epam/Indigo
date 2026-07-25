@@ -77,6 +77,12 @@ namespace indigo
         };
 
     private:
+        struct ArrowAnnotationData
+        {
+            std::vector<std::string> top;
+            std::vector<std::string> bottom;
+        };
+
         struct SweepEvent
         {
             float x;
@@ -93,6 +99,12 @@ namespace indigo
 
         void _makePathway();
         void _updateMetadata();
+        void _loadArrowAnnotations();
+        float _estimateAnnotationTextWidth(const std::string& text) const;
+        float _estimateAnnotationLineHeight() const;
+        float _estimateAnnotationLineSpacing() const;
+        bool _hasArrowAnnotations() const;
+        void _addArrowAnnotations(const Vec2f& arrow_center, const Rect2f& react_box, const Rect2f& product_box);
         void _pushMol(Metalayout::LayoutLine& line, int id, bool is_agent = false);
         void _pushSpace(Metalayout::LayoutLine& line, float size);
         BaseMolecule& _getMol(int id);
@@ -115,6 +127,8 @@ namespace indigo
         BaseReaction& _r;
         Metalayout _ml;
         const float _font_size;
+        ArrowAnnotationData _arrow_annotations;
+        float _annotation_arrow_width = 0.0f;
     };
 
 } // namespace indigo

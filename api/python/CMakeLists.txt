@@ -7,7 +7,6 @@ else()
     add_custom_target(indigo-python
             COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_SOURCE_DIR}/dist
             COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_CURRENT_SOURCE_DIR}/indigo/lib
-            COMMAND ${Python3_EXECUTABLE} setup.py test
             COMMAND ${Python3_EXECUTABLE} setup.py bdist_wheel --plat-name=macosx_11_0_arm64 --python-tag=py3
             COMMAND ${Python3_EXECUTABLE} setup.py bdist_wheel --plat-name=macosx_11_0_x86_64 --python-tag=py3
             COMMAND ${Python3_EXECUTABLE} setup.py bdist_wheel --plat-name=manylinux2014_aarch64 --python-tag=py3

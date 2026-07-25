@@ -26,3 +26,21 @@ python setup.py bdist_wheel --plat-name=manylinux1_i686
 python setup.py bdist_wheel --plat-name=manylinux1_x86_64
 
 And then upload them to PyPI
+
+## Reaction arrow annotations
+
+Use `indigo.MyReaction` for ChemDraw-style arrow labels:
+
+```python
+from indigo import MyReaction
+
+rxn = MyReaction(
+    smiles="c1ccccc1Br.CBr.[Na].[Na]>>Cc1ccccc1.[Na]Br.[Na]Br",
+    catalyst=["Na", "Dry Ether"],
+    temperature="150",
+    pressure="20",
+)
+rxn.render("reaction_arrow_annotations.svg")
+```
+
+`temperature="150"` becomes `150°C`, and `pressure="20"` becomes `20 psi`.

@@ -131,6 +131,9 @@ CEXPORT int indigoLayout(int object)
         else if (IndigoBaseReaction::is(obj))
         {
             BaseReaction& rxn = obj.getBaseReaction();
+            auto& object_properties = obj.getProperties();
+            if (object_properties.contains("indigo:reaction-arrow-annotations"))
+                rxn.properties().insert("indigo:reaction-arrow-annotations", object_properties.at("indigo:reaction-arrow-annotations"));
             if (rxn.isPathwayReaction())
             {
                 PathwayLayout pl(static_cast<PathwayReaction&>(rxn), self.layout_options);
