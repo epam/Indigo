@@ -12,6 +12,8 @@ import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.ElasticsearchStatusException;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.elasticsearch.action.admin.indices.flush.FlushRequest;
+import org.elasticsearch.action.admin.indices.flush.FlushResponse;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
@@ -36,6 +38,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static com.epam.indigo.model.NamingConstants.*;
@@ -44,7 +47,7 @@ import static com.epam.indigo.model.NamingConstants.*;
  * Class responsible for all operations with Elasticsearch
  * Have ability to index, delete, produce stream for further operations like similarity match, filtering on extra textual fields, etc
  */
-public class ElasticRepository<T extends IndigoRecord> implements GenericRepository<T> {
+public class ElasticRepository<T extends IndigoRecord> implements GenericRepository<T>, AutoCloseable {
 
     private String indexName;
     private List<String> hostsNames;
@@ -57,8 +60,11 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
     private int numShards = 1;
     private int numReplicas = 0;
     private String refreshInterval = "5m";
+    private Function<IndigoRecord, String> documentIdProvider = null;
+    private boolean autoFlush = false;
 
     private ElasticRepository() {
+
     }
 
     private boolean checkIfIndexExists() throws BingoElasticException {
@@ -136,6 +142,23 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
         indexRecords(records, batchSize, new ActionListener<BulkResponse>() {
             @Override
             public void onResponse(BulkResponse bulkResponse) {
+                if (autoFlush) {
+                    flushRecords();
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+//              do nothing
+            }
+        });
+    }
+
+    public void flushRecords() {
+        FlushRequest flushRequest = new FlushRequest();
+        this.elasticClient.indices().flushAsync(flushRequest, RequestOptions.DEFAULT, new ActionListener<>() {
+            @Override
+            public void onResponse(FlushResponse bulkResponse) {
 //                do nothing
             }
 
@@ -190,14 +213,23 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
                     }
                 }
                 builder.endObject();
-                request.add(new IndexRequest(this.indexName)
-                        .source(builder));
+
+                IndexRequest indexRequest = new IndexRequest(this.indexName)
+                        .source(builder);
+
+                if (this.documentIdProvider != null) {
+                    String documentId = this.documentIdProvider.apply(t);
+
+                    if (documentId != null && !documentId.isEmpty()) {
+                        indexRequest = indexRequest
+                                .id(documentId);
+                    }
+                }
+
+                request.add(indexRequest);
                 this.elasticClient.bulkAsync(request, RequestOptions.DEFAULT, actionListener);
             }
         }
-//        TODO do we need it?
-//        FlushRequest flushRequest = new FlushRequest();
-//        this.elasticClient.indices().flushAsync(flushRequest, RequestOptions.DEFAULT);
     }
 
     @Override
@@ -215,6 +247,11 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
             }
             throw new BingoElasticException("Couldn't delete records in Elasticsearch", e.getCause());
         }
+    }
+
+    @Override
+    public void close() throws Exception {
+        elasticClient.close();
     }
 
     public static class ElasticRepositoryBuilder<T extends IndigoRecord> {
@@ -276,6 +313,45 @@ public class ElasticRepository<T extends IndigoRecord> implements GenericReposit
 
         public ElasticRepositoryBuilder<T> withRefreshInterval(String refreshInterval) {
             operations.add(repo -> repo.refreshInterval = refreshInterval);
+            return this;
+        }
+
+        /**
+         * Provide a function that maps an IndigoRecord attribute to
+         * ElasticSearch document _id unique identifier, to allow for
+         * updating existing records if they exist.
+         * Mutually exclusive with withUseInternalId
+         *
+         * @param documentIdProvider function that maps IndigoRecord to document id string
+         * @return the repository builder
+         */
+        public ElasticRepositoryBuilder<T> withDocumentIdProvider(Function<IndigoRecord, String> documentIdProvider) {
+            operations.add(repo -> repo.documentIdProvider = documentIdProvider);
+            return this;
+        }
+
+        /**
+         * Use IndigoRecord.internalID as the ElasticSearch document _id
+         * unique identifier, to allow for updating existing records
+         * if they exist.
+         * Mutually exclusive with withDocumentIdProvider
+         *
+         * @return the repository builder
+         */
+        public ElasticRepositoryBuilder<T> useInternalIdAsDocumentId() {
+            operations.add(repo -> repo.documentIdProvider = IndigoRecord::getInternalID);
+            return this;
+        }
+
+        /**
+         * Automatically flush updated index after making an index call.
+         * Not recommended for production use or when inserting a large number of records.
+         *
+         * @param autoFlush auto flush updated index
+         * @return the repository builder
+         */
+        public ElasticRepositoryBuilder<T> withAutoFlush(boolean autoFlush) {
+            operations.add(repo -> repo.autoFlush = autoFlush);
             return this;
         }
 
