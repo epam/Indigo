@@ -20,7 +20,6 @@
 #define __lzw_dictionary_h__
 
 #include "base_cpp/array.h"
-#include "base_cpp/obj_array.h"
 #include "base_cpp/tlscont.h"
 
 #ifdef _WIN32

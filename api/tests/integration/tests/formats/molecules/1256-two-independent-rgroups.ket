@@ -1,0 +1,40 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "rg1"
+            },
+            {
+                "$ref": "rg2"
+            }
+        ],
+        "connections": [],
+        "templates": []
+    },
+    "rg1": {
+        "rlogic": {
+            "number": 1
+        },
+        "type": "rgroup",
+        "atoms": [
+            {
+                "label": "O",
+                "location": [0, 0, 0]
+            }
+        ],
+        "bonds": []
+    },
+    "rg2": {
+        "rlogic": {
+            "number": 2
+        },
+        "type": "rgroup",
+        "atoms": [
+            {
+                "label": "F",
+                "location": [0, -2, 0]
+            }
+        ],
+        "bonds": []
+    }
+}

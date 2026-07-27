@@ -17,6 +17,7 @@
  ***************************************************************************/
 
 #include "IndigoBaseMolecule.h"
+#include "IndigoMolecule.h"
 #include "IndigoSession.h"
 
 #include <indigo.h>
@@ -46,4 +47,10 @@ IndigoAtom IndigoBaseMolecule::getAtom(int atomIndex) const
 {
     session()->setSessionId();
     return IndigoAtom(session()->_checkResult(indigoGetAtom(id(), atomIndex)), session());
+}
+
+IndigoMolecule IndigoBaseMolecule::expandedMonomersToAtoms() const
+{
+    session()->setSessionId();
+    return IndigoMolecule(session()->_checkResult(indigoExpandedMonomersToAtoms(id())), session());
 }

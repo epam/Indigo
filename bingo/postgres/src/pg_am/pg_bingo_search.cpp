@@ -131,7 +131,10 @@ Datum bingo_rescan(PG_FUNCTION_ARGS)
         so = (BingoPgSearch*)scan->opaque;
         if (so != NULL)
         {
-            so->prepareRescan(scan);
+            // We create here search engines, which can call SPI functions
+            // TODO: It doesn't look proper to run SPI from low level index functions
+            // It's better to utilize low level Postgre API
+            so->prepareRescan(scan, true);
         }
     }
     PG_BINGO_HANDLE(delete so; scan->opaque = NULL);

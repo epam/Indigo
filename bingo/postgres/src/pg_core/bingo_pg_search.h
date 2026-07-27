@@ -43,14 +43,14 @@ public:
         return _funcName.ptr();
     }
 
-    void prepareRescan(PG_OBJECT scan_desc_ptr);
+    void prepareRescan(PG_OBJECT scan_desc_ptr, bool deferred_finish);
 
     DECL_ERROR;
 
 private:
     BingoPgSearch(const BingoPgSearch&); // no implicit copy
 
-    void _initScanSearch();
+    void _initScanSearch(bool deferred_finish = false);
     //   void _defineQueryOptions();
 
     bool _initSearch;

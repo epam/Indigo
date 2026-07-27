@@ -20,7 +20,9 @@
 #define __smiles_loader__
 
 #include "base_cpp/exception.h"
+#include "base_cpp/ptr_array.h"
 #include "base_cpp/tlscont.h"
+#include "molecule/loader_options.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/query_molecule.h"
@@ -65,7 +67,13 @@ namespace indigo
         StereocentersOptions stereochemistry_options;
         bool ignore_cistrans_errors;
         bool ignore_bad_valence;
+        ValenceMode valence_mode;
+        bool strict_aliphatic;
         bool ignore_no_chiral_flag{false};
+
+        // Bulk options propagation. See LoaderOptions doc for the field set.
+        void setOptions(const LoaderOptions& opts);
+        LoaderOptions getOptions() const;
 
         static void readSmartsAtomStr(const std::string& atom_str, std::unique_ptr<QueryMolecule::Atom>& qatom);
         static void readSmartsBondStr(const std::string& bond_str, std::unique_ptr<QueryMolecule::Bond>& qbond);
@@ -152,7 +160,7 @@ namespace indigo
         Array<_CycleDesc> _cycles;
         StringPool _pending_bonds_pool;
         Pool<List<int>::Elem> _neipool;
-        ObjArray<_AtomDesc> _atoms;
+        PtrArray<_AtomDesc> _atoms;
         Array<_BondDesc> _bonds;
         Array<int> _polymer_repetitions;
 
@@ -184,7 +192,7 @@ namespace indigo
         void _handlePolymerRepetition(int i);
 
         static void _readAtom(Array<char>& atom_str, bool first_in_brackets, _AtomDesc& atom, std::unique_ptr<QueryMolecule::Atom>& qatom,
-                              bool smarts_mode = false, bool inside_rsmiles = false);
+                              bool smarts_mode = false, bool inside_rsmiles = false, bool strict_aliphatic = false);
 
         static bool _readAtomLogic(Array<char>& atom_str, bool first_in_brackets, _AtomDesc& atom, std::unique_ptr<QueryMolecule::Atom>& qatom,
                                    bool smarts_mode = false, bool inside_rsmiles = false);

@@ -1,0 +1,453 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "monomer0"
+            },
+            {
+                "$ref": "monomer1"
+            },
+            {
+                "$ref": "monomer2"
+            }
+        ],
+        "connections": [
+            {
+                "connectionType": "single",
+                "endpoint1": {
+                    "monomerId": "monomer0",
+                    "attachmentPointId": "R2"
+                },
+                "endpoint2": {
+                    "monomerId": "monomer1",
+                    "attachmentPointId": "R1"
+                }
+            },
+            {
+                "connectionType": "single",
+                "endpoint1": {
+                    "monomerId": "monomer1",
+                    "attachmentPointId": "R2"
+                },
+                "endpoint2": {
+                    "monomerId": "monomer2",
+                    "attachmentPointId": "R1"
+                }
+            }
+        ],
+        "templates": [
+            {
+                "$ref": "monomerTemplate-5Br-dU___5-Bromo-deoxyuridine"
+            }
+        ]
+    },
+    "monomer0": {
+        "type": "monomer",
+        "id": "0",
+        "position": {
+            "x": 25.90992940908742,
+            "y": -19.26678558966075
+        },
+        "alias": "5Br-dU",
+        "templateId": "5Br-dU___5-Bromo-deoxyuridine",
+        "seqid": 1
+    },
+    "monomerTemplate-5Br-dU___5-Bromo-deoxyuridine": {
+        "type": "monomerTemplate",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    -1.622,
+                    0.167,
+                    0
+                ],
+                "stereoLabel": "abs"
+            },
+            {
+                "label": "O",
+                "location": [
+                    -0.708,
+                    0.573,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -0.039,
+                    -0.169,
+                    0
+                ],
+                "stereoLabel": "abs"
+            },
+            {
+                "label": "C",
+                "location": [
+                    -0.539,
+                    -1.035,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -1.518,
+                    -0.827,
+                    0
+                ],
+                "stereoLabel": "abs"
+            },
+            {
+                "label": "C",
+                "location": [
+                    -2.488,
+                    0.666,
+                    0
+                ]
+            },
+            {
+                "label": "N",
+                "location": [
+                    0.955,
+                    -0.066,
+                    0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    -2.488,
+                    1.666,
+                    0
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    -3.354,
+                    2.166,
+                    0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    -2.261,
+                    -1.497,
+                    0
+                ]
+            },
+            {
+                "label": "P",
+                "location": [
+                    -3.212,
+                    -1.188,
+                    0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    -3.955,
+                    -1.858,
+                    0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    -3.42,
+                    -0.21,
+                    0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    -3.004,
+                    -2.166,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    2.453,
+                    0.802,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    1.455,
+                    0.802,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    2.955,
+                    -0.066,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    1.458,
+                    -0.935,
+                    0
+                ]
+            },
+            {
+                "label": "N",
+                "location": [
+                    2.458,
+                    -0.929,
+                    0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    3.955,
+                    -0.063,
+                    0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    0.961,
+                    -1.804,
+                    0
+                ]
+            },
+            {
+                "label": "Br",
+                "location": [
+                    2.952,
+                    1.667,
+                    0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    4
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    4,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    1
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    0
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    5
+                ],
+                "stereo": 1
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    6
+                ],
+                "stereo": 1
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    5,
+                    7
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    7,
+                    8
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    4,
+                    9
+                ],
+                "stereo": 6
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    9,
+                    10
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    10,
+                    11
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    10,
+                    12
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    10,
+                    13
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    15,
+                    6
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    6,
+                    17
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    17,
+                    18
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    18,
+                    16
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    16,
+                    14
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    14,
+                    15
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    16,
+                    19
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    17,
+                    20
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    14,
+                    21
+                ]
+            }
+        ],
+        "class": "RNA",
+        "classHELM": "RNA",
+        "id": "5Br-dU___5-Bromo-deoxyuridine",
+        "fullName": "5-Bromo-deoxyuridine",
+        "alias": "5Br-dU",
+        "attachmentPoints": [
+            {
+                "attachmentAtom": 7,
+                "type": "left",
+                "leavingGroup": {
+                    "atoms": [
+                        8
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 10,
+                "type": "right",
+                "leavingGroup": {
+                    "atoms": [
+                        11
+                    ]
+                }
+            }
+        ],
+        "naturalAnalogShort": "U"
+    },
+    "monomer1": {
+        "type": "monomer",
+        "id": "1",
+        "position": {
+            "x": 27.40992940908742,
+            "y": -19.26678558966075
+        },
+        "alias": "5Br-dU",
+        "templateId": "5Br-dU___5-Bromo-deoxyuridine",
+        "seqid": 2
+    },
+    "monomer2": {
+        "type": "monomer",
+        "id": "2",
+        "position": {
+            "x": 28.90992940908742,
+            "y": -19.26678558966075
+        },
+        "alias": "5Br-dU",
+        "templateId": "5Br-dU___5-Bromo-deoxyuridine",
+        "seqid": 3
+    }
+}

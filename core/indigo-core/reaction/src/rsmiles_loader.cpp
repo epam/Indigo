@@ -36,6 +36,7 @@ RSmilesLoader::RSmilesLoader(Scanner& scanner) : _scanner(scanner)
     smarts_mode = false;
     ignore_cistrans_errors = false;
     ignore_bad_valence = false;
+    valence_mode = ValenceMode::BIOVIA_2009;
 }
 
 int RSmilesLoader::_selectGroupByPair(int& lead_idx, int& idx, int rcnt, int ccnt, int pcnt) const
@@ -57,6 +58,22 @@ int RSmilesLoader::_selectGroup(int& idx, int rcnt, int ccnt, int pcnt) const
 {
     int iidx = idx;
     return _selectGroupByPair(iidx, idx, rcnt, ccnt, pcnt);
+}
+
+void RSmilesLoader::setOptions(const LoaderOptions& opts)
+{
+    stereochemistry_options = opts.stereochemistry_options;
+    ignore_bad_valence = opts.ignore_bad_valence;
+    valence_mode = opts.valence_mode;
+}
+
+LoaderOptions RSmilesLoader::getOptions() const
+{
+    LoaderOptions opts;
+    opts.stereochemistry_options = stereochemistry_options;
+    opts.ignore_bad_valence = ignore_bad_valence;
+    opts.valence_mode = valence_mode;
+    return opts;
 }
 
 void RSmilesLoader::loadReaction(Reaction& reaction)
@@ -86,7 +103,6 @@ void RSmilesLoader::loadQueryReaction(QueryReaction& rxn)
 void RSmilesLoader::_loadReaction()
 {
     _brxn->clear();
-
     std::unique_ptr<BaseMolecule> mols[3];
     std::unique_ptr<BaseMolecule>& rcnt = mols[0];
     std::unique_ptr<BaseMolecule>& ctlt = mols[1];
@@ -126,6 +142,7 @@ void RSmilesLoader::_loadReaction()
     r_loader.ignore_cistrans_errors = ignore_cistrans_errors;
     r_loader.stereochemistry_options = stereochemistry_options;
     r_loader.ignore_bad_valence = ignore_bad_valence;
+    r_loader.valence_mode = valence_mode;
 
     if (_rxn != 0)
     {
@@ -160,6 +177,7 @@ void RSmilesLoader::_loadReaction()
     c_loader.ignore_cistrans_errors = ignore_cistrans_errors;
     c_loader.stereochemistry_options = stereochemistry_options;
     c_loader.ignore_bad_valence = ignore_bad_valence;
+    c_loader.valence_mode = valence_mode;
 
     if (_rxn != 0)
     {
@@ -200,6 +218,7 @@ void RSmilesLoader::_loadReaction()
     p_loader.ignore_cistrans_errors = ignore_cistrans_errors;
     p_loader.stereochemistry_options = stereochemistry_options;
     p_loader.ignore_bad_valence = ignore_bad_valence;
+    p_loader.valence_mode = valence_mode;
 
     if (_rxn != 0)
     {
@@ -476,6 +495,37 @@ void RSmilesLoader::_loadReaction()
                     else
                         hl_bonds[idx] = 1;
 
+                    if (_scanner.lookNext() == ',')
+                        _scanner.skip(1);
+                }
+            }
+            else if (c == 'c' || c == 't')
+            {
+                if (_scanner.readChar() != ':')
+                    throw Error("colon expected after 'c'");
+
+                while (isdigit(_scanner.lookNext()))
+                {
+                    int idx = _scanner.readUnsigned();
+
+                    int group = _selectGroup(idx, rcnt->edgeCount(), ctlt->edgeCount(), prod->edgeCount());
+                    bool skip = false;
+                    if (ignore_cistrans_errors && !MoleculeCisTrans::isGeomStereoBond(*stereo[group], idx, nullptr, false))
+                        skip = true;
+
+                    if (!skip)
+                    {
+                        stereo[group]->restoreSubstituents(idx);
+                        const int* subst = stereo[group]->cis_trans.getSubstituents(idx);
+                        int parity = ((c == 'c') ? MoleculeCisTrans::CIS : MoleculeCisTrans::TRANS);
+
+                        if (subst[1] != -1 && subst[1] < subst[0])
+                            parity = 3 - parity;
+                        if (subst[3] != -1 && subst[3] < subst[2])
+                            parity = 3 - parity;
+
+                        stereo[group]->cis_trans.setParity(idx, parity);
+                    }
                     if (_scanner.lookNext() == ',')
                         _scanner.skip(1);
                 }

@@ -1,5 +1,8 @@
+import gc
+
 import pytest
 from indigo import Indigo
+
 from .constants import (
     DATA_TYPES,
     DB_BINGO,
@@ -11,15 +14,17 @@ from .constants import (
 )
 from .dbc.BingoNoSQL import BingoNoSQL
 from .dbc.PostgresSQL import Postgres
+from .dbc.OracleDB import Oracle
 from .helpers import get_bingo_meta, get_query_entities
 from .logger import logger
 
 
 @pytest.fixture(scope="class")
 def indigo():
-    # TODO: uncomment this:
     indigo = Indigo()
-    return indigo
+    yield indigo
+    del indigo
+    gc.collect()
 
 
 @pytest.fixture(scope="class")
@@ -28,6 +33,11 @@ def entities(request, indigo):
     entities = get_query_entities(indigo, function)
     yield entities
     del entities
+
+
+@pytest.fixture
+def db_backend(request):
+    return request.config.getoption("--db")
 
 
 @pytest.fixture(scope="class")
@@ -48,6 +58,7 @@ def db(request, indigo):
         db.import_data(meta["import_no_sql"], data_type)
     elif db_str == DB_BINGO_ELASTIC:
         from bingo_elastic.elastic import IndexName
+
         from .dbc.BingoElastic import BingoElastic
 
         if data_type == EntitiesType.MOLECULES:
@@ -57,10 +68,12 @@ def db(request, indigo):
         db = BingoElastic(indigo, index_name)
         db.import_data(meta["import_no_sql"], data_type)
     elif db_str == DB_ORACLE:
-        pass
+        db = Oracle()
+        ora_tables = db.create_data_tables(meta["tables"])
+        db.import_data(import_meta=meta["import"])
+        db.create_indices(meta["indices"])
     elif db_str == DB_MSSQL:
         pass
-
     yield db
 
     logger.info("Dropping DB...")
@@ -73,6 +86,10 @@ def db(request, indigo):
         db.delete_base()
     elif db_str == DB_BINGO_ELASTIC:
         db.drop()
+    elif db_str == DB_ORACLE:
+        for table in ora_tables:
+            logger.info(f"Dropping Oracle table {table}")
+            table.drop(db.engine)
     logger.info(f"===== Finish of testing {function} =====")
 
 

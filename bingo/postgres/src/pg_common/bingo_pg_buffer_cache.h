@@ -4,6 +4,7 @@
 extern "C"
 {
 #include "c.h"
+#include "postgres.h"
 #include "storage/itemptr.h"
 }
 

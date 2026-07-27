@@ -18,7 +18,6 @@
 
 #include "layout/molecule_layout.h"
 #include "base_cpp/array.h"
-#include "base_cpp/obj_array.h"
 #include "graph/filter.h"
 #include <vector>
 
@@ -27,7 +26,8 @@ using namespace indigo;
 IMPL_ERROR(MoleculeLayout, "molecule_layout");
 
 MoleculeLayout::MoleculeLayout(BaseMolecule& molecule, bool smart_layout)
-    : _molecule(molecule), _smart_layout(smart_layout), respect_existing_layout(false), multiple_distance(std::nullopt)
+    : _molecule(molecule), _smart_layout(smart_layout), respect_existing_layout(false), multiple_distance(std::nullopt), respect_cycles_direction(false),
+      flexible_fixed_components(false), sequence_layout(false)
 {
     _hasMulGroups = _molecule.sgroups.getSGroupCount(SGroup::SG_TYPE_MUL) > 0;
     _init(smart_layout);
@@ -42,7 +42,11 @@ void MoleculeLayout::_init(bool smart_layout)
     if (_smart_layout)
         _layout_graph = std::make_unique<MoleculeLayoutGraphSmart>();
     else
+    {
         _layout_graph = std::make_unique<MoleculeLayoutGraphSimple>();
+        _layout_graph->respect_cycles_direction = respect_cycles_direction;
+        _layout_graph->sequence_layout = sequence_layout;
+    }
 
     max_iterations = LAYOUT_MAX_ITERATION;
     _query = false;
@@ -335,7 +339,7 @@ void MoleculeLayout::_updateDataSGroups()
         if (sg.sgroup_type == SGroup::SG_TYPE_DAT)
         {
             DataSGroup& group = (DataSGroup&)sg;
-            if (!group.relative)
+            if (!group.relative && group.display_pos.has_value())
             {
                 Vec2f before;
                 _molecule.getSGroupAtomsCenterPoint(group, before);
@@ -354,7 +358,9 @@ void MoleculeLayout::_updateDataSGroups()
 
                 Vec2f delta;
                 delta.diff(after, before);
-                group.display_pos.add(delta);
+                Vec2f dp = group.display_pos.value();
+                dp.add(delta);
+                group.display_pos.set(dp);
             }
         }
     }
@@ -364,7 +370,8 @@ void MoleculeLayout::_make()
 {
     _layout_graph->max_iterations = max_iterations;
     _layout_graph->layout_orientation = layout_orientation;
-
+    _layout_graph->respect_cycles_direction = respect_cycles_direction;
+    _layout_graph->sequence_layout = sequence_layout;
     // 0. Find 2D coordinates via proxy _layout_graph object
     _layout_graph->max_iterations = max_iterations;
     _makeLayout();

@@ -44,6 +44,7 @@ void ReactionAutoLoader::_init()
     ignore_cistrans_errors = false;
     ignore_no_chiral_flag = false;
     ignore_bad_valence = false;
+    valence_mode = ValenceMode::BIOVIA_2017;
     dearomatize_on_load = false;
     treat_stereo_as = 0;
 }
@@ -77,30 +78,54 @@ ReactionAutoLoader::~ReactionAutoLoader()
         delete _scanner;
 }
 
-void ReactionAutoLoader::loadQueryReaction(QueryReaction& qreaction)
+void ReactionAutoLoader::setOptions(const LoaderOptions& opts)
 {
-    loadReaction(qreaction);
+    stereochemistry_options = opts.stereochemistry_options;
+    valence_mode = opts.valence_mode;
+    ignore_bad_valence = opts.ignore_bad_valence;
+    ignore_no_chiral_flag = opts.ignore_no_chiral_flag;
+    ignore_noncritical_query_features = opts.ignore_noncritical_query_features;
+    treat_x_as_pseudoatom = opts.treat_x_as_pseudoatom;
 }
 
-void ReactionAutoLoader::loadReaction(BaseReaction& reaction)
+LoaderOptions ReactionAutoLoader::getOptions() const
 {
-    auto rptr = loadReaction(reaction.isQueryReaction());
+    LoaderOptions opts;
+    opts.stereochemistry_options = stereochemistry_options;
+    opts.valence_mode = valence_mode;
+    opts.ignore_bad_valence = ignore_bad_valence;
+    opts.ignore_no_chiral_flag = ignore_no_chiral_flag;
+    opts.ignore_noncritical_query_features = ignore_noncritical_query_features;
+    opts.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+    return opts;
+}
+
+void ReactionAutoLoader::loadQueryReaction(QueryReaction& qreaction, MonomerTemplateLibrary* monomer_lib)
+{
+    loadReaction(qreaction, monomer_lib);
+}
+
+void ReactionAutoLoader::loadReaction(BaseReaction& reaction, MonomerTemplateLibrary* monomer_lib)
+{
+    auto rptr = loadReaction(reaction.isQueryReaction(), monomer_lib);
     reaction.clone(*rptr);
     reaction.original_format = rptr->original_format;
     for (int i = 0; i < rptr->reactionBlocksCount(); i++)
         reaction.addReactionBlock().copy(rptr->reactionBlock(i));
 }
 
-std::unique_ptr<BaseReaction> ReactionAutoLoader::loadReaction(bool query)
+std::unique_ptr<BaseReaction> ReactionAutoLoader::loadReaction(bool query, MonomerTemplateLibrary* monomer_lib)
 {
-    auto reaction = _loadReaction(query);
+    auto reaction = _loadReaction(query, monomer_lib);
     if (!query && dearomatize_on_load)
         reaction->dearomatize(arom_options);
     return reaction;
 }
 
-std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
+std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query, MonomerTemplateLibrary* monomer_lib)
 {
+    const std::string input_format = MoleculeAutoLoader::normalizeInputFormat(this->input_format);
+    bool allow_all = input_format.empty() || input_format == "auto";
     auto local_scanner = _scanner;
     // chack for base64
     uint8_t base64_id[] = "base64::";
@@ -150,25 +175,31 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
             loader2.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
             loader2.ignore_no_chiral_flag = ignore_no_chiral_flag;
             loader2.ignore_bad_valence = ignore_bad_valence;
+            loader2.valence_mode = valence_mode;
             return loader2.loadReaction(query);
         }
     }
 
+    if (allow_all || input_format == "cdxml")
     {
         if (local_scanner->findWord(kCDX_HeaderString))
         {
             local_scanner->seek(kCDX_HeaderLength, SEEK_CUR);
             ReactionCdxmlLoader loader(*local_scanner, true);
             loader.stereochemistry_options = stereochemistry_options;
+            loader.ignore_bad_valence = ignore_bad_valence;
             if (query)
                 throw Error("CDX queries not supported yet");
             auto reaction = std::make_unique<Reaction>();
             loader.loadReaction(*reaction);
             return reaction;
         }
+        else if (!allow_all && input_format == "cdxml")
+            throw Error("expected CDX binary header but not found");
     }
 
     // check for MDLCT format
+    if (allow_all || input_format == "mol" || input_format == "rxn" || input_format == "sdf")
     {
         QS_DEF(Array<char>, buf);
         if (MoleculeAutoLoader::tryMDLCT(*_scanner, buf))
@@ -180,19 +211,21 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
             loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
             loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
             loader.ignore_bad_valence = ignore_bad_valence;
+            loader.valence_mode = valence_mode;
             if (query)
             {
                 auto reaction = std::make_unique<QueryReaction>();
-                loader.loadQueryReaction(*reaction);
+                loader.loadQueryReaction(*reaction, monomer_lib);
                 return reaction;
             }
             else
             {
                 auto reaction = std::make_unique<Reaction>();
-                loader.loadReaction(*reaction);
+                loader.loadReaction(*reaction, monomer_lib);
                 return reaction;
             }
         }
+        // If tryMDLCT failed, fall through to normal rxnfile/molfile parser below
     }
 
     // check for ICM format
@@ -216,6 +249,7 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
     }
 
     // check for CML format
+    if (allow_all || input_format == "cml")
     {
         long long pos = _scanner->tell();
         _scanner->skipSpace();
@@ -226,6 +260,7 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
             {
                 ReactionCmlLoader loader(*_scanner);
                 loader.stereochemistry_options = stereochemistry_options;
+                loader.ignore_bad_valence = ignore_bad_valence;
 
                 if (query)
                     throw Error("CML queries not supported");
@@ -234,11 +269,13 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
                 return reaction;
             }
         }
-
         _scanner->seek(pos, SEEK_SET);
+        if (!allow_all && input_format == "cml")
+            throw Error("expected '<molecule' tag for CML format but not found");
     }
 
     // check for CDXML format
+    if (allow_all || input_format == "cdxml")
     {
         long long pos = _scanner->tell();
         _scanner->skipSpace();
@@ -247,6 +284,7 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
             _scanner->seek(pos, SEEK_SET);
             ReactionCdxmlLoader loader(*_scanner);
             loader.stereochemistry_options = stereochemistry_options;
+            loader.ignore_bad_valence = ignore_bad_valence;
 
             if (query)
             {
@@ -262,10 +300,13 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
             }
         }
         _scanner->seek(pos, SEEK_SET);
+        if (!allow_all && input_format == "cdxml")
+            throw Error("expected 'CDXML' tag for CDXML format but not found");
     }
 
     // check for JSON-KET format
 
+    if (allow_all || input_format == "ket")
     {
         long long pos = _scanner->tell();
         bool hasbom = false;
@@ -305,6 +346,7 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
                             loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
                             loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
                             loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
+                            loader.ignore_bad_valence = ignore_bad_valence;
                             std::unique_ptr<BaseReaction> reaction;
                             if (is_pathway)
                             {
@@ -331,11 +373,15 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
                             return reaction;
                         }
                     }
+                    if (!allow_all && input_format == "ket")
+                        throw Error("JSON object has no 'root' or 'nodes' members expected for ket format");
                     return nullptr;
                 }
             }
         }
         _scanner->seek(pos, SEEK_SET);
+        if (!allow_all && input_format == "ket")
+            throw Error("Input is not a valid JSON object expected for ket format");
     }
 
     // check for RDF format
@@ -362,8 +408,9 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
                 loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
                 loader.treat_stereo_as = treat_stereo_as;
                 loader.ignore_bad_valence = ignore_bad_valence;
+                loader.valence_mode = valence_mode;
                 reactions.emplace_back();
-                loader.loadReaction(reactions.back(), rdf_loader.properties);
+                loader.loadReaction(reactions.back(), rdf_loader.properties, monomer_lib);
             }
 
             PathwayReactionBuilder builder;
@@ -374,40 +421,42 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
     // check for SMILES format
     if (Scanner::isSingleLine(*_scanner))
     {
-        long long pos = _scanner->tell();
-        RSmilesLoader loader(*_scanner);
-
-        loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
-        loader.ignore_cistrans_errors = ignore_cistrans_errors;
-        loader.stereochemistry_options = stereochemistry_options;
-        loader.ignore_bad_valence = ignore_bad_valence;
-
-        if (query)
+        if (allow_all || input_format == "smi" || input_format == "smarts")
         {
-            // Try to load query as SMILES, if error occured - try to load as SMARTS
-            auto reaction = std::make_unique<QueryReaction>();
-            try
+            long long pos = _scanner->tell();
+            RSmilesLoader loader(*_scanner);
+
+            loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
+            loader.ignore_cistrans_errors = ignore_cistrans_errors;
+            loader.stereochemistry_options = stereochemistry_options;
+            loader.ignore_bad_valence = ignore_bad_valence;
+
+            if (query)
             {
-                loader.loadQueryReaction(*reaction);
+                // Try to load query as SMILES, if error occured - try to load as SMARTS
+                auto reaction = std::make_unique<QueryReaction>();
+                try
+                {
+                    loader.loadQueryReaction(*reaction);
+                }
+                catch (Exception&)
+                {
+                    loader.smarts_mode = true;
+                    _scanner->seek(pos, SEEK_SET);
+                    loader.loadQueryReaction(*reaction);
+                }
+                return reaction;
             }
-            catch (Exception&)
+            else
             {
-                loader.smarts_mode = true;
-                _scanner->seek(pos, SEEK_SET);
-                loader.loadQueryReaction(*reaction);
+                auto reaction = std::make_unique<Reaction>();
+                loader.loadReaction(*reaction);
+                return reaction;
             }
-            return reaction;
-        }
-        else
-        {
-            auto reaction = std::make_unique<Reaction>();
-            loader.loadReaction(*reaction);
-            return reaction;
         }
     }
 
     // default is Rxnfile format
-    else
     {
         RxnfileLoader loader(*_scanner);
         loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
@@ -415,17 +464,18 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query)
         loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
         loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
         loader.ignore_bad_valence = ignore_bad_valence;
+        loader.valence_mode = valence_mode;
 
         if (query)
         {
             auto reaction = std::make_unique<QueryReaction>();
-            loader.loadQueryReaction(*reaction);
+            loader.loadQueryReaction(*reaction, monomer_lib);
             return reaction;
         }
         else
         {
             auto reaction = std::make_unique<Reaction>();
-            loader.loadReaction(*reaction);
+            loader.loadReaction(*reaction, monomer_lib);
             return reaction;
         }
     }

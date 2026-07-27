@@ -134,6 +134,11 @@ public:
         return 0;
     }
 
+    void setDeferredFinish(bool deferred)
+    {
+        _deferred_finish = deferred;
+    }
+
     virtual void prepareQuerySearch(BingoPgIndex&, PG_OBJECT scan_desc);
     virtual bool searchNext(PG_OBJECT result_ptr)
     {
@@ -163,6 +168,8 @@ protected:
 
     int _blockBegin;
     int _blockEnd;
+
+    bool _deferred_finish = false;
 
     BingoPgIndex* _bufferIndexPtr;
 

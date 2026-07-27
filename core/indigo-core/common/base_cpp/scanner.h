@@ -26,7 +26,6 @@
 
 #include "base_cpp/array.h"
 #include "base_cpp/io_base.h"
-#include "base_cpp/obj_array.h"
 #include "base_cpp/reusable_obj_array.h"
 #include <stdio.h>
 
@@ -56,7 +55,11 @@ namespace indigo
         void read(int length, Array<char>& buf);
 
         void readLine(Array<char>& out, bool append_zero);
+        void readLine(std::string& out);
+        void readQuotedLine(Array<char>& out, bool append_zero);
+
         void appendLine(Array<char>& out, bool append_zero);
+        void appendLine(std::string& out);
         bool skipLine();
 
         virtual char readChar();

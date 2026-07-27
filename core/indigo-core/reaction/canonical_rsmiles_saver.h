@@ -37,13 +37,15 @@ namespace indigo
         explicit CanonicalRSmilesSaver(Output& output);
         ~CanonicalRSmilesSaver();
 
-        void saveReaction(Reaction& react);
+        void saveReaction(Reaction& reaction);
 
         DECL_ERROR;
 
     protected:
-        void _saveReaction();
-        void _writeMolecule(int i, CanonicalSmilesSaver& saver);
+        SmilesSaver& _addMoleculeSaver() override;
+
+    private:
+        Reaction _reaction;
     };
 
 } // namespace indigo

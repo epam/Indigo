@@ -23,8 +23,10 @@
 #include "base_cpp/properties_map.h"
 #include "base_cpp/red_black.h"
 #include "base_cpp/tlscont.h"
+#include "molecule/loader_options.h"
 #include "molecule/molecule_arom.h"
 #include "molecule/molecule_stereocenter_options.h"
+#include "molecule/valence_model.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -38,6 +40,7 @@ namespace indigo
     class Molecule;
     class QueryMolecule;
     class BaseMolecule;
+    class MonomerTemplateLibrary;
 
     class DLLEXPORT MoleculeAutoLoader
     {
@@ -48,9 +51,13 @@ namespace indigo
 
         ~MoleculeAutoLoader();
 
-        void loadMolecule(BaseMolecule& mol);
+        void loadMolecule(BaseMolecule& mol, MonomerTemplateLibrary* monomer_lib = nullptr);
         // to keep C++ API compatible
-        void loadQueryMolecule(QueryMolecule& qmol);
+        void loadQueryMolecule(QueryMolecule& qmol, MonomerTemplateLibrary* monomer_lib = nullptr);
+
+        // Bulk options propagation. See LoaderOptions doc for the field set.
+        void setOptions(const LoaderOptions& opts);
+        LoaderOptions getOptions() const;
 
         StereocentersOptions stereochemistry_options;
         bool ignore_cistrans_errors;
@@ -60,9 +67,13 @@ namespace indigo
         bool skip_3d_chirality;
         bool ignore_no_chiral_flag;
         bool ignore_bad_valence;
+        ValenceMode valence_mode;
+        bool smiles_loading_strict_aliphatic;
         int treat_stereo_as;
         bool dearomatize_on_load;
         AromaticityOptions arom_options;
+
+        std::string input_format;
 
         // Loaded properties
         // CP_DECL;
@@ -73,6 +84,7 @@ namespace indigo
 
         static bool tryMDLCT(Scanner& scanner, Array<char>& outbuf);
         static void readAllDataToString(Scanner& scanner, Array<char>& dataBuf);
+        static std::string normalizeInputFormat(const std::string& input_format);
 
     protected:
         Scanner* _scanner;
@@ -80,10 +92,10 @@ namespace indigo
 
         void _init();
         bool _isSingleLine();
-        void _loadMolecule(BaseMolecule& mol);
+        void _loadMolecule(BaseMolecule& mol, MonomerTemplateLibrary* monomer_lib);
 
     private:
-        MoleculeAutoLoader(const MoleculeAutoLoader&); // no implicit copy
+        MoleculeAutoLoader(const MoleculeAutoLoader&) = delete; // no implicit copy
     };
 
 } // namespace indigo

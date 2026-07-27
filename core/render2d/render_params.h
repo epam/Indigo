@@ -58,7 +58,7 @@ namespace indigo
         PtrArray<BaseMolecule> mols;
         PtrArray<BaseReaction> rxns;
 
-        ObjArray<Array<char>> titles;
+        PtrArray<Array<char>> titles;
         Array<int> refAtoms;
 
         RenderOptions rOpt;

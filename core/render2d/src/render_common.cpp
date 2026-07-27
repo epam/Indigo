@@ -18,7 +18,6 @@
 
 #include "render_common.h"
 #include "base_cpp/array.h"
-#include "base_cpp/obj_array.h"
 #include "layout/molecule_layout.h"
 #include "math/algebra.h"
 #include "molecule/molecule.h"
@@ -71,6 +70,7 @@ RenderItem::RenderItem(const RenderItem& ri)
     bbsz.copy(ri.bbsz);
     relpos.copy(ri.relpos);
     color = ri.color;
+    rgb_color = ri.rgb_color;
     highlighted = ri.highlighted;
     noBondOffset = ri.noBondOffset;
 }
@@ -134,8 +134,8 @@ AtomDesc::AtomDesc()
 void AtomDesc::clear()
 {
     showLabel = showHydro = true;
-    tibegin = gibegin = -1;
-    ticount = gicount = 0;
+    tibegin = gibegin = cipBegin = -1;
+    ticount = gicount = cipCount = 0;
     attachmentPointBegin = -1;
     attachmentPointCount = 0;
     rSiteAttachmentIndexBegin = -1;

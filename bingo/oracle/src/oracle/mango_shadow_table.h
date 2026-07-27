@@ -19,11 +19,19 @@
 #ifndef __mango_shadow_table__
 #define __mango_shadow_table__
 
+#include "base_cpp/ptr_array.h"
 #include "base_cpp/queue.h"
 #include "base_cpp/tlscont.h"
 #include "core/mango_matchers.h"
 #include "oracle/bingo_fetch_engine.h"
 #include "oracle/ora_wrap.h"
+
+#include <memory>
+
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
 
 namespace indigo
 {
@@ -62,8 +70,8 @@ namespace indigo
         void _flushMain(OracleEnv& env);
         void _flushComponents(OracleEnv& env);
 
-        Obj<OracleStatement> _main_table_statement;
-        Obj<OracleStatement> _components_table_statement;
+        std::unique_ptr<OracleStatement> _main_table_statement;
+        std::unique_ptr<OracleStatement> _components_table_statement;
 
         int _main_table_statement_count;
         int _components_table_statement_count;
@@ -72,11 +80,11 @@ namespace indigo
         Array<int> _pending_blockno;
         Array<int> _pending_offset;
         Array<char[512]> _pending_gross;
-        ObjArray<OracleRaw> _pending_cmf;
-        ObjArray<OracleRaw> _pending_xyz;
+        PtrArray<OracleRaw> _pending_cmf;
+        PtrArray<OracleRaw> _pending_xyz;
         Array<float> _pending_mass;
         Array<int> _pending_fragcount;
-        ObjArray<Array<int>> _pending_counters;
+        PtrArray<Array<int>> _pending_counters;
 
         Array<char[19]> _pending_comp_rid;
         Array<char[9]> _pending_comp_hash;

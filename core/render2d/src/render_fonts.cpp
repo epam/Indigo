@@ -141,6 +141,17 @@ void RenderContext::fontsGetTextExtents(cairo_t* cr, const char* text, int /*siz
     ry = (float)-te.y_bearing;
 }
 
+float RenderContext::getSpaceWidth()
+{
+    // cairo ignores trailing spaces, but takes in account leading spaces in cairo_text_extents, so we need to work around
+    std::lock_guard<std::mutex> _lock(_cairo_mutex);
+    cairo_text_extents_t te, te_;
+    cairo_text_extents(_cr, ". .", &te);
+    cairo_text_extents(_cr, "..", &te_);
+    cairoCheckStatus();
+    return (float)(te.width - te_.width);
+}
+
 void RenderContext::fontsDrawText(const TextItem& ti, const Vec3f& color, bool idle)
 {
     /*
@@ -191,7 +202,6 @@ void RenderContext::fontsDrawText(const TextItem& ti, const Vec3f& color, bool i
     cairo_new_path(_cr);
     moveTo(ti.bbp);
     moveToRel(ti.relpos);
-
     if (metafileFontsToCurves)
     { // TODO: remove
         {

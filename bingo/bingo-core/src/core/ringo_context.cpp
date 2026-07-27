@@ -41,8 +41,8 @@ RingoContext* RingoContext::_get(int id, BingoContext& context)
     TL_GET(PtrArray<RingoContext>, _instances);
 
     for (int i = 0; i < _instances.size(); i++)
-        if (_instances[i]->_context.id == id)
-            return _instances[i];
+        if (_instances[i]._context.id == id)
+            return &_instances[i];
 
     return 0;
 }
@@ -53,8 +53,8 @@ RingoContext* RingoContext::existing(int id)
     TL_GET(PtrArray<RingoContext>, _instances);
 
     for (int i = 0; i < _instances.size(); i++)
-        if (_instances[i]->_context.id == id)
-            return _instances[i];
+        if (_instances[i]._context.id == id)
+            return &_instances[i];
 
     throw Error("context #%d not found", id);
 }
@@ -65,8 +65,8 @@ RingoContext* RingoContext::get(int id)
     TL_GET(PtrArray<RingoContext>, _instances);
 
     for (int i = 0; i < _instances.size(); i++)
-        if (_instances[i]->_context.id == id)
-            return _instances[i];
+        if (_instances[i]._context.id == id)
+            return &_instances[i];
 
     BingoContext* bingo_context = BingoContext::get(id);
 
@@ -80,7 +80,7 @@ void RingoContext::remove(int id)
     int i;
 
     for (i = 0; i < _instances.size(); i++)
-        if (_instances[i]->_context.id == id)
+        if (_instances[i]._context.id == id)
             break;
 
     // if (i == _instances.size())
@@ -98,11 +98,11 @@ int RingoContext::begin()
     if (_instances.size() < 1)
         return 0;
 
-    int i, min_id = _instances[0]->_context.id;
+    int i, min_id = _instances[0]._context.id;
 
     for (i = 1; i < _instances.size(); i++)
-        if (_instances[i]->_context.id < min_id)
-            min_id = _instances[i]->_context.id;
+        if (_instances[i]._context.id < min_id)
+            min_id = _instances[i]._context.id;
 
     return min_id;
 }
@@ -115,11 +115,11 @@ int RingoContext::end()
     if (_instances.size() < 1)
         return 0;
 
-    int i, max_id = _instances[0]->_context.id;
+    int i, max_id = _instances[0]._context.id;
 
     for (i = 1; i < _instances.size(); i++)
-        if (_instances[i]->_context.id > max_id)
-            max_id = _instances[i]->_context.id;
+        if (_instances[i]._context.id > max_id)
+            max_id = _instances[i]._context.id;
 
     return max_id + 1;
 }
@@ -132,8 +132,8 @@ int RingoContext::next(int k)
     TL_GET(PtrArray<RingoContext>, _instances);
 
     for (i = 0; i < _instances.size(); i++)
-        if (_instances[i]->_context.id > k && _instances[i]->_context.id < next_id)
-            next_id = _instances[i]->_context.id;
+        if (_instances[i]._context.id > k && _instances[i]._context.id < next_id)
+            next_id = _instances[i]._context.id;
 
     return next_id;
 }

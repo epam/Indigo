@@ -575,3 +575,25 @@ CEXPORT int indigoValidateChirality(int handle)
     }
     INDIGO_END(-1);
 }
+
+CEXPORT int indigoStereocenterCIPDescriptor(int atom)
+{
+    INDIGO_BEGIN
+    {
+        IndigoAtom& ia = IndigoAtom::cast(self.getObject(atom));
+        return static_cast<int>(ia.mol.getAtomCIP(ia.idx));
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoAddCIPStereoDescriptors(int molecule)
+{
+    INDIGO_BEGIN
+    {
+        BaseMolecule& mol = self.getObject(molecule).getBaseMolecule();
+        indigo::MoleculeCIPCalculator cal;
+        cal.addCIPStereoDescriptors(mol);
+        return 0;
+    }
+    INDIGO_END(-1);
+}

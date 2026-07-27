@@ -21,7 +21,6 @@
 
 #include "molecule/inchi_wrapper.h"
 
-#include "base_cpp/obj.h"
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_dearom.h"
@@ -91,9 +90,8 @@ void InchiWrapper::clear()
     auxInfo.clear();
 }
 
-void InchiWrapper::setOptions(const char* opt)
+static void SanitizeOptions(Array<char>& options)
 {
-    options.readString(opt, true);
     // Replace '/' and '-' according to InChI manual:
     //   "(use - instead of / for O.S. other than MS Windows)"
 #ifdef _WIN32
@@ -105,6 +103,12 @@ void InchiWrapper::setOptions(const char* opt)
         if (options[i] == '/')
             options[i] = '-';
 #endif
+}
+
+void InchiWrapper::setOptions(const char* opt)
+{
+    options.readString(opt, true);
+    SanitizeOptions(options);
 }
 
 void InchiWrapper::getOptions(Array<char>& value)
@@ -404,8 +408,17 @@ void InchiWrapper::parseInchiOutput(const InchiOutput& inchi_output, Molecule& m
     }
 }
 
-void InchiWrapper::generateInchiInput(Molecule& mol, inchi_Input& input, Array<inchi_Atom>& atoms, Array<inchi_Stereo0D>& stereo)
+void InchiWrapper::generateInchiInput(Molecule& input_mol, inchi_Input& input, Array<inchi_Atom>& atoms, Array<inchi_Stereo0D>& stereo,
+                                      const char* forcedOptions)
 {
+    Molecule tmol;
+    auto tcount = input_mol.tgroups.getTGroupCount();
+    Molecule& mol = tcount ? tmol : input_mol;
+    if (tcount)
+    {
+        tmol.clone_KeepIndices(input_mol);
+        tmol.transformSCSRtoFullCTAB();
+    }
     QS_DEF(Array<int>, mapping);
     mapping.clear_resize(mol.vertexEnd());
     mapping.fffill();
@@ -425,7 +438,8 @@ void InchiWrapper::generateInchiInput(Molecule& mol, inchi_Input& input, Array<i
             throw Error("Molecule with pseudoatom (%s) cannot be converted into InChI", mol.getPseudoAtom(v));
         if (atom_number == ELEM_RSITE)
             throw Error("Molecule with RGroups cannot be converted into InChI");
-        strncpy(atom.elname, Element::toString(atom_number), ATOM_EL_LEN);
+
+        strncpy(atom.elname, atom_number == ELEM_TEMPLATE ? mol.getTemplateAtom(v) : Element::toString(atom_number), ATOM_EL_LEN);
 
         Vec3f& c = mol.getAtomXyz(v);
         atom.x = c.x;
@@ -471,7 +485,14 @@ void InchiWrapper::generateInchiInput(Molecule& mol, inchi_Input& input, Array<i
 
         // Other properties
         atom.isotopic_mass = mol.getAtomIsotope(v);
-        atom.radical = mol.getAtomRadical(v);
+        try
+        {
+            atom.radical = mol.getAtomRadical(v);
+        }
+        catch (Molecule::Error&)
+        {
+            atom.radical = 0;
+        }
         atom.charge = mol.getAtomCharge(v);
 
         // Hydrogens
@@ -537,10 +558,14 @@ void InchiWrapper::generateInchiInput(Molecule& mol, inchi_Input& input, Array<i
         mol.stereocenters.get(v, type, group, pyramid);
         if (type == MoleculeStereocenters::ATOM_ANY)
             continue;
-        if (type == MoleculeStereocenters::ATOM_AND)
-            setOptions("/SRac");
-        else if (type == MoleculeStereocenters::ATOM_OR)
-            setOptions("/SRel");
+
+        if (forcedOptions == nullptr)
+        {
+            if (type == MoleculeStereocenters::ATOM_AND)
+                setOptions("/SRac");
+            else if (type == MoleculeStereocenters::ATOM_OR)
+                setOptions("/SRel");
+        }
 
         for (int k = 0; k < 4; k++)
             if (pyramid[k] != -1)
@@ -592,6 +617,13 @@ void InchiWrapper::generateInchiInput(Molecule& mol, inchi_Input& input, Array<i
     input.num_atoms = atoms.size();
     input.stereo0D = stereo.ptr();
     input.num_stereo0D = stereo.size();
+    if (forcedOptions)
+    {
+        sanitizedForcedOptions.readString(forcedOptions, true);
+        SanitizeOptions(sanitizedForcedOptions);
+        input.szOptions = sanitizedForcedOptions.ptr();
+        return;
+    }
     input.szOptions = options.ptr();
 }
 
@@ -602,7 +634,7 @@ void InchiWrapper::_validate(BaseMolecule& bmol)
         throw Error("%s cannot be written in InChi format.", unresolved.c_str());
 }
 
-void InchiWrapper::saveMoleculeIntoInchi(Molecule& mol, Array<char>& inchi)
+void InchiWrapper::saveMoleculeIntoInchi(Molecule& mol, Array<char>& inchi, const char* forcedOptions)
 {
     _validate(mol);
     inchi_Input input{nullptr, nullptr, nullptr, 0, 0};
@@ -619,10 +651,11 @@ void InchiWrapper::saveMoleculeIntoInchi(Molecule& mol, Array<char>& inchi)
         }
 
     Molecule* target = &mol;
-    Obj<Molecule> dearom;
+    // 2do: use unique_ptr instead of Obj
+    std::optional<Molecule> dearom;
     if (has_aromatic)
     {
-        dearom.create();
+        dearom.emplace();
         dearom->clone(mol, 0, 0);
         try
         {
@@ -639,9 +672,9 @@ void InchiWrapper::saveMoleculeIntoInchi(Molecule& mol, Array<char>& inchi)
         catch (DearomatizationException&)
         {
         }
-        target = dearom.get();
+        target = &dearom.value();
     }
-    generateInchiInput(*target, input, atoms, stereo);
+    generateInchiInput(*target, input, atoms, stereo, forcedOptions);
 
     InchiMemObject<inchi_Output> inchi_output_obj(FreeINCHI);
     inchi_Output& output = inchi_output_obj.ref();

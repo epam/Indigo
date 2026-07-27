@@ -1,0 +1,16 @@
+[
+    {
+        "grossFormula": "C7 H8 N O",
+        "mass": 122.146997,
+        "extinctionCoefficient": 0,
+        "hydrophobicity": [
+            0.616
+        ],
+        "monomerCount": {
+            "peptides": {
+                "A": 1
+            },
+            "nucleotides": {}
+        }
+    }
+]

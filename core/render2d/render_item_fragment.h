@@ -39,6 +39,12 @@ namespace indigo
         {
             _scaleFactor = scale;
         }
+
+        float getObjScale() const
+        {
+            return _scaleFactor;
+        }
+
         void init() override;
         void render(bool idle) override;
         float getTotalBondLength() override;

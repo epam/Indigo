@@ -65,8 +65,6 @@ namespace indigo
         void loadSequence(BaseMolecule& mol, const std::string& seq_type_str);
         void loadFasta(BaseMolecule& mol, const std::string& seq_type_str);
         void loadFasta(BaseMolecule& mol, SeqType seq_type);
-        void loadIdt(BaseMolecule& mol);
-        void loadHELM(BaseMolecule& mol);
 
         void loadSequence(KetDocument& document, const std::string& seq_type_str);
         void loadSequence(KetDocument& document, SeqType seq_type);
@@ -74,7 +72,9 @@ namespace indigo
         void loadFasta(KetDocument& document, SeqType seq_type);
         void loadIdt(KetDocument& document);
         void loadHELM(KetDocument& document);
+        void loadBILN(KetDocument& document);
         void load3LetterSequence(KetDocument& document);
+        void loadAxoLabs(KetDocument& document);
 
     private:
         Vec3f getBackboneMonomerPosition();
@@ -109,15 +109,26 @@ namespace indigo
         static void check_monomer_place(std::string& idt_alias, IdtModification mon_mod, IdtModification alias_mod, bool has_prev_mon);
 
         using ambiguous_template_opts = std::pair<bool, std::vector<std::pair<std::string, std::optional<float>>>>;
-        using MonomerInfo = std::tuple<std::string, std::string, std::string, ambiguous_template_opts>;
+        using MonomerInfo = std::tuple<std::string, bool, std::string, std::string, ambiguous_template_opts>;
+        using polymer_map = std::map<std::string, std::map<int, size_t>>;
+
+        struct PairedStrands
+        {
+            std::string anchor;
+            std::string paired;
+            int anchor_mon_idx;
+            int paired_mon_idx;
+        };
+
+        void applyDoubleStrandLayout(KetDocument& document, const std::vector<PairedStrands>& paired_strands, const polymer_map& used_polymer_nums);
 
         const std::string checkAddAmbiguousMonomerTemplate(KetDocument& document, const std::string& alias, MonomerClass monomer_class,
                                                            ambiguous_template_opts& options);
-        size_t addKetMonomer(KetDocument& document, MonomerInfo info, MonomerClass monomer_class, const Vec3f& pos);
-        int readCount(std::string& count, Scanner& _scanner);
+        size_t addHelmMonomer(KetDocument& document, MonomerInfo info, MonomerClass monomer_class, const Vec3f& pos);
+        int readCount(std::string& count);
 
         MonomerInfo readHelmMonomer(KetDocument& document, MonomerClass monomer_class = MonomerClass::Unknown);
-        std::string readHelmMonomerAlias(KetDocument& document, MonomerClass monomer_class);
+        std::string readHelmMonomerAlias(KetDocument& document, MonomerClass monomer_class, bool inside_parentheses = false);
         std::string readHelmRepeating();
         std::string readHelmAnnotation();
         std::string readHelmSimplePolymerName(std::string& polymer_name);
@@ -130,7 +141,8 @@ namespace indigo
         int _row;
         int _col;
         MonomerTemplateLibrary& _library;
-        std::map<std::string, std::string> _alias_to_id;
+        std::map<std::pair<MonomerClass, std::string>, std::string> _alias_to_id;
+        std::map<std::pair<MonomerClass, std::string>, std::string> _aliasHELM_to_id;
         std::map<std::string, std::string> _var_alias_to_id;
         int _unknown_ambiguous_count;
         std::map<ambiguous_template_opts, std::string> _opts_to_template_id;

@@ -25,7 +25,7 @@ IMPL_ERROR(GraphConstrainedBMatchingFinder, "b-matching finder");
 
 CP_DEF(GraphConstrainedBMatchingFinder);
 
-GraphConstrainedBMatchingFinder::GraphConstrainedBMatchingFinder(const Graph& g, const ObjArray<Array<int>>& nodes_per_set, const Array<int>* per_set_set_id)
+GraphConstrainedBMatchingFinder::GraphConstrainedBMatchingFinder(const Graph& g, const PtrArray<Array<int>>& nodes_per_set, const Array<int>* per_set_set_id)
     : _g(g), CP_INIT, TL_CP_GET(_network), TL_CP_GET(_edges_graph_to_net), TL_CP_GET(_vertices_graph_to_net), TL_CP_GET(_vertices_capacity_arc_per_set),
       TL_CP_GET(_constraint_sets), TL_CP_GET(_edge_matching_multiplicity), TL_CP_GET(_node_incident_edges_count)
 {
@@ -94,7 +94,7 @@ void GraphConstrainedBMatchingFinder::_createVertices()
     }
 }
 
-void GraphConstrainedBMatchingFinder::_connectVerticesWithSets(const ObjArray<Array<int>>& nodes_per_set)
+void GraphConstrainedBMatchingFinder::_connectVerticesWithSets(const PtrArray<Array<int>>& nodes_per_set)
 {
     for (int s = 0; s < nodes_per_set.size(); s++)
     {

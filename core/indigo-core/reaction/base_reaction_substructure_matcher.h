@@ -19,7 +19,6 @@
 #ifndef __base_reaction__substructure_matcher__
 #define __base_reaction__substructure_matcher__
 
-#include "base_cpp/obj.h"
 #include "base_cpp/red_black.h"
 #include "base_cpp/tlscont.h"
 #include "graph/embedding_enumerator.h"
@@ -138,7 +137,7 @@ namespace indigo
             BaseReactionSubstructureMatcher& _context;
             std::unique_ptr<AromaticityMatcher> _am;
 
-            Obj<EmbeddingEnumerator> _enumerator;
+            std::unique_ptr<EmbeddingEnumerator> _enumerator;
             int _mode;
             int _selected_molecule_1;
             int _selected_molecule_2;

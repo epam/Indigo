@@ -29,6 +29,9 @@ F/[#6]=C/Cl is ok. smarts_in==smarts_out
 ([#6]1-[#6]-[#6]-1.[#6]) is ok. smarts_in==smarts_out
 F/[#6]=[#6]/[#6]=[#6]/[#6] is ok. smarts_in==smarts_out
 F\[#6]=[#6]\[#6]=[#6]\[#6] is ok. smarts_in==smarts_out
+smarts_in!=smarts_out
+ smarts_in=[15*+1v4]
+smarts_out=[15;*;+;v4]
 F/[#6]=[#6]/[#6]=[#6]/[#6] is ok. smarts_in==smarts_out
 F/[#6]=[#6]/[#6]=[#6]/[#6] is ok. json_in==json_out
 F/[#6]=[#6]/[#6]=[#6]/[#6] is ok. expected string found in json
@@ -113,3 +116,5 @@ Smarts [C]-&=[C] loaded as smarts - OK.
 [C;@@?] is ok. smarts_in==smarts_out
 [C;@@?] is ok. json_in==json_out
 [C;@@?] is ok. expected string found in json
+#3215 R-group index in SMARTS
+[*:3]%87%88.[*:2]%89-%87.[*:1]%87-%89.[*:6]%89-%87.[*:5]%87-%89.[*:4]-%88-%87

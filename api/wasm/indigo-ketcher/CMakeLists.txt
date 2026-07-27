@@ -19,7 +19,14 @@ if (CMAKE_BUILD_TYPE STREQUAL Debug)
 else ()
     set(EMCC_FLAGS
             -Oz
+            -msimd128
             )
+endif ()
+
+if (CMAKE_BUILD_TYPE STREQUAL Debug)
+    set(EMCC_ASSERTIONS -s ASSERTIONS=1)
+else ()
+    set(EMCC_ASSERTIONS -s ASSERTIONS=0)
 endif ()
 
 set(EMCC_COMMON_FLAGS
@@ -27,9 +34,11 @@ set(EMCC_COMMON_FLAGS
         -s INITIAL_MEMORY=32mb
         -s ALLOW_MEMORY_GROWTH=1
         -s DISABLE_EXCEPTION_CATCHING=0
+        -s DYNAMIC_EXECUTION=0
+        -s ENVIRONMENT=web,worker
         -s MODULARIZE=1
         -s FILESYSTEM=1
-        -s ASSERTIONS=1
+        ${EMCC_ASSERTIONS}
         -s USE_SDL=0 -s USE_SDL_IMAGE=0 -s USE_SDL_TTF=0 -s USE_SDL_NET=0
         --no-entry
         ${EMCC_FLAGS}
@@ -45,6 +54,7 @@ set(EMCC_FLAGS_SEPARATE
 set(EMCC_FLAGS
         ${EMCC_COMMON_FLAGS}
         -s SINGLE_FILE=1
+        -s SINGLE_FILE_BINARY_ENCODE=0
         )
 
 set(TARGET_FILES

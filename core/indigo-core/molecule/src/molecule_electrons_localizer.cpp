@@ -18,7 +18,7 @@
 
 #include "molecule/molecule_electrons_localizer.h"
 
-#include "base_cpp/obj_array.h"
+#include "base_cpp/array.h"
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 
@@ -111,7 +111,7 @@ void MoleculeElectronsLocalizer::_construct()
 
 void MoleculeElectronsLocalizer::_constructBMatchingFinder()
 {
-    QS_DEF(ObjArray<Array<int>>, nodes_per_set);
+    QS_DEF(PtrArray<Array<int>>, nodes_per_set);
     nodes_per_set.clear();
     nodes_per_set.resize(_SET_MAX);
 
@@ -136,7 +136,7 @@ void MoleculeElectronsLocalizer::_constructBMatchingFinder()
     set_per_set[_PRIMARY_LONEPAIRS_SET] = _SUM_LONEPAIRS_SET;
     set_per_set[_SECONDARY_LONEPAIRS_SET] = _SUM_LONEPAIRS_SET;
 
-    _finder.create(_extended_skeleton, nodes_per_set, &set_per_set);
+    _finder = std::make_unique<GraphConstrainedBMatchingFinder>(_extended_skeleton, nodes_per_set, &set_per_set);
 }
 
 void MoleculeElectronsLocalizer::_setupAtomProperties()

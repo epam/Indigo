@@ -36,12 +36,61 @@ using namespace rapidjson;
 
 IMPL_ERROR(KetDocumentJsonLoader, "KetDocument json loader");
 
+namespace
+{
+    std::string normalizeMonomerTemplateId(const std::string& template_ref_or_id)
+    {
+        if (template_ref_or_id.rfind(MonomerTemplate::ref_prefix, 0) == 0)
+            return template_ref_or_id.substr(MonomerTemplate::ref_prefix.size());
+        return template_ref_or_id;
+    }
+
+    std::string resolveMonomerTemplateId(const std::string& template_ref_or_id, const KetDocumentJsonLoader::template_id_resolve_func& resolveTemplateId)
+    {
+        if (resolveTemplateId)
+            return resolveTemplateId(template_ref_or_id);
+        return normalizeMonomerTemplateId(template_ref_or_id);
+    }
+
+    void normalizeTemplateEndpointId(KetConnectionEndPoint& endpoint, const KetDocumentJsonLoader::template_id_resolve_func& resolveTemplateId)
+    {
+        if (hasKetStrProp(endpoint, templateId))
+            setKetStrProp(endpoint, templateId, resolveMonomerTemplateId(getKetStrProp(endpoint, templateId), resolveTemplateId));
+    }
+
+} // namespace
+
+void KetDocumentJsonLoader::parseConnections(const rapidjson::Value& connections, connection_add_func addConnection, template_id_resolve_func resolveTemplateId)
+{
+    for (rapidjson::SizeType i = 0; i < connections.Size(); ++i)
+    {
+        const auto& connection = connections[i];
+        std::string connection_type = connection["connectionType"].GetString();
+        if (connection_type == KetConnectionSingle || connection_type == KetConnectionHydro)
+        {
+            KetConnectionEndPoint ep1, ep2;
+            ep1.parseOptsFromKet(connection["endpoint1"]);
+            ep2.parseOptsFromKet(connection["endpoint2"]);
+            normalizeTemplateEndpointId(ep1, resolveTemplateId);
+            normalizeTemplateEndpointId(ep2, resolveTemplateId);
+            auto& conn = addConnection(connection_type, ep1, ep2);
+            conn.parseOptsFromKet(connection);
+            if (connection.HasMember("annotation"))
+            {
+                conn.setAnnotation(connection["annotation"]);
+            }
+        }
+        else
+            throw Error("Unknown connection type: %s", connection_type.c_str());
+    }
+}
+
 void KetDocumentJsonLoader::parseJson(const std::string& json_str, KetDocument& document, lib_ref /* library */)
 {
     Document data;
     auto& ket = data.Parse(json_str.c_str());
     if (ket.HasParseError())
-        throw Error("Parse error at offset %llu: %s", ket.GetErrorOffset(), GetParseError_En(ket.GetParseError()));
+        throw Error("Parse error at offset %zu: %s", ket.GetErrorOffset(), GetParseError_En(ket.GetParseError()));
 
     Value& root = ket["root"];
     if (root.HasMember("templates"))
@@ -61,6 +110,11 @@ void KetDocumentJsonLoader::parseJson(const std::string& json_str, KetDocument& 
                 else if (templ_type == "ambiguousMonomerTemplate")
                 {
                     parseVariantMonomerTemplate(templ, document);
+                }
+                else if (templ_type == "monomerGroupTemplate")
+                {
+                    // parseMonomerGroupTemplate(templ, document);
+                    // not implemented yet
                 }
                 else
                     throw Error("Unknows template type: %s", templ_type.c_str());
@@ -113,22 +167,22 @@ void KetDocumentJsonLoader::parseJson(const std::string& json_str, KetDocument& 
     }
     if (root.HasMember("connections"))
     {
-        Value& connections = root["connections"];
-        for (rapidjson::SizeType i = 0; i < connections.Size(); ++i)
+        parseConnections(root["connections"],
+                         [&document](const std::string& connection_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2) -> KetConnection& {
+                             return document.addConnection(connection_type, ep1, ep2);
+                         });
+    }
+    if (root.HasMember("annotation"))
+    {
+        Value& annotation_val = root["annotation"];
+        auto& annotation = document.addAnnotation();
+        annotation->parseOptsFromKet(annotation_val);
+        if (annotation_val.HasMember("extended"))
         {
-            Value& connection = connections[i];
-            std::string connection_type = connection["connectionType"].GetString();
-            if (connection_type == KetConnectionSingle || connection_type == KetConnectionHydro)
-            {
-                KetConnectionEndPoint ep1, ep2;
-                ep1.parseOptsFromKet(connection["endpoint1"]);
-                ep2.parseOptsFromKet(connection["endpoint2"]);
-                auto& conn = document.addConnection(connection_type, ep1, ep2);
-                conn.parseOptsFromKet(connection);
-            }
-            else
-                throw Error("Unknown connection type: %s", connection_type.c_str());
-        }
+            Document new_doc;
+            new_doc.CopyFrom(annotation_val["extended"], new_doc.GetAllocator());
+            annotation->setExtended(new_doc);
+        };
     }
 }
 
@@ -162,6 +216,60 @@ static IdtAlias parseIdtAlias(const rapidjson::Value& parent)
         return IdtAlias(idt_alias_base);
 }
 
+void KetDocumentJsonLoader::parseMonomerGroupTemplate(const rapidjson::Value& mt_json, template_group_add_func addMonomerGroupTemplate,
+                                                      template_id_resolve_func resolveTemplateId)
+{
+    if (!mt_json.HasMember("id"))
+        throw Error("Monomer template group without id");
+
+    std::string id = mt_json["id"].GetString();
+    std::string name = mt_json["name"].GetString();
+
+    if (!mt_json.HasMember("class"))
+        throw Error("Monomer template group without class");
+    std::string monomer_class = mt_json["class"].GetString();
+
+    IdtAlias idt_alias;
+    if (mt_json.HasMember("idtAliases"))
+    {
+        idt_alias = parseIdtAlias(mt_json);
+        auto& idt_base = idt_alias.getBase();
+        if (idt_base.size() == 0)
+            throw Error("Monomer template group %s contains IDT alias without base.", id.c_str());
+    }
+
+    std::vector<std::string> template_refs;
+    if (mt_json.HasMember("templates"))
+    {
+        auto& templates = mt_json["templates"];
+        for (SizeType i = 0; i < templates.Size(); i++)
+        {
+            auto& template_el = templates[i];
+            if (!template_el.HasMember("$ref"))
+                throw Error("Monomer template group %s contains template without $ref.", id.c_str());
+            template_refs.push_back(resolveMonomerTemplateId(template_el["$ref"].GetString(), resolveTemplateId));
+        }
+    }
+
+    auto& mon_group_template = addMonomerGroupTemplate(id, name, monomer_class, idt_alias, template_refs);
+
+    if (mt_json.HasMember("connections"))
+    {
+        parseConnections(
+            mt_json["connections"],
+            [&mon_group_template](const std::string& connection_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2) -> KetConnection& {
+                return mon_group_template.addConnection(connection_type, ep1, ep2);
+            },
+            resolveTemplateId);
+    }
+
+    if (mt_json.HasMember("aliasAxoLabs"))
+        mon_group_template.setAliasAxoLabs(mt_json["aliasAxoLabs"].GetString());
+
+    if (!mon_group_template.isValid())
+        throw KetDocumentJsonLoader::Error("Monomer template group %s has disconnected templates.", mon_group_template.id().c_str());
+}
+
 void KetDocumentJsonLoader::parseMonomerTemplate(const rapidjson::Value& mt_json, template_add_func addMonomerTemplate)
 {
     if (!mt_json.HasMember("id"))
@@ -184,16 +292,19 @@ void KetDocumentJsonLoader::parseMonomerTemplate(const rapidjson::Value& mt_json
         auto& idt_base = idt_alias.getBase();
         if (idt_base.size() == 0)
             throw Error("Monomer template %s contains IDT alias without base.", id.c_str());
-        if (unresolved) // For unresoved all modifications should be equal to base
-            idt_alias.setModifications(idt_base, idt_base, idt_base);
-    }
-    else if (unresolved)
-    {
-        throw Error("Unresoved monomer '%s' without IDT alias.", id.c_str());
     }
 
     auto& mon_template = addMonomerTemplate(id, monomer_class, idt_alias, unresolved);
     mon_template.parseOptsFromKet(mt_json);
+
+    if (mt_json.HasMember("modificationTypes"))
+    {
+        auto& mt = mt_json["modificationTypes"];
+        for (SizeType i = 0; i < mt.Size(); i++)
+        {
+            mon_template.addModificationType(mt[i].GetString());
+        }
+    }
 
     // parse atoms
     mon_template.parseAtoms(mt_json["atoms"]);
@@ -266,6 +377,19 @@ void KetDocumentJsonLoader::parseMonomerTemplate(const rapidjson::Value& mt_json
     parseMonomerTemplate(mt_json, func);
 }
 
+void KetDocumentJsonLoader::parseMonomerGroupTemplate(const rapidjson::Value& mt_json, MonomerTemplateLibrary& library)
+{
+    template_group_add_func func = [&library](const std::string& id, const std::string& name, const std::string& monomer_class, IdtAlias idt_alias,
+                                              const std::vector<std::string>& template_refs) -> MonomerGroupTemplate& {
+        library.addMonomerGroupTemplate(MonomerGroupTemplate(id, name, monomer_class, idt_alias));
+        auto& mgt = library.getMonomerGroupTemplateById(id);
+        for (const auto& ref : template_refs)
+            mgt.addTemplate(library, ref);
+        return mgt;
+    };
+    parseMonomerGroupTemplate(mt_json, func);
+}
+
 void KetDocumentJsonLoader::parseKetMolecule(std::string& ref, rapidjson::Value& json, KetDocument& document)
 {
     KetMolecule& mol = document.addMolecule(ref);
@@ -329,9 +453,16 @@ void KetDocumentJsonLoader::parseKetMonomer(std::string& ref, rapidjson::Value& 
             shift.x = shift_val["x"].GetFloat();
             shift.y = shift_val["y"].GetFloat();
         }
-        static_cast<KetMonomer&>(*monomer).setTransformation({rotate, shift});
+        std::string flip;
+        if (transform_val.HasMember("flip"))
+            flip = transform_val["flip"].GetString();
+        static_cast<KetMonomer&>(*monomer).setTransformation({rotate, shift, flip});
     }
     monomer->setAttachmentPoints(document.templates().at(template_id).attachmentPoints());
+    if (json.HasMember("annotation"))
+    {
+        monomer->setAnnotation(json["annotation"]);
+    }
 }
 
 void KetDocumentJsonLoader::parseKetVariantMonomer(std::string& ref, rapidjson::Value& json, KetDocument& document)
@@ -349,6 +480,10 @@ void KetDocumentJsonLoader::parseKetVariantMonomer(std::string& ref, rapidjson::
     }
     auto& variant_monomer_template = document.ambiguousTemplates().at(template_id);
     monomer->setAttachmentPoints(variant_monomer_template.attachmentPoints());
+    if (json.HasMember("annotation"))
+    {
+        monomer->setAnnotation(json["annotation"]);
+    }
 }
 
 void KetDocumentJsonLoader::parseVariantMonomerTemplate(const rapidjson::Value& json, KetDocument& document)

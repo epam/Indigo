@@ -27,6 +27,11 @@
 #include "indigo_molecule.h"
 #include "indigo_reaction.h"
 
+#include "molecule/cmf_loader.h"
+#include "molecule/icm_loader.h"
+#include "reaction/crf_loader.h"
+#include "reaction/icr_loader.h"
+
 // #define INDIGO_DEBUG
 
 #ifdef INDIGO_DEBUG
@@ -119,7 +124,6 @@ static int _bingoCreateOrLoadDatabaseFile(const char* location, const char* opti
      *    - https://jiraeu.epam.com/browse/IND-603
      * */
     fp_params.ext = false;
-    fp_params.tau_qwords = 0;
 
     std::string loc_dir(location);
 
@@ -514,8 +518,16 @@ CEXPORT int bingoGetRecordObj(int db, int id)
         {
             std::unique_ptr<IndigoMolecule> molptr = std::make_unique<IndigoMolecule>();
             Molecule& mol = molptr->mol;
-            CmfLoader cmf_loader(buf_scn);
-            cmf_loader.loadMolecule(mol);
+            if (bingo_index->isOldDB())
+            {
+                CmfLoader cmf_loader(buf_scn);
+                cmf_loader.loadMolecule(mol);
+            }
+            else
+            {
+                IcmLoader icm_loader(buf_scn);
+                icm_loader.loadMolecule(mol);
+            }
             indigo_obj_id = self.addObject(std::move(molptr));
         }
         else if (bingo_index->getType() == IndexType::REACTION)
@@ -523,8 +535,16 @@ CEXPORT int bingoGetRecordObj(int db, int id)
             std::unique_ptr<IndigoReaction> rxnptr = std::make_unique<IndigoReaction>();
 
             Reaction& rxn = rxnptr->getReaction();
-            CrfLoader crf_loader(buf_scn);
-            crf_loader.loadReaction(rxn);
+            if (bingo_index->isOldDB())
+            {
+                CrfLoader crf_loader(buf_scn);
+                crf_loader.loadReaction(rxn);
+            }
+            else
+            {
+                IcrLoader icr_loader(buf_scn);
+                icr_loader.loadReaction(rxn);
+            }
 
             indigo_obj_id = self.addObject(std::move(rxnptr));
         }
@@ -562,6 +582,7 @@ CEXPORT int bingoSearchSub(int db, int query_obj, const char* options)
             obj.getBaseMolecule().aromatize(self.arom_options);
 
             std::unique_ptr<MoleculeSubstructureQueryData> query_data = std::make_unique<MoleculeSubstructureQueryData>(obj.getQueryMolecule());
+            query_data->db_id = db;
 
             auto matcher = [&]() {
                 const auto bingo_indexes = sf::slock_safe_ptr(_indexes());
@@ -581,6 +602,7 @@ CEXPORT int bingoSearchSub(int db, int query_obj, const char* options)
             obj.getBaseReaction().aromatize(self.arom_options);
 
             std::unique_ptr<ReactionSubstructureQueryData> query_data = std::make_unique<ReactionSubstructureQueryData>(obj.getQueryReaction());
+            query_data->db_id = db;
 
             auto matcher = [&]() {
                 const auto bingo_indexes = sf::slock_safe_ptr(_indexes());

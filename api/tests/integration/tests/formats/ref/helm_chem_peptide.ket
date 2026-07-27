@@ -191,7 +191,7 @@
         ],
         "templates": [
             {
-                "$ref": "monomerTemplate-PEG2___Diethylene Glycol"
+                "$ref": "monomerTemplate-PEG-2___Diethylene Glycol"
             },
             {
                 "$ref": "monomerTemplate-W___Tryptophan"
@@ -203,7 +203,7 @@
                 "$ref": "monomerTemplate-D___Aspartic acid"
             },
             {
-                "$ref": "monomerTemplate-Pen___penicillamine (3-mercaptovaline)"
+                "$ref": "monomerTemplate-Pen___Penicillamine"
             },
             {
                 "$ref": "monomerTemplate-G___Glycine"
@@ -218,7 +218,7 @@
                 "$ref": "monomerTemplate-S___Serine"
             },
             {
-                "$ref": "monomerTemplate-Cap___gamma-amino-beta-hydroxycyclohexanepentanoic acid"
+                "$ref": "monomerTemplate-Cap___(2R,3S)-3-amino-2-hydroxy-5-cyclohexylpentanoic acid"
             }
         ]
     },
@@ -230,8 +230,8 @@
             "x": 0.000000,
             "y": -0.000000
         },
-        "alias": "PEG2",
-        "templateId": "PEG2___Diethylene Glycol"
+        "alias": "PEG-2",
+        "templateId": "PEG-2___Diethylene Glycol"
     },
     "monomer1": {
         "type": "monomer",
@@ -275,7 +275,7 @@
             "y": -1.500000
         },
         "alias": "Pen",
-        "templateId": "Pen___penicillamine (3-mercaptovaline)"
+        "templateId": "Pen___Penicillamine"
     },
     "monomer5": {
         "type": "monomer",
@@ -374,31 +374,31 @@
             "y": -1.500000
         },
         "alias": "Cap",
-        "templateId": "Cap___gamma-amino-beta-hydroxycyclohexanepentanoic acid"
+        "templateId": "Cap___(2R,3S)-3-amino-2-hydroxy-5-cyclohexylpentanoic acid"
     },
-    "monomerTemplate-PEG2___Diethylene Glycol": {
+    "monomerTemplate-PEG-2___Diethylene Glycol": {
         "type": "monomerTemplate",
-        "id": "PEG2___Diethylene Glycol",
+        "id": "PEG-2___Diethylene Glycol",
         "class": "CHEM",
         "classHELM": "CHEM",
         "fullName": "Diethylene Glycol",
-        "alias": "PEG2",
+        "alias": "PEG-2",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
                 "type": "left",
                 "leavingGroup": {
                     "atoms": [
-                        8
+                        2
                     ]
                 }
             },
             {
-                "attachmentAtom": 6,
+                "attachmentAtom": 7,
                 "type": "right",
                 "leavingGroup": {
                     "atoms": [
-                        7
+                        8
                     ]
                 }
             }
@@ -407,24 +407,32 @@
             {
                 "label": "O",
                 "location": [
-                    -3.899900,
-                    -0.383300,
+                    -2.598000,
+                    -0.250000,
                     0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -2.599900,
-                    0.366700,
+                    -1.732000,
+                    0.250000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    -3.464000,
+                    0.250000,
                     0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -1.300000,
-                    -0.383300,
+                    -0.866000,
+                    -0.250000,
                     0.000000
                 ]
             },
@@ -432,47 +440,39 @@
                 "label": "O",
                 "location": [
                     0.000000,
-                    0.366700,
+                    0.250000,
                     0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    1.300000,
-                    -0.383300,
+                    0.866000,
+                    -0.250000,
                     0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    2.600000,
-                    0.366700,
+                    1.732000,
+                    0.250000,
                     0.000000
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    3.900000,
-                    -0.383300,
+                    2.598000,
+                    -0.250000,
                     0.000000
                 ]
             },
             {
                 "label": "H",
                 "location": [
-                    4.939400,
-                    0.216400,
-                    0.000000
-                ]
-            },
-            {
-                "label": "H",
-                "location": [
-                    -4.939400,
-                    0.216400,
+                    3.464000,
+                    0.250000,
                     0.000000
                 ]
             }
@@ -488,14 +488,14 @@
             {
                 "type": 1,
                 "atoms": [
-                    1,
+                    0,
                     2
                 ]
             },
             {
                 "type": 1,
                 "atoms": [
-                    2,
+                    1,
                     3
                 ]
             },
@@ -530,7 +530,7 @@
             {
                 "type": 1,
                 "atoms": [
-                    0,
+                    7,
                     8
                 ]
             }
@@ -544,10 +544,20 @@
         "fullName": "Tryptophan",
         "alias": "W",
         "naturalAnalogShort": "W",
+        "aliasHELM": "W",
         "attachmentPoints": [
             {
-                "attachmentAtom": 3,
+                "attachmentAtom": 0,
                 "type": "left",
+                "leavingGroup": {
+                    "atoms": [
+                        2
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 3,
+                "type": "right",
                 "leavingGroup": {
                     "atoms": [
                         4
@@ -555,16 +565,7 @@
                 }
             },
             {
-                "attachmentAtom": 0,
-                "type": "right",
-                "leavingGroup": {
-                    "atoms": [
-                        15
-                    ]
-                }
-            },
-            {
-                "attachmentAtom": 8,
+                "attachmentAtom": 9,
                 "type": "side",
                 "leavingGroup": {
                     "atoms": [
@@ -575,149 +576,149 @@
         ],
         "atoms": [
             {
-                "label": "C",
+                "label": "N",
                 "location": [
-                    2.093800,
-                    -2.355100,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    2.095200,
-                    -3.300000,
+                    -0.010000,
+                    -1.948000,
                     0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    1.069800,
-                    -1.765200,
+                    0.856000,
+                    -1.448000,
                     0.000000
                 ],
                 "stereoLabel": "abs"
             },
             {
-                "label": "N",
-                "location": [
-                    0.045900,
-                    -2.355100,
-                    0.000000
-                ]
-            },
-            {
                 "label": "H",
                 "location": [
-                    -0.772300,
-                    -1.882600,
+                    -0.876000,
+                    -1.448000,
                     0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    1.068000,
-                    -0.583500,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    0.045800,
-                    0.005500,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    -1.031900,
-                    -0.477900,
-                    0.000000
-                ]
-            },
-            {
-                "label": "N",
-                "location": [
-                    -1.824600,
-                    0.397800,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    -1.237000,
-                    1.421600,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    -0.081000,
-                    1.179300,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    0.706800,
-                    2.059100,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    0.338700,
-                    3.181400,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    -0.817300,
-                    3.423800,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    -1.605100,
-                    2.543800,
+                    1.722000,
+                    -1.948000,
                     0.000000
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    2.911400,
-                    -1.881800,
+                    2.588000,
+                    -1.448000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    1.722000,
+                    -2.948000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.856000,
+                    -0.448000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -0.010000,
+                    0.052000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -0.924000,
+                    -0.355000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "N",
+                "location": [
+                    -1.593000,
+                    0.388000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -1.093000,
+                    1.254000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -0.115000,
+                    1.046000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.554000,
+                    1.789000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.245000,
+                    2.740000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -0.733000,
+                    2.948000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -1.402000,
+                    2.205000,
                     0.000000
                 ]
             },
             {
                 "label": "H",
                 "location": [
-                    -3.006100,
-                    0.388700,
+                    -2.588000,
+                    0.284000,
                     0.000000
                 ]
             }
         ],
         "bonds": [
             {
-                "type": 2,
+                "type": 1,
                 "atoms": [
-                    1,
-                    0
+                    0,
+                    1
                 ]
             },
             {
@@ -730,7 +731,7 @@
             {
                 "type": 1,
                 "atoms": [
-                    2,
+                    1,
                     3
                 ]
             },
@@ -742,32 +743,46 @@
                 ]
             },
             {
+                "type": 2,
+                "atoms": [
+                    3,
+                    5
+                ]
+            },
+            {
                 "type": 1,
                 "atoms": [
-                    2,
-                    5
+                    1,
+                    6
                 ],
                 "stereo": 1
             },
             {
                 "type": 1,
                 "atoms": [
-                    5,
-                    6
-                ]
-            },
-            {
-                "type": 2,
-                "atoms": [
-                    7,
-                    6
+                    6,
+                    7
                 ]
             },
             {
                 "type": 1,
                 "atoms": [
-                    8,
-                    7
+                    7,
+                    11
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    11,
+                    10
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    10,
+                    9
                 ]
             },
             {
@@ -778,24 +793,10 @@
                 ]
             },
             {
-                "type": 1,
-                "atoms": [
-                    10,
-                    6
-                ]
-            },
-            {
                 "type": 2,
                 "atoms": [
-                    10,
-                    9
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    10,
-                    11
+                    8,
+                    7
                 ]
             },
             {
@@ -813,13 +814,6 @@
                 ]
             },
             {
-                "type": 1,
-                "atoms": [
-                    14,
-                    9
-                ]
-            },
-            {
                 "type": 2,
                 "atoms": [
                     13,
@@ -829,14 +823,21 @@
             {
                 "type": 1,
                 "atoms": [
-                    0,
+                    14,
                     15
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    15,
+                    10
                 ]
             },
             {
                 "type": 1,
                 "atoms": [
-                    8,
+                    9,
                     16
                 ]
             }
@@ -850,426 +851,23 @@
         "fullName": "Asparagine",
         "alias": "N",
         "naturalAnalogShort": "N",
+        "aliasHELM": "N",
         "attachmentPoints": [
             {
-                "attachmentAtom": 3,
+                "attachmentAtom": 0,
                 "type": "left",
+                "leavingGroup": {
+                    "atoms": [
+                        2
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 3,
+                "type": "right",
                 "leavingGroup": {
                     "atoms": [
                         4
-                    ]
-                }
-            },
-            {
-                "attachmentAtom": 0,
-                "type": "right",
-                "leavingGroup": {
-                    "atoms": [
-                        9
-                    ]
-                }
-            },
-            {
-                "attachmentAtom": 7,
-                "type": "side",
-                "leavingGroup": {
-                    "atoms": [
-                        10
-                    ]
-                }
-            }
-        ],
-        "atoms": [
-            {
-                "label": "C",
-                "location": [
-                    1.892900,
-                    -1.417500,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    1.894700,
-                    -2.598900,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    0.612700,
-                    -0.679900,
-                    0.000000
-                ],
-                "stereoLabel": "abs"
-            },
-            {
-                "label": "N",
-                "location": [
-                    -0.667600,
-                    -1.417500,
-                    0.000000
-                ]
-            },
-            {
-                "label": "H",
-                "location": [
-                    -1.690700,
-                    -0.826600,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    0.610400,
-                    0.797800,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    -0.669800,
-                    1.535400,
-                    0.000000
-                ]
-            },
-            {
-                "label": "N",
-                "location": [
-                    -1.692200,
-                    0.943400,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    -0.671600,
-                    2.716800,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    2.915300,
-                    -0.825500,
-                    0.000000
-                ]
-            },
-            {
-                "label": "H",
-                "location": [
-                    -2.534100,
-                    1.772400,
-                    0.000000
-                ]
-            }
-        ],
-        "bonds": [
-            {
-                "type": 2,
-                "atoms": [
-                    1,
-                    0
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    0,
-                    2
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    2,
-                    3
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    3,
-                    4
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    2,
-                    5
-                ],
-                "stereo": 1
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    5,
-                    6
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    6,
-                    7
-                ]
-            },
-            {
-                "type": 2,
-                "atoms": [
-                    6,
-                    8
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    0,
-                    9
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    7,
-                    10
-                ]
-            }
-        ]
-    },
-    "monomerTemplate-D___Aspartic acid": {
-        "type": "monomerTemplate",
-        "id": "D___Aspartic acid",
-        "class": "AminoAcid",
-        "classHELM": "PEPTIDE",
-        "fullName": "Aspartic acid",
-        "alias": "D",
-        "naturalAnalogShort": "D",
-        "attachmentPoints": [
-            {
-                "attachmentAtom": 3,
-                "type": "left",
-                "leavingGroup": {
-                    "atoms": [
-                        4
-                    ]
-                }
-            },
-            {
-                "attachmentAtom": 0,
-                "type": "right",
-                "leavingGroup": {
-                    "atoms": [
-                        9
-                    ]
-                }
-            },
-            {
-                "attachmentAtom": 8,
-                "type": "side",
-                "leavingGroup": {
-                    "atoms": [
-                        10
-                    ]
-                }
-            }
-        ],
-        "atoms": [
-            {
-                "label": "C",
-                "location": [
-                    1.631000,
-                    -1.557800,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    1.632700,
-                    -2.739200,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    0.350700,
-                    -0.820100,
-                    0.000000
-                ],
-                "stereoLabel": "abs"
-            },
-            {
-                "label": "N",
-                "location": [
-                    -0.929500,
-                    -1.557800,
-                    0.000000
-                ]
-            },
-            {
-                "label": "H",
-                "location": [
-                    -1.952500,
-                    -0.966900,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    0.348500,
-                    0.657500,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    -0.931700,
-                    1.395200,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    -1.954200,
-                    0.803200,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    -0.933500,
-                    2.576600,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    2.653400,
-                    -0.965800,
-                    0.000000
-                ]
-            },
-            {
-                "label": "H",
-                "location": [
-                    0.085100,
-                    3.175100,
-                    0.000000
-                ]
-            }
-        ],
-        "bonds": [
-            {
-                "type": 2,
-                "atoms": [
-                    1,
-                    0
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    0,
-                    2
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    2,
-                    3
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    3,
-                    4
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    2,
-                    5
-                ],
-                "stereo": 1
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    5,
-                    6
-                ]
-            },
-            {
-                "type": 2,
-                "atoms": [
-                    6,
-                    7
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    6,
-                    8
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    0,
-                    9
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    8,
-                    10
-                ]
-            }
-        ]
-    },
-    "monomerTemplate-Pen___penicillamine (3-mercaptovaline)": {
-        "type": "monomerTemplate",
-        "id": "Pen___penicillamine (3-mercaptovaline)",
-        "class": "AminoAcid",
-        "classHELM": "PEPTIDE",
-        "fullName": "penicillamine (3-mercaptovaline)",
-        "alias": "Pen",
-        "naturalAnalogShort": "V",
-        "attachmentPoints": [
-            {
-                "attachmentAtom": 6,
-                "type": "left",
-                "leavingGroup": {
-                    "atoms": [
-                        8
-                    ]
-                }
-            },
-            {
-                "attachmentAtom": 0,
-                "type": "right",
-                "leavingGroup": {
-                    "atoms": [
-                        7
                     ]
                 }
             },
@@ -1285,103 +883,96 @@
         ],
         "atoms": [
             {
-                "label": "C",
+                "label": "N",
                 "location": [
-                    1.322000,
-                    -1.501500,
+                    -0.433000,
+                    -1.000000,
                     0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    0.023100,
-                    -0.749500,
+                    0.433000,
+                    -0.500000,
                     0.000000
                 ],
                 "stereoLabel": "abs"
             },
             {
-                "label": "C",
+                "label": "H",
                 "location": [
-                    1.063700,
-                    1.350400,
+                    -1.299000,
+                    -0.500000,
                     0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    0.023900,
-                    0.751300,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    0.025200,
-                    1.951300,
+                    1.299000,
+                    -1.000000,
                     0.000000
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    1.321300,
-                    -2.701500,
+                    2.165000,
+                    -0.500000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    1.299000,
+                    -2.000000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.433000,
+                    0.500000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -0.433000,
+                    1.000000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    -0.433000,
+                    2.000000,
                     0.000000
                 ]
             },
             {
                 "label": "N",
                 "location": [
-                    -1.275800,
-                    -1.501500,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    2.361800,
-                    -0.902400,
+                    -1.299000,
+                    0.500000,
                     0.000000
                 ]
             },
             {
                 "label": "H",
                 "location": [
-                    -2.316200,
-                    -0.903400,
-                    0.000000
-                ]
-            },
-            {
-                "label": "S",
-                "location": [
-                    -1.274900,
-                    1.503300,
-                    0.000000
-                ]
-            },
-            {
-                "label": "H",
-                "location": [
-                    -1.274200,
-                    2.703300,
+                    -2.165000,
+                    1.000000,
                     0.000000
                 ]
             }
         ],
         "bonds": [
-            {
-                "type": 2,
-                "atoms": [
-                    5,
-                    0
-                ]
-            },
             {
                 "type": 1,
                 "atoms": [
@@ -1393,14 +984,7 @@
                 "type": 1,
                 "atoms": [
                     0,
-                    7
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    1,
-                    6
+                    2
                 ]
             },
             {
@@ -1408,14 +992,6 @@
                 "atoms": [
                     1,
                     3
-                ],
-                "stereo": 1
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    3,
-                    2
                 ]
             },
             {
@@ -1426,16 +1002,38 @@
                 ]
             },
             {
+                "type": 2,
+                "atoms": [
+                    3,
+                    5
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    6
+                ],
+                "stereo": 1
+            },
+            {
                 "type": 1,
                 "atoms": [
                     6,
+                    7
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    7,
                     8
                 ]
             },
             {
                 "type": 1,
                 "atoms": [
-                    3,
+                    7,
                     9
                 ]
             },
@@ -1443,6 +1041,412 @@
                 "type": 1,
                 "atoms": [
                     9,
+                    10
+                ]
+            }
+        ]
+    },
+    "monomerTemplate-D___Aspartic acid": {
+        "type": "monomerTemplate",
+        "id": "D___Aspartic acid",
+        "class": "AminoAcid",
+        "classHELM": "PEPTIDE",
+        "fullName": "Aspartic acid",
+        "alias": "D",
+        "naturalAnalogShort": "D",
+        "aliasHELM": "D",
+        "attachmentPoints": [
+            {
+                "attachmentAtom": 0,
+                "type": "left",
+                "leavingGroup": {
+                    "atoms": [
+                        2
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 3,
+                "type": "right",
+                "leavingGroup": {
+                    "atoms": [
+                        4
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 8,
+                "type": "side",
+                "leavingGroup": {
+                    "atoms": [
+                        9
+                    ]
+                }
+            }
+        ],
+        "atoms": [
+            {
+                "label": "N",
+                "location": [
+                    -0.866000,
+                    -1.250000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.000000,
+                    -0.750000,
+                    0.000000
+                ],
+                "stereoLabel": "abs"
+            },
+            {
+                "label": "H",
+                "location": [
+                    -1.732000,
+                    -0.750000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.866000,
+                    -1.250000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    1.732000,
+                    -0.750000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    0.866000,
+                    -2.250000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.000000,
+                    0.250000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -0.866000,
+                    0.750000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    -0.866000,
+                    1.750000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    0.000000,
+                    2.250000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    -1.732000,
+                    0.250000,
+                    0.000000
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    4
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    3,
+                    5
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    6
+                ],
+                "stereo": 1
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    6,
+                    7
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    7,
+                    8
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    8,
+                    9
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    7,
+                    10
+                ]
+            }
+        ]
+    },
+    "monomerTemplate-Pen___Penicillamine": {
+        "type": "monomerTemplate",
+        "id": "Pen___Penicillamine",
+        "class": "AminoAcid",
+        "classHELM": "PEPTIDE",
+        "fullName": "Penicillamine",
+        "alias": "Pen",
+        "naturalAnalogShort": "V",
+        "aliasHELM": "Pen",
+        "attachmentPoints": [
+            {
+                "attachmentAtom": 0,
+                "type": "left",
+                "leavingGroup": {
+                    "atoms": [
+                        2
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 3,
+                "type": "right",
+                "leavingGroup": {
+                    "atoms": [
+                        4
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 7,
+                "type": "side",
+                "leavingGroup": {
+                    "atoms": [
+                        8
+                    ]
+                }
+            }
+        ],
+        "atoms": [
+            {
+                "label": "N",
+                "location": [
+                    -0.866000,
+                    -1.000000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.000000,
+                    -0.500000,
+                    0.000000
+                ],
+                "stereoLabel": "abs"
+            },
+            {
+                "label": "H",
+                "location": [
+                    -1.732000,
+                    -0.500000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.866000,
+                    -1.000000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    1.732000,
+                    -0.500000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    0.866000,
+                    -2.000000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.000000,
+                    0.500000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "S",
+                "location": [
+                    -0.866000,
+                    1.000000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    -0.866000,
+                    2.000000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.866000,
+                    1.000000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.000000,
+                    1.500000,
+                    0.000000
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    4
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    3,
+                    5
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    6
+                ],
+                "stereo": 1
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    6,
+                    7
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    7,
+                    8
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    6,
+                    9
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    6,
                     10
                 ]
             }
@@ -1456,9 +1460,10 @@
         "fullName": "Glycine",
         "alias": "G",
         "naturalAnalogShort": "G",
+        "aliasHELM": "G",
         "attachmentPoints": [
             {
-                "attachmentAtom": 4,
+                "attachmentAtom": 0,
                 "type": "left",
                 "leavingGroup": {
                     "atoms": [
@@ -1467,7 +1472,7 @@
                 }
             },
             {
-                "attachmentAtom": 1,
+                "attachmentAtom": 2,
                 "type": "right",
                 "leavingGroup": {
                     "atoms": [
@@ -1478,50 +1483,50 @@
         ],
         "atoms": [
             {
-                "label": "C",
-                "location": [
-                    -0.336300,
-                    0.534600,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    0.992900,
-                    -0.110700,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    1.078200,
-                    -1.289000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    1.970900,
-                    0.552000,
-                    0.000000
-                ]
-            },
-            {
                 "label": "N",
                 "location": [
-                    -1.326000,
-                    -0.110700,
+                    -0.866000,
+                    0.250000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.000000,
+                    0.750000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.866000,
+                    0.250000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    1.732000,
+                    0.750000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    0.866000,
+                    -0.750000,
                     0.000000
                 ]
             },
             {
                 "label": "H",
                 "location": [
-                    -2.379700,
-                    0.423800,
+                    -1.732000,
+                    0.750000,
                     0.000000
                 ]
             }
@@ -1535,7 +1540,7 @@
                 ]
             },
             {
-                "type": 2,
+                "type": 1,
                 "atoms": [
                     1,
                     2
@@ -1544,21 +1549,21 @@
             {
                 "type": 1,
                 "atoms": [
-                    1,
+                    2,
                     3
                 ]
             },
             {
-                "type": 1,
+                "type": 2,
                 "atoms": [
-                    0,
+                    2,
                     4
                 ]
             },
             {
                 "type": 1,
                 "atoms": [
-                    4,
+                    0,
                     5
                 ]
             }
@@ -1572,134 +1577,128 @@
         "fullName": "L-ornithine",
         "alias": "Orn",
         "naturalAnalogShort": "K",
+        "aliasHELM": "Orn",
         "attachmentPoints": [
             {
-                "attachmentAtom": 5,
+                "attachmentAtom": 0,
                 "type": "left",
                 "leavingGroup": {
                     "atoms": [
-                        8
+                        2
                     ]
                 }
             },
             {
-                "attachmentAtom": 0,
+                "attachmentAtom": 3,
                 "type": "right",
                 "leavingGroup": {
                     "atoms": [
-                        7
+                        4
                     ]
                 }
             },
             {
-                "attachmentAtom": 4,
+                "attachmentAtom": 9,
                 "type": "side",
                 "leavingGroup": {
                     "atoms": [
-                        9
+                        10
                     ]
                 }
             }
         ],
         "atoms": [
             {
-                "label": "C",
+                "label": "N",
                 "location": [
-                    1.893200,
-                    -2.018100,
+                    -0.866000,
+                    -1.750000,
                     0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    0.592800,
-                    -1.268800,
+                    0.000000,
+                    -1.250000,
                     0.000000
                 ],
                 "stereoLabel": "abs"
             },
             {
-                "label": "C",
+                "label": "H",
                 "location": [
-                    0.590500,
-                    0.232000,
+                    -1.732000,
+                    -1.250000,
                     0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -0.709800,
-                    0.981300,
-                    0.000000
-                ]
-            },
-            {
-                "label": "N",
-                "location": [
-                    -2.012500,
-                    3.231300,
-                    0.000000
-                ]
-            },
-            {
-                "label": "N",
-                "location": [
-                    -0.707600,
-                    -2.018100,
+                    0.866000,
+                    -1.750000,
                     0.000000
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    1.895000,
-                    -3.218100,
+                    1.732000,
+                    -1.250000,
                     0.000000
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    2.931700,
-                    -1.416800,
-                    0.000000
-                ]
-            },
-            {
-                "label": "H",
-                "location": [
-                    -1.746700,
-                    -1.417900,
-                    0.000000
-                ]
-            },
-            {
-                "label": "H",
-                "location": [
-                    -2.014400,
-                    4.431400,
+                    0.866000,
+                    -2.750000,
                     0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -0.712100,
-                    2.482100,
+                    0.000000,
+                    -0.250000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -0.866000,
+                    0.250000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -0.866000,
+                    1.250000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "N",
+                "location": [
+                    -1.732000,
+                    1.750000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    -1.732000,
+                    2.750000,
                     0.000000
                 ]
             }
         ],
         "bonds": [
-            {
-                "type": 2,
-                "atoms": [
-                    6,
-                    0
-                ]
-            },
             {
                 "type": 1,
                 "atoms": [
@@ -1711,13 +1710,27 @@
                 "type": 1,
                 "atoms": [
                     0,
-                    7
+                    2
                 ]
             },
             {
                 "type": 1,
                 "atoms": [
                     1,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    4
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    3,
                     5
                 ]
             },
@@ -1725,43 +1738,36 @@
                 "type": 1,
                 "atoms": [
                     1,
-                    2
+                    6
                 ],
                 "stereo": 1
             },
             {
                 "type": 1,
                 "atoms": [
-                    2,
-                    3
+                    6,
+                    7
                 ]
             },
             {
                 "type": 1,
                 "atoms": [
-                    5,
+                    7,
                     8
                 ]
             },
             {
                 "type": 1,
                 "atoms": [
-                    4,
+                    8,
                     9
                 ]
             },
             {
                 "type": 1,
                 "atoms": [
-                    3,
+                    9,
                     10
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    10,
-                    4
                 ]
             }
         ]
@@ -1774,13 +1780,14 @@
         "fullName": "Alanine",
         "alias": "A",
         "naturalAnalogShort": "A",
+        "aliasHELM": "A",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
                 "type": "left",
                 "leavingGroup": {
                     "atoms": [
-                        6
+                        2
                     ]
                 }
             },
@@ -1789,7 +1796,7 @@
                 "type": "right",
                 "leavingGroup": {
                     "atoms": [
-                        5
+                        4
                     ]
                 }
             }
@@ -1798,57 +1805,57 @@
             {
                 "label": "N",
                 "location": [
-                    -1.254900,
-                    -0.392000,
+                    -0.866000,
+                    -0.250000,
                     0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -0.272000,
-                    0.263300,
+                    0.000000,
+                    0.250000,
                     0.000000
                 ],
                 "stereoLabel": "abs"
             },
             {
-                "label": "C",
-                "location": [
-                    -0.310300,
-                    1.739300,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    1.052300,
-                    -0.392000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    1.082900,
-                    -1.572200,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    2.035300,
-                    0.263300,
-                    0.000000
-                ]
-            },
-            {
                 "label": "H",
                 "location": [
-                    -2.333400,
-                    0.090500,
+                    -1.732000,
+                    0.250000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.866000,
+                    -0.250000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    1.732000,
+                    0.250000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    0.866000,
+                    -1.250000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.000000,
+                    1.250000,
                     0.000000
                 ]
             }
@@ -1857,17 +1864,16 @@
             {
                 "type": 1,
                 "atoms": [
-                    1,
-                    0
+                    0,
+                    1
                 ]
             },
             {
                 "type": 1,
                 "atoms": [
-                    1,
+                    0,
                     2
-                ],
-                "stereo": 1
+                ]
             },
             {
                 "type": 1,
@@ -1877,14 +1883,14 @@
                 ]
             },
             {
-                "type": 2,
+                "type": 1,
                 "atoms": [
                     3,
                     4
                 ]
             },
             {
-                "type": 1,
+                "type": 2,
                 "atoms": [
                     3,
                     5
@@ -1893,9 +1899,10 @@
             {
                 "type": 1,
                 "atoms": [
-                    0,
+                    1,
                     6
-                ]
+                ],
+                "stereo": 1
             }
         ]
     },
@@ -1907,10 +1914,20 @@
         "fullName": "Serine",
         "alias": "S",
         "naturalAnalogShort": "S",
+        "aliasHELM": "S",
         "attachmentPoints": [
             {
-                "attachmentAtom": 3,
+                "attachmentAtom": 0,
                 "type": "left",
+                "leavingGroup": {
+                    "atoms": [
+                        2
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 3,
+                "type": "right",
                 "leavingGroup": {
                     "atoms": [
                         4
@@ -1918,16 +1935,7 @@
                 }
             },
             {
-                "attachmentAtom": 0,
-                "type": "right",
-                "leavingGroup": {
-                    "atoms": [
-                        7
-                    ]
-                }
-            },
-            {
-                "attachmentAtom": 6,
+                "attachmentAtom": 7,
                 "type": "side",
                 "leavingGroup": {
                     "atoms": [
@@ -1938,85 +1946,85 @@
         ],
         "atoms": [
             {
-                "label": "C",
+                "label": "N",
                 "location": [
-                    1.367100,
-                    -1.082900,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    1.368900,
-                    -2.264300,
+                    -0.866000,
+                    -1.000000,
                     0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    0.086900,
-                    -0.345200,
+                    0.000000,
+                    -0.500000,
                     0.000000
                 ],
                 "stereoLabel": "abs"
             },
             {
-                "label": "N",
-                "location": [
-                    -1.193400,
-                    -1.082900,
-                    0.000000
-                ]
-            },
-            {
                 "label": "H",
                 "location": [
-                    -2.216500,
-                    -0.492000,
+                    -1.732000,
+                    -0.500000,
                     0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    0.084700,
-                    1.132400,
+                    0.866000,
+                    -1.000000,
                     0.000000
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    -0.939100,
-                    1.722200,
+                    1.732000,
+                    -0.500000,
                     0.000000
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    2.389600,
-                    -0.490900,
+                    0.866000,
+                    -2.000000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.000000,
+                    0.500000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    -0.866000,
+                    1.000000,
                     0.000000
                 ]
             },
             {
                 "label": "H",
                 "location": [
-                    -0.948100,
-                    2.903600,
+                    -0.866000,
+                    2.000000,
                     0.000000
                 ]
             }
         ],
         "bonds": [
             {
-                "type": 2,
+                "type": 1,
                 "atoms": [
-                    1,
-                    0
+                    0,
+                    1
                 ]
             },
             {
@@ -2029,7 +2037,7 @@
             {
                 "type": 1,
                 "atoms": [
-                    2,
+                    1,
                     3
                 ]
             },
@@ -2041,44 +2049,45 @@
                 ]
             },
             {
+                "type": 2,
+                "atoms": [
+                    3,
+                    5
+                ]
+            },
+            {
                 "type": 1,
                 "atoms": [
-                    2,
-                    5
+                    1,
+                    6
                 ],
                 "stereo": 1
             },
             {
                 "type": 1,
                 "atoms": [
-                    5,
-                    6
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    0,
+                    6,
                     7
                 ]
             },
             {
                 "type": 1,
                 "atoms": [
-                    6,
+                    7,
                     8
                 ]
             }
         ]
     },
-    "monomerTemplate-Cap___gamma-amino-beta-hydroxycyclohexanepentanoic acid": {
+    "monomerTemplate-Cap___(2R,3S)-3-amino-2-hydroxy-5-cyclohexylpentanoic acid": {
         "type": "monomerTemplate",
-        "id": "Cap___gamma-amino-beta-hydroxycyclohexanepentanoic acid",
+        "id": "Cap___(2R,3S)-3-amino-2-hydroxy-5-cyclohexylpentanoic acid",
         "class": "AminoAcid",
         "classHELM": "PEPTIDE",
-        "fullName": "gamma-amino-beta-hydroxycyclohexanepentanoic acid",
+        "fullName": "(2R,3S)-3-amino-2-hydroxy-5-cyclohexylpentanoic acid",
         "alias": "Cap",
         "naturalAnalogShort": "X",
+        "aliasHELM": "Cap",
         "attachmentPoints": [
             {
                 "attachmentAtom": 6,
@@ -2103,8 +2112,8 @@
             {
                 "label": "C",
                 "location": [
-                    -0.237100,
-                    -1.570000,
+                    -0.378000,
+                    -1.474000,
                     0.000000
                 ],
                 "stereoLabel": "abs"
@@ -2112,8 +2121,8 @@
             {
                 "label": "C",
                 "location": [
-                    0.655500,
-                    -2.343100,
+                    0.378000,
+                    -2.127000,
                     0.000000
                 ],
                 "stereoLabel": "abs"
@@ -2121,112 +2130,112 @@
             {
                 "label": "C",
                 "location": [
-                    1.771100,
-                    -1.956600,
+                    1.323000,
+                    -1.800000,
                     0.000000
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    1.994300,
-                    -0.797200,
+                    1.512000,
+                    -0.818000,
                     0.000000
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    2.663700,
-                    -2.729700,
+                    2.079000,
+                    -2.455000,
                     0.000000
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    0.432300,
-                    -3.502600,
+                    0.189000,
+                    -3.110000,
                     0.000000
                 ]
             },
             {
                 "label": "N",
                 "location": [
-                    -1.352800,
-                    -1.956600,
+                    -1.323000,
+                    -1.800000,
                     0.000000
                 ]
             },
             {
                 "label": "H",
                 "location": [
-                    -2.245400,
-                    -1.183500,
+                    -2.079000,
+                    -1.145000,
                     0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -0.014000,
-                    -0.410600,
+                    -0.189000,
+                    -0.491000,
                     0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -0.906600,
-                    0.362400,
+                    -0.945000,
+                    0.163000,
                     0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -0.683400,
-                    1.521800,
+                    -0.756000,
+                    1.145000,
                     0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -1.575900,
-                    2.294800,
+                    -1.512000,
+                    1.800000,
                     0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -1.352700,
-                    3.454200,
+                    -1.323000,
+                    2.781000,
                     0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -0.237000,
-                    3.840800,
+                    -0.378000,
+                    3.110000,
                     0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    0.655500,
-                    3.067700,
+                    0.378000,
+                    2.454000,
                     0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    0.432400,
-                    1.908200,
+                    0.189000,
+                    1.473000,
                     0.000000
                 ]
             }

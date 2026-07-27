@@ -33,18 +33,23 @@
 #include "base_cpp/cancellation_handler.h"
 #include "base_cpp/exception.h"
 #include "base_cpp/io_base.h"
+#include "base_cpp/ptr_array.h"
 
 #include "layout/reaction_layout.h"
 
 #include "molecule/ket_document.h"
+#include "molecule/loader_options.h"
 #include "molecule/molecule_fingerprint.h"
 #include "molecule/molecule_gross_formula.h"
 #include "molecule/molecule_ionize.h"
+#include "molecule/molecule_json_saver.h"
 #include "molecule/molecule_mass_options.h"
 #include "molecule/molecule_standardize_options.h"
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/molecule_tautomer.h"
 #include "molecule/smiles_saver.h"
+#include "molecule/valence_model.h"
+
 #include "option_manager.h"
 
 /* When Indigo internal code is used dynamically the INDIGO_VERSION define
@@ -70,7 +75,7 @@ namespace indigo
     class ReactionJsonSaver;
     class PathwayReactionJsonSaver;
 
-    typedef ObjArray<PropertiesMap> MonomersProperties;
+    typedef PtrArray<PropertiesMap> MonomersProperties;
 } // namespace indigo
 
 extern DLLEXPORT sf::safe_shared_hide_obj<IndigoOptionManager>& indigoGetOptionManager(const qword id = TL_GET_SESSION_ID());
@@ -128,6 +133,8 @@ public:
         ATOM_NEIGHBORS_ITER,
         SUPERATOM,
         SUPERATOMS_ITER,
+        SGROUP_ATTACHMENT_POINT,
+        SGROUP_ATTACHMENT_POINTS_ITER,
         DATA_SGROUP,
         DATA_SGROUPS_ITER,
         REPEATING_UNIT,
@@ -189,8 +196,6 @@ public:
     virtual Molecule& getMolecule();
     virtual const Molecule& getMolecule() const;
 
-    virtual KetDocument& getKetDocument();
-
     virtual BaseReaction& getBaseReaction();
     virtual QueryReaction& getQueryReaction();
     virtual Reaction& getReaction();
@@ -227,6 +232,7 @@ public:
     void toString(Array<char>& str) override;
 
     std::unique_ptr<GROSS_UNITS> gross;
+    bool iupacFormula;
 };
 
 class IndigoReactionGross : public IndigoObject
@@ -238,6 +244,7 @@ public:
     void toString(Array<char>& str) override;
 
     std::unique_ptr<std::pair<PtrArray<GROSS_UNITS>, PtrArray<GROSS_UNITS>>> gross;
+    bool iupacFormula;
 };
 
 struct DLLEXPORT ProductEnumeratorParams
@@ -291,12 +298,17 @@ public:
     {
         Array<char> string;
         float xyz[3];
-
         void clear();
     };
 
     // Method that returns temporary buffer that can be returned from Indigo C API methods
     static TmpData& getThreadTmpData();
+
+    // Snapshot of loader-shared options as a single value object. Loader call-sites
+    // (indigo_loaders.cpp, indigo_molecule.cpp) propagate via loader.setOptions(...)
+    // instead of copying each field individually — adding a new option to LoaderOptions
+    // does not require touching those call-sites again.
+    LoaderOptions loaderOptions() const;
 
     ProductEnumeratorParams rpe_params;
     MoleculeFingerprintParameters fp_params;
@@ -316,11 +328,16 @@ public:
     bool ignore_closing_bond_direction_mismatch;
     bool ignore_bad_valence;
 
+    ValenceMode valence_mode;
+
     bool deconvolution_aromatization;
     bool deco_save_ap_bond_orders;
     bool deco_ignore_errors;
 
-    int molfile_saving_mode; // MolfileSaver::MODE_***, default is zero
+    int molfile_saving_mode;         // MolfileSaver::MODE_***, default is zero
+    int monomer_library_saving_mode; // MolfileSaver::MODE_***, default is zero
+
+    KETVersion ket_saving_version;
     bool dearomatize_on_load;
     SmilesSaver::SMILES_MODE smiles_saving_format;
     bool molfile_saving_no_chiral;
@@ -330,15 +347,20 @@ public:
     bool molfile_saving_add_implicit_h;
     bool molfile_saving_add_mrv_sma;
     bool json_saving_add_stereo_desc;
+    bool json_saving_add_reaction_data;
     bool json_saving_pretty;
     bool json_use_native_precision;
+    int json_native_precision;
     bool smiles_saving_write_name;
+    bool smiles_loading_strict_aliphatic;
     bool smiles_saving_smarts_mode;
 
     Encoding filename_encoding;
 
     bool embedding_edges_uniqueness, find_unique_embeddings;
     int max_embeddings;
+
+    int bingonosql_tau_sub_search_thread_count = 1; // default is 1 -- no multithread
 
     int layout_max_iterations = 0; // default is zero -- no limit
     bool smart_layout = false;
@@ -363,6 +385,8 @@ public:
     AromaticityOptions arom_options;
     // This option is moved out of arom_options because it should be used only in indigoDearomatize method
     bool unique_dearomatization;
+
+    std::string input_format;
 
     StandardizeOptions standardize_options;
 

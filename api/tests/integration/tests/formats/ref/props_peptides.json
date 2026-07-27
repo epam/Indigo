@@ -1,8 +1,8 @@
 [
     {
-        "grossFormula": "C19 N5 O8 S Se H33",
-        "mass": 569.5190227031708,
-        "pKa": 4.0066667,
+        "grossFormula": "C19 H33 N5 O8 S Se",
+        "mass": 570.530993,
+        "pKa": 8.493333,
         "extinctionCoefficient": 125,
         "hydrophobicity": [
             0.616,
@@ -16,15 +16,15 @@
                 "C": 1,
                 "D": 1,
                 "I": 1,
-                "Other": 1
+                "U": 1
             },
             "nucleotides": {}
         }
     },
     {
-        "grossFormula": "C23 N8 O7 H36",
-        "mass": 535.5813446044922,
-        "pKa": 3.5150001,
+        "grossFormula": "C23 H36 N8 O7",
+        "mass": 536.58999,
+        "pKa": 5.96,
         "extinctionCoefficient": 0,
         "hydrophobicity": [
             0.236,

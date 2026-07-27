@@ -30,6 +30,7 @@
 #include "base_cpp/output.h"
 #include "molecule/elements.h"
 #include "molecule/json_writer.h"
+#include "molecule/ket_objects.h"
 #include "molecule/meta_commons.h"
 
 namespace indigo
@@ -37,6 +38,7 @@ namespace indigo
 
     class Output;
     class MonomerTemplate;
+    class MonomerGroupTemplate;
     class KetMolecule;
     class KetMonomer;
     class KetAmbiguousMonomer;
@@ -51,10 +53,12 @@ namespace indigo
         KetDocumentJsonSaver(const KetDocumentJsonSaver&) = delete; // no implicit copy
 
         void saveKetDocument(const KetDocument& document);
+        void saveMonomerLibrary(const MonomerTemplateLibrary& monomers_library);
 
         static void saveKetDocument(JsonWriter& writer, const KetDocument& document);
-
-        static void saveMonomerTemplate(JsonWriter& writer, const MonomerTemplate& monomer_template);
+        static void saveMonomerTemplate(JsonWriter& writer, const MonomerTemplate& monomer_template, bool save_resolved_idt_alias = false);
+        static void saveMonomerTemplateGroup(JsonWriter& writer, const MonomerGroupTemplate& monomer_group_template);
+        static void saveIdtAlias(JsonWriter& writer, const IdtAlias& idt_alias, bool save_resolved = false);
 
         bool pretty_json;
 
@@ -64,6 +68,7 @@ namespace indigo
         static void saveVariantMonomer(JsonWriter& writer, const KetAmbiguousMonomer& monomer);
         static void saveVariantMonomerTemplate(JsonWriter& writer, const KetAmbiguousMonomerTemplate& monomer_template);
         static void saveMonomerShape(JsonWriter& writer, const KetMonomerShape& monomer_shape);
+        static void saveAnnotation(JsonWriter& writer, const std::optional<KetObjectAnnotation>& annotation);
 
         DECL_ERROR;
 

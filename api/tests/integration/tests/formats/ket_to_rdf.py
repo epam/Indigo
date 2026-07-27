@@ -1,18 +1,18 @@
-﻿import difflib
-import os
+﻿import os
 import sys
-
-
-def find_diff(a, b):
-    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
-
 
 sys.path.append(
     os.path.normpath(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
-from env_indigo import *  # noqa
+from common.util import compare_diff
+from env_indigo import (
+    Indigo,
+    IndigoException,
+    getIndigoExceptionText,
+    joinPathPy,
+)
 
 indigo = Indigo()
 indigo.setOption("json-saving-pretty", True)
@@ -47,6 +47,9 @@ files = [
     "multi_merge4",
     "multi_merge5",
     "multi_merge6",
+    "pathway_no_product",
+    "3071-bad-cast",
+    "3212-disorginize",
 ]
 
 files.sort()
@@ -70,16 +73,4 @@ for filename in files:
         rdfSaver.append(rxn.clone())
     rdfSaver.close()
     rdf = buffer.toString()
-
-    # with open(os.path.join(ref_path, filename) + ".rdf", "w") as file:
-    #    file.write(rdf)
-
-    with open(os.path.join(ref_path, filename) + ".rdf", "r") as file:
-        rdf_ref = file.read()
-
-    diff = find_diff(rdf_ref, rdf)
-    if not diff:
-        print(filename + ".rdf:SUCCEED")
-    else:
-        print(filename + ".rdf:FAILED")
-        print(diff)
+    compare_diff(ref_path, filename + ".rdf", rdf)

@@ -41,7 +41,7 @@ CrfSaver::CrfSaver(LzwDict& dict, Output& output) : _output(output)
     if (!dict.isInitialized())
         dict.init(CMF_ALPHABET_SIZE, CMF_BIT_CODE_SIZE);
 
-    _encoder.create(dict, output);
+    _encoder = std::make_unique<LzwEncoder>(dict, output);
     _init();
 }
 
@@ -86,18 +86,18 @@ void CrfSaver::_writeReactionMolecule(Reaction& reaction, int i)
 
 void CrfSaver::_writeMolecule(Molecule& molecule)
 {
-    Obj<CmfSaver> saver;
+    std::unique_ptr<CmfSaver> saver;
     int i;
 
     if (_encoder.get() != 0)
-        saver.create(_encoder.ref());
+        saver = std::make_unique<CmfSaver>(*_encoder);
     else
-        saver.create(_output);
+        saver = std::make_unique<CmfSaver>(_output);
 
     QS_DEF(Array<int>, atom_flags);
     QS_DEF(Array<int>, bond_flags);
 
-    if (_atom_stereo_flags != 0)
+    if (_atom_stereo_flags != nullptr)
     {
         atom_flags.clear_resize(molecule.vertexEnd());
         atom_flags.zerofill();
@@ -110,7 +110,7 @@ void CrfSaver::_writeMolecule(Molecule& molecule)
         saver->atom_flags = atom_flags.ptr();
     }
 
-    if (_bond_rc_flags != 0)
+    if (_bond_rc_flags != nullptr)
     {
         bond_flags.clear_resize(molecule.edgeEnd());
         bond_flags.zerofill();
@@ -133,17 +133,17 @@ void CrfSaver::_writeMolecule(Molecule& molecule)
 
     saver->saveMolecule(molecule);
 
-    if (_aam != 0)
+    if (_aam != nullptr)
         _writeAam(_aam, saver->getAtomSequence());
 
-    if (xyz_output != 0)
+    if (xyz_output != nullptr)
     {
-        if (xyz_output == &_output && _encoder.get() != 0)
+        if (xyz_output == &_output && _encoder.get() != nullptr)
             _encoder->finish();
 
         saver->saveXyz(*xyz_output);
 
-        if (xyz_output == &_output && _encoder.get() != 0)
+        if (xyz_output == &_output && _encoder.get() != nullptr)
             _encoder->start();
     }
 }

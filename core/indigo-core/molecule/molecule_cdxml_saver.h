@@ -71,6 +71,8 @@ namespace indigo
         };
 
     public:
+        static std::string boundingBoxToString(const Rect2f& bbox);
+
         explicit MoleculeCdxmlSaver(Output& output, bool is_binary = false);
 
         ~MoleculeCdxmlSaver();
@@ -101,15 +103,16 @@ namespace indigo
         void addFontTable(const char* font);
         void addFontToTable(int id, const char* charset, const char* name);
         void addColorTable(const char* color);
-        void addColorToTable(int id, int r, int g, int b);
+        void addColorToTable(int id, float r, float g, float b);
         void saveMoleculeFragment(BaseMolecule& bmol, const Vec2f& offset, float scale, int frag_id, int& id, std::map<int, int>& atom_ids);
         void saveMoleculeFragment(BaseMolecule& bmol, const Vec2f& offset, float scale);
-        void saveRGroup(PtrPool<BaseMolecule>& fragments, const Vec2f& offset, int rgnum);
+        void saveRGroup(PtrPool<BaseMolecule>& fragments, const Vec2f& offset, int rgnum, Rect2f& bbox);
 
         void addMetaObject(const MetaObject& obj, int id, const Vec2f& offset);
         void addArrow(int id, int arrow_type, const Vec2f& beg, const Vec2f& end);
         void addRetrosynteticArrow(int graphic_obj_id, int arrow_id, const Vec2f& arrow_beg, const Vec2f& arrow_end);
         void addImage(int id, const EmbeddedImageObject& image);
+        void addMultitailArrow(int& id, const ReactionMultitailArrowObject& arrow);
 
         void addText(const Vec2f& pos, const char* text);
         void addText(const Vec2f& pos, const char* text, const char* alignment);
@@ -171,6 +174,8 @@ namespace indigo
         std::map<int, int> _atoms_ids;
         std::map<int, int> _bonds_ids;
         std::map<int, SuperatomDesc> _superatoms;
+        std::unordered_map<uint32_t, int> _color_table_map;
+        std::vector<uint32_t> _color_table;
 
         int _id;
         float _scale;

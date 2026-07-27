@@ -1,3 +1,417 @@
+# Indigo 1.45.0
+Released 2026-07-10
+
+## Features
+* #3333 - Use BIOVIA post 2014 valence table to calculate atomic valences from molfiles
+
+## Bugfixes and improvements
+* #3599 - Bond length become wrong after Arrange as a Ring option applied
+* #3648 - Integration tests may fails in MT mode
+* #3283 - SVG export fails, with S-Groups
+* #1937 - Add tests for Bingo Oracle
+* #3606 - Bond length between the base and the sugar is not standart if the selected group is forming an n-agon with 12 or more than 12 points
+* #3683 - SMARTS search crashes in the Postgres
+* #235 - Add Tautomer support in Bingo Elastic Python
+* #3688 - `Add explicit hydrogens` operation causes unfolded hydrogen out of query component
+* #3702 - Unfold hydrogens makes monoradical from Helium with odd valence
+* #3359 - Atoms with invalid valence loaded with explicitly defined valence from CDX
+* #3691 - Refactoring PtrArray<T>
+
+**Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.44.0-rc.1...indigo-1.45.0
+
+
+# Indigo 1.44.0
+Released 2026-07-10
+
+## Features
+* #3541 - Support for BILN
+* #3636 - Add coordinates support in bingo-nosql
+* #3524 – Support default InChI (Key) generation
+* #3598 - Add cross bonds related api methods for superatoms and remove type based restriction from generic sgroups methods
+* #3536 - Implement update mode for integration tests
+
+## Bugfixes and improvements
+* #3333 - Adding missing elements and test to fix the current workflow
+* #3544 - Indexing issues in Sgroups created as match to query molecule with unfolded hydrogens
+* #3577 - Arrange as a Ring doesn't work if circular structure has tails that has connection between each other
+* #3545 - Error on attempt to get 'SRU' sgroup name contradicts API documentation
+* #3215 - Export to SMARTS works wrong for R-Groups
+* #3249 - Unable to load Mol v3000 file with R-group fragment inside - system throws exception
+* #3595 - Pasting a large molecule doesn't work in Ketcher (works slow)
+* #3600 - Layout is wrong while open HELM file in the Flex mode of Macromolecules mode
+* #3220 - System ignores implicitly provided file format on load content thru Paste From Clipboard way
+* #3606 - Bond length between the base and the sugar is not standart if the selected group is forming an n-agon with 12 or more than 12 points
+* #3641, #3642 - Add/Remove explicit hydrogens operation causes Error: array: invalid index 2 (size=2) exception
+* #3661 - BILN import/export special cases
+
+**Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.43.0-rc.1...indigo-1.44.0
+
+
+# Indigo 1.43.0
+Released 2026-05-13
+
+## Features
+* #3526 - Update SDF and KET format to include information about preset phosphate position
+* #3525 - Expose ability to calculate fully expanded large molecule into chemical structures
+* #3562 – Add api to iterate through attachments points of S-groups of 'SUP' type
+* #3554 - Implement multi-threading in Bingo NoSQL substructure search
+
+## Bugfixes and improvements
+* #3307 - If the selected group is forming an n-agon with 6 or more than 6 points, then the bases should be located inside of the circular structure
+* #3308 - If the selected group is forming an n-agon with 12 or more than 12 points, the bases should be located inside of the circular structure
+* #3304, #3305 Fixed monomer of cycle on layout should be top left monomer
+* #3496 - Fixing the issue during reading of the molecule data and parse it.
+* #3301 - System provides invalid SDF content (missing semicolon) on mono…
+* #3449 - Bond length become wrong after Arrange as a Ring option applied
+* #3329 - Sequential application of “Create cyclic structure” to different segments of one chain leads to overlapping and distorted topology
+* #3584 - Deadlock in multithread subsearch.
+* #3622 - Fix Bingo-nosql matcher sub tau speed issue
+* #3268 - Cyclic layout issues
+* #3353 - System ignores Implicit H count value in export to SVG/PNG
+* #3303 - Wrong monomer re-layout
+
+
+**Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.42.0-rc.1...indigo-1.43.0
+
+# Indigo 1.42.0
+Released 2026-05-13
+
+## Features
+* #3461 - Export/import multi-tailed arrows to/from CDX/CDXML
+* Enable tau fingerprints in Bingo NoSQL
+
+## Bugfixes and improvements
+* #3528 - Bingo NoSQL database format different in Windows and Linux
+
+
+**Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.41.0-rc.1...indigo-1.42.0
+
+# Indigo 1.41.0
+Released 2026-05-13
+
+## Features
+* Run sonarqube only by request
+
+## Bugfixes and improvements
+* #3437 - Turn off specific indigo wrappers using cmake
+* #3352 - System should count O and U peptides in Amino Acid natural analog grid
+* #3465 - Substructure match: add parameter to limit tautomer chain search only by matched struct
+* #3446 - Export to CDXML replaces multi-line text labels to many one-line text labels stacked one over another
+
+
+**Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.40.0-rc.1...indigo-1.41.0
+
+# Indigo 1.40.0
+Released 2026-02-23
+
+## Features
+* #3375 - Improve the alignment logic
+
+## Bugfixes and improvements
+* #3360 - CIP labels aren't added correctly when loading from a cdxml file with no CIP labels
+* #3362 - 13C isotope not recognised in molecular formula when loading from cdxml
+
+
+**Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.39.0-rc.1...indigo-1.40.0
+
+# Indigo 1.39.0
+Released 2026-02-20
+
+## Features
+* #3211 - Introducing alignment of sense and antisense chains
+* #3273 - Circular structures improvement - formation of fused rings 
+* #3250 - Alignment of sense and antisense strings in AxoLabs format
+* #3337 - Bingo NoSQL tautomer substructure search support.
+
+## Bugfixes and improvements
+* #3282 - Can't use indigo as a git submodule
+* #3297 - Random '$$$$V2.0' empty return from conversion to HELM
+* #3306 - Saving to HELM doesn't work for cycled structures consist of nucleosides
+* #3177 - System can't calculate Calculate properties window values for Amino acids with query bonds
+* #3299 - System should set Implicit H value for atoms if the comes without hydrogens from CDXML
+* #3343 - Export to Mol v3000 works wrong for stereo bonds between monomers
+* #3369 - Bingo NoSQL treat empty flags as NONE instead of ALL
+* #3363 - The layout algorithm returns different coordinates on macOS for some tests
+* #3342 - Export ot SVG and PNG doesn't work for stereo bond between monomers, system throws an error: pool: access to unused element
+* #3343 - Export to Mol v3000 works wrong for stereo bonds between monomers
+* #3344 - Export to SVG/PNG works wrong for stereo bonds between monomers
+
+
+**Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.38.0-rc.1...indigo-1.39.0
+
+# Indigo 1.38.0
+Released 2026-02-20
+
+## Features
+* #3227 - Introducing Copolymer S-group type
+* #3272 - SDF files for library/monomer information
+* #3196 - Support formation of circular structures in flex mode - PoC
+
+## Bugfixes and improvements
+* #3239 - System doesn't save monomer expand/collapse state in Mol v3000 for user created monomers (they always come in collapsed state)
+* #3261 - indigoSaveCdxml doesn't support reaction molecules
+* #3269 - System ignored HELM alias for bases on monomer load to Library
+* #3256 - Metals loaded from cdxml are always represented with hydrogens
+* #3237 - Stackoverflow iterate components
+* #3277 - System adds broken Preset to the library (part2)
+* #3278 - System doesn't allow to add monomers with the same structure but different names (part2)
+* #3286 - CHEMBUGS-64 Automapping fails to guard against contradictory reaction center annotation, corrupts future structure export data
+* #3297 - Random '$$$$V2.0' empty return from conversion to HELM
+* #3293 - Library update works wrong if we use empty SDF file
+* #3292 - Save to SDF v2000 works wrong for created monomers
+* #3291 - Layout works wrong 
+* #3267 - Export to sugar monomer to AxoLabs error message is wrong
+* #3265 - System should be able to load unknown monomer on any position
+* #3338 - System losts stereo bonds on monomer load to Library
+* #3247 - SVG/PNG: Export of any atom with Isotope (atomic mass) value set doesn't work
+
+
+**Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.37.0-rc.1...indigo-1.38.0
+
+# Indigo 1.37.0
+Released 2026-02-19
+
+## Features
+* #3161 - SDF files for library/monomer information
+* #3152 - AxoLabs format support
+* #3146 - IDT export: use hardcorded nucleotides instead of standard ones
+
+## Bugfixes and improvements
+* #2922 - Performing an exact match search results in PostgreSQL termination
+* #3193 - Missing valence of 0 in mol file
+* #3016 - Valence 0 is not taken into account by Molfile export via API
+* #3079 - Export to SVG/PNG doesn't work for molecules with "star" atom. System throws an error: molecule render internal: Query atom type 4 not supported
+* #3141 - One time exception on export to RXN: molecule: casting to molecule is invalid
+* #3178 - Unable to copy user created monomer, exception: Convert error! molecule: casting to molecule is invalid
+* #3070 - Saving to RXN v2000 encloses Polymer labels into double quotes
+* #3206 - Export (or import) to (from) Mol v3000 works wrong for CHEM monomers
+* #3200 - System allows to export not a purely amino acid to Sequence (3-letter code)
+* #3210 - System loads Sequence with numbers in middle
+* #3102 - System can't load sugar-phosphate preset from HELM if sugar provided with HELMAlias name
+* #3220 - System ignores implicitly provided file format on load content thru Paste From Clipboard way
+* #3187 - Export to HELM works wrong for custom monomers imported from HELM with inline SMILES (part 2)
+* #3228 - Loading of AxoLabs with last monomer in brackets doesn't work
+* #3234 - Unable to add user`s peptide, nucleotide and CHEM to the library
+* #3235 - System adds broken Preset to the library
+* #3238 - Monomer name is missed if updated from the API
+* #3212 - Export to RXN disorganize the reaction
+
+
+**Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.36.0-rc.1...indigo-1.37.0
+
+# Indigo 1.36.0
+Released 2025-10-16
+
+## Features
+* #905 - Support for pagination in Bingo Elastic
+* #3092 - Avoid overwriting cmake output directories variables
+* #3099 - Support dev container
+* #2893 - Reaction data support in KET-format 
+* #3136 - No attachment points check should be performed for terminal CHEMs on IDT import/export
+* #3135 - Mark undefined stereocenters using the standardize function
+* #3085 - HELM annotations support
+
+## Bugfixes and improvements
+* #3065 - Indigo build fails when trying to build indigo-depict
+* #3060 - CH labels are recognised as pseudo-atoms when parsing cdxml
+* #3096 - Expand monomer works wrong with selection
+* #3105 - bingo-elastic-python filter broken for exact/substructure
+* #3130 - Bingo-postrgress-fingerprints tests are failing
+* #3071 - Export to RDF V2000 doesn't work if "star" atom on the canvas. System throws exception: Convert error! std::bad_cast
+* #3067 - System can't load HELM with inline SMILES if it has r-site star atom without square brackets
+* #3120 - bingo-elastic-python reaction exact search do not use postprocess actions
+* #3150 - Exception during molecules loading in test fixture
+* #3123 - Unable to paste FASTA content from clipcoard
+* #3159 - Export to HELM works wrong for custom monomers imported from HELM with inline SMILES
+* #3068, #3080, #3082, #3086, #3087, #3088, #3090, #3084 - System can't load atom properties (Charge, Isotope and Valence) in SMARTS with "star" atom. System throws exception. 
+* #3144, #3147 - Export to IDT baseless preset and modified phosphate
+* #3148 - Export to IDT shouldn't work if monomer at the end has no 3' position IDT code
+* #3169 - Export to IDT doesn't work if R1-only CHEM stays on five prime position
+
+
+**Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.35.0-rc.1...indigo-1.36.0
+
+# Indigo 1.35.0
+Released 2025-09-19
+
+## Features
+* #2894 - Saving expanded monomers into MOL-files 
+* Update monomer expand to follow Indigo structure
+
+## Bugfixes and improvements
+* #2900 - CIP labels are always rendered from cdxml
+* #3012 - Create IUPAC Compliant Chemical Formula
+* #3050, #3047, #3048, #3054, #3051 - Loading monomer chain from SDF file works wrong - bonds between monomers got lost/Export RNA monomers from MOLv3000 doesn't work for ACCLDraw export
+* #2928 - Isoelectric Point calculation should take into account occupied leaving groups (exclude them)
+* #3053 - Calculate properties doesn't work for "rich" sequences
+* #3049 - Stereo labels got missied on export to SVG result
+* #3056 - HELM load fails if it contains more than one instance of monomers with aliasHELM property
+* #3045 - Adding substituents to reactants breaks chemical property calculations
+* #3061, #3062 - System can't recognize single rebose or phosphate if loaded from HELM
+* #3069 - Export to RXN doesn't work, system throws exception: Error: memory access out of bounds
+* #3094 - Export of expanded CHEMs works wrong (system losts CHEM type)
+
+
+**Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.34.0-rc.1...indigo-1.35.0
+
+# Indigo 1.34.0
+Released 2025-08-21
+
+## Features
+* 2899 - Peptide sequence should be auto-deceted at insert
+* 2958 - Map molfile monomers onto library monomers on import
+* 2967 - Support for marking of nucleotide components
+* 2952 - Expand c api to return CIP labels
+
+## Bugfixes and improvements
+* 2929 - Isoelectric Point calculation formula seems to be wrong
+* 2964 - System loads base as sugar
+* 2985 - Incorrect Implementation of PKA calculation 
+* 2926 - Atom weights in indigo should be updated according to last IUPAC data
+* 2936 - System doesn't calculate melting temperature for mix of nucleotides/nucleosides and unsplit nucleotides/unsplit nucleosides
+* 2965 - System shouldn't allow to export molecules to 3-letter sequence format
+* 2989 - Export (and import) of sequence of nucleosides to HELM works wrong (doesn't work for import)
+* 2993 - System shouldn't consider closing bracket as part of name
+* 2998 - Input fields for ion concentration and oligonucleotides become inactive after entering excessively long number
+* 2970 - Rendering CIP labels breaks the generated svg for firefox
+* 3014 - Wrong bingo-postgres-linux version
+
+
+**Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.33.0-rc.1...indigo-1.34.0
+
+# Indigo 1.33.0
+Released 2025-08-14
+
+## Features
+* #2890 - Conda support
+* #2835 - Loading HELM with monomers with multi-character IDs without brackets
+* #2836 - Loading monomer NOT from the library as Unknown monomers (in the same manner as it works in IDT)
+
+## Bugfixes and improvements
+* #2933 - Melting temperature calculation works wrong
+* #2748 - Substituents are displayed backwards if appearing on the left of the molecule
+* #2934 - Melting temperature should not be defined for one RNA/DNA nucleotide chain lenght
+* #2927 - Molecule formula atom order wrong
+* #522 - core: replace Obj with standard smart pointer
+* #2937 - System doesn't calculate melting temperature for mix of nucleotides/nucleosides and phosphates
+* #2720 - Reaction SMILES lossily handles enhanced stereochemistry
+* #2968 - Melting temperature calculation works wrong
+* #2969 - Export of unknown for Ketcher monomers works wrong
+* #2923 - System doesn't substract from mass of monomer mass of leaving group atom(s) if an attachment point is occupied
+* #2966 - Load from HELM doesn't work for two side chain connected sequences
+* #2986 - Don't calculate Melting temperature for one pair of double stranded DNA/RNA nucleotides
+
+
+**Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.32.0-rc.1...indigo-1.33.0
+
+# Indigo 1.32.0
+Released 2025-06-18
+
+## Features
+* #2767 Add support for Postgres 17
+* #1970 New text entities in KET-format
+* #2843 Support of "HELM alias" property for monomers
+* #2844 Support for "Modification Type" property of monomers
+* #2870 Add suuport for flip expanded monomer
+* #2840 Add InChI key method to cpp api
+
+## Bugfixes and improvements
+* #2805 Saving of 3:3 reaction to SDF v2000 causes exception: Convert error! core: <reaction> is not a base molecule
+* #2781 Ketcher fails to save structure in MOL V3000 format when encountering custom attachment labels like “Ch”
+* #2851 Macromolecule property Molecular mass wrong calculation
+* #2772 Saving monomers to SDF v3000 works wrong - system saves every monomer template for every monomer on the canvas (geometry progression)
+* #2860 Copy to clipboard doesn't work if Multi-Tailed Arrow present on the canvas
+* #2858 Export to any format doesn't work. System throw exception
+* #2047 Saved Ellipse and Line Shapes in CDX, CDXML, Base 64 CDX formats are not correctly displayed after opening
+* #2868 Indigo use wrong rotate parameter name KET files
+* #2867 API calculateMacroProperties does not allow to pass parameters for UPC and NAC
+* #2859 System wrongly reverse reaction order on Calculated Values dialog (and thus - values are wrong)
+* #2462 Can't save a reaction with Multi-Tailed Arrow to Daylight SMARTS format
+* #2892 API calculateMacroProperties does not work if only molecule passed as a parameter without monomers
+* #2888 Unable to export single expanded monomer to SVG Image, system throws error: array: invalid index 0
+* #1679 System ignores carrige return in text blocks in loaded CDX
+* #1683 System shifts text label to the right
+* #2897 Calculated Values doesn't work if reaction arrow overlaps reactant bounding box
+* #2931 Calculated values doesn't work for "rich" monomer chain
+* #2917 Molecular mass and Molecular formula are not calculated for Molecule (custom CHEM)
+* #2939 System doesn't calculate melting temperature for GC nucleotides pair
+* #2930 System shouldn't count bases that are not part of a nucleotide/nucleoside as RNA/DNA
+* #2947 System "caches" PNG/SVG of canvas and stops reflect rotation/flip chanages if any
+* #2987 Melting temperature value missed if UPC or NAC value set to zero
+* #2946 Non-standard connections cause chain break in macromolecule properties calculation
+* #2902 Indigo does not calculate properties for Peptides tab if Phosphate is missing in mixed chain
+* #2903 Indigo fails to calculate properties when two chains are connected via a microstructure
+* #2904 Indigo fails to calculate properties when two chains are connected via a CHEM
+* #2905 Incorrect Calculate Properties result when monomers are connected via not a R2-R1
+
+**Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.31.0-rc.1...indigo-1.32.0
+
+# Indigo 1.31.0
+Released 2025-06-17
+
+## Features
+* #2788 Support for PNG/SVG export of expanded monomers
+
+## Bugfixes and improvements
+* #2150 Can't save a schema with some elements from Periodic Table in PNG and SVG format
+* #425 Smiles with attachment points is not read correctly (valences are wrong)
+* #2747 Incorrect substituent position
+* #1680 System can't load CDX with (unsupported) brackets inside
+* #1631 Add/Remove hydrogens changes Radical value from Diradical (triplet) to Diradical (singlet)
+* #2755 Error occurs on click of "Remove Explicit Hydrogens" in reaction
+* #1686 System shows positive charge modificator as extra + in addition to charge modified molecule 
+* #2810 Unnecessary rearrangment of cdxml reaction
+* #2807 Missing label from cdxml
+* #2801 Can't render reactions which contain brackets
+* #2778 Can't render fragments with multiple external connections
+* #2815 CIP labels are not rendered
+* #2591 Reagents are repositioned above the reaction arrow after saving and loading RXN V2000/V3000 files
+* #2832 Load from clipboard ignores RNA/DNA/PEP switcher and always loads DNA ambiguous bases even if RNA mode switched on
+* #2845 Export to PNG/SVG works wrong for labels
+* #2722 Monomer could be saved to RDF V3000 format but can't be loaded back exception
+
+**Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.30.0-rc.1...indigo-1.31.0
+
+# Indigo 1.30.1
+Released 2025-04-17
+
+## Features
+* 2790 Support of "expanded" monomer option
+
+## Bugfixes and improvements
+* 2513 Elliptical arrows can not be saved to the png
+* 2412 User can't correctly save (or make a layout) to RDF/RXN reaction several products or with separate positioned molecules
+* 2746 Incorrect phosphorus valence
+* 2708 Export to SMILES works wrong if loaded from MOL
+* 2707 Atom Query feature export: System lost MOST "Substitution count" values
+* 2702 Export molecule which contains atom with five neighbors and stereo-bond cause error
+* 2704 System losts one stereo label if load from MOL
+* 2699 R Group logic condition is wrong if loaded from MOL
+* 2816 Format recognition order of content from clipboard should be changed for Sequence mode canvas
+* 2818 Library ambiguius RNA bases loaded from HELM as bases with % label
+* 2826 Unable to load ambiguous RNA and ambiguous DNA monomers with same name from HELM
+
+**Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.29.0...indigo-1.30.1
+
+# Indigo 1.29.0
+Released 2025-03-26
+
+## Features
+* #1844 - Implement GenBank/GenPept sequences import
+* #2552 - "Calculate Properties" for macromolecules 
+* #2713 - Support for the star atom (*)
+
+## Bugfixes and improvements
+* #2739 - Wrong stereochemistry when reading cdxml reaction 
+* #2744 - Indigo ignores alternate name for templates in MOL v3000 
+* #2716 - Valid CXSMILES rejected 
+* #2732 - V2000 Mol file loader skips essential SGroup line in certain cases 
+* #2589 - Jump on uninitialised value
+* #2763 - System should ignore spaces before line indexes on GenBank/GenPept sequences import
+* #2798 - Peptide sequence not pasting directly on canvas
+
+**Full Changelog**: https://github.com/epam/Indigo/compare/indigo-1.28.0-rc.1...indigo-1.29.0
+
 # Indigo 1.28.0
 Released 2025-02-13
 

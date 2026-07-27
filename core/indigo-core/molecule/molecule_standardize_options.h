@@ -182,6 +182,10 @@ namespace indigo
         // Remove unnecessary stereo bonds
         // Default is false.
         bool remove_extra_stereo_bonds;
+
+        // Mark all undefined stereocenters as stereocenters
+        // Default is false.
+        bool standardize_stereo_mark_undefined;
     };
 
 } // namespace indigo

@@ -133,18 +133,17 @@ std::unique_ptr<GROSS_UNITS> MoleculeGrossFormula::collect(BaseMolecule& mol, bo
     std::set<int> selected_atoms;
     mol.getAtomSelection(selected_atoms);
 
-    if (!mol.isQueryMolecule())
-    {
-        mol.asMolecule().restoreAromaticHydrogens();
-    }
+    mol.restoreAromaticHydrogens();
 
     std::unique_ptr<GROSS_UNITS> result = std::make_unique<GROSS_UNITS>();
     auto& gross = *result;
 
     // basic structure and all polymers
     int grossFormulaSize = mol.sgroups.getSGroupCount(SGroup::SG_TYPE_SRU) + 1;
-    QS_DEF_RES(ObjArray<Array<int>>, filters, grossFormulaSize);
-    QS_DEF_RES(ObjArray<Array<char>>, indices, grossFormulaSize);
+    PtrArray<Array<int>> filters;
+    filters.resize(grossFormulaSize);
+    PtrArray<Array<char>> indices;
+    indices.resize(grossFormulaSize);
 
     // first element is for old-style gross formula
     indices[0].appendString(" ", true);
@@ -158,7 +157,7 @@ std::unique_ptr<GROSS_UNITS> MoleculeGrossFormula::collect(BaseMolecule& mol, bo
     {
         RepeatingUnit* ru = (RepeatingUnit*)&mol.sgroups.getSGroup(i - 1, SGroup::SG_TYPE_SRU);
         filters[i].copy(ru->atoms);
-        indices[i].copy(ru->subscript.ptr(), ru->subscript.size() - 1); // Remove '0' symbol at the end
+        indices[i].copy(ru->label.ptr(), ru->label.size() - 1); // Remove '0' symbol at the end
         // Filter polymer atoms
         for (int j = 0; j < filters[i].size(); j++)
         {
@@ -169,7 +168,7 @@ std::unique_ptr<GROSS_UNITS> MoleculeGrossFormula::collect(BaseMolecule& mol, bo
             }
         }
     }
-    // init ObjArray
+    // init gross units
     gross.resize(grossFormulaSize);
 
     for (int i = 0; i < grossFormulaSize; i++)
@@ -212,9 +211,13 @@ std::unique_ptr<GROSS_UNITS> MoleculeGrossFormula::collect(BaseMolecule& mol, bo
             else
                 *val += 1;
 
-            if (!mol.isQueryMolecule() && !mol.isRSite(filters[i][j]))
+            if (!mol.isRSite(filters[i][j]))
             {
-                int implicit_h = mol.asMolecule().getImplicitH(filters[i][j]);
+                int implicit_h = -1;
+                if (mol.isQueryMolecule())
+                    implicit_h = mol.asQueryMolecule().getImplicitH(filters[i][j], true);
+                else
+                    implicit_h = mol.asMolecule().getImplicitH_NoThrow(filters[i][j], -1);
 
                 if (implicit_h >= 0)
                 {
@@ -251,7 +254,7 @@ void MoleculeGrossFormula::toString(GROSS_UNITS& gross, Array<char>& str, bool a
     output.writeChar(0);
 }
 
-void MoleculeGrossFormula::toString_Hill(GROSS_UNITS& gross, Array<char>& str, bool add_rsites)
+void MoleculeGrossFormula::toString_Hill(GROSS_UNITS& gross, Array<char>& str, bool add_rsites, bool iupacFormuala)
 {
     ArrayOutput output(str); // clear!
 
@@ -259,23 +262,43 @@ void MoleculeGrossFormula::toString_Hill(GROSS_UNITS& gross, Array<char>& str, b
         return;
 
     // First base molecule
-    if (gross[0].isotopes.find(ELEM_C) == gross[0].isotopes.end())
-        _toString(gross[0].isotopes, output, _cmp_hill_no_carbon, add_rsites);
-    else
-        _toString(gross[0].isotopes, output, _cmp_hill, add_rsites);
+    toStringType(gross[0], output, add_rsites, iupacFormuala);
 
     // Then polymers repeating units
     for (int i = 1; i < gross.size(); i++)
     {
         output.writeChar('(');
-        if (gross[0].isotopes.find(ELEM_C) == gross[0].isotopes.end())
-            _toString(gross[i].isotopes, output, _cmp_hill_no_carbon, add_rsites);
-        else
-            _toString(gross[i].isotopes, output, _cmp_hill, add_rsites);
+        toStringType(gross[i], output, add_rsites, iupacFormuala);
         output.writeChar(')');
         output.writeArray(gross[i].multiplier);
     }
     output.writeChar(0);
+}
+
+void MoleculeGrossFormula::toStringType(const GrossFormulaUnit& grossFormulaUnit, ArrayOutput& output, const bool addRsites, const bool iupacFormuala)
+{
+    if (!iupacFormuala)
+    {
+        if (grossFormulaUnit.isotopes.find(ELEM_C) == grossFormulaUnit.isotopes.end())
+        {
+            _toString(grossFormulaUnit.isotopes, output, _cmp_hill_no_carbon, addRsites);
+        }
+        else
+        {
+            _toString(grossFormulaUnit.isotopes, output, _cmp_hill, addRsites);
+        }
+    }
+    else
+    {
+        if (grossFormulaUnit.isotopes.find(ELEM_C) == grossFormulaUnit.isotopes.end())
+        {
+            _toStringIUPAC(grossFormulaUnit.isotopes, output, _cmp_hill_no_carbon);
+        }
+        else
+        {
+            _toStringIUPAC(grossFormulaUnit.isotopes, output, _cmp_hill);
+        }
+    }
 }
 
 void MoleculeGrossFormula::_toString(const Array<int>& gross, ArrayOutput& output, int (*cmp)(_ElemCounter&, _ElemCounter&, void*), bool add_rsites)
@@ -383,6 +406,64 @@ void MoleculeGrossFormula::_toString(const std::map<int, int>& isotopes, ArrayOu
         if (*val > 1)
         {
             output.printf("%d", *val);
+        }
+    }
+}
+
+void MoleculeGrossFormula::_toStringIUPAC(const std::map<int, int>& isotopes, ArrayOutput& output, int (*cmp)(_ElemCounter&, _ElemCounter&, void*))
+{
+    QS_DEF(Array<_ElemCounter>, counters);
+
+    int i;
+    int number;
+    int isotope;
+
+    for (auto it = isotopes.begin(); it != isotopes.end(); it++)
+    {
+        if (it->first == ELEM_RSITE)
+            continue;
+
+        _ElemCounter& ec = counters.push();
+
+        number = it->first & 0xFF;
+        isotope = it->first >> 8;
+
+        ec.elem = number;
+        ec.isotope = isotope;
+        ec.counter = it->second;
+    }
+
+    counters.qsort(cmp, 0);
+
+    for (i = 0; i < counters.size(); ++i)
+    {
+        if (counters[i].counter < 1)
+            break;
+
+        if (counters[i].isotope > 0)
+        {
+            output.printf("[");
+
+            if ((counters[i].elem == ELEM_H) && (counters[i].isotope == DEUTERIUM))
+                output.printf("%s", "D");
+            else if ((counters[i].elem == ELEM_H) && (counters[i].isotope == TRITIUM))
+                output.printf("%s", "T");
+            else
+            {
+                output.printf("%d%s", counters[i].isotope, Element::toString(counters[i].elem));
+            }
+        }
+        else
+        {
+            output.printf(Element::toString(counters[i].elem));
+        }
+
+        if (counters[i].counter > 1)
+            output.printf("%d", counters[i].counter);
+
+        if (counters[i].isotope > 0)
+        {
+            output.printf("]");
         }
     }
 }

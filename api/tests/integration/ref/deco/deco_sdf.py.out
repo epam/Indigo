@@ -25328,8 +25328,8 @@ mapped scaffold: OCC1OC(O)C(O)C(O)C1O
   fragment #0: C1%91C(O)C(C(O)C(CO)O1)O.[*:1]%91 |$;;;;;;;;;;;_AP1$|
   RGROUP #3
   fragment #0: P%91([O-])([O-])=O.[*:1]%91 |$;;;;_AP1$|
-C1(C(O)C(C(OC2C(O)C(C(O*)OC2CO)O)OC1CO)O)OC1C(O)C(C(O*)C(CO)O1)O |$;;;;;;;;;;;;X;;;;;;;;;;;;;;;;;;X;;;;;$,ha:0,1,2,3,4,5,18,19,20,21,22,23,hb:0,1,2,3,4,18,19,20,21,22,23,24|
-decomposed molecule: C1(C(O)C(C(O%91)OC1CO)O)O%92.[*:2]%92.[*:1]%91 |$;;;;;;;;;;;;_R2;_R1$,RG:_R1={C1%91C(O)C(C(O*)OC1CO)O.[*:1]%91 |$;;;;;;X;;;;;;_AP1$|},_R2={C1%91C(O)C(C(O*)C(CO)O1)O.[*:1]%91 |$;;;;;;X;;;;;;_AP1$|}|
+C1(C(O)C(C(OC2C(O)C(C(O*)OC2CO)O)OC1CO)O)OC1C(O)C(C(O*)C(CO)O1)O |$;;;;;;;;;;;;X_p;;;;;;;;;;;;;;;;;;X_p;;;;;$,ha:0,1,2,3,4,5,18,19,20,21,22,23,hb:0,1,2,3,4,18,19,20,21,22,23,24|
+decomposed molecule: C1(C(O)C(C(O%91)OC1CO)O)O%92.[*:2]%92.[*:1]%91 |$;;;;;;;;;;;;_R2;_R1$,RG:_R1={C1%91C(O)C(C(O*)OC1CO)O.[*:1]%91 |$;;;;;;X_p;;;;;;_AP1$|},_R2={C1%91C(O)C(C(O*)C(CO)O1)O.[*:1]%91 |$;;;;;;X_p;;;;;;_AP1$|}|
 decomposed molecule: $MDL  REV  1 0100000000
 $MOL
 $HDR
@@ -25440,9 +25440,9 @@ $END MOL
 
 mapped scaffold: OCC1OC(O)C(O)C(O)C1O
   RGROUP #1
-  fragment #0: C1%91C(O)C(C(O*)OC1CO)O.[*:1]%91 |$;;;;;;X;;;;;;_AP1$|
+  fragment #0: C1%91C(O)C(C(O*)OC1CO)O.[*:1]%91 |$;;;;;;X_p;;;;;;_AP1$|
   RGROUP #2
-  fragment #0: C1%91C(O)C(C(O*)C(CO)O1)O.[*:1]%91 |$;;;;;;X;;;;;;_AP1$|
+  fragment #0: C1%91C(O)C(C(O*)C(CO)O1)O.[*:1]%91 |$;;;;;;X_p;;;;;;_AP1$|
 C1(C(O)C(C(O)C(CO)O1)O)OC(C(O)CO)C(O)C(O)C=O |ha:0,1,2,3,4,5,6,7,8,9,10,11,hb:0,1,2,3,4,5,6,7,8,9,10,11|
 decomposed molecule: C1(C(O)C(C(O)C(CO)O1)O)O%91.[*:1]%91 |$;;;;;;;;;;;;_R1$,RG:_R1={C%91(C(O)CO)C(O)C(O)C=O.[*:1]%91 |$;;;;;;;;;;;_AP1$|}|
 decomposed molecule: $MDL  REV  1 0100000000
@@ -41221,8 +41221,8 @@ mapped scaffold: OCC1OC(O)C(O)C(O)C1O
   fragment #0: C%91(=O)CCC(=O)O.[*:1]%91 |$;;;;;;;_AP1$|
   RGROUP #7
   fragment #0: C1%91OC(C(OC2OC(C(OC3OC(C(OC4OC(COC(=O)CCC(=O)O)C(C(OC(=O)CCC(=O)O)C4OC(=O)CCC(=O)O)OC4OC(COC(=O)CCC(=O)O)C(C(OC(=O)CCC(=O)O)C4OC(=O)CCC(=O)O)OC4OC(COC(=O)CCC(=O)O)C%92C(OC(=O)CCC(=O)O)C4OC(=O)CCC(=O)O)C(OC(=O)CCC(=O)O)C3OC(=O)CCC(=O)O)COC(=O)CCC(=O)O)C(OC(=O)CCC(=O)O)C2OC(=O)CCC(=O)O)COC(=O)CCC(=O)O)C(OC(=O)CCC(=O)O)C1OC(=O)CCC(=O)O)COC(=O)CCC(=O)O.[*:1]%91.[*:2]%92 |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;_AP1;_AP2$|
-C1(C(O)C(C(O*)OC1CO)O)OC1C(O)C(C(O)C(CO)O1)O |$;;;;;;Pol;;;;;;;;;;;;;;;;;$,ha:0,1,2,3,4,5,7,8,9,10,11,12,hb:0,1,2,3,4,6,7,8,9,10,11,12|
-decomposed molecule: C1(C(O)C(C(O%91)OC1CO)O)O%92.[*:2]%92.[*:1]%91 |$;;;;;;;;;;;;_R2;_R1$,RG:_R1={*%91.[*:1]%91 |$Pol;_AP1$|},_R2={C1%91C(O)C(C(O)C(CO)O1)O.[*:1]%91 |$;;;;;;;;;;;_AP1$|}|
+C1(C(O)C(C(O*)OC1CO)O)OC1C(O)C(C(O)C(CO)O1)O |$;;;;;;Pol_p;;;;;;;;;;;;;;;;;$,ha:0,1,2,3,4,5,7,8,9,10,11,12,hb:0,1,2,3,4,6,7,8,9,10,11,12|
+decomposed molecule: C1(C(O)C(C(O%91)OC1CO)O)O%92.[*:2]%92.[*:1]%91 |$;;;;;;;;;;;;_R2;_R1$,RG:_R1={*%91.[*:1]%91 |$Pol_p;_AP1$|},_R2={C1%91C(O)C(C(O)C(CO)O1)O.[*:1]%91 |$;;;;;;;;;;;_AP1$|}|
 decomposed molecule: $MDL  REV  1 0100000000
 $MOL
 $HDR
@@ -41308,7 +41308,7 @@ $END MOL
 
 mapped scaffold: OCC1OC(O)C(O)C(O)C1O
   RGROUP #1
-  fragment #0: *%91.[*:1]%91 |$Pol;_AP1$|
+  fragment #0: *%91.[*:1]%91 |$Pol_p;_AP1$|
   RGROUP #2
   fragment #0: C1%91C(O)C(C(O)C(CO)O1)O.[*:1]%91 |$;;;;;;;;;;;_AP1$|
 C1(OC2OC(C(OC(=O)C)C(OC(=O)C)C2OC(=O)C)COC(=O)C)C(COC(=O)C)OC(N=[N+]=[N-])C(OC(=O)C)C1OC(=O)C |ha:1,2,3,4,5,6,10,11,15,16,20,21,hb:1,2,3,4,5,9,10,14,15,16,20,21|
@@ -42381,8 +42381,8 @@ $END MOL
 mapped scaffold: OCC1O[14CH](O)C(O)C(O)C1O
   RGROUP #1
   fragment #0: P%91(=O)(O)O.[*:1]%91 |$;;;;_AP1$|
-C1(N(C(=O)C)S([O-])(=O)=O)C(C(C(CO)OC1OC1C(O)C(C(OC2C(O)C(OC(OC3C(O)C(C(O*)OC3C([O-])=O)O)C2N(C(=O)C)S([O-])(=O)=O)CO)OC1C([O-])=O)O)O)OC1C(O)C(C(OC2OC(C(O)C(O*)C2N(C(=O)C)S([O-])(=O)=O)CO)C(C([O-])=O)O1)O.[Na+].[Na+].[Na+].[Na+].[Na+].[Na+] |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;X;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;X;;;;;;;;;;;;;;;;;;;;;;;$,ha:16,17,18,19,20,21,22,54,55,56,57,59,hb:17,18,19,20,21,22,56,57,58,59,60,62|
-decomposed molecule: O%91C1C(O)C(C(O%92)OC1C%93[O-])O.[*:9]=%93.[*:2]%91.[*:1]%92 |$;;;;;;;;;;;;_R9;_R2;_R1$,RG:_R1={C1%91C(O)C(OC(OC2C(O)C(C(O*)OC2C([O-])=O)O)C1N(C(=O)C)S([O-])(=O)=O)CO.[*:1]%91 |$;;;;;;;;;;;;;X;;;;;;;;;;;;;;;;;;_AP1$|},_R2={C1(N(C(=O)C)S([O-])(=O)=O)C(C(C(CO)OC%911)O)OC1C(O)C(C(OC2OC(C(O)C(O*)C2N(C(=O)C)S([O-])(=O)=O)CO)C(C([O-])=O)O1)O.[*:1]%91 |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;X;;;;;;;;;;;;;;;;;;_AP1$|},_R9={O%91.[*:1]%91 |$;_AP1$|}|
+C1(N(C(=O)C)S([O-])(=O)=O)C(C(C(CO)OC1OC1C(O)C(C(OC2C(O)C(OC(OC3C(O)C(C(O*)OC3C([O-])=O)O)C2N(C(=O)C)S([O-])(=O)=O)CO)OC1C([O-])=O)O)O)OC1C(O)C(C(OC2OC(C(O)C(O*)C2N(C(=O)C)S([O-])(=O)=O)CO)C(C([O-])=O)O1)O.[Na+].[Na+].[Na+].[Na+].[Na+].[Na+] |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;X_p;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;X_p;;;;;;;;;;;;;;;;;;;;;;;$,ha:16,17,18,19,20,21,22,54,55,56,57,59,hb:17,18,19,20,21,22,56,57,58,59,60,62|
+decomposed molecule: O%91C1C(O)C(C(O%92)OC1C%93[O-])O.[*:9]=%93.[*:2]%91.[*:1]%92 |$;;;;;;;;;;;;_R9;_R2;_R1$,RG:_R1={C1%91C(O)C(OC(OC2C(O)C(C(O*)OC2C([O-])=O)O)C1N(C(=O)C)S([O-])(=O)=O)CO.[*:1]%91 |$;;;;;;;;;;;;;X_p;;;;;;;;;;;;;;;;;;_AP1$|},_R2={C1(N(C(=O)C)S([O-])(=O)=O)C(C(C(CO)OC%911)O)OC1C(O)C(C(OC2OC(C(O)C(O*)C2N(C(=O)C)S([O-])(=O)=O)CO)C(C([O-])=O)O1)O.[*:1]%91 |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;X_p;;;;;;;;;;;;;;;;;;_AP1$|},_R9={O%91.[*:1]%91 |$;_AP1$|}|
 decomposed molecule: $MDL  REV  1 0100000000
 $MOL
 $HDR
@@ -42623,9 +42623,9 @@ $END MOL
 
 mapped scaffold: [O-]CC1OC(O)C(O)C(O)C1O
   RGROUP #1
-  fragment #0: C1%91C(O)C(OC(OC2C(O)C(C(O*)OC2C([O-])=O)O)C1N(C(=O)C)S([O-])(=O)=O)CO.[*:1]%91 |$;;;;;;;;;;;;;X;;;;;;;;;;;;;;;;;;_AP1$|
+  fragment #0: C1%91C(O)C(OC(OC2C(O)C(C(O*)OC2C([O-])=O)O)C1N(C(=O)C)S([O-])(=O)=O)CO.[*:1]%91 |$;;;;;;;;;;;;;X_p;;;;;;;;;;;;;;;;;;_AP1$|
   RGROUP #2
-  fragment #0: C1(N(C(=O)C)S([O-])(=O)=O)C(C(C(CO)OC%911)O)OC1C(O)C(C(OC2OC(C(O)C(O*)C2N(C(=O)C)S([O-])(=O)=O)CO)C(C([O-])=O)O1)O.[*:1]%91 |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;X;;;;;;;;;;;;;;;;;;_AP1$|
+  fragment #0: C1(N(C(=O)C)S([O-])(=O)=O)C(C(C(CO)OC%911)O)OC1C(O)C(C(OC2OC(C(O)C(O*)C2N(C(=O)C)S([O-])(=O)=O)CO)C(C([O-])=O)O1)O.[*:1]%91 |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;X_p;;;;;;;;;;;;;;;;;;_AP1$|
   RGROUP #9
   fragment #0: O%91.[*:1]%91 |$;_AP1$|
 C1(C(O)C(C(OCCCCCCCCCCCCCCCC)OC1CO)O)OC1C(O)C(C(O)C(CO)O1)O |ha:0,1,2,3,4,5,22,23,24,25,26,27,hb:0,1,2,3,4,21,22,23,24,25,26,27|
@@ -45461,8 +45461,8 @@ $END MOL
 mapped scaffold: OCC1OC(O)C(O)C(O)C1O
   RGROUP #2
   fragment #0: C1%91C(O)C(C(O)C(CO)O1)O.[*:1]%91 |$;;;;;;;;;;;_AP1$|
-C1(C(O)C(C(NC(=O)CNC(=O)CC(=O)N*)OC1CO)O)OC1C(O)C(C(O)C(CO)O1)O |$;;;;;;;;;;;;;;;;X;;;;;;;;;;;;;;;;;$,ha:22,23,24,25,26,27,28,29,30,31,32,33,hb:23,24,25,26,27,28,29,30,31,32,33,34|
-decomposed molecule: O%91C1C(O)C(C(O)C(CO)O1)O.[*:1]%91 |$;;;;;;;;;;;;_R1$,RG:_R1={C1%91C(O)C(C(NC(=O)CNC(=O)CC(=O)N*)OC1CO)O.[*:1]%91 |$;;;;;;;;;;;;;;;;X;;;;;;_AP1$|}|
+C1(C(O)C(C(NC(=O)CNC(=O)CC(=O)N*)OC1CO)O)OC1C(O)C(C(O)C(CO)O1)O |$;;;;;;;;;;;;;;;;X_p;;;;;;;;;;;;;;;;;$,ha:22,23,24,25,26,27,28,29,30,31,32,33,hb:23,24,25,26,27,28,29,30,31,32,33,34|
+decomposed molecule: O%91C1C(O)C(C(O)C(CO)O1)O.[*:1]%91 |$;;;;;;;;;;;;_R1$,RG:_R1={C1%91C(O)C(C(NC(=O)CNC(=O)CC(=O)N*)OC1CO)O.[*:1]%91 |$;;;;;;;;;;;;;;;;X_p;;;;;;_AP1$|}|
 decomposed molecule: $MDL  REV  1 0100000000
 $MOL
 $HDR
@@ -45558,7 +45558,7 @@ $END MOL
 
 mapped scaffold: OCC1OC(O)C(O)C(O)C1O
   RGROUP #1
-  fragment #0: C1%91C(O)C(C(NC(=O)CNC(=O)CC(=O)N*)OC1CO)O.[*:1]%91 |$;;;;;;;;;;;;;;;;X;;;;;;_AP1$|
+  fragment #0: C1%91C(O)C(C(NC(=O)CNC(=O)CC(=O)N*)OC1CO)O.[*:1]%91 |$;;;;;;;;;;;;;;;;X_p;;;;;;_AP1$|
 C1(COC(=O)C)(OC(C(OC(=O)C(C)C)C1OC(=O)C(C)C)COC(=O)C(C)C)OC1OC(C(OC(=O)C(C)C)C(OC(=O)C(C)C)C1OC(=O)C)COC(=O)C(C)C |ha:29,30,31,32,33,34,40,41,47,48,52,53,hb:30,31,32,33,34,40,41,47,48,49,53,54|
 decomposed molecule: O%91C1OC(C(O%92)C(O%93)C1O%94)CO%95.[*:2]%92.[*:3]%95.[*:4]%93.[*:1]%91.[*:5]%94 |$;;;;;;;;;;;;_R2;_R3;_R4;_R1;_R5$,RG:_R1={C1%91(COC(=O)C)OC(C(OC(=O)C(C)C)C1OC(=O)C(C)C)COC(=O)C(C)C.[*:1]%91 |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;_AP1$|},_R2={C%91(=O)C(C)C.[*:1]%91 |$;;;;;_AP1$|},_R3={C%91(=O)C(C)C.[*:1]%91 |$;;;;;_AP1$|},_R4={C%91(=O)C(C)C.[*:1]%91 |$;;;;;_AP1$|},_R5={C%91(=O)C.[*:1]%91 |$;;;_AP1$|}|
 decomposed molecule: $MDL  REV  1 0100000000
@@ -61367,13 +61367,13 @@ mapped scaffold: OCC1OC(O)C(O)C(O)C1O
   fragment #0: C1%91C(O)C(C(O)C(CO)O1)O.[*:1]%91 |$;;;;;;;;;;;_AP1$|
   RGROUP #3
   fragment #0: P%91([O-])([O-])=O.[*:1]%91 |$;;;;_AP1$|
-C1(C(O)C(C(OC2C(O)C(C(O*)OC2CO)O)OC1CO)O)OC1C(O)C(C(O*)C(CO)O1)O |$;;;;;;;;;;;;X;;;;;;;;;;;;;;;;;;X;;;;;$,ha:0,1,2,3,4,5,18,19,20,21,22,23,hb:0,1,2,3,4,18,19,20,21,22,23,24|
-decomposed molecule: C1(C(O)C(C(O%91)OC1CO)O)O%92.[*:2]%92.[*:1]%91 |$;;;;;;;;;;;;_R2;_R1$,RG:_R1={C1%91C(O)C(C(O*)OC1CO)O.[*:1]%91 |$;;;;;;X;;;;;;_AP1$|},_R2={C1%91C(O)C(C(O*)C(CO)O1)O.[*:1]%91 |$;;;;;;X;;;;;;_AP1$|}|
+C1(C(O)C(C(OC2C(O)C(C(O*)OC2CO)O)OC1CO)O)OC1C(O)C(C(O*)C(CO)O1)O |$;;;;;;;;;;;;X_p;;;;;;;;;;;;;;;;;;X_p;;;;;$,ha:0,1,2,3,4,5,18,19,20,21,22,23,hb:0,1,2,3,4,18,19,20,21,22,23,24|
+decomposed molecule: C1(C(O)C(C(O%91)OC1CO)O)O%92.[*:2]%92.[*:1]%91 |$;;;;;;;;;;;;_R2;_R1$,RG:_R1={C1%91C(O)C(C(O*)OC1CO)O.[*:1]%91 |$;;;;;;X_p;;;;;;_AP1$|},_R2={C1%91C(O)C(C(O*)C(CO)O1)O.[*:1]%91 |$;;;;;;X_p;;;;;;_AP1$|}|
 mapped scaffold: OCC1OC(O)C(O)C(O)C1O
   RGROUP #1
-  fragment #0: C1%91C(O)C(C(O*)OC1CO)O.[*:1]%91 |$;;;;;;X;;;;;;_AP1$|
+  fragment #0: C1%91C(O)C(C(O*)OC1CO)O.[*:1]%91 |$;;;;;;X_p;;;;;;_AP1$|
   RGROUP #2
-  fragment #0: C1%91C(O)C(C(O*)C(CO)O1)O.[*:1]%91 |$;;;;;;X;;;;;;_AP1$|
+  fragment #0: C1%91C(O)C(C(O*)C(CO)O1)O.[*:1]%91 |$;;;;;;X_p;;;;;;_AP1$|
 C1(C(O)C(C(O)C(CO)O1)O)OC(C(O)CO)C(O)C(O)C=O |ha:0,1,2,3,4,5,6,7,8,9,10,11,hb:0,1,2,3,4,5,6,7,8,9,10,11|
 decomposed molecule: C1(C(O)C(C(O)C(CO)O1)O)O%91.[*:1]%91 |$;;;;;;;;;;;;_R1$,RG:_R1={C%91(C(O)CO)C(O)C(O)C=O.[*:1]%91 |$;;;;;;;;;;;_AP1$|}|
 mapped scaffold: OCC1OC(O)C(O)C(O)C1O
@@ -62150,11 +62150,11 @@ mapped scaffold: OCC1OC(O)C(O)C(O)C1O
   fragment #0: C%91(=O)CCC(=O)O.[*:1]%91 |$;;;;;;;_AP1$|
   RGROUP #7
   fragment #0: C1%91OC(C(OC2OC(C(OC3OC(C(OC4OC(COC(=O)CCC(=O)O)C(C(OC(=O)CCC(=O)O)C4OC(=O)CCC(=O)O)OC4OC(COC(=O)CCC(=O)O)C(C(OC(=O)CCC(=O)O)C4OC(=O)CCC(=O)O)OC4OC(COC(=O)CCC(=O)O)C%92C(OC(=O)CCC(=O)O)C4OC(=O)CCC(=O)O)C(OC(=O)CCC(=O)O)C3OC(=O)CCC(=O)O)COC(=O)CCC(=O)O)C(OC(=O)CCC(=O)O)C2OC(=O)CCC(=O)O)COC(=O)CCC(=O)O)C(OC(=O)CCC(=O)O)C1OC(=O)CCC(=O)O)COC(=O)CCC(=O)O.[*:1]%91.[*:2]%92 |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;_AP1;_AP2$|
-C1(C(O)C(C(O*)OC1CO)O)OC1C(O)C(C(O)C(CO)O1)O |$;;;;;;Pol;;;;;;;;;;;;;;;;;$,ha:0,1,2,3,4,5,7,8,9,10,11,12,hb:0,1,2,3,4,6,7,8,9,10,11,12|
-decomposed molecule: C1(C(O)C(C(O%91)OC1CO)O)O%92.[*:2]%92.[*:1]%91 |$;;;;;;;;;;;;_R2;_R1$,RG:_R1={*%91.[*:1]%91 |$Pol;_AP1$|},_R2={C1%91C(O)C(C(O)C(CO)O1)O.[*:1]%91 |$;;;;;;;;;;;_AP1$|}|
+C1(C(O)C(C(O*)OC1CO)O)OC1C(O)C(C(O)C(CO)O1)O |$;;;;;;Pol_p;;;;;;;;;;;;;;;;;$,ha:0,1,2,3,4,5,7,8,9,10,11,12,hb:0,1,2,3,4,6,7,8,9,10,11,12|
+decomposed molecule: C1(C(O)C(C(O%91)OC1CO)O)O%92.[*:2]%92.[*:1]%91 |$;;;;;;;;;;;;_R2;_R1$,RG:_R1={*%91.[*:1]%91 |$Pol_p;_AP1$|},_R2={C1%91C(O)C(C(O)C(CO)O1)O.[*:1]%91 |$;;;;;;;;;;;_AP1$|}|
 mapped scaffold: OCC1OC(O)C(O)C(O)C1O
   RGROUP #1
-  fragment #0: *%91.[*:1]%91 |$Pol;_AP1$|
+  fragment #0: *%91.[*:1]%91 |$Pol_p;_AP1$|
   RGROUP #2
   fragment #0: C1%91C(O)C(C(O)C(CO)O1)O.[*:1]%91 |$;;;;;;;;;;;_AP1$|
 C1(OC2OC(C(OC(=O)C)C(OC(=O)C)C2OC(=O)C)COC(=O)C)C(COC(=O)C)OC(N=[N+]=[N-])C(OC(=O)C)C1OC(=O)C |ha:1,2,3,4,5,6,10,11,15,16,20,21,hb:1,2,3,4,5,9,10,14,15,16,20,21|
@@ -62220,13 +62220,13 @@ decomposed molecule: [14CH]1(O%91)C(O)C(C(O)C(CO)O1)O.[*:1]%91 |$;;;;;;;;;;;;_R1
 mapped scaffold: OCC1O[14CH](O)C(O)C(O)C1O
   RGROUP #1
   fragment #0: P%91(=O)(O)O.[*:1]%91 |$;;;;_AP1$|
-C1(N(C(=O)C)S([O-])(=O)=O)C(C(C(CO)OC1OC1C(O)C(C(OC2C(O)C(OC(OC3C(O)C(C(O*)OC3C([O-])=O)O)C2N(C(=O)C)S([O-])(=O)=O)CO)OC1C([O-])=O)O)O)OC1C(O)C(C(OC2OC(C(O)C(O*)C2N(C(=O)C)S([O-])(=O)=O)CO)C(C([O-])=O)O1)O.[Na+].[Na+].[Na+].[Na+].[Na+].[Na+] |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;X;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;X;;;;;;;;;;;;;;;;;;;;;;;$,ha:16,17,18,19,20,21,22,54,55,56,57,59,hb:17,18,19,20,21,22,56,57,58,59,60,62|
-decomposed molecule: O%91C1C(O)C(C(O%92)OC1C%93[O-])O.[*:9]=%93.[*:2]%91.[*:1]%92 |$;;;;;;;;;;;;_R9;_R2;_R1$,RG:_R1={C1%91C(O)C(OC(OC2C(O)C(C(O*)OC2C([O-])=O)O)C1N(C(=O)C)S([O-])(=O)=O)CO.[*:1]%91 |$;;;;;;;;;;;;;X;;;;;;;;;;;;;;;;;;_AP1$|},_R2={C1(N(C(=O)C)S([O-])(=O)=O)C(C(C(CO)OC%911)O)OC1C(O)C(C(OC2OC(C(O)C(O*)C2N(C(=O)C)S([O-])(=O)=O)CO)C(C([O-])=O)O1)O.[*:1]%91 |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;X;;;;;;;;;;;;;;;;;;_AP1$|},_R9={O%91.[*:1]%91 |$;_AP1$|}|
+C1(N(C(=O)C)S([O-])(=O)=O)C(C(C(CO)OC1OC1C(O)C(C(OC2C(O)C(OC(OC3C(O)C(C(O*)OC3C([O-])=O)O)C2N(C(=O)C)S([O-])(=O)=O)CO)OC1C([O-])=O)O)O)OC1C(O)C(C(OC2OC(C(O)C(O*)C2N(C(=O)C)S([O-])(=O)=O)CO)C(C([O-])=O)O1)O.[Na+].[Na+].[Na+].[Na+].[Na+].[Na+] |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;X_p;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;X_p;;;;;;;;;;;;;;;;;;;;;;;$,ha:16,17,18,19,20,21,22,54,55,56,57,59,hb:17,18,19,20,21,22,56,57,58,59,60,62|
+decomposed molecule: O%91C1C(O)C(C(O%92)OC1C%93[O-])O.[*:9]=%93.[*:2]%91.[*:1]%92 |$;;;;;;;;;;;;_R9;_R2;_R1$,RG:_R1={C1%91C(O)C(OC(OC2C(O)C(C(O*)OC2C([O-])=O)O)C1N(C(=O)C)S([O-])(=O)=O)CO.[*:1]%91 |$;;;;;;;;;;;;;X_p;;;;;;;;;;;;;;;;;;_AP1$|},_R2={C1(N(C(=O)C)S([O-])(=O)=O)C(C(C(CO)OC%911)O)OC1C(O)C(C(OC2OC(C(O)C(O*)C2N(C(=O)C)S([O-])(=O)=O)CO)C(C([O-])=O)O1)O.[*:1]%91 |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;X_p;;;;;;;;;;;;;;;;;;_AP1$|},_R9={O%91.[*:1]%91 |$;_AP1$|}|
 mapped scaffold: [O-]CC1OC(O)C(O)C(O)C1O
   RGROUP #1
-  fragment #0: C1%91C(O)C(OC(OC2C(O)C(C(O*)OC2C([O-])=O)O)C1N(C(=O)C)S([O-])(=O)=O)CO.[*:1]%91 |$;;;;;;;;;;;;;X;;;;;;;;;;;;;;;;;;_AP1$|
+  fragment #0: C1%91C(O)C(OC(OC2C(O)C(C(O*)OC2C([O-])=O)O)C1N(C(=O)C)S([O-])(=O)=O)CO.[*:1]%91 |$;;;;;;;;;;;;;X_p;;;;;;;;;;;;;;;;;;_AP1$|
   RGROUP #2
-  fragment #0: C1(N(C(=O)C)S([O-])(=O)=O)C(C(C(CO)OC%911)O)OC1C(O)C(C(OC2OC(C(O)C(O*)C2N(C(=O)C)S([O-])(=O)=O)CO)C(C([O-])=O)O1)O.[*:1]%91 |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;X;;;;;;;;;;;;;;;;;;_AP1$|
+  fragment #0: C1(N(C(=O)C)S([O-])(=O)=O)C(C(C(CO)OC%911)O)OC1C(O)C(C(OC2OC(C(O)C(O*)C2N(C(=O)C)S([O-])(=O)=O)CO)C(C([O-])=O)O1)O.[*:1]%91 |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;X_p;;;;;;;;;;;;;;;;;;_AP1$|
   RGROUP #9
   fragment #0: O%91.[*:1]%91 |$;_AP1$|
 C1(C(O)C(C(OCCCCCCCCCCCCCCCC)OC1CO)O)OC1C(O)C(C(O)C(CO)O1)O |ha:0,1,2,3,4,5,22,23,24,25,26,27,hb:0,1,2,3,4,21,22,23,24,25,26,27|
@@ -62403,11 +62403,11 @@ decomposed molecule: C1(C(O)C(C(O)OC1CO)O)O%91.[*:2]%91 |$;;;;;;;;;;;;_R2$,RG:_R
 mapped scaffold: OCC1OC(O)C(O)C(O)C1O
   RGROUP #2
   fragment #0: C1%91C(O)C(C(O)C(CO)O1)O.[*:1]%91 |$;;;;;;;;;;;_AP1$|
-C1(C(O)C(C(NC(=O)CNC(=O)CC(=O)N*)OC1CO)O)OC1C(O)C(C(O)C(CO)O1)O |$;;;;;;;;;;;;;;;;X;;;;;;;;;;;;;;;;;$,ha:22,23,24,25,26,27,28,29,30,31,32,33,hb:23,24,25,26,27,28,29,30,31,32,33,34|
-decomposed molecule: O%91C1C(O)C(C(O)C(CO)O1)O.[*:1]%91 |$;;;;;;;;;;;;_R1$,RG:_R1={C1%91C(O)C(C(NC(=O)CNC(=O)CC(=O)N*)OC1CO)O.[*:1]%91 |$;;;;;;;;;;;;;;;;X;;;;;;_AP1$|}|
+C1(C(O)C(C(NC(=O)CNC(=O)CC(=O)N*)OC1CO)O)OC1C(O)C(C(O)C(CO)O1)O |$;;;;;;;;;;;;;;;;X_p;;;;;;;;;;;;;;;;;$,ha:22,23,24,25,26,27,28,29,30,31,32,33,hb:23,24,25,26,27,28,29,30,31,32,33,34|
+decomposed molecule: O%91C1C(O)C(C(O)C(CO)O1)O.[*:1]%91 |$;;;;;;;;;;;;_R1$,RG:_R1={C1%91C(O)C(C(NC(=O)CNC(=O)CC(=O)N*)OC1CO)O.[*:1]%91 |$;;;;;;;;;;;;;;;;X_p;;;;;;_AP1$|}|
 mapped scaffold: OCC1OC(O)C(O)C(O)C1O
   RGROUP #1
-  fragment #0: C1%91C(O)C(C(NC(=O)CNC(=O)CC(=O)N*)OC1CO)O.[*:1]%91 |$;;;;;;;;;;;;;;;;X;;;;;;_AP1$|
+  fragment #0: C1%91C(O)C(C(NC(=O)CNC(=O)CC(=O)N*)OC1CO)O.[*:1]%91 |$;;;;;;;;;;;;;;;;X_p;;;;;;_AP1$|
 C1(COC(=O)C)(OC(C(OC(=O)C(C)C)C1OC(=O)C(C)C)COC(=O)C(C)C)OC1OC(C(OC(=O)C(C)C)C(OC(=O)C(C)C)C1OC(=O)C)COC(=O)C(C)C |ha:29,30,31,32,33,34,40,41,47,48,52,53,hb:30,31,32,33,34,40,41,47,48,49,53,54|
 decomposed molecule: O%91C1OC(C(O%92)C(O%93)C1O%94)CO%95.[*:2]%92.[*:3]%95.[*:4]%93.[*:1]%91.[*:5]%94 |$;;;;;;;;;;;;_R2;_R3;_R4;_R1;_R5$,RG:_R1={C1%91(COC(=O)C)OC(C(OC(=O)C(C)C)C1OC(=O)C(C)C)COC(=O)C(C)C.[*:1]%91 |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;_AP1$|},_R2={C%91(=O)C(C)C.[*:1]%91 |$;;;;;_AP1$|},_R3={C%91(=O)C(C)C.[*:1]%91 |$;;;;;_AP1$|},_R4={C%91(=O)C(C)C.[*:1]%91 |$;;;;;_AP1$|},_R5={C%91(=O)C.[*:1]%91 |$;;;_AP1$|}|
 mapped scaffold: OCC1OC(O)C(O)C(O)C1O

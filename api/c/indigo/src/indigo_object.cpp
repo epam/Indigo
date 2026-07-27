@@ -118,6 +118,8 @@ IndigoObjectTypes::IndigoObjectTypes()
     emplace(IndigoObject::CDX_SAVER, "<CDXSaver>");
     emplace(IndigoObject::SGROUP, "<SGroup>");
     emplace(IndigoObject::SGROUPS_ITER, "<SGroupsIterator>");
+    emplace(IndigoObject::SGROUP_ATTACHMENT_POINT, "<SGroupAttachmentPoint>");
+    emplace(IndigoObject::SGROUP_ATTACHMENT_POINTS_ITER, "<SGroupAttachmentPointsIterator>");
     emplace(IndigoObject::TAUTOMER_ITER, "<TautomerIterator>");
     emplace(IndigoObject::TAUTOMER_MOLECULE, "<TautomerMolecule>");
     emplace(IndigoObject::TGROUP, "<TGroup>");
@@ -239,11 +241,6 @@ BaseReaction& IndigoObject::getBaseReaction()
 QueryReaction& IndigoObject::getQueryReaction()
 {
     throw IndigoError("%s is not a query reaction", debugInfo());
-}
-
-KetDocument& IndigoObject::getKetDocument()
-{
-    throw IndigoError("%s is not a ket document", debugInfo());
 }
 
 IndigoObject* IndigoObject::next()

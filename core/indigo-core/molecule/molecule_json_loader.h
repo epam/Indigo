@@ -64,6 +64,7 @@ namespace indigo
 
         void loadMolecule(BaseMolecule& mol, bool load_arrows = false);
         void loadMonomerLibrary(MonomerTemplateLibrary& library);
+        bool isParsed() const;
         StereocentersOptions stereochemistry_options;
         bool treat_x_as_pseudoatom; // normally 'X' means 'any halogen'
         bool skip_3d_chirality;     // do not compute chirality from 3D coordinates
@@ -82,7 +83,7 @@ namespace indigo
                              //  = ATOM_AND ('rac')
                              //  = ATOM_ANY ('any')
 
-        static void loadMetaObjects(rapidjson::Value& meta_objects, MetaDataStorage& meta);
+        void loadMetaObjects(rapidjson::Value& meta_objects, MetaDataStorage& meta);
         static int parseMonomerTemplate(const rapidjson::Value& monomer_template, BaseMolecule& mol, StereocentersOptions stereochemistry_options);
         void parseAmbiguousMonomerTemplate(const rapidjson::Value& monomer_template, BaseMolecule& mol);
 
@@ -126,11 +127,15 @@ namespace indigo
         rapidjson::Value _monomer_shapes;
         std::unordered_map<std::string, int> _id_to_template;
         std::map<std::string, std::string> _template_ref_to_id;
+        std::map<std::string, int> _monomer_ref_to_id;
         Molecule* _pmol;
         QueryMolecule* _pqmol;
         std::vector<EnhancedStereoCenter> _stereo_centers;
-        unsigned int components_count;
+        std::string _ket_version;
+        unsigned int _components_count;
+        bool _parsed;
         rapidjson::Document _document;
+        rapidjson::Value _annotation;
     };
 
 } // namespace indigo

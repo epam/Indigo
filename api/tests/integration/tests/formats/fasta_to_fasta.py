@@ -1,17 +1,12 @@
-﻿import difflib
-import os
+﻿import os
 import sys
-
-
-def find_diff(a, b):
-    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
-
 
 sys.path.append(
     os.path.normpath(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
+from common.util import compare_diff
 from env_indigo import *  # noqa
 
 indigo = Indigo()
@@ -36,17 +31,17 @@ lib = indigo.loadMonomerLibraryFromFile(
 
 for desc in fasta_files:
     filename = desc["file"]
-    mol = indigo.loadFastaFromFile(
-        os.path.join(root, filename + ".fasta"), desc["seq_type"], lib
-    )
-    # with open(os.path.join(ref_path, filename) + ".fasta", "w") as file:
-    #     file.write(mol.fasta())
-    with open(os.path.join(ref_path, filename) + ".fasta", "r") as file:
-        fasta_ref = file.read()
-    fasta = mol.fasta(lib)
-    diff = find_diff(fasta_ref, fasta)
-    if not diff:
-        print(filename + ".fasta:SUCCEED")
-    else:
+    try:
+        mol = indigo.loadFastaFromFile(
+            os.path.join(root, filename + ".fasta"), desc["seq_type"], lib
+        )
+    except Exception as e:
+        print("%s.fasta:FAILED - %s" % (filename, e))
+        continue
+    try:
+        fasta = mol.fasta(lib)
+    except Exception as e:
         print(filename + ".fasta:FAILED")
-        print(diff)
+        print(e)
+        continue
+    compare_diff(ref_path, filename + ".fasta", fasta)

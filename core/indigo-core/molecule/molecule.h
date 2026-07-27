@@ -21,6 +21,7 @@
 
 #include "molecule/base_molecule.h"
 #include "molecule/molecule_sgroups.h"
+#include "molecule/valence_model.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -146,14 +147,14 @@ namespace indigo
         bool getIgnoreBadValenceFlag();
         void setIgnoreBadValenceFlag(bool flag);
 
+        ValenceMode getValenceMode() const;
+        void setValenceMode(ValenceMode mode);
+
         // Check
         bool isNitrogenV5(int atom_index);
         bool isNitrogenV5ForConnectivity(int atom_index, int conn);
-        bool isPiBonded(int atom_index) const;
 
         void invalidateAtom(int index, int mask) override;
-
-        bool restoreAromaticHydrogens(bool unambiguous_only = true);
 
         bool standardize(const StandardizeOptions& options);
 
@@ -192,6 +193,8 @@ namespace indigo
         bool _aromatized;
 
         bool _ignore_bad_valence;
+
+        ValenceMode _valence_mode;
 
         void _mergeWithSubmolecule(BaseMolecule& bmol, const Array<int>& vertices, const Array<int>* edges, const Array<int>& mapping, int skip_flags) override;
 

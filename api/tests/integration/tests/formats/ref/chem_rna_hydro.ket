@@ -108,7 +108,7 @@
     "monomerTemplate-MCC_1": {
         "type": "monomerTemplate",
         "id": "MCC_1",
-        "class": "Linker",
+        "class": "CHEM",
         "classHELM": "CHEM",
         "alias": "MCC",
         "name": "MCC",

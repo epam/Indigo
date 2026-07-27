@@ -23,6 +23,7 @@
 #include <rapidjson/document.h>
 
 #include "base_cpp/exception.h"
+#include "molecule/loader_options.h"
 #include "molecule/meta_commons.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_json_loader.h"
@@ -50,9 +51,14 @@ namespace indigo
 
         StereocentersOptions stereochemistry_options;
         bool ignore_bad_valence;
+        ValenceMode valence_mode;
         bool ignore_noncritical_query_features;
         bool treat_x_as_pseudoatom;
         bool ignore_no_chiral_flag;
+
+        // Bulk options propagation. See LoaderOptions doc for the field set.
+        void setOptions(const LoaderOptions& opts);
+        LoaderOptions getOptions() const;
 
     private:
         ReactionJsonLoader(const ReactionJsonLoader&); // no implicit copy

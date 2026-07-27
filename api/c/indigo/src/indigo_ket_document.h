@@ -48,8 +48,6 @@ public:
 
     const char* debugInfo() const override;
 
-    KetDocument& getKetDocument() override;
-
 private:
     KetDocument _document;
 };

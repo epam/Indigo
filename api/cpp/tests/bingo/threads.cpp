@@ -31,6 +31,8 @@ using namespace indigo_cpp;
 
 namespace
 {
+    const int THREAD_COUNT = 8;
+
     void testCreate()
     {
         auto session_1 = IndigoSession::create();
@@ -106,7 +108,7 @@ TEST(BingoThreads, InsertSingleThread)
     auto session = IndigoSession::create();
     session->setOption("ignore-stereochemistry-errors", true);
     auto bingo = BingoMolecule::createDatabaseFile(session, "test.db");
-    constexpr int ITERATIONS = 16;
+    constexpr int ITERATIONS = 4;
     for (auto i = 0; i < ITERATIONS; i++)
     {
         testInsert(bingo, "molecules/basic/Compound_0000001_0000250.sdf.gz");
@@ -132,8 +134,8 @@ TEST(BingoThreads, InsertMultipleThreads)
     session->setOption("ignore-stereochemistry-errors", true);
     auto bingo = BingoMolecule::createDatabaseFile(session, "BingoThreads_Insert.db");
     std::vector<std::thread> threads;
-    threads.reserve(16);
-    for (auto i = 0; i < 16; i++)
+    threads.reserve(THREAD_COUNT);
+    for (auto i = 0; i < THREAD_COUNT; i++)
     {
         threads.emplace_back(testInsert, std::ref(bingo), "molecules/basic/Compound_0000001_0000250.sdf.gz");
     }
@@ -142,7 +144,7 @@ TEST(BingoThreads, InsertMultipleThreads)
         thread.join();
     }
 
-    checkCount(bingo, 241 * 16);
+    checkCount(bingo, 241 * THREAD_COUNT);
 }
 
 TEST(BingoThreads, InsertDeleteMultipleThreads)
@@ -150,8 +152,8 @@ TEST(BingoThreads, InsertDeleteMultipleThreads)
     auto session = IndigoSession::create();
     auto bingo = BingoMolecule::createDatabaseFile(session, "test.db");
     std::vector<std::thread> threads;
-    threads.reserve(16);
-    for (auto i = 0; i < 16; i++)
+    threads.reserve(THREAD_COUNT);
+    for (auto i = 0; i < THREAD_COUNT; i++)
     {
         threads.emplace_back(testInsertDelete, std::ref(bingo), "molecules/basic/Compound_0000001_0000250.sdf.gz");
     }

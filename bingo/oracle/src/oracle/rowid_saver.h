@@ -23,8 +23,14 @@
 #include "lzw/lzw_dictionary.h"
 #include "lzw/lzw_encoder.h"
 
-#include "base_cpp/obj.h"
 #include "oracle/rowid_symbol_codes.h"
+
+#include <memory>
+
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
 
 namespace indigo
 {
@@ -45,7 +51,7 @@ namespace indigo
 
         void _encode(int NextSymbol);
 
-        Obj<LzwEncoder> _encoder_obj;
+        std::unique_ptr<LzwEncoder> _encoder_obj;
 
         LzwEncoder* _encoder;
 
@@ -54,6 +60,10 @@ namespace indigo
     };
 
 } // namespace indigo
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif /* __rowid_saver_h__ */
 

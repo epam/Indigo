@@ -20,6 +20,7 @@
 #define _ALGEBRA_H_
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <iostream>
 #include <limits>
@@ -30,13 +31,13 @@
 
 #define SQR(x) ((x) * (x))
 
-#define DEG2RAD(x) ((x)*M_PI / 180)
-#define RAD2DEG(x) ((x)*180 / M_PI)
-#define HYPOT(a, b) (sqrt((a) * (a) + (b) * (b)))
+#define DEG2RAD(x) (x * M_PI / 180)
+#define RAD2DEG(x) (x * 180 / M_PI)
+#define HYPOT(a, b) (std::hypot(a, b))
 
 namespace indigo
 {
-
+    using Mat23 = std::array<std::array<float, 3>, 2>;
     const float EPSILON = 0.000001f;
 
     // frac of type 1/n for acos_stable
@@ -150,7 +151,7 @@ namespace indigo
 
         inline float length() const
         {
-            return _2FLOAT(sqrt(lengthSqr()));
+            return std::hypotf(x, y);
         }
 
         // OPERATORS:
@@ -370,7 +371,7 @@ namespace indigo
             _rightTop.max(b._rightTop);
         }
 
-        inline void copy(Rect2f& other)
+        inline void copy(const Rect2f& other)
         {
             _leftBottom = other._leftBottom;
             _rightTop = other._rightTop;

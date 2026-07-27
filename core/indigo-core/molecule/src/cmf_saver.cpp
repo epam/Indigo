@@ -39,8 +39,8 @@ CmfSaver::CmfSaver(LzwDict& dict, Output& output) : CP_INIT, TL_CP_GET(_atom_seq
     if (!dict.isInitialized())
         dict.init(CMF_ALPHABET_SIZE, CMF_BIT_CODE_SIZE);
 
-    _encoder_obj.create(dict, output);
-    _encoder_output_obj.create(_encoder_obj.ref());
+    _encoder_obj = std::make_unique<LzwEncoder>(dict, output);
+    _encoder_output_obj = std::make_unique<LzwOutput>(*_encoder_obj);
     _output = _encoder_output_obj.get();
 }
 
@@ -48,7 +48,7 @@ CmfSaver::CmfSaver(LzwEncoder& encoder) : CP_INIT, TL_CP_GET(_atom_sequence)
 {
     _init();
     _ext_encoder = &encoder;
-    _encoder_output_obj.create(encoder);
+    _encoder_output_obj = std::make_unique<LzwOutput>(encoder);
     _output = _encoder_output_obj.get();
 }
 
@@ -271,7 +271,7 @@ void CmfSaver::_encodeUIntArraySkipNegative(const Array<int>& data)
 void CmfSaver::_encodeBaseSGroup(Molecule& /* mol */, SGroup& sgroup, const Mapping& mapping)
 {
     _encodeUIntArray(sgroup.atoms, *mapping.atom_mapping);
-    _encodeUIntArray(sgroup.bonds, *mapping.bond_mapping);
+    _encodeUIntArray(sgroup.getBonds(), *mapping.bond_mapping);
 }
 
 void CmfSaver::_encodeExtSection(Molecule& mol, const Mapping& mapping)
@@ -339,21 +339,22 @@ void CmfSaver::_encodeExtSection(Molecule& mol, const Mapping& mapping)
             _encodeString(sd.queryoper);
             _encodeString(sd.data);
             // Pack detached, relative, display_units, and sd.dasp_pos into one byte
-            if (sd.dasp_pos < 0 || sd.dasp_pos > 9)
-                throw Error("DataSGroup dasp_pos field should be less than 10: %d", sd.dasp_pos);
-            byte packed = (sd.dasp_pos & 0x0F) | (sd.detached << 4) | (sd.relative << 5) | (sd.display_units << 6);
+            const int dasp_pos = sd.dasp_pos.value_or(0);
+            if (dasp_pos < 0 || dasp_pos > 9)
+                throw Error("DataSGroup dasp_pos field should be less than 10: %d", dasp_pos);
+            byte packed = (dasp_pos & 0x0F) | (sd.detached << 4) | (sd.relative << 5) | (sd.display_units << 6);
             _output->writeByte(packed);
-            _output->writePackedUInt(sd.num_chars);
-            _output->writeChar(sd.tag);
+            _output->writePackedUInt(sd.num_chars.value_or(0));
+            _output->writeChar(sd.tag.value_or(0));
         }
         else if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
         {
             Superatom& sa = (Superatom&)sg;
             _encode(CMF_SUPERATOM);
             _encodeBaseSGroup(mol, sa, mapping);
-            _encodeString(sa.subscript);
+            _encodeString(sa.label);
             _encodeString(sa.sa_class);
-            byte packed = static_cast<byte>(((int)sa.contracted & 0x01) | (sa.bond_connections.size() << 1));
+            byte packed = static_cast<byte>(((int)(sa.contracted.value_or(DisplayOption::Undefined)) & 0x01) | (sa.bond_connections.size() << 1));
             _output->writeByte(packed);
             if (sa.bond_connections.size() > 0)
             {
@@ -368,8 +369,8 @@ void CmfSaver::_encodeExtSection(Molecule& mol, const Mapping& mapping)
             RepeatingUnit& su = (RepeatingUnit&)sg;
             _encode(CMF_REPEATINGUNIT);
             _encodeBaseSGroup(mol, su, mapping);
-            _encodeString(su.subscript);
-            _output->writePackedUInt(su.connectivity);
+            _encodeString(su.label);
+            _output->writePackedUInt(su.connectivity.value_or(SGroup::HEAD_TO_TAIL));
         }
         else if (sg.sgroup_type == SGroup::SG_TYPE_MUL)
         {
@@ -377,9 +378,10 @@ void CmfSaver::_encodeExtSection(Molecule& mol, const Mapping& mapping)
             _encode(CMF_MULTIPLEGROUP);
             _encodeBaseSGroup(mol, sm, mapping);
             _encodeUIntArray(sm.parent_atoms, *mapping.atom_mapping);
-            if (sm.multiplier < 0)
-                throw Error("internal error: SGroup multiplier is negative: %d", sm.multiplier);
-            _output->writePackedUInt(sm.multiplier);
+            const int multiplier = sm.multiplier.value_or(0);
+            if (multiplier < 0)
+                throw Error("internal error: SGroup multiplier is negative: %d", multiplier);
+            _output->writePackedUInt(multiplier);
         }
     }
 
@@ -422,7 +424,8 @@ void CmfSaver::_writeSGroupsXyz(Molecule& mol, Output& output, const VecRange& r
         {
             DataSGroup& sd = (DataSGroup&)sg;
             _writeBaseSGroupXyz(output, sd, range);
-            _writeVec2f(output, sd.display_pos, range);
+            Vec2f display_pos = sd.display_pos.value_or(Vec2f(0, 0));
+            _writeVec2f(output, display_pos, range);
         }
         else if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
         {
@@ -824,7 +827,8 @@ void CmfSaver::_updateSGroupsXyzMinMax(Molecule& mol, Vec3f& min, Vec3f& max)
             DataSGroup& s = (DataSGroup&)sg;
             _updateBaseSGroupXyzMinMax(s, min, max);
 
-            Vec3f display_pos(s.display_pos.x, s.display_pos.y, 0);
+            Vec2f display_pos_2d = s.display_pos.value_or(Vec2f(0, 0));
+            Vec3f display_pos(display_pos_2d.x, display_pos_2d.y, 0);
 
             min.min(display_pos);
             max.max(display_pos);

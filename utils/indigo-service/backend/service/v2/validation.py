@@ -36,6 +36,9 @@ class InputFormatSchema(Schema):
         "chemical/x-fasta",
         "chemical/x-idt",
         "chemical/x-helm",
+        "chemical/x-biln",
+        "chemical/x-monomer-library",
+        "chemical/x-axo-labs",
     )
     input_format = fields.Str(missing=None, validate=OneOf(struct_mime_types))
 
@@ -115,6 +118,7 @@ class IndigoCheckSchema(IndigoBaseSchema):
         "v3000",
         "rgroups",
         "chiral",
+        "isotopes",
     )
     types = fields.List(
         fields.Str,
@@ -131,6 +135,7 @@ class IndigoCheckSchema(IndigoBaseSchema):
             "sgroups",
             "v3000",
             "rgroups",
+            "isotopes",
         ],
     )
 

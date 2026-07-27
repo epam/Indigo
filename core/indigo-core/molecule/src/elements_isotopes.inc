@@ -1,5 +1,5 @@
    SET(ELEM_H, NATURAL);
-      ADD(ELEM_H, NATURAL, 1.00794f, 0);
+      ADD(ELEM_H, NATURAL, 1.008f, 0);
       ADD(ELEM_H, 1, 1.0078250321f, 99.9885f);
       ADD(ELEM_H, 2, 2.0141017780f, 0.0115f);
       ADD(ELEM_H, 3, 3.0160492675f, 0.0f);
@@ -7,7 +7,7 @@
       ADD(ELEM_H, 5, 5.03954f, 0.0f);
       ADD(ELEM_H, 6, 6.04494f, 0.0f);
    SET(ELEM_He, NATURAL);
-      ADD(ELEM_He, NATURAL, 4.002602f, 0);
+      ADD(ELEM_He, NATURAL, 4.0026f, 0);
       ADD(ELEM_He, 3, 3.0160293097f, 0.000137f);
       ADD(ELEM_He, 4, 4.0026032497f, 99.999863f);
       ADD(ELEM_He, 5, 5.012220f, 0.0f);
@@ -17,7 +17,7 @@
       ADD(ELEM_He, 9, 9.043820f, 0.0f);
       ADD(ELEM_He, 10, 10.052400f, 0.0f);
    SET(ELEM_Li, NATURAL);
-      ADD(ELEM_Li, NATURAL, 6.941f, 0);
+      ADD(ELEM_Li, NATURAL, 6.94f, 0);
       ADD(ELEM_Li, 4, 4.02718f, 0.0f);
       ADD(ELEM_Li, 5, 5.012540f, 0.0f);
       ADD(ELEM_Li, 6, 6.0151223f, 7.59f);
@@ -28,7 +28,7 @@
       ADD(ELEM_Li, 11, 11.043796f, 0.0f);
       ADD(ELEM_Li, 12, 12.05378f, 0.0f);
    SET(ELEM_Be, NATURAL);
-      ADD(ELEM_Be, NATURAL, 9.012182f, 0);
+      ADD(ELEM_Be, NATURAL, 9.0122f, 0);
       ADD(ELEM_Be, 5, 5.04079f, 0.0f);
       ADD(ELEM_Be, 6, 6.019726f, 0.0f);
       ADD(ELEM_Be, 7, 7.0169292f, 0.0f);
@@ -40,7 +40,7 @@
       ADD(ELEM_Be, 13, 13.03613f, 0.0f);
       ADD(ELEM_Be, 14, 14.04282f, 0.0f);
    SET(ELEM_B, NATURAL);
-      ADD(ELEM_B, NATURAL, 10.811f, 0);
+      ADD(ELEM_B, NATURAL, 10.81f, 0);
       ADD(ELEM_B, 7, 7.029920f, 0.0f);
       ADD(ELEM_B, 8, 8.0246067f, 0.0f);
       ADD(ELEM_B, 9, 9.0133288f, 0.0f);
@@ -55,7 +55,7 @@
       ADD(ELEM_B, 18, 18.05617f, 0.0f);
       ADD(ELEM_B, 19, 19.06373f, 0.0f);
    SET(ELEM_C, NATURAL);
-      ADD(ELEM_C, NATURAL, 12.0107f, 0);
+      ADD(ELEM_C, NATURAL, 12.011f, 0);
       ADD(ELEM_C, 8, 8.037675f, 0.0f);
       ADD(ELEM_C, 9, 9.0310401f, 0.0f);
       ADD(ELEM_C, 10, 10.0168531f, 0.0f);
@@ -72,7 +72,7 @@
       ADD(ELEM_C, 21, 21.04934f, 0.0f);
       ADD(ELEM_C, 22, 22.05645f, 0.0f);
    SET(ELEM_N, NATURAL);
-      ADD(ELEM_N, NATURAL, 14.0067f, 0);
+      ADD(ELEM_N, NATURAL, 14.007f, 0);
       ADD(ELEM_N, 10, 10.04262f, 0.0f);
       ADD(ELEM_N, 11, 11.02680f, 0.0f);
       ADD(ELEM_N, 12, 12.0186132f, 0.0f);
@@ -89,7 +89,7 @@
       ADD(ELEM_N, 23, 23.04051f, 0.0f);
       ADD(ELEM_N, 24, 24.05050f, 0.0f);
    SET(ELEM_O, NATURAL);
-      ADD(ELEM_O, NATURAL, 15.9994f, 0);
+      ADD(ELEM_O, NATURAL, 15.999f, 0);
       ADD(ELEM_O, 12, 12.034405f, 0.0f);
       ADD(ELEM_O, 13, 13.024810f, 0.0f);
       ADD(ELEM_O, 14, 14.00859529f, 0.0f);
@@ -106,7 +106,7 @@
       ADD(ELEM_O, 25, 25.02914f, 0.0f);
       ADD(ELEM_O, 26, 26.03775f, 0.0f);
    SET(ELEM_F, NATURAL);
-      ADD(ELEM_F, NATURAL, 18.9984032f, 0);
+      ADD(ELEM_F, NATURAL, 18.998f, 0);
       ADD(ELEM_F, 14, 14.03608f, 0.0f);
       ADD(ELEM_F, 15, 15.01801f, 0.0f);
       ADD(ELEM_F, 16, 16.011466f, 0.0f);
@@ -124,7 +124,7 @@
       ADD(ELEM_F, 28, 28.03567f, 0.0f);
       ADD(ELEM_F, 29, 29.04326f, 0.0f);
    SET(ELEM_Ne, NATURAL);
-      ADD(ELEM_Ne, NATURAL, 20.1797f, 0);
+      ADD(ELEM_Ne, NATURAL, 20.18f, 0);
       ADD(ELEM_Ne, 16, 16.025757f, 0.0f);
       ADD(ELEM_Ne, 17, 17.017700f, 0.0f);
       ADD(ELEM_Ne, 18, 18.0056971f, 0.0f);
@@ -143,7 +143,7 @@
       ADD(ELEM_Ne, 31, 31.03311f, 0.0f);
       ADD(ELEM_Ne, 32, 32.03991f, 0.0f);
    SET(ELEM_Na, NATURAL);
-      ADD(ELEM_Na, NATURAL, 22.989770f, 0);
+      ADD(ELEM_Na, NATURAL, 22.99f, 0);
       ADD(ELEM_Na, 18, 18.02718f, 0.0f);
       ADD(ELEM_Na, 19, 19.013879f, 0.0f);
       ADD(ELEM_Na, 20, 20.007348f, 0.0f);
@@ -163,7 +163,7 @@
       ADD(ELEM_Na, 34, 34.03490f, 0.0f);
       ADD(ELEM_Na, 35, 35.04418f, 0.0f);
    SET(ELEM_Mg, NATURAL);
-      ADD(ELEM_Mg, NATURAL, 24.3050f, 0);
+      ADD(ELEM_Mg, NATURAL, 24.305f, 0);
       ADD(ELEM_Mg, 20, 20.018863f, 0.0f);
       ADD(ELEM_Mg, 21, 21.011714f, 0.0f);
       ADD(ELEM_Mg, 22, 21.9995741f, 0.0f);
@@ -183,7 +183,7 @@
       ADD(ELEM_Mg, 36, 36.02245f, 0.0f);
       ADD(ELEM_Mg, 37, 37.03124f, 0.0f);
    SET(ELEM_Al, NATURAL);
-      ADD(ELEM_Al, NATURAL, 26.981538f, 0);
+      ADD(ELEM_Al, NATURAL, 26.982f, 0);
       ADD(ELEM_Al, 21, 21.02804f, 0.0f);
       ADD(ELEM_Al, 22, 22.01952f, 0.0f);
       ADD(ELEM_Al, 23, 23.007265f, 0.0f);
@@ -204,7 +204,7 @@
       ADD(ELEM_Al, 38, 38.01690f, 0.0f);
       ADD(ELEM_Al, 39, 39.02190f, 0.0f);
    SET(ELEM_Si, NATURAL);
-      ADD(ELEM_Si, NATURAL, 28.0855f, 0);
+      ADD(ELEM_Si, NATURAL, 28.085f, 0);
       ADD(ELEM_Si, 22, 22.03453f, 0.0f);
       ADD(ELEM_Si, 23, 23.02552f, 0.0f);
       ADD(ELEM_Si, 24, 24.011546f, 0.0f);
@@ -227,7 +227,7 @@
       ADD(ELEM_Si, 41, 41.01270f, 0.0f);
       ADD(ELEM_Si, 42, 42.01610f, 0.0f);
    SET(ELEM_P, NATURAL);
-      ADD(ELEM_P, NATURAL, 30.973761f, 0);
+      ADD(ELEM_P, NATURAL, 30.974f, 0);
       ADD(ELEM_P, 24, 24.03435f, 0.0f);
       ADD(ELEM_P, 25, 25.02026f, 0.0f);
       ADD(ELEM_P, 26, 26.01178f, 0.0f);
@@ -252,7 +252,7 @@
       ADD(ELEM_P, 45, 45.01514f, 0.0f);
       ADD(ELEM_P, 46, 46.02383f, 0.0f);
    SET(ELEM_S, NATURAL);
-      ADD(ELEM_S, NATURAL, 32.065f, 0);
+      ADD(ELEM_S, NATURAL, 32.06f, 0);
       ADD(ELEM_S, 26, 26.02788f, 0.0f);
       ADD(ELEM_S, 27, 27.01880f, 0.0f);
       ADD(ELEM_S, 28, 28.00437f, 0.0f);
@@ -278,7 +278,7 @@
       ADD(ELEM_S, 48, 48.01299f, 0.0f);
       ADD(ELEM_S, 49, 49.02201f, 0.0f);
    SET(ELEM_Cl, NATURAL);
-      ADD(ELEM_Cl, NATURAL, 35.453f, 0);
+      ADD(ELEM_Cl, NATURAL, 35.45f, 0);
       ADD(ELEM_Cl, 28, 28.02851f, 0.0f);
       ADD(ELEM_Cl, 29, 29.01411f, 0.0f);
       ADD(ELEM_Cl, 30, 30.00477f, 0.0f);
@@ -304,7 +304,7 @@
       ADD(ELEM_Cl, 50, 50.00773f, 0.0f);
       ADD(ELEM_Cl, 51, 51.01353f, 0.0f);
    SET(ELEM_Ar, NATURAL);
-      ADD(ELEM_Ar, NATURAL, 39.948f, 0);
+      ADD(ELEM_Ar, NATURAL, 39.95f, 0);
       ADD(ELEM_Ar, 30, 30.02156f, 0.0f);
       ADD(ELEM_Ar, 31, 31.01213f, 0.0f);
       ADD(ELEM_Ar, 32, 31.997660f, 0.0f);
@@ -330,7 +330,7 @@
       ADD(ELEM_Ar, 52, 51.99817f, 0.0f);
       ADD(ELEM_Ar, 53, 53.00623f, 0.0f);
    SET(ELEM_K, NATURAL);
-      ADD(ELEM_K, NATURAL, 39.0983f, 0);
+      ADD(ELEM_K, NATURAL, 39.098f, 0);
       ADD(ELEM_K, 32, 32.02192f, 0.0f);
       ADD(ELEM_K, 33, 33.00726f, 0.0f);
       ADD(ELEM_K, 34, 33.99841f, 0.0f);
@@ -382,7 +382,7 @@
       ADD(ELEM_Ca, 56, 55.98579f, 0.0f);
       ADD(ELEM_Ca, 57, 56.99236f, 0.0f);
    SET(ELEM_Sc, NATURAL);
-      ADD(ELEM_Sc, NATURAL, 44.955910f, 0);
+      ADD(ELEM_Sc, NATURAL, 44.956f, 0);
       ADD(ELEM_Sc, 36, 36.01492f, 0.0f);
       ADD(ELEM_Sc, 37, 37.00305f, 0.0f);
       ADD(ELEM_Sc, 38, 37.99470f, 0.0f);
@@ -434,7 +434,7 @@
       ADD(ELEM_Ti, 60, 59.97564f, 0.0f);
       ADD(ELEM_Ti, 61, 60.98202f, 0.0f);
    SET(ELEM_V, NATURAL);
-      ADD(ELEM_V, NATURAL, 50.9415f, 0);
+      ADD(ELEM_V, NATURAL, 50.942f, 0);
       ADD(ELEM_V, 40, 40.01109f, 0.0f);
       ADD(ELEM_V, 41, 40.99974f, 0.0f);
       ADD(ELEM_V, 42, 41.99123f, 0.0f);
@@ -460,7 +460,7 @@
       ADD(ELEM_V, 62, 61.97314f, 0.0f);
       ADD(ELEM_V, 63, 62.97675f, 0.0f);
    SET(ELEM_Cr, NATURAL);
-      ADD(ELEM_Cr, NATURAL, 51.9961f, 0);
+      ADD(ELEM_Cr, NATURAL, 51.996f, 0);
       ADD(ELEM_Cr, 42, 42.00643f, 0.0f);
       ADD(ELEM_Cr, 43, 42.997710f, 0.0f);
       ADD(ELEM_Cr, 44, 43.98547f, 0.0f);
@@ -486,7 +486,7 @@
       ADD(ELEM_Cr, 64, 63.96420f, 0.0f);
       ADD(ELEM_Cr, 65, 64.97037f, 0.0f);
    SET(ELEM_Mn, NATURAL);
-      ADD(ELEM_Mn, NATURAL, 54.938049f, 0);
+      ADD(ELEM_Mn, NATURAL, 54.938f, 0);
       ADD(ELEM_Mn, 44, 44.00687f, 0.0f);
       ADD(ELEM_Mn, 45, 44.99451f, 0.0f);
       ADD(ELEM_Mn, 46, 45.98672f, 0.0f);
@@ -539,7 +539,7 @@
       ADD(ELEM_Fe, 68, 67.95251f, 0.0f);
       ADD(ELEM_Fe, 69, 68.95770f, 0.0f);
    SET(ELEM_Co, NATURAL);
-      ADD(ELEM_Co, NATURAL, 58.933200f, 0);
+      ADD(ELEM_Co, NATURAL, 58.933f, 0);
       ADD(ELEM_Co, 48, 48.00176f, 0.0f);
       ADD(ELEM_Co, 49, 48.98972f, 0.0f);
       ADD(ELEM_Co, 50, 49.98154f, 0.0f);
@@ -566,7 +566,7 @@
       ADD(ELEM_Co, 71, 70.95173f, 0.0f);
       ADD(ELEM_Co, 72, 71.95641f, 0.0f);
    SET(ELEM_Ni, NATURAL);
-      ADD(ELEM_Ni, NATURAL, 58.6934f, 0);
+      ADD(ELEM_Ni, NATURAL, 58.693f, 0);
       ADD(ELEM_Ni, 50, 49.99593f, 0.0f);
       ADD(ELEM_Ni, 51, 50.98772f, 0.0f);
       ADD(ELEM_Ni, 52, 51.975680f, 0.0f);
@@ -628,7 +628,7 @@
       ADD(ELEM_Cu, 79, 78.95528f, 0.0f);
       ADD(ELEM_Cu, 80, 79.96189f, 0.0f);
    SET(ELEM_Zn, NATURAL);
-      ADD(ELEM_Zn, NATURAL, 65.409f, 0);
+      ADD(ELEM_Zn, NATURAL, 65.38f, 0);
       ADD(ELEM_Zn, 54, 53.99295f, 0.0f);
       ADD(ELEM_Zn, 55, 54.98398f, 0.0f);
       ADD(ELEM_Zn, 56, 55.97238f, 0.0f);
@@ -690,7 +690,7 @@
       ADD(ELEM_Ga, 83, 82.94687f, 0.0f);
       ADD(ELEM_Ga, 84, 83.95234f, 0.0f);
    SET(ELEM_Ge, NATURAL);
-      ADD(ELEM_Ge, NATURAL, 72.64f, 0);
+      ADD(ELEM_Ge, NATURAL, 72.63f, 0);
       ADD(ELEM_Ge, 58, 57.99101f, 0.0f);
       ADD(ELEM_Ge, 59, 58.98175f, 0.0f);
       ADD(ELEM_Ge, 60, 59.97019f, 0.0f);
@@ -721,7 +721,7 @@
       ADD(ELEM_Ge, 85, 84.94269f, 0.0f);
       ADD(ELEM_Ge, 86, 85.94627f, 0.0f);
    SET(ELEM_As, NATURAL);
-      ADD(ELEM_As, NATURAL, 74.92160f, 0);
+      ADD(ELEM_As, NATURAL, 74.922f, 0);
       ADD(ELEM_As, 60, 59.99313f, 0.0f);
       ADD(ELEM_As, 61, 60.98062f, 0.0f);
       ADD(ELEM_As, 62, 61.97320f, 0.0f);
@@ -753,7 +753,7 @@
       ADD(ELEM_As, 88, 87.94456f, 0.0f);
       ADD(ELEM_As, 89, 88.94923f, 0.0f);
    SET(ELEM_Se, NATURAL);
-      ADD(ELEM_Se, NATURAL, 78.96f, 0);
+      ADD(ELEM_Se, NATURAL, 78.971f, 0);
       ADD(ELEM_Se, 65, 64.96466f, 0.0f);
       ADD(ELEM_Se, 66, 65.95521f, 0.0f);
       ADD(ELEM_Se, 67, 66.95009f, 0.0f);
@@ -844,7 +844,7 @@
       ADD(ELEM_Kr, 96, 95.94307f, 0.0f);
       ADD(ELEM_Kr, 97, 96.94856f, 0.0f);
    SET(ELEM_Rb, NATURAL);
-      ADD(ELEM_Rb, NATURAL, 85.4678f, 0);
+      ADD(ELEM_Rb, NATURAL, 85.468f, 0);
       ADD(ELEM_Rb, 71, 70.96532f, 0.0f);
       ADD(ELEM_Rb, 72, 71.95908f, 0.0f);
       ADD(ELEM_Rb, 73, 72.95037f, 0.0f);
@@ -912,7 +912,7 @@
       ADD(ELEM_Sr, 103, 102.94895f, 0.0f);
       ADD(ELEM_Sr, 104, 103.95233f, 0.0f);
    SET(ELEM_Y, NATURAL);
-      ADD(ELEM_Y, NATURAL, 88.90585f, 0);
+      ADD(ELEM_Y, NATURAL, 88.906f, 0);
       ADD(ELEM_Y, 77, 76.94962f, 0.0f);
       ADD(ELEM_Y, 78, 77.94350f, 0.0f);
       ADD(ELEM_Y, 79, 78.93735f, 0.0f);
@@ -976,7 +976,7 @@
       ADD(ELEM_Zr, 107, 106.94086f, 0.0f);
       ADD(ELEM_Zr, 108, 107.94428f, 0.0f);
    SET(ELEM_Nb, NATURAL);
-      ADD(ELEM_Nb, NATURAL, 92.90638f, 0);
+      ADD(ELEM_Nb, NATURAL, 92.906f, 0);
       ADD(ELEM_Nb, 81, 80.94905f, 0.0f);
       ADD(ELEM_Nb, 82, 81.94313f, 0.0f);
       ADD(ELEM_Nb, 83, 82.93670f, 0.0f);
@@ -1008,7 +1008,7 @@
       ADD(ELEM_Nb, 109, 108.93763f, 0.0f);
       ADD(ELEM_Nb, 110, 109.94268f, 0.0f);
    SET(ELEM_Mo, NATURAL);
-      ADD(ELEM_Mo, NATURAL, 95.94f, 0);
+      ADD(ELEM_Mo, NATURAL, 95.95f, 0);
       ADD(ELEM_Mo, 83, 82.94874f, 0.0f);
       ADD(ELEM_Mo, 84, 83.94009f, 0.0f);
       ADD(ELEM_Mo, 85, 84.93659f, 0.0f);
@@ -1107,7 +1107,7 @@
       ADD(ELEM_Ru, 117, 116.93479f, 0.0f);
       ADD(ELEM_Ru, 118, 117.93703f, 0.0f);
    SET(ELEM_Rh, NATURAL);
-      ADD(ELEM_Rh, NATURAL, 102.90550f, 0);
+      ADD(ELEM_Rh, NATURAL, 102.91f, 0);
       ADD(ELEM_Rh, 89, 88.94938f, 0.0f);
       ADD(ELEM_Rh, 90, 89.94287f, 0.0f);
       ADD(ELEM_Rh, 91, 90.93655f, 0.0f);
@@ -1177,7 +1177,7 @@
       ADD(ELEM_Pd, 122, 121.92980f, 0.0f);
       ADD(ELEM_Pd, 123, 122.93426f, 0.0f);
    SET(ELEM_Ag, NATURAL);
-      ADD(ELEM_Ag, NATURAL, 107.8682f, 0);
+      ADD(ELEM_Ag, NATURAL, 107.87f, 0);
       ADD(ELEM_Ag, 94, 93.94278f, 0.0f);
       ADD(ELEM_Ag, 95, 94.93548f, 0.0f);
       ADD(ELEM_Ag, 96, 95.93068f, 0.0f);
@@ -1213,7 +1213,7 @@
       ADD(ELEM_Ag, 126, 125.93450f, 0.0f);
       ADD(ELEM_Ag, 127, 126.93688f, 0.0f);
    SET(ELEM_Cd, NATURAL);
-      ADD(ELEM_Cd, NATURAL, 112.411f, 0);
+      ADD(ELEM_Cd, NATURAL, 112.41f, 0);
       ADD(ELEM_Cd, 96, 95.93977f, 0.0f);
       ADD(ELEM_Cd, 97, 96.93494f, 0.0f);
       ADD(ELEM_Cd, 98, 97.92758f, 0.0f);
@@ -1250,7 +1250,7 @@
       ADD(ELEM_Cd, 129, 128.93226f, 0.0f);
       ADD(ELEM_Cd, 130, 129.93398f, 0.0f);
    SET(ELEM_In, NATURAL);
-      ADD(ELEM_In, NATURAL, 114.818f, 0);
+      ADD(ELEM_In, NATURAL, 114.82f, 0);
       ADD(ELEM_In, 98, 97.94224f, 0.0f);
       ADD(ELEM_In, 99, 98.93461f, 0.0f);
       ADD(ELEM_In, 100, 99.93115f, 0.0f);
@@ -1289,7 +1289,7 @@
       ADD(ELEM_In, 133, 132.93834f, 0.0f);
       ADD(ELEM_In, 134, 133.94466f, 0.0f);
    SET(ELEM_Sn, NATURAL);
-      ADD(ELEM_Sn, NATURAL, 118.710f, 0);
+      ADD(ELEM_Sn, NATURAL, 118.71f, 0);
       ADD(ELEM_Sn, 100, 99.93895f, 0.0f);
       ADD(ELEM_Sn, 101, 100.93606f, 0.0f);
       ADD(ELEM_Sn, 102, 101.93049f, 0.0f);
@@ -1329,7 +1329,7 @@
       ADD(ELEM_Sn, 136, 135.93934f, 0.0f);
       ADD(ELEM_Sn, 137, 136.94579f, 0.0f);
    SET(ELEM_Sb, NATURAL);
-      ADD(ELEM_Sb, NATURAL, 121.760f, 0);
+      ADD(ELEM_Sb, NATURAL, 121.76f, 0);
       ADD(ELEM_Sb, 103, 102.94012f, 0.0f);
       ADD(ELEM_Sb, 104, 103.93629f, 0.0f);
       ADD(ELEM_Sb, 105, 104.93153f, 0.0f);
@@ -1368,7 +1368,7 @@
       ADD(ELEM_Sb, 138, 137.94096f, 0.0f);
       ADD(ELEM_Sb, 139, 138.94571f, 0.0f);
    SET(ELEM_Te, NATURAL);
-      ADD(ELEM_Te, NATURAL, 127.60f, 0);
+      ADD(ELEM_Te, NATURAL, 127.6f, 0);
       ADD(ELEM_Te, 106, 105.93770f, 0.0f);
       ADD(ELEM_Te, 107, 106.93504f, 0.0f);
       ADD(ELEM_Te, 108, 107.92949f, 0.0f);
@@ -1407,7 +1407,7 @@
       ADD(ELEM_Te, 141, 140.94439f, 0.0f);
       ADD(ELEM_Te, 142, 141.94850f, 0.0f);
    SET(ELEM_I, NATURAL);
-      ADD(ELEM_I, NATURAL, 126.90447f, 0);
+      ADD(ELEM_I, NATURAL, 126.9f, 0);
       ADD(ELEM_I, 108, 107.94329f, 0.0f);
       ADD(ELEM_I, 109, 108.93819f, 0.0f);
       ADD(ELEM_I, 110, 109.93521f, 0.0f);
@@ -1446,7 +1446,7 @@
       ADD(ELEM_I, 143, 142.94407f, 0.0f);
       ADD(ELEM_I, 144, 143.94961f, 0.0f);
    SET(ELEM_Xe, NATURAL);
-      ADD(ELEM_Xe, NATURAL, 131.293f, 0);
+      ADD(ELEM_Xe, NATURAL, 131.29f, 0);
       ADD(ELEM_Xe, 110, 109.94448f, 0.0f);
       ADD(ELEM_Xe, 111, 110.94163f, 0.0f);
       ADD(ELEM_Xe, 112, 111.93567f, 0.0f);
@@ -1486,7 +1486,7 @@
       ADD(ELEM_Xe, 146, 145.94730f, 0.0f);
       ADD(ELEM_Xe, 147, 146.95301f, 0.0f);
    SET(ELEM_Cs, NATURAL);
-      ADD(ELEM_Cs, NATURAL, 132.90545f, 0);
+      ADD(ELEM_Cs, NATURAL, 132.91f, 0);
       ADD(ELEM_Cs, 112, 111.95033f, 0.0f);
       ADD(ELEM_Cs, 113, 112.94454f, 0.0f);
       ADD(ELEM_Cs, 114, 113.94142f, 0.0f);
@@ -1528,7 +1528,7 @@
       ADD(ELEM_Cs, 150, 149.95797f, 0.0f);
       ADD(ELEM_Cs, 151, 150.96200f, 0.0f);
    SET(ELEM_Ba, NATURAL);
-      ADD(ELEM_Ba, NATURAL, 137.327f, 0);
+      ADD(ELEM_Ba, NATURAL, 137.33f, 0);
       ADD(ELEM_Ba, 114, 113.95094f, 0.0f);
       ADD(ELEM_Ba, 115, 114.94771f, 0.0f);
       ADD(ELEM_Ba, 116, 115.94168f, 0.0f);
@@ -1570,7 +1570,7 @@
       ADD(ELEM_Ba, 152, 151.95416f, 0.0f);
       ADD(ELEM_Ba, 153, 152.95961f, 0.0f);
    SET(ELEM_La, NATURAL);
-      ADD(ELEM_La, NATURAL, 138.9055f, 0);
+      ADD(ELEM_La, NATURAL, 138.91f, 0);
       ADD(ELEM_La, 117, 116.95001f, 0.0f);
       ADD(ELEM_La, 118, 117.94657f, 0.0f);
       ADD(ELEM_La, 119, 118.94099f, 0.0f);
@@ -1611,7 +1611,7 @@
       ADD(ELEM_La, 154, 153.95440f, 0.0f);
       ADD(ELEM_La, 155, 154.95813f, 0.0f);
    SET(ELEM_Ce, NATURAL);
-      ADD(ELEM_Ce, NATURAL, 140.116f, 0);
+      ADD(ELEM_Ce, NATURAL, 140.12f, 0);
       ADD(ELEM_Ce, 119, 118.95276f, 0.0f);
       ADD(ELEM_Ce, 120, 119.94664f, 0.0f);
       ADD(ELEM_Ce, 121, 120.94367f, 0.0f);
@@ -1652,7 +1652,7 @@
       ADD(ELEM_Ce, 156, 155.95126f, 0.0f);
       ADD(ELEM_Ce, 157, 156.95634f, 0.0f);
    SET(ELEM_Pr, NATURAL);
-      ADD(ELEM_Pr, NATURAL, 140.90765f, 0);
+      ADD(ELEM_Pr, NATURAL, 140.91f, 0);
       ADD(ELEM_Pr, 121, 120.95536f, 0.0f);
       ADD(ELEM_Pr, 122, 121.95165f, 0.0f);
       ADD(ELEM_Pr, 123, 122.94596f, 0.0f);
@@ -1806,7 +1806,7 @@
       ADD(ELEM_Sm, 164, 163.94828f, 0.0f);
       ADD(ELEM_Sm, 165, 164.95298f, 0.0f);
    SET(ELEM_Eu, NATURAL);
-      ADD(ELEM_Eu, NATURAL, 151.964f, 0);
+      ADD(ELEM_Eu, NATURAL, 151.96f, 0);
       ADD(ELEM_Eu, 132, 131.95416f, 0.0f);
       ADD(ELEM_Eu, 133, 132.94890f, 0.0f);
       ADD(ELEM_Eu, 134, 133.94632f, 0.0f);
@@ -1880,7 +1880,7 @@
       ADD(ELEM_Gd, 168, 167.94836f, 0.0f);
       ADD(ELEM_Gd, 169, 168.95287f, 0.0f);
    SET(ELEM_Tb, NATURAL);
-      ADD(ELEM_Tb, NATURAL, 158.92534f, 0);
+      ADD(ELEM_Tb, NATURAL, 158.93f, 0);
       ADD(ELEM_Tb, 138, 137.95287f, 0.0f);
       ADD(ELEM_Tb, 139, 138.94803f, 0.0f);
       ADD(ELEM_Tb, 140, 139.94554f, 0.0f);
@@ -1916,7 +1916,7 @@
       ADD(ELEM_Tb, 170, 169.95025f, 0.0f);
       ADD(ELEM_Tb, 171, 170.95330f, 0.0f);
    SET(ELEM_Dy, NATURAL);
-      ADD(ELEM_Dy, NATURAL, 162.500f, 0);
+      ADD(ELEM_Dy, NATURAL, 162.5f, 0);
       ADD(ELEM_Dy, 140, 139.95379f, 0.0f);
       ADD(ELEM_Dy, 141, 140.95119f, 0.0f);
       ADD(ELEM_Dy, 142, 141.94627f, 0.0f);
@@ -1952,7 +1952,7 @@
       ADD(ELEM_Dy, 172, 171.94911f, 0.0f);
       ADD(ELEM_Dy, 173, 172.95344f, 0.0f);
    SET(ELEM_Ho, NATURAL);
-      ADD(ELEM_Ho, NATURAL, 164.93032f, 0);
+      ADD(ELEM_Ho, NATURAL, 164.93f, 0);
       ADD(ELEM_Ho, 142, 141.95986f, 0.0f);
       ADD(ELEM_Ho, 143, 142.95469f, 0.0f);
       ADD(ELEM_Ho, 144, 143.95164f, 0.0f);
@@ -1988,7 +1988,7 @@
       ADD(ELEM_Ho, 174, 173.95115f, 0.0f);
       ADD(ELEM_Ho, 175, 174.95405f, 0.0f);
    SET(ELEM_Er, NATURAL);
-      ADD(ELEM_Er, NATURAL, 167.259f, 0);
+      ADD(ELEM_Er, NATURAL, 167.26f, 0);
       ADD(ELEM_Er, 144, 143.96059f, 0.0f);
       ADD(ELEM_Er, 145, 144.95746f, 0.0f);
       ADD(ELEM_Er, 146, 145.95212f, 0.0f);
@@ -2024,7 +2024,7 @@
       ADD(ELEM_Er, 176, 175.95029f, 0.0f);
       ADD(ELEM_Er, 177, 176.95437f, 0.0f);
    SET(ELEM_Tm, NATURAL);
-      ADD(ELEM_Tm, NATURAL, 168.93421f, 0);
+      ADD(ELEM_Tm, NATURAL, 168.93f, 0);
       ADD(ELEM_Tm, 146, 145.96650f, 0.0f);
       ADD(ELEM_Tm, 147, 146.96108f, 0.0f);
       ADD(ELEM_Tm, 148, 147.95755f, 0.0f);
@@ -2060,7 +2060,7 @@
       ADD(ELEM_Tm, 178, 177.95264f, 0.0f);
       ADD(ELEM_Tm, 179, 178.95534f, 0.0f);
    SET(ELEM_Yb, NATURAL);
-      ADD(ELEM_Yb, NATURAL, 173.04f, 0);
+      ADD(ELEM_Yb, NATURAL, 173.05f, 0);
       ADD(ELEM_Yb, 148, 147.96676f, 0.0f);
       ADD(ELEM_Yb, 149, 148.96348f, 0.0f);
       ADD(ELEM_Yb, 150, 149.95799f, 0.0f);
@@ -2096,7 +2096,7 @@
       ADD(ELEM_Yb, 180, 179.95233f, 0.0f);
       ADD(ELEM_Yb, 181, 180.95615f, 0.0f);
    SET(ELEM_Lu, NATURAL);
-      ADD(ELEM_Lu, NATURAL, 174.967f, 0);
+      ADD(ELEM_Lu, NATURAL, 174.97f, 0);
       ADD(ELEM_Lu, 150, 149.97267f, 0.0f);
       ADD(ELEM_Lu, 151, 150.96715f, 0.0f);
       ADD(ELEM_Lu, 152, 151.96361f, 0.0f);
@@ -2168,7 +2168,7 @@
       ADD(ELEM_Hf, 185, 184.95878f, 0.0f);
       ADD(ELEM_Hf, 186, 185.96092f, 0.0f);
    SET(ELEM_Ta, NATURAL);
-      ADD(ELEM_Ta, NATURAL, 180.9479f, 0);
+      ADD(ELEM_Ta, NATURAL, 180.95f, 0);
       ADD(ELEM_Ta, 156, 155.97169f, 0.0f);
       ADD(ELEM_Ta, 157, 156.96815f, 0.0f);
       ADD(ELEM_Ta, 158, 157.96637f, 0.0f);
@@ -2238,7 +2238,7 @@
       ADD(ELEM_W, 189, 188.96191f, 0.0f);
       ADD(ELEM_W, 190, 189.96318f, 0.0f);
    SET(ELEM_Re, NATURAL);
-      ADD(ELEM_Re, NATURAL, 186.207f, 0);
+      ADD(ELEM_Re, NATURAL, 186.21f, 0);
       ADD(ELEM_Re, 160, 159.98149f, 0.0f);
       ADD(ELEM_Re, 161, 160.97766f, 0.0f);
       ADD(ELEM_Re, 162, 161.97571f, 0.0f);
@@ -2310,7 +2310,7 @@
       ADD(ELEM_Os, 195, 194.96812f, 0.0f);
       ADD(ELEM_Os, 196, 195.969620f, 0.0f);
    SET(ELEM_Ir, NATURAL);
-      ADD(ELEM_Ir, NATURAL, 192.217f, 0);
+      ADD(ELEM_Ir, NATURAL, 192.22f, 0);
       ADD(ELEM_Ir, 165, 164.98758f, 0.0f);
       ADD(ELEM_Ir, 166, 165.98551f, 0.0f);
       ADD(ELEM_Ir, 167, 166.98154f, 0.0f);
@@ -2347,7 +2347,7 @@
       ADD(ELEM_Ir, 198, 197.97228f, 0.0f);
       ADD(ELEM_Ir, 199, 198.973790f, 0.0f);
    SET(ELEM_Pt, NATURAL);
-      ADD(ELEM_Pt, NATURAL, 195.078f, 0);
+      ADD(ELEM_Pt, NATURAL, 195.08f, 0);
       ADD(ELEM_Pt, 168, 167.98804f, 0.0f);
       ADD(ELEM_Pt, 169, 168.98642f, 0.0f);
       ADD(ELEM_Pt, 170, 169.98233f, 0.0f);
@@ -2384,7 +2384,7 @@
       ADD(ELEM_Pt, 201, 200.974500f, 0.0f);
       ADD(ELEM_Pt, 202, 201.97574f, 0.0f);
    SET(ELEM_Au, NATURAL);
-      ADD(ELEM_Au, NATURAL, 196.96655f, 0);
+      ADD(ELEM_Au, NATURAL, 196.97f, 0);
       ADD(ELEM_Au, 171, 170.99177f, 0.0f);
       ADD(ELEM_Au, 172, 171.99011f, 0.0f);
       ADD(ELEM_Au, 173, 172.98640f, 0.0f);
@@ -2457,7 +2457,7 @@
       ADD(ELEM_Hg, 207, 206.98258f, 0.0f);
       ADD(ELEM_Hg, 208, 207.98594f, 0.0f);
    SET(ELEM_Tl, NATURAL);
-      ADD(ELEM_Tl, NATURAL, 204.3833f, 0);
+      ADD(ELEM_Tl, NATURAL, 204.38f, 0);
       ADD(ELEM_Tl, 177, 176.99688f, 0.0f);
       ADD(ELEM_Tl, 178, 177.99523f, 0.0f);
       ADD(ELEM_Tl, 179, 178.99147f, 0.0f);
@@ -2529,7 +2529,7 @@
       ADD(ELEM_Pb, 213, 212.99650f, 0.0f);
       ADD(ELEM_Pb, 214, 213.9997981f, 0.0f);
    SET(ELEM_Bi, NATURAL);
-      ADD(ELEM_Bi, NATURAL, 208.98038f, 0);
+      ADD(ELEM_Bi, NATURAL, 208.98f, 0);
       ADD(ELEM_Bi, 185, 184.99771f, 0.0f);
       ADD(ELEM_Bi, 186, 185.99648f, 0.0f);
       ADD(ELEM_Bi, 187, 186.99346f, 0.0f);
@@ -2757,7 +2757,7 @@
       ADD(ELEM_Ac, 235, 235.05110f, 0.0f);
       ADD(ELEM_Ac, 236, 236.05518f, 0.0f);
    SET(ELEM_Th, NATURAL);
-      ADD(ELEM_Th, NATURAL, 232.0381f, 0);
+      ADD(ELEM_Th, NATURAL, 232.04f, 0);
       ADD(ELEM_Th, 210, 210.01503f, 0.0f);
       ADD(ELEM_Th, 211, 211.01486f, 0.0f);
       ADD(ELEM_Th, 212, 212.01292f, 0.0f);
@@ -2788,7 +2788,7 @@
       ADD(ELEM_Th, 237, 237.05389f, 0.0f);
       ADD(ELEM_Th, 238, 238.05624f, 0.0f);
    SET(ELEM_Pa, NATURAL);
-      ADD(ELEM_Pa, NATURAL, 231.03588f, 0);
+      ADD(ELEM_Pa, NATURAL, 231.04f, 0);
       ADD(ELEM_Pa, 213, 213.02118f, 0.0f);
       ADD(ELEM_Pa, 214, 214.02074f, 0.0f);
       ADD(ELEM_Pa, 215, 215.01910f, 0.0f);
@@ -2818,7 +2818,7 @@
       ADD(ELEM_Pa, 239, 239.05713f, 0.0f);
       ADD(ELEM_Pa, 240, 240.06098f, 0.0f);
    SET(ELEM_U, NATURAL);
-      ADD(ELEM_U, NATURAL, 238.02891f, 0);
+      ADD(ELEM_U, NATURAL, 238.03f, 0);
       ADD(ELEM_U, 218, 218.02349f, 0.0f);
       ADD(ELEM_U, 219, 219.024920f, 0.0f);
       ADD(ELEM_U, 220, 220.02471f, 0.0f);

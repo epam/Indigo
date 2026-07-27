@@ -34,10 +34,27 @@ IMPL_ERROR(ReactionCdxmlLoader, "reaction CDXML loader");
 ReactionCdxmlLoader::ReactionCdxmlLoader(Scanner& scanner, bool is_binary) : _scanner(scanner), _is_binary(is_binary)
 {
     ignore_bad_valence = false;
+    valence_mode = ValenceMode::BIOVIA_2009;
 }
 
 ReactionCdxmlLoader::~ReactionCdxmlLoader()
 {
+}
+
+void ReactionCdxmlLoader::setOptions(const LoaderOptions& opts)
+{
+    stereochemistry_options = opts.stereochemistry_options;
+    ignore_bad_valence = opts.ignore_bad_valence;
+    valence_mode = opts.valence_mode;
+}
+
+LoaderOptions ReactionCdxmlLoader::getOptions() const
+{
+    LoaderOptions opts;
+    opts.stereochemistry_options = stereochemistry_options;
+    opts.ignore_bad_valence = ignore_bad_valence;
+    opts.valence_mode = valence_mode;
+    return opts;
 }
 
 void ReactionCdxmlLoader::_initReaction(BaseReaction& rxn)
@@ -127,6 +144,8 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
     cdx_reader->process();
     MoleculeCdxmlLoader loader(_scanner, _is_binary);
     loader.stereochemistry_options = stereochemistry_options;
+    loader.ignore_bad_valence = ignore_bad_valence;
+    loader.valence_mode = valence_mode;
     loader.parseCDXMLAttributes(*cdx_reader->rootElement()->firstProperty());
 
     for (auto page_elem = cdx_reader->rootElement()->firstChildElement(); page_elem->hasContent(); page_elem = page_elem->nextSiblingElement())
@@ -157,9 +176,17 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
                     auto id = cdxml_elem->findProperty("id");
                     if (id->hasContent())
                         _cdxml_elements.emplace(std::stoi(id->value()), cdxml_elem->copy());
+                    else
+                        std::cout << "Unknown element: " << page_elem->value() << std::endl;
                 }
             }
         }
+        else if (page_elem->value() == "colortable")
+            loader.parseColorTable(*page_elem);
+        else if (page_elem->value() == "fonttable")
+            loader.parseFontTable(*page_elem);
+        else
+            std::cout << "Unknown element: " << page_elem->value() << std::endl;
     }
 
     std::map<int, std::unordered_map<int, int>> moleculeToAtomIDs;
@@ -228,7 +255,8 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
                 {
                     auto& text = (SimpleTextObject&)_pmol->meta().getMetaObject(SimpleTextObject::CID, i);
                     int idx = rxn.meta().addMetaObject(text.clone());
-                    rxn.addSpecialCondition(idx, Rect2f(Vec2f(text._pos.x, text._pos.y), Vec2f(text._pos.x, text._pos.y)));
+                    rxn.addSpecialCondition(
+                        idx, Rect2f(Vec2f(text.boundingBox().left(), text.boundingBox().top()), Vec2f(text.boundingBox().left(), text.boundingBox().top())));
                 }
             }
             _cdxml_elements.erase(elem_it);
@@ -322,7 +350,11 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
     {
         loader.loadMoleculeFromFragment(*_pmol, *kvp.second);
         if (_pmol->vertexCount())
+        {
+            Array<char> label;
+            _pmol->getAtomSymbol(0, label);
             rxn.addUndefinedCopy(*_pmol, 0, 0);
+        }
         rxn.meta().append(_pmol->meta());
     }
 }

@@ -9,6 +9,7 @@
 
 #include "base_c/bitarray.h"
 #include "base_cpp/output.h"
+#include "base_cpp/ptr_array.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/tlscont.h"
 #include "bingo_core_c_internal.h"
@@ -103,7 +104,7 @@ public:
         }
 
         template <typename T>
-        static void handleDArray(indigo::ObjArray<indigo::Array<T>>& data, indigo::Scanner* scanner, indigo::Output* output)
+        static void handleDArray(indigo::PtrArray<indigo::Array<T>>& data, indigo::Scanner* scanner, indigo::Output* output)
         {
             int size = data.size();
             handleNumber(size, scanner, output);
@@ -420,6 +421,15 @@ private:
         handle_statement;                                                                                                                                      \
     }                                                                                                                                                          \
     }
+
+#if PG_VERSION_NUM >= 160000
+#define PG_FUNCNAME_MACRO __func__
+#endif
+
+#if PG_VERSION_NUM >= 170000
+#define SPI_push_conditional() false
+#define SPI_pop_conditional(pushed) ((void)0)
+#endif
 
 #define PG_BINGO_BEGIN                                                                                                                                         \
     {                                                                                                                                                          \

@@ -100,11 +100,11 @@ void MoleculeInChICompoment::_getCanonicalMolecule(Molecule& source_mol, Molecul
 
     QS_DEF(Array<int>, canonical_order);
     as.getCanonicalNumbering(canonical_order);
-    for (int i = 0; i < canonical_order.size(); ++i)
-    {
-        printf("%d ", canonical_order[i]);
-    }
-    printf("\n");
+    // for (int i = 0; i < canonical_order.size(); ++i)
+    // {
+    //     printf("%d ", canonical_order[i]);
+    // }
+    // printf("\n");
 
     cano_mol.makeSubmolecule(source_mol, canonical_order, NULL);
 

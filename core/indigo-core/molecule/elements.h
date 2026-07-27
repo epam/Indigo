@@ -21,9 +21,11 @@
 
 #include <array>
 #include <map>
+#include <optional>
 
 #include "base_c/defs.h"
 #include "base_cpp/exception.h"
+#include "molecule/valence_model.h"
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -164,12 +166,10 @@ namespace indigo
         ELEM_ATOMLIST
     };
 
-    inline bool ElementHygrodenOnLeft(int el)
+    inline bool ElementHydrogenOnLeft(int el)
     {
-        if (el == ELEM_O || el == ELEM_F || el == ELEM_S || el == ELEM_Cl || el == ELEM_Se || el == ELEM_Br || el == ELEM_I)
-            return true;
-        return false;
-    };
+        return el == ELEM_O || el == ELEM_F || el == ELEM_S || el == ELEM_Cl || el == ELEM_Se || el == ELEM_Br || el == ELEM_I;
+    }
 
     enum LABEL_MODE
     {
@@ -193,6 +193,14 @@ namespace indigo
         TRITIUM = 3
     };
 
+    struct DLLEXPORT ValenceResult
+    {
+        int valence = 0;
+        int implicit_h = 0;
+        bool valid = false;
+        bool nonStandard = false; // true when connectivity exceeds model prediction
+    };
+
     class DLLEXPORT Element
     {
     public:
@@ -210,7 +218,19 @@ namespace indigo
         static int radicalElectrons(int radical);
         static int radicalOrbitals(int radical);
 
-        static bool calcValence(int elem, int charge, int radical, int conn, int& valence, int& hyd, bool to_throw);
+        // Static valence calculation. Optional `mode` overrides the model:
+        //   - explicit value  → that ValenceModel is used
+        //   - std::nullopt    → ValenceModeProvider hook (registered by api/c
+        //                       at init to read the current TLS Indigo session),
+        //                       falling back to BIOVIA_2009 if no provider set
+        // Callers with molecule context should pass the molecule's stored mode
+        // explicitly; callers without context (parsers, query atoms, etc.)
+        // rely on the provider to follow the current Indigo session.
+        static bool calcValence(int elem, int charge, int radical, int conn, int& valence, int& hyd, bool to_throw, bool* nonStandard = nullptr,
+                                std::optional<ValenceMode> mode = std::nullopt);
+        static ValenceResult calcValenceResult(int elem, int charge, int radical, int conn, std::optional<ValenceMode> mode = std::nullopt);
+
+        // Mode-independent electron-counting helpers (do not consult ValenceModel).
         static int calcValenceOfAromaticAtom(int elem, int charge, int n_arom, int min_conn);
         static int calcValenceMinusHyd(int elem, int charge, int radical, int conn);
 
@@ -219,12 +239,20 @@ namespace indigo
         static int getMaximumConnectivity(int elem, int charge, int radical, bool use_d_orbital);
         static int orbitals(int elem, bool use_d_orbital);
         static int electrons(int elem, int charge);
+        static int baseValence(int eff);
+
+        // Provider hook used by calcValence/calcValenceResult when no explicit
+        // mode is passed. api/c registers a function reading the current TLS
+        // session's valence_mode. nullptr (default) → BIOVIA_2009.
+        using ValenceModeProvider = ValenceMode (*)();
+        static void setDefaultValenceModeProvider(ValenceModeProvider provider);
 
         static int group(int element);
         static int period(int period);
         static int read(Scanner& scanner);
 
         static bool isHalogen(int element);
+        static bool isMetal(int element);
 
         // Returns isotope that has weight most close to the atomic weight
         static int getDefaultIsotope(int element);
@@ -256,7 +284,6 @@ namespace indigo
         void _addElementIsotope(int element, int isotope, double mass, double isotopic_composition);
         void _initAllIsotopes();
         void _initDefaultIsotopes();
-        void _initAromatic();
 
         double _getStandardAtomicWeight(int element) const;
         double _getRelativeIsotopicMass(int element, int isotope) const;
@@ -276,8 +303,6 @@ namespace indigo
             int most_abundant_isotope;
             // Minimum and maximum isotope index
             int min_isotope_index, max_isotope_index;
-
-            bool can_be_aromatic;
         };
 
         // Isotopes mass key

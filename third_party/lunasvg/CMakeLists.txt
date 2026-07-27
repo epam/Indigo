@@ -9,7 +9,7 @@ project(lunasvg LANGUAGES CXX VERSION ${LUNASVG_VERSION_MAJOR}.${LUNASVG_VERSION
 include(FetchContent)
 FetchContent_Declare(plutovg
     GIT_REPOSITORY https://github.com/sammycage/plutovg.git
-    GIT_TAG main
+    GIT_TAG v1.1.0
     GIT_SHALLOW ON
     FIND_PACKAGE_ARGS 0.0.4
 )

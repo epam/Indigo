@@ -27,7 +27,7 @@
 namespace indigo
 {
 
-    class Molecule;
+    class BaseMolecule;
 
     // Molecular mass calculation
     class MoleculeMass
@@ -54,27 +54,27 @@ namespace indigo
         /* Mass of a molecule calculated using the average mass of each
          * element weighted for its natural isotopic abundance
          */
-        double molecularWeight(Molecule& mol);
+        double molecularWeight(BaseMolecule& mol);
 
         /* Mass of a molecule containing most likely
          * isotopic composition for a single random molecule.
          * Notes: in PubChem search engine it is called Exact Mass
          */
-        double mostAbundantMass(Molecule& mol);
+        double mostAbundantMass(BaseMolecule& mol);
 
         /* Mass of a molecule calculated using the mass of
          * the most abundant isotope of each element.
          * Notes: in Marvin it is called Exact Mass
          */
-        double monoisotopicMass(Molecule& mol);
+        double monoisotopicMass(BaseMolecule& mol);
 
         /* Sum of the mass numbers of all constituent atoms.
          */
-        int nominalMass(Molecule& mol);
+        int nominalMass(BaseMolecule& mol);
 
         /* Atom weight percentage like "C 77% H 13%"
          */
-        void massComposition(Molecule& molecule, Array<char>& str);
+        void massComposition(BaseMolecule& molecule, Array<char>& str);
     };
 
 } // namespace indigo

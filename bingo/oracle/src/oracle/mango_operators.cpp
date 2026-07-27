@@ -455,7 +455,7 @@ ORAEXT OCIString* oraMangoGrossCalc(OCIExtProcContext* ctx, OCILobLocator* targe
         if (target_ind == OCI_IND_NOTNULL)
         {
             MangoOracleContext& context = MangoOracleContext::get(env, 0, false);
-            block_throw_error = context.context().reject_invalid_structures.get();
+            block_throw_error = context.context().reject_invalid_structures.value();
 
             QS_DEF(Array<char>, target_buf);
             OracleLOB target_lob(env, target_loc);
@@ -491,7 +491,7 @@ ORAEXT OCINumber* oraMangoGross(OCIExtProcContext* ctx, int context_id, OCILobLo
         if (target_ind == OCI_IND_NOTNULL)
         {
             MangoOracleContext& context = MangoOracleContext::get(env, context_id, false);
-            block_throw_error = context.context().reject_invalid_structures.get();
+            block_throw_error = context.context().reject_invalid_structures.value();
 
             QS_DEF(Array<char>, target_buf);
 

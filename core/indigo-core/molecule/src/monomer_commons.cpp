@@ -22,7 +22,9 @@
 
 #include <unordered_map>
 
+#include "base_cpp/output.h"
 #include "molecule/base_molecule.h"
+#include "molecule/molecule_inchi.h"
 #include "molecule/monomer_commons.h"
 
 namespace indigo
@@ -44,6 +46,12 @@ namespace indigo
         if (monomer_class == kMonomerClassdAA || monomer_class == kMonomerClassDNA)
             return kPrefix_d;
         return "";
+    }
+
+    bool isChemClass(const std::string& monomer_class)
+    {
+        static const std::unordered_set<std::string> kChemClasses = {kMonomerClassCHEM, kMonomerClassMOD, kMonomerClassXLINK, kMonomerClassLINKER};
+        return kChemClasses.find(monomer_class) != kChemClasses.end();
     }
 
     bool isNucleicClass(const std::string& monomer_class)
@@ -229,6 +237,46 @@ namespace indigo
         return false;
     }
 
+    std::string monomerId(const TGroup& tg)
+    {
+        std::string name;
+        std::string monomer_class;
+        if (tg.tgroup_text_id.ptr())
+            return tg.tgroup_text_id.ptr();
+        if (tg.tgroup_name.ptr())
+            name = tg.tgroup_name.ptr();
+        if (tg.tgroup_class.ptr())
+            monomer_class = tg.tgroup_class.ptr();
+        if (name.size())
+            name = monomerNameByAlias(monomer_class, name) + "_" + std::to_string(tg.tgroup_id);
+        else
+            name = std::string("#") + std::to_string(tg.tgroup_id);
+        return name;
+    }
+
+    std::string monomerTemplateId(const TGroup& tg)
+    {
+        std::string name;
+        std::string monomer_class;
+        if (tg.tgroup_text_id.ptr())
+            return tg.tgroup_text_id.ptr();
+        if (tg.tgroup_name.ptr())
+            name = tg.tgroup_name.ptr();
+        if (tg.tgroup_class.ptr())
+            monomer_class = tg.tgroup_class.ptr();
+
+        return monomerNameByAlias(monomer_class, name);
+    }
+
+    std::string monomerInchi(const TGroup& tg)
+    {
+        std::string templ_inchi_str;
+        StringOutput templ_inchi_output(templ_inchi_str);
+        MoleculeInChI templ_inchi(templ_inchi_output);
+        templ_inchi.outputInChI(tg.fragment->asMolecule());
+        return templ_inchi_str;
+    }
+
     std::string monomerAlias(const TGroup& tg)
     {
         std::string monomer_class;
@@ -295,6 +343,164 @@ namespace indigo
         return typeToStr.at(helm_type);
     }
 
+    std::string monomerKETClass(const std::string& class_name)
+    {
+        auto mclass = class_name;
+        if (class_name == kMonomerClassAA)
+            return kMonomerClassAminoAcid;
+
+        if (mclass == kMonomerClassdAA)
+            return kMonomerClassDAminoAcid;
+
+        if (mclass == kMonomerClassRNA || mclass == kMonomerClassDNA || mclass.find(kMonomerClassMOD) == 0 || mclass.find(kMonomerClassXLINK) == 0)
+            return mclass;
+
+        for (auto it = mclass.begin(); it < mclass.end(); ++it)
+            *it = static_cast<char>(it > mclass.begin() ? std::tolower(*it) : std::toupper(*it));
+
+        return mclass;
+    }
+
+    std::string monomerHELMClass(const std::string& class_name)
+    {
+        if (isAminoAcidClass(class_name))
+            return kMonomerClassPEPTIDE;
+        if (isNucleicClass(class_name))
+            return kMonomerClassRNA;
+        return kMonomerClassCHEM;
+    }
+
+    // Calclulate offset to maximize sense-antisense complementary pairs count
+    // return offset, vector of pairs and flag set to true when antisense should be moved to left
+    size_t best_allign(const std::string& sense, const std::string& antisense, std::vector<std::pair<size_t, size_t>>& pairs, bool& shift_sense)
+    {
+        shift_sense = false;
+        pairs.clear();
+        if (sense.size() == 0 || antisense.size() == 0)
+            return 0;
+        size_t max_count = 0;
+        std::vector<std::pair<size_t, size_t>> max_pairs;
+        size_t allign = 0;
+        bool left = false;
+        // move right
+        for (size_t i = 0; i < sense.size(); i++)
+        {
+            size_t count = 0;
+            size_t len = std::min(sense.size() - i, antisense.size());
+            std::vector<std::pair<size_t, size_t>> cur_pairs;
+            if (len < max_count)
+                break;
+            for (size_t idx = 0; idx < len; idx++)
+            {
+                if (complementary_bases.count(std::make_pair(sense[i + idx], antisense[idx])) > 0)
+                {
+                    count++;
+                    cur_pairs.emplace_back(i + idx, idx);
+                }
+            }
+            if (count > max_count)
+            {
+                allign = i;
+                max_count = count;
+                max_pairs = cur_pairs;
+            }
+        }
+        // move left
+        for (size_t i = 1; i < antisense.size(); i++)
+        {
+            size_t count = 0;
+            size_t len = std::min(antisense.size() - i, sense.size());
+            std::vector<std::pair<size_t, size_t>> cur_pairs;
+            if (len < max_count)
+                break;
+            for (size_t idx = 0; idx < len; idx++)
+            {
+                if (complementary_bases.count(std::make_pair(sense[idx], antisense[idx + i])) > 0)
+                {
+                    count++;
+                    cur_pairs.emplace_back(idx, idx + i);
+                }
+            }
+            if (count > max_count)
+            {
+                allign = i;
+                max_count = count;
+                max_pairs = cur_pairs;
+                left = true;
+            }
+        }
+        pairs = max_pairs;
+        shift_sense = left;
+        return allign;
+    }
+
+    size_t needleman_wunsch(const std::string& sense, const std::string& antisense, std::vector<std::pair<size_t, size_t>>& strands,
+                            std::map<std::pair<char, char>, int> similarity, int mismatch, int indel)
+    {
+        std::vector<std::vector<int>> H;
+        // First line of scorring matrix contais sense size +1 zeroes
+        H.emplace_back(std::vector<int>());
+        for (size_t i = 0; i <= sense.size(); i++)
+            H[0].emplace_back(static_cast<int>(i) * indel);
+        // Function to get pair score from similarity or mismatch value
+        auto score = [&similarity, &mismatch](char base1, char base2) {
+            auto it = similarity.find(std::make_pair(base1, base2));
+            int match = it == similarity.end() ? mismatch : it->second;
+            return match;
+        };
+        // Fill scoring matrix
+        for (size_t a = 0; a < antisense.size(); a++)
+        {
+            auto a_base = antisense[a];
+            auto& vec = H.emplace_back(std::vector<int>(1, static_cast<int>(a + 1) * indel));
+            auto& prev_vec = H[a];
+            int prev_a = prev_vec[0];
+            int prev_s = vec[0];
+            for (size_t s = 0; s < sense.size(); s++)
+            {
+                // Calculate next vector element(cur_s) based on already calculated (prev_s, prev_a, cur_a)
+                // | prev_a | cur_a |
+                // +--------+-------+
+                // | prev_s | cur_s +
+                int cur_a = prev_vec[s + 1];
+                int cur_s = std::max({prev_a + score(a_base, sense[s]), cur_a + indel, prev_s + indel});
+                vec.emplace_back(cur_s);
+                prev_s = cur_s;
+                prev_a = cur_a;
+            }
+        }
+        // Traceback
+        size_t a = antisense.size(), s = sense.size(), match_count = 0;
+        while (a > 0 && s > 0)
+        {
+            int current = H[a][s];
+            if (current == H[a - 1][s - 1] + score(antisense[a - 1], sense[s - 1]))
+            {
+                strands.emplace_back(--s, --a);
+                ++match_count;
+            }
+            else if (current == H[a - 1][s] + indel)
+            {
+                strands.emplace_back(SIZE_MAX, --a);
+            }
+            else
+            {
+                strands.emplace_back(--s, SIZE_MAX);
+            }
+        }
+        while (a > 0)
+        {
+            strands.emplace_back(SIZE_MAX, --a);
+        }
+        while (s > 0)
+        {
+            strands.emplace_back(--s, SIZE_MAX);
+        }
+
+        // Reverse pairs
+        std::reverse(strands.begin(), strands.end());
+        return match_count;
+    }
 }
 
 #ifdef _MSC_VER

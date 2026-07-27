@@ -787,3 +787,6 @@ smarts/0262.png rendering status: OK
 263: [$([a;r4,!R1&r3])]1:[$([a;r4,!R1&r3])]:[$([a;r4,!R1&r3])]:[$([a;r4,!R1&r3])]:1
 
 smarts/0263.png rendering status: OK
+264: *1C=*C=*C=1 |$star_e;;star_e;;star_e;$|
+
+smarts/0264.png rendering status: OK

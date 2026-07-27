@@ -1,0 +1,147 @@
+{
+    "root": {
+        "nodes": [],
+        "templates": [
+            {
+                "$ref": "monomerTemplate-Alanine"
+            }
+        ]
+    },
+    "monomerTemplate-Alanine": {
+        "type": "monomerTemplate",
+        "id": "Alanine",
+        "class": "AminoAcid",
+        "classHELM": "PEPTIDE",
+        "fullName": "Alanine",
+        "alias": "Alanine",
+        "naturalAnalog": "Ala",
+        "naturalAnalogShort": "A",
+        "aliasHELM": "A",
+        "modificationTypes": [
+            "Natural amino acid",
+            "modification1"
+        ],
+        "attachmentPoints": [
+            {
+                "attachmentAtom": 0,
+                "leavingGroup": {
+                    "atoms": [
+                        5
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 2,
+                "leavingGroup": {
+                    "atoms": [
+                        6
+                    ]
+                }
+            }
+        ],
+        "atoms": [
+            {
+                "label": "N",
+                "location": [
+                    -1.039200,
+                    -0.200000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -0.173200,
+                    0.300000,
+                    0.000000
+                ],
+                "stereoLabel": "abs"
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.692800,
+                    -0.200000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    0.692800,
+                    -1.200000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -0.173200,
+                    1.300000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    -1.905200,
+                    0.300000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    1.558800,
+                    0.300000,
+                    0.000000
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    5
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    6
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    2,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    4
+                ],
+                "stereo": 1
+            }
+        ]
+    }
+}

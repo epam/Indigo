@@ -45,7 +45,9 @@ namespace indigo
             FASTA,
             IDT,
             HELM,
+            BILN,
             Sequence3,
+            AxoLabs,
         };
 
         static constexpr uint32_t SEQ_LINE_LENGTH = 80;
@@ -61,10 +63,10 @@ namespace indigo
 
     protected:
         TGroup& getTGroup();
-        std::string saveIdt(BaseMolecule& mol, std::deque<int>& sequence);
         void saveIdt(KetDocument& doc, std::vector<std::deque<std::string>> sequences, std::string& seq_text);
-        std::string saveHELM(BaseMolecule& mol, std::vector<std::deque<int>>& sequence);
-        std::string saveHELM(KetDocument& mol, std::vector<std::deque<std::string>> sequences);
+        std::string saveHELM(KetDocument& mol, const std::vector<std::deque<std::string>>& sequences);
+        std::string saveBILN(KetDocument& doc);
+        void saveAxoLabs(KetDocument& doc, std::vector<std::deque<std::string>> sequences, std::string& seq_text);
         void _validateSequence(BaseMolecule& bmol);
 
     private:

@@ -1,0 +1,17 @@
+[
+    {
+        "grossFormula": "C2 H",
+        "mass": 25.029999,
+        "pKa": 9.553333,
+        "extinctionCoefficient": 125,
+        "hydrophobicity": [
+            0.68
+        ],
+        "monomerCount": {
+            "peptides": {
+                "C": 1
+            },
+            "nucleotides": {}
+        }
+    }
+]

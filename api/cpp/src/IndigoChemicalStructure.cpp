@@ -85,6 +85,12 @@ std::string IndigoChemicalStructure::inchi() const
     return session()->_checkResultString(indigoInchiGetInchi(id()));
 }
 
+std::string IndigoChemicalStructure::inchiKey() const
+{
+    session()->setSessionId();
+    return session()->_checkResultString(indigoInchiGetInchiKey(inchi().c_str()));
+}
+
 std::string IndigoChemicalStructure::rawData() const
 {
     session()->setSessionId();

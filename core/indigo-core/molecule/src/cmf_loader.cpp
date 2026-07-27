@@ -33,8 +33,8 @@ CmfLoader::CmfLoader(LzwDict& dict, Scanner& scanner)
       TL_CP_GET(inv_bond_mapping_to_restore), TL_CP_GET(_atoms), TL_CP_GET(_bonds), TL_CP_GET(_pseudo_labels), TL_CP_GET(_attachments), TL_CP_GET(_sgroup_order)
 {
     _init();
-    _decoder_obj.create(dict, scanner);
-    _lzw_scanner.create(_decoder_obj.ref());
+    _decoder_obj = std::make_unique<LzwDecoder>(dict, scanner);
+    _lzw_scanner = std::make_unique<LzwScanner>(*_decoder_obj);
     _scanner = _lzw_scanner.get();
 }
 
@@ -51,7 +51,7 @@ CmfLoader::CmfLoader(LzwDecoder& decoder)
       TL_CP_GET(inv_bond_mapping_to_restore), TL_CP_GET(_atoms), TL_CP_GET(_bonds), TL_CP_GET(_pseudo_labels), TL_CP_GET(_attachments), TL_CP_GET(_sgroup_order)
 {
     _init();
-    _lzw_scanner.create(decoder);
+    _lzw_scanner = std::make_unique<LzwScanner>(decoder);
     _scanner = _lzw_scanner.get();
 }
 
@@ -743,7 +743,7 @@ void CmfLoader::_readSGroup(int code, Molecule& mol)
         Superatom& s = (Superatom&)mol.sgroups.getSGroup(idx);
         _readGeneralSGroup(s);
 
-        _readString(s.subscript);
+        _readString(s.label);
         _readString(s.sa_class);
         byte bits = _scanner->readByte();
         if (bits & 0x01) // -1 and 1 are the same from here
@@ -768,9 +768,9 @@ void CmfLoader::_readSGroup(int code, Molecule& mol)
         _readGeneralSGroup(s);
 
         if (version >= 2)
-            _readString(s.subscript);
+            _readString(s.label);
         else
-            s.subscript.readString("n", true);
+            s.label.readString("n", true);
 
         s.connectivity = _scanner->readPackedUInt();
     }
@@ -843,7 +843,9 @@ void CmfLoader::_readSGroupXYZ(Scanner& scanner, int idx, Molecule& mol, const C
     {
         DataSGroup& s = (DataSGroup&)sg;
         _readBaseSGroupXyz(scanner, s, range);
-        _readVec2f(scanner, s.display_pos, range);
+        Vec2f dp;
+        _readVec2f(scanner, dp, range);
+        s.display_pos.set(dp);
     }
     else if (sg_type == SGroup::SG_TYPE_SUP)
     {
@@ -884,7 +886,7 @@ void CmfLoader::_readUIntArray(Array<int>& dest)
 void CmfLoader::_readGeneralSGroup(SGroup& sgroup)
 {
     _readUIntArray(sgroup.atoms);
-    _readUIntArray(sgroup.bonds);
+    _readUIntArray(sgroup.getBonds());
 }
 
 void CmfLoader::_readExtSection(Molecule& mol)

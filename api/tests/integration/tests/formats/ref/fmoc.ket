@@ -2,6 +2,9 @@
     "root": {
         "nodes": [
             {
+                "$ref": "mol0"
+            },
+            {
                 "$ref": "monomer0"
             },
             {
@@ -93,9 +96,6 @@
             },
             {
                 "$ref": "monomer30"
-            },
-            {
-                "$ref": "monomer31"
             }
         ],
         "connections": [
@@ -311,22 +311,22 @@
             {
                 "connectionType": "single",
                 "endpoint1": {
-                    "monomerId": "monomer31",
-                    "attachmentPointId": "R3"
+                    "monomerId": "monomer30",
+                    "attachmentPointId": "R1"
                 },
                 "endpoint2": {
-                    "monomerId": "monomer30",
-                    "attachmentPointId": "R3"
+                    "monomerId": "monomer19",
+                    "attachmentPointId": "R2"
                 }
             },
             {
                 "connectionType": "single",
                 "endpoint1": {
-                    "monomerId": "monomer19",
+                    "monomerId": "monomer30",
                     "attachmentPointId": "R2"
                 },
                 "endpoint2": {
-                    "monomerId": "monomer30",
+                    "monomerId": "monomer20",
                     "attachmentPointId": "R1"
                 }
             },
@@ -432,12 +432,12 @@
             {
                 "connectionType": "single",
                 "endpoint1": {
-                    "monomerId": "monomer20",
-                    "attachmentPointId": "R1"
+                    "moleculeId": "mol0",
+                    "atomId": "0"
                 },
                 "endpoint2": {
                     "monomerId": "monomer30",
-                    "attachmentPointId": "R2"
+                    "attachmentPointId": "R3"
                 }
             }
         ],
@@ -491,10 +491,7 @@
                 "$ref": "monomerTemplate-Arg_16"
             },
             {
-                "$ref": "monomerTemplate-Fmoc_17"
-            },
-            {
-                "$ref": "monomerTemplate-Glu_18"
+                "$ref": "monomerTemplate-Glu_17"
             }
         ]
     },
@@ -837,17 +834,7 @@
             "y": -5.159056186676025
         },
         "alias": "E",
-        "templateId": "Glu_18"
-    },
-    "monomer31": {
-        "type": "monomer",
-        "id": "31",
-        "position": {
-            "x": 15.770377159118653,
-            "y": -3.601959228515625
-        },
-        "alias": "Fmoc",
-        "templateId": "Fmoc_17"
+        "templateId": "Glu_17"
     },
     "monomerTemplate-His_1": {
         "type": "monomerTemplate",
@@ -4082,22 +4069,172 @@
             }
         ]
     },
-    "monomerTemplate-Fmoc_17": {
+    "monomerTemplate-Glu_17": {
         "type": "monomerTemplate",
-        "id": "Fmoc_17",
-        "class": "Chem",
-        "classHELM": "CHEM",
-        "alias": "Fmoc",
-        "name": "Fmoc",
+        "id": "Glu_17",
+        "class": "MODAA",
+        "classHELM": "PEPTIDE",
+        "alias": "E",
+        "name": "E",
+        "naturalAnalogShort": "E",
+        "naturalAnalog": "Glu",
         "attachmentPoints": [
             {
-                "id": "Cx",
-                "type": "side",
-                "label": "R3",
-                "attachmentAtom": 16
+                "attachmentAtom": 0
+            },
+            {
+                "attachmentAtom": 3
+            },
+            {
+                "attachmentAtom": 7
             }
         ],
         "atoms": [
+            {
+                "label": "N",
+                "location": [
+                    -0.9809112548828125,
+                    -1.0518436431884766,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -0.35041141510009768,
+                    -0.6878437995910645,
+                    0.0
+                ],
+                "stereoLabel": "abs"
+            },
+            {
+                "label": "C",
+                "location": [
+                    -0.35041141510009768,
+                    0.040456295013427737,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.2802886962890625,
+                    -1.0519437789916993,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.2802886962890625,
+                    0.4045562744140625,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.2802886962890625,
+                    1.1328563690185547,
+                    0.0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    0.9109878540039063,
+                    1.4969561100006104,
+                    0.0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    -0.35041141510009768,
+                    1.4969561100006104,
+                    0.0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    0.2802886962890625,
+                    -1.7801437377929688,
+                    0.0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 2,
+                "atoms": [
+                    3,
+                    8
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    5,
+                    7
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    5,
+                    6
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    4,
+                    5
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    4
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    2
+                ],
+                "stereo": 1
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            }
+        ]
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    15.781000137329102,
+                    -5.530099868774414,
+                    0.0
+                ]
+            },
             {
                 "label": "O",
                 "location": [
@@ -4225,17 +4362,16 @@
                     -3.427299976348877,
                     0.0
                 ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    15.781000137329102,
-                    -5.530099868774414,
-                    0.0
-                ]
             }
         ],
         "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    4,
+                    3
+                ]
+            },
             {
                 "type": 1,
                 "atoms": [
@@ -4246,47 +4382,33 @@
             {
                 "type": 1,
                 "atoms": [
-                    2,
+                    4,
+                    5
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    0,
                     1
                 ]
             },
             {
-                "type": 1,
-                "atoms": [
-                    3,
-                    4
-                ]
-            },
-            {
                 "type": 2,
-                "atoms": [
-                    16,
-                    0
-                ]
-            },
-            {
-                "type": 2,
-                "atoms": [
-                    11,
-                    12
-                ]
-            },
-            {
-                "type": 1,
                 "atoms": [
                     12,
                     13
                 ]
             },
             {
-                "type": 2,
+                "type": 1,
                 "atoms": [
                     13,
                     14
                 ]
             },
             {
-                "type": 1,
+                "type": 2,
                 "atoms": [
                     14,
                     15
@@ -4295,201 +4417,54 @@
             {
                 "type": 1,
                 "atoms": [
-                    10,
-                    11
-                ]
-            },
-            {
-                "type": 2,
-                "atoms": [
-                    5,
-                    6
+                    15,
+                    16
                 ]
             },
             {
                 "type": 1,
                 "atoms": [
-                    7,
-                    6
+                    11,
+                    12
                 ]
             },
             {
                 "type": 2,
+                "atoms": [
+                    6,
+                    7
+                ]
+            },
+            {
+                "type": 1,
                 "atoms": [
                     8,
                     7
                 ]
             },
             {
-                "type": 1,
+                "type": 2,
                 "atoms": [
                     9,
                     8
                 ]
             },
             {
-                "type": 2,
+                "type": 1,
                 "atoms": [
-                    4,
+                    10,
                     9
                 ]
             },
             {
-                "type": 1,
-                "atoms": [
-                    4,
-                    5
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    10,
-                    5
-                ]
-            },
-            {
                 "type": 2,
                 "atoms": [
-                    15,
+                    5,
                     10
                 ]
             },
             {
                 "type": 1,
-                "atoms": [
-                    15,
-                    3
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    1,
-                    16
-                ]
-            }
-        ]
-    },
-    "monomerTemplate-Glu_18": {
-        "type": "monomerTemplate",
-        "id": "Glu_18",
-        "class": "MODAA",
-        "classHELM": "PEPTIDE",
-        "alias": "E",
-        "name": "E",
-        "naturalAnalogShort": "E",
-        "naturalAnalog": "Glu",
-        "attachmentPoints": [
-            {
-                "attachmentAtom": 0
-            },
-            {
-                "attachmentAtom": 3
-            },
-            {
-                "attachmentAtom": 7
-            }
-        ],
-        "atoms": [
-            {
-                "label": "N",
-                "location": [
-                    15.150400161743164,
-                    -6.210899829864502,
-                    0.0
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    15.780900001525879,
-                    -5.84689998626709,
-                    0.0
-                ],
-                "stereoLabel": "abs"
-            },
-            {
-                "label": "C",
-                "location": [
-                    15.780900001525879,
-                    -5.118599891662598,
-                    0.0
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    16.41160011291504,
-                    -6.210999965667725,
-                    0.0
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    16.41160011291504,
-                    -4.754499912261963,
-                    0.0
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    16.41160011291504,
-                    -4.026199817657471,
-                    0.0
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    17.042299270629884,
-                    -3.662100076675415,
-                    0.0
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    15.780900001525879,
-                    -3.662100076675415,
-                    0.0
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    16.41160011291504,
-                    -6.939199924468994,
-                    0.0
-                ]
-            }
-        ],
-        "bonds": [
-            {
-                "type": 2,
-                "atoms": [
-                    3,
-                    8
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    1,
-                    3
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    5,
-                    7
-                ]
-            },
-            {
-                "type": 2,
                 "atoms": [
                     5,
                     6
@@ -4498,31 +4473,55 @@
             {
                 "type": 1,
                 "atoms": [
-                    4,
-                    5
+                    11,
+                    6
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    16,
+                    11
                 ]
             },
             {
                 "type": 1,
                 "atoms": [
-                    2,
+                    16,
                     4
                 ]
             },
             {
                 "type": 1,
                 "atoms": [
-                    1,
-                    2
-                ],
-                "stereo": 1
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    0,
-                    1
+                    2,
+                    0
                 ]
+            }
+        ],
+        "sgroups": [
+            {
+                "type": "SUP",
+                "atoms": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8,
+                    9,
+                    10,
+                    11,
+                    12,
+                    13,
+                    14,
+                    15,
+                    16,
+                    0
+                ],
+                "name": "Fmoc"
             }
         ]
     }

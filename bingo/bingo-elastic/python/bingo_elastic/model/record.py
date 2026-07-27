@@ -1,12 +1,33 @@
 from __future__ import annotations
 
-from typing import Callable, Dict, List, Optional
+from typing import Callable, Dict, FrozenSet, Iterable, List, Optional
 from uuid import uuid4
 
 from indigo import Indigo, IndigoException, IndigoObject  # type: ignore
 
 MOL_TYPES = ["#02: <molecule>", "#03: <query reaction>", "#12: <RDFMolecule>"]
 REAC_TYPES = ["#04: <reaction>", "#05: <query reaction>"]
+RESERVED_FIELDS = frozenset(
+    {
+        "cmf",
+        "name",
+        "hash",
+        "has_error",
+        "rawData",
+        "sim_fingerprint",
+        "sim_fingerprint_len",
+        "sub_fingerprint",
+        "sub_fingerprint_len",
+        "tau_fingerprint",
+        "tau_fingerprint_len",
+        "record_id",
+        "error_handler",
+        "skip_errors",
+        "tau_search",
+        "indigo_object",
+        "elastic_response",
+    }
+)
 
 
 # pylint: disable=unused-argument
@@ -31,7 +52,7 @@ class WithElasticResponse:
 
 
 class WithIndigoObject:
-    def __set__(  # pylint: disable=too-many-branches
+    def __set__(  # pylint: disable=too-many-statements, too-many-branches, too-many-locals
         self, instance: IndigoRecord, value: IndigoObject
     ) -> None:
         try:
@@ -42,24 +63,20 @@ class WithIndigoObject:
             return
 
         value_dup.aromatize()
-        fingerprints = (
-            "sim",
-            "sub",
-        )
+        fingerprints = [("sim", "sim"), ("sub", "sub")]
+        if instance.tau_search:
+            fingerprints += [("sub-tau", "tau")]
 
-        for f_print in fingerprints:
+        for fp_type, prefix in fingerprints:
             try:
-                setattr(instance, f"{f_print}_fingerprint", [])
-                setattr(instance, f"{f_print}_fingerprint_len", 0)
-
-                fp_list = value_dup.fingerprint(f_print).oneBitsList()
+                setattr(instance, f"{prefix}_fingerprint", [])
+                setattr(instance, f"{prefix}_fingerprint_len", 0)
+                fp_list = value_dup.fingerprint(fp_type).oneBitsList()
                 if fp_list:
-                    fp_ = [int(feature) for feature in fp_list.split(" ")]
-                    setattr(instance, f"{f_print}_fingerprint", fp_)
-                    setattr(instance, f"{f_print}_fingerprint_len", len(fp_))
-            except ValueError as err_:
-                check_error(instance, err_)
-            except IndigoException as err_:
+                    fp_ = [int(b) for b in fp_list.split(" ")]
+                    setattr(instance, f"{prefix}_fingerprint", fp_)
+                    setattr(instance, f"{prefix}_fingerprint_len", len(fp_))
+            except (ValueError, IndigoException) as err_:
                 check_error(instance, err_)
 
         try:
@@ -96,6 +113,19 @@ class WithIndigoObject:
         except IndigoException as err_:
             check_error(instance, err_)
 
+        allowed = getattr(instance, "_custom_properties", None)
+        if allowed:
+            try:
+                for prop in value_dup.iterateProperties():
+                    prop_name = prop.name()
+                    if prop_name in RESERVED_FIELDS:
+                        continue
+                    if prop_name not in allowed:
+                        continue
+                    setattr(instance, prop_name, prop.rawData())
+            except IndigoException as err_:
+                check_error(instance, err_)
+
 
 class IndigoRecord:
     """
@@ -109,12 +139,24 @@ class IndigoRecord:
     cmf: Optional[str] = None
     name: Optional[str] = None
     rawData: Optional[str] = None
+    tau_search: bool = False
+    tau_fingerprint: Optional[List[int]] = None
+    tau_fingerprint_len: Optional[int] = None
     sim_fingerprint: Optional[List[str]] = None
     sub_fingerprint: Optional[List[str]] = None
     indigo_object = WithIndigoObject()
     elastic_response = WithElasticResponse()
     record_id: Optional[str] = None
     error_handler: Optional[Callable[[object, BaseException], None]] = None
+    _custom_properties: Optional[FrozenSet[str]] = None
+
+    def __new__(cls, *args, **kwargs):
+        if cls is IndigoRecord:
+            raise TypeError(
+                "Cannot instantiate IndigoRecord directly. "
+                "Use IndigoRecordMolecule or IndigoRecordReaction instead."
+            )
+        return super().__new__(cls)
 
     def __init__(self, **kwargs) -> None:
         """
@@ -123,6 +165,10 @@ class IndigoRecord:
         :type indigo_object: IndigoObject
         :param name: — add name. Rewrites name from IndigoObject
         :type name: str
+        :param tau_search: include tautomers in the search
+        :type tau_search: boolean
+        :param tau_fingerprint: tautomer fingerprint (sub-tau)
+        :type tau_fingerprint: List[int]
         :param sim_fingerprint: similarity fingerprint (sim)
         :type sim_fingerprint: List[int]
         :param sub_fingerprint: similarity fingerprint (sub)
@@ -132,6 +178,13 @@ class IndigoRecord:
         :param skip_errors: if True, all errors will be skipped,
                             no error_handler is required
         :type skip_errors: bool
+        :param custom_properties: iterable of SDF tag names to extract from the
+                            IndigoObject. If None or empty (default), no SDF
+                            tags are extracted. Pass the keys of the
+                            ElasticRepository's custom mapping here so the
+                            indexed schema matches what the index mapping
+                            declares.
+        :type custom_properties: Optional[Iterable[str]]
         """
 
         # First check if skip_errors flag passed
@@ -142,12 +195,28 @@ class IndigoRecord:
             self.error_handler = kwargs.get("error_handler", None)
 
         self.record_id = uuid4().hex
+
+        self.tau_search = kwargs.pop("tau_search", False)
+        # Must be set before indigo_object assignment so the descriptor sees it
+        custom_properties: Optional[Iterable[str]] = kwargs.pop(
+            "custom_properties", None
+        )
+        self._custom_properties = (
+            frozenset(custom_properties)
+            if custom_properties is not None
+            else None
+        )
         for arg, val in kwargs.items():
             setattr(self, arg, val)
 
     def as_dict(self) -> Dict:
         # Add system fields here to exclude from indexing
-        filtered_fields = {"error_handler", "skip_errors"}
+        filtered_fields = {
+            "error_handler",
+            "skip_errors",
+            "tau_search",
+            "_custom_properties",
+        }
         return {
             key: value
             for key, value in self.__dict__.items()

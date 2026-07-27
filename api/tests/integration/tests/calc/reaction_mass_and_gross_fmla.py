@@ -132,3 +132,13 @@ M  END
 """
 )
 print(r.grossFormula())
+
+print("*** Gross formula for pathway reaction ***")
+try:
+    print(
+        indigo.loadReactionFromFile(
+            joinPathPy("reactions/pathway_2859.ket", __file__)
+        ).grossFormula()
+    )
+except IndigoException as e:
+    print("Exception:  %s" % (getIndigoExceptionText(e)))

@@ -49,6 +49,8 @@ namespace indigo
 
     std::string extractMonomerName(const std::string& str);
 
+    bool isChemClass(const std::string& monomer_class);
+
     bool isNucleicClass(const std::string& monomer_class);
 
     bool isNucleotideClass(const std::string& monomer_class);
@@ -77,15 +79,23 @@ namespace indigo
     int getAttachmentOrder(const std::string& label);
     std::string getAttachmentLabel(int order);
     std::string monomerAlias(const TGroup& tg);
+    std::string monomerId(const TGroup& tg);
+    std::string monomerTemplateId(const TGroup& tg);
+    std::string monomerInchi(const TGroup& tg);
+
     std::optional<std::reference_wrapper<TGroup>> findTemplateInMap(
         const std::string& name, const std::string& class_name,
         std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash>& templates_map);
+
+    std::string monomerKETClass(const std::string& class_name);
+    std::string monomerHELMClass(const std::string& class_name);
 
     const auto kLeftAttachmentPoint = "Al";
     const auto kRightAttachmentPoint = "Br";
     const auto kBranchAttachmentPoint = "Cx";
     const auto kAttachmentPointR1 = "R1";
     const auto kAttachmentPointR2 = "R2";
+    const auto kAttachmentPointR3 = "R3";
 
     const int kLeftAttachmentPointIdx = 0;
     const int kRightAttachmentPointIdx = 1;
@@ -141,5 +151,34 @@ namespace indigo
     static const std::set<std::string> RNA_DNA_MIXED_BASES = {"R", "M", "S", "V"};
     static const std::map<std::string, std::string> STANDARD_MIXED_PEPTIDES_ALIAS_TO_NAME = {{"B", "Asx"}, {"J", "Xle"}, {"X", "Xaa"}, {"Z", "Glx"}};
     static const std::map<std::string, std::string> STANDARD_MIXED_PEPTIDES_NAME_TO_ALIAS = {{"Asx", "B"}, {"Xle", "J"}, {"Xaa", "X"}, {"Glx", "Z"}};
+
+    constexpr char AXOLABS_PREFIX[] = "5'-";
+    constexpr char AXOLABS_SUFFIX[] = "-3'";
+
+    static const std::set<std::pair<char, char>> complementary_bases{
+        {'A', 'T'},
+        {'T', 'A'},
+        {'A', 'U'},
+        {'U', 'A'},
+        {'C', 'G'},
+        {'G', 'C'},
+        // complementary_mixed_bases
+        {'N', 'N'},
+        {'B', 'V'},
+        {'V', 'B'},
+        {'D', 'H'},
+        {'H', 'D'},
+        {'K', 'M'},
+        {'M', 'K'},
+        {'W', 'W'},
+        {'Y', 'R'},
+        {'R', 'Y'},
+        {'S', 'S'},
+    };
+
+    size_t best_allign(const std::string& sense, const std::string& antisense, std::vector<std::pair<size_t, size_t>>& pairs, bool& shift_sense);
+    size_t needleman_wunsch(const std::string& sense, const std::string& antisense, std::vector<std::pair<size_t, size_t>>& strands,
+                            std::map<std::pair<char, char>, int> similarity, int mismatch = -1, int indel = -1);
+
 }
 #endif

@@ -18,7 +18,6 @@
 
 #include "indigo_deconvolution.h"
 #include "base_cpp/array.h"
-#include "base_cpp/obj_array.h"
 #include "base_cpp/obj_list.h"
 #include "base_cpp/red_black.h"
 #include "base_cpp/tlscont.h"
@@ -217,8 +216,8 @@ int IndigoDeconvolution::_rGroupsEmbedding(Graph& graph1, Graph& graph2, int* ma
      * Order - atom number for scaffold
      * Index - atom number for Rgroup
      */
-    ObjArray<Array<int>>& attachment_order = deco_match.attachmentOrder;
-    ObjArray<Array<int>>& attachment_index = deco_match.attachmentIndex;
+    PtrArray<Array<int>>& attachment_order = deco_match.attachmentOrder;
+    PtrArray<Array<int>>& attachment_index = deco_match.attachmentIndex;
 
     visited_atoms.clear_resize(graph2.vertexEnd());
     visited_atoms.zerofill();
@@ -376,8 +375,8 @@ void IndigoDeconvolution::createRgroups(IndigoDecompositionMatch& deco_match, bo
 
     Array<int>& visited_atoms = deco_match.visitedAtoms;
 
-    ObjArray<Array<int>>& attachment_order = deco_match.attachmentOrder;
-    ObjArray<Array<int>>& attachment_index = deco_match.attachmentIndex;
+    PtrArray<Array<int>>& attachment_order = deco_match.attachmentOrder;
+    PtrArray<Array<int>>& attachment_index = deco_match.attachmentIndex;
 
     int n_rgroups = deco_match.getRgroupNumber();
     /*
@@ -560,7 +559,7 @@ IndigoDeconvolutionElem::~IndigoDeconvolutionElem()
 {
 }
 
-IndigoDeconvolutionIter::IndigoDeconvolutionIter(ObjArray<IndigoDeconvolutionElem>& items) : IndigoObject(DECONVOLUTION_ITER), _items(items)
+IndigoDeconvolutionIter::IndigoDeconvolutionIter(PtrArray<IndigoDeconvolutionElem>& items) : IndigoObject(DECONVOLUTION_ITER), _items(items)
 {
     _index = -1;
 }
@@ -583,7 +582,7 @@ IndigoDeconvolutionIter::~IndigoDeconvolutionIter()
 {
 }
 
-IndigoDecompositionMatchIter::IndigoDecompositionMatchIter(ObjArray<IndigoDecompositionMatch>& matches)
+IndigoDecompositionMatchIter::IndigoDecompositionMatchIter(PtrArray<IndigoDecompositionMatch>& matches)
     : IndigoObject(DECOMPOSITION_MATCH_ITER), _matches(matches)
 {
     _index = -1;
@@ -713,8 +712,8 @@ void IndigoDecompositionMatch::completeScaffold()
 // */
 // void IndigoDeconvolution::addCompleteRGroup(IndigoDecompositionMatch& deco_match, bool change_scaffold, Array<int>* rg_map) {
 //   Molecule& mol_set = deco_match.mol_out;
-//   ObjArray< Array<int> >& attachment_order = deco_match.attachmentOrder;
-//   ObjArray< Array<int> >& attachment_index = deco_match.attachmentIndex;
+//   PtrArray< Array<int> >& attachment_order = deco_match.attachmentOrder;
+//   PtrArray< Array<int> >& attachment_index = deco_match.attachmentIndex;
 //   Array<int>& map = deco_match.lastInvMapping;
 //
 ////   saveMoleculeAsReaction(mol_set, "res/i_mol_set.rxn");
@@ -1123,7 +1122,7 @@ int IndigoDeconvolution::_createRgMap(IndigoDecompositionMatch& deco_match, int 
     int max_rg_idx = match_rgroups.at("max_rg_idx").at(0);
 
     int n_rgroups = deco_match.getRgroupNumber();
-    ObjArray<Array<int>>& attachment_order = deco_match.attachmentOrder;
+    PtrArray<Array<int>>& attachment_order = deco_match.attachmentOrder;
     Array<int>& map = deco_match.lastInvMapping;
     int result_num = 0;
 
@@ -1297,7 +1296,7 @@ void IndigoDeconvolution::DecompositionEnumerator::addMatch(IndigoDecompositionM
      * Add all other automorphisms matches
      */
     QueryMolecule r_molecule;
-    ObjArray<Array<int>> rsite_orders;
+    PtrArray<Array<int>> rsite_orders;
     std::map<int, int> r_sites;
     QS_DEF(RedBlackSet<int>, processed_r);
     QS_DEF(Array<int>, swap_order);
@@ -1380,7 +1379,7 @@ void IndigoDeconvolution::DecompositionEnumerator::addMatch(IndigoDecompositionM
     }
 }
 
-bool IndigoDeconvolution::DecompositionEnumerator::_foundOrder(ObjArray<Array<int>>& rsite_orders, Array<int>& swap_order)
+bool IndigoDeconvolution::DecompositionEnumerator::_foundOrder(PtrArray<Array<int>>& rsite_orders, Array<int>& swap_order)
 {
     bool found = false;
 
@@ -1408,8 +1407,8 @@ bool IndigoDeconvolution::DecompositionEnumerator::_foundOrder(ObjArray<Array<in
 void IndigoDeconvolution::DecompositionEnumerator::_swapIndexes(IndigoDecompositionMatch& match, int old_idx, int new_idx)
 {
     QS_DEF(Array<int>, tmp_buf);
-    ObjArray<Array<int>>& attachment_order = match.attachmentOrder;
-    ObjArray<Array<int>>& attachment_index = match.attachmentIndex;
+    PtrArray<Array<int>>& attachment_order = match.attachmentOrder;
+    PtrArray<Array<int>>& attachment_index = match.attachmentIndex;
 
     tmp_buf.copy(attachment_order[old_idx]);
     attachment_order[old_idx].copy(attachment_order[new_idx]);
@@ -1575,7 +1574,7 @@ CEXPORT int indigoDecomposeMolecules(int scaffold, int structures)
         deco->aromatize = self.deconvolution_aromatization;
         for (int i = 0; i < mol_array.objects.size(); i++)
         {
-            IndigoObject& obj = *mol_array.objects[i];
+            IndigoObject& obj = mol_array.objects[i];
             deco->addMolecule(obj.getMolecule(), obj.getProperties(), i);
         }
         QueryMolecule& scaf = self.getObject(scaffold).getQueryMolecule();

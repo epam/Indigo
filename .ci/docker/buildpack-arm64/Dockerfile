@@ -20,7 +20,7 @@ RUN apt update && \
     apt update && \
     # Install tools required for building Indigo
     apt install -y --no-install-recommends \
-        cmake \
+        cmake=3.31.\* cmake-data=3.31.\* \
         g++-10-aarch64-linux-gnu \
         git \
         libfontconfig1-dev:arm64 \

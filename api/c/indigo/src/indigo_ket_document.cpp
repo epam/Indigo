@@ -48,11 +48,6 @@ const char* IndigoKetDocument::debugInfo() const
     return "<KetDocument>";
 }
 
-KetDocument& IndigoKetDocument::getKetDocument()
-{
-    return _document;
-}
-
 BaseMolecule& IndigoKetDocument::getBaseMolecule()
 {
     return _document.getBaseMolecule();

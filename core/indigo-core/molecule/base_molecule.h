@@ -23,13 +23,14 @@
 #include <optional>
 #include <set>
 
-#include "base_cpp/obj_array.h"
 #include "base_cpp/properties_map.h"
+#include "base_cpp/ptr_array.h"
 #include "base_cpp/red_black.h"
 #include "graph/graph.h"
-#include "ket_objects.h"
 #include "math/algebra.h"
 #include "molecule/elements.h"
+#include "molecule/ket_annotation.h"
+#include "molecule/ket_monomer_shape.h"
 #include "molecule/metadata_storage.h"
 #include "molecule/molecule_allene_stereo.h"
 #include "molecule/molecule_arom.h"
@@ -41,7 +42,7 @@
 #include "molecule/molecule_standardize.h"
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/molecule_tgroups.h"
-#include "molecule/monomers_lib.h"
+#include "molecule/monomers_defs.h"
 #include "molecule/transformation.h"
 
 #ifdef _WIN32
@@ -110,7 +111,7 @@ namespace indigo
     // merging with molecule and cloning procedures
     enum
     {
-        SKIP_ALL = 0x7F,
+        SKIP_ALL = 0xFF,
         SKIP_CIS_TRANS = 0x01,
         SKIP_STEREOCENTERS = 0x02,
         SKIP_XYZ = 0x04,
@@ -118,12 +119,16 @@ namespace indigo
         SKIP_ATTACHMENT_POINTS = 0x10,
         SKIP_TGROUPS = 0x20,
         SKIP_TEMPLATE_ATTACHMENT_POINTS = 0x40,
+        // Skip copying ALL R-group data (fragments + attachment points on R-sites).
+        // Use this when you want to populate R-groups manually afterwards.
+        SKIP_RGROUPS = 0x80,
     };
 
     class Molecule;
     class QueryMolecule;
     class MetaDataStorage;
-    class KetDocument;
+    class TGroup;
+    class MonomerTemplateLibrary;
 
     class DLLEXPORT BaseMolecule : public Graph
     {
@@ -253,6 +258,31 @@ namespace indigo
         virtual bool isTemplateAtom(int idx) const = 0;
         virtual int getTemplateAtomOccurrence(int idx) const = 0;
 
+        // [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+        // Validates that a template occurrence index is valid in the template occurrences pool.
+        // This is used to safely check template occurrence indices before accessing them,
+        // preventing "pool: access to unused element" errors when working with cloned molecules.
+        //
+        // Args:
+        //   template_occur_idx: The template occurrence index to validate
+        //
+        // Returns:
+        //   true if the index is valid and the element exists in the pool, false otherwise
+        bool isValidTemplateOccurrence(int template_occur_idx) const;
+
+        // [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+        // Validates that a template attachment point index is valid in the template attachment points pool.
+        // This is used to safely check attachment point indices before accessing them,
+        // preventing "pool: access to unused element" errors when working with cloned molecules
+        // or during monomer expansion when attachment points may be removed.
+        //
+        // Args:
+        //   template_att_point_idx: The template attachment point index to validate
+        //
+        // Returns:
+        //   true if the index is valid and the element exists in the pool, false otherwise
+        bool isValidTemplateAttachmentPoint(int template_att_point_idx) const;
+
         const char* getTemplateAtom(int idx);
         const int getTemplateAtomSeqid(int idx);
         const char* getTemplateAtomSeqName(int idx);
@@ -260,12 +290,17 @@ namespace indigo
         const DisplayOption getTemplateAtomDisplayOption(int idx) const;
         const int getTemplateAtomTemplateIndex(int idx);
         const Transformation& getTemplateAtomTransform(int idx) const;
+        const KetObjectAnnotation& getTemplateAtomAnnotation(int idx) const;
+        bool hasTemplateAtomAnnotation(int idx) const;
 
         void renameTemplateAtom(int idx, const char* text);
         void setTemplateAtomName(int idx, const char* text);
         void setTemplateAtomClass(int idx, const char* text);
         void setTemplateAtomSeqid(int idx, int seq_id);
         void setTemplateAtomSeqName(int idx, const char* seq_name);
+        void setTemplateAtomAnnotation(int idx, const KetObjectAnnotation& annotation);
+
+        void setBondAnnotation(int idx, const KetObjectAnnotation& annotation);
 
         void setTemplateAtomDisplayOption(int idx, DisplayOption contracted);
         void setTemplateAtomTemplateIndex(int idx, int temp_idx);
@@ -285,9 +320,9 @@ namespace indigo
         static void collapse(BaseMolecule& bm);
 
         int transformSCSRtoFullCTAB();
-        int transformFullCTABtoSCSR(ObjArray<TGroup>& templates);
+        int transformFullCTABtoSCSR(PtrArray<TGroup>& templates);
         int transformHELMtoSGroups(Array<char>& helm_class, Array<char>& helm_name, Array<char>& code, Array<char>& natreplace, StringPool& r_names);
-        void transformSuperatomsToTemplates(int template_id);
+        void transformSuperatomsToTemplates(int template_id, MonomerTemplateLibrary* mtl = nullptr);
         void transformTemplatesToSuperatoms();
 
         virtual bool isRSite(int atom_idx) = 0;
@@ -296,6 +331,10 @@ namespace indigo
 
         void getAllowedRGroups(int atom_idx, Array<int>& rgroup_list);
         int getSingleAllowedRGroup(int atom_idx);
+        void removeUnusedRGroups();
+        // Copy only the R-groups from `src` that are referenced by R-sites
+        // already present in *this. Leaves all other R-groups in `src` untouched.
+        void copyUsedRGroupsFrom(BaseMolecule& src);
         int getRSiteAttachmentPointByOrder(int idx, int order) const;
         void setRSiteAttachmentOrder(int atom_idx, int att_atom_idx, int order);
 
@@ -317,7 +356,7 @@ namespace indigo
         void removeAttachmentPoints();
         void getAttachmentIndicesForAtom(int atom_idx, Array<int>& res);
         int getExpandedMonomerCount() const;
-        std::unique_ptr<BaseMolecule>& expandedMonomersToAtoms();
+        std::unique_ptr<BaseMolecule> expandedMonomersToAtoms();
 
         virtual bool isSaturatedAtom(int idx) = 0;
 
@@ -366,6 +405,7 @@ namespace indigo
         virtual int addBond_Silent(int beg, int end, int order) = 0;
 
         void unfoldHydrogens(Array<int>* markers_out, int max_h_cnt = -1, bool impl_h_no_throw = false, bool only_selected = false);
+        virtual void registerUnfoldedHydrogenQueryComponent(int /*atom_idx*/, int /*added_hydrogen*/){}; // QueryMolecule only
 
         virtual int getImplicitH(int idx, bool impl_h_no_throw) = 0;
         virtual void setImplicitH(int idx, int impl_h) = 0;
@@ -380,10 +420,14 @@ namespace indigo
         void addCIP();
         void clearCIP();
         CIPDesc getAtomCIP(int atom_idx);
+        bool getShowAtomCIP(const int atomIndex);
         CIPDesc getBondCIP(int bond_idx);
 
         void setAtomCIP(int atom_idx, CIPDesc cip);
+        void setShowAtomCIP(const int atomIndex, const bool display);
         void setBondCIP(int bond_idx, CIPDesc cip);
+
+        bool restoreAromaticHydrogens(bool unambiguous_only = true);
 
         Vec3f& getAtomXyz(int idx);
         bool getMiddlePoint(int idx1, int idx2, Vec3f& vec);
@@ -422,8 +466,24 @@ namespace indigo
             return reaction_atom_exact_change;
         }
 
+        const std::map<int, KetObjectAnnotation>& getBondAnnotations()
+        {
+            return _bond_annotations;
+        };
+
+        std::optional<KetAnnotation>& addAnnotation()
+        {
+            _annotation.emplace();
+            return _annotation;
+        };
+
+        const std::optional<KetAnnotation>& annotation() const
+        {
+            return _annotation;
+        };
+
         ObjPool<TemplateAttPoint> template_attachment_points; // All used APs -
-        ObjArray<ObjPool<int>> template_attachment_indexes;   //
+        PtrArray<ObjPool<int>> template_attachment_indexes;   //
 
         MoleculeSGroups sgroups;
 
@@ -516,6 +576,8 @@ namespace indigo
         // directly without calling molecule methods (for example mol.cis_trans.clear() and etc.)
         void updateEditRevision();
 
+        int flipBondWithDirection(int atom_parent, int atom_from, int atom_to, int leaving_atom);
+
         void clearBondDirections();
         int getBondDirection(int idx) const;
         void setBondDirection(int idx, int dir);
@@ -530,7 +592,10 @@ namespace indigo
         void getSGroupAtomsCenterPoint(SGroup& sgroup, Vec2f& res);
         void getAtomsCenterPoint(Array<int>& atoms, Vec2f& res);
         void getAtomsCenterPoint(Vec2f& res);
+        void setAtomsCenterPoint(const Vec3f& center);
         float getBondsMeanLength();
+
+        bool isPiBonded(int atom_index) const;
 
         void scale(const Vec2f& center, float scale);
 
@@ -604,6 +669,7 @@ namespace indigo
             return applyTransformation(transform, Vec2f(xyz.x, xyz.y));
         };
 
+        bool convertTemplateAtomsToSuperatoms(bool only_transformed = false);
         // calc convex hull
         std::vector<Vec2f> getConvexHull(const Vec2f& min_box) const;
 
@@ -612,8 +678,6 @@ namespace indigo
         const char* getAlias(int atom_idx) const;
         void setAlias(int atom_idx, const char* alias);
         void removeAlias(int atom_idx);
-
-        KetDocument& getKetDocument();
 
         PtrArray<KetMonomerShape> monomer_shapes;
 
@@ -659,23 +723,42 @@ namespace indigo
         int _createSGroupFromFragment(Array<int>& sg_atoms, const TGroup& tg, Array<int>& mapping);
         bool isAtomBelongsSGroup(int idx);
 
+        void _connectTemplateAtom(Superatom& sa, int t_idx, Array<int>& orphaned_atoms);
+        bool _replaceExpandedMonomerWithTemplate(int sg_idx, int& tg_id, MonomerTemplateLibrary& mtl, std::unordered_map<std::string, int>& added_templates,
+                                                 Array<int>& remove_atoms);
+        bool _restoreTemplateFromLibrary(TGroup& tg, MonomerTemplateLibrary& mtl, const std::string& residue_inchi);
+        void _collectSuparatomAttachmentPoints(Superatom& sa, std::unordered_map<int, std::string>& ap_ids_map);
+        static bool _findAffineTransform(BaseMolecule& src, BaseMolecule& dst, Mat23& M, const int* mapping);
+
+        void _processMonomerAttachmentPoints(int monomer_id, BaseMolecule& result, BaseMolecule& monomer_mol, std::map<int, std::pair<int, int>>& attached_atom,
+                                             Array<int>& atoms_to_remove);
+        void _connectMonomerToNeighbors(int monomer_id, BaseMolecule& result, BaseMolecule& monomer_mol, const Array<int>& atom_map,
+                                        const std::map<int, std::pair<int, int>>& attached_atom,
+                                        std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash>& templates);
+        std::pair<int, bool> _getNeighborLeavingBondDir(
+            int other, int monomer_id, BaseMolecule& result,
+            std::unordered_map<std::pair<std::string, std::string>, std::reference_wrapper<TGroup>, pair_hash>& templates);
+
         Array<int> _hl_atoms;
         Array<int> _hl_bonds;
         Array<int> _sl_atoms;
         Array<int> _sl_bonds;
 
         Array<int> _bond_directions;
+        std::map<int, KetObjectAnnotation> _bond_annotations;
+        std::map<int, KetObjectAnnotation> _atom_annotations;
 
         Array<Vec3f> _xyz;
         RedBlackMap<int, Vec3f> _stereo_flag_positions;
         // CIP maps should be changed to std::unordered_map
         RedBlackMap<int, CIPDesc> _cip_atoms;
+        RedBlackMap<int, bool> _show_cip_atoms;
         RedBlackMap<int, CIPDesc> _cip_bonds;
 
-        ObjArray<Array<int>> _rsite_attachment_points;
+        PtrArray<Array<int>> _rsite_attachment_points;
         bool _rGroupFragment;
 
-        ObjArray<Array<int>> _attachment_index;
+        PtrArray<Array<int>> _attachment_index;
 
         int _chiral_flag = -1;
 
@@ -685,11 +768,10 @@ namespace indigo
 
         MetaDataStorage _meta;
 
+        std::optional<KetAnnotation> _annotation;
+
         RedBlackObjMap<int, Array<char>> aliases;
         RedBlackObjMap<int, PropertiesMap> _properties;
-
-        KetDocument* _document;
-        int _document_revision;
     };
 
 } // namespace indigo

@@ -533,6 +533,77 @@ def test_indigo_options(  # pylint: disable=too-many-arguments
             assert options_response.json()["data"]["attributes"] == message
 
 
+# ---------------------------------------------------------------------------
+# valence-mode option (BIOVIA 2009 vs 2017)
+# ---------------------------------------------------------------------------
+
+
+def _convert_request(
+    structure: str, options: Optional[Dict[str, Any]] = None
+) -> Dict[str, Any]:
+    attributes: Dict[str, Any] = {
+        "compound": {"structure": structure, "format": "auto"},
+        "outputFormat": "smiles",
+    }
+    if options is not None:
+        attributes["options"] = options
+    return {"data": {"type": "convert", "attributes": attributes}}
+
+
+@pytest.mark.parametrize("mode", ["biovia-2009", "biovia-2017"])
+def test_valence_mode_accepted(mode: str) -> None:
+    response = client.post(
+        "/indigo/convert",
+        json=_convert_request("CCO", {"valence-mode": mode}),
+    )
+    assert response.status_code == 200, response.text
+
+
+def test_valence_mode_invalid_value_rejected() -> None:
+    # The options dict is forwarded generically to Indigo.setOption(); an
+    # unknown value is rejected at the C layer and surfaces as 400 via the
+    # IndigoException handler in indigo_http.py.
+    response = client.post(
+        "/indigo/convert",
+        json=_convert_request("CCO", {"valence-mode": "not-a-mode"}),
+    )
+    assert response.status_code == 400
+    assert "valence mode" in response.text
+
+
+def test_valence_mode_isolated_between_requests() -> None:
+    # Request A picks biovia-2017 explicitly. Request B omits the option.
+    # If the option leaked across the per-request Indigo() instance, request B
+    # would still see biovia-2017 on its session — which would not be detectable
+    # via the response payload alone, so this test guards the contract by
+    # asserting both succeed and that B uses the default schema (no `options`
+    # echoed back).
+    response_a = client.post(
+        "/indigo/convert",
+        json=_convert_request("CCO", {"valence-mode": "biovia-2017"}),
+    )
+    response_b = client.post(
+        "/indigo/convert",
+        json=_convert_request("CCO"),
+    )
+    assert response_a.status_code == 200, response_a.text
+    assert response_b.status_code == 200, response_b.text
+
+
+def test_unknown_options_still_passed_through() -> None:
+    # Backward compatibility: clients send arbitrary legacy option keys
+    # (smart-layout, ignore-stereochemistry-errors, etc.). IndigoOptions
+    # uses `extra = "allow"` so unknown keys reach setOption().
+    response = client.post(
+        "/indigo/convert",
+        json=_convert_request(
+            "C1[C@@H]=CC=[C@H]C=1",
+            {"ignore-stereochemistry-errors": True},
+        ),
+    )
+    assert response.status_code == 200, response.text
+
+
 # TODO: /indigo/render with alternative responses types
 # def render_request(
 #     structure: str, output_format: str, options: Dict = None

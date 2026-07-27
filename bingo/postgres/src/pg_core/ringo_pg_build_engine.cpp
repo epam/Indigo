@@ -79,7 +79,7 @@ bool RingoPgBuildEngine::processStructure(StructCache& struct_cache)
     return true;
 }
 
-void RingoPgBuildEngine::processStructures(ObjArray<StructCache>& struct_caches)
+void RingoPgBuildEngine::processStructures(PtrArray<StructCache>& struct_caches)
 {
     _currentCache = 0;
     _structCaches = &struct_caches;
@@ -159,7 +159,7 @@ void RingoPgBuildEngine::finishShadowProcessing()
 void RingoPgBuildEngine::_processResultCb(void* context)
 {
     RingoPgBuildEngine* engine = (RingoPgBuildEngine*)context;
-    ObjArray<StructCache>& struct_caches = *(engine->_structCaches);
+    PtrArray<StructCache>& struct_caches = *(engine->_structCaches);
     int cache_idx = -1;
     std::unique_ptr<RingoPgFpData> fp_data = std::make_unique<RingoPgFpData>();
     /*

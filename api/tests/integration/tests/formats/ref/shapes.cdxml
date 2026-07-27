@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
+<CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
+    <fonttable id="1">
+        <font id="2" charset="utf-8" name="Arial"/>
+        <font id="3" charset="utf-8" name="Times New Roman"/>
+    </fonttable>
+    <colortable>
+        <color r="1" g="1" b="1"/>
+        <color r="0" g="0" b="0"/>
+        <color r="1" g="0" b="0"/>
+        <color r="1" g="1" b="0"/>
+        <color r="0" g="1" b="0"/>
+        <color r="0" g="1" b="1"/>
+        <color r="0" g="0" b="1"/>
+        <color r="1" g="0" b="1"/>
+        <color r="0.5" g="0.5" b="0.5"/>
+    </colortable>
+    <page HeightPages="1" WidthPages="1" BoundingBox="0.000000 698.250000 510.000000 -0.000000">
+        <fragment id="4"/>
+        <graphic id="5" BoundingBox="249.000000 324.750000 471.750000 230.250000" Center3D="360.375000 277.500000 0" MajorAxisEnd3D="471.750000 277.500000 0" MinorAxisEnd3D="360.375000 324.750000 0" GraphicType="Oval"/>
+        <graphic id="6" BoundingBox="238.500000 329.250000 462.750000 212.250000" GraphicType="Line"/>
+        <graphic id="7" BoundingBox="486.750000 231.000000 255.000000 351.000000" GraphicType="Line"/>
+        <graphic id="8" BoundingBox="236.250000 449.250000 484.500000 566.250000" GraphicType="Line"/>
+        <graphic id="9" BoundingBox="465.000000 604.500000 205.500000 471.000000" GraphicType="Line"/>
+        <graphic id="10" BoundingBox="281.250000 630.000000 434.250000 433.500000" GraphicType="Rectangle"/>
+        <graphic id="11" BoundingBox="192.000000 698.250000 510.000000 391.500000" GraphicType="Rectangle"/>
+    </page>
+</CDXML>

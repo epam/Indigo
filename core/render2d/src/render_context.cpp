@@ -447,14 +447,15 @@ void RenderContext::drawRectangle(const Vec2f& p, const Vec2f& sz)
 
 void RenderContext::drawEllipse(const Vec2f& v1, const Vec2f& v2)
 {
-    auto width = v2.x - v1.x;
-    auto height = v2.y - v1.y;
+    Rect2f bbox(v1, v2);
+    auto width = bbox.width();
+    auto height = bbox.height();
     cairo_matrix_t save_matrix;
     cairo_get_matrix(_cr, &save_matrix);
-    cairo_translate(_cr, v1.x + width / 2.0, v1.y + height / 2.0);
+    cairo_translate(_cr, bbox.center().x, bbox.center().y);
     cairo_scale(_cr, 1, height / width);
-    cairo_translate(_cr, -v1.x - width / 2.0, -v1.y - height / 2.0);
-    cairo_arc(_cr, v1.x + width / 2.0, v1.y + height / 2.0, width / 2.0, 0, 2 * M_PI);
+    cairo_translate(_cr, -bbox.center().x, -bbox.center().y);
+    cairo_arc(_cr, bbox.center().x, bbox.center().y, width / 2.0, 0, 2 * M_PI);
     cairo_set_matrix(_cr, &save_matrix);
     checkPathNonEmpty();
     bbIncludePath(true);

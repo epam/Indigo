@@ -1,17 +1,12 @@
-﻿import difflib
-import os
+﻿import os
 import sys
-
-
-def find_diff(a, b):
-    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
-
 
 sys.path.append(
     os.path.normpath(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
+from common.util import compare_diff
 from env_indigo import Indigo, IndigoException, joinPathPy  # noqa
 
 indigo = Indigo()
@@ -72,6 +67,16 @@ files = [
     ("chem_rna_hydro", "3000"),
     ("issue_2702", "auto"),
     ("issue_2699_rlogic", "3000"),
+    ("hydro_atp_ch", "3000"),
+    ("sgroup_class", "3000"),
+    ("flip_rotate", "3000"),
+    ("flip_rotate_2000", "2000"),
+    ("flip_rotate_rna", "3000"),
+    ("3068-star-issue", "3000"),
+    ("exp-valence-0", "2000"),
+    ("3178-any-bond", "3000"),
+    ("3227-copolymer", "3000"),
+    ("3343-dir-expanded", "3000"),
 ]
 
 files.sort(key=lambda x: x[0])
@@ -90,19 +95,8 @@ for test_tuple in files:
 
     if len(test_tuple) > 1:
         indigo.setOption("molfile-saving-mode", test_tuple[1])
-
-    # with open(os.path.join(ref_path, filename) + ".mol", "w") as file:
-    #     file.write(mol.molfile())
-
-    with open(os.path.join(ref_path, filename) + ".mol", "r") as file:
-        ket_ref = file.read()
     ket = mol.molfile()
-    diff = find_diff(ket_ref, ket)
-    if not diff:
-        print(filename + ".ket:SUCCEED")
-    else:
-        print(filename + ".ket:FAILED")
-        print(diff)
+    compare_diff(ref_path, filename + ".mol", ket)
 
 files = ["ket-reaction-arrow", "empty_apid"]
 
@@ -110,14 +104,4 @@ files.sort()
 for filename in files:
     rc = indigo.loadReactionFromFile(os.path.join(root_rea, filename + ".ket"))
     ket = rc.rxnfile()
-    # with open(os.path.join(ref_path, filename) + ".mol", "w") as file:
-    #    file.write(ket)
-
-    with open(os.path.join(ref_path, filename) + ".mol", "r") as file:
-        ket_ref = file.read()
-    diff = find_diff(ket_ref, ket)
-    if not diff:
-        print(filename + ".ket:SUCCEED")
-    else:
-        print(filename + ".ket:FAILED")
-        print(diff)
+    compare_diff(ref_path, filename + ".mol", ket)

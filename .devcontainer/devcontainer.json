@@ -1,0 +1,58 @@
+{
+    "name": "Debian 12 Dev Container",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "workspaceFolder": "/workspaces/Indigo",
+    "remoteUser": "root",
+    "customizations": {
+        "vscode": {
+            "settings": {
+                // Use the Python inside the venv
+                "typescript.tsc.autoDetect": "off",
+                "python.defaultInterpreterPath": "/opt/venv/bin/python",
+                "python.terminal.activateEnvironment": true,
+                "python.analysis.autoImportCompletions": true,
+                "python.linting.enabled": true,
+                "python.linting.pylintEnabled": true,
+                "python.formatting.provider": "black",
+                "editor.formatOnSave": true,
+                "files.trimTrailingWhitespace": true,
+                "files.insertFinalNewline": true,
+                "taskExplorer.enabledTasks": {
+                    "ant": false,
+                    "appPublisher": false,
+                    "batch": false,
+                    "bash": false,
+                    "composer": false,
+                    "gradle": false,
+                    "grunt": false,
+                    "gulp": false,
+                    "make": false,
+                    "maven": false,
+                    "npm": false,
+                    "nsis": false,
+                    "perl": false,
+                    "pipenv": false,
+                    "powershell": false,
+                    "python": false,
+                    "ruby": false,
+                    "tsc": false,
+                    "workspace": true
+                }
+            },
+            "extensions": [
+                "ms-python.python",
+                "ms-python.debugpy",
+                "ms-toolsai.jupyter",
+                "ms-dotnettools.csharp",
+                "spmeesseman.vscode-taskexplorer",
+                "ms-vscode.cmake-tools",
+                "ms-vscode.cpptools"
+            ]
+        }
+    },
+    "postCreateCommand": "pip install --no-cache-dir debugpy",
+    "features": {},
+    "updateRemoteUserUID": true
+}

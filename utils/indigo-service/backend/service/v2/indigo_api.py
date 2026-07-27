@@ -71,17 +71,23 @@ def indigo_init(options={}):
         tls.indigo.renderer = IndigoRenderer(tls.indigo)
         for option, value in indigo_api.indigo_defaults.items():
             tls.indigo.setOption(option, value)
+
         for option, value in options.items():
             # TODO: Remove this when Indigo API supports smiles type option
             if option in (
                 "smiles",
                 "smarts",
-                "input-format",
                 "output-content-type",
                 "monomerLibrary",
                 "sequence-type",
+                "upc",
+                "nac",
             ):
                 continue
+
+            if option == "input-format" and value is None:
+                continue
+
             tls.indigo.setOption(option, value)
         return tls.indigo
     except Exception as e:
@@ -194,14 +200,6 @@ def iterate_selected_submolecules(r, selected, indigo):
             yield m.getSubmolecule(moleculeAtoms).clone()
 
 
-def iterate_selected_components(m, selected):
-    for c in m.iterateComponents():
-        for atom in c.iterateAtoms():
-            if atom.index() in selected:
-                yield c
-                break
-
-
 def do_calc(m, func_name, precision):
     try:
         value = getattr(m, func_name)()
@@ -213,120 +211,91 @@ def do_calc(m, func_name, precision):
 
 
 def molecule_calc(m, func_name, precision=None):
-    if m.dbgInternalType() == "#03: <query molecule>":
-        return "Cannot calculate properties for structures with query features"
-    if m.countRGroups() or m.countAttachmentPoints():
-        return "Cannot calculate properties for RGroups"
     results = []
-    for c in m.iterateComponents():
-        results.append(do_calc(c.clone(), func_name, precision))
+    has_selection = m.hasSelection()
+    for component in m.iterateComponents():
+        c = component.clone()
+        if not has_selection or c.hasSelection():
+            results.append(do_calc(c.clone(), func_name, precision))
     return "; ".join(results)
 
 
 def reaction_calc(rxn, func_name, precision=None):
-    if rxn.dbgInternalType() == "#05: <query reaction>":
-        return "Cannot calculate properties for structures with query features"
-    for m in rxn.iterateMolecules():
-        if m.countRGroups() or m.countAttachmentPoints():
-            return "Cannot calculate properties for RGroups"
     reactants_results = []
-    for r in rxn.iterateReactants():
-        reactants_results.append(
-            "[{0}]".format(molecule_calc(r, func_name, precision))
+    has_selection = rxn.hasSelection()
+    if rxn.countReactants() > 0 or rxn.countProducts() > 0:
+        for r in rxn.iterateReactants():
+            if not has_selection or r.hasSelection():
+                reactants_results.append(
+                    "[{0}]".format(molecule_calc(r, func_name, precision))
+                )
+        product_results = []
+        for p in rxn.iterateProducts():
+            if not has_selection or p.hasSelection():
+                product_results.append(
+                    "[{0}]".format(molecule_calc(p, func_name, precision))
+                )
+        return "{0} > {1}".format(
+            " + ".join(reactants_results), " + ".join(product_results)
         )
-    product_results = []
-    for p in rxn.iterateProducts():
-        product_results.append(
-            "[{0}]".format(molecule_calc(p, func_name, precision))
-        )
-    return "{0} > {1}".format(
-        " + ".join(reactants_results), " + ".join(product_results)
-    )
+    else:
+        results = []
+        for m in rxn.iterateMolecules():
+            if not has_selection or m.hasSelection():
+                results.append(do_calc(m, func_name, precision))
+        return "; ".join(results)
 
 
-def selected_molecule_calc(
-    m, selected, func_name, precision=None, indigo=None
-):
-    if m.dbgInternalType() == "#03: <query molecule>":
-        try:
-            m = qmol_to_mol(m, selected, indigo)
-        except IndigoException:
-            return "Cannot calculate properties for structures with query features"
-    if m.countRGroups() and max(selected) >= m.countAtoms():
-        return "Cannot calculate properties for RGroups"
-    try:
-        m = remove_implicit_h_in_selected_components(m, selected)
-    except ImplicitHCalcExpection as e:
-        return str(e.value)
-    results = []
-    for c in iterate_selected_components(m, selected):
-        cc = c.clone()
-        if cc.countRSites() or cc.countAttachmentPoints():
-            return "Cannot calculate properties for RGroups"
-        results.append(do_calc(cc, func_name, precision))
-    return "; ".join(results)
-
-
-def selected_reaction_calc(
-    r, selected, func_name, precision=None, indigo=None
-):
-    results = []
-    total_atoms_count = sum([m.countAtoms() for m in r.iterateMolecules()])
-    total_rgroups_count = sum([m.countRGroups() for m in r.iterateMolecules()])
-    if total_rgroups_count and max(selected) >= total_atoms_count:
-        return "Cannot calculate properties for RGroups"
-    try:
-        for csm in iterate_selected_submolecules(r, selected, indigo):
-            if csm.countRSites() or csm.countAttachmentPoints():
-                return "Cannot calculate properties for RGroups"
-            results.append(do_calc(csm, func_name, precision))
-    except ImplicitHCalcExpection as e:
-        return str(e.value)
-    except IndigoException:
-        return "Cannot calculate properties for structures with query features"
-    return "; ".join(results)
-
-
-def remove_unselected_repeating_units_m(m, selected):
+def remove_unselected_repeating_units_m(m):
     for ru in m.iterateRepeatingUnits():
         for atom in ru.iterateAtoms():
-            if atom.index() not in selected:
+            if not atom.isSelected():
                 ru.remove()
                 break
 
 
-def remove_unselected_repeating_units_r(r, selected):
-    atomCounter = 0
+def remove_unselected_repeating_units_r(r):
     for m in r.iterateMolecules():
-        moleculeAtoms = []
-        for atom in selected:
-            if atomCounter <= atom < atomCounter + m.countAtoms():
-                moleculeAtoms.append(atom - atomCounter)
-        atomCounter += m.countAtoms()
-        if moleculeAtoms:
-            remove_unselected_repeating_units_m(m, moleculeAtoms)
+        remove_unselected_repeating_units_m(m)
+
+
+def try_load_seq(indigo, md, molstr, library, seq_type):
+    try:
+        md.struct = indigo.loadSequence(molstr, seq_type, library)
+        md.is_rxn = False
+        md.is_query = False
+        return True
+    except IndigoException:
+        return False
+
+
+def try_load_fasta(indigo, md, molstr, library, seq_type):
+    try:
+        md.struct = indigo.loadFasta(molstr, seq_type, library)
+        md.is_rxn = False
+        md.is_query = False
+        return True
+    except IndigoException:
+        return False
 
 
 def try_load_macromol(indigo, md, molstr, library, options):
     sequence_type = options.get("sequence-type")
-    if sequence_type == "PEPTIDE":
-        try:
-            md.struct = indigo.loadSequence(
-                molstr, "PEPTIDE-3-LETTER", library
-            )
-            md.is_rxn = False
-            md.is_query = False
+    if try_load_seq(indigo, md, molstr, library, "PEPTIDE-3-LETTER"):
+        return
+    if sequence_type is not None:
+        if try_load_fasta(indigo, md, molstr, library, sequence_type):
             return
-        except IndigoException:
-            pass
-    if sequence_type is not None and (molstr.isupper() or molstr.islower()):
-        try:
-            md.struct = indigo.loadSequence(molstr, sequence_type, library)
-            md.is_rxn = False
-            md.is_query = False
+    else:
+        if try_load_fasta(indigo, md, molstr, library, "PEPTIDE"):
             return
-        except IndigoException:
-            pass
+    if molstr.isupper() or molstr.islower():
+        if sequence_type is not None:
+            if try_load_seq(indigo, md, molstr, library, sequence_type):
+                return
+        else:
+            if try_load_seq(indigo, md, molstr, library, "PEPTIDE"):
+                return
     try:
         md.struct = indigo.loadIdt(molstr, library)
         md.is_rxn = False
@@ -334,26 +303,30 @@ def try_load_macromol(indigo, md, molstr, library, options):
         return
     except IndigoException:
         pass
-    if sequence_type is not None:
-        try:
-            md.struct = indigo.loadSequence(molstr, sequence_type, library)
-            md.is_rxn = False
-            md.is_query = False
-            return
-        except IndigoException:
-            pass
-    else:
-        try:
-            md.struct = indigo.loadSequence(
-                molstr, "PEPTIDE-3-LETTER", library
-            )
-            md.is_rxn = False
-            md.is_query = False
-            return
-        except IndigoException:
-            pass
+    if sequence_type is not None and try_load_seq(
+        indigo, md, molstr, library, sequence_type
+    ):
+        return
+    if try_load_seq(indigo, md, molstr, library, "PEPTIDE"):
+        return
     try:
         md.struct = indigo.loadHelm(molstr, library)
+        md.is_rxn = False
+        md.is_query = False
+        return
+    except IndigoException:
+        pass
+    try:
+        md.struct = indigo.loadBiln(molstr, library)
+        md.is_rxn = False
+        md.is_query = False
+        return
+    except IndigoException:
+        pass
+    try:
+        md.struct = indigo.loadAxoLabs(molstr, library)
+        md.is_rxn = False
+        md.is_query = False
     except IndigoException:
         raise HttpException(
             "struct data not recognized as molecule, query, reaction or reaction query",
@@ -380,9 +353,39 @@ def load_moldata(
             )
     md = MolData()
 
+    has_explicit_library = library is not None
+    if library is None:
+        library = indigo.loadMonomerLibrary('{"root":{}}')
+
     input_format = mime_type
     if "input-format" in options:
         input_format = options["input-format"]
+
+    # Only propagate input-format to the core for formats handled by
+    # the autoloader (mol, smi, ket, cml, cdxml, sdf, etc.).
+    # Macromolecular formats (sequence, fasta, IDT, HELM, BILN, AxoLabs)
+    # are dispatched via explicit load functions below and must not
+    # leak their MIME type into the core option.
+    _explicit_formats = {
+        "smarts",
+        "chemical/x-daylight-smarts",
+        "chemical/x-peptide-sequence",
+        "chemical/x-peptide-sequence-3-letter",
+        "chemical/x-rna-sequence",
+        "chemical/x-dna-sequence",
+        "chemical/x-peptide-fasta",
+        "chemical/x-rna-fasta",
+        "chemical/x-dna-fasta",
+        "chemical/x-idt",
+        "chemical/x-helm",
+        "chemical/x-biln",
+        "chemical/x-axo-labs",
+        "monomer-library",
+        "chemical/x-monomer-library",
+    }
+    if input_format is not None and input_format not in _explicit_formats:
+        indigo.setOption("input-format", input_format)
+
     if input_format in ("smarts", "chemical/x-daylight-smarts"):
         md.struct = indigo.loadSmarts(molstr)
         md.is_query = True
@@ -422,6 +425,18 @@ def load_moldata(
         md.struct = indigo.loadHelm(molstr, library)
         md.is_rxn = False
         md.is_query = False
+    elif input_format == "chemical/x-biln":
+        md.struct = indigo.loadBiln(molstr, library)
+        md.is_rxn = False
+        md.is_query = False
+    elif input_format == "chemical/x-axo-labs":
+        md.struct = indigo.loadAxoLabs(molstr, library)
+        md.is_rxn = False
+        md.is_query = False
+    elif input_format in ("monomer-library", "chemical/x-monomer-library"):
+        md.struct = indigo.loadMonomerLibrary(molstr)
+        md.is_rxn = False
+        md.is_query = False
     elif molstr.startswith("InChI"):
         md.struct = indigo.inchi.loadMolecule(molstr)
         md.is_rxn = False
@@ -435,30 +450,43 @@ def load_moldata(
                 pass
         try:
             if not query:
-                md.struct = indigo.loadMolecule(molstr)
+                md.struct = indigo.loadMoleculeWithLib(molstr, library)
                 md.is_query = False
             else:
-                md.struct = indigo.loadQueryMolecule(molstr)
+                md.struct = indigo.loadQueryMoleculeWithLib(molstr, library)
                 md.is_query = True
         except IndigoException:
             try:
-                md.struct = indigo.loadQueryMolecule(molstr)
+                md.struct = indigo.loadQueryMoleculeWithLib(molstr, library)
                 md.is_query = True
             except IndigoException:
                 md.is_rxn = True
                 try:
-                    if not query:
-                        md.struct = indigo.loadReaction(molstr)
-                        md.is_query = False
+                    if query:
+                        try:
+                            md.struct = indigo.loadQueryReactionWithLib(
+                                molstr, library
+                            )
+                            md.is_query = True
+                        except IndigoException:
+                            md.struct = indigo.loadReactionWithLib(
+                                molstr, library
+                            )
+                            md.is_query = False
                     else:
-                        md.struct = indigo.loadQueryReaction(molstr)
-                        md.is_query = True
+                        md.struct = indigo.loadReactionWithLib(molstr, library)
+                        md.is_query = False
                 except IndigoException:
                     try:
-                        md.struct = indigo.loadQueryReaction(molstr)
+                        md.struct = indigo.loadQueryReactionWithLib(
+                            molstr, library
+                        )
                         md.is_query = True
                     except IndigoException:
-                        if library is None:
+                        if (
+                            not has_explicit_library
+                            or input_format is not None
+                        ):
                             raise HttpException(
                                 "struct data not recognized as molecule, query, reaction or reaction query",
                                 400,
@@ -473,7 +501,9 @@ def load_moldata(
 def save_moldata(
     md, output_format=None, options={}, indigo=None, library=None
 ):
-    if output_format in ("chemical/x-mdl-molfile", "chemical/x-mdl-rxnfile"):
+    if output_format in ("monomer-library", "chemical/x-monomer-library"):
+        return md.struct.monomerLibrary()
+    elif output_format in ("chemical/x-mdl-molfile", "chemical/x-mdl-rxnfile"):
         return md.struct.rxnfile() if md.is_rxn else md.struct.molfile()
     elif output_format == "chemical/x-indigo-ket":
         return md.struct.json()
@@ -487,6 +517,10 @@ def save_moldata(
         return md.struct.idt(library)
     elif output_format == "chemical/x-helm":
         return md.struct.helm(library)
+    elif output_format == "chemical/x-biln":
+        return md.struct.biln(library)
+    elif output_format == "chemical/x-axo-labs":
+        return md.struct.axolabs(library)
     elif output_format == "chemical/x-daylight-smiles":
         if options.get("smiles") == "canonical":
             return md.struct.canonicalSmiles()
@@ -516,12 +550,7 @@ def save_moldata(
         aux = indigo.inchi.getAuxInfo()
         return "{}\n{}".format(res, aux)
     elif output_format == "chemical/x-sdf":
-        buffer = indigo.writeBuffer()
-        sdfSaver = indigo.createSaver(buffer, "sdf")
-        for frag in md.struct.iterateComponents():
-            sdfSaver.append(frag.clone())
-        sdfSaver.close()
-        return buffer.toString()
+        return md.struct.fragmentedSdf()
     elif output_format == "chemical/x-rdf":
         buffer = indigo.writeBuffer()
         rdfSaver = indigo.createSaver(buffer, "rdf")
@@ -932,6 +961,7 @@ def convert():
                 - chemical/x-iupac
                 - chemical/x-daylight-smarts
                 - chemical/x-inchi-aux
+                - chemical/x-monomer-library
           example:
             struct: C1=CC=CC=C1
             output_format: chemical/x-mdl-molfile
@@ -978,7 +1008,9 @@ def convert():
             "chemical/x-fasta",
             "chemical/x-idt",
             "chemical/x-helm",
+            "chemical/x-biln",
             "chemical/x-peptide-sequence-3-letter",
+            "chemical/x-axo-labs",
         ):
             try_document = True
 
@@ -1490,7 +1522,7 @@ def check():
               examples: C1=CC=CC=C1
             types:
               type: array
-              default: ["valence", "ambiguous_h", "query", "pseudoatoms", "radicals", "stereo", "overlapping_atoms", "overlapping_bonds", "3d", "sgroups", "v3000", "rgroups"]
+              default: ["valence", "ambiguous_h", "query", "pseudoatoms", "radicals", "stereo", "overlapping_atoms", "overlapping_bonds", "3d", "sgroups", "v3000", "rgroups", "isotope"]
               enum:
                 - valence
                 - ambiguous_h
@@ -1504,6 +1536,7 @@ def check():
                 - sgroups
                 - v3000
                 - rgroups
+                - isotope
           example:
             struct: "[C+5]"
             types: ["valence", "ambiguous_h"]
@@ -1600,11 +1633,11 @@ def calculate():
         selected=data["selected"],
         indigo=indigo,
     )
-    if data["selected"]:
+    if md.struct.hasSelection():
         if md.is_rxn:
-            remove_unselected_repeating_units_r(md.struct, data["selected"])
+            remove_unselected_repeating_units_r(md.struct)
         else:
-            remove_unselected_repeating_units_m(md.struct, data["selected"])
+            remove_unselected_repeating_units_m(md.struct)
     calculate_properties = data["properties"]
     result = {}
     precision = data["precision"]
@@ -1617,31 +1650,13 @@ def calculate():
     }
     for p in calculate_properties:
         if md.is_rxn:
-            if data["selected"]:
-                result[p] = selected_reaction_calc(
-                    md.struct,
-                    data["selected"],
-                    func_name_dict[p],
-                    precision=precision,
-                    indigo=indigo,
-                )
-            else:
-                result[p] = reaction_calc(
-                    md.struct, func_name_dict[p], precision=precision
-                )
+            result[p] = reaction_calc(
+                md.struct, func_name_dict[p], precision=precision
+            )
         else:
-            if data["selected"]:
-                result[p] = selected_molecule_calc(
-                    md.struct,
-                    data["selected"],
-                    func_name_dict[p],
-                    precision=precision,
-                    indigo=indigo,
-                )
-            else:
-                result[p] = molecule_calc(
-                    md.struct, func_name_dict[p], precision=precision
-                )
+            result[p] = molecule_calc(
+                md.struct, func_name_dict[p], precision=precision
+            )
     if data["json_output"]:
         return jsonify(result), 200, {"Content-Type": "application/json"}
     else:
@@ -1923,6 +1938,136 @@ def calculateMacroProperties():
         try_document=True,
     )
 
-    result = {"properties": md.struct.macroProperties()}
+    options = data["options"]
+    # UPC is molar concentration of unipositive cations, NAC is molar concentration of the nucleotide strands, these options need to calculate melting temperature
+    upc = 0.14  # default value is the average physiological - 140 mM
+    if "upc" in options:
+        try:
+            upc = float(options["upc"])
+        except ValueError:
+            raise IndigoException("Invalid value for UPC")
+    nac = 0
+    if "nac" in options:
+        try:
+            nac = float(options["nac"])
+        except ValueError:
+            raise IndigoException("Invalid value for NAC")
+    else:
+        raise IndigoException("NAC option is mandatory")
+    result = {"properties": md.struct.macroProperties(upc, nac)}
 
     return jsonify(result), 200, {"Content-Type": "application/json"}
+
+
+@indigo_api.route("/expand", methods=["POST"])
+@check_exceptions
+def expand():
+    """
+    Expand selected monomers
+    ---
+    tags:
+      - indigo
+    parameters:
+      - name: json_request
+        in: body
+        required: true
+        schema:
+          id: IndigoRequest
+          required:
+            - struct
+          properties:
+            struct:
+              type: string
+              required: true
+              examples: C1=CC=CC=C1
+            output_format:
+              type: string
+              default: chemical/x-mdl-molfile
+              examples: chemical/x-daylight-smiles
+              enum:
+                - chemical/x-mdl-rxnfile
+                - chemical/x-mdl-molfile
+                - chemical/x-indigo-ket
+                - chemical/x-daylight-smiles
+                - chemical/x-chemaxon-cxsmiles
+                - chemical/x-cml
+                - chemical/x-inchi
+                - chemical/x-iupac
+                - chemical/x-daylight-smarts
+                - chemical/x-inchi-aux
+          example:
+            struct: C1=CC=CC=C1
+            output_format: chemical/x-daylight-smiles
+    responses:
+      200:
+        description: structure with selected monomers expanded
+        schema:
+          id: IndigoResponse
+          required:
+            - struct
+            - format
+          properties:
+            struct:
+              type: string
+            format:
+              type: string
+              default: chemical/x-mdl-molfile
+      400:
+        description: 'A problem with supplied client data'
+        schema:
+          id: ClientError
+          required:
+            - error
+          properties:
+            error:
+              type: string
+      500:
+        description: 'A problem on server side'
+        schema:
+          id: ServerError
+          required:
+            - error
+          properties:
+            error:
+              type: string
+    """
+
+    request_data = get_request_data(request)
+    indigo_api_logger.info("[RAW REQUEST] {}".format(request_data))
+
+    data = IndigoRequestSchema().load(request_data)
+
+    LOG_DATA(
+        "[REQUEST] /expand",
+        data["input_format"],
+        data["output_format"],
+        data["struct"],
+        data["options"],
+    )
+    indigo = indigo_init(data["options"])
+
+    monomer_library = data["options"].get("monomerLibrary")
+    library = None
+    if monomer_library is not None:
+        library = indigo.loadMonomerLibrary(monomer_library)
+    else:
+        library = indigo.loadMonomerLibrary('{"root":{}}')
+
+    md = load_moldata(
+        data["struct"],
+        mime_type=data["input_format"],
+        options=data["options"],
+        indigo=indigo,
+        library=library,
+        try_document=True,
+    )
+
+    md.struct.expandMonomers()
+
+    return get_response(
+        md,
+        data["output_format"],
+        data["json_output"],
+        data["options"],
+        indigo=indigo,
+    )

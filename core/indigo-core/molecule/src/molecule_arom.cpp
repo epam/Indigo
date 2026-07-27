@@ -728,7 +728,12 @@ QueryMoleculeAromatizer::PiValue QueryMoleculeAromatizer::_getPiLabel(int v_idx)
 
     int valence, implicit_h;
 
-    if (!Element::calcValence(number, charge, radical, min_conn, valence, implicit_h, false) && !query.possibleNitrogenV5(v_idx))
+    // Non-standard valence disqualifies this atom from π-system assignment (except for
+    // the intentional V5 nitrogen). Read `nonStandard` rather than the return value —
+    // in permissive mode calcValence always returns true.
+    bool nonStandard = false;
+    Element::calcValence(number, charge, radical, min_conn, valence, implicit_h, false, &nonStandard);
+    if (nonStandard && !query.possibleNitrogenV5(v_idx))
         return PiValue(-1, -1);
 
     if (_basemol.possibleAtomNumber(v_idx, ELEM_C) && query.getExplicitValence(v_idx) == 5)

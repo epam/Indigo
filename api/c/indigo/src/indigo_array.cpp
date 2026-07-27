@@ -51,7 +51,7 @@ IndigoObject* IndigoArray::clone()
 {
     std::unique_ptr<IndigoArray> res = std::make_unique<IndigoArray>();
     for (int i = 0; i < objects.size(); i++)
-        res->objects.add(objects.at(i)->clone());
+        res->objects.add(objects.at(i).clone());
     return res.release();
 }
 
@@ -67,47 +67,47 @@ IndigoArrayElement::~IndigoArrayElement()
 
 IndigoObject& IndigoArrayElement::get()
 {
-    return *array->objects[idx];
+    return array->objects[idx];
 }
 
 BaseMolecule& IndigoArrayElement::getBaseMolecule()
 {
-    return array->objects[idx]->getBaseMolecule();
+    return array->objects[idx].getBaseMolecule();
 }
 
 Molecule& IndigoArrayElement::getMolecule()
 {
-    return array->objects[idx]->getMolecule();
+    return array->objects[idx].getMolecule();
 }
 
 QueryMolecule& IndigoArrayElement::getQueryMolecule()
 {
-    return array->objects[idx]->getQueryMolecule();
+    return array->objects[idx].getQueryMolecule();
 }
 
 MonomersProperties& IndigoArrayElement::getMonomersProperties()
 {
-    return array->objects[idx]->getMonomersProperties();
+    return array->objects[idx].getMonomersProperties();
 }
 
 BaseReaction& IndigoArrayElement::getBaseReaction()
 {
-    return array->objects[idx]->getBaseReaction();
+    return array->objects[idx].getBaseReaction();
 }
 
 Reaction& IndigoArrayElement::getReaction()
 {
-    return array->objects[idx]->getReaction();
+    return array->objects[idx].getReaction();
 }
 
 IndigoObject* IndigoArrayElement::clone()
 {
-    return array->objects[idx]->clone();
+    return array->objects[idx].clone();
 }
 
 const char* IndigoArrayElement::getName()
 {
-    return array->objects[idx]->getName();
+    return array->objects[idx].getName();
 }
 
 int IndigoArrayElement::getIndex()

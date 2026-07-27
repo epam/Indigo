@@ -20,7 +20,10 @@
 #define __rxnfile_loader__
 
 #include "base_cpp/exception.h"
+#include "molecule/loader_options.h"
 #include "molecule/molecule_stereocenter_options.h"
+
+#include "molecule/valence_model.h"
 
 namespace indigo
 {
@@ -31,6 +34,7 @@ namespace indigo
     class QueryReaction;
     class MolfileLoader;
     class PropertiesMap;
+    class MonomerTemplateLibrary;
 
     class DLLEXPORT RxnfileLoader
     {
@@ -38,10 +42,10 @@ namespace indigo
         RxnfileLoader(Scanner& scanner);
         ~RxnfileLoader();
 
-        void loadReaction(Reaction& reaction);
-        void loadQueryReaction(QueryReaction& reaction);
-        void loadReaction(Reaction& reaction, PropertiesMap& props);
-        void loadQueryReaction(QueryReaction& reaction, PropertiesMap& props);
+        void loadReaction(Reaction& reaction, MonomerTemplateLibrary* monomer_lib = nullptr);
+        void loadQueryReaction(QueryReaction& reaction, MonomerTemplateLibrary* monomer_lib = nullptr);
+        void loadReaction(Reaction& reaction, PropertiesMap& props, MonomerTemplateLibrary* monomer_lib = nullptr);
+        void loadQueryReaction(QueryReaction& reaction, PropertiesMap& props, MonomerTemplateLibrary* monomer_lib = nullptr);
 
         bool treat_x_as_pseudoatom;
         StereocentersOptions stereochemistry_options;
@@ -49,6 +53,11 @@ namespace indigo
         bool ignore_no_chiral_flag;
         int treat_stereo_as;
         bool ignore_bad_valence;
+        ValenceMode valence_mode;
+
+        // Bulk options propagation. See LoaderOptions doc for the field set.
+        void setOptions(const LoaderOptions& opts);
+        LoaderOptions getOptions() const;
 
         DECL_ERROR;
 
@@ -57,7 +66,7 @@ namespace indigo
         QueryReaction* _qrxn;
         Reaction* _rxn;
 
-        void _loadReaction();
+        void _loadReaction(MonomerTemplateLibrary* monomer_lib = nullptr);
 
         Scanner& _scanner;
         void _readRxnHeader();

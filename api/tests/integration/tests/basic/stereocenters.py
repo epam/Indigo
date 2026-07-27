@@ -138,3 +138,12 @@ for format in ["2000", "3000"]:
         m2 = indigo.loadMolecule(m.molfile())
         m.setProperty("reloaded-smiles", m2.smiles())
         output.append(m)
+
+print("issue 2952 expand c api for cip labels")
+mol = indigo.loadMolecule("C[C@@H](F)C[C@H](C)Cl")
+print("count stereocenters: " + str(mol.countStereocenters()))
+for atom in mol.iterateStereocenters():
+    print("cip description before: " + str(atom.stereocenterCIPDescriptor()))
+mol.addCIPStereoDescriptors()
+for atom in mol.iterateStereocenters():
+    print("cip description after " + str(atom.stereocenterCIPDescriptor()))

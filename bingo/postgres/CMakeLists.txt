@@ -2,7 +2,7 @@ if (WIN32 OR APPLE)
     # We need PostgreSQL_TYPE_INCLUDE_DIR definition
     cmake_minimum_required(VERSION 3.17)
 else()
-    cmake_minimum_required(VERSION 3.4)
+    cmake_minimum_required(VERSION 3.4...3.31)
 endif()
 
 find_package(PostgreSQL)

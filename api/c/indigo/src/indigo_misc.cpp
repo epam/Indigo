@@ -23,6 +23,7 @@
 #include "molecule/icm_loader.h"
 #include "molecule/icm_saver.h"
 #include "molecule/ket_document_json_saver.h"
+#include "molecule/macro_properties_calculator.h"
 #include "molecule/molecule_arom.h"
 #include "molecule/molecule_automorphism_search.h"
 #include "molecule/molecule_hash.h"
@@ -42,6 +43,7 @@
 #include "indigo_ket_document.h"
 #include "indigo_loaders.h"
 #include "indigo_molecule.h"
+#include "indigo_monomer_library.h"
 #include "indigo_properties.h"
 #include "indigo_reaction.h"
 #include "indigo_savers.h"
@@ -1123,6 +1125,28 @@ CEXPORT int indigoIsSelected(int item)
     INDIGO_END(-1);
 }
 
+CEXPORT int indigoHasSelection(int item)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(item);
+
+        if (IndigoBaseMolecule::is(obj))
+        {
+            return obj.getBaseMolecule().hasSelection() ? 1 : 0;
+        }
+        else if (IndigoBaseReaction::is(obj))
+        {
+            return obj.getBaseReaction().hasSelection() ? 1 : 0;
+        }
+        else
+            throw IndigoError("indigoHasSelection(): expected molecule or reaction, got %s", obj.debugInfo());
+
+        return 1;
+    }
+    INDIGO_END(-1);
+}
+
 CEXPORT int indigoOptimize(int query, const char* options)
 {
     INDIGO_BEGIN
@@ -1654,6 +1678,21 @@ CEXPORT const char* indigoCheckStructure(const char* structure, const char* prop
     INDIGO_END(0);
 }
 
+CEXPORT const char* indigoMonomerLibrary(int library)
+{
+    INDIGO_BEGIN
+    {
+        auto& tmp = self.getThreadTmpData();
+        ArrayOutput out(tmp.string);
+        IndigoMonomerLibrarySaver ms(out);
+        IndigoObject& lib_obj = self.getObject(library);
+        ms.save(IndigoMonomerLibrary::get(lib_obj));
+        out.writeChar(0);
+        return tmp.string.ptr();
+    }
+    INDIGO_END(0);
+}
+
 CEXPORT const char* indigoJson(int item)
 {
     INDIGO_BEGIN
@@ -1676,8 +1715,7 @@ CEXPORT const char* indigoJson(int item)
             {
                 PathwayReactionJsonSaver jn(out);
                 self.initReactionJsonSaver(jn);
-                BaseReaction& br = obj.getBaseReaction();
-                jn.saveReaction(dynamic_cast<PathwayReaction&>(br));
+                jn.saveReaction(obj.getPathwayReaction());
             }
             else
             {
@@ -1699,7 +1737,7 @@ CEXPORT const char* indigoJson(int item)
     INDIGO_END(0);
 }
 
-CEXPORT const char* indigoMacroProperties(int object)
+CEXPORT const char* indigoMacroProperties(int object, float upc, float nac)
 {
     INDIGO_BEGIN
     {
@@ -1708,10 +1746,21 @@ CEXPORT const char* indigoMacroProperties(int object)
 
         IndigoObject& obj = self.getObject(object);
 
-        if (IndigoBaseMolecule::is(obj) || IndigoBaseReaction::is(obj) || IndigoKetDocument::is(obj))
+        MacroPropertiesCalculator calc;
+
+        if (IndigoBaseMolecule::is(obj))
         {
-            auto& doc = obj.getKetDocument();
-            doc.CalculateMacroProps(out, self.json_saving_pretty);
+            std::unique_ptr<KetDocument> doc_ptr(new KetDocument(obj.getBaseMolecule()));
+            calc.CalculateMacroProps(*doc_ptr, out, upc, nac, self.json_saving_pretty);
+        }
+        else if (IndigoBaseReaction::is(obj))
+        {
+            std::unique_ptr<KetDocument> doc_ptr(new KetDocument(obj.getBaseReaction()));
+            calc.CalculateMacroProps(*doc_ptr, out, upc, nac, self.json_saving_pretty);
+        }
+        else if (IndigoKetDocument::is(obj))
+        {
+            calc.CalculateMacroProps(static_cast<IndigoKetDocument&>(obj).get(), out, upc, nac, self.json_saving_pretty);
         }
         out.writeChar(0);
         return tmp.string.ptr();
@@ -1739,6 +1788,10 @@ CEXPORT const char* indigoGetOriginalFormat(int item)
         {
             auto& doc = static_cast<IndigoKetDocument&>(obj).get();
             original_format = doc.original_format;
+        }
+        else if (IndigoMonomerLibrary::is(obj))
+        {
+            original_format = 0;
         }
         else
             throw IndigoError("indigoSaveJson(): expected molecule, got %s", obj.debugInfo());

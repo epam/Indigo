@@ -31,4 +31,10 @@ TEST(InchiBasic, GetInChI)
     const auto& m = session->loadMolecule("C");
     const auto& result = inchi.getInChI(m);
     ASSERT_EQ(result, "InChI=1S/CH4/h1H4");
+
+    const auto& moleculeInChI = m.inchi();
+    ASSERT_EQ(moleculeInChI, "InChI=1S/CH4/h1H4");
+
+    const auto& moleculeInChIKey = m.inchiKey();
+    ASSERT_EQ(moleculeInChIKey, "VNWKTOKETHGBQD-UHFFFAOYSA-N");
 }

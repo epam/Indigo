@@ -89,3 +89,5 @@ suffoxide:
 C1[S@](=O)CC(=O)C=1C
 C1[S@](=O)CC(=O)C=1C
 bond:5 stereo:6
+*** Star atom ***
+{"root":{"nodes":[{"$ref":"mol0"}]},"mol0":{"type":"molecule","atoms":[{"label":"*","location":[0.0,0.0,0.0]},{"label":"C","location":[-1.0,0.0,0.0]},{"label":"*","location":[-1.5,-0.8660253882408142,0.0]},{"label":"C","location":[-1.0,-1.732050895690918,0.0]},{"label":"*","location":[1.1920928955078126e-7,-1.7320510149002076,0.0]},{"label":"C","location":[0.5000003576278687,-0.8660255670547485,0.0]}],"bonds":[{"type":1,"atoms":[0,1]},{"type":2,"atoms":[1,2]},{"type":1,"atoms":[2,3]},{"type":2,"atoms":[3,4]},{"type":1,"atoms":[4,5]},{"type":2,"atoms":[5,0]}]}}

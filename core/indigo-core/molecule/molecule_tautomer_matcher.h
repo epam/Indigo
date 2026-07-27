@@ -48,13 +48,13 @@ namespace indigo
         void setQuery(BaseMolecule& query);
 
         void setRulesList(const PtrArray<TautomerRule>* rules_list);
-        void setRules(int rules_set, bool force_hydrogens, bool ring_chain, TautomerMethod method);
+        void setRules(int rules_set, bool force_hydrogens, bool ring_chain, TautomerMethod method, bool inner);
 
         bool find();
 
         const int* getQueryMapping();
 
-        static void parseConditions(const char* tautomer_text, int& rules, bool& force_hydrogens, bool& ring_chain, TautomerMethod& method);
+        static void parseConditions(const char* tautomer_text, int& rules, bool& force_hydrogens, bool& ring_chain, TautomerMethod& method, bool& inner);
 
         static int countNonHydrogens(BaseMolecule& molecule);
 
@@ -66,6 +66,7 @@ namespace indigo
         bool _substructure;
         bool _force_hydrogens;
         bool _ring_chain;
+        bool _inner;
         TautomerMethod _method;
         int _rules;
 
@@ -74,11 +75,11 @@ namespace indigo
         Molecule& _target_src;
         std::unique_ptr<BaseMolecule> _query;
 
-        Obj<TautomerSuperStructure> _target;
+        std::unique_ptr<TautomerSuperStructure> _target;
         BaseMolecule* _supermol;
 
-        Obj<GraphDecomposer> _query_decomposer;
-        Obj<GraphDecomposer> _target_decomposer;
+        std::unique_ptr<GraphDecomposer> _query_decomposer;
+        std::unique_ptr<GraphDecomposer> _target_decomposer;
     };
 
 } // namespace indigo

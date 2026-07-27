@@ -71,11 +71,9 @@ void PathwayReaction::_cloneSub(BaseReaction& other)
 
     for (int i = 0; i < other_pwr._molecules.size(); ++i)
     {
-        auto other_molecule = other_pwr._molecules[i];
-        addMolecule(*other_molecule);
+        auto& other_molecule = other_pwr._molecules[i];
+        addMolecule(other_molecule);
     }
-
-    _rootReaction.clone(other_pwr._rootReaction);
 }
 
 BaseReaction* PathwayReaction::neu()
@@ -103,7 +101,7 @@ bool PathwayReaction::aromatize(const AromaticityOptions& options)
 {
     bool arom_found = false;
     for (int i = 0; i < _molecules.size(); ++i)
-        arom_found |= _molecules[i]->aromatize(options);
+        arom_found |= _molecules[i].aromatize(options);
     return arom_found;
 }
 
@@ -111,6 +109,6 @@ bool PathwayReaction::dearomatize(const AromaticityOptions& options)
 {
     bool arom_found = false;
     for (int i = 0; i < _molecules.size(); ++i)
-        arom_found |= _molecules[i]->dearomatize(options);
+        arom_found |= _molecules[i].dearomatize(options);
     return arom_found;
 }

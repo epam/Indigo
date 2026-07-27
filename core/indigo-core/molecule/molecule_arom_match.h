@@ -52,7 +52,7 @@ namespace indigo
 
         // Check if query bond can be aromatic if 'aromatic' is true and
         // nonaromatic otherwise.
-        bool canFixQueryBond(int query_edge_idx, bool aromatic);
+        bool canFixQueryBond(int query_edge_idx, bool aromatic) const;
 
         // Fix query bond to aromatic or nonaromatic state
         void fixQueryBond(int query_edge_idx, bool aromatic);

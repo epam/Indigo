@@ -1,0 +1,42 @@
+*** Sequence cycles layout ***
+6bases.ket:SUCCEED
+disulfide_pep_sel.ket:SUCCEED
+left_top_monomer.ket:SUCCEED
+n-agon1.ket:SUCCEED
+n-agon2.ket:SUCCEED
+overlapping.ket:SUCCEED
+pep_sel.ket:SUCCEED
+ring_fuse.ket:SUCCEED
+rna_bicyclic.ket:SUCCEED
+rna_bicyclic_sel_2.ket:SUCCEED
+rna_ring_11.ket:SUCCEED
+rna_ring_12.ket:SUCCEED
+rna_ring_24.ket:SUCCEED
+rna_ring_6.ket:SUCCEED
+rna_sel.ket:SUCCEED
+shifting_structs_1.ket:SUCCEED
+shifting_structs_1_sel.ket:SUCCEED
+shifting_structs_2.ket:SUCCEED
+shifting_structs_2_sel.ket:SUCCEED
+small_mol.ket:SUCCEED
+
+*** Sequential multi-cycle layout (cycles 1,3,5,7) ***
+multi_seq_1357.ket:SUCCEED
+
+*** Multi-cycle simultaneous layout (cycles 1+2+3) ***
+multi_sel_123.ket:SUCCEED
+
+*** Multi-cycle simultaneous layout (cycles 2+3+4) ***
+multi_sel_234.ket:SUCCEED
+
+*** cycle_part_sel: ring + pendant phosphates + fixed backbone ***
+cycle_part_sel.ket:SUCCEED
+
+*** disulfide_pep_sel: two-bridge partial selection with R3-R3 ring ***
+disulfide_pep_sel.ket invariants:SUCCEED
+
+*** Synthetic partial-selection edge cases ***
+partial_selection_edge_cases:SUCCEED
+
+*** Nucleus seed-edge invariant (cycle-free partial selection) ***
+nucleus_seed_edge:SUCCEED

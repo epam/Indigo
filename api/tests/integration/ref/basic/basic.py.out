@@ -32,9 +32,9 @@ CC=C(N(O)=O)N(O)=O
 ****** Serialize and atom changing ********
 CC[C@H](/C=C\C)N
 C/C=C\[C@H](N)CC
-***(*=**)* |$*;*;*;*;*;*;*$|
+***(*=**)* |$star_e;star_e;star_e;star_e;star_e;star_e;star_e$|
 ***(*)*=**
-***(*)*=** |$*;*;*;*;*;*;*$|
+***(*)*=** |$star_e;star_e;star_e;star_e;star_e;star_e;star_e$|
 ***(*)*=**
 ****** Anormal properties ********
 0 8

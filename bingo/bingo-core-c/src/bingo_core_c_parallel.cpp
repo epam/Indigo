@@ -112,7 +112,7 @@ bool IndexingDispatcher::_setupCommand(OsCommand& cmd)
             _finished = true;
             break;
         }
-        command.records.add(_core.index_record_data.ref());
+        command.records.add(*_core.index_record_data);
         command.ids.push(_core.index_record_data_id);
     }
     return command.ids.size() != 0;
@@ -171,28 +171,28 @@ void IndexingCommand::execute(OsCommandResult& result_)
                     }
                     catch (CmfSaver::Error& e)
                     {
-                        if (core->bingo_context->reject_invalid_structures)
+                        if (core->bingo_context->reject_invalid_structures.value())
                             throw;
                         exception_found = true;
                         result.error_messages.add(e.message());
                     }
                     catch (CrfSaver::Error& e)
                     {
-                        if (core->bingo_context->reject_invalid_structures)
+                        if (core->bingo_context->reject_invalid_structures.value())
                             throw;
                         exception_found = true;
                         result.error_messages.add(e.message());
                     }
                 }
                 CATCH_READ_TARGET_MOL({
-                    if (core->bingo_context->reject_invalid_structures)
+                    if (core->bingo_context->reject_invalid_structures.value())
                         throw;
                     result.error_messages.add(e.message());
                     exception_found = true;
                 });
             }
             CATCH_READ_TARGET_RXN({
-                if (core->bingo_context->reject_invalid_structures)
+                if (core->bingo_context->reject_invalid_structures.value())
                     throw;
                 result.error_messages.add(e.message());
                 exception_found = true;

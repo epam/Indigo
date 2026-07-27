@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  docker-buildpack-centos7:
+  docker-buildpack-almalinux8:
     runs-on: ubuntu-latest
     steps:
       - name: Login to DockerHub
@@ -17,14 +17,14 @@ jobs:
         with:
           lfs: true
           fetch-depth: 500
-      - name: Build buildpack-centos7
+      - name: Build buildpack-almalinux8
         uses: docker/build-push-action@v2
         with:
           context: .
-          file: .ci/docker/buildpack-centos7/Dockerfile
-          tags: epmlsop/buildpack-centos7:latest
-      - name: Push buildpack-centos7
-        run: docker push epmlsop/buildpack-centos7:latest
+          file: .ci/docker/buildpack-almalinux8/Dockerfile
+          tags: epmlsop/buildpack-almalinux8:latest
+      - name: Push buildpack-almalinux8
+        run: docker push epmlsop/buildpack-almalinux8:latest
   docker-buildpack-arm64:
     runs-on: ubuntu-latest
     steps:

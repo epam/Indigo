@@ -32,21 +32,44 @@ RxnfileLoader::RxnfileLoader(Scanner& scanner) : _scanner(scanner)
     ignore_noncritical_query_features = false;
     ignore_no_chiral_flag = false;
     ignore_bad_valence = false;
+    valence_mode = ValenceMode::BIOVIA_2017;
 }
 
 RxnfileLoader::~RxnfileLoader()
 {
 }
 
-void RxnfileLoader::loadReaction(Reaction& reaction)
+void RxnfileLoader::setOptions(const LoaderOptions& opts)
+{
+    stereochemistry_options = opts.stereochemistry_options;
+    valence_mode = opts.valence_mode;
+    ignore_bad_valence = opts.ignore_bad_valence;
+    ignore_no_chiral_flag = opts.ignore_no_chiral_flag;
+    ignore_noncritical_query_features = opts.ignore_noncritical_query_features;
+    treat_x_as_pseudoatom = opts.treat_x_as_pseudoatom;
+}
+
+LoaderOptions RxnfileLoader::getOptions() const
+{
+    LoaderOptions opts;
+    opts.stereochemistry_options = stereochemistry_options;
+    opts.valence_mode = valence_mode;
+    opts.ignore_bad_valence = ignore_bad_valence;
+    opts.ignore_no_chiral_flag = ignore_no_chiral_flag;
+    opts.ignore_noncritical_query_features = ignore_noncritical_query_features;
+    opts.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+    return opts;
+}
+
+void RxnfileLoader::loadReaction(Reaction& reaction, MonomerTemplateLibrary* monomer_lib)
 {
     _rxn = &reaction;
     _brxn = &reaction;
     _qrxn = 0;
-    _loadReaction();
+    _loadReaction(monomer_lib);
 }
 
-void RxnfileLoader::loadQueryReaction(QueryReaction& rxn)
+void RxnfileLoader::loadQueryReaction(QueryReaction& rxn, MonomerTemplateLibrary* monomer_lib)
 {
     _rxn = 0;
     _brxn = &rxn;
@@ -54,29 +77,30 @@ void RxnfileLoader::loadQueryReaction(QueryReaction& rxn)
     _loadReaction();
 }
 
-void indigo::RxnfileLoader::loadReaction(Reaction& reaction, PropertiesMap& props)
+void indigo::RxnfileLoader::loadReaction(Reaction& reaction, PropertiesMap& props, MonomerTemplateLibrary* monomer_lib)
 {
-    loadReaction(reaction);
+    loadReaction(reaction, monomer_lib);
     reaction.properties().copy(props);
 }
 
-void indigo::RxnfileLoader::loadQueryReaction(QueryReaction& reaction, PropertiesMap& props)
+void indigo::RxnfileLoader::loadQueryReaction(QueryReaction& reaction, PropertiesMap& props, MonomerTemplateLibrary* monomer_lib)
 {
-    loadQueryReaction(reaction);
+    loadQueryReaction(reaction, monomer_lib);
     reaction.properties().copy(props);
 }
 
-void RxnfileLoader::_loadReaction()
+void RxnfileLoader::_loadReaction(MonomerTemplateLibrary* monomer_lib)
 {
     _brxn->clear();
 
-    MolfileLoader molfileLoader(_scanner);
+    MolfileLoader molfileLoader(_scanner, monomer_lib);
 
     molfileLoader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
     molfileLoader.stereochemistry_options = stereochemistry_options;
     molfileLoader.ignore_noncritical_query_features = ignore_noncritical_query_features;
     molfileLoader.ignore_no_chiral_flag = ignore_no_chiral_flag;
     molfileLoader.ignore_bad_valence = ignore_bad_valence;
+    molfileLoader.valence_mode = valence_mode;
     _readRxnHeader();
 
     if (_v3000)

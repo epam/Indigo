@@ -26,6 +26,8 @@ namespace bingo
                                       indigo::Array<byte>* sim_fp) /* const */
             = 0;
         virtual ~QueryObject(){};
+
+        virtual void setIsTau(bool is_tau){};
     };
 
     //////////////////////////
@@ -52,9 +54,18 @@ namespace bingo
     {
     private:
         indigo::QueryMolecule _mol;
+        bool _is_tau;
 
     public:
         SubstructureMoleculeQuery(/* const */ indigo::QueryMolecule& mol);
+
+        bool buildFingerprint(const indigo::MoleculeFingerprintParameters& fp_params, indigo::Array<byte>* sub_fp,
+                              indigo::Array<byte>* sim_fp) /*const*/ override;
+
+        void setIsTau(bool is_tau) override
+        {
+            _is_tau = is_tau;
+        };
     };
 
     class SimilarityMoleculeQuery : public BaseMoleculeQuery

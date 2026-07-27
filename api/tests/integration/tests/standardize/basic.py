@@ -425,3 +425,39 @@ print(mol.molfile())
 mol.standardize()
 print(mol.molfile())
 indigo.setOption("standardize-create-hydrogen-bonds", "false")
+
+print("****** mark undefined stereoceneters ********")
+indigo.setOption("standardize-stereo-mark-undefined", "true")
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/3135_mark_undefined_stereo1.mol", __file__)
+)
+print(mol.smiles())
+print("checkStereo(): " + str(mol.checkStereo()))
+mol.standardize()
+print(mol.smiles())
+print("checkeStereo() " + str(mol.checkStereo()))
+print("stereoceneters: " + str(mol.countStereocenters()))
+for atom in mol.iterateStereocenters():
+    print(
+        "atom "
+        + str(atom.index())
+        + " -- stereocenter type "
+        + str(atom.stereocenterType())
+    )
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/3135_mark_undefined_stereo2.mol", __file__)
+)
+print(mol.smiles())
+print("checkStereo(): " + str(mol.checkStereo()))
+mol.standardize()
+print(mol.smiles())
+print("checkeStereo() " + str(mol.checkStereo()))
+print("stereoceneters: " + str(mol.countStereocenters()))
+for atom in mol.iterateStereocenters():
+    print(
+        "atom "
+        + str(atom.index())
+        + " -- stereocenter type "
+        + str(atom.stereocenterType())
+    )
+indigo.setOption("standardize-stereo-mark-undefined", "false")

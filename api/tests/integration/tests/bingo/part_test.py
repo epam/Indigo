@@ -7,7 +7,7 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
-from env_indigo import (
+from env_indigo import (  # noqa
     Bingo,
     BingoException,
     Indigo,
@@ -117,7 +117,7 @@ def partTest(size, searchType="sub"):
                 threads.append(
                     threading.Thread(
                         target=makeSearchExact,
-                        args=(bingo, 0, qmol, "", outputs),
+                        args=(bingo, 0, qmol, "NONE", outputs),
                     )
                 )
                 for i in range(1, size + 1):
@@ -128,7 +128,7 @@ def partTest(size, searchType="sub"):
                                 bingo,
                                 i,
                                 qmol,
-                                "part:{0}/{1}".format(i, size),
+                                "NONE;part:{0}/{1}".format(i, size),
                                 outputs,
                             ),
                         )

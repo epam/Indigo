@@ -23,6 +23,7 @@
 
 #include "base_cpp/obj_list.h"
 #include "base_cpp/properties_map.h"
+#include "base_cpp/ptr_array.h"
 #include "indigo_internal.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_arom_match.h"
@@ -61,7 +62,7 @@ public:
     {
         return _fullScaffold;
     }
-    ObjArray<IndigoDeconvolutionElem>& getItems()
+    PtrArray<IndigoDeconvolutionElem>& getItems()
     {
         return _deconvolutionElems;
     }
@@ -102,11 +103,11 @@ public:
         bool all_matches;
         bool remove_rsites;
         IndigoDeconvolution* deco;
-        ObjArray<IndigoDecompositionMatch> contexts;
+        PtrArray<IndigoDecompositionMatch> contexts;
 
     private:
         DecompositionEnumerator(const DecompositionEnumerator&); // no implicit copy
-        bool _foundOrder(ObjArray<Array<int>>& rsite_orders, Array<int>& swap_order);
+        bool _foundOrder(PtrArray<Array<int>>& rsite_orders, Array<int>& swap_order);
         void _swapIndexes(IndigoDecompositionMatch&, int old_idx, int new_idx);
         void _refineAutoMaps(ObjList<Array<int>>& auto_maps, Graph& sub, Graph& super, Array<int>& scaf_map);
         void _addAllRsites(QueryMolecule&, IndigoDecompositionMatch&, std::map<int, int>&);
@@ -140,7 +141,7 @@ private:
     QueryMolecule _scaffold;
     QueryMolecule _fullScaffold;
     bool _userDefinedScaffold;
-    ObjArray<IndigoDeconvolutionElem> _deconvolutionElems;
+    PtrArray<IndigoDeconvolutionElem> _deconvolutionElems;
 };
 
 class DLLEXPORT IndigoDeconvolutionElem : public IndigoObject
@@ -178,8 +179,8 @@ public:
     Array<int> scaffoldAtoms;
     Array<int> lastMapping;
     Array<int> lastInvMapping;
-    ObjArray<Array<int>> attachmentOrder;
-    ObjArray<Array<int>> attachmentIndex;
+    PtrArray<Array<int>> attachmentOrder;
+    PtrArray<Array<int>> attachmentIndex;
     ObjList<Array<int>> scafAutoMaps;
 
     int getRgroupNumber() const
@@ -208,7 +209,7 @@ private:
 class DLLEXPORT IndigoDeconvolutionIter : public IndigoObject
 {
 public:
-    IndigoDeconvolutionIter(ObjArray<IndigoDeconvolutionElem>& items);
+    IndigoDeconvolutionIter(PtrArray<IndigoDeconvolutionElem>& items);
     ~IndigoDeconvolutionIter() override;
 
     IndigoObject* next() override;
@@ -216,12 +217,12 @@ public:
 
 protected:
     int _index;
-    ObjArray<IndigoDeconvolutionElem>& _items;
+    PtrArray<IndigoDeconvolutionElem>& _items;
 };
 class DLLEXPORT IndigoDecompositionMatchIter : public IndigoObject
 {
 public:
-    IndigoDecompositionMatchIter(ObjArray<IndigoDecompositionMatch>& matches);
+    IndigoDecompositionMatchIter(PtrArray<IndigoDecompositionMatch>& matches);
     ~IndigoDecompositionMatchIter() override
     {
     }
@@ -235,7 +236,7 @@ public:
 
 protected:
     int _index;
-    ObjArray<IndigoDecompositionMatch>& _matches;
+    PtrArray<IndigoDecompositionMatch>& _matches;
 };
 
 #ifdef _WIN32

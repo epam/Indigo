@@ -23,12 +23,34 @@
 
 using namespace indigo;
 
-TGroup::TGroup() : unresolved(false), ambiguous(false), mixture(false)
+TGroup::TGroup() : unresolved(false), ambiguous(false), mixture(false), different_aliasHELM(false), tgroup_id(-1)
 {
 }
 
 TGroup::~TGroup()
 {
+}
+
+std::unique_ptr<BaseMolecule> TGroup::getResidue() const
+{
+    std::unique_ptr<BaseMolecule> templ_residue;
+    if (fragment)
+        for (int j = fragment->sgroups.begin(); j != fragment->sgroups.end(); j = fragment->sgroups.next(j))
+        {
+            auto& sg = fragment->sgroups.getSGroup(j);
+            if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
+            {
+                Superatom& tsa = (Superatom&)sg; // superatom in template
+                BufferScanner sc(tsa.sa_class);
+                if (!sc.findWordIgnoreCase("LGRP")) // if not LGRP
+                {
+                    templ_residue.reset(fragment->neu());
+                    Array<int> mapping;
+                    templ_residue->makeSubmolecule(*fragment, tsa.atoms, &mapping, SKIP_TGROUPS | SKIP_TEMPLATE_ATTACHMENT_POINTS | SKIP_STEREOCENTERS);
+                }
+            }
+        }
+    return templ_residue;
 }
 
 void TGroup::clear()
@@ -115,6 +137,16 @@ int TGroup::cmp(TGroup& tg1, TGroup& tg2, void* /*context*/)
 
 void TGroup::copy(const TGroup& other)
 {
+    copy_without_fragment(other);
+    if (!other.ambiguous)
+    {
+        fragment.reset(other.fragment->neu());
+        fragment->clone(*other.fragment.get(), 0, 0);
+    }
+}
+
+void TGroup::copy_without_fragment(const TGroup& other)
+{
     tgroup_class.copy(other.tgroup_class);
     tgroup_name.copy(other.tgroup_name);
     tgroup_full_name.copy(other.tgroup_full_name);
@@ -125,11 +157,6 @@ void TGroup::copy(const TGroup& other)
     tgroup_id = other.tgroup_id;
     unresolved = other.unresolved;
     idt_alias.copy(other.idt_alias);
-    if (!other.ambiguous)
-    {
-        fragment.reset(other.fragment->neu());
-        fragment->clone(*other.fragment.get(), 0, 0);
-    }
     ambiguous = other.ambiguous;
     mixture = other.mixture;
     for (int i = 0; i < other.aliases.size(); i++)
@@ -137,6 +164,13 @@ void TGroup::copy(const TGroup& other)
         aliases.push().copy(other.aliases[i]);
     }
     ratios.copy(other.ratios);
+    different_aliasHELM = other.different_aliasHELM;
+    aliasHELM.copy(other.aliasHELM);
+    for (int i = 0; i < other.modification_types.size(); i++)
+    {
+        modification_types.push().copy(other.modification_types[i]);
+    }
+    aliasAxoLabs.copy(other.aliasAxoLabs);
 }
 
 IMPL_ERROR(MoleculeTGroups, "molecule tgroups");
@@ -208,7 +242,8 @@ int MoleculeTGroups::findTGroup(const char* name)
         TGroup& tgroup = *_tgroups.at(i);
         if (tgroup.tgroup_name.size() > 0 && name != 0)
         {
-            if (strncmp(tgroup.tgroup_name.ptr(), name, tgroup.tgroup_name.size()) == 0)
+            if (strncmp(tgroup.tgroup_name.ptr(), name, tgroup.tgroup_name.size()) == 0 ||
+                strncmp(tgroup.tgroup_alias.ptr(), name, tgroup.tgroup_alias.size()) == 0)
                 return i;
         }
     }

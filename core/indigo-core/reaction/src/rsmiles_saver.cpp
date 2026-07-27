@@ -20,7 +20,6 @@
 
 #include "base_cpp/output.h"
 #include "molecule/elements.h"
-#include "molecule/smiles_saver.h"
 #include "reaction/query_reaction.h"
 #include "reaction/reaction.h"
 
@@ -52,16 +51,22 @@ void RSmilesSaver::saveQueryReaction(QueryReaction& reaction)
     _saveReaction();
 }
 
+SmilesSaver& RSmilesSaver::_addMoleculeSaver()
+{
+    auto saver = std::make_unique<SmilesSaver>(_output);
+    saver->write_extra_info = false;
+    saver->chemaxon = false;
+    saver->separate_rsites = false;
+    saver->rsite_indices_as_aam = false;
+    saver->smarts_mode = smarts_mode;
+    saver->inside_rsmiles = true;
+    _smiles_savers.emplace_back(std::move(saver));
+    return *_smiles_savers.back();
+}
+
 void RSmilesSaver::_writeMolecule(int i)
 {
-    SmilesSaver saver(_output);
-
-    saver.write_extra_info = false;
-    saver.chemaxon = false;
-    saver.separate_rsites = false;
-    saver.rsite_indices_as_aam = false;
-    saver.smarts_mode = smarts_mode;
-    saver.inside_rsmiles = true;
+    SmilesSaver& saver = _addMoleculeSaver();
 
     if (_rxn != 0)
         saver.saveMolecule(_rxn->getMolecule(i));
@@ -150,6 +155,7 @@ void RSmilesSaver::_saveReaction()
     {
         _comma = false;
         _writeFragmentsInfo();
+        _writeRingCisTrans();
         _writeStereogroups();
         _writeRadicals();
         _writePseudoAtoms();
@@ -174,13 +180,7 @@ void RSmilesSaver::_writeFragmentsInfo()
     if (i == _ncomp.size())
         return;
 
-    if (_comma)
-        _output.writeChar(',');
-    else
-    {
-        _output.writeString(" |");
-        _comma = true;
-    }
+    _startExtension();
 
     _output.writeString("f:");
 
@@ -202,6 +202,7 @@ void RSmilesSaver::_writeFragmentsInfo()
     }
 }
 
+// TODO: this function need refactoring
 void RSmilesSaver::_writeStereogroups()
 {
     QS_DEF(Array<int>, marked);
@@ -296,7 +297,7 @@ void RSmilesSaver::_writeStereogroups()
         {
             int group = _brxn->getBaseMolecule(idx.mol).stereocenters.getGroup(idx.idx);
 
-            _output.printf("&%d:%d", or_group_idx++, i);
+            _output.printf("o%d:%d", or_group_idx++, i);
             for (j = i + 1; j < _written_atoms.size(); j++)
             {
                 const _Idx& jdx = _written_atoms[j];
@@ -314,76 +315,20 @@ void RSmilesSaver::_writeStereogroups()
 
 void RSmilesSaver::_writeRadicals()
 {
-    QS_DEF(Array<int>, marked);
-    int i, j;
-
-    marked.clear_resize(_written_atoms.size());
-    marked.zerofill();
-
-    for (i = 0; i < _written_atoms.size(); i++)
+    int atoms_offset = 0;
+    int cur_radical = -1;
+    for (size_t i = 0; i < _smiles_savers.size(); ++i)
     {
-        if (marked[i])
-            continue;
-
-        const _Idx& idx = _written_atoms[i];
-        BaseMolecule& bmol = _brxn->getBaseMolecule(idx.mol);
-
-        if (bmol.isRSite(idx.idx) || bmol.isPseudoAtom(idx.idx) || bmol.isAlias(idx.idx))
-            continue;
-
-        int radical = bmol.getAtomRadical(idx.idx);
-
-        if (radical <= 0)
-            continue;
-
-        if (_comma)
-            _output.writeChar(',');
-        else
-        {
-            _output.writeString(" |");
-            _comma = true;
-        }
-
-        if (radical == RADICAL_SINGLET)
-            _output.writeString("^3:");
-        else if (radical == RADICAL_DOUBLET)
-            _output.writeString("^1:");
-        else // RADICAL_TRIPLET
-            _output.writeString("^4:");
-
-        _output.printf("%d", i);
-
-        for (j = i + 1; j < _written_atoms.size(); j++)
-        {
-            const _Idx& jdx = _written_atoms[j];
-
-            if (_brxn->getBaseMolecule(jdx.mol).getAtomRadical(jdx.idx) == radical)
-            {
-                marked[j] = 1;
-                _output.printf(",%d", j);
-            }
-        }
+        auto& smiles_saver = _smiles_savers[i];
+        smiles_saver->setComma(_comma);
+        cur_radical = smiles_saver->writeRadicals(atoms_offset, cur_radical);
+        atoms_offset += smiles_saver->writtenAtoms().size();
+        _comma = smiles_saver->getComma();
     }
 }
 
-void RSmilesSaver::_writePseudoAtoms()
+void RSmilesSaver::_startExtension()
 {
-    int i;
-
-    for (i = 0; i < _written_atoms.size(); i++)
-    {
-        BaseMolecule& mol = _brxn->getBaseMolecule(_written_atoms[i].mol);
-        int idx = _written_atoms[i].idx;
-
-        if (mol.isPseudoAtom(idx) || mol.isAlias(idx))
-            break;
-        if (mol.isRSite(idx) && mol.getRSiteBits(idx) > 0)
-            break;
-    }
-
-    if (i == _written_atoms.size())
-        return;
-
     if (_comma)
         _output.writeChar(',');
     else
@@ -391,81 +336,57 @@ void RSmilesSaver::_writePseudoAtoms()
         _output.writeString(" |");
         _comma = true;
     }
+}
 
-    _output.writeChar('$');
-
-    for (i = 0; i < _written_atoms.size(); i++)
+void RSmilesSaver::_writePseudoAtoms()
+{
+    int atoms_offset = 0;
+    for (int i = 0; i < _written_atoms.size(); i++)
     {
-        _Idx& idx = _written_atoms[i];
-
-        if (i > 0)
-            _output.writeChar(';');
-
-        BaseMolecule& mol = _brxn->getBaseMolecule(idx.mol);
-
-        if (mol.isPseudoAtom(idx.idx))
-            SmilesSaver::writePseudoAtom(mol.getPseudoAtom(idx.idx), _output);
-        else if (mol.isAlias(idx.idx))
-            SmilesSaver::writePseudoAtom(mol.getAlias(idx.idx), _output);
-        else if (mol.isRSite(idx.idx) && mol.getRSiteBits(idx.idx) > 0)
-            // ChemAxon's Extended SMILES notation for R-sites
-            _output.printf("_R%d", mol.getSingleAllowedRGroup(idx.idx));
+        BaseMolecule& mol = _brxn->getBaseMolecule(_written_atoms[i].mol);
+        int idx = _written_atoms[i].idx;
+        if ((mol.isPseudoAtom(idx) || mol.isAlias(idx)) || (mol.isRSite(idx) && mol.getRSiteBits(idx) > 0))
+        {
+            _startExtension();
+            _output.writeChar('$');
+            for (size_t i = 0; i < _smiles_savers.size(); ++i)
+            {
+                auto& smiles_saver = _smiles_savers[i];
+                smiles_saver->writePseudoAtoms(atoms_offset, false);
+                atoms_offset += smiles_saver->writtenAtoms().size();
+            }
+            _output.writeChar('$');
+            break;
+        }
     }
-
-    _output.writeChar('$');
 }
 
 void RSmilesSaver::_writeHighlighting()
 {
-    int i;
-
-    bool ha = false;
-
-    for (i = 0; i < _written_atoms.size(); i++)
+    for (int j = 0; j < 2; ++j)
     {
-        if (_brxn->getBaseMolecule(_written_atoms[i].mol).isAtomHighlighted(_written_atoms[i].idx))
+        int offset = 0;
+        bool is_cont = false;
+        for (size_t i = 0; i < _smiles_savers.size(); ++i)
         {
-            if (ha)
-                _output.writeChar(',');
-            else
-            {
-                if (_comma)
-                    _output.writeChar(',');
-                else
-                {
-                    _output.writeString(" |");
-                    _comma = true;
-                }
-                _output.writeString("ha:");
-                ha = true;
-            }
-
-            _output.printf("%d", i);
+            auto& smiles_saver = _smiles_savers[i];
+            smiles_saver->setComma(_comma);
+            is_cont = j == 0 ? smiles_saver->writeHighlightedAtoms(offset, is_cont) : smiles_saver->writeHighlightedBonds(offset, is_cont);
+            _comma = smiles_saver->getComma();
+            offset += j == 0 ? smiles_saver->writtenAtoms().size() : smiles_saver->writtenBonds().size();
         }
     }
+}
 
-    bool hb = false;
-
-    for (i = 0; i < _written_bonds.size(); i++)
+void RSmilesSaver::_writeRingCisTrans()
+{
+    int bonds_offset = 0;
+    for (size_t i = 0; i < _smiles_savers.size(); ++i)
     {
-        if (_brxn->getBaseMolecule(_written_bonds[i].mol).isBondHighlighted(_written_bonds[i].idx))
-        {
-            if (hb)
-                _output.writeChar(',');
-            else
-            {
-                if (_comma)
-                    _output.writeChar(',');
-                else
-                {
-                    _output.writeString(" |");
-                    _comma = true;
-                }
-                _output.writeString("hb:");
-                hb = true;
-            }
-
-            _output.printf("%d", i);
-        }
+        auto& smiles_saver = _smiles_savers[i];
+        smiles_saver->setComma(_comma);
+        smiles_saver->writeRingCisTrans(bonds_offset);
+        bonds_offset += smiles_saver->writtenBonds().size();
+        _comma = smiles_saver->getComma();
     }
 }

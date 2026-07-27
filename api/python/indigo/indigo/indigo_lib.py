@@ -124,10 +124,36 @@ class IndigoLib:
             POINTER(c_byte),
             c_int,
         ]
+        IndigoLib.lib.indigoLoadMoleculeWithLibFromString.restype = c_int
+        IndigoLib.lib.indigoLoadMoleculeWithLibFromString.argtypes = [
+            c_char_p,
+            c_int,
+        ]
+        IndigoLib.lib.indigoLoadMoleculeWithLibFromFile.restype = c_int
+        IndigoLib.lib.indigoLoadMoleculeWithLibFromFile.argtypes = [
+            c_char_p,
+            c_int,
+        ]
+        IndigoLib.lib.indigoLoadMoleculeWithLibFromBuffer.restype = c_int
+        IndigoLib.lib.indigoLoadMoleculeWithLibFromBuffer.argtypes = [
+            POINTER(c_byte),
+            c_int,
+            c_int,
+        ]
         IndigoLib.lib.indigoLoadQueryMoleculeFromString.restype = c_int
         IndigoLib.lib.indigoLoadQueryMoleculeFromString.argtypes = [c_char_p]
         IndigoLib.lib.indigoLoadQueryMoleculeFromFile.restype = c_int
         IndigoLib.lib.indigoLoadQueryMoleculeFromFile.argtypes = [c_char_p]
+        IndigoLib.lib.indigoLoadQueryMoleculeWithLibFromString.restype = c_int
+        IndigoLib.lib.indigoLoadQueryMoleculeWithLibFromString.argtypes = [
+            c_char_p,
+            c_int,
+        ]
+        IndigoLib.lib.indigoLoadQueryMoleculeWithLibFromFile.restype = c_int
+        IndigoLib.lib.indigoLoadQueryMoleculeWithLibFromFile.argtypes = [
+            c_char_p,
+            c_int,
+        ]
         IndigoLib.lib.indigoLoadSmartsFromString.restype = c_int
         IndigoLib.lib.indigoLoadSmartsFromString.argtypes = [c_char_p]
         IndigoLib.lib.indigoLoadSmartsFromFile.restype = c_int
@@ -172,6 +198,14 @@ class IndigoLib:
         IndigoLib.lib.indigoLoadHelmFromString.argtypes = [c_char_p, c_int]
         IndigoLib.lib.indigoLoadHelmFromFile.restype = c_int
         IndigoLib.lib.indigoLoadHelmFromFile.argtypes = [c_char_p, c_int]
+        IndigoLib.lib.indigoLoadBilnFromString.restype = c_int
+        IndigoLib.lib.indigoLoadBilnFromString.argtypes = [c_char_p, c_int]
+        IndigoLib.lib.indigoLoadBilnFromFile.restype = c_int
+        IndigoLib.lib.indigoLoadBilnFromFile.argtypes = [c_char_p, c_int]
+        IndigoLib.lib.indigoLoadAxoLabsFromString.restype = c_int
+        IndigoLib.lib.indigoLoadAxoLabsFromString.argtypes = [c_char_p, c_int]
+        IndigoLib.lib.indigoLoadAxoLabsFromFile.restype = c_int
+        IndigoLib.lib.indigoLoadAxoLabsFromFile.argtypes = [c_char_p, c_int]
         IndigoLib.lib.indigoLoadReactionFromString.restype = c_int
         IndigoLib.lib.indigoLoadReactionFromString.argtypes = [c_char_p]
         IndigoLib.lib.indigoLoadReactionFromFile.restype = c_int
@@ -180,6 +214,26 @@ class IndigoLib:
         IndigoLib.lib.indigoLoadQueryReactionFromString.argtypes = [c_char_p]
         IndigoLib.lib.indigoLoadQueryReactionFromFile.restype = c_int
         IndigoLib.lib.indigoLoadQueryReactionFromFile.argtypes = [c_char_p]
+        IndigoLib.lib.indigoLoadReactionWithLibFromString.restype = c_int
+        IndigoLib.lib.indigoLoadReactionWithLibFromString.argtypes = [
+            c_char_p,
+            c_int,
+        ]
+        IndigoLib.lib.indigoLoadReactionWithLibFromFile.restype = c_int
+        IndigoLib.lib.indigoLoadReactionWithLibFromFile.argtypes = [
+            c_char_p,
+            c_int,
+        ]
+        IndigoLib.lib.indigoLoadQueryReactionWithLibFromString.restype = c_int
+        IndigoLib.lib.indigoLoadQueryReactionWithLibFromString.argtypes = [
+            c_char_p,
+            c_int,
+        ]
+        IndigoLib.lib.indigoLoadQueryReactionWithLibFromFile.restype = c_int
+        IndigoLib.lib.indigoLoadQueryReactionWithLibFromFile.argtypes = [
+            c_char_p,
+            c_int,
+        ]
         IndigoLib.lib.indigoLoadReactionSmartsFromString.restype = c_int
         IndigoLib.lib.indigoLoadReactionSmartsFromString.argtypes = [c_char_p]
         IndigoLib.lib.indigoLoadReactionSmartsFromFile.restype = c_int
@@ -287,7 +341,11 @@ class IndigoLib:
         IndigoLib.lib.indigoRemove.restype = c_int
         IndigoLib.lib.indigoRemove.argtypes = [c_int]
         IndigoLib.lib.indigoMacroProperties.restype = c_char_p
-        IndigoLib.lib.indigoMacroProperties.argtypes = [c_int]
+        IndigoLib.lib.indigoMacroProperties.argtypes = [
+            c_int,
+            c_float,
+            c_float,
+        ]
         IndigoLib.lib.indigoGetOriginalFormat.restype = c_char_p
         IndigoLib.lib.indigoGetOriginalFormat.argtypes = [c_int]
         IndigoLib.lib.indigoSaveMolfileToFile.restype = c_int
@@ -308,6 +366,8 @@ class IndigoLib:
         IndigoLib.lib.indigoCdxBase64.argtypes = [c_int]
         IndigoLib.lib.indigoJson.restype = c_char_p
         IndigoLib.lib.indigoJson.argtypes = [c_int]
+        IndigoLib.lib.indigoMonomerLibrary.restype = c_char_p
+        IndigoLib.lib.indigoMonomerLibrary.argtypes = [c_int]
         IndigoLib.lib.indigoSaveMDLCT.restype = c_int
         IndigoLib.lib.indigoSaveMDLCT.argtypes = [c_int, c_int]
         IndigoLib.lib.indigoAddReactant.restype = c_int
@@ -418,6 +478,10 @@ class IndigoLib:
         IndigoLib.lib.indigoChangeStereocenterType.argtypes = [c_int, c_int]
         IndigoLib.lib.indigoValidateChirality.restype = c_int
         IndigoLib.lib.indigoValidateChirality.argtypes = [c_int]
+        IndigoLib.lib.indigoStereocenterCIPDescriptor.restype = c_int
+        IndigoLib.lib.indigoStereocenterCIPDescriptor.argtypes = [c_int]
+        IndigoLib.lib.indigoAddCIPStereoDescriptors.restype = c_int
+        IndigoLib.lib.indigoAddCIPStereoDescriptors.argtypes = [c_int]
         IndigoLib.lib.indigoSingleAllowedRGroup.restype = c_int
         IndigoLib.lib.indigoSingleAllowedRGroup.argtypes = [c_int]
         IndigoLib.lib.indigoAddStereocenter.restype = c_int
@@ -471,6 +535,14 @@ class IndigoLib:
         IndigoLib.lib.indigoCheckQuery.argtypes = [c_int]
         IndigoLib.lib.indigoCheckRGroups.restype = c_int
         IndigoLib.lib.indigoCheckRGroups.argtypes = [c_int]
+        IndigoLib.lib.indigoAtomIndex.restype = c_int
+        IndigoLib.lib.indigoAtomIndex.argtypes = [c_int]
+        IndigoLib.lib.indigoBondIndex.restype = c_int
+        IndigoLib.lib.indigoBondIndex.argtypes = [c_int]
+        IndigoLib.lib.indigoBondBegin.restype = c_int
+        IndigoLib.lib.indigoBondBegin.argtypes = [c_int]
+        IndigoLib.lib.indigoBondEnd.restype = c_int
+        IndigoLib.lib.indigoBondEnd.argtypes = [c_int]
         IndigoLib.lib.indigoCountHydrogens.restype = c_int
         IndigoLib.lib.indigoCountHydrogens.argtypes = [c_int, POINTER(c_int)]
         IndigoLib.lib.indigoCountImplicitHydrogens.restype = c_int
@@ -588,6 +660,26 @@ class IndigoLib:
         IndigoLib.lib.indigoGetSGroupName.argtypes = [c_int]
         IndigoLib.lib.indigoGetSGroupNumCrossBonds.restype = c_int
         IndigoLib.lib.indigoGetSGroupNumCrossBonds.argtypes = [c_int]
+        IndigoLib.lib.indigoCreateCrossBonds.restype = c_int
+        IndigoLib.lib.indigoCreateCrossBonds.argtypes = [c_int]
+        IndigoLib.lib.indigoClearSGroupCrossBonds.restype = c_int
+        IndigoLib.lib.indigoClearSGroupCrossBonds.argtypes = [c_int]
+        IndigoLib.lib.indigoAddSGroup.restype = c_int
+        IndigoLib.lib.indigoAddSGroup.argtypes = [c_int, c_char_p, c_int]
+        IndigoLib.lib.indigoSetSGroupAtoms.restype = c_int
+        IndigoLib.lib.indigoSetSGroupAtoms.argtypes = [
+            c_int,
+            c_int,
+            POINTER(c_int),
+        ]
+        IndigoLib.lib.indigoSetSGroupBonds.restype = c_int
+        IndigoLib.lib.indigoSetSGroupBonds.argtypes = [
+            c_int,
+            c_int,
+            POINTER(c_int),
+        ]
+        IndigoLib.lib.indigoIterateSGroupCrossBonds.restype = c_int
+        IndigoLib.lib.indigoIterateSGroupCrossBonds.argtypes = [c_int]
         IndigoLib.lib.indigoAddSGroupAttachmentPoint.restype = c_int
         IndigoLib.lib.indigoAddSGroupAttachmentPoint.argtypes = [
             c_int,
@@ -600,6 +692,17 @@ class IndigoLib:
             c_int,
             c_int,
         ]
+        IndigoLib.lib.indigoIterateSGroupAttachmentPoints.restype = c_int
+        IndigoLib.lib.indigoIterateSGroupAttachmentPoints.argtypes = [c_int]
+        IndigoLib.lib.indigoGetSGroupAttachmentPointAtomIdx.restype = c_int
+        IndigoLib.lib.indigoGetSGroupAttachmentPointAtomIdx.argtypes = [c_int]
+        IndigoLib.lib.indigoGetSGroupAttachmentPointLeaveAtom.restype = c_int
+        IndigoLib.lib.indigoGetSGroupAttachmentPointLeaveAtom.argtypes = [
+            c_int,
+            POINTER(c_int),
+        ]
+        IndigoLib.lib.indigoGetSGroupAttachmentPointLabel.restype = c_char_p
+        IndigoLib.lib.indigoGetSGroupAttachmentPointLabel.argtypes = [c_int]
         IndigoLib.lib.indigoGetSGroupDisplayOption.restype = c_int
         IndigoLib.lib.indigoGetSGroupDisplayOption.argtypes = [c_int]
         IndigoLib.lib.indigoSetSGroupDisplayOption.restype = c_int
@@ -773,6 +876,14 @@ class IndigoLib:
         IndigoLib.lib.indigoUnhighlight.argtypes = [c_int]
         IndigoLib.lib.indigoIsHighlighted.restype = c_int
         IndigoLib.lib.indigoIsHighlighted.argtypes = [c_int]
+        IndigoLib.lib.indigoSelect.restype = c_int
+        IndigoLib.lib.indigoSelect.argtypes = [c_int]
+        IndigoLib.lib.indigoUnselect.restype = c_int
+        IndigoLib.lib.indigoUnselect.argtypes = [c_int]
+        IndigoLib.lib.indigoIsSelected.restype = c_int
+        IndigoLib.lib.indigoIsSelected.argtypes = [c_int]
+        IndigoLib.lib.indigoHasSelection.restype = c_int
+        IndigoLib.lib.indigoHasSelection.argtypes = [c_int]
         IndigoLib.lib.indigoCountComponents.restype = c_int
         IndigoLib.lib.indigoCountComponents.argtypes = [c_int]
         IndigoLib.lib.indigoComponentIndex.restype = c_int
@@ -799,6 +910,8 @@ class IndigoLib:
         IndigoLib.lib.indigoCountHeavyAtoms.argtypes = [c_int]
         IndigoLib.lib.indigoGrossFormula.restype = c_int
         IndigoLib.lib.indigoGrossFormula.argtypes = [c_int]
+        IndigoLib.lib.indigoMolecularFormula.restype = c_int
+        IndigoLib.lib.indigoMolecularFormula.argtypes = [c_int]
         IndigoLib.lib.indigoMolecularWeight.restype = c_double
         IndigoLib.lib.indigoMolecularWeight.argtypes = [c_int]
         IndigoLib.lib.indigoMostAbundantMass.restype = c_double
@@ -821,6 +934,8 @@ class IndigoLib:
         IndigoLib.lib.indigoMolarRefractivity.argtypes = [c_int]
         IndigoLib.lib.indigoPka.restype = c_double
         IndigoLib.lib.indigoPka.argtypes = [c_int]
+        IndigoLib.lib.indigoPkaValues.restype = c_char_p
+        IndigoLib.lib.indigoPkaValues.argtypes = [c_int]
         IndigoLib.lib.indigoCanonicalSmiles.restype = c_char_p
         IndigoLib.lib.indigoCanonicalSmiles.argtypes = [c_int]
         IndigoLib.lib.indigoCanonicalSmarts.restype = c_char_p
@@ -891,6 +1006,8 @@ class IndigoLib:
         IndigoLib.lib.indigoUnfoldHydrogens.argtypes = [c_int]
         IndigoLib.lib.indigoFoldUnfoldHydrogens.restype = c_int
         IndigoLib.lib.indigoFoldUnfoldHydrogens.argtypes = [c_int]
+        IndigoLib.lib.indigoExpandMonomers.restype = c_int
+        IndigoLib.lib.indigoExpandMonomers.argtypes = [c_int]
         IndigoLib.lib.indigoClearXYZ.restype = c_int
         IndigoLib.lib.indigoClearXYZ.argtypes = [c_int]
         IndigoLib.lib.indigoLayout.restype = c_int
@@ -927,6 +1044,18 @@ class IndigoLib:
         IndigoLib.lib.indigoHelm.argtypes = [c_int, c_int]
         IndigoLib.lib.indigoSaveHelmToFile.restype = c_int
         IndigoLib.lib.indigoSaveHelmToFile.argtypes = [c_int, c_char_p, c_int]
+        IndigoLib.lib.indigoBiln.restype = c_char_p
+        IndigoLib.lib.indigoBiln.argtypes = [c_int, c_int]
+        IndigoLib.lib.indigoSaveBilnToFile.restype = c_int
+        IndigoLib.lib.indigoSaveBilnToFile.argtypes = [c_int, c_char_p, c_int]
+        IndigoLib.lib.indigoAxoLabs.restype = c_char_p
+        IndigoLib.lib.indigoAxoLabs.argtypes = [c_int, c_int]
+        IndigoLib.lib.indigoSaveAxoLabsToFile.restype = c_int
+        IndigoLib.lib.indigoSaveAxoLabsToFile.argtypes = [
+            c_int,
+            c_char_p,
+            c_int,
+        ]
         IndigoLib.lib.indigoSmarts.restype = c_char_p
         IndigoLib.lib.indigoSmarts.argtypes = [c_int]
         IndigoLib.lib.indigoName.restype = c_char_p
@@ -983,6 +1112,8 @@ class IndigoLib:
         IndigoLib.lib.indigoTell.argtypes = [c_int]
         IndigoLib.lib.indigoSdfAppend.restype = c_int
         IndigoLib.lib.indigoSdfAppend.argtypes = [c_int, c_int]
+        IndigoLib.lib.indigoFragmentedSdf.restype = c_char_p
+        IndigoLib.lib.indigoFragmentedSdf.argtypes = [c_int]
         IndigoLib.lib.indigoSmilesAppend.restype = c_int
         IndigoLib.lib.indigoSmilesAppend.argtypes = [c_int, c_int]
         IndigoLib.lib.indigoRdfHeader.restype = c_int
@@ -1065,6 +1196,11 @@ class IndigoLib:
         IndigoLib.lib.indigoStereocenterPyramid.argtypes = [c_int]
         IndigoLib.lib.indigoExpandAbbreviations.restype = c_int
         IndigoLib.lib.indigoExpandAbbreviations.argtypes = [c_int]
+        IndigoLib.lib.indigoExpandGroupPseudoatoms.restype = c_int
+        IndigoLib.lib.indigoExpandGroupPseudoatoms.argtypes = [c_int]
+        # [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+        IndigoLib.lib.indigoExpandedMonomersToAtoms.restype = c_int
+        IndigoLib.lib.indigoExpandedMonomersToAtoms.argtypes = [c_int]
         IndigoLib.lib.indigoDbgInternalType.restype = c_char_p
         IndigoLib.lib.indigoDbgInternalType.argtypes = [c_int]
         IndigoLib.lib.indigoNameToStructure.restype = c_int

@@ -17,7 +17,7 @@ public class BingoTests {
         Indigo indigo = new Indigo(Paths.get(System.getProperty("user.dir"), "..", "..", "..", "dist", "lib").normalize().toAbsolutePath().toString());
         Bingo bingo = Bingo.createDatabaseFile(indigo, tempDir.toString(), "molecule", "");
         Assertions.assertEquals(
-                "v0.72",
+                "v0.73",
                 bingo.version(),
                 "Checking version of the Bingo"
         );

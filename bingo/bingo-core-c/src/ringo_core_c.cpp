@@ -37,7 +37,7 @@ using namespace indigo::bingo_core;
 
 int BingoCore::ringoIndexProcessSingleRecord()
 {
-    BufferScanner scanner(self.index_record_data.ref());
+    BufferScanner scanner(*self.index_record_data);
 
     NullOutput output;
 
@@ -47,7 +47,7 @@ int BingoCore::ringoIndexProcessSingleRecord()
         {
             if (self.single_ringo_index.get() == NULL)
             {
-                self.single_ringo_index.create();
+                self.single_ringo_index = std::make_unique<RingoIndex>();
                 self.single_ringo_index->init(*self.bingo_context);
                 self.single_ringo_index->skip_calculate_fp = self.skip_calculate_fp;
             }
@@ -57,21 +57,21 @@ int BingoCore::ringoIndexProcessSingleRecord()
         }
         catch (CmfSaver::Error& e)
         {
-            if (self.bingo_context->reject_invalid_structures)
+            if (self.bingo_context->reject_invalid_structures.value())
                 throw;
             self.warning.readString(e.message(), true);
             return 0;
         }
         catch (CrfSaver::Error& e)
         {
-            if (self.bingo_context->reject_invalid_structures)
+            if (self.bingo_context->reject_invalid_structures.value())
                 throw;
             self.warning.readString(e.message(), true);
             return 0;
         }
     }
     CATCH_READ_TARGET_RXN({
-        if (self.bingo_context->reject_invalid_structures)
+        if (self.bingo_context->reject_invalid_structures.value())
             throw;
 
         self.warning.readString(e.message(), true);
@@ -125,9 +125,9 @@ void _ringoCheckPseudoAndCBDM(BingoCore& self)
         throw BingoError("context not set");
 
     // TODO: pass this check inside RingoSubstructure
-    if (!self.bingo_context->treat_x_as_pseudoatom.hasValue())
+    if (!self.bingo_context->treat_x_as_pseudoatom.has_value())
         throw BingoError("treat_x_as_pseudoatom option not set");
-    if (!self.bingo_context->ignore_closing_bond_direction_mismatch.hasValue())
+    if (!self.bingo_context->ignore_closing_bond_direction_mismatch.has_value())
         throw BingoError("ignore_closing_bond_direction_mismatch option not set");
 }
 

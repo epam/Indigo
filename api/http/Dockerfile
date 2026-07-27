@@ -32,6 +32,8 @@ COPY tests ./tests
 COPY setup.py *manylinux1_x86_64*.whl ./
 
 # Required for indigo-renderer
+RUN sed -i -e 's/deb.debian.org/archive.debian.org/g' /etc/apt/sources.list
+
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends libfreetype6-dev libfontconfig1-dev
@@ -47,6 +49,8 @@ RUN pip3 install -r requirements.txt -r requirements_dev.txt && \
 
 # For final build
 FROM python:3.9-slim-buster
+
+RUN sed -i -e 's/deb.debian.org/archive.debian.org/g' /etc/apt/sources.list
 
 RUN apt-get update && \
     apt-get upgrade -y && \

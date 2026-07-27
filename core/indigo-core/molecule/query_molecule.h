@@ -38,13 +38,13 @@ namespace indigo
     {
         SKIP_3D_CONSTRAINTS = 0x0100,
         SKIP_FIXED_ATOMS = 0x0200,
-        SKIP_RGROUPS = 0x0400,
-        SKIP_AROMATICITY = 0x0800,
-        SKIP_COMPONENTS = 0x1000
+        SKIP_AROMATICITY = 0x0400,
+        SKIP_COMPONENTS = 0x0800
     };
 
     enum
     {
+        _ATOM_STAR,
         _ATOM_R,
         _ATOM_A,
         _ATOM_X,
@@ -72,7 +72,7 @@ namespace indigo
             OP_AND,
             OP_OR,
             OP_NOT,
-
+            ATOM_STAR,
             ATOM_NUMBER,
             ATOM_PSEUDO,
             ATOM_RSITE,
@@ -358,7 +358,8 @@ namespace indigo
         enum QUERY_ATOM
         {
             QUERY_ATOM_UNKNOWN = -1,
-            QUERY_ATOM_A = 0,
+            QUERY_ATOM_STAR = 0,
+            QUERY_ATOM_A,
             QUERY_ATOM_X,
             QUERY_ATOM_Q,
             QUERY_ATOM_M,
@@ -432,6 +433,8 @@ namespace indigo
         // must belong to different connected components of the target molecule
         Array<int> components;
 
+        virtual void registerUnfoldedHydrogenQueryComponent(int atom_idx, int added_hydrogen);
+
         void getComponentNeighbors(std::list<std::unordered_set<int>>& componentNeighbors);
 
         void invalidateAtom(int index, int mask) override;
@@ -462,7 +465,15 @@ namespace indigo
         static bool _isAtomList(Atom* qa, AtomList list);
         static bool _tryToConvertToList(Atom* p_query_atom, std::vector<std::unique_ptr<Atom>>& atoms, std::map<int, std::unique_ptr<Atom>>& properties);
 
+        enum MaxHState
+        {
+            MAXH_UNSET = -2,
+            MAXH_UNKNOWN = -1
+        };
+
         Array<int> _min_h;
+        Array<int> _max_h;
+        Array<int> _implicit_h;
 
         Array<bool> _bond_stereo_care;
 

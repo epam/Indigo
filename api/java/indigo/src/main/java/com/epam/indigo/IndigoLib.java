@@ -87,13 +87,21 @@ public interface IndigoLib extends Library {
 
     int indigoRemove(int item);
 
-    Pointer indigoMacroProperties(int item);
+    Pointer indigoMacroProperties(int item, float upc, float nac);
 
     Pointer indigoGetOriginalFormat(int item);
 
     int indigoCreateMolecule();
 
     int indigoCreateQueryMolecule();
+
+    int indigoLoadMoleculeWithLib(int source, int lib);
+
+    int indigoLoadMoleculeWithLibFromString(String str, int lib);
+
+    int indigoLoadMoleculeWithLibFromFile(String filename, int lib);
+
+    int indigoLoadMoleculeWithLibFromBuffer(byte[] buffer, int size, int lib);
 
     int indigoLoadMolecule(int source);
 
@@ -102,6 +110,14 @@ public interface IndigoLib extends Library {
     int indigoLoadMoleculeFromFile(String filename);
 
     int indigoLoadMoleculeFromBuffer(byte[] buffer, int size);
+
+    int indigoLoadQueryMoleculeWithLib(int source, int lib);
+
+    int indigoLoadQueryMoleculeWithLibFromString(String str, int lib);
+
+    int indigoLoadQueryMoleculeWithLibFromFile(String filename, int lib);
+
+    int indigoLoadQueryMoleculeWithLibFromBuffer(byte[] buffer, int size, int lib);
 
     int indigoLoadQueryMolecule(int source);
 
@@ -155,6 +171,18 @@ public interface IndigoLib extends Library {
 
     int indigoLoadHelmFromFile(String filename, int library);
 
+    int indigoLoadBiln(int source, int library);
+
+    int indigoLoadBilnFromString(String str, int library);
+
+    int indigoLoadBilnFromFile(String filename, int library);
+
+    int indigoLoadAxoLabs(int source, int library);
+
+    int indigoLoadAxoLabsFromString(String str, int library);
+
+    int indigoLoadAxoLabsFromFile(String filename, int library);
+
     int indigoLoadStructureFromString(String str, String params);
 
     int indigoLoadStructureFromFile(String filename, String params);
@@ -183,6 +211,10 @@ public interface IndigoLib extends Library {
 
     Pointer indigoHelm(int molecule, int library);
 
+    Pointer indigoBiln(int molecule, int library);
+
+    Pointer indigoAxoLabs(int molecule, int library);
+
     int indigoSaveCml(int object, int output);
 
     int indigoSaveCmlToFile(int object, String filename);
@@ -190,6 +222,10 @@ public interface IndigoLib extends Library {
     Pointer indigoCml(int object);
 
     Pointer indigoJson(int object);
+
+    Pointer indigoFragmentedSdf(int item);
+
+    Pointer indigoMonomerLibrary(int object);
 
     @SuppressWarnings("checkstyle:Indentation")
     int indigoSaveCdxml(int object, int output);
@@ -217,6 +253,22 @@ public interface IndigoLib extends Library {
     int indigoLoadQueryReactionFromFile(String filename);
 
     int indigoLoadQueryReactionFromBuffer(byte[] buf, int size);
+
+    int indigoLoadReactionWithLib(int source, int library);
+
+    int indigoLoadReactionWithLibFromString(String string, int library);
+
+    int indigoLoadReactionWithLibFromFile(String filename, int library);
+
+    int indigoLoadReactionWithLibFromBuffer(byte[] buf, int size, int library);
+
+    int indigoLoadQueryReactionWithLib(int source, int library);
+
+    int indigoLoadQueryReactionWithLibFromString(String str, int library);
+
+    int indigoLoadQueryReactionWithLibFromFile(String filename, int library);
+
+    int indigoLoadQueryReactionWithLibFromBuffer(byte[] buf, int size, int library);
 
     int indigoLoadReactionSmarts(int source);
 
@@ -348,6 +400,14 @@ public interface IndigoLib extends Library {
 
     int indigoCheckRGroups(int item);
 
+    int indigoAtomIndex(int atom);
+
+    int indigoBondIndex(int bond);
+
+    int indigoBondBegin(int bond);
+
+    int indigoBondEnd(int bond);
+
     int indigoCheckChirality(int item);
 
     int indigoCheck3DStereo(int item);
@@ -419,6 +479,8 @@ public interface IndigoLib extends Library {
             String description,
             String data);
 
+    int indigoAddSuperatom(int molecule, int natoms, int[] atoms, String name);
+
     int indigoSetDataSGroupXY(int sgroup, float x, float y, String options);
 
     int indigoCreateSGroup(String type, int mapping, String name);
@@ -433,9 +495,30 @@ public interface IndigoLib extends Library {
 
     int indigoGetSGroupNumCrossBonds(int sgroup);
 
+    int indigoCreateCrossBonds(int sgroup);
+
+    int indigoClearSGroupCrossBonds(int sgroup);
+
+    // Issue #3604: New SGroup API methods
+    int indigoAddSGroup(int molecule, String type, int extindex);
+
+    int indigoSetSGroupAtoms(int sgroup, int natoms, int[] atoms);
+
+    int indigoSetSGroupBonds(int sgroup, int nbonds, int[] bonds);
+
+    int indigoIterateSGroupCrossBonds(int sgroup);
+
     int indigoAddSGroupAttachmentPoint(int sgroup, int aidx, int lvidx, String apid);
 
     int indigoDeleteSGroupAttachmentPoint(int sgroup, int apidx);
+
+    int indigoIterateSGroupAttachmentPoints(int sgroup);
+
+    int indigoGetSGroupAttachmentPointAtomIdx(int ap);
+
+    int indigoGetSGroupAttachmentPointLeaveAtom(int ap, IntByReference lvidx);
+
+    Pointer indigoGetSGroupAttachmentPointLabel(int ap);
 
     int indigoGetSGroupDisplayOption(int sgroup);
 
@@ -601,6 +684,10 @@ public interface IndigoLib extends Library {
 
     int indigoValidateChirality(int handle);
 
+    int indigoStereocenterCIPDescriptor(int atom);
+
+    int indigoAddCIPStereoDescriptors(int molecule);
+
     int indigoAddAtom(int molecule, String symbol);
 
     int indigoResetAtom(int atom, String symbol);
@@ -631,6 +718,14 @@ public interface IndigoLib extends Library {
 
     int indigoIsHighlighted(int item);
 
+    int indigoSelect(int item);
+
+    int indigoUnselect(int item);
+    
+    int indigoIsSelected(int item);
+
+    int indigoHasSelection(int item);
+
     int indigoCountComponents(int molecule);
 
     int indigoComponentIndex(int atom);
@@ -653,6 +748,8 @@ public interface IndigoLib extends Library {
 
     int indigoGrossFormula(int molecule);
 
+    int indigoMolecularFormula(int molecule);
+
     double indigoMolecularWeight(int molecule);
 
     double indigoMostAbundantMass(int molecule);
@@ -674,6 +771,8 @@ public interface IndigoLib extends Library {
     double indigoMolarRefractivity(int molecule);
 
     double indigoPka(int molecule);
+
+    Pointer indigoPkaValues(int molecule);
 
     Pointer indigoCanonicalSmiles(int molecule);
 
@@ -713,6 +812,8 @@ public interface IndigoLib extends Library {
     int indigoUnfoldHydrogens(int item);
 
     int indigoFoldUnfoldHydrogens(int item);
+
+    int indigoExpandMonomers(int molecule);
 
     int indigoClearXYZ(int item);
 
@@ -887,6 +988,10 @@ public interface IndigoLib extends Library {
     int indigoTransform(int reaction, int monomers);
 
     int indigoExpandAbbreviations(int structure);
+
+    int indigoExpandGroupPseudoatoms(int molecule);
+
+    int indigoExpandedMonomersToAtoms(int molecule);
 
     int indigoIterateTautomers(int structure, String params);
 

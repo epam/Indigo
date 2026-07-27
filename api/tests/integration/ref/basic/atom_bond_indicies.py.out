@@ -1,0 +1,14 @@
+issue 2952 expand c api for cip labels
+atom index: 0
+atom index: 1
+atom index: 2
+atom index: 3
+atom index: 4
+atom index: 5
+atom index: 6
+bond index, begining and ending atoms: 0 0 1
+bond index, begining and ending atoms: 1 1 2
+bond index, begining and ending atoms: 2 1 3
+bond index, begining and ending atoms: 3 3 4
+bond index, begining and ending atoms: 4 4 5
+bond index, begining and ending atoms: 5 4 6

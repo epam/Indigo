@@ -131,7 +131,7 @@ ORAEXT OCIString* oraMangoSMILES(OCIExtProcContext* ctx, OCILobLocator* target_l
         if (target_indicator == OCI_IND_NOTNULL)
         {
             BingoOracleContext& context = BingoOracleContext::get(env, 0, false, 0);
-            block_throw_error = context.reject_invalid_structures.get();
+            block_throw_error = context.reject_invalid_structures.value();
 
             OracleLOB target_lob(env, target_locator);
 
@@ -171,7 +171,7 @@ ORAEXT OCIString* oraMangoCanonicalSMILES(OCIExtProcContext* ctx, OCILobLocator*
         if (target_indicator == OCI_IND_NOTNULL)
         {
             BingoOracleContext& context = BingoOracleContext::get(env, 0, false, 0);
-            block_throw_error = context.reject_invalid_structures.get();
+            block_throw_error = context.reject_invalid_structures.value();
 
             OracleLOB target_lob(env, target_locator);
 
@@ -290,7 +290,7 @@ ORAEXT OCILobLocator* oraMangoICM(OCIExtProcContext* ctx, OCILobLocator* target_
         {
             OracleLOB target_lob(env, target_locator);
             BingoOracleContext& context = BingoOracleContext::get(env, 0, false, 0);
-            block_throw_error = context.reject_invalid_structures.get();
+            block_throw_error = context.reject_invalid_structures.value();
 
             QS_DEF(Array<char>, icm);
 
@@ -320,7 +320,7 @@ if (result_indicator == OCI_IND_NULL)
 
 OracleLOB target_lob(env, target_locator);
 BingoOracleContext& context = BingoOracleContext::get(env, 0, false, 0);
-block_throw_error = context.reject_invalid_structures.get();
+block_throw_error = context.reject_invalid_structures.value();
 
 QS_DEF(Array<char>, icm);
 
@@ -351,7 +351,7 @@ ORAEXT OCILobLocator* oraMangoMolfile(OCIExtProcContext* ctx, OCILobLocator* tar
         if (target_indicator == OCI_IND_NOTNULL)
         {
             BingoOracleContext& context = BingoOracleContext::get(env, 0, false, 0);
-            block_throw_error = context.reject_invalid_structures.get();
+            block_throw_error = context.reject_invalid_structures.value();
             OracleLOB target_lob(env, target_locator);
 
             QS_DEF(Array<char>, target);
@@ -408,7 +408,7 @@ ORAEXT OCILobLocator* oraMangoCML(OCIExtProcContext* ctx, OCILobLocator* target_
         if (target_indicator == OCI_IND_NOTNULL)
         {
             BingoOracleContext& context = BingoOracleContext::get(env, 0, false, 0);
-            block_throw_error = context.reject_invalid_structures.get();
+            block_throw_error = context.reject_invalid_structures.value();
             OracleLOB target_lob(env, target_locator);
 
             QS_DEF(Array<char>, target);
@@ -467,7 +467,7 @@ ORAEXT OCILobLocator* oraMangoInchi(OCIExtProcContext* ctx, OCILobLocator* targe
         if (target_ind == OCI_IND_NOTNULL)
         {
             BingoOracleContext& context = BingoOracleContext::get(env, 0, false, 0);
-            block_throw_error = context.reject_invalid_structures.get();
+            block_throw_error = context.reject_invalid_structures.value();
 
             QS_DEF(Array<char>, target_buf);
 
@@ -516,7 +516,7 @@ ORAEXT OCIString* oraMangoInchiKey(OCIExtProcContext* ctx, OCILobLocator* inchi_
         if (inchi_ind == OCI_IND_NOTNULL)
         {
             BingoOracleContext& context = BingoOracleContext::get(env, 0, false, 0);
-            block_throw_error = context.reject_invalid_structures.get();
+            block_throw_error = context.reject_invalid_structures.value();
 
             QS_DEF(Array<char>, inchi);
             OracleLOB inchi_lob(env, inchi_loc);
@@ -554,7 +554,7 @@ ORAEXT OCILobLocator* oraMangoFingerprint(OCIExtProcContext* ctx, OCILobLocator*
         if (target_ind == OCI_IND_NOTNULL)
         {
             BingoOracleContext& context = BingoOracleContext::get(env, 0, false, 0);
-            block_throw_error = context.reject_invalid_structures.get();
+            block_throw_error = context.reject_invalid_structures.value();
 
             QS_DEF(Array<char>, target_buf);
 

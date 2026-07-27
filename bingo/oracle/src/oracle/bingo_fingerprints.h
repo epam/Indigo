@@ -20,10 +20,16 @@
 #define __bingo_fingerprints__
 
 #include "base_cpp/array.h"
-#include "base_cpp/obj_array.h"
 #include "base_cpp/ptr_array.h"
 #include "base_cpp/tlscont.h"
 #include "core/bingo_context.h"
+
+#include <memory>
+
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
 
 namespace indigo
 {
@@ -73,8 +79,8 @@ namespace indigo
 
             void* data;
 
-            Obj<OracleStatement> statement;
-            Obj<OracleLOB> bits_lob;
+            std::unique_ptr<OracleStatement> statement;
+            std::unique_ptr<OracleLOB> bits_lob;
             Block* block;
             int query_bit_idx;
         };
@@ -141,12 +147,16 @@ namespace indigo
         static int _cmp_optimize_counters(int a, int b, void* context);
 
         // when screening
-        ObjArray<Block> _all_blocks;
+        PtrArray<Block> _all_blocks;
 
         static int _cmp_counters(int a, int b, void* context);
         static int _cmp_int(int a, int b, void* context);
     };
 
 } // namespace indigo
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

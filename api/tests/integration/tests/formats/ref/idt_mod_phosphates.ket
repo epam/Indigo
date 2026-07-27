@@ -71,7 +71,7 @@
                 "$ref": "monomerTemplate-MOE___2'-O-Methoxyethyl ribose"
             },
             {
-                "$ref": "monomerTemplate-5meC___5-methyl-cytidine"
+                "$ref": "monomerTemplate-5meC___5-methylcytosine"
             }
         ]
     },
@@ -106,7 +106,7 @@
             "y": -1.500000
         },
         "alias": "5meC",
-        "templateId": "5meC___5-methyl-cytidine"
+        "templateId": "5meC___5-methylcytosine"
     },
     "monomer3": {
         "type": "monomer",
@@ -138,13 +138,14 @@
         "fullName": "Phosphate",
         "alias": "P",
         "naturalAnalogShort": "P",
+        "aliasHELM": "p",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
                 "type": "left",
                 "leavingGroup": {
                     "atoms": [
-                        1
+                        3
                     ]
                 }
             },
@@ -153,7 +154,7 @@
                 "type": "right",
                 "leavingGroup": {
                     "atoms": [
-                        3
+                        4
                     ]
                 }
             }
@@ -162,7 +163,7 @@
             {
                 "label": "P",
                 "location": [
-                    -0.239900,
+                    0.000000,
                     0.000000,
                     0.000000
                 ]
@@ -170,7 +171,23 @@
             {
                 "label": "O",
                 "location": [
-                    -1.439900,
+                    0.500000,
+                    -0.866000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    0.500000,
+                    0.866000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    -1.000000,
                     0.000000,
                     0.000000
                 ]
@@ -178,38 +195,22 @@
             {
                 "label": "O",
                 "location": [
-                    0.359800,
-                    -1.039400,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    0.960100,
+                    1.000000,
                     0.000000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    0.359800,
-                    1.039400,
                     0.000000
                 ]
             }
         ],
         "bonds": [
             {
-                "type": 1,
+                "type": 2,
                 "atoms": [
                     0,
                     1
                 ]
             },
             {
-                "type": 2,
+                "type": 1,
                 "atoms": [
                     0,
                     2
@@ -239,49 +240,42 @@
         "fullName": "2'-O-Methoxyethyl ribose",
         "alias": "MOE",
         "naturalAnalogShort": "R",
+        "aliasHELM": "moe",
         "attachmentPoints": [
             {
-                "attachmentAtom": 9,
+                "attachmentAtom": 6,
                 "type": "left",
                 "leavingGroup": {
                     "atoms": [
-                        10
+                        7
                     ]
                 }
             },
             {
-                "attachmentAtom": 5,
+                "attachmentAtom": 8,
                 "type": "right",
                 "leavingGroup": {
                     "atoms": [
-                        11
+                        9
                     ]
                 }
             },
             {
-                "attachmentAtom": 2,
+                "attachmentAtom": 0,
                 "type": "side",
                 "leavingGroup": {
                     "atoms": [
-                        8
+                        10
                     ]
                 }
             }
         ],
         "atoms": [
             {
-                "label": "O",
-                "location": [
-                    -2.234000,
-                    0.032800,
-                    0.000000
-                ]
-            },
-            {
                 "label": "C",
                 "location": [
-                    -1.722000,
-                    1.442700,
+                    -0.704000,
+                    -0.378000,
                     0.000000
                 ],
                 "stereoLabel": "abs"
@@ -289,8 +283,8 @@
             {
                 "label": "C",
                 "location": [
-                    -1.051400,
-                    -0.889800,
+                    0.105000,
+                    0.209000,
                     0.000000
                 ],
                 "stereoLabel": "abs"
@@ -298,8 +292,8 @@
             {
                 "label": "C",
                 "location": [
-                    -0.222900,
-                    1.391500,
+                    -0.204000,
+                    1.160000,
                     0.000000
                 ],
                 "stereoLabel": "abs"
@@ -307,8 +301,8 @@
             {
                 "label": "C",
                 "location": [
-                    0.191600,
-                    -0.050000,
+                    -1.204000,
+                    1.160000,
                     0.000000
                 ],
                 "stereoLabel": "abs"
@@ -316,88 +310,96 @@
             {
                 "label": "O",
                 "location": [
-                    0.696200,
-                    2.574600,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    1.598800,
-                    -0.564400,
+                    -1.513000,
+                    0.209000,
                     0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -2.563300,
-                    2.682500,
+                    -1.792000,
+                    1.969000,
                     0.000000
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    -1.092300,
-                    -2.089100,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    -4.060200,
-                    2.574600,
+                    -2.786000,
+                    1.865000,
                     0.000000
                 ]
             },
             {
                 "label": "H",
                 "location": [
-                    -4.734100,
-                    3.567400,
-                    0.000000
-                ]
-            },
-            {
-                "label": "H",
-                "location": [
-                    1.885100,
-                    2.411800,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    1.858400,
-                    -2.042600,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    3.268000,
-                    -2.557800,
+                    -3.374000,
+                    2.674000,
                     0.000000
                 ]
             },
             {
                 "label": "O",
                 "location": [
-                    3.527500,
-                    -4.036100,
+                    0.384000,
+                    1.969000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    1.378000,
+                    1.865000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    -0.704000,
+                    -1.378000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    1.056000,
+                    -0.100000,
                     0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    4.654600,
-                    -4.448100,
+                    1.264000,
+                    -1.078000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    2.215000,
+                    -1.387000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    2.423000,
+                    -2.365000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    3.374000,
+                    -2.674000,
                     0.000000
                 ]
             }
@@ -407,51 +409,35 @@
                 "type": 1,
                 "atoms": [
                     0,
-                    1
+                    4
                 ]
             },
             {
                 "type": 1,
                 "atoms": [
-                    0,
-                    2
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    1,
+                    4,
                     3
                 ]
             },
             {
                 "type": 1,
                 "atoms": [
-                    1,
-                    7
-                ],
-                "stereo": 6
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    2,
-                    4
+                    3,
+                    2
                 ]
             },
             {
                 "type": 1,
                 "atoms": [
                     2,
-                    8
-                ],
-                "stereo": 6
+                    1
+                ]
             },
             {
                 "type": 1,
                 "atoms": [
-                    3,
-                    4
+                    1,
+                    0
                 ]
             },
             {
@@ -460,41 +446,57 @@
                     3,
                     5
                 ],
-                "stereo": 1
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    4,
-                    6
-                ],
-                "stereo": 1
+                "stereo": 6
             },
             {
                 "type": 1,
                 "atoms": [
                     5,
-                    11
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    7,
-                    9
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    9,
-                    10
+                    6
                 ]
             },
             {
                 "type": 1,
                 "atoms": [
                     6,
+                    7
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    8
+                ],
+                "stereo": 1
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    8,
+                    9
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    10
+                ],
+                "stereo": 6
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    11
+                ],
+                "stereo": 1
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    11,
                     12
                 ]
             },
@@ -521,103 +523,104 @@
             }
         ]
     },
-    "monomerTemplate-5meC___5-methyl-cytidine": {
+    "monomerTemplate-5meC___5-methylcytosine": {
         "type": "monomerTemplate",
-        "id": "5meC___5-methyl-cytidine",
+        "id": "5meC___5-methylcytosine",
         "class": "Base",
         "classHELM": "RNA",
-        "fullName": "5-methyl-cytidine",
+        "fullName": "5-methylcytosine",
         "alias": "5meC",
         "naturalAnalogShort": "C",
+        "aliasHELM": "m5C",
         "attachmentPoints": [
             {
-                "attachmentAtom": 3,
+                "attachmentAtom": 0,
                 "type": "left",
                 "leavingGroup": {
                     "atoms": [
-                        8
+                        6
                     ]
                 }
             }
         ],
         "atoms": [
             {
-                "label": "C",
+                "label": "N",
                 "location": [
-                    1.861700,
-                    1.349900,
+                    -1.000000,
+                    0.000000,
                     0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    1.111700,
-                    2.648900,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    -0.388200,
-                    2.649000,
+                    -0.500000,
+                    -0.866000,
                     0.000000
                 ]
             },
             {
                 "label": "N",
                 "location": [
-                    -1.138200,
-                    1.350000,
+                    0.500000,
+                    -0.866000,
                     0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    -0.388300,
-                    0.050900,
+                    1.000000,
+                    0.000000,
                     0.000000
                 ]
             },
             {
-                "label": "N",
+                "label": "C",
                 "location": [
-                    1.111700,
-                    0.050900,
+                    0.500000,
+                    0.866000,
                     0.000000
                 ]
             },
             {
-                "label": "N",
+                "label": "C",
                 "location": [
-                    3.061800,
-                    1.349900,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    -0.988400,
-                    -0.988300,
+                    -0.500000,
+                    0.866000,
                     0.000000
                 ]
             },
             {
                 "label": "H",
                 "location": [
-                    -2.338300,
-                    1.350000,
+                    -2.000000,
+                    0.000000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    -1.000000,
+                    -1.732000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "N",
+                "location": [
+                    2.000000,
+                    0.000000,
                     0.000000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    1.711800,
-                    3.688200,
+                    1.000000,
+                    1.732000,
                     0.000000
                 ]
             }
@@ -626,14 +629,42 @@
             {
                 "type": 1,
                 "atoms": [
+                    5,
+                    0
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
                     0,
                     1
                 ]
             },
             {
+                "type": 1,
+                "atoms": [
+                    1,
+                    2
+                ]
+            },
+            {
                 "type": 2,
                 "atoms": [
-                    0,
+                    2,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    4
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    4,
                     5
                 ]
             },
@@ -648,21 +679,7 @@
                 "type": 2,
                 "atoms": [
                     1,
-                    2
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    2,
-                    3
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    3,
-                    4
+                    7
                 ]
             },
             {
@@ -676,20 +693,6 @@
                 "type": 1,
                 "atoms": [
                     4,
-                    5
-                ]
-            },
-            {
-                "type": 2,
-                "atoms": [
-                    4,
-                    7
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    1,
                     9
                 ]
             }

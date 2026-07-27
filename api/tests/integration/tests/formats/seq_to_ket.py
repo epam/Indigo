@@ -1,18 +1,18 @@
-﻿import difflib
-import os
+﻿import os
 import sys
-
-
-def find_diff(a, b):
-    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
-
 
 sys.path.append(
     os.path.normpath(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
-from env_indigo import *  # noqa
+from common.util import compare_diff
+from env_indigo import (
+    Indigo,
+    IndigoException,
+    getIndigoExceptionText,
+    joinPathPy,
+)
 
 indigo = Indigo()
 indigo.setOption("json-saving-pretty", True)
@@ -47,15 +47,30 @@ lib = indigo.loadMonomerLibraryFromFile(
 for seq in seq_tests:
     mol = indigo.loadSequence(seq["seq_data"], seq["seq_type"], lib)
     filename = seq["ref"]
-    # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
-    #     file.write(mol.json())
-
-    with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
-        ket_ref = file.read()
     ket = mol.json()
-    diff = find_diff(ket_ref, ket)
-    if not diff:
-        print(filename + ".ket:SUCCEED")
-    else:
-        print(filename + ".ket:FAILED")
-        print(diff)
+    compare_diff(ref_path, filename + ".ket", ket)
+
+seq_errors = {
+    "12w12r23e32e33": (
+        "PEPTIDE",
+        "Invalid symbols in the sequence: 1,2,2,3,3,2,3,3",
+    ),
+    "12w12r23c32c33": (
+        "RNA",
+        "Invalid symbols in the sequence: 1,2,2,3,3,2,3,3",
+    ),
+}
+for seq in sorted(seq_errors.keys()):
+    type, error = seq_errors[seq]
+    try:
+        mol = indigo.loadSequence(seq, type, lib)
+        print("Test %s %s failed: exception expected." % (type, seq))
+    except IndigoException as e:
+        text = getIndigoExceptionText(e)
+        if error in text:
+            print("Test %s '%s': got expected error '%s'" % (type, seq, error))
+        else:
+            print(
+                "Test %s '%s': expected error '%s' but got '%s'"
+                % (type, seq, error, text)
+            )

@@ -102,6 +102,8 @@ namespace indigo
         static void _createCoordinationBonds(BaseMolecule& mol);
         static void _createHydrogenBonds(BaseMolecule& mol);
         static void _removeExtraStereoBonds(BaseMolecule& mol);
+        static void _standardizeStereoMarkUndefined(Molecule& mol);
+        static void _standardizeStereoMarkUndefined(QueryMolecule& mol);
         CP_DECL;
 
     private:

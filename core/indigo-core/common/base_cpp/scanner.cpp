@@ -463,10 +463,36 @@ void Scanner::appendLine(Array<char>& out, bool append_zero)
         out.push(0);
 }
 
+void Scanner::appendLine(std::string& out)
+{
+    Array<char> buf;
+    appendLine(buf, false);
+    out.assign(buf.ptr(), buf.size());
+}
+
 void Scanner::readLine(Array<char>& out, bool append_zero)
 {
     out.clear();
     appendLine(out, append_zero);
+}
+
+void Scanner::readLine(std::string& out)
+{
+    out.clear();
+    appendLine(out);
+}
+
+void Scanner::readQuotedLine(Array<char>& out, bool append_zero)
+{
+    out.clear();
+    Array<char> stripped_line;
+    appendLine(stripped_line, append_zero);
+    if (stripped_line.size() > 2 && stripped_line[0] == '"' && stripped_line[stripped_line.size() - 2] == '"')
+    {
+        stripped_line.remove(stripped_line.size() - 2, 1);
+        stripped_line.remove(0, 1);
+    }
+    out.copy(stripped_line);
 }
 
 void Scanner::readCharsFix(int n, char* chars_out)

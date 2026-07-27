@@ -56,7 +56,7 @@ if sys.argv[1] == "bdist_wheel":
     for opt in sys.argv[2:]:
         if opt.startswith("--plat-name"):
             PLATFORM_NAME = opt.split("=")[1]
-            if PLATFORM_NAME.startswith("macosx_10_7_intel"):
+            if PLATFORM_NAME.startswith("macosx_11_0_x86_64"):
                 INDIGO_LIBS = "lib/darwin-x86_64/*.dylib"
             elif PLATFORM_NAME.startswith("macosx_11_0_arm64"):
                 INDIGO_LIBS = "lib/darwin-aarch64/*.dylib"
@@ -77,7 +77,7 @@ if sys.argv[1] == "bdist_wheel":
     if not INDIGO_LIBS:
         raise ValueError(
             "Wrong --plat-name value! Should be one of: macosx_11_0_arm64, "
-            "macosx_10_7_intel, manylinux1_x86_64, manylinux2014_aarch64, "
+            "macosx_11_0_x86_64, manylinux1_x86_64, manylinux2014_aarch64, "
             "manylinux1_i686, win_amd64, win32"
         )
 
@@ -97,13 +97,13 @@ if os.path.exists("epam.indigo.egg-info"):
     shutil.rmtree("epam.indigo.egg-info")
 
 setup(
-    name="epam.indigo",
-    version="1.31.0.dev1",
+    name="epam_indigo",
+    version="1.47.0.dev1",
     description="Indigo universal cheminformatics toolkit",
     author="EPAM Systems Life Science Department",
     author_email="lifescience.opensource@epam.com",
-    maintainer="Mikhail Kviatkovskii",
-    maintainer_email="Mikhail_Kviatkovskii@epam.com",
+    maintainer="Lifescience Opensource",
+    maintainer_email="lifescience.opensource@epam.com",
     packages=[
         "indigo",
         "indigo._common",

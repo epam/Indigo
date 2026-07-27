@@ -19,9 +19,15 @@
 #ifndef _RDF_LOADER_H__
 #define _RDF_LOADER_H__
 
-#include "base_cpp/obj.h"
 #include "base_cpp/properties_map.h"
 #include "base_cpp/tlscont.h"
+
+#include <memory>
+
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
 
 namespace indigo
 {
@@ -95,5 +101,9 @@ namespace indigo
     };
 
 } // namespace indigo
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif /* _RDF_READER_H */

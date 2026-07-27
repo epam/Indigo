@@ -22,15 +22,15 @@ namespace indigo
     {
     public:
         DECL_ERROR;
-        IdtAlias(){};
+        IdtAlias() : _has_modifications(false){};
 
         IdtAlias(const std::string& base) : _base(base), _has_modifications(false)
         {
             if (_base.size() > 0)
             {
-                _five_prime_end = "5" + base;
-                _internal = "i" + base;
-                _three_prime_end = "3" + base;
+                _five_prime_end = "/5" + base + "/";
+                _internal = "/i" + base + "/";
+                _three_prime_end = "/3" + base + "/";
             }
         };
 
@@ -60,6 +60,11 @@ namespace indigo
                 break;
             };
             _has_modifications = true;
+        };
+
+        inline void setBase(const std::string& base)
+        {
+            _base = base;
         };
 
         inline bool hasModification(IdtModification modification) const
@@ -118,7 +123,7 @@ namespace indigo
 
         static std::string getBaseForMod(const std::string& alias);
 
-        inline bool hasModifications()
+        inline bool hasModifications() const
         {
             return _has_modifications;
         }

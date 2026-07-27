@@ -72167,9 +72167,9 @@ Item
 Molecules set: ../../../../../data/molecules/sgroups/all_sgroups.sdf
 
 Testing molecule #0
-CCOCCOCC.*CNC*.C1CCC2C(CCC3CCCCC3)CCCC2C1.N(N)NN.N(N)NN.N(N)NN |$;;;;;;;;*;;;;*;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$,Sg:n:9,10,11:n:ht,SgD:1,2,3:RRREE:ptptptttprpt:::q:,Sg:gen:13,14,18:|
+CCOCCOCC.*CNC*.C1CCC2C(CCC3CCCCC3)CCCC2C1.N(N)NN.N(N)NN.N(N)NN |$;;;;;;;;star_e;;;;star_e;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$,Sg:n:9,10,11:n:ht,SgD:1,2,3:RRREE:ptptptttprpt:::q:,Sg:gen:13,14,18:|
 
-CCOCCOCC.*CNC*.C1CC2C(C(CCC2)CCC2CCCCC2)CC1.N(NN)N.N(NN)N.N(NN)N |$;;;;;;;;*;;;;*;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$,Sg:n:9,10,11:n:ht,SgD:1,2,3:RRREE:ptptptttprpt:::q:,Sg:gen:13,14,18:|
+CCOCCOCC.*CNC*.C1CC2C(C(CCC2)CCC2CCCCC2)CC1.N(NN)N.N(NN)N.N(NN)N |$;;;;;;;;star_e;;;;star_e;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$,Sg:n:9,10,11:n:ht,SgD:1,2,3:RRREE:ptptptttprpt:::q:,Sg:gen:13,14,18:|
 
 * checkEqualProperties *
 allenecenters: 0 0 
@@ -72243,9 +72243,9 @@ Item
   sssr:3
   stereocenters:0
   superatoms:0
-CCOCCOCC.*CNC*.C1CCC2C(CCC3CCCCC3)CCCC2C1.N(N)NN.N(N)NN.N(N)NN |$;;;;;;;;*;;;;*;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$,Sg:n:9,10,11:n:ht,SgD:1,2,3:RRREE:ptptptttprpt:::q:,Sg:gen:13,14,18:|
+CCOCCOCC.*CNC*.C1CCC2C(CCC3CCCCC3)CCCC2C1.N(N)NN.N(N)NN.N(N)NN |$;;;;;;;;star_e;;;;star_e;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$,Sg:n:9,10,11:n:ht,SgD:1,2,3:RRREE:ptptptttprpt:::q:,Sg:gen:13,14,18:|
 
-CCOCCOCC.*CNC*.C1CC2C(C(CCC2)CCC2CCCCC2)CC1.N(NN)N.N(NN)N.N(NN)N |$;;;;;;;;*;;;;*;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$,Sg:n:9,10,11:n:ht,SgD:1,2,3:RRREE:ptptptttprpt:::q:,Sg:gen:13,14,18:|
+CCOCCOCC.*CNC*.C1CC2C(C(CCC2)CCC2CCCCC2)CC1.N(NN)N.N(NN)N.N(NN)N |$;;;;;;;;star_e;;;;star_e;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$,Sg:n:9,10,11:n:ht,SgD:1,2,3:RRREE:ptptptttprpt:::q:,Sg:gen:13,14,18:|
 
 * checkEqualProperties *
 allenecenters: 0 0 
@@ -72321,9 +72321,9 @@ Item
   superatoms:0
 
 Testing molecule #1
-C(*)C(*)C1C=CC=CC=1 |$;*;;*;;;;;;$,Sg:n:0,1,2,3,4,5,6,7:n:ht|
+C(*)C(*)C1C=CC=CC=1 |$;star_e;;star_e;;;;;;$,Sg:n:0,1,2,3,4,5,6,7:n:ht|
 
-C(C(C1=CC=CC=C1)*)* |$;;;;;;;;*;*$,Sg:n:0,1,2,3,4,5,6,7:n:ht|
+C(C(C1=CC=CC=C1)*)* |$;;;;;;;;star_e;star_e$,Sg:n:0,1,2,3,4,5,6,7:n:ht|
 
 * checkEqualProperties *
 allenecenters: 0 0 
@@ -72394,9 +72394,9 @@ Item
   sssr:1
   stereocenters:0
   superatoms:0
-C(*)C(*)c1ccccc1 |$;*;;*;;;;;;$,Sg:n:0,1,2,3,4,5,6,7:n:ht|
+C(*)C(*)c1ccccc1 |$;star_e;;star_e;;;;;;$,Sg:n:0,1,2,3,4,5,6,7:n:ht|
 
-C(C(c1ccccc1)*)* |$;;;;;;;;*;*$,Sg:n:0,1,2,3,4,5,6,7:n:ht|
+C(C(c1ccccc1)*)* |$;;;;;;;;star_e;star_e$,Sg:n:0,1,2,3,4,5,6,7:n:ht|
 
 * checkEqualProperties *
 allenecenters: 0 0 
@@ -72617,9 +72617,9 @@ Item
   superatoms:0
 
 Testing molecule #3
-[C@@H](C(=O)O[C@@H](C)C(=O)O[C@H](C(=O)O)C)(C)O.C(S)(S)S.*(C)CCCC.*CCCCCCC |$;;;;;;;;;;;;;;;;;;;;0 1;;;;;;*;;;;;;;$,Sg:n:2,12,13,14,15:n:ht,Sg:n:16:n:ht,Sg:n:21,22:m:hh,Sg:n:27,28,29,30,31:k:eu|
+[C@@H](C(=O)O[C@@H](C)C(=O)O[C@H](C(=O)O)C)(C)O.C(S)(S)S.*(C)CCCC.*CCCCCCC |$;;;;;;;;;;;;;;;;;;;;0 1;;;;;;star_e;;;;;;;$,Sg:n:2,12,13,14,15:n:ht,Sg:n:16:n:ht,Sg:n:21,22:m:hh,Sg:n:27,28,29,30,31:k:eu|
 
-[C@H](O)(C)C(O[C@H](C(O[C@@H](C)C(O)=O)=O)C)=O.C(S)(S)S.*(CCCC)C.*CCCCCCC |$;;;;;;;;;;;;;;;;;;;;0 1;;;;;;*;;;;;;;$,Sg:n:2,12,13,14,15:n:ht,Sg:n:16:n:ht,Sg:n:21,22:m:hh,Sg:n:27,28,29,30,31:k:eu|
+[C@H](O)(C)C(O[C@H](C(O[C@@H](C)C(O)=O)=O)C)=O.C(S)(S)S.*(CCCC)C.*CCCCCCC |$;;;;;;;;;;;;;;;;;;;;0 1;;;;;;star_e;;;;;;;$,Sg:n:2,12,13,14,15:n:ht,Sg:n:16:n:ht,Sg:n:21,22:m:hh,Sg:n:27,28,29,30,31:k:eu|
 
 * checkEqualProperties *
 allenecenters: 0 0 
@@ -72690,9 +72690,9 @@ Item
   sssr:0
   stereocenters:0
   superatoms:0
-[C@@H](C(=O)O[C@@H](C)C(=O)O[C@H](C(=O)O)C)(C)O.C(S)(S)S.*(C)CCCC.*CCCCCCC |$;;;;;;;;;;;;;;;;;;;;0 1;;;;;;*;;;;;;;$,Sg:n:2,12,13,14,15:n:ht,Sg:n:16:n:ht,Sg:n:21,22:m:hh,Sg:n:27,28,29,30,31:k:eu|
+[C@@H](C(=O)O[C@@H](C)C(=O)O[C@H](C(=O)O)C)(C)O.C(S)(S)S.*(C)CCCC.*CCCCCCC |$;;;;;;;;;;;;;;;;;;;;0 1;;;;;;star_e;;;;;;;$,Sg:n:2,12,13,14,15:n:ht,Sg:n:16:n:ht,Sg:n:21,22:m:hh,Sg:n:27,28,29,30,31:k:eu|
 
-[C@H](O)(C)C(O[C@H](C(O[C@@H](C)C(O)=O)=O)C)=O.C(S)(S)S.*(CCCC)C.*CCCCCCC |$;;;;;;;;;;;;;;;;;;;;0 1;;;;;;*;;;;;;;$,Sg:n:2,12,13,14,15:n:ht,Sg:n:16:n:ht,Sg:n:21,22:m:hh,Sg:n:27,28,29,30,31:k:eu|
+[C@H](O)(C)C(O[C@H](C(O[C@@H](C)C(O)=O)=O)C)=O.C(S)(S)S.*(CCCC)C.*CCCCCCC |$;;;;;;;;;;;;;;;;;;;;0 1;;;;;;star_e;;;;;;;$,Sg:n:2,12,13,14,15:n:ht,Sg:n:16:n:ht,Sg:n:21,22:m:hh,Sg:n:27,28,29,30,31:k:eu|
 
 * checkEqualProperties *
 allenecenters: 0 0 
@@ -73061,9 +73061,9 @@ Item
   superatoms:0
 
 Testing molecule #6
-C1(CCCC(CCCCCCCCCCCCCCCCCCCCCCCCC2=C(CCCC*)C=C3C(=C2)C=C(CCCC)C(CCCC)=C3)CC)C=CC=CC=1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1 |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;*;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$,Sg:n:0,1,2,3,4,5:2:ht,Sg:n:20,21,22,23,24,25,26,27,28,29:n:ht,Sg:n:9:n:ht,Sg:n:32,33:n:ht|
+C1(CCCC(CCCCCCCCCCCCCCCCCCCCCCCCC2=C(CCCC*)C=C3C(=C2)C=C(CCCC)C(CCCC)=C3)CC)C=CC=CC=1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1 |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;star_e;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$,Sg:n:0,1,2,3,4,5:2:ht,Sg:n:20,21,22,23,24,25,26,27,28,29:n:ht,Sg:n:9:n:ht,Sg:n:32,33:n:ht|
 
-C1(=CC=CC=C1)CCCC(CC)CCCCCCCCCCCCCCCCCCCCCCCCC1C=C2C=C(C(=CC2=CC=1CCCC*)CCCC)CCCC.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1 |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;*;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$,Sg:n:0,1,2,3,4,5:2:ht,Sg:n:20,21,22,23,24,25,26,27,28,29:n:ht,Sg:n:9:n:ht,Sg:n:32,33:n:ht|
+C1(=CC=CC=C1)CCCC(CC)CCCCCCCCCCCCCCCCCCCCCCCCC1C=C2C=C(C(=CC2=CC=1CCCC*)CCCC)CCCC.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1 |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;star_e;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$,Sg:n:0,1,2,3,4,5:2:ht,Sg:n:20,21,22,23,24,25,26,27,28,29:n:ht,Sg:n:9:n:ht,Sg:n:32,33:n:ht|
 
 * checkEqualProperties *
 allenecenters: 0 0 
@@ -73134,9 +73134,9 @@ Item
   sssr:0
   stereocenters:0
   superatoms:0
-c1(CCCC(CCCCCCCCCCCCCCCCCCCCCCCCc2c(CCCC*)cc3c(c2)cc(CCCC)c(CCCC)c3)CC)ccccc1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1 |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;*;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$,Sg:n:0,1,2,3,4,5:2:ht,Sg:n:20,21,22,23,24,25,26,27,28,29:n:ht,Sg:n:9:n:ht,Sg:n:32,33:n:ht|
+c1(CCCC(CCCCCCCCCCCCCCCCCCCCCCCCc2c(CCCC*)cc3c(c2)cc(CCCC)c(CCCC)c3)CC)ccccc1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1 |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;star_e;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$,Sg:n:0,1,2,3,4,5:2:ht,Sg:n:20,21,22,23,24,25,26,27,28,29:n:ht,Sg:n:9:n:ht,Sg:n:32,33:n:ht|
 
-c1(ccccc1)CCCC(CC)CCCCCCCCCCCCCCCCCCCCCCCCc1cc2cc(c(cc2cc1CCCC*)CCCC)CCCC.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1 |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;*;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$,Sg:n:0,1,2,3,4,5:2:ht,Sg:n:20,21,22,23,24,25,26,27,28,29:n:ht,Sg:n:9:n:ht,Sg:n:32,33:n:ht|
+c1(ccccc1)CCCC(CC)CCCCCCCCCCCCCCCCCCCCCCCCc1cc2cc(c(cc2cc1CCCC*)CCCC)CCCC.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1 |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;star_e;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$,Sg:n:0,1,2,3,4,5:2:ht,Sg:n:20,21,22,23,24,25,26,27,28,29:n:ht,Sg:n:9:n:ht,Sg:n:32,33:n:ht|
 
 * checkEqualProperties *
 allenecenters: 0 0 
@@ -73209,9 +73209,9 @@ Item
   superatoms:0
 
 Testing molecule #7
-C1(CCCC(CCCCCCCCCCCCCCCCCCCCCCCCC2=C(CCCC*)C=C3C(=C2)C=C(CCCC)C(CCCC)=C3)CCCCCCCCCC2(CCCC2)CC*)C=CC=CC=1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1 |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;*;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;*;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$,Sg:n:0,1,2,3,4,5:2:ht,Sg:n:20,21,22,23,24,25,26,27,28,29:n:ht,Sg:n:9:n:ht,Sg:n:32,33:n:ht,Sg:n:48,49,50:n:ht,Sg:n:54,55,56,57,59,60,61,62:n:ht|
+C1(CCCC(CCCCCCCCCCCCCCCCCCCCCCCCC2=C(CCCC*)C=C3C(=C2)C=C(CCCC)C(CCCC)=C3)CCCCCCCCCC2(CCCC2)CC*)C=CC=CC=1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1 |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;star_e;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;star_e;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$,Sg:n:0,1,2,3,4,5:2:ht,Sg:n:20,21,22,23,24,25,26,27,28,29:n:ht,Sg:n:9:n:ht,Sg:n:32,33:n:ht,Sg:n:48,49,50:n:ht,Sg:n:54,55,56,57,59,60,61,62:n:ht|
 
-C1(=CC=CC=C1)CCCC(CCCCCCCCCC1(CC*)CCCC1)CCCCCCCCCCCCCCCCCCCCCCCCC1C=C2C=C(C(=CC2=CC=1CCCC*)CCCC)CCCC.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1 |$;;;;;;;;;;;;;;;;;;;;;;*;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;*;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$,Sg:n:0,1,2,3,4,5:2:ht,Sg:n:20,21,22,23,24,25,26,27,28,29:n:ht,Sg:n:9:n:ht,Sg:n:32,33:n:ht,Sg:n:48,49,50:n:ht,Sg:n:54,55,56,57,59,60,61,62:n:ht|
+C1(=CC=CC=C1)CCCC(CCCCCCCCCC1(CC*)CCCC1)CCCCCCCCCCCCCCCCCCCCCCCCC1C=C2C=C(C(=CC2=CC=1CCCC*)CCCC)CCCC.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1 |$;;;;;;;;;;;;;;;;;;;;;;star_e;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;star_e;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$,Sg:n:0,1,2,3,4,5:2:ht,Sg:n:20,21,22,23,24,25,26,27,28,29:n:ht,Sg:n:9:n:ht,Sg:n:32,33:n:ht,Sg:n:48,49,50:n:ht,Sg:n:54,55,56,57,59,60,61,62:n:ht|
 
 * checkEqualProperties *
 allenecenters: 0 0 
@@ -73282,9 +73282,9 @@ Item
   sssr:0
   stereocenters:0
   superatoms:0
-c1(CCCC(CCCCCCCCCCCCCCCCCCCCCCCCc2c(CCCC*)cc3c(c2)cc(CCCC)c(CCCC)c3)CCCCCCCCCC2(CCCC2)CC*)ccccc1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1 |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;*;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;*;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$,Sg:n:0,1,2,3,4,5:2:ht,Sg:n:20,21,22,23,24,25,26,27,28,29:n:ht,Sg:n:9:n:ht,Sg:n:32,33:n:ht,Sg:n:48,49,50:n:ht,Sg:n:54,55,56,57,59,60,61,62:n:ht|
+c1(CCCC(CCCCCCCCCCCCCCCCCCCCCCCCc2c(CCCC*)cc3c(c2)cc(CCCC)c(CCCC)c3)CCCCCCCCCC2(CCCC2)CC*)ccccc1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1 |$;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;star_e;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;star_e;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$,Sg:n:0,1,2,3,4,5:2:ht,Sg:n:20,21,22,23,24,25,26,27,28,29:n:ht,Sg:n:9:n:ht,Sg:n:32,33:n:ht,Sg:n:48,49,50:n:ht,Sg:n:54,55,56,57,59,60,61,62:n:ht|
 
-c1(ccccc1)CCCC(CCCCCCCCCC1(CC*)CCCC1)CCCCCCCCCCCCCCCCCCCCCCCCc1cc2cc(c(cc2cc1CCCC*)CCCC)CCCC.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1 |$;;;;;;;;;;;;;;;;;;;;;;*;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;*;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$,Sg:n:0,1,2,3,4,5:2:ht,Sg:n:20,21,22,23,24,25,26,27,28,29:n:ht,Sg:n:9:n:ht,Sg:n:32,33:n:ht,Sg:n:48,49,50:n:ht,Sg:n:54,55,56,57,59,60,61,62:n:ht|
+c1(ccccc1)CCCC(CCCCCCCCCC1(CC*)CCCC1)CCCCCCCCCCCCCCCCCCCCCCCCc1cc2cc(c(cc2cc1CCCC*)CCCC)CCCC.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1.C1CCCC1 |$;;;;;;;;;;;;;;;;;;;;;;star_e;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;star_e;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;$,Sg:n:0,1,2,3,4,5:2:ht,Sg:n:20,21,22,23,24,25,26,27,28,29:n:ht,Sg:n:9:n:ht,Sg:n:32,33:n:ht,Sg:n:48,49,50:n:ht,Sg:n:54,55,56,57,59,60,61,62:n:ht|
 
 * checkEqualProperties *
 allenecenters: 0 0 

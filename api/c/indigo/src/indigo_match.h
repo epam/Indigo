@@ -27,6 +27,13 @@
 #include "reaction/reaction.h"
 #include "reaction/reaction_substructure_matcher.h"
 
+#include <memory>
+
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
+
 class IndigoQueryMolecule;
 
 #ifdef _WIN32
@@ -39,6 +46,7 @@ struct IndigoTautomerParams
     int conditions;
     bool force_hydrogens;
     bool ring_chain;
+    bool inner;
     TautomerMethod method;
 };
 
@@ -130,7 +138,7 @@ public:
     Molecule& target;
     Molecule moleculeFound;
 
-    Obj<MoleculeTautomerMatcher> tau_matcher;
+    std::unique_ptr<MoleculeTautomerMatcher> tau_matcher;
     IndigoTautomerParams tau_params;
     bool findTautomerMatch(QueryMolecule& query, PtrArray<TautomerRule>& tautomer_rules, Array<int>& mapping_out);
 
@@ -159,8 +167,8 @@ public:
     Reaction target;
     bool daylight_aam;
 
-    Obj<ReactionSubstructureMatcher> matcher;
-    ObjArray<Array<int>> mappings;
+    std::unique_ptr<ReactionSubstructureMatcher> matcher;
+    PtrArray<Array<int>> mappings;
     Array<int> mol_mapping;
 };
 

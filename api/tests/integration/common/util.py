@@ -1,3 +1,5 @@
+import difflib
+import io
 import os
 import platform
 import re
@@ -141,13 +143,37 @@ def file_sha1(path):
     return sha1sum.hexdigest()
 
 
+def file_md5(path):
+    import hashlib
+
+    md5sum = hashlib.md5()
+    with open(path, "rb") as source:
+        block = source.read(2**16)
+        while len(block) != 0:
+            md5sum.update(block)
+            block = source.read(2**16)
+    return md5sum.hexdigest()
+
+
 def download_jna(jna_version, path):
     import urllib
 
     def check_jna_sha1():
         jna_sha1_url = "{}.sha1".format(jna_url)
-        jna_ref_sha1 = urllib.urlopen(jna_sha1_url).read()
+        sha_req = urllib.urlopen(jna_sha1_url)
+        jna_ref_sha1 = sha_req.read()
         jna_file_sha1 = file_sha1(output_path)
+        if (
+            len(jna_ref_sha1) != 40 or sha_req.getcode() >= 400
+        ):  # Http error, try use md5
+            print("sha1 load failed: %s" % jna_ref_sha1)
+            print("fallback to MD5")
+            sha_req.close()
+            jna_sha1_url = "{}.md5".format(jna_url)
+            md5_req = urllib.urlopen(jna_sha1_url)
+            jna_ref_sha1 = md5_req.read()
+            jna_file_sha1 = file_md5(output_path)
+
         if jna_ref_sha1 != jna_file_sha1:
             print(
                 "Checked JNA at {}, sha1 {} is not equal to reference {}".format(
@@ -183,3 +209,30 @@ def download_jna(jna_version, path):
     except Exception as e:
         os.remove(output_path)
         raise e
+
+
+def find_diff(a, b):
+    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
+
+
+def compare_diff(ref_path, filename, data, stdout=True, diff_fn=find_diff):
+    path_to_file = os.path.join(ref_path, filename)
+
+    is_update_required = os.getenv("INDIGO_UPDATE_TESTS", "False") == "True"
+    if is_update_required:
+        with io.open(path_to_file, "w", encoding="utf-8") as file:
+            file.write(data)
+
+    with io.open(path_to_file, "r", encoding="utf-8") as file:
+        data_ref = file.read()
+
+    diff = diff_fn(data_ref, data)
+
+    if not stdout:
+        return diff
+
+    if not diff:
+        print(filename + ":SUCCEED")
+    else:
+        print(filename + ":FAILED")
+        print(diff)

@@ -183,6 +183,14 @@ int RenderItemMolecule::_getRIfThenCount()
 void RenderItemMolecule::estimateSizeWithMeta()
 {
     Vec2f bbmin, bbmax;
+    if (_core >= 0 && _meta >= 0)
+    {
+        auto& core = static_cast<RenderItemFragment&>(_factory.getItem(_core));
+        core.estimateSize();
+        auto& meta = _factory.getItem(_meta);
+        meta.setObjScale(core.getObjScale());
+    }
+
     for (int i = 0; i < items.size(); ++i)
     {
         RenderItemBase& item = _factory.getItem(items[i]);

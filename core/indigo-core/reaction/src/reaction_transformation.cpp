@@ -55,7 +55,7 @@ bool ReactionTransformation::transform(Molecule& molecule, QueryReaction& reacti
     QS_DEF(ReactionEnumeratorState::ReactionMonomers, cur_reaction_monomers);
     cur_reaction_monomers.clear();
     cur_reaction_monomers.addMonomer(reactant_idx, molecule);
-    QS_DEF(ObjArray<Array<int>>, cur_tubes_monomers);
+    QS_DEF(PtrArray<Array<int>>, cur_tubes_monomers);
     cur_tubes_monomers.clear();
 
     int product_count = 0;

@@ -27,6 +27,9 @@
 namespace indigo
 {
 
+    // Marker value used to render bold stereo bonds (distinct from existing stereochemistry codes).
+    const int BOND_STEREO_BOLD = 10001;
+
     class RenderContext;
 
     class MoleculeRenderInternal
@@ -37,6 +40,8 @@ namespace indigo
         void setMolecule(BaseMolecule* mol);
         void setIsRFragment(bool isRFragment);
         void setScaleFactor(const float scaleFactor, const Vec2f& min, const Vec2f& max);
+        float getScaleFactor(Vec2f& min, Vec2f& max);
+
         void render();
 
         void setReactionComponentProperties(const Array<int>* aam, const Array<int>* reactingCenters, const Array<int>* inversions);
@@ -132,7 +137,10 @@ namespace indigo
         int _findClosestBox(Vec2f& p, int aid, const Vec2f& sz, float mrg, int skip = -1);
         void _preparePseudoAtom(int aid, int color, bool highlighted);
         void _prepareChargeLabel(int aid, int color, bool highlighted);
+        void _prepareCIPLabel(const int aid, int& skip);
         void _prepareLabelText(int aid);
+        void _reverseLabelText(const int aid);
+        std::vector<std::string> _splitLabelText(const std::string& label) const;
         void _prepareAAM();
         int _pushTextItem(RenderItem::TYPE type, int color, bool highlighted);
         int _pushTextItem(AtomDesc& ad, RenderItem::TYPE type, int color, bool highlighted);

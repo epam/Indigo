@@ -19,6 +19,7 @@
 #ifndef __mango_matchers__
 #define __mango_matchers__
 
+#include "base_cpp/ptr_array.h"
 #include "base_cpp/reusable_obj_array.h"
 #include "base_cpp/tlscont.h"
 #include "molecule/cmf_loader.h"
@@ -28,6 +29,11 @@
 #include "molecule/molecule_tautomer.h"
 #include "molecule/query_molecule.h"
 #include <memory>
+
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
 
 namespace indigo
 {
@@ -85,10 +91,10 @@ namespace indigo
         MoleculeAtomNeighbourhoodCounters _nei_target_counters;
         MoleculeAtomNeighbourhoodCounters _nei_query_counters;
 
-        ObjArray<RedBlackStringMap<int>> _fmcache;
+        PtrArray<RedBlackStringMap<int>> _fmcache;
 
         // cmf loader for delayed xyz loading
-        Obj<CmfLoader> cmf_loader;
+        std::unique_ptr<CmfLoader> cmf_loader;
 
         bool _query_has_stereocare_bonds;
         bool _query_has_stereocenters;
@@ -238,6 +244,7 @@ namespace indigo
             bool force_hydrogens;
             bool ring_chain;
             bool substructure;
+            bool inner;
         };
 
         MangoTautomer(BingoContext& context);
@@ -246,7 +253,7 @@ namespace indigo
         void loadQuery(Scanner& scanner);
         void loadQuery(const char* str);
 
-        void setParams(int conditions, bool force_hydrogens, bool ring_chain, bool substructure);
+        void setParams(int conditions, bool force_hydrogens, bool ring_chain, bool substructure, bool inner);
         void setParameters(const char* conditions);
 
         const char* getQueryGross();
@@ -324,5 +331,9 @@ namespace indigo
     };
 
 } // namespace indigo
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

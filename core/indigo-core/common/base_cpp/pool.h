@@ -125,15 +125,19 @@ namespace indigo
 
         const T& operator[](int index) const
         {
+#ifndef INDIGO_UNCHECKED_ACCESS
             if (_next[index] != -2)
                 throw Error("access to unused element %d", index);
+#endif
             return _array[index];
         }
 
         T& operator[](int index)
         {
+#ifndef INDIGO_UNCHECKED_ACCESS
             if (_next[index] != -2)
                 throw Error("access to unused element %d", index);
+#endif
             return _array[index];
         }
 

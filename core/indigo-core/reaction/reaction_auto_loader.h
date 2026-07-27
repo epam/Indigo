@@ -26,8 +26,10 @@
 
 #include "base_cpp/array.h"
 #include "layout/metalayout.h"
+#include "molecule/loader_options.h"
 #include "molecule/molecule_arom.h"
 #include "molecule/molecule_stereocenter_options.h"
+#include "molecule/valence_model.h"
 
 namespace indigo
 {
@@ -36,6 +38,7 @@ namespace indigo
     class BaseReaction;
     class Reaction;
     class QueryReaction;
+    class MonomerTemplateLibrary;
 
     class DLLEXPORT ReactionAutoLoader
     {
@@ -46,10 +49,10 @@ namespace indigo
 
         ~ReactionAutoLoader();
 
-        void loadReaction(BaseReaction& reaction);
-        std::unique_ptr<BaseReaction> loadReaction(bool query);
+        void loadReaction(BaseReaction& reaction, MonomerTemplateLibrary* monomer_lib = nullptr);
+        std::unique_ptr<BaseReaction> loadReaction(bool query, MonomerTemplateLibrary* monomer_lib = nullptr);
         // to keep C++ API compatible
-        void loadQueryReaction(QueryReaction& qreaction);
+        void loadQueryReaction(QueryReaction& qreaction, MonomerTemplateLibrary* monomer_lib = nullptr);
 
         bool treat_x_as_pseudoatom;
         bool ignore_closing_bond_direction_mismatch;
@@ -58,10 +61,16 @@ namespace indigo
         bool ignore_noncritical_query_features;
         bool ignore_no_chiral_flag;
         bool ignore_bad_valence;
+        ValenceMode valence_mode;
         bool dearomatize_on_load;
         int treat_stereo_as;
         AromaticityOptions arom_options;
         LayoutOptions layout_options;
+        std::string input_format;
+
+        // Bulk options propagation. See LoaderOptions doc for the field set.
+        void setOptions(const LoaderOptions& opts);
+        LoaderOptions getOptions() const;
 
         DECL_ERROR;
 
@@ -70,11 +79,11 @@ namespace indigo
         bool _own_scanner;
 
         void _init();
-        std::unique_ptr<BaseReaction> _loadReaction(bool query);
+        std::unique_ptr<BaseReaction> _loadReaction(bool query, MonomerTemplateLibrary* monomer_lib);
         bool _isSingleLine();
 
     private:
-        ReactionAutoLoader(const ReactionAutoLoader&); // no implicit copy
+        ReactionAutoLoader(const ReactionAutoLoader&) = delete; // no implicit copy
     };
 
 } // namespace indigo

@@ -8,7 +8,7 @@
 
     <name>Indigo InChI</name>
     <description>InChI plugin for Indigo universal organic chemistry toolkit</description>
-    <url>http://lifescience.opensource.epam.com/indigo/api</url>
+    <url>http://lifescience.opensource.epam.com/indigo/api/index.html</url>
 
     <parent>
         <groupId>com.epam.indigo</groupId>

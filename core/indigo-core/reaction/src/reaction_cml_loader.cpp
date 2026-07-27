@@ -33,10 +33,27 @@ IMPL_ERROR(ReactionCmlLoader, "reaction CML loader");
 ReactionCmlLoader::ReactionCmlLoader(Scanner& scanner) : _scanner(scanner)
 {
     ignore_bad_valence = false;
+    valence_mode = ValenceMode::BIOVIA_2009;
 }
 
 ReactionCmlLoader::~ReactionCmlLoader()
 {
+}
+
+void ReactionCmlLoader::setOptions(const LoaderOptions& opts)
+{
+    stereochemistry_options = opts.stereochemistry_options;
+    ignore_bad_valence = opts.ignore_bad_valence;
+    valence_mode = opts.valence_mode;
+}
+
+LoaderOptions ReactionCmlLoader::getOptions() const
+{
+    LoaderOptions opts;
+    opts.stereochemistry_options = stereochemistry_options;
+    opts.ignore_bad_valence = ignore_bad_valence;
+    opts.valence_mode = valence_mode;
+    return opts;
 }
 
 void ReactionCmlLoader::loadReaction(Reaction& rxn)
@@ -81,6 +98,7 @@ void ReactionCmlLoader::loadReaction(Reaction& rxn)
         CmlLoader loader(handle);
         loader.stereochemistry_options = stereochemistry_options;
         loader.ignore_bad_valence = ignore_bad_valence;
+        loader.valence_mode = valence_mode;
         loader.loadMolecule(mol);
         rxn.addReactantCopy(mol, 0, 0);
     }
@@ -94,6 +112,7 @@ void ReactionCmlLoader::loadReaction(Reaction& rxn)
         CmlLoader loader(handle);
         loader.stereochemistry_options = stereochemistry_options;
         loader.ignore_bad_valence = ignore_bad_valence;
+        loader.valence_mode = valence_mode;
         loader.loadMolecule(mol);
         rxn.addProductCopy(mol, 0, 0);
     }
@@ -107,6 +126,7 @@ void ReactionCmlLoader::loadReaction(Reaction& rxn)
         CmlLoader loader(handle);
         loader.stereochemistry_options = stereochemistry_options;
         loader.ignore_bad_valence = ignore_bad_valence;
+        loader.valence_mode = valence_mode;
         loader.loadMolecule(mol);
         rxn.addCatalystCopy(mol, 0, 0);
     }

@@ -62,9 +62,9 @@ void MoleculeTautomerSubstructureMatcher::setQuery(QueryMolecule& query)
     ignored.zerofill();
 
     if (_ee.get() != 0)
-        _ee.free();
+        _ee.reset(nullptr);
 
-    _ee.create(_tautomerEnumerator.layeredMolecules);
+    _ee = std::make_unique<EmbeddingEnumerator>(_tautomerEnumerator.layeredMolecules);
     _ee->cb_match_vertex = _matchAtomsHyper;
     _ee->cb_match_edge = _matchBondsSubHyper;
     _ee->cb_edge_add = _edgeAddHyper;
@@ -76,7 +76,7 @@ void MoleculeTautomerSubstructureMatcher::setQuery(QueryMolecule& query)
 
     _ee->setSubgraph(*_query);
 
-    _embeddings_storage.free();
+    _embeddings_storage.reset(nullptr);
     _masks.clear();
 }
 
@@ -127,7 +127,7 @@ void MoleculeTautomerSubstructureMatcher::_edgeAddHyper(Graph& subgraph, Graph& 
     int sub_bond_order = query.getBondOrder(sub_idx);
     const Dbitset& mask = layeredMolecules.getBondMask(super_idx, sub_bond_order);
 
-    breadcrumps.maskHistory.expand(breadcrumps.maskHistory.size() + 1);
+    breadcrumps.maskHistory.push();
     breadcrumps.maskHistory.top().copy(breadcrumps.mask);
 
     breadcrumps.mask.andWith(mask);
@@ -139,7 +139,7 @@ void MoleculeTautomerSubstructureMatcher::_vertexRemoveHyper(Graph& subgraph, in
     if (breadcrumps.maskHistory.size())
     {
         breadcrumps.mask.copy(breadcrumps.maskHistory.top());
-        breadcrumps.maskHistory.pop();
+        breadcrumps.maskHistory.removeLast();
     }
 }
 
@@ -219,7 +219,7 @@ bool MoleculeTautomerSubstructureMatcher::findNext()
 
 void MoleculeTautomerSubstructureMatcher::_createEmbeddingsStorage()
 {
-    _embeddings_storage.create();
+    _embeddings_storage = std::make_unique<GraphEmbeddingsStorage>();
     _embeddings_storage->unique_by_edges = find_unique_by_edges;
     _embeddings_storage->save_edges = save_for_iteration;
     _embeddings_storage->save_mapping = save_for_iteration;
@@ -272,7 +272,7 @@ const int* MoleculeTautomerSubstructureMatcher::getTargetMapping()
 
 const GraphEmbeddingsStorage& MoleculeTautomerSubstructureMatcher::getEmbeddingsStorage() const
 {
-    return _embeddings_storage.ref();
+    return *_embeddings_storage;
 }
 
 const Dbitset& MoleculeTautomerSubstructureMatcher::getMask(int ind) const

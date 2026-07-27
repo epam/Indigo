@@ -15,13 +15,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
+#include <numeric>
 
 #include "molecule/crippen.h"
 
 #include "base_cpp/csv_reader.h"
 #include "base_cpp/scanner.h"
-#include "molecule/molecule.h"
-#include "molecule/molecule_auto_loader.h"
+#include "molecule/base_molecule.h"
 #include "molecule/molecule_substructure_matcher.h"
 #include "molecule/smiles_loader.h"
 #include "pka_decision_tree.h"
@@ -298,7 +298,7 @@ namespace
         return contributions;
     }
 
-    unordered_map<string, int> calculateMatches(Molecule& rawMolecule)
+    unordered_map<string, int> calculateMatches(BaseMolecule& rawMolecule)
     {
         Molecule molecule;
         molecule.clone(rawMolecule);
@@ -354,80 +354,79 @@ namespace
 
         return result;
     }
-
-    struct PKANode
-    {
-        size_t id;
-        bool isLeaf;
-        double pkaValue;
-        shared_ptr<PKANode> yes = nullptr;
-        shared_ptr<PKANode> no = nullptr;
-        QueryMolecule smarts;
-        string smartsString;
-
-        PKANode(const size_t id, const bool isLeaf, const double pkaValue, const string& smartsString)
-            : id(id), isLeaf(isLeaf), pkaValue(pkaValue), smartsString(smartsString)
-        {
-        }
-    };
-
-    struct PKACalculator
+    class PKACalculator
     {
     public:
-        PKACalculator()
+        double median(std::vector<double> v) const
         {
-            unordered_map<size_t, shared_ptr<PKANode>> nodes;
-            for (const auto& rawLine : pkaDecisionTree)
+            if (v.empty())
+                return std::numeric_limits<double>::quiet_NaN();
+            std::sort(v.begin(), v.end());
+            std::size_t n = v.size();
+            return n & 1 ? v[n / 2] : (v[n / 2 - 1] + v[n / 2]) / 2.0f;
+        }
+
+        double calculate(BaseMolecule& target) const
+        {
+            auto pkaValues = calculatePKAs(target);
+            return median(pkaValues);
+        }
+
+        std::vector<double> calculatePKAs(BaseMolecule& target) const
+        {
+            target.transformSCSRtoFullCTAB();
+            std::unique_ptr<BaseMolecule> mol_copy{target.neu()};
+            mol_copy->clone(target);
+            if (mol_copy->tgroups.getTGroupCount())
             {
-                const auto& line = CSVReader::readCSVRow(rawLine);
-                const size_t id = static_cast<size_t>(stoull(line[0]));
-                const size_t parentId = static_cast<size_t>(stoull(line[1]));
-                const bool isLeaf = !static_cast<bool>(stoi(line[2]));
-                const string& smarts = line[4];
-                const bool yes = static_cast<bool>(stoi(line[5]));
-                const double pkaValue = stod(line[6]);
+                mol_copy->transformSCSRtoFullCTAB();
+            }
+            MoleculeSubstructureMatcher matcher(*mol_copy);
+            std::vector<int> tree_indexes;
+            const int amino_index = 551;  // 1427; Index of the amino group decision tree
+            const int thiol_index = 675;  // Index of the thiol group decision tree
+            const int carboxyl_index = 0; // Index of the carboxyl group decision tree
+            std::vector<std::pair<std::string, int>> ionizing_groups = {
+                {"[C;X3](=O)[O;H1]", carboxyl_index}, {"[S;v2;H1]", thiol_index}, {"[N;X3;H1,H2]", amino_index}};
 
-                auto node = make_shared<PKANode>(id, isLeaf, pkaValue, smarts);
-                MoleculeAutoLoader loader(smarts.c_str());
-                loader.loadMolecule(node->smarts);
+            for (const auto& group : ionizing_groups)
+            {
+                QueryMolecule ionizing_query;
+                BufferScanner scanner(group.first.c_str());
+                SmilesLoader smiles_loader(scanner);
+                smiles_loader.loadSMARTS(ionizing_query);
+                matcher.setQuery(ionizing_query);
+                if (matcher.find())
+                    tree_indexes.push_back(group.second);
+            }
 
-                nodes[id] = node;
-                if (parentId > 0)
+            // only one ionizing group is found let the tree decides. We don't need a specific forwarding.
+            if (tree_indexes.size() == 1)
+                tree_indexes.clear();
+            if (tree_indexes.empty())
+                tree_indexes.push_back(0);
+
+            std::vector<double> result;
+            for (int idx : tree_indexes)
+            {
+                while (true)
                 {
-                    if (yes)
+                    const Node& node = pkaDecisionTree[idx];
+                    if (node.smarts[0] == '\0')
                     {
-                        nodes.at(parentId)->yes = node;
+                        result.push_back(node.pka);
+                        break;
                     }
-                    else
-                    {
-                        nodes.at(parentId)->no = node;
-                    }
+                    QueryMolecule query;
+                    BufferScanner scanner(node.smarts);
+                    SmilesLoader smiles_loader(scanner);
+                    smiles_loader.strict_aliphatic = true;
+                    smiles_loader.loadSMARTS(query);
+                    matcher.setQuery(query);
+                    idx = matcher.find() ? node.yes : node.no;
                 }
             }
-            root = nodes.at(1);
-        }
-
-        double calculate(Molecule& target) const
-        {
-            MoleculeSubstructureMatcher matcher(target);
-            return traverse(matcher, root);
-        }
-
-    private:
-        shared_ptr<PKANode> root = nullptr;
-
-        double traverse(MoleculeSubstructureMatcher& matcher, const shared_ptr<PKANode>& node) const
-        {
-            if (node->isLeaf)
-            {
-                return node->pkaValue;
-            }
-            matcher.setQuery(node->yes->smarts);
-            if (matcher.find())
-            {
-                return traverse(matcher, node->yes);
-            }
-            return traverse(matcher, node->no);
+            return result;
         }
     };
 
@@ -437,7 +436,7 @@ namespace
 namespace indigo
 {
     // https://doi.org/10.1021/ci990307l
-    double Crippen::logP(Molecule& molecule)
+    double Crippen::logP(BaseMolecule& molecule)
     {
         const auto& matches = calculateMatches(molecule);
         const auto& logPContributions = getLogPContributions();
@@ -450,7 +449,7 @@ namespace indigo
     }
 
     // https://doi.org/10.1021/ci990307l
-    double Crippen::molarRefractivity(Molecule& molecule)
+    double Crippen::molarRefractivity(BaseMolecule& molecule)
     {
         const auto& matches = calculateMatches(molecule);
         const auto& contributions = getMRContributions();
@@ -463,11 +462,21 @@ namespace indigo
     }
 
     // https://doi.org/10.1021/ci8001815
-    double Crippen::pKa(Molecule& molecule)
+    double Crippen::pKa(BaseMolecule& molecule)
     {
         Molecule copy;
         copy.clone(molecule);
         copy.aromatize(AromaticityOptions());
         return pkaCalculator.calculate(molecule);
+    }
+
+    void Crippen::getPKaValues(BaseMolecule& molecule, Array<double>& values)
+    {
+        std::unique_ptr<BaseMolecule> copy(molecule.neu());
+        copy->clone(molecule);
+        copy->aromatize(AromaticityOptions());
+        auto vals = pkaCalculator.calculatePKAs(molecule);
+        for (const auto& val : vals)
+            values.push(val);
     }
 }
