@@ -393,8 +393,9 @@ void MoleculeRenderInternal::_bondSingle(BondDescr& bd, const BondEnd& be1, cons
     l0.addScaled(bd.norm, -lw / 2);
     r0.addScaled(bd.norm, lw / 2);
 
-    if (bd.stereodir == BOND_UP)
+    switch (bd.stereodir)
     {
+    case BOND_UP: {
         if (_ad(be2.aid).showLabel == false && !bd.isShort)
         {
             _adjustAngle(l, be1, be2, true);
@@ -406,8 +407,9 @@ void MoleculeRenderInternal::_bondSingle(BondDescr& bd, const BondEnd& be1, cons
             _cw.fillQuad(r0, r, l, l0);
         }
     }
-    else if (bd.stereodir == BOND_DOWN)
-    {
+    break;
+
+    case BOND_DOWN: {
         int constexpr min_count = 4;
         auto count = len / (_settings.hashSpacing > 0 ? _settings.hashSpacing : (lw * 2));
         if (_settings.hashSpacing > 0 && count > min_count)
@@ -420,13 +422,34 @@ void MoleculeRenderInternal::_bondSingle(BondDescr& bd, const BondEnd& be1, cons
             _cw.fillQuadStripes(r0, l0, r, l, stripeCnt);
         }
     }
-    else if (bd.stereodir == BOND_EITHER)
-    {
+    break;
+
+    case BOND_EITHER: {
         int stripeCnt = std::max((int)((len) / lw / 1.5), 5);
         _cw.drawTriangleZigzag(be1.p, r, l, stripeCnt);
     }
-    else
-        throw Error("Unknown single bond stereo type");
+    break;
+
+    case BOND_DIRECTION_MONO:
+        [[fallthrough]];
+    case BOND_UP_OR_UNSPECIFIED:
+        [[fallthrough]];
+    case BOND_DOWN_OR_UNSPECIFIED:
+        [[fallthrough]];
+    case BOND_STEREO_BOLD: {
+        std::string msg = "Unexpected single bond stereo type: ";
+        msg.append(std::to_string(bd.stereodir));
+        throw Error(msg.data());
+    }
+    break;
+
+    default: {
+        std::string msg = "Unknown single bond stereo type: ";
+        msg.append(std::to_string(bd.stereodir));
+        throw Error(msg.data());
+    }
+    break;
+    }
 }
 
 void MoleculeRenderInternal::_bondAny(BondDescr& bd, const BondEnd& be1, const BondEnd& be2)

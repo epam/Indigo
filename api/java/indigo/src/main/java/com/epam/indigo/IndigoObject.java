@@ -22,6 +22,7 @@ import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -102,6 +103,11 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResultString(this, lib.indigoHelm(self, library.self));
     }
 
+    public String biln(IndigoObject library) {
+        dispatcher.setSessionID();
+        return Indigo.checkResultString(this, lib.indigoBiln(self, library.self));
+    }
+
     public String axolabs(IndigoObject library) {
         dispatcher.setSessionID();
         return Indigo.checkResultString(this, lib.indigoAxoLabs(self, library.self));
@@ -150,6 +156,11 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
     public String monomerLibrary() {
         dispatcher.setSessionID();
         return Indigo.checkResultString(this, lib.indigoMonomerLibrary(self));
+    }
+
+    public String fragmentedSdf() {
+        dispatcher.setSessionID();
+        return Indigo.checkResultString(this, lib.indigoFragmentedSdf(self));
     }
 
     public void saveCml(String filename) {
@@ -831,6 +842,16 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResult(this, lib.indigoIsHighlighted(self)) == 1;
     }
 
+    public void select() {
+        dispatcher.setSessionID();
+        Indigo.checkResult(this, lib.indigoSelect(self));
+    }
+
+    public void unselect() {
+        dispatcher.setSessionID();
+        Indigo.checkResult(this, lib.indigoUnselect(self));
+    }
+
     public boolean isSelected() {
         dispatcher.setSessionID();
         return Indigo.checkResult(this, lib.indigoIsSelected(self)) == 1;
@@ -861,6 +882,77 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         dispatcher.setSessionID();
         return new IndigoObject(
                 dispatcher, Indigo.checkResult(this, lib.indigoComponent(self, index)), this);
+    }
+
+    /**
+     * Verifies whether the structure contains a disconnected inorganic component ("salt").
+     *
+     * @return {@code true} if the structure contains a salt
+     */
+    public boolean checkSalt() {
+        dispatcher.setSessionID();
+
+        for (IndigoObject component : iterateComponents()) {
+            IndigoObject targetFragment = component.clone();
+            for (String salt : Salts.SALTS) {
+                IndigoObject querySalt = dispatcher.loadSmarts(salt);
+                IndigoObject matcher = dispatcher.substructureMatcher(targetFragment);
+                if (matcher.match(querySalt) != null) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Strips all disconnected inorganic components ("salts") from the molecule.
+     *
+     * <p>Returns a copy of the molecule without its inorganic components.
+     *
+     * @return a new molecule without inorganic components
+     */
+    public IndigoObject stripSalt() {
+        return stripSalt(false);
+    }
+
+    /**
+     * Strips all disconnected inorganic components ("salts") from the molecule.
+     *
+     * @param inplace if {@code false} - returns a copy of the molecule without inorganic
+     *     components; if {@code true} - strips inorganic components from the molecule itself
+     * @return if {@code inplace} is {@code false} - a new molecule without inorganic components;
+     *     if {@code inplace} is {@code true} - this molecule, without inorganic components
+     */
+    public IndigoObject stripSalt(boolean inplace) {
+        dispatcher.setSessionID();
+
+        ArrayList<Integer> saltAtoms = new ArrayList<>();
+        int idx = 0;
+        for (IndigoObject component : iterateComponents()) {
+            IndigoObject targetFragment = component.clone();
+            int nAtoms = targetFragment.countAtoms();
+
+            for (String salt : Salts.SALTS) {
+                IndigoObject querySalt = dispatcher.loadQueryMolecule(salt);
+                IndigoObject matcher = dispatcher.substructureMatcher(targetFragment);
+                if (matcher.match(querySalt) != null) {
+                    for (int i = idx; i < idx + nAtoms; i++) {
+                        saltAtoms.add(i);
+                    }
+                }
+            }
+            idx += nAtoms;
+        }
+
+        if (!inplace) {
+            IndigoObject saltlessFragment = clone();
+            saltlessFragment.removeAtoms(saltAtoms);
+            return saltlessFragment;
+        } else {
+            removeAtoms(saltAtoms);
+            return this;
+        }
     }
 
     public int countSSSR() {
@@ -1174,6 +1266,19 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return addDataSGroup(Indigo.toIntArray(atoms), Indigo.toIntArray(bonds), description, data);
     }
 
+    public IndigoObject addSuperatom(int[] atoms, String name) {
+        if (name == null) name = "";
+        dispatcher.setSessionID();
+        return new IndigoObject(
+                dispatcher,
+                Indigo.checkResult(this, lib.indigoAddSuperatom(self, atoms.length, atoms, name)),
+                this);
+    }
+
+    public IndigoObject addSuperatom(Collection<Integer> atoms, String name) {
+        return addSuperatom(Indigo.toIntArray(atoms), name);
+    }
+
     public IndigoObject createSGroup(String type, IndigoObject mapping, String name) {
         dispatcher.setSessionID();
         return new IndigoObject(
@@ -1211,6 +1316,50 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResult(this, lib.indigoGetSGroupNumCrossBonds(self));
     }
 
+    public int createCrossBonds() {
+        dispatcher.setSessionID();
+        return Indigo.checkResult(this, lib.indigoCreateCrossBonds(self));
+    }
+
+    public int clearSGroupCrossBonds() {
+        dispatcher.setSessionID();
+        return Indigo.checkResult(this, lib.indigoClearSGroupCrossBonds(self));
+    }
+
+    public IndigoObject addSGroup(String type) {
+        return addSGroup(type, 0);
+    }
+
+    public IndigoObject addSGroup(String type, int extindex) {
+        dispatcher.setSessionID();
+        return new IndigoObject(
+                dispatcher, Indigo.checkResult(this, lib.indigoAddSGroup(self, type, extindex)), this);
+    }
+
+    public int setSGroupAtoms(int[] atoms) {
+        dispatcher.setSessionID();
+        return Indigo.checkResult(this, lib.indigoSetSGroupAtoms(self, atoms.length, atoms));
+    }
+
+    public int setSGroupAtoms(Collection<Integer> atoms) {
+        return setSGroupAtoms(Indigo.toIntArray(atoms));
+    }
+
+    public int setSGroupBonds(int[] bonds) {
+        dispatcher.setSessionID();
+        return Indigo.checkResult(this, lib.indigoSetSGroupBonds(self, bonds.length, bonds));
+    }
+
+    public int setSGroupBonds(Collection<Integer> bonds) {
+        return setSGroupBonds(Indigo.toIntArray(bonds));
+    }
+
+    public IndigoObject iterateSGroupCrossBonds() {
+        dispatcher.setSessionID();
+        return new IndigoObject(
+                dispatcher, Indigo.checkResult(this, lib.indigoIterateSGroupCrossBonds(self)), this);
+    }
+
     public int addSGroupAttachmentPoint(int aidx, int lvidx, String apid) {
         dispatcher.setSessionID();
         return Indigo.checkResult(
@@ -1220,6 +1369,32 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
     public int deleteSGroupAttachmentPoint(int apidx) {
         dispatcher.setSessionID();
         return Indigo.checkResult(this, lib.indigoDeleteSGroupAttachmentPoint(self, apidx));
+    }
+
+    public IndigoObject iterateSGroupAttachmentPoints() {
+        dispatcher.setSessionID();
+        return new IndigoObject(
+                dispatcher,
+                Indigo.checkResult(this, lib.indigoIterateSGroupAttachmentPoints(self)),
+                this);
+    }
+
+    public int getSGroupAttachmentPointAtomIdx() {
+        dispatcher.setSessionID();
+        return Indigo.checkResult(this, lib.indigoGetSGroupAttachmentPointAtomIdx(self));
+    }
+
+    public Integer getSGroupAttachmentPointLeaveAtom() {
+        IntByReference res = new IntByReference();
+        dispatcher.setSessionID();
+        if (Indigo.checkResult(this, lib.indigoGetSGroupAttachmentPointLeaveAtom(self, res)) == 1)
+            return res.getValue();
+        return null;
+    }
+
+    public String getSGroupAttachmentPointLabel() {
+        dispatcher.setSessionID();
+        return Indigo.checkResultString(this, lib.indigoGetSGroupAttachmentPointLabel(self));
     }
 
     public int getSGroupDisplayOption() {
@@ -1995,6 +2170,15 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
     public int expandAbbreviations() {
         dispatcher.setSessionID();
         return Indigo.checkResult(this, lib.indigoExpandAbbreviations(self));
+    }
+
+    /**
+     * Converts expanded template atoms (monomers) to regular atoms.
+     * Returns a new molecule; the original is not modified.
+     */
+    public IndigoObject expandedMonomersToAtoms() {
+        dispatcher.setSessionID();
+        return new IndigoObject(dispatcher, Indigo.checkResult(this, lib.indigoExpandedMonomersToAtoms(self)));
     }
 
     public String dbgInternalType() {

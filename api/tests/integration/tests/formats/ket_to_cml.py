@@ -1,17 +1,12 @@
-﻿import difflib
-import os
+﻿import os
 import sys
-
-
-def find_diff(a, b):
-    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
-
 
 sys.path.append(
     os.path.normpath(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
+from common.util import compare_diff
 from env_indigo import *  # noqa
 
 indigo = Indigo()
@@ -35,16 +30,5 @@ for filename in files:
         ket = indigo.loadQueryMoleculeFromFile(
             os.path.join(root, filename + ".ket")
         )
-
     cml = ket.cml()
-    # with open(os.path.join(ref_path, filename) + ".cml", "w") as file:
-    #     file.write(cml)
-
-    with open(os.path.join(ref_path, filename) + ".cml", "r") as file:
-        cml_ref = file.read()
-    diff = find_diff(cml_ref, cml)
-    if not diff:
-        print(filename + ".cml:SUCCEED")
-    else:
-        print(filename + ".cml:FAILED")
-        print(diff)
+    compare_diff(ref_path, filename + ".cml", cml)

@@ -2472,10 +2472,8 @@ Database: ../../../../../data/molecules/stereo/stereo_cis_trans.sdf
 Database: molecules/set1.sdf
 isotopes_nonh-0003-00 (#1): CC(C)([13CH3])c1cc(cc(c1)C([13CH3])([13CH3])[13CH3])C(C)([13CH3])[13CH3]
 organometallics-0029-00 (#2): F[P-](F)(F)(F)(F)F.[C-]12C3=C4C5=C1[Fe]167893542[C-]2[C-]1C6=C7C8=C92
-organometallics-0038-00 (#3): SMILES saver: unsure hydrogen count on atom #2
-  Error after serialize: : SMILES saver: unsure hydrogen count on atom #11
-     for smiles: C1(=O)N(C(=O)[N+]([H])(C([H])([H])[H])[B+3]2([N+]([H])(C(=O)N(C([H])([H])[H])C(=O)[N+]2([H])C([H])([H])[H])C([H])([H])[H])[N+]1([H])C([H])([H])[H])C([H])([H])[H].C([H])([H])([H])N([H])[H] -> C1([N+](C([H])([H])[H])([H])[B+3]2([N+](C([H])([H])[H])([H])C(=O)N(C([H])([H])[H])C(=O)[N+]2(C([H])([H])[H])[H])[N+](C([H])([H])[H])([H])C(=O)N1C([H])([H])[H])=O.C(N([H])[H])([H])([H])[H]
-organometallics-0040-00 (#4): SMILES saver: unsure hydrogen count on atom #15
+organometallics-0038-00 (#3): element: bad valence on B having 4 drawn bonds, charge 3, and 0 radical electrons
+organometallics-0040-00 (#4): element: bad valence on F having 1 drawn bonds, charge -1, and 0 radical electrons
 organometallics-0045-00 (#5): C[C]1[CH][C](C(=O)OCCP(C2C=CC=CC=2)C2C=CC=CC=2)[C](C)[CH]1.[CH2][CH][CH2].F[P-](F)(F)(F)(F)F.Cl[Ru+3]
 radicals-0030-00 (#6): c1cccc[c]1
 radicals-0052-00 (#7): [CH2]c1cccc1
@@ -2485,9 +2483,9 @@ spatial-0037-00 (#10): CO[C@@]1(C)O[C@H]([C@@H](O)/C=C/c2ccccc2)C(=O)O[C@@]1(C)O
 symmetric-0052-00 (#11): c1c2cc3cc4cc5cc6cc7cc8cc9cc%10cc%11cc%12cc%13cc%14cc1c1cc%14cc%13cc%12cc%11cc%10cc9cc8cc7cc6cc5cc4cc3cc2c1
 arom_het_5-0036-00 (#12): Cc1ccco1
 arom_het_6-0004-00 (#13): CC(C)(C)c1cc(cc(c1)C(C)(C)C)C(C)(C)C
-disconnected-0054-00 (#14): SMILES saver: unsure hydrogen count on atom #155
-disconnected-0055-00 (#15): SMILES saver: unsure hydrogen count on atom #108
-disconnected-0056-00 (#16): SMILES saver: unsure hydrogen count on atom #278
+disconnected-0054-00 (#14): element: bad valence on Po having 8 drawn bonds, charge 0, and 0 radical electrons
+disconnected-0055-00 (#15): element: bad valence on Po having 8 drawn bonds, charge 0, and 0 radical electrons
+disconnected-0056-00 (#16): element: bad valence on Po having 8 drawn bonds, charge 0, and 0 radical electrons
 disconnected-0135-00 (#17): III.C(=P(C1C=CC=CC=1)(C1C=CC=CC=1)C1C=CC=CC=1)[P+](C1C=CC=CC=1)(C1C=CC=CC=1)C1C=CC=CC=1
 disconnected-0179-00 (#18): C1=CC=CC=CC2=CC=CC=CC=C1C#C2.C1=CC=CC#C1.c1ccccc1
 disconnected-0214-00 (#19): [CH2-][O+]=C.C[N+](C)=[N-].C[S+]1C=CC2C=CC=CC=2[C-]1C(=O)C1=CC=CC=C1.CN(C)[N].C[NH+](C)[N-]C.C[Se+]1[CH-]C(=O)C2=CC=CC=C2C1.CC1=C[N-]C=[N+]1C.CN(C)[N].C[N+](C)(C)NS([O-])(=O)=O.C[BH2-][NH2+][BH2-][NH2+]C.C/C=C\C(=C/C=C)\C1C(=O)N2C=C(C=[N+]2C=1[O-])C1=CC=CC=C1.CC#[N+][NH-].C[N+]1[N-]OC(=O)C=1C(O)=O.C[N+]1[N-]C2=CC=CC3C=CC=C(N=1)C2=3.C[N+]1=NOC([O-])=C1C(O)=O.[O-]S(=O)(=O)C1C=C2C=CC=C3C=CC=C(C=1)[C+]32.[O-]C(=O)C1C=[S+]C2C=CC=CC=2C=1.[O-]C1OC(=[O+]C=1C1=CC=CC=C1)C1=CC=CC=C1.[S-]C1=C[CH+]SS1.Cl[As-2]12(Cl)OC=C[N+]1=CC=[O+]2.C1C=CC2C=C3[N-]C4=CC=CC=C4C3=C[N+]=2C=1.C1=CC=CC(=C1)[B-]1(OC2C=CC=C[N+]=2O1)C1=CC=CC=C1

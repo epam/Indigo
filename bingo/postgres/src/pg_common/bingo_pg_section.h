@@ -3,7 +3,6 @@
 
 #include "base_cpp/array.h"
 #include "base_cpp/exception.h"
-#include "base_cpp/obj_array.h"
 #include "base_cpp/ptr_array.h"
 #include "bingo_pg_buffer_cache.h"
 #include "bingo_postgres.h"
@@ -99,7 +98,7 @@ private:
     indigo::Array<int> _offsetMap;
     indigo::Array<int> _offsetBin;
 
-    indigo::ObjArray<BingoPgBuffer> _bitsCountBuffers;
+    indigo::PtrArray<BingoPgBuffer> _bitsCountBuffers;
 };
 
 #endif /* BINGO_PG_SECTION1_H */

@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Callable, Generator, Optional, Union
+from typing import Callable, Generator, Iterable, Optional, Union
 
 from indigo import Indigo, IndigoObject  # type: ignore
 
@@ -14,6 +14,7 @@ def iterate_file(
     iterator: Optional[str] = None,
     error_handler: Optional[Callable[[object, BaseException], None]] = None,
     session: Optional[Indigo] = None,
+    custom_properties: Optional[Iterable[str]] = None,
 ) -> Generator[IndigoRecordMolecule, None, None]:
     """
     :param file:
@@ -24,6 +25,11 @@ def iterate_file(
     :param error_handler: lambda for catching exceptions
     :type error_handler: Optional[Callable[[object, BaseException], None]]
     :type session: Optional[Indigo]
+    :param custom_properties: SDF tag names to extract; pass the keys of the
+        ElasticRepository's custom_properties mapping so extracted attributes
+        match what the index mapping declares. None or empty (default) means
+        no SDF tags are extracted from the file.
+    :type custom_properties: Optional[Iterable[str]]
     :return:
     """
     iterators = {
@@ -43,7 +49,9 @@ def iterate_file(
     indigo_object: IndigoObject
     for indigo_object in getattr(session, iterator_fn)(str(file)):
         yield IndigoRecordMolecule(
-            indigo_object=indigo_object, error_handler=error_handler
+            indigo_object=indigo_object,
+            error_handler=error_handler,
+            custom_properties=custom_properties,
         )
 
 
@@ -51,12 +59,14 @@ def iterate_sdf(
     file: Union[Path, str],
     error_handler: Optional[Callable[[object, BaseException], None]] = None,
     session: Optional[Indigo] = None,
+    custom_properties: Optional[Iterable[str]] = None,
 ) -> Generator:
     yield from iterate_file(
         Path(file) if isinstance(file, str) else file,
         "sdf",
         error_handler=error_handler,
         session=session,
+        custom_properties=custom_properties,
     )
 
 
@@ -64,12 +74,14 @@ def iterate_smiles(
     file: Union[Path, str],
     error_handler: Optional[Callable[[object, BaseException], None]] = None,
     session: Optional[Indigo] = None,
+    custom_properties: Optional[Iterable[str]] = None,
 ) -> Generator:
     yield from iterate_file(
         Path(file) if isinstance(file, str) else file,
         "smiles",
         error_handler=error_handler,
         session=session,
+        custom_properties=custom_properties,
     )
 
 
@@ -77,12 +89,14 @@ def iterate_cml(
     file: Union[Path, str],
     error_handler: Optional[Callable[[object, BaseException], None]] = None,
     session: Optional[Indigo] = None,
+    custom_properties: Optional[Iterable[str]] = None,
 ) -> Generator:
     yield from iterate_file(
         Path(file) if isinstance(file, str) else file,
         "cml",
         error_handler=error_handler,
         session=session,
+        custom_properties=custom_properties,
     )
 
 

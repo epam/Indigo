@@ -171,6 +171,12 @@ public interface IndigoLib extends Library {
 
     int indigoLoadHelmFromFile(String filename, int library);
 
+    int indigoLoadBiln(int source, int library);
+
+    int indigoLoadBilnFromString(String str, int library);
+
+    int indigoLoadBilnFromFile(String filename, int library);
+
     int indigoLoadAxoLabs(int source, int library);
 
     int indigoLoadAxoLabsFromString(String str, int library);
@@ -205,6 +211,8 @@ public interface IndigoLib extends Library {
 
     Pointer indigoHelm(int molecule, int library);
 
+    Pointer indigoBiln(int molecule, int library);
+
     Pointer indigoAxoLabs(int molecule, int library);
 
     int indigoSaveCml(int object, int output);
@@ -214,6 +222,8 @@ public interface IndigoLib extends Library {
     Pointer indigoCml(int object);
 
     Pointer indigoJson(int object);
+
+    Pointer indigoFragmentedSdf(int item);
 
     Pointer indigoMonomerLibrary(int object);
 
@@ -469,6 +479,8 @@ public interface IndigoLib extends Library {
             String description,
             String data);
 
+    int indigoAddSuperatom(int molecule, int natoms, int[] atoms, String name);
+
     int indigoSetDataSGroupXY(int sgroup, float x, float y, String options);
 
     int indigoCreateSGroup(String type, int mapping, String name);
@@ -483,9 +495,30 @@ public interface IndigoLib extends Library {
 
     int indigoGetSGroupNumCrossBonds(int sgroup);
 
+    int indigoCreateCrossBonds(int sgroup);
+
+    int indigoClearSGroupCrossBonds(int sgroup);
+
+    // Issue #3604: New SGroup API methods
+    int indigoAddSGroup(int molecule, String type, int extindex);
+
+    int indigoSetSGroupAtoms(int sgroup, int natoms, int[] atoms);
+
+    int indigoSetSGroupBonds(int sgroup, int nbonds, int[] bonds);
+
+    int indigoIterateSGroupCrossBonds(int sgroup);
+
     int indigoAddSGroupAttachmentPoint(int sgroup, int aidx, int lvidx, String apid);
 
     int indigoDeleteSGroupAttachmentPoint(int sgroup, int apidx);
+
+    int indigoIterateSGroupAttachmentPoints(int sgroup);
+
+    int indigoGetSGroupAttachmentPointAtomIdx(int ap);
+
+    int indigoGetSGroupAttachmentPointLeaveAtom(int ap, IntByReference lvidx);
+
+    Pointer indigoGetSGroupAttachmentPointLabel(int ap);
 
     int indigoGetSGroupDisplayOption(int sgroup);
 
@@ -684,6 +717,10 @@ public interface IndigoLib extends Library {
     int indigoUnhighlight(int item);
 
     int indigoIsHighlighted(int item);
+
+    int indigoSelect(int item);
+
+    int indigoUnselect(int item);
     
     int indigoIsSelected(int item);
 
@@ -951,6 +988,10 @@ public interface IndigoLib extends Library {
     int indigoTransform(int reaction, int monomers);
 
     int indigoExpandAbbreviations(int structure);
+
+    int indigoExpandGroupPseudoatoms(int molecule);
+
+    int indigoExpandedMonomersToAtoms(int molecule);
 
     int indigoIterateTautomers(int structure, String params);
 

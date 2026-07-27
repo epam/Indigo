@@ -18,7 +18,6 @@
 
 #include "render_common.h"
 #include "base_cpp/array.h"
-#include "base_cpp/obj_array.h"
 #include "layout/molecule_layout.h"
 #include "math/algebra.h"
 #include "molecule/molecule.h"

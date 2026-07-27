@@ -114,7 +114,7 @@ const RedBlackSet<V>& MultiMap<K, V>::get(const K& k) const
     int* i = _map.at2(k);
     if (i)
     {
-        return *_sets[*i];
+        return _sets[*i];
     }
     return _nil;
 }
@@ -224,13 +224,13 @@ RedBlackSet<V>& MultiMap<K, V>::_provide_set(const K& k)
     int* i = _map.at2(k);
     if (i)
     {
-        return *_sets[*i];
+        return _sets[*i];
     }
 
     _keys.insert(k);
     _map.insert(k, _sets.size());
     CHECK_KEYS;
-    return _sets.add(new RedBlackSet<V>());
+    return _sets.emplace();
 }
 
 #endif

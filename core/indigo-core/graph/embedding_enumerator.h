@@ -25,7 +25,7 @@
 #endif
 
 #include "base_cpp/list.h"
-#include "base_cpp/obj_array.h"
+#include "base_cpp/ptr_array.h"
 #include "base_cpp/red_black.h"
 #include "base_cpp/tlscont.h"
 #include "graph/graph_fast_access.h"
@@ -189,7 +189,7 @@ namespace indigo
             void _fixPair(int node1, int node2);
         };
 
-        TL_CP_DECL(ObjArray<_Enumerator>, _enumerators);
+        TL_CP_DECL(PtrArray<_Enumerator>, _enumerators);
 
         int _cancellation_check_number;
         std::shared_ptr<CancellationHandler> _cancellation_handler;

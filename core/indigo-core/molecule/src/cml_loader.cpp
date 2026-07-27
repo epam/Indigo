@@ -45,12 +45,32 @@ CmlLoader::CmlLoader(Scanner& scanner)
 {
     _scanner = &scanner;
     _handle = 0;
+    ignore_bad_valence = false;
+    valence_mode = ValenceMode::BIOVIA_2009;
 }
 
 CmlLoader::CmlLoader(XMLHandle& handle)
 {
     _handle = &handle;
     _scanner = 0;
+    ignore_bad_valence = false;
+    valence_mode = ValenceMode::BIOVIA_2009;
+}
+
+void CmlLoader::setOptions(const LoaderOptions& opts)
+{
+    stereochemistry_options = opts.stereochemistry_options;
+    ignore_bad_valence = opts.ignore_bad_valence;
+    valence_mode = opts.valence_mode;
+}
+
+LoaderOptions CmlLoader::getOptions() const
+{
+    LoaderOptions opts;
+    opts.stereochemistry_options = stereochemistry_options;
+    opts.ignore_bad_valence = ignore_bad_valence;
+    opts.valence_mode = valence_mode;
+    return opts;
 }
 
 void CmlLoader::loadMolecule(Molecule& mol)
@@ -59,9 +79,11 @@ void CmlLoader::loadMolecule(Molecule& mol)
     _bmol = &mol;
     _mol = &mol;
     _qmol = 0;
-    _loadMolecule();
-
+    // Order matters: _loadMolecule() infers implicit H using the molecule's current
+    // valence model, so the mode must be set first.
     mol.setIgnoreBadValenceFlag(ignore_bad_valence);
+    mol.setValenceMode(valence_mode);
+    _loadMolecule();
 }
 
 void CmlLoader::loadQueryMolecule(QueryMolecule& mol)
@@ -1339,17 +1361,21 @@ void CmlLoader::_loadSGroupElement(XMLElement* elem, std::unordered_map<std::str
                 dsg->description.readString(fieldtype, true);
 
             const char* disp_x = elem->Attribute("x");
-            if (disp_x != 0)
-            {
-                BufferScanner strscan(disp_x);
-                dsg->display_pos.x = strscan.readFloat();
-            }
-
             const char* disp_y = elem->Attribute("y");
-            if (disp_y != 0)
+            if (disp_x != 0 || disp_y != 0)
             {
-                BufferScanner strscan(disp_y);
-                dsg->display_pos.y = strscan.readFloat();
+                Vec2f dp;
+                if (disp_x != 0)
+                {
+                    BufferScanner strscan(disp_x);
+                    dp.x = strscan.readFloat();
+                }
+                if (disp_y != 0)
+                {
+                    BufferScanner strscan(disp_y);
+                    dp.y = strscan.readFloat();
+                }
+                dsg->display_pos.set(dp);
             }
 
             const char* detached = elem->Attribute("dataDetached");
@@ -1569,7 +1595,7 @@ void CmlLoader::_loadSGroupElement(XMLElement* elem, std::unordered_map<std::str
 
             const char* title = elem->Attribute("title");
             if (title != 0)
-                sru->subscript.readString(title, true);
+                sru->label.readString(title, true);
 
             const char* connect = elem->Attribute("connect");
             if (connect != 0)
@@ -1793,7 +1819,7 @@ void CmlLoader::_loadSGroupElement(XMLElement* elem, std::unordered_map<std::str
 
             const char* title = elem->Attribute("title");
             if (title != 0)
-                sup->subscript.readString(title, true);
+                sup->label.readString(title, true);
 
             XMLNode* pChild;
             for (pChild = elem->FirstChild(); pChild != 0; pChild = pChild->NextSibling())

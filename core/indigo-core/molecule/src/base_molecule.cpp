@@ -18,6 +18,7 @@
 
 #include <algorithm>
 #include <numeric>
+#include <unordered_set>
 
 #include "base_cpp/crc32.h"
 #include "base_cpp/output.h"
@@ -175,8 +176,10 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
         int idx = sgroups.addSGroup(supersg.sgroup_type);
         SGroup& sg = sgroups.getSGroup(idx);
         sg.parent_idx = supersg.parent_idx;
-        sg.original_group = supersg.original_group;
+        sg.index = supersg.index;
+        sg.ext_index = supersg.ext_index;
         sg.parent_group = supersg.parent_group;
+        sg.label.copy(supersg.label);
 
         if (_mergeSGroupWithSubmolecule(sg, supersg, mol, mapping, edge_mapping))
         {
@@ -220,7 +223,6 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
                         }
                     }
                 }
-                sa.subscript.copy(supersa.subscript);
                 sa.sa_class.copy(supersa.sa_class);
                 sa.sa_natreplace.copy(supersa.sa_natreplace);
                 sa.contracted = supersa.contracted;
@@ -244,7 +246,7 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
                         ap.apid.copy(supersa.attachment_points[j].apid);
                     }
                 }
-                sa.display_position.copy(supersa.display_position);
+                sa.display_position = supersa.display_position;
             }
             else if (sg.sgroup_type == SGroup::SG_TYPE_SRU)
             {
@@ -252,7 +254,6 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
                 RepeatingUnit& superru = (RepeatingUnit&)supersg;
 
                 ru.connectivity = superru.connectivity;
-                ru.subscript.copy(superru.subscript);
             }
             else if (sg.sgroup_type == SGroup::SG_TYPE_MUL)
             {
@@ -277,10 +278,11 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
         for (i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
         {
             SGroup& sgroup = sgroups.getSGroup(i);
-            if (sgroup.parent_idx < 0)
+            const int parent_idx = sgroup.parent_idx.value_or(-1);
+            if (parent_idx < 0)
                 continue;
 
-            const auto it = old_idx_to_new.find(sgroup.parent_idx);
+            const auto it = old_idx_to_new.find(parent_idx);
             if (it != old_idx_to_new.end())
                 sgroup.parent_idx = it->second;
         }
@@ -352,7 +354,7 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
     reaction_atom_inversion.expandFill(vertexEnd(), 0);
     reaction_atom_exact_change.expandFill(vertexEnd(), 0);
     reaction_bond_reacting_center.expandFill(edgeEnd(), 0);
-    _bond_directions.expandFill(edgeEnd(), -1);
+    _bond_directions.expandFill(edgeEnd(), BOND_DIRECTION_MONO);
 
     // Copy atom properties
     for (auto i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
@@ -490,9 +492,9 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
 
 void BaseMolecule::_flipSGroupBond(SGroup& sgroup, int src_bond_idx, int new_bond_idx)
 {
-    int idx = sgroup.bonds.find(src_bond_idx);
+    int idx = sgroup.getBonds().find(src_bond_idx);
     if (idx != -1)
-        sgroup.bonds[idx] = new_bond_idx;
+        sgroup.getBonds()[idx] = new_bond_idx;
 }
 
 void BaseMolecule::_flipSuperatomBond(Superatom& sa, int src_bond_idx, int new_bond_idx)
@@ -857,7 +859,7 @@ void BaseMolecule::clone(BaseMolecule& other, Array<int>* mapping, Array<int>* i
     original_format = other.original_format;
     copyProperties(other, *mapping);
     for (int i = 0; i < other.monomer_shapes.size(); ++i)
-        monomer_shapes.add(new KetMonomerShape(*other.monomer_shapes[i]));
+        monomer_shapes.add(new KetMonomerShape(other.monomer_shapes[i]));
     for (int i = 0; i < other._template_occurrences.size(); ++i)
         std::ignore = _template_occurrences.add(other._template_occurrences[i]);
     for (int i = 0; i < other._template_names.size(); ++i)
@@ -903,7 +905,7 @@ void BaseMolecule::clone_KeepIndices(BaseMolecule& other, int skip_flags)
     original_format = other.original_format;
     copyProperties(other, mapping);
     for (int j = 0; j < other.monomer_shapes.size(); ++j)
-        monomer_shapes.add(new KetMonomerShape(*other.monomer_shapes[j]));
+        monomer_shapes.add(new KetMonomerShape(other.monomer_shapes[j]));
     for (i = 0; i < other._template_occurrences.size(); ++i)
         std::ignore = _template_occurrences.add(other._template_occurrences[i]);
     for (i = 0; i < other._template_names.size(); ++i)
@@ -1064,7 +1066,7 @@ void BaseMolecule::removeBond(int idx)
 void BaseMolecule::removeSGroup(int idx)
 {
     SGroup& sg = sgroups.getSGroup(idx);
-    _checkSgroupHierarchy(sg.parent_group, sg.original_group);
+    _checkSgroupHierarchy(sg.parent_group.value_or(0), sg.index);
 
     sgroups.remove(idx);
 }
@@ -1073,7 +1075,7 @@ void BaseMolecule::removeSGroupWithBasis(int idx)
 {
     QS_DEF(Array<int>, sg_atoms);
     SGroup& sg = sgroups.getSGroup(idx);
-    _checkSgroupHierarchy(sg.parent_group, sg.original_group);
+    _checkSgroupHierarchy(sg.parent_group.value_or(0), sg.index);
     sg_atoms.copy(sg.atoms);
     removeAtoms(sg_atoms);
 }
@@ -1278,6 +1280,102 @@ int BaseMolecule::getSingleAllowedRGroup(int atom_idx)
     throw Error("getSingleAllowedRGroup(): no r-groups defined on atom #%d", atom_idx);
 }
 
+void BaseMolecule::removeUnusedRGroups()
+{
+    std::unordered_set<int> used_rgroups;
+    bool changed = true;
+
+    for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
+    {
+        if (isRSite(i))
+        {
+            QS_DEF(Array<int>, allowed);
+            getAllowedRGroups(i, allowed);
+            for (int j = 0; j < allowed.size(); ++j)
+                used_rgroups.insert(allowed[j]);
+        }
+    }
+
+    while (changed)
+    {
+        changed = false;
+        for (auto rg_idx : used_rgroups)
+        {
+            if (rg_idx > rgroups.getRGroupCount() || rg_idx < 1)
+                continue;
+
+            auto& rg = rgroups.getRGroup(rg_idx);
+            for (int f = rg.fragments.begin(); f != rg.fragments.end(); f = rg.fragments.next(f))
+            {
+                BaseMolecule& frag = *rg.fragments[f];
+                for (int k = frag.vertexBegin(); k < frag.vertexEnd(); k = frag.vertexNext(k))
+                {
+                    if (frag.isRSite(k))
+                    {
+                        QS_DEF(Array<int>, allowed);
+                        frag.getAllowedRGroups(k, allowed);
+                        for (int j = 0; j < allowed.size(); ++j)
+                        {
+                            if (used_rgroups.find(allowed[j]) == used_rgroups.end())
+                            {
+                                used_rgroups.insert(allowed[j]);
+                                changed = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    for (int i = 1; i <= rgroups.getRGroupCount(); ++i)
+    {
+        if (used_rgroups.find(i) == used_rgroups.end())
+        {
+            rgroups.getRGroup(i).fragments.clear();
+            rgroups.getRGroup(i).clear();
+        }
+    }
+}
+
+void BaseMolecule::copyUsedRGroupsFrom(BaseMolecule& src)
+{
+    // Collect R-group indices referenced by R-sites present in *this.
+    std::unordered_set<int> used;
+    for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
+    {
+        if (!isRSite(i))
+            continue;
+        QS_DEF(Array<int>, allowed);
+        getAllowedRGroups(i, allowed);
+        for (int j = 0; j < allowed.size(); ++j)
+            used.insert(allowed[j]);
+    }
+
+    // Deep-copy only the R-groups that are actually referenced.
+    for (int rg_idx : used)
+    {
+        if (rg_idx < 1 || rg_idx > src.rgroups.getRGroupCount())
+            continue;
+        RGroup& src_rg = src.rgroups.getRGroup(rg_idx);
+        if (src_rg.fragments.size() > 0)
+            rgroups.getRGroup(rg_idx).copy(src_rg);
+    }
+
+    // Copy R-site attachment points for the R-sites present in *this.
+    for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
+    {
+        if (!isRSite(i))
+            continue;
+        if (src._rsite_attachment_points.size() <= i)
+            continue;
+        Array<int>& ap = src._rsite_attachment_points[i];
+        for (int j = 0; j < ap.size(); ++j)
+            if (ap[j] >= 0)
+                setRSiteAttachmentOrder(i, ap[j], j);
+    }
+}
+
 int BaseMolecule::countRSites()
 {
     int i, sum = 0;
@@ -1302,7 +1400,8 @@ int BaseMolecule::getRSiteAttachmentPointByOrder(int idx, int order) const
 
 void BaseMolecule::setRSiteAttachmentOrder(int atom_idx, int att_atom_idx, int order)
 {
-    _rsite_attachment_points.expand(atom_idx + 1);
+    if (_rsite_attachment_points.size() < atom_idx + 1)
+        _rsite_attachment_points.resize(atom_idx + 1);
     _rsite_attachment_points[atom_idx].expandFill(order + 1, -1);
     _rsite_attachment_points[atom_idx][order] = att_atom_idx;
     updateEditRevision();
@@ -1317,7 +1416,7 @@ void BaseMolecule::setTemplateAtomAttachmentOrder(int atom_idx, int att_atom_idx
     ap.ap_id.readString(att_id, false);
     ap.ap_id.push(0);
     if (atom_idx >= template_attachment_indexes.size())
-        template_attachment_indexes.expand(atom_idx + 1);
+        template_attachment_indexes.resize(atom_idx + 1);
     template_attachment_indexes.at(atom_idx).add(att_idx);
     updateEditRevision();
 }

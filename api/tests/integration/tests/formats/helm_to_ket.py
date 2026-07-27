@@ -1,17 +1,12 @@
-﻿import difflib
 import os
 import sys
-
-
-def find_diff(a, b):
-    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
-
 
 sys.path.append(
     os.path.normpath(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
+from common.util import compare_diff
 from env_indigo import (  # noqa
     Indigo,
     IndigoException,
@@ -59,6 +54,7 @@ helm_data = {
     "helm_alias_ambiguous": "RNA1{[Sm5moe]([m2nprn2A]+[nobn6pur]+[nC6n2G]+[nC6n8A])[mepo2]}$$$$V2.0",
     "helm_rsite_no_brackets": "PEPTIDE1{[dF].C.F.[dW].K.T.C.[*N[C@H](CO)[C@@H](C)O|$_R1;;;;;;;$|]}$PEPTIDE1,PEPTIDE1,2:R3-7:R3$$$",
     "helm_smiles_first": "RNA1{[C([*:3])[C@@H](O[*:2])CO[*:1]].p}$$$$V2.0",
+    "helm_double_strand": "RNA1{r(A)p.r(A)p.r(A)p}|RNA2{p.d(T)p.d(T)p.d(T)}$RNA1,RNA2,5:pair-6:pair|RNA1,RNA2,2:pair-9:pair|RNA1,RNA2,8:pair-3:pair$$$V2.0",
 }
 
 lib = indigo.loadMonomerLibraryFromFile(
@@ -68,18 +64,8 @@ lib = indigo.loadMonomerLibraryFromFile(
 for filename in sorted(helm_data.keys()):
     try:
         mol = indigo.loadHelm(helm_data[filename], lib)
-        # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
-        #     file.write(mol.json())
-        with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
-            ket_ref = file.read()
         ket = mol.json()
-        diff = find_diff(ket_ref, ket)
-        if not diff:
-            print(filename + ".ket:SUCCEED")
-        else:
-            print(filename + ".ket:FAILED")
-            print(diff)
-            print(ket)
+        compare_diff(ref_path, filename + ".ket", ket)
     except IndigoException as e:
         text = getIndigoExceptionText(e)
         print(filename + ".ket:FAILED - " + text)

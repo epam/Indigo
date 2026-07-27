@@ -44,7 +44,7 @@ namespace indigo
         DECL_ERROR;
 
     protected:
-        TL_CP_DECL(ObjArray<MoleculeSubstructureMatcher::FragmentMatchCache>, _fmcaches);
+        TL_CP_DECL(PtrArray<MoleculeSubstructureMatcher::FragmentMatchCache>, _fmcaches);
 
         bool _checkAAM() override;
 

@@ -171,28 +171,28 @@ void IndexingCommand::execute(OsCommandResult& result_)
                     }
                     catch (CmfSaver::Error& e)
                     {
-                        if (core->bingo_context->reject_invalid_structures)
+                        if (core->bingo_context->reject_invalid_structures.value())
                             throw;
                         exception_found = true;
                         result.error_messages.add(e.message());
                     }
                     catch (CrfSaver::Error& e)
                     {
-                        if (core->bingo_context->reject_invalid_structures)
+                        if (core->bingo_context->reject_invalid_structures.value())
                             throw;
                         exception_found = true;
                         result.error_messages.add(e.message());
                     }
                 }
                 CATCH_READ_TARGET_MOL({
-                    if (core->bingo_context->reject_invalid_structures)
+                    if (core->bingo_context->reject_invalid_structures.value())
                         throw;
                     result.error_messages.add(e.message());
                     exception_found = true;
                 });
             }
             CATCH_READ_TARGET_RXN({
-                if (core->bingo_context->reject_invalid_structures)
+                if (core->bingo_context->reject_invalid_structures.value())
                     throw;
                 result.error_messages.add(e.message());
                 exception_found = true;

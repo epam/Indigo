@@ -213,7 +213,7 @@ void BaseMolecule::getAtomBoundingBox(int atom_idx, float font_size, LABEL_MODE 
                 bool h_at_right = true;
                 if (vertex.degree() == 0)
                 {
-                    if (ElementHygrodenOnLeft(label))
+                    if (ElementHydrogenOnLeft(label))
                         h_at_right = false;
                 }
                 else
@@ -440,6 +440,7 @@ void BaseMolecule::unfoldHydrogens(Array<int>* markers_out, int max_h_cnt, bool 
                 cis_trans.registerUnfoldedHydrogen(*this, i, new_h_idx);
                 allene_stereo.registerUnfoldedHydrogen(i, new_h_idx);
                 sgroups.registerUnfoldedHydrogen(i, new_h_idx);
+                registerUnfoldedHydrogenQueryComponent(i, new_h_idx);
             }
 
             setImplicitH(i, impl_h - h_cnt);
@@ -721,6 +722,18 @@ int BaseMolecule::getExpandedMonomerCount() const
     return count;
 }
 
+// [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+bool BaseMolecule::isValidTemplateOccurrence(int template_occur_idx) const
+{
+    return template_occur_idx >= 0 && _template_occurrences.hasElement(template_occur_idx);
+}
+
+// [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+bool BaseMolecule::isValidTemplateAttachmentPoint(int template_att_point_idx) const
+{
+    return template_att_point_idx >= 0 && template_attachment_points.hasElement(template_att_point_idx);
+}
+
 std::unique_ptr<BaseMolecule> BaseMolecule::expandedMonomersToAtoms()
 {
     std::unique_ptr<BaseMolecule> result(neu());
@@ -969,7 +982,12 @@ void BaseMolecule::_processMonomerAttachmentPoints(int monomer_id, BaseMolecule&
                     auto& indexes = result.template_attachment_indexes.at(monomer_id);
                     for (int att_idx = indexes.begin(); att_idx != indexes.end(); att_idx = indexes.next(att_idx))
                     {
-                        auto& ap = result.template_attachment_points.at(indexes.at(att_idx));
+                        // [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+                        // Validate attachment point index before accessing to prevent pool access errors.
+                        int ap_idx = indexes.at(att_idx);
+                        if (!result.isValidTemplateAttachmentPoint(ap_idx))
+                            continue;
+                        auto& ap = result.template_attachment_points.at(ap_idx);
                         assert(ap.ap_occur_idx == monomer_id);
                         auto it = sorted_attachment_points.find(ap.ap_id.ptr());
                         if (it != sorted_attachment_points.end())
@@ -1001,7 +1019,11 @@ std::pair<int, bool> BaseMolecule::_getNeighborLeavingBondDir(
         auto& b_indexes = result.template_attachment_indexes.at(other);
         for (int att_idx = b_indexes.begin(); att_idx != b_indexes.end(); att_idx = b_indexes.next(att_idx))
         {
-            auto& ap = result.template_attachment_points.at(b_indexes.at(att_idx));
+            // [Sapio] FR-48004 Validate attachment point index before access to prevent pool errors.
+            int ap_idx = b_indexes.at(att_idx);
+            if (!result.isValidTemplateAttachmentPoint(ap_idx))
+                continue;
+            auto& ap = result.template_attachment_points.at(ap_idx);
             if (ap.ap_aidx == monomer_id)
             { // Found B's AP connecting to A.
                 // Need leaving direction from B's template.
@@ -1111,7 +1133,11 @@ void BaseMolecule::_connectMonomerToNeighbors(int monomer_id, BaseMolecule& resu
                     auto& indexes = result.template_attachment_indexes.at(other);
                     for (int att_idx = indexes.begin(); att_idx != indexes.end(); att_idx = indexes.next(att_idx))
                     {
-                        auto& ap = result.template_attachment_points.at(indexes.at(att_idx));
+                        // [Sapio] FR-48004 Validate attachment point index before access to prevent pool errors.
+                        int ap_idx = indexes.at(att_idx);
+                        if (!result.isValidTemplateAttachmentPoint(ap_idx))
+                            continue;
+                        auto& ap = result.template_attachment_points.at(ap_idx);
                         // Check if 'monomer_id' is connected to this AP
                         if (result.findEdgeIndex(monomer_id, ap.ap_aidx) >= 0)
                         {
@@ -1129,7 +1155,11 @@ void BaseMolecule::_connectMonomerToNeighbors(int monomer_id, BaseMolecule& resu
                     auto& indexes = result.template_attachment_indexes.at(other);
                     for (int att_idx = indexes.begin(); att_idx != indexes.end(); att_idx = indexes.next(att_idx))
                     {
-                        auto& ap = result.template_attachment_points.at(indexes.at(att_idx));
+                        // [Sapio] FR-48004 Validate attachment point index before access to prevent pool errors.
+                        int ap_idx = indexes.at(att_idx);
+                        if (!result.isValidTemplateAttachmentPoint(ap_idx))
+                            continue;
+                        auto& ap = result.template_attachment_points.at(ap_idx);
                         if (ap.ap_aidx == monomer_id)
                             ap.ap_aidx = ap_new_idx;
                     }

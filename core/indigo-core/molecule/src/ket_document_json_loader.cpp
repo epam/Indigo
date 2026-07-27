@@ -36,6 +36,55 @@ using namespace rapidjson;
 
 IMPL_ERROR(KetDocumentJsonLoader, "KetDocument json loader");
 
+namespace
+{
+    std::string normalizeMonomerTemplateId(const std::string& template_ref_or_id)
+    {
+        if (template_ref_or_id.rfind(MonomerTemplate::ref_prefix, 0) == 0)
+            return template_ref_or_id.substr(MonomerTemplate::ref_prefix.size());
+        return template_ref_or_id;
+    }
+
+    std::string resolveMonomerTemplateId(const std::string& template_ref_or_id, const KetDocumentJsonLoader::template_id_resolve_func& resolveTemplateId)
+    {
+        if (resolveTemplateId)
+            return resolveTemplateId(template_ref_or_id);
+        return normalizeMonomerTemplateId(template_ref_or_id);
+    }
+
+    void normalizeTemplateEndpointId(KetConnectionEndPoint& endpoint, const KetDocumentJsonLoader::template_id_resolve_func& resolveTemplateId)
+    {
+        if (hasKetStrProp(endpoint, templateId))
+            setKetStrProp(endpoint, templateId, resolveMonomerTemplateId(getKetStrProp(endpoint, templateId), resolveTemplateId));
+    }
+
+} // namespace
+
+void KetDocumentJsonLoader::parseConnections(const rapidjson::Value& connections, connection_add_func addConnection, template_id_resolve_func resolveTemplateId)
+{
+    for (rapidjson::SizeType i = 0; i < connections.Size(); ++i)
+    {
+        const auto& connection = connections[i];
+        std::string connection_type = connection["connectionType"].GetString();
+        if (connection_type == KetConnectionSingle || connection_type == KetConnectionHydro)
+        {
+            KetConnectionEndPoint ep1, ep2;
+            ep1.parseOptsFromKet(connection["endpoint1"]);
+            ep2.parseOptsFromKet(connection["endpoint2"]);
+            normalizeTemplateEndpointId(ep1, resolveTemplateId);
+            normalizeTemplateEndpointId(ep2, resolveTemplateId);
+            auto& conn = addConnection(connection_type, ep1, ep2);
+            conn.parseOptsFromKet(connection);
+            if (connection.HasMember("annotation"))
+            {
+                conn.setAnnotation(connection["annotation"]);
+            }
+        }
+        else
+            throw Error("Unknown connection type: %s", connection_type.c_str());
+    }
+}
+
 void KetDocumentJsonLoader::parseJson(const std::string& json_str, KetDocument& document, lib_ref /* library */)
 {
     Document data;
@@ -118,26 +167,10 @@ void KetDocumentJsonLoader::parseJson(const std::string& json_str, KetDocument& 
     }
     if (root.HasMember("connections"))
     {
-        Value& connections = root["connections"];
-        for (rapidjson::SizeType i = 0; i < connections.Size(); ++i)
-        {
-            Value& connection = connections[i];
-            std::string connection_type = connection["connectionType"].GetString();
-            if (connection_type == KetConnectionSingle || connection_type == KetConnectionHydro)
-            {
-                KetConnectionEndPoint ep1, ep2;
-                ep1.parseOptsFromKet(connection["endpoint1"]);
-                ep2.parseOptsFromKet(connection["endpoint2"]);
-                auto& conn = document.addConnection(connection_type, ep1, ep2);
-                conn.parseOptsFromKet(connection);
-                if (connection.HasMember("annotation"))
-                {
-                    conn.setAnnotation(connection["annotation"]);
-                }
-            }
-            else
-                throw Error("Unknown connection type: %s", connection_type.c_str());
-        }
+        parseConnections(root["connections"],
+                         [&document](const std::string& connection_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2) -> KetConnection& {
+                             return document.addConnection(connection_type, ep1, ep2);
+                         });
     }
     if (root.HasMember("annotation"))
     {
@@ -183,7 +216,8 @@ static IdtAlias parseIdtAlias(const rapidjson::Value& parent)
         return IdtAlias(idt_alias_base);
 }
 
-void KetDocumentJsonLoader::parseMonomerGroupTemplate(const rapidjson::Value& mt_json, template_group_add_func addMonomerGroupTemplate)
+void KetDocumentJsonLoader::parseMonomerGroupTemplate(const rapidjson::Value& mt_json, template_group_add_func addMonomerGroupTemplate,
+                                                      template_id_resolve_func resolveTemplateId)
 {
     if (!mt_json.HasMember("id"))
         throw Error("Monomer template group without id");
@@ -212,12 +246,28 @@ void KetDocumentJsonLoader::parseMonomerGroupTemplate(const rapidjson::Value& mt
         {
             auto& template_el = templates[i];
             if (!template_el.HasMember("$ref"))
-                template_refs.push_back(template_el["$ref"].GetString());
+                throw Error("Monomer template group %s contains template without $ref.", id.c_str());
+            template_refs.push_back(resolveMonomerTemplateId(template_el["$ref"].GetString(), resolveTemplateId));
         }
     }
 
-    /* auto& mon_group_template = */ addMonomerGroupTemplate(id, name, monomer_class, idt_alias, template_refs);
-    // no extra parameters to fill yet
+    auto& mon_group_template = addMonomerGroupTemplate(id, name, monomer_class, idt_alias, template_refs);
+
+    if (mt_json.HasMember("connections"))
+    {
+        parseConnections(
+            mt_json["connections"],
+            [&mon_group_template](const std::string& connection_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2) -> KetConnection& {
+                return mon_group_template.addConnection(connection_type, ep1, ep2);
+            },
+            resolveTemplateId);
+    }
+
+    if (mt_json.HasMember("aliasAxoLabs"))
+        mon_group_template.setAliasAxoLabs(mt_json["aliasAxoLabs"].GetString());
+
+    if (!mon_group_template.isValid())
+        throw KetDocumentJsonLoader::Error("Monomer template group %s has disconnected templates.", mon_group_template.id().c_str());
 }
 
 void KetDocumentJsonLoader::parseMonomerTemplate(const rapidjson::Value& mt_json, template_add_func addMonomerTemplate)

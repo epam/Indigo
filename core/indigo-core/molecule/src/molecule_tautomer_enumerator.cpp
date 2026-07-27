@@ -549,9 +549,9 @@ void TautomerEnumerator::edgeAdd(Graph& /* subgraph */, Graph& supergraph, int /
     const Dbitset& backwardMask = layeredMolecules.getBondMask(super_idx, backwardSubBondOrder);
 
     breadcrumps.edgesHistory.push(super_idx);
-    breadcrumps.forwardEdgesHistory.expand(breadcrumps.forwardEdgesHistory.size() + 1);
+    breadcrumps.forwardEdgesHistory.push();
     breadcrumps.forwardEdgesHistory.top().copy(breadcrumps.forwardMask);
-    breadcrumps.backwardEdgesHistory.expand(breadcrumps.backwardEdgesHistory.size() + 1);
+    breadcrumps.backwardEdgesHistory.push();
     breadcrumps.backwardEdgesHistory.top().copy(breadcrumps.backwardMask);
 
     breadcrumps.forwardMask.andWith(forwardMask);
@@ -595,9 +595,9 @@ void TautomerEnumerator::vertexRemove(Graph& /* subgraph */, int /* sub_idx */, 
     {
         breadcrumps.edgesHistory.pop();
         breadcrumps.forwardMask.copy(breadcrumps.forwardEdgesHistory.top());
-        breadcrumps.forwardEdgesHistory.pop();
+        breadcrumps.forwardEdgesHistory.removeLast();
         breadcrumps.backwardMask.copy(breadcrumps.backwardEdgesHistory.top());
-        breadcrumps.backwardEdgesHistory.pop();
+        breadcrumps.backwardEdgesHistory.removeLast();
     }
     breadcrumps.nodesHistory.pop();
 }

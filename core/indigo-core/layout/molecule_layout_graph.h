@@ -20,7 +20,7 @@
 #define __molecule_layout_graph_h__
 
 #include "base_cpp/cancellation_handler.h"
-#include "base_cpp/obj_array.h"
+#include "base_cpp/ptr_array.h"
 #include "base_cpp/tlscont.h"
 #include "graph/filter.h"
 #include "graph/graph.h"
@@ -74,6 +74,7 @@ namespace indigo
         bool is_inside;
         bool is_nailed;
         int type;
+        int inner_cycle_size; // 0 if not inner; otherwise the n-agon vertex count
 
         Vec2f pos;
     };
@@ -182,11 +183,11 @@ namespace indigo
 
         DECL_ERROR;
 
-        ObjArray<LayoutVertex> _layout_vertices;
-        ObjArray<LayoutEdge> _layout_edges;
+        PtrArray<LayoutVertex> _layout_vertices;
+        PtrArray<LayoutEdge> _layout_edges;
 
-        ObjArray<Array<int>> _fixed_subgraphs_ext_vertices;
-        ObjArray<Array<int>> _fixed_subgraphs_int_vertices;
+        PtrArray<Array<int>> _fixed_subgraphs_ext_vertices;
+        PtrArray<Array<int>> _fixed_subgraphs_int_vertices;
         Array<int> _fixed_decomposition;
 
         Array<int> _fixed_vertices;
@@ -300,7 +301,7 @@ namespace indigo
         static void _findAngles(int k, float s, float& x, float& y);
         static float _dichotomy1(float a0, float b0, int L, float s);
         static float _dichotomy2(float a0, float b0, int L, float s);
-        static void _calculatePos(float phi, const Vec2f& v1, const Vec2f& v2, Vec2f& v);
+        void _calculatePos(float phi, const Vec2f& v1, const Vec2f& v2, Vec2f& v) const;
 
         // border functions
         virtual void _getBorder(Cycle& border) const = 0;
@@ -344,7 +345,7 @@ namespace indigo
         void _calculatePositionsManyNotDrawn(int vert_idx, Array<int>& adjacent_list, Array<Vec2f>& positions);
         void _orderByEnergy(Array<Vec2f>& positions);
         void _assignRelativeSingleEdge(int fixed_component, const MoleculeLayoutGraph& supergraph);
-        void _findFirstVertexIdx(int n_comp, Array<int>& fixed_components, PtrArray<MoleculeLayoutGraph>& bc_components, bool all_trivial);
+        void _findFirstVertexIdx(int n_comp, Array<int>& fixed_components, PtrArray<MoleculeLayoutGraph>& bc_components, bool all_trivial, float bond_length);
         bool _prepareAssignedList(Array<int>& assigned_list, BiconnectedDecomposer& bc_decom, PtrArray<MoleculeLayoutGraph>& bc_components,
                                   Array<int>& bc_tree);
         void _assignFinalCoordinates(float bond_length, const Array<Vec2f>& src_layout);
@@ -352,12 +353,31 @@ namespace indigo
                                             const std::vector<std::pair<int, Vec2f>>& all_fixed_vertices, const std::unordered_set<int>& bridge_connected_pairs,
                                             const Vec2f& selected_center, const std::vector<int>& selected_vertices, Vec2f& best_translation,
                                             float& best_rotation);
+
+        // Boundary edge between a selected and a fixed vertex. Anchoring the rigid
+        // translation of the selected block on this edge makes the bridge bond
+        // length equal to bond_length by construction.
+        struct SelectionBridge
+        {
+            int sel_layout_idx;
+            int sel_ext_idx;
+            int fix_layout_idx;
+            int fix_ext_idx;
+            Vec2f fix_pos;
+        };
+
+        std::vector<SelectionBridge> _detectSelectionBridges(const std::vector<int>& sel_vertices, const Array<Vec2f>& src_layout) const;
+        Vec2f _computeAnchorDirection(const SelectionBridge& bridge, const Array<Vec2f>& src_layout) const;
+        void _applyAnchoredRigidTransform(const SelectionBridge& bridge, const std::vector<int>& sel_vertices, const Array<Vec2f>& src_layout,
+                                          float bond_length);
         void _copyLayout(MoleculeLayoutGraph& component);
         void _getAnchor(int& v1, int& v2, int& v3) const;
 
         void _findFixedComponents(BiconnectedDecomposer& bc_decom, Array<int>& fixed_components, PtrArray<MoleculeLayoutGraph>& bc_components);
         bool _assignComponentsRelativeCoordinates(PtrArray<MoleculeLayoutGraph>& bc_components, Array<int>& fixed_components, BiconnectedDecomposer& bc_decom);
+        void _reflectCycleVertex(int vertex_idx, float bond_length);
         void _reflectCycleVertices(const std::vector<int>& cycle_vertices, float bond_length);
+        void _reflectSequenceCycleVertices(const std::vector<int>& cycle_vertices);
         void _attachCrossingEdges();
 
         void _buildOutline(void);
@@ -393,7 +413,7 @@ namespace indigo
             _flipped = true;
         };
 
-        ObjArray<PatternLayout>& getPatterns();
+        PtrArray<PatternLayout>& getPatterns();
 
 #ifdef M_LAYOUT_DEBUG
         void saveDebug();
@@ -412,7 +432,9 @@ namespace indigo
         // assigning coordinates
         void _assignRelativeCoordinates(int& fixed_component, const MoleculeLayoutGraph& supergraph) override;
         bool _tryToFindPattern(int& fixed_component);
-        void _assignFirstCycle(const Cycle& cycle, float radius);
+        void _assignFirstCycle(const Cycle& cycle, float bond_length);
+        bool _isRegularPolygon(const Cycle& cycle, float bond_length, float tolerance = 0) const;
+        int _findCycleLeftTopIdx(const Cycle& cycle) const;
 
         // attaching cycles
         bool _attachCycleOutside(const Cycle& cycle, float length, int n_common);
@@ -423,7 +445,7 @@ namespace indigo
         void _setChainType(const Array<int>& chain, const Array<int>& mapping, int type);
         bool _splitCycle(const Cycle& cycle, const Array<int>& cycle_vertex_types, bool check_boundary, Array<int>& chain_ext, Array<int>& chain_int,
                          int& c_beg, int& c_end) const;
-        void _splitCycle2(const Cycle& cycle, const Array<int>& cycle_vertex_types, ObjArray<Array<int>>& chains_ext) const;
+        void _splitCycle2(const Cycle& cycle, const Array<int>& cycle_vertex_types, PtrArray<Array<int>>& chains_ext) const;
 
         // border functions
         void _getBorder(Cycle& border) const override;
@@ -529,25 +551,25 @@ namespace indigo
         CP_DECL;
         SmoothingCycle(Array<Vec2f>&, Array<float>&);
         SmoothingCycle(Array<Vec2f>&, Array<float>&, Array<int>&, int);
-        SmoothingCycle(Array<Vec2f>&, Array<float>&, ObjArray<MoleculeLayoutSmoothingSegment>&);
+        SmoothingCycle(Array<Vec2f>&, Array<float>&, PtrArray<MoleculeLayoutSmoothingSegment>&);
 
         int cycle_length;
         Array<Vec2f>& point;
         Array<float>& target_angle;
-        MoleculeLayoutSmoothingSegment* segment;
+        PtrArray<MoleculeLayoutSmoothingSegment>* segment;
         TL_CP_DECL(Array<float>, edge_length);
 
         bool is_simple_component(int i) const
         {
-            return segment == 0 || segment[i].get_layout_component_number() < 0;
+            return segment == 0 || (*segment)[i].get_layout_component_number() < 0;
         }
         float get_radius(int i)
         {
-            return segment == 0 ? (point[(i + 1) % cycle_length] - point[i]).length() / 2 : segment[i].get_radius();
+            return segment == 0 ? (point[(i + 1) % cycle_length] - point[i]).length() / 2 : (*segment)[i].get_radius();
         }
         Vec2f get_center(int i)
         {
-            return segment == 0 ? (point[(i + 1) % cycle_length] + point[i]) / 2 : segment[i].getCenter();
+            return segment == 0 ? (point[(i + 1) % cycle_length] + point[i]) / 2 : (*segment)[i].getCenter();
         }
         float get_length(int i)
         {
@@ -654,20 +676,20 @@ namespace indigo
 
         // smoothing
         void _segment_smoothing(const Cycle& cycle, const MoleculeLayoutMacrocyclesLattice& layout, Array<int>& rotation_vertex, Array<Vec2f>& rotation_point,
-                                ObjArray<MoleculeLayoutSmoothingSegment>& segment);
-        void _update_touching_segments(Array<local_pair_ii>&, ObjArray<MoleculeLayoutSmoothingSegment>&);
+                                PtrArray<MoleculeLayoutSmoothingSegment>& segment);
+        void _update_touching_segments(Array<local_pair_ii>&, PtrArray<MoleculeLayoutSmoothingSegment>&);
         void _segment_smoothing_prepearing(const Cycle& cycle, Array<int>& rotation_vertex, Array<Vec2f>& rotation_point,
-                                           ObjArray<MoleculeLayoutSmoothingSegment>& segment, MoleculeLayoutMacrocyclesLattice& layout);
+                                           PtrArray<MoleculeLayoutSmoothingSegment>& segment, MoleculeLayoutMacrocyclesLattice& layout);
         void _segment_calculate_target_angle(const MoleculeLayoutMacrocyclesLattice& layout, Array<int>& rotation_vertex, Array<float>& target_angle,
-                                             ObjArray<MoleculeLayoutSmoothingSegment>& segment);
+                                             PtrArray<MoleculeLayoutSmoothingSegment>& segment);
         void _segment_update_rotation_points(const Cycle& cycle, Array<int>& rotation_vertex, Array<Vec2f>& rotation_point,
-                                             ObjArray<MoleculeLayoutSmoothingSegment>& segment);
-        void _segment_smoothing_unstick(ObjArray<MoleculeLayoutSmoothingSegment>& segment);
-        void _do_segment_smoothing(Array<Vec2f>& rotation_point, Array<float>& target_angle, ObjArray<MoleculeLayoutSmoothingSegment>& segment);
-        void _segment_improoving(Array<Vec2f>& rotation_point, Array<float>& target_angle, ObjArray<MoleculeLayoutSmoothingSegment>& segment, int, float,
+                                             PtrArray<MoleculeLayoutSmoothingSegment>& segment);
+        void _segment_smoothing_unstick(PtrArray<MoleculeLayoutSmoothingSegment>& segment);
+        void _do_segment_smoothing(Array<Vec2f>& rotation_point, Array<float>& target_angle, PtrArray<MoleculeLayoutSmoothingSegment>& segment);
+        void _segment_improoving(Array<Vec2f>& rotation_point, Array<float>& target_angle, PtrArray<MoleculeLayoutSmoothingSegment>& segment, int, float,
                                  Array<local_pair_ii>&);
-        void _do_segment_smoothing_gradient(Array<Vec2f>& rotation_point, Array<float>& target_angle, ObjArray<MoleculeLayoutSmoothingSegment>& segment);
-        void _gradient_step(Array<Vec2f>& point, Array<float>& target_angle, ObjArray<MoleculeLayoutSmoothingSegment>& segment, float coef,
+        void _do_segment_smoothing_gradient(Array<Vec2f>& rotation_point, Array<float>& target_angle, PtrArray<MoleculeLayoutSmoothingSegment>& segment);
+        void _gradient_step(Array<Vec2f>& point, Array<float>& target_angle, PtrArray<MoleculeLayoutSmoothingSegment>& segment, float coef,
                             Array<local_pair_ii>& touching_segments);
 
         // attaching cycles
@@ -679,7 +701,7 @@ namespace indigo
         void _setChainType(const Array<int>& chain, const Array<int>& mapping, int type);
         bool _splitCycle(const Cycle& cycle, const Array<int>& cycle_vertex_types, bool check_boundary, Array<int>& chain_ext, Array<int>& chain_int,
                          int& c_beg, int& c_end) const;
-        void _splitCycle2(const Cycle& cycle, const Array<int>& cycle_vertex_types, ObjArray<Array<int>>& chains_ext) const;
+        void _splitCycle2(const Cycle& cycle, const Array<int>& cycle_vertex_types, PtrArray<Array<int>>& chains_ext) const;
 
         // border functions
         void _getBorder(Cycle& border) const override;

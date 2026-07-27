@@ -191,7 +191,7 @@ QueryMolecule::Node* QueryMolecule::Node::_nicht(QueryMolecule::Node* node)
 {
     if (node->type == QueryMolecule::OP_NOT)
     {
-        Node* res = (Node*)node->children.pop();
+        Node* res = node->children.pop().release();
         delete node;
         return res;
     }
@@ -231,7 +231,7 @@ bool QueryMolecule::Atom::hasConstraintWithValue(int what_type, int what_value)
         int i;
 
         for (i = 0; i < children.size(); i++)
-            if (((Atom*)children[i])->hasConstraintWithValue(what_type, what_value))
+            if (((Atom*)&children[i])->hasConstraintWithValue(what_type, what_value))
                 return true;
     }
 
@@ -255,7 +255,7 @@ bool QueryMolecule::Atom::updateConstraintWithValue(int what_type, int new_value
         int i;
 
         for (i = 0; i < children.size(); i++)
-            if (((Atom*)children[i])->updateConstraintWithValue(what_type, new_value))
+            if (((Atom*)&children[i])->updateConstraintWithValue(what_type, new_value))
                 return true;
     }
 
@@ -461,7 +461,7 @@ bool QueryMolecule::Node::sureValue(int what_type, int& value_out) const
         for (i = 0; i < children.size(); i++)
         {
             int child_value_tmp;
-            if (children[i]->sureValue(what_type, child_value_tmp))
+            if (children[i].sureValue(what_type, child_value_tmp))
             {
                 if (!child_value_valid)
                 {
@@ -489,7 +489,7 @@ bool QueryMolecule::Node::sureValue(int what_type, int& value_out) const
         for (i = 0; i < children.size(); i++)
         {
             int child_value_tmp;
-            if (children[i]->sureValue(what_type, child_value_tmp))
+            if (children[i].sureValue(what_type, child_value_tmp))
             {
                 if (i == 0)
                     child_value = child_value_tmp;
@@ -503,7 +503,7 @@ bool QueryMolecule::Node::sureValue(int what_type, int& value_out) const
         return true;
     }
     case OP_NOT:
-        return children[0]->sureValueInv(what_type, value_out);
+        return children[0].sureValueInv(what_type, value_out);
     case OP_NONE:
         return false;
     default:
@@ -524,7 +524,7 @@ bool QueryMolecule::Node::sureValueInv(int what_type, int& value_out) const
         for (i = 0; i < children.size(); i++)
         {
             int child_value_tmp;
-            if (children[i]->sureValueInv(what_type, child_value_tmp))
+            if (children[i].sureValueInv(what_type, child_value_tmp))
             {
                 if (!child_value_valid)
                 {
@@ -552,7 +552,7 @@ bool QueryMolecule::Node::sureValueInv(int what_type, int& value_out) const
         for (i = 0; i < children.size(); i++)
         {
             int child_value_tmp;
-            if (children[i]->sureValueInv(what_type, child_value_tmp))
+            if (children[i].sureValueInv(what_type, child_value_tmp))
             {
                 if (i == 0)
                     child_value = child_value_tmp;
@@ -566,7 +566,7 @@ bool QueryMolecule::Node::sureValueInv(int what_type, int& value_out) const
         return true;
     }
     case OP_NOT:
-        return children[0]->sureValue(what_type, value_out);
+        return children[0].sureValue(what_type, value_out);
     case OP_NONE:
         throw QueryMolecule::Error("sureValueInv(OP_NONE) not implemented");
     default:
@@ -582,20 +582,20 @@ bool QueryMolecule::Node::possibleValue(int what_type, int what_value)
     {
     case OP_AND: {
         for (i = 0; i < children.size(); i++)
-            if (!children[i]->possibleValue(what_type, what_value))
+            if (!children[i].possibleValue(what_type, what_value))
                 return false;
 
         return true;
     }
     case OP_OR: {
         for (i = 0; i < children.size(); i++)
-            if (children[i]->possibleValue(what_type, what_value))
+            if (children[i].possibleValue(what_type, what_value))
                 return true;
 
         return false;
     }
     case OP_NOT:
-        return children[0]->possibleValueInv(what_type, what_value);
+        return children[0].possibleValueInv(what_type, what_value);
     case OP_NONE:
         return true;
     default:
@@ -611,20 +611,20 @@ bool QueryMolecule::Node::possibleValueInv(int what_type, int what_value)
     {
     case OP_AND: {
         for (i = 0; i < children.size(); i++)
-            if (children[i]->possibleValueInv(what_type, what_value))
+            if (children[i].possibleValueInv(what_type, what_value))
                 return true;
 
         return false;
     }
     case OP_OR: {
         for (i = 0; i < children.size(); i++)
-            if (!children[i]->possibleValueInv(what_type, what_value))
+            if (!children[i].possibleValueInv(what_type, what_value))
                 return false;
 
         return true;
     }
     case OP_NOT:
-        return children[0]->possibleValue(what_type, what_value);
+        return children[0].possibleValue(what_type, what_value);
     case OP_NONE:
         throw QueryMolecule::Error("possibleValueInv(OP_NONE) not implemented");
     default: {
@@ -646,20 +646,20 @@ bool QueryMolecule::Node::possibleValuePair(int what_type1, int what_value1, int
     {
     case OP_AND: {
         for (i = 0; i < children.size(); i++)
-            if (!children[i]->possibleValuePair(what_type1, what_value1, what_type2, what_value2))
+            if (!children[i].possibleValuePair(what_type1, what_value1, what_type2, what_value2))
                 return false;
 
         return true;
     }
     case OP_OR: {
         for (i = 0; i < children.size(); i++)
-            if (children[i]->possibleValuePair(what_type1, what_value1, what_type2, what_value2))
+            if (children[i].possibleValuePair(what_type1, what_value1, what_type2, what_value2))
                 return true;
 
         return false;
     }
     case OP_NOT:
-        return children[0]->possibleValuePairInv(what_type1, what_value1, what_type2, what_value2);
+        return children[0].possibleValuePairInv(what_type1, what_value1, what_type2, what_value2);
     case OP_NONE:
         return true;
     default:
@@ -675,20 +675,20 @@ bool QueryMolecule::Node::possibleValuePairInv(int what_type1, int what_value1, 
     {
     case OP_AND: {
         for (i = 0; i < children.size(); i++)
-            if (children[i]->possibleValuePairInv(what_type1, what_value1, what_type2, what_value2))
+            if (children[i].possibleValuePairInv(what_type1, what_value1, what_type2, what_value2))
                 return true;
 
         return false;
     }
     case OP_OR: {
         for (i = 0; i < children.size(); i++)
-            if (!children[i]->possibleValuePairInv(what_type1, what_value1, what_type2, what_value2))
+            if (!children[i].possibleValuePairInv(what_type1, what_value1, what_type2, what_value2))
                 return false;
 
         return true;
     }
     case OP_NOT:
-        return children[0]->possibleValuePair(what_type1, what_value1, what_type2, what_value2);
+        return children[0].possibleValuePair(what_type1, what_value1, what_type2, what_value2);
     case OP_NONE:
         throw QueryMolecule::Error("possibleValuePairInv(OP_NONE) not implemented");
     default: {
@@ -721,20 +721,20 @@ bool QueryMolecule::Node::sureValueBelongs(int what_type, const int* arr, int co
         // Of course one can fool this around;
         // see comment in sureValue()
         for (i = 0; i < children.size(); i++)
-            if (children[i]->sureValueBelongs(what_type, arr, count))
+            if (children[i].sureValueBelongs(what_type, arr, count))
                 return true;
 
         return false;
     }
     case OP_OR: {
         for (i = 0; i < children.size(); i++)
-            if (!children[i]->sureValueBelongs(what_type, arr, count))
+            if (!children[i].sureValueBelongs(what_type, arr, count))
                 return false;
 
         return true;
     }
     case OP_NOT:
-        return children[0]->sureValueBelongsInv(what_type, arr, count);
+        return children[0].sureValueBelongsInv(what_type, arr, count);
     case OP_NONE:
         return false;
     default:
@@ -750,7 +750,7 @@ bool QueryMolecule::Node::hasOP_OR()
     {
     case OP_AND: {
         for (i = 0; i < children.size(); i++)
-            if (children[i]->hasOP_OR())
+            if (children[i].hasOP_OR())
                 return true;
 
         return false;
@@ -783,14 +783,14 @@ QueryMolecule::Node* QueryMolecule::Node::_findSureConstraint(int what_type, int
         Node* subnode_found = NULL;
         for (int i = 0; i < children.size(); i++)
         {
-            Node* subnode = children[i]->_findSureConstraint(what_type, count);
+            Node* subnode = children[i]._findSureConstraint(what_type, count);
             if (subnode != NULL)
                 subnode_found = subnode;
         }
         return subnode_found;
     }
     case OP_NOT: {
-        children[0]->_findSureConstraint(what_type, count);
+        children[0]._findSureConstraint(what_type, count);
         return NULL; // Do not return anything in this case but increase count if found
     }
     case OP_NONE:
@@ -813,7 +813,7 @@ bool QueryMolecule::Node::sureValueBelongsInv(int what_type, const int* arr, int
     {
     case OP_OR: {
         for (i = 0; i < children.size(); i++)
-            if (children[i]->sureValueBelongsInv(what_type, arr, count))
+            if (children[i].sureValueBelongsInv(what_type, arr, count))
                 return true;
 
         return false;
@@ -821,13 +821,13 @@ bool QueryMolecule::Node::sureValueBelongsInv(int what_type, const int* arr, int
     case OP_AND: {
         for (i = 0; i < children.size(); i++)
         {
-            if (!children[i]->sureValueBelongsInv(what_type, arr, count))
+            if (!children[i].sureValueBelongsInv(what_type, arr, count))
                 return false;
         }
         return true;
     }
     case OP_NOT:
-        return children[0]->sureValueBelongs(what_type, arr, count);
+        return children[0].sureValueBelongs(what_type, arr, count);
     case OP_NONE:
         throw QueryMolecule::Error("sureValueBelongsInv(OP_NONE) not implemented");
     default:
@@ -843,7 +843,7 @@ void QueryMolecule::Node::optimize()
     case OP_OR:
     case OP_NOT:
         for (int i = 0; i < children.size(); i++)
-            children[i]->optimize();
+            children[i].optimize();
         break;
     case OP_NONE:
         return;
@@ -969,12 +969,12 @@ bool QueryMolecule::Atom::valueWithinRange(int value)
 
 QueryMolecule::Atom* QueryMolecule::Atom::child(int idx)
 {
-    return static_cast<Atom*>(children[idx]);
+    return static_cast<Atom*>(&children[idx]);
 }
 
 QueryMolecule::Bond* QueryMolecule::Bond::child(int idx)
 {
-    return static_cast<Bond*>(children[idx]);
+    return static_cast<Bond*>(&children[idx]);
 }
 
 QueryMolecule::Node* QueryMolecule::Atom::_neu()
@@ -993,6 +993,8 @@ int QueryMolecule::addAtom(Atom* atom)
 
     _atoms.expand(idx + 1);
     _atoms.set(idx, atom);
+    // Keep queryComponent metadata aligned with vertex indices.
+    components.expandFill(idx + 1, 0);
 
     updateEditRevision();
     return idx;
@@ -1000,20 +1002,24 @@ int QueryMolecule::addAtom(Atom* atom)
 
 QueryMolecule::Atom& QueryMolecule::getAtom(int idx)
 {
-    return *_atoms[idx];
+    return _atoms[idx];
 }
 
 QueryMolecule::Atom* QueryMolecule::releaseAtom(int idx)
 {
     updateEditRevision();
-    return _atoms.release(idx);
+    return _atoms.release(idx).release();
 }
 
 void QueryMolecule::resetAtom(int idx, QueryMolecule::Atom* atom)
 {
-    if (atom != _atoms[idx])
-        _atoms.reset(idx);
-    _atoms[idx] = atom;
+    // milestone-19 / issue #783: PtrArray::operator[] no longer returns T*&.
+    // The original code deleted the old slot conditionally then assigned.
+    // reset(idx, atom) collapses both into one well-defined operation; the
+    // identity guard prevents reset() from deleting `atom` if it already
+    // owns it (which would yield a dangling pointer).
+    if (atom != &_atoms[idx])
+        _atoms.reset(idx, atom);
     updateEditRevision();
 }
 
@@ -1053,19 +1059,20 @@ int QueryMolecule::addBond_Silent(int beg, int end, int order)
 
 QueryMolecule::Bond& QueryMolecule::getBond(int idx)
 {
-    return *_bonds[idx];
+    return _bonds[idx];
 }
 
 QueryMolecule::Bond* QueryMolecule::releaseBond(int idx)
 {
     updateEditRevision();
-    return _bonds.release(idx);
+    return _bonds.release(idx).release();
 }
 
 void QueryMolecule::resetBond(int idx, QueryMolecule::Bond* bond)
 {
-    _bonds.reset(idx);
-    _bonds[idx] = bond;
+    // milestone-19 / issue #783: PtrArray::operator[] no longer returns T*&.
+    // Collapsed `reset(idx); arr[idx] = bond;` into `reset(idx, bond)`.
+    _bonds.reset(idx, bond);
     _min_h.clear();
     updateEditRevision();
 }
@@ -1088,7 +1095,7 @@ void QueryMolecule::Atom::copy(const Atom& other)
 
     children.clear();
     for (int i = 0; i < other.children.size(); i++)
-        children.add(((Atom*)other.children[i])->clone());
+        children.add(((Atom*)&other.children[i])->clone());
 }
 
 QueryMolecule::Atom* QueryMolecule::Atom::clone() const
@@ -1108,7 +1115,7 @@ QueryMolecule::Bond* QueryMolecule::Bond::clone()
     res->direction = direction;
 
     for (i = 0; i < children.size(); i++)
-        res->children.add(((Bond*)children[i])->clone());
+        res->children.add(((Bond*)&children[i])->clone());
 
     return res.release();
 }
@@ -1124,7 +1131,7 @@ bool QueryMolecule::Node::hasConstraint(int what_type)
     if (type == OP_AND || type == OP_OR || type == OP_NOT)
     {
         for (int i = 0; i < children.size(); i++)
-            if (children[i]->hasConstraint(what_type))
+            if (children[i].hasConstraint(what_type))
                 return true;
     }
 
@@ -1146,7 +1153,7 @@ bool QueryMolecule::Node::hasNoConstraintExcept(int what_type1, int what_type2)
         int i;
 
         for (i = 0; i < children.size(); i++)
-            if (!children[i]->hasNoConstraintExcept(what_type1, what_type2))
+            if (!children[i].hasNoConstraintExcept(what_type1, what_type2))
                 return false;
 
         return true;
@@ -1165,7 +1172,7 @@ bool QueryMolecule::Node::hasNoConstraintExcept(std::vector<int> what_types)
         int i;
 
         for (i = 0; i < children.size(); i++)
-            if (!children[i]->hasNoConstraintExcept(what_types))
+            if (!children[i].hasNoConstraintExcept(what_types))
                 return false;
 
         return true;
@@ -1188,8 +1195,8 @@ void QueryMolecule::Node::removeConstraints(int what_type)
 
         for (i = children.size() - 1; i >= 0; i--)
         {
-            children[i]->removeConstraints(what_type);
-            if (children[i]->type == OP_NONE)
+            children[i].removeConstraints(what_type);
+            if (children[i].type == OP_NONE)
                 children.remove(i);
         }
         if (children.size() == 0)

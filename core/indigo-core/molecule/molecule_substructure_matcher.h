@@ -51,7 +51,7 @@ namespace indigo
             CONFORMATION = 2
         };
 
-        typedef ObjArray<RedBlackStringMap<int>> FragmentMatchCache;
+        typedef PtrArray<RedBlackStringMap<int>> FragmentMatchCache;
 
         MoleculeSubstructureMatcher(BaseMolecule& target);
         ~MoleculeSubstructureMatcher();

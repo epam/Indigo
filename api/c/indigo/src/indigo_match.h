@@ -168,7 +168,7 @@ public:
     bool daylight_aam;
 
     std::unique_ptr<ReactionSubstructureMatcher> matcher;
-    ObjArray<Array<int>> mappings;
+    PtrArray<Array<int>> mappings;
     Array<int> mol_mapping;
 };
 

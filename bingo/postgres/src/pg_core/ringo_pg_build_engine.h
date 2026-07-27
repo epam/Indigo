@@ -2,7 +2,6 @@
 #define _RINGO_PG_BUILD_ENGINE_H__
 
 #include "base_cpp/array.h"
-#include "base_cpp/obj_array.h"
 #include <memory>
 
 #include "bingo_pg_build_engine.h"
@@ -23,7 +22,7 @@ public:
     ~RingoPgBuildEngine() override;
 
     bool processStructure(StructCache& struct_cache) override;
-    void processStructures(indigo::ObjArray<StructCache>& struct_cache) override;
+    void processStructures(indigo::PtrArray<StructCache>& struct_cache) override;
 
     int getFpSize() override;
     int getType() const override

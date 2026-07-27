@@ -4,8 +4,8 @@
 #ifndef _BINGO_PG_BUILD_H__
 #define _BINGO_PG_BUILD_H__
 
+#include "base_cpp/array.h"
 #include "base_cpp/exception.h"
-#include "base_cpp/obj_array.h"
 #include <memory>
 
 #include "bingo_pg_build_engine.h"
@@ -64,7 +64,7 @@ private:
      */
     bool _buildingState;
 
-    indigo::ObjArray<BingoPgBuildEngine::StructCache> _parrallelCache;
+    indigo::PtrArray<BingoPgBuildEngine::StructCache> _parrallelCache;
 
     // #ifdef BINGO_PG_INTEGRITY_DEBUG
     //    indigo::std::unique_ptr<FileOutput> debug_fileoutput;

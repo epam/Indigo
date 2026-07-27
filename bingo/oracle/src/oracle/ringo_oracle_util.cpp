@@ -328,7 +328,7 @@ ORAEXT OCILobLocator* oraRingoFingerprint(OCIExtProcContext* ctx, OCILobLocator*
 {
     OCILobLocator* result = NULL;
 
-    ORABLOCK_BEGIN
+    ORA_SAFEBLOCK_BEGIN("rfingerprint")
     {
         *return_ind = OCI_IND_NULL;
 
@@ -359,7 +359,9 @@ ORAEXT OCILobLocator* oraRingoFingerprint(OCIExtProcContext* ctx, OCILobLocator*
             builder.process();
 
             const char* buf = (const char*)builder.get();
-            int buf_len = context.fp_parameters.fingerprintSize();
+            // Match Postgres (bingo-core-c/src/ringo_core_c.cpp:578) and the rest
+            // of Bingo's reaction code (ringo_index.cpp:65, ringo_substructure.cpp:142).
+            int buf_len = context.fp_parameters.fingerprintSizeExtOrdSim() * 2;
 
             OracleLOB lob(env);
 
@@ -371,7 +373,7 @@ ORAEXT OCILobLocator* oraRingoFingerprint(OCIExtProcContext* ctx, OCILobLocator*
             *return_ind = OCI_IND_NOTNULL;
         }
     }
-    ORABLOCK_END
+    ORA_SAFEBLOCK_END
 
     return result;
 }

@@ -64,6 +64,7 @@ namespace indigo
 
         void loadMolecule(BaseMolecule& mol, bool load_arrows = false);
         void loadMonomerLibrary(MonomerTemplateLibrary& library);
+        bool isParsed() const;
         StereocentersOptions stereochemistry_options;
         bool treat_x_as_pseudoatom; // normally 'X' means 'any halogen'
         bool skip_3d_chirality;     // do not compute chirality from 3D coordinates
@@ -132,6 +133,7 @@ namespace indigo
         std::vector<EnhancedStereoCenter> _stereo_centers;
         std::string _ket_version;
         unsigned int _components_count;
+        bool _parsed;
         rapidjson::Document _document;
         rapidjson::Value _annotation;
     };

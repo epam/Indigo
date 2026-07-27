@@ -585,7 +585,7 @@ int QueryMolecule::getQueryBondType(Bond& qb, int& direction, bool& negative)
     {
         int idx = qbond->children.size() - 1;
         // Skip topology if any
-        if (qbond->children[idx]->type == BOND_TOPOLOGY)
+        if (qbond->children[idx].type == BOND_TOPOLOGY)
             --idx;
         if (idx > 0) // Looks like _BOND_SINGLE_OR_DOUBLE
         {

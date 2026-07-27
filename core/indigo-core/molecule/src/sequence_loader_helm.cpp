@@ -17,6 +17,7 @@
  ***************************************************************************/
 
 #include <cctype>
+#include <limits>
 #include <memory>
 #include <regex>
 #include <unordered_set>
@@ -38,6 +39,13 @@
 #endif
 
 using namespace indigo;
+
+static std::string to_lower(const std::string& str)
+{
+    std::string res{str};
+    std::transform(res.begin(), res.end(), res.begin(), [](unsigned char c) { return std::tolower(c); });
+    return res;
+};
 
 static std::set<std::string> polymer_types{kHELMPolymerTypePEPTIDE, kHELMPolymerTypeRNA, kHELMPolymerTypeCHEM, kHELMPolymerTypeUnknown};
 static const char* reserved_helm_chars = "${}|.,-:[]()";
@@ -117,7 +125,7 @@ std::string SequenceLoader::readHelmMonomerAlias(KetDocument& document, MonomerC
             auto& mon_template = document.addMonomerTemplate(monomer_alias, MonomerTemplate::MonomerClassToStr(monomer_class), IdtAlias());
             setKetStrProp(mon_template, alias, monomer_alias);
             _added_templates.emplace(monomer_class, monomer_alias);
-            _alias_to_id.emplace(std::make_pair(monomer_class, monomer_alias), mon_template.id());
+            _alias_to_id.emplace(std::make_pair(monomer_class, to_lower(monomer_alias)), mon_template.id());
             std::map<int, int> rgroups;
             std::map<int, int> rg_to_attatom;
             std::vector<KetBond> bonds;
@@ -440,7 +448,7 @@ const std::string SequenceLoader::checkAddAmbiguousMonomerTemplate(KetDocument& 
             std::string opt_alias;
             if (opt_template_id.size() > 0)
             {
-                _aliasHELM_to_id.emplace(make_pair(monomer_class, helm_alias), opt_template_id);
+                _aliasHELM_to_id.emplace(make_pair(monomer_class, to_lower(helm_alias)), opt_template_id);
                 opt_alias = getKetStrProp(_library.getMonomerTemplateById(opt_template_id), alias);
                 checkAddTemplate(document, monomer_class, opt_alias);
             }
@@ -454,7 +462,7 @@ const std::string SequenceLoader::checkAddAmbiguousMonomerTemplate(KetDocument& 
                 }
                 else
                 {
-                    auto tmpl_it = _alias_to_id.find(std::make_pair(monomer_class, opt_alias));
+                    auto tmpl_it = _alias_to_id.find(std::make_pair(monomer_class, to_lower(opt_alias)));
                     if (tmpl_it != _alias_to_id.end())
                     {
                         opt_template_id = tmpl_it->second;
@@ -466,7 +474,7 @@ const std::string SequenceLoader::checkAddAmbiguousMonomerTemplate(KetDocument& 
                         for (auto ap : {"R1", "R2", "R3", "R4"})
                             monomer_template.AddAttachmentPoint(ap, -1);
                         checkAddTemplate(document, monomer_template);
-                        _alias_to_id.emplace(make_pair(monomer_class, opt_alias), monomer_template.id());
+                        _alias_to_id.emplace(make_pair(monomer_class, to_lower(opt_alias)), monomer_template.id());
                         opt_template_id = monomer_template.id();
                     }
                 }
@@ -524,7 +532,7 @@ size_t SequenceLoader::addHelmMonomer(KetDocument& document, MonomerInfo info, M
     if (options.second.size() > 0) // ambiguous monomer
     {
         std::string template_id = checkAddAmbiguousMonomerTemplate(document, helm_alias, monomer_class, options);
-        const auto var_templ = document.ambiguousTemplates().at(template_id);
+        const auto& var_templ = document.ambiguousTemplates().at(template_id);
         helm_alias = var_templ.alias();
         auto& monomer = document.addAmbiguousMonomer(helm_alias, template_id);
         monomer->setAttachmentPoints(var_templ.attachmentPoints());
@@ -535,7 +543,7 @@ size_t SequenceLoader::addHelmMonomer(KetDocument& document, MonomerInfo info, M
     }
     else
     {
-        const auto& it = _aliasHELM_to_id.find(make_pair(monomer_class, helm_alias));
+        const auto& it = _aliasHELM_to_id.find(make_pair(monomer_class, to_lower(helm_alias)));
         std::string template_id;
         if (it != _aliasHELM_to_id.end())
         {
@@ -547,7 +555,7 @@ size_t SequenceLoader::addHelmMonomer(KetDocument& document, MonomerInfo info, M
             std::string alias;
             if (template_id.size() > 0)
             {
-                _aliasHELM_to_id.emplace(make_pair(monomer_class, helm_alias), template_id);
+                _aliasHELM_to_id.emplace(make_pair(monomer_class, to_lower(helm_alias)), template_id);
                 alias = getKetStrProp(_library.getMonomerTemplateById(template_id), alias);
                 template_id = checkAddTemplate(document, monomer_class, alias);
             }
@@ -561,7 +569,7 @@ size_t SequenceLoader::addHelmMonomer(KetDocument& document, MonomerInfo info, M
                 }
                 else
                 {
-                    auto tmpl_it = _alias_to_id.find(std::make_pair(monomer_class, alias));
+                    auto tmpl_it = _alias_to_id.find(std::make_pair(monomer_class, to_lower(alias)));
                     if (tmpl_it != _alias_to_id.end())
                     {
                         template_id = tmpl_it->second;
@@ -579,7 +587,7 @@ size_t SequenceLoader::addHelmMonomer(KetDocument& document, MonomerInfo info, M
                     }
                 }
             }
-            _alias_to_id.emplace(make_pair(monomer_class, alias), template_id);
+            _alias_to_id.emplace(make_pair(monomer_class, to_lower(alias)), template_id);
         }
         auto& monomer = document.addMonomer(helm_alias, template_id);
         monomer->setAttachmentPoints(document.templates().at(template_id).attachmentPoints());
@@ -589,6 +597,335 @@ size_t SequenceLoader::addHelmMonomer(KetDocument& document, MonomerInfo info, M
             monomer->setTextAnnotation(annotaion);
     }
     return monomer_idx;
+}
+
+void SequenceLoader::loadBILN(KetDocument& document)
+{
+    std::string biln;
+    _scanner.readAll(biln);
+
+    auto throw_invalid_biln = []() -> void { throw Error("The string cannot be interpreted as a valid BILN string."); };
+    auto is_space = [](char ch) { return std::isspace(static_cast<unsigned char>(ch)) != 0; };
+    auto begin = biln.begin();
+    while (begin != biln.end() && is_space(*begin))
+        ++begin;
+    auto end = biln.end();
+    while (end != begin && is_space(*(end - 1)))
+        --end;
+    biln = std::string(begin, end);
+
+    if (biln.empty())
+        throw_invalid_biln();
+
+    struct BilnEndpoint
+    {
+        size_t monomer_idx;
+        std::string monomer_id;
+        int attachment_idx;
+    };
+    struct BilnBond
+    {
+        int bond_idx;
+        std::vector<BilnEndpoint> endpoints;
+    };
+    struct PendingBilnEndpoint
+    {
+        int bond_idx;
+        int attachment_idx;
+    };
+    struct BilnChain
+    {
+        std::vector<size_t> monomer_indices;
+        bool reverse = false;
+    };
+
+    std::vector<BilnChain> chains;
+    std::vector<BilnBond> bonds;
+    std::unordered_map<int, size_t> bond_to_idx;
+
+    size_t data_pos = 0;
+    auto skip_spaces = [&]() {
+        while (data_pos < biln.size() && is_space(biln[data_pos]))
+            data_pos++;
+    };
+    auto read_positive_int = [&]() -> int {
+        skip_spaces();
+        if (data_pos >= biln.size() || !std::isdigit(static_cast<unsigned char>(biln[data_pos])))
+            throw_invalid_biln();
+        int value = 0;
+        while (data_pos < biln.size() && std::isdigit(static_cast<unsigned char>(biln[data_pos])))
+        {
+            const int digit = biln[data_pos] - '0';
+            if (value > (std::numeric_limits<int>::max() - digit) / 10)
+                throw_invalid_biln();
+            value = value * 10 + digit;
+            data_pos++;
+        }
+        if (value == 0)
+            throw_invalid_biln();
+        return value;
+    };
+    auto remember_bond_endpoint = [&](int bond_idx, size_t monomer_idx, const std::string& monomer_id, int attachment_idx) {
+        auto [it, inserted] = bond_to_idx.emplace(bond_idx, bonds.size());
+        if (inserted)
+            bonds.push_back({bond_idx, {}});
+        bonds.at(it->second).endpoints.push_back({monomer_idx, monomer_id, attachment_idx});
+    };
+    auto resolve_biln_monomer = [&](const std::string& monomer_alias, const std::vector<PendingBilnEndpoint>& endpoints, bool has_prev_in_chain,
+                                    bool has_next_in_chain) {
+        if (_library.getMonomerTemplateIdByAlias(MonomerClass::AminoAcid, monomer_alias).size() > 0)
+            return std::make_pair(MonomerClass::AminoAcid, monomer_alias);
+        if (_library.getMonomerTemplateIdByAlias(MonomerClass::CHEM, monomer_alias).size() > 0)
+            return std::make_pair(MonomerClass::CHEM, monomer_alias);
+
+        bool uses_r1 = false;
+        bool uses_r2 = false;
+        bool uses_other = false;
+        for (const auto& endpoint : endpoints)
+        {
+            if (endpoint.attachment_idx == 1)
+                uses_r1 = true;
+            else if (endpoint.attachment_idx == 2)
+                uses_r2 = true;
+            else
+                uses_other = true;
+        }
+
+        auto right_hyphen_alias = monomer_alias + "-";
+        auto left_hyphen_alias = "-" + monomer_alias;
+        const bool has_right_hyphen_alias = _library.getMonomerTemplateIdByAlias(MonomerClass::AminoAcid, right_hyphen_alias).size() > 0;
+        const bool has_left_hyphen_alias = _library.getMonomerTemplateIdByAlias(MonomerClass::AminoAcid, left_hyphen_alias).size() > 0;
+        if (has_right_hyphen_alias && !has_left_hyphen_alias)
+            return std::make_pair(MonomerClass::AminoAcid, right_hyphen_alias);
+        if (has_left_hyphen_alias && !has_right_hyphen_alias)
+            return std::make_pair(MonomerClass::AminoAcid, left_hyphen_alias);
+        if (has_right_hyphen_alias && has_left_hyphen_alias)
+        {
+            if (uses_other || (uses_r1 && uses_r2))
+                throw_invalid_biln();
+            if (uses_r1)
+                return std::make_pair(MonomerClass::AminoAcid, left_hyphen_alias);
+            if (uses_r2)
+                return std::make_pair(MonomerClass::AminoAcid, right_hyphen_alias);
+            if (has_prev_in_chain && has_next_in_chain)
+                throw_invalid_biln();
+            if (has_prev_in_chain)
+                return std::make_pair(MonomerClass::AminoAcid, left_hyphen_alias);
+            if (has_next_in_chain)
+                return std::make_pair(MonomerClass::AminoAcid, right_hyphen_alias);
+            return std::make_pair(MonomerClass::AminoAcid, right_hyphen_alias);
+        }
+        throw_invalid_biln();
+        return std::make_pair(MonomerClass::Unknown, monomer_alias);
+    };
+
+    _row = 0;
+    _col = 0;
+    _seq_id = 1;
+    _last_monomer_idx = -1;
+    _unknown_ambiguous_count = 0;
+    _opts_to_template_id.clear();
+
+    while (data_pos < biln.size())
+    {
+        skip_spaces();
+        if (data_pos >= biln.size())
+            break;
+        if (biln[data_pos] == '.')
+            throw_invalid_biln();
+
+        _col = 0;
+        BilnChain chain;
+
+        while (data_pos < biln.size())
+        {
+            skip_spaces();
+            if (data_pos >= biln.size())
+                break;
+            if (biln[data_pos] == '-' || biln[data_pos] == '.')
+                throw_invalid_biln();
+
+            std::string monomer_alias;
+            if (biln[data_pos] == '[')
+            {
+                data_pos++;
+                while (data_pos < biln.size() && biln[data_pos] != ']')
+                {
+                    char ch = biln[data_pos];
+                    if (ch == '.' || ch == '(' || ch == ')' || ch == ',' || ch == '[' || is_space(ch))
+                        throw_invalid_biln();
+                    monomer_alias += biln[data_pos++];
+                }
+                if (data_pos >= biln.size())
+                    throw_invalid_biln();
+                data_pos++;
+            }
+            else
+            {
+                while (data_pos < biln.size() && biln[data_pos] != '(' && biln[data_pos] != '-' && biln[data_pos] != '.' && !is_space(biln[data_pos]))
+                {
+                    char ch = biln[data_pos];
+                    if (ch == ')' || ch == ',' || ch == '[' || ch == ']')
+                        throw_invalid_biln();
+                    monomer_alias += biln[data_pos++];
+                }
+            }
+            if (monomer_alias.empty())
+                throw_invalid_biln();
+
+            const bool has_prev_in_chain = !chain.monomer_indices.empty();
+            std::vector<PendingBilnEndpoint> pending_endpoints;
+            skip_spaces();
+            while (data_pos < biln.size() && biln[data_pos] == '(')
+            {
+                data_pos++;
+                int bond_idx = read_positive_int();
+                skip_spaces();
+                if (data_pos >= biln.size() || biln[data_pos] != ',')
+                    throw_invalid_biln();
+                data_pos++;
+                int attachment_idx = read_positive_int();
+                skip_spaces();
+                if (data_pos >= biln.size() || biln[data_pos] != ')')
+                    throw_invalid_biln();
+                data_pos++;
+                pending_endpoints.push_back({bond_idx, attachment_idx});
+                skip_spaces();
+            }
+
+            Vec3f monomer_pos(_col * LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, -LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH * _row, 0);
+            ambiguous_template_opts options;
+            const bool has_next_in_chain = data_pos < biln.size() && biln[data_pos] == '-';
+            const auto [monomer_class, monomer_load_alias] = resolve_biln_monomer(monomer_alias, pending_endpoints, has_prev_in_chain, has_next_in_chain);
+            auto monomer_idx =
+                addHelmMonomer(document, std::make_tuple(monomer_load_alias, false, std::string(), std::string(), options), monomer_class, monomer_pos);
+            std::string monomer_id = std::to_string(monomer_idx);
+            chain.monomer_indices.push_back(monomer_idx);
+            for (const auto& endpoint : pending_endpoints)
+                remember_bond_endpoint(endpoint.bond_idx, monomer_idx, monomer_id, endpoint.attachment_idx);
+
+            _col++;
+            skip_spaces();
+            if (data_pos >= biln.size())
+                break;
+            if (biln[data_pos] == '-')
+            {
+                data_pos++;
+                continue;
+            }
+            if (biln[data_pos] == '.')
+            {
+                data_pos++;
+                skip_spaces();
+                if (data_pos >= biln.size())
+                    throw_invalid_biln();
+                break;
+            }
+            throw_invalid_biln();
+        }
+
+        if (chain.monomer_indices.empty())
+            throw_invalid_biln();
+        chains.push_back(chain);
+        _row++;
+    }
+
+    std::set<std::pair<std::string, std::string>> used_biln_endpoints;
+    auto attachment_point = [](const BilnEndpoint& ep) { return std::string("R") + std::to_string(ep.attachment_idx); };
+    auto has_terminal_hyphen_alias = [&](const std::unique_ptr<KetBaseMonomer>& monomer) { return _library.isTerminalHyphenAlias(monomer->alias()); };
+    auto validate_endpoint = [&](const BilnEndpoint& ep, const std::string& ap) -> const std::unique_ptr<KetBaseMonomer>& {
+        const auto& monomer = document.monomers().at(ep.monomer_id);
+        if (monomer->attachmentPoints().count(ap) == 0)
+            throw_invalid_biln();
+        if (!used_biln_endpoints.emplace(ep.monomer_id, ap).second)
+            throw_invalid_biln();
+        return monomer;
+    };
+    for (const auto& bond : bonds)
+    {
+        const auto& endpoints = bond.endpoints;
+        if (endpoints.size() != 2)
+            throw_invalid_biln();
+        const auto& ep1 = endpoints[0];
+        const auto& ep2 = endpoints[1];
+        const auto ap1 = attachment_point(ep1);
+        const auto ap2 = attachment_point(ep2);
+        std::ignore = validate_endpoint(ep1, ap1);
+        std::ignore = validate_endpoint(ep2, ap2);
+    }
+
+    std::set<std::pair<std::string, std::string>> used_implicit_endpoints = used_biln_endpoints;
+    auto reserve_implicit_endpoint = [&](size_t monomer_idx, const std::string& ap, std::set<std::pair<std::string, std::string>>& endpoints) -> bool {
+        const auto monomer_id = std::to_string(monomer_idx);
+        const auto& monomer = document.monomers().at(monomer_id);
+        if (monomer->attachmentPoints().count(ap) == 0)
+            return false;
+        return endpoints.emplace(monomer_id, ap).second;
+    };
+    auto can_apply_chain_orientation = [&](const BilnChain& chain, bool reverse) {
+        auto endpoints = used_implicit_endpoints;
+        for (size_t idx = 1; idx < chain.monomer_indices.size(); idx++)
+        {
+            auto left_idx = chain.monomer_indices[idx - 1];
+            auto right_idx = chain.monomer_indices[idx];
+            if (!reserve_implicit_endpoint(left_idx, reverse ? kAttachmentPointR1 : kAttachmentPointR2, endpoints))
+                return false;
+            if (!reserve_implicit_endpoint(right_idx, reverse ? kAttachmentPointR2 : kAttachmentPointR1, endpoints))
+                return false;
+        }
+        return true;
+    };
+    auto apply_chain_orientation = [&](BilnChain& chain) {
+        if (chain.monomer_indices.size() < 2)
+            return;
+        if (can_apply_chain_orientation(chain, false))
+            chain.reverse = false;
+        else if (can_apply_chain_orientation(chain, true))
+            chain.reverse = true;
+        else
+            throw_invalid_biln();
+        for (size_t idx = 1; idx < chain.monomer_indices.size(); idx++)
+        {
+            auto left_idx = chain.monomer_indices[idx - 1];
+            auto right_idx = chain.monomer_indices[idx];
+            if (!reserve_implicit_endpoint(left_idx, chain.reverse ? kAttachmentPointR1 : kAttachmentPointR2, used_implicit_endpoints))
+                throw_invalid_biln();
+            if (!reserve_implicit_endpoint(right_idx, chain.reverse ? kAttachmentPointR2 : kAttachmentPointR1, used_implicit_endpoints))
+                throw_invalid_biln();
+        }
+    };
+    for (auto& chain : chains)
+        apply_chain_orientation(chain);
+    for (const auto& chain : chains)
+    {
+        for (size_t idx = 1; idx < chain.monomer_indices.size(); idx++)
+        {
+            const auto& left_monomer = document.monomers().at(std::to_string(chain.monomer_indices[idx - 1]));
+            const auto& right_monomer = document.monomers().at(std::to_string(chain.monomer_indices[idx]));
+            document.addConnection(left_monomer->ref(), chain.reverse ? kAttachmentPointR1 : kAttachmentPointR2, right_monomer->ref(),
+                                   chain.reverse ? kAttachmentPointR2 : kAttachmentPointR1);
+        }
+    }
+
+    for (const auto& bond : bonds)
+    {
+        const auto& ep1 = bond.endpoints[0];
+        const auto& ep2 = bond.endpoints[1];
+        const auto ap1 = attachment_point(ep1);
+        const auto ap2 = attachment_point(ep2);
+        const auto& monomer1 = document.monomers().at(ep1.monomer_id);
+        const auto& monomer2 = document.monomers().at(ep2.monomer_id);
+        KetConnectionEndPoint endpoint1, endpoint2;
+        setKetStrProp(endpoint1, monomerId, monomer1->ref());
+        setKetStrProp(endpoint1, attachmentPointId, ap1);
+        setKetStrProp(endpoint2, monomerId, monomer2->ref());
+        setKetStrProp(endpoint2, attachmentPointId, ap2);
+        if (((ap1 == kAttachmentPointR1 && ap2 == kAttachmentPointR2) || (ap1 == kAttachmentPointR2 && ap2 == kAttachmentPointR1)) &&
+            !has_terminal_hyphen_alias(monomer1) && !has_terminal_hyphen_alias(monomer2))
+            document.addConnection(monomer1->ref(), ap1, monomer2->ref(), ap2);
+        else
+            document.addExplicitConnection(endpoint1, endpoint2);
+    }
 }
 
 void SequenceLoader::loadHELM(KetDocument& document)
@@ -601,10 +938,11 @@ void SequenceLoader::loadHELM(KetDocument& document)
     int unknown_count = 0;
     size_t last_rna_branch_monomer = 0;
     _unknown_ambiguous_count = 0;
-    using polymer_map = std::map<std::string, std::map<int, size_t>>;
     polymer_map used_polymer_nums;
     polymer_map::iterator cur_polymer_map;
     _opts_to_template_id.clear();
+    std::vector<PairedStrands> paired_strands;
+    std::set<std::pair<std::string, std::string>> used_helm_connection_endpoints;
     enum class helm_parts
     {
         ListOfSimplePolymers,
@@ -672,7 +1010,7 @@ void SequenceLoader::loadHELM(KetDocument& document)
                             monomer_template.AddAttachmentPoint(ap, -1);
                         checkAddTemplate(document, monomer_template);
                         _added_templates.emplace(monomer_class, alias);
-                        _alias_to_id.emplace(std::make_pair(monomer_class, alias), monomer_template.id());
+                        _alias_to_id.emplace(std::make_pair(monomer_class, to_lower(alias)), monomer_template.id());
                     }
                     cur_polymer_map->second[monomer_idx] = addHelmMonomer(document, monomer_info, monomer_class, pos);
                 }
@@ -704,7 +1042,7 @@ void SequenceLoader::loadHELM(KetDocument& document)
                     {
                         size_t added_idx;
                         auto& monomer_alias = std::get<0>(monomer_info);
-                        auto tmpl_it = _alias_to_id.find(std::make_pair(MonomerClass::Sugar, monomer_alias));
+                        auto tmpl_it = _alias_to_id.find(std::make_pair(MonomerClass::Sugar, to_lower(monomer_alias)));
                         // if found sugar id - add sugar, else if found phosphate id - add phosphate, else - add unsplitted RNA(may be unresolved)
                         if (tmpl_it != _alias_to_id.end() || _library.getMonomerTemplateIdByAlias(MonomerClass::Sugar, monomer_alias).size() > 0 ||
                             _library.getMonomerTemplateIdByAliasHELM(MonomerClass::Sugar, monomer_alias).size() > 0)
@@ -856,8 +1194,48 @@ void SequenceLoader::loadHELM(KetDocument& document)
             auto right_mon_it = right_polymer_nums->second.find(right_monomer_idx);
             if (right_mon_it == right_polymer_nums->second.end())
                 throw Error("Polymer '%s' does not contains monomer with number %d.", right_polymer.c_str(), right_monomer_idx);
-            auto& connection = document.addConnection(document.monomers().at(std::to_string(left_mon_it->second))->ref(), left_ap,
-                                                      document.monomers().at(std::to_string(right_mon_it->second))->ref(), right_ap);
+            auto left_monomer_id = std::to_string(left_mon_it->second);
+            auto right_monomer_id = std::to_string(right_mon_it->second);
+            auto& left_monomer = document.monomers().at(left_monomer_id);
+            auto& right_monomer = document.monomers().at(right_monomer_id);
+            const bool hydrogen_pair_connection =
+                left_ap == HelmHydrogenPair || right_ap == HelmHydrogenPair || left_ap == KetConnectionHydro || right_ap == KetConnectionHydro;
+            KetConnection& connection = [&]() -> KetConnection& {
+                if (hydrogen_pair_connection)
+                {
+                    auto& hydrogen_connection = document.addConnection(left_monomer->ref(), left_ap, right_monomer->ref(), right_ap);
+                    // Accumulate only the first bond per unique strand pair to avoid redundant transforms
+                    bool already_paired = std::any_of(paired_strands.begin(), paired_strands.end(), [&](const PairedStrands& p) {
+                        return (p.anchor == left_polymer && p.paired == right_polymer) || (p.anchor == right_polymer && p.paired == left_polymer);
+                    });
+                    if (!already_paired)
+                        paired_strands.push_back({left_polymer, right_polymer, left_monomer_idx, right_monomer_idx});
+                    return hydrogen_connection;
+                }
+
+                // HELM connection-section links are explicit extra links; keep them out of simple polymer backbone traversal.
+                auto validate_endpoint = [&](const std::unique_ptr<KetBaseMonomer>& monomer, const std::string& ap) {
+                    if (monomer->attachmentPoints().count(ap) == 0)
+                        throw Error("Unknown attachment point '%s' in monomer '%s(%s)'", ap.c_str(), monomer->alias().c_str(), monomer->ref().c_str());
+                    if (monomer->connections().count(ap) > 0)
+                    {
+                        const auto& monomer_connection = monomer->connections().at(ap);
+                        throw Error("Monomer '%s(%s)' attachment point '%s' already connected to monomer'%s' attachment point '%s'", monomer->alias().c_str(),
+                                    monomer->ref().c_str(), ap.c_str(), monomer_connection.first.c_str(), monomer_connection.second.c_str());
+                    }
+                    if (!used_helm_connection_endpoints.emplace(monomer->ref(), ap).second)
+                        throw Error("Monomer '%s(%s)' attachment point '%s' already connected.", monomer->alias().c_str(), monomer->ref().c_str(), ap.c_str());
+                };
+                validate_endpoint(left_monomer, left_ap);
+                validate_endpoint(right_monomer, right_ap);
+
+                KetConnectionEndPoint endpoint1, endpoint2;
+                setKetStrProp(endpoint1, monomerId, left_monomer->ref());
+                setKetStrProp(endpoint1, attachmentPointId, left_ap);
+                setKetStrProp(endpoint2, monomerId, right_monomer->ref());
+                setKetStrProp(endpoint2, attachmentPointId, right_ap);
+                return document.addExplicitConnection(endpoint1, endpoint2);
+            }();
             if (_scanner.isEOF())
                 throw Error(unexpected_eod);
             ch = _scanner.lookNext();
@@ -911,11 +1289,101 @@ void SequenceLoader::loadHELM(KetDocument& document)
             // if (signature != "v2.0")
             //     throw Error("Expected HELM V2.0 but got '%s'.", signature.c_str());
             // check that left part is valid json - TODO
+
+            if (!paired_strands.empty())
+                applyDoubleStrandLayout(document, paired_strands, used_polymer_nums);
+
             helm_part = helm_parts::End;
         }
     }
     if (helm_part != helm_parts::End)
         throw Error(unexpected_eod);
+}
+
+void SequenceLoader::applyDoubleStrandLayout(KetDocument& document, const std::vector<PairedStrands>& paired_strands, const polymer_map& used_polymer_nums)
+{
+    // Extract the letter prefix of a polymer name (e.g. "RNA" from "RNA1") for type checking
+    auto get_polymer_type = [](const std::string& name) {
+        auto it = std::find_if_not(name.begin(), name.end(), [](unsigned char c) { return std::isalpha(c); });
+        std::string type(name.begin(), it);
+        std::transform(type.begin(), type.end(), type.begin(), [](unsigned char c) { return static_cast<char>(std::toupper(c)); });
+        return type;
+    };
+
+    std::set<std::string> transformed_polymers;
+    for (const auto& pair : paired_strands)
+    {
+        const std::string& anchor_name = pair.anchor;
+        const std::string& paired_name = pair.paired;
+
+        // Only RNA-RNA connections form double-strand helices
+        if (get_polymer_type(anchor_name) != kHELMPolymerTypeRNA || get_polymer_type(paired_name) != kHELMPolymerTypeRNA)
+            continue;
+
+        if (!used_polymer_nums.count(anchor_name) || !used_polymer_nums.count(paired_name))
+            continue;
+        if (transformed_polymers.count(anchor_name) || transformed_polymers.count(paired_name))
+            continue;
+
+        const auto& anchor_map = used_polymer_nums.at(anchor_name);
+        const auto& paired_map = used_polymer_nums.at(paired_name);
+
+        const auto& anchor_mon = document.monomers().at(std::to_string(anchor_map.at(pair.anchor_mon_idx)));
+        if (!anchor_mon->position().has_value())
+            continue;
+        float anchor_x = anchor_mon->position().value().x;
+        float anchor_y = anchor_mon->position().value().y;
+
+        const auto& paired_mon = document.monomers().at(std::to_string(paired_map.at(pair.paired_mon_idx)));
+        if (!paired_mon->position().has_value())
+            continue;
+        float paired_x = paired_mon->position().value().x;
+        float paired_y = paired_mon->position().value().y;
+
+        // In KET coordinate system Y grows downward (smaller Y = visually higher).
+        // The loader assigns row=0 to the first polymer, row=1 to the second, so
+        // anchor_y <= paired_y reliably identifies the top (first) chain.
+        bool anchor_is_top = (anchor_y <= paired_y);
+
+        const std::string& top_name = anchor_is_top ? anchor_name : paired_name;
+        const std::string& bottom_name = anchor_is_top ? paired_name : anchor_name;
+        const auto& top_map = anchor_is_top ? anchor_map : paired_map;
+        const auto& bottom_map = anchor_is_top ? paired_map : anchor_map;
+
+        float top_x = anchor_is_top ? anchor_x : paired_x;
+        float top_y = anchor_is_top ? anchor_y : paired_y;
+        float bottom_x = anchor_is_top ? paired_x : anchor_x;
+
+        float x_offset = top_x + bottom_x;
+        float y_flip_sum = 2.0f * top_y + LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH;
+
+        // Apply Y-flip to TOP chain (bases point DOWN, 5'->3' left-to-right is preserved)
+        for (const auto& kv : top_map)
+        {
+            auto& mon = document.monomers().at(std::to_string(kv.second));
+            if (mon->position().has_value())
+            {
+                Vec2f pos = mon->position().value();
+                pos.y = y_flip_sum - pos.y;
+                mon->setPosition(pos);
+            }
+        }
+
+        // Apply X-flip to BOTTOM chain (3'->5' left-to-right, bases point UP natively)
+        for (const auto& kv : bottom_map)
+        {
+            auto& mon = document.monomers().at(std::to_string(kv.second));
+            if (mon->position().has_value())
+            {
+                Vec2f pos = mon->position().value();
+                pos.x = x_offset - pos.x;
+                mon->setPosition(pos);
+            }
+        }
+
+        transformed_polymers.insert(top_name);
+        transformed_polymers.insert(bottom_name);
+    }
 }
 
 #ifdef _MSC_VER

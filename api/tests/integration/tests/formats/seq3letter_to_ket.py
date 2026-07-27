@@ -1,17 +1,12 @@
-﻿import difflib
-import os
+﻿import os
 import sys
-
-
-def find_diff(a, b):
-    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
-
 
 sys.path.append(
     os.path.normpath(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
+from common.util import compare_diff
 from env_indigo import (  # noqa
     Indigo,
     IndigoException,
@@ -41,17 +36,8 @@ for filename in files:
     doc = indigo.loadSequenceFromFile(
         os.path.join(ref_path, filename + ".seq3"), "PEPTIDE-3-LETTER", lib
     )
-    # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
-    #     file.write(doc.json())
-    with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
-        ket_ref = file.read()
     ket = doc.json()
-    diff = find_diff(ket_ref, ket)
-    if not diff:
-        print(filename + " : SUCCEED")
-    else:
-        print(filename + " : FAILED")
-        print(diff)
+    compare_diff(ref_path, filename + ".ket", ket)
 
 seq3_errors = {
     "ala": "Given string cannot be interpreted as a valid three letter sequence because of incorrect formatting.",

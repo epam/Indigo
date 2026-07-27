@@ -1,0 +1,4 @@
+# Oracle external-procedure config — required for the bingo .so to load.
+# Must live at $ORACLE_BASE_HOME/hs/admin/extproc.ora (NOT $ORACLE_HOME);
+# extproc reads from ORACLE_BASE_HOME. Without it: ORA-28595 "Invalid DLL Path".
+SET EXTPROC_DLLS=ONLY:/opt/bingo-lib/libbingo-oracle.so

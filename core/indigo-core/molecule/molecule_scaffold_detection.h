@@ -39,7 +39,7 @@ namespace indigo
             ~MoleculeBasket() override;
 
             // initializes molecules basket
-            void initBasket(ObjArray<Molecule>* mol_set, ObjArray<QueryMolecule>* basket_set, int max_number);
+            void initBasket(PtrArray<Molecule>* mol_set, PtrArray<QueryMolecule>* basket_set, int max_number);
             // this method adds molecules from set (defines with edges and vertices lists) to basket queue
             void addToNextEmptySpot(Graph& graph, Array<int>& v_list, Array<int>& e_list) override;
 
@@ -65,8 +65,8 @@ namespace indigo
             static int _compareEdgeCount(int& i1, int& i2, void* context);
             static int _compareRingsCount(BaseMolecule& m1, BaseMolecule& m2, void* context);
 
-            ObjArray<Molecule>* _searchStructures;
-            ObjArray<QueryMolecule>* _basketStructures;
+            PtrArray<Molecule>* _searchStructures;
+            PtrArray<QueryMolecule>* _basketStructures;
 
             MoleculeBasket(const MoleculeBasket&); // no implicit copy
         };
@@ -75,7 +75,7 @@ namespace indigo
         void _searchScaffold(QueryMolecule& scaffold, bool approximate);
 
     public:
-        MoleculeScaffoldDetection(ObjArray<Molecule>* mol_set);
+        MoleculeScaffoldDetection(PtrArray<Molecule>* mol_set);
 
         // two main methods for extracting scaffolds
         // extracting exact scaffold from molecules set
@@ -97,8 +97,8 @@ namespace indigo
         static bool matchBonds(Graph& g1, Graph& g2, int i, int j, void* userdata);
         static bool matchAtoms(Graph& g1, Graph& g2, const int* core_sub, int i, int j, void* userdata);
 
-        ObjArray<Molecule>* searchStructures;
-        ObjArray<QueryMolecule>* basketStructures;
+        PtrArray<Molecule>* searchStructures;
+        PtrArray<QueryMolecule>* basketStructures;
 
         DECL_ERROR;
     };

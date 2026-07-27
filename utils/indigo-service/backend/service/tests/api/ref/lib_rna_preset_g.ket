@@ -567,10 +567,34 @@
                 "$ref": "monomerTemplate-Gua"
             },
             {
-                "$ref": "monomerTemplate-P"
+                "$ref": "monomerTemplate-Rib"
             },
             {
-                "$ref": "monomerTemplate-Rib"
+                "$ref": "monomerTemplate-P"
+            }
+        ],
+        "connections": [
+            {
+                "connectionType": "single",
+                "endpoint1": {
+                    "templateId": "monomerTemplate-Gua",
+                    "attachmentPointId": "R1"
+                },
+                "endpoint2": {
+                    "templateId": "monomerTemplate-Rib",
+                    "attachmentPointId": "R3"
+                }
+            },
+            {
+                "connectionType": "single",
+                "endpoint1": {
+                    "templateId": "monomerTemplate-Rib",
+                    "attachmentPointId": "R2"
+                },
+                "endpoint2": {
+                    "templateId": "monomerTemplate-P",
+                    "attachmentPointId": "R1"
+                }
             }
         ]
     }

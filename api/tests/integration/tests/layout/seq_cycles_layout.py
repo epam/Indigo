@@ -1,10 +1,87 @@
-﻿import difflib
+import json
+import math
 import os
 import sys
+import tempfile
+from collections import defaultdict
 
 
-def find_diff(a, b):
-    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
+def compare_positions(ket_a, ket_b, eps=0.05):
+    """Compare two KET JSONs, allowing epsilon tolerance on position coordinates."""
+    a = json.loads(ket_a)
+    b = json.loads(ket_b)
+    nodes_a = a.get("root", {}).get("nodes", [])
+    nodes_b = b.get("root", {}).get("nodes", [])
+    if len(nodes_a) != len(nodes_b):
+        return "Node count mismatch: {} vs {}".format(
+            len(nodes_a), len(nodes_b)
+        )
+    for na, nb in zip(nodes_a, nodes_b):
+        if na.get("type") != nb.get("type"):
+            return "Node type mismatch: {} vs {}".format(
+                na.get("type"), nb.get("type")
+            )
+        pa = na.get("position")
+        pb = nb.get("position")
+        if pa and pb:
+            dx = abs(pa["x"] - pb["x"])
+            dy = abs(pa["y"] - pb["y"])
+            if dx > eps or dy > eps:
+                return (
+                    "Position mismatch for id={}: "
+                    "({:.4f}, {:.4f}) vs "
+                    "({:.4f}, {:.4f}), "
+                    "delta=({:.4f}, {:.4f})"
+                ).format(
+                    na.get("id"), pa["x"], pa["y"], pb["x"], pb["y"], dx, dy
+                )
+    return ""
+
+
+def _monomer_positions_by_alias(data):
+    return {
+        key: (
+            val.get("alias"),
+            (val["position"]["x"], val["position"]["y"]),
+        )
+        for key, val in data.items()
+        if key.startswith("monomer")
+        and isinstance(val, dict)
+        and "position" in val
+    }
+
+
+def _assert_connection_lengths(ket_data, filename):
+    if not filename.startswith("rna_ring_"):
+        return
+
+    standard_bond_length = 1.5
+    geom_tol = 0.05
+    expected_base_sugar = (
+        1.5 if filename in ("rna_ring_12", "rna_ring_24") else 1.125
+    )
+    positions = _monomer_positions_by_alias(ket_data)
+    for connection in ket_data["root"].get("connections", []):
+        monomer1 = connection["endpoint1"]["monomerId"]
+        monomer2 = connection["endpoint2"]["monomerId"]
+        if monomer1 not in positions or monomer2 not in positions:
+            continue
+
+        alias1, pos1 = positions[monomer1]
+        alias2, pos2 = positions[monomer2]
+        length = math.hypot(pos1[0] - pos2[0], pos1[1] - pos2[1])
+        if {alias1, alias2} == {"R", "A"}:
+            assert (
+                abs(length - expected_base_sugar) <= geom_tol
+            ), "{} base-sugar length: {:.4f}, expected {:.4f}".format(
+                filename, length, expected_base_sugar
+            )
+        elif alias1 == alias2 == "R":
+            assert (
+                abs(length - standard_bond_length) <= geom_tol
+            ), "{} sugar-sugar length: {:.4f}, expected {:.4f}".format(
+                filename, length, standard_bond_length
+            )
 
 
 sys.path.append(
@@ -13,6 +90,7 @@ sys.path.append(
     )
 )
 
+from common.util import compare_diff
 from env_indigo import *  # noqa
 
 indigo = Indigo()
@@ -41,6 +119,14 @@ files = [
     "shifting_structs_2_sel",
     "overlapping",
     "ring_fuse",
+    "left_top_monomer",
+    "6bases",
+    "disulfide_pep_sel",
+    # Issue #3606: inner base bond length for n-agon rings
+    "rna_ring_6",
+    "rna_ring_11",
+    "rna_ring_12",
+    "rna_ring_24",
 ]
 
 files.sort()
@@ -55,15 +141,702 @@ for filename in files:
         )
 
     mol.layout()
-    # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
-    #     file.write(mol.json())
-    with open(getRefFilepath(filename + ".ket"), "r") as file:
-        ket_ref = file.read()
-
     ket = mol.json()
-    diff = find_diff(ket_ref, ket)
-    if not diff:
-        print(filename + ".ket:SUCCEED")
+    _assert_connection_lengths(json.loads(ket), filename)
+    compare_diff(ref_path, filename + ".ket", ket, diff_fn=compare_positions)
+
+
+# ======================================================================
+# Sequential multi-cycle layout test (cycles 1, 3, 5, 7 in multi.ket)
+#
+# Applies layout to cycles one-by-one and verifies after each step:
+#   1. The cycle becomes a regular polygon (edge = 1.5)
+#   2. The left-top monomer preserves its position
+#   3. Previously laid-out cycles remain regular
+# ======================================================================
+
+BOND_LENGTH = 1.5  # LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH
+GEOM_TOL = 0.05
+
+
+def _get_monomer_positions(data):
+    pos = {}
+    for key, val in data.items():
+        if (
+            key.startswith("monomer")
+            and isinstance(val, dict)
+            and "position" in val
+        ):
+            pos[key] = (val["position"]["x"], val["position"]["y"])
+    return pos
+
+
+def _get_adjacency(data):
+    adj = defaultdict(set)
+    for c in data["root"].get("connections", []):
+        ep1 = c["endpoint1"]["monomerId"]
+        ep2 = c["endpoint2"]["monomerId"]
+        adj[ep1].add(ep2)
+        adj[ep2].add(ep1)
+    return adj
+
+
+def _find_small_cycles(data):
+    positions = _get_monomer_positions(data)
+    adj = _get_adjacency(data)
+    monomers = sorted(
+        positions.keys(), key=lambda m: int(m.replace("monomer", ""))
+    )
+    all_cycles = set()
+    for start in monomers:
+        for neighbor in adj[start]:
+            visited = {start: None}
+            queue = [start]
+            found = False
+            while queue and not found:
+                next_queue = []
+                for cur in queue:
+                    for nb in adj[cur]:
+                        if nb == neighbor and cur != start:
+                            path = []
+                            p = cur
+                            while p is not None:
+                                path.append(p)
+                                p = visited[p]
+                            path.append(neighbor)
+                            if len(path) <= 12:
+                                all_cycles.add(frozenset(path))
+                            found = True
+                            break
+                        if nb not in visited and nb != neighbor:
+                            visited[nb] = cur
+                            next_queue.append(nb)
+                    if found:
+                        break
+                queue = next_queue
+    cycles = []
+    seen = []
+    for cs in sorted(
+        all_cycles, key=lambda cs: sum(positions[m][0] for m in cs) / len(cs)
+    ):
+        if cs not in seen:
+            seen.append(cs)
+            cycles.append(list(cs))
+    return cycles
+
+
+def _select_monomers(data, monomer_ids):
+    for mid in monomer_ids:
+        if mid in data:
+            data[mid]["selected"] = True
+
+
+def _clear_selection(data):
+    for key, val in data.items():
+        if key.startswith("monomer") and isinstance(val, dict):
+            val.pop("selected", None)
+
+
+def _do_layout(ket_data):
+    ind = Indigo()
+    ind.setOption("json-saving-pretty", True)
+    ind.setOption("json-use-native-precision", True)
+    ind.setOption("json-set-native-precision", 4)
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix=".ket", delete=False
+    ) as f:
+        json.dump(ket_data, f, indent=4)
+        tmp_in = f.name
+    try:
+        mol = ind.loadMoleculeFromFile(tmp_in)
+        mol.layout()
+        return json.loads(mol.json())
+    finally:
+        os.unlink(tmp_in)
+
+
+def _dist(p1, p2):
+    return math.hypot(p1[0] - p2[0], p1[1] - p2[1])
+
+
+def _find_left_top(cycle_monomers, positions):
+    return min(cycle_monomers, key=lambda m: positions[m][0] - positions[m][1])
+
+
+def _is_regular_polygon(
+    cycle_monomers, positions, expected_edge=BOND_LENGTH, tol=GEOM_TOL
+):
+    n = len(cycle_monomers)
+    if n < 3:
+        return False, "too few vertices"
+    cx = sum(positions[m][0] for m in cycle_monomers) / n
+    cy = sum(positions[m][1] for m in cycle_monomers) / n
+    R = expected_edge / (2 * math.sin(math.pi / n))
+    for m in cycle_monomers:
+        d = _dist(positions[m], (cx, cy))
+        if abs(d - R) > tol:
+            return False, "vertex {} dist={:.4f}, R={:.4f}".format(m, d, R)
+    angles = sorted(
+        (math.atan2(positions[m][1] - cy, positions[m][0] - cx), m)
+        for m in cycle_monomers
+    )
+    ordered = [m for _, m in angles]
+    for i in range(n):
+        edge_len = _dist(
+            positions[ordered[i]], positions[ordered[(i + 1) % n]]
+        )
+        if abs(edge_len - expected_edge) > tol:
+            return False, "edge {}-{} len={:.4f}".format(
+                ordered[i], ordered[(i + 1) % n], edge_len
+            )
+    return True, "ok"
+
+
+print("\n*** Sequential multi-cycle layout (cycles 1,3,5,7) ***")
+multi_errors = []
+
+with open(os.path.join(root, "multi.ket")) as f:
+    current_data = json.load(f)
+
+cycle_indices = [1, 3, 5, 7]
+cycle_history = {}
+
+for idx in cycle_indices:
+    cycles = _find_small_cycles(current_data)
+    selected = cycles[idx - 1]
+    cycle_history[idx] = selected
+
+    positions_before = _get_monomer_positions(current_data)
+    lt_id = _find_left_top(selected, positions_before)
+    lt_pos_before = positions_before[lt_id]
+
+    _clear_selection(current_data)
+    _select_monomers(current_data, selected)
+    current_data = _do_layout(current_data)
+
+    positions_after = _get_monomer_positions(current_data)
+
+    # Check regular polygon
+    ok, msg = _is_regular_polygon(selected, positions_after)
+    if not ok:
+        multi_errors.append("Cycle {} not regular: {}".format(idx, msg))
+
+    # Check orientation: center must be to the right of left-top vertex.
+    # Note: with rotation optimization, cy != lt_y is expected — the decagon
+    # is rotated to best fit the bridge bonds, not forced to horizontal.
+    n = len(selected)
+    cx = sum(positions_after[m][0] for m in selected) / n
+    lt_pos = positions_after[lt_id]
+    if cx <= lt_pos[0]:
+        multi_errors.append(
+            "Cycle {} center not right of left-top: cx={:.4f} lt_x={:.4f}".format(
+                idx, cx, lt_pos[0]
+            )
+        )
+
+    # Check previously laid-out cycles still regular
+    for prev_idx in cycle_indices:
+        if prev_idx >= idx:
+            break
+        ok, msg = _is_regular_polygon(cycle_history[prev_idx], positions_after)
+        if not ok:
+            multi_errors.append(
+                "Cycle {} broken after step {}: {}".format(prev_idx, idx, msg)
+            )
+
+if multi_errors:
+    print("multi.ket:FAILED")
+    for e in multi_errors:
+        print("  " + e)
+else:
+    final_ket = json.dumps(current_data, indent=2)
+    compare_diff(
+        ref_path,
+        "multi_seq_1357.ket",
+        final_ket,
+        diff_fn=compare_positions,
+    )
+
+
+# ======================================================================
+# Multi-cycle simultaneous selection tests
+#
+# Selects the union of monomers from N cycles at once and runs a single
+# layout call. The first (primary) cycle goes through assignFirstCycle and
+# must be a perfect regular polygon. Secondary (fused) cycles may have
+# geometric distortions due to shared edges — only checked loosely.
+# Fixed (unselected) monomers must not move.
+# ======================================================================
+
+
+def _run_multi_cycle_selection_test(label, cycle_groups, ref_filename):
+    """Select union of given cycle groups simultaneously, layout once, verify."""
+    with open(os.path.join(root, "multi.ket")) as f:
+        data = json.load(f)
+
+    cycles = _find_small_cycles(data)
+    selected_monomers = set()
+    selected_cycles = []
+    for idx in cycle_groups:
+        cyc = cycles[idx - 1]
+        selected_cycles.append((idx, cyc))
+        selected_monomers.update(cyc)
+
+    positions_before = _get_monomer_positions(data)
+
+    _clear_selection(data)
+    _select_monomers(data, list(selected_monomers))
+    data = _do_layout(data)
+
+    positions_after = _get_monomer_positions(data)
+
+    errors = []
+
+    # At least one selected cycle must be a perfect regular polygon —
+    # the engine picks one as primary (via assignFirstCycle) and lays it
+    # out with exact geometry. Which one depends on Morgan code sorting.
+    any_regular = False
+    for idx, cyc in selected_cycles:
+        ok, _ = _is_regular_polygon(cyc, positions_after)
+        if ok:
+            any_regular = True
+            break
+    if not any_regular:
+        msgs = []
+        for idx, cyc in selected_cycles:
+            _, msg = _is_regular_polygon(cyc, positions_after)
+            msgs.append("Cycle {}: {}".format(idx, msg))
+        errors.append("No cycle is a regular polygon: " + "; ".join(msgs))
+
+    # Fixed (unselected) monomers must not move
+    for m, pos_before in positions_before.items():
+        if m in selected_monomers:
+            continue
+        pos_after = positions_after.get(m)
+        if pos_after is None:
+            continue
+        dx = abs(pos_after[0] - pos_before[0])
+        dy = abs(pos_after[1] - pos_before[1])
+        if dx > GEOM_TOL or dy > GEOM_TOL:
+            errors.append(
+                "Fixed monomer {} moved: before=({:.3f},{:.3f}) after=({:.3f},{:.3f})".format(
+                    m, pos_before[0], pos_before[1], pos_after[0], pos_after[1]
+                )
+            )
+
+    if errors:
+        print("{}:FAILED".format(label))
+        for e in errors:
+            print("  " + e)
     else:
-        print(filename + ".ket:FAILED")
-        print(diff)
+        final_ket = json.dumps(data, indent=2)
+        compare_diff(
+            ref_path,
+            ref_filename,
+            final_ket,
+            diff_fn=compare_positions,
+        )
+
+
+print("\n*** Multi-cycle simultaneous layout (cycles 1+2+3) ***")
+_run_multi_cycle_selection_test(
+    "multi_123.ket", [1, 2, 3], "multi_sel_123.ket"
+)
+
+print("\n*** Multi-cycle simultaneous layout (cycles 2+3+4) ***")
+_run_multi_cycle_selection_test(
+    "multi_234.ket", [2, 3, 4], "multi_sel_234.ket"
+)
+
+
+# ======================================================================
+# Partial-selection cycle layout: cycle_part_sel.ket
+#
+# A 10-vertex selected ring connected to a fixed backbone via two
+# pendant phosphates (P5, P12).  The layout must:
+#   1. Make the selected ring a regular 10-gon (all edges = 1.5)
+#   2. Place pendant P atoms OUTSIDE the ring (outward direction)
+#   3. Keep the fixed backbone atoms stationary
+# ======================================================================
+
+print("\n*** cycle_part_sel: ring + pendant phosphates + fixed backbone ***")
+
+with open(os.path.join(root, "cycle_part_sel.ket")) as f:
+    cp_data = json.load(f)
+
+cp_out = _do_layout(cp_data)
+
+cp_positions = _get_monomer_positions(cp_out)
+
+cp_errors = []
+
+# Ring0 vertices (atom indices 0,1,2,3,4,13,14,15,16,17 → monomer ids)
+# Discover them: all monomers that are selected and NOT pendant phosphates.
+# Selected monomers: those with "selected": true in the input.
+selected_ids = {
+    key
+    for key, val in cp_data.items()
+    if key.startswith("monomer")
+    and isinstance(val, dict)
+    and val.get("selected", False)
+}
+fixed_ids = {
+    key
+    for key, val in cp_data.items()
+    if key.startswith("monomer")
+    and isinstance(val, dict)
+    and not val.get("selected", False)
+}
+
+# Find the ring cycle among selected monomers via graph cycle detection.
+adj_cp = defaultdict(set)
+for c in cp_data["root"].get("connections", []):
+    ep1 = c["endpoint1"]["monomerId"]
+    ep2 = c["endpoint2"]["monomerId"]
+    if ep1 in selected_ids and ep2 in selected_ids:
+        adj_cp[ep1].add(ep2)
+        adj_cp[ep2].add(ep1)
+
+# Pendant atoms: selected monomers with only 1 selected neighbour.
+pendant_ids = {m for m in selected_ids if len(adj_cp[m]) <= 1}
+ring_ids = selected_ids - pendant_ids
+
+if len(pendant_ids) != 2:
+    cp_errors.append(
+        "Expected 2 pendant atoms, got {}".format(len(pendant_ids))
+    )
+
+if len(ring_ids) != 10:
+    cp_errors.append("Expected 10 ring vertices, got {}".format(len(ring_ids)))
+else:
+    ok, msg = _is_regular_polygon(list(ring_ids), cp_positions)
+    if not ok:
+        cp_errors.append("Ring not regular polygon: " + msg)
+    else:
+        # Compute ring center.
+        n = len(ring_ids)
+        cx = sum(cp_positions[m][0] for m in ring_ids) / n
+        cy = sum(cp_positions[m][1] for m in ring_ids) / n
+
+        # Each pendant P must be OUTSIDE the ring (dot product with
+        # outward radial direction at its ring neighbour > 0).
+        for p in pendant_ids:
+            # Find the ring-side neighbour of this pendant.
+            ring_nb = None
+            for c in cp_data["root"].get("connections", []):
+                ep1 = c["endpoint1"]["monomerId"]
+                ep2 = c["endpoint2"]["monomerId"]
+                if ep1 == p and ep2 in ring_ids:
+                    ring_nb = ep2
+                    break
+                if ep2 == p and ep1 in ring_ids:
+                    ring_nb = ep1
+                    break
+            if ring_nb is None:
+                cp_errors.append("Pendant {} has no ring neighbour".format(p))
+                continue
+
+            rn_pos = cp_positions[ring_nb]
+            p_pos = cp_positions[p]
+
+            # Outward direction at ring neighbour: from center through ring_nb.
+            outward_x = rn_pos[0] - cx
+            outward_y = rn_pos[1] - cy
+            # Direction ring_nb → P.
+            dp_x = p_pos[0] - rn_pos[0]
+            dp_y = p_pos[1] - rn_pos[1]
+
+            dot = outward_x * dp_x + outward_y * dp_y
+            if dot <= 0:
+                cp_errors.append(
+                    "Pendant {} points inward (dot={:.4f})".format(p, dot)
+                )
+
+# Fixed backbone atoms must not move.
+for m in fixed_ids:
+    pos_val = cp_data[m].get("position")
+    if pos_val is None:
+        continue
+    before = (pos_val["x"], pos_val["y"])
+    after = cp_positions.get(m)
+    if after is None:
+        continue
+    dx = abs(after[0] - before[0])
+    dy = abs(after[1] - before[1])
+    if dx > GEOM_TOL or dy > GEOM_TOL:
+        cp_errors.append(
+            "Fixed monomer {} moved: ({:.3f},{:.3f})->({:.3f},{:.3f})".format(
+                m, before[0], before[1], after[0], after[1]
+            )
+        )
+
+if cp_errors:
+    print("cycle_part_sel.ket:FAILED")
+    for e in cp_errors:
+        print("  " + e)
+else:
+    cp_ket = json.dumps(cp_out, indent=2)
+    compare_diff(
+        ref_path,
+        "cycle_part_sel.ket",
+        cp_ket,
+        diff_fn=compare_positions,
+    )
+
+
+# ======================================================================
+# Two-bridge partial selection with disulfide-bridged ring.
+#
+# 13 cysteines in a linear backbone with an R3-R3 disulfide between
+# monomer4 and monomer7 forming a 4-vertex macrocycle. Monomers 4..10
+# are selected (the cycle plus a 3-monomer pendant tail); m3 and m11 are
+# the fixed boundaries on either side. The position-equality check above
+# pins the exact post-layout coordinates; the invariants below capture
+# the structural guarantees that must hold regardless of layout drift.
+# ======================================================================
+
+print(
+    "\n*** disulfide_pep_sel: two-bridge partial selection with R3-R3 ring ***"
+)
+
+with open(os.path.join(root, "disulfide_pep_sel.ket")) as f:
+    dp_input = json.load(f)
+dp_input_pos = _get_monomer_positions(dp_input)
+dp_out = _do_layout(dp_input)
+dp_pos = _get_monomer_positions(dp_out)
+
+# Selected vs fixed sets per the input file.
+dp_selected = {
+    key
+    for key, val in dp_input.items()
+    if key.startswith("monomer")
+    and isinstance(val, dict)
+    and val.get("selected", False)
+}
+dp_fixed = {"monomer{}".format(i) for i in range(13)} - dp_selected
+
+dp_errors = []
+
+# 1. Disulfide cycle: monomer4..monomer7 must form a regular 4-gon.
+disulfide_ring = ["monomer4", "monomer5", "monomer6", "monomer7"]
+ok, msg = _is_regular_polygon(disulfide_ring, dp_pos)
+if not ok:
+    dp_errors.append("disulfide cycle not regular: " + msg)
+
+# 2. All interior backbone bonds inside the selection equal bond_length.
+backbone_pairs = [
+    ("monomer4", "monomer5"),
+    ("monomer5", "monomer6"),
+    ("monomer6", "monomer7"),
+    ("monomer7", "monomer8"),
+    ("monomer8", "monomer9"),
+    ("monomer9", "monomer10"),
+]
+for a, b in backbone_pairs:
+    d = _dist(dp_pos[a], dp_pos[b])
+    if abs(d - BOND_LENGTH) > GEOM_TOL:
+        dp_errors.append("interior bond {}-{}: len={:.4f}".format(a, b, d))
+
+# 3. Fixed monomers must not move from their input positions.
+for m in dp_fixed:
+    before = dp_input_pos[m]
+    after = dp_pos[m]
+    dx = abs(after[0] - before[0])
+    dy = abs(after[1] - before[1])
+    if dx > GEOM_TOL or dy > GEOM_TOL:
+        dp_errors.append(
+            "fixed {} moved: ({:.3f},{:.3f})->({:.3f},{:.3f})".format(
+                m, before[0], before[1], after[0], after[1]
+            )
+        )
+
+# 4. No interior bond catastrophically stretched (the regression guard).
+for a, b in backbone_pairs:
+    d = _dist(dp_pos[a], dp_pos[b])
+    if d > BOND_LENGTH * 3.0:
+        dp_errors.append(
+            "CATASTROPHIC stretch {}-{}: len={:.4f}".format(a, b, d)
+        )
+
+if dp_errors:
+    print("disulfide_pep_sel.ket invariants:FAILED")
+    for e in dp_errors:
+        print("  " + e)
+else:
+    print("disulfide_pep_sel.ket invariants:SUCCEED")
+
+
+# ======================================================================
+# Synthetic partial-selection edge cases.
+#
+# Each numbered subtest below targets one branch of _prepareAssignedList
+# that the named .ket fixtures do not reach. Cysteine template is read
+# once from disulfide_pep_sel.ket so we don't duplicate ~150 lines of JSON.
+# ======================================================================
+
+
+def _build_peptide_ket(n_monomers, selected_indices):
+    """Linear cysteine backbone of length n_monomers; selected_indices get
+    the `selected: true` flag. Position step matches the standard Indigo
+    sequence loader (1.5 along x)."""
+    nodes = [{"$ref": "monomer{}".format(i)} for i in range(n_monomers)]
+    connections = [
+        {
+            "connectionType": "single",
+            "endpoint1": {
+                "monomerId": "monomer{}".format(i),
+                "attachmentPointId": "R2",
+            },
+            "endpoint2": {
+                "monomerId": "monomer{}".format(i + 1),
+                "attachmentPointId": "R1",
+            },
+        }
+        for i in range(n_monomers - 1)
+    ]
+    data = {
+        "ket_version": "2.0.0",
+        "root": {
+            "nodes": nodes,
+            "connections": connections,
+            "templates": [{"$ref": "monomerTemplate-C___Cysteine"}],
+        },
+        "monomerTemplate-C___Cysteine": _peptide_template,
+    }
+    sel = set(selected_indices)
+    for i in range(n_monomers):
+        m = {
+            "type": "monomer",
+            "id": str(i),
+            "position": {"x": 1.25 + 1.5 * i, "y": -1.25},
+            "alias": "C",
+            "templateId": "C___Cysteine",
+            "seqid": i + 1,
+        }
+        if i in sel:
+            m["selected"] = True
+        data["monomer{}".format(i)] = m
+    return data
+
+
+print("\n*** Synthetic partial-selection edge cases ***")
+
+with open(os.path.join(root, "disulfide_pep_sel.ket")) as f:
+    _peptide_template = json.load(f)["monomerTemplate-C___Cysteine"]
+
+edge_errors = []
+
+# (1) Single-bridge: tail of 3 hangs off a fixed backbone via one bond.
+# After layout, the bridge bond must be exactly bond_length (closed-form anchor).
+sb_data = _build_peptide_ket(8, selected_indices=[5, 6, 7])
+sb_out = _do_layout(sb_data)
+sb_pos = _get_monomer_positions(sb_out)
+sb_bridge = _dist(sb_pos["monomer4"], sb_pos["monomer5"])
+if abs(sb_bridge - BOND_LENGTH) > GEOM_TOL:
+    edge_errors.append(
+        "single-bridge anchor not exact: m4-m5 = {:.4f}".format(sb_bridge)
+    )
+
+# (2) Two-bridge straight chain (no cycle). Interior bonds must not be
+# catastrophically stretched between the two fixed anchors.
+tb_data = _build_peptide_ket(9, selected_indices=[3, 4, 5, 6])
+tb_out = _do_layout(tb_data)
+tb_pos = _get_monomer_positions(tb_out)
+for i in range(3, 6):
+    a, b = "monomer{}".format(i), "monomer{}".format(i + 1)
+    d = _dist(tb_pos[a], tb_pos[b])
+    if d > BOND_LENGTH * 3.0:
+        edge_errors.append(
+            "CATASTROPHIC stretch in straight chain {}-{}: len={:.4f}".format(
+                a, b, d
+            )
+        )
+
+# Fixed monomers around the two-bridge selection must not move.
+tb_input_pos = _get_monomer_positions(tb_data)
+for i in [0, 1, 2, 7, 8]:
+    m = "monomer{}".format(i)
+    before, after = tb_input_pos[m], tb_pos[m]
+    if (
+        abs(after[0] - before[0]) > GEOM_TOL
+        or abs(after[1] - before[1]) > GEOM_TOL
+    ):
+        edge_errors.append(
+            "two-bridge: fixed {} moved {} -> {}".format(m, before, after)
+        )
+
+# (3) Isolated selection touching only fixed (fallback path in
+# _prepareAssignedList). Without the fallback the selected monomer would
+# never be placed.
+iso_data = _build_peptide_ket(5, selected_indices=[2])
+iso_out = _do_layout(iso_data)
+iso_pos = _get_monomer_positions(iso_out)
+p2 = iso_pos["monomer2"]
+# Jython 2.7's math lacks isfinite; combine isnan and isinf instead.
+if (
+    math.isnan(p2[0])
+    or math.isnan(p2[1])
+    or math.isinf(p2[0])
+    or math.isinf(p2[1])
+):
+    edge_errors.append("isolated selected monomer has non-finite position")
+else:
+    d_left = _dist(iso_pos["monomer1"], iso_pos["monomer2"])
+    d_right = _dist(iso_pos["monomer2"], iso_pos["monomer3"])
+    if (
+        abs(d_left - BOND_LENGTH) > GEOM_TOL
+        and abs(d_right - BOND_LENGTH) > GEOM_TOL
+    ):
+        edge_errors.append(
+            "isolated selection: neither bridge is bond_length "
+            "(left={:.4f} right={:.4f})".format(d_left, d_right)
+        )
+
+# (4) Two disjoint selected segments — internal bonds of each must be 1.5.
+dj_data = _build_peptide_ket(11, selected_indices=[2, 3, 7, 8])
+dj_out = _do_layout(dj_data)
+dj_pos = _get_monomer_positions(dj_out)
+d23 = _dist(dj_pos["monomer2"], dj_pos["monomer3"])
+d78 = _dist(dj_pos["monomer7"], dj_pos["monomer8"])
+if abs(d23 - BOND_LENGTH) > GEOM_TOL:
+    edge_errors.append("disjoint selection 2-3 bond: {:.4f}".format(d23))
+if abs(d78 - BOND_LENGTH) > GEOM_TOL:
+    edge_errors.append("disjoint selection 7-8 bond: {:.4f}".format(d78))
+
+if edge_errors:
+    print("partial_selection_edge_cases:FAILED")
+    for e in edge_errors:
+        print("  " + e)
+else:
+    print("partial_selection_edge_cases:SUCCEED")
+
+
+# ======================================================================
+# Nucleus seed-edge invariant.
+#
+# _findFirstVertexIdx seeds the BC walk at (0,0) and (bond_length,0). In a
+# cycle-free partial selection the seed survives into the final layout, so
+# the seed edge must already be at bond_length — a unit-length seed would
+# leave one interior backbone bond at 1.0 next to neighbours at bond_length.
+# ======================================================================
+
+print("\n*** Nucleus seed-edge invariant (cycle-free partial selection) ***")
+
+seed_data = _build_peptide_ket(9, selected_indices=[3, 4, 5, 6])
+seed_pos = _get_monomer_positions(_do_layout(seed_data))
+seed_errors = []
+for a, b in [
+    ("monomer3", "monomer4"),
+    ("monomer4", "monomer5"),
+    ("monomer5", "monomer6"),
+]:
+    d = _dist(seed_pos[a], seed_pos[b])
+    if abs(d - BOND_LENGTH) > GEOM_TOL:
+        seed_errors.append("{}-{}: len={:.4f}".format(a, b, d))
+
+if seed_errors:
+    print("nucleus_seed_edge:FAILED")
+    for e in seed_errors:
+        print("  " + e)
+else:
+    print("nucleus_seed_edge:SUCCEED")

@@ -396,7 +396,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                         indent = text_item.indent;
 
                     FONT_STYLE_SET current_styles;
-                    ObjArray<ObjArray<TextItem>> ti_lines;
+                    PtrArray<PtrArray<TextItem>> ti_lines;
                     std::vector<std::pair<int, float>> spaces_widths;
                     std::pair<int, float> trailing_spaces{};
                     TextItem ti;

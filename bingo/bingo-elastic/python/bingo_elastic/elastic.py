@@ -3,6 +3,7 @@ from typing import (
     Any,
     AsyncGenerator,
     Dict,
+    FrozenSet,
     Generator,
     List,
     Optional,
@@ -25,6 +26,7 @@ except ImportError:
 from indigo import Indigo, IndigoObject  # type: ignore
 
 from bingo_elastic.model.record import (
+    RESERVED_FIELDS,
     IndigoRecord,
     IndigoRecordMolecule,
     IndigoRecordReaction,
@@ -33,6 +35,9 @@ from bingo_elastic.queries import BaseMatch, query_factory
 from bingo_elastic.utils import PostprocessType
 
 ElasticRepositoryT = TypeVar("ElasticRepositoryT")
+
+# Mapping of custom (e.g. SDF tag) field name -> ES property mapping fragment
+CustomPropertiesMapping = Dict[str, Dict[str, Any]]
 
 MAX_ALLOWED_SIZE = 1000
 
@@ -110,19 +115,83 @@ def get_client(
     return client_type(**arguments)  # type: ignore
 
 
-index_body = {
-    "mappings": {
-        "properties": {
-            "sim_fingerprint": {"type": "keyword", "similarity": "boolean"},
-            "sim_fingerprint_len": {"type": "integer"},
-            "sub_fingerprint": {"type": "keyword", "similarity": "boolean"},
-            "sub_fingerprint_len": {"type": "integer"},
-            "cmf": {"type": "binary"},
-            "hash": {"type": "unsigned_long"},
-            "has_error": {"type": "integer"},
+def build_index_body(
+    tau_search: bool = False,
+    custom_properties: Optional[CustomPropertiesMapping] = None,
+) -> Dict:
+    index_body = {
+        "mappings": {
+            "properties": {
+                "sim_fingerprint": {
+                    "type": "keyword",
+                    "similarity": "boolean",
+                },
+                "sim_fingerprint_len": {"type": "integer"},
+                "sub_fingerprint": {
+                    "type": "keyword",
+                    "similarity": "boolean",
+                },
+                "sub_fingerprint_len": {"type": "integer"},
+                "cmf": {"type": "binary"},
+                "hash": {"type": "unsigned_long"},
+                "has_error": {"type": "integer"},
+            }
         }
     }
-}
+
+    if tau_search:
+        index_body["mappings"]["properties"].update(
+            {
+                "tau_fingerprint": {
+                    "type": "keyword",
+                    "similarity": "boolean",
+                },
+                "tau_fingerprint_len": {"type": "integer"},
+            }
+        )
+
+    if custom_properties:
+        collisions = set(custom_properties).intersection(RESERVED_FIELDS)
+        if collisions:
+            raise ValueError(
+                "custom_properties uses reserved field name(s): "
+                f"{sorted(collisions)}"
+            )
+        index_body["mappings"]["properties"].update(custom_properties)
+
+    return index_body
+
+
+def non_indexed_fields(
+    custom_properties: Optional[CustomPropertiesMapping],
+) -> FrozenSet[str]:
+    """Field names mapped with "index": false.
+
+    Such fields are stored in _source (returned on retrieved records) but
+    are not searchable, so filter() must reject queries against them.
+    """
+    if not custom_properties:
+        return frozenset()
+    return frozenset(
+        name
+        for name, fragment in custom_properties.items()
+        if str(fragment.get("index", True)).lower() == "false"
+    )
+
+
+def validate_custom_properties(
+    custom_properties: Optional[CustomPropertiesMapping],
+) -> None:
+    """custom_properties must map field names to ES mapping-fragment dicts."""
+    if custom_properties is None:
+        return
+    if not isinstance(custom_properties, dict) or not all(
+        isinstance(fragment, dict) for fragment in custom_properties.values()
+    ):
+        raise TypeError(
+            "custom_properties must be a Dict[str, Dict[str, Any]] mapping "
+            "field names to Elasticsearch property fragments"
+        )
 
 
 def check_index_exception(err_: RequestError) -> None:
@@ -137,7 +206,12 @@ def check_index_exception(err_: RequestError) -> None:
     raise err_
 
 
-def create_index(index_name: str, el_client: Elasticsearch) -> None:
+def create_index(
+    index_name: str,
+    el_client: Elasticsearch,
+    *,
+    index_body: Optional[Dict] = None,
+) -> None:
     try:
         el_client.indices.create(index=index_name, body=index_body)
     except RequestError as err_:
@@ -145,7 +219,10 @@ def create_index(index_name: str, el_client: Elasticsearch) -> None:
 
 
 async def a_create_index(
-    index_name: str, el_client: "AsyncElasticsearch"
+    index_name: str,
+    el_client: "AsyncElasticsearch",
+    *,
+    index_body: Optional[Dict] = None,
 ) -> None:
     try:
         await el_client.indices.create(index=index_name, body=index_body)
@@ -188,7 +265,7 @@ def response_to_records(
 
 
 class AsyncElasticRepository:
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         index_name: IndexName,
         *,
@@ -199,6 +276,8 @@ class AsyncElasticRepository:
         ssl_context: Any = None,
         request_timeout: int = 60,
         retry_on_timeout: bool = True,
+        tau_search: bool = False,
+        custom_properties: Optional[CustomPropertiesMapping] = None,
     ) -> None:
         """
         :param index_name: use function  get_index_name for setting this argument
@@ -209,8 +288,27 @@ class AsyncElasticRepository:
         :param ssl_context:
         :param timeout:
         :param retry_on_timeout:
+        :param tau_search: declare tau_fingerprint in the index mapping so
+            tautomer-aware substructure search is available via
+            filter(..., options="TAU ...")
+        :param custom_properties: ES mapping fragments for caller-defined
+            fields (SDF tags or kwargs passed to IndigoRecord). Keys are field
+            names; values are ES property mappings, e.g.
+            {"MolecularWeight": {"type": "float"}, "CAS": {"type": "keyword"}}.
+            The same keys must also be passed as ``custom_properties=`` to
+            iterate_sdf/iterate_file — without that, no SDF tags are
+            extracted and the typed mapping has nothing to populate.
+            Add ``"index": False`` to a fragment (e.g.
+            {"comment": {"type": "keyword", "index": False}}) to store the
+            value on records without making it searchable; filter() raises
+            ValueError if such a field is queried.
         """
         self.index_name = index_name.value
+        self.tau_search = tau_search
+        self.custom_properties = custom_properties
+        validate_custom_properties(custom_properties)
+        self._non_indexed_fields = non_indexed_fields(custom_properties)
+        self.index_body = build_index_body(tau_search, custom_properties)
 
         self.el_client = get_client(
             client_type=AsyncElasticsearch,
@@ -230,7 +328,9 @@ class AsyncElasticRepository:
         return await self.index_records(gen(), chunk_size=1)
 
     async def index_records(self, records: Generator, chunk_size: int = 500):
-        await a_create_index(self.index_name, self.el_client)
+        await a_create_index(
+            self.index_name, self.el_client, index_body=self.index_body
+        )
         # pylint: disable=unused-variable
         async for is_ok, action in async_streaming_bulk(
             self.el_client,
@@ -240,7 +340,7 @@ class AsyncElasticRepository:
         ):
             pass
 
-    async def filter(
+    async def filter(  # pylint: disable=too-many-locals
         self,
         query_subject: Optional[
             Union[BaseMatch, IndigoObject, IndigoRecord]
@@ -297,6 +397,13 @@ class AsyncElasticRepository:
             raise ValueError(
                 f"page_size should less or equal to {MAX_ALLOWED_SIZE}"
             )
+        forbidden = self._non_indexed_fields.intersection(kwargs)
+        if forbidden:
+            raise ValueError(
+                f"Field(s) {sorted(forbidden)} are mapped with index=false: "
+                "stored on records but not searchable, so they cannot be "
+                "used in filter()."
+            )
         # actions needed to be called on elastic_search result
         postprocess_actions: PostprocessType = []
 
@@ -304,6 +411,8 @@ class AsyncElasticRepository:
             query_subject=query_subject,
             limit=page_size,
             postprocess_actions=postprocess_actions,
+            options=options,
+            tau_search=self.tau_search,
             **kwargs,
         )
         try:
@@ -356,7 +465,7 @@ class AsyncElasticRepository:
 
 
 class ElasticRepository:
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         index_name: IndexName,
         *,
@@ -367,6 +476,8 @@ class ElasticRepository:
         ssl_context: Any = None,
         request_timeout: int = 60,
         retry_on_timeout: bool = True,
+        tau_search: bool = False,
+        custom_properties: Optional[CustomPropertiesMapping] = None,
     ) -> None:
         """
         :param index_name: use function  get_index_name for setting this argument
@@ -377,8 +488,27 @@ class ElasticRepository:
         :param ssl_context:
         :param timeout:
         :param retry_on_timeout:
+        :param tau_search: declare tau_fingerprint in the index mapping so
+            tautomer-aware substructure search is available via
+            filter(..., options="TAU ...")
+        :param custom_properties: ES mapping fragments for caller-defined
+            fields (SDF tags or kwargs passed to IndigoRecord). Keys are field
+            names; values are ES property mappings, e.g.
+            {"MolecularWeight": {"type": "float"}, "CAS": {"type": "keyword"}}.
+            The same keys must also be passed as ``custom_properties=`` to
+            iterate_sdf/iterate_file — without that, no SDF tags are
+            extracted and the typed mapping has nothing to populate.
+            Add ``"index": False`` to a fragment (e.g.
+            {"comment": {"type": "keyword", "index": False}}) to store the
+            value on records without making it searchable; filter() raises
+            ValueError if such a field is queried.
         """
         self.index_name = index_name.value
+        self.tau_search = tau_search
+        self.custom_properties = custom_properties
+        validate_custom_properties(custom_properties)
+        self._non_indexed_fields = non_indexed_fields(custom_properties)
+        self.index_body = build_index_body(tau_search, custom_properties)
 
         self.el_client = get_client(
             client_type=Elasticsearch,
@@ -398,7 +528,9 @@ class ElasticRepository:
         return self.index_records(gen(), chunk_size=1)
 
     def index_records(self, records: Generator, chunk_size: int = 500):
-        create_index(self.index_name, self.el_client)
+        create_index(
+            self.index_name, self.el_client, index_body=self.index_body
+        )
         # pylint: disable=unused-variable
         for is_ok, action in streaming_bulk(
             self.el_client,
@@ -414,7 +546,7 @@ class ElasticRepository:
         except NotFoundError:
             pass
 
-    def filter(
+    def filter(  # pylint: disable=too-many-locals
         self,
         query_subject: Optional[
             Union[BaseMatch, IndigoObject, IndigoRecord]
@@ -471,12 +603,21 @@ class ElasticRepository:
             raise ValueError(
                 f"page_size should less or equal to {MAX_ALLOWED_SIZE}"
             )
+        forbidden = self._non_indexed_fields.intersection(kwargs)
+        if forbidden:
+            raise ValueError(
+                f"Field(s) {sorted(forbidden)} are mapped with index=false: "
+                "stored on records but not searchable, so they cannot be "
+                "used in filter()."
+            )
         # actions needed to be called on elastic_search result
         postprocess_actions: PostprocessType = []
         query = compile_query(
             query_subject=query_subject,
             limit=min(limit, page_size),
             postprocess_actions=postprocess_actions,
+            options=options,
+            tau_search=self.tau_search,
             **kwargs,
         )
 
@@ -526,6 +667,8 @@ def compile_query(
     ] = None,
     limit: int = 10,
     postprocess_actions: Optional[PostprocessType] = None,
+    options: str = "",
+    tau_search: bool = False,
     **kwargs,
 ) -> Dict:
     query = {
@@ -537,9 +680,21 @@ def compile_query(
                 "sim_fingerprint_len",
                 "sub_fingerprint_len",
                 "sub_fingerprint",
+                "tau_fingerprint",
+                "tau_fingerprint_len",
             ],
         },
     }
+
+    tau_mode = "TAU" in options.split()
+    if tau_mode and not tau_search:
+        raise ValueError(
+            "TAU search requires tau_search=True on the repository "
+            "(and on the indexed records). The tau_fingerprint field "
+            "is not present on this index."
+        )
+
+    substructure_key = "tautomer" if tau_mode else "substructure"
 
     if isinstance(query_subject, BaseMatch):
         query_subject.compile(query, postprocess_actions)
@@ -548,11 +703,13 @@ def compile_query(
             query, postprocess_actions
         )
     elif isinstance(query_subject, IndigoObject):
-        query_factory("substructure", query_subject).compile(
+        query_factory(substructure_key, query_subject).compile(
             query, postprocess_actions
         )
 
     for key, value in kwargs.items():
+        if tau_mode and key == "substructure":
+            key = "tautomer"
         query_factory(key, value).compile(query, postprocess_actions)
 
     return query

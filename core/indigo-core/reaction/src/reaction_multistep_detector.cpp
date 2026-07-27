@@ -19,6 +19,8 @@
 #include <queue>
 
 #include "layout/pathway_layout.h"
+#include "molecule/base_molecule.h"
+#include "molecule/molecule_rgroups.h"
 #include "reaction/pathway_reaction.h"
 #include "reaction/reaction.h"
 #include "reaction/reaction_multistep_detector.h"
@@ -250,8 +252,85 @@ std::unique_ptr<BaseMolecule> ReactionMultistepDetector::extractComponent(int in
         component = std::make_unique<QueryMolecule>();
     else
         component = std::make_unique<Molecule>();
-    component->makeSubmolecule(_bmol, filter, 0, 0);
+    // Extract atoms/bonds without R-groups, then selectively copy only the
+    // R-groups whose R-sites appear in this component.
+    component->makeSubmolecule(_bmol, filter, 0, 0, SKIP_RGROUPS);
+    component->copyUsedRGroupsFrom(_bmol);
     return component;
+}
+
+void ReactionMultistepDetector::distributeOrphanRGroups()
+{
+    int total = _bmol.rgroups.getRGroupCount();
+    if (total < 1 || _components.empty())
+        return;
+
+    // Collect the set of R-group indices already claimed by some component.
+    std::unordered_set<int> claimed;
+    for (auto& cd : _components)
+    {
+        BaseMolecule& mol = *cd.mol;
+        for (int i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i))
+        {
+            if (!mol.isRSite(i))
+                continue;
+            QS_DEF(Array<int>, allowed);
+            mol.getAllowedRGroups(i, allowed);
+            for (int j = 0; j < allowed.size(); ++j)
+                claimed.insert(allowed[j]);
+        }
+    }
+
+    // For each unclaimed (orphan) R-group, find the component whose bounding
+    // box is closest to the bounding box of the R-group's fragments.
+    for (int rg_idx = 1; rg_idx <= total; ++rg_idx)
+    {
+        if (claimed.count(rg_idx))
+            continue;
+        RGroup& rg = _bmol.rgroups.getRGroup(rg_idx);
+        if (rg.fragments.size() == 0)
+            continue;
+
+        // Compute center of the R-group's fragments bounding box.
+        Rect2f rg_bbox;
+        bool rg_bbox_init = false;
+        for (int f = rg.fragments.begin(); f != rg.fragments.end(); f = rg.fragments.next(f))
+        {
+            Rect2f frag_bbox;
+            rg.fragments[f]->getBoundingBox(frag_bbox);
+            if (!rg_bbox_init)
+            {
+                rg_bbox = frag_bbox;
+                rg_bbox_init = true;
+            }
+            else
+            {
+                rg_bbox = Rect2f(Vec2f(std::min(rg_bbox.left(), frag_bbox.left()), std::min(rg_bbox.bottom(), frag_bbox.bottom())),
+                                 Vec2f(std::max(rg_bbox.right(), frag_bbox.right()), std::max(rg_bbox.top(), frag_bbox.top())));
+            }
+        }
+        if (!rg_bbox_init)
+            continue;
+        Vec2f rg_center = rg_bbox.center();
+
+        // Find the closest component by bbox distance.
+        int best_comp = 0;
+        float best_dist = -1.f;
+        for (int ci = 0; ci < static_cast<int>(_components.size()); ++ci)
+        {
+            Rect2f comp_bbox;
+            _components[ci].mol->getBoundingBox(comp_bbox);
+            float dist = comp_bbox.pointDistance(rg_center);
+            if (best_dist < 0 || dist < best_dist)
+            {
+                best_dist = dist;
+                best_comp = ci;
+            }
+        }
+
+        // Assign the orphan R-group to the nearest component.
+        _components[best_comp].mol->rgroups.getRGroup(rg_idx).copy(rg);
+    }
 }
 
 // TODO: we can't avoid the calculation like this, but it's optimizable to N(log(N)) complexity
@@ -882,7 +961,7 @@ ReactionMultistepDetector::ReactionType ReactionMultistepDetector::detectReactio
         hull.push_back(bbox.leftTop());
         _components.emplace_back(std::move(component), hull);
     }
-
+    distributeOrphanRGroups();
     collectSortedDistances();
     mergeCloseComponents();
     createSummBlocks();

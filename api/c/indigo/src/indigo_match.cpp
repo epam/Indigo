@@ -298,7 +298,7 @@ CEXPORT int indigoExactMatch(int handler1, int handler2, const char* flags)
             auto mapping = std::make_unique<IndigoReactionMapping>(rxn1, rxn2);
             mapping->mol_mapping.clear_resize(rxn1.end());
             mapping->mol_mapping.fffill();
-            mapping->mappings.expand(rxn1.end());
+            mapping->mappings.resize(rxn1.end());
 
             for (int i = rxn1.begin(); i != rxn1.end(); i = rxn1.next(i))
             {
@@ -915,7 +915,7 @@ CEXPORT int indigoMatch(int target_matcher, int query)
             auto mapping = std::make_unique<IndigoReactionMapping>(qrxn, matcher.original_target);
             mapping->mol_mapping.clear_resize(qrxn.end());
             mapping->mol_mapping.fffill();
-            mapping->mappings.expand(qrxn.end());
+            mapping->mappings.resize(qrxn.end());
 
             for (i = qrxn.begin(); i != qrxn.end(); i = qrxn.next(i))
             {

@@ -75,6 +75,31 @@ def a_elastic_repository_reaction() -> Callable[[], AsyncElasticRepository]:
     return wraped
 
 
+@pytest.fixture
+def elastic_repository_molecule_tau() -> ElasticRepository:
+    return ElasticRepository(
+        IndexName.BINGO_MOLECULE,
+        host="127.0.0.1",
+        port=9200,
+        tau_search=True,
+    )
+
+
+@pytest.fixture
+def a_elastic_repository_molecule_tau() -> (
+    Callable[[], AsyncElasticRepository]
+):
+    def wraped():
+        return AsyncElasticRepository(
+            IndexName.BINGO_MOLECULE,
+            host="127.0.0.1",
+            port=9200,
+            tau_search=True,
+        )
+
+    return wraped
+
+
 @pytest.fixture(autouse=True)
 def clear_index(
     elastic_repository_molecule: ElasticRepository,

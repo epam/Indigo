@@ -23,8 +23,8 @@
 #include <optional>
 #include <set>
 
-#include "base_cpp/obj_array.h"
 #include "base_cpp/properties_map.h"
+#include "base_cpp/ptr_array.h"
 #include "base_cpp/red_black.h"
 #include "graph/graph.h"
 #include "math/algebra.h"
@@ -111,7 +111,7 @@ namespace indigo
     // merging with molecule and cloning procedures
     enum
     {
-        SKIP_ALL = 0x7F,
+        SKIP_ALL = 0xFF,
         SKIP_CIS_TRANS = 0x01,
         SKIP_STEREOCENTERS = 0x02,
         SKIP_XYZ = 0x04,
@@ -119,6 +119,9 @@ namespace indigo
         SKIP_ATTACHMENT_POINTS = 0x10,
         SKIP_TGROUPS = 0x20,
         SKIP_TEMPLATE_ATTACHMENT_POINTS = 0x40,
+        // Skip copying ALL R-group data (fragments + attachment points on R-sites).
+        // Use this when you want to populate R-groups manually afterwards.
+        SKIP_RGROUPS = 0x80,
     };
 
     class Molecule;
@@ -255,6 +258,31 @@ namespace indigo
         virtual bool isTemplateAtom(int idx) const = 0;
         virtual int getTemplateAtomOccurrence(int idx) const = 0;
 
+        // [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+        // Validates that a template occurrence index is valid in the template occurrences pool.
+        // This is used to safely check template occurrence indices before accessing them,
+        // preventing "pool: access to unused element" errors when working with cloned molecules.
+        //
+        // Args:
+        //   template_occur_idx: The template occurrence index to validate
+        //
+        // Returns:
+        //   true if the index is valid and the element exists in the pool, false otherwise
+        bool isValidTemplateOccurrence(int template_occur_idx) const;
+
+        // [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+        // Validates that a template attachment point index is valid in the template attachment points pool.
+        // This is used to safely check attachment point indices before accessing them,
+        // preventing "pool: access to unused element" errors when working with cloned molecules
+        // or during monomer expansion when attachment points may be removed.
+        //
+        // Args:
+        //   template_att_point_idx: The template attachment point index to validate
+        //
+        // Returns:
+        //   true if the index is valid and the element exists in the pool, false otherwise
+        bool isValidTemplateAttachmentPoint(int template_att_point_idx) const;
+
         const char* getTemplateAtom(int idx);
         const int getTemplateAtomSeqid(int idx);
         const char* getTemplateAtomSeqName(int idx);
@@ -292,7 +320,7 @@ namespace indigo
         static void collapse(BaseMolecule& bm);
 
         int transformSCSRtoFullCTAB();
-        int transformFullCTABtoSCSR(ObjArray<TGroup>& templates);
+        int transformFullCTABtoSCSR(PtrArray<TGroup>& templates);
         int transformHELMtoSGroups(Array<char>& helm_class, Array<char>& helm_name, Array<char>& code, Array<char>& natreplace, StringPool& r_names);
         void transformSuperatomsToTemplates(int template_id, MonomerTemplateLibrary* mtl = nullptr);
         void transformTemplatesToSuperatoms();
@@ -303,6 +331,10 @@ namespace indigo
 
         void getAllowedRGroups(int atom_idx, Array<int>& rgroup_list);
         int getSingleAllowedRGroup(int atom_idx);
+        void removeUnusedRGroups();
+        // Copy only the R-groups from `src` that are referenced by R-sites
+        // already present in *this. Leaves all other R-groups in `src` untouched.
+        void copyUsedRGroupsFrom(BaseMolecule& src);
         int getRSiteAttachmentPointByOrder(int idx, int order) const;
         void setRSiteAttachmentOrder(int atom_idx, int att_atom_idx, int order);
 
@@ -373,6 +405,7 @@ namespace indigo
         virtual int addBond_Silent(int beg, int end, int order) = 0;
 
         void unfoldHydrogens(Array<int>* markers_out, int max_h_cnt = -1, bool impl_h_no_throw = false, bool only_selected = false);
+        virtual void registerUnfoldedHydrogenQueryComponent(int /*atom_idx*/, int /*added_hydrogen*/){}; // QueryMolecule only
 
         virtual int getImplicitH(int idx, bool impl_h_no_throw) = 0;
         virtual void setImplicitH(int idx, int impl_h) = 0;
@@ -450,7 +483,7 @@ namespace indigo
         };
 
         ObjPool<TemplateAttPoint> template_attachment_points; // All used APs -
-        ObjArray<ObjPool<int>> template_attachment_indexes;   //
+        PtrArray<ObjPool<int>> template_attachment_indexes;   //
 
         MoleculeSGroups sgroups;
 
@@ -722,10 +755,10 @@ namespace indigo
         RedBlackMap<int, bool> _show_cip_atoms;
         RedBlackMap<int, CIPDesc> _cip_bonds;
 
-        ObjArray<Array<int>> _rsite_attachment_points;
+        PtrArray<Array<int>> _rsite_attachment_points;
         bool _rGroupFragment;
 
-        ObjArray<Array<int>> _attachment_index;
+        PtrArray<Array<int>> _attachment_index;
 
         int _chiral_flag = -1;
 

@@ -16,7 +16,7 @@ namespace com.epam.indigo
         {
             _indigo = indigo;
             _indigo.setSessionID();
-             // Preloads native library to register options
+            // Preloads native library to register options
             _indigo.checkResult(IndigoInchiLib.indigoInchiInit(_indigo.getSID()));
             initialized = true;
         }
@@ -54,10 +54,10 @@ namespace com.epam.indigo
             return new IndigoObject(_indigo, _indigo.checkResult(IndigoInchiLib.indigoInchiLoadMolecule(inchi_string)));
         }
 
-        public String getInchi(IndigoObject molecule)
+        public String getInchi(IndigoObject molecule, string forceOptions = null)
         {
             _indigo.setSessionID();
-            return _indigo.checkResult(IndigoInchiLib.indigoInchiGetInchi(molecule.self));
+            return _indigo.checkResult(IndigoInchiLib.indigoInchiGetInchi(molecule.self, forceOptions));
         }
 
         public String getInchiKey(String inchi_string)

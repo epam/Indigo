@@ -67,6 +67,10 @@ class KeywordQuery(CompilableQuery):
 
 
 class SubstructureQuery(CompilableQuery):
+    # Indigo fingerprint type used both for candidate clauses and min_score.
+    fingerprint_type: str = "sub"
+    fingerprint_field: str = "sub_fingerprint"
+
     def __init__(self, key: str, value: IndigoObject) -> None:
         self._key = key
         self._value = value
@@ -87,8 +91,12 @@ class SubstructureQuery(CompilableQuery):
 
     @lru_cache(maxsize=None)
     def clauses(self) -> List[Dict]:
-        fp_list = self._value.fingerprint("sub").oneBitsList().split()
-        return clauses(fp_list, "sub_fingerprint")
+        fp_list = (
+            self._value.fingerprint(self.fingerprint_type)
+            .oneBitsList()
+            .split()
+        )
+        return clauses(fp_list, self.fingerprint_field)
 
     def compile(
         self,
@@ -101,10 +109,17 @@ class SubstructureQuery(CompilableQuery):
         bool_head["must"] += self.clauses()
         bool_head["filter"] = [{"term": {"has_error": {"value": 0}}}]
         query["min_score"] = len(
-            self._value.fingerprint("sub").oneBitsList().split()
+            self._value.fingerprint(self.fingerprint_type)
+            .oneBitsList()
+            .split()
         )
         assert postprocess_actions is not None
         postprocess_actions.append(getattr(self, "postprocess"))
+
+
+class TautomerSubstructureQuery(SubstructureQuery):
+    fingerprint_type: str = "sub-tau"
+    fingerprint_field: str = "tau_fingerprint"
 
 
 class RangeQuery(CompilableQuery):
@@ -327,6 +342,8 @@ def query_factory(key: str, value: Any) -> CompilableQuery:
         return ExactMatch(value)
     if key == "substructure":
         return SubstructureQuery(key, value)
+    if key == "tautomer":
+        return TautomerSubstructureQuery(key, value)
     if isinstance(value, CompilableQuery):
         value.field = key
         return value

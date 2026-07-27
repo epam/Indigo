@@ -152,7 +152,7 @@ void EmbeddingEnumerator::processStart()
 
     // Restore enumerators stack
     while (_enumerators.size() > 1)
-        _enumerators.pop();
+        _enumerators.removeLast();
 
     //
     // Save query indices ordered by preserving connectivity by walk
@@ -233,7 +233,7 @@ bool EmbeddingEnumerator::processNext()
     if (_enumerators.size() > 1)
     {
         _enumerators.top().restore();
-        _enumerators.pop();
+        _enumerators.removeLast();
     }
 
     while (1)
@@ -245,7 +245,7 @@ bool EmbeddingEnumerator::processNext()
             if (_enumerators.size() > 1)
             {
                 _enumerators.top().restore();
-                _enumerators.pop();
+                _enumerators.removeLast();
             }
             else
                 break;
@@ -273,7 +273,7 @@ bool EmbeddingEnumerator::processNext()
     }
 
     while (_enumerators.size() > 1)
-        _enumerators.pop();
+        _enumerators.removeLast();
 
     return false;
 }

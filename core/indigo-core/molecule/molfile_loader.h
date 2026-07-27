@@ -23,10 +23,12 @@
 #include "base_cpp/exception.h"
 #include "base_cpp/tlscont.h"
 #include "molecule/base_molecule.h"
+#include "molecule/loader_options.h"
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/monomers_lib.h"
 #include "molecule/monomers_template_library.h"
 #include "molecule/query_molecule.h"
+#include "molecule/valence_model.h"
 
 namespace indigo
 {
@@ -56,12 +58,19 @@ namespace indigo
         void loadMolBlock3000(Molecule& mol);
         void loadQueryMolBlock3000(QueryMolecule& mol);
 
+        // Bulk options propagation. Replaces the historical pattern of copying
+        // each public field individually (see Indigo::loadMolecule). New options
+        // added to LoaderOptions are picked up automatically by every loader.
+        void setOptions(const LoaderOptions& opts);
+        LoaderOptions getOptions() const;
+
         StereocentersOptions stereochemistry_options;
         bool treat_x_as_pseudoatom; // normally 'X' means 'any halogen'
         bool skip_3d_chirality;     // do not compute chirality from 3D coordinates
         bool ignore_no_chiral_flag; // ignore chiral flag absence (treat stereo "as drawn")
                                     // (depricated, use treat_stereo-as instead of this option)
         bool ignore_bad_valence;    // ignore bad valence (default value is false)
+        ValenceMode valence_mode;   // pre-2014 (default) or BIOVIA post-2014
 
         // When true, the "bond topology", "stereo care", "ring bond count", and "unsaturation"
         // specifications are ignored when a non-query molecule is being loaded.

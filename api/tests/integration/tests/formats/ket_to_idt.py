@@ -1,17 +1,12 @@
-﻿import difflib
-import os
+﻿import os
 import sys
-
-
-def find_diff(a, b):
-    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
-
 
 sys.path.append(
     os.path.normpath(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
+from common.util import find_diff
 from env_indigo import (  # noqa
     Indigo,
     IndigoException,
@@ -78,13 +73,12 @@ for filename in sorted(idt_data.keys()):
     try:
         idt = mol.idt(lib)
         idt_ref = idt_data[filename]
-        if idt_ref == idt:
+        diff = find_diff(idt_ref, idt)
+        if not diff:
             print(filename + ".ket:SUCCEED")
         else:
-            print(
-                "%s.idt FAILED : expected '%s', got '%s'"
-                % (filename, idt_ref, idt)
-            )
+            print(filename + ".ket:FAILED")
+            print(diff)
     except IndigoException as e:
         text = getIndigoExceptionText(e)
         print(filename + ".ket:FAILED - %s" % text)

@@ -1,0 +1,35 @@
+# Oracle Instant Client + Python image for the `tests` service.
+
+FROM --platform=linux/amd64 python:3.12-slim-bookworm
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    ORACLE_HOME=/opt/oracle/instantclient_23_5 \
+    LD_LIBRARY_PATH=/opt/oracle/instantclient_23_5 \
+    PATH=/opt/oracle/instantclient_23_5:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+        libaio1 \
+        unzip \
+        curl \
+        ca-certificates \
+ && rm -rf /var/lib/apt/lists/*
+
+# curl -fL + --retry: fail loudly on non-2xx, survive flaky BuildKit networking.
+ARG IC_BASE_URL=https://download.oracle.com/otn_software/linux/instantclient/2350000
+RUN mkdir -p /opt/oracle \
+ && cd /tmp \
+ && curl -fL --retry 5 --retry-delay 5 --connect-timeout 30 --max-time 600 \
+        -o basic.zip   "$IC_BASE_URL/instantclient-basic-linux.x64-23.5.0.24.07.zip" \
+ && curl -fL --retry 5 --retry-delay 5 --connect-timeout 30 --max-time 600 \
+        -o sqlplus.zip "$IC_BASE_URL/instantclient-sqlplus-linux.x64-23.5.0.24.07.zip" \
+ && unzip -qo basic.zip   -d /opt/oracle \
+ && unzip -qo sqlplus.zip -d /opt/oracle \
+ && rm -f /tmp/basic.zip /tmp/sqlplus.zip
+
+COPY bingo/tests/requirements.txt /tmp/requirements.txt
+# psycopg2-binary==2.9.3 has no cp312 wheel; conftest.py imports psycopg2
+# unconditionally, so swap in a >=2.9.9 wheel (ABI-compatible with 2.9.x).
+RUN grep -v '^psycopg2-binary' /tmp/requirements.txt > /tmp/requirements-oracle.txt \
+ && pip install --no-cache-dir -r /tmp/requirements-oracle.txt \
+ && pip install --no-cache-dir --only-binary=:all: 'psycopg2-binary>=2.9.9,<3'

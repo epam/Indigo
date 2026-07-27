@@ -40,10 +40,33 @@ ReactionJsonLoader::ReactionJsonLoader(Document& ket, const LayoutOptions& optio
     : _loader(ket), _molecule(kArrayType), ignore_noncritical_query_features(false), _layout_options(options)
 {
     ignore_bad_valence = false;
+    valence_mode = ValenceMode::BIOVIA_2009;
 }
 
 ReactionJsonLoader::~ReactionJsonLoader()
 {
+}
+
+void ReactionJsonLoader::setOptions(const LoaderOptions& opts)
+{
+    stereochemistry_options = opts.stereochemistry_options;
+    ignore_bad_valence = opts.ignore_bad_valence;
+    valence_mode = opts.valence_mode;
+    ignore_no_chiral_flag = opts.ignore_no_chiral_flag;
+    ignore_noncritical_query_features = opts.ignore_noncritical_query_features;
+    treat_x_as_pseudoatom = opts.treat_x_as_pseudoatom;
+}
+
+LoaderOptions ReactionJsonLoader::getOptions() const
+{
+    LoaderOptions opts;
+    opts.stereochemistry_options = stereochemistry_options;
+    opts.ignore_bad_valence = ignore_bad_valence;
+    opts.valence_mode = valence_mode;
+    opts.ignore_no_chiral_flag = ignore_no_chiral_flag;
+    opts.ignore_noncritical_query_features = ignore_noncritical_query_features;
+    opts.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+    return opts;
 }
 
 void ReactionJsonLoader::loadReaction(BaseReaction& rxn)
@@ -126,7 +149,10 @@ void ReactionJsonLoader::parseOneArrowReaction(BaseReaction& rxn)
 
         Filter filter(_pmol->getDecomposition().ptr(), Filter::EQ, index);
 
-        mol->makeSubmolecule(*_pmol, filter, 0, 0);
+        // Extract component atoms/bonds without R-groups, then add only those
+        // R-groups referenced by R-sites present in this component.
+        mol->makeSubmolecule(*_pmol, filter, 0, 0, SKIP_RGROUPS);
+        mol->copyUsedRGroupsFrom(*_pmol);
         Rect2f bbox;
         mol->getBoundingBox(bbox);
         components.emplace_back(bbox, ReactionFragmentType::MOLECULE, std::move(mol));

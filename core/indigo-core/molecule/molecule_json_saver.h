@@ -100,7 +100,6 @@ namespace indigo
         DECL_ERROR;
 
     protected:
-        void _checkSGroupIndices(BaseMolecule& mol, Array<int>& sgs_list);
         bool _checkAttPointOrder(BaseMolecule& mol, int rsite);
         bool _needCustomQuery(QueryMolecule::Atom* atom) const;
         void _writeQueryProperties(QueryMolecule::Atom* atom, JsonWriter& writer);
@@ -113,7 +112,7 @@ namespace indigo
         std::unordered_map<std::pair<int, int>, std::string, pair_int_hash> _monomer_connections;
         std::map<int, int> _monomers_enum;
         std::vector<std::unique_ptr<BaseMolecule>> _no_template_molecules;
-        ObjArray<Array<int>> _mappings;
+        PtrArray<Array<int>> _mappings;
         std::unordered_map<int, int> _atom_to_mol_id;
         std::optional<std::reference_wrapper<ReactionMultistepDetector>> _rmd;
 

@@ -116,3 +116,5 @@ Smarts [C]-&=[C] loaded as smarts - OK.
 [C;@@?] is ok. smarts_in==smarts_out
 [C;@@?] is ok. json_in==json_out
 [C;@@?] is ok. expected string found in json
+#3215 R-group index in SMARTS
+[*:3]%87%88.[*:2]%89-%87.[*:1]%87-%89.[*:6]%89-%87.[*:5]%87-%89.[*:4]-%88-%87
