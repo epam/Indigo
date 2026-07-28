@@ -19,11 +19,16 @@
 #ifndef __render_context_h__
 #define __render_context_h__
 
+#ifndef __EMSCRIPTEN__
 #include <cairo-pdf.h>
 #include <cairo-svg.h>
 #include <cairo.h>
+#endif
+
+#include <memory>
 #include <vector>
 
+#include "render_backend.h"
 #include "render_common.h"
 
 #ifdef RENDER_USE_FONT_MANAGER
@@ -32,6 +37,21 @@
 
 namespace indigo
 {
+
+    // 6-element transform matrix [xx, yx, xy, yy, x0, y0] — replaces cairo_matrix_t
+    struct RenderMatrix
+    {
+        double m[6];
+        RenderMatrix()
+        {
+            m[0] = 1;
+            m[1] = 0;
+            m[2] = 0;
+            m[3] = 1;
+            m[4] = 0;
+            m[5] = 0;
+        }
+    };
 
     class RenderContext
     {
@@ -53,7 +73,7 @@ namespace indigo
         void setLineWidth(double width);
         void setFontFamily(const char* ff);
         void setOutput(Output* output);
-        void createSurface(cairo_write_func_t writer, Output* output, int width, int height);
+        void createSurface(int width, int height);
         void init();
         void fillBackground();
         void initNullContext();
@@ -153,13 +173,13 @@ namespace indigo
             return _height;
         }
 
-        void cairoCheckStatus() const;
-        void cairoCheckSurfaceStatus() const;
+        void backendCheckStatus() const;
 
 #ifdef _WIN32
-        cairo_surface_t* createWin32Surface();
-        cairo_surface_t* createWin32PrintingSurfaceForHDC();
-        cairo_surface_t* createWin32PrintingSurfaceForMetafile(bool& isLarge);
+        // Win32-specific rendering (requires cairo)
+        void* createWin32Surface();
+        void* createWin32PrintingSurfaceForHDC();
+        void* createWin32PrintingSurfaceForMetafile(bool& isLarge);
         void storeAndDestroyMetafile(bool discard);
 #endif
 
@@ -168,7 +188,7 @@ namespace indigo
         void fontsDispose();
         double fontGetSize(FONT_SIZE size);
         void fontsSetFont(const TextItem& ti);
-        void fontsGetTextExtents(cairo_t* cr, const char* text, int size, float& dx, float& dy, float& rx, float& ry);
+        void fontsGetTextExtents(const char* text, int size, float& dx, float& dy, float& rx, float& ry);
         float getSpaceWidth();
 
         void fontsDrawText(const TextItem& ti, const Vec3f& color, bool idle);
@@ -183,8 +203,6 @@ namespace indigo
         Vec2f bbmin, bbmax;
 
     private:
-        static cairo_status_t writer(void* closure, const unsigned char* data, unsigned int length);
-
         void _drawGraphItem(GraphItem& gi);
         void lineTo(const Vec2f& v);
         void lineToRel(float x, float y);
@@ -192,7 +210,7 @@ namespace indigo
         void moveTo(const Vec2f& v);
         void moveToRel(float x, float y);
         void moveToRel(const Vec2f& v);
-        void arc(cairo_t* cr, double xc, double yc, double radius, double angle1, double angle2);
+        void _arc(double xc, double yc, double radius, double angle1, double angle2);
 
         int _width;
         int _height;
@@ -200,25 +218,19 @@ namespace indigo
         Vec3f _backColor;
         Vec3f _baseColor;
         float _currentLineWidth;
-        cairo_pattern_t* _pattern;
 
-        static std::mutex _cairo_mutex;
+        std::unique_ptr<IRenderBackend> _backend;
+
+        static std::mutex _mutex;
 
         CP_DECL;
         TL_CP_DECL(Array<char>, _fontfamily);
-        TL_CP_DECL(Array<cairo_matrix_t>, transforms);
+        TL_CP_DECL(Array<RenderMatrix>, transforms);
 #ifdef _WIN32
         void* _h_fonts[FONT_SIZE_COUNT * 2];
 #endif
 
-        cairo_font_face_t *cairoFontFaceRegular, *cairoFontFaceBold;
-        cairo_matrix_t fontScale, fontCtm;
-        cairo_font_options_t* fontOptions;
-        cairo_scaled_font_t* _scaled_fonts[FONT_SIZE_COUNT * 2];
-
         bool metafileFontsToCurves;
-        cairo_t* _cr;
-        cairo_surface_t* _surface;
         void* _meta_hdc;
 
 #ifdef RENDER_USE_FONT_MANAGER

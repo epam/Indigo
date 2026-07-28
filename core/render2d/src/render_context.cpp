@@ -18,13 +18,19 @@
 
 #include "render_context.h"
 #include "base_cpp/output.h"
+
+#ifdef __EMSCRIPTEN__
+#include "js_render_backend.h"
+#else
+#include "cairo_render_backend.h"
+#endif
 #include "molecule/meta_commons.h"
 
 #include <limits.h>
 
 using namespace indigo;
 
-std::mutex RenderContext::_cairo_mutex;
+std::mutex RenderContext::_mutex;
 
 IMPL_ERROR(RenderContext, "render context");
 
@@ -33,17 +39,17 @@ IMPL_ERROR(RenderContext, "render context");
 #include "cairo-win32.h"
 #include <windows.h>
 
-cairo_surface_t* RenderContext::createWin32PrintingSurfaceForHDC()
+void* RenderContext::createWin32PrintingSurfaceForHDC()
 {
     cairo_surface_t* surface = cairo_win32_printing_surface_create((HDC)opt.hdc);
-    cairoCheckStatus();
+    backendCheckStatus();
     return surface;
 }
 
-cairo_surface_t* RenderContext::createWin32Surface()
+void* RenderContext::createWin32Surface()
 {
     cairo_surface_t* surface = cairo_win32_surface_create((HDC)opt.hdc);
-    cairoCheckStatus();
+    backendCheckStatus();
     return surface;
 }
 
@@ -65,7 +71,7 @@ static void _init_language_pack()
     }
 }
 
-cairo_surface_t* RenderContext::createWin32PrintingSurfaceForMetafile(bool& isLarge)
+void* RenderContext::createWin32PrintingSurfaceForMetafile(bool& isLarge)
 {
     HDC dc = GetDC(NULL);
     int hr = GetDeviceCaps(dc, HORZRES);
@@ -85,19 +91,26 @@ cairo_surface_t* RenderContext::createWin32PrintingSurfaceForMetafile(bool& isLa
     _meta_hdc = CreateEnhMetaFileA(dc, 0, &rc, "Indigo Render2D\0\0");
     ReleaseDC(NULL, dc);
     cairo_surface_t* s = cairo_win32_printing_surface_create((HDC)_meta_hdc);
-    cairoCheckStatus();
+    backendCheckStatus();
     StartPage((HDC)_meta_hdc);
     return s;
 }
 
 void RenderContext::storeAndDestroyMetafile(bool discard)
 {
-    cairo_surface_show_page(_surface);
-    cairoCheckStatus();
+    auto* cairoBackend = dynamic_cast<CairoRenderBackend*>(_backend.get());
+    cairo_surface_t* surface = cairoBackend ? cairoBackend->getSurface() : nullptr;
+    if (surface)
+    {
+        cairo_surface_show_page(surface);
+        backendCheckStatus();
+    }
     EndPage((HDC)_meta_hdc);
-    cairo_surface_destroy(_surface);
-    cairoCheckStatus();
-    _surface = NULL;
+    if (surface)
+    {
+        cairo_surface_destroy(surface);
+        backendCheckStatus();
+    }
     HENHMETAFILE hemf = CloseEnhMetaFile((HDC)_meta_hdc);
     if (!discard)
     {
@@ -120,8 +133,7 @@ void RenderContext::storeAndDestroyMetafile(bool discard)
 CP_DEF(RenderContext);
 
 RenderContext::RenderContext(const RenderOptions& ropt, float relativeThickness, float bondLineWidthFactor)
-    : CP_INIT, TL_CP_GET(_fontfamily), TL_CP_GET(transforms), metafileFontsToCurves(false), _cr(NULL), _surface(NULL), _meta_hdc(NULL), opt(ropt),
-      _pattern(NULL), _settings()
+    : CP_INIT, TL_CP_GET(_fontfamily), TL_CP_GET(transforms), metafileFontsToCurves(false), _meta_hdc(NULL), opt(ropt), _settings()
 {
     AcsOptions acs;
     if (ropt.fontSize > 0)
@@ -138,16 +150,26 @@ RenderContext::RenderContext(const RenderOptions& ropt, float relativeThickness,
         acs.bondSpacing = ropt.bondSpacing;
     _settings.init(relativeThickness, bondLineWidthFactor, &acs);
 
+#ifdef __EMSCRIPTEN__
+    bprintf(_fontfamily, "Noto Sans");
+#else
     bprintf(_fontfamily, "Arial");
+#endif
     bbmin.x = bbmin.y = 1;
     bbmax.x = bbmax.y = -1;
     _defaultScale = 0.0f;
+
+#ifdef __EMSCRIPTEN__
+    _backend = std::make_unique<JSRenderBackend>();
+#else
+    _backend = std::make_unique<CairoRenderBackend>();
+#endif
 }
 
 void RenderContext::bbIncludePoint(const Vec2f& v)
 {
     double x = v.x, y = v.y;
-    cairo_user_to_device(_cr, &x, &y);
+    _backend->userToDevice(x, y);
     Vec2f u((float)x, (float)y);
     if (bbmin.x > bbmax.x)
     { // init
@@ -164,7 +186,7 @@ void RenderContext::bbIncludePoint(const Vec2f& v)
 void RenderContext::_bbVecToUser(Vec2f& d, const Vec2f& s)
 {
     double x = s.x, y = s.y;
-    cairo_device_to_user(_cr, &x, &y);
+    _backend->deviceToUser(x, y);
     d.set((float)x, (float)y);
 }
 
@@ -188,9 +210,9 @@ void RenderContext::bbIncludePath(bool stroke)
 {
     double x1, x2, y1, y2;
     if (stroke)
-        cairo_stroke_extents(_cr, &x1, &y1, &x2, &y2);
+        _backend->strokeExtents(x1, y1, x2, y2);
     else
-        cairo_path_extents(_cr, &x1, &y1, &x2, &y2);
+        _backend->pathExtents(x1, y1, x2, y2);
     bbIncludePoint(x1, y1);
     bbIncludePoint(x2, y2);
 }
@@ -212,121 +234,59 @@ int RenderContext::getMaxPageSize() const
     return INT_MAX;
 }
 
-cairo_status_t RenderContext::writer(void* closure, const unsigned char* data, unsigned int length)
+void RenderContext::createSurface(int /*width*/, int /*height*/)
 {
-    try
+    int rbMode = RBMODE_PNG;
+    switch (opt.mode)
     {
-        ((Output*)closure)->write(data, length);
+    case MODE_NONE:
+        throw Error("mode not set");
+    case MODE_PDF:
+        rbMode = RBMODE_PDF;
+        break;
+    case MODE_SVG:
+        rbMode = RBMODE_SVG;
+        break;
+    case MODE_PNG:
+        rbMode = RBMODE_PNG;
+        break;
+    default:
+        rbMode = RBMODE_PNG;
+        break;
     }
-    catch (Output::Error&)
-    {
-        return CAIRO_STATUS_WRITE_ERROR;
-    }
-    return CAIRO_STATUS_SUCCESS;
+    _backend->createSurface(rbMode, _width, _height, opt.output);
 }
 
-void RenderContext::createSurface(cairo_write_func_t writer, Output* /*output*/, int /*width*/, int /*height*/)
+void RenderContext::backendCheckStatus() const
 {
-    int mode = opt.mode;
-    if (writer == NULL && (mode == MODE_HDC || mode == MODE_PRN))
-    {
-        mode = MODE_PDF;
-    }
-
-    {
-        std::lock_guard<std::mutex> _lock(_cairo_mutex);
-        switch (mode)
-        {
-        case MODE_NONE:
-            throw Error("mode not set");
-        case MODE_PDF:
-            _surface = cairo_pdf_surface_create_for_stream(writer, opt.output, _width, _height);
-            cairoCheckSurfaceStatus();
-            break;
-        case MODE_SVG:
-            _surface = cairo_svg_surface_create_for_stream(writer, opt.output, _width, _height);
-            cairoCheckSurfaceStatus();
-            break;
-        case MODE_PNG:
-            _surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, _width, _height);
-            cairoCheckSurfaceStatus();
-            break;
-        case MODE_HDC:
-#ifdef _WIN32
-            _surface = createWin32Surface();
-#else
-            throw Error("mode \"HDC\" is not supported on this platform");
-#endif
-            break;
-        case MODE_PRN:
-#ifdef _WIN32
-            _surface = createWin32PrintingSurfaceForHDC();
-#else
-            throw Error("mode \"PRN\" is not supported on this platform");
-#endif
-            break;
-        case MODE_EMF:
-#ifdef _WIN32
-            bool isLarge;
-            _surface = createWin32PrintingSurfaceForMetafile(isLarge);
-            if (isLarge)
-                metafileFontsToCurves = true;
-#else
-            throw Error("mode \"EMF\" is not supported on this platform");
-#endif
-            break;
-        default:
-            throw Error("unknown mode: %d", mode);
-        }
-    }
-}
-
-void RenderContext::cairoCheckSurfaceStatus() const
-{
-    cairo_status_t s;
-    s = cairo_surface_status(_surface);
-    if (s != CAIRO_STATUS_SUCCESS)
-        throw Error("Cairo error: %s\n", cairo_status_to_string(s));
+    // Status checking is handled internally by each backend
 }
 
 void RenderContext::init()
 {
     fontsInit();
-    cairo_text_extents_t te;
-
-    {
-        std::lock_guard<std::mutex> _lock(_cairo_mutex);
-        cairo_select_font_face(_cr, _fontfamily.ptr(), CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
-        cairoCheckStatus();
-        cairo_set_font_size(_cr, _settings.fzz[FONT_SIZE_ATTR]);
-        cairoCheckStatus();
-        cairo_text_extents(_cr, "N", &te);
-        cairoCheckStatus();
-    }
-
-    cairo_set_antialias(_cr, CAIRO_ANTIALIAS_GRAY);
-    cairoCheckStatus();
+    _backend->selectFontFace(_fontfamily.ptr(), false, false);
+    _backend->setFontSize(_settings.fzz[FONT_SIZE_ATTR]);
+    _backend->setAntialias(0);
 
     _currentLineWidth = _settings.bondLineWidth;
 }
 
 void RenderContext::fillBackground()
 {
-    cairo_set_source_rgb(_cr, opt.backgroundColor.x, opt.backgroundColor.y, opt.backgroundColor.z);
-    cairoCheckStatus();
-    cairo_paint(_cr);
-    cairoCheckStatus();
+    _backend->setSourceRGB(opt.backgroundColor.x, opt.backgroundColor.y, opt.backgroundColor.z);
+    backendCheckStatus();
+    _backend->paint();
+    backendCheckStatus();
 }
 
 void RenderContext::initNullContext()
 {
     _width = 10;
     _height = 10;
-    if (_surface != NULL || _cr != NULL)
-        throw Error("context is already open (or invalid)");
-    createSurface(NULL, NULL, 1, 1);
-    cairoCheckStatus();
-    _cr = cairo_create(_surface);
+    // Backend manages its own surface/context state
+    createSurface(1, 1);
+    _backend->createContext();
     scale(_defaultScale);
 }
 
@@ -336,52 +296,35 @@ void RenderContext::initContext(int width, int height)
     _height = height;
     if (opt.mode != MODE_HDC && opt.mode != MODE_PRN && opt.output == NULL)
         throw Error("output not set");
-    if (_surface != NULL || _cr != NULL)
-        throw Error("context is already open (or invalid)");
+    // Backend manages its own surface/context state
 
-    createSurface(writer, opt.output, _width, _height);
-    _cr = cairo_create(_surface);
+    createSurface(_width, _height);
+    _backend->createContext();
     if (opt.backgroundColor.x >= 0 && opt.backgroundColor.y >= 0 && opt.backgroundColor.z >= 0)
         fillBackground();
 }
 
 void RenderContext::closeContext(bool discard)
 {
-    if (_cr != NULL)
-    {
-        std::lock_guard<std::mutex> _lock(_cairo_mutex);
-        cairo_destroy(_cr);
-        _cr = NULL;
-    }
+    _backend->destroyContext();
 
+    int rbMode = RBMODE_PNG;
     switch (opt.mode)
     {
-    case MODE_NONE:
-        throw Error("mode not set");
-    case MODE_PNG:
-        if (!discard)
-            cairo_surface_write_to_png_stream(_surface, writer, opt.output);
-        break;
     case MODE_PDF:
-    case MODE_SVG:
-    case MODE_HDC:
-    case MODE_PRN:
+        rbMode = RBMODE_PDF;
         break;
-    case MODE_EMF:
-#ifdef _WIN32
-        storeAndDestroyMetafile(discard);
-#endif
+    case MODE_SVG:
+        rbMode = RBMODE_SVG;
+        break;
+    case MODE_PNG:
+        rbMode = RBMODE_PNG;
         break;
     default:
-        throw Error("unknown mode: %d", opt.mode);
+        rbMode = RBMODE_PNG;
+        break;
     }
-
-    if (_surface != NULL)
-    {
-        std::lock_guard<std::mutex> _lock(_cairo_mutex);
-        cairo_surface_destroy(_surface);
-        _surface = NULL;
-    }
+    _backend->closeSurface(rbMode, discard, opt.output);
 
     bbmin.x = bbmin.y = 1;
     bbmax.x = bbmax.y = -1;
@@ -391,29 +334,29 @@ void RenderContext::closeContext(bool discard)
 
 void RenderContext::translate(float dx, float dy)
 {
-    cairo_translate(_cr, dx, dy);
-    cairoCheckStatus();
+    _backend->translate(dx, dy);
+    backendCheckStatus();
 }
 
 void RenderContext::scale(float s)
 {
-    cairo_scale(_cr, s, s);
-    cairoCheckStatus();
+    _backend->scale(s, s);
+    backendCheckStatus();
 }
 
 void RenderContext::storeTransform()
 {
-    cairo_matrix_t& t = transforms.push();
-    cairo_get_matrix(_cr, &t);
-    cairoCheckStatus();
+    RenderMatrix& t = transforms.push();
+    _backend->getMatrix(t.m);
+    backendCheckStatus();
 }
 
 void RenderContext::restoreTransform()
 {
-    std::lock_guard<std::mutex> _lock(_cairo_mutex);
-    cairo_matrix_t& t = transforms.top();
-    cairo_set_matrix(_cr, &t);
-    cairoCheckStatus();
+    std::lock_guard<std::mutex> _lock(_mutex);
+    RenderMatrix& t = transforms.top();
+    _backend->setMatrix(t.m);
+    backendCheckStatus();
 }
 
 void RenderContext::removeStoredTransform()
@@ -423,26 +366,26 @@ void RenderContext::removeStoredTransform()
 
 void RenderContext::resetTransform()
 {
-    cairo_matrix_t t;
-    cairo_matrix_init_identity(&t);
-    cairo_set_matrix(_cr, &t);
-    cairoCheckStatus();
+    RenderMatrix t;
+    _backend->initIdentityMatrix(t.m);
+    _backend->setMatrix(t.m);
+    backendCheckStatus();
 }
 
 void RenderContext::setLineWidth(double width)
 {
     _currentLineWidth = (float)width;
-    cairo_set_line_width(_cr, width);
-    cairoCheckStatus();
+    _backend->setLineWidth(width);
+    backendCheckStatus();
 }
 
 void RenderContext::drawRectangle(const Vec2f& p, const Vec2f& sz)
 {
-    cairo_rectangle(_cr, p.x, p.y, sz.x, sz.y);
-    cairoCheckStatus();
+    _backend->rect(p.x, p.y, sz.x, sz.y);
+    backendCheckStatus();
     checkPathNonEmpty();
-    cairo_fill(_cr);
-    cairoCheckStatus();
+    _backend->fill();
+    backendCheckStatus();
 }
 
 void RenderContext::drawEllipse(const Vec2f& v1, const Vec2f& v2)
@@ -450,29 +393,29 @@ void RenderContext::drawEllipse(const Vec2f& v1, const Vec2f& v2)
     Rect2f bbox(v1, v2);
     auto width = bbox.width();
     auto height = bbox.height();
-    cairo_matrix_t save_matrix;
-    cairo_get_matrix(_cr, &save_matrix);
-    cairo_translate(_cr, bbox.center().x, bbox.center().y);
-    cairo_scale(_cr, 1, height / width);
-    cairo_translate(_cr, -bbox.center().x, -bbox.center().y);
-    cairo_arc(_cr, bbox.center().x, bbox.center().y, width / 2.0, 0, 2 * M_PI);
-    cairo_set_matrix(_cr, &save_matrix);
+    RenderMatrix save_matrix;
+    _backend->getMatrix(save_matrix.m);
+    _backend->translate(bbox.center().x, bbox.center().y);
+    _backend->scale(1, height / width);
+    _backend->translate(-bbox.center().x, -bbox.center().y);
+    _backend->arc(bbox.center().x, bbox.center().y, width / 2.0, 0, 2 * M_PI);
+    _backend->setMatrix(save_matrix.m);
     checkPathNonEmpty();
     bbIncludePath(true);
-    cairo_stroke(_cr);
-    cairoCheckStatus();
+    _backend->stroke();
+    backendCheckStatus();
 }
 
 void RenderContext::drawItemBackground(const RenderItem& item)
 {
-    cairo_rectangle(_cr, item.bbp.x, item.bbp.y, item.bbsz.x, item.bbsz.y);
-    cairoCheckStatus();
+    _backend->rect(item.bbp.x, item.bbp.y, item.bbsz.x, item.bbsz.y);
+    backendCheckStatus();
     if (opt.backgroundColor.x >= 0 && opt.backgroundColor.y >= 0 && opt.backgroundColor.z >= 0)
     {
         setSingleSource(opt.backgroundColor);
         checkPathNonEmpty();
-        cairo_fill(_cr);
-        cairoCheckStatus();
+        _backend->fill();
+        backendCheckStatus();
     }
     else
     {
@@ -481,16 +424,16 @@ void RenderContext::drawItemBackground(const RenderItem& item)
          * Fill the rectangle with the transparent color, invalidating it and
          * erasing everything underneath
          */
-        cairo_save(_cr);
-        cairoCheckStatus();
-        cairo_set_source_rgba(_cr, 0, 0, 0, 0);
-        cairoCheckStatus();
-        cairo_set_operator(_cr, CAIRO_OPERATOR_SOURCE);
-        cairoCheckStatus();
-        cairo_fill(_cr);
-        cairoCheckStatus();
-        cairo_restore(_cr);
-        cairoCheckStatus();
+        _backend->save();
+        backendCheckStatus();
+        _backend->setSourceRGBA(0, 0, 0, 0);
+        backendCheckStatus();
+        _backend->setOperator(1);
+        backendCheckStatus();
+        _backend->fill();
+        backendCheckStatus();
+        _backend->restore();
+        backendCheckStatus();
         return;
     }
 }
@@ -525,47 +468,9 @@ void RenderContext::drawTextItemText(const TextItem& ti, const Vec3f& color, boo
     fontsDrawText(ti_mod, color, idle);
 }
 
-struct PngReadContext
-{
-    const unsigned char* data;
-    size_t size;
-    size_t offset;
-};
-
-cairo_status_t pngReadFunc(void* closure, unsigned char* data, unsigned int length)
-{
-    PngReadContext* context = static_cast<PngReadContext*>(closure);
-    if (context->offset + length > context->size)
-        return CAIRO_STATUS_READ_ERROR;
-    memcpy(data, context->data + context->offset, length);
-    context->offset += length;
-    return CAIRO_STATUS_SUCCESS;
-}
-
 void RenderContext::drawPng(const std::string& pngData, const Rect2f& bbox)
 {
-    PngReadContext context = {(const unsigned char*)pngData.data(), pngData.size(), 0};
-    cairo_surface_t* image = cairo_image_surface_create_from_png_stream(pngReadFunc, &context);
-
-    if (cairo_surface_status(image) != CAIRO_STATUS_SUCCESS)
-    {
-        cairo_surface_destroy(image);
-        return;
-    }
-
-    double imgWidth = cairo_image_surface_get_width(image);
-    double imgHeight = cairo_image_surface_get_height(image);
-
-    cairo_save(_cr);
-
-    cairo_translate(_cr, bbox.left(), bbox.bottom());
-    cairo_scale(_cr, bbox.width() / imgWidth, bbox.height() / imgHeight);
-
-    cairo_set_source_surface(_cr, image, 0, 0);
-    cairo_paint(_cr);
-
-    cairo_restore(_cr);
-    cairo_surface_destroy(image);
+    _backend->drawPngImage(pngData.data(), static_cast<int>(pngData.size()), bbox.left(), bbox.bottom(), bbox.width(), bbox.height());
     bbIncludePoint(bbox.leftTop());
     bbIncludePoint(bbox.rightBottom());
 }
@@ -577,10 +482,10 @@ void RenderContext::drawLine(const Vec2f& v0, const Vec2f& v1)
     checkPathNonEmpty();
     bbIncludePath(true);
     {
-        std::lock_guard<std::mutex> _lock(_cairo_mutex);
-        cairo_stroke(_cr);
+        std::lock_guard<std::mutex> _lock(_mutex);
+        _backend->stroke();
     }
-    cairoCheckStatus();
+    backendCheckStatus();
 }
 
 void RenderContext::drawPoly(const Array<Vec2f>& v)
@@ -591,19 +496,15 @@ void RenderContext::drawPoly(const Array<Vec2f>& v)
     lineTo(v[0]);
     checkPathNonEmpty();
     bbIncludePath(true);
-    cairo_stroke(_cr);
-    cairoCheckStatus();
+    _backend->stroke();
+    backendCheckStatus();
 }
 
 void RenderContext::checkPathNonEmpty() const
 {
 #ifdef DEBUG
-    cairo_path_t* p = cairo_copy_path(_cr);
-    cairoCheckStatus();
-    if (p->num_data == 0)
+    if (_backend->isPathEmpty())
         throw Error("Empty path");
-    cairo_path_destroy(p);
-    cairoCheckStatus();
 #endif
 }
 
@@ -615,8 +516,8 @@ void RenderContext::fillQuad(const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, 
     lineTo(v3);
     checkPathNonEmpty();
     bbIncludePath(false);
-    cairo_fill(_cr);
-    cairoCheckStatus();
+    _backend->fill();
+    backendCheckStatus();
 }
 
 void RenderContext::fillHex(const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, const Vec2f& v3, const Vec2f& v4, const Vec2f& v5)
@@ -629,8 +530,8 @@ void RenderContext::fillHex(const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, c
     lineTo(v5);
     checkPathNonEmpty();
     bbIncludePath(false);
-    cairo_fill(_cr);
-    cairoCheckStatus();
+    _backend->fill();
+    backendCheckStatus();
 }
 
 void RenderContext::fillQuadStripes(const Vec2f& v0r, const Vec2f& v0l, const Vec2f& v1r, const Vec2f& v1l, int cnt)
@@ -653,8 +554,8 @@ void RenderContext::fillQuadStripes(const Vec2f& v0r, const Vec2f& v0l, const Ve
     }
     checkPathNonEmpty();
     bbIncludePath(true);
-    cairo_stroke(_cr);
-    cairoCheckStatus();
+    _backend->stroke();
+    backendCheckStatus();
 }
 
 void RenderContext::fillQuadStripesSpacing(const Vec2f& v0r, const Vec2f& v0l, const Vec2f& v1r, const Vec2f& v1l, float spacing)
@@ -684,8 +585,8 @@ void RenderContext::fillQuadStripesSpacing(const Vec2f& v0r, const Vec2f& v0l, c
     }
     checkPathNonEmpty();
     bbIncludePath(true);
-    cairo_stroke(_cr);
-    cairoCheckStatus();
+    _backend->stroke();
+    backendCheckStatus();
 }
 
 void RenderContext::fillPentagon(const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, const Vec2f& v3, const Vec2f& v4)
@@ -697,8 +598,8 @@ void RenderContext::fillPentagon(const Vec2f& v0, const Vec2f& v1, const Vec2f& 
     lineTo(v4);
     checkPathNonEmpty();
     bbIncludePath(false);
-    cairo_fill(_cr);
-    cairoCheckStatus();
+    _backend->fill();
+    backendCheckStatus();
 }
 
 void RenderContext::drawQuad(const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, const Vec2f& v3)
@@ -707,12 +608,12 @@ void RenderContext::drawQuad(const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, 
     lineTo(v1);
     lineTo(v2);
     lineTo(v3);
-    cairo_close_path(_cr);
-    cairoCheckStatus();
+    _backend->closePath();
+    backendCheckStatus();
     checkPathNonEmpty();
     bbIncludePath(true);
-    cairo_stroke(_cr);
-    cairoCheckStatus();
+    _backend->stroke();
+    backendCheckStatus();
 }
 
 void RenderContext::drawTriangleZigzag(const Vec2f& v0, const Vec2f& v1, const Vec2f& v2, int cnt)
@@ -724,8 +625,8 @@ void RenderContext::drawTriangleZigzag(const Vec2f& v0, const Vec2f& v1, const V
     dl.diff(v2, v0);
     dl.scale(1.0f / cnt);
 
-    cairo_set_line_join(_cr, CAIRO_LINE_JOIN_MITER);
-    cairoCheckStatus();
+    _backend->setLineJoin(0);
+    backendCheckStatus();
 
     moveTo(v0);
     if (cnt < 3)
@@ -741,47 +642,47 @@ void RenderContext::drawTriangleZigzag(const Vec2f& v0, const Vec2f& v1, const V
     }
     checkPathNonEmpty();
     bbIncludePath(true);
-    cairo_stroke(_cr);
-    cairoCheckStatus();
-    cairo_set_line_join(_cr, CAIRO_LINE_JOIN_BEVEL);
-    cairoCheckStatus();
+    _backend->stroke();
+    backendCheckStatus();
+    _backend->setLineJoin(2);
+    backendCheckStatus();
 }
 
 void RenderContext::drawCircle(const Vec2f& center, const float r)
 {
-    cairo_new_path(_cr);
-    arc(_cr, center.x, center.y, r, 0, 2 * M_PI);
-    cairoCheckStatus();
+    _backend->beginPath();
+    _arc(center.x, center.y, r, 0, 2 * M_PI);
+    backendCheckStatus();
     checkPathNonEmpty();
     bbIncludePath(true);
-    cairo_stroke(_cr);
-    cairoCheckStatus();
-    cairo_new_path(_cr);
+    _backend->stroke();
+    backendCheckStatus();
+    _backend->beginPath();
 }
 
 void RenderContext::fillCircle(const Vec2f& center, const float r)
 {
-    arc(_cr, center.x, center.y, r, 0, 2 * M_PI);
-    cairoCheckStatus();
+    _arc(center.x, center.y, r, 0, 2 * M_PI);
+    backendCheckStatus();
     checkPathNonEmpty();
     bbIncludePath(false);
-    cairo_fill(_cr);
-    cairoCheckStatus();
+    _backend->fill();
+    backendCheckStatus();
 }
 
 void RenderContext::drawArc(const Vec2f& center, const float r, const float a0, const float a1)
 {
-    cairo_new_path(_cr);
-    cairoCheckStatus();
-    arc(_cr, center.x, center.y, r, a0, a1);
-    cairoCheckStatus();
+    _backend->beginPath();
+    backendCheckStatus();
+    _arc(center.x, center.y, r, a0, a1);
+    backendCheckStatus();
     checkPathNonEmpty();
     bbIncludePath(true);
-    cairo_stroke(_cr);
-    cairoCheckStatus();
+    _backend->stroke();
+    backendCheckStatus();
 }
 
-void RenderContext::arc(cairo_t* cr, double xc, double yc, double radius, double angle1, double angle2)
+void RenderContext::_arc(double xc, double yc, double radius, double angle1, double angle2)
 {
 #ifdef __EMSCRIPTEN__
     // In the WASM build this workaround fixes function signature issues with cairo_arc.
@@ -795,27 +696,27 @@ void RenderContext::arc(cairo_t* cr, double xc, double yc, double radius, double
     {
         Vec2f p(radius * cos(phi) + xc, radius * sin(phi) + yc);
         if (i)
-            cairo_line_to(cr, p.x, p.y);
+            _backend->lineTo(p.x, p.y);
         else
-            cairo_move_to(cr, p.x, p.y);
+            _backend->moveTo(p.x, p.y);
         phi += step;
     }
 #else
-    cairo_arc(cr, xc, yc, radius, angle1, angle2);
+    _backend->arc(xc, yc, radius, angle1, angle2);
 #endif
 }
 
 void RenderContext::setFontSize(double fontSize)
 {
-    cairo_set_font_size(_cr, fontSize);
-    cairoCheckStatus();
+    _backend->setFontSize(fontSize);
+    backendCheckStatus();
 }
 
 double RenderContext::getFontExtentHeight()
 {
-    cairo_font_extents_t fe;
-    cairo_font_extents(_cr, &fe);
-    return fe.height;
+    double h;
+    _backend->fontExtents(h);
+    return h;
 }
 
 void RenderContext::setTextItemSize(TextItem& ti)
@@ -823,7 +724,7 @@ void RenderContext::setTextItemSize(TextItem& ti)
     if (!ti.bold)
         ti.bold = ti.highlighted && opt.highlightThicknessEnable;
     fontsSetFont(ti);
-    fontsGetTextExtents(_cr, ti.text.ptr(), ti.fontsize, ti.bbsz.x, ti.bbsz.y, ti.relpos.x, ti.relpos.y);
+    fontsGetTextExtents(ti.text.ptr(), ti.fontsize, ti.bbsz.x, ti.bbsz.y, ti.relpos.x, ti.relpos.y);
 }
 
 void RenderContext::setTextItemSize(TextItem& ti, const Vec2f& c)
@@ -864,8 +765,8 @@ void RenderContext::drawAttachmentPoint(RenderItemAttachmentPoint& ri, bool idle
     lineTo(ri.p1);
     checkPathNonEmpty();
     bbIncludePath(false);
-    cairo_stroke(_cr);
-    cairoCheckStatus();
+    _backend->stroke();
+    backendCheckStatus();
 
     Vec2f n;
     n.copy(ri.dir);
@@ -886,12 +787,12 @@ void RenderContext::drawAttachmentPoint(RenderItemAttachmentPoint& ri, bool idle
         p.addScaled(n, step);
         r.lineCombin(p, ri.dir, waveWidth * turn);
         r.addScaled(n, -waveWidth * slopeFactor);
-        cairo_curve_to(_cr, q.x, q.y, r.x, r.y, p.x, p.y);
+        _backend->curveTo(q.x, q.y, r.x, r.y, p.x, p.y);
     }
     checkPathNonEmpty();
     bbIncludePath(false);
-    cairo_stroke(_cr);
-    cairoCheckStatus();
+    _backend->stroke();
+    backendCheckStatus();
 
     QS_DEF(TextItem, ti);
     ti.clear();
@@ -946,8 +847,8 @@ void RenderContext::_drawGraphItem(GraphItem& gi)
         break;
     case GraphItem::DOT:
         moveTo(v0);
-        arc(_cr, v0.x, v0.y, _settings.graphItemDotRadius, 0, 2 * M_PI);
-        cairoCheckStatus();
+        _arc(v0.x, v0.y, _settings.graphItemDotRadius, 0, 2 * M_PI);
+        backendCheckStatus();
         break;
     case GraphItem::PLUS:
         moveTo(v0);
@@ -974,8 +875,8 @@ void RenderContext::_drawGraphItem(GraphItem& gi)
     }
     checkPathNonEmpty();
     bbIncludePath(false);
-    cairo_fill(_cr);
-    cairoCheckStatus();
+    _backend->fill();
+    backendCheckStatus();
 }
 
 void RenderContext::drawBracket(RenderItemBracket& bracket)
@@ -991,17 +892,17 @@ void RenderContext::drawBracket(RenderItemBracket& bracket)
 
     checkPathNonEmpty();
     bbIncludePath(false);
-    cairo_stroke(_cr);
-    cairoCheckStatus();
+    _backend->stroke();
+    backendCheckStatus();
 }
 
 void RenderContext::fillRect(double x, double y, double w, double h)
 {
-    cairo_rectangle(_cr, x, y, w, h);
-    cairoCheckStatus();
+    _backend->rect(x, y, w, h);
+    backendCheckStatus();
     checkPathNonEmpty();
-    cairo_fill(_cr);
-    cairoCheckStatus();
+    _backend->fill();
+    backendCheckStatus();
 }
 
 void RenderContext::drawEquality(const Vec2f& pos, const float linewidth, const float size, const float interval)
@@ -1015,8 +916,8 @@ void RenderContext::drawEquality(const Vec2f& pos, const float linewidth, const 
     setLineWidth(linewidth);
     checkPathNonEmpty();
     bbIncludePath(true);
-    cairo_stroke(_cr);
-    cairoCheckStatus();
+    _backend->stroke();
+    backendCheckStatus();
 }
 
 void RenderContext::drawPlus(const Vec2f& pos, const float linewidth, const float size)
@@ -1031,8 +932,8 @@ void RenderContext::drawPlus(const Vec2f& pos, const float linewidth, const floa
     setLineWidth(linewidth);
     checkPathNonEmpty();
     bbIncludePath(true);
-    cairo_stroke(_cr);
-    cairoCheckStatus();
+    _backend->stroke();
+    backendCheckStatus();
 }
 
 void RenderContext::drawHalfEllipse(const Vec2f& v1, const Vec2f& v2, const float height, const bool is_negative)
@@ -1043,17 +944,17 @@ void RenderContext::drawHalfEllipse(const Vec2f& v1, const Vec2f& v2, const floa
     Vec2f d;
     d.diff(v2, v1);
     float width = d.length();
-    cairo_matrix_t save_matrix;
-    cairo_get_matrix(_cr, &save_matrix);
-    cairo_translate(_cr, (v1.x + v2.x) / 2.0, (v1.y + v2.y) / 2.0);
-    cairo_rotate(_cr, atan2(d.y, d.x));
-    cairo_scale(_cr, 1, 2 * h / width);
-    cairo_translate(_cr, -(v1.x + v2.x) / 2.0, -(v1.y + v2.y) / 2.0);
+    RenderMatrix save_matrix;
+    _backend->getMatrix(save_matrix.m);
+    _backend->translate((v1.x + v2.x) / 2.0, (v1.y + v2.y) / 2.0);
+    _backend->rotate(atan2(d.y, d.x));
+    _backend->scale(1, 2 * h / width);
+    _backend->translate(-(v1.x + v2.x) / 2.0, -(v1.y + v2.y) / 2.0);
     if (is_negative)
-        cairo_arc_negative(_cr, (v1.x + v2.x) / 2.0, (v1.y + v2.y) / 2.0, width / 2.0, angle1, angle2);
+        _backend->arcNegative((v1.x + v2.x) / 2.0, (v1.y + v2.y) / 2.0, width / 2.0, angle1, angle2);
     else
-        cairo_arc(_cr, (v1.x + v2.x) / 2.0, (v1.y + v2.y) / 2.0, width / 2.0, angle1, angle2);
-    cairo_set_matrix(_cr, &save_matrix);
+        _backend->arc((v1.x + v2.x) / 2.0, (v1.y + v2.y) / 2.0, width / 2.0, angle1, angle2);
+    _backend->setMatrix(save_matrix.m);
 }
 
 void RenderContext::drawTriangleArrowHeader(const Vec2f& v, const Vec2f& dir, const float /*width*/, const float headwidth, const float headsize)
@@ -1181,7 +1082,7 @@ void RenderContext::drawEllipticalArrow(const Vec2f& p1, const Vec2f& p2, const 
         drawHalfArrowHeader(p2, n_orig, width, headwidth, headsize);
         break;
     }
-    cairo_fill(_cr);
+    _backend->fill();
     pb.addScaled(d, width / 2); // go forward to outer ellipse
     d.negate();                 // backward
     pa.addScaled(d, width / 2); // back to outer ellipse
@@ -1195,8 +1096,8 @@ void RenderContext::drawEllipticalArrow(const Vec2f& p1, const Vec2f& p2, const 
     drawHalfEllipse(pb, pa, height - width * h_sign, true);
     checkPathNonEmpty();
     bbIncludePath(false);
-    cairo_fill(_cr);
-    cairoCheckStatus();
+    _backend->fill();
+    backendCheckStatus();
 }
 
 void RenderContext::drawBothEndsArrow(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize)
@@ -1242,8 +1143,8 @@ void RenderContext::drawBothEndsArrow(const Vec2f& p1, const Vec2f& p2, const fl
     lineTo(p);
     checkPathNonEmpty();
     bbIncludePath(false);
-    cairo_fill(_cr);
-    cairoCheckStatus();
+    _backend->fill();
+    backendCheckStatus();
 }
 
 void RenderContext::drawDashedArrow(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize)
@@ -1290,8 +1191,8 @@ void RenderContext::drawDashedArrow(const Vec2f& p1, const Vec2f& p2, const floa
     drawArrowHeader(p2, d, width, headwidth, headsize, false);
     checkPathNonEmpty();
     bbIncludePath(false);
-    cairo_fill(_cr);
-    cairoCheckStatus();
+    _backend->fill();
+    backendCheckStatus();
 }
 
 void RenderContext::drawBar(const Vec2f& p1, const Vec2f& p2, const float width, const float margin)
@@ -1356,8 +1257,8 @@ void RenderContext::drawEquillibriumHalf(const Vec2f& p1, const Vec2f& p2, const
     drawBar(pb, pa, width, margin);
     checkPathNonEmpty();
     bbIncludePath(false);
-    cairo_fill(_cr);
-    cairoCheckStatus();
+    _backend->fill();
+    backendCheckStatus();
 }
 
 void RenderContext::drawEquillibriumFilledTriangle(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize)
@@ -1378,8 +1279,8 @@ void RenderContext::drawEquillibriumFilledTriangle(const Vec2f& p1, const Vec2f&
     drawCustomArrow(pb, pa, width, headwidth, headsize, false);
     checkPathNonEmpty();
     bbIncludePath(false);
-    cairo_fill(_cr);
-    cairoCheckStatus();
+    _backend->fill();
+    backendCheckStatus();
 }
 
 void RenderContext::drawCustomArrow(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize, const bool is_bow)
@@ -1452,8 +1353,8 @@ void RenderContext::drawRetroSynthArrow(const Vec2f& p1, const Vec2f& p2, const 
     drawArrowHeader(pb, d, width, (headwidth + width) * 2, headsize * 2);
     checkPathNonEmpty();
     bbIncludePath(false);
-    cairo_fill(_cr);
-    cairoCheckStatus();
+    _backend->fill();
+    backendCheckStatus();
 }
 
 void RenderContext::drawCustomArrow(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize, const bool is_bow,
@@ -1466,7 +1367,7 @@ void RenderContext::drawCustomArrow(const Vec2f& p1, const Vec2f& p2, const floa
     drawCustomArrow(p1, p2, width, headwidth, headsize, is_bow);
     if (is_failed)
     {
-        cairo_fill(_cr);
+        _backend->fill();
         for (int arr_ind = 0; arr_ind < 2; ++arr_ind)
         {
             p.set(p1.x, p1.y);
@@ -1495,8 +1396,8 @@ void RenderContext::drawCustomArrow(const Vec2f& p1, const Vec2f& p2, const floa
     }
     checkPathNonEmpty();
     bbIncludePath(false);
-    cairo_fill(_cr);
-    cairoCheckStatus();
+    _backend->fill();
+    backendCheckStatus();
 }
 
 void RenderContext::drawArrow(const Vec2f& p1, const Vec2f& p2, const float width, const float headwidth, const float headsize)
@@ -1525,8 +1426,8 @@ void RenderContext::drawArrow(const Vec2f& p1, const Vec2f& p2, const float widt
     lineTo(p);
     checkPathNonEmpty();
     bbIncludePath(false);
-    cairo_fill(_cr);
-    cairoCheckStatus();
+    _backend->fill();
+    backendCheckStatus();
 }
 
 float RenderContext::highlightedBondLineWidth() const
@@ -1574,39 +1475,26 @@ void RenderContext::setSingleSource(int color)
 {
     Vec3f v;
     getColorVec(v, color);
-    cairo_set_source_rgb(_cr, v.x, v.y, v.z);
-    cairoCheckStatus();
+    _backend->setSourceRGB(v.x, v.y, v.z);
+    backendCheckStatus();
 }
 
 void RenderContext::setSingleSource(const Vec3f& color)
 {
-    cairo_set_source_rgb(_cr, color.x, color.y, color.z);
-    cairoCheckStatus();
+    _backend->setSourceRGB(color.x, color.y, color.z);
+    backendCheckStatus();
 }
 
 void RenderContext::setGradientSource(const Vec3f& color1, const Vec3f& color2, const Vec2f& pos1, const Vec2f& pos2)
 {
-    if (_pattern != NULL)
-    {
-        throw new Error("Pattern already initialized");
-    }
+    _backend->setLinearGradient(pos1.x, pos1.y, pos2.x, pos2.y, color1.x, color1.y, color1.z, color2.x, color2.y, color2.z);
 
-    _pattern = cairo_pattern_create_linear(pos1.x, pos1.y, pos2.x, pos2.y);
-    cairo_pattern_add_color_stop_rgb(_pattern, 0, color1.x, color1.y, color1.z);
-    cairo_pattern_add_color_stop_rgb(_pattern, 1, color2.x, color2.y, color2.z);
-    cairo_set_source(_cr, _pattern);
-
-    cairoCheckStatus();
+    backendCheckStatus();
 }
 
 void RenderContext::clearPattern()
 {
-    if (_pattern != NULL)
-    {
-        cairo_pattern_destroy(_pattern);
-        _pattern = NULL;
-        cairoCheckStatus();
-    }
+    _backend->clearPattern();
 }
 
 float RenderContext::_getDashedLineAlignmentOffset(float length)
@@ -1622,50 +1510,50 @@ float RenderContext::_getDashedLineAlignmentOffset(float length)
 
 void RenderContext::setDash(const Array<double>& dash, float length)
 {
-    cairo_set_dash(_cr, dash.ptr(), dash.size(), _getDashedLineAlignmentOffset(length));
-    cairoCheckStatus();
+    _backend->setDash(dash.ptr(), dash.size(), _getDashedLineAlignmentOffset(length));
+    backendCheckStatus();
 }
 
 void RenderContext::resetDash()
 {
-    cairo_set_dash(_cr, NULL, 0, 0);
-    cairoCheckStatus();
+    _backend->setDash(nullptr, 0, 0);
+    backendCheckStatus();
 }
 
 void RenderContext::lineTo(const Vec2f& v)
 {
-    cairo_line_to(_cr, v.x, v.y);
-    cairoCheckStatus();
+    _backend->lineTo(v.x, v.y);
+    backendCheckStatus();
 }
 
 void RenderContext::lineToRel(float x, float y)
 {
-    cairo_rel_line_to(_cr, x, y);
-    cairoCheckStatus();
+    _backend->relLineTo(x, y);
+    backendCheckStatus();
 }
 
 void RenderContext::lineToRel(const Vec2f& v)
 {
-    cairo_rel_line_to(_cr, v.x, v.y);
-    cairoCheckStatus();
+    _backend->relLineTo(v.x, v.y);
+    backendCheckStatus();
 }
 
 void RenderContext::moveTo(const Vec2f& v)
 {
-    cairo_move_to(_cr, v.x, v.y);
-    cairoCheckStatus();
+    _backend->moveTo(v.x, v.y);
+    backendCheckStatus();
 }
 
 void RenderContext::moveToRel(float x, float y)
 {
-    cairo_rel_move_to(_cr, x, y);
-    cairoCheckStatus();
+    _backend->relMoveTo(x, y);
+    backendCheckStatus();
 }
 
 void RenderContext::moveToRel(const Vec2f& v)
 {
-    cairo_rel_move_to(_cr, v.x, v.y);
-    cairoCheckStatus();
+    _backend->relMoveTo(v.x, v.y);
+    backendCheckStatus();
 }
 
 int RenderContext::getElementColor(int label)
