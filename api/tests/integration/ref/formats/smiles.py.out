@@ -55,12 +55,36 @@ default smiles:
 CCCCC |Sg:n:1,2,3::hh|
 canonical smiles:
 canonical SMILES saver: can not canonicalize a polymer
+default smiles:
+CCCC%91.[*:1]%91 |$;;;;_AP1$,Sg:n:2:2&#44;6-7:ht|
+canonical smiles:
+canonical SMILES saver: can not canonicalize a polymer
+default smiles:
+CCCCC |SgD:1,2,3:a&#44;b:c&#44;d::: :|
+canonical smiles:
+CCCCC
+default smiles:
+CCCCC |SgD:1,2,3:name&#44;&#59;&#58;&#124;&#123;&#125;&#36;field:data&#44;&#59;&#58;&#124;&#123;&#125;&#36;value:query&#44;&#59;&#58;&#124;&#123;&#125;&#36;op:unit&#44;&#59;&#58;&#124;&#123;&#125;&#36;text: :|
+canonical smiles:
+CCCCC
+default smiles:
+CCCCC |Sg:n:1,2,3:sub&#44;&#59;&#58;&#124;&#123;&#125;&#36;script:hh|
+canonical smiles:
+canonical SMILES saver: can not canonicalize a polymer
 daylight:
 CCCC
 daylight:
 SMILES saver: repeating units must have exactly two outgoing bonds, has 1
 daylight:
 SMILES saver: repeating units must have exactly two outgoing bonds, has 1
+daylight:
+CC{-}CC{+n}C
+daylight:
+CCC{-}{+n}C%91.[*:1]%91
+daylight:
+CCCCC
+daylight:
+CCCCC
 daylight:
 CC{-}CC{+n}C
 chemaxon:
@@ -71,6 +95,19 @@ chemaxon:
 CCCC |Sg:n:0,1,2::ht|
 chemaxon:
 CCCCC |Sg:n:1,2,3::hh|
+chemaxon:
+CCCC%91.[*:1]%91 |$;;;;_AP1$,Sg:n:2:2&#44;6-7:ht|
+chemaxon:
+CCCCC |SgD:1,2,3:a&#44;b:c&#44;d::: :|
+chemaxon:
+CCCCC |SgD:1,2,3:name&#44;&#59;&#58;&#124;&#123;&#125;&#36;field:data&#44;&#59;&#58;&#124;&#123;&#125;&#36;value:query&#44;&#59;&#58;&#124;&#123;&#125;&#36;op:unit&#44;&#59;&#58;&#124;&#123;&#125;&#36;text: :|
+chemaxon:
+CCCCC |Sg:n:1,2,3:sub&#44;&#59;&#58;&#124;&#123;&#125;&#36;script:hh|
+*** S-Group AP closure roundtrip ***
+chemaxon roundtrip:
+CCCC%91.[*:1]%91 |$;;;;_AP1$,Sg:n:2:2&#44;6-7:ht|
+daylight closure:
+CCC{-}{+n}C%91.[*:1]%91
 *** Atropisomers ***
 atropisomer:
 C1=CC=C(C)C(C2=C(N)C=C(C)C=C2)=C1O |o1:5,r,wU:5.4|

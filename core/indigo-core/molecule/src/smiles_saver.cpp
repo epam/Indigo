@@ -31,6 +31,13 @@
 #include "molecule/molecule_stereocenters.h"
 #include "molecule/query_molecule.h"
 
+#include <cstring>
+
+#ifdef _MSC_VER
+#pragma warning(push, 4)
+#pragma warning(error : 4100 4101 4189 4244 4456 4458 4715)
+#endif
+
 using namespace indigo;
 
 IMPL_ERROR(SmilesSaver, "SMILES saver");
@@ -620,6 +627,7 @@ void SmilesSaver::_saveMolecule()
 
             walk.getNeighborsClosing(v_idx, closing);
 
+            constexpr int IMAGINARY_SHIFT = 10000;
             for (int ap = 1; ap <= _bmol->attachmentPointCount(); ap++)
             {
                 int idx = 0, atom_idx;
@@ -634,13 +642,13 @@ void SmilesSaver::_saveMolecule()
                         // We can not modify the given molecule, but we want the closure to
                         // be here. To achieve that, we add a link to an imagimary atom with
                         // incredibly big number.
-                        closing.push(10000 + ap);
+                        closing.push(IMAGINARY_SHIFT + ap);
                     }
             }
 
             for (j = 0; j < closing.size(); j++)
             {
-                bool ap = (closing[j] >= 10000);
+                bool ap = (closing[j] >= IMAGINARY_SHIFT);
                 bool rsite = !ap && (separate_rsites && _bmol->isRSite(closing[j]));
 
                 if (ap || rsite)
@@ -659,7 +667,7 @@ void SmilesSaver::_saveMolecule()
 
                 if (ap)
                 {
-                    _attachment_indices.push(closing[j] - 10000);
+                    _attachment_indices.push(closing[j] - IMAGINARY_SHIFT);
                     _attachment_cycle_numbers.push(k);
                 }
 
@@ -680,6 +688,17 @@ void SmilesSaver::_saveMolecule()
     if (smarts_mode && v_to_comp_group[i - 1] > 0) // if group set for last fragment - add finish )
         _output.writeChar(')');
 
+    if (!chemaxon && !smarts_mode)
+    {
+        for (i = 0; i < _attachment_indices.size(); i++)
+        {
+            if (_attachment_cycle_numbers[i] < 0)
+                continue;
+            _output.printf(".[*:%d]", _attachment_indices[i]);
+            _writeCycleNumber(_attachment_cycle_numbers[i]);
+        }
+    }
+
     if (write_extra_info && chemaxon && !smarts_mode) // no extended block in SMARTS
     {
         // Before we write the |...| block (ChemAxon's Extended SMILES),
@@ -690,6 +709,8 @@ void SmilesSaver::_saveMolecule()
         // attachment points.
         for (i = 0; i < _attachment_indices.size(); i++)
         {
+            if (_attachment_cycle_numbers[i] < 0)
+                continue;
             _output.printf(".[*:%d]", _attachment_indices[i]);
             _writeCycleNumber(_attachment_cycle_numbers[i]);
         }
@@ -1445,7 +1466,6 @@ int SmilesSaver::writeRadicals(int atoms_offset, int prev_radical)
     int i, j;
     marked.clear_resize(_written_atoms.size());
     marked.zerofill();
-    int radical = -1;
     for (i = 0; i < _written_atoms.size(); i++)
     {
         if (marked[i] || mol.isRSite(_written_atoms[i]) || mol.isPseudoAtom(_written_atoms[i]))
@@ -1832,6 +1852,20 @@ void SmilesSaver::_writeSGroupAtoms(const SGroup& sgroup)
     }
 }
 
+static void writeSgEscapedField(Output& output, const char* field)
+{
+    if (field == nullptr)
+        return;
+
+    for (const char* c = field; *c != 0; ++c)
+    {
+        if (strchr(",;:|{}$", *c) != nullptr)
+            output.printf("&#%d;", static_cast<unsigned char>(*c));
+        else
+            output.writeChar(*c);
+    }
+}
+
 void SmilesSaver::_writeSGroups()
 {
     for (int i = _bmol->sgroups.begin(); i != _bmol->sgroups.end(); i = _bmol->sgroups.next(i))
@@ -1849,16 +1883,16 @@ void SmilesSaver::_writeSGroups()
             {
                 DataSGroup& dsg = static_cast<DataSGroup&>(sg);
                 if (dsg.name.size() > 0)
-                    _output.writeString(dsg.name.ptr());
+                    writeSgEscapedField(_output, dsg.name.ptr());
                 _output.writeChar(':');
                 if (dsg.data.size() > 0)
-                    _output.writeString(dsg.data.ptr());
+                    writeSgEscapedField(_output, dsg.data.ptr());
                 _output.writeChar(':');
                 if (dsg.queryoper.size() > 0)
-                    _output.writeString(dsg.queryoper.ptr());
+                    writeSgEscapedField(_output, dsg.queryoper.ptr());
                 _output.writeChar(':');
                 if (dsg.description.size() > 0)
-                    _output.writeString(dsg.description.ptr());
+                    writeSgEscapedField(_output, dsg.description.ptr());
                 _output.writeChar(':');
                 _output.writeChar(dsg.tag.value_or(0));
                 _output.writeChar(':');
@@ -1874,7 +1908,9 @@ void SmilesSaver::_writeSGroups()
             RepeatingUnit& ru = static_cast<RepeatingUnit&>(sg);
             _output.writeString("n:");
             _writeSGroupAtoms(sg);
-            _output.printf(":%s:", ru.label.ptr() ? ru.label.ptr() : "");
+            _output.writeChar(':');
+            writeSgEscapedField(_output, ru.label.ptr());
+            _output.writeChar(':');
             const int connectivity = ru.connectivity.value_or(RepeatingUnit::HEAD_TO_TAIL);
             switch (connectivity)
             {
@@ -2247,3 +2283,7 @@ void SmilesSaver::_validate(BaseMolecule& bmol)
     if (bmol.getUnresolvedTemplatesList(bmol, unresolved))
         throw Error("%s cannot be written in SMILES/SMARTS format.", unresolved.c_str());
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
