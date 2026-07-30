@@ -1184,7 +1184,7 @@ void MolfileLoader::_readCtab2000()
                     int n = _scanner.readIntFix(3);
                     while (n-- > 0)
                     {
-                        int idap = sup.attachment_points.push();
+                        int idap = sup.attachment_points.add();
                         Superatom::_AttachmentPoint& ap = sup.attachment_points.at(idap);
                         _scanner.skip(1);
                         ap.aidx = _scanner.readIntFix(3) - 1;

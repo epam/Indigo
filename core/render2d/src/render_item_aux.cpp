@@ -355,7 +355,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
         const auto& md = meta->metaData();
         // images go first
         std::vector<int> order_indexes, back_indexes;
-        for (int i = md.begin(); i != md.end(); i = md.next(i))
+        for (int i = 0; i < md.size(); i++)
         {
             const auto& mobj = md[i];
             if (mobj._class_id == EmbeddedImageObject::CID)

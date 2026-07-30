@@ -292,6 +292,8 @@ namespace indigo
 
         BaseMolecule* neu() const override;
 
+        // Factory for a molecule-pool slot holding a QueryMolecule.
+        static PtrReusablePool<BaseMolecule>::Factory poolFactory();
         QueryMolecule& asQueryMolecule() override;
         bool isQueryMolecule() override;
 

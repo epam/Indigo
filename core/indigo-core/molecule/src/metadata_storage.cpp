@@ -11,11 +11,19 @@ bool isReactionObject(uint32_t class_id)
     return class_id == ReactionArrowObject::CID || class_id == ReactionPlusObject::CID || class_id == ReactionMultitailArrowObject::CID;
 }
 
-int MetaDataStorage::addMetaObject(MetaObject* pobj, bool explicit_reaction_object)
+void MetaDataStorage::_clearIndexes()
 {
-    int index = _meta_data.adopt(std::unique_ptr<MetaObject>(pobj));
+    _plus_indexes.clear();
+    _arrow_indexes.clear();
+    _multi_tail_indexes.clear();
+    _simple_object_indexes.clear();
+    _text_object_indexes.clear();
+    _image_indexes.clear();
+}
 
-    switch (pobj->_class_id)
+void MetaDataStorage::_indexMetaObject(uint32_t class_id, int index)
+{
+    switch (class_id)
     {
     case SimpleTextObject::CID:
         _text_object_indexes.push() = index;
@@ -38,7 +46,23 @@ int MetaDataStorage::addMetaObject(MetaObject* pobj, bool explicit_reaction_obje
     default:
         break;
     }
-    if (explicit_reaction_object && !isReactionObject(pobj->_class_id))
+}
+
+void MetaDataStorage::_reindex()
+{
+    _clearIndexes();
+    for (int i = 0; i < _meta_data.size(); i++)
+        _indexMetaObject(_meta_data[i]._class_id, i);
+}
+
+int MetaDataStorage::addMetaObject(MetaObject* pobj, bool explicit_reaction_object)
+{
+    const uint32_t class_id = pobj->_class_id;
+    _meta_data.add(std::unique_ptr<MetaObject>(pobj));
+    const int index = _meta_data.size() - 1;
+
+    _indexMetaObject(class_id, index);
+    if (explicit_reaction_object && !isReactionObject(class_id))
         _explicit_reaction_object_indexes.find_or_insert(index);
     return index;
 }
@@ -46,7 +70,7 @@ int MetaDataStorage::addMetaObject(MetaObject* pobj, bool explicit_reaction_obje
 void MetaDataStorage::append(const MetaDataStorage& other)
 {
     const auto& meta = other.metaData();
-    for (int i = meta.begin(); i != meta.end(); i = meta.next(i))
+    for (int i = 0; i < meta.size(); i++)
         addMetaObject(meta[i].clone());
     for (auto it = other._explicit_reaction_object_indexes.begin(); it != other._explicit_reaction_object_indexes.end();
          it = other._explicit_reaction_object_indexes.next(it))
@@ -133,28 +157,17 @@ int MetaDataStorage::getMetaCount(uint32_t meta_type) const
 
 void MetaDataStorage::resetReactionData()
 {
-    _plus_indexes.clear();
-    _arrow_indexes.clear();
-    _multi_tail_indexes.clear();
-    // _meta_data is a sparse reuse pool: adopt() never refills freed slots, so
-    // size() is the live count, NOT a dense index bound, and stale slots leave
-    // holes. Walk live slots via begin()/next() and collect victims before
-    // removing (removing mid-walk would invalidate the iteration index).
-    Array<int> to_remove;
-    for (int i = _meta_data.begin(); i != _meta_data.end(); i = _meta_data.next(i))
-        if (isReactionObject(_meta_data[i]._class_id))
-            to_remove.push(i);
-    for (int j = 0; j < to_remove.size(); j++)
-        _meta_data.remove(to_remove[j]);
-
-    for (auto it = _explicit_reaction_object_indexes.begin(); it != _explicit_reaction_object_indexes.end(); it = _explicit_reaction_object_indexes.next(it))
+    // Drops the reaction objects and the ones explicitly marked as such, keeping
+    // the rest in order. Compacting keeps the store dense; the per-kind indexes
+    // are rebuilt from the new contents.
+    MetaObjectStore kept;
+    for (int i = 0; i < _meta_data.size(); i++)
     {
-        int idx = _explicit_reaction_object_indexes.key(it);
-        // Guard against double-remove: an explicit index may already have been
-        // freed above (reaction object) or point at an out-of-range/stale slot.
-        if (_meta_data.hasElement(idx))
-            _meta_data.remove(idx);
+        if (isReactionObject(_meta_data[i]._class_id) || _explicit_reaction_object_indexes.find(i))
+            continue;
+        kept.add(_meta_data.release(i));
     }
-
+    _meta_data = std::move(kept);
+    _reindex();
     _explicit_reaction_object_indexes.clear();
 }

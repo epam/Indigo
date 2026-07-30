@@ -1916,8 +1916,8 @@ void SmilesSaver::_writeRGroups()
             PtrReusablePool<BaseMolecule>& frags = rgroup.fragments;
             for (int j = frags.begin(); j != frags.end(); j = frags.next(j))
             {
-                BaseMolecule* fragment = &frags[j];
-                if (fragment->vertexCount() > 0)
+                BaseMolecule& fragment = frags[j];
+                if (fragment.vertexCount() > 0)
                     empty_fragments = false;
             }
             if (empty_fragments)
@@ -1940,7 +1940,7 @@ void SmilesSaver::_writeRGroups()
                 else
                     first_fr = false;
 
-                BaseMolecule* fragment = &frags[j];
+                BaseMolecule& fragment = frags[j];
                 Array<char> out_buffer;
                 ArrayOutput fr_out(out_buffer);
 
@@ -1948,17 +1948,17 @@ void SmilesSaver::_writeRGroups()
                 {
                     CanonicalSmilesSaver fr_saver(fr_out);
                     if (_qmol != 0)
-                        fr_saver.saveQueryMolecule(fragment->asQueryMolecule());
+                        fr_saver.saveQueryMolecule(fragment.asQueryMolecule());
                     else
-                        fr_saver.saveMolecule(fragment->asMolecule());
+                        fr_saver.saveMolecule(fragment.asMolecule());
                 }
                 else
                 {
                     SmilesSaver fr_saver(fr_out);
                     if (_qmol != 0)
-                        fr_saver.saveQueryMolecule(fragment->asQueryMolecule());
+                        fr_saver.saveQueryMolecule(fragment.asQueryMolecule());
                     else
-                        fr_saver.saveMolecule(fragment->asMolecule());
+                        fr_saver.saveMolecule(fragment.asMolecule());
                 }
 
                 _output.writeString("{");

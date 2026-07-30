@@ -33,9 +33,10 @@ namespace indigo
     // freshly-constructed logical state while keeping the object alive and its
     // internal buffers retained for reuse. It is the semantic equivalent of
     // destroying and default-constructing the object, minus the deallocation
-    // and reallocation. The pool calls it exactly once per retirement — when a
-    // slot is freed by remove() or retired by reuse() — so an implementation
-    // must leave the object usable, not merely consistent.
+    // and reallocation. The pool calls it when a slot is retired (remove() or
+    // pool clear()) and once more when a retired slot is handed back out, so an
+    // implementation must leave the object usable, not merely consistent, and
+    // must tolerate a repeated call on an already-reset object.
     //
     // The method is a pure virtual so the language itself guarantees every
     // element type declares and defines it (a compile-time marker could not).

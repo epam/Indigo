@@ -17,15 +17,15 @@
  ***************************************************************************/
 
 // Characterization tests for indigo::BaseReaction molecule membership
-// (PtrPool<BaseMolecule> _allMolecules).
+// (_allMolecules).
 //
-// Rationale (task #3766): BaseReaction::remove() -> PtrPool<BaseMolecule>::remove()
-// is the single most under-covered operation in the affected surface (0 calls in
-// the whole known test run) and the largest practical consumer of PtrPool. It is
-// the operation that frees a pool slot for reuse, so its observable contract —
-// side-count bookkeeping, index allocation, LIFO slot reuse, per-side iteration
-// skipping removed molecules — is the golden master the PtrReusablePool migration
-// must preserve.
+// Rationale (task #3766): BaseReaction::remove() was the single most
+// under-covered operation in the affected surface (0 calls in the whole known
+// test run) and the largest practical consumer of the legacy
+// PtrPool<BaseMolecule>. It is the operation that frees a pool slot for reuse,
+// so its observable contract — side-count bookkeeping, index allocation, LIFO
+// slot reuse, per-side iteration skipping removed molecules — is the golden
+// master the PtrReusablePool migration preserves.
 
 #include <gtest/gtest.h>
 

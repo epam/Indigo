@@ -88,20 +88,6 @@ typedef unsigned int UINT32;
 #endif
 #endif
 
-// Force-inline for tiny hot accessors (e.g. bounds-checked Array element
-// access, called in every graph loop). Optimizer inline budgets are computed
-// per translation unit, so an unrelated header change can flip such an
-// accessor to an out-of-line call; forcing keeps the codegen stable.
-#ifndef INDIGO_FORCE_INLINE
-#if defined(_MSC_VER)
-#define INDIGO_FORCE_INLINE __forceinline
-#elif defined(__GNUC__) || defined(__clang__)
-#define INDIGO_FORCE_INLINE inline __attribute__((always_inline))
-#else
-#define INDIGO_FORCE_INLINE inline
-#endif
-#endif
-
 #ifndef CEXPORT
 #ifndef __cplusplus
 #define CEXPORT EXPORT_SYMBOL

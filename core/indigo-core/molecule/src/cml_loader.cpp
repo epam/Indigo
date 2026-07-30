@@ -1792,7 +1792,7 @@ void CmlLoader::_loadSGroupElement(XMLElement* elem, std::unordered_map<std::str
                            if (strncmp(aPoint->Value(), "attachmentPoint", 15) != 0)
                               continue;
 
-                           int idap = sup->attachment_points.push();
+                           int idap = sup->attachment_points.add();
                            Superatom::_AttachmentPoint &ap = sup->attachment_points.at(idap);
 
                            const char *a_idx = aPoint->Attribute("atom");
@@ -1879,7 +1879,7 @@ void CmlLoader::_loadRgroupElement(XMLHandle& handle)
             XMLHandle molecule(pChild);
             if (molecule.ToElement() != 0)
             {
-                std::unique_ptr<BaseMolecule> fragment(_bmol->neu());
+                BaseMolecule& fragment = rgroup.fragments.push_t(BaseMolecule::poolFactoryLike(*_bmol));
 
                 Molecule* _mol_save;
                 BaseMolecule* _bmol_save;
@@ -1889,7 +1889,7 @@ void CmlLoader::_loadRgroupElement(XMLHandle& handle)
                 _bmol_save = _bmol;
                 _qmol_save = _qmol;
 
-                _bmol = fragment.get();
+                _bmol = &fragment;
 
                 if (_bmol->isQueryMolecule())
                 {
@@ -1906,8 +1906,6 @@ void CmlLoader::_loadRgroupElement(XMLHandle& handle)
                 _mol = _mol_save;
                 _bmol = _bmol_save;
                 _qmol = _qmol_save;
-
-                rgroup.fragments.adopt(std::move(fragment));
             }
         }
     }

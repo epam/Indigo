@@ -114,7 +114,7 @@ void BaseReaction::clear()
     _intermediateCount = 0;
     _undefinedCount = 0;
     _specialCount = 0;
-    _allMolecules.reuse();
+    _allMolecules.clear();
     _reactionBlocks.clear();
     _specialConditions.clear();
     _types.clear();
@@ -308,7 +308,7 @@ const SpecialCondition& BaseReaction::specialCondition(int idx) const
 
 int BaseReaction::addReactantCopy(BaseMolecule& mol, Array<int>* mapping, Array<int>* inv_mapping)
 {
-    int idx = _allMolecules.add(std::type_index(typeid(mol)), [&] { return std::unique_ptr<BaseMolecule>(mol.neu()); });
+    int idx = _allMolecules.add_t(BaseMolecule::poolFactoryLike(mol));
 
     _allMolecules[idx].clone(mol, mapping, inv_mapping);
     _addedBaseMolecule(idx, REACTANT, _allMolecules[idx]);
@@ -317,7 +317,7 @@ int BaseReaction::addReactantCopy(BaseMolecule& mol, Array<int>* mapping, Array<
 
 int BaseReaction::addProductCopy(BaseMolecule& mol, Array<int>* mapping, Array<int>* inv_mapping)
 {
-    int idx = _allMolecules.add(std::type_index(typeid(mol)), [&] { return std::unique_ptr<BaseMolecule>(mol.neu()); });
+    int idx = _allMolecules.add_t(BaseMolecule::poolFactoryLike(mol));
 
     _allMolecules[idx].clone(mol, mapping, inv_mapping);
     _addedBaseMolecule(idx, PRODUCT, _allMolecules[idx]);
@@ -326,7 +326,7 @@ int BaseReaction::addProductCopy(BaseMolecule& mol, Array<int>* mapping, Array<i
 
 int BaseReaction::addCatalystCopy(BaseMolecule& mol, Array<int>* mapping, Array<int>* inv_mapping)
 {
-    int idx = _allMolecules.add(std::type_index(typeid(mol)), [&] { return std::unique_ptr<BaseMolecule>(mol.neu()); });
+    int idx = _allMolecules.add_t(BaseMolecule::poolFactoryLike(mol));
 
     _allMolecules[idx].clone(mol, mapping, inv_mapping);
     _addedBaseMolecule(idx, CATALYST, _allMolecules[idx]);
@@ -335,7 +335,7 @@ int BaseReaction::addCatalystCopy(BaseMolecule& mol, Array<int>* mapping, Array<
 
 int BaseReaction::addIntermediateCopy(BaseMolecule& mol, Array<int>* mapping, Array<int>* inv_mapping)
 {
-    int idx = _allMolecules.add(std::type_index(typeid(mol)), [&] { return std::unique_ptr<BaseMolecule>(mol.neu()); });
+    int idx = _allMolecules.add_t(BaseMolecule::poolFactoryLike(mol));
 
     _allMolecules[idx].clone(mol, mapping, inv_mapping);
     _addedBaseMolecule(idx, INTERMEDIATE, _allMolecules[idx]);
@@ -344,7 +344,7 @@ int BaseReaction::addIntermediateCopy(BaseMolecule& mol, Array<int>* mapping, Ar
 
 int BaseReaction::addUndefinedCopy(BaseMolecule& mol, Array<int>* mapping, Array<int>* inv_mapping)
 {
-    int idx = _allMolecules.add(std::type_index(typeid(mol)), [&] { return std::unique_ptr<BaseMolecule>(mol.neu()); });
+    int idx = _allMolecules.add_t(BaseMolecule::poolFactoryLike(mol));
 
     _allMolecules[idx].clone(mol, mapping, inv_mapping);
     _addedBaseMolecule(idx, UNDEFINED, _allMolecules[idx]);

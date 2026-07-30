@@ -374,7 +374,7 @@ int Molecule::addTemplateAtom(const char* text)
 void Molecule::setTemplateAtom(int idx, const char* text)
 {
     _atoms[idx].number = ELEM_TEMPLATE;
-    _atoms[idx].template_occur_idx = _template_occurrences.push();
+    _atoms[idx].template_occur_idx = _template_occurrences.add();
     _TemplateOccurrence& occur = _template_occurrences.at(_atoms[idx].template_occur_idx);
     occur.name_idx = _template_names.add(text);
     occur.seq_id = -1;
@@ -1397,6 +1397,11 @@ int Molecule::getTemplateAtomOccurrence(int idx) const
 BaseMolecule* Molecule::neu() const
 {
     return new Molecule();
+}
+
+PtrReusablePool<BaseMolecule>::Factory Molecule::poolFactory()
+{
+    return {std::type_index(typeid(Molecule)), [](void*) { return std::unique_ptr<BaseMolecule>(std::make_unique<Molecule>()); }};
 }
 
 bool Molecule::bondStereoCare(int idx)

@@ -160,8 +160,8 @@ namespace indigo
             Array<char> ap_id;    // Attachment point id
 
             // Non-destructive reset for PtrReusablePool reuse: restore the
-            // value-initialized state a fresh ObjPool<TemplateAttPoint>::add()
-            // used to produce (zeroed indices, empty id), buffer retained.
+            // value-initialized state (zeroed indices, empty id), buffer
+            // retained.
             void reuse() override
             {
                 ap_occur_idx = 0;
@@ -216,6 +216,11 @@ namespace indigo
         // 'neu' means 'new' in German
         virtual BaseMolecule* neu() const = 0;
 
+        // Factory for a pool slot of the same dynamic type as `sample`. The maker
+        // calls sample.neu(), so it runs only when the pool has nothing of that
+        // type to recycle.
+        static PtrReusablePool<BaseMolecule>::Factory poolFactoryLike(const BaseMolecule& sample);
+
         virtual int getAtomNumber(int idx) = 0;      // > 0 -- ELEM_***, 0 -- pseudo-atom, -1 -- not sure
         virtual int getAtomCharge(int idx) = 0;      // charge or CHARGE_UNKNOWN if not sure
         virtual int getAtomIsotope(int idx) = 0;     // > 0 -- isotope, -1 -- not sure
@@ -267,9 +272,8 @@ namespace indigo
                 order.copy(other.order);
             }
 
-            // Deep field copy into an existing occurrence, used where the legacy
-            // ObjPool add(copy) call sites cloned an occurrence.
-            void copy(const _TemplateOccurrence& other)
+            // Deep field copy, for a caller that clones an occurrence.
+            void reuse(const _TemplateOccurrence& other)
             {
                 name_idx = other.name_idx;
                 class_idx = other.class_idx;
@@ -295,7 +299,7 @@ namespace indigo
                 transform = Transformation();
             }
         };
-        PtrReusablePool<_TemplateOccurrence> _template_occurrences; // monomer info. each template atom contains index of it occurence in this array
+        PtrReusablePool<_TemplateOccurrence> _template_occurrences; // monomer occurrences; a template atom stores its occurrence index here
 
         StringPool _template_classes;
         StringPool _template_names;
@@ -528,8 +532,8 @@ namespace indigo
             return _annotation;
         };
 
-        PtrReusablePool<TemplateAttPoint> template_attachment_points; // All used APs -
-        PtrArray<ObjPool<int>> template_attachment_indexes;   //
+        PtrReusablePool<TemplateAttPoint> template_attachment_points; // all attachment points in use
+        PtrArray<ObjPool<int>> template_attachment_indexes;           // per-atom lists of indices into template_attachment_points
 
         MoleculeSGroups sgroups;
 

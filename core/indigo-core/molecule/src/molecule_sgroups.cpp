@@ -108,7 +108,7 @@ Superatom::Superatom() : unresolved(false)
 {
     sgroup_type = SGroup::SG_TYPE_SUP;
     seqid = -1;
-    attachment_points.reuse();
+    attachment_points.clear();
     bond_connections.clear();
     display_position.set(Vec3f(0, 0, 0));
 }
@@ -199,7 +199,7 @@ void Superatom::reuse()
     // Mirror Superatom::Superatom() ...
     sgroup_type = SGroup::SG_TYPE_SUP;
     seqid = -1;
-    attachment_points.reuse();
+    attachment_points.clear();
     bond_connections.clear();
     display_position.set(Vec3f(0, 0, 0));
     unresolved = false;
@@ -234,17 +234,17 @@ IMPL_ERROR(MoleculeSGroups, "molecule sgroups");
 
 MoleculeSGroups::MoleculeSGroups()
 {
-    _sgroups.reuse();
+    _sgroups.clear();
 }
 
 MoleculeSGroups::~MoleculeSGroups()
 {
-    _sgroups.reuse();
+    _sgroups.clear();
 }
 
 void MoleculeSGroups::clear()
 {
-    _sgroups.reuse();
+    _sgroups.clear();
 }
 
 void MoleculeSGroups::clear(int sg_type)
@@ -286,37 +286,33 @@ int MoleculeSGroups::addSGroup(const char* sg_type)
     return addSGroup(sgroup_type);
 }
 
-int MoleculeSGroups::addSGroup(int sg_type)
+PtrReusablePool<SGroup>::Factory MoleculeSGroups::poolFactory(int sg_type)
 {
-    // Heterogeneous PtrReusablePool: the slot type is keyed by the C++ class
-    // (Reusable::reuseTypeId()), and a freed slot is reused only by a same-type
-    // request. The factory is lazy — it runs only when no reusable slot of the
-    // requested type exists — so reuse constructs nothing.
     switch (sg_type)
     {
     case SGroup::SG_TYPE_DAT:
-        return _sgroups.add(std::type_index(typeid(DataSGroup)), [] { return std::make_unique<DataSGroup>(); });
+        return {std::type_index(typeid(DataSGroup)), [](void*) { return std::unique_ptr<SGroup>(std::make_unique<DataSGroup>()); }};
     case SGroup::SG_TYPE_SUP:
-        return _sgroups.add(std::type_index(typeid(Superatom)), [] { return std::make_unique<Superatom>(); });
+        return {std::type_index(typeid(Superatom)), [](void*) { return std::unique_ptr<SGroup>(std::make_unique<Superatom>()); }};
     case SGroup::SG_TYPE_SRU:
-        return _sgroups.add(std::type_index(typeid(RepeatingUnit)), [] { return std::make_unique<RepeatingUnit>(); });
+        return {std::type_index(typeid(RepeatingUnit)), [](void*) { return std::unique_ptr<SGroup>(std::make_unique<RepeatingUnit>()); }};
     case SGroup::SG_TYPE_MUL:
-        return _sgroups.add(std::type_index(typeid(MultipleGroup)), [] { return std::make_unique<MultipleGroup>(); });
+        return {std::type_index(typeid(MultipleGroup)), [](void*) { return std::unique_ptr<SGroup>(std::make_unique<MultipleGroup>()); }};
     case SGroup::SG_TYPE_COP:
-        return _sgroups.add(std::type_index(typeid(CopolymerGroup)), [] { return std::make_unique<CopolymerGroup>(); });
-    case SGroup::SG_TYPE_GEN:
-        return _sgroups.add(std::type_index(typeid(SGroup)), [] { return std::make_unique<SGroup>(); });
+        return {std::type_index(typeid(CopolymerGroup)), [](void*) { return std::unique_ptr<SGroup>(std::make_unique<CopolymerGroup>()); }};
     default:
-    {
-        // MON/MER/CRO/MOD/GRA/COM/MIX/FOR/ANY all use the base SGroup type
-        // (many sg_type values -> one C++ type, so they share a reuse bucket);
-        // the discriminating sgroup_type is stamped after reuse/construction —
-        // reuse() resets it to GEN, matching the legacy add(new SGroup())+assign.
-        int idx = _sgroups.add(std::type_index(typeid(SGroup)), [] { return std::make_unique<SGroup>(); });
-        _sgroups.at(idx).sgroup_type = sg_type;
-        return idx;
+        // GEN plus MON/MER/CRO/MOD/GRA/COM/MIX/FOR/ANY: all represented by the
+        // base SGroup class, so they share a reuse bucket.
+        return {std::type_index(typeid(SGroup)), [](void*) { return std::unique_ptr<SGroup>(std::make_unique<SGroup>()); }};
     }
-    }
+}
+
+int MoleculeSGroups::addSGroup(int sg_type)
+{
+    const int idx = _sgroups.add_t(poolFactory(sg_type));
+    // reuse() resets sgroup_type to GEN, so the requested one is stamped here.
+    _sgroups.at(idx).sgroup_type = sg_type;
+    return idx;
 }
 
 SGroup& MoleculeSGroups::getSGroup(int idx)

@@ -853,9 +853,9 @@ void CmlSaver::_addRgroupElement(XMLElement* elem, RGroup& rgroup, bool query)
 
     for (int i = frags.begin(); i != frags.end(); i = frags.next(i))
     {
-        BaseMolecule* fragment = &frags[i];
+        BaseMolecule& fragment = frags[i];
 
-        _addMoleculeElement(elem, *fragment, query);
+        _addMoleculeElement(elem, fragment, query);
     }
 }
 

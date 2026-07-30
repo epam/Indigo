@@ -124,12 +124,7 @@ void ReactionCdxmlSaver::saveReaction(BaseReaction& rxn)
 
     if (rxn.meta().metaData().size()) // we have metadata
     {
-        // metaData() is a sparse reuse pool; iterate live slots via begin()/next()
-        // and track a dense positional index p that stays in lockstep with
-        // meta_ids (one entry per live object, in the same slot order). Indexing
-        // the pool by a dense counter would throw on a freed slot.
-        int p = 0;
-        for (int i = rxn.meta().metaData().begin(); i != rxn.meta().metaData().end(); i = rxn.meta().metaData().next(i), ++p)
+        for (int i = 0; i < rxn.meta().metaData().size(); i++)
         {
             auto& obj = rxn.meta().metaData()[i];
             if (obj._class_id == ReactionArrowObject::CID)
@@ -137,12 +132,12 @@ void ReactionCdxmlSaver::saveReaction(BaseReaction& rxn)
                 ReactionArrowObject& arrow = (ReactionArrowObject&)(obj);
                 if (arrow.getArrowType() == ReactionArrowObject::ERetrosynthetic)
                 {
-                    molsaver.addRetrosynteticArrow(++_id, meta_ids[p], arrow.getTail(), arrow.getHead());
-                    retro_arrows_graph_id[meta_ids[p]] = _id;
+                    molsaver.addRetrosynteticArrow(++_id, meta_ids[i], arrow.getTail(), arrow.getHead());
+                    retro_arrows_graph_id[meta_ids[i]] = _id;
                     continue;
                 }
             }
-            molsaver.addMetaObject(obj, meta_ids[p], offset);
+            molsaver.addMetaObject(obj, meta_ids[i], offset);
         }
     }
     else

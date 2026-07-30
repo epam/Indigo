@@ -162,7 +162,7 @@ int BaseMolecule::transformSCSRtoFullCTAB()
     if (tinds.size() > 0)
     {
         tgroups.clear();
-        template_attachment_points.reuse();
+        template_attachment_points.clear();
         template_attachment_indexes.clear();
     }
 

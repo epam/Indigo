@@ -18,13 +18,13 @@
 
 // Characterization tests for the 2D layout of cyclic systems.
 //
-// Rationale (task #3766): MoleculeLayoutGraph::Cycle lives in ObjPool<Cycle>
-// pools (molecule_layout_graph_assign*.cpp) that the PtrReusablePool migration
-// must replace. The coverage audit flagged Cycle as a blind spot — no test
-// exercised it — so this suite pins the observable geometry that the cycle
-// layout code produces BEFORE the container is swapped. Cycle construction /
-// ordering / index reuse changes would show up as altered ring geometry or
-// non-deterministic output here.
+// Rationale (task #3766): MoleculeLayoutGraph::Cycle lived in legacy
+// ObjPool<Cycle> pools (molecule_layout_graph_assign*.cpp) that the
+// PtrReusablePool migration replaced. The coverage audit flagged Cycle as a
+// blind spot — no test exercised it — so this suite pins the observable
+// geometry the cycle layout code produced before the container was swapped.
+// Cycle construction / ordering / index reuse changes would show up as altered
+// ring geometry or non-deterministic output here.
 //
 // The assertions are structural (relative bond lengths, regularity, centroid
 // symmetry, determinism) rather than absolute golden coordinates, so they are

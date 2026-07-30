@@ -321,13 +321,13 @@ void MolfileSaver::_saveMolecule(BaseMolecule& bmol, bool query)
 
             for (j = frags.begin(); j != frags.end(); j = frags.next(j))
             {
-                BaseMolecule* fragment = &frags[j];
+                BaseMolecule& fragment = frags[j];
 
                 _output.writeStringCR("$CTAB");
-                _writeCtabHeader2000(_output, *fragment);
-                _writeCtab2000(_output, *fragment, query);
-                _writeRGroupIndices2000(_output, *fragment);
-                _writeAttachmentValues2000(_output, *fragment);
+                _writeCtabHeader2000(_output, fragment);
+                _writeCtab2000(_output, fragment, query);
+                _writeRGroupIndices2000(_output, fragment);
+                _writeAttachmentValues2000(_output, fragment);
 
                 _output.writeStringCR("M  END");
                 _output.writeStringCR("$END CTAB");

@@ -16,15 +16,16 @@
  * limitations under the License.
  ***************************************************************************/
 
-// Characterization tests for indigo::MetaDataStorage (PtrPool<MetaObject>).
+// Characterization tests for indigo::MetaDataStorage.
 //
-// Rationale (task #3766): MetaDataStorage::_meta_data.remove() (metadata_storage.cpp:141,144)
-// is invoked only from resetReactionData() and has 0 direct test coverage in the
-// whole known run. It is the pool slot-reuse path most at risk in the migration
-// because MetaDataStorage keeps *side index arrays* (_plus_indexes, _text_object_indexes,
-// ...) that store pool indices: after removing reaction objects the surviving
-// non-reaction objects MUST keep their original pool indices so those side arrays
-// stay valid. These tests pin exactly that invariant plus reuse and full reset.
+// Rationale (task #3766): resetReactionData() had 0 direct test coverage while
+// being the only removal path. MetaDataStorage keeps per-kind index arrays
+// (_plus_indexes, _text_object_indexes, ...) that point into the store, so
+// removal is where they can go stale. Migrated from the legacy
+// PtrPool<MetaObject> to a dense MetaObjectStore: a removal now compacts the
+// store and the per-kind indexes are rebuilt from the survivors. These tests
+// pin the observable behavior — counts, by-kind lookup, reset — across
+// removals, additions and full resets.
 
 #include <gtest/gtest.h>
 
@@ -86,39 +87,36 @@ TEST(MetaDataStorageContract, ResetReactionDataRemovesReactionObjectsKeepsSurviv
     EXPECT_EQ(0, meta.getMetaCount(ReactionPlusObject::CID));
     EXPECT_EQ(0, meta.getMetaCount(ReactionArrowObject::CID));
     EXPECT_EQ(1, meta.getMetaCount(SimpleTextObject::CID));
-    // survivor still reachable at its original pool index via side array
+    // survivor still reachable through the rebuilt per-kind index
     EXPECT_EQ(SimpleTextObject::CID, meta.getMetaObject(SimpleTextObject::CID, 0)._class_id);
 }
 
-TEST(MetaDataStorageContract, AddAfterResetReactionDataReusesFreedSlot)
+TEST(MetaDataStorageContract, AddAfterResetReactionDataAppends)
 {
     MetaDataStorage meta;
     meta.addMetaObject(new TestMeta(ReactionPlusObject::CID));  // 0
     meta.addMetaObject(new TestMeta(SimpleTextObject::CID));    // 1
     meta.addMetaObject(new TestMeta(ReactionArrowObject::CID)); // 2
-    meta.resetReactionData(); // frees slots 0 and 2
+    meta.resetReactionData();                                   // compacts 0 and 2 away
     ASSERT_EQ(1, meta.metaData().size());
 
-    meta.addMetaObject(new TestMeta(ReactionPlusObject::CID)); // reuses a freed slot
+    meta.addMetaObject(new TestMeta(ReactionPlusObject::CID)); // appends after compaction
     EXPECT_EQ(2, meta.metaData().size());
     EXPECT_EQ(1, meta.getMetaCount(ReactionPlusObject::CID));
 }
 
-// Regression (task #3766, review C1): resetReactionData() must iterate the
-// sparse reuse pool via begin()/next(), not a dense 0..size()-1 loop. Once any
-// slot is freed (adopt-only never refills it) the live objects sit at sparse
-// indices; a dense loop indexes a freed slot and throws "access to unused
-// element". Reproduce by leaving a hole below the survivor, then resetting again.
-TEST(MetaDataStorageContract, ResetReactionDataOnSparsePoolDoesNotThrow)
+// resetReactionData() compacts the store: survivors are kept in order and the
+// per-kind indexes are rebuilt, so a second reset (and every by-kind lookup)
+// works on the compacted contents.
+TEST(MetaDataStorageContract, ResetReactionDataTwiceAfterRemovalIsConsistent)
 {
     MetaDataStorage meta;
     meta.addMetaObject(new TestMeta(ReactionArrowObject::CID)); // index 0 (reaction)
     meta.addMetaObject(new TestMeta(SimpleTextObject::CID));    // index 1 (survivor)
 
-    meta.resetReactionData(); // frees slot 0 -> hole below the live survivor at 1
+    meta.resetReactionData(); // compacts the arrow away; the survivor moves to index 0
     ASSERT_EQ(1, meta.metaData().size());
 
-    // A dense 0..size()-1 loop would touch the freed slot 0 here and throw.
     EXPECT_NO_THROW(meta.resetReactionData());
     EXPECT_EQ(1, meta.metaData().size());
     EXPECT_EQ(1, meta.getMetaCount(SimpleTextObject::CID));

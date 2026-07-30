@@ -18,13 +18,13 @@
 
 // Characterization tests for indigo::Graph vertex/edge lifecycle.
 //
-// Rationale (task #3766): Graph is the heaviest consumer of ObjPool<Vertex>
-// (and Pool<Edge>), and the perf baseline shows Graph::getVertex/getEdge +
-// pool accessors are ~29% of the core suite. Graph has no dedicated unit test;
-// all confidence rests on incidental coverage. These tests lock the invariants
-// most at risk in the pool migration: index allocation, LIFO slot reuse after
-// removal, incident-edge removal, iteration skipping holes, throwing access to
-// a removed slot, and cloneGraph preserving every live vertex.
+// Rationale (task #3766): Graph was the heaviest consumer of the legacy
+// ObjPool<Vertex> (Pool<Edge> remains), and the perf baseline showed
+// Graph::getVertex/getEdge + pool accessors at ~29% of the core suite, with no
+// dedicated unit test. These tests lock the invariants the PtrReusablePool
+// migration preserves: index allocation, LIFO slot reuse after removal,
+// incident-edge removal, iteration skipping holes, throwing access to a
+// removed slot, and cloneGraph preserving every live vertex.
 
 #include <gtest/gtest.h>
 
@@ -84,7 +84,7 @@ TEST(GraphContract, EdgeIndexReuseLIFO)
     g.addVertex();
     g.addVertex();
     g.addVertex();
-    g.addEdge(0, 1);      // edge 0
+    g.addEdge(0, 1);          // edge 0
     int e1 = g.addEdge(1, 2); // edge 1
     g.removeEdge(e1);
     int reused = g.addEdge(0, 2);

@@ -200,17 +200,17 @@ IMPL_ERROR(MoleculeTGroups, "molecule tgroups");
 
 MoleculeTGroups::MoleculeTGroups()
 {
-    _tgroups.reuse();
+    _tgroups.clear();
 }
 
 MoleculeTGroups::~MoleculeTGroups()
 {
-    _tgroups.reuse();
+    _tgroups.clear();
 }
 
 void MoleculeTGroups::clear()
 {
-    _tgroups.reuse();
+    _tgroups.clear();
 }
 
 int MoleculeTGroups::begin()
@@ -235,7 +235,7 @@ void MoleculeTGroups::remove(int i)
 
 int MoleculeTGroups::addTGroup()
 {
-    return _tgroups.push();
+    return _tgroups.add();
 }
 
 TGroup& MoleculeTGroups::getTGroup(int idx)
@@ -247,9 +247,7 @@ void MoleculeTGroups::copyTGroupsFromMolecule(MoleculeTGroups& other)
 {
     for (int i = other.begin(); i != other.end(); i = other.next(i))
     {
-        TGroup& tgroup = other.getTGroup(i);
-        int idx = addTGroup();
-        getTGroup(idx).copy(tgroup);
+        _tgroups.add(other.getTGroup(i));
     }
 }
 

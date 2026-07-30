@@ -71,7 +71,7 @@ void QueryReaction::makeTransposedForSubstructure(QueryReaction& other)
     for (int i = other.begin(); i < other.end(); i = other.next(i))
     {
         other._transposeMoleculeForSubstructure(i, transposition);
-        int index = _allMolecules.add(std::type_index(typeid(QueryMolecule)), [] { return std::unique_ptr<BaseMolecule>(std::make_unique<QueryMolecule>()); });
+        int index = _allMolecules.add_t(QueryMolecule::poolFactory());
 
         QueryMolecule& qmol = static_cast<QueryMolecule&>(_allMolecules[index]);
 
@@ -176,7 +176,7 @@ int QueryReaction::_compare(int& i1, int& i2, void* c)
 
 int QueryReaction::_addBaseMolecule(int side)
 {
-    int idx = _allMolecules.add(std::type_index(typeid(QueryMolecule)), [] { return std::unique_ptr<BaseMolecule>(std::make_unique<QueryMolecule>()); });
+    int idx = _allMolecules.add_t(QueryMolecule::poolFactory());
     _addedBaseMolecule(idx, side, _allMolecules[idx]);
     return idx;
 }

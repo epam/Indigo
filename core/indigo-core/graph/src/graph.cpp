@@ -55,16 +55,16 @@ IMPL_ERROR(Graph, "graph");
 
 Graph::Graph()
 {
-    // _vertices and _neighbors_pool are by-value members now (no per-Graph
-    // heap allocation); their construction/destruction order is fixed by the
-    // declaration order in graph.h (_vertices is destroyed first — its Vertex
-    // destructors clear neighbor lists referencing _neighbors_pool).
+    _vertices = new PtrReusablePool<Vertex>();
+    _neighbors_pool = new Pool<List<VertexEdge>::Elem>();
     _sssr_pool = 0;
     _components_valid = false;
 }
 
 Graph::~Graph()
 {
+    delete _vertices;
+    delete _neighbors_pool;
     if (_sssr_pool != 0)
     {
         _sssr_vertices.clear();
@@ -76,9 +76,7 @@ Graph::~Graph()
 int Graph::addVertex()
 {
     changed();
-    int idx = _vertices.push();
-    _vertices.at(idx).bind(_neighbors_pool); // share the graph-wide neighbor pool
-    return idx;
+    return _vertices->add(*_neighbors_pool); // shares the graph-wide neighbor pool
 }
 
 int Graph::findEdgeIndex(int beg, int end) const
@@ -104,7 +102,7 @@ bool Graph::hasEdge(int idx) const
 
 bool Graph::hasVertex(int idx) const
 {
-    return _vertices.hasElement(idx);
+    return _vertices->hasElement(idx);
 }
 
 int Graph::getEdgeEnd(int beg, int edge) const
@@ -127,8 +125,8 @@ int Graph::addEdge(int beg, int end)
 
     int edge_idx = _edges.add();
 
-    Vertex& vbeg = _vertices.at(beg);
-    Vertex& vend = _vertices.at(end);
+    Vertex& vbeg = _vertices->at(beg);
+    Vertex& vend = _vertices->at(end);
 
     int ve1_idx = vbeg.neighbors_list.add();
     int ve2_idx = vend.neighbors_list.add();
@@ -161,8 +159,8 @@ void Graph::removeEdge(int idx)
 {
     Edge edge = _edges[idx];
 
-    Vertex& beg = _vertices.at(edge.beg);
-    Vertex& end = _vertices.at(edge.end);
+    Vertex& beg = _vertices->at(edge.beg);
+    Vertex& end = _vertices->at(edge.end);
 
     _edges.remove(idx);
 
@@ -177,8 +175,8 @@ void Graph::removeEdge(int idx)
 
 void Graph::removeAllEdges()
 {
-    for (int i = _vertices.begin(); i != _vertices.end(); i = _vertices.next(i))
-        _vertices.at(i).neighbors_list.clear();
+    for (int i = _vertices->begin(); i != _vertices->end(); i = _vertices->next(i))
+        _vertices->at(i).neighbors_list.clear();
 
     _edges.clear();
     _topology_valid = false;
@@ -203,7 +201,7 @@ void Graph::removeVertex(int idx)
     for (i = 0; i < edges.size(); i++)
         removeEdge(edges[i]);
 
-    _vertices.remove(idx);
+    _vertices->remove(idx);
 
     _topology_valid = false;
     _sssr_valid = false;
@@ -213,7 +211,7 @@ void Graph::removeVertex(int idx)
 
 const Vertex& Graph::getVertex(int idx) const
 {
-    return _vertices.at(idx);
+    return _vertices->at(idx);
 }
 
 const Edge& Graph::getEdge(int idx) const
@@ -241,8 +239,8 @@ bool Graph::findPath(int from, int where, Array<int>& path_out) const
     QS_DEF(Array<int>, queue);
     QS_DEF(Array<BfsState>, states);
 
-    queue.clear_resize(_vertices.size());
-    states.clear_resize(_vertices.end());
+    queue.clear_resize(_vertices->size());
+    states.clear_resize(_vertices->end());
 
     states.zerofill();
 
@@ -308,7 +306,7 @@ void Graph::changed()
 
 void Graph::clear()
 {
-    _vertices.reuse();
+    _vertices->clear();
     _edges.clear();
     _topology_valid = false;
     _sssr_valid = false;
@@ -848,8 +846,8 @@ void Graph::_cloneGraph_KeepIndices(const Graph& other)
         _edges[i].beg = other._edges[i].beg;
         _edges[i].end = other._edges[i].end;
 
-        Vertex& vbeg = _vertices.at(_edges[i].beg);
-        Vertex& vend = _vertices.at(_edges[i].end);
+        Vertex& vbeg = _vertices->at(_edges[i].beg);
+        Vertex& vend = _vertices->at(_edges[i].end);
 
         int ve1_idx = vbeg.neighbors_list.add();
         int ve2_idx = vend.neighbors_list.add();

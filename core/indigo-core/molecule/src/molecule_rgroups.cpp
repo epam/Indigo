@@ -36,7 +36,7 @@ void RGroup::clear()
     if_then = 0;
     rest_h = 0;
     occurrence.clear();
-    fragments.reuse();
+    fragments.clear();
 }
 
 void RGroup::copy(RGroup& other)
@@ -44,16 +44,10 @@ void RGroup::copy(RGroup& other)
     if_then = other.if_then;
     rest_h = other.rest_h;
     occurrence.copy(other.occurrence);
-    fragments.reuse();
+    fragments.clear();
 
-    PtrReusablePool<BaseMolecule>& frags = other.fragments;
-    for (int i = frags.begin(); i != frags.end(); i = frags.next(i))
-    {
-        std::unique_ptr<BaseMolecule> new_fragment(frags[i].neu());
-
-        new_fragment->clone(frags[i], 0, 0);
-        fragments.adopt(std::move(new_fragment));
-    }
+    for (BaseMolecule& source : other.fragments.items())
+        fragments.push_t(BaseMolecule::poolFactoryLike(source)).clone(source, 0, 0);
 }
 
 bool RGroup::occurrenceSatisfied(int value)

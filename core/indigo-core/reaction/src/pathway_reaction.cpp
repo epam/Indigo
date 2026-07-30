@@ -92,7 +92,7 @@ void PathwayReaction::clear()
 
 int PathwayReaction::_addBaseMolecule(int side)
 {
-    int idx = _allMolecules.add(std::type_index(typeid(Molecule)), [] { return std::unique_ptr<BaseMolecule>(std::make_unique<Molecule>()); });
+    int idx = _allMolecules.add_t(Molecule::poolFactory());
     _addedBaseMolecule(idx, side, _allMolecules[idx]);
     return idx;
 }

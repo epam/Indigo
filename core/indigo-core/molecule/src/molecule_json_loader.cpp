@@ -1100,7 +1100,7 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
                     {
                         attachmentId = attachmentPoints[j]["attachmentId"].GetString();
                     }
-                    int ap_idx = sg.attachment_points.push();
+                    int ap_idx = sg.attachment_points.add();
                     Superatom::_AttachmentPoint& ap = sg.attachment_points.at(ap_idx);
                     ap.aidx = attachmentAtom;
                     ap.lvidx = leavingAtom;
@@ -1573,7 +1573,7 @@ int MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_tem
 
             for (const auto& att_desc : attachment_descs)
             {
-                int atp_index = sa.attachment_points.push();
+                int atp_index = sa.attachment_points.add();
                 auto& atp = sa.attachment_points[atp_index];
                 atp.aidx = att_desc.attachment_atom;
                 if (att_desc.leaving_group >= 0)
@@ -1760,23 +1760,21 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
             auto& rfragments = rnode["fragments"];
             for (SizeType i = 0; i < rfragments.Size(); i++)
             {
-                std::unique_ptr<BaseMolecule> fragment(mol.neu());
+                BaseMolecule& fragment = rgroup.fragments.push_t(BaseMolecule::poolFactoryLike(mol));
                 one_rnode.PushBack(rfragments[i], data.GetAllocator());
                 MoleculeJsonLoader loader(one_rnode);
                 loader.stereochemistry_options = stereochemistry_options;
-                loader.loadMolecule(*fragment.get());
-                rgroup.fragments.adopt(std::move(fragment));
+                loader.loadMolecule(fragment);
                 one_rnode.Clear();
             }
         }
         else
         {
-            std::unique_ptr<BaseMolecule> fragment(mol.neu());
+            BaseMolecule& fragment = rgroup.fragments.push_t(BaseMolecule::poolFactoryLike(mol));
             one_rnode.PushBack(rnode, data.GetAllocator());
             MoleculeJsonLoader loader(one_rnode);
             loader.stereochemistry_options = stereochemistry_options;
-            loader.loadMolecule(*fragment.get());
-            rgroup.fragments.adopt(std::move(fragment));
+            loader.loadMolecule(fragment);
         }
     }
 

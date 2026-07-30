@@ -2131,7 +2131,7 @@ void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& bmol)
     if (bmol.have_xyz)
         bmol.getBoundingBox(bbox);
 
-    for (int i = bmol.meta().metaData().begin(); i != bmol.meta().metaData().end(); i = bmol.meta().metaData().next(i))
+    for (int i = 0; i < bmol.meta().metaData().size(); i++)
     {
         Rect2f bb;
         auto& mo = bmol.meta().metaData()[i];
@@ -2153,7 +2153,7 @@ void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& bmol)
             saveRGroup(rgrp.fragments, offset, i, bbox);
     }
 
-    for (int i = bmol.meta().metaData().begin(); i != bmol.meta().metaData().end(); i = bmol.meta().metaData().next(i))
+    for (int i = 0; i < bmol.meta().metaData().size(); i++)
     {
         auto& mo = bmol.meta().metaData()[i];
         addMetaObject(bmol.meta().metaData()[i], ++_id, offset);

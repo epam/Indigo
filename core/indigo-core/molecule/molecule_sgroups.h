@@ -217,13 +217,21 @@ namespace indigo
             int lvidx;
             Array<char> apid;
 
-            // Non-destructive reset for PtrReusablePool reuse: restore the
-            // default-constructed state (matches a fresh ObjPool add()).
+            // Restores the default-constructed state.
             void reuse() override
             {
                 aidx = -1;
                 lvidx = -1;
                 apid.clear();
+            }
+
+            // An attachment point on `atom` with an empty (zero-terminated) id,
+            // the shape every loader needs.
+            void reuse(int atom)
+            {
+                reuse();
+                aidx = atom;
+                apid.push(0);
             }
         };
         PtrReusablePool<_AttachmentPoint> attachment_points; // SAP in Molfile format
@@ -302,6 +310,11 @@ namespace indigo
 
         int addSGroup(const char* sg_type);
         int addSGroup(int sg_type);
+
+        // Factory for the C++ class that represents sg_type. Several sg_type
+        // values map to the base SGroup class and are discriminated by the
+        // sgroup_type field that addSGroup() stamps afterwards.
+        static PtrReusablePool<SGroup>::Factory poolFactory(int sg_type);
         SGroup& getSGroup(int idx);
         SGroup& getSGroup(int idx, int sg_type);
         int getSGroupCount();

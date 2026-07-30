@@ -126,11 +126,7 @@ namespace indigo
             return _array;
         }
 
-        // The element accessors are force-inlined: they are the hottest calls
-        // in the library (every graph and molecule loop goes through them), and
-        // per-translation-unit optimizer inline budgets may otherwise flip them
-        // to out-of-line calls after unrelated header growth.
-        INDIGO_FORCE_INLINE const T& operator[](int index) const
+        const T& operator[](int index) const
         {
 #ifndef INDIGO_UNCHECKED_ACCESS
             if (index < 0 || _length - index <= 0)
@@ -139,7 +135,7 @@ namespace indigo
             return _array[index];
         }
 
-        INDIGO_FORCE_INLINE T& operator[](int index)
+        T& operator[](int index)
         {
 #ifndef INDIGO_UNCHECKED_ACCESS
             if (index < 0 || _length - index <= 0)
@@ -148,7 +144,7 @@ namespace indigo
             return _array[index];
         }
 
-        INDIGO_FORCE_INLINE const T& at(int index) const
+        const T& at(int index) const
         {
             if (index < 0 || _length - index <= 0)
                 throw Error("invalid index %d (size=%d)", index, _length);
@@ -156,7 +152,7 @@ namespace indigo
             return (*this)[index];
         }
 
-        INDIGO_FORCE_INLINE T& at(int index)
+        T& at(int index)
         {
             if (index < 0 || _length - index <= 0)
                 throw Error("invalid index %d (size=%d)", index, _length);

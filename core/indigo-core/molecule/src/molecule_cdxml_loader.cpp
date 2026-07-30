@@ -1273,17 +1273,9 @@ void MoleculeCdxmlLoader::_handleSGroup(SGroup& sgroup, const std::unordered_set
     if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP && start >= 0)
     {
         Superatom& sa = static_cast<Superatom&>(sgroup);
-        {
-            auto& ap = sa.attachment_points[sa.attachment_points.push()];
-            ap.aidx = start;
-            ap.apid.push(0);
-        }
+        sa.attachment_points.add(start);
         if (end >= 0)
-        {
-            auto& ap = sa.attachment_points[sa.attachment_points.push()];
-            ap.aidx = end;
-            ap.apid.push(0);
-        }
+            sa.attachment_points.add(end);
     }
     else if (sgroup.sgroup_type == SGroup::SG_TYPE_MUL)
     {
@@ -1627,12 +1619,11 @@ void MoleculeCdxmlLoader::_parseAltGroup(BaseCDXElement& elem)
         {
             MoleculeCdxmlLoader alt_loader(_scanner, _is_binary);
             BaseMolecule& mol = _pmol ? *(BaseMolecule*)_pmol : *(BaseMolecule*)_pqmol;
-            std::unique_ptr<BaseMolecule> fragment(mol.neu());
-            alt_loader.stereochemistry_options = stereochemistry_options;
-            alt_loader.loadMoleculeFromFragment(*fragment, *r_fragments.front());
             MoleculeRGroups& rgroups = mol.rgroups;
             RGroup& rgroup = rgroups.getRGroup(r_labels.front());
-            rgroup.fragments.adopt(std::move(fragment));
+            BaseMolecule& fragment = rgroup.fragments.push_t(BaseMolecule::poolFactoryLike(mol));
+            alt_loader.stereochemistry_options = stereochemistry_options;
+            alt_loader.loadMoleculeFromFragment(fragment, *r_fragments.front());
         }
     }
 }

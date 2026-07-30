@@ -199,9 +199,9 @@ TEST(ReusableTrait, GetTypeReflectsDynamicType)
 TEST_F(PtrReusablePoolTest, PushReturnsMonotonicIndicesFromZero)
 {
     PtrReusablePool<Elem> pool;
-    EXPECT_EQ(0, pool.push());
-    EXPECT_EQ(1, pool.push());
-    EXPECT_EQ(2, pool.push());
+    EXPECT_EQ(0, pool.add());
+    EXPECT_EQ(1, pool.add());
+    EXPECT_EQ(2, pool.add());
     EXPECT_EQ(3, pool.size());
     EXPECT_EQ(3, pool.end());
 }
@@ -210,18 +210,18 @@ TEST_F(PtrReusablePoolTest, PushReturnsMonotonicIndicesFromZero)
 TEST_F(PtrReusablePoolTest, RemoveThenPushReusesIndexLIFO)
 {
     PtrReusablePool<Elem> pool;
-    pool.push(); // 0
-    pool.push(); // 1
-    pool.push(); // 2
+    pool.add(); // 0
+    pool.add(); // 1
+    pool.add(); // 2
 
     pool.remove(0);
     pool.remove(2);
     EXPECT_EQ(3, pool.end()); // holes, no growth
 
-    EXPECT_EQ(2, pool.push()); // LIFO: last freed first
-    EXPECT_EQ(0, pool.push());
+    EXPECT_EQ(2, pool.add()); // LIFO: last freed first
+    EXPECT_EQ(0, pool.add());
     EXPECT_EQ(3, pool.end()); // reused, still no growth
-    EXPECT_EQ(3, pool.push());     // free list empty -> grow
+    EXPECT_EQ(3, pool.add()); // free list empty -> grow
     EXPECT_EQ(4, pool.end());
 }
 
@@ -230,33 +230,33 @@ TEST_F(PtrReusablePoolTest, RemoveThenPushReusesIndexLIFO)
 TEST_F(PtrReusablePoolTest, RemoveResetsButRetainsObject)
 {
     PtrReusablePool<Elem> pool;
-    pool.push();
-    pool.push();
-    pool.push();
+    pool.add();
+    pool.add();
+    pool.add();
     ASSERT_EQ(3, Elem::s_live);
 
     const int resets_before = Elem::s_resets;
     pool.remove(1);
 
-    EXPECT_EQ(3, Elem::s_live);                 // object retained, not destroyed
+    EXPECT_EQ(3, Elem::s_live);                   // object retained, not destroyed
     EXPECT_EQ(resets_before + 1, Elem::s_resets); // reuse() was called
     EXPECT_EQ(2, pool.size());
     EXPECT_FALSE(pool.hasElement(1));
-    EXPECT_EQ(3, pool.end());              // slot retained
+    EXPECT_EQ(3, pool.end()); // slot retained
 }
 
-TEST_F(PtrReusablePoolTest, PushReusingSlotHandsOutPristineObjectNoReconstruct)
+TEST_F(PtrReusablePoolTest, PushReusingSlotResetsAgainNotReconstructs)
 {
     PtrReusablePool<Elem> pool;
-    int i = pool.push();
+    int i = pool.add();
     pool.at(i).id = 77;
     const int ctor_before = Elem::s_ctor;
 
-    pool.remove(i);      // the single reset happens here (single-reset contract)
-    int j = pool.push(); // re-issues the parked slot: no construction, no second reset
+    pool.remove(i);     // reset #1
+    int j = pool.add(); // reuse slot -> reset #2, no new construction
     EXPECT_EQ(i, j);
     EXPECT_EQ(ctor_before, Elem::s_ctor); // no new object constructed
-    EXPECT_EQ(0, pool.at(j).id);          // fresh logical state (reset at remove)
+    EXPECT_EQ(0, pool.at(j).id);          // fresh logical state
 }
 
 // Pointer stability: a reference obtained from get() stays valid across many
@@ -264,12 +264,12 @@ TEST_F(PtrReusablePoolTest, PushReusingSlotHandsOutPristineObjectNoReconstruct)
 TEST_F(PtrReusablePoolTest, GetReferenceStableAcrossGrowth)
 {
     PtrReusablePool<Elem> pool;
-    int i = pool.push();
+    int i = pool.add();
     pool.at(i).id = 12345;
     Elem* addr = &pool.at(i);
 
     for (int k = 0; k < 64; k++) // force spine reallocation beyond DEFAULT_RESERVE
-        pool.push();
+        pool.add();
 
     EXPECT_EQ(addr, &pool.at(i)); // pointee did not move
     EXPECT_EQ(12345, pool.at(i).id);
@@ -282,12 +282,12 @@ TEST(PtrReusablePoolExceptionSafety, ThrowingCtorDuringGrowthKeepsPoolConsistent
     ThrowingElem::configure(/*countdown=*/3);
     {
         PtrReusablePool<ThrowingElem> pool;
-        ASSERT_EQ(0, pool.push()); // countdown 3 -> 2
-        ASSERT_EQ(1, pool.push()); // countdown 2 -> 1
+        ASSERT_EQ(0, pool.add()); // countdown 3 -> 2
+        ASSERT_EQ(1, pool.add()); // countdown 2 -> 1
         ASSERT_EQ(2, pool.size());
         ASSERT_EQ(2, pool.end());
 
-        EXPECT_THROW(pool.push(), std::runtime_error); // countdown 1 -> 0 -> throw
+        EXPECT_THROW(pool.add(), std::runtime_error); // countdown 1 -> 0 -> throw
 
         // State unchanged by the failed growth.
         EXPECT_EQ(2, pool.size());
@@ -297,7 +297,7 @@ TEST(PtrReusablePoolExceptionSafety, ThrowingCtorDuringGrowthKeepsPoolConsistent
 
         // Pool still usable: disable throwing and grow successfully.
         ThrowingElem::s_countdown = 0;
-        EXPECT_EQ(2, pool.push());
+        EXPECT_EQ(2, pool.add());
         EXPECT_EQ(3, pool.size());
     }
     EXPECT_EQ(0, ThrowingElem::s_live) << "ThrowingElem leaked";
@@ -311,7 +311,7 @@ TEST_F(PtrReusablePoolTest, IterationSkipsFreedHoles)
 {
     PtrReusablePool<Elem> pool;
     for (int k = 0; k < 5; k++)
-        pool.at(pool.push()).id = k;
+        pool.at(pool.add()).id = k;
     pool.remove(1);
     pool.remove(3);
 
@@ -328,7 +328,7 @@ TEST_F(PtrReusablePoolTest, IterationSkipsFreedHoles)
 TEST_F(PtrReusablePoolTest, AccessToRemovedSlotThrows)
 {
     PtrReusablePool<Elem> pool;
-    int i = pool.push();
+    int i = pool.add();
     pool.remove(i);
     EXPECT_THROW(pool.at(i), Exception);
     EXPECT_THROW(pool.remove(i), Exception); // double remove
@@ -339,20 +339,20 @@ TEST_F(PtrReusablePoolTest, AccessToRemovedSlotThrows)
 TEST_F(PtrReusablePoolTest, ResetEmptiesButRetainsObjectsAndCapacity)
 {
     PtrReusablePool<Elem> pool;
-    pool.push();
-    pool.push();
-    pool.push();
+    pool.add();
+    pool.add();
+    pool.add();
     ASSERT_EQ(3, Elem::s_live);
 
     pool.reuse();
     EXPECT_EQ(0, pool.size());
-    EXPECT_EQ(0, pool.end());   // active spine emptied -> end()==0
+    EXPECT_EQ(0, pool.end());         // active spine emptied -> end()==0
     EXPECT_EQ(3, pool.reserveSize()); // objects moved to the reserve
     EXPECT_EQ(3, Elem::s_live);       // objects NOT destroyed
 
     // Reuses a reserved object (no new construction).
     const int ctor_before = Elem::s_ctor;
-    pool.push();
+    pool.add();
     EXPECT_EQ(1, pool.size());
     EXPECT_EQ(1, pool.end());
     EXPECT_EQ(2, pool.reserveSize());
@@ -363,8 +363,8 @@ TEST_F(PtrReusablePoolTest, ResetEmptiesButRetainsObjectsAndCapacity)
 TEST_F(PtrReusablePoolTest, PurgeDestroysEverything)
 {
     PtrReusablePool<Elem> pool;
-    pool.push();
-    pool.push();
+    pool.add();
+    pool.add();
     ASSERT_EQ(2, Elem::s_live);
 
     pool.purge();
@@ -373,7 +373,7 @@ TEST_F(PtrReusablePoolTest, PurgeDestroysEverything)
     EXPECT_EQ(0, Elem::s_live); // objects destroyed
 
     // Still usable after purge, restarting from index 0.
-    EXPECT_EQ(0, pool.push());
+    EXPECT_EQ(0, pool.add());
 }
 
 // =====================================================================
@@ -387,30 +387,29 @@ TEST_F(PtrReusablePoolTest, ResetWithHolesRestartsAllocationFromZero)
 {
     PtrReusablePool<Elem> pool;
     for (int k = 0; k < 5; k++)
-        pool.push(); // 0..4
+        pool.add(); // 0..4
     pool.remove(3);
     pool.remove(1); // holes at 3 then 1
     ASSERT_EQ(3, pool.size());
 
     pool.reuse();
     EXPECT_EQ(0, pool.size());
-    EXPECT_EQ(0, pool.end());    // active spine emptied
+    EXPECT_EQ(0, pool.end());         // active spine emptied
     EXPECT_EQ(5, pool.reserveSize()); // all 5 objects retained in the reserve
 
     for (int expected = 0; expected < 5; expected++)
-        EXPECT_EQ(expected, pool.push()) << "allocation must restart at 0 after reuse()";
+        EXPECT_EQ(expected, pool.add()) << "allocation must restart at 0 after reuse()";
 }
 
-// Reserve cap (P9/P7 review fix): clear() retains at most
-// MAX_RESERVE_PER_BUCKET retired objects; the excess is DESTROYED so memory
-// stays bounded instead of being pinned at the all-time high-water mark (the
-// unbounded-retention risk the review flagged for adopt-flow pools).
+// Reserve cap: clear() retains at most MAX_RESERVE_PER_BUCKET retired objects;
+// the excess is DESTROYED so memory stays bounded instead of being pinned at
+// the all-time high-water mark.
 TEST_F(PtrReusablePoolTest, ClearBoundsReserveToCap)
 {
     PtrReusablePool<Elem> pool;
     const int cap = PtrReusablePool<Elem>::MAX_RESERVE_PER_BUCKET;
     for (int k = 0; k < cap + 10; k++)
-        pool.push();
+        pool.add();
     ASSERT_EQ(cap + 10, Elem::s_live);
 
     pool.reuse(); // park up to cap into the reserve, destroy the remaining 10
@@ -426,13 +425,13 @@ TEST_F(PtrReusablePoolTest, ClearBoundsReserveToCap)
 TEST_F(PtrReusablePoolTest, ReuseRetainsElementBufferCapacity)
 {
     PtrReusablePool<Elem> pool;
-    int i = pool.push();
+    int i = pool.add();
     pool.at(i).buf.resize(1000);
     const size_t cap = pool.at(i).buf.capacity();
     ASSERT_GE(cap, 1000u);
 
-    pool.remove(i);      // reuse(): buf.clear() keeps capacity
-    int j = pool.push(); // reuse slot i
+    pool.remove(i);     // reuse(): buf.clear() keeps capacity
+    int j = pool.add(); // reuse slot i
     ASSERT_EQ(i, j);
     EXPECT_EQ(0u, pool.at(j).buf.size());      // logically empty
     EXPECT_GE(pool.at(j).buf.capacity(), cap); // buffer retained (never-shrink)
@@ -445,14 +444,14 @@ TEST_F(PtrReusablePoolTest, ReuseRetainsElementBufferCapacity)
 TEST_F(PtrReusablePoolTest, PushThenFillThrow_RemoveInCatchKeepsPoolConsistent)
 {
     PtrReusablePool<Elem> pool;
-    pool.push();           // 0
-    pool.push();           // 1
+    pool.add(); // 0
+    pool.add(); // 1
     ASSERT_EQ(2, pool.size());
 
     int idx = -1;
     try
     {
-        idx = pool.push(); // 2, slot already live
+        idx = pool.add(); // 2, slot already live
         pool.at(idx).id = 5;
         throw std::runtime_error("simulated fill failure after push");
     }
@@ -463,37 +462,29 @@ TEST_F(PtrReusablePoolTest, PushThenFillThrow_RemoveInCatchKeepsPoolConsistent)
 
     EXPECT_EQ(2, pool.size());
     EXPECT_FALSE(pool.hasElement(idx));
-    EXPECT_EQ(idx, pool.push()); // freed slot reusable
+    EXPECT_EQ(idx, pool.add()); // freed slot reusable
 }
 
-// Single-reset contract: the object is reset ONCE, by remove() at retirement;
-// push() re-issues the parked slot with pure bookkeeping and must NOT call
-// reuse() again (a parked slot is untouchable via checked access, so the
-// object is guaranteed pristine). Also pins the exception ordering: if the
-// (misbehaving) reuse() throws inside remove(), nothing has been mutated yet,
-// so the slot simply stays live and counted — no state is lost.
-TEST(PtrReusablePoolResetThrow, SingleResetOnRemove_PushSkipsSecondReset)
+// If reuse() throws while push() is reusing a freed slot, the slot must not be
+// lost from both the free list and the live set: push() marks it live and
+// counts it before calling reuse(), so bookkeeping stays consistent (the
+// exception still propagates). Locks the fix for the reuse-path reuse() throw.
+TEST(PtrReusablePoolResetThrow, SlotStaysConsistentWhenReuseResetThrows)
 {
     ThrowOnResetElem::configure();
     {
         PtrReusablePool<ThrowOnResetElem> pool;
-        int i = pool.push(); // fresh construction (no reset on this path)
-
-        ThrowOnResetElem::s_throw_on_reset = true;
-        EXPECT_THROW(pool.remove(i), std::runtime_error); // reuse() throws inside remove()
-        // Bookkeeping untouched by the throw: the slot is still live and counted.
-        EXPECT_EQ(1, pool.size());
-        EXPECT_TRUE(pool.hasElement(i));
-
-        ThrowOnResetElem::s_throw_on_reset = false;
-        pool.remove(i); // retires cleanly — the single reset happens here
+        int i = pool.add(); // grow (reset not called on grow)
+        pool.remove(i);     // reuse() runs (not throwing yet) -> slot freed
         ASSERT_EQ(0, pool.size());
 
-        ThrowOnResetElem::s_throw_on_reset = true; // would throw IF push reset again
-        int j = pool.push();                       // must NOT call reuse() (object already pristine)
-        EXPECT_EQ(i, j);                           // LIFO slot reuse
+        ThrowOnResetElem::s_throw_on_reset = true;
+        EXPECT_THROW(pool.add(), std::runtime_error); // reuse -> reuse() throws
+
+        // Bookkeeping consistent despite the throw: slot is live and counted,
+        // not lost.
         EXPECT_EQ(1, pool.size());
-        EXPECT_TRUE(pool.hasElement(j));
+        EXPECT_TRUE(pool.hasElement(i));
 
         ThrowOnResetElem::s_throw_on_reset = false; // let teardown be clean
     }
@@ -501,10 +492,10 @@ TEST(PtrReusablePoolResetThrow, SingleResetOnRemove_PushSkipsSecondReset)
 }
 
 // =====================================================================
-// Heterogeneous discipline (HETERO-POOL-DESIGN): per-type free lists keyed
-// by Reusable::reuseTypeId(), lazy factory on growth, adopt() for populated
-// objects. The reuse-on-remove + reuse-on-reuse lifecycle is INHERITED from
-// the homogeneous discipline; only slot parking and construction differ.
+// Custom family (add_t/push_t): per-type spares keyed by
+// Reusable::reuseTypeId(), lazy factory on growth, the caller fills the
+// element in place. The reuse-on-remove + reuse-on-clear lifecycle is the
+// same as the standard family's; only slot parking and construction differ.
 // =====================================================================
 
 namespace
@@ -552,12 +543,12 @@ namespace
     };
     int HetB::s_made = 0;
 
-    std::unique_ptr<HetBase> makeA()
+    std::unique_ptr<HetBase> makeA(void*)
     {
         ++HetA::s_made;
         return std::make_unique<HetA>();
     }
-    std::unique_ptr<HetBase> makeB()
+    std::unique_ptr<HetBase> makeB(void*)
     {
         ++HetB::s_made;
         return std::make_unique<HetB>();
@@ -565,6 +556,10 @@ namespace
 
     const std::type_index kA(typeid(HetA));
     const std::type_index kB(typeid(HetB));
+
+    // Factories in the shape the pool takes them: type key + lazy maker.
+    const PtrReusablePool<HetBase>::Factory kFactoryA{kA, &makeA};
+    const PtrReusablePool<HetBase>::Factory kFactoryB{kB, &makeB};
 
     class HeteroPoolTest : public ::testing::Test
     {
@@ -585,9 +580,9 @@ namespace
 TEST_F(HeteroPoolTest, AddGrowsViaLazyFactory)
 {
     PtrReusablePool<HetBase> pool;
-    EXPECT_EQ(0, pool.add(kA, makeA));
-    EXPECT_EQ(1, pool.add(kB, makeB));
-    EXPECT_EQ(2, pool.add(kA, makeA));
+    EXPECT_EQ(0, pool.add_t(kFactoryA));
+    EXPECT_EQ(1, pool.add_t(kFactoryB));
+    EXPECT_EQ(2, pool.add_t(kFactoryA));
     EXPECT_EQ(3, pool.size());
     EXPECT_EQ(2, HetA::s_made);
     EXPECT_EQ(1, HetB::s_made);
@@ -601,9 +596,9 @@ TEST_F(HeteroPoolTest, AddGrowsViaLazyFactory)
 TEST_F(HeteroPoolTest, SameTypeReuseLIFOWithoutConstruction)
 {
     PtrReusablePool<HetBase> pool;
-    pool.add(kA, makeA); // 0
-    pool.add(kB, makeB); // 1
-    pool.add(kA, makeA); // 2
+    pool.add_t(kFactoryA); // 0
+    pool.add_t(kFactoryB); // 1
+    pool.add_t(kFactoryA); // 2
 
     const int reuses_before = HetBase::s_reuses;
     pool.remove(0);
@@ -613,14 +608,13 @@ TEST_F(HeteroPoolTest, SameTypeReuseLIFOWithoutConstruction)
     EXPECT_EQ(3, pool.end());
 
     const int made_before = HetA::s_made;
-    EXPECT_EQ(2, pool.add(kA, makeA)); // LIFO within type: last freed A first
-    EXPECT_EQ(0, pool.add(kA, makeA));
+    EXPECT_EQ(2, pool.add_t(kFactoryA)); // LIFO within type: last freed A first
+    EXPECT_EQ(0, pool.add_t(kFactoryA));
     EXPECT_EQ(made_before, HetA::s_made);            // factory never ran
-    EXPECT_EQ(reuses_before + 2, HetBase::s_reuses); // single-reset: reset at remove() only,
-                                                     // re-issuing a parked slot adds none
-    EXPECT_EQ(3, pool.end());                   // no growth
+    EXPECT_EQ(reuses_before + 4, HetBase::s_reuses); // + reuse-on-reuse x2
+    EXPECT_EQ(3, pool.end());                        // no growth
 
-    EXPECT_EQ(3, pool.add(kA, makeA)); // bucket empty -> grow
+    EXPECT_EQ(3, pool.add_t(kFactoryA)); // bucket empty -> grow
     EXPECT_EQ(made_before + 1, HetA::s_made);
 }
 
@@ -629,71 +623,70 @@ TEST_F(HeteroPoolTest, SameTypeReuseLIFOWithoutConstruction)
 TEST_F(HeteroPoolTest, ForeignTypeSlotNotReused)
 {
     PtrReusablePool<HetBase> pool;
-    pool.add(kA, makeA); // 0
-    pool.add(kB, makeB); // 1
-    pool.remove(0);      // free A slot
+    pool.add_t(kFactoryA); // 0
+    pool.add_t(kFactoryB); // 1
+    pool.remove(0);        // free A slot
 
-    EXPECT_EQ(2, pool.add(kB, makeB)); // grows; does NOT take slot 0
+    EXPECT_EQ(2, pool.add_t(kFactoryB)); // grows; does NOT take slot 0
     EXPECT_FALSE(pool.hasElement(0));
     EXPECT_EQ(2, HetB::s_made);
 
-    EXPECT_EQ(0, pool.add(kA, makeA)); // A request reuses the A slot
-    EXPECT_EQ(1, HetA::s_made);        // no construction for the reuse
+    EXPECT_EQ(0, pool.add_t(kFactoryA)); // A request reuses the A slot
+    EXPECT_EQ(1, HetA::s_made);          // no construction for the reuse
 }
 
-// adopt(): takes a populated object as-is (no reuse() on the way in, payload
-// preserved), always appends; after remove() the slot joins the per-type
-// free list and construct-flow add() of the same type can reuse it.
-TEST_F(HeteroPoolTest, AdoptKeepsPayloadAndJoinsReuseAfterRemove)
+// push_t(): hands out the element so a caller fills it IN PLACE — the pool
+// owns the construction, so no ready-made object is ever handed in (a filled
+// slot then behaves exactly like any other: reuse-on-remove, recycled by a
+// later same-type request without constructing).
+TEST_F(HeteroPoolTest, PushTHandsOutElementForInPlaceFill)
 {
     PtrReusablePool<HetBase> pool;
-    auto obj = std::make_unique<HetA>();
-    obj->value = 42;
+    HetBase& elem = pool.push_t(kFactoryA);
+    elem.value = 42; // filled in place, through the pool's own element
+    EXPECT_EQ(0, pool.begin());
+    EXPECT_EQ(42, pool.at(0).value);
+    EXPECT_EQ(&elem, &pool.at(0)) << "push_t must return the element of the new slot";
 
-    int idx = pool.adopt(std::move(obj));
-    EXPECT_EQ(0, idx);
-    EXPECT_EQ(42, pool.at(idx).value) << "adopt must not reset the payload";
-
-    pool.remove(idx); // reuse-on-remove parks it in the A bucket
+    pool.remove(0); // reuse-on-remove parks it in the A bucket
     const int made_before = HetA::s_made;
-    EXPECT_EQ(idx, pool.add(kA, makeA)) << "construct-flow reuses the adopted slot";
-    EXPECT_EQ(made_before, HetA::s_made);
-    EXPECT_EQ(0, pool.at(idx).value) << "reused object must be reset";
+    EXPECT_EQ(0, pool.add_t(kFactoryA)) << "the freed slot is recycled";
+    EXPECT_EQ(made_before, HetA::s_made) << "recycling constructs nothing";
+    EXPECT_EQ(0, pool.at(0).value) << "a recycled element is reset";
 }
 
 TEST_F(HeteroPoolTest, FactoryMisbehaviorThrows)
 {
     PtrReusablePool<HetBase> pool;
     // Factory produces a type different from the requested key.
-    EXPECT_THROW(pool.add(kA, makeB), Exception);
+    EXPECT_THROW(pool.add_t(kA, [] { return makeB(nullptr); }), Exception);
     // Factory returns null.
-    EXPECT_THROW(pool.add(kA, []() -> std::unique_ptr<HetBase> { return nullptr; }), Exception);
+    EXPECT_THROW(pool.add_t(kA, []() -> std::unique_ptr<HetBase> { return nullptr; }), Exception);
     EXPECT_EQ(0, pool.size());
     // The pool remains usable.
-    EXPECT_EQ(0, pool.add(kA, makeA));
+    EXPECT_EQ(0, pool.add_t(kFactoryA));
 }
 
-TEST_F(HeteroPoolTest, MixingDisciplinesThrows)
+TEST_F(HeteroPoolTest, MixingAddFamiliesThrows)
 {
-    PtrReusablePool<HetBase> hetero;
-    hetero.add(kA, makeA);
-    EXPECT_THROW(hetero.push(), Exception);
+    PtrReusablePool<HetBase> custom;
+    custom.add_t(kFactoryA);
+    EXPECT_THROW(custom.add(), Exception);
 
-    PtrReusablePool<HetBase> homogeneous;
-    homogeneous.push(); // HetBase is concrete -> homogeneous use is legal
-    EXPECT_THROW(homogeneous.add(kA, makeA), Exception);
-    EXPECT_THROW(homogeneous.adopt(std::make_unique<HetA>()), Exception);
+    PtrReusablePool<HetBase> standard;
+    standard.add(); // HetBase is concrete -> the standard family is legal
+    EXPECT_THROW(standard.add_t(kFactoryA), Exception);
 }
 
-// clear() is NON-destructive for the heterogeneous discipline too: objects
+// clear() is NON-destructive for the custom family too: objects
 // move to the per-type reserve (retained, not destroyed); the active spine
 // empties so allocation restarts at 0 (legacy PtrPool::clear() OBSERVABLE
 // contract: emptied backing, restart at 0 — but WITHOUT freeing objects).
 TEST_F(HeteroPoolTest, ClearRetainsObjectsAndRestartsAtZero)
 {
     PtrReusablePool<HetBase> pool;
-    pool.add(kA, makeA);
-    pool.add(kB, makeB);
+    pool.add_t(kFactoryA);
+    pool.add_t(kFactoryB);
     ASSERT_EQ(2, HetBase::s_live);
 
     pool.reuse();
@@ -703,7 +696,7 @@ TEST_F(HeteroPoolTest, ClearRetainsObjectsAndRestartsAtZero)
     EXPECT_EQ(2, HetBase::s_live) << "hetero clear() must RETAIN objects (reuse, not destroy)";
 
     const int a_made = HetA::s_made;
-    EXPECT_EQ(0, pool.add(kA, makeA)); // restarts at 0, reuses a reserved A
+    EXPECT_EQ(0, pool.add_t(kFactoryA)); // restarts at 0, reuses a reserved A
     EXPECT_EQ(a_made, HetA::s_made) << "reused reserved object, no construction";
 }
 
@@ -713,20 +706,147 @@ TEST_F(HeteroPoolTest, ClearRetainsObjectsAndRestartsAtZero)
 TEST_F(HeteroPoolTest, WholePoolReuseRetainsPerTypeAndRestartsAtZero)
 {
     PtrReusablePool<HetBase> pool;
-    pool.add(kA, makeA); // 0
-    pool.add(kB, makeB); // 1
-    pool.add(kA, makeA); // 2
+    pool.add_t(kFactoryA); // 0
+    pool.add_t(kFactoryB); // 1
+    pool.add_t(kFactoryA); // 2
 
     pool.reuse();
     EXPECT_EQ(0, pool.size());
-    EXPECT_EQ(0, pool.end());    // active spine emptied
+    EXPECT_EQ(0, pool.end());         // active spine emptied
     EXPECT_EQ(3, pool.reserveSize()); // 3 objects retained (2 A + 1 B)
     EXPECT_EQ(3, HetBase::s_live) << "whole-pool reuse() retains objects";
 
     const int a_made = HetA::s_made, b_made = HetB::s_made;
-    EXPECT_EQ(0, pool.add(kA, makeA)); // fresh spine, sequential from 0
-    EXPECT_EQ(1, pool.add(kA, makeA));
-    EXPECT_EQ(2, pool.add(kB, makeB));
+    EXPECT_EQ(0, pool.add_t(kFactoryA)); // fresh spine, sequential from 0
+    EXPECT_EQ(1, pool.add_t(kFactoryA));
+    EXPECT_EQ(2, pool.add_t(kFactoryB));
     EXPECT_EQ(a_made, HetA::s_made);
     EXPECT_EQ(b_made, HetB::s_made); // all reuses, no construction
+}
+
+// =====================================================================
+// Initializing add(args...), element-returning push(), and iteration.
+// =====================================================================
+
+namespace
+{
+    // Element with an initializing reuse() overload, the shape the pool relies
+    // on to make a fresh and a recycled slot indistinguishable.
+    struct ArgElem : public Reusable
+    {
+        static int s_ctor;
+        int a = -1;
+        int b = -1;
+
+        ArgElem()
+        {
+            ++s_ctor;
+        }
+        void reuse() override
+        {
+            a = -1;
+            b = -1;
+        }
+        void reuse(int first)
+        {
+            reuse();
+            a = first;
+        }
+        void reuse(int first, int second)
+        {
+            reuse();
+            a = first;
+            b = second;
+        }
+    };
+    int ArgElem::s_ctor = 0;
+} // namespace
+
+// add(args...) forwards to T::reuse(args...) on the fresh path AND on the
+// recycled path, so a caller never sees a half-initialized element.
+TEST(PtrReusablePoolArgs, AddInitializesOnFreshAndRecycledSlot)
+{
+    PtrReusablePool<ArgElem> pool;
+    ArgElem::s_ctor = 0;
+
+    const int i = pool.add(7);
+    EXPECT_EQ(7, pool.at(i).a);
+    EXPECT_EQ(-1, pool.at(i).b);
+
+    const int j = pool.add(1, 2);
+    EXPECT_EQ(1, pool.at(j).a);
+    EXPECT_EQ(2, pool.at(j).b);
+    EXPECT_EQ(2, ArgElem::s_ctor);
+
+    pool.remove(i);
+    const int recycled = pool.add(9, 8); // same slot, no construction
+    EXPECT_EQ(i, recycled);
+    EXPECT_EQ(2, ArgElem::s_ctor) << "a recycled slot constructs nothing";
+    EXPECT_EQ(9, pool.at(recycled).a) << "a recycled element is initialized too";
+    EXPECT_EQ(8, pool.at(recycled).b);
+}
+
+// push(args...) is add(args...) that hands back the element itself.
+TEST(PtrReusablePoolArgs, PushReturnsTheNewElement)
+{
+    PtrReusablePool<ArgElem> pool;
+    ArgElem& elem = pool.push(4, 5);
+    EXPECT_EQ(4, elem.a);
+    EXPECT_EQ(5, elem.b);
+    EXPECT_EQ(&elem, &pool.at(pool.begin()));
+    EXPECT_EQ(1, pool.size());
+}
+
+// items() walks the live elements, skipping freed slots; indices() yields the
+// same indices as the begin()/next()/end() walk.
+TEST(PtrReusablePoolIteration, ItemsAndIndicesSkipFreedSlots)
+{
+    PtrReusablePool<ArgElem> pool;
+    for (int k = 0; k < 5; k++)
+        pool.add(k);
+    pool.remove(1);
+    pool.remove(3);
+
+    std::vector<int> seen;
+    for (ArgElem& elem : pool.items())
+        seen.push_back(elem.a);
+    EXPECT_EQ(std::vector<int>({0, 2, 4}), seen);
+
+    std::vector<int> walked;
+    for (int i = pool.begin(); i != pool.end(); i = pool.next(i))
+        walked.push_back(i);
+    std::vector<int> from_range;
+    for (int i : pool.indices())
+        from_range.push_back(i);
+    EXPECT_EQ(walked, from_range);
+
+    // const access yields const elements.
+    const PtrReusablePool<ArgElem>& const_pool = pool;
+    int count = 0;
+    for (const ArgElem& elem : const_pool.items())
+    {
+        EXPECT_GE(elem.a, 0);
+        ++count;
+    }
+    EXPECT_EQ(3, count);
+}
+
+TEST(PtrReusablePoolIteration, ItemsOnEmptyPoolIsEmpty)
+{
+    PtrReusablePool<ArgElem> pool;
+    int count = 0;
+    for (ArgElem& elem : pool.items())
+    {
+        (void)elem;
+        ++count;
+    }
+    EXPECT_EQ(0, count);
+    pool.add(1);
+    pool.clear(); // clear() is the consumer-facing name for reuse()
+    for (ArgElem& elem : pool.items())
+    {
+        (void)elem;
+        ++count;
+    }
+    EXPECT_EQ(0, count) << "a cleared pool iterates over nothing";
 }

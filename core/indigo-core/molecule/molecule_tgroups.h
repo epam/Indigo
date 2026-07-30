@@ -67,13 +67,18 @@ namespace indigo
         void clear();
         static int cmp(TGroup& tg1, TGroup& tg2, void* context);
 
-        // Non-destructive reset for PtrReusablePool reuse. Restores the full
-        // default-constructed state a fresh TGroup() had (the legacy pool did
-        // add(new TGroup())), NOT the partial TGroup::clear() (which only resets
-        // three flags). Array buffers are retained; the owned fragment molecule
-        // is released. Defined in the .cpp because releasing the fragment needs
+        // Restores the default-constructed state, unlike clear(), which only
+        // resets three flags. Array buffers are retained and the owned fragment
+        // is released. Defined out of line because releasing the fragment needs
         // the complete BaseMolecule type.
         void reuse() override;
+
+        // Adds a clone of an existing group. copy() stays public for the places
+        // that overwrite an already-registered group in place.
+        void reuse(const TGroup& other)
+        {
+            copy(other);
+        }
 
         std::unique_ptr<BaseMolecule> fragment;
 

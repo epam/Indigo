@@ -917,8 +917,3 @@ TEST_F(PtrArrayTest, Top_OnEmpty_Throws)
     PtrArray<Tracked> arr;
     EXPECT_ANY_THROW((void)arr.top());
 }
-
-// (The milestone-19 #3766 sparse index-walk API — begin/next/end/hasElement/
-// liveCount — was removed as dead code: group-A pool consumers migrated to
-// PtrReusablePool, not to a sparse PtrArray, so no production caller ever used
-// it. See REVIEW-3766 item S9.)

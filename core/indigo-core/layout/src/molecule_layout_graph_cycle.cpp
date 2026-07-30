@@ -49,9 +49,9 @@ MoleculeLayoutGraph::Cycle::Cycle(const Array<int>& vertices, const Array<int>& 
     _morgan_code_calculated = false;
 }
 
-// init(): same effect as the matching two-argument constructor, applied to an
-// already-constructed (pooled) cycle.
-void MoleculeLayoutGraph::Cycle::init(const List<int>& edges, const MoleculeLayoutGraph& graph)
+// Same effect as the matching constructor, applied to an already-constructed
+// pooled cycle.
+void MoleculeLayoutGraph::Cycle::reuse(const List<int>& edges, const MoleculeLayoutGraph& graph)
 {
     copy(edges, graph);
     _attached_weight.resize(graph.vertexCount());
@@ -59,7 +59,7 @@ void MoleculeLayoutGraph::Cycle::init(const List<int>& edges, const MoleculeLayo
     _morgan_code_calculated = false;
 }
 
-void MoleculeLayoutGraph::Cycle::init(const Array<int>& vertices, const Array<int>& edges)
+void MoleculeLayoutGraph::Cycle::reuse(const Array<int>& vertices, const Array<int>& edges)
 {
     copy(vertices, edges);
     _attached_weight.resize(vertices.size());

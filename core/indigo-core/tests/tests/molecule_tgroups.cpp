@@ -16,14 +16,14 @@
  * limitations under the License.
  ***************************************************************************/
 
-// Characterization tests for indigo::MoleculeTGroups (PtrPool<TGroup>).
+// Characterization tests for indigo::MoleculeTGroups.
 //
-// Rationale (task #3766): MoleculeTGroups::remove() -> PtrPool<TGroup>::remove()
-// is a documented coverage gap (0 calls in the whole known test run). It is
-// exactly the operation that frees a pool slot for reuse, so its behavior is
-// the golden master the PtrReusablePool migration must preserve: index
-// allocation, LIFO slot reuse, count/iteration after removal, and lookup by
-// name no longer finding a removed template.
+// Rationale (task #3766): MoleculeTGroups::remove() was a documented coverage
+// gap (0 calls in the whole known test run) and is exactly the operation that
+// frees a pool slot for reuse. Written against the legacy PtrPool<TGroup>,
+// these tests are the golden master the PtrReusablePool migration preserves:
+// index allocation, LIFO slot reuse, count/iteration after removal, and lookup
+// by name no longer finding a removed template.
 
 #include <gtest/gtest.h>
 
@@ -75,9 +75,9 @@ TEST(MoleculeTGroupsContract, FindTGroupByName)
 TEST(MoleculeTGroupsContract, RemoveFreesSlotAndAddReusesIndex)
 {
     MoleculeTGroups tg;
-    addNamed(tg, "A");      // 0
+    addNamed(tg, "A");         // 0
     int b = addNamed(tg, "B"); // 1
-    addNamed(tg, "C");      // 2
+    addNamed(tg, "C");         // 2
     ASSERT_EQ(3, tg.getTGroupCount());
 
     tg.remove(b);

@@ -300,7 +300,7 @@ TEST_F(PoolLifetimeTest, ObjPoolReuseConstructsFreshInstance)
 
     int b = 99;
     int j = pool.add(b);
-    EXPECT_EQ(i, j);          // same slot reused (LIFO)
+    EXPECT_EQ(i, j);           // same slot reused (LIFO)
     EXPECT_EQ(99, pool[j].id); // fresh construction, not stale 7
     EXPECT_EQ(1, Tracked::s_live);
     pool.remove(j);

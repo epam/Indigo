@@ -16,16 +16,16 @@
  * limitations under the License.
  ***************************************************************************/
 
-// Characterization tests for indigo::MoleculeSGroups (PtrPool<SGroup>) and
-// indigo::Superatom::attachment_points (ObjPool<_AttachmentPoint>).
+// Characterization tests for indigo::MoleculeSGroups and
+// indigo::Superatom::attachment_points.
 //
-// Rationale (task #3766): MoleculeSGroups::remove() -> PtrPool<SGroup>::remove()
-// (molecule_sgroups.cpp:177) and Superatom::attachment_points.remove()
-// (base_molecule_templates.cpp:1251) are slot-reuse paths only exercised
-// indirectly by format loaders. These tests pin the reuse contract directly:
-// index allocation, LIFO reuse, per-type counting, iteration over holes, and
-// (for the ObjPool case) that a non-trivial element type with an Array<char>
-// member round-trips construct/destruct through the pool.
+// Rationale (task #3766): MoleculeSGroups::remove() and
+// Superatom::attachment_points.remove() are slot-reuse paths only exercised
+// indirectly by format loaders. Written against the legacy PtrPool<SGroup> /
+// ObjPool<_AttachmentPoint>, they pin the reuse contract the PtrReusablePool
+// migration preserves: index allocation, LIFO reuse, per-type counting,
+// iteration over holes, and that a non-trivial element type with an
+// Array<char> member round-trips construct/destruct through the pool.
 
 #include <gtest/gtest.h>
 
@@ -34,7 +34,7 @@
 
 using namespace indigo;
 
-// ---- MoleculeSGroups (PtrPool<SGroup>) -----------------------------------
+// ---- MoleculeSGroups ------------------------------------------------------
 
 TEST(MoleculeSGroupsContract, AddAssignsIndicesAndCountsByType)
 {
@@ -57,9 +57,9 @@ TEST(MoleculeSGroupsContract, AddAssignsIndicesAndCountsByType)
 TEST(MoleculeSGroupsContract, RemoveFreesSlotAndAddReusesFreshInstance)
 {
     MoleculeSGroups sg;
-    sg.addSGroup(SGroup::SG_TYPE_GEN);       // 0
+    sg.addSGroup(SGroup::SG_TYPE_GEN);         // 0
     int b = sg.addSGroup(SGroup::SG_TYPE_GEN); // 1
-    sg.addSGroup(SGroup::SG_TYPE_GEN);       // 2
+    sg.addSGroup(SGroup::SG_TYPE_GEN);         // 2
     sg.getSGroup(b).atoms.push(42);
     ASSERT_EQ(3, sg.getSGroupCount());
 
@@ -68,7 +68,7 @@ TEST(MoleculeSGroupsContract, RemoveFreesSlotAndAddReusesFreshInstance)
     EXPECT_FALSE(sg.hasSGroup(b));
 
     int reused = sg.addSGroup(SGroup::SG_TYPE_GEN);
-    EXPECT_EQ(b, reused);                       // LIFO slot reuse
+    EXPECT_EQ(b, reused); // LIFO slot reuse
     EXPECT_TRUE(sg.hasSGroup(reused));
     EXPECT_EQ(0, sg.getSGroup(reused).atoms.size()); // fresh, not stale {42}
     EXPECT_EQ(3, sg.getSGroupCount());
@@ -117,7 +117,7 @@ namespace
     // push() then fill (equivalent to the legacy _AttachmentPoint(int) ctor).
     int addAp(Superatom& sup, int atom_id)
     {
-        int idx = sup.attachment_points.push();
+        int idx = sup.attachment_points.add();
         auto& ap = sup.attachment_points[idx];
         ap.aidx = atom_id;
         ap.apid.push(0);
@@ -144,7 +144,7 @@ TEST(SuperatomAttachmentPointsContract, AddRemoveReuseWithNonTrivialElement)
     EXPECT_FALSE(sup.attachment_points.hasElement(i1));
 
     int reused = addAp(sup, a1);
-    EXPECT_EQ(i1, reused);                          // LIFO reuse
+    EXPECT_EQ(i1, reused); // LIFO reuse
     EXPECT_EQ(11, sup.attachment_points[reused].aidx);
     EXPECT_EQ(1, sup.attachment_points[reused].apid.size()); // fresh element
 }

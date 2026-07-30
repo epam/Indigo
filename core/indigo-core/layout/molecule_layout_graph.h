@@ -212,15 +212,13 @@ namespace indigo
             void copy(const List<int>& edges, const MoleculeLayoutGraph& graph);
             void copy(const Array<int>& vertices, const Array<int>& edges);
 
-            // Initialize an already-constructed (pooled) cycle exactly as the
-            // corresponding two-argument constructor would. Used by the
-            // PtrReusablePool call sites, which push() a default cycle and then
-            // fill it, since the pool default-constructs its elements.
-            void init(const List<int>& edges, const MoleculeLayoutGraph& graph);
-            void init(const Array<int>& vertices, const Array<int>& edges);
+            // Set up a pooled cycle exactly as the corresponding two-argument
+            // constructor would. The pool applies one of these on every add(),
+            // so a cycle is never handed out uninitialized.
+            void reuse(const List<int>& edges, const MoleculeLayoutGraph& graph);
+            void reuse(const Array<int>& vertices, const Array<int>& edges);
 
-            // Non-destructive reset for PtrReusablePool reuse: restore the
-            // default-constructed state (buffers retained).
+            // Restores the default-constructed state; buffers are retained.
             void reuse() override
             {
                 _vertices.clear();

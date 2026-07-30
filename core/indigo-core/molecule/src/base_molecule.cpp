@@ -51,6 +51,12 @@ BaseMolecule::BaseMolecule() : original_format(BaseMolecule::UNKNOWN), _edit_rev
 {
 }
 
+PtrReusablePool<BaseMolecule>::Factory BaseMolecule::poolFactoryLike(const BaseMolecule& sample)
+{
+    return {std::type_index(typeid(sample)), [](void* context) { return std::unique_ptr<BaseMolecule>(static_cast<const BaseMolecule*>(context)->neu()); },
+            const_cast<void*>(static_cast<const void*>(&sample))};
+}
+
 BaseMolecule::~BaseMolecule()
 {
 }
@@ -91,9 +97,9 @@ void BaseMolecule::clear()
     _attachment_index.clear();
     sgroups.clear();
     tgroups.clear();
-    template_attachment_points.reuse();
+    template_attachment_points.clear();
     template_attachment_indexes.clear();
-    _template_occurrences.reuse();
+    _template_occurrences.clear();
     _template_names.clear();
     _template_classes.clear();
 
@@ -248,7 +254,7 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
                 {
                     for (int j = supersa.attachment_points.begin(); j < supersa.attachment_points.end(); j = supersa.attachment_points.next(j))
                     {
-                        int ap_idx = sa.attachment_points.push();
+                        int ap_idx = sa.attachment_points.add();
                         Superatom::_AttachmentPoint& ap = sa.attachment_points.at(ap_idx);
                         int a_idx = supersa.attachment_points[j].aidx;
                         if (a_idx > -1)
@@ -748,21 +754,21 @@ int BaseMolecule::flipBondWithDirection(int atom_parent, int atom_from, int atom
 
         // 3. Update Adjacency Lists
         // A. Pivot (stays connected): change neighbor ref from old to new
-        Vertex& v_pivot = _vertices.at(pivot);
+        Vertex& v_pivot = _vertices->at(pivot);
         int item_pivot = v_pivot.findNeiEdge(edge_idx);
         if (item_pivot == -1)
             throw Error("flipBondWithDirection: inconsistency at pivot %d", pivot);
         v_pivot.neighbors_list[item_pivot].v = new_neighbor;
 
         // B. Old Neighbor (loses connection): remove edge from adjacency list
-        Vertex& v_old = _vertices.at(old_neighbor);
+        Vertex& v_old = _vertices->at(old_neighbor);
         int item_old = v_old.findNeiEdge(edge_idx);
         if (item_old == -1)
             throw Error("flipBondWithDirection: inconsistency at old neighbor %d", old_neighbor);
         v_old.neighbors_list.remove(item_old);
 
         // C. New Neighbor (gains connection): add edge to adjacency list
-        Vertex& v_new = _vertices.at(new_neighbor);
+        Vertex& v_new = _vertices->at(new_neighbor);
         int item_new = v_new.neighbors_list.add();
         VertexEdge& ve_new = v_new.neighbors_list[item_new];
         ve_new.e = edge_idx;
@@ -879,10 +885,9 @@ void BaseMolecule::clone(BaseMolecule& other, Array<int>* mapping, Array<int>* i
     for (int i = 0; i < other.monomer_shapes.size(); ++i)
         monomer_shapes.add(new KetMonomerShape(other.monomer_shapes[i]));
     for (int i = 0; i < other._template_occurrences.size(); ++i)
-        {
-            int occ_idx = _template_occurrences.push();
-            _template_occurrences[occ_idx].copy(other._template_occurrences[i]);
-        }
+    {
+        _template_occurrences.add(other._template_occurrences[i]);
+    }
     for (int i = 0; i < other._template_names.size(); ++i)
         _template_names.add(other._template_names.at(i));
     for (int i = 0; i < other._template_classes.size(); ++i)
@@ -928,10 +933,9 @@ void BaseMolecule::clone_KeepIndices(BaseMolecule& other, int skip_flags)
     for (int j = 0; j < other.monomer_shapes.size(); ++j)
         monomer_shapes.add(new KetMonomerShape(other.monomer_shapes[j]));
     for (i = 0; i < other._template_occurrences.size(); ++i)
-        {
-            int occ_idx = _template_occurrences.push();
-            _template_occurrences[occ_idx].copy(other._template_occurrences[i]);
-        }
+    {
+        _template_occurrences.add(other._template_occurrences[i]);
+    }
     for (i = 0; i < other._template_names.size(); ++i)
         _template_names.add(other._template_names.at(i));
     for (i = 0; i < other._template_classes.size(); ++i)
@@ -1356,7 +1360,7 @@ void BaseMolecule::removeUnusedRGroups()
     {
         if (used_rgroups.find(i) == used_rgroups.end())
         {
-            rgroups.getRGroup(i).fragments.reuse();
+            rgroups.getRGroup(i).fragments.clear();
             rgroups.getRGroup(i).clear();
         }
     }
@@ -1433,7 +1437,7 @@ void BaseMolecule::setRSiteAttachmentOrder(int atom_idx, int att_atom_idx, int o
 
 void BaseMolecule::setTemplateAtomAttachmentOrder(int atom_idx, int att_atom_idx, const char* att_id)
 {
-    int att_idx = template_attachment_points.push();
+    int att_idx = template_attachment_points.add();
     auto& ap = template_attachment_points.at(att_idx);
     ap.ap_occur_idx = atom_idx;
     ap.ap_aidx = att_atom_idx;

@@ -19,13 +19,11 @@
 #ifndef __ptr_reusable_pool_h__
 #define __ptr_reusable_pool_h__
 
-#include <cassert>
-#include <cstddef>
 #include <cstdint>
 #include <memory>
-#include <new>
 #include <typeindex>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "base_cpp/exception.h"
@@ -35,373 +33,214 @@ namespace indigo
 {
 
     DECL_EXCEPTION(PtrReusablePoolError);
+
     /***************************************************************************
-    * PtrReusablePool<T> — sparse owning pool with stable indices and stable
-    * object addresses (issue #3766).
-    *
-    * Contract:
-    *  * Indices are handed out from 0 upwards; a freed slot is reused LIFO;
-    *    reuse() restarts allocation at 0.
-    *  * Reuse, never destroy: remove() and reuse() reset objects via T::reuse()
-    *    and keep them. Objects are freed only by purge()/dtor, plus one bounded
-    *    exception — the reserve holds at most MAX_RESERVE_PER_BUCKET objects per
-    *    bucket and destroys the excess, so memory does not stay pinned at the
-    *    all-time high-water mark.
-    *  * A T& obtained from operator[] stays valid across later push() calls.
-    *  * Growth is exception-safe: the object is fully constructed before any
-    *    bookkeeping is mutated.
-    *  * The pool is itself Reusable, so pools can nest.
-    *
-    * Two storage disciplines, one contract:
-    *  * HOMOGENEOUS (push()): objects are constructed in place inside chunks
-    *    (see Slabs). One allocation covers a whole chunk, neighbouring elements
-    *    are contiguous, and construction is lazy — one constructor call per
-    *    fresh push. reuse() retires the active range into an IMPLICIT reserve:
-    *    the objects stay constructed in their chunks and the next growth
-    *    re-activates them index by index with no construction.
-    *  * HETEROGENEOUS (add(type_index, factory) / adopt()): polymorphic element
-    *    hierarchies (SGroup, MetaObject, BaseMolecule) cannot share in-place
-    *    slots of one static type, so objects live behind std::unique_ptr. Freed
-    *    slots are parked in per-type free lists keyed by Reusable::reuseTypeId()
-    *    because reuse() cannot change an object's dynamic type. add() grows
-    *    through a lazy factory, so nothing is constructed on the reuse path;
-    *    adopt() appends a caller-constructed, already populated object.
-    *
-    * The discipline is fixed by the first allocating call; mixing the two on one
-    * instance throws.
-    ****************************************************************************/
+     * Sparse owning pool of Reusable elements, addressed by stable int indices.
+     *
+     * Indices are handed out from 0 upwards and a freed one is recycled LIFO;
+     * clear() empties the pool and restarts allocation at 0. A T& obtained from
+     * operator[]/at() stays valid across later add() calls: the elements are
+     * heap-allocated and never relocated. Iteration follows slot order, so the
+     * order consumers observe (and save to files) is insertion order, never
+     * hash order.
+     *
+     * Lifetime: remove() and clear() do not destroy an element, they reset it
+     * through T::reuse() and keep it for a later add(). Elements are destroyed by
+     * purge() and the destructor, and by clear() only for the part of a reuse
+     * bucket beyond MAX_RESERVE_PER_BUCKET.
+     *
+     * The pool constructs every element itself; a caller never hands in a
+     * ready-made object. Two families of add do that, and one instance must use
+     * only one of them (mixing throws):
+     *  - add(args...)/push(args...) for a single element type. The element is
+     *    initialized with T::reuse(args...) on every path, so a fresh and a
+     *    recycled slot are indistinguishable to the caller.
+     *  - add_t(factory)/push_t(factory) for a polymorphic hierarchy, where the
+     *    caller fills the returned element in place. A freed slot is recycled
+     *    only by a request for the same dynamic type, because a reset cannot
+     *    change the type of an object.
+     *
+     * Design — the pool separates its two roles the way an allocator does:
+     *  - _slots is the address space. It resolves an index to an object in O(1)
+     *    and defines end(). It cannot be a type-keyed container: pool indices
+     *    are values that outlive any pool call — consumers store them in their
+     *    own data (Edge ends, atom fields, C-API handles) and size dense arrays
+     *    by end() — and elements are dereferenced far more often than allocated,
+     *    while the dynamic type is known only at allocation, never at access.
+     *  - Spares is the allocator satellite, consulted only when a slot is
+     *    allocated or retired. The standard family has exactly one element
+     *    type, so it keeps a single Spares and its allocation path never
+     *    hashes; the custom family keys Spares by dynamic type, one lookup
+     *    per add_t().
+     *  - std::unique_ptr backing is the simplest storage that keeps references
+     *    stable: the legacy pools relocated live objects with realloc, which is
+     *    undefined behaviour for non-trivial types.
+     *
+     * The pool is itself Reusable, so pools can nest.
+     ****************************************************************************/
 
     template <class T>
     class PtrReusablePool : public Reusable
     {
-        // The T-must-be-Reusable check lives in the allocating methods rather
-        // than at class scope: is_reusable_v<T> (is_base_of) needs a COMPLETE T,
-        // but the pool must be declarable with a forward-declared element type
-        // (e.g. PtrReusablePool<BaseMolecule> in molecule_rgroups.h, which only
-        // forward-declares BaseMolecule to avoid a circular include). By the time
-        // push()/add()/adopt() are instantiated, T is complete at the call site.
-        static void _assertReusable()
-        {
-            static_assert(is_reusable_v<T>, "T must implement the Reusable interface (inherit Reusable + define reuse())");
-        }
-
-        // A chunk spans roughly one memory page and holds a power-of-two number
-        // of slots, capped so that a single chunk never grows unbounded for
-        // small element types.
-        static constexpr std::size_t CHUNK_TARGET_BYTES = 4096;
-        static constexpr std::size_t CHUNK_MAX_SLOTS = 64;
-
-        // ---- Slabs: the storage of the homogeneous discipline ---------------
-        //
-        // Why a hand-rolled store and not a standard container: the pooled
-        // element types (Vertex, TGroup, Cycle, _AttachmentPoint, ...) are
-        // neither movable nor copyable — each declares a destructor, which
-        // suppresses the implicit move constructor, and holds Array/List/
-        // PtrArray members that declare a move constructor, which deletes the
-        // implicit copy constructor. Therefore:
-        //  * std::vector<T> does not compile for them at all: growth requires
-        //    MoveInsertable. The legacy ObjPool<T> worked around that by
-        //    placement-new into Pool<T>'s Array<T> plus std::realloc, i.e. it
-        //    relocated non-trivial objects byte-wise — undefined behaviour, and
-        //    the reason references into the old pool could dangle.
-        //  * std::deque<T> does compile (emplace_back needs no move) and gives
-        //    the same reference stability, but its block size is unspecified:
-        //    the MSVC STL uses one element per block once sizeof(T) exceeds 8,
-        //    degenerating into one allocation per object, while libstdc++ uses
-        //    512-byte blocks. A platform-dependent allocation profile is not
-        //    acceptable here.
-        //  * std::vector<std::unique_ptr<T>> also costs one allocation per
-        //    object, which profiling identified as the dominant cost of the hot
-        //    parse and substructure-match paths.
-        // So: chunks of raw storage, one allocation per slotsPerChunk() objects,
-        // lazy placement-new, explicit destruction. The ceremony this requires —
-        // alignment, std::launder, destructor calls, chunk release — is confined
-        // to this class; the pool itself only asks for addresses.
-        class Slabs
-        {
-        public:
-            // A constexpr FUNCTION (not a static data member) so sizeof(T) is
-            // evaluated lazily — only where a homogeneous body is instantiated
-            // and T is therefore complete.
-            static constexpr std::size_t slotsPerChunk()
-            {
-                std::size_t slots = 1;
-                while (slots < CHUNK_MAX_SLOTS && (slots * 2) * sizeof(T) <= CHUNK_TARGET_BYTES)
-                    slots *= 2;
-                return slots;
-            }
-
-            ~Slabs()
-            {
-                destroyFrom(0);
-            }
-
-            // Slots [0..constructed()) hold constructed objects.
-            int constructed() const
-            {
-                return _constructed;
-            }
-
-            // Address of the constructed object in slot idx. std::launder is
-            // required when forming a pointer to a placement-new'd object
-            // through the raw-storage address.
-            T* ptr(int idx) const
-            {
-                Chunk* chunk = _chunks[static_cast<std::size_t>(idx) / slotsPerChunk()].get();
-                return std::launder(reinterpret_cast<T*>(chunk->raw) + static_cast<std::size_t>(idx) % slotsPerChunk());
-            }
-
-            // Append one object. A throwing constructor leaves the store
-            // unchanged: the chunk may already be allocated, but that is spare
-            // capacity, not an object.
-            void construct(int idx)
-            {
-                assert(idx == _constructed); // slots are constructed in order
-                const std::size_t chunk_idx = static_cast<std::size_t>(idx) / slotsPerChunk();
-                if (chunk_idx >= _chunks.size())
-                    // `new Chunk` default-initializes: the raw byte array stays
-                    // uninitialized on purpose (make_unique would value-
-                    // initialize it, i.e. memset a whole page).
-                    _chunks.push_back(std::unique_ptr<Chunk>(new Chunk));
-                Chunk& chunk = *_chunks[chunk_idx];
-                new (chunk.raw + (static_cast<std::size_t>(idx) % slotsPerChunk()) * sizeof(T)) T();
-                _constructed++;
-            }
-
-            // Destroy the objects in [keep..constructed()) and release the
-            // chunks that become empty. destroyFrom(0) releases everything.
-            void destroyFrom(int keep)
-            {
-                if (keep >= _constructed)
-                    return;
-                for (int i = _constructed - 1; i >= keep; i--)
-                    ptr(i)->~T();
-                _constructed = keep;
-                const std::size_t needed_chunks = (static_cast<std::size_t>(keep) + slotsPerChunk() - 1) / slotsPerChunk();
-                while (_chunks.size() > needed_chunks)
-                    _chunks.pop_back();
-            }
-
-        private:
-            // alignas(T) + unsigned char[] is the recommended raw-storage
-            // pattern (std::aligned_storage is deprecated).
-            struct Chunk
-            {
-                alignas(T) unsigned char raw[sizeof(T) * slotsPerChunk()];
-            };
-
-            std::vector<std::unique_ptr<Chunk>> _chunks; // chunks never move while in use
-            int _constructed = 0;
-        };
-
     public:
         DECL_TPL_ERROR(PtrReusablePoolError);
 
-        // Initial spine reserve: a freshly constructed pool has room for a first
-        // couple of elements. It is deliberately small, because most pools owned
-        // by a molecule stay empty or hold single digits and every constructed
-        // pool pays this reserve. It is NOT the growth base — growth starts from
-        // the size the discipline actually needs (see _growLive/_growSpine), so
-        // a small initial reserve costs no extra reallocations later.
+        // How to make an element of one dynamic type. The key is known without
+        // calling `make`, which is what lets add_t() recycle a slot without
+        // constructing anything. `context` is the argument passed to `make`, so a
+        // Factory built by a static class method needs no allocation even when it
+        // has to consult an existing object (sample.neu()).
+        struct Factory
+        {
+            std::type_index key;
+            std::unique_ptr<T> (*make)(void* context);
+            void* context = nullptr;
+        };
+
+        // Room reserved by the constructor. Deliberately small: most pools stay
+        // empty or hold single digits, and every constructed pool pays it.
         static constexpr int DEFAULT_RESERVE = 2;
 
-        // Upper bound on retired objects kept per reuse bucket. The reserve
-        // keeps up to this many objects for the load-clear-reload reuse win;
-        // retiring more destroys the excess so memory stays bounded. Homogeneous
-        // pools have one bucket; heterogeneous pools cap each per-type bucket
-        // independently.
+        // Retired elements kept per reuse bucket; the excess is destroyed, so a
+        // cleared pool does not pin the all-time high-water mark.
         static constexpr int MAX_RESERVE_PER_BUCKET = 64;
 
         PtrReusablePool()
         {
-            // Pre-reserve the occupancy spine shared by both disciplines. The
-            // discipline-specific storage is pre-reserved when the discipline is
-            // fixed (_requireDiscipline): _slots for heterogeneous; homogeneous
-            // needs no _slots at all (objects live in chunks).
+            // Checked here and not at class scope so that a pool can be declared
+            // with a forward-declared element type; T is complete by the time an
+            // owner is constructed.
+            static_assert(is_reusable_v<T>, "T must implement the Reusable interface (inherit Reusable + define reuse())");
+            _slots.reserve(DEFAULT_RESERVE);
             _live.reserve(DEFAULT_RESERVE);
         }
 
-        ~PtrReusablePool() override
-        {
-            _slabs.destroyFrom(0);
-        }
+        ~PtrReusablePool() override = default;
 
-        // Rule of Five: the pool owns unique heap objects and stable indices, so
-        // it is neither copyable nor movable — the identity of the container is
-        // meaningful and must not be relocated. Declared explicitly for intent.
+        // Neither copyable nor movable: consumers hold indices and references into
+        // a specific pool instance.
         PtrReusablePool(const PtrReusablePool&) = delete;
         PtrReusablePool& operator=(const PtrReusablePool&) = delete;
         PtrReusablePool(PtrReusablePool&&) = delete;
         PtrReusablePool& operator=(PtrReusablePool&&) = delete;
 
-        // Allocate a slot and return its index: reuse a freed slot, re-activate
-        // an object retained across a prior reuse(), or construct a fresh one.
-        int push()
+        // Allocates a slot and returns its index. The element is initialized with
+        // T::reuse(args...) whether the slot is recycled or new.
+        template <class... Args>
+        int add(Args&&... args)
         {
-            _assertReusable();
-            _requireDiscipline(Discipline::Homogeneous);
-            if (!_free.empty())
-            {
-                int idx = _free.back(); // LIFO
-                _free.pop_back();
-                // Single-reset contract: remove() already reset the object when
-                // it parked the slot, and a parked slot cannot be reached
-                // through checked access, so re-issuing it is pure bookkeeping.
-                _live[idx] = true;
-                _size++;
-                return idx;
-            }
-
-            const int idx = static_cast<int>(_live.size());
-            _ensureLiveCapacity(); // throws before anything is mutated
-
-            // An object retained across a prior reuse() (implicit reserve): it
-            // was reset on retirement, so no construction and no reset here.
-            if (idx < _slabs.constructed())
-            {
-                _live.push_back(1); // nothrow after _ensureLiveCapacity()
-                _size++;
-                return idx;
-            }
-
-            _slabs.construct(idx);
-            _live.push_back(1);
-            _size++;
+            _requireFamily(Family::Standard);
+            const int idx = _acquireStandardSlot();
+            _slots[idx]->reuse(std::forward<Args>(args)...);
             return idx;
         }
 
-        // Heterogeneous allocation: reuse a freed slot of the SAME dynamic type,
-        // or grow. The factory runs only when no slot of `key` is available, so
-        // call sites like add(key, [&]{ return mol.neu(); }) construct nothing
-        // on the reuse path.
-        template <typename F>
-        int add(std::type_index key, F&& make)
+        // add() that returns the element instead of its index.
+        template <class... Args>
+        T& push(Args&&... args)
         {
-            _assertReusable();
-            _requireDiscipline(Discipline::Heterogeneous);
-            auto it = _free_by_type.find(key);
-            if (it != _free_by_type.end() && !it->second.empty())
-            {
-                int idx = it->second.back(); // LIFO within the type
-                it->second.pop_back();
-                _live[idx] = true; // single-reset contract, as in push()
-                _size++;
-                return idx;
-            }
-
-            // Grow by reusing a retained object of the SAME type (no factory
-            // call); reserved objects were already reset on retirement.
-            auto rit = _reserve_by_type.find(key);
-            if (rit != _reserve_by_type.end() && !rit->second.empty())
-            {
-                _ensureSpineCapacity();
-                _slots.push_back(std::move(rit->second.back()));
-                rit->second.pop_back();
-                _live.push_back(1);
-                _size++;
-                return static_cast<int>(_slots.size()) - 1;
-            }
-
-            std::unique_ptr<T> obj = std::forward<F>(make)();
-            if (!obj)
-                throw Error("add(): type factory returned null");
-            if (obj->reuseTypeId() != key)
-                throw Error("add(): type factory produced an object of a different type than requested");
-            _ensureSpineCapacity();
-            _slots.push_back(std::move(obj));
-            _live.push_back(1);
-            _size++;
-            return static_cast<int>(_slots.size()) - 1;
+            return *_slots[add(std::forward<Args>(args)...)];
         }
 
-        // Take ownership of a caller-constructed, typically already populated
-        // object. Never reuses a freed slot: the incoming object carries its own
-        // payload, which the retained occupant of a freed slot could not take
-        // over. Freed adopted slots DO enter the per-type free lists on
-        // remove(), so a later add() of the same type can reuse them.
-        int adopt(std::unique_ptr<T> obj)
+        // Allocates a slot for an element of factory.key and returns its index.
+        // factory.make() runs only when no slot of that type can be recycled.
+        int add_t(const Factory& factory)
         {
-            _assertReusable();
-            // Validate BEFORE fixing the discipline: a rejected adopt(nullptr)
-            // must not permanently lock a pool that has allocated nothing yet
-            // (which would then reject a later push()).
-            if (!obj)
-                throw Error("adopt(): null object");
-            _requireDiscipline(Discipline::Heterogeneous);
-            _ensureSpineCapacity();
-            _slots.push_back(std::move(obj));
-            _live.push_back(1);
-            _size++;
-            return static_cast<int>(_slots.size()) - 1;
+            return add_t(factory.key, [&factory] { return factory.make(factory.context); });
+        }
+
+        // Overload for a maker that captures.
+        template <class F>
+        int add_t(std::type_index key, F&& make)
+        {
+            _requireFamily(Family::Custom);
+            auto it = _spares_by_type.find(key); // the only type lookup on this path
+            if (it != _spares_by_type.end())
+            {
+                Spares& spares = it->second;
+                if (!spares.holes.empty())
+                {
+                    const int idx = spares.holes.back(); // LIFO within the type
+                    spares.holes.pop_back();
+                    _activate(idx);
+                    _slots[idx]->reuse();
+                    return idx;
+                }
+                if (!spares.detached.empty())
+                {
+                    std::unique_ptr<T> retained = std::move(spares.detached.back());
+                    spares.detached.pop_back();
+                    return _appendSlot(std::move(retained)); // reset when it was retired
+                }
+            }
+            return _appendSlot(_make(key, std::forward<F>(make)));
+        }
+
+        // add_t() that returns the element, so a caller can fill it in place:
+        //     BaseMolecule& fragment = fragments.push_t(factory);
+        T& push_t(const Factory& factory)
+        {
+            return *_slots[add_t(factory)];
+        }
+
+        template <class F>
+        T& push_t(std::type_index key, F&& make)
+        {
+            return *_slots[add_t(key, std::forward<F>(make))];
         }
 
         void remove(int idx)
         {
             checkUsed(idx);
-            _objPtr(idx)->reuse(); // the object stays alive
-            _live[idx] = false;
-            _parkFreedSlot(idx);
+            _slots[idx]->reuse(); // the element stays alive
+            _live[idx] = 0;
             _size--;
+            _parkFreedSlot(idx);
         }
 
-        // Empty the whole collection, RETAINING the objects for reuse. The
-        // active spine is emptied, so size() and end() become 0 and allocation
-        // restarts at 0 — consumers depend on that (e.g. Graph::clear() must
-        // leave vertexEnd() == 0, or vertexEnd()-sized arrays desync).
-        //
-        // Homogeneous: retired objects stay constructed in their chunks and form
-        // the implicit reserve. Heterogeneous: objects move into per-type
-        // reserve buckets. In both cases the reserve is bounded by
-        // MAX_RESERVE_PER_BUCKET and the excess is destroyed here — the only
-        // destruction outside purge()/dtor.
+        // Empties the pool: allocation restarts at 0 and end() becomes 0, which
+        // consumers rely on (Graph::clear() must leave vertexEnd() == 0, or
+        // arrays sized by vertexEnd() desync).
+        void clear()
+        {
+            reuse();
+        }
+
+        // Resetting a pool means emptying it, so a nested pool needs no separate
+        // handling.
         void reuse() override
         {
-            if (_discipline == Discipline::Heterogeneous)
-            {
-                for (int i = 0; i < static_cast<int>(_slots.size()); i++)
-                    if (_slots[i])
-                        // Parked slots were already reset by remove().
-                        _reserveObject(std::move(_slots[i]), /* needs_reset = */ _live[i] != 0);
-                _slots.clear();
-                _free_by_type.clear();
-            }
-            else
-            {
-                // Reset the retained objects on retirement so the reserve holds
-                // reusable capacity buffers, not payloads. Parked slots were
-                // already reset by remove(); objects beyond the reserve cap are
-                // about to be destroyed and need no reset.
-                const int end_active = static_cast<int>(_live.size());
-                const int reset_upto = end_active < MAX_RESERVE_PER_BUCKET ? end_active : MAX_RESERVE_PER_BUCKET;
-                for (int i = 0; i < reset_upto; i++)
-                    if (_live[i])
-                        _slabs.ptr(i)->reuse();
-                _slabs.destroyFrom(MAX_RESERVE_PER_BUCKET);
-                _free.clear();
-            }
+            for (int i = 0; i < static_cast<int>(_slots.size()); i++)
+                if (_slots[i])
+                    // A slot freed by remove() was reset when it was parked; a
+                    // live one is reset on its way to the reserve.
+                    _retain(std::move(_slots[i]), /* needs_reset = */ _live[i] != 0);
+            _slots.clear();
             _live.clear();
+            _spares.holes.clear();
+            for (auto& entry : _spares_by_type)
+                entry.second.holes.clear();
             _size = 0;
         }
 
-        // Explicit memory release: DESTROY every object (active and reserved)
-        // and release all storage.
+        // Destroys every element, active and retained, and releases the memory.
         void purge()
         {
-            _slabs.destroyFrom(0);
             _slots.clear();
             _slots.shrink_to_fit();
-            _reserve_by_type.clear();
-            _free.clear();
-            _free.shrink_to_fit();
-            _free_by_type.clear();
             _live.clear();
             _live.shrink_to_fit();
+            _spares.holes.clear();
+            _spares.holes.shrink_to_fit();
+            _spares.detached.clear();
+            _spares.detached.shrink_to_fit();
+            _spares_by_type.clear();
             _size = 0;
         }
 
         bool hasElement(int idx) const
         {
-            return idx >= 0 && idx < static_cast<int>(_live.size()) && _live[idx];
+            return idx >= 0 && idx < static_cast<int>(_slots.size()) && _live[idx];
         }
 
         int size() const
@@ -409,33 +248,28 @@ namespace indigo
             return _size;
         }
 
-        // Diagnostics (tests): number of objects held in the reserve.
+        // Elements currently held for reuse. Diagnostic accessor.
         int reserveSize() const
         {
-            if (_discipline == Discipline::Heterogeneous)
-            {
-                int n = 0;
-                for (const auto& kv : _reserve_by_type)
-                    n += static_cast<int>(kv.second.size());
-                return n;
-            }
-            return _slabs.constructed() - static_cast<int>(_live.size());
+            int n = static_cast<int>(_spares.detached.size());
+            for (const auto& entry : _spares_by_type)
+                n += static_cast<int>(entry.second.detached.size());
+            return n;
         }
 
-        // Stable reference to the object in slot idx.
         T& operator[](int idx)
         {
 #ifndef INDIGO_UNCHECKED_ACCESS
             checkUsed(idx);
 #endif
-            return *_objPtr(idx);
+            return *_slots[idx];
         }
         const T& operator[](int idx) const
         {
 #ifndef INDIGO_UNCHECKED_ACCESS
             checkUsed(idx);
 #endif
-            return *_objPtr(idx);
+            return *_slots[idx];
         }
 
         T& at(int idx)
@@ -447,10 +281,12 @@ namespace indigo
             return operator[](idx);
         }
 
+        // Index walk over the live slots: begin()/next() skip freed ones, end() is
+        // one past the last slot and is NOT the number of live elements.
         int begin() const
         {
             int i = 0;
-            for (; i < static_cast<int>(_live.size()); i++)
+            for (; i < static_cast<int>(_slots.size()); i++)
                 if (_live[i])
                     break;
             return i;
@@ -458,153 +294,235 @@ namespace indigo
 
         int next(int i) const
         {
-            for (i++; i < static_cast<int>(_live.size()); i++)
+            for (i++; i < static_cast<int>(_slots.size()); i++)
                 if (_live[i])
                     break;
             return i;
         }
 
-        // Iteration bound: one past the last active slot. After reuse() this is
-        // 0; it does not count reserved objects.
         int end() const
         {
-            return static_cast<int>(_live.size());
+            return static_cast<int>(_slots.size());
+        }
+
+        // Range views over the live slots:
+        //     for (auto& elem : pool.items())
+        //     for (int idx : pool.indices())
+
+        template <class PoolRef, class ElemRef>
+        class ElementIterator
+        {
+        public:
+            ElementIterator(PoolRef pool, int idx) : _pool(pool), _idx(idx)
+            {
+            }
+            ElemRef operator*() const
+            {
+                return _pool->at(_idx);
+            }
+            ElementIterator& operator++()
+            {
+                _idx = _pool->next(_idx);
+                return *this;
+            }
+            bool operator!=(const ElementIterator& other) const
+            {
+                return _idx != other._idx;
+            }
+
+        private:
+            PoolRef _pool;
+            int _idx;
+        };
+
+        class IndexIterator
+        {
+        public:
+            IndexIterator(const PtrReusablePool* pool, int idx) : _pool(pool), _idx(idx)
+            {
+            }
+            int operator*() const
+            {
+                return _idx;
+            }
+            IndexIterator& operator++()
+            {
+                _idx = _pool->next(_idx);
+                return *this;
+            }
+            bool operator!=(const IndexIterator& other) const
+            {
+                return _idx != other._idx;
+            }
+
+        private:
+            const PtrReusablePool* _pool;
+            int _idx;
+        };
+
+        template <class PoolRef, class IterT>
+        class Range
+        {
+        public:
+            explicit Range(PoolRef pool) : _pool(pool)
+            {
+            }
+            IterT begin() const
+            {
+                return IterT(_pool, _pool->begin());
+            }
+            IterT end() const
+            {
+                return IterT(_pool, _pool->end());
+            }
+
+        private:
+            PoolRef _pool;
+        };
+
+        using ItemsRange = Range<PtrReusablePool*, ElementIterator<PtrReusablePool*, T&>>;
+        using ConstItemsRange = Range<const PtrReusablePool*, ElementIterator<const PtrReusablePool*, const T&>>;
+        using IndicesRange = Range<const PtrReusablePool*, IndexIterator>;
+
+        ItemsRange items()
+        {
+            return ItemsRange(this);
+        }
+        ConstItemsRange items() const
+        {
+            return ConstItemsRange(this);
+        }
+        IndicesRange indices() const
+        {
+            return IndicesRange(this);
         }
 
     protected:
         void checkUsed(int idx) const
         {
-            if (idx < 0 || idx >= static_cast<int>(_live.size()) || !_live[idx])
+            if (idx < 0 || idx >= static_cast<int>(_slots.size()) || !_live[idx])
                 throw Error("access to unused element %d", idx);
         }
 
-        // The free-list discipline is fixed by the first allocating call and
-        // may not change afterwards: the two free structures are not
-        // interchangeable, so silently mixing them would corrupt slot reuse.
-        enum class Discipline
+        // The spare structures of the two families are not interchangeable, so
+        // silently mixing them would corrupt slot recycling.
+        enum class Family
         {
             Unset,
-            Homogeneous,  // push(): in-place chunks + single LIFO free list (_free)
-            Heterogeneous // add(key, factory)/adopt(): unique_ptr slots + per-type free lists
+            Standard, // add()/push()
+            Custom    // add_t()/push_t()
         };
 
-        void _requireDiscipline(Discipline d)
+        void _requireFamily(Family f)
         {
-            if (_discipline == Discipline::Unset)
+            if (_family == Family::Unset)
+                _family = f;
+            else if (_family != f)
+                throw Error("add()/push() and add_t()/push_t() must not be mixed on one pool");
+        }
+
+        // Recycles a freed slot, takes back an element retained across a clear(),
+        // or constructs a fresh one. Does not initialize it: add() applies
+        // T::reuse(args...) to whatever this returns.
+        int _acquireStandardSlot()
+        {
+            if (!_spares.holes.empty())
             {
-                _discipline = d;
-                // Pre-reserve the spine this discipline actually uses: the
-                // homogeneous one stores objects in chunks and never populates
-                // _slots.
-                if (d == Discipline::Heterogeneous)
-                    _slots.reserve(DEFAULT_RESERVE);
+                const int idx = _spares.holes.back(); // LIFO
+                _spares.holes.pop_back();
+                _activate(idx);
+                return idx;
             }
-            else if (_discipline != d)
-                throw Error("homogeneous (push) and heterogeneous (add/adopt) APIs must not be mixed on one pool");
-        }
-
-        // Object address for either discipline. The branch is perfectly
-        // predictable (constant per pool instance).
-        T* _objPtr(int idx) const
-        {
-            if (_discipline == Discipline::Heterogeneous)
-                return _slots[idx].get();
-            return _slabs.ptr(idx);
-        }
-
-        // ---- growth --------------------------------------------------------
-        // reserve(n) allocates exactly n, so reserving size()+1 would degrade
-        // growth to one reallocation per push; doubling keeps it logarithmic.
-        // Hot/cold split: the almost-always-false capacity check stays small
-        // enough to inline into the allocation paths, while the growth itself
-        // lives in a separate method so it does not consume the callers' inline
-        // budget (a fat inline body here measurably flipped unrelated inlining
-        // decisions in the graph translation units).
-
-        void _ensureLiveCapacity()
-        {
-            if (_live.size() + 1 > _live.capacity())
-                _growLive(_live.size() + 1);
-        }
-
-        // Homogeneous spine. The growth base is a whole chunk, NOT
-        // DEFAULT_RESERVE: a chunk covering slotsPerChunk() objects has already
-        // been allocated for those slots, and the matching occupancy spine costs
-        // one byte per slot. Reserving less would only buy extra reallocations
-        // on the hottest path.
-        void _growLive(std::size_t need)
-        {
-            const std::size_t base = Slabs::slotsPerChunk();
-            std::size_t cap = _live.capacity() < base ? base : _live.capacity() * 2;
-            while (cap < need)
-                cap *= 2;
-            _live.reserve(cap);
-        }
-
-        // Heterogeneous spine: keep _slots and _live growable in lockstep so the
-        // paired push_backs after the check cannot reallocate, making the pair
-        // effectively atomic. If a reserve() throws, nothing has been appended.
-        void _ensureSpineCapacity()
-        {
-            const std::size_t need = _slots.size() + 1;
-            if (need > _slots.capacity() || _live.capacity() < need)
-                _growSpine(need);
-        }
-
-        void _growSpine(std::size_t need)
-        {
-            if (need > _slots.capacity())
+            if (!_spares.detached.empty())
             {
-                std::size_t cap = _slots.capacity() < DEFAULT_RESERVE ? static_cast<std::size_t>(DEFAULT_RESERVE) : _slots.capacity() * 2;
-                while (cap < need)
-                    cap *= 2;
-                _slots.reserve(cap);
+                std::unique_ptr<T> retained = std::move(_spares.detached.back());
+                _spares.detached.pop_back();
+                return _appendSlot(std::move(retained));
             }
-            if (_live.capacity() < need)
-                _live.reserve(_slots.capacity()); // keep both spines in lockstep
+            // Construct first: if the constructor throws, no bookkeeping has
+            // been touched and the pool is unchanged.
+            return _appendSlot(std::make_unique<T>());
         }
 
-        // Park a freed slot in the free structure of the active discipline.
-        // Heterogeneous slots are bucketed by the object's dynamic type so only
-        // a same-type request can reuse them.
+        template <class F>
+        std::unique_ptr<T> _make(std::type_index key, F&& make)
+        {
+            std::unique_ptr<T> obj = std::forward<F>(make)();
+            if (!obj)
+                throw Error("add_t(): factory returned null");
+            if (obj->reuseTypeId() != key)
+                throw Error("add_t(): factory produced an object of a different type than requested");
+            return obj;
+        }
+
+        // Appends a new slot. If the occupancy push_back throws, the slot is rolled
+        // back, so the two vectors never desync.
+        int _appendSlot(std::unique_ptr<T> obj)
+        {
+            _slots.push_back(std::move(obj));
+            try
+            {
+                _live.push_back(1);
+            }
+            catch (...)
+            {
+                _slots.pop_back();
+                throw;
+            }
+            _size++;
+            return static_cast<int>(_slots.size()) - 1;
+        }
+
+        // Bookkeeping is completed before the element is initialized, so a throwing
+        // T::reuse() leaves the slot live rather than lost from both the free list
+        // and the live set.
+        void _activate(int idx)
+        {
+            _live[idx] = 1;
+            _size++;
+        }
+
         void _parkFreedSlot(int idx)
         {
-            if (_discipline == Discipline::Heterogeneous)
-                _free_by_type[_slots[idx]->reuseTypeId()].push_back(idx);
+            if (_family == Family::Custom)
+                _spares_by_type[_slots[idx]->reuseTypeId()].holes.push_back(idx);
             else
-                _free.push_back(idx);
+                _spares.holes.push_back(idx);
         }
 
-        // Heterogeneous only: move a retained object into its per-type reserve
-        // bucket so a later grow can reuse it instead of constructing. Objects
-        // beyond the bucket cap are destroyed here (unique_ptr frees on return)
-        // rather than pinning the high-water mark forever. needs_reset is false
-        // for parked slots that remove() already reset.
-        void _reserveObject(std::unique_ptr<T> obj, bool needs_reset)
+        // Keeps a retired element for reuse, up to MAX_RESERVE_PER_BUCKET; beyond
+        // that it is destroyed when this unique_ptr goes out of scope.
+        void _retain(std::unique_ptr<T> obj, bool needs_reset)
         {
-            std::vector<std::unique_ptr<T>>& bucket = _reserve_by_type[obj->reuseTypeId()];
+            std::vector<std::unique_ptr<T>>& bucket = (_family == Family::Custom) ? _spares_by_type[obj->reuseTypeId()].detached : _spares.detached;
             if (static_cast<int>(bucket.size()) >= MAX_RESERVE_PER_BUCKET)
                 return;
-            // The reserve must hold only the reusable buffers of a retired
-            // object, not its payload, so grow-from-reserve hands out an
-            // already-pristine object.
+            // The reserve keeps only the buffers of a retired element, not its
+            // payload, so a later add() hands out a pristine one.
             if (needs_reset)
                 obj->reuse();
             bucket.push_back(std::move(obj));
         }
 
-        // ---- storage -------------------------------------------------------
-        std::vector<std::unique_ptr<T>> _slots; // heterogeneous: active owned objects; pointees heap-stable
-        std::vector<uint8_t> _live;             // per-slot occupancy for BOTH disciplines; its size() is the
-                                                // active spine bound = end(). (uint8_t, not vector<bool>: the
-                                                // bit proxy costs on every checkUsed()/begin()/next() access.)
-        std::vector<int> _free;                 // homogeneous: freed active slots, LIFO stack via back()
-        std::unordered_map<std::type_index, std::vector<int>> _free_by_type; // heterogeneous: freed slots per dynamic type
-        Slabs _slabs;                                                        // homogeneous: in-place object storage. Slots
-                                                                             // [_live.size().._slabs.constructed()) are the implicit reserve.
-        std::unordered_map<std::type_index, std::vector<std::unique_ptr<T>>> _reserve_by_type; // heterogeneous: retained per type
-        Discipline _discipline = Discipline::Unset;                                            // fixed by first allocating call
-        int _size = 0;                                                                         // number of live slots
+        // Spare capacity of one element type: indices of slots freed by remove()
+        // — their objects stay in _slots — plus elements detached by clear().
+        // The standard family has a single element type, so it holds one Spares
+        // directly and never touches a hash or typeid; the custom family keys
+        // them by dynamic type, because a slot may be recycled only by a request
+        // for the same type.
+        struct Spares
+        {
+            std::vector<int> holes;                   // freed slot indices, LIFO stack via back()
+            std::vector<std::unique_ptr<T>> detached; // elements retained across clear()
+        };
+
+        std::vector<std::unique_ptr<T>> _slots;                      // owned objects; the pointees never move
+        std::vector<uint8_t> _live;                                  // per-slot occupancy (uint8_t, not vector<bool>:
+                                                                     // the bit proxy costs on every access)
+        Spares _spares;                                              // standard family
+        std::unordered_map<std::type_index, Spares> _spares_by_type; // custom family
+        Family _family = Family::Unset;                              // fixed by the first allocating call
+        int _size = 0;                                               // number of live slots
     };
 
 } // namespace indigo

@@ -472,7 +472,7 @@ void BaseMolecule::_collectSuparatomAttachmentPoints(Superatom& sa, std::unorder
                 continue;
             }
 
-            int idap = sa.attachment_points.push();
+            int idap = sa.attachment_points.add();
             Superatom::_AttachmentPoint& ap = sa.attachment_points.at(idap);
 
             if (_isNTerminus(sa, ap_aidx)) //  N-terminus ?
@@ -891,7 +891,7 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
                 ap_lvidx = edge.beg;
             }
 
-            int idap = su.attachment_points.push();
+            int idap = su.attachment_points.add();
             Superatom::_AttachmentPoint& ap = su.attachment_points.at(idap);
 
             if (_isNTerminus(su, ap_aidx)) //  N-terminus ?
@@ -1184,7 +1184,7 @@ int BaseMolecule::_createSGroupFromFragment(Array<int>& sg_atoms, const TGroup& 
                         if (fragment.getBondOrder(q_xbond_idx) == getBondOrder(t_xbond_idx))
                         {
                             su_new.xbonds.push(t_xbond_idx);
-                            int idap = su_new.attachment_points.push();
+                            int idap = su_new.attachment_points.add();
                             Superatom::_AttachmentPoint& ap = su_new.attachment_points.at(idap);
                             ap.aidx = att_point_idx;
                             ap.lvidx = v.neiVertex(k);

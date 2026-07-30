@@ -68,12 +68,10 @@ namespace indigo
     class DLLEXPORT Vertex : public Reusable
     {
     public:
-        // Construct the neighbor list UNBOUND (no pool, no allocation): every
-        // Vertex is created by Graph::addVertex(), which binds it to the
-        // graph-wide shared pool immediately afterwards. This avoids a throwaway
-        // private-pool allocation per vertex on the hottest allocation path. The
-        // list must not be touched before that binding, which is why bind() is
-        // private to Graph.
+        // The neighbor list starts unbound (no pool, no allocation): every vertex
+        // is created through Graph::addVertex(), which binds it to the graph-wide
+        // pool. Binding on construction would allocate a private pool per vertex
+        // only to throw it away.
         Vertex() : neighbors_list(List<VertexEdge>::Unbound{})
         {
         }
@@ -83,11 +81,18 @@ namespace indigo
 
         List<VertexEdge> neighbors_list;
 
-        // Non-destructive reset for PtrReusablePool reuse: clear the neighbor
-        // list (the pool binding and backing slots are retained).
+        // Keeps the pool binding and the backing slots.
         void reuse() override
         {
             neighbors_list.clear();
+        }
+
+        // Binds the neighbor list onto the graph-wide element pool, so all
+        // vertices of a graph share one. The pool applies this on every add(), so
+        // a vertex is never handed out unbound.
+        void reuse(Pool<List<VertexEdge>::Elem>& pool)
+        {
+            neighbors_list = List<VertexEdge>(pool);
         }
 
         NeighborsAuto neighbors() const;
@@ -123,18 +128,6 @@ namespace indigo
         }
 
     private:
-        friend class Graph;
-
-        // Bind the neighbor list onto the graph-wide shared element pool so all
-        // vertices of a Graph share one Pool. Move-assigning a shared-pool list
-        // swaps in the shared pool (and frees any private pool the list held).
-        // Only Graph::addVertex() may call this, and it must do so before the
-        // vertex is handed out.
-        void bind(Pool<List<VertexEdge>::Elem>& pool)
-        {
-            neighbors_list = List<VertexEdge>(pool);
-        }
-
         Vertex(const Vertex&); // no implicit copy
     };
 
@@ -170,12 +163,8 @@ namespace indigo
         virtual void clear();
         virtual void changed();
 
-        // Reusable: a graph is reused by resetting it to the empty state, which
-        // is exactly clear(). Virtual dispatch routes to the most-derived
-        // clear() (BaseMolecule/Molecule/QueryMolecule), so a pooled molecule is
-        // fully emptied on reuse. reuseTypeId() (from Reusable) keys the pool's
-        // per-type reserve by the concrete molecule type (Molecule vs
-        // QueryMolecule), which is required for heterogeneous slot reuse.
+        // Resetting a graph means emptying it. The virtual dispatch reaches the
+        // most-derived clear(), so a pooled molecule is emptied completely.
         void reuse() override
         {
             clear();
@@ -187,19 +176,19 @@ namespace indigo
 
         int vertexBegin() const
         {
-            return _vertices.begin();
+            return _vertices->begin();
         }
         int vertexEnd() const
         {
-            return _vertices.end();
+            return _vertices->end();
         }
         int vertexNext(int i) const
         {
-            return _vertices.next(i);
+            return _vertices->next(i);
         }
         int vertexCount() const
         {
-            return _vertices.size();
+            return _vertices->size();
         }
 
         int edgeBegin() const
@@ -282,12 +271,8 @@ namespace indigo
     protected:
         void _mergeWithSubgraph(const Graph& other, const Array<int>& vertices, const Array<int>* edges, Array<int>* mapping, Array<int>* edge_mapping);
 
-        // By value (no per-Graph heap allocation for the containers themselves).
-        // Declaration order is load-bearing: _neighbors_pool is declared BEFORE
-        // _vertices so it is destroyed AFTER — Vertex destructors clear their
-        // neighbor lists, which reference this shared pool.
-        Pool<List<VertexEdge>::Elem> _neighbors_pool;
-        PtrReusablePool<Vertex> _vertices;
+        Pool<List<VertexEdge>::Elem>* _neighbors_pool;
+        PtrReusablePool<Vertex>* _vertices;
         Pool<Edge> _edges;
 
         Array<int> _topology; // for each edge: TOPOLOGY_RING, TOPOLOGY_CHAIN, or -1 (not calculated)

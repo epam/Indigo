@@ -1005,7 +1005,7 @@ const char* QueryMolecule::getPseudoAtom(int idx)
 int QueryMolecule::addTemplateAtom(const char* alias)
 {
     std::unique_ptr<Atom> atom(new Atom(ATOM_TEMPLATE, alias));
-    int template_occur_idx = _template_occurrences.push();
+    int template_occur_idx = _template_occurrences.add();
     atom->occurrence_idx = template_occur_idx;
     _TemplateOccurrence& occur = _template_occurrences.at(template_occur_idx);
     occur.name_idx = _template_names.add(alias);
