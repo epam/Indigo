@@ -31,6 +31,8 @@ flip_rotate_rna.ket:SUCCEED
 fmoc.ket:SUCCEED
 issue_2699_rlogic.ket:SUCCEED
 issue_2958_map_template.ket:SUCCEED
+issue_3759_one_atom_three_ap.ket:SUCCEED
+issue_3759_one_atom_two_ap.ket:SUCCEED
 non_atrop.ket:SUCCEED
 pepchem.ket:SUCCEED
 peptides.ket:SUCCEED
