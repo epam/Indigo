@@ -527,6 +527,7 @@ namespace indigo
         int commentOffset;
         int titleOffset;
         Array<char> comment;
+        Array<char> fontFamily;
         Array<char> titleProp;
         COMMENT_POS commentPos;
         MultilineTextLayout commentAlign;
