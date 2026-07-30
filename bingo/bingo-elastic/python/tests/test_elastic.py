@@ -1,7 +1,9 @@
+import json
+import re
 import time
 from collections import Counter
 from pathlib import Path
-from typing import Callable
+from typing import Callable, Dict
 
 import pytest
 from elasticsearch import NotFoundError
@@ -22,10 +24,12 @@ from bingo_elastic.model.record import (
 )
 from bingo_elastic.queries import (
     EuclidSimilarityMatch,
+    GrossFormulaQuery,
     RangeQuery,
     TanimotoSimilarityMatch,
     TverskySimilarityMatch,
     WildcardQuery,
+    _normalize_formula,
 )
 
 AsyncRepositoryT = Callable[[], AsyncElasticRepository]
@@ -1261,3 +1265,126 @@ async def test_a_molecule_tautomer_exact_search(
             )
         ]
     assert len(matches) == 1
+
+
+# Reference data shared with bingo/tests/test_gross: query_id N in std.json
+# is the N-th record of mols.sdf; "expected" is None for unloadable records
+GROSS_DATA_DIR = (
+    Path(__file__).resolve().parents[3] / "tests" / "data" / "molecules"
+) / "gross"
+
+
+def _bingo_gross_cases() -> list:
+    with open(GROSS_DATA_DIR / "std.json", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def _skip_unloadable(_record: object, _error: BaseException) -> None:
+    """Keep unloadable reference molecules as records without a formula."""
+
+
+def _bingo_gross_records(indigo: Indigo) -> list:
+    return list(
+        iterate_sdf(
+            GROSS_DATA_DIR / "import" / "queries" / "mols.sdf",
+            error_handler=_skip_unloadable,
+            session=indigo,
+        )
+    )
+
+
+def _index_bingo_gross_reference(
+    repository: ElasticRepository, indigo: Indigo
+) -> Dict[str, int]:
+    """
+    Index the reference set and return {raw query formula: expected hits}
+    for every carbon-free formula, every formula with carbon but no
+    hydrogen, and the 10 most common formulas. Queries use the raw
+    std.json string (e.g. "C6 N5 O3 H5") so the normaliser is exercised.
+    """
+    records = _bingo_gross_records(indigo)
+    repository.index_records(record for record in records)
+    repository.el_client.indices.refresh(index=IndexName.BINGO_MOLECULE.value)
+
+    expected: Counter = Counter()
+    raw_formula: Dict[str, str] = {}
+    for case in _bingo_gross_cases():
+        if case["expected"] is None:
+            continue
+        formula = _normalize_formula(case["expected"])
+        expected[formula] += 1
+        raw_formula.setdefault(formula, case["expected"])
+
+    # Hill order puts C first only when carbon is present
+    def has_carbon(formula: str) -> bool:
+        return formula.startswith("C") and not formula[1:2].islower()
+
+    queries = {f for f in expected if not has_carbon(f)}
+    queries |= {f for f in expected if has_carbon(f) and "H" not in f}
+    queries |= {f for f, _ in expected.most_common(10)}
+    return {raw_formula[f]: expected[f] for f in sorted(queries)}
+
+
+@pytest.mark.parametrize(
+    "formula, message",
+    [
+        ("", "Unsupported gross formula"),
+        ("   ", "Unsupported gross formula"),
+        ("c2h6o", "Unsupported gross formula"),
+        ("2H2O", "Unsupported gross formula"),
+        ("(CH3)2CHOH", "Unsupported gross formula"),
+        ("C2H6O-", "Unsupported gross formula"),
+        ("C0", "contains no atoms"),
+    ],
+)
+def test_gross_formula_invalid(formula: str, message: str):
+    with pytest.raises(ValueError, match=re.escape(message)):
+        GrossFormulaQuery(formula)
+
+
+def test_gross_formula_matches_bingo_reference(indigo_fixture: Indigo):
+    cases = _bingo_gross_cases()
+    records = _bingo_gross_records(indigo_fixture)
+    assert len(cases) == len(records)
+    for case, record in zip(cases, records):
+        if case["expected"] is None:
+            continue
+        assert (
+            _normalize_formula(case["expected"]) == record.gross_formula
+        ), case["query_id"]
+
+
+def test_gross_formula_search_bingo_reference(
+    elastic_repository_molecule: ElasticRepository,
+    indigo_fixture: Indigo,
+):
+    queries = _index_bingo_gross_reference(
+        elastic_repository_molecule, indigo_fixture
+    )
+    for formula, expected in queries.items():
+        results = list(
+            elastic_repository_molecule.filter(
+                gross_formula=GrossFormulaQuery(formula), limit=100
+            )
+        )
+        assert len(results) == expected, formula
+
+
+@pytest.mark.asyncio
+async def test_a_gross_formula_search_bingo_reference(
+    elastic_repository_molecule: ElasticRepository,
+    a_elastic_repository_molecule: AsyncRepositoryT,
+    indigo_fixture: Indigo,
+):
+    queries = _index_bingo_gross_reference(
+        elastic_repository_molecule, indigo_fixture
+    )
+    async with a_elastic_repository_molecule() as rep:
+        for formula, expected in queries.items():
+            results = [
+                r
+                async for r in rep.filter(
+                    gross_formula=GrossFormulaQuery(formula), limit=100
+                )
+            ]
+            assert len(results) == expected, formula
