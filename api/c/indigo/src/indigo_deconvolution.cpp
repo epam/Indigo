@@ -457,7 +457,7 @@ void IndigoDeconvolution::createRgroups(IndigoDecompositionMatch& deco_match, bo
         /*
          * Add a fragment
          */
-        Molecule& fragment = r_group.fragments.at(r_group.fragments.add_t(Molecule::poolFactory())).asMolecule();
+        Molecule& fragment = r_group.fragments.push_t(Molecule::poolFactory()).asMolecule();
 
         Filter sub_filter_fr(visited_atoms.ptr(), Filter::EQ, rg_idx + SHIFT_IDX);
         fragment.makeSubmolecule(mol_set, sub_filter_fr, 0, &rg_mapping);

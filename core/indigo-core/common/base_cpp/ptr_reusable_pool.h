@@ -144,49 +144,61 @@ namespace indigo
 
         // Allocates a slot for an element of factory.key and returns its index.
         // factory.make() runs only when no slot of that type can be recycled.
-        int add_t(const Factory& factory)
+        // With arguments the element is initialized by T::reuse(args...) on
+        // every path, exactly like add(); without them the caller fills the
+        // element in place.
+        template <class... Args>
+        int add_t(const Factory& factory, Args&&... args)
         {
-            return add_t(factory.key, [&factory] { return factory.make(factory.context); });
+            return add_t(
+                factory.key, [&factory] { return factory.make(factory.context); }, std::forward<Args>(args)...);
         }
 
         // Overload for a maker that captures.
-        template <class F>
-        int add_t(std::type_index key, F&& make)
+        template <class F, class... Args>
+        int add_t(std::type_index key, F&& make, Args&&... args)
         {
             _requireFamily(Family::Custom);
+            constexpr bool initializing = sizeof...(Args) > 0;
+            int idx = -1;
             auto it = _spares_by_type.find(key); // the only type lookup on this path
             if (it != _spares_by_type.end())
             {
                 Spares& spares = it->second;
                 if (!spares.holes.empty())
                 {
-                    const int idx = spares.holes.back(); // LIFO within the type
+                    idx = spares.holes.back(); // LIFO within the type
                     spares.holes.pop_back();
                     _activate(idx);
-                    _slots[idx]->reuse();
-                    return idx;
+                    if (!initializing)
+                        _slots[idx]->reuse();
                 }
-                if (!spares.detached.empty())
+                else if (!spares.detached.empty())
                 {
                     std::unique_ptr<T> retained = std::move(spares.detached.back());
                     spares.detached.pop_back();
-                    return _appendSlot(std::move(retained)); // reset when it was retired
+                    idx = _appendSlot(std::move(retained)); // reset when it was retired
                 }
             }
-            return _appendSlot(_make(key, std::forward<F>(make)));
+            if (idx < 0)
+                idx = _appendSlot(_make(key, std::forward<F>(make)));
+            if constexpr (initializing)
+                _slots[idx]->reuse(std::forward<Args>(args)...);
+            return idx;
         }
 
         // add_t() that returns the element, so a caller can fill it in place:
         //     BaseMolecule& fragment = fragments.push_t(factory);
-        T& push_t(const Factory& factory)
+        template <class... Args>
+        T& push_t(const Factory& factory, Args&&... args)
         {
-            return *_slots[add_t(factory)];
+            return *_slots[add_t(factory, std::forward<Args>(args)...)];
         }
 
-        template <class F>
-        T& push_t(std::type_index key, F&& make)
+        template <class F, class... Args>
+        T& push_t(std::type_index key, F&& make, Args&&... args)
         {
-            return *_slots[add_t(key, std::forward<F>(make))];
+            return *_slots[add_t(key, std::forward<F>(make), std::forward<Args>(args)...)];
         }
 
         void remove(int idx)

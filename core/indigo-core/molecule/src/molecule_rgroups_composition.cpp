@@ -151,10 +151,9 @@ MoleculeIter::SourceRGroups::SourceRGroups(const MoleculeIter& m)
         {
             for (auto k = 0; k < fragment2count.at({it->first, it_fs_r->second}); k++)
             {
-                int fr_idx = rgroup.fragments.add_t(Molecule::poolFactory());
-                BaseMolecule* fragment = &rgroup.fragments.at(fr_idx);
-                fragment->clone(source.fragments[it_fs_r->second], nullptr, nullptr);
-                fragment->removeAttachmentPoints();
+                BaseMolecule& fragment = rgroup.fragments.push_t(Molecule::poolFactory());
+                fragment.clone(source.fragments[it_fs_r->second], nullptr, nullptr);
+                fragment.removeAttachmentPoints();
             }
         }
     }
@@ -167,10 +166,9 @@ MoleculeIter::OrderedRGroups::OrderedRGroups(const MoleculeIter& m)
     for (auto i = 0; i < fs.size(); i++)
     {
         RGroup& rgroup = _rgroups.push();
-        int fr_idx = rgroup.fragments.add_t(Molecule::poolFactory());
-        BaseMolecule* fragment = &rgroup.fragments.at(fr_idx);
-        fragment->clone(m._parent._fragment(i, fs[i]), nullptr, nullptr);
-        fragment->removeAttachmentPoints();
+        BaseMolecule& fragment = rgroup.fragments.push_t(Molecule::poolFactory());
+        fragment.clone(m._parent._fragment(i, fs[i]), nullptr, nullptr);
+        fragment.removeAttachmentPoints();
     }
 }
 

@@ -37,27 +37,65 @@
 
 using namespace indigo;
 
-// Regression (task #3766, review C3): BaseMolecule::reuse() (the pool hand-back
-// hook) must wipe the residual state that clear() intentionally leaves for its
-// many direct callers. Otherwise a molecule pulled from the pool reserve and
-// re-populated via clone() inherits the previous occupant's data (clone()
-// appends to monomer_shapes and only sets original_format/properties it copies).
+// clear() empties a molecule completely, document-level state included: an
+// emptied object must be indistinguishable from a fresh one. Otherwise a
+// molecule that is cleared and repopulated via clone() inherits the previous
+// contents (clone() appends to monomer_shapes and merges properties by source
+// key), which is what the pooled hand-back path exposed first.
+namespace
+{
+    void fillResidualState(Molecule& mol)
+    {
+        mol.addAtom(ELEM_C);
+        mol.original_format = BaseMolecule::KET;
+        mol.properties().findOrInsert(0); // a per-atom property entry
+        mol.monomer_shapes.add(new KetMonomerShape("shape-1", false, "generic", Vec2f(0, 0), {}));
+        ASSERT_GT(mol.properties().size(), 0);
+        ASSERT_EQ(1, mol.monomer_shapes.size());
+    }
+
+    void expectPristine(Molecule& mol)
+    {
+        EXPECT_EQ(0, mol.vertexCount());
+        EXPECT_EQ(BaseMolecule::UNKNOWN, mol.original_format);
+        EXPECT_EQ(0, mol.properties().size());
+        EXPECT_EQ(0, mol.monomer_shapes.size());
+    }
+}
+
+TEST(BaseMoleculeReuseContract, ClearWipesResidualState)
+{
+    Molecule mol;
+    fillResidualState(mol);
+
+    mol.clear();
+
+    expectPristine(mol);
+}
+
+// The pool hand-back path: reuse() is inherited from Graph and dispatches to
+// the most-derived clear(), so a pooled slot is emptied just as completely.
 TEST(BaseMoleculeReuseContract, ReuseWipesResidualState)
 {
     Molecule mol;
-    mol.addAtom(ELEM_C);
-    mol.original_format = BaseMolecule::KET;
-    mol.properties().findOrInsert(0); // a per-atom property entry
-    mol.monomer_shapes.add(new KetMonomerShape("shape-1", false, "generic", Vec2f(0, 0), {}));
-    ASSERT_GT(mol.properties().size(), 0);
-    ASSERT_EQ(1, mol.monomer_shapes.size());
+    fillResidualState(mol);
 
     mol.reuse();
 
-    EXPECT_EQ(0, mol.vertexCount());
-    EXPECT_EQ(BaseMolecule::UNKNOWN, mol.original_format);
-    EXPECT_EQ(0, mol.properties().size());
-    EXPECT_EQ(0, mol.monomer_shapes.size());
+    expectPristine(mol);
+}
+
+// The same guarantee through a base-class handle, which is how the pool holds
+// its elements: PtrReusablePool<BaseMolecule> calls reuse() on BaseMolecule*.
+TEST(BaseMoleculeReuseContract, ReuseThroughBaseHandleWipesResidualState)
+{
+    Molecule mol;
+    fillResidualState(mol);
+
+    BaseMolecule& handle = mol;
+    handle.reuse();
+
+    expectPristine(mol);
 }
 
 TEST(RGroupContract, ClearResetsAllFields)

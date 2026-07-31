@@ -118,6 +118,11 @@ namespace indigo
         // defaults (including re-setting sgroup_type).
         void reuse() override;
 
+        // Initializing form used by the pool: resets through the virtual
+        // reuse() (so a subclass restores its own defaults) and then applies
+        // the requested type, which reuse() alone always sets back to GEN.
+        void reuse(int sg_type);
+
         int sgroup_type;              // group type, represnted with STY in Molfile format
         Nullable<int> sgroup_subtype; // group subtype, represnted with SST in Molfile format
         int index;                    // internal SGroup index; V3000 field 1, V2000 M STY sss. Used for cross-refs (PARENT, SPL).

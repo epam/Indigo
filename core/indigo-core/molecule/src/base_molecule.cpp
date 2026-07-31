@@ -123,18 +123,12 @@ void BaseMolecule::clear()
     _meta.resetMetaData();
     clearCIP();
     aliases.clear();
-}
 
-void BaseMolecule::reuse()
-{
-    clear();
-    // Residual state clear() leaves behind (see header note). Without this a
-    // molecule pulled from the pool's reserve and re-populated via clone()
-    // would carry the previous occupant's data:
-    //   - monomer_shapes: clone() appends, never clears -> unbounded growth;
-    //   - _properties / annotations: clone() merges by source key -> stale
-    //     entries under other atom indices survive;
-    //   - original_format: only the ctor resets it to UNKNOWN.
+    // Document-level state. Cleared here and not left to the caller, so an
+    // emptied molecule carries nothing from its previous contents: clone()
+    // appends to monomer_shapes and merges properties/annotations by source
+    // key, so leftovers would accumulate in any object that is cleared and
+    // repopulated (loaders, clone destinations, pooled slots).
     _properties.clear();
     monomer_shapes.clear();
     _atom_annotations.clear();

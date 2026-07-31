@@ -1732,10 +1732,13 @@ CEXPORT int indigoCountAttachmentPoints(int rgroup)
 
         IndigoRGroup& rgp = IndigoRGroup::cast(object);
 
-        // fragments is a sparse reuse pool: after a fragment removal slot 0 can
-        // stay a hole until a later add recycles it, so take the first live
-        // slot instead of hard-coding [0].
         auto& fragments = rgp.mol->rgroups.getRGroup(rgp.idx).fragments;
+        // An R-group without fragments is a legal state — indigoIterateRGroups
+        // skips such groups — so report it instead of failing inside the pool.
+        if (fragments.size() == 0)
+            throw IndigoError("indigoCountAttachmentPoints(): R-group %d has no fragments", rgp.idx);
+        // The pool is sparse: after a fragment removal slot 0 can stay a hole
+        // until a later add recycles it, so take the first live slot.
         return fragments[fragments.begin()].attachmentPointCount();
     }
     INDIGO_END(-1);

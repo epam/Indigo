@@ -522,6 +522,12 @@ namespace
             value = 0;
             ++s_reuses;
         }
+        // Initializing form: what add_t(factory, args...) applies on every path.
+        void reuse(int initial)
+        {
+            reuse();
+            value = initial;
+        }
         static void reset_counters()
         {
             s_live = 0;
@@ -665,6 +671,62 @@ TEST_F(HeteroPoolTest, FactoryMisbehaviorThrows)
     EXPECT_EQ(0, pool.size());
     // The pool remains usable.
     EXPECT_EQ(0, pool.add_t(kFactoryA));
+}
+
+// add_t(factory, args...) mirrors add(args...): the element is initialized by
+// T::reuse(args...) on the fresh, the hole-recycled and the detached path, so
+// the caller cannot tell them apart.
+TEST_F(HeteroPoolTest, AddTWithArgsInitializesOnEveryPath)
+{
+    PtrReusablePool<HetBase> pool;
+
+    const int fresh = pool.add_t(kFactoryA, 11); // grows: factory + reuse(11)
+    EXPECT_EQ(11, pool.at(fresh).value);
+    EXPECT_EQ(1, HetA::s_made);
+
+    pool.remove(fresh);
+    const int recycled = pool.add_t(kFactoryA, 22); // hole of the same type
+    EXPECT_EQ(recycled, fresh);
+    EXPECT_EQ(22, pool.at(recycled).value);
+    EXPECT_EQ(1, HetA::s_made) << "a recycled slot must not construct a new element";
+
+    pool.clear();                                   // objects move to the reserve
+    const int detached = pool.add_t(kFactoryA, 33); // reserve path
+    EXPECT_EQ(0, detached) << "allocation restarts at 0 after clear()";
+    EXPECT_EQ(33, pool.at(detached).value);
+    EXPECT_EQ(1, HetA::s_made) << "a retained element must not construct a new one";
+}
+
+TEST_F(HeteroPoolTest, PushTWithArgsReturnsInitializedElement)
+{
+    PtrReusablePool<HetBase> pool;
+
+    HetBase& a = pool.push_t(kFactoryA, 7);
+    EXPECT_EQ(7, a.value);
+    EXPECT_EQ(&a, &pool.at(0));
+
+    // Keying stays per type: a B request does not recycle an A slot.
+    HetBase& b = pool.push_t(kFactoryB, 9);
+    EXPECT_EQ(9, b.value);
+    EXPECT_EQ(1, HetA::s_made);
+    EXPECT_EQ(1, HetB::s_made);
+}
+
+// Without arguments the caller fills the element in place, so a fresh slot is
+// handed out exactly as the factory built it — no extra reset.
+TEST_F(HeteroPoolTest, AddTWithoutArgsLeavesFreshSlotToTheCaller)
+{
+    PtrReusablePool<HetBase> pool;
+
+    const int idx = pool.add_t(kFactoryA);
+    EXPECT_EQ(0, HetBase::s_reuses) << "a freshly constructed element needs no reset";
+    pool.at(idx).value = 5; // filled in place by the caller
+
+    pool.remove(idx);
+    EXPECT_EQ(1, HetBase::s_reuses) << "remove() resets the element it parks";
+    EXPECT_EQ(idx, pool.add_t(kFactoryA));
+    EXPECT_EQ(2, HetBase::s_reuses) << "a recycled slot is reset before hand-out";
+    EXPECT_EQ(0, pool.at(idx).value);
 }
 
 TEST_F(HeteroPoolTest, MixingAddFamiliesThrows)
