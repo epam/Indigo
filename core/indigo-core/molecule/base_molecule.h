@@ -103,7 +103,7 @@ namespace indigo
 
     enum LAYOUT_ORIENTATION
     {
-        UNCPECIFIED,
+        UNSPECIFIED,
         HORIZONTAL,
         VERTICAL
     };

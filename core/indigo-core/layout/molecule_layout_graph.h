@@ -174,7 +174,10 @@ namespace indigo
         bool _flipped; // component was flipped after attaching
 
         int max_iterations;
-        LAYOUT_ORIENTATION layout_orientation;
+        // Default-initialized: a directly constructed layout graph (e.g.
+        // UnfoldAndLayoutHydrogens) must not read a garbage orientation in
+        // _refineCoordinates; MoleculeLayout assigns it explicitly.
+        LAYOUT_ORIENTATION layout_orientation = UNSPECIFIED;
 
         bool preserve_existing_layout;
         bool respect_cycles_direction;

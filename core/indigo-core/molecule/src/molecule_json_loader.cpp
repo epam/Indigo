@@ -2013,7 +2013,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     }
 
     MoleculeLayout ml(mol, false);
-    ml.layout_orientation = UNCPECIFIED;
+    ml.layout_orientation = UNSPECIFIED;
     ml.updateSGroups();
     loadMetaObjects(_meta_objects, mol.meta());
 

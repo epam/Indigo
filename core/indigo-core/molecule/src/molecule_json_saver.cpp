@@ -1711,7 +1711,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
     if (!BaseMolecule::hasCoord(*mol))
     {
         MoleculeLayout ml(*mol, false);
-        ml.layout_orientation = UNCPECIFIED;
+        ml.layout_orientation = UNSPECIFIED;
         ml.make();
     }
 
