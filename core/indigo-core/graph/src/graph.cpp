@@ -55,7 +55,7 @@ IMPL_ERROR(Graph, "graph");
 
 Graph::Graph()
 {
-    _vertices = new ObjPool<Vertex>();
+    _vertices = new PtrReusablePool<Vertex>();
     _neighbors_pool = new Pool<List<VertexEdge>::Elem>();
     _sssr_pool = 0;
     _components_valid = false;
@@ -76,7 +76,7 @@ Graph::~Graph()
 int Graph::addVertex()
 {
     changed();
-    return _vertices->add(*_neighbors_pool);
+    return _vertices->add(*_neighbors_pool); // shares the graph-wide neighbor pool
 }
 
 int Graph::findEdgeIndex(int beg, int end) const

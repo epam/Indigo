@@ -231,7 +231,7 @@ namespace indigo
     class SimpleGraphicsObject : public MetaObject
     {
     public:
-        static const std::uint32_t CID = "Metadata simple object"_hash;
+        static constexpr std::uint32_t CID = "Metadata simple object"_hash;
         SimpleGraphicsObject(int mode, const std::pair<Vec2f, Vec2f>& coords) : MetaObject(CID)
         {
             _mode = mode;
@@ -324,7 +324,7 @@ namespace indigo
             std::map<std::size_t, FONT_STYLE_SET> font_styles; // v1 and v2
         };
 
-        static const std::uint32_t CID = "Simple text object"_hash;
+        static constexpr std::uint32_t CID = "Simple text object"_hash;
 
         static void convertToSimpleTextStyle(const FONT_STYLE_SET& fss, SimpleTextStyle& sts)
         {
@@ -635,7 +635,7 @@ namespace indigo
     class ReactionArrowObject : public MetaObject
     {
     public:
-        static const std::uint32_t CID = "Reaction arrow object"_hash;
+        static constexpr std::uint32_t CID = "Reaction arrow object"_hash;
         enum
         {
             EOpenAngle = 2,
@@ -711,7 +711,7 @@ namespace indigo
         static const int CORRECT_TAIL_SIZE = 2;
 
     public:
-        static const std::uint32_t CID = "Reaction multitail arrow object"_hash;
+        static constexpr std::uint32_t CID = "Reaction multitail arrow object"_hash;
 
         static constexpr float TAIL_ARC_RADIUS = .15f;
 
@@ -798,7 +798,7 @@ namespace indigo
     class ReactionPlusObject : public MetaObject
     {
     public:
-        static const std::uint32_t CID = "Reaction plus object"_hash;
+        static constexpr std::uint32_t CID = "Reaction plus object"_hash;
         ReactionPlusObject(const Vec2f& pos) : MetaObject(CID), _pos(pos){};
 
         MetaObject* clone() const override
@@ -840,7 +840,7 @@ namespace indigo
             EKETSVG
         };
 
-        static const std::uint32_t CID = "Embedded image object"_hash;
+        static constexpr std::uint32_t CID = "Embedded image object"_hash;
         EmbeddedImageObject(const Rect2f& bbox, EmbeddedImageObject::ImageFormat format, const std::string& data, bool is_base64 = true);
 
         MetaObject* clone() const override

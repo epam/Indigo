@@ -43,13 +43,13 @@ QueryMolecule& QueryReaction::getQueryMolecule(int index)
 
 Array<int>& QueryReaction::getExactChangeArray(int index)
 {
-    BaseMolecule& mol = *_allMolecules.at(index);
+    BaseMolecule& mol = _allMolecules.at(index);
     return mol.reaction_atom_exact_change;
 }
 
 int QueryReaction::getExactChange(int index, int atom)
 {
-    BaseMolecule& mol = *_allMolecules.at(index);
+    BaseMolecule& mol = _allMolecules.at(index);
     return mol.reaction_atom_exact_change[atom];
 }
 
@@ -71,9 +71,9 @@ void QueryReaction::makeTransposedForSubstructure(QueryReaction& other)
     for (int i = other.begin(); i < other.end(); i = other.next(i))
     {
         other._transposeMoleculeForSubstructure(i, transposition);
-        int index = _allMolecules.add(new QueryMolecule());
+        int index = _allMolecules.add_t(QueryMolecule::poolFactory());
 
-        QueryMolecule& qmol = *(QueryMolecule*)_allMolecules[index];
+        QueryMolecule& qmol = static_cast<QueryMolecule&>(_allMolecules[index]);
 
         qmol.makeSubmolecule(other.getQueryMolecule(i), transposition, 0);
 
@@ -98,7 +98,7 @@ void QueryReaction::makeTransposedForSubstructure(QueryReaction& other)
 void QueryReaction::_transposeMoleculeForSubstructure(int index, Array<int>& transposition)
 {
     QS_DEF(Array<int>, has_reacting_info);
-    QueryMolecule& mol = *(QueryMolecule*)_allMolecules[index];
+    QueryMolecule& mol = static_cast<QueryMolecule&>(_allMolecules[index]);
 
     Array<int>& aam = getAAMArray(index);
     Array<int>& rc = getReactingCenterArray(index);
@@ -176,8 +176,8 @@ int QueryReaction::_compare(int& i1, int& i2, void* c)
 
 int QueryReaction::_addBaseMolecule(int side)
 {
-    int idx = _allMolecules.add(new QueryMolecule());
-    _addedBaseMolecule(idx, side, *_allMolecules[idx]);
+    int idx = _allMolecules.add_t(QueryMolecule::poolFactory());
+    _addedBaseMolecule(idx, side, _allMolecules[idx]);
     return idx;
 }
 
@@ -193,7 +193,7 @@ bool QueryReaction::aromatize(const AromaticityOptions& options)
     bool arom_found = false;
     for (int i = begin(); i < end(); i = next(i))
     {
-        arom_found |= QueryMoleculeAromatizer::aromatizeBonds(*(QueryMolecule*)_allMolecules[i], options);
+        arom_found |= QueryMoleculeAromatizer::aromatizeBonds(static_cast<QueryMolecule&>(_allMolecules[i]), options);
     }
 
     return arom_found;
@@ -241,5 +241,5 @@ int QueryReaction::getIgnorableAAM(int index, int atom)
 void QueryReaction::optimize()
 {
     for (int i = begin(); i < end(); i = next(i))
-        _allMolecules[i]->asQueryMolecule().optimize();
+        _allMolecules[i].asQueryMolecule().optimize();
 }

@@ -24,6 +24,8 @@
 #include "base_cpp/non_copyable.h"
 #include "base_cpp/obj_pool.h"
 #include "base_cpp/ptr_array.h"
+#include "base_cpp/ptr_reusable_pool.h"
+#include "base_cpp/reusable.h"
 #include "graph/filter.h"
 #include "graph/graph_iterators.h"
 #include <list>
@@ -63,17 +65,35 @@ namespace indigo
         int e;
     };
 
-    class DLLEXPORT Vertex
+    class DLLEXPORT Vertex : public Reusable
     {
     public:
-        Vertex(Pool<List<VertexEdge>::Elem>& pool) : neighbors_list(pool)
+        // The neighbor list starts unbound (no pool, no allocation): every vertex
+        // is created through Graph::addVertex(), which binds it to the graph-wide
+        // pool. Binding on construction would allocate a private pool per vertex
+        // only to throw it away.
+        Vertex() : neighbors_list(List<VertexEdge>::Unbound{})
         {
         }
-        ~Vertex()
+        ~Vertex() override
         {
         }
 
         List<VertexEdge> neighbors_list;
+
+        // Keeps the pool binding and the backing slots.
+        void reuse() override
+        {
+            neighbors_list.clear();
+        }
+
+        // Binds the neighbor list onto the graph-wide element pool, so all
+        // vertices of a graph share one. The pool applies this on every add(), so
+        // a vertex is never handed out unbound.
+        void reuse(Pool<List<VertexEdge>::Elem>& pool)
+        {
+            neighbors_list = List<VertexEdge>(pool);
+        }
 
         NeighborsAuto neighbors() const;
 
@@ -128,7 +148,7 @@ namespace indigo
 
     class CycleBasis;
 
-    class DLLEXPORT Graph : public NonCopyable
+    class DLLEXPORT Graph : public NonCopyable, public Reusable
     {
     public:
         DECL_ERROR;
@@ -142,6 +162,13 @@ namespace indigo
 
         virtual void clear();
         virtual void changed();
+
+        // Resetting a graph means emptying it. The virtual dispatch reaches the
+        // most-derived clear(), so a pooled molecule is emptied completely.
+        void reuse() override
+        {
+            clear();
+        }
 
         const Vertex& getVertex(int idx) const;
 
@@ -245,7 +272,7 @@ namespace indigo
         void _mergeWithSubgraph(const Graph& other, const Array<int>& vertices, const Array<int>* edges, Array<int>* mapping, Array<int>* edge_mapping);
 
         Pool<List<VertexEdge>::Elem>* _neighbors_pool;
-        ObjPool<Vertex>* _vertices;
+        PtrReusablePool<Vertex>* _vertices;
         Pool<Edge> _edges;
 
         Array<int> _topology; // for each edge: TOPOLOGY_RING, TOPOLOGY_CHAIN, or -1 (not calculated)

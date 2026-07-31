@@ -570,7 +570,7 @@ void MoleculeLayoutGraphSimple::_assignRelativeCoordinates(int& fixed_component,
 
     // TODO: repair exception with vec2f
 
-    QS_DEF(ObjPool<Cycle>, cycles);
+    QS_DEF(PtrReusablePool<Cycle>, cycles);
     QS_DEF(Array<int>, sorted_cycles);
 
     cycles.clear();

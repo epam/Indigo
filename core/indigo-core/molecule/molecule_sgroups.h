@@ -22,7 +22,8 @@
 #include "base_cpp/array.h"
 #include "base_cpp/nullable.h"
 #include "base_cpp/obj_pool.h"
-#include "base_cpp/ptr_pool.h"
+#include "base_cpp/ptr_reusable_pool.h"
+#include "base_cpp/reusable.h"
 #include "math/algebra.h"
 #include <vector>
 
@@ -43,7 +44,7 @@ namespace indigo
         Contracted = 1
     };
 
-    class DLLEXPORT SGroup
+    class DLLEXPORT SGroup : public Reusable
     {
     public:
         enum
@@ -110,6 +111,18 @@ namespace indigo
         SGroup();
         virtual ~SGroup();
 
+        // Reusable: restore the exact default-constructed state so a pooled slot
+        // can be handed back out. MUST mirror the constructor field by field — a
+        // missed field would leak stale data into the reused SGroup. Subclass
+        // overrides call SGroup::reuse() and then restore their own constructor
+        // defaults (including re-setting sgroup_type).
+        void reuse() override;
+
+        // Initializing form used by the pool: resets through the virtual
+        // reuse() (so a subclass restores its own defaults) and then applies
+        // the requested type, which reuse() alone always sets back to GEN.
+        void reuse(int sg_type);
+
         int sgroup_type;              // group type, represnted with STY in Molfile format
         Nullable<int> sgroup_subtype; // group subtype, represnted with SST in Molfile format
         int index;                    // internal SGroup index; V3000 field 1, V2000 M STY sss. Used for cross-refs (PARENT, SPL).
@@ -147,6 +160,8 @@ namespace indigo
     public:
         DataSGroup();
         ~DataSGroup() override;
+
+        void reuse() override;
 
         Array<int> cbonds; // chemical bonds, represented with CBONDS/SBL in Molfile format
 
@@ -189,6 +204,8 @@ namespace indigo
         Superatom();
         ~Superatom() override;
 
+        void reuse() override;
+
         Array<char> sa_class;      // SCL in Molfile format
                                    // SDS in Molfile format
         Nullable<int> seqid;       // SEQID (V3000 - 2017)
@@ -196,20 +213,33 @@ namespace indigo
 
         bool unresolved;
 
-        struct _AttachmentPoint
+        struct _AttachmentPoint : public Reusable
         {
             _AttachmentPoint() : aidx(-1), lvidx(-1)
             {
             }
-            _AttachmentPoint(int atom_id) : aidx(atom_id), lvidx(-1)
-            {
-                apid.push(0);
-            }
             int aidx;
             int lvidx;
             Array<char> apid;
+
+            // Restores the default-constructed state.
+            void reuse() override
+            {
+                aidx = -1;
+                lvidx = -1;
+                apid.clear();
+            }
+
+            // An attachment point on `atom` with an empty (zero-terminated) id,
+            // the shape every loader needs.
+            void reuse(int atom)
+            {
+                reuse();
+                aidx = atom;
+                apid.push(0);
+            }
         };
-        ObjPool<_AttachmentPoint> attachment_points; // SAP in Molfile format
+        PtrReusablePool<_AttachmentPoint> attachment_points; // SAP in Molfile format
 
         struct _BondConnection
         {
@@ -230,6 +260,8 @@ namespace indigo
         RepeatingUnit();
         ~RepeatingUnit() override;
 
+        void reuse() override;
+
         Nullable<int> connectivity;
 
     private:
@@ -242,6 +274,8 @@ namespace indigo
         CopolymerGroup();
         ~CopolymerGroup() override;
 
+        void reuse() override;
+
         Nullable<int> connectivity;
 
     private:
@@ -253,6 +287,8 @@ namespace indigo
     public:
         MultipleGroup();
         ~MultipleGroup() override;
+
+        void reuse() override;
 
         Array<int> parent_atoms;
         Nullable<int> multiplier;
@@ -279,6 +315,11 @@ namespace indigo
 
         int addSGroup(const char* sg_type);
         int addSGroup(int sg_type);
+
+        // Factory for the C++ class that represents sg_type. Several sg_type
+        // values map to the base SGroup class and are discriminated by the
+        // sgroup_type field that addSGroup() stamps afterwards.
+        static PtrReusablePool<SGroup>::Factory poolFactory(int sg_type);
         SGroup& getSGroup(int idx);
         SGroup& getSGroup(int idx, int sg_type);
         int getSGroupCount();
@@ -317,7 +358,7 @@ namespace indigo
         int findSGroupById(int id);
 
     protected:
-        PtrPool<SGroup> _sgroups;
+        PtrReusablePool<SGroup> _sgroups;
 
     private:
         bool _cmpIndices(Array<int>& t_inds, Array<int>& q_inds);

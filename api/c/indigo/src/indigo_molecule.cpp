@@ -1593,22 +1593,22 @@ void IndigoRGroupFragment::remove()
 
 QueryMolecule& IndigoRGroupFragment::getQueryMolecule()
 {
-    return rgroup.mol->rgroups.getRGroup(rgroup.idx).fragments[frag_idx]->asQueryMolecule();
+    return rgroup.mol->rgroups.getRGroup(rgroup.idx).fragments[frag_idx].asQueryMolecule();
 }
 
 Molecule& IndigoRGroupFragment::getMolecule()
 {
-    return rgroup.mol->rgroups.getRGroup(rgroup.idx).fragments[frag_idx]->asMolecule();
+    return rgroup.mol->rgroups.getRGroup(rgroup.idx).fragments[frag_idx].asMolecule();
 }
 
 BaseMolecule& IndigoRGroupFragment::getBaseMolecule()
 {
-    return *rgroup.mol->rgroups.getRGroup(rgroup.idx).fragments[frag_idx];
+    return rgroup.mol->rgroups.getRGroup(rgroup.idx).fragments[frag_idx];
 }
 
 IndigoObject* IndigoRGroupFragment::clone()
 {
-    BaseMolecule* mol = rgroup.mol->rgroups.getRGroup(rgroup.idx).fragments[frag_idx];
+    BaseMolecule* mol = &rgroup.mol->rgroups.getRGroup(rgroup.idx).fragments[frag_idx];
 
     std::unique_ptr<IndigoBaseMolecule> molptr;
 
@@ -1639,7 +1639,7 @@ IndigoRGroupFragmentsIter::~IndigoRGroupFragmentsIter()
 
 bool IndigoRGroupFragmentsIter::hasNext()
 {
-    PtrPool<BaseMolecule>& frags = _mol->rgroups.getRGroup(_rgroup_idx).fragments;
+    PtrReusablePool<BaseMolecule>& frags = _mol->rgroups.getRGroup(_rgroup_idx).fragments;
 
     if (_frag_idx == -1)
         return frags.begin() != frags.end();
@@ -1651,7 +1651,7 @@ IndigoObject* IndigoRGroupFragmentsIter::next()
     if (!hasNext())
         return nullptr;
 
-    PtrPool<BaseMolecule>& frags = _mol->rgroups.getRGroup(_rgroup_idx).fragments;
+    PtrReusablePool<BaseMolecule>& frags = _mol->rgroups.getRGroup(_rgroup_idx).fragments;
 
     if (_frag_idx == -1)
         _frag_idx = frags.begin();
@@ -1732,7 +1732,14 @@ CEXPORT int indigoCountAttachmentPoints(int rgroup)
 
         IndigoRGroup& rgp = IndigoRGroup::cast(object);
 
-        return rgp.mol->rgroups.getRGroup(rgp.idx).fragments[0]->attachmentPointCount();
+        auto& fragments = rgp.mol->rgroups.getRGroup(rgp.idx).fragments;
+        // An R-group without fragments is a legal state — indigoIterateRGroups
+        // skips such groups — so report it instead of failing inside the pool.
+        if (fragments.size() == 0)
+            throw IndigoError("indigoCountAttachmentPoints(): R-group %d has no fragments", rgp.idx);
+        // The pool is sparse: after a fragment removal slot 0 can stay a hole
+        // until a later add recycles it, so take the first live slot.
+        return fragments[fragments.begin()].attachmentPointCount();
     }
     INDIGO_END(-1);
 }

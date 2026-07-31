@@ -1760,23 +1760,21 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
             auto& rfragments = rnode["fragments"];
             for (SizeType i = 0; i < rfragments.Size(); i++)
             {
-                std::unique_ptr<BaseMolecule> fragment(mol.neu());
+                BaseMolecule& fragment = rgroup.fragments.push_t(BaseMolecule::poolFactoryLike(mol));
                 one_rnode.PushBack(rfragments[i], data.GetAllocator());
                 MoleculeJsonLoader loader(one_rnode);
                 loader.stereochemistry_options = stereochemistry_options;
-                loader.loadMolecule(*fragment.get());
-                rgroup.fragments.add(fragment.release());
+                loader.loadMolecule(fragment);
                 one_rnode.Clear();
             }
         }
         else
         {
-            std::unique_ptr<BaseMolecule> fragment(mol.neu());
+            BaseMolecule& fragment = rgroup.fragments.push_t(BaseMolecule::poolFactoryLike(mol));
             one_rnode.PushBack(rnode, data.GetAllocator());
             MoleculeJsonLoader loader(one_rnode);
             loader.stereochemistry_options = stereochemistry_options;
-            loader.loadMolecule(*fragment.get());
-            rgroup.fragments.add(fragment.release());
+            loader.loadMolecule(fragment);
         }
     }
 
@@ -2015,7 +2013,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     }
 
     MoleculeLayout ml(mol, false);
-    ml.layout_orientation = UNCPECIFIED;
+    ml.layout_orientation = UNSPECIFIED;
     ml.updateSGroups();
     loadMetaObjects(_meta_objects, mol.meta());
 

@@ -516,11 +516,11 @@ bool MoleculeAromatizer::aromatizeBonds(Molecule& mol, const AromaticityOptions&
     int n_rgroups = mol.rgroups.getRGroupCount();
     for (int i = 1; i <= n_rgroups; i++)
     {
-        PtrPool<BaseMolecule>& frags = mol.rgroups.getRGroup(i).fragments;
+        PtrReusablePool<BaseMolecule>& frags = mol.rgroups.getRGroup(i).fragments;
 
         for (int j = frags.begin(); j != frags.end(); j = frags.next(j))
         {
-            Molecule& fragment = frags[j]->asMolecule();
+            Molecule& fragment = frags[j].asMolecule();
             aromatic_bond_found |= MoleculeAromatizer::aromatizeBonds(fragment, options);
         }
     }
@@ -897,11 +897,11 @@ bool QueryMoleculeAromatizer::_aromatizeBonds(QueryMolecule& mol, int additional
     rgroups_attached_single.expandFill(n_rgroups + 1, true);
     for (int i = 1; i <= n_rgroups; i++)
     {
-        PtrPool<BaseMolecule>& frags = rgroups.getRGroup(i).fragments;
+        PtrReusablePool<BaseMolecule>& frags = rgroups.getRGroup(i).fragments;
 
         for (int j = frags.begin(); j != frags.end(); j = frags.next(j))
         {
-            QueryMolecule& fragment = frags[j]->asQueryMolecule();
+            QueryMolecule& fragment = frags[j].asQueryMolecule();
 
             aromatized |= _aromatizeRGroupFragment(fragment, rgroups_attached_single[i], options);
         }

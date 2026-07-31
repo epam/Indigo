@@ -1401,7 +1401,7 @@ void MoleculeJsonSaver::saveRGroup(RGroup& rgroup, int rgnum, JsonWriter& writer
     {
         if (fmode)
             writer.StartObject();
-        saveFragment(*rgroup.fragments[i], writer);
+        saveFragment(rgroup.fragments[i], writer);
         if (fmode)
             writer.EndObject();
     }
@@ -1711,7 +1711,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
     if (!BaseMolecule::hasCoord(*mol))
     {
         MoleculeLayout ml(*mol, false);
-        ml.layout_orientation = UNCPECIFIED;
+        ml.layout_orientation = UNSPECIFIED;
         ml.make();
     }
 
@@ -2120,13 +2120,13 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
 
     const auto& meta_objects = meta.metaData();
     int arrow_id = 0, plus_id = 0, text_id = 0, multi_arrow_id = meta.getMetaCount(ReactionArrowObject::CID);
-    for (int meta_index = 0; meta_index < meta_objects.size(); ++meta_index)
+    for (int meta_index = 0; meta_index < meta_objects.size(); meta_index++)
     {
-        auto pobj = meta_objects[meta_index];
-        switch (pobj->_class_id)
+        const MetaObject& obj = meta_objects[meta_index];
+        switch (obj._class_id)
         {
         case ReactionArrowObject::CID: {
-            ReactionArrowObject& ar = (ReactionArrowObject&)(*pobj);
+            const ReactionArrowObject& ar = (const ReactionArrowObject&)obj;
             writer.StartObject();
             if (add_reaction_data)
             {
@@ -2172,7 +2172,7 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
         }
         break;
         case ReactionMultitailArrowObject::CID: {
-            ReactionMultitailArrowObject& ar = (ReactionMultitailArrowObject&)(*pobj);
+            const ReactionMultitailArrowObject& ar = (const ReactionMultitailArrowObject&)obj;
             writer.StartObject();
             if (add_reaction_data)
             {
@@ -2252,7 +2252,7 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
         }
         break;
         case ReactionPlusObject::CID: {
-            ReactionPlusObject& rp = (ReactionPlusObject&)(*pobj);
+            const ReactionPlusObject& rp = (const ReactionPlusObject&)obj;
             writer.StartObject();
             if (add_reaction_data)
             {
@@ -2271,7 +2271,7 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
         }
         break;
         case SimpleGraphicsObject::CID: {
-            auto simple_obj = (SimpleGraphicsObject*)pobj;
+            auto simple_obj = (const SimpleGraphicsObject*)&obj;
             writer.StartObject();
             writer.Key("type");
             writer.String("simpleObject");
@@ -2304,7 +2304,7 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
             break;
         }
         case SimpleTextObject::CID: {
-            auto ptext_obj = (SimpleTextObject*)pobj;
+            auto ptext_obj = (const SimpleTextObject*)&obj;
             writer.StartObject();
             if (add_reaction_data)
             {
@@ -2321,7 +2321,7 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
             break;
         }
         case EmbeddedImageObject::CID: {
-            auto image_obj = static_cast<const EmbeddedImageObject*>(pobj);
+            auto image_obj = static_cast<const EmbeddedImageObject*>(&obj);
             auto& bbox = image_obj->getBoundingBox();
             writer.StartObject(); // start node
             writer.Key("type");

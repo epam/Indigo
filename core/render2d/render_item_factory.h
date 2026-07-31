@@ -19,6 +19,7 @@
 #ifndef __render_item_factory_h__
 #define __render_item_factory_h__
 
+#include "base_cpp/ptr_array.h"
 #include "render_context.h"
 #include "render_item.h"
 #include "render_item_aux.h"
@@ -38,8 +39,10 @@ namespace indigo
 #define IMPL_ITEM(name)                                                                                                                                        \
     int addItem##name()                                                                                                                                        \
     {                                                                                                                                                          \
-        int id = _item##name.add(*this);                                                                                                                       \
-        int num = _items.add(id);                                                                                                                              \
+        int id = _item##name.size();                                                                                                                           \
+        _item##name.push(*this);                                                                                                                               \
+        int num = _items.size();                                                                                                                               \
+        _items.push(id);                                                                                                                                       \
         _items[num].type = TYPE_##name;                                                                                                                        \
         return num;                                                                                                                                            \
     }                                                                                                                                                          \
@@ -56,7 +59,7 @@ namespace indigo
         return item.type == TYPE_##name;                                                                                                                       \
     }
 
-#define DEF_POOL(name) ObjPool<RenderItem##name> _item##name;
+#define DEF_POOL(name) PtrArray<RenderItem##name> _item##name;
 
     class RenderItemFactory
     {
@@ -123,7 +126,7 @@ namespace indigo
         DEF_POOL(Molecule);
         DEF_POOL(Reaction);
 
-        ObjPool<Item> _items;
+        PtrArray<Item> _items;
     };
 
 } // namespace indigo

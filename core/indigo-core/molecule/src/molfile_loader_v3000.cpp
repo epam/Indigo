@@ -1101,23 +1101,22 @@ void MolfileLoader::_readRGroups3000()
                 if (strcmp(str.ptr(), "M  V30 BEGIN CTAB") == 0)
                 {
                     _scanner.seek(pos, SEEK_SET);
-                    std::unique_ptr<BaseMolecule> fragment(_bmol->neu());
+                    BaseMolecule& fragment = rgroup.fragments.push_t(BaseMolecule::poolFactoryLike(*_bmol));
 
                     MolfileLoader loader(_scanner);
-                    loader._bmol = fragment.get();
+                    loader._bmol = &fragment;
                     if (_bmol->isQueryMolecule())
                     {
-                        loader._qmol = &fragment.get()->asQueryMolecule();
+                        loader._qmol = &fragment.asQueryMolecule();
                         loader._mol = 0;
                     }
                     else
                     {
                         loader._qmol = 0;
-                        loader._mol = &fragment.get()->asMolecule();
+                        loader._mol = &fragment.asMolecule();
                     }
                     loader._readCtab3000();
                     loader._postLoad();
-                    rgroup.fragments.add(fragment.release());
                 }
                 else if (strcmp(str.ptr(), "M  V30 END RGROUP") == 0)
                     break;

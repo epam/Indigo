@@ -450,7 +450,7 @@ void MoleculeLayoutGraph::_refineCoordinates(const BiconnectedDecomposer& bc_dec
 
             beg_state.calcHeight();
 
-            if (layout_orientation != UNCPECIFIED)
+            if (layout_orientation != UNSPECIFIED)
             {
                 new_state.rotateLayout(beg_state, center, _2FLOAT(RAD2DEG(beg_state.calc_best_angle())));
                 beg_state.copy(new_state);

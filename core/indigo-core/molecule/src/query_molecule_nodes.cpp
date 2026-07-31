@@ -1225,6 +1225,11 @@ BaseMolecule* QueryMolecule::neu() const
     return new QueryMolecule();
 }
 
+PtrReusablePool<BaseMolecule>::Factory QueryMolecule::poolFactory()
+{
+    return {std::type_index(typeid(QueryMolecule)), [](void*) { return std::unique_ptr<BaseMolecule>(std::make_unique<QueryMolecule>()); }};
+}
+
 bool QueryMolecule::bondStereoCare(int idx)
 {
     if (idx >= _bond_stereo_care.size())

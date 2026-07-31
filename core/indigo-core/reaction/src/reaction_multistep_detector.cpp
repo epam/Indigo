@@ -297,7 +297,7 @@ void ReactionMultistepDetector::distributeOrphanRGroups()
         for (int f = rg.fragments.begin(); f != rg.fragments.end(); f = rg.fragments.next(f))
         {
             Rect2f frag_bbox;
-            rg.fragments[f]->getBoundingBox(frag_bbox);
+            rg.fragments[f].getBoundingBox(frag_bbox);
             if (!rg_bbox_init)
             {
                 rg_bbox = frag_bbox;

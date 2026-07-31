@@ -465,11 +465,11 @@ void MolfileLoader::_readRGroups2000()
                 if (strncmp(rgp_chars, "$CTAB", 5) == 0)
                 {
                     _scanner.skipLine();
-                    std::unique_ptr<BaseMolecule> fragment(_bmol->neu());
+                    BaseMolecule& fragment = rgroup.fragments.push_t(BaseMolecule::poolFactoryLike(*_bmol));
 
                     MolfileLoader loader(_scanner);
 
-                    loader._bmol = fragment.get();
+                    loader._bmol = &fragment;
                     if (_bmol->isQueryMolecule())
                     {
                         loader._qmol = &loader._bmol->asQueryMolecule();
@@ -485,8 +485,6 @@ void MolfileLoader::_readRGroups2000()
                     if (loader._rgfile)
                         loader._readRGroups2000();
                     loader._postLoad();
-
-                    rgroup.fragments.add(fragment.release());
                 }
                 else if (strncmp(rgp_chars, "$END ", 5) == 0)
                 {

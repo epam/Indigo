@@ -109,7 +109,7 @@ std::string SequenceLoader::readHelmMonomerAlias(KetDocument& document, MonomerC
             // loader.ignore_cistrans_errors = true;
             loader.loadMolecule(mol);
             MoleculeLayout ml(mol, true);
-            ml.layout_orientation = UNCPECIFIED;
+            ml.layout_orientation = UNSPECIFIED;
             ml.make();
             mol.clearBondDirections();
             try

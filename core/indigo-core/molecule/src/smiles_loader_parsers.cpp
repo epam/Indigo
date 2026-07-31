@@ -988,20 +988,18 @@ void SmilesLoader::_readOtherStuff()
                             {
                                 rgdesc.pop();
 
-                                std::unique_ptr<BaseMolecule> fragment(_bmol->neu());
+                                BaseMolecule& fragment = rgroup.fragments.push_t(BaseMolecule::poolFactoryLike(*_bmol));
                                 BufferScanner rg_scanner(rgdesc);
                                 SmilesLoader rg_loader(rg_scanner);
 
                                 if (_bmol->isQueryMolecule())
                                 {
-                                    rg_loader.loadQueryMolecule(fragment.get()->asQueryMolecule());
+                                    rg_loader.loadQueryMolecule(fragment.asQueryMolecule());
                                 }
                                 else
                                 {
-                                    rg_loader.loadMolecule(fragment.get()->asMolecule());
+                                    rg_loader.loadMolecule(fragment.asMolecule());
                                 }
-
-                                rgroup.fragments.add(fragment.release());
                             }
                         }
                     }

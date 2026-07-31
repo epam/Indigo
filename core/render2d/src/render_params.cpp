@@ -128,9 +128,9 @@ bool RenderParamInterface::needsLayout(BaseMolecule& mol)
     MoleculeRGroups& rGroups = mol.rgroups;
     for (int i = 1; i <= rGroups.getRGroupCount(); ++i)
     {
-        PtrPool<BaseMolecule>& frags = rGroups.getRGroup(i).fragments;
+        PtrReusablePool<BaseMolecule>& frags = rGroups.getRGroup(i).fragments;
         for (int j = frags.begin(); j != frags.end(); j = frags.next(j))
-            if (needsLayoutSub(*frags[j]))
+            if (needsLayoutSub(frags[j]))
                 return true;
     }
     return false;
@@ -141,7 +141,7 @@ void RenderParamInterface::_prepareMolecule(RenderParams& params, BaseMolecule& 
     if (needsLayout(bm))
     {
         MoleculeLayout ml(bm, params.smart_layout);
-        ml.layout_orientation = UNCPECIFIED;
+        ml.layout_orientation = UNSPECIFIED;
         ml.make();
         bm.clearBondDirections();
         bm.markBondsStereocenters();
@@ -157,7 +157,7 @@ void RenderParamInterface::_prepareReaction(RenderParams& params, BaseReaction& 
         if (needsLayout(mol))
         {
             MoleculeLayout ml(mol, params.smart_layout);
-            ml.layout_orientation = UNCPECIFIED;
+            ml.layout_orientation = UNSPECIFIED;
             ml.make();
             mol.clearBondDirections();
             mol.markBondsStereocenters();

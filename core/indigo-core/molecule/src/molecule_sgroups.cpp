@@ -23,6 +23,7 @@
 #include "molecule/molecule_sgroups.h"
 
 #include <algorithm>
+#include <typeindex>
 #include <unordered_map>
 
 using namespace indigo;
@@ -146,6 +147,95 @@ MultipleGroup::~MultipleGroup()
 {
 }
 
+// ---- reuse(): non-destructive reset for PtrReusablePool slot reuse ----------
+// Each reuse() MUST reproduce its constructor field-by-field: the pool hands
+// the same object back out, so any field not restored here would leak stale
+// data from the previous occupant. Keep in exact sync with the ctors above.
+
+void SGroup::reuse()
+{
+    // Mirror SGroup::SGroup() ...
+    sgroup_type = SGroup::SG_TYPE_GEN;
+    sgroup_subtype = 0;
+    brk_style = 0;
+    index = 0;
+    ext_index = 0;
+    parent_group = 0;
+    parent_idx = -1;
+    contracted = DisplayOption::Undefined;
+    // ... plus the members the ctor leaves default-constructed (empty).
+    atoms.clear();
+    xbonds.clear();
+    label.clear();
+    brackets.clear();
+}
+
+void SGroup::reuse(int sg_type)
+{
+    reuse(); // virtual: a subclass slot restores its own constructor defaults
+    sgroup_type = sg_type;
+}
+
+void DataSGroup::reuse()
+{
+    SGroup::reuse();
+    // Mirror DataSGroup::DataSGroup() ...
+    sgroup_type = SGroup::SG_TYPE_DAT;
+    detached = false;
+    relative = false;
+    display_units = false;
+    dasp_pos = 1;
+    num_chars = 0;
+    tag = ' ';
+    // ... plus default-constructed members.
+    cbonds.clear();
+    description.clear();
+    name.clear();
+    type.clear();
+    querycode.clear();
+    queryoper.clear();
+    data.clear();
+    sa_natreplace.clear();
+    display_pos.reset();
+}
+
+void Superatom::reuse()
+{
+    SGroup::reuse();
+    // Mirror Superatom::Superatom() ...
+    sgroup_type = SGroup::SG_TYPE_SUP;
+    seqid = -1;
+    attachment_points.clear();
+    bond_connections.clear();
+    display_position.set(Vec3f(0, 0, 0));
+    unresolved = false;
+    // ... plus default-constructed members.
+    sa_class.clear();
+    sa_natreplace.clear();
+}
+
+void RepeatingUnit::reuse()
+{
+    SGroup::reuse();
+    sgroup_type = SGroup::SG_TYPE_SRU;
+    connectivity = 0;
+}
+
+void CopolymerGroup::reuse()
+{
+    SGroup::reuse();
+    sgroup_type = SGroup::SG_TYPE_COP;
+    connectivity = 0;
+}
+
+void MultipleGroup::reuse()
+{
+    SGroup::reuse();
+    sgroup_type = SGroup::SG_TYPE_MUL;
+    multiplier = 1;
+    parent_atoms.clear();
+}
+
 IMPL_ERROR(MoleculeSGroups, "molecule sgroups");
 
 MoleculeSGroups::MoleculeSGroups()
@@ -165,9 +255,9 @@ void MoleculeSGroups::clear()
 
 void MoleculeSGroups::clear(int sg_type)
 {
-    for (int i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
+    for (int i : _sgroups.indices())
     {
-        if (_sgroups.at(i)->sgroup_type == sg_type)
+        if (_sgroups.at(i).sgroup_type == sg_type)
             remove(i);
     }
 }
@@ -202,46 +292,36 @@ int MoleculeSGroups::addSGroup(const char* sg_type)
     return addSGroup(sgroup_type);
 }
 
+PtrReusablePool<SGroup>::Factory MoleculeSGroups::poolFactory(int sg_type)
+{
+    switch (sg_type)
+    {
+    case SGroup::SG_TYPE_DAT:
+        return {std::type_index(typeid(DataSGroup)), [](void*) { return std::unique_ptr<SGroup>(std::make_unique<DataSGroup>()); }};
+    case SGroup::SG_TYPE_SUP:
+        return {std::type_index(typeid(Superatom)), [](void*) { return std::unique_ptr<SGroup>(std::make_unique<Superatom>()); }};
+    case SGroup::SG_TYPE_SRU:
+        return {std::type_index(typeid(RepeatingUnit)), [](void*) { return std::unique_ptr<SGroup>(std::make_unique<RepeatingUnit>()); }};
+    case SGroup::SG_TYPE_MUL:
+        return {std::type_index(typeid(MultipleGroup)), [](void*) { return std::unique_ptr<SGroup>(std::make_unique<MultipleGroup>()); }};
+    case SGroup::SG_TYPE_COP:
+        return {std::type_index(typeid(CopolymerGroup)), [](void*) { return std::unique_ptr<SGroup>(std::make_unique<CopolymerGroup>()); }};
+    default:
+        // GEN plus MON/MER/CRO/MOD/GRA/COM/MIX/FOR/ANY: all represented by the
+        // base SGroup class, so they share a reuse bucket.
+        return {std::type_index(typeid(SGroup)), [](void*) { return std::unique_ptr<SGroup>(std::make_unique<SGroup>()); }};
+    }
+}
+
 int MoleculeSGroups::addSGroup(int sg_type)
 {
-    int idx = -1;
-    if (sg_type == SGroup::SG_TYPE_GEN)
-    {
-        idx = _sgroups.add(new SGroup());
-    }
-    else if (sg_type == SGroup::SG_TYPE_DAT)
-    {
-        idx = _sgroups.add(new DataSGroup());
-    }
-    else if (sg_type == SGroup::SG_TYPE_SUP)
-    {
-        idx = _sgroups.add(new Superatom());
-    }
-    else if (sg_type == SGroup::SG_TYPE_SRU)
-    {
-        idx = _sgroups.add(new RepeatingUnit());
-    }
-    else if (sg_type == SGroup::SG_TYPE_MUL)
-    {
-        idx = _sgroups.add(new MultipleGroup());
-    }
-    else if (sg_type == SGroup::SG_TYPE_COP)
-    {
-        idx = _sgroups.add(new CopolymerGroup());
-    }
-    else
-    {
-        idx = _sgroups.add(new SGroup());
-        if (idx != -1)
-            _sgroups.at(idx)->sgroup_type = sg_type;
-    }
-    return idx;
+    return _sgroups.add_t(poolFactory(sg_type), sg_type);
 }
 
 SGroup& MoleculeSGroups::getSGroup(int idx)
 {
     if (_sgroups.hasElement(idx))
-        return *_sgroups.at(idx);
+        return _sgroups.at(idx);
 
     throw Error("Sgroup with index %d is not found", idx);
 }
@@ -254,13 +334,13 @@ bool MoleculeSGroups::hasSGroup(int idx)
 SGroup& MoleculeSGroups::getSGroup(int idx, int sg_type)
 {
     int count = -1;
-    for (int i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
+    for (int i : _sgroups.indices())
     {
-        if (_sgroups.at(i)->sgroup_type == sg_type)
+        if (_sgroups.at(i).sgroup_type == sg_type)
         {
             count++;
             if (count == idx)
-                return *_sgroups.at(i);
+                return _sgroups.at(i);
         }
     }
     throw Error("Sgroup index %d or type %d wrong", idx, sg_type);
@@ -274,9 +354,9 @@ int MoleculeSGroups::getSGroupCount()
 int MoleculeSGroups::getSGroupCount(int sg_type)
 {
     int count = 0;
-    for (int i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
+    for (int i : _sgroups.indices())
     {
-        if (_sgroups.at(i)->sgroup_type == sg_type)
+        if (_sgroups.at(i).sgroup_type == sg_type)
             count++;
     }
     return count;
@@ -426,12 +506,11 @@ void MoleculeSGroups::parseCondition(const char* property, const char* value, in
 
 void MoleculeSGroups::findSGroups(int property, int value, Array<int>& sgs)
 {
-    int i;
     if (property == SGroup::SG_TYPE)
     {
-        for (i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
+        for (int i : _sgroups.indices())
         {
-            SGroup& sg = *_sgroups.at(i);
+            SGroup& sg = _sgroups.at(i);
             if (sg.sgroup_type == value)
             {
                 sgs.push(i);
@@ -440,9 +519,9 @@ void MoleculeSGroups::findSGroups(int property, int value, Array<int>& sgs)
     }
     else if (property == SGroup::SG_BRACKET_STYLE)
     {
-        for (i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
+        for (int i : _sgroups.indices())
         {
-            SGroup& sg = *_sgroups.at(i);
+            SGroup& sg = _sgroups.at(i);
             if (sg.brk_style == value)
             {
                 sgs.push(i);
@@ -451,9 +530,9 @@ void MoleculeSGroups::findSGroups(int property, int value, Array<int>& sgs)
     }
     else if (property == SGroup::SG_DISPLAY_OPTION)
     {
-        for (i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
+        for (int i : _sgroups.indices())
         {
-            SGroup& sg = *_sgroups.at(i);
+            SGroup& sg = _sgroups.at(i);
             if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
             {
                 Superatom& sup = (Superatom&)sg;
@@ -466,9 +545,9 @@ void MoleculeSGroups::findSGroups(int property, int value, Array<int>& sgs)
     }
     else if (property == SGroup::SG_PARENT)
     {
-        for (i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
+        for (int i : _sgroups.indices())
         {
-            SGroup& sg = *_sgroups.at(i);
+            SGroup& sg = _sgroups.at(i);
             if (sg.parent_group == value)
             {
                 sgs.push(i);
@@ -480,7 +559,7 @@ void MoleculeSGroups::findSGroups(int property, int value, Array<int>& sgs)
         if (!_sgroups.hasElement(value))
             return;
 
-        SGroup& sg = *_sgroups.at(value);
+        SGroup& sg = _sgroups.at(value);
         if (sg.parent_group != 0)
         {
             int idx = findSGroupById(sg.parent_group.value());
@@ -494,12 +573,11 @@ void MoleculeSGroups::findSGroups(int property, int value, Array<int>& sgs)
 
 void MoleculeSGroups::findSGroups(int property, const char* str, Array<int>& sgs)
 {
-    int i;
     if (property == SGroup::SG_CLASS)
     {
-        for (i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
+        for (int i : _sgroups.indices())
         {
-            SGroup& sg = *_sgroups.at(i);
+            SGroup& sg = _sgroups.at(i);
             if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
             {
                 Superatom& sa = (Superatom&)sg;
@@ -513,9 +591,9 @@ void MoleculeSGroups::findSGroups(int property, const char* str, Array<int>& sgs
     }
     else if (property == SGroup::SG_LABEL)
     {
-        for (i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
+        for (int i : _sgroups.indices())
         {
-            SGroup& sg = *_sgroups.at(i);
+            SGroup& sg = _sgroups.at(i);
             BufferScanner sc(sg.label);
             if (sc.findWordIgnoreCase(str))
             {
@@ -525,9 +603,9 @@ void MoleculeSGroups::findSGroups(int property, const char* str, Array<int>& sgs
     }
     else if (property == SGroup::SG_DATA)
     {
-        for (i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
+        for (int i : _sgroups.indices())
         {
-            SGroup& sg = *_sgroups.at(i);
+            SGroup& sg = _sgroups.at(i);
             if (sg.sgroup_type == SGroup::SG_TYPE_DAT)
             {
                 DataSGroup& dg = (DataSGroup&)sg;
@@ -541,9 +619,9 @@ void MoleculeSGroups::findSGroups(int property, const char* str, Array<int>& sgs
     }
     else if (property == SGroup::SG_DATA_NAME)
     {
-        for (i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
+        for (int i : _sgroups.indices())
         {
-            SGroup& sg = *_sgroups.at(i);
+            SGroup& sg = _sgroups.at(i);
             if (sg.sgroup_type == SGroup::SG_TYPE_DAT)
             {
                 DataSGroup& dg = (DataSGroup&)sg;
@@ -557,9 +635,9 @@ void MoleculeSGroups::findSGroups(int property, const char* str, Array<int>& sgs
     }
     else if (property == SGroup::SG_DATA_TYPE)
     {
-        for (i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
+        for (int i : _sgroups.indices())
         {
-            SGroup& sg = *_sgroups.at(i);
+            SGroup& sg = _sgroups.at(i);
             if (sg.sgroup_type == SGroup::SG_TYPE_DAT)
             {
                 DataSGroup& dg = (DataSGroup&)sg;
@@ -573,9 +651,9 @@ void MoleculeSGroups::findSGroups(int property, const char* str, Array<int>& sgs
     }
     else if (property == SGroup::SG_DATA_DESCRIPTION)
     {
-        for (i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
+        for (int i : _sgroups.indices())
         {
-            SGroup& sg = *_sgroups.at(i);
+            SGroup& sg = _sgroups.at(i);
             if (sg.sgroup_type == SGroup::SG_TYPE_DAT)
             {
                 DataSGroup& dg = (DataSGroup&)sg;
@@ -589,9 +667,9 @@ void MoleculeSGroups::findSGroups(int property, const char* str, Array<int>& sgs
     }
     else if (property == SGroup::SG_DATA_DISPLAY)
     {
-        for (i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
+        for (int i : _sgroups.indices())
         {
-            SGroup& sg = *_sgroups.at(i);
+            SGroup& sg = _sgroups.at(i);
             if (sg.sgroup_type == SGroup::SG_TYPE_DAT)
             {
                 DataSGroup& dg = (DataSGroup&)sg;
@@ -604,9 +682,9 @@ void MoleculeSGroups::findSGroups(int property, const char* str, Array<int>& sgs
     }
     else if (property == SGroup::SG_DATA_LOCATION)
     {
-        for (i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
+        for (int i : _sgroups.indices())
         {
-            SGroup& sg = *_sgroups.at(i);
+            SGroup& sg = _sgroups.at(i);
             if (sg.sgroup_type == SGroup::SG_TYPE_DAT)
             {
                 DataSGroup& dg = (DataSGroup&)sg;
@@ -619,9 +697,9 @@ void MoleculeSGroups::findSGroups(int property, const char* str, Array<int>& sgs
     }
     else if (property == SGroup::SG_DATA_TAG)
     {
-        for (i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
+        for (int i : _sgroups.indices())
         {
-            SGroup& sg = *_sgroups.at(i);
+            SGroup& sg = _sgroups.at(i);
             if (sg.sgroup_type == SGroup::SG_TYPE_DAT)
             {
                 DataSGroup& dg = (DataSGroup&)sg;
@@ -634,9 +712,9 @@ void MoleculeSGroups::findSGroups(int property, const char* str, Array<int>& sgs
     }
     else if (property == SGroup::SG_QUERY_CODE)
     {
-        for (i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
+        for (int i : _sgroups.indices())
         {
-            SGroup& sg = *_sgroups.at(i);
+            SGroup& sg = _sgroups.at(i);
             if (sg.sgroup_type == SGroup::SG_TYPE_DAT)
             {
                 DataSGroup& dg = (DataSGroup&)sg;
@@ -650,9 +728,9 @@ void MoleculeSGroups::findSGroups(int property, const char* str, Array<int>& sgs
     }
     else if (property == SGroup::SG_QUERY_OPER)
     {
-        for (i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
+        for (int i : _sgroups.indices())
         {
-            SGroup& sg = *_sgroups.at(i);
+            SGroup& sg = _sgroups.at(i);
             if (sg.sgroup_type == SGroup::SG_TYPE_DAT)
             {
                 DataSGroup& dg = (DataSGroup&)sg;
@@ -670,12 +748,11 @@ void MoleculeSGroups::findSGroups(int property, const char* str, Array<int>& sgs
 
 void MoleculeSGroups::findSGroups(int property, Array<int>& indices, Array<int>& sgs)
 {
-    int i;
     if (property == SGroup::SG_ATOMS)
     {
-        for (i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
+        for (int i : _sgroups.indices())
         {
-            SGroup& sg = *_sgroups.at(i);
+            SGroup& sg = _sgroups.at(i);
             if (_cmpIndices(sg.atoms, indices))
             {
                 sgs.push(i);
@@ -684,9 +761,9 @@ void MoleculeSGroups::findSGroups(int property, Array<int>& indices, Array<int>&
     }
     else if (property == SGroup::SG_BONDS)
     {
-        for (i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
+        for (int i : _sgroups.indices())
         {
-            SGroup& sg = *_sgroups.at(i);
+            SGroup& sg = _sgroups.at(i);
             if (_cmpIndices(sg.getBonds(), indices))
             {
                 sgs.push(i);
@@ -699,9 +776,9 @@ void MoleculeSGroups::findSGroups(int property, Array<int>& indices, Array<int>&
 
 void MoleculeSGroups::registerUnfoldedHydrogen(int idx, int new_h_idx)
 {
-    for (int i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
+    for (int i : _sgroups.indices())
     {
-        SGroup& sg = *_sgroups.at(i);
+        SGroup& sg = _sgroups.at(i);
         if (sg.atoms.find(idx) != -1)
         {
             sg.atoms.push(new_h_idx);
@@ -711,9 +788,9 @@ void MoleculeSGroups::registerUnfoldedHydrogen(int idx, int new_h_idx)
 
 int MoleculeSGroups::findSGroupById(int id)
 {
-    for (int i = _sgroups.begin(); i != _sgroups.end(); i = _sgroups.next(i))
+    for (int i : _sgroups.indices())
     {
-        SGroup& sg = *_sgroups.at(i);
+        SGroup& sg = _sgroups.at(i);
         if (sg.index == id)
         {
             return i;

@@ -51,6 +51,12 @@ BaseMolecule::BaseMolecule() : original_format(BaseMolecule::UNKNOWN), _edit_rev
 {
 }
 
+PtrReusablePool<BaseMolecule>::Factory BaseMolecule::poolFactoryLike(const BaseMolecule& sample)
+{
+    return {std::type_index(typeid(sample)), [](void* context) { return std::unique_ptr<BaseMolecule>(static_cast<const BaseMolecule*>(context)->neu()); },
+            const_cast<void*>(static_cast<const void*>(&sample))};
+}
+
 BaseMolecule::~BaseMolecule()
 {
 }
@@ -117,6 +123,18 @@ void BaseMolecule::clear()
     _meta.resetMetaData();
     clearCIP();
     aliases.clear();
+
+    // Document-level state. Cleared here and not left to the caller, so an
+    // emptied molecule carries nothing from its previous contents: clone()
+    // appends to monomer_shapes and merges properties/annotations by source
+    // key, so leftovers would accumulate in any object that is cleared and
+    // repopulated (loaders, clone destinations, pooled slots).
+    _properties.clear();
+    monomer_shapes.clear();
+    _atom_annotations.clear();
+    _bond_annotations.clear();
+    _annotation.reset();
+    original_format = UNKNOWN;
 }
 
 bool BaseMolecule::hasCoord(BaseMolecule& mol)
@@ -861,7 +879,9 @@ void BaseMolecule::clone(BaseMolecule& other, Array<int>* mapping, Array<int>* i
     for (int i = 0; i < other.monomer_shapes.size(); ++i)
         monomer_shapes.add(new KetMonomerShape(other.monomer_shapes[i]));
     for (int i = 0; i < other._template_occurrences.size(); ++i)
-        std::ignore = _template_occurrences.add(other._template_occurrences[i]);
+    {
+        _template_occurrences.add(other._template_occurrences[i]);
+    }
     for (int i = 0; i < other._template_names.size(); ++i)
         _template_names.add(other._template_names.at(i));
     for (int i = 0; i < other._template_classes.size(); ++i)
@@ -907,7 +927,9 @@ void BaseMolecule::clone_KeepIndices(BaseMolecule& other, int skip_flags)
     for (int j = 0; j < other.monomer_shapes.size(); ++j)
         monomer_shapes.add(new KetMonomerShape(other.monomer_shapes[j]));
     for (i = 0; i < other._template_occurrences.size(); ++i)
-        std::ignore = _template_occurrences.add(other._template_occurrences[i]);
+    {
+        _template_occurrences.add(other._template_occurrences[i]);
+    }
     for (i = 0; i < other._template_names.size(); ++i)
         _template_names.add(other._template_names.at(i));
     for (i = 0; i < other._template_classes.size(); ++i)
@@ -1307,7 +1329,7 @@ void BaseMolecule::removeUnusedRGroups()
             auto& rg = rgroups.getRGroup(rg_idx);
             for (int f = rg.fragments.begin(); f != rg.fragments.end(); f = rg.fragments.next(f))
             {
-                BaseMolecule& frag = *rg.fragments[f];
+                BaseMolecule& frag = rg.fragments[f];
                 for (int k = frag.vertexBegin(); k < frag.vertexEnd(); k = frag.vertexNext(k))
                 {
                     if (frag.isRSite(k))
