@@ -387,7 +387,6 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query, Mono
                 RxnfileLoader loader(reaction_scanner);
                 loader.setOptions(getOptions());
                 loader.treat_stereo_as = treat_stereo_as;
-                loader.setOptions(getOptions());
                 reactions.emplace_back();
                 loader.loadReaction(reactions.back(), rdf_loader.properties, monomer_lib);
             }

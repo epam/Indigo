@@ -1417,6 +1417,8 @@ int MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_tem
     monomer_template_cp.CopyFrom(monomer_template, data.GetAllocator());
     one_tgroup.PushBack(monomer_template_cp, data.GetAllocator());
     MoleculeJsonLoader loader(one_tgroup);
+    // Static entry point, so only the stereo options are in scope. Monomer
+    // templates are C/N/O/P fragments, where both valence tables agree.
     loader.stereochemistry_options = stereochemistry_options;
     loader.ignore_noncritical_query_features = true;
     tg.fragment.reset(mol.neu());
@@ -1803,7 +1805,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
                 BaseMolecule& fragment = rgroup.fragments.push_t(BaseMolecule::poolFactoryLike(mol));
                 one_rnode.PushBack(rfragments[i], data.GetAllocator());
                 MoleculeJsonLoader loader(one_rnode);
-                loader.stereochemistry_options = stereochemistry_options;
+                loader.setOptions(getOptions());
                 loader.loadMolecule(fragment);
                 one_rnode.Clear();
             }
@@ -1813,7 +1815,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
             BaseMolecule& fragment = rgroup.fragments.push_t(BaseMolecule::poolFactoryLike(mol));
             one_rnode.PushBack(rnode, data.GetAllocator());
             MoleculeJsonLoader loader(one_rnode);
-            loader.stereochemistry_options = stereochemistry_options;
+            loader.setOptions(getOptions());
             loader.loadMolecule(fragment);
         }
     }

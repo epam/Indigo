@@ -295,6 +295,36 @@ TEST_F(LoaderOptionsTest, ValenceModeIsHonouredOnEveryInputPath)
     }
 }
 
+// Sub-structures are parsed by a second loader instance the first one builds.
+// That instance starts from defaults, so it has to be handed the options too —
+// otherwise an R-group fragment keeps the default model while the root honours
+// the option. Same defect as above, one level down, and invisible to any probe
+// that only looks at the root.
+TEST_F(LoaderOptionsTest, NestedFragmentsInheritTheModel)
+{
+    const char* rgroup_ket = R"({"root":{"nodes":[{"$ref":"rg1"}]},)"
+                             R"("rg1":{"rlogic":{"number":1},"type":"rgroup",)"
+                             R"("atoms":[{"label":"Al","location":[0,0,0]}],"bonds":[]}})";
+
+    const auto smilesWith = [&](const char* mode) {
+        indigoSetOption("ignore-bad-valence", "true");
+        indigoSetOption("valence-mode", mode);
+        const int mol = indigoLoadMoleculeFromString(rgroup_ket);
+        EXPECT_NE(-1, mol);
+        if (mol == -1)
+            return std::string("<build-failed>");
+        const std::string result = indigoSmiles(mol);
+        indigoFree(mol);
+        return result;
+    };
+
+    EXPECT_NE(std::string::npos, smilesWith("biovia-2009").find("[AlH3]"));
+
+    const std::string with_2017 = smilesWith("biovia-2017");
+    EXPECT_EQ(std::string::npos, with_2017.find("[AlH3]")) << "R-group fragment kept the 2009 model: " << with_2017;
+    EXPECT_NE(std::string::npos, with_2017.find("[Al]")) << with_2017;
+}
+
 TEST_F(LoaderOptionsTest, InvalidValueIsRejected)
 {
     // A silently ignored bad value would look exactly like the original defect.
