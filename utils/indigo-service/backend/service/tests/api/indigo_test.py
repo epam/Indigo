@@ -3321,7 +3321,10 @@ M  END
             "    0.0000    0.0000    0.0000 Al  0  0  0  0  0  0  0  0  0  0  0  0\n"
             "M  END\n"
         )
-        for mode, expected in (("biovia-2009", "[AlH3]"), ("biovia-2017", "[Al]")):
+        for mode, expected in (
+            ("biovia-2009", "[AlH3]"),
+            ("biovia-2017", "[Al]"),
+        ):
             self.assertEqual(
                 expected,
                 self._unfold_with_valence_mode(

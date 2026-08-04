@@ -580,7 +580,8 @@ def _convert_struct(structure: str, mode: str) -> str:
         json=_convert_request(structure, {"valence-mode": mode}),
     )
     assert response.status_code == 200, response.text
-    return response.json()["data"]["attributes"]["structure"]
+    # str(): the JSON body is untyped, and mypy rejects returning Any here.
+    return str(response.json()["data"]["attributes"]["structure"])
 
 
 @pytest.mark.parametrize(
