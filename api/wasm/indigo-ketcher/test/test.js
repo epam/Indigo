@@ -554,6 +554,86 @@ M  END
         });
     }
 
+    // valence-mode over the in-process WASM channel.
+    //
+    // Regression cover for issue #3823: the option had no impact on
+    // fold/unfold hydrogens. It reached the Indigo session correctly —
+    // indigoSetOptions filters against a deny-list that never contained it —
+    // but MoleculeAutoLoader failed to forward it to MoleculeJsonLoader, so KET
+    // input, which is what Ketcher actually sends, kept the BIOVIA-2009 model.
+    //
+    // api/c/tests/unit/tests/loader_options.cpp pins the same expectations at
+    // the C-API level. These cases add what it cannot reach: the Emscripten
+    // binding, its per-call IndigoSession and its option filter.
+    {
+        // Verbatim from the issue: a bare, neutral aluminium. Under
+        // BIOVIA-2017 it is an intercepted metal, so unfolding adds no H.
+        const bare_al_ket = JSON.stringify({
+            root: { nodes: [{ $ref: "mol0" }] },
+            mol0: { type: "molecule", atoms: [{ label: "Al", location: [0, 0, 0] }] }
+        });
+
+        const bare_al_molfile = "\n  Indigo  0000000002D\n\n"
+            + "  1  0  0  0  0  0  0  0  0  0999 V2000\n"
+            + "    0.0000    0.0000    0.0000 Al  0  0  0  0  0  0  0  0  0  0  0  0\n"
+            + "M  END\n";
+
+        function unfoldWithValenceMode(struct, mode) {
+            let options = new indigo.MapStringString();
+            options.set("valence-mode", mode);
+            try {
+                return indigo.convert_explicit_hydrogens(struct, "unfold", "smiles", options);
+            } finally {
+                options.delete();
+            }
+        }
+
+        test("valence_mode", "metal_ket_biovia_2017_adds_no_hydrogens", () => {
+            assert.equal(unfoldWithValenceMode(bare_al_ket, "biovia-2017"), "[Al]");
+        });
+
+        test("valence_mode", "metal_ket_biovia_2009_adds_hydrogens", () => {
+            assert.equal(unfoldWithValenceMode(bare_al_ket, "biovia-2009"), "[AlH3]");
+        });
+
+        test("valence_mode", "ket_and_molfile_agree", () => {
+            // The defect was format-specific, so a single-format assertion
+            // would have stayed green throughout.
+            assert.equal(unfoldWithValenceMode(bare_al_molfile, "biovia-2017"), "[Al]");
+            assert.equal(unfoldWithValenceMode(bare_al_molfile, "biovia-2009"), "[AlH3]");
+        });
+
+        test("valence_mode", "default_is_biovia_2009", () => {
+            // "default" is an alias for the legacy table, not "let Indigo choose".
+            assert.equal(
+                unfoldWithValenceMode(bare_al_ket, "default"),
+                unfoldWithValenceMode(bare_al_ket, "biovia-2009"));
+        });
+
+        test("valence_mode", "saturated_metal_is_mode_independent", () => {
+            // Negative control: a SATURATED metal, where interception gives
+            // valence = conn and both models agree. This shape was originally
+            // mistaken for "the option does nothing".
+            const li_h_ket = JSON.stringify({
+                root: { nodes: [{ $ref: "mol0" }] },
+                mol0: {
+                    type: "molecule",
+                    atoms: [{ label: "Li", location: [0, 0, 0] }, { label: "H", location: [1.5, 0, 0] }],
+                    bonds: [{ type: 1, atoms: [0, 1] }]
+                }
+            });
+            assert.equal(
+                unfoldWithValenceMode(li_h_ket, "biovia-2017"),
+                unfoldWithValenceMode(li_h_ket, "biovia-2009"));
+        });
+
+        test("valence_mode", "invalid_value_is_rejected", () => {
+            // The binding forwards unknown values verbatim; the C layer must
+            // reject them rather than silently falling back to a default.
+            assert.throws(() => unfoldWithValenceMode(bare_al_ket, "not-a-mode"));
+        });
+    }
+
     // Convert explicit hydrogens
     {
         test("convert_explicit_hydrogens", "auto", () => {

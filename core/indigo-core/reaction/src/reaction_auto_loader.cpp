@@ -44,7 +44,7 @@ void ReactionAutoLoader::_init()
     ignore_cistrans_errors = false;
     ignore_no_chiral_flag = false;
     ignore_bad_valence = false;
-    valence_mode = ValenceMode::BIOVIA_2017;
+    valence_mode = ValenceMode::BIOVIA_2009;
     dearomatize_on_load = false;
     treat_stereo_as = 0;
 }
@@ -170,12 +170,7 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query, Mono
             gzscanner.readAll(buf);
             ReactionAutoLoader loader2(buf);
 
-            loader2.stereochemistry_options = stereochemistry_options;
-            loader2.ignore_noncritical_query_features = ignore_noncritical_query_features;
-            loader2.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
-            loader2.ignore_no_chiral_flag = ignore_no_chiral_flag;
-            loader2.ignore_bad_valence = ignore_bad_valence;
-            loader2.valence_mode = valence_mode;
+            loader2.setOptions(getOptions());
             return loader2.loadReaction(query);
         }
     }
@@ -186,8 +181,7 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query, Mono
         {
             local_scanner->seek(kCDX_HeaderLength, SEEK_CUR);
             ReactionCdxmlLoader loader(*local_scanner, true);
-            loader.stereochemistry_options = stereochemistry_options;
-            loader.ignore_bad_valence = ignore_bad_valence;
+            loader.setOptions(getOptions());
             if (query)
                 throw Error("CDX queries not supported yet");
             auto reaction = std::make_unique<Reaction>();
@@ -206,12 +200,7 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query, Mono
         {
             BufferScanner scanner2(buf);
             RxnfileLoader loader(scanner2);
-            loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
-            loader.stereochemistry_options = stereochemistry_options;
-            loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
-            loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
-            loader.ignore_bad_valence = ignore_bad_valence;
-            loader.valence_mode = valence_mode;
+            loader.setOptions(getOptions());
             if (query)
             {
                 auto reaction = std::make_unique<QueryReaction>();
@@ -259,8 +248,7 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query, Mono
             if (_scanner->findWord("<reaction"))
             {
                 ReactionCmlLoader loader(*_scanner);
-                loader.stereochemistry_options = stereochemistry_options;
-                loader.ignore_bad_valence = ignore_bad_valence;
+                loader.setOptions(getOptions());
 
                 if (query)
                     throw Error("CML queries not supported");
@@ -283,8 +271,7 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query, Mono
         {
             _scanner->seek(pos, SEEK_SET);
             ReactionCdxmlLoader loader(*_scanner);
-            loader.stereochemistry_options = stereochemistry_options;
-            loader.ignore_bad_valence = ignore_bad_valence;
+            loader.setOptions(getOptions());
 
             if (query)
             {
@@ -342,11 +329,7 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query, Mono
                         if (data.HasMember("root") && data["root"].HasMember("nodes"))
                         {
                             ReactionJsonLoader loader(data, layout_options);
-                            loader.stereochemistry_options = stereochemistry_options;
-                            loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
-                            loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
-                            loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
-                            loader.ignore_bad_valence = ignore_bad_valence;
+                            loader.setOptions(getOptions());
                             std::unique_ptr<BaseReaction> reaction;
                             if (is_pathway)
                             {
@@ -402,13 +385,9 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query, Mono
                 rdf_loader.readNext();
                 BufferScanner reaction_scanner(rdf_loader.data);
                 RxnfileLoader loader(reaction_scanner);
-                loader.stereochemistry_options = stereochemistry_options;
-                loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
-                loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
-                loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
+                loader.setOptions(getOptions());
                 loader.treat_stereo_as = treat_stereo_as;
-                loader.ignore_bad_valence = ignore_bad_valence;
-                loader.valence_mode = valence_mode;
+                loader.setOptions(getOptions());
                 reactions.emplace_back();
                 loader.loadReaction(reactions.back(), rdf_loader.properties, monomer_lib);
             }
@@ -428,8 +407,7 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query, Mono
 
             loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
             loader.ignore_cistrans_errors = ignore_cistrans_errors;
-            loader.stereochemistry_options = stereochemistry_options;
-            loader.ignore_bad_valence = ignore_bad_valence;
+            loader.setOptions(getOptions());
 
             if (query)
             {
@@ -459,12 +437,7 @@ std::unique_ptr<BaseReaction> ReactionAutoLoader::_loadReaction(bool query, Mono
     // default is Rxnfile format
     {
         RxnfileLoader loader(*_scanner);
-        loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
-        loader.stereochemistry_options = stereochemistry_options;
-        loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
-        loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
-        loader.ignore_bad_valence = ignore_bad_valence;
-        loader.valence_mode = valence_mode;
+        loader.setOptions(getOptions());
 
         if (query)
         {

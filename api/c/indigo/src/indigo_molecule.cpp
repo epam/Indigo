@@ -691,6 +691,8 @@ CEXPORT int indigoLoadKetDocument(int source)
         }
         std::unique_ptr<IndigoKetDocument> docptr = std::make_unique<IndigoKetDocument>();
         KetDocumentJsonLoader loader{};
+        // The document converts to a Molecule lazily; see KetDocument::setOptions.
+        docptr->get().setOptions(self.loaderOptions());
         loader.parseJson(json_str, docptr->get());
         return self.addObject(docptr.release());
     }

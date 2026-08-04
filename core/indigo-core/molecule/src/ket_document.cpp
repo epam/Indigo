@@ -145,6 +145,12 @@ std::unique_ptr<KetBaseMonomer>& KetDocument::addAmbiguousMonomer(const std::str
     return addAmbiguousMonomer(id, alias, template_id);
 }
 
+void KetDocument::setOptions(const LoaderOptions& opts)
+{
+    _options = opts;
+    _cached_molecule.reset(); // a stale conversion would keep the old model
+}
+
 BaseMolecule& KetDocument::getBaseMolecule()
 {
     if (!_cached_molecule)
@@ -158,6 +164,7 @@ BaseMolecule& KetDocument::getBaseMolecule()
         rapidjson::Document data;
         std::ignore = data.Parse(json.c_str());
         MoleculeJsonLoader loader(data);
+        loader.setOptions(_options);
         loader.stereochemistry_options.ignore_errors = true;
         loader.ignore_noncritical_query_features = true;
         _cached_molecule = std::make_unique<Molecule>();

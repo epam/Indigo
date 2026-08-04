@@ -140,9 +140,7 @@ void RSmilesLoader::_loadReaction()
     r_loader.ignorable_aam = &rcnt_aam_ignorable;
     r_loader.smarts_mode = smarts_mode;
     r_loader.ignore_cistrans_errors = ignore_cistrans_errors;
-    r_loader.stereochemistry_options = stereochemistry_options;
-    r_loader.ignore_bad_valence = ignore_bad_valence;
-    r_loader.valence_mode = valence_mode;
+    r_loader.setOptions(getOptions());
 
     if (_rxn != 0)
     {
@@ -175,9 +173,7 @@ void RSmilesLoader::_loadReaction()
     c_loader.inside_rsmiles = true;
     c_loader.smarts_mode = smarts_mode;
     c_loader.ignore_cistrans_errors = ignore_cistrans_errors;
-    c_loader.stereochemistry_options = stereochemistry_options;
-    c_loader.ignore_bad_valence = ignore_bad_valence;
-    c_loader.valence_mode = valence_mode;
+    c_loader.setOptions(getOptions());
 
     if (_rxn != 0)
     {
@@ -216,9 +212,7 @@ void RSmilesLoader::_loadReaction()
     p_loader.ignorable_aam = &prod_aam_ignorable;
     p_loader.smarts_mode = smarts_mode;
     p_loader.ignore_cistrans_errors = ignore_cistrans_errors;
-    p_loader.stereochemistry_options = stereochemistry_options;
-    p_loader.ignore_bad_valence = ignore_bad_valence;
-    p_loader.valence_mode = valence_mode;
+    p_loader.setOptions(getOptions());
 
     if (_rxn != 0)
     {
