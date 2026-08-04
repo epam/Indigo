@@ -593,14 +593,16 @@ M  END
         });
 
         test("valence_mode", "metal_ket_biovia_2009_adds_hydrogens", () => {
-            assert.equal(unfoldWithValenceMode(bare_al_ket, "biovia-2009"), "[AlH3]");
+            // Unfolding materialises implicit hydrogens as separate ATOMS, so
+            // the SMILES is the expanded form, not the collapsed [AlH3].
+            assert.equal(unfoldWithValenceMode(bare_al_ket, "biovia-2009"), "[Al]([H])([H])[H]");
         });
 
         test("valence_mode", "ket_and_molfile_agree", () => {
             // The defect was format-specific, so a single-format assertion
             // would have stayed green throughout.
             assert.equal(unfoldWithValenceMode(bare_al_molfile, "biovia-2017"), "[Al]");
-            assert.equal(unfoldWithValenceMode(bare_al_molfile, "biovia-2009"), "[AlH3]");
+            assert.equal(unfoldWithValenceMode(bare_al_molfile, "biovia-2009"), "[Al]([H])([H])[H]");
         });
 
         test("valence_mode", "default_is_biovia_2009", () => {

@@ -3293,8 +3293,10 @@ M  END
         )
 
     def test_valence_mode_metal_ket_biovia_2009_adds_hydrogens(self):
+        # Unfolding materialises implicit hydrogens as separate ATOMS, so the
+        # SMILES is the expanded form, not the collapsed [AlH3].
         self.assertEqual(
-            "[AlH3]",
+            "[Al]([H])([H])[H]",
             self._unfold_with_valence_mode(
                 self.KET_BARE_AL, "biovia-2009", "chemical/x-indigo-ket"
             ),
@@ -3322,7 +3324,7 @@ M  END
             "M  END\n"
         )
         for mode, expected in (
-            ("biovia-2009", "[AlH3]"),
+            ("biovia-2009", "[Al]([H])([H])[H]"),
             ("biovia-2017", "[Al]"),
         ):
             self.assertEqual(
