@@ -63,8 +63,7 @@ namespace
         std::ostringstream out;
         out << "\n  Indigo  0000000002D\n\n"
             << (s.explicit_h ? "  2  1" : "  1  0") << "  0  0  0  0  0  0  0  0999 V2000\n"
-            << "    0.0000    0.0000    0.0000 " << std::string(s.symbol) + std::string(3 - strlen(s.symbol), ' ')
-            << " 0  0  0  0  0  0  0  0  0  0  0  0\n";
+            << "    0.0000    0.0000    0.0000 " << std::string(s.symbol) + std::string(3 - strlen(s.symbol), ' ') << " 0  0  0  0  0  0  0  0  0  0  0  0\n";
         if (s.explicit_h)
         {
             out << "    1.5000    0.0000    0.0000 H   0  0  0  0  0  0  0  0  0  0  0  0\n";
@@ -329,8 +328,7 @@ TEST_F(LoaderOptionsTest, NoChannelDeniesTheOption)
         buffer << stream.rdbuf();
         const std::string source = buffer.str();
         for (const auto& option : options)
-            EXPECT_EQ(std::string::npos, source.find("\"" + option + "\"")) << channel.first << ": option \"" << option
-                                                                            << "\" appears in " << channel.second
+            EXPECT_EQ(std::string::npos, source.find("\"" + option + "\"")) << channel.first << ": option \"" << option << "\" appears in " << channel.second
                                                                             << " — if it was added to the skip list, that channel now drops it";
     }
 }

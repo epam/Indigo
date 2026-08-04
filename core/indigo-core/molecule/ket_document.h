@@ -20,8 +20,8 @@
 #define __ket_document__
 
 #include "molecule/ket_monomer_shape.h"
-#include "molecule/loader_options.h"
 #include "molecule/ket_objects.h"
+#include "molecule/loader_options.h"
 #include "molecule/monomers_template_library.h"
 
 #include <rapidjson/document.h> // Temporary until direct conversion to molecule supported
