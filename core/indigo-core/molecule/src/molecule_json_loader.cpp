@@ -30,8 +30,8 @@ IMPL_ERROR(MoleculeJsonLoader, "molecule json loader");
 
 MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
     : _mol_array(kArrayType), _mol_nodes(_mol_array), _meta_objects(kArrayType), _templates(kArrayType), _monomer_array(kArrayType),
-      _connection_array(kArrayType), _monomer_shapes(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false), _components_count(0),
-      _parsed(false), _document(), _annotation(kArrayType)
+      _connection_array(kArrayType), _monomer_shapes(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false),
+      valence_mode(ValenceMode::BIOVIA_2009), ignore_bad_valence(false), _components_count(0), _parsed(false), _document(), _annotation(kArrayType)
 {
     parse_ket(ket);
     _parsed = true;
@@ -169,8 +169,8 @@ void MoleculeJsonLoader::parse_ket(Document& ket)
 
 MoleculeJsonLoader::MoleculeJsonLoader(Scanner& scanner)
     : _mol_array(kArrayType), _mol_nodes(_mol_array), _meta_objects(kArrayType), _templates(kArrayType), _monomer_array(kArrayType),
-      _connection_array(kArrayType), _monomer_shapes(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false), _components_count(0),
-      _parsed(false), _document(), _annotation(kArrayType)
+      _connection_array(kArrayType), _monomer_shapes(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false),
+      valence_mode(ValenceMode::BIOVIA_2009), ignore_bad_valence(false), _components_count(0), _parsed(false), _document(), _annotation(kArrayType)
 {
     if (scanner.lookNext() == '{')
     {
@@ -192,8 +192,33 @@ MoleculeJsonLoader::MoleculeJsonLoader(Scanner& scanner)
 MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes)
     : _mol_nodes(mol_nodes), _meta_objects(kArrayType), _templates(kArrayType), _monomer_array(kArrayType), _connection_array(kArrayType),
       _monomer_shapes(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false), ignore_no_chiral_flag(false), skip_3d_chirality(false),
-      treat_x_as_pseudoatom(false), treat_stereo_as(0), _components_count(0), _parsed(true), _document(), _annotation(kArrayType)
+      treat_x_as_pseudoatom(false), treat_stereo_as(0), valence_mode(ValenceMode::BIOVIA_2009), ignore_bad_valence(false), _components_count(0), _parsed(true),
+      _document(), _annotation(kArrayType)
 {
+}
+
+void MoleculeJsonLoader::setOptions(const LoaderOptions& opts)
+{
+    stereochemistry_options = opts.stereochemistry_options;
+    valence_mode = opts.valence_mode;
+    ignore_bad_valence = opts.ignore_bad_valence;
+    ignore_no_chiral_flag = opts.ignore_no_chiral_flag;
+    ignore_noncritical_query_features = opts.ignore_noncritical_query_features;
+    skip_3d_chirality = opts.skip_3d_chirality;
+    treat_x_as_pseudoatom = opts.treat_x_as_pseudoatom;
+}
+
+LoaderOptions MoleculeJsonLoader::getOptions() const
+{
+    LoaderOptions opts;
+    opts.stereochemistry_options = stereochemistry_options;
+    opts.valence_mode = valence_mode;
+    opts.ignore_bad_valence = ignore_bad_valence;
+    opts.ignore_no_chiral_flag = ignore_no_chiral_flag;
+    opts.ignore_noncritical_query_features = ignore_noncritical_query_features;
+    opts.skip_3d_chirality = skip_3d_chirality;
+    opts.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+    return opts;
 }
 
 bool MoleculeJsonLoader::isParsed() const
@@ -1392,6 +1417,8 @@ int MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_tem
     monomer_template_cp.CopyFrom(monomer_template, data.GetAllocator());
     one_tgroup.PushBack(monomer_template_cp, data.GetAllocator());
     MoleculeJsonLoader loader(one_tgroup);
+    // Static entry point, so only the stereo options are in scope. Monomer
+    // templates are C/N/O/P fragments, where both valence tables agree.
     loader.stereochemistry_options = stereochemistry_options;
     loader.ignore_noncritical_query_features = true;
     tg.fragment.reset(mol.neu());
@@ -1663,6 +1690,17 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     if (!_parsed)
         throw Error("Invalid JSON input");
 
+    // Order matters: atom parsing infers implicit H using the molecule's current
+    // valence model, so the mode must be captured before any atom is added.
+    // Seeding the target too covers a KET with no fragments, where no merge
+    // would carry the mode over.
+    if (!mol.isQueryMolecule())
+    {
+        Molecule& target = mol.asMolecule();
+        target.setIgnoreBadValenceFlag(ignore_bad_valence);
+        target.setValenceMode(valence_mode);
+    }
+
     PtrArray<Array<int>> mol_mappings;
     for (rapidjson::SizeType node_idx = 0; node_idx < _mol_nodes.Size(); ++node_idx)
     {
@@ -1677,6 +1715,10 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         else
         {
             _pmol = &pmol->asMolecule();
+            // Fragments are parsed standalone, so each needs the mode too —
+            // implicit H is inferred here, before the merge.
+            _pmol->setIgnoreBadValenceFlag(ignore_bad_valence);
+            _pmol->setValenceMode(valence_mode);
         }
         mol.original_format = BaseMolecule::KET;
 
@@ -1763,7 +1805,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
                 BaseMolecule& fragment = rgroup.fragments.push_t(BaseMolecule::poolFactoryLike(mol));
                 one_rnode.PushBack(rfragments[i], data.GetAllocator());
                 MoleculeJsonLoader loader(one_rnode);
-                loader.stereochemistry_options = stereochemistry_options;
+                loader.setOptions(getOptions());
                 loader.loadMolecule(fragment);
                 one_rnode.Clear();
             }
@@ -1773,7 +1815,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
             BaseMolecule& fragment = rgroup.fragments.push_t(BaseMolecule::poolFactoryLike(mol));
             one_rnode.PushBack(rnode, data.GetAllocator());
             MoleculeJsonLoader loader(one_rnode);
-            loader.stereochemistry_options = stereochemistry_options;
+            loader.setOptions(getOptions());
             loader.loadMolecule(fragment);
         }
     }

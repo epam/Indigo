@@ -1622,7 +1622,7 @@ void MoleculeCdxmlLoader::_parseAltGroup(BaseCDXElement& elem)
             MoleculeRGroups& rgroups = mol.rgroups;
             RGroup& rgroup = rgroups.getRGroup(r_labels.front());
             BaseMolecule& fragment = rgroup.fragments.push_t(BaseMolecule::poolFactoryLike(mol));
-            alt_loader.stereochemistry_options = stereochemistry_options;
+            alt_loader.setOptions(getOptions());
             alt_loader.loadMoleculeFromFragment(fragment, *r_fragments.front());
         }
     }

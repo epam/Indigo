@@ -96,9 +96,7 @@ void ReactionCmlLoader::loadReaction(Reaction& rxn)
             continue;
         XMLHandle handle(elem);
         CmlLoader loader(handle);
-        loader.stereochemistry_options = stereochemistry_options;
-        loader.ignore_bad_valence = ignore_bad_valence;
-        loader.valence_mode = valence_mode;
+        loader.setOptions(getOptions());
         loader.loadMolecule(mol);
         rxn.addReactantCopy(mol, 0, 0);
     }
@@ -110,9 +108,7 @@ void ReactionCmlLoader::loadReaction(Reaction& rxn)
             continue;
         XMLHandle handle(elem);
         CmlLoader loader(handle);
-        loader.stereochemistry_options = stereochemistry_options;
-        loader.ignore_bad_valence = ignore_bad_valence;
-        loader.valence_mode = valence_mode;
+        loader.setOptions(getOptions());
         loader.loadMolecule(mol);
         rxn.addProductCopy(mol, 0, 0);
     }
@@ -124,9 +120,7 @@ void ReactionCmlLoader::loadReaction(Reaction& rxn)
             continue;
         XMLHandle handle(elem);
         CmlLoader loader(handle);
-        loader.stereochemistry_options = stereochemistry_options;
-        loader.ignore_bad_valence = ignore_bad_valence;
-        loader.valence_mode = valence_mode;
+        loader.setOptions(getOptions());
         loader.loadMolecule(mol);
         rxn.addCatalystCopy(mol, 0, 0);
     }
