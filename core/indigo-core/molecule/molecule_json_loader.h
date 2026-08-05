@@ -27,6 +27,7 @@
 #include "base_c/defs.h"
 #include "base_cpp/exception.h"
 #include "base_cpp/non_copyable.h"
+#include "molecule/loader_options.h"
 #include "molecule/molecule_stereocenter_options.h"
 
 #ifdef _WIN32
@@ -65,7 +66,14 @@ namespace indigo
         void loadMolecule(BaseMolecule& mol, bool load_arrows = false);
         void loadMonomerLibrary(MonomerTemplateLibrary& library);
         bool isParsed() const;
+
+        // See loader_options.h for the contract.
+        void setOptions(const LoaderOptions& opts);
+        LoaderOptions getOptions() const;
+
         StereocentersOptions stereochemistry_options;
+        ValenceMode valence_mode;   // valence table used to infer implicit H
+        bool ignore_bad_valence;    // collapse bad valence instead of throwing
         bool treat_x_as_pseudoatom; // normally 'X' means 'any halogen'
         bool skip_3d_chirality;     // do not compute chirality from 3D coordinates
         bool ignore_no_chiral_flag; // ignore chiral flag absence (treat stereo "as drawn")

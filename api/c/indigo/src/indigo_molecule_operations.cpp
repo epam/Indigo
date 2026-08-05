@@ -2590,6 +2590,10 @@ CEXPORT int indigoCreateMolecule()
     INDIGO_BEGIN
     {
         std::unique_ptr<IndigoMolecule> obj = std::make_unique<IndigoMolecule>();
+        // No loader runs here, so nothing else would capture the session's
+        // valence model and addAtom() would infer implicit H with the default.
+        obj->mol.setIgnoreBadValenceFlag(self.ignore_bad_valence);
+        obj->mol.setValenceMode(self.valence_mode);
         return self.addObject(obj.release());
     }
     INDIGO_END(-1);
