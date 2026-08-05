@@ -71,10 +71,7 @@ LoaderOptions ReactionJsonLoader::getOptions() const
 
 void ReactionJsonLoader::loadReaction(BaseReaction& rxn)
 {
-    _loader.stereochemistry_options = stereochemistry_options;
-    _loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
-    _loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
-    _loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
+    _loader.setOptions(getOptions());
 
     if (rxn.isQueryReaction())
     {
