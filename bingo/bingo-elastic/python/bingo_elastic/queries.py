@@ -1,4 +1,5 @@
 import math
+import re
 from abc import ABCMeta, abstractmethod
 from functools import lru_cache
 from typing import Any, Dict, List, Optional
@@ -168,6 +169,44 @@ class WildcardQuery(CompilableQuery):
             bool_head["must"] = []
         bool_head["must"].append(
             {"wildcard": {f"{self.field}": {"wildcard": self.wildcard}}}
+        )
+        default_script_score(query)
+
+
+def _normalize_formula(formula: str) -> str:
+    counts: Dict[str, int] = {}
+    for element, count_str in re.findall(r"([A-Z][a-z]?)(\d*)", formula):
+        counts[element] = counts.get(element, 0) + (
+            int(count_str) if count_str else 1
+        )
+    parts = []
+    for symbol in ("C", "H"):
+        if symbol in counts:
+            count = counts[symbol]
+            parts.append(f"{symbol}{count}" if count > 1 else symbol)
+    for symbol in sorted(counts):
+        if symbol not in ("C", "H"):
+            count = counts[symbol]
+            parts.append(f"{symbol}{count}" if count > 1 else symbol)
+    return "".join(parts)
+
+
+class GrossFormulaQuery(CompilableQuery):
+    def __init__(self, formula: str) -> None:
+        self._formula = _normalize_formula(formula)
+
+    def compile(
+        self,
+        query: Dict,
+        postprocess_actions: Optional[PostprocessType] = None,
+    ) -> None:
+        bool_head = head_by_path(
+            query, ("query", "script_score", "query", "bool")
+        )
+        if not bool_head.get("must"):
+            bool_head["must"] = []
+        bool_head["must"].append(
+            {"term": {self.field: {"value": self._formula}}}
         )
         default_script_score(query)
 
