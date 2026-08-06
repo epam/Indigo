@@ -889,6 +889,13 @@ void MoleculeRenderInternal::_prepareSGroups(bool collapseAtLeastOneSuperatom)
                                 if (mol.findEdgeIndex(neighboringAtomID, superAtomID) < 0)
                                 {
                                     int oldBondMappingInvPosition = _bondMappingInv.at(neighboringBondID);
+                                    bool restoreStereocenter = !mol.isQueryMolecule() && mol.stereocenters.exists(neighboringAtomID);
+                                    int savedStereoType = 0, savedStereoGroup = 0;
+                                    if (restoreStereocenter)
+                                    {
+                                        savedStereoType = mol.stereocenters.getType(neighboringAtomID);
+                                        savedStereoGroup = mol.stereocenters.getGroup(neighboringAtomID);
+                                    }
                                     if (mol.isQueryMolecule())
                                     {
                                         QueryMolecule& qm = mol.asQueryMolecule();
@@ -904,6 +911,8 @@ void MoleculeRenderInternal::_prepareSGroups(bool collapseAtLeastOneSuperatom)
                                         amol.setEdgeTopology(bondID, oldBondTopology);
                                         amol.setBondDirection(bondID, oldBondDirection);
                                     }
+                                    if (restoreStereocenter && !mol.stereocenters.exists(neighboringAtomID))
+                                        mol.addStereocentersIgnoreBad(neighboringAtomID, savedStereoType, savedStereoGroup, false);
                                     if (_bondMappingInv.find(bondID) != _bondMappingInv.end())
                                         _bondMappingInv.erase(bondID);
                                     _bondMappingInv.emplace(bondID, oldBondMappingInvPosition);
