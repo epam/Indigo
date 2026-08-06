@@ -35,6 +35,17 @@ namespace indigo
         static int getHCount(BaseMolecule& mol, int index, int atom_number, int atom_charge);
         static bool getRingBondCountFlagValue(QueryMolecule& qmol, int idx, int& value);
         static bool getSubstitutionCountFlagValue(QueryMolecule& qmol, int idx, int& value);
+
+        // True if the molecule carries stereochemistry that a drawing-based format can only
+        // convey through its depiction.
+        static bool hasStereoToDepict(BaseMolecule& mol);
+
+        // Generates a 2D depiction and marks the stereo bonds against it, the way
+        // indigoLayout does. Molfile, KET and CDXML convey configuration only through the
+        // drawing, so a molecule that carries stereochemistry but no coordinates has to be
+        // given one before it is saved. Returns false if layout failed and the molecule was
+        // left as it was.
+        static bool layoutAndMarkStereo(BaseMolecule& mol);
     };
 
 } // namespace indigo

@@ -24,6 +24,7 @@
 
 #include "base_cpp/locale_guard.h"
 #include "base_cpp/output.h"
+#include "layout/molecule_layout.h"
 #include "layout/sequence_layout.h"
 #include "math/algebra.h"
 #include "molecule/base_molecule.h"
@@ -206,6 +207,15 @@ void MolfileSaver::_saveMolecule(BaseMolecule& bmol, bool query)
     BaseMolecule* pmol = &bmol;
     std::unique_ptr<BaseMolecule> mol(bmol.neu());
     mol->clone_KeepIndices(bmol);
+
+    // A molfile conveys tetrahedral configuration and cis/trans only through the drawing:
+    // wedge bonds interpreted against 2D coordinates. A molecule that carries no
+    // coordinates - one built from SMILES, for instance - would therefore be written
+    // without any stereochemistry at all. Lay it out and mark the bonds the way
+    // indigoLayout does, so the file conveys what the molecule knows. The work happens on
+    // the clone, so the caller's molecule does not acquire coordinates as a side effect.
+    if (!BaseMolecule::hasCoord(*mol) && MoleculeSavers::hasStereoToDepict(*mol) && MoleculeSavers::layoutAndMarkStereo(*mol))
+        pmol = mol.get();
 
     bool has_dat_xbonds = false;
     for (int i = pmol->sgroups.begin(); i != pmol->sgroups.end(); i = pmol->sgroups.next(i))
