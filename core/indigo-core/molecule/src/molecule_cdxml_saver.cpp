@@ -1211,6 +1211,13 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& bmol, const Vec2f& o
 {
     std::unique_ptr<BaseMolecule> mol(bmol.neu());
     mol->clone(bmol);
+
+    // Reactions and R-group fragments reach this method without passing through saveMolecule,
+    // so the depiction gate belongs here too. A fragment that already has coordinates - the
+    // usual case, including the clone saveMolecule prepared - is left untouched.
+    if (!BaseMolecule::hasCoord(*mol) && MoleculeSavers::hasStereoToDepict(*mol))
+        MoleculeSavers::layoutAndMarkStereo(*mol);
+
     deleteNamelessSGroups(*mol);
     mol->transformTemplatesToSuperatoms();
     _atoms_ids.clear();

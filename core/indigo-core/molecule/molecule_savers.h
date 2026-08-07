@@ -46,6 +46,12 @@ namespace indigo
         // given one before it is saved. Returns false if layout failed and the molecule was
         // left as it was.
         static bool layoutAndMarkStereo(BaseMolecule& mol);
+
+        // Marks the stereo bonds against coordinates the molecule already has. Callers that
+        // lay a molecule out themselves - reaction savers run ReactionLayout over the whole
+        // scheme - need this half on its own, since generating a geometry without marking
+        // against it produces a file whose stereochemistry cannot be read back.
+        static void markStereoAgainstGeometry(BaseMolecule& mol);
     };
 
 } // namespace indigo

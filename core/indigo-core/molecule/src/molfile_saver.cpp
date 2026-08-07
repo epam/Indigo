@@ -40,6 +40,24 @@
 
 using namespace indigo;
 
+namespace
+{
+    // Returns a laid-out clone when the molecule carries stereochemistry but no depiction to
+    // convey it, and an empty pointer when the molecule can be written as it stands. Working
+    // on a clone keeps the caller's molecule free of coordinates it never asked for.
+    std::unique_ptr<BaseMolecule> depictedCloneIfNeeded(BaseMolecule& mol)
+    {
+        if (BaseMolecule::hasCoord(mol) || !MoleculeSavers::hasStereoToDepict(mol))
+            return nullptr;
+
+        std::unique_ptr<BaseMolecule> clone(mol.neu());
+        clone->clone_KeepIndices(mol);
+        if (!MoleculeSavers::layoutAndMarkStereo(*clone))
+            clone.reset();
+        return clone;
+    }
+}
+
 IMPL_ERROR(MolfileSaver, "molfile saver");
 
 CP_DEF(MolfileSaver);
@@ -359,12 +377,17 @@ void MolfileSaver::_validate(BaseMolecule& bmol)
 
 void MolfileSaver::saveCtab3000(Molecule& mol)
 {
-    _writeCtab(_output, mol, false);
+    // Reaction saving reaches this method directly, bypassing _saveMolecule, so the depiction
+    // has to be generated here as well - otherwise a V3000 CTAB names its stereocentres in a
+    // STEABS collection while carrying no wedges to define them, which the loader rejects.
+    std::unique_ptr<BaseMolecule> depicted = depictedCloneIfNeeded(mol);
+    _writeCtab(_output, depicted ? *depicted : static_cast<BaseMolecule&>(mol), false);
 }
 
 void MolfileSaver::saveQueryCtab3000(QueryMolecule& mol)
 {
-    _writeCtab(_output, mol, true);
+    std::unique_ptr<BaseMolecule> depicted = depictedCloneIfNeeded(mol);
+    _writeCtab(_output, depicted ? *depicted : static_cast<BaseMolecule&>(mol), true);
 }
 
 int MolfileSaver::parseFormatMode(const char* mode)

@@ -1754,9 +1754,19 @@ void MoleculeStereocenters::_convertAtomToImplicitHydrogen(int pyramid[4], int a
 
 void MoleculeStereocenters::markBond(BaseMolecule& baseMolecule, int atom_idx)
 {
+    if (!tryMarkBond(baseMolecule, atom_idx))
+        throw Error("no bond can be marked");
+}
+
+// Returns false when every bond at the centre is already carrying a wedge of its own, which
+// happens in fused cages: the centres share bonds and the ones marked first take them. That
+// is an outcome, not a failure - the caller decides whether a partly marked structure is
+// acceptable.
+bool MoleculeStereocenters::tryMarkBond(BaseMolecule& baseMolecule, int atom_idx)
+{
     const _Atom* atom_ptr = _stereocenters.at2(atom_idx);
     if (atom_ptr == NULL)
-        return;
+        return true;
 
     const _Atom& atom = *atom_ptr;
 
@@ -1852,48 +1862,60 @@ void MoleculeStereocenters::markBond(BaseMolecule& baseMolecule, int atom_idx)
         }
 
         if (j == size)
-            throw Error("no bond can be marked");
+            return false;
 
         if (baseMolecule.getEdge(edge_idx).beg != atom_idx)
             baseMolecule.swapEdgeEnds(edge_idx);
 
         if (BaseMolecule::hasCoord(baseMolecule))
         {
-            if (atom.type > ATOM_ANY)
+            try
             {
-                std::array<Vec3f, 4> dirs;
-                dirs.fill({0.0, 0.0, 0.0});
-                for (j = 0; j < size; j++)
+                if (atom.type > ATOM_ANY)
                 {
-                    dirs[j] = baseMolecule.getAtomXyz(pyramid[j]);
-                    dirs[j].sub(baseMolecule.getAtomXyz(atom_idx));
-                    if (!dirs[j].normalize())
-                        throw Error("zero bond length");
-                }
-
-                int sign = _sign(dirs[0], dirs[1], dirs[2]);
-
-                if (size == 3)
-                {
-                    // Check if all the three bonds belong to the same half-plane.
-                    // This is equal to that one of the bonds lies in the smaller
-                    // angle formed by the other two.
-                    if (_xyzzy(dirs[1], dirs[0], dirs[2]) == 1 || _xyzzy(dirs[2], dirs[1], dirs[0]) == 1 || _xyzzy(dirs[0], dirs[2], dirs[1]) == 1)
+                    std::array<Vec3f, 4> dirs;
+                    dirs.fill({0.0, 0.0, 0.0});
+                    for (j = 0; j < size; j++)
                     {
-                        if (_xyzzy(dirs[1], dirs[0], dirs[2]) == 1)
-                            mult = -1;
-                        baseMolecule.setBondDirection(edge_idx, (sign * mult == 1) ? BOND_DOWN : BOND_UP);
+                        dirs[j] = baseMolecule.getAtomXyz(pyramid[j]);
+                        dirs[j].sub(baseMolecule.getAtomXyz(atom_idx));
+                        if (!dirs[j].normalize())
+                            throw Error("zero bond length");
+                    }
+
+                    int sign = _sign(dirs[0], dirs[1], dirs[2]);
+
+                    if (size == 3)
+                    {
+                        // Check if all the three bonds belong to the same half-plane.
+                        // This is equal to that one of the bonds lies in the smaller
+                        // angle formed by the other two.
+                        if (_xyzzy(dirs[1], dirs[0], dirs[2]) == 1 || _xyzzy(dirs[2], dirs[1], dirs[0]) == 1 || _xyzzy(dirs[0], dirs[2], dirs[1]) == 1)
+                        {
+                            if (_xyzzy(dirs[1], dirs[0], dirs[2]) == 1)
+                                mult = -1;
+                            baseMolecule.setBondDirection(edge_idx, (sign * mult == 1) ? BOND_DOWN : BOND_UP);
+                        }
+                        else
+                            baseMolecule.setBondDirection(edge_idx, (sign == 1) ? BOND_DOWN : BOND_UP);
                     }
                     else
-                        baseMolecule.setBondDirection(edge_idx, (sign == 1) ? BOND_DOWN : BOND_UP);
+                        baseMolecule.setBondDirection(edge_idx, (sign * mult == 1) ? BOND_UP : BOND_DOWN);
                 }
                 else
-                    baseMolecule.setBondDirection(edge_idx, (sign * mult == 1) ? BOND_UP : BOND_DOWN);
+                    baseMolecule.setBondDirection(edge_idx, BOND_EITHER);
             }
-            else
-                baseMolecule.setBondDirection(edge_idx, BOND_EITHER);
+            catch (Exception&)
+            {
+                // The direction vectors and _sign reject degenerate geometry - atoms on top
+                // of one another, bonds at a vanishing angle. Such a drawing cannot express
+                // the centre, which for the caller is the same outcome as finding no bond
+                // free to carry a wedge.
+                return false;
+            }
         }
     }
+    return true;
 }
 
 void MoleculeStereocenters::markAtropisomericBond(BaseMolecule& baseMolecule, int atom_idx)
@@ -1920,6 +1942,17 @@ void MoleculeStereocenters::markBonds(BaseMolecule& baseMolecule)
         markBond(baseMolecule, _stereocenters.key(i));
     for (int i = _stereocenters.begin(); i != _stereocenters.end(); i = _stereocenters.next(i))
         markAtropisomericBond(baseMolecule, _stereocenters.key(i));
+}
+
+int MoleculeStereocenters::markBondsBestEffort(BaseMolecule& baseMolecule)
+{
+    int unmarked = 0;
+    for (int i = _stereocenters.begin(); i != _stereocenters.end(); i = _stereocenters.next(i))
+        if (!tryMarkBond(baseMolecule, _stereocenters.key(i)))
+            unmarked++;
+    for (int i = _stereocenters.begin(); i != _stereocenters.end(); i = _stereocenters.next(i))
+        markAtropisomericBond(baseMolecule, _stereocenters.key(i));
+    return unmarked;
 }
 
 bool MoleculeStereocenters::isAutomorphism(BaseMolecule& mol, const Array<int>& mapping, const Filter* filter)
