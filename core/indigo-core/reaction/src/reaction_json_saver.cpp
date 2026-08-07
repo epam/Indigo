@@ -24,6 +24,7 @@
 #include "base_cpp/output.h"
 #include "layout/reaction_layout.h"
 #include "molecule/molecule_json_saver.h"
+#include "molecule/molecule_savers.h"
 #include "molecule/query_molecule.h"
 #include "reaction/pathway_reaction_builder.h"
 #include "reaction/reaction.h"
@@ -65,8 +66,33 @@ void ReactionJsonSaver::saveReaction(BaseReaction& rxn)
 
     std::unique_ptr<BaseReaction> reaction(rxn.neu());
     reaction->clone(rxn);
+
+    // The layout below gives the scheme a geometry but leaves the stereo bonds unmarked, so a
+    // reaction built from SMILES would be written with coordinates and no wedges - and read
+    // back without its configuration. Note which components arrive without a depiction of
+    // their own; the ones that came with a drawing keep the wedges they already carry.
+    std::vector<int> undepicted;
+    for (int i = reaction->begin(); i != reaction->end(); i = reaction->next(i))
+    {
+        BaseMolecule& mol = reaction->getBaseMolecule(i);
+        if (!BaseMolecule::hasCoord(mol) && MoleculeSavers::hasStereoToDepict(mol))
+            undepicted.push_back(i);
+    }
+
     ReactionLayout rl(*reaction, false, layout_options);
     rl.fixLayout();
+
+    for (int i : undepicted)
+    {
+        BaseMolecule& mol = reaction->getBaseMolecule(i);
+        // fixLayout returns early when the reaction already carries meta objects, so a
+        // component can still be without coordinates here and needs one of its own.
+        if (BaseMolecule::hasCoord(mol))
+            MoleculeSavers::markStereoAgainstGeometry(mol);
+        else
+            MoleculeSavers::layoutAndMarkStereo(mol);
+    }
+
     int mol_id = 0;
     for (int i = reaction->begin(); i != reaction->end(); i = reaction->next(i))
     {

@@ -27,6 +27,7 @@
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_cdxml_loader.h"
+#include "molecule/molecule_savers.h"
 #include "molecule/parse_utils.h"
 #include "molecule/query_molecule.h"
 #include "utils/image_not_supported.h"
@@ -1210,6 +1211,13 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& bmol, const Vec2f& o
 {
     std::unique_ptr<BaseMolecule> mol(bmol.neu());
     mol->clone(bmol);
+
+    // Reactions and R-group fragments reach this method without passing through saveMolecule,
+    // so the depiction gate belongs here too. A fragment that already has coordinates - the
+    // usual case, including the clone saveMolecule prepared - is left untouched.
+    if (!BaseMolecule::hasCoord(*mol) && MoleculeSavers::hasStereoToDepict(*mol))
+        MoleculeSavers::layoutAndMarkStereo(*mol);
+
     deleteNamelessSGroups(*mol);
     mol->transformTemplatesToSuperatoms();
     _atoms_ids.clear();
@@ -2123,9 +2131,23 @@ void MoleculeCdxmlSaver::_validate(BaseMolecule& bmol)
         throw Error("%s cannot be written in CDXML/CDX format.", unresolved.c_str());
 }
 
-void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& bmol)
+void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& bmol_in)
 {
-    _validate(bmol);
+    _validate(bmol_in);
+
+    // CDXML conveys configuration through the drawing, so a molecule that carries
+    // stereochemistry but no coordinates has to be given a depiction first. The work is done
+    // on a clone, so the caller's molecule does not acquire coordinates as a side effect.
+    std::unique_ptr<BaseMolecule> depicted;
+    if (!BaseMolecule::hasCoord(bmol_in) && MoleculeSavers::hasStereoToDepict(bmol_in))
+    {
+        depicted.reset(bmol_in.neu());
+        depicted->clone_KeepIndices(bmol_in);
+        if (!MoleculeSavers::layoutAndMarkStereo(*depicted))
+            depicted.reset();
+    }
+    BaseMolecule& bmol = depicted ? *depicted : bmol_in;
+
     Rect2f bbox;
     _id = 0;
     if (bmol.have_xyz)

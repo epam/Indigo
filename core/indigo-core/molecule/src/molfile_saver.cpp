@@ -24,6 +24,7 @@
 
 #include "base_cpp/locale_guard.h"
 #include "base_cpp/output.h"
+#include "layout/molecule_layout.h"
 #include "layout/sequence_layout.h"
 #include "math/algebra.h"
 #include "molecule/base_molecule.h"
@@ -38,6 +39,24 @@
 #include "molecule/query_molecule.h"
 
 using namespace indigo;
+
+namespace
+{
+    // Returns a laid-out clone when the molecule carries stereochemistry but no depiction to
+    // convey it, and an empty pointer when the molecule can be written as it stands. Working
+    // on a clone keeps the caller's molecule free of coordinates it never asked for.
+    std::unique_ptr<BaseMolecule> depictedCloneIfNeeded(BaseMolecule& mol)
+    {
+        if (BaseMolecule::hasCoord(mol) || !MoleculeSavers::hasStereoToDepict(mol))
+            return nullptr;
+
+        std::unique_ptr<BaseMolecule> clone(mol.neu());
+        clone->clone_KeepIndices(mol);
+        if (!MoleculeSavers::layoutAndMarkStereo(*clone))
+            clone.reset();
+        return clone;
+    }
+}
 
 IMPL_ERROR(MolfileSaver, "molfile saver");
 
@@ -207,6 +226,15 @@ void MolfileSaver::_saveMolecule(BaseMolecule& bmol, bool query)
     std::unique_ptr<BaseMolecule> mol(bmol.neu());
     mol->clone_KeepIndices(bmol);
 
+    // A molfile conveys tetrahedral configuration and cis/trans only through the drawing:
+    // wedge bonds interpreted against 2D coordinates. A molecule that carries no
+    // coordinates - one built from SMILES, for instance - would therefore be written
+    // without any stereochemistry at all. Lay it out and mark the bonds the way
+    // indigoLayout does, so the file conveys what the molecule knows. The work happens on
+    // the clone, so the caller's molecule does not acquire coordinates as a side effect.
+    if (!BaseMolecule::hasCoord(*mol) && MoleculeSavers::hasStereoToDepict(*mol) && MoleculeSavers::layoutAndMarkStereo(*mol))
+        pmol = mol.get();
+
     bool has_dat_xbonds = false;
     for (int i = pmol->sgroups.begin(); i != pmol->sgroups.end(); i = pmol->sgroups.next(i))
     {
@@ -349,12 +377,17 @@ void MolfileSaver::_validate(BaseMolecule& bmol)
 
 void MolfileSaver::saveCtab3000(Molecule& mol)
 {
-    _writeCtab(_output, mol, false);
+    // Reaction saving reaches this method directly, bypassing _saveMolecule, so the depiction
+    // has to be generated here as well - otherwise a V3000 CTAB names its stereocentres in a
+    // STEABS collection while carrying no wedges to define them, which the loader rejects.
+    std::unique_ptr<BaseMolecule> depicted = depictedCloneIfNeeded(mol);
+    _writeCtab(_output, depicted ? *depicted : static_cast<BaseMolecule&>(mol), false);
 }
 
 void MolfileSaver::saveQueryCtab3000(QueryMolecule& mol)
 {
-    _writeCtab(_output, mol, true);
+    std::unique_ptr<BaseMolecule> depicted = depictedCloneIfNeeded(mol);
+    _writeCtab(_output, depicted ? *depicted : static_cast<BaseMolecule&>(mol), true);
 }
 
 int MolfileSaver::parseFormatMode(const char* mode)

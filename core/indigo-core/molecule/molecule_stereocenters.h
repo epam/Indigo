@@ -56,6 +56,12 @@ namespace indigo
 
         void markBonds(BaseMolecule& baseMolecule);
         void markBond(BaseMolecule& baseMolecule, int atom_idx);
+
+        // Marks what can be marked and reports how many centres were left without a wedge,
+        // instead of giving up on the first one. Fused cages share bonds between centres, so
+        // a partly marked structure is the best a drawing can express there.
+        int markBondsBestEffort(BaseMolecule& baseMolecule);
+        bool tryMarkBond(BaseMolecule& baseMolecule, int atom_idx);
         void markAtropisomericBond(BaseMolecule& baseMolecule, int atom_idx);
 
         // takes mapping from supermolecule to submolecule
