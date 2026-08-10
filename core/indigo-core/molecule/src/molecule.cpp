@@ -448,7 +448,7 @@ int Molecule::calcAtomConnectivity_noImplH(int idx)
         if (order == -1) // can happen on TautomerSuperStructure
             continue;
 
-        if (order == _BOND_HYDROGEN || order == _BOND_COORDINATION)
+        if (isNonValenceBond(order))
             continue;
 
         conn += order;
@@ -485,7 +485,7 @@ void Molecule::calcAromaticAtomConnectivity(int idx, int& n_arom, int& min_conn)
             min_conn++;
             n_arom++;
         }
-        else
+        else if (!isNonValenceBond(order))
             min_conn += order;
     }
 
