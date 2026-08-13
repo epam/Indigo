@@ -84,7 +84,7 @@ TEST_F(IndigoCoreAttachmentGroupsTest, RemoveFreesSlotAndReusesItClean)
     const int b = groups.addGroup();
     groups.addGroup();
     groups.group(b).addAtom(42);
-    groups.group(b).addBond(7, 9);
+    groups.group(b).addBond(7, _BOND_COORDINATION);
 
     groups.removeGroup(b);
     EXPECT_EQ(2, groups.groupCount());
@@ -136,12 +136,12 @@ TEST_F(IndigoCoreAttachmentGroupsTest, MultiplicityIsUnbounded)
 {
     MoleculeAttachmentGroups groups;
     AttachmentGroup& shared = groups.group(groups.addGroup());
-    shared.addBond(10, 9);
-    shared.addBond(11, 9);
+    shared.addBond(10, _BOND_COORDINATION);
+    shared.addBond(11, _BOND_COORDINATION);
     EXPECT_EQ(2u, shared.bonds().size());
 
     AttachmentGroup& second = groups.group(groups.addGroup());
-    second.addBond(10, 9); // same partner atom as the first group
+    second.addBond(10, _BOND_COORDINATION); // same partner atom as the first group
     EXPECT_EQ(1u, second.bonds().size());
     EXPECT_EQ(10, second.bonds()[0].atom);
 }
@@ -151,8 +151,8 @@ TEST_F(IndigoCoreAttachmentGroupsTest, RemovingGroupTakesItsBondsWithIt)
     MoleculeAttachmentGroups groups;
     const int a = groups.addGroup();
     const int b = groups.addGroup();
-    groups.group(a).addBond(10, 9);
-    groups.group(b).addBond(11, 9);
+    groups.group(a).addBond(10, _BOND_COORDINATION);
+    groups.group(b).addBond(11, _BOND_COORDINATION);
 
     groups.removeGroup(a);
     ASSERT_TRUE(groups.hasGroup(b));
@@ -179,7 +179,7 @@ TEST_F(IndigoCoreAttachmentGroupsTest, ConnectivitySetsJoinGroupAndPartners)
     MoleculeAttachmentGroups groups;
     AttachmentGroup& ag = groups.group(groups.addGroup());
     ag.setAtoms({0, 1, 2});
-    ag.addBond(9, 9);
+    ag.addBond(9, _BOND_COORDINATION);
 
     std::list<std::unordered_set<int>> neighbors;
     groups.collectConnectivitySets(neighbors);
@@ -199,7 +199,7 @@ TEST_F(IndigoCoreAttachmentGroupsTest, ZeroOrderInvariantValenceUntouched)
     Molecule with_group;
     makeRingAndMetal(with_group);
     AttachmentGroup& ag = with_group.attachment_groups.group(addRingGroup(with_group));
-    ag.addBond(5, 9); // haptic bond from the ring to the metal
+    ag.addBond(5, _BOND_COORDINATION); // haptic bond from the ring to the metal
     ag.setCharge(-1);
 
     for (int i = plain.vertexBegin(); i != plain.vertexEnd(); i = plain.vertexNext(i))
@@ -223,12 +223,73 @@ TEST_F(IndigoCoreAttachmentGroupsTest, HapticMarkOnBondDoesNotChangeValence)
     EXPECT_EQ(hydrogens_before, mol.getImplicitH(0));
 }
 
+// The graph pool hands a freed bond index straight back to the next addBond, so a
+// mark left on a removed bond is not stale data — it silently marks another bond.
+TEST_F(IndigoCoreAttachmentGroupsTest, HapticMarkDoesNotOutliveItsBond)
+{
+    Molecule mol;
+    mol.addAtom(ELEM_C);
+    mol.addAtom(ELEM_Fe);
+    mol.addAtom(ELEM_C);
+    const int bond = mol.addBond(0, 1, _BOND_COORDINATION);
+    mol.attachment_groups.setBondHaptic(bond);
+
+    mol.removeBond(bond);
+    EXPECT_FALSE(mol.attachment_groups.isBondHaptic(bond));
+    EXPECT_EQ(0, mol.attachment_groups.hapticBondCount());
+
+    const int reused = mol.addBond(1, 2, BOND_SINGLE);
+    ASSERT_EQ(bond, reused);
+    EXPECT_FALSE(mol.attachment_groups.isBondHaptic(reused));
+}
+
+TEST_F(IndigoCoreAttachmentGroupsTest, HapticMarkDropsWithTheRemovedAtom)
+{
+    Molecule mol;
+    mol.addAtom(ELEM_C);
+    mol.addAtom(ELEM_Fe);
+    mol.addAtom(ELEM_C);
+    const int bond = mol.addBond(0, 1, _BOND_COORDINATION);
+    mol.attachment_groups.setBondHaptic(bond);
+
+    mol.removeAtom(1); // takes the marked bond with it
+    EXPECT_EQ(0, mol.attachment_groups.hapticBondCount());
+
+    const int reused = mol.addBond(0, 2, BOND_SINGLE);
+    ASSERT_EQ(bond, reused);
+    EXPECT_FALSE(mol.attachment_groups.isBondHaptic(reused));
+}
+
+TEST_F(IndigoCoreAttachmentGroupsTest, GroupIsDroppedWholeWhenAMemberAtomIsRemoved)
+{
+    Molecule mol;
+    makeRingAndMetal(mol);
+    mol.attachment_groups.group(addRingGroup(mol)).addBond(5, _BOND_COORDINATION);
+
+    mol.removeAtom(2); // one of the five ring atoms
+    EXPECT_EQ(0, mol.attachment_groups.groupCount());
+    EXPECT_TRUE(mol.attachment_groups.isEmpty());
+}
+
+TEST_F(IndigoCoreAttachmentGroupsTest, RemovingThePartnerAtomDropsOnlyTheBond)
+{
+    Molecule mol;
+    makeRingAndMetal(mol);
+    const int group = addRingGroup(mol);
+    mol.attachment_groups.group(group).addBond(5, _BOND_COORDINATION);
+
+    mol.removeAtom(5); // the metal: a partner, not a member
+    ASSERT_TRUE(mol.attachment_groups.hasGroup(group));
+    EXPECT_EQ(5u, mol.attachment_groups.group(group).atoms().size());
+    EXPECT_TRUE(mol.attachment_groups.group(group).bonds().empty());
+}
+
 TEST_F(IndigoCoreAttachmentGroupsTest, CloneKeepsGroupsAndMarks)
 {
     Molecule source;
     makeRingAndMetal(source);
     AttachmentGroup& ag = source.attachment_groups.group(addRingGroup(source));
-    ag.addBond(5, 9);
+    ag.addBond(5, _BOND_COORDINATION);
     ag.setCharge(-1);
     ag.setRadical(2);
     source.attachment_groups.setBondHaptic(0);
@@ -241,7 +302,7 @@ TEST_F(IndigoCoreAttachmentGroupsTest, CloneKeepsGroupsAndMarks)
     EXPECT_EQ(5u, copied.atoms().size());
     ASSERT_EQ(1u, copied.bonds().size());
     EXPECT_EQ(5, copied.bonds()[0].atom);
-    EXPECT_EQ(9, copied.bonds()[0].order);
+    EXPECT_EQ(_BOND_COORDINATION, copied.bonds()[0].order);
     EXPECT_EQ(-1, copied.charge());
     EXPECT_EQ(2, copied.radical());
     EXPECT_EQ(1, copy.attachment_groups.hapticBondCount());
@@ -251,7 +312,7 @@ TEST_F(IndigoCoreAttachmentGroupsTest, SkipFlagDropsGroupsAndMarks)
 {
     Molecule source;
     makeRingAndMetal(source);
-    source.attachment_groups.group(addRingGroup(source)).addBond(5, 9);
+    source.attachment_groups.group(addRingGroup(source)).addBond(5, _BOND_COORDINATION);
     source.attachment_groups.setBondHaptic(0);
 
     Molecule copy;
@@ -267,7 +328,7 @@ TEST_F(IndigoCoreAttachmentGroupsTest, PartialGroupIsDroppedWhole)
 {
     Molecule source;
     makeRingAndMetal(source);
-    source.attachment_groups.group(addRingGroup(source)).addBond(5, 9);
+    source.attachment_groups.group(addRingGroup(source)).addBond(5, _BOND_COORDINATION);
 
     Array<int> vertices;
     for (int i = 0; i < 4; i++) // four of the five ring atoms
@@ -282,7 +343,7 @@ TEST_F(IndigoCoreAttachmentGroupsTest, CompleteGroupSurvivesSubmoleculeAndIsRema
 {
     Molecule source;
     makeRingAndMetal(source);
-    source.attachment_groups.group(addRingGroup(source)).addBond(5, 9);
+    source.attachment_groups.group(addRingGroup(source)).addBond(5, _BOND_COORDINATION);
 
     Array<int> vertices; // whole ring plus the metal, in reverse order
     for (int i = 5; i >= 0; i--)
@@ -307,7 +368,7 @@ TEST_F(IndigoCoreAttachmentGroupsTest, BondToDroppedPartnerIsRemoved)
 {
     Molecule source;
     makeRingAndMetal(source);
-    source.attachment_groups.group(addRingGroup(source)).addBond(5, 9);
+    source.attachment_groups.group(addRingGroup(source)).addBond(5, _BOND_COORDINATION);
 
     Array<int> vertices; // ring only, metal left out
     for (int i = 0; i < 5; i++)
@@ -324,7 +385,7 @@ TEST_F(IndigoCoreAttachmentGroupsTest, ClearRemovesEverything)
 {
     Molecule mol;
     makeRingAndMetal(mol);
-    mol.attachment_groups.group(addRingGroup(mol)).addBond(5, 9);
+    mol.attachment_groups.group(addRingGroup(mol)).addBond(5, _BOND_COORDINATION);
     mol.attachment_groups.setBondHaptic(0);
 
     mol.clear();

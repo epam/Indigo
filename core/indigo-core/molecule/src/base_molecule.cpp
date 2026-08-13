@@ -985,6 +985,8 @@ void BaseMolecule::removeAtoms(const Array<int>& indices)
             removeSGroup(j);
     }
 
+    attachment_groups.onAtomsRemoved(mapping);
+
     // stereo
     removeAtomsStereocenters(indices);
     buildOnSubmoleculeCisTrans(*this, mapping.ptr());
@@ -1000,6 +1002,7 @@ void BaseMolecule::removeAtoms(const Array<int>& indices)
         {
             b_idx = vertex.neiEdge(j);
             unhighlightBond(b_idx);
+            attachment_groups.onBondRemoved(b_idx);
             if (getBondDirection(b_idx) > 0)
                 setBondDirection(b_idx, BOND_DIRECTION_MONO);
         }
@@ -1076,6 +1079,7 @@ void BaseMolecule::removeBonds(const Array<int>& indices)
             setBondDirection(indices[i], BOND_DIRECTION_MONO);
         removeEdge(indices[i]);
         _bond_annotations.erase(indices[i]);
+        attachment_groups.onBondRemoved(indices[i]);
     }
     updateEditRevision();
 }

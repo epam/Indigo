@@ -33,17 +33,15 @@
 #pragma warning(disable : 4251)
 #endif
 
+// Attachment groups and haptic bonds (#3233; Markush bonds of #3731 reuse the
+// same group). The design and the alternatives it was chosen over are in the
+// message of the commit that added this file.
+
 namespace indigo
 {
-    // Attachment mode of a multi-endpoint bond, the `ATTACH=` keyword of a
-    // CTfile V3000 bond record.
-    //
-    // The mode is the only thing that separates the two features built on
-    // attachment groups, so the group carries it from the start even though
-    // only All is acted upon today: All is a haptic bond (#3233), which
-    // reaches every atom of the group at once; Any is a Markush bond (#3731),
-    // which reaches one unspecified atom of it. Loading a file must be able to
-    // record what it saw without deciding whether the feature is implemented.
+    // The `ATTACH=` keyword of a CTfile V3000 bond record: All reaches every atom
+    // of the group at once (haptic), Any reaches one unspecified atom of it
+    // (Markush). Any is recorded on load but not acted upon.
     enum class AttachmentMode
     {
         All,
@@ -51,24 +49,13 @@ namespace indigo
     };
 
     // A set of atoms acting as one collective endpoint of a bond.
-    //
-    // The group is deliberately NOT a vertex of the molecular graph: making it
-    // one would force every algorithm that walks vertices()/edges() (valence,
-    // aromaticity, canonical SMILES, InChI, fingerprints, substructure search)
-    // to learn to skip it. Keeping it beside the graph makes those algorithms
-    // correct by construction. Its position is likewise not stored — it is
-    // always derived from the member atoms, so it cannot drift out of date when
-    // the ligand moves.
+    // Not a graph vertex: never appears in vertices()/edges().
+    // No stored position: derive it from the member atoms.
     class DLLEXPORT AttachmentGroup : public Reusable
     {
     public:
-        // A bond from this group to an atom outside it.
-        //
-        // Bonds live inside the group rather than in a side table because such
-        // a bond is meaningless without the collective endpoint it starts
-        // from: composition makes "no bond outlives its group" a property of
-        // the data layout instead of an invariant every removal path has to
-        // remember to enforce.
+        // A bond from this group to an atom outside it. Owned by the group, so it
+        // cannot outlive the endpoint it starts from.
         struct Bond
         {
             int atom;  // partner atom, index in the owning molecule
@@ -96,9 +83,8 @@ namespace indigo
             _mode = mode;
         }
 
-        // Member atoms, in insertion order. Exposed read-only: membership is
-        // changed through addAtom()/setAtoms() so the group can keep itself
-        // duplicate-free.
+        // Member atoms, in insertion order and without duplicates: a repeated atom
+        // would make the group claim it twice and skew the derived centre.
         const std::vector<int>& atoms() const
         {
             return _atoms;
@@ -112,16 +98,18 @@ namespace indigo
             return _bonds;
         }
         void addBond(int atom, int order);
-        void removeBondsToAtom(int atom);
 
-        // Aggregate charge and radical of the group.
-        //
-        // A pi system carries them as a property of the system as a whole (the
-        // position inside it is not significant, per BIOVIA Chemical
-        // Representation), and file formats put them on the star atom that
-        // denotes the group. That atom is absorbed on load, so without this the
-        // charge would be dropped and the total charge of, say, ferrocene would
-        // no longer balance.
+        // Renumbers member atoms and bond partners through `atom_mapping`, where
+        // -1 means the atom is gone; bonds to a gone partner are dropped.
+        // Returns false if a MEMBER atom is gone: a haptic bond addresses every
+        // atom of its group at once, so a truncated group would assert something
+        // the original structure never said — the caller drops it whole.
+        bool remapAtoms(const Array<int>& atom_mapping);
+
+        // Aggregate charge and radical of the pi system: a property of the system
+        // as a whole, the position inside it being insignificant (BIOVIA Chemical
+        // Representation). Carried here because the star atom holding them in the
+        // file formats is absorbed on load.
         int charge() const
         {
             return _charge;
@@ -140,6 +128,8 @@ namespace indigo
         }
 
     private:
+        void _reset(); // the one place the fields are listed; not virtual — called from the constructor
+
         std::vector<int> _atoms;
         std::vector<Bond> _bonds;
         AttachmentMode _mode;
@@ -148,15 +138,11 @@ namespace indigo
     };
 
     // The attachment groups of one molecule, plus the marks that tell which
-    // ordinary bonds are haptic.
+    // ordinary bonds are haptic (an atom-to-atom haptic bond is a real edge, so
+    // it carries a mark instead of being a one-atom group).
     //
-    // The two live together because they are two encodings of one feature and
-    // share a lifetime: an atom-to-atom haptic bond is a real edge of the graph
-    // (that is what it is chemically, and it keeps the fragment connected for
-    // layout, rendering and canonicalization), so it is stored as a mark on
-    // that edge rather than as a one-atom group; a group-to-atom haptic bond
-    // has no edge to mark and lives in the group. Owning both here keeps
-    // clearing, merging and skipping the feature a single operation.
+    // Every removal path of BaseMolecule must reach this class: see
+    // onAtomsRemoved() and onBondRemoved().
     class DLLEXPORT MoleculeAttachmentGroups
     {
     public:
@@ -178,10 +164,14 @@ namespace indigo
         bool hasGroup(int idx) const;
         int groupCount() const;
 
-        // Removes the group and, with it, its bonds. Indices of the other
-        // groups are unaffected: callers (loaders, savers, the public API)
-        // hold group indices across such calls.
+        // Removes the group and, with it, its bonds. Indices of the other groups
+        // are unaffected — callers hold group indices across such calls.
         void removeGroup(int idx);
+
+        // Must be called when the molecule removes atoms, with the same mapping
+        // BaseMolecule::removeAtoms builds (-1 = removed). Groups that lose a
+        // member are dropped whole; bonds to removed partners are dropped.
+        void onAtomsRemoved(const Array<int>& atom_mapping);
 
         // Index walk over the live groups, mirroring the pool: end() is one
         // past the last slot, not the number of groups.
@@ -195,28 +185,30 @@ namespace indigo
         bool isBondHaptic(int bond_idx) const;
         int hapticBondCount() const;
 
+        // Must be called for every bond the molecule removes: the graph recycles
+        // freed bond indices, so a mark left behind is inherited by the next bond
+        // to take the index.
+        void onBondRemoved(int bond_idx);
+
         // --- whole-container operations -------------------------------------
 
         void clear();
         bool isEmpty() const;
 
         // Copies the groups and marks of `other` that survive a submolecule
-        // mapping (-1 in a mapping means "dropped").
-        //
-        // A group is copied only when EVERY member atom survives: a haptic bond
-        // means "all atoms of this group at once", so a truncated group would
-        // silently change what the bond says. A bond of a surviving group is
-        // copied only when its partner atom survives too.
+        // mapping (-1 means "dropped"), under the same all-or-nothing rule as
+        // remapAtoms().
         void mergeWithSubmolecule(const MoleculeAttachmentGroups& other, const Array<int>& atom_mapping, const Array<int>& bond_mapping);
 
-        // Atom sets that must be treated as connected even though no edge
-        // joins them: each group contributes its members plus the partners of
-        // its bonds. Feeds Graph::countComponents(external_neighbors), which
-        // otherwise would split a haptic complex (ferrocene) into a metal and
-        // two loose rings.
+        // Atom sets that must be treated as connected even though no edge joins
+        // them: each group contributes its members plus the partners of its bonds.
+        // Feeds Graph::countComponents(external_neighbors), which otherwise splits
+        // a haptic complex (ferrocene) into a metal and two loose rings.
         void collectConnectivitySets(std::list<std::unordered_set<int>>& neighbors) const;
 
     private:
+        void _checkGroup(int idx) const;
+
         PtrReusablePool<AttachmentGroup> _groups;
         std::unordered_set<int> _haptic_bonds;
     };

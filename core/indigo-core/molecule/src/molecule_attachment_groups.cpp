@@ -28,24 +28,27 @@ IMPL_ERROR(MoleculeAttachmentGroups, "molecule attachment groups");
 // AttachmentGroup
 // ---------------------------------------------------------------------------
 
-AttachmentGroup::AttachmentGroup() : _mode(AttachmentMode::All), _charge(0), _radical(0)
+AttachmentGroup::AttachmentGroup()
 {
+    _reset();
 }
 
 AttachmentGroup::~AttachmentGroup()
 {
 }
 
-void AttachmentGroup::reuse()
+void AttachmentGroup::_reset()
 {
-    // Must mirror the constructor field by field: a missed field would leak
-    // stale data into a recycled group. clear() keeps the buffers, which is the
-    // point of a non-destructive reset.
-    _atoms.clear();
+    _atoms.clear(); // the buffers are kept: that is the point of a non-destructive reset
     _bonds.clear();
     _mode = AttachmentMode::All;
     _charge = 0;
     _radical = 0;
+}
+
+void AttachmentGroup::reuse()
+{
+    _reset();
 }
 
 void AttachmentGroup::reuse(AttachmentMode mode)
@@ -61,8 +64,6 @@ bool AttachmentGroup::hasAtom(int atom) const
 
 void AttachmentGroup::addAtom(int atom)
 {
-    // Membership is a set: a duplicate would make the group claim an atom
-    // twice and skew the derived centre.
     if (!hasAtom(atom))
         _atoms.push_back(atom);
 }
@@ -79,9 +80,22 @@ void AttachmentGroup::addBond(int atom, int order)
     _bonds.push_back(Bond{atom, order});
 }
 
-void AttachmentGroup::removeBondsToAtom(int atom)
+bool AttachmentGroup::remapAtoms(const Array<int>& atom_mapping)
 {
-    _bonds.erase(std::remove_if(_bonds.begin(), _bonds.end(), [atom](const Bond& bond) { return bond.atom == atom; }), _bonds.end());
+    const auto mapped = [&atom_mapping](int atom) { return atom >= 0 && atom < atom_mapping.size() ? atom_mapping[atom] : -1; };
+
+    for (int atom : _atoms)
+        if (mapped(atom) < 0)
+            return false;
+
+    for (int& atom : _atoms)
+        atom = mapped(atom);
+
+    _bonds.erase(std::remove_if(_bonds.begin(), _bonds.end(), [&mapped](const Bond& bond) { return mapped(bond.atom) < 0; }), _bonds.end());
+    for (Bond& bond : _bonds)
+        bond.atom = mapped(bond.atom);
+
+    return true;
 }
 
 // ---------------------------------------------------------------------------
@@ -101,17 +115,21 @@ int MoleculeAttachmentGroups::addGroup(AttachmentMode mode)
     return _groups.add(mode);
 }
 
-AttachmentGroup& MoleculeAttachmentGroups::group(int idx)
+void MoleculeAttachmentGroups::_checkGroup(int idx) const
 {
     if (!hasGroup(idx))
         throw Error("attachment group %d does not exist", idx);
+}
+
+AttachmentGroup& MoleculeAttachmentGroups::group(int idx)
+{
+    _checkGroup(idx);
     return _groups[idx];
 }
 
 const AttachmentGroup& MoleculeAttachmentGroups::group(int idx) const
 {
-    if (!hasGroup(idx))
-        throw Error("attachment group %d does not exist", idx);
+    _checkGroup(idx);
     return _groups[idx];
 }
 
@@ -127,10 +145,7 @@ int MoleculeAttachmentGroups::groupCount() const
 
 void MoleculeAttachmentGroups::removeGroup(int idx)
 {
-    if (!hasGroup(idx))
-        throw Error("attachment group %d does not exist", idx);
-    // The bonds go with it: they are stored inside the group, so there is
-    // nothing left to dangle.
+    _checkGroup(idx);
     _groups.remove(idx);
 }
 
@@ -147,6 +162,13 @@ int MoleculeAttachmentGroups::next(int idx) const
 int MoleculeAttachmentGroups::end() const
 {
     return _groups.end();
+}
+
+void MoleculeAttachmentGroups::onAtomsRemoved(const Array<int>& atom_mapping)
+{
+    for (int i = begin(); i != end(); i = next(i))
+        if (!_groups[i].remapAtoms(atom_mapping))
+            removeGroup(i);
 }
 
 void MoleculeAttachmentGroups::setBondHaptic(int bond_idx, bool haptic)
@@ -167,6 +189,11 @@ int MoleculeAttachmentGroups::hapticBondCount() const
     return static_cast<int>(_haptic_bonds.size());
 }
 
+void MoleculeAttachmentGroups::onBondRemoved(int bond_idx)
+{
+    _haptic_bonds.erase(bond_idx);
+}
+
 void MoleculeAttachmentGroups::clear()
 {
     _groups.clear();
@@ -183,31 +210,19 @@ void MoleculeAttachmentGroups::mergeWithSubmolecule(const MoleculeAttachmentGrou
     for (int i = other.begin(); i != other.end(); i = other.next(i))
     {
         const AttachmentGroup& source = other.group(i);
-
-        // All-or-nothing: a haptic bond addresses every atom of its group, so a
-        // group that survives only in part would assert something the original
-        // structure never said.
-        bool complete = !source.atoms().empty();
-        for (int atom : source.atoms())
-        {
-            if (atom < 0 || atom >= atom_mapping.size() || atom_mapping[atom] < 0)
-            {
-                complete = false;
-                break;
-            }
-        }
-        if (!complete)
+        if (source.atoms().empty())
             continue;
 
-        AttachmentGroup& copy = group(addGroup(source.mode()));
-        for (int atom : source.atoms())
-            copy.addAtom(atom_mapping[atom]);
+        const int idx = addGroup(source.mode());
+        AttachmentGroup& copy = group(idx);
+        copy.setAtoms(source.atoms());
         copy.setCharge(source.charge());
         copy.setRadical(source.radical());
-
         for (const AttachmentGroup::Bond& bond : source.bonds())
-            if (bond.atom >= 0 && bond.atom < atom_mapping.size() && atom_mapping[bond.atom] >= 0)
-                copy.addBond(atom_mapping[bond.atom], bond.order);
+            copy.addBond(bond.atom, bond.order);
+
+        if (!copy.remapAtoms(atom_mapping))
+            removeGroup(idx);
     }
 
     for (int bond_idx : other._haptic_bonds)
