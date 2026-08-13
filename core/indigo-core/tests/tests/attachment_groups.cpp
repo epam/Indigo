@@ -16,15 +16,13 @@
  * limitations under the License.
  ***************************************************************************/
 
-// Tests for the attachment-group model that backs haptic bonds (task #3233).
+// Tests for the attachment-group model that backs haptic bonds (#3233, #3837).
 //
-// Two contracts are pinned here. The container contract: stable indices, LIFO
-// slot reuse, bonds owned by their group, unbounded multiplicity. And the
-// contract with the rest of the molecule: an attachment group must not perturb
-// any chemistry — BIOVIA calls coordination and hydrogen bonds "zero-order
-// bonds, which are bonds that do not affect valence", and a haptic bond
-// inherits that. The zero-order test is the regression guard that keeps this
-// feature isolated from the valence model of #3617.
+// Two contracts are pinned: the container itself (stable indices, slot reuse,
+// bonds owned by their group, unbounded multiplicity) and its contract with the
+// molecule — a group must not perturb any chemistry, since BIOVIA classes a
+// haptic bond with the "zero-order bonds, which are bonds that do not affect
+// valence". That last one guards the isolation from the valence model of #3617.
 
 #include <gtest/gtest.h>
 

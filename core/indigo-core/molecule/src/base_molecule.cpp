@@ -475,6 +475,7 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
     // SGroups merging
     mergeSGroupsWithSubmolecule(mol, mapping, edge_mapping);
 
+    // attachment groups
     if (!(skip_flags & SKIP_ATTACHMENT_GROUPS))
         attachment_groups.mergeWithSubmolecule(mol.attachment_groups, mapping, edge_mapping);
 
@@ -985,6 +986,7 @@ void BaseMolecule::removeAtoms(const Array<int>& indices)
             removeSGroup(j);
     }
 
+    // attachment groups
     attachment_groups.onAtomsRemoved(mapping);
 
     // stereo

@@ -33,9 +33,8 @@
 #pragma warning(disable : 4251)
 #endif
 
-// Attachment groups and haptic bonds (#3233; Markush bonds of #3731 reuse the
-// same group). The design and the alternatives it was chosen over are in the
-// message of the commit that added this file.
+// The attachment-group model behind haptic bonds: feature #3233, model #3837.
+// Markush bonds (#3731) reuse the group with the other attachment mode.
 
 namespace indigo
 {
@@ -83,8 +82,7 @@ namespace indigo
             _mode = mode;
         }
 
-        // Member atoms, in insertion order and without duplicates: a repeated atom
-        // would make the group claim it twice and skew the derived centre.
+        // Member atoms, in insertion order and without duplicates.
         const std::vector<int>& atoms() const
         {
             return _atoms;
@@ -101,15 +99,12 @@ namespace indigo
 
         // Renumbers member atoms and bond partners through `atom_mapping`, where
         // -1 means the atom is gone; bonds to a gone partner are dropped.
-        // Returns false if a MEMBER atom is gone: a haptic bond addresses every
-        // atom of its group at once, so a truncated group would assert something
-        // the original structure never said — the caller drops it whole.
+        // Returns false if a MEMBER atom is gone — the caller must then drop the
+        // whole group, never a truncated one.
         bool remapAtoms(const Array<int>& atom_mapping);
 
-        // Aggregate charge and radical of the pi system: a property of the system
-        // as a whole, the position inside it being insignificant (BIOVIA Chemical
-        // Representation). Carried here because the star atom holding them in the
-        // file formats is absorbed on load.
+        // Aggregate charge and radical of the pi system: the position inside the
+        // system is not significant (BIOVIA Chemical Representation).
         int charge() const
         {
             return _charge;
@@ -137,9 +132,8 @@ namespace indigo
         int _radical;
     };
 
-    // The attachment groups of one molecule, plus the marks that tell which
-    // ordinary bonds are haptic (an atom-to-atom haptic bond is a real edge, so
-    // it carries a mark instead of being a one-atom group).
+    // The attachment groups of one molecule, plus the marks telling which ordinary
+    // bonds are haptic.
     //
     // Every removal path of BaseMolecule must reach this class: see
     // onAtomsRemoved() and onBondRemoved().
@@ -153,8 +147,6 @@ namespace indigo
 
         MoleculeAttachmentGroups(const MoleculeAttachmentGroups&) = delete;
         MoleculeAttachmentGroups& operator=(const MoleculeAttachmentGroups&) = delete;
-
-        // --- groups ---------------------------------------------------------
 
         int addGroup(AttachmentMode mode = AttachmentMode::All);
 
@@ -179,8 +171,6 @@ namespace indigo
         int next(int idx) const;
         int end() const;
 
-        // --- haptic marks on ordinary bonds ---------------------------------
-
         void setBondHaptic(int bond_idx, bool haptic = true);
         bool isBondHaptic(int bond_idx) const;
         int hapticBondCount() const;
@@ -189,8 +179,6 @@ namespace indigo
         // freed bond indices, so a mark left behind is inherited by the next bond
         // to take the index.
         void onBondRemoved(int bond_idx);
-
-        // --- whole-container operations -------------------------------------
 
         void clear();
         bool isEmpty() const;
@@ -202,8 +190,7 @@ namespace indigo
 
         // Atom sets that must be treated as connected even though no edge joins
         // them: each group contributes its members plus the partners of its bonds.
-        // Feeds Graph::countComponents(external_neighbors), which otherwise splits
-        // a haptic complex (ferrocene) into a metal and two loose rings.
+        // Feeds Graph::countComponents(external_neighbors).
         void collectConnectivitySets(std::list<std::unordered_set<int>>& neighbors) const;
 
     private:

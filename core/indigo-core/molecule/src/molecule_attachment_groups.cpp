@@ -207,7 +207,11 @@ bool MoleculeAttachmentGroups::isEmpty() const
 
 void MoleculeAttachmentGroups::mergeWithSubmolecule(const MoleculeAttachmentGroups& other, const Array<int>& atom_mapping, const Array<int>& bond_mapping)
 {
-    for (int i = other.begin(); i != other.end(); i = other.next(i))
+    // The end is taken once: the groups added below must not be re-read as sources
+    // when a molecule is merged with itself.
+    const int last = other.end();
+
+    for (int i = other.begin(); i < last; i = other.next(i))
     {
         const AttachmentGroup& source = other.group(i);
         if (source.atoms().empty())
