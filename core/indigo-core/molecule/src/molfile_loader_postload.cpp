@@ -40,6 +40,27 @@
 
 using namespace indigo;
 
+void MolfileLoader::_buildStereocentersFromParity()
+{
+    for (int i = 0; i < _atoms_num; i++)
+    {
+        const int parity = _stereocenter_parities[i];
+
+        if (parity != MoleculeStereocenters::MDL_PARITY_ODD && parity != MoleculeStereocenters::MDL_PARITY_EVEN)
+            continue;
+
+        if (_bmol->stereocenters.exists(i))
+            continue;
+
+        if (!_bmol->stereocenters.isPossibleStereocenter(*_bmol, i))
+            continue;
+
+        _bmol->addStereocenters(i, MoleculeStereocenters::ATOM_ABS, 0, false);
+        if (MoleculeStereocenters::getMdlParity(*_bmol, i) != parity)
+            _bmol->stereocenters.invertPyramid(i);
+    }
+}
+
 void MolfileLoader::_postLoad()
 {
     for (int i = _bmol->vertexBegin(); i < _bmol->vertexEnd(); i = _bmol->vertexNext(i))
@@ -206,6 +227,10 @@ void MolfileLoader::_postLoad()
 
     _bmol->buildFromBondsStereocenters(stereochemistry_options, _sensible_bond_directions.ptr());
     _bmol->buildFromBondsAlleneStereo(stereochemistry_options.ignore_errors, _sensible_bond_directions.ptr());
+
+    // CTfile has parity ignored while a drawing is present; without one it is the only carrier.
+    if (!BaseMolecule::hasCoord(*_bmol))
+        _buildStereocentersFromParity();
 
     if (!_chiral && treat_stereo_as == 0)
         for (int i = 0; i < _atoms_num; i++)

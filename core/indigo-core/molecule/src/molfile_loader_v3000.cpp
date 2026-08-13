@@ -445,11 +445,7 @@ void MolfileLoader::_readCtab3000()
                 }
                 else if (strcmp(prop, "CFG") == 0)
                 {
-                    strscan.readInt1();
-                    // int cfg = strscan.readInt1();
-
-                    // if (cfg == 3)
-                    //   _stereocenter_types[idx] = MoleculeStereocenters::ATOM4;
+                    _stereocenter_parities[i] = strscan.readInt1();
                 }
                 else if (strcmp(prop, "MASS") == 0)
                 {
@@ -1785,6 +1781,8 @@ void MolfileLoader::_init()
     _stereocenter_types.zerofill();
     _stereocenter_groups.clear_resize(_atoms_num);
     _stereocenter_groups.zerofill();
+    _stereocenter_parities.clear_resize(_atoms_num);
+    _stereocenter_parities.zerofill();
     _sensible_bond_directions.clear_resize(_bonds_num);
     _sensible_bond_directions.zerofill();
     _ignore_cistrans.clear_resize(_bonds_num);

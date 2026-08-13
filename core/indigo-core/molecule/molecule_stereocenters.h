@@ -46,6 +46,14 @@ namespace indigo
             ATOM_ABS = 4
         };
 
+        enum
+        {
+            MDL_PARITY_NONE = 0,
+            MDL_PARITY_ODD = 1,
+            MDL_PARITY_EVEN = 2,
+            MDL_PARITY_EITHER = 3
+        };
+
         explicit MoleculeStereocenters();
 
         void clear();
@@ -56,12 +64,6 @@ namespace indigo
 
         void markBonds(BaseMolecule& baseMolecule);
         void markBond(BaseMolecule& baseMolecule, int atom_idx);
-
-        // Marks what can be marked and reports how many centres were left without a wedge,
-        // instead of giving up on the first one. Fused cages share bonds between centres, so
-        // a partly marked structure is the best a drawing can express there.
-        int markBondsBestEffort(BaseMolecule& baseMolecule);
-        bool tryMarkBond(BaseMolecule& baseMolecule, int atom_idx);
         void markAtropisomericBond(BaseMolecule& baseMolecule, int atom_idx);
 
         // takes mapping from supermolecule to submolecule
@@ -136,6 +138,9 @@ namespace indigo
 
         static bool isPyramidMappingRigid(const int mapping[4]);
         static bool isPyramidMappingRigid_Sort(int* pyramid, const int* mapping);
+
+        // Parity as CTfile Appendix A defines it, from connectivity alone - no coordinates.
+        static int getMdlParity(BaseMolecule& mol, int idx);
 
         static void moveImplicitHydrogenToEnd(int pyramid[4]);
         static void moveMinimalToEnd(int pyramid[4]);

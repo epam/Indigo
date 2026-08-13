@@ -24,7 +24,6 @@
 
 #include "base_cpp/locale_guard.h"
 #include "base_cpp/output.h"
-#include "layout/molecule_layout.h"
 #include "layout/sequence_layout.h"
 #include "math/algebra.h"
 #include "molecule/base_molecule.h"
@@ -39,24 +38,6 @@
 #include "molecule/query_molecule.h"
 
 using namespace indigo;
-
-namespace
-{
-    // Returns a laid-out clone when the molecule carries stereochemistry but no depiction to
-    // convey it, and an empty pointer when the molecule can be written as it stands. Working
-    // on a clone keeps the caller's molecule free of coordinates it never asked for.
-    std::unique_ptr<BaseMolecule> depictedCloneIfNeeded(BaseMolecule& mol)
-    {
-        if (BaseMolecule::hasCoord(mol) || !MoleculeSavers::hasStereoToDepict(mol))
-            return nullptr;
-
-        std::unique_ptr<BaseMolecule> clone(mol.neu());
-        clone->clone_KeepIndices(mol);
-        if (!MoleculeSavers::layoutAndMarkStereo(*clone))
-            clone.reset();
-        return clone;
-    }
-}
 
 IMPL_ERROR(MolfileSaver, "molfile saver");
 
@@ -226,15 +207,6 @@ void MolfileSaver::_saveMolecule(BaseMolecule& bmol, bool query)
     std::unique_ptr<BaseMolecule> mol(bmol.neu());
     mol->clone_KeepIndices(bmol);
 
-    // A molfile conveys tetrahedral configuration and cis/trans only through the drawing:
-    // wedge bonds interpreted against 2D coordinates. A molecule that carries no
-    // coordinates - one built from SMILES, for instance - would therefore be written
-    // without any stereochemistry at all. Lay it out and mark the bonds the way
-    // indigoLayout does, so the file conveys what the molecule knows. The work happens on
-    // the clone, so the caller's molecule does not acquire coordinates as a side effect.
-    if (!BaseMolecule::hasCoord(*mol) && MoleculeSavers::hasStereoToDepict(*mol) && MoleculeSavers::layoutAndMarkStereo(*mol))
-        pmol = mol.get();
-
     bool has_dat_xbonds = false;
     for (int i = pmol->sgroups.begin(); i != pmol->sgroups.end(); i = pmol->sgroups.next(i))
     {
@@ -377,17 +349,12 @@ void MolfileSaver::_validate(BaseMolecule& bmol)
 
 void MolfileSaver::saveCtab3000(Molecule& mol)
 {
-    // Reaction saving reaches this method directly, bypassing _saveMolecule, so the depiction
-    // has to be generated here as well - otherwise a V3000 CTAB names its stereocentres in a
-    // STEABS collection while carrying no wedges to define them, which the loader rejects.
-    std::unique_ptr<BaseMolecule> depicted = depictedCloneIfNeeded(mol);
-    _writeCtab(_output, depicted ? *depicted : static_cast<BaseMolecule&>(mol), false);
+    _writeCtab(_output, mol, false);
 }
 
 void MolfileSaver::saveQueryCtab3000(QueryMolecule& mol)
 {
-    std::unique_ptr<BaseMolecule> depicted = depictedCloneIfNeeded(mol);
-    _writeCtab(_output, depicted ? *depicted : static_cast<BaseMolecule&>(mol), true);
+    _writeCtab(_output, mol, true);
 }
 
 int MolfileSaver::parseFormatMode(const char* mode)
@@ -618,7 +585,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         int charge = mol.getAtomCharge(i);
         int radical = 0;
         int valence = mol.getExplicitValence(i);
-        int stereo_parity = _getStereocenterParity(mol, i);
+        int stereo_parity = MoleculeStereocenters::getMdlParity(mol, i);
 
         if (!mol.isRSite(i) && !mol.isPseudoAtom(i) && !mol.isTemplateAtom(i))
             radical = mol.getAtomRadical_NoThrow(i, 0);
@@ -1487,7 +1454,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             hydrogens_count = 0;
         }
 
-        stereo_parity = _getStereocenterParity(mol, i);
+        stereo_parity = MoleculeStereocenters::getMdlParity(mol, i);
 
         Vec3f pos = mol.getAtomXyz(i);
         if (fabs(pos.x) < 1e-5f)
@@ -2005,61 +1972,6 @@ void MolfileSaver::_writeFormattedString(Output& output, Array<char>& str, int l
     else
         while (k-- > 0)
             output.writeChar(' ');
-}
-
-int MolfileSaver::_getStereocenterParity(BaseMolecule& mol, int idx)
-{
-    int type = mol.stereocenters.getType(idx);
-    if (type == 0 || !mol.stereocenters.isTetrahydral(idx))
-        return 0;
-    if (type == MoleculeStereocenters::ATOM_ANY)
-        return 3;
-
-    // Reference from "CTfile Formats. Appendix A: Stereo Notes":
-    // Number the atoms surrounding the stereo center with 1, 2, 3, and 4 in
-    // order of increasing atom number (position in the atom block) (a hydrogen
-    // atom should be considered the highest numbered atom, in this case atom 4).
-    // View the center from a position such that the bond connecting the
-    // highest-numbered atom (4) projects behind the plane formed by atoms 1, 2, and 3.
-
-    int pyramid[4];
-    memcpy(pyramid, mol.stereocenters.getPyramid(idx), sizeof(pyramid));
-    if (pyramid[3] == -1)
-    {
-        if (mol.isQueryMolecule())
-        {
-            if (mol.getAtomNumber(idx) == -1)
-                // This atom is not a pure atom
-                // There are no implicit hydrogens for query molecules
-                return 0;
-        }
-
-        // Assign implicit hydrogen the highest index
-        pyramid[3] = mol.vertexEnd();
-    }
-    else
-    {
-        // Replace pure hydrogen atom with the highest value
-        for (int i = 0; i < 4; i++)
-        {
-            int p = pyramid[i];
-            if (p != -1 && mol.getAtomNumber(p) == ELEM_H)
-            {
-                bool pure_hydrogen = (mol.getAtomIsotope(p) == 0);
-                if (!pure_hydrogen && mol.isQueryMolecule())
-                    pure_hydrogen = !mol.asQueryMolecule().getAtom(p).hasConstraint(QueryMolecule::ATOM_ISOTOPE);
-                if (pure_hydrogen)
-                {
-                    pyramid[i] = mol.vertexEnd();
-                    break;
-                }
-            }
-        }
-    }
-
-    if (MoleculeStereocenters::isPyramidMappingRigid(pyramid))
-        return 1; // odd parity
-    return 2;     // even parity
 }
 
 void MolfileSaver::_writeRGroupIndices2000(Output& output, BaseMolecule& mol)

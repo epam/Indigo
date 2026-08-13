@@ -1710,15 +1710,9 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
 
     if (!BaseMolecule::hasCoord(*mol))
     {
-        // KET conveys tetrahedral configuration and cis/trans through the drawing alone, so
-        // laying the molecule out is not enough - the stereo bonds have to be marked against
-        // the new geometry as well, or the configuration is lost on reading back.
-        if (!MoleculeSavers::layoutAndMarkStereo(*mol))
-        {
-            MoleculeLayout ml(*mol, false);
-            ml.layout_orientation = UNSPECIFIED;
-            ml.make();
-        }
+        MoleculeLayout ml(*mol, false);
+        ml.layout_orientation = UNSPECIFIED;
+        ml.make();
     }
 
     BaseMolecule::collapse(*mol);

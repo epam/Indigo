@@ -316,3 +316,50 @@ TEST_F(IndigoApiFormatsTest, ket_to_idt)
     // printf("res=%s", res);
     ASSERT_STREQ("ARAS", res);
 }
+
+// https://github.com/epam/Indigo/issues/317 - configuration has to survive
+// SMILES -> molfile -> SMILES, and converting must not lay the molecule out.
+TEST_F(IndigoApiFormatsTest, stereo_survives_molfile_without_coordinates)
+{
+    const char* enantiomers[] = {"O=C(O)[C@@]([H])(N)C", "O=C(O)[C@]([H])(N)C"};
+
+    for (const char* mode : {"2000", "3000"})
+    {
+        indigoSetOption("molfile-saving-mode", mode);
+
+        std::string canonical[2];
+        for (int i = 0; i < 2; i++)
+        {
+            const int mol = indigoLoadMoleculeFromString(enantiomers[i]);
+            const std::string expected = indigoCanonicalSmiles(mol);
+            const std::string molfile = indigoMolfile(mol);
+
+            const int reloaded = indigoLoadMoleculeFromString(molfile.c_str());
+            canonical[i] = indigoCanonicalSmiles(reloaded);
+
+            EXPECT_EQ(expected, canonical[i]) << "mode " << mode;
+            EXPECT_EQ(0, indigoHasCoord(reloaded)) << "mode " << mode << ": saving must not lay the molecule out";
+
+            indigoFree(reloaded);
+            indigoFree(mol);
+        }
+        EXPECT_NE(canonical[0], canonical[1]) << "mode " << mode << ": enantiomers collapsed into one";
+    }
+    indigoSetOption("molfile-saving-mode", "auto");
+}
+
+// A molecule that carries a drawing keeps taking its configuration from the wedges.
+TEST_F(IndigoApiFormatsTest, stereo_from_wedges_when_coordinates_present)
+{
+    const int mol = indigoLoadMoleculeFromString("O=C(O)[C@@]([H])(N)C");
+    const std::string expected = indigoCanonicalSmiles(mol);
+
+    indigoLayout(mol);
+    ASSERT_EQ(1, indigoHasCoord(mol));
+
+    const int reloaded = indigoLoadMoleculeFromString(indigoMolfile(mol));
+    EXPECT_EQ(expected, std::string(indigoCanonicalSmiles(reloaded)));
+
+    indigoFree(reloaded);
+    indigoFree(mol);
+}

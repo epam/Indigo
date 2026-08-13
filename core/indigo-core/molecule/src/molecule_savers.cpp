@@ -18,7 +18,6 @@
 
 #include "molecule/molecule_savers.h"
 
-#include "layout/molecule_layout.h"
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
@@ -105,53 +104,4 @@ bool MoleculeSavers::getSubstitutionCountFlagValue(QueryMolecule& qmol, int idx,
         return true;
     }
     return false;
-}
-
-bool MoleculeSavers::hasStereoToDepict(BaseMolecule& mol)
-{
-    return mol.stereocenters.size() > 0 || mol.cis_trans.count() > 0;
-}
-
-bool MoleculeSavers::layoutAndMarkStereo(BaseMolecule& mol)
-{
-    try
-    {
-        MoleculeLayout ml(mol, false);
-        ml.layout_orientation = UNSPECIFIED;
-        ml.make();
-    }
-    catch (Exception&)
-    {
-        // Without a geometry there is nothing to mark against, so leave the molecule as it
-        // came rather than failing the save.
-        return false;
-    }
-
-    markStereoAgainstGeometry(mol);
-    return true;
-}
-
-void MoleculeSavers::markStereoAgainstGeometry(BaseMolecule& mol)
-{
-    mol.clearBondDirections();
-    mol.stereocenters.markBondsBestEffort(mol);
-    mol.markBondsAlleneStereo();
-
-    // The geometry generated above would, on reading back, define cis/trans for double bonds
-    // that had none. Mark those "either" so the file states the configuration is unknown
-    // instead of inventing one.
-    for (int b = mol.edgeBegin(); b != mol.edgeEnd(); b = mol.edgeNext(b))
-        if (mol.getBondOrder(b) == BOND_DOUBLE && mol.cis_trans.getParity(b) == 0 && MoleculeCisTrans::isGeomStereoBond(mol, b, 0, true))
-            mol.cis_trans.ignore(b);
-
-    for (int rg_idx = 1; rg_idx <= mol.rgroups.getRGroupCount(); rg_idx++)
-    {
-        RGroup& rgp = mol.rgroups.getRGroup(rg_idx);
-        for (int j = rgp.fragments.begin(); j != rgp.fragments.end(); j = rgp.fragments.next(j))
-        {
-            rgp.fragments[j].clearBondDirections();
-            rgp.fragments[j].stereocenters.markBondsBestEffort(rgp.fragments[j]);
-            rgp.fragments[j].markBondsAlleneStereo();
-        }
-    }
 }

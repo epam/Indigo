@@ -24,6 +24,7 @@
 #include "molecule/molecule.h"
 #include "molecule/molecule_automorphism_search.h"
 #include "molecule/molecule_stereocenter_options.h"
+#include "molecule/query_molecule.h"
 #include <algorithm>
 #include <array>
 
@@ -914,6 +915,62 @@ void MoleculeStereocenters::invertPyramid(int idx)
     std::swap(pyramid[0], pyramid[1]);
 }
 
+int MoleculeStereocenters::getMdlParity(BaseMolecule& mol, int idx)
+{
+    if (!mol.stereocenters.exists(idx))
+        return MDL_PARITY_NONE;
+
+    int type = mol.stereocenters.getType(idx);
+    if (type == 0 || !mol.stereocenters.isTetrahydral(idx))
+        return MDL_PARITY_NONE;
+    if (type == ATOM_ANY)
+        return MDL_PARITY_EITHER;
+
+    // Reference from "CTfile Formats. Appendix A: Stereo Notes":
+    // Number the atoms surrounding the stereo center with 1, 2, 3, and 4 in
+    // order of increasing atom number (position in the atom block) (a hydrogen
+    // atom should be considered the highest numbered atom, in this case atom 4).
+    // View the center from a position such that the bond connecting the
+    // highest-numbered atom (4) projects behind the plane formed by atoms 1, 2, and 3.
+
+    int pyramid[4];
+    memcpy(pyramid, mol.stereocenters.getPyramid(idx), sizeof(pyramid));
+    if (pyramid[3] == -1)
+    {
+        if (mol.isQueryMolecule())
+        {
+            if (mol.getAtomNumber(idx) == -1)
+                // This atom is not a pure atom
+                // There are no implicit hydrogens for query molecules
+                return MDL_PARITY_NONE;
+        }
+
+        // Assign implicit hydrogen the highest index
+        pyramid[3] = mol.vertexEnd();
+    }
+    else
+    {
+        // Replace pure hydrogen atom with the highest value
+        for (int i = 0; i < 4; i++)
+        {
+            int p = pyramid[i];
+            if (p != -1 && mol.getAtomNumber(p) == ELEM_H)
+            {
+                bool pure_hydrogen = (mol.getAtomIsotope(p) == 0);
+                if (!pure_hydrogen && mol.isQueryMolecule())
+                    pure_hydrogen = !mol.asQueryMolecule().getAtom(p).hasConstraint(QueryMolecule::ATOM_ISOTOPE);
+                if (pure_hydrogen)
+                {
+                    pyramid[i] = mol.vertexEnd();
+                    break;
+                }
+            }
+        }
+    }
+
+    return isPyramidMappingRigid(pyramid) ? MDL_PARITY_ODD : MDL_PARITY_EVEN;
+}
+
 void MoleculeStereocenters::getAbsAtoms(Array<int>& indices)
 {
     indices.clear();
@@ -1754,19 +1811,9 @@ void MoleculeStereocenters::_convertAtomToImplicitHydrogen(int pyramid[4], int a
 
 void MoleculeStereocenters::markBond(BaseMolecule& baseMolecule, int atom_idx)
 {
-    if (!tryMarkBond(baseMolecule, atom_idx))
-        throw Error("no bond can be marked");
-}
-
-// Returns false when every bond at the centre is already carrying a wedge of its own, which
-// happens in fused cages: the centres share bonds and the ones marked first take them. That
-// is an outcome, not a failure - the caller decides whether a partly marked structure is
-// acceptable.
-bool MoleculeStereocenters::tryMarkBond(BaseMolecule& baseMolecule, int atom_idx)
-{
     const _Atom* atom_ptr = _stereocenters.at2(atom_idx);
     if (atom_ptr == NULL)
-        return true;
+        return;
 
     const _Atom& atom = *atom_ptr;
 
@@ -1862,60 +1909,48 @@ bool MoleculeStereocenters::tryMarkBond(BaseMolecule& baseMolecule, int atom_idx
         }
 
         if (j == size)
-            return false;
+            throw Error("no bond can be marked");
 
         if (baseMolecule.getEdge(edge_idx).beg != atom_idx)
             baseMolecule.swapEdgeEnds(edge_idx);
 
         if (BaseMolecule::hasCoord(baseMolecule))
         {
-            try
+            if (atom.type > ATOM_ANY)
             {
-                if (atom.type > ATOM_ANY)
+                std::array<Vec3f, 4> dirs;
+                dirs.fill({0.0, 0.0, 0.0});
+                for (j = 0; j < size; j++)
                 {
-                    std::array<Vec3f, 4> dirs;
-                    dirs.fill({0.0, 0.0, 0.0});
-                    for (j = 0; j < size; j++)
-                    {
-                        dirs[j] = baseMolecule.getAtomXyz(pyramid[j]);
-                        dirs[j].sub(baseMolecule.getAtomXyz(atom_idx));
-                        if (!dirs[j].normalize())
-                            throw Error("zero bond length");
-                    }
+                    dirs[j] = baseMolecule.getAtomXyz(pyramid[j]);
+                    dirs[j].sub(baseMolecule.getAtomXyz(atom_idx));
+                    if (!dirs[j].normalize())
+                        throw Error("zero bond length");
+                }
 
-                    int sign = _sign(dirs[0], dirs[1], dirs[2]);
+                int sign = _sign(dirs[0], dirs[1], dirs[2]);
 
-                    if (size == 3)
+                if (size == 3)
+                {
+                    // Check if all the three bonds belong to the same half-plane.
+                    // This is equal to that one of the bonds lies in the smaller
+                    // angle formed by the other two.
+                    if (_xyzzy(dirs[1], dirs[0], dirs[2]) == 1 || _xyzzy(dirs[2], dirs[1], dirs[0]) == 1 || _xyzzy(dirs[0], dirs[2], dirs[1]) == 1)
                     {
-                        // Check if all the three bonds belong to the same half-plane.
-                        // This is equal to that one of the bonds lies in the smaller
-                        // angle formed by the other two.
-                        if (_xyzzy(dirs[1], dirs[0], dirs[2]) == 1 || _xyzzy(dirs[2], dirs[1], dirs[0]) == 1 || _xyzzy(dirs[0], dirs[2], dirs[1]) == 1)
-                        {
-                            if (_xyzzy(dirs[1], dirs[0], dirs[2]) == 1)
-                                mult = -1;
-                            baseMolecule.setBondDirection(edge_idx, (sign * mult == 1) ? BOND_DOWN : BOND_UP);
-                        }
-                        else
-                            baseMolecule.setBondDirection(edge_idx, (sign == 1) ? BOND_DOWN : BOND_UP);
+                        if (_xyzzy(dirs[1], dirs[0], dirs[2]) == 1)
+                            mult = -1;
+                        baseMolecule.setBondDirection(edge_idx, (sign * mult == 1) ? BOND_DOWN : BOND_UP);
                     }
                     else
-                        baseMolecule.setBondDirection(edge_idx, (sign * mult == 1) ? BOND_UP : BOND_DOWN);
+                        baseMolecule.setBondDirection(edge_idx, (sign == 1) ? BOND_DOWN : BOND_UP);
                 }
                 else
-                    baseMolecule.setBondDirection(edge_idx, BOND_EITHER);
+                    baseMolecule.setBondDirection(edge_idx, (sign * mult == 1) ? BOND_UP : BOND_DOWN);
             }
-            catch (Exception&)
-            {
-                // The direction vectors and _sign reject degenerate geometry - atoms on top
-                // of one another, bonds at a vanishing angle. Such a drawing cannot express
-                // the centre, which for the caller is the same outcome as finding no bond
-                // free to carry a wedge.
-                return false;
-            }
+            else
+                baseMolecule.setBondDirection(edge_idx, BOND_EITHER);
         }
     }
-    return true;
 }
 
 void MoleculeStereocenters::markAtropisomericBond(BaseMolecule& baseMolecule, int atom_idx)
@@ -1942,17 +1977,6 @@ void MoleculeStereocenters::markBonds(BaseMolecule& baseMolecule)
         markBond(baseMolecule, _stereocenters.key(i));
     for (int i = _stereocenters.begin(); i != _stereocenters.end(); i = _stereocenters.next(i))
         markAtropisomericBond(baseMolecule, _stereocenters.key(i));
-}
-
-int MoleculeStereocenters::markBondsBestEffort(BaseMolecule& baseMolecule)
-{
-    int unmarked = 0;
-    for (int i = _stereocenters.begin(); i != _stereocenters.end(); i = _stereocenters.next(i))
-        if (!tryMarkBond(baseMolecule, _stereocenters.key(i)))
-            unmarked++;
-    for (int i = _stereocenters.begin(); i != _stereocenters.end(); i = _stereocenters.next(i))
-        markAtropisomericBond(baseMolecule, _stereocenters.key(i));
-    return unmarked;
 }
 
 bool MoleculeStereocenters::isAutomorphism(BaseMolecule& mol, const Array<int>& mapping, const Filter* filter)

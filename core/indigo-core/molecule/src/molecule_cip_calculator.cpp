@@ -310,7 +310,7 @@ void MoleculeCIPCalculator::_calcRSStereoDescriptor(BaseMolecule& mol, BaseMolec
     if (type <= MoleculeStereocenters::ATOM_ANY)
         return;
 
-    parity = MolfileSaver::_getStereocenterParity(mol, atom_idx);
+    parity = MoleculeStereocenters::getMdlParity(mol, atom_idx);
 
     ligands.clear();
     used1.clear();
