@@ -97,6 +97,7 @@ void BaseMolecule::clear()
     _attachment_index.clear();
     sgroups.clear();
     tgroups.clear();
+    attachment_groups.clear();
     template_attachment_points.clear();
     template_attachment_indexes.clear();
     _template_occurrences.clear();
@@ -473,6 +474,9 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
 
     // SGroups merging
     mergeSGroupsWithSubmolecule(mol, mapping, edge_mapping);
+
+    if (!(skip_flags & SKIP_ATTACHMENT_GROUPS))
+        attachment_groups.mergeWithSubmolecule(mol.attachment_groups, mapping, edge_mapping);
 
     // highlighting
     highlightSubmolecule(mol, mapping.ptr(), false);

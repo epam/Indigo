@@ -35,6 +35,7 @@
 #include "molecule/metadata_storage.h"
 #include "molecule/molecule_allene_stereo.h"
 #include "molecule/molecule_arom.h"
+#include "molecule/molecule_attachment_groups.h"
 #include "molecule/molecule_cip_calculator.h"
 #include "molecule/molecule_cis_trans.h"
 #include "molecule/molecule_ionize.h"
@@ -123,6 +124,8 @@ namespace indigo
         // Skip copying ALL R-group data (fragments + attachment points on R-sites).
         // Use this when you want to populate R-groups manually afterwards.
         SKIP_RGROUPS = 0x80,
+        // Skip copying attachment groups and the haptic marks on bonds.
+        SKIP_ATTACHMENT_GROUPS = 0x100,
     };
 
     class Molecule;
@@ -534,6 +537,8 @@ namespace indigo
         MoleculeSGroups sgroups;
 
         MoleculeTGroups tgroups;
+
+        MoleculeAttachmentGroups attachment_groups;
 
         bool use_scsr_sgroups_only = false;
         bool remove_scsr_lgrp = false;
