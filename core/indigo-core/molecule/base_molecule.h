@@ -475,6 +475,12 @@ namespace indigo
         // about them.
         void removeAttachmentGroup(int idx);
 
+        // Atom sets that hold together although no edge joins them: s-group
+        // members, query components and haptic bonds. Feeds
+        // Graph::countComponents(external_neighbors) — call it whenever a
+        // decomposition must not cut a molecule where it is still one whole.
+        void collectExternalNeighbors(std::list<std::unordered_set<int>>& neighbors);
+
         void unfoldHydrogens(Array<int>* markers_out, int max_h_cnt = -1, bool impl_h_no_throw = false, bool only_selected = false);
         virtual void registerUnfoldedHydrogenQueryComponent(int /*atom_idx*/, int /*added_hydrogen*/){}; // QueryMolecule only
 

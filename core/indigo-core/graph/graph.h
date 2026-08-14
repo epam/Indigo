@@ -289,6 +289,11 @@ namespace indigo
         Array<int> _component_vcount;
         Array<int> _component_ecount;
         bool _components_valid;
+        // Whether the cached decomposition was computed with external neighbours.
+        // Without it the result would depend on the order of the calls: the two
+        // countComponents() overloads share one cache, and getDecomposition()
+        // computes without them.
+        bool _components_used_external;
         int _components_count;
 
         void _calculateTopology();
@@ -296,7 +301,7 @@ namespace indigo
         void _calculateSSSRInit();
         void _calculateSSSRByCycleBasis(CycleBasis& basis);
         void _calculateSSSRAddEdgesAndVertices(const Array<int>& cycle, List<int>& edges, List<int>& vertices);
-        void _calculateComponents(const std::list<std::unordered_set<int>> external_neighbors = {{}});
+        void _calculateComponents(const std::list<std::unordered_set<int>>& external_neighbors = {{}});
         // This is a bad hack for those who are too lazy to handle the mappings.
         // NEVER USE IT.
         void _cloneGraph_KeepIndices(const Graph& other);

@@ -59,6 +59,7 @@ Graph::Graph()
     _neighbors_pool = new Pool<List<VertexEdge>::Elem>();
     _sssr_pool = 0;
     _components_valid = false;
+    _components_used_external = false;
 }
 
 Graph::~Graph()
@@ -688,7 +689,7 @@ void Graph::_calculateSSSR()
     _calculateSSSRByCycleBasis(basis);
 }
 
-void Graph::_calculateComponents(const std::list<std::unordered_set<int>> external_neighbors)
+void Graph::_calculateComponents(const std::list<std::unordered_set<int>>& external_neighbors)
 {
     GraphDecomposer decomposer(*this);
     int i;
@@ -712,6 +713,7 @@ void Graph::_calculateComponents(const std::list<std::unordered_set<int>> extern
     }
 
     _components_valid = true;
+    _components_used_external = !external_neighbors.empty() && !external_neighbors.front().empty();
 }
 
 int Graph::vertexComponent(int v_idx)
@@ -724,7 +726,9 @@ int Graph::vertexComponent(int v_idx)
 
 int Graph::countComponents(const std::list<std::unordered_set<int>>& external_neighbors)
 {
-    if (!_components_valid)
+    // A cache computed without the external neighbours would answer a different
+    // question, so it is recomputed rather than reused.
+    if (!_components_valid || !_components_used_external)
         _calculateComponents(external_neighbors);
 
     return _components_count;
@@ -732,7 +736,7 @@ int Graph::countComponents(const std::list<std::unordered_set<int>>& external_ne
 
 int Graph::countComponentEdges(int comp_idx, const std::list<std::unordered_set<int>>& external_neighbors)
 {
-    if (!_components_valid)
+    if (!_components_valid || !_components_used_external)
         _calculateComponents(external_neighbors);
 
     return _component_ecount[comp_idx];
@@ -740,7 +744,7 @@ int Graph::countComponentEdges(int comp_idx, const std::list<std::unordered_set<
 
 int Graph::countComponentVertices(int comp_idx, const std::list<std::unordered_set<int>>& external_neighbors)
 {
-    if (!_components_valid)
+    if (!_components_valid || !_components_used_external)
         _calculateComponents(external_neighbors);
 
     return _component_vcount[comp_idx];

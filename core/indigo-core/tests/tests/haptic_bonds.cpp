@@ -511,3 +511,79 @@ TEST_F(IndigoCoreHapticBondsTest, ClearRemovesBondsFromTheMolecule)
     EXPECT_TRUE(mol.haptic_bonds.isEmpty());
     EXPECT_TRUE(mol.attachment_groups.isEmpty());
 }
+
+// ---- connectivity ---------------------------------------------------------
+
+// Ferrocene: two rings that reach the iron through haptic bonds only. The graph
+// has three pieces; the molecule is one.
+static void makeFerrocene(Molecule& mol)
+{
+    for (int ring = 0; ring < 2; ring++)
+    {
+        const int first = ring * 5;
+        for (int i = 0; i < 5; i++)
+            mol.addAtom(ELEM_C);
+        for (int i = 0; i < 5; i++)
+            mol.addBond(first + i, first + (i + 1) % 5, BOND_SINGLE);
+    }
+    const int metal = mol.addAtom(ELEM_Fe);
+
+    for (int ring = 0; ring < 2; ring++)
+    {
+        const int group = mol.attachment_groups.addGroup();
+        mol.attachment_groups.group(group).setAtoms({ring * 5, ring * 5 + 1, ring * 5 + 2, ring * 5 + 3, ring * 5 + 4});
+        mol.addHapticBond(HapticBond::Endpoint::group(group), HapticBond::Endpoint::atom(metal));
+    }
+}
+
+TEST_F(IndigoCoreHapticBondsTest, ExternalNeighborsKeepTheComplexWhole)
+{
+    Molecule mol;
+    makeFerrocene(mol);
+
+    std::list<std::unordered_set<int>> neighbors;
+    mol.collectExternalNeighbors(neighbors);
+    EXPECT_EQ(1, mol.countComponents(neighbors));
+}
+
+// Without them the graph is what it is: three disconnected pieces. That is the
+// answer InChI and the standardizer need, since a haptic bond is dropped on
+// export and the disconnection is then expected.
+TEST_F(IndigoCoreHapticBondsTest, PlainComponentCountLeavesTheComplexApart)
+{
+    Molecule mol;
+    makeFerrocene(mol);
+    EXPECT_EQ(3, mol.countComponents());
+}
+
+// Both overloads share one cache, so without a mode flag the answer would
+// depend on which of them ran first.
+TEST_F(IndigoCoreHapticBondsTest, DecompositionDoesNotDependOnTheOrderOfTheCalls)
+{
+    Molecule mol;
+    makeFerrocene(mol);
+
+    ASSERT_EQ(3, mol.countComponents()); // fills the cache without external neighbours
+
+    std::list<std::unordered_set<int>> neighbors;
+    mol.collectExternalNeighbors(neighbors);
+    EXPECT_EQ(1, mol.countComponents(neighbors));
+
+    // and the decomposition that follows is the one just computed
+    const Array<int>& decomposition = mol.getDecomposition();
+    for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+        EXPECT_EQ(0, decomposition[i]) << "atom " << i << " landed in another component";
+}
+
+TEST_F(IndigoCoreHapticBondsTest, AtomToAtomHapticBondAlsoHoldsTheFragmentTogether)
+{
+    Molecule mol;
+    mol.addAtom(ELEM_C);
+    mol.addAtom(ELEM_Fe);
+    mol.addHapticBond(Endpoint::atom(0), Endpoint::atom(1));
+
+    std::list<std::unordered_set<int>> neighbors;
+    mol.collectExternalNeighbors(neighbors);
+    EXPECT_EQ(2, mol.countComponents());
+    EXPECT_EQ(1, mol.countComponents(neighbors));
+}

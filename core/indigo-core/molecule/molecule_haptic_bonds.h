@@ -96,10 +96,6 @@ namespace indigo
         {
             return _type;
         }
-        void setType(int type)
-        {
-            _type = type;
-        }
 
         bool referencesGroup(int group_idx) const;
 

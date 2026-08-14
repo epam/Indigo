@@ -1150,6 +1150,23 @@ void BaseMolecule::removeAttachmentGroup(int idx)
     updateEditRevision();
 }
 
+void BaseMolecule::collectExternalNeighbors(std::list<std::unordered_set<int>>& neighbors)
+{
+    for (int i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
+    {
+        SGroup& sgroup = sgroups.getSGroup(i);
+        neighbors.push_back({});
+        auto& sg_set = neighbors.back();
+        for (auto atom_idx : sgroup.atoms)
+            sg_set.insert(atom_idx);
+    }
+
+    if (isQueryMolecule())
+        asQueryMolecule().getComponentNeighbors(neighbors);
+
+    haptic_bonds.collectConnectivitySets(attachment_groups, neighbors);
+}
+
 void BaseMolecule::removeSGroup(int idx)
 {
     SGroup& sg = sgroups.getSGroup(idx);
