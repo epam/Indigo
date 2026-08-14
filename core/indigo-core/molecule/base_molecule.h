@@ -81,6 +81,14 @@ namespace indigo
         _BOND_ANY = 8,
         _BOND_COORDINATION = 9,
         _BOND_HYDROGEN = 10,
+
+        // Internal bond kinds of Indigo, deliberately outside the range any file
+        // format uses so that a format code can never be taken for one and back.
+        // They are never stored as the order of a graph edge: a bond of this kind
+        // lives in MoleculeHapticBonds and is turned into the target format's own
+        // representation on saving (V3000: order 9 plus ENDPTS/ATTACH).
+        _BOND_HAPTIC = 1009,              // ATTACH=ALL, feature #3233
+        _BOND_VARIABLE_ATTACHMENT = 1010, // ATTACH=ANY, feature #3731
     };
 
     enum
