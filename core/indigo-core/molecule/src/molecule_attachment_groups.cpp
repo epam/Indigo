@@ -39,22 +39,13 @@ AttachmentGroup::~AttachmentGroup()
 
 void AttachmentGroup::_reset()
 {
-    _atoms.clear(); // the buffers are kept: that is the point of a non-destructive reset
-    _bonds.clear();
-    _mode = AttachmentMode::All;
-    _charge = 0;
-    _radical = 0;
+    _atoms.clear(); // the buffer is kept: that is the point of a non-destructive reset
+    _anchor = Anchor();
 }
 
 void AttachmentGroup::reuse()
 {
     _reset();
-}
-
-void AttachmentGroup::reuse(AttachmentMode mode)
-{
-    reuse();
-    _mode = mode;
 }
 
 bool AttachmentGroup::hasAtom(int atom) const
@@ -75,11 +66,6 @@ void AttachmentGroup::setAtoms(const std::vector<int>& atoms)
         addAtom(atom);
 }
 
-void AttachmentGroup::addBond(int atom, int order)
-{
-    _bonds.push_back(Bond{atom, order});
-}
-
 bool AttachmentGroup::remapAtoms(const Array<int>& atom_mapping)
 {
     const auto mapped = [&atom_mapping](int atom) { return atom >= 0 && atom < atom_mapping.size() ? atom_mapping[atom] : -1; };
@@ -90,10 +76,6 @@ bool AttachmentGroup::remapAtoms(const Array<int>& atom_mapping)
 
     for (int& atom : _atoms)
         atom = mapped(atom);
-
-    _bonds.erase(std::remove_if(_bonds.begin(), _bonds.end(), [&mapped](const Bond& bond) { return mapped(bond.atom) < 0; }), _bonds.end());
-    for (Bond& bond : _bonds)
-        bond.atom = mapped(bond.atom);
 
     return true;
 }
@@ -110,9 +92,9 @@ MoleculeAttachmentGroups::~MoleculeAttachmentGroups()
 {
 }
 
-int MoleculeAttachmentGroups::addGroup(AttachmentMode mode)
+int MoleculeAttachmentGroups::addGroup()
 {
-    return _groups.add(mode);
+    return _groups.add();
 }
 
 void MoleculeAttachmentGroups::_checkGroup(int idx) const
@@ -176,42 +158,17 @@ void MoleculeAttachmentGroups::onAtomsRemoved(const Array<int>& atom_mapping, Ar
         }
 }
 
-void MoleculeAttachmentGroups::setBondHaptic(int bond_idx, bool haptic)
-{
-    if (haptic)
-        _haptic_bonds.insert(bond_idx);
-    else
-        _haptic_bonds.erase(bond_idx);
-}
-
-bool MoleculeAttachmentGroups::isBondHaptic(int bond_idx) const
-{
-    return _haptic_bonds.count(bond_idx) != 0;
-}
-
-int MoleculeAttachmentGroups::hapticBondCount() const
-{
-    return static_cast<int>(_haptic_bonds.size());
-}
-
-void MoleculeAttachmentGroups::onBondRemoved(int bond_idx)
-{
-    _haptic_bonds.erase(bond_idx);
-}
-
 void MoleculeAttachmentGroups::clear()
 {
     _groups.clear();
-    _haptic_bonds.clear();
 }
 
 bool MoleculeAttachmentGroups::isEmpty() const
 {
-    return groupCount() == 0 && _haptic_bonds.empty();
+    return groupCount() == 0;
 }
 
-void MoleculeAttachmentGroups::mergeWithSubmolecule(const MoleculeAttachmentGroups& other, const Array<int>& atom_mapping, const Array<int>& bond_mapping,
-                                                    Array<int>& group_mapping)
+void MoleculeAttachmentGroups::mergeWithSubmolecule(const MoleculeAttachmentGroups& other, const Array<int>& atom_mapping, Array<int>& group_mapping)
 {
     // The end is taken once: the groups added below must not be re-read as sources
     // when a molecule is merged with itself.
@@ -226,36 +183,14 @@ void MoleculeAttachmentGroups::mergeWithSubmolecule(const MoleculeAttachmentGrou
         if (source.atoms().empty())
             continue;
 
-        const int idx = addGroup(source.mode());
+        const int idx = addGroup();
         AttachmentGroup& copy = group(idx);
         copy.setAtoms(source.atoms());
-        copy.setCharge(source.charge());
-        copy.setRadical(source.radical());
-        for (const AttachmentGroup::Bond& bond : source.bonds())
-            copy.addBond(bond.atom, bond.order);
+        copy.setAnchor(source.anchor());
 
         if (copy.remapAtoms(atom_mapping))
             group_mapping[i] = idx;
         else
             removeGroup(idx);
-    }
-
-    for (int bond_idx : other._haptic_bonds)
-        if (bond_idx >= 0 && bond_idx < bond_mapping.size() && bond_mapping[bond_idx] >= 0)
-            setBondHaptic(bond_mapping[bond_idx]);
-}
-
-void MoleculeAttachmentGroups::collectConnectivitySets(std::list<std::unordered_set<int>>& neighbors) const
-{
-    for (int i = begin(); i != end(); i = next(i))
-    {
-        const AttachmentGroup& ag = group(i);
-        if (ag.atoms().empty())
-            continue;
-
-        std::unordered_set<int> connected(ag.atoms().begin(), ag.atoms().end());
-        for (const AttachmentGroup::Bond& bond : ag.bonds())
-            connected.insert(bond.atom);
-        neighbors.push_back(std::move(connected));
     }
 }

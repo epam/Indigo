@@ -480,7 +480,7 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
     if (!(skip_flags & SKIP_ATTACHMENT_GROUPS))
     {
         QS_DEF(Array<int>, group_mapping);
-        attachment_groups.mergeWithSubmolecule(mol.attachment_groups, mapping, edge_mapping, group_mapping);
+        attachment_groups.mergeWithSubmolecule(mol.attachment_groups, mapping, group_mapping);
         if (!(skip_flags & SKIP_HAPTIC_BONDS))
             haptic_bonds.mergeWithSubmolecule(mol.haptic_bonds, mapping, group_mapping);
     }
@@ -1015,7 +1015,6 @@ void BaseMolecule::removeAtoms(const Array<int>& indices)
         {
             b_idx = vertex.neiEdge(j);
             unhighlightBond(b_idx);
-            attachment_groups.onBondRemoved(b_idx);
             if (getBondDirection(b_idx) > 0)
                 setBondDirection(b_idx, BOND_DIRECTION_MONO);
         }
@@ -1092,7 +1091,6 @@ void BaseMolecule::removeBonds(const Array<int>& indices)
             setBondDirection(indices[i], BOND_DIRECTION_MONO);
         removeEdge(indices[i]);
         _bond_annotations.erase(indices[i]);
-        attachment_groups.onBondRemoved(indices[i]);
     }
     updateEditRevision();
 }

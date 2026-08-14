@@ -133,7 +133,8 @@ namespace indigo
         // Skip copying ALL R-group data (fragments + attachment points on R-sites).
         // Use this when you want to populate R-groups manually afterwards.
         SKIP_RGROUPS = 0x80,
-        // Skip copying attachment groups and the haptic marks on bonds.
+        // Skip copying attachment groups; the haptic bonds that address them are
+        // skipped with them, since a bond without its group is meaningless.
         SKIP_ATTACHMENT_GROUPS = 0x100,
         SKIP_HAPTIC_BONDS = 0x200,
     };
