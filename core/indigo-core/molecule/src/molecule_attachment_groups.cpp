@@ -164,11 +164,16 @@ int MoleculeAttachmentGroups::end() const
     return _groups.end();
 }
 
-void MoleculeAttachmentGroups::onAtomsRemoved(const Array<int>& atom_mapping)
+void MoleculeAttachmentGroups::onAtomsRemoved(const Array<int>& atom_mapping, Array<int>& removed_groups)
 {
+    removed_groups.clear();
+
     for (int i = begin(); i != end(); i = next(i))
         if (!_groups[i].remapAtoms(atom_mapping))
+        {
             removeGroup(i);
+            removed_groups.push(i);
+        }
 }
 
 void MoleculeAttachmentGroups::setBondHaptic(int bond_idx, bool haptic)
@@ -205,11 +210,15 @@ bool MoleculeAttachmentGroups::isEmpty() const
     return groupCount() == 0 && _haptic_bonds.empty();
 }
 
-void MoleculeAttachmentGroups::mergeWithSubmolecule(const MoleculeAttachmentGroups& other, const Array<int>& atom_mapping, const Array<int>& bond_mapping)
+void MoleculeAttachmentGroups::mergeWithSubmolecule(const MoleculeAttachmentGroups& other, const Array<int>& atom_mapping, const Array<int>& bond_mapping,
+                                                    Array<int>& group_mapping)
 {
     // The end is taken once: the groups added below must not be re-read as sources
     // when a molecule is merged with itself.
     const int last = other.end();
+
+    group_mapping.clear_resize(last);
+    group_mapping.fill(-1);
 
     for (int i = other.begin(); i < last; i = other.next(i))
     {
@@ -225,7 +234,9 @@ void MoleculeAttachmentGroups::mergeWithSubmolecule(const MoleculeAttachmentGrou
         for (const AttachmentGroup::Bond& bond : source.bonds())
             copy.addBond(bond.atom, bond.order);
 
-        if (!copy.remapAtoms(atom_mapping))
+        if (copy.remapAtoms(atom_mapping))
+            group_mapping[i] = idx;
+        else
             removeGroup(idx);
     }
 

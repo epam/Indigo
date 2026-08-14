@@ -162,8 +162,10 @@ namespace indigo
 
         // Must be called when the molecule removes atoms, with the same mapping
         // BaseMolecule::removeAtoms builds (-1 = removed). Groups that lose a
-        // member are dropped whole; bonds to removed partners are dropped.
-        void onAtomsRemoved(const Array<int>& atom_mapping);
+        // member are dropped whole; their indices are reported in `removed_groups`
+        // because the haptic bonds that reference them must go too, and this
+        // container does not know about them.
+        void onAtomsRemoved(const Array<int>& atom_mapping, Array<int>& removed_groups);
 
         // Index walk over the live groups, mirroring the pool: end() is one
         // past the last slot, not the number of groups.
@@ -185,8 +187,11 @@ namespace indigo
 
         // Copies the groups and marks of `other` that survive a submolecule
         // mapping (-1 means "dropped"), under the same all-or-nothing rule as
-        // remapAtoms().
-        void mergeWithSubmolecule(const MoleculeAttachmentGroups& other, const Array<int>& atom_mapping, const Array<int>& bond_mapping);
+        // remapAtoms(). `group_mapping` receives, per source group index, the
+        // index it got here or -1: the haptic bonds of the same merge address
+        // their groups by index and have no other way to follow them.
+        void mergeWithSubmolecule(const MoleculeAttachmentGroups& other, const Array<int>& atom_mapping, const Array<int>& bond_mapping,
+                                  Array<int>& group_mapping);
 
         // Atom sets that must be treated as connected even though no edge joins
         // them: each group contributes its members plus the partners of its bonds.

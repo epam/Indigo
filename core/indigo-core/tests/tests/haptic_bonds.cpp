@@ -23,8 +23,10 @@
 #include <gtest/gtest.h>
 
 #include <molecule/base_molecule.h>
+#include <molecule/molecule.h>
 #include <molecule/molecule_attachment_groups.h>
 #include <molecule/molecule_haptic_bonds.h>
+#include <molecule/query_molecule.h>
 
 #include "common.h"
 
@@ -50,6 +52,24 @@ protected:
         for (int i = 0; i < size; i++)
             mapping[i] = i;
         return mapping;
+    }
+
+    // Cyclopentadienyl ring (atoms 0..4) plus an iron atom (5): the ferrocene
+    // half the ticket's example is made of.
+    static void makeRingAndMetal(Molecule& mol)
+    {
+        for (int i = 0; i < 5; i++)
+            mol.addAtom(ELEM_C);
+        mol.addAtom(ELEM_Fe);
+        for (int i = 0; i < 5; i++)
+            mol.addBond(i, (i + 1) % 5, BOND_SINGLE);
+    }
+
+    static int addRingGroup(BaseMolecule& mol)
+    {
+        const int idx = mol.attachment_groups.addGroup();
+        mol.attachment_groups.group(idx).setAtoms({0, 1, 2, 3, 4});
+        return idx;
     }
 };
 
@@ -264,4 +284,230 @@ TEST_F(IndigoCoreHapticBondsTest, ClearRemovesEverything)
     bonds.clear();
     EXPECT_TRUE(bonds.isEmpty());
     EXPECT_EQ(0, bonds.count());
+}
+
+// ---- contract with the molecule -------------------------------------------
+
+TEST_F(IndigoCoreHapticBondsTest, AddHapticBondValidatesItsEndpoints)
+{
+    Molecule mol;
+    makeRingAndMetal(mol);
+    const int group = addRingGroup(mol);
+    const int empty_group = mol.attachment_groups.addGroup();
+
+    EXPECT_THROW(mol.addHapticBond(Endpoint::group(group), Endpoint::atom(42)), Exception);                    // no such atom
+    EXPECT_THROW(mol.addHapticBond(Endpoint::group(42), Endpoint::atom(5)), Exception);                        // no such group
+    EXPECT_THROW(mol.addHapticBond(Endpoint::group(empty_group), Endpoint::atom(5)), Exception);               // empty group
+    EXPECT_THROW(mol.addHapticBond(Endpoint::group(group), Endpoint::group(empty_group)), Exception);          // two groups
+    EXPECT_THROW(mol.addHapticBond(Endpoint::group(group), Endpoint::atom(0)), Exception);                     // partner is a member
+    EXPECT_THROW(mol.addHapticBond(Endpoint::atom(5), Endpoint::atom(5)), Exception);                          // one atom twice
+    EXPECT_THROW(mol.addHapticBond(Endpoint::group(group), Endpoint::atom(5), _BOND_COORDINATION), Exception); // format code
+
+    EXPECT_EQ(0, mol.haptic_bonds.count());
+}
+
+TEST_F(IndigoCoreHapticBondsTest, AddHapticBondStoresTheBondAndMovesTheEditRevision)
+{
+    Molecule mol;
+    makeRingAndMetal(mol);
+    const int group = addRingGroup(mol);
+
+    const int revision_before = mol.getEditRevision();
+    const int bond = mol.addHapticBond(Endpoint::group(group), Endpoint::atom(5));
+
+    ASSERT_TRUE(mol.haptic_bonds.has(bond));
+    EXPECT_EQ(_BOND_HAPTIC, mol.haptic_bonds.at(bond).type());
+    EXPECT_EQ(0, mol.haptic_bonds.firstAtom(bond, mol.attachment_groups));
+    EXPECT_EQ(5, mol.haptic_bonds.lastAtom(bond, mol.attachment_groups));
+    EXPECT_NE(revision_before, mol.getEditRevision());
+}
+
+// The method is not virtual, so every subclass gets exactly the same behaviour.
+TEST_F(IndigoCoreHapticBondsTest, AddHapticBondWorksOnAQueryMoleculeToo)
+{
+    QueryMolecule qmol;
+    for (int i = 0; i < 3; i++)
+        qmol.addAtom(new QueryMolecule::Atom(QueryMolecule::ATOM_NUMBER, ELEM_C));
+
+    const int group = qmol.attachment_groups.addGroup();
+    qmol.attachment_groups.group(group).setAtoms({0, 1});
+
+    const int bond = qmol.addHapticBond(Endpoint::group(group), Endpoint::atom(2));
+    ASSERT_TRUE(qmol.haptic_bonds.has(bond));
+    EXPECT_EQ(2, qmol.haptic_bonds.lastAtom(bond, qmol.attachment_groups));
+}
+
+// The isolation invariant: a haptic bond must leave every atom's valence and
+// implicit hydrogen count exactly as it was — BIOVIA classes it with the
+// "zero-order bonds, which are bonds that do not affect valence".
+TEST_F(IndigoCoreHapticBondsTest, ZeroOrderInvariantValenceUntouched)
+{
+    Molecule plain;
+    makeRingAndMetal(plain);
+
+    Molecule with_bond;
+    makeRingAndMetal(with_bond);
+    with_bond.addHapticBond(Endpoint::group(addRingGroup(with_bond)), Endpoint::atom(5));
+
+    for (int i = plain.vertexBegin(); i != plain.vertexEnd(); i = plain.vertexNext(i))
+    {
+        EXPECT_EQ(plain.getAtomValence(i), with_bond.getAtomValence(i)) << "valence changed for atom " << i;
+        EXPECT_EQ(plain.getImplicitH(i), with_bond.getImplicitH(i)) << "implicit H changed for atom " << i;
+    }
+}
+
+TEST_F(IndigoCoreHapticBondsTest, AtomToAtomHapticBondIsNotAGraphEdge)
+{
+    Molecule mol;
+    mol.addAtom(ELEM_C);
+    mol.addAtom(ELEM_Fe);
+
+    const int edges_before = mol.edgeCount();
+    mol.addHapticBond(Endpoint::atom(0), Endpoint::atom(1));
+
+    EXPECT_EQ(edges_before, mol.edgeCount());
+    EXPECT_EQ(-1, mol.findEdgeIndex(0, 1));
+}
+
+TEST_F(IndigoCoreHapticBondsTest, RemovingAMemberAtomDropsTheGroupAndItsBonds)
+{
+    Molecule mol;
+    makeRingAndMetal(mol);
+    mol.addHapticBond(Endpoint::group(addRingGroup(mol)), Endpoint::atom(5));
+
+    mol.removeAtom(2); // one of the five ring atoms
+    EXPECT_EQ(0, mol.attachment_groups.groupCount());
+    EXPECT_EQ(0, mol.haptic_bonds.count());
+}
+
+TEST_F(IndigoCoreHapticBondsTest, RemovingThePartnerAtomDropsOnlyTheBond)
+{
+    Molecule mol;
+    makeRingAndMetal(mol);
+    const int group = addRingGroup(mol);
+    mol.addHapticBond(Endpoint::group(group), Endpoint::atom(5));
+
+    mol.removeAtom(5); // the metal: a partner, not a member
+    ASSERT_TRUE(mol.attachment_groups.hasGroup(group));
+    EXPECT_EQ(5u, mol.attachment_groups.group(group).atoms().size());
+    EXPECT_EQ(0, mol.haptic_bonds.count());
+}
+
+// The group pool hands a freed index straight back to the next addGroup, so a
+// bond left behind would not be stale data — it would attach to another group.
+TEST_F(IndigoCoreHapticBondsTest, BondDoesNotOutliveTheGroupItAddresses)
+{
+    Molecule mol;
+    makeRingAndMetal(mol);
+    const int group = addRingGroup(mol);
+    mol.addHapticBond(Endpoint::group(group), Endpoint::atom(5));
+
+    mol.removeAttachmentGroup(group);
+    EXPECT_EQ(0, mol.haptic_bonds.count());
+
+    const int reused = mol.attachment_groups.addGroup();
+    ASSERT_EQ(group, reused); // the freed slot comes back
+    EXPECT_EQ(0, mol.haptic_bonds.count());
+}
+
+TEST_F(IndigoCoreHapticBondsTest, CloneKeepsBondsAndTheirGroups)
+{
+    Molecule source;
+    makeRingAndMetal(source);
+    const int group = addRingGroup(source);
+    source.addHapticBond(Endpoint::group(group), Endpoint::atom(5));
+    source.addHapticBond(Endpoint::atom(0), Endpoint::atom(5), _BOND_VARIABLE_ATTACHMENT);
+
+    Molecule copy;
+    copy.clone(source);
+
+    ASSERT_EQ(1, copy.attachment_groups.groupCount());
+    ASSERT_EQ(2, copy.haptic_bonds.count());
+
+    const int copied_group = copy.attachment_groups.begin();
+    const HapticBond& first = copy.haptic_bonds.at(copy.haptic_bonds.begin());
+    ASSERT_TRUE(first.begin().isGroup());
+    EXPECT_EQ(copied_group, first.begin().index()); // the group reference followed the merge
+    EXPECT_EQ(5, first.end().index());
+
+    const HapticBond& second = copy.haptic_bonds.at(copy.haptic_bonds.next(copy.haptic_bonds.begin()));
+    EXPECT_EQ(_BOND_VARIABLE_ATTACHMENT, second.type());
+}
+
+TEST_F(IndigoCoreHapticBondsTest, SkipFlagDropsBondsAndGroups)
+{
+    Molecule source;
+    makeRingAndMetal(source);
+    source.addHapticBond(Endpoint::group(addRingGroup(source)), Endpoint::atom(5));
+
+    Molecule copy;
+    copy.clone(source, nullptr, nullptr, SKIP_ATTACHMENT_GROUPS);
+
+    EXPECT_EQ(0, copy.attachment_groups.groupCount());
+    EXPECT_EQ(0, copy.haptic_bonds.count());
+}
+
+TEST_F(IndigoCoreHapticBondsTest, PartialGroupTakesItsBondsWithIt)
+{
+    Molecule source;
+    makeRingAndMetal(source);
+    source.addHapticBond(Endpoint::group(addRingGroup(source)), Endpoint::atom(5));
+
+    Array<int> vertices;
+    for (int i = 0; i < 4; i++) // four of the five ring atoms
+        vertices.push(i);
+
+    Molecule partial;
+    partial.makeSubmolecule(source, vertices, nullptr);
+    EXPECT_EQ(0, partial.attachment_groups.groupCount());
+    EXPECT_EQ(0, partial.haptic_bonds.count());
+}
+
+TEST_F(IndigoCoreHapticBondsTest, CompleteGroupSurvivesSubmoleculeAndIsRemapped)
+{
+    Molecule source;
+    makeRingAndMetal(source);
+    source.addHapticBond(Endpoint::group(addRingGroup(source)), Endpoint::atom(5));
+
+    Array<int> vertices; // whole ring plus the metal, in reverse order
+    for (int i = 5; i >= 0; i--)
+        vertices.push(i);
+
+    Array<int> mapping;
+    Molecule sub;
+    sub.makeSubmolecule(source, vertices, &mapping);
+
+    ASSERT_EQ(1, sub.attachment_groups.groupCount());
+    ASSERT_EQ(1, sub.haptic_bonds.count());
+    const HapticBond& bond = sub.haptic_bonds.at(sub.haptic_bonds.begin());
+    EXPECT_EQ(sub.attachment_groups.begin(), bond.begin().index());
+    EXPECT_EQ(mapping[5], bond.end().index()); // the partner followed the mapping
+}
+
+TEST_F(IndigoCoreHapticBondsTest, BondToADroppedPartnerIsRemovedButTheGroupStays)
+{
+    Molecule source;
+    makeRingAndMetal(source);
+    source.addHapticBond(Endpoint::group(addRingGroup(source)), Endpoint::atom(5));
+
+    Array<int> vertices; // ring only, metal left out
+    for (int i = 0; i < 5; i++)
+        vertices.push(i);
+
+    Molecule sub;
+    sub.makeSubmolecule(source, vertices, nullptr);
+
+    EXPECT_EQ(1, sub.attachment_groups.groupCount());
+    EXPECT_EQ(0, sub.haptic_bonds.count());
+}
+
+TEST_F(IndigoCoreHapticBondsTest, ClearRemovesBondsFromTheMolecule)
+{
+    Molecule mol;
+    makeRingAndMetal(mol);
+    mol.addHapticBond(Endpoint::group(addRingGroup(mol)), Endpoint::atom(5));
+
+    mol.clear();
+    EXPECT_TRUE(mol.haptic_bonds.isEmpty());
+    EXPECT_TRUE(mol.attachment_groups.isEmpty());
 }
