@@ -317,8 +317,8 @@ TEST_F(IndigoApiFormatsTest, ket_to_idt)
     ASSERT_STREQ("ARAS", res);
 }
 
-// https://github.com/epam/Indigo/issues/317 - configuration has to survive
-// SMILES -> molfile -> SMILES, and converting must not lay the molecule out.
+// issue #317: configuration has to survive SMILES -> molfile -> SMILES,
+// and converting must not lay the molecule out.
 TEST_F(IndigoApiFormatsTest, stereo_survives_molfile_without_coordinates)
 {
     const char* enantiomers[] = {"O=C(O)[C@@]([H])(N)C", "O=C(O)[C@]([H])(N)C"};
@@ -348,7 +348,6 @@ TEST_F(IndigoApiFormatsTest, stereo_survives_molfile_without_coordinates)
     indigoSetOption("molfile-saving-mode", "auto");
 }
 
-// A molecule that carries a drawing keeps taking its configuration from the wedges.
 TEST_F(IndigoApiFormatsTest, stereo_from_wedges_when_coordinates_present)
 {
     const int mol = indigoLoadMoleculeFromString("O=C(O)[C@@]([H])(N)C");

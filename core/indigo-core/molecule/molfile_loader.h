@@ -93,7 +93,7 @@ namespace indigo
         TL_CP_DECL(Array<int>, _stereo_care_bonds);
         TL_CP_DECL(Array<int>, _stereocenter_types);
         TL_CP_DECL(Array<int>, _stereocenter_groups);
-        // Read only to serve files without coordinates; wedges take precedence everywhere else.
+        // Atom block parity, consumed only when the file has no coordinates; wedges win otherwise.
         TL_CP_DECL(Array<int>, _stereocenter_parities);
         TL_CP_DECL(Array<int>, _sensible_bond_directions);
         TL_CP_DECL(Array<int>, _ignore_cistrans);

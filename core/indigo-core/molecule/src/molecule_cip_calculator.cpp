@@ -390,7 +390,7 @@ void MoleculeCIPCalculator::_calcRSStereoDescriptor(BaseMolecule& mol, BaseMolec
 
     if (cip_parity == 1)
     {
-        if (parity == 1)
+        if (parity == MoleculeStereocenters::MDL_PARITY_ODD)
         {
             if (use_stereo && context.use_rule_5)
             {
@@ -415,7 +415,7 @@ void MoleculeCIPCalculator::_calcRSStereoDescriptor(BaseMolecule& mol, BaseMolec
     }
     else
     {
-        if (parity == 1)
+        if (parity == MoleculeStereocenters::MDL_PARITY_ODD)
         {
             if (use_stereo && context.use_rule_5)
             {

@@ -228,7 +228,7 @@ void MolfileLoader::_postLoad()
     _bmol->buildFromBondsStereocenters(stereochemistry_options, _sensible_bond_directions.ptr());
     _bmol->buildFromBondsAlleneStereo(stereochemistry_options.ignore_errors, _sensible_bond_directions.ptr());
 
-    // CTfile has parity ignored while a drawing is present; without one it is the only carrier.
+    // CTfile prescribes ignoring parity while a drawing is present; without one it is the only carrier.
     if (!BaseMolecule::hasCoord(*_bmol))
         _buildStereocentersFromParity();
 

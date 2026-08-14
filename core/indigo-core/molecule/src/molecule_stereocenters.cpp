@@ -917,10 +917,7 @@ void MoleculeStereocenters::invertPyramid(int idx)
 
 int MoleculeStereocenters::getMdlParity(BaseMolecule& mol, int idx)
 {
-    if (!mol.stereocenters.exists(idx))
-        return MDL_PARITY_NONE;
-
-    int type = mol.stereocenters.getType(idx);
+    const int type = mol.stereocenters.getType(idx);
     if (type == 0 || !mol.stereocenters.isTetrahydral(idx))
         return MDL_PARITY_NONE;
     if (type == ATOM_ANY)
