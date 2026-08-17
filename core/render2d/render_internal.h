@@ -116,6 +116,11 @@ namespace indigo
         void _setHighlightOpt();
         void _resetHighlightOpt();
         void _renderBonds();
+        void _renderHapticBonds();
+        // The atom itself, or the centre of the group acting as one endpoint.
+        // False when the endpoint has no atoms left to draw from.
+        bool _hapticEndpointPos(const HapticBond::Endpoint& endpoint, Vec2f& pos);
+        void _clipHapticEndToLabel(const HapticBond::Endpoint& endpoint, Vec2f& pos, const Vec2f& other);
         void _applyBondOffset();
         void _setBondCenter();
         float _getBondOffset(int aid, const Vec2f& pos, const Vec2f& dir, const float bondWidth);
