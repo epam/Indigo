@@ -1228,6 +1228,98 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
     }
 }
 
+HapticBond::Endpoint MoleculeJsonLoader::resolveHapticEndpoint(const rapidjson::Value& endpoint, const PtrArray<Array<int>>& mol_mappings,
+                                                               const std::vector<std::map<std::string, int>>& ag_mappings)
+{
+    if (!endpoint.HasMember("moleculeId") || !endpoint["moleculeId"].IsString())
+        throw Error("Haptic connection endpoint requires a string \"moleculeId\"");
+
+    const char* mol_ref = endpoint["moleculeId"].GetString();
+    const int mol_id = extract_id(mol_ref, "mol");
+    if (mol_id < 0 || mol_id >= mol_mappings.size())
+        throw Error("Haptic connection refers to an unknown molecule \"%s\"", mol_ref);
+
+    if (endpoint.HasMember("attachmentGroupId"))
+    {
+        if (!endpoint["attachmentGroupId"].IsString())
+            throw Error("\"attachmentGroupId\" of a haptic connection must be a string");
+
+        const std::string ag_id = endpoint["attachmentGroupId"].GetString();
+        const auto& ag_mapping = ag_mappings[mol_id];
+        const auto it = ag_mapping.find(ag_id);
+        if (it == ag_mapping.end())
+            throw Error("Haptic connection refers to an unknown attachment group \"%s\"", ag_id.c_str());
+        return HapticBond::Endpoint::group(it->second);
+    }
+
+    if (endpoint.HasMember("atomId"))
+    {
+        if (!endpoint["atomId"].IsString())
+            throw Error("\"atomId\" of a haptic connection must be a string");
+
+        const Array<int>& atoms = mol_mappings[mol_id];
+        const int atom_id = atoi(endpoint["atomId"].GetString());
+        if (atom_id < 0 || atom_id >= atoms.size())
+            throw Error("Haptic connection refers to a non-existent atom %d of \"%s\"", atom_id, mol_ref);
+        return HapticBond::Endpoint::atom(atoms[atom_id]);
+    }
+
+    throw Error("Haptic connection endpoint requires \"atomId\" or \"attachmentGroupId\"");
+}
+
+void MoleculeJsonLoader::loadHapticConnection(const rapidjson::Value& connection, BaseMolecule& mol, const PtrArray<Array<int>>& mol_mappings,
+                                              const std::vector<std::map<std::string, int>>& ag_mappings)
+{
+    if (!connection.HasMember("endpoint1") || !connection.HasMember("endpoint2"))
+        throw Error("Haptic connection requires \"endpoint1\" and \"endpoint2\"");
+
+    // The pairs the endpoints may not form - two groups, an atom with itself, an
+    // atom with its own group - are rejected by addHapticBond for every producer.
+    mol.addHapticBond(resolveHapticEndpoint(connection["endpoint1"], mol_mappings, ag_mappings),
+                      resolveHapticEndpoint(connection["endpoint2"], mol_mappings, ag_mappings), _BOND_HAPTIC);
+}
+
+std::map<std::string, int> MoleculeJsonLoader::parseAttachmentGroups(const rapidjson::Value& groups, BaseMolecule& mol, const Array<int>& atom_mapping)
+{
+    std::map<std::string, int> ids;
+
+    if (!groups.IsArray())
+        throw Error("\"attachmentGroups\" must be an array");
+
+    for (rapidjson::SizeType i = 0; i < groups.Size(); ++i)
+    {
+        const auto& group = groups[i];
+        if (!group.IsObject() || !group.HasMember("id") || !group.HasMember("atoms"))
+            throw Error("Attachment group requires \"id\" and \"atoms\"");
+
+        if (!group["id"].IsString())
+            throw Error("\"id\" of an attachment group must be a string");
+
+        const char* id = group["id"].GetString();
+        const auto& atoms = group["atoms"];
+        if (!atoms.IsArray() || atoms.Size() == 0)
+            throw Error("Attachment group \"%s\" has no atoms", id);
+
+        const int group_idx = mol.attachment_groups.addGroup();
+        AttachmentGroup& ag = mol.attachment_groups.group(group_idx);
+        for (rapidjson::SizeType j = 0; j < atoms.Size(); ++j)
+        {
+            if (!atoms[j].IsInt())
+                throw Error("Attachment group \"%s\" has a non-integer atom index", id);
+
+            const int atom_idx = atoms[j].GetInt();
+            if (atom_idx < 0 || atom_idx >= atom_mapping.size() || atom_mapping[atom_idx] < 0)
+                throw Error("Attachment group \"%s\" refers to a non-existent atom %d", id, atom_idx);
+            ag.addAtom(atom_mapping[atom_idx]);
+        }
+
+        if (!ids.emplace(id, group_idx).second)
+            throw Error("Duplicate attachment group id \"%s\"", id);
+    }
+
+    return ids;
+}
+
 void MoleculeJsonLoader::parseProperties(const rapidjson::Value& props, BaseMolecule& mol)
 {
     auto& properties = mol.properties().insert(0);
@@ -1702,6 +1794,10 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     }
 
     PtrArray<Array<int>> mol_mappings;
+    // Per mol node: KET attachment-group id -> group index in the merged molecule.
+    // A haptic connection addresses a group by the id local to its molecule, so the
+    // ids have to survive the merge that renumbers everything else.
+    std::vector<std::map<std::string, int>> ag_mappings;
     for (rapidjson::SizeType node_idx = 0; node_idx < _mol_nodes.Size(); ++node_idx)
     {
         std::vector<EnhancedStereoCenter> stereo_centers;
@@ -1764,6 +1860,9 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         Array<int> mapping;
         mol.mergeWithMolecule(*pmol, &mapping, 0);
         mol_mappings.push().copy(mapping);
+
+        ag_mappings.push_back(mol_node.HasMember("attachmentGroups") ? parseAttachmentGroups(mol_node["attachmentGroups"], mol, mapping)
+                                                                     : std::map<std::string, int>());
 
         for (auto& sc : stereo_centers)
         {
@@ -1995,6 +2094,16 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     for (rapidjson::SizeType i = 0; i < _connection_array.Size(); ++i)
     {
         auto& connection = _connection_array[i];
+
+        // A haptic connection is marked with "type", not "connectionType", and it
+        // may address an attachment group instead of an atom — so it is resolved
+        // before the atom-to-atom machinery below.
+        if (connection.HasMember("type") && connection["type"].IsString() && std::string(connection["type"].GetString()) == "haptic")
+        {
+            loadHapticConnection(connection, mol, mol_mappings, ag_mappings);
+            continue;
+        }
+
         int order = _BOND_ANY;
         if (connection.HasMember("connectionType"))
         {

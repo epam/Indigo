@@ -65,6 +65,11 @@ void KetDocumentJsonLoader::parseConnections(const rapidjson::Value& connections
     for (rapidjson::SizeType i = 0; i < connections.Size(); ++i)
     {
         const auto& connection = connections[i];
+        // A haptic connection is keyed by "type" instead and belongs to a molecule, not
+        // to a monomer document; without this the missing member is read as one.
+        if (!connection.HasMember("connectionType"))
+            throw Error("Connection without \"connectionType\" is not supported in a monomer document");
+
         std::string connection_type = connection["connectionType"].GetString();
         if (connection_type == KetConnectionSingle || connection_type == KetConnectionHydro)
         {

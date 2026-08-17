@@ -113,6 +113,16 @@ namespace indigo
         void parseBonds(const rapidjson::Value& bonds, BaseMolecule& mol);
         void parseHighlight(const rapidjson::Value& highlight, BaseMolecule& mol);
         void parseSGroups(const rapidjson::Value& sgroups, BaseMolecule& mol);
+
+        // Adds the node's attachment groups to the already-merged molecule, taking
+        // the atom mapping of that merge. Returns the KET id -> group index map
+        // that haptic connections are resolved through.
+        std::map<std::string, int> parseAttachmentGroups(const rapidjson::Value& groups, BaseMolecule& mol, const Array<int>& atom_mapping);
+
+        static HapticBond::Endpoint resolveHapticEndpoint(const rapidjson::Value& endpoint, const PtrArray<Array<int>>& mol_mappings,
+                                                          const std::vector<std::map<std::string, int>>& ag_mappings);
+        void loadHapticConnection(const rapidjson::Value& connection, BaseMolecule& mol, const PtrArray<Array<int>>& mol_mappings,
+                                  const std::vector<std::map<std::string, int>>& ag_mappings);
         void parseProperties(const rapidjson::Value& props, BaseMolecule& mol);
         void setStereoFlagPosition(const rapidjson::Value& pos, int fragment_index, BaseMolecule& mol);
         void handleSGroup(SGroup& sgroup, const std::unordered_set<int>& atoms, BaseMolecule& bmol);
