@@ -70,14 +70,16 @@ TEST_F(IndigoCoreAttachmentGroupsTest, AddAssignsIndicesAndCounts)
 
 TEST_F(IndigoCoreAttachmentGroupsTest, RemoveFreesSlotAndReusesItClean)
 {
-    MoleculeAttachmentGroups groups;
+    Molecule mol;
+    mol.addAtom(ELEM_C);
+    auto& groups = mol.attachment_groups;
     groups.addGroup();
     const int b = groups.addGroup();
     groups.addGroup();
-    groups.group(b).addAtom(42);
+    groups.group(b).addAtom(0);
     groups.group(b).setAnchor({-1, 2});
 
-    groups.removeGroup(b);
+    mol.removeAttachmentGroup(b);
     EXPECT_EQ(2, groups.groupCount());
     EXPECT_FALSE(groups.hasGroup(b));
 
@@ -90,11 +92,12 @@ TEST_F(IndigoCoreAttachmentGroupsTest, RemoveFreesSlotAndReusesItClean)
 
 TEST_F(IndigoCoreAttachmentGroupsTest, IterationSkipsRemovedGroups)
 {
-    MoleculeAttachmentGroups groups;
+    Molecule mol;
+    auto& groups = mol.attachment_groups;
     const int a = groups.addGroup();
     const int b = groups.addGroup();
     const int c = groups.addGroup();
-    groups.removeGroup(b);
+    mol.removeAttachmentGroup(b);
 
     std::vector<int> seen;
     for (int i = groups.begin(); i != groups.end(); i = groups.next(i))
@@ -104,9 +107,9 @@ TEST_F(IndigoCoreAttachmentGroupsTest, IterationSkipsRemovedGroups)
 
 TEST_F(IndigoCoreAttachmentGroupsTest, AccessToMissingGroupThrows)
 {
-    MoleculeAttachmentGroups groups;
-    EXPECT_THROW(groups.group(0), Exception);
-    EXPECT_THROW(groups.removeGroup(0), Exception);
+    Molecule mol;
+    EXPECT_THROW(mol.attachment_groups.group(0), Exception);
+    EXPECT_THROW(mol.removeAttachmentGroup(0), Exception);
 }
 
 TEST_F(IndigoCoreAttachmentGroupsTest, MembershipIsASet)

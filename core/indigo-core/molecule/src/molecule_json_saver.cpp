@@ -1620,7 +1620,13 @@ void MoleculeJsonSaver::saveAnnotation(JsonWriter& writer, const KetObjectAnnota
 
 void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
 {
+    // Everything the nodes are addressed by is rebuilt from scratch: the node
+    // numbering below restarts at zero, so anything kept from a previous save would
+    // send an endpoint to a node of that save.
     _no_template_molecules.clear();
+    _mappings.clear();
+    _atom_to_mol_id.clear();
+    _monomers_enum.clear();
     QS_DEF(Array<char>, buf);
     ArrayOutput out(buf);
     writer.StartObject();

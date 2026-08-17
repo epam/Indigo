@@ -477,13 +477,19 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
     mergeSGroupsWithSubmolecule(mol, mapping, edge_mapping);
 
     // attachment groups and the haptic bonds that address them by index
+    QS_DEF(Array<int>, group_mapping);
     if (!(skip_flags & SKIP_ATTACHMENT_GROUPS))
-    {
-        QS_DEF(Array<int>, group_mapping);
         attachment_groups.mergeWithSubmolecule(mol.attachment_groups, mapping, group_mapping);
-        if (!(skip_flags & SKIP_HAPTIC_BONDS))
-            haptic_bonds.mergeWithSubmolecule(mol.haptic_bonds, mapping, group_mapping);
+    else
+    {
+        // No group survives, so the bonds that address one go with them - while an
+        // atom-to-atom bond, which has no group at all, is none of that flag's business.
+        group_mapping.clear_resize(mol.attachment_groups.end());
+        group_mapping.fffill();
     }
+
+    if (!(skip_flags & SKIP_HAPTIC_BONDS))
+        haptic_bonds.mergeWithSubmolecule(mol.haptic_bonds, mapping, group_mapping);
 
     // highlighting
     highlightSubmolecule(mol, mapping.ptr(), false);
@@ -1110,8 +1116,17 @@ void BaseMolecule::_checkHapticEndpoint(const HapticBond::Endpoint& endpoint)
     {
         if (!attachment_groups.hasGroup(endpoint.index()))
             throw Error("haptic bond refers to a non-existent attachment group %d", endpoint.index());
-        if (attachment_groups.group(endpoint.index()).atoms().empty())
+
+        const auto& atoms = attachment_groups.group(endpoint.index()).atoms();
+        if (atoms.empty())
             throw Error("haptic bond refers to an empty attachment group %d", endpoint.index());
+
+        // The group takes any int as a member, and this is the only place where it
+        // meets the molecule: an index nobody owns would reach the connectivity sets
+        // and every consumer of them.
+        for (int atom : atoms)
+            if (!hasVertex(atom))
+                throw Error("attachment group %d holds a non-existent atom %d", endpoint.index(), atom);
     }
     else if (!hasVertex(endpoint.index()))
         throw Error("haptic bond refers to a non-existent atom %d", endpoint.index());

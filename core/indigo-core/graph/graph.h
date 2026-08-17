@@ -301,7 +301,9 @@ namespace indigo
         void _calculateSSSRInit();
         void _calculateSSSRByCycleBasis(CycleBasis& basis);
         void _calculateSSSRAddEdgesAndVertices(const Array<int>& cycle, List<int>& edges, List<int>& vertices);
-        void _calculateComponents(const std::list<std::unordered_set<int>>& external_neighbors = {{}});
+        // No external neighbours means an empty list, not a list holding one empty
+        // set: the two differ to the cache-mode flag below.
+        void _calculateComponents(const std::list<std::unordered_set<int>>& external_neighbors = {});
         // This is a bad hack for those who are too lazy to handle the mappings.
         // NEVER USE IT.
         void _cloneGraph_KeepIndices(const Graph& other);

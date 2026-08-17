@@ -116,10 +116,17 @@ namespace indigo
         bool hasGroup(int idx) const;
         int groupCount() const;
 
-        // Removes the group. Indices of the other groups are unaffected — callers
-        // hold group indices across such calls.
+        // Removing a group is the molecule's business alone: the haptic bonds that
+        // address it have to go with it, and this container knows nothing of them.
+        // Hence private with a single friend, rather than a comment asking callers
+        // to go through BaseMolecule::removeAttachmentGroup().
+    private:
+        friend class BaseMolecule;
+        // Indices of the other groups are unaffected — callers hold group indices
+        // across such calls.
         void removeGroup(int idx);
 
+    public:
         // Must be called when the molecule removes atoms, with the same mapping
         // BaseMolecule::removeAtoms builds (-1 = removed). Groups that lose a
         // member are dropped whole; their indices are reported in `removed_groups`
