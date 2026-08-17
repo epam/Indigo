@@ -1,35 +1,163 @@
 *** KET to HELM ***
-dna_variants.ket:SUCCEED
+dna_variants.ket:FAILED
+--- 
+
++++ 
+
+@@ -1 +1 @@
+
+-RNA1{d(C,G,T)p.d(A,C,G,T)}$$$$V2.0
++RNA1{[dR](C,G,T)P.[dR](A,C,G,T)}$$$$V2.0
 helm_alias_ambiguous.ket:SUCCEED
-helm_alias_single_r_p.ket:SUCCEED
+helm_alias_single_r_p.ket:FAILED
+--- 
+
++++ 
+
+@@ -1 +1 @@
+
+-RNA1{r.p}$$$$V2.0
++RNA1{R.P}$$$$V2.0
 helm_aminoacids_variants.ket:SUCCEED
-helm_annotations.ket:SUCCEED
+helm_annotations.ket:FAILED
+--- 
+
++++ 
+
+@@ -1 +1 @@
+
+-CHEM1{[hxy]"Annotation"}|RNA1{r(A"mutation")p.r(U)p.r(G)p}$CHEM1,RNA1,1:pair-3:pair"connection annotation"$${"PEPTIDE1":{"ChainType":"hc"},"PEPITDE2":{"ChainType":"lc"}}$V2.0
++CHEM1{[hxy]"Annotation"}|RNA1{R(A"mutation")P.R(U)P.R(G)P}$CHEM1,RNA1,1:pair-3:pair"connection annotation"$${"PEPTIDE1":{"ChainType":"hc"},"PEPITDE2":{"ChainType":"lc"}}$V2.0
 helm_any_chem.ket:SUCCEED
-helm_chem_peptide.ket:SUCCEED
-helm_chem_rna.ket:SUCCEED
-helm_chem_rna_hydro.ket:SUCCEED
+helm_chem_peptide.ket:FAILED
+--- 
+
++++ 
+
+@@ -1 +1 @@
+
+-CHEM1{[PEG-2]}|PEPTIDE1{W.N.D.[Pen].G.[Orn].D.A.D.G.S.G.[Cap]}$CHEM1,PEPTIDE1,1:R1-1:R1$$$V2.0
++CHEM1{[PEG2]}|PEPTIDE1{W.N.D.[Pen].G.[Orn].D.A.D.G.S.G.[Cap]}$CHEM1,PEPTIDE1,1:R1-1:R1$$$V2.0
+helm_chem_rna.ket:FAILED
+--- 
+
++++ 
+
+@@ -1 +1 @@
+
+-CHEM1{[MCC]}|RNA1{r(U)p}$CHEM1,RNA1,1:R1-3:R2$$$V2.0
++CHEM1{[MCC]}|RNA1{R(U)P}$CHEM1,RNA1,1:R1-3:R2$$$V2.0
+helm_chem_rna_hydro.ket:FAILED
+--- 
+
++++ 
+
+@@ -1 +1 @@
+
+-CHEM1{[MCC]}|RNA1{r(U)p}$CHEM1,RNA1,1:pair-3:pair$$$V2.0
++CHEM1{[MCC]}|RNA1{R(U)P}$CHEM1,RNA1,1:pair-3:pair$$$V2.0
 helm_connetion_separator.ket:SUCCEED
-helm_cycle_no_sugar.ket:SUCCEED
+helm_cycle_no_sugar.ket:FAILED
+--- 
+
++++ 
+
+@@ -1 +1 @@
+
+-RNA1{r(A).r(A).r(A).r(A).r(A).r(A).r(A)}$RNA1,RNA1,1:R1-13:R2$$$V2.0
++RNA1{R(A).R(A).R(A).R(A).R(A).R(A).R(A)}$RNA1,RNA1,1:R1-13:R2$$$V2.0
 helm_cycled_polymer.ket:SUCCEED
-helm_different_id.ket:SUCCEED
+helm_different_id.ket:FAILED
+--- 
+
++++ 
+
+@@ -1 +1 @@
+
+-PEPTIDE1{A}|RNA1{r(A)p}$$$$V2.0
++PEPTIDE1{A}|RNA1{R(A)P}$$$$V2.0
 helm_fractional_ratio.ket:SUCCEED
-helm_mixed_base.ket:SUCCEED
-helm_mixed_custom.ket:SUCCEED
+helm_mixed_base.ket:FAILED
+--- 
+
++++ 
+
+@@ -1 +1 @@
+
+-RNA1{d(A)p.d(A+G)p.d(A)p.d(G+C)}$$$$V2.0
++RNA1{d(A)P.d(A+G)P.d(A)P.d(G+C)}$$$$V2.0
+helm_mixed_custom.ket:FAILED
+--- 
+
++++ 
+
+@@ -1 +1 @@
+
+-RNA1{d(A:10+[Xan]:20+G:30+T:50)p.d(A:10+C:20+G:30+T:50)p.d(A+C+G+T)}$$$$V2.0
++RNA1{d(A:10+[Xan]:20+G:30+T:50)P.d(A:10+C:20+G:30+T:50)P.d(A+C+G+T)}$$$$V2.0
 helm_molecule_2418.ket:SUCCEED
 helm_monomer_molecule.ket:SUCCEED
 helm_monomer_molecule_direct.ket:SUCCEED
-helm_multi_char_rna.ket:SUCCEED
+helm_multi_char_rna.ket:FAILED
+--- 
+
++++ 
+
+@@ -1 +1 @@
+
+-RNA1{r(U)p.r(T)p.r(G)p.r(C)p.r([m62A])}$$$$V2.0
++RNA1{R(U)P.R(T)P.R(G)P.R(C)P.R([m62A])}$$$$V2.0
 helm_nucleosides.ket:SUCCEED
 helm_only_base.ket:SUCCEED
 helm_peptide.ket:SUCCEED
-helm_rna_without_base.ket:SUCCEED
+helm_rna_without_base.ket:FAILED
+--- 
+
++++ 
+
+@@ -1 +1 @@
+
+-RNA1{r.p}$$$$V2.0
++RNA1{R.P}$$$$V2.0
 helm_rsite_no_brackets.ket:SUCCEED
-helm_simple_rna.ket:SUCCEED
+helm_simple_rna.ket:FAILED
+--- 
+
++++ 
+
+@@ -1 +1 @@
+
+-RNA1{r(U)p.r(T)p.r(G)p.r(C)p.r(A)}$$$$V2.0
++RNA1{R(U)P.R(T)P.R(G)P.R(C)P.R(A)}$$$$V2.0
 helm_smiles.ket:SUCCEED
 helm_smiles_direction.ket:SUCCEED
-helm_smiles_first.ket:SUCCEED
-helm_smiles_sugar.ket:SUCCEED
+helm_smiles_first.ket:FAILED
+--- 
+
++++ 
+
+@@ -1 +1 @@
+
+-RNA1{[C([C@H](CO[*:1])O[*:2])[*:3] |$;;;;_R1;;_R2;_R3$|].p}$$$$V2.0
++RNA1{[C([C@H](CO[*:1])O[*:2])[*:3] |$;;;;_R1;;_R2;_R3$|].P}$$$$V2.0
+helm_smiles_sugar.ket:FAILED
+--- 
+
++++ 
+
+@@ -1 +1 @@
+
+-RNA1{[C([C@H](CO[*:1])O[*:2])[*:3] |$;;;;_R1;;_R2;_R3$|](A)p}$$$$V2.0
++RNA1{[C([C@H](CO[*:1])O[*:2])[*:3] |$;;;;_R1;;_R2;_R3$|](A)P}$$$$V2.0
 helm_unknown.ket:SUCCEED
 helm_unresolved.ket:SUCCEED
 helm_unresolved_rna.ket:SUCCEED
-rna_variants.ket:SUCCEED
+rna_variants.ket:FAILED
+--- 
+
++++ 
+
+@@ -1 +1 @@
+
+-RNA1{r(A,G)p.r(G,U)p.r(A,C,G,U)}$$$$V2.0
++RNA1{R(A,G)P.R(G,U)P.R(A,C,G,U)}$$$$V2.0

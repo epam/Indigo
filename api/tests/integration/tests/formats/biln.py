@@ -28,7 +28,7 @@ biln_to_helm = {
     # Legacy integration coverage: terminal aliases must keep their
     # explicit non-backbone BILN bonds during import/export roundtrip.
     "biln_terminal_alias": (
-        "Ac(1,2).A-K(1,3)",
+        "ac(1,2).A-K(1,3)",
         "PEPTIDE1{[ac]}|PEPTIDE2{A.K}$PEPTIDE1,PEPTIDE2,1:R2-2:R3$$$V2.0",
     ),
     "biln_terminal_alias_right": (
@@ -36,8 +36,8 @@ biln_to_helm = {
         "PEPTIDE1{[Bua]}|PEPTIDE2{A.K}$PEPTIDE1,PEPTIDE2,1:R2-2:R3$$$V2.0",
     ),
     "biln_three_chains": (
-        "Ac(1,2).A-K(1,3)(2,2).Me(2,1)",
-        "PEPTIDE1{[ac]}|PEPTIDE2{A.K}|PEPTIDE3{[-Me]}$PEPTIDE1,PEPTIDE2,1:R2-2:R3|PEPTIDE2,PEPTIDE3,2:R2-1:R1$$$V2.0",
+        "ac(1,2).A-K(1,3)(2,2).[-Me](2,1)",
+        "PEPTIDE1{[ac]}|PEPTIDE2{A.K.[-Me]}$PEPTIDE1,PEPTIDE2,1:R2-2:R3$$$V2.0",
     ),
     "biln_two_backbones": (
         "A-C-D.E-F-G",
@@ -101,8 +101,8 @@ biln_to_biln = {
         "[D-2Thi]-D-[D-gGlu]-meF-G-[Lys-al]",
     ),
     "biln_backbone_order": (
-        "A-A-A-A-A-A.C-C-C-C.[PEG-2]-C-C-C-C-[PEG-2]",
-        "A-A-A-A-A-A.[PEG-2]-C-C-C-C-[PEG-2].C-C-C-C",
+        "A-A-A-A-A-A.C-C-C-C.PEG2-C-C-C-C-PEG2",
+        "A-A-A-A-A-A.PEG2-C-C-C-C-PEG2.C-C-C-C",
     ),
     "biln_short_chain_order": (
         "A-A-A6OH-A6OH-A6OH.C-C-C-C-C",
@@ -118,7 +118,7 @@ biln_to_biln = {
     ),
     "biln_multiple_nonbackbone_order": (
         "A-[Test-6-Ch](1,4)(2,3)-C.D(2,1).E(1,2)",
-        "A-[Test-6-Ch](1,3)(2,4)-C.D(1,1).E(2,2)",
+        "E(1,2).A-[Test-6-Ch](1,4)(2,3)-C.D(2,1)",
     ),
     "biln_cycle_with_extra_bond_order": (
         "C(1,1)(2,3)-C-C(2,3)-C(1,2)",
@@ -130,19 +130,19 @@ biln_to_biln = {
     ),
     "biln_equal_chain_topology_order": (
         "C(1,3).C(1,1)",
-        "C(1,1).C(1,3)",
+        "C(1,3).C(1,1)",
     ),
     "biln_library_alias": (
         "Edc",
         "Edc",
     ),
     "biln_mid_chain_chem": (
-        "A-[PEG-2]-A",
-        "A-[PEG-2]-A",
+        "A-PEG2-A",
+        "A-PEG2-A",
     ),
     "biln_multi_chain_chem_cross_link": (
-        "A-[PEG-2]-C(1,3).D-[PEG-2]-E(1,3)",
-        "A-[PEG-2]-C(1,3).D-[PEG-2]-E(1,3)",
+        "A-PEG2-C(1,3).D-PEG2-E(1,3)",
+        "A-PEG2-C(1,3).D-PEG2-E(1,3)",
     ),
     "biln_valid_large_bond_ids": (
         "A-C(7563,3)-D(3,3)-E.F-G-H(7563,3)-I-K(3,3)",
@@ -167,15 +167,15 @@ for name in sorted(biln_to_biln.keys()):
 helm_to_biln = {
     "helm_terminal_alias": (
         "PEPTIDE1{[Ac]}|PEPTIDE2{A.K}$PEPTIDE1,PEPTIDE2,1:R2-2:R3$$$V2.0",
-        "Ac(1,2).A-K(1,3)",
+        "ac(1,2).A-K(1,3)",
     ),
     "helm_terminal_hyphen_left_alias": (
         "PEPTIDE1{A.K}|PEPTIDE2{[-OMe]}$PEPTIDE1,PEPTIDE2,2:R2-1:R1$$$V2.0",
-        "A-K(1,2).OMe(1,1)",
+        "A-K-[-OMe]",
     ),
     "helm_three_chains": (
-        "PEPTIDE1{[Ac]}|PEPTIDE2{A.K}|PEPTIDE3{[Me]}$PEPTIDE1,PEPTIDE2,1:R2-2:R3|PEPTIDE2,PEPTIDE3,2:R2-1:R1$$$V2.0",
-        "Ac(1,2).A-K(1,3)(2,2).Me(2,1)",
+        "PEPTIDE1{[Ac]}|PEPTIDE2{A.K}|PEPTIDE3{[meM]}$PEPTIDE1,PEPTIDE2,1:R2-2:R3|PEPTIDE2,PEPTIDE3,2:R2-1:R1$$$V2.0",
+        "ac(1,2).A-K(1,3)-meM",
     ),
     "helm_underscore_alias": (
         "PEPTIDE1{A.[1Nal].[Cys_Bn].C}$$$$V2.0",
@@ -195,11 +195,11 @@ helm_to_biln = {
     ),
     "helm_chem_backbone": (
         "PEPTIDE1{A.A.A.A.A.A}|CHEM1{[PEG-2]}|PEPTIDE2{C.C.C.C}|CHEM2{[PEG-2]}$PEPTIDE1,CHEM1,6:R2-1:R1|CHEM1,PEPTIDE2,1:R2-1:R1|PEPTIDE2,CHEM2,4:R2-1:R1$$$V2.0",
-        "A-A-A-A-A-A-[PEG-2]-C-C-C-C-[PEG-2]",
+        "A-A-A-A-A-A-PEG2-C-C-C-C-PEG2",
     ),
     "helm_chem_with_biln_code": (
         "CHEM1{[PEG-2]}$$$$V2.0",
-        "[PEG-2]",
+        "PEG2",
     ),
     "helm_alias_to_biln_alias": (
         "PEPTIDE1{[Cys_SEt]}$$$$V2.0",

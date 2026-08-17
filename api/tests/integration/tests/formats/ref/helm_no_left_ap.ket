@@ -61,6 +61,7 @@
         "alias": "DACys",
         "naturalAnalogShort": "C",
         "aliasHELM": "deamino-Cys",
+        "aliasBILN": "deamino-Cys",
         "attachmentPoints": [
             {
                 "attachmentAtom": 3,
@@ -169,6 +170,7 @@
         "alias": "C",
         "naturalAnalogShort": "C",
         "aliasHELM": "C",
+        "aliasBILN": "C",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,

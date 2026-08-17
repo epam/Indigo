@@ -733,6 +733,7 @@
         "alias": "A",
         "naturalAnalogShort": "A",
         "aliasHELM": "A",
+        "aliasBILN": "A",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -867,6 +868,7 @@
         "alias": "R",
         "naturalAnalogShort": "R",
         "aliasHELM": "R",
+        "aliasBILN": "R",
         "attachmentPoints": [
             {
                 "attachmentAtom": 4,
@@ -1115,6 +1117,7 @@
         "alias": "N",
         "naturalAnalogShort": "N",
         "aliasHELM": "N",
+        "aliasBILN": "N",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1318,6 +1321,7 @@
         "alias": "D",
         "naturalAnalogShort": "D",
         "aliasHELM": "D",
+        "aliasBILN": "D",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1338,11 +1342,11 @@
                 }
             },
             {
-                "attachmentAtom": 8,
+                "attachmentAtom": 7,
                 "type": "side",
                 "leavingGroup": {
                     "atoms": [
-                        9
+                        8
                     ]
                 }
             }
@@ -1352,7 +1356,7 @@
                 "label": "N",
                 "location": [
                     -0.866000,
-                    -1.250000,
+                    -1.000000,
                     0.000000
                 ]
             },
@@ -1360,7 +1364,7 @@
                 "label": "C",
                 "location": [
                     0.000000,
-                    -0.750000,
+                    -0.500000,
                     0.000000
                 ],
                 "stereoLabel": "abs"
@@ -1369,7 +1373,7 @@
                 "label": "H",
                 "location": [
                     -1.732000,
-                    -0.750000,
+                    -0.500000,
                     0.000000
                 ]
             },
@@ -1377,7 +1381,7 @@
                 "label": "C",
                 "location": [
                     0.866000,
-                    -1.250000,
+                    -1.000000,
                     0.000000
                 ]
             },
@@ -1385,7 +1389,7 @@
                 "label": "O",
                 "location": [
                     1.732000,
-                    -0.750000,
+                    -0.500000,
                     0.000000
                 ]
             },
@@ -1393,7 +1397,7 @@
                 "label": "O",
                 "location": [
                     0.866000,
-                    -2.250000,
+                    -2.000000,
                     0.000000
                 ]
             },
@@ -1401,7 +1405,7 @@
                 "label": "C",
                 "location": [
                     0.000000,
-                    0.250000,
+                    0.500000,
                     0.000000
                 ]
             },
@@ -1409,7 +1413,7 @@
                 "label": "C",
                 "location": [
                     -0.866000,
-                    0.750000,
+                    1.000000,
                     0.000000
                 ]
             },
@@ -1417,15 +1421,7 @@
                 "label": "O",
                 "location": [
                     -0.866000,
-                    1.750000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "H",
-                "location": [
-                    0.000000,
-                    2.250000,
+                    2.000000,
                     0.000000
                 ]
             },
@@ -1433,7 +1429,7 @@
                 "label": "O",
                 "location": [
                     -1.732000,
-                    0.250000,
+                    0.500000,
                     0.000000
                 ]
             }
@@ -1497,17 +1493,10 @@
                 ]
             },
             {
-                "type": 1,
-                "atoms": [
-                    8,
-                    9
-                ]
-            },
-            {
                 "type": 2,
                 "atoms": [
                     7,
-                    10
+                    9
                 ]
             }
         ]
@@ -1521,6 +1510,7 @@
         "alias": "C",
         "naturalAnalogShort": "C",
         "aliasHELM": "C",
+        "aliasBILN": "C",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1694,6 +1684,7 @@
         "alias": "Q",
         "naturalAnalogShort": "Q",
         "aliasHELM": "Q",
+        "aliasBILN": "Q",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1912,6 +1903,7 @@
         "alias": "E",
         "naturalAnalogShort": "E",
         "aliasHELM": "E",
+        "aliasBILN": "E",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1932,11 +1924,11 @@
                 }
             },
             {
-                "attachmentAtom": 9,
+                "attachmentAtom": 8,
                 "type": "side",
                 "leavingGroup": {
                     "atoms": [
-                        11
+                        9
                     ]
                 }
             }
@@ -1946,7 +1938,7 @@
                 "label": "N",
                 "location": [
                     -0.866000,
-                    -1.750000,
+                    -1.250000,
                     0.000000
                 ]
             },
@@ -1954,7 +1946,7 @@
                 "label": "C",
                 "location": [
                     0.000000,
-                    -1.250000,
+                    -0.750000,
                     0.000000
                 ],
                 "stereoLabel": "abs"
@@ -1963,7 +1955,7 @@
                 "label": "H",
                 "location": [
                     -1.732000,
-                    -1.250000,
+                    -0.750000,
                     0.000000
                 ]
             },
@@ -1971,7 +1963,7 @@
                 "label": "C",
                 "location": [
                     0.866000,
-                    -1.750000,
+                    -1.250000,
                     0.000000
                 ]
             },
@@ -1979,7 +1971,7 @@
                 "label": "O",
                 "location": [
                     1.732000,
-                    -1.250000,
+                    -0.750000,
                     0.000000
                 ]
             },
@@ -1987,7 +1979,7 @@
                 "label": "O",
                 "location": [
                     0.866000,
-                    -2.750000,
+                    -2.250000,
                     0.000000
                 ]
             },
@@ -1995,14 +1987,6 @@
                 "label": "C",
                 "location": [
                     0.000000,
-                    -0.250000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    -0.866000,
                     0.250000,
                     0.000000
                 ]
@@ -2011,7 +1995,15 @@
                 "label": "C",
                 "location": [
                     -0.866000,
-                    1.250000,
+                    0.750000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -0.866000,
+                    1.750000,
                     0.000000
                 ]
             },
@@ -2019,7 +2011,7 @@
                 "label": "O",
                 "location": [
                     0.000000,
-                    1.750000,
+                    2.250000,
                     0.000000
                 ]
             },
@@ -2027,15 +2019,7 @@
                 "label": "O",
                 "location": [
                     -1.732000,
-                    1.750000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "H",
-                "location": [
-                    0.000000,
-                    2.750000,
+                    2.250000,
                     0.000000
                 ]
             }
@@ -2111,13 +2095,6 @@
                     8,
                     10
                 ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    9,
-                    11
-                ]
             }
         ]
     },
@@ -2130,6 +2107,7 @@
         "alias": "G",
         "naturalAnalogShort": "G",
         "aliasHELM": "G",
+        "aliasBILN": "G",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -2247,6 +2225,7 @@
         "alias": "H",
         "naturalAnalogShort": "H",
         "aliasHELM": "H",
+        "aliasBILN": "H",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -2487,6 +2466,7 @@
         "alias": "I",
         "naturalAnalogShort": "I",
         "aliasHELM": "I",
+        "aliasBILN": "I",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -2668,6 +2648,7 @@
         "alias": "L",
         "naturalAnalogShort": "L",
         "aliasHELM": "L",
+        "aliasBILN": "L",
         "attachmentPoints": [
             {
                 "attachmentAtom": 6,
@@ -2847,6 +2828,7 @@
         "alias": "K",
         "naturalAnalogShort": "K",
         "aliasHELM": "K",
+        "aliasBILN": "K",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -3065,6 +3047,7 @@
         "alias": "M",
         "naturalAnalogShort": "M",
         "aliasHELM": "M",
+        "aliasBILN": "M",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -3244,6 +3227,7 @@
         "alias": "F",
         "naturalAnalogShort": "F",
         "aliasHELM": "F",
+        "aliasBILN": "F",
         "attachmentPoints": [
             {
                 "attachmentAtom": 9,
@@ -3475,6 +3459,7 @@
         "alias": "P",
         "naturalAnalogShort": "P",
         "aliasHELM": "P",
+        "aliasBILN": "P",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -3646,6 +3631,7 @@
         "alias": "S",
         "naturalAnalogShort": "S",
         "aliasHELM": "S",
+        "aliasBILN": "S",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -3819,6 +3805,7 @@
         "alias": "T",
         "naturalAnalogShort": "T",
         "aliasHELM": "T",
+        "aliasBILN": "T",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -4009,6 +3996,7 @@
         "alias": "W",
         "naturalAnalogShort": "W",
         "aliasHELM": "W",
+        "aliasBILN": "W",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -4316,6 +4304,7 @@
         "alias": "Y",
         "naturalAnalogShort": "Y",
         "aliasHELM": "Y",
+        "aliasBILN": "Y",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -4586,6 +4575,7 @@
         "alias": "V",
         "naturalAnalogShort": "V",
         "aliasHELM": "V",
+        "aliasBILN": "V",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -4750,6 +4740,7 @@
         "alias": "U",
         "naturalAnalogShort": "U",
         "aliasHELM": "seC",
+        "aliasBILN": "seC",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -4923,6 +4914,7 @@
         "alias": "O",
         "naturalAnalogShort": "O",
         "aliasHELM": "Pyl",
+        "aliasBILN": "Pyl",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,

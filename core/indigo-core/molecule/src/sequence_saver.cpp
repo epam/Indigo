@@ -882,16 +882,10 @@ std::string SequenceSaver::saveBILN(KetDocument& doc)
     struct BilnNode
     {
         std::string monomer_id;
-        std::string monomer_ref;
         std::string alias;
         std::string biln_alias;
-        std::vector<std::string> biln_template_ids;
+        std::string template_id;
         MonomerClass monomer_class;
-    };
-    struct BilnAlias
-    {
-        std::string alias;
-        std::vector<std::string> template_ids;
     };
     struct BilnConnection
     {
@@ -915,48 +909,23 @@ std::string SequenceSaver::saveBILN(KetDocument& doc)
     std::map<std::string, int> monomer_ref_to_node;
     const auto& monomers = doc.monomers();
     const auto& monomer_ids = doc.monomersIds();
-    auto get_biln_alias = [&](MonomerClass monomer_class, const std::string& monomer_alias) {
-        auto make_biln_alias = [&](const std::vector<std::string>& template_ids) {
-            if (template_ids.empty())
-                throw Error(biln_export_error);
-            const auto& monomer_template = _library.getMonomerTemplateById(template_ids.front());
-            const auto& template_alias = getKetStrProp(monomer_template, alias);
-            const bool strip_terminal_hyphen = _library.hasTerminalHyphenAlias(template_ids.front());
-            return BilnAlias{format_biln_alias(template_alias, strip_terminal_hyphen), template_ids};
-        };
-
-        std::string template_id = _library.getMonomerTemplateIdByAlias(monomer_class, monomer_alias);
-        if (template_id.empty())
-            template_id = _library.getMonomerTemplateIdByAliasHELM(monomer_class, monomer_alias);
-        if (!template_id.empty())
-            return make_biln_alias({template_id});
-
-        if (monomer_class == MonomerClass::AminoAcid)
-        {
-            std::vector<std::string> terminal_hyphen_template_ids;
-            template_id = _library.getMonomerTemplateIdByAlias(monomer_class, monomer_alias + "-");
-            if (!template_id.empty())
-                terminal_hyphen_template_ids.push_back(template_id);
-            template_id = _library.getMonomerTemplateIdByAlias(monomer_class, "-" + monomer_alias);
-            if (!template_id.empty() &&
-                std::find(terminal_hyphen_template_ids.begin(), terminal_hyphen_template_ids.end(), template_id) == terminal_hyphen_template_ids.end())
-                terminal_hyphen_template_ids.push_back(template_id);
-            if (!terminal_hyphen_template_ids.empty())
-                return make_biln_alias(terminal_hyphen_template_ids);
-        }
-
-        throw Error(biln_export_error);
-        return BilnAlias{};
-    };
+    const auto& templates = doc.templates();
     for (const auto& monomer_id : monomer_ids)
     {
         auto monomer_class = doc.getMonomerClass(monomer_id);
         const auto& monomer = monomers.at(monomer_id);
         if (monomer_class != MonomerClass::AminoAcid && monomer_class != MonomerClass::CHEM)
             throw Error(biln_export_error);
-        auto biln_alias = get_biln_alias(monomer_class, monomer->alias());
         const int node_idx = static_cast<int>(nodes.size());
-        nodes.push_back({monomer_id, monomer->ref(), monomer->alias(), biln_alias.alias, biln_alias.template_ids, monomer_class});
+        auto const& template_id = monomer->templateId();
+        auto const& monomer_template = templates.at(template_id);
+        auto aliasBILN_id = toUType(MonomerTemplate::StringProps::aliasBILN);
+        if (!monomer_template.hasStringProp(aliasBILN_id))
+            throw Error(biln_export_error);
+        const auto& aliasBILN = monomer_template.getStringProp(aliasBILN_id);
+        if (aliasBILN.size() == 0)
+            throw Error(biln_export_error);
+        nodes.push_back({monomer_id, monomer->alias(), aliasBILN, template_id, monomer_class});
         monomer_ref_to_node.emplace(monomer->ref(), node_idx);
     }
 
@@ -966,18 +935,6 @@ std::string SequenceSaver::saveBILN(KetDocument& doc)
     std::set<std::pair<int, std::string>> used_connection_endpoints;
     std::map<int, std::set<std::string>> node_used_attachment_points;
 
-    auto is_terminal_hyphen_node = [&](int node_idx) {
-        const auto& node = nodes.at(node_idx);
-        if (node.monomer_class != MonomerClass::AminoAcid)
-            return false;
-        for (const auto& template_id : node.biln_template_ids)
-            if (_library.hasTerminalHyphenAlias(template_id))
-                return true;
-        return _library.isTerminalHyphenAlias(node.alias) || _library.isTerminalHyphenAlias(node.biln_alias);
-    };
-    auto is_biln_backbone_connection = [](const std::string& ap1, const std::string& ap2) {
-        return (ap1 == kAttachmentPointR1 && ap2 == kAttachmentPointR2) || (ap1 == kAttachmentPointR2 && ap2 == kAttachmentPointR1);
-    };
     auto read_endpoint = [&](const KetConnectionEndPoint& ep) -> std::pair<int, std::string> {
         if (!hasKetStrProp(ep, monomerId) || !hasKetStrProp(ep, attachmentPointId))
             throw Error(biln_export_error);
@@ -990,16 +947,7 @@ std::string SequenceSaver::saveBILN(KetDocument& doc)
         const auto& ap = getKetStrProp(ep, attachmentPointId);
         std::ignore = get_biln_attachment_idx(ep);
         const auto& node = nodes.at(node_it->second);
-        bool supported_by_biln_template = false;
-        for (const auto& template_id : node.biln_template_ids)
-        {
-            if (_library.getMonomerTemplateById(template_id).attachmentPoints().count(ap) > 0)
-            {
-                supported_by_biln_template = true;
-                break;
-            }
-        }
-        if (monomers.at(node.monomer_id)->attachmentPoints().count(ap) == 0 || !supported_by_biln_template)
+        if (monomers.at(node.monomer_id)->attachmentPoints().count(ap) == 0)
             throw Error("Cannot save in BILN format - unsupported attachment point '%s'.", ap.c_str());
         if (!used_connection_endpoints.emplace(node_it->second, ap).second)
             throw Error("Cannot save in BILN format - attachment point '%s' of monomer '%s' is used more than once.", ap.c_str(), node.alias.c_str());
@@ -1015,8 +963,8 @@ std::string SequenceSaver::saveBILN(KetDocument& doc)
         const auto& ep2 = connection.ep2();
         auto [node1, ap1] = read_endpoint(ep1);
         auto [node2, ap2] = read_endpoint(ep2);
-        if (is_biln_backbone_connection(ap1, ap2) && !is_terminal_hyphen_node(node1) && !is_terminal_hyphen_node(node2))
-        {
+        if ((ap1 == kAttachmentPointR1 && ap2 == kAttachmentPointR2) || (ap1 == kAttachmentPointR2 && ap2 == kAttachmentPointR1))
+        { // backbone connection
             int left = ap1 == kAttachmentPointR2 ? node1 : node2;
             int right = ap1 == kAttachmentPointR2 ? node2 : node1;
             if (next.at(left) != -1 || prev.at(right) != -1)
@@ -1033,27 +981,14 @@ std::string SequenceSaver::saveBILN(KetDocument& doc)
     for (const auto& [node_idx, attachment_points] : node_used_attachment_points)
     {
         const auto& node = nodes.at(node_idx);
-        bool supported_by_single_biln_template = false;
-        for (const auto& template_id : node.biln_template_ids)
+        const auto& template_attachment_points = _library.getMonomerTemplateById(node.template_id).attachmentPoints();
+        for (const auto& ap : attachment_points)
         {
-            const auto& template_attachment_points = _library.getMonomerTemplateById(template_id).attachmentPoints();
-            bool template_supports_all_aps = true;
-            for (const auto& ap : attachment_points)
+            if (template_attachment_points.count(ap) == 0)
             {
-                if (template_attachment_points.count(ap) == 0)
-                {
-                    template_supports_all_aps = false;
-                    break;
-                }
-            }
-            if (template_supports_all_aps)
-            {
-                supported_by_single_biln_template = true;
-                break;
+                throw Error("Cannot save in BILN format - attachment points of monomer '%s' do not match a BILN monomer template.", node.alias.c_str());
             }
         }
-        if (!supported_by_single_biln_template)
-            throw Error("Cannot save in BILN format - attachment points of monomer '%s' do not match a BILN monomer template.", node.alias.c_str());
     }
 
     auto make_sort_key = [&](const std::vector<int>& chain_nodes) {
@@ -1316,8 +1251,6 @@ std::string SequenceSaver::saveBILN(KetDocument& doc)
             if (chain.monomer_count != 1 || chain.nodes.empty())
                 return 0;
             int node_idx = chain.nodes.front();
-            if (!is_terminal_hyphen_node(node_idx))
-                return 0;
             for (const auto& connection : explicit_connections)
             {
                 if (connection.node1 == node_idx)
@@ -1391,7 +1324,7 @@ std::string SequenceSaver::saveBILN(KetDocument& doc)
             if (monomer_idx > 0)
                 biln_string += '-';
             const int node_idx = chain.nodes[monomer_idx];
-            std::string monomer_text = nodes.at(node_idx).biln_alias;
+            std::string monomer_text = format_biln_alias(nodes.at(node_idx).biln_alias);
             auto& incident_bonds = node_to_bonds.at(chain_idx).at(monomer_idx);
             std::sort(incident_bonds.begin(), incident_bonds.end(), [&](int left_idx, int right_idx) {
                 auto other_pos = [&](const BilnConnection& bond, int current_node) {

@@ -572,7 +572,7 @@
         "fullName": "Deoxy-Ribose",
         "alias": "dR",
         "naturalAnalogShort": "R",
-        "aliasHELM": "d",
+        "aliasHELM": "dR",
         "attachmentPoints": [
             {
                 "attachmentAtom": 9,
@@ -946,7 +946,8 @@
         "fullName": "Phosphate",
         "alias": "P",
         "naturalAnalogShort": "P",
-        "aliasHELM": "p",
+        "aliasHELM": "P",
+        "aliasAxoLabs": "p",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,

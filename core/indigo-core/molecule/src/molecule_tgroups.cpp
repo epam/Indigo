@@ -194,6 +194,7 @@ void TGroup::copy_without_fragment(const TGroup& other)
         modification_types.push().copy(other.modification_types[i]);
     }
     aliasAxoLabs.copy(other.aliasAxoLabs);
+    aliasBILN.copy(other.aliasBILN);
 }
 
 IMPL_ERROR(MoleculeTGroups, "molecule tgroups");

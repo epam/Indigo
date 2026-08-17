@@ -57,6 +57,7 @@ namespace indigo
         Array<char> aliasHELM;
         PtrArray<Array<char>> modification_types;
         Array<char> aliasAxoLabs;
+        Array<char> aliasBILN;
 
         TGroup();
         ~TGroup();

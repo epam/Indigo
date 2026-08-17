@@ -383,6 +383,8 @@
         "classHELM": "CHEM",
         "fullName": "Diethylene Glycol",
         "alias": "PEG-2",
+        "aliasHELM": "PEG2",
+        "aliasBILN": "PEG2",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -545,6 +547,7 @@
         "alias": "W",
         "naturalAnalogShort": "W",
         "aliasHELM": "W",
+        "aliasBILN": "W",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -852,6 +855,7 @@
         "alias": "N",
         "naturalAnalogShort": "N",
         "aliasHELM": "N",
+        "aliasBILN": "N",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1055,6 +1059,7 @@
         "alias": "D",
         "naturalAnalogShort": "D",
         "aliasHELM": "D",
+        "aliasBILN": "D",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1075,11 +1080,11 @@
                 }
             },
             {
-                "attachmentAtom": 8,
+                "attachmentAtom": 7,
                 "type": "side",
                 "leavingGroup": {
                     "atoms": [
-                        9
+                        8
                     ]
                 }
             }
@@ -1089,7 +1094,7 @@
                 "label": "N",
                 "location": [
                     -0.866000,
-                    -1.250000,
+                    -1.000000,
                     0.000000
                 ]
             },
@@ -1097,7 +1102,7 @@
                 "label": "C",
                 "location": [
                     0.000000,
-                    -0.750000,
+                    -0.500000,
                     0.000000
                 ],
                 "stereoLabel": "abs"
@@ -1106,7 +1111,7 @@
                 "label": "H",
                 "location": [
                     -1.732000,
-                    -0.750000,
+                    -0.500000,
                     0.000000
                 ]
             },
@@ -1114,7 +1119,7 @@
                 "label": "C",
                 "location": [
                     0.866000,
-                    -1.250000,
+                    -1.000000,
                     0.000000
                 ]
             },
@@ -1122,7 +1127,7 @@
                 "label": "O",
                 "location": [
                     1.732000,
-                    -0.750000,
+                    -0.500000,
                     0.000000
                 ]
             },
@@ -1130,7 +1135,7 @@
                 "label": "O",
                 "location": [
                     0.866000,
-                    -2.250000,
+                    -2.000000,
                     0.000000
                 ]
             },
@@ -1138,7 +1143,7 @@
                 "label": "C",
                 "location": [
                     0.000000,
-                    0.250000,
+                    0.500000,
                     0.000000
                 ]
             },
@@ -1146,7 +1151,7 @@
                 "label": "C",
                 "location": [
                     -0.866000,
-                    0.750000,
+                    1.000000,
                     0.000000
                 ]
             },
@@ -1154,15 +1159,7 @@
                 "label": "O",
                 "location": [
                     -0.866000,
-                    1.750000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "H",
-                "location": [
-                    0.000000,
-                    2.250000,
+                    2.000000,
                     0.000000
                 ]
             },
@@ -1170,7 +1167,7 @@
                 "label": "O",
                 "location": [
                     -1.732000,
-                    0.250000,
+                    0.500000,
                     0.000000
                 ]
             }
@@ -1234,17 +1231,10 @@
                 ]
             },
             {
-                "type": 1,
-                "atoms": [
-                    8,
-                    9
-                ]
-            },
-            {
                 "type": 2,
                 "atoms": [
                     7,
-                    10
+                    9
                 ]
             }
         ]
@@ -1258,6 +1248,7 @@
         "alias": "Pen",
         "naturalAnalogShort": "V",
         "aliasHELM": "Pen",
+        "aliasBILN": "Pen",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1461,6 +1452,7 @@
         "alias": "G",
         "naturalAnalogShort": "G",
         "aliasHELM": "G",
+        "aliasBILN": "G",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1578,6 +1570,7 @@
         "alias": "Orn",
         "naturalAnalogShort": "K",
         "aliasHELM": "Orn",
+        "aliasBILN": "Orn",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1781,6 +1774,7 @@
         "alias": "A",
         "naturalAnalogShort": "A",
         "aliasHELM": "A",
+        "aliasBILN": "A",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1915,6 +1909,7 @@
         "alias": "S",
         "naturalAnalogShort": "S",
         "aliasHELM": "S",
+        "aliasBILN": "S",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -2088,6 +2083,7 @@
         "alias": "Cap",
         "naturalAnalogShort": "X",
         "aliasHELM": "Cap",
+        "aliasBILN": "Cap",
         "attachmentPoints": [
             {
                 "attachmentAtom": 6,
