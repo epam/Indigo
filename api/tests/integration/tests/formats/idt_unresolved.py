@@ -22,7 +22,7 @@ print("*** IDT unresolved to misc. unsupported formats ***")
 lib = indigo.loadMonomerLibraryFromFile(
     os.path.join(joinPathPy("ref/", __file__), "monomer_library.ket")
 )
-mol = indigo.loadIdt("/i2AmPr/", lib)
+mol = indigo.loadIdt("/i3AmPr/", lib)
 try:
     mol.sequence(lib)
 except IndigoException as e:
