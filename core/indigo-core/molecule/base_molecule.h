@@ -35,8 +35,10 @@
 #include "molecule/metadata_storage.h"
 #include "molecule/molecule_allene_stereo.h"
 #include "molecule/molecule_arom.h"
+#include "molecule/molecule_attachment_groups.h"
 #include "molecule/molecule_cip_calculator.h"
 #include "molecule/molecule_cis_trans.h"
+#include "molecule/molecule_haptic_bonds.h"
 #include "molecule/molecule_ionize.h"
 #include "molecule/molecule_rgroups.h"
 #include "molecule/molecule_sgroups.h"
@@ -80,6 +82,14 @@ namespace indigo
         _BOND_ANY = 8,
         _BOND_COORDINATION = 9,
         _BOND_HYDROGEN = 10,
+
+        // Internal bond kinds of Indigo, deliberately outside the range any file
+        // format uses so that a format code can never be taken for one and back.
+        // They are never stored as the order of a graph edge: a bond of this kind
+        // lives in MoleculeHapticBonds and is turned into the target format's own
+        // representation on saving (V3000: order 9 plus ENDPTS/ATTACH).
+        _BOND_HAPTIC = 1009,              // ATTACH=ALL, feature #3233
+        _BOND_VARIABLE_ATTACHMENT = 1010, // ATTACH=ANY, feature #3731
     };
 
     enum
@@ -123,6 +133,10 @@ namespace indigo
         // Skip copying ALL R-group data (fragments + attachment points on R-sites).
         // Use this when you want to populate R-groups manually afterwards.
         SKIP_RGROUPS = 0x80,
+        // Skip copying attachment groups; the haptic bonds that address them are
+        // skipped with them, since a bond without its group is meaningless.
+        SKIP_ATTACHMENT_GROUPS = 0x100,
+        SKIP_HAPTIC_BONDS = 0x200,
     };
 
     class Molecule;
@@ -450,6 +464,23 @@ namespace indigo
         virtual int addBond(int beg, int end, int order) = 0;
         virtual int addBond_Silent(int beg, int end, int order) = 0;
 
+        // The only way to create a haptic bond. Not virtual: the bond keeps the
+        // same shape in every subclass, and the validation below must not be
+        // lost by an override. `type` is an internal code, _BOND_HAPTIC or
+        // _BOND_VARIABLE_ATTACHMENT.
+        int addHapticBond(HapticBond::Endpoint begin, HapticBond::Endpoint end, int type = _BOND_HAPTIC);
+
+        // The only way to remove an attachment group: the haptic bonds that
+        // reference it must go with it, and the group container does not know
+        // about them.
+        void removeAttachmentGroup(int idx);
+
+        // Atom sets that hold together although no edge joins them: s-group
+        // members, query components and haptic bonds. Feeds
+        // Graph::countComponents(external_neighbors) — call it whenever a
+        // decomposition must not cut a molecule where it is still one whole.
+        void collectExternalNeighbors(std::list<std::unordered_set<int>>& neighbors);
+
         void unfoldHydrogens(Array<int>* markers_out, int max_h_cnt = -1, bool impl_h_no_throw = false, bool only_selected = false);
         virtual void registerUnfoldedHydrogenQueryComponent(int /*atom_idx*/, int /*added_hydrogen*/){}; // QueryMolecule only
 
@@ -534,6 +565,10 @@ namespace indigo
         MoleculeSGroups sgroups;
 
         MoleculeTGroups tgroups;
+
+        MoleculeAttachmentGroups attachment_groups;
+
+        MoleculeHapticBonds haptic_bonds;
 
         bool use_scsr_sgroups_only = false;
         bool remove_scsr_lgrp = false;
@@ -747,6 +782,9 @@ namespace indigo
 
         virtual void _removeAtoms(const Array<int>& indices, const int* mapping);
         virtual void _removeBonds(const Array<int>& indices);
+
+        // Throws unless the endpoint names something this molecule has.
+        void _checkHapticEndpoint(const HapticBond::Endpoint& endpoint);
 
         int _addBaseAtom();
         int _addBaseBond(int beg, int end);

@@ -222,8 +222,6 @@ namespace indigo
 
     bool isCIPSGroup(SGroup& sgroup);
 
-    void getSGroupAtoms(BaseMolecule& mol, std::list<std::unordered_set<int>>& neighbors);
-
     std::string convertAPToHELM(const std::string& atp_id_str);
 
     std::string convertAPFromHELM(const std::string& atp_id_str);

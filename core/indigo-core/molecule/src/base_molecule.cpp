@@ -97,6 +97,8 @@ void BaseMolecule::clear()
     _attachment_index.clear();
     sgroups.clear();
     tgroups.clear();
+    attachment_groups.clear();
+    haptic_bonds.clear();
     template_attachment_points.clear();
     template_attachment_indexes.clear();
     _template_occurrences.clear();
@@ -473,6 +475,15 @@ void BaseMolecule::_mergeWithSubmolecule_Sub(BaseMolecule& mol, const Array<int>
 
     // SGroups merging
     mergeSGroupsWithSubmolecule(mol, mapping, edge_mapping);
+
+    // attachment groups and the haptic bonds that address them by index
+    if (!(skip_flags & SKIP_ATTACHMENT_GROUPS))
+    {
+        QS_DEF(Array<int>, group_mapping);
+        attachment_groups.mergeWithSubmolecule(mol.attachment_groups, mapping, group_mapping);
+        if (!(skip_flags & SKIP_HAPTIC_BONDS))
+            haptic_bonds.mergeWithSubmolecule(mol.haptic_bonds, mapping, group_mapping);
+    }
 
     // highlighting
     highlightSubmolecule(mol, mapping.ptr(), false);
@@ -981,6 +992,14 @@ void BaseMolecule::removeAtoms(const Array<int>& indices)
             removeSGroup(j);
     }
 
+    // haptic bonds and attachment groups, in this order: a bond addresses atoms
+    // directly, and the groups dropped below take their bonds with them
+    haptic_bonds.onAtomsRemoved(mapping);
+    QS_DEF(Array<int>, removed_groups);
+    attachment_groups.onAtomsRemoved(mapping, removed_groups);
+    for (i = 0; i < removed_groups.size(); i++)
+        haptic_bonds.onGroupRemoved(removed_groups[i]);
+
     // stereo
     removeAtomsStereocenters(indices);
     buildOnSubmoleculeCisTrans(*this, mapping.ptr());
@@ -1083,6 +1102,69 @@ void BaseMolecule::removeBond(int idx)
     edges.clear();
     edges.push(idx);
     removeBonds(edges);
+}
+
+void BaseMolecule::_checkHapticEndpoint(const HapticBond::Endpoint& endpoint)
+{
+    if (endpoint.isGroup())
+    {
+        if (!attachment_groups.hasGroup(endpoint.index()))
+            throw Error("haptic bond refers to a non-existent attachment group %d", endpoint.index());
+        if (attachment_groups.group(endpoint.index()).atoms().empty())
+            throw Error("haptic bond refers to an empty attachment group %d", endpoint.index());
+    }
+    else if (!hasVertex(endpoint.index()))
+        throw Error("haptic bond refers to a non-existent atom %d", endpoint.index());
+}
+
+int BaseMolecule::addHapticBond(HapticBond::Endpoint begin, HapticBond::Endpoint end, int type)
+{
+    if (type != _BOND_HAPTIC && type != _BOND_VARIABLE_ATTACHMENT)
+        throw Error("unknown haptic bond type %d", type);
+
+    if (begin.isGroup() && end.isGroup())
+        throw Error("a haptic bond between two attachment groups is not allowed");
+
+    _checkHapticEndpoint(begin);
+    _checkHapticEndpoint(end);
+
+    if (begin.isGroup() || end.isGroup())
+    {
+        const HapticBond::Endpoint& group = begin.isGroup() ? begin : end;
+        const HapticBond::Endpoint& atom = begin.isGroup() ? end : begin;
+        if (attachment_groups.group(group.index()).hasAtom(atom.index()))
+            throw Error("atom %d is a member of the attachment group it would be bonded to", atom.index());
+    }
+    else if (begin.index() == end.index())
+        throw Error("a haptic bond needs two different atoms");
+
+    const int idx = haptic_bonds.add(begin, end, type);
+    updateEditRevision();
+    return idx;
+}
+
+void BaseMolecule::removeAttachmentGroup(int idx)
+{
+    attachment_groups.removeGroup(idx);
+    haptic_bonds.onGroupRemoved(idx);
+    updateEditRevision();
+}
+
+void BaseMolecule::collectExternalNeighbors(std::list<std::unordered_set<int>>& neighbors)
+{
+    for (int i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
+    {
+        SGroup& sgroup = sgroups.getSGroup(i);
+        neighbors.push_back({});
+        auto& sg_set = neighbors.back();
+        for (auto atom_idx : sgroup.atoms)
+            sg_set.insert(atom_idx);
+    }
+
+    if (isQueryMolecule())
+        asQueryMolecule().getComponentNeighbors(neighbors);
+
+    haptic_bonds.collectConnectivitySets(attachment_groups, neighbors);
 }
 
 void BaseMolecule::removeSGroup(int idx)

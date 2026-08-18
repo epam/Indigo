@@ -945,7 +945,7 @@ ReactionMultistepDetector::ReactionType ReactionMultistepDetector::detectReactio
 {
     createSpecialZones();
     std::list<std::unordered_set<int>> s_neighbors;
-    getSGroupAtoms(_bmol, s_neighbors);
+    _bmol.collectExternalNeighbors(s_neighbors);
     _moleculeCount = _bmol.countComponents(s_neighbors);
     for (int i = 0; i < _moleculeCount; ++i)
     {

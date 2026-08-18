@@ -134,7 +134,7 @@ void ReactionJsonLoader::parseOneArrowReaction(BaseReaction& rxn)
     std::vector<ReactionComponent> components;
 
     std::list<std::unordered_set<int>> s_neighbors;
-    getSGroupAtoms(*_pmol, s_neighbors);
+    _pmol->collectExternalNeighbors(s_neighbors);
 
     for (int index = 0; index < _pmol->countComponents(s_neighbors); ++index)
     {

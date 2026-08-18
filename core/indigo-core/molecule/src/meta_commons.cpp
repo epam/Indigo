@@ -157,23 +157,6 @@ namespace indigo
         return res;
     }
 
-    void getSGroupAtoms(BaseMolecule& mol, std::list<std::unordered_set<int>>& neighbors)
-    {
-        for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
-        {
-            SGroup& sgroup = mol.sgroups.getSGroup(i);
-            neighbors.push_back({});
-            auto& sg_set = neighbors.back();
-            for (auto atom_idx : sgroup.atoms)
-                sg_set.insert(atom_idx);
-        }
-        if (mol.isQueryMolecule())
-        {
-            QueryMolecule& qmol = static_cast<QueryMolecule&>(mol);
-            qmol.getComponentNeighbors(neighbors);
-        }
-    }
-
     std::string convertAPToHELM(const std::string& atp_id_str)
     {
         if (::isupper(atp_id_str[0]) && atp_id_str.size() == 2)

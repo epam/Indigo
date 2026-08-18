@@ -1523,7 +1523,7 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
     writer.Key("nodes");
     writer.StartArray();
 
-    getSGroupAtoms(mol, _s_neighbors);
+    mol.collectExternalNeighbors(_s_neighbors);
     // save mol references
     // int mol_id = 0;
     for (int idx = 0; idx < mol.countComponents(_s_neighbors); ++idx)
