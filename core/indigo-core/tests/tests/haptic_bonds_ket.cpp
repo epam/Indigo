@@ -25,9 +25,12 @@
 #include <gtest/gtest.h>
 
 #include <base_cpp/output.h>
+#include <layout/metalayout.h>
 #include <molecule/molecule.h>
 #include <molecule/molecule_json_loader.h>
 #include <molecule/molecule_json_saver.h>
+#include <reaction/reaction.h>
+#include <reaction/reaction_json_loader.h>
 
 #include "common.h"
 
@@ -69,6 +72,15 @@ protected:
         MoleculeJsonSaver saver(output);
         saver.saveMolecule(mol);
         return std::string(buffer.ptr(), static_cast<size_t>(buffer.size()));
+    }
+
+    static void loadKetReaction(const char* json, Reaction& rxn)
+    {
+        rapidjson::Document data;
+        ASSERT_FALSE(data.Parse(json).HasParseError());
+        LayoutOptions options;
+        ReactionJsonLoader loader(data, options);
+        loader.loadReaction(rxn);
     }
 
     static size_t countOccurrences(const std::string& text, const std::string& part)
@@ -194,6 +206,53 @@ namespace
         },
         "mol0": {"type": "molecule", "atoms": [{"label": "Fe", "location": [3.383987, -5.449992, 0]}], "bonds": []},
         "mol1": {"type": "molecule", "atoms": [{"label": "C", "location": [3.383987, -6.450007, 0]}], "bonds": []}
+    })";
+
+    // Ferrocene as the reactant of a one-arrow reaction. Its three graph fragments -
+    // the iron and the two rings - are held together only by the haptic bonds, so the
+    // reaction loader has to count components with the attachment groups mixed in.
+    const char* KET_REACTION_WITH_FERROCENE = R"({
+        "root": {
+            "nodes": [{"$ref": "mol0"}, {"$ref": "mol1"}, {"$ref": "mol2"}, {"$ref": "mol3"},
+                      {"type": "arrow",
+                       "data": {"mode": "open-angle", "pos": [{"x": 5, "y": 0, "z": 0}, {"x": 7, "y": 0, "z": 0}]}}],
+            "connections": [
+                {"type": "haptic",
+                 "endpoint1": {"atomId": "0", "moleculeId": "mol0"},
+                 "endpoint2": {"attachmentGroupId": "0", "moleculeId": "mol1"}},
+                {"type": "haptic",
+                 "endpoint1": {"atomId": "0", "moleculeId": "mol0"},
+                 "endpoint2": {"attachmentGroupId": "0", "moleculeId": "mol2"}}
+            ]
+        },
+        "mol0": {"type": "molecule", "atoms": [{"label": "Fe", "location": [0, 0, 0]}], "bonds": []},
+        "mol1": {
+            "type": "molecule",
+            "atoms": [
+                {"label": "C", "location": [0.0, 2.5, 0]},   {"label": "C", "location": [0.95, 2.65, 0]},
+                {"label": "C", "location": [0.59, 2.09, 0]}, {"label": "C", "location": [-0.59, 2.09, 0]},
+                {"label": "C", "location": [-0.95, 2.65, 0]}
+            ],
+            "bonds": [
+                {"type": 1, "atoms": [0, 1]}, {"type": 1, "atoms": [1, 2]}, {"type": 1, "atoms": [2, 3]},
+                {"type": 1, "atoms": [3, 4]}, {"type": 1, "atoms": [4, 0]}
+            ],
+            "attachmentGroups": [{"id": "0", "atoms": [0, 1, 2, 3, 4]}]
+        },
+        "mol2": {
+            "type": "molecule",
+            "atoms": [
+                {"label": "C", "location": [0.0, -2.5, 0]},   {"label": "C", "location": [0.95, -2.35, 0]},
+                {"label": "C", "location": [0.59, -2.91, 0]}, {"label": "C", "location": [-0.59, -2.91, 0]},
+                {"label": "C", "location": [-0.95, -2.35, 0]}
+            ],
+            "bonds": [
+                {"type": 1, "atoms": [0, 1]}, {"type": 1, "atoms": [1, 2]}, {"type": 1, "atoms": [2, 3]},
+                {"type": 1, "atoms": [3, 4]}, {"type": 1, "atoms": [4, 0]}
+            ],
+            "attachmentGroups": [{"id": "0", "atoms": [0, 1, 2, 3, 4]}]
+        },
+        "mol3": {"type": "molecule", "atoms": [{"label": "O", "location": [10, 0, 0]}], "bonds": []}
     })";
 
     // The group example exactly as attached: mol1 is referenced by the connection but
@@ -428,4 +487,26 @@ TEST_F(IndigoCoreHapticKetTest, VariableAttachmentBondIsNotWrittenAsHaptic)
 
     const std::string saved = saveKet(mol);
     EXPECT_EQ(2u, countOccurrences(saved, "\"type\":\"haptic\""));
+}
+
+// ---- reaction KET ----------------------------------------------------------
+
+// Splitting a reaction into fragments is graph connectivity, and a haptic bond is
+// not an edge: without the attachment groups in the external-neighbour sets the
+// ferrocene reactant arrives as three separate reactants.
+TEST_F(IndigoCoreHapticKetTest, FerroceneReactantStaysOneComponent)
+{
+    Reaction rxn;
+    loadKetReaction(KET_REACTION_WITH_FERROCENE, rxn);
+
+    ASSERT_EQ(1, rxn.reactantsCount());
+    EXPECT_EQ(1, rxn.productsCount());
+    // Without the groups the rings are components of their own, and the sides of
+    // the arrow they sit on turn them into catalysts rather than a second reactant.
+    EXPECT_EQ(0, rxn.catalystCount());
+
+    BaseMolecule& reactant = rxn.getBaseMolecule(rxn.reactantBegin());
+    EXPECT_EQ(11, reactant.vertexCount()); // two rings plus the iron
+    EXPECT_EQ(2, reactant.attachment_groups.groupCount());
+    EXPECT_EQ(2, reactant.haptic_bonds.count());
 }
