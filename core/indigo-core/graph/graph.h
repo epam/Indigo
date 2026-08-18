@@ -304,6 +304,12 @@ namespace indigo
         // No external neighbours means an empty list, not a list holding one empty
         // set: the two differ to the cache-mode flag below.
         void _calculateComponents(const std::list<std::unordered_set<int>>& external_neighbors = {});
+
+        // Adding or removing a vertex or an edge drops the cached decomposition on
+        // its own. Whatever else a heir lets the answer depend on - external
+        // neighbours are the case - has to say so here.
+        void invalidateComponents();
+
         // This is a bad hack for those who are too lazy to handle the mappings.
         // NEVER USE IT.
         void _cloneGraph_KeepIndices(const Graph& other);

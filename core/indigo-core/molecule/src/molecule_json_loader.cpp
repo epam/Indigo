@@ -1300,8 +1300,8 @@ std::map<std::string, int> MoleculeJsonLoader::parseAttachmentGroups(const rapid
         if (!atoms.IsArray() || atoms.Size() == 0)
             throw Error("Attachment group \"%s\" has no atoms", id);
 
-        const int group_idx = mol.attachment_groups.addGroup();
-        AttachmentGroup& ag = mol.attachment_groups.group(group_idx);
+        std::vector<int> members;
+        members.reserve(atoms.Size());
         for (rapidjson::SizeType j = 0; j < atoms.Size(); ++j)
         {
             if (!atoms[j].IsInt())
@@ -1310,8 +1310,11 @@ std::map<std::string, int> MoleculeJsonLoader::parseAttachmentGroups(const rapid
             const int atom_idx = atoms[j].GetInt();
             if (atom_idx < 0 || atom_idx >= atom_mapping.size() || atom_mapping[atom_idx] < 0)
                 throw Error("Attachment group \"%s\" refers to a non-existent atom %d", id, atom_idx);
-            ag.addAtom(atom_mapping[atom_idx]);
+            members.push_back(atom_mapping[atom_idx]);
         }
+
+        const int group_idx = mol.attachment_groups.addGroup();
+        mol.attachment_groups.group(group_idx).setAtoms(members);
 
         if (!ids.emplace(id, group_idx).second)
             throw Error("Duplicate attachment group id \"%s\"", id);

@@ -1125,11 +1125,19 @@ void BaseMolecule::_checkHapticEndpoint(const HapticBond::Endpoint& endpoint)
         // meets the molecule: an index nobody owns would reach the connectivity sets
         // and every consumer of them.
         for (int atom : atoms)
+        {
             if (!hasVertex(atom))
                 throw Error("attachment group %d holds a non-existent atom %d", endpoint.index(), atom);
+            if (isTemplateAtom(atom))
+                throw Error("attachment group %d holds template atom %d", endpoint.index(), atom);
+        }
     }
     else if (!hasVertex(endpoint.index()))
         throw Error("haptic bond refers to a non-existent atom %d", endpoint.index());
+    // A template atom stands for a whole monomer and is written as a node of its
+    // own, so no format has a way to address it as one end of a haptic bond.
+    else if (isTemplateAtom(endpoint.index()))
+        throw Error("a haptic bond cannot reach template atom %d", endpoint.index());
 }
 
 int BaseMolecule::addHapticBond(HapticBond::Endpoint begin, HapticBond::Endpoint end, int type)
@@ -1154,6 +1162,10 @@ int BaseMolecule::addHapticBond(HapticBond::Endpoint begin, HapticBond::Endpoint
         throw Error("a haptic bond needs two different atoms");
 
     const int idx = haptic_bonds.add(begin, end, type);
+    // A haptic bond holds atoms together without an edge, so the decomposition
+    // depends on it while the graph, which drops the cache on its own, does not
+    // notice the change at all.
+    invalidateComponents();
     updateEditRevision();
     return idx;
 }
@@ -1162,6 +1174,7 @@ void BaseMolecule::removeAttachmentGroup(int idx)
 {
     attachment_groups.removeGroup(idx);
     haptic_bonds.onGroupRemoved(idx);
+    invalidateComponents();
     updateEditRevision();
 }
 

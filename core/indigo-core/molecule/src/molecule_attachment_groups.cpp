@@ -19,6 +19,7 @@
 #include "molecule/molecule_attachment_groups.h"
 
 #include <algorithm>
+#include <unordered_set>
 
 using namespace indigo;
 
@@ -61,9 +62,17 @@ void AttachmentGroup::addAtom(int atom)
 
 void AttachmentGroup::setAtoms(const std::vector<int>& atoms)
 {
+    // Membership is a set, and the whole list is known here - so it is filtered in
+    // one pass rather than through addAtom(), whose linear search would make filling
+    // a group from a file quadratic in the size of that file's list.
+    std::unordered_set<int> seen;
+    seen.reserve(atoms.size());
+
     _atoms.clear();
+    _atoms.reserve(atoms.size());
     for (int atom : atoms)
-        addAtom(atom);
+        if (seen.insert(atom).second)
+            _atoms.push_back(atom);
 }
 
 bool AttachmentGroup::remapAtoms(const Array<int>& atom_mapping)

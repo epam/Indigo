@@ -719,6 +719,11 @@ void Graph::_calculateComponents(const std::list<std::unordered_set<int>>& exter
     _components_used_external = !external_neighbors.empty();
 }
 
+void Graph::invalidateComponents()
+{
+    _components_valid = false;
+}
+
 int Graph::vertexComponent(int v_idx)
 {
     if (!_components_valid)
