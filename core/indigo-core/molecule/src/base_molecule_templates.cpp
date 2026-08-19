@@ -990,9 +990,6 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
     for (int j = 0; j < ap_points_atoms.size(); j++)
     {
         int att_point_idx = ap_points_atoms[j];
-        // More than one AP at this atom and this AP leaving atom is on place
-        if (ap_points_atoms.count(att_point_idx) > 1 && ap_points_leaving[j] != -1)
-            continue;
         if (su.atoms.find(att_point_idx) != -1)
         {
             const Vertex& v = getVertex(att_point_idx);
@@ -1012,6 +1009,8 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
                 int v_k = neighbors[k];
                 if (findEdgeIndex(v_k, att_point_idx) != -1)
                 {
+                    if (ap_points_leaving[j] >= 0 && ap_points_leaving[j] != v_k)
+                        continue; // connected atom defined and it not this neighbor
                     if (connected_neighbors.count(v_k) > 0 && k < neighbors.size() - 1)
                         continue; // if atom already connected and we have other non connected neighbors - skip it
                     if (findEdgeIndex(v_k, idx) == -1)
