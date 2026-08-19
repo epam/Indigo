@@ -98,8 +98,6 @@ namespace indigo
 
         // Removing a group is the molecule's business alone: the haptic bonds that
         // address it have to go with it, and this container knows nothing of them.
-        // Hence private with a single friend, rather than a comment asking callers
-        // to go through BaseMolecule::removeAttachmentGroup().
     private:
         friend class BaseMolecule;
         // Indices of the other groups are unaffected — callers hold group indices

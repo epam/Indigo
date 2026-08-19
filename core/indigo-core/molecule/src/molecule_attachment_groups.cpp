@@ -61,9 +61,8 @@ void AttachmentGroup::addAtom(int atom)
 
 void AttachmentGroup::setAtoms(const std::vector<int>& atoms)
 {
-    // Membership is a set, and the whole list is known here - so it is filtered in
-    // one pass rather than through addAtom(), whose linear search would make filling
-    // a group from a file quadratic in the size of that file's list.
+    // Linear in the list length. The list comes from a file, so the obvious
+    // addAtom()-per-element loop would be quadratic in it.
     std::unordered_set<int> seen;
     seen.reserve(atoms.size());
 
@@ -178,8 +177,8 @@ bool MoleculeAttachmentGroups::isEmpty() const
 
 void MoleculeAttachmentGroups::mergeWithSubmolecule(const MoleculeAttachmentGroups& other, const Array<int>& atom_mapping, Array<int>& group_mapping)
 {
-    // The sources are listed before anything is added: on a merge with itself a copy
-    // lands in a freed slot below `end()`, and the walk would reach it as a source.
+    // Snapshot first: a merge with itself puts copies into freed slots below end(),
+    // and the walk would re-read them as sources.
     const int last = other.end();
     std::vector<int> sources;
     for (int i = other.begin(); i < last; i = other.next(i))

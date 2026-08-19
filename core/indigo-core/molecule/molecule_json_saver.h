@@ -78,10 +78,9 @@ namespace indigo
         void saveAtomEndpoint(const std::string& ep, int atom_idx, JsonWriter& writer);
         int getMonomerNumber(int mon_idx);
 
-        // Attachment groups are declared by the molecule node that owns their atoms,
-        // while the haptic bonds themselves are root connections that may cross the
-        // component split - both are addressed through _mol_attachment_groups, which
-        // distributes the groups of the whole molecule over the saved nodes.
+        // Distributes the groups of the whole molecule over the saved nodes: a group
+        // is declared by the node owning its atoms, while a haptic bond is a root
+        // connection and may cross the component split.
         void collectAttachmentGroups(BaseMolecule& mol);
         void saveAttachmentGroups(BaseMolecule& mol, int mol_id, JsonWriter& writer);
         void saveHapticConnections(BaseMolecule& mol, JsonWriter& writer);

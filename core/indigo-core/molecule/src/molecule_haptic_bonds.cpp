@@ -241,8 +241,8 @@ void MoleculeHapticBonds::onGroupRemoved(int group_idx)
 
 void MoleculeHapticBonds::mergeWithSubmolecule(const MoleculeHapticBonds& other, const Array<int>& atom_mapping, const Array<int>& group_mapping)
 {
-    // The sources are listed before anything is added: on a merge with itself a copy
-    // lands in a freed slot below `end()`, and the walk would reach it as a source.
+    // Snapshot first: a merge with itself puts copies into freed slots below end(),
+    // and the walk would re-read them as sources.
     const int last = other.end();
     std::vector<int> sources;
     for (int i = other.begin(); i < last; i = other.next(i))

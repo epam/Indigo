@@ -334,9 +334,8 @@ TEST_F(IndigoCoreHapticKetTest, UnknownAtomIdIsRejected)
 }
 
 // Rejected by the core, on the single path that creates a haptic bond.
-// Every id of the contract is a number inside a string. A non-numeric one used to
-// go through atoi(), which reads "abc" as 0 and would have bound the endpoint to the
-// first atom of the molecule instead of failing.
+// A non-numeric id used to reach atoi(), which reads "abc" as 0 - the endpoint bound
+// itself to atom 0 instead of the load failing.
 TEST_F(IndigoCoreHapticKetTest, NonNumericAtomIdIsRejected)
 {
     std::string json(KET_BONDED_PAIR_WITH_HAPTIC);
@@ -348,8 +347,8 @@ TEST_F(IndigoCoreHapticKetTest, NonNumericAtomIdIsRejected)
     EXPECT_NE(std::string::npos, loadKetError(json.c_str()).find("non-existent atom"));
 }
 
-// The molecule reference is parsed the same way, and stoi() inside extract_id()
-// would throw a std::exception rather than an Indigo one on a malformed suffix.
+// The other trap of the same parser: extract_id()'s stoi() throws a std::exception,
+// not an Indigo one, on a malformed suffix.
 TEST_F(IndigoCoreHapticKetTest, NonNumericMoleculeIdIsRejected)
 {
     std::string json(KET_RING_AND_METAL);
@@ -361,9 +360,8 @@ TEST_F(IndigoCoreHapticKetTest, NonNumericMoleculeIdIsRejected)
     EXPECT_NE(std::string::npos, loadKetError(json.c_str()).find("unknown molecule"));
 }
 
-// Two groups of one node sharing an id. Rejected before either is built, so the
-// molecule is not left holding a group no connection can address - the load is
-// abandoned either way, which is why this is a guard rather than a fix.
+// A guard, not a regression test: the duplicate was rejected before this change too,
+// only after the group had already been added.
 TEST_F(IndigoCoreHapticKetTest, DuplicateGroupIdIsRejected)
 {
     std::string json(KET_RING_AND_METAL);
