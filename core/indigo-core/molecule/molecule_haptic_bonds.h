@@ -40,15 +40,13 @@ namespace indigo
 {
     class MoleculeAttachmentGroups;
 
-    // A bond whose ends are not restricted to single atoms. Never an edge of the
-    // graph: it appears in neither vertices() nor edges(), so no traversal of the
-    // core has to learn to skip it.
+    // A bond whose ends are not restricted to single atoms.
+    // Never an edge of the graph: appears in neither vertices() nor edges().
     class DLLEXPORT HapticBond : public Reusable
     {
     public:
-        // One end of the bond: a single atom, or an attachment group acting as
-        // one. Exactly one of the two is set, which is why this is a type and not
-        // a pair of indices.
+        // One end of the bond: a single atom, or an attachment group acting as one.
+        // Exactly one of the two is set.
         class Endpoint
         {
         public:
@@ -75,7 +73,6 @@ namespace indigo
         HapticBond(const HapticBond&) = delete;
         HapticBond& operator=(const HapticBond&) = delete;
 
-        // Reusable: restore the default-constructed state.
         void reuse() override;
 
         // Initializing form used by the pool's add(begin, end, type).
@@ -116,9 +113,8 @@ namespace indigo
     };
 
     // The haptic bonds of one molecule.
-    //
-    // Every removal path of BaseMolecule must reach this class: see
-    // onAtomsRemoved() and onGroupRemoved().
+    // Reached from the removal paths of BaseMolecule through onAtomsRemoved() and
+    // onGroupRemoved(); a bond never outlives an endpoint.
     class DLLEXPORT MoleculeHapticBonds
     {
     public:
@@ -155,14 +151,13 @@ namespace indigo
         int firstAtom(int idx, const MoleculeAttachmentGroups& groups) const;
         int lastAtom(int idx, const MoleculeAttachmentGroups& groups) const;
 
-        // Must be called when the molecule removes atoms, with the same mapping
-        // BaseMolecule::removeAtoms builds (-1 = removed). A bond that loses an
-        // endpoint atom is dropped whole.
+        // Takes the mapping BaseMolecule::removeAtoms builds (-1 = removed). A bond
+        // that loses an endpoint atom is dropped whole.
         void onAtomsRemoved(const Array<int>& atom_mapping);
 
-        // Must be called for every attachment group the molecule removes: the
-        // group pool recycles freed indices, so a bond left behind would silently
-        // attach itself to the next group to take the index.
+        // Must be called for every attachment group the molecule removes: the group
+        // pool recycles freed indices, so a bond left behind would silently attach
+        // itself to the next group to take that index.
         void onGroupRemoved(int group_idx);
 
         // Copies the bonds of `other` that survive both mappings (-1 means

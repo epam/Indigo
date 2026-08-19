@@ -713,9 +713,8 @@ void Graph::_calculateComponents(const std::list<std::unordered_set<int>>& exter
     }
 
     _components_valid = true;
-    // Any set at all counts: judging by the first one alone reports "computed without
-    // external neighbours" whenever that first set happens to be empty, and the whole
-    // decomposition is then recomputed on every call.
+    // Any set at all counts. Judging by the first one alone made an empty leading set
+    // read as "computed without external neighbours", recomputing on every call.
     _components_used_external = !external_neighbors.empty();
 }
 

@@ -305,9 +305,9 @@ namespace indigo
         // set: the two differ to the cache-mode flag below.
         void _calculateComponents(const std::list<std::unordered_set<int>>& external_neighbors = {});
 
-        // Adding or removing a vertex or an edge drops the cached decomposition on
-        // its own. Whatever else a heir lets the answer depend on - external
-        // neighbours are the case - has to say so here.
+        // Vertex and edge changes drop the cached decomposition themselves. A heir
+        // that lets the answer depend on anything else - external neighbours do -
+        // has to call this when that something changes.
         void invalidateComponents();
 
         // This is a bad hack for those who are too lazy to handle the mappings.

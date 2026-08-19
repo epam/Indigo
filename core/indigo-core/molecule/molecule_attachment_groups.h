@@ -72,11 +72,9 @@ namespace indigo
     };
 
     // The attachment groups of one molecule.
-    //
-    // Every removal path of BaseMolecule must reach this class: see
-    // onAtomsRemoved(). A single group is removed through
-    // BaseMolecule::removeAttachmentGroup(), which also drops the haptic bonds
-    // that address it.
+    // Knows nothing of the haptic bonds that address its groups by index, so every
+    // operation that drops or renumbers a group reports that through an out-param
+    // and leaves propagating it to BaseMolecule.
     class DLLEXPORT MoleculeAttachmentGroups
     {
     public:
@@ -96,8 +94,6 @@ namespace indigo
         bool hasGroup(int idx) const;
         int groupCount() const;
 
-        // Removing a group is the molecule's business alone: the haptic bonds that
-        // address it have to go with it, and this container knows nothing of them.
     private:
         friend class BaseMolecule;
         // Indices of the other groups are unaffected — callers hold group indices
@@ -105,11 +101,9 @@ namespace indigo
         void removeGroup(int idx);
 
     public:
-        // Must be called when the molecule removes atoms, with the same mapping
-        // BaseMolecule::removeAtoms builds (-1 = removed). Groups that lose a
-        // member are dropped whole; their indices are reported in `removed_groups`
-        // because the haptic bonds that reference them must go too, and this
-        // container does not know about them.
+        // Takes the mapping BaseMolecule::removeAtoms builds (-1 = removed). A group
+        // that loses a member is dropped whole, never truncated; `removed_groups`
+        // receives the indices of those dropped.
         void onAtomsRemoved(const Array<int>& atom_mapping, Array<int>& removed_groups);
 
         // Index walk over the live groups, mirroring the pool: end() is one
@@ -121,11 +115,9 @@ namespace indigo
         void clear();
         bool isEmpty() const;
 
-        // Copies the groups of `other` that survive a submolecule mapping (-1
-        // means "dropped"), under the same all-or-nothing rule as remapAtoms().
-        // `group_mapping` receives, per source group index, the index it got here
-        // or -1: the haptic bonds of the same merge address their groups by index
-        // and have no other way to follow them.
+        // Copies the groups of `other` that survive `atom_mapping` (-1 = dropped),
+        // under the same all-or-nothing rule as remapAtoms(). `group_mapping`
+        // receives, per source group index, the index it got here or -1.
         void mergeWithSubmolecule(const MoleculeAttachmentGroups& other, const Array<int>& atom_mapping, Array<int>& group_mapping);
 
     private:
