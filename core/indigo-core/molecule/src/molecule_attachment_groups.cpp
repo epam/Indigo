@@ -41,7 +41,6 @@ AttachmentGroup::~AttachmentGroup()
 void AttachmentGroup::_reset()
 {
     _atoms.clear(); // the buffer is kept: that is the point of a non-destructive reset
-    _anchor = Anchor();
 }
 
 void AttachmentGroup::reuse()
@@ -198,7 +197,6 @@ void MoleculeAttachmentGroups::mergeWithSubmolecule(const MoleculeAttachmentGrou
         const int idx = addGroup();
         AttachmentGroup& copy = group(idx);
         copy.setAtoms(source.atoms());
-        copy.setAnchor(source.anchor());
 
         if (copy.remapAtoms(atom_mapping))
             group_mapping[i] = idx;

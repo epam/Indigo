@@ -42,16 +42,6 @@ namespace indigo
     class DLLEXPORT AttachmentGroup : public Reusable
     {
     public:
-        // Attributes of the anchor atom that the file formats put the charge and
-        // the radical of the pi system on, and which is absorbed on loading.
-        // Carried through unchanged: never recomputed and never spread over the
-        // member atoms, so a structure charged either way comes back as it came in.
-        struct Anchor
-        {
-            int charge = 0;
-            int radical = 0;
-        };
-
         AttachmentGroup();
         ~AttachmentGroup() override;
 
@@ -75,20 +65,10 @@ namespace indigo
         // the whole group, never a truncated one.
         bool remapAtoms(const Array<int>& atom_mapping);
 
-        const Anchor& anchor() const
-        {
-            return _anchor;
-        }
-        void setAnchor(const Anchor& anchor)
-        {
-            _anchor = anchor;
-        }
-
     private:
         void _reset(); // the one place the fields are listed; not virtual — called from the constructor
 
         std::vector<int> _atoms;
-        Anchor _anchor;
     };
 
     // The attachment groups of one molecule.
