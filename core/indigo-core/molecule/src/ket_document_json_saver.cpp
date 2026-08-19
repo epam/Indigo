@@ -21,6 +21,7 @@
 
 #include "molecule/ket_document.h"
 #include "molecule/ket_document_json_saver.h"
+#include "molecule/ket_keys.h"
 #include "molecule/meta_commons.h"
 #include "molecule/monomer_commons.h"
 #include "molecule/monomers_template_library.h"
@@ -110,21 +111,21 @@ static void saveConnections(JsonWriter& writer, const std::vector<KetConnection>
     if (connections.empty())
         return;
 
-    writer.Key("connections");
+    writer.Key(ket::KetConnections);
     writer.StartArray();
     for (const auto& connection : connections)
     {
         writer.StartObject();
-        saveStr(writer, "connectionType", connection.connectionType());
+        saveStr(writer, ket::KetConnectionType, connection.connectionType());
         connection.saveOptsToKet(writer);
-        writer.Key("endpoint1");
+        writer.Key(ket::KetEndpoint1);
         writer.StartObject();
         if (monomer_group_template != nullptr)
             saveMonomerTemplateConnectionEndpoint(writer, connection.ep1(), *monomer_group_template);
         else
             saveConnectionEndpoint(writer, connection.ep1());
         writer.EndObject();
-        writer.Key("endpoint2");
+        writer.Key(ket::KetEndpoint2);
         writer.StartObject();
         if (monomer_group_template != nullptr)
             saveMonomerTemplateConnectionEndpoint(writer, connection.ep2(), *monomer_group_template);

@@ -23,6 +23,7 @@
 
 #include "layout/molecule_layout.h"
 
+#include "molecule/ket_keys.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_cip_calculator.h"
 #include "molecule/molecule_json_saver.h"
@@ -1472,9 +1473,9 @@ void MoleculeJsonSaver::saveAtomEndpoint(const std::string& ep, int atom_idx, Js
     const int mol_id = atom_mol_it->second;
     writer.Key(ep.c_str());
     writer.StartObject();
-    writer.Key("moleculeId");
-    writer.String((std::string("mol") + std::to_string(mol_id)).c_str());
-    writer.Key("atomId");
+    writer.Key(ket::KetMoleculeId);
+    writer.String((std::string(ket::KetMoleculePrefix) + std::to_string(mol_id)).c_str());
+    writer.Key(ket::KetAtomId);
     writer.String(std::to_string(_mappings[mol_id][atom_idx]).c_str());
     writer.EndObject();
 }
@@ -1518,14 +1519,19 @@ void MoleculeJsonSaver::saveAttachmentGroups(BaseMolecule& mol, int mol_id, Json
         return;
 
     const Array<int>& mapping = _mappings[mol_id];
-    writer.Key("attachmentGroups");
+    const auto& group_indices = _mol_attachment_groups[mol_id];
+    writer.Key(ket::KetAttachmentGroups);
     writer.StartArray();
-    for (int group_idx : _mol_attachment_groups[mol_id])
+    for (size_t position = 0; position < group_indices.size(); ++position)
     {
+        // The KET id of a group is its position in the list of its own node, which
+        // is what this loop walks - attachmentGroupRef() would search the same list
+        // back for an answer already in hand.
+        const int group_idx = group_indices[position];
         writer.StartObject();
-        writer.Key("id");
-        writer.String(std::to_string(attachmentGroupRef(group_idx).second).c_str());
-        writer.Key("atoms");
+        writer.Key(ket::KetAttachmentGroupIdField);
+        writer.String(std::to_string(position).c_str());
+        writer.Key(ket::KetAttachmentGroupAtoms);
         writer.StartArray();
         for (int atom : mol.attachment_groups.group(group_idx).atoms())
         {
@@ -1552,9 +1558,9 @@ void MoleculeJsonSaver::saveHapticEndpoint(const std::string& ep, const HapticBo
     const auto ref = attachmentGroupRef(endpoint.index());
     writer.Key(ep.c_str());
     writer.StartObject();
-    writer.Key("moleculeId");
-    writer.String((std::string("mol") + std::to_string(ref.first)).c_str());
-    writer.Key("attachmentGroupId");
+    writer.Key(ket::KetMoleculeId);
+    writer.String((std::string(ket::KetMoleculePrefix) + std::to_string(ref.first)).c_str());
+    writer.Key(ket::KetAttachmentGroupId);
     writer.String(std::to_string(ref.second).c_str());
     writer.EndObject();
 }
@@ -1582,10 +1588,10 @@ void MoleculeJsonSaver::saveHapticConnections(BaseMolecule& mol, JsonWriter& wri
             continue;
 
         writer.StartObject();
-        writer.Key("type");
-        writer.String("haptic");
-        saveHapticEndpoint("endpoint1", bond.begin(), writer);
-        saveHapticEndpoint("endpoint2", bond.end(), writer);
+        writer.Key(ket::KetConnectionKind);
+        writer.String(ket::KetConnectionHaptic);
+        saveHapticEndpoint(ket::KetEndpoint1, bond.begin(), writer);
+        saveHapticEndpoint(ket::KetEndpoint2, bond.end(), writer);
         writer.EndObject();
     }
 }
@@ -1784,7 +1790,7 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
     // that has no templates at all.
     if (has_templates || hasHapticConnections(mol))
     {
-        writer.Key("connections");
+        writer.Key(ket::KetConnections);
         writer.StartArray();
         if (has_templates)
         {
@@ -1796,12 +1802,12 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
                 {
                     // save connections between templates or atoms
                     writer.StartObject();
-                    writer.Key("connectionType");
+                    writer.Key(ket::KetConnectionType);
                     bool hydrogen = mol.getBondOrder(i) == _BOND_HYDROGEN;
                     writer.String(hydrogen ? "hydrogen" : "single");
                     // save endpoints
-                    saveEndpoint(mol, "endpoint1", e.beg, e.end, writer, hydrogen);
-                    saveEndpoint(mol, "endpoint2", e.end, e.beg, writer, hydrogen);
+                    saveEndpoint(mol, ket::KetEndpoint1, e.beg, e.end, writer, hydrogen);
+                    saveEndpoint(mol, ket::KetEndpoint2, e.end, e.beg, writer, hydrogen);
                     if (bond_annotations.count(i) > 0)
                         saveAnnotation(writer, bond_annotations.at(i));
                     writer.EndObject(); // connection

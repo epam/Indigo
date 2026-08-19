@@ -1,3 +1,4 @@
+#include <limits>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -8,6 +9,7 @@
 #include "molecule/elements.h"
 #include "molecule/ket_document.h"
 #include "molecule/ket_document_json_loader.h"
+#include "molecule/ket_keys.h"
 #include "molecule/meta_commons.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_json_loader.h"
@@ -159,9 +161,9 @@ void MoleculeJsonLoader::parse_ket(Document& ket)
         _annotation.PushBack(root["annotation"], ket.GetAllocator());
     }
 
-    if (root.HasMember("connections"))
+    if (root.HasMember(ket::KetConnections))
     {
-        Value& connections = root["connections"];
+        Value& connections = root[ket::KetConnections];
         for (rapidjson::SizeType i = 0; i < connections.Size(); ++i)
             _connection_array.PushBack(connections[i], ket.GetAllocator());
     }
@@ -1228,23 +1230,45 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
     }
 }
 
+// The contract spells every id as a number inside a string. atoi() would read
+// "abc" as 0 and quietly bind the endpoint to the first atom, and the stoi() inside
+// extract_id() throws a std::exception rather than an Indigo one - both are wrong
+// answers for a file that arrives from outside through the HTTP service.
+static int parseNumericId(const char* text)
+{
+    if (text == nullptr || *text == '\0')
+        return -1;
+
+    long value = 0;
+    for (const char* p = text; *p != '\0'; ++p)
+    {
+        if (*p < '0' || *p > '9')
+            return -1;
+        value = value * 10 + (*p - '0');
+        if (value > std::numeric_limits<int>::max())
+            return -1;
+    }
+    return static_cast<int>(value);
+}
+
 HapticBond::Endpoint MoleculeJsonLoader::resolveHapticEndpoint(const rapidjson::Value& endpoint, const PtrArray<Array<int>>& mol_mappings,
                                                                const std::vector<std::map<std::string, int>>& ag_mappings)
 {
-    if (!endpoint.HasMember("moleculeId") || !endpoint["moleculeId"].IsString())
-        throw Error("Haptic connection endpoint requires a string \"moleculeId\"");
+    if (!endpoint.HasMember(ket::KetMoleculeId) || !endpoint[ket::KetMoleculeId].IsString())
+        throw Error("Haptic connection endpoint requires a string \"%s\"", ket::KetMoleculeId);
 
-    const char* mol_ref = endpoint["moleculeId"].GetString();
-    const int mol_id = extract_id(mol_ref, "mol");
+    const char* mol_ref = endpoint[ket::KetMoleculeId].GetString();
+    const std::string prefix(ket::KetMoleculePrefix);
+    const int mol_id = std::string(mol_ref).compare(0, prefix.size(), prefix) == 0 ? parseNumericId(mol_ref + prefix.size()) : -1;
     if (mol_id < 0 || mol_id >= mol_mappings.size())
         throw Error("Haptic connection refers to an unknown molecule \"%s\"", mol_ref);
 
-    if (endpoint.HasMember("attachmentGroupId"))
+    if (endpoint.HasMember(ket::KetAttachmentGroupId))
     {
-        if (!endpoint["attachmentGroupId"].IsString())
-            throw Error("\"attachmentGroupId\" of a haptic connection must be a string");
+        if (!endpoint[ket::KetAttachmentGroupId].IsString())
+            throw Error("\"%s\" of a haptic connection must be a string", ket::KetAttachmentGroupId);
 
-        const std::string ag_id = endpoint["attachmentGroupId"].GetString();
+        const std::string ag_id = endpoint[ket::KetAttachmentGroupId].GetString();
         const auto& ag_mapping = ag_mappings[mol_id];
         const auto it = ag_mapping.find(ag_id);
         if (it == ag_mapping.end())
@@ -1252,31 +1276,32 @@ HapticBond::Endpoint MoleculeJsonLoader::resolveHapticEndpoint(const rapidjson::
         return HapticBond::Endpoint::group(it->second);
     }
 
-    if (endpoint.HasMember("atomId"))
+    if (endpoint.HasMember(ket::KetAtomId))
     {
-        if (!endpoint["atomId"].IsString())
-            throw Error("\"atomId\" of a haptic connection must be a string");
+        if (!endpoint[ket::KetAtomId].IsString())
+            throw Error("\"%s\" of a haptic connection must be a string", ket::KetAtomId);
 
         const Array<int>& atoms = mol_mappings[mol_id];
-        const int atom_id = atoi(endpoint["atomId"].GetString());
+        const char* atom_ref = endpoint[ket::KetAtomId].GetString();
+        const int atom_id = parseNumericId(atom_ref);
         if (atom_id < 0 || atom_id >= atoms.size())
-            throw Error("Haptic connection refers to a non-existent atom %d of \"%s\"", atom_id, mol_ref);
+            throw Error("Haptic connection refers to a non-existent atom \"%s\" of \"%s\"", atom_ref, mol_ref);
         return HapticBond::Endpoint::atom(atoms[atom_id]);
     }
 
-    throw Error("Haptic connection endpoint requires \"atomId\" or \"attachmentGroupId\"");
+    throw Error("Haptic connection endpoint requires \"%s\" or \"%s\"", ket::KetAtomId, ket::KetAttachmentGroupId);
 }
 
 void MoleculeJsonLoader::loadHapticConnection(const rapidjson::Value& connection, BaseMolecule& mol, const PtrArray<Array<int>>& mol_mappings,
                                               const std::vector<std::map<std::string, int>>& ag_mappings)
 {
-    if (!connection.HasMember("endpoint1") || !connection.HasMember("endpoint2"))
-        throw Error("Haptic connection requires \"endpoint1\" and \"endpoint2\"");
+    if (!connection.HasMember(ket::KetEndpoint1) || !connection.HasMember(ket::KetEndpoint2))
+        throw Error("Haptic connection requires \"%s\" and \"%s\"", ket::KetEndpoint1, ket::KetEndpoint2);
 
     // The pairs the endpoints may not form - two groups, an atom with itself, an
     // atom with its own group - are rejected by addHapticBond for every producer.
-    mol.addHapticBond(resolveHapticEndpoint(connection["endpoint1"], mol_mappings, ag_mappings),
-                      resolveHapticEndpoint(connection["endpoint2"], mol_mappings, ag_mappings), _BOND_HAPTIC);
+    mol.addHapticBond(resolveHapticEndpoint(connection[ket::KetEndpoint1], mol_mappings, ag_mappings),
+                      resolveHapticEndpoint(connection[ket::KetEndpoint2], mol_mappings, ag_mappings), _BOND_HAPTIC);
 }
 
 std::map<std::string, int> MoleculeJsonLoader::parseAttachmentGroups(const rapidjson::Value& groups, BaseMolecule& mol, const Array<int>& atom_mapping)
@@ -1284,19 +1309,24 @@ std::map<std::string, int> MoleculeJsonLoader::parseAttachmentGroups(const rapid
     std::map<std::string, int> ids;
 
     if (!groups.IsArray())
-        throw Error("\"attachmentGroups\" must be an array");
+        throw Error("\"%s\" must be an array", ket::KetAttachmentGroups);
 
     for (rapidjson::SizeType i = 0; i < groups.Size(); ++i)
     {
         const auto& group = groups[i];
-        if (!group.IsObject() || !group.HasMember("id") || !group.HasMember("atoms"))
-            throw Error("Attachment group requires \"id\" and \"atoms\"");
+        if (!group.IsObject() || !group.HasMember(ket::KetAttachmentGroupIdField) || !group.HasMember(ket::KetAttachmentGroupAtoms))
+            throw Error("Attachment group requires \"%s\" and \"%s\"", ket::KetAttachmentGroupIdField, ket::KetAttachmentGroupAtoms);
 
-        if (!group["id"].IsString())
-            throw Error("\"id\" of an attachment group must be a string");
+        if (!group[ket::KetAttachmentGroupIdField].IsString())
+            throw Error("\"%s\" of an attachment group must be a string", ket::KetAttachmentGroupIdField);
 
-        const char* id = group["id"].GetString();
-        const auto& atoms = group["atoms"];
+        const char* id = group[ket::KetAttachmentGroupIdField].GetString();
+        // Before the group is built, not after: a duplicate would otherwise leave a
+        // group in the molecule that no id resolves to.
+        if (ids.count(id) != 0)
+            throw Error("Duplicate attachment group id \"%s\"", id);
+
+        const auto& atoms = group[ket::KetAttachmentGroupAtoms];
         if (!atoms.IsArray() || atoms.Size() == 0)
             throw Error("Attachment group \"%s\" has no atoms", id);
 
@@ -1315,9 +1345,7 @@ std::map<std::string, int> MoleculeJsonLoader::parseAttachmentGroups(const rapid
 
         const int group_idx = mol.attachment_groups.addGroup();
         mol.attachment_groups.group(group_idx).setAtoms(members);
-
-        if (!ids.emplace(id, group_idx).second)
-            throw Error("Duplicate attachment group id \"%s\"", id);
+        ids.emplace(id, group_idx);
     }
 
     return ids;
@@ -1864,8 +1892,8 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         mol.mergeWithMolecule(*pmol, &mapping, 0);
         mol_mappings.push().copy(mapping);
 
-        ag_mappings.push_back(mol_node.HasMember("attachmentGroups") ? parseAttachmentGroups(mol_node["attachmentGroups"], mol, mapping)
-                                                                     : std::map<std::string, int>());
+        ag_mappings.push_back(mol_node.HasMember(ket::KetAttachmentGroups) ? parseAttachmentGroups(mol_node[ket::KetAttachmentGroups], mol, mapping)
+                                                                           : std::map<std::string, int>());
 
         for (auto& sc : stereo_centers)
         {
@@ -2101,23 +2129,24 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         // A haptic connection is marked with "type", not "connectionType", and it
         // may address an attachment group instead of an atom — so it is resolved
         // before the atom-to-atom machinery below.
-        if (connection.HasMember("type") && connection["type"].IsString() && std::string(connection["type"].GetString()) == "haptic")
+        if (connection.HasMember(ket::KetConnectionKind) && connection[ket::KetConnectionKind].IsString() &&
+            std::string(connection[ket::KetConnectionKind].GetString()) == ket::KetConnectionHaptic)
         {
             loadHapticConnection(connection, mol, mol_mappings, ag_mappings);
             continue;
         }
 
         int order = _BOND_ANY;
-        if (connection.HasMember("connectionType"))
+        if (connection.HasMember(ket::KetConnectionType))
         {
-            std::string conn_type = connection["connectionType"].GetString();
+            std::string conn_type = connection[ket::KetConnectionType].GetString();
             if (conn_type == "single")
                 order = BOND_SINGLE;
             else if (conn_type == "hydrogen")
                 order = _BOND_HYDROGEN;
         }
-        auto& ep1 = connection["endpoint1"];
-        auto& ep2 = connection["endpoint2"];
+        auto& ep1 = connection[ket::KetEndpoint1];
+        auto& ep2 = connection[ket::KetEndpoint2];
 
         int id1 = -1;
         int id2 = -1;
@@ -2129,10 +2158,10 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
             if (ep1.HasMember("attachmentPointId"))
                 atp1 = convertAPFromHELM(ep1["attachmentPointId"].GetString());
         }
-        else if (ep1.HasMember("moleculeId") && ep1.HasMember("atomId"))
+        else if (ep1.HasMember(ket::KetMoleculeId) && ep1.HasMember(ket::KetAtomId))
         {
-            int mol_id = extract_id(ep1["moleculeId"].GetString(), "mol");
-            id1 = mol_mappings[mol_id][atoi(ep1["atomId"].GetString())];
+            int mol_id = extract_id(ep1[ket::KetMoleculeId].GetString(), ket::KetMoleculePrefix);
+            id1 = mol_mappings[mol_id][atoi(ep1[ket::KetAtomId].GetString())];
         }
         else
             throw Error("Invalid endpoint");
@@ -2143,10 +2172,10 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
             if (ep2.HasMember("attachmentPointId"))
                 atp2 = convertAPFromHELM(ep2["attachmentPointId"].GetString());
         }
-        else if (ep2.HasMember("moleculeId") && ep2.HasMember("atomId"))
+        else if (ep2.HasMember(ket::KetMoleculeId) && ep2.HasMember(ket::KetAtomId))
         {
-            int mol_id = extract_id(ep2["moleculeId"].GetString(), "mol");
-            id2 = mol_mappings[mol_id][atoi(ep2["atomId"].GetString())];
+            int mol_id = extract_id(ep2[ket::KetMoleculeId].GetString(), ket::KetMoleculePrefix);
+            id2 = mol_mappings[mol_id][atoi(ep2[ket::KetAtomId].GetString())];
         }
         else
             throw Error("Invalid endpoint");

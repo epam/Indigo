@@ -334,6 +334,47 @@ TEST_F(IndigoCoreHapticKetTest, UnknownAtomIdIsRejected)
 }
 
 // Rejected by the core, on the single path that creates a haptic bond.
+// Every id of the contract is a number inside a string. A non-numeric one used to
+// go through atoi(), which reads "abc" as 0 and would have bound the endpoint to the
+// first atom of the molecule instead of failing.
+TEST_F(IndigoCoreHapticKetTest, NonNumericAtomIdIsRejected)
+{
+    std::string json(KET_BONDED_PAIR_WITH_HAPTIC);
+    const std::string endpoint = "\"atomId\": \"1\"";
+    const size_t pos = json.find(endpoint);
+    ASSERT_NE(std::string::npos, pos);
+    json.replace(pos, endpoint.size(), "\"atomId\": \"abc\"");
+
+    EXPECT_NE(std::string::npos, loadKetError(json.c_str()).find("non-existent atom"));
+}
+
+// The molecule reference is parsed the same way, and stoi() inside extract_id()
+// would throw a std::exception rather than an Indigo one on a malformed suffix.
+TEST_F(IndigoCoreHapticKetTest, NonNumericMoleculeIdIsRejected)
+{
+    std::string json(KET_RING_AND_METAL);
+    const std::string endpoint = "\"moleculeId\": \"mol1\"";
+    const size_t pos = json.find(endpoint);
+    ASSERT_NE(std::string::npos, pos);
+    json.replace(pos, endpoint.size(), "\"moleculeId\": \"molXYZ\"");
+
+    EXPECT_NE(std::string::npos, loadKetError(json.c_str()).find("unknown molecule"));
+}
+
+// Two groups of one node sharing an id. Rejected before either is built, so the
+// molecule is not left holding a group no connection can address - the load is
+// abandoned either way, which is why this is a guard rather than a fix.
+TEST_F(IndigoCoreHapticKetTest, DuplicateGroupIdIsRejected)
+{
+    std::string json(KET_RING_AND_METAL);
+    const std::string groups = "\"attachmentGroups\": [{\"id\": \"7\", \"atoms\": [0, 1, 2, 3, 4]}]";
+    const size_t pos = json.find(groups);
+    ASSERT_NE(std::string::npos, pos);
+    json.replace(pos, groups.size(), "\"attachmentGroups\": [{\"id\": \"7\", \"atoms\": [0, 1]}, {\"id\": \"7\", \"atoms\": [2, 3]}]");
+
+    EXPECT_NE(std::string::npos, loadKetError(json.c_str()).find("Duplicate attachment group id"));
+}
+
 TEST_F(IndigoCoreHapticKetTest, ConnectionBetweenTwoGroupsIsRejected)
 {
     std::string json(KET_RING_AND_METAL);
