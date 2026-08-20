@@ -122,7 +122,7 @@ namespace indigo
     // merging with molecule and cloning procedures
     enum
     {
-        SKIP_ALL = 0xFF,
+        SKIP_ALL = 0x3FF,
         SKIP_CIS_TRANS = 0x01,
         SKIP_STEREOCENTERS = 0x02,
         SKIP_XYZ = 0x04,

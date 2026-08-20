@@ -19,6 +19,7 @@
 #include "molecule/molecule_attachment_groups.h"
 
 #include <algorithm>
+#include <unordered_set>
 
 using namespace indigo;
 
@@ -40,7 +41,6 @@ AttachmentGroup::~AttachmentGroup()
 void AttachmentGroup::_reset()
 {
     _atoms.clear(); // the buffer is kept: that is the point of a non-destructive reset
-    _anchor = Anchor();
 }
 
 void AttachmentGroup::reuse()
@@ -61,9 +61,16 @@ void AttachmentGroup::addAtom(int atom)
 
 void AttachmentGroup::setAtoms(const std::vector<int>& atoms)
 {
+    // Linear in the list length. The list comes from a file, so the obvious
+    // addAtom()-per-element loop would be quadratic in it.
+    std::unordered_set<int> seen;
+    seen.reserve(atoms.size());
+
     _atoms.clear();
+    _atoms.reserve(atoms.size());
     for (int atom : atoms)
-        addAtom(atom);
+        if (seen.insert(atom).second)
+            _atoms.push_back(atom);
 }
 
 bool AttachmentGroup::remapAtoms(const Array<int>& atom_mapping)
@@ -170,14 +177,17 @@ bool MoleculeAttachmentGroups::isEmpty() const
 
 void MoleculeAttachmentGroups::mergeWithSubmolecule(const MoleculeAttachmentGroups& other, const Array<int>& atom_mapping, Array<int>& group_mapping)
 {
-    // The end is taken once: the groups added below must not be re-read as sources
-    // when a molecule is merged with itself.
+    // Snapshot first: a merge with itself puts copies into freed slots below end(),
+    // and the walk would re-read them as sources.
     const int last = other.end();
+    std::vector<int> sources;
+    for (int i = other.begin(); i < last; i = other.next(i))
+        sources.push_back(i);
 
     group_mapping.clear_resize(last);
     group_mapping.fill(-1);
 
-    for (int i = other.begin(); i < last; i = other.next(i))
+    for (int i : sources)
     {
         const AttachmentGroup& source = other.group(i);
         if (source.atoms().empty())
@@ -186,7 +196,6 @@ void MoleculeAttachmentGroups::mergeWithSubmolecule(const MoleculeAttachmentGrou
         const int idx = addGroup();
         AttachmentGroup& copy = group(idx);
         copy.setAtoms(source.atoms());
-        copy.setAnchor(source.anchor());
 
         if (copy.remapAtoms(atom_mapping))
             group_mapping[i] = idx;

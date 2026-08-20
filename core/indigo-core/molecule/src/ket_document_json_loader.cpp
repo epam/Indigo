@@ -22,6 +22,7 @@
 #include "molecule/base_molecule.h"
 #include "molecule/ket_document.h"
 #include "molecule/ket_document_json_loader.h"
+#include "molecule/ket_keys.h"
 #include "molecule/monomers_template_library.h"
 
 #include "rapidjson/document.h"
@@ -65,12 +66,17 @@ void KetDocumentJsonLoader::parseConnections(const rapidjson::Value& connections
     for (rapidjson::SizeType i = 0; i < connections.Size(); ++i)
     {
         const auto& connection = connections[i];
-        std::string connection_type = connection["connectionType"].GetString();
+        // A haptic connection carries "type" instead, and belongs to a molecule rather
+        // than to a monomer document. Reading the absent member is UB in release.
+        if (!connection.HasMember(KetConnectionType))
+            throw Error("Connection without \"connectionType\" is not supported in a monomer document");
+
+        std::string connection_type = connection[KetConnectionType].GetString();
         if (connection_type == KetConnectionSingle || connection_type == KetConnectionHydro)
         {
             KetConnectionEndPoint ep1, ep2;
-            ep1.parseOptsFromKet(connection["endpoint1"]);
-            ep2.parseOptsFromKet(connection["endpoint2"]);
+            ep1.parseOptsFromKet(connection[KetEndpoint1]);
+            ep2.parseOptsFromKet(connection[KetEndpoint2]);
             normalizeTemplateEndpointId(ep1, resolveTemplateId);
             normalizeTemplateEndpointId(ep2, resolveTemplateId);
             auto& conn = addConnection(connection_type, ep1, ep2);
@@ -165,9 +171,9 @@ void KetDocumentJsonLoader::parseJson(const std::string& json_str, KetDocument& 
                 throw Error("Unsupported node for molecule");
         }
     }
-    if (root.HasMember("connections"))
+    if (root.HasMember(KetConnections))
     {
-        parseConnections(root["connections"],
+        parseConnections(root[KetConnections],
                          [&document](const std::string& connection_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2) -> KetConnection& {
                              return document.addConnection(connection_type, ep1, ep2);
                          });
@@ -253,10 +259,10 @@ void KetDocumentJsonLoader::parseMonomerGroupTemplate(const rapidjson::Value& mt
 
     auto& mon_group_template = addMonomerGroupTemplate(id, name, monomer_class, idt_alias, template_refs);
 
-    if (mt_json.HasMember("connections"))
+    if (mt_json.HasMember(KetConnections))
     {
         parseConnections(
-            mt_json["connections"],
+            mt_json[KetConnections],
             [&mon_group_template](const std::string& connection_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2) -> KetConnection& {
                 return mon_group_template.addConnection(connection_type, ep1, ep2);
             },

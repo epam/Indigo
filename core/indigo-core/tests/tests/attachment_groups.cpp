@@ -17,9 +17,8 @@
  ***************************************************************************/
 
 // Tests for the attachment groups behind haptic bonds (#3233, #3837): stable
-// indices, slot reuse, membership as a set, the all-or-nothing rule on removal,
-// and the anchor attributes a group carries through unchanged. The bonds that
-// address these groups are tested in haptic_bonds.cpp.
+// indices, slot reuse, membership as a set and the all-or-nothing rule on
+// removal. The bonds that address these groups are tested in haptic_bonds.cpp.
 
 #include <gtest/gtest.h>
 
@@ -70,31 +69,31 @@ TEST_F(IndigoCoreAttachmentGroupsTest, AddAssignsIndicesAndCounts)
 
 TEST_F(IndigoCoreAttachmentGroupsTest, RemoveFreesSlotAndReusesItClean)
 {
-    MoleculeAttachmentGroups groups;
+    Molecule mol;
+    mol.addAtom(ELEM_C);
+    auto& groups = mol.attachment_groups;
     groups.addGroup();
     const int b = groups.addGroup();
     groups.addGroup();
-    groups.group(b).addAtom(42);
-    groups.group(b).setAnchor({-1, 2});
+    groups.group(b).addAtom(0);
 
-    groups.removeGroup(b);
+    mol.removeAttachmentGroup(b);
     EXPECT_EQ(2, groups.groupCount());
     EXPECT_FALSE(groups.hasGroup(b));
 
     const int reused = groups.addGroup();
     EXPECT_EQ(b, reused); // stable indices: the freed slot comes back
     EXPECT_TRUE(groups.group(reused).atoms().empty());
-    EXPECT_EQ(0, groups.group(reused).anchor().charge); // no stale anchor
-    EXPECT_EQ(0, groups.group(reused).anchor().radical);
 }
 
 TEST_F(IndigoCoreAttachmentGroupsTest, IterationSkipsRemovedGroups)
 {
-    MoleculeAttachmentGroups groups;
+    Molecule mol;
+    auto& groups = mol.attachment_groups;
     const int a = groups.addGroup();
     const int b = groups.addGroup();
     const int c = groups.addGroup();
-    groups.removeGroup(b);
+    mol.removeAttachmentGroup(b);
 
     std::vector<int> seen;
     for (int i = groups.begin(); i != groups.end(); i = groups.next(i))
@@ -104,9 +103,9 @@ TEST_F(IndigoCoreAttachmentGroupsTest, IterationSkipsRemovedGroups)
 
 TEST_F(IndigoCoreAttachmentGroupsTest, AccessToMissingGroupThrows)
 {
-    MoleculeAttachmentGroups groups;
-    EXPECT_THROW(groups.group(0), Exception);
-    EXPECT_THROW(groups.removeGroup(0), Exception);
+    Molecule mol;
+    EXPECT_THROW(mol.attachment_groups.group(0), Exception);
+    EXPECT_THROW(mol.removeAttachmentGroup(0), Exception);
 }
 
 TEST_F(IndigoCoreAttachmentGroupsTest, MembershipIsASet)
@@ -166,25 +165,25 @@ TEST_F(IndigoCoreAttachmentGroupsTest, RemovingANonMemberAtomLeavesTheGroupAlone
     EXPECT_EQ(5u, mol.attachment_groups.group(group).atoms().size());
 }
 
-// The anchor of the pi system is transit data: whatever the file put on the
-// absorbed anchor atom comes back unchanged, and no atom charge is touched.
-TEST_F(IndigoCoreAttachmentGroupsTest, AnchorSurvivesCloningUnchanged)
+// A group is a set of atoms and nothing else: the charge of the pi system stays on
+// the atom the file put it on, and cloning must not invent one anywhere.
+TEST_F(IndigoCoreAttachmentGroupsTest, GroupCarriesNoChargeOfItsOwn)
 {
     Molecule source;
     makeRingAndMetal(source);
-    source.attachment_groups.group(addRingGroup(source)).setAnchor({-1, 2});
+    source.setAtomCharge(0, -1); // as a V3000 file may write it, on a ring atom
+    addRingGroup(source);
 
     Molecule copy;
     copy.clone(source);
 
     ASSERT_EQ(1, copy.attachment_groups.groupCount());
-    const AttachmentGroup& copied = copy.attachment_groups.group(copy.attachment_groups.begin());
-    EXPECT_EQ(5u, copied.atoms().size());
-    EXPECT_EQ(-1, copied.anchor().charge);
-    EXPECT_EQ(2, copied.anchor().radical);
+    EXPECT_EQ(5u, copy.attachment_groups.group(copy.attachment_groups.begin()).atoms().size());
 
+    int total = 0;
     for (int i = copy.vertexBegin(); i != copy.vertexEnd(); i = copy.vertexNext(i))
-        EXPECT_EQ(0, copy.getAtomCharge(i)) << "the anchor charge leaked onto atom " << i;
+        total += copy.getAtomCharge(i);
+    EXPECT_EQ(-1, total) << "the charge must stay exactly where the file put it";
 }
 
 TEST_F(IndigoCoreAttachmentGroupsTest, SkipFlagDropsGroups)

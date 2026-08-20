@@ -447,6 +447,152 @@ TEST_F(IndigoCoreHapticBondsTest, SkipFlagDropsBondsAndGroups)
     EXPECT_EQ(0, copy.haptic_bonds.count());
 }
 
+// An atom-to-atom bond has no group at all, so the flag that drops groups has no
+// business dropping it.
+TEST_F(IndigoCoreHapticBondsTest, SkipAttachmentGroupsKeepsAnAtomToAtomBond)
+{
+    Molecule source;
+    makeRingAndMetal(source);
+    source.addHapticBond(Endpoint::atom(0), Endpoint::atom(5));
+
+    Molecule copy;
+    copy.clone(source, nullptr, nullptr, SKIP_ATTACHMENT_GROUPS);
+
+    EXPECT_EQ(0, copy.attachment_groups.groupCount());
+    EXPECT_EQ(1, copy.haptic_bonds.count());
+}
+
+TEST_F(IndigoCoreHapticBondsTest, SkipAllDropsBondsAndGroupsToo)
+{
+    Molecule source;
+    makeRingAndMetal(source);
+    source.addHapticBond(Endpoint::group(addRingGroup(source)), Endpoint::atom(5));
+    source.addHapticBond(Endpoint::atom(0), Endpoint::atom(5));
+
+    Molecule copy;
+    copy.clone(source, nullptr, nullptr, SKIP_ALL);
+
+    EXPECT_EQ(0, copy.attachment_groups.groupCount());
+    EXPECT_EQ(0, copy.haptic_bonds.count());
+}
+
+// The group takes any int as a member; the bond is where that meets the molecule.
+TEST_F(IndigoCoreHapticBondsTest, BondToAGroupHoldingAStrangeAtomIsRejected)
+{
+    Molecule mol;
+    makeRingAndMetal(mol);
+    const int group = mol.attachment_groups.addGroup();
+    mol.attachment_groups.group(group).setAtoms({0, 1, 99});
+
+    EXPECT_THROW(mol.addHapticBond(Endpoint::group(group), Endpoint::atom(5)), Exception);
+}
+
+// A copy lands in the slot freed below end(), and a walk that reads the pool as it
+// goes would take that copy for a source of its own.
+TEST_F(IndigoCoreHapticBondsTest, SelfMergeOverAFreedSlotCopiesEachGroupOnce)
+{
+    Molecule mol;
+    makeRingAndMetal(mol);
+    addRingGroup(mol);
+    const int hole = mol.attachment_groups.addGroup();
+    mol.attachment_groups.group(hole).setAtoms({5});
+    mol.removeAttachmentGroup(hole); // the copy below lands in this slot
+
+    auto& groups = mol.attachment_groups;
+    Array<int> group_mapping;
+    groups.mergeWithSubmolecule(groups, identity(6), group_mapping);
+
+    EXPECT_EQ(2, groups.groupCount()); // the original and exactly one copy of it
+}
+
+// The bonds are the reason the answer differs from the graph's own, so editing them
+// has to drop the cached decomposition — nothing in the graph itself changed.
+TEST_F(IndigoCoreHapticBondsTest, EditingBondsDropsTheCachedDecomposition)
+{
+    Molecule mol;
+    makeRingAndMetal(mol);
+    const int group = addRingGroup(mol);
+    mol.addHapticBond(Endpoint::group(group), Endpoint::atom(5));
+
+    std::list<std::unordered_set<int>> before;
+    mol.collectExternalNeighbors(before);
+    ASSERT_EQ(1, mol.countComponents(before));
+
+    mol.removeAttachmentGroup(group); // the bond goes with it, the graph is untouched
+
+    std::list<std::unordered_set<int>> after;
+    mol.collectExternalNeighbors(after);
+    EXPECT_EQ(2, mol.countComponents(after)); // the ring and the metal, apart again
+}
+
+TEST_F(IndigoCoreHapticBondsTest, AddingABondDropsTheCachedDecomposition)
+{
+    Molecule mol;
+    makeRingAndMetal(mol);
+    const int lone = mol.addAtom(ELEM_C);
+    // The first answer has to be one computed *with* external neighbours, or the
+    // cache would be recomputed anyway and the test would pin nothing.
+    mol.addHapticBond(Endpoint::group(addRingGroup(mol)), Endpoint::atom(5));
+
+    std::list<std::unordered_set<int>> before;
+    mol.collectExternalNeighbors(before);
+    ASSERT_EQ(2, mol.countComponents(before)); // the complex, and the lone atom
+
+    mol.addHapticBond(Endpoint::atom(lone), Endpoint::atom(5));
+
+    std::list<std::unordered_set<int>> after;
+    mol.collectExternalNeighbors(after);
+    EXPECT_EQ(1, mol.countComponents(after));
+}
+
+// A template atom stands for a whole monomer and is written as a node of its own, so
+// no format can address it as an end of a haptic bond; it used to load and then fail
+// on saving.
+TEST_F(IndigoCoreHapticBondsTest, TemplateAtomCannotBeAnEndpoint)
+{
+    Molecule mol;
+    makeRingAndMetal(mol);
+    const int monomer = mol.addTemplateAtom("Ala");
+
+    EXPECT_THROW(mol.addHapticBond(Endpoint::group(addRingGroup(mol)), Endpoint::atom(monomer)), Exception);
+
+    const int group = mol.attachment_groups.addGroup();
+    mol.attachment_groups.group(group).setAtoms({0, monomer});
+    EXPECT_THROW(mol.addHapticBond(Endpoint::group(group), Endpoint::atom(5)), Exception);
+}
+
+// The same trap as for the groups: a copy landing in a freed slot below end() must
+// not be read as a source of its own.
+TEST_F(IndigoCoreHapticBondsTest, SelfMergeOfBondsOverAFreedSlotCopiesEachBondOnce)
+{
+    Molecule mol;
+    makeRingAndMetal(mol);
+    mol.addHapticBond(Endpoint::atom(0), Endpoint::atom(5));
+    const int hole = mol.addHapticBond(Endpoint::atom(1), Endpoint::atom(5));
+    mol.haptic_bonds.remove(hole); // the copy below lands in this slot
+
+    Array<int> group_mapping;
+    mol.haptic_bonds.mergeWithSubmolecule(mol.haptic_bonds, identity(6), group_mapping);
+
+    EXPECT_EQ(2, mol.haptic_bonds.count()); // the original and exactly one copy of it
+}
+
+// A set that happens to be empty must not read as "no external neighbours at all",
+// or the whole decomposition is recomputed on every call.
+TEST_F(IndigoCoreHapticBondsTest, AnEmptyLeadingSetStillCountsAsExternal)
+{
+    Molecule mol;
+    makeRingAndMetal(mol);
+    mol.addHapticBond(Endpoint::group(addRingGroup(mol)), Endpoint::atom(5));
+
+    std::list<std::unordered_set<int>> neighbors;
+    neighbors.push_back({}); // what an s-group without atoms contributes
+    mol.collectExternalNeighbors(neighbors);
+
+    EXPECT_EQ(1, mol.countComponents(neighbors));
+    EXPECT_EQ(1, mol.countComponents(neighbors)); // answered from the cache, same answer
+}
+
 TEST_F(IndigoCoreHapticBondsTest, PartialGroupTakesItsBondsWithIt)
 {
     Molecule source;

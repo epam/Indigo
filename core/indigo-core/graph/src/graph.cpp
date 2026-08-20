@@ -713,7 +713,14 @@ void Graph::_calculateComponents(const std::list<std::unordered_set<int>>& exter
     }
 
     _components_valid = true;
-    _components_used_external = !external_neighbors.empty() && !external_neighbors.front().empty();
+    // Any set at all counts. Judging by the first one alone made an empty leading set
+    // read as "computed without external neighbours", recomputing on every call.
+    _components_used_external = !external_neighbors.empty();
+}
+
+void Graph::invalidateComponents()
+{
+    _components_valid = false;
 }
 
 int Graph::vertexComponent(int v_idx)
