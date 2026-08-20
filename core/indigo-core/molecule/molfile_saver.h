@@ -107,8 +107,6 @@ namespace indigo
         static bool _checkAttPointOrder(BaseMolecule& mol, int rsite);
         static bool _hasNeighborEitherBond(BaseMolecule& mol, int edge_idx);
 
-        static int _getStereocenterParity(BaseMolecule& mol, int idx);
-
         Output& _output;
         bool _v2000;
 
