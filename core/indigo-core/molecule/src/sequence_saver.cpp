@@ -846,18 +846,11 @@ static std::string get_biln_attachment_idx(const KetConnectionEndPoint& ep)
     return ap.substr(1);
 }
 
-static std::string format_biln_alias(const std::string& monomer_alias, bool strip_terminal_hyphen = false)
+static std::string format_biln_alias(const std::string& monomer_alias)
 {
     if (monomer_alias.empty())
         throw SequenceSaver::Error("Cannot save empty monomer alias in BILN format.");
     auto biln_alias = monomer_alias;
-    if (strip_terminal_hyphen && biln_alias.size() > 1)
-    {
-        if (biln_alias.back() == '-')
-            biln_alias.pop_back();
-        else if (biln_alias.front() == '-')
-            biln_alias.erase(biln_alias.begin());
-    }
     bool needs_brackets = false;
     for (auto ch : biln_alias)
     {
@@ -913,8 +906,10 @@ std::string SequenceSaver::saveBILN(KetDocument& doc)
     for (const auto& monomer_id : monomer_ids)
     {
         auto monomer_class = doc.getMonomerClass(monomer_id);
-        const auto& monomer = monomers.at(monomer_id);
         if (monomer_class != MonomerClass::AminoAcid && monomer_class != MonomerClass::CHEM)
+            throw Error(biln_export_error);
+        const auto& monomer = monomers.at(monomer_id);
+        if (monomer->monomerType() != KetBaseMonomer::MonomerType::Monomer)
             throw Error(biln_export_error);
         const int node_idx = static_cast<int>(nodes.size());
         auto const& template_id = monomer->templateId();
@@ -1247,33 +1242,6 @@ std::string SequenceSaver::saveBILN(KetDocument& doc)
         chain.topology_sort_key = make_chain_topology_key(chain);
 
     std::sort(chains.begin(), chains.end(), [&](const BilnChain& left, const BilnChain& right) {
-        auto terminal_hyphen_rank = [&](const BilnChain& chain) {
-            if (chain.monomer_count != 1 || chain.nodes.empty())
-                return 0;
-            int node_idx = chain.nodes.front();
-            for (const auto& connection : explicit_connections)
-            {
-                if (connection.node1 == node_idx)
-                {
-                    if (connection.ap1 == kAttachmentPointR2)
-                        return -1;
-                    if (connection.ap1 == kAttachmentPointR1)
-                        return 1;
-                }
-                if (connection.node2 == node_idx)
-                {
-                    if (connection.ap2 == kAttachmentPointR2)
-                        return -1;
-                    if (connection.ap2 == kAttachmentPointR1)
-                        return 1;
-                }
-            }
-            return 0;
-        };
-        auto left_hyphen_rank = terminal_hyphen_rank(left);
-        auto right_hyphen_rank = terminal_hyphen_rank(right);
-        if (left_hyphen_rank != right_hyphen_rank)
-            return left_hyphen_rank < right_hyphen_rank;
         if (left.effective_amino_acid_count != right.effective_amino_acid_count)
             return left.effective_amino_acid_count > right.effective_amino_acid_count;
         if (left.monomer_count != right.monomer_count)

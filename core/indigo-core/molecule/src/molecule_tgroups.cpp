@@ -80,6 +80,7 @@ void TGroup::reuse()
     aliasHELM.clear();
     modification_types.clear();
     aliasAxoLabs.clear();
+    aliasBILN.clear();
     fragment.reset();
 }
 

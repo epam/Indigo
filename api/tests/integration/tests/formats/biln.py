@@ -118,7 +118,7 @@ biln_to_biln = {
     ),
     "biln_multiple_nonbackbone_order": (
         "A-[Test-6-Ch](1,4)(2,3)-C.D(2,1).E(1,2)",
-        "E(1,2).A-[Test-6-Ch](1,4)(2,3)-C.D(2,1)",
+        "A-[Test-6-Ch](1,3)(2,4)-C.D(1,1).E(2,2)",
     ),
     "biln_cycle_with_extra_bond_order": (
         "C(1,1)(2,3)-C-C(2,3)-C(1,2)",
@@ -130,7 +130,7 @@ biln_to_biln = {
     ),
     "biln_equal_chain_topology_order": (
         "C(1,3).C(1,1)",
-        "C(1,3).C(1,1)",
+        "C(1,1).C(1,3)",
     ),
     "biln_library_alias": (
         "Edc",
@@ -167,7 +167,7 @@ for name in sorted(biln_to_biln.keys()):
 helm_to_biln = {
     "helm_terminal_alias": (
         "PEPTIDE1{[Ac]}|PEPTIDE2{A.K}$PEPTIDE1,PEPTIDE2,1:R2-2:R3$$$V2.0",
-        "ac(1,2).A-K(1,3)",
+        "A-K(1,3).ac(1,2)",
     ),
     "helm_terminal_hyphen_left_alias": (
         "PEPTIDE1{A.K}|PEPTIDE2{[-OMe]}$PEPTIDE1,PEPTIDE2,2:R2-1:R1$$$V2.0",
@@ -175,7 +175,7 @@ helm_to_biln = {
     ),
     "helm_three_chains": (
         "PEPTIDE1{[Ac]}|PEPTIDE2{A.K}|PEPTIDE3{[meM]}$PEPTIDE1,PEPTIDE2,1:R2-2:R3|PEPTIDE2,PEPTIDE3,2:R2-1:R1$$$V2.0",
-        "ac(1,2).A-K(1,3)-meM",
+        "A-K(1,3)-meM.ac(1,2)",
     ),
     "helm_underscore_alias": (
         "PEPTIDE1{A.[1Nal].[Cys_Bn].C}$$$$V2.0",

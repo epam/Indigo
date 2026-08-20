@@ -630,7 +630,11 @@ namespace indigo
                         setKetStrProp(mt, aliasHELM, alias_helm);
                     }
                     if (properties.contains("aliasBILN"))
-                        setKetStrProp(mt, aliasBILN, properties.at("aliasBILN"));
+                    {
+                        const char* alias_biln = properties.at("aliasBILN");
+                        if (alias_biln != nullptr && *alias_biln)
+                            setKetStrProp(mt, aliasBILN, alias_biln);
+                    }
                 }
                 catch (const Error& /* e */)
                 {
