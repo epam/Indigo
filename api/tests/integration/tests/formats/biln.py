@@ -25,8 +25,6 @@ lib = indigo.loadMonomerLibraryFromFile(
 )
 
 biln_to_helm = {
-    # Legacy integration coverage: terminal aliases must keep their
-    # explicit non-backbone BILN bonds during import/export roundtrip.
     "biln_terminal_alias": (
         "ac(1,2).A-K(1,3)",
         "PEPTIDE1{[ac]}|PEPTIDE2{A.K}$PEPTIDE1,PEPTIDE2,1:R2-2:R3$$$V2.0",

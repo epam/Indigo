@@ -1356,7 +1356,7 @@ M  END
             save_options.set("input-format", "chemical/x-indigo-ket");
             save_options.set("monomerLibrary", monomersLib);
             const res_biln = JSON.parse(indigo.convert(ket, "biln", save_options)).struct;
-            assert.equal(res_biln, "E(1,2).A-[Test-6-Ch](1,4)(2,3)-C.D(2,1)");
+            assert.equal(res_biln, "A-[Test-6-Ch](1,3)(2,4)-C.D(1,1).E(2,2)");
             options.delete();
             save_options.delete();
         });
@@ -1552,7 +1552,7 @@ M  END
             options.set("output-content-type", "application/json");
             options.set("input-format", "chemical/x-biln");
             options.set("monomerLibrary", monomersLib);
-            const biln = "C(1,3).C(1,1)";
+            const biln = "C(1,1).C(1,3)";
             const ket = JSON.parse(indigo.convert(biln, "ket", options)).struct;
             let save_options = new indigo.MapStringString();
             save_options.set("output-content-type", "application/json");
