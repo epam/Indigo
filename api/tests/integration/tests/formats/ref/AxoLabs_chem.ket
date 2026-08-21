@@ -484,7 +484,7 @@
         "fullName": "Inosine",
         "alias": "In",
         "naturalAnalogShort": "X",
-        "aliasHELM": "Hyp",
+        "aliasHELM": "In",
         "attachmentPoints": [
             {
                 "attachmentAtom": 8,
@@ -681,7 +681,7 @@
         "fullName": "Deoxy-Ribose",
         "alias": "dR",
         "naturalAnalogShort": "R",
-        "aliasHELM": "d",
+        "aliasHELM": "dR",
         "attachmentPoints": [
             {
                 "attachmentAtom": 9,
@@ -895,7 +895,8 @@
         "fullName": "Phosphate",
         "alias": "P",
         "naturalAnalogShort": "P",
-        "aliasHELM": "p",
+        "aliasHELM": "P",
+        "aliasAxoLabs": "p",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -997,7 +998,7 @@
         "fullName": "5-methylcytosine",
         "alias": "5meC",
         "naturalAnalogShort": "C",
-        "aliasHELM": "m5C",
+        "aliasHELM": "5meC",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1369,7 +1370,7 @@
         "fullName": "2'-O-Methoxyethyl ribose",
         "alias": "MOE",
         "naturalAnalogShort": "R",
-        "aliasHELM": "moe",
+        "aliasHELM": "MOE",
         "attachmentPoints": [
             {
                 "attachmentAtom": 6,
@@ -1660,7 +1661,7 @@
         "fullName": "Ribose",
         "alias": "R",
         "naturalAnalogShort": "R",
-        "aliasHELM": "r",
+        "aliasHELM": "R",
         "attachmentPoints": [
             {
                 "attachmentAtom": 10,
@@ -1850,7 +1851,7 @@
                     1,
                     7
                 ],
-                "stereo": 1
+                "stereo": 6
             },
             {
                 "type": 1,
@@ -1890,7 +1891,9 @@
         "classHELM": "CHEM",
         "fullName": "6-amino-hexanol",
         "alias": "A6OH",
+        "aliasHELM": "A6OH",
         "aliasAxoLabs": "(NHC6)",
+        "aliasBILN": "A6OH",
         "attachmentPoints": [
             {
                 "attachmentAtom": 2,

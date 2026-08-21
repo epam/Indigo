@@ -255,6 +255,19 @@ void IndigoSdfSaver::saveMonomerLibrary(const MonomerTemplateLibrary& monomers_l
     indigo.initMolfileSaver(saver);
     saver.mode = MolfileSaver::MODE_3000;
 
+    auto print_alias = [&](const MonomerTemplate& mt, MonomerTemplate::StringProps alias_code, const char* alias_str) {
+        if (mt.hasStringProp(toUType(alias_code)))
+        {
+            std::string alias_value = mt.getStringProp(toUType(alias_code));
+            auto first = alias_value.find_first_not_of(" \t\n\r\f\v");
+            if (first == std::string::npos)
+                alias_value.clear();
+            else
+                alias_value = alias_value.substr(first, alias_value.find_last_not_of(" \t\n\r\f\v") - first + 1);
+            _output.printf(">  <%s>\n%s\n\n", alias_str, alias_value.c_str());
+        }
+    };
+
     for (auto& template_kvp : monomers_library.monomerTemplates())
     {
         auto& mt = template_kvp.second;
@@ -264,16 +277,8 @@ void IndigoSdfSaver::saveMonomerLibrary(const MonomerTemplateLibrary& monomers_l
         mol.tgroups.getTGroup(0).copy(*tg);
         saver.saveBaseMolecule(mol);
         _output.printf(">  <%s>\n%s\n\n", "type", "monomerTemplate");
-        if (mt.hasStringProp(toUType(MonomerTemplate::StringProps::aliasHELM)))
-        {
-            std::string alias_helm = mt.getStringProp(toUType(MonomerTemplate::StringProps::aliasHELM));
-            auto first = alias_helm.find_first_not_of(" \t\n\r\f\v");
-            if (first == std::string::npos)
-                alias_helm.clear();
-            else
-                alias_helm = alias_helm.substr(first, alias_helm.find_last_not_of(" \t\n\r\f\v") - first + 1);
-            _output.printf(">  <%s>\n%s\n\n", "aliasHELM", alias_helm.c_str());
-        }
+        print_alias(mt, MonomerTemplate::StringProps::aliasHELM, "aliasHELM");
+        print_alias(mt, MonomerTemplate::StringProps::aliasBILN, "aliasBILN");
 
         printIdtAlias(mt.idtAlias(), _output);
 

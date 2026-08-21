@@ -3616,7 +3616,9 @@ M  END
         #     file.write(result_dna.text)
         # with open(os.path.join(ref_path, "peptide_ref") + ".ket", "w") as file:
         #     file.write(result_peptide.text)
-        # with open(os.path.join(ref_path, "peptide_ref_ad") + ".ket", "w") as file:
+        # with open(
+        #     os.path.join(ref_path, "peptide_ref_ad") + ".ket", "w"
+        # ) as file:
         #     file.write(result_peptide_ad_dna.text)
 
         with open(os.path.join(ref_path, "rna_ref") + ".ket", "r") as file:
@@ -4063,7 +4065,7 @@ M  END
         self.assertEqual(helm_ref, result_helm)
 
         # BILN with terminal alias cross-link
-        biln_cross = "Ac(1,2).A-K(1,3)"
+        biln_cross = "ac(1,2).A-K(1,3)"
         helm_cross_ref = (
             "PEPTIDE1{[ac]}|PEPTIDE2{A.K}"
             "$PEPTIDE1,PEPTIDE2,1:R2-2:R3$$$V2.0"

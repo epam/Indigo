@@ -237,6 +237,7 @@
         "alias": "dF",
         "naturalAnalogShort": "F",
         "aliasHELM": "dF",
+        "aliasBILN": "dF",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -468,6 +469,7 @@
         "alias": "C",
         "naturalAnalogShort": "C",
         "aliasHELM": "C",
+        "aliasBILN": "C",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -641,6 +643,7 @@
         "alias": "F",
         "naturalAnalogShort": "F",
         "aliasHELM": "F",
+        "aliasBILN": "F",
         "attachmentPoints": [
             {
                 "attachmentAtom": 9,
@@ -872,6 +875,7 @@
         "alias": "dW",
         "naturalAnalogShort": "W",
         "aliasHELM": "dW",
+        "aliasBILN": "dW",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1179,6 +1183,7 @@
         "alias": "K",
         "naturalAnalogShort": "K",
         "aliasHELM": "K",
+        "aliasBILN": "K",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1397,6 +1402,7 @@
         "alias": "T",
         "naturalAnalogShort": "T",
         "aliasHELM": "T",
+        "aliasBILN": "T",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,

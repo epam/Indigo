@@ -29,14 +29,14 @@ lib = indigo.loadMonomerLibraryFromFile(
 # same ref ket files used to check idt-to-ket and to check ket-to-idt
 idt_data = {
     "idt_single_nucleoside": "A",
-    "idt_bases": "ATCGU/3deoxyI/",
-    "idt_prefix_suffix": "mA*rT*+C*G*+UrImA",
+    "idt_bases": "ATCG/ideoxyU//3deoxyI/",
+    "idt_prefix_suffix": "mA*rT*+C*G*+U/iRiboI/mA",
     "idt_modifications": "/52MOErA/*/i2MOErA//32MOErA/",
     "idt_52moera_with_3phos": "/52MOErA//3Phos/",
     "idt_std_phosphates": "/5Phos/ATG/3Phos/",
     "idt_mod_phosphates": "/5Phos//i2MOErC//3Phos/",
     "idt_mixed": "/5Phos/+A*/i2MOErA/*rG/3Phos/",
-    "idt_many_molecules": "ACTG\n/52MOErA/*AU/3Phos/\nAC/i2MOErC//3Phos/\nTACG",
+    "idt_many_molecules": "ACTG\n/52MOErA/*A/ideoxyU/\nAC/i2MOErC//3Phos/\nTACG",
     "idt_unresolved": "/unr1//unr2/",
     "idt_unresolved_many": "/unr0/A/unr1/C/unr2/ACTG/unr3/G/unr4/",
     "idt_52moera": "/52MOErA/",
