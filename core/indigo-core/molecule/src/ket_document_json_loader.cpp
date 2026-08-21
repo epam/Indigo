@@ -68,15 +68,15 @@ void KetDocumentJsonLoader::parseConnections(const rapidjson::Value& connections
         const auto& connection = connections[i];
         // A haptic connection carries "type" instead, and belongs to a molecule rather
         // than to a monomer document. Reading the absent member is UB in release.
-        if (!connection.HasMember(KetConnectionType))
+        if (!connection.HasMember(KetConnectionTypeField))
             throw Error("Connection without \"connectionType\" is not supported in a monomer document");
 
-        std::string connection_type = connection[KetConnectionType].GetString();
+        std::string connection_type = connection[KetConnectionTypeField].GetString();
         if (connection_type == KetConnectionSingle || connection_type == KetConnectionHydro)
         {
             KetConnectionEndPoint ep1, ep2;
-            ep1.parseOptsFromKet(connection[KetEndpoint1]);
-            ep2.parseOptsFromKet(connection[KetEndpoint2]);
+            ep1.parseOptsFromKet(connection[KetEndpoint1Field]);
+            ep2.parseOptsFromKet(connection[KetEndpoint2Field]);
             normalizeTemplateEndpointId(ep1, resolveTemplateId);
             normalizeTemplateEndpointId(ep2, resolveTemplateId);
             auto& conn = addConnection(connection_type, ep1, ep2);
@@ -171,9 +171,9 @@ void KetDocumentJsonLoader::parseJson(const std::string& json_str, KetDocument& 
                 throw Error("Unsupported node for molecule");
         }
     }
-    if (root.HasMember(KetConnections))
+    if (root.HasMember(KetConnectionsField))
     {
-        parseConnections(root[KetConnections],
+        parseConnections(root[KetConnectionsField],
                          [&document](const std::string& connection_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2) -> KetConnection& {
                              return document.addConnection(connection_type, ep1, ep2);
                          });
@@ -259,10 +259,10 @@ void KetDocumentJsonLoader::parseMonomerGroupTemplate(const rapidjson::Value& mt
 
     auto& mon_group_template = addMonomerGroupTemplate(id, name, monomer_class, idt_alias, template_refs);
 
-    if (mt_json.HasMember(KetConnections))
+    if (mt_json.HasMember(KetConnectionsField))
     {
         parseConnections(
-            mt_json[KetConnections],
+            mt_json[KetConnectionsField],
             [&mon_group_template](const std::string& connection_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2) -> KetConnection& {
                 return mon_group_template.addConnection(connection_type, ep1, ep2);
             },

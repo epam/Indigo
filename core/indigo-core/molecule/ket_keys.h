@@ -22,27 +22,40 @@
 // Field names of the KET wire format, shared by its readers and writers.
 // Covers the haptic bond feature (#3233) only; the rest of the vocabulary is
 // still inline. Contract: Task/3233/KET-CONTRACT.md.
+//
+// A `Field` suffix marks a JSON key. Names without it are KET *values*, in the
+// style of KetConnectionSingle / KetConnectionHydro (monomers_defs.h). Neither
+// kind is a type, though Ket* is also the prefix of the classes in ket_objects.h.
 
 namespace indigo
 {
-    inline constexpr const char* KetConnections = "connections";
-    // A haptic connection is keyed by "type", the monomer ones by "connectionType"
-    // (KET-CONTRACT.md §5.1) - reading the wrong key silently skips the connection.
-    inline constexpr const char* KetConnectionKind = "type";
-    inline constexpr const char* KetConnectionType = "connectionType";
-    inline constexpr const char* KetConnectionHaptic = "haptic";
+    // Generic keys: each is spelled the same wherever it appears, but says nothing
+    // about what the object around it is. "type" alone distinguishes a molecule
+    // node from an rgroup, a monomerTemplate, a query component and an atom list.
+    inline constexpr const char* KetTypeField = "type";
+    inline constexpr const char* KetIdField = "id";
+    inline constexpr const char* KetAtomsField = "atoms";
 
-    inline constexpr const char* KetEndpoint1 = "endpoint1";
-    inline constexpr const char* KetEndpoint2 = "endpoint2";
-    inline constexpr const char* KetMoleculeId = "moleculeId";
-    inline constexpr const char* KetAtomId = "atomId";
-    inline constexpr const char* KetAttachmentGroupId = "attachmentGroupId";
+    // Connections of the root.
+    inline constexpr const char* KetConnectionsField = "connections";
+    // A haptic connection is discriminated by KetTypeField, the monomer ones carry
+    // this key instead (KET-CONTRACT.md §5.1). Reading the wrong one silently skips
+    // the connection.
+    inline constexpr const char* KetConnectionTypeField = "connectionType";
+    inline constexpr const char* KetConnectionHaptic = "haptic"; // value of KetTypeField
 
-    inline constexpr const char* KetAttachmentGroups = "attachmentGroups";
-    inline constexpr const char* KetGroupId = "id";
-    inline constexpr const char* KetGroupAtoms = "atoms";
+    inline constexpr const char* KetEndpoint1Field = "endpoint1";
+    inline constexpr const char* KetEndpoint2Field = "endpoint2";
+    inline constexpr const char* KetMoleculeIdField = "moleculeId";
+    inline constexpr const char* KetAtomIdField = "atomId";
+    inline constexpr const char* KetAttachmentGroupIdField = "attachmentGroupId";
 
-    inline constexpr const char* KetMoleculePrefix = "mol";
+    // Attachment groups, declared by a molecule node; a group object uses the
+    // generic KetIdField and KetAtomsField above.
+    inline constexpr const char* KetAttachmentGroupsField = "attachmentGroups";
+
+    // Not a key: the prefix a molecule node is referenced by, as in "mol0".
+    inline constexpr const char* KetMoleculeRefPrefix = "mol";
 }
 
 #endif
