@@ -63,6 +63,7 @@ files = [
     "3343-dir-expanded",
     "issue_3759_one_atom_two_ap",
     "issue_3759_one_atom_three_ap",
+    "issue_3847",
 ]
 
 native_precision = [
@@ -72,6 +73,7 @@ native_precision = [
     "issue_2958_map_template",
     "issue_3759_one_atom_two_ap",
     "issue_3759_one_atom_three_ap",
+    "issue_3847",
 ]
 
 with_lib = [
@@ -86,6 +88,7 @@ with_lib = [
     "3094-chem-3000",
     "issue_3759_one_atom_two_ap",
     "issue_3759_one_atom_three_ap",
+    "issue_3847",
 ]
 
 lib = indigo.loadMonomerLibraryFromFile(
