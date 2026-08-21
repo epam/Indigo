@@ -93,7 +93,8 @@ protected:
 
     // Ferrocene: two cyclopentadienyl rings, each an attachment group bonded to the
     // iron between them. Coordinates are given so that saving needs no layout.
-    static void makeFerrocene(Molecule& mol)
+    // Returns the index of the iron, so callers do not hard-code it.
+    static int makeFerrocene(Molecule& mol)
     {
         static const float ring_x[5] = {0.0f, 0.95f, 0.59f, -0.59f, -0.95f};
         static const float ring_y[5] = {1.0f, 0.31f, -0.81f, -0.81f, 0.31f};
@@ -117,6 +118,8 @@ protected:
                 mol.attachment_groups.group(group).addAtom(ring * 5 + i);
             mol.addHapticBond(HapticBond::Endpoint::group(group), HapticBond::Endpoint::atom(metal));
         }
+
+        return metal;
     }
 };
 
@@ -533,9 +536,9 @@ TEST_F(IndigoCoreHapticKetTest, SaveOfAPlainMoleculeHasNoConnections)
 TEST_F(IndigoCoreHapticKetTest, VariableAttachmentBondIsNotWrittenAsHaptic)
 {
     Molecule mol;
-    makeFerrocene(mol);
+    const int metal = makeFerrocene(mol);
     const int group = mol.attachment_groups.begin();
-    mol.addHapticBond(HapticBond::Endpoint::group(group), HapticBond::Endpoint::atom(10), _BOND_VARIABLE_ATTACHMENT); // 10 = the iron
+    mol.addHapticBond(HapticBond::Endpoint::group(group), HapticBond::Endpoint::atom(metal), _BOND_VARIABLE_ATTACHMENT);
 
     const std::string saved = saveKet(mol);
     EXPECT_EQ(2u, countOccurrences(saved, "\"type\":\"haptic\""));

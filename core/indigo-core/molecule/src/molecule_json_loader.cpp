@@ -1256,48 +1256,48 @@ HapticBond::Endpoint MoleculeJsonLoader::resolveHapticEndpoint(const rapidjson::
                                                                const std::vector<std::map<std::string, int>>& ag_mappings)
 {
     if (!endpoint.HasMember(KetKeyMoleculeId) || !endpoint[KetKeyMoleculeId].IsString())
-        throw Error("Haptic connection endpoint requires a string \"%s\"", KetKeyMoleculeId);
+        throw Error("Haptic connection endpoint requires a string '%s'", KetKeyMoleculeId);
 
     const char* mol_ref = endpoint[KetKeyMoleculeId].GetString();
     const std::string prefix(KetMoleculeRefPrefix);
     const int mol_id = std::string(mol_ref).compare(0, prefix.size(), prefix) == 0 ? parseNumericId(mol_ref + prefix.size()) : -1;
     if (mol_id < 0 || mol_id >= mol_mappings.size())
-        throw Error("Haptic connection refers to an unknown molecule \"%s\"", mol_ref);
+        throw Error("Haptic connection refers to an unknown molecule '%s'", mol_ref);
 
     if (endpoint.HasMember(KetKeyAttachmentGroupId))
     {
         if (!endpoint[KetKeyAttachmentGroupId].IsString())
-            throw Error("\"%s\" of a haptic connection must be a string", KetKeyAttachmentGroupId);
+            throw Error("'%s' of a haptic connection must be a string", KetKeyAttachmentGroupId);
 
         const std::string ag_id = endpoint[KetKeyAttachmentGroupId].GetString();
         const auto& ag_mapping = ag_mappings[mol_id];
         const auto it = ag_mapping.find(ag_id);
         if (it == ag_mapping.end())
-            throw Error("Haptic connection refers to an unknown attachment group \"%s\"", ag_id.c_str());
+            throw Error("Haptic connection refers to an unknown attachment group '%s'", ag_id.c_str());
         return HapticBond::Endpoint::group(it->second);
     }
 
     if (endpoint.HasMember(KetKeyAtomId))
     {
         if (!endpoint[KetKeyAtomId].IsString())
-            throw Error("\"%s\" of a haptic connection must be a string", KetKeyAtomId);
+            throw Error("'%s' of a haptic connection must be a string", KetKeyAtomId);
 
         const Array<int>& atoms = mol_mappings[mol_id];
         const char* atom_ref = endpoint[KetKeyAtomId].GetString();
         const int atom_id = parseNumericId(atom_ref);
         if (atom_id < 0 || atom_id >= atoms.size())
-            throw Error("Haptic connection refers to a non-existent atom \"%s\" of \"%s\"", atom_ref, mol_ref);
+            throw Error("Haptic connection refers to a non-existent atom '%s' of '%s'", atom_ref, mol_ref);
         return HapticBond::Endpoint::atom(atoms[atom_id]);
     }
 
-    throw Error("Haptic connection endpoint requires \"%s\" or \"%s\"", KetKeyAtomId, KetKeyAttachmentGroupId);
+    throw Error("Haptic connection endpoint requires '%s' or '%s'", KetKeyAtomId, KetKeyAttachmentGroupId);
 }
 
 void MoleculeJsonLoader::loadHapticConnection(const rapidjson::Value& connection, BaseMolecule& mol, const PtrArray<Array<int>>& mol_mappings,
                                               const std::vector<std::map<std::string, int>>& ag_mappings)
 {
     if (!connection.HasMember(KetKeyEndpoint1) || !connection.HasMember(KetKeyEndpoint2))
-        throw Error("Haptic connection requires \"%s\" and \"%s\"", KetKeyEndpoint1, KetKeyEndpoint2);
+        throw Error("Haptic connection requires '%s' and '%s'", KetKeyEndpoint1, KetKeyEndpoint2);
 
     // The pairs the endpoints may not form - two groups, an atom with itself, an
     // atom with its own group - are rejected by addHapticBond for every producer.
@@ -1310,35 +1310,35 @@ std::map<std::string, int> MoleculeJsonLoader::parseAttachmentGroups(const rapid
     std::map<std::string, int> ids;
 
     if (!groups.IsArray())
-        throw Error("\"%s\" must be an array", KetKeyAttachmentGroups);
+        throw Error("'%s' must be an array", KetKeyAttachmentGroups);
 
     for (rapidjson::SizeType i = 0; i < groups.Size(); ++i)
     {
         const auto& group = groups[i];
         if (!group.IsObject() || !group.HasMember(KetKeyId) || !group.HasMember(KetKeyAtoms))
-            throw Error("Attachment group requires \"%s\" and \"%s\"", KetKeyId, KetKeyAtoms);
+            throw Error("Attachment group requires '%s' and '%s'", KetKeyId, KetKeyAtoms);
 
         if (!group[KetKeyId].IsString())
-            throw Error("\"%s\" of an attachment group must be a string", KetKeyId);
+            throw Error("'%s' of an attachment group must be a string", KetKeyId);
 
         const char* id = group[KetKeyId].GetString();
         if (ids.count(id) != 0)
-            throw Error("Duplicate attachment group id \"%s\"", id);
+            throw Error("Duplicate attachment group id '%s'", id);
 
         const auto& atoms = group[KetKeyAtoms];
         if (!atoms.IsArray() || atoms.Size() == 0)
-            throw Error("Attachment group \"%s\" has no atoms", id);
+            throw Error("Attachment group '%s' has no atoms", id);
 
         std::vector<int> members;
         members.reserve(atoms.Size());
         for (rapidjson::SizeType j = 0; j < atoms.Size(); ++j)
         {
             if (!atoms[j].IsInt())
-                throw Error("Attachment group \"%s\" has a non-integer atom index", id);
+                throw Error("Attachment group '%s' has a non-integer atom index", id);
 
             const int atom_idx = atoms[j].GetInt();
             if (atom_idx < 0 || atom_idx >= atom_mapping.size() || atom_mapping[atom_idx] < 0)
-                throw Error("Attachment group \"%s\" refers to a non-existent atom %d", id, atom_idx);
+                throw Error("Attachment group '%s' refers to a non-existent atom %d", id, atom_idx);
             members.push_back(atom_mapping[atom_idx]);
         }
 
