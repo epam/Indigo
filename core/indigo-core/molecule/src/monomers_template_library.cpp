@@ -455,6 +455,9 @@ namespace indigo
     {
         for (auto& it : _monomer_templates)
         {
+            auto monomer_class = it.second.monomerClass();
+            if (monomer_class != MonomerClass::AminoAcid && monomer_class != MonomerClass::CHEM)
+                continue;
             if (hasKetStrProp(it.second, aliasBILN) && getKetStrProp(it.second, aliasBILN) == alias)
                 return it.second.id();
         }
