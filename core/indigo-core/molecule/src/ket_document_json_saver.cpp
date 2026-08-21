@@ -111,21 +111,21 @@ static void saveConnections(JsonWriter& writer, const std::vector<KetConnection>
     if (connections.empty())
         return;
 
-    writer.Key(KetConnectionsField);
+    writer.Key(KetKeyConnections);
     writer.StartArray();
     for (const auto& connection : connections)
     {
         writer.StartObject();
-        saveStr(writer, KetConnectionTypeField, connection.connectionType());
+        saveStr(writer, KetKeyConnectionType, connection.connectionType());
         connection.saveOptsToKet(writer);
-        writer.Key(KetEndpoint1Field);
+        writer.Key(KetKeyEndpoint1);
         writer.StartObject();
         if (monomer_group_template != nullptr)
             saveMonomerTemplateConnectionEndpoint(writer, connection.ep1(), *monomer_group_template);
         else
             saveConnectionEndpoint(writer, connection.ep1());
         writer.EndObject();
-        writer.Key(KetEndpoint2Field);
+        writer.Key(KetKeyEndpoint2);
         writer.StartObject();
         if (monomer_group_template != nullptr)
             saveMonomerTemplateConnectionEndpoint(writer, connection.ep2(), *monomer_group_template);

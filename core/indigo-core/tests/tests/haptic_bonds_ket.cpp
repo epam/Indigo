@@ -347,6 +347,19 @@ TEST_F(IndigoCoreHapticKetTest, NonNumericAtomIdIsRejected)
     EXPECT_NE(std::string::npos, loadKetError(json.c_str()).find("non-existent atom"));
 }
 
+// 2^32 + 1. While the accumulator was a `long` this wrapped to 1 on LLP64 (Win64,
+// where long is 32 bits), so an out-of-range id bound itself to the second atom.
+TEST_F(IndigoCoreHapticKetTest, OutOfRangeAtomIdDoesNotWrapAround)
+{
+    std::string json(KET_BONDED_PAIR_WITH_HAPTIC);
+    const std::string endpoint = "\"atomId\": \"1\"";
+    const size_t pos = json.find(endpoint);
+    ASSERT_NE(std::string::npos, pos);
+    json.replace(pos, endpoint.size(), "\"atomId\": \"4294967297\"");
+
+    EXPECT_NE(std::string::npos, loadKetError(json.c_str()).find("non-existent atom"));
+}
+
 // The other trap of the same parser: extract_id()'s stoi() throws a std::exception,
 // not an Indigo one, on a malformed suffix.
 TEST_F(IndigoCoreHapticKetTest, NonNumericMoleculeIdIsRejected)
