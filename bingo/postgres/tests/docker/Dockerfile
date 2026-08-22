@@ -3,6 +3,11 @@ FROM postgres:17
 # The harness intentionally tests the exact shared object that will be deployed.
 # Copy a built libbingo-postgres.so into this directory before `docker compose build`.
 COPY bingo/postgres/tests/docker/libbingo-postgres.so /usr/lib/postgresql/17/lib/libbingo-postgres.so
+RUN mkdir -p /opt/bingo-harness \
+    && test -s /usr/lib/postgresql/17/lib/libbingo-postgres.so \
+    && ldd /usr/lib/postgresql/17/lib/libbingo-postgres.so \
+    && sha256sum /usr/lib/postgresql/17/lib/libbingo-postgres.so \
+       > /opt/bingo-harness/libbingo-postgres.sha256
 
 # Generate the SQL bindings from the same source templates as the 1.45 package.
 COPY bingo/postgres/setup/bingo-pg-install.sh /opt/bingo-package/bingo-pg-install.sh
