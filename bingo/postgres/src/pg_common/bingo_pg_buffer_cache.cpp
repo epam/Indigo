@@ -9,25 +9,21 @@
 
 using namespace indigo;
 
-BingoPgBufferCache::BingoPgBufferCache(int block_id, PG_OBJECT index_ptr, bool write, bool wal_enabled)
+BingoPgBufferCache::BingoPgBufferCache(int block_id, PG_OBJECT index_ptr, bool write, bool wal_enabled, unsigned int reusable_tail_start)
     : _blockId(block_id), _index(index_ptr), _write(write), _walEnabled(wal_enabled)
 {
     _buffer.setWalEnabled(_walEnabled);
+    _buffer.setReusableTailStart(reusable_tail_start);
     if (_write)
     {
-        /*
-         * Keep the freshly extended page locked until the derived cache has
-         * installed its structurally valid first tuple. This prevents a crash
-         * from leaving a published PageInit-only Bingo page.
-         */
         _buffer.writeNewBuffer(_index, _blockId);
     }
 }
 
 IMPL_ERROR(BingoPgBufferCacheMap, "bingo buffer cache");
 
-BingoPgBufferCacheMap::BingoPgBufferCacheMap(int block_id, PG_OBJECT index_ptr, bool write, bool wal_enabled)
-    : BingoPgBufferCache(block_id, index_ptr, write, wal_enabled)
+BingoPgBufferCacheMap::BingoPgBufferCacheMap(int block_id, PG_OBJECT index_ptr, bool write, bool wal_enabled, unsigned int reusable_tail_start)
+    : BingoPgBufferCache(block_id, index_ptr, write, wal_enabled, reusable_tail_start)
 {
     if (_write)
     {
@@ -154,8 +150,8 @@ void BingoPgBufferCacheMap::_checkMapIdx(int map_idx)
 
 IMPL_ERROR(BingoPgBufferCacheFp, "bingo buffer cache fingerprints");
 
-BingoPgBufferCacheFp::BingoPgBufferCacheFp(int block_id, PG_OBJECT index_ptr, bool write, bool wal_enabled)
-    : BingoPgBufferCache(block_id, index_ptr, write, wal_enabled), _cache(BINGO_MOLS_PER_FINGERBLOCK)
+BingoPgBufferCacheFp::BingoPgBufferCacheFp(int block_id, PG_OBJECT index_ptr, bool write, bool wal_enabled, unsigned int reusable_tail_start)
+    : BingoPgBufferCache(block_id, index_ptr, write, wal_enabled, reusable_tail_start), _cache(BINGO_MOLS_PER_FINGERBLOCK)
 {
     if (_write)
     {
@@ -253,8 +249,8 @@ void BingoPgBufferCacheFp::getCopy(BingoPgExternalBitset& other)
 
 IMPL_ERROR(BingoPgBufferCacheBin, "bingo buffer cache binary data");
 
-BingoPgBufferCacheBin::BingoPgBufferCacheBin(int block_id, PG_OBJECT index_ptr, bool write, bool wal_enabled)
-    : BingoPgBufferCache(block_id, index_ptr, write, wal_enabled)
+BingoPgBufferCacheBin::BingoPgBufferCacheBin(int block_id, PG_OBJECT index_ptr, bool write, bool wal_enabled, unsigned int reusable_tail_start)
+    : BingoPgBufferCache(block_id, index_ptr, write, wal_enabled, reusable_tail_start)
 {
     if (_write)
     {
