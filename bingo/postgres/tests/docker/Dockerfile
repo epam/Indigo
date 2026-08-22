@@ -34,7 +34,8 @@ RUN yum install -y \
 RUN printf 'leak:libfontconfig\nleak:libc\n' > /opt/external.supp
 
 # Enable the GCC toolset for every subsequent RUN command. This mirrors the
-# PostgreSQL 17 builder that has previously been used successfully for Bingo.
+# maintained AlmaLinux 8 CI buildpack and the PostgreSQL 17 builder that has
+# previously been used successfully for Bingo.
 ENV PCP_DIR=/opt/rh/gcc-toolset-${DEVTOOLSET_VERSION}/root \
     PATH=/opt/rh/gcc-toolset-${DEVTOOLSET_VERSION}/root/usr/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
     PKG_CONFIG_PATH=/opt/rh/gcc-toolset-${DEVTOOLSET_VERSION}/root/usr/lib64/pkgconfig \
@@ -52,18 +53,31 @@ RUN cmake --version \
 WORKDIR /src
 COPY . /src
 
-# Install exactly the PostgreSQL 17 development package into its versioned
-# PGDG prefix. Do not use the distro's /usr/include/postgresql discovery path:
-# that was selecting PostgreSQL 18 headers in the previous builder.
+# Install the complete PostgreSQL 17 client/development dependency set through
+# PGDG's package manager rather than installing the -devel RPM with --nodeps.
+# The latter leaves required companion packages (including pg_config) absent.
+# Disable AlmaLinux's PostgreSQL module so it cannot interfere with the PGDG
+# versioned packages or introduce a different major into discovery.
 RUN set -eux; \
     yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm; \
-    curl -fsSLo /tmp/PGDG-RPM-GPG-KEY-RHEL https://download.postgresql.org/pub/repos/yum/keys/PGDG-RPM-GPG-KEY-RHEL; \
-    rpm --import /tmp/PGDG-RPM-GPG-KEY-RHEL; \
-    yumdownloader -y postgresql${POSTGRES_MAJOR_VERSION}-devel; \
-    rpm -i --nodeps postgresql${POSTGRES_MAJOR_VERSION}-devel-*.rpm; \
+    yum -qy module disable postgresql || true; \
+    yum install -y \
+      postgresql${POSTGRES_MAJOR_VERSION} \
+      postgresql${POSTGRES_MAJOR_VERSION}-devel; \
+    rpm -q \
+      postgresql${POSTGRES_MAJOR_VERSION} \
+      postgresql${POSTGRES_MAJOR_VERSION}-libs \
+      postgresql${POSTGRES_MAJOR_VERSION}-devel; \
     test -x /usr/pgsql-${POSTGRES_MAJOR_VERSION}/bin/pg_config; \
     /usr/pgsql-${POSTGRES_MAJOR_VERSION}/bin/pg_config --version | grep -E '^PostgreSQL 17([.]|$)'; \
-    test -f /usr/pgsql-${POSTGRES_MAJOR_VERSION}/include/server/postgres.h
+    /usr/pgsql-${POSTGRES_MAJOR_VERSION}/bin/pg_config --includedir; \
+    /usr/pgsql-${POSTGRES_MAJOR_VERSION}/bin/pg_config --includedir-server; \
+    /usr/pgsql-${POSTGRES_MAJOR_VERSION}/bin/pg_config --libdir; \
+    test -f "$(/usr/pgsql-${POSTGRES_MAJOR_VERSION}/bin/pg_config --includedir-server)/postgres.h"; \
+    test -f "$(/usr/pgsql-${POSTGRES_MAJOR_VERSION}/bin/pg_config --libdir)/libpq.so"; \
+    yum clean -y all
+
+ENV PATH=/usr/pgsql-${POSTGRES_MAJOR_VERSION}/bin:${PATH}
 
 # Bingo derives version metadata from Git. Mark the copied checkout safe so a
 # container build cannot fall back to the bogus 1.9.1-00000000 metadata caused
@@ -73,8 +87,9 @@ RUN git config --global --add safe.directory /src \
     && git rev-parse HEAD > /tmp/source-revision \
     && (git describe --tags --always --dirty > /tmp/source-describe || git rev-parse --short HEAD > /tmp/source-describe)
 
-# Pin both package-root hints to /usr/pgsql-17. The explicit pg_config/header
-# checks above make a wrong-major discovery fail before compilation starts.
+# Pin FindPostgreSQL's root and cache variables to PGDG's versioned PostgreSQL
+# 17 tree. FindPostgreSQL explicitly honors these cache entries, so an unrelated
+# /usr/include/postgresql/<major> installation cannot win discovery.
 RUN cmake -S /src -B /build-pg17 \
       -DCMAKE_BUILD_TYPE=Release \
       -DBUILD_BINGO_POSTGRES=ON \
@@ -86,6 +101,10 @@ RUN cmake -S /src -B /build-pg17 \
       -DBUILD_INDIGO_UTILS=OFF \
       -DCMAKE_PREFIX_PATH=/usr/pgsql-${POSTGRES_MAJOR_VERSION} \
       -DPostgreSQL_ROOT=/usr/pgsql-${POSTGRES_MAJOR_VERSION} \
+      -DPostgreSQL_INCLUDE_DIR=/usr/pgsql-${POSTGRES_MAJOR_VERSION}/include \
+      -DPostgreSQL_TYPE_INCLUDE_DIR=/usr/pgsql-${POSTGRES_MAJOR_VERSION}/include/server \
+      -DPostgreSQL_LIBRARY=/usr/pgsql-${POSTGRES_MAJOR_VERSION}/lib/libpq.so \
+    && grep -E '^PostgreSQL_(INCLUDE_DIR|TYPE_INCLUDE_DIR|LIBRARY|VERSION)' /build-pg17/CMakeCache.txt \
     && cmake --build /build-pg17 \
       --config Release \
       --target package-bingo-postgres \
