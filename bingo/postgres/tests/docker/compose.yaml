@@ -25,6 +25,7 @@ services:
     build:
       context: ../../../..
       dockerfile: bingo/postgres/tests/docker/Dockerfile
+      target: postgres-bingo
     image: bingo-postgres-wal-test:local
     environment: *postgres-environment
     command: *postgres-command
