@@ -25,35 +25,26 @@ using namespace indigo;
 
 IMPL_ERROR(BingoPgBuffer, "bingo buffer");
 
-/*
- * Empty buffer constructor
- */
 BingoPgBuffer::BingoPgBuffer()
     : _buffer(InvalidBuffer), _lock(BINGO_PG_NOLOCK), _blockIdx(0), _relation(0), _walState(nullptr), _writePage(nullptr), _walEnabled(true),
       _writeAborted(false)
 {
 }
-/*
- * New buffer constructor
- */
+
 BingoPgBuffer::BingoPgBuffer(PG_OBJECT rel_ptr, unsigned int block_num)
     : _buffer(InvalidBuffer), _lock(BINGO_PG_NOLOCK), _blockIdx(0), _relation(0), _walState(nullptr), _writePage(nullptr), _walEnabled(true),
       _writeAborted(false)
 {
     writeNewBuffer(rel_ptr, block_num);
 }
-/*
- * Existing buffer constructor
- */
+
 BingoPgBuffer::BingoPgBuffer(PG_OBJECT rel_ptr, unsigned int block_num, int lock)
     : _buffer(InvalidBuffer), _lock(BINGO_PG_NOLOCK), _blockIdx(0), _relation(0), _walState(nullptr), _writePage(nullptr), _walEnabled(true),
       _writeAborted(false)
 {
     readBuffer(rel_ptr, block_num, lock);
 }
-/*
- * Destructor
- */
+
 BingoPgBuffer::~BingoPgBuffer()
 {
     clear();
@@ -148,9 +139,11 @@ void* BingoPgBuffer::_getPage() const
     return BufferGetPage(_buffer);
 }
 
-/*
- * Changes an access for the buffer
- */
+void* BingoPgBuffer::getPage() const
+{
+    return _getPage();
+}
+
 void BingoPgBuffer::changeAccess(int lock)
 {
     if (_buffer == InvalidBuffer)
@@ -174,9 +167,7 @@ void BingoPgBuffer::changeAccess(int lock)
     if (_lock == BINGO_PG_WRITE)
         _beginWrite(false);
 }
-/*
- * Writes a new buffer with WRITE lock
- */
+
 int BingoPgBuffer::writeNewBuffer(PG_OBJECT rel_ptr, unsigned int block_num)
 {
     if (_buffer != InvalidBuffer)
@@ -261,9 +252,7 @@ int BingoPgBuffer::writeNewBuffer(PG_OBJECT rel_ptr, unsigned int block_num)
 
     return _buffer;
 }
-/*
- * Reads a buffer
- */
+
 int BingoPgBuffer::readBuffer(PG_OBJECT rel_ptr, unsigned int block_num, int lock)
 {
     if (_buffer != InvalidBuffer)
@@ -303,9 +292,6 @@ int BingoPgBuffer::readBuffer(PG_OBJECT rel_ptr, unsigned int block_num, int loc
     return _buffer;
 }
 
-/*
- * Clears and releases the buffer
- */
 void BingoPgBuffer::clear()
 {
     if (_buffer == InvalidBuffer)
