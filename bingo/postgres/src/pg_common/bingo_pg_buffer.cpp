@@ -6,6 +6,7 @@ extern "C"
 
 #include "access/generic_xlog.h"
 #include "access/itup.h"
+#include "access/xloginsert.h"
 #include "fmgr.h"
 #include "storage/bufmgr.h"
 #include "storage/bufpage.h"
@@ -27,20 +28,20 @@ IMPL_ERROR(BingoPgBuffer, "bingo buffer");
 
 BingoPgBuffer::BingoPgBuffer()
     : _buffer(InvalidBuffer), _lock(BINGO_PG_NOLOCK), _blockIdx(0), _relation(0), _walState(nullptr), _writePage(nullptr), _walEnabled(true),
-      _writeAborted(false)
+      _rawPageWal(false), _writeAborted(false)
 {
 }
 
 BingoPgBuffer::BingoPgBuffer(PG_OBJECT rel_ptr, unsigned int block_num)
     : _buffer(InvalidBuffer), _lock(BINGO_PG_NOLOCK), _blockIdx(0), _relation(0), _walState(nullptr), _writePage(nullptr), _walEnabled(true),
-      _writeAborted(false)
+      _rawPageWal(false), _writeAborted(false)
 {
     writeNewBuffer(rel_ptr, block_num);
 }
 
 BingoPgBuffer::BingoPgBuffer(PG_OBJECT rel_ptr, unsigned int block_num, int lock)
     : _buffer(InvalidBuffer), _lock(BINGO_PG_NOLOCK), _blockIdx(0), _relation(0), _walState(nullptr), _writePage(nullptr), _walEnabled(true),
-      _writeAborted(false)
+      _rawPageWal(false), _writeAborted(false)
 {
     readBuffer(rel_ptr, block_num, lock);
 }
@@ -57,13 +58,20 @@ void BingoPgBuffer::setWalEnabled(bool enabled)
     _walEnabled = enabled;
 }
 
+void BingoPgBuffer::setRawPageWal(bool enabled)
+{
+    if (_lock == BINGO_PG_WRITE || _walState != nullptr)
+        throw Error("internal error: can not change raw-page WAL mode while a bingo buffer is being written");
+    _rawPageWal = enabled;
+}
+
 void BingoPgBuffer::_beginWrite(bool full_image)
 {
     if (_buffer == InvalidBuffer)
         throw Error("internal error: can not begin writing an invalid bingo buffer");
 
     _writeAborted = false;
-    if (!_walEnabled)
+    if (!_walEnabled || _rawPageWal)
     {
         _writePage = BufferGetPage(_buffer);
         return;
@@ -104,6 +112,25 @@ void BingoPgBuffer::_finishWrite()
         }
         BINGO_PG_HANDLE(throw Error("internal error: can not finish WAL for bingo block %u: %s", _blockIdx, message));
         _walState = nullptr;
+    }
+    else if (_rawPageWal && _walEnabled)
+    {
+        Relation rel = (Relation)_relation;
+        if (RelationNeedsWAL(rel))
+        {
+            /*
+             * Do not use REGBUF_STANDARD for the Bingo metapage: useful
+             * metadata lives in bytes PostgreSQL considers the free-space hole.
+             */
+            START_CRIT_SECTION();
+            MarkBufferDirty(_buffer);
+            log_newpage_buffer(_buffer, false);
+            END_CRIT_SECTION();
+        }
+        else
+        {
+            MarkBufferDirty(_buffer);
+        }
     }
     else
     {
@@ -370,6 +397,7 @@ void* BingoPgBuffer::getIndexData(int& data_len)
 
 void BingoPgBuffer::formIndexTuple(void* map_data, int size)
 {
+    bool add_failed = false;
     BINGO_PG_TRY
     {
         Page page = (Page)_getPage();
@@ -400,12 +428,7 @@ void BingoPgBuffer::formIndexTuple(void* map_data, int size)
         itemsz = MAXALIGN(itemsz);
 
         if (PageAddItem(page, (Item)itup, itemsz, 0, false, false) == InvalidOffsetNumber)
-        {
-            pfree(itup);
-            FreeTupleDesc(index_desc);
-            _abortWrite();
-            throw Error("internal error: failed to add index item");
-        }
+            add_failed = true;
 
         pfree(itup);
         FreeTupleDesc(index_desc);
@@ -414,6 +437,12 @@ void BingoPgBuffer::formIndexTuple(void* map_data, int size)
         _abortWrite();
         throw Error("internal error: can not form index tuple: %s", message);
     });
+
+    if (add_failed)
+    {
+        _abortWrite();
+        throw Error("internal error: failed to add index item");
+    }
 }
 
 using namespace indigo;
