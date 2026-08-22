@@ -20,30 +20,36 @@ using namespace indigo;
 
 IMPL_ERROR(BingoPgSection, "bingo postgres section");
 
-BingoPgSection::BingoPgSection(BingoPgIndex& bingo_idx, int idx_strategy, int offset)
+BingoPgSection::BingoPgSection(BingoPgIndex& bingo_idx, int idx_strategy, int offset, bool create_new)
     : _index(bingo_idx.getIndexPtr()), _offset(offset), _idxStrategy(idx_strategy)
 {
     clear();
 
     const bool building = (_idxStrategy == BingoPgIndex::BUILDING_STRATEGY);
+    const bool creating = building || create_new;
     const bool wal_enabled = !building;
     _sectionInfoBuffer.setWalEnabled(wal_enabled);
 
-    if (building)
+    if (creating)
     {
         _sectionInfo.n_blocks_for_map = bingo_idx.getMapSize();
         _sectionInfo.n_blocks_for_fp = bingo_idx.getFpSize();
 
-        /*
-         * Install a valid section-info tuple as part of the initial page write.
-         * A Bingo page must never exist only as PageInit() waiting for a
-         * destructor to add its first tuple.
-         */
         _sectionInfoBuffer.writeNewBuffer(_index, offset);
         _sectionInfoBuffer.formIndexTuple(&_sectionInfo, sizeof(_sectionInfo));
         _sectionInfoBuffer.changeAccess(BINGO_PG_NOLOCK);
 
-        _existStructures = std::make_unique<BingoPgBufferCacheFp>(offset + 1, _index, true, wal_enabled);
+        if (building)
+        {
+            _existStructures = std::make_unique<BingoPgBufferCacheFp>(offset + 1, _index, true, wal_enabled);
+        }
+        else
+        {
+            {
+                BingoPgBufferCacheFp initial_exists(offset + 1, _index, true, wal_enabled);
+            }
+            _existStructures = std::make_unique<BingoPgBufferCacheFp>(offset + 1, _index, false, wal_enabled);
+        }
 
         for (int idx = 0; idx < SECTION_BITSNUMBER_PAGES; ++idx)
         {
@@ -94,7 +100,7 @@ BingoPgSection::BingoPgSection(BingoPgIndex& bingo_idx, int idx_strategy, int of
         ++block_offset;
     }
 
-    if (_idxStrategy != BingoPgIndex::READING_STRATEGY)
+    if (building)
     {
         for (int i = 0; i < map_count; ++i)
             getMapBufferCache(i);
@@ -103,8 +109,30 @@ BingoPgSection::BingoPgSection(BingoPgIndex& bingo_idx, int idx_strategy, int of
         for (int i = 0; i < bin_count; ++i)
             getBinBufferCache(i);
     }
+    else if (create_new)
+    {
+        /*
+         * A live section rollover must create every fixed page with WAL, but
+         * subsequent mutations must use normal incremental cache semantics.
+         * Temporary write-mode caches install valid zero tuples and then go
+         * away; the real caches remain lazy/read-update objects.
+         */
+        for (int i = 0; i < map_count; ++i)
+        {
+            BingoPgBufferCacheMap initial_map(_offsetMap[i], _index, true, wal_enabled);
+        }
+        for (int i = 0; i < fp_count; ++i)
+        {
+            BingoPgBufferCacheFp initial_fp(_offsetFp[i], _index, true, wal_enabled);
+        }
+    }
+    else if (_idxStrategy == BingoPgIndex::UPDATING_STRATEGY)
+    {
+        for (int i = 0; i < bin_count; ++i)
+            getBinBufferCache(i);
+    }
 
-    if (building)
+    if (creating)
     {
         _sectionInfo.n_blocks_for_bin = _buffersBin.size();
         _sectionInfo.section_size = getPagesCount();
@@ -163,11 +191,6 @@ void BingoPgSection::addStructure(BingoPgFpData& item_data)
     const int current_str = _sectionInfo.n_structures;
     elog(DEBUG1, "bingo: section: reserve structure %d", current_str);
 
-    /*
-     * Persist slot reservation before any content page is changed. If the
-     * backend crashes later, this slot remains an unpublished hole and will
-     * never be reused with stale fingerprint/map data.
-     */
     ++_sectionInfo.n_structures;
     _flushSectionInfo();
 
@@ -191,19 +214,10 @@ void BingoPgSection::addStructure(BingoPgFpData& item_data)
 
     item_data.setStructureIdx(current_str);
 
-    /*
-     * Dynamic binary-page allocation changes the section's owned page range.
-     * Persist that ownership before publishing the slot in the existence
-     * bitset so recovery can distinguish owned pages from orphan tail pages.
-     */
     _sectionInfo.n_blocks_for_bin = _buffersBin.size();
     _sectionInfo.section_size = getPagesCount();
     _flushSectionInfo();
 
-    /*
-     * This is the publication marker used by Bingo searches. It must be the
-     * final section-page mutation for a newly inserted structure.
-     */
     _existStructures->setBit(current_str, true);
 }
 
@@ -219,12 +233,6 @@ void BingoPgSection::getSectionStructures(BingoPgExternalBitset& section_bitset)
 
 void BingoPgSection::removeStructure(int mol_idx)
 {
-    /*
-     * Publish removal metadata before clearing the existence bit. A crash may
-     * temporarily leave a dead candidate visible to the heap visibility check,
-     * but must never expose a removed slot as structurally absent while its
-     * section metadata still claims no removals.
-     */
     _sectionInfo.has_removed = 1;
     _flushSectionInfo();
     _existStructures->setBit(mol_idx, false);
@@ -307,7 +315,7 @@ void BingoPgSection::_setCmfData(indigo::Array<char>& cmf_buf, int map_buf_idx, 
     BingoPgBufferCacheMap& buffer_map = getMapBufferCache(map_buf_idx);
     buffer_map.setCmfItem(map_idx, cmf_item);
 
-    elog(DEBUG1, "bingo: section: set cmf map: buffer = %d, offset = %d", ItemPointerGetBlockNumber(&cmf_item), ItemPointerGetOffsetNumber(&cmf_item));
+    elog(DEBUG1, "bingo: index: set cmf map: buffer = %d, offset = %d", ItemPointerGetBlockNumber(&cmf_item), ItemPointerGetOffsetNumber(&cmf_item));
 }
 
 void BingoPgSection::_setXyzData(indigo::Array<char>& xyz_buf, int map_buf_idx, int map_idx)
@@ -317,7 +325,7 @@ void BingoPgSection::_setXyzData(indigo::Array<char>& xyz_buf, int map_buf_idx, 
     BingoPgBufferCacheMap& buffer_map = getMapBufferCache(map_buf_idx);
     buffer_map.setXyzItem(map_idx, xyz_item);
 
-    elog(DEBUG1, "bingo: section: set xyz map: buffer = %d, offset = %d", ItemPointerGetBlockNumber(&xyz_item), ItemPointerGetOffsetNumber(&xyz_item));
+    elog(DEBUG1, "bingo: index: set xyz map: buffer = %d, offset = %d", ItemPointerGetBlockNumber(&xyz_item), ItemPointerGetOffsetNumber(&xyz_item));
 }
 
 void BingoPgSection::_setBinData(indigo::Array<char>& buf, int& last_buf, ItemPointerData& item_data)
