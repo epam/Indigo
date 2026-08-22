@@ -176,12 +176,6 @@ Datum bingo_build(PG_FUNCTION_ARGS)
         BingoPgWrapper rel_namespace;
         const char* index_schema = rel_namespace.getRelNameSpace(index->rd_id);
 
-        /*
-         * Fresh builds intentionally do not emit Generic WAL per Bingo page.
-         * Keep the build engine in an inner scope so all cached pages,
-         * dictionary data, section metadata, and metapage state are finalized
-         * before log_newpage_range() snapshots the relation.
-         */
         {
             BingoPgBuild build_engine(index, schema_name, index_schema, true);
             BINGO_PG_TRY
@@ -200,7 +194,11 @@ Datum bingo_build(PG_FUNCTION_ARGS)
 
         if (RelationNeedsWAL(index))
         {
-            log_newpage_range(index, MAIN_FORKNUM, 0, RelationGetNumberOfBlocks(index), true);
+            /*
+             * Bingo's metapage stores useful bytes in the nominal free-space
+             * hole, so the relation cannot be logged as standard pages.
+             */
+            log_newpage_range(index, MAIN_FORKNUM, 0, RelationGetNumberOfBlocks(index), false);
         }
 
         result = (IndexBuildResult*)palloc(sizeof(IndexBuildResult));
@@ -271,7 +269,7 @@ Datum bingo_buildempty(PG_FUNCTION_ARGS)
 
         if (RelationNeedsWAL(index))
         {
-            log_newpage_range(index, MAIN_FORKNUM, 0, RelationGetNumberOfBlocks(index), true);
+            log_newpage_range(index, MAIN_FORKNUM, 0, RelationGetNumberOfBlocks(index), false);
         }
     }
     PG_BINGO_END
