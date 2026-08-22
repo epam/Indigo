@@ -145,6 +145,26 @@ static void bingoIndexCallback(Relation index, ItemPointer item_ptr, Datum* valu
 static void bingoIndexCallback(Relation index, HeapTuple htup, Datum* values, bool* isnull, bool tupleIsAlive, void* state);
 #endif
 
+static void bingoLogBuiltRelation(Relation index)
+{
+    if (!RelationNeedsWAL(index))
+        return;
+
+    BlockNumber nblocks = RelationGetNumberOfBlocks(index);
+    if (nblocks == 0)
+        return;
+
+    /*
+     * Block 0 is a Bingo-specific raw metapage whose useful metadata lives in
+     * the area PostgreSQL calls the standard-page free-space hole. Log it as a
+     * non-standard full image. All remaining Bingo pages use ordinary PageInit
+     * + IndexTuple layout and can use standard-page hole compression.
+     */
+    log_newpage_range(index, MAIN_FORKNUM, 0, 1, false);
+    if (nblocks > 1)
+        log_newpage_range(index, MAIN_FORKNUM, 1, nblocks, true);
+}
+
 #if PG_VERSION_NUM / 100 >= 906
 CEXPORT IndexBuildResult* bingo_build(Relation heap, Relation index, struct IndexInfo* indexInfo)
 {
@@ -192,14 +212,7 @@ Datum bingo_build(PG_FUNCTION_ARGS)
             build_engine.flush();
         }
 
-        if (RelationNeedsWAL(index))
-        {
-            /*
-             * Bingo's metapage stores useful bytes in the nominal free-space
-             * hole, so the relation cannot be logged as standard pages.
-             */
-            log_newpage_range(index, MAIN_FORKNUM, 0, RelationGetNumberOfBlocks(index), false);
-        }
+        bingoLogBuiltRelation(index);
 
         result = (IndexBuildResult*)palloc(sizeof(IndexBuildResult));
         result->heap_tuples = reltuples;
@@ -267,10 +280,7 @@ Datum bingo_buildempty(PG_FUNCTION_ARGS)
             BingoPgBuild build_engine(index, schema_name, index_schema, true);
         }
 
-        if (RelationNeedsWAL(index))
-        {
-            log_newpage_range(index, MAIN_FORKNUM, 0, RelationGetNumberOfBlocks(index), false);
-        }
+        bingoLogBuiltRelation(index);
     }
     PG_BINGO_END
 #if PG_VERSION_NUM / 100 < 906
