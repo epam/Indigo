@@ -111,12 +111,6 @@ BingoPgSection::BingoPgSection(BingoPgIndex& bingo_idx, int idx_strategy, int of
     }
     else if (create_new)
     {
-        /*
-         * A live section rollover must create every fixed page with WAL, but
-         * subsequent mutations must use normal incremental cache semantics.
-         * Temporary write-mode caches install valid zero tuples and then go
-         * away; the real caches remain lazy/read-update objects.
-         */
         for (int i = 0; i < map_count; ++i)
         {
             BingoPgBufferCacheMap initial_map(_offsetMap[i], _index, true, wal_enabled);
@@ -340,11 +334,23 @@ void BingoPgSection::_setBinData(indigo::Array<char>& buf, int& last_buf, ItemPo
         return;
     }
 
-    const bool wal_enabled = (_idxStrategy != BingoPgIndex::BUILDING_STRATEGY);
+    const bool building = (_idxStrategy == BingoPgIndex::BUILDING_STRATEGY);
+    const bool wal_enabled = !building;
+
     if (last_buf == -1)
     {
         int block_off = _offset + getPagesCount();
-        _buffersBin.add(new BingoPgBufferCacheBin(block_off, _index, true, wal_enabled));
+        if (building)
+        {
+            _buffersBin.add(new BingoPgBufferCacheBin(block_off, _index, true, false));
+        }
+        else
+        {
+            {
+                BingoPgBufferCacheBin initial_bin(block_off, _index, true, true);
+            }
+            _buffersBin.add(new BingoPgBufferCacheBin(block_off, _index, false, true));
+        }
         last_buf = _buffersBin.size() - 1;
         _offsetBin.push(block_off);
         _sectionInfo.n_blocks_for_bin = _buffersBin.size();
@@ -356,7 +362,17 @@ void BingoPgSection::_setBinData(indigo::Array<char>& buf, int& last_buf, ItemPo
     if (!cache_bin->isEnoughSpace(buf.sizeInBytes()))
     {
         int block_off = _offset + getPagesCount();
-        _buffersBin.add(new BingoPgBufferCacheBin(block_off, _index, true, wal_enabled));
+        if (building)
+        {
+            _buffersBin.add(new BingoPgBufferCacheBin(block_off, _index, true, false));
+        }
+        else
+        {
+            {
+                BingoPgBufferCacheBin initial_bin(block_off, _index, true, true);
+            }
+            _buffersBin.add(new BingoPgBufferCacheBin(block_off, _index, false, true));
+        }
         last_buf = _buffersBin.size() - 1;
         _offsetBin.push(block_off);
         _sectionInfo.n_blocks_for_bin = _buffersBin.size();
