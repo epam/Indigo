@@ -28,6 +28,16 @@ trap cleanup EXIT
 
 run_psql -q -c "CREATE EXTENSION IF NOT EXISTS pageinspect"
 
+# Keep Bingo's own structure-processing path single-threaded so this test
+# isolates PostgreSQL/WAL behavior. Per-index WITH (NTHREADS=...) is broken on
+# modern PostgreSQL in upstream Bingo, so use Bingo's installed config table.
+run_psql -q -c "UPDATE bingo.bingo_config SET cvalue = '1' WHERE cname = 'NTHREADS'"
+nthreads=$(scalar "SELECT cvalue FROM bingo.bingo_config WHERE cname = 'NTHREADS'")
+if [[ "$nthreads" != "1" ]]; then
+    echo "failed to configure Bingo NTHREADS=1" >&2
+    exit 1
+fi
+
 wal_before=$(scalar "SELECT pg_current_wal_lsn()")
 
 run_psql <<SQL
@@ -49,8 +59,7 @@ ON ${SCHEMA}.structures (payload);
 
 CREATE INDEX structures_molecule_bingo
 ON ${SCHEMA}.structures
-USING bingo_idx (molecule bingo.molecule)
-WITH (NTHREADS=1);
+USING bingo_idx (molecule bingo.molecule);
 SQL
 
 wal_after_build=$(scalar "SELECT pg_current_wal_lsn()")
