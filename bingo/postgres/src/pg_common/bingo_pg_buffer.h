@@ -9,54 +9,30 @@
 class BingoPgBuffer
 {
 public:
-    /*
-     * Empty buffer constructor
-     */
     BingoPgBuffer();
-    /*
-     * New buffer constructor
-     */
     BingoPgBuffer(PG_OBJECT rel, unsigned int block_num);
-    /*
-     * Existing buffer constructor
-     */
     BingoPgBuffer(PG_OBJECT rel, unsigned int block_num, int lock);
-    /*
-     * Destructor
-     */
     ~BingoPgBuffer();
 
-    /*
-     * Changes an access for the buffer
-     */
     void changeAccess(int lock);
-    /*
-     * Buffer getter
-     */
     int getBuffer() const
     {
         return _buffer;
     }
 
     /*
-     * Incremental index mutations use PostgreSQL generic WAL. Fresh index
-     * builds disable per-page WAL and log the completed relation in one pass.
-     * This setting must be selected before the buffer enters write mode.
+     * Return the page image callers must use. During an incremental WAL write
+     * this is GenericXLog's private page copy; otherwise it is the shared
+     * buffer page. Callers must never bypass this with BufferGetPage() while
+     * holding BINGO_PG_WRITE.
      */
+    void* getPage() const;
+
     void setWalEnabled(bool enabled);
 
-    /*
-     * Writes a new buffer with WRITE lock
-     */
     int writeNewBuffer(PG_OBJECT rel, unsigned int block_num);
-    /*
-     * Reads a buffer
-     */
     int readBuffer(PG_OBJECT rel, unsigned int block_num, int lock);
 
-    /*
-     * Clears and releases the buffer
-     */
     void clear();
 
     void* getIndexData(int& data_len);
