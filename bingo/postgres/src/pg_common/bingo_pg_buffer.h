@@ -1,6 +1,8 @@
 #ifndef _BINGO_PG_BUFFER_H__
 #define _BINGO_PG_BUFFER_H__
 
+#include <climits>
+
 #include "base_cpp/exception.h"
 #include "bingo_postgres.h"
 /*
@@ -23,12 +25,15 @@ public:
     void* getPage() const;
 
     void setWalEnabled(bool enabled);
-    /*
-     * Bingo's metapage stores useful bytes in the area PostgreSQL considers
-     * the standard-page free-space hole. Generic WAL deliberately zeros that
-     * area, so that page must be WAL-logged as a non-standard full image.
-     */
     void setRawPageWal(bool enabled);
+
+    /*
+     * Set the first block that higher-level Bingo metadata proves is not yet
+     * published. Existing pages at or after this boundary may be overwritten
+     * while recovering an interrupted tail extension. Existing pages before
+     * it remain protected from PageInit().
+     */
+    void setReusableTailStart(unsigned int block_num);
 
     int writeNewBuffer(PG_OBJECT rel, unsigned int block_num);
     int readBuffer(PG_OBJECT rel, unsigned int block_num, int lock);
@@ -62,6 +67,7 @@ private:
     bool _walEnabled;
     bool _rawPageWal;
     bool _writeAborted;
+    unsigned int _reusableTailStart;
 };
 
 #endif /* BINGO_PG_BUFFER_H */
