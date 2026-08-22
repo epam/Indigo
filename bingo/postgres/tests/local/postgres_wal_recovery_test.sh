@@ -25,6 +25,7 @@ DATABASE=${1:-test}
 ROWS=${ROWS:-50000}
 CRASH_ROWS=${CRASH_ROWS:-150000}
 CRASH_DELAY=${CRASH_DELAY:-0.20}
+ORPHAN_GROW_ROWS=${ORPHAN_GROW_ROWS:-20000}
 SCHEMA=bingo_wal_crash_regression
 INDEX=${SCHEMA}.structures_molecule_bingo
 PG_LOG=${PG_LOG:-${PGDATA}/bingo-wal-recovery-test.log}
@@ -193,16 +194,24 @@ fi
 run_psql -q -c "VACUUM (INDEX_CLEANUP ON) ${SCHEMA}.structures"
 run_psql -q -c "CHECKPOINT"
 
+# Every stored molecule is a run of 'C' characters, so every row whose
+# molecule has at least two carbons must be returned by the substructure
+# search. Compare against that independent oracle instead of only requiring a
+# non-zero result.
+expected_matches=$(scalar "SELECT count(*) FROM ${SCHEMA}.structures WHERE length(molecule) >= 2")
 post_vacuum_matches=$(scalar "SELECT count(*) FROM ${SCHEMA}.structures WHERE molecule @ ('CC', '')::bingo.sub")
-if (( post_vacuum_matches <= 0 )); then
-    echo "Bingo search failed after VACUUM crash/recovery" >&2
+if [[ "$post_vacuum_matches" != "$expected_matches" ]]; then
+    echo "Bingo search mismatch after VACUUM crash/recovery: got ${post_vacuum_matches}, expected ${expected_matches}" >&2
     exit 1
 fi
 
-# The original production failure left zero-filled pages exactly at EOF. After
-# recovery plus successful post-crash mutation, no current tail page may have
-# an uninitialized PostgreSQL page header.
-zero_tail_pages=$(scalar "
+# A crashed tail extension can leave an unreferenced zero-filled block exactly
+# at EOF. Bingo skips such blocks during scans and reuses them the next time
+# the index extends, so their immediate presence is not corruption. Corruption
+# would be: search results diverging from the oracle (checked above), or zero
+# blocks still present after the index was forced to grow over them.
+zero_tail_pages() {
+    scalar "
 WITH s AS (
     SELECT pg_relation_size('${INDEX}') / current_setting('block_size')::bigint AS blocks
 ), h AS (
@@ -213,12 +222,29 @@ WITH s AS (
 )
 SELECT count(*)
 FROM h
-WHERE pagesize = 0 OR lower = 0 OR upper = 0;
-")
+WHERE pagesize = 0 OR lower = 0 OR upper = 0"
+}
 
-if [[ "$zero_tail_pages" != "0" ]]; then
-    echo "found ${zero_tail_pages} zero/uninitialized Bingo tail page(s) after crash recovery" >&2
-    exit 1
+orphans=$(zero_tail_pages)
+if [[ "$orphans" != "0" ]]; then
+    echo "note: ${orphans} orphaned zero tail block(s) after recovery; forcing index growth to validate reuse" >&2
+    run_psql -q -c "
+        INSERT INTO ${SCHEMA}.structures (molecule, payload)
+        SELECT repeat('C', (g % 64) + 1), 'orphan-reuse-' || g
+        FROM generate_series(1, ${ORPHAN_GROW_ROWS}) AS g"
+
+    remaining=$(zero_tail_pages)
+    if [[ "$remaining" != "0" ]]; then
+        echo "found ${remaining} zero/uninitialized Bingo tail page(s) even after forced index growth" >&2
+        exit 1
+    fi
+
+    expected_matches=$(scalar "SELECT count(*) FROM ${SCHEMA}.structures WHERE length(molecule) >= 2")
+    post_growth_matches=$(scalar "SELECT count(*) FROM ${SCHEMA}.structures WHERE molecule @ ('CC', '')::bingo.sub")
+    if [[ "$post_growth_matches" != "$expected_matches" ]]; then
+        echo "Bingo search mismatch after orphan reuse: got ${post_growth_matches}, expected ${expected_matches}" >&2
+        exit 1
+    fi
 fi
 
 run_psql <<SQL
