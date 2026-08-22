@@ -33,23 +33,14 @@ public:
         SECTION_BITSNUMBER_PAGES = 16,
         SECTION_BITS_PER_BLOCK = 4000 /* 4000 * sizeof(unsigned short) < 8K*/
     };
-    BingoPgSection(BingoPgIndex& bingo_idx, int idx_strategy, int offset);
+    BingoPgSection(BingoPgIndex& bingo_idx, int idx_strategy, int offset, bool create_new = false);
     ~BingoPgSection();
 
     void clear();
 
-    /*
-     * Returns true if section can be extended
-     */
     bool isExtended();
-    /*
-     * Add a structure to current section
-     */
     void addStructure(BingoPgFpData&);
 
-    /*
-     * Getters
-     */
     int getPagesCount() const;
     int getStructuresNumber() const
     {
