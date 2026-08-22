@@ -7,6 +7,11 @@ PSQL=${PSQL:-psql}
 
 export PSQL
 
+if [[ -f /opt/bingo-harness/libbingo-postgres.sha256 ]]; then
+    echo "Bingo library under test:"
+    cat /opt/bingo-harness/libbingo-postgres.sha256
+fi
+
 case "$suite" in
     normal)
         exec /opt/bingo-tests/postgres_wal_build_test.sh "$POSTGRES_DB"
