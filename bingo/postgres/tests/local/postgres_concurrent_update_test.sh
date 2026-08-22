@@ -20,10 +20,23 @@ run_psql() {
     "$PSQL" -X -v ON_ERROR_STOP=1 "$DATABASE" "$@"
 }
 
+scalar() {
+    run_psql -Atq -c "$1"
+}
+
 cleanup() {
     run_psql -q -c "DROP SCHEMA IF EXISTS ${SCHEMA} CASCADE" >/dev/null 2>&1 || true
 }
 trap cleanup EXIT
+
+# Keep Bingo's internal structure processing single-threaded while this test
+# creates concurrency explicitly through multiple PostgreSQL sessions.
+run_psql -q -c "UPDATE bingo.bingo_config SET cvalue = '1' WHERE cname = 'NTHREADS'"
+nthreads=$(scalar "SELECT cvalue FROM bingo.bingo_config WHERE cname = 'NTHREADS'")
+if [[ "$nthreads" != "1" ]]; then
+    echo "failed to configure Bingo NTHREADS=1" >&2
+    exit 1
+fi
 
 run_psql <<SQL
 DROP SCHEMA IF EXISTS ${SCHEMA} CASCADE;
@@ -41,8 +54,7 @@ FROM generate_series(1, ${ROWS}) AS g;
 
 CREATE INDEX structures_molecule_bingo
 ON ${SCHEMA}.structures
-USING bingo_idx (molecule bingo.molecule)
-WITH (NTHREADS=1);
+USING bingo_idx (molecule bingo.molecule);
 
 -- Updating this column makes the heap update non-HOT while leaving the Bingo
 -- key unchanged. PostgreSQL must still insert a new index TID for each row.
