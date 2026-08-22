@@ -10,11 +10,6 @@
 #include "bingo_postgres.h"
 #include "pg_bingo_context.h"
 
-/*
- * Class for handling bingo meta info and sections
- * Bingo index block are the following:
- * meta info(1 block) | config (1 block) | section mapping (10 blocks) | dictionary(100 blocks) | sections
- */
 class BingoPgBuildEngine;
 class BingoPgConfig;
 class BingoPgFpData;
@@ -89,6 +84,7 @@ public:
     void setStrategy(INDEX_STRATEGY strategy)
     {
         _strategy = strategy;
+        _metaBuffer.setRawPageWal(true);
         _metaBuffer.setWalEnabled(strategy != BUILDING_STRATEGY);
     }
 
