@@ -20,15 +20,15 @@ public:
         return _buffer;
     }
 
-    /*
-     * Return the page image callers must use. During an incremental WAL write
-     * this is GenericXLog's private page copy; otherwise it is the shared
-     * buffer page. Callers must never bypass this with BufferGetPage() while
-     * holding BINGO_PG_WRITE.
-     */
     void* getPage() const;
 
     void setWalEnabled(bool enabled);
+    /*
+     * Bingo's metapage stores useful bytes in the area PostgreSQL considers
+     * the standard-page free-space hole. Generic WAL deliberately zeros that
+     * area, so that page must be WAL-logged as a non-standard full image.
+     */
+    void setRawPageWal(bool enabled);
 
     int writeNewBuffer(PG_OBJECT rel, unsigned int block_num);
     int readBuffer(PG_OBJECT rel, unsigned int block_num, int lock);
@@ -60,6 +60,7 @@ private:
     void* _walState;
     void* _writePage;
     bool _walEnabled;
+    bool _rawPageWal;
     bool _writeAborted;
 };
 
