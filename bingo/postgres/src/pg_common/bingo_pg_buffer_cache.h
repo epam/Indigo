@@ -22,7 +22,7 @@ extern "C"
 class BingoPgBufferCache
 {
 public:
-    BingoPgBufferCache(int block_id, PG_OBJECT index_ptr, bool write);
+    BingoPgBufferCache(int block_id, PG_OBJECT index_ptr, bool write, bool wal_enabled = true);
     virtual ~BingoPgBufferCache()
     {
     }
@@ -43,6 +43,7 @@ protected:
     int _blockId;
     PG_OBJECT _index;
     bool _write;
+    bool _walEnabled;
     BingoPgBuffer _buffer;
 };
 /*
@@ -61,7 +62,7 @@ public:
         ItemPointerData xyz_map;
     } BingoMapData;
 
-    BingoPgBufferCacheMap(int block_id, PG_OBJECT index_ptr, bool write);
+    BingoPgBufferCacheMap(int block_id, PG_OBJECT index_ptr, bool write, bool wal_enabled = true);
     ~BingoPgBufferCacheMap() override;
 
     /*
@@ -92,7 +93,7 @@ private:
 class BingoPgBufferCacheFp : public BingoPgBufferCache
 {
 public:
-    BingoPgBufferCacheFp(int block_id, PG_OBJECT index_ptr, bool write);
+    BingoPgBufferCacheFp(int block_id, PG_OBJECT index_ptr, bool write, bool wal_enabled = true);
     ~BingoPgBufferCacheFp() override;
 
     void setBit(int str_idx, bool value);
@@ -126,7 +127,7 @@ public:
         BUFFER_SIZE = 8150
     };
 
-    BingoPgBufferCacheBin(int block_id, PG_OBJECT index_ptr, bool write);
+    BingoPgBufferCacheBin(int block_id, PG_OBJECT index_ptr, bool write, bool wal_enabled = true);
     ~BingoPgBufferCacheBin() override;
 
     /*
