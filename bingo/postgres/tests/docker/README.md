@@ -8,10 +8,12 @@ No host CMake, compiler, PostgreSQL development headers, or manually copied `lib
 
 `Dockerfile` is a multi-stage build:
 
-1. `bingo-builder` starts from `postgres:17-bookworm`, installs the native build toolchain and PostgreSQL 17 development headers, and runs Indigo's `package-bingo-postgres` CMake target against the current source tree.
-2. `postgres-bingo` starts from a clean `postgres:17-bookworm` image and copies only the built `libbingo-postgres.so`, generated `bingo_install.sql`, source revision metadata, and test harness files into the runtime image.
+1. `bingo-builder` starts from AlmaLinux 8, enables GCC Toolset 11, installs the PGDG PostgreSQL 17 development package into the isolated `/usr/pgsql-17` prefix, and runs Indigo's `package-bingo-postgres` CMake target against the current source tree. Both `CMAKE_PREFIX_PATH` and `PostgreSQL_ROOT` are pinned to `/usr/pgsql-17` so CMake cannot accidentally select headers from another PostgreSQL major version.
+2. `postgres-bingo` starts from a clean `postgres:17-bookworm` image and copies only the built `libbingo-postgres.so`, generated `bingo_install.sql`, source revision metadata, and test harness files into the runtime image. The image build runs `ldd` and fails if the AlmaLinux-built library has an unresolved runtime dependency.
 
-The builder marks `/src` as a safe Git directory before CMake runs so Bingo's Git-derived version metadata is not lost to Git's dubious-ownership protection. This protects against the `1.9.1-00000000` fallback version observed in older container builds.
+The builder explicitly verifies before CMake runs that `/usr/pgsql-17/bin/pg_config` reports PostgreSQL 17 and that `/usr/pgsql-17/include/server/postgres.h` exists. This is intended to catch the wrong-major header problem early; the previous Debian-based builder reached compilation with `/usr/include/postgresql/18/server` even though the target runtime was PostgreSQL 17.
+
+The builder also marks `/src` as a safe Git directory before CMake runs so Bingo's Git-derived version metadata is not lost to Git's dubious-ownership protection. This protects against the `1.9.1-00000000` fallback version observed in older container builds.
 
 The generated runtime library is installed at:
 
