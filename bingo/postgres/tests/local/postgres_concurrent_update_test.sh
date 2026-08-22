@@ -6,7 +6,7 @@ set -euo pipefail
 # TID and therefore invoking bingo_insert() with an unchanged molecule key.
 #
 # Usage:
-#   PSQL=/usr/local/pgsql/bin/psql ./postgres_concurrent_update_test.sh [database]
+#   PSQL=/usr/local/pgsql/bin/psql bash postgres_concurrent_update_test.sh [database]
 #
 # The Bingo SQL objects must already be installed in the target database.
 
