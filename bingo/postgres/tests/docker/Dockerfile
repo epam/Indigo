@@ -50,14 +50,14 @@ RUN cmake --version \
     && make --version \
     && python3 --version
 
-WORKDIR /src
-COPY . /src
-
 # Install the PG17 client/libs normally so pg_config and libpq are present, but
 # install only the -devel RPM with --nodeps. PGDG's RHEL 8 -devel package pulls
 # perl(IPC::Run), which is a PostgreSQL build/test dependency and is not needed
 # to compile Bingo. This keeps the proven isolated /usr/pgsql-17 layout without
 # adding EPEL solely to satisfy an irrelevant Perl dependency.
+#
+# Keep this layer before COPY so source-only edits reuse the expensive package
+# installation during iterative compile/test work.
 RUN set -eux; \
     yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm; \
     yum -qy module disable postgresql || true; \
@@ -81,6 +81,9 @@ RUN set -eux; \
     yum clean -y all
 
 ENV PATH=/usr/pgsql-${POSTGRES_MAJOR_VERSION}/bin:${PATH}
+
+WORKDIR /src
+COPY . /src
 
 # Bingo derives version metadata from Git. Mark the copied checkout safe so a
 # container build cannot fall back to the bogus 1.9.1-00000000 metadata caused
