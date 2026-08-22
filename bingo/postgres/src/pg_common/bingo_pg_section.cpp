@@ -28,7 +28,9 @@ BingoPgSection::BingoPgSection(BingoPgIndex& bingo_idx, int idx_strategy, int of
     const bool building = (_idxStrategy == BingoPgIndex::BUILDING_STRATEGY);
     const bool creating = building || create_new;
     const bool wal_enabled = !building;
+    const unsigned int reusable_tail_start = (!building && create_new) ? (unsigned int)offset : UINT_MAX;
     _sectionInfoBuffer.setWalEnabled(wal_enabled);
+    _sectionInfoBuffer.setReusableTailStart(reusable_tail_start);
 
     if (creating)
     {
@@ -46,7 +48,7 @@ BingoPgSection::BingoPgSection(BingoPgIndex& bingo_idx, int idx_strategy, int of
         else
         {
             {
-                BingoPgBufferCacheFp initial_exists(offset + 1, _index, true, wal_enabled);
+                BingoPgBufferCacheFp initial_exists(offset + 1, _index, true, wal_enabled, reusable_tail_start);
             }
             _existStructures = std::make_unique<BingoPgBufferCacheFp>(offset + 1, _index, false, wal_enabled);
         }
@@ -55,6 +57,7 @@ BingoPgSection::BingoPgSection(BingoPgIndex& bingo_idx, int idx_strategy, int of
         {
             BingoPgBuffer& bits_buffer = _bitsCountBuffers.push();
             bits_buffer.setWalEnabled(wal_enabled);
+            bits_buffer.setReusableTailStart(reusable_tail_start);
             bits_buffer.writeNewBuffer(_index, offset + idx + SECTION_META_PAGES);
             bits_buffer.formEmptyIndexTuple(SECTION_BITS_PER_BLOCK * sizeof(unsigned short));
             bits_buffer.changeAccess(BINGO_PG_NOLOCK);
@@ -113,11 +116,11 @@ BingoPgSection::BingoPgSection(BingoPgIndex& bingo_idx, int idx_strategy, int of
     {
         for (int i = 0; i < map_count; ++i)
         {
-            BingoPgBufferCacheMap initial_map(_offsetMap[i], _index, true, wal_enabled);
+            BingoPgBufferCacheMap initial_map(_offsetMap[i], _index, true, wal_enabled, reusable_tail_start);
         }
         for (int i = 0; i < fp_count; ++i)
         {
-            BingoPgBufferCacheFp initial_fp(_offsetFp[i], _index, true, wal_enabled);
+            BingoPgBufferCacheFp initial_fp(_offsetFp[i], _index, true, wal_enabled, reusable_tail_start);
         }
     }
     else if (_idxStrategy == BingoPgIndex::UPDATING_STRATEGY)
@@ -335,7 +338,6 @@ void BingoPgSection::_setBinData(indigo::Array<char>& buf, int& last_buf, ItemPo
     }
 
     const bool building = (_idxStrategy == BingoPgIndex::BUILDING_STRATEGY);
-    const bool wal_enabled = !building;
 
     if (last_buf == -1)
     {
@@ -347,7 +349,7 @@ void BingoPgSection::_setBinData(indigo::Array<char>& buf, int& last_buf, ItemPo
         else
         {
             {
-                BingoPgBufferCacheBin initial_bin(block_off, _index, true, true);
+                BingoPgBufferCacheBin initial_bin(block_off, _index, true, true, (unsigned int)block_off);
             }
             _buffersBin.add(new BingoPgBufferCacheBin(block_off, _index, false, true));
         }
@@ -369,7 +371,7 @@ void BingoPgSection::_setBinData(indigo::Array<char>& buf, int& last_buf, ItemPo
         else
         {
             {
-                BingoPgBufferCacheBin initial_bin(block_off, _index, true, true);
+                BingoPgBufferCacheBin initial_bin(block_off, _index, true, true, (unsigned int)block_off);
             }
             _buffersBin.add(new BingoPgBufferCacheBin(block_off, _index, false, true));
         }
