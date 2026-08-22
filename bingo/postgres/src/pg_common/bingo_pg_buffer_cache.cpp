@@ -203,7 +203,7 @@ bool BingoPgBufferCacheFp::getBit(int str_idx)
     }
     else
     {
-        _buffer.readBuffer(_index, _blockId, BINGO_PG_WRITE);
+        _buffer.readBuffer(_index, _blockId, BINGO_PG_READ);
         int data_len;
         void* data = _buffer.getIndexData(data_len);
         _cache.deserialize(data, data_len, true);
