@@ -16,7 +16,6 @@ if [[ -f /opt/bingo-harness/libbingo-postgres.sha256 ]]; then
     cat /opt/bingo-harness/libbingo-postgres.sha256
 fi
 
-PGDATA=${PGDATA:-/var/lib/postgresql/data}
 mkdir -p "$PGDATA" /var/run/postgresql
 chown -R postgres:postgres "$PGDATA" /var/run/postgresql
 chmod 3775 /var/run/postgresql
