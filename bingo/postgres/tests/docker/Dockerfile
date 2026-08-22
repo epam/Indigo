@@ -53,17 +53,19 @@ RUN cmake --version \
 WORKDIR /src
 COPY . /src
 
-# Install the complete PostgreSQL 17 client/development dependency set through
-# PGDG's package manager rather than installing the -devel RPM with --nodeps.
-# The latter leaves required companion packages (including pg_config) absent.
-# Disable AlmaLinux's PostgreSQL module so it cannot interfere with the PGDG
-# versioned packages or introduce a different major into discovery.
+# Install the PG17 client/libs normally so pg_config and libpq are present, but
+# install only the -devel RPM with --nodeps. PGDG's RHEL 8 -devel package pulls
+# perl(IPC::Run), which is a PostgreSQL build/test dependency and is not needed
+# to compile Bingo. This keeps the proven isolated /usr/pgsql-17 layout without
+# adding EPEL solely to satisfy an irrelevant Perl dependency.
 RUN set -eux; \
     yum install -y https://download.postgresql.org/pub/repos/yum/reporpms/EL-8-x86_64/pgdg-redhat-repo-latest.noarch.rpm; \
     yum -qy module disable postgresql || true; \
     yum install -y \
       postgresql${POSTGRES_MAJOR_VERSION} \
-      postgresql${POSTGRES_MAJOR_VERSION}-devel; \
+      postgresql${POSTGRES_MAJOR_VERSION}-libs; \
+    yumdownloader -y postgresql${POSTGRES_MAJOR_VERSION}-devel; \
+    rpm -i --nodeps postgresql${POSTGRES_MAJOR_VERSION}-devel-*.rpm; \
     rpm -q \
       postgresql${POSTGRES_MAJOR_VERSION} \
       postgresql${POSTGRES_MAJOR_VERSION}-libs \
@@ -75,6 +77,7 @@ RUN set -eux; \
     /usr/pgsql-${POSTGRES_MAJOR_VERSION}/bin/pg_config --libdir; \
     test -f "$(/usr/pgsql-${POSTGRES_MAJOR_VERSION}/bin/pg_config --includedir-server)/postgres.h"; \
     test -f "$(/usr/pgsql-${POSTGRES_MAJOR_VERSION}/bin/pg_config --libdir)/libpq.so"; \
+    rm -f postgresql${POSTGRES_MAJOR_VERSION}-devel-*.rpm; \
     yum clean -y all
 
 ENV PATH=/usr/pgsql-${POSTGRES_MAJOR_VERSION}/bin:${PATH}
