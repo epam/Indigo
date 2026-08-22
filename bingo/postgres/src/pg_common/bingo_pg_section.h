@@ -69,13 +69,14 @@ public:
     const BingoSectionInfoData& getSectionInfo() const
     {
         return _sectionInfo;
-    };
+    }
 
     DECL_ERROR;
 
 private:
     BingoPgSection(const BingoPgSection&); // no implicit copy
 
+    void _flushSectionInfo();
     void _setCmfData(indigo::Array<char>& cmf_buf, int map_buf_idx, int map_idx);
     void _setXyzData(indigo::Array<char>& xyz_buf, int map_buf_idx, int map_idx);
     void _setBinData(indigo::Array<char>& buf, int& last_buf, ItemPointerData& item_data);
