@@ -5,6 +5,18 @@ PGDATA=${PGDATA:-/var/lib/postgresql/data}
 POSTGRES_DB=${POSTGRES_DB:-test}
 PG_LOG=${PG_LOG:-${PGDATA}/postgres.log}
 
+if [[ -f /opt/bingo-harness/source-describe ]]; then
+    echo "Bingo source under test: $(cat /opt/bingo-harness/source-describe)"
+fi
+if [[ -f /opt/bingo-harness/source-revision ]]; then
+    echo "Bingo source revision: $(cat /opt/bingo-harness/source-revision)"
+fi
+if [[ -f /opt/bingo-harness/libbingo-postgres.sha256 ]]; then
+    echo "Bingo library under test:"
+    cat /opt/bingo-harness/libbingo-postgres.sha256
+fi
+
+PGDATA=${PGDATA:-/var/lib/postgresql/data}
 mkdir -p "$PGDATA" /var/run/postgresql
 chown -R postgres:postgres "$PGDATA" /var/run/postgresql
 chmod 3775 /var/run/postgresql
