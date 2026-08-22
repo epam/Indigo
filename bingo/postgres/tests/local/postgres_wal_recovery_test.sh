@@ -68,6 +68,15 @@ trap cleanup EXIT
 
 run_psql -q -c "CREATE EXTENSION IF NOT EXISTS pageinspect"
 
+# Keep Bingo's own structure-processing path single-threaded so crash timing
+# tests PostgreSQL/WAL durability without also varying Bingo worker scheduling.
+run_psql -q -c "UPDATE bingo.bingo_config SET cvalue = '1' WHERE cname = 'NTHREADS'"
+nthreads=$(scalar "SELECT cvalue FROM bingo.bingo_config WHERE cname = 'NTHREADS'")
+if [[ "$nthreads" != "1" ]]; then
+    echo "failed to configure Bingo NTHREADS=1" >&2
+    exit 1
+fi
+
 run_psql <<SQL
 DROP SCHEMA IF EXISTS ${SCHEMA} CASCADE;
 CREATE SCHEMA ${SCHEMA};
@@ -87,8 +96,7 @@ ON ${SCHEMA}.structures (payload);
 
 CREATE INDEX structures_molecule_bingo
 ON ${SCHEMA}.structures
-USING bingo_idx (molecule bingo.molecule)
-WITH (NTHREADS=1);
+USING bingo_idx (molecule bingo.molecule);
 
 CHECKPOINT;
 SQL
