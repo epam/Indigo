@@ -1,0 +1,63 @@
+# This ignore file applies only to bingo/postgres/tests/docker/Dockerfile.
+# Keep the root build context because the native build needs cmake/, core/,
+# third_party/, and bingo/, but avoid sending unrelated source and local output.
+
+# Repository/tooling metadata not used by this harness.
+.ci/
+.devcontainer/
+.github/
+.claude/
+.idea/
+.vscode/
+.vs/
+.kdev4/
+*.kdev4
+
+# The Dockerfile uses Git metadata for exact source/version provenance, so do
+# not ignore .git itself. LFS payloads, logs, hooks, and submodule metadata are
+# not needed by git rev-parse/git describe and can be very large locally.
+.git/lfs/
+.git/logs/
+.git/hooks/
+.git/modules/
+.git/rr-cache/
+.git/rebase-apply/
+.git/rebase-merge/
+
+# Source trees disabled explicitly by this harness's CMake configuration.
+api/
+utils/
+
+# Top-level and CMake build output.
+build/
+build-*/
+cmake-build-*/
+dist/
+_projects/
+TestResults/
+**/CMakeFiles/
+**/CMakeCache.txt
+**/cmake_install.cmake
+**/compile_commands.json
+
+# Language/tool caches and generated output.
+.cache/
+**/.cache/
+**/.mypy_cache/
+**/.pytest_cache/
+**/.ruff_cache/
+**/__pycache__/
+**/.__pycache__/
+**/.venv/
+**/venv/
+**/target/
+.jython_cache/
+*.pyc
+*.pyo
+*$py.class
+
+# Local package/test artifacts.
+*.whl
+*.nupkg
+*.log
+.DS_Store
