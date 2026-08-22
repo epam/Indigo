@@ -3,23 +3,9 @@ set -euo pipefail
 
 HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 COMPOSE=(docker compose -f "$HERE/compose.yaml")
-BINGO_SO="$HERE/libbingo-postgres.so"
-
-require_so() {
-    if [[ ! -f "$BINGO_SO" ]]; then
-        cat >&2 <<EOF
-Missing $BINGO_SO
-
-Copy the patched PostgreSQL 17 library you want to test there first, for example:
-  cp /path/to/libbingo-postgres.so "$BINGO_SO"
-EOF
-        exit 2
-    fi
-}
 
 build_image() {
-    require_so
-    "${COMPOSE[@]}" build
+    "${COMPOSE[@]}" build primary
 }
 
 start_primary() {
@@ -56,13 +42,13 @@ usage() {
 Usage: ./run.sh COMMAND
 
 Commands:
-  build        Build the PostgreSQL 17 + patched Bingo test image
+  build        Build patched Bingo from this checkout and create the PG17 test image
   normal       CREATE INDEX, incremental mutation, VACUUM, REINDEX, tail checks
   concurrent   Concurrent inserts plus non-key UPDATE regression
   crash        Disposable immediate-stop crash/recovery test
   replica      Fresh primary/physical-standby WAL replay test
   all          Run normal, concurrent, crash, and replica tests
-  up           Start the normal primary database
+  up           Build and start the normal primary database
   shell        Open psql against the normal primary database
   logs         Follow primary logs
   down         Stop services and remove all test volumes
