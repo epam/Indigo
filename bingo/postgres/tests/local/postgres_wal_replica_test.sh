@@ -73,6 +73,15 @@ cleanup() {
 }
 trap cleanup EXIT
 
+# Keep Bingo's own structure-processing path single-threaded so the replay
+# assertions are deterministic and isolate PostgreSQL/WAL behavior.
+primary_psql -q -c "UPDATE bingo.bingo_config SET cvalue = '1' WHERE cname = 'NTHREADS'"
+nthreads=$(primary_scalar "SELECT cvalue FROM bingo.bingo_config WHERE cname = 'NTHREADS'")
+if [[ "$nthreads" != "1" ]]; then
+    echo "failed to configure Bingo NTHREADS=1" >&2
+    exit 1
+fi
+
 # Phase 1: CREATE INDEX / bulk-build WAL replay.
 primary_psql <<SQL
 DROP SCHEMA IF EXISTS ${SCHEMA} CASCADE;
@@ -93,8 +102,7 @@ ON ${SCHEMA}.structures (payload);
 
 CREATE INDEX structures_molecule_bingo
 ON ${SCHEMA}.structures
-USING bingo_idx (molecule bingo.molecule)
-WITH (NTHREADS=1);
+USING bingo_idx (molecule bingo.molecule);
 SQL
 
 target=$(flush_target)
