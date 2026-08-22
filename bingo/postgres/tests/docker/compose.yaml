@@ -49,6 +49,7 @@ services:
       <<: *postgres-environment
       PGHOST: primary
       PGPORT: 5432
+      PGUSER: postgres
       PGPASSWORD: postgres
       WORKERS: ${WORKERS:-8}
       ROWS: ${ROWS:-6000}
