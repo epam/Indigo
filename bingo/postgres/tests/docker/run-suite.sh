@@ -7,6 +7,12 @@ PSQL=${PSQL:-psql}
 
 export PSQL
 
+if [[ -f /opt/bingo-harness/source-describe ]]; then
+    echo "Bingo source under test: $(cat /opt/bingo-harness/source-describe)"
+fi
+if [[ -f /opt/bingo-harness/source-revision ]]; then
+    echo "Bingo source revision: $(cat /opt/bingo-harness/source-revision)"
+fi
 if [[ -f /opt/bingo-harness/libbingo-postgres.sha256 ]]; then
     echo "Bingo library under test:"
     cat /opt/bingo-harness/libbingo-postgres.sha256
