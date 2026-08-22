@@ -39,6 +39,13 @@ public:
     }
 
     /*
+     * Incremental index mutations use PostgreSQL generic WAL. Fresh index
+     * builds disable per-page WAL and log the completed relation in one pass.
+     * This setting must be selected before the buffer enters write mode.
+     */
+    void setWalEnabled(bool enabled);
+
+    /*
      * Writes a new buffer with WRITE lock
      */
     int writeNewBuffer(PG_OBJECT rel, unsigned int block_num);
@@ -55,6 +62,7 @@ public:
     void* getIndexData(int& data_len);
     void formIndexTuple(void* map_data, int size);
     void formEmptyIndexTuple(int size);
+    void replaceIndexData(const void* data, int size);
 
     bool isReady() const;
 
@@ -64,10 +72,19 @@ private:
     BingoPgBuffer(const BingoPgBuffer&); // no implicit copy
 
     int _getAccess(int lock);
+    void _beginWrite(bool full_image);
+    void _finishWrite();
+    void _abortWrite();
+    void* _getPage() const;
 
     int _buffer;
     int _lock;
     unsigned int _blockIdx;
+    PG_OBJECT _relation;
+    void* _walState;
+    void* _writePage;
+    bool _walEnabled;
+    bool _writeAborted;
 };
 
 #endif /* BINGO_PG_BUFFER_H */
