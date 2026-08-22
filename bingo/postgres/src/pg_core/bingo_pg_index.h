@@ -34,15 +34,9 @@ public:
     {
     }
 
-    /*
-     * Begins write section. Create meta buffer
-     */
     void writeBegin(BingoPgBuildEngine&, BingoPgConfig&);
     void updateBegin();
 
-    /*
-     * Read section iterator
-     */
     int readBegin();
     int readNext(int section_idx);
     int readEnd()
@@ -50,16 +44,10 @@ public:
         return _metaInfo.n_sections;
     }
 
-    /*
-     * Handle with meta info
-     */
     void readMetaInfo();
     void readConfigParameters(BingoPgConfig&);
     void writeMetaInfo();
 
-    /*
-     * Getters
-     */
     int getStructuresNumber() const
     {
         return _metaInfo.n_molecules;
@@ -98,23 +86,14 @@ public:
         return _strategy;
     }
 
-    /*
-     * Strategies
-     */
-
     void setStrategy(INDEX_STRATEGY strategy)
     {
         _strategy = strategy;
+        _metaBuffer.setWalEnabled(strategy != BUILDING_STRATEGY);
     }
 
-    /*
-     * Insert a new structure in the index
-     */
     void insertStructure(BingoPgFpData&);
 
-    /*
-     * Read all the data for the index
-     */
     void readTidItem(ItemPointerData&, PG_OBJECT result_ptr);
     void readTidItem(int section_idx, int mol_idx, PG_OBJECT result_ptr);
 
@@ -135,9 +114,6 @@ public:
 
     void readDictionary(indigo::Array<char>& _dictionary);
     void writeDictionary(BingoPgBuildEngine&);
-    /*
-     * Clear all buffers
-     */
     void clearAllBuffers();
 
     DECL_ERROR;
