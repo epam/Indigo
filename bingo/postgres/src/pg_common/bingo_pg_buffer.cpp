@@ -28,20 +28,20 @@ IMPL_ERROR(BingoPgBuffer, "bingo buffer");
 
 BingoPgBuffer::BingoPgBuffer()
     : _buffer(InvalidBuffer), _lock(BINGO_PG_NOLOCK), _blockIdx(0), _relation(0), _walState(nullptr), _writePage(nullptr), _walEnabled(true),
-      _rawPageWal(false), _writeAborted(false)
+      _rawPageWal(false), _writeAborted(false), _reusableTailStart(UINT_MAX)
 {
 }
 
 BingoPgBuffer::BingoPgBuffer(PG_OBJECT rel_ptr, unsigned int block_num)
     : _buffer(InvalidBuffer), _lock(BINGO_PG_NOLOCK), _blockIdx(0), _relation(0), _walState(nullptr), _writePage(nullptr), _walEnabled(true),
-      _rawPageWal(false), _writeAborted(false)
+      _rawPageWal(false), _writeAborted(false), _reusableTailStart(UINT_MAX)
 {
     writeNewBuffer(rel_ptr, block_num);
 }
 
 BingoPgBuffer::BingoPgBuffer(PG_OBJECT rel_ptr, unsigned int block_num, int lock)
     : _buffer(InvalidBuffer), _lock(BINGO_PG_NOLOCK), _blockIdx(0), _relation(0), _walState(nullptr), _writePage(nullptr), _walEnabled(true),
-      _rawPageWal(false), _writeAborted(false)
+      _rawPageWal(false), _writeAborted(false), _reusableTailStart(UINT_MAX)
 {
     readBuffer(rel_ptr, block_num, lock);
 }
@@ -63,6 +63,13 @@ void BingoPgBuffer::setRawPageWal(bool enabled)
     if (_lock == BINGO_PG_WRITE || _walState != nullptr)
         throw Error("internal error: can not change raw-page WAL mode while a bingo buffer is being written");
     _rawPageWal = enabled;
+}
+
+void BingoPgBuffer::setReusableTailStart(unsigned int block_num)
+{
+    if (_buffer != InvalidBuffer || _walState != nullptr)
+        throw Error("internal error: can not change reusable tail boundary while a bingo buffer is active");
+    _reusableTailStart = block_num;
 }
 
 void BingoPgBuffer::_beginWrite(bool full_image)
@@ -118,10 +125,6 @@ void BingoPgBuffer::_finishWrite()
         Relation rel = (Relation)_relation;
         if (RelationNeedsWAL(rel))
         {
-            /*
-             * Do not use REGBUF_STANDARD for the Bingo metapage: useful
-             * metadata lives in bytes PostgreSQL considers the free-space hole.
-             */
             START_CRIT_SECTION();
             MarkBufferDirty(_buffer);
             log_newpage_buffer(_buffer, false);
@@ -252,14 +255,16 @@ int BingoPgBuffer::writeNewBuffer(PG_OBJECT rel_ptr, unsigned int block_num)
     _relation = rel_ptr;
 
     Page disk_page = BufferGetPage(_buffer);
-    if (block_num < nblocks && !PageIsNew(disk_page))
+    const bool existing_page = block_num < nblocks;
+    const bool proven_orphan_tail = existing_page && block_num >= _reusableTailStart;
+    if (existing_page && !PageIsNew(disk_page) && !proven_orphan_tail)
     {
         UnlockReleaseBuffer(_buffer);
         _buffer = InvalidBuffer;
         _lock = BINGO_PG_NOLOCK;
         _blockIdx = 0;
         _relation = 0;
-        throw Error("internal error: refusing to initialize existing bingo index block %u", block_num);
+        throw Error("internal error: refusing to initialize published bingo index block %u", block_num);
     }
 
     _beginWrite(true);
