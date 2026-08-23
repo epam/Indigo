@@ -7,6 +7,7 @@ extern "C"
 #include "access/itup.h"
 #include "fmgr.h"
 #include "storage/bufmgr.h"
+#include "storage/bufpage.h"
 #include "storage/lock.h"
 #include "utils/rel.h"
 #include "utils/relcache.h"
@@ -104,30 +105,33 @@ int BingoPgBuffer::writeNewBuffer(PG_OBJECT rel_ptr, unsigned int block_num)
     BINGO_PG_HANDLE(throw Error("internal error: can not get number of blocks: %s", message));
 
     /*
-     * Bingo forbids noncontiguous access
+     * Bingo forbids noncontiguous access. A block below the relation size is
+     * only reusable when PostgreSQL still considers it uninitialized. This
+     * can happen after an interrupted extension. Never PageInit an existing
+     * populated block: doing so destroys another writer's index data.
      */
     if (block_num > nblocks)
     {
         throw Error("internal error: access to noncontiguous page in bingo index");
     }
-    //   if(block_num < nblocks)
-    //      throw Error("internal error: access to already pinned block in bingo index");
 
-    /*
-     * smgr insists we use P_NEW to extend the relation
-     */
     if (block_num == nblocks)
     {
         int buffer_block_num = 0;
         BINGO_PG_TRY
         {
+            /* smgr insists we use P_NEW to extend the relation */
             _buffer = ReadBuffer(rel, P_NEW);
             buffer_block_num = BufferGetBlockNumber(_buffer);
         }
         BINGO_PG_HANDLE(throw Error("internal error: can not create a new buffer %s", message));
 
         if (buffer_block_num != block_num)
+        {
+            ReleaseBuffer(_buffer);
+            _buffer = InvalidBuffer;
             throw Error("internal error: unexpected relation size: %u, should be %u", buffer_block_num, block_num);
+        }
     }
     else
     {
@@ -135,8 +139,9 @@ int BingoPgBuffer::writeNewBuffer(PG_OBJECT rel_ptr, unsigned int block_num)
         {
             _buffer = ReadBufferExtended(rel, MAIN_FORKNUM, block_num, RBM_NORMAL, NULL);
         }
-        BINGO_PG_HANDLE(throw Error("internal error: can not extend the existing buffer: %s", message));
+        BINGO_PG_HANDLE(throw Error("internal error: can not read the existing buffer: %s", message));
     }
+
     /*
      * Lock buffer on writing
      */
@@ -145,21 +150,40 @@ int BingoPgBuffer::writeNewBuffer(PG_OBJECT rel_ptr, unsigned int block_num)
         LockBuffer(_buffer, BUFFER_LOCK_EXCLUSIVE);
     }
     BINGO_PG_HANDLE(throw Error("internal error: can not lock the buffer: %s", message));
+    _lock = BINGO_PG_WRITE;
+    _blockIdx = block_num;
+
+    Page page = BufferGetPage(_buffer);
+    if (block_num < nblocks && !PageIsNew(page))
+    {
+        /*
+         * Do not rely on the destructor here: this method is also called from
+         * a constructor, whose destructor will not run when construction
+         * throws.
+         */
+        UnlockReleaseBuffer(_buffer);
+        _buffer = InvalidBuffer;
+        _lock = BINGO_PG_NOLOCK;
+        _blockIdx = 0;
+        throw Error("internal error: refusing to initialize existing bingo index block %u", block_num);
+    }
 
     /*
-     * initialize the page
+     * Initialize either a newly extended page or an uninitialized page left
+     * behind by an interrupted extension.
      */
-    //   PageInit(BufferGetPage(buf), BufferGetPageSize(buf), sizeof (HashPageOpaqueData));
     BINGO_PG_TRY
     {
-        PageInit(BufferGetPage(_buffer), BufferGetPageSize(_buffer), 0);
+        PageInit(page, BufferGetPageSize(_buffer), 0);
     }
-    BINGO_PG_HANDLE(throw Error("internal error: can not initialize the page %d: %s", _buffer, message));
-    _lock = BINGO_PG_WRITE;
-    /*
-     * Store block index
-     */
-    _blockIdx = block_num;
+    BINGO_PG_HANDLE({
+        UnlockReleaseBuffer(_buffer);
+        _buffer = InvalidBuffer;
+        _lock = BINGO_PG_NOLOCK;
+        _blockIdx = 0;
+        throw Error("internal error: can not initialize the page: %s", message);
+    });
+
     return _buffer;
 }
 /*
@@ -256,25 +280,36 @@ int BingoPgBuffer::_getAccess(int lock)
 
 void* BingoPgBuffer::getIndexData(int& data_len)
 {
-    char* data_ptr = 0;
+    Page page = 0;
     BINGO_PG_TRY
     {
-        Page page = BufferGetPage(getBuffer());
-        IndexTuple itup = (IndexTuple)PageGetItem(page, PageGetItemId(page, BINGO_TUPLE_OFFSET));
-
-        int hoff = IndexInfoFindDataOffset(itup->t_info);
-        data_ptr = (char*)itup + hoff;
-
-        data_len = IndexTupleSize(itup) - hoff;
+        page = BufferGetPage(getBuffer());
     }
-    BINGO_PG_HANDLE(throw Error("internal error: can not get index data from the block %d: %s", _blockIdx, message));
+    BINGO_PG_HANDLE(throw Error("internal error: can not get index page from the block %d: %s", _blockIdx, message));
 
+    if (PageIsNew(page))
+        throw Error("internal error: uninitialized bingo index block %d", _blockIdx);
+
+    OffsetNumber max_offset = PageGetMaxOffsetNumber(page);
+    if (max_offset < BINGO_TUPLE_OFFSET)
+        throw Error("internal error: bingo index block %d has no index tuple", _blockIdx);
+
+    ItemId item_id = PageGetItemId(page, BINGO_TUPLE_OFFSET);
+    if (!ItemIdIsNormal(item_id))
+        throw Error("internal error: bingo index block %d has an invalid index tuple", _blockIdx);
+
+    IndexTuple itup = (IndexTuple)PageGetItem(page, item_id);
+    int hoff = IndexInfoFindDataOffset(itup->t_info);
+    int tuple_size = IndexTupleSize(itup);
+
+    if (tuple_size < hoff)
+        throw Error("internal error: corrupted block %d data len is %d", _blockIdx, tuple_size - hoff);
+
+    char* data_ptr = (char*)itup + hoff;
     if (data_ptr == 0)
         throw Error("internal error: empty ptr data for the block %d", _blockIdx);
 
-    if (data_len < 0)
-        throw Error("internal error: corrupted block %d data len is %d", _blockIdx, data_len);
-
+    data_len = tuple_size - hoff;
     return data_ptr;
 }
 

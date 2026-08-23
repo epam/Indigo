@@ -7,6 +7,7 @@ extern "C"
 #include "catalog/index.h"
 #include "fmgr.h"
 #include "storage/bufmgr.h"
+#include "storage/lmgr.h"
 #include "utils/rel.h"
 #include "utils/relcache.h"
 #if PG_VERSION_NUM / 100 >= 1200
@@ -32,6 +33,22 @@ extern "C"
     BINGO_FUNCTION_EXPORT(bingo_vacuumcleanup);
 }
 #endif
+
+/*
+ * Bingo updates several index pages and metadata structures as one logical
+ * operation. Those read/modify/write sequences are not safe when two backends
+ * mutate the same Bingo index concurrently. Use PostgreSQL's per-relation
+ * extension lock as a dedicated mutation mutex for the Bingo index.
+ */
+static void bingoLockIndexMutation(Relation index)
+{
+    LockRelationForExtension(index, ExclusiveLock);
+}
+
+static void bingoUnlockIndexMutation(Relation index)
+{
+    UnlockRelationForExtension(index, ExclusiveLock);
+}
 
 /*
  *	Insert an index tuple into a bingo table.
@@ -69,18 +86,29 @@ Datum bingo_insert(PG_FUNCTION_ARGS)
 
     bool result = false;
 
-    PG_BINGO_BEGIN
+    bingoLockIndexMutation(index);
+    PG_TRY();
     {
-        BingoPgWrapper rel_namespace;
-        const char* index_schema = rel_namespace.getRelNameSpace(index->rd_id);
+        PG_BINGO_BEGIN
+        {
+            BingoPgWrapper rel_namespace;
+            const char* index_schema = rel_namespace.getRelNameSpace(index->rd_id);
 
-        BingoPgBuild build_engine(index, 0, index_schema, false);
-        /*
-         * Insert a new structure
-         */
-        result = build_engine.insertStructureSingle(ht_ctid, values[0]);
+            BingoPgBuild build_engine(index, 0, index_schema, false);
+            /*
+             * Insert a new structure
+             */
+            result = build_engine.insertStructureSingle(ht_ctid, values[0]);
+        }
+        PG_BINGO_END
     }
-    PG_BINGO_END
+    PG_CATCH();
+    {
+        bingoUnlockIndexMutation(index);
+        PG_RE_THROW();
+    }
+    PG_END_TRY();
+    bingoUnlockIndexMutation(index);
 
     // #ifdef NOT_USED
     //	Relation	heapRel = (Relation) PG_GETARG_POINTER(4);
@@ -140,59 +168,71 @@ Datum bingo_bulkdelete(PG_FUNCTION_ARGS)
 
     elog(NOTICE, "bingo.index: start bulk delete");
 
-    PG_BINGO_BEGIN
+    Relation index_rel = info->index;
+    bingoLockIndexMutation(index_rel);
+    PG_TRY();
     {
-        /*
-         * Initialize local variables
-         */
-        Relation index_rel = info->index;
-        double tuples_removed = 0;
-        ItemPointerData item_data;
-        ItemPointer item_ptr = &item_data;
-        BingoPgExternalBitset section_bitset(BINGO_MOLS_PER_SECTION);
-
-        /*
-         * Create index manager
-         */
-        BingoPgIndex bingo_index(index_rel);
-
-        /*
-         * Iterate through all the sections and search for removed tuples
-         */
-        int section_idx = bingo_index.readBegin();
-        for (; section_idx != bingo_index.readEnd(); section_idx = bingo_index.readNext(section_idx))
+        PG_BINGO_BEGIN
         {
-            bingo_index.getSectionBitset(section_idx, section_bitset);
             /*
-             * Iterate through section structures
+             * Initialize local variables
              */
-            for (int mol_idx = section_bitset.begin(); mol_idx != section_bitset.end(); mol_idx = section_bitset.next(mol_idx))
+            double tuples_removed = 0;
+            ItemPointerData item_data;
+            ItemPointer item_ptr = &item_data;
+            BingoPgExternalBitset section_bitset(BINGO_MOLS_PER_SECTION);
+
+            /*
+             * Create index manager
+             */
+            BingoPgIndex bingo_index(index_rel);
+
+            /*
+             * Iterate through all the sections and search for removed tuples
+             */
+            int section_idx = bingo_index.readBegin();
+            for (; section_idx != bingo_index.readEnd(); section_idx = bingo_index.readNext(section_idx))
             {
-                bingo_index.readTidItem(section_idx, mol_idx, item_ptr);
-                if (bulk_del_cb(item_ptr, cb_state))
+                bingo_index.getSectionBitset(section_idx, section_bitset);
+                /*
+                 * Iterate through section structures
+                 */
+                for (int mol_idx = section_bitset.begin(); mol_idx != section_bitset.end(); mol_idx = section_bitset.next(mol_idx))
                 {
-                    /*
-                     * Remove the structure from the bingo index
-                     */
-                    bingo_index.removeStructure(section_idx, mol_idx);
-                    tuples_removed += 1;
+                    bingo_index.readTidItem(section_idx, mol_idx, item_ptr);
+                    if (bulk_del_cb(item_ptr, cb_state))
+                    {
+                        /*
+                         * Remove the structure from the bingo index
+                         */
+                        bingo_index.removeStructure(section_idx, mol_idx);
+                        tuples_removed += 1;
+                    }
                 }
             }
+            /*
+             * Write new structures number
+             */
+            bingo_index.writeMetaInfo();
+            /*
+             * Always return null since no index values are removed
+             */
+            //      if (stats == NULL)
+            //         stats = (IndexBulkDeleteResult *) palloc0(sizeof (IndexBulkDeleteResult));
+            //
+            //      stats->estimated_count = false;
+            //      stats->tuples_removed = tuples_removed;
         }
-        /*
-         * Write new structures number
-         */
-        bingo_index.writeMetaInfo();
-        /*
-         * Always return null since no index values are removed
-         */
-        //      if (stats == NULL)
-        //         stats = (IndexBulkDeleteResult *) palloc0(sizeof (IndexBulkDeleteResult));
-        //
-        //      stats->estimated_count = false;
-        //      stats->tuples_removed = tuples_removed;
+        PG_BINGO_END
     }
-    PG_BINGO_END
+    PG_CATCH();
+    {
+        bingoUnlockIndexMutation(index_rel);
+        PG_RE_THROW();
+    }
+    PG_END_TRY();
+    bingoUnlockIndexMutation(index_rel);
+
     /*
      * Always return null since no index values are removed
      */
