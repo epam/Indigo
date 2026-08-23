@@ -58,6 +58,21 @@ services:
     entrypoint: ["/opt/bingo-harness/run-suite.sh"]
     command: ["normal"]
 
+  functional-test:
+    image: bingo-postgres-wal-test:local
+    profiles: ["functional"]
+    depends_on:
+      primary:
+        condition: service_healthy
+    environment:
+      <<: *postgres-environment
+      PGHOST: primary
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: postgres
+    entrypoint: ["/opt/bingo-harness/run-suite.sh"]
+    command: ["functional"]
+
   standby:
     image: bingo-postgres-wal-test:local
     profiles: ["replica"]

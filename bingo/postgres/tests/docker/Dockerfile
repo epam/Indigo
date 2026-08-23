@@ -170,6 +170,7 @@ COPY bingo/postgres/tests/docker/init-primary-replication.sh /docker-entrypoint-
 COPY bingo/postgres/tests/docker/standby-entrypoint.sh /opt/bingo-harness/standby-entrypoint.sh
 COPY bingo/postgres/tests/docker/crash-entrypoint.sh /opt/bingo-harness/crash-entrypoint.sh
 COPY bingo/postgres/tests/docker/run-suite.sh /opt/bingo-harness/run-suite.sh
+COPY bingo/postgres/tests/docker/run-functional.sh /opt/bingo-harness/run-functional.sh
 COPY bingo/postgres/tests/local/ /opt/bingo-tests/
 
 RUN chmod 0755 \
@@ -177,4 +178,28 @@ RUN chmod 0755 \
       /opt/bingo-harness/standby-entrypoint.sh \
       /opt/bingo-harness/crash-entrypoint.sh \
       /opt/bingo-harness/run-suite.sh \
+      /opt/bingo-harness/run-functional.sh \
       /opt/bingo-tests/*.sh
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends python3 python3-pip python3-venv \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY bingo/tests /opt/bingo_tests
+
+# Dependency pins mirror bingo/tests/requirements.txt minus the
+# Elasticsearch client (bingo-elastic is imported lazily and never reached by
+# --db postgres; oracledb stays because conftest imports the Oracle adapter at
+# module scope). psycopg2-binary is bumped from 2.9.3 to the first release
+# CPython 3.11 wheels, and pytest from 6.2.5 to 7.4.4 (6.x predates Python
+# 3.11 and fails to import the package-style conftest), because the runtime
+# image intentionally carries no compiler toolchain.
+RUN python3 -m venv /opt/bingo-func-venv \
+    && /opt/bingo-func-venv/bin/pip install --no-cache-dir \
+        pytest==7.4.4 \
+        SQLAlchemy==1.3.22 \
+        psycopg2-binary==2.9.9 \
+        oracledb==3.4.2 \
+        epam.indigo \
+        xmldiff==2.4 \
+    && /opt/bingo-func-venv/bin/python -c "import indigo, psycopg2, sqlalchemy, xmldiff"

@@ -23,6 +23,11 @@ run_concurrent() {
     "${COMPOSE[@]}" --profile tools run --rm runner concurrent
 }
 
+run_functional() {
+    start_primary
+    "${COMPOSE[@]}" --profile functional run --rm functional-test functional
+}
+
 run_recovery_suite() {
     local suite=$1
     "${COMPOSE[@]}" --profile crash run --rm crash-test "$suite"
@@ -60,12 +65,13 @@ Commands:
   build                Build Bingo from the selected source and create the PG17 test image
   normal               CREATE INDEX, incremental mutation, VACUUM, REINDEX, tail checks
   concurrent           Concurrent inserts plus non-key UPDATE regression
+  functional           Repository's native bingo/tests pytest suite (--db postgres)
   recovery-build       Committed CREATE INDEX + immediate-stop recovery
   recovery-committed   Committed incremental writes + production-shaped non-HOT UPDATE recovery
   recovery-inflight    Immediate stop while INSERT/UPDATE/VACUUM is in flight
   crash                Run all three recovery suites above, each on fresh PGDATA
   replica              Fresh primary/physical-standby WAL replay test
-  all                  Run normal, concurrent, all recovery suites, and replica
+  all                  Run normal, concurrent, functional, all recovery suites, and replica
   up                   Build and start the normal primary database
   shell                Open psql against the normal primary database
   logs                 Follow primary logs
@@ -88,6 +94,9 @@ case "$command" in
     concurrent)
         run_concurrent
         ;;
+    functional)
+        run_functional
+        ;;
     recovery-build)
         run_single_recovery_suite build
         ;;
@@ -106,6 +115,7 @@ case "$command" in
     all)
         run_normal
         run_concurrent
+        run_functional
         run_crash
         run_replica
         ;;
@@ -119,10 +129,10 @@ case "$command" in
         "${COMPOSE[@]}" logs -f primary
         ;;
     down)
-        "${COMPOSE[@]}" --profile tools --profile crash --profile replica down -v --remove-orphans
+        "${COMPOSE[@]}" --profile tools --profile functional --profile crash --profile replica down -v --remove-orphans
         ;;
     status)
-        "${COMPOSE[@]}" --profile tools --profile crash --profile replica ps
+        "${COMPOSE[@]}" --profile tools --profile functional --profile crash --profile replica ps
         ;;
     -h|--help|help|"")
         usage

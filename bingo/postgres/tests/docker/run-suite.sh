@@ -28,6 +28,10 @@ case "$suite" in
             ROWS="${ROWS:-6000}" \
             /opt/bingo-tests/postgres_concurrent_update_test.sh "$POSTGRES_DB"
         ;;
+    functional)
+        shift || true
+        exec /opt/bingo-harness/run-functional.sh "$@"
+        ;;
     replica)
         : "${PRIMARY_DSN:?PRIMARY_DSN is required for replica suite}"
         : "${STANDBY_DSN:?STANDBY_DSN is required for replica suite}"
@@ -40,7 +44,7 @@ case "$suite" in
         ;;
     *)
         echo "Unknown test suite: $suite" >&2
-        echo "Expected one of: normal, concurrent, replica" >&2
+        echo "Expected one of: normal, concurrent, functional, replica" >&2
         exit 2
         ;;
 esac
