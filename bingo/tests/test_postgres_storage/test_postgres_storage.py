@@ -154,8 +154,8 @@ def test_concurrent_inserts_and_non_hot_updates_keep_bingo_index_consistent(
                 cursor.execute(
                     f"""
                     INSERT INTO {TABLE} (smiles_isomeric, smiles_indigo)
-                    SELECT repeat('C', ((g + {worker}) %% 48) + 1),
-                           repeat('C', ((g + {worker}) %% 48) + 1)
+                    SELECT repeat('C', ((g + {worker}) % 48) + 1),
+                           repeat('C', ((g + {worker}) % 48) + 1)
                     FROM generate_series(1, {rows_per_worker}) AS g
                     """
                 )
@@ -176,7 +176,7 @@ def test_concurrent_inserts_and_non_hot_updates_keep_bingo_index_consistent(
                     f"""
                     UPDATE {TABLE}
                     SET smiles_indigo = smiles_indigo || 'C'
-                    WHERE (id %% {workers}) = {worker}
+                    WHERE (id % {workers}) = {worker}
                     """
                 )
         finally:
