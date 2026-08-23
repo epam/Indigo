@@ -1,0 +1,51 @@
+{
+    "version": 3,
+    "configurePresets": [
+        {
+            "name": "default debug",
+            "displayName": "pg debug",
+            "description": "Default build generator",
+            "binaryDir": "${sourceDir}/build",
+            "generator": "Unix Makefiles",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "BUILD_BINGO_POSTGRES": "ON",
+                "BUILD_INDIGO": "OFF",
+                "BUILD_INDIGO_WRAPPERS": "OFF",
+                "BUILD_BINGO_SQLSERVER": "OFF",
+                "BUILD_BINGO_ORACLE": "OFF",
+                "BUILD_BINGO_ELASTIC": "OFF",
+                "BUILD_INDIGO_UTILS": "OFF"
+            },
+            "environment": {
+                "PostgreSQL_ROOT": "/usr/local/pgsql",
+                "CMAKE_BUILD_PARALLEL_LEVEL": "8"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "default",
+            "configurePreset": "default"
+        },
+        {
+            "name": "debug",
+            "description": "",
+            "displayName": "",
+            "configurePreset": "default debug"
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "default",
+            "configurePreset": "default",
+            "output": {
+                "outputOnFailure": true
+            },
+            "execution": {
+                "noTestsAction": "error",
+                "stopOnFailure": true
+            }
+        }
+    ]
+}
