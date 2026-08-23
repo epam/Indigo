@@ -32,7 +32,7 @@ public:
         SECTION_BITSNUMBER_PAGES = 16,
         SECTION_BITS_PER_BLOCK = 4000 /* 4000 * sizeof(unsigned short) < 8K*/
     };
-    BingoPgSection(BingoPgIndex& bingo_idx, int idx_strategy, int offset);
+    BingoPgSection(BingoPgIndex& bingo_idx, int idx_strategy, int offset, bool create_new = false);
     ~BingoPgSection();
 
     void clear();
@@ -68,13 +68,14 @@ public:
     const BingoSectionInfoData& getSectionInfo() const
     {
         return _sectionInfo;
-    };
+    }
 
     DECL_ERROR;
 
 private:
     BingoPgSection(const BingoPgSection&); // no implicit copy
 
+    void _flushSectionInfo();
     void _setCmfData(indigo::Array<char>& cmf_buf, int map_buf_idx, int map_idx);
     void _setXyzData(indigo::Array<char>& xyz_buf, int map_buf_idx, int map_idx);
     void _setBinData(indigo::Array<char>& buf, int& last_buf, ItemPointerData& item_data);

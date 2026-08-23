@@ -7,6 +7,7 @@ extern "C"
 #include "fmgr.h"
 
 #include "access/htup.h"
+#include "access/xloginsert.h"
 #include "catalog/index.h"
 #include "catalog/pg_type.h"
 #include "storage/bufmgr.h"
@@ -82,10 +83,6 @@ extern "C"
 }
 
 #if PG_VERSION_NUM / 100 >= 906
-/*
- * Bingo handler function: return IndexAmRoutine with access method parameters
- * and callbacks.
- */
 Datum bingo_handler(PG_FUNCTION_ARGS)
 {
     IndexAmRoutine* amroutine = makeNode(IndexAmRoutine);
@@ -148,14 +145,26 @@ static void bingoIndexCallback(Relation index, ItemPointer item_ptr, Datum* valu
 static void bingoIndexCallback(Relation index, HeapTuple htup, Datum* values, bool* isnull, bool tupleIsAlive, void* state);
 #endif
 
-// #include <signal.h>
-//  void error_handler(int i) {
-//    elog(ERROR, "query was cancelled");
-// }
+static void bingoLogBuiltRelation(Relation index)
+{
+    if (!RelationNeedsWAL(index))
+        return;
 
-/*
- * Bingo build the index
- */
+    BlockNumber nblocks = RelationGetNumberOfBlocks(index);
+    if (nblocks == 0)
+        return;
+
+    /*
+     * Block 0 is a Bingo-specific raw metapage whose useful metadata lives in
+     * the area PostgreSQL calls the standard-page free-space hole. Log it as a
+     * non-standard full image. All remaining Bingo pages use ordinary PageInit
+     * + IndexTuple layout and can use standard-page hole compression.
+     */
+    log_newpage_range(index, MAIN_FORKNUM, 0, 1, false);
+    if (nblocks > 1)
+        log_newpage_range(index, MAIN_FORKNUM, 1, nblocks, true);
+}
+
 #if PG_VERSION_NUM / 100 >= 906
 CEXPORT IndexBuildResult* bingo_build(Relation heap, Relation index, struct IndexInfo* indexInfo)
 {
@@ -167,30 +176,16 @@ Datum bingo_build(PG_FUNCTION_ARGS)
     IndexInfo* indexInfo = (IndexInfo*)PG_GETARG_POINTER(2);
 #endif
 
-    //   BlockNumber relpages;
     IndexBuildResult* result = 0;
     double reltuples = 0;
 
-    //   signal(SIGINT, &error_handler);
     elog(DEBUG1, "bingo: build: start building index");
 
-    /*
-     * We expect to be called exactly once for any index relation. If that's
-     * not the case, big trouble's what we have.
-     */
     if (RelationGetNumberOfBlocks(index) != 0)
         elog(ERROR, "index \"%s\" already contains data", RelationGetRelationName(index));
 
-    //   /*
-    //    * Estimate the number of rows currently present in the table
-    //    */
-    //   estimate_rel_size(heap, NULL, &relpages, &reltuples);
-
     PG_BINGO_BEGIN
     {
-        /*
-         * Initialize the bingo index metadata page and initial blocks
-         */
         BingoPgWrapper func_namespace;
 #if PG_VERSION_NUM / 100 >= 906
         const char* schema_name = "bingo";
@@ -201,32 +196,26 @@ Datum bingo_build(PG_FUNCTION_ARGS)
         BingoPgWrapper rel_namespace;
         const char* index_schema = rel_namespace.getRelNameSpace(index->rd_id);
 
-        BingoPgBuild build_engine(index, schema_name, index_schema, true);
-        /*
-         * Do the heap scan and build index
-         */
-        BINGO_PG_TRY
         {
+            BingoPgBuild build_engine(index, schema_name, index_schema, true);
+            BINGO_PG_TRY
+            {
 #if PG_VERSION_NUM / 100 >= 1200
-            reltuples = table_index_build_scan(heap, index, indexInfo, true, true, bingoIndexCallback, (void*)&build_engine, NULL);
+                reltuples = table_index_build_scan(heap, index, indexInfo, true, true, bingoIndexCallback, (void*)&build_engine, NULL);
 #elif PG_VERSION_NUM / 100 >= 1100
-            reltuples = IndexBuildHeapScan(heap, index, indexInfo, true, bingoIndexCallback, (void*)&build_engine, NULL);
+                reltuples = IndexBuildHeapScan(heap, index, indexInfo, true, bingoIndexCallback, (void*)&build_engine, NULL);
 #else
-        reltuples = IndexBuildHeapScan(heap, index, indexInfo, true, bingoIndexCallback, (void*)&build_engine);
+                reltuples = IndexBuildHeapScan(heap, index, indexInfo, true, bingoIndexCallback, (void*)&build_engine);
 #endif
+            }
+            BINGO_PG_HANDLE(throw BingoPgError("Error while executing build index procedure %s", message));
+            build_engine.flush();
         }
-        BINGO_PG_HANDLE(throw BingoPgError("Error while executing build index procedure %s", message));
 
-        build_engine.flush();
-        /*
-         * Return statistics
-         */
+        bingoLogBuiltRelation(index);
+
         result = (IndexBuildResult*)palloc(sizeof(IndexBuildResult));
-
         result->heap_tuples = reltuples;
-        /*
-         * Index is always cost cheaper so set tuples number 1
-         */
         result->index_tuples = 1;
     }
     PG_BINGO_END
@@ -236,25 +225,13 @@ Datum bingo_build(PG_FUNCTION_ARGS)
     PG_RETURN_POINTER(result);
 #endif
 }
-/*
- * Bingo build callback. Accepts heap relation.
- */
+
 static void bingoIndexCallbackImpl(Relation index, PG_OBJECT item_ptr, Datum* values, bool* isnull, bool tupleIsAlive, void* state)
 {
-    /*
-     * Skip inserting null tuples
-     */
     if (*isnull)
         return;
 
-    /*
-     * Get bingo state
-     */
     BingoPgBuild& build_engine = *(BingoPgBuild*)state;
-
-    /*
-     * Insert a new structure (single or parallel)
-     */
     PG_BINGO_BEGIN
     {
         build_engine.insertStructure(item_ptr, values[0]);
@@ -285,23 +262,11 @@ Datum bingo_buildempty(PG_FUNCTION_ARGS)
 
     elog(NOTICE, "start bingo empty build ");
 
-    /*
-     * We expect to be called exactly once for any index relation. If that's
-     * not the case, big trouble's what we have.
-     */
     if (RelationGetNumberOfBlocks(index) != 0)
         elog(ERROR, "index \"%s\" already contains data", RelationGetRelationName(index));
 
-    //   /*
-    //    * Estimate the number of rows currently present in the table
-    //    */
-    //   estimate_rel_size(heap, NULL, &relpages, &reltuples);
-
     PG_BINGO_BEGIN
     {
-        /*
-         * Initialize the bingo index metadata page and initial blocks
-         */
         BingoPgWrapper func_namespace;
 #if PG_VERSION_NUM / 100 >= 906
         const char* schema_name = "bingo";
@@ -311,7 +276,11 @@ Datum bingo_buildempty(PG_FUNCTION_ARGS)
         BingoPgWrapper rel_namespace;
         const char* index_schema = rel_namespace.getRelNameSpace(index->rd_id);
 
-        BingoPgBuild build_engine(index, schema_name, index_schema, true);
+        {
+            BingoPgBuild build_engine(index, schema_name, index_schema, true);
+        }
+
+        bingoLogBuiltRelation(index);
     }
     PG_BINGO_END
 #if PG_VERSION_NUM / 100 < 906

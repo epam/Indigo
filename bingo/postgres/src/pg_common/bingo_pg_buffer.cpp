@@ -4,8 +4,11 @@ extern "C"
 {
 #include "postgres.h"
 
+#include "access/generic_xlog.h"
 #include "access/itup.h"
+#include "access/xloginsert.h"
 #include "fmgr.h"
+#include "miscadmin.h"
 #include "storage/bufmgr.h"
 #include "storage/bufpage.h"
 #include "storage/lock.h"
@@ -24,41 +27,116 @@ using namespace indigo;
 
 IMPL_ERROR(BingoPgBuffer, "bingo buffer");
 
-/*
- * Empty buffer constructor
- */
-BingoPgBuffer::BingoPgBuffer() : _buffer(InvalidBuffer), _lock(BINGO_PG_NOLOCK), _blockIdx(0)
+BingoPgBuffer::BingoPgBuffer()
+    : _buffer(InvalidBuffer), _lock(BINGO_PG_NOLOCK), _blockIdx(0), _relation(0), _walState(nullptr), _writePage(nullptr), _walEnabled(true),
+      _rawPageWal(false), _writeAborted(false), _reusableTailStart(UINT_MAX)
 {
 }
-/*
- * New buffer constructor
- */
-BingoPgBuffer::BingoPgBuffer(PG_OBJECT rel_ptr, unsigned int block_num) : _buffer(InvalidBuffer), _lock(BINGO_PG_NOLOCK), _blockIdx(0)
+
+BingoPgBuffer::BingoPgBuffer(PG_OBJECT rel_ptr, unsigned int block_num)
+    : _buffer(InvalidBuffer), _lock(BINGO_PG_NOLOCK), _blockIdx(0), _relation(0), _walState(nullptr), _writePage(nullptr), _walEnabled(true),
+      _rawPageWal(false), _writeAborted(false), _reusableTailStart(UINT_MAX)
 {
     writeNewBuffer(rel_ptr, block_num);
 }
-/*
- * Existing buffer constructor
- */
-BingoPgBuffer::BingoPgBuffer(PG_OBJECT rel_ptr, unsigned int block_num, int lock) : _buffer(InvalidBuffer), _lock(BINGO_PG_NOLOCK), _blockIdx(0)
+
+BingoPgBuffer::BingoPgBuffer(PG_OBJECT rel_ptr, unsigned int block_num, int lock)
+    : _buffer(InvalidBuffer), _lock(BINGO_PG_NOLOCK), _blockIdx(0), _relation(0), _walState(nullptr), _writePage(nullptr), _walEnabled(true),
+      _rawPageWal(false), _writeAborted(false), _reusableTailStart(UINT_MAX)
 {
     readBuffer(rel_ptr, block_num, lock);
 }
-/*
- * Destructor
- */
+
 BingoPgBuffer::~BingoPgBuffer()
 {
     clear();
 }
-/*
- * Changes an access for the buffer
- */
-void BingoPgBuffer::changeAccess(int lock)
+
+void BingoPgBuffer::setWalEnabled(bool enabled)
+{
+    if (_lock == BINGO_PG_WRITE || _walState != nullptr)
+        throw Error("internal error: can not change WAL mode while a bingo buffer is being written");
+    _walEnabled = enabled;
+}
+
+void BingoPgBuffer::setRawPageWal(bool enabled)
+{
+    if (_lock == BINGO_PG_WRITE || _walState != nullptr)
+        throw Error("internal error: can not change raw-page WAL mode while a bingo buffer is being written");
+    _rawPageWal = enabled;
+}
+
+void BingoPgBuffer::setReusableTailStart(unsigned int block_num)
+{
+    if (_buffer != InvalidBuffer || _walState != nullptr)
+        throw Error("internal error: can not change reusable tail boundary while a bingo buffer is active");
+    _reusableTailStart = block_num;
+}
+
+void BingoPgBuffer::_beginWrite(bool full_image)
 {
     if (_buffer == InvalidBuffer)
+        throw Error("internal error: can not begin writing an invalid bingo buffer");
+
+    _writeAborted = false;
+    if (!_walEnabled || _rawPageWal)
+    {
+        _writePage = BufferGetPage(_buffer);
         return;
-    if (_lock == BINGO_PG_WRITE)
+    }
+
+    Relation rel = (Relation)_relation;
+    GenericXLogState* state = nullptr;
+    Page page = nullptr;
+    BINGO_PG_TRY
+    {
+        state = GenericXLogStart(rel);
+        page = GenericXLogRegisterBuffer(state, _buffer, full_image ? GENERIC_XLOG_FULL_IMAGE : 0);
+    }
+    BINGO_PG_HANDLE(throw Error("internal error: can not start WAL for bingo block %u: %s", _blockIdx, message));
+
+    _walState = state;
+    _writePage = page;
+}
+
+void BingoPgBuffer::_finishWrite()
+{
+    if (_buffer == InvalidBuffer || _writePage == nullptr)
+        return;
+
+    if (_writeAborted)
+    {
+        _writePage = nullptr;
+        _writeAborted = false;
+        return;
+    }
+
+    if (_walState != nullptr)
+    {
+        GenericXLogState* state = (GenericXLogState*)_walState;
+        BINGO_PG_TRY
+        {
+            GenericXLogFinish(state);
+        }
+        BINGO_PG_HANDLE(throw Error("internal error: can not finish WAL for bingo block %u: %s", _blockIdx, message));
+        _walState = nullptr;
+    }
+    else if (_rawPageWal && _walEnabled)
+    {
+        Relation rel = (Relation)_relation;
+        if (RelationNeedsWAL(rel))
+        {
+            START_CRIT_SECTION();
+            MarkBufferDirty(_buffer);
+            log_newpage_buffer(_buffer, false);
+            END_CRIT_SECTION();
+        }
+        else
+        {
+            MarkBufferDirty(_buffer);
+        }
+    }
+    else
     {
         BINGO_PG_TRY
         {
@@ -66,28 +144,63 @@ void BingoPgBuffer::changeAccess(int lock)
         }
         BINGO_PG_HANDLE(throw Error("internal error: can not set buffer dirty %d: %s", _buffer, message));
     }
+    _writePage = nullptr;
+}
+
+void BingoPgBuffer::_abortWrite()
+{
+    if (_walState != nullptr)
+    {
+        GenericXLogState* state = (GenericXLogState*)_walState;
+        BINGO_PG_TRY
+        {
+            GenericXLogAbort(state);
+        }
+        BINGO_PG_HANDLE(throw Error("internal error: can not abort WAL for bingo block %u: %s", _blockIdx, message));
+        _walState = nullptr;
+    }
+    _writePage = nullptr;
+    _writeAborted = true;
+}
+
+void* BingoPgBuffer::_getPage() const
+{
+    if (_writePage != nullptr)
+        return _writePage;
+    return BufferGetPage(_buffer);
+}
+
+void* BingoPgBuffer::getPage() const
+{
+    return _getPage();
+}
+
+void BingoPgBuffer::changeAccess(int lock)
+{
+    if (_buffer == InvalidBuffer)
+        return;
+    if (_lock == lock)
+        return;
+
+    if (_lock == BINGO_PG_WRITE)
+        _finishWrite();
+
     BINGO_PG_TRY
     {
         if (_lock != BINGO_PG_NOLOCK)
-        {
             LockBuffer(_buffer, BUFFER_LOCK_UNLOCK);
-        }
         if (lock != BINGO_PG_NOLOCK)
-        {
             LockBuffer(_buffer, _getAccess(lock));
-        }
     }
     BINGO_PG_HANDLE(throw Error("internal error: can not lock the buffer %d: %s", _buffer, message));
     _lock = lock;
+
+    if (_lock == BINGO_PG_WRITE)
+        _beginWrite(false);
 }
-/*
- * Writes a new buffer with WRITE lock
- */
+
 int BingoPgBuffer::writeNewBuffer(PG_OBJECT rel_ptr, unsigned int block_num)
 {
-    /*
-     * Clear if it is a new buffer
-     */
     if (_buffer != InvalidBuffer)
     {
         if (_blockIdx != block_num)
@@ -104,23 +217,14 @@ int BingoPgBuffer::writeNewBuffer(PG_OBJECT rel_ptr, unsigned int block_num)
     }
     BINGO_PG_HANDLE(throw Error("internal error: can not get number of blocks: %s", message));
 
-    /*
-     * Bingo forbids noncontiguous access. A block below the relation size is
-     * only reusable when PostgreSQL still considers it uninitialized. This
-     * can happen after an interrupted extension. Never PageInit an existing
-     * populated block: doing so destroys another writer's index data.
-     */
     if (block_num > nblocks)
-    {
         throw Error("internal error: access to noncontiguous page in bingo index");
-    }
 
     if (block_num == nblocks)
     {
         int buffer_block_num = 0;
         BINGO_PG_TRY
         {
-            /* smgr insists we use P_NEW to extend the relation */
             _buffer = ReadBuffer(rel, P_NEW);
             buffer_block_num = BufferGetBlockNumber(_buffer);
         }
@@ -142,9 +246,6 @@ int BingoPgBuffer::writeNewBuffer(PG_OBJECT rel_ptr, unsigned int block_num)
         BINGO_PG_HANDLE(throw Error("internal error: can not read the existing buffer: %s", message));
     }
 
-    /*
-     * Lock buffer on writing
-     */
     BINGO_PG_TRY
     {
         LockBuffer(_buffer, BUFFER_LOCK_EXCLUSIVE);
@@ -152,48 +253,41 @@ int BingoPgBuffer::writeNewBuffer(PG_OBJECT rel_ptr, unsigned int block_num)
     BINGO_PG_HANDLE(throw Error("internal error: can not lock the buffer: %s", message));
     _lock = BINGO_PG_WRITE;
     _blockIdx = block_num;
+    _relation = rel_ptr;
 
-    Page page = BufferGetPage(_buffer);
-    if (block_num < nblocks && !PageIsNew(page))
+    Page disk_page = BufferGetPage(_buffer);
+    const bool existing_page = block_num < nblocks;
+    const bool proven_orphan_tail = existing_page && block_num >= _reusableTailStart;
+    if (existing_page && !PageIsNew(disk_page) && !proven_orphan_tail)
     {
-        /*
-         * Do not rely on the destructor here: this method is also called from
-         * a constructor, whose destructor will not run when construction
-         * throws.
-         */
         UnlockReleaseBuffer(_buffer);
         _buffer = InvalidBuffer;
         _lock = BINGO_PG_NOLOCK;
         _blockIdx = 0;
-        throw Error("internal error: refusing to initialize existing bingo index block %u", block_num);
+        _relation = 0;
+        throw Error("internal error: refusing to initialize published bingo index block %u", block_num);
     }
 
-    /*
-     * Initialize either a newly extended page or an uninitialized page left
-     * behind by an interrupted extension.
-     */
+    _beginWrite(true);
     BINGO_PG_TRY
     {
-        PageInit(page, BufferGetPageSize(_buffer), 0);
+        PageInit((Page)_getPage(), BufferGetPageSize(_buffer), 0);
     }
     BINGO_PG_HANDLE({
+        _abortWrite();
         UnlockReleaseBuffer(_buffer);
         _buffer = InvalidBuffer;
         _lock = BINGO_PG_NOLOCK;
         _blockIdx = 0;
+        _relation = 0;
         throw Error("internal error: can not initialize the page: %s", message);
     });
 
     return _buffer;
 }
-/*
- * Reads a buffer
- */
+
 int BingoPgBuffer::readBuffer(PG_OBJECT rel_ptr, unsigned int block_num, int lock)
 {
-    /*
-     * Clear a buffer if it is different
-     */
     if (_buffer != InvalidBuffer)
     {
         if (_blockIdx != block_num)
@@ -213,9 +307,6 @@ int BingoPgBuffer::readBuffer(PG_OBJECT rel_ptr, unsigned int block_num, int loc
     }
     BINGO_PG_HANDLE(throw Error("internal error: can not read the buffer %d: %s", block_num, message));
 
-    /*
-     * Lock buffer
-     */
     if (lock != BINGO_PG_NOLOCK)
     {
         BINGO_PG_TRY
@@ -227,28 +318,26 @@ int BingoPgBuffer::readBuffer(PG_OBJECT rel_ptr, unsigned int block_num, int loc
 
     _lock = lock;
     _buffer = buf;
-    /*
-     * Store block index
-     */
     _blockIdx = block_num;
+    _relation = rel_ptr;
+    if (_lock == BINGO_PG_WRITE)
+        _beginWrite(false);
     return _buffer;
 }
 
-/*
- * Clears and releases the buffer
- */
 void BingoPgBuffer::clear()
 {
     if (_buffer == InvalidBuffer)
         return;
+
+    if (_lock == BINGO_PG_WRITE)
+        _finishWrite();
+
     BINGO_PG_TRY
     {
         switch (_lock)
         {
         case BINGO_PG_WRITE:
-            MarkBufferDirty(_buffer);
-            UnlockReleaseBuffer(_buffer);
-            break;
         case BINGO_PG_READ:
             UnlockReleaseBuffer(_buffer);
             break;
@@ -264,6 +353,10 @@ void BingoPgBuffer::clear()
     _buffer = InvalidBuffer;
     _lock = BINGO_PG_NOLOCK;
     _blockIdx = 0;
+    _relation = 0;
+    _walState = nullptr;
+    _writePage = nullptr;
+    _writeAborted = false;
 }
 
 int BingoPgBuffer::_getAccess(int lock)
@@ -280,12 +373,7 @@ int BingoPgBuffer::_getAccess(int lock)
 
 void* BingoPgBuffer::getIndexData(int& data_len)
 {
-    Page page = 0;
-    BINGO_PG_TRY
-    {
-        page = BufferGetPage(getBuffer());
-    }
-    BINGO_PG_HANDLE(throw Error("internal error: can not get index page from the block %d: %s", _blockIdx, message));
+    Page page = (Page)_getPage();
 
     if (PageIsNew(page))
         throw Error("internal error: uninitialized bingo index block %d", _blockIdx);
@@ -315,9 +403,10 @@ void* BingoPgBuffer::getIndexData(int& data_len)
 
 void BingoPgBuffer::formIndexTuple(void* map_data, int size)
 {
+    bool add_failed = false;
     BINGO_PG_TRY
     {
-        Page page = BufferGetPage(getBuffer());
+        Page page = (Page)_getPage();
         Datum map_datum = PointerGetDatum(map_data);
 #if PG_VERSION_NUM / 100 >= 1200
         TupleDesc index_desc = CreateTemplateTupleDesc(1);
@@ -345,16 +434,21 @@ void BingoPgBuffer::formIndexTuple(void* map_data, int size)
         itemsz = MAXALIGN(itemsz);
 
         if (PageAddItem(page, (Item)itup, itemsz, 0, false, false) == InvalidOffsetNumber)
-        {
-            pfree(itup);
-            FreeTupleDesc(index_desc);
-            throw Error("internal error: failed to add index item");
-        }
+            add_failed = true;
 
         pfree(itup);
         FreeTupleDesc(index_desc);
     }
-    BINGO_PG_HANDLE(throw Error("internal error: can not form index tuple: %s", message));
+    BINGO_PG_HANDLE({
+        _abortWrite();
+        throw Error("internal error: can not form index tuple: %s", message);
+    });
+
+    if (add_failed)
+    {
+        _abortWrite();
+        throw Error("internal error: failed to add index item");
+    }
 }
 
 using namespace indigo;
@@ -365,6 +459,17 @@ void BingoPgBuffer::formEmptyIndexTuple(int size)
     buf.resize(size);
     buf.zerofill();
     formIndexTuple(buf.ptr(), buf.sizeInBytes());
+}
+
+void BingoPgBuffer::replaceIndexData(const void* data, int size)
+{
+    int data_len = 0;
+    void* target = getIndexData(data_len);
+    if (size > data_len)
+        throw Error("internal error: replacement data size %d exceeds bingo block %u capacity %d", size, _blockIdx, data_len);
+    memcpy(target, data, size);
+    if (size < data_len)
+        memset((char*)target + size, 0, data_len - size);
 }
 
 bool BingoPgBuffer::isReady() const

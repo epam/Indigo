@@ -101,10 +101,11 @@ public:
     /*
      * Strategies
      */
-
     void setStrategy(INDEX_STRATEGY strategy)
     {
         _strategy = strategy;
+        _metaBuffer.setRawPageWal(true);
+        _metaBuffer.setWalEnabled(strategy != BUILDING_STRATEGY);
     }
 
     /*

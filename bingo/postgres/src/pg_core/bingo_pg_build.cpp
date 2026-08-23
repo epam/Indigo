@@ -32,9 +32,6 @@ IMPL_ERROR(BingoPgBuild, "build engine");
 BingoPgBuild::BingoPgBuild(PG_OBJECT index_ptr, const char* schema_name, const char* index_schema, bool new_index)
     : _index(index_ptr), _bufferIndex(index_ptr), _buildingState(new_index)
 {
-    /*
-     * Prepare buffer section for building or updating
-     */
     BingoPgCommon::appendPath(index_schema);
 
     if (_buildingState)
@@ -52,22 +49,19 @@ BingoPgBuild::BingoPgBuild(PG_OBJECT index_ptr, const char* schema_name, const c
 BingoPgBuild::~BingoPgBuild()
 {
     /*
-     * Finish building stage
+     * Bulk builds publish their shadow indexes, dictionary, and metapage when
+     * the build is complete. Incremental writes persist dictionary/meta state
+     * explicitly before/while publishing each structure and must not depend on
+     * destructor ordering for crash safety.
      */
     if (_buildingState)
     {
         fp_engine->finishShadowProcessing();
+        _bufferIndex.writeDictionary(*fp_engine);
+        _bufferIndex.writeMetaInfo();
     }
-    /*
-     * Write meta info in desctructor
-     */
-    _bufferIndex.writeDictionary(*fp_engine);
-    _bufferIndex.writeMetaInfo();
 }
-/*
- * Inserts a new structure into the index
- * Returns true if insertion was successfull
- */
+
 void BingoPgBuild::_prepareBuilding(const char* schema_name, const char* index_schema)
 {
     Relation index = (Relation)_index;
@@ -79,15 +73,9 @@ void BingoPgBuild::_prepareBuilding(const char* schema_name, const char* index_s
 
     elog(DEBUG1, "bingo: index build: start create index '%s'", rel_name);
 
-    /*
-     * Safety check
-     */
     if (RelationGetNumberOfBlocks(index) != 0)
         throw Error("cannot initialize non-empty bingo index \"%s\"", RelationGetRelationName(index));
 
-    /*
-     * Define index type
-     */
     if (strcasecmp(func_name, "matchsub") == 0)
     {
         fp_engine = std::make_unique<MangoPgBuildEngine>(rel_name);
@@ -101,21 +89,11 @@ void BingoPgBuild::_prepareBuilding(const char* schema_name, const char* index_s
         throw Error("internal error: unknown index build function %s", func_name);
     }
     BingoPgConfig bingo_config(fp_engine->bingoCore);
-    /*
-     * Set up configuration from postgres table
-     */
     bingo_config.readDefaultConfig(schema_name);
-    /*
-     * Update configuration from pg_class.reloptions
-     */
     bingo_config.updateByIndexConfig(index);
     fp_engine->setUpConfiguration(bingo_config);
 
-    /*
-     * If new build then create a metapage and initial section
-     */
     _bufferIndex.writeBegin(*fp_engine, bingo_config);
-
     fp_engine->prepareShadowInfo(schema_name, index_schema);
 }
 
@@ -129,9 +107,6 @@ void BingoPgBuild::_prepareUpdating()
 
     _bufferIndex.readMetaInfo();
 
-    /*
-     * Define index type
-     */
     if (_bufferIndex.getIndexType() == BINGO_INDEX_TYPE_MOLECULE)
         fp_engine = std::make_unique<MangoPgBuildEngine>(rel_name);
     else if (_bufferIndex.getIndexType() == BINGO_INDEX_TYPE_REACTION)
@@ -141,43 +116,26 @@ void BingoPgBuild::_prepareUpdating()
     auto& bingo_core = fp_engine->bingoCore;
     BingoPgConfig bingo_config(bingo_core);
     _bufferIndex.readConfigParameters(bingo_config);
-    /*
-     * Set up bingo configuration
-     */
     bingo_config.setUpBingoConfiguration();
     bingo_core.bingoTautomerRulesReady(0, 0, 0);
     bingo_core.bingoIndexBegin();
 
-    /*
-     * Prepare for an update
-     */
     _bufferIndex.updateBegin();
-    /*
-     * Load cmf dictionary
-     */
     fp_engine->loadDictionary(_bufferIndex);
 }
 
 void BingoPgBuild::insertStructure(PG_OBJECT item_ptr, uintptr_t text_ptr)
 {
     if (fp_engine->getNthreads() == 1)
-    {
         insertStructureSingle(item_ptr, text_ptr);
-    }
     else
-    {
         insertStructureParallel(item_ptr, text_ptr);
-    }
 }
 
 bool BingoPgBuild::insertStructureSingle(PG_OBJECT item_ptr, uintptr_t text_ptr)
 {
-    /*
-     * Insert a new structure
-     */
     int block_number = ItemPointerGetBlockNumber((ItemPointer)item_ptr);
     int offset_number = ItemPointerGetOffsetNumber((ItemPointer)item_ptr);
-    // profTimerStart(t0, "bingo_pg.insert");
 
     BingoPgBuildEngine::StructCache struct_cache;
     struct_cache.text = std::make_unique<BingoPgText>(text_ptr);
@@ -186,57 +144,57 @@ bool BingoPgBuild::insertStructureSingle(PG_OBJECT item_ptr, uintptr_t text_ptr)
     elog(DEBUG1, "bingo: insert structure: processing the table entry with ctid='(%d,%d)'::tid", block_number, offset_number);
 
     if (!fp_engine->processStructure(struct_cache))
-    {
         return false;
-    }
 
     if (struct_cache.data.get() == 0)
         return false;
 
-    BingoPgFpData& data_ref = *struct_cache.data;
+    /*
+     * The encoded CMF can depend on dictionary state changed while processing
+     * this molecule. For a live index, WAL-persist that dictionary and its
+     * metapage count before any section existence bit can publish the molecule.
+     */
+    if (!_buildingState)
+    {
+        _bufferIndex.writeDictionary(*fp_engine);
+        _bufferIndex.writeMetaInfo();
+    }
 
+    BingoPgFpData& data_ref = *struct_cache.data;
     _bufferIndex.insertStructure(data_ref);
     fp_engine->insertShadowInfo(data_ref);
 
     elog(DEBUG1, "bingo: insert structure: finish processing the table entry with ctid='(%d,%d)'::tid", block_number, offset_number);
-
     return true;
 }
 
 void BingoPgBuild::insertStructureParallel(PG_OBJECT item_ptr, uintptr_t text_ptr)
 {
-    /*
-     * Insert a new structure
-     */
     BingoPgBuildEngine::StructCache& struct_cache = _parrallelCache.push();
     struct_cache.text = std::make_unique<BingoPgText>(text_ptr);
     struct_cache.ptr = *((ItemPointer)item_ptr);
-    /*
-     * Flush cache
-     */
     if (_parrallelCache.size() > MAX_CACHE_SIZE)
         flush();
 }
 
 void BingoPgBuild::flush()
 {
-    // profTimerStart(t0, "bingo_pg.flush");
-
     if (_parrallelCache.size() == 0)
         return;
-    /*
-     * Process cache structures
-     */
+
     fp_engine->processStructures(_parrallelCache);
+
+    if (!_buildingState)
+    {
+        _bufferIndex.writeDictionary(*fp_engine);
+        _bufferIndex.writeMetaInfo();
+    }
 
     for (int c_idx = 0; c_idx < _parrallelCache.size(); ++c_idx)
     {
-        // profTimerStart(t1, "bingo_pg.insert_idx");
         BingoPgBuildEngine::StructCache& struct_cache = _parrallelCache[c_idx];
         if (struct_cache.data.get() == 0)
-        {
             continue;
-        }
 
         BingoPgFpData& data_ref = *struct_cache.data;
         _bufferIndex.insertStructure(data_ref);
