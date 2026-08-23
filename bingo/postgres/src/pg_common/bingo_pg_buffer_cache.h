@@ -52,6 +52,9 @@ protected:
 class BingoPgBufferCacheMap : public BingoPgBufferCache
 {
 public:
+    /*
+     * Tid mapping = tid + cmf + xyz
+     */
     typedef struct BingoMapData
     {
         ItemPointerData tid_map;
@@ -62,9 +65,15 @@ public:
     BingoPgBufferCacheMap(int block_id, PG_OBJECT index_ptr, bool write, bool wal_enabled = true, unsigned int reusable_tail_start = UINT_MAX);
     ~BingoPgBufferCacheMap() override;
 
+    /*
+     * Setters
+     */
     void setTidItem(int map_idx, ItemPointerData& tid_item);
     void setCmfItem(int map_idx, ItemPointerData& cmf_item);
     void setXyzItem(int map_idx, ItemPointerData& xyz_item);
+    /*
+     * Getters
+     */
     void getTidItem(int map_idx, ItemPointerData& tid_item);
     void getCmfItem(int map_idx, ItemPointerData& cmf_item);
     void getXyzItem(int map_idx, ItemPointerData& xyz_item);
@@ -89,7 +98,11 @@ public:
 
     void setBit(int str_idx, bool value);
     bool getBit(int str_idx);
+    /*
+     * Main bit processing
+     */
     void andWithBitset(BingoPgExternalBitset& ext_bitset);
+
     void getCopy(BingoPgExternalBitset& other);
 
     DECL_ERROR;
@@ -100,11 +113,14 @@ private:
     BingoPgExternalBitset _cache;
 };
 /*
- * Binary buffers handling
+ * Biniary buffers handling
  */
 class BingoPgBufferCacheBin : public BingoPgBufferCache
 {
 public:
+    /*
+     * Max size is rewrite BLCKSZ because there is int for keeping data length (stored in the begining of the buffer)
+     */
     enum
     {
         MAX_SIZE = 8140,
@@ -114,9 +130,19 @@ public:
     BingoPgBufferCacheBin(int block_id, PG_OBJECT index_ptr, bool write, bool wal_enabled = true, unsigned int reusable_tail_start = UINT_MAX);
     ~BingoPgBufferCacheBin() override;
 
+    /*
+     * Returns true if enough space for adding a new structure with given size
+     */
     bool isEnoughSpace(int size);
+    /*
+     * Add cmf to the buffer. Returns offset for a added cmf
+     */
     unsigned short addBin(indigo::Array<char>& bin_buf);
     unsigned short writeBin(indigo::Array<char>& bin_buf);
+
+    /*
+     * Get cmf from a buffer
+     */
     void readBin(unsigned short offset, indigo::Array<char>& result);
 
     DECL_ERROR;

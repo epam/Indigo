@@ -68,7 +68,7 @@ public:
     const BingoSectionInfoData& getSectionInfo() const
     {
         return _sectionInfo;
-    }
+    };
 
     DECL_ERROR;
 

@@ -23,8 +23,14 @@ IMPL_ERROR(BingoPgSection, "bingo postgres section");
 BingoPgSection::BingoPgSection(BingoPgIndex& bingo_idx, int idx_strategy, int offset, bool create_new)
     : _index(bingo_idx.getIndexPtr()), _offset(offset), _idxStrategy(idx_strategy)
 {
+    /*
+     * Clear section metainfo
+     */
     clear();
 
+    /*
+     * Prepare section strategy
+     */
     const bool building = (_idxStrategy == BingoPgIndex::BUILDING_STRATEGY);
     const bool creating = building || create_new;
     const bool wal_enabled = !building;
@@ -34,6 +40,9 @@ BingoPgSection::BingoPgSection(BingoPgIndex& bingo_idx, int idx_strategy, int of
 
     if (creating)
     {
+        /*
+         * If creating then create new buffers
+         */
         _sectionInfo.n_blocks_for_map = bingo_idx.getMapSize();
         _sectionInfo.n_blocks_for_fp = bingo_idx.getFpSize();
 
@@ -41,6 +50,9 @@ BingoPgSection::BingoPgSection(BingoPgIndex& bingo_idx, int idx_strategy, int of
         _sectionInfoBuffer.formIndexTuple(&_sectionInfo, sizeof(_sectionInfo));
         _sectionInfoBuffer.changeAccess(BINGO_PG_NOLOCK);
 
+        /*
+         * Initialize existing structures fingerprint
+         */
         if (building)
         {
             _existStructures = std::make_unique<BingoPgBufferCacheFp>(offset + 1, _index, true, wal_enabled);
@@ -53,6 +65,9 @@ BingoPgSection::BingoPgSection(BingoPgIndex& bingo_idx, int idx_strategy, int of
             _existStructures = std::make_unique<BingoPgBufferCacheFp>(offset + 1, _index, false, wal_enabled);
         }
 
+        /*
+         * Initialize bits number buffers
+         */
         for (int idx = 0; idx < SECTION_BITSNUMBER_PAGES; ++idx)
         {
             BingoPgBuffer& bits_buffer = _bitsCountBuffers.push();
@@ -65,6 +80,9 @@ BingoPgSection::BingoPgSection(BingoPgIndex& bingo_idx, int idx_strategy, int of
     }
     else
     {
+        /*
+         * Read section meta info
+         */
         _sectionInfoBuffer.readBuffer(_index, _offset, BINGO_PG_READ);
         int data_len;
         BingoSectionInfoData* data = (BingoSectionInfoData*)_sectionInfoBuffer.getIndexData(data_len);
@@ -77,15 +95,21 @@ BingoPgSection::BingoPgSection(BingoPgIndex& bingo_idx, int idx_strategy, int of
     int map_count = _sectionInfo.n_blocks_for_map;
     int fp_count = _sectionInfo.n_blocks_for_fp;
     int bin_count = _sectionInfo.n_blocks_for_bin;
-
+    /*
+     * Prepare cache arrays
+     */
     _buffersMap.expand(map_count);
     _buffersFp.expand(fp_count);
     _buffersBin.expand(bin_count);
-
+    /*
+     * Prepare offset arrays
+     */
     _offsetMap.expand(map_count);
     _offsetFp.expand(fp_count);
     _offsetBin.expand(bin_count);
-
+    /*
+     * Prepare for reading or writing all the data buffers
+     */
     int block_offset = offset + SECTION_META_PAGES + SECTION_BITSNUMBER_PAGES;
     for (int i = 0; i < map_count; ++i)
     {
@@ -106,11 +130,17 @@ BingoPgSection::BingoPgSection(BingoPgIndex& bingo_idx, int idx_strategy, int of
     if (building)
     {
         for (int i = 0; i < map_count; ++i)
+        {
             getMapBufferCache(i);
+        }
         for (int i = 0; i < fp_count; ++i)
+        {
             getFpBufferCache(i);
+        }
         for (int i = 0; i < bin_count; ++i)
+        {
             getBinBufferCache(i);
+        }
     }
     else if (create_new)
     {
@@ -126,7 +156,9 @@ BingoPgSection::BingoPgSection(BingoPgIndex& bingo_idx, int idx_strategy, int of
     else if (_idxStrategy == BingoPgIndex::UPDATING_STRATEGY)
     {
         for (int i = 0; i < bin_count; ++i)
+        {
             getBinBufferCache(i);
+        }
     }
 
     if (creating)
@@ -139,6 +171,9 @@ BingoPgSection::BingoPgSection(BingoPgIndex& bingo_idx, int idx_strategy, int of
 
 BingoPgSection::~BingoPgSection()
 {
+    /*
+     * Write meta info
+     */
     if (_idxStrategy != BingoPgIndex::READING_STRATEGY)
     {
         _sectionInfo.n_blocks_for_bin = _buffersBin.size();
@@ -188,9 +223,15 @@ void BingoPgSection::addStructure(BingoPgFpData& item_data)
     const int current_str = _sectionInfo.n_structures;
     elog(DEBUG1, "bingo: section: reserve structure %d", current_str);
 
+    /*
+     * Reserve the logical structure slot before writing payload pages
+     */
     ++_sectionInfo.n_structures;
     _flushSectionInfo();
 
+    /*
+     * Set fp bits
+     */
     for (int idx = item_data.bitBegin(); idx != item_data.bitEnd(); idx = item_data.bitNext(idx))
     {
         int bit_idx = item_data.getBit(idx);
@@ -200,21 +241,38 @@ void BingoPgSection::addStructure(BingoPgFpData& item_data)
 
     int map_buf_idx = current_str / BINGO_MOLS_PER_MAPBLOCK;
     int map_idx = current_str % BINGO_MOLS_PER_MAPBLOCK;
-
+    /*
+     * Set tid map
+     */
     elog(DEBUG1, "bingo: section: set tid map: map buffer idx = %d offset = %d", map_buf_idx, map_idx);
     BingoPgBufferCacheMap& buffer_map = getMapBufferCache(map_buf_idx);
     buffer_map.setTidItem(map_idx, item_data.getTidItem());
 
+    /*
+     * Prepare and set cmf map
+     */
     _setCmfData(item_data.getCmfBuf(), map_buf_idx, map_idx);
+    /*
+     * Prepare and set xyz map
+     */
     _setXyzData(item_data.getXyzBuf(), map_buf_idx, map_idx);
-    _setBitsCountData(item_data.getBitsCount());
 
+    /*
+     * Set bits number
+     */
+    _setBitsCountData(item_data.getBitsCount());
+    /*
+     * Set structure index
+     */
     item_data.setStructureIdx(current_str);
 
     _sectionInfo.n_blocks_for_bin = _buffersBin.size();
     _sectionInfo.section_size = getPagesCount();
     _flushSectionInfo();
 
+    /*
+     * Set structure bit
+     */
     _existStructures->setBit(current_str, true);
 }
 
@@ -307,8 +365,14 @@ void BingoPgSection::readSectionBitsCount(indigo::Array<int>& bits_number)
 
 void BingoPgSection::_setCmfData(indigo::Array<char>& cmf_buf, int map_buf_idx, int map_idx)
 {
+    /*
+     * Set binary info
+     */
     ItemPointerData cmf_item;
     _setBinData(cmf_buf, _sectionInfo.last_cmf, cmf_item);
+    /*
+     * Set mappings
+     */
     BingoPgBufferCacheMap& buffer_map = getMapBufferCache(map_buf_idx);
     buffer_map.setCmfItem(map_idx, cmf_item);
 
@@ -317,8 +381,14 @@ void BingoPgSection::_setCmfData(indigo::Array<char>& cmf_buf, int map_buf_idx, 
 
 void BingoPgSection::_setXyzData(indigo::Array<char>& xyz_buf, int map_buf_idx, int map_idx)
 {
+    /*
+     * Set binary info
+     */
     ItemPointerData xyz_item;
     _setBinData(xyz_buf, _sectionInfo.last_xyz, xyz_item);
+    /*
+     * Set mappings
+     */
     BingoPgBufferCacheMap& buffer_map = getMapBufferCache(map_buf_idx);
     buffer_map.setXyzItem(map_idx, xyz_item);
 
@@ -336,6 +406,9 @@ void BingoPgSection::_setBinData(indigo::Array<char>& buf, int& last_buf, ItemPo
         BINGO_PG_HANDLE(throw Error("internal error: can not set block data: %s", message));
         return;
     }
+    /*
+     * Dynamic binary buffers
+     */
 
     const bool building = (_idxStrategy == BingoPgIndex::BUILDING_STRATEGY);
 
@@ -361,6 +434,9 @@ void BingoPgSection::_setBinData(indigo::Array<char>& buf, int& last_buf, ItemPo
     }
 
     BingoPgBufferCacheBin* cache_bin = _getBufferBin(last_buf);
+    /*
+     * If not enough space for inserting a new structure - then create and new buffer
+     */
     if (!cache_bin->isEnoughSpace(buf.sizeInBytes()))
     {
         int block_off = _offset + getPagesCount();
@@ -383,8 +459,14 @@ void BingoPgSection::_setBinData(indigo::Array<char>& buf, int& last_buf, ItemPo
     }
     cache_bin = _getBufferBin(last_buf);
 
+    /*
+     * Get cmf offset for storing cmf mapping
+     */
     unsigned short bin_offset = cache_bin->addBin(buf);
 
+    /*
+     * Set mappings
+     */
     BINGO_PG_TRY
     {
         ItemPointerSet(&item_data, last_buf, bin_offset);
@@ -394,6 +476,7 @@ void BingoPgSection::_setBinData(indigo::Array<char>& buf, int& last_buf, ItemPo
 
 void BingoPgSection::_setBitsCountData(unsigned short bits_count)
 {
+
     if (_bitsCountBuffers.size() == 0)
         _bitsCountBuffers.resize(SECTION_BITSNUMBER_PAGES);
 

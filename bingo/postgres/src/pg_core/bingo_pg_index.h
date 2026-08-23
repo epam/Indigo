@@ -101,6 +101,7 @@ public:
     /*
      * Strategies
      */
+
     void setStrategy(INDEX_STRATEGY strategy)
     {
         _strategy = strategy;
