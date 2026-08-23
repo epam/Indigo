@@ -5,6 +5,7 @@ FROM almalinux:8 AS bingo-builder
 
 ARG DEVTOOLSET_VERSION=11
 ARG POSTGRES_MAJOR_VERSION=17
+ARG BINGO_SOURCE_REF=WORKTREE
 
 USER root
 
@@ -85,18 +86,30 @@ ENV PATH=/usr/pgsql-${POSTGRES_MAJOR_VERSION}/bin:${PATH}
 WORKDIR /src
 COPY . /src
 
-# Bingo derives version metadata from Git. Mark the copied checkout safe so a
-# container build cannot fall back to the bogus 1.9.1-00000000 metadata caused
-# by Git's dubious-ownership protection.
-RUN git config --global --add safe.directory /src \
-    && test -d /src/.git \
-    && git rev-parse HEAD > /tmp/source-revision \
-    && (git describe --tags --always --dirty > /tmp/source-describe || git rev-parse --short HEAD > /tmp/source-describe)
+# By default build the copied working tree, including intentional uncommitted
+# source edits. For controlled A/B tests BINGO_SOURCE_REF can instead name a
+# committed ref (for example the unpatched 1.45 release). Only the Bingo source
+# changes; the runtime still receives the current regression harness below.
+RUN set -eux; \
+    git config --global --add safe.directory /src; \
+    if [ "$BINGO_SOURCE_REF" = "WORKTREE" ]; then \
+      source_dir=/src; \
+    else \
+      git -C /src cat-file -e "${BINGO_SOURCE_REF}^{commit}"; \
+      git -C /src worktree add --detach /source-under-test "$BINGO_SOURCE_REF"; \
+      source_dir=/source-under-test; \
+      git config --global --add safe.directory "$source_dir"; \
+    fi; \
+    printf '%s\n' "$source_dir" > /tmp/bingo-source-dir; \
+    git -C "$source_dir" rev-parse HEAD > /tmp/source-revision; \
+    (git -C "$source_dir" describe --tags --always --dirty > /tmp/source-describe || git -C "$source_dir" rev-parse --short HEAD > /tmp/source-describe)
 
 # Pin FindPostgreSQL's root and cache variables to PGDG's versioned PostgreSQL
 # 17 tree. FindPostgreSQL explicitly honors these cache entries, so an unrelated
 # /usr/include/postgresql/<major> installation cannot win discovery.
-RUN cmake -S /src -B /build-pg17 \
+RUN set -eux; \
+    source_dir="$(cat /tmp/bingo-source-dir)"; \
+    cmake -S "$source_dir" -B /build-pg17 \
       -DCMAKE_BUILD_TYPE=Release \
       -DBUILD_BINGO_POSTGRES=ON \
       -DBUILD_INDIGO=OFF \
@@ -109,9 +122,9 @@ RUN cmake -S /src -B /build-pg17 \
       -DPostgreSQL_ROOT=/usr/pgsql-${POSTGRES_MAJOR_VERSION} \
       -DPostgreSQL_INCLUDE_DIR=/usr/pgsql-${POSTGRES_MAJOR_VERSION}/include \
       -DPostgreSQL_TYPE_INCLUDE_DIR=/usr/pgsql-${POSTGRES_MAJOR_VERSION}/include/server \
-      -DPostgreSQL_LIBRARY=/usr/pgsql-${POSTGRES_MAJOR_VERSION}/lib/libpq.so \
-    && grep -E '^PostgreSQL_(INCLUDE_DIR|TYPE_INCLUDE_DIR|LIBRARY|VERSION)' /build-pg17/CMakeCache.txt \
-    && cmake --build /build-pg17 \
+      -DPostgreSQL_LIBRARY=/usr/pgsql-${POSTGRES_MAJOR_VERSION}/lib/libpq.so; \
+    grep -E '^PostgreSQL_(INCLUDE_DIR|TYPE_INCLUDE_DIR|LIBRARY|VERSION)' /build-pg17/CMakeCache.txt; \
+    cmake --build /build-pg17 \
       --config Release \
       --target package-bingo-postgres \
       -- -j "$(nproc)"

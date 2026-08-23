@@ -23,9 +23,24 @@ run_concurrent() {
     "${COMPOSE[@]}" --profile tools run --rm runner concurrent
 }
 
+run_recovery_suite() {
+    local suite=$1
+    "${COMPOSE[@]}" --profile crash run --rm crash-test "$suite"
+}
+
+run_single_recovery_suite() {
+    local suite=$1
+    build_image
+    run_recovery_suite "$suite"
+}
+
 run_crash() {
     build_image
-    "${COMPOSE[@]}" --profile crash run --rm crash-test
+    # Each invocation gets a fresh crash-test container with tmpfs PGDATA, so
+    # build, committed-write, and in-flight recovery failures stay isolated.
+    run_recovery_suite build
+    run_recovery_suite committed
+    run_recovery_suite inflight
 }
 
 run_replica() {
@@ -38,22 +53,28 @@ run_replica() {
 }
 
 usage() {
-    cat <<'EOF'
+    cat <<'EOF_USAGE'
 Usage: ./run.sh COMMAND
 
 Commands:
-  build        Build patched Bingo from this checkout and create the PG17 test image
-  normal       CREATE INDEX, incremental mutation, VACUUM, REINDEX, tail checks
-  concurrent   Concurrent inserts plus non-key UPDATE regression
-  crash        Disposable immediate-stop crash/recovery test
-  replica      Fresh primary/physical-standby WAL replay test
-  all          Run normal, concurrent, crash, and replica tests
-  up           Build and start the normal primary database
-  shell        Open psql against the normal primary database
-  logs         Follow primary logs
-  down         Stop services and remove all test volumes
-  status       Show Compose service status
-EOF
+  build                Build Bingo from the selected source and create the PG17 test image
+  normal               CREATE INDEX, incremental mutation, VACUUM, REINDEX, tail checks
+  concurrent           Concurrent inserts plus non-key UPDATE regression
+  recovery-build       Committed CREATE INDEX + immediate-stop recovery
+  recovery-committed   Committed incremental writes + production-shaped non-HOT UPDATE recovery
+  recovery-inflight    Immediate stop while INSERT/UPDATE/VACUUM is in flight
+  crash                Run all three recovery suites above, each on fresh PGDATA
+  replica              Fresh primary/physical-standby WAL replay test
+  all                  Run normal, concurrent, all recovery suites, and replica
+  up                   Build and start the normal primary database
+  shell                Open psql against the normal primary database
+  logs                 Follow primary logs
+  down                 Stop services and remove all test volumes
+  status               Show Compose service status
+
+Environment:
+  BINGO_SOURCE_REF      WORKTREE (default) or a committed Git ref to build for A/B testing
+EOF_USAGE
 }
 
 command=${1:-}
@@ -66,6 +87,15 @@ case "$command" in
         ;;
     concurrent)
         run_concurrent
+        ;;
+    recovery-build)
+        run_single_recovery_suite build
+        ;;
+    recovery-committed)
+        run_single_recovery_suite committed
+        ;;
+    recovery-inflight)
+        run_single_recovery_suite inflight
         ;;
     crash)
         run_crash

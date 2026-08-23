@@ -26,6 +26,8 @@ services:
       context: ../../../..
       dockerfile: bingo/postgres/tests/docker/Dockerfile
       target: postgres-bingo
+      args:
+        BINGO_SOURCE_REF: ${BINGO_SOURCE_REF:-WORKTREE}
     image: bingo-postgres-wal-test:local
     environment: *postgres-environment
     command: *postgres-command
@@ -104,8 +106,10 @@ services:
       POSTGRES_PASSWORD: postgres
       BINGO_WAL_TEST_ALLOW_CRASH: "1"
       ROWS: ${CRASH_ROWS_BASELINE:-50000}
+      COMMITTED_ROWS: ${COMMITTED_ROWS:-50000}
       CRASH_ROWS: ${CRASH_ROWS:-150000}
       CRASH_DELAY: ${CRASH_DELAY:-0.20}
+      ORPHAN_GROW_ROWS: ${ORPHAN_GROW_ROWS:-20000}
     entrypoint: ["/opt/bingo-harness/crash-entrypoint.sh"]
     tmpfs:
       - /var/lib/postgresql/data
