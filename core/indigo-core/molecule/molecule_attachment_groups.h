@@ -42,16 +42,6 @@ namespace indigo
     class DLLEXPORT AttachmentGroup : public Reusable
     {
     public:
-        // Attributes of the anchor atom that the file formats put the charge and
-        // the radical of the pi system on, and which is absorbed on loading.
-        // Carried through unchanged: never recomputed and never spread over the
-        // member atoms, so a structure charged either way comes back as it came in.
-        struct Anchor
-        {
-            int charge = 0;
-            int radical = 0;
-        };
-
         AttachmentGroup();
         ~AttachmentGroup() override;
 
@@ -75,28 +65,16 @@ namespace indigo
         // the whole group, never a truncated one.
         bool remapAtoms(const Array<int>& atom_mapping);
 
-        const Anchor& anchor() const
-        {
-            return _anchor;
-        }
-        void setAnchor(const Anchor& anchor)
-        {
-            _anchor = anchor;
-        }
-
     private:
         void _reset(); // the one place the fields are listed; not virtual — called from the constructor
 
         std::vector<int> _atoms;
-        Anchor _anchor;
     };
 
     // The attachment groups of one molecule.
-    //
-    // Every removal path of BaseMolecule must reach this class: see
-    // onAtomsRemoved(). A single group is removed through
-    // BaseMolecule::removeAttachmentGroup(), which also drops the haptic bonds
-    // that address it.
+    // Knows nothing of the haptic bonds that address its groups by index, so every
+    // operation that drops or renumbers a group reports that through an out-param
+    // and leaves propagating it to BaseMolecule.
     class DLLEXPORT MoleculeAttachmentGroups
     {
     public:
@@ -116,15 +94,16 @@ namespace indigo
         bool hasGroup(int idx) const;
         int groupCount() const;
 
-        // Removes the group. Indices of the other groups are unaffected — callers
-        // hold group indices across such calls.
+    private:
+        friend class BaseMolecule;
+        // Indices of the other groups are unaffected — callers hold group indices
+        // across such calls.
         void removeGroup(int idx);
 
-        // Must be called when the molecule removes atoms, with the same mapping
-        // BaseMolecule::removeAtoms builds (-1 = removed). Groups that lose a
-        // member are dropped whole; their indices are reported in `removed_groups`
-        // because the haptic bonds that reference them must go too, and this
-        // container does not know about them.
+    public:
+        // Takes the mapping BaseMolecule::removeAtoms builds (-1 = removed). A group
+        // that loses a member is dropped whole, never truncated; `removed_groups`
+        // receives the indices of those dropped.
         void onAtomsRemoved(const Array<int>& atom_mapping, Array<int>& removed_groups);
 
         // Index walk over the live groups, mirroring the pool: end() is one
@@ -136,11 +115,9 @@ namespace indigo
         void clear();
         bool isEmpty() const;
 
-        // Copies the groups of `other` that survive a submolecule mapping (-1
-        // means "dropped"), under the same all-or-nothing rule as remapAtoms().
-        // `group_mapping` receives, per source group index, the index it got here
-        // or -1: the haptic bonds of the same merge address their groups by index
-        // and have no other way to follow them.
+        // Copies the groups of `other` that survive `atom_mapping` (-1 = dropped),
+        // under the same all-or-nothing rule as remapAtoms(). `group_mapping`
+        // receives, per source group index, the index it got here or -1.
         void mergeWithSubmolecule(const MoleculeAttachmentGroups& other, const Array<int>& atom_mapping, Array<int>& group_mapping);
 
     private:

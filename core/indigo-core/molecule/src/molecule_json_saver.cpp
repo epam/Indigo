@@ -23,6 +23,7 @@
 
 #include "layout/molecule_layout.h"
 
+#include "molecule/ket_keys.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_cip_calculator.h"
 #include "molecule/molecule_json_saver.h"
@@ -1448,36 +1449,155 @@ int MoleculeJsonSaver::getMonomerNumber(int mon_idx)
 
 void MoleculeJsonSaver::saveEndpoint(BaseMolecule& mol, const std::string& ep, int beg_idx, int end_idx, JsonWriter& writer, bool hydrogen)
 {
+    if (!mol.isTemplateAtom(beg_idx))
+    {
+        saveAtomEndpoint(ep, beg_idx, writer);
+        return;
+    }
+
     writer.Key(ep.c_str());
     writer.StartObject();
-    if (mol.isTemplateAtom(beg_idx))
+    writer.Key("monomerId");
+    writer.String((std::string("monomer") + std::to_string(getMonomerNumber(beg_idx))).c_str());
+    auto conn_it = _monomer_connections.find(std::make_pair(beg_idx, end_idx));
+    if (conn_it != _monomer_connections.end())
     {
-        writer.Key("monomerId");
-        writer.String((std::string("monomer") + std::to_string(getMonomerNumber(beg_idx))).c_str());
-        auto conn_it = _monomer_connections.find(std::make_pair(beg_idx, end_idx));
-        if (conn_it != _monomer_connections.end())
-        {
-            writer.Key("attachmentPointId");
-            writer.String(convertAPToHELM(conn_it->second).c_str());
-        }
-        else if (!hydrogen) // Hydrogen connection has no attachment point
-            throw Error("Attachment point not found!!!");
+        writer.Key("attachmentPointId");
+        writer.String(convertAPToHELM(conn_it->second).c_str());
     }
-    else
-    {
-        auto atom_mol_it = _atom_to_mol_id.find(beg_idx);
-        if (atom_mol_it != _atom_to_mol_id.end())
-        {
-            int mol_id = atom_mol_it->second;
-            writer.Key("moleculeId");
-            writer.String((std::string("mol") + std::to_string(mol_id)).c_str());
-            writer.Key("atomId");
-            writer.String(std::to_string(_mappings[mol_id][beg_idx]).c_str());
-        }
-        else
-            throw Error("Atom %d not found", beg_idx);
-    }
+    else if (!hydrogen) // Hydrogen connection has no attachment point
+        throw Error("Attachment point not found!!!");
     writer.EndObject();
+}
+
+void MoleculeJsonSaver::saveAtomEndpoint(const std::string& ep, int atom_idx, JsonWriter& writer)
+{
+    const auto atom_mol_it = _atom_to_mol_id.find(atom_idx);
+    if (atom_mol_it == _atom_to_mol_id.end())
+        throw Error("Atom %d not found", atom_idx);
+
+    const int mol_id = atom_mol_it->second;
+    writer.Key(ep.c_str());
+    writer.StartObject();
+    writer.Key(KetKeyMoleculeId);
+    writer.String((std::string(KetMoleculeRefPrefix) + std::to_string(mol_id)).c_str());
+    writer.Key(KetKeyAtomId);
+    writer.String(std::to_string(_mappings[mol_id][atom_idx]).c_str());
+    writer.EndObject();
+}
+
+void MoleculeJsonSaver::collectAttachmentGroups(BaseMolecule& mol)
+{
+    _mol_attachment_groups.clear();
+    _mol_attachment_groups.resize(_no_template_molecules.size());
+
+    auto& groups = mol.attachment_groups;
+    for (int i = groups.begin(); i != groups.end(); i = groups.next(i))
+    {
+        const auto& atoms = groups.group(i).atoms();
+        if (atoms.empty())
+            continue;
+
+        // A group and its atoms are one component (collectExternalNeighbors), so the
+        // node that took the first atom holds the whole group.
+        const auto atom_mol_it = _atom_to_mol_id.find(atoms.front());
+        if (atom_mol_it == _atom_to_mol_id.end())
+            throw Error("Attachment group %d belongs to no saved molecule", i);
+        _mol_attachment_groups[atom_mol_it->second].push_back(i);
+    }
+}
+
+std::pair<int, int> MoleculeJsonSaver::attachmentGroupRef(int group_idx) const
+{
+    for (int mol_id = 0; mol_id < static_cast<int>(_mol_attachment_groups.size()); ++mol_id)
+    {
+        const auto& ids = _mol_attachment_groups[mol_id];
+        const auto it = std::find(ids.begin(), ids.end(), group_idx);
+        if (it != ids.end())
+            return {mol_id, static_cast<int>(it - ids.begin())};
+    }
+    throw Error("Attachment group %d was not distributed over the saved molecules", group_idx);
+}
+
+void MoleculeJsonSaver::saveAttachmentGroups(BaseMolecule& mol, int mol_id, JsonWriter& writer)
+{
+    if (mol_id >= static_cast<int>(_mol_attachment_groups.size()) || _mol_attachment_groups[mol_id].empty())
+        return;
+
+    const Array<int>& mapping = _mappings[mol_id];
+    const auto& group_indices = _mol_attachment_groups[mol_id];
+    writer.Key(KetKeyAttachmentGroups);
+    writer.StartArray();
+    for (size_t position = 0; position < group_indices.size(); ++position)
+    {
+        // The KET id of a group is its position in the list of its own node.
+        const int group_idx = group_indices[position];
+        writer.StartObject();
+        writer.Key(KetKeyId);
+        writer.String(std::to_string(position).c_str());
+        writer.Key(KetKeyAtoms);
+        writer.StartArray();
+        for (int atom : mol.attachment_groups.group(group_idx).atoms())
+        {
+            // A group whose atoms ended up in different nodes cannot be written at
+            // all: the members are addressed by their index inside one node.
+            if (mapping[atom] < 0)
+                throw Error("Attachment group %d is split across molecules", group_idx);
+            writer.Int(mapping[atom]);
+        }
+        writer.EndArray();
+        writer.EndObject();
+    }
+    writer.EndArray();
+}
+
+void MoleculeJsonSaver::saveHapticEndpoint(const std::string& ep, const HapticBond::Endpoint& endpoint, JsonWriter& writer)
+{
+    if (!endpoint.isGroup())
+    {
+        saveAtomEndpoint(ep, endpoint.index(), writer);
+        return;
+    }
+
+    const auto ref = attachmentGroupRef(endpoint.index());
+    writer.Key(ep.c_str());
+    writer.StartObject();
+    writer.Key(KetKeyMoleculeId);
+    writer.String((std::string(KetMoleculeRefPrefix) + std::to_string(ref.first)).c_str());
+    writer.Key(KetKeyAttachmentGroupId);
+    writer.String(std::to_string(ref.second).c_str());
+    writer.EndObject();
+}
+
+bool MoleculeJsonSaver::hasHapticConnections(BaseMolecule& mol)
+{
+    const auto& bonds = mol.haptic_bonds;
+    for (int i = bonds.begin(); i != bonds.end(); i = bonds.next(i))
+        if (bonds.at(i).type() == _BOND_HAPTIC)
+            return true;
+
+    return false;
+}
+
+void MoleculeJsonSaver::saveHapticConnections(BaseMolecule& mol, JsonWriter& writer)
+{
+    const auto& bonds = mol.haptic_bonds;
+    for (int i = bonds.begin(); i != bonds.end(); i = bonds.next(i))
+    {
+        const HapticBond& bond = bonds.at(i);
+        // Only the haptic kind has a KET representation; a variable attachment
+        // (#3731) would silently turn into one, so it is dropped like any other
+        // construct the format cannot hold.
+        if (bond.type() != _BOND_HAPTIC)
+            continue;
+
+        writer.StartObject();
+        writer.Key(KetKeyType);
+        writer.String(KetConnectionHaptic);
+        saveHapticEndpoint(KetKeyEndpoint1, bond.begin(), writer);
+        saveHapticEndpoint(KetKeyEndpoint2, bond.end(), writer);
+        writer.EndObject();
+    }
 }
 
 void MoleculeJsonSaver::saveMoleculeReference(int mol_id, JsonWriter& writer)
@@ -1510,7 +1630,13 @@ void MoleculeJsonSaver::saveAnnotation(JsonWriter& writer, const KetObjectAnnota
 
 void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
 {
+    // Everything the nodes are addressed by is rebuilt from scratch: the node
+    // numbering below restarts at zero, so anything kept from a previous save would
+    // send an endpoint to a node of that save.
     _no_template_molecules.clear();
+    _mappings.clear();
+    _atom_to_mol_id.clear();
+    _monomers_enum.clear();
     QS_DEF(Array<char>, buf);
     ArrayOutput out(buf);
     writer.StartObject();
@@ -1529,6 +1655,7 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
     writer.Key("nodes");
     writer.StartArray();
 
+    _s_neighbors.clear();
     mol.collectExternalNeighbors(_s_neighbors);
     // save mol references
     // int mol_id = 0;
@@ -1575,6 +1702,8 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
             }
         }
     }
+
+    collectAttachmentGroups(mol);
 
     if (_rmd)
     {
@@ -1649,7 +1778,8 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
     }
 
     // save connections and templates
-    if (mol.tgroups.getTGroupCount())
+    const bool has_templates = mol.tgroups.getTGroupCount() != 0;
+    if (has_templates)
     {
         // collect attachment points into unordered map <key, val>. key - pair of from and destination atom. val - attachment point name.
         _monomer_connections.clear();
@@ -1658,30 +1788,42 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
             auto& sap = mol.template_attachment_points.at(i);
             _monomer_connections.emplace(std::make_pair(sap.ap_occur_idx, sap.ap_aidx), sap.ap_id.ptr());
         }
+    }
 
-        // save connections
-        writer.Key("connections");
+    // A haptic bond is a connection of the root as well, and it lives in a molecule
+    // that has no templates at all.
+    if (has_templates || hasHapticConnections(mol))
+    {
+        writer.Key(KetKeyConnections);
         writer.StartArray();
-        auto& bond_annotations = mol.getBondAnnotations();
-        for (auto i : mol.edges())
+        if (has_templates)
         {
-            auto& e = mol.getEdge(i);
-            if (mol.isTemplateAtom(e.beg) || mol.isTemplateAtom(e.end))
+            auto& bond_annotations = mol.getBondAnnotations();
+            for (auto i : mol.edges())
             {
-                // save connections between templates or atoms
-                writer.StartObject();
-                writer.Key("connectionType");
-                bool hydrogen = mol.getBondOrder(i) == _BOND_HYDROGEN;
-                writer.String(hydrogen ? "hydrogen" : "single");
-                // save endpoints
-                saveEndpoint(mol, "endpoint1", e.beg, e.end, writer, hydrogen);
-                saveEndpoint(mol, "endpoint2", e.end, e.beg, writer, hydrogen);
-                if (bond_annotations.count(i) > 0)
-                    saveAnnotation(writer, bond_annotations.at(i));
-                writer.EndObject(); // connection
+                auto& e = mol.getEdge(i);
+                if (mol.isTemplateAtom(e.beg) || mol.isTemplateAtom(e.end))
+                {
+                    // save connections between templates or atoms
+                    writer.StartObject();
+                    writer.Key(KetKeyConnectionType);
+                    bool hydrogen = mol.getBondOrder(i) == _BOND_HYDROGEN;
+                    writer.String(hydrogen ? "hydrogen" : "single");
+                    // save endpoints
+                    saveEndpoint(mol, KetKeyEndpoint1, e.beg, e.end, writer, hydrogen);
+                    saveEndpoint(mol, KetKeyEndpoint2, e.end, e.beg, writer, hydrogen);
+                    if (bond_annotations.count(i) > 0)
+                        saveAnnotation(writer, bond_annotations.at(i));
+                    writer.EndObject(); // connection
+                }
             }
         }
+        saveHapticConnections(mol, writer);
         writer.EndArray(); // connections
+    }
+
+    if (has_templates)
+    {
         writer.Key("templates");
         writer.StartArray();
 
@@ -1852,6 +1994,9 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
             writer.Key("type");
             writer.String("molecule");
             saveFragment(*component, writer);
+            // The groups were distributed over the components of the clone, whose
+            // group indices need not match those of bmol.
+            saveAttachmentGroups(*mol, i, writer);
             // TODO: the code below needs refactoring
             Vec3f flag_pos;
             if (bmol.getStereoFlagPosition(i, flag_pos))

@@ -122,7 +122,6 @@ namespace indigo
     // merging with molecule and cloning procedures
     enum
     {
-        SKIP_ALL = 0xFF,
         SKIP_CIS_TRANS = 0x01,
         SKIP_STEREOCENTERS = 0x02,
         SKIP_XYZ = 0x04,
@@ -137,6 +136,10 @@ namespace indigo
         // skipped with them, since a bond without its group is meaningless.
         SKIP_ATTACHMENT_GROUPS = 0x100,
         SKIP_HAPTIC_BONDS = 0x200,
+        // Last on purpose: every flag above has to appear here, so a new one is added
+        // in the line right below itself rather than by recounting a hex literal.
+        SKIP_ALL = SKIP_CIS_TRANS | SKIP_STEREOCENTERS | SKIP_XYZ | SKIP_RGROUP_FRAGMENTS | SKIP_ATTACHMENT_POINTS | SKIP_TGROUPS |
+                   SKIP_TEMPLATE_ATTACHMENT_POINTS | SKIP_RGROUPS | SKIP_ATTACHMENT_GROUPS | SKIP_HAPTIC_BONDS,
     };
 
     class Molecule;
