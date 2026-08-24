@@ -60,7 +60,7 @@
         "fullName": "Deoxy-Ribose",
         "alias": "dR",
         "naturalAnalogShort": "R",
-        "aliasHELM": "d",
+        "aliasHELM": "dR",
         "attachmentPoints": [
             {
                 "attachmentAtom": 9,

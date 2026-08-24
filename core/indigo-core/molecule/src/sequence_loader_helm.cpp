@@ -448,7 +448,7 @@ const std::string SequenceLoader::checkAddAmbiguousMonomerTemplate(KetDocument& 
             std::string opt_alias;
             if (opt_template_id.size() > 0)
             {
-                _aliasHELM_to_id.emplace(make_pair(monomer_class, to_lower(helm_alias)), opt_template_id);
+                _aliasHELM_to_id.emplace(make_pair(monomer_class, helm_alias), opt_template_id);
                 opt_alias = getKetStrProp(_library.getMonomerTemplateById(opt_template_id), alias);
                 checkAddTemplate(document, monomer_class, opt_alias);
             }
@@ -543,7 +543,7 @@ size_t SequenceLoader::addHelmMonomer(KetDocument& document, MonomerInfo info, M
     }
     else
     {
-        const auto& it = _aliasHELM_to_id.find(make_pair(monomer_class, to_lower(helm_alias)));
+        const auto& it = _aliasHELM_to_id.find(make_pair(monomer_class, helm_alias));
         std::string template_id;
         if (it != _aliasHELM_to_id.end())
         {
@@ -555,7 +555,7 @@ size_t SequenceLoader::addHelmMonomer(KetDocument& document, MonomerInfo info, M
             std::string alias;
             if (template_id.size() > 0)
             {
-                _aliasHELM_to_id.emplace(make_pair(monomer_class, to_lower(helm_alias)), template_id);
+                _aliasHELM_to_id.emplace(make_pair(monomer_class, helm_alias), template_id);
                 alias = getKetStrProp(_library.getMonomerTemplateById(template_id), alias);
                 template_id = checkAddTemplate(document, monomer_class, alias);
             }
@@ -671,53 +671,6 @@ void SequenceLoader::loadBILN(KetDocument& document)
             bonds.push_back({bond_idx, {}});
         bonds.at(it->second).endpoints.push_back({monomer_idx, monomer_id, attachment_idx});
     };
-    auto resolve_biln_monomer = [&](const std::string& monomer_alias, const std::vector<PendingBilnEndpoint>& endpoints, bool has_prev_in_chain,
-                                    bool has_next_in_chain) {
-        if (_library.getMonomerTemplateIdByAlias(MonomerClass::AminoAcid, monomer_alias).size() > 0)
-            return std::make_pair(MonomerClass::AminoAcid, monomer_alias);
-        if (_library.getMonomerTemplateIdByAlias(MonomerClass::CHEM, monomer_alias).size() > 0)
-            return std::make_pair(MonomerClass::CHEM, monomer_alias);
-
-        bool uses_r1 = false;
-        bool uses_r2 = false;
-        bool uses_other = false;
-        for (const auto& endpoint : endpoints)
-        {
-            if (endpoint.attachment_idx == 1)
-                uses_r1 = true;
-            else if (endpoint.attachment_idx == 2)
-                uses_r2 = true;
-            else
-                uses_other = true;
-        }
-
-        auto right_hyphen_alias = monomer_alias + "-";
-        auto left_hyphen_alias = "-" + monomer_alias;
-        const bool has_right_hyphen_alias = _library.getMonomerTemplateIdByAlias(MonomerClass::AminoAcid, right_hyphen_alias).size() > 0;
-        const bool has_left_hyphen_alias = _library.getMonomerTemplateIdByAlias(MonomerClass::AminoAcid, left_hyphen_alias).size() > 0;
-        if (has_right_hyphen_alias && !has_left_hyphen_alias)
-            return std::make_pair(MonomerClass::AminoAcid, right_hyphen_alias);
-        if (has_left_hyphen_alias && !has_right_hyphen_alias)
-            return std::make_pair(MonomerClass::AminoAcid, left_hyphen_alias);
-        if (has_right_hyphen_alias && has_left_hyphen_alias)
-        {
-            if (uses_other || (uses_r1 && uses_r2))
-                throw_invalid_biln();
-            if (uses_r1)
-                return std::make_pair(MonomerClass::AminoAcid, left_hyphen_alias);
-            if (uses_r2)
-                return std::make_pair(MonomerClass::AminoAcid, right_hyphen_alias);
-            if (has_prev_in_chain && has_next_in_chain)
-                throw_invalid_biln();
-            if (has_prev_in_chain)
-                return std::make_pair(MonomerClass::AminoAcid, left_hyphen_alias);
-            if (has_next_in_chain)
-                return std::make_pair(MonomerClass::AminoAcid, right_hyphen_alias);
-            return std::make_pair(MonomerClass::AminoAcid, right_hyphen_alias);
-        }
-        throw_invalid_biln();
-        return std::make_pair(MonomerClass::Unknown, monomer_alias);
-    };
 
     _row = 0;
     _col = 0;
@@ -773,7 +726,6 @@ void SequenceLoader::loadBILN(KetDocument& document)
             if (monomer_alias.empty())
                 throw_invalid_biln();
 
-            const bool has_prev_in_chain = !chain.monomer_indices.empty();
             std::vector<PendingBilnEndpoint> pending_endpoints;
             skip_spaces();
             while (data_pos < biln.size() && biln[data_pos] == '(')
@@ -795,10 +747,17 @@ void SequenceLoader::loadBILN(KetDocument& document)
 
             Vec3f monomer_pos(_col * LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, -LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH * _row, 0);
             ambiguous_template_opts options;
-            const bool has_next_in_chain = data_pos < biln.size() && biln[data_pos] == '-';
-            const auto [monomer_class, monomer_load_alias] = resolve_biln_monomer(monomer_alias, pending_endpoints, has_prev_in_chain, has_next_in_chain);
+            const auto& template_id = _library.getMonomerTemplateIdByAliasBILN(monomer_alias);
+            if (template_id.size() == 0)
+                throw_invalid_biln();
+            const auto& monomer_template = _library.getMonomerTemplateById(template_id);
+            auto monomer_class = monomer_template.monomerClass();
+            if (monomer_class != MonomerClass::AminoAcid && monomer_class != MonomerClass::CHEM)
+                throw_invalid_biln();
+            checkAddTemplate(document, monomer_template);
+            _aliasHELM_to_id.emplace(make_pair(monomer_class, monomer_alias), template_id);
             auto monomer_idx =
-                addHelmMonomer(document, std::make_tuple(monomer_load_alias, false, std::string(), std::string(), options), monomer_class, monomer_pos);
+                addHelmMonomer(document, std::make_tuple(monomer_alias, false, std::string(), std::string(), options), monomer_class, monomer_pos);
             std::string monomer_id = std::to_string(monomer_idx);
             chain.monomer_indices.push_back(monomer_idx);
             for (const auto& endpoint : pending_endpoints)
@@ -832,7 +791,6 @@ void SequenceLoader::loadBILN(KetDocument& document)
 
     std::set<std::pair<std::string, std::string>> used_biln_endpoints;
     auto attachment_point = [](const BilnEndpoint& ep) { return std::string("R") + std::to_string(ep.attachment_idx); };
-    auto has_terminal_hyphen_alias = [&](const std::unique_ptr<KetBaseMonomer>& monomer) { return _library.isTerminalHyphenAlias(monomer->alias()); };
     auto validate_endpoint = [&](const BilnEndpoint& ep, const std::string& ap) -> const std::unique_ptr<KetBaseMonomer>& {
         const auto& monomer = document.monomers().at(ep.monomer_id);
         if (monomer->attachmentPoints().count(ap) == 0)
@@ -920,8 +878,7 @@ void SequenceLoader::loadBILN(KetDocument& document)
         setKetStrProp(endpoint1, attachmentPointId, ap1);
         setKetStrProp(endpoint2, monomerId, monomer2->ref());
         setKetStrProp(endpoint2, attachmentPointId, ap2);
-        if (((ap1 == kAttachmentPointR1 && ap2 == kAttachmentPointR2) || (ap1 == kAttachmentPointR2 && ap2 == kAttachmentPointR1)) &&
-            !has_terminal_hyphen_alias(monomer1) && !has_terminal_hyphen_alias(monomer2))
+        if (((ap1 == kAttachmentPointR1 && ap2 == kAttachmentPointR2) || (ap1 == kAttachmentPointR2 && ap2 == kAttachmentPointR1)))
             document.addConnection(monomer1->ref(), ap1, monomer2->ref(), ap2);
         else
             document.addExplicitConnection(endpoint1, endpoint2);

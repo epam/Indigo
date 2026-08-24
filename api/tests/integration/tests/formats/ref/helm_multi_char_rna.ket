@@ -209,7 +209,7 @@
                 "$ref": "monomerTemplate-C___Cytosine"
             },
             {
-                "$ref": "monomerTemplate-daA___N6,N6-dimethyladenine"
+                "$ref": "monomerTemplate-Basem62A"
             }
         ]
     },
@@ -365,7 +365,7 @@
             "y": -1.500000
         },
         "alias": "m62A",
-        "templateId": "daA___N6,N6-dimethyladenine"
+        "templateId": "Basem62A"
     },
     "monomerTemplate-R___Ribose": {
         "type": "monomerTemplate",
@@ -375,7 +375,7 @@
         "fullName": "Ribose",
         "alias": "R",
         "naturalAnalogShort": "R",
-        "aliasHELM": "r",
+        "aliasHELM": "R",
         "attachmentPoints": [
             {
                 "attachmentAtom": 10,
@@ -565,7 +565,7 @@
                     1,
                     7
                 ],
-                "stereo": 1
+                "stereo": 6
             },
             {
                 "type": 1,
@@ -766,7 +766,8 @@
         "fullName": "Phosphate",
         "alias": "P",
         "naturalAnalogShort": "P",
-        "aliasHELM": "p",
+        "aliasHELM": "P",
+        "aliasAxoLabs": "p",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1407,231 +1408,32 @@
             }
         ]
     },
-    "monomerTemplate-daA___N6,N6-dimethyladenine": {
+    "monomerTemplate-Basem62A": {
         "type": "monomerTemplate",
-        "id": "daA___N6,N6-dimethyladenine",
+        "id": "Basem62A",
         "class": "Base",
-        "classHELM": "RNA",
-        "fullName": "N6,N6-dimethyladenine",
-        "alias": "daA",
-        "naturalAnalogShort": "A",
+        "alias": "m62A",
         "aliasHELM": "m62A",
+        "unresolved": true,
         "attachmentPoints": [
             {
-                "attachmentAtom": 1,
-                "type": "left",
-                "leavingGroup": {
-                    "atoms": [
-                        0
-                    ]
-                }
+                "attachmentAtom": -1,
+                "label": "R1"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R2"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R3"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R4"
             }
         ],
-        "atoms": [
-            {
-                "label": "H",
-                "location": [
-                    -2.488000,
-                    -0.824000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "N",
-                "location": [
-                    -1.488000,
-                    -0.824000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    -0.900000,
-                    -0.015000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    0.051000,
-                    -0.324000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "N",
-                "location": [
-                    0.051000,
-                    -1.324000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    -0.900000,
-                    -1.633000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    0.794000,
-                    0.345000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "N",
-                "location": [
-                    0.586000,
-                    1.324000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    -0.365000,
-                    1.633000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "N",
-                "location": [
-                    -1.108000,
-                    0.963000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "N",
-                "location": [
-                    1.745000,
-                    0.036000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    1.953000,
-                    -0.942000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    2.488000,
-                    0.706000,
-                    0.000000
-                ]
-            }
-        ],
-        "bonds": [
-            {
-                "type": 1,
-                "atoms": [
-                    0,
-                    1
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    1,
-                    5
-                ]
-            },
-            {
-                "type": 2,
-                "atoms": [
-                    5,
-                    4
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    4,
-                    3
-                ]
-            },
-            {
-                "type": 2,
-                "atoms": [
-                    3,
-                    2
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    2,
-                    1
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    3,
-                    6
-                ]
-            },
-            {
-                "type": 2,
-                "atoms": [
-                    6,
-                    7
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    7,
-                    8
-                ]
-            },
-            {
-                "type": 2,
-                "atoms": [
-                    8,
-                    9
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    9,
-                    2
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    6,
-                    10
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    10,
-                    11
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    10,
-                    12
-                ]
-            }
-        ]
+        "atoms": [],
+        "bonds": []
     }
 }

@@ -1514,6 +1514,11 @@ int MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_tem
             tg.aliasAxoLabs.readString(monomer_template["aliasAxoLabs"].GetString(), true);
         }
 
+        if (monomer_template.HasMember("aliasBILN"))
+        {
+            tg.aliasBILN.readString(monomer_template["aliasBILN"].GetString(), true);
+        }
+
         if (monomer_template.HasMember("attachmentPoints"))
         {
             auto& att_points = monomer_template["attachmentPoints"];
