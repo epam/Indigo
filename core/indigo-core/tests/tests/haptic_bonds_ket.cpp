@@ -363,6 +363,23 @@ TEST_F(IndigoCoreHapticKetTest, OutOfRangeAtomIdDoesNotWrapAround)
     EXPECT_NE(std::string::npos, loadKetError(json.c_str()).find("non-existent atom"));
 }
 
+// The id parser accepts a plain non-negative decimal and nothing else. Each of these
+// is a form std::from_chars treats differently from an outright non-digit, so they
+// are pinned rather than assumed: a sign, padding, a base prefix, an exponent.
+TEST_F(IndigoCoreHapticKetTest, OnlyAPlainDecimalIsAcceptedAsAnAtomId)
+{
+    for (const char* malformed : {"-1", "+1", " 1", "1 ", "0x1", "1e0", "1.0", ""})
+    {
+        std::string json(KET_BONDED_PAIR_WITH_HAPTIC);
+        const std::string endpoint = "\"atomId\": \"1\"";
+        const size_t pos = json.find(endpoint);
+        ASSERT_NE(std::string::npos, pos);
+        json.replace(pos, endpoint.size(), std::string("\"atomId\": \"") + malformed + "\"");
+
+        EXPECT_FALSE(loadKetError(json.c_str()).empty()) << "accepted atomId \"" << malformed << '"';
+    }
+}
+
 // The other trap of the same parser: extract_id()'s stoi() throws a std::exception,
 // not an Indigo one, on a malformed suffix.
 TEST_F(IndigoCoreHapticKetTest, NonNumericMoleculeIdIsRejected)

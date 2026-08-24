@@ -1,4 +1,5 @@
-#include <limits>
+#include <charconv>
+#include <cstring>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -1232,24 +1233,24 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
 
 // Ids of the KET contract are numbers inside strings. Neither obvious route reports
 // a malformed one: atoi() reads "abc" as 0, and the stoi() inside extract_id()
-// throws a std::exception rather than an Indigo one.
+// throws a std::exception rather than an Indigo one. from_chars does the range
+// check itself, so there is no accumulator here to overflow.
+// Returns -1 for anything that is not a plain non-negative decimal in int range.
 static int parseNumericId(const char* text)
 {
     if (text == nullptr || *text == '\0')
         return -1;
 
-    // long long, not long: on LLP64 (Win64) long is 32 bits, so the guard below
-    // could never fire and an id of 2^32+1 came back as atom 1.
-    long long value = 0;
-    for (const char* p = text; *p != '\0'; ++p)
-    {
-        if (*p < '0' || *p > '9')
-            return -1;
-        value = value * 10 + (*p - '0');
-        if (value > std::numeric_limits<int>::max())
-            return -1;
-    }
-    return static_cast<int>(value);
+    const char* const end = text + std::strlen(text);
+    int value = 0;
+    const auto result = std::from_chars(text, end, value);
+
+    // errc{} rules out overflow and a non-digit start; `ptr == end` rules out
+    // trailing rubbish ("12abc"); from_chars would take a leading '-', ids do not.
+    if (result.ec != std::errc{} || result.ptr != end || value < 0)
+        return -1;
+
+    return value;
 }
 
 HapticBond::Endpoint MoleculeJsonLoader::resolveHapticEndpoint(const rapidjson::Value& endpoint, const PtrArray<Array<int>>& mol_mappings,
