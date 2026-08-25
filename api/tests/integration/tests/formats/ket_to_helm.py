@@ -62,6 +62,7 @@ helm_data = {
     "helm_smiles_direction": "RNA1{[O1[C@H](CO[*:1])[C@@H](O[*:2])[C@@H](O)[C@@H]1[*:3] |$;;;;_R1;;;_R2;;;;_R3$|]}$$$$V2.0",
     "helm_cycle_no_sugar": "RNA1{R(A).R(A).R(A).R(A).R(A).R(A).R(A)}$RNA1,RNA1,1:R1-13:R2$$$V2.0",
     "helm_only_base": "RNA1{(A)}$$$$V2.0",
+    "helm_issue_3776": "RNA1{(A)}|CHEM1{[C([*:1])(S)Cl |$;_R1;;$|]}$CHEM1,RNA1,1:R1-1:R1$$$V2.0",
 }
 
 for filename in sorted(helm_data.keys()):
