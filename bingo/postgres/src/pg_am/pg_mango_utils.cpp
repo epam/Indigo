@@ -46,29 +46,28 @@ extern "C"
 
 namespace
 {
-void destroyCheckMoleculeHandler(void* arg)
-{
-    delete static_cast<BingoPgCommon::BingoSessionHandler*>(arg);
-}
+    void destroyCheckMoleculeHandler(void* arg)
+    {
+        delete static_cast<BingoPgCommon::BingoSessionHandler*>(arg);
+    }
 
-BingoPgCommon::BingoSessionHandler& getCheckMoleculeHandler(FunctionCallInfo fcinfo)
-{
-    auto* bingo_handler = static_cast<BingoPgCommon::BingoSessionHandler*>(fcinfo->flinfo->fn_extra);
-    if (bingo_handler != nullptr)
+    BingoPgCommon::BingoSessionHandler& getCheckMoleculeHandler(FunctionCallInfo fcinfo)
+    {
+        auto* bingo_handler = static_cast<BingoPgCommon::BingoSessionHandler*>(fcinfo->flinfo->fn_extra);
+        if (bingo_handler != nullptr)
+            return *bingo_handler;
+
+        bingo_handler = new BingoPgCommon::BingoSessionHandler(fcinfo->flinfo->fn_oid);
+
+        MemoryContextCallback* reset_callback = static_cast<MemoryContextCallback*>(MemoryContextAlloc(fcinfo->flinfo->fn_mcxt, sizeof(MemoryContextCallback)));
+        reset_callback->func = destroyCheckMoleculeHandler;
+        reset_callback->arg = bingo_handler;
+        MemoryContextRegisterResetCallback(fcinfo->flinfo->fn_mcxt, reset_callback);
+
+        fcinfo->flinfo->fn_extra = bingo_handler;
+        bingo_handler->setFunctionName("checkmolecule");
         return *bingo_handler;
-
-    bingo_handler = new BingoPgCommon::BingoSessionHandler(fcinfo->flinfo->fn_oid);
-
-    MemoryContextCallback* reset_callback =
-        static_cast<MemoryContextCallback*>(MemoryContextAlloc(fcinfo->flinfo->fn_mcxt, sizeof(MemoryContextCallback)));
-    reset_callback->func = destroyCheckMoleculeHandler;
-    reset_callback->arg = bingo_handler;
-    MemoryContextRegisterResetCallback(fcinfo->flinfo->fn_mcxt, reset_callback);
-
-    fcinfo->flinfo->fn_extra = bingo_handler;
-    bingo_handler->setFunctionName("checkmolecule");
-    return *bingo_handler;
-}
+    }
 } // namespace
 
 Datum smiles(PG_FUNCTION_ARGS)

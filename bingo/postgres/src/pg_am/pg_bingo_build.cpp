@@ -239,7 +239,7 @@ Datum bingo_build(PG_FUNCTION_ARGS)
 #elif PG_VERSION_NUM / 100 >= 1100
                 reltuples = IndexBuildHeapScan(heap, index, indexInfo, true, bingoIndexCallback, (void*)&build_engine, NULL);
 #else
-                reltuples = IndexBuildHeapScan(heap, index, indexInfo, true, bingoIndexCallback, (void*)&build_engine);
+            reltuples = IndexBuildHeapScan(heap, index, indexInfo, true, bingoIndexCallback, (void*)&build_engine);
 #endif
             }
             PG_CATCH();

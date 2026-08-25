@@ -50,6 +50,75 @@ static void bingoUnlockIndexMutation(Relation index)
     UnlockRelationForExtension(index, ExclusiveLock);
 }
 
+static bool bingoInsertStructureLocked(Relation index, ItemPointer ht_ctid, Datum value)
+{
+    bool result = false;
+
+    PG_BINGO_BEGIN
+    {
+        BingoPgWrapper rel_namespace;
+        const char* index_schema = rel_namespace.getRelNameSpace(index->rd_id);
+
+        BingoPgBuild build_engine(index, 0, index_schema, false);
+        /*
+         * Insert a new structure
+         */
+        result = build_engine.insertStructureSingle(ht_ctid, value);
+    }
+    PG_BINGO_END
+
+    return result;
+}
+
+static void bingoBulkDeleteLocked(Relation index_rel, IndexBulkDeleteCallback bulk_del_cb, void* cb_state){PG_BINGO_BEGIN{/*
+                                                                                                                           * Initialize local variables
+                                                                                                                           */
+                                                                                                                          double tuples_removed = 0;
+ItemPointerData item_data;
+ItemPointer item_ptr = &item_data;
+BingoPgExternalBitset section_bitset(BINGO_MOLS_PER_SECTION);
+
+/*
+ * Create index manager. VACUUM mutates the section existence
+ * bitsets and metapage count, so use the WAL-enabled update path.
+ */
+BingoPgIndex bingo_index(index_rel);
+bingo_index.updateBegin();
+
+/*
+ * Iterate through all the sections and search for removed tuples
+ */
+for (int section_idx = 0; section_idx != bingo_index.readEnd(); section_idx = bingo_index.readNext(section_idx))
+{
+    bingo_index.getSectionBitset(section_idx, section_bitset);
+    /*
+     * Iterate through section structures
+     */
+    for (int mol_idx = section_bitset.begin(); mol_idx != section_bitset.end(); mol_idx = section_bitset.next(mol_idx))
+    {
+        bingo_index.readTidItem(section_idx, mol_idx, item_ptr);
+        if (bulk_del_cb(item_ptr, cb_state))
+        {
+            /*
+             * Remove the structure from the bingo index
+             */
+            bingo_index.removeStructure(section_idx, mol_idx);
+            tuples_removed += 1;
+        }
+    }
+}
+/*
+ * Always return null since no index values are removed
+ */
+//      if (stats == NULL)
+//         stats = (IndexBulkDeleteResult *) palloc0(sizeof (IndexBulkDeleteResult));
+//
+//      stats->estimated_count = false;
+//      stats->tuples_removed = tuples_removed;
+}
+PG_BINGO_END
+}
+
 /*
  *	Insert an index tuple into a bingo table.
  *
@@ -89,18 +158,7 @@ Datum bingo_insert(PG_FUNCTION_ARGS)
     bingoLockIndexMutation(index);
     PG_TRY();
     {
-        PG_BINGO_BEGIN
-        {
-            BingoPgWrapper rel_namespace;
-            const char* index_schema = rel_namespace.getRelNameSpace(index->rd_id);
-
-            BingoPgBuild build_engine(index, 0, index_schema, false);
-            /*
-             * Insert a new structure
-             */
-            result = build_engine.insertStructureSingle(ht_ctid, values[0]);
-        }
-        PG_BINGO_END
+        result = bingoInsertStructureLocked(index, ht_ctid, values[0]);
     }
     PG_CATCH();
     {
@@ -172,55 +230,7 @@ Datum bingo_bulkdelete(PG_FUNCTION_ARGS)
     bingoLockIndexMutation(index_rel);
     PG_TRY();
     {
-        PG_BINGO_BEGIN
-        {
-            /*
-             * Initialize local variables
-             */
-            double tuples_removed = 0;
-            ItemPointerData item_data;
-            ItemPointer item_ptr = &item_data;
-            BingoPgExternalBitset section_bitset(BINGO_MOLS_PER_SECTION);
-
-            /*
-             * Create index manager. VACUUM mutates the section existence
-             * bitsets and metapage count, so use the WAL-enabled update path.
-             */
-            BingoPgIndex bingo_index(index_rel);
-            bingo_index.updateBegin();
-
-            /*
-             * Iterate through all the sections and search for removed tuples
-             */
-            for (int section_idx = 0; section_idx != bingo_index.readEnd(); section_idx = bingo_index.readNext(section_idx))
-            {
-                bingo_index.getSectionBitset(section_idx, section_bitset);
-                /*
-                 * Iterate through section structures
-                 */
-                for (int mol_idx = section_bitset.begin(); mol_idx != section_bitset.end(); mol_idx = section_bitset.next(mol_idx))
-                {
-                    bingo_index.readTidItem(section_idx, mol_idx, item_ptr);
-                    if (bulk_del_cb(item_ptr, cb_state))
-                    {
-                        /*
-                         * Remove the structure from the bingo index
-                         */
-                        bingo_index.removeStructure(section_idx, mol_idx);
-                        tuples_removed += 1;
-                    }
-                }
-            }
-            /*
-             * Always return null since no index values are removed
-             */
-            //      if (stats == NULL)
-            //         stats = (IndexBulkDeleteResult *) palloc0(sizeof (IndexBulkDeleteResult));
-            //
-            //      stats->estimated_count = false;
-            //      stats->tuples_removed = tuples_removed;
-        }
-        PG_BINGO_END
+        bingoBulkDeleteLocked(index_rel, bulk_del_cb, cb_state);
     }
     PG_CATCH();
     {

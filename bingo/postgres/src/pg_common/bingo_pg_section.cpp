@@ -102,8 +102,8 @@ BingoPgSection::BingoPgSection(BingoPgIndex& bingo_idx, int idx_strategy, int of
             throw Error("internal error: bingo section %d map block count %d does not match index count %d", _offset, _sectionInfo.n_blocks_for_map,
                         bingo_idx.getMapSize());
         if (_sectionInfo.n_blocks_for_fp != bingo_idx.getFpSize())
-            throw Error("internal error: bingo section %d fingerprint block count %d does not match index count %d", _offset,
-                        _sectionInfo.n_blocks_for_fp, bingo_idx.getFpSize());
+            throw Error("internal error: bingo section %d fingerprint block count %d does not match index count %d", _offset, _sectionInfo.n_blocks_for_fp,
+                        bingo_idx.getFpSize());
         if (_sectionInfo.n_blocks_for_bin < 0 || (BlockNumber)_sectionInfo.n_blocks_for_bin > relation_blocks)
             throw Error("internal error: bingo section %d has invalid binary block count %d", _offset, _sectionInfo.n_blocks_for_bin);
 
