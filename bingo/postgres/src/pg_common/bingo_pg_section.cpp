@@ -4,7 +4,9 @@ extern "C"
 {
 #include "postgres.h"
 #include "storage/block.h"
+#include "storage/bufmgr.h"
 #include "storage/itemptr.h"
+#include "utils/rel.h"
 }
 
 #include "bingo_pg_fix_post.h"
@@ -81,13 +83,43 @@ BingoPgSection::BingoPgSection(BingoPgIndex& bingo_idx, int idx_strategy, int of
     else
     {
         /*
-         * Read section meta info
+         * Read and validate section meta info before using persisted counts to
+         * size cache arrays or calculate physical block offsets.
          */
         _sectionInfoBuffer.readBuffer(_index, _offset, BINGO_PG_READ);
         int data_len;
         BingoSectionInfoData* data = (BingoSectionInfoData*)_sectionInfoBuffer.getIndexData(data_len);
+        if (data_len < (int)sizeof(BingoSectionInfoData))
+            throw Error("internal error: bingo section %d metadata is too small", _offset);
         _sectionInfo = *data;
         _sectionInfoBuffer.changeAccess(BINGO_PG_NOLOCK);
+
+        Relation index = (Relation)_index;
+        const BlockNumber relation_blocks = RelationGetNumberOfBlocks(index);
+        if (_sectionInfo.n_structures < 0 || _sectionInfo.n_structures > BINGO_MOLS_PER_SECTION)
+            throw Error("internal error: bingo section %d has invalid structure count %d", _offset, _sectionInfo.n_structures);
+        if (_sectionInfo.n_blocks_for_map != bingo_idx.getMapSize())
+            throw Error("internal error: bingo section %d map block count %d does not match index count %d", _offset, _sectionInfo.n_blocks_for_map,
+                        bingo_idx.getMapSize());
+        if (_sectionInfo.n_blocks_for_fp != bingo_idx.getFpSize())
+            throw Error("internal error: bingo section %d fingerprint block count %d does not match index count %d", _offset,
+                        _sectionInfo.n_blocks_for_fp, bingo_idx.getFpSize());
+        if (_sectionInfo.n_blocks_for_bin < 0 || (BlockNumber)_sectionInfo.n_blocks_for_bin > relation_blocks)
+            throw Error("internal error: bingo section %d has invalid binary block count %d", _offset, _sectionInfo.n_blocks_for_bin);
+
+        const long long expected_section_size = (long long)SECTION_META_PAGES + SECTION_BITSNUMBER_PAGES + _sectionInfo.n_blocks_for_map +
+                                                _sectionInfo.n_blocks_for_fp + _sectionInfo.n_blocks_for_bin;
+        if (_sectionInfo.section_size != expected_section_size)
+            throw Error("internal error: bingo section %d size %d does not match expected size %lld", _offset, _sectionInfo.section_size,
+                        expected_section_size);
+        if (_offset < 0 || expected_section_size <= 0 || (long long)_offset + expected_section_size > relation_blocks)
+            throw Error("internal error: bingo section %d range exceeds relation size %u", _offset, (unsigned int)relation_blocks);
+        if (_sectionInfo.last_cmf < -1 || _sectionInfo.last_cmf >= _sectionInfo.n_blocks_for_bin)
+            throw Error("internal error: bingo section %d has invalid last CMF block %d", _offset, _sectionInfo.last_cmf);
+        if (_sectionInfo.last_xyz < -1 || _sectionInfo.last_xyz >= _sectionInfo.n_blocks_for_bin)
+            throw Error("internal error: bingo section %d has invalid last XYZ block %d", _offset, _sectionInfo.last_xyz);
+        if (_sectionInfo.has_removed != 0 && _sectionInfo.has_removed != 1)
+            throw Error("internal error: bingo section %d has invalid removed flag %d", _offset, (int)_sectionInfo.has_removed);
 
         _existStructures = std::make_unique<BingoPgBufferCacheFp>(offset + 1, _index, false, wal_enabled);
     }
@@ -171,15 +203,6 @@ BingoPgSection::BingoPgSection(BingoPgIndex& bingo_idx, int idx_strategy, int of
 
 BingoPgSection::~BingoPgSection()
 {
-    /*
-     * Write meta info
-     */
-    if (_idxStrategy != BingoPgIndex::READING_STRATEGY)
-    {
-        _sectionInfo.n_blocks_for_bin = _buffersBin.size();
-        _sectionInfo.section_size = getPagesCount();
-        _flushSectionInfo();
-    }
 }
 
 void BingoPgSection::clear()
@@ -200,6 +223,39 @@ void BingoPgSection::clear()
     _offsetBin.clear();
     _offsetFp.clear();
     _offsetMap.clear();
+}
+
+void BingoPgSection::finish()
+{
+    if (_idxStrategy == BingoPgIndex::READING_STRATEGY)
+        return;
+
+    _sectionInfo.n_blocks_for_bin = _buffersBin.size();
+    _sectionInfo.section_size = getPagesCount();
+
+    for (int i = 0; i < _buffersBin.size(); ++i)
+    {
+        BingoPgBufferCacheBin* cache = _buffersBin.getPtr(i);
+        if (cache != 0)
+            cache->flush();
+    }
+    for (int i = 0; i < _buffersMap.size(); ++i)
+    {
+        BingoPgBufferCacheMap* cache = _buffersMap.getPtr(i);
+        if (cache != 0)
+            cache->flush();
+    }
+    for (int i = 0; i < _buffersFp.size(); ++i)
+    {
+        BingoPgBufferCacheFp* cache = _buffersFp.getPtr(i);
+        if (cache != 0)
+            cache->flush();
+    }
+
+    _flushSectionInfo();
+
+    if (_existStructures.get() != 0)
+        _existStructures->flush();
 }
 
 void BingoPgSection::_flushSectionInfo()
@@ -352,6 +408,11 @@ void BingoPgSection::readSectionBitsCount(indigo::Array<int>& bits_number)
         bits_buffer.setWalEnabled(_idxStrategy != BingoPgIndex::BUILDING_STRATEGY);
         bits_buffer.readBuffer(_index, _offset + buf_idx + SECTION_META_PAGES, BINGO_PG_READ);
         buffer_data = (unsigned short*)bits_buffer.getIndexData(data_len);
+        if (data_len < SECTION_BITS_PER_BLOCK * (int)sizeof(unsigned short))
+        {
+            bits_buffer.changeAccess(BINGO_PG_NOLOCK);
+            throw Error("internal error: bingo section %d bits-count block %d is too small", _offset, buf_idx);
+        }
         for (int page_str_idx = 0; page_str_idx < SECTION_BITS_PER_BLOCK; ++page_str_idx)
         {
             str_idx = buf_idx * SECTION_BITS_PER_BLOCK + page_str_idx;
@@ -488,6 +549,8 @@ void BingoPgSection::_setBitsCountData(unsigned short bits_count)
     bits_buffer.setWalEnabled(_idxStrategy != BingoPgIndex::BUILDING_STRATEGY);
     bits_buffer.readBuffer(_index, _offset + buf_idx + SECTION_META_PAGES, BINGO_PG_WRITE);
     unsigned short* buffer_data = (unsigned short*)bits_buffer.getIndexData(data_len);
+    if (data_len < SECTION_BITS_PER_BLOCK * (int)sizeof(unsigned short))
+        throw Error("internal error: bingo section %d bits-count block %d is too small", _offset, buf_idx);
     buffer_data[page_str_idx] = bits_count;
     bits_buffer.changeAccess(BINGO_PG_NOLOCK);
 }

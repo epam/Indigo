@@ -11,6 +11,7 @@ extern "C"
 #include "catalog/index.h"
 #include "catalog/pg_type.h"
 #include "storage/bufmgr.h"
+#include "utils/memutils.h"
 #include "utils/rel.h"
 
 #if PG_VERSION_NUM / 100 >= 906
@@ -191,6 +192,7 @@ Datum bingo_build(PG_FUNCTION_ARGS)
     //   BlockNumber relpages;
     IndexBuildResult* result = 0;
     double reltuples = 0;
+    ErrorData* volatile build_error = nullptr;
 
     //   signal(SIGINT, &error_handler);
     elog(DEBUG1, "bingo: build: start building index");
@@ -224,10 +226,13 @@ Datum bingo_build(PG_FUNCTION_ARGS)
 
         {
             BingoPgBuild build_engine(index, schema_name, index_schema, true);
+            MemoryContext oldcontext = CurrentMemoryContext;
+
             /*
-             * Do the heap scan and build index
+             * Preserve PostgreSQL errors raised by the heap scan, including
+             * QUERY_CANCELED. Do not convert them into a Bingo XX000 error.
              */
-            BINGO_PG_TRY
+            PG_TRY();
             {
 #if PG_VERSION_NUM / 100 >= 1200
                 reltuples = table_index_build_scan(heap, index, indexInfo, true, true, bingoIndexCallback, (void*)&build_engine, NULL);
@@ -237,24 +242,38 @@ Datum bingo_build(PG_FUNCTION_ARGS)
                 reltuples = IndexBuildHeapScan(heap, index, indexInfo, true, bingoIndexCallback, (void*)&build_engine);
 #endif
             }
-            BINGO_PG_HANDLE(throw BingoPgError("Error while executing build index procedure %s", message));
+            PG_CATCH();
+            {
+                MemoryContextSwitchTo(oldcontext);
+                build_error = CopyErrorData();
+                FlushErrorState();
+            }
+            PG_END_TRY();
 
-            build_engine.flush();
+            if (build_error == nullptr)
+                build_engine.finish();
         }
 
-        bingoLogBuiltRelation(index);
-        /*
-         * Return statistics
-         */
-        result = (IndexBuildResult*)palloc(sizeof(IndexBuildResult));
+        if (build_error == nullptr)
+        {
+            bingoLogBuiltRelation(index);
+            /*
+             * Return statistics
+             */
+            result = (IndexBuildResult*)palloc(sizeof(IndexBuildResult));
 
-        result->heap_tuples = reltuples;
-        /*
-         * Index is always cost cheaper so set tuples number 1
-         */
-        result->index_tuples = 1;
+            result->heap_tuples = reltuples;
+            /*
+             * Index is always cost cheaper so set tuples number 1
+             */
+            result->index_tuples = 1;
+        }
     }
     PG_BINGO_END
+
+    if (build_error != nullptr)
+        ReThrowError((ErrorData*)build_error);
+
 #if PG_VERSION_NUM / 100 >= 906
     return result;
 #else
@@ -338,6 +357,7 @@ Datum bingo_buildempty(PG_FUNCTION_ARGS)
 
         {
             BingoPgBuild build_engine(index, schema_name, index_schema, true);
+            build_engine.finish();
         }
 
         bingoLogBuiltRelation(index);

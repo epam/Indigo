@@ -72,9 +72,7 @@ bool RingoPgBuildEngine::processStructure(StructCache& struct_cache)
     }
     else
     {
-        elog(WARNING, "reaction build engine: internal error while processing record with ctid='(%d,%d)'::tid: see at the previous warning", block_number,
-             offset_number);
-        return false;
+        throw Error("internal error while reading prepared reaction data for ctid='(%d,%d)'::tid; see the previous warning", block_number, offset_number);
     }
     return true;
 }

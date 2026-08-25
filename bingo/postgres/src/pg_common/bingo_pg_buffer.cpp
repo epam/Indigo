@@ -58,7 +58,20 @@ BingoPgBuffer::BingoPgBuffer(PG_OBJECT rel_ptr, unsigned int block_num, int lock
  */
 BingoPgBuffer::~BingoPgBuffer()
 {
-    clear();
+    try
+    {
+        if (_lock == BINGO_PG_WRITE)
+            _abortWrite();
+        clear();
+    }
+    catch (Exception& e)
+    {
+        elog(WARNING, "internal error while cleaning up bingo block %u: %s", _blockIdx, e.message());
+    }
+    catch (...)
+    {
+        elog(WARNING, "internal error while cleaning up bingo block %u", _blockIdx);
+    }
 }
 
 void BingoPgBuffer::setWalEnabled(bool enabled)
@@ -495,7 +508,7 @@ void BingoPgBuffer::formIndexTuple(void* map_data, int size)
     }
     BINGO_PG_HANDLE({
         _abortWrite();
-        throw Error("internal error: can not form index tuple: %s", message));
+        throw Error("internal error: can not form index tuple: %s", message);
     });
 
     if (add_failed)

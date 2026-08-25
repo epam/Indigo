@@ -409,9 +409,12 @@ private:
     PG_CATCH();                                                                                                                                                \
     {                                                                                                                                                          \
         ErrorData* err = CopyErrorData();                                                                                                                      \
+        bool pg_query_canceled = (err->sqlerrcode == ERRCODE_QUERY_CANCELED);                                                                                  \
         pg_message.readString(err->message, true);                                                                                                             \
         FreeErrorData(err);                                                                                                                                    \
         FlushErrorState();                                                                                                                                     \
+        if (pg_query_canceled)                                                                                                                                 \
+            throw BingoPgCanceled("%s", pg_message.ptr());                                                                                                     \
         pg_error_raised = true;                                                                                                                                \
     }                                                                                                                                                          \
     PG_END_TRY();                                                                                                                                              \
@@ -439,6 +442,13 @@ private:
 
 #if PG_VERSION_NUM / 100 > 1200
 #define PG_BINGO_END                                                                                                                                           \
+    catch (BingoPgCanceled & e)                                                                                                                                \
+    {                                                                                                                                                          \
+        pg_raise_error = true;                                                                                                                                 \
+        errstart(ERROR, TEXTDOMAIN);                                                                                                                           \
+        (void)errcode(ERRCODE_QUERY_CANCELED);                                                                                                                 \
+        pg_err_mess = errmsg("error: %s", e.message());                                                                                                        \
+    }                                                                                                                                                          \
     catch (indigo::Exception & e)                                                                                                                              \
     {                                                                                                                                                          \
         pg_raise_error = true;                                                                                                                                 \
@@ -458,23 +468,28 @@ private:
     }
 #else
 #define PG_BINGO_END                                                                                                                                           \
+    catch (BingoPgCanceled & e)                                                                                                                                \
+    {                                                                                                                                                          \
+        pg_raise_error = true;                                                                                                                                 \
+        errstart(ERROR, __FILE__, __LINE__, PG_FUNCNAME_MACRO, TEXTDOMAIN);                                                                                    \
+        pg_err_mess = errmsg("error: %s", e.message());                                                                                                        \
+        errfinish((errcode(ERRCODE_QUERY_CANCELED), pg_err_mess));                                                                                             \
+    }                                                                                                                                                          \
     catch (indigo::Exception & e)                                                                                                                              \
     {                                                                                                                                                          \
         pg_raise_error = true;                                                                                                                                 \
         errstart(ERROR, __FILE__, __LINE__, PG_FUNCNAME_MACRO, TEXTDOMAIN);                                                                                    \
         pg_err_mess = errmsg("error: %s", e.message());                                                                                                        \
+        errfinish((errcode(ERRCODE_INTERNAL_ERROR), pg_err_mess));                                                                                             \
     }                                                                                                                                                          \
     catch (...)                                                                                                                                                \
     {                                                                                                                                                          \
         pg_raise_error = true;                                                                                                                                 \
         errstart(ERROR, __FILE__, __LINE__, PG_FUNCNAME_MACRO, TEXTDOMAIN);                                                                                    \
         pg_err_mess = errmsg("bingo unknown error");                                                                                                           \
-    }                                                                                                                                                          \
-    if (pg_raise_error)                                                                                                                                        \
-    {                                                                                                                                                          \
         errfinish((errcode(ERRCODE_INTERNAL_ERROR), pg_err_mess));                                                                                             \
     }                                                                                                                                                          \
-    }
+    (void)pg_raise_error;
 #endif
 
 #if PG_VERSION_NUM / 100 > 1200
@@ -532,7 +547,30 @@ public:
     }
 };
 
+/*
+ * PostgreSQL statement cancellation (SQLSTATE 57014) must never be masked by
+ * intermediate error conversions. Every BINGO_PG_HANDLE site throws this type
+ * for QUERY_CANCELED, and every broad catcher rethrows it untouched, so the
+ * AM entry points can report the original SQLSTATE instead of XX000.
+ */
+class DLLEXPORT BingoPgCanceled : public indigo::Exception
+{
+public:
+    explicit BingoPgCanceled(const char* format, ...) : indigo::Exception("bingo-postgres: canceled: ")
+    {
+        va_list args;
+        va_start(args, format);
+        const size_t len = strlen(_message);
+        vsnprintf(_message + len, sizeof(_message) - len, format, args);
+        va_end(args);
+    }
+};
+
 #define CORE_CATCH_ERROR(suffix)                                                                                                                               \
+    catch (BingoPgCanceled & e)                                                                                                                                \
+    {                                                                                                                                                          \
+        throw;                                                                                                                                                 \
+    }                                                                                                                                                          \
     catch (indigo::Exception & e)                                                                                                                              \
     {                                                                                                                                                          \
         throw BingoPgError("%s: %s", suffix, e.message());                                                                                                     \
@@ -543,6 +581,10 @@ public:
     }
 
 #define CORE_CATCH_ERROR_TID_NO_INDEX(suffix, block, offset)                                                                                                   \
+    catch (BingoPgCanceled & e)                                                                                                                                \
+    {                                                                                                                                                          \
+        throw;                                                                                                                                                 \
+    }                                                                                                                                                          \
     catch (indigo::Exception & e)                                                                                                                              \
     {                                                                                                                                                          \
         throw BingoPgError("%s with ctid='(%d,%d)'::tid: %s", suffix, block, offset, e.message());                                                             \
@@ -553,6 +595,10 @@ public:
     }
 
 #define CORE_CATCH_ERROR_TID(suffix, section_idx, structure_idx)                                                                                               \
+    catch (BingoPgCanceled & e)                                                                                                                                \
+    {                                                                                                                                                          \
+        throw;                                                                                                                                                 \
+    }                                                                                                                                                          \
     catch (indigo::Exception & e)                                                                                                                              \
     {                                                                                                                                                          \
         ItemPointerData target_item;                                                                                                                           \

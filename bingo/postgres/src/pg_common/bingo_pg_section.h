@@ -36,6 +36,7 @@ public:
     ~BingoPgSection();
 
     void clear();
+    void finish();
 
     /*
      * Returns true if section can be extended

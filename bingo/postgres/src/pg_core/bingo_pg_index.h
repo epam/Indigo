@@ -58,6 +58,23 @@ public:
     void writeMetaInfo();
 
     /*
+     * Finalize and release the current section before build metadata and WAL
+     * publication. Returns the physical range that was released so the caller
+     * can validate it before declaring the build complete.
+     */
+    void finishCurrentSection(int& section_offset, int& section_pages)
+    {
+        if (_currentSection.get() == 0 || _currentSectionIdx < 0)
+            throw Error("internal error: no current bingo section to finish");
+
+        section_offset = _getSectionOffset(_currentSectionIdx);
+        _currentSection->finish();
+        section_pages = _currentSection->getPagesCount();
+        _currentSection.reset(nullptr);
+        _currentSectionIdx = -1;
+    }
+
+    /*
      * Getters
      */
     int getStructuresNumber() const

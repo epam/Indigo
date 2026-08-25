@@ -42,11 +42,12 @@ BingoPgBufferCacheMap::BingoPgBufferCacheMap(int block_id, PG_OBJECT index_ptr, 
 
 BingoPgBufferCacheMap::~BingoPgBufferCacheMap()
 {
+}
+
+void BingoPgBufferCacheMap::flush()
+{
     if (_write)
     {
-        /*
-         * Write the cache only in the end
-         */
         if (!_buffer.isReady())
         {
             _buffer.readBuffer(_index, _blockId, BINGO_PG_NOLOCK);
@@ -198,11 +199,12 @@ BingoPgBufferCacheFp::BingoPgBufferCacheFp(int block_id, PG_OBJECT index_ptr, bo
 
 BingoPgBufferCacheFp::~BingoPgBufferCacheFp()
 {
+}
+
+void BingoPgBufferCacheFp::flush()
+{
     if (_write)
     {
-        /*
-         * Write the cache only in the end
-         */
         if (!_buffer.isReady())
         {
             _buffer.readBuffer(_index, _blockId, BINGO_PG_NOLOCK);
@@ -321,13 +323,12 @@ BingoPgBufferCacheBin::BingoPgBufferCacheBin(int block_id, PG_OBJECT index_ptr, 
 
 BingoPgBufferCacheBin::~BingoPgBufferCacheBin()
 {
+}
+
+void BingoPgBufferCacheBin::flush()
+{
     if (_write)
-    {
-        /*
-         * Write the cache only in the end
-         */
         _writeCache();
-    }
 }
 
 bool BingoPgBufferCacheBin::isEnoughSpace(int size)

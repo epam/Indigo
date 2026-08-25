@@ -5,6 +5,7 @@ extern "C"
 #include "postgres.h"
 
 #include "fmgr.h"
+#include "utils/memutils.h"
 }
 
 #include "bingo_pg_fix_post.h"
@@ -42,6 +43,33 @@ extern "C"
 
     BINGO_FUNCTION_EXPORT(standardize);
 }
+
+namespace
+{
+void destroyCheckMoleculeHandler(void* arg)
+{
+    delete static_cast<BingoPgCommon::BingoSessionHandler*>(arg);
+}
+
+BingoPgCommon::BingoSessionHandler& getCheckMoleculeHandler(FunctionCallInfo fcinfo)
+{
+    auto* bingo_handler = static_cast<BingoPgCommon::BingoSessionHandler*>(fcinfo->flinfo->fn_extra);
+    if (bingo_handler != nullptr)
+        return *bingo_handler;
+
+    bingo_handler = new BingoPgCommon::BingoSessionHandler(fcinfo->flinfo->fn_oid);
+
+    MemoryContextCallback* reset_callback =
+        static_cast<MemoryContextCallback*>(MemoryContextAlloc(fcinfo->flinfo->fn_mcxt, sizeof(MemoryContextCallback)));
+    reset_callback->func = destroyCheckMoleculeHandler;
+    reset_callback->arg = bingo_handler;
+    MemoryContextRegisterResetCallback(fcinfo->flinfo->fn_mcxt, reset_callback);
+
+    fcinfo->flinfo->fn_extra = bingo_handler;
+    bingo_handler->setFunctionName("checkmolecule");
+    return *bingo_handler;
+}
+} // namespace
 
 Datum smiles(PG_FUNCTION_ARGS)
 {
@@ -176,8 +204,7 @@ Datum checkmolecule(PG_FUNCTION_ARGS)
     void* result = 0;
     PG_BINGO_BEGIN
     {
-        BingoPgCommon::BingoSessionHandler bingo_handler(fcinfo->flinfo->fn_oid);
-        bingo_handler.setFunctionName("checkmolecule");
+        BingoPgCommon::BingoSessionHandler& bingo_handler = getCheckMoleculeHandler(fcinfo);
         auto& bingoCore = bingo_handler.bingoCore;
 
         BingoPgText mol_text(mol_datum);

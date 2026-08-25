@@ -29,6 +29,12 @@ public:
     ~BingoPgBuild();
 
     /*
+     * Complete a bulk build after the heap scan succeeds. Build publication is
+     * explicit so error unwinding never performs successful-build finalization.
+     */
+    void finish();
+
+    /*
      * Inserts a new structure into the index
      * Returns true if insertion was successfull
      */
@@ -46,6 +52,7 @@ private:
 
     void _prepareBuilding(const char* schema_name, const char* index_schema);
     void _prepareUpdating();
+    void _validateBuiltSection(int section_offset, int section_pages);
 
     /*
      * Index relation

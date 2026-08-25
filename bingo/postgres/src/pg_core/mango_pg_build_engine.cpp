@@ -83,9 +83,7 @@ bool MangoPgBuildEngine::processStructure(StructCache& struct_cache)
     }
     else
     {
-        elog(WARNING, "molecule build engine: internal error while processing record with ctid='(%d,%d)'::tid: see at the previous warning", block_number,
-             offset_number);
-        return false;
+        throw Error("internal error while reading prepared molecule data for ctid='(%d,%d)'::tid; see the previous warning", block_number, offset_number);
     }
     return true;
 }

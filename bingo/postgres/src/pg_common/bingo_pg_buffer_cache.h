@@ -65,6 +65,8 @@ public:
     BingoPgBufferCacheMap(int block_id, PG_OBJECT index_ptr, bool write, bool wal_enabled = true, unsigned int reusable_tail_start = UINT_MAX);
     ~BingoPgBufferCacheMap() override;
 
+    void flush();
+
     /*
      * Setters
      */
@@ -95,6 +97,8 @@ class BingoPgBufferCacheFp : public BingoPgBufferCache
 public:
     BingoPgBufferCacheFp(int block_id, PG_OBJECT index_ptr, bool write, bool wal_enabled = true, unsigned int reusable_tail_start = UINT_MAX);
     ~BingoPgBufferCacheFp() override;
+
+    void flush();
 
     void setBit(int str_idx, bool value);
     bool getBit(int str_idx);
@@ -129,6 +133,8 @@ public:
 
     BingoPgBufferCacheBin(int block_id, PG_OBJECT index_ptr, bool write, bool wal_enabled = true, unsigned int reusable_tail_start = UINT_MAX);
     ~BingoPgBufferCacheBin() override;
+
+    void flush();
 
     /*
      * Returns true if enough space for adding a new structure with given size
