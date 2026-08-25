@@ -99,19 +99,22 @@ BingoPgSection::BingoPgSection(BingoPgIndex& bingo_idx, int idx_strategy, int of
         if (_sectionInfo.n_structures < 0 || _sectionInfo.n_structures > BINGO_MOLS_PER_SECTION)
             throw Error("internal error: bingo section %d has invalid structure count %d", _offset, _sectionInfo.n_structures);
         if (_sectionInfo.n_blocks_for_map != bingo_idx.getMapSize())
-            throw Error("internal error: bingo section %d map block count %d does not match index count %d", _offset, _sectionInfo.n_blocks_for_map,
-                        bingo_idx.getMapSize());
+            throw Error("internal error: bingo section %d map block count %d does "
+                        "not match index count %d",
+                        _offset, _sectionInfo.n_blocks_for_map, bingo_idx.getMapSize());
         if (_sectionInfo.n_blocks_for_fp != bingo_idx.getFpSize())
-            throw Error("internal error: bingo section %d fingerprint block count %d does not match index count %d", _offset, _sectionInfo.n_blocks_for_fp,
-                        bingo_idx.getFpSize());
+            throw Error("internal error: bingo section %d fingerprint block count %d "
+                        "does not match index count %d",
+                        _offset, _sectionInfo.n_blocks_for_fp, bingo_idx.getFpSize());
         if (_sectionInfo.n_blocks_for_bin < 0 || (BlockNumber)_sectionInfo.n_blocks_for_bin > relation_blocks)
             throw Error("internal error: bingo section %d has invalid binary block count %d", _offset, _sectionInfo.n_blocks_for_bin);
 
         const long long expected_section_size = (long long)SECTION_META_PAGES + SECTION_BITSNUMBER_PAGES + _sectionInfo.n_blocks_for_map +
                                                 _sectionInfo.n_blocks_for_fp + _sectionInfo.n_blocks_for_bin;
         if (_sectionInfo.section_size != expected_section_size)
-            throw Error("internal error: bingo section %d size %d does not match expected size %lld", _offset, _sectionInfo.section_size,
-                        expected_section_size);
+            throw Error("internal error: bingo section %d size %d does not match "
+                        "expected size %lld",
+                        _offset, _sectionInfo.section_size, expected_section_size);
         if (_offset < 0 || expected_section_size <= 0 || (long long)_offset + expected_section_size > relation_blocks)
             throw Error("internal error: bingo section %d range exceeds relation size %u", _offset, (unsigned int)relation_blocks);
         if (_sectionInfo.last_cmf < -1 || _sectionInfo.last_cmf >= _sectionInfo.n_blocks_for_bin)
@@ -496,7 +499,8 @@ void BingoPgSection::_setBinData(indigo::Array<char>& buf, int& last_buf, ItemPo
 
     BingoPgBufferCacheBin* cache_bin = _getBufferBin(last_buf);
     /*
-     * If not enough space for inserting a new structure - then create and new buffer
+     * If not enough space for inserting a new structure - then create and new
+     * buffer
      */
     if (!cache_bin->isEnoughSpace(buf.sizeInBytes()))
     {

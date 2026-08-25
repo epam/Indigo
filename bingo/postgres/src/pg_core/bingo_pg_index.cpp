@@ -47,7 +47,8 @@ BingoPgIndex::BingoPgIndex(PG_OBJECT index) : _index(index), _strategy(READING_S
 void BingoPgIndex::writeBegin(BingoPgBuildEngine& fp_engine, BingoPgConfig& bingo_config)
 {
     /*
-     * Set up write strategy before creating pages so build-mode WAL policy is active.
+     * Set up write strategy before creating pages so build-mode WAL policy is
+     * active.
      */
     setStrategy(BUILDING_STRATEGY);
 
@@ -150,7 +151,9 @@ void BingoPgIndex::readMetaInfo()
     if (_metaInfo.offset_dictionary != dictionary_offset)
         throw Error("internal error: invalid bingo dictionary offset %d", _metaInfo.offset_dictionary);
     if (_metaInfo.n_pages < first_section_offset || (BlockNumber)_metaInfo.n_pages >= relation_blocks)
-        throw Error("internal error: invalid bingo final section offset %d for relation size %u", _metaInfo.n_pages, (unsigned int)relation_blocks);
+        throw Error("internal error: invalid bingo final section offset %d for "
+                    "relation size %u",
+                    _metaInfo.n_pages, (unsigned int)relation_blocks);
     if (_metaInfo.index_type != BINGO_INDEX_TYPE_MOLECULE && _metaInfo.index_type != BINGO_INDEX_TYPE_REACTION)
         throw Error("internal error: invalid bingo index type %d", _metaInfo.index_type);
 
@@ -163,11 +166,15 @@ void BingoPgIndex::readMetaInfo()
     {
         int section_offset = _getSectionOffset(section_idx);
         if (previous_offset >= 0 && section_offset <= previous_offset)
-            throw Error("internal error: bingo section %d offset %d is not after previous offset %d", section_idx, section_offset, previous_offset);
+            throw Error("internal error: bingo section %d offset %d is not after "
+                        "previous offset %d",
+                        section_idx, section_offset, previous_offset);
         previous_offset = section_offset;
     }
     if (previous_offset != _metaInfo.n_pages)
-        throw Error("internal error: bingo final section offset %d does not match metadata offset %d", previous_offset, _metaInfo.n_pages);
+        throw Error("internal error: bingo final section offset %d does not match "
+                    "metadata offset %d",
+                    previous_offset, _metaInfo.n_pages);
 }
 
 void BingoPgIndex::readConfigParameters(BingoPgConfig& bingo_config)
@@ -346,7 +353,9 @@ void BingoPgIndex::_setSectionOffset(int section_idx, int section_offset)
     off_buffer.changeAccess(BINGO_PG_WRITE);
     int* section_offsets = (int*)off_buffer.getIndexData(data_len);
     if (section_off_idx < 0 || data_len < (section_off_idx + 1) * (int)sizeof(int))
-        throw Error("internal error: bingo section offset block is too small for section %d", section_idx);
+        throw Error("internal error: bingo section offset block is too small for "
+                    "section %d",
+                    section_idx);
     section_offsets[section_off_idx] = section_offset;
     off_buffer.changeAccess(BINGO_PG_NOLOCK);
 }
@@ -435,7 +444,9 @@ int BingoPgIndex::_getSectionOffset(int section_idx)
     if (data_len < (section_off_idx + 1) * (int)sizeof(int))
     {
         off_buffer.changeAccess(BINGO_PG_NOLOCK);
-        throw Error("internal error: bingo section offset block is too small for section %d", section_idx);
+        throw Error("internal error: bingo section offset block is too small for "
+                    "section %d",
+                    section_idx);
     }
     result = section_offsets[section_off_idx];
     off_buffer.changeAccess(BINGO_PG_NOLOCK);
@@ -444,7 +455,9 @@ int BingoPgIndex::_getSectionOffset(int section_idx)
     const BlockNumber relation_blocks = RelationGetNumberOfBlocks(index);
     const int first_section_offset = BINGO_METABLOCKS_NUM + BINGO_SECTION_OFFSET_BLOCKS_NUM + BINGO_DICTIONARY_BLOCKS_NUM;
     if (result < first_section_offset || (BlockNumber)result >= relation_blocks)
-        throw Error("internal error: bingo section %d has invalid offset %d for relation size %u", section_idx, result, (unsigned int)relation_blocks);
+        throw Error("internal error: bingo section %d has invalid offset %d for "
+                    "relation size %u",
+                    section_idx, result, (unsigned int)relation_blocks);
     return result;
 }
 
@@ -484,7 +497,8 @@ void BingoPgIndex::insertStructure(BingoPgFpData& data_item)
     _jumpToSection(getSectionNumber() - 1);
 
     /*
-     * If a structure can not be added to the current section then initialize the new
+     * If a structure can not be added to the current section then initialize the
+     * new
      */
     if (!_currentSection->isExtended())
     {
@@ -497,7 +511,8 @@ void BingoPgIndex::insertStructure(BingoPgFpData& data_item)
     //    BingoPgWrapper rel_wr;
     //    const char* rel_name = rel_wr.getRelName(index->rd_id);
     //
-    //    indigo::FileOutput fout(false, "%s/insert/%s_%d_%d_%d", BINGO_PG_INTEGRITY_DIR, rel_name, _currentSectionIdx, );
+    //    indigo::FileOutput fout(false, "%s/insert/%s_%d_%d_%d",
+    //    BINGO_PG_INTEGRITY_DIR, rel_name, _currentSectionIdx, );
     // #endif
     /*
      * Add a structure
@@ -639,7 +654,10 @@ void BingoPgIndex::readCmfItem(int section_idx, int mol_idx, indigo::Array<char>
     if (block_num == InvalidBlockNumber)
     {
         cmf_buf.clear();
-        elog(DEBUG1, "bingo: index: read cmf: cmf is empty for structure %d for section = %d", mol_idx, section_idx);
+        elog(DEBUG1,
+             "bingo: index: read cmf: cmf is empty for structure %d for section = "
+             "%d",
+             mol_idx, section_idx);
         return;
     }
     unsigned short block_offset = ItemPointerGetOffsetNumber(&cmf_item);
@@ -648,7 +666,10 @@ void BingoPgIndex::readCmfItem(int section_idx, int mol_idx, indigo::Array<char>
      */
     BingoPgBufferCacheBin& bin_cache = current_section.getBinBufferCache(block_num);
     bin_cache.readBin(block_offset, cmf_buf);
-    elog(DEBUG1, "bingo: index: read cmf: successfully read cmf of size %d for block %d offset %d", cmf_buf.size(), block_num, block_offset);
+    elog(DEBUG1,
+         "bingo: index: read cmf: successfully read cmf of size %d for block %d "
+         "offset %d",
+         cmf_buf.size(), block_num, block_offset);
 }
 
 void BingoPgIndex::readXyzItem(int section_idx, int mol_idx, indigo::Array<char>& xyz_buf)
@@ -675,7 +696,10 @@ void BingoPgIndex::readXyzItem(int section_idx, int mol_idx, indigo::Array<char>
     if (block_num == InvalidBlockNumber)
     {
         xyz_buf.clear();
-        elog(DEBUG1, "bingo: index: read xyz: xyz is empty for structure %d for section = %d", mol_idx, section_idx);
+        elog(DEBUG1,
+             "bingo: index: read xyz: xyz is empty for structure %d for section = "
+             "%d",
+             mol_idx, section_idx);
         return;
     }
     unsigned short block_offset = ItemPointerGetOffsetNumber(&xyz_item);
@@ -684,5 +708,8 @@ void BingoPgIndex::readXyzItem(int section_idx, int mol_idx, indigo::Array<char>
      */
     BingoPgBufferCacheBin& bin_cache = current_section.getBinBufferCache(block_num);
     bin_cache.readBin(block_offset, xyz_buf);
-    elog(DEBUG1, "bingo: index: read xyz: successfully read xyz of size %d for block %d offset %d", xyz_buf.size(), block_num, block_offset);
+    elog(DEBUG1,
+         "bingo: index: read xyz: successfully read xyz of size %d for block %d "
+         "offset %d",
+         xyz_buf.size(), block_num, block_offset);
 }

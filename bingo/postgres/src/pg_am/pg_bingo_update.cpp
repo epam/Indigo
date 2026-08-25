@@ -70,53 +70,57 @@ static bool bingoInsertStructureLocked(Relation index, ItemPointer ht_ctid, Datu
     return result;
 }
 
-static void bingoBulkDeleteLocked(Relation index_rel, IndexBulkDeleteCallback bulk_del_cb, void* cb_state){PG_BINGO_BEGIN{/*
-                                                                                                                           * Initialize local variables
-                                                                                                                           */
-                                                                                                                          double tuples_removed = 0;
-ItemPointerData item_data;
-ItemPointer item_ptr = &item_data;
-BingoPgExternalBitset section_bitset(BINGO_MOLS_PER_SECTION);
-
-/*
- * Create index manager. VACUUM mutates the section existence
- * bitsets and metapage count, so use the WAL-enabled update path.
- */
-BingoPgIndex bingo_index(index_rel);
-bingo_index.updateBegin();
-
-/*
- * Iterate through all the sections and search for removed tuples
- */
-for (int section_idx = 0; section_idx != bingo_index.readEnd(); section_idx = bingo_index.readNext(section_idx))
+static void bingoBulkDeleteLocked(Relation index_rel, IndexBulkDeleteCallback bulk_del_cb, void* cb_state)
 {
-    bingo_index.getSectionBitset(section_idx, section_bitset);
-    /*
-     * Iterate through section structures
-     */
-    for (int mol_idx = section_bitset.begin(); mol_idx != section_bitset.end(); mol_idx = section_bitset.next(mol_idx))
-    {
-        bingo_index.readTidItem(section_idx, mol_idx, item_ptr);
-        if (bulk_del_cb(item_ptr, cb_state))
+    PG_BINGO_BEGIN
+    { /*
+       * Initialize local variables
+       */
+        double tuples_removed = 0;
+        ItemPointerData item_data;
+        ItemPointer item_ptr = &item_data;
+        BingoPgExternalBitset section_bitset(BINGO_MOLS_PER_SECTION);
+
+        /*
+         * Create index manager. VACUUM mutates the section existence
+         * bitsets and metapage count, so use the WAL-enabled update path.
+         */
+        BingoPgIndex bingo_index(index_rel);
+        bingo_index.updateBegin();
+
+        /*
+         * Iterate through all the sections and search for removed tuples
+         */
+        for (int section_idx = 0; section_idx != bingo_index.readEnd(); section_idx = bingo_index.readNext(section_idx))
         {
+            bingo_index.getSectionBitset(section_idx, section_bitset);
             /*
-             * Remove the structure from the bingo index
+             * Iterate through section structures
              */
-            bingo_index.removeStructure(section_idx, mol_idx);
-            tuples_removed += 1;
+            for (int mol_idx = section_bitset.begin(); mol_idx != section_bitset.end(); mol_idx = section_bitset.next(mol_idx))
+            {
+                bingo_index.readTidItem(section_idx, mol_idx, item_ptr);
+                if (bulk_del_cb(item_ptr, cb_state))
+                {
+                    /*
+                     * Remove the structure from the bingo index
+                     */
+                    bingo_index.removeStructure(section_idx, mol_idx);
+                    tuples_removed += 1;
+                }
+            }
         }
+        /*
+         * Always return null since no index values are removed
+         */
+        //      if (stats == NULL)
+        //         stats = (IndexBulkDeleteResult *) palloc0(sizeof
+        //         (IndexBulkDeleteResult));
+        //
+        //      stats->estimated_count = false;
+        //      stats->tuples_removed = tuples_removed;
     }
-}
-/*
- * Always return null since no index values are removed
- */
-//      if (stats == NULL)
-//         stats = (IndexBulkDeleteResult *) palloc0(sizeof (IndexBulkDeleteResult));
-//
-//      stats->estimated_count = false;
-//      stats->tuples_removed = tuples_removed;
-}
-PG_BINGO_END
+    PG_BINGO_END
 }
 
 /*
@@ -184,7 +188,8 @@ Datum bingo_insert(PG_FUNCTION_ARGS)
     //	 * returns null if either A or B is null.  This means that no
     //	 * qualification used in an index scan could ever return true on a null
     //	 * attribute.  It also means that indices can't be used by ISNULL or
-    //	 * NOTNULL scans, but that's an artifact of the strategy map architecture
+    //	 * NOTNULL scans, but that's an artifact of the strategy map
+    // architecture
     //	 * chosen in 1986, not of the way nulls are handled here.
     //	 */
     //	if (IndexTupleHasNulls(itup))

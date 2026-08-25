@@ -13,7 +13,8 @@
 /*
  * Class for handling bingo meta info and sections
  * Bingo index block are the following:
- * meta info(1 block) | config (1 block) | section mapping (10 blocks) | dictionary(100 blocks) | sections
+ * meta info(1 block) | config (1 block) | section mapping (10 blocks) |
+ * dictionary(100 blocks) | sections
  */
 class BingoPgBuildEngine;
 class BingoPgConfig;

@@ -83,7 +83,9 @@ bool MangoPgBuildEngine::processStructure(StructCache& struct_cache)
     }
     else
     {
-        throw Error("internal error while reading prepared molecule data for ctid='(%d,%d)'::tid; see the previous warning", block_number, offset_number);
+        throw Error("internal error while reading prepared molecule data for "
+                    "ctid='(%d,%d)'::tid; see the previous warning",
+                    block_number, offset_number);
     }
     return true;
 }
@@ -127,7 +129,9 @@ void MangoPgBuildEngine::processStructures(PtrArray<StructCache>& struct_caches)
     //             ItemPointer item_ptr = &(struct_caches[id_n]->ptr);
     //             int block_number = ItemPointerGetBlockNumber(item_ptr);
     //             int offset_number = ItemPointerGetOffsetNumber(item_ptr);
-    //             CORE_HANDLE_ERROR_TID_NO_INDEX(bingo_res, 0, "molecule build engine: error while processing records", block_number, offset_number,
+    //             CORE_HANDLE_ERROR_TID_NO_INDEX(bingo_res, 0, "molecule build
+    //             engine: error while processing records", block_number,
+    //             offset_number,
     //                                            bingoCore.error.ptr());
     //         }
     //     }
@@ -142,7 +146,9 @@ void MangoPgBuildEngine::insertShadowInfo(BingoPgFpData& item_data)
     const char* shadow_hash_name = _shadowHashRelName.ptr();
     ItemPointerData* tid_ptr = &data.getTidItem();
 
-    BingoPgCommon::executeQuery("INSERT INTO %s(b_id,tid_map,mass,fragments,gross,cnt_C,cnt_N,cnt_O,cnt_P,cnt_S,cnt_H) VALUES ("
+    BingoPgCommon::executeQuery("INSERT INTO "
+                                "%s(b_id,tid_map,mass,fragments,gross,cnt_C,cnt_N,cnt_O,cnt_P,cnt_S,cnt_"
+                                "H) VALUES ("
                                 "'(%d, %d)'::tid, '(%d, %d)'::tid, %f, %d, %s)",
                                 shadow_rel_name, data.getSectionIdx(), data.getStructureIdx(), ItemPointerGetBlockNumber(tid_ptr),
                                 ItemPointerGetOffsetNumber(tid_ptr), data.getMass(), data.getFragmentsCount(), data.getGrossStr());
@@ -150,8 +156,9 @@ void MangoPgBuildEngine::insertShadowInfo(BingoPgFpData& item_data)
     const std::map<dword, int>& hashes = data.getHashes();
     for (const auto& pair : hashes)
     {
-        BingoPgCommon::executeQuery("INSERT INTO %s(b_id, ex_hash, f_count) VALUES ('(%d, %d)'::tid, %d, %d)", shadow_hash_name, data.getSectionIdx(),
-                                    data.getStructureIdx(), pair.first, pair.second);
+        BingoPgCommon::executeQuery("INSERT INTO %s(b_id, ex_hash, f_count) VALUES "
+                                    "('(%d, %d)'::tid, %d, %d)",
+                                    shadow_hash_name, data.getSectionIdx(), data.getStructureIdx(), pair.first, pair.second);
     }
 }
 
@@ -245,12 +252,15 @@ void MangoPgBuildEngine::_processResultCb(void* context)
             ItemPointer item_ptr = &(struct_caches[cache_idx].ptr);
             int block_number = ItemPointerGetBlockNumber(item_ptr);
             int offset_number = ItemPointerGetOffsetNumber(item_ptr);
-            elog(WARNING, "molecule build engine: internal error while processing record with ctid='(%d,%d)'::tid: see at the previous warning", block_number,
-                 offset_number);
+            elog(WARNING,
+                 "molecule build engine: internal error while processing record with "
+                 "ctid='(%d,%d)'::tid: see at the previous warning",
+                 block_number, offset_number);
         }
         else
         {
-            elog(WARNING, "molecule build engine: internal error while processing record: see at the previous warning");
+            elog(WARNING, "molecule build engine: internal error while processing "
+                          "record: see at the previous warning");
         }
     }
 }

@@ -110,15 +110,22 @@ void BingoPgBuildEngine::_processErrorCb(int id, void* context)
     BingoPgBuildEngine* engine = (BingoPgBuildEngine*)context;
     PtrArray<StructCache>& struct_caches = *(engine->_structCaches);
     if (id < 0 || id >= struct_caches.size())
-        throw Error("internal error: parallel bingo build returned invalid rejected record id %d", id);
+        throw Error("internal error: parallel bingo build returned invalid "
+                    "rejected record id %d",
+                    id);
 
     StructCache& struct_cache = struct_caches[id];
     if (struct_cache.data.get() != 0)
-        throw Error("internal error: parallel bingo build returned record %d as both prepared and rejected", id);
+        throw Error("internal error: parallel bingo build returned record %d as "
+                    "both prepared and rejected",
+                    id);
     struct_cache.rejected = true;
 
     ItemPointer item_ptr = &(struct_cache.ptr);
     int block_number = ItemPointerGetBlockNumber(item_ptr);
     int offset_number = ItemPointerGetOffsetNumber(item_ptr);
-    elog(WARNING, "build engine: error while processing record with ctid='(%d,%d)'::tid: %s", block_number, offset_number, engine->bingoCore.warning.ptr());
+    elog(WARNING,
+         "build engine: error while processing record with ctid='(%d,%d)'::tid: "
+         "%s",
+         block_number, offset_number, engine->bingoCore.warning.ptr());
 }

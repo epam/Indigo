@@ -123,7 +123,8 @@ class BingoPgBufferCacheBin : public BingoPgBufferCache
 {
 public:
     /*
-     * Max size is rewrite BLCKSZ because there is int for keeping data length (stored in the begining of the buffer)
+     * Max size is rewrite BLCKSZ because there is int for keeping data length
+     * (stored in the begining of the buffer)
      */
     enum
     {

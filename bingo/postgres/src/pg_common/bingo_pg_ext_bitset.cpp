@@ -496,7 +496,8 @@ bool BingoPgExternalBitset::hasBits() const
     return (*_lastWordPtr) != 0;
 }
 
-// some 64-bit compilators can not correctly work with big values shift. So it must be processed manually
+// some 64-bit compilators can not correctly work with big values shift. So it
+// must be processed manually
 
 qword BingoPgExternalBitset::shiftOne(int shiftNumber)
 {

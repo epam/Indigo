@@ -76,8 +76,9 @@ void BingoPgBuild::finish()
     const BlockNumber physical_pages = RelationGetNumberOfBlocks(index);
     const BlockNumber expected_pages = (BlockNumber)(final_section_offset + final_section_pages);
     if (physical_pages != expected_pages)
-        throw Error("internal error: bingo index physical size %u does not match final logical end %u", (unsigned int)physical_pages,
-                    (unsigned int)expected_pages);
+        throw Error("internal error: bingo index physical size %u does not match "
+                    "final logical end %u",
+                    (unsigned int)physical_pages, (unsigned int)expected_pages);
 
     _validateBuiltSection(final_section_offset, final_section_pages);
 
@@ -224,7 +225,10 @@ bool BingoPgBuild::insertStructureSingle(PG_OBJECT item_ptr, uintptr_t text_ptr)
     struct_cache.text = std::make_unique<BingoPgText>(text_ptr);
     struct_cache.ptr = *((ItemPointer)item_ptr);
 
-    elog(DEBUG1, "bingo: insert structure: processing the table entry with ctid='(%d,%d)'::tid", block_number, offset_number);
+    elog(DEBUG1,
+         "bingo: insert structure: processing the table entry with "
+         "ctid='(%d,%d)'::tid",
+         block_number, offset_number);
 
     if (!fp_engine->processStructure(struct_cache))
     {
@@ -232,7 +236,9 @@ bool BingoPgBuild::insertStructureSingle(PG_OBJECT item_ptr, uintptr_t text_ptr)
     }
 
     if (struct_cache.data.get() == 0)
-        throw Error("internal error: bingo build reported success without prepared data for ctid='(%d,%d)'::tid", block_number, offset_number);
+        throw Error("internal error: bingo build reported success without prepared "
+                    "data for ctid='(%d,%d)'::tid",
+                    block_number, offset_number);
 
     /*
      * The encoded CMF can depend on dictionary state changed while processing
@@ -250,7 +256,10 @@ bool BingoPgBuild::insertStructureSingle(PG_OBJECT item_ptr, uintptr_t text_ptr)
     _bufferIndex.insertStructure(data_ref);
     fp_engine->insertShadowInfo(data_ref);
 
-    elog(DEBUG1, "bingo: insert structure: finish processing the table entry with ctid='(%d,%d)'::tid", block_number, offset_number);
+    elog(DEBUG1,
+         "bingo: insert structure: finish processing the table entry with "
+         "ctid='(%d,%d)'::tid",
+         block_number, offset_number);
 
     return true;
 }
@@ -299,10 +308,14 @@ void BingoPgBuild::flush()
         {
             if (struct_cache.rejected)
                 continue;
-            throw Error("internal error: parallel bingo build did not resolve ctid='(%d,%d)'::tid as prepared or rejected", block_number, offset_number);
+            throw Error("internal error: parallel bingo build did not resolve "
+                        "ctid='(%d,%d)'::tid as prepared or rejected",
+                        block_number, offset_number);
         }
         if (struct_cache.rejected)
-            throw Error("internal error: parallel bingo build resolved ctid='(%d,%d)'::tid as both prepared and rejected", block_number, offset_number);
+            throw Error("internal error: parallel bingo build resolved "
+                        "ctid='(%d,%d)'::tid as both prepared and rejected",
+                        block_number, offset_number);
 
         BingoPgFpData& data_ref = *struct_cache.data;
         _bufferIndex.insertStructure(data_ref);

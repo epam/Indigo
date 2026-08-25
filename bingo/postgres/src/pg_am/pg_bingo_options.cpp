@@ -65,7 +65,9 @@ static relopt_int intRelOpts[] = {
      -1,
      100000000,
      2000000000},
-    {{"autovacuum_freeze_table_age", "Age at which VACUUM should perform a full table sweep to replace old Xid values with FrozenXID",
+    {{"autovacuum_freeze_table_age",
+      "Age at which VACUUM should perform a full table sweep to replace old "
+      "Xid values with FrozenXID",
       RELOPT_KIND_HEAP | RELOPT_KIND_TOAST},
      -1,
      0,
@@ -92,28 +94,50 @@ static relopt_int intRelOpts[] = {
 
 };
 
-static relopt_real realRelOpts[] = {
-    {{"autovacuum_vacuum_scale_factor", "Number of tuple updates or deletes prior to vacuum as a fraction of reltuples", RELOPT_KIND_HEAP | RELOPT_KIND_TOAST},
-     -1,
-     0.0,
-     100.0},
-    {{"autovacuum_analyze_scale_factor", "Number of tuple inserts, updates or deletes prior to analyze as a fraction of reltuples", RELOPT_KIND_HEAP},
-     -1,
-     0.0,
-     100.0},
-    {{"seq_page_cost", "Sets the planner's estimate of the cost of a sequentially fetched disk page.", RELOPT_KIND_TABLESPACE}, -1, 0.0, DBL_MAX},
-    {{"random_page_cost", "Sets the planner's estimate of the cost of a nonsequentially fetched disk page.", RELOPT_KIND_TABLESPACE}, -1, 0.0, DBL_MAX},
-    {{"n_distinct", "Sets the planner's estimate of the number of distinct values appearing in a column (excluding child relations).", RELOPT_KIND_ATTRIBUTE},
-     0,
-     -1.0,
-     DBL_MAX},
-    {{"n_distinct_inherited", "Sets the planner's estimate of the number of distinct values appearing in a column (including child relations).",
-      RELOPT_KIND_ATTRIBUTE},
-     0,
-     -1.0,
-     DBL_MAX},
-    /* list terminator */
-    {{NULL}}};
+static relopt_real realRelOpts[] = {{{"autovacuum_vacuum_scale_factor",
+                                      "Number of tuple updates or deletes prior to vacuum as a fraction of "
+                                      "reltuples",
+                                      RELOPT_KIND_HEAP | RELOPT_KIND_TOAST},
+                                     -1,
+                                     0.0,
+                                     100.0},
+                                    {{"autovacuum_analyze_scale_factor",
+                                      "Number of tuple inserts, updates or deletes prior to analyze as a "
+                                      "fraction of reltuples",
+                                      RELOPT_KIND_HEAP},
+                                     -1,
+                                     0.0,
+                                     100.0},
+                                    {{"seq_page_cost",
+                                      "Sets the planner's estimate of the cost of a sequentially fetched disk "
+                                      "page.",
+                                      RELOPT_KIND_TABLESPACE},
+                                     -1,
+                                     0.0,
+                                     DBL_MAX},
+                                    {{"random_page_cost",
+                                      "Sets the planner's estimate of the cost of a nonsequentially fetched "
+                                      "disk page.",
+                                      RELOPT_KIND_TABLESPACE},
+                                     -1,
+                                     0.0,
+                                     DBL_MAX},
+                                    {{"n_distinct",
+                                      "Sets the planner's estimate of the number of distinct values appearing "
+                                      "in a column (excluding child relations).",
+                                      RELOPT_KIND_ATTRIBUTE},
+                                     0,
+                                     -1.0,
+                                     DBL_MAX},
+                                    {{"n_distinct_inherited",
+                                      "Sets the planner's estimate of the number of distinct values appearing "
+                                      "in a column (including child relations).",
+                                      RELOPT_KIND_ATTRIBUTE},
+                                     0,
+                                     -1.0,
+                                     DBL_MAX},
+                                    /* list terminator */
+                                    {{NULL}}};
 
 // static relopt_string stringRelOpts[] =
 //{
@@ -402,7 +426,8 @@ void _PG_init(void)
                           AccessExclusiveLock);
     }
 
-    /* -2 means the index option is unset; -1 keeps its historical automatic meaning. */
+    /* -2 means the index option is unset; -1 keeps its historical automatic
+     * meaning. */
     add_int_reloption(bingo_relopt_kind, "nthreads", "", -2, -1, 2000000000, AccessExclusiveLock);
 }
 #endif
@@ -533,24 +558,33 @@ Datum bingo_options(PG_FUNCTION_ARGS)
 //         attributes.clear();
 //         for (int i = 0; i < noptions; i++) {
 //            int text_len;
-//            char* text_data = BingoPgCommon::getTextData(&optiondatums[i], text_len);
-//            Helpers::addAttributeAndValue(text_data, text_len, attributes);
+//            char* text_data = BingoPgCommon::getTextData(&optiondatums[i],
+//            text_len); Helpers::addAttributeAndValue(text_data, text_len,
+//            attributes);
 //         }
 //      }
 //
 //      rdopts = (BingoStdRdOptions*)palloc0(sizeof(BingoStdRdOptions));
 //
-//      Helpers::mapParameter(attributes, "treat_x_as_pseudoatom", rdopts->index_parameters.treat_x_as_pseudoatom);
-//      Helpers::mapParameter(attributes, "ignore_closing_bond_direction_mismatch", rdopts->index_parameters.ignore_closing_bond_direction_mismatch);
-//      Helpers::mapParameter(attributes, "fp_ord_size", rdopts->index_parameters.fp_ord_size);
-//      Helpers::mapParameter(attributes, "fp_any_size", rdopts->index_parameters.fp_any_size);
-//      Helpers::mapParameter(attributes, "fp_tau_size", rdopts->index_parameters.fp_tau_size);
-//      Helpers::mapParameter(attributes, "fp_sim_size", rdopts->index_parameters.fp_sim_size);
-//      Helpers::mapParameter(attributes, "sub_screening_max_bits", rdopts->index_parameters.sub_screening_max_bits);
-//      Helpers::mapParameter(attributes, "sim_screening_pass_mark", rdopts->index_parameters.sim_screening_pass_mark);
+//      Helpers::mapParameter(attributes, "treat_x_as_pseudoatom",
+//      rdopts->index_parameters.treat_x_as_pseudoatom);
+//      Helpers::mapParameter(attributes,
+//      "ignore_closing_bond_direction_mismatch",
+//      rdopts->index_parameters.ignore_closing_bond_direction_mismatch);
+//      Helpers::mapParameter(attributes, "fp_ord_size",
+//      rdopts->index_parameters.fp_ord_size); Helpers::mapParameter(attributes,
+//      "fp_any_size", rdopts->index_parameters.fp_any_size);
+//      Helpers::mapParameter(attributes, "fp_tau_size",
+//      rdopts->index_parameters.fp_tau_size); Helpers::mapParameter(attributes,
+//      "fp_sim_size", rdopts->index_parameters.fp_sim_size);
+//      Helpers::mapParameter(attributes, "sub_screening_max_bits",
+//      rdopts->index_parameters.sub_screening_max_bits);
+//      Helpers::mapParameter(attributes, "sim_screening_pass_mark",
+//      rdopts->index_parameters.sim_screening_pass_mark);
 //
 //      if(validate && attributes.size() > 0)
-//         elog(ERROR, "Error while loading options: unknown option %s\n", attributes.key(attributes.begin()));
+//         elog(ERROR, "Error while loading options: unknown option %s\n",
+//         attributes.key(attributes.begin()));
 //
 //   } catch (Exception& e) {
 //      elog(ERROR, "Error while loading options: %s\n", e.message());

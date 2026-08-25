@@ -72,7 +72,9 @@ bool RingoPgBuildEngine::processStructure(StructCache& struct_cache)
     }
     else
     {
-        throw Error("internal error while reading prepared reaction data for ctid='(%d,%d)'::tid; see the previous warning", block_number, offset_number);
+        throw Error("internal error while reading prepared reaction data for "
+                    "ctid='(%d,%d)'::tid; see the previous warning",
+                    block_number, offset_number);
     }
     return true;
 }
@@ -176,12 +178,15 @@ void RingoPgBuildEngine::_processResultCb(void* context)
             ItemPointer item_ptr = &(struct_caches[cache_idx].ptr);
             int block_number = ItemPointerGetBlockNumber(item_ptr);
             int offset_number = ItemPointerGetOffsetNumber(item_ptr);
-            elog(WARNING, "reaction build engine: internal error while processing record with ctid='(%d,%d)'::tid: see at the previous warning", block_number,
-                 offset_number);
+            elog(WARNING,
+                 "reaction build engine: internal error while processing record with "
+                 "ctid='(%d,%d)'::tid: see at the previous warning",
+                 block_number, offset_number);
         }
         else
         {
-            elog(WARNING, "reaction build engine: internal error while processing record: see at the previous warning");
+            elog(WARNING, "reaction build engine: internal error while processing "
+                          "record: see at the previous warning");
         }
     }
 }

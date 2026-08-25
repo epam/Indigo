@@ -47,8 +47,9 @@ public:
 
     //   static float getBingoSim(char*, int, char*, int);
 
-    //   static void formIndexTuple(BingoPgBuffer& buffer, void* map_data, int size);
-    //   static void* getIndexData(BingoPgBuffer& pg_buffer, int& data_len);
+    //   static void formIndexTuple(BingoPgBuffer& buffer, void* map_data, int
+    //   size); static void* getIndexData(BingoPgBuffer& pg_buffer, int&
+    //   data_len);
 
     static void printBitset(const char* name, BingoPgExternalBitset& bitset);
     static void printFPBitset(const char* name, unsigned char* bitset, int size);
@@ -56,8 +57,8 @@ public:
     //   static char* getTextData(PG_OBJECT text_datum, int& size);
 
     // static void setDefaultOptions(bingo_core::BingoCore& bingoCore);
-    //   static dword getFunctionOid(const char* name, indigo::Array<dword>& types);
-    //   static dword getFunctionOid1(const char* name, dword type1);
+    //   static dword getFunctionOid(const char* name, indigo::Array<dword>&
+    //   types); static dword getFunctionOid1(const char* name, dword type1);
 
     //   static dword callFunction(dword oid, indigo::Array<dword>& args);
     //   static dword callFunction1(dword oid, dword arg1);

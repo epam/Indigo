@@ -77,21 +77,24 @@ BingoPgBuffer::~BingoPgBuffer()
 void BingoPgBuffer::setWalEnabled(bool enabled)
 {
     if (_lock == BINGO_PG_WRITE || _walState != nullptr)
-        throw Error("internal error: can not change WAL mode while a bingo buffer is being written");
+        throw Error("internal error: can not change WAL mode while a bingo buffer "
+                    "is being written");
     _walEnabled = enabled;
 }
 
 void BingoPgBuffer::setRawPageWal(bool enabled)
 {
     if (_lock == BINGO_PG_WRITE || _walState != nullptr)
-        throw Error("internal error: can not change raw-page WAL mode while a bingo buffer is being written");
+        throw Error("internal error: can not change raw-page WAL mode while a "
+                    "bingo buffer is being written");
     _rawPageWal = enabled;
 }
 
 void BingoPgBuffer::setReusableTailStart(unsigned int block_num)
 {
     if (_buffer != InvalidBuffer || _walState != nullptr)
-        throw Error("internal error: can not change reusable tail boundary while a bingo buffer is active");
+        throw Error("internal error: can not change reusable tail boundary while a "
+                    "bingo buffer is active");
     _reusableTailStart = block_num;
 }
 
@@ -259,7 +262,8 @@ int BingoPgBuffer::writeNewBuffer(PG_OBJECT rel_ptr, unsigned int block_num)
         throw Error("internal error: access to noncontiguous page in bingo index");
     }
     //   if(block_num < nblocks)
-    //      throw Error("internal error: access to already pinned block in bingo index");
+    //      throw Error("internal error: access to already pinned block in bingo
+    //      index");
 
     /*
      * smgr insists we use P_NEW to extend the relation
@@ -320,7 +324,8 @@ int BingoPgBuffer::writeNewBuffer(PG_OBJECT rel_ptr, unsigned int block_num)
     /*
      * initialize the page
      */
-    //   PageInit(BufferGetPage(buf), BufferGetPageSize(buf), sizeof (HashPageOpaqueData));
+    //   PageInit(BufferGetPage(buf), BufferGetPageSize(buf), sizeof
+    //   (HashPageOpaqueData));
     _beginWrite(true);
     BINGO_PG_TRY
     {
@@ -533,7 +538,9 @@ void BingoPgBuffer::replaceIndexData(const void* data, int size)
     int data_len = 0;
     void* target = getIndexData(data_len);
     if (size > data_len)
-        throw Error("internal error: replacement data size %d exceeds bingo block %u capacity %d", size, _blockIdx, data_len);
+        throw Error("internal error: replacement data size %d exceeds bingo block "
+                    "%u capacity %d",
+                    size, _blockIdx, data_len);
     memcpy(target, data, size);
     if (size < data_len)
         memset((char*)target + size, 0, data_len - size);
