@@ -28,6 +28,7 @@
 #include <molecule/molecule.h>
 #include <molecule/molfile_loader.h>
 #include <molecule/molfile_saver.h>
+#include <molecule/query_molecule.h>
 
 #include "common.h"
 
@@ -272,4 +273,132 @@ TEST_F(IndigoCoreHapticMolfileTest, BondsWithoutEndptsProduceNoGroups)
 
     EXPECT_EQ(0, mol.attachment_groups.groupCount());
     EXPECT_EQ(0, mol.haptic_bonds.count());
+}
+
+// ---- saving ---------------------------------------------------------------
+
+TEST_F(IndigoCoreHapticMolfileTest, SavedRecordCarriesTheKeysBack)
+{
+    Molecule mol;
+    loadMolfile(ferrocene(), mol);
+    const std::string saved = saveMolfile(mol);
+
+    EXPECT_NE(std::string::npos, saved.find("M  V30 11 9 6 12 ENDPTS=(5 11 7 8 9 10) ATTACH=ALL"));
+    EXPECT_NE(std::string::npos, saved.find("M  V30 12 9 6 13 ENDPTS=(5 5 4 3 2 1) ATTACH=ALL"));
+    EXPECT_NE(std::string::npos, saved.find("M  V30 COUNTS 13 12 0 0 0")) << "no atom and no record was invented";
+}
+
+// One record in the file became an edge and a haptic bond; it has to come back as
+// one record, not as both of them.
+TEST_F(IndigoCoreHapticMolfileTest, EachHapticBondIsWrittenExactlyOnce)
+{
+    Molecule mol;
+    loadMolfile(ferrocene(), mol);
+    const std::string saved = saveMolfile(mol);
+
+    EXPECT_EQ(2, countOccurrences(saved, "ENDPTS="));
+    EXPECT_EQ(2, countOccurrences(saved, "ATTACH="));
+}
+
+TEST_F(IndigoCoreHapticMolfileTest, RoundTripIsStable)
+{
+    Molecule first;
+    loadMolfile(ferrocene(), first);
+    const std::string once = saveMolfile(first);
+
+    Molecule second;
+    loadMolfile(once.c_str(), second);
+    EXPECT_EQ(once, saveMolfile(second));
+
+    ASSERT_EQ(2, second.attachment_groups.groupCount());
+    ASSERT_EQ(2, second.haptic_bonds.count());
+}
+
+TEST_F(IndigoCoreHapticMolfileTest, VariableAttachmentRoundTripsAsAny)
+{
+    Molecule mol;
+    loadMolfile(variableAttachment(), mol);
+    const std::string saved = saveMolfile(mol);
+
+    EXPECT_NE(std::string::npos, saved.find("ENDPTS=(3 2 3 4) ATTACH=ANY"));
+    EXPECT_EQ(0, countOccurrences(saved, "ATTACH=ALL"));
+}
+
+// A group that never had a star gets one: the format has no other way to draw the
+// end of the bond, and the centre of the members is where it belongs.
+TEST_F(IndigoCoreHapticMolfileTest, StarIsSynthesizedForAGroupWithoutAnchor)
+{
+    Molecule mol;
+    makeAnchorlessComplex(mol);
+    const std::string saved = saveMolfile(mol);
+
+    EXPECT_NE(std::string::npos, saved.find("M  V30 COUNTS 7 6 0 0 0")) << "one atom and one record more than the graph has";
+    EXPECT_NE(std::string::npos, saved.find("M  V30 7 * 0.5 0.77 0.0 0")) << "the star sits at the centre of the ring";
+    EXPECT_NE(std::string::npos, saved.find("M  V30 6 9 6 7 ENDPTS=(5 1 2 3 4 5) ATTACH=ALL"));
+
+    Molecule reloaded;
+    loadMolfile(saved.c_str(), reloaded);
+    ASSERT_EQ(1, reloaded.attachment_groups.groupCount());
+    ASSERT_EQ(1, reloaded.haptic_bonds.count());
+    EXPECT_EQ(6, reloaded.attachment_groups.group(reloaded.attachment_groups.begin()).anchorAtom());
+}
+
+// V2000 has no ENDPTS at all, so the haptic markup is dropped whole - and nothing
+// else is: the star stays the ordinary atom it is.
+TEST_F(IndigoCoreHapticMolfileTest, V2000OmitsTheHapticMarkup)
+{
+    Molecule mol;
+    loadMolfile(ferrocene(), mol);
+    const std::string saved = saveMolfile(mol, MolfileSaver::MODE_2000);
+
+    EXPECT_EQ(0, countOccurrences(saved, "ENDPTS"));
+    EXPECT_EQ(0, countOccurrences(saved, "ATTACH"));
+
+    Molecule reloaded;
+    loadMolfile(saved.c_str(), reloaded);
+    EXPECT_EQ(13, reloaded.vertexCount());
+    EXPECT_EQ(0, reloaded.attachment_groups.groupCount());
+}
+
+// A variable attachment is a query construct (#3731), so the query path is where
+// such a file usually arrives - and it is a different loader branch and a
+// different saver call than the plain molecule above.
+TEST_F(IndigoCoreHapticMolfileTest, VariableAttachmentRoundTripsAsAQueryMolecule)
+{
+    QueryMolecule query;
+    BufferScanner scanner(variableAttachment());
+    MolfileLoader loader(scanner);
+    loader.loadQueryMolecule(query);
+
+    ASSERT_EQ(1, query.attachment_groups.groupCount());
+    ASSERT_EQ(1, query.haptic_bonds.count());
+
+    const HapticBond& bond = query.haptic_bonds.at(query.haptic_bonds.begin());
+    EXPECT_EQ(_BOND_VARIABLE_ATTACHMENT, bond.type());
+    EXPECT_EQ(std::vector<int>({1, 2, 3}), query.attachment_groups.group(bond.begin().index()).atoms());
+    EXPECT_EQ(7, query.attachment_groups.group(bond.begin().index()).anchorAtom());
+
+    Array<char> buffer;
+    ArrayOutput output(buffer);
+    MolfileSaver saver(output);
+    saver.mode = MolfileSaver::MODE_3000;
+    saver.skip_date = true;
+    saver.saveQueryMolecule(query);
+
+    const std::string saved{buffer.ptr(), static_cast<std::size_t>(buffer.size())};
+    EXPECT_NE(std::string::npos, saved.find("ENDPTS=(3 2 3 4) ATTACH=ANY"));
+    EXPECT_EQ(1, countOccurrences(saved, "ENDPTS="));
+}
+
+// The group knows its star by atom index, so a copy that renumbers atoms must not
+// end up writing the ENDPTS of one ring next to the star of the other.
+TEST_F(IndigoCoreHapticMolfileTest, CloneWritesTheSameRecords)
+{
+    Molecule mol;
+    loadMolfile(ferrocene(), mol);
+
+    Molecule copy;
+    copy.clone(mol);
+
+    EXPECT_EQ(saveMolfile(mol), saveMolfile(copy));
 }
