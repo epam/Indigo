@@ -147,3 +147,11 @@ for atom in mol.iterateStereocenters():
 mol.addCIPStereoDescriptors()
 for atom in mol.iterateStereocenters():
     print("cip description after " + str(atom.stereocenterCIPDescriptor()))
+
+print("issue 3854 array: invalid index")
+mol = indigo.loadMolecule(
+    "[C@@]12(C[C@@H]3C[C@]3(O[H])[C@@]1([H])O[C@@H](O)C2)O[H]"
+)
+mol.addCIPStereoDescriptors()
+for atom in mol.iterateStereocenters():
+    print("cip description " + str(atom.stereocenterCIPDescriptor()))
