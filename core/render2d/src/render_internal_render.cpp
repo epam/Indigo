@@ -20,6 +20,8 @@
 #include "base_cpp/scanner.h"
 #include "base_cpp/tree.h"
 #include "molecule/molecule.h"
+#include "molecule/molecule_attachment_groups.h"
+#include "molecule/molecule_haptic_bonds.h"
 #include "molecule/molecule_sgroups.h"
 #include "molecule/query_molecule.h"
 #include "reaction/query_reaction.h"
@@ -182,6 +184,90 @@ void MoleculeRenderInternal::_renderBonds()
 {
     for (int i = _mol->edgeBegin(); i < _mol->edgeEnd(); i = _mol->edgeNext(i))
         _drawBond(i);
+}
+
+bool MoleculeRenderInternal::_hapticEndpointPos(const HapticBond::Endpoint& endpoint, Vec2f& pos)
+{
+    if (!endpoint.isGroup())
+    {
+        if (!_mol->hasVertex(endpoint.index()))
+            return false;
+        pos = _ad(endpoint.index()).pos;
+        return true;
+    }
+
+    const MoleculeAttachmentGroups& groups = _mol->attachment_groups;
+    if (!groups.hasGroup(endpoint.index()))
+        return false;
+
+    QS_DEF(Array<int>, atoms);
+    atoms.clear();
+    for (int atom : groups.group(endpoint.index()).atoms())
+    {
+        if (!_mol->hasVertex(atom))
+            return false;
+        atoms.push(atom);
+    }
+
+    if (atoms.size() == 0)
+        return false;
+
+    // Bounding-box centre, the convention #3767 fixed for the anchor of a group.
+    pos = _bound(atoms).center();
+    return true;
+}
+
+void MoleculeRenderInternal::_clipHapticEndToLabel(const HapticBond::Endpoint& endpoint, Vec2f& pos, const Vec2f& other)
+{
+    // A group has no label of its own, and the reference drawing has the line begin
+    // inside the ligand — only an atom end is pulled back to clear its label.
+    if (endpoint.isGroup())
+        return;
+
+    Vec2f dir;
+    dir.diff(other, pos);
+    if (!dir.normalize())
+        return;
+
+    // -1 is how _getBondOffset says "this atom draws no label": a value to discard,
+    // not to move by - unclamped it drags the end a unit the other way. So do the
+    // other two callers.
+    const float offset = _getBondOffset(endpoint.index(), pos, dir, _settings.bondLineWidth);
+    if (offset > 0)
+        pos.addScaled(dir, offset);
+}
+
+void MoleculeRenderInternal::_renderHapticBonds()
+{
+    // No edge of the graph, so no part of the bond pipeline draws it. A plain line:
+    // no arrowhead - this is not a dative bond - and no marker at the centre.
+    const MoleculeHapticBonds& bonds = _mol->haptic_bonds;
+    if (bonds.isEmpty())
+        return;
+
+    _cw.setLineWidth(_settings.bondLineWidth);
+    _cw.setSingleSource(CWC_BASE);
+
+    for (int i = bonds.begin(); i != bonds.end(); i = bonds.next(i))
+    {
+        const HapticBond& bond = bonds.at(i);
+
+        // A variable attachment (#3731) shares the container and is drawn its own
+        // way; drawn here it would become a haptic bond on the picture.
+        if (bond.type() != _BOND_HAPTIC)
+            continue;
+
+        Vec2f begin, end;
+        if (!_hapticEndpointPos(bond.begin(), begin) || !_hapticEndpointPos(bond.end(), end))
+            continue;
+
+        if (Vec2f::dist(begin, end) < EPSILON)
+            continue;
+
+        _clipHapticEndToLabel(bond.begin(), begin, end);
+        _clipHapticEndToLabel(bond.end(), end, begin);
+        _cw.drawLine(begin, end);
+    }
 }
 
 void MoleculeRenderInternal::_renderSGroups()
