@@ -41,6 +41,7 @@ set(EMCC_COMMON_FLAGS
         ${EMCC_ASSERTIONS}
         -s USE_SDL=0 -s USE_SDL_IMAGE=0 -s USE_SDL_TTF=0 -s USE_SDL_NET=0
         --no-entry
+        --post-js ${CMAKE_CURRENT_SOURCE_DIR}/post.js
         ${EMCC_FLAGS}
         )
 
@@ -59,11 +60,11 @@ set(EMCC_FLAGS
 
 set(TARGET_FILES
         $<TARGET_OBJECTS:${PROJECT_NAME}-object>
-        $<TARGET_FILE:indigo-static> $<TARGET_FILE:indigo-inchi-static> $<TARGET_FILE:indigo-renderer-static> $<TARGET_FILE:render2d> $<TARGET_FILE:lunasvg> $<TARGET_FILE:plutovg> $<TARGET_FILE:cairo> $<TARGET_FILE:freetype>  $<TARGET_FILE:png> $<TARGET_FILE:pixman> $<TARGET_FILE:indigo-core> $<TARGET_FILE:inchi> $<TARGET_FILE:tinyxml2> $<TARGET_FILE:z>
+        $<TARGET_FILE:indigo-static> $<TARGET_FILE:indigo-inchi-static> $<TARGET_FILE:indigo-renderer-static> $<TARGET_FILE:render2d> $<TARGET_FILE:indigo-core> $<TARGET_FILE:inchi> $<TARGET_FILE:tinyxml2> $<TARGET_FILE:z>
         )
 
 set(TARGET_FILES_NORENDER
-    $<TARGET_OBJECTS:${PROJECT_NAME}-object-norender> $<TARGET_FILE:indigo-static> $<TARGET_FILE:indigo-inchi-static> $<TARGET_FILE:indigo-core> $<TARGET_FILE:inchi> $<TARGET_FILE:tinyxml2> $<TARGET_FILE:png> $<TARGET_FILE:z>
+    $<TARGET_OBJECTS:${PROJECT_NAME}-object-norender> $<TARGET_FILE:indigo-static> $<TARGET_FILE:indigo-inchi-static> $<TARGET_FILE:indigo-core> $<TARGET_FILE:inchi> $<TARGET_FILE:tinyxml2> $<TARGET_FILE:z>
 )
 
 add_custom_target(${PROJECT_NAME}-separate
@@ -112,6 +113,7 @@ if (NOT RENDER_ENABLE_CJK)
             WORKING_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
             COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_LIST_DIR}/patch.cmake
             COMMAND npm test
+            COMMAND npm run test_browser
             COMMAND npm pack
             COMMAND ${CMAKE_COMMAND} -E make_directory ${DIST_DIRECTORY}
             COMMAND ${COPY_COMMAND} ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}${SEP}${PROJECT_NAME}*.tgz ${NATIVE_DIST_DIRECTORY}${SEP}
@@ -128,6 +130,7 @@ else ()
             WORKING_DIRECTORY ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}
             COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_LIST_DIR}/patch.cmake
             COMMAND npm test
+            COMMAND npm run test_browser
             COMMAND npm run test_cjk
             COMMAND npm pack
             COMMAND ${CMAKE_COMMAND} -E make_directory ${DIST_DIRECTORY}

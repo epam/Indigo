@@ -13,6 +13,9 @@ file(GLOB ${PROJECT_NAME}_SOURCES CONFIGURE_DEPENDS
 
 if (EMSCRIPTEN)
         add_definitions(-DRENDER_EMSCRIPTEN)
+        # On WASM, exclude cairo backend and font face manager (JS backend replaces them)
+        list(REMOVE_ITEM ${PROJECT_NAME}_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/cairo_render_backend.cpp)
+        list(REMOVE_ITEM ${PROJECT_NAME}_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/render_font_face_manager.cpp)
 endif()
 
 if (USE_FONT_MANAGER)
@@ -38,16 +41,27 @@ if (RENDER_ENABLE_CJK)
         target_compile_definitions(${PROJECT_NAME} PRIVATE RENDER_ENABLE_CJK)
 endif()
 
-target_link_libraries(${PROJECT_NAME} PUBLIC lunasvg)
+if (NOT EMSCRIPTEN)
+    # Desktop/server builds: link cairo, lunasvg, and their dependencies
+    target_link_libraries(${PROJECT_NAME} PUBLIC lunasvg)
 
-if (BUILD_STANDALONE)
-    target_link_libraries(${PROJECT_NAME}
-            PUBLIC rapidjson
-            PUBLIC cairo)
-else ()
-    find_package(Cairo REQUIRED)
-    find_package(RapidJSON REQUIRED)
-    target_link_libraries(${PROJECT_NAME}
-            PUBLIC RapidJSON::RapidJSON
-            PUBLIC Cairo::Cairo)
-endif ()
+    if (BUILD_STANDALONE)
+        target_link_libraries(${PROJECT_NAME}
+                PUBLIC rapidjson
+                PUBLIC cairo)
+    else ()
+        find_package(Cairo REQUIRED)
+        find_package(RapidJSON REQUIRED)
+        target_link_libraries(${PROJECT_NAME}
+                PUBLIC RapidJSON::RapidJSON
+                PUBLIC Cairo::Cairo)
+    endif ()
+else()
+    # WASM builds: no graphics library dependencies, only rapidjson
+    if (BUILD_STANDALONE)
+        target_link_libraries(${PROJECT_NAME} PUBLIC rapidjson)
+    else()
+        find_package(RapidJSON REQUIRED)
+        target_link_libraries(${PROJECT_NAME} PUBLIC RapidJSON::RapidJSON)
+    endif()
+endif()
