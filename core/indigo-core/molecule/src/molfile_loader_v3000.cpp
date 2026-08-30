@@ -1620,11 +1620,18 @@ void MolfileLoader::_readTGroups3000()
                                     StringOutput templ_inchi_output(templ_inchi_str);
                                     MoleculeInChI templ_inchi(templ_inchi_output);
                                     auto templ_tgroup = templ.getTGroup();
-                                    templ_inchi.outputInChI(templ_tgroup->fragment->asMolecule());
+                                    AromaticityOptions a_opts;
+                                    Molecule templ_mol;
+                                    templ_mol.mergeWithMolecule(templ_tgroup->fragment->asMolecule(), nullptr);
+                                    templ_mol.aromatize(a_opts);
+                                    templ_inchi.outputInChI(templ_mol);
                                     std::string tg_inchi_str;
                                     StringOutput tg_inchi_output(tg_inchi_str);
                                     MoleculeInChI tg_inchi(tg_inchi_output);
-                                    tg_inchi.outputInChI(tgroup.fragment->asMolecule());
+                                    Molecule tg_mol;
+                                    tg_mol.mergeWithMolecule(tgroup.fragment->asMolecule(), nullptr);
+                                    tg_mol.aromatize(a_opts);
+                                    tg_inchi.outputInChI(tg_mol);
                                     if (templ_inchi_str == tg_inchi_str)
                                     {
                                         std::string tgroup_name = tgroup.tgroup_name.ptr();

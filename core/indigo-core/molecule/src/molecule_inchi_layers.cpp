@@ -71,7 +71,7 @@ void MainLayerFormula::_collectAtomsCount()
     int implicit_hydrogens_count = 0;
     for (int v_idx = mol.vertexBegin(); v_idx != mol.vertexEnd(); v_idx = mol.vertexNext(v_idx))
     {
-        implicit_hydrogens_count += mol.getImplicitH(v_idx);
+        implicit_hydrogens_count += mol.getImplicitH_NoThrow(v_idx, 0);
         _atoms_count[mol.getAtomNumber(v_idx)]++;
     }
 
@@ -437,7 +437,7 @@ void HydrogensLayer::_construct()
     _per_atom_immobile.clear_resize(mol.vertexEnd());
     _per_atom_immobile.zerofill();
     for (int v = mol.vertexBegin(); v != mol.vertexEnd(); v = mol.vertexNext(v))
-        _per_atom_immobile[v] = mol.getImplicitH(v);
+        _per_atom_immobile[v] = mol.getImplicitH_NoThrow(v, 0);
 }
 
 int HydrogensLayer::compareComponentsHydrogens(HydrogensLayer& comp1, HydrogensLayer& comp2)
