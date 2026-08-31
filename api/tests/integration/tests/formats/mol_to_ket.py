@@ -64,6 +64,7 @@ files = [
     "issue_3759_one_atom_two_ap",
     "issue_3759_one_atom_three_ap",
     "issue_3847",
+    "issue_3635",
 ]
 
 native_precision = [
@@ -74,6 +75,7 @@ native_precision = [
     "issue_3759_one_atom_two_ap",
     "issue_3759_one_atom_three_ap",
     "issue_3847",
+    "issue_3635",
 ]
 
 with_lib = [
@@ -89,6 +91,7 @@ with_lib = [
     "issue_3759_one_atom_two_ap",
     "issue_3759_one_atom_three_ap",
     "issue_3847",
+    "issue_3635",
 ]
 
 lib = indigo.loadMonomerLibraryFromFile(

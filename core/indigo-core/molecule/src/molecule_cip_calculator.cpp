@@ -1536,7 +1536,7 @@ int MoleculeCIPCalculator::_cip_rules_cmp(int i1, int i2, void* context)
         if (!cur_context->next_level)
             return 0;
 
-        int next_level_branches = neibs2.size() > neibs1.size() ? neibs2.size() : neibs1.size();
+        int next_level_branches = neibs2.size() < neibs1.size() ? neibs2.size() : neibs1.size();
 
         if (next_level_branches > 0)
         {

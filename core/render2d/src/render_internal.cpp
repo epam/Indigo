@@ -261,6 +261,8 @@ void MoleculeRenderInternal::render()
 
     _renderBonds();
 
+    _renderHapticBonds();
+
     _renderRings();
 
     _renderSGroups();
