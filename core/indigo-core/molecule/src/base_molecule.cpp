@@ -751,7 +751,7 @@ int BaseMolecule::flipBondWithDirection(int atom_parent, int atom_from, int atom
             throw Error("flipBondWithDirection: edge not found between %d and %d", pivot, old_neighbor);
 
         // 1. Update internal molecular structures
-        stereocenters.flipBond(pivot, old_neighbor, new_neighbor);
+        stereocenters.flipBond(pivot, old_neighbor, new_neighbor, true);
         cis_trans.flipBond(*this, pivot, old_neighbor, new_neighbor);
 
         // 2. Direct Graph Modification: Update Edge endpoints

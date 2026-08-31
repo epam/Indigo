@@ -97,3 +97,14 @@ for helm_seq in sorted(helm_errors.keys()):
                 "Test '%s': expected error '%s' but got '%s'"
                 % (helm_seq, error, text)
             )
+
+
+# 3834 - expandedMonomersToAtoms throw IndigoException
+helm = "PEPTIDE1{[-Et]}|RNA1{[Rsp]}|RNA2{[hn]}$PEPTIDE1,RNA1,1:R1-1:R1|RNA2,RNA1,1:R1-1:R2$$$V2.0"
+mol = indigo.loadHelm(helm, lib)
+try:
+    mol_exp = mol.expandedMonomersToAtoms()
+    print("Issue 3834 PASSED")
+except IndigoException as e:
+    text = getIndigoExceptionText(e)
+    print("Issue 3834 FAILED: " + text)
