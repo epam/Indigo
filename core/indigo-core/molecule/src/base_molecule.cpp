@@ -786,6 +786,19 @@ int BaseMolecule::flipBondWithDirection(int atom_parent, int atom_from, int atom
         ve_new.v = pivot;
     };
 
+    // A stereocenter that already has four explicit neighbors has no free slot for the
+    // atom the flip attaches. The slot it must take is the one still held by the bond
+    // that is dropped right after the flip, so that bond has to go first: its removal
+    // frees exactly that slot and keeps the pyramid parity. When a free slot is there
+    // (implicit hydrogen), the original order is kept - removing the bond first would
+    // drop the stereocenter altogether.
+    auto pyramidIsFull = [&](int atom_idx) {
+        if (!stereocenters.exists(atom_idx))
+            return false;
+        const int* pyramid = stereocenters.getPyramid(atom_idx);
+        return pyramid != nullptr && pyramid[3] != -1;
+    };
+
     // Selection Logic:
     // If Leaving Bond has STRICTLY higher priority, use Method 2.
     // Otherwise (Existing is better or equal), use Method 1.
@@ -794,10 +807,17 @@ int BaseMolecule::flipBondWithDirection(int atom_parent, int atom_from, int atom
         // Method 2: Keep Leaving Bond (AttA-L)
         // We preserve the bond (AttA-L) and move its endpoint L -> B.
         // Result: Bond (AttA, B) using the 'Leaving' edge object.
+
+        // Here B gains AttA and loses A, so B is the center that needs a free slot.
+        bool conflicting_removed = pyramidIsFull(atom_parent);
+        if (conflicting_removed)
+            removeBond(bond_AB_idx);
+
         inplaceFlipBond(atom_to, leaving_atom, atom_parent);
 
         // Remove the conflicting A-B bond.
-        removeBond(bond_AB_idx);
+        if (!conflicting_removed)
+            removeBond(bond_AB_idx);
 
         final_dir = dir_AttAL;
         kept_bond_idx = findEdgeIndex(atom_to, atom_parent);
@@ -814,7 +834,16 @@ int BaseMolecule::flipBondWithDirection(int atom_parent, int atom_from, int atom
         if (bond_AB_idx >= 0)
             bond_ends_at_atom_from = (_edges[bond_AB_idx].end == atom_from);
 
+        // Here AttA gains B and loses L, so AttA is the center that needs a free slot.
+        bool leaving_removed = bond_AttAL_idx >= 0 && pyramidIsFull(atom_to);
+        if (leaving_removed)
+            removeBond(bond_AttAL_idx);
+
         inplaceFlipBond(atom_parent, atom_from, atom_to);
+
+        // Remove the unused AttA-L bond.
+        if (bond_AttAL_idx >= 0 && !leaving_removed)
+            removeBond(bond_AttAL_idx);
 
         final_dir = dir_AB;
 
@@ -827,10 +856,6 @@ int BaseMolecule::flipBondWithDirection(int atom_parent, int atom_from, int atom
             if (bond_ends_at_atom_from)
                 final_dir = BOND_DIRECTION_MONO;
         }
-
-        // Remove the unused AttA-L bond.
-        if (bond_AttAL_idx >= 0)
-            removeBond(bond_AttAL_idx);
 
         kept_bond_idx = findEdgeIndex(atom_parent, atom_to);
     }
