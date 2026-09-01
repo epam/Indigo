@@ -53,12 +53,14 @@ def main():
                 idx = stereo_atom.index()
                 atom = expanded.getAtom(idx)
                 centers.append(
-                    "%d%s(deg=%d)%s"
+                    "%d%s(deg=%d) pyramid=%s"
                     % (
                         idx,
                         atom.symbol(),
                         atom.degree(),
-                        stereo_atom.stereocenterPyramid(),
+                        ",".join(
+                            [str(i) for i in stereo_atom.stereocenterPyramid()]
+                        ),
                     )
                 )
             smiles = expanded.canonicalSmiles()
