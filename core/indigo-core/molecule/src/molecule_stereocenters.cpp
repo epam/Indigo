@@ -1635,7 +1635,7 @@ void MoleculeStereocenters::registerUnfoldedHydrogen(int atom_idx, int added_hyd
     center->pyramid[3] = added_hydrogen;
 }
 
-void MoleculeStereocenters::flipBond(int atom_parent, int atom_from, int atom_to, bool ignore_errors)
+void MoleculeStereocenters::flipBond(int atom_parent, int atom_from, int atom_to)
 {
     if (exists(atom_from))
     {
@@ -1656,7 +1656,7 @@ void MoleculeStereocenters::flipBond(int atom_parent, int atom_from, int atom_to
     {
         _Atom* to_center = _stereocenters.at2(atom_to);
 
-        if (to_center->pyramid[3] != -1 && !ignore_errors)
+        if (to_center->pyramid[3] != -1)
             throw Error("Bad bond flipping. Stereocenter pyramid is already full");
 
         to_center->pyramid[3] = atom_parent;

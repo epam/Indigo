@@ -116,7 +116,7 @@ namespace indigo
 
         void registerUnfoldedHydrogen(int atom_idx, int added_hydrogen);
 
-        void flipBond(int atom_parent, int atom_from, int atom_to, bool ignore_errors = false);
+        void flipBond(int atom_parent, int atom_from, int atom_to);
 
         int begin() const;
         int end() const;

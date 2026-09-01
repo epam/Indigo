@@ -751,7 +751,7 @@ int BaseMolecule::flipBondWithDirection(int atom_parent, int atom_from, int atom
             throw Error("flipBondWithDirection: edge not found between %d and %d", pivot, old_neighbor);
 
         // 1. Update internal molecular structures
-        stereocenters.flipBond(pivot, old_neighbor, new_neighbor, true);
+        stereocenters.flipBond(pivot, old_neighbor, new_neighbor);
         cis_trans.flipBond(*this, pivot, old_neighbor, new_neighbor);
 
         // 2. Direct Graph Modification: Update Edge endpoints
@@ -814,6 +814,10 @@ int BaseMolecule::flipBondWithDirection(int atom_parent, int atom_from, int atom
         if (bond_AB_idx >= 0)
             bond_ends_at_atom_from = (_edges[bond_AB_idx].end == atom_from);
 
+        // Remove the unused AttA-L bond.
+        if (bond_AttAL_idx >= 0)
+            removeBond(bond_AttAL_idx);
+
         inplaceFlipBond(atom_parent, atom_from, atom_to);
 
         final_dir = dir_AB;
@@ -827,10 +831,6 @@ int BaseMolecule::flipBondWithDirection(int atom_parent, int atom_from, int atom
             if (bond_ends_at_atom_from)
                 final_dir = BOND_DIRECTION_MONO;
         }
-
-        // Remove the unused AttA-L bond.
-        if (bond_AttAL_idx >= 0)
-            removeBond(bond_AttAL_idx);
 
         kept_bond_idx = findEdgeIndex(atom_parent, atom_to);
     }
