@@ -20,9 +20,17 @@
 #define __dative_model_h__
 
 #include "base_c/defs.h"
+#include "base_cpp/array.h"
+
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
 
 namespace indigo
 {
+    class Molecule;
+
     // Element data for the dative-bond valence model (ticket #3617).
     //
     // These two tables are used ONLY by the dative model. They deliberately disagree
@@ -61,6 +69,61 @@ namespace indigo
         // Returns 0 for element numbers outside [ELEM_MIN, ELEM_MAX).
         DLLEXPORT int valenceOrbitals(int elem);
     }
+
+    // Valence contribution of dative bonds (ticket #3617).
+    //
+    // Built once per molecule, then queried per atom. The molecule passed in is never
+    // modified: requirement 1.1 ("dearomatize, calculate, aromatize again") is satisfied
+    // by asking MoleculeDearomatizer for the connectivity the dearomatized structure
+    // would have, which needs no copy of the molecule and no mutation of it.
+    //
+    // Scope rule (see ANALYSIS-REPORT section 3.5): this model applies ONLY to atoms
+    // that carry at least one dative bond. Every other atom must keep its existing
+    // behaviour byte for byte, so callers gate on atomParticipates() / hasDativeBonds().
+    class DLLEXPORT DativeModel
+    {
+    public:
+        struct AtomResult
+        {
+            int el = 0;                 // req 1: electrons eligible for dative bonding
+            int orb = 0;                // req 2: orbitals eligible; may be negative (see Q2)
+            int max_donor = 0;          // req 4: n_donor, 0 when the Or >= n > 0 gate fails
+            int max_acceptor = 0;       // req 5: n_acceptor, 0 when the gate fails
+            int donor_bonds = 0;        // req 3: donor bonds left after cancellation
+            int acceptor_bonds = 0;     // req 3: acceptor bonds left after cancellation
+            bool valence_error = false; // req 6: more dative bonds than allowed
+        };
+
+        explicit DativeModel(Molecule& mol);
+
+        // True when the molecule contains at least one dative bond. Cheap pre-check:
+        // when false, nothing in this class needs to be consulted at all.
+        static bool hasDativeBonds(Molecule& mol);
+
+        // True when this atom carries at least one dative bond — the gate that keeps
+        // the new behaviour away from everything else.
+        bool atomParticipates(int atom_idx) const;
+
+        // Computes the per-atom result. Returns false when it cannot be computed
+        // (kekulization failed, or the atom is a pseudo-atom / R-site / template);
+        // the caller then keeps the existing behaviour.
+        bool compute(int atom_idx, AtomResult& out) const;
+
+    private:
+        // Sum of the orders of all bonds that count towards `bonds` in req 1 and 2:
+        // dative and hydrogen bonds excluded, implicit hydrogens excluded, aromatic
+        // bonds resolved to their Kekule orders (req 1.1).
+        int _countBonds(int atom_idx) const;
+
+        Molecule& _mol;
+        Array<int> _kekule_connectivity; // filled only when the molecule has aromatic bonds
+        bool _has_aromatic = false;
+        bool _usable = true;
+    };
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 
 #endif

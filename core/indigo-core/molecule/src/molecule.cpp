@@ -55,6 +55,8 @@ Molecule::Molecule()
     _aromatized = false;
     _ignore_bad_valence = false;
     _valence_mode = ValenceMode::BIOVIA_2009;
+    _dative_model_revision = -1;
+    _dative_model_building = false;
 }
 
 Molecule& Molecule::asMolecule()
@@ -79,6 +81,10 @@ void Molecule::clear()
     _aromatized = false;
     _ignore_bad_valence = false;
     _valence_mode = ValenceMode::BIOVIA_2009;
+
+    _dative_model.reset();
+    _dative_model_revision = -1;
+
     updateEditRevision();
 }
 
@@ -933,6 +939,62 @@ void Molecule::setValenceMode(ValenceMode mode)
     invalidateHCounters();
 }
 
+const DativeModel* Molecule::_dativeModel()
+{
+    // Building the model queries the molecule (dearomatization needs implicit hydrogens),
+    // and those queries can come back here. Reporting "no model" for the duration keeps
+    // that nesting free of both infinite recursion and half-built state.
+    if (_dative_model_building)
+        return nullptr;
+
+    if (_dative_model_revision == getEditRevision())
+        return _dative_model.get();
+
+    _dative_model.reset();
+    _dative_model_building = true;
+
+    try
+    {
+        if (DativeModel::hasDativeBonds(*this))
+            _dative_model = std::make_unique<DativeModel>(*this);
+    }
+    catch (...)
+    {
+        _dative_model_building = false;
+        throw;
+    }
+
+    _dative_model_building = false;
+
+    // Read the revision after building rather than before: the model itself does not edit
+    // the molecule, but reading it back is what makes that a checked assumption instead of
+    // a silent one -- a model built for a revision we never stored would be rebuilt on
+    // every single query.
+    _dative_model_revision = getEditRevision();
+
+    return _dative_model.get();
+}
+
+void Molecule::_checkDativeValence(int idx)
+{
+    const DativeModel* model = _dativeModel();
+
+    if (model == nullptr || !model->atomParticipates(idx))
+        return;
+
+    DativeModel::AtomResult result;
+
+    // compute() declines on atoms it cannot describe (unknown element, failed
+    // kekulization). Declining means "keep the existing behaviour", not "error".
+    if (!model->compute(idx, result) || !result.valence_error)
+        return;
+
+    throw Element::Error("%s can not hold %d donor and %d acceptor dative bonds: at most %d and %d are allowed "
+                         "(%d electrons and %d orbitals available for dative bonding)",
+                         Element::toString(_atoms[idx].number), result.donor_bonds, result.acceptor_bonds, result.max_donor, result.max_acceptor, result.el,
+                         result.orb);
+}
+
 int Molecule::getAtomValence(int idx)
 {
     if (_atoms[idx].number == ELEM_PSEUDO)
@@ -943,6 +1005,12 @@ int Molecule::getAtomValence(int idx)
 
     if (_atoms[idx].number == ELEM_RSITE)
         throw Error("getAtomValence() does not work on R-sites");
+
+    // Requirement 6 of #3617. Checked ahead of the cached valence because it is a property
+    // of the bonding around the atom, not of the valence number: an explicitly specified
+    // valence must not hide the fact that the atom carries impossible dative bonds.
+    if (!_ignore_bad_valence)
+        _checkDativeValence(idx);
 
     if (_valence.size() > idx && _valence[idx] >= 0)
         return _valence[idx];
@@ -1133,6 +1201,14 @@ int Molecule::getAtomRadical(int idx)
 
     _radicals.expandFill(idx + 1, -1);
     _radicals[idx] = 0;
+    return 0;
+}
+
+int Molecule::getStoredRadical(int idx) const
+{
+    if (_radicals.size() > idx && _radicals[idx] >= 0)
+        return _radicals[idx];
+
     return 0;
 }
 
