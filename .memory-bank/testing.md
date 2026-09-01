@@ -1,6 +1,9 @@
 # Testing
 
-How to run each of Indigo's test suites. Oracle has its own document because of the additional Docker harness and gotchas — see [claude-docs/oracle.md](oracle.md).
+> **Read when:** you need to run, extend, or debug a suite — C++ GTest, Python integration, Bingo, or the REST service.
+> **Skip when:** you are not running tests in this task.
+
+How to run each of Indigo's test suites. Oracle has its own document because of the additional Docker harness and gotchas — see [modules/bingo-oracle.md](./modules/bingo-oracle.md).
 
 ## Indigo integration tests
 
@@ -26,7 +29,7 @@ cd bingo/tests
 
 pytest .                    # default (bingo-nosql)
 pytest --db postgres        # PostgreSQL
-pytest --db oracle          # Oracle (see claude-docs/oracle.md)
+pytest --db oracle          # Oracle (see .memory-bank/modules/bingo-oracle.md)
 pytest --db bingo-elastic   # Elasticsearch
 
 # Run a single test module
@@ -65,6 +68,6 @@ python utils/indigo-service/backend/service/tests/api/indigo_test.py
 
 ## Related
 
-- [claude-docs/oracle.md](oracle.md) — Oracle-specific Docker harness, host venv setup, and gotchas
-- [claude-docs/architecture.md](architecture.md) — the Bingo test adapter pattern that backs `--db <engine>`
-- [claude-docs/build.md](build.md) — building the artifacts the tests run against
+- [modules/bingo-oracle.md](./modules/bingo-oracle.md) — Oracle-specific Docker harness, host venv setup, and gotchas
+- [architecture.md](./architecture.md) — the Bingo test adapter pattern that backs `--db <engine>`
+- [build.md](./build.md) — building the artifacts the tests run against

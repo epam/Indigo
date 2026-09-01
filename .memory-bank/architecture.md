@@ -1,5 +1,8 @@
 # Architecture
 
+> **Read when:** you need to know where a component lives, or how the Bingo test layer is wired.
+> **Skip when:** you already know which file you are editing.
+
 Cross-cutting design notes for the parts of the codebase that aren't obvious from a quick read of the source.
 
 ## Bingo test adapter pattern
@@ -24,6 +27,6 @@ This is what lets the same test body produce parity assertions across radically 
 
 ## Related
 
-- [claude-docs/oracle.md](oracle.md) — Oracle-specific architecture notes (extproc, hand-coded config loader, connect hook)
-- [claude-docs/testing.md](testing.md) — running the suites that exercise this adapter pattern
-- [claude-docs/build.md](build.md) — how the components above are compiled
+- [modules/bingo-oracle.md](./modules/bingo-oracle.md) — Oracle-specific architecture notes (extproc, hand-coded config loader, connect hook)
+- [testing.md](./testing.md) — running the suites that exercise this adapter pattern
+- [build.md](./build.md) — how the components above are compiled

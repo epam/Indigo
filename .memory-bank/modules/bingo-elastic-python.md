@@ -1,5 +1,8 @@
 # Bingo-Elastic (Python)
 
+> **Read when:** you touch `bingo/bingo-elastic/python/` or its tests.
+> **Skip when:** you mean the `--db bingo-elastic` cartridge adapter — that is [../architecture.md](../architecture.md).
+
 The standalone Python library at `bingo/bingo-elastic/python/` that indexes Indigo molecules/reactions into Elasticsearch and queries them. **Distinct** from `bingo/tests/` and the `--db bingo-elastic` adapter — that adapter exercises the cartridge test parity matrix; this library is its own product with its own API surface and its own test suite.
 
 ## Module map
@@ -60,7 +63,7 @@ pytest tests/test_elastic.py -k similarity   # filter
 
 Requires an Elasticsearch instance reachable on `127.0.0.1:9200`. The `clear_index` fixture in `tests/conftest.py` deletes both `bingo-molecules` and `bingo-reactions` between tests, so do not point this at a populated cluster.
 
-For spinning up Elasticsearch see [claude-docs/testing.md](testing.md).
+For spinning up Elasticsearch see [testing.md](../testing.md).
 
 ## Sync/Async parity
 
@@ -72,6 +75,6 @@ For spinning up Elasticsearch see [claude-docs/testing.md](testing.md).
 
 ## Related
 
-- [claude-docs/architecture.md](architecture.md) — the `bingo/tests/` adapter pattern (different layer)
-- [claude-docs/testing.md](testing.md) — Elasticsearch Docker recipe and the `--db bingo-elastic` cartridge adapter tests
-- [claude-docs/build.md](build.md) — `BUILD_BINGO_ELASTIC` CMake flag
+- [architecture.md](../architecture.md) — the `bingo/tests/` adapter pattern (different layer)
+- [testing.md](../testing.md) — Elasticsearch Docker recipe and the `--db bingo-elastic` cartridge adapter tests
+- [build.md](../build.md) — `BUILD_BINGO_ELASTIC` CMake flag
