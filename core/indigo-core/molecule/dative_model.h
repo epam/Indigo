@@ -77,9 +77,15 @@ namespace indigo
     // by asking MoleculeDearomatizer for the connectivity the dearomatized structure
     // would have, which needs no copy of the molecule and no mutation of it.
     //
-    // Scope rule (see ANALYSIS-REPORT section 3.5): this model applies ONLY to atoms
-    // that carry at least one dative bond. Every other atom must keep its existing
-    // behaviour byte for byte, so callers gate on atomParticipates() / hasDativeBonds().
+    // Scope rule (see ANALYSIS-REPORT section 3.5): this model applies ONLY to atoms that
+    // carry at least one dative bond. Every other atom must keep its existing behaviour
+    // byte for byte. The gate that enforces that is Molecule::_atomHasDativeBond, and it
+    // deliberately lives there rather than here: it has to be answerable without building
+    // a model, because it is asked on every valence query of every molecule.
+    //
+    // compute() therefore assumes its caller has already passed that gate. It computes
+    // what the specification says for the atom it is given and does not second-guess
+    // whether the atom should have been asked about.
     class DLLEXPORT DativeModel
     {
     public:
@@ -96,14 +102,6 @@ namespace indigo
         };
 
         explicit DativeModel(Molecule& mol);
-
-        // True when the molecule contains at least one dative bond. Cheap pre-check:
-        // when false, nothing in this class needs to be consulted at all.
-        static bool hasDativeBonds(Molecule& mol);
-
-        // True when this atom carries at least one dative bond — the gate that keeps
-        // the new behaviour away from everything else.
-        bool atomParticipates(int atom_idx) const;
 
         // Computes the per-atom result. Returns false when it cannot be computed
         // (kekulization failed, or the atom is a pseudo-atom / R-site / template);

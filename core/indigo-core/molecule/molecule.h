@@ -227,6 +227,11 @@ namespace indigo
         // (building it consults the molecule, so re-entrant queries must see no model).
         const DativeModel* _dativeModel();
 
+        // Whether this particular atom carries a dative bond. Costs O(degree), where
+        // asking the model whether the molecule has any costs O(edges) -- and the answer
+        // is what both #3617 integration points actually need.
+        bool _atomHasDativeBond(int idx) const;
+
         // Requirement 7 of #3617: the implicit hydrogens implied by this atom's dative
         // bonds. Returns false for every atom the dative model does not describe, which
         // is what leaves the existing calculation in charge of all of them.

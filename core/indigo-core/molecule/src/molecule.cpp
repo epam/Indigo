@@ -957,6 +957,17 @@ void Molecule::setValenceMode(ValenceMode mode)
     invalidateHCounters();
 }
 
+bool Molecule::_atomHasDativeBond(int idx) const
+{
+    const Vertex& vertex = getVertex(idx);
+
+    for (int i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
+        if (getBondOrder(vertex.neiEdge(i)) == _BOND_COORDINATION)
+            return true;
+
+    return false;
+}
+
 const DativeModel* Molecule::_dativeModel()
 {
     // Building the model queries the molecule (dearomatization needs implicit hydrogens),
@@ -973,8 +984,10 @@ const DativeModel* Molecule::_dativeModel()
 
     try
     {
-        if (DativeModel::hasDativeBonds(*this))
-            _dative_model = std::make_unique<DativeModel>(*this);
+        // Both callers reach here only after finding a dative bond on the atom they are
+        // asking about, so the molecule demonstrably has one; scanning again to confirm
+        // it would be the O(edges) cost this design exists to avoid.
+        _dative_model = std::make_unique<DativeModel>(*this);
     }
     catch (...)
     {
@@ -995,9 +1008,15 @@ const DativeModel* Molecule::_dativeModel()
 
 bool Molecule::_getDativeImplicitH(int idx, int& impl_h)
 {
+    // The cheap gate comes first. Building or even validating the model costs O(edges),
+    // and this runs on every hydrogen query after every edit -- which would make building
+    // a large dative-free molecule quadratic in its size.
+    if (!_atomHasDativeBond(idx))
+        return false;
+
     const DativeModel* model = _dativeModel();
 
-    if (model == nullptr || !model->atomParticipates(idx))
+    if (model == nullptr)
         return false;
 
     DativeModel::AtomResult result;
@@ -1013,9 +1032,14 @@ bool Molecule::_getDativeImplicitH(int idx, int& impl_h)
 
 void Molecule::_checkDativeValence(int idx)
 {
+    // Same cheap gate as in _getDativeImplicitH, and for the same reason: this runs on
+    // every valence query, and every edit invalidates the model behind it.
+    if (!_atomHasDativeBond(idx))
+        return;
+
     const DativeModel* model = _dativeModel();
 
-    if (model == nullptr || !model->atomParticipates(idx))
+    if (model == nullptr)
         return;
 
     DativeModel::AtomResult result;

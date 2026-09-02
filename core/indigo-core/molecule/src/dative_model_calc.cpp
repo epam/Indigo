@@ -85,23 +85,6 @@ DativeModel::DativeModel(Molecule& mol) : _mol(mol)
     }
 }
 
-bool DativeModel::hasDativeBonds(Molecule& mol)
-{
-    for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
-        if (mol.getBondOrder(i) == _BOND_COORDINATION)
-            return true;
-    return false;
-}
-
-bool DativeModel::atomParticipates(int atom_idx) const
-{
-    const Vertex& vertex = _mol.getVertex(atom_idx);
-    for (int i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
-        if (_mol.getBondOrder(vertex.neiEdge(i)) == _BOND_COORDINATION)
-            return true;
-    return false;
-}
-
 int DativeModel::_countBonds(int atom_idx) const
 {
     const Vertex& vertex = _mol.getVertex(atom_idx);

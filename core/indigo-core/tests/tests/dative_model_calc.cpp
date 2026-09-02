@@ -297,8 +297,11 @@ TEST_F(IndigoCoreDativeModelTest, aromatic_and_kekule_forms_agree)
     }
 }
 
-// The gate that keeps the new behaviour away from everything else.
-TEST_F(IndigoCoreDativeModelTest, participation_gate)
+// The gate lives in Molecule, not in the model, so it is tested through behaviour --
+// see atoms_without_dative_bonds_are_left_alone and hydrogens_elsewhere_are_left_alone
+// below. What belongs here is the model's own contract: it answers for the atom it is
+// given, including atoms its caller would never ask about.
+TEST_F(IndigoCoreDativeModelTest, compute_answers_for_any_atom_it_is_given)
 {
     Molecule mol;
     ASSERT_NO_THROW(loadV3000(mol, wrap("M  V30 1 N 0 0 0 0\n"
@@ -308,16 +311,13 @@ TEST_F(IndigoCoreDativeModelTest, participation_gate)
                                         "M  V30 2 1 1 3\n",
                                         3, 2)));
 
-    EXPECT_TRUE(DativeModel::hasDativeBonds(mol));
-
     DativeModel model(mol);
-    EXPECT_TRUE(model.atomParticipates(0)) << "nitrogen carries the dative bond";
-    EXPECT_TRUE(model.atomParticipates(1)) << "iron is the other end of it";
-    EXPECT_FALSE(model.atomParticipates(2)) << "the carbon has only an ordinary bond";
 
-    Molecule plain;
-    ASSERT_NO_THROW(loadMolecule("CCO", plain));
-    EXPECT_FALSE(DativeModel::hasDativeBonds(plain));
+    DativeModel::AtomResult carbon;
+    ASSERT_TRUE(model.compute(2, carbon)) << "the carbon has no dative bond, but is still computable";
+    EXPECT_EQ(0, carbon.donor_bonds);
+    EXPECT_EQ(0, carbon.acceptor_bonds);
+    EXPECT_FALSE(carbon.valence_error);
 }
 
 // The tests above exercise the model directly. The ones below exercise the path a user
