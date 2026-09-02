@@ -333,7 +333,9 @@ TEST_F(IndigoCoreHapticMolfileTest, StarIsSynthesizedForAGroupWithoutAnchor)
     const std::string saved = saveMolfile(mol);
 
     EXPECT_NE(std::string::npos, saved.find("M  V30 COUNTS 7 6 0 0 0")) << "one atom and one record more than the graph has";
-    EXPECT_NE(std::string::npos, saved.find("M  V30 7 * 0.5 0.77 0.0 0")) << "the star sits at the centre of the ring";
+    // The centroid of the five members (#3844): (0.5, 0.688), where the bounding
+    // box would have said (0.5, 0.77). The two agree only on a symmetric set.
+    EXPECT_NE(std::string::npos, saved.find("M  V30 7 * 0.5 0.688 0.0 0")) << "the star sits at the centre of the ring";
     EXPECT_NE(std::string::npos, saved.find("M  V30 6 9 6 7 ENDPTS=(5 1 2 3 4 5) ATTACH=ALL"));
 
     Molecule reloaded;

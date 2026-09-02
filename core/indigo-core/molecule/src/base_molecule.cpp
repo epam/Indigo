@@ -1235,6 +1235,18 @@ void BaseMolecule::removeHapticBond(int idx)
     updateEditRevision();
 }
 
+Vec3f BaseMolecule::attachmentGroupCentre(int group_idx)
+{
+    const std::vector<int>& atoms = attachment_groups.group(group_idx).atoms();
+
+    std::vector<Vec3f> positions;
+    positions.reserve(atoms.size());
+    for (int atom : atoms)
+        positions.push_back(getAtomXyz(atom));
+
+    return AttachmentGroup::centreOf(positions);
+}
+
 void BaseMolecule::collectExternalNeighbors(std::list<std::unordered_set<int>>& neighbors)
 {
     for (int i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))

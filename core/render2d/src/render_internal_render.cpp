@@ -200,20 +200,20 @@ bool MoleculeRenderInternal::_hapticEndpointPos(const HapticBond::Endpoint& endp
     if (!groups.hasGroup(endpoint.index()))
         return false;
 
-    QS_DEF(Array<int>, atoms);
-    atoms.clear();
+    // The positions the picture is drawn in, not the ones the molecule holds, so
+    // the shared rule takes points; see AttachmentGroup::centreOf (#3844).
+    std::vector<Vec2f> positions;
     for (int atom : groups.group(endpoint.index()).atoms())
     {
         if (!_mol->hasVertex(atom))
             return false;
-        atoms.push(atom);
+        positions.push_back(_ad(atom).pos);
     }
 
-    if (atoms.size() == 0)
+    if (positions.empty())
         return false;
 
-    // Bounding-box centre, the convention #3767 fixed for the anchor of a group.
-    pos = _bound(atoms).center();
+    pos = AttachmentGroup::centreOf(positions);
     return true;
 }
 

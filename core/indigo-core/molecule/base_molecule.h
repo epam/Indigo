@@ -495,6 +495,12 @@ namespace indigo
         // group container cannot see the bonds to check that.
         void setAttachmentGroupAtoms(int group_idx, const std::vector<int>& atoms);
 
+        // The point an attachment group acts from, in the coordinates of this
+        // molecule: AttachmentGroup::centreOf() over the member atoms. Throws when
+        // the group does not exist; an empty group answers the origin, the same
+        // value its members average to.
+        Vec3f attachmentGroupCentre(int group_idx);
+
         // Atom sets that hold together although no edge joins them: s-group
         // members, query components and haptic bonds. Feeds
         // Graph::countComponents(external_neighbors) — call it whenever a

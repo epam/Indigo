@@ -498,24 +498,6 @@ void MolfileSaver::_collectHapticRecords(BaseMolecule& mol, std::vector<HapticRe
     }
 }
 
-Vec3f MolfileSaver::_attachmentGroupCentre(BaseMolecule& mol, int group)
-{
-    const std::vector<int>& atoms = mol.attachment_groups.group(group).atoms();
-    Vec3f low = mol.getAtomXyz(atoms.front());
-    Vec3f high = low;
-
-    for (int atom : atoms)
-    {
-        const Vec3f& xyz = mol.getAtomXyz(atom);
-        low.min(xyz);
-        high.max(xyz);
-    }
-
-    Vec3f centre;
-    centre.lineCombin2(low, 0.5f, high, 0.5f);
-    return centre;
-}
-
 void MolfileSaver::_writeHapticKeys(Output& output, BaseMolecule& mol, const HapticRecord& record)
 {
     const std::vector<int>& atoms = mol.attachment_groups.group(record.group).atoms();
@@ -815,7 +797,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
     for (int k = 0; k < synthetic_atoms; k++)
     {
         ArrayOutput out(buf);
-        Vec3f centre = _attachmentGroupCentre(mol, groups_needing_a_star[k]);
+        Vec3f centre = mol.attachmentGroupCentre(groups_needing_a_star[k]);
 
         convert_xyz_to_string(centre, coords);
         out.printf("%d * %s 0", mol.vertexCount() + k + 1, coords.str().c_str());

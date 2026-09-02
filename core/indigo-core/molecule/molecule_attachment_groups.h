@@ -25,6 +25,7 @@
 #include "base_cpp/exception.h"
 #include "base_cpp/ptr_reusable_pool.h"
 #include "base_cpp/reusable.h"
+#include "math/algebra.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -83,6 +84,30 @@ namespace indigo
         // when its atom does, which is why this is not part of remapAtoms() and
         // never makes the caller drop the group.
         void remapAnchorAtom(const Array<int>& atom_mapping);
+
+        // The point the group acts from: the centroid of the positions given.
+        // The single definition of that rule — the picture (render), the geometry
+        // (layout) and the file (the synthesized V3000 star) must agree, and each
+        // of them holds the positions in its own coordinates, so the rule takes
+        // points rather than reading them from a molecule. See
+        // BaseMolecule::attachmentGroupCentre() for the molecule-coordinate form.
+        //
+        // Centroid and not the bounding-box centre (decision of #3844): on an
+        // asymmetric subset of a ring the bbox centre collapses onto the centre of
+        // the whole ring — for three atoms of a hexagon it gives (0, 0) where the
+        // centroid gives (-0.167, 0.289), a third of a bond length away.
+        template <typename Vec>
+        static Vec centreOf(const std::vector<Vec>& positions)
+        {
+            Vec centre;
+            if (positions.empty())
+                return centre;
+
+            for (const Vec& position : positions)
+                centre.add(position);
+            centre.scale(1.0f / positions.size());
+            return centre;
+        }
 
     private:
         void _reset(); // the one place the fields are listed; not virtual — called from the constructor
