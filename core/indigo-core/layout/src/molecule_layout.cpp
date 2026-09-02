@@ -37,6 +37,7 @@ MoleculeLayout::MoleculeLayout(BaseMolecule& molecule, bool smart_layout)
 void MoleculeLayout::_init(bool smart_layout)
 {
     bond_length = 1.f;
+    haptic_bond_multiplier = 1.5f;
     filter = 0;
     _smart_layout = smart_layout;
     if (_smart_layout)
@@ -372,6 +373,7 @@ void MoleculeLayout::_make()
     _layout_graph->layout_orientation = layout_orientation;
     _layout_graph->respect_cycles_direction = respect_cycles_direction;
     _layout_graph->sequence_layout = sequence_layout;
+    _layout_graph->haptic_bond_multiplier = haptic_bond_multiplier;
     // 0. Find 2D coordinates via proxy _layout_graph object
     _layout_graph->max_iterations = max_iterations;
     _makeLayout();
@@ -450,6 +452,7 @@ void MoleculeLayout::make()
                     layout.max_iterations = max_iterations;
                     layout.layout_orientation = layout_orientation;
                     layout.bond_length = bond_length;
+                    layout.haptic_bond_multiplier = haptic_bond_multiplier;
                     layout.multiple_distance = multiple_distance;
                     layout.make();
                 }

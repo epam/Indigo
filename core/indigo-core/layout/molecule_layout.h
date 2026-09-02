@@ -50,6 +50,10 @@ namespace indigo
         void setCancellationHandler(CancellationHandler* cancellation);
 
         float bond_length;
+        // The length of a haptic bond between an attachment group and an atom, in
+        // standard bond lengths (#3233 requirement 4, #3844). A parameter and not
+        // a constant: variable attachment (#3731) is expected to want another one.
+        float haptic_bond_multiplier;
         std::optional<Vec2f> multiple_distance;
         bool respect_existing_layout;
         bool respect_cycles_direction;
