@@ -23,6 +23,8 @@
 
 namespace indigo_cpp
 {
+    class IndigoMolecule;
+
     class IndigoBaseMolecule : public IndigoChemicalStructure
     {
     protected:
@@ -38,5 +40,8 @@ namespace indigo_cpp
         std::string ctfile() const override;
 
         IndigoAtom getAtom(int atomIndex) const;
+
+        /** Converts expanded template atoms (monomers) to regular atoms. Returns a new molecule. */
+        IndigoMolecule expandedMonomersToAtoms() const;
     };
 }

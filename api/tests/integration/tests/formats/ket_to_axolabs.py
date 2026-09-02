@@ -1,17 +1,12 @@
-﻿import difflib
-import os
+﻿import os
 import sys
-
-
-def find_diff(a, b):
-    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
-
 
 sys.path.append(
     os.path.normpath(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
+from common.util import find_diff
 from env_indigo import (  # noqa
     Indigo,
     IndigoException,
@@ -44,13 +39,12 @@ for filename in sorted(axolabs_data.keys()):
     try:
         axolabs = mol.axolabs(lib)
         axolabs_ref = axolabs_data[filename]
-        if axolabs_ref == axolabs:
+        diff = find_diff(axolabs_ref, axolabs)
+        if not diff:
             print(filename + ".ket:SUCCEED")
         else:
-            print(
-                "%s FAILED : expected '%s', got '%s'"
-                % (filename, axolabs_ref, axolabs)
-            )
+            print(filename + ".ket:FAILED")
+            print(diff)
     except IndigoException as e:
         text = getIndigoExceptionText(e)
         print(filename + ".ket:FAILED - %s" % text)

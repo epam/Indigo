@@ -40,6 +40,27 @@
 
 using namespace indigo;
 
+void MolfileLoader::_buildStereocentersFromParity()
+{
+    for (int i = 0; i < _atoms_num; i++)
+    {
+        const int parity = _stereocenter_parities[i];
+
+        if (parity != MoleculeStereocenters::MDL_PARITY_ODD && parity != MoleculeStereocenters::MDL_PARITY_EVEN)
+            continue;
+
+        if (_bmol->stereocenters.exists(i))
+            continue;
+
+        if (!_bmol->stereocenters.isPossibleStereocenter(*_bmol, i))
+            continue;
+
+        _bmol->addStereocenters(i, MoleculeStereocenters::ATOM_ABS, 0, false);
+        if (MoleculeStereocenters::getMdlParity(*_bmol, i) != parity)
+            _bmol->stereocenters.invertPyramid(i);
+    }
+}
+
 void MolfileLoader::_postLoad()
 {
     for (int i = _bmol->vertexBegin(); i < _bmol->vertexEnd(); i = _bmol->vertexNext(i))
@@ -95,9 +116,10 @@ void MolfileLoader::_postLoad()
         if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
         {
             DataSGroup& dsg = static_cast<DataSGroup&>(sgroup);
-            if (dsg.parent_idx > -1 && std::string(dsg.name.ptr()) == "SMMX:class")
+            const int parent_idx = dsg.parent_idx.value_or(-1);
+            if (parent_idx > -1 && std::string(dsg.name.ptr()) == "SMMX:class")
             {
-                SGroup& parent_sgroup = _bmol->sgroups.getSGroup(dsg.parent_idx);
+                SGroup& parent_sgroup = _bmol->sgroups.getSGroup(parent_idx);
                 if (parent_sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
                 {
                     auto& sa = static_cast<Superatom&>(parent_sgroup);
@@ -205,6 +227,10 @@ void MolfileLoader::_postLoad()
 
     _bmol->buildFromBondsStereocenters(stereochemistry_options, _sensible_bond_directions.ptr());
     _bmol->buildFromBondsAlleneStereo(stereochemistry_options.ignore_errors, _sensible_bond_directions.ptr());
+
+    // CTfile prescribes ignoring parity while a drawing is present; without one it is the only carrier.
+    if (!BaseMolecule::hasCoord(*_bmol))
+        _buildStereocentersFromParity();
 
     if (!_chiral && treat_stereo_as == 0)
         for (int i = 0; i < _atoms_num; i++)
@@ -464,11 +490,11 @@ void MolfileLoader::_readRGroups2000()
                 if (strncmp(rgp_chars, "$CTAB", 5) == 0)
                 {
                     _scanner.skipLine();
-                    std::unique_ptr<BaseMolecule> fragment(_bmol->neu());
+                    BaseMolecule& fragment = rgroup.fragments.push_t(BaseMolecule::poolFactoryLike(*_bmol));
 
                     MolfileLoader loader(_scanner);
 
-                    loader._bmol = fragment.get();
+                    loader._bmol = &fragment;
                     if (_bmol->isQueryMolecule())
                     {
                         loader._qmol = &loader._bmol->asQueryMolecule();
@@ -484,8 +510,6 @@ void MolfileLoader::_readRGroups2000()
                     if (loader._rgfile)
                         loader._readRGroups2000();
                     loader._postLoad();
-
-                    rgroup.fragments.add(fragment.release());
                 }
                 else if (strncmp(rgp_chars, "$END ", 5) == 0)
                 {

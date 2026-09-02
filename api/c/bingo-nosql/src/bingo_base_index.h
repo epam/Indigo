@@ -14,7 +14,8 @@
 #include "bingo_sim_storage.h"
 #include "mmf/mmf_mapping.h"
 
-#define BINGO_VERSION "v0.72"
+#define BINGO_VERSION "v0.73"
+#define BINGO_COMPATIBLE_VERSION "v0.72"
 
 namespace bingo
 {
@@ -83,11 +84,15 @@ namespace bingo
 
         GrossStorage& getGrossStorage();
 
+        GrossStorageShort& getGrossStorageShort();
+
         MMFArray<int>& getIdMapping();
 
         MMFMapping& getBackIdMapping();
 
         ByteBufferStorage& getCfStorage();
+
+        ByteBufferStorageShort& getCfStorageShort();
 
         int getObjectsCount() const;
 
@@ -104,6 +109,16 @@ namespace bingo
         ObjectIndexData prepareIndexData(IndexObject& obj) const;
         ObjectIndexData prepareIndexDataWithExtFP(IndexObject& obj, IndigoObject& fp) const;
 
+        bool useShortBuffer()
+        {
+            return _use_short;
+        }
+
+        bool isOldDB()
+        {
+            return _is_old_db;
+        }
+
     protected:
         BaseIndex(IndexType type);
         IndexType _type;
@@ -118,11 +133,18 @@ namespace bingo
         MMFPtr<ExactStorage> _exact_storage;
         MMFPtr<GrossStorage> _gross_storage;
         MMFPtr<ByteBufferStorage> _cf_storage;
+        // This two variables used to backward compatibility
+        // https://github.com/epam/Indigo/issues/3528
+        MMFPtr<GrossStorageShort> _gross_storage_short;
+        MMFPtr<ByteBufferStorageShort> _cf_storage_short;
+
         MMFPtr<Properties> _properties;
 
         MoleculeFingerprintParameters _fp_params;
         std::string _location;
         int _lock_fd = -1;
+        bool _use_short = false;
+        bool _is_old_db = false;
 
         static void _checkOptions(std::map<std::string, std::string>& option_map, bool is_create);
 

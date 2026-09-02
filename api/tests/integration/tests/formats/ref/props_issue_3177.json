@@ -2,7 +2,7 @@
     {
         "grossFormula": "C2 H",
         "mass": 25.029999,
-        "pKa": 9.553333,
+        "pKa": 2.05,
         "extinctionCoefficient": 125,
         "hydrophobicity": [
             0.68

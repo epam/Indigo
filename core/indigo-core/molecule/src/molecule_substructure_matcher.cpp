@@ -113,7 +113,7 @@ bool MoleculeSubstructureMatcher::_shouldUnfoldTargetHydrogens_A(QueryMolecule::
         int i;
 
         for (i = 0; i < atom->children.size(); i++)
-            if (_shouldUnfoldTargetHydrogens_A((QueryMolecule::Atom*)atom->children[i], is_fragment, find_all_embeddings))
+            if (_shouldUnfoldTargetHydrogens_A((QueryMolecule::Atom*)&atom->children[i], is_fragment, find_all_embeddings))
                 return true;
     }
 
@@ -199,9 +199,9 @@ bool MoleculeSubstructureMatcher::_shouldUnfoldTargetHydrogens(QueryMolecule& qu
     int n_rgroups = rgroups.getRGroupCount();
     for (i = 1; i <= n_rgroups; i++)
     {
-        PtrPool<BaseMolecule>& frags = rgroups.getRGroup(i).fragments;
+        PtrReusablePool<BaseMolecule>& frags = rgroups.getRGroup(i).fragments;
         for (j = frags.begin(); j != frags.end(); j = frags.next(j))
-            if (_shouldUnfoldTargetHydrogens(frags[j]->asQueryMolecule(), is_fragment, disable_folding_query_h))
+            if (_shouldUnfoldTargetHydrogens(frags[j].asQueryMolecule(), is_fragment, disable_folding_query_h))
                 return true;
     }
 
@@ -480,6 +480,8 @@ bool MoleculeSubstructureMatcher::matchQueryAtom(QueryMolecule::Atom* query, Bas
         if (smarts != 0 && strlen(smarts) > 0)
         {
             fmcache->expand(super_idx + 1);
+            if (fmcache->getPtr(super_idx) == nullptr)
+                fmcache->set(super_idx, std::make_unique<RedBlackStringMap<int>>());
             int* value = fmcache->at(super_idx).at2(smarts);
 
             if (value != 0)
@@ -500,6 +502,8 @@ bool MoleculeSubstructureMatcher::matchQueryAtom(QueryMolecule::Atom* query, Bas
         if (smarts != 0 && strlen(smarts) > 0)
         {
             fmcache->expand(super_idx + 1);
+            if (fmcache->getPtr(super_idx) == nullptr)
+                fmcache->set(super_idx, std::make_unique<RedBlackStringMap<int>>());
             fmcache->at(super_idx).insert(smarts, result ? 1 : 0);
         }
 
@@ -891,13 +895,13 @@ int MoleculeSubstructureMatcher::_embedding_markush(int* core_sub, int* core_sup
     for (int rg_idx = 0; rg_idx < old_site_rgroups.size(); rg_idx++)
     {
         RGroup& rgroup = g1.rgroups.getRGroup(old_site_rgroups[rg_idx]);
-        PtrPool<BaseMolecule>& frags = rgroup.fragments;
+        PtrReusablePool<BaseMolecule>& frags = rgroup.fragments;
 
         all_have_rest_h &= (rgroup.rest_h > 0);
         // For all rgroup fragments
         for (int fr_idx = frags.begin(); fr_idx != frags.end(); fr_idx = frags.next(fr_idx))
         {
-            QueryMolecule& fragment = frags[fr_idx]->asQueryMolecule();
+            QueryMolecule& fragment = frags[fr_idx].asQueryMolecule();
 
             if (fragment.attachmentPointCount() > 2)
                 throw Error("more than two attachment points");

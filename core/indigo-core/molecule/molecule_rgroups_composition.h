@@ -23,6 +23,7 @@
 
 #include "base_cpp/array.h"
 #include "base_cpp/multimap.h"
+#include "base_cpp/ptr_array.h"
 #include "molecule/molecule.h"
 
 namespace indigo
@@ -89,9 +90,7 @@ namespace indigo
             }
             AttachmentIter& begin()
             {
-                AttachmentIter* ptr = _begin();
-                _ptrs.add(ptr);
-                return *ptr;
+                return _ptrs.add(std::unique_ptr<AttachmentIter>(_begin()));
             }
             AttachmentIter& end()
             {
@@ -105,7 +104,11 @@ namespace indigo
             }
             const Array<int>& _limits;
 
-            PtrPool<AttachmentIter> _ptrs;
+            // Lifetime bag: iterators handed out by begin() are owned here until the
+            // Attachments object dies. No element is ever removed individually, so the
+            // sparse-index machinery of PtrPool was unused — PtrArray provides the same
+            // ownership with std::unique_ptr slots.
+            PtrArray<AttachmentIter> _ptrs;
             AttachmentIter _end;
 
             const int _size;
@@ -264,7 +267,7 @@ namespace indigo
         inline BaseMolecule& _fragment(int rsite, int fragment) const
         {
             auto x = _fragment_coordinates(rsite, fragment);
-            return *_rgroups.getRGroup(x.rgroup).fragments[x.fragment];
+            return _rgroups.getRGroup(x.rgroup).fragments[x.fragment];
         }
 
     private:

@@ -1130,24 +1130,28 @@ void MoleculeCdxmlSaver::addFragmentNodes(BaseMolecule& mol, tinyxml2::XMLElemen
         }
 
         auto& sa = (Superatom&)mol.sgroups.getSGroup(kvp.first);
-        if (sa.subscript.size())
+        if (sa.label.size())
         {
             XMLElement* t = _doc->NewElement("t");
             node->LinkEndChild(t);
-            Vec2f pos(sa.display_position.x + offset.x, -sa.display_position.y - offset.y);
-            pos.scale(_bond_length);
-            Vec2f v1(pos.x - _bond_length / 2, pos.y - _bond_length / 2);
-            Vec2f v2(pos.x + _bond_length / 2, pos.y + _bond_length / 2);
-            std::string pos_str = std::to_string(pos.x) + " " + std::to_string(pos.y);
-            Rect2f bbox(v1, v2);
-            std::string bbox_str = boundingBoxToString(bbox);
-            if (sa.display_position.x != 0.0f && sa.display_position.y != 0.0f)
-                node->SetAttribute("p", pos_str.c_str());
+            if (sa.display_position.has_value())
+            {
+                const Vec3f& display_position = sa.display_position.value();
+                Vec2f pos(display_position.x + offset.x, -display_position.y - offset.y);
+                pos.scale(_bond_length);
+                Vec2f v1(pos.x - _bond_length / 2, pos.y - _bond_length / 2);
+                Vec2f v2(pos.x + _bond_length / 2, pos.y + _bond_length / 2);
+                std::string pos_str = std::to_string(pos.x) + " " + std::to_string(pos.y);
+                Rect2f bbox(v1, v2);
+                std::string bbox_str = boundingBoxToString(bbox);
+                if (display_position.x != 0.0f && display_position.y != 0.0f)
+                    node->SetAttribute("p", pos_str.c_str());
+            }
             t->SetAttribute("LabelJustification", "Left");
             t->SetAttribute("LabelAlignment", "Above");
             XMLElement* s = _doc->NewElement("s");
             t->LinkEndChild(s);
-            XMLText* txt = _doc->NewText(sa.subscript.ptr());
+            XMLText* txt = _doc->NewText(sa.label.ptr());
             s->LinkEndChild(txt);
         }
     }
@@ -1160,7 +1164,7 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& bmol, const Vec2f& o
     saveMoleculeFragment(bmol, offset, scale, -1, id, atom_ids);
 }
 
-void MoleculeCdxmlSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, const Vec2f& offset, int rgnum, Rect2f& doc_bbox)
+void MoleculeCdxmlSaver::saveRGroup(PtrReusablePool<BaseMolecule>& fragments, const Vec2f& offset, int rgnum, Rect2f& doc_bbox)
 {
     // XMLElement* parent = _current;
     XMLElement* fragment = _doc->NewElement("altgroup");
@@ -1172,7 +1176,7 @@ void MoleculeCdxmlSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, const Vec2
     for (int i = fragments.begin(); i != fragments.end(); i = fragments.next(i))
     {
         Vec2f min_coord, max_coord;
-        fragments[i]->getBoundingBox(min_coord, max_coord);
+        fragments[i].getBoundingBox(min_coord, max_coord);
         if (i == fragments.begin())
         {
             rmin.copy(min_coord);
@@ -1183,8 +1187,8 @@ void MoleculeCdxmlSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, const Vec2
             rmin.min(min_coord);
             rmax.max(max_coord);
         }
-        saveMoleculeFragment(*fragments[i], offset, 1);
-        valence += fragments[i]->attachmentPointCount();
+        saveMoleculeFragment(fragments[i], offset, 1);
+        valence += fragments[i].attachmentPointCount();
     }
     doc_bbox.extend(Rect2f(rmin, rmax));
     std::string rg_name("R");
@@ -1363,6 +1367,21 @@ void MoleculeCdxmlSaver::addImage(int id, const EmbeddedImageObject& image)
     addCustomElement(id, emb_object, attrs);
 }
 
+void MoleculeCdxmlSaver::addMultitailArrow(int& id, const ReactionMultitailArrowObject& arrow)
+{
+    float spine_x = arrow.getSpineBegin().x;
+    addArrow(++id, ReactionArrowObject::EFilledTriangle, Vec2f{spine_x, arrow.getHead().y}, arrow.getHead());
+    PropertiesMap attrs;
+    attrs.clear();
+    attrs.insert("GraphicType", "Line");
+    addElement("graphic", ++id, arrow.getSpineBegin(), arrow.getSpineEnd(), attrs);
+    const auto& tails = arrow.getTails();
+    for (int i = 0; i < tails.size(); i++)
+    {
+        addElement("graphic", ++id, tails[i], Vec2f{spine_x, tails[i].y}, attrs);
+    }
+}
+
 void MoleculeCdxmlSaver::addArrow(int id, int arrow_type, const Vec2f& beg, const Vec2f& end)
 {
     PropertiesMap attrs;
@@ -1526,71 +1545,26 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id, const Vec2
         int font_size = static_cast<int>(KDefaultFontSize);
         int color_index = -1;
         CDXMLFontStyle font_face(0);
-        for (auto& text_item : ko.block())
-        {
+        auto pos_str = [](float bond_length, const Vec2f& text_origin) -> std::string {
+            return std::to_string(bond_length * text_origin.x) + " " + std::to_string(-bond_length * text_origin.y);
+        };
+        auto box_str = [](float bond_length, const Rect2f& bbox) -> std::string {
+            return std::to_string(bond_length * bbox.left()) + " " + std::to_string(-bond_length * bbox.top()) + " " +
+                   std::to_string(bond_length * bbox.right()) + " " + std::to_string(-bond_length * bbox.bottom());
+        };
+        auto create_t = [this, &pos_str, &id](Vec2f text_origin) -> XMLElement* {
+            XMLElement* t = _doc->NewElement("t");
+            _current->LinkEndChild(t);
+            t->SetAttribute("id", id);
+            t->SetAttribute("p", pos_str(_bond_length, text_origin).c_str());
+            // t->SetAttribute("BoundingBox", box_str(_bond_length, text_origin).c_str());
+            return t;
+        };
+        auto save_paragraph_styles = [this, &font_face, &font_size, &color_index](const SimpleTextObject::KETTextParagraph& text_item, XMLElement* t) {
             bool is_first_index = true;
             size_t first_index = 0;
             size_t second_index = 0;
             FONT_STYLE_SET current_styles;
-            Vec2f text_origin(ko.boundingBox().left(), ko.boundingBox().bottom());
-            auto align = text_item.alignment.has_value() ? text_item.alignment : ko.alignment();
-            if (align.has_value())
-            {
-                switch (align.value())
-                {
-                case SimpleTextObject::TextAlignment::ECenter:
-                    text_origin.x = ko.boundingBox().center().x;
-                    break;
-                case SimpleTextObject::TextAlignment::ERight:
-                    text_origin.x = ko.boundingBox().right();
-                    break;
-                }
-            }
-
-            std::string pos_str = std::to_string(_bond_length * text_origin.x) + " " + std::to_string(-_bond_length * text_origin.y);
-            std::string box_str = std::to_string(_bond_length * ko.boundingBox().left()) + " " + std::to_string(-_bond_length * ko.boundingBox().top()) + " " +
-                                  std::to_string(_bond_length * ko.boundingBox().right()) + " " + std::to_string(-_bond_length * ko.boundingBox().bottom());
-
-            XMLElement* t = _doc->NewElement("t");
-            _current->LinkEndChild(t);
-            t->SetAttribute("id", id);
-            t->SetAttribute("p", pos_str.c_str());
-            // t->SetAttribute("BoundingBox", box_str.c_str());
-            if (align.has_value())
-            {
-                switch (align.value())
-                {
-                case SimpleTextObject::TextAlignment::ELeft:
-                    t->SetAttribute("Justification", "Left");
-                    break;
-                case SimpleTextObject::TextAlignment::ECenter:
-                    t->SetAttribute("Justification", "Center");
-                    break;
-                case SimpleTextObject::TextAlignment::ERight:
-                    t->SetAttribute("Justification", "Right");
-                    break;
-                case SimpleTextObject::TextAlignment::EFull:
-                    t->SetAttribute("Justification", "Full");
-                    break;
-                default:
-                    t->SetAttribute("Justification", "Left");
-                    break;
-                }
-            }
-            if (text_item.line_starts.has_value() && text_item.line_starts.value().size())
-            {
-                auto& line_starts = text_item.line_starts.value();
-                std::string line_starts_str;
-                for (auto ls : line_starts)
-                {
-                    if (!line_starts_str.empty())
-                        line_starts_str += " ";
-                    line_starts_str += std::to_string(ls);
-                }
-                t->SetAttribute("LineStarts", line_starts_str.c_str());
-                t->SetAttribute("WordWrapWidth", ko.boundingBox().width() * _bond_length);
-            }
-            t->SetAttribute("InterpretChemically", "no");
             for (auto& kvp : text_item.font_styles)
             {
                 if (is_first_index)
@@ -1670,6 +1644,86 @@ void MoleculeCdxmlSaver::addMetaObject(const MetaObject& obj, int id, const Vec2
                 s->LinkEndChild(txt);
                 current_styles = kvp.second;
                 first_index = second_index;
+            }
+        };
+        if (ko.version() == SimpleTextObject::Versions::ONE)
+        {
+            Vec2f text_origin(ko.boundingBox().left(), ko.boundingBox().bottom());
+            XMLElement* t = create_t(text_origin);
+            t->SetAttribute("InterpretChemically", "no");
+            bool not_first = false;
+            for (auto& text_item : ko.block())
+            {
+                if (not_first)
+                {
+                    XMLElement* s = _doc->NewElement("s");
+                    t->LinkEndChild(s);
+                    XMLText* txt = _doc->NewText("\n");
+                    s->LinkEndChild(txt);
+                }
+                else
+                {
+                    not_first = true;
+                }
+                save_paragraph_styles(text_item, t);
+            }
+        }
+        else if (ko.version() == SimpleTextObject::Versions::TWO)
+        {
+            for (auto& text_item : ko.block())
+            {
+                Vec2f text_origin(ko.boundingBox().left(), ko.boundingBox().bottom());
+                auto align = text_item.alignment.has_value() ? text_item.alignment : ko.alignment();
+                if (align.has_value())
+                {
+                    switch (align.value())
+                    {
+                    case SimpleTextObject::TextAlignment::ECenter:
+                        text_origin.x = ko.boundingBox().center().x;
+                        break;
+                    case SimpleTextObject::TextAlignment::ERight:
+                        text_origin.x = ko.boundingBox().right();
+                        break;
+                    }
+                }
+
+                XMLElement* t = create_t(text_origin);
+                if (align.has_value())
+                {
+                    switch (align.value())
+                    {
+                    case SimpleTextObject::TextAlignment::ELeft:
+                        t->SetAttribute("Justification", "Left");
+                        break;
+                    case SimpleTextObject::TextAlignment::ECenter:
+                        t->SetAttribute("Justification", "Center");
+                        break;
+                    case SimpleTextObject::TextAlignment::ERight:
+                        t->SetAttribute("Justification", "Right");
+                        break;
+                    case SimpleTextObject::TextAlignment::EFull:
+                        t->SetAttribute("Justification", "Full");
+                        break;
+                    default:
+                        t->SetAttribute("Justification", "Left");
+                        break;
+                    }
+                }
+                if (text_item.line_starts.has_value() && text_item.line_starts.value().size())
+                {
+                    auto& line_starts = text_item.line_starts.value();
+                    std::string line_starts_str;
+                    for (auto ls : line_starts)
+                    {
+                        if (!line_starts_str.empty())
+                            line_starts_str += " ";
+                        line_starts_str += std::to_string(ls);
+                    }
+                    t->SetAttribute("LineStarts", line_starts_str.c_str());
+                    t->SetAttribute("WordWrapWidth", ko.boundingBox().width() * _bond_length);
+                }
+                t->SetAttribute("InterpretChemically", "no");
+                save_paragraph_styles(text_item, t);
             }
         }
     }
@@ -2077,10 +2131,10 @@ void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& bmol)
     if (bmol.have_xyz)
         bmol.getBoundingBox(bbox);
 
-    for (int i = 0; i < bmol.meta().metaData().size(); ++i)
+    for (int i = 0; i < bmol.meta().metaData().size(); i++)
     {
         Rect2f bb;
-        auto& mo = *bmol.meta().metaData()[i];
+        auto& mo = bmol.meta().metaData()[i];
         mo.getBoundingBox(bb);
         bbox.extend(bb);
     }
@@ -2099,10 +2153,10 @@ void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& bmol)
             saveRGroup(rgrp.fragments, offset, i, bbox);
     }
 
-    for (int i = 0; i < bmol.meta().metaData().size(); ++i)
+    for (int i = 0; i < bmol.meta().metaData().size(); i++)
     {
-        auto& mo = *bmol.meta().metaData()[i];
-        addMetaObject(*bmol.meta().metaData()[i], ++_id, offset);
+        auto& mo = bmol.meta().metaData()[i];
+        addMetaObject(bmol.meta().metaData()[i], ++_id, offset);
     }
 
     QS_DEF(Array<char>, buf);
@@ -2122,7 +2176,7 @@ void MoleculeCdxmlSaver::deleteNamelessSGroups(BaseMolecule& bmol)
         if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
         {
             auto& sa = static_cast<Superatom&>(sg);
-            if (sa.subscript.size() == 0 || std::string(sa.subscript.ptr()).size() == 0)
+            if (sa.label.size() == 0 || std::string(sa.label.ptr()).size() == 0)
                 bmol.sgroups.remove(j);
         }
     }

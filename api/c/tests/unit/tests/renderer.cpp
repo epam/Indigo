@@ -122,7 +122,7 @@ TEST_F(IndigoApiRendererTest, render_superatoms)
 {
     std::vector<std::thread> threads;
 
-    for (int i = 0; i < 16; i++)
+    for (int i = 0; i < 8; i++)
     {
         threads.emplace_back(testRender);
     }

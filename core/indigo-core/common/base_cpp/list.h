@@ -19,6 +19,8 @@
 #ifndef __list_h__
 #define __list_h__
 
+#include <cassert>
+
 #include "base_cpp/pool.h"
 
 namespace indigo
@@ -40,6 +42,22 @@ namespace indigo
         }
 
         explicit List(Pool<Elem>& pool) : _pool(&pool), _size(0), _head(-1), _tail(-1), _own_pool(false)
+        {
+        }
+
+        // Tag for the "unbound" construction below.
+        struct Unbound
+        {
+        };
+
+        // Unbound list: neither owns nor references a pool, so it allocates
+        // NOTHING at construction. It MUST be bound to a pool (by move-assigning
+        // a pooled List) before any add(), insert() or element access. Used by
+        // pooled owners such as Graph::Vertex, whose owner binds the shared pool
+        // right after construction, to avoid the throwaway private-pool
+        // allocation that the default List() would make and the binding would
+        // immediately free.
+        explicit List(Unbound) : _pool(nullptr), _size(0), _head(-1), _tail(-1), _own_pool(false)
         {
         }
 
@@ -74,6 +92,11 @@ namespace indigo
 
         int add()
         {
+            // An unbound list has no pool: adding to one is a programming error
+            // (the owner must bind it first), and would otherwise be a null
+            // dereference. Checked in debug builds only — this is the hottest
+            // insertion path in the library.
+            assert(_pool != nullptr);
             if (_size == 0)
             {
                 _head = _pool->add();

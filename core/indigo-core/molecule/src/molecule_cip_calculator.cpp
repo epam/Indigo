@@ -206,8 +206,7 @@ void MoleculeCIPCalculator::addCIPSgroups(BaseMolecule& mol)
         }
 
         sgroup.name.readString("INDIGO_CIP_DESC", true);
-        sgroup.display_pos.x = 0.0;
-        sgroup.display_pos.y = 0.0;
+        sgroup.display_pos.set(Vec2f(0.0f, 0.0f));
         sgroup.detached = true;
         sgroup.relative = true;
     }
@@ -229,8 +228,7 @@ void MoleculeCIPCalculator::addCIPSgroups(BaseMolecule& mol)
             sgroup.data.readString("(Z)", true);
 
         sgroup.name.readString("INDIGO_CIP_DESC", true);
-        sgroup.display_pos.x = 0.0;
-        sgroup.display_pos.y = 0.0;
+        sgroup.display_pos.set(Vec2f(0.0f, 0.0f));
         sgroup.detached = true;
         sgroup.relative = true;
     }
@@ -312,7 +310,7 @@ void MoleculeCIPCalculator::_calcRSStereoDescriptor(BaseMolecule& mol, BaseMolec
     if (type <= MoleculeStereocenters::ATOM_ANY)
         return;
 
-    parity = MolfileSaver::_getStereocenterParity(mol, atom_idx);
+    parity = MoleculeStereocenters::getMdlParity(mol, atom_idx);
 
     ligands.clear();
     used1.clear();
@@ -392,7 +390,7 @@ void MoleculeCIPCalculator::_calcRSStereoDescriptor(BaseMolecule& mol, BaseMolec
 
     if (cip_parity == 1)
     {
-        if (parity == 1)
+        if (parity == MoleculeStereocenters::MDL_PARITY_ODD)
         {
             if (use_stereo && context.use_rule_5)
             {
@@ -417,7 +415,7 @@ void MoleculeCIPCalculator::_calcRSStereoDescriptor(BaseMolecule& mol, BaseMolec
     }
     else
     {
-        if (parity == 1)
+        if (parity == MoleculeStereocenters::MDL_PARITY_ODD)
         {
             if (use_stereo && context.use_rule_5)
             {
@@ -1538,7 +1536,7 @@ int MoleculeCIPCalculator::_cip_rules_cmp(int i1, int i2, void* context)
         if (!cur_context->next_level)
             return 0;
 
-        int next_level_branches = neibs2.size() > neibs1.size() ? neibs2.size() : neibs1.size();
+        int next_level_branches = neibs2.size() < neibs1.size() ? neibs2.size() : neibs1.size();
 
         if (next_level_branches > 0)
         {

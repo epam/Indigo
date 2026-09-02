@@ -1,11 +1,5 @@
-import difflib
 import os
 import sys
-
-
-def find_diff(a, b):
-    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
-
 
 sys.path.append(
     os.path.normpath(
@@ -13,7 +7,13 @@ sys.path.append(
     )
 )
 
-from env_indigo import *  # noqa
+from common.util import compare_diff
+from env_indigo import (  # noqa
+    Indigo,
+    IndigoException,
+    getIndigoExceptionText,
+    joinPathPy,
+)
 
 indigo = Indigo()
 
@@ -35,20 +35,18 @@ files.sort()
 
 
 def test_file(filename, suffix=".mol"):
+    ref_filename = filename + ".b64cdx"
     try:
         mol = indigo.loadMoleculeFromFile(
             os.path.join(root, filename + suffix)
         )
         resb64 = mol.b64cdx()
-        # with open(os.path.join(ref_path, filename + ".b64cdx"), 'w') as file:
-        #    data = file.write(resb64)
-        with open(os.path.join(ref_path, filename + ".b64cdx"), "r") as file:
-            refb64 = file.read()
         try:
             indigo.loadMolecule(resb64)
         except IndigoException as e:
             print(getIndigoExceptionText(e))
-        print(filename + (":success" if refb64 == resb64 else ":failed"))
+        compare_diff(ref_path, ref_filename, resb64)
+
     except IndigoException as e:
         print(getIndigoExceptionText(e))
         print("*** Try as Query ***")
@@ -56,15 +54,11 @@ def test_file(filename, suffix=".mol"):
             os.path.join(root, filename + suffix)
         )
         resb64 = mol.b64cdx()
-        # with open(os.path.join(ref_path, filename + ".b64cdx"), 'w') as file:
-        #    data = file.write(resb64)
-        with open(os.path.join(ref_path, filename + ".b64cdx"), "r") as file:
-            refb64 = file.read()
         try:
             indigo.loadQueryMolecule(resb64)
         except IndigoException as e:
             print(getIndigoExceptionText(e))
-        print(filename + (":success" if refb64 == resb64 else ":failed"))
+        compare_diff(ref_path, ref_filename, resb64)
 
 
 for filename in files:
@@ -81,22 +75,18 @@ files = ["agents"]
 files.sort()
 
 for filename in files:
+    ref_filename = filename + ".b64cdx"
     try:
         rea = indigo.loadReactionFromFile(
             os.path.join(root, filename + ".ket")
         )
         resb64 = rea.b64cdx()
-        # with open(os.path.join(ref_path, filename + ".b64cdx"), 'w') as file:
-        #    data = file.write(resb64)
-        with open(os.path.join(ref_path, filename + ".b64cdx"), "r") as file:
-            refb64 = file.read()
-
         try:
             indigo.loadReaction(resb64)
         except IndigoException as e:
             print(getIndigoExceptionText(e))
+        compare_diff(ref_path, ref_filename, resb64)
 
-        print(filename + (":success" if refb64 == resb64 else ":failed"))
     except IndigoException as e:
         print(getIndigoExceptionText(e))
         print("*** Try as Reaction Query ***")
@@ -104,15 +94,11 @@ for filename in files:
             os.path.join(root, filename + ".ket")
         )
         resb64 = rea.b64cdx()
-        # with open(os.path.join(ref_path, filename + ".b64cdx"), 'w') as file:
-        #    data = file.write(resb64)
-        with open(os.path.join(ref_path, filename + ".b64cdx"), "r") as file:
-            refb64 = file.read()
         try:
             indigo.loadQueryReaction(resb64)
         except IndigoException as e:
             print(getIndigoExceptionText(e))
-        print(filename + (":success" if refb64 == resb64 else ":failed"))
+        compare_diff(ref_path, ref_filename, resb64)
 
 print("*** CDXML to CDX ***")
 
@@ -152,11 +138,7 @@ for filename in files:
             os.path.join(root_cdxml, filename + ".cdxml")
         )
         resb64 = rea.b64cdx()
-        # with open(os.path.join(ref_path, filename + ".b64cdx"), "w") as file:
-        #     file.write(resb64)
-        with open(os.path.join(ref_path, filename + ".b64cdx"), "r") as file:
-            refb64 = file.read()
-        print(filename + (":success" if refb64 == resb64 else ":failed"))
+        compare_diff(ref_path, filename + ".b64cdx", resb64)
 
     except IndigoException as e:
         print(getIndigoExceptionText(e))

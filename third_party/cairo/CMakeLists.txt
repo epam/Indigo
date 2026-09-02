@@ -193,6 +193,8 @@ endif()
 if (EMSCRIPTEN)
     target_compile_definitions(${PROJECT_NAME}
         PRIVATE -DCAIRO_NO_MUTEX)
+    target_compile_options(${PROJECT_NAME}
+        PRIVATE -Wno-incompatible-pointer-types)
 else()
     if (NOT MSVC)
         target_compile_definitions(${PROJECT_NAME}

@@ -30,7 +30,6 @@
 #include "molecule/smiles_saver.h"
 
 #include "base_cpp/profiling.h"
-#include "base_cpp/ptr_pool.h"
 
 using namespace indigo;
 
@@ -249,10 +248,10 @@ void MangoSubstructure::_correctQueryStereo(QueryMolecule& query)
     int n_rgroups = rgroups.getRGroupCount();
     for (int i = 1; i <= n_rgroups; i++)
     {
-        PtrPool<BaseMolecule>& frags = rgroups.getRGroup(i).fragments;
+        PtrReusablePool<BaseMolecule>& frags = rgroups.getRGroup(i).fragments;
         for (int j = frags.begin(); j != frags.end(); j = frags.next(j))
         {
-            QueryMolecule& fragment = frags[j]->asQueryMolecule();
+            QueryMolecule& fragment = frags[j].asQueryMolecule();
             _correctQueryStereo(fragment);
         }
     }

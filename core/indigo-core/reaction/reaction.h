@@ -20,7 +20,6 @@
 #define __reaction_h__
 
 #include "base_cpp/array.h"
-#include "base_cpp/obj_array.h"
 #include "molecule/molecule.h"
 #include "reaction/base_reaction.h"
 
@@ -70,8 +69,8 @@ namespace indigo
         void aromatizeQueryBonds();
         bool isAllConnected() const;*/
 
-        static void saveBondOrders(Reaction& reaction, ObjArray<Array<int>>& bond_types);
-        static void loadBondOrders(Reaction& reaction, ObjArray<Array<int>>& bond_types);
+        static void saveBondOrders(Reaction& reaction, PtrArray<Array<int>>& bond_types);
+        static void loadBondOrders(Reaction& reaction, PtrArray<Array<int>>& bond_types);
 
         static void checkForConsistency(Reaction& rxn);
 

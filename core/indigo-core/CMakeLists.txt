@@ -3,8 +3,12 @@ cmake_minimum_required(VERSION 3.6)
 project(indigo-core LANGUAGES C CXX)
 
 if (MSVC)
-    string(APPEND CMAKE_C_FLAGS " -W3 -WX")
-    string(APPEND CMAKE_CXX_FLAGS " -W3  -WX")
+    # /wd4996 — temporary suppression of C4996 (deprecated declarations) during
+    # milestone of core container refactoring. Remove once have
+    # migrated all call sites away from PtrArray::add(T*) / set(int,T*) /
+    # reset(int,T*) deprecated overloads.
+    string(APPEND CMAKE_C_FLAGS " -W3 -WX /wd4996")
+    string(APPEND CMAKE_CXX_FLAGS " -W3  -WX /wd4996")
 endif ()
 
 file(GLOB_RECURSE ${PROJECT_NAME}_SOURCES CONFIUGURE_DEPENDS

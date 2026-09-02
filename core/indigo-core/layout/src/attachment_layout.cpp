@@ -49,7 +49,7 @@ AttachmentLayout::AttachmentLayout(const BiconnectedDecomposer& bc_decom, const 
         if (i < n_comp)
             _attached_bc[i] = bc_decom.getIncomingComponents(_src_vertex)[i];
 
-        const MoleculeLayoutGraph& cur_bc = *bc_components[_attached_bc[i]];
+        const MoleculeLayoutGraph& cur_bc = bc_components[_attached_bc[i]];
 
         _src_vertex_map[i] = cur_bc.findVertexByExtIdx(_src_vertex);
         _bc_angles[i] = cur_bc.calculateAngle(_src_vertex_map[i], v1, v2);
@@ -66,7 +66,7 @@ AttachmentLayout::AttachmentLayout(const BiconnectedDecomposer& bc_decom, const 
     // find the one component which is drawn and put it to the end
     for (i = 0; i < _attached_bc.size() - 1; i++)
     {
-        if (_graph.getVertexType(_bc_components[_attached_bc[i]]->getVertexExtIdx(_vertices_l[i])) != ELEMENT_NOT_DRAWN)
+        if (_graph.getVertexType(_bc_components[_attached_bc[i]].getVertexExtIdx(_vertices_l[i])) != ELEMENT_NOT_DRAWN)
         {
             _src_vertex_map.swap(i, _attached_bc.size() - 1);
             _attached_bc.swap(i, _attached_bc.size() - 1);
@@ -80,7 +80,7 @@ AttachmentLayout::AttachmentLayout(const BiconnectedDecomposer& bc_decom, const 
     int n_new_vert = 0;
 
     for (i = 0; i < _attached_bc.size() - 1; i++)
-        n_new_vert += _bc_components[_attached_bc[i]]->vertexCount() - 1;
+        n_new_vert += _bc_components[_attached_bc[i]].vertexCount() - 1;
 
     _new_vertices.clear_resize(n_new_vert);
     _new_vertices.fill(-1);
@@ -101,6 +101,9 @@ AttachmentLayoutSmart::AttachmentLayoutSmart(const BiconnectedDecomposer& bc_dec
 }
 
 // Calculate energy of the drawn part of graph
+// Optimization: only compute interactions involving at least one _new_ vertex.
+// drawn↔drawn energy is constant across permutations (positions unchanged),
+// so we skip it. This reduces O(V²) to O(n_new × V).
 float AttachmentLayout::calculateEnergy()
 {
     int i, j;
@@ -145,6 +148,9 @@ float AttachmentLayout::calculateEnergy()
     for (i = _graph.vertexBegin(); i < _graph.vertexEnd(); i = _graph.vertexNext(i))
         if (drawn_vertices[i] > 0)
         {
+            // Skip drawn↔drawn pairs: only process if at least one vertex is new
+            bool i_is_new = (drawn_vertices[i] >= 2);
+
             if (drawn_vertices[i] == 1)
                 pos_i = &_graph.getPos(i);
             else
@@ -153,6 +159,10 @@ float AttachmentLayout::calculateEnergy()
             for (j = _graph.vertexBegin(); j < _graph.vertexEnd(); j = _graph.vertexNext(j))
                 if (drawn_vertices[j] > 0 && i != j)
                 {
+                    // Skip if both are already-drawn (their interaction is constant)
+                    if (!i_is_new && drawn_vertices[j] < 2)
+                        continue;
+
                     if (drawn_vertices[j] == 1)
                         pos_j = &_graph.getPos(j);
                     else
@@ -187,7 +197,7 @@ void AttachmentLayoutSmart::applyLayout()
 
     for (int i = 0; i < _attached_bc.size(); i++)
     {
-        MoleculeLayoutGraph& comp = (MoleculeLayoutGraph&)*_bc_components[_attached_bc[i]];
+        MoleculeLayoutGraph& comp = (MoleculeLayoutGraph&)_bc_components[_attached_bc[i]];
 
         for (int v = comp.vertexBegin(); v != comp.vertexEnd(); v = comp.vertexNext(v))
         {
@@ -202,7 +212,7 @@ void AttachmentLayout::markDrawnVertices()
 
     for (i = 0; i < _attached_bc.size(); i++)
     {
-        const MoleculeLayoutGraph& comp = *_bc_components[_attached_bc[i]];
+        const MoleculeLayoutGraph& comp = _bc_components[_attached_bc[i]];
 
         for (j = comp.vertexBegin(); j < comp.vertexEnd(); j = comp.vertexNext(j))
         {
@@ -280,7 +290,7 @@ void LayoutChooser::_makeLayout()
     k = -1;
     v = _layout._src_vertex;
     cur_angle = _layout._bc_angles[_n_components];
-    v2 = _layout._bc_components[_layout._attached_bc[_n_components]]->getVertexExtIdx(_layout._vertices_l[_n_components]);
+    v2 = _layout._bc_components[_layout._attached_bc[_n_components]].getVertexExtIdx(_layout._vertices_l[_n_components]);
     // number of the last vertex of drown biconnected component in the connected component
 
     for (i = 0; i < _n_components; i++)
@@ -290,7 +300,7 @@ void LayoutChooser::_makeLayout()
         // Shift and rotate component so cur_angle is the angle between [v1C,v2C] and drawn edge [v,v2]
         int comp_idx = _comp_permutation[i];
         int bc_com_idx = _layout._attached_bc[comp_idx];
-        const MoleculeLayoutGraph& comp = *_layout._bc_components[bc_com_idx];
+        const MoleculeLayoutGraph& comp = _layout._bc_components[bc_com_idx];
 
         v1C = _layout._src_vertex_map[comp_idx];
         v2C = _layout._vertices_l[comp_idx];
@@ -333,9 +343,13 @@ void LayoutChooser::_makeLayout()
                     cur_pos.sum(p1, _layout._graph.getPos(v));
                 }
                 else if (is_nailed)
+                {
                     cur_pos.copy(comp.getPos(j));
+                }
                 else // fixed components or fixed vertex in graph
+                {
                     cur_pos.copy(_layout._graph.getPos(v1));
+                }
 
                 _layout._new_vertices[k] = comp.getVertexExtIdx(j);
             }
@@ -343,11 +357,16 @@ void LayoutChooser::_makeLayout()
         cur_angle += _layout._bc_angles[comp_idx];
     }
 
+    // cis/trans resolution below dereferences _attached_bc[1]; with a single
+    // attached BC there is nothing to resolve and the index is out of bounds.
+    if (_layout._attached_bc.size() < 2)
+        return;
+
     // respect cis/trans
     const int* molecule_edge_mapping = 0;
     const BaseMolecule* molecule = _layout._graph.getMolecule(&molecule_edge_mapping);
-    const MoleculeLayoutGraph& drawn_comp = *_layout._bc_components[_layout._attached_bc[1]];
-    MoleculeLayoutGraph& attach_comp = (MoleculeLayoutGraph&)*_layout._bc_components[_layout._attached_bc[0]];
+    const MoleculeLayoutGraph& drawn_comp = _layout._bc_components[_layout._attached_bc[1]];
+    MoleculeLayoutGraph& attach_comp = (MoleculeLayoutGraph&)_layout._bc_components[_layout._attached_bc[0]];
 
     if (_n_components == 1 && molecule != 0 && drawn_comp.isSingleEdge())
     {

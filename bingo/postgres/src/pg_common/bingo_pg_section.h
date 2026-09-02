@@ -3,7 +3,6 @@
 
 #include "base_cpp/array.h"
 #include "base_cpp/exception.h"
-#include "base_cpp/obj_array.h"
 #include "base_cpp/ptr_array.h"
 #include "bingo_pg_buffer_cache.h"
 #include "bingo_postgres.h"
@@ -33,10 +32,11 @@ public:
         SECTION_BITSNUMBER_PAGES = 16,
         SECTION_BITS_PER_BLOCK = 4000 /* 4000 * sizeof(unsigned short) < 8K*/
     };
-    BingoPgSection(BingoPgIndex& bingo_idx, int idx_strategy, int offset);
+    BingoPgSection(BingoPgIndex& bingo_idx, int idx_strategy, int offset, bool create_new = false);
     ~BingoPgSection();
 
     void clear();
+    void finish();
 
     /*
      * Returns true if section can be extended
@@ -76,6 +76,7 @@ public:
 private:
     BingoPgSection(const BingoPgSection&); // no implicit copy
 
+    void _flushSectionInfo();
     void _setCmfData(indigo::Array<char>& cmf_buf, int map_buf_idx, int map_idx);
     void _setXyzData(indigo::Array<char>& xyz_buf, int map_buf_idx, int map_idx);
     void _setBinData(indigo::Array<char>& buf, int& last_buf, ItemPointerData& item_data);
@@ -99,7 +100,7 @@ private:
     indigo::Array<int> _offsetMap;
     indigo::Array<int> _offsetBin;
 
-    indigo::ObjArray<BingoPgBuffer> _bitsCountBuffers;
+    indigo::PtrArray<BingoPgBuffer> _bitsCountBuffers;
 };
 
 #endif /* BINGO_PG_SECTION1_H */

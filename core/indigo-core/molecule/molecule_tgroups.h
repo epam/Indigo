@@ -19,8 +19,8 @@
 #ifndef __molecule_tgroups__
 #define __molecule_tgroups__
 
-#include "base_cpp/obj_array.h"
-#include "base_cpp/ptr_pool.h"
+#include "base_cpp/ptr_array.h"
+#include "base_cpp/ptr_reusable_pool.h"
 #include "base_cpp/red_black.h"
 #include "base_cpp/tlscont.h"
 #include "molecule/idt_alias.h"
@@ -36,7 +36,7 @@ namespace indigo
     class BaseMolecule;
     class Transformation;
 
-    class TGroup
+    class TGroup : public Reusable
     {
     public:
         Array<char> tgroup_class;
@@ -51,12 +51,13 @@ namespace indigo
         Array<char> idt_alias;
         bool ambiguous;
         bool mixture;
-        ObjArray<Array<char>> aliases;
+        PtrArray<Array<char>> aliases;
         Array<float> ratios;
         bool different_aliasHELM;
         Array<char> aliasHELM;
-        ObjArray<Array<char>> modification_types;
+        PtrArray<Array<char>> modification_types;
         Array<char> aliasAxoLabs;
+        Array<char> aliasBILN;
 
         TGroup();
         ~TGroup();
@@ -66,6 +67,19 @@ namespace indigo
         void copy_without_fragment(const TGroup& other);
         void clear();
         static int cmp(TGroup& tg1, TGroup& tg2, void* context);
+
+        // Restores the default-constructed state, unlike clear(), which only
+        // resets three flags. Array buffers are retained and the owned fragment
+        // is released. Defined out of line because releasing the fragment needs
+        // the complete BaseMolecule type.
+        void reuse() override;
+
+        // Adds a clone of an existing group. copy() stays public for the places
+        // that overwrite an already-registered group in place.
+        void reuse(const TGroup& other)
+        {
+            copy(other);
+        }
 
         std::unique_ptr<BaseMolecule> fragment;
 
@@ -96,7 +110,7 @@ namespace indigo
         int next(int i);
 
     protected:
-        PtrPool<TGroup> _tgroups;
+        PtrReusablePool<TGroup> _tgroups;
     };
 
 } // namespace indigo

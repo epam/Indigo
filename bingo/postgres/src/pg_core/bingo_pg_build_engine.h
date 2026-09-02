@@ -14,7 +14,7 @@ extern "C"
  * Interface class for procession fingerprint data
  */
 
-#include "base_cpp/obj_array.h"
+#include "base_cpp/ptr_array.h"
 #include "bingo_postgres.h"
 #include <memory>
 
@@ -33,7 +33,7 @@ public:
     class StructCache
     {
     public:
-        StructCache()
+        StructCache() : rejected(false)
         {
         }
         ~StructCache()
@@ -42,6 +42,7 @@ public:
         ItemPointerData ptr;
         std::unique_ptr<BingoPgText> text;
         std::unique_ptr<BingoPgFpData> data;
+        bool rejected;
 
     private:
         StructCache(const StructCache&); // no implicit copy
@@ -54,7 +55,7 @@ public:
     {
         return true;
     }
-    virtual void processStructures(indigo::ObjArray<StructCache>& struct_caches)
+    virtual void processStructures(indigo::PtrArray<StructCache>& struct_caches)
     {
     }
 
@@ -84,6 +85,8 @@ public:
     int getNthreads();
     indigo::bingo_core::BingoCore bingoCore;
 
+    DECL_ERROR;
+
 private:
     BingoPgBuildEngine(const BingoPgBuildEngine&); // no implicit copy
 protected:
@@ -99,7 +102,7 @@ protected:
     std::unique_ptr<indigo::RingoContext> _ringoContext;
     BingoPgIndex* _bufferIndexPtr;
 
-    indigo::ObjArray<StructCache>* _structCaches;
+    indigo::PtrArray<StructCache>* _structCaches;
     int _currentCache;
     int _fpSize;
     indigo::Nullable<int> nThreads;

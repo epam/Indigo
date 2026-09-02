@@ -405,6 +405,37 @@ protected:
     Array<int> _refs;
 };
 
+class IndigoSGroupAttachmentPoint : public IndigoObject
+{
+public:
+    IndigoSGroupAttachmentPoint(BaseMolecule& mol, int sgroup_idx, int ap_idx);
+    ~IndigoSGroupAttachmentPoint() override;
+
+    int getIndex() override;
+
+    static IndigoSGroupAttachmentPoint& cast(IndigoObject& obj);
+    Superatom::_AttachmentPoint& get();
+
+    BaseMolecule& mol;
+    int sgroup_idx;
+    int ap_idx;
+};
+
+class IndigoSGroupAttachmentPointsIter : public IndigoObject
+{
+public:
+    IndigoSGroupAttachmentPointsIter(BaseMolecule& mol, int sgroup_idx);
+    ~IndigoSGroupAttachmentPointsIter() override;
+
+    IndigoObject* next() override;
+    bool hasNext() override;
+
+protected:
+    BaseMolecule& _mol;
+    int _sgroup_idx;
+    int _idx;
+};
+
 class IndigoRepeatingUnit : public IndigoObject
 {
 public:
@@ -518,6 +549,22 @@ class IndigoSGroupBondsIter : public IndigoObject
 public:
     IndigoSGroupBondsIter(BaseMolecule& mol, SGroup& sgroup);
     ~IndigoSGroupBondsIter() override;
+
+    IndigoObject* next() override;
+    bool hasNext() override;
+
+protected:
+    BaseMolecule& _mol;
+    SGroup& _sgroup;
+    int _idx;
+};
+
+// Iterates xbonds (crossing bonds) directly, not polymorphic getBonds()
+class IndigoSGroupXBondsIter : public IndigoObject
+{
+public:
+    IndigoSGroupXBondsIter(BaseMolecule& mol, SGroup& sgroup);
+    ~IndigoSGroupXBondsIter() override;
 
     IndigoObject* next() override;
     bool hasNext() override;
@@ -677,8 +724,8 @@ protected:
     BaseMolecule& _mol;
     GraphSubtreeEnumerator _enumerator;
     int _idx;
-    ObjArray<Array<int>> _vertices;
-    ObjArray<Array<int>> _edges;
+    PtrArray<Array<int>> _vertices;
+    PtrArray<Array<int>> _edges;
 };
 
 class IndigoRingsIter : public IndigoObject
@@ -696,8 +743,8 @@ protected:
     BaseMolecule& _mol;
     CycleEnumerator _enumerator;
     int _idx;
-    ObjArray<Array<int>> _vertices;
-    ObjArray<Array<int>> _edges;
+    PtrArray<Array<int>> _vertices;
+    PtrArray<Array<int>> _edges;
 };
 
 class IndigoEdgeSubmoleculeIter : public IndigoObject
@@ -715,8 +762,8 @@ protected:
     BaseMolecule& _mol;
     EdgeSubgraphEnumerator _enumerator;
     int _idx;
-    ObjArray<Array<int>> _vertices;
-    ObjArray<Array<int>> _edges;
+    PtrArray<Array<int>> _vertices;
+    PtrArray<Array<int>> _edges;
 };
 
 class IndigoAttachmentPointsIter : public IndigoObject

@@ -1552,11 +1552,11 @@ bool MoleculeDearomatizer::dearomatizeMolecule(BaseMolecule& mol, const Aromatic
     int n_rgroups = mol.rgroups.getRGroupCount();
     for (int i = 1; i <= n_rgroups; i++)
     {
-        PtrPool<BaseMolecule>& frags = mol.rgroups.getRGroup(i).fragments;
+        PtrReusablePool<BaseMolecule>& frags = mol.rgroups.getRGroup(i).fragments;
 
         for (int j = frags.begin(); j != frags.end(); j = frags.next(j))
         {
-            Molecule& fragment = frags[j]->asMolecule();
+            Molecule& fragment = frags[j].asMolecule();
             dearomatizeMolecule(fragment, options);
         }
     }

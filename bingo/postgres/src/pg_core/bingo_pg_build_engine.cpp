@@ -20,6 +20,8 @@ extern "C"
 
 using namespace indigo;
 
+IMPL_ERROR(BingoPgBuildEngine, "build engine");
+
 BingoPgBuildEngine::BingoPgBuildEngine() : _bufferIndexPtr(0)
 {
     _bingoContext = std::make_unique<BingoContext>(0);
@@ -70,7 +72,7 @@ int BingoPgBuildEngine::getNthreads()
     // TO DISABLE THREADS UNCOMMENT THIS
     //   return 1;
 
-    if (!nThreads.hasValue())
+    if (!nThreads.has_value())
     {
         // _setBingoContext();
         int result;
@@ -78,7 +80,7 @@ int BingoPgBuildEngine::getNthreads()
         nThreads.set(result);
     }
 
-    return nThreads.get();
+    return nThreads.value();
 }
 
 int BingoPgBuildEngine::_getNextRecordCb(void* context)
@@ -86,7 +88,7 @@ int BingoPgBuildEngine::_getNextRecordCb(void* context)
     BingoPgBuildEngine* engine = (BingoPgBuildEngine*)context;
 
     int& cache_idx = engine->_currentCache;
-    ObjArray<StructCache>& struct_caches = *(engine->_structCaches);
+    PtrArray<StructCache>& struct_caches = *(engine->_structCaches);
     if (cache_idx >= struct_caches.size())
         return 0;
 
@@ -106,9 +108,24 @@ int BingoPgBuildEngine::_getNextRecordCb(void* context)
 void BingoPgBuildEngine::_processErrorCb(int id, void* context)
 {
     BingoPgBuildEngine* engine = (BingoPgBuildEngine*)context;
-    ObjArray<StructCache>& struct_caches = *(engine->_structCaches);
-    ItemPointer item_ptr = &(struct_caches[id].ptr);
+    PtrArray<StructCache>& struct_caches = *(engine->_structCaches);
+    if (id < 0 || id >= struct_caches.size())
+        throw Error("internal error: parallel bingo build returned invalid "
+                    "rejected record id %d",
+                    id);
+
+    StructCache& struct_cache = struct_caches[id];
+    if (struct_cache.data.get() != 0)
+        throw Error("internal error: parallel bingo build returned record %d as "
+                    "both prepared and rejected",
+                    id);
+    struct_cache.rejected = true;
+
+    ItemPointer item_ptr = &(struct_cache.ptr);
     int block_number = ItemPointerGetBlockNumber(item_ptr);
     int offset_number = ItemPointerGetOffsetNumber(item_ptr);
-    elog(WARNING, "build engine: error while processing record with ctid='(%d,%d)'::tid: %s", block_number, offset_number, engine->bingoCore.warning.ptr());
+    elog(WARNING,
+         "build engine: error while processing record with ctid='(%d,%d)'::tid: "
+         "%s",
+         block_number, offset_number, engine->bingoCore.warning.ptr());
 }

@@ -90,9 +90,8 @@ void InchiWrapper::clear()
     auxInfo.clear();
 }
 
-void InchiWrapper::setOptions(const char* opt)
+static void SanitizeOptions(Array<char>& options)
 {
-    options.readString(opt, true);
     // Replace '/' and '-' according to InChI manual:
     //   "(use - instead of / for O.S. other than MS Windows)"
 #ifdef _WIN32
@@ -104,6 +103,12 @@ void InchiWrapper::setOptions(const char* opt)
         if (options[i] == '/')
             options[i] = '-';
 #endif
+}
+
+void InchiWrapper::setOptions(const char* opt)
+{
+    options.readString(opt, true);
+    SanitizeOptions(options);
 }
 
 void InchiWrapper::getOptions(Array<char>& value)
@@ -403,7 +408,8 @@ void InchiWrapper::parseInchiOutput(const InchiOutput& inchi_output, Molecule& m
     }
 }
 
-void InchiWrapper::generateInchiInput(Molecule& input_mol, inchi_Input& input, Array<inchi_Atom>& atoms, Array<inchi_Stereo0D>& stereo)
+void InchiWrapper::generateInchiInput(Molecule& input_mol, inchi_Input& input, Array<inchi_Atom>& atoms, Array<inchi_Stereo0D>& stereo,
+                                      const char* forcedOptions)
 {
     Molecule tmol;
     auto tcount = input_mol.tgroups.getTGroupCount();
@@ -552,10 +558,14 @@ void InchiWrapper::generateInchiInput(Molecule& input_mol, inchi_Input& input, A
         mol.stereocenters.get(v, type, group, pyramid);
         if (type == MoleculeStereocenters::ATOM_ANY)
             continue;
-        if (type == MoleculeStereocenters::ATOM_AND)
-            setOptions("/SRac");
-        else if (type == MoleculeStereocenters::ATOM_OR)
-            setOptions("/SRel");
+
+        if (forcedOptions == nullptr)
+        {
+            if (type == MoleculeStereocenters::ATOM_AND)
+                setOptions("/SRac");
+            else if (type == MoleculeStereocenters::ATOM_OR)
+                setOptions("/SRel");
+        }
 
         for (int k = 0; k < 4; k++)
             if (pyramid[k] != -1)
@@ -607,6 +617,13 @@ void InchiWrapper::generateInchiInput(Molecule& input_mol, inchi_Input& input, A
     input.num_atoms = atoms.size();
     input.stereo0D = stereo.ptr();
     input.num_stereo0D = stereo.size();
+    if (forcedOptions)
+    {
+        sanitizedForcedOptions.readString(forcedOptions, true);
+        SanitizeOptions(sanitizedForcedOptions);
+        input.szOptions = sanitizedForcedOptions.ptr();
+        return;
+    }
     input.szOptions = options.ptr();
 }
 
@@ -617,7 +634,7 @@ void InchiWrapper::_validate(BaseMolecule& bmol)
         throw Error("%s cannot be written in InChi format.", unresolved.c_str());
 }
 
-void InchiWrapper::saveMoleculeIntoInchi(Molecule& mol, Array<char>& inchi)
+void InchiWrapper::saveMoleculeIntoInchi(Molecule& mol, Array<char>& inchi, const char* forcedOptions)
 {
     _validate(mol);
     inchi_Input input{nullptr, nullptr, nullptr, 0, 0};
@@ -657,7 +674,7 @@ void InchiWrapper::saveMoleculeIntoInchi(Molecule& mol, Array<char>& inchi)
         }
         target = &dearom.value();
     }
-    generateInchiInput(*target, input, atoms, stereo);
+    generateInchiInput(*target, input, atoms, stereo, forcedOptions);
 
     InchiMemObject<inchi_Output> inchi_output_obj(FreeINCHI);
     inchi_Output& output = inchi_output_obj.ref();

@@ -24,8 +24,8 @@
 #include <set>
 
 #include "base_cpp/array.h"
-#include "base_cpp/obj_array.h"
 #include "base_cpp/output.h"
+#include "base_cpp/ptr_array.h"
 #include "base_cpp/red_black.h"
 #include "base_cpp/scanner.h"
 #include "molecule/molecule_gross_formula_options.h"
@@ -48,7 +48,7 @@ namespace indigo
     };
 
     // Represents array of superunits gross formulas.
-    typedef ObjArray<GrossFormulaUnit> GROSS_UNITS;
+    typedef PtrArray<GrossFormulaUnit> GROSS_UNITS;
 
     class DLLEXPORT MoleculeGrossFormula
     {

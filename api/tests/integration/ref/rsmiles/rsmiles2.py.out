@@ -51,7 +51,7 @@ CC/C(=C(/C1C=C(C(=CC=1)OCCN(C)C)[Sn](CCCC)(CCCC)CCCC)\C1C=CC=CC=1)/C1C=CC=CC=1>>
 [32PH3]>>[32PH3]
 *** 17 ***
 [29P-](S)(S)(OCC)OCC>>[29P](S)(OCC)(OCC)SCS[32P](=S)(OCC)OCC |^1:9|
-SMILES saver: unsure hydrogen count on atom #0
+element: explicit valence 2 specified on P, but 4 bonds are drawn
 *** 18 ***
 [3HH]>>[3HH].[3HH]
 [3HH]>>[3HH].[3HH] |f:1.2|
@@ -615,7 +615,7 @@ C[C:4](=O)[CH2:2][CH:3]=O.[O:1]=[C:5](C(F)(F)F)C(F)(F)F>>C[C:4](=O)[CH:2]([CH:3]
 [cH2:1]:[cH:2]Cl>>[cH2:1]:[cH:2]F
 *** 205 ***
 [c:1](:[c:4])(Cl):[c:2]>>[c:1](:[c:4])(F):[c:2]
-SMILES saver: unsure hydrogen count on atom #1
+element: cannot calculate implicit hydrogens on aromatic C, charge 0, degree 1, 0 radical electrons
 *** 206 ***
 [C:1]1([CH:6]=[CH:5][C:4](Cl)=[CH:3][CH:2]=1)[C:7](=[O:8])[CH3:9]>>[C:1]1([CH:6]=[CH:5][C:4](C(=O)C)=[CH:3][CH:2]=1)[C:7](=[O:8])[CH3:9]
 [CH3:1][C:7](=[O:2])[C:9]1[CH:3]=[CH:6][C:8](Cl)=[CH:5][CH:4]=1>>[CH3:1][C:7](=[O:2])[C:9]1[CH:3]=[CH:6][C:8](=[CH:5][CH:4]=1)C(C)=O

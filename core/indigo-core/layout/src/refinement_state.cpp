@@ -20,6 +20,11 @@
 
 using namespace indigo;
 
+// Minimum squared distance before enforcing a massive repulsion penalty
+constexpr float MIN_DIST_SQR = 0.0001f;
+// Massive repulsion energy for heavily overlapping vertices
+constexpr float MAX_REPULSION_ENERGY = 5000000.f;
+
 IMPL_ERROR(RefinementState, "refinement");
 
 CP_DEF(RefinementState);
@@ -83,29 +88,96 @@ void RefinementState::applyToGraph()
 void RefinementState::calcEnergy()
 {
     int i, j;
-    float r;
+    double r;
     Vec2f d;
 
     energy = 0;
 
     for (i = _graph.vertexBegin(); i < _graph.vertexEnd(); i = _graph.vertexNext(i))
-        for (j = _graph.vertexBegin(); j < _graph.vertexEnd(); j = _graph.vertexNext(j))
+        for (j = _graph.vertexNext(i); j < _graph.vertexEnd(); j = _graph.vertexNext(j))
+        {
+            d.diff(layout[i], layout[j]);
+            r = d.lengthSqr();
+
+            if (r < MIN_DIST_SQR)
+                r = MAX_REPULSION_ENERGY;
+            else
+                r = 1.0 / r;
+
+            energy += r;
+        }
+}
+
+void RefinementState::calcEnergyDelta(const RefinementState& old_state)
+{
+    energy = old_state.energy;
+
+    int i, j;
+    double r_old, r_new;
+    Vec2f d;
+
+    // Kahan summation initialization
+    double delta_energy = 0.0;
+    double c = 0.0;
+
+    int vertex_count = _graph.vertexEnd();
+    QS_DEF(Array<bool>, moved);
+    moved.clear_resize(vertex_count);
+    moved.zerofill();
+
+    int moved_count = 0;
+    for (i = _graph.vertexBegin(); i < vertex_count; i = _graph.vertexNext(i))
+    {
+        if (layout[i].x != old_state.layout[i].x || layout[i].y != old_state.layout[i].y)
+        {
+            moved[i] = true;
+            moved_count++;
+        }
+    }
+
+    if (moved_count == 0)
+        return;
+
+    for (i = _graph.vertexBegin(); i < vertex_count; i = _graph.vertexNext(i))
+    {
+        if (!moved[i])
+            continue;
+
+        for (j = _graph.vertexBegin(); j < vertex_count; j = _graph.vertexNext(j))
         {
             if (i == j)
                 continue;
 
-            d.diff(layout[i], layout[j]);
-            r = d.lengthSqr();
+            // Avoid double counting for pairs that both moved
+            if (moved[j] && j < i)
+                continue;
 
-            if (r < 0.0001f)
-                r = 5000000.f;
+            // old interaction
+            d.diff(old_state.layout[i], old_state.layout[j]);
+            r_old = d.lengthSqr();
+
+            if (r_old < MIN_DIST_SQR)
+                r_old = MAX_REPULSION_ENERGY;
             else
-                r = 1 / r;
+                r_old = 1.0 / r_old;
 
-            energy += r;
+            // new interaction
+            d.diff(layout[i], layout[j]);
+            r_new = d.lengthSqr();
+
+            if (r_new < MIN_DIST_SQR)
+                r_new = MAX_REPULSION_ENERGY;
+            else
+                r_new = 1.0 / r_new;
+
+            double term = r_new - r_old;
+            double y = term - c;
+            double t = delta_energy + y;
+            c = (t - delta_energy) - y;
+            delta_energy = t;
         }
-
-    energy /= 2;
+    }
+    energy += delta_energy;
 }
 
 // Flip all verices from branch around (v1,v2)

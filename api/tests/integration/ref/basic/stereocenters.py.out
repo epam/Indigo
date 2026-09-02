@@ -5537,3 +5537,9 @@ cip description before: 0
 cip description before: 0
 cip description after 5
 cip description after 4
+issue 3854 array: invalid index
+cip description 4
+cip description 5
+cip description 5
+cip description 4
+cip description 5

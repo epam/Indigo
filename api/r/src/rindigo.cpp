@@ -173,6 +173,14 @@ REXPORT SEXP r_indigoAromatize(SEXP obj)
     return result;
 }
 
+REXPORT SEXP r_indigoExpandedMonomersToAtoms(SEXP mol)
+{
+    SEXP result = PROTECT(allocVector(INTSXP, 1));
+    INTEGER(result)[0] = indigoExpandedMonomersToAtoms(INTEGER(mol)[0]);
+    UNPROTECT(1);
+    return result;
+}
+
 ////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 

@@ -60,6 +60,30 @@ void TGroup::clear()
     mixture = false;
 }
 
+void TGroup::reuse()
+{
+    tgroup_class.clear();
+    tgroup_name.clear();
+    tgroup_full_name.clear();
+    tgroup_alias.clear();
+    tgroup_comment.clear();
+    tgroup_natreplace.clear();
+    tgroup_text_id.clear();
+    tgroup_id = -1;
+    unresolved = false;
+    idt_alias.clear();
+    ambiguous = false;
+    mixture = false;
+    aliases.clear();
+    ratios.clear();
+    different_aliasHELM = false;
+    aliasHELM.clear();
+    modification_types.clear();
+    aliasAxoLabs.clear();
+    aliasBILN.clear();
+    fragment.reset();
+}
+
 int TGroup::cmp(TGroup& tg1, TGroup& tg2, void* /*context*/)
 {
     QS_DEF(Array<int>, lgrps)
@@ -171,6 +195,7 @@ void TGroup::copy_without_fragment(const TGroup& other)
         modification_types.push().copy(other.modification_types[i]);
     }
     aliasAxoLabs.copy(other.aliasAxoLabs);
+    aliasBILN.copy(other.aliasBILN);
 }
 
 IMPL_ERROR(MoleculeTGroups, "molecule tgroups");
@@ -212,21 +237,19 @@ void MoleculeTGroups::remove(int i)
 
 int MoleculeTGroups::addTGroup()
 {
-    return _tgroups.add(new TGroup());
+    return _tgroups.add();
 }
 
 TGroup& MoleculeTGroups::getTGroup(int idx)
 {
-    return *_tgroups.at(idx);
+    return _tgroups.at(idx);
 }
 
 void MoleculeTGroups::copyTGroupsFromMolecule(MoleculeTGroups& other)
 {
     for (int i = other.begin(); i != other.end(); i = other.next(i))
     {
-        TGroup& tgroup = other.getTGroup(i);
-        int idx = addTGroup();
-        getTGroup(idx).copy(tgroup);
+        _tgroups.add(other.getTGroup(i));
     }
 }
 
@@ -239,7 +262,7 @@ int MoleculeTGroups::findTGroup(const char* name)
 {
     for (int i = _tgroups.begin(); i != _tgroups.end(); i = _tgroups.next(i))
     {
-        TGroup& tgroup = *_tgroups.at(i);
+        TGroup& tgroup = _tgroups.at(i);
         if (tgroup.tgroup_name.size() > 0 && name != 0)
         {
             if (strncmp(tgroup.tgroup_name.ptr(), name, tgroup.tgroup_name.size()) == 0 ||

@@ -304,6 +304,17 @@ class IndigoObject:
 
         return IndigoLib.checkResultString(self._lib().indigoCml(self.id))
 
+    def fragmentedSdf(self):
+        """Structure method returns the structure as a string in SDF format,
+        splitting it into fragments.
+
+        Returns:
+            str: SDF string
+        """
+        return IndigoLib.checkResultString(
+            self._lib().indigoFragmentedSdf(self.id)
+        )
+
     def saveCdxml(self, filename):
         """Molecule method saves the structure into a CDXML file
 
@@ -1706,6 +1717,73 @@ class IndigoObject:
             ),
         )
 
+    def addSGroup(self, sgtype, extindex=0):
+        """Molecule method adds an empty SGroup
+
+        Args:
+            sgtype (str): sgroup type (e.g. "SUP", "DAT", "SRU", "MUL", "GEN")
+            extindex (int): external index; 0 for auto-generation
+
+        Returns:
+            IndigoObject: SGroup object
+        """
+
+        return IndigoObject(
+            self.session,
+            IndigoLib.checkResult(
+                self._lib().indigoAddSGroup(self.id, sgtype.encode(), extindex)
+            ),
+        )
+
+    def setSGroupAtoms(self, atoms):
+        """SGroup method replaces atoms with the given list
+
+        Args:
+            atoms (list): atom index list
+
+        Returns:
+            int: 1 if there are no errors
+        """
+        arr = (c_int * len(atoms))()
+        for i in range(len(atoms)):
+            arr[i] = atoms[i]
+
+        return IndigoLib.checkResult(
+            self._lib().indigoSetSGroupAtoms(self.id, len(arr), arr)
+        )
+
+    def setSGroupBonds(self, bonds):
+        """SGroup method replaces bonds with the given list (DAT only)
+
+        Args:
+            bonds (list): bond index list
+
+        Returns:
+            int: 1 if there are no errors
+        """
+        arr = (c_int * len(bonds))()
+        for i in range(len(bonds)):
+            arr[i] = bonds[i]
+
+        return IndigoLib.checkResult(
+            self._lib().indigoSetSGroupBonds(self.id, len(arr), arr)
+        )
+
+    def iterateSGroupCrossBonds(self):
+        """SGroup method iterates cross bonds
+
+        Returns:
+            IndigoObject: bonds iterator
+        """
+
+        return IndigoObject(
+            self.session,
+            IndigoLib.checkResult(
+                self._lib().indigoIterateSGroupCrossBonds(self.id)
+            ),
+            self,
+        )
+
     def setDataSGroupXY(self, x, y, options=""):
         """SGroup method sets coordinates
 
@@ -1993,6 +2071,28 @@ class IndigoObject:
             self._lib().indigoGetSGroupNumCrossBonds(self.id)
         )
 
+    def createCrossBonds(self):
+        """SGroup method automatically detects and adds crossing bonds according to the current atoms in Sgroup
+
+        Returns:
+            int: 1 if there are no errors
+        """
+
+        return IndigoLib.checkResult(
+            self._lib().indigoCreateCrossBonds(self.id)
+        )
+
+    def clearSGroupCrossBonds(self):
+        """SGroup method removes all cross bonds for a superatom S-group
+
+        Returns:
+            int: 1 if there are no errors
+        """
+
+        return IndigoLib.checkResult(
+            self._lib().indigoClearSGroupCrossBonds(self.id)
+        )
+
     def addSGroupAttachmentPoint(self, aidx, lvidx, apid):
         """SGroup method sets attachment point info
 
@@ -2023,6 +2123,59 @@ class IndigoObject:
 
         return IndigoLib.checkResult(
             self._lib().indigoDeleteSGroupAttachmentPoint(self.id, apidx)
+        )
+
+    def iterateSGroupAttachmentPoints(self):
+        """SGroup method iterates attachment points of a superatom S-group
+
+        Returns:
+            IndigoObject: attachment points iterator
+        """
+
+        return IndigoObject(
+            self.session,
+            IndigoLib.checkResult(
+                self._lib().indigoIterateSGroupAttachmentPoints(self.id)
+            ),
+            self,
+        )
+
+    def getSGroupAttachmentPointAtomIdx(self):
+        """SGroup attachment point method returns the attachment atom index
+
+        Returns:
+            int: atom index
+        """
+
+        return IndigoLib.checkResult(
+            self._lib().indigoGetSGroupAttachmentPointAtomIdx(self.id)
+        )
+
+    def getSGroupAttachmentPointLeaveAtom(self):
+        """SGroup attachment point method returns the leaving atom index
+
+        Returns:
+            Optional[int]: leaving atom index, or None if not set
+        """
+        value = c_int()
+        res = IndigoLib.checkResult(
+            self._lib().indigoGetSGroupAttachmentPointLeaveAtom(
+                self.id, pointer(value)
+            )
+        )
+        if res == 0:
+            return None
+        return value.value
+
+    def getSGroupAttachmentPointLabel(self):
+        """SGroup attachment point method returns the attachment point label (e.g. 'Al', 'R1')
+
+        Returns:
+            str: attachment point label string
+        """
+
+        return IndigoLib.checkResultString(
+            self._lib().indigoGetSGroupAttachmentPointLabel(self.id)
         )
 
     def getSGroupDisplayOption(self):
@@ -2991,6 +3144,24 @@ class IndigoObject:
             IndigoLib.checkResult(self._lib().indigoIsHighlighted(self.id))
         )
 
+    def select(self):
+        """Atom or bond method to add selection
+
+        Returns:
+            int: 1 if there are no errors
+        """
+
+        return IndigoLib.checkResult(self._lib().indigoSelect(self.id))
+
+    def unselect(self):
+        """Atom, bond, molecule, or reaction method to remove selection
+
+        Returns:
+            int: 1 if there are no errors
+        """
+
+        return IndigoLib.checkResult(self._lib().indigoUnselect(self.id))
+
     def isSelected(self):
         """Atom or bond method returns True if selected
 
@@ -3682,6 +3853,33 @@ class IndigoObject:
 
         return IndigoLib.checkResultString(
             self._lib().indigoHelm(self.id, library.id)
+        )
+
+    def saveBiln(self, filename, library):
+        """Saves macromolecule to BILN file
+
+        Args:
+            filename (str): full file path to the output file
+
+        Returns:
+            int: 1 if file is saved successfully
+        """
+
+        return IndigoLib.checkResult(
+            self._lib().indigoSaveBilnToFile(
+                self.id, filename.encode(), library.id
+            )
+        )
+
+    def biln(self, library):
+        """Molecule or reaction method returns BILN for the structure
+
+        Returns:
+            str: BILN string
+        """
+
+        return IndigoLib.checkResultString(
+            self._lib().indigoBiln(self.id, library.id)
         )
 
     def saveAxoLabs(self, filename, library):
@@ -4403,6 +4601,34 @@ class IndigoObject:
 
         return IndigoLib.checkResult(
             self._lib().indigoExpandAbbreviations(self.id)
+        )
+
+    # [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+    def expandedMonomersToAtoms(self):
+        """Molecule method converts expanded template atoms to regular atoms.
+
+        This method takes a molecule with expanded monomers (template atoms
+        marked as expanded) and converts them to fully expanded regular atoms.
+        Group pseudoatoms (e.g. OH, NH2) are also expanded to explicit atoms
+        for V3000/molfile interoperability with toolkits such as RDKit.
+        This is required for:
+        - Accurate molecular weight calculations
+        - Clean molfile output without template metadata
+        - Compatibility with third-party tools without monomer libraries
+
+        The original molecule is not modified. A new molecule is returned.
+
+        Returns:
+            IndigoObject: New molecule with all expanded monomers converted to atoms
+
+        Raises:
+            IndigoException: If the operation fails
+        """
+        return IndigoObject(
+            self.session,
+            IndigoLib.checkResult(
+                self._lib().indigoExpandedMonomersToAtoms(self.id)
+            ),
         )
 
     def dbgInternalType(self):

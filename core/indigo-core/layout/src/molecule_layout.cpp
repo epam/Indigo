@@ -18,7 +18,6 @@
 
 #include "layout/molecule_layout.h"
 #include "base_cpp/array.h"
-#include "base_cpp/obj_array.h"
 #include "graph/filter.h"
 #include <vector>
 
@@ -340,7 +339,7 @@ void MoleculeLayout::_updateDataSGroups()
         if (sg.sgroup_type == SGroup::SG_TYPE_DAT)
         {
             DataSGroup& group = (DataSGroup&)sg;
-            if (!group.relative)
+            if (!group.relative && group.display_pos.has_value())
             {
                 Vec2f before;
                 _molecule.getSGroupAtomsCenterPoint(group, before);
@@ -359,7 +358,9 @@ void MoleculeLayout::_updateDataSGroups()
 
                 Vec2f delta;
                 delta.diff(after, before);
-                group.display_pos.add(delta);
+                Vec2f dp = group.display_pos.value();
+                dp.add(delta);
+                group.display_pos.set(dp);
             }
         }
     }
@@ -439,10 +440,10 @@ void MoleculeLayout::make()
         {
             RGroup& rg = rgs.getRGroup(i);
             Metalayout::LayoutLine& line = _ml.newLine();
-            PtrPool<BaseMolecule>& frags = rg.fragments;
+            PtrReusablePool<BaseMolecule>& frags = rg.fragments;
             for (int j = frags.begin(); j != frags.end(); j = frags.next(j))
             {
-                BaseMolecule& mol = *frags[j];
+                BaseMolecule& mol = frags[j];
                 if (filter == NULL)
                 {
                     MoleculeLayout layout(mol, _smart_layout);

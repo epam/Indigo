@@ -60,11 +60,11 @@ bool AromaticityMatcher::isNecessary(QueryMolecule& query)
     int n_rgroups = rgroups.getRGroupCount();
     for (int i = 1; i <= n_rgroups; i++)
     {
-        PtrPool<BaseMolecule>& frags = rgroups.getRGroup(i).fragments;
+        PtrReusablePool<BaseMolecule>& frags = rgroups.getRGroup(i).fragments;
 
         for (int j = frags.begin(); j != frags.end(); j = frags.next(j))
         {
-            QueryMolecule& fragment = frags[j]->asQueryMolecule();
+            QueryMolecule& fragment = frags[j].asQueryMolecule();
             if (AromaticityMatcher::isNecessary(fragment))
                 return true;
         }

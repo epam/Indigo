@@ -413,8 +413,25 @@ auto MoleculeCdxmlLoader::bboxLambda(Rect2f& bbox)
 }
 
 MoleculeCdxmlLoader::MoleculeCdxmlLoader(Scanner& scanner, bool is_binary, bool is_fragment)
-    : _scanner(scanner), _is_binary(is_binary), _is_fragment(is_fragment), _has_bounding_box(false), _pmol(nullptr), _pqmol(nullptr), ignore_bad_valence(false)
+    : _scanner(scanner), _is_binary(is_binary), _is_fragment(is_fragment), _has_bounding_box(false), _pmol(nullptr), _pqmol(nullptr), ignore_bad_valence(false),
+      valence_mode(ValenceMode::BIOVIA_2009)
 {
+}
+
+void MoleculeCdxmlLoader::setOptions(const LoaderOptions& opts)
+{
+    stereochemistry_options = opts.stereochemistry_options;
+    ignore_bad_valence = opts.ignore_bad_valence;
+    valence_mode = opts.valence_mode;
+}
+
+LoaderOptions MoleculeCdxmlLoader::getOptions() const
+{
+    LoaderOptions opts;
+    opts.stereochemistry_options = stereochemistry_options;
+    opts.ignore_bad_valence = ignore_bad_valence;
+    opts.valence_mode = valence_mode;
+    return opts;
 }
 
 void MoleculeCdxmlLoader::_initMolecule(BaseMolecule& mol)
@@ -444,6 +461,7 @@ void MoleculeCdxmlLoader::_initMolecule(BaseMolecule& mol)
     {
         _pmol = &mol.asMolecule();
         _pmol->setIgnoreBadValenceFlag(ignore_bad_valence);
+        _pmol->setValenceMode(valence_mode);
     }
 }
 
@@ -995,12 +1013,11 @@ void MoleculeCdxmlLoader::_addAtomsAndBonds(BaseMolecule& mol, const std::vector
                 _pmol->setExplicitValence(atom_idx, atom.valence);
             _pmol->setAtomRadical(atom_idx, atom.radical);
             _pmol->setAtomIsotope(atom_idx, atom.isotope);
-            if (atom.hydrogens >= 0)
+            if (atom.hydrogens > 0)
                 _pmol->setImplicitH(atom_idx, atom.hydrogens);
             const int element = atom.element;
             // All metals up to group 13, set implicit hydrogens to 0 if set in the cdxml file (and valence to avoid (0) labels)
-            if ((element >= 3 && element <= 4) || (element >= 11 && element <= 12) || (element >= 19 && element <= 30) || (element >= 37 && element <= 48) ||
-                (element >= 55 && element <= 80) || (element >= 87 && element <= 112))
+            if (Element::isMetal(element))
             {
                 if (atom.hydrogens == 0)
                 {
@@ -1168,7 +1185,7 @@ void MoleculeCdxmlLoader::_addBracket(BaseMolecule& mol, const CdxmlBracket& bra
                 if (bracket.usage == kCDXBracketUsage_MultipleGroup)
                 {
                     MultipleGroup& mg = (MultipleGroup&)sgroup;
-                    if (mg.multiplier)
+                    if (mg.multiplier != 0)
                         mg.parent_atoms.push(atom_idx);
                 }
             }
@@ -1185,8 +1202,8 @@ void MoleculeCdxmlLoader::_addBracket(BaseMolecule& mol, const CdxmlBracket& bra
         {
             Superatom& sa = (Superatom&)sgroup;
             sa.contracted = DisplayOption::Contracted;
-            sa.subscript.readString(bracket.label.c_str(), true);
-            sa.display_position.copy(bracket.superatom_position);
+            sa.label.readString(bracket.label.c_str(), true);
+            sa.display_position.set(Vec3f(bracket.superatom_position.x, bracket.superatom_position.y, bracket.superatom_position.z));
         }
         else
             switch (bracket.usage)
@@ -1194,7 +1211,7 @@ void MoleculeCdxmlLoader::_addBracket(BaseMolecule& mol, const CdxmlBracket& bra
             case kCDXBracketUsage_SRU: {
                 RepeatingUnit& ru = (RepeatingUnit&)sgroup;
                 ru.connectivity = bracket.repeat_pattern;
-                ru.subscript.readString(bracket.label.c_str(), true);
+                ru.label.readString(bracket.label.c_str(), true);
             }
             break;
             case kCDXBracketUsage_MultipleGroup: {
@@ -1272,11 +1289,12 @@ void MoleculeCdxmlLoader::_handleSGroup(SGroup& sgroup, const std::unordered_set
         int rep_start = mapping[start];
         int rep_end = mapping[end];
         MultipleGroup& mg = (MultipleGroup&)sgroup;
-        if (mg.multiplier > 1)
+        const int multiplier = mg.multiplier.value_or(0);
+        if (multiplier > 1)
         {
             int start_order = start_bond > 0 ? bmol.getBondOrder(start_bond) : -1;
             int end_order = end_bond > 0 ? bmol.getBondOrder(end_bond) : -1;
-            for (int j = 0; j < mg.multiplier - 1; j++)
+            for (int j = 0; j < multiplier - 1; j++)
             {
                 bmol.mergeWithMolecule(*rep, &mapping, 0);
                 int k;
@@ -1601,12 +1619,11 @@ void MoleculeCdxmlLoader::_parseAltGroup(BaseCDXElement& elem)
         {
             MoleculeCdxmlLoader alt_loader(_scanner, _is_binary);
             BaseMolecule& mol = _pmol ? *(BaseMolecule*)_pmol : *(BaseMolecule*)_pqmol;
-            std::unique_ptr<BaseMolecule> fragment(mol.neu());
-            alt_loader.stereochemistry_options = stereochemistry_options;
-            alt_loader.loadMoleculeFromFragment(*fragment, *r_fragments.front());
             MoleculeRGroups& rgroups = mol.rgroups;
             RGroup& rgroup = rgroups.getRGroup(r_labels.front());
-            rgroup.fragments.add(fragment.release());
+            BaseMolecule& fragment = rgroup.fragments.push_t(BaseMolecule::poolFactoryLike(mol));
+            alt_loader.setOptions(getOptions());
+            alt_loader.loadMoleculeFromFragment(fragment, *r_fragments.front());
         }
     }
 }

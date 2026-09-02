@@ -21,6 +21,7 @@
 
 #include "molecule/ket_monomer_shape.h"
 #include "molecule/ket_objects.h"
+#include "molecule/loader_options.h"
 #include "molecule/monomers_template_library.h"
 
 #include <rapidjson/document.h> // Temporary until direct conversion to molecule supported
@@ -37,15 +38,15 @@ namespace indigo
 {
     class BaseMolecule;
     class BaseReaction;
+    class Molecule;
     class Output;
 
     class DLLEXPORT KetDocument : public MonomerTemplateLibrary
     {
     public:
         DECL_ERROR;
-        KetDocument()
-            : _molecules(), original_format(0), _meta_objects(rapidjson::kArrayType), _r_groups(rapidjson::kArrayType), _json_molecules(rapidjson::kArrayType),
-              _json_document(){};
+        KetDocument();
+        ~KetDocument();
         KetDocument(const KetDocument& other) = delete;
         KetDocument(BaseMolecule& bmol);
         KetDocument(BaseReaction& breact);
@@ -108,11 +109,21 @@ namespace indigo
 
         KetConnection& addConnection(KetConnectionEndPoint ep1, KetConnectionEndPoint ep2);
 
+        // Explicit format-level connections, such as HELM connection-section links
+        // and BILN bond annotations, must not be folded into simple polymer chains.
+        KetConnection& addExplicitConnection(const std::string& conn_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2);
+
+        KetConnection& addExplicitConnection(KetConnectionEndPoint ep1, KetConnectionEndPoint ep2);
+
+        KetConnection& addNonSequenceConnection(const std::string& conn_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2);
+
+        KetConnection& addNonSequenceConnection(KetConnectionEndPoint ep1, KetConnectionEndPoint ep2);
+
         KetConnection& addConnection(const std::string& mon1, const std::string& ap1, const std::string& mon2, const std::string& ap2);
 
         void connectMonomerTo(const std::string& mon1, const std::string& ap1, const std::string& mon2, const std::string& ap2);
 
-        const std::vector<KetConnection> connections() const
+        const std::vector<KetConnection>& connections() const
         {
             return _connections;
         };
@@ -121,7 +132,7 @@ namespace indigo
         // i.e. non-backbone and not sugar-base connections
         // connections that create a cycle place here too
         // parseSimplePolymers should be called to fill this list
-        const std::vector<KetConnection> nonSequenceConnections() const
+        const std::vector<KetConnection>& nonSequenceConnections() const
         {
             return _non_sequence_connections;
         };
@@ -140,6 +151,17 @@ namespace indigo
 
         BaseMolecule& getBaseMolecule();
 
+        // getBaseMolecule() converts lazily, long after the Indigo session is
+        // reachable, so the options have to travel with the document.
+        // Out of line: dropping the cached conversion needs the complete
+        // Molecule type, forward-declared here.
+        void setOptions(const LoaderOptions& opts);
+
+        const LoaderOptions& getOptions() const
+        {
+            return _options;
+        }
+
         bool hasAmbiguousMonomerTemplate(const std::string& id) const
         {
             return _ambiguous_templates.find(id) != _ambiguous_templates.end();
@@ -152,7 +174,7 @@ namespace indigo
         // Monomers connected from m[i] R2 to m[i+1] R1 for peptides
         // For RNA/DNA monomer placed in order Sugar-Base-Phosphate-Sugar... with standard connections
         // Each CHEM returned as separate simple polymer
-        // Also store non-standard or creating cycle connections in nonSequenceConnections list
+        // Also store non-standard, explicit, or cycle-forming connections in nonSequenceConnections list
         void parseSimplePolymers(std::vector<std::deque<std::string>>& sequences, bool for_idt = false);
 
         MonomerClass getMonomerClass(const KetBaseMonomer& monomer) const;
@@ -239,6 +261,7 @@ namespace indigo
         std::vector<std::string> _ambiguous_templates_ids;
         std::vector<KetConnection> _connections;
         std::vector<KetConnection> _non_sequence_connections;
+        std::set<size_t> _forced_non_sequence_connections;
         std::map<std::string, KetBaseMonomerTemplate::TemplateType> _template_id_to_type;
         rapidjson::Value _meta_objects;
         rapidjson::Value _r_groups;
@@ -248,6 +271,8 @@ namespace indigo
         std::vector<std::string> _fasta_properties;
         std::vector<KetMonomerShape> _monomer_shapes;
         std::optional<KetAnnotation> _annotation;
+        mutable std::unique_ptr<Molecule> _cached_molecule;
+        LoaderOptions _options;
     };
 }
 

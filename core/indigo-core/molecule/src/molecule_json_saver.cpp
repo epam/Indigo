@@ -23,6 +23,7 @@
 
 #include "layout/molecule_layout.h"
 
+#include "molecule/ket_keys.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_cip_calculator.h"
 #include "molecule/molecule_json_saver.h"
@@ -120,117 +121,22 @@ void MoleculeJsonSaver::saveFormatMode(KETVersion& version, Array<char>& output)
     output.readString(ver.c_str(), true);
 }
 
-void MoleculeJsonSaver::_checkSGroupIndices(BaseMolecule& mol, Array<int>& sgs_list)
-{
-    QS_DEF(Array<int>, orig_ids);
-    QS_DEF(Array<int>, added_ids);
-    QS_DEF(Array<int>, sgs_mapping);
-    QS_DEF(Array<int>, sgs_changed);
-
-    sgs_list.clear();
-    orig_ids.clear();
-    added_ids.clear();
-    sgs_mapping.clear_resize(mol.sgroups.end());
-    sgs_mapping.zerofill();
-    sgs_changed.clear_resize(mol.sgroups.end());
-    sgs_changed.zerofill();
-
-    int iw = 1;
-    for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
-    {
-        SGroup& sgroup = mol.sgroups.getSGroup(i);
-        if (sgroup.parent_group == 0)
-        {
-            sgs_mapping[i] = iw;
-            iw++;
-        }
-    }
-    for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
-    {
-        if (sgs_mapping[i] == 0)
-        {
-            sgs_mapping[i] = iw;
-            iw++;
-        }
-    }
-
-    for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
-    {
-        SGroup& sgroup = mol.sgroups.getSGroup(i);
-        if (sgroup.original_group == 0)
-        {
-            sgroup.original_group = sgs_mapping[i];
-        }
-        else
-        {
-            for (int j = mol.sgroups.begin(); j != mol.sgroups.end(); j = mol.sgroups.next(j))
-            {
-                SGroup& sg = mol.sgroups.getSGroup(j);
-                if (sg.parent_group == sgroup.original_group && sgs_changed[j] == 0)
-                {
-                    sg.parent_group = sgs_mapping[i];
-                    sgs_changed[j] = 1;
-                }
-            }
-            sgroup.original_group = sgs_mapping[i];
-        }
-        orig_ids.push(sgroup.original_group);
-    }
-
-    for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
-    {
-        SGroup& sgroup = mol.sgroups.getSGroup(i);
-        if (sgroup.parent_group == 0)
-        {
-            sgs_list.push(i);
-            added_ids.push(sgroup.original_group);
-        }
-        else
-        {
-            if (orig_ids.find(sgroup.parent_group) == VALUE_UNKNOWN || sgroup.parent_group == sgroup.original_group)
-            {
-                sgroup.parent_group = 0;
-                sgs_list.push(i);
-                added_ids.push(sgroup.original_group);
-            }
-        }
-    }
-
-    for (;;)
-    {
-        for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
-        {
-            SGroup& sgroup = mol.sgroups.getSGroup(i);
-            if (sgroup.parent_group == 0)
-                continue;
-
-            if (added_ids.find(sgroup.original_group) != VALUE_UNKNOWN)
-                continue;
-
-            if (added_ids.find(sgroup.parent_group) != VALUE_UNKNOWN)
-            {
-                sgs_list.push(i);
-                added_ids.push(sgroup.original_group);
-            }
-        }
-        if (sgs_list.size() == mol.countSGroups())
-            break;
-    }
-}
-
 void MoleculeJsonSaver::saveSGroups(BaseMolecule& mol, JsonWriter& writer)
 {
-    QS_DEF(Array<int>, sgs_sorted);
-    _checkSGroupIndices(mol, sgs_sorted);
-    int sGroupsCount = mol.countSGroups();
+    auto sgroup_infos = mol.sgroups.getOrderedSGroups();
+    int sGroupsCount = static_cast<int>(sgroup_infos.size());
     bool componentDefined = false;
     if (mol.isQueryMolecule())
     {
         QueryMolecule& qmol = static_cast<QueryMolecule&>(mol);
-        if (qmol.components.size() > 0 && qmol.components[0])
+        for (int i = 0; i < qmol.components.size(); ++i)
         {
-            componentDefined = true;
-            sGroupsCount++;
+            if (qmol.components[i] > 0)
+            {
+                componentDefined = true;
+                sGroupsCount++;
+                break;
+            }
         }
     }
 
@@ -238,11 +144,9 @@ void MoleculeJsonSaver::saveSGroups(BaseMolecule& mol, JsonWriter& writer)
     {
         writer.Key("sgroups");
         writer.StartArray();
-        // int idx = 1;
-        for (int i = 0; i < sgs_sorted.size(); i++)
+        for (const auto& info : sgroup_infos)
         {
-            int sg_idx = sgs_sorted[i];
-            auto& sgrp = mol.sgroups.getSGroup(sg_idx);
+            SGroup& sgrp = info.sgroup;
             saveSGroup(sgrp, writer);
         }
         // save queryComponent
@@ -256,7 +160,7 @@ void MoleculeJsonSaver::saveSGroups(BaseMolecule& mol, JsonWriter& writer)
             writer.StartArray();
             for (int i = 0; i < qmol.vertexCount(); i++)
             {
-                if (qmol.components[i])
+                if (i < qmol.components.size() && qmol.components[i] > 0)
                 {
                     writer.Int(i);
                 }
@@ -319,10 +223,14 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
             writer.String(query_oper);
         }
 
-        writer.Key("x");
-        writeFloat(writer, dsg.display_pos.x);
-        writer.Key("y");
-        writeFloat(writer, dsg.display_pos.y);
+        if (dsg.display_pos.has_value())
+        {
+            const Vec2f& display_pos = dsg.display_pos.value();
+            writer.Key("x");
+            writeFloat(writer, display_pos.x);
+            writer.Key("y");
+            writeFloat(writer, display_pos.y);
+        }
 
         if (!dsg.detached)
         {
@@ -342,7 +250,7 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
             writer.Bool(true);
         }
 
-        char tag = dsg.tag;
+        char tag = dsg.tag.value_or(0);
         if (tag != 0 && tag != ' ')
         {
             writer.Key("tag");
@@ -350,17 +258,18 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
             writer.String(tag_s.c_str());
         }
 
-        if (dsg.num_chars > 0)
+        const int num_chars = dsg.num_chars.value_or(0);
+        if (num_chars > 0)
         {
             writer.Key("displayedChars");
-            writer.Int(dsg.num_chars);
+            writer.Int(num_chars);
         }
     }
     break;
     case SGroup::SG_TYPE_SUP: {
         Superatom& sa = (Superatom&)sgroup;
         writer.Key("name");
-        writer.String(sa.subscript.size() ? sa.subscript.ptr() : "");
+        writer.String(sgroup.label.size() ? sgroup.label.ptr() : "");
         if (sa.contracted == DisplayOption::Expanded)
         {
             writer.Key("expanded");
@@ -402,14 +311,15 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
     break;
     case SGroup::SG_TYPE_SRU: {
         RepeatingUnit& ru = (RepeatingUnit&)sgroup;
-        if (ru.subscript.size())
+        if (sgroup.label.size())
         {
             writer.Key("subscript");
-            writer.String(ru.subscript.ptr());
+            writer.String(sgroup.label.ptr());
         }
 
         writer.Key("connectivity");
-        switch (ru.connectivity)
+        const int connectivity = ru.connectivity.value_or(SGroup::HEAD_TO_TAIL);
+        switch (connectivity)
         {
         case SGroup::HEAD_TO_TAIL:
             writer.String("HT");
@@ -433,7 +343,7 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
             writer.EndArray();
         }
         writer.Key("mul");
-        writer.Int(mg.multiplier);
+        writer.Int(mg.multiplier.value_or(0));
     }
     break;
     case SGroup::SG_TYPE_MON:
@@ -444,25 +354,27 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
         break;
     case SGroup::SG_TYPE_COP: {
         CopolymerGroup& ru = (CopolymerGroup&)sgroup;
-        if (ru.sgroup_subtype != 0)
+        const int subtype = ru.sgroup_subtype.value_or(0);
+        if (subtype != 0)
         {
             writer.Key("subtype");
-            if (ru.sgroup_subtype == SGroup::SG_SUBTYPE_ALT)
+            if (subtype == SGroup::SG_SUBTYPE_ALT)
             {
                 writer.String("ALT");
             }
-            else if (ru.sgroup_subtype == SGroup::SG_SUBTYPE_RAN)
+            else if (subtype == SGroup::SG_SUBTYPE_RAN)
             {
                 writer.String("RAN");
             }
-            else if (ru.sgroup_subtype == SGroup::SG_SUBTYPE_BLO)
+            else if (subtype == SGroup::SG_SUBTYPE_BLO)
             {
                 writer.String("BLO");
             }
         }
 
         writer.Key("connectivity");
-        switch (ru.connectivity)
+        const int connectivity = ru.connectivity.value_or(SGroup::HEAD_TO_TAIL);
+        switch (connectivity)
         {
         case SGroup::HEAD_TO_TAIL:
             writer.String("HT");
@@ -501,12 +413,12 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
         break;
     }
 
-    if (sgroup.bonds.size())
+    if (sgroup.getBonds().size())
     {
         writer.Key("bonds");
         writer.StartArray();
-        for (int i = 0; i < sgroup.bonds.size(); ++i)
-            writer.Int(sgroup.bonds[i]);
+        for (int i = 0; i < sgroup.getBonds().size(); ++i)
+            writer.Int(sgroup.getBonds()[i]);
         writer.EndArray();
     }
 
@@ -934,7 +846,6 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
         int mapping = mol.reaction_atom_mapping[i];
         int inv_ret = mol.reaction_atom_inversion[i];
         bool ecflag = mol.reaction_atom_exact_change[i];
-        int hcount = MoleculeSavers::getHCount(mol, i, anum, charge);
 
         if (_pqmol && !is_rSite) // No custom query for RSite
         {
@@ -1015,6 +926,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
                 writer.Bool(true);
             }
 
+            int hcount = MoleculeSavers::getHCount(mol, i, anum, charge);
             if (hcount == VALUE_UNKNOWN)
                 hcount = 0;
             else
@@ -1032,10 +944,15 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
         }
         else if (_pmol)
         {
-            if (Molecule::shouldWriteHCount(mol.asMolecule(), i) && hcount > 0)
+            if (Molecule::shouldWriteHCount(mol.asMolecule(), i))
             {
-                writer.Key("implicitHCount");
-                writer.Int(hcount);
+                const bool metal = Element::isMetal(anum);
+                const int hcount = metal ? mol.asMolecule().getImplicitH_NoThrow(i, -1) : MoleculeSavers::getHCount(mol, i, anum, charge);
+                if (hcount > 0 || (metal && hcount == 0))
+                {
+                    writer.Key("implicitHCount");
+                    writer.Int(hcount);
+                }
             }
         }
 
@@ -1177,6 +1094,24 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
     }
 }
 
+// [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+// Validates that a TGroup is safe to save to KET JSON.
+// Returns true if the TGroup has all required data, false otherwise.
+// Invalid TGroups should be skipped to prevent malformed JSON output.
+static bool isValidTGroupForSaving(const TGroup& tg)
+{
+    // For non-ambiguous templates, fragment is required for saving template structure
+    if (!tg.ambiguous && tg.fragment == nullptr)
+        return false;
+
+    // Template ID is required for template name and identification
+    std::string tg_id = monomerId(tg);
+    if (tg_id.empty())
+        return false;
+
+    return true;
+}
+
 void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
 {
     std::string template_id("monomerTemplate-");
@@ -1301,6 +1236,12 @@ void MoleculeJsonSaver::saveMonomerTemplate(TGroup& tg, JsonWriter& writer)
     {
         writer.Key("aliasAxoLabs");
         writer.String(tg.aliasAxoLabs.ptr());
+    }
+
+    if (tg.aliasBILN.size() > 0)
+    {
+        writer.Key("aliasBILN");
+        writer.String(tg.aliasBILN.ptr());
     }
 
     saveMonomerAttachmentPoints(tg, writer);
@@ -1467,7 +1408,7 @@ void MoleculeJsonSaver::saveRGroup(RGroup& rgroup, int rgnum, JsonWriter& writer
     {
         if (fmode)
             writer.StartObject();
-        saveFragment(*rgroup.fragments[i], writer);
+        saveFragment(rgroup.fragments[i], writer);
         if (fmode)
             writer.EndObject();
     }
@@ -1508,36 +1449,155 @@ int MoleculeJsonSaver::getMonomerNumber(int mon_idx)
 
 void MoleculeJsonSaver::saveEndpoint(BaseMolecule& mol, const std::string& ep, int beg_idx, int end_idx, JsonWriter& writer, bool hydrogen)
 {
+    if (!mol.isTemplateAtom(beg_idx))
+    {
+        saveAtomEndpoint(ep, beg_idx, writer);
+        return;
+    }
+
     writer.Key(ep.c_str());
     writer.StartObject();
-    if (mol.isTemplateAtom(beg_idx))
+    writer.Key("monomerId");
+    writer.String((std::string("monomer") + std::to_string(getMonomerNumber(beg_idx))).c_str());
+    auto conn_it = _monomer_connections.find(std::make_pair(beg_idx, end_idx));
+    if (conn_it != _monomer_connections.end())
     {
-        writer.Key("monomerId");
-        writer.String((std::string("monomer") + std::to_string(getMonomerNumber(beg_idx))).c_str());
-        auto conn_it = _monomer_connections.find(std::make_pair(beg_idx, end_idx));
-        if (conn_it != _monomer_connections.end())
-        {
-            writer.Key("attachmentPointId");
-            writer.String(convertAPToHELM(conn_it->second).c_str());
-        }
-        else if (!hydrogen) // Hydrogen connection has no attachment point
-            throw Error("Attachment point not found!!!");
+        writer.Key("attachmentPointId");
+        writer.String(convertAPToHELM(conn_it->second).c_str());
     }
-    else
-    {
-        auto atom_mol_it = _atom_to_mol_id.find(beg_idx);
-        if (atom_mol_it != _atom_to_mol_id.end())
-        {
-            int mol_id = atom_mol_it->second;
-            writer.Key("moleculeId");
-            writer.String((std::string("mol") + std::to_string(mol_id)).c_str());
-            writer.Key("atomId");
-            writer.String(std::to_string(_mappings[mol_id][beg_idx]).c_str());
-        }
-        else
-            throw Error("Atom %d not found", beg_idx);
-    }
+    else if (!hydrogen) // Hydrogen connection has no attachment point
+        throw Error("Attachment point not found!!!");
     writer.EndObject();
+}
+
+void MoleculeJsonSaver::saveAtomEndpoint(const std::string& ep, int atom_idx, JsonWriter& writer)
+{
+    const auto atom_mol_it = _atom_to_mol_id.find(atom_idx);
+    if (atom_mol_it == _atom_to_mol_id.end())
+        throw Error("Atom %d not found", atom_idx);
+
+    const int mol_id = atom_mol_it->second;
+    writer.Key(ep.c_str());
+    writer.StartObject();
+    writer.Key(KetKeyMoleculeId);
+    writer.String((std::string(KetMoleculeRefPrefix) + std::to_string(mol_id)).c_str());
+    writer.Key(KetKeyAtomId);
+    writer.String(std::to_string(_mappings[mol_id][atom_idx]).c_str());
+    writer.EndObject();
+}
+
+void MoleculeJsonSaver::collectAttachmentGroups(BaseMolecule& mol)
+{
+    _mol_attachment_groups.clear();
+    _mol_attachment_groups.resize(_no_template_molecules.size());
+
+    auto& groups = mol.attachment_groups;
+    for (int i = groups.begin(); i != groups.end(); i = groups.next(i))
+    {
+        const auto& atoms = groups.group(i).atoms();
+        if (atoms.empty())
+            continue;
+
+        // A group and its atoms are one component (collectExternalNeighbors), so the
+        // node that took the first atom holds the whole group.
+        const auto atom_mol_it = _atom_to_mol_id.find(atoms.front());
+        if (atom_mol_it == _atom_to_mol_id.end())
+            throw Error("Attachment group %d belongs to no saved molecule", i);
+        _mol_attachment_groups[atom_mol_it->second].push_back(i);
+    }
+}
+
+std::pair<int, int> MoleculeJsonSaver::attachmentGroupRef(int group_idx) const
+{
+    for (int mol_id = 0; mol_id < static_cast<int>(_mol_attachment_groups.size()); ++mol_id)
+    {
+        const auto& ids = _mol_attachment_groups[mol_id];
+        const auto it = std::find(ids.begin(), ids.end(), group_idx);
+        if (it != ids.end())
+            return {mol_id, static_cast<int>(it - ids.begin())};
+    }
+    throw Error("Attachment group %d was not distributed over the saved molecules", group_idx);
+}
+
+void MoleculeJsonSaver::saveAttachmentGroups(BaseMolecule& mol, int mol_id, JsonWriter& writer)
+{
+    if (mol_id >= static_cast<int>(_mol_attachment_groups.size()) || _mol_attachment_groups[mol_id].empty())
+        return;
+
+    const Array<int>& mapping = _mappings[mol_id];
+    const auto& group_indices = _mol_attachment_groups[mol_id];
+    writer.Key(KetKeyAttachmentGroups);
+    writer.StartArray();
+    for (size_t position = 0; position < group_indices.size(); ++position)
+    {
+        // The KET id of a group is its position in the list of its own node.
+        const int group_idx = group_indices[position];
+        writer.StartObject();
+        writer.Key(KetKeyId);
+        writer.String(std::to_string(position).c_str());
+        writer.Key(KetKeyAtoms);
+        writer.StartArray();
+        for (int atom : mol.attachment_groups.group(group_idx).atoms())
+        {
+            // A group whose atoms ended up in different nodes cannot be written at
+            // all: the members are addressed by their index inside one node.
+            if (mapping[atom] < 0)
+                throw Error("Attachment group %d is split across molecules", group_idx);
+            writer.Int(mapping[atom]);
+        }
+        writer.EndArray();
+        writer.EndObject();
+    }
+    writer.EndArray();
+}
+
+void MoleculeJsonSaver::saveHapticEndpoint(const std::string& ep, const HapticBond::Endpoint& endpoint, JsonWriter& writer)
+{
+    if (!endpoint.isGroup())
+    {
+        saveAtomEndpoint(ep, endpoint.index(), writer);
+        return;
+    }
+
+    const auto ref = attachmentGroupRef(endpoint.index());
+    writer.Key(ep.c_str());
+    writer.StartObject();
+    writer.Key(KetKeyMoleculeId);
+    writer.String((std::string(KetMoleculeRefPrefix) + std::to_string(ref.first)).c_str());
+    writer.Key(KetKeyAttachmentGroupId);
+    writer.String(std::to_string(ref.second).c_str());
+    writer.EndObject();
+}
+
+bool MoleculeJsonSaver::hasHapticConnections(BaseMolecule& mol)
+{
+    const auto& bonds = mol.haptic_bonds;
+    for (int i = bonds.begin(); i != bonds.end(); i = bonds.next(i))
+        if (bonds.at(i).type() == _BOND_HAPTIC)
+            return true;
+
+    return false;
+}
+
+void MoleculeJsonSaver::saveHapticConnections(BaseMolecule& mol, JsonWriter& writer)
+{
+    const auto& bonds = mol.haptic_bonds;
+    for (int i = bonds.begin(); i != bonds.end(); i = bonds.next(i))
+    {
+        const HapticBond& bond = bonds.at(i);
+        // Only the haptic kind has a KET representation; a variable attachment
+        // (#3731) would silently turn into one, so it is dropped like any other
+        // construct the format cannot hold.
+        if (bond.type() != _BOND_HAPTIC)
+            continue;
+
+        writer.StartObject();
+        writer.Key(KetKeyType);
+        writer.String(KetConnectionHaptic);
+        saveHapticEndpoint(KetKeyEndpoint1, bond.begin(), writer);
+        saveHapticEndpoint(KetKeyEndpoint2, bond.end(), writer);
+        writer.EndObject();
+    }
 }
 
 void MoleculeJsonSaver::saveMoleculeReference(int mol_id, JsonWriter& writer)
@@ -1570,7 +1630,13 @@ void MoleculeJsonSaver::saveAnnotation(JsonWriter& writer, const KetObjectAnnota
 
 void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
 {
+    // Everything the nodes are addressed by is rebuilt from scratch: the node
+    // numbering below restarts at zero, so anything kept from a previous save would
+    // send an endpoint to a node of that save.
     _no_template_molecules.clear();
+    _mappings.clear();
+    _atom_to_mol_id.clear();
+    _monomers_enum.clear();
     QS_DEF(Array<char>, buf);
     ArrayOutput out(buf);
     writer.StartObject();
@@ -1589,7 +1655,8 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
     writer.Key("nodes");
     writer.StartArray();
 
-    getSGroupAtoms(mol, _s_neighbors);
+    _s_neighbors.clear();
+    mol.collectExternalNeighbors(_s_neighbors);
     // save mol references
     // int mol_id = 0;
     for (int idx = 0; idx < mol.countComponents(_s_neighbors); ++idx)
@@ -1635,6 +1702,8 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
             }
         }
     }
+
+    collectAttachmentGroups(mol);
 
     if (_rmd)
     {
@@ -1709,7 +1778,8 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
     }
 
     // save connections and templates
-    if (mol.tgroups.getTGroupCount())
+    const bool has_templates = mol.tgroups.getTGroupCount() != 0;
+    if (has_templates)
     {
         // collect attachment points into unordered map <key, val>. key - pair of from and destination atom. val - attachment point name.
         _monomer_connections.clear();
@@ -1718,36 +1788,54 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
             auto& sap = mol.template_attachment_points.at(i);
             _monomer_connections.emplace(std::make_pair(sap.ap_occur_idx, sap.ap_aidx), sap.ap_id.ptr());
         }
+    }
 
-        // save connections
-        writer.Key("connections");
+    // A haptic bond is a connection of the root as well, and it lives in a molecule
+    // that has no templates at all.
+    if (has_templates || hasHapticConnections(mol))
+    {
+        writer.Key(KetKeyConnections);
         writer.StartArray();
-        auto& bond_annotations = mol.getBondAnnotations();
-        for (auto i : mol.edges())
+        if (has_templates)
         {
-            auto& e = mol.getEdge(i);
-            if (mol.isTemplateAtom(e.beg) || mol.isTemplateAtom(e.end))
+            auto& bond_annotations = mol.getBondAnnotations();
+            for (auto i : mol.edges())
             {
-                // save connections between templates or atoms
-                writer.StartObject();
-                writer.Key("connectionType");
-                bool hydrogen = mol.getBondOrder(i) == _BOND_HYDROGEN;
-                writer.String(hydrogen ? "hydrogen" : "single");
-                // save endpoints
-                saveEndpoint(mol, "endpoint1", e.beg, e.end, writer, hydrogen);
-                saveEndpoint(mol, "endpoint2", e.end, e.beg, writer, hydrogen);
-                if (bond_annotations.count(i) > 0)
-                    saveAnnotation(writer, bond_annotations.at(i));
-                writer.EndObject(); // connection
+                auto& e = mol.getEdge(i);
+                if (mol.isTemplateAtom(e.beg) || mol.isTemplateAtom(e.end))
+                {
+                    // save connections between templates or atoms
+                    writer.StartObject();
+                    writer.Key(KetKeyConnectionType);
+                    bool hydrogen = mol.getBondOrder(i) == _BOND_HYDROGEN;
+                    writer.String(hydrogen ? "hydrogen" : "single");
+                    // save endpoints
+                    saveEndpoint(mol, KetKeyEndpoint1, e.beg, e.end, writer, hydrogen);
+                    saveEndpoint(mol, KetKeyEndpoint2, e.end, e.beg, writer, hydrogen);
+                    if (bond_annotations.count(i) > 0)
+                        saveAnnotation(writer, bond_annotations.at(i));
+                    writer.EndObject(); // connection
+                }
             }
         }
+        saveHapticConnections(mol, writer);
         writer.EndArray(); // connections
+    }
+
+    if (has_templates)
+    {
         writer.Key("templates");
         writer.StartArray();
 
         for (int i = mol.tgroups.begin(); i != mol.tgroups.end(); i = mol.tgroups.next(i))
         {
             TGroup& tg = mol.tgroups.getTGroup(i);
+            // [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+            // Validate TGroup before writing template reference to prevent malformed JSON.
+            // Skip invalid TGroups (e.g., null fragment or empty ID).
+            if (!isValidTGroupForSaving(tg))
+                continue;
+
             auto template_name = std::string(tg.ambiguous ? "ambiguousMonomerTemplate-" : "monomerTemplate-") + monomerId(tg);
             writer.StartObject();
             writer.Key("$ref");
@@ -1771,7 +1859,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
     if (!BaseMolecule::hasCoord(*mol))
     {
         MoleculeLayout ml(*mol, false);
-        ml.layout_orientation = UNCPECIFIED;
+        ml.layout_orientation = UNSPECIFIED;
         ml.make();
     }
 
@@ -1882,6 +1970,12 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
     for (int i = mol->tgroups.begin(); i != mol->tgroups.end(); i = mol->tgroups.next(i))
     {
         TGroup& tg = mol->tgroups.getTGroup(i);
+        // [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+        // Validate TGroup before writing template node to prevent malformed JSON.
+        // Skip invalid TGroups (e.g., null fragment or empty ID).
+        if (!isValidTGroupForSaving(tg))
+            continue;
+
         if (tg.ambiguous)
             saveAmbiguousMonomerTemplate(tg, writer);
         else
@@ -1900,6 +1994,9 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
             writer.Key("type");
             writer.String("molecule");
             saveFragment(*component, writer);
+            // The groups were distributed over the components of the clone, whose
+            // group indices need not match those of bmol.
+            saveAttachmentGroups(*mol, i, writer);
             // TODO: the code below needs refactoring
             Vec3f flag_pos;
             if (bmol.getStereoFlagPosition(i, flag_pos))
@@ -2071,7 +2168,7 @@ void MoleculeJsonSaver::saveMolecule(BaseMolecule& bmol, JsonWriter& writer)
     // save monomer shapes
     for (int shape_idx = 0; shape_idx < mol->monomer_shapes.size(); ++shape_idx)
     {
-        auto& monomer_shape = *mol->monomer_shapes[shape_idx];
+        auto& monomer_shape = mol->monomer_shapes[shape_idx];
         writer.Key((KetMonomerShape::ref_prefix + std::to_string(shape_idx)).c_str());
         writer.StartObject();
         writer.Key("type");
@@ -2174,13 +2271,13 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
 
     const auto& meta_objects = meta.metaData();
     int arrow_id = 0, plus_id = 0, text_id = 0, multi_arrow_id = meta.getMetaCount(ReactionArrowObject::CID);
-    for (int meta_index = 0; meta_index < meta_objects.size(); ++meta_index)
+    for (int meta_index = 0; meta_index < meta_objects.size(); meta_index++)
     {
-        auto pobj = meta_objects[meta_index];
-        switch (pobj->_class_id)
+        const MetaObject& obj = meta_objects[meta_index];
+        switch (obj._class_id)
         {
         case ReactionArrowObject::CID: {
-            ReactionArrowObject& ar = (ReactionArrowObject&)(*pobj);
+            const ReactionArrowObject& ar = (const ReactionArrowObject&)obj;
             writer.StartObject();
             if (add_reaction_data)
             {
@@ -2226,7 +2323,7 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
         }
         break;
         case ReactionMultitailArrowObject::CID: {
-            ReactionMultitailArrowObject& ar = (ReactionMultitailArrowObject&)(*pobj);
+            const ReactionMultitailArrowObject& ar = (const ReactionMultitailArrowObject&)obj;
             writer.StartObject();
             if (add_reaction_data)
             {
@@ -2306,7 +2403,7 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
         }
         break;
         case ReactionPlusObject::CID: {
-            ReactionPlusObject& rp = (ReactionPlusObject&)(*pobj);
+            const ReactionPlusObject& rp = (const ReactionPlusObject&)obj;
             writer.StartObject();
             if (add_reaction_data)
             {
@@ -2325,7 +2422,7 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
         }
         break;
         case SimpleGraphicsObject::CID: {
-            auto simple_obj = (SimpleGraphicsObject*)pobj;
+            auto simple_obj = (const SimpleGraphicsObject*)&obj;
             writer.StartObject();
             writer.Key("type");
             writer.String("simpleObject");
@@ -2358,7 +2455,7 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
             break;
         }
         case SimpleTextObject::CID: {
-            auto ptext_obj = (SimpleTextObject*)pobj;
+            auto ptext_obj = (const SimpleTextObject*)&obj;
             writer.StartObject();
             if (add_reaction_data)
             {
@@ -2375,7 +2472,7 @@ void MoleculeJsonSaver::saveMetaData(JsonWriter& writer, const MetaDataStorage& 
             break;
         }
         case EmbeddedImageObject::CID: {
-            auto image_obj = static_cast<const EmbeddedImageObject*>(pobj);
+            auto image_obj = static_cast<const EmbeddedImageObject*>(&obj);
             auto& bbox = image_obj->getBoundingBox();
             writer.StartObject(); // start node
             writer.Key("type");

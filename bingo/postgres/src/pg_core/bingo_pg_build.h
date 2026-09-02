@@ -4,8 +4,8 @@
 #ifndef _BINGO_PG_BUILD_H__
 #define _BINGO_PG_BUILD_H__
 
+#include "base_cpp/array.h"
 #include "base_cpp/exception.h"
-#include "base_cpp/obj_array.h"
 #include <memory>
 
 #include "bingo_pg_build_engine.h"
@@ -29,6 +29,12 @@ public:
     ~BingoPgBuild();
 
     /*
+     * Complete a bulk build after the heap scan succeeds. Build publication is
+     * explicit so error unwinding never performs successful-build finalization.
+     */
+    void finish();
+
+    /*
      * Inserts a new structure into the index
      * Returns true if insertion was successfull
      */
@@ -46,6 +52,7 @@ private:
 
     void _prepareBuilding(const char* schema_name, const char* index_schema);
     void _prepareUpdating();
+    void _validateBuiltSection(int section_offset, int section_pages);
 
     /*
      * Index relation
@@ -64,7 +71,7 @@ private:
      */
     bool _buildingState;
 
-    indigo::ObjArray<BingoPgBuildEngine::StructCache> _parrallelCache;
+    indigo::PtrArray<BingoPgBuildEngine::StructCache> _parrallelCache;
 
     // #ifdef BINGO_PG_INTEGRITY_DEBUG
     //    indigo::std::unique_ptr<FileOutput> debug_fileoutput;

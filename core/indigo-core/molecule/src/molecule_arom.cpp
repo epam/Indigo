@@ -516,11 +516,11 @@ bool MoleculeAromatizer::aromatizeBonds(Molecule& mol, const AromaticityOptions&
     int n_rgroups = mol.rgroups.getRGroupCount();
     for (int i = 1; i <= n_rgroups; i++)
     {
-        PtrPool<BaseMolecule>& frags = mol.rgroups.getRGroup(i).fragments;
+        PtrReusablePool<BaseMolecule>& frags = mol.rgroups.getRGroup(i).fragments;
 
         for (int j = frags.begin(); j != frags.end(); j = frags.next(j))
         {
-            Molecule& fragment = frags[j]->asMolecule();
+            Molecule& fragment = frags[j].asMolecule();
             aromatic_bond_found |= MoleculeAromatizer::aromatizeBonds(fragment, options);
         }
     }
@@ -728,7 +728,12 @@ QueryMoleculeAromatizer::PiValue QueryMoleculeAromatizer::_getPiLabel(int v_idx)
 
     int valence, implicit_h;
 
-    if (!Element::calcValence(number, charge, radical, min_conn, valence, implicit_h, false) && !query.possibleNitrogenV5(v_idx))
+    // Non-standard valence disqualifies this atom from π-system assignment (except for
+    // the intentional V5 nitrogen). Read `nonStandard` rather than the return value —
+    // in permissive mode calcValence always returns true.
+    bool nonStandard = false;
+    Element::calcValence(number, charge, radical, min_conn, valence, implicit_h, false, &nonStandard);
+    if (nonStandard && !query.possibleNitrogenV5(v_idx))
         return PiValue(-1, -1);
 
     if (_basemol.possibleAtomNumber(v_idx, ELEM_C) && query.getExplicitValence(v_idx) == 5)
@@ -892,11 +897,11 @@ bool QueryMoleculeAromatizer::_aromatizeBonds(QueryMolecule& mol, int additional
     rgroups_attached_single.expandFill(n_rgroups + 1, true);
     for (int i = 1; i <= n_rgroups; i++)
     {
-        PtrPool<BaseMolecule>& frags = rgroups.getRGroup(i).fragments;
+        PtrReusablePool<BaseMolecule>& frags = rgroups.getRGroup(i).fragments;
 
         for (int j = frags.begin(); j != frags.end(); j = frags.next(j))
         {
-            QueryMolecule& fragment = frags[j]->asQueryMolecule();
+            QueryMolecule& fragment = frags[j].asQueryMolecule();
 
             aromatized |= _aromatizeRGroupFragment(fragment, rgroups_attached_single[i], options);
         }
