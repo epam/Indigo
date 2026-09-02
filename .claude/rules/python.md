@@ -1,6 +1,7 @@
 ---
 paths:
   - "api/python/**/*.py"
+  - "api/http/**/*.py"
   - "utils/indigo-service/**/*.py"
   - "bingo/bingo-elastic/python/**/*.py"
   - "bingo/tests/**/*.py"
@@ -27,7 +28,7 @@ linter settings: [.memory-bank/conventions.md](../../.memory-bank/conventions.md
 - A C call returning `-1` is an error: raise, never return the sentinel to the caller.
 - Release native resources explicitly. `__del__` calling `indigoFree()` is a backstop, not the plan.
 
-## REST service (`utils/indigo-service/`)
+## REST services (`api/http/`, and the older `utils/indigo-service/`)
 
 - One Indigo instance per request, isolated via `ContextVar`; instances are never shared across
   requests or threads.
