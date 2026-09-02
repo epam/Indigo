@@ -680,6 +680,42 @@ class IndigoLib:
         ]
         IndigoLib.lib.indigoIterateSGroupCrossBonds.restype = c_int
         IndigoLib.lib.indigoIterateSGroupCrossBonds.argtypes = [c_int]
+        IndigoLib.lib.indigoAddAttachmentGroup.restype = c_int
+        IndigoLib.lib.indigoAddAttachmentGroup.argtypes = [
+            c_int,
+            c_int,
+            POINTER(c_int),
+        ]
+        IndigoLib.lib.indigoCountAttachmentGroups.restype = c_int
+        IndigoLib.lib.indigoCountAttachmentGroups.argtypes = [c_int]
+        IndigoLib.lib.indigoIterateAttachmentGroups.restype = c_int
+        IndigoLib.lib.indigoIterateAttachmentGroups.argtypes = [c_int]
+        IndigoLib.lib.indigoGetAttachmentGroup.restype = c_int
+        IndigoLib.lib.indigoGetAttachmentGroup.argtypes = [c_int, c_int]
+        IndigoLib.lib.indigoSetAttachmentGroupAtoms.restype = c_int
+        IndigoLib.lib.indigoSetAttachmentGroupAtoms.argtypes = [
+            c_int,
+            c_int,
+            POINTER(c_int),
+        ]
+        IndigoLib.lib.indigoGetAttachmentGroupAnchor.restype = c_int
+        IndigoLib.lib.indigoGetAttachmentGroupAnchor.argtypes = [c_int]
+        IndigoLib.lib.indigoIsAttachmentGroup.restype = c_int
+        IndigoLib.lib.indigoIsAttachmentGroup.argtypes = [c_int]
+        IndigoLib.lib.indigoAddHapticBond.restype = c_int
+        IndigoLib.lib.indigoAddHapticBond.argtypes = [c_int, c_int, c_int]
+        IndigoLib.lib.indigoCountHapticBonds.restype = c_int
+        IndigoLib.lib.indigoCountHapticBonds.argtypes = [c_int]
+        IndigoLib.lib.indigoIterateHapticBonds.restype = c_int
+        IndigoLib.lib.indigoIterateHapticBonds.argtypes = [c_int]
+        IndigoLib.lib.indigoGetHapticBond.restype = c_int
+        IndigoLib.lib.indigoGetHapticBond.argtypes = [c_int, c_int]
+        IndigoLib.lib.indigoGetHapticBondBegin.restype = c_int
+        IndigoLib.lib.indigoGetHapticBondBegin.argtypes = [c_int]
+        IndigoLib.lib.indigoGetHapticBondEnd.restype = c_int
+        IndigoLib.lib.indigoGetHapticBondEnd.argtypes = [c_int]
+        IndigoLib.lib.indigoHapticBondType.restype = c_char_p
+        IndigoLib.lib.indigoHapticBondType.argtypes = [c_int]
         IndigoLib.lib.indigoAddSGroupAttachmentPoint.restype = c_int
         IndigoLib.lib.indigoAddSGroupAttachmentPoint.argtypes = [
             c_int,
