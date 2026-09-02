@@ -16,14 +16,14 @@ feature file must stay true across a refactor.
 
 ## Documented
 
-None yet.
+- [valence-and-implicit-hydrogens.md](./valence-and-implicit-hydrogens.md) — the `valence-mode`
+  option, the failure contract, and why a client may show a different number
 
-## Worth writing first
+## Worth writing next
 
 The capabilities whose behaviour is most often argued about in tickets, in rough priority order:
 
-1. `valence-and-implicit-hydrogens` — model selection, what each model promises, where they differ
-2. `stereochemistry` — what the loaders accept, what the checker rejects, what is silently dropped
-3. `substructure-search` — matching semantics for queries, aromaticity handling, timeouts
-4. `format-round-trip` — which conversions are lossless, and what is dropped where they are not
-5. `structure-checker` — the check catalogue and what each code actually means
+1. `stereochemistry` — what the loaders accept, what the checker rejects, what is silently dropped
+2. `substructure-search` — matching semantics for queries, aromaticity handling, timeouts
+3. `format-round-trip` — which conversions are lossless, and what is dropped where they are not
+4. `structure-checker` — the check catalogue and what each code actually means

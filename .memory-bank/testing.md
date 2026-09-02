@@ -41,7 +41,7 @@ pytest test_exact/test_exact.py --db postgres
 ```bash
 docker build --tag epmlsop/bingo-postgres:latest \
   -f bingo/postgres/Dockerfile --build-arg BINGO_PG_VERSION=14 .
-docker run -d -p 5432:5432 -e "POSTGRES_PASSWORD=password" epmlsop/bingo-postgres:latest
+docker run -d -p 5432:5432 -e "POSTGRES_PASSWORD=<super_secrete_password>" epmlsop/bingo-postgres:latest
 ```
 
 ### Spinning up Elasticsearch for bingo-elastic
