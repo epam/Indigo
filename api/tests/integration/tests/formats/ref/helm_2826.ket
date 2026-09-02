@@ -294,7 +294,7 @@
         ],
         "templates": [
             {
-                "$ref": "monomerTemplate-dR___Deoxy-Ribose"
+                "$ref": "monomerTemplate-Sugard"
             },
             {
                 "$ref": "monomerTemplate-A___Adenine"
@@ -348,17 +348,17 @@
         "id": "0",
         "seqid": 1,
         "position": {
-            "x": 0.000000,
+            "x": 6.000000,
             "y": -0.000000
         },
         "alias": "d",
-        "templateId": "dR___Deoxy-Ribose"
+        "templateId": "Sugard"
     },
     "ambiguousMonomer-1": {
         "type": "ambiguousMonomer",
         "id": "1",
         "position": {
-            "x": 0.000000,
+            "x": 6.000000,
             "y": -1.500000
         },
         "seqid": 2,
@@ -370,7 +370,7 @@
         "id": "2",
         "seqid": 3,
         "position": {
-            "x": 1.500000,
+            "x": 4.500000,
             "y": -0.000000
         },
         "alias": "p",
@@ -385,7 +385,7 @@
             "y": -0.000000
         },
         "alias": "d",
-        "templateId": "dR___Deoxy-Ribose"
+        "templateId": "Sugard"
     },
     "ambiguousMonomer-4": {
         "type": "ambiguousMonomer",
@@ -403,7 +403,7 @@
         "id": "5",
         "seqid": 6,
         "position": {
-            "x": 4.500000,
+            "x": 1.500000,
             "y": -0.000000
         },
         "alias": "p",
@@ -414,17 +414,17 @@
         "id": "6",
         "seqid": 7,
         "position": {
-            "x": 6.000000,
+            "x": 0.000000,
             "y": -0.000000
         },
         "alias": "d",
-        "templateId": "dR___Deoxy-Ribose"
+        "templateId": "Sugard"
     },
     "ambiguousMonomer-7": {
         "type": "ambiguousMonomer",
         "id": "7",
         "position": {
-            "x": 6.000000,
+            "x": 0.000000,
             "y": -1.500000
         },
         "seqid": 8,
@@ -436,7 +436,7 @@
         "id": "8",
         "seqid": 9,
         "position": {
-            "x": 7.500000,
+            "x": -1.500000,
             "y": -0.000000
         },
         "alias": "P",
@@ -448,7 +448,7 @@
         "seqid": 10,
         "position": {
             "x": 0.000000,
-            "y": -3.000000
+            "y": -4.500000
         },
         "alias": "r",
         "templateId": "R___Ribose"
@@ -458,7 +458,7 @@
         "id": "10",
         "position": {
             "x": 0.000000,
-            "y": -4.500000
+            "y": -3.000000
         },
         "seqid": 11,
         "alias": "N",
@@ -470,7 +470,7 @@
         "seqid": 12,
         "position": {
             "x": 1.500000,
-            "y": -3.000000
+            "y": -4.500000
         },
         "alias": "p",
         "templateId": "P___Phosphate"
@@ -481,7 +481,7 @@
         "seqid": 13,
         "position": {
             "x": 3.000000,
-            "y": -3.000000
+            "y": -4.500000
         },
         "alias": "r",
         "templateId": "R___Ribose"
@@ -491,7 +491,7 @@
         "id": "13",
         "position": {
             "x": 3.000000,
-            "y": -4.500000
+            "y": -3.000000
         },
         "seqid": 14,
         "alias": "H",
@@ -503,7 +503,7 @@
         "seqid": 15,
         "position": {
             "x": 4.500000,
-            "y": -3.000000
+            "y": -4.500000
         },
         "alias": "p",
         "templateId": "P___Phosphate"
@@ -514,7 +514,7 @@
         "seqid": 16,
         "position": {
             "x": 6.000000,
-            "y": -3.000000
+            "y": -4.500000
         },
         "alias": "r",
         "templateId": "R___Ribose"
@@ -524,7 +524,7 @@
         "id": "16",
         "position": {
             "x": 6.000000,
-            "y": -4.500000
+            "y": -3.000000
         },
         "seqid": 17,
         "alias": "W",
@@ -536,7 +536,7 @@
         "seqid": 18,
         "position": {
             "x": 7.500000,
-            "y": -3.000000
+            "y": -4.500000
         },
         "alias": "Ssp",
         "templateId": "Ssp___(Sp)-Phosphorothioate"
@@ -574,219 +574,33 @@
         "alias": "p",
         "templateId": "P___Phosphate"
     },
-    "monomerTemplate-dR___Deoxy-Ribose": {
+    "monomerTemplate-Sugard": {
         "type": "monomerTemplate",
-        "id": "dR___Deoxy-Ribose",
+        "id": "Sugard",
         "class": "Sugar",
-        "classHELM": "RNA",
-        "fullName": "Deoxy-Ribose",
-        "alias": "dR",
-        "naturalAnalogShort": "R",
+        "alias": "d",
         "aliasHELM": "d",
+        "unresolved": true,
         "attachmentPoints": [
             {
-                "attachmentAtom": 9,
-                "type": "left",
-                "leavingGroup": {
-                    "atoms": [
-                        10
-                    ]
-                }
+                "attachmentAtom": -1,
+                "label": "R1"
             },
             {
-                "attachmentAtom": 6,
-                "type": "right",
-                "leavingGroup": {
-                    "atoms": [
-                        7
-                    ]
-                }
+                "attachmentAtom": -1,
+                "label": "R2"
             },
             {
-                "attachmentAtom": 0,
-                "type": "side",
-                "leavingGroup": {
-                    "atoms": [
-                        5
-                    ]
-                }
+                "attachmentAtom": -1,
+                "label": "R3"
+            },
+            {
+                "attachmentAtom": -1,
+                "label": "R4"
             }
         ],
-        "atoms": [
-            {
-                "label": "C",
-                "location": [
-                    0.294000,
-                    -1.026000,
-                    0.000000
-                ],
-                "stereoLabel": "abs"
-            },
-            {
-                "label": "C",
-                "location": [
-                    1.103000,
-                    -0.438000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    0.794000,
-                    0.513000,
-                    0.000000
-                ],
-                "stereoLabel": "abs"
-            },
-            {
-                "label": "C",
-                "location": [
-                    -0.206000,
-                    0.513000,
-                    0.000000
-                ],
-                "stereoLabel": "abs"
-            },
-            {
-                "label": "O",
-                "location": [
-                    -0.515000,
-                    -0.438000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    0.294000,
-                    -2.026000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    1.382000,
-                    1.322000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "H",
-                "location": [
-                    2.376000,
-                    1.217000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    -0.794000,
-                    1.322000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    -1.788000,
-                    1.217000,
-                    0.000000
-                ]
-            },
-            {
-                "label": "H",
-                "location": [
-                    -2.376000,
-                    2.026000,
-                    0.000000
-                ]
-            }
-        ],
-        "bonds": [
-            {
-                "type": 1,
-                "atoms": [
-                    0,
-                    4
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    4,
-                    3
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    3,
-                    2
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    2,
-                    1
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    1,
-                    0
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    0,
-                    5
-                ],
-                "stereo": 6
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    2,
-                    6
-                ],
-                "stereo": 1
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    6,
-                    7
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    3,
-                    8
-                ],
-                "stereo": 6
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    8,
-                    9
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    9,
-                    10
-                ]
-            }
-        ]
+        "atoms": [],
+        "bonds": []
     },
     "monomerTemplate-A___Adenine": {
         "type": "monomerTemplate",
@@ -1540,7 +1354,8 @@
         "fullName": "Phosphate",
         "alias": "P",
         "naturalAnalogShort": "P",
-        "aliasHELM": "p",
+        "aliasHELM": "P",
+        "aliasAxoLabs": "p",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -1642,7 +1457,7 @@
         "fullName": "Ribose",
         "alias": "R",
         "naturalAnalogShort": "R",
-        "aliasHELM": "r",
+        "aliasHELM": "R",
         "attachmentPoints": [
             {
                 "attachmentAtom": 10,
@@ -1832,7 +1647,7 @@
                     1,
                     7
                 ],
-                "stereo": 1
+                "stereo": 6
             },
             {
                 "type": 1,

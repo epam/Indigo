@@ -20,6 +20,8 @@
 #include "indigo_savers.h"
 #include "molecule/molfile_saver.h"
 
+#include <cstring>
+
 static void setStrValue(const char* source, char* dest, int len)
 {
     if (strlen(source) > len)
@@ -37,6 +39,26 @@ static void indigoGetMolfileSavingMode(Array<char>& value)
 {
     Indigo& self = indigoGetInstance();
     MolfileSaver::saveFormatMode(self.molfile_saving_mode, value);
+}
+
+static void indigoSetValenceMode(const char* mode)
+{
+    Indigo& self = indigoGetInstance();
+    if (strcmp(mode, "biovia-2009") == 0 || strcmp(mode, "default") == 0)
+        self.valence_mode = ValenceMode::BIOVIA_2009;
+    else if (strcmp(mode, "biovia-2017") == 0)
+        self.valence_mode = ValenceMode::BIOVIA_2017;
+    else
+        throw IndigoError("invalid valence mode: '%s' (expected 'biovia-2009', 'biovia-2017', or 'default')", mode);
+}
+
+static void indigoGetValenceMode(Array<char>& value)
+{
+    Indigo& self = indigoGetInstance();
+    if (self.valence_mode == ValenceMode::BIOVIA_2017)
+        value.readString("biovia-2017", true);
+    else
+        value.readString("biovia-2009", true);
 }
 
 static void indigoSetMonomerLibrarySavingMode(const char* mode)
@@ -61,6 +83,18 @@ static void indigoSetJsonSavingVersion(const char* version)
 {
     Indigo& self = indigoGetInstance();
     MoleculeJsonSaver::parseFormatMode(version, self.ket_saving_version);
+}
+
+static void indigoSetInputFormat(const char* format)
+{
+    Indigo& self = indigoGetInstance();
+    self.input_format = format;
+}
+
+static void indigoGetInputFormat(Array<char>& value)
+{
+    Indigo& self = indigoGetInstance();
+    value.readString(self.input_format.c_str(), true);
 }
 
 static void indigoSetSmilesSavingFormat(const char* mode)
@@ -346,11 +380,13 @@ void IndigoOptionHandlerSetter::setBasicOptionHandlers(const qword id)
     mgr->setOptionHandlerString("treat-stereo-as", indigoSetStereoOption, indigoGetStereoOption);
     mgr->setOptionHandlerBool("ignore-closing-bond-direction-mismatch", SETTER_GETTER_BOOL_OPTION(indigo.ignore_closing_bond_direction_mismatch));
     mgr->setOptionHandlerBool("ignore-bad-valence", SETTER_GETTER_BOOL_OPTION(indigo.ignore_bad_valence));
+    mgr->setOptionHandlerString("valence-mode", indigoSetValenceMode, indigoGetValenceMode);
     mgr->setOptionHandlerBool("treat-x-as-pseudoatom", SETTER_GETTER_BOOL_OPTION(indigo.treat_x_as_pseudoatom));
     mgr->setOptionHandlerBool("dearomatize-on-load", SETTER_GETTER_BOOL_OPTION(indigo.dearomatize_on_load));
     mgr->setOptionHandlerBool("aromatize-skip-superatoms", SETTER_GETTER_BOOL_OPTION(indigo.aromatize_skip_superatoms));
     mgr->setOptionHandlerBool("skip-3d-chirality", SETTER_GETTER_BOOL_OPTION(indigo.skip_3d_chirality));
     mgr->setOptionHandlerBool("deconvolution-aromatization", SETTER_GETTER_BOOL_OPTION(indigo.deconvolution_aromatization));
+    mgr->setOptionHandlerInt("bingonosql-sub-search-thread-count", SETTER_GETTER_INT_OPTION(indigo.bingonosql_tau_sub_search_thread_count));
     mgr->setOptionHandlerBool("deco-save-ap-bond-orders", SETTER_GETTER_BOOL_OPTION(indigo.deco_save_ap_bond_orders));
     mgr->setOptionHandlerBool("deco-ignore-errors", SETTER_GETTER_BOOL_OPTION(indigo.deco_ignore_errors));
     mgr->setOptionHandlerString("molfile-saving-mode", indigoSetMolfileSavingMode, indigoGetMolfileSavingMode);
@@ -369,6 +405,7 @@ void IndigoOptionHandlerSetter::setBasicOptionHandlers(const qword id)
     mgr->setOptionHandlerInt("json-set-native-precision", SETTER_GETTER_INT_OPTION(indigo.json_native_precision));
     mgr->setOptionHandlerBool("molfile-saving-add-implicit-h", SETTER_GETTER_BOOL_OPTION(indigo.molfile_saving_add_implicit_h));
     mgr->setOptionHandlerBool("molfile-saving-add-mrv-sma", SETTER_GETTER_BOOL_OPTION(indigo.molfile_saving_add_mrv_sma));
+    mgr->setOptionHandlerString("input-format", indigoSetInputFormat, indigoGetInputFormat);
     mgr->setOptionHandlerBool("smiles-saving-write-name", SETTER_GETTER_BOOL_OPTION(indigo.smiles_saving_write_name));
     mgr->setOptionHandlerBool("smiles-loading-strict-aliphatic", SETTER_GETTER_BOOL_OPTION(indigo.smiles_loading_strict_aliphatic));
     mgr->setOptionHandlerString("filename-encoding", indigoSetFilenameEncoding, indigoGetFilenameEncoding);

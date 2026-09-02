@@ -180,6 +180,10 @@ namespace indigo
         std::optional<std::pair<int, int>> isMergeable(size_t mol_idx1, size_t mol_idx2, std::optional<std::pair<int, int>>& current_zone);
         std::unique_ptr<BaseMolecule> extractComponent(int index);
         void sortSummblocks();
+        // After all components are built, assign each orphan R-group (one not
+        // referenced by any component's R-sites) to the nearest component by
+        // bounding-box distance of the R-group's own fragments.
+        void distributeOrphanRGroups();
 
         bool mapReactionComponents();
         bool mapMultitailReactionComponents();

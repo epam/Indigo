@@ -35,14 +35,14 @@ CEXPORT int indigoExtractCommonScaffold(int structures, const char* options)
 {
     INDIGO_BEGIN
     {
-        QS_DEF(ObjArray<Molecule>, mol_set);
+        QS_DEF(PtrArray<Molecule>, mol_set);
         IndigoArray& arr = IndigoArray::cast(self.getObject(structures));
         int i;
 
         mol_set.clear();
 
         for (i = 0; i < arr.objects.size(); i++)
-            mol_set.push().clone(arr.objects[i]->getMolecule(), 0, 0);
+            mol_set.push().clone(arr.objects[i].getMolecule(), 0, 0);
 
         if (self.deconvolution_aromatization)
             for (int i = 0; i < mol_set.size(); ++i)

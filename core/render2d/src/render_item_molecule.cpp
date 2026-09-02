@@ -61,13 +61,13 @@ void RenderItemMolecule::initWithMetaData()
         if (rg.fragments.size() == 0)
             continue;
 
-        PtrPool<BaseMolecule>& frags = rg.fragments;
+        PtrReusablePool<BaseMolecule>& frags = rg.fragments;
         Vec2f lb, rt;
         for (int j = frags.begin(); j != frags.end(); j = frags.next(j))
         {
             int id = _factory.addItemFragment();
             auto& frag = _factory.getItemFragment(id);
-            frag.mol = frags[j];
+            frag.mol = &frags[j];
             frag.isRFragment = true;
             items.push(id);
             Rect2f fbbox;
@@ -152,12 +152,12 @@ void RenderItemMolecule::init()
                     _factory.getItemHLine(lineRFrag).items.push(label);
                     _factory.getItemAuxiliary(label).init();
 
-                    PtrPool<BaseMolecule>& frags = rg.fragments;
+                    PtrReusablePool<BaseMolecule>& frags = rg.fragments;
 
                     for (int j = frags.begin(); j != frags.end(); j = frags.next(j))
                     {
                         int id = _factory.addItemFragment();
-                        _factory.getItemFragment(id).mol = frags[j];
+                        _factory.getItemFragment(id).mol = &frags[j];
                         _factory.getItemFragment(id).isRFragment = true;
                         _factory.getItemFragment(id).init();
                         _factory.getItemHLine(lineRFrag).items.push(id);

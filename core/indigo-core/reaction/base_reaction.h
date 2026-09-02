@@ -26,9 +26,11 @@
 
 #include "base_cpp/auto_iter.h"
 #include "base_cpp/non_copyable.h"
-#include "base_cpp/obj_array.h"
-#include "base_cpp/ptr_pool.h"
+#include "base_cpp/ptr_array.h"
+#include "base_cpp/ptr_reusable_pool.h"
 #include "molecule/base_molecule.h"
+
+#include <typeindex>
 
 namespace indigo
 {
@@ -117,7 +119,7 @@ namespace indigo
 
         void remove(int i);
 
-        PtrPool<BaseMolecule>& molecules()
+        PtrReusablePool<BaseMolecule>& molecules()
         {
             return _allMolecules;
         }
@@ -360,8 +362,8 @@ namespace indigo
 
         static bool haveCoord(BaseReaction& reaction);
 
-        void clone(BaseReaction& other, Array<int>* mol_mapping = nullptr, ObjArray<Array<int>>* mappings = nullptr,
-                   ObjArray<Array<int>>* inv_mappings = nullptr);
+        void clone(BaseReaction& other, Array<int>* mol_mapping = nullptr, PtrArray<Array<int>>* mappings = nullptr,
+                   PtrArray<Array<int>>* inv_mappings = nullptr);
 
         Array<char> name;
 
@@ -386,9 +388,9 @@ namespace indigo
 
         virtual void _addedBaseMolecule(int idx, int side, BaseMolecule& mol);
 
-        PtrPool<BaseMolecule> _allMolecules;
+        PtrReusablePool<BaseMolecule> _allMolecules;
 
-        ObjArray<ReactionBlock> _reactionBlocks; // for multistep reactions only
+        PtrArray<ReactionBlock> _reactionBlocks; // for multistep reactions only
 
         Array<int> _types;
         Array<SpecialCondition> _specialConditions;
@@ -405,7 +407,7 @@ namespace indigo
         MetaDataStorage _meta;
         bool isRetrosynthetic = false;
 
-        virtual void _clone(BaseReaction& other, int index, int i, ObjArray<Array<int>>* mol_mappings);
+        virtual void _clone(BaseReaction& other, int index, int i, PtrArray<Array<int>>* mol_mappings);
         virtual void _cloneSub(BaseReaction& other);
     };
 

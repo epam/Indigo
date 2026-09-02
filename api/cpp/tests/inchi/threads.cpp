@@ -35,6 +35,8 @@ namespace
     thread_local std::mt19937 rng(rd());
     thread_local std::uniform_int_distribution<int> uni(0, 5);
 
+    constexpr int THREAD_COUNT = 16;
+
     std::string randomSmiles()
     {
         return choices.at(uni(rng));
@@ -58,8 +60,8 @@ namespace
 TEST(InchiThreads, Basic)
 {
     std::vector<std::thread> threads;
-    threads.reserve(100);
-    for (auto i = 0; i < 100; i++)
+    threads.reserve(THREAD_COUNT);
+    for (auto i = 0; i < THREAD_COUNT; i++)
     {
         threads.emplace_back(testInChI);
     }

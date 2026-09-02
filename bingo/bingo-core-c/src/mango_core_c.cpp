@@ -64,14 +64,14 @@ int BingoCore::mangoIndexProcessSingleRecord()
         }
         catch (CmfSaver::Error& e)
         {
-            if (self.bingo_context->reject_invalid_structures)
+            if (self.bingo_context->reject_invalid_structures.value())
                 throw;
             self.warning.readString(e.message(), true);
             return 0;
         }
     }
     CATCH_READ_TARGET_MOL({
-        if (self.bingo_context->reject_invalid_structures)
+        if (self.bingo_context->reject_invalid_structures.value())
             throw;
 
         self.warning.readString(e.message(), true);
@@ -185,9 +185,9 @@ void _mangoCheckPseudoAndCBDM(BingoCore& self)
         throw BingoError("context not set");
 
     // TODO: pass this check inside MangoSubstructure
-    if (!self.bingo_context->treat_x_as_pseudoatom.hasValue())
+    if (!self.bingo_context->treat_x_as_pseudoatom.has_value())
         throw BingoError("treat_x_as_pseudoatom option not set");
-    if (!self.bingo_context->ignore_closing_bond_direction_mismatch.hasValue())
+    if (!self.bingo_context->ignore_closing_bond_direction_mismatch.has_value())
         throw BingoError("ignore_closing_bond_direction_mismatch option not set");
 }
 

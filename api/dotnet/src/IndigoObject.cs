@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 
 namespace com.epam.indigo
@@ -116,6 +116,12 @@ namespace com.epam.indigo
             return dispatcher.checkResult(IndigoLib.indigoHelm(self, library.self));
         }
 
+        public string biln(IndigoObject library)
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoBiln(self, library.self));
+        }
+
         public string axolabs(IndigoObject library)
         {
             dispatcher.setSessionID();
@@ -166,6 +172,12 @@ namespace com.epam.indigo
         {
             dispatcher.setSessionID();
             return dispatcher.checkResult(IndigoLib.indigoMonomerLibrary(self));
+        }
+
+        public string fragmentedSdf()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoFragmentedSdf(self));
         }
 
         public void saveCml(string filename)
@@ -824,6 +836,52 @@ namespace com.epam.indigo
             return dispatcher.checkResult(IndigoLib.indigoGetSGroupNumCrossBonds(self));
         }
 
+        public int createCrossBonds()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoCreateCrossBonds(self));
+        }
+
+        public int clearSGroupCrossBonds()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoClearSGroupCrossBonds(self));
+        }
+
+        public IndigoObject addSGroup(string type, int extindex = 0)
+        {
+            dispatcher.setSessionID();
+            return new IndigoObject(dispatcher, dispatcher.checkResult(IndigoLib.indigoAddSGroup(self, type, extindex)), this);
+        }
+
+        public int setSGroupAtoms(int[] atoms)
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoSetSGroupAtoms(self, atoms.Length, atoms));
+        }
+
+        public int setSGroupAtoms(ICollection atoms)
+        {
+            return setSGroupAtoms(Indigo.toIntArray(atoms));
+        }
+
+        public int setSGroupBonds(int[] bonds)
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoSetSGroupBonds(self, bonds.Length, bonds));
+        }
+
+        public int setSGroupBonds(ICollection bonds)
+        {
+            return setSGroupBonds(Indigo.toIntArray(bonds));
+        }
+
+        public IndigoObject iterateSGroupCrossBonds()
+        {
+            dispatcher.setSessionID();
+            return new IndigoObject(dispatcher, dispatcher.checkResult(IndigoLib.indigoIterateSGroupCrossBonds(self)), this);
+        }
+
         public int addSGroupAttachmentPoint(int aidx, int lvidx, string apid)
         {
             dispatcher.setSessionID();
@@ -834,6 +892,36 @@ namespace com.epam.indigo
         {
             dispatcher.setSessionID();
             return dispatcher.checkResult(IndigoLib.indigoDeleteSGroupAttachmentPoint(self, apidx));
+        }
+
+        public IndigoObject iterateSGroupAttachmentPoints()
+        {
+            dispatcher.setSessionID();
+            return new IndigoObject(dispatcher, dispatcher.checkResult(IndigoLib.indigoIterateSGroupAttachmentPoints(self)), this);
+        }
+
+        public int getSGroupAttachmentPointAtomIdx()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoGetSGroupAttachmentPointAtomIdx(self));
+        }
+
+        public int? getSGroupAttachmentPointLeaveAtom()
+        {
+            int value;
+            dispatcher.setSessionID();
+            if (dispatcher.checkResult(IndigoLib.indigoGetSGroupAttachmentPointLeaveAtom(self, &value)) == 1)
+            {
+                return value;
+            }
+
+            return null;
+        }
+
+        public string getSGroupAttachmentPointLabel()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoGetSGroupAttachmentPointLabel(self));
         }
 
         public int getSGroupDisplayOption()
@@ -1411,6 +1499,18 @@ namespace com.epam.indigo
         {
             dispatcher.setSessionID();
             return (dispatcher.checkResult(IndigoLib.indigoIsHighlighted(self)) == 1);
+        }
+
+        public void select()
+        {
+            dispatcher.setSessionID();
+            dispatcher.checkResult(IndigoLib.indigoSelect(self));
+        }
+
+        public void unselect()
+        {
+            dispatcher.setSessionID();
+            dispatcher.checkResult(IndigoLib.indigoUnselect(self));
         }
 
         public bool isSelected()
@@ -2306,6 +2406,16 @@ namespace com.epam.indigo
         {
             dispatcher.setSessionID();
             return dispatcher.checkResult(IndigoLib.indigoExpandAbbreviations(self));
+        }
+
+        /// <summary>
+        /// Converts expanded template atoms (monomers) to regular atoms.
+        /// Returns a new molecule; the original is not modified.
+        /// </summary>
+        public IndigoObject expandedMonomersToAtoms()
+        {
+            dispatcher.setSessionID();
+            return new IndigoObject(dispatcher, dispatcher.checkResult(IndigoLib.indigoExpandedMonomersToAtoms(self)));
         }
 
         public int nameToStructure(string name, string parameters)

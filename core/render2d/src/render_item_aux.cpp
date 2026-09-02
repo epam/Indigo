@@ -355,9 +355,9 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
         const auto& md = meta->metaData();
         // images go first
         std::vector<int> order_indexes, back_indexes;
-        for (int i = 0; i < md.size(); ++i)
+        for (int i = 0; i < md.size(); i++)
         {
-            const auto& mobj = *md[i];
+            const auto& mobj = md[i];
             if (mobj._class_id == EmbeddedImageObject::CID)
                 order_indexes.push_back(i);
             else
@@ -367,7 +367,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
 
         for (auto i : order_indexes)
         {
-            const auto& mobj = *md[i];
+            const auto& mobj = md[i];
             switch (mobj._class_id)
             {
             case SimpleGraphicsObject::CID: {
@@ -396,7 +396,7 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                         indent = text_item.indent;
 
                     FONT_STYLE_SET current_styles;
-                    ObjArray<ObjArray<TextItem>> ti_lines;
+                    PtrArray<PtrArray<TextItem>> ti_lines;
                     std::vector<std::pair<int, float>> spaces_widths;
                     std::pair<int, float> trailing_spaces{};
                     TextItem ti;

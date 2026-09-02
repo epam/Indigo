@@ -481,33 +481,33 @@
             {
                 "connectionType": "single",
                 "endpoint1": {
-                    "monomerId": "monomer84",
+                    "monomerId": "monomer39",
                     "attachmentPointId": "R2"
                 },
                 "endpoint2": {
                     "monomerId": "monomer62",
-                    "attachmentPointId": "R2"
+                    "attachmentPointId": "R1"
                 }
             },
             {
                 "connectionType": "single",
                 "endpoint1": {
-                    "monomerId": "monomer84",
+                    "monomerId": "monomer52",
                     "attachmentPointId": "R1"
                 },
                 "endpoint2": {
-                    "monomerId": "monomer52",
-                    "attachmentPointId": "R3"
+                    "monomerId": "monomer21",
+                    "attachmentPointId": "R2"
                 }
             },
             {
                 "connectionType": "single",
                 "endpoint1": {
-                    "monomerId": "monomer21",
+                    "monomerId": "monomer52",
                     "attachmentPointId": "R2"
                 },
                 "endpoint2": {
-                    "monomerId": "monomer52",
+                    "monomerId": "monomer22",
                     "attachmentPointId": "R1"
                 }
             },
@@ -701,12 +701,12 @@
             {
                 "connectionType": "single",
                 "endpoint1": {
-                    "monomerId": "monomer22",
-                    "attachmentPointId": "R1"
+                    "monomerId": "monomer14",
+                    "attachmentPointId": "R2"
                 },
                 "endpoint2": {
-                    "monomerId": "monomer52",
-                    "attachmentPointId": "R2"
+                    "monomerId": "monomer50",
+                    "attachmentPointId": "R1"
                 }
             },
             {
@@ -888,11 +888,11 @@
             {
                 "connectionType": "single",
                 "endpoint1": {
-                    "monomerId": "monomer39",
+                    "monomerId": "monomer10",
                     "attachmentPointId": "R2"
                 },
                 "endpoint2": {
-                    "monomerId": "monomer62",
+                    "monomerId": "monomer59",
                     "attachmentPointId": "R1"
                 }
             },
@@ -1163,23 +1163,23 @@
             {
                 "connectionType": "single",
                 "endpoint1": {
-                    "monomerId": "monomer14",
-                    "attachmentPointId": "R2"
+                    "monomerId": "monomer84",
+                    "attachmentPointId": "R1"
                 },
                 "endpoint2": {
-                    "monomerId": "monomer50",
-                    "attachmentPointId": "R1"
+                    "monomerId": "monomer52",
+                    "attachmentPointId": "R3"
                 }
             },
             {
                 "connectionType": "single",
                 "endpoint1": {
-                    "monomerId": "monomer10",
+                    "monomerId": "monomer84",
                     "attachmentPointId": "R2"
                 },
                 "endpoint2": {
-                    "monomerId": "monomer59",
-                    "attachmentPointId": "R1"
+                    "monomerId": "monomer62",
+                    "attachmentPointId": "R2"
                 }
             }
         ],

@@ -19,6 +19,7 @@
 #ifndef __mango_matchers__
 #define __mango_matchers__
 
+#include "base_cpp/ptr_array.h"
 #include "base_cpp/reusable_obj_array.h"
 #include "base_cpp/tlscont.h"
 #include "molecule/cmf_loader.h"
@@ -90,7 +91,7 @@ namespace indigo
         MoleculeAtomNeighbourhoodCounters _nei_target_counters;
         MoleculeAtomNeighbourhoodCounters _nei_query_counters;
 
-        ObjArray<RedBlackStringMap<int>> _fmcache;
+        PtrArray<RedBlackStringMap<int>> _fmcache;
 
         // cmf loader for delayed xyz loading
         std::unique_ptr<CmfLoader> cmf_loader;
@@ -243,6 +244,7 @@ namespace indigo
             bool force_hydrogens;
             bool ring_chain;
             bool substructure;
+            bool inner;
         };
 
         MangoTautomer(BingoContext& context);
@@ -251,7 +253,7 @@ namespace indigo
         void loadQuery(Scanner& scanner);
         void loadQuery(const char* str);
 
-        void setParams(int conditions, bool force_hydrogens, bool ring_chain, bool substructure);
+        void setParams(int conditions, bool force_hydrogens, bool ring_chain, bool substructure, bool inner);
         void setParameters(const char* conditions);
 
         const char* getQueryGross();

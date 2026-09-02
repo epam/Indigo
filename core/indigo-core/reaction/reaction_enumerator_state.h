@@ -19,6 +19,7 @@
 #ifndef __reaction_enumerator_state__
 #define __reaction_enumerator_state__
 
+#include "base_cpp/ptr_array.h"
 #include "base_cpp/red_black.h"
 #include "base_cpp/reusable_obj_array.h"
 #include "graph/embedding_enumerator.h"
@@ -92,7 +93,7 @@ namespace indigo
 
         ReactionEnumeratorState(ReactionEnumeratorContext& context, QueryReaction& cur_reaction, QueryMolecule& cur_full_product,
                                 Array<int>& cur_product_aam_array, RedBlackStringMap<int>& cur_smiles_array, ReactionMonomers& cur_reaction_monomers,
-                                int& cur_product_coint, ObjArray<Array<int>>& cur_tubes_monomers);
+                                int& cur_product_coint, PtrArray<Array<int>>& cur_tubes_monomers);
 
         ReactionEnumeratorState(ReactionEnumeratorState& cur_rpe_state);
 
@@ -111,7 +112,7 @@ namespace indigo
 
         int& _product_count;
 
-        ObjArray<Array<int>>& _tubes_monomers;
+        PtrArray<Array<int>>& _tubes_monomers;
         Array<int>& _product_aam_array;
         RedBlackStringMap<int>& _smiles_array;
         ReactionMonomers& _reaction_monomers;
@@ -126,7 +127,7 @@ namespace indigo
         TL_CP_DECL(Array<int>, _is_needless_bond);
         TL_CP_DECL(Array<int>, _bonds_mapping_sub);
         TL_CP_DECL(Array<int>, _bonds_mapping_super);
-        TL_CP_DECL(ObjArray<Array<int>>, _att_points);
+        TL_CP_DECL(PtrArray<Array<int>>, _att_points);
         TL_CP_DECL(MoleculeSubstructureMatcher::FragmentMatchCache, _fmcache);
         TL_CP_DECL(Array<int>, _monomer_forbidden_atoms);
         TL_CP_DECL(Array<int>, _product_forbidden_atoms);

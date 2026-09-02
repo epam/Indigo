@@ -216,9 +216,9 @@ void BingoCore::bingoGetConfigInt(const char* name, int* value)
         throw BingoError("context not set");
 
     if (strcasecmp(name, "treat-x-as-pseudoatom") == 0 || strcasecmp(name, "treat_x_as_pseudoatom") == 0)
-        *value = (int)self.bingo_context->treat_x_as_pseudoatom;
+        *value = (int)self.bingo_context->treat_x_as_pseudoatom.value();
     else if (strcasecmp(name, "ignore-closing-bond-direction-mismatch") == 0 || strcasecmp(name, "ignore_closing_bond_direction_mismatch") == 0)
-        *value = (int)self.bingo_context->ignore_closing_bond_direction_mismatch;
+        *value = (int)self.bingo_context->ignore_closing_bond_direction_mismatch.value();
     else if (strcasecmp(name, "fp-size-bytes") == 0 || strcasecmp(name, "fp_size_bytes") == 0)
         *value = self.bingo_context->fp_parameters.fingerprintSize();
     else if (strcasecmp(name, "reaction-fp-size-bytes") == 0 || strcasecmp(name, "reaction_fp_size_bytes") == 0)
@@ -232,23 +232,23 @@ void BingoCore::bingoGetConfigInt(const char* name, int* value)
     else if (strcasecmp(name, "timeout") == 0)
         *value = self.bingo_context->timeout;
     else if (strcasecmp(name, "ignore-cistrans-errors") == 0 || strcasecmp(name, "ignore_cistrans_errors") == 0)
-        *value = (int)self.bingo_context->ignore_cistrans_errors;
+        *value = (int)self.bingo_context->ignore_cistrans_errors.value();
     else if (strcasecmp(name, "ignore-stereocenter-errors") == 0 || strcasecmp(name, "ignore_stereocenter_errors") == 0)
-        *value = (int)self.bingo_context->ignore_stereocenter_errors;
+        *value = (int)self.bingo_context->ignore_stereocenter_errors.value();
     else if (strcasecmp(name, "stereochemistry-bidirectional-mode") == 0 || strcasecmp(name, "stereochemistry_bidirectional_mode") == 0)
-        *value = (int)self.bingo_context->stereochemistry_bidirectional_mode;
+        *value = (int)self.bingo_context->stereochemistry_bidirectional_mode.value();
     else if (strcasecmp(name, "stereochemistry-detect-haworth-projection") == 0 || strcasecmp(name, "stereochemistry_detect_haworth_projection") == 0)
-        *value = (int)self.bingo_context->stereochemistry_detect_haworth_projection;
+        *value = (int)self.bingo_context->stereochemistry_detect_haworth_projection.value();
     else if (strcasecmp(name, "allow-non-unique-dearomatization") == 0 || strcasecmp(name, "allow_non_unique_dearomatization") == 0)
-        *value = (int)self.bingo_context->allow_non_unique_dearomatization;
+        *value = (int)self.bingo_context->allow_non_unique_dearomatization.value();
     else if (strcasecmp(name, "zero-unknown-aromatic-hydrogens") == 0 || strcasecmp(name, "zero_unknown_aromatic_hydrogens") == 0)
-        *value = (int)self.bingo_context->zero_unknown_aromatic_hydrogens;
+        *value = (int)self.bingo_context->zero_unknown_aromatic_hydrogens.value();
     else if (strcasecmp(name, "reject-invalid-structures") == 0 || strcasecmp(name, "reject_invalid_structures") == 0)
-        *value = (int)self.bingo_context->reject_invalid_structures;
+        *value = (int)self.bingo_context->reject_invalid_structures.value();
     else if (strcasecmp(name, "ignore-bad-valence") == 0 || strcasecmp(name, "ignore_bad_valence") == 0)
-        *value = (int)self.bingo_context->ignore_bad_valence;
+        *value = (int)self.bingo_context->ignore_bad_valence.value();
     else if (strcasecmp(name, "ct_format_save_date") == 0 || strcasecmp(name, "ct-format-save-date") == 0)
-        *value = (int)self.bingo_context->ct_format_save_date;
+        *value = (int)self.bingo_context->ct_format_save_date.value();
     else
         throw BingoError("unknown parameter name: %s", name);
 }

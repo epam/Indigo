@@ -19,6 +19,7 @@
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
 #include <regex>
+#include <unordered_map>
 
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
@@ -55,12 +56,57 @@ void MoleculeAutoLoader::_init()
     ignore_cistrans_errors = false;
     ignore_no_chiral_flag = false;
     ignore_bad_valence = false;
+    valence_mode = ValenceMode::BIOVIA_2009;
     smiles_loading_strict_aliphatic = false;
     dearomatize_on_load = false;
     treat_stereo_as = 0;
 }
 
+void MoleculeAutoLoader::setOptions(const LoaderOptions& opts)
+{
+    stereochemistry_options = opts.stereochemistry_options;
+    valence_mode = opts.valence_mode;
+    ignore_bad_valence = opts.ignore_bad_valence;
+    ignore_no_chiral_flag = opts.ignore_no_chiral_flag;
+    ignore_noncritical_query_features = opts.ignore_noncritical_query_features;
+    skip_3d_chirality = opts.skip_3d_chirality;
+    treat_x_as_pseudoatom = opts.treat_x_as_pseudoatom;
+}
+
+LoaderOptions MoleculeAutoLoader::getOptions() const
+{
+    LoaderOptions opts;
+    opts.stereochemistry_options = stereochemistry_options;
+    opts.valence_mode = valence_mode;
+    opts.ignore_bad_valence = ignore_bad_valence;
+    opts.ignore_no_chiral_flag = ignore_no_chiral_flag;
+    opts.ignore_noncritical_query_features = ignore_noncritical_query_features;
+    opts.skip_3d_chirality = skip_3d_chirality;
+    opts.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+    return opts;
+}
+
 IMPL_ERROR(MoleculeAutoLoader, "molecule auto loader");
+
+std::string MoleculeAutoLoader::normalizeInputFormat(const std::string& input_format)
+{
+    static const std::unordered_map<std::string, std::string> format_mapping = {{"chemical/x-mdl-molfile", "mol"},
+                                                                                {"chemical/x-mdl-rxnfile", "rxn"},
+                                                                                {"chemical/x-daylight-smiles", "smi"},
+                                                                                {"chemical/x-daylight-smarts", "smarts"},
+                                                                                {"chemical/x-indigo-ket", "ket"},
+                                                                                {"chemical/x-cml", "cml"},
+                                                                                {"chemical/x-cdxml", "cdxml"},
+                                                                                {"chemical/x-sdf", "sdf"},
+                                                                                {"chemical/x-unknown", "auto"},
+                                                                                {"chemical/x-iupac", "auto"},
+                                                                                {"auto", "auto"},
+                                                                                {"", "auto"}};
+
+    if (const auto it = format_mapping.find(input_format); it != format_mapping.end())
+        return it->second;
+    return input_format;
+}
 
 MoleculeAutoLoader::MoleculeAutoLoader(Scanner& scanner)
 {
@@ -204,6 +250,9 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, MonomerTemplateLibrary
     bool query = mol.isQueryMolecule();
     properties.clear();
 
+    const std::string input_format = normalizeInputFormat(this->input_format);
+    bool allow_all = input_format.empty() || input_format == "auto";
+
     auto local_scanner = _scanner; // local scanner only for binary format
     // chack for base64
     uint8_t base64_id[] = "base64::";
@@ -248,40 +297,38 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, MonomerTemplateLibrary
             gzscanner.readAll(buf);
             MoleculeAutoLoader loader2(buf);
 
-            loader2.stereochemistry_options = stereochemistry_options;
-            loader2.ignore_noncritical_query_features = ignore_noncritical_query_features;
-            loader2.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
-            loader2.skip_3d_chirality = skip_3d_chirality;
-            loader2.ignore_no_chiral_flag = ignore_no_chiral_flag;
+            loader2.setOptions(getOptions());
             loader2.treat_stereo_as = treat_stereo_as;
             loader2.loadMolecule(mol);
             return;
         }
     }
 
-    if (local_scanner->startsWith(kCDX_HeaderString))
+    if (allow_all || input_format == "cdxml")
     {
-        local_scanner->seek(kCDX_HeaderLength, SEEK_CUR);
-        MoleculeCdxmlLoader loader(*local_scanner, true);
-        loader.stereochemistry_options = stereochemistry_options;
-        loader.loadMolecule(mol);
-        return;
+        if (local_scanner->startsWith(kCDX_HeaderString))
+        {
+            local_scanner->seek(kCDX_HeaderLength, SEEK_CUR);
+            MoleculeCdxmlLoader loader(*local_scanner, true);
+            loader.setOptions(getOptions());
+            loader.loadMolecule(mol);
+            return;
+        }
+        else if (!allow_all && input_format == "cdxml")
+            throw Error("expected CDX binary header but not found");
     }
 
     _scanner->skipBom();
 
     // check for MDLCT format
+    if (allow_all || input_format == "mol" || input_format == "rxn" || input_format == "sdf")
     {
         QS_DEF(Array<char>, buf);
         if (tryMDLCT(*_scanner, buf))
         {
             BufferScanner scanner2(buf);
             MolfileLoader loader(scanner2, monomer_lib);
-            loader.stereochemistry_options = stereochemistry_options;
-            loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
-            loader.skip_3d_chirality = skip_3d_chirality;
-            loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
-            loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
+            loader.setOptions(getOptions());
             loader.treat_stereo_as = treat_stereo_as;
 
             if (query)
@@ -290,6 +337,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, MonomerTemplateLibrary
                 loader.loadMolecule((Molecule&)mol);
             return;
         }
+        // If tryMDLCT failed, fall through to normal molfile/sdf parser below
     }
 
     // check for ICM format
@@ -312,6 +360,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, MonomerTemplateLibrary
     }
 
     // check for CML format
+    if (allow_all || input_format == "cml")
     {
         long long pos = _scanner->tell();
         _scanner->skipSpace();
@@ -321,7 +370,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, MonomerTemplateLibrary
             if (_scanner->findWord("<molecule"))
             {
                 CmlLoader loader(*_scanner);
-                loader.stereochemistry_options = stereochemistry_options;
+                loader.setOptions(getOptions());
                 if (query)
                     loader.loadQueryMolecule((QueryMolecule&)mol);
                 else
@@ -331,9 +380,12 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, MonomerTemplateLibrary
         }
 
         _scanner->seek(pos, SEEK_SET);
+        if (!allow_all && input_format == "cml")
+            throw Error("expected '<molecule' tag for CML format but not found");
     }
 
     // check for CDXML format
+    if (allow_all || input_format == "cdxml")
     {
         long long pos = _scanner->tell();
         _scanner->skipSpace();
@@ -341,15 +393,18 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, MonomerTemplateLibrary
         {
             _scanner->seek(pos, SEEK_SET);
             MoleculeCdxmlLoader loader(*_scanner);
-            loader.stereochemistry_options = stereochemistry_options;
+            loader.setOptions(getOptions());
             loader.loadMolecule(mol);
             return;
         }
         _scanner->seek(pos, SEEK_SET);
+        if (!allow_all && input_format == "cdxml")
+            throw Error("expected 'CDXML' tag for CDXML format but not found");
     }
 
     // check json format
     long long pos = _scanner->tell();
+    if (allow_all || input_format == "ket")
     {
         if (_scanner->lookNext() == '{')
         {
@@ -368,11 +423,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, MonomerTemplateLibrary
                         if (data.HasMember("root"))
                         {
                             MoleculeJsonLoader loader(data);
-                            loader.stereochemistry_options = stereochemistry_options;
-                            loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
-                            loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
-                            loader.skip_3d_chirality = skip_3d_chirality;
-                            loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
+                            loader.setOptions(getOptions());
                             loader.treat_stereo_as = treat_stereo_as;
                             loader.loadMolecule(mol);
                             return;
@@ -382,6 +433,8 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, MonomerTemplateLibrary
             }
         }
         _scanner->seek(pos, SEEK_SET);
+        if (!allow_all && input_format == "ket")
+            throw Error("expected JSON with 'root' member for KET format");
     }
 
     // check for single line formats
@@ -442,6 +495,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, MonomerTemplateLibrary
             _scanner->seek(start_pos, SEEK_SET);
         }
         // check for InChI format
+        if (allow_all || input_format == "inchi")
         {
             char prefix[6] = {'\0'};
             long long start = _scanner->tell();
@@ -472,66 +526,79 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, MonomerTemplateLibrary
                 loader.loadMoleculeFromInchi(inchi_data.ptr(), (Molecule&)mol);
                 return;
             }
+            else if (!allow_all && input_format == "inchi")
+                throw Error("expected 'InChI=' prefix for InChI format but not found");
         }
 
         // If not InChI then SMILES or IUPAC name
-        Array<char> err_buf;
-
-        try
+        if (allow_all || input_format == "smi")
         {
-            SmilesLoader loader(*_scanner);
-            long long start = _scanner->tell();
+            Array<char> err_buf;
 
-            loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
-            loader.stereochemistry_options = stereochemistry_options;
-            loader.ignore_cistrans_errors = ignore_cistrans_errors;
-            loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
-            loader.strict_aliphatic = smiles_loading_strict_aliphatic;
-            /*
-            If exception is thrown, try the SMARTS, if exception thrown again - the string is rather an IUPAC name than a SMILES string
-            We catch it and pass down to IUPAC name conversion
-            */
-            if (query)
+            try
+            {
+                SmilesLoader loader(*_scanner);
+                long long start = _scanner->tell();
+
+                loader.setOptions(getOptions());
+                loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
+                loader.ignore_cistrans_errors = ignore_cistrans_errors;
+                loader.strict_aliphatic = smiles_loading_strict_aliphatic;
+                /*
+                If exception is thrown, try the SMARTS, if exception thrown again - the string is rather an IUPAC name than a SMILES string
+                We catch it and pass down to IUPAC name conversion
+                */
+                if (query)
+                {
+                    try
+                    {
+                        loader.loadQueryMolecule(static_cast<QueryMolecule&>(mol));
+                    }
+                    catch (Exception&)
+                    {
+                        _scanner->seek(start, SEEK_SET);
+                        loader.loadSMARTS(static_cast<QueryMolecule&>(mol));
+                    }
+                }
+                else
+                {
+                    loader.loadMolecule(static_cast<Molecule&>(mol));
+                }
+                return;
+            }
+            catch (Exception& e)
+            {
+                if (!allow_all && input_format == "smi")
+                    throw;
+                err_buf.appendString(e.message(), true);
+            }
+
+            // We fall down to IUPAC name conversion if SMILES loading threw an exception
+            if (allow_all)
             {
                 try
                 {
-                    loader.loadQueryMolecule(static_cast<QueryMolecule&>(mol));
+                    Array<char> name;
+                    _scanner->seek(SEEK_SET, SEEK_SET);
+                    _scanner->readLine(name, true);
+                    MoleculeNameParser parser;
+                    parser.parseMolecule(name.ptr(), static_cast<Molecule&>(mol));
+                    return;
                 }
                 catch (Exception&)
                 {
-                    _scanner->seek(start, SEEK_SET);
-                    loader.loadSMARTS(static_cast<QueryMolecule&>(mol));
                 }
             }
-            else
+
+            if (err_buf.size() > 0)
             {
-                loader.loadMolecule(static_cast<Molecule&>(mol));
+                throw Error(err_buf.ptr());
             }
-            return;
         }
-        catch (Exception& e)
-        {
-            err_buf.appendString(e.message(), true);
-        }
-
-        // We fall down to IUPAC name conversion if SMILES loading threw an exception
-        try
-        {
-            Array<char> name;
-            _scanner->seek(SEEK_SET, SEEK_SET);
-            _scanner->readLine(name, true);
-            MoleculeNameParser parser;
-            parser.parseMolecule(name.ptr(), static_cast<Molecule&>(mol));
-            return;
-        }
-        catch (Exception&)
-        {
-        }
-
-        if (err_buf.size() > 0)
-        {
-            throw Error(err_buf.ptr());
-        }
+    }
+    else if (!allow_all && (input_format == "inchi" || input_format == "smi"))
+    {
+        throw Error("Provided structure is not a single line but %s was expected", input_format.c_str());
     }
 
     // default is Molfile format
@@ -549,11 +616,7 @@ void MoleculeAutoLoader::_loadMolecule(BaseMolecule& mol, MonomerTemplateLibrary
             BufferScanner scanner2(sdf_loader.data);
 
             MolfileLoader loader(scanner2, monomer_lib);
-            loader.stereochemistry_options = stereochemistry_options;
-            loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
-            loader.skip_3d_chirality = skip_3d_chirality;
-            loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
-            loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
+            loader.setOptions(getOptions());
             loader.treat_stereo_as = treat_stereo_as;
 
             if (is_first && sdf_loader.isEOF())

@@ -30,6 +30,8 @@ CEXPORT int indigoInchiResetOptions();
 
 CEXPORT int indigoInchiLoadMolecule(const char* inchi_string);
 
+CEXPORT const char* indigoInchiGetInchiWithForcedOptions(int molecule, const char* forcedOptions = nullptr);
+
 CEXPORT const char* indigoInchiGetInchi(int molecule);
 
 CEXPORT const char* indigoInchiGetInchiKey(const char* inchi_string);

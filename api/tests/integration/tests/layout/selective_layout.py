@@ -61,7 +61,11 @@ for idx, item in enumerate(
             mol = item.clone()
             mol.getSubmolecule(atom_list).layout()
             res = moleculeLayoutDiff(
-                indigo, mol, layout_dict[mol_test], ref_is_file=False
+                indigo,
+                mol,
+                layout_dict[mol_test],
+                ref_is_file=False,
+                update=False,
             )
             print("  Result: {}".format(res))
             mol.setProperty("test", mol_test)
@@ -71,7 +75,11 @@ for idx, item in enumerate(
             mol = item.clone()
             mol.getSubmolecule(atom_list).clean2d()
             res = moleculeLayoutDiff(
-                indigo, mol, clean2d_dict[mol_test], ref_is_file=False
+                indigo,
+                mol,
+                clean2d_dict[mol_test],
+                ref_is_file=False,
+                update=False,
             )
             print("  Result: {}".format(res))
             mol.setProperty("test", mol_test)

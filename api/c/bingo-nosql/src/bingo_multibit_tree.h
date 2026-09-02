@@ -2,7 +2,7 @@
 #define __multibit_tree__
 
 #include "base_c/bitarray.h"
-#include "base_cpp/obj_array.h"
+#include "base_cpp/array.h"
 #include "base_cpp/profiling.h"
 #include "base_cpp/tlscont.h"
 #include "math/algebra.h"

@@ -222,8 +222,6 @@ namespace indigo
 
     bool isCIPSGroup(SGroup& sgroup);
 
-    void getSGroupAtoms(BaseMolecule& mol, std::list<std::unordered_set<int>>& neighbors);
-
     std::string convertAPToHELM(const std::string& atp_id_str);
 
     std::string convertAPFromHELM(const std::string& atp_id_str);
@@ -231,7 +229,7 @@ namespace indigo
     class SimpleGraphicsObject : public MetaObject
     {
     public:
-        static const std::uint32_t CID = "Metadata simple object"_hash;
+        static constexpr std::uint32_t CID = "Metadata simple object"_hash;
         SimpleGraphicsObject(int mode, const std::pair<Vec2f, Vec2f>& coords) : MetaObject(CID)
         {
             _mode = mode;
@@ -281,6 +279,12 @@ namespace indigo
     class SimpleTextObject : public MetaObject
     {
     public:
+        enum class Versions : int
+        {
+            ONE = 1, // v1 contains only _bbox, _block and _content
+            TWO,
+        };
+
         enum class TextAlignment : int
         {
             ELeft,
@@ -305,20 +309,20 @@ namespace indigo
 
         static KETFontStyle::FontStyle textStyleByName(const std::string& style_name);
 
-        struct KETTextParagraph
+        struct KETTextParagraph // v1 contains only text and font_styles
         {
             KETTextParagraph() : font_styles{}, alignment{}, indent{}, line_starts{}
             {
             }
-            std::string text;
-            FONT_STYLE_SET font_style;
-            std::optional<TextAlignment> alignment;
-            std::optional<float> indent;
-            std::optional<std::set<int>> line_starts;
-            std::map<std::size_t, FONT_STYLE_SET> font_styles;
+            std::string text;                                  // v1 and v2
+            FONT_STYLE_SET font_style;                         // v2 only
+            std::optional<TextAlignment> alignment;            // v2 only
+            std::optional<float> indent;                       // v2 only
+            std::optional<std::set<int>> line_starts;          // v2 only
+            std::map<std::size_t, FONT_STYLE_SET> font_styles; // v1 and v2
         };
 
-        static const std::uint32_t CID = "Simple text object"_hash;
+        static constexpr std::uint32_t CID = "Simple text object"_hash;
 
         static void convertToSimpleTextStyle(const FONT_STYLE_SET& fss, SimpleTextStyle& sts)
         {
@@ -512,7 +516,7 @@ namespace indigo
 
         SimpleTextObject(const SimpleTextObject& other)
             : MetaObject(CID), _alignment(other._alignment), _indent(other._indent), _font_styles{other._font_styles}, _bbox(other._bbox),
-              _content(other._content), _block(other._block)
+              _content(other._content), _block(other._block), _version(other._version)
         {
         }
 
@@ -591,6 +595,11 @@ namespace indigo
             return _block;
         }
 
+        Versions version() const
+        {
+            return _version;
+        }
+
     private:
         void offset(const Vec2f& offset) override
         {
@@ -603,6 +612,7 @@ namespace indigo
         std::optional<float> _indent;
         std::optional<TextAlignment> _alignment;
         FONT_STYLE_SET _font_styles;
+        Versions _version;
     };
 
     class SimpleTextObjectBuilder
@@ -623,7 +633,7 @@ namespace indigo
     class ReactionArrowObject : public MetaObject
     {
     public:
-        static const std::uint32_t CID = "Reaction arrow object"_hash;
+        static constexpr std::uint32_t CID = "Reaction arrow object"_hash;
         enum
         {
             EOpenAngle = 2,
@@ -699,7 +709,7 @@ namespace indigo
         static const int CORRECT_TAIL_SIZE = 2;
 
     public:
-        static const std::uint32_t CID = "Reaction multitail arrow object"_hash;
+        static constexpr std::uint32_t CID = "Reaction multitail arrow object"_hash;
 
         static constexpr float TAIL_ARC_RADIUS = .15f;
 
@@ -786,7 +796,7 @@ namespace indigo
     class ReactionPlusObject : public MetaObject
     {
     public:
-        static const std::uint32_t CID = "Reaction plus object"_hash;
+        static constexpr std::uint32_t CID = "Reaction plus object"_hash;
         ReactionPlusObject(const Vec2f& pos) : MetaObject(CID), _pos(pos){};
 
         MetaObject* clone() const override
@@ -828,7 +838,7 @@ namespace indigo
             EKETSVG
         };
 
-        static const std::uint32_t CID = "Embedded image object"_hash;
+        static constexpr std::uint32_t CID = "Embedded image object"_hash;
         EmbeddedImageObject(const Rect2f& bbox, EmbeddedImageObject::ImageFormat format, const std::string& data, bool is_base64 = true);
 
         MetaObject* clone() const override

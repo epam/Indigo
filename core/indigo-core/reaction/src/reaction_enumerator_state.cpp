@@ -72,7 +72,7 @@ Molecule& ReactionEnumeratorState::ReactionMonomers::getMonomer(int reactant_idx
     for (int i = 0; i < _reactant_indexes.size(); i++)
         if (_reactant_indexes[i] == reactant_idx)
             if (cur_idx++ == index)
-                return *_monomers[i];
+                return _monomers[i];
 
     throw Error("can't find reactant's #%d monomer #%d", reactant_idx, index);
 }
@@ -82,7 +82,7 @@ Molecule& ReactionEnumeratorState::ReactionMonomers::getMonomer(int mon_index)
     if (mon_index >= _monomers.size() || mon_index < 0)
         throw Error("can't find monomer #%d", mon_index);
     else
-        return *_monomers[mon_index];
+        return _monomers[mon_index];
 }
 
 void ReactionEnumeratorState::ReactionMonomers::addMonomer(int reactant_idx, Molecule& monomer, int deep_level, int tube_idx)
@@ -103,13 +103,13 @@ void ReactionEnumeratorState::ReactionMonomers::removeMonomer(int idx)
     for (int j = idx + 1; j < _monomers.size(); j++)
     {
         _reactant_indexes[j - 1] = _reactant_indexes[j];
-        _monomers[j - 1]->clone(*_monomers[j], NULL, NULL);
+        _monomers[j - 1].clone(_monomers[j], NULL, NULL);
         _deep_levels[j - 1] = _deep_levels[j];
         _tube_indexes[j - 1] = _tube_indexes[j];
     }
 
     _reactant_indexes.pop();
-    delete (_monomers.pop());
+    (void)_monomers.pop(); // unique_ptr destroys the popped molecule
     _deep_levels.pop();
     _tube_indexes.pop();
 }
@@ -120,7 +120,7 @@ CP_DEF(ReactionEnumeratorState);
 
 ReactionEnumeratorState::ReactionEnumeratorState(ReactionEnumeratorContext& context, QueryReaction& cur_reaction, QueryMolecule& cur_full_product,
                                                  Array<int>& cur_product_aam_array, RedBlackStringMap<int>& cur_smiles_array,
-                                                 ReactionMonomers& cur_reaction_monomers, int& cur_product_count, ObjArray<Array<int>>& cur_tubes_monomers)
+                                                 ReactionMonomers& cur_reaction_monomers, int& cur_product_count, PtrArray<Array<int>>& cur_tubes_monomers)
     : _reaction(cur_reaction), _product_count(cur_product_count), _tubes_monomers(cur_tubes_monomers), _product_aam_array(cur_product_aam_array),
       _smiles_array(cur_smiles_array), _reaction_monomers(cur_reaction_monomers), _context(context), CP_INIT, TL_CP_GET(_fragments_aam_array),
       TL_CP_GET(_full_product), TL_CP_GET(_product_monomers), TL_CP_GET(_mapping), TL_CP_GET(_fragments), TL_CP_GET(_is_needless_atom),
@@ -262,7 +262,7 @@ int ReactionEnumeratorState::buildProduct(void)
     {
         QS_DEF(Molecule, ee_monomer);
         ee_monomer.clear();
-        ee_monomer.clone(*_reaction_monomers._monomers[i], NULL, NULL);
+        ee_monomer.clone(_reaction_monomers._monomers[i], NULL, NULL);
         ee_monomer.buildCisTrans(NULL);
 
         if (!is_one_tube)
@@ -413,17 +413,17 @@ void ReactionEnumeratorState::_productProcess(void)
 
     for (int i = 0; i < _product_monomers.size(); i++)
     {
-        if (_reaction_monomers._monomers[_product_monomers[i]]->name.size() == 0)
+        if (_reaction_monomers._monomers[_product_monomers[i]].name.size() == 0)
             continue;
 
         bool is_deep = false;
-        if (_reaction_monomers._monomers[_product_monomers[i]]->name.find('+') != -1)
+        if (_reaction_monomers._monomers[_product_monomers[i]].name.find('+') != -1)
         {
             is_deep = true;
             ready_product.name.push('(');
         }
 
-        ready_product.name.concat(_reaction_monomers._monomers[_product_monomers[i]]->name);
+        ready_product.name.concat(_reaction_monomers._monomers[_product_monomers[i]].name);
         ready_product.name.pop();
 
         if (is_deep)
@@ -1517,7 +1517,7 @@ bool ReactionEnumeratorState::_attachFragments(Molecule& ready_product_out, Arra
 
                 frags_mapping[_att_points[i][j]] = pr_atom;
                 mol_product.removeAtom(mon_atom);
-                // if (mol_product.mergeAtoms(frags_mapping[_att_points[i][0]], mapping[i]) == -1)
+                // if (mol_product.mergeAtoms(frags_mapping[(*_att_points[i])[0]], mapping[i]) == -1)
                 //   return false;
             }
         }
@@ -1525,10 +1525,10 @@ bool ReactionEnumeratorState::_attachFragments(Molecule& ready_product_out, Arra
         product_mapping[mapping[i]] = frags_mapping[_att_points[i][0]];
 
         /*
-        if (is_transform && _att_points[i].size() != 0 && is_valid && !_checkValence(mol_product, mapping[i]))
+        if (is_transform && _att_points[i]->size() != 0 && is_valid && !_checkValence(mol_product, mapping[i]))
         {
            _product_forbidden_atoms.copy(_monomer_forbidden_atoms);
-           _product_forbidden_atoms[_att_points[i][0]] = max_reuse_count;
+           _product_forbidden_atoms[(*_att_points[i])[0]] = max_reuse_count;
            return false;
         }*/
 
@@ -1639,7 +1639,7 @@ bool ReactionEnumeratorState::_attachFragments(Molecule& ready_product_out, Arra
 
 bool ReactionEnumeratorState::_checkFragment(QueryMolecule& submolecule, Molecule& monomer, Array<byte>& unfrag_mon_atoms, int* core_sub)
 {
-    QS_DEF(ObjArray<Array<int>>, attachment_pairs);
+    QS_DEF(PtrArray<Array<int>>, attachment_pairs);
     attachment_pairs.clear();
 
     QS_DEF(Molecule, fragment);
@@ -1656,7 +1656,7 @@ bool ReactionEnumeratorState::_checkFragment(QueryMolecule& submolecule, Molecul
         int rg_idx = submolecule.getSingleAllowedRGroup(i);
 
         if (attachment_pairs.size() <= rg_idx)
-            attachment_pairs.expand(rg_idx + 1);
+            attachment_pairs.resize(rg_idx + 1);
 
         attachment_pairs[rg_idx].push(core_sub[i]);
     }

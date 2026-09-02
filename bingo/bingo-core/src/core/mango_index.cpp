@@ -48,10 +48,10 @@ void MangoIndex::prepare(Scanner& molfile, Output& output, std::mutex* lock_for_
     // Skip all SGroups
     mol.clearSGroups();
 
-    if (_context->allow_non_unique_dearomatization)
+    if (_context->allow_non_unique_dearomatization.value())
         MoleculeDearomatizer::restoreHydrogens(mol, false);
 
-    if (_context->zero_unknown_aromatic_hydrogens)
+    if (_context->zero_unknown_aromatic_hydrogens.value())
     {
         mol.restoreAromaticHydrogens();
         for (int i : mol.vertices())

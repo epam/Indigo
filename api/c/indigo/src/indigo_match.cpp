@@ -130,7 +130,7 @@ DLLEXPORT bool _indigoParseTautomerFlags(const char* flags, IndigoTautomerParams
     if (strcasecmp(word.ptr(), "TAU") != 0)
         return false;
 
-    MoleculeTautomerMatcher::parseConditions(flags, params.conditions, params.force_hydrogens, params.ring_chain, params.method);
+    MoleculeTautomerMatcher::parseConditions(flags, params.conditions, params.force_hydrogens, params.ring_chain, params.method, params.inner);
 
     return true;
 }
@@ -266,7 +266,7 @@ CEXPORT int indigoExactMatch(int handler1, int handler2, const char* flags)
 
                 matcher.arom_options = self.arom_options;
                 matcher.setRulesList(&self.tautomer_rules);
-                matcher.setRules(params.conditions, params.force_hydrogens, params.ring_chain, params.method);
+                matcher.setRules(params.conditions, params.force_hydrogens, params.ring_chain, params.method, params.inner);
                 matcher.setQuery(mol1);
 
                 if (!matcher.find())
@@ -298,7 +298,7 @@ CEXPORT int indigoExactMatch(int handler1, int handler2, const char* flags)
             auto mapping = std::make_unique<IndigoReactionMapping>(rxn1, rxn2);
             mapping->mol_mapping.clear_resize(rxn1.end());
             mapping->mol_mapping.fffill();
-            mapping->mappings.expand(rxn1.end());
+            mapping->mappings.resize(rxn1.end());
 
             for (int i = rxn1.begin(); i != rxn1.end(); i = rxn1.next(i))
             {
@@ -709,7 +709,7 @@ bool IndigoMoleculeSubstructureMatcher::findTautomerMatch(QueryMolecule& query, 
     }
 
     tau_matcher->setRulesList(&tautomer_rules);
-    tau_matcher->setRules(tau_params.conditions, tau_params.force_hydrogens, tau_params.ring_chain, tau_params.method);
+    tau_matcher->setRules(tau_params.conditions, tau_params.force_hydrogens, tau_params.ring_chain, tau_params.method, tau_params.inner);
     tau_matcher->setQuery(query);
     tau_matcher->arom_options = indigo.arom_options;
     if (!tau_matcher->find())
@@ -915,7 +915,7 @@ CEXPORT int indigoMatch(int target_matcher, int query)
             auto mapping = std::make_unique<IndigoReactionMapping>(qrxn, matcher.original_target);
             mapping->mol_mapping.clear_resize(qrxn.end());
             mapping->mol_mapping.fffill();
-            mapping->mappings.expand(qrxn.end());
+            mapping->mappings.resize(qrxn.end());
 
             for (i = qrxn.begin(); i != qrxn.end(); i = qrxn.next(i))
             {

@@ -1,17 +1,12 @@
-﻿import difflib
-import os
+﻿import os
 import sys
-
-
-def find_diff(a, b):
-    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
-
 
 sys.path.append(
     os.path.normpath(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
+from common.util import compare_diff
 from env_indigo import Indigo, joinPathPy  # noqa
 
 indigo = Indigo()
@@ -65,6 +60,11 @@ files = [
     "3094-chem-3000",
     "3227-copolymer",
     "3292-template-center",
+    "3343-dir-expanded",
+    "issue_3759_one_atom_two_ap",
+    "issue_3759_one_atom_three_ap",
+    "issue_3847",
+    "issue_3635",
 ]
 
 native_precision = [
@@ -72,6 +72,10 @@ native_precision = [
     "2704-stereocenters",
     "issue_2699_rlogic",
     "issue_2958_map_template",
+    "issue_3759_one_atom_two_ap",
+    "issue_3759_one_atom_three_ap",
+    "issue_3847",
+    "issue_3635",
 ]
 
 with_lib = [
@@ -84,6 +88,10 @@ with_lib = [
     "anacyclamide",
     "3094-chem-2000",
     "3094-chem-3000",
+    "issue_3759_one_atom_two_ap",
+    "issue_3759_one_atom_three_ap",
+    "issue_3847",
+    "issue_3635",
 ]
 
 lib = indigo.loadMonomerLibraryFromFile(
@@ -102,14 +110,5 @@ for filename in files:
         indigo.setOption("json-use-native-precision", True)
     else:
         indigo.setOption("json-use-native-precision", False)
-    # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
-    #     file.write(mol.json())
-    with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
-        ket_ref = file.read()
     ket = mol.json()
-    diff = find_diff(ket_ref, ket)
-    if not diff:
-        print(filename + ".ket:SUCCEED")
-    else:
-        print(filename + ".ket:FAILED")
-        print(diff)
+    compare_diff(ref_path, filename + ".ket", ket)

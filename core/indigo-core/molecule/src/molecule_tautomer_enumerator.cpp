@@ -394,7 +394,8 @@ bool TautomerEnumerator::_performProcedure()
       "[#1:0][N&v3,n,O,S:1][*:2]=,:[N&v3,n,O,S:3]>>[N,n,O,S:1]=[A,a:2]-[N,n,O,S:3][#1:0]",
       "[#1:0][N&v3,n,O,S:1][*:2]=,:[*:3][*:4]=,:[N&v3,n,O,S:5]>>[N,n,O,S:1]=[A,a:2]-[A,a:3]=[A,a:4]-[N,n,O,S:5][#1:0]",
       "[#1:0][N&v3,n,O,S:1][*:2]=,:[*:3][*:4]=,:[*:5][*:6]=,:[N&v3,n,O,S:7]>>[N,n,O,S:1]=[A,a:2]-[A,a:3]=[A,a:4]-[A,a:5]=[A,a:6]-[N,n,O,S:7][#1:0]",
-      "[#1:0][N&v3,n,O,S:1][*:2]=,:[*:3][*:4]=,:[*:5][*:6]=,:[*:7][*:8]=,:[N&v3,n,O,S:9]>>[N,n,O,S:1]=[A,a:2]-[A,a:3]=[A,a:4]-[A,a:5]=[A,a:6]-[A,a:7]=[A,a:8]-[N,n,O,S:9][#1:0]"
+      "[#1:0][N&v3,n,O,S:1][*:2]=,:[*:3][*:4]=,:[*:5][*:6]=,:[*:7][*:8]=,:[N&v3,n,O,S:9]>>"
+      "[N,n,O,S:1]=[A,a:2]-[A,a:3]=[A,a:4]-[A,a:5]=[A,a:6]-[A,a:7]=[A,a:8]-[N,n,O,S:9][#1:0]"
 #else
         "[O,S,Se,Te;X1:1]=[C:2][CX4;R0,R1,R2:3][#1:0]>>[#1:0][O,S,Se,Te;X2:1]-[#6;X3:2]=[C,c;X3:3]", // Rule 1:  1,3 Keto-enol
         "[#1:0][O,S,Se,Te;X2:1]-[#6;X3:2]=[C,c;X3:3]>>[O,S,Se,Te;X1:1]=[C:2][CX4;R0,R1,R2:3][#1:0]", // Rule 1:  1,3 Keto-enol
@@ -548,9 +549,9 @@ void TautomerEnumerator::edgeAdd(Graph& /* subgraph */, Graph& supergraph, int /
     const Dbitset& backwardMask = layeredMolecules.getBondMask(super_idx, backwardSubBondOrder);
 
     breadcrumps.edgesHistory.push(super_idx);
-    breadcrumps.forwardEdgesHistory.expand(breadcrumps.forwardEdgesHistory.size() + 1);
+    breadcrumps.forwardEdgesHistory.push();
     breadcrumps.forwardEdgesHistory.top().copy(breadcrumps.forwardMask);
-    breadcrumps.backwardEdgesHistory.expand(breadcrumps.backwardEdgesHistory.size() + 1);
+    breadcrumps.backwardEdgesHistory.push();
     breadcrumps.backwardEdgesHistory.top().copy(breadcrumps.backwardMask);
 
     breadcrumps.forwardMask.andWith(forwardMask);
@@ -594,9 +595,9 @@ void TautomerEnumerator::vertexRemove(Graph& /* subgraph */, int /* sub_idx */, 
     {
         breadcrumps.edgesHistory.pop();
         breadcrumps.forwardMask.copy(breadcrumps.forwardEdgesHistory.top());
-        breadcrumps.forwardEdgesHistory.pop();
+        breadcrumps.forwardEdgesHistory.removeLast();
         breadcrumps.backwardMask.copy(breadcrumps.backwardEdgesHistory.top());
-        breadcrumps.backwardEdgesHistory.pop();
+        breadcrumps.backwardEdgesHistory.removeLast();
     }
     breadcrumps.nodesHistory.pop();
 }

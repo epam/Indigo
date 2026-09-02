@@ -1,3 +1,3 @@
 *** 2713 star atom support ***
-star_atom ket : SUCCEED
-star_atom scxmiles : SUCCEED
+star_atom.ket:SUCCEED
+*C.*N.*O |$star_e;;AH_p;;star_e;$|

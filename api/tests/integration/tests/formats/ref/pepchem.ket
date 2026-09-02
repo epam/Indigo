@@ -300,23 +300,23 @@
             {
                 "connectionType": "single",
                 "endpoint1": {
-                    "monomerId": "monomer18",
+                    "monomerId": "monomer30",
                     "attachmentPointId": "R1"
                 },
                 "endpoint2": {
-                    "monomerId": "monomer30",
+                    "monomerId": "monomer17",
                     "attachmentPointId": "R2"
                 }
             },
             {
                 "connectionType": "single",
                 "endpoint1": {
-                    "moleculeId": "mol0",
-                    "atomId": "12"
+                    "monomerId": "monomer18",
+                    "attachmentPointId": "R1"
                 },
                 "endpoint2": {
                     "monomerId": "monomer30",
-                    "attachmentPointId": "R3"
+                    "attachmentPointId": "R2"
                 }
             },
             {
@@ -432,12 +432,12 @@
             {
                 "connectionType": "single",
                 "endpoint1": {
-                    "monomerId": "monomer17",
-                    "attachmentPointId": "R2"
+                    "moleculeId": "mol0",
+                    "atomId": "12"
                 },
                 "endpoint2": {
                     "monomerId": "monomer30",
-                    "attachmentPointId": "R1"
+                    "attachmentPointId": "R3"
                 }
             }
         ],

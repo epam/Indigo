@@ -26,7 +26,11 @@ def check_case(name):
             mol = item.clone()
             mol.layout()
             res = moleculeLayoutDiff(
-                indigo, mol, ref.at(idx).rawData(), ref_is_file=False
+                indigo,
+                mol,
+                ref.at(idx).rawData(),
+                ref_is_file=False,
+                update=False,
             )
             print("  Item #{}: Result: {}".format(idx, res))
             saver.sdfAppend(mol)

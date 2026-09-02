@@ -19,8 +19,8 @@
 #ifndef __rsmiles_saver__
 #define __rsmiles_saver__
 
+#include "base_cpp/array.h"
 #include "base_cpp/exception.h"
-#include "base_cpp/obj_array.h"
 #include "base_cpp/tlscont.h"
 #include "molecule/smiles_saver.h"
 #include "reaction.h"

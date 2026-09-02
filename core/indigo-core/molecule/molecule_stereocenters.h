@@ -46,6 +46,14 @@ namespace indigo
             ATOM_ABS = 4
         };
 
+        enum
+        {
+            MDL_PARITY_NONE = 0,
+            MDL_PARITY_ODD = 1,
+            MDL_PARITY_EVEN = 2,
+            MDL_PARITY_EITHER = 3
+        };
+
         explicit MoleculeStereocenters();
 
         void clear();
@@ -130,6 +138,9 @@ namespace indigo
 
         static bool isPyramidMappingRigid(const int mapping[4]);
         static bool isPyramidMappingRigid_Sort(int* pyramid, const int* mapping);
+
+        // Parity as CTfile Appendix A defines it, from connectivity alone - no coordinates.
+        static int getMdlParity(BaseMolecule& mol, int idx);
 
         static void moveImplicitHydrogenToEnd(int pyramid[4]);
         static void moveMinimalToEnd(int pyramid[4]);

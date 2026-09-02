@@ -60,9 +60,14 @@ public class IndigoInchi {
         return new IndigoObject(indigo, Indigo.checkResult(this, lib.indigoInchiLoadMolecule(inchi)));
     }
 
+    public String getInchi(IndigoObject molecule, String forceOptions) {
+        indigo.setSessionID();
+        return Indigo.checkResultString(this, lib.indigoInchiGetInchiWithForcedOptions(molecule.self, forceOptions));
+    }
+
     public String getInchi(IndigoObject molecule) {
         indigo.setSessionID();
-        return Indigo.checkResultString(this, lib.indigoInchiGetInchi(molecule.self));
+        return Indigo.checkResultString(this, lib.indigoInchiGetInchiWithForcedOptions(molecule.self, null));
     }
 
     public String getInchiKey(String inchi) {

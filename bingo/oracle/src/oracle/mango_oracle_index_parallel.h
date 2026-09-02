@@ -2,6 +2,7 @@
 #define __mango_oracle_index_parallel_h__
 
 #include "base_cpp/os_sync_wrapper.h"
+#include "base_cpp/ptr_array.h"
 #include "oracle/bingo_oracle_parallel.h"
 #include "oracle/mango_oracle.h"
 
@@ -65,7 +66,7 @@ namespace indigo
 
         void clear() override;
 
-        ObjArray<MangoIndex> per_molecule_index;
+        PtrArray<MangoIndex> per_molecule_index;
         std::vector<MangoRegisterFailure> warnings;
         ChunkStorage per_molecule_data;
         ChunkStorage rowids;

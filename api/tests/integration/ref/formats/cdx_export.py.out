@@ -1,41 +1,41 @@
 *** Mol to CDX ***
-enhanced_stereo1:success
-enhanced_stereo2:success
-enhanced_stereo3:success
-macro/sa-mono:success
-rgroup:success
-stereo_either-0020:success
-two_bn:success
+enhanced_stereo1.b64cdx:SUCCEED
+enhanced_stereo2.b64cdx:SUCCEED
+enhanced_stereo3.b64cdx:SUCCEED
+macro/sa-mono.b64cdx:SUCCEED
+rgroup.b64cdx:SUCCEED
+stereo_either-0020.b64cdx:SUCCEED
+two_bn.b64cdx:SUCCEED
 *** KET to CDX ***
-issue_1774:success
-issue_1775:success
+issue_1774.b64cdx:SUCCEED
+issue_1775.b64cdx:SUCCEED
 molecule json loader: 'any' bonds are allowed only for queries
 *** Try as Query ***
 CDXML loader: Queries not supported
-issue_1777:success
-agents:success
+issue_1777.b64cdx:SUCCEED
+agents.b64cdx:SUCCEED
 *** CDXML to CDX ***
-AlcoholOxidation_Rxn1:success
-AlcoholOxidation_Rxn2:success
-Amidation_Rxn1:success
-Amidation_Rxn2:success
-BuchwaldHartwig_Rxn1:success
-BuchwaldHartwig_Rxn2:success
-CarbonylReduction_Rxn1:success
-CarbonylReduction_Rxn2:success
-Esterification_Rxn1:success
-Esterification_Rxn2:success
-Grignard_Rxn1:success
-Grignard_Rxn2:success
-N-Alkylation_Rxn1:success
-N-Alkylation_Rxn2:success
-N-Sulfonylation_Rxn1:success
-N-Sulfonylation_Rxn2:success
-O-Alkylation_Rxn1:success
-O-Alkylation_Rxn2:success
-Reductive Amination_Rxn1:success
-Reductive Amination_Rxn2:success
-SnAr_Rxn1:success
-SnAr_Rxn2:success
-Suzuki_Rxn1:success
-Suzuki_Rxn2:success
+AlcoholOxidation_Rxn1.b64cdx:SUCCEED
+AlcoholOxidation_Rxn2.b64cdx:SUCCEED
+Amidation_Rxn1.b64cdx:SUCCEED
+Amidation_Rxn2.b64cdx:SUCCEED
+BuchwaldHartwig_Rxn1.b64cdx:SUCCEED
+BuchwaldHartwig_Rxn2.b64cdx:SUCCEED
+CarbonylReduction_Rxn1.b64cdx:SUCCEED
+CarbonylReduction_Rxn2.b64cdx:SUCCEED
+Esterification_Rxn1.b64cdx:SUCCEED
+Esterification_Rxn2.b64cdx:SUCCEED
+Grignard_Rxn1.b64cdx:SUCCEED
+Grignard_Rxn2.b64cdx:SUCCEED
+N-Alkylation_Rxn1.b64cdx:SUCCEED
+N-Alkylation_Rxn2.b64cdx:SUCCEED
+N-Sulfonylation_Rxn1.b64cdx:SUCCEED
+N-Sulfonylation_Rxn2.b64cdx:SUCCEED
+O-Alkylation_Rxn1.b64cdx:SUCCEED
+O-Alkylation_Rxn2.b64cdx:SUCCEED
+Reductive Amination_Rxn1.b64cdx:SUCCEED
+Reductive Amination_Rxn2.b64cdx:SUCCEED
+SnAr_Rxn1.b64cdx:SUCCEED
+SnAr_Rxn2.b64cdx:SUCCEED
+Suzuki_Rxn1.b64cdx:SUCCEED
+Suzuki_Rxn2.b64cdx:SUCCEED

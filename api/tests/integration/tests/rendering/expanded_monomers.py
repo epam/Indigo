@@ -47,6 +47,21 @@ indigo.setOption("render-output-format", "png")
 renderer.renderToFile(mol, joinPathPy("out/monomer_unused_atps.png", __file__))
 print(checkImageSimilarity("monomer_unused_atps.png"))
 
+indigo.setOption("ignore-stereochemistry-errors", "true")
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/3342_stereo.ket", __file__)
+)
+indigo.setOption("render-output-format", "png")
+renderer.renderToFile(mol, joinPathPy("out/3342_stereo.png", __file__))
+print(checkImageSimilarity("3342_stereo.png"))
+
+mol = indigo.loadMoleculeFromFile(
+    joinPathPy("molecules/3343_stereo.ket", __file__)
+)
+
+renderer.renderToFile(mol, joinPathPy("out/3343_stereo.png", __file__))
+print(checkImageSimilarity("3343_stereo.png"))
+
 if isIronPython():
     renderer.Dispose()
     indigo.Dispose()

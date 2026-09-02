@@ -47,16 +47,16 @@ Molecule& Reaction::getMolecule(int index)
 
 int Reaction::_addBaseMolecule(int side)
 {
-    int idx = _allMolecules.add(new Molecule());
-    _addedBaseMolecule(idx, side, *_allMolecules[idx]);
+    int idx = _allMolecules.add_t(Molecule::poolFactory());
+    _addedBaseMolecule(idx, side, _allMolecules[idx]);
     return idx;
 }
 
-void Reaction::saveBondOrders(Reaction& reaction, ObjArray<Array<int>>& bond_types)
+void Reaction::saveBondOrders(Reaction& reaction, PtrArray<Array<int>>& bond_types)
 {
 
-    while (bond_types.size() < reaction.end())
-        bond_types.push();
+    if (bond_types.size() < reaction.end())
+        bond_types.resize(reaction.end());
 
     for (int i = reaction.begin(); i != reaction.end(); i = reaction.next(i))
     {
@@ -64,7 +64,7 @@ void Reaction::saveBondOrders(Reaction& reaction, ObjArray<Array<int>>& bond_typ
     }
 }
 
-void Reaction::loadBondOrders(Reaction& reaction, ObjArray<Array<int>>& bond_types)
+void Reaction::loadBondOrders(Reaction& reaction, PtrArray<Array<int>>& bond_types)
 {
     for (int i = reaction.begin(); i != reaction.end(); i = reaction.next(i))
     {
@@ -77,7 +77,7 @@ bool Reaction::aromatize(const AromaticityOptions& options)
     bool arom_found = false;
     for (int i = begin(); i < end(); i = next(i))
     {
-        arom_found |= MoleculeAromatizer::aromatizeBonds(*(Molecule*)_allMolecules[i], options);
+        arom_found |= MoleculeAromatizer::aromatizeBonds(static_cast<Molecule&>(_allMolecules[i]), options);
     }
     return arom_found;
 }

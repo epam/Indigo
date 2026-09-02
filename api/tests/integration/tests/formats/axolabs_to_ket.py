@@ -1,17 +1,12 @@
-﻿import difflib
-import os
+﻿import os
 import sys
-
-
-def find_diff(a, b):
-    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
-
 
 sys.path.append(
     os.path.normpath(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
+from common.util import compare_diff
 from env_indigo import (  # noqa
     Indigo,
     IndigoException,
@@ -39,6 +34,7 @@ axolabs_data = {
     "AxoLabs_two_double": "5'-AC-3'\n5'-GU-3'\n5'-AC-3'\n5'-GU-3'",
     "AxoLabs_double_sense_shift": "5'-AC-3'\n5'-GUAA-3'",
     "AxoLabs_double_antisense_shift": "5'-AAAC-3'\n5'-GU-3'",
+    "AxoLabs_double_3": "5'-TmGCGCA-3'\n5'-UCAA-3'",
 }
 
 lib = indigo.loadMonomerLibraryFromFile(
@@ -48,16 +44,7 @@ lib = indigo.loadMonomerLibraryFromFile(
 for filename in sorted(axolabs_data.keys()):
     mol = indigo.loadAxoLabs(axolabs_data[filename], lib)
     ket = mol.json()
-    # with open(os.path.join(ref_path, filename) + ".ket", "w") as file:
-    #     file.write(mol.json())
-    with open(os.path.join(ref_path, filename) + ".ket", "r") as file:
-        ket_ref = file.read()
-    diff = find_diff(ket_ref, ket)
-    if not diff:
-        print(filename + ".ket:SUCCEED")
-    else:
-        print(filename + ".ket:FAILED")
-        print(diff)
+    compare_diff(ref_path, filename + ".ket", ket)
 
 axolabs_errors = {
     "5'-pACsGsUsp-3'": "Invalid AxoLabs sequence: phosphate 's' can only be internal",

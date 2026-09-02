@@ -172,7 +172,7 @@ IMPL_ERROR(KetRUSGroup, "Ket RU SGroup")
 const std::map<std::string, int>& KetRUSGroup::getStringPropStrToIdx() const
 {
     static std::map<std::string, int> str_to_idx{
-        {"subscript", toUType(StringProps::subscript)},
+        {"subscript", toUType(StringProps::label)},
     };
     return str_to_idx;
 };
@@ -475,11 +475,9 @@ IMPL_ERROR(KetConnectionEndPoint, "Ket Connection End Point")
 const std::map<std::string, int>& KetConnectionEndPoint::getStringPropStrToIdx() const
 {
     static std::map<std::string, int> str_to_idx{
-        {"groupId", toUType(StringProps::groupId)},
-        {"monomerId", toUType(StringProps::monomerId)},
-        {"moleculeId", toUType(StringProps::moleculeId)},
-        {"atomId", toUType(StringProps::atomId)},
-        {"attachmentPointId", toUType(StringProps::attachmentPointId)},
+        {"groupId", toUType(StringProps::groupId)},     {"templateId", toUType(StringProps::templateId)},
+        {"monomerId", toUType(StringProps::monomerId)}, {"moleculeId", toUType(StringProps::moleculeId)},
+        {"atomId", toUType(StringProps::atomId)},       {"attachmentPointId", toUType(StringProps::attachmentPointId)},
     };
     return str_to_idx;
 }

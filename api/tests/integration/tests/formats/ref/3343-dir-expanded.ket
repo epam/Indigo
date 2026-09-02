@@ -1,0 +1,174 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "mol0"
+            }
+        ]
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "H",
+                "location": [
+                    11.87600040435791,
+                    -6.787499904632568,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    12.741999626159668,
+                    -7.287499904632568,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    13.607999801635743,
+                    -6.787499904632568,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    14.241999626159668,
+                    -7.287499904632568,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    15.107999801635743,
+                    -6.787499904632568,
+                    0.0
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    15.973999977111817,
+                    -7.287499904632568,
+                    0.0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    4
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    0
+                ],
+                "stereo": 1
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    4,
+                    5
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    3
+                ],
+                "stereo": 1
+            }
+        ],
+        "sgroups": [
+            {
+                "type": "SUP",
+                "atoms": [
+                    0
+                ],
+                "name": "H",
+                "class": "LGRP",
+                "bonds": [
+                    2
+                ]
+            },
+            {
+                "type": "SUP",
+                "atoms": [
+                    1,
+                    2
+                ],
+                "name": "SingleUP",
+                "expanded": true,
+                "class": "AA",
+                "attachmentPoints": [
+                    {
+                        "attachmentAtom": 1,
+                        "leavingAtom": 0,
+                        "attachmentId": "R1"
+                    },
+                    {
+                        "attachmentAtom": 2,
+                        "attachmentId": "R2"
+                    }
+                ],
+                "bonds": [
+                    2
+                ]
+            },
+            {
+                "type": "SUP",
+                "atoms": [
+                    5
+                ],
+                "name": "H",
+                "class": "LGRP",
+                "bonds": [
+                    3
+                ]
+            },
+            {
+                "type": "SUP",
+                "atoms": [
+                    3,
+                    4
+                ],
+                "name": "Single",
+                "expanded": true,
+                "class": "AA",
+                "attachmentPoints": [
+                    {
+                        "attachmentAtom": 3,
+                        "attachmentId": "R1"
+                    },
+                    {
+                        "attachmentAtom": 4,
+                        "leavingAtom": 5,
+                        "attachmentId": "R2"
+                    }
+                ],
+                "bonds": [
+                    3,
+                    4
+                ]
+            }
+        ]
+    }
+}
