@@ -507,12 +507,17 @@ M  ISO  1   1  29
 M  END
 )";
 
+// The hypervalent structures below carry no dative bond, so ticket #3617 must leave them
+// exactly as valid as they are today. Checking the valence rather than only the parse is
+// what makes that a real guard: indigoLoadMoleculeFromString succeeds on invalid molecules
+// by design, so a load that returns a handle proves nothing about valence.
 TEST_F(IndigoApiBasicTest, valence_Si_pentafluoride_dianion)
 {
     const int mol = indigoLoadMoleculeFromString(SiF5_dianion_mol);
     ASSERT_NE(-1, mol);
     ASSERT_EQ(6, indigoCountAtoms(mol));
     ASSERT_EQ(5, indigoCountBonds(mol));
+    EXPECT_STREQ("", indigoCheckBadValence(mol));
 
     const char* smiles = indigoCanonicalSmiles(mol);
     ASSERT_NE(nullptr, smiles);
@@ -524,6 +529,7 @@ TEST_F(IndigoApiBasicTest, valence_Si_hexafluorosilicate)
     int mol = indigoLoadMoleculeFromString("[Si-2](F)(F)(F)(F)(F)F");
     ASSERT_NE(-1, mol);
     ASSERT_EQ(7, indigoCountAtoms(mol));
+    EXPECT_STREQ("", indigoCheckBadValence(mol));
 
     const char* smiles = indigoCanonicalSmiles(mol);
     ASSERT_NE(nullptr, smiles);
@@ -536,6 +542,7 @@ TEST_F(IndigoApiBasicTest, valence_Si_dianion_radical)
     const int mol = indigoLoadMoleculeFromString(SiF4_dianion_radical_mol);
     ASSERT_NE(-1, mol);
     ASSERT_EQ(5, indigoCountAtoms(mol));
+    EXPECT_STREQ("", indigoCheckBadValence(mol));
 
     const char* smiles = indigoCanonicalSmiles(mol);
     ASSERT_NE(nullptr, smiles);
@@ -547,6 +554,7 @@ TEST_F(IndigoApiBasicTest, valence_Ge_pentafluoride_dianion)
     const int mol = indigoLoadMoleculeFromString(GeF5_dianion_mol);
     ASSERT_NE(-1, mol);
     ASSERT_EQ(6, indigoCountAtoms(mol));
+    EXPECT_STREQ("", indigoCheckBadValence(mol));
 
     const char* smiles = indigoCanonicalSmiles(mol);
     ASSERT_NE(nullptr, smiles);
@@ -559,6 +567,7 @@ TEST_F(IndigoApiBasicTest, valence_Si_monoanion_pentacoordinate)
     int mol = indigoLoadMoleculeFromString("[Si-](F)(F)(F)(F)F");
     ASSERT_NE(-1, mol);
     ASSERT_EQ(6, indigoCountAtoms(mol));
+    EXPECT_STREQ("", indigoCheckBadValence(mol));
 
     const char* smiles = indigoCanonicalSmiles(mol);
     ASSERT_NE(nullptr, smiles);
@@ -570,6 +579,7 @@ TEST_F(IndigoApiBasicTest, valence_Ge_monoanion_radical)
     const int mol = indigoLoadMoleculeFromString(GeF4_monoanion_radical_mol);
     ASSERT_NE(-1, mol);
     ASSERT_EQ(5, indigoCountAtoms(mol));
+    EXPECT_STREQ("", indigoCheckBadValence(mol));
 
     const char* smiles = indigoCanonicalSmiles(mol);
     ASSERT_NE(nullptr, smiles);
@@ -589,6 +599,67 @@ TEST_F(IndigoApiBasicTest, valence_Si_dianion_invalid_bonds)
     EXPECT_NE(std::string::npos, errStr.find("3 drawn bonds")) << "Error should mention 3 drawn bonds, got: " << errStr;
 }
 
+// Ticket #3617 across the C boundary. The C++ suite covers the model itself; what these
+// two pin is that the result survives the FFI layer the way every other valence result
+// does -- through indigoCheckBadValence and the implicit hydrogen counter.
+TEST_F(IndigoApiBasicTest, dative_bond_valence_error_reaches_the_c_api)
+{
+    // Fluorine cannot accept: it has no empty orbital, and no arrangement produces one.
+    const char* mol_text = "\n\n\n"
+                           "  0  0  0     0  0            999 V3000\n"
+                           "M  V30 BEGIN CTAB\n"
+                           "M  V30 COUNTS 2 1 0 0 0\n"
+                           "M  V30 BEGIN ATOM\n"
+                           "M  V30 1 F 0 0 0 0\n"
+                           "M  V30 2 Fe 1.5 0 0 0\n"
+                           "M  V30 END ATOM\n"
+                           "M  V30 BEGIN BOND\n"
+                           "M  V30 1 9 2 1\n"
+                           "M  V30 END BOND\n"
+                           "M  V30 END CTAB\n"
+                           "M  END\n";
+
+    const int mol = indigoLoadMoleculeFromString(mol_text);
+    ASSERT_NE(-1, mol);
+
+    const char* valenceErr = indigoCheckBadValence(mol);
+    ASSERT_NE(nullptr, valenceErr);
+    const std::string errStr(valenceErr);
+    EXPECT_NE(std::string::npos, errStr.find("F")) << "Error should mention the element, got: " << errStr;
+    EXPECT_NE(std::string::npos, errStr.find("dative")) << "Error should say what kind of bond it is about, got: " << errStr;
+}
+
+TEST_F(IndigoApiBasicTest, dative_bond_changes_implicit_hydrogen_count)
+{
+    // Chlorine(3+) with one ordinary bond: no hydrogen on its own, one once it donates.
+    const char* mol_text = "\n\n\n"
+                           "  0  0  0     0  0            999 V3000\n"
+                           "M  V30 BEGIN CTAB\n"
+                           "M  V30 COUNTS 3 2 0 0 0\n"
+                           "M  V30 BEGIN ATOM\n"
+                           "M  V30 1 Cl 0 0 0 0 CHG=3\n"
+                           "M  V30 2 C 1.5 0 0 0\n"
+                           "M  V30 3 Fe -1.5 0 0 0\n"
+                           "M  V30 END ATOM\n"
+                           "M  V30 BEGIN BOND\n"
+                           "M  V30 1 1 1 2\n"
+                           "M  V30 2 9 1 3\n"
+                           "M  V30 END BOND\n"
+                           "M  V30 END CTAB\n"
+                           "M  END\n";
+
+    const int mol = indigoLoadMoleculeFromString(mol_text);
+    ASSERT_NE(-1, mol);
+
+    const int chlorine = indigoGetAtom(mol, 0);
+    ASSERT_NE(-1, chlorine);
+    EXPECT_EQ(1, indigoCountImplicitHydrogens(chlorine));
+
+    const int carbon = indigoGetAtom(mol, 1);
+    ASSERT_NE(-1, carbon);
+    EXPECT_EQ(3, indigoCountImplicitHydrogens(carbon)) << "an atom without dative bonds keeps its own count";
+}
+
 TEST_F(IndigoApiBasicTest, parse_Si_tetramer_cycle_radical)
 {
     const int mol = indigoLoadMoleculeFromString(Si4_cycle_radical_v3000);
@@ -604,6 +675,7 @@ TEST_F(IndigoApiBasicTest, valence_Si29_isotope_pentafluoride_dianion)
     ASSERT_NE(-1, mol);
     ASSERT_EQ(6, indigoCountAtoms(mol));
     ASSERT_EQ(5, indigoCountBonds(mol));
+    EXPECT_STREQ("", indigoCheckBadValence(mol));
 
     const char* smiles = indigoCanonicalSmiles(mol);
     ASSERT_NE(nullptr, smiles);

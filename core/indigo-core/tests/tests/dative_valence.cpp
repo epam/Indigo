@@ -26,11 +26,13 @@
 
 #include <gtest/gtest.h>
 
+#include <base_cpp/output.h>
 #include <base_cpp/scanner.h>
 #include <molecule/molecule.h>
 #include <molecule/molecule_standardize.h>
 #include <molecule/molecule_standardize_options.h>
 #include <molecule/molfile_loader.h>
+#include <molecule/molfile_saver.h>
 
 #include "common.h"
 
@@ -210,4 +212,71 @@ TEST_F(IndigoCoreDativeValenceTest, standardizer_creates_and_clears_the_same_rep
     clear.clear_dative_bonds = true;
     ASSERT_NO_THROW(MoleculeStandardizer::standardize(mol, clear));
     EXPECT_EQ(bonds_before - 1, mol.edgeCount()) << "a bond created by the standardizer must be clearable by it";
+}
+
+// A copper(2+) with two dative bonds, the structure of issue3496_coordination_bond_no_val
+// in formats.cpp. That test loads it as a QueryMolecule and asserts only the atom count,
+// so neither the bond order, nor its direction, nor the Molecule path was covered by
+// anything -- and direction is what requirements 4 and 5 are stated in terms of.
+TEST_F(IndigoCoreDativeValenceTest, dative_bonds_keep_order_and_direction_on_the_molecule_path)
+{
+    const char* mol_text = "\n\n\n"
+                           "  0  0  0     0  0            999 V3000\n"
+                           "M  V30 BEGIN CTAB\n"
+                           "M  V30 COUNTS 3 2 0 0 0\n"
+                           "M  V30 BEGIN ATOM\n"
+                           "M  V30 1 Cu 0 0 0 0 CHG=2\n"
+                           "M  V30 2 N 1.5 0 0 0\n"
+                           "M  V30 3 N -1.5 0 0 0\n"
+                           "M  V30 END ATOM\n"
+                           "M  V30 BEGIN BOND\n"
+                           "M  V30 1 9 1 2\n"
+                           "M  V30 2 9 1 3\n"
+                           "M  V30 END BOND\n"
+                           "M  V30 END CTAB\n"
+                           "M  END\n";
+
+    Molecule mol;
+    ASSERT_NO_THROW(load(mol, mol_text));
+    ASSERT_EQ(3, mol.vertexCount());
+    ASSERT_EQ(2, mol.edgeCount());
+
+    for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
+    {
+        EXPECT_EQ(_BOND_COORDINATION, mol.getBondOrder(i)) << "the loader must keep order 9, not fold it into BOND_ZERO";
+        EXPECT_EQ(0, mol.getEdge(i).beg) << "the copper is the donor side of both bonds as drawn";
+    }
+
+    // Neither end is over its limit here, so the model must stay silent -- this is the
+    // "should not regress" case the original test was written for.
+    for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+        EXPECT_NO_THROW(mol.getAtomValence(i)) << "atom " << i;
+}
+
+// Round trip through V3000, which is the only format that carries dative bonds today.
+// V2000, CDXML and SMILES do not (defects #3-#5 of the analysis, deliberately left out of
+// this ticket); pinning V3000 makes that boundary explicit rather than assumed.
+TEST_F(IndigoCoreDativeValenceTest, dative_bonds_survive_a_v3000_round_trip)
+{
+    Molecule original;
+    ASSERT_NO_THROW(load(original, aromaticRingWithExtraBond("S", _BOND_COORDINATION)));
+
+    const int bond = original.findEdgeIndex(0, 5);
+    ASSERT_NE(-1, bond);
+    ASSERT_EQ(_BOND_COORDINATION, original.getBondOrder(bond));
+
+    Array<char> buffer;
+    ArrayOutput output(buffer);
+    MolfileSaver saver(output);
+    saver.mode = MolfileSaver::MODE_3000;
+    ASSERT_NO_THROW(saver.saveMolecule(original));
+    buffer.push(0);
+
+    Molecule restored;
+    ASSERT_NO_THROW(load(restored, buffer.ptr()));
+
+    const int restored_bond = restored.findEdgeIndex(0, 5);
+    ASSERT_NE(-1, restored_bond) << "the dative bond disappeared in the round trip";
+    EXPECT_EQ(_BOND_COORDINATION, restored.getBondOrder(restored_bond));
+    EXPECT_EQ(original.getEdge(bond).beg, restored.getEdge(restored_bond).beg) << "direction must survive too";
 }
