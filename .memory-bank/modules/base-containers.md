@@ -36,7 +36,7 @@ element is constructed by the container (`emplace`, `push`) or handed to it as a
 which is what makes an out-of-range report actionable.
 
 Replaced `ObjArray<T>`, which no longer exists — see
-[../adr/2026-09-02-owning-containers.md](../adr/2026-09-02-owning-containers.md).
+[../adr/owning-containers.md](../adr/owning-containers.md).
 
 ## `PtrReusablePool<T>` and `Reusable`
 

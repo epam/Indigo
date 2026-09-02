@@ -3,9 +3,10 @@
 > **Read when:** you are about to reverse, extend, or re-argue a structural decision.
 > **Skip when:** you are implementing inside an existing structure.
 
-One file per decision, named `YYYY-MM-DD-<slug>.md`. Records are immutable: a decision that is later
-reversed gets a **new** record that supersedes the old one, and the old one gains a `Superseded by:`
-line. Editing history away destroys the only reason to keep it.
+One file per decision, named `<slug>.md` — the date belongs in the header, not in the file name.
+Records are immutable: a decision that is later reversed gets a **new** record that supersedes the
+old one, and the old one gains a `Superseded by:` line. Editing history away destroys the only
+reason to keep it.
 
 ## Format
 
@@ -38,7 +39,7 @@ recorded in a ticket that the code links to.
 
 ## Records
 
-- [2026-09-02-owning-containers.md](./2026-09-02-owning-containers.md) — objects are owned by
+- [owning-containers.md](./owning-containers.md) — objects are owned by
   `PtrArray` and `PtrReusablePool`, not by `ObjArray` or `std::vector<T>`; the `Reusable` contract
 
 Still worth reconstructing from the analyses in `indigo-common/Task/`: the valence-model

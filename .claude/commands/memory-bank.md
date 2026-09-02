@@ -17,7 +17,7 @@ Target: **$ARGUMENTS**
      with an ID, the reason it fails quietly, and a `path/file.cpp:NNN` anchor
    - subsystem behaviour that cost you real reading time → `modules/<name>.md`
    - a change in what a capability promises callers → `features/<name>.md`
-   - a structural decision that sets precedent → `adr/YYYY-MM-DD-<slug>.md`
+   - a structural decision that sets precedent → `adr/<slug>.md`
    - a term you had to look up → `glossary.md`
 4. Check the anchors you are about to touch still resolve; a stale `file:line` in the bank is a
    defect, fix it while you are there.

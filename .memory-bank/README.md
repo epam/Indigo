@@ -45,7 +45,7 @@ before it is useful is a tax on every session; a routing table plus honest per-f
 | `invariants.md`    | ID, statement, why it breaks silently, anchor (`file:line`)                          |
 | `modules/<x>.md`   | Responsibility, public interface, dependencies, dependents, constraints & traps      |
 | `features/<x>.md`  | Problem, user interaction, expected behaviour (WHEN/THEN), guarantees, limitations    |
-| `adr/<date>-<x>.md`| Decision, context, alternatives considered, rationale, consequences                  |
+| `adr/<slug>.md`    | Decision, context, alternatives considered, rationale, consequences                  |
 
 ## Rules for writing
 
