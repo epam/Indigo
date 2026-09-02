@@ -744,6 +744,24 @@ int Molecule::_getImplicitHForConnectivity(int idx, int conn, bool use_cache)
             return _implicit_h[idx];
     }
 
+    // Requirement 7 of #3617. For an atom with dative bonds the model replaces the whole
+    // calculation below rather than adjusting its outcome, so it is consulted before any
+    // of it runs -- but after the cache, which stays the single source of a stored count.
+    {
+        int dative_h = -1;
+
+        if (_getDativeImplicitH(idx, dative_h))
+        {
+            if (use_cache)
+            {
+                _implicit_h.expandFill(idx + 1, -1);
+                _implicit_h[idx] = dative_h;
+            }
+
+            return dative_h;
+        }
+    }
+
     const _Atom& atom = _atoms[idx];
 
     int radical = 0;
@@ -973,6 +991,24 @@ const DativeModel* Molecule::_dativeModel()
     _dative_model_revision = getEditRevision();
 
     return _dative_model.get();
+}
+
+bool Molecule::_getDativeImplicitH(int idx, int& impl_h)
+{
+    const DativeModel* model = _dativeModel();
+
+    if (model == nullptr || !model->atomParticipates(idx))
+        return false;
+
+    DativeModel::AtomResult result;
+
+    // A negative implicit_h means requirement 8 excludes the atom, or the count could not
+    // be derived. Either way the answer belongs to the existing calculation.
+    if (!model->compute(idx, result) || result.implicit_h < 0)
+        return false;
+
+    impl_h = result.implicit_h;
+    return true;
 }
 
 void Molecule::_checkDativeValence(int idx)

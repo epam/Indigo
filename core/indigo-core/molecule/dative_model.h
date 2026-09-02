@@ -92,6 +92,7 @@ namespace indigo
             int donor_bonds = 0;        // req 3: donor bonds left after cancellation
             int acceptor_bonds = 0;     // req 3: acceptor bonds left after cancellation
             bool valence_error = false; // req 6: more dative bonds than allowed
+            int implicit_h = -1;        // req 7; -1 when the count does not apply (req 8)
         };
 
         explicit DativeModel(Molecule& mol);
@@ -110,6 +111,11 @@ namespace indigo
         bool compute(int atom_idx, AtomResult& out) const;
 
     private:
+        // Requirements 7 and 8: the hydrogens implied by what is left once the dative
+        // bonds have taken their share of the electrons and orbitals. Returns -1 when the
+        // count does not apply to this atom.
+        static int _implicitHydrogens(int elem, const AtomResult& result);
+
         // Sum of the orders of all bonds that count towards `bonds` in req 1 and 2:
         // dative and hydrogen bonds excluded, implicit hydrogens excluded, aromatic
         // bonds resolved to their Kekule orders (req 1.1).

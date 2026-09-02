@@ -194,5 +194,42 @@ bool DativeModel::compute(int atom_idx, AtomResult& out) const
     // Requirement 6.
     out.valence_error = out.donor_bonds > out.max_donor || out.acceptor_bonds > out.max_acceptor;
 
+    // Requirements 7 and 8.
+    out.implicit_h = _implicitHydrogens(elem, out);
+
     return true;
+}
+
+int DativeModel::_implicitHydrogens(int elem, const AtomResult& result)
+{
+    // Requirement 8. Both sets already answer "no hydrogens" in the existing valence
+    // code -- transition metals are accepted exactly as drawn, noble gases are held at
+    // zero -- so declining here leaves that code in charge instead of restating its
+    // conclusion in a second place.
+    if (isTransitionMetal(elem) || Element::group(elem) == 8)
+        return -1;
+
+    // An atom that cannot hold the dative bonds drawn on it has no meaningful remainder
+    // to derive hydrogens from. The specification stops at the valence error for such
+    // atoms, and so do we.
+    if (result.valence_error)
+        return -1;
+
+    const int el_remaining = result.el - 2 * result.donor_bonds;
+    const int or_remaining = result.orb - result.donor_bonds - result.acceptor_bonds;
+
+    // Neither can go negative in the absence of a valence error: donor_bonds is bounded
+    // by rounddown(El/2), and cancellation (req 3) leaves at most one of the two counts
+    // non-zero, each bounded by Or. The guard is here because a negative hydrogen count
+    // would only be noticed much further away from its cause.
+    if (el_remaining < 0 || or_remaining < 0)
+        return -1;
+
+    if (el_remaining <= or_remaining)
+        return el_remaining;
+
+    if (el_remaining < 2 * or_remaining)
+        return 2 * or_remaining - el_remaining;
+
+    return 0;
 }

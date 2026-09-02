@@ -227,6 +227,11 @@ namespace indigo
         // (building it consults the molecule, so re-entrant queries must see no model).
         const DativeModel* _dativeModel();
 
+        // Requirement 7 of #3617: the implicit hydrogens implied by this atom's dative
+        // bonds. Returns false for every atom the dative model does not describe, which
+        // is what leaves the existing calculation in charge of all of them.
+        bool _getDativeImplicitH(int idx, int& impl_h);
+
         // Requirement 6 of #3617: an atom carrying more dative bonds than its electron
         // and orbital counts allow is a valence error. Does nothing for atoms without
         // dative bonds, which is what keeps every other molecule bit-identical.

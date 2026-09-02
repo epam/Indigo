@@ -380,6 +380,83 @@ TEST_F(IndigoCoreDativeValenceIntegrationTest, atoms_without_dative_bonds_are_le
     EXPECT_EQ(4, mol.getAtomValence(2)) << "the carbon is unrelated to the dative bond";
 }
 
+// Requirement 7, and the step the ticket exists to produce: chlorine(3+) with one
+// ordinary bond has no hydrogen today, and gains one as soon as a dative bond is drawn
+// on it. El_remaining = 3 - 2 = 1, Or_remaining = 3 - 1 = 2, and 1 <= 2, so the count is
+// El_remaining itself.
+TEST_F(IndigoCoreDativeValenceIntegrationTest, donor_dative_bond_adds_a_hydrogen)
+{
+    Molecule without_dative;
+    ASSERT_NO_THROW(loadV3000(without_dative, wrap("M  V30 1 Cl 0 0 0 0 CHG=3\n"
+                                                   "M  V30 2 C 1.5 0 0 0\n",
+                                                   "M  V30 1 1 1 2\n", 2, 1)));
+    ASSERT_EQ(0, without_dative.getImplicitH(0)) << "baseline: no hydrogen without a dative bond";
+
+    Molecule with_dative;
+    ASSERT_NO_THROW(loadV3000(with_dative, wrap("M  V30 1 Cl 0 0 0 0 CHG=3\n"
+                                                "M  V30 2 C 1.5 0 0 0\n"
+                                                "M  V30 3 Fe -1.5 0 0 0\n",
+                                                "M  V30 1 1 1 2\n"
+                                                "M  V30 2 9 1 3\n", // chlorine donates
+                                                3, 2)));
+
+    EXPECT_EQ(1, with_dative.getImplicitH(0));
+}
+
+// The other branch of the requirement 7 formula. As an acceptor the chlorine keeps its
+// electrons: El_remaining = 3, Or_remaining = 2, so 2*Or > El > Or and the count is
+// 2*Or_remaining - El_remaining = 1.
+TEST_F(IndigoCoreDativeValenceIntegrationTest, acceptor_dative_bond_uses_the_second_branch)
+{
+    Molecule mol;
+    ASSERT_NO_THROW(loadV3000(mol, wrap("M  V30 1 Cl 0 0 0 0 CHG=3\n"
+                                        "M  V30 2 C 1.5 0 0 0\n"
+                                        "M  V30 3 Fe -1.5 0 0 0\n",
+                                        "M  V30 1 1 1 2\n"
+                                        "M  V30 2 9 3 1\n", // chlorine accepts
+                                        3, 2)));
+
+    EXPECT_EQ(1, mol.getImplicitH(0));
+}
+
+// Requirement 8: a transition metal is not drawn with hydrogens, dative bonds or not.
+TEST_F(IndigoCoreDativeValenceIntegrationTest, transition_metals_get_no_hydrogens)
+{
+    Molecule mol;
+    ASSERT_NO_THROW(loadV3000(mol, wrap("M  V30 1 N 0 0 0 0\n"
+                                        "M  V30 2 Ni 1.5 0 0 0 CHG=2\n",
+                                        "M  V30 1 9 1 2\n", 2, 1)));
+
+    EXPECT_EQ(0, mol.getImplicitH(1));
+}
+
+// The same rule for noble gases, the ticket's other named example.
+TEST_F(IndigoCoreDativeValenceIntegrationTest, noble_gases_get_no_hydrogens)
+{
+    Molecule mol;
+    ASSERT_NO_THROW(loadV3000(mol, wrap("M  V30 1 Xe 0 0 0 0\n"
+                                        "M  V30 2 Fe 1.5 0 0 0\n",
+                                        "M  V30 1 9 1 2\n", 2, 1)));
+
+    EXPECT_EQ(0, mol.getImplicitH(0));
+}
+
+// The isolation invariant for requirement 7: an atom with no dative bond of its own keeps
+// the hydrogen count it had before the feature existed.
+TEST_F(IndigoCoreDativeValenceIntegrationTest, hydrogens_elsewhere_are_left_alone)
+{
+    Molecule mol;
+    ASSERT_NO_THROW(loadV3000(mol, wrap("M  V30 1 N 0 0 0 0\n"
+                                        "M  V30 2 Fe 1.5 0 0 0\n"
+                                        "M  V30 3 C -1.5 0 0 0\n"
+                                        "M  V30 4 C -3.0 0 0 0\n",
+                                        "M  V30 1 9 1 2\n"
+                                        "M  V30 2 1 3 4\n",
+                                        4, 2)));
+
+    EXPECT_EQ(3, mol.getImplicitH(2)) << "a methyl carbon is unaffected by the dative bond elsewhere";
+}
+
 // An explicitly specified valence must not mask requirement 6: the error is a property of
 // the bonding around the atom, not of the valence number stored on it.
 TEST_F(IndigoCoreDativeValenceIntegrationTest, specified_valence_does_not_mask_the_error)
