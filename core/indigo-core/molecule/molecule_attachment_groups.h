@@ -65,10 +65,30 @@ namespace indigo
         // the whole group, never a truncated one.
         bool remapAtoms(const Array<int>& atom_mapping);
 
+        // The atom a file uses to draw the group with: the star atom of a V3000
+        // ENDPTS record. -1 when the source named none, as KET does. Not a member
+        // of the group and not part of it chemically — a group whose anchor is
+        // gone stays a group, and a saver that needs one puts a fresh star at the
+        // centre of the members.
+        int anchorAtom() const
+        {
+            return _anchor_atom;
+        }
+        void setAnchorAtom(int atom)
+        {
+            _anchor_atom = atom;
+        }
+
+        // Renumbers the anchor through `atom_mapping`; the anchor simply goes away
+        // when its atom does, which is why this is not part of remapAtoms() and
+        // never makes the caller drop the group.
+        void remapAnchorAtom(const Array<int>& atom_mapping);
+
     private:
         void _reset(); // the one place the fields are listed; not virtual — called from the constructor
 
         std::vector<int> _atoms;
+        int _anchor_atom;
     };
 
     // The attachment groups of one molecule.

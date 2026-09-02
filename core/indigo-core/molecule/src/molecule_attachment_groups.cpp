@@ -41,6 +41,7 @@ AttachmentGroup::~AttachmentGroup()
 void AttachmentGroup::_reset()
 {
     _atoms.clear(); // the buffer is kept: that is the point of a non-destructive reset
+    _anchor_atom = -1;
 }
 
 void AttachmentGroup::reuse()
@@ -85,6 +86,14 @@ bool AttachmentGroup::remapAtoms(const Array<int>& atom_mapping)
         atom = mapped(atom);
 
     return true;
+}
+
+void AttachmentGroup::remapAnchorAtom(const Array<int>& atom_mapping)
+{
+    if (_anchor_atom < 0)
+        return;
+
+    _anchor_atom = _anchor_atom < atom_mapping.size() ? atom_mapping[_anchor_atom] : -1;
 }
 
 // ---------------------------------------------------------------------------
@@ -158,7 +167,9 @@ void MoleculeAttachmentGroups::onAtomsRemoved(const Array<int>& atom_mapping, Ar
     removed_groups.clear();
 
     for (int i = begin(); i != end(); i = next(i))
-        if (!_groups[i].remapAtoms(atom_mapping))
+        if (_groups[i].remapAtoms(atom_mapping))
+            _groups[i].remapAnchorAtom(atom_mapping);
+        else
         {
             removeGroup(i);
             removed_groups.push(i);
@@ -196,9 +207,13 @@ void MoleculeAttachmentGroups::mergeWithSubmolecule(const MoleculeAttachmentGrou
         const int idx = addGroup();
         AttachmentGroup& copy = group(idx);
         copy.setAtoms(source.atoms());
+        copy.setAnchorAtom(source.anchorAtom());
 
         if (copy.remapAtoms(atom_mapping))
+        {
+            copy.remapAnchorAtom(atom_mapping);
             group_mapping[i] = idx;
+        }
         else
             removeGroup(idx);
     }

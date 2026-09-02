@@ -16,7 +16,9 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include <algorithm>
 #include <memory>
+#include <vector>
 
 #include "../layout/molecule_layout.h"
 #include "base_cpp/output.h"
@@ -663,6 +665,11 @@ void MolfileLoader::_readCtab3000()
         for (i = 0; i < _bonds_num; i++)
         {
             int reacting_center = 0;
+            // ENDPTS and ATTACH come in either order, so the record is turned into
+            // an attachment group only after the whole record has been read. ATTACH
+            // is optional, and a bare ENDPTS means the one-to-all form.
+            std::vector<int> endpoints;
+            int attach_type = _BOND_HAPTIC;
 
             _readMultiString(str);
             BufferScanner strscan(str.ptr());
@@ -759,23 +766,19 @@ void MolfileLoader::_readCtab3000()
                     reacting_center = strscan.readInt1();
                 else if (strcmp(prop.ptr(), "ENDPTS") == 0)
                 {
-                    strscan.skip(1); // (
-                    n = strscan.readInt1();
-                    while (n-- > 0)
-                    {
-                        strscan.readInt();
-                        strscan.skipSpace();
-                    }
-                    strscan.skip(1); // )
+                    _readEndpoints3000(strscan, endpoints);
                 }
                 else if (strcmp(prop.ptr(), "ATTACH") == 0)
                 {
-                    while (!strscan.isEOF())
-                    {
-                        char c = strscan.readChar();
-                        if (c == ' ')
-                            break;
-                    }
+                    QS_DEF(Array<char>, attach);
+                    strscan.readWord(attach, 0);
+
+                    if (strcmp(attach.ptr(), "ALL") == 0)
+                        attach_type = _BOND_HAPTIC;
+                    else if (strcmp(attach.ptr(), "ANY") == 0)
+                        attach_type = _BOND_VARIABLE_ATTACHMENT;
+                    else
+                        throw Error("unknown ATTACH value in bond %d: %s", i + 1, attach.ptr());
                 }
                 else if (strcmp(prop.ptr(), "DISP") == 0)
                 {
@@ -791,6 +794,10 @@ void MolfileLoader::_readCtab3000()
                     throw Error("unsupported property of CTAB3000 (in BOND block): %s", prop.ptr());
                 }
             }
+
+            if (!endpoints.empty())
+                _addHapticBond3000(beg, end, endpoints, attach_type);
+
             _bmol->reaction_bond_reacting_center[i] = reacting_center;
         }
 
@@ -827,6 +834,67 @@ void MolfileLoader::_readCtab3000()
 
         _scanner.readLine(str, true);
     }
+}
+
+// ENDPTS=(natoms atom1 atom2 ...): the atoms a multi-endpoint bond attaches to,
+// one-based as everywhere in the bond block. Read in file order, which is the
+// order the saver writes back.
+void MolfileLoader::_readEndpoints3000(Scanner& scanner, std::vector<int>& endpoints)
+{
+    endpoints.clear();
+
+    scanner.skipSpace();
+    if (scanner.readChar() != '(')
+        throw Error("ENDPTS must be a parenthesized list");
+
+    const int count = scanner.readInt1();
+    if (count < 1)
+        throw Error("ENDPTS lists %d atoms", count);
+
+    for (int i = 0; i < count; i++)
+    {
+        scanner.skipSpace();
+        const int atom = scanner.readInt();
+        scanner.skipSpace();
+
+        if (atom < 1 || atom > _atoms_num)
+            throw Error("ENDPTS refers to atom %d, which is outside 1..%d", atom, _atoms_num);
+
+        if (std::find(endpoints.begin(), endpoints.end(), atom - 1) != endpoints.end())
+            throw Error("ENDPTS lists atom %d twice", atom);
+
+        endpoints.push_back(atom - 1);
+    }
+
+    if (scanner.readChar() != ')')
+        throw Error("ENDPTS list of %d atoms is not closed", count);
+}
+
+// One bond record with ENDPTS becomes two things: the ordinary edge that was
+// already added, and a haptic bond from the attachment group to the atom at the
+// other end. The star atom stays an ordinary pseudo-atom of the graph - the group
+// only remembers it, so that the saver writes one record back instead of two.
+void MolfileLoader::_addHapticBond3000(int beg, int end, const std::vector<int>& endpoints, int type)
+{
+    const auto listed = [&endpoints](int atom) { return std::find(endpoints.begin(), endpoints.end(), atom) != endpoints.end(); };
+
+    // The ends of the record are the two sides of the association, so neither of
+    // them can be one of the atoms the bond attaches to.
+    if (listed(beg) || listed(end))
+        throw Error("ENDPTS lists atom %d, which is an end of the bond itself", (listed(beg) ? beg : end) + 1);
+
+    const auto is_star = [this](int atom) { return _bmol->isPseudoAtom(atom) && strcmp(_bmol->getPseudoAtom(atom), "*") == 0; };
+
+    // The format does not say which end stands for the group. Every producer we
+    // have puts a star atom there, and puts it second when both ends could pass.
+    const int anchor = is_star(beg) && !is_star(end) ? beg : end;
+    const int attached_to = anchor == beg ? end : beg;
+
+    const int group = _bmol->attachment_groups.addGroup();
+    _bmol->attachment_groups.group(group).setAtoms(endpoints);
+    _bmol->attachment_groups.group(group).setAnchorAtom(anchor);
+
+    _bmol->addHapticBond(HapticBond::Endpoint::group(group), HapticBond::Endpoint::atom(attached_to), type);
 }
 
 void MolfileLoader::_readSGroupsBlock3000()
