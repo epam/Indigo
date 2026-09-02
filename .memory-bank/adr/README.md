@@ -38,6 +38,9 @@ recorded in a ticket that the code links to.
 
 ## Records
 
-None yet. Candidates worth reconstructing from the existing analyses in `indigo-common/Task/`:
-the std-container migration strategy (milestone 19), the pooled-object ownership model, and the
-valence-model configuration contract.
+- [2026-09-02-owning-containers.md](./2026-09-02-owning-containers.md) — objects are owned by
+  `PtrArray` and `PtrReusablePool`, not by `ObjArray` or `std::vector<T>`; the `Reusable` contract
+
+Still worth reconstructing from the analyses in `indigo-common/Task/`: the valence-model
+configuration contract (BIOVIA 2009 vs 2017), and the decision to route non-local formats through
+Indigo rather than duplicating parsers in Ketcher.

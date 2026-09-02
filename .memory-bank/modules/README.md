@@ -15,6 +15,8 @@ document that restates the header file saves nothing and should not be written.
 
 ## Documented
 
+- [base-containers.md](./base-containers.md) — `common/base_cpp/`: index stability, `PtrArray`,
+  `PtrReusablePool` and the `Reusable` contract
 - [bingo-oracle.md](./bingo-oracle.md) — Oracle cartridge: Docker harness, host venv, extproc path,
   the hand-coded config loader, `mango_*`/`ringo_*` parity, install and `cx_Oracle` gotchas
 - [bingo-elastic-python.md](./bingo-elastic-python.md) — standalone Python library: API surface,
@@ -25,7 +27,8 @@ document that restates the header file saves nothing and should not be written.
 Listed so that their absence is visible rather than mistaken for "nothing to know here". Write one
 when a task forces you to reconstruct the knowledge anyway.
 
-- `indigo-core-graph` — the graph layer, index pools, automorphism and canonical ranking
+- `indigo-core-graph` — the graph layer, automorphism and canonical ranking (the storage side is
+  covered by [base-containers.md](./base-containers.md))
 - `molecule-loaders` — the loader/saver matrix, shared options plumbing, error contracts
 - `layout` — the 2D layout pipeline and its cross-platform reproducibility limits (invariant A9)
 - `render2d` — rendering pipeline, cairo backend, font and platform dependencies
