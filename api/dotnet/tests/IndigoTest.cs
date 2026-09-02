@@ -126,6 +126,32 @@ M  END
         }
 
         [TestMethod]
+        public void IndigoTestHapticBond()
+        {
+            using var indigo = new Indigo();
+            var m = indigo.loadMolecule("C1=CC=CC1.[Fe]");
+            var metal = m.getAtom(5);
+
+            var group = m.addAttachmentGroup(new int[] { 0, 1, 2, 3, 4 });
+            var bond = m.addHapticBond(group, metal);
+
+            Assert.AreEqual(1, m.countAttachmentGroups());
+            Assert.AreEqual(1, m.countHapticBonds());
+            Assert.AreEqual(5, group.countAtoms());
+            Assert.AreEqual("haptic", bond.hapticBondType());
+            Assert.IsTrue(bond.hapticBondBegin().isAttachmentGroup());
+            Assert.AreEqual("Fe", bond.hapticBondEnd().symbol());
+
+            // Neither construct is a part of the graph.
+            Assert.AreEqual(5, m.countBonds());
+
+            // The group goes, and the bond that addressed it goes with it.
+            group.remove();
+            Assert.AreEqual(0, m.countAttachmentGroups());
+            Assert.AreEqual(0, m.countHapticBonds());
+        }
+
+        [TestMethod]
         public void IndigoTestCopyRGroup()
         {
             using var indigo = new Indigo();
