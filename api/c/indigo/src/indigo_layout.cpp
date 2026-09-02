@@ -115,11 +115,11 @@ CEXPORT int indigoLayout(int object)
 
                     for (int j = rgp.fragments.begin(); j != rgp.fragments.end(); j = rgp.fragments.next(j))
                     {
-                        rgp.fragments[j]->clearBondDirections();
+                        rgp.fragments[j].clearBondDirections();
                         try
                         {
-                            rgp.fragments[j]->markBondsStereocenters();
-                            rgp.fragments[j]->markBondsAlleneStereo();
+                            rgp.fragments[j].markBondsStereocenters();
+                            rgp.fragments[j].markBondsAlleneStereo();
                         }
                         catch (Exception e)
                         {

@@ -23,7 +23,7 @@
 #include "base_cpp/nullable.h"
 #include "base_cpp/pool.h"
 #include "base_cpp/ptr_array.h"
-#include "base_cpp/ptr_pool.h"
+#include "base_cpp/ptr_reusable_pool.h"
 #include "base_cpp/queue.h"
 #include "base_cpp/red_black.h"
 #include <memory>
@@ -35,6 +35,6 @@ IMPL_EXCEPTION(indigo, DbitsetError, "Dynamic bitset");
 IMPL_EXCEPTION(indigo, FixedDequeError, "FixedDeque");
 IMPL_EXCEPTION(indigo, PoolError, "pool");
 IMPL_EXCEPTION(indigo, PtrArrayError, "ptr array");
-IMPL_EXCEPTION(indigo, PtrPoolError, "ptr pool");
+IMPL_EXCEPTION(indigo, PtrReusablePoolError, "ptr reusable pool");
 IMPL_EXCEPTION(indigo, QueueError, "queue");
 IMPL_EXCEPTION(indigo, RedBlackTreeError, "red-black tree");

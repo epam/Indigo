@@ -71,10 +71,7 @@ LoaderOptions ReactionJsonLoader::getOptions() const
 
 void ReactionJsonLoader::loadReaction(BaseReaction& rxn)
 {
-    _loader.stereochemistry_options = stereochemistry_options;
-    _loader.ignore_noncritical_query_features = ignore_noncritical_query_features;
-    _loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
-    _loader.ignore_no_chiral_flag = ignore_no_chiral_flag;
+    _loader.setOptions(getOptions());
 
     if (rxn.isQueryReaction())
     {
@@ -137,7 +134,7 @@ void ReactionJsonLoader::parseOneArrowReaction(BaseReaction& rxn)
     std::vector<ReactionComponent> components;
 
     std::list<std::unordered_set<int>> s_neighbors;
-    getSGroupAtoms(*_pmol, s_neighbors);
+    _pmol->collectExternalNeighbors(s_neighbors);
 
     for (int index = 0; index < _pmol->countComponents(s_neighbors); ++index)
     {

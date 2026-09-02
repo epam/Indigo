@@ -3506,6 +3506,7 @@
         "alias": "G",
         "naturalAnalogShort": "G",
         "aliasHELM": "G",
+        "aliasBILN": "G",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -3623,6 +3624,7 @@
         "alias": "C",
         "naturalAnalogShort": "C",
         "aliasHELM": "C",
+        "aliasBILN": "C",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -3796,6 +3798,7 @@
         "alias": "A",
         "naturalAnalogShort": "A",
         "aliasHELM": "A",
+        "aliasBILN": "A",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -3930,6 +3933,7 @@
         "alias": "T",
         "naturalAnalogShort": "T",
         "aliasHELM": "T",
+        "aliasBILN": "T",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,

@@ -190,7 +190,7 @@ void MolfileLoader::_readCtab2000()
         try
         {
 
-            atom_line.skip(3); // skip atom stereo parity
+            _stereocenter_parities[k] = atom_line.readIntFix(3);
             _hcount[k] = atom_line.readIntFix(3);
 
             if (_hcount[k] > 0 && _qmol == 0)

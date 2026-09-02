@@ -118,15 +118,15 @@ void ReactionCdxmlSaver::saveReaction(BaseReaction& rxn)
     for (int i = 0; i < multi_count; ++i)
     {
         int arrow_index = rxn.meta().getMetaObjectIndex(ReactionMultitailArrowObject::CID, i);
-        std::unique_ptr<MetaObject> cp_obj(rxn.meta().metaData()[arrow_index]->clone());
+        std::unique_ptr<MetaObject> cp_obj(rxn.meta().metaData()[arrow_index].clone());
         molsaver.addMultitailArrow(_id, static_cast<ReactionMultitailArrowObject&>(*cp_obj));
     }
 
     if (rxn.meta().metaData().size()) // we have metadata
     {
-        for (int i = 0; i < rxn.meta().metaData().size(); ++i)
+        for (int i = 0; i < rxn.meta().metaData().size(); i++)
         {
-            auto& obj = *rxn.meta().metaData()[i];
+            auto& obj = rxn.meta().metaData()[i];
             if (obj._class_id == ReactionArrowObject::CID)
             {
                 ReactionArrowObject& arrow = (ReactionArrowObject&)(obj);

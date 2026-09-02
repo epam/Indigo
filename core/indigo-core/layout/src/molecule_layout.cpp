@@ -440,10 +440,10 @@ void MoleculeLayout::make()
         {
             RGroup& rg = rgs.getRGroup(i);
             Metalayout::LayoutLine& line = _ml.newLine();
-            PtrPool<BaseMolecule>& frags = rg.fragments;
+            PtrReusablePool<BaseMolecule>& frags = rg.fragments;
             for (int j = frags.begin(); j != frags.end(); j = frags.next(j))
             {
-                BaseMolecule& mol = *frags[j];
+                BaseMolecule& mol = frags[j];
                 if (filter == NULL)
                 {
                     MoleculeLayout layout(mol, _smart_layout);

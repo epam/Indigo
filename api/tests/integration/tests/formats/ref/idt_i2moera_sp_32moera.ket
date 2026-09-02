@@ -138,7 +138,7 @@
         "fullName": "2'-O-Methoxyethyl ribose",
         "alias": "MOE",
         "naturalAnalogShort": "R",
-        "aliasHELM": "moe",
+        "aliasHELM": "MOE",
         "attachmentPoints": [
             {
                 "attachmentAtom": 6,
@@ -429,7 +429,8 @@
         "fullName": "Phosporothioate",
         "alias": "sP",
         "naturalAnalogShort": "P",
-        "aliasHELM": "sp",
+        "aliasHELM": "sP",
+        "aliasAxoLabs": "s",
         "attachmentPoints": [
             {
                 "attachmentAtom": 1,

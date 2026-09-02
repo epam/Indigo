@@ -24,6 +24,7 @@
 #include "molecule/molecule.h"
 #include "molecule/molecule_automorphism_search.h"
 #include "molecule/molecule_stereocenter_options.h"
+#include "molecule/query_molecule.h"
 #include <algorithm>
 #include <array>
 
@@ -912,6 +913,59 @@ void MoleculeStereocenters::invertPyramid(int idx)
 {
     int* pyramid = getPyramid(idx);
     std::swap(pyramid[0], pyramid[1]);
+}
+
+int MoleculeStereocenters::getMdlParity(BaseMolecule& mol, int idx)
+{
+    const int type = mol.stereocenters.getType(idx);
+    if (type == 0 || !mol.stereocenters.isTetrahydral(idx))
+        return MDL_PARITY_NONE;
+    if (type == ATOM_ANY)
+        return MDL_PARITY_EITHER;
+
+    // Reference from "CTfile Formats. Appendix A: Stereo Notes":
+    // Number the atoms surrounding the stereo center with 1, 2, 3, and 4 in
+    // order of increasing atom number (position in the atom block) (a hydrogen
+    // atom should be considered the highest numbered atom, in this case atom 4).
+    // View the center from a position such that the bond connecting the
+    // highest-numbered atom (4) projects behind the plane formed by atoms 1, 2, and 3.
+
+    int pyramid[4];
+    memcpy(pyramid, mol.stereocenters.getPyramid(idx), sizeof(pyramid));
+    if (pyramid[3] == -1)
+    {
+        if (mol.isQueryMolecule())
+        {
+            if (mol.getAtomNumber(idx) == -1)
+                // This atom is not a pure atom
+                // There are no implicit hydrogens for query molecules
+                return MDL_PARITY_NONE;
+        }
+
+        // Assign implicit hydrogen the highest index
+        pyramid[3] = mol.vertexEnd();
+    }
+    else
+    {
+        // Replace pure hydrogen atom with the highest value
+        for (int i = 0; i < 4; i++)
+        {
+            int p = pyramid[i];
+            if (p != -1 && mol.getAtomNumber(p) == ELEM_H)
+            {
+                bool pure_hydrogen = (mol.getAtomIsotope(p) == 0);
+                if (!pure_hydrogen && mol.isQueryMolecule())
+                    pure_hydrogen = !mol.asQueryMolecule().getAtom(p).hasConstraint(QueryMolecule::ATOM_ISOTOPE);
+                if (pure_hydrogen)
+                {
+                    pyramid[i] = mol.vertexEnd();
+                    break;
+                }
+            }
+        }
+    }
+
+    return isPyramidMappingRigid(pyramid) ? MDL_PARITY_ODD : MDL_PARITY_EVEN;
 }
 
 void MoleculeStereocenters::getAbsAtoms(Array<int>& indices)

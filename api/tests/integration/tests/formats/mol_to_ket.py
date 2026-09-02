@@ -61,6 +61,10 @@ files = [
     "3227-copolymer",
     "3292-template-center",
     "3343-dir-expanded",
+    "issue_3759_one_atom_two_ap",
+    "issue_3759_one_atom_three_ap",
+    "issue_3847",
+    "issue_3635",
 ]
 
 native_precision = [
@@ -68,6 +72,10 @@ native_precision = [
     "2704-stereocenters",
     "issue_2699_rlogic",
     "issue_2958_map_template",
+    "issue_3759_one_atom_two_ap",
+    "issue_3759_one_atom_three_ap",
+    "issue_3847",
+    "issue_3635",
 ]
 
 with_lib = [
@@ -80,6 +88,10 @@ with_lib = [
     "anacyclamide",
     "3094-chem-2000",
     "3094-chem-3000",
+    "issue_3759_one_atom_two_ap",
+    "issue_3759_one_atom_three_ap",
+    "issue_3847",
+    "issue_3635",
 ]
 
 lib = indigo.loadMonomerLibraryFromFile(

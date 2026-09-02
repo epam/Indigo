@@ -1399,6 +1399,11 @@ BaseMolecule* Molecule::neu() const
     return new Molecule();
 }
 
+PtrReusablePool<BaseMolecule>::Factory Molecule::poolFactory()
+{
+    return {std::type_index(typeid(Molecule)), [](void*) { return std::unique_ptr<BaseMolecule>(std::make_unique<Molecule>()); }};
+}
+
 bool Molecule::bondStereoCare(int idx)
 {
     if (!cis_trans.exists())

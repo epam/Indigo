@@ -41,6 +41,9 @@ namespace indigo
 
         BaseMolecule* neu() const override;
 
+        // Factory for a molecule-pool slot holding a plain Molecule.
+        static PtrReusablePool<BaseMolecule>::Factory poolFactory();
+
         int addAtom(int label) override;
         int resetAtom(int idx, int label);
 

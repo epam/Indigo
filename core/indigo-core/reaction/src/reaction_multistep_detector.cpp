@@ -297,7 +297,7 @@ void ReactionMultistepDetector::distributeOrphanRGroups()
         for (int f = rg.fragments.begin(); f != rg.fragments.end(); f = rg.fragments.next(f))
         {
             Rect2f frag_bbox;
-            rg.fragments[f]->getBoundingBox(frag_bbox);
+            rg.fragments[f].getBoundingBox(frag_bbox);
             if (!rg_bbox_init)
             {
                 rg_bbox = frag_bbox;
@@ -945,7 +945,7 @@ ReactionMultistepDetector::ReactionType ReactionMultistepDetector::detectReactio
 {
     createSpecialZones();
     std::list<std::unordered_set<int>> s_neighbors;
-    getSGroupAtoms(_bmol, s_neighbors);
+    _bmol.collectExternalNeighbors(s_neighbors);
     _moleculeCount = _bmol.countComponents(s_neighbors);
     for (int i = 0; i < _moleculeCount; ++i)
     {

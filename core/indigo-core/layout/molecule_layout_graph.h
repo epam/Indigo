@@ -21,6 +21,7 @@
 
 #include "base_cpp/cancellation_handler.h"
 #include "base_cpp/ptr_array.h"
+#include "base_cpp/ptr_reusable_pool.h"
 #include "base_cpp/tlscont.h"
 #include "graph/filter.h"
 #include "graph/graph.h"
@@ -173,7 +174,10 @@ namespace indigo
         bool _flipped; // component was flipped after attaching
 
         int max_iterations;
-        LAYOUT_ORIENTATION layout_orientation;
+        // Default-initialized: a directly constructed layout graph (e.g.
+        // UnfoldAndLayoutHydrogens) must not read a garbage orientation in
+        // _refineCoordinates; MoleculeLayout assigns it explicitly.
+        LAYOUT_ORIENTATION layout_orientation = UNSPECIFIED;
 
         bool preserve_existing_layout;
         bool respect_cycles_direction;
@@ -202,7 +206,7 @@ namespace indigo
         BaseMolecule* _molecule;
         const int* _molecule_edge_mapping;
 
-        struct Cycle
+        struct Cycle : public Reusable
         {
             explicit Cycle();
             explicit Cycle(const List<int>& edges, const MoleculeLayoutGraph& graph);
@@ -210,6 +214,22 @@ namespace indigo
 
             void copy(const List<int>& edges, const MoleculeLayoutGraph& graph);
             void copy(const Array<int>& vertices, const Array<int>& edges);
+
+            // Set up a pooled cycle exactly as the corresponding two-argument
+            // constructor would. The pool applies one of these on every add(),
+            // so a cycle is never handed out uninitialized.
+            void reuse(const List<int>& edges, const MoleculeLayoutGraph& graph);
+            void reuse(const Array<int>& vertices, const Array<int>& edges);
+
+            // Restores the default-constructed state; buffers are retained.
+            void reuse() override
+            {
+                _vertices.clear();
+                _edges.clear();
+                _attached_weight.clear();
+                _max_idx = 0;
+                _morgan_code_calculated = false;
+            }
 
             int vertexCount() const
             {

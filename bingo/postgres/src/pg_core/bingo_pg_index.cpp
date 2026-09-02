@@ -47,6 +47,12 @@ BingoPgIndex::BingoPgIndex(PG_OBJECT index) : _index(index), _strategy(READING_S
 void BingoPgIndex::writeBegin(BingoPgBuildEngine& fp_engine, BingoPgConfig& bingo_config)
 {
     /*
+     * Set up write strategy before creating pages so build-mode WAL policy is
+     * active.
+     */
+    setStrategy(BUILDING_STRATEGY);
+
+    /*
      * Prepare meta info for writing
      */
     _metaInfo.n_blocks_for_map = BINGO_MOLS_PER_FINGERBLOCK / BINGO_MOLS_PER_MAPBLOCK + 1;
@@ -62,16 +68,11 @@ void BingoPgIndex::writeBegin(BingoPgBuildEngine& fp_engine, BingoPgConfig& bing
      */
     _metaInfo.n_sections = 0;
     _initializeNewSection();
-
-    /*
-     * Set up write strategy
-     */
-    _strategy = BUILDING_STRATEGY;
 }
 
 void BingoPgIndex::updateBegin()
 {
-    _strategy = UPDATING_STRATEGY;
+    setStrategy(UPDATING_STRATEGY);
     /*
      * Read meta information
      */
@@ -88,7 +89,7 @@ void BingoPgIndex::updateBegin()
  */
 int BingoPgIndex::readBegin()
 {
-    _strategy = READING_STRATEGY;
+    setStrategy(READING_STRATEGY);
     /*
      * Read meta information
      */
@@ -111,24 +112,69 @@ int BingoPgIndex::readNext(int section_idx)
  */
 void BingoPgIndex::readMetaInfo()
 {
+    Relation index = (Relation)_index;
+    const BlockNumber relation_blocks = RelationGetNumberOfBlocks(index);
+    if (relation_blocks <= BINGO_METAPAGE)
+        throw Error("internal error: bingo index relation has no metapage");
+
     /*
      * Read meta buffer
      */
     _metaBuffer.readBuffer(_index, BINGO_METAPAGE, BINGO_PG_READ);
+    Page meta_buffer_page = (Page)_metaBuffer.getPage();
+    if (PageIsNew(meta_buffer_page))
+        throw Error("internal error: uninitialized bingo metapage");
     /*
      * Copy meta info
      */
-    BingoMetaPage meta_page = BingoPageGetMeta(BufferGetPage(_metaBuffer.getBuffer()));
+    BingoMetaPage meta_page = BingoPageGetMeta(meta_buffer_page);
     _metaInfo = *meta_page;
     /*
      * Return buffer pin
      */
     _metaBuffer.changeAccess(BINGO_PG_NOLOCK);
 
+    const int max_sections = BINGO_SECTION_OFFSET_PER_BLOCK * BINGO_SECTION_OFFSET_BLOCKS_NUM;
+    const int dictionary_offset = BINGO_METABLOCKS_NUM + BINGO_SECTION_OFFSET_BLOCKS_NUM;
+    const int first_section_offset = dictionary_offset + BINGO_DICTIONARY_BLOCKS_NUM;
+
+    if (_metaInfo.n_sections <= 0 || _metaInfo.n_sections > max_sections)
+        throw Error("internal error: invalid bingo section count %d", _metaInfo.n_sections);
+    if (_metaInfo.n_molecules < 0 || (long long)_metaInfo.n_molecules > (long long)_metaInfo.n_sections * BINGO_MOLS_PER_SECTION)
+        throw Error("internal error: invalid bingo molecule count %d for %d sections", _metaInfo.n_molecules, _metaInfo.n_sections);
+    if (_metaInfo.n_blocks_for_map <= 0 || _metaInfo.n_blocks_for_map > (int)relation_blocks)
+        throw Error("internal error: invalid bingo map block count %d", _metaInfo.n_blocks_for_map);
+    if (_metaInfo.n_blocks_for_fp < 0 || _metaInfo.n_blocks_for_fp > (int)relation_blocks)
+        throw Error("internal error: invalid bingo fingerprint block count %d", _metaInfo.n_blocks_for_fp);
+    if (_metaInfo.n_blocks_for_dictionary < 0 || _metaInfo.n_blocks_for_dictionary > BINGO_DICTIONARY_BLOCKS_NUM)
+        throw Error("internal error: invalid bingo dictionary block count %d", _metaInfo.n_blocks_for_dictionary);
+    if (_metaInfo.offset_dictionary != dictionary_offset)
+        throw Error("internal error: invalid bingo dictionary offset %d", _metaInfo.offset_dictionary);
+    if (_metaInfo.n_pages < first_section_offset || (BlockNumber)_metaInfo.n_pages >= relation_blocks)
+        throw Error("internal error: invalid bingo final section offset %d for "
+                    "relation size %u",
+                    _metaInfo.n_pages, (unsigned int)relation_blocks);
+    if (_metaInfo.index_type != BINGO_INDEX_TYPE_MOLECULE && _metaInfo.index_type != BINGO_INDEX_TYPE_REACTION)
+        throw Error("internal error: invalid bingo index type %d", _metaInfo.index_type);
+
     /*
-     * Prepare section buffers
+     * Prepare section buffers and validate the compact section offset map.
      */
     _sectionOffsetBuffers.expand(BINGO_SECTION_OFFSET_BLOCKS_NUM);
+    int previous_offset = -1;
+    for (int section_idx = 0; section_idx < _metaInfo.n_sections; ++section_idx)
+    {
+        int section_offset = _getSectionOffset(section_idx);
+        if (previous_offset >= 0 && section_offset <= previous_offset)
+            throw Error("internal error: bingo section %d offset %d is not after "
+                        "previous offset %d",
+                        section_idx, section_offset, previous_offset);
+        previous_offset = section_offset;
+    }
+    if (previous_offset != _metaInfo.n_pages)
+        throw Error("internal error: bingo final section offset %d does not match "
+                    "metadata offset %d",
+                    previous_offset, _metaInfo.n_pages);
 }
 
 void BingoPgIndex::readConfigParameters(BingoPgConfig& bingo_config)
@@ -152,7 +198,7 @@ void BingoPgIndex::readConfigParameters(BingoPgConfig& bingo_config)
 void BingoPgIndex::writeMetaInfo()
 {
     _metaBuffer.changeAccess(BINGO_PG_WRITE);
-    BingoMetaPage meta_page = BingoPageGetMeta(BufferGetPage(_metaBuffer.getBuffer()));
+    BingoMetaPage meta_page = BingoPageGetMeta((Page)_metaBuffer.getPage());
     *meta_page = _metaInfo;
     _metaBuffer.changeAccess(BINGO_PG_NOLOCK);
 }
@@ -162,6 +208,7 @@ void BingoPgIndex::_initializeMetaPages(BingoPgConfig& bingo_config)
     /*
      * Initialize meta buffer
      */
+    _metaBuffer.setWalEnabled(false);
     _metaBuffer.writeNewBuffer(_index, BINGO_METAPAGE);
     _metaBuffer.formIndexTuple(&_metaInfo, sizeof(_metaInfo));
     _metaBuffer.changeAccess(BINGO_PG_NOLOCK);
@@ -172,6 +219,7 @@ void BingoPgIndex::_initializeMetaPages(BingoPgConfig& bingo_config)
     indigo::Array<char> config_data;
     bingo_config.serialize(config_data);
     BingoPgBuffer config_buffer;
+    config_buffer.setWalEnabled(false);
     config_buffer.writeNewBuffer(_index, BINGO_CONFIG_PAGE);
     config_buffer.formIndexTuple(config_data.ptr(), config_data.sizeInBytes());
     config_buffer.clear();
@@ -183,6 +231,7 @@ void BingoPgIndex::_initializeMetaPages(BingoPgConfig& bingo_config)
     for (int block_idx = 0; block_idx < BINGO_SECTION_OFFSET_BLOCKS_NUM; ++block_idx)
     {
         BingoPgBuffer buffer;
+        buffer.setWalEnabled(false);
         buffer.writeNewBuffer(_index, _metaInfo.n_pages);
         buffer.formEmptyIndexTuple(BINGO_SECTION_OFFSET_PER_BLOCK * sizeof(int));
         buffer.clear();
@@ -198,6 +247,7 @@ void BingoPgIndex::_initializeMetaPages(BingoPgConfig& bingo_config)
     for (int block_idx = 0; block_idx < BINGO_DICTIONARY_BLOCKS_NUM; ++block_idx)
     {
         BingoPgBuffer buffer;
+        buffer.setWalEnabled(false);
         buffer.writeNewBuffer(_index, _metaInfo.n_pages);
         buffer.formEmptyIndexTuple(BingoPgBufferCacheBin::BUFFER_SIZE);
         buffer.clear();
@@ -234,6 +284,7 @@ void BingoPgIndex::writeDictionary(BingoPgBuildEngine& fp_engine)
      * Set offset
      */
     dict_buf_size = std::min(static_cast<int>(BingoPgBufferCacheBin::MAX_SIZE), dict_size - dict_offset);
+    const bool wal_enabled = (_strategy != BUILDING_STRATEGY);
 
     while (dict_buf_size > 0)
     {
@@ -241,7 +292,7 @@ void BingoPgIndex::writeDictionary(BingoPgBuildEngine& fp_engine)
          * Write buffers immediately
          */
         int blck_off = _metaInfo.offset_dictionary + _metaInfo.n_blocks_for_dictionary;
-        BingoPgBufferCacheBin buffer_cache(blck_off, _index, false);
+        BingoPgBufferCacheBin buffer_cache(blck_off, _index, false, wal_enabled);
         buffer_dict.copy(dict_buf + dict_offset, dict_buf_size);
         buffer_cache.writeBin(buffer_dict);
 
@@ -268,20 +319,27 @@ void BingoPgIndex::_initializeNewSection()
 {
     if (_currentSection.get() != 0)
     {
+        _currentSection->finish();
         _metaInfo.n_pages += _currentSection->getPagesCount();
+        _currentSection.reset(nullptr);
     }
     int section_offset = _metaInfo.n_pages;
+    int section_idx = _metaInfo.n_sections;
+    _currentSectionIdx = section_idx;
+
+    /*
+     * Prepare a new section. Create every fixed page before publishing the
+     * section offset so an interrupted incremental extension remains orphaned.
+     */
+    _currentSection = std::make_unique<BingoPgSection>(*this, _strategy, section_offset, true);
     /*
      * Set up section offset mapping
      */
-    _currentSectionIdx = _metaInfo.n_sections;
-    _setSectionOffset(_currentSectionIdx, section_offset);
-
-    /*
-     * Prepare a new section
-     */
-    _currentSection = std::make_unique<BingoPgSection>(*this, BUILDING_STRATEGY, section_offset);
+    _setSectionOffset(section_idx, section_offset);
     ++_metaInfo.n_sections;
+
+    if (_strategy == UPDATING_STRATEGY)
+        writeMetaInfo();
 }
 
 void BingoPgIndex::_setSectionOffset(int section_idx, int section_offset)
@@ -294,12 +352,19 @@ void BingoPgIndex::_setSectionOffset(int section_idx, int section_offset)
      */
     off_buffer.changeAccess(BINGO_PG_WRITE);
     int* section_offsets = (int*)off_buffer.getIndexData(data_len);
+    if (section_off_idx < 0 || data_len < (section_off_idx + 1) * (int)sizeof(int))
+        throw Error("internal error: bingo section offset block is too small for "
+                    "section %d",
+                    section_idx);
     section_offsets[section_off_idx] = section_offset;
     off_buffer.changeAccess(BINGO_PG_NOLOCK);
 }
 
 BingoPgBuffer& BingoPgIndex::_getOffsetBuffer(int section_idx)
 {
+    if (section_idx < 0)
+        throw Error("internal error: bingo section index %d is out of bounds", section_idx);
+
     int section_buf_idx = section_idx / BINGO_SECTION_OFFSET_PER_BLOCK;
     /*
      * There is the maximum limit of sections
@@ -311,6 +376,7 @@ BingoPgBuffer& BingoPgIndex::_getOffsetBuffer(int section_idx)
     {
         _sectionOffsetBuffers.set(section_buf_idx, new BingoPgBuffer());
         buffer = _sectionOffsetBuffers.getPtr(section_buf_idx);
+        buffer->setWalEnabled(_strategy != BUILDING_STRATEGY);
         buffer->readBuffer(_index, section_buf_idx + BINGO_METABLOCKS_NUM, BINGO_PG_NOLOCK);
     }
     buffer = _sectionOffsetBuffers.getPtr(section_buf_idx);
@@ -360,6 +426,9 @@ BingoPgSection& BingoPgIndex::_jumpToSection(int section_idx)
 
 int BingoPgIndex::_getSectionOffset(int section_idx)
 {
+    if (section_idx < 0 || section_idx >= _metaInfo.n_sections)
+        throw Error("internal error: bingo section index %d is out of bounds %d", section_idx, _metaInfo.n_sections);
+
     /*
      * Prepare section offset mapping
      */
@@ -372,8 +441,23 @@ int BingoPgIndex::_getSectionOffset(int section_idx)
      */
     off_buffer.changeAccess(BINGO_PG_READ);
     int* section_offsets = (int*)off_buffer.getIndexData(data_len);
+    if (data_len < (section_off_idx + 1) * (int)sizeof(int))
+    {
+        off_buffer.changeAccess(BINGO_PG_NOLOCK);
+        throw Error("internal error: bingo section offset block is too small for "
+                    "section %d",
+                    section_idx);
+    }
     result = section_offsets[section_off_idx];
     off_buffer.changeAccess(BINGO_PG_NOLOCK);
+
+    Relation index = (Relation)_index;
+    const BlockNumber relation_blocks = RelationGetNumberOfBlocks(index);
+    const int first_section_offset = BINGO_METABLOCKS_NUM + BINGO_SECTION_OFFSET_BLOCKS_NUM + BINGO_DICTIONARY_BLOCKS_NUM;
+    if (result < first_section_offset || (BlockNumber)result >= relation_blocks)
+        throw Error("internal error: bingo section %d has invalid offset %d for "
+                    "relation size %u",
+                    section_idx, result, (unsigned int)relation_blocks);
     return result;
 }
 
@@ -413,7 +497,8 @@ void BingoPgIndex::insertStructure(BingoPgFpData& data_item)
     _jumpToSection(getSectionNumber() - 1);
 
     /*
-     * If a structure can not be added to the current section then initialize the new
+     * If a structure can not be added to the current section then initialize the
+     * new
      */
     if (!_currentSection->isExtended())
     {
@@ -426,7 +511,8 @@ void BingoPgIndex::insertStructure(BingoPgFpData& data_item)
     //    BingoPgWrapper rel_wr;
     //    const char* rel_name = rel_wr.getRelName(index->rd_id);
     //
-    //    indigo::FileOutput fout(false, "%s/insert/%s_%d_%d_%d", BINGO_PG_INTEGRITY_DIR, rel_name, _currentSectionIdx, );
+    //    indigo::FileOutput fout(false, "%s/insert/%s_%d_%d_%d",
+    //    BINGO_PG_INTEGRITY_DIR, rel_name, _currentSectionIdx, );
     // #endif
     /*
      * Add a structure
@@ -443,6 +529,16 @@ void BingoPgIndex::insertStructure(BingoPgFpData& data_item)
      * Increment structures common number
      */
     ++_metaInfo.n_molecules;
+
+    /*
+     * The section existence bit is already durable at this point. Persist the
+     * global count promptly instead of relying on BingoPgBuild destruction.
+     * A crash between the two can at worst leave this diagnostic count one
+     * behind; it cannot expose partially written structure content.
+     */
+    if (_strategy == UPDATING_STRATEGY)
+        writeMetaInfo();
+
     if (_metaInfo.n_molecules % 1000 == 0)
     {
         elog(NOTICE, "bingo.index: %d structures processed", _metaInfo.n_molecules);
@@ -518,6 +614,8 @@ void BingoPgIndex::removeStructure(int section_idx, int mol_idx)
     BingoPgSection& current_section = _jumpToSection(section_idx);
     current_section.removeStructure(mol_idx);
     --_metaInfo.n_molecules;
+    if (_strategy == UPDATING_STRATEGY)
+        writeMetaInfo();
 }
 
 bool BingoPgIndex::isStructureRemoved(int section_idx, int mol_idx)
@@ -556,7 +654,10 @@ void BingoPgIndex::readCmfItem(int section_idx, int mol_idx, indigo::Array<char>
     if (block_num == InvalidBlockNumber)
     {
         cmf_buf.clear();
-        elog(DEBUG1, "bingo: index: read cmf: cmf is empty for structure %d for section = %d", mol_idx, section_idx);
+        elog(DEBUG1,
+             "bingo: index: read cmf: cmf is empty for structure %d for section = "
+             "%d",
+             mol_idx, section_idx);
         return;
     }
     unsigned short block_offset = ItemPointerGetOffsetNumber(&cmf_item);
@@ -565,7 +666,10 @@ void BingoPgIndex::readCmfItem(int section_idx, int mol_idx, indigo::Array<char>
      */
     BingoPgBufferCacheBin& bin_cache = current_section.getBinBufferCache(block_num);
     bin_cache.readBin(block_offset, cmf_buf);
-    elog(DEBUG1, "bingo: index: read cmf: successfully read cmf of size %d for block %d offset %d", cmf_buf.size(), block_num, block_offset);
+    elog(DEBUG1,
+         "bingo: index: read cmf: successfully read cmf of size %d for block %d "
+         "offset %d",
+         cmf_buf.size(), block_num, block_offset);
 }
 
 void BingoPgIndex::readXyzItem(int section_idx, int mol_idx, indigo::Array<char>& xyz_buf)
@@ -592,7 +696,10 @@ void BingoPgIndex::readXyzItem(int section_idx, int mol_idx, indigo::Array<char>
     if (block_num == InvalidBlockNumber)
     {
         xyz_buf.clear();
-        elog(DEBUG1, "bingo: index: read xyz: xyz is empty for structure %d for section = %d", mol_idx, section_idx);
+        elog(DEBUG1,
+             "bingo: index: read xyz: xyz is empty for structure %d for section = "
+             "%d",
+             mol_idx, section_idx);
         return;
     }
     unsigned short block_offset = ItemPointerGetOffsetNumber(&xyz_item);
@@ -601,5 +708,8 @@ void BingoPgIndex::readXyzItem(int section_idx, int mol_idx, indigo::Array<char>
      */
     BingoPgBufferCacheBin& bin_cache = current_section.getBinBufferCache(block_num);
     bin_cache.readBin(block_offset, xyz_buf);
-    elog(DEBUG1, "bingo: index: read xyz: successfully read xyz of size %d for block %d offset %d", xyz_buf.size(), block_num, block_offset);
+    elog(DEBUG1,
+         "bingo: index: read xyz: successfully read xyz of size %d for block %d "
+         "offset %d",
+         xyz_buf.size(), block_num, block_offset);
 }

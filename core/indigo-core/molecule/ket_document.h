@@ -21,6 +21,7 @@
 
 #include "molecule/ket_monomer_shape.h"
 #include "molecule/ket_objects.h"
+#include "molecule/loader_options.h"
 #include "molecule/monomers_template_library.h"
 
 #include <rapidjson/document.h> // Temporary until direct conversion to molecule supported
@@ -150,6 +151,17 @@ namespace indigo
 
         BaseMolecule& getBaseMolecule();
 
+        // getBaseMolecule() converts lazily, long after the Indigo session is
+        // reachable, so the options have to travel with the document.
+        // Out of line: dropping the cached conversion needs the complete
+        // Molecule type, forward-declared here.
+        void setOptions(const LoaderOptions& opts);
+
+        const LoaderOptions& getOptions() const
+        {
+            return _options;
+        }
+
         bool hasAmbiguousMonomerTemplate(const std::string& id) const
         {
             return _ambiguous_templates.find(id) != _ambiguous_templates.end();
@@ -260,6 +272,7 @@ namespace indigo
         std::vector<KetMonomerShape> _monomer_shapes;
         std::optional<KetAnnotation> _annotation;
         mutable std::unique_ptr<Molecule> _cached_molecule;
+        LoaderOptions _options;
     };
 }
 

@@ -32,6 +32,7 @@
 
 #include <stdexcept>
 #include <type_traits>
+#include <vector>
 
 using namespace indigo;
 

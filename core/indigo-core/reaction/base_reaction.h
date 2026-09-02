@@ -27,8 +27,10 @@
 #include "base_cpp/auto_iter.h"
 #include "base_cpp/non_copyable.h"
 #include "base_cpp/ptr_array.h"
-#include "base_cpp/ptr_pool.h"
+#include "base_cpp/ptr_reusable_pool.h"
 #include "molecule/base_molecule.h"
+
+#include <typeindex>
 
 namespace indigo
 {
@@ -117,7 +119,7 @@ namespace indigo
 
         void remove(int i);
 
-        PtrPool<BaseMolecule>& molecules()
+        PtrReusablePool<BaseMolecule>& molecules()
         {
             return _allMolecules;
         }
@@ -386,7 +388,7 @@ namespace indigo
 
         virtual void _addedBaseMolecule(int idx, int side, BaseMolecule& mol);
 
-        PtrPool<BaseMolecule> _allMolecules;
+        PtrReusablePool<BaseMolecule> _allMolecules;
 
         PtrArray<ReactionBlock> _reactionBlocks; // for multistep reactions only
 

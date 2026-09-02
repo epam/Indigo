@@ -213,7 +213,7 @@ void MoleculeLayoutGraphSmart::_assignRelativeCoordinates(int& fixed_component, 
 
     // TODO: repair exception with vec2f
 
-    QS_DEF(ObjPool<Cycle>, cycles);
+    QS_DEF(PtrReusablePool<Cycle>, cycles);
 
     cycles.clear();
     int n_cycles = sssrCount();

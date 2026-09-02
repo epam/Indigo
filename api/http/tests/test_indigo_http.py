@@ -559,6 +559,50 @@ def test_valence_mode_accepted(mode: str) -> None:
     assert response.status_code == 200, response.text
 
 
+# Bare neutral aluminium in KET — Ketcher's native format, and the shape from
+# issue #3823. Under BIOVIA-2017 it is an intercepted metal: no implicit H.
+_BARE_AL_KET = (
+    '{"root":{"nodes":[{"$ref":"mol0"}]},"mol0":{"type":"molecule",'
+    '"atoms":[{"label":"Al","location":[0,0,0]}]}}'
+)
+
+_BARE_AL_MOLFILE = (
+    "\n  Indigo  0000000002D\n\n"
+    "  1  0  0  0  0  0  0  0  0  0999 V2000\n"
+    "    0.0000    0.0000    0.0000 Al  0  0  0  0  0  0  0  0  0  0  0  0\n"
+    "M  END\n"
+)
+
+
+def _convert_struct(structure: str, mode: str) -> str:
+    response = client.post(
+        "/indigo/convert",
+        json=_convert_request(structure, {"valence-mode": mode}),
+    )
+    assert response.status_code == 200, response.text
+    # str(): the JSON body is untyped, and mypy rejects returning Any here.
+    return str(response.json()["data"]["attributes"]["structure"])
+
+
+@pytest.mark.parametrize(
+    "structure", [_BARE_AL_KET, _BARE_AL_MOLFILE], ids=["ket", "molfile"]
+)
+def test_valence_mode_changes_the_result(structure: str) -> None:
+    # Asserting a status code is not enough: the original defect returned 200
+    # with the option silently ignored. Pin the actual output instead, and pin
+    # it identically for KET and molfile — the defect was format-specific, so a
+    # single-format test would have passed throughout.
+    assert _convert_struct(structure, "biovia-2009") == "[AlH3]"
+    assert _convert_struct(structure, "biovia-2017") == "[Al]"
+
+
+def test_valence_mode_default_is_biovia_2009() -> None:
+    # "default" is an alias for the legacy table, not "let Indigo choose".
+    assert _convert_struct(_BARE_AL_KET, "default") == _convert_struct(
+        _BARE_AL_KET, "biovia-2009"
+    )
+
+
 def test_valence_mode_invalid_value_rejected() -> None:
     # The options dict is forwarded generically to Indigo.setOption(); an
     # unknown value is rejected at the C layer and surfaces as 400 via the

@@ -1665,6 +1665,36 @@ M  END
             result_data,
         )
 
+    def test_check_isotope(self):
+        headers, data = self.get_headers(
+            {
+                "struct": """
+  Ketcher  7232618 42D 1   1.00000     0.00000     0
+
+  3  3  0  0  0  0  0  0  0  0999 V2000
+    8.9744   -8.3325    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    9.9756   -8.3325    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    9.4751   -7.4675    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0     0  0
+  2  3  1  0     0  0
+  3  1  1  0     0  0
+M  ISO  2   1   7   2  24
+M  END
+
+""",
+                "types": ["isotopes"],
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/check", headers=headers, data=data
+        )
+        self.assertEqual(200, result.status_code)
+        result_data = result.text
+        self.assertEqual(
+            '{"isotopes":"Structure contains atoms with impossible isotopic number: (0,1)"}',
+            result_data,
+        )
+
     def test_check_overlap(self):
         headers, data = self.get_headers(
             {
@@ -3207,6 +3237,122 @@ M  END
         result_data = json.loads(result.text)
         self.assertEqual("[HH]", result_data["struct"])
 
+    # --- valence-mode over the /v2 channel -------------------------------
+    #
+    # Regression cover for issue #3823: `valence-mode` had no impact on
+    # fold/unfold hydrogens. The option reached the Indigo session fine, but
+    # MoleculeAutoLoader never forwarded it to MoleculeJsonLoader, so KET input
+    # — Ketcher's native format — silently kept the BIOVIA-2009 model.
+    #
+    # Core behaviour is pinned per-format by
+    # api/c/tests/unit/tests/loader_options.cpp; these cases cover what it
+    # cannot reach: the HTTP layer and the fold/unfold operation on top of it.
+
+    # Verbatim from the issue: a bare, neutral aluminium. Under BIOVIA-2017 it
+    # is an intercepted metal, so unfolding adds no H.
+    KET_BARE_AL = (
+        '{"ket_version":"2.0.0","root":{"nodes":[{"$ref":"mol0"}],'
+        '"connections":[],"templates":[]},"mol0":{"type":"molecule",'
+        '"atoms":[{"label":"Al","location":[9.2,-6.35,0]}]}}'
+    )
+
+    # Lithium bonded to an explicit hydrogen. A SATURATED metal: interception
+    # assigns valence = conn = 1 and the legacy ladder independently arrives at
+    # valence 1 / hyd 0, so the two modes must agree. Kept as a negative control
+    # because this shape was originally mistaken for "the option does nothing".
+    KET_LI_H = (
+        '{"root":{"nodes":[{"$ref":"mol0"}]},"mol0":{"type":"molecule",'
+        '"atoms":[{"label":"Li","location":[0,0,0]},'
+        '{"label":"H","location":[1.5,0,0]}],'
+        '"bonds":[{"type":1,"atoms":[0,1]}]}}'
+    )
+
+    def _unfold_with_valence_mode(self, struct, mode, input_format):
+        params = {
+            "struct": struct,
+            "mode": "unfold",
+            "output_format": "chemical/x-daylight-smiles",
+            "input_format": input_format,
+            "options": {"valence-mode": mode},
+        }
+        headers, data = self.get_headers(params)
+        result = requests.post(
+            self.url_prefix + "/convert_explicit_hydrogens",
+            headers=headers,
+            data=data,
+        )
+        self.assertEqual(200, result.status_code, result.text)
+        return json.loads(result.text)["struct"]
+
+    def test_valence_mode_metal_ket_biovia_2017_adds_no_hydrogens(self):
+        self.assertEqual(
+            "[Al]",
+            self._unfold_with_valence_mode(
+                self.KET_BARE_AL, "biovia-2017", "chemical/x-indigo-ket"
+            ),
+        )
+
+    def test_valence_mode_metal_ket_biovia_2009_adds_hydrogens(self):
+        # Unfolding materialises implicit hydrogens as separate ATOMS, so the
+        # SMILES is the expanded form, not the collapsed [AlH3].
+        self.assertEqual(
+            "[Al]([H])([H])[H]",
+            self._unfold_with_valence_mode(
+                self.KET_BARE_AL, "biovia-2009", "chemical/x-indigo-ket"
+            ),
+        )
+
+    def test_valence_mode_default_matches_biovia_2009(self):
+        # "default" is an alias for the legacy table, not "choose for me".
+        self.assertEqual(
+            self._unfold_with_valence_mode(
+                self.KET_BARE_AL, "biovia-2009", "chemical/x-indigo-ket"
+            ),
+            self._unfold_with_valence_mode(
+                self.KET_BARE_AL, "default", "chemical/x-indigo-ket"
+            ),
+        )
+
+    def test_valence_mode_applies_to_molfile_and_ket_alike(self):
+        # The defect was format-specific: molfile honoured the option while KET
+        # ignored it. Asserting both against the same expectation is what makes
+        # a per-format gap visible again.
+        molfile = (
+            "\n  Indigo  0000000002D\n\n"
+            "  1  0  0  0  0  0  0  0  0  0999 V2000\n"
+            "    0.0000    0.0000    0.0000 Al  0  0  0  0  0  0  0  0  0  0  0  0\n"
+            "M  END\n"
+        )
+        for mode, expected in (
+            ("biovia-2009", "[Al]([H])([H])[H]"),
+            ("biovia-2017", "[Al]"),
+        ):
+            self.assertEqual(
+                expected,
+                self._unfold_with_valence_mode(
+                    molfile, mode, "chemical/x-mdl-molfile"
+                ),
+                "molfile disagrees with the matrix for {}".format(mode),
+            )
+            self.assertEqual(
+                expected,
+                self._unfold_with_valence_mode(
+                    self.KET_BARE_AL, mode, "chemical/x-indigo-ket"
+                ),
+                "KET disagrees with molfile for {}".format(mode),
+            )
+
+    def test_valence_mode_saturated_metal_is_mode_independent(self):
+        # Negative control — see KET_LI_H above.
+        self.assertEqual(
+            self._unfold_with_valence_mode(
+                self.KET_LI_H, "biovia-2009", "chemical/x-indigo-ket"
+            ),
+            self._unfold_with_valence_mode(
+                self.KET_LI_H, "biovia-2017", "chemical/x-indigo-ket"
+            ),
+        )
+
     def test_convert_explicit_hydrogens_reaction(self):
         params = {
             "struct": "CC>>C",
@@ -3470,7 +3616,9 @@ M  END
         #     file.write(result_dna.text)
         # with open(os.path.join(ref_path, "peptide_ref") + ".ket", "w") as file:
         #     file.write(result_peptide.text)
-        # with open(os.path.join(ref_path, "peptide_ref_ad") + ".ket", "w") as file:
+        # with open(
+        #     os.path.join(ref_path, "peptide_ref_ad") + ".ket", "w"
+        # ) as file:
         #     file.write(result_peptide_ad_dna.text)
 
         with open(os.path.join(ref_path, "rna_ref") + ".ket", "r") as file:
@@ -3917,7 +4065,7 @@ M  END
         self.assertEqual(helm_ref, result_helm)
 
         # BILN with terminal alias cross-link
-        biln_cross = "Ac(1,2).A-K(1,3)"
+        biln_cross = "ac(1,2).A-K(1,3)"
         helm_cross_ref = (
             "PEPTIDE1{[ac]}|PEPTIDE2{A.K}"
             "$PEPTIDE1,PEPTIDE2,1:R2-2:R3$$$V2.0"

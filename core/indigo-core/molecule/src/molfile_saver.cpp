@@ -311,7 +311,7 @@ void MolfileSaver::_saveMolecule(BaseMolecule& bmol, bool query)
 
         for (i = 1; i <= n_rgroups; i++)
         {
-            PtrPool<BaseMolecule>& frags = rgroups.getRGroup(i).fragments;
+            PtrReusablePool<BaseMolecule>& frags = rgroups.getRGroup(i).fragments;
 
             if (frags.size() == 0)
                 continue;
@@ -321,13 +321,13 @@ void MolfileSaver::_saveMolecule(BaseMolecule& bmol, bool query)
 
             for (j = frags.begin(); j != frags.end(); j = frags.next(j))
             {
-                BaseMolecule* fragment = frags[j];
+                BaseMolecule& fragment = frags[j];
 
                 _output.writeStringCR("$CTAB");
-                _writeCtabHeader2000(_output, *fragment);
-                _writeCtab2000(_output, *fragment, query);
-                _writeRGroupIndices2000(_output, *fragment);
-                _writeAttachmentValues2000(_output, *fragment);
+                _writeCtabHeader2000(_output, fragment);
+                _writeCtab2000(_output, fragment, query);
+                _writeRGroupIndices2000(_output, fragment);
+                _writeAttachmentValues2000(_output, fragment);
 
                 _output.writeStringCR("M  END");
                 _output.writeStringCR("$END CTAB");
@@ -585,7 +585,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         int charge = mol.getAtomCharge(i);
         int radical = 0;
         int valence = mol.getExplicitValence(i);
-        int stereo_parity = _getStereocenterParity(mol, i);
+        int stereo_parity = MoleculeStereocenters::getMdlParity(mol, i);
 
         if (!mol.isRSite(i) && !mol.isPseudoAtom(i) && !mol.isTemplateAtom(i))
             radical = mol.getAtomRadical_NoThrow(i, 0);
@@ -1188,9 +1188,9 @@ void MolfileSaver::_writeRGroup(Output& output, BaseMolecule& mol, int rg_idx)
 
     _writeMultiString(output, buf.ptr(), buf.size());
 
-    PtrPool<BaseMolecule>& frags = rgroup.fragments;
+    PtrReusablePool<BaseMolecule>& frags = rgroup.fragments;
     for (int j = frags.begin(); j != frags.end(); j = frags.next(j))
-        _writeCtab(output, *rgroup.fragments[j], mol.isQueryMolecule());
+        _writeCtab(output, rgroup.fragments[j], mol.isQueryMolecule());
 
     output.writeStringCR("M  V30 END RGROUP");
 }
@@ -1454,7 +1454,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             hydrogens_count = 0;
         }
 
-        stereo_parity = _getStereocenterParity(mol, i);
+        stereo_parity = MoleculeStereocenters::getMdlParity(mol, i);
 
         Vec3f pos = mol.getAtomXyz(i);
         if (fabs(pos.x) < 1e-5f)
@@ -1972,61 +1972,6 @@ void MolfileSaver::_writeFormattedString(Output& output, Array<char>& str, int l
     else
         while (k-- > 0)
             output.writeChar(' ');
-}
-
-int MolfileSaver::_getStereocenterParity(BaseMolecule& mol, int idx)
-{
-    int type = mol.stereocenters.getType(idx);
-    if (type == 0 || !mol.stereocenters.isTetrahydral(idx))
-        return 0;
-    if (type == MoleculeStereocenters::ATOM_ANY)
-        return 3;
-
-    // Reference from "CTfile Formats. Appendix A: Stereo Notes":
-    // Number the atoms surrounding the stereo center with 1, 2, 3, and 4 in
-    // order of increasing atom number (position in the atom block) (a hydrogen
-    // atom should be considered the highest numbered atom, in this case atom 4).
-    // View the center from a position such that the bond connecting the
-    // highest-numbered atom (4) projects behind the plane formed by atoms 1, 2, and 3.
-
-    int pyramid[4];
-    memcpy(pyramid, mol.stereocenters.getPyramid(idx), sizeof(pyramid));
-    if (pyramid[3] == -1)
-    {
-        if (mol.isQueryMolecule())
-        {
-            if (mol.getAtomNumber(idx) == -1)
-                // This atom is not a pure atom
-                // There are no implicit hydrogens for query molecules
-                return 0;
-        }
-
-        // Assign implicit hydrogen the highest index
-        pyramid[3] = mol.vertexEnd();
-    }
-    else
-    {
-        // Replace pure hydrogen atom with the highest value
-        for (int i = 0; i < 4; i++)
-        {
-            int p = pyramid[i];
-            if (p != -1 && mol.getAtomNumber(p) == ELEM_H)
-            {
-                bool pure_hydrogen = (mol.getAtomIsotope(p) == 0);
-                if (!pure_hydrogen && mol.isQueryMolecule())
-                    pure_hydrogen = !mol.asQueryMolecule().getAtom(p).hasConstraint(QueryMolecule::ATOM_ISOTOPE);
-                if (pure_hydrogen)
-                {
-                    pyramid[i] = mol.vertexEnd();
-                    break;
-                }
-            }
-        }
-    }
-
-    if (MoleculeStereocenters::isPyramidMappingRigid(pyramid))
-        return 1; // odd parity
-    return 2;     // even parity
 }
 
 void MolfileSaver::_writeRGroupIndices2000(Output& output, BaseMolecule& mol)

@@ -797,6 +797,7 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
     QS_DEF(Array<int>, residue_atoms);
     QS_DEF(Array<int>, mapping);
     QS_DEF(Array<int>, ap_points_atoms);
+    QS_DEF(Array<int>, ap_points_leaving);
     QS_DEF(StringPool, ap_points_ids);
     QS_DEF(Array<int>, ap_ids);
     QS_DEF(Array<int>, fragment_sgroups);
@@ -831,6 +832,7 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
     }
 
     ap_points_atoms.clear();
+    ap_points_leaving.clear();
     ap_points_ids.clear();
     ap_ids.clear();
 
@@ -843,6 +845,7 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
         {
             Superatom::_AttachmentPoint& ap = su.attachment_points.at(k);
             ap_points_atoms.push(ap.aidx);
+            ap_points_leaving.push(ap.lvidx);
             ap_ids.push(ap_points_ids.add(ap.apid));
             if (ap.lvidx >= 0)
             {
@@ -905,6 +908,7 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
             ap.lvidx = ap_lvidx;
 
             ap_points_atoms.push(ap.aidx);
+            ap_points_leaving.push(ap.lvidx);
             ap_ids.push(ap_points_ids.add(ap.apid));
         }
     }
@@ -981,6 +985,8 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
     setTemplateAtomDisplayOption(idx, su.contracted.value_or(DisplayOption::Undefined));
     setTemplateAtomTemplateIndex(idx, tg_idx);
 
+    Array<int> connected_neighbors;
+
     for (int j = 0; j < ap_points_atoms.size(); j++)
     {
         int att_point_idx = ap_points_atoms[j];
@@ -991,9 +997,10 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
             neighbors.clear();
             for (int k = v.neiBegin(); k != v.neiEnd(); k = v.neiNext(k))
             {
-                if (su.atoms.find(v.neiVertex(k)) == -1 && leaving_atoms.find(v.neiVertex(k)) == -1)
+                auto nei = v.neiVertex(k);
+                if (su.atoms.find(nei) == -1 && leaving_atoms.find(nei) == -1)
                 {
-                    neighbors.push(v.neiVertex(k));
+                    neighbors.push(nei);
                 }
             }
 
@@ -1002,6 +1009,10 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
                 int v_k = neighbors[k];
                 if (findEdgeIndex(v_k, att_point_idx) != -1)
                 {
+                    if (ap_points_leaving[j] >= 0 && ap_points_leaving[j] != v_k)
+                        continue; // connected atom defined and it not this neighbor
+                    if (connected_neighbors.count(v_k) > 0 && k < neighbors.size() - 1)
+                        continue; // if atom already connected and we have other non connected neighbors - skip it
                     if (findEdgeIndex(v_k, idx) == -1)
                         flipBondWithDirection(v_k, att_point_idx, idx, -1);
                     setTemplateAtomAttachmentOrder(idx, v_k, ap_points_ids.at(ap_ids[j]));
@@ -1018,6 +1029,8 @@ int BaseMolecule::_transformSGroupToTGroup(int sg_idx, int& tg_id)
                             }
                         }
                     }
+                    connected_neighbors.push(v_k);
+                    break; // only one atom could be connected to AP
                 }
             }
         }

@@ -1406,6 +1406,9 @@ void QueryMolecule::getComponentNeighbors(std::list<std::unordered_set<int>>& co
 
 int QueryMolecule::addAtom(int label)
 {
+    if (ELEM_RSITE == label)
+        return addAtom(new Atom(ATOM_RSITE, 0));
+
     return addAtom(new Atom(ATOM_NUMBER, label));
 }
 

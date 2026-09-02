@@ -445,11 +445,7 @@ void MolfileLoader::_readCtab3000()
                 }
                 else if (strcmp(prop, "CFG") == 0)
                 {
-                    strscan.readInt1();
-                    // int cfg = strscan.readInt1();
-
-                    // if (cfg == 3)
-                    //   _stereocenter_types[idx] = MoleculeStereocenters::ATOM4;
+                    _stereocenter_parities[i] = strscan.readInt1();
                 }
                 else if (strcmp(prop, "MASS") == 0)
                 {
@@ -1101,23 +1097,22 @@ void MolfileLoader::_readRGroups3000()
                 if (strcmp(str.ptr(), "M  V30 BEGIN CTAB") == 0)
                 {
                     _scanner.seek(pos, SEEK_SET);
-                    std::unique_ptr<BaseMolecule> fragment(_bmol->neu());
+                    BaseMolecule& fragment = rgroup.fragments.push_t(BaseMolecule::poolFactoryLike(*_bmol));
 
                     MolfileLoader loader(_scanner);
-                    loader._bmol = fragment.get();
+                    loader._bmol = &fragment;
                     if (_bmol->isQueryMolecule())
                     {
-                        loader._qmol = &fragment.get()->asQueryMolecule();
+                        loader._qmol = &fragment.asQueryMolecule();
                         loader._mol = 0;
                     }
                     else
                     {
                         loader._qmol = 0;
-                        loader._mol = &fragment.get()->asMolecule();
+                        loader._mol = &fragment.asMolecule();
                     }
                     loader._readCtab3000();
                     loader._postLoad();
-                    rgroup.fragments.add(fragment.release());
                 }
                 else if (strcmp(str.ptr(), "M  V30 END RGROUP") == 0)
                     break;
@@ -1625,11 +1620,18 @@ void MolfileLoader::_readTGroups3000()
                                     StringOutput templ_inchi_output(templ_inchi_str);
                                     MoleculeInChI templ_inchi(templ_inchi_output);
                                     auto templ_tgroup = templ.getTGroup();
-                                    templ_inchi.outputInChI(templ_tgroup->fragment->asMolecule());
+                                    AromaticityOptions a_opts;
+                                    Molecule templ_mol;
+                                    templ_mol.mergeWithMolecule(templ_tgroup->fragment->asMolecule(), nullptr);
+                                    templ_mol.aromatize(a_opts);
+                                    templ_inchi.outputInChI(templ_mol);
                                     std::string tg_inchi_str;
                                     StringOutput tg_inchi_output(tg_inchi_str);
                                     MoleculeInChI tg_inchi(tg_inchi_output);
-                                    tg_inchi.outputInChI(tgroup.fragment->asMolecule());
+                                    Molecule tg_mol;
+                                    tg_mol.mergeWithMolecule(tgroup.fragment->asMolecule(), nullptr);
+                                    tg_mol.aromatize(a_opts);
+                                    tg_inchi.outputInChI(tg_mol);
                                     if (templ_inchi_str == tg_inchi_str)
                                     {
                                         std::string tgroup_name = tgroup.tgroup_name.ptr();
@@ -1786,6 +1788,8 @@ void MolfileLoader::_init()
     _stereocenter_types.zerofill();
     _stereocenter_groups.clear_resize(_atoms_num);
     _stereocenter_groups.zerofill();
+    _stereocenter_parities.clear_resize(_atoms_num);
+    _stereocenter_parities.zerofill();
     _sensible_bond_directions.clear_resize(_bonds_num);
     _sensible_bond_directions.zerofill();
     _ignore_cistrans.clear_resize(_bonds_num);

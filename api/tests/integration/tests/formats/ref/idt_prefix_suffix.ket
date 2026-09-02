@@ -540,7 +540,7 @@
         "fullName": "2'-O-Methyl-Ribose",
         "alias": "mR",
         "naturalAnalogShort": "R",
-        "aliasHELM": "m",
+        "aliasHELM": "mR",
         "attachmentPoints": [
             {
                 "attachmentAtom": 6,
@@ -983,7 +983,8 @@
         "fullName": "Phosporothioate",
         "alias": "sP",
         "naturalAnalogShort": "P",
-        "aliasHELM": "sp",
+        "aliasHELM": "sP",
+        "aliasAxoLabs": "s",
         "attachmentPoints": [
             {
                 "attachmentAtom": 1,
@@ -1085,7 +1086,7 @@
         "fullName": "Ribose",
         "alias": "R",
         "naturalAnalogShort": "R",
-        "aliasHELM": "r",
+        "aliasHELM": "R",
         "attachmentPoints": [
             {
                 "attachmentAtom": 10,
@@ -1275,7 +1276,7 @@
                     1,
                     7
                 ],
-                "stereo": 1
+                "stereo": 6
             },
             {
                 "type": 1,
@@ -1491,6 +1492,7 @@
         "fullName": "2,'4'-locked-Ribose",
         "alias": "LR",
         "naturalAnalogShort": "R",
+        "aliasHELM": "LR",
         "attachmentPoints": [
             {
                 "attachmentAtom": 6,
@@ -1903,7 +1905,7 @@
         "fullName": "Deoxy-Ribose",
         "alias": "dR",
         "naturalAnalogShort": "R",
-        "aliasHELM": "d",
+        "aliasHELM": "dR",
         "attachmentPoints": [
             {
                 "attachmentAtom": 9,
@@ -2489,7 +2491,8 @@
         "fullName": "Phosphate",
         "alias": "P",
         "naturalAnalogShort": "P",
-        "aliasHELM": "p",
+        "aliasHELM": "P",
+        "aliasAxoLabs": "p",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -2591,7 +2594,7 @@
         "fullName": "Inosine",
         "alias": "In",
         "naturalAnalogShort": "X",
-        "aliasHELM": "Hyp",
+        "aliasHELM": "In",
         "attachmentPoints": [
             {
                 "attachmentAtom": 8,

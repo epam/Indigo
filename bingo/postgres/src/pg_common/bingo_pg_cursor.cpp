@@ -29,7 +29,7 @@ static void bingoPgCursorXactCallback(XactEvent event, void* arg);
 static bool callbackRegistered = false;
 static int cursorsToFinish = 0;
 
-BingoPgCursor::BingoPgCursor(const char* format, ...)
+BingoPgCursor::BingoPgCursor(const char* format, ...) : _finishOnTransactionEnd(false)
 {
     Array<char> buf;
     va_list args;
@@ -38,12 +38,11 @@ BingoPgCursor::BingoPgCursor(const char* format, ...)
     output.vprintf(format, args);
     output.writeChar(0);
     va_end(args);
-    _finishOnTransactionEnd = false;
 
     _init(buf);
 }
 
-BingoPgCursor::BingoPgCursor(indigo::Array<char>& query_str)
+BingoPgCursor::BingoPgCursor(indigo::Array<char>& query_str) : _finishOnTransactionEnd(false)
 {
     _init(query_str);
 }
@@ -55,16 +54,16 @@ BingoPgCursor::~BingoPgCursor()
      */
     BINGO_PG_TRY
     {
-        if (!callbackRegistered)
-        {
-            callbackRegistered = false;
-            RegisterXactCallback(bingoPgCursorXactCallback, NULL);
-        }
         Portal cur_ptr = SPI_cursor_find(_cursorName.ptr());
         if (cur_ptr != NULL)
             SPI_cursor_close((Portal)_cursorPtr);
         if (_finishOnTransactionEnd)
         {
+            if (!callbackRegistered)
+            {
+                RegisterXactCallback(bingoPgCursorXactCallback, NULL);
+                callbackRegistered = true;
+            }
             ++cursorsToFinish;
         }
         else
