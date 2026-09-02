@@ -1298,6 +1298,11 @@ CEXPORT int indigoIterateAtoms(int molecule)
         {
             return self.addObject(new IndigoSGroupAtomsIter(*sg.mol, sg.get()));
         }
+        if (obj.type == IndigoObject::ATTACHMENT_GROUP)
+        {
+            IndigoAttachmentGroup& ag = IndigoAttachmentGroup::cast(obj);
+            return self.addObject(new IndigoAttachmentGroupAtomsIter(ag.mol, ag.idx));
+        }
 
         return _indigoIterateAtoms(self, molecule, IndigoAtomsIter::ALL);
     }
@@ -1350,6 +1355,9 @@ CEXPORT int indigoCountAtoms(int molecule)
         auto sg = _getSGroupFromObject(obj);
         if (sg)
             return sg.get().atoms.size();
+
+        if (obj.type == IndigoObject::ATTACHMENT_GROUP)
+            return static_cast<int>(IndigoAttachmentGroup::cast(obj).get().atoms().size());
 
         BaseMolecule& mol = obj.getBaseMolecule();
 
