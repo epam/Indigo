@@ -18,6 +18,8 @@ feature file must stay true across a refactor.
 
 - [valence-and-implicit-hydrogens.md](./valence-and-implicit-hydrogens.md) — the `valence-mode`
   option, the failure contract, and why a client may show a different number
+- [haptic-bonds.md](./haptic-bonds.md) — bonds whose endpoint is a set of atoms: what round-trips
+  today (KET, rendering) and what does not (V3000, the C API, layout)
 
 ## Worth writing next
 

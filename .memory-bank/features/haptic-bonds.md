@@ -1,0 +1,75 @@
+# Haptic bonds
+
+> **Read when:** a ticket mentions haptic or hapto bonds, attachment groups, or a bond whose end is
+> a set of atoms rather than one atom.
+> **Skip when:** the work is about ordinary two-atom bonds.
+
+Verified on `c57c377e4`. Ticket family #3233.
+
+## Problem
+
+In organometallic chemistry a ligand binds a metal through several of its atoms at once — the
+η⁵-cyclopentadienyl ring bonds through all five carbons, not through any one of them. A model in
+which every bond connects exactly two atoms cannot express that, and drawing five separate bonds
+says something chemically different.
+
+## Interface
+
+A **haptic bond** connects two endpoints, and an endpoint is either an atom or an **attachment
+group** — a named set of atoms acting as one collective end
+(`HapticBond::Endpoint::atom(idx)` / `Endpoint::group(idx)`).
+
+- `BaseMolecule::addHapticBond(begin, end, type = _BOND_HAPTIC)` is the **only** way to create one
+  (`base_molecule.h:474`).
+- `BaseMolecule::removeAttachmentGroup(idx)` is the only way to remove a group
+  (`base_molecule.h:479`); the haptic bonds addressing it are removed with it.
+- The data lives in `attachment_groups` and `haptic_bonds` on `BaseMolecule`
+  (`base_molecule.h:572`, `:574`), not on the atoms.
+- In KET, a connection is discriminated by type `"haptic"`, with `attachmentGroups` and
+  `attachmentGroupId` carrying the sets (`molecule/ket_keys.h`).
+
+## Expected behaviour
+
+**When** a KET document containing haptic connections and attachment groups is loaded, **then** the
+groups and bonds are reconstructed, and each bond's endpoints resolve to the atoms or groups named
+in the document.
+
+**When** such a molecule is saved back to KET, **then** the connections and groups round-trip.
+
+**When** an attachment group is removed, **then** every haptic bond referring to it is removed too —
+a haptic bond never survives with a dangling endpoint.
+
+**When** atoms belonging to a group are removed from the molecule, **then** the group's membership is
+remapped and groups left without members are dropped, through
+`MoleculeAttachmentGroups::onAtomsRemoved`.
+
+**When** a molecule is copied or merged with `SKIP_ATTACHMENT_GROUPS` or `SKIP_HAPTIC_BONDS`
+(`base_molecule.h:137-138`), **then** that data is deliberately left behind; without the flags it is
+remapped into the target.
+
+**When** the structure is rendered, **then** the haptic bond is drawn to the group as a whole —
+`core/render2d/` knows about attachment groups.
+
+## Guarantees
+
+- **An attachment group is not a vertex of the molecular graph.** It never appears in
+  `vertexBegin()`/`vertexNext()`, so every algorithm that walks the graph — valence, aromaticity,
+  canonical SMILES, InChI, fingerprints, substructure search — is unaffected by its presence. See
+  [../adr/haptic-bond-endpoints.md](../adr/haptic-bond-endpoints.md).
+- **A group has no stored position.** Anything needing one derives it from the member atoms, so it
+  cannot go stale when the ligand moves.
+- Endpoints are validated on creation (`_checkHapticEndpoint`, `base_molecule.h:790`); an endpoint
+  naming a nonexistent atom or group is rejected rather than stored.
+
+## Limitations
+
+At this commit the feature is model, KET and rendering only:
+
+- **No MOL/SDF V3000 support** — the molfile loader and saver do not mention attachment groups, so a
+  structure with haptic bonds does not survive a conversion through V3000.
+- **No C API functions**, and therefore nothing in the Python, Java, .NET, R or WASM wrappers: the
+  feature is reachable from C++ only.
+- **Layout does not place attachment groups** — `core/indigo-core/layout/` has no knowledge of them.
+
+Those three are separate tickets in the same family; check whether they have landed before treating
+any of them as missing work.

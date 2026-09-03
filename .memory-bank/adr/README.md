@@ -41,6 +41,8 @@ recorded in a ticket that the code links to.
 
 - [owning-containers.md](./owning-containers.md) — objects are owned by
   `PtrArray` and `PtrReusablePool`, not by `ObjArray` or `std::vector<T>`; the `Reusable` contract
+- [haptic-bond-endpoints.md](./haptic-bond-endpoints.md) — an attachment group is stored beside the
+  graph, never as a vertex, so graph algorithms stay correct on organometallics by construction
 
 Still worth reconstructing from the analyses in `indigo-common/Task/`: the valence-model
 configuration contract (BIOVIA 2009 vs 2017), and the decision to route non-local formats through

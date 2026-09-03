@@ -76,7 +76,7 @@ declaring a fix complete — see [modules/bingo-oracle.md](./modules/bingo-oracl
 **B3 — Bingo test adapters return exceptions, they do not raise them.**
 Methods in `bingo/tests/dbc/*.py` return the `Exception` object so that the same test body can assert
 parity across engines with radically different error reporting. Raising instead of returning breaks
-every cross-DB comparison — see [architecture.md](./architecture.md).
+every cross-DB comparison — see [testing.md](./testing.md).
 
 **B4 — Run `pytest` from `bingo/tests/`, not from the repository root.**
 `base.SQLAdapter` resolves `db_config.ini` relative to the working directory.
