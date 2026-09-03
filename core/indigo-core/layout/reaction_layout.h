@@ -110,7 +110,7 @@ namespace indigo
         bool preserve_molecule_layout = false;
         int max_iterations = 0;
         bool _smart_layout = false;
-        LAYOUT_ORIENTATION layout_orientation = UNCPECIFIED;
+        LAYOUT_ORIENTATION layout_orientation = UNSPECIFIED;
         LayoutOptions _options;
         BaseReaction& _r;
         Metalayout _ml;

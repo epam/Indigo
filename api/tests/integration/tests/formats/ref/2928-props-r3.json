@@ -2,7 +2,7 @@
     {
         "grossFormula": "C6 H12 N2 O4 S2",
         "mass": 240.291999,
-        "pKa": 5.96,
+        "pKa": 6.15,
         "extinctionCoefficient": 250,
         "hydrophobicity": [
             0.68,
@@ -18,7 +18,7 @@
     {
         "grossFormula": "C6 H12 N2 O2 S2",
         "mass": 208.294,
-        "pKa": 9.011667,
+        "pKa": 5.025,
         "extinctionCoefficient": 250,
         "hydrophobicity": [
             0.68,
@@ -34,7 +34,7 @@
     {
         "grossFormula": "C6 H12 N2 O3 S2",
         "mass": 224.292999,
-        "pKa": 8.493333,
+        "pKa": 8.0,
         "extinctionCoefficient": 250,
         "hydrophobicity": [
             0.68,
@@ -50,7 +50,7 @@
     {
         "grossFormula": "C6 H14 N2 O4 S2",
         "mass": 242.307999,
-        "pKa": 8.493333,
+        "pKa": 8.0,
         "extinctionCoefficient": 250,
         "hydrophobicity": [
             0.68,

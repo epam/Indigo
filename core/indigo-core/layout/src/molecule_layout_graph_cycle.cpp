@@ -49,6 +49,24 @@ MoleculeLayoutGraph::Cycle::Cycle(const Array<int>& vertices, const Array<int>& 
     _morgan_code_calculated = false;
 }
 
+// Same effect as the matching constructor, applied to an already-constructed
+// pooled cycle.
+void MoleculeLayoutGraph::Cycle::reuse(const List<int>& edges, const MoleculeLayoutGraph& graph)
+{
+    copy(edges, graph);
+    _attached_weight.resize(graph.vertexCount());
+    _attached_weight.zerofill();
+    _morgan_code_calculated = false;
+}
+
+void MoleculeLayoutGraph::Cycle::reuse(const Array<int>& vertices, const Array<int>& edges)
+{
+    copy(vertices, edges);
+    _attached_weight.resize(vertices.size());
+    _attached_weight.zerofill();
+    _morgan_code_calculated = false;
+}
+
 void MoleculeLayoutGraph::Cycle::copy(const List<int>& edges, const MoleculeLayoutGraph& graph)
 {
     int i = edges.begin();
@@ -182,7 +200,7 @@ bool MoleculeLayoutGraph::Cycle::contains(const Cycle& another) const
 // If cycles has the same size then Morgan code in descending order (higher first)
 int MoleculeLayoutGraph::Cycle::compare_cb(int& idx1, int& idx2, void* context)
 {
-    const ObjPool<Cycle>& cycles = *(const ObjPool<Cycle>*)context;
+    const PtrReusablePool<Cycle>& cycles = *(const PtrReusablePool<Cycle>*)context;
 
     int size_freq[] = {6, 5, 7, 8, 4, 3};
     int freq_idx1, freq_idx2;

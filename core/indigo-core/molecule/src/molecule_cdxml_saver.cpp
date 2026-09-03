@@ -1130,24 +1130,28 @@ void MoleculeCdxmlSaver::addFragmentNodes(BaseMolecule& mol, tinyxml2::XMLElemen
         }
 
         auto& sa = (Superatom&)mol.sgroups.getSGroup(kvp.first);
-        if (sa.subscript.size())
+        if (sa.label.size())
         {
             XMLElement* t = _doc->NewElement("t");
             node->LinkEndChild(t);
-            Vec2f pos(sa.display_position.x + offset.x, -sa.display_position.y - offset.y);
-            pos.scale(_bond_length);
-            Vec2f v1(pos.x - _bond_length / 2, pos.y - _bond_length / 2);
-            Vec2f v2(pos.x + _bond_length / 2, pos.y + _bond_length / 2);
-            std::string pos_str = std::to_string(pos.x) + " " + std::to_string(pos.y);
-            Rect2f bbox(v1, v2);
-            std::string bbox_str = boundingBoxToString(bbox);
-            if (sa.display_position.x != 0.0f && sa.display_position.y != 0.0f)
-                node->SetAttribute("p", pos_str.c_str());
+            if (sa.display_position.has_value())
+            {
+                const Vec3f& display_position = sa.display_position.value();
+                Vec2f pos(display_position.x + offset.x, -display_position.y - offset.y);
+                pos.scale(_bond_length);
+                Vec2f v1(pos.x - _bond_length / 2, pos.y - _bond_length / 2);
+                Vec2f v2(pos.x + _bond_length / 2, pos.y + _bond_length / 2);
+                std::string pos_str = std::to_string(pos.x) + " " + std::to_string(pos.y);
+                Rect2f bbox(v1, v2);
+                std::string bbox_str = boundingBoxToString(bbox);
+                if (display_position.x != 0.0f && display_position.y != 0.0f)
+                    node->SetAttribute("p", pos_str.c_str());
+            }
             t->SetAttribute("LabelJustification", "Left");
             t->SetAttribute("LabelAlignment", "Above");
             XMLElement* s = _doc->NewElement("s");
             t->LinkEndChild(s);
-            XMLText* txt = _doc->NewText(sa.subscript.ptr());
+            XMLText* txt = _doc->NewText(sa.label.ptr());
             s->LinkEndChild(txt);
         }
     }
@@ -1160,7 +1164,7 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& bmol, const Vec2f& o
     saveMoleculeFragment(bmol, offset, scale, -1, id, atom_ids);
 }
 
-void MoleculeCdxmlSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, const Vec2f& offset, int rgnum, Rect2f& doc_bbox)
+void MoleculeCdxmlSaver::saveRGroup(PtrReusablePool<BaseMolecule>& fragments, const Vec2f& offset, int rgnum, Rect2f& doc_bbox)
 {
     // XMLElement* parent = _current;
     XMLElement* fragment = _doc->NewElement("altgroup");
@@ -1172,7 +1176,7 @@ void MoleculeCdxmlSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, const Vec2
     for (int i = fragments.begin(); i != fragments.end(); i = fragments.next(i))
     {
         Vec2f min_coord, max_coord;
-        fragments[i]->getBoundingBox(min_coord, max_coord);
+        fragments[i].getBoundingBox(min_coord, max_coord);
         if (i == fragments.begin())
         {
             rmin.copy(min_coord);
@@ -1183,8 +1187,8 @@ void MoleculeCdxmlSaver::saveRGroup(PtrPool<BaseMolecule>& fragments, const Vec2
             rmin.min(min_coord);
             rmax.max(max_coord);
         }
-        saveMoleculeFragment(*fragments[i], offset, 1);
-        valence += fragments[i]->attachmentPointCount();
+        saveMoleculeFragment(fragments[i], offset, 1);
+        valence += fragments[i].attachmentPointCount();
     }
     doc_bbox.extend(Rect2f(rmin, rmax));
     std::string rg_name("R");
@@ -2127,10 +2131,10 @@ void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& bmol)
     if (bmol.have_xyz)
         bmol.getBoundingBox(bbox);
 
-    for (int i = 0; i < bmol.meta().metaData().size(); ++i)
+    for (int i = 0; i < bmol.meta().metaData().size(); i++)
     {
         Rect2f bb;
-        auto& mo = *bmol.meta().metaData()[i];
+        auto& mo = bmol.meta().metaData()[i];
         mo.getBoundingBox(bb);
         bbox.extend(bb);
     }
@@ -2149,10 +2153,10 @@ void MoleculeCdxmlSaver::saveMolecule(BaseMolecule& bmol)
             saveRGroup(rgrp.fragments, offset, i, bbox);
     }
 
-    for (int i = 0; i < bmol.meta().metaData().size(); ++i)
+    for (int i = 0; i < bmol.meta().metaData().size(); i++)
     {
-        auto& mo = *bmol.meta().metaData()[i];
-        addMetaObject(*bmol.meta().metaData()[i], ++_id, offset);
+        auto& mo = bmol.meta().metaData()[i];
+        addMetaObject(bmol.meta().metaData()[i], ++_id, offset);
     }
 
     QS_DEF(Array<char>, buf);
@@ -2172,7 +2176,7 @@ void MoleculeCdxmlSaver::deleteNamelessSGroups(BaseMolecule& bmol)
         if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
         {
             auto& sa = static_cast<Superatom&>(sg);
-            if (sa.subscript.size() == 0 || std::string(sa.subscript.ptr()).size() == 0)
+            if (sa.label.size() == 0 || std::string(sa.label.ptr()).size() == 0)
                 bmol.sgroups.remove(j);
         }
     }

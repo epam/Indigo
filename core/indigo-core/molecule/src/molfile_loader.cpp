@@ -47,8 +47,8 @@ CP_DEF(MolfileLoader);
 MolfileLoader::MolfileLoader(Scanner& scanner, MonomerTemplateLibrary* monomer_library)
     : _scanner(scanner), _monomer_templates(MonomerTemplates::_instance()), _max_template_id(0), _disable_sgroups_conversion(false), CP_INIT,
       TL_CP_GET(_stereo_care_atoms), TL_CP_GET(_stereo_care_bonds), TL_CP_GET(_stereocenter_types), TL_CP_GET(_stereocenter_groups),
-      TL_CP_GET(_sensible_bond_directions), TL_CP_GET(_ignore_cistrans), TL_CP_GET(_atom_types), TL_CP_GET(_hcount), TL_CP_GET(_sgroup_types),
-      TL_CP_GET(_sgroup_mapping)
+      TL_CP_GET(_stereocenter_parities), TL_CP_GET(_sensible_bond_directions), TL_CP_GET(_ignore_cistrans), TL_CP_GET(_atom_types), TL_CP_GET(_hcount),
+      TL_CP_GET(_sgroup_types), TL_CP_GET(_sgroup_mapping)
 {
     _rgfile = false;
     treat_x_as_pseudoatom = false;
@@ -56,6 +56,7 @@ MolfileLoader::MolfileLoader(Scanner& scanner, MonomerTemplateLibrary* monomer_l
     ignore_noncritical_query_features = false;
     ignore_no_chiral_flag = false;
     ignore_bad_valence = false;
+    valence_mode = ValenceMode::BIOVIA_2009;
     treat_stereo_as = 0;
     _monomer_library = monomer_library;
 }
@@ -67,21 +68,44 @@ void MolfileLoader::loadMolecule(Molecule& mol)
     _mol = &mol;
     _qmol = 0;
     _max_template_id = 0;
-    _loadMolecule();
+    // Order matters: atom parsing infers implicit H using the molecule's current valence
+    // model, so a post-parse setValenceMode would leave the caller's request unapplied.
     mol.setIgnoreBadValenceFlag(ignore_bad_valence);
+    mol.setValenceMode(valence_mode);
+    _loadMolecule();
     if (mol.stereocenters.size() == 0 && !skip_3d_chirality)
         mol.buildFrom3dCoordinatesStereocenters(stereochemistry_options);
 }
 
 void MolfileLoader::copyProperties(const MolfileLoader& loader)
 {
-    stereochemistry_options = loader.stereochemistry_options;
-    ignore_bad_valence = loader.ignore_bad_valence;
-    ignore_no_chiral_flag = loader.ignore_no_chiral_flag;
-    skip_3d_chirality = loader.skip_3d_chirality;
+    setOptions(loader.getOptions());
     treat_stereo_as = loader.treat_stereo_as;
-    treat_x_as_pseudoatom = loader.treat_x_as_pseudoatom;
     _monomer_library = loader._monomer_library;
+}
+
+void MolfileLoader::setOptions(const LoaderOptions& opts)
+{
+    stereochemistry_options = opts.stereochemistry_options;
+    valence_mode = opts.valence_mode;
+    ignore_bad_valence = opts.ignore_bad_valence;
+    ignore_no_chiral_flag = opts.ignore_no_chiral_flag;
+    ignore_noncritical_query_features = opts.ignore_noncritical_query_features;
+    skip_3d_chirality = opts.skip_3d_chirality;
+    treat_x_as_pseudoatom = opts.treat_x_as_pseudoatom;
+}
+
+LoaderOptions MolfileLoader::getOptions() const
+{
+    LoaderOptions opts;
+    opts.stereochemistry_options = stereochemistry_options;
+    opts.valence_mode = valence_mode;
+    opts.ignore_bad_valence = ignore_bad_valence;
+    opts.ignore_no_chiral_flag = ignore_no_chiral_flag;
+    opts.ignore_noncritical_query_features = ignore_noncritical_query_features;
+    opts.skip_3d_chirality = skip_3d_chirality;
+    opts.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+    return opts;
 }
 
 void MolfileLoader::loadQueryMolecule(QueryMolecule& mol)
@@ -142,6 +166,7 @@ void MolfileLoader::loadMolBlock3000(Molecule& mol)
     _qmol = 0;
     _mol = &mol;
     _readCtab3000();
+    _readRGroups3000();
     _readTGroups3000();
     _checkEndOfMolBlock3000();
     _postLoad();
@@ -153,6 +178,7 @@ void MolfileLoader::loadQueryMolBlock3000(QueryMolecule& mol)
     _qmol = &mol;
     _mol = 0;
     _readCtab3000();
+    _readRGroups3000();
     _readTGroups3000();
     _checkEndOfMolBlock3000();
     _postLoad();

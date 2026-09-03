@@ -21,6 +21,7 @@
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "indigo_array.h"
+#include "indigo_group_pseudoatoms_expand.h"
 #include "indigo_io.h"
 #include "indigo_ket_document.h"
 #include "indigo_mapping.h"
@@ -492,17 +493,13 @@ CEXPORT int indigoLoadMoleculeWithLib(int source, int monomer_library)
 
         MoleculeAutoLoader loader(IndigoScanner::get(obj));
 
-        loader.stereochemistry_options = self.stereochemistry_options;
-        loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
-        loader.ignore_noncritical_query_features = self.ignore_noncritical_query_features;
-        loader.skip_3d_chirality = self.skip_3d_chirality;
+        loader.setOptions(self.loaderOptions());
         loader.ignore_closing_bond_direction_mismatch = self.ignore_closing_bond_direction_mismatch;
-        loader.ignore_no_chiral_flag = self.ignore_no_chiral_flag;
         loader.treat_stereo_as = self.treat_stereo_as;
-        loader.ignore_bad_valence = self.ignore_bad_valence;
         loader.smiles_loading_strict_aliphatic = self.smiles_loading_strict_aliphatic;
         loader.dearomatize_on_load = self.dearomatize_on_load;
         loader.arom_options = self.arom_options;
+        loader.input_format = self.input_format;
 
         std::unique_ptr<IndigoMolecule> molptr = std::make_unique<IndigoMolecule>();
 
@@ -609,10 +606,10 @@ CEXPORT int indigoLoadQueryMoleculeWithLib(int source, int monomer_library)
         IndigoObject& obj = self.getObject(source);
         MoleculeAutoLoader loader(IndigoScanner::get(obj));
 
-        loader.stereochemistry_options = self.stereochemistry_options;
-        loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
+        loader.setOptions(self.loaderOptions());
         loader.dearomatize_on_load = self.dearomatize_on_load;
         loader.arom_options = self.arom_options;
+        loader.input_format = self.input_format;
 
         std::unique_ptr<IndigoQueryMolecule> molptr = std::make_unique<IndigoQueryMolecule>();
 
@@ -635,17 +632,21 @@ CEXPORT int indigoLoadMonomerLibrary(int source)
     {
         IndigoObject& obj = self.getObject(source);
         std::unique_ptr<IndigoMonomerLibrary> libptr = std::make_unique<IndigoMonomerLibrary>();
-        try // try to load as json
+        Scanner& scanner = IndigoScanner::get(obj);
+        auto pos = scanner.tell();
+
+        try
         {
-            MoleculeJsonLoader loader(IndigoScanner::get(obj));
-            loader.stereochemistry_options.ignore_errors = true;
-            loader.loadMonomerLibrary(libptr->get());
-        }
-        catch (Exception& e) // trying as SDF
-        {
-            try
+            MoleculeJsonLoader loader(scanner);
+            if (loader.isParsed())
             {
-                SdfLoader sdf_loader(IndigoScanner::get(obj));
+                loader.stereochemistry_options.ignore_errors = true;
+                loader.loadMonomerLibrary(libptr->get());
+            }
+            else
+            {
+                scanner.seek(pos, SEEK_SET);
+                SdfLoader sdf_loader(scanner);
                 PropertiesMap properties;
                 while (!sdf_loader.isEOF())
                 {
@@ -654,11 +655,7 @@ CEXPORT int indigoLoadMonomerLibrary(int source)
                     properties.copy(sdf_loader.properties);
                     BufferScanner scanner2(sdf_loader.data);
                     MolfileLoader loader(scanner2, &libptr->get());
-                    loader.stereochemistry_options = self.stereochemistry_options;
-                    loader.ignore_noncritical_query_features = self.ignore_noncritical_query_features;
-                    loader.skip_3d_chirality = self.skip_3d_chirality;
-                    loader.treat_x_as_pseudoatom = self.treat_x_as_pseudoatom;
-                    loader.ignore_no_chiral_flag = self.ignore_no_chiral_flag;
+                    loader.setOptions(self.loaderOptions());
                     loader.treat_stereo_as = self.treat_stereo_as;
                     Molecule mol;
                     loader.loadMolecule(mol);
@@ -667,10 +664,10 @@ CEXPORT int indigoLoadMonomerLibrary(int source)
                         libptr->get().addMonomersFromMolecule(mol, properties);
                 }
             }
-            catch (Exception& e)
-            {
-                throw IndigoError("Error loading monomer library: %s", e.message());
-            }
+        }
+        catch (Exception& e)
+        {
+            throw IndigoError("Error loading monomer library: %s", e.message());
         }
         return self.addObject(libptr.release());
     }
@@ -694,6 +691,8 @@ CEXPORT int indigoLoadKetDocument(int source)
         }
         std::unique_ptr<IndigoKetDocument> docptr = std::make_unique<IndigoKetDocument>();
         KetDocumentJsonLoader loader{};
+        // The document converts to a Molecule lazily; see KetDocument::setOptions.
+        docptr->get().setOptions(self.loaderOptions());
         loader.parseJson(json_str, docptr->get());
         return self.addObject(docptr.release());
     }
@@ -895,6 +894,56 @@ CEXPORT int indigoLoadHelmFromFile(const char* filename, int library)
             return -1;
 
         result = indigoLoadHelm(source, library);
+        indigoFree(source);
+        return result;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoLoadBiln(int source, int library)
+{
+    INDIGO_BEGIN
+    {
+        IndigoObject& obj = self.getObject(source);
+        IndigoObject& lib_obj = self.getObject(library);
+        SequenceLoader loader(IndigoScanner::get(obj), IndigoMonomerLibrary::get(lib_obj));
+
+        std::unique_ptr<IndigoKetDocument> docptr = std::make_unique<IndigoKetDocument>();
+
+        loader.loadBILN(docptr->get());
+        return self.addObject(docptr.release());
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoLoadBilnFromString(const char* string, int library)
+{
+    INDIGO_BEGIN
+    {
+        int source = indigoReadString(string);
+        int result;
+
+        if (source <= 0)
+            return -1;
+
+        result = indigoLoadBiln(source, library);
+        indigoFree(source);
+        return result;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoLoadBilnFromFile(const char* filename, int library)
+{
+    INDIGO_BEGIN
+    {
+        int source = indigoReadFile(filename);
+        int result;
+
+        if (source < 0)
+            return -1;
+
+        result = indigoLoadBiln(source, library);
         indigoFree(source);
         return result;
     }
@@ -1141,7 +1190,7 @@ IndigoObject* IndigoSGroupAtomsIter::next()
     return new IndigoAtom(_mol, _sgroup.atoms[_idx]);
 }
 
-IndigoSGroupBondsIter::IndigoSGroupBondsIter(BaseMolecule& mol, SGroup& sgroup) : IndigoObject(SGROUP_ATOMS_ITER), _mol(mol), _sgroup(sgroup)
+IndigoSGroupBondsIter::IndigoSGroupBondsIter(BaseMolecule& mol, SGroup& sgroup) : IndigoObject(SGROUP_BONDS_ITER), _mol(mol), _sgroup(sgroup)
 {
     _idx = -1;
 }
@@ -1152,7 +1201,7 @@ IndigoSGroupBondsIter::~IndigoSGroupBondsIter()
 
 bool IndigoSGroupBondsIter::hasNext()
 {
-    return _idx + 1 < _sgroup.bonds.size();
+    return _idx + 1 < _sgroup.getBonds().size();
 }
 
 IndigoObject* IndigoSGroupBondsIter::next()
@@ -1161,12 +1210,72 @@ IndigoObject* IndigoSGroupBondsIter::next()
         return 0;
 
     _idx++;
-    return new IndigoBond(_mol, _sgroup.bonds[_idx]);
+    return new IndigoBond(_mol, _sgroup.getBonds()[_idx]);
+}
+
+IndigoSGroupXBondsIter::IndigoSGroupXBondsIter(BaseMolecule& mol, SGroup& sgroup) : IndigoObject(SGROUP_BONDS_ITER), _mol(mol), _sgroup(sgroup)
+{
+    _idx = -1;
+}
+
+IndigoSGroupXBondsIter::~IndigoSGroupXBondsIter()
+{
+}
+
+bool IndigoSGroupXBondsIter::hasNext()
+{
+    return _idx + 1 < _sgroup.xbonds.size();
+}
+
+IndigoObject* IndigoSGroupXBondsIter::next()
+{
+    if (!hasNext())
+        return 0;
+
+    _idx++;
+    return new IndigoBond(_mol, _sgroup.xbonds[_idx]);
 }
 
 int _indigoIterateAtoms(Indigo& self, int molecule, int type)
 {
     return self.addObject(new IndigoAtomsIter(&self.getObject(molecule).getBaseMolecule(), type));
+}
+
+struct _IndigoSGroupObject
+{
+    BaseMolecule* mol;
+    SGroup* sg;
+
+    operator bool() const
+    {
+        return mol != nullptr && sg != nullptr;
+    }
+
+    SGroup& get() const
+    {
+        return *sg;
+    }
+};
+
+static _IndigoSGroupObject _getSGroupFromObject(IndigoObject& obj)
+{
+    switch (obj.type)
+    {
+    case IndigoObject::DATA_SGROUP:
+        return {&IndigoDataSGroup::cast(obj).mol, &IndigoDataSGroup::cast(obj).get()};
+    case IndigoObject::SUPERATOM:
+        return {&IndigoSuperatom::cast(obj).mol, &IndigoSuperatom::cast(obj).get()};
+    case IndigoObject::REPEATING_UNIT:
+        return {&IndigoRepeatingUnit::cast(obj).mol, &IndigoRepeatingUnit::cast(obj).get()};
+    case IndigoObject::MULTIPLE_GROUP:
+        return {&IndigoMultipleGroup::cast(obj).mol, &IndigoMultipleGroup::cast(obj).get()};
+    case IndigoObject::GENERIC_SGROUP:
+        return {&IndigoGenericSGroup::cast(obj).mol, &IndigoGenericSGroup::cast(obj).get()};
+    case IndigoObject::SGROUP:
+        return {&IndigoSGroup::cast(obj).mol, &IndigoSGroup::cast(obj).get()};
+    default:
+        return {nullptr, nullptr};
+    }
 }
 
 CEXPORT int indigoIterateAtoms(int molecule)
@@ -1185,30 +1294,9 @@ CEXPORT int indigoIterateAtoms(int molecule)
             IndigoSubmolecule& sm = (IndigoSubmolecule&)obj;
             return self.addObject(new IndigoSubmoleculeAtomsIter(sm));
         }
-        if (obj.type == IndigoObject::DATA_SGROUP)
+        if (auto sg = _getSGroupFromObject(obj))
         {
-            IndigoDataSGroup& dsg = IndigoDataSGroup::cast(obj);
-            return self.addObject(new IndigoSGroupAtomsIter(dsg.mol, dsg.mol.sgroups.getSGroup(dsg.idx)));
-        }
-        if (obj.type == IndigoObject::SUPERATOM)
-        {
-            IndigoSuperatom& sa = IndigoSuperatom::cast(obj);
-            return self.addObject(new IndigoSGroupAtomsIter(sa.mol, sa.mol.sgroups.getSGroup(sa.idx)));
-        }
-        if (obj.type == IndigoObject::REPEATING_UNIT)
-        {
-            IndigoRepeatingUnit& ru = IndigoRepeatingUnit::cast(obj);
-            return self.addObject(new IndigoSGroupAtomsIter(ru.mol, ru.mol.sgroups.getSGroup(ru.idx)));
-        }
-        if (obj.type == IndigoObject::MULTIPLE_GROUP)
-        {
-            IndigoMultipleGroup& mr = IndigoMultipleGroup::cast(obj);
-            return self.addObject(new IndigoSGroupAtomsIter(mr.mol, mr.mol.sgroups.getSGroup(mr.idx)));
-        }
-        if (obj.type == IndigoObject::GENERIC_SGROUP)
-        {
-            IndigoGenericSGroup& gg = IndigoGenericSGroup::cast(obj);
-            return self.addObject(new IndigoSGroupAtomsIter(gg.mol, gg.mol.sgroups.getSGroup(gg.idx)));
+            return self.addObject(new IndigoSGroupAtomsIter(*sg.mol, sg.get()));
         }
 
         return _indigoIterateAtoms(self, molecule, IndigoAtomsIter::ALL);
@@ -1232,30 +1320,9 @@ CEXPORT int indigoIterateBonds(int molecule)
             IndigoSubmolecule& sm = (IndigoSubmolecule&)obj;
             return self.addObject(new IndigoSubmoleculeBondsIter(sm));
         }
-        if (obj.type == IndigoObject::DATA_SGROUP)
+        if (auto sg = _getSGroupFromObject(obj))
         {
-            IndigoDataSGroup& dsg = IndigoDataSGroup::cast(obj);
-            return self.addObject(new IndigoSGroupBondsIter(dsg.mol, dsg.mol.sgroups.getSGroup(dsg.idx)));
-        }
-        if (obj.type == IndigoObject::SUPERATOM)
-        {
-            IndigoSuperatom& sa = IndigoSuperatom::cast(obj);
-            return self.addObject(new IndigoSGroupBondsIter(sa.mol, sa.mol.sgroups.getSGroup(sa.idx)));
-        }
-        if (obj.type == IndigoObject::REPEATING_UNIT)
-        {
-            IndigoRepeatingUnit& ru = IndigoRepeatingUnit::cast(obj);
-            return self.addObject(new IndigoSGroupBondsIter(ru.mol, ru.mol.sgroups.getSGroup(ru.idx)));
-        }
-        if (obj.type == IndigoObject::MULTIPLE_GROUP)
-        {
-            IndigoMultipleGroup& mr = IndigoMultipleGroup::cast(obj);
-            return self.addObject(new IndigoSGroupBondsIter(mr.mol, mr.mol.sgroups.getSGroup(mr.idx)));
-        }
-        if (obj.type == IndigoObject::GENERIC_SGROUP)
-        {
-            IndigoGenericSGroup& gg = IndigoGenericSGroup::cast(obj);
-            return self.addObject(new IndigoSGroupBondsIter(gg.mol, gg.mol.sgroups.getSGroup(gg.idx)));
+            return self.addObject(new IndigoSGroupBondsIter(*sg.mol, sg.get()));
         }
         BaseMolecule& mol = obj.getBaseMolecule();
         return self.addObject(new IndigoBondsIter(mol));
@@ -1279,16 +1346,10 @@ CEXPORT int indigoCountAtoms(int molecule)
             IndigoSubmolecule& sm = (IndigoSubmolecule&)obj;
             return sm.vertices.size();
         }
-        if (obj.type == IndigoObject::DATA_SGROUP)
-        {
-            IndigoDataSGroup& dsg = IndigoDataSGroup::cast(obj);
-            return dsg.get().atoms.size();
-        }
-        if (obj.type == IndigoObject::SUPERATOM)
-        {
-            IndigoSuperatom& sa = IndigoSuperatom::cast(obj);
-            return sa.get().atoms.size();
-        }
+
+        auto sg = _getSGroupFromObject(obj);
+        if (sg)
+            return sg.get().atoms.size();
 
         BaseMolecule& mol = obj.getBaseMolecule();
 
@@ -1313,16 +1374,10 @@ CEXPORT int indigoCountBonds(int molecule)
             IndigoSubmolecule& sm = (IndigoSubmolecule&)obj;
             return sm.edges.size();
         }
-        if (obj.type == IndigoObject::DATA_SGROUP)
-        {
-            IndigoDataSGroup& dsg = IndigoDataSGroup::cast(obj);
-            return dsg.get().bonds.size();
-        }
-        if (obj.type == IndigoObject::SUPERATOM)
-        {
-            IndigoSuperatom& sa = IndigoSuperatom::cast(obj);
-            return sa.get().bonds.size();
-        }
+
+        auto sg = _getSGroupFromObject(obj);
+        if (sg)
+            return sg.get().getBonds().size();
 
         BaseMolecule& mol = obj.getBaseMolecule();
 
@@ -1540,22 +1595,22 @@ void IndigoRGroupFragment::remove()
 
 QueryMolecule& IndigoRGroupFragment::getQueryMolecule()
 {
-    return rgroup.mol->rgroups.getRGroup(rgroup.idx).fragments[frag_idx]->asQueryMolecule();
+    return rgroup.mol->rgroups.getRGroup(rgroup.idx).fragments[frag_idx].asQueryMolecule();
 }
 
 Molecule& IndigoRGroupFragment::getMolecule()
 {
-    return rgroup.mol->rgroups.getRGroup(rgroup.idx).fragments[frag_idx]->asMolecule();
+    return rgroup.mol->rgroups.getRGroup(rgroup.idx).fragments[frag_idx].asMolecule();
 }
 
 BaseMolecule& IndigoRGroupFragment::getBaseMolecule()
 {
-    return *rgroup.mol->rgroups.getRGroup(rgroup.idx).fragments[frag_idx];
+    return rgroup.mol->rgroups.getRGroup(rgroup.idx).fragments[frag_idx];
 }
 
 IndigoObject* IndigoRGroupFragment::clone()
 {
-    BaseMolecule* mol = rgroup.mol->rgroups.getRGroup(rgroup.idx).fragments[frag_idx];
+    BaseMolecule* mol = &rgroup.mol->rgroups.getRGroup(rgroup.idx).fragments[frag_idx];
 
     std::unique_ptr<IndigoBaseMolecule> molptr;
 
@@ -1586,7 +1641,7 @@ IndigoRGroupFragmentsIter::~IndigoRGroupFragmentsIter()
 
 bool IndigoRGroupFragmentsIter::hasNext()
 {
-    PtrPool<BaseMolecule>& frags = _mol->rgroups.getRGroup(_rgroup_idx).fragments;
+    PtrReusablePool<BaseMolecule>& frags = _mol->rgroups.getRGroup(_rgroup_idx).fragments;
 
     if (_frag_idx == -1)
         return frags.begin() != frags.end();
@@ -1598,7 +1653,7 @@ IndigoObject* IndigoRGroupFragmentsIter::next()
     if (!hasNext())
         return nullptr;
 
-    PtrPool<BaseMolecule>& frags = _mol->rgroups.getRGroup(_rgroup_idx).fragments;
+    PtrReusablePool<BaseMolecule>& frags = _mol->rgroups.getRGroup(_rgroup_idx).fragments;
 
     if (_frag_idx == -1)
         _frag_idx = frags.begin();
@@ -1679,7 +1734,14 @@ CEXPORT int indigoCountAttachmentPoints(int rgroup)
 
         IndigoRGroup& rgp = IndigoRGroup::cast(object);
 
-        return rgp.mol->rgroups.getRGroup(rgp.idx).fragments[0]->attachmentPointCount();
+        auto& fragments = rgp.mol->rgroups.getRGroup(rgp.idx).fragments;
+        // An R-group without fragments is a legal state — indigoIterateRGroups
+        // skips such groups — so report it instead of failing inside the pool.
+        if (fragments.size() == 0)
+            throw IndigoError("indigoCountAttachmentPoints(): R-group %d has no fragments", rgp.idx);
+        // The pool is sparse: after a fragment removal slot 0 can stay a hole
+        // until a later add recycles it, so take the first live slot.
+        return fragments[fragments.begin()].attachmentPointCount();
     }
     INDIGO_END(-1);
 }
@@ -1925,9 +1987,14 @@ CEXPORT int indigoResetCharge(int atom)
         BaseMolecule& mol = ia.mol;
 
         if (mol.isQueryMolecule())
+        {
             mol.asQueryMolecule().getAtom(ia.idx).removeConstraints(QueryMolecule::ATOM_CHARGE);
+            mol.asQueryMolecule().invalidateAtom(ia.idx, BaseMolecule::CHANGED_ALL);
+        }
         else
+        {
             mol.asMolecule().setAtomCharge(ia.idx, 0);
+        }
         return 1;
     }
     INDIGO_END(-1);
@@ -1941,9 +2008,14 @@ CEXPORT int indigoResetExplicitValence(int atom)
         BaseMolecule& mol = ia.mol;
 
         if (mol.isQueryMolecule())
+        {
             mol.asQueryMolecule().getAtom(ia.idx).removeConstraints(QueryMolecule::ATOM_VALENCE);
+            mol.asQueryMolecule().invalidateAtom(ia.idx, BaseMolecule::CHANGED_ALL);
+        }
         else
+        {
             mol.asMolecule().resetExplicitValence(ia.idx);
+        }
         return 1;
     }
     INDIGO_END(-1);

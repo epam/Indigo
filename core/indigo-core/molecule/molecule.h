@@ -21,6 +21,7 @@
 
 #include "molecule/base_molecule.h"
 #include "molecule/molecule_sgroups.h"
+#include "molecule/valence_model.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -39,6 +40,9 @@ namespace indigo
         void clear() override;
 
         BaseMolecule* neu() const override;
+
+        // Factory for a molecule-pool slot holding a plain Molecule.
+        static PtrReusablePool<BaseMolecule>::Factory poolFactory();
 
         int addAtom(int label) override;
         int resetAtom(int idx, int label);
@@ -146,6 +150,9 @@ namespace indigo
         bool getIgnoreBadValenceFlag();
         void setIgnoreBadValenceFlag(bool flag);
 
+        ValenceMode getValenceMode() const;
+        void setValenceMode(ValenceMode mode);
+
         // Check
         bool isNitrogenV5(int atom_index);
         bool isNitrogenV5ForConnectivity(int atom_index, int conn);
@@ -189,6 +196,8 @@ namespace indigo
         bool _aromatized;
 
         bool _ignore_bad_valence;
+
+        ValenceMode _valence_mode;
 
         void _mergeWithSubmolecule(BaseMolecule& bmol, const Array<int>& vertices, const Array<int>* edges, const Array<int>& mapping, int skip_flags) override;
 

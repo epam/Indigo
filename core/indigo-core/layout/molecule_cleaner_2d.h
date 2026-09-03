@@ -26,7 +26,7 @@
 
 #include "base_cpp/array.h"
 #include "base_cpp/non_copyable.h"
-#include "base_cpp/obj_array.h"
+#include "base_cpp/ptr_array.h"
 #include "common/math/algebra.h"
 
 namespace indigo
@@ -82,17 +82,17 @@ namespace indigo
         bool is_trivial;
         int vertex_size;
         int component_count;
-        ObjArray<Array<bool>> in;               // is vertex in component
-        ObjArray<Array<int>> definiting_points; // definiting points for component
-        ObjArray<Array<Vec2f>> coef;            // linear representation for every vertices throw base points over field of complex numbers
+        PtrArray<Array<bool>> in;               // is vertex in component
+        PtrArray<Array<int>> definiting_points; // definiting points for component
+        PtrArray<Array<Vec2f>> coef;            // linear representation for every vertices throw base points over field of complex numbers
         Array<Vec2f> gradient;
         Array<Vec2f> pregradient;
         Array<int> edge_comp;
         Array<bool> is_art_point;
         Array<bool> is_valid_base;
-        ObjArray<Array<bool>> adj_matrix;
-        ObjArray<Array<int>> common_comp; // common_comp[i][j] = number of component wich is contains both vertices i and j (or -1 if there isnt such component)
-        ObjArray<Array<int>> common_bicon_comp; // common_bicon_comp[i][j] = number of biconnected component wich is contains both vertices i and j (or -1 if
+        PtrArray<Array<bool>> adj_matrix;
+        PtrArray<Array<int>> common_comp; // common_comp[i][j] = number of component wich is contains both vertices i and j (or -1 if there isnt such component)
+        PtrArray<Array<int>> common_bicon_comp; // common_bicon_comp[i][j] = number of biconnected component wich is contains both vertices i and j (or -1 if
                                                 // there isnt such component)
         float target_len;                       // target length of bonds
         bool clean_external_angles;

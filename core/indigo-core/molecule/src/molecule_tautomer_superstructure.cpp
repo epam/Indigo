@@ -206,6 +206,8 @@ void TautomerSuperStructure::_collectAtomProperties(void)
     _atomsEmitBond.clear();
     _total_h.clear_resize(vertexEnd());
 
+    bool old_ignore_bad_valence = getIgnoreBadValenceFlag();
+    setIgnoreBadValenceFlag(true); // set ignore bad valence flag to avoid exceptions
     for (int i = vertexBegin(); i != vertexEnd(); i = vertexNext(i))
     {
         _total_h[i] = 0;
@@ -256,6 +258,7 @@ void TautomerSuperStructure::_collectAtomProperties(void)
             }
         }
     }
+    setIgnoreBadValenceFlag(old_ignore_bad_valence);
 }
 
 // Find minimum distance between source vertex and vertices from dest array

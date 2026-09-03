@@ -1,0 +1,261 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "mol0"
+            },
+            {
+                "$ref": "monomer0"
+            }
+        ],
+        "connections": [
+            {
+                "connectionType": "single",
+                "endpoint1": {
+                    "moleculeId": "mol0",
+                    "atomId": "0"
+                },
+                "endpoint2": {
+                    "monomerId": "monomer0",
+                    "attachmentPointId": "R1"
+                }
+            }
+        ],
+        "templates": [
+            {
+                "$ref": "monomerTemplate-Ade_1"
+            }
+        ]
+    },
+    "monomer0": {
+        "type": "monomer",
+        "id": "0",
+        "position": {
+            "x": 18.4466495513916,
+            "y": -9.370832443237305
+        },
+        "alias": "A",
+        "templateId": "Ade_1"
+    },
+    "monomerTemplate-Ade_1": {
+        "type": "monomerTemplate",
+        "id": "Ade_1",
+        "class": "Base",
+        "classHELM": "RNA",
+        "alias": "A",
+        "name": "A",
+        "attachmentPoints": [
+            {
+                "attachmentAtom": 0
+            }
+        ],
+        "atoms": [
+            {
+                "label": "N",
+                "location": [
+                    -1.4804496765136719,
+                    0.5461225509643555,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -1.0736503601074219,
+                    1.459672451019287,
+                    0
+                ]
+            },
+            {
+                "label": "N",
+                "location": [
+                    -0.07914924621582031,
+                    1.355142593383789,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.12874984741210938,
+                    0.37699222564697268,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.9947509765625,
+                    -0.12300777435302735,
+                    0
+                ]
+            },
+            {
+                "label": "N",
+                "location": [
+                    1.8607501983642579,
+                    0.37699222564697268,
+                    0
+                ]
+            },
+            {
+                "label": "N",
+                "location": [
+                    0.9947509765625,
+                    -1.1229677200317383,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.12874984741210938,
+                    -1.6229677200317383,
+                    0
+                ]
+            },
+            {
+                "label": "N",
+                "location": [
+                    -0.7372493743896484,
+                    -1.1229677200317383,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -0.7372493743896484,
+                    -0.12300777435302735,
+                    0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    1,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    4
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    4,
+                    5
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    4,
+                    6
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    6,
+                    7
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    7,
+                    8
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    8,
+                    9
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    9,
+                    0
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    9,
+                    3
+                ]
+            }
+        ]
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    15.988100051879883,
+                    -9.032620429992676,
+                    0
+                ],
+                "stereoLabel": "abs"
+            },
+            {
+                "label": "Cl",
+                "location": [
+                    15.679100036621094,
+                    -9.98367977142334,
+                    0
+                ]
+            },
+            {
+                "label": "S",
+                "location": [
+                    15.318900108337403,
+                    -8.289469718933106,
+                    0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    2
+                ],
+                "stereo": 6
+            }
+        ]
+    }
+}

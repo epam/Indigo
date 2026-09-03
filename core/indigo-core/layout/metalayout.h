@@ -19,7 +19,7 @@
 #ifndef __metalayout_h__
 #define __metalayout_h__
 
-#include "base_cpp/obj_array.h"
+#include "base_cpp/ptr_array.h"
 #include "base_cpp/reusable_obj_array.h"
 
 #include "math/algebra.h"
@@ -88,7 +88,7 @@ namespace indigo
             ~LayoutLine();
             void clear();
 
-            ObjArray<LayoutItem> items;
+            PtrArray<LayoutItem> items;
             float height;
             float top_height;
             float bottom_height;
@@ -257,8 +257,9 @@ namespace indigo
     struct LayoutOptions
     {
         // FIXME: The value is 1.6 instead of 1.0 due to backward compatibility, needs to be refactored
-        static constexpr float DEFAULT_BOND_LENGTH = 1.0f;         // default length of inter-chemical bonds
-        static constexpr float DEFAULT_MONOMER_BOND_LENGTH = 1.5f; // default length of inter-chemical bonds
+        static constexpr float DEFAULT_BOND_LENGTH = 1.0f;                   // default length of inter-chemical bonds
+        static constexpr float DEFAULT_MONOMER_BOND_LENGTH = 1.5f;           // default length of inter-chemical bonds
+        static constexpr float DEFAULT_INNER_MACROCYCLE_BOND_LENGTH = 0.75f; // length of bases drawn inside the cycle
         static constexpr float DEFAULT_PLUS_SIZE = DEFAULT_BOND_LENGTH / 2;
         static constexpr float DEFAULT_BOND_LENGTH_PX = 100.0f; // 100 pixel
         static constexpr float DEFAULT_FONT_SIZE_PX = DEFAULT_BOND_LENGTH_PX * 0.4f;

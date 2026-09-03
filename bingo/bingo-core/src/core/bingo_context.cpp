@@ -90,7 +90,7 @@ void BingoContext::remove(int id)
     int i;
 
     for (i = 0; i < _instances.size(); i++)
-        if (_instances[i]->id == id)
+        if (_instances[i].id == id)
             break;
 
     // if (i == _instances.size())
@@ -106,8 +106,8 @@ BingoContext* BingoContext::_get(int id)
     TL_GET(PtrArray<BingoContext>, _instances);
 
     for (int i = 0; i < _instances.size(); i++)
-        if (_instances[i]->id == id)
-            return _instances[i];
+        if (_instances[i].id == id)
+            return &_instances[i];
 
     return 0;
 }
@@ -118,8 +118,8 @@ BingoContext* BingoContext::existing(int id)
     TL_GET(PtrArray<BingoContext>, _instances);
 
     for (int i = 0; i < _instances.size(); i++)
-        if (_instances[i]->id == id)
-            return _instances[i];
+        if (_instances[i].id == id)
+            return &_instances[i];
 
     throw Error("context #%d not found", id);
 }
@@ -130,8 +130,8 @@ BingoContext* BingoContext::get(int id)
     TL_GET(PtrArray<BingoContext>, _instances);
 
     for (int i = 0; i < _instances.size(); i++)
-        if (_instances[i]->id == id)
-            return _instances[i];
+        if (_instances[i].id == id)
+            return &_instances[i];
 
     return &_instances.add(new BingoContext(id));
 }
@@ -220,44 +220,44 @@ void bingoGetName(Scanner& scanner, Array<char>& result)
 StereocentersOptions BingoContext::getStereocentersOptions()
 {
     StereocentersOptions opt;
-    opt.ignore_errors = ignore_stereocenter_errors;
-    opt.bidirectional_mode = stereochemistry_bidirectional_mode;
-    opt.detect_haworth_projection = stereochemistry_detect_haworth_projection;
+    opt.ignore_errors = ignore_stereocenter_errors.value();
+    opt.bidirectional_mode = stereochemistry_bidirectional_mode.value();
+    opt.detect_haworth_projection = stereochemistry_detect_haworth_projection.value();
     return opt;
 }
 
 void BingoContext::setLoaderSettings(MoleculeAutoLoader& loader)
 {
-    loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
-    loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
+    loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom.value();
+    loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch.value();
     loader.stereochemistry_options = getStereocentersOptions();
-    loader.ignore_cistrans_errors = ignore_cistrans_errors;
-    loader.ignore_bad_valence = ignore_bad_valence;
+    loader.ignore_cistrans_errors = ignore_cistrans_errors.value();
+    loader.ignore_bad_valence = ignore_bad_valence.value();
 }
 
 void BingoContext::setLoaderSettings(SmilesLoader& loader)
 {
-    loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
+    loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch.value();
     loader.stereochemistry_options = getStereocentersOptions();
-    loader.ignore_cistrans_errors = ignore_cistrans_errors;
-    loader.ignore_bad_valence = ignore_bad_valence;
+    loader.ignore_cistrans_errors = ignore_cistrans_errors.value();
+    loader.ignore_bad_valence = ignore_bad_valence.value();
 }
 
 void BingoContext::setLoaderSettings(ReactionAutoLoader& loader)
 {
-    loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
-    loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
+    loader.treat_x_as_pseudoatom = treat_x_as_pseudoatom.value();
+    loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch.value();
     loader.stereochemistry_options = getStereocentersOptions();
-    loader.ignore_cistrans_errors = ignore_cistrans_errors;
-    loader.ignore_bad_valence = ignore_bad_valence;
+    loader.ignore_cistrans_errors = ignore_cistrans_errors.value();
+    loader.ignore_bad_valence = ignore_bad_valence.value();
 }
 
 void BingoContext::setLoaderSettings(RSmilesLoader& loader)
 {
-    loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch;
+    loader.ignore_closing_bond_direction_mismatch = ignore_closing_bond_direction_mismatch.value();
     loader.stereochemistry_options = getStereocentersOptions();
-    loader.ignore_cistrans_errors = ignore_cistrans_errors;
-    loader.ignore_bad_valence = ignore_bad_valence;
+    loader.ignore_cistrans_errors = ignore_cistrans_errors.value();
+    loader.ignore_bad_valence = ignore_bad_valence.value();
 }
 
 void BingoContext::setSaverSettings(MolfileSaver& saver)

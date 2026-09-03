@@ -60,7 +60,7 @@
         "fullName": "2'-O-Methoxyethyl ribose",
         "alias": "MOE",
         "naturalAnalogShort": "R",
-        "aliasHELM": "moe",
+        "aliasHELM": "MOE",
         "attachmentPoints": [
             {
                 "attachmentAtom": 6,

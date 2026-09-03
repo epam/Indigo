@@ -15,6 +15,9 @@
 
 #include "indigo_fingerprints.h"
 
+#include "molecule/cmf_loader.h"
+#include "reaction/crf_loader.h"
+
 using namespace bingo;
 
 static const char* _cf_data_filename = "cf_data";
@@ -22,6 +25,8 @@ static const char* _cf_offset_filename = "cf_offset";
 static const char* _id_mapping_filename = "id_mapping";
 static const char* _reaction_type = "reaction_" BINGO_VERSION;
 static const char* _molecule_type = "molecule_" BINGO_VERSION;
+static const char* _reaction_type_old = "reaction_" BINGO_COMPATIBLE_VERSION;
+static const char* _molecule_type_old = "molecule_" BINGO_COMPATIBLE_VERSION;
 static const int _type_len = 30;
 static const char* _mmf_file = "mmf_storage";
 static const char* _version_prop = "version";
@@ -67,7 +72,7 @@ namespace
     }
 }
 
-BaseIndex::BaseIndex(IndexType type) : _type(type), _read_only(false)
+BaseIndex::BaseIndex(IndexType type) : _type(type), _read_only(false), _use_short(false), _is_old_db(false)
 {
 }
 
@@ -170,11 +175,18 @@ void BaseIndex::load(const char* location, const char* options, int index_id)
     const char* ver = _properties->get(_version_prop);
 
     if (strcmp(ver, BINGO_VERSION) != 0)
-        throw Exception("BaseIndex: load(): incorrect database version");
+        if (strcmp(ver, BINGO_COMPATIBLE_VERSION) == 0)
+            _is_old_db = true;
+        else
+            throw Exception("BaseIndex: load(): incorrect database version");
 
-    const char* type_str = (_type == IndexType::MOLECULE ? _molecule_type : _reaction_type);
+    const char* type_str;
+    if (_is_old_db)
+        type_str = (_type == IndexType::MOLECULE ? _molecule_type_old : _reaction_type_old);
+    else
+        type_str = (_type == IndexType::MOLECULE ? _molecule_type : _reaction_type);
     if (strcmp(_properties->get("base_type"), type_str) != 0)
-        throw Exception("Loading databse: wrong type propety");
+        throw Exception("Loading database: wrong type propety");
 
     _fp_params.ext = (_properties.ref().getULong("fp_ext") != 0);
     _fp_params.ord_qwords = _properties.ref().getULong("fp_ord");
@@ -193,7 +205,7 @@ void BaseIndex::load(const char* location, const char* options, int index_id)
     ByteBufferStorage::load(_cf_storage, _header.ptr()->cf_offset);
     // try to load data using int64_t
     auto count = getObjectsCount();
-    if (count > 0)
+    if (_is_old_db && count > 0) //_is_old_db==true mean that db is in old format - should check word size used to create DB
     {
         if (count > 100)
             count = 100;
@@ -218,7 +230,7 @@ void BaseIndex::load(const char* location, const char* options, int index_id)
                     }
                     catch (...)
                     {
-                        use_short = true;
+                        _use_short = true;
                         break;
                     };
                 }
@@ -232,13 +244,13 @@ void BaseIndex::load(const char* location, const char* options, int index_id)
                     }
                     catch (...)
                     {
-                        use_short = true;
+                        _use_short = true;
                         break;
                     };
                 }
                 else
                 {
-                    use_short = true;
+                    _use_short = true;
                     break;
                 };
             }
@@ -260,10 +272,10 @@ void BaseIndex::load(const char* location, const char* options, int index_id)
             };
             if (!check_records_short())
                 throw indigo::Exception("ByteBufferStorage: incorrect buffer");
-            use_short = true;
+            _use_short = true;
         }
     }
-    if (use_short)
+    if (_use_short)
         GrossStorageShort::load(_gross_storage_short, _header.ptr()->gross_offset);
     else
         GrossStorage::load(_gross_storage, _header.ptr()->gross_offset);
@@ -327,7 +339,7 @@ void BaseIndex::remove(int obj_id)
     if (obj_id < 0 || back_id_mapping.get(obj_id) == (size_t)-1)
         throw Exception("There is no object with this id");
 
-    if (use_short)
+    if (_use_short)
         _cf_storage_short->remove(back_id_mapping.get(obj_id));
     else
         _cf_storage->remove(back_id_mapping.get(obj_id));
@@ -392,7 +404,7 @@ int BaseIndex::getObjectsCount() const
 const byte* BaseIndex::getObjectCf(int id, int& len)
 {
     const byte* cf_buf =
-        use_short ? _cf_storage_short->get(_back_id_mapping_ptr.ref().get(id), len) : _cf_storage->get(_back_id_mapping_ptr.ref().get(id), len);
+        _use_short ? _cf_storage_short->get(_back_id_mapping_ptr.ref().get(id), len) : _cf_storage->get(_back_id_mapping_ptr.ref().get(id), len);
 
     if (len == -1)
         throw Exception("There is no object with this id");
@@ -429,9 +441,9 @@ IndexType BaseIndex::determineType(const char* location)
     file.seekg(0);
     file.read(type, _type_len);
 
-    if (strcmp(type, _molecule_type) == 0)
+    if (strcmp(type, _molecule_type) == 0 || strcmp(type, _molecule_type_old) == 0)
         return IndexType::MOLECULE;
-    else if (strcmp(type, _reaction_type) == 0)
+    else if (strcmp(type, _reaction_type) == 0 || strcmp(type, _reaction_type_old) == 0)
         return IndexType::REACTION;
     else
         throw Exception("BingoIndex: determineType(): Database format is not compatible with this version.");
@@ -501,9 +513,9 @@ size_t BaseIndex::_getMaxMMfSize(std::map<std::string, std::string>& option_map)
 
 bool BaseIndex::_getAccessType(std::map<std::string, std::string>& option_map)
 {
-    if (option_map.find("read_only") != option_map.end())
+    if (option_map.find(_read_only_prop) != option_map.end())
     {
-        if (option_map["read_only"].compare("true") == 0)
+        if (option_map[_read_only_prop].compare("true") == 0)
             return true;
     }
 
@@ -590,12 +602,12 @@ void BaseIndex::_insertIndexData(const ObjectIndexData& obj_data)
 {
     _sub_fp_storage.ptr()->add(obj_data.sub_fp.ptr());
     _sim_fp_storage.ptr()->add(obj_data.sim_fp.ptr(), _header->object_count);
-    if (use_short)
+    if (_use_short)
         _cf_storage_short.ptr()->add((byte*)obj_data.cf_str.ptr(), obj_data.cf_str.size(), _header->object_count);
     else
         _cf_storage.ptr()->add((byte*)obj_data.cf_str.ptr(), obj_data.cf_str.size(), _header->object_count);
     _exact_storage.ptr()->add(obj_data.hash, _header->object_count);
-    if (use_short)
+    if (_use_short)
         _gross_storage_short.ptr()->add(obj_data.gross_str, _header->object_count);
     else
         _gross_storage.ptr()->add(obj_data.gross_str, _header->object_count);

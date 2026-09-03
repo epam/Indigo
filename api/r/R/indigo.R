@@ -111,6 +111,13 @@ IndigoObject$methods(
   })
 
 IndigoObject$methods(
+  expandedMonomersToAtoms = function(){
+    .Call("r_indigoSetSessionId", indigo_id)
+    new_id = checkResult(.Call("r_indigoExpandedMonomersToAtoms", obj_id))
+    return(IndigoObject$new(indigo_id, new_id))
+  })
+
+IndigoObject$methods(
   finalize = function(){
     .Call("r_indigoSetSessionId", indigo_id)
     (checkResult(.Call("r_indigoFree", obj_id)))

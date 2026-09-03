@@ -19,6 +19,8 @@
 #ifndef __molecule_layered_molecules_h__
 #define __molecule_layered_molecules_h__
 
+#include "base_cpp/ptr_array.h"
+#include "base_cpp/ptr_reusable_pool.h"
 #include "common/base_cpp/d_bitset.h"
 #include "molecule/base_molecule.h"
 #include "molecule/molecule.h"
@@ -144,9 +146,9 @@ namespace indigo
         };
 
         Molecule _proto;
-        ObjArray<Dbitset> _bond_masks[BOND_TYPES_NUMBER];
+        PtrArray<Dbitset> _bond_masks[BOND_TYPES_NUMBER];
         Array<bool> _mobilePositions;
-        ObjArray<Dbitset> _mobilePositionsOccupied;
+        PtrArray<Dbitset> _mobilePositionsOccupied;
 
         void _mergeWithSubmolecule(BaseMolecule& bmol, const Array<int>& vertices, const Array<int>* edges, const Array<int>& mapping, int skip_flags) override;
 
@@ -162,11 +164,11 @@ namespace indigo
 
     private:
         LayeredMolecules(const LayeredMolecules&); // no implicit copy
-        ObjArray<Array<int>> _piLabels;
-        ObjArray<Array<int>> _connectivity;
+        PtrArray<Array<int>> _piLabels;
+        PtrArray<Array<int>> _connectivity;
         int _layersAromatized;
 
-        struct TrieNode
+        struct TrieNode : public Reusable
         {
             static const int ALPHABET_SIZE = 5;
 
@@ -176,6 +178,13 @@ namespace indigo
                     n = -1;
             }
             int next[ALPHABET_SIZE];
+
+            // Non-destructive reset for PtrReusablePool reuse.
+            void reuse() override
+            {
+                for (auto& n : next)
+                    n = -1;
+            }
         };
 
         class Trie
@@ -208,7 +217,7 @@ namespace indigo
             }
 
         private:
-            std::unique_ptr<ObjPool<TrieNode>> _nodes = std::make_unique<ObjPool<TrieNode>>();
+            std::unique_ptr<PtrReusablePool<TrieNode>> _nodes = std::make_unique<PtrReusablePool<TrieNode>>();
         };
 
         Trie _trie;

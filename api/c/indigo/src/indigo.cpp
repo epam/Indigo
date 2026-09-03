@@ -21,9 +21,11 @@
 #include "indigo_version.h"
 #include <atomic>
 #include <clocale>
+#include <mutex>
 
 #include "base_cpp/output.h"
 #include "base_cpp/profiling.h"
+#include "molecule/elements.h"
 #include "molecule/molecule_fingerprint.h"
 #include "molecule/molecule_json_saver.h"
 #include "molecule/molfile_saver.h"
@@ -144,6 +146,8 @@ void Indigo::init()
     smiles_loading_strict_aliphatic = false;
     smiles_saving_smarts_mode = false;
 
+    input_format = "auto";
+
     aam_cancellation_timeout = 0;
     cancellation_timeout = 0;
 
@@ -157,6 +161,15 @@ void Indigo::init()
 
     ignore_closing_bond_direction_mismatch = false;
     ignore_bad_valence = false;
+    valence_mode = ValenceMode::BIOVIA_2009;
+
+    // Install once-per-process hook so Element::calcValence-family static
+    // helpers used in contexts without molecule references (substructure
+    // matching, query parsing, abbreviation/name parsers) pick up the
+    // current TLS Indigo session's valence_mode instead of a hardcoded default.
+    // Per-Molecule operations pass _valence_mode explicitly and bypass this.
+    static std::once_flag valence_mode_provider_installed;
+    std::call_once(valence_mode_provider_installed, []() { Element::setDefaultValenceModeProvider([]() { return indigoGetInstance().valence_mode; }); });
 
     // Update global index
     static std::atomic<int> global_id;
@@ -246,6 +259,19 @@ void Indigo::initRxnfileSaver(RxnfileSaver& saver)
 Indigo::~Indigo()
 {
     removeAllObjects();
+}
+
+LoaderOptions Indigo::loaderOptions() const
+{
+    LoaderOptions opts;
+    opts.stereochemistry_options = stereochemistry_options;
+    opts.valence_mode = valence_mode;
+    opts.ignore_bad_valence = ignore_bad_valence;
+    opts.ignore_no_chiral_flag = ignore_no_chiral_flag;
+    opts.ignore_noncritical_query_features = ignore_noncritical_query_features;
+    opts.skip_3d_chirality = skip_3d_chirality;
+    opts.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+    return opts;
 }
 
 int Indigo::getId() const

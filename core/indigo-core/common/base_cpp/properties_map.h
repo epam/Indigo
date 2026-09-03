@@ -27,7 +27,7 @@
 #include "base_cpp/array.h"
 #include "base_cpp/auto_iter.h"
 #include "base_cpp/exception.h"
-#include "base_cpp/obj_array.h"
+#include "base_cpp/ptr_array.h"
 #include "base_cpp/red_black.h"
 
 namespace indigo
@@ -94,7 +94,7 @@ namespace indigo
     private:
         PropertiesMap(const PropertiesMap&);
         RedBlackStringObjMap<Array<char>> _properties;
-        ObjArray<Array<char>> _propertyNames;
+        PtrArray<Array<char>> _propertyNames;
     };
 
 } // namespace indigo

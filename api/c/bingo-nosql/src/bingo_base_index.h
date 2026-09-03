@@ -14,7 +14,8 @@
 #include "bingo_sim_storage.h"
 #include "mmf/mmf_mapping.h"
 
-#define BINGO_VERSION "v0.72"
+#define BINGO_VERSION "v0.73"
+#define BINGO_COMPATIBLE_VERSION "v0.72"
 
 namespace bingo
 {
@@ -110,7 +111,12 @@ namespace bingo
 
         bool useShortBuffer()
         {
-            return use_short;
+            return _use_short;
+        }
+
+        bool isOldDB()
+        {
+            return _is_old_db;
         }
 
     protected:
@@ -137,7 +143,8 @@ namespace bingo
         MoleculeFingerprintParameters _fp_params;
         std::string _location;
         int _lock_fd = -1;
-        bool use_short = false;
+        bool _use_short = false;
+        bool _is_old_db = false;
 
         static void _checkOptions(std::map<std::string, std::string>& option_map, bool is_create);
 

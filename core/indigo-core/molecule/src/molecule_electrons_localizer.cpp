@@ -18,7 +18,7 @@
 
 #include "molecule/molecule_electrons_localizer.h"
 
-#include "base_cpp/obj_array.h"
+#include "base_cpp/array.h"
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 
@@ -111,7 +111,7 @@ void MoleculeElectronsLocalizer::_construct()
 
 void MoleculeElectronsLocalizer::_constructBMatchingFinder()
 {
-    QS_DEF(ObjArray<Array<int>>, nodes_per_set);
+    QS_DEF(PtrArray<Array<int>>, nodes_per_set);
     nodes_per_set.clear();
     nodes_per_set.resize(_SET_MAX);
 

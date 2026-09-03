@@ -71,12 +71,12 @@ def indigo_init(options={}):
         tls.indigo.renderer = IndigoRenderer(tls.indigo)
         for option, value in indigo_api.indigo_defaults.items():
             tls.indigo.setOption(option, value)
+
         for option, value in options.items():
             # TODO: Remove this when Indigo API supports smiles type option
             if option in (
                 "smiles",
                 "smarts",
-                "input-format",
                 "output-content-type",
                 "monomerLibrary",
                 "sequence-type",
@@ -84,6 +84,10 @@ def indigo_init(options={}):
                 "nac",
             ):
                 continue
+
+            if option == "input-format" and value is None:
+                continue
+
             tls.indigo.setOption(option, value)
         return tls.indigo
     except Exception as e:
@@ -313,6 +317,13 @@ def try_load_macromol(indigo, md, molstr, library, options):
     except IndigoException:
         pass
     try:
+        md.struct = indigo.loadBiln(molstr, library)
+        md.is_rxn = False
+        md.is_query = False
+        return
+    except IndigoException:
+        pass
+    try:
         md.struct = indigo.loadAxoLabs(molstr, library)
         md.is_rxn = False
         md.is_query = False
@@ -342,12 +353,39 @@ def load_moldata(
             )
     md = MolData()
 
+    has_explicit_library = library is not None
     if library is None:
         library = indigo.loadMonomerLibrary('{"root":{}}')
 
     input_format = mime_type
     if "input-format" in options:
         input_format = options["input-format"]
+
+    # Only propagate input-format to the core for formats handled by
+    # the autoloader (mol, smi, ket, cml, cdxml, sdf, etc.).
+    # Macromolecular formats (sequence, fasta, IDT, HELM, BILN, AxoLabs)
+    # are dispatched via explicit load functions below and must not
+    # leak their MIME type into the core option.
+    _explicit_formats = {
+        "smarts",
+        "chemical/x-daylight-smarts",
+        "chemical/x-peptide-sequence",
+        "chemical/x-peptide-sequence-3-letter",
+        "chemical/x-rna-sequence",
+        "chemical/x-dna-sequence",
+        "chemical/x-peptide-fasta",
+        "chemical/x-rna-fasta",
+        "chemical/x-dna-fasta",
+        "chemical/x-idt",
+        "chemical/x-helm",
+        "chemical/x-biln",
+        "chemical/x-axo-labs",
+        "monomer-library",
+        "chemical/x-monomer-library",
+    }
+    if input_format is not None and input_format not in _explicit_formats:
+        indigo.setOption("input-format", input_format)
+
     if input_format in ("smarts", "chemical/x-daylight-smarts"):
         md.struct = indigo.loadSmarts(molstr)
         md.is_query = True
@@ -385,6 +423,10 @@ def load_moldata(
         md.is_query = False
     elif input_format == "chemical/x-helm":
         md.struct = indigo.loadHelm(molstr, library)
+        md.is_rxn = False
+        md.is_query = False
+    elif input_format == "chemical/x-biln":
+        md.struct = indigo.loadBiln(molstr, library)
         md.is_rxn = False
         md.is_query = False
     elif input_format == "chemical/x-axo-labs":
@@ -441,7 +483,10 @@ def load_moldata(
                         )
                         md.is_query = True
                     except IndigoException:
-                        if library is None:
+                        if (
+                            not has_explicit_library
+                            or input_format is not None
+                        ):
                             raise HttpException(
                                 "struct data not recognized as molecule, query, reaction or reaction query",
                                 400,
@@ -472,6 +517,8 @@ def save_moldata(
         return md.struct.idt(library)
     elif output_format == "chemical/x-helm":
         return md.struct.helm(library)
+    elif output_format == "chemical/x-biln":
+        return md.struct.biln(library)
     elif output_format == "chemical/x-axo-labs":
         return md.struct.axolabs(library)
     elif output_format == "chemical/x-daylight-smiles":
@@ -503,12 +550,7 @@ def save_moldata(
         aux = indigo.inchi.getAuxInfo()
         return "{}\n{}".format(res, aux)
     elif output_format == "chemical/x-sdf":
-        buffer = indigo.writeBuffer()
-        sdfSaver = indigo.createSaver(buffer, "sdf")
-        for frag in md.struct.iterateComponents():
-            sdfSaver.append(frag.clone())
-        sdfSaver.close()
-        return buffer.toString()
+        return md.struct.fragmentedSdf()
     elif output_format == "chemical/x-rdf":
         buffer = indigo.writeBuffer()
         rdfSaver = indigo.createSaver(buffer, "rdf")
@@ -966,6 +1008,7 @@ def convert():
             "chemical/x-fasta",
             "chemical/x-idt",
             "chemical/x-helm",
+            "chemical/x-biln",
             "chemical/x-peptide-sequence-3-letter",
             "chemical/x-axo-labs",
         ):
@@ -1479,7 +1522,7 @@ def check():
               examples: C1=CC=CC=C1
             types:
               type: array
-              default: ["valence", "ambiguous_h", "query", "pseudoatoms", "radicals", "stereo", "overlapping_atoms", "overlapping_bonds", "3d", "sgroups", "v3000", "rgroups"]
+              default: ["valence", "ambiguous_h", "query", "pseudoatoms", "radicals", "stereo", "overlapping_atoms", "overlapping_bonds", "3d", "sgroups", "v3000", "rgroups", "isotope"]
               enum:
                 - valence
                 - ambiguous_h
@@ -1493,6 +1536,7 @@ def check():
                 - sgroups
                 - v3000
                 - rgroups
+                - isotope
           example:
             struct: "[C+5]"
             types: ["valence", "ambiguous_h"]

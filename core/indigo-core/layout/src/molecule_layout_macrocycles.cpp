@@ -913,7 +913,7 @@ float MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool /* profi */)
         }
     };
 
-    QS_DEF(ObjArray<point>, points);
+    QS_DEF(PtrArray<point>, points);
     points.clear();
 
     int critical_diff_grid = infinity - 1;

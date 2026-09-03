@@ -156,7 +156,7 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
         }
         polymers[source_polymer].deleted = true;
     };
-    for (auto connection : document.nonSequenceConnections())
+    for (auto& connection : document.nonSequenceConnections())
     {
         auto& ep1 = connection.ep1();
         auto& ep2 = connection.ep2();
@@ -386,9 +386,8 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
         // in kDa(1000g/mol) (all chains)
         double mass_sum = 0;
         bool calculate_mass = true;
-        std::map<char, size_t> atoms_count;
         GROSS_UNITS gross_units;
-        gross_units.resize(1);
+        gross_units.add(std::make_unique<GrossFormulaUnit>());
         auto merge_gross_data = [&gross_units](const GROSS_UNITS& gross) {
             for (int i = 0; i < gross.size(); i++)
             {
@@ -403,8 +402,6 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
         };
         for (size_t sequence_idx : polymer.sequences)
         {
-            if (!calculate_mass)
-                break;
             for (auto& monomer_id : sequences[sequence_idx])
             {
                 auto& monomer = monomers.at(monomer_id);
@@ -414,67 +411,50 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
                 if (monomer->monomerType() == KetBaseMonomer::MonomerType::AmbiguousMonomer)
                 {
                     calculate_mass = false;
-                    atoms_count.clear();
-                    break;
+                    continue;
                 }
                 auto& monomer_template = templates.at(monomer->templateId());
                 if (monomer_template.unresolved())
                 {
                     calculate_mass = false;
-                    atoms_count.clear();
-                    break;
+                    continue;
                 }
                 std::vector<int> leaved_atoms;
                 auto& att_points = monomer->attachmentPoints();
-                std::vector<std::string> used_attachment_points;
-                std::set<std::string> used_atp_pkas;
+                std::set<std::string> used_attachment_points;
 
                 for (auto& conn : monomer->connections())
-                {
-                    used_attachment_points.emplace_back(conn.first);
-                    used_atp_pkas.emplace(conn.first);
-                }
+                    used_attachment_points.emplace(conn.first);
 
                 for (auto& conn : monomer->connectionsToMolecules())
-                {
-                    used_attachment_points.emplace_back(conn.first);
-                    used_atp_pkas.emplace(conn.first);
-                }
+                    used_attachment_points.emplace(conn.first);
 
-                auto tgroup = monomer_template.getTGroup();
-                auto* pmol = tgroup->fragment.get();
                 if (document.getMonomerClass(*monomer) == MonomerClass::AminoAcid)
                 {
-                    Array<double> pkas_array;
-                    Crippen::getPKaValues(*pmol, pkas_array);
-                    std::map<int, double> pkas_map;
-                    for (int k = 0; k < pkas_array.size(); ++k)
-                        pkas_map.emplace(k, pkas_array[k]);
-
-                    if (pkas_map.size() > 1)
+                    static const std::unordered_map<std::string, std::array<double, 3>> pKa_table = {
+                        {"A", {2.35, 9.87, 0}},    {"R", {2.01, 9.04, 12.48}}, {"N", {2.02, 8.80, 0}}, {"D", {2.10, 9.82, 3.86}},  {"C", {2.05, 10.25, 8.00}},
+                        {"E", {2.10, 9.47, 4.07}}, {"Q", {2.17, 9.13, 0}},     {"G", {2.35, 9.78, 0}}, {"H", {1.77, 9.18, 6.10}},  {"I", {2.32, 9.76, 0}},
+                        {"L", {2.33, 9.74, 0}},    {"K", {2.18, 8.95, 10.53}}, {"M", {2.28, 9.21, 0}}, {"F", {2.58, 9.24, 0}},     {"P", {2.00, 10.60, 0}},
+                        {"S", {2.21, 9.15, 0}},    {"T", {2.09, 9.10, 0}},     {"W", {2.38, 9.39, 0}}, {"Y", {2.20, 9.11, 10.07}}, {"V", {2.29, 9.72, 0}},
+                    };
+                    if (hasKetStrProp(monomer_template, naturalAnalogShort))
                     {
-                        if (used_atp_pkas.count(kAttachmentPointR1))
+                        auto& natural_analog = getKetStrProp(monomer_template, naturalAnalogShort);
+                        const auto& pka_values = pKa_table.find(natural_analog);
+                        if (pka_values != pKa_table.end())
                         {
-                            used_atp_pkas.erase(kAttachmentPointR1);
-                            pkas_map.erase((int)pkas_map.size() - 1); // remove amine pka
-                        }
 
-                        if (used_atp_pkas.count(kAttachmentPointR2))
-                        {
-                            used_atp_pkas.erase(kAttachmentPointR2);
-                            pkas_map.erase(0); // remove carboxyl pka
-                        }
-
-                        for (auto it = used_atp_pkas.crbegin(); it != used_atp_pkas.crend(); ++it)
-                        {
-                            auto att_index = getAttachmentOrder(*it) - kRightAttachmentPointIdx;
-                            auto map_it = pkas_map.find(att_index);
-                            if (map_it != pkas_map.end())
-                                pkas_map.erase(map_it); // remove side pka
+                            for (const auto& ap : att_points)
+                            {
+                                if (used_attachment_points.count(ap.first) == 0)
+                                {
+                                    double pka = pka_values->second[getAttachmentOrder(ap.first)];
+                                    if (pka > 0)
+                                        pKa_values.emplace_back(pka);
+                                }
+                            }
                         }
                     }
-                    for (auto pka_kvp : pkas_map)
-                        pKa_values.emplace_back(pka_kvp.second);
                 }
                 for (auto& att_point_id : used_attachment_points)
                 {
@@ -490,6 +470,8 @@ void MacroPropertiesCalculator::CalculateMacroProps(KetDocument& document, Outpu
 
                 std::sort(leaved_atoms.rbegin(), leaved_atoms.rend());
                 Array<int> atom_filt;
+                auto tgroup = monomer_template.getTGroup();
+                auto* pmol = tgroup->fragment.get();
                 atom_filt.expandFill(pmol->vertexCount(), 1);
                 for (auto& idx : leaved_atoms)
                     atom_filt[idx] = 0;

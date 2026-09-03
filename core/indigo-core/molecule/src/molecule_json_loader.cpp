@@ -1,3 +1,5 @@
+#include <charconv>
+#include <cstring>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -8,6 +10,7 @@
 #include "molecule/elements.h"
 #include "molecule/ket_document.h"
 #include "molecule/ket_document_json_loader.h"
+#include "molecule/ket_keys.h"
 #include "molecule/meta_commons.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_json_loader.h"
@@ -30,10 +33,11 @@ IMPL_ERROR(MoleculeJsonLoader, "molecule json loader");
 
 MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
     : _mol_array(kArrayType), _mol_nodes(_mol_array), _meta_objects(kArrayType), _templates(kArrayType), _monomer_array(kArrayType),
-      _connection_array(kArrayType), _monomer_shapes(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false), _components_count(0),
-      _document(), _annotation(kArrayType)
+      _connection_array(kArrayType), _monomer_shapes(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false),
+      valence_mode(ValenceMode::BIOVIA_2009), ignore_bad_valence(false), _components_count(0), _parsed(false), _document(), _annotation(kArrayType)
 {
     parse_ket(ket);
+    _parsed = true;
 }
 
 void MoleculeJsonLoader::parse_ket(Document& ket)
@@ -105,9 +109,49 @@ void MoleculeJsonLoader::parse_ket(Document& ket)
             if (ket.HasMember(template_ref.c_str()))
             {
                 Value& template_node = ket[template_ref.c_str()];
+                // [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+                // Skip null template nodes - they indicate the template was not saved
+                // (e.g., due to invalid TGroup data). This allows loading to continue
+                // with valid templates while gracefully handling invalid ones.
+                if (template_node.IsNull())
+                {
+                    // Template reference points to null - skip it
+                    // This can occur when invalid TGroups are skipped during saving
+                    continue;
+                }
+                // [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+                // Validate template node before accessing to provide clear error messages.
+                // This prevents crashes and gives users actionable feedback about corrupted data.
+                if (!template_node.IsObject())
+                {
+                    const char* type_name = "unknown";
+                    if (template_node.IsBool())
+                        type_name = "boolean";
+                    else if (template_node.IsNumber())
+                        type_name = "number";
+                    else if (template_node.IsString())
+                        type_name = "string";
+                    else if (template_node.IsArray())
+                        type_name = "array";
+                    throw Error("Template reference '%s' points to invalid value (expected object, got %s). "
+                                "This may indicate corrupted KET JSON data.",
+                                template_ref.c_str(), type_name);
+                }
+                if (!template_node.HasMember("id"))
+                {
+                    throw Error("Template reference '%s' points to object missing required 'id' field. "
+                                "This may indicate corrupted KET JSON data.",
+                                template_ref.c_str());
+                }
                 std::string id = template_node["id"].GetString();
+                // [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+                // Use actual index in _templates array, not loop index, to handle skipped null templates.
+                // When null templates are skipped with continue, the loop index i doesn't match
+                // the actual position in _templates array, causing out-of-bounds access later.
+                // This ensures _id_to_template maps template IDs to correct indices in _templates.
+                rapidjson::SizeType template_index = _templates.Size();
                 _templates.PushBack(template_node, ket.GetAllocator());
-                _id_to_template.emplace(id, i);
+                _id_to_template.emplace(id, template_index);
                 _template_ref_to_id.emplace(template_ref, id);
             }
         }
@@ -118,9 +162,9 @@ void MoleculeJsonLoader::parse_ket(Document& ket)
         _annotation.PushBack(root["annotation"], ket.GetAllocator());
     }
 
-    if (root.HasMember("connections"))
+    if (root.HasMember(KetKeyConnections))
     {
-        Value& connections = root["connections"];
+        Value& connections = root[KetKeyConnections];
         for (rapidjson::SizeType i = 0; i < connections.Size(); ++i)
             _connection_array.PushBack(connections[i], ket.GetAllocator());
     }
@@ -128,8 +172,8 @@ void MoleculeJsonLoader::parse_ket(Document& ket)
 
 MoleculeJsonLoader::MoleculeJsonLoader(Scanner& scanner)
     : _mol_array(kArrayType), _mol_nodes(_mol_array), _meta_objects(kArrayType), _templates(kArrayType), _monomer_array(kArrayType),
-      _connection_array(kArrayType), _monomer_shapes(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false), _components_count(0),
-      _document(), _annotation(kArrayType)
+      _connection_array(kArrayType), _monomer_shapes(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false),
+      valence_mode(ValenceMode::BIOVIA_2009), ignore_bad_valence(false), _components_count(0), _parsed(false), _document(), _annotation(kArrayType)
 {
     if (scanner.lookNext() == '{')
     {
@@ -142,18 +186,47 @@ MoleculeJsonLoader::MoleculeJsonLoader(Scanner& scanner)
             if (_document.HasMember("root"))
             {
                 parse_ket(_document);
+                _parsed = true;
             }
         }
     }
-    else
-        throw Error("Invalid JSON input");
 }
 
 MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes)
     : _mol_nodes(mol_nodes), _meta_objects(kArrayType), _templates(kArrayType), _monomer_array(kArrayType), _connection_array(kArrayType),
       _monomer_shapes(kArrayType), _pmol(0), _pqmol(0), ignore_noncritical_query_features(false), ignore_no_chiral_flag(false), skip_3d_chirality(false),
-      treat_x_as_pseudoatom(false), treat_stereo_as(0), _components_count(0), _document(), _annotation(kArrayType)
+      treat_x_as_pseudoatom(false), treat_stereo_as(0), valence_mode(ValenceMode::BIOVIA_2009), ignore_bad_valence(false), _components_count(0), _parsed(true),
+      _document(), _annotation(kArrayType)
 {
+}
+
+void MoleculeJsonLoader::setOptions(const LoaderOptions& opts)
+{
+    stereochemistry_options = opts.stereochemistry_options;
+    valence_mode = opts.valence_mode;
+    ignore_bad_valence = opts.ignore_bad_valence;
+    ignore_no_chiral_flag = opts.ignore_no_chiral_flag;
+    ignore_noncritical_query_features = opts.ignore_noncritical_query_features;
+    skip_3d_chirality = opts.skip_3d_chirality;
+    treat_x_as_pseudoatom = opts.treat_x_as_pseudoatom;
+}
+
+LoaderOptions MoleculeJsonLoader::getOptions() const
+{
+    LoaderOptions opts;
+    opts.stereochemistry_options = stereochemistry_options;
+    opts.valence_mode = valence_mode;
+    opts.ignore_bad_valence = ignore_bad_valence;
+    opts.ignore_no_chiral_flag = ignore_no_chiral_flag;
+    opts.ignore_noncritical_query_features = ignore_noncritical_query_features;
+    opts.skip_3d_chirality = skip_3d_chirality;
+    opts.treat_x_as_pseudoatom = treat_x_as_pseudoatom;
+    return opts;
+}
+
+bool MoleculeJsonLoader::isParsed() const
+{
+    return _parsed;
 }
 
 int MoleculeJsonLoader::addBondToMoleculeQuery(int beg, int end, int order, int topology, int direction)
@@ -896,11 +969,12 @@ void MoleculeJsonLoader::handleSGroup(SGroup& sgroup, const std::unordered_set<i
             rep_end = mapping[end];
 
         MultipleGroup& mg = (MultipleGroup&)sgroup;
-        if (mg.multiplier > 1)
+        const int multiplier = mg.multiplier.value_or(0);
+        if (multiplier > 1)
         {
             int start_order = start_bond >= 0 ? bmol.getBondOrder(start_bond) : -1;
             int end_order = end_bond >= 0 ? bmol.getBondOrder(end_bond) : -1;
-            for (int j = 0; j < mg.multiplier - 1; j++)
+            for (int j = 0; j < multiplier - 1; j++)
             {
                 bmol.mergeWithMolecule(*rep, &mapping, 0);
                 int k;
@@ -978,7 +1052,7 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
             if (sg_type == SGroup::SG_TYPE_MUL)
             {
                 MultipleGroup& mg = (MultipleGroup&)sgroup;
-                if (mg.multiplier)
+                if (mg.multiplier != 0)
                     mg.parent_atoms.push(atom_idx);
             }
         }
@@ -1010,7 +1084,7 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
             RepeatingUnit& ru = (RepeatingUnit&)sgroup;
             if (s.HasMember("subscript"))
             {
-                ru.subscript.readString(s["subscript"].GetString(), true);
+                sgroup.label.readString(s["subscript"].GetString(), true);
             }
 
             if (s.HasMember("connectivity"))
@@ -1028,7 +1102,7 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
         case SGroup::SG_TYPE_SUP: {
             Superatom& sg = (Superatom&)sgroup;
             if (s.HasMember("name"))
-                sg.subscript.readString(s["name"].GetString(), true);
+                sgroup.label.readString(s["name"].GetString(), true);
             if (s.HasMember("expanded"))
                 sg.contracted = s["expanded"].GetBool() ? DisplayOption::Expanded : DisplayOption::Contracted;
             if (s.HasMember("class"))
@@ -1080,11 +1154,17 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
             if (s.HasMember("queryOp"))
                 dsg.queryoper.readString(s["queryOp"].GetString(), true);
 
-            if (s.HasMember("x"))
-                dsg.display_pos.x = s["x"].GetFloat();
+            bool display_units = s.HasMember("display") && s["display"].GetBool();
+            if (s.HasMember("x") || s.HasMember("y") || display_units)
+            {
+                Vec2f dp(0.0f, 0.0f);
+                if (s.HasMember("x"))
+                    dp.x = s["x"].GetFloat();
 
-            if (s.HasMember("y"))
-                dsg.display_pos.y = s["y"].GetFloat();
+                if (s.HasMember("y"))
+                    dp.y = s["y"].GetFloat();
+                dsg.display_pos.set(dp);
+            }
 
             if (s.HasMember("dataDetached"))
                 dsg.detached = s["dataDetached"].GetBool();
@@ -1095,7 +1175,7 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
                 dsg.relative = s["placement"].GetBool();
 
             if (s.HasMember("display"))
-                dsg.display_units = s["display"].GetBool();
+                dsg.display_units = display_units;
 
             if (s.HasMember("tag"))
             {
@@ -1145,10 +1225,130 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
             const Value& bonds = s["bonds"];
             for (rapidjson::SizeType j = 0; j < bonds.Size(); ++j)
             {
-                sgroup.bonds.push(bonds[j].GetInt());
+                sgroup.getBonds().push(bonds[j].GetInt());
             }
         }
     }
+}
+
+// Ids of the KET contract are numbers inside strings. Neither obvious route reports
+// a malformed one: atoi() reads "abc" as 0, and the stoi() inside extract_id()
+// throws a std::exception rather than an Indigo one. from_chars does the range
+// check itself, so there is no accumulator here to overflow.
+// Returns -1 for anything that is not a plain non-negative decimal in int range.
+static int parseNumericId(const char* text)
+{
+    if (text == nullptr || *text == '\0')
+        return -1;
+
+    const char* const end = text + std::strlen(text);
+    int value = 0;
+    const auto result = std::from_chars(text, end, value);
+
+    // errc{} rules out overflow and a non-digit start; `ptr == end` rules out
+    // trailing rubbish ("12abc"); from_chars would take a leading '-', ids do not.
+    if (result.ec != std::errc{} || result.ptr != end || value < 0)
+        return -1;
+
+    return value;
+}
+
+HapticBond::Endpoint MoleculeJsonLoader::resolveHapticEndpoint(const rapidjson::Value& endpoint, const PtrArray<Array<int>>& mol_mappings,
+                                                               const std::vector<std::map<std::string, int>>& ag_mappings)
+{
+    if (!endpoint.HasMember(KetKeyMoleculeId) || !endpoint[KetKeyMoleculeId].IsString())
+        throw Error("Haptic connection endpoint requires a string '%s'", KetKeyMoleculeId);
+
+    const char* mol_ref = endpoint[KetKeyMoleculeId].GetString();
+    const std::string prefix(KetMoleculeRefPrefix);
+    const int mol_id = std::string(mol_ref).compare(0, prefix.size(), prefix) == 0 ? parseNumericId(mol_ref + prefix.size()) : -1;
+    if (mol_id < 0 || mol_id >= mol_mappings.size())
+        throw Error("Haptic connection refers to an unknown molecule '%s'", mol_ref);
+
+    if (endpoint.HasMember(KetKeyAttachmentGroupId))
+    {
+        if (!endpoint[KetKeyAttachmentGroupId].IsString())
+            throw Error("'%s' of a haptic connection must be a string", KetKeyAttachmentGroupId);
+
+        const std::string ag_id = endpoint[KetKeyAttachmentGroupId].GetString();
+        const auto& ag_mapping = ag_mappings[mol_id];
+        const auto it = ag_mapping.find(ag_id);
+        if (it == ag_mapping.end())
+            throw Error("Haptic connection refers to an unknown attachment group '%s'", ag_id.c_str());
+        return HapticBond::Endpoint::group(it->second);
+    }
+
+    if (endpoint.HasMember(KetKeyAtomId))
+    {
+        if (!endpoint[KetKeyAtomId].IsString())
+            throw Error("'%s' of a haptic connection must be a string", KetKeyAtomId);
+
+        const Array<int>& atoms = mol_mappings[mol_id];
+        const char* atom_ref = endpoint[KetKeyAtomId].GetString();
+        const int atom_id = parseNumericId(atom_ref);
+        if (atom_id < 0 || atom_id >= atoms.size())
+            throw Error("Haptic connection refers to a non-existent atom '%s' of '%s'", atom_ref, mol_ref);
+        return HapticBond::Endpoint::atom(atoms[atom_id]);
+    }
+
+    throw Error("Haptic connection endpoint requires '%s' or '%s'", KetKeyAtomId, KetKeyAttachmentGroupId);
+}
+
+void MoleculeJsonLoader::loadHapticConnection(const rapidjson::Value& connection, BaseMolecule& mol, const PtrArray<Array<int>>& mol_mappings,
+                                              const std::vector<std::map<std::string, int>>& ag_mappings)
+{
+    if (!connection.HasMember(KetKeyEndpoint1) || !connection.HasMember(KetKeyEndpoint2))
+        throw Error("Haptic connection requires '%s' and '%s'", KetKeyEndpoint1, KetKeyEndpoint2);
+
+    // The pairs the endpoints may not form - two groups, an atom with itself, an
+    // atom with its own group - are rejected by addHapticBond for every producer.
+    mol.addHapticBond(resolveHapticEndpoint(connection[KetKeyEndpoint1], mol_mappings, ag_mappings),
+                      resolveHapticEndpoint(connection[KetKeyEndpoint2], mol_mappings, ag_mappings), _BOND_HAPTIC);
+}
+
+std::map<std::string, int> MoleculeJsonLoader::parseAttachmentGroups(const rapidjson::Value& groups, BaseMolecule& mol, const Array<int>& atom_mapping)
+{
+    std::map<std::string, int> ids;
+
+    if (!groups.IsArray())
+        throw Error("'%s' must be an array", KetKeyAttachmentGroups);
+
+    for (rapidjson::SizeType i = 0; i < groups.Size(); ++i)
+    {
+        const auto& group = groups[i];
+        if (!group.IsObject() || !group.HasMember(KetKeyId) || !group.HasMember(KetKeyAtoms))
+            throw Error("Attachment group requires '%s' and '%s'", KetKeyId, KetKeyAtoms);
+
+        if (!group[KetKeyId].IsString())
+            throw Error("'%s' of an attachment group must be a string", KetKeyId);
+
+        const char* id = group[KetKeyId].GetString();
+        if (ids.count(id) != 0)
+            throw Error("Duplicate attachment group id '%s'", id);
+
+        const auto& atoms = group[KetKeyAtoms];
+        if (!atoms.IsArray() || atoms.Size() == 0)
+            throw Error("Attachment group '%s' has no atoms", id);
+
+        std::vector<int> members;
+        members.reserve(atoms.Size());
+        for (rapidjson::SizeType j = 0; j < atoms.Size(); ++j)
+        {
+            if (!atoms[j].IsInt())
+                throw Error("Attachment group '%s' has a non-integer atom index", id);
+
+            const int atom_idx = atoms[j].GetInt();
+            if (atom_idx < 0 || atom_idx >= atom_mapping.size() || atom_mapping[atom_idx] < 0)
+                throw Error("Attachment group '%s' refers to a non-existent atom %d", id, atom_idx);
+            members.push_back(atom_mapping[atom_idx]);
+        }
+
+        const int group_idx = mol.attachment_groups.addGroup();
+        mol.attachment_groups.group(group_idx).setAtoms(members);
+        ids.emplace(id, group_idx);
+    }
+
+    return ids;
 }
 
 void MoleculeJsonLoader::parseProperties(const rapidjson::Value& props, BaseMolecule& mol)
@@ -1181,7 +1381,7 @@ void MoleculeJsonLoader::fillXBondsAndBrackets(Superatom& sa, BaseMolecule& mol)
             if (atoms.find(target_atom) == atoms.end())
             {
                 const auto& target_pos = mol.getAtomXyz(target_atom);
-                sa.bonds.push(vx.neiEdge(i));
+                sa.xbonds.push(vx.neiEdge(i));
                 brackets.emplace_back((target_pos.x - src_pos.x) / 2, (target_pos.y - src_pos.y) / 2);
             }
         }
@@ -1232,58 +1432,72 @@ static IdtAlias parseIdtAlias(const rapidjson::Value& parent)
 
 void MoleculeJsonLoader::addToLibMonomerGroupTemplate(MonomerTemplateLibrary& library, const rapidjson::Value& monomer_group_template)
 {
-    if (monomer_group_template.HasMember("id"))
+    MonomerGroupTemplate* parsed_mgt = nullptr;
+    KetDocumentJsonLoader::parseMonomerGroupTemplate(
+        monomer_group_template,
+        [&library, &parsed_mgt](const std::string& id, const std::string& name, const std::string& monomer_class, IdtAlias idt_alias,
+                                const std::vector<std::string>& template_refs) -> MonomerGroupTemplate& {
+            library.addMonomerGroupTemplate(MonomerGroupTemplate(id, name, monomer_class, idt_alias));
+            auto& mgt = library.getMonomerGroupTemplateById(id);
+            for (const auto& template_ref : template_refs)
+                mgt.addTemplate(library, template_ref);
+            parsed_mgt = &mgt;
+            return mgt;
+        },
+        [this](const std::string& template_ref_or_id) {
+            const auto it = _template_ref_to_id.find(template_ref_or_id);
+            if (it != _template_ref_to_id.end())
+                return it->second;
+            if (template_ref_or_id.rfind(MonomerTemplate::ref_prefix, 0) == 0)
+                return template_ref_or_id.substr(MonomerTemplate::ref_prefix.size());
+            return template_ref_or_id;
+        });
+
+    if (parsed_mgt != nullptr && monomer_group_template.HasMember("id"))
     {
-        std::string id = monomer_group_template["id"].GetString();
-        std::string name, template_class;
-
-        if (monomer_group_template.HasMember("name"))
-            name = monomer_group_template["name"].GetString();
-        if (monomer_group_template.HasMember("class"))
-            template_class = monomer_group_template["class"].GetString();
-
-        std::string idt_alias_base, idt_five_prime_end, idt_internal, idt_three_prime_end;
-        bool idt_has_modifications = false;
-        if (monomer_group_template.HasMember("idtAliases"))
+        const std::string id = monomer_group_template["id"].GetString();
+        for (const auto& [template_ref, ref_id] : _template_ref_to_id)
         {
-            parseIdtAlias(monomer_group_template, idt_alias_base, idt_has_modifications, idt_five_prime_end, idt_internal, idt_three_prime_end);
-            if (idt_alias_base.size() == 0)
-                throw Error("Group monomer template %s(id=%s) contains IDT alias without base.", name.c_str(), id.c_str());
-        }
-
-        if (idt_has_modifications)
-            library.addMonomerGroupTemplate(
-                MonomerGroupTemplate(id, name, template_class, IdtAlias(idt_alias_base, idt_five_prime_end, idt_internal, idt_three_prime_end)));
-        else
-            library.addMonomerGroupTemplate(MonomerGroupTemplate(id, name, template_class, idt_alias_base));
-
-        if (monomer_group_template.HasMember("templates"))
-        {
-            MonomerGroupTemplate& mgt = library.getMonomerGroupTemplateById(id);
-            auto& templates = monomer_group_template["templates"];
-            for (SizeType i = 0; i < templates.Size(); i++)
+            if (ref_id == id && template_ref.rfind(MonomerGroupTemplate::ref_prefix, 0) == 0)
             {
-                std::string template_ref = templates[i]["$ref"].GetString();
-                mgt.addTemplate(library, _template_ref_to_id[template_ref]);
+                parsed_mgt->setRef(template_ref);
+                break;
             }
-        }
-        if (monomer_group_template.HasMember("aliasAxoLabs"))
-        {
-            MonomerGroupTemplate& mgt = library.getMonomerGroupTemplateById(id);
-            mgt.setAliasAxoLabs(monomer_group_template["aliasAxoLabs"].GetString());
         }
     }
 }
 
 void MoleculeJsonLoader::loadMonomerLibrary(MonomerTemplateLibrary& library)
 {
+    if (!_parsed)
+        throw Error("Invalid JSON input");
+
     // Add monomer teplates
     for (SizeType i = 0; i < _templates.Size(); i++)
     {
         auto& mt = _templates[i];
         if (mt.HasMember("type") && mt["type"].GetString() == std::string("monomerTemplate"))
         {
-            KetDocumentJsonLoader::parseMonomerTemplate(mt, library);
+            MonomerTemplate* parsed_mt = nullptr;
+            KetDocumentJsonLoader::parseMonomerTemplate(
+                mt, [&library, &parsed_mt](const std::string& id, const std::string& monomer_class, IdtAlias idt_alias, bool unresolved) -> MonomerTemplate& {
+                    auto& monomer_template = library.addMonomerTemplate(id, monomer_class, idt_alias, unresolved);
+                    parsed_mt = &monomer_template;
+                    return monomer_template;
+                });
+
+            if (parsed_mt != nullptr && mt.HasMember("id"))
+            {
+                const std::string id = mt["id"].GetString();
+                for (const auto& [template_ref, ref_id] : _template_ref_to_id)
+                {
+                    if (ref_id == id && template_ref.rfind(MonomerTemplate::ref_prefix, 0) == 0)
+                    {
+                        parsed_mt->setRef(template_ref);
+                        break;
+                    }
+                }
+            }
         }
     }
 
@@ -1326,6 +1540,8 @@ int MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_tem
     monomer_template_cp.CopyFrom(monomer_template, data.GetAllocator());
     one_tgroup.PushBack(monomer_template_cp, data.GetAllocator());
     MoleculeJsonLoader loader(one_tgroup);
+    // Static entry point, so only the stereo options are in scope. Monomer
+    // templates are C/N/O/P fragments, where both valence tables agree.
     loader.stereochemistry_options = stereochemistry_options;
     loader.ignore_noncritical_query_features = true;
     tg.fragment.reset(mol.neu());
@@ -1421,6 +1637,11 @@ int MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_tem
             tg.aliasAxoLabs.readString(monomer_template["aliasAxoLabs"].GetString(), true);
         }
 
+        if (monomer_template.HasMember("aliasBILN"))
+        {
+            tg.aliasBILN.readString(monomer_template["aliasBILN"].GetString(), true);
+        }
+
         if (monomer_template.HasMember("attachmentPoints"))
         {
             auto& att_points = monomer_template["attachmentPoints"];
@@ -1459,7 +1680,7 @@ int MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_tem
                         }
                     }
                     sa.sa_class.appendString("LGRP", true);
-                    sa.subscript.appendString(group_name.c_str(), true);
+                    sa.label.appendString(group_name.c_str(), true);
 
                     att_desc.leaving_group = grp_idx;
                     fillXBondsAndBrackets(sa, monomer_mol);
@@ -1500,7 +1721,7 @@ int MoleculeJsonLoader::parseMonomerTemplate(const rapidjson::Value& monomer_tem
                 sa.sa_class.appendString(mclass.c_str(), true);
 
             if (alias.size())
-                sa.subscript.appendString(alias.c_str(), true);
+                sa.label.appendString(alias.c_str(), true);
 
             if (natreplace.size())
                 sa.sa_natreplace.appendString(natreplace.c_str(), true);
@@ -1594,7 +1815,25 @@ std::string MoleculeJsonLoader::monomerMolClass(const std::string& class_name)
 
 void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
 {
-    ObjArray<Array<int>> mol_mappings;
+    if (!_parsed)
+        throw Error("Invalid JSON input");
+
+    // Order matters: atom parsing infers implicit H using the molecule's current
+    // valence model, so the mode must be captured before any atom is added.
+    // Seeding the target too covers a KET with no fragments, where no merge
+    // would carry the mode over.
+    if (!mol.isQueryMolecule())
+    {
+        Molecule& target = mol.asMolecule();
+        target.setIgnoreBadValenceFlag(ignore_bad_valence);
+        target.setValenceMode(valence_mode);
+    }
+
+    PtrArray<Array<int>> mol_mappings;
+    // Per mol node: KET attachment-group id -> group index in the merged molecule.
+    // A haptic connection addresses a group by the id local to its molecule, so the
+    // ids have to survive the merge that renumbers everything else.
+    std::vector<std::map<std::string, int>> ag_mappings;
     for (rapidjson::SizeType node_idx = 0; node_idx < _mol_nodes.Size(); ++node_idx)
     {
         std::vector<EnhancedStereoCenter> stereo_centers;
@@ -1608,6 +1847,10 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         else
         {
             _pmol = &pmol->asMolecule();
+            // Fragments are parsed standalone, so each needs the mode too —
+            // implicit H is inferred here, before the merge.
+            _pmol->setIgnoreBadValenceFlag(ignore_bad_valence);
+            _pmol->setValenceMode(valence_mode);
         }
         mol.original_format = BaseMolecule::KET;
 
@@ -1654,6 +1897,9 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         mol.mergeWithMolecule(*pmol, &mapping, 0);
         mol_mappings.push().copy(mapping);
 
+        ag_mappings.push_back(mol_node.HasMember(KetKeyAttachmentGroups) ? parseAttachmentGroups(mol_node[KetKeyAttachmentGroups], mol, mapping)
+                                                                         : std::map<std::string, int>());
+
         for (auto& sc : stereo_centers)
         {
             sc._atom_idx = mapping[sc._atom_idx];
@@ -1691,23 +1937,21 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
             auto& rfragments = rnode["fragments"];
             for (SizeType i = 0; i < rfragments.Size(); i++)
             {
-                std::unique_ptr<BaseMolecule> fragment(mol.neu());
+                BaseMolecule& fragment = rgroup.fragments.push_t(BaseMolecule::poolFactoryLike(mol));
                 one_rnode.PushBack(rfragments[i], data.GetAllocator());
                 MoleculeJsonLoader loader(one_rnode);
-                loader.stereochemistry_options = stereochemistry_options;
-                loader.loadMolecule(*fragment.get());
-                rgroup.fragments.add(fragment.release());
+                loader.setOptions(getOptions());
+                loader.loadMolecule(fragment);
                 one_rnode.Clear();
             }
         }
         else
         {
-            std::unique_ptr<BaseMolecule> fragment(mol.neu());
+            BaseMolecule& fragment = rgroup.fragments.push_t(BaseMolecule::poolFactoryLike(mol));
             one_rnode.PushBack(rnode, data.GetAllocator());
             MoleculeJsonLoader loader(one_rnode);
-            loader.stereochemistry_options = stereochemistry_options;
-            loader.loadMolecule(*fragment.get());
-            rgroup.fragments.add(fragment.release());
+            loader.setOptions(getOptions());
+            loader.loadMolecule(fragment);
         }
     }
 
@@ -1886,17 +2130,27 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     for (rapidjson::SizeType i = 0; i < _connection_array.Size(); ++i)
     {
         auto& connection = _connection_array[i];
-        int order = _BOND_ANY;
-        if (connection.HasMember("connectionType"))
+
+        // A haptic connection is marked with "type", not "connectionType", and it
+        // may address an attachment group instead of an atom — so it is resolved
+        // before the atom-to-atom machinery below.
+        if (connection.HasMember(KetKeyType) && connection[KetKeyType].IsString() && std::string(connection[KetKeyType].GetString()) == KetConnectionHaptic)
         {
-            std::string conn_type = connection["connectionType"].GetString();
+            loadHapticConnection(connection, mol, mol_mappings, ag_mappings);
+            continue;
+        }
+
+        int order = _BOND_ANY;
+        if (connection.HasMember(KetKeyConnectionType))
+        {
+            std::string conn_type = connection[KetKeyConnectionType].GetString();
             if (conn_type == "single")
                 order = BOND_SINGLE;
             else if (conn_type == "hydrogen")
                 order = _BOND_HYDROGEN;
         }
-        auto& ep1 = connection["endpoint1"];
-        auto& ep2 = connection["endpoint2"];
+        auto& ep1 = connection[KetKeyEndpoint1];
+        auto& ep2 = connection[KetKeyEndpoint2];
 
         int id1 = -1;
         int id2 = -1;
@@ -1908,10 +2162,10 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
             if (ep1.HasMember("attachmentPointId"))
                 atp1 = convertAPFromHELM(ep1["attachmentPointId"].GetString());
         }
-        else if (ep1.HasMember("moleculeId") && ep1.HasMember("atomId"))
+        else if (ep1.HasMember(KetKeyMoleculeId) && ep1.HasMember(KetKeyAtomId))
         {
-            int mol_id = extract_id(ep1["moleculeId"].GetString(), "mol");
-            id1 = mol_mappings[mol_id][atoi(ep1["atomId"].GetString())];
+            int mol_id = extract_id(ep1[KetKeyMoleculeId].GetString(), KetMoleculeRefPrefix);
+            id1 = mol_mappings[mol_id][atoi(ep1[KetKeyAtomId].GetString())];
         }
         else
             throw Error("Invalid endpoint");
@@ -1922,10 +2176,10 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
             if (ep2.HasMember("attachmentPointId"))
                 atp2 = convertAPFromHELM(ep2["attachmentPointId"].GetString());
         }
-        else if (ep2.HasMember("moleculeId") && ep2.HasMember("atomId"))
+        else if (ep2.HasMember(KetKeyMoleculeId) && ep2.HasMember(KetKeyAtomId))
         {
-            int mol_id = extract_id(ep2["moleculeId"].GetString(), "mol");
-            id2 = mol_mappings[mol_id][atoi(ep2["atomId"].GetString())];
+            int mol_id = extract_id(ep2[KetKeyMoleculeId].GetString(), KetMoleculeRefPrefix);
+            id2 = mol_mappings[mol_id][atoi(ep2[KetKeyAtomId].GetString())];
         }
         else
             throw Error("Invalid endpoint");
@@ -1946,7 +2200,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     }
 
     MoleculeLayout ml(mol, false);
-    ml.layout_orientation = UNCPECIFIED;
+    ml.layout_orientation = UNSPECIFIED;
     ml.updateSGroups();
     loadMetaObjects(_meta_objects, mol.meta());
 

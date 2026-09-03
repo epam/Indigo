@@ -89,6 +89,7 @@
         "alias": "A",
         "naturalAnalogShort": "A",
         "aliasHELM": "A",
+        "aliasBILN": "A",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,
@@ -223,6 +224,7 @@
         "alias": "meA",
         "naturalAnalogShort": "A",
         "aliasHELM": "meA",
+        "aliasBILN": "meA",
         "attachmentPoints": [
             {
                 "attachmentAtom": 5,
@@ -372,6 +374,7 @@
         "alias": "C",
         "naturalAnalogShort": "C",
         "aliasHELM": "C",
+        "aliasBILN": "C",
         "attachmentPoints": [
             {
                 "attachmentAtom": 0,

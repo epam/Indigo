@@ -19,6 +19,7 @@
 #ifndef __indigo_scaffold__
 #define __indigo_scaffold__
 
+#include "base_cpp/ptr_array.h"
 #include "indigo_internal.h"
 #include "molecule/query_molecule.h"
 
@@ -34,7 +35,7 @@ public:
     BaseMolecule& getBaseMolecule() override;
 
     QueryMolecule max_scaffold;
-    ObjArray<QueryMolecule> all_scaffolds;
+    PtrArray<QueryMolecule> all_scaffolds;
 };
 
 #endif

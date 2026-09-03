@@ -751,7 +751,7 @@
         "fullName": "Ribose",
         "alias": "R",
         "naturalAnalogShort": "R",
-        "aliasHELM": "r",
+        "aliasHELM": "R",
         "attachmentPoints": [
             {
                 "attachmentAtom": 10,
@@ -941,7 +941,7 @@
                     1,
                     7
                 ],
-                "stereo": 1
+                "stereo": 6
             },
             {
                 "type": 1,

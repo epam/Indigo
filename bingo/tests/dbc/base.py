@@ -1,5 +1,6 @@
 from abc import abstractmethod
 from configparser import ConfigParser
+import os
 from os import path
 from os.path import abspath, join
 from typing import Dict, List
@@ -37,13 +38,19 @@ def get_config():
             "test_schema": parser.get("common", "test_schema"),
         },
         DB_POSTGRES: {
-            "host": parser.get(DB_POSTGRES, "host"),
+            "host": os.environ.get("DB_POSTGRES_HOST", parser.get(DB_POSTGRES, "host")),
             "port": parser.get(DB_POSTGRES, "port"),
             "database": parser.get(DB_POSTGRES, "database"),
             "user": parser.get(DB_POSTGRES, "user"),
             "password": parser.get(DB_POSTGRES, "password"),
         },
-        DB_ORACLE: None,
+        DB_ORACLE: {
+            "host": os.environ.get("DB_ORACLE_HOST", parser.get(DB_ORACLE, "host")),
+            "port": parser.get(DB_ORACLE, "port"),
+            "database": parser.get(DB_ORACLE, "database"),
+            "user": parser.get(DB_ORACLE, "user"),
+            "password": parser.get(DB_ORACLE, "password"),
+        },
         DB_MSSQL: None,
         DB_BINGO: {
             "db_name": parser.get(DB_BINGO, "db_name"),
@@ -154,26 +161,26 @@ class SQLAdapter(DBAdapter):
 
     @property
     def conn_string(self):
-        conn_string = (
-            "{dialect}+{driver}://{user}:{password}"
-            "@{host}:{port}/{database}"
-        )
         if self.dbms == "postgres":
-            dialect, driver = "postgresql", "psycopg2"
+            return (
+                f"postgresql+psycopg2://{self.user}:{self.password}"
+                f"@{self.host}:{self.port}/{self.database}"
+            )
         if self.dbms == "oracle":
-            pass
+            # SQLAlchemy 1.3 only ships the oracle+cx_oracle dialect. The
+            # OracleDB adapter registers python-oracledb as a cx_Oracle
+            # drop-in at import time so this dialect resolves.
+            #
+            # We pass the target as `?service_name=...` rather than using the
+            # URL path — the cx_oracle dialect treats the path as a SID, but
+            # Oracle XE 21's XEPDB1 is a service name (pluggable DB), not a
+            # SID, so the listener rejects SID connections (DPY-6003).
+            return (
+                f"oracle+cx_oracle://{self.user}:{self.password}"
+                f"@{self.host}:{self.port}/?service_name={self.database}"
+            )
         if self.dbms == "mssql":
             pass
-
-        return conn_string.format(
-            dialect=dialect,
-            driver=driver,
-            user=self.user,
-            password=self.password,
-            port=self.port,
-            host=self.host,
-            database=self.database,
-        )
 
     def _select_error_text(
         self,
@@ -238,6 +245,7 @@ class SQLAdapter(DBAdapter):
             return self._select_error_text(e, errors_start_with, "\n")
 
         return rows
+
 
     def _execute_dml_query(self, query: str):
         rows = None

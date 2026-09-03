@@ -19,6 +19,7 @@
 #ifndef __mango_matchers__
 #define __mango_matchers__
 
+#include "base_cpp/ptr_array.h"
 #include "base_cpp/reusable_obj_array.h"
 #include "base_cpp/tlscont.h"
 #include "molecule/cmf_loader.h"
@@ -90,7 +91,7 @@ namespace indigo
         MoleculeAtomNeighbourhoodCounters _nei_target_counters;
         MoleculeAtomNeighbourhoodCounters _nei_query_counters;
 
-        ObjArray<RedBlackStringMap<int>> _fmcache;
+        PtrArray<RedBlackStringMap<int>> _fmcache;
 
         // cmf loader for delayed xyz loading
         std::unique_ptr<CmfLoader> cmf_loader;

@@ -1,3 +1,5 @@
+import difflib
+import io
 import os
 import platform
 import re
@@ -207,3 +209,30 @@ def download_jna(jna_version, path):
     except Exception as e:
         os.remove(output_path)
         raise e
+
+
+def find_diff(a, b):
+    return "\n".join(difflib.unified_diff(a.splitlines(), b.splitlines()))
+
+
+def compare_diff(ref_path, filename, data, stdout=True, diff_fn=find_diff):
+    path_to_file = os.path.join(ref_path, filename)
+
+    is_update_required = os.getenv("INDIGO_UPDATE_TESTS", "False") == "True"
+    if is_update_required:
+        with io.open(path_to_file, "w", encoding="utf-8") as file:
+            file.write(data)
+
+    with io.open(path_to_file, "r", encoding="utf-8") as file:
+        data_ref = file.read()
+
+    diff = diff_fn(data_ref, data)
+
+    if not stdout:
+        return diff
+
+    if not diff:
+        print(filename + ":SUCCEED")
+    else:
+        print(filename + ":FAILED")
+        print(diff)

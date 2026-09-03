@@ -20,6 +20,7 @@
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "indigo_array.h"
+#include "indigo_group_pseudoatoms_expand.h"
 #include "indigo_io.h"
 #include "indigo_ket_document.h"
 #include "indigo_mapping.h"
@@ -55,9 +56,14 @@ CEXPORT int indigoResetRadical(int atom)
         BaseMolecule& mol = ia.mol;
 
         if (mol.isQueryMolecule())
+        {
             mol.asQueryMolecule().getAtom(ia.idx).removeConstraints(QueryMolecule::ATOM_RADICAL);
+            mol.asQueryMolecule().invalidateAtom(ia.idx, BaseMolecule::CHANGED_ALL);
+        }
         else
+        {
             mol.asMolecule().setAtomRadical(ia.idx, 0);
+        }
         return 1;
     }
     INDIGO_END(-1);
@@ -71,9 +77,14 @@ CEXPORT int indigoResetIsotope(int atom)
         BaseMolecule& mol = ia.mol;
 
         if (mol.isQueryMolecule())
+        {
             mol.asQueryMolecule().getAtom(ia.idx).removeConstraints(QueryMolecule::ATOM_ISOTOPE);
+            mol.asQueryMolecule().invalidateAtom(ia.idx, BaseMolecule::CHANGED_ALL);
+        }
         else
+        {
             mol.asMolecule().setAtomIsotope(ia.idx, 0);
+        }
         return 1;
     }
     INDIGO_END(-1);
@@ -777,7 +788,7 @@ void IndigoSuperatom::remove()
 
 const char* IndigoSuperatom::getName()
 {
-    return ((Superatom&)mol.sgroups.getSGroup(idx)).subscript.ptr();
+    return ((Superatom&)mol.sgroups.getSGroup(idx)).label.ptr();
 }
 
 IndigoSuperatom& IndigoSuperatom::cast(IndigoObject& obj)
@@ -1355,7 +1366,7 @@ CEXPORT int indigoAddDataSGroup(int molecule, int natoms, int* atoms, int nbonds
             dsg.atoms.concat(atoms, natoms);
 
         if (bonds != nullptr)
-            dsg.bonds.concat(bonds, nbonds);
+            dsg.cbonds.concat(bonds, nbonds);
 
         if (data != nullptr)
             dsg.data.readString(data, true);
@@ -1374,7 +1385,7 @@ CEXPORT int indigoAddSuperatom(int molecule, int natoms, int* atoms, const char*
         BaseMolecule& mol = self.getObject(molecule).getBaseMolecule();
         int idx = mol.sgroups.addSGroup(SGroup::SG_TYPE_SUP);
         Superatom& satom = (Superatom&)mol.sgroups.getSGroup(idx);
-        satom.subscript.appendString(name, true);
+        satom.label.appendString(name, true);
         if (atoms == nullptr)
             throw IndigoError("indigoAddSuperatom(): atoms were not specified");
 
@@ -1392,8 +1403,7 @@ CEXPORT int indigoSetDataSGroupXY(int sgroup, float x, float y, const char* opti
     {
         DataSGroup& dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
 
-        dsg.display_pos.x = x;
-        dsg.display_pos.y = y;
+        dsg.display_pos.set(Vec2f(x, y));
         dsg.detached = true;
 
         if (options != 0 && options[0] != 0)
@@ -1431,8 +1441,7 @@ CEXPORT int indigoSetSGroupCoords(int sgroup, float x, float y)
     {
         DataSGroup& dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
 
-        dsg.display_pos.x = x;
-        dsg.display_pos.y = y;
+        dsg.display_pos.set(Vec2f(x, y));
 
         return 1;
     }
@@ -1591,7 +1600,9 @@ CEXPORT int indigoSetSGroupXCoord(int sgroup, float x)
     {
         DataSGroup& dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
 
-        dsg.display_pos.x = x;
+        Vec2f dp = dsg.display_pos.value_or(Vec2f(0, 0));
+        dp.x = x;
+        dsg.display_pos.set(dp);
 
         return 1;
     }
@@ -1604,7 +1615,9 @@ CEXPORT int indigoSetSGroupYCoord(int sgroup, float y)
     {
         DataSGroup& dsg = IndigoDataSGroup::cast(self.getObject(sgroup)).get();
 
-        dsg.display_pos.y = y;
+        Vec2f dp = dsg.display_pos.value_or(Vec2f(0, 0));
+        dp.y = y;
+        dsg.display_pos.set(dp);
 
         return 1;
     }
@@ -1626,7 +1639,8 @@ CEXPORT int indigoCreateSGroup(const char* type, int mapping, const char* name)
 
             for (auto i : temp.vertices())
             {
-                sgroup.atoms.push(m[i]);
+                if (m[i] >= 0)
+                    sgroup.atoms.push(m[i]);
             }
 
             for (auto i : mol.edges())
@@ -1635,20 +1649,18 @@ CEXPORT int indigoCreateSGroup(const char* type, int mapping, const char* name)
                 if (((sgroup.atoms.find(edge.beg) != -1) && (sgroup.atoms.find(edge.end) == -1)) ||
                     ((sgroup.atoms.find(edge.end) != -1) && (sgroup.atoms.find(edge.beg) == -1)))
                 {
-                    sgroup.bonds.push(i);
+                    sgroup.xbonds.push(i);
                 }
             }
 
+            sgroup.label.appendString(name, true);
+
             if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
             {
-                Superatom& sa = (Superatom&)sgroup;
-                sa.subscript.appendString(name, true);
                 return self.addObject(new IndigoSuperatom(mol, idx));
             }
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_SRU)
             {
-                RepeatingUnit& ru = (RepeatingUnit&)sgroup;
-                ru.subscript.appendString(name, true);
                 return self.addObject(new IndigoRepeatingUnit(mol, idx));
             }
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_MUL)
@@ -1696,8 +1708,9 @@ CEXPORT int indigoSetSGroupName(int sgroup, const char* sgname)
 {
     INDIGO_BEGIN
     {
-        Superatom& sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
-        sup.subscript.readString(sgname, true);
+        IndigoObject& obj = self.getObject(sgroup);
+        SGroup& sg = IndigoSGroup::cast(obj).get();
+        sg.label.readString(sgname, true);
 
         return 1;
     }
@@ -1708,10 +1721,11 @@ CEXPORT const char* indigoGetSGroupName(int sgroup)
 {
     INDIGO_BEGIN
     {
-        Superatom& sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
-        if (sup.subscript.size() < 1)
+        IndigoObject& obj = self.getObject(sgroup);
+        SGroup& sg = IndigoSGroup::cast(obj).get();
+        if (sg.label.size() < 1)
             return "";
-        return sup.subscript.ptr();
+        return sg.label.ptr();
     }
     INDIGO_END(0);
 }
@@ -1720,8 +1734,141 @@ CEXPORT int indigoGetSGroupNumCrossBonds(int sgroup)
 {
     INDIGO_BEGIN
     {
-        Superatom& sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
-        return sup.bonds.size();
+        IndigoSGroup& isg = IndigoSGroup::cast(self.getObject(sgroup));
+        return isg.get().xbonds.size();
+    }
+    INDIGO_END(-1);
+}
+
+static void _fillCrossBonds(BaseMolecule& mol, SGroup& sg)
+{
+    sg.xbonds.clear();
+    for (auto atom_idx : sg.atoms)
+    {
+        const Vertex& vx = mol.getVertex(atom_idx);
+        for (auto nei_idx = vx.neiBegin(); nei_idx != vx.neiEnd(); nei_idx = vx.neiNext(nei_idx))
+        {
+            if (sg.atoms.find(vx.neiVertex(nei_idx)) == -1)
+            {
+                int edge_idx = vx.neiEdge(nei_idx);
+                if (sg.xbonds.find(edge_idx) == -1)
+                    sg.xbonds.push(edge_idx);
+            }
+        }
+    }
+}
+
+CEXPORT int indigoCreateCrossBonds(int sgroup)
+{
+    INDIGO_BEGIN
+    {
+        IndigoSGroup& isg = IndigoSGroup::cast(self.getObject(sgroup));
+        _fillCrossBonds(isg.mol, isg.get());
+        return 1;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoClearSGroupCrossBonds(int sgroup)
+{
+    INDIGO_BEGIN
+    {
+        IndigoSGroup& isg = IndigoSGroup::cast(self.getObject(sgroup));
+        isg.get().xbonds.clear();
+        return 1;
+    }
+    INDIGO_END(-1);
+}
+
+static IndigoObject* _wrapSGroup(BaseMolecule& mol, int idx)
+{
+    switch (mol.sgroups.getSGroup(idx).sgroup_type)
+    {
+    case SGroup::SG_TYPE_SUP:
+        return new IndigoSuperatom(mol, idx);
+    case SGroup::SG_TYPE_SRU:
+        return new IndigoRepeatingUnit(mol, idx);
+    case SGroup::SG_TYPE_MUL:
+        return new IndigoMultipleGroup(mol, idx);
+    case SGroup::SG_TYPE_DAT:
+        return new IndigoDataSGroup(mol, idx);
+    default:
+        return new IndigoGenericSGroup(mol, idx);
+    }
+}
+
+CEXPORT int indigoAddSGroup(int molecule, const char* type, int extindex)
+{
+    INDIGO_BEGIN
+    {
+        BaseMolecule& mol = self.getObject(molecule).getBaseMolecule();
+        int idx = mol.sgroups.addSGroup(type);
+        if (idx == -1)
+            throw IndigoError("indigoAddSGroup: cannot add SGroup of type '%s'", type);
+
+        SGroup& sgroup = mol.sgroups.getSGroup(idx);
+        if (extindex > 0)
+            sgroup.ext_index = extindex;
+
+        return self.addObject(_wrapSGroup(mol, idx));
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoSetSGroupAtoms(int sgroup, int natoms, int* atoms)
+{
+    INDIGO_BEGIN
+    {
+        IndigoSGroup& isg = IndigoSGroup::cast(self.getObject(sgroup));
+        SGroup& s = isg.get();
+
+        s.atoms.clear();
+        if (atoms != nullptr && natoms > 0)
+        {
+            for (int i = 0; i < natoms; i++)
+            {
+                if (atoms[i] < 0 || atoms[i] >= isg.mol.vertexEnd())
+                    throw IndigoError("indigoSetSGroupAtoms: atom index %d out of range", atoms[i]);
+                s.atoms.push(atoms[i]);
+            }
+        }
+        return 1;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoSetSGroupBonds(int sgroup, int nbonds, int* bonds)
+{
+    INDIGO_BEGIN
+    {
+        IndigoSGroup& isg = IndigoSGroup::cast(self.getObject(sgroup));
+        SGroup& s = isg.get();
+
+        if (s.sgroup_type != SGroup::SG_TYPE_DAT)
+            throw IndigoError("indigoSetSGroupBonds: only DAT SGroups support explicit bond assignment");
+
+        DataSGroup& dsg = (DataSGroup&)s;
+        dsg.cbonds.clear();
+        if (bonds != nullptr && nbonds > 0)
+        {
+            for (int i = 0; i < nbonds; i++)
+            {
+                if (bonds[i] < 0 || bonds[i] >= isg.mol.edgeEnd())
+                    throw IndigoError("indigoSetSGroupBonds: bond index %d out of range", bonds[i]);
+                dsg.cbonds.push(bonds[i]);
+            }
+        }
+        return 1;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoIterateSGroupCrossBonds(int sgroup)
+{
+    INDIGO_BEGIN
+    {
+        IndigoSGroup& isg = IndigoSGroup::cast(self.getObject(sgroup));
+        return self.addObject(new IndigoSGroupXBondsIter(isg.mol, isg.get()));
     }
     INDIGO_END(-1);
 }
@@ -1752,13 +1899,132 @@ CEXPORT int indigoDeleteSGroupAttachmentPoint(int sgroup, int ap_idx)
     INDIGO_END(-1);
 }
 
+//
+// IndigoSGroupAttachmentPoint
+//
+
+IndigoSGroupAttachmentPoint::IndigoSGroupAttachmentPoint(BaseMolecule& mol_, int sgroup_idx_, int ap_idx_)
+    : IndigoObject(SGROUP_ATTACHMENT_POINT), mol(mol_), sgroup_idx(sgroup_idx_), ap_idx(ap_idx_)
+{
+}
+
+IndigoSGroupAttachmentPoint::~IndigoSGroupAttachmentPoint()
+{
+}
+
+int IndigoSGroupAttachmentPoint::getIndex()
+{
+    return ap_idx;
+}
+
+IndigoSGroupAttachmentPoint& IndigoSGroupAttachmentPoint::cast(IndigoObject& obj)
+{
+    if (obj.type == IndigoObject::SGROUP_ATTACHMENT_POINT)
+        return (IndigoSGroupAttachmentPoint&)obj;
+
+    throw IndigoError("%s is not an SGroup attachment point", obj.debugInfo());
+}
+
+Superatom::_AttachmentPoint& IndigoSGroupAttachmentPoint::get()
+{
+    Superatom& sup = (Superatom&)mol.sgroups.getSGroup(sgroup_idx);
+    if (!sup.attachment_points.hasElement(ap_idx))
+        throw IndigoError("attachment point #%d is not an SGroup attachment point", ap_idx);
+
+    return sup.attachment_points[ap_idx];
+}
+
+//
+// IndigoSGroupAttachmentPointsIter
+//
+
+IndigoSGroupAttachmentPointsIter::IndigoSGroupAttachmentPointsIter(BaseMolecule& mol_, int sgroup_idx_)
+    : IndigoObject(SGROUP_ATTACHMENT_POINTS_ITER), _mol(mol_), _sgroup_idx(sgroup_idx_), _idx(-1)
+{
+}
+
+IndigoSGroupAttachmentPointsIter::~IndigoSGroupAttachmentPointsIter()
+{
+}
+
+bool IndigoSGroupAttachmentPointsIter::hasNext()
+{
+    Superatom& sup = (Superatom&)_mol.sgroups.getSGroup(_sgroup_idx);
+    if (_idx == -1)
+        return sup.attachment_points.begin() != sup.attachment_points.end();
+    return sup.attachment_points.next(_idx) != sup.attachment_points.end();
+}
+
+IndigoObject* IndigoSGroupAttachmentPointsIter::next()
+{
+    if (!hasNext())
+        return 0;
+
+    Superatom& sup = (Superatom&)_mol.sgroups.getSGroup(_sgroup_idx);
+    if (_idx == -1)
+        _idx = sup.attachment_points.begin();
+    else
+        _idx = sup.attachment_points.next(_idx);
+
+    std::unique_ptr<IndigoSGroupAttachmentPoint> ap = std::make_unique<IndigoSGroupAttachmentPoint>(_mol, _sgroup_idx, _idx);
+    return ap.release();
+}
+
+CEXPORT int indigoIterateSGroupAttachmentPoints(int sgroup)
+{
+    INDIGO_BEGIN
+    {
+        IndigoSuperatom& isup = IndigoSuperatom::cast(self.getObject(sgroup));
+        return self.addObject(new IndigoSGroupAttachmentPointsIter(isup.mol, isup.idx));
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoGetSGroupAttachmentPointAtomIdx(int ap)
+{
+    INDIGO_BEGIN
+    {
+        return IndigoSGroupAttachmentPoint::cast(self.getObject(ap)).get().aidx;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoGetSGroupAttachmentPointLeaveAtom(int ap, int* lvidx)
+{
+    INDIGO_BEGIN
+    {
+        int lv = IndigoSGroupAttachmentPoint::cast(self.getObject(ap)).get().lvidx;
+        if (lv == -1)
+        {
+            *lvidx = 0;
+            return 0;
+        }
+        *lvidx = lv;
+        return 1;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT const char* indigoGetSGroupAttachmentPointLabel(int ap)
+{
+    INDIGO_BEGIN
+    {
+        Superatom::_AttachmentPoint& apoint = IndigoSGroupAttachmentPoint::cast(self.getObject(ap)).get();
+        if (apoint.apid.size() < 1)
+            return "";
+        return apoint.apid.ptr();
+    }
+    INDIGO_END(0);
+}
+
 CEXPORT int indigoGetSGroupDisplayOption(int sgroup)
 {
     INDIGO_BEGIN
     {
         Superatom& sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
-        if (sup.contracted > DisplayOption::Undefined)
-            return (int)sup.contracted;
+        const auto option = sup.contracted.value_or(DisplayOption::Undefined);
+        if (option > DisplayOption::Undefined)
+            return static_cast<int>(option);
 
         return 0;
     }
@@ -1782,9 +2048,7 @@ CEXPORT int indigoGetSGroupSeqId(int sgroup)
     INDIGO_BEGIN
     {
         Superatom& sup = IndigoSuperatom::cast(self.getObject(sgroup)).get();
-        if (sup.seqid != -1)
-            return sup.seqid;
-        return 0;
+        return sup.seqid.value_or(0);
     }
     INDIGO_END(0);
 }
@@ -1796,7 +2060,8 @@ CEXPORT float* indigoGetSGroupCoords(int sgroup)
         IndigoDataSGroup& ds = IndigoDataSGroup::cast(self.getObject(sgroup));
 
         auto& tmp = self.getThreadTmpData();
-        auto& xy = ds.get().display_pos;
+        DataSGroup& dsg = ds.get();
+        Vec2f xy = dsg.display_pos.value_or(Vec2f(0, 0));
         tmp.xyz[0] = xy.x;
         tmp.xyz[1] = xy.y;
         tmp.xyz[2] = 0.f;
@@ -1810,7 +2075,7 @@ CEXPORT int indigoGetSGroupMultiplier(int sgroup)
     INDIGO_BEGIN
     {
         MultipleGroup& mg = IndigoMultipleGroup::cast(self.getObject(sgroup)).get();
-        return mg.multiplier;
+        return mg.multiplier.value_or(0);
     }
     INDIGO_END(-1);
 }
@@ -1820,7 +2085,7 @@ CEXPORT const char* indigoGetRepeatingUnitSubscript(int sgroup)
     INDIGO_BEGIN
     {
         RepeatingUnit& ru = IndigoRepeatingUnit::cast(self.getObject(sgroup)).get();
-        return ru.subscript.ptr();
+        return ru.label.ptr();
     }
     INDIGO_END(0);
 }
@@ -1830,7 +2095,7 @@ CEXPORT int indigoGetRepeatingUnitConnectivity(int sgroup)
     INDIGO_BEGIN
     {
         RepeatingUnit& ru = IndigoRepeatingUnit::cast(self.getObject(sgroup)).get();
-        return ru.connectivity;
+        return ru.connectivity.value_or(SGroup::HEAD_TO_TAIL);
     }
     INDIGO_END(-1);
 }
@@ -1916,7 +2181,7 @@ CEXPORT int indigoGetSGroupOriginalId(int sgroup)
     INDIGO_BEGIN
     {
         IndigoSGroup& sg = IndigoSGroup::cast(self.getObject(sgroup));
-        return sg.get().original_group;
+        return sg.get().index;
     }
     INDIGO_END(-1);
 }
@@ -1930,11 +2195,11 @@ CEXPORT int indigoSetSGroupOriginalId(int sgroup, int new_original)
         for (auto i = sgr.mol.sgroups.begin(); i != sgr.mol.sgroups.end(); i = sgr.mol.sgroups.next(i))
         {
             SGroup& sg = sgr.mol.sgroups.getSGroup(i);
-            if (sg.original_group == new_original && i != sgr.idx)
+            if (sg.index == new_original && i != sgr.idx)
                 throw IndigoError("indigoSetSGroupOriginalId: duplicated sgroup id %d )", new_original);
         }
 
-        int old_original = sgr.get().original_group;
+        int old_original = sgr.get().index;
         if (old_original > 0)
         {
             for (auto i = sgr.mol.sgroups.begin(); i != sgr.mol.sgroups.end(); i = sgr.mol.sgroups.next(i))
@@ -1944,7 +2209,7 @@ CEXPORT int indigoSetSGroupOriginalId(int sgroup, int new_original)
                     sg.parent_group = new_original;
             }
         }
-        sgr.get().original_group = new_original;
+        sgr.get().index = new_original;
 
         return 1;
     }
@@ -1956,7 +2221,8 @@ CEXPORT int indigoGetSGroupParentId(int sgroup)
     INDIGO_BEGIN
     {
         IndigoSGroup& sg = IndigoSGroup::cast(self.getObject(sgroup));
-        return sg.get().parent_group;
+        SGroup& sgrp = sg.get();
+        return sgrp.parent_group.value_or(0);
     }
     INDIGO_END(-1);
 }
@@ -1971,7 +2237,7 @@ CEXPORT int indigoSetSGroupParentId(int sgroup, int parent)
         for (auto i = sgr.mol.sgroups.begin(); i != sgr.mol.sgroups.end(); i = sgr.mol.sgroups.next(i))
         {
             SGroup& sg = sgr.mol.sgroups.getSGroup(i);
-            if (sg.original_group == parent)
+            if (sg.index == parent)
                 original_found = true;
         }
         if (!original_found)
@@ -2085,7 +2351,7 @@ CEXPORT int indigoTransformCTABtoSCSR(int molecule, int templates)
 {
     INDIGO_BEGIN
     {
-        QS_DEF(ObjArray<TGroup>, tgs);
+        QS_DEF(PtrArray<TGroup>, tgs);
         tgs.clear();
         BaseMolecule& mol = self.getObject(molecule).getBaseMolecule();
         BaseMolecule& temp = self.getObject(templates).getBaseMolecule();
@@ -2324,6 +2590,10 @@ CEXPORT int indigoCreateMolecule()
     INDIGO_BEGIN
     {
         std::unique_ptr<IndigoMolecule> obj = std::make_unique<IndigoMolecule>();
+        // No loader runs here, so nothing else would capture the session's
+        // valence model and addAtom() would infer implicit H with the default.
+        obj->mol.setIgnoreBadValenceFlag(self.ignore_bad_valence);
+        obj->mol.setValenceMode(self.valence_mode);
         return self.addObject(obj.release());
     }
     INDIGO_END(-1);
@@ -3167,4 +3437,68 @@ CEXPORT int indigoExpandMonomers(int item)
         return 1;
     }
     INDIGO_END(0);
+}
+
+// [Sapio] FR-48004 Expose expandedMonomersToAtoms to Python API.
+// This function fully expands all template atoms (monomers) in a macromolecule to regular atoms.
+// It creates a working copy of the molecule to avoid side effects, marks all template atoms as
+// expanded, then calls the internal expandedMonomersToAtoms() method to perform the actual
+// expansion. The result is a new molecule with all monomers fully expanded to their atomic
+// structures, suitable for molecular weight calculations and compatibility with third-party tools.
+CEXPORT int indigoExpandedMonomersToAtoms(int molecule)
+{
+    INDIGO_BEGIN
+    {
+        BaseMolecule& mol = self.getObject(molecule).getBaseMolecule();
+
+        // Create a working copy to avoid side effects on the original molecule
+        std::unique_ptr<IndigoMolecule> work_mol = std::make_unique<IndigoMolecule>();
+        QS_DEF(Array<int>, work_mapping);
+        work_mol->mol.clone(mol, 0, &work_mapping);
+
+        // Set display options on template atoms in the working copy
+        // This marks them as expanded so expandedMonomersToAtoms() will process them.
+        // We validate each template atom's occurrence index before accessing to detect
+        // data corruption issues early.
+        for (int v_idx = work_mol->mol.vertexBegin(); v_idx != work_mol->mol.vertexEnd(); v_idx = work_mol->mol.vertexNext(v_idx))
+        {
+            if (!work_mol->mol.isTemplateAtom(v_idx))
+                continue;
+
+            // Get the template occurrence index - this should not throw since we checked isTemplateAtom()
+            int template_occur_idx = work_mol->mol.getTemplateAtomOccurrence(v_idx);
+
+            // Validate that the occurrence index is valid in the pool
+            // If invalid, this indicates data corruption and we should fail rather than silently skip
+            if (!work_mol->mol.isValidTemplateOccurrence(template_occur_idx))
+            {
+                throw IndigoError("expandedMonomersToAtoms: template atom #%d has invalid occurrence index %d (data corruption detected)", v_idx,
+                                  template_occur_idx);
+            }
+
+            // Mark this template atom as expanded
+            work_mol->mol.setTemplateAtomDisplayOption(v_idx, DisplayOption::Expanded);
+        }
+
+        // Call expandedMonomersToAtoms on the working copy
+        // This method clones internally and returns a molecule with all expanded monomers
+        // converted to regular atoms.
+        std::unique_ptr<BaseMolecule> expanded = work_mol->mol.expandedMonomersToAtoms();
+
+        // Create new IndigoMolecule for the final result
+        std::unique_ptr<IndigoMolecule> new_mol = std::make_unique<IndigoMolecule>();
+        QS_DEF(Array<int>, mapping);
+        new_mol->mol.clone(*expanded, 0, &mapping);
+
+        // Expand group pseudoatoms (OH, NH2, etc.) to explicit atoms for V3000 interoperability
+        expandGroupPseudoatomsInMolecule(new_mol->mol);
+
+        // Copy properties from original molecule
+        auto& props = self.getObject(molecule).getProperties();
+        new_mol->copyProperties(props);
+
+        // Add to session and return ID
+        return self.addObject(new_mol.release());
+    }
+    INDIGO_END(-1);
 }

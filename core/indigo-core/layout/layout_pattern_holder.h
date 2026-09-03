@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "base_cpp/obj_array.h"
+#include "base_cpp/ptr_array.h"
 #include "layout_pattern.h"
 
 namespace indigo
@@ -28,13 +28,13 @@ namespace indigo
     public:
         LayoutPatternHolder();
 
-        ObjArray<PatternLayout>& getPatterns();
+        PtrArray<PatternLayout>& getPatterns();
 
     private:
         void _initPatterns();
         static int _pattern_cmp(PatternLayout& p1, PatternLayout& p2, void* context);
 
-        ObjArray<PatternLayout> _patterns;
+        PtrArray<PatternLayout> _patterns;
 
         DECL_ERROR;
     };

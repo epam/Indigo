@@ -145,10 +145,15 @@ std::unique_ptr<KetBaseMonomer>& KetDocument::addAmbiguousMonomer(const std::str
     return addAmbiguousMonomer(id, alias, template_id);
 }
 
+void KetDocument::setOptions(const LoaderOptions& opts)
+{
+    _options = opts;
+    _cached_molecule.reset(); // a stale conversion would keep the old model
+}
+
 BaseMolecule& KetDocument::getBaseMolecule()
 {
-    static thread_local std::optional<std::unique_ptr<Molecule>> molecule; // Temporary until direct conversion to molecule supported
-    if (!molecule.has_value())
+    if (!_cached_molecule)
     {
         // save to ket
         std::string json;
@@ -158,15 +163,14 @@ BaseMolecule& KetDocument::getBaseMolecule()
         // load molecule from ket
         rapidjson::Document data;
         std::ignore = data.Parse(json.c_str());
-        // auto& res = data.Parse(json.c_str());
-        // if res.hasParseError()
         MoleculeJsonLoader loader(data);
+        loader.setOptions(_options);
         loader.stereochemistry_options.ignore_errors = true;
         loader.ignore_noncritical_query_features = true;
-        molecule.emplace(std::make_unique<Molecule>());
-        loader.loadMolecule(*molecule.value().get());
+        _cached_molecule = std::make_unique<Molecule>();
+        loader.loadMolecule(*_cached_molecule);
     }
-    return *molecule.value().get();
+    return *_cached_molecule;
 }
 
 KetConnection& KetDocument::addConnection(const std::string& conn_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2)
@@ -178,6 +182,28 @@ KetConnection& KetDocument::addConnection(const std::string& conn_type, KetConne
 KetConnection& KetDocument::addConnection(KetConnectionEndPoint ep1, KetConnectionEndPoint ep2)
 {
     return addConnection(KetConnectionSingle, ep1, ep2);
+}
+
+KetConnection& KetDocument::addExplicitConnection(const std::string& conn_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2)
+{
+    auto& connection = addConnection(conn_type, ep1, ep2);
+    _forced_non_sequence_connections.emplace(_connections.size() - 1);
+    return connection;
+}
+
+KetConnection& KetDocument::addExplicitConnection(KetConnectionEndPoint ep1, KetConnectionEndPoint ep2)
+{
+    return addExplicitConnection(KetConnectionSingle, ep1, ep2);
+}
+
+KetConnection& KetDocument::addNonSequenceConnection(const std::string& conn_type, KetConnectionEndPoint ep1, KetConnectionEndPoint ep2)
+{
+    return addExplicitConnection(conn_type, ep1, ep2);
+}
+
+KetConnection& KetDocument::addNonSequenceConnection(KetConnectionEndPoint ep1, KetConnectionEndPoint ep2)
+{
+    return addExplicitConnection(ep1, ep2);
 }
 
 KetConnection& KetDocument::addConnection(const std::string& mon1, const std::string& ap1, const std::string& mon2, const std::string& ap2)
@@ -241,7 +267,7 @@ void KetDocument::processAmbiguousMonomerTemplates()
         it.second.setMonomerClass(monomer_class);
         // calc attachment points
         std::map<std::string, KetAttachmentPoint> var_att_points;
-        for (auto opt_it : options)
+        for (auto& opt_it : options)
         {
             if ((opt_it.ratio().has_value() && opt_it.ratio().value() == 0) || (opt_it.probability().has_value() && opt_it.probability().value() == 0))
                 continue;
@@ -440,6 +466,8 @@ bool is_backbone_class(MonomerClass monomer_class)
 
 void KetDocument::parseSimplePolymers(std::vector<std::deque<std::string>>& sequences, bool for_idt)
 {
+    _non_sequence_connections.clear();
+
     std::map<std::string, MonomerClass> id_to_class;
     std::set<std::string> monomers;
     std::set<std::string> used_monomers;
@@ -452,8 +480,10 @@ void KetDocument::parseSimplePolymers(std::vector<std::deque<std::string>>& sequ
 
     std::map<std::pair<std::string, std::string>, const KetConnection&> ap_to_connection;
 
-    for (auto& connection : _connections)
+    for (size_t connection_idx = 0; connection_idx < _connections.size(); connection_idx++)
     {
+        auto& connection = _connections[connection_idx];
+        bool force_non_sequence = _forced_non_sequence_connections.count(connection_idx) > 0;
         auto& ep1 = connection.ep1();
         auto& ep2 = connection.ep2();
         bool has_mol_1 = hasKetStrProp(ep1, moleculeId);
@@ -501,7 +531,7 @@ void KetDocument::parseSimplePolymers(std::vector<std::deque<std::string>>& sequ
         ap_to_connection.emplace(std::make_pair(mon_id_2, ap_id_2), connection);
 
         bool sequence_connection = false;
-        if (has_mon_1 && has_mon_2) // any connection to molecule is not in sequence
+        if (!force_non_sequence && has_mon_1 && has_mon_2) // any connection to molecule is not in sequence
             if (for_idt)
                 sequence_connection = isIdtConnection(mon1_class, ap_id_1, mon2_class, ap_id_2);
             else
@@ -560,31 +590,30 @@ int KetDocument::moleculeIdxByRef(const std::string& ref)
     return it->second;
 }
 
-KetDocument::KetDocument(BaseMolecule& bmol)
+KetDocument::~KetDocument() = default;
+
+KetDocument::KetDocument()
+    : _molecules(), original_format(0), _meta_objects(rapidjson::kArrayType), _r_groups(rapidjson::kArrayType), _json_molecules(rapidjson::kArrayType),
+      _json_document()
 {
-    // save molecule to ket
+}
+
+KetDocument::KetDocument(BaseMolecule& bmol) : KetDocument()
+{
     std::string json;
     StringOutput out(json);
     MoleculeJsonSaver saver(out);
     saver.saveMolecule(bmol);
-    // load document from ket
-    rapidjson::Document data;
-    /*auto& res*/ std::ignore = data.Parse(json.c_str());
-    // if res.hasParseError()
     KetDocumentJsonLoader loader{};
     loader.parseJson(json, *this);
 }
 
-KetDocument::KetDocument(BaseReaction& breact)
+KetDocument::KetDocument(BaseReaction& breact) : KetDocument()
 {
-    // save reaction to ket
     std::string json;
     StringOutput out(json);
     ReactionJsonSaver saver(out);
     saver.saveReaction(breact);
-    // load document from ket
-    rapidjson::Document data;
-    std::ignore = data.Parse(json.c_str());
     KetDocumentJsonLoader loader{};
     loader.parseJson(json, *this);
 }

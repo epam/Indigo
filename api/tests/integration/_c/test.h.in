@@ -1,1 +1,2 @@
 #cmakedefine PYTHON_SYS_PATH "@PYTHON_SYS_PATH@"
+#cmakedefine PYTHON_HOME "@PYTHON_HOME@"

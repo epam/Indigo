@@ -41,7 +41,7 @@ void ReactionAutomapper::automap(int mode)
 {
     _mode = mode;
 
-    QS_DEF(ObjArray<Array<int>>, mol_mappings);
+    QS_DEF(PtrArray<Array<int>>, mol_mappings);
     QS_DEF(Array<int>, react_mapping);
 
     /*
@@ -73,7 +73,7 @@ void ReactionAutomapper::automap(int mode)
     _checkAtomMapping(false, true, false);
 }
 
-void ReactionAutomapper::_createReactionCopy(Array<int>& mol_mapping, ObjArray<Array<int>>& mappings)
+void ReactionAutomapper::_createReactionCopy(Array<int>& mol_mapping, PtrArray<Array<int>>& mappings)
 {
     _reactionCopy.reset(_initReaction.neu());
 
@@ -92,7 +92,7 @@ void ReactionAutomapper::_createReactionCopy(Array<int>& mol_mapping, ObjArray<A
     _reactionCopy->aromatize(arom_options);
 }
 
-void ReactionAutomapper::_createMoleculeCopy(int mol_idx, bool reactant, Array<int>& mol_mapping, ObjArray<Array<int>>& mappings)
+void ReactionAutomapper::_createMoleculeCopy(int mol_idx, bool reactant, Array<int>& mol_mapping, PtrArray<Array<int>>& mappings)
 {
     QS_DEF(Array<int>, vertices_map);
     QS_DEF(Array<int>, vertices_to_clone);
@@ -257,7 +257,7 @@ void ReactionAutomapper::_initMappings(BaseReaction& reaction)
 
 void ReactionAutomapper::_createReactionMap()
 {
-    QS_DEF(ObjArray<Array<int>>, reactant_permutations);
+    QS_DEF(PtrArray<Array<int>>, reactant_permutations);
     QS_DEF(Array<int>, product_mapping_tmp);
 
     BaseReaction& reaction = *_reactionCopy;
@@ -488,13 +488,13 @@ bool ReactionAutomapper::_checkAtomMapping(bool change_rc, bool change_aam, bool
     ReactionMapMatchingData map_match(_initReaction);
     map_match.createBondMatchingData();
 
-    QS_DEF(ObjArray<Array<int>>, bond_centers);
+    QS_DEF(PtrArray<Array<int>>, bond_centers);
     QS_DEF(Array<int>, mapping);
     QS_DEF(Array<int>, v_mapping);
     QS_DEF(Array<int>, null_map);
     QS_DEF(Array<int>, rmol_map);
     std::unique_ptr<BaseReaction> reaction_copy_ptr;
-    QS_DEF(ObjArray<Array<int>>, react_invmap);
+    QS_DEF(PtrArray<Array<int>>, react_invmap);
 
     null_map.clear();
     bool unchanged = true;
@@ -607,8 +607,8 @@ bool ReactionAutomapper::_checkAtomMapping(bool change_rc, bool change_aam, bool
                         BaseMolecule& cr_mol = reaction_copy.getBaseMolecule(copy_mol_idx);
                         BaseMolecule& cp_mol = reaction_copy.getBaseMolecule(copy_opp_idx);
 
-                        int mol_edge_idx = cr_mol.findEdgeIndex(react_invmap.at(mol_idx)[r_edge.beg], react_invmap.at(mol_idx)[r_edge.end]);
-                        int opp_edge_idx = cp_mol.findEdgeIndex(react_invmap.at(opp_idx)[p_edge.beg], react_invmap.at(opp_idx)[p_edge.end]);
+                        int mol_edge_idx = cr_mol.findEdgeIndex((react_invmap.at(mol_idx))[r_edge.beg], (react_invmap.at(mol_idx))[r_edge.end]);
+                        int opp_edge_idx = cp_mol.findEdgeIndex((react_invmap.at(opp_idx))[p_edge.beg], (react_invmap.at(opp_idx))[p_edge.end]);
 
                         bool react_arom = cr_mol.getBondOrder(mol_edge_idx) == BOND_AROMATIC;
                         bool prod_arom = cp_mol.getBondOrder(opp_edge_idx) == BOND_AROMATIC;
@@ -732,7 +732,7 @@ bool ReactionAutomapper::_checkAtomMapping(bool change_rc, bool change_aam, bool
     return unchanged;
 }
 
-void ReactionAutomapper::_setupReactionMap(Array<int>& react_mapping, ObjArray<Array<int>>& mol_mappings)
+void ReactionAutomapper::_setupReactionMap(Array<int>& react_mapping, PtrArray<Array<int>>& mol_mappings)
 {
     int mol_idx, j, v;
     if (_mode == AAM_REGEN_KEEP)
@@ -780,7 +780,7 @@ void ReactionAutomapper::_setupReactionMap(Array<int>& react_mapping, ObjArray<A
         }
     }
 }
-void ReactionAutomapper::_setupReactionInvMap(Array<int>& react_mapping, ObjArray<Array<int>>& mol_mappings)
+void ReactionAutomapper::_setupReactionInvMap(Array<int>& react_mapping, PtrArray<Array<int>>& mol_mappings)
 {
     int mol_idx, mol_idx_map, j, v, map_j;
     if (_mode == AAM_REGEN_KEEP)
@@ -909,7 +909,7 @@ void ReactionAutomapper::_considerDissociation()
 void ReactionAutomapper::_considerDimerization()
 {
     QS_DEF(Array<int>, mol_mapping);
-    QS_DEF(ObjArray<Array<int>>, inv_mappings);
+    QS_DEF(PtrArray<Array<int>>, inv_mappings);
     QS_DEF(Array<int>, sub_map);
     QS_DEF(Array<int>, max_sub_map);
     bool way_exit = true, map_changed = false;
@@ -1070,7 +1070,7 @@ void ReactionAutomapper::_removeSmallComponents(BaseMolecule& mol) const
     }
 }
 
-void ReactionAutomapper::_createPermutations(BaseReaction& reaction, ObjArray<Array<int>>& permutations)
+void ReactionAutomapper::_createPermutations(BaseReaction& reaction, PtrArray<Array<int>>& permutations)
 {
     QS_DEF(Array<int>, reactant_indexes);
     QS_DEF(Array<int>, reactant_small);
@@ -1157,7 +1157,7 @@ void ReactionAutomapper::_createPermutations(BaseReaction& reaction, ObjArray<Ar
 }
 
 // all transpositions for numbers from 0 to n-1
-void ReactionAutomapper::_permutation(Array<int>& s_array, ObjArray<Array<int>>& p_array)
+void ReactionAutomapper::_permutation(Array<int>& s_array, PtrArray<Array<int>>& p_array)
 {
 
     p_array.clear();
@@ -1500,8 +1500,8 @@ bool RSubstructureMcs::searchSubstructureReact(BaseMolecule& init_rmol, const Ar
     if (_sub == 0 || _super == 0)
         throw ReactionAutomapper::Error("internal AAM error: not initialized sub-mcs molecules");
 
-    QS_DEF(ObjArray<Array<int>>, tmp_maps);
-    QS_DEF(ObjArray<EmbeddingEnumerator>, emb_enums);
+    QS_DEF(PtrArray<Array<int>>, tmp_maps);
+    QS_DEF(PtrArray<EmbeddingEnumerator>, emb_enums);
     QS_DEF(Array<int>, in_map_cut);
     QS_DEF(Array<int>, results);
 

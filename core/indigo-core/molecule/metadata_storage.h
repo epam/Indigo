@@ -21,12 +21,16 @@
 #include <cstdint>
 
 #include "base_cpp/ptr_array.h"
-#include "base_cpp/ptr_pool.h"
 #include "base_cpp/red_black.h"
 #include "common/math/algebra.h"
 
+#include <memory>
+
 namespace indigo
 {
+    // A meta object is constructed complete: its payload is fixed by the
+    // constructor and the subclasses offer no in-place fill. It is therefore
+    // never reset and not Reusable, and its owner is a plain owning array.
     class MetaObject
     {
     public:
@@ -37,8 +41,14 @@ namespace indigo
         virtual MetaObject* clone() const = 0;
         virtual void getBoundingBox(Rect2f& bbox) const = 0;
         virtual void offset(const Vec2f& offset) = 0;
-        virtual ~MetaObject(){};
+        virtual ~MetaObject() = default;
     };
+
+    // Stays dense: objects are appended and a removal compacts the array, so
+    // size() is the object count and every consumer can walk it by index. The
+    // per-kind index arrays below are a derived lookup cache and are rebuilt
+    // after a compaction rather than constraining the layout.
+    using MetaObjectStore = PtrArray<MetaObject>;
 
     class MetaDataStorage
     {
@@ -56,17 +66,13 @@ namespace indigo
         void resetMetaData()
         {
             _meta_data.clear();
-            _plus_indexes.clear();
-            _arrow_indexes.clear();
-            _simple_object_indexes.clear();
-            _text_object_indexes.clear();
-            _image_indexes.clear();
+            _clearIndexes();
             _explicit_reaction_object_indexes.clear();
         }
 
         void resetReactionData();
 
-        const PtrPool<MetaObject>& metaData() const
+        const MetaObjectStore& metaData() const
         {
             return _meta_data;
         }
@@ -79,7 +85,12 @@ namespace indigo
         void addExplicitReactionObjectIndex(int index);
 
     protected:
-        PtrPool<MetaObject> _meta_data; // TODO: should be replaced with list of unique_ptr
+        void _clearIndexes();
+        // Rebuilds every per-kind index from the current contents of the store.
+        void _reindex();
+        void _indexMetaObject(uint32_t class_id, int index);
+
+        MetaObjectStore _meta_data;
         Array<int> _plus_indexes;
         Array<int> _arrow_indexes;
         Array<int> _multi_tail_indexes;

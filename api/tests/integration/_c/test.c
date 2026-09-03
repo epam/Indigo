@@ -1,6 +1,16 @@
 // Based on https://pythonextensionpatterns.readthedocs.io/en/latest/debugging/debug_in_ide.html
 
+#ifdef _DEBUG
+#undef _DEBUG
 #include <Python.h>
+#define _DEBUG
+#else
+#include <Python.h>
+#endif
+
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 #include "test.h"
 
@@ -11,18 +21,21 @@ int import_call_execute(int argc, const char* argv[])
     PyObject* pFunc = NULL;
     PyObject* pResult = NULL;
 
+    size_t python_sys_path_len = strlen(PYTHON_SYS_PATH);
+    Py_SetPath(Py_DecodeLocale(PYTHON_SYS_PATH, &python_sys_path_len));
+
     Py_SetProgramName((wchar_t*)argv[0]);
+    Py_Initialize();
+
     wchar_t** _argv = PyMem_Malloc(sizeof(wchar_t*) * argc);
     for (int i = 0; i < argc; i++)
     {
         wchar_t* arg = Py_DecodeLocale(argv[i], NULL);
         _argv[i] = arg;
     }
-    size_t python_sys_path_len = strlen(PYTHON_SYS_PATH);
-    Py_SetPath(Py_DecodeLocale(PYTHON_SYS_PATH, &python_sys_path_len));
-    Py_Initialize();
     PySys_SetArgv(argc, _argv);
     PyMem_Free(_argv);
+
     pModule = PyImport_ImportModule("test");
     if (!pModule)
     {

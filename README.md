@@ -103,6 +103,7 @@ To build the project from the sources, the following tools should be installed:
 - flask_httpauth package installed (to run backend API test). Command: `python -m pip install flask_httpauth`
 - pyparsing package installed (to run backend API test). Command: `python -m pip install pyparsing`
 - requests package installed (to run backend API test). Command: `python -m pip install requests`
+- pillow package installed (required for rendering tests). Command: `python -m pip install pillow`
 
 > On Linux use python3 insted of python. Using virtual environment might be required as well.
 
@@ -172,6 +173,22 @@ Befor running any test you have to build and install indigo-python
     >to run tests by mask use `test_name`
     ```
     python api/tests/integration/test.py -t 1 -p test_name
+    ```
+
+    >to update all tests "ref/" using -u flag
+    ```
+    python api/tests/integration/test.py -u
+    ```
+
+    >to update all tests "ref/" without -u flag
+    ```
+    export INDIGO_UPDATE_TESTS="True"
+    python api/tests/integration/test.py
+    ```
+
+    >to update a single test's "ref/" by mask use `test_name` and -u flag
+    ```
+    python api/tests/integration/test.py -t 1 -p test_name -u
     ```
 
 ### To run backend API test:

@@ -547,13 +547,37 @@
         "class": "RNA",
         "templates": [
             {
+                "$ref": "monomerTemplate-sNuc01"
+            },
+            {
                 "$ref": "monomerTemplate-Nuc01"
             },
             {
                 "$ref": "monomerTemplate-pNuc01"
+            }
+        ],
+        "connections": [
+            {
+                "connectionType": "single",
+                "endpoint1": {
+                    "templateId": "monomerTemplate-sNuc01",
+                    "attachmentPointId": "R3"
+                },
+                "endpoint2": {
+                    "templateId": "monomerTemplate-Nuc01",
+                    "attachmentPointId": "R1"
+                }
             },
             {
-                "$ref": "monomerTemplate-sNuc01"
+                "connectionType": "single",
+                "endpoint1": {
+                    "templateId": "monomerTemplate-pNuc01",
+                    "attachmentPointId": "R2"
+                },
+                "endpoint2": {
+                    "templateId": "monomerTemplate-sNuc01",
+                    "attachmentPointId": "R1"
+                }
             }
         ]
     }
