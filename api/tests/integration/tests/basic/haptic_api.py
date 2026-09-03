@@ -6,6 +6,10 @@ the group nor the bond is a part of the molecular graph, so this test also pins
 what must NOT change: the bond count, the valences and the implicit hydrogens.
 """
 
+# The Java job runs this suite under Jython 2.7, where a bare print() would print
+# an empty tuple instead of an empty line.
+from __future__ import print_function
+
 import os
 import sys
 
