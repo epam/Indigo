@@ -6,7 +6,7 @@
 Rules that must stay true. Each one is here because breaking it fails **silently** — no compiler
 error, and often no failing test on the machine where the change was made.
 
-Anchors were verified on `93b041db7` (master, 2026-08-31). An anchor that no longer resolves is a
+Anchors were verified on `f0cc3c423` (master, 2026-09-03). An anchor that no longer resolves is a
 defect in this file: fix it in the same change that moved the code.
 
 ---
@@ -46,16 +46,24 @@ a wrong molecule several operations later.
 Follow the existing `MoleculeCisTrans` / `MoleculeStereocenters` shape. `BaseMolecule` is already a
 god object; every field added to it is added to every molecule ever allocated.
 
-**A7 — Bond orders and query flags are named constants, tests included.**
+**A7 — A collective endpoint is dropped whole or not at all.**
+When atoms are removed, `AttachmentGroup::remapAtoms` returns `false` if any member is gone, and the
+caller must then drop the entire group — never a truncated one
+(`core/indigo-core/molecule/molecule_attachment_groups.h:63-66`). Half a ligand is a different
+chemical claim, not a smaller one, and a haptic bond pointing at a partial group is wrong in a way
+nothing downstream can detect. The group's anchor atom is deliberately outside this rule: it is
+remapped separately and simply becomes `-1`.
+
+**A8 — Bond orders and query flags are named constants, tests included.**
 `BOND_SINGLE`, `BOND_ZERO`, `_BOND_COORDINATION` and friends — never the underlying integers.
 
 ## Language & platform
 
-**A8 — C++17, no C++20.**
+**A9 — C++17, no C++20.**
 `cmake/setup.cmake:25` sets `CMAKE_CXX_STANDARD 17`, and the Emscripten and oldest-supported-GCC
 build legs will reject C++20 constructs. The code must compile under GCC, Clang and MSVC.
 
-**A9 — Layout output is not bit-identical across platforms.**
+**A10 — Layout output is not bit-identical across platforms.**
 The 2D layout produces different coordinates on Windows and Linux for a measurable share of the
 corpus — floating-point noise crossing epsilon comparisons, not a platform bug to be "fixed" by
 widening a type. Never assert on exact coordinates in a cross-platform test; compare topology, or

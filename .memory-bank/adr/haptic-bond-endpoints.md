@@ -25,7 +25,10 @@ either an atom index or a group index.
 
 Two consequences are part of the decision, not accidents of it:
 
-- **A group stores no position.** Anything needing one derives it from the member atoms.
+- **A group stores no position.** Anything needing one derives it from the member atoms. A group may
+  carry an *anchor atom* — the atom a file drew it with, such as the star atom of a V3000 `ENDPTS`
+  record — but that is a reference to an atom, not a coordinate, and a group whose anchor is gone
+  stays a valid group.
 - **Creation and removal are funnelled.** `addHapticBond` is the only way to make a haptic bond, and
   `removeAttachmentGroup` the only way to remove a group, so the invariant "no haptic bond has a
   dangling endpoint" is maintained in one place rather than at every call site.
@@ -50,7 +53,13 @@ Two consequences are part of the decision, not accidents of it:
   ([../invariants.md](../invariants.md), A4 and A5), and this feature is the largest instance of it.
 - Formats that have no concept of a collective endpoint cannot represent the structure faithfully;
   each such format needs an explicit decision about what to write, rather than a silent fallback.
-- Anything that needs a point for the group — rendering, and layout when it gains support —
-  computes the centroid from the member atoms. That computation belongs in **one** function shared
-  by its callers; duplicating it is how two parts of the UI end up disagreeing about where the bond
-  points.
+- Anything that needs a point for the group — the V3000 saver when it has to emit a star atom,
+  rendering, and layout when it gains support — derives one from the member atoms. Today that is the
+  centre of their bounding box (`MolfileSaver::_attachmentGroupCentre`). Keep the derivation in
+  **one** function shared by its callers: duplicating it is how two parts of the system end up
+  disagreeing about where the bond points.
+- **A format with no collective endpoint loses the structure, not part of it.** V3000 can express a
+  group-to-atom haptic bond as an `ENDPTS` record, but has no form for an atom-to-atom one, and the
+  saver drops those silently (`molfile_saver.cpp:465`). That is the general consequence: each format
+  needs an explicit decision, and "drop it quietly" is a decision that should be recorded rather
+  than discovered.

@@ -4,7 +4,7 @@
 > **Skip when:** you are only *using* an existing container through its interface.
 
 `core/indigo-core/common/base_cpp/` holds the containers everything else is built on. Anchors
-verified on `c57c377e4`.
+verified on `f0cc3c423`.
 
 ## Responsibility
 

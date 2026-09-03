@@ -4,7 +4,7 @@
 > integration harness, a wrapper's own tests, WASM, Bingo, or the REST service.
 > **Skip when:** you are not running tests in this task.
 
-Verified on `c57c377e4`. Oracle has its own document because of the Docker harness and its traps —
+Verified on `f0cc3c423`. Oracle has its own document because of the Docker harness and its traps —
 [modules/bingo-oracle.md](./modules/bingo-oracle.md).
 
 ## The thing to understand first
@@ -138,7 +138,7 @@ python utils/indigo-service/backend/service/tests/api/indigo_test.py   # termina
 
 - **Read the exit code.** A suite that was not run is reported as not run, never as passing.
 - **Never assert on 2D coordinates** — layout differs across platforms
-  ([invariants.md](./invariants.md), A9). Compare topology, or pin references per platform.
+  ([invariants.md](./invariants.md), A10). Compare topology, or pin references per platform.
 - **Assert the exception message, not only that something failed** — the text is a public contract.
 - **Reference files in `ref/` are regenerated deliberately.** If a baseline moved, explain what
   changed in the behaviour and why the new value is right.

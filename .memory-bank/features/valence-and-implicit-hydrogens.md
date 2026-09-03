@@ -7,7 +7,7 @@
 <!-- STUB: covers the model selection and the failure contract. The per-element rules themselves are
      in the BIOVIA specifications and in valence_model.cpp; they are not restated here. -->
 
-Anchors verified on `c57c377e4`.
+Anchors verified on `f0cc3c423`.
 
 ## Problem
 
