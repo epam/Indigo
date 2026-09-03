@@ -920,11 +920,8 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
 
     output.writeStringCR("M  V30 END BOND");
 
-    QS_DEF(Array<int>, sgs_sorted);
-    _checkSGroupIndices(mol, sgs_sorted);
-
     //[Sapio] [CHEMBUGS-184] S-GROUP needs to be before COLLECTION when S GROUP is used.
-    auto sgroup_infos = mol.sgroups.getOrderedSGroups(); 
+    auto sgroup_infos = mol.sgroups.getOrderedSGroups();
     const bool has_sgroups = (sgroup_infos.size() > 0);
     MoleculeStereocenters& stereocenters = mol.stereocenters;
     const bool has_collection = (stereocenters.begin() != stereocenters.end() || mol.hasHighlighting() || mol.custom_collections.size() > 0);
