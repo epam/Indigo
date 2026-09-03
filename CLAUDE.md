@@ -14,7 +14,7 @@ knowledge lives in `.memory-bank/` and is read on demand.
 - where a component lives, how data flows — [.memory-bank/architecture.md](.memory-bank/architecture.md)
 - compiling, CMake options, WASM, devcontainer — [.memory-bank/build.md](.memory-bank/build.md)
 - running any test suite — [.memory-bank/testing.md](.memory-bank/testing.md)
-- Python style and linting — [.memory-bank/conventions.md](.memory-bank/conventions.md)
+- code style, and what the CI gate actually checks — [.memory-bank/conventions.md](.memory-bank/conventions.md)
 - `bingo/oracle/` — [.memory-bank/modules/bingo-oracle.md](.memory-bank/modules/bingo-oracle.md)
 - `bingo/bingo-elastic/python/` — [.memory-bank/modules/bingo-elastic-python.md](.memory-bank/modules/bingo-elastic-python.md)
 - writing into `.memory-bank/` itself — [.memory-bank/README.md](.memory-bank/README.md), formats and rules

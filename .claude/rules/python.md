@@ -18,8 +18,10 @@ linter settings: [.memory-bank/conventions.md](../../.memory-bank/conventions.md
 
 - Python 3.9 or newer. Type hints on every public function; docstrings describe the **contract**
   (arguments, return, exceptions raised), not a retelling of the body.
-- `black` (line length 79) and `isort` (black profile) are not negotiable; `flake8`, `mypy` and
-  `pylint` gate the CI. `api/tests/integration` is excluded from flake8.
+- `black` (line length 79) and `isort` are not negotiable, and `pflake8` and `mypy` gate the CI
+  (`.ci/static_analysis_check.sh`). `api/tests/integration` is formatted and linted like everything
+  else, but **exempt from `mypy`** — it runs under Jython and IronPython, not only CPython, so it
+  also cannot use CPython-only syntax.
 
 ## Wrapper (`api/python/`)
 

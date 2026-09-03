@@ -12,6 +12,15 @@ description: "C++ standards for the Indigo core and native API: portability, mem
 Silent-failure rules live in [.memory-bank/invariants.md](../../.memory-bank/invariants.md) — read
 those before changing molecule data structures or the C API. This file is the everyday style contract.
 
+## Formatting
+
+`.clang-format` is enforced: CI runs `clang-format -Werror --dry-run` over every `.h/.hpp/.c/.cpp`
+outside `third_party/` and the build directories, and the job fails the build. Microsoft base style,
+**column limit 160**, `PointerAlignment: Left`, `NamespaceIndentation: All`. Run `clang-format -i` on
+what you touched before pushing.
+
+clang-tidy is configured but **not run** — see [.memory-bank/conventions.md](../../.memory-bank/conventions.md).
+
 ## Language and portability
 
 - **C++17.** `cmake/setup.cmake` sets the standard; `std::optional`, `string_view`, structured
