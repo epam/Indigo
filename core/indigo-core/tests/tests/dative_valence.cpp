@@ -29,6 +29,8 @@
 #include <base_cpp/output.h>
 #include <base_cpp/scanner.h>
 #include <molecule/molecule.h>
+#include <molecule/molecule_json_loader.h>
+#include <molecule/molecule_json_saver.h>
 #include <molecule/molecule_standardize.h>
 #include <molecule/molecule_standardize_options.h>
 #include <molecule/molfile_loader.h>
@@ -81,6 +83,36 @@ protected:
         BufferScanner scanner(molfile.c_str());
         MolfileLoader loader(scanner);
         loader.loadMolecule(mol);
+    }
+
+    static void loadKet(Molecule& mol, const char* json)
+    {
+        rapidjson::Document data;
+        ASSERT_FALSE(data.Parse(json).HasParseError());
+        MoleculeJsonLoader loader(data);
+        loader.loadMolecule(mol);
+    }
+
+    static std::string saveKet(Molecule& mol)
+    {
+        Array<char> buffer;
+        ArrayOutput output(buffer);
+        MoleculeJsonSaver saver(output);
+        saver.saveMolecule(mol);
+        return std::string(buffer.ptr(), static_cast<size_t>(buffer.size()));
+    }
+
+    // Chlorine(3+) with one ordinary bond, donating a dative bond to iron -- the molecule
+    // the requirement 7 step is stated on. `donor_first` decides which way the arrow runs.
+    static std::string chlorineKet(bool donor_first)
+    {
+        return std::string("{\"root\":{\"nodes\":[{\"$ref\":\"mol0\"}]},\"mol0\":{\"type\":\"molecule\",\"atoms\":["
+                           "{\"label\":\"Cl\",\"charge\":3,\"location\":[0,0,0]},"
+                           "{\"label\":\"C\",\"location\":[1.5,0,0]},"
+                           "{\"label\":\"Fe\",\"location\":[-1.5,0,0]}],\"bonds\":["
+                           "{\"type\":1,\"atoms\":[0,1]},"
+                           "{\"type\":9,\"atoms\":[") +
+               (donor_first ? "0,2" : "2,0") + "]}]}}";
     }
 };
 
@@ -336,4 +368,79 @@ TEST_F(IndigoCoreDativeValenceTest, dative_bonds_survive_a_v3000_round_trip)
     ASSERT_NE(-1, restored_bond) << "the dative bond disappeared in the round trip";
     EXPECT_EQ(_BOND_COORDINATION, restored.getBondOrder(restored_bond));
     EXPECT_EQ(original.getEdge(bond).beg, restored.getEdge(restored_bond).beg) << "direction must survive too";
+}
+
+// KET is the format Ketcher speaks, and the Ketcher side of this feature
+// (epam/ketcher#10427) is what the ticket exists to serve, so the contract has to hold
+// there and not only in V3000. Chlorine(3+) with one ordinary bond has no hydrogen on its
+// own and gains one as a donor -- the same step, reached through the other format.
+TEST_F(IndigoCoreDativeValenceTest, ket_carries_dative_bonds_into_the_model)
+{
+    Molecule from_ket;
+    ASSERT_NO_THROW(loadKet(from_ket, chlorineKet(true).c_str()));
+
+    const int bond = from_ket.findEdgeIndex(0, 2);
+    ASSERT_NE(-1, bond);
+    EXPECT_EQ(_BOND_COORDINATION, from_ket.getBondOrder(bond)) << "KET must keep order 9, not fold it into a single bond";
+    EXPECT_EQ(0, from_ket.getEdge(bond).beg) << "the order of \"atoms\" is the direction of the arrow";
+
+    EXPECT_EQ(1, from_ket.getImplicitH(0));
+    EXPECT_EQ(3, from_ket.getImplicitH(1)) << "the carbon is unaffected";
+
+    // The two formats must not disagree about the same molecule.
+    Molecule from_molfile;
+    ASSERT_NO_THROW(load(from_molfile, "\n\n\n"
+                                       "  0  0  0     0  0            999 V3000\n"
+                                       "M  V30 BEGIN CTAB\n"
+                                       "M  V30 COUNTS 3 2 0 0 0\n"
+                                       "M  V30 BEGIN ATOM\n"
+                                       "M  V30 1 Cl 0 0 0 0 CHG=3\n"
+                                       "M  V30 2 C 1.5 0 0 0\n"
+                                       "M  V30 3 Fe -1.5 0 0 0\n"
+                                       "M  V30 END ATOM\n"
+                                       "M  V30 BEGIN BOND\n"
+                                       "M  V30 1 1 1 2\n"
+                                       "M  V30 2 9 1 3\n"
+                                       "M  V30 END BOND\n"
+                                       "M  V30 END CTAB\n"
+                                       "M  END\n"));
+    EXPECT_EQ(from_molfile.getImplicitH(0), from_ket.getImplicitH(0));
+}
+
+// Reversing the arrow in KET has to reverse the roles, because requirements 4 and 5 are
+// stated in terms of donor and acceptor rather than of the pair of atoms.
+TEST_F(IndigoCoreDativeValenceTest, ket_keeps_the_direction_of_the_arrow)
+{
+    Molecule forward;
+    ASSERT_NO_THROW(loadKet(forward, chlorineKet(true).c_str()));
+    EXPECT_EQ(0, forward.getEdge(forward.findEdgeIndex(0, 2)).beg) << "chlorine donates";
+
+    Molecule reversed;
+    ASSERT_NO_THROW(loadKet(reversed, chlorineKet(false).c_str()));
+    EXPECT_EQ(2, reversed.getEdge(reversed.findEdgeIndex(0, 2)).beg) << "iron donates";
+}
+
+TEST_F(IndigoCoreDativeValenceTest, ket_round_trip_keeps_the_dative_bond)
+{
+    Molecule original;
+    ASSERT_NO_THROW(loadKet(original, chlorineKet(true).c_str()));
+
+    const std::string saved = saveKet(original);
+
+    // Compared without whitespace, so that turning pretty printing on or off cannot
+    // decide whether this test passes.
+    std::string dense;
+    for (char c : saved)
+        if (!isspace(static_cast<unsigned char>(c)))
+            dense += c;
+    EXPECT_NE(std::string::npos, dense.find("\"type\":9")) << "the saved KET no longer says the bond is dative: " << saved;
+
+    Molecule restored;
+    ASSERT_NO_THROW(loadKet(restored, saved.c_str()));
+
+    const int bond = restored.findEdgeIndex(0, 2);
+    ASSERT_NE(-1, bond) << "the dative bond disappeared in the round trip";
+    EXPECT_EQ(_BOND_COORDINATION, restored.getBondOrder(bond));
+    EXPECT_EQ(0, restored.getEdge(bond).beg) << "direction must survive too";
+    EXPECT_EQ(1, restored.getImplicitH(0));
 }
