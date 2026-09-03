@@ -50,4 +50,9 @@ else ()
     target_link_libraries(${PROJECT_NAME}
             PUBLIC RapidJSON::RapidJSON
             PUBLIC Cairo::Cairo)
+    if (USE_FONT_MANAGER)
+        find_package(Freetype REQUIRED)
+        target_include_directories(${PROJECT_NAME} PRIVATE ${FREETYPE_INCLUDE_DIRS})
+        target_link_libraries(${PROJECT_NAME} PUBLIC ${FREETYPE_LIBRARIES})
+    endif()
 endif ()
