@@ -1011,7 +1011,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                 auto collection = mol.custom_collections.at(i);
                 out.printf("%s", collection);
                 _writeMultiString(collection_output, buf.ptr(), buf.size());
-                if (strstr(collection, "Sgroups=(") == 0)
+                if (strstr(collection, "Sgroups=(") != nullptr)
                     has_sgroup_collection = true;
             }
         }
