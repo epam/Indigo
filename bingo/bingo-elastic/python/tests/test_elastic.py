@@ -22,6 +22,7 @@ from bingo_elastic.model.record import (
 )
 from bingo_elastic.queries import (
     EuclidSimilarityMatch,
+    GrossFormulaQuery,
     RangeQuery,
     TanimotoSimilarityMatch,
     TverskySimilarityMatch,
@@ -1261,3 +1262,36 @@ async def test_a_molecule_tautomer_exact_search(
             )
         ]
     assert len(matches) == 1
+
+
+def test_gross_formula_search(
+    elastic_repository_molecule: ElasticRepository,
+    indigo_fixture: Indigo,
+    fixture_molecules_20_10_5_1: None,
+):
+    _ = fixture_molecules_20_10_5_1
+    for formula in ("C2H6O", "CH3CH2OH"):
+        results = list(
+            elastic_repository_molecule.filter(
+                gross_formula=GrossFormulaQuery(formula), limit=50
+            )
+        )
+        assert len(results) == 20
+
+
+@pytest.mark.asyncio
+async def test_a_gross_formula_search(
+    a_elastic_repository_molecule,
+    indigo_fixture: Indigo,
+    fixture_molecules_20_10_5_1: None,
+):
+    _ = fixture_molecules_20_10_5_1
+    for formula in ("C2H6O", "CH3CH2OH"):
+        async with a_elastic_repository_molecule() as rep:
+            results = [
+                r
+                async for r in rep.filter(
+                    gross_formula=GrossFormulaQuery(formula), limit=50
+                )
+            ]
+        assert len(results) == 20

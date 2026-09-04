@@ -4,9 +4,9 @@ The standalone Python library at `bingo/bingo-elastic/python/` that indexes Indi
 
 ## Module map
 
-- `bingo_elastic/elastic.py` — `ElasticRepository` and `AsyncElasticRepository` (parallel sync/async classes, both take `tau_search: bool` and `custom_properties: CustomPropertiesMapping` flags), `IndexName` enum (`BINGO_MOLECULE`, `BINGO_REACTION`, `BINGO_CUSTOM`), `build_index_body(tau_search, custom_properties)` builder for the index mapping (merges `custom_properties` into `mappings.properties` and rejects collisions with `RESERVED_FIELDS`), and `compile_query` (dispatches a query subject + kwargs to the right query class; reroutes substructure to the tautomer path when `options` contains `TAU`). `CustomPropertiesMapping = Dict[str, Dict[str, Any]]`: keys are field names, values are ES property-mapping fragments (e.g. `{"n": {"type": "integer"}}`).
-- `bingo_elastic/queries.py` — `CompilableQuery` hierarchy: `SubstructureQuery`, `TautomerSubstructureQuery` (subclass swapping in the `sub-tau` fingerprint and `tau_fingerprint` field), `ExactMatch`, similarity matches (`TanimotoSimilarityMatch`, `EuclidSimilarityMatch`, `TverskySimilarityMatch`), plus `KeywordQuery`, `RangeQuery`, `WildcardQuery` for non-chemical fields. `query_factory` maps kwarg keys (`"substructure"`, `"tautomer"`, `"exact"`, …) to a class.
-- `bingo_elastic/model/record.py` — `IndigoRecord` (abstract), `IndigoRecordMolecule`, `IndigoRecordReaction`, and the `WithIndigoObject` descriptor that extracts fingerprints + `cmf` + `hash` from an `IndigoObject` at construction time. The descriptor also computes the `sub-tau` fingerprint when the record was built with `tau_search=True`, and copies non-reserved properties from `iterateProperties()` (SDF tags) onto the record. `IndigoRecord(custom_properties=…)` accepts an iterable of property names used as a per-record allowlist; `RESERVED_FIELDS` lists names the extractor never overwrites (`cmf`, `hash`, fingerprints, etc.).
+- `bingo_elastic/elastic.py` — `ElasticRepository` and `AsyncElasticRepository` (parallel sync/async classes, both take `tau_search: bool` and `custom_properties: CustomPropertiesMapping` flags), `IndexName` enum (`BINGO_MOLECULE`, `BINGO_REACTION`, `BINGO_CUSTOM`), `build_index_body(tau_search, custom_properties)` builder for the index mapping (default properties: `sim_fingerprint`, `sub_fingerprint`, `cmf`, `hash`, `has_error`, and `gross_formula: keyword`; merges `custom_properties` into `mappings.properties` and rejects collisions with `RESERVED_FIELDS`), and `compile_query` (dispatches a query subject + kwargs to the right query class; reroutes substructure to the tautomer path when `options` contains `TAU`). `CustomPropertiesMapping = Dict[str, Dict[str, Any]]`: keys are field names, values are ES property-mapping fragments (e.g. `{"n": {"type": "integer"}}`).
+- `bingo_elastic/queries.py` — `CompilableQuery` hierarchy: `SubstructureQuery`, `TautomerSubstructureQuery` (subclass swapping in the `sub-tau` fingerprint and `tau_fingerprint` field), `ExactMatch`, similarity matches (`TanimotoSimilarityMatch`, `EuclidSimilarityMatch`, `TverskySimilarityMatch`), plus `KeywordQuery`, `RangeQuery`, `WildcardQuery`, and `GrossFormulaQuery` for non-chemical fields. `GrossFormulaQuery` accepts compact Hill notation (`"C2H6O"`) or condensed structural notation (`"CH3CH2OH"`) and normalises both to canonical Hill form via `_normalize_formula` (regex `[A-Z][a-z]?\d*` sums element counts then re-emits C, H first, then alphabetical) before emitting an ES `term` query against `gross_formula`. `query_factory` maps kwarg keys (`"substructure"`, `"tautomer"`, `"exact"`, …) to a class; `GrossFormulaQuery` instances reach it via the `isinstance(value, CompilableQuery)` branch.
+- `bingo_elastic/model/record.py` — `IndigoRecord` (abstract), `IndigoRecordMolecule`, `IndigoRecordReaction`, and the `WithIndigoObject` descriptor that extracts fingerprints + `cmf` + `hash` + `gross_formula` from an `IndigoObject` at construction time. `gross_formula` is set via `IndigoObject.grossFormula()` with spaces stripped (Indigo returns `"C2 H6 O"`; stored as `"C2H6O"`). The descriptor also computes the `sub-tau` fingerprint when the record was built with `tau_search=True`, and copies non-reserved properties from `iterateProperties()` (SDF tags) onto the record. `IndigoRecord(custom_properties=…)` accepts an iterable of property names used as a per-record allowlist; `RESERVED_FIELDS` lists names the extractor never overwrites (`cmf`, `hash`, `gross_formula`, fingerprints, etc.).
 - `bingo_elastic/model/helpers.py` — file iterators (`iterate_file` generic dispatcher plus format-specific wrappers `iterate_sdf` / `iterate_smiles` / `iterate_cml`) and single-file loaders (`load_molecule`, `load_reaction`). All iterators accept `custom_properties=` (an iterable of allowed property names) and forward it to the records they yield — pass the keys of the repo's `custom_properties` mapping so extraction and the ES mapping stay aligned.
 - `tests/` — its own pytest suite with `conftest.py` fixtures that connect to `localhost:9200`.
 
@@ -28,6 +28,19 @@ When `options` contains the `TAU` token, `compile_query` also switches the **can
 The tautomer path is opt-in on **both sides**: `tau_search=True` on the record gates fingerprint extraction, and `tau_search=True` on the repository declares `tau_fingerprint` in the index mapping (see `build_index_body`). Old records and old indexes stay byte-for-byte unchanged when these flags are left at their defaults.
 
 Side effect to remember: fingerprints are computed at **record construction time** in the `WithIndigoObject` descriptor, not at `index_records()` time. By the time records reach the repo, the fingerprint is already frozen on the instance.
+
+## Gross formula search
+
+`gross_formula` (e.g. `"C2H6O"`) is computed by `WithIndigoObject.__set__` via `IndigoObject.grossFormula()` (spaces stripped) and declared as a `keyword` field in the default `build_index_body` mapping — no opt-in flag or custom mapping setup is needed.
+
+Search with:
+
+```python
+repo.filter(gross_formula=GrossFormulaQuery("C2H6O"))
+repo.filter(gross_formula=GrossFormulaQuery("CH3CH2OH"))  # condensed structural form — normalises to C2H6O
+```
+
+No postprocess step is required — an ES `term` query on a `keyword` field has no false positives. Gross formula search is **isomer-blind**: all structural isomers share the same formula, so `"C3H8O"` returns both propan-1-ol and propan-2-ol.
 
 ## Custom SDF properties
 
