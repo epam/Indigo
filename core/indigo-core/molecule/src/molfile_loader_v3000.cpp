@@ -685,8 +685,6 @@ void MolfileLoader::_readCtab3000()
                 if (order == BOND_SINGLE || order == BOND_DOUBLE || order == BOND_TRIPLE || order == BOND_AROMATIC || order == _BOND_COORDINATION ||
                     order == _BOND_HYDROGEN)
                     _mol->addBond_Silent(beg, end, order);
-                else if (order == _BOND_COORDINATION || order == _BOND_HYDROGEN)
-                    _mol->addBond_Silent(beg, end, BOND_ZERO);
                 else if (order == _BOND_SINGLE_OR_DOUBLE)
                     throw Error("'single or double' bonds are allowed only for queries");
                 else if (order == _BOND_SINGLE_OR_AROMATIC)

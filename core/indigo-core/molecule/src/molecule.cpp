@@ -55,6 +55,8 @@ Molecule::Molecule()
     _aromatized = false;
     _ignore_bad_valence = false;
     _valence_mode = ValenceMode::BIOVIA_2009;
+    _dative_model_revision = -1;
+    _dative_model_building = false;
 }
 
 Molecule& Molecule::asMolecule()
@@ -79,6 +81,10 @@ void Molecule::clear()
     _aromatized = false;
     _ignore_bad_valence = false;
     _valence_mode = ValenceMode::BIOVIA_2009;
+
+    _dative_model.reset();
+    _dative_model_revision = -1;
+
     updateEditRevision();
 }
 
@@ -448,7 +454,7 @@ int Molecule::calcAtomConnectivity_noImplH(int idx)
         if (order == -1) // can happen on TautomerSuperStructure
             continue;
 
-        if (order == _BOND_HYDROGEN || order == _BOND_COORDINATION)
+        if (isNonValenceBond(order))
             continue;
 
         conn += order;
@@ -485,7 +491,7 @@ void Molecule::calcAromaticAtomConnectivity(int idx, int& n_arom, int& min_conn)
             min_conn++;
             n_arom++;
         }
-        else
+        else if (!isNonValenceBond(order))
             min_conn += order;
     }
 
@@ -738,6 +744,24 @@ int Molecule::_getImplicitHForConnectivity(int idx, int conn, bool use_cache)
             return _implicit_h[idx];
     }
 
+    // Requirement 7 of #3617. For an atom with dative bonds the model replaces the whole
+    // calculation below rather than adjusting its outcome, so it is consulted before any
+    // of it runs -- but after the cache, which stays the single source of a stored count.
+    {
+        int dative_h = -1;
+
+        if (_getDativeImplicitH(idx, dative_h))
+        {
+            if (use_cache)
+            {
+                _implicit_h.expandFill(idx + 1, -1);
+                _implicit_h[idx] = dative_h;
+            }
+
+            return dative_h;
+        }
+    }
+
     const _Atom& atom = _atoms[idx];
 
     int radical = 0;
@@ -933,6 +957,104 @@ void Molecule::setValenceMode(ValenceMode mode)
     invalidateHCounters();
 }
 
+bool Molecule::_atomHasDativeBond(int idx) const
+{
+    const Vertex& vertex = getVertex(idx);
+
+    for (int i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
+        if (getBondOrder(vertex.neiEdge(i)) == _BOND_COORDINATION)
+            return true;
+
+    return false;
+}
+
+const DativeModel* Molecule::_dativeModel()
+{
+    // Building the model queries the molecule (dearomatization needs implicit hydrogens),
+    // and those queries can come back here. Reporting "no model" for the duration keeps
+    // that nesting free of both infinite recursion and half-built state.
+    if (_dative_model_building)
+        return nullptr;
+
+    if (_dative_model_revision == getEditRevision())
+        return _dative_model.get();
+
+    _dative_model.reset();
+    _dative_model_building = true;
+
+    try
+    {
+        // Both callers reach here only after finding a dative bond on the atom they are
+        // asking about, so the molecule demonstrably has one; scanning again to confirm
+        // it would be the O(edges) cost this design exists to avoid.
+        _dative_model = std::make_unique<DativeModel>(*this);
+    }
+    catch (...)
+    {
+        _dative_model_building = false;
+        throw;
+    }
+
+    _dative_model_building = false;
+
+    // Read the revision after building rather than before: the model itself does not edit
+    // the molecule, but reading it back is what makes that a checked assumption instead of
+    // a silent one -- a model built for a revision we never stored would be rebuilt on
+    // every single query.
+    _dative_model_revision = getEditRevision();
+
+    return _dative_model.get();
+}
+
+bool Molecule::_getDativeImplicitH(int idx, int& impl_h)
+{
+    // The cheap gate comes first. Building or even validating the model costs O(edges),
+    // and this runs on every hydrogen query after every edit -- which would make building
+    // a large dative-free molecule quadratic in its size.
+    if (!_atomHasDativeBond(idx))
+        return false;
+
+    const DativeModel* model = _dativeModel();
+
+    if (model == nullptr)
+        return false;
+
+    DativeModel::AtomResult result;
+
+    // A negative implicit_h means requirement 8 excludes the atom, or the count could not
+    // be derived. Either way the answer belongs to the existing calculation.
+    if (!model->compute(idx, result) || result.implicit_h < 0)
+        return false;
+
+    impl_h = result.implicit_h;
+    return true;
+}
+
+void Molecule::_checkDativeValence(int idx)
+{
+    // Same cheap gate as in _getDativeImplicitH, and for the same reason: this runs on
+    // every valence query, and every edit invalidates the model behind it.
+    if (!_atomHasDativeBond(idx))
+        return;
+
+    const DativeModel* model = _dativeModel();
+
+    if (model == nullptr)
+        return;
+
+    DativeModel::AtomResult result;
+
+    // compute() declines on atoms it cannot describe (unknown element, failed
+    // kekulization). Declining means "keep the existing behaviour", not "error".
+    if (!model->compute(idx, result) || !result.valence_error)
+        return;
+
+    throw Element::Error("%s can not hold %d donor and %d acceptor dative bonds: at most %d and %d are allowed "
+                         "(%d electrons and %d orbitals available for dative bonding)",
+                         Element::toString(_atoms[idx].number), result.donor_bonds, result.acceptor_bonds, result.max_donor, result.max_acceptor, result.el,
+                         result.orb);
+}
+
 int Molecule::getAtomValence(int idx)
 {
     if (_atoms[idx].number == ELEM_PSEUDO)
@@ -943,6 +1065,12 @@ int Molecule::getAtomValence(int idx)
 
     if (_atoms[idx].number == ELEM_RSITE)
         throw Error("getAtomValence() does not work on R-sites");
+
+    // Requirement 6 of #3617. Checked ahead of the cached valence because it is a property
+    // of the bonding around the atom, not of the valence number: an explicitly specified
+    // valence must not hide the fact that the atom carries impossible dative bonds.
+    if (!_ignore_bad_valence)
+        _checkDativeValence(idx);
 
     if (_valence.size() > idx && _valence[idx] >= 0)
         return _valence[idx];
@@ -1133,6 +1261,14 @@ int Molecule::getAtomRadical(int idx)
 
     _radicals.expandFill(idx + 1, -1);
     _radicals[idx] = 0;
+    return 0;
+}
+
+int Molecule::getStoredRadical(int idx) const
+{
+    if (_radicals.size() > idx && _radicals[idx] >= 0)
+        return _radicals[idx];
+
     return 0;
 }
 

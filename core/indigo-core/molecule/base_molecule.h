@@ -92,6 +92,14 @@ namespace indigo
         _BOND_VARIABLE_ATTACHMENT = 1010, // ATTACH=ANY, feature #3731
     };
 
+    // Bonds that contribute no shared electron pair to either atom and therefore must be
+    // excluded from every valence/connectivity calculation: coordination (dative) and
+    // hydrogen bonds. Kept in one place so all connectivity paths apply the same rule.
+    inline bool isNonValenceBond(int order)
+    {
+        return order == _BOND_COORDINATION || order == _BOND_HYDROGEN;
+    }
+
     enum
     {
         BOND_DIRECTION_MONO = 0,
