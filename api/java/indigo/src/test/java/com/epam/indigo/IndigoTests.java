@@ -196,4 +196,30 @@ public class IndigoTests {
         m.stripSalt(true);
         assertEquals("CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1", m.smiles());
     }
+
+    @Test
+    @DisplayName("an attachment group and a haptic bond are built and read back (#3842)")
+    void testHapticBond() {
+        Indigo indigo = new Indigo();
+        IndigoObject m = indigo.loadMolecule("C1=CC=CC1.[Fe]");
+        IndigoObject metal = m.getAtom(5);
+
+        IndigoObject group = m.addAttachmentGroup(new int[] {0, 1, 2, 3, 4});
+        IndigoObject bond = m.addHapticBond(group, metal);
+
+        assertEquals(1, m.countAttachmentGroups());
+        assertEquals(1, m.countHapticBonds());
+        assertEquals(5, group.countAtoms());
+        assertEquals("haptic", bond.hapticBondType());
+        assertTrue(bond.hapticBondBegin().isAttachmentGroup());
+        assertEquals("Fe", bond.hapticBondEnd().symbol());
+
+        // Neither construct is a part of the graph.
+        assertEquals(5, m.countBonds());
+
+        // The group goes, and the bond that addressed it goes with it.
+        group.remove();
+        assertEquals(0, m.countAttachmentGroups());
+        assertEquals(0, m.countHapticBonds());
+    }
 }

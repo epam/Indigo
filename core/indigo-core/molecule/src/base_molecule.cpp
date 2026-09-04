@@ -1203,6 +1203,38 @@ void BaseMolecule::removeAttachmentGroup(int idx)
     updateEditRevision();
 }
 
+void BaseMolecule::setAttachmentGroupAtoms(int group_idx, const std::vector<int>& atoms)
+{
+    AttachmentGroup& group = attachment_groups.group(group_idx);
+
+    for (int i = haptic_bonds.begin(); i != haptic_bonds.end(); i = haptic_bonds.next(i))
+    {
+        const HapticBond& bond = haptic_bonds.at(i);
+        if (!bond.referencesGroup(group_idx))
+            continue;
+
+        const bool begin_is_this_group = bond.begin().isGroup() && bond.begin().index() == group_idx;
+        const HapticBond::Endpoint& partner = begin_is_this_group ? bond.end() : bond.begin();
+        if (partner.isGroup())
+            continue;
+
+        for (int atom : atoms)
+            if (atom == partner.index())
+                throw Error("atom %d is bonded to the attachment group it would join", atom);
+    }
+
+    group.setAtoms(atoms);
+    invalidateComponents();
+    updateEditRevision();
+}
+
+void BaseMolecule::removeHapticBond(int idx)
+{
+    haptic_bonds.remove(idx);
+    invalidateComponents();
+    updateEditRevision();
+}
+
 void BaseMolecule::collectExternalNeighbors(std::list<std::unordered_set<int>>& neighbors)
 {
     for (int i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))

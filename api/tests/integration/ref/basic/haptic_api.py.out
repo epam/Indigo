@@ -1,0 +1,64 @@
+*** building a haptic complex through the API ***
+after building: groups=1 haptic bonds=1
+  group 0: atoms [0, 1, 2, 3, 4]
+  bond 0: type=haptic begin=group 0 [0, 1, 2, 3, 4] end=atom 5 (Fe)
+group countAtoms=5
+
+*** the graph is untouched (isolation invariant of #3837) ***
+bond count unchanged: True
+implicit hydrogens unchanged: True
+valences unchanged: True
+bonds of the molecule: 5
+
+*** what the API builds survives a KET round-trip ***
+reloaded: groups=1 haptic bonds=1
+  group 0: atoms [0, 1, 2, 3, 4]
+  bond 0: type=haptic begin=group 0 [0, 1, 2, 3, 4] end=atom 5 (Fe)
+
+*** what KET brings in is visible through the API ***
+from KET: groups=1 haptic bonds=1
+  group 0: atoms [1, 2, 3, 4, 5]
+  bond 0: type=haptic begin=atom 0 (Fe) end=group 0 [1, 2, 3, 4, 5]
+getAttachmentGroup(0) countAtoms=5
+getHapticBond(0) type=haptic
+
+*** clone keeps them, a submolecule applies the all-or-nothing rule ***
+clone: groups=1 haptic bonds=1
+  group 0: atoms [0, 1, 2, 3, 4]
+  bond 0: type=haptic begin=group 0 [0, 1, 2, 3, 4] end=atom 5 (Fe)
+whole ring without the metal: groups=1 haptic bonds=0
+  group 0: atoms [0, 1, 2, 3, 4]
+part of the ring: groups=0 haptic bonds=0
+
+*** formats that cannot express a haptic bond omit it, without failing ***
+smiles             saved
+canonical smiles   saved
+cml                saved
+
+*** V3000 writes the bond out, V2000 omits it (#3840) ***
+V3000 carries ENDPTS: True
+the group gets a star atom back: True
+V2000 carries ENDPTS: False
+
+*** a group loaded from V3000 knows its anchor atom, a KET one does not ***
+V3000 anchor: atom 6 (*)
+KET anchor: none
+
+*** membership can be replaced ***
+after setAttachmentGroupAtoms: atoms [0, 1, 2]
+
+*** errors ***
+group to group           molecule: a haptic bond between two attachment groups is not allowed
+bond to own member       molecule: atom 0 is a member of the attachment group it would be bonded to
+partner joins group      molecule: atom 5 is bonded to the attachment group it would join
+atom out of range        core: indigoAddAttachmentGroup(): atom index 99 out of range
+no such group            core: indigoGetAttachmentGroup(): no attachment group with index 99
+no such haptic bond      core: indigoGetHapticBond(): no haptic bond with index 99
+empty group              core: indigoAddAttachmentGroup(): no atoms were given
+
+*** removing a group takes its bonds with it ***
+groups=1 haptic bonds=0
+removed group is gone    core: attachment group 0 does not exist any more
+
+*** removing a haptic bond leaves the group alone ***
+groups=1 haptic bonds=0
