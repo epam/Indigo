@@ -19,7 +19,10 @@
 #ifndef __molecule_h__
 #define __molecule_h__
 
+#include <memory>
+
 #include "molecule/base_molecule.h"
+#include "molecule/dative_model.h"
 #include "molecule/molecule_sgroups.h"
 #include "molecule/valence_model.h"
 
@@ -81,6 +84,10 @@ namespace indigo
         int getAtomCharge(int idx) override;
         int getAtomIsotope(int idx) override;
         int getAtomRadical(int idx) override;
+        // Radical state as stored on the atom, or 0 when none was set.
+        // Unlike getAtomRadical(), this never falls back to getAtomValence() to infer a
+        // value, so it is safe to call from inside the valence computation itself.
+        int getStoredRadical(int idx) const;
         int getBondOrder(int idx) const override;
         int getBondTopology(int idx) override;
         int getAtomAromaticity(int idx) override;
@@ -213,6 +220,31 @@ namespace indigo
 
     private:
         int _getImplicitHForConnectivity(int idx, int conn, bool use_cache);
+
+        // Dative-bond model of this molecule (ticket #3617), built on the first query and
+        // reused until the molecule is edited. Returns nullptr when the model does not
+        // apply: the molecule has no dative bonds, or the model is currently being built
+        // (building it consults the molecule, so re-entrant queries must see no model).
+        const DativeModel* _dativeModel();
+
+        // Whether this particular atom carries a dative bond. Costs O(degree), where
+        // asking the model whether the molecule has any costs O(edges) -- and the answer
+        // is what both #3617 integration points actually need.
+        bool _atomHasDativeBond(int idx) const;
+
+        // Requirement 7 of #3617: the implicit hydrogens implied by this atom's dative
+        // bonds. Returns false for every atom the dative model does not describe, which
+        // is what leaves the existing calculation in charge of all of them.
+        bool _getDativeImplicitH(int idx, int& impl_h);
+
+        // Requirement 6 of #3617: an atom carrying more dative bonds than its electron
+        // and orbital counts allow is a valence error. Does nothing for atoms without
+        // dative bonds, which is what keeps every other molecule bit-identical.
+        void _checkDativeValence(int idx);
+
+        std::unique_ptr<DativeModel> _dative_model; // null when the molecule has no dative bonds
+        int _dative_model_revision;                 // edit revision _dative_model was built for; -1 = never built
+        bool _dative_model_building;
     };
 
 } // namespace indigo

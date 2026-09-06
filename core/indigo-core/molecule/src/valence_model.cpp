@@ -29,12 +29,6 @@ using namespace indigo;
 namespace
 {
 
-    bool isTransitionMetal(int elem)
-    {
-        return (elem >= ELEM_Sc && elem <= ELEM_Zn) || (elem >= ELEM_Y && elem <= ELEM_Cd) || (elem >= ELEM_La && elem <= ELEM_Hg) ||
-               (elem >= ELEM_Ac && elem <= ELEM_Cn);
-    }
-
     bool calcValenceGroup1(int charge, int rad, int conn, int& valence, int& hyd)
     {
         valence = 1;

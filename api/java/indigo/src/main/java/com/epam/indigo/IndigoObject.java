@@ -1345,6 +1345,122 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return setSGroupAtoms(Indigo.toIntArray(atoms));
     }
 
+    /**
+     * Creates an attachment group - a set of atoms acting as one end of a haptic bond (#3233). Not
+     * an R-group attachment point, and not a part of the molecular graph: it appears neither in
+     * iterateAtoms() nor in countAtoms() of the molecule.
+     */
+    public IndigoObject addAttachmentGroup(int[] atoms) {
+        dispatcher.setSessionID();
+        return new IndigoObject(
+                dispatcher,
+                Indigo.checkResult(this, lib.indigoAddAttachmentGroup(self, atoms.length, atoms)),
+                this);
+    }
+
+    public IndigoObject addAttachmentGroup(Collection<Integer> atoms) {
+        return addAttachmentGroup(Indigo.toIntArray(atoms));
+    }
+
+    public int countAttachmentGroups() {
+        dispatcher.setSessionID();
+        return Indigo.checkResult(this, lib.indigoCountAttachmentGroups(self));
+    }
+
+    public IndigoObject iterateAttachmentGroups() {
+        dispatcher.setSessionID();
+        return new IndigoObject(
+                dispatcher, Indigo.checkResult(this, lib.indigoIterateAttachmentGroups(self)), this);
+    }
+
+    public IndigoObject getAttachmentGroup(int index) {
+        dispatcher.setSessionID();
+        return new IndigoObject(
+                dispatcher,
+                Indigo.checkResult(this, lib.indigoGetAttachmentGroup(self, index)),
+                this);
+    }
+
+    public int setAttachmentGroupAtoms(int[] atoms) {
+        dispatcher.setSessionID();
+        return Indigo.checkResult(
+                this, lib.indigoSetAttachmentGroupAtoms(self, atoms.length, atoms));
+    }
+
+    public int setAttachmentGroupAtoms(Collection<Integer> atoms) {
+        return setAttachmentGroupAtoms(Indigo.toIntArray(atoms));
+    }
+
+    /**
+     * The atom a file draws the group with - the star of a V3000 ENDPTS record. Returns null when
+     * the group has none; a group read from KET never has one.
+     */
+    public IndigoObject getAttachmentGroupAnchor() {
+        dispatcher.setSessionID();
+        int anchor = Indigo.checkResult(this, lib.indigoGetAttachmentGroupAnchor(self));
+        if (anchor == 0) {
+            return null;
+        }
+        return new IndigoObject(dispatcher, anchor, this);
+    }
+
+    /** Tells an attachment group apart from an atom - the two kinds of haptic bond end. */
+    public boolean isAttachmentGroup() {
+        dispatcher.setSessionID();
+        return Indigo.checkResult(this, lib.indigoIsAttachmentGroup(self)) == 1;
+    }
+
+    /**
+     * Creates a haptic bond (#3233) between two ends, each of them an atom or an attachment group;
+     * at most one end may be a group. The bond is not a graph edge: it changes no valence and no
+     * implicit hydrogen count, and it never appears in iterateBonds().
+     */
+    public IndigoObject addHapticBond(IndigoObject begin, IndigoObject end) {
+        dispatcher.setSessionID();
+        return new IndigoObject(
+                dispatcher,
+                Indigo.checkResult(
+                        this, begin, lib.indigoAddHapticBond(self, begin.self, end.self)),
+                this);
+    }
+
+    public int countHapticBonds() {
+        dispatcher.setSessionID();
+        return Indigo.checkResult(this, lib.indigoCountHapticBonds(self));
+    }
+
+    public IndigoObject iterateHapticBonds() {
+        dispatcher.setSessionID();
+        return new IndigoObject(
+                dispatcher, Indigo.checkResult(this, lib.indigoIterateHapticBonds(self)), this);
+    }
+
+    public IndigoObject getHapticBond(int index) {
+        dispatcher.setSessionID();
+        return new IndigoObject(
+                dispatcher, Indigo.checkResult(this, lib.indigoGetHapticBond(self, index)), this);
+    }
+
+    /** The first end of a haptic bond: an atom or an attachment group. */
+    public IndigoObject hapticBondBegin() {
+        dispatcher.setSessionID();
+        return new IndigoObject(
+                dispatcher, Indigo.checkResult(this, lib.indigoGetHapticBondBegin(self)), this);
+    }
+
+    /** The second end of a haptic bond: an atom or an attachment group. */
+    public IndigoObject hapticBondEnd() {
+        dispatcher.setSessionID();
+        return new IndigoObject(
+                dispatcher, Indigo.checkResult(this, lib.indigoGetHapticBondEnd(self)), this);
+    }
+
+    /** "haptic" (#3233) or "variable-attachment" (Markush, #3731). */
+    public String hapticBondType() {
+        dispatcher.setSessionID();
+        return Indigo.checkResultString(this, lib.indigoHapticBondType(self));
+    }
+
     public int setSGroupBonds(int[] bonds) {
         dispatcher.setSessionID();
         return Indigo.checkResult(this, lib.indigoSetSGroupBonds(self, bonds.length, bonds));

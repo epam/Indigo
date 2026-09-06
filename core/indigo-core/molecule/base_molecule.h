@@ -92,6 +92,14 @@ namespace indigo
         _BOND_VARIABLE_ATTACHMENT = 1010, // ATTACH=ANY, feature #3731
     };
 
+    // Bonds that contribute no shared electron pair to either atom and therefore must be
+    // excluded from every valence/connectivity calculation: coordination (dative) and
+    // hydrogen bonds. Kept in one place so all connectivity paths apply the same rule.
+    inline bool isNonValenceBond(int order)
+    {
+        return order == _BOND_COORDINATION || order == _BOND_HYDROGEN;
+    }
+
     enum
     {
         BOND_DIRECTION_MONO = 0,
@@ -477,6 +485,15 @@ namespace indigo
         // reference it must go with it, and the group container does not know
         // about them.
         void removeAttachmentGroup(int idx);
+
+        // Removing a haptic bond changes what holds the molecule together, so it
+        // goes through the molecule for the same reason adding one does.
+        void removeHapticBond(int idx);
+
+        // The only way to change what a group is made of once it has bonds: a
+        // member cannot also be the partner of a bond of its own group, and the
+        // group container cannot see the bonds to check that.
+        void setAttachmentGroupAtoms(int group_idx, const std::vector<int>& atoms);
 
         // Atom sets that hold together although no edge joins them: s-group
         // members, query components and haptic bonds. Feeds

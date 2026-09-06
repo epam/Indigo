@@ -620,6 +620,33 @@ CEXPORT int indigoSetSGroupAtoms(int sgroup, int natoms, int* atoms);
 CEXPORT int indigoSetSGroupBonds(int sgroup, int nbonds, int* bonds);
 CEXPORT int indigoIterateSGroupCrossBonds(int sgroup);
 
+// Issue #3842: haptic bonds (#3233). An attachment group is a set of atoms acting
+// as one end of a bond - not the R-group "attachment point" of the calls below.
+// Neither a group nor a haptic bond is part of the molecular graph: they never
+// appear in indigoIterateAtoms/indigoIterateBonds of the molecule, only through
+// the calls here. On a group object indigoCountAtoms/indigoIterateAtoms report its
+// members, and indigoRemove drops the group along with the bonds that address it.
+CEXPORT int indigoAddAttachmentGroup(int molecule, int natoms, int* atoms);
+CEXPORT int indigoCountAttachmentGroups(int molecule);
+CEXPORT int indigoIterateAttachmentGroups(int molecule);
+CEXPORT int indigoGetAttachmentGroup(int molecule, int index);
+CEXPORT int indigoSetAttachmentGroupAtoms(int group, int natoms, int* atoms);
+// The atom a file draws the group with (the V3000 star), or 0 when the group has
+// none - a group read from KET never has one.
+CEXPORT int indigoGetAttachmentGroupAnchor(int group);
+// 1 for an attachment group object, 0 for anything else - tells the two kinds of
+// haptic bond end apart.
+CEXPORT int indigoIsAttachmentGroup(int item);
+// Both ends are objects: an atom or an attachment group, at most one of them a group.
+CEXPORT int indigoAddHapticBond(int molecule, int begin, int end);
+CEXPORT int indigoCountHapticBonds(int molecule);
+CEXPORT int indigoIterateHapticBonds(int molecule);
+CEXPORT int indigoGetHapticBond(int molecule, int index);
+CEXPORT int indigoGetHapticBondBegin(int bond);
+CEXPORT int indigoGetHapticBondEnd(int bond);
+// "haptic" (#3233) or "variable-attachment" (Markush, #3731).
+CEXPORT const char* indigoHapticBondType(int bond);
+
 CEXPORT int indigoAddSGroupAttachmentPoint(int sgroup, int aidx, int lvidx, const char* apid);
 CEXPORT int indigoDeleteSGroupAttachmentPoint(int sgroup, int index);
 // Returns iterator of superatom attachment points (SAP entries) for a superatom S-group.

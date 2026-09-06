@@ -2093,6 +2093,230 @@ class IndigoObject:
             self._lib().indigoClearSGroupCrossBonds(self.id)
         )
 
+    def addAttachmentGroup(self, atoms):
+        """Molecule method creates an attachment group - a set of atoms acting
+        as one end of a haptic bond (#3233).
+
+        An attachment group is not an R-group attachment point and not a part of
+        the molecular graph: it never shows up in iterateAtoms() or in
+        countAtoms() of the molecule.
+
+        Args:
+            atoms (list): atom index list
+
+        Returns:
+            IndigoObject: attachment group object
+        """
+        arr = (c_int * len(atoms))()
+        for i in range(len(atoms)):
+            arr[i] = atoms[i]
+
+        return IndigoObject(
+            self.session,
+            IndigoLib.checkResult(
+                self._lib().indigoAddAttachmentGroup(self.id, len(arr), arr)
+            ),
+            self,
+        )
+
+    def countAttachmentGroups(self):
+        """Molecule method returns the number of attachment groups
+
+        Returns:
+            int: attachment group count
+        """
+
+        return IndigoLib.checkResult(
+            self._lib().indigoCountAttachmentGroups(self.id)
+        )
+
+    def iterateAttachmentGroups(self):
+        """Molecule method iterates attachment groups
+
+        Returns:
+            IndigoObject: attachment groups iterator
+        """
+
+        return IndigoObject(
+            self.session,
+            IndigoLib.checkResult(
+                self._lib().indigoIterateAttachmentGroups(self.id)
+            ),
+            self,
+        )
+
+    def getAttachmentGroup(self, index):
+        """Molecule method returns the attachment group with the given index
+
+        Args:
+            index (int): attachment group index
+
+        Returns:
+            IndigoObject: attachment group object
+        """
+
+        return IndigoObject(
+            self.session,
+            IndigoLib.checkResult(
+                self._lib().indigoGetAttachmentGroup(self.id, index)
+            ),
+            self,
+        )
+
+    def setAttachmentGroupAtoms(self, atoms):
+        """Attachment group method replaces the member atoms with the given list
+
+        Args:
+            atoms (list): atom index list
+
+        Returns:
+            int: 1 if there are no errors
+        """
+        arr = (c_int * len(atoms))()
+        for i in range(len(atoms)):
+            arr[i] = atoms[i]
+
+        return IndigoLib.checkResult(
+            self._lib().indigoSetAttachmentGroupAtoms(self.id, len(arr), arr)
+        )
+
+    def getAttachmentGroupAnchor(self):
+        """Attachment group method returns the atom a file draws the group with
+        - the star atom of a V3000 ENDPTS record
+
+        Returns:
+            IndigoObject: the anchor atom, or None when the group has none
+                (a group read from KET never has one)
+        """
+        anchor = IndigoLib.checkResult(
+            self._lib().indigoGetAttachmentGroupAnchor(self.id)
+        )
+        if anchor == 0:
+            return None
+        return IndigoObject(self.session, anchor, self)
+
+    def isAttachmentGroup(self):
+        """Tells an attachment group apart from an atom - the two kinds of object
+        a haptic bond end can be
+
+        Returns:
+            bool: True for an attachment group
+        """
+
+        return (
+            IndigoLib.checkResult(self._lib().indigoIsAttachmentGroup(self.id))
+            == 1
+        )
+
+    def addHapticBond(self, begin, end):
+        """Molecule method creates a haptic bond (#3233) between two ends, each
+        of them an atom or an attachment group. At most one end may be a group.
+
+        A haptic bond is not an edge of the graph: it changes no valence and no
+        implicit hydrogen count, and it never appears in iterateBonds().
+
+        Args:
+            begin (IndigoObject): atom or attachment group
+            end (IndigoObject): atom or attachment group
+
+        Returns:
+            IndigoObject: haptic bond object
+        """
+
+        return IndigoObject(
+            self.session,
+            IndigoLib.checkResult(
+                self._lib().indigoAddHapticBond(self.id, begin.id, end.id)
+            ),
+            self,
+        )
+
+    def countHapticBonds(self):
+        """Molecule method returns the number of haptic bonds
+
+        Returns:
+            int: haptic bond count
+        """
+
+        return IndigoLib.checkResult(
+            self._lib().indigoCountHapticBonds(self.id)
+        )
+
+    def iterateHapticBonds(self):
+        """Molecule method iterates haptic bonds
+
+        Returns:
+            IndigoObject: haptic bonds iterator
+        """
+
+        return IndigoObject(
+            self.session,
+            IndigoLib.checkResult(
+                self._lib().indigoIterateHapticBonds(self.id)
+            ),
+            self,
+        )
+
+    def getHapticBond(self, index):
+        """Molecule method returns the haptic bond with the given index
+
+        Args:
+            index (int): haptic bond index
+
+        Returns:
+            IndigoObject: haptic bond object
+        """
+
+        return IndigoObject(
+            self.session,
+            IndigoLib.checkResult(
+                self._lib().indigoGetHapticBond(self.id, index)
+            ),
+            self,
+        )
+
+    def hapticBondBegin(self):
+        """Haptic bond method returns the first end: an atom or an attachment
+        group object
+
+        Returns:
+            IndigoObject: atom or attachment group
+        """
+
+        return IndigoObject(
+            self.session,
+            IndigoLib.checkResult(
+                self._lib().indigoGetHapticBondBegin(self.id)
+            ),
+            self,
+        )
+
+    def hapticBondEnd(self):
+        """Haptic bond method returns the second end: an atom or an attachment
+        group object
+
+        Returns:
+            IndigoObject: atom or attachment group
+        """
+
+        return IndigoObject(
+            self.session,
+            IndigoLib.checkResult(self._lib().indigoGetHapticBondEnd(self.id)),
+            self,
+        )
+
+    def hapticBondType(self):
+        """Haptic bond method returns the kind of the bond: "haptic" (#3233) or
+        "variable-attachment" (Markush, #3731)
+
+        Returns:
+            str: bond kind
+        """
+
+        return IndigoLib.checkResultString(
+            self._lib().indigoHapticBondType(self.id)
+        )
+
     def addSGroupAttachmentPoint(self, aidx, lvidx, apid):
         """SGroup method sets attachment point info
 

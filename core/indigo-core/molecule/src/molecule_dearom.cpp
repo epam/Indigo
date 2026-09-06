@@ -1439,7 +1439,7 @@ DearomatizationMatcher::GraphMatchingVerticesFixed::GraphMatchingVerticesFixed(B
 CP_DEF(MoleculeDearomatizer);
 
 MoleculeDearomatizer::MoleculeDearomatizer(BaseMolecule& mol, DearomatizationsStorage& dearom)
-    : _dearomatizations(dearom), _mol(mol), CP_INIT, TL_CP_GET(vertex_connectivity)
+    : _dearomatizations(dearom), _mol(mol), CP_INIT, TL_CP_GET(vertex_connectivity), TL_CP_GET(_connectivity_seeded)
 {
     _isQueryMolecule = _mol.isQueryMolecule();
 }
@@ -1496,7 +1496,7 @@ int MoleculeDearomatizer::_countDoubleBonds(int group, int dearomatization_index
     return count;
 }
 
-void MoleculeDearomatizer::restoreHydrogens(int group, int dearomatization_index)
+void MoleculeDearomatizer::_accumulateConnectivity(int group, int dearomatization_index)
 {
     byte* bondsState = _dearomatizations.getGroupDearomatization(group, dearomatization_index);
     const int* bondsMap = _dearomatizations.getGroupBonds(group);
@@ -1510,22 +1510,62 @@ void MoleculeDearomatizer::restoreHydrogens(int group, int dearomatization_index
         for (int j = 0; j < 2; j++)
         {
             int v = v_indices[j];
-            if (vertex_connectivity[j] == 0)
+            // The non-aromatic part of an atom is added exactly once, however many
+            // aromatic bonds of this group it takes part in.
+            if (_connectivity_seeded[v])
+                continue;
+            _connectivity_seeded[v] = 1;
+
+            const Vertex& vertex = _mol.getVertex(v);
+            for (int nei = vertex.neiBegin(); nei != vertex.neiEnd(); nei = vertex.neiNext(nei))
             {
-                // Compute non-aromatic connectivity
-                const Vertex& vertex = _mol.getVertex(v);
-                for (int nei = vertex.neiBegin(); nei != vertex.neiEnd(); nei = vertex.neiNext(nei))
-                {
-                    int nei_edge = vertex.neiEdge(nei);
-                    int nei_order = _mol.getBondOrder(nei_edge);
-                    if (nei_order != BOND_AROMATIC)
-                        vertex_connectivity[v] += nei_order;
-                }
+                int nei_edge = vertex.neiEdge(nei);
+                int nei_order = _mol.getBondOrder(nei_edge);
+                // Dative and hydrogen bonds share no electron pair, so they contribute
+                // nothing to connectivity — same rule as calcAtomConnectivity_noImplH.
+                if (nei_order < 0 || nei_order == BOND_AROMATIC || isNonValenceBond(nei_order))
+                    continue;
+                vertex_connectivity[v] += nei_order;
             }
         }
         vertex_connectivity[edge.beg] += order;
         vertex_connectivity[edge.end] += order;
     }
+}
+
+bool MoleculeDearomatizer::calculateDearomatizedConnectivity(BaseMolecule& mol, const AromaticityOptions& options, Array<int>& connectivity)
+{
+    connectivity.clear_resize(mol.vertexEnd());
+    connectivity.zerofill();
+
+    DearomatizationsStorage dst;
+    Dearomatizer dearomatizer(mol, 0, options);
+    dearomatizer.setDearomatizationParams(Dearomatizer::PARAMS_SAVE_ONE_DEAROMATIZATION);
+    dearomatizer.enumerateDearomatizations(dst);
+    MoleculeDearomatizer mol_dearom(mol, dst);
+
+    mol_dearom.vertex_connectivity.clear_resize(mol.vertexEnd());
+    mol_dearom.vertex_connectivity.zerofill();
+    mol_dearom._connectivity_seeded.clear_resize(mol.vertexEnd());
+    mol_dearom._connectivity_seeded.zerofill();
+
+    bool all_dearomatized = true;
+    for (int i = 0; i < dst.getGroupsCount(); ++i)
+    {
+        int cnt = dst.getGroupDearomatizationsCount(i);
+        if (cnt == 0)
+            all_dearomatized = false;
+        else if (cnt > 1 && options.unique_dearomatization)
+            // Wording kept verbatim: it is part of the public error surface and several
+            // reference outputs match on it. Callers that tolerate ambiguity (the dative
+            // model) pass unique_dearomatization = false and never reach this branch.
+            throw NonUniqueDearomatizationException("Dearomatization is not unique. Cannot restore hydrogens.");
+        else
+            mol_dearom._accumulateConnectivity(i, mol_dearom._getBestDearomatization(i));
+    }
+
+    connectivity.copy(mol_dearom.vertex_connectivity);
+    return all_dearomatized;
 }
 
 bool MoleculeDearomatizer::dearomatizeMolecule(BaseMolecule& mol, const AromaticityOptions& options)
@@ -1582,30 +1622,12 @@ bool MoleculeDearomatizer::restoreHydrogens(BaseMolecule& mol, const Aromaticity
     if (!found_invalid_aromatic_h)
         return false;
 
-    DearomatizationsStorage dst;
-    Dearomatizer dearomatizer(mol, 0, options);
-    dearomatizer.setDearomatizationParams(Dearomatizer::PARAMS_SAVE_ONE_DEAROMATIZATION);
-    dearomatizer.enumerateDearomatizations(dst);
-    MoleculeDearomatizer mol_dearom(mol, dst);
-
-    mol_dearom.vertex_connectivity.clear_resize(mol.vertexEnd());
-    mol_dearom.vertex_connectivity.zerofill();
-
-    bool all_dearomatzied = true;
-    for (int i = 0; i < dst.getGroupsCount(); ++i)
-    {
-        int cnt = dst.getGroupDearomatizationsCount(i);
-        if (cnt == 0)
-            all_dearomatzied = false;
-        else if (cnt > 1 && options.unique_dearomatization)
-            throw NonUniqueDearomatizationException("Dearomatization is not unique. Cannot restore hydrogens.");
-        else
-            mol_dearom.restoreHydrogens(i, mol_dearom._getBestDearomatization(i));
-    }
+    QS_DEF(Array<int>, connectivity);
+    const bool all_dearomatzied = calculateDearomatizedConnectivity(mol, options, connectivity);
 
     for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
     {
-        int conn = mol_dearom.vertex_connectivity[i];
+        int conn = connectivity[i];
         if (mol.isRSite(i) || mol.isPseudoAtom(i) || mol.isTemplateAtom(i))
             continue;
 

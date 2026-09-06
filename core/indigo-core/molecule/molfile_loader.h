@@ -139,6 +139,8 @@ namespace indigo
         void _readSGroupDisplay(Scanner& scanner, DataSGroup& dsg);
         void _readCollectionBlock3000();
         void _readSGroupsBlock3000();
+        void _readEndpoints3000(Scanner& scanner, std::vector<int>& endpoints);
+        void _addHapticBond3000(int beg, int end, const std::vector<int>& endpoints, int type);
         void _preparePseudoAtomLabel(Array<char>& pseudo);
         void _readMultiString(Array<char>& str);
         void _readStringInQuotes(Scanner& scanner, Array<char>* str);

@@ -17,8 +17,9 @@
  ***************************************************************************/
 
 // Tests for the attachment groups behind haptic bonds (#3233, #3837): stable
-// indices, slot reuse, membership as a set and the all-or-nothing rule on
-// removal. The bonds that address these groups are tested in haptic_bonds.cpp.
+// indices, slot reuse, membership as a set, the all-or-nothing rule on removal,
+// and the anchor atom a group points at without owning it. The bonds that
+// address these groups are tested in haptic_bonds.cpp.
 
 #include <gtest/gtest.h>
 
@@ -76,6 +77,7 @@ TEST_F(IndigoCoreAttachmentGroupsTest, RemoveFreesSlotAndReusesItClean)
     const int b = groups.addGroup();
     groups.addGroup();
     groups.group(b).addAtom(0);
+    groups.group(b).setAnchorAtom(0);
 
     mol.removeAttachmentGroup(b);
     EXPECT_EQ(2, groups.groupCount());
@@ -84,6 +86,7 @@ TEST_F(IndigoCoreAttachmentGroupsTest, RemoveFreesSlotAndReusesItClean)
     const int reused = groups.addGroup();
     EXPECT_EQ(b, reused); // stable indices: the freed slot comes back
     EXPECT_TRUE(groups.group(reused).atoms().empty());
+    EXPECT_EQ(-1, groups.group(reused).anchorAtom()); // no stale anchor
 }
 
 TEST_F(IndigoCoreAttachmentGroupsTest, IterationSkipsRemovedGroups)
@@ -184,6 +187,50 @@ TEST_F(IndigoCoreAttachmentGroupsTest, GroupCarriesNoChargeOfItsOwn)
     for (int i = copy.vertexBegin(); i != copy.vertexEnd(); i = copy.vertexNext(i))
         total += copy.getAtomCharge(i);
     EXPECT_EQ(-1, total) << "the charge must stay exactly where the file put it";
+}
+
+// The anchor is a reference to an atom, so it follows the atoms through every
+// mapping — otherwise a saver would write the ENDPTS of one group next to the star
+// of another.
+TEST_F(IndigoCoreAttachmentGroupsTest, AnchorAtomFollowsTheAtomMapping)
+{
+    Molecule source;
+    makeRingAndMetal(source);
+    const int star = source.addAtom(-1); // the star of a V3000 ENDPTS record
+    source.setPseudoAtom(star, "*");
+    source.attachment_groups.group(addRingGroup(source)).setAnchorAtom(star);
+
+    Molecule copy;
+    copy.clone(source);
+    EXPECT_EQ(star, copy.attachment_groups.group(copy.attachment_groups.begin()).anchorAtom());
+
+    Array<int> vertices; // whole ring, the metal and the star, in reverse order
+    for (int i = star; i >= 0; i--)
+        vertices.push(i);
+
+    Array<int> mapping;
+    Molecule sub;
+    sub.makeSubmolecule(source, vertices, &mapping);
+    ASSERT_EQ(1, sub.attachment_groups.groupCount());
+    EXPECT_EQ(mapping[star], sub.attachment_groups.group(sub.attachment_groups.begin()).anchorAtom());
+}
+
+// Losing the anchor is not losing the group: the group is still a set of atoms,
+// and a saver that needs a star puts a fresh one at their centre.
+TEST_F(IndigoCoreAttachmentGroupsTest, GroupOutlivesItsAnchorAtom)
+{
+    Molecule mol;
+    makeRingAndMetal(mol);
+    const int star = mol.addAtom(-1);
+    mol.setPseudoAtom(star, "*");
+    const int group = addRingGroup(mol);
+    mol.attachment_groups.group(group).setAnchorAtom(star);
+
+    mol.removeAtom(star);
+
+    ASSERT_TRUE(mol.attachment_groups.hasGroup(group));
+    EXPECT_EQ(5u, mol.attachment_groups.group(group).atoms().size());
+    EXPECT_EQ(-1, mol.attachment_groups.group(group).anchorAtom());
 }
 
 TEST_F(IndigoCoreAttachmentGroupsTest, SkipFlagDropsGroups)
