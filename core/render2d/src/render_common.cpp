@@ -25,6 +25,8 @@
 #include "reaction/query_reaction.h"
 #include "reaction/reaction.h"
 
+#include <utility>
+
 #ifdef _WIN32
 #pragma warning(push, 4)
 #endif
@@ -57,6 +59,10 @@ namespace indigo
         return sqrt((1 + cs) / (1 - cs));
     }
 } // namespace indigo
+
+RenderFont::RenderFont(std::string name, std::vector<byte> data) : name(std::move(name)), data(std::move(data))
+{
+}
 
 RenderItem::RenderItem()
 {

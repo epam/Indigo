@@ -1700,7 +1700,7 @@ def render():
               type: string
               default: image/svg+xml
             options:
-              type: array
+              type: object
           example:
             struct: C1=CC=CC=C1
             query: C

@@ -71,6 +71,7 @@ void RenderParams::clear()
     rmode = RENDER_NONE;
     rOpt.clearRenderOptions();
     cnvOpt.clear();
+    fonts.clear();
     clearArrays();
 }
 

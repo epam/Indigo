@@ -34,6 +34,14 @@
 #include "indigo_renderer_internal.h"
 #include "option_manager.h"
 
+#include <cppcodec/base64_rfc4648.hpp>
+#include <rapidjson/document.h>
+#include <rapidjson/error/en.h>
+
+#include <exception>
+#include <string>
+#include <utility>
+
 // #define INDIGO_DEBUG
 
 #ifdef INDIGO_DEBUG
@@ -41,6 +49,7 @@
 #endif
 
 using namespace indigo;
+using namespace rapidjson;
 
 static _SessionLocalContainer<IndigoRenderer> indigo_renderer_self;
 
@@ -55,6 +64,7 @@ void IndigoRenderer::init()
 {
     setOptionsHandlers();
     renderParams.clear();
+    fontsJson = "[]";
 }
 
 #define __min3(a, b, c) (std::min(a, std::min(b, c)))
@@ -143,6 +153,60 @@ void indigoRenderGetOutputFormat(Array<char>& value)
     RenderParams& rp = indigoRendererGetInstance().renderParams;
     const char* mode = indigoRenderOutputFormatToString(rp.rOpt.mode);
     value.readString(mode, true);
+}
+
+void indigoRenderSetFonts(const char* fonts)
+{
+    if (fonts == nullptr)
+        throw IndigoError("Invalid fonts JSON: value must not be null");
+
+    Document document;
+
+    document.Parse(fonts);
+
+    if (document.HasParseError())
+        throw IndigoError("Invalid fonts JSON at offset %zu: %s", document.GetErrorOffset(), GetParseError_En(document.GetParseError()));
+    if (!document.IsArray())
+        throw IndigoError("Invalid fonts JSON: expected an array");
+
+    PtrArray<RenderFont> render_fonts;
+
+    for (SizeType i = 0; i < document.Size(); ++i)
+    {
+        const auto& font = document[i];
+
+        if (!font.IsObject())
+            throw IndigoError("Invalid font at index %u: expected an object", i);
+        if (!font.HasMember("name") || !font["name"].IsString())
+            throw IndigoError("Invalid font at index %u: 'name' must be a string", i);
+        if (!font.HasMember("data") || !font["data"].IsString())
+            throw IndigoError("Invalid font at index %u: 'data' must be a Base64 string", i);
+
+        std::string font_name = font["name"].GetString();
+        const Value& font_base64 = font["data"];
+        std::vector<byte> font_data;
+
+        try
+        {
+            font_data = cppcodec::base64_rfc4648::decode<std::vector<byte>>(font_base64.GetString(), font_base64.GetStringLength());
+        }
+        catch (const std::exception& error)
+        {
+            throw IndigoError("Invalid Base64 data for font '%s' at index %u: %s", font_name.c_str(), i, error.what());
+        }
+
+        render_fonts.emplace(std::move(font_name), std::move(font_data));
+    }
+
+    auto& renderer = indigoRendererGetInstance();
+
+    renderer.fontsJson = fonts;
+    renderer.renderParams.fonts = std::move(render_fonts);
+}
+
+void indigoRenderGetFonts(Array<char>& value)
+{
+    value.readString(indigoRendererGetInstance().fontsJson.c_str(), true);
 }
 
 void indigoRenderSetStereoStyle(const char* mode)
@@ -688,6 +752,7 @@ void IndigoRenderer::setOptionsHandlers()
         mgr->setOptionHandlerInt("render-image-max-height", SETTER_GETTER_INT_OPTION(rp.cnvOpt.maxHeight));
 
         mgr->setOptionHandlerString("render-output-format", indigoRenderSetOutputFormat, indigoRenderGetOutputFormat);
+        mgr->setOptionHandlerString("fonts", indigoRenderSetFonts, indigoRenderGetFonts);
 
         mgr->setOptionHandlerString("render-comment", SETTER_GETTER_STR_OPTION(rp.cnvOpt.comment));
         mgr->setOptionHandlerString("render-comment-position", indigoRenderSetCommentPosition, indigoRenderGetCommentPosition);
