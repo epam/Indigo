@@ -527,7 +527,7 @@ jobs:
           path: dist/
       - name: Install Jython
         run: |
-          curl -L https://repo1.maven.org/maven2/org/python/jython-standalone/2.7.2/jython-standalone-2.7.2.jar -o jython.jar
+          curl -fL --retry 3 --retry-delay 5 https://repo1.maven.org/maven2/org/python/jython-standalone/2.7.2/jython-standalone-2.7.2.jar -o jython.jar
       - name: Test (Linux/Windows)
         if: ${{ !startsWith(matrix.os, 'macos') }}
         env:
@@ -584,7 +584,7 @@ jobs:
           run: |
             apt update
             apt install -y curl default-jre
-            curl -L https://repo1.maven.org/maven2/org/python/jython-standalone/2.7.2/jython-standalone-2.7.2.jar -o jython.jar
+            curl -fL --retry 3 --retry-delay 5 https://repo1.maven.org/maven2/org/python/jython-standalone/2.7.2/jython-standalone-2.7.2.jar -o jython.jar
             export INDIGO_PATH=${{ github.workspace }}/dist
             java -Xss4m -jar jython.jar api/tests/integration/test.py -p basic/basic.py -t 1 -j junit_report.xml
       - name: Publish Test Report
@@ -627,7 +627,7 @@ jobs:
           architecture: x86
       - name: Install Jython
         run: |
-          curl -L https://repo1.maven.org/maven2/org/python/jython-standalone/2.7.2/jython-standalone-2.7.2.jar -o jython.jar
+          curl -fL --retry 3 --retry-delay 5 https://repo1.maven.org/maven2/org/python/jython-standalone/2.7.2/jython-standalone-2.7.2.jar -o jython.jar
       - name: Test
         env:
           INDIGO_PATH: ${{ github.workspace }}/dist
@@ -1171,7 +1171,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        postgres_major_version: [ 14, 15, 16, 17 ]
+        postgres_major_version: [ 14, 15, 16, 17, 18 ]
     runs-on: ubuntu-latest
     needs: [build_indigo_windows_mingw_x86_64, build_indigo_ketcher_cjk, build_bingo_oracle_linux_x86_64, build_bingo_oracle_windows_mingw_x86_64, build_bingo_oracle_windows_msvc_x86_64]
     steps:
@@ -1246,7 +1246,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        postgres_major_version: [ "14", "15", "16" ]
+        postgres_major_version: [ "14", "15", "16", "17", "18" ]
     runs-on: windows-latest
     needs: [build_indigo_windows_mingw_x86_64, build_indigo_ketcher_cjk, build_bingo_oracle_linux_x86_64, build_bingo_oracle_windows_mingw_x86_64, build_bingo_oracle_windows_msvc_x86_64]
     steps:
@@ -1261,11 +1261,19 @@ jobs:
              git fetch --tags -f
       - name: Setup Postgres
         run: |
-          $pg_version = switch(${{ matrix.postgres_major_version }}) { "17" { "17.5" } "16" { "16.9" } "15" { "15.13" } "14" { "14.18" } }
+          $pg_version = switch(${{ matrix.postgres_major_version }}) { "18" { "18.3" } "17" { "17.9" } "16" { "16.13" } "15" { "15.17" } "14" { "14.22" } }
           curl -O https://get.enterprisedb.com/postgresql/postgresql-${pg_version}-1-windows-x64-binaries.zip
           Expand-Archive postgresql-${pg_version}-1-windows-x64-binaries.zip
           mv postgresql-${pg_version}-1-windows-x64-binaries/pgsql pgsql
-          cp bingo/postgres/patches/generic-msvc.h pgsql/include/server/port/atomics/generic-msvc.h
+      - name: Apply patch
+        if: ${{ matrix.postgres_major_version < 18 }}
+        run: cp bingo/postgres/patches/generic-msvc.h pgsql/include/server/port/atomics/generic-msvc.h
+      - name: Apply patch 18
+        if: ${{ matrix.postgres_major_version >= 18 }}
+        run: cp bingo/postgres/patches/generic-msvc-18.h pgsql/include/server/port/atomics/generic-msvc.h
+      - name: Apply patch 17
+        if: ${{ matrix.postgres_major_version >= 17 }}
+        run: cp bingo/postgres/patches/port.h pgsql/include/server/port.h
       - name: Build bingo-postgres
         run: |
           mkdir build
@@ -1283,7 +1291,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        postgres_major_version: [ 14, 15, 16, 17 ]
+        postgres_major_version: [ 14, 15, 16, 17, 18 ]
     runs-on: macos-15
     needs: [build_indigo_windows_mingw_x86_64, build_indigo_ketcher_cjk, build_bingo_oracle_linux_x86_64, build_bingo_oracle_windows_mingw_x86_64, build_bingo_oracle_windows_msvc_x86_64]
     steps:
@@ -1298,7 +1306,7 @@ jobs:
              git fetch --tags -f
       - name: Setup Postgres
         run: |
-          case ${{ matrix.postgres_major_version }} in 17) pg_version=17.5;; 16) pg_version=16.9;; 15) pg_version=15.13;; 14) pg_version=14.18;; esac;
+          case ${{ matrix.postgres_major_version }} in 18) pg_version=18.3;; 17) pg_version=17.9;; 16) pg_version=16.13;; 15) pg_version=15.17;; 14) pg_version=14.22;; esac;
           curl -O https://get.enterprisedb.com/postgresql/postgresql-${pg_version}-1-osx-binaries.zip
           unzip postgresql-${pg_version}-1-osx-binaries.zip
           mv pgsql/include/zlib.h pgsql/include/zlib.h.bck
