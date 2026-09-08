@@ -1,4 +1,7 @@
-# Oracle
+# Bingo — Oracle
+
+> **Read when:** you touch `bingo/oracle/`, or run the Oracle test suite. Several failures here are silent.
+> **Skip when:** the work is Postgres, NoSQL or Elastic only.
 
 Everything specific to running Bingo on Oracle: the local Docker harness, running tests from the host venv, and the load-bearing gotchas in the install scripts and C++ context loader.
 
@@ -125,6 +128,6 @@ Postgres's loader iterates every row of `bingo_config` and bingo-sets each one. 
 
 ## Related
 
-- [claude-docs/testing.md](testing.md) — the broader test-suite landscape
-- [claude-docs/architecture.md](architecture.md) — the test adapter pattern shared across DB engines
-- [claude-docs/build.md](build.md) — building Bingo for Oracle generally
+- [testing.md](../testing.md) — the broader test-suite landscape
+- [architecture.md](../architecture.md) — the test adapter pattern shared across DB engines
+- [build.md](../build.md) — building Bingo for Oracle generally
