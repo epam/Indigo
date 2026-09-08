@@ -71,7 +71,7 @@ For spinning up Elasticsearch see [testing.md](../testing.md).
 
 ## Java sibling
 
-`bingo/bingo-elastic/java/` is a parallel implementation and lags Python — for example, tautomer search is now implemented on the Python side (issue #235) while `IndigoRecord.java:29` still carries `// TODO add tau fingerprint`. When changing one library check whether the other has a TODO referring to the same gap; the Python side is now the lead reference for tautomer.
+`bingo/bingo-elastic/java/` is a parallel implementation and lags Python — for example, tautomer search is now implemented on the Python side (issue #235) while `bingo/bingo-elastic/java/src/main/java/com/epam/indigo/model/IndigoRecord.java#IndigoRecord` still carries `// TODO add tau fingerprint`. When changing one library check whether the other has a TODO referring to the same gap; the Python side is now the lead reference for tautomer.
 
 ## Related
 

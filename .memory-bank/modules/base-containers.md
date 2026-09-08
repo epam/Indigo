@@ -29,7 +29,7 @@ scratch buffers, mappings, and the FFI-facing byte arrays. Do not reach for it t
 
 ## `PtrArray<T>`
 
-Owning, index-stable, move-only (`PtrArray(const PtrArray&) = delete`, `ptr_array.h:81`). The
+Owning, index-stable, move-only (`PtrArray(const PtrArray&) = delete`, `core/indigo-core/common/base_cpp/ptr_array.h#PtrArray(const PtrArray&) = delete`). The
 element is constructed by the container (`emplace`, `push`) or handed to it as a `unique_ptr`
 (`add`, `set`). `remove(idx)` clears the slot without renumbering; `reset(idx)` empties one;
 `clear()` empties all. Access is bounds-checked, and the check reports the calling method's name,
@@ -52,7 +52,7 @@ its object alive with its buffers allocated; the object is returned to a freshly
 - **Leaves the object usable**, not merely internally consistent.
 
 `Graph` and `Vertex` both derive from `Reusable`; `Graph` stores its vertices in a
-`PtrReusablePool<Vertex>` (`graph/graph.h:275`). `PtrReusablePool` is itself `Reusable`, so a pool
+`PtrReusablePool<Vertex>` (`core/indigo-core/graph/graph.h#PtrReusablePool<Vertex>`). `PtrReusablePool` is itself `Reusable`, so a pool
 can live inside a pooled object.
 
 ## Constraints and traps

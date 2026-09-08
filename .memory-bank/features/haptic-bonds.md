@@ -20,17 +20,19 @@ group** — a named set of atoms acting as one collective end
 (`HapticBond::Endpoint::atom(idx)` / `Endpoint::group(idx)`).
 
 - `BaseMolecule::addHapticBond(begin, end, type = _BOND_HAPTIC)` is the **only** way to create one
-  (`base_molecule.h:474`).
+  (`core/indigo-core/molecule/base_molecule.h#addHapticBond`).
 - `BaseMolecule::removeAttachmentGroup(idx)` is the only way to remove a group
-  (`base_molecule.h:479`); the haptic bonds addressing it are removed with it.
+  (`core/indigo-core/molecule/base_molecule.h#removeAttachmentGroup`); the haptic bonds addressing
+  it are removed with it.
 - The data lives in `attachment_groups` and `haptic_bonds` on `BaseMolecule`
-  (`base_molecule.h:572`, `:574`), not on the atoms.
+  (`core/indigo-core/molecule/base_molecule.h#MoleculeAttachmentGroups attachment_groups`), not on
+  the atoms.
 - In KET, a connection is discriminated by type `"haptic"`, with `attachmentGroups` and
   `attachmentGroupId` carrying the sets (`molecule/ket_keys.h`).
 - In MOL V3000, one bond record carries the group as an `ENDPTS` list with `ATTACH`; the record's
   visible end is the group's **anchor atom** — the star atom of the `ENDPTS` record. A group's
   anchor is `-1` when the source named none, as KET does; it is not a member of the group and not
-  part of it chemically (`molecule_attachment_groups.h:69-73`).
+  part of it chemically (`core/indigo-core/molecule/molecule_attachment_groups.h#anchorAtom`).
 
 ## Expected behaviour
 
@@ -43,7 +45,7 @@ in the document.
 **When** a MOL V3000 file with an `ENDPTS` / `ATTACH` bond record is loaded, **then** an attachment
 group is created from the endpoint list, its anchor is set to the record's star atom, and one haptic
 bond is added from the group to the atom at the other end
-(`molfile_loader_v3000.cpp:877` `_addHapticBond3000`).
+(`core/indigo-core/molecule/src/molfile_loader_v3000.cpp#_addHapticBond3000`).
 
 **When** a molecule with haptic bonds is saved to MOL V3000, **then** each group-to-atom bond becomes
 one record. If the group has no usable anchor, the saver emits a fresh star atom placed at the
@@ -52,8 +54,8 @@ has something to draw the bond to.
 
 **When** a haptic bond connects two atoms rather than a group and an atom, **then** V3000 **drops
 it** — the format has no `ENDPTS` form for that case, and it is discarded like any other feature
-V3000 cannot express (`molfile_saver.cpp:465`). A structure like that does not survive the round
-trip, and nothing warns about it.
+V3000 cannot express (`core/indigo-core/molecule/src/molfile_saver.cpp#no ENDPTS form`). A
+structure like that does not survive the round trip, and nothing warns about it.
 
 **When** an attachment group is removed, **then** every haptic bond referring to it is removed too —
 a haptic bond never survives with a dangling endpoint.
@@ -65,8 +67,8 @@ chemical claim, not a smaller one. The anchor is the exception — it is remappe
 simply becomes `-1` when its atom disappears, which never forces the group out.
 
 **When** a molecule is copied or merged with `SKIP_ATTACHMENT_GROUPS` or `SKIP_HAPTIC_BONDS`
-(`base_molecule.h:137-138`), **then** that data is deliberately left behind; without the flags it is
-remapped into the target.
+(`core/indigo-core/molecule/base_molecule.h#SKIP_ATTACHMENT_GROUPS`), **then** that data is
+deliberately left behind; without the flags it is remapped into the target.
 
 **When** the structure is rendered, **then** the haptic bond is drawn to the group as a whole —
 `core/render2d/` knows about attachment groups.
@@ -81,8 +83,9 @@ remapped into the target.
   cannot go stale when the ligand moves. The anchor atom is not an exception: it is a reference to
   an atom a file drew the group with, not a coordinate, and a group whose anchor is gone is still a
   valid group.
-- Endpoints are validated on creation (`_checkHapticEndpoint`, `base_molecule.h:790`); an endpoint
-  naming a nonexistent atom or group is rejected rather than stored.
+- Endpoints are validated on creation
+  (`core/indigo-core/molecule/base_molecule.h#_checkHapticEndpoint`); an endpoint naming a
+  nonexistent atom or group is rejected rather than stored.
 
 ## Limitations
 

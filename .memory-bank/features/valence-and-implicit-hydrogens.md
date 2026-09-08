@@ -19,7 +19,7 @@ about real structures. Indigo therefore does not have "the" hydrogen count; it h
 
 ## Interface
 
-`valence-mode`, a string option (`api/c/indigo/src/indigo_options.cpp:383`):
+`valence-mode`, a string option (`api/c/indigo/src/indigo_options.cpp#"valence-mode"`):
 
 | Value | Meaning |
 | --- | --- |
@@ -27,14 +27,14 @@ about real structures. Indigo therefore does not have "the" hydrogen count; it h
 | `biovia-2017` | only the 22 listed non-metals, plus the Al⁻ exception |
 
 Any other value raises: `invalid valence mode: '<x>' (expected 'biovia-2009', 'biovia-2017', or
-'default')` (`indigo_options.cpp:52`). Reading the option back returns `biovia-2009` or
+'default')` (`api/c/indigo/src/indigo_options.cpp#invalid valence mode`). Reading the option back returns `biovia-2009` or
 `biovia-2017` — never `default`.
 
-`ignore-bad-valence`, a boolean option (`indigo_options.cpp:382`), suppresses the exception described
+`ignore-bad-valence`, a boolean option (`api/c/indigo/src/indigo_options.cpp#"ignore-bad-valence"`), suppresses the exception described
 below.
 
 The count is read through `indigoCountImplicitHydrogens`
-(`api/c/indigo/src/indigo_molecule_operations.cpp:3249`), which reports one atom's count or, given a
+(`api/c/indigo/src/indigo_molecule_operations.cpp#indigoCountImplicitHydrogens`), which reports one atom's count or, given a
 molecule, the sum over all atoms.
 
 ## Expected behaviour
@@ -48,7 +48,7 @@ exists.
 
 **When** an atom's drawn bonds, charge and radical state admit no valid valence, **then**
 `Element::Error` is raised with `bad valence on <element> having <n> drawn bonds, charge <c>, and
-<r> radical electrons` (`core/indigo-core/molecule/src/valence_model.cpp:904`) — unless
+<r> radical electrons` (`core/indigo-core/molecule/src/valence_model.cpp#bad valence on %s`) — unless
 `ignore-bad-valence` is set, in which case the atom keeps an undefined hydrogen count and
 `checkmolecule` is expected to surface the problem instead.
 
