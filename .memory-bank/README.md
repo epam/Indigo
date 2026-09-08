@@ -42,16 +42,29 @@ before it is useful is a tax on every session; a routing table plus honest per-f
 | `architecture.md`  | Component structure, layering, data flow, where a change of kind X belongs           |
 | `domain.md`        | Entities, relationships, constraints — chemistry as modelled here, not as in textbooks |
 | `glossary.md`      | Term, definition, where it is used in code                                            |
-| `invariants.md`    | ID, statement, why it breaks silently, anchor (`file:line`)                          |
+| `invariants.md`    | ID, statement, why it breaks silently, and an anchor                                 |
 | `modules/<x>.md`   | Responsibility, public interface, dependencies, dependents, constraints & traps      |
 | `features/<x>.md`  | Problem, user interaction, expected behaviour (WHEN/THEN), guarantees, limitations    |
 | `adr/<slug>.md`    | Decision, context, alternatives considered, rationale, consequences                  |
 
 ## Rules for writing
 
-- **State facts, anchored.** Every non-obvious claim carries a `path/file.cpp:NNN` anchor and, where
-  the claim is about behaviour rather than structure, the commit it was verified on. An anchor that
-  no longer resolves is a bug report against this file.
+- **State facts, anchored — by symbol, never by line number.** An anchor is one code span:
+
+  ```
+  `core/indigo-core/molecule/base_molecule.h#addHapticBond`
+  ```
+
+  the path, `#`, then a literal that must occur in that file: a declaration name, a macro, an enum
+  member, or a distinctive message. Line numbers are forbidden here. They are wrong the moment
+  anyone inserts a line above them, they go wrong **silently**, and a confidently wrong line number
+  costs the reader more than no anchor at all. A symbol survives edits, survives a rebase, and is
+  found with one grep.
+
+  `.claude/scripts/check-anchors.sh` verifies every anchor in this bank and in `.claude/`; run it
+  after editing, and treat a failure as a defect in the document.
+
+  Where the claim is about behaviour rather than structure, also name the commit it was verified on.
 - **Non-obvious only.** If a competent reader learns it in thirty seconds from the source, it does
   not belong here. Directory listings, class inventories, and restated signatures are not knowledge.
 - **Traps outrank descriptions.** The reason this base exists is the silent failure — the second edit

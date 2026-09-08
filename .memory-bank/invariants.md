@@ -15,8 +15,8 @@ defect in this file: fix it in the same change that moved the code.
 
 **A1 — No C++ exception may cross the C boundary.**
 Every exported function in `api/c/` is wrapped in `INDIGO_BEGIN` / `INDIGO_END`
-(`api/c/indigo/src/indigo_internal.h:440`), returns `-1` on failure, and leaves the message
-retrievable through `indigoGetLastError`. An unwrapped export terminates the host process instead of
+(`api/c/indigo/src/indigo_internal.h#define INDIGO_BEGIN`), returns `-1` on failure, and leaves
+the message retrievable through `indigoGetLastError`. An unwrapped export terminates the host process instead of
 returning an error to Python/Java/.NET.
 
 **A2 — Exception message text is part of the public contract.**
@@ -33,9 +33,10 @@ tightening a loader, and do not assume that a structure which loaded is chemical
 
 **A4 — New per-atom or per-bond data must be wired into the whole lifecycle.**
 The touch points are `clear()`, `_mergeWithSubmolecule_Sub()`, the `SKIP_*` copy flags
-(`core/indigo-core/molecule/base_molecule.h:125`), `removeAtoms()` / `removeBonds()`
-(`base_molecule.h:615`), and both load and save paths. Missing any one of them produces data that is
-correct on a freshly parsed molecule and wrong after a copy, a merge, or an edit.
+(`core/indigo-core/molecule/base_molecule.h#SKIP_CIS_TRANS`), `removeAtoms()` / `removeBonds()`
+(`core/indigo-core/molecule/base_molecule.h#void removeAtoms(`), and both load and save paths.
+Missing any one of them produces data that is correct on a freshly parsed molecule and wrong after
+a copy, a merge, or an edit.
 
 **A5 — A side table keyed by atom or bond index must be cleared in `removeAtoms` / `removeBonds`.**
 The index pools reuse freed indices. A side table that is not cleared silently re-attaches its stale
@@ -49,7 +50,7 @@ god object; every field added to it is added to every molecule ever allocated.
 **A7 — A collective endpoint is dropped whole or not at all.**
 When atoms are removed, `AttachmentGroup::remapAtoms` returns `false` if any member is gone, and the
 caller must then drop the entire group — never a truncated one
-(`core/indigo-core/molecule/molecule_attachment_groups.h:63-66`). Half a ligand is a different
+(`core/indigo-core/molecule/molecule_attachment_groups.h#remapAtoms`). Half a ligand is a different
 chemical claim, not a smaller one, and a haptic bond pointing at a partial group is wrong in a way
 nothing downstream can detect. The group's anchor atom is deliberately outside this rule: it is
 remapped separately and simply becomes `-1`.
@@ -60,8 +61,8 @@ remapped separately and simply becomes `-1`.
 ## Language & platform
 
 **A9 — C++17, no C++20.**
-`cmake/setup.cmake:25` sets `CMAKE_CXX_STANDARD 17`, and the Emscripten and oldest-supported-GCC
-build legs will reject C++20 constructs. The code must compile under GCC, Clang and MSVC.
+`cmake/setup.cmake#CMAKE_CXX_STANDARD 17` sets the standard, and the Emscripten and
+oldest-supported-GCC build legs reject C++20 constructs. The code must compile under GCC, Clang and MSVC.
 
 **A10 — Layout output is not bit-identical across platforms.**
 The 2D layout produces different coordinates on Windows and Linux for a measurable share of the
@@ -73,7 +74,7 @@ pin the reference per platform.
 
 **B1 — Adding an Oracle config tunable takes two edits, not one.**
 Insert the row into `bingo/oracle/sql/bingo/bingo_config.sql` **and** add a `configGetIntDef` line in
-`BingoOracleContext::_loadConfigParameters` (`bingo/oracle/src/oracle/bingo_oracle_context.cpp:95`).
+`BingoOracleContext::_loadConfigParameters` (`bingo/oracle/src/oracle/bingo_oracle_context.cpp#configGetIntDef`).
 Postgres iterates the table; the Oracle loader is hand-coded, so a row on its own is ignored without
 any error.
 

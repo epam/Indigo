@@ -36,10 +36,10 @@ Three GTest binaries plus a set of `dlopen` smoke tests, all registered with CTe
 
 | Target | Covers | Registered in |
 | --- | --- | --- |
-| `indigo-core-unit-tests` | core algorithms | `core/indigo-core/tests/CMakeLists.txt:34` |
-| `indigo-api-unit-tests` | the C API | `api/c/tests/unit/CMakeLists.txt:33` |
-| `indigo-cpp-unit-tests` | the C++ wrapper — `basic`, `bingo`, `formats`, `inchi`, `rendering`, `substructure` | `api/cpp/tests/CMakeLists.txt:36` |
-| `dlopen-*` | that each shared library loads: indigo, indigo-inchi, indigo-renderer, bingo-nosql | `api/c/tests/dlopen/CMakeLists.txt:8-14` |
+| `indigo-core-unit-tests` | core algorithms | `core/indigo-core/tests/CMakeLists.txt#indigo-core-unit-tests` |
+| `indigo-api-unit-tests` | the C API | `api/c/tests/unit/CMakeLists.txt#indigo-api-unit-tests` |
+| `indigo-cpp-unit-tests` | the C++ wrapper — `basic`, `bingo`, `formats`, `inchi`, `rendering`, `substructure` | `api/cpp/tests/CMakeLists.txt#indigo-cpp-unit-tests` |
+| `dlopen-*` | that each shared library loads: indigo, indigo-inchi, indigo-renderer, bingo-nosql | `api/c/tests/dlopen/CMakeLists.txt#add_test(NAME` |
 
 ```bash
 cmake --build --preset indigo-debug

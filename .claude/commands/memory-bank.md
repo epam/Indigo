@@ -14,13 +14,13 @@ Target: **$ARGUMENTS**
 3. Decide what, if anything, is *lasting* knowledge. Most changes teach nothing durable — say so and
    stop. Only these earn an edit:
    - a failure mode that is silent (no compile error, no failing test locally) → `invariants.md`,
-     with an ID, the reason it fails quietly, and a `path/file.cpp:NNN` anchor
+     with an ID, the reason it fails quietly, and a `<path>#<Symbol>` anchor
    - subsystem behaviour that cost you real reading time → `modules/<name>.md`
    - a change in what a capability promises callers → `features/<name>.md`
    - a structural decision that sets precedent → `adr/<slug>.md`
    - a term you had to look up → `glossary.md`
-4. Check the anchors you are about to touch still resolve; a stale `file:line` in the bank is a
-   defect, fix it while you are there.
+4. Run `.claude/scripts/check-anchors.sh`. A broken anchor is a defect in the document — fix it
+   while you are there, and never replace a symbol anchor with a line number.
 5. Report each edit as one line: `file — what changed and why`. If nothing qualified, report that.
 
 ## Mode B — a topic: answer from the bank, then close the gap

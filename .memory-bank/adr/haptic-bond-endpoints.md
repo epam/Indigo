@@ -19,7 +19,7 @@ atom.
 ## Decision
 
 The attachment group is stored **beside** the graph, not in it. `MoleculeAttachmentGroups` and
-`MoleculeHapticBonds` are members of `BaseMolecule` (`base_molecule.h:572`, `:574`); a group is
+`MoleculeHapticBonds` are members of `BaseMolecule` (`core/indigo-core/molecule/base_molecule.h#MoleculeAttachmentGroups attachment_groups`, `core/indigo-core/molecule/base_molecule.h#MoleculeHapticBonds haptic_bonds`); a group is
 never a vertex and never appears in vertex iteration. A `HapticBond::Endpoint` is a tagged value —
 either an atom index or a group index.
 
@@ -60,6 +60,6 @@ Two consequences are part of the decision, not accidents of it:
   disagreeing about where the bond points.
 - **A format with no collective endpoint loses the structure, not part of it.** V3000 can express a
   group-to-atom haptic bond as an `ENDPTS` record, but has no form for an atom-to-atom one, and the
-  saver drops those silently (`molfile_saver.cpp:465`). That is the general consequence: each format
+  saver drops those silently (`core/indigo-core/molecule/src/molfile_saver.cpp#no ENDPTS form`). That is the general consequence: each format
   needs an explicit decision, and "drop it quietly" is a decision that should be recorded rather
   than discovered.

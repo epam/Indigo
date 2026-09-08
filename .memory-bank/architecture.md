@@ -27,11 +27,6 @@ api/tests/integration/   the cross-language conformance harness
 bingo/bingo-core/  bingo-core-c/        search engine shared by the cartridges
 bingo/postgres/  oracle/  sqlserver/    per-database cartridges
 bingo/bingo-elastic/{java,python}       Elasticsearch clients (separate products)
-
-utils/                   CLI and adjacent tools: indigo-cano, indigo-deco, indigo-depict,
-                         cdx-dump, chemdiff, legio, indigo-knime, indigo-ml, indigo-service
-third_party/             vendored: inchi, cairo, pixman, freetype, libpng, lunasvg,
-                         rapidjson, tinyxml2, zlib, googletest, object_threadsafe, cppcodec
 ```
 
 ## The rules that hold it together
