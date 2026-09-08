@@ -26,6 +26,7 @@ RESERVED_FIELDS = frozenset(
         "tau_search",
         "indigo_object",
         "elastic_response",
+        "gross_formula",
     }
 )
 
@@ -113,6 +114,12 @@ class WithIndigoObject:
         except IndigoException as err_:
             check_error(instance, err_)
 
+        try:
+            gross_formula = value_dup.grossFormula()
+            setattr(instance, "gross_formula", gross_formula.replace(" ", ""))
+        except IndigoException as err_:
+            check_error(instance, err_)
+
         allowed = getattr(instance, "_custom_properties", None)
         if allowed:
             try:
@@ -149,6 +156,7 @@ class IndigoRecord:
     record_id: Optional[str] = None
     error_handler: Optional[Callable[[object, BaseException], None]] = None
     _custom_properties: Optional[FrozenSet[str]] = None
+    gross_formula: Optional[str] = None
 
     def __new__(cls, *args, **kwargs):
         if cls is IndigoRecord:
