@@ -286,3 +286,25 @@ TEST_F(IndigoCoreHapticLayoutTest, VariableAttachmentIsNotLaidOutAsHaptic)
 
     EXPECT_GT(Vec2f::dist(groupCentre(mol, group), pos(mol, metal)), 1.5f + TOLERANCE) << "the grid placed it, not the haptic rule";
 }
+
+// The anchor is an ordinary vertex bonded to the partner, so the layout first
+// places it as a substituent; it belongs at the centre of the ligand it stands
+// for, which is where the haptic bond is drawn from.
+TEST_F(IndigoCoreHapticLayoutTest, TheAnchorEndsUpAtTheCentreOfItsGroup)
+{
+    Molecule mol;
+    const int ring = addRing(mol, 5);
+    const int metal = mol.addAtom(ELEM_Fe);
+    const int star = mol.addAtom(ELEM_PSEUDO);
+    mol.setPseudoAtom(star, "*");
+    mol.addBond(metal, star, BOND_SINGLE);
+
+    const int group = addGroup(mol, {ring, ring + 1, ring + 2, ring + 3, ring + 4});
+    mol.attachment_groups.group(group).setAnchorAtom(star);
+    mol.addHapticBond(HapticBond::Endpoint::group(group), HapticBond::Endpoint::atom(metal));
+
+    makeLayout(mol);
+
+    EXPECT_NEAR(0.f, Vec2f::dist(pos(mol, star), groupCentre(mol, group)), TOLERANCE);
+    EXPECT_NEAR(1.5f, Vec2f::dist(groupCentre(mol, group), pos(mol, metal)), TOLERANCE);
+}

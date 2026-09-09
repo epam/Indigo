@@ -200,8 +200,18 @@ bool MoleculeRenderInternal::_hapticEndpointPos(const HapticBond::Endpoint& endp
     if (!groups.hasGroup(endpoint.index()))
         return false;
 
-    // The positions the picture is drawn in, not the ones the molecule holds, so
-    // the shared rule takes points; see AttachmentGroup::centreOf (#3844).
+    // The model keeps the anchor at the centre of the ligand
+    // (BaseMolecule::syncAttachmentGroupAnchor), so drawing from it puts the haptic
+    // line and the `*`-to-partner edge on one line instead of two.
+    const int anchor = groups.group(endpoint.index()).anchorAtom();
+    if (anchor >= 0 && _mol->hasVertex(anchor))
+    {
+        pos = _ad(anchor).pos;
+        return true;
+    }
+
+    // No anchor: the source has none, KET being one. Canvas positions, not the
+    // molecule's, hence the point-taking form of the rule.
     std::vector<Vec2f> positions;
     for (int atom : groups.group(endpoint.index()).atoms())
     {

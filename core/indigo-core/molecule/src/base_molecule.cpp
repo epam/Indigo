@@ -1187,6 +1187,14 @@ int BaseMolecule::addHapticBond(HapticBond::Endpoint begin, HapticBond::Endpoint
         throw Error("a haptic bond needs two different atoms");
 
     const int idx = haptic_bonds.add(begin, end, type);
+
+    // The bond starts at the anchor, so forming one is when the anchor has to be on
+    // the centre of its group; a file may well have put it elsewhere.
+    if (begin.isGroup())
+        syncAttachmentGroupAnchor(begin.index());
+    if (end.isGroup())
+        syncAttachmentGroupAnchor(end.index());
+
     // A haptic bond holds atoms together without an edge, so the decomposition
     // depends on it while the graph, which drops the cache on its own, does not
     // notice the change at all.
@@ -1224,6 +1232,8 @@ void BaseMolecule::setAttachmentGroupAtoms(int group_idx, const std::vector<int>
     }
 
     group.setAtoms(atoms);
+    // Another membership means another centre for the anchor to follow.
+    syncAttachmentGroupAnchor(group_idx);
     invalidateComponents();
     updateEditRevision();
 }
@@ -1245,6 +1255,49 @@ Vec3f BaseMolecule::attachmentGroupCentre(int group_idx)
         positions.push_back(getAtomXyz(atom));
 
     return AttachmentGroup::centreOf(positions);
+}
+
+void BaseMolecule::syncAttachmentGroupAnchor(int group_idx)
+{
+    if (!attachment_groups.hasGroup(group_idx))
+        return;
+
+    const AttachmentGroup& group = attachment_groups.group(group_idx);
+    const int anchor = group.anchorAtom();
+
+    if (anchor < 0 || !hasVertex(anchor) || group.atoms().empty())
+        return;
+
+    // Notation is movable, chemistry is not. The V3000 loader falls back to the
+    // second end of the record when neither end is a star, and that end is an
+    // ordinary atom which must stay exactly where the file put it.
+    if (!isPseudoAtom(anchor) || strcmp(getPseudoAtom(anchor), "*") != 0)
+        return;
+
+    // An anchor of its own group would make the centre depend on itself.
+    if (group.hasAtom(anchor))
+        return;
+
+    // Written through the array rather than setAtomXyz(): that path calls back
+    // here, and an anchor that is a member of another group would recurse.
+    _xyz[anchor].copy(attachmentGroupCentre(group_idx));
+    updateEditRevision();
+}
+
+void BaseMolecule::syncAttachmentGroupAnchors()
+{
+    for (int i = attachment_groups.begin(); i != attachment_groups.end(); i = attachment_groups.next(i))
+        syncAttachmentGroupAnchor(i);
+}
+
+void BaseMolecule::_syncAnchorsOfGroupsWith(int atom)
+{
+    if (attachment_groups.isEmpty())
+        return;
+
+    for (int i = attachment_groups.begin(); i != attachment_groups.end(); i = attachment_groups.next(i))
+        if (attachment_groups.group(i).hasAtom(atom))
+            syncAttachmentGroupAnchor(i);
 }
 
 void BaseMolecule::collectExternalNeighbors(std::list<std::unordered_set<int>>& neighbors)
@@ -1353,12 +1406,15 @@ bool BaseMolecule::getMiddlePoint(int idx1, int idx2, Vec3f& vec)
 void BaseMolecule::setAtomXyz(int idx, float x, float y, float z)
 {
     _xyz[idx].set(x, y, z);
+    // Moving a ligand moves the point its haptic bond starts at.
+    _syncAnchorsOfGroupsWith(idx);
     updateEditRevision();
 }
 
 void BaseMolecule::setAtomXyz(int idx, const Vec3f& v)
 {
     _xyz[idx].copy(v);
+    _syncAnchorsOfGroupsWith(idx);
     updateEditRevision();
 }
 

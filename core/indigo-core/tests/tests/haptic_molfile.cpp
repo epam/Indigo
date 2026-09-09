@@ -333,8 +333,7 @@ TEST_F(IndigoCoreHapticMolfileTest, StarIsSynthesizedForAGroupWithoutAnchor)
     const std::string saved = saveMolfile(mol);
 
     EXPECT_NE(std::string::npos, saved.find("M  V30 COUNTS 7 6 0 0 0")) << "one atom and one record more than the graph has";
-    // The centroid of the five members (#3844): (0.5, 0.688), where the bounding
-    // box would have said (0.5, 0.77). The two agree only on a symmetric set.
+    // Centroid of the five members; a bounding-box centre would give 0.77.
     EXPECT_NE(std::string::npos, saved.find("M  V30 7 * 0.5 0.688 0.0 0")) << "the star sits at the centre of the ring";
     EXPECT_NE(std::string::npos, saved.find("M  V30 6 9 6 7 ENDPTS=(5 1 2 3 4 5) ATTACH=ALL"));
 
@@ -403,4 +402,109 @@ TEST_F(IndigoCoreHapticMolfileTest, CloneWritesTheSameRecords)
     copy.clone(mol);
 
     EXPECT_EQ(saveMolfile(mol), saveMolfile(copy));
+}
+
+// ---- the anchor follows the centre of its ligand ---------------------------
+
+// A vendor puts the star on the metal-to-ring axis at the height of the centroid,
+// 0.017 to 0.069 away from the centroid itself; the bond is drawn from the star,
+// so the model puts it where the bond is supposed to start.
+TEST_F(IndigoCoreHapticMolfileTest, AnchorMovesToTheCentreOfItsGroup)
+{
+    Molecule mol;
+    loadMolfile(ferrocene(), mol);
+
+    ASSERT_EQ(2, mol.attachment_groups.groupCount());
+
+    for (int i = mol.attachment_groups.begin(); i != mol.attachment_groups.end(); i = mol.attachment_groups.next(i))
+    {
+        const int anchor = mol.attachment_groups.group(i).anchorAtom();
+        ASSERT_GE(anchor, 0);
+        EXPECT_NEAR(0.f, Vec3f::dist(mol.getAtomXyz(anchor), mol.attachmentGroupCentre(i)), 1e-4f);
+    }
+}
+
+TEST_F(IndigoCoreHapticMolfileTest, AnchorFollowsAMemberThatMoves)
+{
+    Molecule mol;
+    loadMolfile(ferrocene(), mol);
+
+    const int group = mol.attachment_groups.begin();
+    const int member = mol.attachment_groups.group(group).atoms().front();
+    const int anchor = mol.attachment_groups.group(group).anchorAtom();
+
+    Vec3f moved = mol.getAtomXyz(member);
+    moved.add(Vec3f(1.f, 2.f, 0.f));
+    mol.setAtomXyz(member, moved);
+
+    EXPECT_NEAR(0.f, Vec3f::dist(mol.getAtomXyz(anchor), mol.attachmentGroupCentre(group)), 1e-4f);
+}
+
+// A star that no ENDPTS record names is a polymer end group or a plain vertex, and
+// the coordinates of one are chemistry like any other.
+TEST_F(IndigoCoreHapticMolfileTest, AStarOutsideAnyGroupStaysWhereTheFileHadIt)
+{
+    const char* two_stars = "\n"
+                            "  -INDIGO-\n"
+                            "\n"
+                            "  0  0  0  0  0  0  0  0  0  0999 V3000\n"
+                            "M  V30 BEGIN CTAB\n"
+                            "M  V30 COUNTS 3 2 0 0 0\n"
+                            "M  V30 BEGIN ATOM\n"
+                            "M  V30 1 * 1.0 1.0 0 0\n"
+                            "M  V30 2 C 2.0 1.0 0 0\n"
+                            "M  V30 3 * 3.0 1.0 0 0\n"
+                            "M  V30 END ATOM\n"
+                            "M  V30 BEGIN BOND\n"
+                            "M  V30 1 1 1 2\n"
+                            "M  V30 2 1 2 3\n"
+                            "M  V30 END BOND\n"
+                            "M  V30 END CTAB\n"
+                            "M  END\n";
+
+    Molecule mol;
+    loadMolfile(two_stars, mol);
+
+    EXPECT_EQ(0, mol.attachment_groups.groupCount());
+    EXPECT_NEAR(1.f, mol.getAtomXyz(0).x, 1e-4f);
+    EXPECT_NEAR(3.f, mol.getAtomXyz(2).x, 1e-4f);
+}
+
+// When neither end of the record is a star, the loader anchors the group on an
+// ordinary atom. That atom is chemistry, not notation, and does not move.
+TEST_F(IndigoCoreHapticMolfileTest, AnAnchorThatIsNotAPseudoAtomStaysPut)
+{
+    const char* no_star = "\n"
+                          "  -INDIGO-\n"
+                          "\n"
+                          "  0  0  0  0  0  0  0  0  0  0999 V3000\n"
+                          "M  V30 BEGIN CTAB\n"
+                          "M  V30 COUNTS 5 4 0 0 0\n"
+                          "M  V30 BEGIN ATOM\n"
+                          "M  V30 1 C 0.0 0.0 0 0\n"
+                          "M  V30 2 C 1.0 0.0 0 0\n"
+                          "M  V30 3 C 1.5 0.87 0 0\n"
+                          "M  V30 4 Fe 5.0 5.0 0 0\n"
+                          "M  V30 5 C 7.0 7.0 0 0\n"
+                          "M  V30 END ATOM\n"
+                          "M  V30 BEGIN BOND\n"
+                          "M  V30 1 1 1 2\n"
+                          "M  V30 2 1 2 3\n"
+                          "M  V30 3 1 3 1\n"
+                          "M  V30 4 9 4 5 ENDPTS=(3 1 2 3) ATTACH=ALL\n"
+                          "M  V30 END BOND\n"
+                          "M  V30 END CTAB\n"
+                          "M  END\n";
+
+    Molecule mol;
+    loadMolfile(no_star, mol);
+
+    ASSERT_EQ(1, mol.attachment_groups.groupCount());
+    const int group = mol.attachment_groups.begin();
+    const int anchor = mol.attachment_groups.group(group).anchorAtom();
+
+    ASSERT_GE(anchor, 0);
+    EXPECT_FALSE(mol.isPseudoAtom(anchor));
+    EXPECT_NEAR(7.f, mol.getAtomXyz(anchor).x, 1e-4f) << "an ordinary atom keeps the coordinates the file gave it";
+    EXPECT_NEAR(7.f, mol.getAtomXyz(anchor).y, 1e-4f);
 }

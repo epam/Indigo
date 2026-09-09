@@ -402,6 +402,10 @@ void MoleculeLayout::_make()
 
     _updateRepeatingUnits();
 
+    // The anchor is an ordinary vertex, so the layout has just placed it as a
+    // substituent; it belongs at the centre of its ligand.
+    _molecule.syncAttachmentGroupAnchors();
+
     _molecule.have_xyz = true;
 }
 
