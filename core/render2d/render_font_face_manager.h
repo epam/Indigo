@@ -25,9 +25,10 @@
 
 #include <memory>
 #include <string>
+#include <vector>
+
 namespace indigo
 {
-
 #ifdef RENDER_ENABLE_CJK
     class CharacterRange
     {
@@ -229,21 +230,36 @@ namespace indigo
         {
             FT_Face ft_face = nullptr;
             cairo_font_face_t* cairo_face = nullptr;
-            std::unique_ptr<cairo_user_data_key_t> key;
+            std::string name;
+            std::shared_ptr<std::vector<byte>> data;
+            bool bold = false;
+            bool italic = false;
 
-            Face()
+            Face() = default;
+            ~Face();
+
+            Face(const Face&) = delete;
+            Face& operator=(const Face&) = delete;
+            Face(Face&&) = delete;
+            Face& operator=(Face&&) = delete;
+
+            explicit Face(const RenderFont& font) : name(font.name), data(font.data)
             {
-                key = std::make_unique<cairo_user_data_key_t>();
+            }
+
+            Face(const std::string& name, const std::shared_ptr<std::vector<byte>>& data) : name(name), data(data)
+            {
             }
         };
 
     private:
-        FT_Library _library;
+        std::shared_ptr<FT_LibraryRec_> _library;
 
         Face _face_regular;
         Face _face_italic;
         Face _face_bold;
         Face _face_bold_italic;
+        PtrArray<Face> _custom_faces;
 
 #ifdef RENDER_ENABLE_CJK
         FontLangDetector _lang_detector;
@@ -251,11 +267,15 @@ namespace indigo
         Face _face_cjk_bold;
 #endif
 
-        void _loadFontFaces();
-        void _loadFontFace(FT_Library library, Face* face, const unsigned char font[], int font_size, const std::string& name);
+        void _initFreeType();
+        void _loadCustomFontFaces(const PtrArray<RenderFont>& fonts);
+        void _loadVariableFontFaceVariants(const RenderFont& font, FT_Face ft_face);
+        void _loadFontFace(Face& face, const unsigned char font[], size_t font_size, const std::string& name,
+                           std::vector<FT_Fixed>* variation_coordinates = nullptr);
+        cairo_font_face_t* _findFontFace(const PtrArray<Face>& faces, const TextItem& ti) const;
 
     public:
-        RenderFontFaceManager();
+        explicit RenderFontFaceManager(const PtrArray<RenderFont>& fonts);
         ~RenderFontFaceManager();
 
         RenderFontFaceManager(const RenderFontFaceManager&) = delete;

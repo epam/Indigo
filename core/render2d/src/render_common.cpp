@@ -60,7 +60,7 @@ namespace indigo
     }
 } // namespace indigo
 
-RenderFont::RenderFont(std::string name, std::vector<byte> data) : name(std::move(name)), data(std::move(data))
+RenderFont::RenderFont(std::string name, std::vector<byte> data) : name(std::move(name)), data(std::make_shared<std::vector<byte>>(std::move(data)))
 {
 }
 

@@ -218,6 +218,11 @@ endif()
 
 if (CAIRO_HAS_FT_FONT)
     target_link_libraries(${PROJECT_NAME} PUBLIC freetype)
+    if (TARGET freetype)
+        target_compile_definitions(${PROJECT_NAME} PRIVATE
+            HAVE_FT_DONE_MM_VAR
+            HAVE_FT_GET_VAR_DESIGN_COORDINATES)
+    endif()
     if (NOT TARGET freetype AND UNIX AND NOT APPLE)
         target_include_directories(${PROJECT_NAME} PRIVATE /usr/include/freetype2)
     endif()

@@ -26,6 +26,7 @@
 #include "reaction/base_reaction.h"
 #include "render_cdxml.h"
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -545,10 +546,10 @@ namespace indigo
 
     struct RenderFont
     {
-    RenderFont(std::string name, std::vector<byte> data);
+        RenderFont(std::string name, std::vector<byte> data);
 
         std::string name;
-        std::vector<byte> data;
+        std::shared_ptr<std::vector<byte>> data;
     };
 
     class RenderOptions

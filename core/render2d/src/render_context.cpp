@@ -119,10 +119,18 @@ void RenderContext::storeAndDestroyMetafile(bool discard)
 
 CP_DEF(RenderContext);
 
-RenderContext::RenderContext(const RenderOptions& ropt, float relativeThickness, float bondLineWidthFactor)
+RenderContext::RenderContext(const RenderOptions& ropt, const PtrArray<RenderFont>& fonts, float relativeThickness, float bondLineWidthFactor)
     : CP_INIT, TL_CP_GET(_fontfamily), TL_CP_GET(transforms), metafileFontsToCurves(false), _cr(NULL), _surface(NULL), _meta_hdc(NULL), opt(ropt),
-      _pattern(NULL), _settings()
+      _pattern(NULL),
+#ifdef RENDER_USE_FONT_MANAGER
+      _font_face_manager(fonts),
+#endif
+      _settings()
 {
+#ifndef RENDER_USE_FONT_MANAGER
+    (void)fonts;
+#endif
+
     AcsOptions acs;
     if (ropt.fontSize > 0)
         acs.fontSizeAngstrom = UnitsOfMeasure::convertToPx(ropt.fontSize, ropt.fontSizeUnit, ropt.ppi) / ropt.bond_length_px;
