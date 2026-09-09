@@ -757,6 +757,8 @@ void SmilesSaver::_writeCycleNumber(int n) const
         _output.printf("%d", n);
     else if (n >= 10 && n < 100)
         _output.printf("%%%2d", n);
+    else if (n >= 100 && n <= 99999)
+        _output.printf("%%(%d)", n);
     else
         throw Error("bad cycle number: %d", n);
 }
