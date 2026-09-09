@@ -85,17 +85,10 @@ namespace indigo
         // never makes the caller drop the group.
         void remapAnchorAtom(const Array<int>& atom_mapping);
 
-        // The point the group acts from: the centroid of the positions given.
-        // The single definition of that rule — the picture (render), the geometry
-        // (layout) and the file (the synthesized V3000 star) must agree, and each
-        // of them holds the positions in its own coordinates, so the rule takes
-        // points rather than reading them from a molecule. See
-        // BaseMolecule::attachmentGroupCentre() for the molecule-coordinate form.
-        //
-        // Centroid and not the bounding-box centre (decision of #3844): on an
-        // asymmetric subset of a ring the bbox centre collapses onto the centre of
-        // the whole ring — for three atoms of a hexagon it gives (0, 0) where the
-        // centroid gives (-0.167, 0.289), a third of a bond length away.
+        // The point the group acts from: the centroid of the positions given. Takes
+        // points rather than a molecule because the render, the layout and the
+        // savers each hold them in their own coordinates; the molecule-coordinate
+        // form is BaseMolecule::attachmentGroupCentre().
         template <typename Vec>
         static Vec centreOf(const std::vector<Vec>& positions)
         {

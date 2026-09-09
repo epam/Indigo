@@ -28,9 +28,8 @@ using namespace indigo;
 
 IMPL_ERROR(HapticLayout, "haptic layout");
 
-// Where a bond leaves an endpoint that nothing surrounds. Arbitrary, but fixed:
-// a direction derived from the coordinates of a symmetric structure would differ
-// between platforms the way the layout energy already does.
+// Fixed rather than derived from the coordinates: on a symmetric structure a
+// computed direction differs between platforms, as the layout energy already does.
 static const Vec2f DEFAULT_DIRECTION(0.f, -1.f);
 
 HapticLayout::HapticLayout(BaseMolecule& molecule, float bond_length) : group_bond_multiplier(1.5f), _molecule(molecule), _bond_length(bond_length)
@@ -72,9 +71,8 @@ bool HapticLayout::_resolveEndpoint(const HapticBond::Endpoint& endpoint, const 
         resolved.component = component;
     }
 
-    // What already takes up room around the endpoint: the bonds leaving it. For a
-    // group those are the bonds of its members that go outside the group — the
-    // substituents of the ring, which the haptic bond must not be drawn over.
+    // The substituents the haptic bond must not be drawn over: for a group, the
+    // bonds of its members that leave it.
     for (int atom : resolved.atoms)
     {
         const Vertex& vertex = _molecule.getVertex(atom);
@@ -126,8 +124,7 @@ Vec2f HapticLayout::_freeDirection(const Endpoint& from, const Vec2f& from_pos, 
             angles.push_back(atan2f(direction.y, direction.x));
     };
 
-    // A neighbour is in the same component as the endpoint, so it takes the same
-    // shift; `from_pos` is shifted too, and the two agree.
+    // A neighbour shares the component of the endpoint, hence its shift.
     for (int neighbour : from.neighbours)
     {
         Vec2f neighbour_pos = position[neighbour];
@@ -143,10 +140,8 @@ Vec2f HapticLayout::_freeDirection(const Endpoint& from, const Vec2f& from_pos, 
 
     std::sort(angles.begin(), angles.end());
 
-    // The widest gap between consecutive directions, wrapping around the circle;
-    // its bisector is where the bond has the most room. With one direction taken
-    // the gap is the whole circle and the bisector is the opposite side — which
-    // is what puts the second ring of a sandwich under the metal.
+    // Widest gap, wrapping around the circle. One taken direction means a gap of
+    // the whole circle, whose bisector is its opposite side.
     float gap_start = angles.back();
     float widest = _2FLOAT(2. * M_PI) - (angles.back() - angles.front());
 
@@ -171,12 +166,10 @@ void HapticLayout::_place(const Link& link, bool from_begin, const Array<Vec2f>&
 
     const Vec2f from_pos = _shiftedEndpointPos(from, position, shift);
 
-    // Requirement 4 of #3233: the multiplier is for a group-to-atom bond, an
-    // atom-to-atom one keeps the ordinary bond length.
+    // The multiplier is for a group-to-atom bond only (requirement 4 of #3233).
     const float length = _bond_length * (link.group_end ? group_bond_multiplier : 1.f);
 
-    // The haptic partners of this endpoint that are already placed take up room
-    // around it exactly as its own bonds do.
+    // Haptic partners already placed take up room around the endpoint too.
     std::vector<Vec2f> taken;
     for (const Link& other : _links)
     {
@@ -193,8 +186,8 @@ void HapticLayout::_place(const Link& link, bool from_begin, const Array<Vec2f>&
 
     const Vec2f direction = _freeDirection(from, from_pos, taken, position, shift);
 
-    // The length is measured from the anchor of the group and not from a member
-    // atom (#3844 N5): the radius of the ring would otherwise eat most of it.
+    // Measured from the centre of the group: from a member atom the radius of the
+    // ring would eat most of the length.
     Vec2f target(from_pos);
     target.addScaled(direction, length);
 
@@ -220,8 +213,7 @@ int HapticLayout::plan(int n_components, const Array<int>& component_of, const A
     {
         const HapticBond& bond = bonds.at(i);
 
-        // Variable attachment (#3731) shares this container and has geometry of
-        // its own; the render and the KET saver skip it the same way.
+        // Variable attachment (#3731) shares the container and has its own geometry.
         if (bond.type() != _BOND_HAPTIC)
             continue;
 
@@ -229,14 +221,12 @@ int HapticLayout::plan(int n_components, const Array<int>& component_of, const A
         if (!_resolveEndpoint(bond.begin(), component_of, link.begin) || !_resolveEndpoint(bond.end(), component_of, link.end))
             continue;
 
-        // Both ends in one component: their distance is settled by the edges
-        // between them, and moving one end would tear the component apart.
+        // One component: the edges between the ends already settle the distance.
         if (link.begin.component == link.end.component)
             continue;
 
-        // A component the caller keeps in place must not be dragged by a haptic
-        // bond, and moving the other end alone would put the bond at a length
-        // nobody asked for.
+        // A frozen component is not dragged, and moving only the other end would
+        // put the bond at a length nobody asked for.
         if (frozen[link.begin.component] || frozen[link.end.component])
             continue;
 
@@ -244,8 +234,8 @@ int HapticLayout::plan(int n_components, const Array<int>& component_of, const A
         _links.push_back(link);
     }
 
-    // Components joined by haptic bonds become one cluster: the grid places a
-    // cluster as a whole, or it would tear apart what was just put together.
+    // The grid places a cluster as a whole; otherwise it would tear apart what is
+    // being put together here.
     int n_clusters = 0;
     std::deque<int> queue;
 
@@ -259,8 +249,7 @@ int HapticLayout::plan(int n_components, const Array<int>& component_of, const A
         placed[component] = 1;
         queue.push_back(component);
 
-        // Breadth-first from the component the cluster starts at: every link is
-        // applied once, from the end already placed towards the end that is not.
+        // Every link is applied once, from the placed end towards the unplaced one.
         while (!queue.empty())
         {
             const int anchor = queue.front();

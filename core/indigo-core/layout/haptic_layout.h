@@ -19,6 +19,8 @@
 #ifndef __haptic_layout_h__
 #define __haptic_layout_h__
 
+// Layout of haptic bonds: feature #3233, ticket #3844.
+
 #include <vector>
 
 #include "base_cpp/array.h"
@@ -35,16 +37,9 @@ namespace indigo
 {
     class BaseMolecule;
 
-    // Placing the components a haptic bond joins: feature #3233, ticket #3844.
-    //
-    // A haptic bond is not an edge (model #3837), so the layout forces never see
-    // it and its two ends land in different connected components. Laid out by the
-    // ordinary grid, ferrocene becomes two rings and a metal in separate cells.
-    // This class decides where those components go relative to each other; the
-    // grid then places the results, see MoleculeLayoutGraph::_layoutMultipleComponents.
-    //
-    // It answers in shifts and never writes to the molecule, so the caller keeps
-    // the single place where coordinates are assigned.
+    // Places the components a haptic bond joins, which the layout forces cannot see
+    // because the bond is not an edge. Answers in shifts and never writes to the
+    // molecule, so coordinates keep a single assignment point in the caller.
     class DLLEXPORT HapticLayout
     {
     public:
@@ -52,22 +47,15 @@ namespace indigo
 
         HapticLayout(BaseMolecule& molecule, float bond_length);
 
-        // The 1.5 of requirement 4 of #3233: a group-to-atom haptic bond is that
-        // many standard bond lengths long. A parameter and not a constant because
-        // variable attachment (#3731) is expected to ask for another value.
+        // Length of a group-to-atom haptic bond in standard bond lengths
+        // (requirement 4 of #3233); variable attachment (#3731) will want another.
         float group_bond_multiplier;
 
-        // `component_of` and `position` are indexed by atom; an atom outside the
-        // layout carries component -1. `frozen` is indexed by component and marks
-        // the ones the caller will not move (the fixed part of a partial layout):
-        // a bond that reaches one is left alone rather than dragging it.
-        //
-        // Fills `cluster_of` and `shift`, both indexed by component: the cluster a
-        // component belongs to, and the translation that puts it where the haptic
-        // bonds ask. A component no haptic bond reaches gets a cluster of its own
-        // and a zero shift, in the original component order, so a molecule without
-        // haptic bonds comes out of here exactly as it came in.
-        //
+        // `component_of` and `position` are indexed by atom, -1 for an atom outside
+        // the layout; `frozen`, `cluster_of` and `shift` by component. A frozen
+        // component is never moved and never joins a cluster. A component no haptic
+        // bond reaches becomes a cluster of its own with a zero shift, in the
+        // original order - a molecule without haptic bonds comes out unchanged.
         // Returns the number of clusters.
         int plan(int n_components, const Array<int>& component_of, const Array<Vec2f>& position, const Array<int>& frozen, Array<int>& cluster_of,
                  Array<Vec2f>& shift);
@@ -94,17 +82,15 @@ namespace indigo
 
         static bool _sameEndpoint(const Endpoint& left, const Endpoint& right);
 
-        // Where the endpoint sits: an atom's position, or the centre of a group's
-        // member atoms — AttachmentGroup::centreOf(), the rule the render and the
-        // V3000 saver read the same way (#3844).
+        // A group answers AttachmentGroup::centreOf() over its members, not the
+        // position of its anchor atom: the anchor belongs to the partner's
+        // component, so its place is fixed before this class gets to choose one.
         static Vec2f _endpointPos(const Endpoint& endpoint, const Array<Vec2f>& position);
         static Vec2f _shiftedEndpointPos(const Endpoint& endpoint, const Array<Vec2f>& position, const Array<Vec2f>& shift);
 
-        // The direction a bond leaves an endpoint in: the bisector of the widest
-        // angular gap between the directions already taken around it — the bonds
-        // of the endpoint itself and the haptic partners already placed. That one
-        // rule gives 120 degrees on a hexagon, 126 on a cyclopentadienyl ring, and
-        // the far side of the metal for the second ring of a sandwich.
+        // Bisector of the widest angular gap between the directions already taken
+        // around the endpoint. Gives 120 degrees on a hexagon and 126 on a
+        // cyclopentadienyl ring, which is why neither number is a constant here.
         static Vec2f _freeDirection(const Endpoint& from, const Vec2f& from_pos, const std::vector<Vec2f>& taken, const Array<Vec2f>& position,
                                     const Array<Vec2f>& shift);
 

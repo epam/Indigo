@@ -442,8 +442,7 @@ void MoleculeLayoutGraph::_layoutMultipleComponents(BaseMolecule& molecule, bool
 
     if (respect_existing && preserve_existing_layout) // TODO:
     {
-        // The caller asked for the existing layout to be kept, so nothing is
-        // moved here — the haptic geometry of #3844 is not applied either.
+        // Nothing is moved here, the haptic geometry included.
         for (int i = 0; i < n_components; i++)
         {
             copyCoordsFromComponent(components[i]);
@@ -451,9 +450,8 @@ void MoleculeLayoutGraph::_layoutMultipleComponents(BaseMolecule& molecule, bool
     }
     else // Move fixed componets to touch (0,0), layout rest of components in grid
     {
-        // A haptic bond is not an edge, so the ends it joins have just been laid
-        // out as separate components; this says where they go relative to each
-        // other and which components must travel together from now on (#3844).
+        // A haptic bond is not an edge, so the ends it joins were laid out as
+        // separate components; this places them relative to each other.
         QS_DEF(Array<int>, haptic_cluster_of);
         QS_DEF(Array<Vec2f>, haptic_shift);
         const int n_clusters = _planHapticLayout(molecule, components, bond_length, haptic_cluster_of, haptic_shift);
@@ -507,8 +505,7 @@ void MoleculeLayoutGraph::_layoutMultipleComponents(BaseMolecule& molecule, bool
         }
 
         // layout non-fixed clusters in square. A cluster is one component unless
-        // haptic bonds joined several: those keep the geometry just computed for
-        // them and move through the grid as one (#3844).
+        // haptic bonds joined several; such a cluster moves through the grid as one.
         int col_count = (int)ceil(sqrt((float)n_clusters - n_fixed));
         float column_left = 0.f;
         float row_height = 0.f;
@@ -524,8 +521,8 @@ void MoleculeLayoutGraph::_layoutMultipleComponents(BaseMolecule& molecule, bool
                 if (haptic_cluster_of[i] != cluster)
                     continue;
 
-                // A fixed component never shares a cluster: HapticLayout leaves it
-                // out, so one fixed member means the whole cluster is that member.
+                // HapticLayout leaves a fixed component out of every cluster, so one
+                // fixed member means the cluster is that member alone.
                 if (components[i]._n_fixed > 0)
                 {
                     cluster_fixed = true;
@@ -620,8 +617,7 @@ int MoleculeLayoutGraph::_planHapticLayout(BaseMolecule& molecule, PtrArray<Mole
 
         for (int v = component.vertexBegin(); v < component.vertexEnd(); v = component.vertexNext(v))
         {
-            // A component addresses the vertices of this graph, and this graph
-            // addresses the atoms of the molecule.
+            // A component addresses vertices of this graph, this graph atoms.
             const int atom = getVertexExtIdx(component.getVertexExtIdx(v));
             component_of[atom] = i;
             position[atom] = component.getPos(v);

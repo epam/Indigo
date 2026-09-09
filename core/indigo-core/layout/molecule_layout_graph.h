@@ -183,9 +183,7 @@ namespace indigo
         bool respect_cycles_direction;
         bool sequence_layout;
 
-        // How many standard bond lengths a group-to-atom haptic bond is long
-        // (#3844). Assigned by MoleculeLayout; kept here because the components a
-        // haptic bond joins are placed by this class.
+        // Group-to-atom haptic bond length, in standard bond lengths.
         float haptic_bond_multiplier = 1.5f;
 
         CancellationHandler* cancellation;
@@ -414,10 +412,9 @@ namespace indigo
                                        std::optional<Vec2f> multiple_distance = std::nullopt);
         void _layoutSingleComponent(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length);
 
-        // Groups the components the haptic bonds join and says how to move each of
-        // them (#3844); the grid then places whole clusters. Answers the number of
-        // clusters. Without haptic bonds every component is its own cluster with a
-        // zero shift, which is the layout that was there before.
+        // Clusters the components haptic bonds join, filling the shift of each and
+        // returning the cluster count; without such bonds every component is its own
+        // cluster with a zero shift.
         int _planHapticLayout(BaseMolecule& molecule, PtrArray<MoleculeLayoutGraph>& components, float bond_length, Array<int>& cluster_of,
                               Array<Vec2f>& shift);
 
