@@ -624,8 +624,7 @@ int MoleculeLayoutGraph::_planHapticLayout(BaseMolecule& molecule, PtrArray<Mole
         }
     }
 
-    HapticLayout haptic(molecule, bond_length);
-    haptic.group_bond_multiplier = haptic_bond_multiplier;
+    HapticLayout haptic(molecule, bond_length, haptic_bond_multiplier);
     return haptic.plan(n_components, component_of, position, frozen, cluster_of, shift);
 }
 

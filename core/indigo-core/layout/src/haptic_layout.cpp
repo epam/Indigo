@@ -26,13 +26,12 @@
 
 using namespace indigo;
 
-IMPL_ERROR(HapticLayout, "haptic layout");
-
 // Fixed rather than derived from the coordinates: on a symmetric structure a
 // computed direction differs between platforms, as the layout energy already does.
 static const Vec2f DEFAULT_DIRECTION(0.f, -1.f);
 
-HapticLayout::HapticLayout(BaseMolecule& molecule, float bond_length) : group_bond_multiplier(1.5f), _molecule(molecule), _bond_length(bond_length)
+HapticLayout::HapticLayout(BaseMolecule& molecule, float bond_length, float group_bond_multiplier)
+    : _molecule(molecule), _bond_length(bond_length), _group_bond_multiplier(group_bond_multiplier)
 {
 }
 
@@ -167,7 +166,7 @@ void HapticLayout::_place(const Link& link, bool from_begin, const Array<Vec2f>&
     const Vec2f from_pos = _shiftedEndpointPos(from, position, shift);
 
     // The multiplier is for a group-to-atom bond only (requirement 4 of #3233).
-    const float length = _bond_length * (link.group_end ? group_bond_multiplier : 1.f);
+    const float length = _bond_length * (link.group_end ? _group_bond_multiplier : 1.f);
 
     // Haptic partners already placed take up room around the endpoint too.
     std::vector<Vec2f> taken;
@@ -194,18 +193,8 @@ void HapticLayout::_place(const Link& link, bool from_begin, const Array<Vec2f>&
     shift[to.component].diff(target, _endpointPos(to, position));
 }
 
-int HapticLayout::plan(int n_components, const Array<int>& component_of, const Array<Vec2f>& position, const Array<int>& frozen, Array<int>& cluster_of,
-                       Array<Vec2f>& shift)
+void HapticLayout::_collectLinks(const Array<int>& component_of, const Array<int>& frozen)
 {
-    cluster_of.clear_resize(n_components);
-    cluster_of.fffill();
-    shift.clear_resize(n_components);
-    shift.zerofill();
-
-    Array<int> placed;
-    placed.clear_resize(n_components);
-    placed.zerofill();
-
     _links.clear();
 
     const MoleculeHapticBonds& bonds = _molecule.haptic_bonds;
@@ -233,6 +222,21 @@ int HapticLayout::plan(int n_components, const Array<int>& component_of, const A
         link.group_end = link.begin.is_group || link.end.is_group;
         _links.push_back(link);
     }
+}
+
+int HapticLayout::plan(int n_components, const Array<int>& component_of, const Array<Vec2f>& position, const Array<int>& frozen, Array<int>& cluster_of,
+                       Array<Vec2f>& shift)
+{
+    cluster_of.clear_resize(n_components);
+    cluster_of.fffill();
+    shift.clear_resize(n_components);
+    shift.zerofill();
+
+    Array<int> placed;
+    placed.clear_resize(n_components);
+    placed.zerofill();
+
+    _collectLinks(component_of, frozen);
 
     // The grid places a cluster as a whole; otherwise it would tear apart what is
     // being put together here.

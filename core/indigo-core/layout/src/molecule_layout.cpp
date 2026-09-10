@@ -37,7 +37,7 @@ MoleculeLayout::MoleculeLayout(BaseMolecule& molecule, bool smart_layout)
 void MoleculeLayout::_init(bool smart_layout)
 {
     bond_length = 1.f;
-    haptic_bond_multiplier = 1.5f;
+    haptic_bond_multiplier = MoleculeLayoutGraph::DEFAULT_HAPTIC_BOND_MULTIPLIER;
     filter = 0;
     _smart_layout = smart_layout;
     if (_smart_layout)

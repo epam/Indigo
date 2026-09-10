@@ -183,8 +183,10 @@ namespace indigo
         bool respect_cycles_direction;
         bool sequence_layout;
 
-        // Group-to-atom haptic bond length, in standard bond lengths.
-        float haptic_bond_multiplier = 1.5f;
+        // Group-to-atom haptic bond length, in standard bond lengths
+        // (requirement 4 of #3233).
+        static constexpr float DEFAULT_HAPTIC_BOND_MULTIPLIER = 1.5f;
+        float haptic_bond_multiplier = DEFAULT_HAPTIC_BOND_MULTIPLIER;
 
         CancellationHandler* cancellation;
 

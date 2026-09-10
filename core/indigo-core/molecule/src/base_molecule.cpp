@@ -1295,8 +1295,9 @@ void BaseMolecule::_syncAnchorsOfGroupsWith(int atom)
     if (attachment_groups.isEmpty())
         return;
 
+    // Anchor first: it is a field read, while membership is a search.
     for (int i = attachment_groups.begin(); i != attachment_groups.end(); i = attachment_groups.next(i))
-        if (attachment_groups.group(i).hasAtom(atom))
+        if (attachment_groups.group(i).anchorAtom() >= 0 && attachment_groups.group(i).hasAtom(atom))
             syncAttachmentGroupAnchor(i);
 }
 

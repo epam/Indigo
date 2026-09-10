@@ -24,7 +24,6 @@
 #include <vector>
 
 #include "base_cpp/array.h"
-#include "base_cpp/exception.h"
 #include "math/algebra.h"
 #include "molecule/molecule_haptic_bonds.h"
 
@@ -40,16 +39,13 @@ namespace indigo
     // Places the components a haptic bond joins, which the layout forces cannot see
     // because the bond is not an edge. Answers in shifts and never writes to the
     // molecule, so coordinates keep a single assignment point in the caller.
+    // Never throws: a bond it cannot act on is left to the ordinary grid.
     class DLLEXPORT HapticLayout
     {
     public:
-        DECL_ERROR;
-
-        HapticLayout(BaseMolecule& molecule, float bond_length);
-
-        // Length of a group-to-atom haptic bond in standard bond lengths
-        // (requirement 4 of #3233); variable attachment (#3731) will want another.
-        float group_bond_multiplier;
+        // `group_bond_multiplier` is the length of a group-to-atom bond in standard
+        // bond lengths; an atom-to-atom one always keeps the ordinary length.
+        HapticLayout(BaseMolecule& molecule, float bond_length, float group_bond_multiplier);
 
         // `component_of` and `position` are indexed by atom, -1 for an atom outside
         // the layout; `frozen`, `cluster_of` and `shift` by component. A frozen
@@ -78,6 +74,10 @@ namespace indigo
             bool group_end = false; // an end is a group: the multiplier applies
         };
 
+        // Fills _links with the bonds this class can act on: haptic, both ends
+        // resolved, ends in two different components, neither of them frozen.
+        void _collectLinks(const Array<int>& component_of, const Array<int>& frozen);
+
         bool _resolveEndpoint(const HapticBond::Endpoint& endpoint, const Array<int>& component_of, Endpoint& resolved) const;
 
         static bool _sameEndpoint(const Endpoint& left, const Endpoint& right);
@@ -98,6 +98,7 @@ namespace indigo
 
         BaseMolecule& _molecule;
         float _bond_length;
+        float _group_bond_multiplier;
 
         // The bonds that take part, with both ends resolved. Filled by plan().
         std::vector<Link> _links;
