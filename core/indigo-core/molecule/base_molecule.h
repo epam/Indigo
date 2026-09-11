@@ -495,6 +495,16 @@ namespace indigo
         // group container cannot see the bonds to check that.
         void setAttachmentGroupAtoms(int group_idx, const std::vector<int>& atoms);
 
+        // Centroid of the member atoms; throws unless the group exists.
+        Vec3f attachmentGroupCentre(int group_idx);
+
+        // Invariant: the anchor pseudo-atom of a group stands at that centre, where
+        // its haptic bond starts; an anchor that is an ordinary atom stays put. Held
+        // on every coordinate write here, so call it only after writing through the
+        // reference getAtomXyz() returns.
+        void syncAttachmentGroupAnchor(int group_idx);
+        void syncAttachmentGroupAnchors();
+
         // Atom sets that hold together although no edge joins them: s-group
         // members, query components and haptic bonds. Feeds
         // Graph::countComponents(external_neighbors) — call it whenever a
@@ -805,6 +815,10 @@ namespace indigo
 
         // Throws unless the endpoint names something this molecule has.
         void _checkHapticEndpoint(const HapticBond::Endpoint& endpoint);
+
+        // Re-centres the anchor of every group `atom` belongs to; a molecule
+        // without groups pays one comparison.
+        void _syncAnchorsOfGroupsWith(int atom);
 
         int _addBaseAtom();
         int _addBaseBond(int beg, int end);

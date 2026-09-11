@@ -119,8 +119,10 @@ namespace indigo
         void _renderHapticBonds();
         // The atom itself, or the centre of the group acting as one endpoint.
         // False when the endpoint has no atoms left to draw from.
-        bool _hapticEndpointPos(const HapticBond::Endpoint& endpoint, Vec2f& pos);
-        void _clipHapticEndToLabel(const HapticBond::Endpoint& endpoint, Vec2f& pos, const Vec2f& other);
+        // `label_atom` receives the atom whose label the line has to clear, or -1
+        // when the end is a group without an anchor and no label is in the way.
+        bool _hapticEndpointPos(const HapticBond::Endpoint& endpoint, Vec2f& pos, int& label_atom);
+        void _clipHapticEndToLabel(int label_atom, Vec2f& pos, const Vec2f& other);
         void _applyBondOffset();
         void _setBondCenter();
         float _getBondOffset(int aid, const Vec2f& pos, const Vec2f& dir, const float bondWidth);

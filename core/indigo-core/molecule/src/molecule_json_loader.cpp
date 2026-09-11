@@ -2102,11 +2102,27 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         mol.buildFrom3dCoordinatesStereocenters(stereochemistry_options);
     }
 
+    // Haptic connections come first: they decide how many neighbours an atom really
+    // has, and the stereo validation right below asks exactly that.
+    for (rapidjson::SizeType i = 0; i < _connection_array.Size(); ++i)
+    {
+        auto& connection = _connection_array[i];
+        if (connection.HasMember(KetKeyType) && connection[KetKeyType].IsString() && std::string(connection[KetKeyType].GetString()) == KetConnectionHaptic)
+            loadHapticConnection(connection, mol, mol_mappings, ag_mappings);
+    }
+
     for (const auto& sc : _stereo_centers)
     {
         if (mol.stereocenters.getType(sc._atom_idx) == 0)
         {
-            if (stereochemistry_options.ignore_errors)
+            // A haptic bond is not an edge, so an atom holding one has fewer
+            // neighbours here than the drawing shows and the stereocentre cannot be
+            // recognised - a metal with three ligands and one haptic bond among
+            // them. The file is legal and Ketcher writes it; keeping the centre as
+            // a non-valid one loads it instead of refusing the whole structure.
+            const bool has_haptic_bond = mol.haptic_bonds.referencesAtom(sc._atom_idx);
+
+            if (stereochemistry_options.ignore_errors || has_haptic_bond)
                 mol.addStereocentersIgnoreBad(sc._atom_idx, sc._type, sc._group, false); // add non-valid stereocenters
             else if (!_pqmol)
                 throw Error("stereo type specified for atom #%d, but the bond "
@@ -2121,6 +2137,12 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     {
         if (mol.getBondDirection(i) > 0 && !sensible_bond_directions[i])
         {
+            // The wedge of a metal holding a haptic bond makes sense to a chemist
+            // and not to the graph, for the same reason as the stereocentre above.
+            const Edge& edge = mol.getEdge(i);
+            if (mol.haptic_bonds.referencesAtom(edge.beg) || mol.haptic_bonds.referencesAtom(edge.end))
+                continue;
+
             if (!stereochemistry_options.ignore_errors && !_pqmol)
                 throw Error("direction of bond #%d makes no sense", i);
         }
@@ -2131,14 +2153,9 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     {
         auto& connection = _connection_array[i];
 
-        // A haptic connection is marked with "type", not "connectionType", and it
-        // may address an attachment group instead of an atom — so it is resolved
-        // before the atom-to-atom machinery below.
+        // Haptic connections were loaded above, before the stereo validation.
         if (connection.HasMember(KetKeyType) && connection[KetKeyType].IsString() && std::string(connection[KetKeyType].GetString()) == KetConnectionHaptic)
-        {
-            loadHapticConnection(connection, mol, mol_mappings, ag_mappings);
             continue;
-        }
 
         int order = _BOND_ANY;
         if (connection.HasMember(KetKeyConnectionType))

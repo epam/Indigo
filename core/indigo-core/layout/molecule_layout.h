@@ -50,6 +50,8 @@ namespace indigo
         void setCancellationHandler(CancellationHandler* cancellation);
 
         float bond_length;
+        // Group-to-atom haptic bond length, in standard bond lengths.
+        float haptic_bond_multiplier;
         std::optional<Vec2f> multiple_distance;
         bool respect_existing_layout;
         bool respect_cycles_direction;

@@ -25,6 +25,7 @@
 #include "base_cpp/exception.h"
 #include "base_cpp/ptr_reusable_pool.h"
 #include "base_cpp/reusable.h"
+#include "math/algebra.h"
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -83,6 +84,23 @@ namespace indigo
         // when its atom does, which is why this is not part of remapAtoms() and
         // never makes the caller drop the group.
         void remapAnchorAtom(const Array<int>& atom_mapping);
+
+        // The point the group acts from: the centroid of the positions given. Takes
+        // points rather than a molecule because the render, the layout and the
+        // savers each hold them in their own coordinates; the molecule-coordinate
+        // form is BaseMolecule::attachmentGroupCentre().
+        template <typename Vec>
+        static Vec centreOf(const std::vector<Vec>& positions)
+        {
+            Vec centre;
+            if (positions.empty())
+                return centre;
+
+            for (const Vec& position : positions)
+                centre.add(position);
+            centre.scale(1.0f / positions.size());
+            return centre;
+        }
 
     private:
         void _reset(); // the one place the fields are listed; not virtual — called from the constructor

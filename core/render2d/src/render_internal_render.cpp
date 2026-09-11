@@ -186,13 +186,16 @@ void MoleculeRenderInternal::_renderBonds()
         _drawBond(i);
 }
 
-bool MoleculeRenderInternal::_hapticEndpointPos(const HapticBond::Endpoint& endpoint, Vec2f& pos)
+bool MoleculeRenderInternal::_hapticEndpointPos(const HapticBond::Endpoint& endpoint, Vec2f& pos, int& label_atom)
 {
+    label_atom = -1;
+
     if (!endpoint.isGroup())
     {
         if (!_mol->hasVertex(endpoint.index()))
             return false;
         pos = _ad(endpoint.index()).pos;
+        label_atom = endpoint.index();
         return true;
     }
 
@@ -200,28 +203,37 @@ bool MoleculeRenderInternal::_hapticEndpointPos(const HapticBond::Endpoint& endp
     if (!groups.hasGroup(endpoint.index()))
         return false;
 
-    QS_DEF(Array<int>, atoms);
-    atoms.clear();
+    // The model keeps the anchor at the centre of the ligand
+    // (BaseMolecule::syncAttachmentGroupAnchor), so drawing from it puts the haptic
+    // line and the `*`-to-partner edge on one line instead of two.
+    const int anchor = groups.group(endpoint.index()).anchorAtom();
+    if (anchor >= 0 && _mol->hasVertex(anchor))
+    {
+        pos = _ad(anchor).pos;
+        label_atom = anchor;
+        return true;
+    }
+
+    // No anchor: the source has none, KET being one. Canvas positions, not the
+    // molecule's, hence the point-taking form of the rule.
+    std::vector<Vec2f> positions;
     for (int atom : groups.group(endpoint.index()).atoms())
     {
         if (!_mol->hasVertex(atom))
             return false;
-        atoms.push(atom);
+        positions.push_back(_ad(atom).pos);
     }
 
-    if (atoms.size() == 0)
+    if (positions.empty())
         return false;
 
-    // Bounding-box centre, the convention #3767 fixed for the anchor of a group.
-    pos = _bound(atoms).center();
+    pos = AttachmentGroup::centreOf(positions);
     return true;
 }
 
-void MoleculeRenderInternal::_clipHapticEndToLabel(const HapticBond::Endpoint& endpoint, Vec2f& pos, const Vec2f& other)
+void MoleculeRenderInternal::_clipHapticEndToLabel(int label_atom, Vec2f& pos, const Vec2f& other)
 {
-    // A group has no label of its own, and the reference drawing has the line begin
-    // inside the ligand — only an atom end is pulled back to clear its label.
-    if (endpoint.isGroup())
+    if (label_atom < 0)
         return;
 
     Vec2f dir;
@@ -232,7 +244,7 @@ void MoleculeRenderInternal::_clipHapticEndToLabel(const HapticBond::Endpoint& e
     // -1 is how _getBondOffset says "this atom draws no label": a value to discard,
     // not to move by - unclamped it drags the end a unit the other way. So do the
     // other two callers.
-    const float offset = _getBondOffset(endpoint.index(), pos, dir, _settings.bondLineWidth);
+    const float offset = _getBondOffset(label_atom, pos, dir, _settings.bondLineWidth);
     if (offset > 0)
         pos.addScaled(dir, offset);
 }
@@ -258,14 +270,15 @@ void MoleculeRenderInternal::_renderHapticBonds()
             continue;
 
         Vec2f begin, end;
-        if (!_hapticEndpointPos(bond.begin(), begin) || !_hapticEndpointPos(bond.end(), end))
+        int begin_label = -1, end_label = -1;
+        if (!_hapticEndpointPos(bond.begin(), begin, begin_label) || !_hapticEndpointPos(bond.end(), end, end_label))
             continue;
 
         if (Vec2f::dist(begin, end) < EPSILON)
             continue;
 
-        _clipHapticEndToLabel(bond.begin(), begin, end);
-        _clipHapticEndToLabel(bond.end(), end, begin);
+        _clipHapticEndToLabel(begin_label, begin, end);
+        _clipHapticEndToLabel(end_label, end, begin);
         _cw.drawLine(begin, end);
     }
 }

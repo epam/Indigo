@@ -19,6 +19,7 @@
 #include "layout/molecule_layout_graph.h"
 #include "graph/biconnected_decomposer.h"
 #include "graph/morgan_code.h"
+#include "layout/haptic_layout.h"
 
 #include <memory>
 
@@ -375,7 +376,7 @@ void MoleculeLayoutGraph::_layoutMultipleComponents(BaseMolecule& molecule, bool
     int n_components = countComponents();
 
     const Array<int>& decomposition = getDecomposition();
-    int i, j, k;
+    int i, j;
 
     molecule_edge_mapping.clear_resize(edgeEnd());
 
@@ -441,6 +442,7 @@ void MoleculeLayoutGraph::_layoutMultipleComponents(BaseMolecule& molecule, bool
 
     if (respect_existing && preserve_existing_layout) // TODO:
     {
+        // Nothing is moved here, the haptic geometry included.
         for (int i = 0; i < n_components; i++)
         {
             copyCoordsFromComponent(components[i]);
@@ -448,6 +450,11 @@ void MoleculeLayoutGraph::_layoutMultipleComponents(BaseMolecule& molecule, bool
     }
     else // Move fixed componets to touch (0,0), layout rest of components in grid
     {
+        // A haptic bond is not an edge, so the ends it joins were laid out as
+        // separate components; this places them relative to each other.
+        QS_DEF(Array<HapticLayout::Placement>, haptic_placement);
+        const int n_clusters = _planHapticLayout(molecule, components, bond_length, haptic_placement);
+
         // position components
         float row_bottom = 0.f; // where to place non-fixed components
         int n_fixed = 0;
@@ -496,16 +503,46 @@ void MoleculeLayoutGraph::_layoutMultipleComponents(BaseMolecule& molecule, bool
             }
         }
 
-        // layout non-fixed components in square
-        int col_count = (int)ceil(sqrt((float)n_components - n_fixed));
+        // layout non-fixed clusters in square. A cluster is one component unless
+        // haptic bonds joined several; such a cluster moves through the grid as one.
+        int col_count = (int)ceil(sqrt((float)n_clusters - n_fixed));
         float column_left = 0.f;
         float row_height = 0.f;
 
-        for (i = 0, k = 0; i < n_components; i++)
+        for (int cluster = 0, k = 0; cluster < n_clusters; cluster++)
         {
-            MoleculeLayoutGraph& component = components[i];
+            Rect2f bbox;
+            bool cluster_fixed = false;
+            bool first_of_cluster = true;
 
-            if (component._n_fixed > 0)
+            for (i = 0; i < n_components; i++)
+            {
+                if (haptic_placement[i].cluster != cluster)
+                    continue;
+
+                // HapticLayout leaves a fixed component out of every cluster, so one
+                // fixed member means the cluster is that member alone.
+                if (components[i]._n_fixed > 0)
+                {
+                    cluster_fixed = true;
+                    break;
+                }
+
+                // The bounding box has to be taken after the placement, because a
+                // component held by several haptic bonds is turned as well as moved.
+                Rect2f component_bbox;
+                _placedBoundingBox(components[i], haptic_placement[i], component_bbox);
+
+                if (first_of_cluster)
+                {
+                    bbox.copy(component_bbox);
+                    first_of_cluster = false;
+                }
+                else
+                    bbox.extend(component_bbox);
+            }
+
+            if (cluster_fixed || first_of_cluster)
                 continue;
 
             int row = k / col_count;
@@ -522,10 +559,7 @@ void MoleculeLayoutGraph::_layoutMultipleComponents(BaseMolecule& molecule, bool
             if (col > 0)
                 column_left += (multiple_distance.has_value() ? multiple_distance.value().x : bond_length * 2);
 
-            // Component shifting
-            Rect2f bbox;
-            component.getBoundingBox(bbox);
-
+            // Cluster shifting
             if (multiple_distance.has_value())
             {
                 auto bw_size = Vec2f(bbox.width() < bond_length ? bond_length : bbox.width(), bbox.height() < bond_length ? bond_length : bbox.height());
@@ -536,7 +570,9 @@ void MoleculeLayoutGraph::_layoutMultipleComponents(BaseMolecule& molecule, bool
             shift.negate();
             shift.add(Vec2f(column_left, row_bottom));
 
-            copyCoordsFromComponent(component, shift);
+            for (i = 0; i < n_components; i++)
+                if (haptic_placement[i].cluster == cluster)
+                    copyCoordsFromComponent(components[i], haptic_placement[i], shift);
 
             column_left += bbox.width();
 
@@ -545,6 +581,73 @@ void MoleculeLayoutGraph::_layoutMultipleComponents(BaseMolecule& molecule, bool
             k++;
         }
     }
+}
+
+int MoleculeLayoutGraph::_planHapticLayout(BaseMolecule& molecule, PtrArray<MoleculeLayoutGraph>& components, float bond_length,
+                                           Array<HapticLayout::Placement>& placement)
+{
+    const int n_components = components.size();
+
+    placement.clear_resize(n_components);
+    for (int i = 0; i < n_components; i++)
+    {
+        placement[i] = HapticLayout::Placement();
+        placement[i].cluster = i;
+    }
+
+    if (molecule.haptic_bonds.isEmpty())
+        return n_components;
+
+    QS_DEF(Array<int>, component_of);
+    QS_DEF(Array<Vec2f>, position);
+    QS_DEF(Array<int>, frozen);
+
+    component_of.clear_resize(molecule.vertexEnd());
+    component_of.fffill();
+    position.clear_resize(molecule.vertexEnd());
+    position.zerofill();
+    frozen.clear_resize(n_components);
+    frozen.zerofill();
+
+    for (int i = 0; i < n_components; i++)
+    {
+        MoleculeLayoutGraph& component = components[i];
+        frozen[i] = component._n_fixed > 0 ? 1 : 0;
+
+        for (int v = component.vertexBegin(); v < component.vertexEnd(); v = component.vertexNext(v))
+        {
+            // A component addresses vertices of this graph, this graph atoms.
+            const int atom = getVertexExtIdx(component.getVertexExtIdx(v));
+            component_of[atom] = i;
+            position[atom] = component.getPos(v);
+        }
+    }
+
+    HapticLayout haptic(molecule, bond_length, haptic_bond_multiplier);
+    return haptic.plan(n_components, component_of, position, frozen, placement);
+}
+
+void MoleculeLayoutGraph::_placedBoundingBox(MoleculeLayoutGraph& component, const HapticLayout::Placement& placement, Rect2f& bbox)
+{
+    bool first = true;
+    for (int i = component.vertexBegin(); i < component.vertexEnd(); i = component.vertexNext(i))
+    {
+        const Vec2f point = placement.apply(component.getPos(i));
+        Rect2f point_box(point, point);
+        if (first)
+        {
+            bbox.copy(point_box);
+            first = false;
+        }
+        else
+            bbox.extend(point_box);
+    }
+}
+
+void MoleculeLayoutGraph::copyCoordsFromComponent(MoleculeLayoutGraph& component, const HapticLayout::Placement& placement, Vec2f shift)
+{
+    for (int i = component.vertexBegin(); i < component.vertexEnd(); i = component.vertexNext(i))
+        _layout_vertices[component.getVertexExtIdx(i)].pos.sum(placement.apply(component.getPos(i)), shift);
 }
 
 void MoleculeLayoutGraph::copyCoordsFromComponent(MoleculeLayoutGraph& component, Vec2f shift)
