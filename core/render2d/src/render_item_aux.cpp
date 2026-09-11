@@ -32,7 +32,9 @@
 #pragma warning(disable : 4251)
 #endif
 
+#ifndef __EMSCRIPTEN__
 #include <lunasvg.h>
+#endif
 
 using namespace indigo;
 
@@ -602,6 +604,9 @@ void RenderItemAuxiliary::_drawImage(const EmbeddedImageObject& img)
         _rc.drawPng(img.getData(), Rect2f(v1, v2));
     else if (img.getFormat() == EmbeddedImageObject::EKETSVG)
     {
+#ifdef __EMSCRIPTEN__
+        _rc.drawPng(img.getData(), Rect2f(v1, v2));
+#else
         auto document = lunasvg::Document::loadFromData(img.getData());
         if (!document)
             throw Error("RenderItemAuxiliary::_drawImage: loadFromData error");
@@ -615,6 +620,7 @@ void RenderItemAuxiliary::_drawImage(const EmbeddedImageObject& img)
             throw Error("RenderItemAuxiliary::_drawImage: writeToPng error");
 
         _rc.drawPng(lunasvgClosure, Rect2f(v1, v2));
+#endif
     }
 }
 

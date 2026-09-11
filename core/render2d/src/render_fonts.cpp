@@ -17,6 +17,7 @@
  ***************************************************************************/
 
 #include "base_cpp/output.h"
+#include "font_lang_detector.h"
 #include "math/algebra.h"
 #include "render_context.h"
 
@@ -26,70 +27,29 @@
 
 using namespace indigo;
 
-void RenderContext::cairoCheckStatus() const
-{
-#ifdef DEBUG
-    cairo_status_t s;
-    if (_cr)
-    {
-        s = cairo_status(_cr);
-        if (s != CAIRO_STATUS_SUCCESS /*&& s <= CAIRO_STATUS_INVALID_WEIGHT*/)
-            throw Error("Cairo error: %i -- %s\n", s, cairo_status_to_string(s));
-    }
-#endif
-}
-
 void RenderContext::fontsClear()
 {
-    memset(_scaled_fonts, 0, FONT_SIZE_COUNT * 2 * sizeof(cairo_scaled_font_t*));
+    // scaled fonts managed by backend
 
-    cairoFontFaceRegular = NULL;
-    cairoFontFaceBold = NULL;
-    fontOptions = NULL;
+    // font faces managed by backend
 
-    cairo_matrix_init_identity(&fontCtm);
-    cairoCheckStatus();
-    cairo_matrix_init_identity(&fontScale);
-    cairoCheckStatus();
+    // matrix init managed by backend
+    backendCheckStatus();
+
+    backendCheckStatus();
 }
 
 void RenderContext::fontsInit()
 {
     fontsDispose();
-    fontOptions = cairo_font_options_create();
-    cairoCheckStatus();
-    cairo_font_options_set_antialias(fontOptions, CAIRO_ANTIALIAS_GRAY);
-    cairoCheckStatus();
-    cairo_set_font_options(_cr, fontOptions);
-    cairoCheckStatus();
+    _backend->createFontOptions();
+    _backend->setFontOptionsAntialias(0);
+    _backend->applyFontOptions();
 }
 
 void RenderContext::fontsDispose()
 {
-    for (int i = 0; i < FONT_SIZE_COUNT * 2; ++i)
-    {
-        if (_scaled_fonts[i] != NULL)
-        {
-            cairo_scaled_font_destroy(_scaled_fonts[i]);
-            cairoCheckStatus();
-        }
-    }
-    if (cairoFontFaceRegular != NULL)
-    {
-        cairo_font_face_destroy(cairoFontFaceRegular);
-        cairoCheckStatus();
-    }
-    if (cairoFontFaceBold != NULL)
-    {
-        cairo_font_face_destroy(cairoFontFaceBold);
-        cairoCheckStatus();
-    }
-
-    if (fontOptions != NULL)
-    {
-        cairo_font_options_destroy(fontOptions);
-        cairoCheckStatus();
-    }
+    _backend->destroyFontOptions();
     fontsClear();
 }
 
@@ -105,51 +65,55 @@ double RenderContext::fontGetSize(FONT_SIZE size)
 #ifndef RENDER_USE_FONT_MANAGER
 void RenderContext::fontsSetFont(const TextItem& ti)
 {
-    std::lock_guard<std::mutex> _lock(_cairo_mutex);
-    cairo_select_font_face(_cr, _fontfamily.ptr(), ti.italic ? CAIRO_FONT_SLANT_ITALIC : CAIRO_FONT_SLANT_NORMAL,
-                           ti.bold ? CAIRO_FONT_WEIGHT_BOLD : CAIRO_FONT_WEIGHT_NORMAL);
-
-    cairoCheckStatus();
-    cairo_set_font_size(_cr, ti.size > 0 ? ti.size : fontGetSize(ti.fontsize));
-    cairoCheckStatus();
+#if defined(__EMSCRIPTEN__) && defined(RENDER_ENABLE_CJK)
+    // For WASM/Emscripten builds with CJK enabled, detect CJK characters
+    // and select the appropriate Noto Sans CJK font family for the SVG output.
+    std::string family = _fontfamily.ptr();
+    FontLangDetector detector;
+    auto lang = detector.detectLang(ti);
+    if (lang == FONT_LANG::JAPANESE)
+        family = "Noto Sans CJK JP, Noto Sans JP";
+    else if (lang == FONT_LANG::KOREAN)
+        family = "Noto Sans CJK KR, Noto Sans KR";
+    else if (lang == FONT_LANG::CJK)
+        family = "Noto Sans CJK SC, Noto Sans SC";
+    _backend->selectFontFace(family.c_str(), ti.italic, ti.bold);
+#else
+    _backend->selectFontFace(_fontfamily.ptr(), ti.italic, ti.bold);
+#endif
+    _backend->setFontSize(ti.size > 0 ? ti.size : fontGetSize(ti.fontsize));
 }
 #else
 void RenderContext::fontsSetFont(const TextItem& ti)
 {
-    std::lock_guard<std::mutex> _lock(_cairo_mutex);
-
+    // Font manager uses cairo directly - only available on desktop
+    std::lock_guard<std::mutex> _lock(_mutex);
     cairo_font_face_t* _cairo_face = _font_face_manager.selectCairoFontFace(ti);
-    cairoCheckStatus();
-
-    cairo_set_font_face(_cr, _cairo_face);
-    cairoCheckStatus();
-    cairo_set_font_size(_cr, ti.size > 0 ? ti.size : fontGetSize(ti.fontsize));
-    cairoCheckStatus();
+    auto* cairoBackend = dynamic_cast<CairoRenderBackend*>(_backend.get());
+    if (cairoBackend)
+    {
+        cairo_set_font_face(cairoBackend->getCr(), _cairo_face);
+        cairo_set_font_size(cairoBackend->getCr(), ti.size > 0 ? ti.size : fontGetSize(ti.fontsize));
+    }
 }
 #endif
 
-void RenderContext::fontsGetTextExtents(cairo_t* cr, const char* text, int /*size*/, float& dx, float& dy, float& rx, float& ry)
+void RenderContext::fontsGetTextExtents(const char* text, int /*size*/, float& dx, float& dy, float& rx, float& ry)
 {
-    std::lock_guard<std::mutex> _lock(_cairo_mutex);
-    cairo_text_extents_t te;
-    cairo_text_extents(cr, text, &te);
-    cairoCheckStatus();
-
-    dx = (float)te.width;
-    dy = (float)te.height;
-    rx = (float)-te.x_bearing;
-    ry = (float)-te.y_bearing;
+    double w, h, x_bearing, y_bearing;
+    _backend->textExtents(text, w, h, x_bearing, y_bearing);
+    dx = (float)w;
+    dy = (float)h;
+    rx = (float)-x_bearing;
+    ry = (float)-y_bearing;
 }
 
 float RenderContext::getSpaceWidth()
 {
-    // cairo ignores trailing spaces, but takes in account leading spaces in cairo_text_extents, so we need to work around
-    std::lock_guard<std::mutex> _lock(_cairo_mutex);
-    cairo_text_extents_t te, te_;
-    cairo_text_extents(_cr, ". .", &te);
-    cairo_text_extents(_cr, "..", &te_);
-    cairoCheckStatus();
-    return (float)(te.width - te_.width);
+    double w1, h1, xb1, yb1, w2, h2, xb2, yb2;
+    _backend->textExtents(". .", w1, h1, xb1, yb1);
+    _backend->textExtents("..", w2, h2, xb2, yb2);
+    return (float)(w1 - w2);
 }
 
 void RenderContext::fontsDrawText(const TextItem& ti, const Vec3f& color, bool idle)
@@ -171,52 +135,52 @@ void RenderContext::fontsDrawText(const TextItem& ti, const Vec3f& color, bool i
      */
     if (idle)
     {
-        cairo_move_to(_cr, ti.bbp.x, ti.bbp.y);
-        cairo_rectangle(_cr, ti.bbp.x, ti.bbp.y, ti.bbsz.x, ti.bbsz.y);
+        _backend->moveTo(ti.bbp.x, ti.bbp.y);
+        _backend->rect(ti.bbp.x, ti.bbp.y, ti.bbsz.x, ti.bbsz.y);
         bbIncludePath(false);
         return;
     }
 
     setSingleSource(color);
     moveTo(ti.bbp);
-    cairo_matrix_t m;
-    cairo_get_matrix(_cr, &m);
-    float scale = (float)m.xx;
+    RenderMatrix m;
+    _backend->getMatrix(m.m);
+    float scale = (float)m.m[0];
     double v = scale * (ti.size > 0 ? ti.size : fontGetSize(ti.fontsize));
     if (opt.mode != MODE_PDF && opt.mode != MODE_SVG && v < 1.5)
     {
-        cairo_rectangle(_cr, ti.bbp.x + ti.bbsz.x / 4, ti.bbp.y + ti.bbsz.y / 4, ti.bbsz.x / 2, ti.bbsz.y / 2);
+        _backend->rect(ti.bbp.x + ti.bbsz.x / 4, ti.bbp.y + ti.bbsz.y / 4, ti.bbsz.x / 2, ti.bbsz.y / 2);
         bbIncludePath(false);
-        cairo_set_line_width(_cr, _settings.unit / 2);
-        cairo_stroke(_cr);
+        _backend->setLineWidth(_settings.unit / 2);
+        _backend->stroke();
         return;
     }
     moveToRel(ti.relpos);
 
     {
-        std::lock_guard<std::mutex> _lock(_cairo_mutex);
-        cairo_text_path(_cr, ti.text.ptr());
+        std::lock_guard<std::mutex> _lock(_mutex);
+        _backend->textPath(ti.text.ptr());
     }
 
     bbIncludePath(false);
-    cairo_new_path(_cr);
+    _backend->beginPath();
     moveTo(ti.bbp);
     moveToRel(ti.relpos);
     if (metafileFontsToCurves)
     { // TODO: remove
         {
-            std::lock_guard<std::mutex> _lock(_cairo_mutex);
-            cairo_text_path(_cr, ti.text.ptr());
+            std::lock_guard<std::mutex> _lock(_mutex);
+            _backend->textPath(ti.text.ptr());
         }
 
-        cairoCheckStatus();
-        cairo_fill(_cr);
-        cairoCheckStatus();
+        backendCheckStatus();
+        _backend->fill();
+        backendCheckStatus();
     }
     else
     {
-        std::lock_guard<std::mutex> _lock(_cairo_mutex);
-        cairo_show_text(_cr, ti.text.ptr());
-        cairoCheckStatus();
+        std::lock_guard<std::mutex> _lock(_mutex);
+        _backend->showText(ti.text.ptr());
+        backendCheckStatus();
     }
 }

@@ -93,7 +93,7 @@ if (EMSCRIPTEN)
     set(BUILD_BINGO_SQLSERVER OFF)
     set(BUILD_BINGO_ORACLE OFF)
     set(BUILD_BINGO_ELASTIC OFF)
-    set(USE_FONT_MANAGER ON)
+    set(USE_FONT_MANAGER OFF)
     # Skip Array/Pool bounds-check throws in release WASM builds to allow inlining.
     # emscripten's JS-based exception handling wraps every throw-containing function
     # in invoke_* shims, preventing inlining and causing ~80x overhead in hot loops.

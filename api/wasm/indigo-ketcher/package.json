@@ -58,9 +58,21 @@
   "homepage": "https://lifescience.opensource.epam.com/indigo/api/index.html",
   "scripts": {
     "test": "node test.js",
+    "test_browser": "node test_browser.js",
     "test_cjk": "node test_cjk.js"
   },
   "devDependencies": {
-    "looks-same": "^8.2.4"
+    "looks-same": "^8.2.4",
+    "puppeteer": "^22.0.0"
+  },
+  "dependencies": {
+    "@fontsource/noto-sans": "^5.0.0",
+    "@fontsource/noto-sans-jp": "^5.0.0",
+    "@fontsource/noto-sans-kr": "^5.0.0",
+    "@fontsource/noto-sans-sc": "^5.0.0",
+    "@fontsource/noto-sans-tc": "^5.0.0"
+  },
+  "optionalDependencies": {
+    "canvas": "^3.1.0"
   }
 }

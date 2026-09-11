@@ -1,0 +1,102 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "mol0"
+            },
+            {
+                "$ref": "mol1"
+            },
+            {
+                "$ref": "mol2"
+            },
+            {
+                "type": "arrow",
+                "data": {
+                    "mode": "elliptical-arc-arrow-open-angle",
+                    "pos": [
+                        {
+                            "x": 5.799999999999997,
+                            "y": -8.200000000000003,
+                            "z": 0
+                        },
+                        {
+                            "x": 7.205569279687058,
+                            "y": -8.200000000000003,
+                            "z": 0
+                        }
+                    ],
+                    "height": 1
+                }
+            },
+            {
+                "type": "arrow",
+                "data": {
+                    "mode": "open-angle",
+                    "pos": [
+                        {
+                            "x": 7.775,
+                            "y": -8.225,
+                            "z": 0
+                        },
+                        {
+                            "x": 8.875,
+                            "y": -8.225,
+                            "z": 0
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "plus",
+                "location": [
+                    6.525,
+                    -8.225,
+                    0
+                ],
+                "prop": {}
+            }
+        ],
+        "connections": [],
+        "templates": []
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "N",
+                "location": [
+                    5.749999999999999,
+                    -8.350000000000001,
+                    0
+                ]
+            }
+        ]
+    },
+    "mol1": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "O",
+                "location": [
+                    7.3999999999999995,
+                    -8.3,
+                    0
+                ]
+            }
+        ]
+    },
+    "mol2": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    9.15,
+                    -8.3,
+                    0
+                ]
+            }
+        ]
+    }
+}

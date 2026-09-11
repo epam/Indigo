@@ -13,15 +13,42 @@ function parseHrtimeToSeconds(hrtime) {
     return (hrtime[0] + (hrtime[1] / 1e9)).toFixed(3);
 }
 
-function run() {
+async function run() {
     let succeeded = 0;
     let failed = 0;
+
+    // On Linux, configure FontConfig to use the @fontsource fonts so that `sharp` (librsvg) 
+    // renders SVGs with the correct Noto Sans CJK fonts, avoiding looksSame failures in CI.
+    if (process.platform === 'linux') {
+        const { execSync } = require('child_process');
+        const os = require('os');
+        const path = require('path');
+        const fs = require('fs');
+        try {
+            console.log("Configuring FontConfig for Linux...");
+            const fontsDir = path.join(os.homedir(), '.fonts');
+            if (!fs.existsSync(fontsDir)) {
+                fs.mkdirSync(fontsDir, { recursive: true });
+            }
+            const sourceDir = path.join(__dirname, 'node_modules', '@fontsource');
+            if (fs.existsSync(sourceDir)) {
+                execSync(`find "${sourceDir}" -type f \\( -name "*.woff" -o -name "*.woff2" -o -name "*.ttf" \\) -exec cp {} "${fontsDir}" \\;`);
+                execSync('fc-cache -f -v');
+                console.log("FontConfig successfully updated with Noto Sans fonts.");
+            } else {
+                console.warn(`Fontsource directory not found at ${sourceDir}`);
+            }
+        } catch (e) {
+            console.error('Failed to configure FontConfig for Linux:', e.message);
+        }
+    }
+
     console.log("Starting tests...\n")
     var startTestsTime = process.hrtime();
-    tests.forEach(t => {
+    for (const t of tests) {
         try {
             var startTestTime = process.hrtime();
-            t.fn()
+            await t.fn()
             const elapsedSeconds = parseHrtimeToSeconds(process.hrtime(startTestTime));
             console.log(`✅ ${t.group}.${t.name} [${elapsedSeconds}s]`);
             succeeded++;
@@ -30,7 +57,7 @@ function run() {
             console.log(e.stack)
             failed++
         }
-    })
+    }
     const elapsedSeconds = parseHrtimeToSeconds(process.hrtime(startTestsTime));
     const total = succeeded + failed;
     console.log(`\n${total} tests executed in ${elapsedSeconds} seconds. ${succeeded} succeeded, ${failed} failed.`)
