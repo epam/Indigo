@@ -36,7 +36,10 @@ folder = joinPathPy("haptic-golden", __file__)
 
 
 def centroid(points):
-    return (sum(p[0] for p in points) / len(points), sum(p[1] for p in points) / len(points))
+    return (
+        sum(p[0] for p in points) / len(points),
+        sum(p[1] for p in points) / len(points),
+    )
 
 
 def haptic_lengths(molecule):
@@ -47,10 +50,16 @@ def haptic_lengths(molecule):
         ends = []
         for endpoint in (bond.hapticBondBegin(), bond.hapticBondEnd()):
             if endpoint.isAttachmentGroup():
-                ends.append(centroid([positions[a.index()] for a in endpoint.iterateAtoms()]))
+                ends.append(
+                    centroid(
+                        [positions[a.index()] for a in endpoint.iterateAtoms()]
+                    )
+                )
             else:
                 ends.append(positions[endpoint.index()])
-        lengths.append(math.hypot(ends[0][0] - ends[1][0], ends[0][1] - ends[1][1]))
+        lengths.append(
+            math.hypot(ends[0][0] - ends[1][0], ends[0][1] - ends[1][1])
+        )
     return sorted(lengths)
 
 
@@ -63,7 +72,10 @@ for name, expected_groups, expected_bonds in CASES:
     bonds = len(list(molecule.iterateHapticBonds()))
     print("%s: loaded %d group(s), %d haptic bond(s)" % (name, groups, bonds))
     if (groups, bonds) != (expected_groups, expected_bonds):
-        print("  UNEXPECTED: expected %d group(s) and %d bond(s)" % (expected_groups, expected_bonds))
+        print(
+            "  UNEXPECTED: expected %d group(s) and %d bond(s)"
+            % (expected_groups, expected_bonds)
+        )
 
     molecule.layout()
     lengths = haptic_lengths(molecule)
@@ -73,13 +85,25 @@ for name, expected_groups, expected_bonds in CASES:
     reloaded_groups = len(list(reloaded.iterateAttachmentGroups()))
     reloaded_bonds = len(list(reloaded.iterateHapticBonds()))
     if (reloaded_groups, reloaded_bonds) != (groups, bonds):
-        print("  KET round trip lost data: %d group(s), %d bond(s)" % (reloaded_groups, reloaded_bonds))
+        print(
+            "  KET round trip lost data: %d group(s), %d bond(s)"
+            % (reloaded_groups, reloaded_bonds)
+        )
     else:
-        print("  KET round trip keeps %d group(s) and %d bond(s)" % (reloaded_groups, reloaded_bonds))
+        print(
+            "  KET round trip keeps %d group(s) and %d bond(s)"
+            % (reloaded_groups, reloaded_bonds)
+        )
 
     reloaded_lengths = haptic_lengths(reloaded)
-    drift = max((abs(a - b) for a, b in zip(lengths, reloaded_lengths)), default=0.0)
-    print("  bond lengths after a round trip differ by at most %.3f" % drift if drift > TOLERANCE else "  bond lengths unchanged by the round trip")
+    drift = max(
+        (abs(a - b) for a, b in zip(lengths, reloaded_lengths)), default=0.0
+    )
+    print(
+        "  bond lengths after a round trip differ by at most %.3f" % drift
+        if drift > TOLERANCE
+        else "  bond lengths unchanged by the round trip"
+    )
 
     # 3. MOL V3000: a group-to-atom bond becomes an ENDPTS record, an atom-to-atom
     # one has no representation there and is dropped - the documented limit.
@@ -91,7 +115,10 @@ for name, expected_groups, expected_bonds in CASES:
         from_molfile = indigo.loadMolecule(molfile)
         print(
             "  reloaded from MOL V3000: %d group(s), %d haptic bond(s)"
-            % (len(list(from_molfile.iterateAttachmentGroups())), len(list(from_molfile.iterateHapticBonds())))
+            % (
+                len(list(from_molfile.iterateAttachmentGroups())),
+                len(list(from_molfile.iterateHapticBonds())),
+            )
         )
 
     # 4. the renderer draws one line per haptic bond on top of the ordinary ones

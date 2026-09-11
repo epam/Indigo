@@ -35,7 +35,10 @@ folder = joinPathPy("haptic-golden", __file__)
 
 
 def centroid(points):
-    return (sum(p[0] for p in points) / len(points), sum(p[1] for p in points) / len(points))
+    return (
+        sum(p[0] for p in points) / len(points),
+        sum(p[1] for p in points) / len(points),
+    )
 
 
 def distance(a, b):
@@ -63,13 +66,21 @@ def right_angle_error(members, positions, point):
     # the geometry's - an allyl group may well start at its middle atom.
     centre_of_group = centroid([positions[i] for i in members])
     xx = sum((positions[i][0] - centre_of_group[0]) ** 2 for i in members)
-    xy = sum((positions[i][0] - centre_of_group[0]) * (positions[i][1] - centre_of_group[1]) for i in members)
+    xy = sum(
+        (positions[i][0] - centre_of_group[0])
+        * (positions[i][1] - centre_of_group[1])
+        for i in members
+    )
     yy = sum((positions[i][1] - centre_of_group[1]) ** 2 for i in members)
     delta = math.sqrt(max(0.0, (xx - yy) ** 2 + 4 * xy * xy))
     major = (xx + yy + delta) / 2
     if major < 1e-8:
         return None
-    axis = (major - yy, xy) if abs(xy) > 1e-8 else ((1.0, 0.0) if xx >= yy else (0.0, 1.0))
+    axis = (
+        (major - yy, xy)
+        if abs(xy) > 1e-8
+        else ((1.0, 0.0) if xx >= yy else (0.0, 1.0))
+    )
     if math.hypot(*axis) < 1e-4:
         return None
 
@@ -78,7 +89,9 @@ def right_angle_error(members, positions, point):
     if math.hypot(*bond) < 1e-4:
         return None
 
-    cosine = (axis[0] * bond[0] + axis[1] * bond[1]) / (math.hypot(*axis) * math.hypot(*bond))
+    cosine = (axis[0] * bond[0] + axis[1] * bond[1]) / (
+        math.hypot(*axis) * math.hypot(*bond)
+    )
     return abs(90.0 - math.degrees(math.acos(max(-1.0, min(1.0, cosine)))))
 
 
@@ -106,7 +119,11 @@ for name in sorted(os.listdir(folder)):
     held = {}
     for bond in molecule.iterateHapticBonds():
         for endpoint in (bond.hapticBondBegin(), bond.hapticBondEnd()):
-            atoms = [a.index() for a in endpoint.iterateAtoms()] if endpoint.isAttachmentGroup() else [endpoint.index()]
+            atoms = (
+                [a.index() for a in endpoint.iterateAtoms()]
+                if endpoint.isAttachmentGroup()
+                else [endpoint.index()]
+            )
             component = component_of.get(atoms[0])
             held[component] = held.get(component, 0) + 1
 
@@ -114,20 +131,30 @@ for name in sorted(os.listdir(folder)):
     bonds = 0
     for bond in molecule.iterateHapticBonds():
         bonds += 1
-        begin, begin_atoms = endpoint_geometry(bond.hapticBondBegin(), positions)
+        begin, begin_atoms = endpoint_geometry(
+            bond.hapticBondBegin(), positions
+        )
         end, end_atoms = endpoint_geometry(bond.hapticBondEnd(), positions)
 
-        group_end = bond.hapticBondBegin().isAttachmentGroup() or bond.hapticBondEnd().isAttachmentGroup()
+        group_end = (
+            bond.hapticBondBegin().isAttachmentGroup()
+            or bond.hapticBondEnd().isAttachmentGroup()
+        )
         expected = BOND_LENGTH * (GROUP_MULTIPLIER if group_end else 1.0)
 
         # Both ends inside one connected component: the edges between them already
         # settle the distance, and the layout leaves such a bond alone by design.
-        same_component = component_of.get(begin_atoms[0]) == component_of.get(end_atoms[0])
+        same_component = component_of.get(begin_atoms[0]) == component_of.get(
+            end_atoms[0]
+        )
         length = distance(begin, end)
         if not same_component and abs(length - expected) > TOLERANCE:
             problems.append("length %.3f, expected %.2f" % (length, expected))
 
-        ends = ((bond.hapticBondBegin(), begin_atoms, end), (bond.hapticBondEnd(), end_atoms, begin))
+        ends = (
+            (bond.hapticBondBegin(), begin_atoms, end),
+            (bond.hapticBondEnd(), end_atoms, begin),
+        )
         for endpoint, members, other in ends:
             if not endpoint.isAttachmentGroup() or same_component:
                 continue
@@ -135,7 +162,10 @@ for name in sorted(os.listdir(folder)):
                 continue
             error = right_angle_error(members, positions, other)
             if error is not None and error > ANGLE_TOLERANCE:
-                problems.append("bond meets a %d-atom group %.1f degrees off the perpendicular" % (len(members), error))
+                problems.append(
+                    "bond meets a %d-atom group %.1f degrees off the perpendicular"
+                    % (len(members), error)
+                )
 
     if problems:
         failures += 1
