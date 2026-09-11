@@ -42,6 +42,18 @@ def centroid(points):
     )
 
 
+def rendered(molecule):
+    """The rendered SVG as text.
+
+    Each wrapper hands the buffer over in its own shape - bytes under CPython, a
+    Java byte[] whose elements are signed under Jython - so the bytes are masked
+    back into range one by one instead of being decoded as a block.
+    """
+    return "".join(
+        chr(byte & 0xFF) for byte in renderer.renderToBuffer(molecule)
+    )
+
+
 def haptic_lengths(molecule):
     """Length of every haptic bond, measured from the centroid of a group end."""
     positions = {a.index(): a.xyz()[:2] for a in molecule.iterateAtoms()}
@@ -97,7 +109,7 @@ for name, expected_groups, expected_bonds in CASES:
 
     reloaded_lengths = haptic_lengths(reloaded)
     drift = max(
-        (abs(a - b) for a, b in zip(lengths, reloaded_lengths)), default=0.0
+        [abs(a - b) for a, b in zip(lengths, reloaded_lengths)] or [0.0]
     )
     print(
         "  bond lengths after a round trip differ by at most %.3f" % drift
@@ -122,5 +134,5 @@ for name, expected_groups, expected_bonds in CASES:
         )
 
     # 4. the renderer draws one line per haptic bond on top of the ordinary ones
-    svg = bytes(renderer.renderToBuffer(molecule)).decode("utf-8")
+    svg = rendered(molecule)
     print("  rendered, %d path element(s)" % svg.count("<path"))

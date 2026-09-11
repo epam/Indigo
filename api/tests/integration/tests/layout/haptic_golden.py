@@ -1,4 +1,3 @@
-import errno
 import math
 import os
 import sys
@@ -100,8 +99,10 @@ for name in sorted(os.listdir(folder)):
     if not name.endswith(".ket"):
         continue
 
-    with open(os.path.join(folder, name), encoding="utf-8") as source:
-        molecule = indigo.loadMolecule(source.read())
+    # Read as bytes and decode: the suite also runs under Jython 2.7, where open()
+    # takes no encoding.
+    with open(os.path.join(folder, name), "rb") as source:
+        molecule = indigo.loadMolecule(source.read().decode("utf-8"))
 
     molecule.layout()
     positions = {a.index(): a.xyz()[:2] for a in molecule.iterateAtoms()}
