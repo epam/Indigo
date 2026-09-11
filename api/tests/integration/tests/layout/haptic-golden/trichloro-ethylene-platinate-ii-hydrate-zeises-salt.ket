@@ -1,0 +1,130 @@
+{
+    "ket_version": "2.0.0",
+    "root": {
+        "nodes": [
+            {
+                "$ref": "mol0"
+            },
+            {
+                "$ref": "mol1"
+            }
+        ],
+        "connections": [
+            {
+                "type": "haptic",
+                "endpoint1": {
+                    "moleculeId": "mol0",
+                    "atomId": "0"
+                },
+                "endpoint2": {
+                    "moleculeId": "mol1",
+                    "attachmentGroupId": "0"
+                }
+            }
+        ],
+        "templates": []
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "Pt",
+                "location": [
+                    21.60201298701299,
+                    -12.139285714285716,
+                    0
+                ],
+                "stereoLabel": "abs",
+                "stereoParity": 1
+            },
+            {
+                "label": "Cl",
+                "location": [
+                    21.60201298701299,
+                    -13.139285714285716,
+                    0
+                ]
+            },
+            {
+                "label": "Cl",
+                "location": [
+                    21.60201298701299,
+                    -11.139285714285716,
+                    0
+                ]
+            },
+            {
+                "label": "Cl",
+                "location": [
+                    22.60201298701299,
+                    -12.139285714285716,
+                    0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ],
+                "stereo": 1
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    2
+                ],
+                "stereo": 6
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    3
+                ]
+            }
+        ]
+    },
+    "mol1": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    20.056558441558444,
+                    -11.662012987012996,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    20.056558441558444,
+                    -12.662012987012996,
+                    0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 2,
+                "atoms": [
+                    0,
+                    1
+                ]
+            }
+        ],
+        "attachmentGroups": [
+            {
+                "id": "0",
+                "atoms": [
+                    0,
+                    1
+                ]
+            }
+        ]
+    }
+}

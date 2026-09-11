@@ -1,0 +1,35 @@
+ferrocene.ket: loaded 2 group(s), 2 haptic bond(s)
+  KET round trip keeps 2 group(s) and 2 bond(s)
+  bond lengths unchanged by the round trip
+  MOL V3000 carries 2 ENDPTS record(s)
+  reloaded from MOL V3000: 2 group(s), 2 haptic bond(s)
+  rendered, 32 path element(s)
+bis-1-5-cyclooctadiene-nickel-0.ket: loaded 4 group(s), 4 haptic bond(s)
+  KET round trip keeps 4 group(s) and 4 bond(s)
+  bond lengths unchanged by the round trip
+  MOL V3000 carries 4 ENDPTS record(s)
+  reloaded from MOL V3000: 4 group(s), 4 haptic bond(s)
+  rendered, 27 path element(s)
+tris-cyclooctatetraene-triiron.ket: loaded 6 group(s), 6 haptic bond(s)
+  KET round trip keeps 6 group(s) and 6 bond(s)
+  bond lengths unchanged by the round trip
+  MOL V3000 carries 6 ENDPTS record(s)
+  reloaded from MOL V3000: 6 group(s), 6 haptic bond(s)
+  rendered, 48 path element(s)
+trichloro-ethylene-platinate-ii-hydrate-zeises-salt.ket: loaded 1 group(s), 1 haptic bond(s)
+  KET round trip keeps 1 group(s) and 1 bond(s)
+  bond lengths unchanged by the round trip
+  MOL V3000 carries 1 ENDPTS record(s)
+  reloaded from MOL V3000: 1 group(s), 1 haptic bond(s)
+  rendered, 18 path element(s)
+trans-ir-co-pph3-2-indolyl.ket: loaded 0 group(s), 1 haptic bond(s)
+  KET round trip keeps 0 group(s) and 1 bond(s)
+  bond lengths unchanged by the round trip
+  MOL V3000 carries 0 ENDPTS record(s)
+  rendered, 93 path element(s)
+second-complex-from-lu-et-al-2015.ket: loaded 8 group(s), 8 haptic bond(s)
+  KET round trip keeps 8 group(s) and 8 bond(s)
+  bond lengths unchanged by the round trip
+  MOL V3000 carries 8 ENDPTS record(s)
+  reloaded from MOL V3000: 8 group(s), 8 haptic bond(s)
+  rendered, 141 path element(s)

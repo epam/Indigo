@@ -25,6 +25,7 @@
 #include "base_cpp/tlscont.h"
 #include "graph/filter.h"
 #include "graph/graph.h"
+#include "layout/haptic_layout.h"
 #include "layout/layout_pattern_holder.h"
 #include "math/algebra.h"
 #include "molecule/molecule.h"
@@ -338,6 +339,7 @@ namespace indigo
         void getBoundingBox(Rect2f& bbox) const;
         void getBoundingBox(Vec2f& left_bottom, Vec2f& right_top) const;
         void copyCoordsFromComponent(MoleculeLayoutGraph& component, Vec2f shift = {0, 0});
+        void copyCoordsFromComponent(MoleculeLayoutGraph& component, const HapticLayout::Placement& placement, Vec2f shift);
 
         // for components
         virtual void _calcMorganCodes();
@@ -414,11 +416,12 @@ namespace indigo
                                        std::optional<Vec2f> multiple_distance = std::nullopt);
         void _layoutSingleComponent(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length);
 
-        // Clusters the components haptic bonds join, filling the shift of each and
-        // returning the cluster count; without such bonds every component is its own
-        // cluster with a zero shift.
-        int _planHapticLayout(BaseMolecule& molecule, PtrArray<MoleculeLayoutGraph>& components, float bond_length, Array<int>& cluster_of,
-                              Array<Vec2f>& shift);
+        // Clusters the components haptic bonds join, filling the placement of each
+        // and returning the cluster count; without such bonds every component is its
+        // own cluster with an identity placement.
+        int _planHapticLayout(BaseMolecule& molecule, PtrArray<MoleculeLayoutGraph>& components, float bond_length, Array<HapticLayout::Placement>& placement);
+
+        static void _placedBoundingBox(MoleculeLayoutGraph& component, const HapticLayout::Placement& placement, Rect2f& bbox);
 
     protected:
         virtual void _layout_component(BiconnectedDecomposer& bc_decom, PtrArray<MoleculeLayoutGraph>& bc_components, Array<int>& bc_tree,

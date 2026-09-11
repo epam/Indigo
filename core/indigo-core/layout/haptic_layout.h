@@ -43,18 +43,34 @@ namespace indigo
     class DLLEXPORT HapticLayout
     {
     public:
+        // Where one component ends up: p' = rotate(p, rotation) + shift, about the
+        // origin of the component's own coordinates. A chelating ligand is held by
+        // two haptic bonds at once and cannot satisfy both by translation alone,
+        // which is why the answer carries a rotation.
+        struct Placement
+        {
+            int cluster = -1;
+            float rotation = 0.f;
+            Vec2f shift;
+
+            Vec2f apply(const Vec2f& point) const
+            {
+                const float c = cosf(rotation), s = sinf(rotation);
+                return Vec2f(point.x * c - point.y * s + shift.x, point.x * s + point.y * c + shift.y);
+            }
+        };
+
         // `group_bond_multiplier` is the length of a group-to-atom bond in standard
         // bond lengths; an atom-to-atom one always keeps the ordinary length.
         HapticLayout(BaseMolecule& molecule, float bond_length, float group_bond_multiplier);
 
         // `component_of` and `position` are indexed by atom, -1 for an atom outside
-        // the layout; `frozen`, `cluster_of` and `shift` by component. A frozen
-        // component is never moved and never joins a cluster. A component no haptic
-        // bond reaches becomes a cluster of its own with a zero shift, in the
-        // original order - a molecule without haptic bonds comes out unchanged.
-        // Returns the number of clusters.
-        int plan(int n_components, const Array<int>& component_of, const Array<Vec2f>& position, const Array<int>& frozen, Array<int>& cluster_of,
-                 Array<Vec2f>& shift);
+        // the layout; `frozen` and `placement` by component. A frozen component is
+        // never moved and never joins a cluster. A component no haptic bond reaches
+        // becomes a cluster of its own with an identity placement, in the original
+        // order - a molecule without haptic bonds comes out unchanged. Returns the
+        // number of clusters.
+        int plan(int n_components, const Array<int>& component_of, const Array<Vec2f>& position, const Array<int>& frozen, Array<Placement>& placement);
 
     private:
         // One end of a haptic bond, resolved against the components.
@@ -86,15 +102,32 @@ namespace indigo
         // position of its anchor atom: the anchor belongs to the partner's
         // component, so its place is fixed before this class gets to choose one.
         static Vec2f _endpointPos(const Endpoint& endpoint, const Array<Vec2f>& position);
-        static Vec2f _shiftedEndpointPos(const Endpoint& endpoint, const Array<Vec2f>& position, const Array<Vec2f>& shift);
+        static Vec2f _placedEndpointPos(const Endpoint& endpoint, const Array<Vec2f>& position, const Array<Placement>& placement);
+
+        // The axis of a two- or three-atom group, in the component's own
+        // coordinates; false for a ring, which has none.
+        static bool _groupAxis(const Endpoint& endpoint, const Array<Vec2f>& position, Vec2f& axis);
+
+        // True when the group is a line rather than a disc (an eta-2 or eta-3 end),
+        // answering the direction across it - the one that leaves the ligand's own
+        // bonds at a right angle instead of running over them.
+        static bool _acrossTheGroup(const Endpoint& from, const Vec2f& from_pos, const Array<Vec2f>& position, const Array<Placement>& placement, Vec2f& axis);
 
         // Bisector of the widest angular gap between the directions already taken
         // around the endpoint. Gives 120 degrees on a hexagon and 126 on a
         // cyclopentadienyl ring, which is why neither number is a constant here.
         static Vec2f _freeDirection(const Endpoint& from, const Vec2f& from_pos, const std::vector<Vec2f>& taken, const Array<Vec2f>& position,
-                                    const Array<Vec2f>& shift);
+                                    const Array<Placement>& placement);
 
-        void _place(const Link& link, bool from_begin, const Array<Vec2f>& position, const Array<int>& placed, Array<Vec2f>& shift) const;
+        // The length a bond of this link has to end up with.
+        float _lengthOf(const Link& link) const;
+
+        // Places `component` by its first link, then, when more than one link holds
+        // it, refines the placement so that every one of them reaches its length -
+        // a rigid fit, so the component keeps its own geometry.
+        void _place(int component, const std::vector<const Link*>& links, const Array<Vec2f>& position, const Array<int>& placed,
+                    Array<Placement>& placement) const;
+        void _refine(int component, const std::vector<const Link*>& links, const Array<Vec2f>& position, Array<Placement>& placement) const;
 
         BaseMolecule& _molecule;
         float _bond_length;

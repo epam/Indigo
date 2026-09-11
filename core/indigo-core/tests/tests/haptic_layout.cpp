@@ -308,3 +308,88 @@ TEST_F(IndigoCoreHapticLayoutTest, TheAnchorEndsUpAtTheCentreOfItsGroup)
     EXPECT_NEAR(0.f, Vec2f::dist(pos(mol, star), groupCentre(mol, group)), TOLERANCE);
     EXPECT_NEAR(1.5f, Vec2f::dist(groupCentre(mol, group), pos(mol, metal)), TOLERANCE);
 }
+
+// ---- several bonds holding one ligand --------------------------------------
+
+// An eta-2 end is a line, and a bond leaving it along that line would run over the
+// ligand's own bond. It leaves across instead - the right angle the chemist asks
+// for, and the reason the direction cannot simply be "away from the ring".
+TEST_F(IndigoCoreHapticLayoutTest, TheBondCrossesATwoAtomGroupAtARightAngle)
+{
+    Molecule mol;
+    const int ring = addRing(mol, 8);
+    const int metal = mol.addAtom(ELEM_Ni);
+    const int group = addGroup(mol, {ring, ring + 1});
+    mol.addHapticBond(HapticBond::Endpoint::group(group), HapticBond::Endpoint::atom(metal));
+
+    makeLayout(mol);
+
+    Vec2f axis, bond;
+    axis.diff(pos(mol, ring + 1), pos(mol, ring));
+    bond.diff(pos(mol, metal), groupCentre(mol, group));
+
+    EXPECT_NEAR(90.f, angleDegrees(axis, bond), 1.f);
+    EXPECT_NEAR(1.5f, bond.length(), TOLERANCE);
+}
+
+// A chelating ligand holds the metal twice - two double bonds of one ring, as in
+// bis(1,5-cyclooctadiene)nickel. Placing it by the first bond alone leaves the
+// second at whatever length happens to come out; both have to reach 1.5.
+TEST_F(IndigoCoreHapticLayoutTest, AChelatingLigandSatisfiesBothOfItsBonds)
+{
+    Molecule mol;
+    const int ring = addRing(mol, 8);
+    const int metal = mol.addAtom(ELEM_Ni);
+    const int first = addGroup(mol, {ring, ring + 1});
+    const int second = addGroup(mol, {ring + 4, ring + 5});
+    mol.addHapticBond(HapticBond::Endpoint::group(first), HapticBond::Endpoint::atom(metal));
+    mol.addHapticBond(HapticBond::Endpoint::group(second), HapticBond::Endpoint::atom(metal));
+
+    makeLayout(mol);
+
+    EXPECT_NEAR(1.5f, Vec2f::dist(groupCentre(mol, first), pos(mol, metal)), TOLERANCE);
+    EXPECT_NEAR(1.5f, Vec2f::dist(groupCentre(mol, second), pos(mol, metal)), TOLERANCE);
+}
+
+// A bridging ligand is held by two different metals, as the cyclooctatetraene of
+// tris(cyclooctatetraene)triiron is. The ring has to end up between them, at the
+// right distance from each.
+TEST_F(IndigoCoreHapticLayoutTest, ABridgingLigandReachesBothMetals)
+{
+    Molecule mol;
+    const int ring = addRing(mol, 8);
+    const int first_metal = mol.addAtom(ELEM_Fe);
+    const int second_metal = mol.addAtom(ELEM_Fe);
+    mol.addBond(first_metal, second_metal, BOND_SINGLE);
+
+    const int first = addGroup(mol, {ring, ring + 1, ring + 2});
+    const int second = addGroup(mol, {ring + 4, ring + 5, ring + 6});
+    mol.addHapticBond(HapticBond::Endpoint::group(first), HapticBond::Endpoint::atom(first_metal));
+    mol.addHapticBond(HapticBond::Endpoint::group(second), HapticBond::Endpoint::atom(second_metal));
+
+    makeLayout(mol);
+
+    EXPECT_NEAR(1.5f, Vec2f::dist(groupCentre(mol, first), pos(mol, first_metal)), TOLERANCE);
+    EXPECT_NEAR(1.5f, Vec2f::dist(groupCentre(mol, second), pos(mol, second_metal)), TOLERANCE);
+}
+
+// Two ligands on one metal, each holding it twice: the metal cannot be reached by
+// translating it towards one of them, and the exact answer is where the circles of
+// both bonds meet.
+TEST_F(IndigoCoreHapticLayoutTest, AMetalBetweenTwoChelatingLigandsReachesAllFourBonds)
+{
+    Molecule mol;
+    const int first_ring = addRing(mol, 8);
+    const int second_ring = addRing(mol, 8);
+    const int metal = mol.addAtom(ELEM_Ni);
+
+    const int groups[4] = {addGroup(mol, {first_ring, first_ring + 1}), addGroup(mol, {first_ring + 4, first_ring + 5}),
+                           addGroup(mol, {second_ring, second_ring + 1}), addGroup(mol, {second_ring + 4, second_ring + 5})};
+    for (int group : groups)
+        mol.addHapticBond(HapticBond::Endpoint::group(group), HapticBond::Endpoint::atom(metal));
+
+    makeLayout(mol);
+
+    for (int group : groups)
+        EXPECT_NEAR(1.5f, Vec2f::dist(groupCentre(mol, group), pos(mol, metal)), TOLERANCE) << "group " << group;
+}

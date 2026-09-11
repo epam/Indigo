@@ -1,0 +1,462 @@
+{
+    "ket_version": "2.0.0",
+    "root": {
+        "nodes": [
+            {
+                "$ref": "mol0"
+            },
+            {
+                "$ref": "mol1"
+            },
+            {
+                "$ref": "mol2"
+            },
+            {
+                "$ref": "mol3"
+            },
+            {
+                "$ref": "mol4"
+            }
+        ],
+        "connections": [
+            {
+                "type": "haptic",
+                "endpoint1": {
+                    "moleculeId": "mol4",
+                    "atomId": "0"
+                },
+                "endpoint2": {
+                    "moleculeId": "mol1",
+                    "attachmentGroupId": "0"
+                }
+            },
+            {
+                "type": "haptic",
+                "endpoint1": {
+                    "moleculeId": "mol4",
+                    "atomId": "0"
+                },
+                "endpoint2": {
+                    "moleculeId": "mol3",
+                    "attachmentGroupId": "0"
+                }
+            },
+            {
+                "type": "haptic",
+                "endpoint1": {
+                    "moleculeId": "mol4",
+                    "atomId": "0"
+                },
+                "endpoint2": {
+                    "moleculeId": "mol0",
+                    "attachmentGroupId": "0"
+                }
+            },
+            {
+                "type": "haptic",
+                "endpoint1": {
+                    "moleculeId": "mol4",
+                    "atomId": "0"
+                },
+                "endpoint2": {
+                    "moleculeId": "mol2",
+                    "attachmentGroupId": "0"
+                }
+            }
+        ],
+        "templates": []
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    21.462014434541416,
+                    -6.08187290342447,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    20.652997427486515,
+                    -6.669658193967173,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    20.96201439493965,
+                    -7.620714749701916,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    21.96201423572458,
+                    -7.620714749701916,
+                    0
+                ],
+                "charge": -1
+            },
+            {
+                "label": "C",
+                "location": [
+                    22.271031441596318,
+                    -6.669658193967173,
+                    0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 2,
+                "atoms": [
+                    0,
+                    4
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    4,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    2
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    2,
+                    1
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    0
+                ]
+            }
+        ],
+        "attachmentGroups": [
+            {
+                "id": "0",
+                "atoms": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4
+                ]
+            }
+        ]
+    },
+    "mol1": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    21.462014434541416,
+                    -9.081873141035054,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    20.652997427486515,
+                    -9.669658312368458,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    20.96201439493965,
+                    -10.620714868103201,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    21.96201423572458,
+                    -10.6207149873125,
+                    0
+                ],
+                "charge": -1
+            },
+            {
+                "label": "C",
+                "location": [
+                    22.271031441596318,
+                    -9.669658431577757,
+                    0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 2,
+                "atoms": [
+                    0,
+                    4
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    4,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    2
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    2,
+                    1
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    0
+                ]
+            }
+        ],
+        "attachmentGroups": [
+            {
+                "id": "0",
+                "atoms": [
+                    4,
+                    0,
+                    1,
+                    3,
+                    2
+                ]
+            }
+        ]
+    },
+    "mol2": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    22.962014553346705,
+                    -7.581873022229763,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    22.152997546291807,
+                    -8.169658312772464,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    22.462014513744943,
+                    -9.120714749297909,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    23.462014354529874,
+                    -9.120714868507207,
+                    0
+                ],
+                "charge": -1
+            },
+            {
+                "label": "C",
+                "location": [
+                    23.77103156040161,
+                    -8.169658312772464,
+                    0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 2,
+                "atoms": [
+                    0,
+                    4
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    4,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    2
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    2,
+                    1
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    0
+                ]
+            }
+        ],
+        "attachmentGroups": [
+            {
+                "id": "0",
+                "atoms": [
+                    1,
+                    2,
+                    3,
+                    4,
+                    0
+                ]
+            }
+        ]
+    },
+    "mol3": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    19.962014315736123,
+                    -7.58187326064836,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    19.15299736828587,
+                    -8.169658312772464,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    19.46201421652971,
+                    -9.120714987716507,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    20.46201423612859,
+                    -9.120715106925806,
+                    0
+                ],
+                "charge": -1
+            },
+            {
+                "label": "C",
+                "location": [
+                    20.771031322791025,
+                    -8.169658551191063,
+                    0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 2,
+                "atoms": [
+                    0,
+                    4
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    4,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    2
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    2,
+                    1
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    0
+                ]
+            }
+        ],
+        "attachmentGroups": [
+            {
+                "id": "0",
+                "atoms": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4
+                ]
+            }
+        ]
+    },
+    "mol4": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "Ti",
+                "location": [
+                    21.462014434541416,
+                    -8.432523876957822,
+                    0
+                ]
+            }
+        ]
+    }
+}
