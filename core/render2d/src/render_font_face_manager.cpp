@@ -40,8 +40,8 @@ namespace indigo
         // Stores an opened font together with the library and byte array it depends on
         struct FreeTypeFace
         {
-            FreeTypeFace(const std::shared_ptr<FT_LibraryRec_>& library, const unsigned char font[], size_t font_size,
-                         std::shared_ptr<std::vector<byte>> data, const std::string& name)
+            FreeTypeFace(const std::shared_ptr<FT_LibraryRec_>& library, const unsigned char font[], size_t font_size, std::shared_ptr<std::vector<byte>> data,
+                         const std::string& name)
                 : library(library), data(std::move(data))
             {
                 if (FT_New_Memory_Face(library.get(), font, static_cast<FT_Long>(font_size), 0, &face))
