@@ -148,6 +148,8 @@ namespace indigo
         std::vector<_ExtConnection> connections;
         std::vector<int> ext_connections;
         std::vector<int> inner_nodes;
+        // kCDXProp_Node_Attachments: the member nodes of an attachment node.
+        std::vector<int> attachments;
     };
 
     struct CdxmlBond
@@ -966,6 +968,12 @@ namespace indigo
 
         int _addBond(Molecule& mol, const CdxmlBond& bond, int begin, int end);
         void _addAtomsAndBonds(BaseMolecule& mol, const std::vector<int>& atoms, const std::vector<CdxmlBond>& new_bonds);
+        // Resolves the member ids, so it runs after the atoms have been added.
+        void _addAttachmentGroups(BaseMolecule& mol);
+        // Throws when the node is neither an atom nor an attachment group.
+        HapticBond::Endpoint _hapticEndpoint(int node_id, int bond_id) const;
+        // False when neither end of the bond is an attachment node.
+        bool _addHapticBond(BaseMolecule& mol, const CdxmlBond& bond);
         void _addBracket(BaseMolecule& mol, const CdxmlBracket& bracket);
         void _handleSGroup(SGroup& sgroup, const std::unordered_set<int>& atoms, BaseMolecule& bmol);
         void _processEnhancedStereo(BaseMolecule& mol);
@@ -985,6 +993,9 @@ namespace indigo
         std::unordered_map<int, std::size_t> _id_to_node_index;
         std::unordered_map<int, std::size_t> _id_to_bond_index;
         std::vector<int> _fragment_nodes;
+        // Attachment nodes as indices in `nodes`, and the group each became.
+        std::vector<int> _attachment_nodes;
+        std::unordered_map<int, int> _id_to_group_idx;
         std::vector<Vec2f> _pluses;
         std::unordered_map<int, std::pair<std::pair<Vec3f, Vec3f>, int>> _arrows;
         std::vector<std::pair<std::pair<Vec2f, Vec2f>, int>> _graphic_arrows;
