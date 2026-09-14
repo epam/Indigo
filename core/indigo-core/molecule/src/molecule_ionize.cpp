@@ -1203,7 +1203,7 @@ bool MoleculePkaModel::getAtomLocalFeatureSet(BaseMolecule& mol, int idx, Array<
             a_aromatic_cnt++;
         else if (order == BOND_TRIPLE)
             a_triple_cnt++;
-        else if (order == BOND_ZERO)
+        else if (order == BOND_ZERO || order == _BOND_COORDINATION)
             a_coord_cnt++;
     }
 

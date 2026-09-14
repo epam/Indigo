@@ -22,7 +22,7 @@ extern "C"
 class BingoPgBufferCache
 {
 public:
-    BingoPgBufferCache(int block_id, PG_OBJECT index_ptr, bool write);
+    BingoPgBufferCache(int block_id, PG_OBJECT index_ptr, bool write, bool wal_enabled = true, unsigned int reusable_tail_start = UINT_MAX);
     virtual ~BingoPgBufferCache()
     {
     }
@@ -43,6 +43,7 @@ protected:
     int _blockId;
     PG_OBJECT _index;
     bool _write;
+    bool _walEnabled;
     BingoPgBuffer _buffer;
 };
 /*
@@ -61,8 +62,10 @@ public:
         ItemPointerData xyz_map;
     } BingoMapData;
 
-    BingoPgBufferCacheMap(int block_id, PG_OBJECT index_ptr, bool write);
+    BingoPgBufferCacheMap(int block_id, PG_OBJECT index_ptr, bool write, bool wal_enabled = true, unsigned int reusable_tail_start = UINT_MAX);
     ~BingoPgBufferCacheMap() override;
+
+    void flush();
 
     /*
      * Setters
@@ -92,8 +95,10 @@ private:
 class BingoPgBufferCacheFp : public BingoPgBufferCache
 {
 public:
-    BingoPgBufferCacheFp(int block_id, PG_OBJECT index_ptr, bool write);
+    BingoPgBufferCacheFp(int block_id, PG_OBJECT index_ptr, bool write, bool wal_enabled = true, unsigned int reusable_tail_start = UINT_MAX);
     ~BingoPgBufferCacheFp() override;
+
+    void flush();
 
     void setBit(int str_idx, bool value);
     bool getBit(int str_idx);
@@ -118,7 +123,8 @@ class BingoPgBufferCacheBin : public BingoPgBufferCache
 {
 public:
     /*
-     * Max size is rewrite BLCKSZ because there is int for keeping data length (stored in the begining of the buffer)
+     * Max size is rewrite BLCKSZ because there is int for keeping data length
+     * (stored in the begining of the buffer)
      */
     enum
     {
@@ -126,8 +132,10 @@ public:
         BUFFER_SIZE = 8150
     };
 
-    BingoPgBufferCacheBin(int block_id, PG_OBJECT index_ptr, bool write);
+    BingoPgBufferCacheBin(int block_id, PG_OBJECT index_ptr, bool write, bool wal_enabled = true, unsigned int reusable_tail_start = UINT_MAX);
     ~BingoPgBufferCacheBin() override;
+
+    void flush();
 
     /*
      * Returns true if enough space for adding a new structure with given size

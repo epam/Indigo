@@ -23,3 +23,5 @@ issue 2810 unnecessary rearrangment
 unnecessary_rearrangment_2810.png rendering status: OK
 issue 2801 reactions with brackets
 reactions_with_brackets_2801.png rendering status: OK
+issue 3803 enhanced stereo labels lost on sgroups
+3803_sgroup_enhanced_labels.png rendering status: OK

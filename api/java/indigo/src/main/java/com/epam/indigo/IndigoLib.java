@@ -508,6 +508,35 @@ public interface IndigoLib extends Library {
 
     int indigoIterateSGroupCrossBonds(int sgroup);
 
+    // Issue #3842: haptic bonds (#3233)
+    int indigoAddAttachmentGroup(int molecule, int natoms, int[] atoms);
+
+    int indigoCountAttachmentGroups(int molecule);
+
+    int indigoIterateAttachmentGroups(int molecule);
+
+    int indigoGetAttachmentGroup(int molecule, int index);
+
+    int indigoSetAttachmentGroupAtoms(int group, int natoms, int[] atoms);
+
+    int indigoGetAttachmentGroupAnchor(int group);
+
+    int indigoIsAttachmentGroup(int item);
+
+    int indigoAddHapticBond(int molecule, int begin, int end);
+
+    int indigoCountHapticBonds(int molecule);
+
+    int indigoIterateHapticBonds(int molecule);
+
+    int indigoGetHapticBond(int molecule, int index);
+
+    int indigoGetHapticBondBegin(int bond);
+
+    int indigoGetHapticBondEnd(int bond);
+
+    Pointer indigoHapticBondType(int bond);
+
     int indigoAddSGroupAttachmentPoint(int sgroup, int aidx, int lvidx, String apid);
 
     int indigoDeleteSGroupAttachmentPoint(int sgroup, int apidx);

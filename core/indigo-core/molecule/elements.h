@@ -171,6 +171,16 @@ namespace indigo
         return el == ELEM_O || el == ELEM_F || el == ELEM_S || el == ELEM_Cl || el == ELEM_Se || el == ELEM_Br || el == ELEM_I;
     }
 
+    // The d- and f-block. Valence calculation accepts these elements as drawn and gives
+    // them no implicit hydrogens; the dative model (ticket #3617, requirement 8) needs the
+    // same set to decide which atoms are drawn with hydrogens at all. Kept here, next to
+    // the element numbers it is expressed in, so both answers come from one definition.
+    inline bool isTransitionMetal(int elem)
+    {
+        return (elem >= ELEM_Sc && elem <= ELEM_Zn) || (elem >= ELEM_Y && elem <= ELEM_Cd) || (elem >= ELEM_La && elem <= ELEM_Hg) ||
+               (elem >= ELEM_Ac && elem <= ELEM_Cn);
+    }
+
     enum LABEL_MODE
     {
         LABEL_MODE_NONE,

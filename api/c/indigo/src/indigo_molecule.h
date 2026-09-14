@@ -575,6 +575,95 @@ protected:
     int _idx;
 };
 
+// A set of atoms acting as one end of a haptic bond (#3233). Holds the index the
+// group has in its molecule; the group itself is never copied out.
+class IndigoAttachmentGroup : public IndigoObject
+{
+public:
+    IndigoAttachmentGroup(BaseMolecule& mol_, int idx_);
+    ~IndigoAttachmentGroup() override;
+
+    int getIndex() override;
+    void remove() override;
+
+    const char* debugInfo() const override;
+
+    static IndigoAttachmentGroup& cast(IndigoObject& obj);
+    AttachmentGroup& get();
+
+    BaseMolecule& mol;
+    int idx;
+};
+
+class IndigoAttachmentGroupsIter : public IndigoObject
+{
+public:
+    IndigoAttachmentGroupsIter(BaseMolecule& mol_, Array<int>&& refs);
+    ~IndigoAttachmentGroupsIter() override;
+
+    const char* debugInfo() const override;
+
+    IndigoObject* next() override;
+    bool hasNext() override;
+
+protected:
+    BaseMolecule& _mol;
+    Array<int> _refs;
+    int _idx;
+};
+
+class IndigoAttachmentGroupAtomsIter : public IndigoObject
+{
+public:
+    IndigoAttachmentGroupAtomsIter(BaseMolecule& mol_, int group_idx);
+    ~IndigoAttachmentGroupAtomsIter() override;
+
+    IndigoObject* next() override;
+    bool hasNext() override;
+
+protected:
+    BaseMolecule& _mol;
+    int _group_idx;
+    int _idx;
+};
+
+// A haptic bond (#3233). Not an edge of the graph, so it is reached through its
+// own iterator and never appears among the bonds of the molecule.
+class IndigoHapticBond : public IndigoObject
+{
+public:
+    IndigoHapticBond(BaseMolecule& mol_, int idx_);
+    ~IndigoHapticBond() override;
+
+    int getIndex() override;
+    void remove() override;
+
+    const char* debugInfo() const override;
+
+    static IndigoHapticBond& cast(IndigoObject& obj);
+    HapticBond& get();
+
+    BaseMolecule& mol;
+    int idx;
+};
+
+class IndigoHapticBondsIter : public IndigoObject
+{
+public:
+    IndigoHapticBondsIter(BaseMolecule& mol_, Array<int>&& refs);
+    ~IndigoHapticBondsIter() override;
+
+    const char* debugInfo() const override;
+
+    IndigoObject* next() override;
+    bool hasNext() override;
+
+protected:
+    BaseMolecule& _mol;
+    Array<int> _refs;
+    int _idx;
+};
+
 class IndigoMoleculeComponent : public IndigoObject
 {
 public:

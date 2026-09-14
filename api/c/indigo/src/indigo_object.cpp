@@ -129,6 +129,11 @@ IndigoObjectTypes::IndigoObjectTypes()
     emplace(IndigoObject::JSON_REACTION, "<JsonReaction>");
     emplace(IndigoObject::MONOMER_LIBRARY, "<MonomerLibrary>");
     emplace(IndigoObject::KET_DOCUMENT, "<KetDocument>");
+    emplace(IndigoObject::ATTACHMENT_GROUP, "<AttachmentGroup>");
+    emplace(IndigoObject::ATTACHMENT_GROUPS_ITER, "<AttachmentGroupsIterator>");
+    emplace(IndigoObject::ATTACHMENT_GROUP_ATOMS_ITER, "<AttachmentGroupAtomsIterator>");
+    emplace(IndigoObject::HAPTIC_BOND, "<HapticBond>");
+    emplace(IndigoObject::HAPTIC_BONDS_ITER, "<HapticBondsIterator>");
 
     if (size() != IndigoObject::INDIGO_OBJECT_LAST_TYPE - 1)
     {

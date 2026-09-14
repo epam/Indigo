@@ -18,9 +18,11 @@
 
 #include "molecule/molfile_saver.h"
 
+#include <algorithm>
 #include <ctime>
 #include <map>
 #include <sstream>
+#include <string>
 
 #include "base_cpp/locale_guard.h"
 #include "base_cpp/output.h"
@@ -454,6 +456,76 @@ void MolfileSaver::_writeMultiString(Output& output, const char* string, int len
     }
 }
 
+void MolfileSaver::_collectHapticRecords(BaseMolecule& mol, std::vector<HapticRecord>& records, std::unordered_map<int, int>& by_edge,
+                                         std::vector<int>& groups_needing_a_star)
+{
+    for (int i = mol.haptic_bonds.begin(); i != mol.haptic_bonds.end(); i = mol.haptic_bonds.next(i))
+    {
+        const HapticBond& bond = mol.haptic_bonds.at(i);
+
+        // An atom-to-atom haptic bond has no ENDPTS form in the format, so it is
+        // dropped like any other feature V3000 cannot express.
+        if (bond.begin().isGroup() == bond.end().isGroup())
+            continue;
+
+        const HapticBond::Endpoint& group_end = bond.begin().isGroup() ? bond.begin() : bond.end();
+        const HapticBond::Endpoint& atom_end = bond.begin().isGroup() ? bond.end() : bond.begin();
+
+        HapticRecord record;
+        record.group = group_end.index();
+        record.atom = atom_end.index();
+        record.type = bond.type();
+        record.anchor = mol.attachment_groups.group(record.group).anchorAtom();
+        record.edge = -1;
+
+        if (record.anchor >= 0 && mol.hasVertex(record.anchor))
+        {
+            const int edge = mol.findEdgeIndex(record.anchor, record.atom);
+            // A second bond claiming the same edge gets a record of its own: the
+            // keys of two groups cannot share one record.
+            if (edge >= 0 && by_edge.count(edge) == 0)
+                record.edge = edge;
+        }
+        else
+            record.anchor = -1;
+
+        if (record.edge >= 0)
+            by_edge[record.edge] = static_cast<int>(records.size());
+        else if (record.anchor < 0 && std::find(groups_needing_a_star.begin(), groups_needing_a_star.end(), record.group) == groups_needing_a_star.end())
+            groups_needing_a_star.push_back(record.group);
+
+        records.push_back(record);
+    }
+}
+
+Vec3f MolfileSaver::_attachmentGroupCentre(BaseMolecule& mol, int group)
+{
+    const std::vector<int>& atoms = mol.attachment_groups.group(group).atoms();
+    Vec3f low = mol.getAtomXyz(atoms.front());
+    Vec3f high = low;
+
+    for (int atom : atoms)
+    {
+        const Vec3f& xyz = mol.getAtomXyz(atom);
+        low.min(xyz);
+        high.max(xyz);
+    }
+
+    Vec3f centre;
+    centre.lineCombin2(low, 0.5f, high, 0.5f);
+    return centre;
+}
+
+void MolfileSaver::_writeHapticKeys(Output& output, BaseMolecule& mol, const HapticRecord& record)
+{
+    const std::vector<int>& atoms = mol.attachment_groups.group(record.group).atoms();
+
+    output.printf(" ENDPTS=(%d", static_cast<int>(atoms.size()));
+    for (int atom : atoms)
+        output.printf(" %d", _atom_mapping[atom]);
+    output.printf(") ATTACH=%s", record.type == _BOND_VARIABLE_ATTACHMENT ? "ANY" : "ALL");
+}
+
 void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
 {
     _handleCIP(mol);
@@ -503,8 +575,26 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         }
     }
 
+    // Haptic bonds (#3233) are written as ordinary bond records carrying
+    // ENDPTS/ATTACH. What that costs in atoms and records has to be known before
+    // COUNTS is printed.
+    std::vector<HapticRecord> haptic_records;
+    std::unordered_map<int, int> haptic_by_edge;
+    std::vector<int> groups_needing_a_star;
+    _collectHapticRecords(mol, haptic_records, haptic_by_edge, groups_needing_a_star);
+
+    const int synthetic_atoms = static_cast<int>(groups_needing_a_star.size());
+    const int synthetic_bonds = static_cast<int>(haptic_records.size() - haptic_by_edge.size());
+
+    // The star of a group that no longer has one: made up after the real atoms, so
+    // that no existing atom index moves.
+    const auto star_of_group = [&mol, &groups_needing_a_star](int group) {
+        const auto it = std::find(groups_needing_a_star.begin(), groups_needing_a_star.end(), group);
+        return mol.vertexCount() + static_cast<int>(it - groups_needing_a_star.begin()) + 1;
+    };
+
     output.writeStringCR("M  V30 BEGIN CTAB");
-    output.printfCR("M  V30 COUNTS %d %d %d 0 0", mol.vertexCount(), mol.edgeCount(), mol.countSGroups());
+    output.printfCR("M  V30 COUNTS %d %d %d 0 0", mol.vertexCount() + synthetic_atoms, mol.edgeCount() + synthetic_bonds, mol.countSGroups());
     output.writeStringCR("M  V30 BEGIN ATOM");
 
     std::stringstream coords;
@@ -722,6 +812,17 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         _writeMultiString(output, buf.ptr(), buf.size());
     }
 
+    for (int k = 0; k < synthetic_atoms; k++)
+    {
+        ArrayOutput out(buf);
+        Vec3f centre = _attachmentGroupCentre(mol, groups_needing_a_star[k]);
+
+        convert_xyz_to_string(centre, coords);
+        out.printf("%d * %s 0", mol.vertexCount() + k + 1, coords.str().c_str());
+
+        _writeMultiString(output, buf.ptr(), buf.size());
+    }
+
     output.writeStringCR("M  V30 END ATOM");
     output.writeStringCR("M  V30 BEGIN BOND");
 
@@ -794,16 +895,44 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         if (topology != 0)
             out.printf(" TOPO=%d", topology);
 
+        const auto haptic = haptic_by_edge.find(i);
+        if (haptic != haptic_by_edge.end())
+            _writeHapticKeys(out, mol, haptic_records[haptic->second]);
+
+        _writeMultiString(output, buf.ptr(), buf.size());
+    }
+
+    // Haptic bonds with no edge of their own: either the star the file came with
+    // has outlived its bond, or there never was one and it has just been made up.
+    for (const HapticRecord& record : haptic_records)
+    {
+        if (record.edge >= 0)
+            continue;
+
+        ArrayOutput out(buf);
+        const int star = record.anchor >= 0 ? _atom_mapping[record.anchor] : star_of_group(record.group);
+
+        out.printf("%d %d %d %d", iw++, _BOND_COORDINATION, _atom_mapping[record.atom], star);
+        _writeHapticKeys(out, mol, record);
+
         _writeMultiString(output, buf.ptr(), buf.size());
     }
 
     output.writeStringCR("M  V30 END BOND");
 
+    //[Sapio] [CHEMBUGS-184] S-GROUP needs to be before COLLECTION when S GROUP is used.
     MoleculeStereocenters& stereocenters = mol.stereocenters;
+    const bool has_collection = (stereocenters.begin() != stereocenters.end() || mol.hasHighlighting() || mol.custom_collections.size() > 0);
 
-    if (stereocenters.begin() != stereocenters.end() || mol.hasHighlighting())
+    // Default order: COLLECTION before SGROUP.
+    // When have sgroup collection, write SGROUP then COLLECTION (CT spec) page 22.
+    std::string collection_str;
+    StringOutput collection_output(collection_str);
+    bool has_sgroup_collection = false;
+
+    if (has_collection)
     {
-        output.writeStringCR("M  V30 BEGIN COLLECTION");
+        collection_output.writeStringCR("M  V30 BEGIN COLLECTION");
 
         QS_DEF(Array<int>, processed);
 
@@ -844,7 +973,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                 out.printf(" %d", _atom_mapping[list[j]]);
             out.writeChar(')');
 
-            _writeMultiString(output, buf.ptr(), buf.size());
+            _writeMultiString(collection_output, buf.ptr(), buf.size());
         }
 
         if (mol.hasHighlighting())
@@ -860,7 +989,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                         out.printf(" %d", _bond_mapping[i]);
                 out.writeChar(')');
 
-                _writeMultiString(output, buf.ptr(), buf.size());
+                _writeMultiString(collection_output, buf.ptr(), buf.size());
             }
             if (mol.countHighlightedAtoms() > 0)
             {
@@ -871,7 +1000,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                         out.printf(" %d", _atom_mapping[i]);
                 out.writeChar(')');
 
-                _writeMultiString(output, buf.ptr(), buf.size());
+                _writeMultiString(collection_output, buf.ptr(), buf.size());
             }
         }
         if (mol.custom_collections.size() > 0)
@@ -879,13 +1008,19 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
             for (i = mol.custom_collections.begin(); i != mol.custom_collections.end(); i = mol.custom_collections.next(i))
             {
                 ArrayOutput out(buf);
-                out.printf("%s", mol.custom_collections.at(i));
-                _writeMultiString(output, buf.ptr(), buf.size());
+                auto collection = mol.custom_collections.at(i);
+                out.printf("%s", collection);
+                _writeMultiString(collection_output, buf.ptr(), buf.size());
+                if (strstr(collection, "Sgroups=(") != nullptr)
+                    has_sgroup_collection = true;
             }
         }
 
-        output.writeStringCR("M  V30 END COLLECTION");
+        collection_output.writeStringCR("M  V30 END COLLECTION");
     }
+
+    if (!has_sgroup_collection) // no sgroup in collections - write it before sgroups
+        output.write(collection_str.data(), static_cast<int>(collection_str.size()));
 
     auto sgroup_infos = mol.sgroups.getOrderedSGroups();
 
@@ -1084,6 +1219,9 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
         output.writeStringCR("M  V30 END SGROUP");
         _removeImplicitSGroups(mol, implicit_sgroups_indexes);
     }
+
+    if (has_sgroup_collection) // sgroup collection order reversed
+        output.write(collection_str.data(), static_cast<int>(collection_str.size()));
 
     output.writeStringCR("M  V30 END CTAB");
 

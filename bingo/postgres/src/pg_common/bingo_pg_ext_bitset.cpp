@@ -6,6 +6,7 @@
 #include "base_cpp/ptr_array.h"
 #include "bingo_pg_ext_bitset.h"
 #include <algorithm>
+#include <climits>
 
 BingoPgExternalBitset::BingoPgExternalBitset()
 {
@@ -29,10 +30,24 @@ void* BingoPgExternalBitset::serialize(int& size)
 
 void BingoPgExternalBitset::deserialize(void* data_ptr, int data_len, bool ext)
 {
+    if (data_ptr == nullptr || data_len < (int)(2 * sizeof(qword)))
+        throw indigo::Exception("invalid bingo bitset data length %d", data_len);
+
     qword* data = (qword*)data_ptr;
-    _bitsNumber = data[0];
+    if (data[0] == 0 || data[0] > INT_MAX)
+        throw indigo::Exception("invalid bingo bitset size %llu", (unsigned long long)data[0]);
+
+    const int bits_number = (int)data[0];
+    const int length = _wordIndex(bits_number - 1) + 1;
+    const size_t required_size = (size_t)(length + 2) * sizeof(qword);
+    if (length <= 0 || required_size > (size_t)data_len)
+        throw indigo::Exception("bingo bitset size %d exceeds serialized data length %d", bits_number, data_len);
+    if (data[1] > (qword)length)
+        throw indigo::Exception("invalid bingo bitset words-in-use value %llu for %d words", (unsigned long long)data[1], length);
+
+    _bitsNumber = bits_number;
     _lastWordPtr = &(data[1]);
-    _length = _wordIndex(_bitsNumber - 1) + 1;
+    _length = length;
     qword* words_ptr = &(data[2]);
     if (ext)
     {
@@ -481,7 +496,8 @@ bool BingoPgExternalBitset::hasBits() const
     return (*_lastWordPtr) != 0;
 }
 
-// some 64-bit compilators can not correctly work with big values shift. So it must be processed manually
+// some 64-bit compilators can not correctly work with big values shift. So it
+// must be processed manually
 
 qword BingoPgExternalBitset::shiftOne(int shiftNumber)
 {

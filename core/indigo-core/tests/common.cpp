@@ -1,4 +1,6 @@
 #include "common.h"
+#include "reaction/reaction.h"
+#include "reaction/reaction_auto_loader.h"
 #include "reaction/reaction_cml_saver.h"
 #include "reaction/reaction_json_saver.h"
 #include "reaction/rxnfile_saver.h"

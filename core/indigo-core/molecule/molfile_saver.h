@@ -24,6 +24,9 @@
 #pragma warning(disable : 4251)
 #endif
 
+#include <unordered_map>
+#include <vector>
+
 #include "base_cpp/array.h"
 #include "base_cpp/tlscont.h"
 #include "molecule/base_molecule.h"
@@ -101,6 +104,23 @@ namespace indigo
         void _writeCtab2000(Output& output, BaseMolecule& mol, bool query);
         void _writeRGroupIndices2000(Output& output, BaseMolecule& mol);
         void _writeAttachmentValues2000(Output& output, BaseMolecule& fragment);
+        // One V3000 bond record standing for one haptic bond (#3233). The keys ride
+        // on the edge the file was loaded with whenever the group still knows its
+        // star atom; otherwise the record - and sometimes the star - is made up.
+        struct HapticRecord
+        {
+            int group;  // attachment group the ENDPTS list comes from
+            int atom;   // the single-atom end of the haptic bond
+            int type;   // _BOND_HAPTIC or _BOND_VARIABLE_ATTACHMENT
+            int anchor; // star atom of the group, -1 when there is none to reuse
+            int edge;   // edge to append the keys to, -1 when a record of its own is needed
+        };
+
+        static void _collectHapticRecords(BaseMolecule& mol, std::vector<HapticRecord>& records, std::unordered_map<int, int>& by_edge,
+                                          std::vector<int>& groups_needing_a_star);
+        static Vec3f _attachmentGroupCentre(BaseMolecule& mol, int group);
+        void _writeHapticKeys(Output& output, BaseMolecule& mol, const HapticRecord& record);
+
         void _writeGenericSGroup3000(SGroup& sgroup, const SGroupInfo& info, Output& output);
         void _writeDataSGroupDisplay(DataSGroup& datasgroup, Output& out);
         void _writeFormattedString(Output& output, Array<char>& str, int length);

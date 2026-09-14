@@ -1,11 +1,14 @@
 # Build
 
+> **Read when:** you are configuring, compiling, adding a target, or touching CMake/WASM/devcontainer.
+> **Skip when:** the change does not affect compilation.
+
 How to compile Indigo and its components, including WASM and the recommended dev container setup.
 
 ## Prerequisites
 
 - CMake 3.9+
-- C++14 compiler
+- C++17 compiler (`cmake/setup.cmake` sets `CMAKE_CXX_STANDARD 17`)
 - Python 3.6+
 - Ninja (required when using CMake presets)
 - JDK 1.8+ (only for the Java wrapper)
@@ -49,5 +52,5 @@ ninja indigo-ketcher-js-test
 
 ## Related
 
-- [claude-docs/testing.md](testing.md) — running the test suites against built artifacts
-- [claude-docs/oracle.md](oracle.md) — the Bingo-Oracle build via the Docker harness
+- [testing.md](./testing.md) — running the test suites against built artifacts
+- [modules/bingo-oracle.md](./modules/bingo-oracle.md) — the Bingo-Oracle build via the Docker harness

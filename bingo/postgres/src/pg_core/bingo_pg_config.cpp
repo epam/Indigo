@@ -152,7 +152,7 @@ void BingoPgConfig::updateByIndexConfig(PG_OBJECT index_ptr)
         name_key = _rawConfig.findOrInsert("sub_screening_max_bits");
         _toString(options.sub_screening_max_bits, _rawConfig.value(name_key));
     }
-    if (options.nthreads >= 0)
+    if (options.nthreads >= -1)
     {
         name_key = _rawConfig.findOrInsert("nthreads");
         _toString(options.nthreads, _rawConfig.value(name_key));

@@ -48,8 +48,14 @@ public:
 
     const char* debugInfo() const override;
 
+    PropertiesMap& getProperties() override
+    {
+        return _properties;
+    }
+
 private:
     KetDocument _document;
+    indigo::PropertiesMap _properties;
 };
 
 #ifdef _WIN32

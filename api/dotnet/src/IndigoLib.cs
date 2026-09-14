@@ -648,6 +648,49 @@ namespace com.epam.indigo
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoIterateSGroupCrossBonds(int sgroup);
 
+        // Issue #3842: haptic bonds (#3233)
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoAddAttachmentGroup(int molecule, int natoms, int[] atoms);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoCountAttachmentGroups(int molecule);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoIterateAttachmentGroups(int molecule);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoGetAttachmentGroup(int molecule, int index);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoSetAttachmentGroupAtoms(int group, int natoms, int[] atoms);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoGetAttachmentGroupAnchor(int group);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoIsAttachmentGroup(int item);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoAddHapticBond(int molecule, int begin, int end);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoCountHapticBonds(int molecule);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoIterateHapticBonds(int molecule);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoGetHapticBond(int molecule, int index);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoGetHapticBondBegin(int bond);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoGetHapticBondEnd(int bond);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern byte* indigoHapticBondType(int bond);
+
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoAddSGroupAttachmentPoint(int sgroup, int aidx, int lvidx, string apid);
 

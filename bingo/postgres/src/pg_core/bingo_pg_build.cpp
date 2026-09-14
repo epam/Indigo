@@ -51,19 +51,61 @@ BingoPgBuild::BingoPgBuild(PG_OBJECT index_ptr, const char* schema_name, const c
 
 BingoPgBuild::~BingoPgBuild()
 {
+}
+
+void BingoPgBuild::finish()
+{
+    if (!_buildingState)
+        return;
+
     /*
-     * Finish building stage
+     * Process the final parallel batch before releasing the section caches.
      */
-    if (_buildingState)
-    {
-        fp_engine->finishShadowProcessing();
-    }
+    flush();
+
     /*
-     * Write meta info in desctructor
+     * Explicitly finalize and release the current section so all page caches
+     * are complete before the build publishes dictionary/meta state or logs
+     * the relation for WAL.
+     */
+    int final_section_offset = 0;
+    int final_section_pages = 0;
+    _bufferIndex.finishCurrentSection(final_section_offset, final_section_pages);
+
+    Relation index = (Relation)_index;
+    const BlockNumber physical_pages = RelationGetNumberOfBlocks(index);
+    const BlockNumber expected_pages = (BlockNumber)(final_section_offset + final_section_pages);
+    if (physical_pages != expected_pages)
+        throw Error("internal error: bingo index physical size %u does not match "
+                    "final logical end %u",
+                    (unsigned int)physical_pages, (unsigned int)expected_pages);
+
+    _validateBuiltSection(final_section_offset, final_section_pages);
+
+    /*
+     * Publish global build state only after the physical section is complete.
      */
     _bufferIndex.writeDictionary(*fp_engine);
     _bufferIndex.writeMetaInfo();
+    fp_engine->finishShadowProcessing();
+
+    _buildingState = false;
 }
+
+void BingoPgBuild::_validateBuiltSection(int section_offset, int section_pages)
+{
+    if (section_offset < 0 || section_pages <= 0)
+        throw Error("internal error: invalid final bingo section range offset=%d pages=%d", section_offset, section_pages);
+
+    for (int page_idx = 0; page_idx < section_pages; ++page_idx)
+    {
+        const unsigned int block_idx = (unsigned int)(section_offset + page_idx);
+        BingoPgBuffer buffer(_index, block_idx, BINGO_PG_READ);
+        int data_len = 0;
+        buffer.getIndexData(data_len);
+    }
+}
+
 /*
  * Inserts a new structure into the index
  * Returns true if insertion was successfull
@@ -183,7 +225,10 @@ bool BingoPgBuild::insertStructureSingle(PG_OBJECT item_ptr, uintptr_t text_ptr)
     struct_cache.text = std::make_unique<BingoPgText>(text_ptr);
     struct_cache.ptr = *((ItemPointer)item_ptr);
 
-    elog(DEBUG1, "bingo: insert structure: processing the table entry with ctid='(%d,%d)'::tid", block_number, offset_number);
+    elog(DEBUG1,
+         "bingo: insert structure: processing the table entry with "
+         "ctid='(%d,%d)'::tid",
+         block_number, offset_number);
 
     if (!fp_engine->processStructure(struct_cache))
     {
@@ -191,14 +236,30 @@ bool BingoPgBuild::insertStructureSingle(PG_OBJECT item_ptr, uintptr_t text_ptr)
     }
 
     if (struct_cache.data.get() == 0)
-        return false;
+        throw Error("internal error: bingo build reported success without prepared "
+                    "data for ctid='(%d,%d)'::tid",
+                    block_number, offset_number);
+
+    /*
+     * The encoded CMF can depend on dictionary state changed while processing
+     * this molecule. For a live index, WAL-persist that dictionary and its
+     * metapage count before any section existence bit can publish the molecule.
+     */
+    if (!_buildingState)
+    {
+        _bufferIndex.writeDictionary(*fp_engine);
+        _bufferIndex.writeMetaInfo();
+    }
 
     BingoPgFpData& data_ref = *struct_cache.data;
 
     _bufferIndex.insertStructure(data_ref);
     fp_engine->insertShadowInfo(data_ref);
 
-    elog(DEBUG1, "bingo: insert structure: finish processing the table entry with ctid='(%d,%d)'::tid", block_number, offset_number);
+    elog(DEBUG1,
+         "bingo: insert structure: finish processing the table entry with "
+         "ctid='(%d,%d)'::tid",
+         block_number, offset_number);
 
     return true;
 }
@@ -229,14 +290,32 @@ void BingoPgBuild::flush()
      */
     fp_engine->processStructures(_parrallelCache);
 
+    if (!_buildingState)
+    {
+        _bufferIndex.writeDictionary(*fp_engine);
+        _bufferIndex.writeMetaInfo();
+    }
+
     for (int c_idx = 0; c_idx < _parrallelCache.size(); ++c_idx)
     {
         // profTimerStart(t1, "bingo_pg.insert_idx");
         BingoPgBuildEngine::StructCache& struct_cache = _parrallelCache[c_idx];
+        ItemPointer item_ptr = &struct_cache.ptr;
+        int block_number = ItemPointerGetBlockNumber(item_ptr);
+        int offset_number = ItemPointerGetOffsetNumber(item_ptr);
+
         if (struct_cache.data.get() == 0)
         {
-            continue;
+            if (struct_cache.rejected)
+                continue;
+            throw Error("internal error: parallel bingo build did not resolve "
+                        "ctid='(%d,%d)'::tid as prepared or rejected",
+                        block_number, offset_number);
         }
+        if (struct_cache.rejected)
+            throw Error("internal error: parallel bingo build resolved "
+                        "ctid='(%d,%d)'::tid as both prepared and rejected",
+                        block_number, offset_number);
 
         BingoPgFpData& data_ref = *struct_cache.data;
         _bufferIndex.insertStructure(data_ref);

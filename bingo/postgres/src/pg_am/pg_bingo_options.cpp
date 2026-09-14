@@ -36,7 +36,16 @@ extern "C"
 }
 #endif
 
-#define RELOPT_KIND_BINGO 1 << 8
+/*
+ * PostgreSQL 12 and older use Bingo's legacy self-contained parser, where this
+ * private bit is only meaningful inside this file. PostgreSQL 13+ registers a
+ * dynamically allocated reloption kind with the core registry instead.
+ */
+#define RELOPT_KIND_BINGO_LEGACY 1 << 8
+
+#if PG_VERSION_NUM / 100 > 1200
+static relopt_kind bingo_relopt_kind = RELOPT_KIND_LOCAL;
+#endif
 
 static relopt_bool boolRelOpts[] = {{{"autovacuum_enabled", "Enables autovacuum in this relation", RELOPT_KIND_HEAP | RELOPT_KIND_TOAST}, true},
                                     /* list terminator */
@@ -56,55 +65,79 @@ static relopt_int intRelOpts[] = {
      -1,
      100000000,
      2000000000},
-    {{"autovacuum_freeze_table_age", "Age at which VACUUM should perform a full table sweep to replace old Xid values with FrozenXID",
+    {{"autovacuum_freeze_table_age",
+      "Age at which VACUUM should perform a full table sweep to replace old "
+      "Xid values with FrozenXID",
       RELOPT_KIND_HEAP | RELOPT_KIND_TOAST},
      -1,
      0,
      2000000000},
-    {{"treat_x_as_pseudoatom", "", RELOPT_KIND_BINGO}, -1, 0, 1},
-    {{"ignore_closing_bond_direction_mismatch", "", RELOPT_KIND_BINGO}, -1, 0, 1},
-    {{"ignore_stereocenter_errors", "", RELOPT_KIND_BINGO}, -1, 0, 1},
-    {{"stereochemistry_bidirectional_mode", "", RELOPT_KIND_BINGO}, -1, 0, 1},
-    {{"stereochemistry_detect_haworth_projection", "", RELOPT_KIND_BINGO}, -1, 0, 1},
-    {{"ignore_cistrans_errors", "", RELOPT_KIND_BINGO}, -1, 0, 1},
-    {{"allow_non_unique_dearomatization", "", RELOPT_KIND_BINGO}, -1, 0, 1},
-    {{"zero_unknown_aromatic_hydrogens", "", RELOPT_KIND_BINGO}, -1, 0, 1},
-    {{"reject_invalid_structures", "", RELOPT_KIND_BINGO}, -1, 0, 1},
-    {{"ignore_bad_valence", "", RELOPT_KIND_BINGO}, -1, 0, 1},
-    {{"fp_ord_size", "", RELOPT_KIND_BINGO}, -1, 0, 2000000000},
-    {{"fp_any_size", "", RELOPT_KIND_BINGO}, -1, 0, 2000000000},
-    {{"fp_tau_size", "", RELOPT_KIND_BINGO}, -1, 0, 2000000000},
-    {{"fp_sim_size", "", RELOPT_KIND_BINGO}, -1, 0, 2000000000},
-    {{"sub_screening_max_bits", "", RELOPT_KIND_BINGO}, -1, 0, 2000000000},
-    {{"sim_screening_pass_mark", "", RELOPT_KIND_BINGO}, -1, 0, 2000000000},
-    {{"nthreads", "", RELOPT_KIND_BINGO}, -1, 0, 2000000000},
+    {{"treat_x_as_pseudoatom", "", RELOPT_KIND_BINGO_LEGACY}, -1, 0, 1},
+    {{"ignore_closing_bond_direction_mismatch", "", RELOPT_KIND_BINGO_LEGACY}, -1, 0, 1},
+    {{"ignore_stereocenter_errors", "", RELOPT_KIND_BINGO_LEGACY}, -1, 0, 1},
+    {{"stereochemistry_bidirectional_mode", "", RELOPT_KIND_BINGO_LEGACY}, -1, 0, 1},
+    {{"stereochemistry_detect_haworth_projection", "", RELOPT_KIND_BINGO_LEGACY}, -1, 0, 1},
+    {{"ignore_cistrans_errors", "", RELOPT_KIND_BINGO_LEGACY}, -1, 0, 1},
+    {{"allow_non_unique_dearomatization", "", RELOPT_KIND_BINGO_LEGACY}, -1, 0, 1},
+    {{"zero_unknown_aromatic_hydrogens", "", RELOPT_KIND_BINGO_LEGACY}, -1, 0, 1},
+    {{"reject_invalid_structures", "", RELOPT_KIND_BINGO_LEGACY}, -1, 0, 1},
+    {{"ignore_bad_valence", "", RELOPT_KIND_BINGO_LEGACY}, -1, 0, 1},
+    {{"fp_ord_size", "", RELOPT_KIND_BINGO_LEGACY}, -1, 0, 2000000000},
+    {{"fp_any_size", "", RELOPT_KIND_BINGO_LEGACY}, -1, 0, 2000000000},
+    {{"fp_tau_size", "", RELOPT_KIND_BINGO_LEGACY}, -1, 0, 2000000000},
+    {{"fp_sim_size", "", RELOPT_KIND_BINGO_LEGACY}, -1, 0, 2000000000},
+    {{"sub_screening_max_bits", "", RELOPT_KIND_BINGO_LEGACY}, -1, 0, 2000000000},
+    {{"sim_screening_pass_mark", "", RELOPT_KIND_BINGO_LEGACY}, -1, 0, 2000000000},
+    {{"nthreads", "", RELOPT_KIND_BINGO_LEGACY}, -2, -1, 2000000000},
     /* list terminator */
     {{NULL}}
 
 };
 
-static relopt_real realRelOpts[] = {
-    {{"autovacuum_vacuum_scale_factor", "Number of tuple updates or deletes prior to vacuum as a fraction of reltuples", RELOPT_KIND_HEAP | RELOPT_KIND_TOAST},
-     -1,
-     0.0,
-     100.0},
-    {{"autovacuum_analyze_scale_factor", "Number of tuple inserts, updates or deletes prior to analyze as a fraction of reltuples", RELOPT_KIND_HEAP},
-     -1,
-     0.0,
-     100.0},
-    {{"seq_page_cost", "Sets the planner's estimate of the cost of a sequentially fetched disk page.", RELOPT_KIND_TABLESPACE}, -1, 0.0, DBL_MAX},
-    {{"random_page_cost", "Sets the planner's estimate of the cost of a nonsequentially fetched disk page.", RELOPT_KIND_TABLESPACE}, -1, 0.0, DBL_MAX},
-    {{"n_distinct", "Sets the planner's estimate of the number of distinct values appearing in a column (excluding child relations).", RELOPT_KIND_ATTRIBUTE},
-     0,
-     -1.0,
-     DBL_MAX},
-    {{"n_distinct_inherited", "Sets the planner's estimate of the number of distinct values appearing in a column (including child relations).",
-      RELOPT_KIND_ATTRIBUTE},
-     0,
-     -1.0,
-     DBL_MAX},
-    /* list terminator */
-    {{NULL}}};
+static relopt_real realRelOpts[] = {{{"autovacuum_vacuum_scale_factor",
+                                      "Number of tuple updates or deletes prior to vacuum as a fraction of "
+                                      "reltuples",
+                                      RELOPT_KIND_HEAP | RELOPT_KIND_TOAST},
+                                     -1,
+                                     0.0,
+                                     100.0},
+                                    {{"autovacuum_analyze_scale_factor",
+                                      "Number of tuple inserts, updates or deletes prior to analyze as a "
+                                      "fraction of reltuples",
+                                      RELOPT_KIND_HEAP},
+                                     -1,
+                                     0.0,
+                                     100.0},
+                                    {{"seq_page_cost",
+                                      "Sets the planner's estimate of the cost of a sequentially fetched disk "
+                                      "page.",
+                                      RELOPT_KIND_TABLESPACE},
+                                     -1,
+                                     0.0,
+                                     DBL_MAX},
+                                    {{"random_page_cost",
+                                      "Sets the planner's estimate of the cost of a nonsequentially fetched "
+                                      "disk page.",
+                                      RELOPT_KIND_TABLESPACE},
+                                     -1,
+                                     0.0,
+                                     DBL_MAX},
+                                    {{"n_distinct",
+                                      "Sets the planner's estimate of the number of distinct values appearing "
+                                      "in a column (excluding child relations).",
+                                      RELOPT_KIND_ATTRIBUTE},
+                                     0,
+                                     -1.0,
+                                     DBL_MAX},
+                                    {{"n_distinct_inherited",
+                                      "Sets the planner's estimate of the number of distinct values appearing "
+                                      "in a column (including child relations).",
+                                      RELOPT_KIND_ATTRIBUTE},
+                                     0,
+                                     -1.0,
+                                     DBL_MAX},
+                                    /* list terminator */
+                                    {{NULL}}};
 
 // static relopt_string stringRelOpts[] =
 //{
@@ -112,7 +145,7 @@ static relopt_real realRelOpts[] = {
 //		{
 //				"similarity_type",
 //				"",
-//				RELOPT_KIND_BINGO,
+//				RELOPT_KIND_BINGO_LEGACY,
 //                                AccessExclusiveLock
 //		}, 3, false, nullptr, "SIM"
 //	},
@@ -349,6 +382,56 @@ relopt_value* bingoParseRelOptions(Datum options, bool validate, int kind, int* 
     return reloptions;
 }
 
+#if PG_VERSION_NUM / 100 > 1200
+/*
+ * Since PostgreSQL 13 the AM option parser (build_reloptions) matches input
+ * options against options registered with the core reloptions registry only.
+ * The legacy self-contained tables above are not visible to it, so every
+ * Bingo WITH (...) option would be rejected with "unrecognized parameter".
+ * Allocate a dedicated extension reloption kind and register the Bingo option
+ * names under that kind once per backend library load. Types must match the
+ * tab[] entries below (all INT), including the boolean-like flags whose
+ * accepted values stay 0/1.
+ */
+extern "C" void _PG_init(void);
+
+void _PG_init(void)
+{
+    bingo_relopt_kind = add_reloption_kind();
+    static const struct
+    {
+        const char* name;
+        int min_val;
+        int max_val;
+    } bingo_int_options[] = {{"treat_x_as_pseudoatom", 0, 1},
+                             {"ignore_closing_bond_direction_mismatch", 0, 1},
+                             {"ignore_stereocenter_errors", 0, 1},
+                             {"stereochemistry_bidirectional_mode", 0, 1},
+                             {"stereochemistry_detect_haworth_projection", 0, 1},
+                             {"ignore_cistrans_errors", 0, 1},
+                             {"allow_non_unique_dearomatization", 0, 1},
+                             {"zero_unknown_aromatic_hydrogens", 0, 1},
+                             {"reject_invalid_structures", 0, 1},
+                             {"ignore_bad_valence", 0, 1},
+                             {"fp_ord_size", 0, 2000000000},
+                             {"fp_any_size", 0, 2000000000},
+                             {"fp_tau_size", 0, 2000000000},
+                             {"fp_sim_size", 0, 2000000000},
+                             {"sub_screening_max_bits", 0, 2000000000},
+                             {"sim_screening_pass_mark", 0, 2000000000}};
+
+    for (size_t i = 0; i < lengthof(bingo_int_options); ++i)
+    {
+        add_int_reloption(bingo_relopt_kind, bingo_int_options[i].name, "", -1, bingo_int_options[i].min_val, bingo_int_options[i].max_val,
+                          AccessExclusiveLock);
+    }
+
+    /* -2 means the index option is unset; -1 keeps its historical automatic
+     * meaning. */
+    add_int_reloption(bingo_relopt_kind, "nthreads", "", -2, -1, 2000000000, AccessExclusiveLock);
+}
+#endif
+
 bytea* bingo_reloptions(Datum reloptions, bool validate)
 {
     relopt_value* options;
@@ -391,10 +474,9 @@ bytea* bingo_reloptions(Datum reloptions, bool validate)
         {"nthreads", RELOPT_TYPE_INT, offsetof(BingoStdRdOptions, index_parameters) + offsetof(BingoIndexOptions, nthreads)}};
 
 #if PG_VERSION_NUM / 100 > 1200
-    relopt_kind kind = static_cast<relopt_kind>(RELOPT_KIND_BINGO);
-    rdopts = build_reloptions(reloptions, validate, kind, sizeof(BingoStdRdOptions), tab, lengthof(tab));
+    rdopts = build_reloptions(reloptions, validate, bingo_relopt_kind, sizeof(BingoStdRdOptions), tab, lengthof(tab));
 #else
-    options = bingoParseRelOptions(reloptions, validate, RELOPT_KIND_BINGO, &numoptions);
+    options = bingoParseRelOptions(reloptions, validate, RELOPT_KIND_BINGO_LEGACY, &numoptions);
 
     /* if none set, we're done */
     if (numoptions == 0)
@@ -476,24 +558,33 @@ Datum bingo_options(PG_FUNCTION_ARGS)
 //         attributes.clear();
 //         for (int i = 0; i < noptions; i++) {
 //            int text_len;
-//            char* text_data = BingoPgCommon::getTextData(&optiondatums[i], text_len);
-//            Helpers::addAttributeAndValue(text_data, text_len, attributes);
+//            char* text_data = BingoPgCommon::getTextData(&optiondatums[i],
+//            text_len); Helpers::addAttributeAndValue(text_data, text_len,
+//            attributes);
 //         }
 //      }
 //
 //      rdopts = (BingoStdRdOptions*)palloc0(sizeof(BingoStdRdOptions));
 //
-//      Helpers::mapParameter(attributes, "treat_x_as_pseudoatom", rdopts->index_parameters.treat_x_as_pseudoatom);
-//      Helpers::mapParameter(attributes, "ignore_closing_bond_direction_mismatch", rdopts->index_parameters.ignore_closing_bond_direction_mismatch);
-//      Helpers::mapParameter(attributes, "fp_ord_size", rdopts->index_parameters.fp_ord_size);
-//      Helpers::mapParameter(attributes, "fp_any_size", rdopts->index_parameters.fp_any_size);
-//      Helpers::mapParameter(attributes, "fp_tau_size", rdopts->index_parameters.fp_tau_size);
-//      Helpers::mapParameter(attributes, "fp_sim_size", rdopts->index_parameters.fp_sim_size);
-//      Helpers::mapParameter(attributes, "sub_screening_max_bits", rdopts->index_parameters.sub_screening_max_bits);
-//      Helpers::mapParameter(attributes, "sim_screening_pass_mark", rdopts->index_parameters.sim_screening_pass_mark);
+//      Helpers::mapParameter(attributes, "treat_x_as_pseudoatom",
+//      rdopts->index_parameters.treat_x_as_pseudoatom);
+//      Helpers::mapParameter(attributes,
+//      "ignore_closing_bond_direction_mismatch",
+//      rdopts->index_parameters.ignore_closing_bond_direction_mismatch);
+//      Helpers::mapParameter(attributes, "fp_ord_size",
+//      rdopts->index_parameters.fp_ord_size); Helpers::mapParameter(attributes,
+//      "fp_any_size", rdopts->index_parameters.fp_any_size);
+//      Helpers::mapParameter(attributes, "fp_tau_size",
+//      rdopts->index_parameters.fp_tau_size); Helpers::mapParameter(attributes,
+//      "fp_sim_size", rdopts->index_parameters.fp_sim_size);
+//      Helpers::mapParameter(attributes, "sub_screening_max_bits",
+//      rdopts->index_parameters.sub_screening_max_bits);
+//      Helpers::mapParameter(attributes, "sim_screening_pass_mark",
+//      rdopts->index_parameters.sim_screening_pass_mark);
 //
 //      if(validate && attributes.size() > 0)
-//         elog(ERROR, "Error while loading options: unknown option %s\n", attributes.key(attributes.begin()));
+//         elog(ERROR, "Error while loading options: unknown option %s\n",
+//         attributes.key(attributes.begin()));
 //
 //   } catch (Exception& e) {
 //      elog(ERROR, "Error while loading options: %s\n", e.message());

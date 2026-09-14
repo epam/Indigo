@@ -328,8 +328,18 @@ namespace indigo
         static bool restoreHydrogens(BaseMolecule& mol, const AromaticityOptions& options);
         static bool restoreHydrogens(BaseMolecule& mol, bool unambiguous_only);
 
+        // Per-atom connectivity as it would be on the dearomatized structure, computed
+        // WITHOUT modifying the molecule: aromatic bonds are resolved to the Kekule
+        // orders the dearomatizer would assign, other bonds are summed as drawn.
+        // Bonds carrying no shared electron pair (dative, hydrogen) are excluded, and
+        // implicit hydrogens are not counted — connectivity[i] is the `bonds` term of
+        // ticket #3617 requirements 1 and 2.
+        //
+        // Only atoms belonging to an aromatic group get a value; everything else stays 0.
+        // Returns false if some aromatic group could not be dearomatized.
+        static bool calculateDearomatizedConnectivity(BaseMolecule& mol, const AromaticityOptions& options, Array<int>& connectivity);
+
         void dearomatizeGroup(int group, int dearomatization_index);
-        void restoreHydrogens(int group, int dearomatization_index);
 
     private:
         DearomatizationsStorage& _dearomatizations;
@@ -338,9 +348,13 @@ namespace indigo
 
         int _countDoubleBonds(int group, int dearomatization_index);
         int _getBestDearomatization(int group);
+        // Accumulates the dearomatized connectivity of one aromatic group into
+        // vertex_connectivity. Each atom's non-aromatic contribution is added once.
+        void _accumulateConnectivity(int group, int dearomatization_index);
 
         CP_DECL;
         TL_CP_DECL(Array<int>, vertex_connectivity);
+        TL_CP_DECL(Array<int>, _connectivity_seeded);
     };
 
 } // namespace indigo

@@ -157,6 +157,16 @@ rxn = indigo.loadReactionFromFile(cdxml_fname)
 renderer.renderToFile(rxn, joinPathPy("out/" + png_fname, __file__))
 print(checkImageSimilarity(png_fname))
 
+print("issue 3803 enhanced stereo labels lost on sgroups")
+indigo.resetOptions()
+indigo.setOption("render-output-format", "png")
+fname = "3803_sgroup_enhanced_labels"
+png_fname = fname + ".png"
+cdxml_fname = joinPathPy("reactions/%s.cdxml" % fname, __file__)
+rxn = indigo.loadReactionFromFile(cdxml_fname)
+renderer.renderToFile(rxn, joinPathPy("out/" + png_fname, __file__))
+print(checkImageSimilarity(png_fname))
+
 if isIronPython():
     renderer.Dispose()
     indigo.Dispose()

@@ -1441,12 +1441,15 @@ void MoleculeStandardizer::_createCoordinationBonds(BaseMolecule& mol)
             {
                 mol.getAtomValence(non_metal_atom);
             }
-            catch (Exception e)
+            catch (const Exception&)
             {
+                // Use the canonical dative representation (order 9) so that the bond is
+                // recognised by _clearDativeBonds and by every other consumer of dative
+                // bonds; BOND_ZERO also means "zero-order bond" elsewhere (tautomers).
                 if (mol.isQueryMolecule())
-                    (mol.asQueryMolecule()).resetBond(i, new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, BOND_ZERO));
+                    (mol.asQueryMolecule()).resetBond(i, new QueryMolecule::Bond(QueryMolecule::BOND_ORDER, _BOND_COORDINATION));
                 else
-                    (mol.asMolecule()).setBondOrder(i, BOND_ZERO, false);
+                    (mol.asMolecule()).setBondOrder(i, _BOND_COORDINATION, false);
             }
         }
     }
