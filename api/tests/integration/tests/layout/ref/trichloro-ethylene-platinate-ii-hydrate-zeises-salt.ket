@@ -1,0 +1,116 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "mol0"
+            }
+        ],
+        "connections": [
+            {
+                "type": "haptic",
+                "endpoint1": {
+                    "moleculeId": "mol0",
+                    "atomId": "0"
+                },
+                "endpoint2": {
+                    "moleculeId": "mol0",
+                    "attachmentGroupId": "0"
+                }
+            }
+        ]
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "Pt",
+                "location": [
+                    1.549,
+                    1.183,
+                    0.000
+                ],
+                "stereoLabel": "abs"
+            },
+            {
+                "label": "Cl",
+                "location": [
+                    1.549,
+                    0.183,
+                    0.000
+                ]
+            },
+            {
+                "label": "Cl",
+                "location": [
+                    0.683,
+                    1.683,
+                    0.000
+                ]
+            },
+            {
+                "label": "Cl",
+                "location": [
+                    2.415,
+                    1.683,
+                    0.000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.500,
+                    0.000,
+                    0.000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.000,
+                    0.866,
+                    0.000
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    3
+                ],
+                "stereo": 1
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    4,
+                    5
+                ]
+            }
+        ],
+        "attachmentGroups": [
+            {
+                "id": "0",
+                "atoms": [
+                    4,
+                    5
+                ]
+            }
+        ]
+    }
+}
