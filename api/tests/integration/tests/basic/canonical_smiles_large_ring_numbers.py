@@ -22,6 +22,16 @@ PUBCHEM_CID_20652954_SMILES = (
     "C66C55C44C33C22C1CC2C3C4C5C6C7C8C9C%10C%11"
 )
 
+
+def assert_rejected(smiles):
+    try:
+        indigo.loadMolecule(smiles)
+    except IndigoException as err:
+        print(getIndigoExceptionText(err))
+        return
+    raise AssertionError("expected invalid SMILES to be rejected: %s" % smiles)
+
+
 molecule = indigo.loadMolecule(PUBCHEM_CID_20652954_SMILES)
 assert molecule.countAtoms() == 231
 assert molecule.countBonds() == 430
@@ -32,7 +42,14 @@ canonical = molecule.canonicalSmiles()
 assert "%(100)" in canonical
 assert indigo.loadMolecule(canonical).canonicalSmiles() == canonical
 assert indigo.loadMolecule(ordinary).canonicalSmiles() == canonical
+print(canonical)
 
 extended = indigo.loadMolecule("C%(100)CC%(100)")
 assert extended.countAtoms() == 3
 assert extended.countBonds() == 3
+print(extended.canonicalSmiles())
+
+assert_rejected("C%(100C")
+assert_rejected("C%()C")
+assert_rejected("C%(0)C")
+assert_rejected("C%(100000)CC%(100000)")
