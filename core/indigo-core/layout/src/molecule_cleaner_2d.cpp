@@ -513,8 +513,7 @@ void MoleculeCleaner2d::_initGeometry()
     gradient.clear_resize(base_point.size());
     pregradient.clear_resize(vertex_size);
     for (int i = _mol.vertexBegin(); i != _mol.vertexEnd(); i = _mol.vertexNext(i))
-        if (_isBasePoint(i))
-            pos[i] = plane(_mol.getAtomXyz(i));
+        pos[i] = plane(_mol.getAtomXyz(i));
 }
 
 void MoleculeCleaner2d::_initArtPoints()
@@ -673,6 +672,13 @@ void MoleculeCleaner2d::_calcCoef(int to, int from0, int from1, float alpha)
 
 void MoleculeCleaner2d::_updatePosition(int i)
 {
+    // An atom no component defines - one with no bonds at all, which is what a
+    // metal held only by a haptic bond looks like to the graph - has nothing to be
+    // recomputed from, and summing an empty combination would move it to the
+    // origin. It keeps the place the drawing gave it.
+    if (coef[i].size() == 0)
+        return;
+
     pos[i] = ZERO;
     for (int j = 0; j < coef[i].size(); j++)
         pos[i] += mult(coef[i][j], pos[base_point[j]]);

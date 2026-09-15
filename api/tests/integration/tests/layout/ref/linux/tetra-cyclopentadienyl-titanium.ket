@@ -10,7 +10,7 @@
                 "type": "haptic",
                 "endpoint1": {
                     "moleculeId": "mol0",
-                    "atomId": "14"
+                    "atomId": "20"
                 },
                 "endpoint2": {
                     "moleculeId": "mol0",
@@ -21,11 +21,33 @@
                 "type": "haptic",
                 "endpoint1": {
                     "moleculeId": "mol0",
-                    "atomId": "10"
+                    "atomId": "20"
+                },
+                "endpoint2": {
+                    "moleculeId": "mol0",
+                    "attachmentGroupId": "3"
+                }
+            },
+            {
+                "type": "haptic",
+                "endpoint1": {
+                    "moleculeId": "mol0",
+                    "atomId": "20"
                 },
                 "endpoint2": {
                     "moleculeId": "mol0",
                     "attachmentGroupId": "0"
+                }
+            },
+            {
+                "type": "haptic",
+                "endpoint1": {
+                    "moleculeId": "mol0",
+                    "atomId": "20"
+                },
+                "endpoint2": {
+                    "moleculeId": "mol0",
+                    "attachmentGroupId": "2"
                 }
             }
         ]
@@ -36,261 +58,251 @@
             {
                 "label": "C",
                 "location": [
-                    2.064,
-                    5.047,
+                    2.326,
+                    4.023,
                     0.000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    1.755,
-                    4.096,
+                    2.017,
+                    3.072,
                     0.000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    2.564,
-                    3.508,
+                    2.826,
+                    2.484,
                     0.000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    3.373,
-                    4.096,
+                    3.635,
+                    3.072,
                     0.000
                 ],
-                "implicitHCount": 1,
                 "charge": -1
             },
             {
                 "label": "C",
                 "location": [
-                    3.064,
-                    5.047,
+                    3.326,
+                    4.023,
                     0.000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    1.309,
-                    0.183,
+                    1.237,
+                    1.583,
                     0.000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    1.618,
-                    1.134,
+                    0.494,
+                    0.914,
                     0.000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    0.809,
-                    1.722,
+                    0.901,
+                    0.000,
                     0.000
                 ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    1.895,
+                    0.105,
+                    0.000
+                ],
+                "charge": -1
+            },
+            {
+                "label": "C",
+                "location": [
+                    2.103,
+                    1.083,
+                    0.000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    3.029,
+                    0.509,
+                    0.000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    4.007,
+                    0.717,
+                    0.000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    4.112,
+                    1.711,
+                    0.000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    3.198,
+                    2.118,
+                    0.000
+                ],
+                "charge": -1
+            },
+            {
+                "label": "C",
+                "location": [
+                    2.529,
+                    1.375,
+                    0.000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.866,
+                    1.940,
+                    0.000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    1.609,
+                    2.609,
+                    0.000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    1.202,
+                    3.522,
+                    0.000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.208,
+                    3.418,
+                    0.000
+                ],
+                "charge": -1
             },
             {
                 "label": "C",
                 "location": [
                     0.000,
-                    1.134,
-                    0.000
-                ],
-                "implicitHCount": 1,
-                "charge": -1
-            },
-            {
-                "label": "C",
-                "location": [
-                    0.309,
-                    0.183,
+                    2.440,
                     0.000
                 ]
             },
             {
-                "label": "Fe",
+                "label": "Ti",
                 "location": [
-                    1.504,
-                    3.298,
-                    0.000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    2.370,
-                    2.798,
-                    0.000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    1.004,
-                    2.432,
-                    0.000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    1.245,
-                    4.264,
-                    0.000
-                ],
-                "charge": -1
-            },
-            {
-                "label": "Fe",
-                "location": [
-                    1.870,
-                    1.932,
-                    0.000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
-                    2.128,
-                    0.966,
-                    0.000
-                ],
-                "charge": -1
-            },
-            {
-                "label": "O",
-                "location": [
-                    2.387,
-                    0.000,
-                    0.000
-                ],
-                "charge": 1
-            },
-            {
-                "label": "O",
-                "location": [
-                    0.986,
-                    5.230,
-                    0.000
-                ],
-                "charge": 1
-            },
-            {
-                "label": "O",
-                "location": [
-                    3.336,
-                    3.057,
-                    0.000
-                ]
-            },
-            {
-                "label": "O",
-                "location": [
-                    0.038,
-                    2.173,
+                    2.076,
+                    2.036,
                     0.000
                 ]
             }
         ],
         "bonds": [
             {
-                "type": 4,
+                "type": 2,
                 "atoms": [
                     0,
                     4
                 ]
             },
             {
-                "type": 4,
+                "type": 1,
                 "atoms": [
                     4,
                     3
                 ]
             },
             {
-                "type": 4,
+                "type": 1,
                 "atoms": [
                     3,
                     2
                 ]
             },
             {
-                "type": 4,
+                "type": 2,
                 "atoms": [
                     2,
                     1
                 ]
             },
             {
-                "type": 4,
+                "type": 1,
                 "atoms": [
                     1,
                     0
                 ]
             },
             {
-                "type": 4,
+                "type": 2,
                 "atoms": [
                     5,
                     9
                 ]
             },
             {
-                "type": 4,
+                "type": 1,
                 "atoms": [
                     9,
                     8
                 ]
             },
             {
-                "type": 4,
+                "type": 1,
                 "atoms": [
                     8,
                     7
                 ]
             },
             {
-                "type": 4,
+                "type": 2,
                 "atoms": [
                     7,
                     6
                 ]
             },
             {
-                "type": 4,
+                "type": 1,
                 "atoms": [
                     6,
                     5
                 ]
             },
             {
-                "type": 1,
+                "type": 2,
                 "atoms": [
                     10,
-                    11
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    10,
-                    12
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    11,
                     14
                 ]
             },
@@ -298,49 +310,63 @@
                 "type": 1,
                 "atoms": [
                     14,
-                    12
+                    13
                 ]
             },
             {
-                "type": 3,
-                "atoms": [
-                    15,
-                    16
-                ]
-            },
-            {
-                "type": 3,
+                "type": 1,
                 "atoms": [
                     13,
-                    17
-                ]
-            },
-            {
-                "type": 2,
-                "atoms": [
-                    11,
-                    18
+                    12
                 ]
             },
             {
                 "type": 2,
                 "atoms": [
                     12,
+                    11
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    11,
+                    10
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    15,
                     19
                 ]
             },
             {
-                "type": 9,
+                "type": 1,
                 "atoms": [
-                    15,
-                    14
+                    19,
+                    18
                 ]
             },
             {
-                "type": 9,
+                "type": 1,
                 "atoms": [
-                    13,
-                    10
+                    18,
+                    17
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    17,
+                    16
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    16,
+                    15
                 ]
             }
         ],
@@ -358,11 +384,31 @@
             {
                 "id": "1",
                 "atoms": [
+                    9,
                     5,
                     6,
-                    7,
                     8,
-                    9
+                    7
+                ]
+            },
+            {
+                "id": "2",
+                "atoms": [
+                    11,
+                    12,
+                    13,
+                    14,
+                    10
+                ]
+            },
+            {
+                "id": "3",
+                "atoms": [
+                    15,
+                    16,
+                    17,
+                    18,
+                    19
                 ]
             }
         ]

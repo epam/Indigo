@@ -36,6 +36,7 @@
 #include "common.h"
 
 #include <base_cpp/exception.h>
+#include <layout/molecule_cleaner_2d.h>
 #include <layout/molecule_layout.h>
 #include <molecule/molecule.h>
 
@@ -183,4 +184,29 @@ TEST_F(IndigoCoreLayoutTest, TwoIndependentRingsLaidOutApart)
             d.diff(coords[i], coords[j]);
             EXPECT_GT(d.length(), 0.1f) << "atoms " << i << " and " << j << " overlap";
         }
+}
+
+// clean2d improves a drawing that already exists, so an atom it has nothing to
+// say about has to keep its place. An atom with no bonds is defined by no
+// component, and the sum over an empty combination used to put it at the origin -
+// two such atoms landed on top of each other, and so did a metal held only by a
+// haptic bond, which is what the graph sees an isolated atom as.
+TEST_F(IndigoCoreLayoutTest, Clean2dLeavesAnIsolatedAtomWhereItIs)
+{
+    Molecule mol;
+    loadMolecule("c1ccccc1.[Na+].[Cl-]", mol);
+
+    MoleculeLayout ml(mol);
+    ml.make();
+
+    const int sodium = mol.vertexEnd() - 2, chlorine = mol.vertexEnd() - 1;
+    const Vec3f before_sodium = mol.getAtomXyz(sodium);
+    const Vec3f before_chlorine = mol.getAtomXyz(chlorine);
+
+    MoleculeCleaner2d::clean(mol);
+
+    EXPECT_NEAR(before_sodium.x, mol.getAtomXyz(sodium).x, 1e-4f);
+    EXPECT_NEAR(before_sodium.y, mol.getAtomXyz(sodium).y, 1e-4f);
+    EXPECT_NEAR(before_chlorine.x, mol.getAtomXyz(chlorine).x, 1e-4f);
+    EXPECT_NEAR(before_chlorine.y, mol.getAtomXyz(chlorine).y, 1e-4f);
 }

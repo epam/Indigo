@@ -19,6 +19,8 @@
 #include "layout/molecule_layout.h"
 #include "base_cpp/array.h"
 #include "graph/filter.h"
+#include <map>
+#include <utility>
 #include <vector>
 
 using namespace indigo;
@@ -82,6 +84,8 @@ void MoleculeLayout::_init(bool smart_layout)
         }
         _bm = _molCollapsed.get();
     }
+
+    _giveAtomToAtomHapticBondsToTheLayout();
 
     _layout_graph->makeOnGraph(*_bm);
 
@@ -367,6 +371,110 @@ void MoleculeLayout::_updateDataSGroups()
     }
 }
 
+std::vector<std::pair<int, int>> MoleculeLayout::_atomToAtomHapticRings() const
+{
+    // Which haptic bonds between two atoms close a ring of such bonds. HapticLayout
+    // places one component after another, and a ring cannot be closed that way - the
+    // last component would have to satisfy two bonds at once - so a ring is handed
+    // to the ordinary layout, which sees all of it at once. A cube of such bonds
+    // came out with a corner folded inside until it was. A lone bond between two
+    // fragments is left where it is: HapticLayout draws it longer when that is what
+    // keeps the fragments apart, and the ordinary layout has no such freedom.
+    const Array<int>& component = _molecule.getDecomposition();
+
+    std::vector<std::pair<int, int>> joining;
+    const MoleculeHapticBonds& bonds = _molecule.haptic_bonds;
+    for (int i = bonds.begin(); i != bonds.end(); i = bonds.next(i))
+    {
+        const HapticBond& bond = bonds.at(i);
+        if (bond.type() != _BOND_HAPTIC || bond.begin().isGroup() || bond.end().isGroup())
+            continue;
+
+        const int beg = bond.begin().index(), end = bond.end().index();
+        if (beg == end || !_molecule.hasVertex(beg) || !_molecule.hasVertex(end) || _molecule.findEdgeIndex(beg, end) >= 0)
+            continue;
+
+        // Both ends in one component: the edges between them already settle the
+        // geometry, and adding one more would change the shape of the fragment.
+        if (component[beg] == component[end])
+            continue;
+
+        joining.push_back(std::make_pair(beg, end));
+    }
+
+    std::vector<std::pair<int, int>> ringed;
+    if (joining.empty())
+        return ringed;
+
+    // Group the bonds by what they connect. A group of components joined into a
+    // tree has one bond fewer than it has components; as many bonds as components
+    // means a ring somewhere in it.
+    std::map<int, int> parent;
+    for (const std::pair<int, int>& pair : joining)
+        for (int atom : {pair.first, pair.second})
+            parent.insert(std::make_pair(component[atom], component[atom]));
+
+    const auto root = [&parent](int of) {
+        while (parent[of] != of)
+        {
+            parent[of] = parent[parent[of]];
+            of = parent[of];
+        }
+        return of;
+    };
+
+    for (const std::pair<int, int>& pair : joining)
+    {
+        const int one = root(component[pair.first]), two = root(component[pair.second]);
+        if (one != two)
+            parent[one] = two;
+    }
+
+    std::map<int, int> components_of, bonds_of;
+    for (const std::pair<const int, int>& entry : parent)
+        components_of[root(entry.first)]++;
+    for (const std::pair<int, int>& pair : joining)
+        bonds_of[root(component[pair.first])]++;
+
+    for (const std::pair<int, int>& pair : joining)
+    {
+        const int group = root(component[pair.first]);
+        if (bonds_of[group] >= components_of[group])
+            ringed.push_back(pair);
+    }
+
+    return ringed;
+}
+
+void MoleculeLayout::_giveAtomToAtomHapticBondsToTheLayout()
+{
+    if (_molecule.isQueryMolecule() || _molecule.haptic_bonds.isEmpty())
+        return;
+
+    const std::vector<std::pair<int, int>> ringed = _atomToAtomHapticRings();
+    if (ringed.empty())
+        return;
+
+    if (!_molCollapsed)
+    {
+        _molCollapsed = std::make_unique<Molecule>();
+        _molCollapsed->clone(_molecule, &_atomMapping, NULL);
+        _bm = _molCollapsed.get();
+    }
+
+    Molecule& copy = _bm->asMolecule();
+    for (const std::pair<int, int>& pair : ringed)
+    {
+        const int beg = _atomMapping[pair.first], end = _atomMapping[pair.second];
+        if (beg < 0 || end < 0 || !copy.hasVertex(beg) || !copy.hasVertex(end) || copy.findEdgeIndex(beg, end) >= 0)
+            continue;
+
+        // Silent: the copy is thrown away once the coordinates are read off it, and
+        // the valence of the original never hears about this bond (#3837).
+        copy.addBond_Silent(beg, end, BOND_SINGLE);
+    }
+}
+
 void MoleculeLayout::_make()
 {
     _layout_graph->max_iterations = max_iterations;
@@ -388,7 +496,7 @@ void MoleculeLayout::_make()
         _bm->setAtomXyz(vert.ext_idx, vert.pos.x, vert.pos.y, 0.f);
     }
 
-    if (_hasMulGroups)
+    if (_molCollapsed)
     {
         for (int j = 0; j < _atomMapping.size(); ++j)
         {

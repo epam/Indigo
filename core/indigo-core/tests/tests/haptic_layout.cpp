@@ -109,6 +109,47 @@ protected:
         return _2FLOAT(RAD2DEG(acosf(std::max(-1.f, std::min(1.f, Vec2f::dot(a, b))))));
     }
 
+    // What a reader sees as a defect, counted across components: two bonds that
+    // cross, an atom drawn on a bond it has nothing to do with, two atoms in the
+    // same place. Within one component it is the ordinary layout's business, and a
+    // haptic bond is not an edge, so it never appears here and may cross freely.
+    static int collisions(Molecule& mol)
+    {
+        // An atom needs more room against another label than against a bond line.
+        static const float BUMP = 0.45f;
+        static const float ON_BOND = 0.3f;
+
+        const Array<int>& component = mol.getDecomposition();
+        int found = 0;
+
+        for (int e = mol.edgeBegin(); e != mol.edgeEnd(); e = mol.edgeNext(e))
+            for (int f = mol.edgeNext(e); f != mol.edgeEnd(); f = mol.edgeNext(f))
+            {
+                const Edge& one = mol.getEdge(e);
+                const Edge& two = mol.getEdge(f);
+                if (component[one.beg] != component[two.beg])
+                    if (Vec2f::segmentsIntersectInternal(pos(mol, one.beg), pos(mol, one.end), pos(mol, two.beg), pos(mol, two.end)))
+                        found++;
+            }
+
+        for (int v = mol.vertexBegin(); v != mol.vertexEnd(); v = mol.vertexNext(v))
+        {
+            for (int w = mol.vertexNext(v); w != mol.vertexEnd(); w = mol.vertexNext(w))
+                if (component[v] != component[w] && Vec2f::dist(pos(mol, v), pos(mol, w)) < BUMP)
+                    found++;
+
+            for (int e = mol.edgeBegin(); e != mol.edgeEnd(); e = mol.edgeNext(e))
+            {
+                const Edge& edge = mol.getEdge(e);
+                if (component[v] != component[edge.beg])
+                    if (Vec2f::distPointSegment(pos(mol, v), pos(mol, edge.beg), pos(mol, edge.end)) < ON_BOND)
+                        found++;
+            }
+        }
+
+        return found;
+    }
+
     // The angle the bond leaves an atom at, measured against each of the two ring
     // bonds of that atom. Both must be the bisector of the external angle.
     static void expectBisector(Molecule& mol, int atom, int neighbour_one, int neighbour_two, int partner, float expected)
@@ -373,10 +414,12 @@ TEST_F(IndigoCoreHapticLayoutTest, ABridgingLigandReachesBothMetals)
     EXPECT_NEAR(1.5f, Vec2f::dist(groupCentre(mol, second), pos(mol, second_metal)), TOLERANCE);
 }
 
-// Two ligands on one metal, each holding it twice: the metal cannot be reached by
-// translating it towards one of them, and the exact answer is where the circles of
-// both bonds meet.
-TEST_F(IndigoCoreHapticLayoutTest, AMetalBetweenTwoChelatingLigandsReachesAllFourBonds)
+// Two ligands on one metal, each holding it twice. All four bonds at 1.5 cannot be
+// had: an eight-ring that holds a metal by two opposite edges has it inside its own
+// outline, so two such rings would have to be drawn through each other. The length
+// is a floor and the drawing comes first - the layout stretches what it must and
+// leaves nothing overlapping.
+TEST_F(IndigoCoreHapticLayoutTest, AMetalBetweenTwoChelatingLigandsKeepsThemApart)
 {
     Molecule mol;
     const int first_ring = addRing(mol, 8);
@@ -391,5 +434,128 @@ TEST_F(IndigoCoreHapticLayoutTest, AMetalBetweenTwoChelatingLigandsReachesAllFou
     makeLayout(mol);
 
     for (int group : groups)
-        EXPECT_NEAR(1.5f, Vec2f::dist(groupCentre(mol, group), pos(mol, metal)), TOLERANCE) << "group " << group;
+        EXPECT_GE(Vec2f::dist(groupCentre(mol, group), pos(mol, metal)), 1.5f - TOLERANCE) << "group " << group;
+
+    EXPECT_EQ(0, collisions(mol));
+}
+
+// The defect the second round of testing opened with (#3844): the allyl of an
+// allylpalladium chloride dimer was laid across the chlorine bridge, because the
+// direction was chosen from the atoms of one end and nothing looked at the body
+// hanging off the other. A rule cannot see a body; the placement is chosen by what
+// it costs the drawing.
+TEST_F(IndigoCoreHapticLayoutTest, ALigandStaysClearOfWhatTheMetalIsAlreadyBondedTo)
+{
+    Molecule mol;
+
+    // the bridge: Pd-Cl-Pd-Cl as a four-ring
+    const int first_metal = mol.addAtom(ELEM_Pd);
+    const int first_bridge = mol.addAtom(ELEM_Cl);
+    const int second_metal = mol.addAtom(ELEM_Pd);
+    const int second_bridge = mol.addAtom(ELEM_Cl);
+    mol.addBond(first_metal, first_bridge, BOND_SINGLE);
+    mol.addBond(first_bridge, second_metal, BOND_SINGLE);
+    mol.addBond(second_metal, second_bridge, BOND_SINGLE);
+    mol.addBond(second_bridge, first_metal, BOND_SINGLE);
+
+    // an allyl on each metal, each its own component
+    for (int metal : {first_metal, second_metal})
+    {
+        const int base = mol.vertexCount();
+        for (int i = 0; i < 3; i++)
+            mol.addAtom(ELEM_C);
+        mol.addBond(base, base + 1, BOND_SINGLE);
+        mol.addBond(base + 1, base + 2, BOND_SINGLE);
+
+        const int group = addGroup(mol, {base, base + 1, base + 2});
+        mol.addHapticBond(HapticBond::Endpoint::group(group), HapticBond::Endpoint::atom(metal));
+    }
+
+    makeLayout(mol);
+
+    EXPECT_EQ(0, collisions(mol));
+}
+
+// The length of a haptic bond is a floor rather than a value. Where there is room
+// the bond is exactly 1.5 bond lengths - the chemist's own drawings are, in 20 of
+// the 27 of the reference set - and a longer one is drawn only where the short one
+// would put two ligands through each other.
+TEST_F(IndigoCoreHapticLayoutTest, ABondIsNotStretchedWhenTheNominalLengthIsClear)
+{
+    Molecule mol;
+    const int ring = addRing(mol, 5);
+    const int metal = mol.addAtom(ELEM_Fe);
+    const int group = addGroup(mol, {ring, ring + 1, ring + 2, ring + 3, ring + 4});
+    mol.addHapticBond(HapticBond::Endpoint::group(group), HapticBond::Endpoint::atom(metal));
+
+    makeLayout(mol);
+
+    EXPECT_NEAR(1.5f, Vec2f::dist(groupCentre(mol, group), pos(mol, metal)), TOLERANCE);
+    EXPECT_EQ(0, collisions(mol));
+}
+
+// A haptic bond between two atoms is an ordinary bond as far as the drawing is
+// concerned, and where such bonds form a ring they are laid out as edges: placing
+// one component after another cannot close a ring, and a cube of them came out
+// with a corner folded inside. The drawing that comes out is the one the same
+// cube of ordinary bonds gets, which is the whole of the contract.
+TEST_F(IndigoCoreHapticLayoutTest, ARingOfAtomToAtomBondsIsDrawnAsOrdinaryBondsAre)
+{
+    static const int CUBE[12][2] = {{0, 1}, {1, 2}, {2, 3}, {3, 0}, {4, 5}, {5, 6}, {6, 7}, {7, 4}, {0, 4}, {1, 5}, {2, 6}, {3, 7}};
+
+    Molecule haptic, ordinary;
+    for (int i = 0; i < 8; i++)
+    {
+        haptic.addAtom(ELEM_Pd);
+        ordinary.addAtom(ELEM_Pd);
+    }
+
+    for (const auto& edge : CUBE)
+    {
+        haptic.addHapticBond(HapticBond::Endpoint::atom(edge[0]), HapticBond::Endpoint::atom(edge[1]));
+        ordinary.addBond(edge[0], edge[1], BOND_SINGLE);
+    }
+
+    makeLayout(haptic);
+    makeLayout(ordinary);
+
+    // Distances rather than coordinates: the two layouts are free to stand
+    // anywhere on the plane, and only the shape is being compared.
+    for (int i = 0; i < 8; i++)
+        for (int j = i + 1; j < 8; j++)
+            EXPECT_NEAR(Vec2f::dist(pos(ordinary, i), pos(ordinary, j)), Vec2f::dist(pos(haptic, i), pos(haptic, j)), TOLERANCE)
+                << "corners " << i << " and " << j;
+
+    for (const auto& edge : CUBE)
+        EXPECT_NEAR(1.f, Vec2f::dist(pos(haptic, edge[0]), pos(haptic, edge[1])), 0.25f) << "edge " << edge[0] << "-" << edge[1];
+}
+
+// A lone bond between two atoms is not part of a ring, so it stays with the haptic
+// placement, which may draw it longer than the standard length - that is what
+// keeps two bulky fragments from being drawn through each other, and what the
+// chemist's own drawing of such a bond does.
+TEST_F(IndigoCoreHapticLayoutTest, ALoneAtomToAtomBondKeepsTheFragmentsApart)
+{
+    Molecule mol;
+    const int first_ring = addRing(mol, 6);
+    const int second_ring = addRing(mol, 6);
+
+    // a bulky arm on each ring, so that the two fragments have something to collide with
+    for (int ring : {first_ring, second_ring})
+    {
+        int previous = ring;
+        for (int i = 0; i < 3; i++)
+        {
+            const int arm = mol.addAtom(ELEM_C);
+            mol.addBond(previous, arm, BOND_SINGLE);
+            previous = arm;
+        }
+    }
+
+    mol.addHapticBond(HapticBond::Endpoint::atom(first_ring + 3), HapticBond::Endpoint::atom(second_ring + 3));
+
+    makeLayout(mol);
+
+    EXPECT_GE(Vec2f::dist(pos(mol, first_ring + 3), pos(mol, second_ring + 3)), 1.f - TOLERANCE);
+    EXPECT_EQ(0, collisions(mol));
 }

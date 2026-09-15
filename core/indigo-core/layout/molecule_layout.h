@@ -24,6 +24,8 @@
 #include "layout/molecule_layout_graph.h"
 #include "molecule/molecule.h"
 #include "molecule/query_molecule.h"
+#include <utility>
+#include <vector>
 
 #ifdef _WIN32
 #pragma warning(push)
@@ -78,6 +80,15 @@ namespace indigo
         void _updateDataSGroups();
 
         void _init(bool smart_layout);
+
+        // The haptic bonds between two atoms that close a ring of such bonds, as
+        // pairs of atoms of this molecule.
+        std::vector<std::pair<int, int>> _atomToAtomHapticRings() const;
+
+        // Adds those bonds to the copy being laid out as ordinary edges, so that the
+        // ordinary algorithm places them - it is the only one here that can close a
+        // ring. The rest are left to HapticLayout.
+        void _giveAtomToAtomHapticBondsToTheLayout();
 
         Metalayout _ml;
         BaseMolecule& _molecule;

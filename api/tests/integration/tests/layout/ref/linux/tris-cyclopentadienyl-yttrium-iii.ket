@@ -10,7 +10,7 @@
                 "type": "haptic",
                 "endpoint1": {
                     "moleculeId": "mol0",
-                    "atomId": "14"
+                    "atomId": "15"
                 },
                 "endpoint2": {
                     "moleculeId": "mol0",
@@ -21,11 +21,22 @@
                 "type": "haptic",
                 "endpoint1": {
                     "moleculeId": "mol0",
-                    "atomId": "10"
+                    "atomId": "15"
                 },
                 "endpoint2": {
                     "moleculeId": "mol0",
                     "attachmentGroupId": "0"
+                }
+            },
+            {
+                "type": "haptic",
+                "endpoint1": {
+                    "moleculeId": "mol0",
+                    "atomId": "15"
+                },
+                "endpoint2": {
+                    "moleculeId": "mol0",
+                    "attachmentGroupId": "2"
                 }
             }
         ]
@@ -36,32 +47,32 @@
             {
                 "label": "C",
                 "location": [
-                    2.064,
-                    5.047,
+                    2.326,
+                    4.023,
                     0.000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    1.755,
-                    4.096,
+                    2.017,
+                    3.072,
                     0.000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    2.564,
-                    3.508,
+                    2.826,
+                    2.484,
                     0.000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    3.373,
-                    4.096,
+                    3.635,
+                    3.072,
                     0.000
                 ],
                 "implicitHCount": 1,
@@ -70,40 +81,40 @@
             {
                 "label": "C",
                 "location": [
-                    3.064,
-                    5.047,
+                    3.326,
+                    4.023,
                     0.000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    1.309,
-                    0.183,
+                    1.237,
+                    1.583,
                     0.000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    1.618,
-                    1.134,
+                    0.494,
+                    0.914,
                     0.000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    0.809,
-                    1.722,
-                    0.000
-                ]
-            },
-            {
-                "label": "C",
-                "location": [
+                    0.901,
                     0.000,
-                    1.134,
+                    0.000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    1.895,
+                    0.105,
                     0.000
                 ],
                 "implicitHCount": 1,
@@ -112,92 +123,58 @@
             {
                 "label": "C",
                 "location": [
-                    0.309,
-                    0.183,
-                    0.000
-                ]
-            },
-            {
-                "label": "Fe",
-                "location": [
-                    1.504,
-                    3.298,
+                    2.103,
+                    1.083,
                     0.000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    2.370,
-                    2.798,
+                    0.866,
+                    1.940,
                     0.000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    1.004,
-                    2.432,
+                    1.609,
+                    2.609,
                     0.000
                 ]
             },
             {
                 "label": "C",
                 "location": [
-                    1.245,
-                    4.264,
+                    1.202,
+                    3.522,
+                    0.000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.208,
+                    3.418,
                     0.000
                 ],
+                "implicitHCount": 1,
                 "charge": -1
             },
             {
-                "label": "Fe",
-                "location": [
-                    1.870,
-                    1.932,
-                    0.000
-                ]
-            },
-            {
                 "label": "C",
                 "location": [
-                    2.128,
-                    0.966,
-                    0.000
-                ],
-                "charge": -1
-            },
-            {
-                "label": "O",
-                "location": [
-                    2.387,
                     0.000,
-                    0.000
-                ],
-                "charge": 1
-            },
-            {
-                "label": "O",
-                "location": [
-                    0.986,
-                    5.230,
-                    0.000
-                ],
-                "charge": 1
-            },
-            {
-                "label": "O",
-                "location": [
-                    3.336,
-                    3.057,
+                    2.440,
                     0.000
                 ]
             },
             {
-                "label": "O",
+                "label": "Y",
                 "location": [
-                    0.038,
-                    2.173,
+                    2.076,
+                    2.036,
                     0.000
                 ]
             }
@@ -274,72 +251,37 @@
                 ]
             },
             {
-                "type": 1,
+                "type": 4,
                 "atoms": [
                     10,
+                    14
+                ]
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    14,
+                    13
+                ]
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    13,
+                    12
+                ]
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    12,
                     11
                 ]
             },
             {
-                "type": 1,
-                "atoms": [
-                    10,
-                    12
-                ]
-            },
-            {
-                "type": 1,
+                "type": 4,
                 "atoms": [
                     11,
-                    14
-                ]
-            },
-            {
-                "type": 1,
-                "atoms": [
-                    14,
-                    12
-                ]
-            },
-            {
-                "type": 3,
-                "atoms": [
-                    15,
-                    16
-                ]
-            },
-            {
-                "type": 3,
-                "atoms": [
-                    13,
-                    17
-                ]
-            },
-            {
-                "type": 2,
-                "atoms": [
-                    11,
-                    18
-                ]
-            },
-            {
-                "type": 2,
-                "atoms": [
-                    12,
-                    19
-                ]
-            },
-            {
-                "type": 9,
-                "atoms": [
-                    15,
-                    14
-                ]
-            },
-            {
-                "type": 9,
-                "atoms": [
-                    13,
                     10
                 ]
             }
@@ -363,6 +305,16 @@
                     7,
                     8,
                     9
+                ]
+            },
+            {
+                "id": "2",
+                "atoms": [
+                    10,
+                    11,
+                    12,
+                    13,
+                    14
                 ]
             }
         ]
