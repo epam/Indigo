@@ -21,6 +21,10 @@ from env_indigo import *  # noqa
 # they survive a layout that comes out mirrored, turned or in another atom order,
 # which is what makes this file the one test of the set that needs no per-platform
 # reference.
+#
+# They are printed to three decimals, not two: a stretched bond is 1.5 times a
+# stretch factor, and 1.5 * 1.25 = 1.875 lies exactly on a rounding boundary
+# of the second decimal, where float noise decides the digit.
 
 BUMP = 0.45  # two atom labels this close are drawn on top of each other
 ON_BOND = 0.3  # a bond is a thin line and needs less room than a label
@@ -91,10 +95,13 @@ def geometry(molecule):
         for atom in component.iterateAtoms():
             component_of[atom.index()] = number
 
+    # The .NET wrapper hands the coordinates over as System.Single, and
+    # IronPython keeps single precision through the arithmetic unless they are
+    # widened here.
     position = {}
     for atom in molecule.iterateAtoms():
         xyz = atom.xyz()
-        position[atom.index()] = (xyz[0], xyz[1])
+        position[atom.index()] = (float(xyz[0]), float(xyz[1]))
 
     bonds = []
     for bond in molecule.iterateBonds():
@@ -194,6 +201,6 @@ for filename in files:
             inside[0],
             inside[1],
             inside[2],
-            " ".join("%.2f" % value for value in haptic_lengths(molecule)),
+            " ".join("%.3f" % value for value in haptic_lengths(molecule)),
         )
     )
