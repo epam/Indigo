@@ -18,9 +18,7 @@ from env_indigo import *  # noqa
 #
 # The lengths of the haptic bonds are printed beside them, because they are the
 # requirement (#3233, 4) and because neither they nor the counts are coordinates:
-# they survive a layout that comes out mirrored, turned or in another atom order,
-# which is what makes this file the one test of the set that needs no per-platform
-# reference.
+# they survive a layout that comes out mirrored, turned or in another atom order.
 #
 # They are printed to three decimals, not two: a stretched bond is 1.5 times a
 # stretch factor, and 1.5 * 1.25 = 1.875 lies exactly on a rounding boundary

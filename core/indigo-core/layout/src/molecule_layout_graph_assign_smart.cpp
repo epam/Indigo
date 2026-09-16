@@ -990,7 +990,7 @@ void MoleculeLayoutGraphSmart::_assignEveryCycle(const Cycle& cycle)
                     dot = 1;
                 if (dot < -1)
                     dot = -1;
-                float angle = std::acos(dot);
+                float angle = _2FLOAT(std::acos(_2DOUBLE(dot)));
                 if (Vec2f::cross(direction_host, direction_new) < 0)
                     angle = -angle;
                 for (int i = 0; i < insideVertex.size(); i++)
@@ -1672,7 +1672,7 @@ Vec2f SmoothingCycle::_get_angle_derivative(Vec2f left_point, Vec2f right_point,
     if (std::fabs(cos) < 0.5)
     {
         Vec2f cosdv = ((right_point - left_point) * len12 - (left_point * len2_sq - right_point * len1_sq) * dot / len12) / (len1_sq * len2_sq);
-        alpha = std::acos(cos) * signcross;
+        alpha = _2FLOAT(std::acos(_2DOUBLE(cos))) * signcross;
         alphadv = cosdv * _2FLOAT(-1. / std::sqrt(1. - cos * cos)) * signcross;
     }
     else
@@ -1682,7 +1682,7 @@ Vec2f SmoothingCycle::_get_angle_derivative(Vec2f left_point, Vec2f right_point,
         vec.rotate(-1, 0);
         Vec2f sindv = (vec * len12 - (left_point * len2_sq - right_point * len1_sq) * cross / len12) / (len1_sq * len2_sq);
         alphadv = sindv * _2FLOAT(1. / std::sqrt(1. - sin * sin)) * signdot;
-        alpha = std::asin(sin);
+        alpha = _2FLOAT(std::asin(_2DOUBLE(sin)));
         if (cos < 0)
         {
             if (alpha > 0)

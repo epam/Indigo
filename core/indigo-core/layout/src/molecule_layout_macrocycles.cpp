@@ -581,7 +581,7 @@ float MoleculeLayoutMacrocycles::badness(int ind, int molSize, int* rotateAngle,
         vp1 /= len1;
         vp2 /= len2;
 
-        float angle = acos(Vec2f::dot(vp1, vp2));
+        float angle = _2FLOAT(acos(_2DOUBLE(Vec2f::dot(vp1, vp2))));
         if (Vec2f::cross(vp2, vp1) > 0)
             angle = -angle;
         angle /= _target_angle[vertexNumber[i]];
@@ -1068,7 +1068,7 @@ float MoleculeLayoutMacrocycles::depictionMacrocycleGreed(bool /* profi */)
                     while (R - L > eps)
                     {
                         float M = (L + R) / 2;
-                        if (M * x / (2 * sin(M / 2)) > l)
+                        if (M * x / (2 * _2FLOAT(sin(_2DOUBLE(M / 2)))) > l)
                             R = M;
                         else
                             L = M;

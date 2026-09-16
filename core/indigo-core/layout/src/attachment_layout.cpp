@@ -318,8 +318,8 @@ void LayoutChooser::_makeLayout()
 
         // Save current component's coordinates
         phi = cur_angle - (phi2 - phi1);
-        cosa = cos(phi);
-        sina = sin(phi);
+        cosa = _2FLOAT(cos(_2DOUBLE(phi)));
+        sina = _2FLOAT(sin(_2DOUBLE(phi)));
 
         p.diff(_layout._graph.getPos(v), comp.getPos(v1C));
 

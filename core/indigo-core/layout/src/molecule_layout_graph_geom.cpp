@@ -32,7 +32,7 @@ float f1(float X, int L, float s)
     for (i = 1; i <= L; i++)
     {
         min1 = -min1;
-        f += cos(i * X) * min1;
+        f += _2FLOAT(cos(_2DOUBLE(i * X))) * min1;
     }
     return f;
 }
@@ -48,7 +48,7 @@ float f2(float X, int L, float s)
     for (i = 0; i <= L; i++)
     {
         min1 = -min1;
-        f += sin((2 * i + 1) * X / 2) * min1;
+        f += _2FLOAT(sin(_2DOUBLE((2 * i + 1) * X / 2))) * min1;
     }
     return f;
 }
@@ -219,16 +219,16 @@ bool MoleculeLayoutGraph::_drawRegularCurveEx(const Array<int>& chain, int v1, i
     for (i = 0; i <= L - 1; i++)
     {
         min1 = -min1;
-        x2 = x1 + min1 * cos(y0 + i * x0) * length;
-        y2 = y1 + min1 * sin(y0 + i * x0) * length;
+        x2 = x1 + min1 * _2FLOAT(cos(_2DOUBLE(y0 + i * x0))) * length;
+        y2 = y1 + min1 * _2FLOAT(sin(_2DOUBLE(y0 + i * x0))) * length;
         getPos(mapping[chain[i + 1]]).set(x2, y2);
         x1 = x2;
         y1 = y2;
     }
     if (k % 2 == 1)
     {
-        x2 = x1 + sin(x0 / 2) * length;
-        y2 = y1 + cos(x0 / 2) * length;
+        x2 = x1 + _2FLOAT(sin(_2DOUBLE(x0 / 2))) * length;
+        y2 = y1 + _2FLOAT(cos(_2DOUBLE(x0 / 2))) * length;
         getPos(mapping[chain[L + 1]]).set(x2, y2);
     }
     x1 = s;
@@ -236,9 +236,9 @@ bool MoleculeLayoutGraph::_drawRegularCurveEx(const Array<int>& chain, int v1, i
     min1 = 1;
     for (i = 0; i <= L - 1; i++)
     {
-        y2 = y1 + min1 * sin(y0 + i * x0) * length;
+        y2 = y1 + min1 * _2FLOAT(sin(_2DOUBLE(y0 + i * x0))) * length;
         min1 = -min1;
-        x2 = x1 + min1 * cos(y0 + i * x0) * length;
+        x2 = x1 + min1 * _2FLOAT(cos(_2DOUBLE(y0 + i * x0))) * length;
         getPos(mapping[chain[chain.size() - i - 2]]).set(x2, y2);
         x1 = x2;
         y1 = y2;
@@ -437,15 +437,15 @@ float MoleculeLayoutGraphSimple::calculateAngle(int v, int& v1, int& v2) const
     {
         beta = (angles[i + 1] + angles[i]) / 2;
         p = getPos(v);
-        p.x += 0.2f * cos(beta);
-        p.y += 0.2f * sin(beta);
+        p.x += 0.2f * _2FLOAT(cos(_2DOUBLE(beta)));
+        p.y += 0.2f * _2FLOAT(sin(_2DOUBLE(beta)));
         on_left[i] = _isPointOutside(p);
     }
 
     beta = _2FLOAT(M_PI + (angles.top() + angles[0]) / 2.);
     p = getPos(v);
-    p.x += 0.2f * cos(beta);
-    p.y += 0.2f * sin(beta);
+    p.x += 0.2f * _2FLOAT(cos(_2DOUBLE(beta)));
+    p.y += 0.2f * _2FLOAT(sin(_2DOUBLE(beta)));
     on_left.top() = _isPointOutside(p);
 
     float comp_angle;
@@ -522,7 +522,7 @@ void MoleculeLayoutGraph::_calculatePos(float phi, const Vec2f& v1, const Vec2f&
     const float length = (sequence_layout && _n_fixed > 0) ? LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH : LayoutOptions::DEFAULT_BOND_LENGTH;
 
     const float alpha = dir.tiltAngle() + phi;
-    v.set(v1.x + cos(alpha) * length, v1.y + sin(alpha) * length);
+    v.set(v1.x + _2FLOAT(cos(_2DOUBLE(alpha))) * length, v1.y + _2FLOAT(sin(_2DOUBLE(alpha))) * length);
 }
 
 int MoleculeLayoutGraph::_getCycleDirection(const Cycle& cycle) const
@@ -710,15 +710,15 @@ float MoleculeLayoutGraphSmart::calculateAngle(int v, int& v1, int& v2) const
     {
         beta = (angles[i + 1] + angles[i]) / 2.f;
         p = getPos(v);
-        p.x += 0.2f * cos(beta);
-        p.y += 0.2f * sin(beta);
+        p.x += 0.2f * _2FLOAT(cos(_2DOUBLE(beta)));
+        p.y += 0.2f * _2FLOAT(sin(_2DOUBLE(beta)));
         on_left[i] = _isPointOutside(p);
     }
 
     beta = _2FLOAT(M_PI + (angles.top() + angles[0]) / 2.);
     p = getPos(v);
-    p.x += 0.2f * cos(beta);
-    p.y += 0.2f * sin(beta);
+    p.x += 0.2f * _2FLOAT(cos(_2DOUBLE(beta)));
+    p.y += 0.2f * _2FLOAT(sin(_2DOUBLE(beta)));
     on_left.top() = _isPointOutside(p);
 
     float comp_angle;
@@ -820,8 +820,8 @@ float MoleculeLayoutGraphSmart::calculateAngle(int v, int& v1, int& v2) const
         }
         p = _graph->getPos(getVertexExtIdx(v));
 
-        p.x += 1 * cos(beta);
-        p.y += 1 * sin(beta);
+        p.x += 1 * _2FLOAT(cos(_2DOUBLE(beta)));
+        p.y += 1 * _2FLOAT(sin(_2DOUBLE(beta)));
         float energy = _energyOfPoint(p);
         comp_angle = _2FLOAT(2. * M_PI - (angles[ii] - angles[i]));
         if (ii == 0)

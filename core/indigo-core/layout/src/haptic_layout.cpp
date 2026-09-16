@@ -224,7 +224,7 @@ Vec2f HapticLayout::_freeDirection(const Endpoint& from, const Vec2f& from_pos, 
         Vec2f direction;
         direction.diff(point, from_pos);
         if (direction.lengthSqr() > EPSILON * EPSILON)
-            angles.push_back(atan2f(direction.y, direction.x));
+            angles.push_back(_2FLOAT(atan2(_2DOUBLE(direction.y), _2DOUBLE(direction.x))));
     };
 
     // A neighbour shares the component of the endpoint, hence its placement.
@@ -258,7 +258,7 @@ Vec2f HapticLayout::_freeDirection(const Endpoint& from, const Vec2f& from_pos, 
     }
 
     const float bisector = gap_start + widest / 2.f;
-    const Vec2f free_direction(cosf(bisector), sinf(bisector));
+    const Vec2f free_direction(_2FLOAT(cos(_2DOUBLE(bisector))), _2FLOAT(sin(_2DOUBLE(bisector))));
 
     if (!has_axis)
         return free_direction;
@@ -470,7 +470,7 @@ void HapticLayout::_aroundOnePartner(int component, const Link& link, const std:
 {
     const auto target_at = [&held](float direction) {
         Vec2f target(held[0].anchor);
-        target.addScaled(Vec2f(cosf(direction), sinf(direction)), held[0].length);
+        target.addScaled(Vec2f(_2FLOAT(cos(_2DOUBLE(direction))), _2FLOAT(sin(_2DOUBLE(direction)))), held[0].length);
         return target;
     };
 
@@ -494,8 +494,8 @@ void HapticLayout::_aroundOnePartner(int component, const Link& link, const std:
     Vec2f axis;
     if (rotations > 1 && _groupAxis(to, position, axis))
     {
-        const Vec2f along(cosf(preferred), sinf(preferred));
-        rule_rotation = atan2f(-along.x, along.y) - atan2f(axis.y, axis.x);
+        const Vec2f along(_2FLOAT(cos(_2DOUBLE(preferred))), _2FLOAT(sin(_2DOUBLE(preferred))));
+        rule_rotation = _2FLOAT(atan2(_2DOUBLE(-along.x), _2DOUBLE(along.y))) - _2FLOAT(atan2(_2DOUBLE(axis.y), _2DOUBLE(axis.x)));
     }
 
     out.push_back(_candidateAt(held[0], preferred, rule_rotation, target_at(preferred)));
@@ -533,7 +533,7 @@ void HapticLayout::_betweenTwoPartners(const std::vector<Held>& held, int rotati
 
         Vec2f direction;
         direction.diff(target, held[0].anchor);
-        const float angle = atan2f(direction.y, direction.x);
+        const float angle = _2FLOAT(atan2(_2DOUBLE(direction.y), _2DOUBLE(direction.x)));
 
         for (int r = 0; r < rotations; r++)
             out.push_back(_candidateAt(held[0], angle, _2FLOAT(2. * M_PI) * r / rotations, target));
@@ -556,17 +556,17 @@ void HapticLayout::_onAChordOfOnePartner(const std::vector<Held>& held, const Ve
 
     Vec2f chord;
     chord.diff(held[1].source, held[0].source);
-    const float chord_angle = atan2f(chord.y, chord.x);
+    const float chord_angle = _2FLOAT(atan2(_2DOUBLE(chord.y), _2DOUBLE(chord.x)));
 
     const auto chord_at = [&](float direction) {
-        const Vec2f along(cosf(direction), sinf(direction));
+        const Vec2f along(_2FLOAT(cos(_2DOUBLE(direction))), _2FLOAT(sin(_2DOUBLE(direction))));
 
         Vec2f target(held[0].anchor);
         target.addScaled(along, height);
 
         Candidate candidate;
         candidate.direction = direction;
-        candidate.rotation = atan2f(-along.x, along.y) - chord_angle;
+        candidate.rotation = _2FLOAT(atan2(_2DOUBLE(-along.x), _2DOUBLE(along.y))) - chord_angle;
         candidate.placement.rotation = candidate.rotation;
         candidate.placement.shift.zero();
         candidate.placement.shift.diff(target, candidate.placement.apply(source_centre));
@@ -594,14 +594,14 @@ void HapticLayout::_byFitting(int component, const std::vector<const Link*>& lin
             const float direction = _2FLOAT(2. * M_PI) * d / DIRECTIONS;
 
             Vec2f target(held[0].anchor);
-            target.addScaled(Vec2f(cosf(direction), sinf(direction)), held[0].length);
+            target.addScaled(Vec2f(_2FLOAT(cos(_2DOUBLE(direction))), _2FLOAT(sin(_2DOUBLE(direction)))), held[0].length);
 
             Candidate candidate = _candidateAt(held[0], direction, rotation, target);
             _refine(component, links, position, placement, stretch, candidate.placement, REFINE_PASSES);
 
             Vec2f leaving;
             leaving.diff(candidate.placement.apply(held[0].source), held[0].anchor);
-            candidate.direction = atan2f(leaving.y, leaving.x);
+            candidate.direction = _2FLOAT(atan2(_2DOUBLE(leaving.y), _2DOUBLE(leaving.x)));
             candidate.rotation = candidate.placement.rotation;
 
             out.push_back(candidate);
@@ -675,7 +675,7 @@ float HapticLayout::_preferredDirection(int component, const Endpoint& from, con
     }
 
     const Vec2f preferred = _freeDirection(from, from_pos, taken, position, placement);
-    return atan2f(preferred.y, preferred.x);
+    return _2FLOAT(atan2(_2DOUBLE(preferred.y), _2DOUBLE(preferred.x)));
 }
 
 double HapticLayout::_place(int component, int cluster, const std::vector<const Link*>& links, const Array<Vec2f>& position, const Array<int>& placed,
@@ -734,7 +734,7 @@ double HapticLayout::_place(int component, int cluster, const std::vector<const 
 
             Vec2f held;
             held.diff(current.placement.apply(_endpointPos(to, position)), from_pos);
-            current.direction = atan2f(held.y, held.x);
+            current.direction = _2FLOAT(atan2(_2DOUBLE(held.y), _2DOUBLE(held.x)));
             current.stretch = _lengthOf(first) > EPSILON ? held.length() / _lengthOf(first) : 1.f;
             candidates.push_back(current);
         }
@@ -744,13 +744,13 @@ double HapticLayout::_place(int component, int cluster, const std::vector<const 
             double overlap = 0.;
             double soft = _cost(component, candidate.placement, others, overlap);
             overlap += _lineCost(from_pos, candidate.placement.apply(_endpointPos(to, position)), from.component, others);
-            soft += PRIOR_COST * (1. - cos(candidate.direction - preferred_angle)) / 2.;
+            soft += PRIOR_COST * (1. - _2FLOAT(cos(_2DOUBLE(candidate.direction - preferred_angle)))) / 2.;
 
             if (has_axis)
             {
                 Vec2f turned(axis);
                 turned.rotate(candidate.rotation);
-                soft += PRIOR_COST * fabs(Vec2f::dot(turned, Vec2f(cosf(candidate.direction), sinf(candidate.direction))));
+                soft += PRIOR_COST * fabs(Vec2f::dot(turned, Vec2f(_2FLOAT(cos(_2DOUBLE(candidate.direction))), _2FLOAT(sin(_2DOUBLE(candidate.direction))))));
             }
 
             bool better = !found || overlap < best_overlap - 1e-6;
@@ -849,7 +849,7 @@ void HapticLayout::_refine(int component, const std::vector<const Link*>& links,
                 // undo it every pass, and two bonds to one and the same partner
                 // would then drag the component onto that partner.
                 const Vec2f centre_before = current.apply(source_centre);
-                current.rotation = atan2f(sin_sum, cos_sum);
+                current.rotation = _2FLOAT(atan2(_2DOUBLE(sin_sum), _2DOUBLE(cos_sum)));
                 current.shift.zero();
                 current.shift.diff(centre_before, current.apply(source_centre));
             }

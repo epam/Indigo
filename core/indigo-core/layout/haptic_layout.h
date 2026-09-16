@@ -62,7 +62,7 @@ namespace indigo
 
             Vec2f apply(const Vec2f& point) const
             {
-                const float c = cosf(rotation), s = sinf(rotation);
+                const float c = _2FLOAT(cos(_2DOUBLE(rotation))), s = _2FLOAT(sin(_2DOUBLE(rotation)));
                 return Vec2f(point.x * c - point.y * s + shift.x, point.x * s + point.y * c + shift.y);
             }
         };

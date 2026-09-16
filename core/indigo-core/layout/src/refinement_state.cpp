@@ -228,8 +228,8 @@ void RefinementState::rotateBranch(const Filter& branch, const RefinementState& 
 
     angle = _2FLOAT(DEG2RAD(angle));
 
-    co = cos(angle);
-    si = sin(angle);
+    co = _2FLOAT(cos(_2DOUBLE(angle)));
+    si = _2FLOAT(sin(_2DOUBLE(angle)));
 
     layout.clear_resize(state.layout.size());
 
@@ -309,8 +309,8 @@ void RefinementState::rotateLayout(const RefinementState& state, const Vec2f& ce
     Vec2f d;
     angle = _2FLOAT(DEG2RAD(angle));
     float co, si;
-    co = cos(angle);
-    si = sin(angle);
+    co = _2FLOAT(cos(_2DOUBLE(angle)));
+    si = _2FLOAT(sin(_2DOUBLE(angle)));
 
     layout.clear_resize(state.layout.size());
 
@@ -422,5 +422,5 @@ float RefinementState::calc_best_angle()
     } while (base != index - 1);
 
     Vec2f vec = layout[convex_hull[best_base + 1]] - layout[convex_hull[best_base]];
-    return -atan2(vec.y, vec.x);
+    return -_2FLOAT(atan2(_2DOUBLE(vec.y), _2DOUBLE(vec.x)));
 }
