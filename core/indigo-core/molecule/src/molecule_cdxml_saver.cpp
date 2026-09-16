@@ -337,13 +337,22 @@ void MoleculeCdxmlSaver::writeBinaryValue(const XMLAttribute* pAttr, int16_t tag
             _output.writeBinaryInt(std::stoi(val));
     }
     break;
+    case ECDXType::CDXObjectIDArrayWithCounts: {
+        // The same ids as CDXObjectIDArray, preceded by a UINT16 count of them.
+        std::string values = pAttr->Value();
+        auto vals = split(values, ' ');
+        _output.writeBinaryUInt16(static_cast<uint16_t>(sizeof(uint16_t) + vals.size() * sizeof(int32_t)));
+        _output.writeBinaryUInt16(static_cast<uint16_t>(vals.size()));
+        for (const auto& val : vals)
+            _output.writeBinaryInt(std::stoi(val));
+    }
+    break;
     case ECDXType::CDXDate:
     case ECDXType::CDXRepresentsProperty:
     case ECDXType::CDXFontTable:
     case ECDXType::CDXColorTable:
     case ECDXType::CDXElementList:
     case ECDXType::CDXFormula:
-    case ECDXType::CDXObjectIDArrayWithCounts:
     case ECDXType::CDXGenericList:
     case ECDXType::CDXFLOAT64:
     case ECDXType::CDXCurvePoints:
@@ -1025,6 +1034,97 @@ void MoleculeCdxmlSaver::addBondsToFragment(BaseMolecule& mol, tinyxml2::XMLElem
     }
 }
 
+void MoleculeCdxmlSaver::addAttachmentGroupsToFragment(BaseMolecule& mol, XMLElement* fragment, const Vec2f& offset)
+{
+    // An atom without an id here means the caller gave this fragment a set of ids
+    // that does not cover the group living in it.
+    auto atom_id = [this](int atom_idx) {
+        const auto it = _atoms_ids.find(atom_idx);
+        if (it == _atoms_ids.end())
+            throw Error("attachment group refers to atom %d, which is not in this fragment", atom_idx);
+        return it->second;
+    };
+
+    // What the member set means belongs to the bond, not to the group, so the
+    // bonds are read before the nodes are written. A group no bond reaches keeps
+    // the default kind - which is what a reader takes a lone node for anyway.
+    std::unordered_map<int, int> group_types;
+    for (int i = mol.haptic_bonds.begin(); i != mol.haptic_bonds.end(); i = mol.haptic_bonds.next(i))
+    {
+        const HapticBond& bond = mol.haptic_bonds.at(i);
+        for (const HapticBond::Endpoint& endpoint : {bond.begin(), bond.end()})
+            if (endpoint.isGroup())
+                group_types[endpoint.index()] = bond.type();
+    }
+
+    // Every group gets a node of its own, whether a bond reaches it or not: the
+    // format can hold a lone attachment node, and dropping it would lose what the
+    // file - or the KET the molecule came from - declared.
+    std::unordered_map<int, int> group_node_ids;
+    for (int group_idx = mol.attachment_groups.begin(); group_idx != mol.attachment_groups.end(); group_idx = mol.attachment_groups.next(group_idx))
+    {
+        const AttachmentGroup& group = mol.attachment_groups.group(group_idx);
+        const auto type_it = group_types.find(group_idx);
+        const int type = type_it == group_types.end() ? _BOND_HAPTIC : type_it->second;
+
+        XMLElement* node = _doc->NewElement("n");
+        fragment->LinkEndChild(node);
+        const int node_id = ++_id;
+        node->SetAttribute("id", node_id);
+        node->SetAttribute("NodeType", type == _BOND_VARIABLE_ATTACHMENT ? "VariableAttachment" : "MultiAttachment");
+
+        std::string attachments;
+        for (int atom_idx : group.atoms())
+        {
+            if (attachments.size())
+                attachments += " ";
+            attachments += std::to_string(atom_id(atom_idx));
+        }
+        node->SetAttribute("Attachments", attachments.c_str());
+
+        if (mol.have_xyz)
+        {
+            // The node stands where the group acts from, in the same coordinates
+            // the member atoms were just written in.
+            Vec3f centre3 = mol.attachmentGroupCentre(group_idx);
+            Vec2f centre(centre3.x, centre3.y);
+            centre.add(offset);
+            centre.scale(_scale);
+
+            QS_DEF(Array<char>, buf);
+            ArrayOutput out(buf);
+            out.printf("%f %f", centre.x, -centre.y);
+            buf.push(0);
+            node->SetAttribute("p", buf.ptr());
+        }
+
+        group_node_ids.emplace(group_idx, node_id);
+    }
+
+    for (int i = mol.haptic_bonds.begin(); i != mol.haptic_bonds.end(); i = mol.haptic_bonds.next(i))
+    {
+        const HapticBond& bond = mol.haptic_bonds.at(i);
+
+        // With both ends plain atoms there is no attachment node to write, and CDX
+        // has no other form for such a bond: it is dropped like any other feature
+        // the target format cannot express.
+        if (!bond.begin().isGroup() && !bond.end().isGroup())
+            continue;
+
+        auto endpoint_id = [&](const HapticBond::Endpoint& endpoint) {
+            return endpoint.isGroup() ? group_node_ids.at(endpoint.index()) : atom_id(endpoint.index());
+        };
+
+        // "The connection to the iron is represented with a normal bond" (CDX spec,
+        // Node_Type): no order is written, which the format reads as single.
+        XMLElement* haptic_bond = _doc->NewElement("b");
+        fragment->LinkEndChild(haptic_bond);
+        haptic_bond->SetAttribute("id", ++_id);
+        haptic_bond->SetAttribute("B", endpoint_id(bond.begin()));
+        haptic_bond->SetAttribute("E", endpoint_id(bond.end()));
+    }
+}
+
 void MoleculeCdxmlSaver::addNodesToFragment(BaseMolecule& mol, XMLElement* fragment, const Vec2f& offset, Vec2f& min_coord, Vec2f& max_coord)
 {
     Vec2f dummy_pos;
@@ -1257,6 +1357,7 @@ void MoleculeCdxmlSaver::saveMoleculeFragment(BaseMolecule& bmol, const Vec2f& o
     _collectSuperatoms(*mol);
     addFragmentNodes(*mol, fragment, offset, min_coord, max_coord);
     addNodesToFragment(*mol, fragment, offset, min_coord, max_coord);
+    addAttachmentGroupsToFragment(*mol, fragment, offset);
     addBondsToFragment(*mol, fragment);
 
     for (const auto& out_bond : _out_connections)

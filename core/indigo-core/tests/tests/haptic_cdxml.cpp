@@ -16,18 +16,20 @@
  * limitations under the License.
  ***************************************************************************/
 
-// Reading the CDX/CDXML form of haptic bonds (#3233, ticket #3843). The format
-// carries the group as a node of its own - NodeType="MultiAttachment" whose
-// Attachments property lists the member atoms - and the bond to the metal as an
-// ordinary bond to that node, which is the vendor's own description of
-// ferrocene. VariableAttachment (#3731) has the same shape and the other
-// meaning, so the two are told apart here as well.
+// CDX/CDXML side of haptic bonds (#3233, ticket #3843). The format carries the
+// group as a node of its own - NodeType="MultiAttachment" whose Attachments
+// property lists the member atoms - and the bond to the metal as an ordinary
+// bond to that node, which is the vendor's own description of ferrocene.
+// VariableAttachment (#3731) has the same shape and the other meaning, so the
+// two are told apart here as well.
 
 #include <gtest/gtest.h>
 
+#include <base_cpp/output.h>
 #include <base_cpp/scanner.h>
 #include <molecule/molecule.h>
 #include <molecule/molecule_cdxml_loader.h>
+#include <molecule/molecule_cdxml_saver.h>
 
 #include "common.h"
 
@@ -41,6 +43,35 @@ protected:
         BufferScanner scanner(text.c_str());
         MoleculeCdxmlLoader loader(scanner);
         loader.loadMolecule(mol);
+    }
+
+    static void loadCdx(const std::string& binary, Molecule& mol)
+    {
+        BufferScanner scanner(binary.c_str(), static_cast<int>(binary.size()));
+        // The reader starts at the first object, past the document header the
+        // saver wrote - the same step MoleculeAutoLoader takes.
+        ASSERT_TRUE(scanner.startsWith(kCDX_HeaderString));
+        scanner.seek(kCDX_HeaderLength, SEEK_CUR);
+
+        MoleculeCdxmlLoader loader(scanner, true);
+        loader.loadMolecule(mol);
+    }
+
+    static std::string save(Molecule& mol, bool binary = false)
+    {
+        Array<char> buffer;
+        ArrayOutput output(buffer);
+        MoleculeCdxmlSaver saver(output, binary);
+        saver.saveMolecule(mol);
+        return {buffer.ptr(), static_cast<std::size_t>(buffer.size())};
+    }
+
+    static int countOccurrences(const std::string& text, const std::string& what)
+    {
+        int count = 0;
+        for (std::size_t pos = text.find(what); pos != std::string::npos; pos = text.find(what, pos + what.size()))
+            count++;
+        return count;
     }
 
     // A cyclopentadienyl ring, an iron, and an attachment node standing for the
@@ -162,6 +193,79 @@ TEST_F(IndigoCoreHapticCdxmlTest, FerroceneKeepsBothRings)
     EXPECT_EQ(1, mol.countComponents(neighbors));
 }
 
+TEST_F(IndigoCoreHapticCdxmlTest, GroupIsSavedAsAnAttachmentNode)
+{
+    Molecule mol;
+    loadCdxml(ring_and_metal(), mol);
+
+    // Where the node stands and how its bond is written is held by the reference
+    // of formats/haptic_cdxml.py; here only that the group became one node.
+    const std::string saved = save(mol);
+    EXPECT_EQ(1, countOccurrences(saved, "NodeType=\"MultiAttachment\""));
+    EXPECT_EQ(1, countOccurrences(saved, "Attachments=\"5 6 7 8 9\""));
+}
+
+TEST_F(IndigoCoreHapticCdxmlTest, RoundTripKeepsTheGroupAndTheBond)
+{
+    Molecule mol;
+    loadCdxml(ring_and_metal(), mol);
+
+    Molecule reloaded;
+    loadCdxml(save(mol), reloaded);
+
+    ASSERT_EQ(1, reloaded.attachment_groups.groupCount());
+    EXPECT_EQ(5, static_cast<int>(reloaded.attachment_groups.group(reloaded.attachment_groups.begin()).atoms().size()));
+    ASSERT_EQ(1, reloaded.haptic_bonds.count());
+    EXPECT_EQ(_BOND_HAPTIC, reloaded.haptic_bonds.at(reloaded.haptic_bonds.begin()).type());
+    EXPECT_EQ(6, reloaded.vertexCount());
+    EXPECT_EQ(5, reloaded.edgeCount());
+}
+
+TEST_F(IndigoCoreHapticCdxmlTest, RoundTripKeepsVariableAttachmentApart)
+{
+    Molecule mol;
+    loadCdxml(ring_and_metal("VariableAttachment"), mol);
+
+    const std::string saved = save(mol);
+    EXPECT_EQ(1, countOccurrences(saved, "NodeType=\"VariableAttachment\""));
+
+    Molecule reloaded;
+    loadCdxml(saved, reloaded);
+    ASSERT_EQ(1, reloaded.haptic_bonds.count());
+    EXPECT_EQ(_BOND_VARIABLE_ATTACHMENT, reloaded.haptic_bonds.at(reloaded.haptic_bonds.begin()).type());
+}
+
+TEST_F(IndigoCoreHapticCdxmlTest, BinaryCdxRoundTrip)
+{
+    // The binary form of the Attachments property - a UINT16 count and then the
+    // ids - is written and read by cases of its own, so the whole trip is made
+    // here rather than trusting the XML one.
+    Molecule mol;
+    loadCdxml(ring_and_metal(), mol);
+
+    Molecule reloaded;
+    loadCdx(save(mol, true), reloaded);
+
+    EXPECT_EQ(6, reloaded.vertexCount());
+    EXPECT_EQ(5, reloaded.edgeCount());
+    ASSERT_EQ(1, reloaded.attachment_groups.groupCount());
+    EXPECT_EQ((std::vector<int>{0, 1, 2, 3, 4}), reloaded.attachment_groups.group(reloaded.attachment_groups.begin()).atoms());
+    ASSERT_EQ(1, reloaded.haptic_bonds.count());
+    EXPECT_EQ(_BOND_HAPTIC, reloaded.haptic_bonds.at(reloaded.haptic_bonds.begin()).type());
+}
+
+TEST_F(IndigoCoreHapticCdxmlTest, BinaryCdxKeepsVariableAttachmentApart)
+{
+    Molecule mol;
+    loadCdxml(ring_and_metal("VariableAttachment"), mol);
+
+    Molecule reloaded;
+    loadCdx(save(mol, true), reloaded);
+
+    ASSERT_EQ(1, reloaded.haptic_bonds.count());
+    EXPECT_EQ(_BOND_VARIABLE_ATTACHMENT, reloaded.haptic_bonds.at(reloaded.haptic_bonds.begin()).type());
+}
+
 TEST_F(IndigoCoreHapticCdxmlTest, AttachmentNodeWithoutMembersIsRejected)
 {
     const char* text = R"(<?xml version="1.0" encoding="UTF-8"?>
@@ -185,6 +289,25 @@ TEST_F(IndigoCoreHapticCdxmlTest, AttachmentsThatIsNotAListOfIdsIsRejected)
     EXPECT_THROW(loadCdxml(ring_and_metal("MultiAttachment", "", "10 11x"), trailing), Exception);
 }
 
+TEST_F(IndigoCoreHapticCdxmlTest, GroupWithNoBondSurvivesTheRoundTrip)
+{
+    // A lone attachment node declares a set of atoms and nothing more. The format
+    // holds it, so saving must not quietly drop what loading accepted.
+    Molecule mol;
+    loadCdxml(ring_and_metal("MultiAttachment", "", "10 11 12 13 14", false), mol);
+
+    ASSERT_EQ(1, mol.attachment_groups.groupCount());
+    ASSERT_EQ(0, mol.haptic_bonds.count());
+
+    const std::string saved = save(mol);
+    EXPECT_EQ(1, countOccurrences(saved, "NodeType=\"MultiAttachment\""));
+
+    Molecule reloaded;
+    loadCdxml(saved, reloaded);
+    EXPECT_EQ(1, reloaded.attachment_groups.groupCount());
+    EXPECT_EQ(0, reloaded.haptic_bonds.count());
+}
+
 TEST_F(IndigoCoreHapticCdxmlTest, AttachmentNodePointingAtANonAtomIsRejected)
 {
     // The second attachment node is not an atom, so it cannot be a member of the
@@ -202,3 +325,36 @@ TEST_F(IndigoCoreHapticCdxmlTest, AttachmentNodePointingAtANonAtomIsRejected)
     EXPECT_THROW(loadCdxml(text, mol), Exception);
 }
 
+TEST_F(IndigoCoreHapticCdxmlTest, AtomToAtomHapticBondIsDropped)
+{
+    // CDX has no node to hang such a bond on, so it goes the way of every other
+    // feature the target format cannot express - and takes nothing else with it.
+    Molecule mol;
+    mol.addAtom(ELEM_Fe);
+    mol.addAtom(ELEM_C);
+    mol.setAtomXyz(0, Vec3f(0, 0, 0));
+    mol.setAtomXyz(1, Vec3f(1, 0, 0));
+    mol.addHapticBond(HapticBond::Endpoint::atom(0), HapticBond::Endpoint::atom(1));
+
+    const std::string saved = save(mol);
+    EXPECT_EQ(0, countOccurrences(saved, "NodeType=\"MultiAttachment\""));
+    EXPECT_EQ(0, countOccurrences(saved, "Attachments="));
+    EXPECT_EQ(2, countOccurrences(saved, "<n id="));
+}
+
+TEST_F(IndigoCoreHapticCdxmlTest, TwoBondsToOneGroupShareItsNode)
+{
+    // A ligand held by two metals is still one set of atoms: the group must reach
+    // the file as a single node, or the two bonds would name different groups.
+    Molecule mol;
+    loadCdxml(ring_and_metal(), mol);
+
+    const int second_metal = mol.addAtom(ELEM_Fe);
+    mol.setAtomXyz(second_metal, Vec3f(-5, 0, 0));
+    const int group = mol.attachment_groups.begin();
+    mol.addHapticBond(HapticBond::Endpoint::atom(second_metal), HapticBond::Endpoint::group(group));
+
+    const std::string saved = save(mol);
+    EXPECT_EQ(1, countOccurrences(saved, "NodeType=\"MultiAttachment\""));
+    EXPECT_EQ(1, countOccurrences(saved, "Attachments=\"5 6 7 8 9\""));
+}
