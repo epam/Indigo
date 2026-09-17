@@ -59,7 +59,7 @@ def assert_equal(actual, expected, message):
 
 def assert_option_error(indigo, value, expected):
     try:
-        indigo.setOption("fonts", value)
+        indigo.setOption("render-fonts", value)
     except IndigoException as error:
         message = getIndigoExceptionText(error)
         if expected not in message:
@@ -71,14 +71,14 @@ def assert_option_error(indigo, value, expected):
 
 
 def test_fonts_option(indigo):
-    assert_equal(indigo.getOptionType("fonts"), "str", "fonts option type")
-    assert_equal(indigo.getOption("fonts"), "[]", "default fonts option")
+    assert_equal(indigo.getOptionType("render-fonts"), "str", "fonts option type")
+    assert_equal(indigo.getOption("render-fonts"), "[]", "default fonts option")
 
     first_value = json.dumps(
         [{"name": "first", "data": "AA=="}], separators=(",", ":")
     )
-    indigo.setOption("fonts", first_value)
-    assert_equal(indigo.getOption("fonts"), first_value, "single font")
+    indigo.setOption("render-fonts", first_value)
+    assert_equal(indigo.getOption("render-fonts"), first_value, "single font")
 
     multiple_value = json.dumps(
         [
@@ -87,8 +87,8 @@ def test_fonts_option(indigo):
         ],
         separators=(",", ":"),
     )
-    indigo.setOption("fonts", multiple_value)
-    assert_equal(indigo.getOption("fonts"), multiple_value, "multiple fonts")
+    indigo.setOption("render-fonts", multiple_value)
+    assert_equal(indigo.getOption("render-fonts"), multiple_value, "multiple fonts")
 
     invalid_values = (
         ("[", "Invalid fonts JSON at offset 1: Invalid value."),
@@ -115,22 +115,13 @@ def test_fonts_option(indigo):
     for value, expected in invalid_values:
         assert_option_error(indigo, value, expected)
         assert_equal(
-            indigo.getOption("fonts"),
+            indigo.getOption("render-fonts"),
             multiple_value,
             "invalid value must not replace fonts",
         )
 
     indigo.resetOptions()
-    assert_equal(indigo.getOption("fonts"), "[]", "reset fonts option")
-
-
-def font_manager_enabled():
-    value = os.getenv("USE_FONT_MANAGER", "OFF")
-    if value == "ON":
-        return True
-    if value == "OFF":
-        return False
-    raise AssertionError("USE_FONT_MANAGER must be ON or OFF, got %r" % value)
+    assert_equal(indigo.getOption("render-fonts"), "[]", "reset fonts option")
 
 
 def encode_font(path):
@@ -171,7 +162,7 @@ def load_document():
 
 def render(indigo, renderer, document, output_format, fonts):
     indigo.setOption("render-output-format", output_format)
-    indigo.setOption("fonts", fonts)
+    indigo.setOption("render-fonts", fonts)
     molecule = indigo.loadMolecule(json.dumps(document))
     try:
         return list(renderer.renderToBuffer(molecule))
@@ -184,7 +175,7 @@ def render_to_file(indigo, renderer, document, fonts, path):
     indigo.setOption("render-output-format", "png")
     indigo.setOption("render-background-color", "255, 255, 255")
     indigo.setOption("render-coloring", "false")
-    indigo.setOption("fonts", fonts)
+    indigo.setOption("render-fonts", fonts)
     molecule = indigo.loadMolecule(json.dumps(document))
     try:
         renderer.renderToFile(molecule, path)
@@ -258,8 +249,7 @@ indigo = Indigo()
 renderer = IndigoRenderer(indigo)
 
 test_fonts_option(indigo)
-if font_manager_enabled():
-    test_custom_font_rendering(indigo, renderer)
+test_custom_font_rendering(indigo, renderer)
 
 print("Custom fonts option tests: OK")
 
