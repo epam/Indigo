@@ -24,6 +24,8 @@ from env_indigo import *  # noqa
 # stretch factor, and 1.5 * 1.25 = 1.875 lies exactly on a rounding boundary
 # of the second decimal, where float noise decides the digit.
 
+# A little under what the layout keeps clear, so that a placement which just
+# reaches its own threshold does not fail the test on rounding.
 BUMP = 0.45  # two atom labels this close are drawn on top of each other
 ON_BOND = 0.3  # a bond is a thin line and needs less room than a label
 

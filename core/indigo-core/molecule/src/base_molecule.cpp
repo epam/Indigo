@@ -1236,6 +1236,11 @@ void BaseMolecule::removeHapticBond(int idx)
     updateEditRevision();
 }
 
+bool BaseMolecule::hasBondsOutsideTheGraph(int atom) const
+{
+    return haptic_bonds.referencesAtom(atom);
+}
+
 Vec3f BaseMolecule::attachmentGroupCentre(int group_idx)
 {
     const std::vector<int>& atoms = attachment_groups.group(group_idx).atoms();

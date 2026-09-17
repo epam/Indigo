@@ -255,11 +255,7 @@ void MolfileLoader::_postLoad()
         {
             if (_bmol->stereocenters.getType(i) == 0)
             {
-                // An atom holding a haptic bond has fewer neighbours in the graph
-                // than the drawing shows - the bond is not an edge - so the centre
-                // cannot be recognised. Keeping it as a non-valid one loads the
-                // structure instead of refusing it; the KET loader does the same.
-                if (stereochemistry_options.ignore_errors || _bmol->haptic_bonds.referencesAtom(i))
+                if (stereochemistry_options.ignore_errors || _bmol->hasBondsOutsideTheGraph(i))
                     _bmol->addStereocentersIgnoreBad(i, _stereocenter_types[i], _stereocenter_groups[i], false); // add non-valid stereocenters
                 else if (_qmol == nullptr)
                     throw Error("stereo type specified for atom #%d, but the bond "
@@ -277,7 +273,7 @@ void MolfileLoader::_postLoad()
         if (_bmol->getBondDirection(i) && !_sensible_bond_directions[i])
         {
             const Edge& edge = _bmol->getEdge(i);
-            if (_bmol->haptic_bonds.referencesAtom(edge.beg) || _bmol->haptic_bonds.referencesAtom(edge.end))
+            if (_bmol->hasBondsOutsideTheGraph(edge.beg) || _bmol->hasBondsOutsideTheGraph(edge.end))
                 continue;
 
             if (!stereochemistry_options.ignore_errors && !_qmol) // Don't check for query molecule

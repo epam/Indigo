@@ -199,7 +199,17 @@ TEST_F(IndigoCoreLayoutTest, Clean2dLeavesAnIsolatedAtomWhereItIs)
     MoleculeLayout ml(mol);
     ml.make();
 
-    const int sodium = mol.vertexEnd() - 2, chlorine = mol.vertexEnd() - 1;
+    int sodium = -1, chlorine = -1;
+    for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+    {
+        if (mol.getAtomNumber(i) == ELEM_Na)
+            sodium = i;
+        else if (mol.getAtomNumber(i) == ELEM_Cl)
+            chlorine = i;
+    }
+    ASSERT_GE(sodium, 0);
+    ASSERT_GE(chlorine, 0);
+
     const Vec3f before_sodium = mol.getAtomXyz(sodium);
     const Vec3f before_chlorine = mol.getAtomXyz(chlorine);
 

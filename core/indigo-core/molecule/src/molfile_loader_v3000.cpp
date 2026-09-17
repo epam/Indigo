@@ -868,14 +868,11 @@ void MolfileLoader::_readEndpoints3000(Scanner& scanner, std::vector<int>& endpo
         throw Error("ENDPTS list of %d atoms is not closed", count);
 }
 
-// One bond record with ENDPTS becomes a bond from an attachment group to the atom
-// at the other end. In a haptic record (ATTACH=ALL) the star at the group's end is,
-// in the words of the CTfile specification, "an internal phantom atom that
-// represents the center of the pi-system": notation, not an atom of the structure.
-// It is removed together with its edge once the molecule is read (_postLoad), and
-// the saver puts a fresh one at the centre of the group. A variable attachment
-// (ATTACH=ANY, #3731) and a record with no star keep both ends; the group then
-// remembers its end atom, so that the saver writes one record back instead of two.
+// One bond record with ENDPTS becomes a bond from an attachment group to the atom at
+// the other end. The star at the group's end of a haptic record (ATTACH=ALL) is "an
+// internal phantom atom that represents the center of the pi-system" (CTfile), so it
+// leaves the structure in _postLoad. A variable attachment (ATTACH=ANY, #3731) and a
+// record with no star keep both ends, and the group remembers its end atom.
 void MolfileLoader::_addHapticBond3000(int beg, int end, const std::vector<int>& endpoints, int type)
 {
     const auto listed = [&endpoints](int atom) { return std::find(endpoints.begin(), endpoints.end(), atom) != endpoints.end(); };

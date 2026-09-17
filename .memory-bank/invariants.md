@@ -71,7 +71,8 @@ and GCC the double functions; with float calls Windows and Linux disagreed on 11
 18 237 molecules. Every such call in the layout and in `Vec2f` is written `_2FLOAT(cos(_2DOUBLE(x)))`,
 and the two platforms now agree
 bit for bit on all of them — see the comment above `HYPOT` in `common/math/algebra.h#HYPOT`. A new
-call on a float argument brings the divergence back. Widening the layout energy to double does not
+call on a float argument brings the divergence back; `tests/tests/layout_math.cpp` sweeps the
+arguments on which the two spellings differ and pins the macros and `Vec2f` to the double one. Widening the layout energy to double does not
 help and was measured not to. The guarantee covers x86-64 only: a compiler that fuses `a * b + c`
 into one FMA instruction — the default on ARM, including macOS — still produces other bits, so a
 macOS reference may still be needed.

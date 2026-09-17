@@ -27,8 +27,8 @@
 
 using namespace indigo;
 
-// Fixed rather than derived from the coordinates: on a symmetric structure a
-// computed direction differs between platforms, as the layout energy already does.
+// Where a bond leaves an endpoint nothing else takes a direction from: a lone atom
+// has no widest gap to answer with.
 static const Vec2f DEFAULT_DIRECTION(0.f, -1.f);
 
 // How close atoms of two different components may come, in bond lengths: below
@@ -82,12 +82,12 @@ static const float STRETCH_TOLERANCE = 1e-4f;
 // functions are called on double, as everywhere in the layout (invariants.md, A10).
 static Vec2f unitVector(float angle)
 {
-    return Vec2f(_2FLOAT(cos(_2DOUBLE(angle))), _2FLOAT(sin(_2DOUBLE(angle))));
+    return Vec2f(COS(angle), SIN(angle));
 }
 
 static float angleOf(const Vec2f& direction)
 {
-    return _2FLOAT(atan2(_2DOUBLE(direction.y), _2DOUBLE(direction.x)));
+    return ATAN2(direction.y, direction.x);
 }
 
 namespace
@@ -781,7 +781,7 @@ double HapticLayout::_place(int component, int cluster, const std::vector<const 
         {
             DrawingCost cost = _cost(component, candidate.placement, others);
             cost.overlap += _lineCost(from_pos, candidate.placement.apply(_endpointPos(to, position)), from.component, others);
-            cost.soft += PRIOR_COST * (1. - _2FLOAT(cos(_2DOUBLE(candidate.direction - preferred_angle)))) / 2.;
+            cost.soft += PRIOR_COST * (1. - COS(candidate.direction - preferred_angle)) / 2.;
 
             if (has_axis)
             {

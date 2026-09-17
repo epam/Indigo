@@ -375,11 +375,10 @@ std::vector<std::pair<int, int>> MoleculeLayout::_atomToAtomHapticRings() const
 {
     // Which haptic bonds between two atoms close a ring of such bonds. HapticLayout
     // places one component after another, and a ring cannot be closed that way - the
-    // last component would have to satisfy two bonds at once - so a ring is handed
-    // to the ordinary layout, which sees all of it at once. A cube of such bonds
-    // came out with a corner folded inside until it was. A lone bond between two
-    // fragments is left where it is: HapticLayout draws it longer when that is what
-    // keeps the fragments apart, and the ordinary layout has no such freedom.
+    // last component would have to satisfy two bonds at once - so a ring goes to the
+    // ordinary layout, which sees all of it at once. A lone bond between two
+    // fragments stays here: HapticLayout draws it longer when that is what keeps the
+    // fragments apart, and the ordinary layout has no such freedom.
     const Array<int>& component = _molecule.getDecomposition();
 
     std::vector<std::pair<int, int>> joining;

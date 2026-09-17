@@ -57,7 +57,7 @@ bool Vec2f::normalization(const Vec2f& v)
 
 void Vec2f::rotate(float angle)
 {
-    rotate(_2FLOAT(sin(_2DOUBLE(angle))), _2FLOAT(cos(_2DOUBLE(angle))));
+    rotate(SIN(angle), COS(angle));
 }
 
 void Vec2f::rotate(float si, float co)
@@ -80,7 +80,7 @@ void Vec2f::rotateL(Vec2f vec)
 
 void Vec2f::rotateL(float angle)
 {
-    rotateL(_2FLOAT(sin(_2DOUBLE(angle))), _2FLOAT(cos(_2DOUBLE(angle))));
+    rotateL(SIN(angle), COS(angle));
 }
 
 void Vec2f::rotateL(float si, float co)
@@ -106,8 +106,8 @@ float Vec2f::tiltAngle()
         return 0;
 
     if (y >= 0)
-        return _2FLOAT(acos(_2DOUBLE(x / l)));
-    return -_2FLOAT(acos(_2DOUBLE(x / l)));
+        return ACOS(x / l);
+    return -ACOS(x / l);
 }
 
 float Vec2f::tiltAngle2()
@@ -118,8 +118,10 @@ float Vec2f::tiltAngle2()
         return 0;
 
     if (y >= 0)
-        return _2FLOAT(acos(_2DOUBLE(x / l)));
-    return _2FLOAT(2. * M_PI - _2FLOAT(acos(_2DOUBLE(x / l))));
+        return ACOS(x / l);
+    // The rounding to float before the subtraction is kept: without it the angle
+    // changes in the last bits, and a macrocycle comes out drawn differently.
+    return _2FLOAT(2. * M_PI - ACOS(x / l));
 }
 
 float Vec2f::calc_angle(Vec2f a, Vec2f b)

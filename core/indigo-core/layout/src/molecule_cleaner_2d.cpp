@@ -777,7 +777,7 @@ void MoleculeCleaner2d::_updateGradient()
                             Vec2f alphadv2 = (vec1 * l1 * l2 - vec2 * dot * l1 / l2) * acosd / (l1 * l1 * l2 * l2) * signcross;
                             Vec2f alphadv = ((vec1 + vec2) * (-l1 * l2) + (vec1 * l2 / l1 + vec2 * l1 / l2) * dot) * acosd / (l1 * l1 * l2 * l2) * signcross;
 
-                            float alpha = _2FLOAT(acos(_2DOUBLE(cos))) * signcross;
+                            float alpha = ACOS(cos) * signcross;
                             float target_alpha = _2FLOAT((2. * M_PI / 3.) * signcross);
 
                             pregradient[i] += alphadv * (alpha - target_alpha) * 2;
@@ -938,7 +938,7 @@ float MoleculeCleaner2d::_energy()
                 {
                     int v = vert.neiVertex(n1);
                     Vec2f vec = pos[v] - pos[i];
-                    float alpha = _2FLOAT(atan2(_2DOUBLE(vec.y), _2DOUBLE(vec.x)));
+                    float alpha = ATAN2(vec.y, vec.x);
                     angles.push(alpha);
                 }
 

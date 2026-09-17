@@ -40,6 +40,10 @@
 // equal layouts is chosen, and the layout then differs between Windows and Linux. The double results
 // differ far more rarely, and almost never by enough to change the float they are rounded to.
 #define HYPOT(a, b) (_2FLOAT(std::hypot(_2DOUBLE(a), _2DOUBLE(b))))
+#define COS(x) (_2FLOAT(std::cos(_2DOUBLE(x))))
+#define SIN(x) (_2FLOAT(std::sin(_2DOUBLE(x))))
+#define ACOS(x) (_2FLOAT(std::acos(_2DOUBLE(x))))
+#define ATAN2(y, x) (_2FLOAT(std::atan2(_2DOUBLE(y), _2DOUBLE(x))))
 
 namespace indigo
 {

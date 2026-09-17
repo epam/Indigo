@@ -372,7 +372,7 @@ void MoleculeLayoutGraphSimple::_getBorder(Cycle& border) const
                 Vec2f dir_out = getPos(nei_v) - getPos(edge.end);
                 float cross = Vec2f::cross(dir_in, dir_out);
                 float dot = Vec2f::dot(dir_in, dir_out);
-                float angle = _2FLOAT(atan2(_2DOUBLE(cross), _2DOUBLE(dot)));
+                float angle = ATAN2(cross, dot);
                 if (best_v == -1 || angle < best_ang)
                 {
                     best_ang = angle;
@@ -470,7 +470,7 @@ void MoleculeLayoutGraphSimple::_getBorder(Cycle& border) const
         Vec2f dir_out = getPos(nei_v) - getPos(start_v);
         float cross = Vec2f::cross(dir_down, dir_out);
         float dot = Vec2f::dot(dir_down, dir_out);
-        float angle = _2FLOAT(atan2(_2DOUBLE(cross), _2DOUBLE(dot)));
+        float angle = ATAN2(cross, dot);
         if (start_u == -1 || angle > best_start_angle)
         {
             best_start_angle = angle;
@@ -517,7 +517,7 @@ void MoleculeLayoutGraphSimple::_getBorder(Cycle& border) const
             Vec2f dir_out = getPos(nei_v) - getPos(edge.end);
             float cross = Vec2f::cross(dir_in, dir_out);
             float dot = Vec2f::dot(dir_in, dir_out);
-            float angle = _2FLOAT(atan2(_2DOUBLE(cross), _2DOUBLE(dot)));
+            float angle = ATAN2(cross, dot);
             if (best_v == -1 || angle < best_ang)
             {
                 best_ang = angle;
@@ -685,7 +685,7 @@ bool MoleculeLayoutGraphSmart::_isPointOutsideCycle(const Cycle& cycle, const Ve
             cs = 1;
         if (cs < -1)
             cs = -1;
-        float angle = _2FLOAT(acos(_2DOUBLE(cs)));
+        float angle = ACOS(cs);
         if (Vec2f::cross(point[i], point[i + 1]) < 0)
             angle = -angle;
         rotate_angle += angle;

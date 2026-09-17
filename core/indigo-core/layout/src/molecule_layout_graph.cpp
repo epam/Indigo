@@ -455,6 +455,13 @@ void MoleculeLayoutGraph::_layoutMultipleComponents(BaseMolecule& molecule, bool
         QS_DEF(Array<HapticLayout::Placement>, haptic_placement);
         const int n_clusters = _planHapticLayout(molecule, components, bond_length, haptic_placement);
 
+        // Which components each cluster holds, so that the grid below walks them
+        // rather than all the components once per cluster.
+        std::vector<std::vector<int>> cluster_members(n_clusters);
+        for (i = 0; i < n_components; i++)
+            if (haptic_placement[i].cluster >= 0)
+                cluster_members[haptic_placement[i].cluster].push_back(i);
+
         // position components
         float row_bottom = 0.f; // where to place non-fixed components
         int n_fixed = 0;
@@ -515,14 +522,11 @@ void MoleculeLayoutGraph::_layoutMultipleComponents(BaseMolecule& molecule, bool
             bool cluster_fixed = false;
             bool first_of_cluster = true;
 
-            for (i = 0; i < n_components; i++)
+            for (int member : cluster_members[cluster])
             {
-                if (haptic_placement[i].cluster != cluster)
-                    continue;
-
                 // HapticLayout leaves a fixed component out of every cluster, so one
                 // fixed member means the cluster is that member alone.
-                if (components[i]._n_fixed > 0)
+                if (components[member]._n_fixed > 0)
                 {
                     cluster_fixed = true;
                     break;
@@ -531,7 +535,7 @@ void MoleculeLayoutGraph::_layoutMultipleComponents(BaseMolecule& molecule, bool
                 // The bounding box has to be taken after the placement, because a
                 // component held by several haptic bonds is turned as well as moved.
                 Rect2f component_bbox;
-                _placedBoundingBox(components[i], haptic_placement[i], component_bbox);
+                _placedBoundingBox(components[member], haptic_placement[member], component_bbox);
 
                 if (first_of_cluster)
                 {
@@ -570,9 +574,8 @@ void MoleculeLayoutGraph::_layoutMultipleComponents(BaseMolecule& molecule, bool
             shift.negate();
             shift.add(Vec2f(column_left, row_bottom));
 
-            for (i = 0; i < n_components; i++)
-                if (haptic_placement[i].cluster == cluster)
-                    copyCoordsFromComponent(components[i], haptic_placement[i], shift);
+            for (int member : cluster_members[cluster])
+                copyCoordsFromComponent(components[member], haptic_placement[member], shift);
 
             column_left += bbox.width();
 

@@ -40,8 +40,6 @@ namespace indigo
     // because the bond is not an edge. Answers in shifts, so coordinates keep a
     // single assignment point in the caller.
     // Never throws: a bond it cannot act on is left to the ordinary grid.
-    // A bond fixes a distance; the direction and the rotation it leaves free are
-    // chosen by what the drawing costs, and the geometric rules of #3233 break ties.
     class DLLEXPORT HapticLayout
     {
     public:
@@ -55,7 +53,10 @@ namespace indigo
 
             Vec2f apply(const Vec2f& point) const
             {
-                const float c = _2FLOAT(cos(_2DOUBLE(rotation))), s = _2FLOAT(sin(_2DOUBLE(rotation)));
+                if (rotation == 0.f)
+                    return Vec2f(point.x + shift.x, point.y + shift.y);
+
+                const float c = COS(rotation), s = SIN(rotation);
                 return Vec2f(point.x * c - point.y * s + shift.x, point.x * s + point.y * c + shift.y);
             }
         };

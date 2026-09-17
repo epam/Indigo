@@ -19,7 +19,7 @@
 // Laying out haptic bonds (#3233 requirement 4, ticket #3844). A haptic bond is
 // not an edge, so its two ends are separate components and the ordinary layout
 // puts them in a grid; the acceptance criteria below are the geometry that must
-// come out instead. They are the A1-A6 of Task/3233/IMPLEMENTATION-PLAN.md 6.2.4.
+// come out instead. They are the acceptance criteria A1-A6 of #3844.
 
 #include <cmath>
 #include <vector>
@@ -59,7 +59,7 @@ protected:
         return group;
     }
 
-    static void makeLayout(Molecule& mol, float multiplier = 1.5f)
+    static void makeLayout(Molecule& mol, float multiplier = MoleculeLayoutGraph::DEFAULT_HAPTIC_BOND_MULTIPLIER)
     {
         MoleculeLayout layout(mol);
         layout.bond_length = 1.f;
@@ -116,6 +116,9 @@ protected:
     static int collisions(Molecule& mol)
     {
         // An atom needs more room against another label than against a bond line.
+        // Both are a little under what the layout keeps clear (COLLISION and ON_BOND
+        // of haptic_layout.cpp), so a placement that just reaches its own threshold
+        // does not fail the test on rounding.
         static const float BUMP = 0.45f;
         static const float ON_BOND = 0.3f;
 

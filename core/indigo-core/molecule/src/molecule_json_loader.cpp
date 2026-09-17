@@ -2115,14 +2115,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     {
         if (mol.stereocenters.getType(sc._atom_idx) == 0)
         {
-            // A haptic bond is not an edge, so an atom holding one has fewer
-            // neighbours here than the drawing shows and the stereocentre cannot be
-            // recognised - a metal with three ligands and one haptic bond among
-            // them. The file is legal and Ketcher writes it; keeping the centre as
-            // a non-valid one loads it instead of refusing the whole structure.
-            const bool has_haptic_bond = mol.haptic_bonds.referencesAtom(sc._atom_idx);
-
-            if (stereochemistry_options.ignore_errors || has_haptic_bond)
+            if (stereochemistry_options.ignore_errors || mol.hasBondsOutsideTheGraph(sc._atom_idx))
                 mol.addStereocentersIgnoreBad(sc._atom_idx, sc._type, sc._group, false); // add non-valid stereocenters
             else if (!_pqmol)
                 throw Error("stereo type specified for atom #%d, but the bond "
@@ -2137,10 +2130,8 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
     {
         if (mol.getBondDirection(i) > 0 && !sensible_bond_directions[i])
         {
-            // The wedge of a metal holding a haptic bond makes sense to a chemist
-            // and not to the graph, for the same reason as the stereocentre above.
             const Edge& edge = mol.getEdge(i);
-            if (mol.haptic_bonds.referencesAtom(edge.beg) || mol.haptic_bonds.referencesAtom(edge.end))
+            if (mol.hasBondsOutsideTheGraph(edge.beg) || mol.hasBondsOutsideTheGraph(edge.end))
                 continue;
 
             if (!stereochemistry_options.ignore_errors && !_pqmol)

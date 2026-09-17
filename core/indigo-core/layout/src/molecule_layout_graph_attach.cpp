@@ -382,8 +382,8 @@ bool MoleculeLayoutGraphSimple::_attachCycleOutside(const Cycle& cycle, float le
 
                 int vp = cycle.getVertex(prev_di);
                 int vn = cycle.getVertex(next_di);
-                float ap = _2FLOAT(atan2(_2DOUBLE(_layout_vertices[vp].pos.y - cy), _2DOUBLE(_layout_vertices[vp].pos.x - cx)));
-                float an = _2FLOAT(atan2(_2DOUBLE(_layout_vertices[vn].pos.y - cy), _2DOUBLE(_layout_vertices[vn].pos.x - cx)));
+                float ap = ATAN2(_layout_vertices[vp].pos.y - cy, _layout_vertices[vp].pos.x - cx);
+                float an = ATAN2(_layout_vertices[vn].pos.y - cy, _layout_vertices[vn].pos.x - cx);
                 float diff = an - ap;
                 while (diff > (float)M_PI)
                     diff -= 2.f * (float)M_PI;
@@ -392,8 +392,8 @@ bool MoleculeLayoutGraphSimple::_attachCycleOutside(const Cycle& cycle, float le
                 float a_mid = ap + 0.5f * diff;
 
                 int v = cycle.getVertex(di);
-                _layout_vertices[v].pos.x = cx + radius * _2FLOAT(cos(_2DOUBLE(a_mid)));
-                _layout_vertices[v].pos.y = cy + radius * _2FLOAT(sin(_2DOUBLE(a_mid)));
+                _layout_vertices[v].pos.x = cx + radius * COS(a_mid);
+                _layout_vertices[v].pos.y = cy + radius * SIN(a_mid);
                 _layout_vertices[v].type = ELEMENT_BOUNDARY;
                 _layout_vertices[v].is_nailed = true;
                 any_placed = true;
@@ -977,7 +977,7 @@ void MoleculeLayoutGraph::_attachDandlingVertices(int vert_idx, Array<int>& adja
         for (int i = 0; i < n; i++)
         {
             const float angle = step * i;
-            Vec2f pos(base.x + length * _2FLOAT(cos(_2DOUBLE(angle))), base.y + length * _2FLOAT(sin(_2DOUBLE(angle))));
+            Vec2f pos(base.x + length * COS(angle), base.y + length * SIN(angle));
             int nei_layout_idx = adjacent_list[i];
             _layout_vertices[nei_layout_idx].pos = pos;
             _layout_vertices[nei_layout_idx].type = ELEMENT_BOUNDARY;
