@@ -64,7 +64,57 @@ static const float LENGTH_TOLERANCE = 0.02f;
 // neighbours existed is given the chance to move out of their way.
 static const int SWEEPS = 3;
 
-HapticLayout::HapticLayout(BaseMolecule& molecule, float bond_length, float group_bond_multiplier)
+// A group counts as a line rather than a disc when it spreads this much less
+// across its axis than along it.
+static const float LINE_RATIO = 0.15f;
+
+// The lengths a bond is tried at, in standard bond lengths. The chemist's own
+// drawings keep it at the nominal length where there is room and stretch it where
+// there is not, so the length is a floor and the extra is paid for.
+static const float STRETCHES[] = {1.f, 1.25f, 1.5f, 2.f, 2.75f, 4.f};
+
+// Below these differences two costs, and two stretches, count as equal and the
+// next criterion decides.
+static const double COST_TOLERANCE = 1e-6;
+static const float STRETCH_TOLERANCE = 1e-4f;
+
+// Angles and directions are converted both ways all over this file. The elementary
+// functions are called on double, as everywhere in the layout (invariants.md, A10).
+static Vec2f unitVector(float angle)
+{
+    return Vec2f(_2FLOAT(cos(_2DOUBLE(angle))), _2FLOAT(sin(_2DOUBLE(angle))));
+}
+
+static float angleOf(const Vec2f& direction)
+{
+    return _2FLOAT(atan2(_2DOUBLE(direction.y), _2DOUBLE(direction.x)));
+}
+
+namespace
+{
+    // What the choice between placements is made on, in this order: what still
+    // overlaps, then how far the bond had to be stretched, then how crowded the
+    // result is and how far from what the rules of #3233 ask for. So a longer bond
+    // is drawn to clear an overlap, never for room it does not need, and never
+    // longer than it must.
+    struct Score
+    {
+        double overlap = 0.;
+        float stretch = 0.f;
+        double soft = 0.;
+
+        bool isBetterThan(const Score& other) const
+        {
+            if (fabs(overlap - other.overlap) > COST_TOLERANCE)
+                return overlap < other.overlap;
+            if (fabs(stretch - other.stretch) > STRETCH_TOLERANCE)
+                return stretch < other.stretch;
+            return soft < other.soft - COST_TOLERANCE;
+        }
+    };
+}
+
+HapticLayout::HapticLayout(const BaseMolecule& molecule, float bond_length, float group_bond_multiplier)
     : _molecule(molecule), _bond_length(bond_length), _group_bond_multiplier(group_bond_multiplier)
 {
 }
@@ -142,6 +192,30 @@ Vec2f HapticLayout::_placedEndpointPos(const Endpoint& endpoint, const Array<Vec
     return placement[endpoint.component].apply(_endpointPos(endpoint, position));
 }
 
+bool HapticLayout::_principalAxis(const std::vector<Vec2f>& points, const Vec2f& centre, Vec2f& axis, float& major, float& minor)
+{
+    float xx = 0.f, xy = 0.f, yy = 0.f;
+    for (const Vec2f& point : points)
+    {
+        Vec2f offset;
+        offset.diff(point, centre);
+        xx += offset.x * offset.x;
+        xy += offset.x * offset.y;
+        yy += offset.y * offset.y;
+    }
+
+    const float trace = xx + yy;
+    const float delta = sqrtf(std::max(0.f, (xx - yy) * (xx - yy) + 4.f * xy * xy));
+    major = (trace + delta) / 2.f;
+    minor = (trace - delta) / 2.f;
+
+    if (major < EPSILON)
+        return false;
+
+    axis = fabs(xy) > EPSILON ? Vec2f(major - yy, xy) : Vec2f(xx >= yy ? 1.f : 0.f, xx >= yy ? 0.f : 1.f);
+    return axis.normalize();
+}
+
 bool HapticLayout::_groupAxis(const Endpoint& endpoint, const Array<Vec2f>& position, Vec2f& axis)
 {
     // The major axis of the atoms, not the line from the first member to the last:
@@ -150,30 +224,13 @@ bool HapticLayout::_groupAxis(const Endpoint& endpoint, const Array<Vec2f>& posi
     if (endpoint.atoms.size() < 2 || endpoint.atoms.size() > 3)
         return false;
 
-    Vec2f centre;
+    std::vector<Vec2f> points;
+    points.reserve(endpoint.atoms.size());
     for (int atom : endpoint.atoms)
-        centre.add(position[atom]);
-    centre.scale(1.f / endpoint.atoms.size());
+        points.push_back(position[atom]);
 
-    float xx = 0.f, xy = 0.f, yy = 0.f;
-    for (int atom : endpoint.atoms)
-    {
-        Vec2f offset;
-        offset.diff(position[atom], centre);
-        xx += offset.x * offset.x;
-        xy += offset.x * offset.y;
-        yy += offset.y * offset.y;
-    }
-
-    const float trace = xx + yy;
-    const float delta = sqrtf(std::max(0.f, (xx - yy) * (xx - yy) + 4.f * xy * xy));
-    const float major = (trace + delta) / 2.f;
-
-    if (major < EPSILON)
-        return false;
-
-    axis = fabs(xy) > EPSILON ? Vec2f(major - yy, xy) : Vec2f(xx >= yy ? 1.f : 0.f, xx >= yy ? 0.f : 1.f);
-    return axis.normalize();
+    float major = 0.f, minor = 0.f;
+    return _principalAxis(points, AttachmentGroup::centreOf(points), axis, major, minor);
 }
 
 bool HapticLayout::_acrossTheGroup(const Endpoint& from, const Vec2f& from_pos, const Array<Vec2f>& position, const Array<Placement>& placement, Vec2f& axis)
@@ -185,31 +242,19 @@ bool HapticLayout::_acrossTheGroup(const Endpoint& from, const Vec2f& from_pos, 
     if (from.atoms.size() < 2)
         return false;
 
-    float xx = 0.f, xy = 0.f, yy = 0.f;
+    std::vector<Vec2f> points;
+    points.reserve(from.atoms.size());
     for (int atom : from.atoms)
-    {
-        Vec2f offset;
-        offset.diff(placement[from.component].apply(position[atom]), from_pos);
-        xx += offset.x * offset.x;
-        xy += offset.x * offset.y;
-        yy += offset.y * offset.y;
-    }
+        points.push_back(placement[from.component].apply(position[atom]));
 
-    // Eigenvalues of the 2x2 scatter matrix; the group counts as a line when the
-    // smaller one is a small fraction of the larger.
-    const float trace = xx + yy;
-    const float delta = sqrtf(std::max(0.f, (xx - yy) * (xx - yy) + 4.f * xy * xy));
-    const float major = (trace + delta) / 2.f;
-    const float minor = (trace - delta) / 2.f;
-
-    if (major < EPSILON || minor > major * 0.15f)
+    // The scatter is taken about the point the bond leaves, which is this same
+    // centroid, placed.
+    Vec2f along;
+    float major = 0.f, minor = 0.f;
+    if (!_principalAxis(points, from_pos, along, major, minor) || minor > major * LINE_RATIO)
         return false;
 
-    // The eigenvector of the major axis, turned by a right angle.
-    Vec2f along(fabs(xy) > EPSILON ? Vec2f(major - yy, xy) : Vec2f(xx >= yy ? 1.f : 0.f, xx >= yy ? 0.f : 1.f));
-    if (!along.normalize())
-        return false;
-
+    // The major axis, turned by a right angle.
     axis.set(-along.y, along.x);
     return true;
 }
@@ -224,7 +269,7 @@ Vec2f HapticLayout::_freeDirection(const Endpoint& from, const Vec2f& from_pos, 
         Vec2f direction;
         direction.diff(point, from_pos);
         if (direction.lengthSqr() > EPSILON * EPSILON)
-            angles.push_back(_2FLOAT(atan2(_2DOUBLE(direction.y), _2DOUBLE(direction.x))));
+            angles.push_back(angleOf(direction));
     };
 
     // A neighbour shares the component of the endpoint, hence its placement.
@@ -258,7 +303,7 @@ Vec2f HapticLayout::_freeDirection(const Endpoint& from, const Vec2f& from_pos, 
     }
 
     const float bisector = gap_start + widest / 2.f;
-    const Vec2f free_direction(_2FLOAT(cos(_2DOUBLE(bisector))), _2FLOAT(sin(_2DOUBLE(bisector))));
+    const Vec2f free_direction(unitVector(bisector));
 
     if (!has_axis)
         return free_direction;
@@ -273,6 +318,22 @@ float HapticLayout::_lengthOf(const Link& link) const
     return _bond_length * (link.group_end ? _group_bond_multiplier : 1.f);
 }
 
+Vec2f HapticLayout::_heldCentre(const std::vector<Held>& held, float& spread)
+{
+    std::vector<Vec2f> sources;
+    sources.reserve(held.size());
+    for (const Held& entry : held)
+        sources.push_back(entry.source);
+
+    const Vec2f centre = AttachmentGroup::centreOf(sources);
+
+    spread = 0.f;
+    for (const Vec2f& source : sources)
+        spread = std::max(spread, Vec2f::dist(source, centre));
+
+    return centre;
+}
+
 std::vector<HapticLayout::Held> HapticLayout::_heldBy(int component, const std::vector<const Link*>& links, const Array<Vec2f>& position,
                                                       const Array<Placement>& placement, float stretch) const
 {
@@ -281,11 +342,9 @@ std::vector<HapticLayout::Held> HapticLayout::_heldBy(int component, const std::
 
     for (const Link* link : links)
     {
-        const bool from_begin = link->end.component == component;
-
         Held entry;
-        entry.source = _endpointPos(from_begin ? link->end : link->begin, position);
-        entry.anchor = _placedEndpointPos(from_begin ? link->begin : link->end, position, placement);
+        entry.source = _endpointPos(link->side(component), position);
+        entry.anchor = _placedEndpointPos(link->partner(component), position, placement);
         entry.length = _lengthOf(*link) * stretch;
         held.push_back(entry);
     }
@@ -326,9 +385,7 @@ void HapticLayout::_buildBodies(int n_components, const Array<int>& component_of
         if (body.local.empty())
             continue;
 
-        for (const Vec2f& point : body.local)
-            body.centre.add(point);
-        body.centre.scale(1.f / body.local.size());
+        body.centre = AttachmentGroup::centreOf(body.local);
 
         for (const Vec2f& point : body.local)
             body.radius = std::max(body.radius, Vec2f::dist(body.centre, point));
@@ -357,11 +414,13 @@ std::vector<HapticLayout::Placed> HapticLayout::_placedBodies(int cluster, int e
     return out;
 }
 
-double HapticLayout::_cost(int component, const Placement& candidate, const std::vector<Placed>& placed, double& overlapping) const
+HapticLayout::DrawingCost HapticLayout::_cost(int component, const Placement& candidate, const std::vector<Placed>& placed) const
 {
+    DrawingCost cost;
+
     const Body& body = _bodies[component];
     if (body.local.empty() || placed.empty())
-        return 0.;
+        return cost;
 
     std::vector<Vec2f> world;
     world.reserve(body.local.size());
@@ -373,7 +432,6 @@ double HapticLayout::_cost(int component, const Placement& candidate, const std:
     const float collision = COLLISION * _bond_length;
     const float on_bond = ON_BOND * _bond_length;
 
-    double cost = 0.;
     for (const Placed& other : placed)
     {
         if (Vec2f::dist(centre, other.centre) > body.radius + other.radius + repulsion)
@@ -384,11 +442,11 @@ double HapticLayout::_cost(int component, const Placement& candidate, const std:
             {
                 const float distance = Vec2f::dist(mine, theirs);
                 if (distance < collision)
-                    overlapping += COLLISION_COST * (1. + (collision - distance) / collision);
+                    cost.overlap += COLLISION_COST * (1. + (collision - distance) / collision);
                 else if (distance < repulsion)
                 {
                     const double crowding = (repulsion - distance) / (repulsion - collision);
-                    cost += CROWDING_COST * crowding * crowding;
+                    cost.soft += CROWDING_COST * crowding * crowding;
                 }
             }
 
@@ -397,17 +455,17 @@ double HapticLayout::_cost(int component, const Placement& candidate, const std:
         for (const Vec2f& mine : world)
             for (const std::pair<int, int>& bond : their_bonds)
                 if (Vec2f::distPointSegment(mine, other.world[bond.first], other.world[bond.second]) < on_bond)
-                    overlapping += ON_BOND_COST;
+                    cost.overlap += ON_BOND_COST;
 
         for (const Vec2f& theirs : other.world)
             for (const std::pair<int, int>& bond : body.bonds)
                 if (Vec2f::distPointSegment(theirs, world[bond.first], world[bond.second]) < on_bond)
-                    overlapping += ON_BOND_COST;
+                    cost.overlap += ON_BOND_COST;
 
         for (const std::pair<int, int>& mine : body.bonds)
             for (const std::pair<int, int>& theirs : their_bonds)
                 if (Vec2f::segmentsIntersectInternal(world[mine.first], world[mine.second], other.world[theirs.first], other.world[theirs.second]))
-                    overlapping += CROSSING_COST;
+                    cost.overlap += CROSSING_COST;
     }
 
     return cost;
@@ -443,9 +501,8 @@ bool HapticLayout::_fits(int component, const std::vector<const Link*>& links, c
 {
     for (const Link* link : links)
     {
-        const bool from_begin = link->end.component == component;
-        const Vec2f mine = candidate.apply(_endpointPos(from_begin ? link->end : link->begin, position));
-        const Vec2f theirs = _placedEndpointPos(from_begin ? link->begin : link->end, position, placement);
+        const Vec2f mine = candidate.apply(_endpointPos(link->side(component), position));
+        const Vec2f theirs = _placedEndpointPos(link->partner(component), position, placement);
 
         if (fabs(Vec2f::dist(mine, theirs) - _lengthOf(*link) * stretch) > LENGTH_TOLERANCE * _bond_length)
             return false;
@@ -470,7 +527,7 @@ void HapticLayout::_aroundOnePartner(int component, const Link& link, const std:
 {
     const auto target_at = [&held](float direction) {
         Vec2f target(held[0].anchor);
-        target.addScaled(Vec2f(_2FLOAT(cos(_2DOUBLE(direction))), _2FLOAT(sin(_2DOUBLE(direction)))), held[0].length);
+        target.addScaled(unitVector(direction), held[0].length);
         return target;
     };
 
@@ -488,14 +545,14 @@ void HapticLayout::_aroundOnePartner(int component, const Link& link, const std:
     // nearest step of the grid: the widest gap gives 126 degrees on a
     // cyclopentadienyl ring and the group axis a right angle, and neither number is
     // reachable by a grid that knows nothing about them.
-    const Endpoint& to = link.end.component == component ? link.end : link.begin;
+    const Endpoint& to = link.side(component);
 
     float rule_rotation = 0.f;
     Vec2f axis;
     if (rotations > 1 && _groupAxis(to, position, axis))
     {
-        const Vec2f along(_2FLOAT(cos(_2DOUBLE(preferred))), _2FLOAT(sin(_2DOUBLE(preferred))));
-        rule_rotation = _2FLOAT(atan2(_2DOUBLE(-along.x), _2DOUBLE(along.y))) - _2FLOAT(atan2(_2DOUBLE(axis.y), _2DOUBLE(axis.x)));
+        const Vec2f along(unitVector(preferred));
+        rule_rotation = angleOf(Vec2f(along.y, -along.x)) - angleOf(axis);
     }
 
     out.push_back(_candidateAt(held[0], preferred, rule_rotation, target_at(preferred)));
@@ -533,7 +590,7 @@ void HapticLayout::_betweenTwoPartners(const std::vector<Held>& held, int rotati
 
         Vec2f direction;
         direction.diff(target, held[0].anchor);
-        const float angle = _2FLOAT(atan2(_2DOUBLE(direction.y), _2DOUBLE(direction.x)));
+        const float angle = angleOf(direction);
 
         for (int r = 0; r < rotations; r++)
             out.push_back(_candidateAt(held[0], angle, _2FLOAT(2. * M_PI) * r / rotations, target));
@@ -556,17 +613,17 @@ void HapticLayout::_onAChordOfOnePartner(const std::vector<Held>& held, const Ve
 
     Vec2f chord;
     chord.diff(held[1].source, held[0].source);
-    const float chord_angle = _2FLOAT(atan2(_2DOUBLE(chord.y), _2DOUBLE(chord.x)));
+    const float chord_angle = angleOf(chord);
 
     const auto chord_at = [&](float direction) {
-        const Vec2f along(_2FLOAT(cos(_2DOUBLE(direction))), _2FLOAT(sin(_2DOUBLE(direction))));
+        const Vec2f along(unitVector(direction));
 
         Vec2f target(held[0].anchor);
         target.addScaled(along, height);
 
         Candidate candidate;
         candidate.direction = direction;
-        candidate.rotation = _2FLOAT(atan2(_2DOUBLE(-along.x), _2DOUBLE(along.y))) - chord_angle;
+        candidate.rotation = angleOf(Vec2f(along.y, -along.x)) - chord_angle;
         candidate.placement.rotation = candidate.rotation;
         candidate.placement.shift.zero();
         candidate.placement.shift.diff(target, candidate.placement.apply(source_centre));
@@ -594,14 +651,14 @@ void HapticLayout::_byFitting(int component, const std::vector<const Link*>& lin
             const float direction = _2FLOAT(2. * M_PI) * d / DIRECTIONS;
 
             Vec2f target(held[0].anchor);
-            target.addScaled(Vec2f(_2FLOAT(cos(_2DOUBLE(direction))), _2FLOAT(sin(_2DOUBLE(direction)))), held[0].length);
+            target.addScaled(unitVector(direction), held[0].length);
 
             Candidate candidate = _candidateAt(held[0], direction, rotation, target);
             _refine(component, links, position, placement, stretch, candidate.placement, REFINE_PASSES);
 
             Vec2f leaving;
             leaving.diff(candidate.placement.apply(held[0].source), held[0].anchor);
-            candidate.direction = _2FLOAT(atan2(_2DOUBLE(leaving.y), _2DOUBLE(leaving.x)));
+            candidate.direction = angleOf(leaving);
             candidate.rotation = candidate.placement.rotation;
 
             out.push_back(candidate);
@@ -628,14 +685,8 @@ void HapticLayout::_candidatesAt(int component, const std::vector<const Link*>& 
         return;
     }
 
-    Vec2f source_centre;
-    for (const Held& entry : held)
-        source_centre.add(entry.source);
-    source_centre.scale(1.f / held.size());
-
     float spread = 0.f;
-    for (const Held& entry : held)
-        spread = std::max(spread, Vec2f::dist(entry.source, source_centre));
+    const Vec2f source_centre = _heldCentre(held, spread);
 
     if (spread < EPSILON)
         _betweenTwoPartners(held, rotations, out);
@@ -674,8 +725,7 @@ float HapticLayout::_preferredDirection(int component, const Endpoint& from, con
         taken.push_back(_placedEndpointPos(partner, position, placement));
     }
 
-    const Vec2f preferred = _freeDirection(from, from_pos, taken, position, placement);
-    return _2FLOAT(atan2(_2DOUBLE(preferred.y), _2DOUBLE(preferred.x)));
+    return angleOf(_freeDirection(from, from_pos, taken, position, placement));
 }
 
 double HapticLayout::_place(int component, int cluster, const std::vector<const Link*>& links, const Array<Vec2f>& position, const Array<int>& placed,
@@ -685,9 +735,8 @@ double HapticLayout::_place(int component, int cluster, const std::vector<const 
         return 0.;
 
     const Link& first = *links.front();
-    const bool from_begin = first.end.component == component;
-    const Endpoint& from = from_begin ? first.begin : first.end;
-    const Endpoint& to = from_begin ? first.end : first.begin;
+    const Endpoint& from = first.partner(component);
+    const Endpoint& to = first.side(component);
 
     const Vec2f from_pos = _placedEndpointPos(from, position, placement);
     const float preferred_angle = _preferredDirection(component, from, from_pos, position, placed, placement);
@@ -700,21 +749,10 @@ double HapticLayout::_place(int component, int cluster, const std::vector<const 
 
     const std::vector<Placed> others = _placedBodies(cluster, component, placed, placement);
 
-    // The chemist's own drawings keep a haptic bond at its nominal length where
-    // there is room and stretch it where there is not - to 2.3 bond lengths on a
-    // cycloheptatrienyl molybdenum, to 3.9 on the one bond of the set that joins
-    // two atoms. So the length is a floor, and the extra is paid for. A longer
-    // bond is only looked at when the shorter one leaves something overlapping.
-    static const float STRETCHES[] = {1.f, 1.25f, 1.5f, 2.f, 2.75f, 4.f};
-
-    // What the choice is made on, in this order: what still overlaps, then how far
-    // the bond had to be stretched, then how crowded the result is and how far it
-    // is from what the rules of #3233 ask for. So a longer bond is drawn to clear
-    // an overlap, never for room it does not need, and never longer than it must.
+    // A longer bond is only looked at when the shorter one leaves something
+    // overlapping, which is what Score orders the candidates by.
     bool found = false;
-    double best_overlap = 0.;
-    float best_stretch = 0.f;
-    double best_soft = 0.;
+    Score best_score;
     Placement best;
 
     std::vector<Candidate> candidates;
@@ -732,46 +770,36 @@ double HapticLayout::_place(int component, int cluster, const std::vector<const 
             current.placement = placement[component];
             current.rotation = placement[component].rotation;
 
-            Vec2f held;
-            held.diff(current.placement.apply(_endpointPos(to, position)), from_pos);
-            current.direction = _2FLOAT(atan2(_2DOUBLE(held.y), _2DOUBLE(held.x)));
-            current.stretch = _lengthOf(first) > EPSILON ? held.length() / _lengthOf(first) : 1.f;
+            Vec2f reach;
+            reach.diff(current.placement.apply(_endpointPos(to, position)), from_pos);
+            current.direction = angleOf(reach);
+            current.stretch = _lengthOf(first) > EPSILON ? reach.length() / _lengthOf(first) : 1.f;
             candidates.push_back(current);
         }
 
         for (const Candidate& candidate : candidates)
         {
-            double overlap = 0.;
-            double soft = _cost(component, candidate.placement, others, overlap);
-            overlap += _lineCost(from_pos, candidate.placement.apply(_endpointPos(to, position)), from.component, others);
-            soft += PRIOR_COST * (1. - _2FLOAT(cos(_2DOUBLE(candidate.direction - preferred_angle)))) / 2.;
+            DrawingCost cost = _cost(component, candidate.placement, others);
+            cost.overlap += _lineCost(from_pos, candidate.placement.apply(_endpointPos(to, position)), from.component, others);
+            cost.soft += PRIOR_COST * (1. - _2FLOAT(cos(_2DOUBLE(candidate.direction - preferred_angle)))) / 2.;
 
             if (has_axis)
             {
                 Vec2f turned(axis);
                 turned.rotate(candidate.rotation);
-                soft += PRIOR_COST * fabs(Vec2f::dot(turned, Vec2f(_2FLOAT(cos(_2DOUBLE(candidate.direction))), _2FLOAT(sin(_2DOUBLE(candidate.direction))))));
+                cost.soft += PRIOR_COST * fabs(Vec2f::dot(turned, unitVector(candidate.direction)));
             }
 
-            bool better = !found || overlap < best_overlap - 1e-6;
-            if (!better && found && overlap < best_overlap + 1e-6)
-            {
-                better = candidate.stretch < best_stretch - 1e-4f;
-                if (!better && candidate.stretch < best_stretch + 1e-4f)
-                    better = soft < best_soft - 1e-6;
-            }
-
-            if (better)
+            const Score score{cost.overlap, candidate.stretch, cost.soft};
+            if (!found || score.isBetterThan(best_score))
             {
                 found = true;
-                best_overlap = overlap;
-                best_stretch = candidate.stretch;
-                best_soft = soft;
+                best_score = score;
                 best = candidate.placement;
             }
         }
 
-        if (found && best_overlap <= 0.)
+        if (found && best_score.overlap <= 0.)
             break;
     }
 
@@ -782,7 +810,7 @@ double HapticLayout::_place(int component, int cluster, const std::vector<const 
     placement[component] = best;
     placement[component].cluster = cluster_of;
 
-    return best_overlap;
+    return best_score.overlap;
 }
 
 void HapticLayout::_refine(int component, const std::vector<const Link*>& links, const Array<Vec2f>& position, const Array<Placement>& placement, float stretch,
@@ -795,14 +823,8 @@ void HapticLayout::_refine(int component, const std::vector<const Link*>& links,
     // a rigid body throughout, so the ligand keeps its own geometry.
     const std::vector<Held> held = _heldBy(component, links, position, placement, stretch);
 
-    Vec2f source_centre;
-    for (const Held& entry : held)
-        source_centre.add(entry.source);
-    source_centre.scale(1.f / held.size());
-
     float spread = 0.f;
-    for (const Held& entry : held)
-        spread = std::max(spread, Vec2f::dist(entry.source, source_centre));
+    const Vec2f source_centre = _heldCentre(held, spread);
 
     for (int pass = 0; pass < passes; pass++)
     {
@@ -827,10 +849,7 @@ void HapticLayout::_refine(int component, const std::vector<const Link*>& links,
                 target.push_back(wanted);
             }
 
-            Vec2f target_centre;
-            for (const Vec2f& point : target)
-                target_centre.add(point);
-            target_centre.scale(1.f / target.size());
+            const Vec2f target_centre = AttachmentGroup::centreOf(target);
 
             float sin_sum = 0.f, cos_sum = 0.f;
             for (size_t i = 0; i < held.size(); i++)
@@ -849,7 +868,7 @@ void HapticLayout::_refine(int component, const std::vector<const Link*>& links,
                 // undo it every pass, and two bonds to one and the same partner
                 // would then drag the component onto that partner.
                 const Vec2f centre_before = current.apply(source_centre);
-                current.rotation = _2FLOAT(atan2(_2DOUBLE(sin_sum), _2DOUBLE(cos_sum)));
+                current.rotation = angleOf(Vec2f(cos_sum, sin_sum));
                 current.shift.zero();
                 current.shift.diff(centre_before, current.apply(source_centre));
             }
@@ -952,11 +971,10 @@ int HapticLayout::plan(int n_components, const Array<int>& component_of, const A
 
             for (const Link& link : _links)
             {
-                const bool from_anchor = link.begin.component == anchor;
-                if (!from_anchor && link.end.component != anchor)
+                if (link.begin.component != anchor && link.end.component != anchor)
                     continue;
 
-                const int other = from_anchor ? link.end.component : link.begin.component;
+                const int other = link.partner(anchor).component;
                 if (placed[other])
                     continue;
 
@@ -972,11 +990,10 @@ int HapticLayout::plan(int n_components, const Array<int>& component_of, const A
                 // Links to any other component already placed hold it too.
                 for (const Link& link : _links)
                 {
-                    const bool to_neighbour = link.end.component == neighbour;
-                    if (!to_neighbour && link.begin.component != neighbour)
+                    if (link.begin.component != neighbour && link.end.component != neighbour)
                         continue;
 
-                    const int other = to_neighbour ? link.begin.component : link.end.component;
+                    const int other = link.partner(neighbour).component;
                     if (other == anchor || !placed[other])
                         continue;
                     if (std::find(links.begin(), links.end(), &link) == links.end())

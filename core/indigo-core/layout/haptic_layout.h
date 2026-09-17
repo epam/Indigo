@@ -37,23 +37,16 @@ namespace indigo
     class BaseMolecule;
 
     // Places the components a haptic bond joins, which the layout forces cannot see
-    // because the bond is not an edge. Answers in shifts and never writes to the
-    // molecule, so coordinates keep a single assignment point in the caller.
+    // because the bond is not an edge. Answers in shifts, so coordinates keep a
+    // single assignment point in the caller.
     // Never throws: a bond it cannot act on is left to the ordinary grid.
-    //
-    // A bond fixes a distance and leaves a direction and a rotation free, and those
-    // are chosen by what the drawing costs: two components of one cluster may not
-    // cross or sit on top of each other, and the geometric rules of #3233 - the
-    // widest gap, the right angle across a two-atom group - only break the tie.
-    // Choosing them by rule alone is what put a ligand through a metal's other
-    // bonds, because a rule reads one atom and not the body hanging off it.
+    // A bond fixes a distance; the direction and the rotation it leaves free are
+    // chosen by what the drawing costs, and the geometric rules of #3233 break ties.
     class DLLEXPORT HapticLayout
     {
     public:
         // Where one component ends up: p' = rotate(p, rotation) + shift, about the
-        // origin of the component's own coordinates. A chelating ligand is held by
-        // two haptic bonds at once and cannot satisfy both by translation alone,
-        // which is why the answer carries a rotation.
+        // origin of the component's own coordinates.
         struct Placement
         {
             int cluster = -1;
@@ -69,7 +62,7 @@ namespace indigo
 
         // `group_bond_multiplier` is the length of a group-to-atom bond in standard
         // bond lengths; an atom-to-atom one always keeps the ordinary length.
-        HapticLayout(BaseMolecule& molecule, float bond_length, float group_bond_multiplier);
+        HapticLayout(const BaseMolecule& molecule, float bond_length, float group_bond_multiplier);
 
         // `component_of` and `position` are indexed by atom, -1 for an atom outside
         // the layout; `frozen` and `placement` by component. A frozen component is
@@ -95,11 +88,20 @@ namespace indigo
             Endpoint begin;
             Endpoint end;
             bool group_end = false; // an end is a group: the multiplier applies
+
+            // The end that belongs to `component`, and the one holding it. The ends
+            // are in two different components, which _collectLinks makes sure of.
+            const Endpoint& side(int component) const
+            {
+                return end.component == component ? end : begin;
+            }
+            const Endpoint& partner(int component) const
+            {
+                return end.component == component ? begin : end;
+            }
         };
 
         // A component as a rigid body - the shape a placement has to keep clear of.
-        // Held here because a haptic bond says nothing about the atoms hanging off
-        // its ends, and those are what collide.
         struct Body
         {
             std::vector<Vec2f> local;               // atom positions in the component's own frame
@@ -108,7 +110,6 @@ namespace indigo
             float radius = 0.f;
         };
 
-        // A component already placed, with its atoms where they now stand.
         struct Placed
         {
             int component = -1;
@@ -117,9 +118,8 @@ namespace indigo
             float radius = 0.f;
         };
 
-        // Where one bond holds a component: the point of the component it holds, in
-        // the component's own coordinates, the point it is held from, already
-        // placed, and the length it asks for.
+        // Where one bond holds a component: `source` in the component's own
+        // coordinates, `anchor` where it is held from, already placed, and the length.
         struct Held
         {
             Vec2f source;
@@ -127,7 +127,15 @@ namespace indigo
             float length = 0.f;
         };
 
-        // A placement being considered, before it is known to be the best one.
+        // What a drawing pays. `overlap` is the part that is a defect rather than a
+        // preference - bonds crossing, an atom on a bond, two atoms in one place;
+        // `soft` is crowding and the distance from the rules of #3233.
+        struct DrawingCost
+        {
+            double overlap = 0.;
+            double soft = 0.;
+        };
+
         struct Candidate
         {
             Placement placement;
@@ -148,42 +156,44 @@ namespace indigo
         static Vec2f _endpointPos(const Endpoint& endpoint, const Array<Vec2f>& position);
         static Vec2f _placedEndpointPos(const Endpoint& endpoint, const Array<Vec2f>& position, const Array<Placement>& placement);
 
+        // Major axis of the points about `centre`, with the eigenvalues of their 2x2
+        // scatter matrix: `major` is how far they spread along the axis, `minor`
+        // across it. False when they have no axis at all.
+        static bool _principalAxis(const std::vector<Vec2f>& points, const Vec2f& centre, Vec2f& axis, float& major, float& minor);
+
         // The axis of a two- or three-atom group, in the component's own
         // coordinates; false for a ring, which has none.
         static bool _groupAxis(const Endpoint& endpoint, const Array<Vec2f>& position, Vec2f& axis);
 
         // True when the group is a line rather than a disc (an eta-2 or eta-3 end),
-        // answering the direction across it - the one that leaves the ligand's own
-        // bonds at a right angle instead of running over them.
+        // answering the direction across it, at a right angle to the ligand's bonds.
         static bool _acrossTheGroup(const Endpoint& from, const Vec2f& from_pos, const Array<Vec2f>& position, const Array<Placement>& placement, Vec2f& axis);
 
         // Bisector of the widest angular gap between the directions already taken
-        // around the endpoint. Gives 120 degrees on a hexagon and 126 on a
-        // cyclopentadienyl ring, which is why neither number is a constant here.
+        // around the endpoint: 120 degrees on a hexagon, 126 on a cyclopentadienyl.
         static Vec2f _freeDirection(const Endpoint& from, const Vec2f& from_pos, const std::vector<Vec2f>& taken, const Array<Vec2f>& position,
                                     const Array<Placement>& placement);
 
-        // The length a bond of this link has to end up with.
         float _lengthOf(const Link& link) const;
+
+        // The centre of the held points and how far they spread from it; a spread of
+        // zero is one point, which a rotation would not move.
+        static Vec2f _heldCentre(const std::vector<Held>& held, float& spread);
 
         // What holds this component, one entry per link, with every length taken
         // `stretch` times its nominal value.
         std::vector<Held> _heldBy(int component, const std::vector<const Link*>& links, const Array<Vec2f>& position, const Array<Placement>& placement,
                                   float stretch) const;
 
-        // Every placement that satisfies the links holding this component: each of
-        // them puts the bonds at their length, and they differ in where around the
-        // partner the component sits and how it is turned.
-        // `preferred` is the direction the rules of #3233 ask for: it is in the set
-        // exactly, so a grid step never costs the angle they derive. `stretch` is
-        // how much longer than nominal the bonds of this component are drawn.
+        // Every placement that satisfies the links holding this component. `preferred`
+        // is the direction the rules of #3233 ask for, and it is in the set exactly;
+        // `stretch` is how much longer than nominal its bonds are drawn.
         void _candidatesAt(int component, const std::vector<const Link*>& links, const Array<Vec2f>& position, const Array<Placement>& placement,
                            float preferred, float stretch, std::vector<Candidate>& out) const;
 
-        // The four ways a component can be held, each with its own construction: one
-        // bond leaves the direction and the rotation free; two bonds to two partners
-        // meet at the intersection of two circles; two bonds to one partner put the
-        // held points on a chord of one; anything else is fitted numerically.
+        // The four ways a component can be held: one bond leaves direction and
+        // rotation free; two bonds to two partners meet where two circles cut; two
+        // bonds to one partner sit on a chord of one; anything else is fitted.
         static Candidate _candidateAt(const Held& held, float direction, float rotation, const Vec2f& target);
         void _aroundOnePartner(int component, const Link& link, const std::vector<Held>& held, const Array<Vec2f>& position, float preferred, int rotations,
                                std::vector<Candidate>& out) const;
@@ -192,9 +202,8 @@ namespace indigo
         void _byFitting(int component, const std::vector<const Link*>& links, const std::vector<Held>& held, const Array<Vec2f>& position,
                         const Array<Placement>& placement, float stretch, int rotations, std::vector<Candidate>& out) const;
 
-        // Offers every component of `order` its choice again, now that the rest of
-        // the cluster stands around it. Stops as soon as a sweep changes nothing or
-        // leaves nothing overlapping.
+        // Offers every component of `order` its choice again, against the cluster as
+        // it now stands. Stops when a sweep moves nothing or leaves nothing overlapping.
         void _sweep(const std::vector<int>& order, const Array<Vec2f>& position, const Array<int>& placed, Array<Placement>& placement) const;
 
         // The direction the rules of #3233 ask the bond to leave `from` in, as an
@@ -207,9 +216,8 @@ namespace indigo
         double _place(int component, int cluster, const std::vector<const Link*>& links, const Array<Vec2f>& position, const Array<int>& placed,
                       Array<Placement>& placement) const;
 
-        // Turns `current` towards the lengths the bonds ask for, as a rigid body,
-        // from wherever it stands - the general case of several links, where no
-        // construction gives the answer outright.
+        // Turns `current` towards the lengths the bonds ask for, as a rigid body: the
+        // case of several links, where no construction answers outright.
         void _refine(int component, const std::vector<const Link*>& links, const Array<Vec2f>& position, const Array<Placement>& placement, float stretch,
                      Placement& current, int passes) const;
 
@@ -222,14 +230,10 @@ namespace indigo
         // The components of this cluster that are already placed, `except` left out.
         std::vector<Placed> _placedBodies(int cluster, int except, const Array<int>& placed, const Array<Placement>& placement) const;
 
-        // What a drawing pays for this placement. `overlapping` collects the part of
-        // it that is a defect rather than a preference - bonds crossing, an atom on
-        // a bond, two atoms in the same place - which is what a longer bond may be
-        // spent on and what another sweep is worth trying for.
-        double _cost(int component, const Placement& candidate, const std::vector<Placed>& placed, double& overlapping) const;
+        DrawingCost _cost(int component, const Placement& candidate, const std::vector<Placed>& placed) const;
         double _lineCost(const Vec2f& from, const Vec2f& to, int skip, const std::vector<Placed>& placed) const;
 
-        BaseMolecule& _molecule;
+        const BaseMolecule& _molecule;
         float _bond_length;
         float _group_bond_multiplier;
 
