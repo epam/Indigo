@@ -71,8 +71,12 @@ def assert_option_error(indigo, value, expected):
 
 
 def test_fonts_option(indigo):
-    assert_equal(indigo.getOptionType("render-fonts"), "str", "fonts option type")
-    assert_equal(indigo.getOption("render-fonts"), "[]", "default fonts option")
+    assert_equal(
+        indigo.getOptionType("render-fonts"), "str", "fonts option type"
+    )
+    assert_equal(
+        indigo.getOption("render-fonts"), "[]", "default fonts option"
+    )
 
     first_value = json.dumps(
         [{"name": "first", "data": "AA=="}], separators=(",", ":")
@@ -88,7 +92,9 @@ def test_fonts_option(indigo):
         separators=(",", ":"),
     )
     indigo.setOption("render-fonts", multiple_value)
-    assert_equal(indigo.getOption("render-fonts"), multiple_value, "multiple fonts")
+    assert_equal(
+        indigo.getOption("render-fonts"), multiple_value, "multiple fonts"
+    )
 
     invalid_values = (
         ("[", "Invalid fonts JSON at offset 1: Invalid value."),
