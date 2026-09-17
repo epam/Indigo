@@ -676,3 +676,17 @@ auto Indigo::getAbbreviations() -> const abbreviations::IndigoAbbreviations&
     }
     return *_abbreviations;
 };
+
+void Indigo::loadAbbreviations(const char* xml_text)
+{
+    if (_abbreviations == nullptr)
+    {
+        _abbreviations = std::make_unique<abbreviations::IndigoAbbreviations>();
+    }
+    _abbreviations->loadFromXmlString(xml_text);
+}
+
+void Indigo::resetAbbreviations()
+{
+    _abbreviations = std::make_unique<abbreviations::IndigoAbbreviations>();
+}
