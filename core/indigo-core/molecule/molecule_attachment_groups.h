@@ -66,11 +66,12 @@ namespace indigo
         // the whole group, never a truncated one.
         bool remapAtoms(const Array<int>& atom_mapping);
 
-        // The atom a file uses to draw the group with: the star atom of a V3000
-        // ENDPTS record. -1 when the source named none, as KET does. Not a member
-        // of the group and not part of it chemically — a group whose anchor is
-        // gone stays a group, and a saver that needs one puts a fresh star at the
-        // centre of the members.
+        // The atom that ends a V3000 ENDPTS record together with the group, so that
+        // the saver writes the pair back as one record: the star of a variable
+        // attachment (ATTACH=ANY), or the ordinary end of a record with no star. -1
+        // for a haptic group, whose centroid takes the place of the star the loader
+        // absorbs, and for a group from KET. Not a member of the group - a group whose
+        // anchor is gone stays a group, and the saver puts a fresh star at its centre.
         int anchorAtom() const
         {
             return _anchor_atom;

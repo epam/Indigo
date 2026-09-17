@@ -344,6 +344,18 @@ void MolfileLoader::_postLoad()
     for (auto idx : templates_to_remove)
         _bmol->tgroups.remove(idx);
 
+    // Last, because everything above addresses atoms by their place in the file:
+    // the phantom stars of haptic records (_addHapticBond3000) leave the structure.
+    if (!_haptic_stars.empty())
+    {
+        QS_DEF(Array<int>, stars);
+        stars.clear();
+        for (int star : _haptic_stars)
+            stars.push(star);
+        _bmol->removeAtoms(stars);
+        _haptic_stars.clear();
+    }
+
     // fix layout
     // if (templates_to_remove.size() && _bmol->countComponents())
     //{

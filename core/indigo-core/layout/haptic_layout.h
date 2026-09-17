@@ -144,9 +144,7 @@ namespace indigo
 
         static bool _sameEndpoint(const Endpoint& left, const Endpoint& right);
 
-        // A group answers AttachmentGroup::centreOf() over its members, not the
-        // position of its anchor atom: the anchor belongs to the partner's
-        // component, so its place is fixed before this class gets to choose one.
+        // A group answers AttachmentGroup::centreOf() over its members.
         static Vec2f _endpointPos(const Endpoint& endpoint, const Array<Vec2f>& position);
         static Vec2f _placedEndpointPos(const Endpoint& endpoint, const Array<Vec2f>& position, const Array<Placement>& placement);
 

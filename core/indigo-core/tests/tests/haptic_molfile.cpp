@@ -18,8 +18,8 @@
 
 // MOL V3000 side of haptic bonds (#3233, ticket #3840): the ENDPTS/ATTACH keys the
 // loader used to throw away, and the single record the saver must write them back
-// in. The star atom is not absorbed - it stays an ordinary pseudo-atom, and the
-// group only remembers which atom it is.
+// in. The star of a haptic record is the format's phantom for the centre of the
+// pi-system: the loader absorbs it, and the saver puts a fresh one back.
 
 #include <gtest/gtest.h>
 
@@ -182,28 +182,70 @@ TEST_F(IndigoCoreHapticMolfileTest, EndptsBecomeGroupsAndHapticBonds)
 
     const AttachmentGroup& group = mol.attachment_groups.group(first.begin().index());
     EXPECT_EQ(std::vector<int>({10, 6, 7, 8, 9}), group.atoms()) << "members keep the order ENDPTS lists them in";
-    EXPECT_EQ(11, group.anchorAtom()) << "the star of the record, not absorbed but remembered";
+    EXPECT_EQ(-1, group.anchorAtom()) << "the star of a haptic record is absorbed, not remembered";
 }
 
-// The star is an ordinary atom of the graph, so the charge the file put on it does
-// not move anywhere and the molecule still adds up to zero.
-TEST_F(IndigoCoreHapticMolfileTest, StarAtomAndItsEdgeSurviveLoading)
+// "The * atom is an internal phantom atom that represents the center of the
+// pi-system" (CTfile, Haptic): neither the star nor its edge is part of the
+// structure, which is what keeps them out of KET and off the Ketcher canvas. A
+// charge the file put on the phantom goes with it - the specification puts the
+// charges of a haptic complex on the ring atoms and the metal.
+TEST_F(IndigoCoreHapticMolfileTest, StarOfAHapticRecordIsAbsorbed)
 {
     Molecule mol;
     loadMolfile(ferrocene(), mol);
 
-    ASSERT_EQ(13, mol.vertexCount());
-    ASSERT_EQ(12, mol.edgeCount());
-
-    ASSERT_TRUE(mol.isPseudoAtom(11));
-    EXPECT_STREQ("*", mol.getPseudoAtom(11));
-    EXPECT_EQ(-1, mol.getAtomCharge(11));
-    EXPECT_GE(mol.findEdgeIndex(5, 11), 0) << "the record is still an edge as well";
+    EXPECT_EQ(11, mol.vertexCount());
+    EXPECT_EQ(10, mol.edgeCount());
+    for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+        EXPECT_FALSE(mol.isPseudoAtom(i)) << "atom " << i << " is a star";
+    EXPECT_EQ(0, mol.getVertex(5).degree()) << "the iron is held by the haptic bonds only";
+    EXPECT_EQ(2, mol.haptic_bonds.count());
 
     int total = 0;
     for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
         total += mol.getAtomCharge(i);
-    EXPECT_EQ(0, total);
+    EXPECT_EQ(2, total) << "the -1 of each phantom left with it";
+}
+
+// A ring bonded to two metals is two records ending in the same star, which must
+// be absorbed once.
+TEST_F(IndigoCoreHapticMolfileTest, StarSharedByTwoRecordsIsAbsorbedOnce)
+{
+    const char* bridged = "\n"
+                          "  -INDIGO-\n"
+                          "\n"
+                          "  0  0  0  0  0  0  0  0  0  0999 V3000\n"
+                          "M  V30 BEGIN CTAB\n"
+                          "M  V30 COUNTS 8 7 0 0 0\n"
+                          "M  V30 BEGIN ATOM\n"
+                          "M  V30 1 C 0.0 0.0 0 0\n"
+                          "M  V30 2 C 1.0 0.0 0 0\n"
+                          "M  V30 3 C 1.31 0.95 0 0\n"
+                          "M  V30 4 C 0.5 1.54 0 0\n"
+                          "M  V30 5 C -0.31 0.95 0 0\n"
+                          "M  V30 6 Fe 0.5 3.0 0 0\n"
+                          "M  V30 7 Fe 0.5 -2.0 0 0\n"
+                          "M  V30 8 * 0.5 0.69 0 0\n"
+                          "M  V30 END ATOM\n"
+                          "M  V30 BEGIN BOND\n"
+                          "M  V30 1 1 1 2\n"
+                          "M  V30 2 1 2 3\n"
+                          "M  V30 3 1 3 4\n"
+                          "M  V30 4 1 4 5\n"
+                          "M  V30 5 1 5 1\n"
+                          "M  V30 6 9 6 8 ENDPTS=(5 1 2 3 4 5) ATTACH=ALL\n"
+                          "M  V30 7 9 7 8 ENDPTS=(5 1 2 3 4 5) ATTACH=ALL\n"
+                          "M  V30 END BOND\n"
+                          "M  V30 END CTAB\n"
+                          "M  END\n";
+
+    Molecule mol;
+    loadMolfile(bridged, mol);
+
+    EXPECT_EQ(7, mol.vertexCount());
+    EXPECT_EQ(5, mol.edgeCount());
+    EXPECT_EQ(2, mol.haptic_bonds.count());
 }
 
 TEST_F(IndigoCoreHapticMolfileTest, AttachAnyIsStoredWithoutBecomingHaptic)
@@ -285,7 +327,7 @@ TEST_F(IndigoCoreHapticMolfileTest, SavedRecordCarriesTheKeysBack)
 
     EXPECT_NE(std::string::npos, saved.find("M  V30 11 9 6 12 ENDPTS=(5 11 7 8 9 10) ATTACH=ALL"));
     EXPECT_NE(std::string::npos, saved.find("M  V30 12 9 6 13 ENDPTS=(5 5 4 3 2 1) ATTACH=ALL"));
-    EXPECT_NE(std::string::npos, saved.find("M  V30 COUNTS 13 12 0 0 0")) << "no atom and no record was invented";
+    EXPECT_NE(std::string::npos, saved.find("M  V30 COUNTS 13 12 0 0 0")) << "each group gets its star back, and nothing more";
 }
 
 // One record in the file became an edge and a haptic bond; it has to come back as
@@ -341,11 +383,11 @@ TEST_F(IndigoCoreHapticMolfileTest, StarIsSynthesizedForAGroupWithoutAnchor)
     loadMolfile(saved.c_str(), reloaded);
     ASSERT_EQ(1, reloaded.attachment_groups.groupCount());
     ASSERT_EQ(1, reloaded.haptic_bonds.count());
-    EXPECT_EQ(6, reloaded.attachment_groups.group(reloaded.attachment_groups.begin()).anchorAtom());
+    EXPECT_EQ(6, reloaded.vertexCount()) << "and absorbed again on reading";
 }
 
-// V2000 has no ENDPTS at all, so the haptic markup is dropped whole - and nothing
-// else is: the star stays the ordinary atom it is.
+// V2000 has no ENDPTS at all, so the haptic bonds are dropped whole. Their stars
+// went at reading already, so what is written is the structure itself.
 TEST_F(IndigoCoreHapticMolfileTest, V2000OmitsTheHapticMarkup)
 {
     Molecule mol;
@@ -357,7 +399,7 @@ TEST_F(IndigoCoreHapticMolfileTest, V2000OmitsTheHapticMarkup)
 
     Molecule reloaded;
     loadMolfile(saved.c_str(), reloaded);
-    EXPECT_EQ(13, reloaded.vertexCount());
+    EXPECT_EQ(11, reloaded.vertexCount());
     EXPECT_EQ(0, reloaded.attachment_groups.groupCount());
 }
 
@@ -404,40 +446,22 @@ TEST_F(IndigoCoreHapticMolfileTest, CloneWritesTheSameRecords)
     EXPECT_EQ(saveMolfile(mol), saveMolfile(copy));
 }
 
-// ---- the anchor follows the centre of its ligand ---------------------------
+// ---- coordinates of the stars that stay ------------------------------------
 
-// A vendor puts the star on the metal-to-ring axis at the height of the centroid,
-// 0.017 to 0.069 away from the centroid itself; the bond is drawn from the star,
-// so the model puts it where the bond is supposed to start.
-TEST_F(IndigoCoreHapticMolfileTest, AnchorMovesToTheCentreOfItsGroup)
+// A haptic group needs no star: its centroid is where the bond starts. The star of
+// a variable attachment is part of the Markush drawing, and it keeps the place the
+// file gave it.
+TEST_F(IndigoCoreHapticMolfileTest, AVariableAttachmentStarKeepsItsPlace)
 {
     Molecule mol;
-    loadMolfile(ferrocene(), mol);
-
-    ASSERT_EQ(2, mol.attachment_groups.groupCount());
-
-    for (int i = mol.attachment_groups.begin(); i != mol.attachment_groups.end(); i = mol.attachment_groups.next(i))
-    {
-        const int anchor = mol.attachment_groups.group(i).anchorAtom();
-        ASSERT_GE(anchor, 0);
-        EXPECT_NEAR(0.f, Vec3f::dist(mol.getAtomXyz(anchor), mol.attachmentGroupCentre(i)), 1e-4f);
-    }
-}
-
-TEST_F(IndigoCoreHapticMolfileTest, AnchorFollowsAMemberThatMoves)
-{
-    Molecule mol;
-    loadMolfile(ferrocene(), mol);
+    loadMolfile(variableAttachment(), mol);
 
     const int group = mol.attachment_groups.begin();
-    const int member = mol.attachment_groups.group(group).atoms().front();
-    const int anchor = mol.attachment_groups.group(group).anchorAtom();
+    const int star = mol.attachment_groups.group(group).anchorAtom();
 
-    Vec3f moved = mol.getAtomXyz(member);
-    moved.add(Vec3f(1.f, 2.f, 0.f));
-    mol.setAtomXyz(member, moved);
-
-    EXPECT_NEAR(0.f, Vec3f::dist(mol.getAtomXyz(anchor), mol.attachmentGroupCentre(group)), 1e-4f);
+    ASSERT_GE(star, 0);
+    EXPECT_NEAR(1.f, mol.getAtomXyz(star).x, 1e-4f);
+    EXPECT_NEAR(0.866f, mol.getAtomXyz(star).y, 1e-4f);
 }
 
 // A star that no ENDPTS record names is a polymer end group or a plain vertex, and
