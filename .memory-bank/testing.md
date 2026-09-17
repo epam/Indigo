@@ -30,6 +30,10 @@ python api/tests/integration/test.py -t 1 -p basic/basic.py  # one file
 python api/tests/integration/test.py -t 1 -j junit_report.xml
 ```
 
+Under CPython the harness *appends* `api/python` to `sys.path`, so an installed `epam.indigo` wins over
+the checkout, and the libraries are loaded from that package's `lib/<os>-<arch>/`, which no build
+refreshes. The `Indigo library path` line of the header shows which library ran.
+
 ## Native unit tests — GTest through CTest
 
 Three GTest binaries plus a set of `dlopen` smoke tests, all registered with CTest:
@@ -54,16 +58,25 @@ built — a stale copy produces failures that look like logic errors.
 
 ## Wrapper-specific tests
 
+Verified against the job logs of CI run 7682 (PR #3912, `97a183d5c`).
+
 | Suite | Location | Run with | In CI |
 | --- | --- | --- | --- |
-| Python wrapper | `api/python/tests/` — indigo, inchi, renderer, bingo-nosql, sequence layout | `pytest` | via the integration harness |
-| **Java JUnit** | `api/java/*/src/test/java/com/epam/indigo/` — `IndigoTests`, `IndigoInchiTests`, `IndigoRendererTests`, `BingoTests` | `mvnw test` | **no** — the publish job passes `-DskipTests` |
-| **.NET** | `api/dotnet/tests/` — `IndigoTest.cs`, `InchiTests.cs` | `dotnet test` | **no** |
-| HTTP service | `api/http/tests/` | `pytest` with `httpx` | yes |
+| Python wrapper | `api/python/tests/` — indigo, inchi, renderer, bingo-nosql, sequence layout | `pytest` | the `unittest` classes only, 33 of 53 — `setup.py test` in the `indigo-python` target |
+| Java JUnit | `api/java/*/src/test/java/com/epam/indigo/` — `IndigoTests`, `IndigoInchiTests`, `IndigoRendererTests`, `BingoTests` | `mvn test` | on Linux with JDK 8 — `mvn install` in the `indigo-java` target |
+| .NET | `api/dotnet/tests/` — `IndigoTest.cs`, `InchiTests.cs` | `dotnet test` | on Linux with .NET 6 — `dotnet test` in the `indigo-dotnet` target |
+| **HTTP service** | `api/http/tests/` | `pytest` with `httpx` | **no** |
 
-The Java and .NET unit tests **exist and are not executed by CI**. Those two wrappers are covered
-only by the Jython and IronPython runs of the integration harness. If you change either wrapper, run
-its unit tests locally — nothing else will.
+The wrapper unit tests run while the `build_indigo_wrappers` job builds each wrapper in the
+`epmlsop/indigo-tester` container — on Linux, and nowhere else. Two gaps follow from how they are run:
+
+- **`setup.py test` collects `unittest.TestCase` classes only.** `test_sequence_layout.py` is written
+  with pytest fixtures, and its 20 tests never run in CI. `python -m unittest discover -s tests -t .`
+  from `api/python/` selects exactly what CI runs.
+- **The HTTP service tests do not run at all.** `pylint`, `mypy` and `pytest` sit in the
+  `indigo_service_dev` stage of `api/http/Dockerfile`; CI builds the final image, which does not depend
+  on that stage, and BuildKit skips it — the job log shows the final stage only. Run them locally, on
+  Linux, with the wheel of your build installed: `api/http/requirements.txt` pins `epam.indigo` from PyPI.
 
 ## WASM
 
@@ -142,7 +155,9 @@ python utils/indigo-service/backend/service/tests/api/indigo_test.py   # termina
   one platform and checked on the other; a per-platform reference is added only for a platform whose
   output genuinely differs.
 - **Assert the exception message, not only that something failed** — the text is a public contract.
-- **Reference files in `ref/` are regenerated deliberately.** If a baseline moved, explain what
-  changed in the behaviour and why the new value is right.
+- **Reference files in `ref/` are regenerated deliberately** with `test.py … -u`. If a baseline
+  moved, explain what changed in the behaviour and why the new value is right. How a test in this
+  harness is written — the comparison helpers, the fixture and reference layout, the per-platform
+  references — is in [.claude/rules/integration-tests.md](../.claude/rules/integration-tests.md).
 - **Anything added to the integration harness must run under Jython and IronPython**, not only
   CPython.
