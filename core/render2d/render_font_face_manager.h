@@ -184,7 +184,7 @@ namespace indigo
         {
             prepareRanges();
         };
-        ~FontLangDetector() {};
+        ~FontLangDetector(){};
 
         FONT_LANG detectLang(const TextItem& ti)
         {
