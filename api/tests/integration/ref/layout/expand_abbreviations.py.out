@@ -1132,3 +1132,13 @@ N(C)C
 ####### Test expandAbbreviations for CML
 before 21
 after 43
+#3915 user abbreviations
+####### Test custom abbreviations loaded at runtime
+before custom load: 2
+after unknown abbreviation: 2
+after custom load: 5
+after reset: 2
+after load from file: 3
+####### Test that a user-defined abbreviation overrides a built-in one
+Ph before override: 7
+Ph after override: 2

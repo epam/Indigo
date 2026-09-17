@@ -141,6 +141,14 @@ public interface IndigoLib extends Library {
 
     int indigoLoadMonomerLibraryFromFile(String filename);
 
+    int indigoLoadAbbreviations(int source);
+
+    int indigoLoadAbbreviationsFromString(String str);
+
+    int indigoLoadAbbreviationsFromFile(String filename);
+
+    int indigoResetAbbreviations();
+
     int indigoLoadKetDocument(int source);
 
     int indigoLoadKetDocumentFromString(String str);

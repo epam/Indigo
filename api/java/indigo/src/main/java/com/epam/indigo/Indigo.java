@@ -403,6 +403,21 @@ public class Indigo {
         return new IndigoObject(this, checkResult(this, lib.indigoLoadMonomerLibraryFromFile(path)));
     }
 
+    public void loadAbbreviations(String str) {
+        setSessionID();
+        checkResult(this, lib.indigoLoadAbbreviationsFromString(str));
+    }
+
+    public void loadAbbreviationsFromFile(String path) {
+        setSessionID();
+        checkResult(this, lib.indigoLoadAbbreviationsFromFile(path));
+    }
+
+    public void resetAbbreviations() {
+        setSessionID();
+        checkResult(this, lib.indigoResetAbbreviations());
+    }
+
     public IndigoObject loadKetDocument(String str) {
         setSessionID();
         return new IndigoObject(this, checkResult(this, lib.indigoLoadKetDocumentFromString(str)));

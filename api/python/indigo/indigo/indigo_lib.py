@@ -162,6 +162,12 @@ class IndigoLib:
         IndigoLib.lib.indigoLoadMonomerLibraryFromString.argtypes = [c_char_p]
         IndigoLib.lib.indigoLoadMonomerLibraryFromFile.restype = c_int
         IndigoLib.lib.indigoLoadMonomerLibraryFromFile.argtypes = [c_char_p]
+        IndigoLib.lib.indigoLoadAbbreviationsFromString.restype = c_int
+        IndigoLib.lib.indigoLoadAbbreviationsFromString.argtypes = [c_char_p]
+        IndigoLib.lib.indigoLoadAbbreviationsFromFile.restype = c_int
+        IndigoLib.lib.indigoLoadAbbreviationsFromFile.argtypes = [c_char_p]
+        IndigoLib.lib.indigoResetAbbreviations.restype = c_int
+        IndigoLib.lib.indigoResetAbbreviations.argtypes = []
         IndigoLib.lib.indigoLoadKetDocumentFromString.restype = c_int
         IndigoLib.lib.indigoLoadKetDocumentFromString.argtypes = [c_char_p]
         IndigoLib.lib.indigoLoadKetDocumentFromFile.restype = c_int
