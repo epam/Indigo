@@ -23,8 +23,6 @@
 #include "indigo_internal.h"
 #include "render_params.h"
 
-#include <string>
-
 class IndigoRenderer : public IndigoPluginContext
 {
 public:
@@ -32,7 +30,6 @@ public:
     ~IndigoRenderer();
 
     RenderParams renderParams;
-    std::string fontsJson;
 
     void init() override;
 

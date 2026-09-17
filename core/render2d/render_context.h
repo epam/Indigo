@@ -26,9 +26,7 @@
 
 #include "render_common.h"
 
-#ifdef RENDER_USE_FONT_MANAGER
 #include "render_font_face_manager.h"
-#endif
 
 namespace indigo
 {
@@ -221,9 +219,7 @@ namespace indigo
         cairo_surface_t* _surface;
         void* _meta_hdc;
 
-#ifdef RENDER_USE_FONT_MANAGER
         RenderFontFaceManager _font_face_manager;
-#endif
 
     public:
         RenderSettings _settings;

@@ -18,15 +18,17 @@
 
 #include "render_font_face_manager.h"
 
+#ifdef RENDER_ENABLE_NOTO_SANS_CJK
 #include "NotoSansCJK_Bold.h"
-#include "NotoSans_Bold.h"
-
-#include "NotoSans_BoldItalic.h"
-
-#include "NotoSans_Italic.h"
-
 #include "NotoSansCJK_Regular.h"
+#endif
+
+#if defined(RENDER_ENABLE_NOTO_SANS) || defined(RENDER_ENABLE_NOTO_SANS_CJK)
+#include "NotoSans_Bold.h"
+#include "NotoSans_BoldItalic.h"
+#include "NotoSans_Italic.h"
 #include "NotoSans_Regular.h"
+#endif
 
 #include <freetype/ftmm.h>
 
@@ -141,53 +143,55 @@ namespace indigo
         if (auto custom_face = _findFontFace(_custom_faces, ti))
             return custom_face;
 
-        bool is_bold = ti.bold;
-        bool is_italic = ti.italic;
-
-#ifdef RENDER_ENABLE_CJK
+#ifdef RENDER_ENABLE_NOTO_SANS_CJK
         auto lang = _lang_detector.detectLang(ti);
 
         if (lang != FONT_LANG::NO_CJK)
         {
-            if (is_bold)
+            Face& face = ti.bold ? _face_cjk_bold : _face_cjk_regular;
+            if (!face.cairo_face)
             {
-                if (!_face_cjk_bold.cairo_face)
-                    _loadFontFace(_face_cjk_bold, sans_cjk_bold, sans_cjk_bold_size, "CJK bold");
-                return _face_cjk_bold.cairo_face;
+                if (ti.bold)
+                    _loadFontFace(face, sans_cjk_bold, sans_cjk_bold_size, "CJK bold");
+                else
+                    _loadFontFace(face, sans_cjk_regular, sans_cjk_regular_size, "CJK regular");
             }
-            else
-            {
-                if (!_face_cjk_regular.cairo_face)
-                    _loadFontFace(_face_cjk_regular, sans_cjk_regular, sans_cjk_regular_size, "CJK regular");
-                return _face_cjk_regular.cairo_face;
-            }
+            if (_hasAllGlyphs(face.ft_face, ti))
+                return face.cairo_face;
         }
 #endif
 
-        if (is_bold && is_italic)
+#if defined(RENDER_ENABLE_NOTO_SANS) || defined(RENDER_ENABLE_NOTO_SANS_CJK)
+        Face* face = nullptr;
+        if (ti.bold && ti.italic)
         {
+            face = &_face_bold_italic;
             if (!_face_bold_italic.cairo_face)
                 _loadFontFace(_face_bold_italic, sans_bold_italic, sans_bold_italic_size, "bold italic");
-            return _face_bold_italic.cairo_face;
         }
-        else if (is_bold)
+        else if (ti.bold)
         {
+            face = &_face_bold;
             if (!_face_bold.cairo_face)
                 _loadFontFace(_face_bold, sans_bold, sans_bold_size, "bold");
-            return _face_bold.cairo_face;
         }
-        else if (is_italic)
+        else if (ti.italic)
         {
+            face = &_face_italic;
             if (!_face_italic.cairo_face)
                 _loadFontFace(_face_italic, sans_italic, sans_italic_size, "italic");
-            return _face_italic.cairo_face;
         }
         else
         {
+            face = &_face_regular;
             if (!_face_regular.cairo_face)
                 _loadFontFace(_face_regular, sans_regular, sans_regular_size, "regular");
-            return _face_regular.cairo_face;
         }
+        if (_hasAllGlyphs(face->ft_face, ti))
+            return face->cairo_face;
+#endif
+
+        return nullptr;
     }
 
     cairo_font_face_t* RenderFontFaceManager::_findFontFace(const PtrArray<Face>& faces, const TextItem& ti) const
@@ -195,11 +199,53 @@ namespace indigo
         for (int i = 0; i < faces.size(); ++i)
         {
             const Face& face = faces[i];
-            if (face.bold == ti.bold && face.italic == ti.italic)
+            if (face.bold == ti.bold && face.italic == ti.italic && _hasAllGlyphs(face.ft_face, ti))
                 return face.cairo_face;
         }
 
         return nullptr;
+    }
+
+    // FreeType looks up glyphs by Unicode code point, so decode the UTF-8 text before checking the active charmap
+    bool RenderFontFaceManager::_hasAllGlyphs(FT_Face face, const TextItem& ti)
+    {
+        const auto* cursor = reinterpret_cast<const unsigned char*>(ti.text.ptr());
+        if (!cursor)
+            return true;
+
+        while (*cursor)
+        {
+            unsigned int codepoint = *cursor++;
+            unsigned int continuation_count = 0;
+            if (codepoint >= 0xF0 && codepoint <= 0xF4) // 4-byte UTF-8 sequence (U+10000 to U+10FFFF)
+            {
+                continuation_count = 3;
+                codepoint &= 0x07;
+            }
+            else if (codepoint >= 0xE0 && codepoint <= 0xEF) // 3-byte UTF-8 sequence (U+0800 to U+FFFF)
+            {
+                continuation_count = 2;
+                codepoint &= 0x0F;
+            }
+            else if (codepoint >= 0xC2 && codepoint <= 0xDF) // 2-byte UTF-8 sequence (U+0080 to U+07FF)
+            {
+                continuation_count = 1;
+                codepoint &= 0x1F;
+            }
+            else if (codepoint >= 0x80) // Invalid UTF-8 start byte
+                return false;
+
+            for (unsigned int i = 0; i < continuation_count; ++i)
+            {
+                if (!*cursor)
+                    return false;
+                codepoint = (codepoint << 6) | (*cursor++ & 0x3F);
+            }
+
+            if (codepoint >= 0x20 && codepoint != 0x7F && FT_Get_Char_Index(face, codepoint) == 0)
+                return false;
+        }
+        return true;
     }
 
     void RenderFontFaceManager::_loadFontFace(Face& face, const unsigned char font[], size_t font_size, const std::string& name,
@@ -207,7 +253,8 @@ namespace indigo
     {
         auto free_type_face = std::make_unique<FreeTypeFace>(_library, font, font_size, face.data, name);
 
-        if (variation_coordinates && FT_Set_Var_Design_Coordinates(free_type_face->face, variation_coordinates->size(), variation_coordinates->data()))
+        if (variation_coordinates &&
+            FT_Set_Var_Design_Coordinates(free_type_face->face, static_cast<FT_UInt>(variation_coordinates->size()), variation_coordinates->data()))
             throw std::runtime_error("error setting font variation " + name);
 
         cairo_font_face_t* cairo_face = cairo_ft_font_face_create_for_ft_face(free_type_face->face, 0);

@@ -15,27 +15,23 @@ if (EMSCRIPTEN)
         add_definitions(-DRENDER_EMSCRIPTEN)
 endif()
 
-if (USE_FONT_MANAGER)
-        add_definitions(-DRENDER_USE_FONT_MANAGER)
-endif()
-
-if (NOT USE_FONT_MANAGER)
-        list(REMOVE_ITEM ${PROJECT_NAME}_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/render_font_face_manager.cpp)
-endif()
-
 add_library(${PROJECT_NAME} STATIC ${${PROJECT_NAME}_SOURCES})
 get_target_property(IndigoCore_INCLUDE_DIRECTORIES indigo-core INCLUDE_DIRECTORIES)
 target_include_directories(${PROJECT_NAME}
         PRIVATE ${IndigoCore_INCLUDE_DIRECTORIES}
         PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/)
 target_link_libraries(${PROJECT_NAME} PUBLIC object_threadsafe)
-if (USE_FONT_MANAGER)
+if (RENDER_ENABLE_NOTO_SANS OR RENDER_ENABLE_NOTO_SANS_CJK)
         target_include_directories(${PROJECT_NAME}
         PRIVATE ${CMAKE_SOURCE_DIR}/third_party/googlefonts/)
 endif()
 
-if (RENDER_ENABLE_CJK)
-        target_compile_definitions(${PROJECT_NAME} PRIVATE RENDER_ENABLE_CJK)
+if (RENDER_ENABLE_NOTO_SANS)
+        target_compile_definitions(${PROJECT_NAME} PRIVATE RENDER_ENABLE_NOTO_SANS)
+endif()
+
+if (RENDER_ENABLE_NOTO_SANS_CJK)
+        target_compile_definitions(${PROJECT_NAME} PUBLIC RENDER_ENABLE_NOTO_SANS_CJK)
 endif()
 
 target_link_libraries(${PROJECT_NAME} PUBLIC lunasvg)
@@ -43,16 +39,15 @@ target_link_libraries(${PROJECT_NAME} PUBLIC lunasvg)
 if (BUILD_STANDALONE)
     target_link_libraries(${PROJECT_NAME}
             PUBLIC rapidjson
-            PUBLIC cairo)
+            PUBLIC cairo
+            PUBLIC freetype)
 else ()
     find_package(Cairo REQUIRED)
     find_package(RapidJSON REQUIRED)
+    find_package(Freetype 2.14.3 REQUIRED)
+    target_include_directories(${PROJECT_NAME} PUBLIC ${FREETYPE_INCLUDE_DIRS})
     target_link_libraries(${PROJECT_NAME}
             PUBLIC RapidJSON::RapidJSON
-            PUBLIC Cairo::Cairo)
-    if (USE_FONT_MANAGER)
-        find_package(Freetype REQUIRED)
-        target_include_directories(${PROJECT_NAME} PRIVATE ${FREETYPE_INCLUDE_DIRS})
-        target_link_libraries(${PROJECT_NAME} PUBLIC ${FREETYPE_LIBRARIES})
-    endif()
+            PUBLIC Cairo::Cairo
+            PUBLIC ${FREETYPE_LIBRARIES})
 endif ()

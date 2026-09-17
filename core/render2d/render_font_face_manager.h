@@ -29,7 +29,7 @@
 
 namespace indigo
 {
-#ifdef RENDER_ENABLE_CJK
+#ifdef RENDER_ENABLE_NOTO_SANS_CJK
     class CharacterRange
     {
     private:
@@ -184,7 +184,7 @@ namespace indigo
         {
             prepareRanges();
         };
-        ~FontLangDetector(){};
+        ~FontLangDetector() {};
 
         FONT_LANG detectLang(const TextItem& ti)
         {
@@ -246,10 +246,6 @@ namespace indigo
             explicit Face(const RenderFont& font) : name(font.name), data(font.data)
             {
             }
-
-            Face(const std::string& name, const std::shared_ptr<std::vector<byte>>& data) : name(name), data(data)
-            {
-            }
         };
 
     private:
@@ -261,7 +257,7 @@ namespace indigo
         Face _face_bold_italic;
         PtrArray<Face> _custom_faces;
 
-#ifdef RENDER_ENABLE_CJK
+#ifdef RENDER_ENABLE_NOTO_SANS_CJK
         FontLangDetector _lang_detector;
         Face _face_cjk_regular;
         Face _face_cjk_bold;
@@ -273,6 +269,7 @@ namespace indigo
         void _loadFontFace(Face& face, const unsigned char font[], size_t font_size, const std::string& name,
                            std::vector<FT_Fixed>* variation_coordinates = nullptr);
         cairo_font_face_t* _findFontFace(const PtrArray<Face>& faces, const TextItem& ti) const;
+        static bool _hasAllGlyphs(FT_Face face, const TextItem& ti);
 
     public:
         explicit RenderFontFaceManager(const PtrArray<RenderFont>& fonts);
