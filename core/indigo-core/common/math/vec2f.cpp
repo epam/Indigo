@@ -172,13 +172,13 @@ float Vec2f::distSqr(const Vec2f& a, const Vec2f& b)
 {
     float dx = b.x - a.x;
     float dy = b.y - a.y;
-    float h = _2FLOAT(std::hypot(_2DOUBLE(dx), _2DOUBLE(dy)));
+    float h = HYPOT(dx, dy);
     return h * h;
 }
 
 float Vec2f::dist(const Vec2f& a, const Vec2f& b)
 {
-    return _2FLOAT(std::hypot(_2DOUBLE(b.x - a.x), _2DOUBLE(b.y - a.y)));
+    return HYPOT(b.x - a.x, b.y - a.y);
 }
 
 float Vec2f::dot(const Vec2f& a, const Vec2f& b)
@@ -327,7 +327,7 @@ Vec2f Vec2f::get_circle_center(Vec2f p, Vec2f q, float angle)
 
     Vec2f vec(q - p);
 
-    return (p + q) / 2.f + vec / _2FLOAT(tan((M_PI - angle) / 2.));
+    return (p + q) / 2.f + vec / TAN((M_PI - angle) / 2.);
 }
 
 Vec2f Vec2f::get_circle_center(Vec2f a, Vec2f p, Vec2f q)

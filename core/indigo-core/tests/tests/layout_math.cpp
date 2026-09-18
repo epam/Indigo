@@ -33,9 +33,9 @@ namespace
     // The layout works in angles of a turn or two either way. Over this sweep the
     // float function and the double one disagree on 259 samples of the cosine and
     // 3843 of the arc cosine under MSVC, and on 2563 and 15623 under glibc, so a
-    // float spelling cannot pass unseen. The arc tangent differs under glibc
-    // only, and the hypotenuse on neither: those two state the contract without
-    // discriminating.
+    // float spelling cannot pass unseen; the tangent and the arc sine disagree
+    // likewise. The arc tangent differs under glibc only, and the hypotenuse on
+    // neither: those two state the contract without discriminating.
     const int SAMPLES = 200000;
     const float TWO_PI = _2FLOAT(2. * M_PI);
 
@@ -68,22 +68,24 @@ namespace
 // compiler picks the float function instead - cosf, sinf, acosf, atan2f - and it
 // differs in the last bit; the layout then chooses differently between two equal
 // drawings, and the two platforms disagree.
-TEST(LayoutMathContract, CosineAndSineEvaluateInDouble)
+TEST(LayoutMathContract, SineCosineAndTangentEvaluateInDouble)
 {
     for (int i = 0; i < SAMPLES; i++)
     {
         const float angle = sweptAngle(i);
         ASSERT_EQ(rounded(std::cos(static_cast<double>(angle))), COS(angle)) << "cosine of " << angle;
         ASSERT_EQ(rounded(std::sin(static_cast<double>(angle))), SIN(angle)) << "sine of " << angle;
+        ASSERT_EQ(rounded(std::tan(static_cast<double>(angle))), TAN(angle)) << "tangent of " << angle;
     }
 }
 
-TEST(LayoutMathContract, ArcCosineEvaluatesInDouble)
+TEST(LayoutMathContract, ArcCosineAndArcSineEvaluateInDouble)
 {
     for (int i = 0; i < SAMPLES; i++)
     {
-        const float cosine = sweptUnit(i);
-        ASSERT_EQ(rounded(std::acos(static_cast<double>(cosine))), ACOS(cosine)) << "arc cosine of " << cosine;
+        const float sine = sweptUnit(i);
+        ASSERT_EQ(rounded(std::acos(static_cast<double>(sine))), ACOS(sine)) << "arc cosine of " << sine;
+        ASSERT_EQ(rounded(std::asin(static_cast<double>(sine))), ASIN(sine)) << "arc sine of " << sine;
     }
 }
 

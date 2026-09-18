@@ -1503,7 +1503,7 @@ void MoleculeLayoutGraphSmart::_segment_improoving(Array<Vec2f>& point, Array<fl
         Vec2f center(prev_point + chord / 2);
         Vec2f rot_chord(chord);
         rot_chord.rotate(1, 0);
-        center += rot_chord / _2FLOAT(tan(M_PI - target_angle[move_vertex])) / 2.f;
+        center += rot_chord / TAN(M_PI - target_angle[move_vertex]) / 2.f;
 
         float radii = (prev_point - center).length();
         float dist = (this_point - center).length();
@@ -1682,7 +1682,7 @@ Vec2f SmoothingCycle::_get_angle_derivative(Vec2f left_point, Vec2f right_point,
         vec.rotate(-1, 0);
         Vec2f sindv = (vec * len12 - (left_point * len2_sq - right_point * len1_sq) * cross / len12) / (len1_sq * len2_sq);
         alphadv = sindv * _2FLOAT(1. / std::sqrt(1. - sin * sin)) * signdot;
-        alpha = _2FLOAT(std::asin(_2DOUBLE(sin)));
+        alpha = ASIN(sin);
         if (cos < 0)
         {
             if (alpha > 0)

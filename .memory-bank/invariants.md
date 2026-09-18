@@ -68,11 +68,13 @@ oldest-supported-GCC build legs reject C++20 constructs. The code must compile u
 The layout chooses between equal alternatives with float comparisons, so the last bit of a
 coordinate decides the drawing. For a float argument MSVC calls `cosf`, `sinf`, `atan2f`, `hypotf`
 and GCC the double functions; with float calls Windows and Linux disagreed on 11 % of a corpus of
-18 237 molecules. Every such call in the layout and in `Vec2f` is written `_2FLOAT(cos(_2DOUBLE(x)))`,
-and the two platforms now agree
-bit for bit on all of them — see the comment above `HYPOT` in `common/math/algebra.h#HYPOT`. A new
-call on a float argument brings the divergence back; `tests/tests/layout_math.cpp` sweeps the
-arguments on which the two spellings differ and pins the macros and `Vec2f` to the double one. Widening the layout energy to double does not
+18 237 molecules. Every such call in the layout and in `Vec2f` goes through one of the macros
+`HYPOT`, `COS`, `SIN`, `TAN`, `ACOS`, `ASIN`, `ATAN2` of `common/math/algebra.h`, which evaluate in
+double and round once, and the two platforms now agree bit for bit on all of them. Write the
+promotion out by hand and the rule has no single home; write the call on a float and the divergence
+comes back. `tests/tests/layout_math.cpp` sweeps the arguments on which the two spellings differ and
+pins every macro, both rotations of `Vec2f` and both tilt angles to the double value. The square
+root is left alone: IEEE 754 rounds it exactly. Widening the layout energy to double does not
 help and was measured not to. The guarantee covers x86-64 only: a compiler that fuses `a * b + c`
 into one FMA instruction — the default on ARM, including macOS — still produces other bits, so a
 macOS reference may still be needed.
