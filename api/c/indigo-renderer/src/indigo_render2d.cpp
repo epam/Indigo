@@ -34,6 +34,19 @@
 #include "indigo_renderer_internal.h"
 #include "option_manager.h"
 
+#include <cppcodec/base64_rfc4648.hpp>
+#include <freetype/freetype.h>
+#include <rapidjson/document.h>
+#include <rapidjson/error/en.h>
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/writer.h>
+
+#include <cstring>
+#include <exception>
+#include <memory>
+#include <string>
+#include <utility>
+
 // #define INDIGO_DEBUG
 
 #ifdef INDIGO_DEBUG
@@ -143,6 +156,121 @@ void indigoRenderGetOutputFormat(Array<char>& value)
     RenderParams& rp = indigoRendererGetInstance().renderParams;
     const char* mode = indigoRenderOutputFormatToString(rp.rOpt.mode);
     value.readString(mode, true);
+}
+
+namespace
+{
+    constexpr size_t MAX_RENDER_FONT_COUNT = 8;
+    constexpr size_t MAX_RENDER_FONT_BYTES = 16 * 1024 * 1024;
+    constexpr size_t MAX_RENDER_FONT_TOTAL_BYTES = 32 * 1024 * 1024;
+    constexpr size_t MAX_RENDER_FONTS_JSON_BYTES = 48 * 1024 * 1024;
+
+    bool hasSupportedFontSignature(const std::vector<byte>& data)
+    {
+        if (data.size() < 4)
+            return false;
+
+        const byte* signature = data.data();
+        // TrueType: 0x00010000 or 'true'
+        // TrueType Collection: 'ttcf'
+        // OpenType with CFF: 'OTTO'
+        return (signature[0] == 0 && signature[1] == 1 && signature[2] == 0 && signature[3] == 0) || std::memcmp(signature, "true", 4) == 0 ||
+               std::memcmp(signature, "ttcf", 4) == 0 || std::memcmp(signature, "OTTO", 4) == 0;
+    }
+} // namespace
+
+void indigoRenderSetFonts(const char* fonts)
+{
+    if (fonts == nullptr)
+        throw IndigoError("Invalid fonts JSON: value must not be null");
+    if (std::strlen(fonts) > MAX_RENDER_FONTS_JSON_BYTES)
+        throw IndigoError("Invalid fonts JSON: input exceeds %zu bytes", MAX_RENDER_FONTS_JSON_BYTES);
+
+    rapidjson::Document document;
+
+    document.Parse(fonts);
+
+    if (document.HasParseError())
+        throw IndigoError("Invalid fonts JSON at offset %zu: %s", document.GetErrorOffset(), rapidjson::GetParseError_En(document.GetParseError()));
+    if (!document.IsArray())
+        throw IndigoError("Invalid fonts JSON: expected an array");
+    if (document.Size() > MAX_RENDER_FONT_COUNT)
+        throw IndigoError("Invalid fonts JSON: too many fonts (maximum %zu)", MAX_RENDER_FONT_COUNT);
+
+    PtrArray<RenderFont> render_fonts;
+    size_t total_font_bytes = 0;
+    FT_Library raw_library = nullptr;
+    if (!document.Empty() && FT_Init_FreeType(&raw_library) != 0)
+        throw IndigoError("Error initializing FreeType library");
+    std::unique_ptr<FT_LibraryRec_, decltype(&FT_Done_FreeType)> library(raw_library, FT_Done_FreeType);
+
+    for (rapidjson::SizeType i = 0; i < document.Size(); ++i)
+    {
+        const auto& font = document[i];
+
+        if (!font.IsObject())
+            throw IndigoError("Invalid font at index %u: expected an object", i);
+        if (!font.HasMember("name") || !font["name"].IsString())
+            throw IndigoError("Invalid font at index %u: 'name' must be a string", i);
+        if (!font.HasMember("data") || !font["data"].IsString())
+            throw IndigoError("Invalid font at index %u: 'data' must be a Base64 string", i);
+
+        std::string font_name(font["name"].GetString(), font["name"].GetStringLength());
+        const rapidjson::Value& font_base64 = font["data"];
+        // Base64 encoding increases size by ~4/3: each 3 bytes become 4 characters
+        if (font_base64.GetStringLength() > ((MAX_RENDER_FONT_BYTES + 2) / 3) * 4)
+            throw IndigoError("Invalid font at index %u: data exceeds %zu bytes", i, MAX_RENDER_FONT_BYTES);
+        std::vector<byte> font_data;
+
+        try
+        {
+            font_data = cppcodec::base64_rfc4648::decode<std::vector<byte>>(font_base64.GetString(), font_base64.GetStringLength());
+        }
+        catch (const std::exception& error)
+        {
+            throw IndigoError("Invalid Base64 data for font '%s' at index %u: %s", font_name.c_str(), i, error.what());
+        }
+
+        if (font_data.size() > MAX_RENDER_FONT_BYTES || font_data.size() > MAX_RENDER_FONT_TOTAL_BYTES - total_font_bytes)
+            throw IndigoError("Invalid font at index %u: font data exceeds size limit", i);
+        if (!hasSupportedFontSignature(font_data))
+            throw IndigoError("Invalid font at index %u: unsupported font format", i);
+
+        FT_Face raw_face = nullptr;
+        if (FT_New_Memory_Face(library.get(), font_data.data(), static_cast<FT_Long>(font_data.size()), 0, &raw_face) != 0)
+            throw IndigoError("Error loading font '%s'", font_name.c_str());
+        std::unique_ptr<FT_FaceRec_, decltype(&FT_Done_Face)> face(raw_face, FT_Done_Face);
+        if (FT_Select_Charmap(face.get(), FT_ENCODING_UNICODE) != 0)
+            throw IndigoError("Font '%s' does not have a Unicode character map", font_name.c_str());
+
+        total_font_bytes += font_data.size();
+        render_fonts.emplace(std::move(font_name), std::move(font_data));
+    }
+
+    auto& renderer = indigoRendererGetInstance();
+
+    renderer.renderParams.fonts = std::move(render_fonts);
+}
+
+void indigoRenderGetFonts(Array<char>& value)
+{
+    rapidjson::StringBuffer buffer;
+    rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+    writer.StartArray();
+    const auto& fonts = indigoRendererGetInstance().renderParams.fonts;
+    for (int i = 0; i < fonts.size(); ++i)
+    {
+        const RenderFont& font = fonts[i];
+        const std::string encoded = cppcodec::base64_rfc4648::encode(*font.data);
+        writer.StartObject();
+        writer.Key("name");
+        writer.String(font.name.c_str(), static_cast<rapidjson::SizeType>(font.name.size()));
+        writer.Key("data");
+        writer.String(encoded.c_str(), static_cast<rapidjson::SizeType>(encoded.size()));
+        writer.EndObject();
+    }
+    writer.EndArray();
+    value.readString(buffer.GetString(), true);
 }
 
 void indigoRenderSetStereoStyle(const char* mode)
@@ -688,6 +816,7 @@ void IndigoRenderer::setOptionsHandlers()
         mgr->setOptionHandlerInt("render-image-max-height", SETTER_GETTER_INT_OPTION(rp.cnvOpt.maxHeight));
 
         mgr->setOptionHandlerString("render-output-format", indigoRenderSetOutputFormat, indigoRenderGetOutputFormat);
+        mgr->setOptionHandlerString("render-fonts", indigoRenderSetFonts, indigoRenderGetFonts);
 
         mgr->setOptionHandlerString("render-comment", SETTER_GETTER_STR_OPTION(rp.cnvOpt.comment));
         mgr->setOptionHandlerString("render-comment-position", indigoRenderSetCommentPosition, indigoRenderGetCommentPosition);

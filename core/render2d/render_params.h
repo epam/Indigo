@@ -63,6 +63,7 @@ namespace indigo
 
         RenderOptions rOpt;
         CanvasOptions cnvOpt;
+        PtrArray<RenderFont> fonts;
     };
 
     class RenderParamInterface
