@@ -675,6 +675,47 @@ class Indigo:
             ),
         )
 
+    def loadAbbreviations(self, string: str) -> None:
+        """Loads supplementary abbreviations from an XML string and appends
+        them to the current session (same schema as the built-in dictionary).
+        Custom entries take precedence over built-ins on alias collisions.
+
+        Args:
+            string (str): abbreviations XML
+
+        Raises:
+            IndigoException: Exception if the XML is malformed
+        """
+
+        IndigoLib.checkResult(
+            self._lib().indigoLoadAbbreviationsFromString(string.encode())
+        )
+
+    def loadAbbreviationsFromFile(self, filename: str) -> None:
+        """Loads supplementary abbreviations from a file and appends them to
+        the current session.
+
+        Args:
+            filename (str): full path to the abbreviations XML file
+
+        Raises:
+            IndigoException: Exception if the XML is malformed
+        """
+
+        IndigoLib.checkResult(
+            self._lib().indigoLoadAbbreviationsFromFile(filename.encode())
+        )
+
+    def resetAbbreviations(self) -> None:
+        """Drops any abbreviations loaded via loadAbbreviations*, restoring
+        only the built-ins.
+
+        Raises:
+            IndigoException: on failure
+        """
+
+        IndigoLib.checkResult(self._lib().indigoResetAbbreviations())
+
     def loadKetDocument(self, string):
         """Loads ket document from ket string
 

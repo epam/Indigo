@@ -1188,6 +1188,15 @@ CEXPORT int indigoRGroupComposition(int molecule, const char* options);
  */
 CEXPORT int indigoExpandAbbreviations(int molecule);
 
+// Loads supplementary abbreviations (same schema as abbreviations.xml) and
+// appends them to the current session, so they take precedence.
+CEXPORT int indigoLoadAbbreviations(int source);
+CEXPORT int indigoLoadAbbreviationsFromString(const char* string);
+CEXPORT int indigoLoadAbbreviationsFromFile(const char* filename);
+CEXPORT int indigoLoadAbbreviationsFromBuffer(const char* buffer, int size);
+// Drops any abbreviations loaded via indigoLoadAbbreviations*, restoring only the built-ins.
+CEXPORT int indigoResetAbbreviations(void);
+
 /*
  * Group pseudoatoms (OH, NH2, etc.): expand to explicit atoms for V3000/molfile
  * interoperability. Call after expandedMonomersToAtoms(). See
