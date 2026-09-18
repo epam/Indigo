@@ -1,4 +1,4 @@
-anyio==3.7.0
+anyio==4.14.2
 asgiref==3.7.1
 click==8.1.3
 epam.indigo==1.49.0.dev1
