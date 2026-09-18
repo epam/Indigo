@@ -868,10 +868,11 @@ void MolfileLoader::_readEndpoints3000(Scanner& scanner, std::vector<int>& endpo
         throw Error("ENDPTS list of %d atoms is not closed", count);
 }
 
-// One bond record with ENDPTS becomes two things: the ordinary edge that was
-// already added, and a haptic bond from the attachment group to the atom at the
-// other end. The star atom stays an ordinary pseudo-atom of the graph - the group
-// only remembers it, so that the saver writes one record back instead of two.
+// One bond record with ENDPTS becomes a bond from an attachment group to the atom at
+// the other end. The star at the group's end of a haptic record (ATTACH=ALL) is "an
+// internal phantom atom that represents the center of the pi-system" (CTfile), so it
+// leaves the structure in _postLoad. A variable attachment (ATTACH=ANY, #3731) and a
+// record with no star keep both ends, and the group remembers its end atom.
 void MolfileLoader::_addHapticBond3000(int beg, int end, const std::vector<int>& endpoints, int type)
 {
     const auto listed = [&endpoints](int atom) { return std::find(endpoints.begin(), endpoints.end(), atom) != endpoints.end(); };
@@ -890,7 +891,15 @@ void MolfileLoader::_addHapticBond3000(int beg, int end, const std::vector<int>&
 
     const int group = _bmol->attachment_groups.addGroup();
     _bmol->attachment_groups.group(group).setAtoms(endpoints);
-    _bmol->attachment_groups.group(group).setAnchorAtom(anchor);
+
+    if (type == _BOND_HAPTIC && is_star(anchor))
+    {
+        // One ring bonded to two metals is two records ending in the same star.
+        if (std::find(_haptic_stars.begin(), _haptic_stars.end(), anchor) == _haptic_stars.end())
+            _haptic_stars.push_back(anchor);
+    }
+    else
+        _bmol->attachment_groups.group(group).setAnchorAtom(anchor);
 
     _bmol->addHapticBond(HapticBond::Endpoint::group(group), HapticBond::Endpoint::atom(attached_to), type);
 }
@@ -1842,6 +1851,7 @@ void MolfileLoader::_readSGroupDisplay(Scanner& scanner, DataSGroup& dsg)
 
 void MolfileLoader::_init()
 {
+    _haptic_stars.clear();
     _hcount.clear();
     _atom_types.clear();
     _sgroup_types.clear();

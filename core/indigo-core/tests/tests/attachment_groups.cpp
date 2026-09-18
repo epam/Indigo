@@ -196,7 +196,7 @@ TEST_F(IndigoCoreAttachmentGroupsTest, AnchorAtomFollowsTheAtomMapping)
 {
     Molecule source;
     makeRingAndMetal(source);
-    const int star = source.addAtom(-1); // the star of a V3000 ENDPTS record
+    const int star = source.addAtom(-1); // the star of a V3000 ATTACH=ANY record
     source.setPseudoAtom(star, "*");
     source.attachment_groups.group(addRingGroup(source)).setAnchorAtom(star);
 

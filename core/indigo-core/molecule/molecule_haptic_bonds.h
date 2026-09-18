@@ -169,6 +169,11 @@ namespace indigo
         // Feeds Graph::countComponents(external_neighbors).
         void collectConnectivitySets(const MoleculeAttachmentGroups& groups, std::list<std::unordered_set<int>>& neighbors) const;
 
+        // True when some bond has `atom` as an endpoint of its own, a member of an
+        // endpoint group not counting: it answers "does this atom hold a haptic
+        // bond", which is what a caller reasoning about its neighbours needs.
+        bool referencesAtom(int atom) const;
+
         void clear();
         bool isEmpty() const;
 

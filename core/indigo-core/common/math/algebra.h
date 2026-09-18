@@ -33,7 +33,19 @@
 
 #define DEG2RAD(x) (x * M_PI / 180)
 #define RAD2DEG(x) (x * 180 / M_PI)
-#define HYPOT(a, b) (std::hypot(a, b))
+
+// The elementary functions are called on double and the result rounded to float, never on float.
+// For a float argument MSVC picks cosf, sinf, atan2f and hypotf, while GCC promotes it and calls the
+// double functions; the two differ in the last bit of a float often enough to change which of two
+// equal layouts is chosen, and the layout then differs between Windows and Linux. The double results
+// differ far more rarely, and almost never by enough to change the float they are rounded to.
+#define HYPOT(a, b) (_2FLOAT(std::hypot(_2DOUBLE(a), _2DOUBLE(b))))
+#define COS(x) (_2FLOAT(std::cos(_2DOUBLE(x))))
+#define SIN(x) (_2FLOAT(std::sin(_2DOUBLE(x))))
+#define TAN(x) (_2FLOAT(std::tan(_2DOUBLE(x))))
+#define ACOS(x) (_2FLOAT(std::acos(_2DOUBLE(x))))
+#define ASIN(x) (_2FLOAT(std::asin(_2DOUBLE(x))))
+#define ATAN2(y, x) (_2FLOAT(std::atan2(_2DOUBLE(y), _2DOUBLE(x))))
 
 namespace indigo
 {
@@ -151,7 +163,7 @@ namespace indigo
 
         inline float length() const
         {
-            return std::hypotf(x, y);
+            return HYPOT(x, y);
         }
 
         // OPERATORS:

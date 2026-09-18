@@ -125,6 +125,8 @@ namespace indigo
         bool _chiral;
         int _max_template_id;
         bool _disable_sgroups_conversion;
+        // Star atoms of haptic ENDPTS records, removed once the whole molecule is read.
+        std::vector<int> _haptic_stars;
         void _readHeader();
         void _readCtabHeader();
         void _readCtab2000();

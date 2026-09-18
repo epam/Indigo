@@ -25,6 +25,7 @@
 #include "base_cpp/tlscont.h"
 #include "graph/filter.h"
 #include "graph/graph.h"
+#include "layout/haptic_layout.h"
 #include "layout/layout_pattern_holder.h"
 #include "math/algebra.h"
 #include "molecule/molecule.h"
@@ -183,6 +184,11 @@ namespace indigo
         bool respect_cycles_direction;
         bool sequence_layout;
 
+        // Group-to-atom haptic bond length, in standard bond lengths
+        // (requirement 4 of #3233).
+        static constexpr float DEFAULT_HAPTIC_BOND_MULTIPLIER = 1.5f;
+        float haptic_bond_multiplier = DEFAULT_HAPTIC_BOND_MULTIPLIER;
+
         CancellationHandler* cancellation;
 
         DECL_ERROR;
@@ -333,6 +339,7 @@ namespace indigo
         void getBoundingBox(Rect2f& bbox) const;
         void getBoundingBox(Vec2f& left_bottom, Vec2f& right_top) const;
         void copyCoordsFromComponent(MoleculeLayoutGraph& component, Vec2f shift = {0, 0});
+        void copyCoordsFromComponent(MoleculeLayoutGraph& component, const HapticLayout::Placement& placement, Vec2f shift);
 
         // for components
         virtual void _calcMorganCodes();
@@ -408,6 +415,13 @@ namespace indigo
         void _layoutMultipleComponents(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length,
                                        std::optional<Vec2f> multiple_distance = std::nullopt);
         void _layoutSingleComponent(BaseMolecule& molecule, bool respect_existing, const Filter* filter, float bond_length);
+
+        // Clusters the components haptic bonds join, filling the placement of each
+        // and returning the cluster count; without such bonds every component is its
+        // own cluster with an identity placement.
+        int _planHapticLayout(BaseMolecule& molecule, PtrArray<MoleculeLayoutGraph>& components, float bond_length, Array<HapticLayout::Placement>& placement);
+
+        static void _placedBoundingBox(MoleculeLayoutGraph& component, const HapticLayout::Placement& placement, Rect2f& bbox);
 
     protected:
         virtual void _layout_component(BiconnectedDecomposer& bc_decom, PtrArray<MoleculeLayoutGraph>& bc_components, Array<int>& bc_tree,

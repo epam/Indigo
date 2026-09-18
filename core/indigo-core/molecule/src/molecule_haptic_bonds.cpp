@@ -272,6 +272,17 @@ void MoleculeHapticBonds::collectConnectivitySets(const MoleculeAttachmentGroups
     }
 }
 
+bool MoleculeHapticBonds::referencesAtom(int atom) const
+{
+    for (int i = begin(); i != end(); i = next(i))
+    {
+        const HapticBond& bond = at(i);
+        if ((!bond.begin().isGroup() && bond.begin().index() == atom) || (!bond.end().isGroup() && bond.end().index() == atom))
+            return true;
+    }
+    return false;
+}
+
 void MoleculeHapticBonds::clear()
 {
     _bonds.clear();

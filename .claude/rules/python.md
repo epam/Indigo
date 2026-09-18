@@ -39,7 +39,12 @@ linter settings: [.memory-bank/conventions.md](../../.memory-bank/conventions.md
 
 ## Tests
 
-- `pytest`, with `@pytest.mark.parametrize` instead of copied test bodies.
+- `api/http/`, `bingo/tests/`, `bingo/bingo-elastic/python/`: `pytest`, with
+  `@pytest.mark.parametrize` instead of copied test bodies.
+- **`api/python/tests/`: `unittest` classes deriving from `tests.TestIndigoBase`**, cases looped inside
+  `self.subTest(...)`. CI runs this suite through `setup.py test`, which collects `unittest.TestCase`
+  classes only — a pytest-style test there passes locally and never runs in CI.
+- `api/tests/integration/`: neither — a reference comparison ([integration-tests.md](./integration-tests.md)).
 - Every error path a change introduces gets a test that asserts on the error, not merely on failure.
 - Bingo tests run from `bingo/tests/` (invariant B4) and adapters **return** exceptions rather than
   raising them (invariant B3).

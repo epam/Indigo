@@ -216,7 +216,11 @@ def find_diff(a, b):
 
 
 def compare_diff(ref_path, filename, data, stdout=True, diff_fn=find_diff):
-    path_to_file = os.path.join(ref_path, filename)
+    # A platform reference wins when one is provided, the way test.py resolves
+    # the .out files and getRefFilepath the layout ones.
+    path_to_file = os.path.join(ref_path, getPlatform(), filename)
+    if not os.path.exists(path_to_file):
+        path_to_file = os.path.join(ref_path, filename)
 
     is_update_required = os.getenv("INDIGO_UPDATE_TESTS", "False") == "True"
     if is_update_required:

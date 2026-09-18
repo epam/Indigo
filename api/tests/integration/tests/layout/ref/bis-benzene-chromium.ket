@@ -1,0 +1,252 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "mol0"
+            }
+        ],
+        "connections": [
+            {
+                "type": "haptic",
+                "endpoint1": {
+                    "moleculeId": "mol0",
+                    "atomId": "12"
+                },
+                "endpoint2": {
+                    "moleculeId": "mol0",
+                    "attachmentGroupId": "1"
+                }
+            },
+            {
+                "type": "haptic",
+                "endpoint1": {
+                    "moleculeId": "mol0",
+                    "atomId": "12"
+                },
+                "endpoint2": {
+                    "moleculeId": "mol0",
+                    "attachmentGroupId": "0"
+                }
+            }
+        ]
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    0.500,
+                    4.732,
+                    0.000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.000,
+                    3.866,
+                    0.000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.500,
+                    3.000,
+                    0.000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    1.500,
+                    3.000,
+                    0.000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    2.000,
+                    3.866,
+                    0.000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    1.500,
+                    4.732,
+                    0.000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.500,
+                    1.732,
+                    0.000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.000,
+                    0.866,
+                    0.000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.500,
+                    0.000,
+                    0.000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    1.500,
+                    0.000,
+                    0.000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    2.000,
+                    0.866,
+                    0.000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    1.500,
+                    1.732,
+                    0.000
+                ]
+            },
+            {
+                "label": "Cr",
+                "location": [
+                    1.000,
+                    2.366,
+                    0.000
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 4,
+                "atoms": [
+                    5,
+                    0
+                ]
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    1,
+                    2
+                ]
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    2,
+                    3
+                ]
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    3,
+                    4
+                ]
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    4,
+                    5
+                ]
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    11,
+                    6
+                ]
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    6,
+                    7
+                ]
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    7,
+                    8
+                ]
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    8,
+                    9
+                ]
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    9,
+                    10
+                ]
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    10,
+                    11
+                ]
+            }
+        ],
+        "attachmentGroups": [
+            {
+                "id": "0",
+                "atoms": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5
+                ]
+            },
+            {
+                "id": "1",
+                "atoms": [
+                    6,
+                    7,
+                    8,
+                    9,
+                    10,
+                    11
+                ]
+            }
+        ]
+    }
+}

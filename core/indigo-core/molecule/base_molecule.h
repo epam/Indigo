@@ -495,6 +495,16 @@ namespace indigo
         // group container cannot see the bonds to check that.
         void setAttachmentGroupAtoms(int group_idx, const std::vector<int>& atoms);
 
+        // Centroid of the member atoms, where a haptic bond of the group starts;
+        // throws unless the group exists.
+        Vec3f attachmentGroupCentre(int group_idx);
+
+        // A haptic bond holds an atom without being an edge, so the graph shows fewer
+        // neighbours of it than the drawing does: a stereocentre on such an atom
+        // cannot be recognised and the sense of a wedge on it cannot be checked. Both
+        // loaders record what the file says instead of refusing the structure.
+        bool hasBondsOutsideTheGraph(int atom) const;
+
         // Atom sets that hold together although no edge joins them: s-group
         // members, query components and haptic bonds. Feeds
         // Graph::countComponents(external_neighbors) — call it whenever a
