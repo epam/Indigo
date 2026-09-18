@@ -55,12 +55,7 @@ namespace indigo
 
         void IndigoAbbreviations::loadDefault()
         {
-            XMLDocument xml;
-            xml.Parse(default_abbreviations_xml);
-            if (xml.Error())
-                throw IndigoError("XML parsing error: %s", xml.ErrorStr());
-            XMLHandle hxml(&xml);
-            _parseItems(hxml.FirstChildElement("abbreviations"));
+            loadFromXmlString(default_abbreviations_xml);
         }
 
         void IndigoAbbreviations::loadFromXmlString(const char* xml_text)
