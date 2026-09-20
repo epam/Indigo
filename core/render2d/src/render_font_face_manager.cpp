@@ -126,6 +126,16 @@ namespace indigo
 
     RenderFontFaceManager::RenderFontFaceManager(const PtrArray<RenderFont>& fonts)
     {
+#ifndef RENDER_EMSCRIPTEN
+        // Mirrors the selectCairoFontFace() early return: without custom fonts, outside
+        // Emscripten, _library is never touched, so skip initializing FreeType for it.
+        if (fonts.size() == 0)
+            return;
+#endif
+        // TODO: parsed faces are not reused across renders (RenderContext, and this manager with
+        // it, is rebuilt per render call). Caching them across calls needs a thread-safety and
+        // invalidation design (concurrent renders, e.g. in indigo-service) — track separately,
+        // not doing it here without profiling data showing it is a real bottleneck.
         _initFreeType();
         _loadCustomFontFaces(fonts);
     }
