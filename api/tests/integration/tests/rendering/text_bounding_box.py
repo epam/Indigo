@@ -1,5 +1,6 @@
 import base64
 import errno
+import io
 import json
 import os
 import sys
@@ -38,7 +39,7 @@ def encode_font(path):
 
 def load_document():
     path = joinPathPy("molecules/text_bounding_box.ket", __file__)
-    with open(path, "r", encoding="utf-8") as ket_file:
+    with io.open(path, "r", encoding="utf-8") as ket_file:
         return json.load(ket_file)
 
 

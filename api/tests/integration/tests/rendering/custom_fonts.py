@@ -1,5 +1,6 @@
 import base64
 import errno
+import io
 import json
 import os
 import sys
@@ -120,10 +121,13 @@ def test_render_fonts_option(indigo):
         indigo.getOption("render-fonts"), multiple_value, "multiple fonts"
     )
 
-    # Decodes fine (>= 4 bytes), but does not match any supported
-    # TrueType/OpenType magic signature.
+    # Decodes fine, but matches no supported TrueType/OpenType signature.
     unsupported_format_data = base64.b64encode(b"\x00\x00\x00\x00").decode(
         "ascii"
+    )
+    # WOFF is not one of the signatures indigoRenderSetFonts recognizes.
+    woff_format_data = encode_font(
+        os.path.join(font_dir, "Almendra-Regular.woff")
     )
     # One character past the maximum allowed Base64 length for a single
     # font, so the size check rejects it before attempting to decode.
@@ -158,6 +162,10 @@ def test_render_fonts_option(indigo):
         ),
         (
             '[{"name":"broken","data":"%s"}]' % unsupported_format_data,
+            "Invalid font at index 0: unsupported font format",
+        ),
+        (
+            '[{"name":"broken","data":"%s"}]' % woff_format_data,
             "Invalid font at index 0: unsupported font format",
         ),
         (
@@ -211,9 +219,9 @@ def load_font_sets():
     return result
 
 
-def load_document():
-    path = joinPathPy("molecules/custom_fonts.ket", __file__)
-    with open(path, "r", encoding="utf-8") as ket_file:
+def load_document(name):
+    path = joinPathPy("molecules/%s" % name, __file__)
+    with io.open(path, "r", encoding="utf-8") as ket_file:
         return json.load(ket_file)
 
 
@@ -277,28 +285,9 @@ def assert_custom_png_rendering(indigo, renderer, document, font_sets):
 
 
 def assert_first_matching_font_wins(indigo, renderer):
-    # Plain ASCII regular text only, so both fonts fully cover it and the
-    # comparison below cannot be confounded by one of them falling back to
-    # Noto Sans for a glyph the other one happens to lack.
-    document = {
-        "ket_version": "2.0.0",
-        "root": {
-            "nodes": [
-                {
-                    "type": "text",
-                    "paragraphs": [
-                        {
-                            "parts": [{"text": "First match wins"}],
-                            "indent": 0,
-                        }
-                    ],
-                    "indent": 0,
-                }
-            ],
-            "connections": [],
-            "templates": [],
-        },
-    }
+    # Plain ASCII: both fonts fully cover it, so a fallback to Noto Sans
+    # for a glyph one font lacks cannot confound the comparison.
+    document = load_document("custom_fonts_ascii.ket")
 
     font_dir = joinPathPy("fonts", __file__)
     almendra = encode_font(os.path.join(font_dir, "Almendra-Regular.ttf"))
@@ -333,6 +322,25 @@ def assert_first_matching_font_wins(indigo, renderer):
         )
 
 
+def assert_otf_font_accepted(indigo, renderer):
+    # Almendra-Regular.otf is the same font as Almendra-Regular.ttf,
+    # re-encoded as 'OTTO'-tagged CFF, exercising the OpenType/CFF
+    # parsing path that the TrueType fixtures never touch.
+    document = load_document("custom_fonts_ascii.ket")
+    font_dir = joinPathPy("fonts", __file__)
+    otf_font = encode_font(os.path.join(font_dir, "Almendra-Regular.otf"))
+    fonts = json.dumps(
+        [{"name": "Almendra-Regular-OTF", "data": otf_font}],
+        separators=(",", ":"),
+    )
+    default = render(indigo, renderer, document, "svg", "[]")
+    custom = render(indigo, renderer, document, "svg", fonts)
+    if custom == default:
+        raise AssertionError(
+            "OTF font (CFF-flavored OpenType) did not affect rendering"
+        )
+
+
 def assert_invalid_font_rejected(indigo, renderer, document):
     # Valid TrueType signature so the font passes the format check, but the
     # data that follows is not a real font, so FreeType fails to parse it.
@@ -357,11 +365,12 @@ def assert_invalid_font_rejected(indigo, renderer, document):
 
 
 def test_custom_font_rendering(indigo, renderer):
-    document = load_document()
+    document = load_document("custom_fonts_utf.ket")
     font_sets = load_font_sets()
     assert_custom_svg_rendering(indigo, renderer, document, font_sets)
     assert_custom_png_rendering(indigo, renderer, document, font_sets)
     assert_first_matching_font_wins(indigo, renderer)
+    assert_otf_font_accepted(indigo, renderer)
     assert_invalid_font_rejected(indigo, renderer, document)
 
 
