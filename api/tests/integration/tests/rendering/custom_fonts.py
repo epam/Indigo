@@ -47,6 +47,11 @@ FONT_SETS = (
         "roboto-flex-variable.png",
         ("Roboto-Flex-Variable.ttf",),
     ),
+    (
+        "Almendra Regular only",
+        "almendra-regular-only.png",
+        ("Almendra-Regular.ttf",),
+    ),
 )
 
 
@@ -54,6 +59,19 @@ def assert_equal(actual, expected, message):
     if actual != expected:
         raise AssertionError(
             "%s: expected %r, got %r" % (message, expected, actual)
+        )
+
+
+def assert_json_equal(actual, expected, message):
+    # Compares parsed JSON rather than raw strings: under Jython, dict key
+    # order from json.dumps() is not guaranteed to match the source literal,
+    # while Indigo's fonts option always round-trips through a fixed
+    # "name" then "data" key order. Reporting lengths rather than the full
+    # (base64-encoded font) content keeps a failure message readable.
+    if json.loads(actual) != json.loads(expected):
+        raise AssertionError(
+            "%s: expected %d chars, got %d chars"
+            % (message, len(expected), len(actual))
         )
 
 
@@ -86,7 +104,9 @@ def test_render_fonts_option(indigo):
         [{"name": "first", "data": first_font}], separators=(",", ":")
     )
     indigo.setOption("render-fonts", first_value)
-    assert_equal(indigo.getOption("render-fonts"), first_value, "single font")
+    assert_json_equal(
+        indigo.getOption("render-fonts"), first_value, "single font"
+    )
 
     multiple_value = json.dumps(
         [
@@ -96,7 +116,7 @@ def test_render_fonts_option(indigo):
         separators=(",", ":"),
     )
     indigo.setOption("render-fonts", multiple_value)
-    assert_equal(
+    assert_json_equal(
         indigo.getOption("render-fonts"), multiple_value, "multiple fonts"
     )
 
@@ -110,7 +130,9 @@ def test_render_fonts_option(indigo):
     oversized_data = "A" * (((16 * 1024 * 1024 + 2) // 3) * 4 + 1)
 
     invalid_values = (
-        ("[", "Invalid fonts JSON at offset 1: Invalid value."),
+        # Only the offset is ours; the rest of the message is rapidjson's
+        # own wording, which is not our contract to assert on.
+        ("[", "Invalid fonts JSON at offset 1:"),
         ("{}", "Invalid fonts JSON: expected an array"),
         ('["font"]', "Invalid font at index 0: expected an object"),
         ("[{}]", "Invalid font at index 0: 'name' must be a string"),
@@ -125,6 +147,10 @@ def test_render_fonts_option(indigo):
         (
             '[{"name":"broken","data":1}]',
             "Invalid font at index 0: 'data' must be a Base64 string",
+        ),
+        (
+            '[{"name":"broken","data":""}]',
+            "Invalid font at index 0: unsupported font format",
         ),
         (
             '[{"name":"broken","data":"%%%"}]',
@@ -145,7 +171,7 @@ def test_render_fonts_option(indigo):
     )
     for value, expected in invalid_values:
         assert_option_error(indigo, value, expected)
-        assert_equal(
+        assert_json_equal(
             indigo.getOption("render-fonts"),
             multiple_value,
             "invalid value must not replace fonts",
@@ -250,6 +276,63 @@ def assert_custom_png_rendering(indigo, renderer, document, font_sets):
         assert_equal(actual, expected, "%s PNG reference" % set_name)
 
 
+def assert_first_matching_font_wins(indigo, renderer):
+    # Plain ASCII regular text only, so both fonts fully cover it and the
+    # comparison below cannot be confounded by one of them falling back to
+    # Noto Sans for a glyph the other one happens to lack.
+    document = {
+        "ket_version": "2.0.0",
+        "root": {
+            "nodes": [
+                {
+                    "type": "text",
+                    "paragraphs": [
+                        {
+                            "parts": [{"text": "First match wins"}],
+                            "indent": 0,
+                        }
+                    ],
+                    "indent": 0,
+                }
+            ],
+            "connections": [],
+            "templates": [],
+        },
+    }
+
+    font_dir = joinPathPy("fonts", __file__)
+    almendra = encode_font(os.path.join(font_dir, "Almendra-Regular.ttf"))
+    roboto = encode_font(os.path.join(font_dir, "Roboto-Regular-Variable.ttf"))
+
+    almendra_only = json.dumps(
+        [{"name": "almendra", "data": almendra}], separators=(",", ":")
+    )
+    roboto_only = json.dumps(
+        [{"name": "roboto", "data": roboto}], separators=(",", ":")
+    )
+    almendra_first = json.dumps(
+        [
+            {"name": "almendra", "data": almendra},
+            {"name": "roboto", "data": roboto},
+        ],
+        separators=(",", ":"),
+    )
+
+    with_almendra = render(indigo, renderer, document, "svg", almendra_only)
+    with_roboto = render(indigo, renderer, document, "svg", roboto_only)
+    with_both = render(indigo, renderer, document, "svg", almendra_first)
+
+    if with_both != with_almendra:
+        raise AssertionError(
+            "listing a second font with the same style changed rendering: "
+            "the first matching font must win"
+        )
+    if with_both == with_roboto:
+        raise AssertionError(
+            "rendering matched the second font: the first one seems unused"
+        )
+
+
 def assert_invalid_font_rejected(indigo, renderer, document):
     # Valid TrueType signature so the font passes the format check, but the
     # data that follows is not a real font, so FreeType fails to parse it.
@@ -278,6 +361,7 @@ def test_custom_font_rendering(indigo, renderer):
     font_sets = load_font_sets()
     assert_custom_svg_rendering(indigo, renderer, document, font_sets)
     assert_custom_png_rendering(indigo, renderer, document, font_sets)
+    assert_first_matching_font_wins(indigo, renderer)
     assert_invalid_font_rejected(indigo, renderer, document)
 
 

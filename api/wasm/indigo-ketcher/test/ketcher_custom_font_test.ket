@@ -1,0 +1,39 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "type": "text",
+                "data": {
+                    "content": "{\"blocks\": [{\"key\": \"aaaaa\", \"text\": \"Custom font test ABCXYZ\", \"type\": \"unstyled\", \"depth\": 0, \"inlineStyleRanges\": [], \"entityRanges\": [], \"data\": {}}], \"entityMap\": {}}",
+                    "position": {
+                        "x": 22.95,
+                        "y": -14.5,
+                        "z": 0
+                    },
+                    "pos": [
+                        {
+                            "x": 22.95,
+                            "y": -14.5,
+                            "z": 0
+                        },
+                        {
+                            "x": 22.95,
+                            "y": -16.733333396911622,
+                            "z": 0
+                        },
+                        {
+                            "x": 25.488167381286623,
+                            "y": -16.733333396911622,
+                            "z": 0
+                        },
+                        {
+                            "x": 25.488167381286623,
+                            "y": -14.5,
+                            "z": 0
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}

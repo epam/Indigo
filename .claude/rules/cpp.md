@@ -26,8 +26,9 @@ clang-tidy is configured but **not run** — see [.memory-bank/conventions.md](.
 - **C++17.** `cmake/setup.cmake` sets the standard; `std::optional`, `string_view`, structured
   bindings and `if constexpr` are available, C++20 constructs are not.
 - The same source compiles under GCC, Clang, MSVC and Emscripten. Guard platform code with
-  `#ifdef _WIN32` / `__APPLE__` / `__linux__` / `EMSCRIPTEN`; under Emscripten there is no `pthread`
-  and no `cairo`.
+  `#ifdef _WIN32` / `__APPLE__` / `__linux__` / `EMSCRIPTEN`; under Emscripten there is no `pthread`.
+  Emscripten forces `BUILD_STANDALONE` on (`CMakeLists.txt`), so `cairo` **is** available there too —
+  it is the vendored, wasm-compiled copy from `third_party/cairo`, not a system library.
 - OS-dependent behaviour goes through the abstractions in `core/indigo-core/common/base_c/` rather
   than being written inline a second time.
 
