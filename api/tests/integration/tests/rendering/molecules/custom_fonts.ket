@@ -117,6 +117,18 @@
                             }
                         ],
                         "indent": 0
+                    },
+                    {
+                        "parts": [],
+                        "indent": 0
+                    },
+                    {
+                        "parts": [
+                            {
+                                "text": "Fallback: Тест"
+                            }
+                        ],
+                        "indent": 0
                     }
                 ],
                 "indent": 0

@@ -1484,12 +1484,12 @@ M  END""",
         # result = requests.get(self.url_prefix + "/render", params=data)
         # self.assertEqual(200, result.status_code)
 
-    def test_render_with_fonts_option(self):
+    def test_render_with_render_fonts_option(self):
         headers, data = self.get_headers(
             {
                 "struct": "C",
                 "output_format": "image/svg+xml",
-                "options": {"fonts": "[]"},
+                "options": {"render-fonts": "[]"},
             }
         )
         result = requests.post(

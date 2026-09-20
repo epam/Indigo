@@ -143,6 +143,14 @@ namespace indigo
         if (auto custom_face = _findFontFace(_custom_faces, ti))
             return custom_face;
 
+#ifndef RENDER_EMSCRIPTEN
+        // No custom fonts were requested and a native font backend (fontconfig/Quartz/GDI) is
+        // available, so let the caller fall back to cairo's toy font API instead of overriding
+        // the platform's default font for every piece of text.
+        if (_custom_faces.size() == 0)
+            return nullptr;
+#endif
+
 #ifdef RENDER_ENABLE_NOTO_SANS_CJK
         auto lang = _lang_detector.detectLang(ti);
 

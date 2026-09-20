@@ -70,7 +70,7 @@ def assert_option_error(indigo, value, expected):
         raise AssertionError("fonts option accepted invalid value %r" % value)
 
 
-def test_fonts_option(indigo):
+def test_render_fonts_option(indigo):
     assert_equal(
         indigo.getOptionType("render-fonts"), "str", "fonts option type"
     )
@@ -78,16 +78,20 @@ def test_fonts_option(indigo):
         indigo.getOption("render-fonts"), "[]", "default fonts option"
     )
 
+    font_dir = joinPathPy("fonts", __file__)
+    first_font = encode_font(os.path.join(font_dir, "Almendra-Bold.ttf"))
+    second_font = encode_font(os.path.join(font_dir, "Almendra-Italic.ttf"))
+
     first_value = json.dumps(
-        [{"name": "first", "data": "AA=="}], separators=(",", ":")
+        [{"name": "first", "data": first_font}], separators=(",", ":")
     )
     indigo.setOption("render-fonts", first_value)
     assert_equal(indigo.getOption("render-fonts"), first_value, "single font")
 
     multiple_value = json.dumps(
         [
-            {"name": "first", "data": "AA=="},
-            {"name": "second", "data": "AQID"},
+            {"name": "first", "data": first_font},
+            {"name": "second", "data": second_font},
         ],
         separators=(",", ":"),
     )
@@ -95,6 +99,15 @@ def test_fonts_option(indigo):
     assert_equal(
         indigo.getOption("render-fonts"), multiple_value, "multiple fonts"
     )
+
+    # Decodes fine (>= 4 bytes), but does not match any supported
+    # TrueType/OpenType magic signature.
+    unsupported_format_data = base64.b64encode(b"\x00\x00\x00\x00").decode(
+        "ascii"
+    )
+    # One character past the maximum allowed Base64 length for a single
+    # font, so the size check rejects it before attempting to decode.
+    oversized_data = "A" * (((16 * 1024 * 1024 + 2) // 3) * 4 + 1)
 
     invalid_values = (
         ("[", "Invalid fonts JSON at offset 1: Invalid value."),
@@ -116,6 +129,18 @@ def test_fonts_option(indigo):
         (
             '[{"name":"broken","data":"%%%"}]',
             "Invalid Base64 data for font 'broken' at index 0:",
+        ),
+        (
+            '[{"name":"broken","data":"%s"}]' % unsupported_format_data,
+            "Invalid font at index 0: unsupported font format",
+        ),
+        (
+            '[{"name":"broken","data":"%s"}]' % oversized_data,
+            "Invalid font at index 0: data exceeds",
+        ),
+        (
+            "[{},{},{},{},{},{},{},{},{}]",
+            "Invalid fonts JSON: too many fonts (maximum 8)",
         ),
     )
     for value, expected in invalid_values:
@@ -226,15 +251,20 @@ def assert_custom_png_rendering(indigo, renderer, document, font_sets):
 
 
 def assert_invalid_font_rejected(indigo, renderer, document):
+    # Valid TrueType signature so the font passes the format check, but the
+    # data that follows is not a real font, so FreeType fails to parse it.
+    broken_data = base64.b64encode(b"\x00\x01\x00\x00" + b"\x00" * 16).decode(
+        "ascii"
+    )
     invalid_font = json.dumps(
-        [{"name": "broken-font", "data": "AA=="}],
+        [{"name": "broken-font", "data": broken_data}],
         separators=(",", ":"),
     )
     try:
         render(indigo, renderer, document, "svg", invalid_font)
     except IndigoException as error:
         message = getIndigoExceptionText(error)
-        expected = "error loading font broken-font"
+        expected = "Error loading font 'broken-font'"
         if expected not in message:
             raise AssertionError(
                 "expected %r in error message %r" % (expected, message)
@@ -254,7 +284,7 @@ def test_custom_font_rendering(indigo, renderer):
 indigo = Indigo()
 renderer = IndigoRenderer(indigo)
 
-test_fonts_option(indigo)
+test_render_fonts_option(indigo)
 test_custom_font_rendering(indigo, renderer)
 
 print("Custom fonts option tests: OK")
