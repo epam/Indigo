@@ -187,7 +187,7 @@ def load_font_sets():
 
 def load_document():
     path = joinPathPy("molecules/custom_fonts.ket", __file__)
-    with open(path, "r") as ket_file:
+    with open(path, "r", encoding="utf-8") as ket_file:
         return json.load(ket_file)
 
 
