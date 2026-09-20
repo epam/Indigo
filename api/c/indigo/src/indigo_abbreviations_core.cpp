@@ -18,6 +18,7 @@
 
 #include "indigo_abbreviations.h"
 #include "indigo_internal.h"
+#include "indigo_io.h"
 
 #include <tinyxml2.h>
 
@@ -48,19 +49,28 @@ namespace indigo
 
         void IndigoAbbreviations::clear()
         {
+            abbreviations.clear();
             loadDefault();
         }
 
         void IndigoAbbreviations::loadDefault()
         {
+            loadFromXmlString(default_abbreviations_xml);
+        }
+
+        void IndigoAbbreviations::loadFromXmlString(const char* xml_text)
+        {
             XMLDocument xml;
-            xml.Parse(default_abbreviations_xml);
+            xml.Parse(xml_text);
             if (xml.Error())
                 throw IndigoError("XML parsing error: %s", xml.ErrorStr());
             XMLHandle hxml(&xml);
-            XMLHandle handle = hxml.FirstChildElement("abbreviations");
+            _parseItems(hxml.FirstChildElement("abbreviations"));
+        }
 
-            XMLElement* elem = handle.FirstChildElement("item").ToElement();
+        void IndigoAbbreviations::_parseItems(XMLHandle abbreviations_handle)
+        {
+            XMLElement* elem = abbreviations_handle.FirstChildElement("item").ToElement();
             for (; elem; elem = elem->NextSiblingElement())
             {
                 Abbreviation& abbr = abbreviations.add(new Abbreviation);
@@ -95,6 +105,33 @@ namespace indigo
                 else
                     abbr.connections = 1;
             }
+        }
+
+        //
+        // Interface functions
+        //
+        CEXPORT int indigoLoadAbbreviations(int source)
+        {
+            INDIGO_BEGIN
+            {
+                IndigoObject& obj = self.getObject(source);
+                Scanner& scanner = IndigoScanner::get(obj);
+                std::string xml_str;
+                scanner.readAll(xml_str);
+                self.loadAbbreviations(xml_str.c_str());
+                return 1;
+            }
+            INDIGO_END(-1);
+        }
+
+        CEXPORT int indigoResetAbbreviations(void)
+        {
+            INDIGO_BEGIN
+            {
+                self.resetAbbreviations();
+                return 1;
+            }
+            INDIGO_END(-1);
         }
     } // namespace abbreviations
 } // namespace indigo

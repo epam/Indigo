@@ -472,6 +472,12 @@ namespace com.epam.indigo
             return new IndigoObject(this, checkResult(IndigoLib.indigoLoadMonomerLibraryFromString(str)));
         }
 
+        public void loadAbbreviations(string str)
+        {
+            setSessionID();
+            checkResult(IndigoLib.indigoLoadAbbreviationsFromString(str));
+        }
+
         public IndigoObject loadKetDocument(string str)
         {
             setSessionID();
@@ -530,6 +536,18 @@ namespace com.epam.indigo
         {
             setSessionID();
             return new IndigoObject(this, checkResult(IndigoLib.indigoLoadMonomerLibraryFromFile(path)));
+        }
+
+        public void loadAbbreviationsFromFile(string path)
+        {
+            setSessionID();
+            checkResult(IndigoLib.indigoLoadAbbreviationsFromFile(path));
+        }
+
+        public void resetAbbreviations()
+        {
+            setSessionID();
+            checkResult(IndigoLib.indigoResetAbbreviations());
         }
 
         public IndigoObject loadKetDocumentFromFile(string path)

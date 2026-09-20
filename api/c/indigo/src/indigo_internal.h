@@ -407,6 +407,8 @@ public:
     static void handleError(const char* message);
     static void setErrorHandler(INDIGO_ERROR_HANDLER handler, void* context);
     auto getAbbreviations() -> const abbreviations::IndigoAbbreviations&;
+    void loadAbbreviations(const char* xml_text);
+    void resetAbbreviations();
 
 private:
     static Array<char>& error_message();

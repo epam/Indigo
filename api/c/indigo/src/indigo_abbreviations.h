@@ -24,6 +24,11 @@
 
 #include "base_cpp/ptr_array.h"
 
+namespace tinyxml2
+{
+    class XMLHandle;
+}
+
 namespace indigo
 {
 
@@ -45,10 +50,13 @@ namespace indigo
 
             void clear();
 
+            void loadFromXmlString(const char* xml_text);
+
             PtrArray<Abbreviation> abbreviations;
 
         private:
             void loadDefault();
+            void _parseItems(tinyxml2::XMLHandle abbreviations_handle);
         };
 
         IndigoAbbreviations& indigoGetAbbreviationsInstance();

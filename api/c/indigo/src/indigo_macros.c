@@ -92,6 +92,10 @@ WRAPPER_LOAD_FROM_STRING(indigoLoadKetDocument)
 WRAPPER_LOAD_FROM_FILE(indigoLoadKetDocument)
 WRAPPER_LOAD_FROM_BUFFER(indigoLoadKetDocument)
 
+WRAPPER_LOAD_FROM_STRING(indigoLoadAbbreviations)
+WRAPPER_LOAD_FROM_FILE(indigoLoadAbbreviations)
+WRAPPER_LOAD_FROM_BUFFER(indigoLoadAbbreviations)
+
 CEXPORT int indigoSaveMolfileToFile(int molecule, const char* filename)
 {
     int f = indigoWriteFile(filename);
