@@ -4,7 +4,7 @@
  *
  *   FreeType path stroker (body).
  *
- * Copyright (C) 2002-2026 by
+ * Copyright (C) 2002-2022 by
  * David Turner, Robert Wilhelm, and Werner Lemberg.
  *
  * This file is part of the FreeType project, and may only be used,
@@ -693,7 +693,6 @@
   Fail:
     num_points   = 0;
     num_contours = 0;
-    error        = FT_THROW( Invalid_Outline );
     goto Exit;
   }
 
@@ -712,7 +711,7 @@
     {
       FT_UInt   count = border->num_points;
       FT_Byte*  read  = border->tags;
-      FT_Byte*  write = outline->tags + outline->n_points;
+      FT_Byte*  write = (FT_Byte*)outline->tags + outline->n_points;
 
 
       for ( ; count > 0; count--, read++, write++ )
@@ -728,10 +727,10 @@
 
     /* copy contours */
     {
-      FT_UInt     count = border->num_points;
-      FT_Byte*    tags  = border->tags;
-      FT_UShort*  write = outline->contours + outline->n_contours;
-      FT_UShort   idx   = outline->n_points;
+      FT_UInt    count = border->num_points;
+      FT_Byte*   tags  = border->tags;
+      FT_Short*  write = outline->contours + outline->n_contours;
+      FT_Short   idx   = (FT_Short)outline->n_points;
 
 
       for ( ; count > 0; count--, tags++, idx++ )
@@ -744,7 +743,7 @@
       }
     }
 
-    outline->n_points += (FT_UShort)border->num_points;
+    outline->n_points += (short)border->num_points;
 
     FT_ASSERT( FT_Outline_Check( outline ) == 0 );
   }
@@ -1071,7 +1070,7 @@
         if ( theta == FT_ANGLE_PI2 )
           theta = -rotate;
 
-        phi = stroker->angle_in + theta + rotate;
+        phi    = stroker->angle_in + theta + rotate;
 
         FT_Vector_From_Polar( &sigma, stroker->miter_limit, theta );
 
@@ -1372,7 +1371,7 @@
     arc[1] = *control;
     arc[2] = stroker->center;
 
-    do
+    while ( arc >= bez_stack )
     {
       FT_Angle  angle_in, angle_out;
 
@@ -1525,12 +1524,10 @@
         }
       }
 
-      stroker->angle_in = angle_out;
-
-      if ( arc == bez_stack )
-        break;
       arc -= 2;
-    } while ( 1 );
+
+      stroker->angle_in = angle_out;
+    }
 
     stroker->center      = *to;
     stroker->line_length = 0;
@@ -1580,7 +1577,7 @@
     arc[2] = *control1;
     arc[3] = stroker->center;
 
-    do
+    while ( arc >= bez_stack )
     {
       FT_Angle  angle_in, angle_mid, angle_out;
 
@@ -1744,12 +1741,10 @@
         }
       }
 
-      stroker->angle_in = angle_out;
-
-      if ( arc == bez_stack )
-        break;
       arc -= 3;
-    } while ( 1 );
+
+      stroker->angle_in = angle_out;
+    }
 
     stroker->center      = *to;
     stroker->line_length = 0;
@@ -2055,14 +2050,12 @@
 
     FT_Vector*  point;
     FT_Vector*  limit;
-    FT_Byte*    tags;
+    char*       tags;
 
     FT_Error    error;
 
     FT_Int      n;         /* index of contour in outline     */
-    FT_Int      first;     /* index of first point in contour */
-    FT_Int      last;      /* index of last point in contour  */
-
+    FT_UInt     first;     /* index of first point in contour */
     FT_Int      tag;       /* current point's state           */
 
 
@@ -2074,17 +2067,22 @@
 
     FT_Stroker_Rewind( stroker );
 
-    last = -1;
+    first = 0;
+
     for ( n = 0; n < outline->n_contours; n++ )
     {
-      first = last + 1;
-      last  = outline->contours[n];
+      FT_UInt  last;  /* index of last point in contour */
+
+
+      last  = (FT_UInt)outline->contours[n];
+      limit = outline->points + last;
 
       /* skip empty points; we don't stroke these */
       if ( last <= first )
+      {
+        first = last + 1;
         continue;
-
-      limit = outline->points + last;
+      }
 
       v_start = outline->points[first];
       v_last  = outline->points[last];
@@ -2233,6 +2231,8 @@
         if ( error )
           goto Exit;
       }
+
+      first = last + 1;
     }
 
     return FT_Err_Ok;
@@ -2252,7 +2252,7 @@
                    FT_Stroker   stroker,
                    FT_Bool      destroy )
   {
-    FT_Error  error = FT_THROW( Invalid_Argument );
+    FT_Error  error = FT_ERR( Invalid_Argument );
     FT_Glyph  glyph = NULL;
 
 
@@ -2284,9 +2284,7 @@
       if ( error )
         goto Fail;
 
-      error = FT_Stroker_GetCounts( stroker, &num_points, &num_contours );
-      if ( error )
-        goto Fail;
+      FT_Stroker_GetCounts( stroker, &num_points, &num_contours );
 
       FT_Outline_Done( glyph->library, outline );
 
@@ -2329,7 +2327,7 @@
                          FT_Bool      inside,
                          FT_Bool      destroy )
   {
-    FT_Error  error = FT_THROW( Invalid_Argument );
+    FT_Error  error = FT_ERR( Invalid_Argument );
     FT_Glyph  glyph = NULL;
 
 

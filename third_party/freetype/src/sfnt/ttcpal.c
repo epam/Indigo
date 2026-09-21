@@ -4,7 +4,7 @@
  *
  *   TrueType and OpenType color palette support (body).
  *
- * Copyright (C) 2018-2026 by
+ * Copyright (C) 2018-2022 by
  * David Turner, Robert Wilhelm, and Werner Lemberg.
  *
  * Originally written by Shao Yu Zhang <shaozhang@fb.com>.
@@ -303,7 +303,7 @@
 #else /* !TT_CONFIG_OPTION_COLOR_LAYERS */
 
   /* ANSI C doesn't like empty source files */
-  typedef int  tt_cpal_dummy_;
+  typedef int  _tt_cpal_dummy;
 
 #endif /* !TT_CONFIG_OPTION_COLOR_LAYERS */
 

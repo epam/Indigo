@@ -4,7 +4,7 @@
  *
  *   High-level Type 42 driver interface (body).
  *
- * Copyright (C) 2002-2026 by
+ * Copyright (C) 2002-2022 by
  * Roberto Alameda.
  *
  * This file is part of the FreeType project, and may only be used,
@@ -56,41 +56,33 @@
    *
    */
 
-  FT_CALLBACK_DEF( FT_Error )
-  t42_get_glyph_name( FT_Face     face,        /* T42_Face */
+  static FT_Error
+  t42_get_glyph_name( T42_Face    face,
                       FT_UInt     glyph_index,
                       FT_Pointer  buffer,
                       FT_UInt     buffer_max )
   {
-    T42_Face  t42face = (T42_Face)face;
-
-
-    FT_STRCPYN( buffer,
-                t42face->type1.glyph_names[glyph_index],
-                buffer_max );
+    FT_STRCPYN( buffer, face->type1.glyph_names[glyph_index], buffer_max );
 
     return FT_Err_Ok;
   }
 
 
-  FT_CALLBACK_DEF( FT_UInt )
-  t42_get_name_index( FT_Face           face,        /* T42_Face */
+  static FT_UInt
+  t42_get_name_index( T42_Face          face,
                       const FT_String*  glyph_name )
   {
-    T42_Face  t42face = (T42_Face)face;
-    FT_Int    i;
+    FT_Int  i;
 
 
-    for ( i = 0; i < t42face->type1.num_glyphs; i++ )
+    for ( i = 0; i < face->type1.num_glyphs; i++ )
     {
-      FT_String*  gname = t42face->type1.glyph_names[i];
+      FT_String*  gname = face->type1.glyph_names[i];
 
 
       if ( glyph_name[0] == gname[0] && !ft_strcmp( glyph_name, gname ) )
-        return (FT_UInt)ft_strtol(
-                          (const char *)t42face->type1.charstrings[i],
-                          NULL,
-                          10 );
+        return (FT_UInt)ft_strtol( (const char *)face->type1.charstrings[i],
+                                   NULL, 10 );
     }
 
     return 0;
@@ -110,13 +102,10 @@
    *
    */
 
-  FT_CALLBACK_DEF( const char* )
-  t42_get_ps_font_name( FT_Face  face )    /* T42_Face */
+  static const char*
+  t42_get_ps_font_name( T42_Face  face )
   {
-    T42_Face  t42face = (T42_Face)face;
-
-
-    return (const char*)t42face->type1.font_name;
+    return (const char*)face->type1.font_name;
   }
 
 
@@ -132,7 +121,7 @@
    *
    */
 
-  FT_CALLBACK_DEF( FT_Error )
+  static FT_Error
   t42_ps_get_font_info( FT_Face          face,
                         PS_FontInfoRec*  afont_info )
   {
@@ -142,7 +131,7 @@
   }
 
 
-  FT_CALLBACK_DEF( FT_Error )
+  static FT_Error
   t42_ps_get_font_extra( FT_Face           face,
                          PS_FontExtraRec*  afont_extra )
   {
@@ -152,7 +141,7 @@
   }
 
 
-  FT_CALLBACK_DEF( FT_Int )
+  static FT_Int
   t42_ps_has_glyph_names( FT_Face  face )
   {
     FT_UNUSED( face );

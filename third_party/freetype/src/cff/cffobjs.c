@@ -4,7 +4,7 @@
  *
  *   OpenType objects manager (body).
  *
- * Copyright (C) 1996-2026 by
+ * Copyright (C) 1996-2022 by
  * David Turner, Robert Wilhelm, and Werner Lemberg.
  *
  * This file is part of the FreeType project, and may only be used,
@@ -14,6 +14,7 @@
  * understand and accept it fully.
  *
  */
+
 
 
 #include <freetype/internal/ftdebug.h>
@@ -40,9 +41,6 @@
 
 #include <freetype/internal/psaux.h>
 #include <freetype/internal/services/svcfftl.h>
-
-#define CFF_fixedToInt( x )                          \
-          ( (FT_Short)( ( (x) + 0x8000U ) >> 16 ) )
 
 
   /**************************************************************************
@@ -71,8 +69,8 @@
     FT_Module         module;
 
 
-    module = FT_Get_Module( font->library, "pshinter" );
-
+    module = FT_Get_Module( size->root.face->driver->root.library,
+                            "pshinter" );
     return ( module && pshinter && pshinter->get_globals_funcs )
            ? pshinter->get_globals_funcs( module )
            : 0;
@@ -126,20 +124,19 @@
 
     count = priv->num_blue_values = cpriv->num_blue_values;
     for ( n = 0; n < count; n++ )
-      priv->blue_values[n] = CFF_fixedToInt( cpriv->blue_values[n] );
+      priv->blue_values[n] = (FT_Short)cpriv->blue_values[n];
 
     count = priv->num_other_blues = cpriv->num_other_blues;
     for ( n = 0; n < count; n++ )
-      priv->other_blues[n] = CFF_fixedToInt( cpriv->other_blues[n] );
+      priv->other_blues[n] = (FT_Short)cpriv->other_blues[n];
 
     count = priv->num_family_blues = cpriv->num_family_blues;
     for ( n = 0; n < count; n++ )
-      priv->family_blues[n] = CFF_fixedToInt( cpriv->family_blues[n] );
+      priv->family_blues[n] = (FT_Short)cpriv->family_blues[n];
 
     count = priv->num_family_other_blues = cpriv->num_family_other_blues;
     for ( n = 0; n < count; n++ )
-      priv->family_other_blues[n] =
-        CFF_fixedToInt( cpriv->family_other_blues[n] );
+      priv->family_other_blues[n] = (FT_Short)cpriv->family_other_blues[n];
 
     priv->blue_scale = cpriv->blue_scale;
     priv->blue_shift = (FT_Int)cpriv->blue_shift;
@@ -185,7 +182,8 @@
       goto Exit;
 
     cff_make_private_dict( &font->top_font, &priv );
-    error = funcs->create( memory, &priv, &internal->topfont );
+    error = funcs->create( cffsize->face->memory, &priv,
+                             &internal->topfont );
     if ( error )
       goto Exit;
 
@@ -195,7 +193,8 @@
 
 
       cff_make_private_dict( sub, &priv );
-      error = funcs->create( memory, &priv, &internal->subfonts[i - 1] );
+      error = funcs->create( cffsize->face->memory, &priv,
+                               &internal->subfonts[i - 1] );
       if ( error )
         goto Exit;
     }
@@ -382,7 +381,8 @@
       FT_Module  module;
 
 
-      module = FT_Get_Module( slot->library, "pshinter" );
+      module = FT_Get_Module( slot->face->driver->root.library,
+                              "pshinter" );
       if ( module )
       {
         T2_Hints_Funcs  funcs;
@@ -424,23 +424,32 @@
   static void
   remove_subset_prefix( FT_String*  name )
   {
-    FT_UInt32  i = 0, idx = 0;
+    FT_Int32  idx             = 0;
+    FT_Int32  length          = (FT_Int32)ft_strlen( name ) + 1;
+    FT_Bool   continue_search = 1;
 
 
-    /* six ASCII uppercase letters followed by a plus sign */
-    while ( 'A' <= name[i] && name[i++] <= 'Z' &&
-            'A' <= name[i] && name[i++] <= 'Z' &&
-            'A' <= name[i] && name[i++] <= 'Z' &&
-            'A' <= name[i] && name[i++] <= 'Z' &&
-            'A' <= name[i] && name[i++] <= 'Z' &&
-            'A' <= name[i] && name[i++] <= 'Z' &&
-                              name[i++] == '+' )
+    while ( continue_search )
     {
-      idx = i;
-    }
+      if ( length >= 7 && name[6] == '+' )
+      {
+        for ( idx = 0; idx < 6; idx++ )
+        {
+          /* ASCII uppercase letters */
+          if ( !( 'A' <= name[idx] && name[idx] <= 'Z' ) )
+            continue_search = 0;
+        }
 
-    if ( idx )
-      FT_MEM_MOVE( name, name + idx, ft_strlen( name + idx ) + 1 );
+        if ( continue_search )
+        {
+          for ( idx = 7; idx < length; idx++ )
+            name[idx - 7] = name[idx];
+          length -= 7;
+        }
+      }
+      else
+        continue_search = 0;
+    }
   }
 
 
@@ -450,20 +459,42 @@
   remove_style( FT_String*        family_name,
                 const FT_String*  style_name )
   {
-    FT_String*        f = family_name + ft_strlen( family_name );
-    const FT_String*  s =  style_name + ft_strlen(  style_name );
+    FT_Int32  family_name_length, style_name_length;
 
 
-    /* compare strings moving backwards */
-    while ( s > style_name )
-      if ( f == family_name || *--s != *--f )
-        return;
+    family_name_length = (FT_Int32)ft_strlen( family_name );
+    style_name_length  = (FT_Int32)ft_strlen( style_name );
 
-    /* terminate and remove special characters */
-    do
-      *f = '\0';
-    while ( f-- > family_name                                    &&
-            ( *f == '-' || *f == ' ' || *f == '_' || *f == '+' ) );
+    if ( family_name_length > style_name_length )
+    {
+      FT_Int  idx;
+
+
+      for ( idx = 1; idx <= style_name_length; idx++ )
+      {
+        if ( family_name[family_name_length - idx] !=
+             style_name[style_name_length - idx] )
+          break;
+      }
+
+      if ( idx > style_name_length )
+      {
+        /* family_name ends with style_name; remove it */
+        idx = family_name_length - style_name_length - 1;
+
+        /* also remove special characters     */
+        /* between real family name and style */
+        while ( idx > 0                     &&
+                ( family_name[idx] == '-' ||
+                  family_name[idx] == ' ' ||
+                  family_name[idx] == '_' ||
+                  family_name[idx] == '+' ) )
+          idx--;
+
+        if ( idx > 0 )
+          family_name[idx + 1] = '\0';
+      }
+    }
   }
 
 
@@ -537,8 +568,8 @@
 
       sfnt_format = 1;
 
-      /* the font may be OpenType/CFF, SVG CEF, or sfnt/CFF; a `head' table */
-      /* implies OpenType/CFF, otherwise just look for an optional cmap     */
+      /* now, the font can be either an OpenType/CFF font, or an SVG CEF */
+      /* font; in the latter case it doesn't have a `head' table         */
       error = face->goto_table( face, TTAG_head, stream, 0 );
       if ( !error )
       {
@@ -554,9 +585,7 @@
       {
         /* load the `cmap' table explicitly */
         error = sfnt->load_cmap( face, stream );
-
-        /* this may fail because CID-keyed fonts don't have a cmap */
-        if ( FT_ERR_NEQ( error, Table_Missing ) && FT_ERR_NEQ( error, Ok ) )
+        if ( error )
           goto Exit;
       }
 
@@ -653,7 +682,7 @@
         {
           s = cff_index_get_sid_string( cff, idx );
           if ( s )
-            FT_TRACE4(( "  %5u %s\n", idx, s ));
+            FT_TRACE4(( "  %5d %s\n", idx, s ));
         }
 
         /* In Multiple Master CFFs, two SIDs hold the Normalize Design  */
@@ -668,7 +697,7 @@
           FT_PtrDist  l;
 
 
-          FT_TRACE4(( "  %5u ", idx + 390 ));
+          FT_TRACE4(( "  %5d ", idx + 390 ));
           for ( l = 0; l < s1len; l++ )
             FT_TRACE4(( "%c", s1[l] ));
           FT_TRACE4(( "\n" ));
@@ -683,7 +712,7 @@
           FT_PtrDist  l;
 
 
-          FT_TRACE4(( "  %5u ", cff->num_strings + 390 ));
+          FT_TRACE4(( "  %5d ", cff->num_strings + 390 ));
           for ( l = 0; l < s1len; l++ )
             FT_TRACE4(( "%c", s1[l] ));
           FT_TRACE4(( "\n" ));
@@ -693,14 +722,22 @@
 
 #ifdef TT_CONFIG_OPTION_GX_VAR_SUPPORT
       {
+        FT_Service_MultiMasters       mm  = (FT_Service_MultiMasters)face->mm;
+        FT_Service_MetricsVariations  var = (FT_Service_MetricsVariations)face->var;
+
         FT_UInt  instance_index = (FT_UInt)face_index >> 16;
 
 
-        if ( FT_HAS_MULTIPLE_MASTERS( cffface ) )
+        if ( FT_HAS_MULTIPLE_MASTERS( cffface ) &&
+             mm                                 &&
+             instance_index > 0                 )
         {
-          error = FT_Set_Named_Instance( cffface, instance_index );
+          error = mm->set_instance( cffface, instance_index );
           if ( error )
             goto Exit;
+
+          if ( var )
+            var->metrics_adjust( cffface );
         }
       }
 #endif /* TT_CONFIG_OPTION_GX_VAR_SUPPORT */
@@ -846,8 +883,10 @@
           cffface->height = (FT_Short)( cffface->ascender -
                                         cffface->descender );
 
-        cffface->underline_position  = (FT_Short)dict->underline_position;
-        cffface->underline_thickness = (FT_Short)dict->underline_thickness;
+        cffface->underline_position  =
+          (FT_Short)( dict->underline_position >> 16 );
+        cffface->underline_thickness =
+          (FT_Short)( dict->underline_thickness >> 16 );
 
         /* retrieve font family & style name */
         if ( dict->family_name )
@@ -992,10 +1031,12 @@
         cffface->style_flags = flags;
       }
 
+#ifndef FT_CONFIG_OPTION_NO_GLYPH_NAMES
       /* CID-keyed CFF or CFF2 fonts don't have glyph names -- the SFNT */
       /* loader has unset this flag because of the 3.0 `post' table.    */
       if ( dict->cid_registry == 0xFFFFU && !cff2 )
         cffface->face_flags |= FT_FACE_FLAG_GLYPH_NAMES;
+#endif
 
       if ( dict->cid_registry != 0xFFFFU && pure_cff )
         cffface->face_flags |= FT_FACE_FLAG_CID_KEYED;
@@ -1121,7 +1162,7 @@
     }
 
 #ifdef TT_CONFIG_OPTION_GX_VAR_SUPPORT
-    cff_done_blend( cffface );
+    cff_done_blend( face );
     face->blend = NULL;
 #endif
   }

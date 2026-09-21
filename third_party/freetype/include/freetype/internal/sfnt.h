@@ -4,7 +4,7 @@
  *
  *   High-level 'sfnt' driver interface (specification).
  *
- * Copyright (C) 1996-2026 by
+ * Copyright (C) 1996-2022 by
  * David Turner, Robert Wilhelm, and Werner Lemberg.
  *
  * This file is part of the FreeType project, and may only be used,
@@ -612,7 +612,7 @@ FT_BEGIN_HEADER
    *
    * @return:
    *   Value~1 if a ClipBox is found.  If no clip box is found or an
-   *   error occurred, value~0 is returned.
+   *   error occured, value~0 is returned.
    */
   typedef FT_Bool
   ( *TT_Get_Color_Glyph_ClipBox_Func )( TT_Face      face,
@@ -707,7 +707,7 @@ FT_BEGIN_HEADER
    *
    * @return:
    *   Value~1 if everything is OK.  Value~0 if no details can be found for
-   *   this paint or any other error occurred.
+   *   this paint or any other error occured.
    */
   typedef FT_Bool
   ( *TT_Get_Paint_Func )( TT_Face         face,
@@ -808,7 +808,7 @@ FT_BEGIN_HEADER
    *     corresponding (1,0) Apple entry.
    *
    * @return:
-   *   1 if there is either a win or apple entry (or both), 0 otherwise.
+   *   1 if there is either a win or apple entry (or both), 0 otheriwse.
    */
   typedef FT_Bool
   (*TT_Get_Name_ID_Func)( TT_Face    face,
@@ -924,7 +924,6 @@ FT_BEGIN_HEADER
     /* this field was called `load_kerning' up to version 2.1.10 */
     TT_Load_Table_Func  load_kern;
 
-    TT_Load_Table_Func  load_gpos;
     TT_Load_Table_Func  load_gasp;
     TT_Load_Table_Func  load_pclt;
 
@@ -944,8 +943,6 @@ FT_BEGIN_HEADER
     TT_Face_GetKerningFunc  get_kerning;
 
     /* new elements introduced after version 2.1.10 */
-
-    TT_Face_GetKerningFunc  get_gpos_kerning;
 
     /* load the font directory, i.e., the offset table and */
     /* the table directory                                 */
@@ -1005,7 +1002,6 @@ FT_BEGIN_HEADER
           load_name_,                    \
           free_name_,                    \
           load_kern_,                    \
-          load_gpos_,                    \
           load_gasp_,                    \
           load_pclt_,                    \
           load_bhed_,                    \
@@ -1013,7 +1009,6 @@ FT_BEGIN_HEADER
           get_psname_,                   \
           free_psnames_,                 \
           get_kerning_,                  \
-          get_gpos_kerning_,             \
           load_font_dir_,                \
           load_hmtx_,                    \
           load_eblc_,                    \
@@ -1055,7 +1050,6 @@ FT_BEGIN_HEADER
     load_name_,                          \
     free_name_,                          \
     load_kern_,                          \
-    load_gpos_,                          \
     load_gasp_,                          \
     load_pclt_,                          \
     load_bhed_,                          \
@@ -1063,7 +1057,6 @@ FT_BEGIN_HEADER
     get_psname_,                         \
     free_psnames_,                       \
     get_kerning_,                        \
-    get_gpos_kerning_,                   \
     load_font_dir_,                      \
     load_hmtx_,                          \
     load_eblc_,                          \

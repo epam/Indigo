@@ -4,7 +4,7 @@
  *
  *   Callback functions of the caching sub-system (specification only).
  *
- * Copyright (C) 2004-2026 by
+ * Copyright (C) 2004-2022 by
  * David Turner, Robert Wilhelm, and Werner Lemberg.
  *
  * This file is part of the FreeType project, and may only be used,
@@ -19,7 +19,11 @@
 #define FTCCBACK_H_
 
 #include <freetype/ftcache.h>
-#include "ftccache.h"
+#include "ftcmru.h"
+#include "ftcimage.h"
+#include "ftcmanag.h"
+#include "ftcglyph.h"
+#include "ftcsbits.h"
 
 FT_BEGIN_HEADER
 
@@ -76,6 +80,10 @@ FT_BEGIN_HEADER
 
   FT_LOCAL( void )
   ftc_cache_done( FTC_Cache  cache );
+
+  FT_LOCAL( void )
+  ftc_node_destroy( FTC_Node     node,
+                    FTC_Manager  manager );
 
 FT_END_HEADER
 

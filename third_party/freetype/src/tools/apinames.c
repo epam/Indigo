@@ -10,7 +10,7 @@
  * accepted if you are using GCC for compilation (and probably by
  * other compilers too).
  *
- * Author: FreeType team, 2005-2023
+ * Author: FreeType team, 2005-2019
  *
  * This code is explicitly placed into the public domain.
  *
@@ -18,14 +18,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdarg.h>
 #include <string.h>
 #include <ctype.h>
 
-#include "vms_shorten_symbol.c"
-
 #define  PROGRAM_NAME     "apinames"
-#define  PROGRAM_VERSION  "0.5"
+#define  PROGRAM_VERSION  "0.4"
 
 #define  LINEBUFF_SIZE  1024
 
@@ -42,23 +39,11 @@ typedef enum  OutputFormat_
 
 } OutputFormat;
 
-#define SUFFIX_VMS_64ADDR "64__"
 
 static void
-panic( const char*  fmt,
-       ... )
+panic( const char*  message )
 {
-  va_list  ap;
-
-
-  fprintf( stderr, "PANIC: " );
-
-  va_start( ap, fmt );
-  vfprintf( stderr, fmt, ap );
-  va_end( ap );
-
-  fprintf( stderr, "\n" );
-
+  fprintf( stderr, "PANIC: %s\n", message );
   exit(2);
 }
 
@@ -77,12 +62,11 @@ static int   max_names;
 
 
 static void
-names_add( const char*   name,
-           const char*   end,
-           OutputFormat  format )
+names_add( const char*  name,
+           const char*  end )
 {
   unsigned int  h;
-  int           nn, len, len_suffix;
+  int           nn, len;
   Name          nm;
 
 
@@ -101,7 +85,7 @@ names_add( const char*   name,
   {
     nm = the_names + nn;
 
-    if ( nm->hash                      == h &&
+    if ( (int)nm->hash                 == h &&
          memcmp( name, nm->name, len ) == 0 &&
          nm->name[len]                 == 0 )
       return;
@@ -118,18 +102,8 @@ names_add( const char*   name,
   }
   nm = &the_names[num_names++];
 
-  switch ( format )
-  {
-  case OUTPUT_VMS_OPT:
-    /* VMS mode would join the symbol name with a suffix */
-    len_suffix = sizeof ( SUFFIX_VMS_64ADDR );
-    break;
-  default:
-    len_suffix = 0;
-  }
-
   nm->hash = h;
-  nm->name = (char*)malloc( len + len_suffix + 1 );
+  nm->name = (char*)malloc( len + 1 );
   if ( !nm->name )
     panic( "not enough memory" );
 
@@ -193,7 +167,6 @@ names_dump( FILE*         out,
 
   case OUTPUT_WATCOM_LBC:
     {
-      char         temp[512];
       const char*  dot;
 
 
@@ -208,6 +181,7 @@ names_dump( FILE*         out,
       dot = strchr( dll_name, '.' );
       if ( dot )
       {
+        char  temp[512];
         int   len = dot - dll_name;
 
 
@@ -228,24 +202,12 @@ names_dump( FILE*         out,
     break;
 
   case OUTPUT_VMS_OPT:
-    fprintf( out, "case_sensitive=YES\n" );
-
-    for ( nn = 0; nn < num_names; nn++ )
-    {
-      char  short_symbol[32];
-
-
-      if ( vms_shorten_symbol( the_names[nn].name, short_symbol, 1 ) == -1 )
-        panic( "could not shorten name '%s'", the_names[nn].name );
-      fprintf( out, "symbol_vector = ( %s = PROCEDURE)\n", short_symbol );
-
-      /* Also emit a 64-bit symbol, as created by the `vms_auto64` tool. */
-      /* It has the string '64__' appended to its name.                  */
-      strcat( the_names[nn].name , SUFFIX_VMS_64ADDR );
-      if ( vms_shorten_symbol( the_names[nn].name, short_symbol, 1 ) == -1 )
-        panic( "could not shorten name '%s'", the_names[nn].name );
-      fprintf( out, "symbol_vector = ( %s = PROCEDURE)\n", short_symbol );
-    }
+    fprintf( out, "GSMATCH=LEQUAL,2,0\n"
+                  "CASE_SENSITIVE=YES\n"
+                  "SYMBOL_VECTOR=(-\n" );
+    for ( nn = 0; nn < num_names - 1; nn++ )
+      fprintf( out, "    %s=PROCEDURE,-\n", the_names[nn].name );
+    fprintf( out, "    %s=PROCEDURE)\n", the_names[num_names - 1].name );
 
     break;
 
@@ -289,9 +251,8 @@ typedef enum  State_
 
 
 static int
-read_header_file( FILE*         file,
-                  int           verbose,
-                  OutputFormat  format )
+read_header_file( FILE*  file,
+                  int    verbose )
 {
   static char  buff[LINEBUFF_SIZE + 1];
   State        state = STATE_START;
@@ -308,7 +269,7 @@ read_header_file( FILE*         file,
     p = buff;
 
     /* skip leading whitespace */
-    while ( *p == ' ' || *p == '\t' )
+    while ( *p && ( *p == ' ' || *p == '\\' ) )
       p++;
 
     /* skip empty lines */
@@ -363,7 +324,7 @@ read_header_file( FILE*         file,
           if ( verbose )
             fprintf( stderr, ">>> %.*s\n", (int)( p - name ), name );
 
-          names_add( name, p, format );
+          names_add( name, p );
         }
 
         state = STATE_START;
@@ -393,7 +354,7 @@ usage( void )
     "It receives a list of header files as an argument and\n"
     "generates a sorted list of unique identifiers in various formats.\n"
     "\n"
-    "usage: %s [options] header1 [header2 ...]\n"
+    "usage: %s header1 [options] [header2 ...]\n"
     "\n"
     "options:   -       parse the contents of stdin, ignore arguments\n"
     "           -v      verbose mode, output sent to standard error\n"
@@ -532,7 +493,7 @@ main( int                 argc,
   } /* end of while loop */
 
   if ( from_stdin )
-    read_header_file( stdin, verbose, format );
+    read_header_file( stdin, verbose );
   else
   {
     for ( --argc, argv++; argc > 0; argc--, argv++ )
@@ -547,7 +508,7 @@ main( int                 argc,
         if ( verbose )
           fprintf( stderr, "opening '%s'\n", argv[0] );
 
-        read_header_file( file, verbose, format );
+        read_header_file( file, verbose );
         fclose( file );
       }
     }

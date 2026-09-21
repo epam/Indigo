@@ -4,7 +4,7 @@
  *
  *   OpenType Glyph Loader (body).
  *
- * Copyright (C) 1996-2026 by
+ * Copyright (C) 1996-2022 by
  * David Turner, Robert Wilhelm, and Werner Lemberg.
  *
  * This file is part of the FreeType project, and may only be used,
@@ -238,12 +238,24 @@
     else if ( glyph_index >= cff->num_glyphs )
       return FT_THROW( Invalid_Argument );
 
+    if ( load_flags & FT_LOAD_NO_RECURSE )
+      load_flags |= FT_LOAD_NO_SCALE | FT_LOAD_NO_HINTING;
+
+    glyph->x_scale = 0x10000L;
+    glyph->y_scale = 0x10000L;
+    if ( size )
+    {
+      glyph->x_scale = size->root.metrics.x_scale;
+      glyph->y_scale = size->root.metrics.y_scale;
+    }
+
 #ifdef TT_CONFIG_OPTION_EMBEDDED_BITMAPS
 
     /* try to load embedded bitmap if any              */
     /*                                                 */
     /* XXX: The convention should be emphasized in     */
     /*      the documents because it can be confusing. */
+    if ( size )
     {
       CFF_Face      cff_face = (CFF_Face)size->root.face;
       SFNT_Service  sfnt     = (SFNT_Service)cff_face->sfnt;
@@ -271,6 +283,9 @@
           FT_UShort  advance;
           FT_Short   dummy;
 
+
+          glyph->root.outline.n_points   = 0;
+          glyph->root.outline.n_contours = 0;
 
           glyph->root.metrics.width  = (FT_Pos)metrics.width  * 64;
           glyph->root.metrics.height = (FT_Pos)metrics.height * 64;
@@ -341,16 +356,18 @@
 
 #ifdef FT_CONFIG_OPTION_SVG
     /* check for OT-SVG */
-    if ( ( load_flags & FT_LOAD_NO_SVG ) == 0 &&
-         ( load_flags & FT_LOAD_COLOR )       &&
-         face->svg                            )
+    if ( ( load_flags & FT_LOAD_COLOR )     &&
+         ( (TT_Face)glyph->root.face )->svg )
     {
       /*
        * We load the SVG document and try to grab the advances from the
        * table.  For the bearings we rely on the presetting hook to do that.
        */
 
-      SFNT_Service  sfnt = (SFNT_Service)face->sfnt;
+      FT_Short      dummy;
+      FT_UShort     advanceX;
+      FT_UShort     advanceY;
+      SFNT_Service  sfnt;
 
 
       if ( size && (size->root.metrics.x_ppem < 1 ||
@@ -362,17 +379,10 @@
 
       FT_TRACE3(( "Trying to load SVG glyph\n" ));
 
+      sfnt  = (SFNT_Service)((TT_Face)glyph->root.face)->sfnt;
       error = sfnt->load_svg_doc( (FT_GlyphSlot)glyph, glyph_index );
       if ( !error )
       {
-        FT_Fixed  x_scale = size->root.metrics.x_scale;
-        FT_Fixed  y_scale = size->root.metrics.y_scale;
-
-        FT_Short   dummy;
-        FT_UShort  advanceX;
-        FT_UShort  advanceY;
-
-
         FT_TRACE3(( "Successfully loaded SVG glyph\n" ));
 
         glyph->root.format = FT_GLYPH_FORMAT_SVG;
@@ -394,11 +404,17 @@
                            &dummy,
                            &advanceY );
 
-        glyph->root.linearHoriAdvance = advanceX;
-        glyph->root.linearVertAdvance = advanceY;
+        advanceX =
+          (FT_UShort)FT_MulDiv( advanceX,
+                                glyph->root.face->size->metrics.x_ppem,
+                                glyph->root.face->units_per_EM );
+        advanceY =
+          (FT_UShort)FT_MulDiv( advanceY,
+                                glyph->root.face->size->metrics.y_ppem,
+                                glyph->root.face->units_per_EM );
 
-        glyph->root.metrics.horiAdvance = FT_MulFix( advanceX, x_scale );
-        glyph->root.metrics.vertAdvance = FT_MulFix( advanceY, y_scale );
+        glyph->root.metrics.horiAdvance = advanceX << 6;
+        glyph->root.metrics.vertAdvance = advanceY << 6;
 
         return error;
       }
@@ -407,25 +423,6 @@
     }
 
 #endif /* FT_CONFIG_OPTION_SVG */
-
-    /* top-level code ensures that FT_LOAD_NO_HINTING is set */
-    /* if FT_LOAD_NO_SCALE is active                         */
-    hinting = FT_BOOL( ( load_flags & FT_LOAD_NO_HINTING ) == 0 );
-    scaled  = FT_BOOL( ( load_flags & FT_LOAD_NO_SCALE   ) == 0 );
-
-    glyph->hint        = hinting;
-    glyph->scaled      = scaled;
-
-    if ( scaled )
-    {
-      glyph->x_scale = size->root.metrics.x_scale;
-      glyph->y_scale = size->root.metrics.y_scale;
-    }
-    else
-    {
-      glyph->x_scale = 0x10000L;
-      glyph->y_scale = 0x10000L;
-    }
 
     /* if we have a CID subfont, use its matrix (which has already */
     /* been multiplied with the root matrix)                       */
@@ -461,6 +458,18 @@
       font_offset = cff->top_font.font_dict.font_offset;
     }
 
+    glyph->root.outline.n_points   = 0;
+    glyph->root.outline.n_contours = 0;
+
+    /* top-level code ensures that FT_LOAD_NO_HINTING is set */
+    /* if FT_LOAD_NO_SCALE is active                         */
+    hinting = FT_BOOL( ( load_flags & FT_LOAD_NO_HINTING ) == 0 );
+    scaled  = FT_BOOL( ( load_flags & FT_LOAD_NO_SCALE   ) == 0 );
+
+    glyph->hint        = hinting;
+    glyph->scaled      = scaled;
+    glyph->root.format = FT_GLYPH_FORMAT_OUTLINE;  /* by default */
+
     {
 #ifdef CFF_CONFIG_OPTION_OLD_ENGINE
       PS_Driver  driver = (PS_Driver)FT_FACE_DRIVER( face );
@@ -482,14 +491,13 @@
       decoder.builder.no_recurse =
         FT_BOOL( load_flags & FT_LOAD_NO_RECURSE );
 
-      /* this function also checks for a valid subfont index */
-      error = decoder_funcs->prepare( &decoder, size, glyph_index );
-      if ( error )
-        goto Glyph_Build_Finished;
-
       /* now load the unscaled outline */
       error = cff_get_glyph_data( face, glyph_index,
                                   &charstring, &charstring_len );
+      if ( error )
+        goto Glyph_Build_Finished;
+
+      error = decoder_funcs->prepare( &decoder, size, glyph_index );
       if ( error )
         goto Glyph_Build_Finished;
 
@@ -594,8 +602,10 @@
     {
       /* Now, set the metrics -- this is rather simple, as   */
       /* the left side bearing is the xMin, and the top side */
-      /* bearing the yMax. For composite glyphs, return only */
-      /* left side bearing and advance width.                */
+      /* bearing the yMax.                                   */
+
+      /* For composite glyphs, return only left side bearing and */
+      /* advance width.                                          */
       if ( load_flags & FT_LOAD_NO_RECURSE )
       {
         FT_Slot_Internal  internal = glyph->root.internal;
@@ -613,12 +623,6 @@
         FT_Glyph_Metrics*  metrics = &glyph->root.metrics;
         FT_Bool            has_vertical_info;
 
-
-        glyph->root.format = FT_GLYPH_FORMAT_OUTLINE;
-
-        glyph->root.outline.flags = FT_OUTLINE_REVERSE_FILL;
-        if ( size && size->root.metrics.y_ppem < 24 )
-          glyph->root.outline.flags |= FT_OUTLINE_HIGH_PRECISION;
 
         if ( face->horizontal.number_Of_HMetrics )
         {
@@ -673,6 +677,14 @@
 
         glyph->root.linearVertAdvance = metrics->vertAdvance;
 
+        glyph->root.format = FT_GLYPH_FORMAT_OUTLINE;
+
+        glyph->root.outline.flags = 0;
+        if ( size && size->root.metrics.y_ppem < 24 )
+          glyph->root.outline.flags |= FT_OUTLINE_HIGH_PRECISION;
+
+        glyph->root.outline.flags |= FT_OUTLINE_REVERSE_FILL;
+
         /* apply the font matrix, if any */
         if ( font_matrix.xx != 0x10000L || font_matrix.yy != 0x10000L ||
              font_matrix.xy != 0        || font_matrix.yx != 0        )
@@ -695,7 +707,7 @@
           metrics->vertAdvance += font_offset.y;
         }
 
-        if ( scaled || force_scaling )
+        if ( ( load_flags & FT_LOAD_NO_SCALE ) == 0 || force_scaling )
         {
           /* scale the outline and the metrics */
           FT_Int       n;

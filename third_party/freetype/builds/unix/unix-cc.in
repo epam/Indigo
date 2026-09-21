@@ -2,7 +2,7 @@
 # FreeType 2 template for Unix-specific compiler definitions
 #
 
-# Copyright (C) 1996-2026 by
+# Copyright (C) 1996-2022 by
 # David Turner, Robert Wilhelm, and Werner Lemberg.
 #
 # This file is part of the FreeType project, and may only be used, modified,
@@ -110,14 +110,10 @@ LDFLAGS := @LDFLAGS@
 
 # export symbols
 #
-CCraw_build   := @CC_BUILD@               # native CC of building system
-E_BUILD       := @EXEEXT_BUILD@           # extension for executable on
-                                          # building system
-EXPORTS_LIST  := $(OBJ_DIR)/ftexport.sym
-CCexe         := $(CCraw_build)           # used to compile `apinames` only,
-                                          # see `exports.mk`
-CCexe_CFLAGS  := @CFLAGS_BUILD@           # ditto
-CCexe_LDFLAGS := @LDFLAGS_BUILD@          # ditto
+CCraw_build  := @CC_BUILD@	# native CC of building system
+E_BUILD      := @EXEEXT_BUILD@	# extension for executable on building system
+EXPORTS_LIST := $(OBJ_DIR)/ftexport.sym
+CCexe        := $(CCraw_build)	# used to compile `apinames' only
 
 
 # Library linking.

@@ -4,7 +4,7 @@
  *
  *   ANSI-specific FreeType low-level system interface (body).
  *
- * Copyright (C) 1996-2026 by
+ * Copyright (C) 1996-2022 by
  * David Turner, Robert Wilhelm, and Werner Lemberg.
  *
  * This file is part of the FreeType project, and may only be used,
@@ -206,7 +206,7 @@
    *     The number of bytes to read from the stream.
    *
    * @Return:
-   *   The number of bytes actually read.  If `count' is zero (that is,
+   *   The number of bytes actually read.  If `count' is zero (this is,
    *   the function is used for seeking), a non-zero return value
    *   indicates an error.
    */
@@ -219,18 +219,13 @@
     FT_FILE*  file;
 
 
-    if ( offset > stream->size && !count )
+    if ( !count && offset > stream->size )
       return 1;
 
     file = STREAM_FILE( stream );
 
     if ( stream->pos != offset )
       ft_fseek( file, (long)offset, SEEK_SET );
-
-    /* Avoid calling `fread` with `buffer=NULL` and `count=0`, */
-    /* which is undefined behaviour.                           */
-    if ( !count )
-      return 0;
 
     return (unsigned long)ft_fread( buffer, 1, count, file );
   }
@@ -280,7 +275,7 @@
     stream->close = ft_ansi_stream_close;
 
     FT_TRACE1(( "FT_Stream_Open:" ));
-    FT_TRACE1(( " opened `%s' (%lu bytes) successfully\n",
+    FT_TRACE1(( " opened `%s' (%ld bytes) successfully\n",
                 filepathname, stream->size ));
 
     return FT_Err_Ok;

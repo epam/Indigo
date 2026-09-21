@@ -4,7 +4,7 @@
  *
  *   SFNT object management (base).
  *
- * Copyright (C) 1996-2026 by
+ * Copyright (C) 1996-2022 by
  * David Turner, Robert Wilhelm, and Werner Lemberg.
  *
  * This file is part of the FreeType project, and may only be used,
@@ -38,10 +38,6 @@
 
 #ifdef TT_CONFIG_OPTION_BDF
 #include "ttbdf.h"
-#endif
-
-#ifdef TT_CONFIG_OPTION_GPOS_KERNING
-#include "ttgpos.h"
 #endif
 
 
@@ -538,23 +534,17 @@
                                         0 );
     }
 
-    if ( !face->tt_var )
+    if ( !face->var )
     {
       /* we want the metrics variations interface */
       /* from the `truetype' module only          */
       FT_Module  tt_module = FT_Get_Module( library, "truetype" );
 
 
-      face->tt_var = ft_module_get_service( tt_module,
-                                            FT_SERVICE_ID_METRICS_VARIATIONS,
-                                            0 );
+      face->var = ft_module_get_service( tt_module,
+                                         FT_SERVICE_ID_METRICS_VARIATIONS,
+                                         0 );
     }
-
-    if ( !face->face_var )
-      face->face_var = ft_module_get_service(
-                         &face->root.driver->root,
-                         FT_SERVICE_ID_METRICS_VARIATIONS,
-                         0 );
 #endif
 
     FT_TRACE2(( "SFNT driver\n" ));
@@ -579,9 +569,6 @@
     if ( face_instance_index < 0 && face_index > 0 )
       face_index--;
 
-    /* Note that `face_index` is also used to enumerate elements */
-    /* of containers like a Mac Resource; this means we must     */
-    /* check whether we actually have a TTC.                     */
     if ( face_index >= face->ttc_header.count )
     {
       if ( face_instance_index >= 0 )
@@ -704,9 +691,6 @@
 
           instance_offset += instance_size;
         }
-
-        /* named instance indices start with value 1 */
-        face->var_default_named_instance = i + 1;
 
         if ( i == num_instances )
         {
@@ -1033,10 +1017,6 @@
     LOAD_( gasp );
     LOAD_( kern );
 
-#ifdef TT_CONFIG_OPTION_GPOS_KERNING
-    LOAD_( gpos );
-#endif
-
     face->root.num_glyphs = face->max_profile.numGlyphs;
 
     /* Bit 8 of the `fsSelection' field in the `OS/2' table denotes  */
@@ -1073,16 +1053,6 @@
       if ( !face->root.style_name )
         GET_NAME( FONT_SUBFAMILY, &face->root.style_name );
     }
-
-#ifdef TT_CONFIG_OPTION_GX_VAR_SUPPORT
-    {
-      FT_Memory  memory = face->root.memory;
-
-
-      if ( FT_STRDUP( face->non_var_style_name, face->root.style_name ) )
-        goto Exit;
-    }
-#endif
 
     /* now set up root fields */
     {
@@ -1130,18 +1100,20 @@
         flags |= FT_FACE_FLAG_VERTICAL;
 
       /* kerning available ? */
-      if ( face->kern_avail_bits
-#ifdef TT_CONFIG_OPTION_GPOS_KERNING
-           || face->num_gpos_lookups_kerning
-#endif
-         )
+      if ( TT_FACE_HAS_KERNING( face ) )
         flags |= FT_FACE_FLAG_KERNING;
 
 #ifdef TT_CONFIG_OPTION_GX_VAR_SUPPORT
       /* Don't bother to load the tables unless somebody asks for them. */
       /* No need to do work which will (probably) not be used.          */
       if ( face->variation_support & TT_FACE_FLAG_VAR_FVAR )
-        flags |= FT_FACE_FLAG_MULTIPLE_MASTERS;
+      {
+        if ( tt_face_lookup_table( face, TTAG_glyf ) != 0 &&
+             tt_face_lookup_table( face, TTAG_gvar ) != 0 )
+          flags |= FT_FACE_FLAG_MULTIPLE_MASTERS;
+        if ( tt_face_lookup_table( face, TTAG_CFF2 ) != 0 )
+          flags |= FT_FACE_FLAG_MULTIPLE_MASTERS;
+      }
 #endif
 
       root->face_flags = flags;
@@ -1255,7 +1227,7 @@
 
         if ( count > 0 )
         {
-          FT_Memory        memory   = face->root.memory;
+          FT_Memory        memory   = face->root.stream->memory;
           FT_UShort        em_size  = face->header.Units_Per_EM;
           FT_Short         avgwidth = face->os2.xAvgCharWidth;
           FT_Size_Metrics  metrics;
@@ -1485,11 +1457,6 @@
     /* freeing the kerning table */
     tt_face_done_kern( face );
 
-#ifdef TT_CONFIG_OPTION_GPOS_KERNING
-    /* freeing the GPOS table */
-    tt_face_done_gpos( face );
-#endif
-
     /* freeing the collection table */
     FT_FREE( face->ttc_header.offsets );
     face->ttc_header.count = 0;
@@ -1539,7 +1506,6 @@
 
 #ifdef TT_CONFIG_OPTION_GX_VAR_SUPPORT
     FT_FREE( face->var_postscript_prefix );
-    FT_FREE( face->non_var_style_name );
 #endif
 
     /* freeing glyph color palette data */

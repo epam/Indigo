@@ -5,7 +5,7 @@
  *   FreeType API for color filtering of subpixel bitmap glyphs
  *   (specification).
  *
- * Copyright (C) 2006-2026 by
+ * Copyright (C) 2006-2022 by
  * David Turner, Robert Wilhelm, and Werner Lemberg.
  *
  * This file is part of the FreeType project, and may only be used,
@@ -137,18 +137,24 @@ FT_BEGIN_HEADER
    *
    *   FT_LCD_FILTER_DEFAULT ::
    *     This is a beveled, normalized, and color-balanced five-tap filter
-   *     with weights of [0x08 0x4D 0x56 0x4D 0x08] in 1/256 units.
+   *     with weights of [0x08 0x4D 0x56 0x4D 0x08] in 1/256th units.
    *
    *   FT_LCD_FILTER_LIGHT ::
    *     this is a boxy, normalized, and color-balanced three-tap filter with
-   *     weights of [0x00 0x55 0x56 0x55 0x00] in 1/256 units.
+   *     weights of [0x00 0x55 0x56 0x55 0x00] in 1/256th units.
    *
    *   FT_LCD_FILTER_LEGACY ::
    *   FT_LCD_FILTER_LEGACY1 ::
-   *     The legacy libXft color filter is no longer supported and ignored.
+   *     This filter corresponds to the original libXft color filter.  It
+   *     provides high contrast output but can exhibit really bad color
+   *     fringes if glyphs are not extremely well hinted to the pixel grid.
+   *     This filter is only provided for comparison purposes, and might be
+   *     disabled or stay unsupported in the future. The second value is
+   *     provided for compatibility with FontConfig, which historically used
+   *     different enumeration, sometimes incorrectly forwarded to FreeType.
    *
    * @since:
-   *   2.3.0
+   *   2.3.0 (`FT_LCD_FILTER_LEGACY1` since 2.6.2)
    */
   typedef enum  FT_LcdFilter_
   {
@@ -220,7 +226,7 @@ FT_BEGIN_HEADER
    *
    *   weights ::
    *     A pointer to an array; the function copies the first five bytes and
-   *     uses them to specify the filter weights in 1/256 units.
+   *     uses them to specify the filter weights in 1/256th units.
    *
    * @return:
    *   FreeType error code.  0~means success.

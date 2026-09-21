@@ -4,7 +4,7 @@
  *
  *   CID-keyed Type1 parser (body).
  *
- * Copyright (C) 1996-2026 by
+ * Copyright (C) 1996-2022 by
  * David Turner, Robert Wilhelm, and Werner Lemberg.
  *
  * This file is part of the FreeType project, and may only be used,
@@ -90,15 +90,10 @@
     if ( error )
       goto Exit;
 
-    if ( !stream->read ) {
-      /* just parse memory-based streams */
-      offset = stream->size;
-    }
-    else
+  Again:
+    /* now, read the rest of the file until we find */
+    /* `StartData' or `/sfnts'                      */
     {
-      /* Find the last `StartData` or `/sfnts`.  The parser requires */
-      /* contiguous memory; attempt to pin as little as necessary.   */
-
       /*
        * The algorithm is as follows (omitting the case with less than 256
        * bytes to fill for simplicity).
@@ -124,8 +119,7 @@
       FT_Byte*  p           = buffer;
 
 
-      offset = 0;
-      while ( 1 )
+      for ( offset = FT_STREAM_POS(); ; offset += 256 )
       {
         FT_ULong  stream_len;
 
@@ -133,7 +127,7 @@
         stream_len = stream->size - FT_STREAM_POS();
 
         read_len = FT_MIN( read_len, stream_len );
-        if ( read_len && FT_STREAM_READ( p, read_len ) )
+        if ( FT_STREAM_READ( p, read_len ) )
           goto Exit;
 
         /* ensure that we do not compare with data beyond the buffer */
@@ -147,23 +141,20 @@
                ft_strncmp( (char*)p, STARTDATA, STARTDATA_LEN ) == 0 )
           {
             /* save offset of binary data after `StartData' */
-            offset = FT_STREAM_POS() - read_len - read_offset
-                     + (FT_ULong)( p - buffer ) + STARTDATA_LEN + 1;
+            offset += (FT_ULong)( p - buffer ) + STARTDATA_LEN + 1;
+            goto Found;
           }
           else if ( p[1] == 's'                                   &&
                     ft_strncmp( (char*)p, SFNTS, SFNTS_LEN ) == 0 )
           {
-            offset = FT_STREAM_POS() - read_len - read_offset
-                     + (FT_ULong)( p - buffer ) + SFNTS_LEN + 1;
+            offset += (FT_ULong)( p - buffer ) + SFNTS_LEN + 1;
+            goto Found;
           }
         }
 
-        if ( read_offset + read_len <= STARTDATA_LEN )
+        if ( read_offset + read_len < STARTDATA_LEN )
         {
-          if ( offset )
-            goto Found;
-
-          FT_TRACE2(( "cid_parser_new: no `StartData` keyword found\n" ));
+          FT_TRACE2(( "cid_parser_new: no `StartData' keyword found\n" ));
           error = FT_THROW( Invalid_File_Format );
           goto Exit;
         }
@@ -180,9 +171,9 @@
     }
 
   Found:
-    /* We have found an efficient range to look for the binary data or    */
-    /* `/sfnts' token.  Now rewind and extract the frame corresponding to */
-    /* this PostScript section.                                           */
+    /* We have found the start of the binary data or the `/sfnts' token. */
+    /* Now rewind and extract the frame corresponding to this PostScript */
+    /* section.                                                          */
 
     ps_len = offset - base_offset;
     if ( FT_STREAM_SEEK( base_offset )                  ||
@@ -196,8 +187,8 @@
     parser->root.limit     = parser->root.cursor + ps_len;
     parser->num_dict       = FT_UINT_MAX;
 
-    /* Find the first real `StartData' or `/sfnts' -- the last one    */
-    /* could be in a comment or string.  We also get the arguments    */
+    /* Finally, we check whether `StartData' or `/sfnts' was real --  */
+    /* it could be in a comment or string.  We also get the arguments */
     /* of `StartData' to find out whether the data is represented in  */
     /* binary or hex format.                                          */
 
@@ -223,45 +214,20 @@
            cur <= limit - STARTDATA_LEN                            &&
            ft_strncmp( (char*)cur, STARTDATA, STARTDATA_LEN ) == 0 )
       {
-        T1_TokenRec  type_token;
-        FT_Long      binary_length;
-        FT_ULong     found_offset;
-
-
-        parser->root.cursor = arg1;
-        cid_parser_to_token( parser, &type_token );
-        if ( type_token.limit - type_token.start == 5              &&
-             ft_memcmp( (char*)type_token.start, "(Hex)", 5 ) == 0 )
+        if ( ft_strncmp( (char*)arg1, "(Hex)", 5 ) == 0 )
         {
-          parser->root.cursor = arg2;
-          binary_length = cid_parser_to_int( parser );
-          if ( binary_length < 0 )
+          FT_Long  tmp = ft_strtol( (const char *)arg2, NULL, 10 );
+
+
+          if ( tmp < 0 )
           {
             FT_ERROR(( "cid_parser_new: invalid length of hex data\n" ));
             error = FT_THROW( Invalid_File_Format );
           }
           else
-            parser->binary_length = (FT_ULong)binary_length;
+            parser->binary_length = (FT_ULong)tmp;
         }
 
-        /* set the real values for the parser, if different */
-        found_offset = (FT_ULong)( cur - parser->postscript )
-                       + STARTDATA_LEN + 1;
-        if ( found_offset != offset )
-        {
-          FT_FRAME_RELEASE( parser->postscript );
-
-          ps_len = found_offset - base_offset;
-          if ( FT_STREAM_SEEK( base_offset )                  ||
-               FT_FRAME_EXTRACT( ps_len, parser->postscript ) )
-            goto Exit;
-
-          parser->data_offset    = found_offset;
-          parser->postscript_len = ps_len;
-          parser->root.base      = parser->postscript;
-          parser->root.cursor    = parser->postscript;
-          parser->root.limit     = parser->root.cursor + ps_len;
-        }
         goto Exit;
       }
       else if ( cur[1] == 's'                                   &&
@@ -279,8 +245,11 @@
       cur  = parser->root.cursor;
     }
 
-    FT_TRACE2(( "cid_parser_new: no `StartData` token found\n" ));
-    error = FT_THROW( Invalid_File_Format );
+    /* we haven't found the correct `StartData'; go back and continue */
+    /* searching                                                      */
+    FT_FRAME_RELEASE( parser->postscript );
+    if ( !FT_STREAM_SEEK( offset ) )
+      goto Again;
 
   Exit:
     return error;

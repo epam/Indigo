@@ -4,7 +4,7 @@
  *
  *   Type 1 parser (body).
  *
- * Copyright (C) 1996-2026 by
+ * Copyright (C) 1996-2022 by
  * David Turner, Robert Wilhelm, and Werner Lemberg.
  *
  * This file is part of the FreeType project, and may only be used,
@@ -330,25 +330,50 @@
       /* the private dict.  Otherwise, simply overwrite into the base  */
       /* dictionary block in the heap.                                 */
 
-      /* First look for the `eexec' keyword. Ensure `eexec' is real -- */
-      /* it could be in a comment or string (as e.g. in u003043t.gsf   */
-      /* from ghostscript).                                            */
+      /* first of all, look at the `eexec' keyword */
       FT_Byte*    cur   = parser->base_dict;
       FT_Byte*    limit = cur + parser->base_len;
       FT_Pointer  pos_lf;
       FT_Bool     test_cr;
 
 
+    Again:
+      for (;;)
+      {
+        if ( cur[0] == 'e'   &&
+             cur + 9 < limit )      /* 9 = 5 letters for `eexec' + */
+                                    /* whitespace + 4 chars        */
+        {
+          if ( cur[1] == 'e' &&
+               cur[2] == 'x' &&
+               cur[3] == 'e' &&
+               cur[4] == 'c' )
+            break;
+        }
+        cur++;
+        if ( cur >= limit )
+        {
+          FT_ERROR(( "T1_Get_Private_Dict:"
+                     " could not find `eexec' keyword\n" ));
+          error = FT_THROW( Invalid_File_Format );
+          goto Exit;
+        }
+      }
+
+      /* check whether `eexec' was real -- it could be in a comment */
+      /* or string (as e.g. in u003043t.gsf from ghostscript)       */
+
       parser->root.cursor = parser->base_dict;
-      parser->root.limit  = parser->base_dict + parser->base_len;
+      /* set limit to `eexec' + whitespace + 4 characters */
+      parser->root.limit  = cur + 10;
 
       cur   = parser->root.cursor;
       limit = parser->root.limit;
 
       while ( cur < limit )
       {
-        /* 9 = 5 letters for `eexec' + whitespace + 4 chars */
-        if ( cur[0] == 'e' && cur + 9 < limit )
+        if ( cur[0] == 'e'   &&
+             cur + 5 < limit )
         {
           if ( cur[1] == 'e' &&
                cur[2] == 'x' &&
@@ -364,9 +389,21 @@
         cur = parser->root.cursor;
       }
 
-      FT_ERROR(( "T1_Get_Private_Dict: could not find `eexec' keyword\n" ));
-      error = FT_THROW( Invalid_File_Format );
-      goto Exit;
+      /* we haven't found the correct `eexec'; go back and continue */
+      /* searching                                                  */
+
+      cur   = limit;
+      limit = parser->base_dict + parser->base_len;
+
+      if ( cur >= limit )
+      {
+        FT_ERROR(( "T1_Get_Private_Dict:"
+                   " premature end in private dictionary\n" ));
+        error = FT_THROW( Invalid_File_Format );
+        goto Exit;
+      }
+
+      goto Again;
 
       /* now determine where to write the _encrypted_ binary private  */
       /* dictionary.  We overwrite the base dictionary for disk-based */

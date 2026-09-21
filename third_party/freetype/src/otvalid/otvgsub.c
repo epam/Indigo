@@ -4,7 +4,7 @@
  *
  *   OpenType GSUB table validation (body).
  *
- * Copyright (C) 2004-2026 by
+ * Copyright (C) 2004-2022 by
  * David Turner, Robert Wilhelm, and Werner Lemberg.
  *
  * This file is part of the FreeType project, and may only be used,
@@ -53,7 +53,7 @@
     OTV_LIMIT_CHECK( 2 );
     SubstFormat = FT_NEXT_USHORT( p );
 
-    OTV_TRACE(( " (format %u)\n", SubstFormat ));
+    OTV_TRACE(( " (format %d)\n", SubstFormat ));
 
     switch ( SubstFormat )
     {
@@ -61,8 +61,7 @@
       {
         FT_Bytes  Coverage;
         FT_Int    DeltaGlyphID;
-        FT_UInt   first_cov, last_cov;
-        FT_UInt   first_idx, last_idx;
+        FT_Long   idx;
 
 
         OTV_LIMIT_CHECK( 4 );
@@ -71,21 +70,12 @@
 
         otv_Coverage_validate( Coverage, otvalid, -1 );
 
-        first_cov = otv_Coverage_get_first( Coverage );
-        last_cov  = otv_Coverage_get_last( Coverage );
-
-        /* These additions are modulo 65536. */
-        first_idx = (FT_UInt)( (FT_Int)first_cov + DeltaGlyphID ) & 0xFFFFU;
-        last_idx  = (FT_UInt)( (FT_Int)last_cov + DeltaGlyphID ) & 0xFFFFU;
-
-        /* Since the maximum number of glyphs is 2^16 - 1 = 65535, */
-        /* the largest possible glyph index is 65534.  For this    */
-        /* reason there can't be a wrap-around region, which would */
-        /* imply the use of the invalid glyph index 65535.         */
-        if ( first_idx > last_idx )
+        idx = (FT_Long)otv_Coverage_get_first( Coverage ) + DeltaGlyphID;
+        if ( idx < 0 )
           FT_INVALID_DATA;
 
-        if ( last_idx >= otvalid->glyph_count )
+        idx = (FT_Long)otv_Coverage_get_last( Coverage ) + DeltaGlyphID;
+        if ( (FT_UInt)idx >= otvalid->glyph_count )
           FT_INVALID_DATA;
       }
       break;
@@ -99,7 +89,7 @@
         Coverage   = FT_NEXT_USHORT( p );
         GlyphCount = FT_NEXT_USHORT( p );
 
-        OTV_TRACE(( " (GlyphCount = %u)\n", GlyphCount ));
+        OTV_TRACE(( " (GlyphCount = %d)\n", GlyphCount ));
 
         otv_Coverage_validate( table + Coverage,
                                otvalid,
@@ -145,7 +135,7 @@
     OTV_LIMIT_CHECK( 2 );
     SubstFormat = FT_NEXT_USHORT( p );
 
-    OTV_TRACE(( " (format %u)\n", SubstFormat ));
+    OTV_TRACE(( " (format %d)\n", SubstFormat ));
 
     switch ( SubstFormat )
     {
@@ -186,7 +176,7 @@
     OTV_LIMIT_CHECK( 2 );
     SubstFormat = FT_NEXT_USHORT( p );
 
-    OTV_TRACE(( " (format %u)\n", SubstFormat ));
+    OTV_TRACE(( " (format %d)\n", SubstFormat ));
 
     switch ( SubstFormat )
     {
@@ -233,7 +223,7 @@
 
     CompCount = FT_NEXT_USHORT( p );
 
-    OTV_TRACE(( " (CompCount = %u)\n", CompCount ));
+    OTV_TRACE(( " (CompCount = %d)\n", CompCount ));
 
     if ( CompCount == 0 )
       FT_INVALID_DATA;
@@ -261,7 +251,7 @@
     OTV_LIMIT_CHECK( 2 );
     SubstFormat = FT_NEXT_USHORT( p );
 
-    OTV_TRACE(( " (format %u)\n", SubstFormat ));
+    OTV_TRACE(( " (format %d)\n", SubstFormat ));
 
     switch ( SubstFormat )
     {
@@ -301,7 +291,7 @@
     OTV_LIMIT_CHECK( 2 );
     SubstFormat = FT_NEXT_USHORT( p );
 
-    OTV_TRACE(( " (format %u)\n", SubstFormat ));
+    OTV_TRACE(( " (format %d)\n", SubstFormat ));
 
     switch ( SubstFormat )
     {
@@ -360,7 +350,7 @@
     OTV_LIMIT_CHECK( 2 );
     SubstFormat = FT_NEXT_USHORT( p );
 
-    OTV_TRACE(( " (format %u)\n", SubstFormat ));
+    OTV_TRACE(( " (format %d)\n", SubstFormat ));
 
     switch ( SubstFormat )
     {
@@ -421,7 +411,7 @@
     OTV_LIMIT_CHECK( 2 );
     SubstFormat = FT_NEXT_USHORT( p );
 
-    OTV_TRACE(( " (format %u)\n", SubstFormat ));
+    OTV_TRACE(( " (format %d)\n", SubstFormat ));
 
     switch ( SubstFormat )
     {
@@ -478,7 +468,7 @@
     OTV_LIMIT_CHECK( 2 );
     SubstFormat = FT_NEXT_USHORT( p );
 
-    OTV_TRACE(( " (format %u)\n", SubstFormat ));
+    OTV_TRACE(( " (format %d)\n", SubstFormat ));
 
     switch ( SubstFormat )
     {
@@ -487,7 +477,7 @@
       Coverage            = table + FT_NEXT_USHORT( p );
       BacktrackGlyphCount = FT_NEXT_USHORT( p );
 
-      OTV_TRACE(( " (BacktrackGlyphCount = %u)\n", BacktrackGlyphCount ));
+      OTV_TRACE(( " (BacktrackGlyphCount = %d)\n", BacktrackGlyphCount ));
 
       otv_Coverage_validate( Coverage, otvalid, -1 );
 
@@ -498,7 +488,7 @@
 
       LookaheadGlyphCount = FT_NEXT_USHORT( p );
 
-      OTV_TRACE(( " (LookaheadGlyphCount = %u)\n", LookaheadGlyphCount ));
+      OTV_TRACE(( " (LookaheadGlyphCount = %d)\n", LookaheadGlyphCount ));
 
       OTV_LIMIT_CHECK( LookaheadGlyphCount * 2 + 2 );
 
@@ -507,7 +497,7 @@
 
       GlyphCount = FT_NEXT_USHORT( p );
 
-      OTV_TRACE(( " (GlyphCount = %u)\n", GlyphCount ));
+      OTV_TRACE(( " (GlyphCount = %d)\n", GlyphCount ));
 
       if ( GlyphCount != otv_Coverage_get_count( Coverage ) )
         FT_INVALID_DATA;

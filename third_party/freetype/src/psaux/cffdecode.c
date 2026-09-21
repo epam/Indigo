@@ -4,7 +4,7 @@
  *
  *   PostScript CFF (Type 2) decoding routines (body).
  *
- * Copyright (C) 2017-2026 by
+ * Copyright (C) 2017-2022 by
  * David Turner, Robert Wilhelm, and Werner Lemberg.
  *
  * This file is part of the FreeType project, and may only be used,
@@ -17,7 +17,6 @@
 
 
 #include <freetype/freetype.h>
-#include <freetype/internal/ftcalc.h>
 #include <freetype/internal/ftdebug.h>
 #include <freetype/internal/ftserv.h>
 #include <freetype/internal/services/svcfftl.h>
@@ -1753,9 +1752,22 @@
 
           /* without upper limit the loop below might not finish */
           if ( args[0] > 0x7FFFFFFFL )
-            args[0] = 0xB504F4L;    /* sqrt( 32768.0044 ) */
+            args[0] = 46341;
           else if ( args[0] > 0 )
-            args[0] = (FT_Fixed)FT_SqrtFixed( args[0] );
+          {
+            FT_Fixed  root = args[0];
+            FT_Fixed  new_root;
+
+
+            for (;;)
+            {
+              new_root = ( root + FT_DivFix( args[0], root ) + 1 ) >> 1;
+              if ( new_root == root )
+                break;
+              root = new_root;
+            }
+            args[0] = new_root;
+          }
           else
             args[0] = 0;
           args++;
@@ -2141,7 +2153,7 @@
                                       decoder->locals_bias );
 
 
-            FT_TRACE4(( " callsubr (idx %u, entering level %td)\n",
+            FT_TRACE4(( " callsubr (idx %d, entering level %ld)\n",
                         idx,
                         zone - decoder->zones + 1 ));
 
@@ -2185,7 +2197,7 @@
                                       decoder->globals_bias );
 
 
-            FT_TRACE4(( " callgsubr (idx %u, entering level %td)\n",
+            FT_TRACE4(( " callgsubr (idx %d, entering level %ld)\n",
                         idx,
                         zone - decoder->zones + 1 ));
 
@@ -2224,7 +2236,7 @@
           break;
 
         case cff_op_return:
-          FT_TRACE4(( " return (leaving level %td)\n",
+          FT_TRACE4(( " return (leaving level %ld)\n",
                       decoder->zone - decoder->zones ));
 
           if ( decoder->zone <= decoder->zones )

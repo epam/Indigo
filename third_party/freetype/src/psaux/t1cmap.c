@@ -4,7 +4,7 @@
  *
  *   Type 1 character map support (body).
  *
- * Copyright (C) 2002-2026 by
+ * Copyright (C) 2002-2022 by
  * David Turner, Robert Wilhelm, and Werner Lemberg.
  *
  * This file is part of the FreeType project, and may only be used,
@@ -50,11 +50,8 @@
 
 
   FT_CALLBACK_DEF( void )
-  t1_cmap_std_done( FT_CMap  cmap_ )   /* T1_CMapStd */
+  t1_cmap_std_done( T1_CMapStd  cmap )
   {
-    T1_CMapStd  cmap = (T1_CMapStd)cmap_;
-
-
     cmap->num_glyphs    = 0;
     cmap->glyph_names   = NULL;
     cmap->sid_to_string = NULL;
@@ -63,11 +60,10 @@
 
 
   FT_CALLBACK_DEF( FT_UInt )
-  t1_cmap_std_char_index( FT_CMap    cmap,       /* T1_CMapStd */
-                          FT_UInt32  char_code )
+  t1_cmap_std_char_index( T1_CMapStd  cmap,
+                          FT_UInt32   char_code )
   {
-    T1_CMapStd  t1cmap = (T1_CMapStd)cmap;
-    FT_UInt     result = 0;
+    FT_UInt  result = 0;
 
 
     if ( char_code < 256 )
@@ -77,13 +73,13 @@
 
 
       /* convert character code to Adobe SID string */
-      code       = t1cmap->code_to_sid[char_code];
-      glyph_name = t1cmap->sid_to_string( code );
+      code       = cmap->code_to_sid[char_code];
+      glyph_name = cmap->sid_to_string( code );
 
       /* look for the corresponding glyph name */
-      for ( n = 0; n < t1cmap->num_glyphs; n++ )
+      for ( n = 0; n < cmap->num_glyphs; n++ )
       {
-        const char* gname = t1cmap->glyph_names[n];
+        const char* gname = cmap->glyph_names[n];
 
 
         if ( gname && gname[0] == glyph_name[0]  &&
@@ -99,9 +95,9 @@
   }
 
 
-  FT_CALLBACK_DEF( FT_UInt )
-  t1_cmap_std_char_next( FT_CMap     cmap,
-                         FT_UInt32  *pchar_code )
+  FT_CALLBACK_DEF( FT_UInt32 )
+  t1_cmap_std_char_next( T1_CMapStd   cmap,
+                         FT_UInt32   *pchar_code )
   {
     FT_UInt    result    = 0;
     FT_UInt32  char_code = *pchar_code + 1;
@@ -124,14 +120,13 @@
 
 
   FT_CALLBACK_DEF( FT_Error )
-  t1_cmap_standard_init( FT_CMap     cmap,     /* T1_CMapStd */
+  t1_cmap_standard_init( T1_CMapStd  cmap,
                          FT_Pointer  pointer )
   {
-    T1_CMapStd  t1cmap = (T1_CMapStd)cmap;
     FT_UNUSED( pointer );
 
 
-    t1_cmap_std_init( t1cmap, 0 );
+    t1_cmap_std_init( cmap, 0 );
     return 0;
   }
 
@@ -155,14 +150,13 @@
 
 
   FT_CALLBACK_DEF( FT_Error )
-  t1_cmap_expert_init( FT_CMap     cmap,     /* T1_CMapStd */
+  t1_cmap_expert_init( T1_CMapStd  cmap,
                        FT_Pointer  pointer )
   {
-    T1_CMapStd  t1cmap = (T1_CMapStd)cmap;
     FT_UNUSED( pointer );
 
 
-    t1_cmap_std_init( t1cmap, 1 );
+    t1_cmap_std_init( cmap, 1 );
     return 0;
   }
 
@@ -194,21 +188,20 @@
 
 
   FT_CALLBACK_DEF( FT_Error )
-  t1_cmap_custom_init( FT_CMap     cmap,     /* T1_CMapCustom */
-                       FT_Pointer  pointer )
+  t1_cmap_custom_init( T1_CMapCustom  cmap,
+                       FT_Pointer     pointer )
   {
-    T1_CMapCustom  t1cmap   = (T1_CMapCustom)cmap;
-    T1_Face        face     = (T1_Face)FT_CMAP_FACE( cmap );
-    T1_Encoding    encoding = &face->type1.encoding;
+    T1_Face      face     = (T1_Face)FT_CMAP_FACE( cmap );
+    T1_Encoding  encoding = &face->type1.encoding;
 
     FT_UNUSED( pointer );
 
 
-    t1cmap->first   = (FT_UInt)encoding->code_first;
-    t1cmap->count   = (FT_UInt)encoding->code_last - t1cmap->first;
-    t1cmap->indices = encoding->char_index;
+    cmap->first   = (FT_UInt)encoding->code_first;
+    cmap->count   = (FT_UInt)encoding->code_last - cmap->first;
+    cmap->indices = encoding->char_index;
 
-    FT_ASSERT( t1cmap->indices );
+    FT_ASSERT( cmap->indices );
     FT_ASSERT( encoding->code_first <= encoding->code_last );
 
     return 0;
@@ -216,50 +209,45 @@
 
 
   FT_CALLBACK_DEF( void )
-  t1_cmap_custom_done( FT_CMap  cmap )   /* T1_CMapCustom */
+  t1_cmap_custom_done( T1_CMapCustom  cmap )
   {
-    T1_CMapCustom  t1cmap = (T1_CMapCustom)cmap;
-
-
-    t1cmap->indices = NULL;
-    t1cmap->first   = 0;
-    t1cmap->count   = 0;
+    cmap->indices = NULL;
+    cmap->first   = 0;
+    cmap->count   = 0;
   }
 
 
   FT_CALLBACK_DEF( FT_UInt )
-  t1_cmap_custom_char_index( FT_CMap    cmap,       /* T1_CMapCustom */
-                             FT_UInt32  char_code )
+  t1_cmap_custom_char_index( T1_CMapCustom  cmap,
+                             FT_UInt32      char_code )
   {
-    T1_CMapCustom  t1cmap = (T1_CMapCustom)cmap;
-    FT_UInt        result = 0;
+    FT_UInt    result = 0;
 
 
-    if ( char_code >= t1cmap->first                    &&
-         char_code < ( t1cmap->first + t1cmap->count ) )
-      result = t1cmap->indices[char_code];
+    if ( ( char_code >= cmap->first )                  &&
+         ( char_code < ( cmap->first + cmap->count ) ) )
+      result = cmap->indices[char_code];
 
     return result;
   }
 
 
-  FT_CALLBACK_DEF( FT_UInt )
-  t1_cmap_custom_char_next( FT_CMap     cmap,        /* T1_CMapCustom */
-                            FT_UInt32  *pchar_code )
+  FT_CALLBACK_DEF( FT_UInt32 )
+  t1_cmap_custom_char_next( T1_CMapCustom  cmap,
+                            FT_UInt32     *pchar_code )
   {
-    T1_CMapCustom  t1cmap    = (T1_CMapCustom)cmap;
-    FT_UInt        result    = 0;
-    FT_UInt32      char_code = *pchar_code;
+    FT_UInt    result = 0;
+    FT_UInt32  char_code = *pchar_code;
 
 
     char_code++;
 
-    if ( char_code < t1cmap->first )
-      char_code = t1cmap->first;
+    if ( char_code < cmap->first )
+      char_code = cmap->first;
 
-    for ( ; char_code < ( t1cmap->first + t1cmap->count ); char_code++ )
+    for ( ; char_code < ( cmap->first + cmap->count ); char_code++ )
     {
-      result = t1cmap->indices[char_code];
+      result = cmap->indices[char_code];
       if ( result != 0 )
         goto Exit;
     }
@@ -299,24 +287,20 @@
   /*************************************************************************/
 
   FT_CALLBACK_DEF( const char * )
-  psaux_get_glyph_name( void*    face_,
+  psaux_get_glyph_name( T1_Face  face,
                         FT_UInt  idx )
   {
-    T1_Face  face = (T1_Face)face_;
-
-
     return face->type1.glyph_names[idx];
   }
 
 
   FT_CALLBACK_DEF( FT_Error )
-  t1_cmap_unicode_init( FT_CMap     cmap,     /* PS_Unicodes */
-                        FT_Pointer  pointer )
+  t1_cmap_unicode_init( PS_Unicodes  unicodes,
+                        FT_Pointer   pointer )
   {
-    PS_Unicodes         unicodes = (PS_Unicodes)cmap;
-    T1_Face             face     = (T1_Face)FT_CMAP_FACE( cmap );
-    FT_Memory           memory   = FT_FACE_MEMORY( face );
-    FT_Service_PsCMaps  psnames  = (FT_Service_PsCMaps)face->psnames;
+    T1_Face             face    = (T1_Face)FT_CMAP_FACE( unicodes );
+    FT_Memory           memory  = FT_FACE_MEMORY( face );
+    FT_Service_PsCMaps  psnames = (FT_Service_PsCMaps)face->psnames;
 
     FT_UNUSED( pointer );
 
@@ -327,18 +311,17 @@
     return psnames->unicodes_init( memory,
                                    unicodes,
                                    (FT_UInt)face->type1.num_glyphs,
-                                   &psaux_get_glyph_name,
+                                   (PS_GetGlyphNameFunc)&psaux_get_glyph_name,
                                    (PS_FreeGlyphNameFunc)NULL,
                                    (FT_Pointer)face );
   }
 
 
   FT_CALLBACK_DEF( void )
-  t1_cmap_unicode_done( FT_CMap  cmap )   /* PS_Unicodes */
+  t1_cmap_unicode_done( PS_Unicodes  unicodes )
   {
-    PS_Unicodes  unicodes = (PS_Unicodes)cmap;
-    FT_Face      face     = FT_CMAP_FACE( cmap );
-    FT_Memory    memory   = FT_FACE_MEMORY( face );
+    FT_Face    face   = FT_CMAP_FACE( unicodes );
+    FT_Memory  memory = FT_FACE_MEMORY( face );
 
 
     FT_FREE( unicodes->maps );
@@ -347,25 +330,23 @@
 
 
   FT_CALLBACK_DEF( FT_UInt )
-  t1_cmap_unicode_char_index( FT_CMap    cmap,       /* PS_Unicodes */
-                              FT_UInt32  char_code )
+  t1_cmap_unicode_char_index( PS_Unicodes  unicodes,
+                              FT_UInt32    char_code )
   {
-    PS_Unicodes         unicodes = (PS_Unicodes)cmap;
-    T1_Face             face     = (T1_Face)FT_CMAP_FACE( cmap );
-    FT_Service_PsCMaps  psnames  = (FT_Service_PsCMaps)face->psnames;
+    T1_Face             face    = (T1_Face)FT_CMAP_FACE( unicodes );
+    FT_Service_PsCMaps  psnames = (FT_Service_PsCMaps)face->psnames;
 
 
     return psnames->unicodes_char_index( unicodes, char_code );
   }
 
 
-  FT_CALLBACK_DEF( FT_UInt )
-  t1_cmap_unicode_char_next( FT_CMap     cmap,        /* PS_Unicodes */
-                             FT_UInt32  *pchar_code )
+  FT_CALLBACK_DEF( FT_UInt32 )
+  t1_cmap_unicode_char_next( PS_Unicodes  unicodes,
+                             FT_UInt32   *pchar_code )
   {
-    PS_Unicodes         unicodes = (PS_Unicodes)cmap;
-    T1_Face             face     = (T1_Face)FT_CMAP_FACE( cmap );
-    FT_Service_PsCMaps  psnames  = (FT_Service_PsCMaps)face->psnames;
+    T1_Face             face    = (T1_Face)FT_CMAP_FACE( unicodes );
+    FT_Service_PsCMaps  psnames = (FT_Service_PsCMaps)face->psnames;
 
 
     return psnames->unicodes_char_next( unicodes, pchar_code );

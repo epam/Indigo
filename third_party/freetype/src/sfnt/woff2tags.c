@@ -4,7 +4,7 @@
  *
  *   WOFF2 Font table tags (base).
  *
- * Copyright (C) 2019-2026 by
+ * Copyright (C) 2019-2022 by
  * Nikhil Ramakrishnan, David Turner, Robert Wilhelm, and Werner Lemberg.
  *
  * This file is part of the FreeType project, and may only be used,
@@ -111,7 +111,7 @@
 #else /* !FT_CONFIG_OPTION_USE_BROTLI */
 
   /* ANSI C doesn't like empty source files */
-  typedef int  woff2tags_dummy_;
+  typedef int  _woff2tags_dummy;
 
 #endif /* !FT_CONFIG_OPTION_USE_BROTLI */
 

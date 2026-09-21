@@ -4,7 +4,7 @@
  *
  *   Signed Distance Field support for outline fonts (body).
  *
- * Copyright (C) 2020-2026 by
+ * Copyright (C) 2020-2022 by
  * David Turner, Robert Wilhelm, and Werner Lemberg.
  *
  * Written by Anuj Verma.
@@ -871,7 +871,7 @@
       cbox.yMax = edge.control_b.y;
 
       is_set = 1;
-      FALL_THROUGH;
+      /* fall through */
 
     case SDF_EDGE_CONIC:
       if ( is_set )
@@ -899,7 +899,7 @@
 
         is_set = 1;
       }
-      FALL_THROUGH;
+      /* fall through */
 
     case SDF_EDGE_LINE:
       if ( is_set )
@@ -1293,7 +1293,7 @@
             /* Calculate the number of necessary bisections.  Each      */
             /* bisection causes a four-fold reduction of the deviation, */
             /* hence we bisect the Bezier curve until the deviation     */
-            /* becomes less than 1/8 of a pixel.  For more details      */
+            /* becomes less than 1/8th of a pixel.  For more details    */
             /* check file `ftgrays.c`.                                  */
             num_splits = 1;
             while ( dx > ONE_PIXEL / 8 )
@@ -1391,7 +1391,7 @@
       SDF_Contour*  contour = contour_list;
 
 
-      FT_TRACE5(( "  Contour %u\n", num_contours ));
+      FT_TRACE5(( "  Contour %d\n", num_contours ));
 
       edge_list = contour->edges;
 
@@ -1400,7 +1400,7 @@
         SDF_Edge*  edge = edge_list;
 
 
-        FT_TRACE5(( "  %3u: ", num_edges ));
+        FT_TRACE5(( "  %3d: ", num_edges ));
 
         switch ( edge->edge_type )
         {
@@ -1443,11 +1443,11 @@
     }
 
     FT_TRACE5(( "\n" ));
-    FT_TRACE5(( "  total number of contours = %u\n", num_contours ));
-    FT_TRACE5(( "  total number of edges    = %u\n", total_edges ));
-    FT_TRACE5(( "    |__lines = %u\n", total_lines ));
-    FT_TRACE5(( "    |__conic = %u\n", total_conic ));
-    FT_TRACE5(( "    |__cubic = %u\n", total_cubic ));
+    FT_TRACE5(( "  total number of contours = %d\n", num_contours ));
+    FT_TRACE5(( "  total number of edges    = %d\n", total_edges ));
+    FT_TRACE5(( "    |__lines = %d\n", total_lines ));
+    FT_TRACE5(( "    |__conic = %d\n", total_conic ));
+    FT_TRACE5(( "    |__cubic = %d\n", total_cubic ));
   }
 
 #endif /* FT_DEBUG_LEVEL_TRACE */
@@ -1939,7 +1939,7 @@
     /* now factor is 16.16 */
     factor = FT_DivFix( factor, sq_line_length );
 
-    /* clamp the factor between 0.0 and 1.0 in fixed-point */
+    /* clamp the factor between 0.0 and 1.0 in fixed point */
     if ( factor > FT_INT_16D16( 1 ) )
       factor = FT_INT_16D16( 1 );
     if ( factor < 0 )
@@ -2109,8 +2109,7 @@
     FT_Error  error = FT_Err_Ok;
 
     FT_26D6_Vec  aA, bB;         /* A, B in the above comment             */
-    FT_26D6_Vec  nearest_point = { 0, 0 };
-                                 /* point on curve nearest to `point`     */
+    FT_26D6_Vec  nearest_point;  /* point on curve nearest to `point`     */
     FT_26D6_Vec  direction;      /* direction of curve at `nearest_point` */
 
     FT_26D6_Vec  p0, p1, p2;     /* control points of a conic curve       */
@@ -2371,11 +2370,11 @@
      *     ```
      *
      * (6) Our task is to find a value of `t` such that the above equation
-     *     `Q(t)` becomes zero, that is, the point-to-curve vector makes
+     *     `Q(t)` becomes zero, this is, the point-to-curve vector makes
      *     90~degrees with the curve.  We solve this with the Newton-Raphson
      *     method.
      *
-     * (7) We first assume an arbitrary value of factor `t`, which we then
+     * (7) We first assume an arbitary value of factor `t`, which we then
      *     improve.
      *
      *     ```
@@ -2406,8 +2405,7 @@
     FT_Error  error = FT_Err_Ok;
 
     FT_26D6_Vec  aA, bB, cC;     /* A, B, C in the above comment          */
-    FT_26D6_Vec  nearest_point = { 0, 0 };
-                                 /* point on curve nearest to `point`     */
+    FT_26D6_Vec  nearest_point;  /* point on curve nearest to `point`     */
     FT_26D6_Vec  direction;      /* direction of curve at `nearest_point` */
 
     FT_26D6_Vec  p0, p1, p2;     /* control points of a conic curve       */
@@ -2684,11 +2682,11 @@
      *     ```
      *
      * (6) Our task is to find a value of `t` such that the above equation
-     *     `Q(t)` becomes zero, that is, the point-to-curve vector makes
+     *     `Q(t)` becomes zero, this is, the point-to-curve vector makes
      *     90~degree with curve.  We solve this with the Newton-Raphson
      *     method.
      *
-     * (7) We first assume an arbitrary value of factor `t`, which we then
+     * (7) We first assume an arbitary value of factor `t`, which we then
      *     improve.
      *
      *     ```
@@ -2718,9 +2716,8 @@
 
     FT_Error  error = FT_Err_Ok;
 
-    FT_26D6_Vec   aA, bB, cC, dD; /* A, B, C, D in the above comment       */
-    FT_16D16_Vec  nearest_point = { 0, 0 };
-                                  /* point on curve nearest to `point`     */
+    FT_26D6_Vec   aA, bB, cC, dD; /* A, B, C in the above comment          */
+    FT_16D16_Vec  nearest_point;  /* point on curve nearest to `point`     */
     FT_16D16_Vec  direction;      /* direction of curve at `nearest_point` */
 
     FT_26D6_Vec  p0, p1, p2, p3;  /* control points of a cubic curve       */
@@ -3167,7 +3164,7 @@
         if ( min_dist.distance > sp_sq )
           min_dist.distance = sp_sq;
 
-        /* square_root the values and fit in a 6.10 fixed-point */
+        /* square_root the values and fit in a 6.10 fixed point */
         if ( USE_SQUARED_DISTANCES )
           min_dist.distance = square_root( min_dist.distance );
 
@@ -3259,7 +3256,7 @@
     /* and also determine the signs properly.             */
     SDF_Signed_Distance*  dists = NULL;
 
-    const FT_16D16  fixed_spread = (FT_16D16)FT_INT_16D16( spread );
+    const FT_16D16  fixed_spread = FT_INT_16D16( spread );
 
 
     if ( !shape || !bitmap )
@@ -3281,12 +3278,8 @@
       goto Exit;
     }
 
-    if ( bitmap->rows > FT_INT_MAX / bitmap->width )
-    {
-      error = FT_THROW( Array_Too_Large );
-      goto Exit;
-    }
-    if ( FT_NEW_ARRAY( dists, bitmap->rows * bitmap->width ) )
+    if ( FT_ALLOC( dists,
+                   bitmap->width * bitmap->rows * sizeof ( *dists ) ) )
       goto Exit;
 
     contours = shape->contours;
@@ -3460,7 +3453,7 @@
    *     A complete shape which is used to generate SDF.
    *
    *   spread ::
-   *     Maximum distances to be allowed in the output bitmap.
+   *     Maximum distances to be allowed inthe output bitmap.
    *
    * @Output:
    *   bitmap ::
@@ -3601,11 +3594,13 @@
     }
 
     /* allocate the bitmaps to generate SDF for separate contours */
-    if ( FT_NEW_ARRAY( bitmaps, num_contours ) )
+    if ( FT_ALLOC( bitmaps,
+                   (FT_UInt)num_contours * sizeof ( *bitmaps ) ) )
       goto Exit;
 
     /* allocate array to hold orientation for all contours */
-    if ( FT_NEW_ARRAY( orientations, num_contours ) )
+    if ( FT_ALLOC( orientations,
+                   (FT_UInt)num_contours * sizeof ( *orientations ) ) )
       goto Exit;
 
     contour = shape->contours;
@@ -3623,7 +3618,8 @@
       bitmaps[i].pixel_mode = bitmap->pixel_mode;
 
       /* allocate memory for the buffer */
-      if ( FT_ALLOC_MULT( bitmaps[i].buffer, bitmap->rows, bitmap->pitch ) )
+      if ( FT_ALLOC( bitmaps[i].buffer,
+                     bitmap->rows * (FT_UInt)bitmap->pitch ) )
         goto Exit;
 
       /* determine the orientation */
@@ -3763,13 +3759,9 @@
    */
 
   static FT_Error
-  sdf_raster_new( void*       memory_,   /* FT_Memory    */
-                  FT_Raster*  araster_ ) /* SDF_PRaster* */
+  sdf_raster_new( FT_Memory     memory,
+                  SDF_PRaster*  araster )
   {
-    FT_Memory     memory  = (FT_Memory)memory_;
-    SDF_PRaster*  araster = (SDF_PRaster*)araster_;
-
-
     FT_Error     error;
     SDF_PRaster  raster = NULL;
 
@@ -3838,7 +3830,7 @@
     }
 
     /* if the outline is empty, return */
-    if ( outline->n_points == 0 || outline->n_contours == 0 )
+    if ( outline->n_points <= 0 || outline->n_contours <= 0 )
       goto Exit;
 
     /* check whether the outline has valid fields */

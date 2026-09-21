@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright (C) 2020-2026 by
+# Copyright (C) 2020-2022 by
 # David Turner, Robert Wilhelm, and Werner Lemberg.
 #
 # This file is part of the FreeType project, and may only be used, modified,
@@ -84,25 +84,19 @@ def generate_ftmodule(lists):
         )
 
     for module in lists["RASTER_MODULES"]:
-        names = {
-            "raster": ("ft_raster1",),
-            "smooth": ("ft_smooth",),
-            "svg": ("ft_svg",),
-            "sdf": ("ft_sdf", "ft_bitmap_sdf"),
+        name = {
+            "raster": "ft_raster1",
+            "smooth": "ft_smooth",
+            "svg": "ft_svg",
         }.get(module)
-        for name in names:
-            result += (
-                "FT_USE_MODULE( FT_Renderer_Class, %s_renderer_class )\n" % name
-            )
+        result += (
+            "FT_USE_MODULE( FT_Renderer_Class, %s_renderer_class )\n" % name
+        )
 
     for module in lists["AUX_MODULES"]:
         if module in ("psaux", "psnames", "otvalid", "gxvalid"):
-            name = {
-                "gxvalid": "gxv",
-                "otvalid": "otv",
-            }.get(module, module)
             result += (
-                "FT_USE_MODULE( FT_Module_Class, %s_module_class )\n" % name
+                "FT_USE_MODULE( FT_Module_Class, %s_module_class )\n" % module
             )
 
     result += "/* EOF */\n"

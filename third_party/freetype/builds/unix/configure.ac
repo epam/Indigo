@@ -2,7 +2,7 @@
 #
 # Process this file with autoconf to produce a configure script.
 #
-# Copyright (C) 2001-2026 by
+# Copyright (C) 2001-2022 by
 # David Turner, Robert Wilhelm, and Werner Lemberg.
 #
 # This file is part of the FreeType project, and may only be used, modified,
@@ -11,13 +11,13 @@
 # indicate that you have read the license and understand and accept it
 # fully.
 
-AC_INIT([FreeType], [2.14.3], [freetype@nongnu.org], [freetype])
+AC_INIT([FreeType], [2.12.1], [freetype@nongnu.org], [freetype])
 AC_CONFIG_SRCDIR([ftconfig.h.in])
 
 
 # Don't forget to update `docs/VERSIONS.TXT'!
 
-version_info='26:6:20'
+version_info='24:3:18'
 AC_SUBST([version_info])
 ft_version=`echo $version_info | tr : .`
 AC_SUBST([ft_version])
@@ -46,12 +46,11 @@ if test ${cross_compiling} = yes; then
   AC_CHECK_PROG(CC_BUILD, ${build}-gcc, ${build}-gcc)
   test -z "${CC_BUILD}" && AC_CHECK_PROG(CC_BUILD, gcc, gcc)
   test -z "${CC_BUILD}" && AC_CHECK_PROG(CC_BUILD, cc, cc, , , /usr/ucb/cc)
-  test -z "${CC_BUILD}" && AC_CHECK_PROG(CC_BUILD, clang, clang)
   test -z "${CC_BUILD}" && AC_MSG_ERROR([cannot find native C compiler])
 
   AC_MSG_CHECKING([for suffix of native executables])
   rm -f a.* b.* a_out.exe conftest.*
-  echo > conftest.c "int main(void) { return 0;}"
+  echo > conftest.c "int main() { return 0;}"
   ${CC_BUILD} conftest.c || AC_MSG_ERROR([native C compiler is not working])
   rm -f conftest.c
   if test -x a.out -o -x b.out -o -x conftest; then
@@ -63,18 +62,12 @@ if test ${cross_compiling} = yes; then
   fi
   rm -f a.* b.* a_out.exe conftest.*
   AC_MSG_RESULT($EXEEXT_BUILD)
-  CFLAGS_BUILD=
-  LDFLAGS_BUILD=
 else
   CC_BUILD=${CC}
-  CFLAGS_BUILD=${CFLAGS}
-  LDFLAGS_BUILD=${LDFLAGS}
   EXEEXT_BUILD=${EXEEXT}
 fi
 
 AC_SUBST(CC_BUILD)
-AC_SUBST(CFLAGS_BUILD)
-AC_SUBST(LDFLAGS_BUILD)
 AC_SUBST(EXEEXT_BUILD)
 
 
@@ -170,6 +163,9 @@ fi
 AC_SUBST([FTSYS_SRC])
 
 
+AC_CHECK_FUNCS([memcpy memmove])
+
+
 # get compiler flags right
 #
 #   We try to make the compiler work for C99-strict source.  Even if the
@@ -239,24 +235,12 @@ AC_SUBST([XX_ANSIFLAGS])
 found_visibility_flag=no
 AC_MSG_CHECKING([for -fvisibility=hidden compiler flag])
 orig_CFLAGS="${CFLAGS}"
-CFLAGS="${CFLAGS} -fvisibility=hidden -Werror"
-AC_COMPILE_IFELSE([
-  AC_LANG_PROGRAM([
-
-__attribute__(( visibility( "default" ) )) int foo( void );
-__attribute__(( visibility( "hidden" ) )) int bar( void );
-
-int foo( void ) { return 0; }
-int bar( void ) { return 1; }
-
-    ],
-    [])],
-  [found_visibility_flag=yes
-   CFLAGS="${orig_CFLAGS} -fvisibility=hidden"
-   AC_MSG_RESULT(yes)
-  ],
-  [CFLAGS="${orig_CFLAGS}"
-   AC_MSG_RESULT(no)])
+CFLAGS="${CFLAGS} -fvisibility=hidden"
+AC_LINK_IFELSE([AC_LANG_PROGRAM([], [])],
+               [found_visibility_flag=yes
+                AC_MSG_RESULT(yes)],
+               [CFLAGS="${orig_CFLAGS}"
+                AC_MSG_RESULT(no)])
 
 if test "${found_visibility_flag}" = "no"; then
   AC_MSG_CHECKING([for -xldscope=hidden compiler flag])
@@ -422,12 +406,16 @@ if test x"$with_png" = xyes -o x"$with_png" = xauto; then
       have_libpng="yes (LIBPNG_CFLAGS and LIBPNG_LIBS)"
     else
       # fall back to config script
-      AC_CHECK_PROG(have_libpng, [libpng-config], [yes (libpng-config)], [no])
-      if test "$have_libpng" != no; then
+      AC_MSG_CHECKING([for libpng-config])
+      if which libpng-config > /dev/null 2>&1; then
         LIBPNG_CFLAGS=`libpng-config --cflags`
         LIBPNG_LIBS=`libpng-config --ldflags`
         libpng_libspriv=`libpng-config --static --ldflags`
         libpng_libsstaticconf="$libpng_libspriv"
+        have_libpng="yes (libpng-config)"
+        AC_MSG_RESULT([yes])
+      else
+        AC_MSG_RESULT([no])
       fi
     fi
   fi
@@ -441,7 +429,7 @@ fi
 # check for system libharfbuzz
 
 AC_ARG_WITH([harfbuzz],
-  [AS_HELP_STRING([--with-harfbuzz=@<:@yes|dynamic|no|auto@:>@],
+  [AS_HELP_STRING([--with-harfbuzz=@<:@yes|no|auto@:>@],
                   [improve auto-hinting of OpenType fonts @<:@default=auto@:>@])],
   [], [with_harfbuzz=auto])
 
@@ -477,41 +465,10 @@ if test x"$with_harfbuzz" = xyes -o x"$with_harfbuzz" = xauto; then
   fi
 fi
 
-have_harfbuzz_dynamic=no
-if test x"$have_harfbuzz" = xno; then
-  if test x"$with_harfbuzz" = xdynamic -o x"$with_harfbuzz" = xauto; then
-    case "$host" in
-    *-*-mingw*)
-      # Windows uses its own LoadLibrary(), set variables to dynamic.
-      have_harfbuzz_dynamic=yes
-      have_harfbuzz="yes (dynamic)"
-      ;;
-    *)
-      # Check for libdl
-      AC_CHECK_LIB([c],
-                   [dlopen],
-                   [have_harfbuzz_dynamic=yes],
-                   AC_CHECK_LIB([dl],
-                                [dlopen],
-                                [have_harfbuzz_dynamic=yes
-                                 need_libdl=yes]))
-      if test x"$have_harfbuzz_dynamic" = xyes; then
-        have_harfbuzz="yes (dynamic)"
-        HARFBUZZ_CFLAGS=
-        if test x"$need_libdl" = xyes; then
-          HARFBUZZ_LIBS="-ldl"
-        fi
-      fi
-      ;;
-    esac
-  fi
+if test x"$with_harfbuzz" = xyes -a "$have_harfbuzz" = no; then
+  AC_MSG_ERROR([harfbuzz support requested but library not found])
 fi
 
-if test x"$have_harfbuzz" = xno; then
-  if test x"$with_harfbuzz" != xno -a "$with_harfbuzz" != xauto; then
-    AC_MSG_ERROR([harfbuzz support requested but library not found])
-  fi
-fi
 
 # check for system libbrotlidec
 
@@ -1016,14 +973,14 @@ esac
 AX_PTHREAD([have_pthread=yes], [have_pthread=no])
 
 # Check for Python and docwriter
-PYTHON_MIN_VERSION=3.5
+
 have_py3=no
 have_docwriter=no
 PIP=pip
 
 AC_CHECK_PROGS([PYTHON], [python3 python], [missing])
 if test "x$PYTHON" != "xmissing"; then
-  AX_PROG_PYTHON_VERSION([$PYTHON_MIN_VERSION], [have_py3=yes], [])
+  AX_PROG_PYTHON_VERSION([3.5], [have_py3=yes], [])
 
   if test "x$have_py3" = "xyes"; then
     PIP="$PYTHON -m $PIP"
@@ -1112,25 +1069,20 @@ AC_SUBST([wl])
 AC_SUBST([build_libtool_libs])
 
 
-# We cannot use alternation (`\|`) in the `sed` regexp since it is not
-# portable.
+# changing LDFLAGS value should only be done after
+# lt_cv_prog_compiler_static_works test
 
 ftoption_set()
 {
-  regexp="-e \\\"s|.*#.*def.*$1 .*|#define $1|\\\" \
-          -e \\\"s|.*#.*def.*$1\$|#define $1|\\\""
+  regexp="-e \\\"s|.*#.*def.*$1.*|#define $1|\\\""
   FTOPTION_H_SED="$FTOPTION_H_SED $regexp"
 }
 
 ftoption_unset()
 {
-  regexp="-e \\\"s|.*#.*def.*$1 .*|/* #undef $1 */|\\\" \
-          -e \\\"s|.*#.*def.*$1\$|/* #undef $1 */|\\\""
+  regexp="-e \\\"s|.*#.*def.*$1.*|/* #undef $1 */|\\\""
   FTOPTION_H_SED="$FTOPTION_H_SED $regexp"
 }
-
-# Changing the `LDFLAGS` value should only be done after the
-# `lt_cv_prog_compiler_static_works` test.
 
 if test "$have_zlib" != no; then
   CFLAGS="$CFLAGS $ZLIB_CFLAGS"
@@ -1159,11 +1111,6 @@ if test "$have_harfbuzz" != no; then
   ftoption_set FT_CONFIG_OPTION_USE_HARFBUZZ
 else
   ftoption_unset FT_CONFIG_OPTION_USE_HARFBUZZ
-fi
-if test "$have_harfbuzz_dynamic" != no; then
-  ftoption_set FT_CONFIG_OPTION_USE_HARFBUZZ_DYNAMIC
-else
-  ftoption_unset FT_CONFIG_OPTION_USE_HARFBUZZ_DYNAMIC
 fi
 if test "$have_brotli" != no; then
   CFLAGS="$CFLAGS $BROTLI_CFLAGS"
@@ -1222,7 +1169,7 @@ if test $have_docwriter = no; then
   `make refdoc' will fail since pip package `docwriter' is not installed.
   To install, run `$PIP install docwriter', or to use a Python
   virtual environment, run `make refdoc-venv' (requires pip package
-  `virtualenv').  These operations require Python >= $PYTHON_MIN_VERSION.
+  `virtualenv').  These operations require Python >= 3.5.
   ])
 fi
 

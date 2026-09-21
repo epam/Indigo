@@ -3,7 +3,7 @@
 #
 
 
-# Copyright (C) 2003-2026 by
+# Copyright (C) 2003-2022 by
 # David Turner, Robert Wilhelm, and Werner Lemberg.
 #
 # This file is part of the FreeType project, and may only be used, modified,
@@ -28,12 +28,10 @@ AUTOF_COMPILE := $(CC) $(ANSIFLAGS)                              \
 
 # AUTOF driver sources (i.e., C files)
 #
-AUTOF_DRV_SRC := $(AUTOF_DIR)/afadjust.c \
-                 $(AUTOF_DIR)/afblue.c   \
+AUTOF_DRV_SRC := $(AUTOF_DIR)/afblue.c   \
                  $(AUTOF_DIR)/afcjk.c    \
                  $(AUTOF_DIR)/afdummy.c  \
                  $(AUTOF_DIR)/afglobal.c \
-                 $(AUTOF_DIR)/afgsub.c   \
                  $(AUTOF_DIR)/afhints.c  \
                  $(AUTOF_DIR)/afindic.c  \
                  $(AUTOF_DIR)/aflatin.c  \
@@ -41,20 +39,17 @@ AUTOF_DRV_SRC := $(AUTOF_DIR)/afadjust.c \
                  $(AUTOF_DIR)/afmodule.c \
                  $(AUTOF_DIR)/afranges.c \
                  $(AUTOF_DIR)/afshaper.c \
-                 $(AUTOF_DIR)/ft-hb.c    \
-                 $(AUTOF_DIR)/ft-hb-ft.c
 
 # AUTOF driver headers
 #
-AUTOF_DRV_H := $(AUTOF_DRV_SRC:%c=%h)     \
-               $(AUTOF_DIR)/afcover.h     \
-               $(AUTOF_DIR)/aferrors.h    \
-               $(AUTOF_DIR)/afscript.h    \
-               $(AUTOF_DIR)/afstyles.h    \
-               $(AUTOF_DIR)/aftypes.h     \
-               $(AUTOF_DIR)/afws-decl.h   \
-               $(AUTOF_DIR)/afws-iter.h   \
-               $(AUTOF_DIR)/ft-hb-decls.h
+AUTOF_DRV_H := $(AUTOF_DRV_SRC:%c=%h)   \
+               $(AUTOF_DIR)/afcover.h   \
+               $(AUTOF_DIR)/aferrors.h  \
+               $(AUTOF_DIR)/afscript.h  \
+               $(AUTOF_DIR)/afstyles.h  \
+               $(AUTOF_DIR)/aftypes.h   \
+               $(AUTOF_DIR)/afws-decl.h \
+               $(AUTOF_DIR)/afws-iter.h
 
 
 # AUTOF driver object(s)

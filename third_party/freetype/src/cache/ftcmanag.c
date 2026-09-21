@@ -4,7 +4,7 @@
  *
  *   FreeType Cache Manager (body).
  *
- * Copyright (C) 2000-2026 by
+ * Copyright (C) 2000-2022 by
  * David Turner, Robert Wilhelm, and Werner Lemberg.
  *
  * This file is part of the FreeType project, and may only be used,
@@ -22,6 +22,7 @@
 #include <freetype/internal/ftdebug.h>
 #include <freetype/ftsizes.h>
 
+#include "ftccback.h"
 #include "ftcerror.h"
 
 
@@ -85,10 +86,12 @@
                       FT_Pointer   data )
   {
     FTC_SizeNode  node = (FTC_SizeNode)ftcnode;
+    FT_Size       size = node->size;
     FT_UNUSED( data );
 
 
-    FT_Done_Size( node->size );
+    if ( size )
+      FT_Done_Size( size );
   }
 
 
@@ -115,21 +118,32 @@
                       FT_Pointer   ftcscaler,
                       FT_Pointer   ftcmanager )
   {
-    FT_Error      error;
-    FT_Size       size;
     FTC_SizeNode  node    = (FTC_SizeNode)ftcnode;
     FTC_Scaler    scaler  = (FTC_Scaler)ftcscaler;
     FTC_Manager   manager = (FTC_Manager)ftcmanager;
 
 
-    error = ftc_scaler_lookup_size( manager, scaler, &size );
-    if ( !error )
-    {
-      node->size   = size;
-      node->scaler = scaler[0];
-    }
+    node->scaler = scaler[0];
 
-    return error;
+    return ftc_scaler_lookup_size( manager, scaler, &node->size );
+  }
+
+
+  FT_CALLBACK_DEF( FT_Error )
+  ftc_size_node_reset( FTC_MruNode  ftcnode,
+                       FT_Pointer   ftcscaler,
+                       FT_Pointer   ftcmanager )
+  {
+    FTC_SizeNode  node    = (FTC_SizeNode)ftcnode;
+    FTC_Scaler    scaler  = (FTC_Scaler)ftcscaler;
+    FTC_Manager   manager = (FTC_Manager)ftcmanager;
+
+
+    FT_Done_Size( node->size );
+
+    node->scaler = scaler[0];
+
+    return ftc_scaler_lookup_size( manager, scaler, &node->size );
   }
 
 
@@ -140,6 +154,7 @@
 
     ftc_size_node_compare,  /* FTC_MruNode_CompareFunc  node_compare */
     ftc_size_node_init,     /* FTC_MruNode_InitFunc     node_init    */
+    ftc_size_node_reset,    /* FTC_MruNode_ResetFunc    node_reset   */
     ftc_size_node_done      /* FTC_MruNode_DoneFunc     node_done    */
   };
 
@@ -216,25 +231,23 @@
                       FT_Pointer   ftcface_id,
                       FT_Pointer   ftcmanager )
   {
-    FT_Error      error;
-    FT_Face       face;
     FTC_FaceNode  node    = (FTC_FaceNode)ftcnode;
     FTC_FaceID    face_id = (FTC_FaceID)ftcface_id;
     FTC_Manager   manager = (FTC_Manager)ftcmanager;
+    FT_Error      error;
 
+
+    node->face_id = face_id;
 
     error = manager->request_face( face_id,
                                    manager->library,
                                    manager->request_data,
-                                   &face );
+                                   &node->face );
     if ( !error )
     {
       /* destroy initial size object; it will be re-created later */
-      if ( face->size )
-        FT_Done_Size( face->size );
-
-      node->face    = face;
-      node->face_id = face_id;
+      if ( node->face->size )
+        FT_Done_Size( node->face->size );
     }
 
     return error;
@@ -281,6 +294,7 @@
 
     ftc_face_node_compare,  /* FTC_MruNode_CompareFunc  node_compare */
     ftc_face_node_init,     /* FTC_MruNode_InitFunc     node_init    */
+    NULL,                   /* FTC_MruNode_ResetFunc    node_reset   */
     ftc_face_node_done      /* FTC_MruNode_DoneFunc     node_done    */
   };
 
@@ -369,7 +383,6 @@
     manager->library      = library;
     manager->memory       = memory;
     manager->max_weight   = max_bytes;
-    manager->cur_weight   = 0;
 
     manager->request_face = requester;
     manager->request_data = req_data;
@@ -412,7 +425,7 @@
     memory = manager->memory;
 
     /* now discard all caches */
-    for ( idx = manager->num_caches; idx-- > 0; )
+    for (idx = manager->num_caches; idx-- > 0; )
     {
       FTC_Cache  cache = manager->caches[idx];
 
@@ -421,12 +434,17 @@
       {
         cache->clazz.cache_done( cache );
         FT_FREE( cache );
+        manager->caches[idx] = NULL;
       }
     }
+    manager->num_caches = 0;
 
     /* discard faces and sizes */
     FTC_MruList_Done( &manager->sizes );
     FTC_MruList_Done( &manager->faces );
+
+    manager->library = NULL;
+    manager->memory  = NULL;
 
     FT_FREE( manager );
   }
@@ -470,8 +488,8 @@
         FTC_Cache  cache = manager->caches[node->cache_index];
 
 
-        if ( node->cache_index >= manager->num_caches )
-          FT_TRACE0(( "FTC_Manager_Check: invalid node (cache index = %hu\n",
+        if ( (FT_UInt)node->cache_index >= manager->num_caches )
+          FT_TRACE0(( "FTC_Manager_Check: invalid node (cache index = %ld\n",
                       node->cache_index ));
         else
           weight += cache->clazz.node_weight( node, cache );
@@ -501,7 +519,7 @@
 
       if ( count != manager->num_nodes )
         FT_TRACE0(( "FTC_Manager_Check:"
-                    " invalid cache node count %u instead of %u\n",
+                    " invalid cache node count %d instead of %d\n",
                     manager->num_nodes, count ));
     }
   }
@@ -518,7 +536,7 @@
   FT_LOCAL_DEF( void )
   FTC_Manager_Compress( FTC_Manager  manager )
   {
-    FTC_Node   node, prev, first;
+    FTC_Node   node, first;
 
 
     if ( !manager )
@@ -529,7 +547,7 @@
 #ifdef FT_DEBUG_ERROR
     FTC_Manager_Check( manager );
 
-    FT_TRACE0(( "compressing, weight = %ld, max = %ld, nodes = %u\n",
+    FT_TRACE0(( "compressing, weight = %ld, max = %ld, nodes = %d\n",
                 manager->cur_weight, manager->max_weight,
                 manager->num_nodes ));
 #endif
@@ -538,16 +556,20 @@
       return;
 
     /* go to last node -- it's a circular list */
-    prev = FTC_NODE_PREV( first );
+    node = FTC_NODE_PREV( first );
     do
     {
-      node = prev;
-      prev = FTC_NODE_PREV( node );
+      FTC_Node  prev;
+
+
+      prev = ( node == first ) ? NULL : FTC_NODE_PREV( node );
 
       if ( node->ref_count <= 0 )
         ftc_node_destroy( node, manager );
 
-    } while ( node != first && manager->cur_weight > manager->max_weight );
+      node = prev;
+
+    } while ( node && manager->cur_weight > manager->max_weight );
   }
 
 
@@ -610,20 +632,20 @@
                       FT_UInt      count )
   {
     FTC_Node  first = manager->nodes_list;
-    FTC_Node  prev, node;
-    FT_UInt   result = 0;
+    FTC_Node  node;
+    FT_UInt   result;
 
 
     /* try to remove `count' nodes from the list */
-    if ( !first || !count )
-      return result;
+    if ( !first )  /* empty list! */
+      return 0;
 
-    /* go to last node -- it's a circular list */
-    prev = FTC_NODE_PREV( first );
-    do
+    /* go to last node - it's a circular list */
+    node = FTC_NODE_PREV(first);
+    for ( result = 0; result < count; )
     {
-      node = prev;
-      prev = FTC_NODE_PREV( node );
+      FTC_Node  prev = FTC_NODE_PREV( node );
+
 
       /* don't touch locked nodes */
       if ( node->ref_count <= 0 )
@@ -631,9 +653,13 @@
         ftc_node_destroy( node, manager );
         result++;
       }
-    } while ( node != first && result < count );
 
-    return result;
+      if ( node == first )
+        break;
+
+      node = prev;
+    }
+    return  result;
   }
 
 
@@ -667,9 +693,9 @@
   FTC_Node_Unref( FTC_Node     node,
                   FTC_Manager  manager )
   {
-    if ( node                                    &&
-         manager                                 &&
-         node->cache_index < manager->num_caches )
+    if ( node                                             &&
+         manager                                          &&
+         (FT_UInt)node->cache_index < manager->num_caches )
       node->ref_count--;
   }
 

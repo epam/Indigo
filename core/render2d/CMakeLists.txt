@@ -44,7 +44,7 @@ if (BUILD_STANDALONE)
 else ()
     find_package(Cairo REQUIRED)
     find_package(RapidJSON REQUIRED)
-    find_package(Freetype 2.14.3 REQUIRED)
+    find_package(Freetype REQUIRED)
     target_include_directories(${PROJECT_NAME} PUBLIC ${FREETYPE_INCLUDE_DIRS})
     target_link_libraries(${PROJECT_NAME}
             PUBLIC RapidJSON::RapidJSON

@@ -4,7 +4,7 @@
  *
  *   FreeType PFR cmap handling (body).
  *
- * Copyright (C) 2002-2026 by
+ * Copyright (C) 2002-2022 by
  * David Turner, Robert Wilhelm, and Werner Lemberg.
  *
  * This file is part of the FreeType project, and may only be used,
@@ -24,18 +24,17 @@
 
 
   FT_CALLBACK_DEF( FT_Error )
-  pfr_cmap_init( FT_CMap     cmap,     /* PFR_CMap */
+  pfr_cmap_init( PFR_CMap    cmap,
                  FT_Pointer  pointer )
   {
-    PFR_CMap  pfrcmap = (PFR_CMap)cmap;
-    FT_Error  error   = FT_Err_Ok;
-    PFR_Face  face    = (PFR_Face)FT_CMAP_FACE( cmap );
+    FT_Error  error = FT_Err_Ok;
+    PFR_Face  face  = (PFR_Face)FT_CMAP_FACE( cmap );
 
     FT_UNUSED( pointer );
 
 
-    pfrcmap->num_chars = face->phy_font.num_chars;
-    pfrcmap->chars     = face->phy_font.chars;
+    cmap->num_chars = face->phy_font.num_chars;
+    cmap->chars     = face->phy_font.chars;
 
     /* just for safety, check that the character entries are correctly */
     /* sorted in increasing character code order                       */
@@ -43,9 +42,9 @@
       FT_UInt  n;
 
 
-      for ( n = 1; n < pfrcmap->num_chars; n++ )
+      for ( n = 1; n < cmap->num_chars; n++ )
       {
-        if ( pfrcmap->chars[n - 1].char_code >= pfrcmap->chars[n].char_code )
+        if ( cmap->chars[n - 1].char_code >= cmap->chars[n].char_code )
         {
           error = FT_THROW( Invalid_Table );
           goto Exit;
@@ -59,30 +58,29 @@
 
 
   FT_CALLBACK_DEF( void )
-  pfr_cmap_done( FT_CMap  cmap )    /* PFR_CMap */
+  pfr_cmap_done( PFR_CMap  cmap )
   {
-    PFR_CMap  pfrcmap = (PFR_CMap)cmap;
-
-
-    pfrcmap->chars     = NULL;
-    pfrcmap->num_chars = 0;
+    cmap->chars     = NULL;
+    cmap->num_chars = 0;
   }
 
 
   FT_CALLBACK_DEF( FT_UInt )
-  pfr_cmap_char_index( FT_CMap    cmap,       /* PFR_CMap */
+  pfr_cmap_char_index( PFR_CMap   cmap,
                        FT_UInt32  char_code )
   {
-    PFR_CMap  pfrcmap = (PFR_CMap)cmap;
-    FT_UInt   min     = 0;
-    FT_UInt   max     = pfrcmap->num_chars;
-    FT_UInt   mid     = min + ( max - min ) / 2;
-    PFR_Char  gchar;
+    FT_UInt  min = 0;
+    FT_UInt  max = cmap->num_chars;
 
 
     while ( min < max )
     {
-      gchar = pfrcmap->chars + mid;
+      PFR_Char  gchar;
+      FT_UInt   mid;
+
+
+      mid   = min + ( max - min ) / 2;
+      gchar = cmap->chars + mid;
 
       if ( gchar->char_code == char_code )
         return mid + 1;
@@ -91,21 +89,15 @@
         min = mid + 1;
       else
         max = mid;
-
-      /* reasonable prediction in a continuous block */
-      mid += char_code - gchar->char_code;
-      if ( mid >= max || mid < min )
-        mid = min + ( max - min ) / 2;
     }
     return 0;
   }
 
 
-  FT_CALLBACK_DEF( FT_UInt )
-  pfr_cmap_char_next( FT_CMap     cmap,        /* PFR_CMap */
+  FT_CALLBACK_DEF( FT_UInt32 )
+  pfr_cmap_char_next( PFR_CMap    cmap,
                       FT_UInt32  *pchar_code )
   {
-    PFR_CMap   pfrcmap   = (PFR_CMap)cmap;
     FT_UInt    result    = 0;
     FT_UInt32  char_code = *pchar_code + 1;
 
@@ -113,14 +105,15 @@
   Restart:
     {
       FT_UInt   min = 0;
-      FT_UInt   max = pfrcmap->num_chars;
-      FT_UInt   mid = min + ( max - min ) / 2;
+      FT_UInt   max = cmap->num_chars;
+      FT_UInt   mid;
       PFR_Char  gchar;
 
 
       while ( min < max )
       {
-        gchar = pfrcmap->chars + mid;
+        mid   = min + ( ( max - min ) >> 1 );
+        gchar = cmap->chars + mid;
 
         if ( gchar->char_code == char_code )
         {
@@ -139,19 +132,14 @@
           min = mid + 1;
         else
           max = mid;
-
-        /* reasonable prediction in a continuous block */
-        mid += char_code - gchar->char_code;
-        if ( mid >= max || mid < min )
-          mid = min + ( max - min ) / 2;
       }
 
       /* we didn't find it, but we have a pair just above it */
       char_code = 0;
 
-      if ( min < pfrcmap->num_chars )
+      if ( min < cmap->num_chars )
       {
-        gchar  = pfrcmap->chars + min;
+        gchar  = cmap->chars + min;
         result = min;
         if ( result != 0 )
         {
