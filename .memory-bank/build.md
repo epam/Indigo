@@ -7,7 +7,7 @@ How to compile Indigo and its components, including WASM and the recommended dev
 
 ## Prerequisites
 
-- CMake 3.12+ (required by the bundled FreeType 2.14.3)
+- CMake 3.9+
 - C++17 compiler (`cmake/setup.cmake` sets `CMAKE_CXX_STANDARD 17`)
 - Python 3.6+
 - Ninja (required when using CMake presets)
