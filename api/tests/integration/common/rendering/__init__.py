@@ -157,48 +157,57 @@ def imageDiff(imp1, imp2):
 #         print '%s rendering status: Problem: SVG similarity is %s' % (filename, round(value, 2))
 
 
-def checkBitmapSimilarity(filename, ref_filename):
-    if ref_filename is None:
-        ref_filename = filename
-    try:
-        system = getPlatform()
-        if system != "mac" and system != "linux":
-            if os.name == "nt":
-                system = "win"
-            elif os.name == "posix":
-                if not platform.mac_ver()[0]:
-                    system = "linux"
-                else:
-                    system = "mac"
-            elif os.name == "java":
-                osName = System.getProperty("os.name")
-                if osName.find("Windows") != -1:
-                    system = "win"
-                elif osName.find("Linux") != -1:
-                    system = "linux"
-                elif osName.find("Mac OS") != -1:
-                    system = "mac"
-                else:
-                    raise RenderingTestException(
-                        "No reference images for this operating system: {0}".format(
-                            osName
-                        )
-                    )
-            else:
-                raise RenderingTestException(
-                    "No reference images for this operating system: {0}".format(
-                        os.name
-                    )
-                )
-        dirname = os.path.normpath(
-            os.path.abspath(
-                os.path.join(
-                    os.path.dirname(__file__), "..", "..", "tests", "rendering"
-                )
+def _detect_system():
+    system = getPlatform()
+    if system == "mac" or system == "linux":
+        return system
+    if os.name == "nt":
+        return "win"
+    if os.name == "posix":
+        return "mac" if platform.mac_ver()[0] else "linux"
+    if os.name == "java":
+        osName = System.getProperty("os.name")
+        if osName.find("Windows") != -1:
+            return "win"
+        if osName.find("Linux") != -1:
+            return "linux"
+        if osName.find("Mac OS") != -1:
+            return "mac"
+        raise RenderingTestException(
+            "No reference images for this operating system: {0}".format(
+                osName
             )
         )
+    raise RenderingTestException(
+        "No reference images for this operating system: {0}".format(os.name)
+    )
+
+
+def checkBitmapSimilarity(filename, ref_filename=None, shared=False):
+    if ref_filename is None:
+        ref_filename = filename
+    dirname = os.path.normpath(
+        os.path.abspath(
+            os.path.join(
+                os.path.dirname(__file__), "..", "..", "tests", "rendering"
+            )
+        )
+    )
+    try:
+        if shared:
+            # Rendering that never touches OS-native fonts (custom
+            # embedded fonts, always going through FreeType) produces
+            # identical pixels on every platform, so it needs one
+            # reference image, not one per OS.
+            ref_path = "%s/ref/%s" % (dirname, ref_filename)
+        else:
+            ref_path = "%s/ref/%s/%s" % (
+                dirname,
+                _detect_system(),
+                ref_filename,
+            )
         results = imageDiff(
-            "%s/ref/%s/%s" % (dirname, system, ref_filename),
+            ref_path,
             "%s/out/%s" % (dirname, filename),
         )
     except RenderingTestException as e:
@@ -233,9 +242,9 @@ def checkBitmapSimilarity(filename, ref_filename):
     return "%s rendering status: OK" % filename
 
 
-def checkImageSimilarity(filename, ref_filename=None):
+def checkImageSimilarity(filename, ref_filename=None, shared=False):
     if filename.endswith(".svg"):
         # checkSvgSimilarity(filename)
         return ""
     else:
-        return checkBitmapSimilarity(filename, ref_filename)
+        return checkBitmapSimilarity(filename, ref_filename, shared)

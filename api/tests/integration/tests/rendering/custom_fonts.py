@@ -298,7 +298,9 @@ def assert_custom_png_rendering(indigo, renderer, document, font_sets):
 
     for set_name, image_name, _ in font_sets:
         filename = "custom_fonts/%s" % image_name
-        actual = checkImageSimilarity(filename)
+        # Custom fonts always render through FreeType regardless of OS,
+        # so one reference image covers every platform.
+        actual = checkImageSimilarity(filename, shared=True)
         expected = "%s rendering status: OK" % filename
         assert_equal(actual, expected, "%s PNG reference" % set_name)
 
