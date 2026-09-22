@@ -15,6 +15,7 @@ indigo.setOption("stereochemistry-bidirectional-mode", True)
 indigo.setOption("stereochemistry-detect-haworth-projection", True)
 
 renderer = IndigoRenderer(indigo)
+indigo.setOption("render-fonts", "[]")
 indigo.setOption("render-coloring", True)
 indigo.setOption("render-output-format", "png")
 indigo.setOption("render-image-size", 500, 500)

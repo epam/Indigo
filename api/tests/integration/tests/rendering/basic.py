@@ -36,6 +36,7 @@ if not os.path.exists(joinPathPy("out", __file__)):
 
 indigo = Indigo()
 renderer = IndigoRenderer(indigo)
+indigo.setOption("render-fonts", "[]")
 
 mol = indigo.loadMolecule("CCNNCN")
 a1 = mol.getAtom(1)
@@ -71,6 +72,7 @@ renderer.renderToFile(m, joinPathPy("out/ind-514-output.png", __file__))
 print(checkImageSimilarity("ind-514-output.png"))
 
 indigo.resetOptions()
+indigo.setOption("render-fonts", "[]")
 
 indigo.setOption("render-background-color", "255, 255, 255")
 m = indigo.loadMolecule("CCn1c2nc[nH]c2c(=O)[nH]c1=O")
@@ -118,6 +120,7 @@ print(checkImageSimilarity("image-size-bond-length-2.png"))
 
 print("****** Bug with options mismatch *****")
 indigo.resetOptions()
+indigo.setOption("render-fonts", "[]")
 indigo.setOption("render-background-color", "255, 255, 255")
 
 m = indigo.loadMolecule("CCn1c2nc[nH]c2c(=O)[nH]c1=O")
@@ -135,6 +138,7 @@ for idx, opt in enumerate(options):
 
 print("****** Reference count *****")
 indigo.resetOptions()
+indigo.setOption("render-fonts", "[]")
 indigo.setOption("render-output-format", "png")
 m = indigo.loadMolecule("CCCC")
 # Make sure that there are no leak of IndigoObjects
@@ -147,6 +151,7 @@ assert cnt0 >= cnt1
 
 print("****** Smart layout*****")
 indigo.resetOptions()
+indigo.setOption("render-fonts", "[]")
 mol = indigo.loadMolecule("C1OCCOCCOCCOCCOCCOCCOCCOCCOCCOC1")
 indigo.setOption("render-output-format", "png")
 indigo.setOption("smart-layout", "true")
@@ -155,6 +160,7 @@ print(checkImageSimilarity("smart-layout-crown.png"))
 
 print("****** Nameless S-Group *****")
 indigo.resetOptions()
+indigo.setOption("render-fonts", "[]")
 mol = indigo.loadMoleculeFromFile(
     joinPathPy("molecules/sa-mono.ket", __file__)
 )
@@ -164,6 +170,7 @@ print(checkImageSimilarity("sa-mono.png"))
 
 print("issue 2746 incorrect phosphorus valence")
 indigo.resetOptions()
+indigo.setOption("render-fonts", "[]")
 indigo.setOption("render-output-format", "png")
 fname = "incorrect_phosphorus_valence_2746"
 png_fname = fname + ".png"
@@ -174,6 +181,7 @@ print(checkImageSimilarity(png_fname))
 
 print("issue 2150 render heavy atoms")
 indigo.resetOptions()
+indigo.setOption("render-fonts", "[]")
 indigo.setOption("render-output-format", "png")
 fname = "render_heavy_atoms_2150"
 png_fname = fname + ".png"
@@ -184,6 +192,7 @@ print(checkImageSimilarity(png_fname))
 
 print("issue 2815 cip labels")
 indigo.resetOptions()
+indigo.setOption("render-fonts", "[]")
 indigo.setOption("render-output-format", "png")
 fname = "cip_labels_2815"
 cdxml_png_fname = fname + "_cdxml.png"
@@ -199,6 +208,7 @@ print(checkImageSimilarity(ket_png_fname))
 
 print("issue 2748 backwards substituents")
 indigo.resetOptions()
+indigo.setOption("render-fonts", "[]")
 indigo.setOption("render-output-format", "png")
 fname = "backwards_substituents_2748"
 png_fname = fname + ".png"
@@ -209,6 +219,7 @@ print(checkImageSimilarity(png_fname))
 
 print("issue 2970 cip breaks svg")
 indigo.resetOptions()
+indigo.setOption("render-fonts", "[]")
 indigo.setOption("render-output-format", "png")
 fname = "cip_breaks_svg_2970"
 png_fname = fname + ".png"
@@ -219,6 +230,7 @@ print(checkImageSimilarity(png_fname))
 
 print("issue 2900 cip always render")
 indigo.resetOptions()
+indigo.setOption("render-fonts", "[]")
 indigo.setOption("render-output-format", "png")
 fname = "cip_labels_2900"
 png_fname = fname + ".png"
@@ -229,6 +241,7 @@ print(checkImageSimilarity(png_fname))
 
 print("issue 3049 missing stereolabels")
 indigo.resetOptions()
+indigo.setOption("render-fonts", "[]")
 indigo.setOption("render-output-format", "png")
 fname = "cip_labels_3049"
 png_fname = fname + ".png"

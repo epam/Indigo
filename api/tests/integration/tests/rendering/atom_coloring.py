@@ -13,6 +13,7 @@ from rendering import *
 
 indigo = Indigo()
 renderer = IndigoRenderer(indigo)
+indigo.setOption("render-fonts", "[]")
 
 if not os.path.exists(joinPathPy("out", __file__)):
     try:

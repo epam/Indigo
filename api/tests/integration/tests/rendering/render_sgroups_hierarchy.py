@@ -12,6 +12,7 @@ from rendering import *
 
 indigo = Indigo()
 renderer = IndigoRenderer(indigo)
+indigo.setOption("render-fonts", "[]")
 
 out_dir = joinPathPy("out", __file__)
 

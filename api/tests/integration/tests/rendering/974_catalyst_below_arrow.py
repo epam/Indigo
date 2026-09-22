@@ -19,6 +19,7 @@ if not os.path.exists(joinPathPy("out", __file__)):
 
 indigo = Indigo()
 renderer = IndigoRenderer(indigo)
+indigo.setOption("render-fonts", "[]")
 
 rea = indigo.loadReactionFromFile(
     joinPathPy("reactions/catalist_below.ket", __file__)

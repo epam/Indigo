@@ -24,6 +24,7 @@ if not os.path.exists(joinPathPy(out_dir, __file__)):
 
 print("issue 425 smiles with attachment points")
 indigo.resetOptions()
+indigo.setOption("render-fonts", "[]")
 indigo.setOption("render-output-format", "png")
 
 smiles = {

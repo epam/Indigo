@@ -50,6 +50,7 @@ M  END
 
 indigo = Indigo()
 renderer = IndigoRenderer(indigo)
+indigo.setOption("render-fonts", "[]")
 
 print("****** Default rendering settings *****")
 
@@ -73,6 +74,7 @@ print(checkImageSimilarity("acs_style_changed.png"))
 
 print("****** Issue 2447 wrong stereobond width *****")
 indigo.resetOptions()
+indigo.setOption("render-fonts", "[]")
 indigo.setOption("render-output-format", "png")
 indigo.setOption("ignore-stereochemistry-errors", "true")
 indigo.setOption("bond-length-unit", "px")
