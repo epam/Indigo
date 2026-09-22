@@ -82,7 +82,10 @@ def test_text_fits_bounding_box_with_matching_font(indigo, renderer):
     )
     for image_name, fonts in cases:
         render_to_file(
-            indigo, renderer, document, fonts,
+            indigo,
+            renderer,
+            document,
+            fonts,
             os.path.join(out_dir, image_name),
         )
 

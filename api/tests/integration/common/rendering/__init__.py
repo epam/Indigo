@@ -174,9 +174,7 @@ def _detect_system():
         if osName.find("Mac OS") != -1:
             return "mac"
         raise RenderingTestException(
-            "No reference images for this operating system: {0}".format(
-                osName
-            )
+            "No reference images for this operating system: {0}".format(osName)
         )
     raise RenderingTestException(
         "No reference images for this operating system: {0}".format(os.name)
