@@ -199,12 +199,10 @@ void indigoRenderSetFonts(const char* fonts)
 
     PtrArray<RenderFont> render_fonts;
     size_t total_font_bytes = 0;
-#if !defined(__MINGW32__)
     FT_Library raw_library = nullptr;
     if (!document.Empty() && FT_Init_FreeType(&raw_library) != 0)
         throw IndigoError("Error initializing FreeType library");
     std::unique_ptr<FT_LibraryRec_, decltype(&FT_Done_FreeType)> library(raw_library, FT_Done_FreeType);
-#endif
 
     for (rapidjson::SizeType i = 0; i < document.Size(); ++i)
     {
@@ -238,18 +236,12 @@ void indigoRenderSetFonts(const char* fonts)
         if (!hasSupportedFontSignature(font_data))
             throw IndigoError("Invalid font at index %u: unsupported font format", i);
 
-#if !defined(__MINGW32__)
-        // TODO(#3770): cairo's FreeType backend corrupts the heap under the MinGW/GCC toolchain
-        // on Windows (see RenderFontFaceManager, which skips FreeType/cairo-ft entirely there).
-        // Skip this FreeType-based validation on that toolchain too, until root-caused; the
-        // signature check above still rejects files that are not a supported font format.
         FT_Face raw_face = nullptr;
         if (FT_New_Memory_Face(library.get(), font_data.data(), static_cast<FT_Long>(font_data.size()), 0, &raw_face) != 0)
             throw IndigoError("Error loading font '%s'", font_name.c_str());
         std::unique_ptr<FT_FaceRec_, decltype(&FT_Done_Face)> face(raw_face, FT_Done_Face);
         if (FT_Select_Charmap(face.get(), FT_ENCODING_UNICODE) != 0)
             throw IndigoError("Font '%s' does not have a Unicode character map", font_name.c_str());
-#endif
 
         total_font_bytes += font_data.size();
         render_fonts.emplace(std::move(font_name), std::move(font_data));

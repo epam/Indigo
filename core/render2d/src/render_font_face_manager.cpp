@@ -126,15 +126,6 @@ namespace indigo
 
     RenderFontFaceManager::RenderFontFaceManager(const PtrArray<RenderFont>& fonts)
     {
-#if defined(__MINGW32__)
-        // TODO(#3770): cairo's FreeType font backend (cairo-ft-font.c) corrupts the heap when
-        // built with the MinGW/GCC toolchain on Windows (STATUS_HEAP_CORRUPTION, see
-        // build_indigo_windows_mingw_x86_64 CI job), not yet root-caused. _library is left
-        // uninitialized, which makes selectCairoFontFace()'s existing native fallback (below)
-        // always return nullptr, so custom fonts silently fall back to the platform's default
-        // font on this toolchain only. MSVC and every other platform are unaffected.
-        return;
-#endif
 #ifndef RENDER_EMSCRIPTEN
         // Mirrors the selectCairoFontFace() early return: without custom fonts, outside
         // Emscripten, _library is never touched, so skip initializing FreeType for it.
