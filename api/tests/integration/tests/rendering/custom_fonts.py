@@ -225,9 +225,10 @@ def load_document(name):
         return json.load(ket_file)
 
 
-def render(indigo, renderer, document, output_format, fonts):
+def render(indigo, renderer, document, output_format, fonts=None):
     indigo.setOption("render-output-format", output_format)
-    indigo.setOption("render-fonts", fonts)
+    if fonts is not None:
+        indigo.setOption("render-fonts", fonts)
     molecule = indigo.loadMolecule(json.dumps(document))
     try:
         return list(renderer.renderToBuffer(molecule))
@@ -247,6 +248,24 @@ def render_to_file(indigo, renderer, document, fonts, path):
     finally:
         if isIronPython():
             molecule.Dispose()
+
+
+def assert_default_differs_from_explicit_empty_fonts(
+    indigo, renderer, document
+):
+    # render-fonts has never been requested right after resetOptions():
+    # that must fall back to the bundled Noto Sans. Explicitly clearing
+    # the font list to "[]" is a deliberate opt-out of Noto Sans, so it
+    # must fall back to cairo's own default font instead - the two must
+    # render differently.
+    indigo.resetOptions()
+    never_set = render(indigo, renderer, document, "svg")
+    explicit_empty = render(indigo, renderer, document, "svg", "[]")
+    if never_set == explicit_empty:
+        raise AssertionError(
+            "never setting render-fonts and explicitly clearing it to "
+            "'[]' must render differently (Noto Sans vs cairo default)"
+        )
 
 
 def assert_custom_svg_rendering(indigo, renderer, document, font_sets):
@@ -367,6 +386,9 @@ def assert_invalid_font_rejected(indigo, renderer, document):
 def test_custom_font_rendering(indigo, renderer):
     document = load_document("custom_fonts_utf.ket")
     font_sets = load_font_sets()
+    assert_default_differs_from_explicit_empty_fonts(
+        indigo, renderer, document
+    )
     assert_custom_svg_rendering(indigo, renderer, document, font_sets)
     assert_custom_png_rendering(indigo, renderer, document, font_sets)
     assert_first_matching_font_wins(indigo, renderer)

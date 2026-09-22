@@ -71,7 +71,7 @@ void RenderParams::clear()
     rmode = RENDER_NONE;
     rOpt.clearRenderOptions();
     cnvOpt.clear();
-    fonts.clear();
+    fonts.reset();
     clearArrays();
 }
 
@@ -194,7 +194,7 @@ void RenderParamInterface::render(RenderParams& params)
     if (params.rmode == RENDER_NONE)
         throw Error("No object to render specified");
 
-    RenderContext rc(params.rOpt, params.fonts, params.relativeThickness, params.bondLineWidthFactor);
+    RenderContext rc(params.rOpt, params.fonts.get(), params.relativeThickness, params.bondLineWidthFactor);
 
     int bondLength_px = (int)(params.rOpt.bond_length_px > EPSILON ? params.rOpt.bond_length_px : LayoutOptions::DEFAULT_BOND_LENGTH_PX);
 

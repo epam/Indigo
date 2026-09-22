@@ -21,6 +21,7 @@
 
 #include "render_common.h"
 #include <memory>
+#include <vector>
 
 namespace indigo
 {
@@ -63,7 +64,9 @@ namespace indigo
 
         RenderOptions rOpt;
         CanvasOptions cnvOpt;
-        PtrArray<RenderFont> fonts;
+        // Null: never set, use Noto Sans. Non-null (even empty): explicitly set, empty falls
+        // back to cairo's own default font.
+        std::unique_ptr<std::vector<RenderFont>> fonts;
     };
 
     class RenderParamInterface

@@ -44,7 +44,7 @@ namespace indigo
 
         void checkPathNonEmpty() const;
 
-        RenderContext(const RenderOptions& opt, const PtrArray<RenderFont>& fonts, float relativeThickness, float bondLineWidthFactor);
+        RenderContext(const RenderOptions& opt, const std::vector<RenderFont>* fonts, float relativeThickness, float bondLineWidthFactor);
         void setDefaultScale(float scale);
         void setHDC(PVOID hdc);
         int getMaxPageSize() const;

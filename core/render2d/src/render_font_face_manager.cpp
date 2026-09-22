@@ -124,20 +124,17 @@ namespace indigo
 
     } // namespace
 
-    RenderFontFaceManager::RenderFontFaceManager(const PtrArray<RenderFont>& fonts)
+    RenderFontFaceManager::RenderFontFaceManager(const std::vector<RenderFont>* fonts) : _fonts(fonts)
     {
 #ifndef RENDER_EMSCRIPTEN
-        // Mirrors the selectCairoFontFace() early return: without custom fonts, outside
-        // Emscripten, _library is never touched, so skip initializing FreeType for it.
-        if (fonts.size() == 0)
+        // Fonts explicitly cleared: native backend (fontconfig/Quartz/GDI) handles it, skip FreeType.
+        if (_fonts && _fonts->empty())
             return;
 #endif
-        // TODO: parsed faces are not reused across renders (RenderContext, and this manager with
-        // it, is rebuilt per render call). Caching them across calls needs a thread-safety and
-        // invalidation design (concurrent renders, e.g. in indigo-service) — track separately,
-        // not doing it here without profiling data showing it is a real bottleneck.
+        // TODO: cache faces across renders once profiling shows it's a bottleneck.
         _initFreeType();
-        _loadCustomFontFaces(fonts);
+        if (_fonts)
+            _loadCustomFontFaces(*_fonts);
     }
 
     RenderFontFaceManager::~RenderFontFaceManager() = default;
@@ -154,10 +151,8 @@ namespace indigo
             return custom_face;
 
 #ifndef RENDER_EMSCRIPTEN
-        // No custom fonts were requested and a native font backend (fontconfig/Quartz/GDI) is
-        // available, so let the caller fall back to cairo's toy font API instead of overriding
-        // the platform's default font for every piece of text.
-        if (_custom_faces.size() == 0)
+        // Fonts explicitly cleared: fall back to cairo's toy font API, not Noto Sans.
+        if (_custom_faces.size() == 0 && _fonts)
             return nullptr;
 #endif
 
@@ -290,11 +285,10 @@ namespace indigo
         free_type_face.release();
     }
 
-    void RenderFontFaceManager::_loadCustomFontFaces(const PtrArray<RenderFont>& fonts)
+    void RenderFontFaceManager::_loadCustomFontFaces(const std::vector<RenderFont>& fonts)
     {
-        for (int i = 0; i < fonts.size(); ++i)
+        for (const RenderFont& font : fonts)
         {
-            const RenderFont& font = fonts[i];
             FreeTypeFace free_type_face(_library, font.data->data(), font.data->size(), font.data, font.name);
 
             if (FT_HAS_MULTIPLE_MASTERS(free_type_face.face))

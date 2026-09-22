@@ -98,7 +98,7 @@ namespace indigo
         void prepareRanges()
         {
             CharacterRange CJK_Unified_Ideographs(0x4E00, 0x9FFF);             // 一丁
-            CharacterRange CJK_Compatibility_Ideographs(0xF900, 0xFAFF);       // 豈類
+            CharacterRange CJK_Compatibility_Ideographs(0xF900, 0xFAFF);       // 豈類
             CharacterRange CJK_Unified_Ideographs_Extension_A(0x3400, 0x4DBF); // 㐀㐁
 
             _cjk_common_ranges.addRange(CJK_Unified_Ideographs);
@@ -250,6 +250,9 @@ namespace indigo
 
     private:
         std::shared_ptr<FT_LibraryRec_> _library;
+        // Borrowed, outlives this manager. Null: fonts never requested. Non-null (even empty):
+        // explicitly set.
+        const std::vector<RenderFont>* _fonts;
 
         Face _face_regular;
         Face _face_italic;
@@ -264,7 +267,7 @@ namespace indigo
 #endif
 
         void _initFreeType();
-        void _loadCustomFontFaces(const PtrArray<RenderFont>& fonts);
+        void _loadCustomFontFaces(const std::vector<RenderFont>& fonts);
         void _loadVariableFontFaceVariants(const RenderFont& font, FT_Face ft_face);
         void _loadFontFace(Face& face, const unsigned char font[], size_t font_size, const std::string& name,
                            std::vector<FT_Fixed>* variation_coordinates = nullptr);
@@ -272,7 +275,7 @@ namespace indigo
         static bool _hasAllGlyphs(FT_Face face, const TextItem& ti);
 
     public:
-        explicit RenderFontFaceManager(const PtrArray<RenderFont>& fonts);
+        explicit RenderFontFaceManager(const std::vector<RenderFont>* fonts);
         ~RenderFontFaceManager();
 
         RenderFontFaceManager(const RenderFontFaceManager&) = delete;

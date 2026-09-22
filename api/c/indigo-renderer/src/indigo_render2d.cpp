@@ -197,7 +197,7 @@ void indigoRenderSetFonts(const char* fonts)
     if (document.Size() > MAX_RENDER_FONT_COUNT)
         throw IndigoError("Invalid fonts JSON: too many fonts (maximum %zu)", MAX_RENDER_FONT_COUNT);
 
-    PtrArray<RenderFont> render_fonts;
+    auto render_fonts = std::make_unique<std::vector<RenderFont>>();
     size_t total_font_bytes = 0;
     FT_Library raw_library = nullptr;
     if (!document.Empty() && FT_Init_FreeType(&raw_library) != 0)
@@ -244,7 +244,7 @@ void indigoRenderSetFonts(const char* fonts)
             throw IndigoError("Font '%s' does not have a Unicode character map", font_name.c_str());
 
         total_font_bytes += font_data.size();
-        render_fonts.emplace(std::move(font_name), std::move(font_data));
+        render_fonts->emplace_back(std::move(font_name), std::move(font_data));
     }
 
     auto& renderer = indigoRendererGetInstance();
@@ -258,16 +258,18 @@ void indigoRenderGetFonts(Array<char>& value)
     rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
     writer.StartArray();
     const auto& fonts = indigoRendererGetInstance().renderParams.fonts;
-    for (int i = 0; i < fonts.size(); ++i)
+    if (fonts)
     {
-        const RenderFont& font = fonts[i];
-        const std::string encoded = cppcodec::base64_rfc4648::encode(*font.data);
-        writer.StartObject();
-        writer.Key("name");
-        writer.String(font.name.c_str(), static_cast<rapidjson::SizeType>(font.name.size()));
-        writer.Key("data");
-        writer.String(encoded.c_str(), static_cast<rapidjson::SizeType>(encoded.size()));
-        writer.EndObject();
+        for (const RenderFont& font : *fonts)
+        {
+            const std::string encoded = cppcodec::base64_rfc4648::encode(*font.data);
+            writer.StartObject();
+            writer.Key("name");
+            writer.String(font.name.c_str(), static_cast<rapidjson::SizeType>(font.name.size()));
+            writer.Key("data");
+            writer.String(encoded.c_str(), static_cast<rapidjson::SizeType>(encoded.size()));
+            writer.EndObject();
+        }
     }
     writer.EndArray();
     value.readString(buffer.GetString(), true);
