@@ -12,6 +12,7 @@ from rendering import checkImageSimilarity
 
 indigo = Indigo()
 renderer = IndigoRenderer(indigo)
+indigo.setOption("render-fonts", "[]")
 
 if not os.path.exists(joinPathPy("out/rgroups", __file__)):
     try:
@@ -219,6 +220,7 @@ M  END
 print("Test issue 2070 attachment point width")
 
 indigo.resetOptions()
+indigo.setOption("render-fonts", "[]")
 indigo.setOption("render-output-format", "png")
 indigo.setOption("render-bond-thickness", 5)
 fname = joinPathPy("molecules/r1-2ap-aal.mol", __file__)
