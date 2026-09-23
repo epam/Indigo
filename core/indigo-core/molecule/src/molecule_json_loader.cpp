@@ -62,6 +62,7 @@ void MoleculeJsonLoader::parse_ket(Document& ket)
                 std::string node_type = node["type"].GetString();
                 if (node_type.compare("molecule") == 0)
                 {
+                    _mol_ref_to_index.emplace(node_name, static_cast<int>(_mol_nodes.Size()));
                     _mol_nodes.PushBack(node, ket.GetAllocator());
                 }
                 else if (node_type.compare("rgroup") == 0 && node_name.size() > 2)
@@ -1254,16 +1255,18 @@ static int parseNumericId(const char* text)
 }
 
 HapticBond::Endpoint MoleculeJsonLoader::resolveHapticEndpoint(const rapidjson::Value& endpoint, const PtrArray<Array<int>>& mol_mappings,
-                                                               const std::vector<std::map<std::string, int>>& ag_mappings)
+                                                               const std::vector<std::map<std::string, int>>& ag_mappings) const
 {
     if (!endpoint.HasMember(KetKeyMoleculeId) || !endpoint[KetKeyMoleculeId].IsString())
         throw Error("Haptic connection endpoint requires a string '%s'", KetKeyMoleculeId);
 
+    // The reference is the name of a node, which carries no position: the producer
+    // names its nodes as it likes and lists them in any order.
     const char* mol_ref = endpoint[KetKeyMoleculeId].GetString();
-    const std::string prefix(KetMoleculeRefPrefix);
-    const int mol_id = std::string(mol_ref).compare(0, prefix.size(), prefix) == 0 ? parseNumericId(mol_ref + prefix.size()) : -1;
-    if (mol_id < 0 || mol_id >= mol_mappings.size())
+    const auto named = _mol_ref_to_index.find(mol_ref);
+    if (named == _mol_ref_to_index.end() || named->second >= mol_mappings.size())
         throw Error("Haptic connection refers to an unknown molecule '%s'", mol_ref);
+    const int mol_id = named->second;
 
     if (endpoint.HasMember(KetKeyAttachmentGroupId))
     {

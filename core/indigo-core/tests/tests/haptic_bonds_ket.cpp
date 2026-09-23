@@ -380,8 +380,8 @@ TEST_F(IndigoCoreHapticKetTest, OnlyAPlainDecimalIsAcceptedAsAnAtomId)
     }
 }
 
-// The other trap of the same parser: extract_id()'s stoi() throws a std::exception,
-// not an Indigo one, on a malformed suffix.
+// A name no node carries is an error with a message, not a crash: the reference is
+// looked up, never parsed.
 TEST_F(IndigoCoreHapticKetTest, NonNumericMoleculeIdIsRejected)
 {
     std::string json(KET_RING_AND_METAL);
@@ -391,6 +391,46 @@ TEST_F(IndigoCoreHapticKetTest, NonNumericMoleculeIdIsRejected)
     json.replace(pos, endpoint.size(), "\"moleculeId\": \"molXYZ\"");
 
     EXPECT_NE(std::string::npos, loadKetError(json.c_str()).find("unknown molecule"));
+}
+
+// A reference names a node and says nothing about where that node is listed. The
+// loader used to read "mol1" as "the node at position 1", so a producer that listed
+// its nodes in another order got the wrong molecule, or this error.
+TEST_F(IndigoCoreHapticKetTest, NodesAreResolvedByNameNotByPosition)
+{
+    std::string json(KET_RING_AND_METAL);
+    const std::string nodes = R"("nodes": [{"$ref": "mol0"}, {"$ref": "mol1"}])";
+    const size_t pos = json.find(nodes);
+    ASSERT_NE(std::string::npos, pos);
+    json.replace(pos, nodes.size(), R"("nodes": [{"$ref": "mol1"}, {"$ref": "mol0"}])");
+
+    Molecule mol;
+    loadKet(json.c_str(), mol);
+
+    ASSERT_EQ(1, mol.attachment_groups.groupCount());
+    ASSERT_EQ(1, mol.haptic_bonds.count());
+    const HapticBond& bond = mol.haptic_bonds.at(mol.haptic_bonds.begin());
+    const HapticBond::Endpoint& atom_end = bond.begin().isGroup() ? bond.end() : bond.begin();
+    const HapticBond::Endpoint& group_end = bond.begin().isGroup() ? bond.begin() : bond.end();
+    EXPECT_EQ(ELEM_Fe, mol.getAtomNumber(atom_end.index())) << "the bond still ends on the metal";
+    EXPECT_EQ(5u, mol.attachment_groups.group(group_end.index()).atoms().size());
+}
+
+// The name is opaque: a producer may call its nodes anything, a uuid included.
+TEST_F(IndigoCoreHapticKetTest, MoleculeNameMayBeAUuid)
+{
+    std::string json(KET_RING_AND_METAL);
+    for (const auto& renaming : {std::make_pair("mol0", "b1f0c3a2-5d47-4e19-9c68-2ab7de40915f"), std::make_pair("mol1", "the ligand")})
+        for (size_t pos = json.find(renaming.first); pos != std::string::npos; pos = json.find(renaming.first, pos + 1))
+            json.replace(pos, strlen(renaming.first), renaming.second);
+
+    Molecule mol;
+    loadKet(json.c_str(), mol);
+
+    ASSERT_EQ(1, mol.haptic_bonds.count());
+    const HapticBond& bond = mol.haptic_bonds.at(mol.haptic_bonds.begin());
+    const HapticBond::Endpoint& atom_end = bond.begin().isGroup() ? bond.end() : bond.begin();
+    EXPECT_EQ(ELEM_Fe, mol.getAtomNumber(atom_end.index()));
 }
 
 // A guard, not a regression test: the duplicate was rejected before this change too,
