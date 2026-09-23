@@ -21,6 +21,10 @@
 // in. The star of a haptic record is the format's phantom for the centre of the
 // pi-system: the loader absorbs it, and the saver puts a fresh one back.
 
+#include <algorithm>
+#include <string>
+#include <vector>
+
 #include <gtest/gtest.h>
 
 #include <base_cpp/output.h>
@@ -140,6 +144,42 @@ protected:
                "M  END\n";
     }
 
+    // One cyclopentadienyl ring between two irons: two haptic records ending in the
+    // same star, the shape a bridging ring has in the format. `endpoints_of_second`
+    // is what the second record lists, so that a test can make the two disagree.
+    static std::string bridgedRing(const char* endpoints_of_second = "(5 1 2 3 4 5)")
+    {
+        return std::string("\n"
+                           "  -INDIGO-\n"
+                           "\n"
+                           "  0  0  0  0  0  0  0  0  0  0999 V3000\n"
+                           "M  V30 BEGIN CTAB\n"
+                           "M  V30 COUNTS 8 7 0 0 0\n"
+                           "M  V30 BEGIN ATOM\n"
+                           "M  V30 1 C 0.0 0.0 0 0\n"
+                           "M  V30 2 C 1.0 0.0 0 0\n"
+                           "M  V30 3 C 1.31 0.95 0 0\n"
+                           "M  V30 4 C 0.5 1.54 0 0\n"
+                           "M  V30 5 C -0.31 0.95 0 0\n"
+                           "M  V30 6 Fe 0.5 3.0 0 0\n"
+                           "M  V30 7 Fe 0.5 -2.0 0 0\n"
+                           "M  V30 8 * 0.5 0.69 0 0\n"
+                           "M  V30 END ATOM\n"
+                           "M  V30 BEGIN BOND\n"
+                           "M  V30 1 1 1 2\n"
+                           "M  V30 2 1 2 3\n"
+                           "M  V30 3 1 3 4\n"
+                           "M  V30 4 1 4 5\n"
+                           "M  V30 5 1 5 1\n"
+                           "M  V30 6 9 6 8 ENDPTS=(5 1 2 3 4 5) ATTACH=ALL\n"
+                           "M  V30 7 9 7 8 ENDPTS=") +
+               endpoints_of_second +
+               " ATTACH=ALL\n"
+               "M  V30 END BOND\n"
+               "M  V30 END CTAB\n"
+               "M  END\n";
+    }
+
     // Cyclopentadienyl ring (atoms 0..4) and an iron (5), with a haptic bond from
     // the whole ring to the metal and no star atom anywhere: the shape a molecule
     // has when it comes from a format that does not use one.
@@ -208,44 +248,69 @@ TEST_F(IndigoCoreHapticMolfileTest, StarOfAHapticRecordIsAbsorbed)
     EXPECT_EQ(2, total) << "the -1 of each phantom left with it";
 }
 
-// A ring bonded to two metals is two records ending in the same star, which must
-// be absorbed once.
-TEST_F(IndigoCoreHapticMolfileTest, StarSharedByTwoRecordsIsAbsorbedOnce)
+// A ring bonded to two metals is two records ending in the same star. The star is
+// the centre of one pi-system, so the two bonds leave with one group between them
+// and one star absorbed - not a group and a star each.
+TEST_F(IndigoCoreHapticMolfileTest, StarSharedByTwoRecordsGivesOneGroup)
 {
-    const char* bridged = "\n"
-                          "  -INDIGO-\n"
-                          "\n"
-                          "  0  0  0  0  0  0  0  0  0  0999 V3000\n"
-                          "M  V30 BEGIN CTAB\n"
-                          "M  V30 COUNTS 8 7 0 0 0\n"
-                          "M  V30 BEGIN ATOM\n"
-                          "M  V30 1 C 0.0 0.0 0 0\n"
-                          "M  V30 2 C 1.0 0.0 0 0\n"
-                          "M  V30 3 C 1.31 0.95 0 0\n"
-                          "M  V30 4 C 0.5 1.54 0 0\n"
-                          "M  V30 5 C -0.31 0.95 0 0\n"
-                          "M  V30 6 Fe 0.5 3.0 0 0\n"
-                          "M  V30 7 Fe 0.5 -2.0 0 0\n"
-                          "M  V30 8 * 0.5 0.69 0 0\n"
-                          "M  V30 END ATOM\n"
-                          "M  V30 BEGIN BOND\n"
-                          "M  V30 1 1 1 2\n"
-                          "M  V30 2 1 2 3\n"
-                          "M  V30 3 1 3 4\n"
-                          "M  V30 4 1 4 5\n"
-                          "M  V30 5 1 5 1\n"
-                          "M  V30 6 9 6 8 ENDPTS=(5 1 2 3 4 5) ATTACH=ALL\n"
-                          "M  V30 7 9 7 8 ENDPTS=(5 1 2 3 4 5) ATTACH=ALL\n"
-                          "M  V30 END BOND\n"
-                          "M  V30 END CTAB\n"
-                          "M  END\n";
-
     Molecule mol;
-    loadMolfile(bridged, mol);
+    loadMolfile(bridgedRing().c_str(), mol);
 
     EXPECT_EQ(7, mol.vertexCount());
     EXPECT_EQ(5, mol.edgeCount());
+    ASSERT_EQ(2, mol.haptic_bonds.count());
+    ASSERT_EQ(1, mol.attachment_groups.groupCount());
+
+    std::vector<int> metals;
+    for (int i = mol.haptic_bonds.begin(); i != mol.haptic_bonds.end(); i = mol.haptic_bonds.next(i))
+    {
+        const HapticBond& bond = mol.haptic_bonds.at(i);
+        ASSERT_TRUE(bond.begin().isGroup());
+        EXPECT_EQ(mol.attachment_groups.begin(), bond.begin().index()) << "both bonds hold the same group";
+        metals.push_back(bond.end().index());
+    }
+    std::sort(metals.begin(), metals.end());
+    EXPECT_EQ(std::vector<int>({5, 6}), metals) << "one ring, two metals";
+}
+
+// The saver puts back one star per group, so the bridging ring survives the trip
+// with the atom count it came with.
+TEST_F(IndigoCoreHapticMolfileTest, SharedStarIsWrittenBackOnce)
+{
+    Molecule mol;
+    loadMolfile(bridgedRing().c_str(), mol);
+    const std::string saved = saveMolfile(mol);
+
+    EXPECT_NE(std::string::npos, saved.find("M  V30 COUNTS 8 7 0 0 0")) << "one star back, not two";
+    EXPECT_EQ(2, countOccurrences(saved, "ENDPTS="));
+    EXPECT_NE(std::string::npos, saved.find("M  V30 6 9 6 8 ENDPTS=(5 1 2 3 4 5) ATTACH=ALL"));
+    EXPECT_NE(std::string::npos, saved.find("M  V30 7 9 7 8 ENDPTS=(5 1 2 3 4 5) ATTACH=ALL"));
+
+    Molecule reloaded;
+    loadMolfile(saved.c_str(), reloaded);
+    EXPECT_EQ(saved, saveMolfile(reloaded));
+    EXPECT_EQ(1, reloaded.attachment_groups.groupCount());
+}
+
+// Two records may share a star only when they mean the same pi-system. Different
+// members behind one centre is a contradiction in the file, and it is rejected
+// where it is read rather than half-applied.
+TEST_F(IndigoCoreHapticMolfileTest, StarSharedByDifferentEndptsIsRejected)
+{
+    Molecule mol;
+    EXPECT_THROW(loadMolfile(bridgedRing("(4 1 2 3 4)").c_str(), mol), Exception);
+}
+
+// The order ENDPTS lists the members in is not part of the pi-system.
+TEST_F(IndigoCoreHapticMolfileTest, SharedStarToleratesAnotherEndptsOrder)
+{
+    Molecule mol;
+    loadMolfile(bridgedRing("(5 5 4 3 2 1)").c_str(), mol);
+
+    EXPECT_EQ(1, mol.attachment_groups.groupCount());
     EXPECT_EQ(2, mol.haptic_bonds.count());
+    EXPECT_EQ(std::vector<int>({0, 1, 2, 3, 4}), mol.attachment_groups.group(mol.attachment_groups.begin()).atoms())
+        << "the members keep the order the first record listed them in";
 }
 
 TEST_F(IndigoCoreHapticMolfileTest, AttachAnyIsStoredWithoutBecomingHaptic)

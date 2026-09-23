@@ -889,17 +889,41 @@ void MolfileLoader::_addHapticBond3000(int beg, int end, const std::vector<int>&
     const int anchor = is_star(beg) && !is_star(end) ? beg : end;
     const int attached_to = anchor == beg ? end : beg;
 
-    const int group = _bmol->attachment_groups.addGroup();
-    _bmol->attachment_groups.group(group).setAtoms(endpoints);
+    // A star stands for the centre of one pi-system, so a ring bonded to two metals -
+    // two records ending in the same star - attaches through one group and leaves one
+    // star behind. Only a haptic record has such a centre: the star of a variable
+    // attachment is an ordinary atom the group is anchored to.
+    const bool phantom_centre = type == _BOND_HAPTIC && is_star(anchor);
 
-    if (type == _BOND_HAPTIC && is_star(anchor))
+    int group = -1;
+    if (phantom_centre)
     {
-        // One ring bonded to two metals is two records ending in the same star.
-        if (std::find(_haptic_stars.begin(), _haptic_stars.end(), anchor) == _haptic_stars.end())
-            _haptic_stars.push_back(anchor);
+        const auto known = _haptic_star_groups.find(anchor);
+        if (known != _haptic_star_groups.end())
+        {
+            const auto same_atoms = [](std::vector<int> left, std::vector<int> right) {
+                std::sort(left.begin(), left.end());
+                std::sort(right.begin(), right.end());
+                return left == right;
+            };
+
+            if (!same_atoms(_bmol->attachment_groups.group(known->second).atoms(), endpoints))
+                throw Error("star atom %d is the centre of two different ENDPTS lists", anchor + 1);
+
+            group = known->second;
+        }
     }
-    else
-        _bmol->attachment_groups.group(group).setAnchorAtom(anchor);
+
+    if (group < 0)
+    {
+        group = _bmol->attachment_groups.addGroup();
+        _bmol->attachment_groups.group(group).setAtoms(endpoints);
+
+        if (phantom_centre)
+            _haptic_star_groups.emplace(anchor, group);
+        else
+            _bmol->attachment_groups.group(group).setAnchorAtom(anchor);
+    }
 
     _bmol->addHapticBond(HapticBond::Endpoint::group(group), HapticBond::Endpoint::atom(attached_to), type);
 }
@@ -1851,7 +1875,7 @@ void MolfileLoader::_readSGroupDisplay(Scanner& scanner, DataSGroup& dsg)
 
 void MolfileLoader::_init()
 {
-    _haptic_stars.clear();
+    _haptic_star_groups.clear();
     _hcount.clear();
     _atom_types.clear();
     _sgroup_types.clear();
