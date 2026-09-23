@@ -104,7 +104,7 @@ void MoleculeLayoutMacrocyclesLattice::doLayout()
         if (!has_trans)
         {
             float alpha = _2FLOAT(2. * M_PI / length);
-            float r = 1 / sqrt(2 * (1 - cos(alpha)));
+            float r = 1 / sqrt(2 * (1 - COS(alpha)));
             for (int i = 0; i < length; i++)
             {
                 _positions[i] = Vec2f(0, r);
@@ -355,7 +355,7 @@ void AnswerField::_restore_path(answer_point* path, answer_point finish)
                     while (R - L > eps)
                     {
                         float M = (L + R) / 2;
-                        if (M * x / (2 * sin(M / 2)) > l)
+                        if (M * x / (2 * SIN(M / 2)) > l)
                             R = M;
                         else
                             L = M;
@@ -1028,7 +1028,7 @@ float MoleculeLayoutMacrocyclesLattice::rating(CycleLayout& cl)
         vp1 /= len1;
         vp2 /= len2;
 
-        float angle = acos(Vec2f::dot(vp1, vp2));
+        float angle = ACOS(Vec2f::dot(vp1, vp2));
         if (Vec2f::cross(vp2, vp1) > 0)
             angle = -angle;
         angle /= _target_angle[cl.external_vertex_number[i]];

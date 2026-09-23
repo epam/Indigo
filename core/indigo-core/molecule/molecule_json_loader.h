@@ -20,6 +20,7 @@
 #define __molecule_json_loader__
 
 #include <list>
+#include <map>
 #include <rapidjson/document.h>
 #include <unordered_set>
 #include <vector>
@@ -119,8 +120,8 @@ namespace indigo
         // that haptic connections are resolved through.
         std::map<std::string, int> parseAttachmentGroups(const rapidjson::Value& groups, BaseMolecule& mol, const Array<int>& atom_mapping);
 
-        static HapticBond::Endpoint resolveHapticEndpoint(const rapidjson::Value& endpoint, const PtrArray<Array<int>>& mol_mappings,
-                                                          const std::vector<std::map<std::string, int>>& ag_mappings);
+        HapticBond::Endpoint resolveHapticEndpoint(const rapidjson::Value& endpoint, const PtrArray<Array<int>>& mol_mappings,
+                                                   const std::vector<std::map<std::string, int>>& ag_mappings) const;
         void loadHapticConnection(const rapidjson::Value& connection, BaseMolecule& mol, const PtrArray<Array<int>>& mol_mappings,
                                   const std::vector<std::map<std::string, int>>& ag_mappings);
         void parseProperties(const rapidjson::Value& props, BaseMolecule& mol);
@@ -146,6 +147,10 @@ namespace indigo
         std::unordered_map<std::string, int> _id_to_template;
         std::map<std::string, std::string> _template_ref_to_id;
         std::map<std::string, int> _monomer_ref_to_id;
+        // The name a molecule node is referred to by -> its place among the nodes.
+        // A reference is a name and nothing else: the producer may call a node
+        // anything, a uuid included, and list the nodes in any order.
+        std::map<std::string, int> _mol_ref_to_index;
         Molecule* _pmol;
         QueryMolecule* _pqmol;
         std::vector<EnhancedStereoCenter> _stereo_centers;

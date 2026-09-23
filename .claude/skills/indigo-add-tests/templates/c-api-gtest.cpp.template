@@ -1,0 +1,53 @@
+/****************************************************************************
+ * Copyright (C) from 2009 to Present EPAM Systems.
+ *
+ * This file is part of Indigo toolkit.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
+
+#include <gtest/gtest.h>
+
+#include <base_cpp/exception.h>
+#include <indigo.h>
+
+#include "common.h"
+
+using namespace indigo;
+
+// IndigoApiTest allocates a session per test and installs an error handler that throws
+// indigo::Exception, so a failing call throws instead of returning -1.
+class IndigoApi{Suite}Test : public IndigoApiTest
+{
+};
+
+TEST_F(IndigoApi{Suite}Test, {function}_{Scenario}_{Expected})
+{
+    const int molecule = indigoLoadMoleculeFromString("{smiles}");
+    EXPECT_EQ({expected}, {indigoFunction}(molecule));
+    indigoFree(molecule);
+}
+
+TEST_F(IndigoApi{Suite}Test, {function}_{InvalidInput}_Throws)
+{
+    EXPECT_THROW({call that must fail}, Exception);
+}
+
+// A try/catch written around a C API call in the test body does not catch on Windows: the exception
+// escapes to gtest. The message is checked the C way, with the throwing handler removed.
+TEST_F(IndigoApi{Suite}Test, {function}_{InvalidInput}_ReportsMessage)
+{
+    indigoSetErrorHandler(nullptr, nullptr);
+    EXPECT_EQ(-1, {call that must fail});
+    EXPECT_STREQ("{exact message}", indigoGetLastError());
+}

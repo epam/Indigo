@@ -286,10 +286,10 @@ TEST_F(IndigoCoreDativeValenceTest, dative_bonds_keep_order_and_direction_on_the
 }
 
 // Haptic bonds (#3233) and this ticket meet in one representation: a haptic bond is
-// written to V3000 as order 9 plus ENDPTS, and the loader keeps that order 9 edge in the
-// graph while recording the attachment group beside it. So the dative model does see
-// haptic bonds, and ferrocene -- the canonical case -- must survive it: the iron donates
-// through two of them, which is well inside what its electrons and orbitals allow.
+// written to V3000 as order 9 plus ENDPTS. The order 9 edge ends in the star, the
+// format's phantom for the centre of the ring, and the loader absorbs the star with its
+// edge. So the dative model never sees a haptic bond, and ferrocene -- the canonical
+// case -- must load with an iron that has no edges left to count.
 TEST_F(IndigoCoreDativeValenceTest, haptic_bonds_do_not_trip_the_dative_model)
 {
     const char* ferrocene = "\n"
@@ -335,9 +335,9 @@ TEST_F(IndigoCoreDativeValenceTest, haptic_bonds_do_not_trip_the_dative_model)
 
     const int iron = 5; // atom 6 of the file
     ASSERT_EQ(ELEM_Fe, mol.getAtomNumber(iron));
+    ASSERT_EQ(0, mol.getVertex(iron).degree()) << "both order 9 edges went with their stars";
 
-    // Fe(2+): El = 8 - 2 = 6 and Or = 9, so up to three donor dative bonds are allowed
-    // and two are drawn. Requirement 8 keeps a transition metal free of hydrogens.
+    // Requirement 8 keeps a transition metal free of hydrogens, with or without bonds.
     EXPECT_NO_THROW(mol.getAtomValence(iron));
     EXPECT_EQ(0, mol.getImplicitH(iron));
 }

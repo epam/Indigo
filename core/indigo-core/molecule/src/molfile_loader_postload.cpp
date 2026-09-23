@@ -255,7 +255,7 @@ void MolfileLoader::_postLoad()
         {
             if (_bmol->stereocenters.getType(i) == 0)
             {
-                if (stereochemistry_options.ignore_errors)
+                if (stereochemistry_options.ignore_errors || _bmol->hasBondsOutsideTheGraph(i))
                     _bmol->addStereocentersIgnoreBad(i, _stereocenter_types[i], _stereocenter_groups[i], false); // add non-valid stereocenters
                 else if (_qmol == nullptr)
                     throw Error("stereo type specified for atom #%d, but the bond "
@@ -272,6 +272,10 @@ void MolfileLoader::_postLoad()
     {
         if (_bmol->getBondDirection(i) && !_sensible_bond_directions[i])
         {
+            const Edge& edge = _bmol->getEdge(i);
+            if (_bmol->hasBondsOutsideTheGraph(edge.beg) || _bmol->hasBondsOutsideTheGraph(edge.end))
+                continue;
+
             if (!stereochemistry_options.ignore_errors && !_qmol) // Don't check for query molecule
                 throw Error("direction of bond #%d makes no sense", i);
         }
@@ -335,6 +339,18 @@ void MolfileLoader::_postLoad()
 
     for (auto idx : templates_to_remove)
         _bmol->tgroups.remove(idx);
+
+    // Last, because everything above addresses atoms by their place in the file:
+    // the phantom stars of haptic records (_addHapticBond3000) leave the structure.
+    if (!_haptic_star_groups.empty())
+    {
+        QS_DEF(Array<int>, stars);
+        stars.clear();
+        for (const auto& star_group : _haptic_star_groups)
+            stars.push(star_group.first);
+        _bmol->removeAtoms(stars);
+        _haptic_star_groups.clear();
+    }
 
     // fix layout
     // if (templates_to_remove.size() && _bmol->countComponents())

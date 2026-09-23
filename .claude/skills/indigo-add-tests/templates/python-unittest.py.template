@@ -1,0 +1,27 @@
+from indigo import IndigoException
+from tests import TestIndigoBase
+
+
+class Test{Subject}(TestIndigoBase):
+    def test_{method}_{scenario}(self) -> None:
+        molecule = self.indigo.loadMolecule("{smiles}")
+        self.assertEqual({expected}, molecule.{method}())
+
+    def test_{method}_{property}(self) -> None:
+        cases = [
+            ("{smiles 1}", {expected 1}),
+            ("{smiles 2}", {expected 2}),
+            ("{smiles 3}", {expected 3}),
+        ]
+        for smiles, expected in cases:
+            with self.subTest(smiles=smiles):
+                molecule = self.indigo.loadMolecule(smiles)
+                self.assertEqual(expected, molecule.{method}())
+
+    def test_{method}_rejects_{invalid_input}(self) -> None:
+        with self.assertRaises(IndigoException) as raised:
+            {call that must fail}
+        self.assertEqual(
+            "{exact message}",
+            str(raised.exception),
+        )

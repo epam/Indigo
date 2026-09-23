@@ -49,6 +49,38 @@ KET_RING_AND_METAL = """{
 }"""
 
 
+# A chlorine attached to any one of three benzene atoms: the Markush form of the
+# same V3000 keys (#3731), whose star is not a phantom and stays in the structure.
+VARIABLE_ATTACHMENT = """
+  Indigo test
+
+  0  0  0     0  0            999 V3000
+M  V30 BEGIN CTAB
+M  V30 COUNTS 8 7 0 0 0
+M  V30 BEGIN ATOM
+M  V30 1 C 0.0 0.0 0 0
+M  V30 2 C 1.0 0.0 0 0
+M  V30 3 C 1.5 0.866 0 0
+M  V30 4 C 1.0 1.732 0 0
+M  V30 5 C 0.0 1.732 0 0
+M  V30 6 C -0.5 0.866 0 0
+M  V30 7 Cl 2.5 0.866 0 0
+M  V30 8 * 1.0 0.866 0 0
+M  V30 END ATOM
+M  V30 BEGIN BOND
+M  V30 1 1 1 2
+M  V30 2 2 2 3
+M  V30 3 1 3 4
+M  V30 4 2 4 5
+M  V30 5 1 5 6
+M  V30 6 2 6 1
+M  V30 7 1 7 8 ENDPTS=(3 2 3 4) ATTACH=ANY
+M  V30 END BOND
+M  V30 END CTAB
+M  END
+"""
+
+
 def describe(mol, title):
     print(
         "%s: groups=%d haptic bonds=%d"
@@ -177,12 +209,21 @@ indigo.setOption("molfile-saving-mode", "auto")
 
 print()
 print(
-    "*** a group loaded from V3000 knows its anchor atom, a KET one does not ***"
+    "*** V3000 absorbs the star of a haptic record, not a variable one's ***"
 )
 from_v3000 = indigo.loadMolecule(v3000)
-anchor = from_v3000.getAttachmentGroup(0).getAttachmentGroupAnchor()
 print(
-    "V3000 anchor: %s"
+    "haptic star in the structure: %s"
+    % any(a.symbol() == "*" for a in from_v3000.iterateAtoms())
+)
+print(
+    "haptic group anchor: %s"
+    % (from_v3000.getAttachmentGroup(0).getAttachmentGroupAnchor() or "none")
+)
+variable = indigo.loadMolecule(VARIABLE_ATTACHMENT)
+anchor = variable.getAttachmentGroup(0).getAttachmentGroupAnchor()
+print(
+    "variable attachment anchor: %s"
     % (
         "atom %d (%s)" % (anchor.index(), anchor.symbol())
         if anchor is not None

@@ -118,7 +118,6 @@ namespace indigo
 
         static void _collectHapticRecords(BaseMolecule& mol, std::vector<HapticRecord>& records, std::unordered_map<int, int>& by_edge,
                                           std::vector<int>& groups_needing_a_star);
-        static Vec3f _attachmentGroupCentre(BaseMolecule& mol, int group);
         void _writeHapticKeys(Output& output, BaseMolecule& mol, const HapticRecord& record);
 
         void _writeGenericSGroup3000(SGroup& sgroup, const SGroupInfo& info, Output& output);

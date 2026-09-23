@@ -19,6 +19,8 @@
 #ifndef __molfile_loader__
 #define __molfile_loader__
 
+#include <map>
+
 #include "base_cpp/array.h"
 #include "base_cpp/exception.h"
 #include "base_cpp/tlscont.h"
@@ -125,6 +127,10 @@ namespace indigo
         bool _chiral;
         int _max_template_id;
         bool _disable_sgroups_conversion;
+        // The star of a haptic ENDPTS record -> the attachment group it stands for.
+        // One star is the centre of one pi-system, so records sharing a star share the
+        // group. The stars are removed once the whole molecule is read.
+        std::map<int, int> _haptic_star_groups;
         void _readHeader();
         void _readCtabHeader();
         void _readCtab2000();
