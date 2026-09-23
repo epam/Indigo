@@ -124,17 +124,17 @@ namespace indigo
 
     } // namespace
 
-    RenderFontFaceManager::RenderFontFaceManager(const std::vector<RenderFont>* fonts) : _fonts(fonts)
+    RenderFontFaceManager::RenderFontFaceManager(const std::unique_ptr<std::vector<RenderFont>>& fonts) : _fonts_set(static_cast<bool>(fonts))
     {
 #ifndef RENDER_EMSCRIPTEN
         // Fonts explicitly cleared: native backend (fontconfig/Quartz/GDI) handles it, skip FreeType.
-        if (_fonts && _fonts->empty())
+        if (fonts && fonts->empty())
             return;
 #endif
         // TODO: cache faces across renders once profiling shows it's a bottleneck.
         _initFreeType();
-        if (_fonts)
-            _loadCustomFontFaces(*_fonts);
+        if (fonts)
+            _loadCustomFontFaces(*fonts);
     }
 
     RenderFontFaceManager::~RenderFontFaceManager() = default;
@@ -152,7 +152,7 @@ namespace indigo
 
 #ifndef RENDER_EMSCRIPTEN
         // Fonts explicitly cleared: fall back to cairo's toy font API, not Noto Sans.
-        if (_custom_faces.size() == 0 && _fonts)
+        if (_custom_faces.size() == 0 && _fonts_set)
             return nullptr;
 #endif
 

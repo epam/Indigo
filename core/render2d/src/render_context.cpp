@@ -119,7 +119,8 @@ void RenderContext::storeAndDestroyMetafile(bool discard)
 
 CP_DEF(RenderContext);
 
-RenderContext::RenderContext(const RenderOptions& ropt, const std::vector<RenderFont>* fonts, float relativeThickness, float bondLineWidthFactor)
+RenderContext::RenderContext(const RenderOptions& ropt, const std::unique_ptr<std::vector<RenderFont>>& fonts, float relativeThickness,
+                             float bondLineWidthFactor)
     : CP_INIT, TL_CP_GET(_fontfamily), TL_CP_GET(transforms), metafileFontsToCurves(false), _cr(NULL), _surface(NULL), _meta_hdc(NULL), opt(ropt),
       _pattern(NULL), _font_face_manager(fonts), _settings()
 {

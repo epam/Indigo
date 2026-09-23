@@ -22,6 +22,7 @@
 #include <cairo-pdf.h>
 #include <cairo-svg.h>
 #include <cairo.h>
+#include <memory>
 #include <vector>
 
 #include "render_common.h"
@@ -44,7 +45,7 @@ namespace indigo
 
         void checkPathNonEmpty() const;
 
-        RenderContext(const RenderOptions& opt, const std::vector<RenderFont>* fonts, float relativeThickness, float bondLineWidthFactor);
+        RenderContext(const RenderOptions& opt, const std::unique_ptr<std::vector<RenderFont>>& fonts, float relativeThickness, float bondLineWidthFactor);
         void setDefaultScale(float scale);
         void setHDC(PVOID hdc);
         int getMaxPageSize() const;

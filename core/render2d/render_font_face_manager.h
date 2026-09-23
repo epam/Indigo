@@ -250,9 +250,8 @@ namespace indigo
 
     private:
         std::shared_ptr<FT_LibraryRec_> _library;
-        // Borrowed, outlives this manager. Null: fonts never requested. Non-null (even empty):
-        // explicitly set.
-        const std::vector<RenderFont>* _fonts;
+        // Set once at construction: whether render-fonts was ever explicitly set (even to empty).
+        bool _fonts_set;
 
         Face _face_regular;
         Face _face_italic;
@@ -275,7 +274,7 @@ namespace indigo
         static bool _hasAllGlyphs(FT_Face face, const TextItem& ti);
 
     public:
-        explicit RenderFontFaceManager(const std::vector<RenderFont>* fonts);
+        explicit RenderFontFaceManager(const std::unique_ptr<std::vector<RenderFont>>& fonts);
         ~RenderFontFaceManager();
 
         RenderFontFaceManager(const RenderFontFaceManager&) = delete;
