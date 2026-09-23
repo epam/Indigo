@@ -78,10 +78,16 @@ namespace indigo
         struct Endpoint
         {
             bool is_group = false;
-            int index = -1;              // group index, or atom index
-            int component = -1;          // the component every atom of it belongs to
-            std::vector<int> atoms;      // the member atoms of a group, or the single atom
-            std::vector<int> neighbours; // atoms outside the endpoint that bond to it
+            int index = -1;                              // group index, or atom index
+            int component = -1;                          // the component every atom of it belongs to
+            std::vector<int> atoms;                      // the member atoms of a group, or the single atom
+            std::vector<int> neighbours;                 // atoms outside the endpoint that bond to it
+            std::vector<std::pair<int, int>> ring_bonds; // the bonds of the one cycle the members close; empty for any other group
+
+            bool isRing() const
+            {
+                return !ring_bonds.empty();
+            }
         };
 
         struct Link
@@ -145,11 +151,28 @@ namespace indigo
             float stretch = 1.f;   // how much longer than nominal its bonds are drawn
         };
 
+        // An angular gap between two directions leaving an endpoint, counter-clockwise
+        // from `start`.
+        struct Gap
+        {
+            float start = 0.f;
+            float width = 0.f;
+
+            float bisector() const
+            {
+                return start + width / 2.f;
+            }
+        };
+
         // Fills _links with the bonds this class can act on: haptic, both ends
         // resolved, ends in two different components, neither of them frozen.
         void _collectLinks(const Array<int>& component_of, const Array<int>& frozen);
 
         bool _resolveEndpoint(const HapticBond::Endpoint& endpoint, const Array<int>& component_of, Endpoint& resolved) const;
+
+        // The bonds of the cycle `atoms` close when every member is bonded to exactly
+        // two others and all of them form one cycle; empty otherwise.
+        std::vector<std::pair<int, int>> _ringBonds(const std::vector<int>& atoms) const;
 
         static bool _sameEndpoint(const Endpoint& left, const Endpoint& right);
 
@@ -162,18 +185,40 @@ namespace indigo
         // across it. False when they have no axis at all.
         static bool _principalAxis(const std::vector<Vec2f>& points, const Vec2f& centre, Vec2f& axis, float& major, float& minor);
 
-        // The axis of a two- or three-atom group, in the component's own
+        // The axis of a two- or three-atom chain, in the component's own
         // coordinates; false for a ring, which has none.
         static bool _groupAxis(const Endpoint& endpoint, const Array<Vec2f>& position, Vec2f& axis);
 
         // True when the group is a line rather than a disc (an eta-2 or eta-3 end),
         // answering the direction across it, at a right angle to the ligand's bonds.
-        static bool _acrossTheGroup(const Endpoint& from, const Vec2f& from_pos, const Array<Vec2f>& position, const Array<Placement>& placement, Vec2f& axis);
+        // `frame` is the placement of the endpoint's component.
+        static bool _acrossTheGroup(const Endpoint& from, const Vec2f& from_pos, const Array<Vec2f>& position, const Placement& frame, Vec2f& axis);
 
-        // Bisector of the widest angular gap between the directions already taken
-        // around the endpoint: 120 degrees on a hexagon, 126 on a cyclopentadienyl.
+        // The gaps between the directions already taken around the endpoint - its
+        // neighbours, placed by `frame`, and `taken` - the one across the wrap of the
+        // circle first. Empty when nothing surrounds it.
+        static std::vector<Gap> _gaps(const Endpoint& from, const Vec2f& from_pos, const std::vector<Vec2f>& taken, const Array<Vec2f>& position,
+                                      const Placement& frame);
+
+        // Bisector of the widest of the _gaps(): 120 degrees on a hexagon, 126 on a
+        // cyclopentadienyl.
         static Vec2f _freeDirection(const Endpoint& from, const Vec2f& from_pos, const std::vector<Vec2f>& taken, const Array<Vec2f>& position,
-                                    const Array<Placement>& placement);
+                                    const Placement& frame);
+
+        // Every direction the rules of #3233 let a bond leave the endpoint in, as unit
+        // vectors: through the middle of an edge of a ring, across a two- or
+        // three-atom chain, along the bisector of any of the _gaps() otherwise. Empty
+        // when nothing surrounds the endpoint, which may then be left in any direction.
+        static std::vector<Vec2f> _exits(const Endpoint& end, const Vec2f& end_pos, const std::vector<Vec2f>& taken, const Array<Vec2f>& position,
+                                         const Placement& frame);
+
+        // The directions from `centre` through the middle of each bond of the ring, as
+        // unit vectors: a bond leaving the ring along one of them cannot be read as a
+        // bond to one of its atoms.
+        static std::vector<Vec2f> _edgeDirections(const Endpoint& ring, const Vec2f& centre, const Array<Vec2f>& position, const Placement& frame);
+
+        // Of the _edgeDirections(), the one nearest to `direction`.
+        static Vec2f _throughAnEdge(const Endpoint& ring, const Vec2f& centre, const Array<Vec2f>& position, const Placement& frame, const Vec2f& direction);
 
         float _lengthOf(const Link& link) const;
 
@@ -188,16 +233,18 @@ namespace indigo
 
         // Every placement that satisfies the links holding this component. `preferred`
         // is the direction the rules of #3233 ask for, and it is in the set exactly;
-        // `stretch` is how much longer than nominal its bonds are drawn.
+        // `exits` are the _exits() of the partner of the first link; `stretch` is how
+        // much longer than nominal its bonds are drawn.
         void _candidatesAt(int component, const std::vector<const Link*>& links, const Array<Vec2f>& position, const Array<Placement>& placement,
-                           float preferred, float stretch, std::vector<Candidate>& out) const;
+                           float preferred, const std::vector<Vec2f>& exits, float stretch, std::vector<Candidate>& out) const;
 
-        // The four ways a component can be held: one bond leaves direction and
-        // rotation free; two bonds to two partners meet where two circles cut; two
-        // bonds to one partner sit on a chord of one; anything else is fitted.
+        // The four ways a component can be held: one bond leaves by one of the
+        // partner's exits and meets the component by one of its own; two bonds to two
+        // partners meet where two circles cut; two bonds to one partner sit on a chord
+        // of one; anything else is fitted.
         static Candidate _candidateAt(const Held& held, float direction, float rotation, const Vec2f& target);
-        void _aroundOnePartner(int component, const Link& link, const std::vector<Held>& held, const Array<Vec2f>& position, float preferred, int rotations,
-                               std::vector<Candidate>& out) const;
+        void _aroundOnePartner(int component, const Link& link, const std::vector<Held>& held, const Array<Vec2f>& position, float preferred,
+                               const std::vector<Vec2f>& exits, int rotations, std::vector<Candidate>& out) const;
         void _betweenTwoPartners(const std::vector<Held>& held, int rotations, std::vector<Candidate>& out) const;
         static void _onAChordOfOnePartner(const std::vector<Held>& held, const Vec2f& source_centre, float preferred, std::vector<Candidate>& out);
         void _byFitting(int component, const std::vector<const Link*>& links, const std::vector<Held>& held, const Array<Vec2f>& position,
@@ -207,9 +254,18 @@ namespace indigo
         // it now stands. Stops when a sweep moves nothing or leaves nothing overlapping.
         void _sweep(const std::vector<int>& order, const Array<Vec2f>& position, const Array<int>& placed, Array<Placement>& placement) const;
 
+        // Turns the cluster `first` belongs to so that the axis between the two
+        // components that bond joins - over every bond between them - points
+        // straight down from the ligand, the side of the group end.
+        void _orient(const Link& first, const Array<Vec2f>& position, Array<Placement>& placement) const;
+
+        // The haptic partners already placed around `from`, other than `component`.
+        std::vector<Vec2f> _takenAround(int component, const Endpoint& from, const Array<Vec2f>& position, const Array<int>& placed,
+                                        const Array<Placement>& placement) const;
+
         // The direction the rules of #3233 ask the bond to leave `from` in, as an
         // angle: the widest gap left by the bonds and the haptic partners around it.
-        float _preferredDirection(int component, const Endpoint& from, const Vec2f& from_pos, const Array<Vec2f>& position, const Array<int>& placed,
+        float _preferredDirection(const Endpoint& from, const Vec2f& from_pos, const std::vector<Vec2f>& taken, const Array<Vec2f>& position,
                                   const Array<Placement>& placement) const;
 
         // Places `component` where it costs the drawing least of everything that

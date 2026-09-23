@@ -21,6 +21,7 @@
 // puts them in a grid; the acceptance criteria below are the geometry that must
 // come out instead. They are the acceptance criteria A1-A6 of #3844.
 
+#include <algorithm>
 #include <cmath>
 #include <vector>
 
@@ -59,12 +60,42 @@ protected:
         return group;
     }
 
-    static void makeLayout(Molecule& mol, float multiplier = MoleculeLayoutGraph::DEFAULT_HAPTIC_BOND_MULTIPLIER)
+    static void makeLayout(Molecule& mol, float multiplier = MoleculeLayoutGraph::DEFAULT_HAPTIC_BOND_MULTIPLIER, bool smart = false)
     {
-        MoleculeLayout layout(mol);
+        MoleculeLayout layout(mol, smart);
         layout.bond_length = 1.f;
         layout.haptic_bond_multiplier = multiplier;
         layout.make();
+    }
+
+    static void makeLayoutIn(Molecule& mol, bool smart)
+    {
+        makeLayout(mol, MoleculeLayoutGraph::DEFAULT_HAPTIC_BOND_MULTIPLIER, smart);
+    }
+
+    // Two cyclopentadienyl rings on an iron, the first ring bonded first.
+    static void makeFerrocene(Molecule& mol, int& first_group, int& second_group, int& metal)
+    {
+        const int first = addRing(mol, 5);
+        const int second = addRing(mol, 5);
+        metal = mol.addAtom(ELEM_Fe);
+
+        first_group = addGroup(mol, {first, first + 1, first + 2, first + 3, first + 4});
+        second_group = addGroup(mol, {second, second + 1, second + 2, second + 3, second + 4});
+        mol.addHapticBond(HapticBond::Endpoint::group(first_group), HapticBond::Endpoint::atom(metal));
+        mol.addHapticBond(HapticBond::Endpoint::group(second_group), HapticBond::Endpoint::atom(metal));
+    }
+
+    // How close the bond from the centre of the group to `partner` runs to a member
+    // atom. Through the middle of an edge of a regular ring it passes the two atoms
+    // of that edge half a bond length away; through an atom, at no distance at all.
+    static float memberClearance(Molecule& mol, int group, int partner)
+    {
+        const Vec2f centre = groupCentre(mol, group);
+        float nearest = 1e9f;
+        for (int atom : mol.attachment_groups.group(group).atoms())
+            nearest = std::min(nearest, Vec2f::distPointSegment(pos(mol, atom), centre, pos(mol, partner)));
+        return nearest;
     }
 
     static Vec2f pos(Molecule& mol, int atom)
@@ -289,14 +320,8 @@ TEST_F(IndigoCoreHapticLayoutTest, TheMultiplierIsAParameter)
 TEST_F(IndigoCoreHapticLayoutTest, FerroceneComesOutAsASandwich)
 {
     Molecule mol;
-    const int first = addRing(mol, 5);
-    const int second = addRing(mol, 5);
-    const int metal = mol.addAtom(ELEM_Fe);
-
-    const int first_group = addGroup(mol, {first, first + 1, first + 2, first + 3, first + 4});
-    const int second_group = addGroup(mol, {second, second + 1, second + 2, second + 3, second + 4});
-    mol.addHapticBond(HapticBond::Endpoint::group(first_group), HapticBond::Endpoint::atom(metal));
-    mol.addHapticBond(HapticBond::Endpoint::group(second_group), HapticBond::Endpoint::atom(metal));
+    int first_group, second_group, metal;
+    makeFerrocene(mol, first_group, second_group, metal);
 
     makeLayout(mol);
 
@@ -539,4 +564,149 @@ TEST_F(IndigoCoreHapticLayoutTest, ALoneAtomToAtomBondKeepsTheFragmentsApart)
 
     EXPECT_GE(Vec2f::dist(pos(mol, first_ring + 3), pos(mol, second_ring + 3)), 1.f - TOLERANCE);
     EXPECT_EQ(0, collisions(mol));
+}
+
+// ---- how the complex stands --------------------------------------------------
+
+// The layout of each component turns it whichever way it happens to, and the
+// classic and the smart layout turn the same ring differently: that is what tilted
+// ferrocene in one mode and bis(benzene)chromium in the other (#3844). A complex
+// stands by its first haptic bond instead - upright, the ring above the metal - in
+// both modes; Ketcher lays out with the smart one.
+TEST_F(IndigoCoreHapticLayoutTest, ASandwichStandsUprightInBothLayoutModes)
+{
+    for (bool smart : {false, true})
+    {
+        SCOPED_TRACE(smart ? "smart layout" : "classic layout");
+
+        Molecule mol;
+        int first_group, second_group, metal;
+        makeFerrocene(mol, first_group, second_group, metal);
+
+        makeLayoutIn(mol, smart);
+
+        const Vec2f metal_pos = pos(mol, metal);
+        const Vec2f first_centre = groupCentre(mol, first_group);
+        const Vec2f second_centre = groupCentre(mol, second_group);
+
+        EXPECT_NEAR(metal_pos.x, first_centre.x, TOLERANCE);
+        EXPECT_NEAR(metal_pos.y + 1.5f, first_centre.y, TOLERANCE) << "the ring of the first bond stands above the metal";
+        EXPECT_NEAR(metal_pos.x, second_centre.x, TOLERANCE);
+        EXPECT_NEAR(metal_pos.y - 1.5f, second_centre.y, TOLERANCE) << "and the other one below it";
+    }
+}
+
+// A bond drawn from the centre of a ring through one of its atoms reads as a bond
+// to that atom. Each ring meets its bond in the middle of an edge instead, which
+// leaves the two atoms of that edge half a bond length off the bond.
+TEST_F(IndigoCoreHapticLayoutTest, ARingMeetsItsBondWithTheMiddleOfAnEdge)
+{
+    for (bool smart : {false, true})
+    {
+        SCOPED_TRACE(smart ? "smart layout" : "classic layout");
+
+        for (int size : {3, 4, 5, 6, 7, 8})
+        {
+            SCOPED_TRACE(size);
+
+            Molecule mol;
+            const int first = addRing(mol, size);
+            const int second = addRing(mol, size);
+            const int metal = mol.addAtom(ELEM_Cr);
+
+            std::vector<int> first_atoms, second_atoms;
+            for (int i = 0; i < size; i++)
+            {
+                first_atoms.push_back(first + i);
+                second_atoms.push_back(second + i);
+            }
+            const int first_group = addGroup(mol, first_atoms);
+            const int second_group = addGroup(mol, second_atoms);
+            mol.addHapticBond(HapticBond::Endpoint::group(first_group), HapticBond::Endpoint::atom(metal));
+            mol.addHapticBond(HapticBond::Endpoint::group(second_group), HapticBond::Endpoint::atom(metal));
+
+            makeLayoutIn(mol, smart);
+
+            EXPECT_NEAR(0.5f, memberClearance(mol, first_group, metal), TOLERANCE);
+            EXPECT_NEAR(0.5f, memberClearance(mol, second_group, metal), TOLERANCE);
+        }
+    }
+}
+
+// A half-sandwich - cyclopentadienyl manganese tricarbonyl. The metal is placed
+// against the ring as a body with legs, and the bond has to reach it in the widest
+// gap between those legs (A4) exactly, not at whichever step of a grid crowds the
+// ring least: one carbonyl opposite the ring and the other two mirrored across the
+// bond, the way the stool is drawn.
+TEST_F(IndigoCoreHapticLayoutTest, APianoStoolStandsSymmetricallyOnItsLegs)
+{
+    for (bool smart : {false, true})
+    {
+        SCOPED_TRACE(smart ? "smart layout" : "classic layout");
+
+        Molecule mol;
+        const int ring = addRing(mol, 5);
+        const int metal = mol.addAtom(ELEM_Mn);
+
+        std::vector<int> carbons;
+        for (int i = 0; i < 3; i++)
+        {
+            const int carbon = mol.addAtom(ELEM_C);
+            const int oxygen = mol.addAtom(ELEM_O);
+            mol.addBond(metal, carbon, BOND_SINGLE);
+            mol.addBond(carbon, oxygen, BOND_TRIPLE);
+            carbons.push_back(carbon);
+        }
+
+        const int group = addGroup(mol, {ring, ring + 1, ring + 2, ring + 3, ring + 4});
+        mol.addHapticBond(HapticBond::Endpoint::group(group), HapticBond::Endpoint::atom(metal));
+
+        makeLayoutIn(mol, smart);
+
+        const Vec2f metal_pos = pos(mol, metal);
+        const Vec2f centre = groupCentre(mol, group);
+        EXPECT_NEAR(metal_pos.x, centre.x, TOLERANCE);
+        EXPECT_GT(centre.y, metal_pos.y) << "the ring is the seat, above the metal";
+        EXPECT_NEAR(0.5f, memberClearance(mol, group, metal), TOLERANCE);
+
+        // The legs relative to the metal, left to right.
+        std::vector<Vec2f> legs;
+        for (int carbon : carbons)
+        {
+            Vec2f leg;
+            leg.diff(pos(mol, carbon), metal_pos);
+            legs.push_back(leg);
+        }
+        std::sort(legs.begin(), legs.end(), [](const Vec2f& left, const Vec2f& right) { return left.x < right.x; });
+
+        EXPECT_NEAR(0.f, legs[1].x, TOLERANCE) << "one leg straight down";
+        EXPECT_LT(legs[1].y, 0.f);
+        EXPECT_NEAR(-legs[0].x, legs[2].x, TOLERANCE) << "the other two mirrored across the bond";
+        EXPECT_NEAR(legs[0].y, legs[2].y, TOLERANCE);
+    }
+}
+
+// A ligand that holds the metal twice, the way a cyclooctadiene does, stands on the
+// line between its two bonds, not along one of them.
+TEST_F(IndigoCoreHapticLayoutTest, AChelateStandsOnTheLineBetweenItsBonds)
+{
+    for (bool smart : {false, true})
+    {
+        SCOPED_TRACE(smart ? "smart layout" : "classic layout");
+
+        Molecule mol;
+        const int ring = addRing(mol, 8);
+        const int metal = mol.addAtom(ELEM_Ni);
+        const int first = addGroup(mol, {ring, ring + 1});
+        const int second = addGroup(mol, {ring + 4, ring + 5});
+        mol.addHapticBond(HapticBond::Endpoint::group(first), HapticBond::Endpoint::atom(metal));
+        mol.addHapticBond(HapticBond::Endpoint::group(second), HapticBond::Endpoint::atom(metal));
+
+        makeLayoutIn(mol, smart);
+
+        Vec2f between;
+        between.lineCombin2(groupCentre(mol, first), 0.5f, groupCentre(mol, second), 0.5f);
+        EXPECT_NEAR(pos(mol, metal).x, between.x, TOLERANCE);
+        EXPECT_GT(between.y, pos(mol, metal).y);
+    }
 }

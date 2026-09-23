@@ -23,6 +23,11 @@ from env_indigo import *  # noqa
 # They are printed to three decimals, not two: a stretched bond is 1.5 times a
 # stretch factor, and 1.5 * 1.25 = 1.875 lies exactly on a rounding boundary
 # of the second decimal, where float noise decides the digit.
+#
+# So is the direction of the first haptic bond, from its group end, in whole
+# degrees: the complex is stood up by it, and a complex that turns with the
+# layout mode is the defect #3844 reopened for. Every complex is laid out in both
+# modes, since Ketcher lays out with the smart one.
 
 # A little under what the layout keeps clear, so that a placement which just
 # reaches its own threshold does not fail the test on rounding.
@@ -157,11 +162,12 @@ def count(molecule):
     return inside, between
 
 
-def haptic_lengths(molecule):
-    """From the centre of a group end, which is where the bond starts (N5)."""
+def haptic_ends(molecule):
+    """Both ends of every haptic bond, the group end first: the centre of a group
+    end, which is where the bond starts (N5), or the atom itself."""
     _, position, _ = geometry(molecule)
 
-    lengths = []
+    bonds = []
     for bond in molecule.iterateHapticBonds():
         ends = []
         for endpoint in (bond.hapticBondBegin(), bond.hapticBondEnd()):
@@ -169,38 +175,54 @@ def haptic_lengths(molecule):
                 atoms = [a.index() for a in endpoint.iterateAtoms()]
             else:
                 atoms = [endpoint.index()]
-            ends.append(
-                (
-                    sum(position[a][0] for a in atoms) / len(atoms),
-                    sum(position[a][1] for a in atoms) / len(atoms),
-                )
+            centre = (
+                sum(position[a][0] for a in atoms) / len(atoms),
+                sum(position[a][1] for a in atoms) / len(atoms),
             )
-        lengths.append(
-            math.hypot(ends[0][0] - ends[1][0], ends[0][1] - ends[1][1])
-        )
+            ends.append((endpoint.isAttachmentGroup(), centre))
+        if ends[1][0] and not ends[0][0]:
+            ends.reverse()
+        bonds.append((ends[0][1], ends[1][1]))
 
-    return sorted(lengths)
+    return bonds
+
+
+def haptic_lengths(molecule):
+    return sorted(
+        math.hypot(begin[0] - end[0], begin[1] - end[1])
+        for begin, end in haptic_ends(molecule)
+    )
+
+
+def first_bond_direction(molecule):
+    begin, end = haptic_ends(molecule)[0]
+    angle = math.degrees(math.atan2(end[1] - begin[1], end[0] - begin[0]))
+    return int(round(angle % 360.0)) % 360
 
 
 print("*** Haptic bond layout: crossings, bumps and bond lengths ***")
 
 files.sort()
-for filename in files:
-    molecule = indigo.loadMoleculeFromFile(
-        os.path.join(root, filename + ".ket")
-    )
-    molecule.layout()
-    inside, between = count(molecule)
-    print(
-        "%-52s between %d/%d/%d inside %d/%d/%d lengths %s"
-        % (
-            filename,
-            between[0],
-            between[1],
-            between[2],
-            inside[0],
-            inside[1],
-            inside[2],
-            " ".join("%.3f" % value for value in haptic_lengths(molecule)),
+for mode, smart in (("classic", False), ("smart", True)):
+    print("--- %s layout ---" % mode)
+    indigo.setOption("smart-layout", smart)
+    for filename in files:
+        molecule = indigo.loadMoleculeFromFile(
+            os.path.join(root, filename + ".ket")
         )
-    )
+        molecule.layout()
+        inside, between = count(molecule)
+        print(
+            "%-52s between %d/%d/%d inside %d/%d/%d lengths %s first %d"
+            % (
+                filename,
+                between[0],
+                between[1],
+                between[2],
+                inside[0],
+                inside[1],
+                inside[2],
+                " ".join("%.3f" % value for value in haptic_lengths(molecule)),
+                first_bond_direction(molecule),
+            )
+        )

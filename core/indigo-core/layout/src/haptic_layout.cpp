@@ -78,6 +78,11 @@ static const float STRETCHES[] = {1.f, 1.25f, 1.5f, 2.f, 2.75f, 4.f};
 static const double COST_TOLERANCE = 1e-6;
 static const float STRETCH_TOLERANCE = 1e-4f;
 
+// Two directions whose cosines differ less than this are one: a ring that points an
+// atom straight along the way out has two edges equally near it, and which one is
+// taken must not be decided by the last bit of a float.
+static const float TIE_TOLERANCE = 1e-4f;
+
 // Angles and directions are converted both ways all over this file. The elementary
 // functions are called on double, as everywhere in the layout (invariants.md, A10).
 static Vec2f unitVector(float angle)
@@ -169,7 +174,65 @@ bool HapticLayout::_resolveEndpoint(const HapticBond::Endpoint& endpoint, const 
         }
     }
 
+    if (resolved.is_group)
+        resolved.ring_bonds = _ringBonds(resolved.atoms);
+
     return true;
+}
+
+std::vector<std::pair<int, int>> HapticLayout::_ringBonds(const std::vector<int>& atoms) const
+{
+    std::vector<std::pair<int, int>> bonds;
+    if (atoms.size() < 3)
+        return bonds;
+
+    const auto member = [&atoms](int atom) { return std::find(atoms.begin(), atoms.end(), atom) != atoms.end(); };
+
+    for (int atom : atoms)
+    {
+        int inside = 0;
+        const Vertex& vertex = _molecule.getVertex(atom);
+        for (int i = vertex.neiBegin(); i < vertex.neiEnd(); i = vertex.neiNext(i))
+        {
+            const int neighbour = vertex.neiVertex(i);
+            if (!member(neighbour))
+                continue;
+
+            inside++;
+            if (atom < neighbour)
+                bonds.emplace_back(atom, neighbour);
+        }
+
+        if (inside != 2)
+            return {};
+    }
+
+    // Two bonds inside for every member make one cycle or several; it is one when
+    // a walk along them from any member comes back only after meeting them all.
+    int previous = -1;
+    int current = atoms.front();
+    size_t walked = 0;
+    do
+    {
+        int next = -1;
+        for (const std::pair<int, int>& bond : bonds)
+        {
+            const int other = bond.first == current ? bond.second : (bond.second == current ? bond.first : -1);
+            if (other >= 0 && other != previous)
+            {
+                next = other;
+                break;
+            }
+        }
+        previous = current;
+        current = next;
+        walked++;
+    } while (current >= 0 && current != atoms.front() && walked < atoms.size());
+
+    if (current != atoms.front() || walked != atoms.size())
+        return {};
+
+    return bonds;
 }
 
 bool HapticLayout::_sameEndpoint(const Endpoint& left, const Endpoint& right)
@@ -220,8 +283,9 @@ bool HapticLayout::_groupAxis(const Endpoint& endpoint, const Array<Vec2f>& posi
 {
     // The major axis of the atoms, not the line from the first member to the last:
     // the members are in the order the file listed them, which for an allyl group
-    // is as likely to be the middle atom first as it is either end.
-    if (endpoint.atoms.size() < 2 || endpoint.atoms.size() > 3)
+    // is as likely to be the middle atom first as it is either end. Three atoms
+    // bonded in a triangle are a ring, and a triangle has no axis to cross.
+    if (endpoint.atoms.size() < 2 || endpoint.atoms.size() > 3 || endpoint.isRing())
         return false;
 
     std::vector<Vec2f> points;
@@ -233,7 +297,7 @@ bool HapticLayout::_groupAxis(const Endpoint& endpoint, const Array<Vec2f>& posi
     return _principalAxis(points, AttachmentGroup::centreOf(points), axis, major, minor);
 }
 
-bool HapticLayout::_acrossTheGroup(const Endpoint& from, const Vec2f& from_pos, const Array<Vec2f>& position, const Array<Placement>& placement, Vec2f& axis)
+bool HapticLayout::_acrossTheGroup(const Endpoint& from, const Vec2f& from_pos, const Array<Vec2f>& position, const Placement& frame, Vec2f& axis)
 {
     // A group of two or three atoms is a line, not a disc, and a bond leaving it
     // along that line runs over the ligand's own bonds - the overlap a chemist
@@ -245,7 +309,7 @@ bool HapticLayout::_acrossTheGroup(const Endpoint& from, const Vec2f& from_pos, 
     std::vector<Vec2f> points;
     points.reserve(from.atoms.size());
     for (int atom : from.atoms)
-        points.push_back(placement[from.component].apply(position[atom]));
+        points.push_back(frame.apply(position[atom]));
 
     // The scatter is taken about the point the bond leaves, which is this same
     // centroid, placed.
@@ -259,8 +323,8 @@ bool HapticLayout::_acrossTheGroup(const Endpoint& from, const Vec2f& from_pos, 
     return true;
 }
 
-Vec2f HapticLayout::_freeDirection(const Endpoint& from, const Vec2f& from_pos, const std::vector<Vec2f>& taken, const Array<Vec2f>& position,
-                                   const Array<Placement>& placement)
+std::vector<HapticLayout::Gap> HapticLayout::_gaps(const Endpoint& from, const Vec2f& from_pos, const std::vector<Vec2f>& taken, const Array<Vec2f>& position,
+                                                   const Placement& frame)
 {
     std::vector<float> angles;
     angles.reserve(from.neighbours.size() + taken.size());
@@ -274,42 +338,109 @@ Vec2f HapticLayout::_freeDirection(const Endpoint& from, const Vec2f& from_pos, 
 
     // A neighbour shares the component of the endpoint, hence its placement.
     for (int neighbour : from.neighbours)
-        take(placement[from.component].apply(position[neighbour]));
+        take(frame.apply(position[neighbour]));
 
     for (const Vec2f& point : taken)
         take(point);
 
-    Vec2f across;
-    const bool has_axis = _acrossTheGroup(from, from_pos, position, placement, across);
-
+    std::vector<Gap> gaps;
     if (angles.empty())
-        return has_axis ? across : DEFAULT_DIRECTION;
+        return gaps;
 
     std::sort(angles.begin(), angles.end());
 
-    // Widest gap, wrapping around the circle. One taken direction means a gap of
-    // the whole circle, whose bisector is its opposite side.
-    float gap_start = angles.back();
-    float widest = _2FLOAT(2. * M_PI) - (angles.back() - angles.front());
-
+    // The gap across the wrap of the circle first. One taken direction means a gap
+    // of the whole circle, whose bisector is its opposite side.
+    gaps.push_back({angles.back(), _2FLOAT(2. * M_PI) - (angles.back() - angles.front())});
     for (size_t i = 1; i < angles.size(); i++)
-    {
-        const float gap = angles[i] - angles[i - 1];
-        if (gap > widest)
-        {
-            widest = gap;
-            gap_start = angles[i - 1];
-        }
-    }
+        gaps.push_back({angles[i - 1], angles[i] - angles[i - 1]});
 
-    const float bisector = gap_start + widest / 2.f;
-    const Vec2f free_direction(unitVector(bisector));
+    return gaps;
+}
+
+Vec2f HapticLayout::_freeDirection(const Endpoint& from, const Vec2f& from_pos, const std::vector<Vec2f>& taken, const Array<Vec2f>& position,
+                                   const Placement& frame)
+{
+    const std::vector<Gap> gaps = _gaps(from, from_pos, taken, position, frame);
+
+    Vec2f across;
+    const bool has_axis = _acrossTheGroup(from, from_pos, position, frame, across);
+
+    if (gaps.empty())
+        return has_axis ? across : DEFAULT_DIRECTION;
+
+    const Gap* widest = &gaps.front();
+    for (const Gap& gap : gaps)
+        if (gap.width > widest->width)
+            widest = &gap;
+
+    const Vec2f free_direction(unitVector(widest->bisector()));
 
     if (!has_axis)
         return free_direction;
 
     // Of the two ways across the group, the one pointing away from what surrounds it.
     return Vec2f::dot(across, free_direction) >= 0.f ? across : Vec2f(-across.x, -across.y);
+}
+
+std::vector<Vec2f> HapticLayout::_exits(const Endpoint& end, const Vec2f& end_pos, const std::vector<Vec2f>& taken, const Array<Vec2f>& position,
+                                        const Placement& frame)
+{
+    if (end.isRing())
+        return _edgeDirections(end, end_pos, position, frame);
+
+    Vec2f across;
+    if (_acrossTheGroup(end, end_pos, position, frame, across))
+        return {across, Vec2f(-across.x, -across.y)};
+
+    std::vector<Vec2f> exits;
+    for (const Gap& gap : _gaps(end, end_pos, taken, position, frame))
+        exits.push_back(unitVector(gap.bisector()));
+    return exits;
+}
+
+std::vector<Vec2f> HapticLayout::_edgeDirections(const Endpoint& ring, const Vec2f& centre, const Array<Vec2f>& position, const Placement& frame)
+{
+    std::vector<Vec2f> directions;
+    directions.reserve(ring.ring_bonds.size());
+
+    for (const std::pair<int, int>& bond : ring.ring_bonds)
+    {
+        Vec2f through;
+        through.lineCombin2(frame.apply(position[bond.first]), 0.5f, frame.apply(position[bond.second]), 0.5f);
+        through.sub(centre);
+        if (through.normalize())
+            directions.push_back(through);
+    }
+
+    return directions;
+}
+
+Vec2f HapticLayout::_throughAnEdge(const Endpoint& ring, const Vec2f& centre, const Array<Vec2f>& position, const Placement& frame, const Vec2f& direction)
+{
+    Vec2f wanted(direction);
+    wanted.normalize();
+
+    Vec2f best(wanted);
+    float best_cosine = 0.f;
+    bool found = false;
+
+    for (const Vec2f& through : _edgeDirections(ring, centre, position, frame))
+    {
+        // Two edges equally near are told apart by side rather than by the last bit
+        // of a float: the one clockwise of the direction is taken.
+        const float cosine = Vec2f::dot(through, wanted);
+        const bool nearer = cosine > best_cosine + TIE_TOLERANCE;
+        const bool as_near = fabs(cosine - best_cosine) <= TIE_TOLERANCE;
+        if (!found || nearer || (as_near && Vec2f::cross(wanted, through) < 0.f))
+        {
+            found = true;
+            best = through;
+            best_cosine = cosine;
+        }
+    }
+
+    return best;
 }
 
 float HapticLayout::_lengthOf(const Link& link) const
@@ -523,7 +654,7 @@ HapticLayout::Candidate HapticLayout::_candidateAt(const Held& held, float direc
 }
 
 void HapticLayout::_aroundOnePartner(int component, const Link& link, const std::vector<Held>& held, const Array<Vec2f>& position, float preferred,
-                                     int rotations, std::vector<Candidate>& out) const
+                                     const std::vector<Vec2f>& exits, int rotations, std::vector<Candidate>& out) const
 {
     const auto target_at = [&held](float direction) {
         Vec2f target(held[0].anchor);
@@ -531,13 +662,50 @@ void HapticLayout::_aroundOnePartner(int component, const Link& link, const std:
         return target;
     };
 
-    for (int r = 0; r < rotations; r++)
-    {
-        const float rotation = _2FLOAT(2. * M_PI) * r / rotations;
-        for (int d = 0; d < DIRECTIONS; d++)
+    const Endpoint& to = link.side(component);
+
+    // The rules of #3233 say where the bond may run, and what the drawing costs only
+    // chooses among that: the bond leaves the partner by one of `exits` and meets
+    // this component by one of its own, which fixes how the component is turned. An
+    // end with nothing around it is free, and the grid stands in for its choices.
+    const std::vector<Vec2f> own_exits = rotations > 1 ? _exits(to, held[0].source, {}, position, Placement()) : std::vector<Vec2f>();
+
+    const auto turns_at = [&](float direction) {
+        if (own_exits.empty())
         {
-            const float direction = _2FLOAT(2. * M_PI) * d / DIRECTIONS;
-            out.push_back(_candidateAt(held[0], direction, rotation, target_at(direction)));
+            for (int r = 0; r < rotations; r++)
+                out.push_back(_candidateAt(held[0], direction, _2FLOAT(2. * M_PI) * r / rotations, target_at(direction)));
+            return;
+        }
+
+        Vec2f back(unitVector(direction));
+        back.negate();
+
+        Vec2f origin;
+        for (const Vec2f& own : own_exits)
+            out.push_back(_candidateAt(held[0], direction, origin.calc_angle(own, back), target_at(direction)));
+    };
+
+    if (!exits.empty())
+    {
+        for (const Vec2f& exit : exits)
+            turns_at(angleOf(exit));
+    }
+    else if (!own_exits.empty())
+    {
+        for (int d = 0; d < DIRECTIONS; d++)
+            turns_at(_2FLOAT(2. * M_PI) * d / DIRECTIONS);
+    }
+    else
+    {
+        for (int r = 0; r < rotations; r++)
+        {
+            const float rotation = _2FLOAT(2. * M_PI) * r / rotations;
+            for (int d = 0; d < DIRECTIONS; d++)
+            {
+                const float direction = _2FLOAT(2. * M_PI) * d / DIRECTIONS;
+                out.push_back(_candidateAt(held[0], direction, rotation, target_at(direction)));
+            }
         }
     }
 
@@ -545,7 +713,11 @@ void HapticLayout::_aroundOnePartner(int component, const Link& link, const std:
     // nearest step of the grid: the widest gap gives 126 degrees on a
     // cyclopentadienyl ring and the group axis a right angle, and neither number is
     // reachable by a grid that knows nothing about them.
-    const Endpoint& to = link.side(component);
+    if (!own_exits.empty())
+    {
+        turns_at(preferred);
+        return;
+    }
 
     float rule_rotation = 0.f;
     Vec2f axis;
@@ -667,7 +839,7 @@ void HapticLayout::_byFitting(int component, const std::vector<const Link*>& lin
 }
 
 void HapticLayout::_candidatesAt(int component, const std::vector<const Link*>& links, const Array<Vec2f>& position, const Array<Placement>& placement,
-                                 float preferred, float stretch, std::vector<Candidate>& out) const
+                                 float preferred, const std::vector<Vec2f>& exits, float stretch, std::vector<Candidate>& out) const
 {
     out.clear();
     if (links.empty())
@@ -681,7 +853,7 @@ void HapticLayout::_candidatesAt(int component, const std::vector<const Link*>& 
 
     if (links.size() == 1)
     {
-        _aroundOnePartner(component, *links.front(), held, position, preferred, rotations, out);
+        _aroundOnePartner(component, *links.front(), held, position, preferred, exits, rotations, out);
         return;
     }
 
@@ -706,11 +878,11 @@ void HapticLayout::_candidatesAt(int component, const std::vector<const Link*>& 
         out.swap(fitting);
 }
 
-float HapticLayout::_preferredDirection(int component, const Endpoint& from, const Vec2f& from_pos, const Array<Vec2f>& position, const Array<int>& placed,
-                                        const Array<Placement>& placement) const
+std::vector<Vec2f> HapticLayout::_takenAround(int component, const Endpoint& from, const Array<Vec2f>& position, const Array<int>& placed,
+                                              const Array<Placement>& placement) const
 {
     // Haptic partners already placed take up room around the endpoint too, so the
-    // widest gap is measured against them as well as against the bonds.
+    // gaps are measured against them as well as against the bonds.
     std::vector<Vec2f> taken;
     for (const Link& other : _links)
     {
@@ -725,7 +897,18 @@ float HapticLayout::_preferredDirection(int component, const Endpoint& from, con
         taken.push_back(_placedEndpointPos(partner, position, placement));
     }
 
-    return angleOf(_freeDirection(from, from_pos, taken, position, placement));
+    return taken;
+}
+
+float HapticLayout::_preferredDirection(const Endpoint& from, const Vec2f& from_pos, const std::vector<Vec2f>& taken, const Array<Vec2f>& position,
+                                        const Array<Placement>& placement) const
+{
+    const Placement& frame = placement[from.component];
+    const Vec2f free = _freeDirection(from, from_pos, taken, position, frame);
+
+    // A ring is left through the middle of one of its bonds: from its centre
+    // through a member atom, the bond would be read as a bond to that atom.
+    return angleOf(from.isRing() ? _throughAnEdge(from, from_pos, position, frame, free) : free);
 }
 
 double HapticLayout::_place(int component, int cluster, const std::vector<const Link*>& links, const Array<Vec2f>& position, const Array<int>& placed,
@@ -739,7 +922,9 @@ double HapticLayout::_place(int component, int cluster, const std::vector<const 
     const Endpoint& to = first.side(component);
 
     const Vec2f from_pos = _placedEndpointPos(from, position, placement);
-    const float preferred_angle = _preferredDirection(component, from, from_pos, position, placed, placement);
+    const std::vector<Vec2f> taken = _takenAround(component, from, position, placed, placement);
+    const float preferred_angle = _preferredDirection(from, from_pos, taken, position, placement);
+    const std::vector<Vec2f> exits = _exits(from, from_pos, taken, position, placement[from.component]);
 
     // A two- or three-atom end is a line and the bond has to cross it rather than
     // run along it - a preference here, not a construction, because a ligand held
@@ -758,7 +943,7 @@ double HapticLayout::_place(int component, int cluster, const std::vector<const 
     std::vector<Candidate> candidates;
     for (float stretch : STRETCHES)
     {
-        _candidatesAt(component, links, position, placement, preferred_angle, stretch, candidates);
+        _candidatesAt(component, links, position, placement, preferred_angle, exits, stretch, candidates);
         for (Candidate& candidate : candidates)
             candidate.stretch = stretch;
 
@@ -1015,7 +1200,59 @@ int HapticLayout::plan(int n_components, const Array<int>& component_of, const A
     if (overlapping > 0.)
         _sweep(order, position, placed, placement);
 
+    // The layout of each component turned it whichever way it happened to - the
+    // classic and the smart layout draw the same ring differently - so a cluster
+    // is stood up by its first haptic bond instead.
+    std::vector<bool> oriented(n_clusters, false);
+    for (const Link& link : _links)
+    {
+        const int cluster = placement[link.begin.component].cluster;
+        if (oriented[cluster])
+            continue;
+
+        oriented[cluster] = true;
+        _orient(link, position, placement);
+    }
+
     return n_clusters;
+}
+
+void HapticLayout::_orient(const Link& first, const Array<Vec2f>& position, Array<Placement>& placement) const
+{
+    // The ligand stands above the metal, the way a half-sandwich is drawn. Between
+    // two atoms, or two groups, the bond is simply stood upright.
+    const Endpoint& ligand_end = first.end.is_group && !first.begin.is_group ? first.end : first.begin;
+    const int ligand = ligand_end.component;
+    const int partner = first.partner(ligand).component;
+
+    // Every bond between the two counts: a ligand holding the metal twice stands
+    // on the line between its bonds, not along one of them.
+    Vec2f axis;
+    for (const Link& link : _links)
+    {
+        if (link.side(ligand).component != ligand || link.partner(ligand).component != partner)
+            continue;
+
+        Vec2f step;
+        step.diff(_placedEndpointPos(link.partner(ligand), position, placement), _placedEndpointPos(link.side(ligand), position, placement));
+        axis.add(step);
+    }
+
+    if (axis.lengthSqr() < EPSILON * EPSILON)
+        return;
+
+    Vec2f origin;
+    const float turn = origin.calc_angle(axis, DEFAULT_DIRECTION);
+    const int cluster = placement[ligand].cluster;
+
+    for (int component = 0; component < placement.size(); component++)
+    {
+        if (placement[component].cluster != cluster)
+            continue;
+
+        placement[component].rotation += turn;
+        placement[component].shift.rotate(turn);
+    }
 }
 
 void HapticLayout::_sweep(const std::vector<int>& order, const Array<Vec2f>& position, const Array<int>& placed, Array<Placement>& placement) const
