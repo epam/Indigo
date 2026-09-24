@@ -1,0 +1,493 @@
+{
+    "ket_version": "2.0.0",
+    "root": {
+        "nodes": [
+            {
+                "$ref": "mol0"
+            },
+            {
+                "type": "simpleObject",
+                "data": {
+                    "mode": "rectangle",
+                    "pos": [
+                        {
+                            "x": 0.0,
+                            "y": -3.0,
+                            "z": 0
+                        },
+                        {
+                            "x": 4.5,
+                            "y": -7.5,
+                            "z": 0
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "text",
+                "boundingBox": {
+                    "x": 0.0,
+                    "y": -3.0,
+                    "width": 4.5,
+                    "height": 4.5
+                },
+                "bold": true,
+                "italic": true,
+                "paragraphs": [
+                    {
+                        "indent": 0.25,
+                        "parts": [
+                            {
+                                "text": "Sphinx of ",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "black",
+                                "bold": false,
+                                "italic": false,
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": " quartz, ",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "judge",
+                                "bold": false,
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 27
+                                }
+                            },
+                            {
+                                "text": " ",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 27
+                                }
+                            },
+                            {
+                                "text": "my",
+                                "bold": false,
+                                "italic": false,
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 27
+                                }
+                            },
+                            {
+                                "text": " vow.\n",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "C",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 27
+                                }
+                            },
+                            {
+                                "text": "6",
+                                "subscript": true,
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "H",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18,
+                                    "color": "#ff"
+                                }
+                            },
+                            {
+                                "text": "12",
+                                "bold": false,
+                                "italic": false,
+                                "subscript": true,
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "O",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 21,
+                                    "color": "#ff0000"
+                                }
+                            },
+                            {
+                                "text": "6\n",
+                                "bold": false,
+                                "subscript": false,
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "X",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "n",
+                                "italic": false,
+                                "superscript": false,
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18,
+                                    "color": "#ff00"
+                                }
+                            },
+                            {
+                                "text": "+Y",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "n",
+                                "bold": false,
+                                "superscript": false,
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18,
+                                    "color": "#ff"
+                                }
+                            },
+                            {
+                                "text": "=Z",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "n",
+                                "bold": false,
+                                "italic": false,
+                                "superscript": true,
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18,
+                                    "color": "#ff0000"
+                                }
+                            }
+                        ],
+                        "lineStarts": [
+                            24,
+                            38,
+                            46,
+                            54
+                        ]
+                    },
+                    {
+                        "indent": 0.5,
+                        "parts": [
+                            {
+                                "text": "Sphinx of ",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "black",
+                                "bold": false,
+                                "italic": false,
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": " quartz, ",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "judge",
+                                "bold": false,
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 27
+                                }
+                            },
+                            {
+                                "text": " ",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 27
+                                }
+                            },
+                            {
+                                "text": "my",
+                                "bold": false,
+                                "italic": false,
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 27
+                                }
+                            },
+                            {
+                                "text": " vow.\n",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "C",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 27
+                                }
+                            },
+                            {
+                                "text": "6",
+                                "subscript": true,
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "H",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18,
+                                    "color": "#ff"
+                                }
+                            },
+                            {
+                                "text": "12",
+                                "bold": false,
+                                "italic": false,
+                                "subscript": true,
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "O",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 21,
+                                    "color": "#ff0000"
+                                }
+                            },
+                            {
+                                "text": "6\n",
+                                "bold": false,
+                                "subscript": true,
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "X",
+                                "subscript": false,
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "n",
+                                "italic": false,
+                                "superscript": true,
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18,
+                                    "color": "#ff00"
+                                }
+                            },
+                            {
+                                "text": "+Y",
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "n",
+                                "bold": false,
+                                "superscript": false,
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18,
+                                    "color": "#ff"
+                                }
+                            },
+                            {
+                                "text": "=Z",
+                                "superscript": false,
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18
+                                }
+                            },
+                            {
+                                "text": "n",
+                                "bold": false,
+                                "italic": false,
+                                "superscript": true,
+                                "font": {
+                                    "family": "Times New Roman",
+                                    "size": 18,
+                                    "color": "#ff0000"
+                                }
+                            }
+                        ],
+                        "lineStarts": [
+                            24,
+                            38,
+                            46,
+                            54
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "text",
+                "boundingBox": {
+                    "x": -1.5,
+                    "y": -2.5,
+                    "width": 2.815000057220459,
+                    "height": 0.4649999141693115
+                },
+                "italic": true,
+                "paragraphs": [
+                    {
+                        "parts": [
+                            {
+                                "text": "Paragraph indents, switching off common styles"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -1.0,
+                    0.0,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -1.5,
+                    -0.8660253882408142,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -1.0,
+                    -1.732050895690918,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    1.1920928955078126e-7,
+                    -1.7320510149002076,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.5000003576278687,
+                    -0.8660255670547485,
+                    0.0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 2,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    2
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    2,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    4
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    4,
+                    5
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    5,
+                    0
+                ]
+            }
+        ]
+    }
+}
