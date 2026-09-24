@@ -193,7 +193,7 @@ void RenderParamInterface::render(RenderParams& params)
     if (params.rmode == RENDER_NONE)
         throw Error("No object to render specified");
 
-    RenderContext rc(params.rOpt, params.relativeThickness, params.bondLineWidthFactor);
+    RenderContext rc(params.rOpt, params.cnvOpt, params.relativeThickness, params.bondLineWidthFactor);
 
     int bondLength_px = (int)(params.rOpt.bond_length_px > EPSILON ? params.rOpt.bond_length_px : LayoutOptions::DEFAULT_BOND_LENGTH_PX);
 

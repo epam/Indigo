@@ -413,6 +413,7 @@ void CanvasOptions::clear()
     titleOffset = 0;
     gridColumnNumber = 1;
     comment.clear();
+    fontFamily.clear();
     titleProp.clear();
     titleProp.appendString("^NAME", true);
     outputSheetWidth = -1;
