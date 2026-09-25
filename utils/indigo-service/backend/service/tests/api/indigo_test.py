@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import base64
 import json
 import os
 import unittest
@@ -1483,6 +1484,43 @@ M  END""",
         # data = {"struct": "c1ccccc1", "output_format": "application/pdf"}
         # result = requests.get(self.url_prefix + "/render", params=data)
         # self.assertEqual(200, result.status_code)
+
+    def test_render_with_render_fonts_option(self):
+        headers, data = self.get_headers(
+            {
+                "struct": "C",
+                "output_format": "image/svg+xml",
+                "options": {"render-fonts": "[]"},
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/render", headers=headers, data=data
+        )
+        self.assertEqual(200, result.status_code)
+        self.assertEqual("image/svg+xml", result.headers["Content-Type"])
+        self.assertIn(b"<svg", result.content)
+
+    def test_render_with_custom_font(self):
+        font_path = os.path.join(
+            joinPathPy("fonts/", __file__), "Almendra-Regular.ttf"
+        )
+        with open(font_path, "rb") as font_file:
+            font_data = base64.b64encode(font_file.read()).decode("ascii")
+        fonts = json.dumps([{"name": "Almendra-Regular", "data": font_data}])
+
+        headers, data = self.get_headers(
+            {
+                "struct": "C",
+                "output_format": "image/svg+xml",
+                "options": {"render-fonts": fonts},
+            }
+        )
+        result = requests.post(
+            self.url_prefix + "/render", headers=headers, data=data
+        )
+        self.assertEqual(200, result.status_code)
+        self.assertEqual("image/svg+xml", result.headers["Content-Type"])
+        self.assertIn(b"<svg", result.content)
 
     def test_renderhighlight(self):
         params = {"struct": "C1=CC=CC=C1", "query": "C"}

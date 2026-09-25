@@ -12,6 +12,7 @@ from rendering import checkImageSimilarity  # noqa
 
 indigo = Indigo()
 renderer = IndigoRenderer(indigo)
+indigo.setOption("render-fonts", "[]")
 
 if not os.path.exists(joinPathPy("out", __file__)):
     try:
@@ -70,6 +71,7 @@ print("Done")
 
 print("issue 2457 wrong chiral label position")
 indigo.resetOptions()
+indigo.setOption("render-fonts", "[]")
 indigo.setOption("ignore-stereochemistry-errors", "true")
 indigo.setOption("render-background-color", "255, 255, 255")
 indigo.setOption("render-output-format", "png")
@@ -82,6 +84,7 @@ print(checkImageSimilarity(png_fname))
 
 print("issue 2444 wrong arrow and plus width")
 indigo.resetOptions()
+indigo.setOption("render-fonts", "[]")
 indigo.setOption("ignore-stereochemistry-errors", "true")
 indigo.setOption("render-background-color", "255, 255, 255")
 indigo.setOption("render-output-format", "png")
@@ -95,6 +98,7 @@ print(checkImageSimilarity(png_fname))
 
 print("issue 2512 two short equilibrium half arrows")
 indigo.resetOptions()
+indigo.setOption("render-fonts", "[]")
 indigo.setOption("ignore-stereochemistry-errors", "true")
 indigo.setOption("render-background-color", "255, 255, 255")
 indigo.setOption("render-output-format", "png")
@@ -107,6 +111,7 @@ print(checkImageSimilarity(png_fname))
 
 print("issue 2513 elliptical-arc-arrow render error")
 indigo.resetOptions()
+indigo.setOption("render-fonts", "[]")
 indigo.setOption("ignore-stereochemistry-errors", "true")
 indigo.setOption("render-background-color", "255, 255, 255")
 indigo.setOption("render-output-format", "png")
@@ -119,6 +124,7 @@ print(checkImageSimilarity(png_fname))
 
 print("issue 2741 missing stereochemistry")
 indigo.resetOptions()
+indigo.setOption("render-fonts", "[]")
 indigo.setOption("render-output-format", "png")
 fname = "missing_stereochemistry_2741"
 png_fname = fname + ".png"
@@ -129,6 +135,7 @@ print(checkImageSimilarity(png_fname))
 
 print("issue 2747 incorrect substituent position")
 indigo.resetOptions()
+indigo.setOption("render-fonts", "[]")
 indigo.setOption("render-output-format", "png")
 fname = "incorrect_substituent_position_2747"
 png_fname = fname + ".png"
@@ -139,6 +146,7 @@ print(checkImageSimilarity(png_fname))
 
 print("issue 2810 unnecessary rearrangment")
 indigo.resetOptions()
+indigo.setOption("render-fonts", "[]")
 indigo.setOption("render-output-format", "png")
 fname = "unnecessary_rearrangment_2810"
 png_fname = fname + ".png"
@@ -149,6 +157,7 @@ print(checkImageSimilarity(png_fname))
 
 print("issue 2801 reactions with brackets")
 indigo.resetOptions()
+indigo.setOption("render-fonts", "[]")
 indigo.setOption("render-output-format", "png")
 fname = "reactions_with_brackets_2801"
 png_fname = fname + ".png"
@@ -159,6 +168,7 @@ print(checkImageSimilarity(png_fname))
 
 print("issue 3803 enhanced stereo labels lost on sgroups")
 indigo.resetOptions()
+indigo.setOption("render-fonts", "[]")
 indigo.setOption("render-output-format", "png")
 fname = "3803_sgroup_enhanced_labels"
 png_fname = fname + ".png"

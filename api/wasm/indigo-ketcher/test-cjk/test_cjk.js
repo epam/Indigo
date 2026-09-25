@@ -13,15 +13,15 @@ function parseHrtimeToSeconds(hrtime) {
     return (hrtime[0] + (hrtime[1] / 1e9)).toFixed(3);
 }
 
-function run() {
+async function run() {
     let succeeded = 0;
     let failed = 0;
     console.log("Starting tests...\n")
     var startTestsTime = process.hrtime();
-    tests.forEach(t => {
+    for (const t of tests) {
         try {
             var startTestTime = process.hrtime();
-            t.fn()
+            await t.fn()
             const elapsedSeconds = parseHrtimeToSeconds(process.hrtime(startTestTime));
             console.log(`✅ ${t.group}.${t.name} [${elapsedSeconds}s]`);
             succeeded++;
@@ -30,7 +30,7 @@ function run() {
             console.log(e.stack)
             failed++
         }
-    })
+    }
     const elapsedSeconds = parseHrtimeToSeconds(process.hrtime(startTestsTime));
     const total = succeeded + failed;
     console.log(`\n${total} tests executed in ${elapsedSeconds} seconds. ${succeeded} succeeded, ${failed} failed.`)
@@ -69,6 +69,31 @@ indigoModuleFn().then(indigo => {
             const {equal} = await looksSame('CJK_characters_2_styles_2_sizes_ref.png', 'CJK_characters_2_styles_2_sizes_out.png');
             assert(equal);
             options.delete();
+        });
+
+        test("render", "custom_font_cjk_fallback", async () => {
+            // A Latin-only custom font covers none of the CJK text, so
+            // rendering must fall back to the built-in CJK renderer and
+            // match a fresh no-fonts render exactly.
+            var fs = require('fs');
+            const ket_data = fs.readFileSync("CJK_characters_test.ket");
+
+            let defaultOptions = new indigo.MapStringString();
+            defaultOptions.set("render-output-format", "png");
+            defaultOptions.set("render-background-color", "1,1,1");
+            const defaultPng = Buffer.from(indigo.render(ket_data, defaultOptions), "base64");
+            defaultOptions.delete();
+
+            let customOptions = new indigo.MapStringString();
+            customOptions.set("render-output-format", "png");
+            customOptions.set("render-background-color", "1,1,1");
+            const font_data = fs.readFileSync("fonts/Almendra-Regular.ttf").toString("base64");
+            const fonts = JSON.stringify([{name: "Almendra-Regular", data: font_data}]);
+            customOptions.set("render-fonts", fonts);
+            const customPng = Buffer.from(indigo.render(ket_data, customOptions), "base64");
+            customOptions.delete();
+
+            assert(defaultPng.equals(customPng));
         });
 
         test("render", "Characters_4_sets_4_styles", async () => {

@@ -14,9 +14,10 @@ endif()
 if (BUILD_INDIGO OR BUILD_INDIGO_UTILS)
     if (BUILD_STANDALONE)
         add_subdirectory(pixman)
-        if (EMSCRIPTEN)
-            add_subdirectory(freetype)
-        endif()
+        # Force FreeType onto its bundled zlib: find_package(ZLIB) could otherwise pick up a
+        # system zlib mismatched with the vendored one libpng links, corrupting the heap.
+        option(FT_DISABLE_ZLIB "Disable use of system zlib and use internal zlib library instead." ON)
+        add_subdirectory(freetype)
         add_subdirectory(cairo)
     endif()
 endif ()

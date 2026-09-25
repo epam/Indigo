@@ -1,0 +1,50 @@
+{
+    "ket_version": "2.0.0",
+    "root": {
+        "nodes": [
+            {
+                "type": "simpleObject",
+                "data": {
+                    "mode": "rectangle",
+                    "pos": [
+                        {
+                            "x": 0,
+                            "y": -0.3,
+                            "z": 0
+                        },
+                        {
+                            "x": 5.7,
+                            "y": -1.0,
+                            "z": 0
+                        }
+                    ]
+                }
+            },
+            {
+                "type": "text",
+                "boundingBox": {
+                    "x": 0.2,
+                    "y": -0.5,
+                    "width": 5.5,
+                    "height": 0.6
+                },
+                "paragraphs": [
+                    {
+                        "parts": [
+                            {
+                                "text": "Hello I am Bounding BOX Text",
+                                "font": {
+                                    "size": 20
+                                }
+                            }
+                        ],
+                        "indent": 0
+                    }
+                ],
+                "indent": 0
+            }
+        ],
+        "connections": [],
+        "templates": []
+    }
+}

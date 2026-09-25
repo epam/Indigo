@@ -13,15 +13,15 @@ function parseHrtimeToSeconds(hrtime) {
     return (hrtime[0] + (hrtime[1] / 1e9)).toFixed(3);
 }
 
-function run() {
+async function run() {
     let succeeded = 0;
     let failed = 0;
     console.log("Starting tests...\n")
     var startTestsTime = process.hrtime();
-    tests.forEach(t => {
+    for (const t of tests) {
         try {
             var startTestTime = process.hrtime();
-            t.fn()
+            await t.fn()
             const elapsedSeconds = parseHrtimeToSeconds(process.hrtime(startTestTime));
             console.log(`✅ ${t.group}.${t.name} [${elapsedSeconds}s]`);
             succeeded++;
@@ -30,7 +30,7 @@ function run() {
             console.log(e.stack)
             failed++
         }
-    })
+    }
     const elapsedSeconds = parseHrtimeToSeconds(process.hrtime(startTestsTime));
     const total = succeeded + failed;
     console.log(`\n${total} tests executed in ${elapsedSeconds} seconds. ${succeeded} succeeded, ${failed} failed.`)
@@ -853,6 +853,22 @@ M  END
             const png = Buffer.from(indigo.render(ket_data, options), "base64");
             fs.writeFileSync("ketcher_text_panel_bold_italic_out.png", png);
             const { equal } = await looksSame('ketcher_text_panel_bold_italic_ref.png', 'ketcher_text_panel_bold_italic_out.png');
+            assert(equal);
+            options.delete();
+        });
+
+        test("render", "custom_font", async () => {
+            let options = new indigo.MapStringString();
+            options.set("render-output-format", "png");
+            options.set("render-background-color", "1,1,1");
+            var fs = require('fs');
+            const font_data = fs.readFileSync("fonts/Almendra-Regular.ttf").toString("base64");
+            const fonts = JSON.stringify([{ name: "Almendra-Regular", data: font_data }]);
+            options.set("render-fonts", fonts);
+            const ket_data = fs.readFileSync("ketcher_custom_font_test.ket");
+            const png = Buffer.from(indigo.render(ket_data, options), "base64");
+            fs.writeFileSync("custom_font_out.png", png);
+            const { equal } = await looksSame('custom_font_ref.png', 'custom_font_out.png');
             assert(equal);
             options.delete();
         });

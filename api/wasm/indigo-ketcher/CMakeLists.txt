@@ -102,7 +102,7 @@ add_custom_target(${PROJECT_NAME}-norender
         DEPENDS ${PROJECT_NAME}-object-norender
         )
 
-if (NOT RENDER_ENABLE_CJK)
+if (NOT RENDER_ENABLE_NOTO_SANS_CJK)
     add_custom_target(${PROJECT_NAME}-package
             COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/package.json ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/
             COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/README.md ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/

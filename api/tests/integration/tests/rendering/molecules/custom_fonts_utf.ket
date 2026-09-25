@@ -1,0 +1,364 @@
+{
+    "ket_version": "2.0.0",
+    "root": {
+        "nodes": [
+            {
+                "$ref": "mol0"
+            },
+            {
+                "type": "text",
+                "boundingBox": {
+                    "x": 22.631578947368418,
+                    "y": -13.789473684210526,
+                    "width": 6.222412109375,
+                    "height": 3.8895833333333325
+                },
+                "paragraphs": [
+                    {
+                        "parts": [
+                            {
+                                "text": "Caffeine",
+                                "bold": true
+                            },
+                            {
+                                "text": " "
+                            },
+                            {
+                                "text": "sample",
+                                "italic": true
+                            },
+                            {
+                                "text": " "
+                            },
+                            {
+                                "text": "12345",
+                                "bold": true,
+                                "italic": true
+                            }
+                        ],
+                        "indent": 0
+                    },
+                    {
+                        "parts": [],
+                        "indent": 0
+                    },
+                    {
+                        "parts": [
+                            {
+                                "text": "Test "
+                            },
+                            {
+                                "text": "TEXT Superscript",
+                                "superscript": true
+                            }
+                        ],
+                        "indent": 0
+                    },
+                    {
+                        "parts": [
+                            {
+                                "text": "Test "
+                            },
+                            {
+                                "text": "TEXT Subscript",
+                                "subscript": true
+                            }
+                        ],
+                        "indent": 0
+                    },
+                    {
+                        "parts": [],
+                        "indent": 0
+                    },
+                    {
+                        "parts": [
+                            {
+                                "text": "Test TEXT Regular 16",
+                                "font": {
+                                    "size": 16
+                                }
+                            }
+                        ],
+                        "indent": 0
+                    },
+                    {
+                        "parts": [
+                            {
+                                "text": "Test TEXT Bold 18",
+                                "bold": true,
+                                "font": {
+                                    "size": 18
+                                }
+                            }
+                        ],
+                        "indent": 0
+                    },
+                    {
+                        "parts": [
+                            {
+                                "text": "Test TEXT Italic 20",
+                                "italic": true,
+                                "font": {
+                                    "size": 20
+                                }
+                            }
+                        ],
+                        "indent": 0
+                    },
+                    {
+                        "parts": [
+                            {
+                                "text": "Test TEXT Bold Italic 22",
+                                "bold": true,
+                                "italic": true,
+                                "font": {
+                                    "size": 22
+                                }
+                            }
+                        ],
+                        "indent": 0
+                    },
+                    {
+                        "parts": [],
+                        "indent": 0
+                    },
+                    {
+                        "parts": [
+                            {
+                                "text": "Fallback: Тест"
+                            }
+                        ],
+                        "indent": 0
+                    }
+                ],
+                "indent": 0
+            }
+        ],
+        "connections": [],
+        "templates": []
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    22.78169921581072,
+                    -7.952159955711085,
+                    0
+                ]
+            },
+            {
+                "label": "N",
+                "location": [
+                    22.281698985204557,
+                    -8.818185151606471,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    21.28169894122474,
+                    -8.818185151606471,
+                    0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    20.78169894903715,
+                    -7.95215971729251,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    20.78169877022322,
+                    -9.68421070512972,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    21.28169912003867,
+                    -10.550235901025108,
+                    0
+                ]
+            },
+            {
+                "label": "N",
+                "location": [
+                    20.612568685967045,
+                    -11.293380878427268,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    19.69902297251124,
+                    -10.886644630090373,
+                    0
+                ]
+            },
+            {
+                "label": "N",
+                "location": [
+                    19.80355127879274,
+                    -9.89212261050769,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    19.060406301390575,
+                    -9.22299211683142,
+                    0
+                ]
+            },
+            {
+                "label": "N",
+                "location": [
+                    22.281698985204557,
+                    -10.550235901025108,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    22.781698619764278,
+                    -11.416261335339069,
+                    0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    22.781698977392143,
+                    -9.68421070512972,
+                    0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    23.781698961767315,
+                    -9.684210824339008,
+                    0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    1,
+                    2
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    2,
+                    3
+                ]
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    2,
+                    4
+                ]
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    4,
+                    5
+                ]
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    5,
+                    6
+                ]
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    6,
+                    7
+                ]
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    7,
+                    8
+                ]
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    8,
+                    4
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    8,
+                    9
+                ]
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    5,
+                    10
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    10,
+                    11
+                ]
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    10,
+                    12
+                ]
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    12,
+                    1
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    12,
+                    13
+                ]
+            }
+        ]
+    }
+}

@@ -21,6 +21,7 @@ if not os.path.exists(out_dir):
         if e.errno != errno.EEXIST:
             raise
 
+indigo.setOption("render-fonts", "[]")
 indigo.setOption("render-background-color", "255, 255, 255")
 indigo.setOption("render-coloring", "true")
 idx = 1

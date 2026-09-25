@@ -13,6 +13,7 @@ from rendering import *
 
 indigo = Indigo()
 renderer = IndigoRenderer(indigo)
+indigo.setOption("render-fonts", "[]")
 
 if not os.path.exists(joinPathPy("out/cdxml", __file__)):
     try:
@@ -75,6 +76,7 @@ print(len(buf) > 100)
 
 print("issue 1686 extra plus")
 indigo.resetOptions()
+indigo.setOption("render-fonts", "[]")
 indigo.setOption("render-output-format", "png")
 fname = "extra_plus_1686"
 png_fname = fname + ".png"
@@ -85,6 +87,7 @@ print(checkImageSimilarity(png_fname))
 
 print("issue 2807 missing label")
 indigo.resetOptions()
+indigo.setOption("render-fonts", "[]")
 indigo.setOption("render-output-format", "png")
 fname = "missing_label_2807"
 png_fname = fname + ".png"
@@ -95,6 +98,7 @@ print(checkImageSimilarity(png_fname))
 
 print("issue 2778 multiple external connections")
 indigo.resetOptions()
+indigo.setOption("render-fonts", "[]")
 indigo.setOption("render-output-format", "png")
 fname = "multiple_external_connections_2778"
 png_fname = fname + ".png"
@@ -105,6 +109,7 @@ print(checkImageSimilarity(png_fname))
 
 print("issue 3256 metals always represented with hydrogens")
 indigo.resetOptions()
+indigo.setOption("render-fonts", "[]")
 indigo.setOption("render-output-format", "png")
 fname = "3256_periodic_table"
 png_fname = fname + ".png"

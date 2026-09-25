@@ -26,6 +26,10 @@
 #include "reaction/base_reaction.h"
 #include "render_cdxml.h"
 
+#include <memory>
+#include <string>
+#include <vector>
+
 typedef void* PVOID;
 
 namespace indigo
@@ -538,6 +542,14 @@ namespace indigo
 
     private:
         CanvasOptions(const CanvasOptions&);
+    };
+
+    struct RenderFont
+    {
+        RenderFont(std::string name, std::vector<byte> data);
+
+        std::string name;
+        std::shared_ptr<std::vector<byte>> data;
     };
 
     class RenderOptions

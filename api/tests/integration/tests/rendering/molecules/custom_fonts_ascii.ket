@@ -1,0 +1,23 @@
+{
+    "ket_version": "2.0.0",
+    "root": {
+        "nodes": [
+            {
+                "type": "text",
+                "paragraphs": [
+                    {
+                        "parts": [
+                            {
+                                "text": "Custom font test"
+                            }
+                        ],
+                        "indent": 0
+                    }
+                ],
+                "indent": 0
+            }
+        ],
+        "connections": [],
+        "templates": []
+    }
+}

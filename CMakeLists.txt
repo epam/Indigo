@@ -16,7 +16,8 @@ option(WITH_STATIC "Build Indigo static library as well as shared" OFF)
 
 # Indigo API options
 option(BUILD_INDIGO "Build indigo shared library" ON)
-option(USE_FONT_MANAGER "Build indigo render with font_face_manager" OFF)
+option(RENDER_ENABLE_NOTO_SANS "Embed Noto Sans fonts in the renderer" ON)
+option(RENDER_ENABLE_NOTO_SANS_CJK "Embed Noto Sans CJK fonts in the renderer" OFF)
 
 # Indigo API Wrappers options
 option(BUILD_INDIGO_WRAPPERS "Build all existing Indigo API wrappers" ON)
@@ -93,7 +94,6 @@ if (EMSCRIPTEN)
     set(BUILD_BINGO_SQLSERVER OFF)
     set(BUILD_BINGO_ORACLE OFF)
     set(BUILD_BINGO_ELASTIC OFF)
-    set(USE_FONT_MANAGER ON)
     # Skip Array/Pool bounds-check throws in release WASM builds to allow inlining.
     # emscripten's JS-based exception handling wraps every throw-containing function
     # in invoke_* shims, preventing inlining and causing ~80x overhead in hot loops.
