@@ -885,7 +885,7 @@ bool MoleculeLayoutGraphSimple::_isRegularPolygon(const Cycle& cycle, float bond
     }
 
     // Check circumscribed radius consistency
-    float R = bond_length / (2.0f * sin((float)M_PI / n));
+    float R = bond_length / (2.0f * SIN((float)M_PI / n));
     Vec2f center(0, 0);
     for (int i = 0; i < n; i++)
         center += _layout_vertices[cycle.getVertex(i)].pos;
@@ -948,10 +948,10 @@ void MoleculeLayoutGraphSimple::_assignFirstCycle(const Cycle& cycle, float bond
     {
         // Place vertex s at 180° on the circumscribed circle (leftmost point),
         // so the center of the circle is to the right of the top-left monomer.
-        float R = bond_length / (2.0f * sin((float)M_PI / n));
+        float R = bond_length / (2.0f * SIN((float)M_PI / n));
         float step = 2.0f * (float)M_PI / n;
         _layout_vertices[cycle.getVertex(s)].pos.set(-R, 0.f);
-        _layout_vertices[cycle.getVertex((s + 1) % n)].pos.set(R * cos((float)M_PI - step), R * sin((float)M_PI - step));
+        _layout_vertices[cycle.getVertex((s + 1) % n)].pos.set(R * COS((float)M_PI - step), R * SIN((float)M_PI - step));
     }
     else if (respect_cycles_direction && diff.normalize())
     {
@@ -1902,8 +1902,8 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
         phi1 = p1.tiltAngle();
         phi2 = p2.tiltAngle();
         alpha = phi1 - phi2;
-        sina = sin(alpha);
-        cosa = cos(alpha);
+        sina = SIN(alpha);
+        cosa = COS(alpha);
 
         for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
             _layout_vertices[i].pos.rotate(sina, cosa);
@@ -1952,8 +1952,8 @@ void MoleculeLayoutGraph::_assignFinalCoordinates(float bond_length, const Array
                 _layout_vertices[i].pos.sub(p1);
 
             // Turn by -phi1 and flip vertically
-            sina = -sin(phi1);
-            cosa = cos(phi1);
+            sina = -SIN(phi1);
+            cosa = COS(phi1);
             for (int i = vertexBegin(); i < vertexEnd(); i = vertexNext(i))
             {
                 _layout_vertices[i].pos.rotate(sina, cosa);

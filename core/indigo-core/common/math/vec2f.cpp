@@ -57,7 +57,7 @@ bool Vec2f::normalization(const Vec2f& v)
 
 void Vec2f::rotate(float angle)
 {
-    rotate(sin(angle), cos(angle));
+    rotate(SIN(angle), COS(angle));
 }
 
 void Vec2f::rotate(float si, float co)
@@ -80,7 +80,7 @@ void Vec2f::rotateL(Vec2f vec)
 
 void Vec2f::rotateL(float angle)
 {
-    rotateL(sin(angle), cos(angle));
+    rotateL(SIN(angle), COS(angle));
 }
 
 void Vec2f::rotateL(float si, float co)
@@ -106,8 +106,8 @@ float Vec2f::tiltAngle()
         return 0;
 
     if (y >= 0)
-        return acos(x / l);
-    return -acos(x / l);
+        return ACOS(x / l);
+    return -ACOS(x / l);
 }
 
 float Vec2f::tiltAngle2()
@@ -118,8 +118,10 @@ float Vec2f::tiltAngle2()
         return 0;
 
     if (y >= 0)
-        return acos(x / l);
-    return _2FLOAT(2. * M_PI - acos(x / l));
+        return ACOS(x / l);
+    // The rounding to float before the subtraction is kept: without it the angle
+    // changes in the last bits, and a macrocycle comes out drawn differently.
+    return _2FLOAT(2. * M_PI - ACOS(x / l));
 }
 
 float Vec2f::calc_angle(Vec2f a, Vec2f b)
@@ -170,13 +172,13 @@ float Vec2f::distSqr(const Vec2f& a, const Vec2f& b)
 {
     float dx = b.x - a.x;
     float dy = b.y - a.y;
-    float h = std::hypotf(dx, dy);
+    float h = HYPOT(dx, dy);
     return h * h;
 }
 
 float Vec2f::dist(const Vec2f& a, const Vec2f& b)
 {
-    return std::hypotf(b.x - a.x, b.y - a.y);
+    return HYPOT(b.x - a.x, b.y - a.y);
 }
 
 float Vec2f::dot(const Vec2f& a, const Vec2f& b)
@@ -325,7 +327,7 @@ Vec2f Vec2f::get_circle_center(Vec2f p, Vec2f q, float angle)
 
     Vec2f vec(q - p);
 
-    return (p + q) / 2.f + vec / _2FLOAT(tan((M_PI - angle) / 2.));
+    return (p + q) / 2.f + vec / TAN((M_PI - angle) / 2.);
 }
 
 Vec2f Vec2f::get_circle_center(Vec2f a, Vec2f p, Vec2f q)

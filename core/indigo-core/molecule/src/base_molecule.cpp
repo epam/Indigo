@@ -1187,6 +1187,7 @@ int BaseMolecule::addHapticBond(HapticBond::Endpoint begin, HapticBond::Endpoint
         throw Error("a haptic bond needs two different atoms");
 
     const int idx = haptic_bonds.add(begin, end, type);
+
     // A haptic bond holds atoms together without an edge, so the decomposition
     // depends on it while the graph, which drops the cache on its own, does not
     // notice the change at all.
@@ -1233,6 +1234,23 @@ void BaseMolecule::removeHapticBond(int idx)
     haptic_bonds.remove(idx);
     invalidateComponents();
     updateEditRevision();
+}
+
+bool BaseMolecule::hasBondsOutsideTheGraph(int atom) const
+{
+    return haptic_bonds.referencesAtom(atom);
+}
+
+Vec3f BaseMolecule::attachmentGroupCentre(int group_idx)
+{
+    const std::vector<int>& atoms = attachment_groups.group(group_idx).atoms();
+
+    std::vector<Vec3f> positions;
+    positions.reserve(atoms.size());
+    for (int atom : atoms)
+        positions.push_back(getAtomXyz(atom));
+
+    return AttachmentGroup::centreOf(positions);
 }
 
 void BaseMolecule::collectExternalNeighbors(std::list<std::unordered_set<int>>& neighbors)
