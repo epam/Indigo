@@ -36,7 +36,7 @@ class TestIndigoRenderer(TestIndigoBase):
             with open(filename, encoding="utf-8") as svg_file:
                 outputs.append(svg_file.read())
 
-        previous_ids = set()
+        previous_ids: set[str] = set()
         for svg in outputs:
             root = ET.fromstring(svg)
             ids = {
