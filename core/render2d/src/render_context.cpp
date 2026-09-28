@@ -20,7 +20,13 @@
 #include "base_cpp/output.h"
 #include "molecule/meta_commons.h"
 
+#include <algorithm>
+#include <cctype>
+#include <cstdint>
 #include <limits.h>
+#include <new>
+#include <random>
+#include <unordered_set>
 
 using namespace indigo;
 
@@ -226,6 +232,23 @@ cairo_status_t RenderContext::writer(void* closure, const unsigned char* data, u
     return CAIRO_STATUS_SUCCESS;
 }
 
+cairo_status_t RenderContext::svgWriter(void* closure, const unsigned char* data, unsigned int length)
+{
+    try
+    {
+        static_cast<std::string*>(closure)->append(reinterpret_cast<const char*>(data), length);
+    }
+    catch (const std::bad_alloc&)
+    {
+        return CAIRO_STATUS_NO_MEMORY;
+    }
+    catch (...)
+    {
+        return CAIRO_STATUS_WRITE_ERROR;
+    }
+    return CAIRO_STATUS_SUCCESS;
+}
+
 void RenderContext::createSurface(cairo_write_func_t writer, Output* /*output*/, int /*width*/, int /*height*/)
 {
     int mode = opt.mode;
@@ -245,7 +268,14 @@ void RenderContext::createSurface(cairo_write_func_t writer, Output* /*output*/,
             cairoCheckSurfaceStatus();
             break;
         case MODE_SVG:
-            _surface = cairo_svg_surface_create_for_stream(writer, opt.output, _width, _height);
+            if (writer != NULL)
+            {
+                // Buffer cairo's output so closeContext() can make the ids unique before it reaches Output.
+                _svgBuffer.clear();
+                _surface = cairo_svg_surface_create_for_stream(svgWriter, &_svgBuffer, _width, _height);
+            }
+            else
+                _surface = cairo_svg_surface_create_for_stream(writer, opt.output, _width, _height);
             cairoCheckSurfaceStatus();
             break;
         case MODE_PNG:
@@ -346,6 +376,81 @@ void RenderContext::initContext(int width, int height)
         fillBackground();
 }
 
+// Molecule labels are drawn as glyph paths, never as literal SVG text nodes, so the only text
+// in the output is cairo's own markup - a plain scan for id=/href=/url(# below is safe.
+std::string RenderContext::patchSvgIds(const std::string& svg)
+{
+    std::unordered_set<std::string> ids;
+    size_t pos = 0;
+    while ((pos = svg.find("id=\"", pos)) != std::string::npos)
+    {
+        const size_t value_start = pos + 4;
+        const size_t value_end = svg.find('"', value_start);
+        if (value_end == std::string::npos)
+            break;
+        if (pos > 0 && std::isspace(static_cast<unsigned char>(svg[pos - 1])))
+            ids.emplace(svg.substr(value_start, value_end - value_start));
+        pos = value_end + 1;
+    }
+
+    if (ids.empty())
+        return svg;
+
+    static constexpr char HEX[] = "0123456789abcdef";
+    std::random_device random;
+    const uint64_t value = std::uniform_int_distribution<uint64_t>{}(random);
+    std::string prefix = "indigo-";
+    for (int shift = 60; shift >= 0; shift -= 4)
+        prefix.push_back(HEX[(value >> shift) & 0xf]);
+    prefix.push_back('-');
+
+    std::string result;
+    result.reserve(svg.size() + ids.size() * prefix.size() * 2);
+    for (size_t i = 0; i < svg.size();)
+    {
+        if (svg.compare(i, 4, "id=\"") == 0 && i > 0 && std::isspace(static_cast<unsigned char>(svg[i - 1])))
+        {
+            const size_t end = svg.find('"', i + 4);
+            if (end != std::string::npos)
+            {
+                result.append("id=\"").append(prefix).append(svg, i + 4, end - i - 4).push_back('"');
+                i = end + 1;
+                continue;
+            }
+        }
+        if (svg.compare(i, 7, "href=\"#") == 0 && (i == 0 || std::isspace(static_cast<unsigned char>(svg[i - 1])) || svg[i - 1] == ':'))
+        {
+            const size_t end = svg.find('"', i + 7);
+            if (end != std::string::npos)
+            {
+                const std::string id = svg.substr(i + 7, end - i - 7);
+                result.append("href=\"#");
+                if (ids.find(id) != ids.end())
+                    result.append(prefix);
+                result.append(id).push_back('"');
+                i = end + 1;
+                continue;
+            }
+        }
+        if (svg.compare(i, 5, "url(#") == 0)
+        {
+            const size_t end = svg.find(')', i + 5);
+            if (end != std::string::npos)
+            {
+                const std::string id = svg.substr(i + 5, end - i - 5);
+                result.append("url(#");
+                if (ids.find(id) != ids.end())
+                    result.append(prefix);
+                result.append(id).push_back(')');
+                i = end + 1;
+                continue;
+            }
+        }
+        result.push_back(svg[i++]);
+    }
+    return result;
+}
+
 void RenderContext::closeContext(bool discard)
 {
     if (_cr != NULL)
@@ -377,9 +482,15 @@ void RenderContext::closeContext(bool discard)
         throw Error("unknown mode: %d", opt.mode);
     }
 
+    cairo_status_t surface_status = CAIRO_STATUS_SUCCESS;
     if (_surface != NULL)
     {
         std::lock_guard<std::mutex> _lock(_cairo_mutex);
+        if (opt.mode == MODE_SVG && !discard)
+        {
+            cairo_surface_finish(_surface);
+            surface_status = cairo_surface_status(_surface);
+        }
         cairo_surface_destroy(_surface);
         _surface = NULL;
     }
@@ -388,6 +499,24 @@ void RenderContext::closeContext(bool discard)
     bbmax.x = bbmax.y = -1;
 
     fontsDispose();
+
+    if (surface_status != CAIRO_STATUS_SUCCESS)
+    {
+        _svgBuffer.clear();
+        throw Error("Cairo error: %s\n", cairo_status_to_string(surface_status));
+    }
+
+    if (opt.mode == MODE_SVG && !discard)
+    {
+        const std::string svg = patchSvgIds(_svgBuffer);
+        for (size_t offset = 0; offset < svg.size();)
+        {
+            const int length = static_cast<int>(std::min<size_t>(svg.size() - offset, INT_MAX));
+            opt.output->write(svg.data() + offset, length);
+            offset += length;
+        }
+    }
+    _svgBuffer.clear();
 }
 
 void RenderContext::translate(float dx, float dy)

@@ -3,6 +3,7 @@ import errno
 import io
 import json
 import os
+import re
 import sys
 
 sys.path.append(
@@ -231,7 +232,12 @@ def render(indigo, renderer, document, output_format, fonts=None):
         indigo.setOption("render-fonts", fonts)
     molecule = indigo.loadMolecule(json.dumps(document))
     try:
-        return list(renderer.renderToBuffer(molecule))
+        output = list(renderer.renderToBuffer(molecule))
+        if output_format == "svg":
+            # Per-render IDs vary; compare the SVG after removing their prefix.
+            svg = "".join(chr(int(value) & 0xFF) for value in output)
+            return re.sub(r"indigo-[0-9a-f]{16}-", "", svg)
+        return output
     finally:
         if isIronPython():
             molecule.Dispose()
