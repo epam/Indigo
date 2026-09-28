@@ -18,6 +18,7 @@
 
 #include <array>
 #include <random>
+#include <regex>
 #include <thread>
 
 #include <gtest/gtest.h>
@@ -41,6 +42,13 @@ namespace
         return choices.at(uni(rng));
     }
 
+    // Each render gets its own random id prefix, so strip it before comparing.
+    std::string stripIdPrefix(const std::string& svg)
+    {
+        static const std::regex prefix("indigo-[0-9a-f]{16}-");
+        return std::regex_replace(svg, prefix, "");
+    }
+
     void testRender()
     {
         const auto& smiles = randomSmiles();
@@ -52,7 +60,7 @@ namespace
         const auto& m_2 = session_2->loadMolecule(smiles);
         const auto& result_svg_1 = renderer_1.svg(m_1);
         const auto& result_svg_2 = renderer_2.svg(m_2);
-        ASSERT_EQ(result_svg_1, result_svg_2);
+        ASSERT_EQ(stripIdPrefix(result_svg_1), stripIdPrefix(result_svg_2));
         const auto& result_png_1 = renderer_1.png(m_1);
         const auto& result_png_2 = renderer_2.png(m_2);
         ASSERT_EQ(result_png_1, result_png_2);
