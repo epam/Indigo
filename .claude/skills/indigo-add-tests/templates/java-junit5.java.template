@@ -1,0 +1,28 @@
+package com.epam.indigo;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+public class {Subject}Tests {
+
+    @Test
+    @DisplayName("{what the valid case asserts}")
+    void {method}{Scenario}() {
+        Indigo indigo = new Indigo();
+        IndigoObject molecule = indigo.loadMolecule("{smiles}");
+
+        assertEquals({expected}, molecule.{method}());
+    }
+
+    @Test
+    @DisplayName("{what the invalid case asserts}")
+    void {method}Rejects{InvalidInput}() {
+        Indigo indigo = new Indigo();
+
+        IndigoException e = assertThrows(IndigoException.class, () -> {call that must fail});
+        assertEquals("{exact message}", e.getMessage());
+    }
+}

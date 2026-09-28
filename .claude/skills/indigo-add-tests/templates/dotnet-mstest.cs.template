@@ -1,0 +1,26 @@
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace com.epam.indigo
+{
+    [TestClass]
+    public class {Subject}Test
+    {
+        [TestMethod]
+        public void Test{Method}{Scenario}()
+        {
+            using var indigo = new Indigo();
+            var molecule = indigo.loadMolecule("{smiles}");
+
+            Assert.AreEqual({expected}, molecule.{method}());
+        }
+
+        [TestMethod]
+        public void Test{Method}Rejects{InvalidInput}()
+        {
+            using var indigo = new Indigo();
+
+            var e = Assert.ThrowsException<IndigoException>(() => {call that must fail});
+            Assert.AreEqual("{exact message}", e.Message);
+        }
+    }
+}

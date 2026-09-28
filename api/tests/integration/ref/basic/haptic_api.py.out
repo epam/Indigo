@@ -40,8 +40,10 @@ V3000 carries ENDPTS: True
 the group gets a star atom back: True
 V2000 carries ENDPTS: False
 
-*** a group loaded from V3000 knows its anchor atom, a KET one does not ***
-V3000 anchor: atom 6 (*)
+*** V3000 absorbs the star of a haptic record, not a variable one's ***
+haptic star in the structure: False
+haptic group anchor: none
+variable attachment anchor: atom 7 (*)
 KET anchor: none
 
 *** membership can be replaced ***
