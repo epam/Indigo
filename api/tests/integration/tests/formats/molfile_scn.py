@@ -29,8 +29,13 @@ def molfile(atoms, bonds, properties):
 def load(name, text):
     try:
         mol = indigo.loadMolecule(text)
+        # print the lines, not the list: Jython would show them as u'...'
         scn = [line for line in mol.molfile().splitlines() if "SCN" in line]
-        print("%s: OK, %d atoms %s" % (name, mol.countAtoms(), scn))
+        saved = ", ".join('"%s"' % line for line in scn) or "none"
+        print(
+            "%s: OK, %d atoms, M SCN saved: %s"
+            % (name, mol.countAtoms(), saved)
+        )
     except IndigoException as e:
         print("%s: %s" % (name, getIndigoExceptionText(e)))
 
