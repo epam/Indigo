@@ -89,8 +89,9 @@ idt_errors = {
     "/52MOErA/*/3Phos/": "Symbol '*' could be placed only between two nucleotides/nucleosides.",
     "/52MOErA//32MOErA/*": "Monomer /32MOErA/ doesn't have phosphate, so '*' couldn't be applied.",
     "/3Phos/*": "Symbol '*' could be placed only between two nucleotides/nucleosides.",
-    "r(B1:50003000)(B1)": "Unknown mixed base 'B1'",
+    "r(B1:00503020)(B1)": "Unknown mixed base 'B1'",
     "(YY:00330067)": "Invalid mixed base - only numerical index allowed.",
+    "(Y:00333334)": "Invalid mixed base 'Y' - percentage is defined for G, but only C, T are allowed.",
     "(Y:)": "Invalid IDT ambiguous monomer (Y:)",
     "(Y:000010af)": "Invalid number 'af'",
 }
