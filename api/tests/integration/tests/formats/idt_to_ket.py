@@ -93,6 +93,7 @@ idt_errors = {
     "(YY:00330067)": "Invalid mixed base - only numerical index allowed.",
     "(Y:)": "Invalid IDT ambiguous monomer (Y:)",
     "(Y:000010af)": "Invalid number 'af'",
+    "(B5:00653005)": "Invalid mixed base 'B5' - index must be from 1 to 4.",
 }
 for idt_seq in sorted(idt_errors.keys()):
     error = idt_errors[idt_seq]
