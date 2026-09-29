@@ -20,8 +20,9 @@ root = joinPathPy("molecules/", __file__)
 ref_path = joinPathPy("ref/", __file__)
 
 # Ferrocene as the CDX specification describes it: one MultiAttachment node per
-# ring, each joined to the iron by an ordinary bond.
-files = ["haptic-ferrocene"]
+# ring, each joined to the iron by an ordinary bond. The second file puts it on a
+# page with two more fragments, a benzene and a half-sandwich manganese.
+files = ["haptic-ferrocene", "haptic-several-molecules"]
 
 files.sort()
 for filename in files:
@@ -38,4 +39,24 @@ for filename in files:
     compare_diff(ref_path, filename + "-from-cdxml.ket", from_cdxml)
 
     from_cdx = indigo.loadMolecule(cdx).json()
+    compare_diff(ref_path, filename + "-from-cdx.ket", from_cdx)
+
+# Friedel-Crafts acylation of ferrocene as Ketcher draws it: a haptic complex on
+# each side of the arrow, each saved as a fragment of its own.
+reactions = ["haptic-acylation"]
+
+reactions.sort()
+for filename in reactions:
+    rxn = indigo.loadReactionFromFile(os.path.join(root, filename + ".ket"))
+
+    cdxml = rxn.cdxml()
+    compare_diff(ref_path, filename + ".cdxml", cdxml)
+
+    cdx = rxn.b64cdx()
+    compare_diff(ref_path, filename + ".b64cdx", cdx)
+
+    from_cdxml = indigo.loadReaction(cdxml).json()
+    compare_diff(ref_path, filename + "-from-cdxml.ket", from_cdxml)
+
+    from_cdx = indigo.loadReaction(cdx).json()
     compare_diff(ref_path, filename + "-from-cdx.ket", from_cdx)

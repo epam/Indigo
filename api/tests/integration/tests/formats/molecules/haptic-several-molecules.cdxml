@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
+<CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
+    <page HeightPages="1" WidthPages="1">
+        <fragment id="1">
+            <n id="10" p="100.00 60.00"/>
+            <n id="11" p="128.53 80.73"/>
+            <n id="12" p="117.63 114.27"/>
+            <n id="13" p="82.37 114.27"/>
+            <n id="14" p="71.47 80.73"/>
+            <n id="20" p="100.00 90.00" NodeType="MultiAttachment" Attachments="10 11 12 13 14"/>
+            <n id="110" p="100.00 200.00"/>
+            <n id="111" p="128.53 220.73"/>
+            <n id="112" p="117.63 254.27"/>
+            <n id="113" p="82.37 254.27"/>
+            <n id="114" p="71.47 220.73"/>
+            <n id="120" p="100.00 230.00" NodeType="MultiAttachment" Attachments="110 111 112 113 114"/>
+            <n id="30" p="180.00 160.00" Element="26"/>
+            <b id="40" B="10" E="11" Order="2"/>
+            <b id="41" B="11" E="12"/>
+            <b id="42" B="12" E="13" Order="2"/>
+            <b id="43" B="13" E="14"/>
+            <b id="44" B="14" E="10" Order="2"/>
+            <b id="140" B="110" E="111" Order="2"/>
+            <b id="141" B="111" E="112"/>
+            <b id="142" B="112" E="113" Order="2"/>
+            <b id="143" B="113" E="114"/>
+            <b id="144" B="114" E="110" Order="2"/>
+            <b id="50" B="30" E="20"/>
+            <b id="150" B="30" E="120"/>
+        </fragment>
+        <fragment id="2">
+            <n id="210" p="300.00 130.00"/>
+            <n id="211" p="326.00 145.00"/>
+            <n id="212" p="326.00 175.00"/>
+            <n id="213" p="300.00 190.00"/>
+            <n id="214" p="274.00 175.00"/>
+            <n id="215" p="274.00 145.00"/>
+            <b id="240" B="210" E="211" Order="2"/>
+            <b id="241" B="211" E="212"/>
+            <b id="242" B="212" E="213" Order="2"/>
+            <b id="243" B="213" E="214"/>
+            <b id="244" B="214" E="215" Order="2"/>
+            <b id="245" B="215" E="210"/>
+        </fragment>
+        <fragment id="3">
+            <n id="310" p="440.00 100.00"/>
+            <n id="311" p="468.53 120.73"/>
+            <n id="312" p="457.63 154.27"/>
+            <n id="313" p="422.37 154.27"/>
+            <n id="314" p="411.47 120.73"/>
+            <n id="320" p="440.00 130.00" NodeType="MultiAttachment" Attachments="310 311 312 313 314"/>
+            <n id="330" p="440.00 200.00" Element="25"/>
+            <b id="340" B="310" E="311" Order="2"/>
+            <b id="341" B="311" E="312"/>
+            <b id="342" B="312" E="313" Order="2"/>
+            <b id="343" B="313" E="314"/>
+            <b id="344" B="314" E="310" Order="2"/>
+            <b id="350" B="330" E="320"/>
+        </fragment>
+    </page>
+</CDXML>

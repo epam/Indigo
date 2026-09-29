@@ -23,6 +23,8 @@
 // VariableAttachment (#3731) has the same shape and the other meaning, so the
 // two are told apart here as well.
 
+#include <unordered_set>
+
 #include <gtest/gtest.h>
 
 #include <base_cpp/output.h>
@@ -30,6 +32,9 @@
 #include <molecule/molecule.h>
 #include <molecule/molecule_cdxml_loader.h>
 #include <molecule/molecule_cdxml_saver.h>
+#include <reaction/reaction.h>
+#include <reaction/reaction_cdxml_loader.h>
+#include <reaction/reaction_cdxml_saver.h>
 
 #include "common.h"
 
@@ -64,6 +69,60 @@ protected:
         MoleculeCdxmlSaver saver(output, binary);
         saver.saveMolecule(mol);
         return {buffer.ptr(), static_cast<std::size_t>(buffer.size())};
+    }
+
+    static std::string saveReaction(Reaction& rxn, bool binary)
+    {
+        Array<char> buffer;
+        ArrayOutput output(buffer);
+        ReactionCdxmlSaver saver(output, binary);
+        saver.saveReaction(rxn);
+        return {buffer.ptr(), static_cast<std::size_t>(buffer.size())};
+    }
+
+    static void loadReaction(const std::string& data, bool binary, Reaction& rxn)
+    {
+        BufferScanner scanner(data.c_str(), static_cast<int>(data.size()));
+        if (binary)
+        {
+            // Past the document header, as ReactionAutoLoader does.
+            ASSERT_TRUE(scanner.startsWith(kCDX_HeaderString));
+            scanner.seek(kCDX_HeaderLength, SEEK_CUR);
+        }
+        ReactionCdxmlLoader loader(scanner, binary);
+        loader.loadReaction(rxn);
+    }
+
+    // An object id names one object in the whole document (CDX specification,
+    // Object "id"). Indigo's own reader resolves ids fragment by fragment and would
+    // read a clash between two molecules back without complaint, so the written
+    // document is checked directly.
+    static bool idsAreUnique(const std::string& document)
+    {
+        const std::string key = " id=\"";
+        std::unordered_set<std::string> seen;
+        for (std::size_t pos = document.find(key); pos != std::string::npos; pos = document.find(key, pos + key.size()))
+        {
+            const std::size_t value = pos + key.size();
+            if (!seen.insert(document.substr(value, document.find('"', value) - value)).second)
+                return false;
+        }
+        return true;
+    }
+
+    // The metal a group is bonded to, found through the haptic bond that reaches
+    // it; -1 when no bond does.
+    static int metalOf(BaseMolecule& mol, int group_idx)
+    {
+        for (int i = mol.haptic_bonds.begin(); i != mol.haptic_bonds.end(); i = mol.haptic_bonds.next(i))
+        {
+            const HapticBond& bond = mol.haptic_bonds.at(i);
+            if (bond.end().isGroup() && bond.end().index() == group_idx && !bond.begin().isGroup())
+                return mol.getAtomNumber(bond.begin().index());
+            if (bond.begin().isGroup() && bond.begin().index() == group_idx && !bond.end().isGroup())
+                return mol.getAtomNumber(bond.end().index());
+        }
+        return -1;
     }
 
     static int countOccurrences(const std::string& text, const std::string& what)
@@ -357,4 +416,110 @@ TEST_F(IndigoCoreHapticCdxmlTest, TwoBondsToOneGroupShareItsNode)
     const std::string saved = save(mol);
     EXPECT_EQ(1, countOccurrences(saved, "NodeType=\"MultiAttachment\""));
     EXPECT_EQ(1, countOccurrences(saved, "Attachments=\"5 6 7 8 9\""));
+}
+
+TEST_F(IndigoCoreHapticCdxmlTest, EveryFragmentKeepsItsOwnGroup)
+{
+    // Two structures on one page, as ChemDraw saves several molecules: each ring
+    // has its attachment node and its metal in its own fragment. A member id has
+    // to resolve to the atom of that fragment, and each bond has to reach the
+    // metal drawn next to its ring - the iron for the first, the manganese for the
+    // second - before the save and after it.
+    const char* page = R"(<?xml version="1.0" encoding="UTF-8"?>
+<CDXML BondLength="30.000000"><page HeightPages="1" WidthPages="1">
+<fragment id="1">
+<n id="10" p="100.00 100.00"/><n id="11" p="128.53 120.73"/><n id="12" p="117.63 154.27"/>
+<n id="13" p="82.37 154.27"/><n id="14" p="71.47 120.73"/>
+<n id="20" p="100.00 130.00" NodeType="MultiAttachment" Attachments="10 11 12 13 14"/>
+<n id="30" p="180.00 130.00" Element="26"/>
+<b id="40" B="10" E="11" Order="2"/><b id="41" B="11" E="12"/><b id="42" B="12" E="13" Order="2"/>
+<b id="43" B="13" E="14"/><b id="44" B="14" E="10" Order="2"/><b id="50" B="30" E="20"/>
+</fragment>
+<fragment id="2">
+<n id="110" p="400.00 100.00"/><n id="111" p="428.53 120.73"/><n id="112" p="417.63 154.27"/>
+<n id="113" p="382.37 154.27"/><n id="114" p="371.47 120.73"/>
+<n id="120" p="400.00 130.00" NodeType="MultiAttachment" Attachments="110 111 112 113 114"/>
+<n id="130" p="480.00 130.00" Element="25"/>
+<b id="140" B="110" E="111" Order="2"/><b id="141" B="111" E="112"/><b id="142" B="112" E="113" Order="2"/>
+<b id="143" B="113" E="114"/><b id="144" B="114" E="110" Order="2"/><b id="150" B="130" E="120"/>
+</fragment>
+</page></CDXML>)";
+
+    auto check = [](Molecule& mol) {
+        ASSERT_EQ(12, mol.vertexCount());
+        ASSERT_EQ(2, mol.attachment_groups.groupCount());
+        ASSERT_EQ(2, mol.haptic_bonds.count());
+
+        // Atoms are numbered in the order the file lists them: the first ring is
+        // atoms 0-4, the second 6-10.
+        for (int group = mol.attachment_groups.begin(); group != mol.attachment_groups.end(); group = mol.attachment_groups.next(group))
+        {
+            const std::vector<int>& members = mol.attachment_groups.group(group).atoms();
+            ASSERT_EQ(5u, members.size());
+            const bool first_ring = members.front() < 5;
+            for (int atom : members)
+                EXPECT_EQ(first_ring, atom < 5);
+            EXPECT_EQ(first_ring ? ELEM_Fe : ELEM_Mn, metalOf(mol, group));
+        }
+    };
+
+    Molecule mol;
+    loadCdxml(page, mol);
+    check(mol);
+
+    Molecule reloaded;
+    loadCdxml(save(mol), reloaded);
+    check(reloaded);
+}
+
+TEST_F(IndigoCoreHapticCdxmlTest, ReactionKeepsTheGroupsOfEveryMolecule)
+{
+    // Each molecule of a reaction is saved as a fragment of its own, with ids
+    // numbered across the whole document. A haptic complex on each side of the
+    // arrow, with a plain reactant between them, has to come back with every
+    // group in its own molecule and bonded to its own iron, as text and as
+    // binary CDX alike.
+    Molecule complex;
+    loadCdxml(ring_and_metal(), complex);
+
+    Molecule oxygen;
+    loadCdxml(R"(<?xml version="1.0" encoding="UTF-8"?>
+<CDXML BondLength="30.000000"><page HeightPages="1" WidthPages="1"><fragment id="1">
+<n id="10" p="250.00 130.00" Element="8"/>
+</fragment></page></CDXML>)",
+              oxygen);
+
+    Reaction rxn;
+    rxn.addReactantCopy(complex, nullptr, nullptr);
+    rxn.addReactantCopy(oxygen, nullptr, nullptr);
+    rxn.addProductCopy(complex, nullptr, nullptr);
+
+    EXPECT_TRUE(idsAreUnique(saveReaction(rxn, false)));
+
+    for (bool binary : {false, true})
+    {
+        Reaction reloaded;
+        loadReaction(saveReaction(rxn, binary), binary, reloaded);
+        ASSERT_EQ(2, reloaded.reactantsCount());
+        ASSERT_EQ(1, reloaded.productsCount());
+
+        int complexes = 0;
+        for (int i = reloaded.begin(); i != reloaded.end(); i = reloaded.next(i))
+        {
+            BaseMolecule& mol = reloaded.getBaseMolecule(i);
+            if (mol.attachment_groups.groupCount() == 0)
+            {
+                EXPECT_EQ(0, mol.haptic_bonds.count());
+                continue;
+            }
+
+            ++complexes;
+            ASSERT_EQ(1, mol.attachment_groups.groupCount());
+            ASSERT_EQ(1, mol.haptic_bonds.count());
+            const int group = mol.attachment_groups.begin();
+            EXPECT_EQ(5u, mol.attachment_groups.group(group).atoms().size());
+            EXPECT_EQ(ELEM_Fe, metalOf(mol, group));
+        }
+        EXPECT_EQ(2, complexes);
+    }
 }
