@@ -35,6 +35,7 @@
 #include <molecule/cmf_loader.h>
 #include <molecule/cmf_saver.h>
 #include <molecule/cml_saver.h>
+#include <molecule/molecule_cdxml_loader.h>
 #include <molecule/molecule_cdxml_saver.h>
 #include <molecule/molecule_json_loader.h>
 #include <molecule/molecule_json_saver.h>
@@ -115,6 +116,31 @@ TEST_F(IndigoCoreFormatsTest, save_cdxml)
     saver.saveMolecule(t_mol);
 
     ASSERT_TRUE(out.size() > 2000);
+}
+
+// Binary CDX stores the radical as a number, CDXML by its name, and the reader
+// understands only the name: the number has to be translated on the way in.
+TEST_F(IndigoCoreFormatsTest, binary_cdx_keeps_the_radical)
+{
+    Molecule mol;
+    loadMolecule("CC", mol);
+    mol.setAtomRadical(0, RADICAL_DOUBLET);
+
+    Array<char> buffer;
+    ArrayOutput output(buffer);
+    MoleculeCdxmlSaver saver(output, true);
+    saver.saveMolecule(mol);
+
+    BufferScanner scanner(buffer);
+    ASSERT_TRUE(scanner.startsWith(kCDX_HeaderString));
+    scanner.seek(kCDX_HeaderLength, SEEK_CUR);
+    Molecule reloaded;
+    MoleculeCdxmlLoader loader(scanner, true);
+    loader.loadMolecule(reloaded);
+
+    ASSERT_EQ(2, reloaded.vertexCount());
+    EXPECT_EQ(RADICAL_DOUBLET, reloaded.getAtomRadical(0));
+    EXPECT_EQ(0, reloaded.getAtomRadical(1));
 }
 
 TEST_F(IndigoCoreFormatsTest, save_cml)

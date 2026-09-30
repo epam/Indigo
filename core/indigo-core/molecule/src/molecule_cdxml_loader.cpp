@@ -373,6 +373,12 @@ std::string CDXProperty::parseCDXINT8(int8_t val) const
         return kBondReactionParticipationIntToName.at(val);
     case kCDXProp_Bond_RestrictTopology:
         return kBondTopologyIntToName.at(val);
+    case kCDXProp_Atom_Radical:
+        // The node reads the radical by its CDXML name; a code with no name is
+        // left as a number, which it ignores as it ignores an unknown name.
+        if (val >= 0 && val < static_cast<int>(kRadicalIdToStr.size()))
+            return kRadicalIdToStr[val];
+        break;
     default:
         break;
     }
