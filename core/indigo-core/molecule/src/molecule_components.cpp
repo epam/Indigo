@@ -89,5 +89,5 @@ void MoleculeComponents::selectAtoms(int component, Filter& filter) const
 void MoleculeComponents::_checkComponent(int component) const
 {
     if (component < 0 || component >= count())
-        throw Error("component %d does not exist: the molecule has %d", component, count());
+        throw Error("component %d does not exist: the molecule has %d components", component, count());
 }

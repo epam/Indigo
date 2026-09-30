@@ -43,6 +43,9 @@ recorded in a ticket that the code links to.
   `PtrArray` and `PtrReusablePool`, not by `ObjArray` or `std::vector<T>`; the `Reusable` contract
 - [haptic-bond-endpoints.md](./haptic-bond-endpoints.md) — an attachment group is stored beside the
   graph, never as a vertex, so graph algorithms stay correct on organometallics by construction
+- [public-components-follow-haptic-bonds.md](./public-components-follow-haptic-bonds.md) — the public
+  component API follows haptic bonds through `moleculeComponents()`; graph algorithms keep the
+  graph's components
 
 Still worth reconstructing from the analyses in `indigo-common/Task/`: the valence-model
 configuration contract (BIOVIA 2009 vs 2017), and the decision to route non-local formats through

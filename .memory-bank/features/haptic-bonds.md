@@ -74,9 +74,11 @@ deliberately left behind; without the flags it is remapped into the target.
 `core/render2d/` knows about attachment groups.
 
 **When** the public API is asked for components (`indigoCountComponents`, `indigoComponent`,
-`indigoIterateComponents`, `indigoComponentIndex`, `indigoFragmentedSdf`) or `standardize` keeps or
-removes fragments, **then** a haptic bond joins atoms as an ordinary bond does: a ferrocene is one
-component, a counter ion that nothing bonds is another (#3927). The answer comes from
+`indigoIterateComponents`, `indigoComponentIndex`, `indigoCloneComponent`,
+`indigoCount/IterateComponentAtoms/Bonds`, `indigoFragmentedSdf`), `standardize` keeps or removes
+fragments or charges a lone halogen, or the wrappers' `checkSalt` / `stripSalt` look for salts,
+**then** a haptic bond joins atoms as an ordinary bond does: a ferrocene is one component, a counter
+ion that nothing bonds is another, and a complex is never a salt (#3927). The answer comes from
 `core/indigo-core/molecule/base_molecule.h#moleculeComponents`, never from the graph's
 `countComponents()`, which SMILES, InChI and substructure search keep using — so a complex is one
 component and still prints as dot-separated SMILES.
@@ -106,4 +108,6 @@ and .NET wrappers (#3842), layout (#3844) and CDX/CDXML (#3843) have been added 
 - Charge and radical state on a group are deliberately out of scope, tracked separately.
 
 Coverage lives in `core/indigo-core/tests/tests/` — `attachment_groups.cpp`, `haptic_bonds.cpp`,
-`haptic_bonds_ket.cpp`, `haptic_molfile.cpp` — plus `api/cpp/tests/rendering/haptic.cpp`.
+`haptic_bonds_ket.cpp`, `haptic_molfile.cpp`, `molecule_components.cpp` — plus
+`api/cpp/tests/rendering/haptic.cpp`, `api/c/tests/unit/tests/haptic_components.cpp` and
+`api/tests/integration/tests/basic/haptic_components.py`.

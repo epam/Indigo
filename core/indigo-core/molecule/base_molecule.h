@@ -509,13 +509,15 @@ namespace indigo
         // Atom sets that hold together although no edge joins them: s-group
         // members, query components and haptic bonds. Feeds
         // Graph::countComponents(external_neighbors) — call it whenever a
-        // decomposition must not cut a molecule where it is still one whole.
+        // decomposition must not cut a molecule where it is still one whole. A split
+        // the user sees goes through moleculeComponents() instead.
         void collectExternalNeighbors(std::list<std::unordered_set<int>>& neighbors);
 
         // The components the public API reports, where a haptic bond joins atoms like
         // an ordinary one. Graph::countComponents() stays the graph's own answer, which
         // SMILES, InChI and substructure search rely on; a component index of one must
-        // never be used with the other. Rebuilt after any edit of the molecule.
+        // never be used with the other. Rebuilt on the first call after an edit, which
+        // is also when a reference returned before the edit stops being valid.
         const MoleculeComponents& moleculeComponents();
 
         void unfoldHydrogens(Array<int>* markers_out, int max_h_cnt = -1, bool impl_h_no_throw = false, bool only_selected = false);
@@ -888,7 +890,7 @@ namespace indigo
         int _edit_revision;
 
         std::unique_ptr<MoleculeComponents> _molecule_components;
-        int _molecule_components_revision = -1; // edit revision _molecule_components was built for
+        int _molecule_components_revision = -1;
 
         MetaDataStorage _meta;
 

@@ -3,7 +3,9 @@ Issue #3927: a haptic bond holds atoms together the way an ordinary bond does,
 so a complex is one component - the same one KET writes as one molecule node.
 
 For every haptic structure the suite has, the component sizes the API reports
-are printed beside the sizes of the KET molecule nodes; the two must agree.
+are printed beside the sizes of the KET molecule nodes; the two must agree. The
+list is read from the layout suite at run time, so a haptic structure added
+there shows up here too, and the reference has to take it in.
 """
 
 # The Java job runs this suite under Jython 2.7, where a bare print() would print

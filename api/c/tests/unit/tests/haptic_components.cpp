@@ -144,6 +144,17 @@ TEST_F(IndigoApiHapticComponentsTest, component_clone_keeps_the_complex)
     }
 }
 
+// A query takes the same path; its component clones into a query that keeps the complex.
+TEST_F(IndigoApiHapticComponentsTest, query_ferrocene_is_one_component)
+{
+    const int query = indigoLoadQueryMoleculeFromString(FERROCENE);
+    ASSERT_EQ(1, indigoCountComponents(query));
+
+    const int clone = indigoClone(indigoComponent(query, 0));
+    EXPECT_EQ(11, indigoCountAtoms(clone));
+    EXPECT_EQ(2, indigoCountHapticBonds(clone));
+}
+
 TEST_F(IndigoApiHapticComponentsTest, fragmented_sdf_writes_the_complex_as_one_record)
 {
     const int mol = indigoLoadMoleculeFromString(FERROCENE);
