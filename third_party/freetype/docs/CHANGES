@@ -1,4 +1,354 @@
-CHANGES BETWEEN 2.12.0 and 2.12.1
+CHANGES BETWEEN 2.14.2 and 2.14.3 (2026-Mar-22)
+
+  I. IMPORTANT BUG FIXES
+
+  - A bunch of potential security problems have been found.  All users
+    should update.
+
+
+  II. MISCELLANEOUS
+
+  - If configuration option `TT_CONFIG_OPTION_GPOS_KERNING` is active,
+    GPOS-based kerning could miss some  value pairs (bug introduced in
+    version 2.14.0).
+
+
+======================================================================
+
+CHANGES BETWEEN 2.14.1 and 2.14.2 (2026-Mar-01)
+
+  I. IMPORTANT CHANGES
+
+  - Several  changes  related  to  LCD  filtering  are implemented  to
+    achieve better performance and encourage sound practices.
+
+    . Instead of  blanket LCD filtering over the entire bitmap,  it is
+      now applied only to non-zero spans using direct rendering.  This
+      speeds up the ClearType-like rendering by more than 40% at sizes
+      above 32 ppem.
+
+    . Setting the filter weights with FT_Face_Properties  is no longer
+      supported.  The default and light filters  are optimized to work
+      with any face.
+
+    . The legacy libXft LCD filter algorithm is no longer provided.
+
+
+  II. IMPORTANT BUG FIXES
+
+  - A bunch of potential security problems have been found.  All users
+    should update.
+
+  - The italic angle in `PS_FontInfo`  is now stored  as a fixed-point
+    value  in degrees  for  all  Type 1 fonts  and  their derivatives,
+    consistent  with  CFF  fonts  and  common  practices.  The  broken
+    underline position and thickness values are fixed for CFF fonts.
+
+
+  III. MISCELLANEOUS
+
+  - The `x` field in the `FT_Span` structure is now unsigned.
+
+  - Demo  program  `ftgrid` got  an  option  `-m`  to select  a  start
+    character to display.
+
+  - Similarly, demo program  `ftmulti` got an option `-m`  to select a
+    text string for rendering.
+
+  - Option  `-d` in  the demo  program `ttdebug`  is now  called `-a`,
+    expecting  a  comma-separated  list  of  axis  values.   The  user
+    interface is also slightly improved.
+
+  - The `ftinspect` demo program can now be compiled with Qt6, too.
+
+
+======================================================================
+
+CHANGES BETWEEN 2.14.0 and 2.14.1 (2025-Sep-11)
+
+  I. IMPORTANT BUG FIXES
+
+  - This is  an emergency release that  fixes a couple of  severe bugs
+    introduced  in  version  2.14.0  and discovered  right  after  the
+    release; see issues  #1349, #1353, #1354, #1355, and  #1356 in our
+    bug tracker at
+
+      https://gitlab.freedesktop.org/freetype/freetype/-/issues
+
+
+======================================================================
+
+CHANGES BETWEEN 2.13.3 and 2.14.0 (2025-Sep-06)
+
+  I. IMPORTANT CHANGES
+
+  - A new  configuration macro `FT_CONFIG_OPTION_USE_HARFBUZZ_DYNAMIC`
+    is available to load the HarfBuzz library dynamically (in addition
+    to the standard static and  dynamic linking modes);  cmake, meson,
+    and autotools support have  been updated  accordingly.  Using this
+    new feature  makes  it possible  to avoid  the circular dependency
+    between HarfBuzz and FreeType.
+
+    A  side effect  of this  change is  that FreeType  no longer  uses
+    HarfBuzz header files (if HarfBuzz support is activated).
+
+    This code was contributed by Behdad Esfahbod.
+
+  - The auto-hinter got new abilities.
+
+    . It can now better separate  diacritic glyphs from base glyphs at
+      small sizes  by artificially moving  diacritics up (or  down) if
+      necessary.
+
+    . Tilde accent  glyphs get vertically stretched at  small sizes so
+      that they don't degenerate to horizontal lines.
+
+    . Diacritics directly attached to a base glyph (like the ogonek in
+      character 'ę') no longer distort the shape of the base glyph.
+
+    These features  use a  database (which  currently has  entries for
+    Unicode characters up to U+FFFF,  based on Unicode 17.0), handling
+    scripts like  Latin, Cyrillic, or  Greek, but not Arabic  or Indic
+    scripts.  FreeType needs to access  a proper Unicode character map
+    (or must be able to construct such a cmap) of a given font to make
+    this work.
+
+    The central algorithm and the foundation of this feature was Craig
+    White's GSoC 2023 project.
+
+  - Bitmap-only TrueType fonts now ignore the `FT_LOAD_NO_BITMAP` flag
+    and  proceed loading  bitmaps instead  of giving  an error.   This
+    behavior  is  documented  and implemented  for  other  bitmap-only
+    fonts.  The flag  was always meant to suppress  the bitmap strikes
+    in favor of outlines, not to ban them completely.
+
+
+  II. IMPORTANT BUG FIXES
+
+  - Users of the `TT_CONFIG_OPTION_GPOS_KERNING`  configuration option
+    should update;  the 'GPOS' table wasn't correctly validated before
+    access, which could lead to crashes with malformed font files.
+
+
+  III. MISCELLANEOUS
+
+  - `FT_Set_Var_Design_Coordinates`  and `FT_Set_MM_Blend_Coordinates`
+    now set the `FT_FACE_FLAG_VARIATION`  bit in the `face_flag` field
+    of `FT_Face` (i.e., the macro `FT_IS_VARIATION` returns true) also
+    if any  of the provided  coordinates is different from  the face's
+    default value for the corresponding axis, that is, the set up face
+    is not at its default position.
+
+  - `FT_Load_Sfnt_Table` can now also load a font's table directory.
+
+  - The TrueType  instruction interpreter  was optimized to  produce a
+    15% gain in the glyph loading speed.
+
+  - Handling of Variation Fonts is now considerably faster,  thanks to
+    contributions by Behdad Esfahbod.
+
+  - TrueType and CFF glyph loading speed has been improved by 5-10% on
+    modern 64-bit platforms  as  a result of better handling of fixed-
+    point multiplication.
+
+  - The BDF driver now loads fonts 75% faster.
+
+  - 'GPOS' kern table handling (if the `TT_CONFIG_OPTION_GPOS_KERNING`
+    configuration option is active) is now about 3.5 times faster than
+    before.
+
+  - Support for  the (currently  undocumented) 'flip' graphic  type in
+    the 'sbix' SFNT table as used  in the `Apple Color Emoji.ttc` font
+    (code provided by Andrew Murray).
+
+  - `ftmulti` can now scroll  through named instances  and  gracefully
+    show static fonts.
+
+  - The build file on OpenVMS now also creates a 32-bit version of the
+    library.
+
+
+======================================================================
+
+CHANGES BETWEEN 2.13.2 and 2.13.3 (2024-Aug-11)
+
+  I. IMPORTANT CHANGES
+
+  - Some  fields  in  the  `FT_Outline` structure  have been   changed
+    from signed  to unsigned type,  which  better reflects  the actual
+    usage.   It  is  also  an  additional  means  to  protect  against
+    malformed input.
+
+
+  II. IMPORTANT BUG FIXES
+
+  - Rare double-free crashes in the cache subsystem have been fixed.
+
+  - Excessive stack allocation in the autohinter has been fixed.
+
+
+  III. MISCELLANEOUS
+
+  - The B/W  rasterizer has  received a major  upkeep that  results in
+    large performance improvements.  The rendering speed has increased
+    and even doubled for very complex glyphs.
+
+  - If the new configuration option `TT_CONFIG_OPTION_GPOS_KERNING` is
+    defined,  `FT_Get_Kerning`  understands rudimentary  GPOS  kerning
+    (for TrueType fonts  only).  This is not enabled  by default since
+    its usage  is very  limited, mainly  for legacy  applications that
+    have to support TrueType fonts automatically converted from 'kern'
+    tables to GPOS kerning.  If you need proper (GPOS) kerning support
+    please use a higher-level library like HarfBuzz.
+
+    Code contributed by David Saltzman <davidbsaltzman@gmail.com>.
+
+  - The internal structures  `PS_DesignMap` and `PS_Blend` related  to
+    parsing of old Multiple Masters fonts  have been removed  from the
+    public header file `t1tables.h`.
+
+
+======================================================================
+
+CHANGES BETWEEN 2.13.1 and 2.13.2 (2023-Aug-25)
+
+  I. MISCELLANEOUS
+
+  - Better support for CFF2 variation fonts.
+
+  - TrueType interpreter  version 38 (also known  as 'Infinality') has
+    been removed.
+
+  - Improved OpenVMS support.
+
+
+======================================================================
+
+CHANGES BETWEEN 2.13.0 and 2.13.1 (2023-Jun-24)
+
+  I. MISCELLANEOUS
+
+  - New function  `FT_Get_Default_Named_Instance` to get the  index of
+    the default named instance of an OpenType Variation Font.
+
+  - A new load flag `FT_LOAD_NO_SVG` to make FreeType ignore glyphs in
+    an 'SVG ' table.
+
+  - New  function  `FT_GlyphSlot_AdjustWeight`  to  adjust  the  glyph
+    weight either  horizontally or  vertically.  This  is part  of the
+    `ftsynth.h` header file, which is  still considered to be in alpha
+    stage.
+
+  - TrueType interpreter  version 38 (also known  as 'Infinality') has
+    been deactivated; the value  of `TT_INTERPRETER_VERSION_38` is now
+    the same as `TT_INTERPRETER_VERSION_40`.
+
+  - Updated OpenVMS support.
+
+  - The  base  API  documentation  has  been  modularized  for  easier
+    handling.
+
+  - Switching named instances on and  off in Variation Fonts was buggy
+    if the design coordinates didn't change.
+
+  - `ftbench`  has a  new  command-line option  `-a`  to apply  design
+    coordinates.
+
+  - `ftview` can now flip SVG rendering on and off using the 'Z' key.
+
+  - In  `ftmulti` it  is  now possible  to toggle  the  fill rule  and
+    overlap flag  used for  rendering glyphs using  the 'F3'  and 'F4'
+    keys,  respectively.   Toggling  the anti-aliased  mode  has  been
+    changed to the 'TAB' key.
+
+
+======================================================================
+
+CHANGES BETWEEN 2.12.1 and 2.13.0 (2023-Feb-09)
+
+  I. IMPORTANT CHANGES
+
+  - The demo program `ftinspect` has  been completely updated and much
+    enhanced.  It now  combines the functionality of  almost all other
+    graphical FreeType  demo programs into a  single application based
+    on the Qt framework.  This was Charlie Jiang's GSoC 2022 project.
+
+  - The 'COLR' v1 API is now considered as stable.
+
+      https://learn.microsoft.com/typography/opentype/spec/colr
+
+
+  II. MISCELLANEOUS
+
+  - For  OpenType  Variable Fonts,  `avar`  table  format 2.0  is  now
+    supported.  The code was contributed by Behdad Esfahbod.
+
+    Note that this is an extension supported on recent Apple platforms
+    and by HarfBuzz, but not yet in the OpenType standard!  See
+
+      https://github.com/harfbuzz/boring-expansion-spec/blob/main/avar2.md
+
+    for the specification.  To deactivate it, define the configuration
+    macro 'TT_CONFIG_OPTION_NO_BORING_EXPANSION'.
+
+  - A new API  `FT_GlyphSlot_Slant` to slant a glyph by  a given angle
+    has been added.   Note that this function is  part of `ftsynth.h`,
+    which is still considered to be in alpha stage.
+
+  - TrueType interpreter version 38  (also known as 'Infinality') that
+    was first introduced about 10 years  ago in FreeType 2.4.11 is now
+    deprecated and slated to be removed in the next version.  TrueType
+    interpreter version 40 has been FreeType's default version for six
+    years now and provides an excellent alternative.  This is the last
+    FreeType     version     with    TT_INTERPRETER_VERSION_38     and
+    TT_INTERPRETER_VERSION_40 treated differently.
+
+  - The  only  referenced  but never  documented  configuration  macro
+    `FT_CONFIG_OPTION_NO_GLYPH_NAMES` has been removed.
+
+  - The `ftbench` demo  program got a new command line  option `-e` to
+    set a charmap index.
+
+  - Specifying  a point  size is  now optional  for the  demo programs
+    `ftgrid`, `ftmulti`,  `ftstring`, and  `ftview`.  If not  given, a
+    default size is used.
+
+  - For  `ftgrid`,  `ftstring`, and  `ftview`,  option  `-e` now  also
+    accepts a numeric value to set a charmap index.
+
+  - In  `ftstring`, it  is  now  possible to  set  the displayed  text
+    interactively by pressing the 'Enter' key.
+
+  - `ftmulti` can now handle up to 16 design axes.
+
+  - To  avoid  reserved identifiers  that  are  globally defined,  the
+    auto-hinter  debugging   macros  (which  are  only   available  if
+    `FT_DEBUG_AUTOFIT` is defined)
+
+    ```
+    _af_debug_disable_horz_hints
+    _af_debug_disable_vert_hints
+    _af_debug_disable_blue_hints
+    _af_debug_hints
+    ```
+
+    have been renamed to
+
+    ```
+    af_debug_disable_horz_hints_
+    af_debug_disable_vert_hints_
+    af_debug_disable_blue_hints_
+    af_debug_hints_
+    ```
+
+  - The internal  zlib library was  updated to version  1.2.13.  Note,
+    however, that  FreeType is *not* affected  by CVE-2022-37434 since
+    it doesn't use the `inflateGetHeader` function.
+
+
+======================================================================
+
+CHANGES BETWEEN 2.12.0 and 2.12.1 (2022-May-01)
 
   I. IMPORTANT BUG FIXES
 
@@ -28,7 +378,7 @@ CHANGES BETWEEN 2.12.0 and 2.12.1
 
 ======================================================================
 
-CHANGES BETWEEN 2.11.1 and 2.12.0
+CHANGES BETWEEN 2.11.1 and 2.12.0 (2022-Mar-30)
 
   I. IMPORTANT CHANGES
 
@@ -79,7 +429,7 @@ CHANGES BETWEEN 2.11.1 and 2.12.0
 
 ======================================================================
 
-CHANGES BETWEEN 2.11.0 and 2.11.1
+CHANGES BETWEEN 2.11.0 and 2.11.1 (2021-Dec-01)
 
   I. IMPORTANT CHANGES
 
@@ -111,7 +461,7 @@ CHANGES BETWEEN 2.11.0 and 2.11.1
 
 ======================================================================
 
-CHANGES BETWEEN 2.10.4 and 2.11.0
+CHANGES BETWEEN 2.10.4 and 2.11.0 (2021-Jul-18)
 
   I. IMPORTANT CHANGES
 
@@ -154,6 +504,10 @@ CHANGES BETWEEN 2.10.4 and 2.11.0
         Dereference  an  `FT_OpaquePaint`   object  and  retrieve  the
         corresponding `FT_COLR_Paint`  object, which  contains details
         on how to draw the respective 'COLR' v1 `Paint` table.
+
+    Please note that FreeType does *not* provide rendering support for
+    'COLR' v1 but  only parsing of  this table.  You need  a dedicated
+    graphics library like Skia or Cairo for rendering.
 
 
   II. MISCELLANEOUS
@@ -401,7 +755,7 @@ CHANGES BETWEEN 2.9.1 and 2.10.0 (2019-Mar-15)
           Set text foreground color for palette index 0xFFFF.
 
         FT_Get_Color_Glyph_Layer
-          Get color layers for a given glyph (using an interator
+          Get color layers for a given glyph (using an iterator
           object).
 
         FT_Bitmap_Blend
@@ -1834,7 +2188,7 @@ CHANGES BETWEEN 2.4.10 and 2.4.11 (2012-Dec-20)
     - Subpixel  hinting support  has been  contributed by  Infinality,
       based on Greg Hitchcock's whitepaper at
 
-        https://www.microsoft.com/typography/cleartype/truetypecleartype.aspx
+        https://learn.microsoft.com/typography/cleartype/truetypecleartype
 
       Originally, it was a separate patch available from
 
@@ -2340,7 +2694,7 @@ CHANGES BETWEEN 2.3.8 and 2.3.7
       is provided for x86 and ARM.  See FT_CONFIG_OPTION_INLINE_MULFIX
       and FT_CONFIG_OPTION_NO_ASSEMBLER (in ftoption.h) for more.
 
-    - The handling of `tricky' fonts  (this is, fonts which don't work
+    - The handling of `tricky' fonts  (that is, fonts which don't work
       with the  autohinter, needing the font  format's hinting engine)
       has been generalized and changed slightly:
 
@@ -2797,7 +3151,7 @@ CHANGES BETWEEN 2.2 and 2.1.10
 
   II. IMPORTANT CHANGES
 
-    - Version 2.2 no longer exposes its internals, this is, the header
+    - Version 2.2 no longer exposes its internals, that is, the header
       files  located in  the `include/freetype/internal'  directory of
       the source package are not  copied anymore by the `make install'
       command.  Consequently, a number of rogue clients which directly
@@ -2807,7 +3161,7 @@ CHANGES BETWEEN 2.2 and 2.1.10
       We provide  patches for  most of those  rogue clients.   See the
       following page for more information:
 
-        https://www.freetype.org/freetype2/patches/rogue-patches.html
+        https://freetype.org/freetype2/patches/rogue-patches.html
 
       Note that, as  a convenience to our Unix  desktop users, version
       2.2 is *binary* compatible with FreeType 2.1.7, which means that
@@ -3596,7 +3950,7 @@ CHANGES BETWEEN 2.1.3 and 2.1.2
       quality since  many nasty defaults have been suppressed.  Please
       visit the web page:
 
-        https://www.freetype.org/hinting/smooth-hinting.html
+        https://freetype.org/hinting/smooth-hinting.html
 
       for additional details on this topic.
 
@@ -3844,7 +4198,7 @@ CHANGES BETWEEN 2.1.0 and 2.0.9
 
       """
         Portions of this software are copyright © 1996-2002 The
-        FreeType Project (www.freetype.org).  All rights reserved.
+        FreeType Project (https://freetype.org).  All rights reserved.
       """
 
     - The default size of the render pool has been reduced to 16kByte.
@@ -3855,7 +4209,7 @@ CHANGES BETWEEN 2.1.0 and 2.0.9
     - The  FreeType 2  redesign has  begun.  More  information  can be
       found at this URL:
 
-        https://www.freetype.org/freetype2/redesign.html
+        https://freetype.org/freetype2/redesign.html
 
       The following  internal changes  have been performed  within the
       sources of this release:
@@ -4446,7 +4800,7 @@ CHANGES BETWEEN 2.0.2 and 2.0.1
 
       For more information, see section I of the following document:
 
-        https://www.freetype.org/freetype2/docs/tutorial/step1.html
+        https://freetype.org/freetype2/docs/tutorial/step1.html
 
     - Many, many comments have been added to the public source file in
       order to  automatically generate  the API Reference  through the
@@ -4455,7 +4809,7 @@ CHANGES BETWEEN 2.0.2 and 2.0.1
       The latter has been updated  to support the grouping of sections
       in chapters and better index sort.  See:
 
-        https://www.freetype.org/freetype2/docs/reference/ft2-toc.html
+        https://freetype.org/freetype2/docs/reference/ft2-toc.html
 
 
   III. CHANGES TO THE BUILD PROCESS
@@ -5530,7 +5884,7 @@ Extensions support:
 
 ------------------------------------------------------------------------
 
-Copyright (C) 2000-2022 by
+Copyright (C) 2000-2026 by
 David Turner, Robert Wilhelm, and Werner Lemberg.
 
 This  file  is  part  of the  FreeType  project, and may  only be  used,
