@@ -1313,7 +1313,9 @@ class IndigoObject:
         return IndigoLib.checkResult(self._lib().indigoCheckStereo(self.id))
 
     def checkSalt(self):
-        """Molecule method verifies if the structure contains salt.
+        """Molecule method verifies if the structure contains salt. A
+        component held together by haptic bonds is a coordination compound,
+        not a salt.
 
         Returns:
             bool: True if structure contains salt
@@ -1321,6 +1323,9 @@ class IndigoObject:
 
         for target_fragment in self.iterateComponents():
             target_fragment = target_fragment.clone()
+            # Its metal has no ordinary bond, so it looks like a lone ion.
+            if target_fragment.countHapticBonds():
+                continue
             for salt in SALTS:
                 query_salt = self.session.loadSmarts(salt)
                 matcher = self.session.substructureMatcher(target_fragment)
@@ -1329,7 +1334,8 @@ class IndigoObject:
         return False
 
     def stripSalt(self, inplace=False):
-        """Molecule method strips all inorganic components.
+        """Molecule method strips all inorganic components. A component held
+        together by haptic bonds is a coordination compound and stays.
 
         Args:
             inplace(bool): if False - returns the copy of the molecule,
@@ -1343,27 +1349,27 @@ class IndigoObject:
                           components.
         """
 
+        # The atoms are named by their indices in the molecule they are removed
+        # from: a component's atoms need not be consecutive, and a copy numbers
+        # them anew.
+        target = self if inplace else self.clone()
         salts_atoms = []
-        idx = 0
-        for target_fragment in self.iterateComponents():
-            target_fragment = target_fragment.clone()
-            n_atoms = target_fragment.countAtoms()
+        for component in target.iterateComponents():
+            target_fragment = component.clone()
+            if target_fragment.countHapticBonds():
+                continue
 
             for salt in SALTS:
                 query_salt = self.session.loadQueryMolecule(salt)
                 matcher = self.session.substructureMatcher(target_fragment)
                 if matcher.match(query_salt):
-                    salt_position = [i for i in range(idx, idx + n_atoms)]
-                    salts_atoms.extend(salt_position)
-            idx += n_atoms
+                    salts_atoms.extend(
+                        atom.index() for atom in component.iterateAtoms()
+                    )
+                    break
 
-        if not inplace:
-            saltless_fragment = self.clone()
-            saltless_fragment.removeAtoms(salts_atoms)
-            return saltless_fragment
-        else:
-            self.removeAtoms(salts_atoms)
-            return self
+        target.removeAtoms(salts_atoms)
+        return target
 
     def countHydrogens(self):
         """Atom or Molecule method returns the number of hydrogens

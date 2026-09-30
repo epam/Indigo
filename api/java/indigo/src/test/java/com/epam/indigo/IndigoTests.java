@@ -197,6 +197,50 @@ public class IndigoTests {
         assertEquals("CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1", m.smiles());
     }
 
+    // The ionic drawing of a ferrocene, its rings bound to the iron by haptic bonds (#3927): the
+    // iron has no ordinary bond at all.
+    private static IndigoObject ferrocene(Indigo indigo, String smiles, int[] rings, int iron) {
+        IndigoObject m = indigo.loadMolecule(smiles);
+        for (int first : rings) {
+            IndigoObject group =
+                    m.addAttachmentGroup(new int[] {first, first + 1, first + 2, first + 3, first + 4});
+            m.addHapticBond(group, m.getAtom(iron));
+        }
+        return m;
+    }
+
+    @Test
+    @DisplayName("checkSalt does not take a haptic complex for a salt, but finds its counter ion")
+    void testCheckSaltHapticComplex() {
+        Indigo indigo = new Indigo();
+        IndigoObject m = ferrocene(indigo, "[cH-]1cccc1.[Fe+2].[cH-]1cccc1", new int[] {0, 6}, 5);
+        assertFalse(m.checkSalt());
+        m.merge(indigo.loadMolecule("[Cl-]"));
+        assertTrue(m.checkSalt());
+    }
+
+    @Test
+    @DisplayName("stripSalt keeps a haptic complex and removes the ion drawn between its atoms")
+    void testStripSaltHapticComplex() {
+        Indigo indigo = new Indigo();
+        IndigoObject m = ferrocene(indigo, "[cH-]1cccc1.[Cl-].[cH-]1cccc1.[Fe+2]", new int[] {0, 6}, 11);
+
+        IndigoObject stripped = m.stripSalt();
+        assertEquals(11, stripped.countAtoms());
+        assertEquals(2, stripped.countHapticBonds());
+
+        m.stripSalt(true);
+        assertEquals(11, m.countAtoms());
+        assertEquals(2, m.countHapticBonds());
+    }
+
+    @Test
+    @DisplayName("stripSalt removes the ion, not the atom whose place the ion has in the numbering")
+    void testStripSaltIonBetweenFragmentAtoms() {
+        Indigo indigo = new Indigo();
+        assertEquals("CC", indigo.loadMolecule("C1.[Na+].C1").stripSalt().smiles());
+    }
+
     @Test
     @DisplayName("an attachment group and a haptic bond are built and read back (#3842)")
     void testHapticBond() {

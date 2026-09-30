@@ -885,7 +885,8 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
     }
 
     /**
-     * Verifies whether the structure contains a disconnected inorganic component ("salt").
+     * Verifies whether the structure contains a disconnected inorganic component ("salt"). A
+     * component held together by haptic bonds is a coordination compound, not a salt.
      *
      * @return {@code true} if the structure contains a salt
      */
@@ -894,6 +895,10 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
 
         for (IndigoObject component : iterateComponents()) {
             IndigoObject targetFragment = component.clone();
+            // Its metal has no ordinary bond, so it looks like a lone ion.
+            if (targetFragment.countHapticBonds() > 0) {
+                continue;
+            }
             for (String salt : Salts.SALTS) {
                 IndigoObject querySalt = dispatcher.loadSmarts(salt);
                 IndigoObject matcher = dispatcher.substructureMatcher(targetFragment);
@@ -917,7 +922,8 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
     }
 
     /**
-     * Strips all disconnected inorganic components ("salts") from the molecule.
+     * Strips all disconnected inorganic components ("salts") from the molecule. A component held
+     * together by haptic bonds is a coordination compound and stays.
      *
      * @param inplace if {@code false} - returns a copy of the molecule without inorganic
      *     components; if {@code true} - strips inorganic components from the molecule itself
@@ -927,32 +933,30 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
     public IndigoObject stripSalt(boolean inplace) {
         dispatcher.setSessionID();
 
+        // The atoms are named by their indices in the molecule they are removed from: a
+        // component's atoms need not be consecutive, and a copy numbers them anew.
+        IndigoObject target = inplace ? this : clone();
         ArrayList<Integer> saltAtoms = new ArrayList<>();
-        int idx = 0;
-        for (IndigoObject component : iterateComponents()) {
+        for (IndigoObject component : target.iterateComponents()) {
             IndigoObject targetFragment = component.clone();
-            int nAtoms = targetFragment.countAtoms();
+            if (targetFragment.countHapticBonds() > 0) {
+                continue;
+            }
 
             for (String salt : Salts.SALTS) {
                 IndigoObject querySalt = dispatcher.loadQueryMolecule(salt);
                 IndigoObject matcher = dispatcher.substructureMatcher(targetFragment);
                 if (matcher.match(querySalt) != null) {
-                    for (int i = idx; i < idx + nAtoms; i++) {
-                        saltAtoms.add(i);
+                    for (IndigoObject atom : component.iterateAtoms()) {
+                        saltAtoms.add(atom.index());
                     }
+                    break;
                 }
             }
-            idx += nAtoms;
         }
 
-        if (!inplace) {
-            IndigoObject saltlessFragment = clone();
-            saltlessFragment.removeAtoms(saltAtoms);
-            return saltlessFragment;
-        } else {
-            removeAtoms(saltAtoms);
-            return this;
-        }
+        target.removeAtoms(saltAtoms);
+        return target;
     }
 
     public int countSSSR() {

@@ -228,6 +228,45 @@ class TestIndigo(TestIndigoBase):
         self.assertEqual(m.smiles(), "CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1")
         self.assertNotEqual(m.smiles(), "CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1.[Cl-]")
 
+    def _ferrocene(self, smiles, rings, iron):
+        """The ionic drawing of a ferrocene, its rings bound to the iron by
+        haptic bonds (#3927): the iron has no ordinary bond at all."""
+        m = self.indigo.loadMolecule(smiles)
+        for first in rings:
+            group = m.addAttachmentGroup(list(range(first, first + 5)))
+            m.addHapticBond(group, m.getAtom(iron))
+        return m
+
+    def test_check_salt_haptic_complex(self) -> None:
+        m = self._ferrocene("[cH-]1cccc1.[Fe+2].[cH-]1cccc1", (0, 6), 5)
+        self.assertFalse(m.checkSalt(), "the iron is bonded to the rings")
+        m.merge(self.indigo.loadMolecule("[Cl-]"))
+        self.assertTrue(m.checkSalt(), "the chloride is bonded to nothing")
+
+    def test_strip_salt_haptic_complex(self) -> None:
+        m = self._ferrocene("[cH-]1cccc1.[Fe+2].[cH-]1cccc1", (0, 6), 5)
+        stripped = m.stripSalt()
+        self.assertEqual(stripped.countAtoms(), 11)
+        self.assertEqual(stripped.countHapticBonds(), 2)
+
+    def test_strip_salt_ion_between_complex_atoms(self) -> None:
+        m = self._ferrocene("[cH-]1cccc1.[Cl-].[cH-]1cccc1.[Fe+2]", (0, 6), 11)
+        stripped = m.stripSalt()
+        self.assertEqual(
+            [atom.symbol() for atom in stripped.iterateAtoms()].count("Cl"), 0
+        )
+        self.assertEqual(stripped.countAtoms(), 11)
+        self.assertEqual(stripped.countHapticBonds(), 2)
+        m.stripSalt(inplace=True)
+        self.assertEqual(m.countAtoms(), 11)
+        self.assertEqual(m.countHapticBonds(), 2)
+
+    def test_strip_salt_ion_between_fragment_atoms(self) -> None:
+        # Ethane written around the sodium: the atoms of one component are not
+        # consecutive, and the sodium, not a carbon, has to go.
+        m = self.indigo.loadMolecule("C1.[Na+].C1")
+        self.assertEqual(m.stripSalt().smiles(), "CC")
+
     def test_copy_rgroups(self) -> None:
         m_with_rg = self.indigo.loadMolecule(
             "C%91C.[*:1]%91 |$;;_R1$,RG:_R1={F%91.Cl%92.Br%93."
