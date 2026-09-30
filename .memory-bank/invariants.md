@@ -55,6 +55,14 @@ chemical claim, not a smaller one, and a haptic bond pointing at a partial group
 nothing downstream can detect. The group's anchor atom is deliberately outside this rule: it is
 remapped separately and simply becomes `-1`.
 
+**A7a — A molecule has two decompositions into components; an index of one is meaningless in the other.**
+`Graph::countComponents()` follows edges only; `BaseMolecule::moleculeComponents()` also follows
+haptic bonds (`core/indigo-core/molecule/base_molecule.h#moleculeComponents`). The public component
+API and `fragmentedSdf` use the second, graph algorithms the first. A component number taken from one
+and fed to the other's `getDecomposition()` or `selectAtoms()` picks the wrong atoms — only on
+molecules with haptic bonds, so nothing else notices. Every consumer of a component index reads the
+same decomposition that produced it.
+
 **A8 — Bond orders and query flags are named constants, tests included.**
 `BOND_SINGLE`, `BOND_ZERO`, `_BOND_COORDINATION` and friends — never the underlying integers.
 

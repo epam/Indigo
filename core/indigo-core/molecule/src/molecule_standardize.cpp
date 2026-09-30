@@ -702,12 +702,15 @@ void MoleculeStandardizer::_removeSingleAtomFragments(BaseMolecule& mol)
     QS_DEF(Array<int>, single_atoms);
     single_atoms.clear();
 
+    // A metal held by haptic bonds alone has no neighbour in the graph, yet it is
+    // not a fragment of its own (#3927).
+    const MoleculeComponents& components = mol.moleculeComponents();
     for (auto i : mol.vertices())
     {
         auto atom_number = mol.getAtomNumber(i);
         if (atom_number != ELEM_H)
         {
-            if (mol.getVertex(i).degree() == 0)
+            if (components.atomCount(components.componentOf(i)) == 1)
                 single_atoms.push(i);
         }
     }
@@ -721,7 +724,8 @@ void MoleculeStandardizer::_keepSmallestFragment(BaseMolecule& mol)
     if (mol.vertexCount() <= 1)
         return;
 
-    auto ncomp = mol.countComponents();
+    const MoleculeComponents& components = mol.moleculeComponents();
+    auto ncomp = components.count();
     if (ncomp == 1)
         return;
 
@@ -729,9 +733,9 @@ void MoleculeStandardizer::_keepSmallestFragment(BaseMolecule& mol)
     auto min_comp = 0;
     for (auto i = 0; i < ncomp; i++)
     {
-        if (mol.countComponentVertices(i) < min_size)
+        if (components.atomCount(i) < min_size)
         {
-            min_size = mol.countComponentVertices(i);
+            min_size = components.atomCount(i);
             min_comp = i;
         }
     }
@@ -741,7 +745,7 @@ void MoleculeStandardizer::_keepSmallestFragment(BaseMolecule& mol)
 
     for (auto i : mol.vertices())
     {
-        if (mol.vertexComponent(i) != min_comp)
+        if (components.componentOf(i) != min_comp)
             remove_atoms.push(i);
     }
 
@@ -755,7 +759,8 @@ void MoleculeStandardizer::_keepLargestFragment(BaseMolecule& mol)
     if (mol.vertexCount() <= 1)
         return;
 
-    auto ncomp = mol.countComponents();
+    const MoleculeComponents& components = mol.moleculeComponents();
+    auto ncomp = components.count();
     if (ncomp == 1)
         return;
 
@@ -763,9 +768,9 @@ void MoleculeStandardizer::_keepLargestFragment(BaseMolecule& mol)
     auto max_comp = 0;
     for (auto i = 0; i < ncomp; i++)
     {
-        if (mol.countComponentVertices(i) > max_size)
+        if (components.atomCount(i) > max_size)
         {
-            max_size = mol.countComponentVertices(i);
+            max_size = components.atomCount(i);
             max_comp = i;
         }
     }
@@ -775,7 +780,7 @@ void MoleculeStandardizer::_keepLargestFragment(BaseMolecule& mol)
 
     for (auto i : mol.vertices())
     {
-        if (mol.vertexComponent(i) != max_comp)
+        if (components.componentOf(i) != max_comp)
             remove_atoms.push(i);
     }
 
@@ -788,7 +793,8 @@ void MoleculeStandardizer::_removeLargestFragment(BaseMolecule& mol)
     if (mol.vertexCount() <= 1)
         return;
 
-    auto ncomp = mol.countComponents();
+    const MoleculeComponents& components = mol.moleculeComponents();
+    auto ncomp = components.count();
     if (ncomp == 1)
         return;
 
@@ -796,9 +802,9 @@ void MoleculeStandardizer::_removeLargestFragment(BaseMolecule& mol)
     auto max_comp = 0;
     for (auto i = 0; i < ncomp; i++)
     {
-        if (mol.countComponentVertices(i) > max_size)
+        if (components.atomCount(i) > max_size)
         {
-            max_size = mol.countComponentVertices(i);
+            max_size = components.atomCount(i);
             max_comp = i;
         }
     }
@@ -808,7 +814,7 @@ void MoleculeStandardizer::_removeLargestFragment(BaseMolecule& mol)
 
     for (auto i : mol.vertices())
     {
-        if (mol.vertexComponent(i) == max_comp)
+        if (components.componentOf(i) == max_comp)
             remove_atoms.push(i);
     }
 

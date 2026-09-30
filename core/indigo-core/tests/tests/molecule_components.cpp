@@ -30,6 +30,7 @@
 #include <molecule/molecule.h>
 #include <molecule/molecule_components.h>
 #include <molecule/molecule_haptic_bonds.h>
+#include <molecule/molecule_standardize_options.h>
 
 #include "common.h"
 
@@ -257,4 +258,52 @@ TEST_F(IndigoCoreMoleculeComponentsTest, EmptyMoleculeHasNoComponents)
 {
     Molecule mol;
     EXPECT_EQ(0, mol.moleculeComponents().count());
+}
+
+// ---- standardize ------------------------------------------------------------
+
+// A ferrocene (atoms 0-10) beside a sodium and a chloride nothing bonds to: the
+// fragment options must treat the complex as one fragment of eleven atoms.
+class IndigoCoreStandardizeHapticTest : public IndigoCoreMoleculeComponentsTest
+{
+protected:
+    static int standardize(bool StandardizeOptions::*option, Molecule& mol)
+    {
+        makeFerrocene(mol);
+        mol.addAtom(ELEM_Na);
+        mol.addAtom(ELEM_Cl);
+
+        StandardizeOptions options;
+        options.*option = true;
+        mol.standardize(options);
+        return mol.vertexCount();
+    }
+};
+
+TEST_F(IndigoCoreStandardizeHapticTest, RemoveSingleAtomsKeepsTheMetalOfAComplex)
+{
+    Molecule mol;
+    EXPECT_EQ(11, standardize(&StandardizeOptions::remove_single_atom_fragments, mol));
+    EXPECT_EQ(2, mol.haptic_bonds.count());
+}
+
+TEST_F(IndigoCoreStandardizeHapticTest, KeepLargestKeepsTheWholeComplex)
+{
+    Molecule mol;
+    EXPECT_EQ(11, standardize(&StandardizeOptions::keep_largest_fragment, mol));
+    EXPECT_EQ(2, mol.haptic_bonds.count());
+}
+
+TEST_F(IndigoCoreStandardizeHapticTest, KeepSmallestDropsTheWholeComplex)
+{
+    Molecule mol;
+    EXPECT_EQ(1, standardize(&StandardizeOptions::keep_smallest_fragment, mol));
+    EXPECT_EQ(ELEM_Na, mol.getAtomNumber(mol.vertexBegin()));
+}
+
+TEST_F(IndigoCoreStandardizeHapticTest, RemoveLargestDropsTheWholeComplex)
+{
+    Molecule mol;
+    EXPECT_EQ(2, standardize(&StandardizeOptions::remove_largest_fragment, mol));
+    EXPECT_TRUE(mol.haptic_bonds.isEmpty());
 }
