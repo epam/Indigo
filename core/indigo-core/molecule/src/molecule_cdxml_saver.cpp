@@ -1082,6 +1082,11 @@ void MoleculeCdxmlSaver::addAttachmentGroupsToFragment(BaseMolecule& mol, XMLEle
         }
         node->SetAttribute("Attachments", attachments.c_str());
 
+        if (group.charge() != 0)
+            node->SetAttribute("Charge", group.charge());
+        if (group.radical() != 0)
+            node->SetAttribute("Radical", kRadicalIdToStr[group.radical()].c_str());
+
         if (mol.have_xyz)
         {
             // The node stands where the group acts from, in the same coordinates

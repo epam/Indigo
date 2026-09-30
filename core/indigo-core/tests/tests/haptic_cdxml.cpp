@@ -19,16 +19,19 @@
 // CDX/CDXML side of haptic bonds (#3233, ticket #3843). The format carries the
 // group as a node of its own - NodeType="MultiAttachment" whose Attachments
 // property lists the member atoms - and the bond to the metal as an ordinary
-// bond to that node, which is the vendor's own description of ferrocene.
+// bond to that node, which is the vendor's own description of ferrocene. The
+// node also carries the charge and the radical of the group (#3923).
 // VariableAttachment (#3731) has the same shape and the other meaning, so the
 // two are told apart here as well.
 
+#include <string>
 #include <unordered_set>
 
 #include <gtest/gtest.h>
 
 #include <base_cpp/output.h>
 #include <base_cpp/scanner.h>
+#include <molecule/elements.h>
 #include <molecule/molecule.h>
 #include <molecule/molecule_cdxml_loader.h>
 #include <molecule/molecule_cdxml_saver.h>
@@ -162,6 +165,25 @@ protected:
         text += R"(
 </fragment></page></CDXML>)";
         return text;
+    }
+
+    // ring_and_metal() with a charge and a radical on its attachment node.
+    static std::string chargedRingAndMetal()
+    {
+        std::string text = ring_and_metal();
+        const std::string node_type = "NodeType=\"MultiAttachment\"";
+        text.insert(text.find(node_type) + node_type.size(), " Charge=\"-1\" Radical=\"Doublet\"");
+        return text;
+    }
+
+    // The element of the one attachment node of a saved document.
+    static std::string attachmentNode(const std::string& document)
+    {
+        const std::size_t type = document.find("NodeType=\"MultiAttachment\"");
+        if (type == std::string::npos)
+            return {};
+        const std::size_t begin = document.rfind("<n ", type);
+        return document.substr(begin, document.find("/>", type) - begin);
     }
 };
 
@@ -323,6 +345,46 @@ TEST_F(IndigoCoreHapticCdxmlTest, BinaryCdxKeepsVariableAttachmentApart)
 
     ASSERT_EQ(1, reloaded.haptic_bonds.count());
     EXPECT_EQ(_BOND_VARIABLE_ATTACHMENT, reloaded.haptic_bonds.at(reloaded.haptic_bonds.begin()).type());
+}
+
+// "A multicenter attachment node can also have charge and radical attributes,
+// which are treated as being distributed over the attached nodes" (CDX spec): the
+// charge of the pi-system, which the group holds of its own.
+TEST_F(IndigoCoreHapticCdxmlTest, ChargeAndRadicalOfTheNodeBelongToTheGroup)
+{
+    Molecule mol;
+    loadCdxml(chargedRingAndMetal(), mol);
+
+    ASSERT_EQ(1, mol.attachment_groups.groupCount());
+    const AttachmentGroup& group = mol.attachment_groups.group(mol.attachment_groups.begin());
+    EXPECT_EQ(-1, group.charge());
+    EXPECT_EQ(RADICAL_DOUBLET, group.radical());
+    for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+        EXPECT_EQ(0, mol.getAtomCharge(i)) << "atom " << i;
+}
+
+TEST_F(IndigoCoreHapticCdxmlTest, ChargeAndRadicalOfTheGroupGoBackOnItsNode)
+{
+    Molecule mol;
+    loadCdxml(chargedRingAndMetal(), mol);
+
+    const std::string node = attachmentNode(save(mol));
+    EXPECT_NE(std::string::npos, node.find(" Charge=\"-1\"")) << node;
+    EXPECT_NE(std::string::npos, node.find(" Radical=\"Doublet\"")) << node;
+
+    for (bool binary : {false, true})
+    {
+        Molecule reloaded;
+        if (binary)
+            loadCdx(save(mol, true), reloaded);
+        else
+            loadCdxml(save(mol), reloaded);
+
+        ASSERT_EQ(1, reloaded.attachment_groups.groupCount());
+        const AttachmentGroup& group = reloaded.attachment_groups.group(reloaded.attachment_groups.begin());
+        EXPECT_EQ(-1, group.charge()) << (binary ? "CDX" : "CDXML");
+        EXPECT_EQ(RADICAL_DOUBLET, group.radical()) << (binary ? "CDX" : "CDXML");
+    }
 }
 
 TEST_F(IndigoCoreHapticCdxmlTest, AttachmentNodeWithoutMembersIsRejected)
