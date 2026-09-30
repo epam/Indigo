@@ -536,6 +536,9 @@ void MoleculeStandardizer::_standardizeStereo(QueryMolecule& /*mol*/)
 
 void MoleculeStandardizer::_standardizeCharges(Molecule& mol)
 {
+    QS_DEF(Array<int>, lone);
+    _findLoneAtoms(mol, lone);
+
     for (auto i : mol.vertices())
     {
         switch (mol.getAtomNumber(i))
@@ -621,25 +624,10 @@ void MoleculeStandardizer::_standardizeCharges(Molecule& mol)
             }
             break;
         case ELEM_F:
-            if (mol.getVertex(i).degree() == 0)
-            {
-                mol.setAtomCharge(i, -1);
-            }
-            break;
         case ELEM_Cl:
-            if (mol.getVertex(i).degree() == 0)
-            {
-                mol.setAtomCharge(i, -1);
-            }
-            break;
         case ELEM_Br:
-            if (mol.getVertex(i).degree() == 0)
-            {
-                mol.setAtomCharge(i, -1);
-            }
-            break;
         case ELEM_I:
-            if (mol.getVertex(i).degree() == 0)
+            if (lone[i])
             {
                 mol.setAtomCharge(i, -1);
             }
@@ -702,21 +690,32 @@ void MoleculeStandardizer::_removeSingleAtomFragments(BaseMolecule& mol)
     QS_DEF(Array<int>, single_atoms);
     single_atoms.clear();
 
-    // A metal held by haptic bonds alone has no neighbour in the graph, yet it is
-    // not a fragment of its own (#3927).
-    const MoleculeComponents& components = mol.moleculeComponents();
+    QS_DEF(Array<int>, lone);
+    _findLoneAtoms(mol, lone);
+
     for (auto i : mol.vertices())
     {
         auto atom_number = mol.getAtomNumber(i);
         if (atom_number != ELEM_H)
         {
-            if (components.atomCount(components.componentOf(i)) == 1)
+            if (lone[i])
                 single_atoms.push(i);
         }
     }
 
     if (single_atoms.size() > 0)
         mol.removeAtoms(single_atoms);
+}
+
+void MoleculeStandardizer::_findLoneAtoms(BaseMolecule& mol, Array<int>& lone)
+{
+    // Alone means no bond of either kind holds the atom. The graph degree cannot tell:
+    // a metal held by haptic bonds alone has no neighbour in the graph (#3927).
+    const MoleculeComponents& components = mol.moleculeComponents();
+    lone.clear_resize(mol.vertexEnd());
+    lone.zerofill();
+    for (auto i : mol.vertices())
+        lone[i] = components.atomCount(components.componentOf(i)) == 1 ? 1 : 0;
 }
 
 void MoleculeStandardizer::_keepSmallestFragment(BaseMolecule& mol)

@@ -201,8 +201,9 @@ TEST_F(IndigoCoreMoleculeComponentsTest, AnAtomAddedAfterAQueryIsSeen)
     EXPECT_EQ(1, mol.moleculeComponents().componentOf(lone));
 }
 
-// The graph's cache may hold a decomposition made with s-group neighbours, as the KET
-// saver leaves it; the component answer must not pick that up.
+// The graph's cache may hold a decomposition made with s-group neighbours, as any
+// caller of countComponents(neighbors) leaves it; the component answer must not pick
+// that up.
 TEST_F(IndigoCoreMoleculeComponentsTest, TheGraphsCacheDoesNotLeakIn)
 {
     Molecule mol;
@@ -299,6 +300,23 @@ TEST_F(IndigoCoreStandardizeHapticTest, KeepSmallestDropsTheWholeComplex)
     Molecule mol;
     EXPECT_EQ(1, standardize(&StandardizeOptions::keep_smallest_fragment, mol));
     EXPECT_EQ(ELEM_Na, mol.getAtomNumber(mol.vertexBegin()));
+}
+
+// A chloride is a chlorine nothing holds; one on a variable attachment is a substituent.
+TEST_F(IndigoCoreStandardizeHapticTest, ChargesLeaveABoundHalogenNeutral)
+{
+    Molecule mol;
+    addRing(mol, 0);
+    const int substituent = mol.addAtom(ELEM_Cl);
+    mol.addHapticBond(Endpoint::group(addGroup(mol, 0)), Endpoint::atom(substituent), _BOND_VARIABLE_ATTACHMENT);
+    const int lone = mol.addAtom(ELEM_Cl);
+
+    StandardizeOptions options;
+    options.standardize_charges = true;
+    mol.standardize(options);
+
+    EXPECT_EQ(0, mol.getAtomCharge(substituent));
+    EXPECT_EQ(-1, mol.getAtomCharge(lone));
 }
 
 TEST_F(IndigoCoreStandardizeHapticTest, RemoveLargestDropsTheWholeComplex)
