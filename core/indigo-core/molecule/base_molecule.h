@@ -38,6 +38,7 @@
 #include "molecule/molecule_attachment_groups.h"
 #include "molecule/molecule_cip_calculator.h"
 #include "molecule/molecule_cis_trans.h"
+#include "molecule/molecule_components.h"
 #include "molecule/molecule_haptic_bonds.h"
 #include "molecule/molecule_ionize.h"
 #include "molecule/molecule_rgroups.h"
@@ -511,6 +512,12 @@ namespace indigo
         // decomposition must not cut a molecule where it is still one whole.
         void collectExternalNeighbors(std::list<std::unordered_set<int>>& neighbors);
 
+        // The components the public API reports, where a haptic bond joins atoms like
+        // an ordinary one. Graph::countComponents() stays the graph's own answer, which
+        // SMILES, InChI and substructure search rely on; a component index of one must
+        // never be used with the other. Rebuilt after any edit of the molecule.
+        const MoleculeComponents& moleculeComponents();
+
         void unfoldHydrogens(Array<int>* markers_out, int max_h_cnt = -1, bool impl_h_no_throw = false, bool only_selected = false);
         virtual void registerUnfoldedHydrogenQueryComponent(int /*atom_idx*/, int /*added_hydrogen*/){}; // QueryMolecule only
 
@@ -879,6 +886,9 @@ namespace indigo
         // When molecule gets edited then edit revision is increased.
         // If edit revision is the same then molecule wasn't edited
         int _edit_revision;
+
+        std::unique_ptr<MoleculeComponents> _molecule_components;
+        int _molecule_components_revision = -1; // edit revision _molecule_components was built for
 
         MetaDataStorage _meta;
 

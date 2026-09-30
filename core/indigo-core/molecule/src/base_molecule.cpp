@@ -99,6 +99,7 @@ void BaseMolecule::clear()
     tgroups.clear();
     attachment_groups.clear();
     haptic_bonds.clear();
+    _molecule_components.reset();
     template_attachment_points.clear();
     template_attachment_indexes.clear();
     _template_occurrences.clear();
@@ -1268,6 +1269,18 @@ void BaseMolecule::collectExternalNeighbors(std::list<std::unordered_set<int>>& 
         asQueryMolecule().getComponentNeighbors(neighbors);
 
     haptic_bonds.collectConnectivitySets(attachment_groups, neighbors);
+}
+
+const MoleculeComponents& BaseMolecule::moleculeComponents()
+{
+    // Keyed on the edit revision rather than on the graph's own cache flag: the graph
+    // keeps its decomposition when a vertex is added, and knows nothing of haptic bonds.
+    if (_molecule_components == nullptr || _molecule_components_revision != getEditRevision())
+    {
+        _molecule_components = std::make_unique<MoleculeComponents>(*this);
+        _molecule_components_revision = getEditRevision();
+    }
+    return *_molecule_components;
 }
 
 void BaseMolecule::removeSGroup(int idx)
