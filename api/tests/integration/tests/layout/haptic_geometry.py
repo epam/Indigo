@@ -12,9 +12,9 @@ from env_indigo import *  # noqa
 # What a drawing may not show, counted rather than looked at: two bonds that
 # cross, an atom on a bond it has nothing to do with, two atoms in one place. A
 # haptic bond is not an edge, so it never appears here - it is allowed to cross.
-# Collisions inside one component belong to the ordinary layout; the ones between
-# components are what the haptic placement is responsible for, so they are
-# reported apart.
+# Collisions inside a piece that ordinary bonds hold together belong to the
+# ordinary layout; the ones between such pieces are what the haptic placement is
+# responsible for, so they are reported apart.
 #
 # The lengths of the haptic bonds are printed beside them, because they are the
 # requirement (#3233, 4) and because neither they nor the counts are coordinates:
@@ -94,11 +94,27 @@ def distance_to_bond(point, begin, end):
     )
 
 
+def pieces(molecule):
+    # Found here rather than taken from iterateComponents(), which counts a
+    # haptic bond as a bond (#3927) and would put a whole complex in one piece.
+    piece = {}
+    for atom in molecule.iterateAtoms():
+        piece[atom.index()] = atom.index()
+
+    def root(atom):
+        while piece[atom] != atom:
+            piece[atom] = piece[piece[atom]]
+            atom = piece[atom]
+        return atom
+
+    for bond in molecule.iterateBonds():
+        piece[root(bond.source().index())] = root(bond.destination().index())
+
+    return dict((atom, root(atom)) for atom in piece)
+
+
 def geometry(molecule):
-    component_of = {}
-    for number, component in enumerate(molecule.iterateComponents()):
-        for atom in component.iterateAtoms():
-            component_of[atom.index()] = number
+    component_of = pieces(molecule)
 
     # The .NET wrapper hands the coordinates over as System.Single, and
     # IronPython keeps single precision through the arithmetic unless they are

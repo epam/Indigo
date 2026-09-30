@@ -819,7 +819,8 @@ CEXPORT int indigoIsSelected(int item);
 // Molecule or reaction
 CEXPORT int indigoHasSelection(int item);
 
-/* Connected components of molecules */
+/* Components of molecules: atoms held together by bonds. A haptic bond holds
+   them as an ordinary bond does, so a ferrocene is one component. */
 
 CEXPORT int indigoCountComponents(int molecule);
 CEXPORT int indigoComponentIndex(int atom);
@@ -1030,9 +1031,10 @@ CEXPORT long long indigoTell64(int handle);
 // Saves the molecule to an SDF output stream
 CEXPORT int indigoSdfAppend(int output, int item);
 
-// Splits the item into fragments (connected components for a molecule,
-// constituent molecules for a reaction) and returns the whole multi-record
-// SDF as a string. Single entry point for SDF-by-fragments serialization.
+// Splits the item into fragments (components for a molecule, as
+// indigoIterateComponents() gives them, constituent molecules for a reaction)
+// and returns the whole multi-record SDF as a string. Single entry point for
+// SDF-by-fragments serialization.
 CEXPORT const char* indigoFragmentedSdf(int item);
 
 // Saves the molecule to a multiline SMILES output stream

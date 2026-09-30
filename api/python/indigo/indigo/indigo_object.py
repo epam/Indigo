@@ -306,7 +306,8 @@ class IndigoObject:
 
     def fragmentedSdf(self):
         """Structure method returns the structure as a string in SDF format,
-        splitting it into fragments.
+        splitting it into fragments: the components of a molecule, the
+        molecules of a reaction.
 
         Returns:
             str: SDF string
@@ -3409,7 +3410,8 @@ class IndigoObject:
         )
 
     def countComponents(self):
-        """Molecule method returns the number of components
+        """Molecule method returns the number of components. Atoms joined by
+        a haptic bond belong to one component, as they do by an ordinary bond.
 
         Returns:
             int: number of components
