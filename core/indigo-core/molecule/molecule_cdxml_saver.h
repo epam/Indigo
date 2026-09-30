@@ -87,6 +87,8 @@ namespace indigo
         void addNodesToFragment(BaseMolecule& mol, tinyxml2::XMLElement* fragment, const Vec2f& offset, Vec2f& min_coord, Vec2f& max_coord);
         void addFragmentNodes(BaseMolecule& mol, tinyxml2::XMLElement* fragment, const Vec2f& offset, Vec2f& min_coord, Vec2f& max_coord);
         void addBondsToFragment(BaseMolecule& mol, tinyxml2::XMLElement* fragment);
+        // One attachment node per group, plus a bond for every haptic bond.
+        void addAttachmentGroupsToFragment(BaseMolecule& mol, tinyxml2::XMLElement* fragment, const Vec2f& offset);
 
         static const int SCALE = 30;
         static const int MAX_PAGE_HEIGHT = 64;

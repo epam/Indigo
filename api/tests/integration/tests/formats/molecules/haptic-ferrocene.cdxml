@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE CDXML SYSTEM "http://www.cambridgesoft.com/xml/cdxml.dtd">
+<CDXML BondLength="30.000000" LabelFont="3" CaptionFont="4">
+    <page HeightPages="1" WidthPages="1">
+        <fragment id="1">
+            <n id="10" p="100.00 60.00"/>
+            <n id="11" p="128.53 80.73"/>
+            <n id="12" p="117.63 114.27"/>
+            <n id="13" p="82.37 114.27"/>
+            <n id="14" p="71.47 80.73"/>
+            <n id="20" p="100.00 90.00" NodeType="MultiAttachment" Attachments="10 11 12 13 14"/>
+            <n id="110" p="100.00 200.00"/>
+            <n id="111" p="128.53 220.73"/>
+            <n id="112" p="117.63 254.27"/>
+            <n id="113" p="82.37 254.27"/>
+            <n id="114" p="71.47 220.73"/>
+            <n id="120" p="100.00 230.00" NodeType="MultiAttachment" Attachments="110 111 112 113 114"/>
+            <n id="30" p="180.00 160.00" Element="26"/>
+            <b id="40" B="10" E="11" Order="2"/>
+            <b id="41" B="11" E="12"/>
+            <b id="42" B="12" E="13" Order="2"/>
+            <b id="43" B="13" E="14"/>
+            <b id="44" B="14" E="10" Order="2"/>
+            <b id="140" B="110" E="111" Order="2"/>
+            <b id="141" B="111" E="112"/>
+            <b id="142" B="112" E="113" Order="2"/>
+            <b id="143" B="113" E="114"/>
+            <b id="144" B="114" E="110" Order="2"/>
+            <b id="50" B="30" E="20"/>
+            <b id="150" B="30" E="120"/>
+        </fragment>
+    </page>
+</CDXML>

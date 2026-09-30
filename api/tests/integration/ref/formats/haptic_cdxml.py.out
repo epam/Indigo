@@ -1,0 +1,15 @@
+*** Haptic bonds in CDX and CDXML ***
+haptic-ferrocene.ket:SUCCEED
+haptic-ferrocene.cdxml:SUCCEED
+haptic-ferrocene.b64cdx:SUCCEED
+haptic-ferrocene-from-cdxml.ket:SUCCEED
+haptic-ferrocene-from-cdx.ket:SUCCEED
+haptic-several-molecules.ket:SUCCEED
+haptic-several-molecules.cdxml:SUCCEED
+haptic-several-molecules.b64cdx:SUCCEED
+haptic-several-molecules-from-cdxml.ket:SUCCEED
+haptic-several-molecules-from-cdx.ket:SUCCEED
+haptic-acylation.cdxml:SUCCEED
+haptic-acylation.b64cdx:SUCCEED
+haptic-acylation-from-cdxml.ket:SUCCEED
+haptic-acylation-from-cdx.ket:SUCCEED
