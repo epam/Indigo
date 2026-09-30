@@ -17,15 +17,22 @@
  ***************************************************************************/
 
 // The KET side of haptic bonds (#3233, format #3838): a molecule node declares
-// its attachment groups, and every haptic bond is a connection of the root.
-// The wire contract is Task/3233/KET-CONTRACT.md; its two subtleties are pinned
-// here — a haptic connection is keyed by "type" while the monomer ones use
-// "connectionType", and every id is a string while the member atoms are numbers.
+// its attachment groups, with their optional charge and radical (#3923), and
+// every haptic bond is a connection of the root. The wire contract is
+// Task/3233/KET-CONTRACT.md; its two subtleties are pinned here — a haptic
+// connection is keyed by "type" while the monomer ones use "connectionType", and
+// every id is a string while the member atoms are numbers.
+
+#include <algorithm>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include <gtest/gtest.h>
 
 #include <base_cpp/output.h>
 #include <layout/metalayout.h>
+#include <molecule/elements.h>
 #include <molecule/molecule.h>
 #include <molecule/molecule_json_loader.h>
 #include <molecule/molecule_json_saver.h>
@@ -258,6 +265,15 @@ namespace
         "mol3": {"type": "molecule", "atoms": [{"label": "O", "location": [10, 0, 0]}], "bonds": []}
     })";
 
+    // KET_RING_AND_METAL with `keys` added to the object of its one group.
+    std::string ringAndMetalWithGroupKeys(const std::string& keys)
+    {
+        std::string json(KET_RING_AND_METAL);
+        const std::string group = "{\"id\": \"7\", ";
+        json.insert(json.find(group) + group.size(), keys + ", ");
+        return json;
+    }
+
     // The group example exactly as attached: mol1 is referenced by the connection but
     // absent from root.nodes.
     const char* KET_REFERENCE_GROUP_TO_ATOM_AS_ATTACHED = R"({
@@ -473,6 +489,37 @@ TEST_F(IndigoCoreHapticKetTest, AttachmentGroupsOfTheWrongJsonTypeAreRejected)
     EXPECT_NE(std::string::npos, loadKetError(json.c_str()).find("must be an array"));
 }
 
+// The charge and the radical of the pi-system are the group's own, whatever the
+// charges of its member atoms are.
+TEST_F(IndigoCoreHapticKetTest, GroupChargeAndRadicalAreRead)
+{
+    Molecule mol;
+    loadKet(ringAndMetalWithGroupKeys("\"charge\": -1, \"radical\": 2").c_str(), mol);
+
+    ASSERT_EQ(1, mol.attachment_groups.groupCount());
+    const AttachmentGroup& group = mol.attachment_groups.group(mol.attachment_groups.begin());
+    EXPECT_EQ(-1, group.charge());
+    EXPECT_EQ(RADICAL_DOUBLET, group.radical());
+    for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+        EXPECT_EQ(0, mol.getAtomCharge(i)) << "atom " << i;
+}
+
+// A file may declare many groups, so the error names the group and the key.
+TEST_F(IndigoCoreHapticKetTest, InvalidChargeOrRadicalIsRejectedNamingTheGroupAndTheKey)
+{
+    const std::pair<const char*, const char*> invalid[] = {
+        {"charge", "\"charge\": 1.5"},  {"charge", "\"charge\": \"-1\""}, {"charge", "\"charge\": 3000000000"}, {"radical", "\"radical\": 4"},
+        {"radical", "\"radical\": -1"}, {"radical", "\"radical\": true"}, {"radical", "\"radical\": 2.0"},
+    };
+
+    for (const auto& [key, keys] : invalid)
+    {
+        const std::string error = loadKetError(ringAndMetalWithGroupKeys(keys).c_str());
+        EXPECT_NE(std::string::npos, error.find("'7'")) << keys << " -> " << error;
+        EXPECT_NE(std::string::npos, error.find(std::string("'") + key + "'")) << keys << " -> " << error;
+    }
+}
+
 // ---- saving and round trip -------------------------------------------------
 
 TEST_F(IndigoCoreHapticKetTest, ReferenceGroupExampleSurvivesARoundTrip)
@@ -560,6 +607,29 @@ TEST_F(IndigoCoreHapticKetTest, SaveKeepsFerroceneInOneNode)
     EXPECT_EQ(2, reloaded.haptic_bonds.count());
     for (int i = reloaded.attachment_groups.begin(); i != reloaded.attachment_groups.end(); i = reloaded.attachment_groups.next(i))
         EXPECT_EQ(5u, reloaded.attachment_groups.group(i).atoms().size());
+}
+
+// A key equal to 0 is not written, so a neutral group looks exactly as it did
+// before the keys existed.
+TEST_F(IndigoCoreHapticKetTest, GroupChargeAndRadicalAreWrittenOnlyWhenSet)
+{
+    Molecule mol;
+    makeFerrocene(mol);
+    AttachmentGroup& charged = mol.attachment_groups.group(mol.attachment_groups.begin());
+    charged.setCharge(-1);
+    charged.setRadical(RADICAL_DOUBLET);
+
+    const std::string saved = saveKet(mol);
+    EXPECT_NE(std::string::npos, saved.find("{\"id\":\"0\",\"charge\":-1,\"radical\":2,\"atoms\":[")) << saved;
+    EXPECT_NE(std::string::npos, saved.find("{\"id\":\"1\",\"atoms\":[")) << saved;
+
+    Molecule reloaded;
+    loadKet(saved.c_str(), reloaded);
+    std::vector<std::pair<int, int>> charge_and_radical;
+    for (int i = reloaded.attachment_groups.begin(); i != reloaded.attachment_groups.end(); i = reloaded.attachment_groups.next(i))
+        charge_and_radical.emplace_back(reloaded.attachment_groups.group(i).charge(), reloaded.attachment_groups.group(i).radical());
+    std::sort(charge_and_radical.begin(), charge_and_radical.end());
+    EXPECT_EQ((std::vector<std::pair<int, int>>{{-1, RADICAL_DOUBLET}, {0, 0}}), charge_and_radical);
 }
 
 // A group without bonds is valid on its own (KET-CONTRACT.md §5.5) and must not

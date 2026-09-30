@@ -52,8 +52,11 @@ namespace indigo
     inline constexpr const char* KetKeyAttachmentGroupId = "attachmentGroupId";
 
     // Attachment groups, declared by a molecule node; a group object uses the
-    // generic KetKeyId and KetKeyAtoms above.
+    // generic KetKeyId and KetKeyAtoms above. Its charge and radical are optional
+    // and absent when 0; they are spelled as the atom keys, which are still inline.
     inline constexpr const char* KetKeyAttachmentGroups = "attachmentGroups";
+    inline constexpr const char* KetKeyCharge = "charge";
+    inline constexpr const char* KetKeyRadical = "radical";
 
     // Not a key: the prefix a molecule node is referenced by, as in "mol0".
     inline constexpr const char* KetMoleculeRefPrefix = "mol";

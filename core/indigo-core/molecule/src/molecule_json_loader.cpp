@@ -1309,6 +1309,18 @@ void MoleculeJsonLoader::loadHapticConnection(const rapidjson::Value& connection
                       resolveHapticEndpoint(connection[KetKeyEndpoint2], mol_mappings, ag_mappings), _BOND_HAPTIC);
 }
 
+// An optional integer key of an attachment group object; an absent key reads as 0.
+static int parseOptionalGroupInt(const rapidjson::Value& group, const char* key, const char* id)
+{
+    if (!group.HasMember(key))
+        return 0;
+
+    if (!group[key].IsInt())
+        throw MoleculeJsonLoader::Error("Attachment group '%s' has a non-integer '%s'", id, key);
+
+    return group[key].GetInt();
+}
+
 std::map<std::string, int> MoleculeJsonLoader::parseAttachmentGroups(const rapidjson::Value& groups, BaseMolecule& mol, const Array<int>& atom_mapping)
 {
     std::map<std::string, int> ids;
@@ -1346,8 +1358,16 @@ std::map<std::string, int> MoleculeJsonLoader::parseAttachmentGroups(const rapid
             members.push_back(atom_mapping[atom_idx]);
         }
 
+        const int charge = parseOptionalGroupInt(group, KetKeyCharge, id);
+        const int radical = parseOptionalGroupInt(group, KetKeyRadical, id);
+        if (radical < 0 || radical > RADICAL_TRIPLET)
+            throw Error("Attachment group '%s' has '%s' %d, which is none of 0 (none), 1 (singlet), 2 (doublet), 3 (triplet)", id, KetKeyRadical, radical);
+
         const int group_idx = mol.attachment_groups.addGroup();
-        mol.attachment_groups.group(group_idx).setAtoms(members);
+        AttachmentGroup& created = mol.attachment_groups.group(group_idx);
+        created.setAtoms(members);
+        created.setCharge(charge);
+        created.setRadical(radical);
         ids.emplace(id, group_idx);
     }
 

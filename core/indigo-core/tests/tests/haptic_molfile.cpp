@@ -19,17 +19,22 @@
 // MOL V3000 side of haptic bonds (#3233, ticket #3840): the ENDPTS/ATTACH keys the
 // loader used to throw away, and the single record the saver must write them back
 // in. The star of a haptic record is the format's phantom for the centre of the
-// pi-system: the loader absorbs it, and the saver puts a fresh one back.
+// pi-system: the loader absorbs it and hands its charge and radical to the group
+// (#3923), and the saver puts a fresh one back carrying them.
 
 #include <algorithm>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <gtest/gtest.h>
 
 #include <base_cpp/output.h>
 #include <base_cpp/scanner.h>
+#include <molecule/elements.h>
 #include <molecule/molecule.h>
+#include <molecule/molecule_json_loader.h>
+#include <molecule/molecule_json_saver.h>
 #include <molecule/molfile_loader.h>
 #include <molecule/molfile_saver.h>
 #include <molecule/query_molecule.h>
@@ -65,6 +70,32 @@ protected:
         for (std::size_t pos = text.find(what); pos != std::string::npos; pos = text.find(what, pos + what.size()))
             count++;
         return count;
+    }
+
+    static void replaceOnce(std::string& text, const std::string& what, const std::string& with)
+    {
+        const std::size_t pos = text.find(what);
+        ASSERT_NE(std::string::npos, pos) << "the fixture has no \"" << what << '"';
+        text.replace(pos, what.size(), with);
+    }
+
+    // The whole line of the saved atom block that starts with `prefix`.
+    static std::string lineStartingWith(const std::string& text, const std::string& prefix)
+    {
+        const std::size_t begin = text.find(prefix);
+        if (begin == std::string::npos)
+            return {};
+        return text.substr(begin, text.find('\n', begin) - begin);
+    }
+
+    // The group whose members include `atom`: the tests below tell the two rings of
+    // ferrocene apart this way, since group indices follow the order of the records.
+    static const AttachmentGroup& groupWithAtom(BaseMolecule& mol, int atom)
+    {
+        for (int i = mol.attachment_groups.begin(); i != mol.attachment_groups.end(); i = mol.attachment_groups.next(i))
+            if (mol.attachment_groups.group(i).hasAtom(atom))
+                return mol.attachment_groups.group(i);
+        throw Exception("no attachment group holds atom %d", atom);
     }
 
     // The radical form of ferrocene from the repository fixtures
@@ -227,9 +258,7 @@ TEST_F(IndigoCoreHapticMolfileTest, EndptsBecomeGroupsAndHapticBonds)
 
 // "The * atom is an internal phantom atom that represents the center of the
 // pi-system" (CTfile, Haptic): neither the star nor its edge is part of the
-// structure, which is what keeps them out of KET and off the Ketcher canvas. A
-// charge the file put on the phantom goes with it - the specification puts the
-// charges of a haptic complex on the ring atoms and the metal.
+// structure, which is what keeps them out of KET and off the Ketcher canvas.
 TEST_F(IndigoCoreHapticMolfileTest, StarOfAHapticRecordIsAbsorbed)
 {
     Molecule mol;
@@ -241,11 +270,53 @@ TEST_F(IndigoCoreHapticMolfileTest, StarOfAHapticRecordIsAbsorbed)
         EXPECT_FALSE(mol.isPseudoAtom(i)) << "atom " << i << " is a star";
     EXPECT_EQ(0, mol.getVertex(5).degree()) << "the iron is held by the haptic bonds only";
     EXPECT_EQ(2, mol.haptic_bonds.count());
+}
+
+// What the phantom carries is the charge and the radical of the pi-system it stands
+// for: they become the group's, and no atom of the ring takes them over.
+TEST_F(IndigoCoreHapticMolfileTest, ChargeAndRadicalOfTheStarMoveToItsGroup)
+{
+    std::string text = ferrocene();
+    replaceOnce(text, "M  V30 13 * 12.7132 -12.7932 0 0 CHG=-1", "M  V30 13 * 12.7132 -12.7932 0 0 CHG=-1 RAD=2");
+
+    Molecule mol;
+    loadMolfile(text.c_str(), mol);
+
+    ASSERT_EQ(2, mol.attachment_groups.groupCount());
+    const AttachmentGroup& first_ring = groupWithAtom(mol, 6);
+    const AttachmentGroup& second_ring = groupWithAtom(mol, 0);
+    EXPECT_EQ(-1, first_ring.charge());
+    EXPECT_EQ(0, first_ring.radical());
+    EXPECT_EQ(-1, second_ring.charge());
+    EXPECT_EQ(RADICAL_DOUBLET, second_ring.radical());
 
     int total = 0;
     for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
         total += mol.getAtomCharge(i);
-    EXPECT_EQ(2, total) << "the -1 of each phantom left with it";
+    EXPECT_EQ(2, total) << "the atoms keep only their own charges: the +2 of the iron";
+}
+
+// The radical of a group uses the atom encoding, so a star carrying any other code
+// is a record that means nothing, and it is rejected where it is read.
+TEST_F(IndigoCoreHapticMolfileTest, AStarRadicalOutsideTheEncodingIsRejected)
+{
+    std::string text = ferrocene();
+    replaceOnce(text, "M  V30 13 * 12.7132 -12.7932 0 0 CHG=-1", "M  V30 13 * 12.7132 -12.7932 0 0 CHG=-1 RAD=5");
+
+    Molecule mol;
+    EXPECT_THROW(loadMolfile(text.c_str(), mol), Exception);
+}
+
+TEST_F(IndigoCoreHapticMolfileTest, ChargeOfTheGroupIsWrittenBackOnItsStar)
+{
+    Molecule mol;
+    loadMolfile(ferrocene(), mol);
+    const std::string saved = saveMolfile(mol);
+
+    for (const char* star : {"M  V30 12 * ", "M  V30 13 * "})
+        EXPECT_NE(std::string::npos, lineStartingWith(saved, star).find(" CHG=-1")) << lineStartingWith(saved, star);
+    EXPECT_EQ(2, countOccurrences(saved, "CHG=-1")) << "on the stars and nowhere else";
+    EXPECT_EQ(0, countOccurrences(lineStartingWith(saved, "M  V30 12 * "), "RAD="));
 }
 
 // A ring bonded to two metals is two records ending in the same star. The star is
@@ -299,6 +370,24 @@ TEST_F(IndigoCoreHapticMolfileTest, StarSharedByDifferentEndptsIsRejected)
 {
     Molecule mol;
     EXPECT_THROW(loadMolfile(bridgedRing("(4 1 2 3 4)").c_str(), mol), Exception);
+}
+
+// Both records end in the same star, so the pi-system has one charge: it reaches the
+// group once, and goes back out on the one star the saver writes.
+TEST_F(IndigoCoreHapticMolfileTest, SharedStarTransfersItsChargeOnce)
+{
+    std::string text = bridgedRing();
+    replaceOnce(text, "M  V30 8 * 0.5 0.69 0 0\n", "M  V30 8 * 0.5 0.69 0 0 CHG=-1\n");
+
+    Molecule mol;
+    loadMolfile(text.c_str(), mol);
+
+    ASSERT_EQ(1, mol.attachment_groups.groupCount());
+    EXPECT_EQ(-1, mol.attachment_groups.group(mol.attachment_groups.begin()).charge());
+
+    const std::string saved = saveMolfile(mol);
+    EXPECT_EQ(1, countOccurrences(saved, "CHG=-1"));
+    EXPECT_NE(std::string::npos, lineStartingWith(saved, "M  V30 8 * ").find(" CHG=-1"));
 }
 
 // The order ENDPTS lists the members in is not part of the pi-system.
@@ -451,6 +540,66 @@ TEST_F(IndigoCoreHapticMolfileTest, StarIsSynthesizedForAGroupWithoutAnchor)
     EXPECT_EQ(6, reloaded.vertexCount()) << "and absorbed again on reading";
 }
 
+// A group that came without a star - from KET, say - still has its charge and
+// radical, and the star made up for it is the only place V3000 has for them.
+TEST_F(IndigoCoreHapticMolfileTest, SynthesizedStarCarriesTheChargeAndRadicalOfItsGroup)
+{
+    Molecule mol;
+    makeAnchorlessComplex(mol);
+    AttachmentGroup& ring = mol.attachment_groups.group(mol.attachment_groups.begin());
+    ring.setCharge(-1);
+    ring.setRadical(RADICAL_DOUBLET);
+
+    const std::string saved = saveMolfile(mol);
+    EXPECT_EQ("M  V30 7 * 0.5 0.688 0.0 0 CHG=-1 RAD=2", lineStartingWith(saved, "M  V30 7 * "));
+
+    Molecule reloaded;
+    loadMolfile(saved.c_str(), reloaded);
+    ASSERT_EQ(1, reloaded.attachment_groups.groupCount());
+    const AttachmentGroup& group = reloaded.attachment_groups.group(reloaded.attachment_groups.begin());
+    EXPECT_EQ(-1, group.charge());
+    EXPECT_EQ(RADICAL_DOUBLET, group.radical());
+}
+
+// The KET contract has no star at all, so on this trip the group is the only
+// thing that holds the charge and the radical between the two V3000 files.
+TEST_F(IndigoCoreHapticMolfileTest, V3000ToKetToV3000KeepsChargeAndRadical)
+{
+    std::string text = ferrocene();
+    replaceOnce(text, "M  V30 13 * 12.7132 -12.7932 0 0 CHG=-1", "M  V30 13 * 12.7132 -12.7932 0 0 CHG=-1 RAD=2");
+
+    Molecule from_v3000;
+    loadMolfile(text.c_str(), from_v3000);
+
+    Array<char> ket;
+    ArrayOutput ket_output(ket);
+    MoleculeJsonSaver ket_saver(ket_output);
+    ket_saver.saveMolecule(from_v3000);
+    const std::string ket_text(ket.ptr(), static_cast<std::size_t>(ket.size()));
+
+    rapidjson::Document document;
+    ASSERT_FALSE(document.Parse(ket_text.c_str()).HasParseError());
+    ASSERT_TRUE(document.HasMember("mol0") && document["mol0"].HasMember("attachmentGroups")) << ket_text;
+
+    // The ring carbons carry radicals of their own, so the groups are read as objects.
+    std::vector<std::pair<int, int>> charge_and_radical;
+    for (const auto& group : document["mol0"]["attachmentGroups"].GetArray())
+        charge_and_radical.emplace_back(group.HasMember("charge") ? group["charge"].GetInt() : 0, group.HasMember("radical") ? group["radical"].GetInt() : 0);
+    std::sort(charge_and_radical.begin(), charge_and_radical.end());
+    EXPECT_EQ((std::vector<std::pair<int, int>>{{-1, 0}, {-1, RADICAL_DOUBLET}}), charge_and_radical);
+
+    Molecule from_ket;
+    MoleculeJsonLoader ket_loader(document);
+    ket_loader.loadMolecule(from_ket);
+
+    const std::string saved = saveMolfile(from_ket);
+    const std::string first_star = lineStartingWith(saved, "M  V30 12 * ");
+    const std::string second_star = lineStartingWith(saved, "M  V30 13 * ");
+    EXPECT_NE(std::string::npos, first_star.find(" CHG=-1")) << first_star;
+    EXPECT_NE(std::string::npos, second_star.find(" CHG=-1")) << second_star;
+    EXPECT_EQ(1, countOccurrences(first_star + second_star, " RAD=2")) << "one star of the two carries the radical";
+}
+
 // V2000 has no ENDPTS at all, so the haptic bonds are dropped whole. Their stars
 // went at reading already, so what is written is the structure itself.
 TEST_F(IndigoCoreHapticMolfileTest, V2000OmitsTheHapticMarkup)
@@ -496,6 +645,60 @@ TEST_F(IndigoCoreHapticMolfileTest, VariableAttachmentRoundTripsAsAQueryMolecule
     const std::string saved{buffer.ptr(), static_cast<std::size_t>(buffer.size())};
     EXPECT_NE(std::string::npos, saved.find("ENDPTS=(3 2 3 4) ATTACH=ANY"));
     EXPECT_EQ(1, countOccurrences(saved, "ENDPTS="));
+}
+
+// A query holds the charge and the radical of an atom as constraints, and a star
+// without them has nothing to hand over: its group gets 0, not the "unknown" a
+// query atom reports.
+TEST_F(IndigoCoreHapticMolfileTest, AQueryStarHandsOverOnlyWhatItConstrains)
+{
+    std::string text = ferrocene();
+    replaceOnce(text, "M  V30 12 * 12.7132 -9.0052 0 0 CHG=-1", "M  V30 12 * 12.7132 -9.0052 0 0 CHG=-1 RAD=2");
+    replaceOnce(text, "M  V30 13 * 12.7132 -12.7932 0 0 CHG=-1", "M  V30 13 * 12.7132 -12.7932 0 0");
+
+    QueryMolecule query;
+    BufferScanner scanner(text.c_str());
+    MolfileLoader loader(scanner);
+    loader.loadQueryMolecule(query);
+
+    ASSERT_EQ(2, query.attachment_groups.groupCount());
+    const AttachmentGroup& constrained = groupWithAtom(query, 6);
+    const AttachmentGroup& unconstrained = groupWithAtom(query, 0);
+    EXPECT_EQ(-1, constrained.charge());
+    EXPECT_EQ(RADICAL_DOUBLET, constrained.radical());
+    EXPECT_EQ(0, unconstrained.charge());
+    EXPECT_EQ(0, unconstrained.radical());
+}
+
+// The star of a variable attachment is an atom of the Markush drawing, not a
+// phantom: it keeps its own charge, and the group gets none of it.
+TEST_F(IndigoCoreHapticMolfileTest, AVariableAttachmentStarKeepsItsCharge)
+{
+    std::string text = variableAttachment();
+    replaceOnce(text, "M  V30 8 * 1.0 0.866 0 0\n", "M  V30 8 * 1.0 0.866 0 0 CHG=-1\n");
+
+    Molecule mol;
+    loadMolfile(text.c_str(), mol);
+
+    ASSERT_EQ(1, mol.attachment_groups.groupCount());
+    const AttachmentGroup& group = mol.attachment_groups.group(mol.attachment_groups.begin());
+    EXPECT_EQ(0, group.charge());
+    ASSERT_GE(group.anchorAtom(), 0);
+    EXPECT_EQ(-1, mol.getAtomCharge(group.anchorAtom()));
+
+    EXPECT_NE(std::string::npos, lineStartingWith(saveMolfile(mol), "M  V30 8 * ").find(" CHG=-1"));
+}
+
+// A group that ends on an atom of the structure is written on that atom's bond,
+// where V3000 has no place for a charge of the group's own: saving refuses rather
+// than dropping it.
+TEST_F(IndigoCoreHapticMolfileTest, AChargeOfAnAnchoredGroupIsNotDroppedSilently)
+{
+    Molecule mol;
+    loadMolfile(variableAttachment(), mol);
+    mol.attachment_groups.group(mol.attachment_groups.begin()).setCharge(-1);
+
+    EXPECT_THROW(saveMolfile(mol), Exception);
 }
 
 // The group knows its star by atom index, so a copy that renumbers atoms must not
