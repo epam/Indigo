@@ -5,7 +5,7 @@ How to prepare a new release
   `FREETYPE_MINOR`, and `FREETYPE_PATCH`.
 
 . Update version numbers in all files where necessary (for example, do
-  a grep for both '2.10.4' and '2104' for release 2.10.4).
+  a grep for both '2.14.0' and '2140' for release 2.14.0).
 
 . builds/unix/configure.raw: Update `version_info`.
 
@@ -15,32 +15,58 @@ How to prepare a new release
 
 . docs/VERSIONS.TXT: Document changed `version_info`.
 
-. Clone the git archive to another directory with
+. Update the 'dlg' submodule with
 
-    git clone -l -s . ../freetype.test
+    git submodule foreach git pull origin master
 
-  or something like this and run
+. Copy the submodule code with
 
-    make distclean; make devel; make
-    make distclean; make devel; make multi
-    make distclean; make devel CC=g++; make CC=g++
-    make distclean; make devel CC=g++; make multi CC=g++
+    make copy_submodule
+
+  and run
+
+    make distclean && make devel && make
+    make distclean && make devel && make multi
+    make distclean && make devel CC=g++ && make CC=g++ ANSIFLAGS=""
+    make distclean && make devel CC=g++ && make multi CC=g++ ANSIFLAGS=""
 
     sh autogen.sh
-    make distclean; ./configure CC=g++; make
+    make distclean && ./configure CC=g++ && make ANSIFLAGS=""
 
-  in the cloned repository to test compilation with both gcc and g++.
+  to test compilation with both gcc and g++ (you might also add the `-j`
+  flag to `make` for parallel compilation).
 
   Note that it is normally not necessary to test standard C
   compilation with the `configure`, `meson`, and `cmake` build tools
-  since this is done by the CI process of 'gitlab.freetype.org' for
+  since this is done by the CI process of 'gitlab.freedesktop.org' for
   every commit.
 
-. Test C++ compilation for 'freetype-demos' too (using `git clone` as
-  above).
+. Test C++ compilation for 'freetype-demos' too; this needs a compiled
+  FreeType library as described in the `README` file.
+
+    make distclean && make
+    make distclean && make CC=g++ ANSIFLAGS=""
 
 . Run `src/tools/chktrcmp.py` and check that there are no undefined
   `trace_XXXX` macros.
+
+. Check meson subproject files (for both the 'freetype' and
+  'freetype-demos' git repositories) with
+
+    meson wrap status
+
+  and update wrap files with
+
+    meson wrap update <library>
+
+  if necessary.
+
+. Test meson compilation (for both the 'freetype' and 'freetype-demos'
+  git repositories) with
+
+    meson setup builddir && meson compile -C builddir
+
+. Commit everything.
 
 . After pushing the new release, tag the git repositories ('freetype',
   'freetype-demos') with
@@ -71,13 +97,15 @@ How to prepare a new release
   zip!
 
 . Run the following script (with updated `$VERSION`, `$SAVANNAH_USER`,
-  and `$SOURCEFORGE_USER` variables) to sign and upload the bundles to
-  both Savannah and SourceForge.  The signing code has been taken from
-  the `gnupload` script (part of the 'automake' bundle).
+  `$SOURCEFORGE_USER`, and `GPG_KEY_ID` variables) to sign and upload
+  the bundles to both Savannah and SourceForge.  The signing code has
+  been taken from the `gnupload` script (part of the 'automake'
+  bundle); it uses `sshpass` to avoid entering the SourceForge password
+  multiple times.
 
     #!/bin/sh
 
-    VERSION=2.12.0
+    VERSION=2.14.0
     SAVANNAH_USER=wl
     SOURCEFORGE_USER=wlemb
     GPG_KEY_ID=BE6C3AAC63AD8E3F
@@ -103,11 +131,18 @@ How to prepare a new release
                   $FTDOC_PACKAGES"
 
     set -e
-    unset passphrase
+    unset savannah_passphrase
+    unset sourceforge_password
 
-    PATH=/empty echo -n "Enter GPG passphrase: "
+    PATH=/empty echo -n "Enter Savannah GPG passphrase: "
     stty -echo
-    read -r passphrase
+    read -r savannah_passphrase
+    stty echo
+    echo
+
+    PATH=/empty echo -n "Enter SourceForge password: "
+    stty -echo
+    read -r sourceforge_password
     stty echo
     echo
 
@@ -123,7 +158,7 @@ How to prepare a new release
     for f in $PACKAGE_LIST; do
       echo "Signing $f..."
       rm -f $f.sig
-      echo $passphrase | $GPG --passphrase-fd 0 -ba -o $f.sig $f
+      echo $savannah_passphrase | $GPG --passphrase-fd 0 -ba -o $f.sig $f
     done
 
     FREETYPE_SIGNATURES=
@@ -145,15 +180,18 @@ How to prepare a new release
                     $FT2DEMOS_SIGNATURES \
                     $FTDOC_SIGNATURES"
 
-    scp $PACKAGE_LIST $SIGNATURE_LIST \
+    scp -O $PACKAGE_LIST $SIGNATURE_LIST \
       $SAVANNAH_USER@dl.sv.nongnu.org:/releases/freetype/
 
-    rsync -avP -e ssh $FREETYPE_PACKAGES $FREETYPE_SIGNATURES \
-      $SOURCEFORGE_USER,freetype@frs.sf.net:/home/frs/project/f/fr/freetype/freetype2/$VERSION/
-    rsync -avP -e ssh $FT2DEMOS_PACKAGES $FT2DEMOS_SIGNATURES \
-      $SOURCEFORGE_USER,freetype@frs.sf.net:/home/frs/project/f/fr/freetype/freetype-demos/$VERSION/
-    rsync -avP -e ssh $FTDOC_PACKAGES $FTDOC_SIGNATURES \
-      $SOURCEFORGE_USER,freetype@frs.sf.net:/home/frs/project/f/fr/freetype/freetype-docs/$VERSION/
+    echo $sourceforge_password | sshpass \
+      rsync -avP -e ssh $FREETYPE_PACKAGES $FREETYPE_SIGNATURES \
+        $SOURCEFORGE_USER,freetype@frs.sf.net:/home/frs/project/f/fr/freetype/freetype2/$VERSION/
+    echo $sourceforge_password | sshpass \
+      rsync -avP -e ssh $FT2DEMOS_PACKAGES $FT2DEMOS_SIGNATURES \
+        $SOURCEFORGE_USER,freetype@frs.sf.net:/home/frs/project/f/fr/freetype/freetype-demos/$VERSION/
+    echo $sourceforge_password | sshpass \
+      rsync -avP -e ssh $FTDOC_PACKAGES $FTDOC_SIGNATURES \
+        $SOURCEFORGE_USER,freetype@frs.sf.net:/home/frs/project/f/fr/freetype/freetype-docs/$VERSION/
 
     # EOF
 
@@ -163,7 +201,7 @@ How to prepare a new release
 
     #!/bin/sh
 
-    VERSION=2.10.4
+    VERSION=2.14.0
     SOURCEFORGE_USER=wlemb
 
     #####################################################################
@@ -190,7 +228,7 @@ How to prepare a new release
 
 ----------------------------------------------------------------------
 
-Copyright (C) 2003-2022 by
+Copyright (C) 2003-2026 by
 David Turner, Robert Wilhelm, and Werner Lemberg.
 
 This  file is  part of  the FreeType  project, and  may only  be used,
