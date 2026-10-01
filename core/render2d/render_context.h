@@ -23,6 +23,7 @@
 #include <cairo-svg.h>
 #include <cairo.h>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -185,7 +186,6 @@ namespace indigo
     private:
         static cairo_status_t writer(void* closure, const unsigned char* data, unsigned int length);
         static cairo_status_t svgWriter(void* closure, const unsigned char* data, unsigned int length);
-        static std::string patchSvgIds(const std::string& svg);
 
         void _drawGraphItem(GraphItem& gi);
         void lineTo(const Vec2f& v);
@@ -222,7 +222,7 @@ namespace indigo
         cairo_t* _cr;
         cairo_surface_t* _surface;
         void* _meta_hdc;
-        std::string _svgBuffer;
+        std::optional<std::string> _svgBuffer; // set only while cairo's SVG is held back to make its ids unique
 
         RenderFontFaceManager _font_face_manager;
 
