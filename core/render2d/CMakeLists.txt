@@ -39,15 +39,18 @@ target_link_libraries(${PROJECT_NAME} PUBLIC lunasvg)
 if (BUILD_STANDALONE)
     target_link_libraries(${PROJECT_NAME}
             PUBLIC rapidjson
+            PUBLIC tinyxml2
             PUBLIC cairo
             PUBLIC freetype)
 else ()
     find_package(Cairo REQUIRED)
     find_package(RapidJSON REQUIRED)
+    find_package(TinyXML2 REQUIRED)
     find_package(Freetype REQUIRED)
     target_include_directories(${PROJECT_NAME} PUBLIC ${FREETYPE_INCLUDE_DIRS})
     target_link_libraries(${PROJECT_NAME}
             PUBLIC RapidJSON::RapidJSON
+            PUBLIC TinyXML2::TinyXML2
             PUBLIC Cairo::Cairo
             PUBLIC ${FREETYPE_LIBRARIES})
 endif ()
