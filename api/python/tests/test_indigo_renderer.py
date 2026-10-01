@@ -126,9 +126,11 @@ class TestIndigoRenderer(TestIndigoBase):
         self.assertTrue(self.indigo.getOptionBool("render-svg-unique-id"))
 
     def test_svg_not_well_formed_is_returned_unchanged(self) -> None:
-        # With no custom fonts cairo writes an unterminated <image> for the
+        # With no custom fonts cairo may write an unterminated <image> for the
         # empty mask of an R-group label, so the SVG is not well-formed XML.
         # Prefixing ids cannot parse it and must leave the render intact.
+        # Reproduced only on macOS; the test is skipped wherever cairo writes
+        # well-formed SVG.
         # Smallest input that triggers it: a scaffold "C-R1" (R1 = N) in RGfile.
         rgroup_rgfile = "\n".join(
             [
@@ -166,8 +168,12 @@ class TestIndigoRenderer(TestIndigoBase):
 
         self.indigo.setOption("render-svg-unique-id", False)
         expected = self.indigo_renderer.renderToString(molecule)
-        with self.assertRaises(ET.ParseError):
+        try:
             ET.fromstring(expected)
+        except ET.ParseError:
+            pass
+        else:
+            self.skipTest("cairo wrote well-formed SVG on this platform")
 
         self.indigo.setOption("render-svg-unique-id", True)
         self.assertEqual(
