@@ -40,6 +40,8 @@ class TestIndigoRenderer(TestIndigoBase):
         ids, references = svg_ids_and_references(svg)
         self.assertTrue(ids)
         self.assertEqual(len(ids), len(set(ids)))
+        # An id starting with a digit breaks querySelector("#id") and CSS.
+        self.assertTrue(all(i[0].isalpha() for i in ids))
         self.assertTrue(references)
         self.assertTrue(references.issubset(ids))
         return set(ids)

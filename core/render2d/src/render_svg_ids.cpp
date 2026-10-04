@@ -45,7 +45,8 @@ std::string indigo::makeSvgIdPrefix(const std::string& svg)
 
     char hex[16];
     std::snprintf(hex, sizeof(hex), "%08x", svg_crc + time_crc);
-    return std::string(hex) + "-";
+    // A leading letter keeps the id a valid XML name and CSS selector (an id may not start with a digit).
+    return std::string("i") + hex + "-";
 }
 
 namespace

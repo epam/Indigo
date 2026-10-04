@@ -26,7 +26,7 @@ namespace indigo
     // Cairo's SVG backend numbers glyphs, gradients, masks, filters and patterns from zero in every
     // document, so two SVGs inlined into one page collide. These helpers make the ids unique.
 
-    // "<hex>-" where <hex> = crc32(svg) + crc32(current time and a process-wide counter).
+    // "i<hex>-" where <hex> = crc32(svg) + crc32(current time and a process-wide counter).
     // The same drawing rendered twice still gets different prefixes.
     std::string makeSvgIdPrefix(const std::string& svg);
 
