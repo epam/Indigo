@@ -4,6 +4,8 @@ package com.epam.indigo;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.stream.IntStream;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -197,23 +199,33 @@ public class IndigoTests {
         assertEquals("CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1", m.smiles());
     }
 
-    // The ionic drawing of a ferrocene, its rings bound to the iron by haptic bonds (#3927): the
-    // iron has no ordinary bond at all.
-    private static IndigoObject ferrocene(Indigo indigo, String smiles, int[] rings, int iron) {
+    private static final int RING_SIZE = 5;
+    private static final int FERROCENE_ATOMS = 2 * RING_SIZE + 1; // two rings and the iron
+    private static final int FERROCENE_HAPTIC_BONDS = 2; // one from each ring to the iron
+
+    // The ionic drawing of a ferrocene with its rings bound to the iron by haptic bonds: the iron
+    // has no ordinary bond, as a lone ion has none.
+    private static IndigoObject bindRings(
+            Indigo indigo, String smiles, int[] ringStarts, int iron) {
         IndigoObject m = indigo.loadMolecule(smiles);
-        for (int first : rings) {
-            IndigoObject group =
-                    m.addAttachmentGroup(new int[] {first, first + 1, first + 2, first + 3, first + 4});
-            m.addHapticBond(group, m.getAtom(iron));
+        for (int first : ringStarts) {
+            int[] ring = IntStream.range(first, first + RING_SIZE).toArray();
+            m.addHapticBond(m.addAttachmentGroup(ring), m.getAtom(iron));
         }
         return m;
+    }
+
+    private static void assertWholeFerrocene(IndigoObject m) {
+        assertEquals(FERROCENE_ATOMS, m.countAtoms());
+        assertEquals(FERROCENE_HAPTIC_BONDS, m.countHapticBonds());
     }
 
     @Test
     @DisplayName("checkSalt does not take a haptic complex for a salt, but finds its counter ion")
     void testCheckSaltHapticComplex() {
         Indigo indigo = new Indigo();
-        IndigoObject m = ferrocene(indigo, "[cH-]1cccc1.[Fe+2].[cH-]1cccc1", new int[] {0, 6}, 5);
+        IndigoObject m =
+                bindRings(indigo, "[cH-]1cccc1.[Fe+2].[cH-]1cccc1", new int[] {0, 6}, 5);
         assertFalse(m.checkSalt());
         m.merge(indigo.loadMolecule("[Cl-]"));
         assertTrue(m.checkSalt());
@@ -223,15 +235,13 @@ public class IndigoTests {
     @DisplayName("stripSalt keeps a haptic complex and removes the ion drawn between its atoms")
     void testStripSaltHapticComplex() {
         Indigo indigo = new Indigo();
-        IndigoObject m = ferrocene(indigo, "[cH-]1cccc1.[Cl-].[cH-]1cccc1.[Fe+2]", new int[] {0, 6}, 11);
+        IndigoObject m =
+                bindRings(indigo, "[cH-]1cccc1.[Cl-].[cH-]1cccc1.[Fe+2]", new int[] {0, 6}, 11);
 
-        IndigoObject stripped = m.stripSalt();
-        assertEquals(11, stripped.countAtoms());
-        assertEquals(2, stripped.countHapticBonds());
+        assertWholeFerrocene(m.stripSalt());
 
         m.stripSalt(true);
-        assertEquals(11, m.countAtoms());
-        assertEquals(2, m.countHapticBonds());
+        assertWholeFerrocene(m);
     }
 
     @Test

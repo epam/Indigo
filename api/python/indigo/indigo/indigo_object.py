@@ -1323,8 +1323,7 @@ class IndigoObject:
 
         for target_fragment in self.iterateComponents():
             target_fragment = target_fragment.clone()
-            # Its metal has no ordinary bond, so it looks like a lone ion.
-            if target_fragment.countHapticBonds():
+            if target_fragment._is_haptic_complex():
                 continue
             for salt in SALTS:
                 query_salt = self.session.loadSmarts(salt)
@@ -1332,6 +1331,16 @@ class IndigoObject:
                 if matcher.match(query_salt):
                     return True
         return False
+
+    def _is_haptic_complex(self) -> bool:
+        """Tells a coordination compound from a salt: the metal a haptic bond
+        holds has no ordinary bond, so to a salt pattern it is a lone ion.
+
+        Returns:
+            bool: True if the molecule has haptic bonds
+        """
+
+        return self.countHapticBonds() > 0
 
     def stripSalt(self, inplace=False):
         """Molecule method strips all inorganic components. A component held
@@ -1356,7 +1365,7 @@ class IndigoObject:
         salts_atoms = []
         for component in target.iterateComponents():
             target_fragment = component.clone()
-            if target_fragment.countHapticBonds():
+            if target_fragment._is_haptic_complex():
                 continue
 
             for salt in SALTS:
@@ -3437,7 +3446,8 @@ class IndigoObject:
         return IndigoLib.checkResult(self._lib().indigoComponentIndex(self.id))
 
     def iterateComponents(self):
-        """Molecule method returns components iterator
+        """Molecule method returns components iterator. Atoms joined by a
+        haptic bond belong to one component, as they do by an ordinary bond.
 
         Returns:
             IndigoObject: molecule components iterator

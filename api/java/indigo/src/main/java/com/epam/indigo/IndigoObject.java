@@ -862,6 +862,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResult(this, lib.indigoHasSelection(self)) == 1;
     }
 
+    /**
+     * Returns the number of components of the molecule. Atoms joined by a haptic bond belong to
+     * one component, as they do by an ordinary bond.
+     *
+     * @return the number of components
+     */
     public int countComponents() {
         dispatcher.setSessionID();
         return Indigo.checkResult(this, lib.indigoCountComponents(self));
@@ -872,6 +878,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResult(this, lib.indigoComponentIndex(self));
     }
 
+    /**
+     * Iterates the components of the molecule. Atoms joined by a haptic bond belong to one
+     * component, as they do by an ordinary bond.
+     *
+     * @return an iterator over the components
+     */
     public IndigoObject iterateComponents() {
         dispatcher.setSessionID();
         return new IndigoObject(
@@ -895,8 +907,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
 
         for (IndigoObject component : iterateComponents()) {
             IndigoObject targetFragment = component.clone();
-            // Its metal has no ordinary bond, so it looks like a lone ion.
-            if (targetFragment.countHapticBonds() > 0) {
+            if (targetFragment.isHapticComplex()) {
                 continue;
             }
             for (String salt : Salts.SALTS) {
@@ -910,8 +921,15 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return false;
     }
 
+    // Tells a coordination compound from a salt: the metal a haptic bond holds has no ordinary
+    // bond, so to a salt pattern it is a lone ion.
+    private boolean isHapticComplex() {
+        return countHapticBonds() > 0;
+    }
+
     /**
-     * Strips all disconnected inorganic components ("salts") from the molecule.
+     * Strips all disconnected inorganic components ("salts") from the molecule. A component held
+     * together by haptic bonds is a coordination compound and stays.
      *
      * <p>Returns a copy of the molecule without its inorganic components.
      *
@@ -939,7 +957,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         ArrayList<Integer> saltAtoms = new ArrayList<>();
         for (IndigoObject component : target.iterateComponents()) {
             IndigoObject targetFragment = component.clone();
-            if (targetFragment.countHapticBonds() > 0) {
+            if (targetFragment.isHapticComplex()) {
                 continue;
             }
 
