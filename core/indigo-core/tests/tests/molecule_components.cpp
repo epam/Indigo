@@ -605,7 +605,8 @@ TEST_F(IndigoCoreStandardizeHapticTest, KeepSmallestDropsTheWholeComplex)
     options.keep_smallest_fragment = true;
     mol.standardize(options);
 
-    EXPECT_EQ(1, mol.vertexCount()) << "one of the ions, not the iron and not a ring";
+    ASSERT_EQ(1, mol.vertexCount());
+    EXPECT_NE(ELEM_Fe, mol.getAtomNumber(mol.vertexBegin())) << "an ion is the smallest fragment; the iron is a part of the largest";
     EXPECT_TRUE(mol.haptic_bonds.isEmpty());
 }
 
