@@ -78,7 +78,8 @@ deliberately left behind; without the flags it is remapped into the target.
 `indigoCount/IterateComponentAtoms/Bonds`, `indigoFragmentedSdf`), `standardize` keeps or removes
 fragments or charges a lone halogen, or the wrappers' `checkSalt` / `stripSalt` look for salts,
 **then** a haptic bond joins atoms as an ordinary bond does: a ferrocene is one component, a counter
-ion that nothing bonds is another, and a complex is never a salt (#3927). The answer comes from
+ion that nothing bonds is another, and a complex is never a salt (#3927). An attachment group that no
+bond refers to joins nothing. The answer comes from
 `core/indigo-core/molecule/base_molecule.h#moleculeComponents`, never from the graph's
 `countComponents()`, which SMILES, InChI and substructure search keep using — so a complex is one
 component and still prints as dot-separated SMILES.
