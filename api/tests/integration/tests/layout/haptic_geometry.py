@@ -94,27 +94,27 @@ def distance_to_bond(point, begin, end):
     )
 
 
-def pieces(molecule):
-    # Found here rather than taken from iterateComponents(), which counts a
-    # haptic bond as a bond (#3927) and would put a whole complex in one piece.
-    piece = {}
+def bonded_pieces(molecule):
+    # What ordinary bonds alone hold together. iterateComponents() follows
+    # haptic bonds as well, so it gives a whole complex as one piece.
+    parent = {}
     for atom in molecule.iterateAtoms():
-        piece[atom.index()] = atom.index()
+        parent[atom.index()] = atom.index()
 
-    def root(atom):
-        while piece[atom] != atom:
-            piece[atom] = piece[piece[atom]]
-            atom = piece[atom]
+    def find(atom):
+        while parent[atom] != atom:
+            parent[atom] = parent[parent[atom]]
+            atom = parent[atom]
         return atom
 
     for bond in molecule.iterateBonds():
-        piece[root(bond.source().index())] = root(bond.destination().index())
+        parent[find(bond.source().index())] = find(bond.destination().index())
 
-    return dict((atom, root(atom)) for atom in piece)
+    return dict((atom, find(atom)) for atom in parent)
 
 
 def geometry(molecule):
-    component_of = pieces(molecule)
+    piece_of = bonded_pieces(molecule)
 
     # The .NET wrapper hands the coordinates over as System.Single, and
     # IronPython keeps single precision through the arithmetic unless they are
@@ -128,16 +128,16 @@ def geometry(molecule):
     for bond in molecule.iterateBonds():
         bonds.append((bond.source().index(), bond.destination().index()))
 
-    return component_of, position, bonds
+    return piece_of, position, bonds
 
 
 def count(molecule):
-    component_of, position, bonds = geometry(molecule)
+    piece_of, position, bonds = geometry(molecule)
     inside = [0, 0, 0]
     between = [0, 0, 0]
 
     def bucket(one, two):
-        return inside if component_of[one] == component_of[two] else between
+        return inside if piece_of[one] == piece_of[two] else between
 
     for i in range(len(bonds)):
         for j in range(i + 1, len(bonds)):

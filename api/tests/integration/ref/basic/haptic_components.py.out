@@ -1,36 +1,37 @@
-*** Components of haptic structures ***
-allylpalladium-chloride-dimer                        [10] as in KET
-bis-1-5-cyclooctadiene-nickel-0                      [17] as in KET
-bis-benzene-chromium                                 [13] as in KET
-bis-cyclopentadienyl-dimethylzirconium-iv            [13] as in KET
-complex-from-kaufmann-et-al-2023                     [39] as in KET
-complex-from-seyferth-2002                           [24] as in KET
-complex-from-wetzel-roesky-1998                      [65] as in KET
-cyclobutadiene-iron-tricarbonyl                      [11] as in KET
-cycloheptatrienyl-cyclopentadienyl-titanium          [13] as in KET
-cycloheptatrienyl-molybdenum-tricarbonyl             [14] as in KET
-cyclooctadiene-rhodium-chloride-dimer                [20] as in KET
-cyclopentadienyl-iron-dicarbonyl-dimer               [20] as in KET
-cyclopentadienyl-manganese-tricarbonyl               [12] as in KET
-eta3-allyl-eta5-cyclopentadienyl-palladium           [9] as in KET
-ferrocene                                            [11] as in KET
-first-complex-from-lu-et-al-2015                     [26] as in KET
-pdcl2-bis-diphenylphosphanyl-ferrocene-2             [40] as in KET
-second-complex-from-lu-et-al-2015                    [75] as in KET
-tetra-cyclopentadienyl-titanium                      [21] as in KET
-third-complex-from-lu-et-al-2015                     [36] as in KET
-trans-ir-co-pph3-2-indolyl                           [50] as in KET
-tricarbonyl-benzene-chromium                         [13] as in KET
-trichloro-ethylene-platinate-ii-hydrate-zeises-salt  [6] as in KET
-triple-decker-complex-from-ghag-at-el-2013           [29] as in KET
-tris-cyclooctatetraene-triiron                       [27] as in KET
-tris-cyclopentadienyl-yttrium-iii                    [16] as in KET
-uranocene                                            [17] as in KET
-ferrocene-variant5                                   [11] as in KET
-ferrocene-variant6                                   [11] as in KET
-*** A complex and its counter ions ***
-ferrocene with NaCl                                  [1, 1, 11] as in KET
-component 0: 11 atoms, 2 haptic bonds, 2 attachment groups
-component 1: 1 atoms, 0 haptic bonds, 0 attachment groups
-component 2: 1 atoms, 0 haptic bonds, 0 attachment groups
-fragmentedSdf records: 3
+*** a complex is one component ***
+ferrocene-variant5
+components: 1
+  0: atoms [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 10 bonds, 2 haptic bonds
+  component of each atom: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+ferrocene-variant5_fragments.sdf:SUCCEED
+ferrocene-variant6
+components: 1
+  0: atoms [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 10 bonds, 2 haptic bonds
+  component of each atom: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+ferrocene-variant6_fragments.sdf:SUCCEED
+*** a counter ion is another ***
+components: 3
+  0: atoms [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 10 bonds, 2 haptic bonds
+  1: atoms [11], 0 bonds, 0 haptic bonds
+  2: atoms [12], 0 bonds, 0 haptic bonds
+  component of each atom: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2]
+ferrocene-variant5_with_ions_fragments.sdf:SUCCEED
+*** a haptic bond joins components, and parts them when it goes ***
+components: 2
+  0: atoms [0, 1, 2, 3, 4], 5 bonds, 0 haptic bonds
+  1: atoms [5], 0 bonds, 0 haptic bonds
+  component of each atom: [0, 0, 0, 0, 0, 1]
+an attachment group over the ring, no bond to it yet
+components: 2
+  0: atoms [0, 1, 2, 3, 4], 5 bonds, 0 haptic bonds
+  1: atoms [5], 0 bonds, 0 haptic bonds
+  component of each atom: [0, 0, 0, 0, 0, 1]
+a haptic bond from the group to the iron
+components: 1
+  0: atoms [0, 1, 2, 3, 4, 5], 5 bonds, 1 haptic bonds
+  component of each atom: [0, 0, 0, 0, 0, 0]
+the haptic bond removed
+components: 2
+  0: atoms [0, 1, 2, 3, 4], 5 bonds, 0 haptic bonds
+  1: atoms [5], 0 bonds, 0 haptic bonds
+  component of each atom: [0, 0, 0, 0, 0, 1]
