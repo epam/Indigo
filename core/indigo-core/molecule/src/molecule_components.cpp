@@ -21,7 +21,6 @@
 #include <list>
 #include <unordered_set>
 
-#include "graph/filter.h"
 #include "graph/graph_decomposer.h"
 #include "molecule/base_molecule.h"
 
@@ -29,7 +28,7 @@ using namespace indigo;
 
 IMPL_ERROR(MoleculeComponents, "molecule components");
 
-MoleculeComponents::MoleculeComponents(BaseMolecule& mol)
+void MoleculeComponents::build(const BaseMolecule& mol)
 {
     std::list<std::unordered_set<int>> haptic_sets;
     mol.haptic_bonds.collectConnectivitySets(mol.attachment_groups, haptic_sets);
@@ -39,21 +38,16 @@ MoleculeComponents::MoleculeComponents(BaseMolecule& mol)
 
     _component_of.clear_resize(mol.vertexEnd());
     _component_of.fffill();
-    _atom_count.clear_resize(component_count);
-    _atom_count.zerofill();
-    _bond_count.clear_resize(component_count);
-    _bond_count.zerofill();
+    for (int atom = mol.vertexBegin(); atom != mol.vertexEnd(); atom = mol.vertexNext(atom))
+        _component_of[atom] = decomposer.getComponent(atom);
 
-    // Counted here rather than taken from the decomposer: with external neighbours it
-    // counts every pair of a set as an edge, 40 bonds for a ferrocene instead of 10.
-    for (int atom : mol.vertices())
+    _atom_count.clear_resize(component_count);
+    _bond_count.clear_resize(component_count);
+    for (int component = 0; component < component_count; component++)
     {
-        const int component = decomposer.getComponent(atom);
-        _component_of[atom] = component;
-        _atom_count[component]++;
+        _atom_count[component] = decomposer.getComponentVerticesCount(component);
+        _bond_count[component] = decomposer.getComponentEdgesCount(component);
     }
-    for (int bond : mol.edges())
-        _bond_count[_component_of[mol.getEdge(bond).beg]]++;
 }
 
 int MoleculeComponents::count() const
@@ -80,14 +74,22 @@ int MoleculeComponents::bondCount(int component) const
     return _bond_count[component];
 }
 
-void MoleculeComponents::selectAtoms(int component, Filter& filter) const
+bool MoleculeComponents::isLoneAtom(int atom) const
+{
+    return _atom_count[componentOf(atom)] == 1;
+}
+
+void MoleculeComponents::collectAtoms(int component, Array<int>& atoms) const
 {
     _checkComponent(component);
-    filter.init(_component_of.ptr(), Filter::EQ, component);
+    atoms.clear();
+    for (int atom = 0; atom < _component_of.size(); atom++)
+        if (_component_of[atom] == component)
+            atoms.push(atom);
 }
 
 void MoleculeComponents::_checkComponent(int component) const
 {
     if (component < 0 || component >= count())
-        throw Error("component %d does not exist: the molecule has %d components", component, count());
+        throw Error("component %d is out of range: the component count is %d", component, count());
 }

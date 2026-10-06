@@ -2405,10 +2405,10 @@ CEXPORT int indigoCloneComponent(int molecule, int index)
         if (index < 0 || index >= components.count())
             throw IndigoError("indigoCloneComponent(): bad index %d (0-%d allowed)", index, components.count() - 1);
 
-        Filter filter;
-        components.selectAtoms(index, filter);
+        QS_DEF(Array<int>, atoms);
+        components.collectAtoms(index, atoms);
         std::unique_ptr<IndigoMolecule> im = std::make_unique<IndigoMolecule>();
-        im->mol.makeSubmolecule(bm, filter, 0, 0);
+        im->mol.makeSubmolecule(bm, atoms, nullptr);
         return self.addObject(im.release());
     }
     INDIGO_END(-1);

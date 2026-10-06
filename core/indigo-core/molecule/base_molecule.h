@@ -513,11 +513,8 @@ namespace indigo
         // the user sees goes through moleculeComponents() instead.
         void collectExternalNeighbors(std::list<std::unordered_set<int>>& neighbors);
 
-        // The components the public API reports, where a haptic bond joins atoms like
-        // an ordinary one. Graph::countComponents() stays the graph's own answer, which
-        // SMILES, InChI and substructure search rely on; a component index of one must
-        // never be used with the other. Rebuilt on the first call after an edit, which
-        // is also when a reference returned before the edit stops being valid.
+        // The components the public API reports; see MoleculeComponents. Their numbers
+        // are not those of Graph::getDecomposition(), which splits a haptic complex.
         const MoleculeComponents& moleculeComponents();
 
         void unfoldHydrogens(Array<int>* markers_out, int max_h_cnt = -1, bool impl_h_no_throw = false, bool only_selected = false);
@@ -824,6 +821,7 @@ namespace indigo
 
         // Throws unless the endpoint names something this molecule has.
         void _checkHapticEndpoint(const HapticBond::Endpoint& endpoint);
+        void _hapticConnectivityChanged();
 
         int _addBaseAtom();
         int _addBaseBond(int beg, int end);
@@ -889,8 +887,8 @@ namespace indigo
         // If edit revision is the same then molecule wasn't edited
         int _edit_revision;
 
-        std::unique_ptr<MoleculeComponents> _molecule_components;
-        int _molecule_components_revision = -1;
+        MoleculeComponents _molecule_components;
+        bool _molecule_components_valid = false;
 
         MetaDataStorage _meta;
 

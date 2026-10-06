@@ -17,20 +17,25 @@
  ***************************************************************************/
 
 // Tests for the components a molecule reports when haptic bonds join atoms (#3927):
-// what holds a component together, how components are numbered, and when the cached
-// answer is rebuilt.
+// what holds a component together, how components are numbered, and which edits
+// change the answer after it has been asked for once.
 
 #include <gtest/gtest.h>
 
 #include <list>
+#include <string>
 #include <unordered_set>
+#include <vector>
 
-#include <graph/filter.h>
+#include <base_cpp/scanner.h>
+#include <graph/graph_decomposer.h>
 #include <molecule/base_molecule.h>
 #include <molecule/molecule.h>
 #include <molecule/molecule_components.h>
 #include <molecule/molecule_haptic_bonds.h>
 #include <molecule/molecule_standardize_options.h>
+#include <molecule/query_molecule.h>
+#include <molecule/smiles_loader.h>
 
 #include "common.h"
 
@@ -41,74 +46,137 @@ class IndigoCoreMoleculeComponentsTest : public IndigoCoreTest
 protected:
     using Endpoint = HapticBond::Endpoint;
 
-    static void addRing(Molecule& mol, int first)
+    static constexpr int RING_SIZE = 5;
+    static constexpr int FERROCENE_ATOMS = 2 * RING_SIZE + 1; // two rings and the iron
+    static constexpr int FERROCENE_BONDS = 2 * RING_SIZE;     // the ring bonds: a haptic bond is not an edge
+
+    // A ring bound to a metal, by the names a test needs to edit the binding.
+    struct Ligand
     {
-        for (int i = 0; i < 5; i++)
-            mol.addAtom(ELEM_C);
-        for (int i = 0; i < 5; i++)
-            mol.addBond(first + i, first + (i + 1) % 5, BOND_SINGLE);
+        std::vector<int> atoms;
+        int group = -1;
+        int haptic_bond = -1;
+    };
+
+    struct Ferrocene
+    {
+        Ligand first;
+        Ligand second;
+        int iron = -1;
+    };
+
+    static std::vector<int> addRing(Molecule& mol)
+    {
+        std::vector<int> ring;
+        for (int i = 0; i < RING_SIZE; i++)
+            ring.push_back(mol.addAtom(ELEM_C));
+        for (int i = 0; i < RING_SIZE; i++)
+            mol.addBond(ring[i], ring[(i + 1) % RING_SIZE], BOND_SINGLE);
+        return ring;
     }
 
-    static int addGroup(Molecule& mol, int first)
+    static Ligand bind(Molecule& mol, const std::vector<int>& ring, int atom, int type = _BOND_HAPTIC)
     {
-        const int group = mol.attachment_groups.addGroup();
-        mol.attachment_groups.group(group).setAtoms({first, first + 1, first + 2, first + 3, first + 4});
-        return group;
+        Ligand ligand;
+        ligand.atoms = ring;
+        ligand.group = mol.attachment_groups.addGroup();
+        mol.attachment_groups.group(ligand.group).setAtoms(ring);
+        ligand.haptic_bond = mol.addHapticBond(Endpoint::group(ligand.group), Endpoint::atom(atom), type);
+        return ligand;
     }
 
-    // Ferrocene as #3927 attached it: two rings reach the iron (10) through haptic
-    // bonds only, so the graph has three pieces and the molecule one.
-    static void makeFerrocene(Molecule& mol)
+    // Two rings that reach the iron through haptic bonds only, so the graph has
+    // three pieces and the molecule one.
+    static Ferrocene addFerrocene(Molecule& mol)
     {
-        addRing(mol, 0);
-        addRing(mol, 5);
-        const int metal = mol.addAtom(ELEM_Fe);
-        mol.addHapticBond(Endpoint::group(addGroup(mol, 0)), Endpoint::atom(metal));
-        mol.addHapticBond(Endpoint::group(addGroup(mol, 5)), Endpoint::atom(metal));
+        const std::vector<int> first_ring = addRing(mol);
+        const std::vector<int> second_ring = addRing(mol);
+
+        Ferrocene ferrocene;
+        ferrocene.iron = mol.addAtom(ELEM_Fe);
+        ferrocene.first = bind(mol, first_ring, ferrocene.iron);
+        ferrocene.second = bind(mol, second_ring, ferrocene.iron);
+        return ferrocene;
+    }
+
+    template <typename Call>
+    static std::string errorOf(Call call)
+    {
+        try
+        {
+            call();
+        }
+        catch (Exception& e)
+        {
+            return e.message();
+        }
+        return "";
     }
 };
+
+// ---- what holds a component together ----------------------------------------
 
 TEST_F(IndigoCoreMoleculeComponentsTest, FerroceneIsOneComponent)
 {
     Molecule mol;
-    makeFerrocene(mol);
+    addFerrocene(mol);
 
     const MoleculeComponents& components = mol.moleculeComponents();
     ASSERT_EQ(1, components.count());
-    EXPECT_EQ(11, components.atomCount(0));
-    EXPECT_EQ(10, components.bondCount(0)); // the ring bonds; haptic bonds are counted apart
+    EXPECT_EQ(FERROCENE_ATOMS, components.atomCount(0));
+    EXPECT_EQ(FERROCENE_BONDS, components.bondCount(0));
     for (int atom : mol.vertices())
         EXPECT_EQ(0, components.componentOf(atom)) << "atom " << atom;
 }
 
-// A counter ion drawn between the atoms of the complex: it stays apart, and the
-// complex, holding the lowest atom, comes first — the order the graph uses.
+// The decomposer joins the atoms of a set without taking the set for edges: every
+// pair of a ring and the iron would otherwise count, four times the bonds there are.
+TEST_F(IndigoCoreMoleculeComponentsTest, ExternalNeighboursJoinAtomsWithoutAddingEdges)
+{
+    Molecule mol;
+    addFerrocene(mol);
+    std::list<std::unordered_set<int>> haptic_sets;
+    mol.haptic_bonds.collectConnectivitySets(mol.attachment_groups, haptic_sets);
+
+    GraphDecomposer decomposer(mol);
+    ASSERT_EQ(1, decomposer.decompose(nullptr, nullptr, &haptic_sets));
+    EXPECT_EQ(FERROCENE_ATOMS, decomposer.getComponentVerticesCount(0));
+    EXPECT_EQ(FERROCENE_BONDS, decomposer.getComponentEdgesCount(0));
+}
+
+// A counter ion drawn between the atoms of the complex stays apart, and the complex,
+// holding the lowest atom, comes first - the order the graph uses.
 TEST_F(IndigoCoreMoleculeComponentsTest, CounterIonStaysApartOfTheComplex)
 {
     Molecule mol;
-    addRing(mol, 0);
+    const std::vector<int> first_ring = addRing(mol);
     const int ion = mol.addAtom(ELEM_Cl);
-    addRing(mol, 6);
-    const int metal = mol.addAtom(ELEM_Fe);
-    mol.addHapticBond(Endpoint::group(addGroup(mol, 0)), Endpoint::atom(metal));
-    mol.addHapticBond(Endpoint::group(addGroup(mol, 6)), Endpoint::atom(metal));
+    const std::vector<int> second_ring = addRing(mol);
+    const int iron = mol.addAtom(ELEM_Fe);
+    bind(mol, first_ring, iron);
+    bind(mol, second_ring, iron);
 
     const MoleculeComponents& components = mol.moleculeComponents();
     ASSERT_EQ(2, components.count());
-    EXPECT_EQ(0, components.componentOf(metal));
-    EXPECT_EQ(0, components.componentOf(7));
-    EXPECT_EQ(1, components.componentOf(ion));
-    EXPECT_EQ(11, components.atomCount(0));
-    EXPECT_EQ(1, components.atomCount(1));
-    EXPECT_EQ(0, components.bondCount(1));
+    const int complex = components.componentOf(first_ring.front());
+    const int salt = components.componentOf(ion);
+    EXPECT_EQ(0, complex);
+    EXPECT_EQ(1, salt);
+    EXPECT_EQ(complex, components.componentOf(second_ring.back()));
+    EXPECT_EQ(complex, components.componentOf(iron));
+    EXPECT_EQ(FERROCENE_ATOMS, components.atomCount(complex));
+    EXPECT_EQ(1, components.atomCount(salt));
+    EXPECT_EQ(0, components.bondCount(salt));
+    EXPECT_TRUE(components.isLoneAtom(ion));
+    EXPECT_FALSE(components.isLoneAtom(iron)) << "no edge reaches the iron, but two haptic bonds do";
 }
 
 TEST_F(IndigoCoreMoleculeComponentsTest, AtomToAtomHapticBondJoinsItsAtoms)
 {
     Molecule mol;
-    mol.addAtom(ELEM_C);
-    mol.addAtom(ELEM_Fe);
-    mol.addHapticBond(Endpoint::atom(0), Endpoint::atom(1));
+    const int carbon = mol.addAtom(ELEM_C);
+    const int iron = mol.addAtom(ELEM_Fe);
+    mol.addHapticBond(Endpoint::atom(carbon), Endpoint::atom(iron));
 
     EXPECT_EQ(1, mol.moleculeComponents().count());
 }
@@ -118,11 +186,22 @@ TEST_F(IndigoCoreMoleculeComponentsTest, AtomToAtomHapticBondJoinsItsAtoms)
 TEST_F(IndigoCoreMoleculeComponentsTest, VariableAttachmentJoinsItsAtoms)
 {
     Molecule mol;
-    addRing(mol, 0);
+    const std::vector<int> ring = addRing(mol);
     const int substituent = mol.addAtom(ELEM_Cl);
-    mol.addHapticBond(Endpoint::group(addGroup(mol, 0)), Endpoint::atom(substituent), _BOND_VARIABLE_ATTACHMENT);
+    bind(mol, ring, substituent, _BOND_VARIABLE_ATTACHMENT);
 
     EXPECT_EQ(1, mol.moleculeComponents().count());
+}
+
+// A group is a set of atoms a bond may refer to. Until one does, it holds nothing.
+TEST_F(IndigoCoreMoleculeComponentsTest, AttachmentGroupWithoutABondJoinsNothing)
+{
+    Molecule mol;
+    loadMolecule("C.C", mol);
+    const int group = mol.attachment_groups.addGroup();
+    mol.attachment_groups.group(group).setAtoms({0, 1});
+
+    EXPECT_EQ(2, mol.moleculeComponents().count());
 }
 
 // An s-group annotates atoms and bonds none of them: two fragments marked by one data
@@ -138,8 +217,23 @@ TEST_F(IndigoCoreMoleculeComponentsTest, SGroupJoinsNothing)
     EXPECT_EQ(2, mol.moleculeComponents().count());
 }
 
+// A SMARTS component group says where its atoms may match; it bonds none of them.
+TEST_F(IndigoCoreMoleculeComponentsTest, SmartsComponentGroupJoinsNothing)
+{
+    QueryMolecule query;
+    BufferScanner scanner("(C.C)");
+    SmilesLoader loader(scanner);
+    loader.loadSMARTS(query);
+
+    std::list<std::unordered_set<int>> neighbors;
+    query.collectExternalNeighbors(neighbors);
+    ASSERT_EQ(1, query.countComponents(neighbors)) << "the group is there and the KET saver follows it";
+
+    EXPECT_EQ(2, query.moleculeComponents().count());
+}
+
 // Without haptic bonds the answer is the graph's, component by component and atom by
-// atom — including a molecule whose atom indices have a hole.
+// atom - including a molecule whose atom indices have a hole.
 TEST_F(IndigoCoreMoleculeComponentsTest, WithoutHapticBondsTheAnswerIsTheGraphs)
 {
     for (const char* smiles : {"C", "CC.O.[Na+].[Cl-]", "C1CC1.C1.N.C1", "c1ccccc1CC(=O)O.[K+]"})
@@ -160,50 +254,247 @@ TEST_F(IndigoCoreMoleculeComponentsTest, WithoutHapticBondsTheAnswerIsTheGraphs)
     }
 }
 
-TEST_F(IndigoCoreMoleculeComponentsTest, SelectedAtomsCarryTheWholeComplex)
+TEST_F(IndigoCoreMoleculeComponentsTest, CollectedAtomsCarryTheWholeComplex)
 {
     Molecule mol;
-    makeFerrocene(mol);
+    const std::vector<int> first_ring = addRing(mol);
+    const int ion = mol.addAtom(ELEM_Cl);
+    const std::vector<int> second_ring = addRing(mol);
+    const int iron = mol.addAtom(ELEM_Fe);
+    bind(mol, first_ring, iron);
+    bind(mol, second_ring, iron);
 
-    Filter filter;
-    mol.moleculeComponents().selectAtoms(0, filter);
-    Molecule component;
-    component.makeSubmolecule(mol, filter, nullptr, nullptr);
+    const MoleculeComponents& components = mol.moleculeComponents();
+    Array<int> atoms;
+    components.collectAtoms(components.componentOf(iron), atoms);
 
-    EXPECT_EQ(11, component.vertexCount());
-    EXPECT_EQ(2, component.attachment_groups.groupCount());
-    EXPECT_EQ(2, component.haptic_bonds.count());
+    ASSERT_EQ(FERROCENE_ATOMS, atoms.size());
+    for (int i = 0; i < atoms.size(); i++)
+    {
+        EXPECT_NE(ion, atoms[i]);
+        if (i > 0)
+            EXPECT_LT(atoms[i - 1], atoms[i]) << "a clone numbers its atoms in the order they are given";
+    }
+
+    Molecule complex;
+    complex.makeSubmolecule(mol, atoms, nullptr);
+    EXPECT_EQ(FERROCENE_ATOMS, complex.vertexCount());
+    EXPECT_EQ(2, complex.attachment_groups.groupCount());
+    EXPECT_EQ(2, complex.haptic_bonds.count());
 }
 
-// ---- when the answer is rebuilt ---------------------------------------------
+// ---- which edits change an answer already given -----------------------------
 
-TEST_F(IndigoCoreMoleculeComponentsTest, RemovingAGroupSplitsTheComplex)
-{
-    Molecule mol;
-    makeFerrocene(mol);
-    ASSERT_EQ(1, mol.moleculeComponents().count());
-
-    mol.removeAttachmentGroup(mol.attachment_groups.begin()); // its haptic bond goes with it
-
-    EXPECT_EQ(2, mol.moleculeComponents().count()); // one ring apart, the other still on the iron
-}
-
-// The graph keeps its own decomposition when a vertex is added; this answer must not.
+// The graph keeps its own decomposition when a vertex is added; this one does not.
 TEST_F(IndigoCoreMoleculeComponentsTest, AnAtomAddedAfterAQueryIsSeen)
 {
     Molecule mol;
-    makeFerrocene(mol);
+    addFerrocene(mol);
     ASSERT_EQ(1, mol.moleculeComponents().count());
 
     const int lone = mol.addAtom(ELEM_Na);
 
-    EXPECT_EQ(2, mol.moleculeComponents().count());
-    EXPECT_EQ(1, mol.moleculeComponents().componentOf(lone));
+    const MoleculeComponents& components = mol.moleculeComponents();
+    EXPECT_EQ(2, components.count());
+    EXPECT_TRUE(components.isLoneAtom(lone));
 }
 
+// The index of a removed atom is handed to the next atom added. What was known of
+// the old atom is not.
+TEST_F(IndigoCoreMoleculeComponentsTest, AnAtomTakingAFreedIndexIsNotTheAtomThatHadIt)
+{
+    Molecule mol;
+    loadMolecule("CC.O", mol);
+    const int removed = 1;
+    ASSERT_EQ(mol.moleculeComponents().componentOf(0), mol.moleculeComponents().componentOf(removed));
+
+    mol.removeAtom(removed);
+    ASSERT_EQ(2, mol.moleculeComponents().count());
+    const int added = mol.addAtom(ELEM_Cl);
+    ASSERT_EQ(removed, added);
+
+    const MoleculeComponents& components = mol.moleculeComponents();
+    EXPECT_EQ(3, components.count());
+    EXPECT_TRUE(components.isLoneAtom(added));
+    EXPECT_NE(components.componentOf(0), components.componentOf(added));
+}
+
+TEST_F(IndigoCoreMoleculeComponentsTest, ABondAddedAfterAQueryJoinsItsAtoms)
+{
+    Molecule mol;
+    loadMolecule("C.C", mol);
+    ASSERT_EQ(2, mol.moleculeComponents().count());
+
+    mol.addBond(0, 1, BOND_SINGLE);
+
+    EXPECT_EQ(1, mol.moleculeComponents().count());
+}
+
+TEST_F(IndigoCoreMoleculeComponentsTest, ABondRemovedAfterAQueryPartsItsAtoms)
+{
+    Molecule mol;
+    loadMolecule("CC", mol);
+    ASSERT_EQ(1, mol.moleculeComponents().count());
+
+    mol.removeBond(mol.edgeBegin());
+
+    EXPECT_EQ(2, mol.moleculeComponents().count());
+}
+
+// flipBondWithDirection() moves the end of a bond without removing the bond, past the
+// calls of Graph that add and remove edges.
+TEST_F(IndigoCoreMoleculeComponentsTest, ABondMovedToAnotherAtomIsSeen)
+{
+    Molecule mol;
+    loadMolecule("CC.C", mol);
+    const int kept = 0;
+    const int left = 1;
+    const int taken = 2;
+    ASSERT_EQ(mol.moleculeComponents().componentOf(kept), mol.moleculeComponents().componentOf(left));
+
+    const int no_leaving_atom = -1;
+    mol.flipBondWithDirection(kept, left, taken, no_leaving_atom);
+
+    const MoleculeComponents& components = mol.moleculeComponents();
+    EXPECT_EQ(components.componentOf(kept), components.componentOf(taken));
+    EXPECT_TRUE(components.isLoneAtom(left));
+}
+
+TEST_F(IndigoCoreMoleculeComponentsTest, AMergedMoleculeBringsItsComponents)
+{
+    Molecule mol;
+    addFerrocene(mol);
+    ASSERT_EQ(1, mol.moleculeComponents().count());
+
+    Molecule ions;
+    loadMolecule("[Na+].[Cl-]", ions);
+    mol.mergeWithMolecule(ions, nullptr);
+    ASSERT_EQ(3, mol.moleculeComponents().count()) << "two atoms and no bond were added";
+
+    Molecule another;
+    addFerrocene(another);
+    Array<int> mapping;
+    mol.mergeWithMolecule(another, &mapping);
+
+    const MoleculeComponents& components = mol.moleculeComponents();
+    ASSERT_EQ(4, components.count());
+    EXPECT_EQ(FERROCENE_ATOMS, components.atomCount(components.componentOf(mapping[another.vertexBegin()])));
+}
+
+TEST_F(IndigoCoreMoleculeComponentsTest, ACloneReplacesTheAnswerOfItsTarget)
+{
+    Molecule source;
+    addFerrocene(source);
+    Molecule target;
+    loadMolecule("C.C.C", target);
+    ASSERT_EQ(3, target.moleculeComponents().count());
+
+    target.clone(source);
+
+    EXPECT_EQ(1, target.moleculeComponents().count());
+    EXPECT_EQ(1, source.moleculeComponents().count());
+}
+
+// clone_KeepIndices() fills the graph of an empty molecule by a path of its own.
+TEST_F(IndigoCoreMoleculeComponentsTest, AnIndexKeepingCloneReplacesTheAnswerOfItsTarget)
+{
+    Molecule source;
+    addFerrocene(source);
+    source.addAtom(ELEM_Na);
+    Molecule target;
+    ASSERT_EQ(0, target.moleculeComponents().count());
+
+    target.clone_KeepIndices(source);
+
+    EXPECT_EQ(2, target.moleculeComponents().count());
+}
+
+TEST_F(IndigoCoreMoleculeComponentsTest, AClearedMoleculeHasNoComponents)
+{
+    Molecule mol;
+    addFerrocene(mol);
+    ASSERT_EQ(1, mol.moleculeComponents().count());
+
+    mol.clear();
+
+    EXPECT_EQ(0, mol.moleculeComponents().count());
+}
+
+TEST_F(IndigoCoreMoleculeComponentsTest, AHapticBondAddedAfterAQueryJoinsItsAtoms)
+{
+    Molecule mol;
+    const std::vector<int> ring = addRing(mol);
+    const int iron = mol.addAtom(ELEM_Fe);
+    ASSERT_EQ(2, mol.moleculeComponents().count());
+
+    bind(mol, ring, iron);
+
+    EXPECT_EQ(1, mol.moleculeComponents().count());
+}
+
+TEST_F(IndigoCoreMoleculeComponentsTest, ARemovedHapticBondFreesItsRing)
+{
+    Molecule mol;
+    const Ferrocene ferrocene = addFerrocene(mol);
+    ASSERT_EQ(1, mol.moleculeComponents().count());
+
+    mol.removeHapticBond(ferrocene.first.haptic_bond);
+
+    const MoleculeComponents& components = mol.moleculeComponents();
+    EXPECT_EQ(2, components.count());
+    EXPECT_NE(components.componentOf(ferrocene.iron), components.componentOf(ferrocene.first.atoms.front()));
+    EXPECT_EQ(components.componentOf(ferrocene.iron), components.componentOf(ferrocene.second.atoms.front()));
+}
+
+TEST_F(IndigoCoreMoleculeComponentsTest, ARemovedGroupTakesItsBondAndFreesItsRing)
+{
+    Molecule mol;
+    const Ferrocene ferrocene = addFerrocene(mol);
+    ASSERT_EQ(1, mol.moleculeComponents().count());
+
+    mol.removeAttachmentGroup(ferrocene.first.group);
+
+    const MoleculeComponents& components = mol.moleculeComponents();
+    EXPECT_EQ(2, components.count());
+    EXPECT_NE(components.componentOf(ferrocene.iron), components.componentOf(ferrocene.first.atoms.front()));
+}
+
+TEST_F(IndigoCoreMoleculeComponentsTest, NewAtomsOfAGroupTakeTheBondFromTheOldOnes)
+{
+    Molecule mol;
+    const Ferrocene ferrocene = addFerrocene(mol);
+    const std::vector<int> third_ring = addRing(mol);
+    ASSERT_EQ(2, mol.moleculeComponents().count());
+
+    mol.setAttachmentGroupAtoms(ferrocene.first.group, third_ring);
+
+    const MoleculeComponents& components = mol.moleculeComponents();
+    EXPECT_EQ(2, components.count());
+    EXPECT_EQ(components.componentOf(ferrocene.iron), components.componentOf(third_ring.front()));
+    EXPECT_NE(components.componentOf(ferrocene.iron), components.componentOf(ferrocene.first.atoms.front()));
+}
+
+// A group that loses a member is dropped whole with its bond (invariant A7), so the
+// rest of the ring is no longer held.
+TEST_F(IndigoCoreMoleculeComponentsTest, ARemovedGroupMemberFreesTheRestOfTheRing)
+{
+    Molecule mol;
+    const Ferrocene ferrocene = addFerrocene(mol);
+    ASSERT_EQ(1, mol.moleculeComponents().count());
+
+    mol.removeAtom(ferrocene.first.atoms.front());
+
+    const MoleculeComponents& components = mol.moleculeComponents();
+    ASSERT_EQ(2, components.count());
+    const int freed = components.componentOf(ferrocene.first.atoms.back());
+    EXPECT_NE(components.componentOf(ferrocene.iron), freed);
+    EXPECT_EQ(RING_SIZE - 1, components.atomCount(freed));
+}
+
+// ---- the two decompositions stay apart --------------------------------------
+
 // The graph's cache may hold a decomposition made with s-group neighbours, as any
-// caller of countComponents(neighbors) leaves it; the component answer must not pick
-// that up.
+// caller of countComponents(neighbors) leaves it. That is not this answer.
 TEST_F(IndigoCoreMoleculeComponentsTest, TheGraphsCacheDoesNotLeakIn)
 {
     Molecule mol;
@@ -223,7 +514,7 @@ TEST_F(IndigoCoreMoleculeComponentsTest, TheGraphsCacheDoesNotLeakIn)
 TEST_F(IndigoCoreMoleculeComponentsTest, TheGraphKeepsItsOwnAnswer)
 {
     Molecule mol;
-    makeFerrocene(mol);
+    addFerrocene(mol);
     ASSERT_EQ(1, mol.moleculeComponents().count());
 
     EXPECT_EQ(3, mol.countComponents());
@@ -231,16 +522,17 @@ TEST_F(IndigoCoreMoleculeComponentsTest, TheGraphKeepsItsOwnAnswer)
 
 // ---- errors -----------------------------------------------------------------
 
-TEST_F(IndigoCoreMoleculeComponentsTest, NoComponentForARemovedAtom)
+TEST_F(IndigoCoreMoleculeComponentsTest, NoComponentForAnAtomTheMoleculeDoesNotHave)
 {
     Molecule mol;
     loadMolecule("CCO", mol);
     mol.removeAtom(1);
 
     const MoleculeComponents& components = mol.moleculeComponents();
-    EXPECT_THROW(components.componentOf(1), Exception);
-    EXPECT_THROW(components.componentOf(-1), Exception);
-    EXPECT_THROW(components.componentOf(3), Exception);
+    EXPECT_EQ("molecule components: atom 1 is not in the molecule", errorOf([&] { components.componentOf(1); }));
+    EXPECT_EQ("molecule components: atom -1 is not in the molecule", errorOf([&] { components.componentOf(-1); }));
+    EXPECT_EQ("molecule components: atom 3 is not in the molecule", errorOf([&] { components.componentOf(3); }));
+    EXPECT_EQ("molecule components: atom 1 is not in the molecule", errorOf([&] { components.isLoneAtom(1); }));
 }
 
 TEST_F(IndigoCoreMoleculeComponentsTest, NoComponentBeyondTheCount)
@@ -249,10 +541,10 @@ TEST_F(IndigoCoreMoleculeComponentsTest, NoComponentBeyondTheCount)
     loadMolecule("C.O", mol);
 
     const MoleculeComponents& components = mol.moleculeComponents();
-    Filter filter;
-    EXPECT_THROW(components.atomCount(2), Exception);
-    EXPECT_THROW(components.bondCount(-1), Exception);
-    EXPECT_THROW(components.selectAtoms(2, filter), Exception);
+    Array<int> atoms;
+    EXPECT_EQ("molecule components: component 2 is out of range: the component count is 2", errorOf([&] { components.atomCount(2); }));
+    EXPECT_EQ("molecule components: component -1 is out of range: the component count is 2", errorOf([&] { components.bondCount(-1); }));
+    EXPECT_EQ("molecule components: component 2 is out of range: the component count is 2", errorOf([&] { components.collectAtoms(2, atoms); }));
 }
 
 TEST_F(IndigoCoreMoleculeComponentsTest, EmptyMoleculeHasNoComponents)
@@ -263,52 +555,80 @@ TEST_F(IndigoCoreMoleculeComponentsTest, EmptyMoleculeHasNoComponents)
 
 // ---- standardize ------------------------------------------------------------
 
-// A ferrocene (atoms 0-10) beside a sodium and a chloride nothing bonds to: the
-// fragment options must treat the complex as one fragment of eleven atoms.
+// A ferrocene beside a sodium and a chloride that nothing bonds: to the fragment
+// options the complex is one fragment of eleven atoms, and its iron is not alone.
 class IndigoCoreStandardizeHapticTest : public IndigoCoreMoleculeComponentsTest
 {
 protected:
-    static int standardize(bool StandardizeOptions::*option, Molecule& mol)
+    static constexpr int ION_COUNT = 2;
+
+    static void addFerroceneWithIons(Molecule& mol)
     {
-        makeFerrocene(mol);
+        addFerrocene(mol);
         mol.addAtom(ELEM_Na);
         mol.addAtom(ELEM_Cl);
-
-        StandardizeOptions options;
-        options.*option = true;
-        mol.standardize(options);
-        return mol.vertexCount();
     }
 };
 
 TEST_F(IndigoCoreStandardizeHapticTest, RemoveSingleAtomsKeepsTheMetalOfAComplex)
 {
     Molecule mol;
-    EXPECT_EQ(11, standardize(&StandardizeOptions::remove_single_atom_fragments, mol));
+    addFerroceneWithIons(mol);
+
+    StandardizeOptions options;
+    options.remove_single_atom_fragments = true;
+    mol.standardize(options);
+
+    EXPECT_EQ(FERROCENE_ATOMS, mol.vertexCount());
     EXPECT_EQ(2, mol.haptic_bonds.count());
 }
 
 TEST_F(IndigoCoreStandardizeHapticTest, KeepLargestKeepsTheWholeComplex)
 {
     Molecule mol;
-    EXPECT_EQ(11, standardize(&StandardizeOptions::keep_largest_fragment, mol));
+    addFerroceneWithIons(mol);
+
+    StandardizeOptions options;
+    options.keep_largest_fragment = true;
+    mol.standardize(options);
+
+    EXPECT_EQ(FERROCENE_ATOMS, mol.vertexCount());
     EXPECT_EQ(2, mol.haptic_bonds.count());
 }
 
 TEST_F(IndigoCoreStandardizeHapticTest, KeepSmallestDropsTheWholeComplex)
 {
     Molecule mol;
-    EXPECT_EQ(1, standardize(&StandardizeOptions::keep_smallest_fragment, mol));
-    EXPECT_EQ(ELEM_Na, mol.getAtomNumber(mol.vertexBegin()));
+    addFerroceneWithIons(mol);
+
+    StandardizeOptions options;
+    options.keep_smallest_fragment = true;
+    mol.standardize(options);
+
+    EXPECT_EQ(1, mol.vertexCount()) << "one of the ions, not the iron and not a ring";
+    EXPECT_TRUE(mol.haptic_bonds.isEmpty());
+}
+
+TEST_F(IndigoCoreStandardizeHapticTest, RemoveLargestDropsTheWholeComplex)
+{
+    Molecule mol;
+    addFerroceneWithIons(mol);
+
+    StandardizeOptions options;
+    options.remove_largest_fragment = true;
+    mol.standardize(options);
+
+    EXPECT_EQ(ION_COUNT, mol.vertexCount());
+    EXPECT_TRUE(mol.haptic_bonds.isEmpty());
 }
 
 // A chloride is a chlorine nothing holds; one on a variable attachment is a substituent.
 TEST_F(IndigoCoreStandardizeHapticTest, ChargesLeaveABoundHalogenNeutral)
 {
     Molecule mol;
-    addRing(mol, 0);
+    const std::vector<int> ring = addRing(mol);
     const int substituent = mol.addAtom(ELEM_Cl);
-    mol.addHapticBond(Endpoint::group(addGroup(mol, 0)), Endpoint::atom(substituent), _BOND_VARIABLE_ATTACHMENT);
+    bind(mol, ring, substituent, _BOND_VARIABLE_ATTACHMENT);
     const int lone = mol.addAtom(ELEM_Cl);
 
     StandardizeOptions options;
@@ -317,11 +637,4 @@ TEST_F(IndigoCoreStandardizeHapticTest, ChargesLeaveABoundHalogenNeutral)
 
     EXPECT_EQ(0, mol.getAtomCharge(substituent));
     EXPECT_EQ(-1, mol.getAtomCharge(lone));
-}
-
-TEST_F(IndigoCoreStandardizeHapticTest, RemoveLargestDropsTheWholeComplex)
-{
-    Molecule mol;
-    EXPECT_EQ(2, standardize(&StandardizeOptions::remove_largest_fragment, mol));
-    EXPECT_TRUE(mol.haptic_bonds.isEmpty());
 }

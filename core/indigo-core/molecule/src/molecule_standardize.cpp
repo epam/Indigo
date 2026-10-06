@@ -536,8 +536,7 @@ void MoleculeStandardizer::_standardizeStereo(QueryMolecule& /*mol*/)
 
 void MoleculeStandardizer::_standardizeCharges(Molecule& mol)
 {
-    QS_DEF(Array<int>, lone);
-    _findLoneAtoms(mol, lone);
+    const MoleculeComponents& components = mol.moleculeComponents();
 
     for (auto i : mol.vertices())
     {
@@ -627,7 +626,7 @@ void MoleculeStandardizer::_standardizeCharges(Molecule& mol)
         case ELEM_Cl:
         case ELEM_Br:
         case ELEM_I:
-            if (lone[i])
+            if (components.isLoneAtom(i))
             {
                 mol.setAtomCharge(i, -1);
             }
@@ -690,32 +689,20 @@ void MoleculeStandardizer::_removeSingleAtomFragments(BaseMolecule& mol)
     QS_DEF(Array<int>, single_atoms);
     single_atoms.clear();
 
-    QS_DEF(Array<int>, lone);
-    _findLoneAtoms(mol, lone);
+    const MoleculeComponents& components = mol.moleculeComponents();
 
     for (auto i : mol.vertices())
     {
         auto atom_number = mol.getAtomNumber(i);
         if (atom_number != ELEM_H)
         {
-            if (lone[i])
+            if (components.isLoneAtom(i))
                 single_atoms.push(i);
         }
     }
 
     if (single_atoms.size() > 0)
         mol.removeAtoms(single_atoms);
-}
-
-void MoleculeStandardizer::_findLoneAtoms(BaseMolecule& mol, Array<int>& lone)
-{
-    // Alone means no bond of either kind holds the atom. The graph degree cannot tell:
-    // a metal held by haptic bonds alone has no neighbour in the graph (#3927).
-    const MoleculeComponents& components = mol.moleculeComponents();
-    lone.clear_resize(mol.vertexEnd());
-    lone.zerofill();
-    for (auto i : mol.vertices())
-        lone[i] = components.atomCount(components.componentOf(i)) == 1 ? 1 : 0;
 }
 
 void MoleculeStandardizer::_keepSmallestFragment(BaseMolecule& mol)

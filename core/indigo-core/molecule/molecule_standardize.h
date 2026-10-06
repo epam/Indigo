@@ -53,7 +53,6 @@ namespace indigo
         static void _standardizeCharges(QueryMolecule& mol);
         static void _centerMolecule(BaseMolecule& mol);
         static void _removeSingleAtomFragments(BaseMolecule& mol);
-        static void _findLoneAtoms(BaseMolecule& mol, Array<int>& lone);
         static void _keepSmallestFragment(BaseMolecule& mol);
         static void _keepLargestFragment(BaseMolecule& mol);
         static void _removeLargestFragment(BaseMolecule& mol);

@@ -78,6 +78,8 @@ bool BaseMolecule::isQueryMolecule()
 
 void BaseMolecule::changed()
 {
+    _molecule_components_valid = false;
+
     // #2851: when adding atoms to the molecule, we should keep existing cip labels
     // if (have_cip)
     //     clearCIP();
@@ -99,7 +101,6 @@ void BaseMolecule::clear()
     tgroups.clear();
     attachment_groups.clear();
     haptic_bonds.clear();
-    _molecule_components.reset();
     template_attachment_points.clear();
     template_attachment_indexes.clear();
     _template_occurrences.clear();
@@ -785,6 +786,9 @@ int BaseMolecule::flipBondWithDirection(int atom_parent, int atom_from, int atom
         VertexEdge& ve_new = v_new.neighbors_list[item_new];
         ve_new.e = edge_idx;
         ve_new.v = pivot;
+
+        // The edge is rewired past the mutators of Graph, which are what calls changed().
+        changed();
     };
 
     // A stereocenter that already has four explicit neighbors has no free slot for the
@@ -1166,6 +1170,15 @@ void BaseMolecule::_checkHapticEndpoint(const HapticBond::Endpoint& endpoint)
         throw Error("a haptic bond cannot reach template atom %d", endpoint.index());
 }
 
+// A haptic bond holds atoms together without an edge, so the graph, which drops what
+// it derived from connectivity on its own, does not notice when one changes.
+void BaseMolecule::_hapticConnectivityChanged()
+{
+    invalidateComponents();
+    changed();
+    updateEditRevision();
+}
+
 int BaseMolecule::addHapticBond(HapticBond::Endpoint begin, HapticBond::Endpoint end, int type)
 {
     if (type != _BOND_HAPTIC && type != _BOND_VARIABLE_ATTACHMENT)
@@ -1188,12 +1201,7 @@ int BaseMolecule::addHapticBond(HapticBond::Endpoint begin, HapticBond::Endpoint
         throw Error("a haptic bond needs two different atoms");
 
     const int idx = haptic_bonds.add(begin, end, type);
-
-    // A haptic bond holds atoms together without an edge, so the decomposition
-    // depends on it while the graph, which drops the cache on its own, does not
-    // notice the change at all.
-    invalidateComponents();
-    updateEditRevision();
+    _hapticConnectivityChanged();
     return idx;
 }
 
@@ -1201,8 +1209,7 @@ void BaseMolecule::removeAttachmentGroup(int idx)
 {
     attachment_groups.removeGroup(idx);
     haptic_bonds.onGroupRemoved(idx);
-    invalidateComponents();
-    updateEditRevision();
+    _hapticConnectivityChanged();
 }
 
 void BaseMolecule::setAttachmentGroupAtoms(int group_idx, const std::vector<int>& atoms)
@@ -1226,15 +1233,13 @@ void BaseMolecule::setAttachmentGroupAtoms(int group_idx, const std::vector<int>
     }
 
     group.setAtoms(atoms);
-    invalidateComponents();
-    updateEditRevision();
+    _hapticConnectivityChanged();
 }
 
 void BaseMolecule::removeHapticBond(int idx)
 {
     haptic_bonds.remove(idx);
-    invalidateComponents();
-    updateEditRevision();
+    _hapticConnectivityChanged();
 }
 
 bool BaseMolecule::hasBondsOutsideTheGraph(int atom) const
@@ -1273,14 +1278,12 @@ void BaseMolecule::collectExternalNeighbors(std::list<std::unordered_set<int>>& 
 
 const MoleculeComponents& BaseMolecule::moleculeComponents()
 {
-    // Keyed on the edit revision rather than on the graph's own cache flag: the graph
-    // keeps its decomposition when a vertex is added, and knows nothing of haptic bonds.
-    if (_molecule_components == nullptr || _molecule_components_revision != getEditRevision())
+    if (!_molecule_components_valid)
     {
-        _molecule_components = std::make_unique<MoleculeComponents>(*this);
-        _molecule_components_revision = getEditRevision();
+        _molecule_components.build(*this);
+        _molecule_components_valid = true;
     }
-    return *_molecule_components;
+    return _molecule_components;
 }
 
 void BaseMolecule::removeSGroup(int idx)

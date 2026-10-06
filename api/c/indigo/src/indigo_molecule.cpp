@@ -1133,9 +1133,9 @@ IndigoObject* IndigoMoleculeComponent::clone()
         newmol = &(((IndigoMolecule*)res.get())->mol);
     }
 
-    Filter filter;
-    mol.moleculeComponents().selectAtoms(index, filter);
-    newmol->makeSubmolecule(mol, filter, 0, 0);
+    QS_DEF(Array<int>, atoms);
+    mol.moleculeComponents().collectAtoms(index, atoms);
+    newmol->makeSubmolecule(mol, atoms, nullptr);
     for (auto it = newmol->properties().begin(); it != newmol->properties().end(); ++it)
     {
         auto& props = newmol->properties().value(it);

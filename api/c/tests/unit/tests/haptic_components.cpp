@@ -16,11 +16,12 @@
  * limitations under the License.
  ***************************************************************************/
 
-// The component calls of the C API on a haptic complex (#3927). Every call that
-// takes a component index has to read the same decomposition, or an index from one
-// would pick atoms by another; so they are all checked on one structure.
+// The component calls of the C API on a haptic complex (#3927). A component number
+// taken from one call is given to another, so every call is asked about the same
+// component and has to give the same answer.
 
 #include <string>
+#include <vector>
 
 #include <gtest/gtest.h>
 
@@ -40,46 +41,58 @@ CEXPORT int indigoIterateComponentBonds(int molecule, int index);
 class IndigoApiHapticComponentsTest : public IndigoApiTest
 {
 protected:
-    // The structure attached to #3927: a ferrocene whose two rings reach the iron
-    // through ENDPTS records only. Loading absorbs the two star atoms, leaving eleven
-    // atoms with a gap in their indices.
-    static constexpr const char* FERROCENE = "\n"
-                                             "  ACCLDraw09272617562D\n"
-                                             "\n"
-                                             "  0  0  0     0  0            999 V3000\n"
-                                             "M  V30 BEGIN CTAB\n"
-                                             "M  V30 COUNTS 13 12 0 0 0\n"
-                                             "M  V30 BEGIN ATOM\n"
-                                             "M  V30 1 C 3.1753 -2.1774 0 0 RAD=2 CFG=3\n"
-                                             "M  V30 2 C 4.1303 -2.8712 0 0\n"
-                                             "M  V30 3 C 3.7656 -3.9941 0 0\n"
-                                             "M  V30 4 C 2.585 -3.9941 0 0\n"
-                                             "M  V30 5 C 2.2203 -2.8712 0 0\n"
-                                             "M  V30 6 Fe 2.9045 -6.4941 0 0\n"
-                                             "M  V30 7 * 2.9045 -3.0566 0 0\n"
-                                             "M  V30 8 * 2.9045 -9.9733 0 0\n"
-                                             "M  V30 9 C 1.8453 -9.6212 0 0\n"
-                                             "M  V30 10 C 2.8003 -8.9274 0 0 RAD=2 CFG=3\n"
-                                             "M  V30 11 C 3.7553 -9.6212 0 0\n"
-                                             "M  V30 12 C 3.3906 -10.7441 0 0\n"
-                                             "M  V30 13 C 2.21 -10.7441 0 0\n"
-                                             "M  V30 END ATOM\n"
-                                             "M  V30 BEGIN BOND\n"
-                                             "M  V30 1 1 2 1\n"
-                                             "M  V30 2 2 3 2\n"
-                                             "M  V30 3 1 4 3\n"
-                                             "M  V30 4 2 5 4\n"
-                                             "M  V30 5 1 1 5\n"
-                                             "M  V30 6 9 6 7 ENDPTS=(5 4 5 1 2 3) ATTACH=ALL\n"
-                                             "M  V30 7 9 6 8 ENDPTS=(5 9 10 11 12 13) ATTACH=ALL\n"
-                                             "M  V30 8 1 10 9\n"
-                                             "M  V30 9 1 11 10\n"
-                                             "M  V30 10 2 12 11\n"
-                                             "M  V30 11 1 13 12\n"
-                                             "M  V30 12 2 9 13\n"
-                                             "M  V30 END BOND\n"
-                                             "M  V30 END CTAB\n"
-                                             "M  END\n";
+    static constexpr int RING_SIZE = 5;
+    static constexpr int FERROCENE_RINGS = 2;                               // each an attachment group with a haptic bond to the iron
+    static constexpr int FERROCENE_ATOMS = FERROCENE_RINGS * RING_SIZE + 1; // the rings and the iron
+    static constexpr int FERROCENE_BONDS = FERROCENE_RINGS * RING_SIZE;     // the ring bonds: a haptic bond is not among the bonds
+
+    // The structure attached to the ticket: a ferrocene whose rings reach the iron
+    // through ENDPTS records only. Loading absorbs the two star atoms.
+    static constexpr const char* FERROCENE = R"(
+  ACCLDraw09272617562D
+
+  0  0  0     0  0            999 V3000
+M  V30 BEGIN CTAB
+M  V30 COUNTS 13 12 0 0 0
+M  V30 BEGIN ATOM
+M  V30 1 C 3.1753 -2.1774 0 0 RAD=2 CFG=3
+M  V30 2 C 4.1303 -2.8712 0 0
+M  V30 3 C 3.7656 -3.9941 0 0
+M  V30 4 C 2.585 -3.9941 0 0
+M  V30 5 C 2.2203 -2.8712 0 0
+M  V30 6 Fe 2.9045 -6.4941 0 0
+M  V30 7 * 2.9045 -3.0566 0 0
+M  V30 8 * 2.9045 -9.9733 0 0
+M  V30 9 C 1.8453 -9.6212 0 0
+M  V30 10 C 2.8003 -8.9274 0 0 RAD=2 CFG=3
+M  V30 11 C 3.7553 -9.6212 0 0
+M  V30 12 C 3.3906 -10.7441 0 0
+M  V30 13 C 2.21 -10.7441 0 0
+M  V30 END ATOM
+M  V30 BEGIN BOND
+M  V30 1 1 2 1
+M  V30 2 2 3 2
+M  V30 3 1 4 3
+M  V30 4 2 5 4
+M  V30 5 1 1 5
+M  V30 6 9 6 7 ENDPTS=(5 4 5 1 2 3) ATTACH=ALL
+M  V30 7 9 6 8 ENDPTS=(5 9 10 11 12 13) ATTACH=ALL
+M  V30 8 1 10 9
+M  V30 9 1 11 10
+M  V30 10 2 12 11
+M  V30 11 1 13 12
+M  V30 12 2 9 13
+M  V30 END BOND
+M  V30 END CTAB
+M  END
+)";
+
+    static int loadFerroceneWithIons()
+    {
+        const int mol = indigoLoadMoleculeFromString(FERROCENE);
+        indigoMerge(mol, indigoLoadMoleculeFromString("[Na+].[Cl-]"));
+        return mol;
+    }
 
     static int countItems(int iterator)
     {
@@ -93,42 +106,82 @@ protected:
         return count;
     }
 
-    static int countOccurrences(const std::string& text, const std::string& what)
+    // Asks every call that takes a component number about component `index`.
+    static void expectComponent(int mol, int index, int atom_count, int bond_count)
     {
-        int count = 0;
-        for (size_t at = text.find(what); at != std::string::npos; at = text.find(what, at + what.size()))
-            count++;
-        return count;
+        SCOPED_TRACE("component " + std::to_string(index));
+
+        const int component = indigoComponent(mol, index);
+        EXPECT_EQ(index, indigoIndex(component));
+        EXPECT_EQ(atom_count, indigoCountAtoms(component));
+        EXPECT_EQ(bond_count, indigoCountBonds(component));
+        EXPECT_EQ(bond_count, countItems(indigoIterateBonds(component)));
+
+        EXPECT_EQ(atom_count, indigoCountComponentAtoms(mol, index));
+        EXPECT_EQ(bond_count, indigoCountComponentBonds(mol, index));
+        EXPECT_EQ(atom_count, countItems(indigoIterateComponentAtoms(mol, index)));
+        EXPECT_EQ(bond_count, countItems(indigoIterateComponentBonds(mol, index)));
+
+        EXPECT_EQ(atom_count, indigoCountAtoms(indigoClone(component)));
+        EXPECT_EQ(atom_count, indigoCountAtoms(indigoCloneComponent(mol, index)));
+
+        int atoms_seen = 0;
+        const int atoms = indigoIterateAtoms(component);
+        while (indigoHasNext(atoms))
+        {
+            const int atom = indigoNext(atoms);
+            EXPECT_EQ(index, indigoComponentIndex(atom)) << "atom " << indigoIndex(atom);
+            indigoFree(atom);
+            atoms_seen++;
+        }
+        indigoFree(atoms);
+        EXPECT_EQ(atom_count, atoms_seen);
+    }
+
+    static std::vector<std::string> sdfRecords(const std::string& sdf)
+    {
+        static const std::string terminator = "$$$$\n";
+        std::vector<std::string> records;
+        size_t begin = 0;
+        for (size_t end = sdf.find(terminator); end != std::string::npos; end = sdf.find(terminator, begin))
+        {
+            records.push_back(sdf.substr(begin, end - begin));
+            begin = end + terminator.size();
+        }
+        return records;
     }
 };
 
 TEST_F(IndigoApiHapticComponentsTest, ferrocene_is_one_component)
 {
     const int mol = indigoLoadMoleculeFromString(FERROCENE);
-    ASSERT_EQ(11, indigoCountAtoms(mol));
-    ASSERT_EQ(2, indigoCountHapticBonds(mol));
+    ASSERT_EQ(FERROCENE_ATOMS, indigoCountAtoms(mol));
+    ASSERT_EQ(FERROCENE_RINGS, indigoCountHapticBonds(mol));
 
     ASSERT_EQ(1, indigoCountComponents(mol));
+    expectComponent(mol, 0, FERROCENE_ATOMS, FERROCENE_BONDS);
+}
 
-    const int component = indigoComponent(mol, 0);
-    EXPECT_EQ(11, indigoCountAtoms(component));
-    EXPECT_EQ(10, indigoCountBonds(component)); // the ring bonds; the haptic ones are not bonds of the graph
-    EXPECT_EQ(11, countItems(indigoIterateAtoms(component)));
-    EXPECT_EQ(10, countItems(indigoIterateBonds(component)));
+// What the ticket asks for: a counter ion that no bond holds is told apart from the
+// parts of the complex, which haptic bonds hold.
+TEST_F(IndigoApiHapticComponentsTest, counter_ions_are_components_of_their_own)
+{
+    const int mol = loadFerroceneWithIons();
 
-    EXPECT_EQ(11, indigoCountComponentAtoms(mol, 0));
-    EXPECT_EQ(10, indigoCountComponentBonds(mol, 0));
-    EXPECT_EQ(11, countItems(indigoIterateComponentAtoms(mol, 0)));
-    EXPECT_EQ(10, countItems(indigoIterateComponentBonds(mol, 0)));
+    ASSERT_EQ(3, indigoCountComponents(mol));
+    expectComponent(mol, 0, FERROCENE_ATOMS, FERROCENE_BONDS);
+    expectComponent(mol, 1, 1, 0);
+    expectComponent(mol, 2, 1, 0);
 
-    const int atoms = indigoIterateAtoms(mol);
-    while (indigoHasNext(atoms))
+    std::vector<int> atom_counts;
+    const int components = indigoIterateComponents(mol);
+    while (indigoHasNext(components))
     {
-        const int atom = indigoNext(atoms);
-        EXPECT_EQ(0, indigoComponentIndex(atom)) << "atom " << indigoIndex(atom);
-        indigoFree(atom);
+        const int component = indigoNext(components);
+        EXPECT_EQ(static_cast<int>(atom_counts.size()), indigoIndex(component));
+        atom_counts.push_back(indigoCountAtoms(component));
     }
-    indigoFree(atoms);
+    EXPECT_EQ(std::vector<int>({FERROCENE_ATOMS, 1, 1}), atom_counts);
 }
 
 // A clone of the component is the whole complex, haptic bonds and groups included.
@@ -138,9 +191,9 @@ TEST_F(IndigoApiHapticComponentsTest, component_clone_keeps_the_complex)
 
     for (const int clone : {indigoClone(indigoComponent(mol, 0)), indigoCloneComponent(mol, 0)})
     {
-        EXPECT_EQ(11, indigoCountAtoms(clone));
-        EXPECT_EQ(2, indigoCountAttachmentGroups(clone));
-        EXPECT_EQ(2, indigoCountHapticBonds(clone));
+        EXPECT_EQ(FERROCENE_ATOMS, indigoCountAtoms(clone));
+        EXPECT_EQ(FERROCENE_RINGS, indigoCountAttachmentGroups(clone));
+        EXPECT_EQ(FERROCENE_RINGS, indigoCountHapticBonds(clone));
     }
 }
 
@@ -151,39 +204,73 @@ TEST_F(IndigoApiHapticComponentsTest, query_ferrocene_is_one_component)
     ASSERT_EQ(1, indigoCountComponents(query));
 
     const int clone = indigoClone(indigoComponent(query, 0));
-    EXPECT_EQ(11, indigoCountAtoms(clone));
-    EXPECT_EQ(2, indigoCountHapticBonds(clone));
+    EXPECT_EQ(FERROCENE_ATOMS, indigoCountAtoms(clone));
+    EXPECT_EQ(FERROCENE_RINGS, indigoCountHapticBonds(clone));
 }
 
-TEST_F(IndigoApiHapticComponentsTest, fragmented_sdf_writes_the_complex_as_one_record)
+TEST_F(IndigoApiHapticComponentsTest, fragmented_sdf_writes_a_record_per_component)
 {
-    const int mol = indigoLoadMoleculeFromString(FERROCENE);
+    indigoSetOption("molfile-saving-mode", "3000"); // V2000 has no form for a haptic bond
+    const int mol = loadFerroceneWithIons();
 
-    EXPECT_EQ(1, countOccurrences(indigoFragmentedSdf(mol), "$$$$"));
+    const std::vector<std::string> records = sdfRecords(indigoFragmentedSdf(mol));
+
+    ASSERT_EQ(3u, records.size());
+    const int complex = indigoLoadMoleculeFromString(records[0].c_str());
+    EXPECT_EQ(FERROCENE_ATOMS, indigoCountAtoms(complex));
+    EXPECT_EQ(FERROCENE_RINGS, indigoCountHapticBonds(complex));
+    EXPECT_EQ(1, indigoCountAtoms(indigoLoadMoleculeFromString(records[1].c_str())));
+    EXPECT_EQ(1, indigoCountAtoms(indigoLoadMoleculeFromString(records[2].c_str())));
 }
 
-// What the ticket asks for: a counter ion that no bond holds is a component of its
-// own, next to the complex, however the atoms are numbered.
-TEST_F(IndigoApiHapticComponentsTest, counter_ion_is_a_component_of_its_own)
-{
-    const int mol = indigoLoadMoleculeFromString(FERROCENE);
-    indigoMerge(mol, indigoLoadMoleculeFromString("[Na+].[Cl-]"));
-
-    ASSERT_EQ(3, indigoCountComponents(mol));
-    EXPECT_EQ(11, indigoCountAtoms(indigoComponent(mol, 0)));
-    EXPECT_EQ(1, indigoCountAtoms(indigoComponent(mol, 1)));
-    EXPECT_EQ(1, indigoCountAtoms(indigoComponent(mol, 2)));
-    EXPECT_EQ(3, countOccurrences(indigoFragmentedSdf(mol), "$$$$"));
-}
-
-TEST_F(IndigoApiHapticComponentsTest, bad_component_index_is_reported)
+TEST_F(IndigoApiHapticComponentsTest, component_number_beyond_the_count_is_reported)
 {
     indigoSetErrorHandler(nullptr, nullptr);
     const int mol = indigoLoadMoleculeFromString(FERROCENE);
+    const int beyond = 1; // the ferrocene is component 0 and there is no other
 
-    EXPECT_EQ(-1, indigoComponent(mol, 1));
+    EXPECT_EQ(-1, indigoComponent(mol, beyond));
     EXPECT_STREQ("core: indigoComponent(): bad index 1 (0-0 allowed)", indigoGetLastError());
+    EXPECT_EQ(-1, indigoCloneComponent(mol, beyond));
+    EXPECT_STREQ("core: indigoCloneComponent(): bad index 1 (0-0 allowed)", indigoGetLastError());
+    EXPECT_EQ(-1, indigoIterateComponentAtoms(mol, beyond));
+    EXPECT_STREQ("core: 1 is not a valid component number (0-0 allowed)", indigoGetLastError());
+    EXPECT_EQ(-1, indigoIterateComponentBonds(mol, beyond));
+    EXPECT_STREQ("core: 1 is not a valid component number (0-0 allowed)", indigoGetLastError());
+    EXPECT_EQ(-1, indigoCountComponentAtoms(mol, beyond));
+    EXPECT_STREQ("molecule components: component 1 is out of range: the component count is 1", indigoGetLastError());
+    EXPECT_EQ(-1, indigoCountComponentBonds(mol, beyond));
+    EXPECT_STREQ("molecule components: component 1 is out of range: the component count is 1", indigoGetLastError());
+}
 
-    EXPECT_EQ(-1, indigoCountComponentAtoms(mol, 1));
-    EXPECT_NE(std::string::npos, std::string(indigoGetLastError()).find("component 1 does not exist")) << indigoGetLastError();
+// A component object is a number in its molecule. When an edit leaves fewer
+// components than that, the object says so.
+TEST_F(IndigoApiHapticComponentsTest, component_that_is_gone_is_reported)
+{
+    indigoSetErrorHandler(nullptr, nullptr);
+    const int mol = loadFerroceneWithIons();
+    const int last = indigoComponent(mol, 2);
+    const int last_atom = indigoIterateAtoms(last);
+    int last_atom_index = indigoIndex(indigoNext(last_atom));
+
+    ASSERT_EQ(1, indigoRemoveAtoms(mol, 1, &last_atom_index));
+
+    EXPECT_EQ(-1, indigoCountAtoms(last));
+    EXPECT_STREQ("molecule components: component 2 is out of range: the component count is 2", indigoGetLastError());
+    EXPECT_EQ(-1, indigoClone(last));
+    EXPECT_STREQ("molecule components: component 2 is out of range: the component count is 2", indigoGetLastError());
+}
+
+TEST_F(IndigoApiHapticComponentsTest, removed_atom_has_no_component)
+{
+    indigoSetErrorHandler(nullptr, nullptr);
+    const int mol = indigoLoadMoleculeFromString("CC.O");
+    int oxygen_index = 2;
+    const int oxygen = indigoGetAtom(mol, oxygen_index);
+    ASSERT_EQ(1, indigoComponentIndex(oxygen));
+
+    ASSERT_EQ(1, indigoRemoveAtoms(mol, 1, &oxygen_index));
+
+    EXPECT_EQ(-1, indigoComponentIndex(oxygen));
+    EXPECT_STREQ("molecule components: atom 2 is not in the molecule", indigoGetLastError());
 }
