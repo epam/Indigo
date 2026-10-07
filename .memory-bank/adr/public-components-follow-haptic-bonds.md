@@ -1,6 +1,6 @@
 # Public components follow haptic bonds; graph algorithms keep the graph's components
 
-**Date:** 2026-09-30, revised 2026-10-06 · **Status:** Accepted · **Ticket:** #3927
+**Date:** 2026-10-07 · **Status:** Accepted · **Ticket:** #3927
 
 ## Context
 
@@ -19,16 +19,17 @@ automapper read the plain readers on the caller's molecule.
 ## Decision
 
 `BaseMolecule::moleculeComponents()` (`core/indigo-core/molecule/base_molecule.h#moleculeComponents`)
-returns a `MoleculeComponents` (`core/indigo-core/molecule/molecule_components.h#MoleculeComponents`):
-edges plus haptic bonds of both types. S-groups, SMARTS component groups and an attachment group no
-bond refers to join nothing. It is the only source for the `indigo*Component*` functions,
-`indigoFragmentedSdf`, the `standardize` fragment options and halide charges, and the wrappers'
-`checkSalt` / `stripSalt`. SMILES, InChI, substructure search, automapping, layout and the Bingo
-cartridge keep the graph's components.
+returns a `GraphDecomposer` run over the edges plus the atom sets of the haptic bonds of both types.
+S-groups, SMARTS component groups and an attachment group no bond refers to join nothing. It is the
+only source for the `indigo*Component*` functions, `indigoFragmentedSdf`, the `standardize` fragment
+options and halide charges, and the wrappers' `checkSalt` / `stripSalt`. SMILES, InChI, substructure
+search, automapping, layout and the Bingo cartridge keep the graph's components.
 
-The molecule keeps the answer and drops it when connectivity changes, and only then. The graph
-reports every vertex and edge change through `changed()`; an edit of a haptic bond or of the atoms of
-a group reports itself through `BaseMolecule::_hapticConnectivityChanged()`.
+The molecule keeps the decomposer, the way the matchers keep theirs, and drops it when connectivity
+changes, and only then. The graph reports every vertex and edge change through `changed()`; an edit of
+a haptic bond or of the atoms of a group reports itself through
+`BaseMolecule::_hapticConnectivityChanged()`. A reference taken before such a change does not outlive
+it.
 
 ## Alternatives considered
 
@@ -44,6 +45,9 @@ a group reports itself through `BaseMolecule::_hapticConnectivityChanged()`.
 - **Key the cache on the edit revision**, as `Molecule::_dativeModel()` is. Every edit moves the
   revision, a charge or a highlight included, so a loop that asks an atom for its component and then
   edits the atom decomposed the molecule at each step: 8.5 s against 0.07 s for 20,000 atoms.
+- **A class of its own for the answer.** Written first: three arrays copied from the decomposer behind
+  accessors that checked their arguments. `GraphDecomposer` holds the same three arrays and four
+  matchers already keep one as a member, so the class was a second name for one thing.
 
 ## Consequences
 
@@ -58,6 +62,6 @@ a group reports itself through `BaseMolecule::_hapticConnectivityChanged()`.
   by design.
 - The API has no call left for the pieces that ordinary bonds alone hold together. A caller that
   wants them removes the haptic bonds from a copy first.
-- `Graph`'s external-neighbour mode and `MoleculeComponents` do the same job on different sets, so a
-  molecule has three decompositions until one mechanism takes over the other. Moving the mode's four
-  users to the class is the direction; it is not part of this change.
+- `Graph`'s external-neighbour mode and `moleculeComponents()` do the same job on different sets, so
+  a molecule has three decompositions until one mechanism takes over the other. Giving the mode's
+  four users a decomposer of their own is the direction; it is not part of this change.
