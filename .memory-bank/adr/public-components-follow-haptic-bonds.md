@@ -22,8 +22,10 @@ automapper read the plain readers on the caller's molecule.
 returns a `GraphDecomposer` run over the edges plus the atom sets of the haptic bonds of both types.
 S-groups, SMARTS component groups and an attachment group no bond refers to join nothing. It is the
 only source for the `indigo*Component*` functions, `indigoFragmentedSdf`, the `standardize` fragment
-options and halide charges, and the wrappers' `checkSalt` / `stripSalt`. SMILES, InChI, substructure
-search, automapping, layout and the Bingo cartridge keep the graph's components.
+options and halide charges, and the wrappers' `checkSalt` / `stripSalt`. The wrappers also skip a
+component that has haptic bonds: the salt patterns count ordinary bonds only, so to them the metal of
+a complex is a lone ion. SMILES, InChI, substructure search, automapping, layout and the Bingo
+cartridge keep the graph's components.
 
 The molecule keeps the decomposer, the way the matchers keep theirs, and drops it when connectivity
 changes, and only then. The graph reports every vertex and edge change through `changed()`; an edit of

@@ -4,7 +4,7 @@
 > a set of atoms rather than one atom.
 > **Skip when:** the work is about ordinary two-atom bonds.
 
-Verified on `f0cc3c423`. Ticket family #3233.
+Verified on `f0cc3c423`; what is said about components came with #3927. Ticket family #3233.
 
 ## Problem
 

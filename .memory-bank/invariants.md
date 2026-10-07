@@ -69,10 +69,13 @@ ordinary molecules miss it. See
 **A7b — A change of connectivity has to reach `BaseMolecule::changed()`.**
 `moleculeComponents()` is computed once and kept until `changed()` drops it
 (`core/indigo-core/molecule/src/base_molecule.cpp#BaseMolecule::changed`), and a reference to it is
-good for as long. The graph calls `changed()` from every vertex and edge mutator. Whatever changes
-connectivity another way calls it itself: the haptic edits through `_hapticConnectivityChanged()`,
-and `flipBondWithDirection`, which rewires an edge in place. A path that skips the call leaves the
-previous answer standing, and nothing fails.
+good for as long. `Graph` calls `changed()` from `addVertex`, `addEdge`, `removeEdge`,
+`removeAllEdges`, `removeVertex` and `clear`. Whatever changes connectivity another way calls it
+itself: the haptic edits through `_hapticConnectivityChanged()`, and `flipBondWithDirection`, which
+rewires an edge in place. Two paths report nothing of their own and lean on a vertex added earlier in
+the same call: `Graph::_cloneGraph_KeepIndices`, which installs the edges directly, and
+`_mergeWithSubmolecule_Sub`, which copies the haptic bonds after the atoms. A path that skips the
+call leaves the previous answer standing, and nothing fails.
 
 **A8 — Bond orders and query flags are named constants, tests included.**
 `BOND_SINGLE`, `BOND_ZERO`, `_BOND_COORDINATION` and friends — never the underlying integers.
