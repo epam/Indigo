@@ -593,6 +593,7 @@ namespace indigo
         bool showCycles; // for diagnostic purposes
         bool agentsBelowArrow;
         Array<char> atomColorProp;
+        bool svgUniqueId; // prefix every id in the SVG output so several SVGs can share one page
         std::unique_ptr<RenderCdxmlContext> cdxml_context;
         // ACS settings
         float bond_length_px;

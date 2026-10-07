@@ -82,6 +82,7 @@ void RenderOptions::clearRenderOptions()
     showCycles = false;
     agentsBelowArrow = true;
     atomColorProp.clear();
+    svgUniqueId = true;
     ppi = LayoutOptions::DEFAULT_PPI;
     fontSize = -1;
     fontSizeUnit = UnitsOfMeasure::PT;

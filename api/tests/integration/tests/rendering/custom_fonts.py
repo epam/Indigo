@@ -227,6 +227,7 @@ def load_document(name):
 
 def render(indigo, renderer, document, output_format, fonts=None):
     indigo.setOption("render-output-format", output_format)
+    indigo.setOption("render-svg-unique-id", False)
     if fonts is not None:
         indigo.setOption("render-fonts", fonts)
     molecule = indigo.loadMolecule(json.dumps(document))
