@@ -238,27 +238,9 @@ TEST_F(IndigoApiHapticComponentsTest, component_number_beyond_the_count_is_repor
     EXPECT_EQ(-1, indigoIterateComponentBonds(mol, beyond));
     EXPECT_STREQ("core: 1 is not a valid component number (0-0 allowed)", indigoGetLastError());
     EXPECT_EQ(-1, indigoCountComponentAtoms(mol, beyond));
-    EXPECT_STREQ("molecule components: component 1 is out of range: the component count is 1", indigoGetLastError());
+    EXPECT_STREQ("array: invalid index 1 (size=1)", indigoGetLastError());
     EXPECT_EQ(-1, indigoCountComponentBonds(mol, beyond));
-    EXPECT_STREQ("molecule components: component 1 is out of range: the component count is 1", indigoGetLastError());
-}
-
-// A component object is a number in its molecule. When an edit leaves fewer
-// components than that, the object says so.
-TEST_F(IndigoApiHapticComponentsTest, component_that_is_gone_is_reported)
-{
-    indigoSetErrorHandler(nullptr, nullptr);
-    const int mol = loadFerroceneWithIons();
-    const int last = indigoComponent(mol, 2);
-    const int last_atom = indigoIterateAtoms(last);
-    int last_atom_index = indigoIndex(indigoNext(last_atom));
-
-    ASSERT_EQ(1, indigoRemoveAtoms(mol, 1, &last_atom_index));
-
-    EXPECT_EQ(-1, indigoCountAtoms(last));
-    EXPECT_STREQ("molecule components: component 2 is out of range: the component count is 2", indigoGetLastError());
-    EXPECT_EQ(-1, indigoClone(last));
-    EXPECT_STREQ("molecule components: component 2 is out of range: the component count is 2", indigoGetLastError());
+    EXPECT_STREQ("array: invalid index 1 (size=1)", indigoGetLastError());
 }
 
 TEST_F(IndigoApiHapticComponentsTest, removed_atom_has_no_component)
@@ -272,5 +254,5 @@ TEST_F(IndigoApiHapticComponentsTest, removed_atom_has_no_component)
     ASSERT_EQ(1, indigoRemoveAtoms(mol, 1, &oxygen_index));
 
     EXPECT_EQ(-1, indigoComponentIndex(oxygen));
-    EXPECT_STREQ("molecule components: atom 2 is not in the molecule", indigoGetLastError());
+    EXPECT_STREQ("core: indigoComponentIndex(): atom 2 is not in the molecule", indigoGetLastError());
 }

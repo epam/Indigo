@@ -78,7 +78,7 @@ bool BaseMolecule::isQueryMolecule()
 
 void BaseMolecule::changed()
 {
-    _molecule_components_valid = false;
+    _molecule_components.reset();
 
     // #2851: when adding atoms to the molecule, we should keep existing cip labels
     // if (have_cip)
@@ -1276,14 +1276,18 @@ void BaseMolecule::collectExternalNeighbors(std::list<std::unordered_set<int>>& 
     haptic_bonds.collectConnectivitySets(attachment_groups, neighbors);
 }
 
-const MoleculeComponents& BaseMolecule::moleculeComponents()
+const GraphDecomposer& BaseMolecule::moleculeComponents()
 {
-    if (!_molecule_components_valid)
+    if (_molecule_components == nullptr)
     {
-        _molecule_components.build(*this);
-        _molecule_components_valid = true;
+        std::list<std::unordered_set<int>> haptic_sets;
+        haptic_bonds.collectConnectivitySets(attachment_groups, haptic_sets);
+
+        auto decomposer = std::make_unique<GraphDecomposer>(*this);
+        decomposer->decompose(nullptr, nullptr, &haptic_sets);
+        _molecule_components = std::move(decomposer);
     }
-    return _molecule_components;
+    return *_molecule_components;
 }
 
 void BaseMolecule::removeSGroup(int idx)

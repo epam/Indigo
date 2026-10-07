@@ -28,6 +28,7 @@
 #include "base_cpp/ptr_reusable_pool.h"
 #include "base_cpp/red_black.h"
 #include "graph/graph.h"
+#include "graph/graph_decomposer.h"
 #include "math/algebra.h"
 #include "molecule/elements.h"
 #include "molecule/ket_annotation.h"
@@ -38,7 +39,6 @@
 #include "molecule/molecule_attachment_groups.h"
 #include "molecule/molecule_cip_calculator.h"
 #include "molecule/molecule_cis_trans.h"
-#include "molecule/molecule_components.h"
 #include "molecule/molecule_haptic_bonds.h"
 #include "molecule/molecule_ionize.h"
 #include "molecule/molecule_rgroups.h"
@@ -513,9 +513,10 @@ namespace indigo
         // the user sees goes through moleculeComponents() instead.
         void collectExternalNeighbors(std::list<std::unordered_set<int>>& neighbors);
 
-        // The components the public API reports; see MoleculeComponents. Their numbers
-        // are not those of Graph::getDecomposition(), which splits a haptic complex.
-        const MoleculeComponents& moleculeComponents();
+        // The components the public API reports: a haptic bond joins atoms as an edge
+        // does, an S-group does not. Numbered apart from Graph::getDecomposition(), and
+        // kept until connectivity changes - a reference to them does not outlive that.
+        const GraphDecomposer& moleculeComponents();
 
         void unfoldHydrogens(Array<int>* markers_out, int max_h_cnt = -1, bool impl_h_no_throw = false, bool only_selected = false);
         virtual void registerUnfoldedHydrogenQueryComponent(int /*atom_idx*/, int /*added_hydrogen*/){}; // QueryMolecule only
@@ -887,8 +888,7 @@ namespace indigo
         // If edit revision is the same then molecule wasn't edited
         int _edit_revision;
 
-        MoleculeComponents _molecule_components;
-        bool _molecule_components_valid = false;
+        std::unique_ptr<GraphDecomposer> _molecule_components;
 
         MetaDataStorage _meta;
 

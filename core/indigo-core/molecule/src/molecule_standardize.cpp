@@ -536,7 +536,7 @@ void MoleculeStandardizer::_standardizeStereo(QueryMolecule& /*mol*/)
 
 void MoleculeStandardizer::_standardizeCharges(Molecule& mol)
 {
-    const MoleculeComponents& components = mol.moleculeComponents();
+    const GraphDecomposer& components = mol.moleculeComponents();
 
     for (auto i : mol.vertices())
     {
@@ -626,7 +626,7 @@ void MoleculeStandardizer::_standardizeCharges(Molecule& mol)
         case ELEM_Cl:
         case ELEM_Br:
         case ELEM_I:
-            if (components.isLoneAtom(i))
+            if (_isSingleAtomFragment(components, i))
             {
                 mol.setAtomCharge(i, -1);
             }
@@ -689,14 +689,14 @@ void MoleculeStandardizer::_removeSingleAtomFragments(BaseMolecule& mol)
     QS_DEF(Array<int>, single_atoms);
     single_atoms.clear();
 
-    const MoleculeComponents& components = mol.moleculeComponents();
+    const GraphDecomposer& components = mol.moleculeComponents();
 
     for (auto i : mol.vertices())
     {
         auto atom_number = mol.getAtomNumber(i);
         if (atom_number != ELEM_H)
         {
-            if (components.isLoneAtom(i))
+            if (_isSingleAtomFragment(components, i))
                 single_atoms.push(i);
         }
     }
@@ -705,13 +705,18 @@ void MoleculeStandardizer::_removeSingleAtomFragments(BaseMolecule& mol)
         mol.removeAtoms(single_atoms);
 }
 
+bool MoleculeStandardizer::_isSingleAtomFragment(const GraphDecomposer& components, int atom)
+{
+    return components.getComponentVerticesCount(components.getComponent(atom)) == 1;
+}
+
 void MoleculeStandardizer::_keepSmallestFragment(BaseMolecule& mol)
 {
     if (mol.vertexCount() <= 1)
         return;
 
-    const MoleculeComponents& components = mol.moleculeComponents();
-    auto ncomp = components.count();
+    const GraphDecomposer& components = mol.moleculeComponents();
+    auto ncomp = components.getComponentsCount();
     if (ncomp == 1)
         return;
 
@@ -719,9 +724,9 @@ void MoleculeStandardizer::_keepSmallestFragment(BaseMolecule& mol)
     auto min_comp = 0;
     for (auto i = 0; i < ncomp; i++)
     {
-        if (components.atomCount(i) < min_size)
+        if (components.getComponentVerticesCount(i) < min_size)
         {
-            min_size = components.atomCount(i);
+            min_size = components.getComponentVerticesCount(i);
             min_comp = i;
         }
     }
@@ -731,7 +736,7 @@ void MoleculeStandardizer::_keepSmallestFragment(BaseMolecule& mol)
 
     for (auto i : mol.vertices())
     {
-        if (components.componentOf(i) != min_comp)
+        if (components.getComponent(i) != min_comp)
             remove_atoms.push(i);
     }
 
@@ -745,8 +750,8 @@ void MoleculeStandardizer::_keepLargestFragment(BaseMolecule& mol)
     if (mol.vertexCount() <= 1)
         return;
 
-    const MoleculeComponents& components = mol.moleculeComponents();
-    auto ncomp = components.count();
+    const GraphDecomposer& components = mol.moleculeComponents();
+    auto ncomp = components.getComponentsCount();
     if (ncomp == 1)
         return;
 
@@ -754,9 +759,9 @@ void MoleculeStandardizer::_keepLargestFragment(BaseMolecule& mol)
     auto max_comp = 0;
     for (auto i = 0; i < ncomp; i++)
     {
-        if (components.atomCount(i) > max_size)
+        if (components.getComponentVerticesCount(i) > max_size)
         {
-            max_size = components.atomCount(i);
+            max_size = components.getComponentVerticesCount(i);
             max_comp = i;
         }
     }
@@ -766,7 +771,7 @@ void MoleculeStandardizer::_keepLargestFragment(BaseMolecule& mol)
 
     for (auto i : mol.vertices())
     {
-        if (components.componentOf(i) != max_comp)
+        if (components.getComponent(i) != max_comp)
             remove_atoms.push(i);
     }
 
@@ -779,8 +784,8 @@ void MoleculeStandardizer::_removeLargestFragment(BaseMolecule& mol)
     if (mol.vertexCount() <= 1)
         return;
 
-    const MoleculeComponents& components = mol.moleculeComponents();
-    auto ncomp = components.count();
+    const GraphDecomposer& components = mol.moleculeComponents();
+    auto ncomp = components.getComponentsCount();
     if (ncomp == 1)
         return;
 
@@ -788,9 +793,9 @@ void MoleculeStandardizer::_removeLargestFragment(BaseMolecule& mol)
     auto max_comp = 0;
     for (auto i = 0; i < ncomp; i++)
     {
-        if (components.atomCount(i) > max_size)
+        if (components.getComponentVerticesCount(i) > max_size)
         {
-            max_size = components.atomCount(i);
+            max_size = components.getComponentVerticesCount(i);
             max_comp = i;
         }
     }
@@ -800,7 +805,7 @@ void MoleculeStandardizer::_removeLargestFragment(BaseMolecule& mol)
 
     for (auto i : mol.vertices())
     {
-        if (components.componentOf(i) == max_comp)
+        if (components.getComponent(i) == max_comp)
             remove_atoms.push(i);
     }
 

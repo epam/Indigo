@@ -380,9 +380,8 @@ static IndigoObject* makeComponentObject(BaseMolecule& mol, int index)
         newmol = &(((IndigoMolecule*)res.get())->mol);
     }
 
-    QS_DEF(Array<int>, atoms);
-    mol.moleculeComponents().collectAtoms(index, atoms);
-    newmol->makeSubmolecule(mol, atoms, nullptr, SKIP_RGROUPS);
+    Filter filter(mol.moleculeComponents().getDecomposition().ptr(), Filter::EQ, index);
+    newmol->makeSubmolecule(mol, filter, 0, 0, SKIP_RGROUPS);
     newmol->copyUsedRGroupsFrom(mol);
     for (auto it = newmol->properties().begin(); it != newmol->properties().end(); ++it)
         res->getProperties().merge(newmol->properties().value(it));
