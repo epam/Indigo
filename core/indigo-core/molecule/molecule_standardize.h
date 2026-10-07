@@ -30,7 +30,6 @@ namespace indigo
 {
 
     class BaseMolecule;
-    class GraphDecomposer;
     class Molecule;
     class QueryMolecule;
     class StandardizeOptions;
@@ -54,7 +53,7 @@ namespace indigo
         static void _standardizeCharges(QueryMolecule& mol);
         static void _centerMolecule(BaseMolecule& mol);
         static void _removeSingleAtomFragments(BaseMolecule& mol);
-        static bool _isSingleAtomFragment(const GraphDecomposer& components, int atom);
+        static bool _isSingleAtomFragment(BaseMolecule& mol, int atom);
         static void _keepSmallestFragment(BaseMolecule& mol);
         static void _keepLargestFragment(BaseMolecule& mol);
         static void _removeLargestFragment(BaseMolecule& mol);
