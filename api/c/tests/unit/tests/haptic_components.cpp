@@ -238,9 +238,9 @@ TEST_F(IndigoApiHapticComponentsTest, component_number_beyond_the_count_is_repor
     EXPECT_EQ(-1, indigoIterateComponentBonds(mol, beyond));
     EXPECT_STREQ("core: 1 is not a valid component number (0-0 allowed)", indigoGetLastError());
     EXPECT_EQ(-1, indigoCountComponentAtoms(mol, beyond));
-    EXPECT_STREQ("array: invalid index 1 (size=1)", indigoGetLastError());
+    EXPECT_STREQ("core: 1 is not a valid component number (0-0 allowed)", indigoGetLastError());
     EXPECT_EQ(-1, indigoCountComponentBonds(mol, beyond));
-    EXPECT_STREQ("array: invalid index 1 (size=1)", indigoGetLastError());
+    EXPECT_STREQ("core: 1 is not a valid component number (0-0 allowed)", indigoGetLastError());
 }
 
 TEST_F(IndigoApiHapticComponentsTest, removed_atom_has_no_component)
