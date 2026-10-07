@@ -50,10 +50,10 @@ for name in ["ferrocene-variant5", "ferrocene-variant6"]:
     compare_diff(ref_path, name + "_fragments.sdf", ferrocene.fragmentedSdf())
 
 print("*** a counter ion is another ***")
-salt = indigo.loadMoleculeFromFile(
-    os.path.join(root, "ferrocene-variant5.mol")
+salt = indigo.loadMolecule("[Na+].[Cl-]")
+salt.merge(
+    indigo.loadMoleculeFromFile(os.path.join(root, "ferrocene-variant5.mol"))
 )
-salt.merge(indigo.loadMolecule("[Na+].[Cl-]"))
 print_components(salt)
 compare_diff(
     ref_path,

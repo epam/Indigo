@@ -11,10 +11,10 @@ components: 1
 ferrocene-variant6_fragments.sdf:SUCCEED
 *** a counter ion is another ***
 components: 3
-  0: atoms [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 10 bonds, 2 haptic bonds
-  1: atoms [11], 0 bonds, 0 haptic bonds
-  2: atoms [12], 0 bonds, 0 haptic bonds
-  component of each atom: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2]
+  0: atoms [0], 0 bonds, 0 haptic bonds
+  1: atoms [1], 0 bonds, 0 haptic bonds
+  2: atoms [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], 10 bonds, 2 haptic bonds
+  component of each atom: [0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
 ferrocene-variant5_with_ions_fragments.sdf:SUCCEED
 *** a haptic bond joins components, and parts them when it goes ***
 components: 2

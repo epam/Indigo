@@ -239,6 +239,7 @@ public class IndigoTests {
                 bindRings(indigo, "[cH-]1cccc1.[Cl-].[cH-]1cccc1.[Fe+2]", new int[] {0, 6}, 11);
 
         assertWholeFerrocene(m.stripSalt());
+        assertEquals(FERROCENE_ATOMS + 1, m.countAtoms(), "a copy was stripped");
 
         m.stripSalt(true);
         assertWholeFerrocene(m);

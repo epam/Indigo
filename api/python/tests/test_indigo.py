@@ -328,5 +328,8 @@ class TestSaltsOfHapticComplex(TestIndigoBase):
             "[cH-]1cccc1.[Cl-].[cH-]1cccc1.[Fe+2]", (0, 6), 11
         )
         self._assert_whole_ferrocene(m.stripSalt())
+        self.assertEqual(
+            m.countAtoms(), self.FERROCENE_ATOMS + 1, "a copy was stripped"
+        )
         m.stripSalt(inplace=True)
         self._assert_whole_ferrocene(m)
