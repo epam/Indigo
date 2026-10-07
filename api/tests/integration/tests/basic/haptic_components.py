@@ -61,6 +61,17 @@ compare_diff(
     salt.fragmentedSdf(),
 )
 
+print("*** a salt whose anion is a complex ***")
+# Zeise's salt hydrate, K[PtCl3(C2H4)].H2O. A haptic bond holds the ethylene to
+# the platinum; nothing bonds the potassium or the water.
+zeise = indigo.loadMoleculeFromFile(
+    os.path.join(root, "zeise-salt-hydrate.mol")
+)
+print_components(zeise)
+compare_diff(
+    ref_path, "zeise-salt-hydrate_fragments.sdf", zeise.fragmentedSdf()
+)
+
 print("*** a haptic bond joins components, and parts them when it goes ***")
 half_sandwich = indigo.loadMolecule("C1=CC=CC1.[Fe]")
 print_components(half_sandwich)

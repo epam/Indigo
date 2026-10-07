@@ -333,3 +333,17 @@ class TestSaltsOfHapticComplex(TestIndigoBase):
         )
         m.stripSalt(inplace=True)
         self._assert_whole_ferrocene(m)
+
+    def test_strip_salt_keeps_a_complex_with_inorganic_ligands(self) -> None:
+        # Zeise's salt. By its ordinary bonds alone the platinum with three
+        # chlorides is a small inorganic ion; the haptic bond to the ethylene
+        # makes it a part of the complex. The potassium is bonded to nothing.
+        m = self.indigo.loadMolecule("[K+].Cl[Pt-](Cl)Cl.C=C")
+        platinum, ethylene = m.getAtom(2), m.addAttachmentGroup([5, 6])
+        m.addHapticBond(ethylene, platinum)
+        self.assertTrue(m.checkSalt(), "the potassium is a counter ion")
+        stripped = m.stripSalt()
+        self.assertEqual(
+            sorted(atom.symbol() for atom in stripped.iterateAtoms()),
+            ["C", "C", "Cl", "Cl", "Cl", "Pt"],
+        )

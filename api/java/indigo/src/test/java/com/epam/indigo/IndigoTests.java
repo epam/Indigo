@@ -4,6 +4,10 @@ package com.epam.indigo;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -243,6 +247,24 @@ public class IndigoTests {
 
         m.stripSalt(true);
         assertWholeFerrocene(m);
+    }
+
+    @Test
+    @DisplayName("stripSalt keeps a complex whose metal has inorganic ligands, and removes its ion")
+    void testStripSaltComplexWithInorganicLigands() {
+        Indigo indigo = new Indigo();
+        // Zeise's salt. By its ordinary bonds alone the platinum with three chlorides is a small
+        // inorganic ion; the haptic bond to the ethylene makes it a part of the complex.
+        IndigoObject m = indigo.loadMolecule("[K+].Cl[Pt-](Cl)Cl.C=C");
+        m.addHapticBond(m.addAttachmentGroup(new int[] {5, 6}), m.getAtom(2));
+
+        assertTrue(m.checkSalt());
+        List<String> left = new ArrayList<>();
+        for (IndigoObject atom : m.stripSalt().iterateAtoms()) {
+            left.add(atom.symbol());
+        }
+        Collections.sort(left);
+        assertEquals(Arrays.asList("C", "C", "Cl", "Cl", "Cl", "Pt"), left);
     }
 
     @Test
