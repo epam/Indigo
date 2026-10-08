@@ -270,7 +270,10 @@ namespace
     {
         std::string json(KET_RING_AND_METAL);
         const std::string group = "{\"id\": \"7\", ";
-        json.insert(json.find(group) + group.size(), keys + ", ");
+        const std::size_t group_pos = json.find(group);
+        if (group_pos == std::string::npos)
+            throw Exception("KET_RING_AND_METAL has no group object starting with %s", group.c_str());
+        json.insert(group_pos + group.size(), keys + ", ");
         return json;
     }
 
@@ -504,19 +507,44 @@ TEST_F(IndigoCoreHapticKetTest, GroupChargeAndRadicalAreRead)
         EXPECT_EQ(0, mol.getAtomCharge(i)) << "atom " << i;
 }
 
-// A file may declare many groups, so the error names the group and the key.
+// A key written out as 0 says what an absent key says.
+TEST_F(IndigoCoreHapticKetTest, GroupKeysEqualToZeroReadAsAbsent)
+{
+    Molecule mol;
+    loadKet(ringAndMetalWithGroupKeys("\"charge\": 0, \"radical\": 0").c_str(), mol);
+
+    ASSERT_EQ(1, mol.attachment_groups.groupCount());
+    const AttachmentGroup& group = mol.attachment_groups.group(mol.attachment_groups.begin());
+    EXPECT_EQ(0, group.charge());
+    EXPECT_EQ(0, group.radical());
+}
+
+// A file may declare many groups, so the error names the group and the key, and it
+// says what is wrong with the value: an integer too large is not "not an integer".
 TEST_F(IndigoCoreHapticKetTest, InvalidChargeOrRadicalIsRejectedNamingTheGroupAndTheKey)
 {
-    const std::pair<const char*, const char*> invalid[] = {
-        {"charge", "\"charge\": 1.5"},  {"charge", "\"charge\": \"-1\""}, {"charge", "\"charge\": 3000000000"}, {"radical", "\"radical\": 4"},
-        {"radical", "\"radical\": -1"}, {"radical", "\"radical\": true"}, {"radical", "\"radical\": 2.0"},
+    struct Invalid
+    {
+        const char* key;
+        const char* keys;
+        const char* complaint;
+    };
+    const Invalid invalid[] = {
+        {"charge", "\"charge\": 1.5", "has a non-integer 'charge'"},
+        {"charge", "\"charge\": \"-1\"", "has a non-integer 'charge'"},
+        {"charge", "\"charge\": null", "has a non-integer 'charge'"},
+        {"charge", "\"charge\": 3000000000", "has 'charge' outside the range of an integer"},
+        {"charge", "\"charge\": -9000000000", "has 'charge' outside the range of an integer"},
+        {"radical", "\"radical\": true", "has a non-integer 'radical'"},
+        {"radical", "\"radical\": 2.0", "has a non-integer 'radical'"},
+        {"radical", "\"radical\": 4", "has 'radical' 4, which is none of 0 (none), 1 (singlet), 2 (doublet), 3 (triplet)"},
+        {"radical", "\"radical\": -1", "has 'radical' -1, which is none of 0 (none), 1 (singlet), 2 (doublet), 3 (triplet)"},
     };
 
-    for (const auto& [key, keys] : invalid)
+    for (const Invalid& value : invalid)
     {
-        const std::string error = loadKetError(ringAndMetalWithGroupKeys(keys).c_str());
-        EXPECT_NE(std::string::npos, error.find("'7'")) << keys << " -> " << error;
-        EXPECT_NE(std::string::npos, error.find(std::string("'") + key + "'")) << keys << " -> " << error;
+        const std::string error = loadKetError(ringAndMetalWithGroupKeys(value.keys).c_str());
+        EXPECT_NE(std::string::npos, error.find(std::string("Attachment group '7' ") + value.complaint)) << value.keys << " -> " << error;
     }
 }
 
@@ -630,6 +658,20 @@ TEST_F(IndigoCoreHapticKetTest, GroupChargeAndRadicalAreWrittenOnlyWhenSet)
         charge_and_radical.emplace_back(reloaded.attachment_groups.group(i).charge(), reloaded.attachment_groups.group(i).radical());
     std::sort(charge_and_radical.begin(), charge_and_radical.end());
     EXPECT_EQ((std::vector<std::pair<int, int>>{{-1, RADICAL_DOUBLET}, {0, 0}}), charge_and_radical);
+}
+
+// The two keys do not come as a pair: each is written for its own value alone.
+TEST_F(IndigoCoreHapticKetTest, EachGroupKeyIsWrittenOnItsOwn)
+{
+    Molecule mol;
+    makeFerrocene(mol);
+    const int first = mol.attachment_groups.begin();
+    mol.attachment_groups.group(first).setCharge(-1);
+    mol.attachment_groups.group(mol.attachment_groups.next(first)).setRadical(RADICAL_DOUBLET);
+
+    const std::string saved = saveKet(mol);
+    EXPECT_NE(std::string::npos, saved.find("{\"id\":\"0\",\"charge\":-1,\"atoms\":[")) << saved;
+    EXPECT_NE(std::string::npos, saved.find("{\"id\":\"1\",\"radical\":2,\"atoms\":[")) << saved;
 }
 
 // A group without bonds is valid on its own (KET-CONTRACT.md §5.5) and must not

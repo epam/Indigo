@@ -1236,9 +1236,13 @@ void MoleculeCdxmlLoader::_addAttachmentGroups(BaseMolecule& mol)
         group.setAtoms(members);
         // "A multicenter attachment node can also have charge and radical attributes,
         // which are treated as being distributed over the attached nodes" (CDX spec,
-        // Node_Type): they are the group's, not a member atom's.
-        group.setCharge(node.charge);
-        group.setRadical(node.radical);
+        // Node_Type): they are the group's, not a member atom's. The spec gives a
+        // variable attachment node no such attributes, so its group takes none.
+        if (node.type == kCDXNodeType_MultiAttachment)
+        {
+            group.setCharge(node.charge);
+            group.setRadical(node.radical);
+        }
         _id_to_group_idx.emplace(node.id, group_idx);
     }
 }

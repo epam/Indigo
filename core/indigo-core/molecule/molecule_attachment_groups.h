@@ -107,6 +107,11 @@ namespace indigo
         }
         void setRadical(int radical);
 
+        // What setRadical() accepts, and the same four values spelled for the message
+        // of whoever rejects a radical before it gets here.
+        static bool isValidRadical(int radical);
+        static const char* const VALID_RADICALS;
+
         // The point the group acts from: the centroid of the positions given. Takes
         // points rather than a molecule because the render, the layout and the
         // savers each hold them in their own coordinates; the molecule-coordinate

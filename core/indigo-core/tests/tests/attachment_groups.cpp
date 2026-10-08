@@ -178,6 +178,27 @@ TEST_F(IndigoCoreAttachmentGroupsTest, RemovingANonMemberAtomLeavesTheGroupAlone
     EXPECT_EQ(5u, mol.attachment_groups.group(group).atoms().size());
 }
 
+// The charge and the radical live on the group: an edit that keeps the group keeps
+// them, and one that drops the group takes them along - no atom inherits them.
+TEST_F(IndigoCoreAttachmentGroupsTest, ChargeAndRadicalShareTheFateOfTheGroupWhenAtomsAreRemoved)
+{
+    Molecule mol;
+    makeRingAndMetal(mol);
+    const int group = addRingGroup(mol);
+    mol.attachment_groups.group(group).setCharge(-1);
+    mol.attachment_groups.group(group).setRadical(RADICAL_DOUBLET);
+
+    mol.removeAtom(5); // the metal is not a member
+    ASSERT_TRUE(mol.attachment_groups.hasGroup(group));
+    EXPECT_EQ(-1, mol.attachment_groups.group(group).charge());
+    EXPECT_EQ(RADICAL_DOUBLET, mol.attachment_groups.group(group).radical());
+
+    mol.removeAtom(2); // a member: the group goes whole
+    EXPECT_EQ(0, mol.attachment_groups.groupCount());
+    for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+        EXPECT_EQ(0, mol.getAtomCharge(i)) << "atom " << i;
+}
+
 // The charge and the radical belong to the pi-system, not to an atom: every copy of
 // the molecule carries them on the group, and the charges of the atoms - one of
 // them charged on its own - come through exactly as they were.
@@ -217,8 +238,8 @@ TEST_F(IndigoCoreAttachmentGroupsTest, ChargeAndRadicalTravelWithTheGroup)
     }
 }
 
-// The formula, the mass and the hydrogen counts are properties of the atoms; the
-// charge of the group is not an atom's and changes none of them.
+// The formula, the mass, the hydrogen counts and the SMILES are made of the atoms;
+// the charge of the group is not an atom's and changes none of them.
 TEST_F(IndigoCoreAttachmentGroupsTest, GroupChargeTakesNoPartInTheAtomCalculations)
 {
     Molecule neutral;
@@ -243,6 +264,7 @@ TEST_F(IndigoCoreAttachmentGroupsTest, GroupChargeTakesNoPartInTheAtomCalculatio
     EXPECT_DOUBLE_EQ(MoleculeMass().molecularWeight(neutral), MoleculeMass().molecularWeight(charged));
     for (int i = 0; i < 5; i++)
         EXPECT_EQ(neutral.getImplicitH(i), charged.getImplicitH(i)) << "ring atom " << i;
+    EXPECT_EQ(smiles(neutral), smiles(charged)) << "a format without attachment groups carries neither property";
 }
 
 TEST_F(IndigoCoreAttachmentGroupsTest, RadicalOutsideTheAtomEncodingIsRejected)

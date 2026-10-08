@@ -1067,6 +1067,12 @@ void MoleculeCdxmlSaver::addAttachmentGroupsToFragment(BaseMolecule& mol, XMLEle
         const auto type_it = group_types.find(group_idx);
         const int type = type_it == group_types.end() ? _BOND_HAPTIC : type_it->second;
 
+        // Only a multicenter attachment node has a charge and a radical of its own
+        // (CDX spec, Node_Type), so those of a variable attachment have no place here.
+        if (type == _BOND_VARIABLE_ATTACHMENT && (group.charge() != 0 || group.radical() != 0))
+            throw Error("attachment group %d has charge %d and radical %d, which CDX can keep only on a MultiAttachment node", group_idx, group.charge(),
+                        group.radical());
+
         XMLElement* node = _doc->NewElement("n");
         fragment->LinkEndChild(node);
         const int node_id = ++_id;

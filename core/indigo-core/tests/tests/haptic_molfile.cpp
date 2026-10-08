@@ -64,6 +64,20 @@ protected:
         return {buffer.ptr(), static_cast<std::size_t>(buffer.size())};
     }
 
+    // The message saving as V3000 fails with; empty when it does not fail.
+    static std::string saveMolfileError(Molecule& mol)
+    {
+        try
+        {
+            saveMolfile(mol);
+        }
+        catch (Exception& e)
+        {
+            return e.message();
+        }
+        return {};
+    }
+
     static int countOccurrences(const std::string& text, const std::string& what)
     {
         int count = 0;
@@ -211,6 +225,33 @@ protected:
                "M  END\n";
     }
 
+    // A haptic record neither end of which is a star: a three-membered ring (atoms
+    // 0..2) attached to an iron (3) through an ordinary carbon (4).
+    static const char* hapticRecordWithoutAStar()
+    {
+        return "\n"
+               "  -INDIGO-\n"
+               "\n"
+               "  0  0  0  0  0  0  0  0  0  0999 V3000\n"
+               "M  V30 BEGIN CTAB\n"
+               "M  V30 COUNTS 5 4 0 0 0\n"
+               "M  V30 BEGIN ATOM\n"
+               "M  V30 1 C 0.0 0.0 0 0\n"
+               "M  V30 2 C 1.0 0.0 0 0\n"
+               "M  V30 3 C 1.5 0.87 0 0\n"
+               "M  V30 4 Fe 5.0 5.0 0 0\n"
+               "M  V30 5 C 7.0 7.0 0 0\n"
+               "M  V30 END ATOM\n"
+               "M  V30 BEGIN BOND\n"
+               "M  V30 1 1 1 2\n"
+               "M  V30 2 1 2 3\n"
+               "M  V30 3 1 3 1\n"
+               "M  V30 4 9 4 5 ENDPTS=(3 1 2 3) ATTACH=ALL\n"
+               "M  V30 END BOND\n"
+               "M  V30 END CTAB\n"
+               "M  END\n";
+    }
+
     // Cyclopentadienyl ring (atoms 0..4) and an iron (5), with a haptic bond from
     // the whole ring to the metal and no star atom anywhere: the shape a molecule
     // has when it comes from a format that does not use one.
@@ -296,15 +337,23 @@ TEST_F(IndigoCoreHapticMolfileTest, ChargeAndRadicalOfTheStarMoveToItsGroup)
     EXPECT_EQ(2, total) << "the atoms keep only their own charges: the +2 of the iron";
 }
 
-// The radical of a group uses the atom encoding, so a star carrying any other code
-// is a record that means nothing, and it is rejected where it is read.
-TEST_F(IndigoCoreHapticMolfileTest, AStarRadicalOutsideTheEncodingIsRejected)
+// The format defines RAD from 0 to 3. A star with any other code says nothing
+// about its pi-system, and the file still loads - an atom with such a code loads
+// too - leaving the group without a radical.
+TEST_F(IndigoCoreHapticMolfileTest, AStarRadicalOutsideTheEncodingIsReadAsNone)
 {
-    std::string text = ferrocene();
-    replaceOnce(text, "M  V30 13 * 12.7132 -12.7932 0 0 CHG=-1", "M  V30 13 * 12.7132 -12.7932 0 0 CHG=-1 RAD=5");
+    for (const char* undefined_radical : {" RAD=5", " RAD=-5"})
+    {
+        std::string text = ferrocene();
+        replaceOnce(text, "M  V30 13 * 12.7132 -12.7932 0 0 CHG=-1", std::string("M  V30 13 * 12.7132 -12.7932 0 0 CHG=-1") + undefined_radical);
 
-    Molecule mol;
-    EXPECT_THROW(loadMolfile(text.c_str(), mol), Exception);
+        Molecule mol;
+        ASSERT_NO_THROW(loadMolfile(text.c_str(), mol)) << undefined_radical;
+
+        const AttachmentGroup& ring = groupWithAtom(mol, 0);
+        EXPECT_EQ(0, ring.radical()) << undefined_radical;
+        EXPECT_EQ(-1, ring.charge()) << "the charge of the same star is still handed over";
+    }
 }
 
 TEST_F(IndigoCoreHapticMolfileTest, ChargeOfTheGroupIsWrittenBackOnItsStar)
@@ -598,6 +647,15 @@ TEST_F(IndigoCoreHapticMolfileTest, V3000ToKetToV3000KeepsChargeAndRadical)
     EXPECT_NE(std::string::npos, first_star.find(" CHG=-1")) << first_star;
     EXPECT_NE(std::string::npos, second_star.find(" CHG=-1")) << second_star;
     EXPECT_EQ(1, countOccurrences(first_star + second_star, " RAD=2")) << "one star of the two carries the radical";
+
+    // Which star took it is read off the file itself: each star goes back to the
+    // ring its ENDPTS name.
+    Molecule from_saved;
+    loadMolfile(saved.c_str(), from_saved);
+    EXPECT_EQ(RADICAL_DOUBLET, groupWithAtom(from_saved, 0).radical());
+    EXPECT_EQ(0, groupWithAtom(from_saved, 6).radical());
+    EXPECT_EQ(-1, groupWithAtom(from_saved, 0).charge());
+    EXPECT_EQ(-1, groupWithAtom(from_saved, 6).charge());
 }
 
 // V2000 has no ENDPTS at all, so the haptic bonds are dropped whole. Their stars
@@ -689,16 +747,37 @@ TEST_F(IndigoCoreHapticMolfileTest, AVariableAttachmentStarKeepsItsCharge)
     EXPECT_NE(std::string::npos, lineStartingWith(saveMolfile(mol), "M  V30 8 * ").find(" CHG=-1"));
 }
 
-// A group that ends on an atom of the structure is written on that atom's bond,
-// where V3000 has no place for a charge of the group's own: saving refuses rather
-// than dropping it.
-TEST_F(IndigoCoreHapticMolfileTest, AChargeOfAnAnchoredGroupIsNotDroppedSilently)
+// V3000 has one place for the charge of a group: the phantom star of a haptic
+// record. A record that ends on an atom of the structure is written on that atom's
+// bond and gets no star, so saving refuses rather than dropping the charge.
+TEST_F(IndigoCoreHapticMolfileTest, AChargeOfAGroupEndingOnAnAtomIsNotDroppedSilently)
 {
     Molecule mol;
-    loadMolfile(variableAttachment(), mol);
-    mol.attachment_groups.group(mol.attachment_groups.begin()).setCharge(-1);
+    loadMolfile(hapticRecordWithoutAStar(), mol);
+    mol.attachment_groups.group(mol.attachment_groups.begin()).setRadical(RADICAL_DOUBLET);
 
-    EXPECT_THROW(saveMolfile(mol), Exception);
+    EXPECT_EQ("molfile saver: attachment group 0 has charge 0 and radical 2, which V3000 can keep only on the star of a haptic bond record",
+              saveMolfileError(mol));
+}
+
+// The star of a variable attachment is an atom of the drawing with a charge of its
+// own, so it cannot stand for the charge of the group either - whether the group
+// still has that star for an anchor or the saver would have to make one up.
+TEST_F(IndigoCoreHapticMolfileTest, AChargeOfAVariableAttachmentGroupIsNotDroppedSilently)
+{
+    for (bool anchored : {true, false})
+    {
+        Molecule mol;
+        loadMolfile(variableAttachment(), mol);
+        AttachmentGroup& group = mol.attachment_groups.group(mol.attachment_groups.begin());
+        group.setCharge(-1);
+        if (!anchored)
+            group.setAnchorAtom(-1);
+
+        EXPECT_EQ("molfile saver: attachment group 0 has charge -1 and radical 0, which V3000 can keep only on the star of a haptic bond record",
+                  saveMolfileError(mol))
+            << (anchored ? "with its star for an anchor" : "without an anchor");
+    }
 }
 
 // The group knows its star by atom index, so a copy that renumbers atoms must not
@@ -766,30 +845,8 @@ TEST_F(IndigoCoreHapticMolfileTest, AStarOutsideAnyGroupStaysWhereTheFileHadIt)
 // ordinary atom. That atom is chemistry, not notation, and does not move.
 TEST_F(IndigoCoreHapticMolfileTest, AnAnchorThatIsNotAPseudoAtomStaysPut)
 {
-    const char* no_star = "\n"
-                          "  -INDIGO-\n"
-                          "\n"
-                          "  0  0  0  0  0  0  0  0  0  0999 V3000\n"
-                          "M  V30 BEGIN CTAB\n"
-                          "M  V30 COUNTS 5 4 0 0 0\n"
-                          "M  V30 BEGIN ATOM\n"
-                          "M  V30 1 C 0.0 0.0 0 0\n"
-                          "M  V30 2 C 1.0 0.0 0 0\n"
-                          "M  V30 3 C 1.5 0.87 0 0\n"
-                          "M  V30 4 Fe 5.0 5.0 0 0\n"
-                          "M  V30 5 C 7.0 7.0 0 0\n"
-                          "M  V30 END ATOM\n"
-                          "M  V30 BEGIN BOND\n"
-                          "M  V30 1 1 1 2\n"
-                          "M  V30 2 1 2 3\n"
-                          "M  V30 3 1 3 1\n"
-                          "M  V30 4 9 4 5 ENDPTS=(3 1 2 3) ATTACH=ALL\n"
-                          "M  V30 END BOND\n"
-                          "M  V30 END CTAB\n"
-                          "M  END\n";
-
     Molecule mol;
-    loadMolfile(no_star, mol);
+    loadMolfile(hapticRecordWithoutAStar(), mol);
 
     ASSERT_EQ(1, mol.attachment_groups.groupCount());
     const int group = mol.attachment_groups.begin();

@@ -168,12 +168,29 @@ protected:
     }
 
     // ring_and_metal() with a charge and a radical on its attachment node.
-    static std::string chargedRingAndMetal()
+    static std::string chargedRingAndMetal(const char* node_type = "MultiAttachment")
     {
-        std::string text = ring_and_metal();
-        const std::string node_type = "NodeType=\"MultiAttachment\"";
-        text.insert(text.find(node_type) + node_type.size(), " Charge=\"-1\" Radical=\"Doublet\"");
+        std::string text = ring_and_metal(node_type);
+        const std::string type_attribute = std::string("NodeType=\"") + node_type + "\"";
+        const std::size_t type_pos = text.find(type_attribute);
+        if (type_pos == std::string::npos)
+            throw Exception("ring_and_metal() has no node with %s", type_attribute.c_str());
+        text.insert(type_pos + type_attribute.size(), " Charge=\"-1\" Radical=\"Doublet\"");
         return text;
+    }
+
+    // The message saving fails with; empty when it does not fail.
+    static std::string saveError(Molecule& mol, bool binary)
+    {
+        try
+        {
+            save(mol, binary);
+        }
+        catch (Exception& e)
+        {
+            return e.message();
+        }
+        return {};
     }
 
     // The element of the one attachment node of a saved document.
@@ -385,6 +402,36 @@ TEST_F(IndigoCoreHapticCdxmlTest, ChargeAndRadicalOfTheGroupGoBackOnItsNode)
         EXPECT_EQ(-1, group.charge()) << (binary ? "CDX" : "CDXML");
         EXPECT_EQ(RADICAL_DOUBLET, group.radical()) << (binary ? "CDX" : "CDXML");
     }
+}
+
+// The specification gives a charge to a multicenter attachment node only. What a
+// variable attachment node carries is not the charge of a pi-system, and its group
+// takes none of it - as the star of ATTACH=ANY keeps its own in a molfile.
+TEST_F(IndigoCoreHapticCdxmlTest, ChargeOfAVariableAttachmentNodeIsNotTheGroups)
+{
+    Molecule mol;
+    loadCdxml(chargedRingAndMetal("VariableAttachment"), mol);
+
+    ASSERT_EQ(1, mol.attachment_groups.groupCount());
+    const AttachmentGroup& group = mol.attachment_groups.group(mol.attachment_groups.begin());
+    EXPECT_EQ(0, group.charge());
+    EXPECT_EQ(0, group.radical());
+}
+
+// A charge given to such a group afterwards has no node to go to, and saving
+// refuses rather than writing it where no reader would look for it.
+TEST_F(IndigoCoreHapticCdxmlTest, ChargeOfAVariableAttachmentGroupIsNotDroppedSilently)
+{
+    Molecule mol;
+    loadCdxml(ring_and_metal("VariableAttachment"), mol);
+    const int group = mol.attachment_groups.begin();
+    mol.attachment_groups.group(group).setCharge(-1);
+
+    for (bool binary : {false, true})
+        EXPECT_EQ("molecule CDXML saver: attachment group " + std::to_string(group) +
+                      " has charge -1 and radical 0, which CDX can keep only on a MultiAttachment node",
+                  saveError(mol, binary))
+            << (binary ? "CDX" : "CDXML");
 }
 
 TEST_F(IndigoCoreHapticCdxmlTest, AttachmentNodeWithoutMembersIsRejected)

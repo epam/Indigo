@@ -101,10 +101,17 @@ void AttachmentGroup::remapAnchorAtom(const Array<int>& atom_mapping)
     _anchor_atom = _anchor_atom < atom_mapping.size() ? atom_mapping[_anchor_atom] : -1;
 }
 
+const char* const AttachmentGroup::VALID_RADICALS = "0 (none), 1 (singlet), 2 (doublet), 3 (triplet)";
+
+bool AttachmentGroup::isValidRadical(int radical)
+{
+    return radical >= 0 && radical <= RADICAL_TRIPLET;
+}
+
 void AttachmentGroup::setRadical(int radical)
 {
-    if (radical < 0 || radical > RADICAL_TRIPLET)
-        throw Error("radical %d is none of 0 (none), 1 (singlet), 2 (doublet), 3 (triplet)", radical);
+    if (!isValidRadical(radical))
+        throw Error("radical %d is none of %s", radical, VALID_RADICALS);
     _radical = radical;
 }
 

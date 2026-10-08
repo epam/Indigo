@@ -484,12 +484,12 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
             }
         }
 
-        if (a.HasMember("charge"))
-            charge = a["charge"].GetInt();
+        if (a.HasMember(KetKeyCharge))
+            charge = a[KetKeyCharge].GetInt();
         if (a.HasMember("explicitValence"))
             valence = a["explicitValence"].GetInt();
-        if (a.HasMember("radical"))
-            radical = a["radical"].GetInt();
+        if (a.HasMember(KetKeyRadical))
+            radical = a[KetKeyRadical].GetInt();
 
         if (_pmol)
         {
@@ -1315,10 +1315,13 @@ static int parseOptionalGroupInt(const rapidjson::Value& group, const char* key,
     if (!group.HasMember(key))
         return 0;
 
-    if (!group[key].IsInt())
-        throw MoleculeJsonLoader::Error("Attachment group '%s' has a non-integer '%s'", id, key);
+    const rapidjson::Value& value = group[key];
+    if (value.IsInt())
+        return value.GetInt();
 
-    return group[key].GetInt();
+    if (value.IsInt64() || value.IsUint64())
+        throw MoleculeJsonLoader::Error("Attachment group '%s' has '%s' outside the range of an integer", id, key);
+    throw MoleculeJsonLoader::Error("Attachment group '%s' has a non-integer '%s'", id, key);
 }
 
 std::map<std::string, int> MoleculeJsonLoader::parseAttachmentGroups(const rapidjson::Value& groups, BaseMolecule& mol, const Array<int>& atom_mapping)
@@ -1360,8 +1363,8 @@ std::map<std::string, int> MoleculeJsonLoader::parseAttachmentGroups(const rapid
 
         const int charge = parseOptionalGroupInt(group, KetKeyCharge, id);
         const int radical = parseOptionalGroupInt(group, KetKeyRadical, id);
-        if (radical < 0 || radical > RADICAL_TRIPLET)
-            throw Error("Attachment group '%s' has '%s' %d, which is none of 0 (none), 1 (singlet), 2 (doublet), 3 (triplet)", id, KetKeyRadical, radical);
+        if (!AttachmentGroup::isValidRadical(radical))
+            throw Error("Attachment group '%s' has '%s' %d, which is none of %s", id, KetKeyRadical, radical, AttachmentGroup::VALID_RADICALS);
 
         const int group_idx = mol.attachment_groups.addGroup();
         AttachmentGroup& created = mol.attachment_groups.group(group_idx);

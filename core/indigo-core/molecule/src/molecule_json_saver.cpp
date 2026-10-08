@@ -964,7 +964,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
 
         if ((mol.isQueryMolecule() && charge != CHARGE_UNKNOWN) || (!mol.isQueryMolecule() && charge != 0))
         {
-            writer.Key("charge");
+            writer.Key(KetKeyCharge);
             writer.Int(charge);
         }
 
@@ -977,7 +977,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
 
         if (radical > 0)
         {
-            writer.Key("radical");
+            writer.Key(KetKeyRadical);
             writer.Int(radical);
         }
 

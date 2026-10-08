@@ -490,10 +490,11 @@ void MolfileSaver::_collectHapticRecords(BaseMolecule& mol, std::vector<HapticRe
         else
             record.anchor = -1;
 
-        // V3000 keeps the charge and the radical of a group on its star, and a group
-        // that ends on an atom of the structure gets no star.
-        if (record.anchor >= 0 && (group.charge() != 0 || group.radical() != 0))
-            throw Error("attachment group %d ends on atom %d, not on a star, so its charge %d and radical %d cannot be written", record.group, record.anchor,
+        // V3000 keeps the charge and the radical of a group on the phantom star of a
+        // haptic record. A record that ends on an atom of the structure gets no star,
+        // and the star of a variable attachment is an atom with a charge of its own.
+        if ((record.anchor >= 0 || record.type == _BOND_VARIABLE_ATTACHMENT) && (group.charge() != 0 || group.radical() != 0))
+            throw Error("attachment group %d has charge %d and radical %d, which V3000 can keep only on the star of a haptic bond record", record.group,
                         group.charge(), group.radical());
 
         if (record.edge >= 0)
