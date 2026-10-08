@@ -1,8 +1,7 @@
-*** M SCN on a defined repeating unit ***
-SRU with head-to-tail connectivity: OK, 2 atoms, M SCN saved: "M  SCN  1   1 HT "
-*** M SCN on a superatom, last entry without the trailing space ***
-SUP, line ends right after the connectivity: OK, 2 atoms, M SCN saved: none
+*** M SCN on a defined Sgroup ***
+455-scn-sru-ht.mol:SUCCEED
+455-scn-sup-no-trailing-space.mol:SUCCEED
 *** M SCN referring to an Sgroup that is not defined ***
-no Sgroups at all: molfile loader: M SCN refers to undefined Sgroup 1
-index past the last Sgroup: molfile loader: M SCN refers to undefined Sgroup 2
-index 0: molfile loader: M SCN refers to undefined Sgroup 0
+455-scn-index-0: molfile loader: M SCN refers to undefined Sgroup 0
+455-scn-no-sgroups: molfile loader: M SCN refers to undefined Sgroup 1
+455-scn-past-last-sgroup: molfile loader: M SCN refers to undefined Sgroup 2
