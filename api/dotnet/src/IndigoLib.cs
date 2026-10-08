@@ -1026,6 +1026,12 @@ namespace com.epam.indigo
         public static extern int indigoComponent(int molecule, int index);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoCheckSalt(int molecule);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
+        public static extern int indigoStripSalt(int molecule);
+
+        [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
         public static extern int indigoCountSSSR(int molecule);
 
         [DllImport("indigo"), SuppressUnmanagedCodeSecurity]
