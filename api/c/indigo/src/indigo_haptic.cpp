@@ -41,7 +41,7 @@ namespace
             return indigo::HapticBond::Endpoint::atom(atom.idx);
         }
 
-        if (obj.type == IndigoObject::ATTACHMENT_GROUP)
+        if (IndigoAttachmentGroup::is(obj))
         {
             IndigoAttachmentGroup& group = IndigoAttachmentGroup::cast(obj);
             if (&group.mol != &mol)
@@ -102,9 +102,14 @@ void IndigoAttachmentGroup::remove()
     mol.removeAttachmentGroup(idx);
 }
 
+bool IndigoAttachmentGroup::is(IndigoObject& obj)
+{
+    return obj.type == IndigoObject::ATTACHMENT_GROUP;
+}
+
 IndigoAttachmentGroup& IndigoAttachmentGroup::cast(IndigoObject& obj)
 {
-    if (obj.type == IndigoObject::ATTACHMENT_GROUP)
+    if (is(obj))
         return (IndigoAttachmentGroup&)obj;
 
     throw IndigoError("%s is not an attachment group", obj.debugInfo());
@@ -117,6 +122,16 @@ AttachmentGroup& IndigoAttachmentGroup::get()
     if (!mol.attachment_groups.hasGroup(idx))
         throw IndigoError("attachment group %d does not exist any more", idx);
     return mol.attachment_groups.group(idx);
+}
+
+// The charge and the radical sit on the group, outside the graph, so no mutator of
+// the molecule sees them change: without the new revision a view cached from the
+// molecule - a submolecule, a component - would go on showing the old value.
+AttachmentGroup& IndigoAttachmentGroup::edit()
+{
+    AttachmentGroup& group = get();
+    mol.updateEditRevision();
+    return group;
 }
 
 IndigoAttachmentGroupsIter::IndigoAttachmentGroupsIter(BaseMolecule& mol_, Array<int>&& refs)
@@ -339,7 +354,7 @@ CEXPORT int indigoIsAttachmentGroup(int item)
         // The two ends of a haptic bond come back as objects of different kinds,
         // and the caller has to be able to tell them apart without provoking an
         // error on the wrong one.
-        return self.getObject(item).type == IndigoObject::ATTACHMENT_GROUP ? 1 : 0;
+        return IndigoAttachmentGroup::is(self.getObject(item)) ? 1 : 0;
     }
     INDIGO_END(-1);
 }

@@ -1088,10 +1088,12 @@ class IndigoObject:
         return IndigoLib.checkResult(self._lib().indigoDegree(self.id))
 
     def charge(self):
-        """Atom method returns the charge of the atom
+        """Atom or attachment group method returns the charge. The charge of
+        an attachment group is its own, never that of a member atom.
 
         Returns:
-            int: charge
+            int: charge; None for an atom whose charge is ambiguous, as that
+            of a query atom can be. An attachment group always has one.
         """
         value = c_int()
 
@@ -1166,10 +1168,12 @@ class IndigoObject:
         return value.value
 
     def radical(self):
-        """Atom method returns the radical value
+        """Atom or attachment group method returns the radical value
 
         Returns:
-            int: radical value
+            int: 0, Indigo.SINGLET, Indigo.DOUBLET or Indigo.TRIPLET; None
+            for an atom whose radical is ambiguous. An attachment group
+            always has one.
         """
         value = c_int()
 
@@ -1181,10 +1185,14 @@ class IndigoObject:
         return value.value
 
     def setRadical(self, radical):
-        """Atom method sets the radical value
+        """Atom or attachment group method sets the radical value
 
         Args:
-            radical (int): radical value
+            radical (int): 0, Indigo.SINGLET, Indigo.DOUBLET or
+                Indigo.TRIPLET
+
+        Raises:
+            IndigoException: if the value is none of these
 
         Returns:
             int: 1 if there are no errors
@@ -3232,7 +3240,7 @@ class IndigoObject:
         )
 
     def setCharge(self, charge):
-        """Atom method sets charge
+        """Atom or attachment group method sets charge
 
         Args:
             charge (int): charge value

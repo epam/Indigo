@@ -97,4 +97,17 @@ public class IndigoTests {
         assertEquals(0, m.countAttachmentGroups());
         assertEquals(0, m.countHapticBonds());
     }
+
+    @Test
+    @DisplayName("an attachment group takes the charge and radical calls (#3924)")
+    void testAttachmentGroupChargeAndRadical() {
+        Indigo indigo = new Indigo();
+        IndigoObject m = indigo.loadMolecule("C1=CC=CC1.[Fe]");
+        IndigoObject group = m.addAttachmentGroup(new int[] {0, 1, 2, 3, 4});
+
+        group.setCharge(-1);
+        group.setRadical(Indigo.DOUBLET);
+        assertEquals(-1, group.charge());
+        assertEquals(Indigo.DOUBLET, group.radical());
+    }
 }
