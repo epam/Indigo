@@ -62,13 +62,20 @@ Verified against the job logs of CI run 7682 (PR #3912, `97a183d5c`).
 
 | Suite | Location | Run with | In CI |
 | --- | --- | --- | --- |
-| Python wrapper | `api/python/tests/` — indigo, inchi, renderer, bingo-nosql, sequence layout | `pytest` | the `unittest` classes only, 33 of 53 — `setup.py test` in the `indigo-python` target |
+| Python wrapper | `api/python/tests/` — indigo, inchi, renderer, bingo-nosql, sequence layout | `pytest` | the `unittest` classes only, 10 of 30 — `setup.py test` in the `indigo-python` target |
 | Java JUnit | `api/java/*/src/test/java/com/epam/indigo/` — `IndigoTests`, `IndigoInchiTests`, `IndigoRendererTests`, `BingoTests` | `mvn test` | on Linux with JDK 8 — `mvn install` in the `indigo-java` target |
 | .NET | `api/dotnet/tests/` — `IndigoTest.cs`, `InchiTests.cs` | `dotnet test` | on Linux with .NET 6 — `dotnet test` in the `indigo-dotnet` target |
 | **HTTP service** | `api/http/tests/` | `pytest` with `httpx` | **no** |
 
 The wrapper unit tests run while the `build_indigo_wrappers` job builds each wrapper in the
-`epmlsop/indigo-tester` container — on Linux, and nowhere else. Two gaps follow from how they are run:
+`epmlsop/indigo-tester` container — on Linux, and nowhere else. They answer one question: was the
+wrapper built, and does a call go through it. A test here checks what the binding itself adds — the
+method exists, the result has the wrapper's type, an argument such as `inplace` does what it says.
+Which structures give which answer belongs to the integration harness, where one file runs through
+all three wrappers on every platform: `checkSalt` / `stripSalt` keep two tests in each wrapper and
+their behaviour in `api/tests/integration/tests/basic/salts.py`.
+
+Two gaps follow from how the wrapper tests are run:
 
 - **`setup.py test` collects `unittest.TestCase` classes only.** `test_sequence_layout.py` is written
   with pytest fixtures, and its 20 tests never run in CI. `python -m unittest discover -s tests -t .`

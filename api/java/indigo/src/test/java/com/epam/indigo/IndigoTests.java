@@ -4,14 +4,9 @@ package com.epam.indigo;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.IntStream;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class IndigoTests {
@@ -57,221 +52,24 @@ public class IndigoTests {
     }
 
     @Test
-    @DisplayName("checkSalt detects mono-, di-, tri- and tetravalent monoatomic cations")
-    void testCheckSaltMonoatomicCations() {
+    @DisplayName("checkSalt tells a structure with a counter ion from one without")
+    void testCheckSalt() {
         Indigo indigo = new Indigo();
-        assertTrue(indigo.loadMolecule("[Na+].C").checkSalt());
-        assertTrue(indigo.loadMolecule("[Rb+].C").checkSalt());
-        assertTrue(indigo.loadMolecule("[Ca+2].C").checkSalt());
-        assertTrue(indigo.loadMolecule("[Zn+2].C").checkSalt());
-        assertTrue(indigo.loadMolecule("[Al+3].C").checkSalt());
-        assertTrue(indigo.loadMolecule("[Cr+3].C").checkSalt());
-        assertTrue(indigo.loadMolecule("[Ru+4].C").checkSalt());
-        assertTrue(indigo.loadMolecule("[Sn+4].C").checkSalt());
+        assertTrue(indigo.loadMolecule("CCO.[Na+]").checkSalt());
+        assertFalse(indigo.loadMolecule("CCO").checkSalt());
     }
 
     @Test
-    @DisplayName("checkSalt detects mono- and divalent monoatomic anions")
-    void testCheckSaltMonoatomicAnions() {
+    @DisplayName("stripSalt strips a copy by default and the molecule itself when asked")
+    void testStripSalt() {
         Indigo indigo = new Indigo();
-        assertTrue(indigo.loadMolecule("[Cl-].C").checkSalt());
-        assertTrue(indigo.loadMolecule("[F-].C").checkSalt());
-        assertTrue(indigo.loadMolecule("[S-2].C").checkSalt());
-        assertTrue(indigo.loadMolecule("[Se-2].C").checkSalt());
-    }
+        IndigoObject m = indigo.loadMolecule("CCO.[Na+]");
 
-    @Test
-    @DisplayName("checkSalt detects molecular inorganic salts")
-    void testCheckSaltMolecularSalts() {
-        Indigo indigo = new Indigo();
-        assertTrue(indigo.loadMolecule("S=[Fe].C").checkSalt());
-        assertTrue(indigo.loadMolecule("Cl[Ag]").checkSalt());
-        assertTrue(indigo.loadMolecule("S=[Sn]=S.C").checkSalt());
-        assertTrue(indigo.loadMolecule("O=[Mn]=O.C").checkSalt());
-        assertTrue(indigo.loadMolecule("Cl[Fe](Cl)Cl.C").checkSalt());
-        assertTrue(indigo.loadMolecule("OCl(=O)=O.C").checkSalt());
-        assertTrue(indigo.loadMolecule("OS(=O)(=O)O.C").checkSalt());
-        assertTrue(indigo.loadMolecule("OP(=O)(O)O.C").checkSalt());
-    }
+        assertEquals("CCO", m.stripSalt().smiles());
+        assertEquals("CCO.[Na+]", m.smiles(), "a copy was stripped");
 
-    @Test
-    @DisplayName("checkSalt detects complex inorganic ions")
-    void testCheckSaltComplexIons() {
-        Indigo indigo = new Indigo();
-        assertTrue(indigo.loadMolecule("[OH-].C").checkSalt());
-        assertTrue(indigo.loadMolecule("[O-]Cl.C").checkSalt());
-        assertTrue(indigo.loadMolecule("[O-]I=O.C").checkSalt());
-        assertTrue(indigo.loadMolecule("[O-]N(=O).C").checkSalt());
-        assertTrue(indigo.loadMolecule("[N+](=O)([O-])[O-].C").checkSalt());
-        assertTrue(indigo.loadMolecule("O[Se](=O)[O-].C").checkSalt());
-        assertTrue(indigo.loadMolecule("OP(=O)(O)[O-].C").checkSalt());
-        assertTrue(indigo.loadMolecule("OS(=O)(=O)[O-].C").checkSalt());
-    }
-
-    @Test
-    @DisplayName("checkSalt detects structures containing several ions")
-    void testCheckSaltMultipleIons() {
-        Indigo indigo = new Indigo();
-        assertTrue(indigo.loadMolecule("[Na+].[Cl-].C").checkSalt());
-        assertTrue(indigo.loadMolecule("[O-]S(=O)(=O)[O-].[K+].[K+].C").checkSalt());
-    }
-
-    @Test
-    @DisplayName("checkSalt returns false for structures without disconnected inorganic components")
-    void testCheckSaltNoIons() {
-        Indigo indigo = new Indigo();
-        assertFalse(indigo.loadMolecule("c1ccccc1").checkSalt());
-        assertFalse(indigo.loadMolecule("C1=CC=C2C=CC=CC2=C1").checkSalt());
-    }
-
-    @Test
-    @DisplayName("checkSalt returns false when the metal or acid group is bonded to an organic part")
-    void testCheckSaltBonded() {
-        Indigo indigo = new Indigo();
-        assertFalse(indigo.loadMolecule("CC[Pb](CC)(CC)CC").checkSalt());
-        assertFalse(indigo.loadMolecule("C[Al](C)C").checkSalt());
-        assertFalse(indigo.loadMolecule("C1=CC=C(C=C1)[N+](=O)[O-]").checkSalt());
-        assertFalse(indigo.loadMolecule("C(C(=O)O)S(=O)(=O)O").checkSalt());
-    }
-
-    @Test
-    @DisplayName("stripSalt keeps a molecule without disconnected inorganic components intact")
-    void testStripSaltNoSalts() {
-        Indigo indigo = new Indigo();
-        IndigoObject m = indigo.loadMolecule("CCCCCCCCCCCCCCCC[N+]1C=CC=CC=1");
-        assertEquals("CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1", m.stripSalt().smiles());
-    }
-
-    @Test
-    @DisplayName("stripSalt removes a single inorganic anion")
-    void testStripSaltSingleSalt() {
-        Indigo indigo = new Indigo();
-        IndigoObject m = indigo.loadMolecule("CCCCCCCCCCCCCCCC[N+]1C=CC=CC=1.[Cl-]");
-        assertEquals("CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1", m.stripSalt().smiles());
-    }
-
-    @Test
-    @DisplayName("stripSalt removes many inorganic components (water and anions)")
-    void testStripSaltManySalts() {
-        Indigo indigo = new Indigo();
-        IndigoObject m = indigo.loadMolecule(
-            "CCCCCCCCCCCCCCCC[N+]1C=CC=CC=1.O.O.O.O.O.O.O.O.O.O.[Cl-].[Cl-]");
-        assertEquals("CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1", m.stripSalt().smiles());
-    }
-
-    @Test
-    @DisplayName("stripSalt keeps multiple organic components and removes the anion")
-    void testStripSaltTwoOrganics() {
-        Indigo indigo = new Indigo();
-        IndigoObject m = indigo.loadMolecule(
-            "CCCCCCCCCCCCCCCC[N+]1C=CC=CC=1.CCCCCCCCCCCCCCCC[N+]1C=CC=CC=1.[O-]S(=O)(=O)[O-]");
-        assertEquals(
-            "CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1.CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1",
-            m.stripSalt().smiles());
-    }
-
-    @Test
-    @DisplayName("stripSalt keeps organic acids and a lone metal atom")
-    void testStripSaltComplexSalt() {
-        Indigo indigo = new Indigo();
-        IndigoObject m = indigo.loadMolecule(
-            "C(C(C(C(C(C(=O)O)O)O)O)O)O.C(C(C(C(C(C(=O)O)O)O)O)O)O.[Fe]");
-        assertEquals(
-            "C(O)C(O)C(O)C(O)C(O)C(O)=O.C(O)C(O)C(O)C(O)C(O)C(O)=O.[Fe]",
-            m.stripSalt().smiles());
-    }
-
-    @Test
-    @DisplayName("stripSalt yields an empty molecule when only inorganic components are present")
-    void testStripSaltOnlySalts() {
-        Indigo indigo = new Indigo();
-        IndigoObject m = indigo.loadMolecule("[NH4+].[O-]P(=O)([O-])[O-].[Fe+2]");
-        assertEquals("", m.stripSalt().smiles());
-    }
-
-    @Test
-    @DisplayName("stripSalt inplace=false leaves the original untouched; inplace=true mutates it")
-    void testStripSaltOptions() {
-        Indigo indigo = new Indigo();
-        IndigoObject m = indigo.loadMolecule("CCCCCCCCCCCCCCCC[N+]1C=CC=CC=1.[Cl-]");
-        IndigoObject mStrip = m.stripSalt();
-
-        assertEquals("CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1", mStrip.smiles());
-        assertEquals("CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1.[Cl-]", m.smiles());
-
-        m.stripSalt(true);
-        assertEquals("CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1", m.smiles());
-    }
-
-    private static final int RING_SIZE = 5;
-    private static final int FERROCENE_ATOMS = 2 * RING_SIZE + 1; // two rings and the iron
-    private static final int FERROCENE_HAPTIC_BONDS = 2; // one from each ring to the iron
-
-    // The ionic drawing of a ferrocene with its rings bound to the iron by haptic bonds: the iron
-    // has no ordinary bond, as a lone ion has none.
-    private static IndigoObject bindRings(
-            Indigo indigo, String smiles, int[] ringStarts, int iron) {
-        IndigoObject m = indigo.loadMolecule(smiles);
-        for (int first : ringStarts) {
-            int[] ring = IntStream.range(first, first + RING_SIZE).toArray();
-            m.addHapticBond(m.addAttachmentGroup(ring), m.getAtom(iron));
-        }
-        return m;
-    }
-
-    private static void assertWholeFerrocene(IndigoObject m) {
-        assertEquals(FERROCENE_ATOMS, m.countAtoms());
-        assertEquals(FERROCENE_HAPTIC_BONDS, m.countHapticBonds());
-    }
-
-    @Test
-    @DisplayName("checkSalt does not take a haptic complex for a salt, but finds its counter ion")
-    void testCheckSaltHapticComplex() {
-        Indigo indigo = new Indigo();
-        IndigoObject m =
-                bindRings(indigo, "[cH-]1cccc1.[Fe+2].[cH-]1cccc1", new int[] {0, 6}, 5);
-        assertFalse(m.checkSalt());
-        m.merge(indigo.loadMolecule("[Cl-]"));
-        assertTrue(m.checkSalt());
-    }
-
-    @Test
-    @DisplayName("stripSalt keeps a haptic complex and removes the ion drawn between its atoms")
-    void testStripSaltHapticComplex() {
-        Indigo indigo = new Indigo();
-        IndigoObject m =
-                bindRings(indigo, "[cH-]1cccc1.[Cl-].[cH-]1cccc1.[Fe+2]", new int[] {0, 6}, 11);
-
-        assertWholeFerrocene(m.stripSalt());
-        assertEquals(FERROCENE_ATOMS + 1, m.countAtoms(), "a copy was stripped");
-
-        m.stripSalt(true);
-        assertWholeFerrocene(m);
-    }
-
-    @Test
-    @DisplayName("stripSalt keeps a complex whose metal has inorganic ligands, and removes its ion")
-    void testStripSaltComplexWithInorganicLigands() {
-        Indigo indigo = new Indigo();
-        // Zeise's salt. By its ordinary bonds alone the platinum with three chlorides is a small
-        // inorganic ion; the haptic bond to the ethylene makes it a part of the complex.
-        IndigoObject m = indigo.loadMolecule("[K+].Cl[Pt-](Cl)Cl.C=C");
-        m.addHapticBond(m.addAttachmentGroup(new int[] {5, 6}), m.getAtom(2));
-
-        assertTrue(m.checkSalt());
-        List<String> left = new ArrayList<>();
-        for (IndigoObject atom : m.stripSalt().iterateAtoms()) {
-            left.add(atom.symbol());
-        }
-        Collections.sort(left);
-        assertEquals(Arrays.asList("C", "C", "Cl", "Cl", "Cl", "Pt"), left);
-    }
-
-    @Test
-    @DisplayName("stripSalt removes the ion, not the atom whose place the ion has in the numbering")
-    void testStripSaltIonBetweenFragmentAtoms() {
-        Indigo indigo = new Indigo();
-        assertEquals("CC", indigo.loadMolecule("C1.[Na+].C1").stripSalt().smiles());
+        assertSame(m, m.stripSalt(true));
+        assertEquals("CCO", m.smiles());
     }
 
     @Test
