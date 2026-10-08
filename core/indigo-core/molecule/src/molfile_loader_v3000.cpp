@@ -1419,7 +1419,7 @@ void MolfileLoader::_readSGroup3000(const char* str)
         }
         else if (strcmp(entity.ptr(), "FIELDDATA") == 0)
         {
-            _readStringInQuotes(scanner, &dsg->data);
+            _readStringInQuotes(scanner, dsg ? &dsg->data : NULL);
         }
         else if (strcmp(entity.ptr(), "QUERYTYPE") == 0)
         {
