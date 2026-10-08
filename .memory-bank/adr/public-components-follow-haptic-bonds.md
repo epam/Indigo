@@ -7,7 +7,7 @@
 A haptic bond is not an edge ([haptic-bond-endpoints.md](./haptic-bond-endpoints.md)), so the graph
 splits a ferrocene into two rings and an iron. The public component API reported that split, while
 KET — through `collectExternalNeighbors` — already wrote the complex as one molecule node; the
-fragment options of `standardize` and the wrappers' salt helpers removed the metal of a complex.
+fragment options of `standardize` and the salt helpers removed the metal of a complex.
 
 The graph's component cache serves its external-neighbour mode and its plain readers from one set of
 arrays: after `countComponents(external_neighbors)`, `getDecomposition()` and `vertexComponent()`
@@ -22,7 +22,8 @@ automapper read the plain readers on the caller's molecule.
 returns a `GraphDecomposer` run over the edges plus the atom sets of the haptic bonds of both types.
 S-groups, SMARTS component groups and an attachment group no bond refers to join nothing. It is the
 only source for the `indigo*Component*` functions, `indigoFragmentedSdf`, the `standardize` fragment
-options and halide charges, and the wrappers' `checkSalt` / `stripSalt`. The wrappers also skip a
+options and halide charges, and `checkSalt` / `stripSalt`
+([salt-detection-in-the-core.md](./salt-detection-in-the-core.md)). Those two also skip a
 component that has haptic bonds: the salt patterns count ordinary bonds only, so to them the metal of
 a complex is a lone ion. SMILES, InChI, substructure search, automapping, layout and the Bingo
 cartridge keep the graph's components.

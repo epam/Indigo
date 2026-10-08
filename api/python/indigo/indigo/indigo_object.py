@@ -20,7 +20,6 @@ from typing import TYPE_CHECKING, Any, Tuple
 from .hybridization import Hybridization
 from .indigo_exception import IndigoException
 from .indigo_lib import IndigoLib
-from .salts import SALTS
 
 if TYPE_CHECKING:
     from .indigo import Indigo
@@ -1313,7 +1312,8 @@ class IndigoObject:
         return IndigoLib.checkResult(self._lib().indigoCheckStereo(self.id))
 
     def checkSalt(self):
-        """Molecule method verifies if the structure contains salt. A
+        """Molecule method verifies if the structure contains salt: a
+        component that is a lone ion or a small inorganic species. A
         component held together by haptic bonds is a coordination compound,
         not a salt.
 
@@ -1321,26 +1321,9 @@ class IndigoObject:
             bool: True if structure contains salt
         """
 
-        for target_fragment in self.iterateComponents():
-            target_fragment = target_fragment.clone()
-            if target_fragment._is_haptic_complex():
-                continue
-            for salt in SALTS:
-                query_salt = self.session.loadSmarts(salt)
-                matcher = self.session.substructureMatcher(target_fragment)
-                if matcher.match(query_salt):
-                    return True
-        return False
-
-    def _is_haptic_complex(self) -> bool:
-        """Tells a coordination compound from a salt: the metal a haptic bond
-        holds has no ordinary bond, so to a salt pattern it is a lone ion.
-
-        Returns:
-            bool: True if the molecule has haptic bonds
-        """
-
-        return self.countHapticBonds() > 0
+        return bool(
+            IndigoLib.checkResult(self._lib().indigoCheckSalt(self.id))
+        )
 
     def stripSalt(self, inplace=False):
         """Molecule method strips all inorganic components. A component held
@@ -1358,26 +1341,8 @@ class IndigoObject:
                           components.
         """
 
-        # The atoms are named by their indices in the molecule they are removed
-        # from: a component's atoms need not be consecutive, and a copy numbers
-        # them anew.
         target = self if inplace else self.clone()
-        salts_atoms = []
-        for component in target.iterateComponents():
-            target_fragment = component.clone()
-            if target_fragment._is_haptic_complex():
-                continue
-
-            for salt in SALTS:
-                query_salt = self.session.loadQueryMolecule(salt)
-                matcher = self.session.substructureMatcher(target_fragment)
-                if matcher.match(query_salt):
-                    salts_atoms.extend(
-                        atom.index() for atom in component.iterateAtoms()
-                    )
-                    break
-
-        target.removeAtoms(salts_atoms)
+        IndigoLib.checkResult(self._lib().indigoStripSalt(target.id))
         return target
 
     def countHydrogens(self):

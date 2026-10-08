@@ -831,6 +831,16 @@ CEXPORT int indigoIterateComponents(int molecule);
 // and also the indigoClone() call, which returns a [query] molecule.
 CEXPORT int indigoComponent(int molecule, int index);
 
+/* Salts: components that are a lone ion or a small inorganic species. A
+   component that haptic bonds hold together is a coordination compound, not
+   a salt. */
+
+// Returns 1 if the molecule has a salt, 0 if it has none.
+CEXPORT int indigoCheckSalt(int molecule);
+// Removes the salts from the molecule. Returns 1 if an atom was removed, 0 if
+// there was nothing to remove.
+CEXPORT int indigoStripSalt(int molecule);
+
 /* Smallest Set of Smallest Rings */
 
 CEXPORT int indigoCountSSSR(int molecule);

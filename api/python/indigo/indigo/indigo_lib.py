@@ -934,6 +934,10 @@ class IndigoLib:
         IndigoLib.lib.indigoIterateComponents.argtypes = [c_int]
         IndigoLib.lib.indigoComponent.restype = c_int
         IndigoLib.lib.indigoComponent.argtypes = [c_int, c_int]
+        IndigoLib.lib.indigoCheckSalt.restype = c_int
+        IndigoLib.lib.indigoCheckSalt.argtypes = [c_int]
+        IndigoLib.lib.indigoStripSalt.restype = c_int
+        IndigoLib.lib.indigoStripSalt.argtypes = [c_int]
         IndigoLib.lib.indigoCountSSSR.restype = c_int
         IndigoLib.lib.indigoCountSSSR.argtypes = [c_int]
         IndigoLib.lib.indigoIterateSSSR.restype = c_int

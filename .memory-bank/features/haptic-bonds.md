@@ -76,7 +76,7 @@ deliberately left behind; without the flags it is remapped into the target.
 **When** the public API is asked for components (`indigoCountComponents`, `indigoComponent`,
 `indigoIterateComponents`, `indigoComponentIndex`, `indigoCloneComponent`,
 `indigoCount/IterateComponentAtoms/Bonds`, `indigoFragmentedSdf`), `standardize` keeps or removes
-fragments or charges a lone halogen, or the wrappers' `checkSalt` / `stripSalt` look for salts,
+fragments or charges a lone halogen, or `checkSalt` / `stripSalt` look for salts,
 **then** a haptic bond joins atoms as an ordinary bond does: a ferrocene is one component, a counter
 ion that nothing bonds is another, and a complex is never a salt (#3927). An attachment group that no
 bond refers to joins nothing. The answer comes from

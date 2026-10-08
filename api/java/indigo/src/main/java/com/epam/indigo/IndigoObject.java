@@ -22,7 +22,6 @@ import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -904,27 +903,7 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
      */
     public boolean checkSalt() {
         dispatcher.setSessionID();
-
-        for (IndigoObject component : iterateComponents()) {
-            IndigoObject targetFragment = component.clone();
-            if (targetFragment.isHapticComplex()) {
-                continue;
-            }
-            for (String salt : Salts.SALTS) {
-                IndigoObject querySalt = dispatcher.loadSmarts(salt);
-                IndigoObject matcher = dispatcher.substructureMatcher(targetFragment);
-                if (matcher.match(querySalt) != null) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    // Tells a coordination compound from a salt: the metal a haptic bond holds has no ordinary
-    // bond, so to a salt pattern it is a lone ion.
-    private boolean isHapticComplex() {
-        return countHapticBonds() > 0;
+        return Indigo.checkResult(this, lib.indigoCheckSalt(self)) == 1;
     }
 
     /**
@@ -950,30 +929,8 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
      */
     public IndigoObject stripSalt(boolean inplace) {
         dispatcher.setSessionID();
-
-        // The atoms are named by their indices in the molecule they are removed from: a
-        // component's atoms need not be consecutive, and a copy numbers them anew.
         IndigoObject target = inplace ? this : clone();
-        ArrayList<Integer> saltAtoms = new ArrayList<>();
-        for (IndigoObject component : target.iterateComponents()) {
-            IndigoObject targetFragment = component.clone();
-            if (targetFragment.isHapticComplex()) {
-                continue;
-            }
-
-            for (String salt : Salts.SALTS) {
-                IndigoObject querySalt = dispatcher.loadQueryMolecule(salt);
-                IndigoObject matcher = dispatcher.substructureMatcher(targetFragment);
-                if (matcher.match(querySalt) != null) {
-                    for (IndigoObject atom : component.iterateAtoms()) {
-                        saltAtoms.add(atom.index());
-                    }
-                    break;
-                }
-            }
-        }
-
-        target.removeAtoms(saltAtoms);
+        Indigo.checkResult(this, lib.indigoStripSalt(target.self));
         return target;
     }
 
