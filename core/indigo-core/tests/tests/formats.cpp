@@ -382,12 +382,19 @@ M  END
     ASSERT_EQ(sg.atoms.at(2), 4);
 }
 
-TEST_F(IndigoCoreFormatsTest, mol_loader_v3000_fielddata_on_non_data_sgroup)
+TEST_F(IndigoCoreFormatsTest, mol_loader_v3000_sgroup_fielddata_forms)
 {
-    for (const char* type : {"GEN", "SRU", "SUP"})
+    const std::pair<const char*, const char*> fielddata_forms[] = {
+        {"FIELDDATA=\"a b\" LABEL=x", "a b"}, {"FIELDDATA=\"\" LABEL=x", ""}, {"FIELDDATA= LABEL=x", ""}, {"LABEL=x FIELDDATA=", ""}, {"LABEL=x", ""}};
+    auto text = [](const Array<char>& str) { return str.size() > 0 ? std::string(str.ptr()) : std::string(); };
+
+    for (const char* type : {"GEN", "SRU", "SUP", "DAT"})
     {
-        SCOPED_TRACE(type);
-        std::string molfile = R"(
+        for (const auto& [fielddata, expected] : fielddata_forms)
+        {
+            SCOPED_TRACE(std::string(type) + " " + fielddata);
+            const bool is_data = strcmp(type, "DAT") == 0;
+            std::string molfile = R"(
   Indigo
 
   0  0  0     0  0            999 V3000
@@ -403,40 +410,46 @@ M  V30 1 1 1 2
 M  V30 2 1 2 3
 M  V30 END BOND
 M  V30 BEGIN SGROUP
-M  V30 1 TYPE 0 ATOMS=(2 1 2) FIELDDATA="a b" LABEL=x
+M  V30 1 TYPE 0 ATOMS=(2 1 2) KEYS
 M  V30 2 DAT 0 ATOMS=(1 3) FIELDNAME=name FIELDDATA=kept
 M  V30 END SGROUP
 M  V30 END CTAB
 M  END
 )";
-        molfile.replace(molfile.find("TYPE"), 4, type);
-        Molecule mol;
-        loadMolecule(molfile.c_str(), mol);
+            molfile.replace(molfile.find("TYPE"), 4, type);
+            molfile.replace(molfile.find("KEYS"), 4, std::string(is_data ? "FIELDNAME=f " : "") + fielddata);
+            Molecule mol;
+            loadMolecule(molfile.c_str(), mol);
 
-        ASSERT_EQ(2, mol.sgroups.getSGroupCount());
-        SGroup& sg = mol.sgroups.getSGroup(0);
-        EXPECT_STREQ(type, SGroup::typeToString(sg.sgroup_type));
-        ASSERT_EQ(2, sg.atoms.size());
-        EXPECT_EQ(0, sg.atoms[0]);
-        EXPECT_EQ(1, sg.atoms[1]);
-        EXPECT_STREQ("x", sg.label.ptr());
+            ASSERT_EQ(2, mol.sgroups.getSGroupCount());
+            SGroup& sg = mol.sgroups.getSGroup(0);
+            EXPECT_STREQ(type, SGroup::typeToString(sg.sgroup_type));
+            ASSERT_EQ(2, sg.atoms.size());
+            EXPECT_EQ(0, sg.atoms[0]);
+            EXPECT_EQ(1, sg.atoms[1]);
+            EXPECT_STREQ("x", sg.label.ptr());
+            if (is_data)
+                EXPECT_EQ(expected, text(static_cast<DataSGroup&>(sg).data));
 
-        SGroup& data = mol.sgroups.getSGroup(1);
-        ASSERT_EQ(SGroup::SG_TYPE_DAT, data.sgroup_type);
-        EXPECT_STREQ("kept", static_cast<DataSGroup&>(data).data.ptr());
+            SGroup& next = mol.sgroups.getSGroup(1);
+            ASSERT_EQ(SGroup::SG_TYPE_DAT, next.sgroup_type);
+            EXPECT_EQ("kept", text(static_cast<DataSGroup&>(next).data));
 
-        Array<char> out;
-        ArrayOutput std_out(out);
-        MolfileSaver saver(std_out);
-        saver.mode = MolfileSaver::MODE_3000;
-        saver.saveMolecule(mol);
-        out.push(0);
+            Array<char> out;
+            ArrayOutput std_out(out);
+            MolfileSaver saver(std_out);
+            saver.mode = MolfileSaver::MODE_3000;
+            saver.saveMolecule(mol);
+            out.push(0);
 
-        Molecule reloaded;
-        loadMolecule(out.ptr(), reloaded);
-        ASSERT_EQ(2, reloaded.sgroups.getSGroupCount());
-        EXPECT_EQ(sg.sgroup_type, reloaded.sgroups.getSGroup(0).sgroup_type);
-        EXPECT_STREQ("kept", static_cast<DataSGroup&>(reloaded.sgroups.getSGroup(1)).data.ptr());
+            Molecule reloaded;
+            loadMolecule(out.ptr(), reloaded);
+            ASSERT_EQ(2, reloaded.sgroups.getSGroupCount());
+            EXPECT_EQ(sg.sgroup_type, reloaded.sgroups.getSGroup(0).sgroup_type);
+            if (is_data)
+                EXPECT_EQ(expected, text(static_cast<DataSGroup&>(reloaded.sgroups.getSGroup(0)).data));
+            EXPECT_EQ("kept", text(static_cast<DataSGroup&>(reloaded.sgroups.getSGroup(1)).data));
+        }
     }
 }
 

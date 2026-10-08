@@ -1106,6 +1106,9 @@ void MolfileLoader::_readMultiString(Array<char>& str)
 
 void MolfileLoader::_readStringInQuotes(Scanner& scanner, Array<char>* str)
 {
+    if (scanner.isEOF())
+        return;
+
     char first = scanner.readChar();
     if (first == ' ')
         return;
