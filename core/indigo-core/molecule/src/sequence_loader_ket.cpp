@@ -484,6 +484,8 @@ void SequenceLoader::loadIdt(KetDocument& document)
                                 if (!std::isdigit(ch))
                                     throw Error("Invalid mixed base - only numerical index allowed.");
                             }
+                            if (count.size() != 1 || count[0] < '1' || count[0] > '4')
+                                throw Error("Invalid mixed base '%s' - index must be from 1 to 4.", base.c_str());
                         };
                         if (auto pos = mixed_base.find(':'); pos != std::string::npos)
                         {
