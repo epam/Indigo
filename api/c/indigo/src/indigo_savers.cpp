@@ -380,7 +380,7 @@ static IndigoObject* makeComponentObject(BaseMolecule& mol, int index)
         newmol = &(((IndigoMolecule*)res.get())->mol);
     }
 
-    Filter filter(mol.getDecomposition().ptr(), Filter::EQ, index);
+    Filter filter(mol.moleculeComponents().getDecomposition().ptr(), Filter::EQ, index);
     newmol->makeSubmolecule(mol, filter, 0, 0, SKIP_RGROUPS);
     newmol->copyUsedRGroupsFrom(mol);
     for (auto it = newmol->properties().begin(); it != newmol->properties().end(); ++it)
@@ -429,7 +429,7 @@ void IndigoSdfSaver::appendFragments(Output& output, IndigoObject& object)
         return;
     }
 
-    // A molecule is split into the connected components of its main graph.
+    // A molecule is split into its components; a haptic bond keeps a complex in one.
     BaseMolecule& mol = object.getBaseMolecule();
     std::unordered_set<int> written_rgroups;
     IndigoComponentsIter fragments(mol);

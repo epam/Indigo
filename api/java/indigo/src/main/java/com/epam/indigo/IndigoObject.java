@@ -22,7 +22,6 @@ import com.sun.jna.Pointer;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.PointerByReference;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -862,6 +861,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResult(this, lib.indigoHasSelection(self)) == 1;
     }
 
+    /**
+     * Returns the number of components of the molecule. Atoms joined by a haptic bond belong to
+     * one component, as they do by an ordinary bond.
+     *
+     * @return the number of components
+     */
     public int countComponents() {
         dispatcher.setSessionID();
         return Indigo.checkResult(this, lib.indigoCountComponents(self));
@@ -872,6 +877,12 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
         return Indigo.checkResult(this, lib.indigoComponentIndex(self));
     }
 
+    /**
+     * Iterates the components of the molecule. Atoms joined by a haptic bond belong to one
+     * component, as they do by an ordinary bond.
+     *
+     * @return an iterator over the components
+     */
     public IndigoObject iterateComponents() {
         dispatcher.setSessionID();
         return new IndigoObject(
@@ -885,28 +896,19 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
     }
 
     /**
-     * Verifies whether the structure contains a disconnected inorganic component ("salt").
+     * Verifies whether the structure contains a disconnected inorganic component ("salt"). A
+     * component held together by haptic bonds is a coordination compound, not a salt.
      *
      * @return {@code true} if the structure contains a salt
      */
     public boolean checkSalt() {
         dispatcher.setSessionID();
-
-        for (IndigoObject component : iterateComponents()) {
-            IndigoObject targetFragment = component.clone();
-            for (String salt : Salts.SALTS) {
-                IndigoObject querySalt = dispatcher.loadSmarts(salt);
-                IndigoObject matcher = dispatcher.substructureMatcher(targetFragment);
-                if (matcher.match(querySalt) != null) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return Indigo.checkResult(this, lib.indigoCheckSalt(self)) == 1;
     }
 
     /**
-     * Strips all disconnected inorganic components ("salts") from the molecule.
+     * Strips all disconnected inorganic components ("salts") from the molecule. A component held
+     * together by haptic bonds is a coordination compound and stays.
      *
      * <p>Returns a copy of the molecule without its inorganic components.
      *
@@ -917,7 +919,8 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
     }
 
     /**
-     * Strips all disconnected inorganic components ("salts") from the molecule.
+     * Strips all disconnected inorganic components ("salts") from the molecule. A component held
+     * together by haptic bonds is a coordination compound and stays.
      *
      * @param inplace if {@code false} - returns a copy of the molecule without inorganic
      *     components; if {@code true} - strips inorganic components from the molecule itself
@@ -926,33 +929,9 @@ public class IndigoObject implements Iterator<IndigoObject>, Iterable<IndigoObje
      */
     public IndigoObject stripSalt(boolean inplace) {
         dispatcher.setSessionID();
-
-        ArrayList<Integer> saltAtoms = new ArrayList<>();
-        int idx = 0;
-        for (IndigoObject component : iterateComponents()) {
-            IndigoObject targetFragment = component.clone();
-            int nAtoms = targetFragment.countAtoms();
-
-            for (String salt : Salts.SALTS) {
-                IndigoObject querySalt = dispatcher.loadQueryMolecule(salt);
-                IndigoObject matcher = dispatcher.substructureMatcher(targetFragment);
-                if (matcher.match(querySalt) != null) {
-                    for (int i = idx; i < idx + nAtoms; i++) {
-                        saltAtoms.add(i);
-                    }
-                }
-            }
-            idx += nAtoms;
-        }
-
-        if (!inplace) {
-            IndigoObject saltlessFragment = clone();
-            saltlessFragment.removeAtoms(saltAtoms);
-            return saltlessFragment;
-        } else {
-            removeAtoms(saltAtoms);
-            return this;
-        }
+        IndigoObject target = inplace ? this : clone();
+        Indigo.checkResult(this, lib.indigoStripSalt(target.self));
+        return target;
     }
 
     public int countSSSR() {

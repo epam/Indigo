@@ -20,7 +20,6 @@ from typing import TYPE_CHECKING, Any, Tuple
 from .hybridization import Hybridization
 from .indigo_exception import IndigoException
 from .indigo_lib import IndigoLib
-from .salts import SALTS
 
 if TYPE_CHECKING:
     from .indigo import Indigo
@@ -306,7 +305,8 @@ class IndigoObject:
 
     def fragmentedSdf(self):
         """Structure method returns the structure as a string in SDF format,
-        splitting it into fragments.
+        splitting it into fragments: the components of a molecule, the
+        molecules of a reaction.
 
         Returns:
             str: SDF string
@@ -1312,23 +1312,22 @@ class IndigoObject:
         return IndigoLib.checkResult(self._lib().indigoCheckStereo(self.id))
 
     def checkSalt(self):
-        """Molecule method verifies if the structure contains salt.
+        """Molecule method verifies if the structure contains salt: a
+        component that is a lone ion or a small inorganic species. A
+        component held together by haptic bonds is a coordination compound,
+        not a salt.
 
         Returns:
             bool: True if structure contains salt
         """
 
-        for target_fragment in self.iterateComponents():
-            target_fragment = target_fragment.clone()
-            for salt in SALTS:
-                query_salt = self.session.loadSmarts(salt)
-                matcher = self.session.substructureMatcher(target_fragment)
-                if matcher.match(query_salt):
-                    return True
-        return False
+        return bool(
+            IndigoLib.checkResult(self._lib().indigoCheckSalt(self.id))
+        )
 
     def stripSalt(self, inplace=False):
-        """Molecule method strips all inorganic components.
+        """Molecule method strips all inorganic components. A component held
+        together by haptic bonds is a coordination compound and stays.
 
         Args:
             inplace(bool): if False - returns the copy of the molecule,
@@ -1342,27 +1341,9 @@ class IndigoObject:
                           components.
         """
 
-        salts_atoms = []
-        idx = 0
-        for target_fragment in self.iterateComponents():
-            target_fragment = target_fragment.clone()
-            n_atoms = target_fragment.countAtoms()
-
-            for salt in SALTS:
-                query_salt = self.session.loadQueryMolecule(salt)
-                matcher = self.session.substructureMatcher(target_fragment)
-                if matcher.match(query_salt):
-                    salt_position = [i for i in range(idx, idx + n_atoms)]
-                    salts_atoms.extend(salt_position)
-            idx += n_atoms
-
-        if not inplace:
-            saltless_fragment = self.clone()
-            saltless_fragment.removeAtoms(salts_atoms)
-            return saltless_fragment
-        else:
-            self.removeAtoms(salts_atoms)
-            return self
+        target = self if inplace else self.clone()
+        IndigoLib.checkResult(self._lib().indigoStripSalt(target.id))
+        return target
 
     def countHydrogens(self):
         """Atom or Molecule method returns the number of hydrogens
@@ -3409,7 +3390,8 @@ class IndigoObject:
         )
 
     def countComponents(self):
-        """Molecule method returns the number of components
+        """Molecule method returns the number of components. Atoms joined by
+        a haptic bond belong to one component, as they do by an ordinary bond.
 
         Returns:
             int: number of components
@@ -3429,7 +3411,8 @@ class IndigoObject:
         return IndigoLib.checkResult(self._lib().indigoComponentIndex(self.id))
 
     def iterateComponents(self):
-        """Molecule method returns components iterator
+        """Molecule method returns components iterator. Atoms joined by a
+        haptic bond belong to one component, as they do by an ordinary bond.
 
         Returns:
             IndigoObject: molecule components iterator

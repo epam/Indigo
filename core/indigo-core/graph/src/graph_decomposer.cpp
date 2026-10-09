@@ -122,8 +122,6 @@ int GraphDecomposer::decompose(const Filter* filter, const Filter* edge_filter, 
                                     queue[top++] = other;
                                     _component_ids[other] = -2;
                                 }
-                                if (_component_ids[other] == -2)
-                                    _component_edges_count[n_comp]++;
                             }
                         }
                     }
