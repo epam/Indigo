@@ -26,9 +26,10 @@ either an atom index or a group index.
 Two consequences are part of the decision, not accidents of it:
 
 - **A group stores no position.** Anything needing one derives it from the member atoms. A group may
-  carry an *anchor atom* — the atom a file drew it with, such as the star atom of a V3000 `ENDPTS`
-  record — but that is a reference to an atom, not a coordinate, and a group whose anchor is gone
-  stays a valid group.
+  carry an *anchor atom* — the real atom a file ended its record on, such as the star of a V3000
+  variable attachment — but that is a reference to an atom, not a coordinate, and a group whose
+  anchor is gone stays a valid group. The star of a haptic record is not such an atom: it is the
+  format's notation for the centre and is not kept.
 - **Creation and removal are funnelled.** `addHapticBond` is the only way to make a haptic bond, and
   `removeAttachmentGroup` the only way to remove a group, so the invariant "no haptic bond has a
   dangling endpoint" is maintained in one place rather than at every call site.
@@ -54,8 +55,8 @@ Two consequences are part of the decision, not accidents of it:
 - Formats that have no concept of a collective endpoint cannot represent the structure faithfully;
   each such format needs an explicit decision about what to write, rather than a silent fallback.
 - Anything that needs a point for the group — the V3000 saver when it has to emit a star atom,
-  rendering, and layout when it gains support — derives one from the member atoms. Today that is the
-  centre of their bounding box (`MolfileSaver::_attachmentGroupCentre`). Keep the derivation in
+  rendering, and layout — derives one from the member atoms: their centroid
+  (`core/indigo-core/molecule/molecule_attachment_groups.h#centreOf`). Keep the derivation in
   **one** function shared by its callers: duplicating it is how two parts of the system end up
   disagreeing about where the bond points.
 - **A format with no collective endpoint loses the structure, not part of it.** V3000 can express a

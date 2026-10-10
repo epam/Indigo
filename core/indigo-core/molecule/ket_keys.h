@@ -55,6 +55,10 @@ namespace indigo
     // generic KetKeyId and KetKeyAtoms above.
     inline constexpr const char* KetKeyAttachmentGroups = "attachmentGroups";
 
+    // On an atom and on an attachment group alike; a group omits a value of 0.
+    inline constexpr const char* KetKeyCharge = "charge";
+    inline constexpr const char* KetKeyRadical = "radical";
+
     // Not a key: the prefix a molecule node is referenced by, as in "mol0".
     inline constexpr const char* KetMoleculeRefPrefix = "mol";
 }

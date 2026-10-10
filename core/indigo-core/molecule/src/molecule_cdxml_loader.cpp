@@ -373,6 +373,12 @@ std::string CDXProperty::parseCDXINT8(int8_t val) const
         return kBondReactionParticipationIntToName.at(val);
     case kCDXProp_Bond_RestrictTopology:
         return kBondTopologyIntToName.at(val);
+    case kCDXProp_Atom_Radical:
+        // The node reads the radical by its CDXML name; a code with no name is
+        // left as a number, which it ignores as it ignores an unknown name.
+        if (val >= 0 && val < static_cast<int>(kRadicalIdToStr.size()))
+            return kRadicalIdToStr[val];
+        break;
     default:
         break;
     }
@@ -1226,7 +1232,17 @@ void MoleculeCdxmlLoader::_addAttachmentGroups(BaseMolecule& mol)
         }
 
         const int group_idx = mol.attachment_groups.addGroup();
-        mol.attachment_groups.group(group_idx).setAtoms(members);
+        AttachmentGroup& group = mol.attachment_groups.group(group_idx);
+        group.setAtoms(members);
+        // "A multicenter attachment node can also have charge and radical attributes,
+        // which are treated as being distributed over the attached nodes" (CDX spec,
+        // Node_Type): they are the group's, not a member atom's. The spec gives a
+        // variable attachment node no such attributes, so its group takes none.
+        if (node.type == kCDXNodeType_MultiAttachment)
+        {
+            group.setCharge(node.charge);
+            group.setRadical(node.radical);
+        }
         _id_to_group_idx.emplace(node.id, group_idx);
     }
 }

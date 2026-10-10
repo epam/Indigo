@@ -484,12 +484,12 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
             }
         }
 
-        if (a.HasMember("charge"))
-            charge = a["charge"].GetInt();
+        if (a.HasMember(KetKeyCharge))
+            charge = a[KetKeyCharge].GetInt();
         if (a.HasMember("explicitValence"))
             valence = a["explicitValence"].GetInt();
-        if (a.HasMember("radical"))
-            radical = a["radical"].GetInt();
+        if (a.HasMember(KetKeyRadical))
+            radical = a[KetKeyRadical].GetInt();
 
         if (_pmol)
         {
@@ -1309,6 +1309,21 @@ void MoleculeJsonLoader::loadHapticConnection(const rapidjson::Value& connection
                       resolveHapticEndpoint(connection[KetKeyEndpoint2], mol_mappings, ag_mappings), _BOND_HAPTIC);
 }
 
+// An optional integer key of an attachment group object; an absent key reads as 0.
+static int parseOptionalGroupInt(const rapidjson::Value& group, const char* key, const char* id)
+{
+    if (!group.HasMember(key))
+        return 0;
+
+    const rapidjson::Value& value = group[key];
+    if (value.IsInt())
+        return value.GetInt();
+
+    if (value.IsInt64() || value.IsUint64())
+        throw MoleculeJsonLoader::Error("Attachment group '%s' has '%s' outside the range of an integer", id, key);
+    throw MoleculeJsonLoader::Error("Attachment group '%s' has a non-integer '%s'", id, key);
+}
+
 std::map<std::string, int> MoleculeJsonLoader::parseAttachmentGroups(const rapidjson::Value& groups, BaseMolecule& mol, const Array<int>& atom_mapping)
 {
     std::map<std::string, int> ids;
@@ -1346,8 +1361,16 @@ std::map<std::string, int> MoleculeJsonLoader::parseAttachmentGroups(const rapid
             members.push_back(atom_mapping[atom_idx]);
         }
 
+        const int charge = parseOptionalGroupInt(group, KetKeyCharge, id);
+        const int radical = parseOptionalGroupInt(group, KetKeyRadical, id);
+        if (!AttachmentGroup::isValidRadical(radical))
+            throw Error("Attachment group '%s' has '%s' %d, which is none of %s", id, KetKeyRadical, radical, AttachmentGroup::VALID_RADICALS);
+
         const int group_idx = mol.attachment_groups.addGroup();
-        mol.attachment_groups.group(group_idx).setAtoms(members);
+        AttachmentGroup& created = mol.attachment_groups.group(group_idx);
+        created.setAtoms(members);
+        created.setCharge(charge);
+        created.setRadical(radical);
         ids.emplace(id, group_idx);
     }
 

@@ -35,6 +35,7 @@
 #include <molecule/cmf_loader.h>
 #include <molecule/cmf_saver.h>
 #include <molecule/cml_saver.h>
+#include <molecule/molecule_cdxml_loader.h>
 #include <molecule/molecule_cdxml_saver.h>
 #include <molecule/molecule_json_loader.h>
 #include <molecule/molecule_json_saver.h>
@@ -115,6 +116,65 @@ TEST_F(IndigoCoreFormatsTest, save_cdxml)
     saver.saveMolecule(t_mol);
 
     ASSERT_TRUE(out.size() > 2000);
+}
+
+// Binary CDX stores the radical as a number, CDXML by its name, and the reader
+// understands only the name: the number has to be translated on the way in.
+TEST_F(IndigoCoreFormatsTest, binary_cdx_keeps_the_radical)
+{
+    Molecule mol;
+    loadMolecule("CC", mol);
+    mol.setAtomRadical(0, RADICAL_DOUBLET);
+
+    Array<char> buffer;
+    ArrayOutput output(buffer);
+    MoleculeCdxmlSaver saver(output, true);
+    saver.saveMolecule(mol);
+
+    BufferScanner scanner(buffer);
+    ASSERT_TRUE(scanner.startsWith(kCDX_HeaderString));
+    scanner.seek(kCDX_HeaderLength, SEEK_CUR);
+    Molecule reloaded;
+    MoleculeCdxmlLoader loader(scanner, true);
+    loader.loadMolecule(reloaded);
+
+    ASSERT_EQ(2, reloaded.vertexCount());
+    EXPECT_EQ(RADICAL_DOUBLET, reloaded.getAtomRadical(0));
+    EXPECT_EQ(0, reloaded.getAtomRadical(1));
+}
+
+// The format names four radical codes. Any other number is not a radical, and the
+// atom is read without one rather than by a name looked up past the table.
+TEST_F(IndigoCoreFormatsTest, binary_cdx_reads_an_unnamed_radical_code_as_none)
+{
+    Molecule mol;
+    loadMolecule("CC", mol);
+    mol.setAtomRadical(0, RADICAL_DOUBLET);
+
+    Array<char> buffer;
+    ArrayOutput output(buffer);
+    MoleculeCdxmlSaver saver(output, true);
+    saver.saveMolecule(mol);
+
+    // A property is its tag, the length of its value and the value, little-endian.
+    const char unnamed_code = 7;
+    const std::string doublet_property = {static_cast<char>(kCDXProp_Atom_Radical & 0xFF), static_cast<char>(kCDXProp_Atom_Radical >> 8), 1, 0,
+                                          RADICAL_DOUBLET};
+    std::string document(buffer.ptr(), static_cast<std::size_t>(buffer.size()));
+    const std::size_t property_pos = document.find(doublet_property);
+    ASSERT_NE(std::string::npos, property_pos) << "the saved document has no doublet radical to replace";
+    ASSERT_EQ(std::string::npos, document.find(doublet_property, property_pos + 1)) << "and only one";
+    document[property_pos + doublet_property.size() - 1] = unnamed_code;
+
+    BufferScanner scanner(document.c_str(), static_cast<int>(document.size()));
+    ASSERT_TRUE(scanner.startsWith(kCDX_HeaderString));
+    scanner.seek(kCDX_HeaderLength, SEEK_CUR);
+    Molecule reloaded;
+    MoleculeCdxmlLoader loader(scanner, true);
+    ASSERT_NO_THROW(loader.loadMolecule(reloaded));
+
+    ASSERT_EQ(2, reloaded.vertexCount());
+    EXPECT_EQ(0, reloaded.getAtomRadical(0));
 }
 
 TEST_F(IndigoCoreFormatsTest, save_cml)

@@ -964,7 +964,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
 
         if ((mol.isQueryMolecule() && charge != CHARGE_UNKNOWN) || (!mol.isQueryMolecule() && charge != 0))
         {
-            writer.Key("charge");
+            writer.Key(KetKeyCharge);
             writer.Int(charge);
         }
 
@@ -977,7 +977,7 @@ void MoleculeJsonSaver::saveAtoms(BaseMolecule& mol, JsonWriter& writer)
 
         if (radical > 0)
         {
-            writer.Key("radical");
+            writer.Key(KetKeyRadical);
             writer.Int(radical);
         }
 
@@ -1532,12 +1532,23 @@ void MoleculeJsonSaver::saveAttachmentGroups(BaseMolecule& mol, int mol_id, Json
     {
         // The KET id of a group is its position in the list of its own node.
         const int group_idx = group_indices[position];
+        const AttachmentGroup& group = mol.attachment_groups.group(group_idx);
         writer.StartObject();
         writer.Key(KetKeyId);
         writer.String(std::to_string(position).c_str());
+        if (group.charge() != 0)
+        {
+            writer.Key(KetKeyCharge);
+            writer.Int(group.charge());
+        }
+        if (group.radical() != 0)
+        {
+            writer.Key(KetKeyRadical);
+            writer.Int(group.radical());
+        }
         writer.Key(KetKeyAtoms);
         writer.StartArray();
-        for (int atom : mol.attachment_groups.group(group_idx).atoms())
+        for (int atom : group.atoms())
         {
             // A group whose atoms ended up in different nodes cannot be written at
             // all: the members are addressed by their index inside one node.

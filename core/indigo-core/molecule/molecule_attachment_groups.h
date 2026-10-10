@@ -43,6 +43,8 @@ namespace indigo
     class DLLEXPORT AttachmentGroup : public Reusable
     {
     public:
+        DECL_ERROR;
+
         AttachmentGroup();
         ~AttachmentGroup() override;
 
@@ -86,6 +88,30 @@ namespace indigo
         // never makes the caller drop the group.
         void remapAnchorAtom(const Array<int>& atom_mapping);
 
+        // The charge and the radical of the pi-system as a whole. They are the
+        // group's own, independent of the charges of its atoms, and nothing moves
+        // them onto an atom. The radical is encoded as for atoms: 0 for none, then
+        // RADICAL_SINGLET, RADICAL_DOUBLET, RADICAL_TRIPLET; setRadical() throws on
+        // anything else.
+        int charge() const
+        {
+            return _charge;
+        }
+        void setCharge(int charge)
+        {
+            _charge = charge;
+        }
+        int radical() const
+        {
+            return _radical;
+        }
+        void setRadical(int radical);
+
+        // What setRadical() accepts, and the same four values spelled for the message
+        // of whoever rejects a radical before it gets here.
+        static bool isValidRadical(int radical);
+        static const char* const VALID_RADICALS;
+
         // The point the group acts from: the centroid of the positions given. Takes
         // points rather than a molecule because the render, the layout and the
         // savers each hold them in their own coordinates; the molecule-coordinate
@@ -108,6 +134,8 @@ namespace indigo
 
         std::vector<int> _atoms;
         int _anchor_atom;
+        int _charge;
+        int _radical;
     };
 
     // The attachment groups of one molecule.
