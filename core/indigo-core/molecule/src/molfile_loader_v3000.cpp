@@ -17,6 +17,7 @@
  ***************************************************************************/
 
 #include <algorithm>
+#include <cstdlib>
 #include <memory>
 #include <vector>
 
@@ -938,7 +939,7 @@ void MolfileLoader::_readSGroupsBlock3000()
 
         if (strncmp(str.ptr(), "END SGROUP", 10) == 0)
             break;
-        if (STRCMP(str.ptr(), "M  V30 DEFAULT") == 0)
+        if (STRCMP(str.ptr(), "DEFAULT") == 0)
             continue;
         _readSGroup3000(str.ptr());
     }
@@ -1821,13 +1822,23 @@ void MolfileLoader::_readSGroupDisplay(Scanner& scanner, DataSGroup& dsg)
         long long cur = scanner.tell();
 
         char chars[4] = {0, 0, 0, 0};
-        scanner.readCharsFix(3, chars);
+        for (int i = 0; i < 3 && !scanner.isEOF(); i++)
+            chars[i] = scanner.readChar();
         if (strncmp(chars, "ALL", 3) == 0)
             dsg.num_chars = 0;
+        else if (well_formatted)
+        {
+            char* end;
+            long count = strtol(chars, &end, 10);
+            if (end != chars && count >= 0)
+                dsg.num_chars = static_cast<int>(count);
+        }
         else
         {
-            scanner.seek(cur, SEEK_CUR);
-            dsg.num_chars = scanner.readInt1();
+            scanner.seek(cur, SEEK_SET);
+            int count = scanner.readInt1();
+            if (count >= 0)
+                dsg.num_chars = count;
         }
 
         if (well_formatted)

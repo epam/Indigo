@@ -40,6 +40,13 @@
 
 using namespace indigo;
 
+void MolfileLoader::_readSGroupLineRest(Array<char>& rest)
+{
+    _scanner.readLine(rest, false);
+    if (rest.size() > 0 && rest[0] == ' ')
+        rest.remove(0);
+}
+
 void MolfileLoader::_readCtab2000()
 {
     _init();
@@ -947,13 +954,11 @@ void MolfileLoader::_readCtab2000()
             {
                 _scanner.skip(1);
                 int sgroup_idx = _scanner.readIntFix(3) - 1;
-                _scanner.skip(1);
+                QS_DEF(Array<char>, rest);
+                _readSGroupLineRest(rest);
 
                 if (_sgroup_types[sgroup_idx] == SGroup::SG_TYPE_DAT)
                 {
-                    QS_DEF(Array<char>, rest);
-
-                    _scanner.readLine(rest, false);
                     BufferScanner strscan(rest);
                     DataSGroup& sgroup = (DataSGroup&)_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
 
@@ -1043,25 +1048,32 @@ void MolfileLoader::_readCtab2000()
             {
                 _scanner.skip(1);
                 int sgroup_idx = _scanner.readIntFix(3) - 1;
+                QS_DEF(Array<char>, rest);
+                _readSGroupLineRest(rest);
+
                 if (_sgroup_types[sgroup_idx] == SGroup::SG_TYPE_DAT)
                 {
-                    _scanner.skip(1);
+                    BufferScanner strscan(rest);
                     DataSGroup& sgroup = (DataSGroup&)_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
 
-                    _readSGroupDisplay(_scanner, sgroup);
+                    _readSGroupDisplay(strscan, sgroup);
                 }
-                _scanner.skipLine();
             }
             else if (strncmp(chars, "SED", 3) == 0 || strncmp(chars, "SCD", 3) == 0)
             {
                 _scanner.skip(1);
                 int sgroup_idx = _scanner.readIntFix(3) - 1;
+                QS_DEF(Array<char>, rest);
+                _readSGroupLineRest(rest);
+
                 if (_sgroup_types[sgroup_idx] == SGroup::SG_TYPE_DAT)
                 {
-                    _scanner.skip(1);
                     DataSGroup& sgroup = (DataSGroup&)_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
+                    while (sgroup.data.size() > 0 && sgroup.data.top() == 0)
+                        sgroup.data.pop();
                     int len = sgroup.data.size();
-                    _scanner.appendLine(sgroup.data, true);
+                    sgroup.data.concat(rest);
+                    sgroup.data.push(0);
 
                     // Remove last spaces because "SED" means end of a paragraph
                     if (strncmp(chars, "SED", 3) == 0)
@@ -1081,39 +1093,45 @@ void MolfileLoader::_readCtab2000()
                             sgroup.data.push(0);
                     }
                 }
-                else
-                    _scanner.skipLine();
             }
             else if (strncmp(chars, "SMT", 3) == 0)
             {
                 _scanner.skip(1);
                 int sgroup_idx = _scanner.readIntFix(3) - 1;
+                QS_DEF(Array<char>, rest);
+                _readSGroupLineRest(rest);
+
                 if (_sgroup_types[sgroup_idx] == SGroup::SG_TYPE_MUL)
                 {
-                    _scanner.skip(1);
                     MultipleGroup& mg = (MultipleGroup&)_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
-                    mg.multiplier = _scanner.readInt();
-                    _scanner.skipLine();
+                    BufferScanner strscan(rest);
+                    mg.multiplier = strscan.readInt();
                 }
                 else
                 {
                     SGroup& sgroup = _bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
-                    _scanner.skip(1);
-                    _scanner.readQuotedLine(sgroup.label, true);
+                    if (rest.size() > 1 && rest[0] == '"' && rest.top() == '"')
+                    {
+                        rest.pop();
+                        rest.remove(0);
+                    }
+                    sgroup.label.copy(rest);
+                    sgroup.label.push(0);
                 }
             }
             else if (strncmp(chars, "SCL", 3) == 0)
             {
                 _scanner.skip(1);
                 int sgroup_idx = _scanner.readIntFix(3) - 1;
+                QS_DEF(Array<char>, rest);
+                _readSGroupLineRest(rest);
+
                 if (_sgroup_types[sgroup_idx] == SGroup::SG_TYPE_SUP)
                 {
-                    _scanner.skip(1);
                     Superatom& sup = (Superatom&)_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
-                    _scanner.readLine(sup.sa_class, true);
+                    sup.sa_class.copy(rest);
+                    sup.sa_class.push(0);
                 }
-                else
-                    _scanner.skipLine();
             }
             else if (strncmp(chars, "SBV", 3) == 0)
             {
@@ -1332,7 +1350,7 @@ void MolfileLoader::_readCtab2000()
         if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
         {
             DataSGroup& dsg = (DataSGroup&)sgroup;
-            if (dsg.data.size() > 2 && dsg.data.top(1) == '\n')
+            if (dsg.data.size() >= 2 && dsg.data.top(1) == '\n')
             {
                 dsg.data.pop();
                 dsg.data.top() = 0;

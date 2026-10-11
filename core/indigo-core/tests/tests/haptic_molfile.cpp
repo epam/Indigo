@@ -48,17 +48,6 @@ protected:
         loader.loadMolecule(mol);
     }
 
-    static std::string saveMolfile(Molecule& mol, int mode = MolfileSaver::MODE_3000)
-    {
-        Array<char> buffer;
-        ArrayOutput output(buffer);
-        MolfileSaver saver(output);
-        saver.mode = mode;
-        saver.skip_date = true;
-        saver.saveMolecule(mol);
-        return {buffer.ptr(), static_cast<std::size_t>(buffer.size())};
-    }
-
     static int countOccurrences(const std::string& text, const std::string& what)
     {
         int count = 0;

@@ -134,6 +134,7 @@ namespace indigo
         void _readHeader();
         void _readCtabHeader();
         void _readCtab2000();
+        void _readSGroupLineRest(Array<char>& rest);
         void _convertCharge(int value, int& charge, int& radical);
         void _read3dFeature2000();
         void _readRGroups2000();

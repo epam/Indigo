@@ -59,6 +59,14 @@ class IndigoCoreFormatsTest : public IndigoCoreTest
 {
 };
 
+namespace
+{
+    std::string text(const Array<char>& str)
+    {
+        return str.size() > 0 ? std::string(str.ptr()) : std::string();
+    }
+}
+
 TEST_F(IndigoCoreFormatsTest, load_targets_cmf)
 {
     FileScanner sc(dataPath("molecules/resonance/resonance.sdf").c_str());
@@ -386,7 +394,6 @@ TEST_F(IndigoCoreFormatsTest, mol_loader_v3000_sgroup_fielddata_forms)
 {
     const std::pair<const char*, const char*> fielddata_forms[] = {
         {"FIELDDATA=\"a b\" LABEL=x", "a b"}, {"FIELDDATA=\"\" LABEL=x", ""}, {"FIELDDATA= LABEL=x", ""}, {"LABEL=x FIELDDATA=", ""}, {"LABEL=x", ""}};
-    auto text = [](const Array<char>& str) { return str.size() > 0 ? std::string(str.ptr()) : std::string(); };
 
     for (const char* type : {"GEN", "SRU", "SUP", "DAT"})
     {
@@ -435,21 +442,275 @@ M  END
             ASSERT_EQ(SGroup::SG_TYPE_DAT, next.sgroup_type);
             EXPECT_EQ("kept", text(static_cast<DataSGroup&>(next).data));
 
-            Array<char> out;
-            ArrayOutput std_out(out);
-            MolfileSaver saver(std_out);
-            saver.mode = MolfileSaver::MODE_3000;
-            saver.saveMolecule(mol);
-            out.push(0);
-
             Molecule reloaded;
-            loadMolecule(out.ptr(), reloaded);
+            loadMolecule(saveMolfile(mol, MolfileSaver::MODE_3000).c_str(), reloaded);
             ASSERT_EQ(2, reloaded.sgroups.getSGroupCount());
             EXPECT_EQ(sg.sgroup_type, reloaded.sgroups.getSGroup(0).sgroup_type);
             if (is_data)
                 EXPECT_EQ(expected, text(static_cast<DataSGroup&>(reloaded.sgroups.getSGroup(0)).data));
             EXPECT_EQ("kept", text(static_cast<DataSGroup&>(reloaded.sgroups.getSGroup(1)).data));
         }
+    }
+}
+
+TEST_F(IndigoCoreFormatsTest, mol_loader_v3000_sgroup_default_line)
+{
+    const char* molfile = R"(
+  Indigo
+
+  0  0  0     0  0            999 V3000
+M  V30 BEGIN CTAB
+M  V30 COUNTS 3 2 1 0 0
+M  V30 BEGIN ATOM
+M  V30 1 C 0 0 0 0
+M  V30 2 C 1 0.5 0 0
+M  V30 3 O 2 0 0 0
+M  V30 END ATOM
+M  V30 BEGIN BOND
+M  V30 1 1 1 2
+M  V30 2 1 2 3
+M  V30 END BOND
+M  V30 BEGIN SGROUP
+M  V30 DEFAULT CLASS=AA
+M  V30 1 GEN 0 ATOMS=(2 1 2)
+M  V30 END SGROUP
+M  V30 END CTAB
+M  END
+)";
+    Molecule mol;
+    loadMolecule(molfile, mol);
+
+    ASSERT_EQ(1, mol.sgroups.getSGroupCount());
+    SGroup& sg = mol.sgroups.getSGroup(0);
+    EXPECT_EQ(SGroup::SG_TYPE_GEN, sg.sgroup_type);
+    ASSERT_EQ(2, sg.atoms.size());
+    EXPECT_EQ(0, sg.atoms[0]);
+    EXPECT_EQ(1, sg.atoms[1]);
+}
+
+TEST_F(IndigoCoreFormatsTest, mol_loader_v2000_sdd_character_count)
+{
+    struct DisplayLine
+    {
+        const char* fields;
+        int num_chars;
+        char tag;
+    };
+    const DisplayLine display_lines[] = {{"    0.5000   -1.0000    DA     10  1    X  0", 10, 'X'},
+                                         {"    0.5000   -1.0000    DA     10", 10, ' '},
+                                         {"    0.5000   -1.0000    DA    ALL", 0, ' '},
+                                         {"    0.5000   -1.0000    DA         1    X  0", 0, 'X'},
+                                         {"    0.5000   -1.0000    DA  12  1 X", 12, 'X'}};
+
+    for (const DisplayLine& line : display_lines)
+    {
+        SCOPED_TRACE(line.fields);
+        std::string molfile = R"(
+  Indigo
+
+  3  2  0  0  0  0  0  0  0  0999 V2000
+    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    1.0000    0.5000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    2.0000    0.0000    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0  0  0  0
+  2  3  1  0  0  0  0
+M  STY  2   1 DAT   2 GEN
+M  SAL   1  3   1   2   3
+M  SDT   1 NOTE                          T
+M  SDD   1 DISPLAY
+M  SED   1 hello
+M  SAL   2  2   1   2
+M  END
+)";
+        molfile.replace(molfile.find("DISPLAY"), 7, line.fields);
+        Molecule mol;
+        loadMolecule(molfile.c_str(), mol);
+
+        DataSGroup& loaded = static_cast<DataSGroup&>(mol.sgroups.getSGroup(0));
+        ASSERT_TRUE(loaded.num_chars.has_value());
+        EXPECT_EQ(line.num_chars, loaded.num_chars.value());
+        ASSERT_TRUE(loaded.tag.has_value());
+        EXPECT_EQ(line.tag, loaded.tag.value());
+
+        for (int mode : {MolfileSaver::MODE_2000, MolfileSaver::MODE_3000})
+        {
+            SCOPED_TRACE(mode);
+            Molecule reloaded;
+            loadMolecule(saveMolfile(mol, mode).c_str(), reloaded);
+
+            for (Molecule* m : {&mol, &reloaded})
+            {
+                ASSERT_EQ(2, m->sgroups.getSGroupCount());
+                DataSGroup& data = static_cast<DataSGroup&>(m->sgroups.getSGroup(0));
+                ASSERT_EQ(SGroup::SG_TYPE_DAT, data.sgroup_type);
+                EXPECT_EQ("hello", text(data.data));
+                EXPECT_TRUE(data.detached);
+                EXPECT_FALSE(data.relative);
+                ASSERT_TRUE(data.num_chars.has_value());
+                EXPECT_EQ(line.num_chars, data.num_chars.value());
+                ASSERT_TRUE(data.tag.has_value());
+                EXPECT_EQ(line.tag, data.tag.value());
+
+                SGroup& gen = m->sgroups.getSGroup(1);
+                EXPECT_EQ(SGroup::SG_TYPE_GEN, gen.sgroup_type);
+                ASSERT_EQ(2, gen.atoms.size());
+                EXPECT_EQ(0, gen.atoms[0]);
+                EXPECT_EQ(1, gen.atoms[1]);
+            }
+        }
+    }
+}
+
+TEST_F(IndigoCoreFormatsTest, mol_saver_data_sgroup_character_count_out_of_range)
+{
+    for (const auto& [num_chars, expected] : {std::pair{-5, 0}, std::pair{1000, 999}, std::pair{1234, 999}})
+    {
+        SCOPED_TRACE(num_chars);
+        Molecule mol;
+        loadMolecule("CCO", mol);
+        DataSGroup& data = static_cast<DataSGroup&>(mol.sgroups.getSGroup(mol.sgroups.addSGroup(SGroup::SG_TYPE_DAT)));
+        data.atoms.push(0);
+        data.name.readString("NOTE", true);
+        data.data.readString("hello", true);
+        data.num_chars = num_chars;
+        data.tag = 'X';
+
+        for (int mode : {MolfileSaver::MODE_2000, MolfileSaver::MODE_3000})
+        {
+            SCOPED_TRACE(mode);
+            Molecule reloaded;
+            loadMolecule(saveMolfile(mol, mode).c_str(), reloaded);
+
+            ASSERT_EQ(1, reloaded.sgroups.getSGroupCount());
+            DataSGroup& loaded = static_cast<DataSGroup&>(reloaded.sgroups.getSGroup(0));
+            EXPECT_EQ("hello", text(loaded.data));
+            ASSERT_TRUE(loaded.num_chars.has_value());
+            EXPECT_EQ(expected, loaded.num_chars.value());
+            ASSERT_TRUE(loaded.tag.has_value());
+            EXPECT_EQ('X', loaded.tag.value());
+        }
+    }
+}
+
+TEST_F(IndigoCoreFormatsTest, mol_loader_v2000_sgroup_lines_ending_after_index)
+{
+    const char* molfile = "\n  Indigo\n\n"
+                          "  3  2  0  0  0  0  0  0  0  0999 V2000\n"
+                          "    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n"
+                          "    1.0000    0.5000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n"
+                          "    2.0000    0.0000    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n"
+                          "  1  2  1  0  0  0  0\n"
+                          "  2  3  1  0  0  0  0\n"
+                          "M  STY  3   1 DAT   2 SUP   3 MUL\n"
+                          "M  SDT   1 NOTE                          T\n"
+                          "M  SED   1 first\n"
+                          "M  SED   1\n"
+                          "M  SED   1    \n"
+                          "M  SED   1 second\n"
+                          "M  SMT   2\n"
+                          "M  SCL   2\n"
+                          "M  SAL   1  1   1\n"
+                          "M  SAL   2  2   2   3\n"
+                          "M  SAL   3  1   3\n"
+                          "M  SMT   3 1\n"
+                          "M  END\n";
+    Molecule mol;
+    loadMolecule(molfile, mol);
+
+    ASSERT_EQ(3, mol.sgroups.getSGroupCount());
+    DataSGroup& data = static_cast<DataSGroup&>(mol.sgroups.getSGroup(0));
+    EXPECT_EQ("first\n\n\nsecond", text(data.data));
+    ASSERT_EQ(1, data.atoms.size());
+    EXPECT_EQ(0, data.atoms[0]);
+
+    Superatom& sup = static_cast<Superatom&>(mol.sgroups.getSGroup(1));
+    EXPECT_EQ("", text(sup.label));
+    EXPECT_EQ("", text(sup.sa_class));
+    ASSERT_EQ(2, sup.atoms.size());
+    EXPECT_EQ(1, sup.atoms[0]);
+    EXPECT_EQ(2, sup.atoms[1]);
+
+    MultipleGroup& mul = static_cast<MultipleGroup&>(mol.sgroups.getSGroup(2));
+    EXPECT_EQ(1, mul.multiplier);
+    ASSERT_EQ(1, mul.atoms.size());
+    EXPECT_EQ(2, mul.atoms[0]);
+}
+
+TEST_F(IndigoCoreFormatsTest, mol_loader_v2000_sdt_on_non_data_sgroup)
+{
+    for (const char* field_name : {" ABCFIELD", " GFIELD", ""})
+    {
+        SCOPED_TRACE(field_name);
+        std::string molfile = R"(
+  Indigo
+
+  3  2  0  0  0  0  0  0  0  0999 V2000
+    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    1.0000    0.5000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    2.0000    0.0000    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0  0  0  0
+  2  3  1  0  0  0  0
+M  STY  2   1 GEN   2 GEN
+M  SAL   1  2   1   2
+M  SDT   1FIELD
+M  SAL   2  2   2   3
+M  END
+)";
+        molfile.replace(molfile.find("FIELD"), 5, field_name);
+        Molecule mol;
+        loadMolecule(molfile.c_str(), mol);
+
+        ASSERT_EQ(2, mol.sgroups.getSGroupCount());
+        for (int i = 0; i < 2; i++)
+        {
+            SGroup& sg = mol.sgroups.getSGroup(i);
+            EXPECT_EQ(SGroup::SG_TYPE_GEN, sg.sgroup_type);
+            ASSERT_EQ(2, sg.atoms.size());
+            EXPECT_EQ(i, sg.atoms[0]);
+            EXPECT_EQ(i + 1, sg.atoms[1]);
+        }
+    }
+}
+
+TEST_F(IndigoCoreFormatsTest, mol_loader_v2000_data_sgroup_single_empty_line)
+{
+    for (const char* sed_line : {"M  SED   1\n", "M  SED   1 \n"})
+    {
+        SCOPED_TRACE(sed_line);
+        std::string molfile = "\n  Indigo\n\n"
+                              "  1  0  0  0  0  0  0  0  0  0999 V2000\n"
+                              "    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n"
+                              "M  STY  1   1 DAT\n"
+                              "M  SAL   1  1   1\n"
+                              "M  SDT   1 NOTE                          T\n";
+        molfile += sed_line;
+        molfile += "M  END\n";
+        Molecule mol;
+        loadMolecule(molfile.c_str(), mol);
+
+        ASSERT_EQ(1, mol.sgroups.getSGroupCount());
+        EXPECT_EQ("", text(static_cast<DataSGroup&>(mol.sgroups.getSGroup(0)).data));
+    }
+}
+
+TEST_F(IndigoCoreFormatsTest, mol_saver_v2000_data_lines_of_69_characters)
+{
+    const std::string line69(69, 'A');
+    for (const std::string& value : {line69, line69 + "\ntail", line69 + line69 + "\ntail", line69 + "\n" + line69})
+    {
+        SCOPED_TRACE(value);
+        Molecule mol;
+        loadMolecule("CCO", mol);
+        DataSGroup& data = static_cast<DataSGroup&>(mol.sgroups.getSGroup(mol.sgroups.addSGroup(SGroup::SG_TYPE_DAT)));
+        data.atoms.push(0);
+        data.name.readString("NOTE", true);
+        data.data.readString(value.c_str(), true);
+
+        Molecule reloaded;
+        loadMolecule(saveMolfile(mol, MolfileSaver::MODE_2000).c_str(), reloaded);
+
+        ASSERT_EQ(1, reloaded.sgroups.getSGroupCount());
+        EXPECT_EQ(value, text(static_cast<DataSGroup&>(reloaded.sgroups.getSGroup(0)).data));
     }
 }
 
