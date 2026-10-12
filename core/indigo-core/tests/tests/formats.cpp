@@ -563,7 +563,8 @@ M  END
 
 TEST_F(IndigoCoreFormatsTest, mol_saver_data_sgroup_character_count_out_of_range)
 {
-    for (const auto& [num_chars, expected] : {std::pair{-5, 0}, std::pair{1000, 999}, std::pair{1234, 999}})
+    constexpr int max_chars = MolfileSaver::SGROUP_DATA_MAX_DISPLAYED_CHARS;
+    for (const auto& [num_chars, expected] : {std::pair{-5, 0}, std::pair{max_chars + 1, max_chars}, std::pair{1234, max_chars}})
     {
         SCOPED_TRACE(num_chars);
         Molecule mol;
@@ -695,8 +696,8 @@ TEST_F(IndigoCoreFormatsTest, mol_loader_v2000_data_sgroup_single_empty_line)
 
 TEST_F(IndigoCoreFormatsTest, mol_saver_v2000_data_lines_of_69_characters)
 {
-    const std::string line69(69, 'A');
-    for (const std::string& value : {line69, line69 + "\ntail", line69 + line69 + "\ntail", line69 + "\n" + line69})
+    const std::string chunk(MolfileSaver::SGROUP_DATA_CHUNK_SIZE, 'A');
+    for (const std::string& value : {chunk, chunk + "\ntail", chunk + chunk + "\ntail", chunk + "\n" + chunk})
     {
         SCOPED_TRACE(value);
         Molecule mol;

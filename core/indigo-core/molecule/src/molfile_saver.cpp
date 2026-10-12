@@ -2009,15 +2009,13 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                 char* ptr = datasgroup.data.ptr();
                 while (k > 0)
                 {
-                    for (j = 0; j < 69 && j < k; j++)
+                    for (j = 0; j < SGROUP_DATA_CHUNK_SIZE && j < k; j++)
                         if (ptr[j] == '\n')
                             break;
 
+                    const bool line_continues = j == SGROUP_DATA_CHUNK_SIZE && j < k && ptr[j] != '\n';
                     output.writeString("M  ");
-                    if (j != 69 || j == k || ptr[j] == '\n')
-                        output.writeString("SED ");
-                    else
-                        output.writeString("SCD ");
+                    output.writeString(line_continues ? "SCD " : "SED ");
                     output.printf("%3d ", wi);
 
                     output.write(ptr, j);
@@ -2215,7 +2213,7 @@ void MolfileSaver::_writeDataSGroupDisplay(DataSGroup& datasgroup, Output& out)
     if (num_chars <= 0)
         out.printf("   ALL  1    %c  %1d  ", tag, dasp_pos);
     else
-        out.printf("   %3d  1    %c  %1d  ", std::min(num_chars, 999), tag, dasp_pos);
+        out.printf("   %3d  1    %c  %1d  ", std::min(num_chars, SGROUP_DATA_MAX_DISPLAYED_CHARS), tag, dasp_pos);
 }
 
 bool MolfileSaver::_hasNeighborEitherBond(BaseMolecule& mol, int edge_idx)
