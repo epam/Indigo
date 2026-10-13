@@ -945,7 +945,7 @@ void MolfileLoader::_readSGroupsBlock3000()
             // The defaults are skipped, not applied; an S-group can continue the same entry
             BufferScanner scanner(str.ptr());
             QS_DEF(Array<char>, keyword);
-            scanner.skip(strlen("DEFAULT"));
+            scanner.skip(static_cast<int>(strlen("DEFAULT")));
             scanner.skipSpace();
             while (!scanner.isEOF() && !isdigit(static_cast<unsigned char>(scanner.lookNext())))
             {
