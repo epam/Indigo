@@ -134,12 +134,13 @@ namespace indigo
         void _readHeader();
         void _readCtabHeader();
         void _readCtab2000();
-        void _readSGroupLineRest(Array<char>& rest);
+        int _readSGroupLine(const char* property, Array<char>& rest);
         void _convertCharge(int value, int& charge, int& radical);
         void _read3dFeature2000();
         void _readRGroups2000();
         void _readCtab3000();
         void _readSGroup3000(const char* str);
+        void _skipValue3000(Scanner& scanner);
         void _readRGroups3000();
         void _readTGroups3000();
         void _checkEndOfMolBlock3000();

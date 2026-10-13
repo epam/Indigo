@@ -61,9 +61,10 @@ remapped separately and simply becomes `-1`.
 ## Formats
 
 **A11 — A V2000 S-group property line is read whole before it is parsed.**
-`M  SDT`, `SDD`, `SED`/`SCD`, `SMT` and `SCL` take the rest of their line with
-`core/indigo-core/molecule/src/molfile_loader_v2000.cpp#_readSGroupLineRest` and parse that buffer.
-A fixed `skip` or `readIntFix` on the whole-file scanner after the S-group index runs into the next
+`M  SDT`, `SDD`, `SED`/`SCD`, `SMT` and `SCL` take their line with
+`core/indigo-core/molecule/src/molfile_loader_v2000.cpp#_readSGroupLine`, which also reads the S-group
+index from that buffer and rejects one beyond the S-groups declared by `M  STY`, then parse the rest.
+A fixed `skip` or `readIntFix` on the whole-file scanner, the index included, runs into the next
 record when a line ends early: the next line is silently consumed and the next S-group loses its atoms
 or its data, while files Indigo writes itself never trigger it (#3959). `SBV`, `SDS`, `SPA`, `SAP` and
 `SCN` still parse positionally — a new handler, or a change to one of these, should read the line first.

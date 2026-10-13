@@ -939,9 +939,29 @@ void MolfileLoader::_readSGroupsBlock3000()
 
         if (strncmp(str.ptr(), "END SGROUP", 10) == 0)
             break;
+        int entry_start = 0;
         if (STRCMP(str.ptr(), "DEFAULT") == 0)
-            continue;
-        _readSGroup3000(str.ptr());
+        {
+            // The defaults are skipped, not applied; an S-group can continue the same entry
+            BufferScanner scanner(str.ptr());
+            QS_DEF(Array<char>, keyword);
+            scanner.skip(strlen("DEFAULT"));
+            scanner.skipSpace();
+            while (!scanner.isEOF() && !isdigit(static_cast<unsigned char>(scanner.lookNext())))
+            {
+                scanner.readWord(keyword, " \t=");
+                keyword.push(0);
+                if (scanner.lookNext() != '=')
+                    throw Error("DEFAULT entry: expected '=' after \"%s\"", keyword.ptr());
+                scanner.skip(1); // =
+                _skipValue3000(scanner);
+                scanner.skipSpace();
+            }
+            if (scanner.isEOF())
+                continue;
+            entry_start = static_cast<int>(scanner.tell());
+        }
+        _readSGroup3000(str.ptr() + entry_start);
     }
 
     _fillSGroupsParentIndices();
@@ -1570,25 +1590,28 @@ void MolfileLoader::_readSGroup3000(const char* str)
             }
         }
         else
-        {
-            if (scanner.lookNext() == '(')
-            {
-                scanner.skip(1);
-                n = scanner.readInt1();
-                while (n-- > 0)
-                {
-                    scanner.readFloat();
-                    scanner.skipSpace();
-                }
-                scanner.skip(1); // )
-            }
-            else
-            {
-                // Unknown property that can have value in quotes: PROP="     "
-                _readStringInQuotes(scanner, NULL);
-            }
-        }
+            _skipValue3000(scanner);
         scanner.skipSpace();
+    }
+}
+
+void MolfileLoader::_skipValue3000(Scanner& scanner)
+{
+    if (scanner.lookNext() == '(')
+    {
+        scanner.skip(1);
+        int n = scanner.readInt1();
+        while (n-- > 0)
+        {
+            scanner.readFloat();
+            scanner.skipSpace();
+        }
+        scanner.skip(1); // )
+    }
+    else
+    {
+        // A value that can be in quotes: PROP="     "
+        _readStringInQuotes(scanner, NULL);
     }
 }
 

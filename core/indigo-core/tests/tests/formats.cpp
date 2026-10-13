@@ -455,6 +455,51 @@ M  END
 
 TEST_F(IndigoCoreFormatsTest, mol_loader_v3000_sgroup_default_line)
 {
+    for (const char* defaults : {"DEFAULT CLASS=AA\nM  V30 ", "DEFAULT CLASS=AA -\nM  V30 ", "DEFAULT LABEL=\"a b\" ATOMS=(2 2 3) -\nM  V30 ",
+                                 "DEFAULT -\nM  V30 CLASS=AA -\nM  V30 "})
+    {
+        SCOPED_TRACE(defaults);
+        std::string molfile = R"(
+  Indigo
+
+  0  0  0     0  0            999 V3000
+M  V30 BEGIN CTAB
+M  V30 COUNTS 3 2 2 0 0
+M  V30 BEGIN ATOM
+M  V30 1 C 0 0 0 0
+M  V30 2 C 1 0.5 0 0
+M  V30 3 O 2 0 0 0
+M  V30 END ATOM
+M  V30 BEGIN BOND
+M  V30 1 1 1 2
+M  V30 2 1 2 3
+M  V30 END BOND
+M  V30 BEGIN SGROUP
+M  V30 DEFAULTS1 GEN 0 ATOMS=(2 1 2)
+M  V30 2 GEN 0 ATOMS=(2 2 3)
+M  V30 END SGROUP
+M  V30 END CTAB
+M  END
+)";
+        molfile.replace(molfile.find("DEFAULTS"), 8, defaults);
+        Molecule mol;
+        loadMolecule(molfile.c_str(), mol);
+
+        ASSERT_EQ(2, mol.sgroups.getSGroupCount());
+        for (int i = 0; i < 2; i++)
+        {
+            SGroup& sg = mol.sgroups.getSGroup(i);
+            EXPECT_EQ(SGroup::SG_TYPE_GEN, sg.sgroup_type);
+            EXPECT_EQ(i + 1, sg.index);
+            ASSERT_EQ(2, sg.atoms.size());
+            EXPECT_EQ(i, sg.atoms[0]);
+            EXPECT_EQ(i + 1, sg.atoms[1]);
+        }
+    }
+}
+
+TEST_F(IndigoCoreFormatsTest, mol_loader_v3000_sgroup_default_without_value)
+{
     const char* molfile = R"(
   Indigo
 
@@ -471,21 +516,22 @@ M  V30 1 1 1 2
 M  V30 2 1 2 3
 M  V30 END BOND
 M  V30 BEGIN SGROUP
-M  V30 DEFAULT CLASS=AA
+M  V30 DEFAULT FOO -
 M  V30 1 GEN 0 ATOMS=(2 1 2)
 M  V30 END SGROUP
 M  V30 END CTAB
 M  END
 )";
     Molecule mol;
-    loadMolecule(molfile, mol);
-
-    ASSERT_EQ(1, mol.sgroups.getSGroupCount());
-    SGroup& sg = mol.sgroups.getSGroup(0);
-    EXPECT_EQ(SGroup::SG_TYPE_GEN, sg.sgroup_type);
-    ASSERT_EQ(2, sg.atoms.size());
-    EXPECT_EQ(0, sg.atoms[0]);
-    EXPECT_EQ(1, sg.atoms[1]);
+    try
+    {
+        loadMolecule(molfile, mol);
+        ADD_FAILURE() << "no error";
+    }
+    catch (Exception& e)
+    {
+        EXPECT_STREQ("molfile loader: DEFAULT entry: expected '=' after \"FOO\"", e.message());
+    }
 }
 
 TEST_F(IndigoCoreFormatsTest, mol_loader_v2000_sdd_character_count)
@@ -500,7 +546,9 @@ TEST_F(IndigoCoreFormatsTest, mol_loader_v2000_sdd_character_count)
                                          {"    0.5000   -1.0000    DA     10", 10, ' '},
                                          {"    0.5000   -1.0000    DA    ALL", 0, ' '},
                                          {"    0.5000   -1.0000    DA         1    X  0", 0, 'X'},
-                                         {"    0.5000   -1.0000    DA  12  1 X", 12, 'X'}};
+                                         {"    0.5000   -1.0000    DA  12  1 X", 12, 'X'},
+                                         {"    0.5000   -1.0000    DA     -5  1    X  0", 0, 'X'},
+                                         {"    0.5000   -1.0000    DA  -5  1 X", 0, 'X'}};
 
     for (const DisplayLine& line : display_lines)
     {
@@ -563,30 +611,42 @@ M  END
 
 TEST_F(IndigoCoreFormatsTest, mol_saver_data_sgroup_character_count_out_of_range)
 {
-    constexpr int max_chars = MolfileSaver::SGROUP_DATA_MAX_DISPLAYED_CHARS;
-    for (const auto& [num_chars, expected] : {std::pair{-5, 0}, std::pair{max_chars + 1, max_chars}, std::pair{1234, max_chars}})
+    struct CharacterCount
     {
-        SCOPED_TRACE(num_chars);
+        int num_chars;
+        int expected;
+        std::string written;
+    };
+    constexpr int max_chars = MolfileSaver::SGROUP_DATA_MAX_DISPLAYED_CHARS;
+    const std::string max_chars_text = std::to_string(max_chars);
+    const CharacterCount counts[] = {{-5, 0, "ALL"}, {-100, 0, "ALL"}, {max_chars + 1, max_chars, max_chars_text}, {1234, max_chars, max_chars_text}};
+
+    for (const CharacterCount& count : counts)
+    {
+        SCOPED_TRACE(count.num_chars);
         Molecule mol;
         loadMolecule("CCO", mol);
         DataSGroup& data = static_cast<DataSGroup&>(mol.sgroups.getSGroup(mol.sgroups.addSGroup(SGroup::SG_TYPE_DAT)));
         data.atoms.push(0);
         data.name.readString("NOTE", true);
         data.data.readString("hello", true);
-        data.num_chars = num_chars;
+        data.num_chars = count.num_chars;
         data.tag = 'X';
 
         for (int mode : {MolfileSaver::MODE_2000, MolfileSaver::MODE_3000})
         {
             SCOPED_TRACE(mode);
+            const std::string saved = saveMolfile(mol, mode);
+            EXPECT_NE(std::string::npos, saved.find("    " + count.written + "  1    X"));
+
             Molecule reloaded;
-            loadMolecule(saveMolfile(mol, mode).c_str(), reloaded);
+            loadMolecule(saved.c_str(), reloaded);
 
             ASSERT_EQ(1, reloaded.sgroups.getSGroupCount());
             DataSGroup& loaded = static_cast<DataSGroup&>(reloaded.sgroups.getSGroup(0));
             EXPECT_EQ("hello", text(loaded.data));
             ASSERT_TRUE(loaded.num_chars.has_value());
-            EXPECT_EQ(expected, loaded.num_chars.value());
+            EXPECT_EQ(count.expected, loaded.num_chars.value());
             ASSERT_TRUE(loaded.tag.has_value());
             EXPECT_EQ('X', loaded.tag.value());
         }
@@ -612,8 +672,8 @@ TEST_F(IndigoCoreFormatsTest, mol_loader_v2000_sgroup_lines_ending_after_index)
                           "M  SCL   2\n"
                           "M  SAL   1  1   1\n"
                           "M  SAL   2  2   2   3\n"
+                          "M  SMT   3\n"
                           "M  SAL   3  1   3\n"
-                          "M  SMT   3 1\n"
                           "M  END\n";
     Molecule mol;
     loadMolecule(molfile, mol);
@@ -635,6 +695,47 @@ TEST_F(IndigoCoreFormatsTest, mol_loader_v2000_sgroup_lines_ending_after_index)
     EXPECT_EQ(1, mul.multiplier);
     ASSERT_EQ(1, mul.atoms.size());
     EXPECT_EQ(2, mul.atoms[0]);
+}
+
+TEST_F(IndigoCoreFormatsTest, mol_loader_v2000_sgroup_index)
+{
+    const std::string header = "\n  Indigo\n\n"
+                               "  3  2  0  0  0  0  0  0  0  0999 V2000\n"
+                               "    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n"
+                               "    1.0000    0.5000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0\n"
+                               "    2.0000    0.0000    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0\n"
+                               "  1  2  1  0  0  0  0\n"
+                               "  2  3  1  0  0  0  0\n";
+    const std::string sgroup_types = "M  STY  2   1 DAT   2 SUP\n";
+
+    for (const char* property : {"SDT", "SDD", "SED", "SCD", "SMT", "SCL"})
+    {
+        SCOPED_TRACE(property);
+        const std::string prefix = std::string("M  ") + property;
+
+        Molecule mol;
+        loadMolecule((header + sgroup_types + prefix + "  1\nM  SAL   2  2   2   3\nM  END\n").c_str(), mol);
+        ASSERT_EQ(2, mol.sgroups.getSGroupCount());
+        SGroup& sup = mol.sgroups.getSGroup(1);
+        ASSERT_EQ(2, sup.atoms.size());
+        EXPECT_EQ(1, sup.atoms[0]);
+        EXPECT_EQ(2, sup.atoms[1]);
+
+        for (const auto& [types, index] : {std::pair{sgroup_types, 5}, std::pair{sgroup_types, 0}, std::pair{std::string(), 1}})
+        {
+            SCOPED_TRACE(index);
+            Molecule failed;
+            try
+            {
+                loadMolecule((header + types + prefix + "   " + std::to_string(index) + " x\nM  END\n").c_str(), failed);
+                ADD_FAILURE() << "no error";
+            }
+            catch (Exception& e)
+            {
+                EXPECT_EQ(std::string("molfile loader: M ") + property + " refers to undefined Sgroup " + std::to_string(index), e.message());
+            }
+        }
+    }
 }
 
 TEST_F(IndigoCoreFormatsTest, mol_loader_v2000_sdt_on_non_data_sgroup)

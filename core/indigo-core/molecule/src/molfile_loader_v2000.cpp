@@ -16,6 +16,7 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include <algorithm>
 #include <memory>
 
 #include "../layout/molecule_layout.h"
@@ -40,11 +41,24 @@
 
 using namespace indigo;
 
-void MolfileLoader::_readSGroupLineRest(Array<char>& rest)
+int MolfileLoader::_readSGroupLine(const char* property, Array<char>& rest)
 {
+    // " sss d...": a separator, the index in three columns, a separator, the data
     _scanner.readLine(rest, false);
+    const int index_end = std::min(rest.size(), 4);
+    int sgroup_idx = -1;
+    if (index_end > 1)
+    {
+        BufferScanner index_scanner(rest.ptr() + 1, index_end - 1);
+        sgroup_idx = index_scanner.readIntFix(index_end - 1) - 1;
+    }
+    if (sgroup_idx < 0 || sgroup_idx >= _sgroup_types.size())
+        throw Error("M %s refers to undefined Sgroup %d", property, sgroup_idx + 1);
+
+    rest.remove(0, index_end);
     if (rest.size() > 0 && rest[0] == ' ')
         rest.remove(0);
+    return sgroup_idx;
 }
 
 void MolfileLoader::_readCtab2000()
@@ -952,10 +966,8 @@ void MolfileLoader::_readCtab2000()
             }
             else if (strncmp(chars, "SDT", 3) == 0)
             {
-                _scanner.skip(1);
-                int sgroup_idx = _scanner.readIntFix(3) - 1;
                 QS_DEF(Array<char>, rest);
-                _readSGroupLineRest(rest);
+                int sgroup_idx = _readSGroupLine(chars, rest);
 
                 if (_sgroup_types[sgroup_idx] == SGroup::SG_TYPE_DAT)
                 {
@@ -1046,10 +1058,8 @@ void MolfileLoader::_readCtab2000()
             }
             else if (strncmp(chars, "SDD", 3) == 0)
             {
-                _scanner.skip(1);
-                int sgroup_idx = _scanner.readIntFix(3) - 1;
                 QS_DEF(Array<char>, rest);
-                _readSGroupLineRest(rest);
+                int sgroup_idx = _readSGroupLine(chars, rest);
 
                 if (_sgroup_types[sgroup_idx] == SGroup::SG_TYPE_DAT)
                 {
@@ -1061,10 +1071,8 @@ void MolfileLoader::_readCtab2000()
             }
             else if (strncmp(chars, "SED", 3) == 0 || strncmp(chars, "SCD", 3) == 0)
             {
-                _scanner.skip(1);
-                int sgroup_idx = _scanner.readIntFix(3) - 1;
                 QS_DEF(Array<char>, rest);
-                _readSGroupLineRest(rest);
+                int sgroup_idx = _readSGroupLine(chars, rest);
 
                 if (_sgroup_types[sgroup_idx] == SGroup::SG_TYPE_DAT)
                 {
@@ -1096,16 +1104,16 @@ void MolfileLoader::_readCtab2000()
             }
             else if (strncmp(chars, "SMT", 3) == 0)
             {
-                _scanner.skip(1);
-                int sgroup_idx = _scanner.readIntFix(3) - 1;
                 QS_DEF(Array<char>, rest);
-                _readSGroupLineRest(rest);
+                int sgroup_idx = _readSGroupLine(chars, rest);
 
                 if (_sgroup_types[sgroup_idx] == SGroup::SG_TYPE_MUL)
                 {
                     MultipleGroup& mg = (MultipleGroup&)_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
                     BufferScanner strscan(rest);
-                    mg.multiplier = strscan.readInt();
+                    strscan.skipSpace();
+                    if (!strscan.isEOF())
+                        mg.multiplier = strscan.readInt();
                 }
                 else
                 {
@@ -1121,10 +1129,8 @@ void MolfileLoader::_readCtab2000()
             }
             else if (strncmp(chars, "SCL", 3) == 0)
             {
-                _scanner.skip(1);
-                int sgroup_idx = _scanner.readIntFix(3) - 1;
                 QS_DEF(Array<char>, rest);
-                _readSGroupLineRest(rest);
+                int sgroup_idx = _readSGroupLine(chars, rest);
 
                 if (_sgroup_types[sgroup_idx] == SGroup::SG_TYPE_SUP)
                 {
