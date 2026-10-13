@@ -200,6 +200,8 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
         sg.ext_index = supersg.ext_index;
         sg.parent_group = supersg.parent_group;
         sg.label.copy(supersg.label);
+        sg.connectivity = supersg.connectivity;
+        sg.component_order = supersg.component_order;
 
         if (_mergeSGroupWithSubmolecule(sg, supersg, mol, mapping, edge_mapping))
         {
@@ -267,13 +269,6 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
                     }
                 }
                 sa.display_position = supersa.display_position;
-            }
-            else if (sg.sgroup_type == SGroup::SG_TYPE_SRU)
-            {
-                RepeatingUnit& ru = (RepeatingUnit&)sg;
-                RepeatingUnit& superru = (RepeatingUnit&)supersg;
-
-                ru.connectivity = superru.connectivity;
             }
             else if (sg.sgroup_type == SGroup::SG_TYPE_MUL)
             {

@@ -453,6 +453,349 @@ M  END
     }
 }
 
+namespace
+{
+    // A formulation of two numbered components; the first one holds a head-to-tail block copolymer of two repeating units.
+    const char* const POLYMER_FORMULATION_V2000 = R"(
+  Indigo
+
+  5  3  0  0  0  0  0  0  0  0999 V2000
+    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    1.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    2.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    3.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    5.0000    0.0000    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0  0  0  0
+  2  3  1  0  0  0  0
+  3  4  1  0  0  0  0
+M  STY  6   1 SRU   2 SRU   3 COP   4 COM   5 COM   6 FOR
+M  SST  1   3 BLO
+M  SPL  5   1   3   2   3   3   4   4   6   5   6
+M  SCN  3   1 HT    2 HH    3 HT
+M  SNC  2   4   1   5   2
+M  SAL   1  1   2
+M  SBL   1  2   1   2
+M  SAL   2  1   3
+M  SBL   2  2   2   3
+M  SAL   3  2   2   3
+M  SAL   4  4   1   2   3   4
+M  SAL   5  1   5
+M  SAL   6  5   1   2   3   4   5
+M  END
+)";
+
+    const char* const REPEATING_UNIT_CODE = "SRU";
+    const char* const COPOLYMER_CODE = "COP";
+    const char* const COMPONENT_CODE = "COM";
+    const char* const MIXTURE_CODE = "MIX";
+
+    // The component order as V3000 spells it, and as the V2000 line of one entry does.
+    const std::string V2000_ORDER_LINE_START = "M  SNC";
+
+    std::string v3000Order(int order)
+    {
+        return "COMPNO=" + std::to_string(order);
+    }
+
+    std::string v2000OrderLine(int sgroup_number, int order)
+    {
+        char entry[16];
+        snprintf(entry, sizeof(entry), "  1 %3d %3d", sgroup_number, order);
+        return V2000_ORDER_LINE_START + entry;
+    }
+
+    // The S-group of both chain fixtures below holds the first two atoms.
+    const std::string CHAIN_SGROUP_ATOMS = "ATOMS=(2 1 2)";
+
+    // A V3000 S-group line of the chain fixture as the saver writes it, or - with external index 0 - as a file may give it.
+    std::string v3000SGroupLine(const std::string& sgroup_type, int external_index, const std::string& properties)
+    {
+        std::string line = sgroup_type + " " + std::to_string(external_index) + " " + CHAIN_SGROUP_ATOMS;
+        if (!properties.empty())
+            line += " " + properties;
+        return line;
+    }
+
+    // A chain of three carbons with one S-group of the given type and properties.
+    std::string v3000WithSGroup(const std::string& sgroup_type, const std::string& properties = "")
+    {
+        std::string molfile = R"(
+  Indigo
+
+  0  0  0     0  0            999 V3000
+M  V30 BEGIN CTAB
+M  V30 COUNTS 3 2 1 0 0
+M  V30 BEGIN ATOM
+M  V30 1 C 0 0 0 0
+M  V30 2 C 1 0 0 0
+M  V30 3 C 2 0 0 0
+M  V30 END ATOM
+M  V30 BEGIN BOND
+M  V30 1 1 1 2
+M  V30 2 1 2 3
+M  V30 END BOND
+M  V30 BEGIN SGROUP
+M  V30 1 SGROUP_LINE
+M  V30 END SGROUP
+M  V30 END CTAB
+M  END
+)";
+        const std::string placeholder = "SGROUP_LINE";
+        return molfile.replace(molfile.find(placeholder), placeholder.size(), v3000SGroupLine(sgroup_type, 0, properties));
+    }
+
+    // The same chain with an S-group of the given type on its first two atoms as S-group 2 - number 1 is
+    // left undefined - followed by the given property line.
+    std::string v2000WithSGroup(const std::string& sgroup_type, const std::string& property_line)
+    {
+        std::string molfile = R"(
+  Indigo
+
+  3  2  0  0  0  0  0  0  0  0999 V2000
+    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    1.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    2.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0  0  0  0
+  2  3  1  0  0  0  0
+M  STY  1   2 TYP
+M  SAL   2  2   1   2
+PROPERTY_LINE
+M  END
+)";
+        const std::string type_placeholder = "TYP";
+        const std::string property_placeholder = "PROPERTY_LINE";
+        molfile.replace(molfile.find(type_placeholder), type_placeholder.size(), sgroup_type);
+        return molfile.replace(molfile.find(property_placeholder), property_placeholder.size(), property_line);
+    }
+
+    std::string saveMolfile(Molecule& mol, int mode)
+    {
+        Array<char> out;
+        ArrayOutput std_out(out);
+        MolfileSaver saver(std_out);
+        saver.mode = mode;
+        saver.skip_date = true;
+        saver.saveMolecule(mol);
+        return std::string(out.ptr(), static_cast<std::size_t>(out.size()));
+    }
+
+    // One entry per S-group that has atoms. Sorted, because V2000 and V3000 output number the S-groups differently.
+    std::vector<std::string> describePolymerSGroups(Molecule& mol)
+    {
+        std::vector<std::string> descriptions;
+        for (int sgroup_idx = mol.sgroups.begin(); sgroup_idx != mol.sgroups.end(); sgroup_idx = mol.sgroups.next(sgroup_idx))
+        {
+            SGroup& sgroup = mol.sgroups.getSGroup(sgroup_idx);
+            if (sgroup.atoms.size() == 0)
+                continue;
+
+            std::string description = SGroup::typeToString(sgroup.sgroup_type);
+            auto addWords = [&description](const std::string& words) { description += " " + words; };
+            if (const char* subtype = SGroup::subtypeToString(sgroup.sgroup_subtype.value_or(0)))
+                addWords(subtype);
+            if (SGroup::typeHasConnectivity(sgroup.sgroup_type))
+                addWords(SGroup::connectivityToString(sgroup.connectivity.value()));
+            if (sgroup.component_order > 0)
+                addWords("order " + std::to_string(sgroup.component_order));
+            const int parent_idx = sgroup.parent_idx.value_or(-1);
+            if (mol.sgroups.hasSGroup(parent_idx))
+                addWords(std::string("in ") + SGroup::typeToString(mol.sgroups.getSGroup(parent_idx).sgroup_type));
+            descriptions.push_back(description);
+        }
+        std::sort(descriptions.begin(), descriptions.end());
+        return descriptions;
+    }
+} // namespace
+
+TEST_F(IndigoCoreFormatsTest, mol_polymer_sgroups_survive_copy_and_round_trip)
+{
+    const std::string second_component = "COM order 2 in FOR";
+    const std::vector<std::string> formulation = {"COM order 1 in FOR", second_component, "COP BLO HT in COM", "FOR", "SRU HH in COP", "SRU HT in COP"};
+
+    Molecule loaded;
+    loadMolecule(POLYMER_FORMULATION_V2000, loaded);
+    EXPECT_EQ(formulation, describePolymerSGroups(loaded));
+
+    Molecule cloned;
+    cloned.clone(loaded);
+    EXPECT_EQ(formulation, describePolymerSGroups(cloned));
+
+    Molecule merged;
+    loadMolecule("N", merged);
+    merged.mergeWithMolecule(loaded, nullptr);
+    EXPECT_EQ(formulation, describePolymerSGroups(merged));
+
+    // The first component alone: its four atoms keep every S-group except the second component.
+    Molecule first_component;
+    Array<int> first_component_atoms;
+    for (int atom_idx : {0, 1, 2, 3})
+        first_component_atoms.push(atom_idx);
+    first_component.makeSubmolecule(loaded, first_component_atoms, nullptr);
+    std::vector<std::string> formulation_without_second_component = formulation;
+    formulation_without_second_component.erase(
+        std::find(formulation_without_second_component.begin(), formulation_without_second_component.end(), second_component));
+    EXPECT_EQ(formulation_without_second_component, describePolymerSGroups(first_component));
+
+    Molecule as_v3000;
+    loadMolecule(saveMolfile(loaded, MolfileSaver::MODE_3000).c_str(), as_v3000);
+    EXPECT_EQ(formulation, describePolymerSGroups(as_v3000));
+
+    Molecule back_as_v2000;
+    loadMolecule(saveMolfile(as_v3000, MolfileSaver::MODE_2000).c_str(), back_as_v2000);
+    EXPECT_EQ(formulation, describePolymerSGroups(back_as_v2000));
+}
+
+TEST_F(IndigoCoreFormatsTest, mol_saver_polymer_sgroup_lines)
+{
+    Molecule mol;
+    loadMolecule(POLYMER_FORMULATION_V2000, mol);
+
+    const std::string v2000 = saveMolfile(mol, MolfileSaver::MODE_2000);
+    for (const char* line : {"M  SCN  3   5 HT    6 HH    4 HT \n", "M  SNC  2   2   1   3   2\n", "M  SST  1   4 BLO\n"})
+        EXPECT_NE(std::string::npos, v2000.find(line)) << line << v2000;
+
+    const std::string v3000 = saveMolfile(mol, MolfileSaver::MODE_3000);
+    for (const char* line : {"M  V30 2 COM 2 ATOMS=(4 1 2 3 4) PARENT=1 COMPNO=1\n", "M  V30 3 COM 3 ATOMS=(1 5) PARENT=1 COMPNO=2\n",
+                             "M  V30 4 COP 4 ATOMS=(2 2 3) SUBTYPE=BLO PARENT=2 CONNECT=HT\n"})
+        EXPECT_NE(std::string::npos, v3000.find(line)) << line << v3000;
+}
+
+TEST_F(IndigoCoreFormatsTest, mol_v3000_sgroup_words_connectivity_and_component_order)
+{
+    struct WordsCase
+    {
+        std::string type_as_read;
+        std::string properties_as_read;
+        std::string type_as_written;
+        std::string properties_as_written;
+    };
+    const std::string order = v3000Order(7);
+    const std::string crossing_bond = "XBONDS=(1 2)";
+    const std::string either_unknown = "CONNECT=EU";
+    const WordsCase cases[] = {
+        {"COPOLYMER", "SUBTYPE=ALTERNATE CONNECT=HH", COPOLYMER_CODE, "SUBTYPE=ALT CONNECT=HH"},
+        {COPOLYMER_CODE, "SUBTYPE=RANDOM CONNECT=HT", COPOLYMER_CODE, "SUBTYPE=RAN CONNECT=HT"},
+        {COPOLYMER_CODE, "SUBTYPE=BLOCK", COPOLYMER_CODE, "SUBTYPE=BLO " + either_unknown},
+        {REPEATING_UNIT_CODE, crossing_bond, REPEATING_UNIT_CODE, crossing_bond + " " + either_unknown},
+        {"COMPONENT", order, COMPONENT_CODE, order},
+        {"MIXTURE", order, MIXTURE_CODE, ""},
+        {"FORMULATION", "", "FOR", ""},
+    };
+
+    for (const WordsCase& words_case : cases)
+    {
+        const std::string molfile = v3000WithSGroup(words_case.type_as_read, words_case.properties_as_read);
+        SCOPED_TRACE(molfile);
+        Molecule mol;
+        loadMolecule(molfile.c_str(), mol);
+
+        const std::string saved = saveMolfile(mol, MolfileSaver::MODE_3000);
+        const std::string written_line = "M  V30 1 " + v3000SGroupLine(words_case.type_as_written, 1, words_case.properties_as_written) + "\n";
+        EXPECT_NE(std::string::npos, saved.find(written_line)) << saved;
+    }
+}
+
+TEST_F(IndigoCoreFormatsTest, mol_loader_component_order_only_positive_and_on_component)
+{
+    struct OrderCase
+    {
+        const char* what;
+        std::string molfile;
+        int expected_order;
+    };
+    // v2000WithSGroup() numbers its only S-group 2: S-group 1 is undefined, S-group 3 is beyond the list.
+    const int the_sgroup = 2;
+    const int undefined_sgroup = 1;
+    const int sgroup_beyond_the_list = 3;
+    const int order = 4;
+    const OrderCase cases[] = {
+        {"V3000, order on a component", v3000WithSGroup(COMPONENT_CODE, v3000Order(order)), order},
+        {"V3000, zero", v3000WithSGroup(COMPONENT_CODE, v3000Order(0)), 0},
+        {"V3000, negative", v3000WithSGroup(COMPONENT_CODE, v3000Order(-order)), 0},
+        {"V3000, order on a mixture", v3000WithSGroup(MIXTURE_CODE, v3000Order(order)), 0},
+        {"V2000, order on a component", v2000WithSGroup(COMPONENT_CODE, v2000OrderLine(the_sgroup, order)), order},
+        {"V2000, zero", v2000WithSGroup(COMPONENT_CODE, v2000OrderLine(the_sgroup, 0)), 0},
+        {"V2000, order on a mixture", v2000WithSGroup(MIXTURE_CODE, v2000OrderLine(the_sgroup, order)), 0},
+        {"V2000, order for an undefined S-group", v2000WithSGroup(COMPONENT_CODE, v2000OrderLine(undefined_sgroup, order)), 0},
+        {"V2000, order for an S-group beyond the list", v2000WithSGroup(COMPONENT_CODE, v2000OrderLine(sgroup_beyond_the_list, order)), 0},
+    };
+
+    for (const OrderCase& order_case : cases)
+    {
+        SCOPED_TRACE(order_case.what);
+        Molecule mol;
+        loadMolecule(order_case.molfile.c_str(), mol);
+        ASSERT_EQ(1, mol.sgroups.getSGroupCount());
+        EXPECT_EQ(order_case.expected_order, mol.sgroups.getSGroup(0).component_order);
+    }
+}
+
+TEST_F(IndigoCoreFormatsTest, mol_loader_reports_unknown_sgroup_type_and_connectivity)
+{
+    const std::pair<std::string, const char*> invalid_molfiles[] = {
+        {v3000WithSGroup("UNKNOWN"), "molecule sgroups: Unknown SGroup type = UNKNOWN"},
+        {v2000WithSGroup(COPOLYMER_CODE, "M  SCN  1   2 XX "), "molfile loader: Undefined Sgroup connectivity: 'XX '"},
+    };
+
+    for (const auto& [molfile, expected_message] : invalid_molfiles)
+    {
+        SCOPED_TRACE(expected_message);
+        Molecule mol;
+        try
+        {
+            loadMolecule(molfile.c_str(), mol);
+            ADD_FAILURE() << "the molfile was loaded";
+        }
+        catch (Exception& e)
+        {
+            EXPECT_STREQ(expected_message, e.message());
+        }
+    }
+}
+
+TEST_F(IndigoCoreFormatsTest, mol_saver_component_order_beyond_v2000)
+{
+    // The V2000 line of the component order gives it three characters.
+    const int widest_v2000_order = 999;
+    const int only_sgroup = 1;
+
+    Molecule mol;
+    loadMolecule(v3000WithSGroup(COMPONENT_CODE).c_str(), mol);
+    SGroup& component = mol.sgroups.getSGroup(0);
+
+    component.component_order = widest_v2000_order + 1;
+    EXPECT_NE(std::string::npos, saveMolfile(mol, MolfileSaver::MODE_AUTO).find(v3000Order(widest_v2000_order + 1)));
+    EXPECT_EQ(std::string::npos, saveMolfile(mol, MolfileSaver::MODE_2000).find(V2000_ORDER_LINE_START));
+
+    component.component_order = widest_v2000_order;
+    EXPECT_NE(std::string::npos, saveMolfile(mol, MolfileSaver::MODE_AUTO).find(v2000OrderLine(only_sgroup, widest_v2000_order) + "\n"));
+}
+
+// M  SCN and M  SNC hold eight entries a line.
+TEST_F(IndigoCoreFormatsTest, mol_saver_v2000_splits_connectivity_and_component_order_lines)
+{
+    const int group_count = 9;
+    Molecule mol;
+    loadMolecule("C.C.C.C.C.C.C.C.C", mol);
+    for (int atom_idx = 0; atom_idx < group_count; atom_idx++)
+    {
+        SGroup& component = mol.sgroups.getSGroup(mol.sgroups.addSGroup(SGroup::SG_TYPE_COM));
+        component.atoms.push(atom_idx);
+        component.component_order = atom_idx + 1;
+        SGroup& copolymer = mol.sgroups.getSGroup(mol.sgroups.addSGroup(SGroup::SG_TYPE_COP));
+        copolymer.atoms.push(atom_idx);
+        copolymer.connectivity = SGroup::HEAD_TO_TAIL;
+    }
+
+    const std::string v2000 = saveMolfile(mol, MolfileSaver::MODE_2000);
+    for (const char* line_start : {"M  SCN  8 ", "M  SCN  1 ", "M  SNC  8 ", "M  SNC  1 "})
+        EXPECT_NE(std::string::npos, v2000.find(line_start)) << line_start << v2000;
+
+    Molecule reloaded;
+    loadMolecule(v2000.c_str(), reloaded);
+    EXPECT_EQ(describePolymerSGroups(mol), describePolymerSGroups(reloaded));
+}
+
 TEST_F(IndigoCoreFormatsTest, mol_saver_nested_sgroups_parent_order)
 {
     Molecule mol;

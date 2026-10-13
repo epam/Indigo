@@ -143,6 +143,9 @@ namespace indigo
         void _readTGroups3000();
         void _checkEndOfMolBlock3000();
         void _readSGroupDisplay(Scanner& scanner, DataSGroup& dsg);
+        // Gives a component its order. An order that is not positive, or one given to another S-group type,
+        // is skipped and the molecule still loads.
+        static void _applyComponentOrder(SGroup& sgroup, int component_order);
         void _readCollectionBlock3000();
         void _readSGroupsBlock3000();
         void _readEndpoints3000(Scanner& scanner, std::vector<int>& endpoints);

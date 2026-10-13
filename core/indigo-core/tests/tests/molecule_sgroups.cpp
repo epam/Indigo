@@ -74,6 +74,27 @@ TEST(MoleculeSGroupsContract, RemoveFreesSlotAndAddReusesFreshInstance)
     EXPECT_EQ(3, sg.getSGroupCount());
 }
 
+// COM, MIX, FOR and GEN are objects of one class and share a reuse bucket: what reuse() leaves
+// behind on a removed component surfaces on an unrelated group.
+TEST(MoleculeSGroupsContract, ReusedSlotForgetsConnectivityAndComponentOrder)
+{
+    MoleculeSGroups sg;
+    int component = sg.addSGroup(SGroup::SG_TYPE_COM);
+    int copolymer = sg.addSGroup(SGroup::SG_TYPE_COP);
+    sg.getSGroup(component).component_order = 5;
+    sg.getSGroup(copolymer).connectivity = SGroup::HEAD_TO_TAIL;
+    sg.getSGroup(copolymer).sgroup_subtype = SGroup::SG_SUBTYPE_BLO;
+
+    sg.remove(component);
+    sg.remove(copolymer);
+
+    SGroup& mixture = sg.getSGroup(sg.addSGroup(SGroup::SG_TYPE_MIX));
+    SGroup& fresh_copolymer = sg.getSGroup(sg.addSGroup(SGroup::SG_TYPE_COP));
+    EXPECT_EQ(0, mixture.component_order);
+    EXPECT_EQ(0, fresh_copolymer.connectivity.value());
+    EXPECT_EQ(0, fresh_copolymer.sgroup_subtype.value());
+}
+
 TEST(MoleculeSGroupsContract, IterationSkipsRemovedSlots)
 {
     MoleculeSGroups sg;
