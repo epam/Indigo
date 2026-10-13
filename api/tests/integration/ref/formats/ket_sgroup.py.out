@@ -1,0 +1,9 @@
+*** KET S-groups ***
+bracketed-without-bonds-2000.mol:SUCCEED
+bracketed-without-bonds-3000.mol:SUCCEED
+explicit-bonds-2000.mol:SUCCEED
+explicit-bonds-3000.mol:SUCCEED
+no-crossing-bonds-2000.mol:SUCCEED
+no-crossing-bonds-3000.mol:SUCCEED
+sru-without-bonds-2000.mol:SUCCEED
+sru-without-bonds-3000.mol:SUCCEED

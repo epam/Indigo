@@ -920,7 +920,6 @@ void MoleculeJsonLoader::handleSGroup(SGroup& sgroup, const std::unordered_set<i
     int start = -1;
     int end = -1;
     int end_bond = -1, start_bond = -1;
-    QS_DEF(Array<int>, xbonds);
 
     for (auto j : bmol.edges())
     {
@@ -938,7 +937,6 @@ void MoleculeJsonLoader::handleSGroup(SGroup& sgroup, const std::unordered_set<i
         else
         {
             // bond going out of the sgroup
-            xbonds.push(j);
             if (start_bond == -1)
             {
                 start_bond = j;
@@ -1015,6 +1013,17 @@ void MoleculeJsonLoader::setStereoFlagPosition(const rapidjson::Value& pos, int 
         s_pos.z = pos["z"].GetFloat();
 
     mol.setStereoFlagPosition(fragment_index, s_pos);
+}
+
+static void addCrossingBonds(SGroup& sgroup, BaseMolecule& mol)
+{
+    const std::unordered_set<int> atoms(sgroup.atoms.ptr(), sgroup.atoms.ptr() + sgroup.atoms.size());
+    for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
+    {
+        const Edge& edge = mol.getEdge(i);
+        if ((atoms.count(edge.beg) > 0) != (atoms.count(edge.end) > 0))
+            sgroup.xbonds.push(i);
+    }
 }
 
 void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolecule& mol)
@@ -1229,6 +1238,8 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
                 sgroup.getBonds().push(bonds[j].GetInt());
             }
         }
+        else if (sg_type != SGroup::SG_TYPE_DAT)
+            addCrossingBonds(sgroup, mol);
     }
 }
 
