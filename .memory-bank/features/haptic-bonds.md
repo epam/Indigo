@@ -4,7 +4,7 @@
 > a set of atoms rather than one atom.
 > **Skip when:** the work is about ordinary two-atom bonds.
 
-Verified on `f0cc3c423`. Ticket family #3233.
+Verified on `f0cc3c423`; what is said about components came with #3927. Ticket family #3233.
 
 ## Problem
 
@@ -73,6 +73,17 @@ deliberately left behind; without the flags it is remapped into the target.
 **When** the structure is rendered, **then** the haptic bond is drawn to the group as a whole —
 `core/render2d/` knows about attachment groups.
 
+**When** the public API is asked for components (`indigoCountComponents`, `indigoComponent`,
+`indigoIterateComponents`, `indigoComponentIndex`, `indigoCloneComponent`,
+`indigoCount/IterateComponentAtoms/Bonds`, `indigoFragmentedSdf`), `standardize` keeps or removes
+fragments or charges a lone halogen, or `checkSalt` / `stripSalt` look for salts,
+**then** a haptic bond joins atoms as an ordinary bond does: a ferrocene is one component, a counter
+ion that nothing bonds is another, and a complex is never a salt (#3927). An attachment group that no
+bond refers to joins nothing. The answer comes from
+`core/indigo-core/molecule/base_molecule.h#moleculeComponents`, never from the graph's
+`countComponents()`, which SMILES, InChI and substructure search keep using — so a complex is one
+component and still prints as dot-separated SMILES.
+
 ## Guarantees
 
 - **An attachment group is not a vertex of the molecular graph.** It never appears in
@@ -89,14 +100,15 @@ deliberately left behind; without the flags it is remapped into the target.
 
 ## Limitations
 
-At `f0cc3c423` the feature is model, KET, MOL V3000 and rendering:
+At `f0cc3c423` the feature was model, KET, MOL V3000 and rendering; the C API with the Python, Java
+and .NET wrappers (#3842), layout (#3844) and CDX/CDXML (#3843) have been added since.
 
 - **Atom-to-atom haptic bonds are lost in V3000.** Silently — see above.
-- **No C API functions**, and therefore nothing in the Python, Java, .NET, R or WASM wrappers: the
-  feature is reachable from C++ only. (In progress as a separate ticket in the family.)
-- **Layout does not place attachment groups** — `core/indigo-core/layout/` has no knowledge of them,
-  so a structure laid out from scratch does not position the group sensibly.
+- **MOL V3000 is not chosen for them automatically**: in `molfile-saving-mode` auto the saver writes
+  V2000, which has no form for a haptic bond, and drops it.
 - Charge and radical state on a group are deliberately out of scope, tracked separately.
 
 Coverage lives in `core/indigo-core/tests/tests/` — `attachment_groups.cpp`, `haptic_bonds.cpp`,
-`haptic_bonds_ket.cpp`, `haptic_molfile.cpp` — plus `api/cpp/tests/rendering/haptic.cpp`.
+`haptic_bonds_ket.cpp`, `haptic_molfile.cpp`, `molecule_components.cpp` — plus
+`api/cpp/tests/rendering/haptic.cpp`, `api/c/tests/unit/tests/haptic_components.cpp` and
+`api/tests/integration/tests/basic/haptic_components.py`.

@@ -1133,7 +1133,7 @@ IndigoObject* IndigoMoleculeComponent::clone()
         newmol = &(((IndigoMolecule*)res.get())->mol);
     }
 
-    Filter filter(mol.getDecomposition().ptr(), Filter::EQ, index);
+    Filter filter(mol.moleculeComponents().getDecomposition().ptr(), Filter::EQ, index);
     newmol->makeSubmolecule(mol, filter, 0, 0);
     for (auto it = newmol->properties().begin(); it != newmol->properties().end(); ++it)
     {
@@ -1155,7 +1155,7 @@ IndigoComponentsIter::~IndigoComponentsIter()
 
 bool IndigoComponentsIter::hasNext()
 {
-    return _idx + 1 < mol.countComponents();
+    return _idx + 1 < mol.moleculeComponents().getComponentsCount();
 }
 
 IndigoObject* IndigoComponentsIter::next()
@@ -1344,7 +1344,7 @@ CEXPORT int indigoCountAtoms(int molecule)
         if (obj.type == IndigoObject::COMPONENT)
         {
             IndigoMoleculeComponent& mc = (IndigoMoleculeComponent&)obj;
-            return mc.mol.countComponentVertices(mc.index);
+            return mc.mol.moleculeComponents().getComponentVerticesCount(mc.index);
         }
         if (obj.type == IndigoObject::SUBMOLECULE)
         {
@@ -1375,7 +1375,7 @@ CEXPORT int indigoCountBonds(int molecule)
         if (obj.type == IndigoObject::COMPONENT)
         {
             IndigoMoleculeComponent& mc = (IndigoMoleculeComponent&)obj;
-            return mc.mol.countComponentEdges(mc.index);
+            return mc.mol.moleculeComponents().getComponentEdgesCount(mc.index);
         }
         if (obj.type == IndigoObject::SUBMOLECULE)
         {
