@@ -470,12 +470,13 @@ void MolfileSaver::_collectHapticRecords(BaseMolecule& mol, std::vector<HapticRe
 
         const HapticBond::Endpoint& group_end = bond.begin().isGroup() ? bond.begin() : bond.end();
         const HapticBond::Endpoint& atom_end = bond.begin().isGroup() ? bond.end() : bond.begin();
+        const AttachmentGroup& group = mol.attachment_groups.group(group_end.index());
 
         HapticRecord record;
         record.group = group_end.index();
         record.atom = atom_end.index();
         record.type = bond.type();
-        record.anchor = mol.attachment_groups.group(record.group).anchorAtom();
+        record.anchor = group.anchorAtom();
         record.edge = -1;
 
         if (record.anchor >= 0 && mol.hasVertex(record.anchor))
@@ -488,6 +489,13 @@ void MolfileSaver::_collectHapticRecords(BaseMolecule& mol, std::vector<HapticRe
         }
         else
             record.anchor = -1;
+
+        // V3000 keeps the charge and the radical of a group on the phantom star of a
+        // haptic record. A record that ends on an atom of the structure gets no star,
+        // and the star of a variable attachment is an atom with a charge of its own.
+        if ((record.anchor >= 0 || record.type == _BOND_VARIABLE_ATTACHMENT) && (group.charge() != 0 || group.radical() != 0))
+            throw Error("attachment group %d has charge %d and radical %d, which V3000 can keep only on the star of a haptic bond record", record.group,
+                        group.charge(), group.radical());
 
         if (record.edge >= 0)
             by_edge[record.edge] = static_cast<int>(records.size());
@@ -801,6 +809,13 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
 
         convert_xyz_to_string(centre, coords);
         out.printf("%d * %s 0", mol.vertexCount() + k + 1, coords.str().c_str());
+
+        // The star stands for the pi-system, so it carries the group's charge and radical.
+        const AttachmentGroup& group = mol.attachment_groups.group(groups_needing_a_star[k]);
+        if (group.charge() != 0)
+            out.printf(" CHG=%d", group.charge());
+        if (group.radical() != 0)
+            out.printf(" RAD=%d", group.radical());
 
         _writeMultiString(output, buf.ptr(), buf.size());
     }

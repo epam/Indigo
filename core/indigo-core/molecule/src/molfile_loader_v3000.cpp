@@ -917,12 +917,23 @@ void MolfileLoader::_addHapticBond3000(int beg, int end, const std::vector<int>&
     if (group < 0)
     {
         group = _bmol->attachment_groups.addGroup();
-        _bmol->attachment_groups.group(group).setAtoms(endpoints);
+        AttachmentGroup& created = _bmol->attachment_groups.group(group);
+        created.setAtoms(endpoints);
 
         if (phantom_centre)
+        {
+            // What the phantom carries is the charge and the radical of the whole
+            // pi-system, so they go to the group before the star leaves in _postLoad.
+            // A query star without the constraint means no charge or radical, and so
+            // does a RAD the format does not define: loading is not validating.
+            const int charge = _bmol->getAtomCharge(anchor);
+            const int radical = _mol != nullptr ? _mol->getStoredRadical(anchor) : _qmol->getAtomRadical(anchor);
+            created.setCharge(charge == CHARGE_UNKNOWN ? 0 : charge);
+            created.setRadical(AttachmentGroup::isValidRadical(radical) ? radical : 0);
             _haptic_star_groups.emplace(anchor, group);
+        }
         else
-            _bmol->attachment_groups.group(group).setAnchorAtom(anchor);
+            created.setAnchorAtom(anchor);
     }
 
     _bmol->addHapticBond(HapticBond::Endpoint::group(group), HapticBond::Endpoint::atom(attached_to), type);
