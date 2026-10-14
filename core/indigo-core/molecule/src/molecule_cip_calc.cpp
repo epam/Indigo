@@ -104,8 +104,7 @@ bool MoleculeCIPCalc::calcCIPLabels(BaseMolecule& mol)
         const bool coordinate_defined_ring_ligands = mol.have_xyz && has_heavy_ligand && all_heavy_ligands_in_ring;
         if (has_ring_ligand || has_tied_ligands)
             digraph_seeded_stereocenters.insert(candidate.atom_idx);
-        if (has_tied_ligands || (has_ring_ligand && !center_in_ring) ||
-            (center_in_ring && (coordinate_defined_ring_ligands || has_multiple_bond_ligand)))
+        if (has_tied_ligands || (has_ring_ligand && !center_in_ring) || (center_in_ring && (coordinate_defined_ring_ligands || has_multiple_bond_ligand)))
             fixed_digraph_stereocenters.insert(candidate.atom_idx);
     }
 
