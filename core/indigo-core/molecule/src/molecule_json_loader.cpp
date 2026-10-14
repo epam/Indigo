@@ -1017,7 +1017,7 @@ void MoleculeJsonLoader::setStereoFlagPosition(const rapidjson::Value& pos, int 
 
 static void addCrossingBonds(SGroup& sgroup, BaseMolecule& mol)
 {
-    const std::unordered_set<int> atoms(sgroup.atoms.ptr(), sgroup.atoms.ptr() + sgroup.atoms.size());
+    const std::unordered_set<int> atoms(sgroup.atoms.begin(), sgroup.atoms.end());
     for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
     {
         const Edge& edge = mol.getEdge(i);
