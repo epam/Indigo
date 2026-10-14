@@ -31,6 +31,12 @@
 
 using namespace indigo;
 
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#pragma warning(disable : 4018)
+#endif
+
 // CIP rule 1, part 1: Higher atomic number precedes lower.
 // If the substituent is an electron pair (see req. 3.5. & 3.7.), its priority will always be lowest -- AN=0.
 constexpr int LONE_PAIR = 0;
@@ -923,7 +929,7 @@ void MoleculeCIPCalc::_collectAtomCandidates(BaseMolecule& mol, BaseMolecule& un
         int double_count = 0;
         std::vector<int> up_neibs;
         std::vector<int> down_neibs;
-        for (size_t i = 0; i < neighbors.size(); i++)
+        for (int i = 0; i < neighbors.size(); i++)
         {
             int neib_idx = neighbors[i];
             int bond_idx = unfolded_mol.findEdgeIndex(atom_idx, neib_idx);
@@ -1249,3 +1255,7 @@ void MoleculeCIPCalc::_atomCandidatesFromStereocenters(BaseMolecule& mol, Array<
         atom_candidates.emplace_back(atom_idx, direction, std::move(neighbors));
     }
 }
+
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
