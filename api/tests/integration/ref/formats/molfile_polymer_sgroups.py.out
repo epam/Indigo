@@ -1,12 +1,50 @@
-*** 3953-formulation saved as V2000 ***
-3953-formulation-v2000.mol:SUCCEED
-3953-formulation-v2000.mol:SUCCEED
-*** 3953-formulation saved as V3000 ***
-3953-formulation-v3000.mol:SUCCEED
-3953-formulation-v3000.mol:SUCCEED
-*** 3953-formulation-words-v3000 saved as V2000 ***
-3953-formulation-words-v3000-v2000.mol:SUCCEED
-3953-formulation-words-v3000-v2000.mol:SUCCEED
-*** 3953-formulation-words-v3000 saved as V3000 ***
-3953-formulation-words-v3000-v3000.mol:SUCCEED
-3953-formulation-words-v3000-v3000.mol:SUCCEED
+*** Repeat pattern, subtype, component order, nesting ***
+formulation-v2000-2000.mol:SUCCEED
+the same after clone()
+formulation-v2000-2000.mol:SUCCEED
+formulation-v2000-3000.mol:SUCCEED
+the same after clone()
+formulation-v2000-3000.mol:SUCCEED
+formulation-words-v3000-2000.mol:SUCCEED
+the same after clone()
+formulation-words-v3000-2000.mol:SUCCEED
+formulation-words-v3000-3000.mol:SUCCEED
+the same after clone()
+formulation-words-v3000-3000.mol:SUCCEED
+sgroup-words-v3000-2000.mol:SUCCEED
+the same after clone()
+sgroup-words-v3000-2000.mol:SUCCEED
+sgroup-words-v3000-3000.mol:SUCCEED
+the same after clone()
+sgroup-words-v3000-3000.mol:SUCCEED
+*** Read back: V2000 -> V3000 -> V2000 ***
+formulation-v2000-3000.mol:SUCCEED
+formulation-v2000-read-from-v3000-2000.mol:SUCCEED
+formulation-v2000-read-from-v3000-2000.mol:SUCCEED
+*** Merge into an empty molecule ***
+formulation-v2000-3000.mol:SUCCEED
+*** Values that are skipped ***
+component-order-not-taken-v2000-2000.mol:SUCCEED
+component-order-not-taken-v2000-3000.mol:SUCCEED
+component-order-not-taken-v3000-2000.mol:SUCCEED
+component-order-not-taken-v3000-3000.mol:SUCCEED
+connectivity-not-known-v2000-2000.mol:SUCCEED
+connectivity-not-known-v2000-3000.mol:SUCCEED
+connectivity of the repeating unit: 0
+connectivity-not-known-v3000-2000.mol:SUCCEED
+connectivity-not-known-v3000-3000.mol:SUCCEED
+connectivity of the repeating unit: 0
+*** The widest order that M  SNC holds, and the next one ***
+component-order-999-v3000-auto.mol:SUCCEED
+component-order-999-v3000-2000.mol:SUCCEED
+component-order-1000-v3000-auto.mol:SUCCEED
+component-order-1000-v3000-2000.mol:SUCCEED
+*** More entries than one property line holds ***
+nine-components-nine-copolymers-v3000-2000.mol:SUCCEED
+nine-components-nine-copolymers-v3000-3000.mol:SUCCEED
+the same after reading the V2000 output
+nine-components-nine-copolymers-v3000-2000.mol:SUCCEED
+*** Input that is rejected ***
+unknown-sgroup-type-v3000: molecule sgroups: Unknown SGroup type = UNKNOWN
+component-order-undefined-sgroup-v2000: molfile loader: M SNC refers to undefined Sgroup 1
+component-order-sgroup-beyond-list-v2000: molfile loader: M SNC refers to undefined Sgroup 3

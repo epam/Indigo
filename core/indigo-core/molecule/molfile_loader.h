@@ -143,8 +143,10 @@ namespace indigo
         void _readTGroups3000();
         void _checkEndOfMolBlock3000();
         void _readSGroupDisplay(Scanner& scanner, DataSGroup& dsg);
-        // Gives a component its order. An order that is not positive, or one given to another S-group type,
+        // Give an S-group what a V2000 or V3000 property says about it. A value that is not understood - an
+        // unknown connectivity code, an order that is not positive - or that the S-group type does not carry
         // is skipped and the molecule still loads.
+        static void _applyConnectivity(SGroup& sgroup, const char* connectivity_code);
         static void _applyComponentOrder(SGroup& sgroup, int component_order);
         void _readCollectionBlock3000();
         void _readSGroupsBlock3000();

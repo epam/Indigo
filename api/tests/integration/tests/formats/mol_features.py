@@ -6,7 +6,7 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
-from common.util import find_diff
+from common.util import compare_diff, find_diff
 from env_indigo import (  # noqa
     Indigo,
     IndigoException,
@@ -15,6 +15,13 @@ from env_indigo import (  # noqa
 )
 
 indigo = Indigo()
+ref_path = joinPathPy("ref/mol_features", __file__)
+
+
+def compareMolfile(mol, name, saving_mode=None):
+    if saving_mode is not None:
+        name = "%s-%s" % (name, saving_mode)
+    compare_diff(ref_path, name + ".mol", mol.molfile())
 
 
 def iterateSavingOptions():
@@ -59,14 +66,14 @@ mol = indigo.loadMoleculeFromFile(
     joinPathPy("molecules/sgroups_2.mol", __file__)
 )
 for opt in iterateSavingOptions():
-    print(mol.molfile())
+    compareMolfile(mol, "sgroups_2", opt)
     saver.append(mol)
 
 mol = indigo.loadMoleculeFromFile(
     joinPathPy("molecules/all_features_mol.mol", __file__)
 )
 for opt in iterateSavingOptions():
-    print(mol.molfile())
+    compareMolfile(mol, "all_features_mol", opt)
     saver.append(mol)
 
 print("Iterate Groups")
@@ -130,7 +137,7 @@ for root, dirnames, filenames in os.walk(
                 os.path.join(root, filename)
             )
             for opt in iterateSavingOptions():
-                print(mol.molfile())
+                compareMolfile(mol, os.path.splitext(filename)[0], opt)
                 saver.append(mol)
             print("   OK")
         except IndigoException as e:
@@ -183,7 +190,7 @@ mol = indigo.loadMoleculeFromFile(
     joinPathPy("molecules/new-v3000-sap.mol", __file__)
 )
 print(mol.smiles())
-print(mol.molfile())
+compareMolfile(mol, "new-v3000-sap")
 
 print("*** 2-digit pseudoatom index ***")
 mol = indigo.loadMoleculeFromFile(
@@ -196,7 +203,7 @@ smiles = "C1CCC(C1)Nc1ccc2ccn(-c3ccc4[nH]ncc4c3)c2c1"
 mol = indigo.loadMolecule(smiles)
 print(smiles)
 indigo.setOption("molfile-saving-mode", "3000")
-print(mol.molfile())
+compareMolfile(mol, "issue_1415")
 
 print("*** 1431 Query explicit valency crash ***")
 qmol = indigo.loadQueryMoleculeFromFile(

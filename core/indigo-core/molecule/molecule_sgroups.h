@@ -142,6 +142,12 @@ namespace indigo
             return xbonds;
         }
 
+        // The readers take only a positive order, so a writer asks no more than this.
+        bool hasComponentOrder() const
+        {
+            return component_order != 0;
+        }
+
         Array<char> label;                  // SMT in Molfile format (LABEL in V3000)
         Nullable<int> brk_style;            // represented with SBT in Molfile format
         Array<Vec2f[2]> brackets;           // represented with SDI in Molfile format

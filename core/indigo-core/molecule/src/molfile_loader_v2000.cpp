@@ -41,6 +41,9 @@
 
 using namespace indigo;
 
+// A V2000 property line names an S-group that no M  STY line defines; takes the tag of the line and the number.
+static const char* const UNDEFINED_SGROUP_MESSAGE = "M %s refers to undefined Sgroup %d";
+
 void MolfileLoader::_readCtab2000()
 {
     _init();
@@ -1189,18 +1192,12 @@ void MolfileLoader::_readCtab2000()
                     _scanner.readCharsFix(3, id);
 
                     if (sgroup_idx < 0 || sgroup_idx >= _sgroup_types.size())
-                        throw Error("M SCN refers to undefined Sgroup %d", sgroup_idx + 1);
+                        throw Error(UNDEFINED_SGROUP_MESSAGE, MOLFILE_SGROUP_CONNECTIVITY_TAG, sgroup_idx + 1);
 
-                    if (SGroup::typeHasConnectivity(_sgroup_types[sgroup_idx]))
+                    if (_sgroup_mapping[sgroup_idx] >= 0)
                     {
-                        const char code[] = {id[0], id[1], 0};
-                        const int connectivity = SGroup::getConnectivity(code);
-                        if (connectivity == -1)
-                        {
-                            id[3] = 0;
-                            throw Error("Undefined Sgroup connectivity: '%s'", id);
-                        }
-                        _bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]).connectivity = connectivity;
+                        const char connectivity_code[] = {id[0], id[1], 0};
+                        _applyConnectivity(_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]), connectivity_code);
                     }
                     if (id[2] == '\n')
                     {
@@ -1226,8 +1223,10 @@ void MolfileLoader::_readCtab2000()
                     _scanner.skip(1);
                     int component_order = _scanner.readIntFix(3);
 
-                    if (sgroup_idx >= 0 && sgroup_idx < _sgroup_mapping.size() && _sgroup_mapping[sgroup_idx] >= 0)
-                        _applyComponentOrder(_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]), component_order);
+                    if (sgroup_idx < 0 || sgroup_idx >= _sgroup_mapping.size() || _sgroup_mapping[sgroup_idx] < 0)
+                        throw Error(UNDEFINED_SGROUP_MESSAGE, MOLFILE_SGROUP_COMPONENT_ORDER_TAG, sgroup_idx + 1);
+
+                    _applyComponentOrder(_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]), component_order);
                 }
                 _scanner.skipLine();
             }

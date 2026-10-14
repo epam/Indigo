@@ -1272,7 +1272,7 @@ void MolfileSaver::_writeGenericSGroup3000(SGroup& sgroup, const SGroupInfo& inf
     {
         output.printf(" PARENT=%d", info.new_parent_index);
     }
-    if (sgroup.component_order > 0)
+    if (sgroup.hasComponentOrder())
     {
         output.printf(" %s=%d", MOLFILE_SGROUP_COMPONENT_ORDER_KEY, sgroup.component_order);
     }
@@ -1859,7 +1859,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
         {
             if (SGroup::typeHasConnectivity(info->sgroup.sgroup_type))
                 connectivity_infos.push_back(info);
-            if (info->sgroup.component_order > 0 && info->sgroup.component_order <= MAX_V2000_COMPONENT_ORDER)
+            if (info->sgroup.hasComponentOrder() && info->sgroup.component_order <= MAX_V2000_COMPONENT_ORDER)
                 numbered_component_infos.push_back(info);
         }
         _writePropertyEntryLines(output, MOLFILE_SGROUP_CONNECTIVITY_TAG, static_cast<int>(connectivity_infos.size()), [&](int entry) {

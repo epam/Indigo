@@ -1395,9 +1395,7 @@ void MolfileLoader::_readSGroup3000(const char* str)
         {
             QS_DEF(Array<char>, connect);
             scanner.readWord(connect, 0);
-            const int connectivity = SGroup::getConnectivity(connect.ptr());
-            if (connectivity != -1 && SGroup::typeHasConnectivity(sgroup->sgroup_type))
-                sgroup->connectivity = connectivity;
+            _applyConnectivity(*sgroup, connect.ptr());
         }
         else if (strcmp(entity.ptr(), MOLFILE_SGROUP_COMPONENT_ORDER_KEY) == 0)
         {
@@ -1767,6 +1765,13 @@ void MolfileLoader::_readTGroups3000()
             break;
         }
     }
+}
+
+void MolfileLoader::_applyConnectivity(SGroup& sgroup, const char* connectivity_code)
+{
+    const int connectivity = SGroup::getConnectivity(connectivity_code);
+    if (connectivity != -1 && SGroup::typeHasConnectivity(sgroup.sgroup_type))
+        sgroup.connectivity = connectivity;
 }
 
 void MolfileLoader::_applyComponentOrder(SGroup& sgroup, int component_order)
