@@ -923,7 +923,7 @@ void MoleculeCIPCalc::_collectAtomCandidates(BaseMolecule& mol, BaseMolecule& un
         int double_count = 0;
         std::vector<int> up_neibs;
         std::vector<int> down_neibs;
-        for (int i = 0; i < neighbors.size(); i++)
+        for (size_t i = 0; i < neighbors.size(); i++)
         {
             int neib_idx = neighbors[i];
             int bond_idx = unfolded_mol.findEdgeIndex(atom_idx, neib_idx);
