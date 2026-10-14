@@ -17,6 +17,7 @@
  ***************************************************************************/
 
 #include <algorithm>
+#include <cstdlib>
 #include <memory>
 #include <vector>
 
@@ -926,12 +927,23 @@ void MolfileLoader::_addHapticBond3000(int beg, int end, const std::vector<int>&
     if (group < 0)
     {
         group = _bmol->attachment_groups.addGroup();
-        _bmol->attachment_groups.group(group).setAtoms(endpoints);
+        AttachmentGroup& created = _bmol->attachment_groups.group(group);
+        created.setAtoms(endpoints);
 
         if (phantom_centre)
+        {
+            // What the phantom carries is the charge and the radical of the whole
+            // pi-system, so they go to the group before the star leaves in _postLoad.
+            // A query star without the constraint means no charge or radical, and so
+            // does a RAD the format does not define: loading is not validating.
+            const int charge = _bmol->getAtomCharge(anchor);
+            const int radical = _mol != nullptr ? _mol->getStoredRadical(anchor) : _qmol->getAtomRadical(anchor);
+            created.setCharge(charge == CHARGE_UNKNOWN ? 0 : charge);
+            created.setRadical(AttachmentGroup::isValidRadical(radical) ? radical : 0);
             _haptic_star_groups.emplace(anchor, group);
+        }
         else
-            _bmol->attachment_groups.group(group).setAnchorAtom(anchor);
+            created.setAnchorAtom(anchor);
     }
 
     _bmol->addHapticBond(HapticBond::Endpoint::group(group), HapticBond::Endpoint::atom(attached_to), type);
@@ -947,9 +959,29 @@ void MolfileLoader::_readSGroupsBlock3000()
 
         if (strncmp(str.ptr(), "END SGROUP", 10) == 0)
             break;
-        if (STRCMP(str.ptr(), "M  V30 DEFAULT") == 0)
-            continue;
-        _readSGroup3000(str.ptr());
+        int entry_start = 0;
+        if (STRCMP(str.ptr(), "DEFAULT") == 0)
+        {
+            // The defaults are skipped, not applied; an S-group can continue the same entry
+            BufferScanner scanner(str.ptr());
+            QS_DEF(Array<char>, keyword);
+            scanner.skip(static_cast<int>(strlen("DEFAULT")));
+            scanner.skipSpace();
+            while (!scanner.isEOF() && !isdigit(static_cast<unsigned char>(scanner.lookNext())))
+            {
+                scanner.readWord(keyword, " \t=");
+                keyword.push(0);
+                if (scanner.lookNext() != '=')
+                    throw Error("DEFAULT entry: expected '=' after \"%s\"", keyword.ptr());
+                scanner.skip(1); // =
+                _skipValue3000(scanner);
+                scanner.skipSpace();
+            }
+            if (scanner.isEOF())
+                continue;
+            entry_start = static_cast<int>(scanner.tell());
+        }
+        _readSGroup3000(str.ptr() + entry_start);
     }
 
     _fillSGroupsParentIndices();
@@ -1571,25 +1603,28 @@ void MolfileLoader::_readSGroup3000(const char* str)
             }
         }
         else
-        {
-            if (scanner.lookNext() == '(')
-            {
-                scanner.skip(1);
-                n = scanner.readInt1();
-                while (n-- > 0)
-                {
-                    scanner.readFloat();
-                    scanner.skipSpace();
-                }
-                scanner.skip(1); // )
-            }
-            else
-            {
-                // Unknown property that can have value in quotes: PROP="     "
-                _readStringInQuotes(scanner, NULL);
-            }
-        }
+            _skipValue3000(scanner);
         scanner.skipSpace();
+    }
+}
+
+void MolfileLoader::_skipValue3000(Scanner& scanner)
+{
+    if (scanner.lookNext() == '(')
+    {
+        scanner.skip(1);
+        int n = scanner.readInt1();
+        while (n-- > 0)
+        {
+            scanner.readFloat();
+            scanner.skipSpace();
+        }
+        scanner.skip(1); // )
+    }
+    else
+    {
+        // A value that can be in quotes: PROP="     "
+        _readStringInQuotes(scanner, NULL);
     }
 }
 
@@ -1836,13 +1871,23 @@ void MolfileLoader::_readSGroupDisplay(Scanner& scanner, DataSGroup& dsg)
         long long cur = scanner.tell();
 
         char chars[4] = {0, 0, 0, 0};
-        scanner.readCharsFix(3, chars);
+        for (int i = 0; i < 3 && !scanner.isEOF(); i++)
+            chars[i] = scanner.readChar();
         if (strncmp(chars, "ALL", 3) == 0)
             dsg.num_chars = 0;
+        else if (well_formatted)
+        {
+            char* end;
+            long count = strtol(chars, &end, 10);
+            if (end != chars && count >= 0)
+                dsg.num_chars = static_cast<int>(count);
+        }
         else
         {
-            scanner.seek(cur, SEEK_CUR);
-            dsg.num_chars = scanner.readInt1();
+            scanner.seek(cur, SEEK_SET);
+            int count = scanner.readInt1();
+            if (count >= 0)
+                dsg.num_chars = count;
         }
 
         if (well_formatted)

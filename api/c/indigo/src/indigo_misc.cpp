@@ -29,6 +29,7 @@
 #include "molecule/molecule_hash.h"
 #include "molecule/molecule_ionize.h"
 #include "molecule/molecule_json_saver.h"
+#include "molecule/molecule_salt_stripper.h"
 #include "molecule/rdf_loader.h"
 #include "molecule/sdf_loader.h"
 #include "reaction/icr_loader.h"
@@ -1312,6 +1313,28 @@ CEXPORT int indigoIonize(int object, float pH, float pH_toll)
         Molecule& mol = obj.getMolecule();
         mol.ionize(pH, pH_toll, self.ionize_options);
         return 1;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoCheckSalt(int molecule)
+{
+    INDIGO_BEGIN
+    {
+        Molecule& mol = self.getObject(molecule).getMolecule();
+        MoleculeSaltStripper stripper(self.arom_options);
+        return stripper.hasSalts(mol) ? 1 : 0;
+    }
+    INDIGO_END(-1);
+}
+
+CEXPORT int indigoStripSalt(int molecule)
+{
+    INDIGO_BEGIN
+    {
+        Molecule& mol = self.getObject(molecule).getMolecule();
+        MoleculeSaltStripper stripper(self.arom_options);
+        return stripper.strip(mol) ? 1 : 0;
     }
     INDIGO_END(-1);
 }

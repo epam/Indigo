@@ -1672,6 +1672,25 @@ namespace com.epam.indigo
             return new IndigoObject(dispatcher, dispatcher.checkResult(IndigoLib.indigoComponent(self, index)), this);
         }
 
+        public bool checkSalt()
+        {
+            dispatcher.setSessionID();
+            return dispatcher.checkResult(IndigoLib.indigoCheckSalt(self)) == 1;
+        }
+
+        public IndigoObject stripSalt()
+        {
+            return stripSalt(false);
+        }
+
+        public IndigoObject stripSalt(bool inplace)
+        {
+            dispatcher.setSessionID();
+            IndigoObject target = inplace ? this : clone();
+            dispatcher.checkResult(IndigoLib.indigoStripSalt(target.self));
+            return target;
+        }
+
         public int countSSSR()
         {
             dispatcher.setSessionID();

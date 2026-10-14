@@ -1,5 +1,6 @@
 """
 Issue #3842: expose attachment groups and haptic bonds (#3233) through the API.
+Issue #3924: the charge and the radical of an attachment group.
 
 An attachment group is a set of atoms acting as one end of a haptic bond. Neither
 the group nor the bond is a part of the molecular graph, so this test also pins
@@ -18,9 +19,18 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
-from env_indigo import Indigo, IndigoException, getIndigoExceptionText  # noqa
+from common.util import compare_diff  # noqa
+from env_indigo import (  # noqa
+    Indigo,
+    IndigoException,
+    getIndigoExceptionText,
+    joinPathPy,
+)
 
 indigo = Indigo()
+
+MOLFILE_SAVING_MODE = "molfile-saving-mode"
+V3000 = "3000"
 
 KET_RING_AND_METAL = """{
     "root": {
@@ -196,16 +206,16 @@ for fmt, save in (
 
 print()
 print("*** V3000 writes the bond out, V2000 omits it (#3840) ***")
-indigo.setOption("molfile-saving-mode", "3000")
+indigo.setOption(MOLFILE_SAVING_MODE, V3000)
 v3000 = mol.molfile()
 print("V3000 carries ENDPTS: %s" % ("ENDPTS" in v3000))
 print(
     "the group gets a star atom back: %s"
     % (indigo.loadMolecule(v3000).countAttachmentGroups() == 1)
 )
-indigo.setOption("molfile-saving-mode", "2000")
+indigo.setOption(MOLFILE_SAVING_MODE, "2000")
 print("V2000 carries ENDPTS: %s" % ("ENDPTS" in mol.molfile()))
-indigo.setOption("molfile-saving-mode", "auto")
+indigo.setOption(MOLFILE_SAVING_MODE, "auto")
 
 print()
 print(
@@ -278,3 +288,147 @@ print(
     "groups=%d haptic bonds=%d"
     % (mol2.countAttachmentGroups(), mol2.countHapticBonds())
 )
+
+
+# Issue #3924. What a saver writes is compared with a reference file; the .out
+# keeps the values read back through the API and the error texts.
+molecules_path = joinPathPy("molecules/", __file__)
+ref_path = joinPathPy("ref/haptic_api/", __file__)
+# One group, ethylene on platinum, with no charge of its own; the atoms K+ and
+# Pt- carry charges the group must leave alone.
+ZEISE_SALT = "zeise-salt-hydrate"
+# Two groups, whose stars bring a charge of -1 each.
+FERROCENE = "ferrocene-variant5"
+indigo.setOption("json-saving-pretty", True)
+indigo.setOption("json-use-native-precision", True)
+indigo.setOption("json-set-native-precision", 3)
+indigo.setOption("molfile-saving-skip-date", True)
+# Left to itself the saver writes V2000, which has no form for a haptic bond.
+indigo.setOption(MOLFILE_SAVING_MODE, V3000)
+
+
+def fixture_path(name):
+    return os.path.join(molecules_path, name + ".mol")
+
+
+def group_values(group):
+    return "charge=%s radical=%s" % (group.charge(), group.radical())
+
+
+def atom_charges(mol):
+    return [atom.charge() for atom in mol.iterateAtoms()]
+
+
+print()
+print("*** a group has a charge and a radical of its own ***")
+zeise = indigo.loadMoleculeFromFile(fixture_path(ZEISE_SALT))
+compare_diff(ref_path, ZEISE_SALT + ".ket", zeise.json())
+ethylene_group = zeise.getAttachmentGroup(0)
+print("as loaded: %s" % group_values(ethylene_group))
+charges_before = atom_charges(zeise)
+ethylene_group.setCharge(-1)
+ethylene_group.setRadical(Indigo.DOUBLET)
+print("after setting: %s" % group_values(ethylene_group))
+print("atom charges unchanged: %s" % (atom_charges(zeise) == charges_before))
+for haptic_bond in zeise.iterateHapticBonds():
+    for bond_end in (
+        haptic_bond.hapticBondBegin(),
+        haptic_bond.hapticBondEnd(),
+    ):
+        if bond_end.isAttachmentGroup() and bond_end.index() == 0:
+            print(
+                "the same group as the end of its bond: %s"
+                % group_values(bond_end)
+            )
+charged_ket = zeise.json()
+charged_molfile = zeise.molfile()
+compare_diff(ref_path, ZEISE_SALT + "-charged.ket", charged_ket)
+compare_diff(ref_path, ZEISE_SALT + "-charged.mol", charged_molfile)
+print(
+    "read back from KET: %s"
+    % group_values(indigo.loadMolecule(charged_ket).getAttachmentGroup(0))
+)
+print(
+    "read back from V3000: %s"
+    % group_values(indigo.loadMolecule(charged_molfile).getAttachmentGroup(0))
+)
+expect_error("unknown radical", lambda: ethylene_group.setRadical(5))
+expect_error("same on an atom", lambda: zeise.getAtom(0).setRadical(5))
+
+print()
+print("*** every radical value, and back to none ***")
+for radical_name, radical_value in (
+    ("singlet", Indigo.SINGLET),
+    ("doublet", Indigo.DOUBLET),
+    ("triplet", Indigo.TRIPLET),
+    ("none", 0),
+):
+    ethylene_group.setRadical(radical_value)
+    print(
+        "%s: set %s, read %s"
+        % (radical_name, radical_value, ethylene_group.radical())
+    )
+ethylene_group.setCharge(0)
+print("charge set back: %s" % ethylene_group.charge())
+# Cleared, the group is saved exactly as the file was loaded.
+compare_diff(ref_path, ZEISE_SALT + ".ket", zeise.json())
+
+print()
+print("*** two groups keep their own values ***")
+two_rings = indigo.loadMoleculeFromFile(fixture_path(FERROCENE))
+first_ring = two_rings.getAttachmentGroup(0)
+second_ring = two_rings.getAttachmentGroup(1)
+first_ring.setCharge(1)
+second_ring.setCharge(2)
+second_ring.setRadical(Indigo.TRIPLET)
+for group in two_rings.iterateAttachmentGroups():
+    print("group %d: %s" % (group.index(), group_values(group)))
+first_ring.remove()
+expect_error("removed: charge", lambda: first_ring.charge())
+expect_error("removed: setCharge", lambda: first_ring.setCharge(1))
+expect_error("removed: radical", lambda: first_ring.radical())
+expect_error(
+    "removed: setRadical", lambda: first_ring.setRadical(Indigo.DOUBLET)
+)
+print("the other group is as it was: %s" % group_values(second_ring))
+
+print()
+print("*** a view taken from the molecule follows the group ***")
+viewed = indigo.loadMoleculeFromFile(fixture_path(ZEISE_SALT))
+view = viewed.getSubmolecule([atom.index() for atom in viewed.iterateAtoms()])
+
+
+def view_groups():
+    return ", ".join(
+        group_values(group) for group in view.iterateAttachmentGroups()
+    )
+
+
+print("before: %s" % view_groups())
+viewed.getAttachmentGroup(0).setCharge(-1)
+print("after setCharge: %s" % view_groups())
+viewed.getAttachmentGroup(0).setRadical(Indigo.DOUBLET)
+print("after setRadical: %s" % view_groups())
+
+print()
+print("*** a group of a query molecule takes them as well ***")
+query = indigo.loadQueryMoleculeFromFile(fixture_path(ZEISE_SALT))
+query_group = query.getAttachmentGroup(0)
+query_group.setCharge(-1)
+query_group.setRadical(Indigo.TRIPLET)
+print(group_values(query_group))
+
+print()
+print("*** no other atom call takes a group, and no other object these ***")
+expect_error("resetCharge", lambda: ethylene_group.resetCharge())
+expect_error("resetRadical", lambda: ethylene_group.resetRadical())
+expect_error("radicalElectrons", lambda: ethylene_group.radicalElectrons())
+expect_error("charge of a bond", lambda: zeise.getBond(0).charge())
+expect_error("of a haptic bond", lambda: zeise.getHapticBond(0).setCharge(1))
+
+print()
+print("*** V3000 keeps the charge of a haptic group only ***")
+markush = indigo.loadMolecule(VARIABLE_ATTACHMENT)
+markush.getAttachmentGroup(0).setCharge(-1)
+expect_error("variable attachment", lambda: markush.molfile())
+compare_diff(ref_path, "variable-attachment-charged.ket", markush.json())
