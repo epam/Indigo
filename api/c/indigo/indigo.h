@@ -492,6 +492,7 @@ CEXPORT int indigoDegree(int atom);
 
 // Returns zero if the charge is ambiguous
 // If the charge is nonambiguous, returns 1 and writes *charge
+// Also takes an attachment group: see indigoAddAttachmentGroup
 CEXPORT int indigoGetCharge(int atom, int* charge);
 // Same as indigoGetCharge
 CEXPORT int indigoGetExplicitValence(int atom, int* valence);
@@ -626,6 +627,17 @@ CEXPORT int indigoIterateSGroupCrossBonds(int sgroup);
 // appear in indigoIterateAtoms/indigoIterateBonds of the molecule, only through
 // the calls here. On a group object indigoCountAtoms/indigoIterateAtoms report its
 // members, and indigoRemove drops the group along with the bonds that address it.
+//
+// A group has a charge and a radical of its own, never those of a member atom:
+// indigoGetCharge/indigoSetCharge and indigoGetRadical/indigoSetRadical take a
+// group object as they take an atom, in a molecule and in a query molecule alike.
+// The getters always return 1 for a group - the value is defined, 0 when none is
+// set - and the radical is 0, INDIGO_SINGLET, INDIGO_DOUBLET or INDIGO_TRIPLET.
+// No other atom call takes a group: where an atom has indigoResetCharge and
+// indigoResetRadical, a group is cleared by setting 0. MOL V3000 keeps both values
+// only on the star atom of a haptic bond record, so saving a group that carries
+// them fails when its record ends on an atom of the structure or is a variable
+// attachment; KET keeps them on any group.
 CEXPORT int indigoAddAttachmentGroup(int molecule, int natoms, int* atoms);
 CEXPORT int indigoCountAttachmentGroups(int molecule);
 CEXPORT int indigoIterateAttachmentGroups(int molecule);
@@ -772,12 +784,15 @@ CEXPORT int indigoSetTemplateAtomClass(int atom, const char* name);
 CEXPORT int indigoAddRSite(int molecule, const char* name);
 CEXPORT int indigoSetRSite(int atom, const char* name);
 
+// Also takes an attachment group: see indigoAddAttachmentGroup
 CEXPORT int indigoSetCharge(int atom, int charge);
 CEXPORT int indigoSetIsotope(int atom, int isotope);
 
 // If the radical is nonambiguous, returns 1 and writes *electrons
 CEXPORT int indigoGetRadicalElectrons(int atom, int* electrons);
 // If the radical is nonambiguous, returns 1 and writes *radical
+// indigoGetRadical and indigoSetRadical also take an attachment group: see
+// indigoAddAttachmentGroup
 CEXPORT int indigoGetRadical(int atom, int* radical);
 CEXPORT int indigoSetRadical(int atom, int radical);
 CEXPORT int indigoResetRadical(int atom);
@@ -819,7 +834,8 @@ CEXPORT int indigoIsSelected(int item);
 // Molecule or reaction
 CEXPORT int indigoHasSelection(int item);
 
-/* Connected components of molecules */
+/* Components of molecules: atoms held together by bonds. A haptic bond holds
+   them as an ordinary bond does, so a ferrocene is one component. */
 
 CEXPORT int indigoCountComponents(int molecule);
 CEXPORT int indigoComponentIndex(int atom);
@@ -829,6 +845,16 @@ CEXPORT int indigoIterateComponents(int molecule);
 // [query] molecule, but supports the indigo{Count,Iterate}{Atoms,Bonds} calls,
 // and also the indigoClone() call, which returns a [query] molecule.
 CEXPORT int indigoComponent(int molecule, int index);
+
+/* Salts: components that are a lone ion or a small inorganic species. A
+   component that haptic bonds hold together is a coordination compound, not
+   a salt. */
+
+// Returns 1 if the molecule has a salt, 0 if it has none.
+CEXPORT int indigoCheckSalt(int molecule);
+// Removes the salts from the molecule. Returns 1 if an atom was removed, 0 if
+// there was nothing to remove.
+CEXPORT int indigoStripSalt(int molecule);
 
 /* Smallest Set of Smallest Rings */
 
@@ -1030,9 +1056,10 @@ CEXPORT long long indigoTell64(int handle);
 // Saves the molecule to an SDF output stream
 CEXPORT int indigoSdfAppend(int output, int item);
 
-// Splits the item into fragments (connected components for a molecule,
-// constituent molecules for a reaction) and returns the whole multi-record
-// SDF as a string. Single entry point for SDF-by-fragments serialization.
+// Splits the item into fragments (components for a molecule, as
+// indigoIterateComponents() gives them, constituent molecules for a reaction)
+// and returns the whole multi-record SDF as a string. Single entry point for
+// SDF-by-fragments serialization.
 CEXPORT const char* indigoFragmentedSdf(int item);
 
 // Saves the molecule to a multiline SMILES output stream

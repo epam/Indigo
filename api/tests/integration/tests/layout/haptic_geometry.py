@@ -12,9 +12,9 @@ from env_indigo import *  # noqa
 # What a drawing may not show, counted rather than looked at: two bonds that
 # cross, an atom on a bond it has nothing to do with, two atoms in one place. A
 # haptic bond is not an edge, so it never appears here - it is allowed to cross.
-# Collisions inside one component belong to the ordinary layout; the ones between
-# components are what the haptic placement is responsible for, so they are
-# reported apart.
+# Collisions inside a piece that ordinary bonds hold together belong to the
+# ordinary layout; the ones between such pieces are what the haptic placement is
+# responsible for, so they are reported apart.
 #
 # The lengths of the haptic bonds are printed beside them, because they are the
 # requirement (#3233, 4) and because neither they nor the counts are coordinates:
@@ -94,11 +94,27 @@ def distance_to_bond(point, begin, end):
     )
 
 
+def bonded_pieces(molecule):
+    # What ordinary bonds alone hold together. iterateComponents() follows
+    # haptic bonds as well, so it gives a whole complex as one piece.
+    parent = {}
+    for atom in molecule.iterateAtoms():
+        parent[atom.index()] = atom.index()
+
+    def find(atom):
+        while parent[atom] != atom:
+            parent[atom] = parent[parent[atom]]
+            atom = parent[atom]
+        return atom
+
+    for bond in molecule.iterateBonds():
+        parent[find(bond.source().index())] = find(bond.destination().index())
+
+    return dict((atom, find(atom)) for atom in parent)
+
+
 def geometry(molecule):
-    component_of = {}
-    for number, component in enumerate(molecule.iterateComponents()):
-        for atom in component.iterateAtoms():
-            component_of[atom.index()] = number
+    piece_of = bonded_pieces(molecule)
 
     # The .NET wrapper hands the coordinates over as System.Single, and
     # IronPython keeps single precision through the arithmetic unless they are
@@ -112,16 +128,16 @@ def geometry(molecule):
     for bond in molecule.iterateBonds():
         bonds.append((bond.source().index(), bond.destination().index()))
 
-    return component_of, position, bonds
+    return piece_of, position, bonds
 
 
 def count(molecule):
-    component_of, position, bonds = geometry(molecule)
+    piece_of, position, bonds = geometry(molecule)
     inside = [0, 0, 0]
     between = [0, 0, 0]
 
     def bucket(one, two):
-        return inside if component_of[one] == component_of[two] else between
+        return inside if piece_of[one] == piece_of[two] else between
 
     for i in range(len(bonds)):
         for j in range(i + 1, len(bonds)):

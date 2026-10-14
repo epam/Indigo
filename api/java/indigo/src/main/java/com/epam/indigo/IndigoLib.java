@@ -771,6 +771,10 @@ public interface IndigoLib extends Library {
 
     int indigoComponent(int molecule, int index);
 
+    int indigoCheckSalt(int molecule);
+
+    int indigoStripSalt(int molecule);
+
     int indigoCountSSSR(int molecule);
 
     int indigoIterateSSSR(int molecule);

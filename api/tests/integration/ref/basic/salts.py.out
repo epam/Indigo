@@ -1,0 +1,67 @@
+*** a lone ion ***
+[Na+].C: salt
+[Rb+].C: salt
+[Ca+2].C: salt
+[Zn+2].C: salt
+[Al+3].C: salt
+[Cr+3].C: salt
+[Ru+4].C: salt
+[Sn+4].C: salt
+[Cl-].C: salt
+[F-].C: salt
+[S-2].C: salt
+[Se-2].C: salt
+*** a small inorganic molecule ***
+S=[Fe].C: salt
+Cl[Ag]: salt
+S=[Sn]=S.C: salt
+O=[Mn]=O.C: salt
+Cl[Fe](Cl)Cl.C: salt
+OCl(=O)=O.C: salt
+OS(=O)(=O)O.C: salt
+OP(=O)(O)O.C: salt
+*** an inorganic ion of several atoms ***
+[OH-].C: salt
+[O-]Cl.C: salt
+[O-]I=O.C: salt
+[O-]N(=O).C: salt
+[N+](=O)([O-])[O-].C: salt
+O[Se](=O)[O-].C: salt
+OP(=O)(O)[O-].C: salt
+OS(=O)(=O)[O-].C: salt
+*** several ions ***
+[Na+].[Cl-].C: salt
+[O-]S(=O)(=O)[O-].[K+].[K+].C: salt
+*** no salt: nothing but organic molecules ***
+c1ccccc1: no salt
+C1=CC=C2C=CC=CC2=C1: no salt
+*** no salt: the metal or the acid group is bonded ***
+CC[Pb](CC)(CC)CC: no salt
+C[Al](C)C: no salt
+C1=CC=C(C=C1)[N+](=O)[O-]: no salt
+C(C(=O)O)S(=O)(=O)O: no salt
+*** stripSalt ***
+CCCCCCCCCCCCCCCC[N+]1C=CC=CC=1 -> 'CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1'
+CCCCCCCCCCCCCCCC[N+]1C=CC=CC=1.[Cl-] -> 'CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1'
+CCCCCCCCCCCCCCCC[N+]1C=CC=CC=1.O.O.O.O.O.O.O.O.O.O.[Cl-].[Cl-] -> 'CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1'
+CCCCCCCCCCCCCCCC[N+]1C=CC=CC=1.CCCCCCCCCCCCCCCC[N+]1C=CC=CC=1.[O-]S(=O)(=O)[O-] -> 'CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1.CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1'
+C(C(C(C(C(C(=O)O)O)O)O)O)O.C(C(C(C(C(C(=O)O)O)O)O)O)O.[Fe] -> 'C(O)C(O)C(O)C(O)C(O)C(O)=O.C(O)C(O)C(O)C(O)C(O)C(O)=O.[Fe]'
+[NH4+].[O-]P(=O)([O-])[O-].[Fe+2] -> ''
+*** the ion goes, not the atom whose place it has in the numbering ***
+C1.[Na+].C1 -> 'CC'
+*** a copy is stripped unless the molecule itself is asked for ***
+the copy: CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1
+the molecule after it: CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1.[Cl-]
+stripped in place: CCCCCCCCCCCCCCCC[N+]1=CC=CC=C1
+*** a haptic complex is not a salt ***
+ferrocene: atoms C C C C C C C C C C Fe, 2 haptic bonds, no salt
+stripped: atoms C C C C C C C C C C Fe, 2 haptic bonds, no salt
+*** its counter ion is ***
+ferrocene and a chloride: atoms C C C C C C C C C C Cl Fe, 2 haptic bonds, salt
+stripped: atoms C C C C C C C C C C Fe, 2 haptic bonds, no salt
+*** a counter ion drawn between the atoms of the complex ***
+stripped: atoms C C C C C C C C C C Fe, 2 haptic bonds, no salt
+stripped in place: atoms C C C C C C C C C C Fe, 2 haptic bonds, no salt
+*** a metal with inorganic ligands, held by a haptic bond ***
+Zeise's salt: atoms C C Cl Cl Cl K Pt, 1 haptic bonds, salt
+stripped: atoms C C Cl Cl Cl Pt, 1 haptic bonds, no salt

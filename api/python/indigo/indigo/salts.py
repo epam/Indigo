@@ -14,30 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-SALTS = [
-    # inorganics with quaternary atom
-    "[X4&!#1&!#6](~[X1&!#6])(~[X1&!#6])(~[X1&!#6])~[X1&!#6]",
-    "[X4&!#1&!#6](~[X2H&!#6])(~[X2H&!#6])(~[X2H&!#6])~[X1&!#6]",
-    "[X4&!#1&!#6](~[X2H&!#6])(~[X2H&!#6])(~[X1&!#6])~[X1&!#6]",
-    "[X4&!#1&!#6](~[X2H&!#6])(~[X1&!#6])(~[X1&!#6])~[X1&!#6]",
-    # inorganics with tertiary atom
-    "[X3&!#1&!#6](~[X1&!#6])(~[X1&!#6])~[X1&!#6]",
-    "[X3&!#1&!#6](~[X2H&!#6])(~[X2H&!#6])~[X1&!#6]",
-    "[X3&!#1&!#6](~[X2H&!#6])(~[X1&!#6])~[X1&!#6]",
-    # inorganics with secondary atom
-    "[X2&!#1&!#6](~[X1&!#6])~[X1&!#6]",
-    "[X2&!#1&!#6](~[X2H&!#6])~[X1&!#6]",
-    # inorganics with primary atom
-    "[X1&!#1&!#6]~[X1&!#6]",
-    # single-element ions
-    "[X0+1]",
-    "[X0+2]",
-    "[X0+3]",
-    "[X0+4]",
-    "[X0-1]",
-    "[X0-2]",
-]
-
 IONS = [
     # metal cations + ammonium
     "[NH4+]",

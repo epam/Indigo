@@ -1133,7 +1133,7 @@ IndigoObject* IndigoMoleculeComponent::clone()
         newmol = &(((IndigoMolecule*)res.get())->mol);
     }
 
-    Filter filter(mol.getDecomposition().ptr(), Filter::EQ, index);
+    Filter filter(mol.moleculeComponents().getDecomposition().ptr(), Filter::EQ, index);
     newmol->makeSubmolecule(mol, filter, 0, 0);
     for (auto it = newmol->properties().begin(); it != newmol->properties().end(); ++it)
     {
@@ -1155,7 +1155,7 @@ IndigoComponentsIter::~IndigoComponentsIter()
 
 bool IndigoComponentsIter::hasNext()
 {
-    return _idx + 1 < mol.countComponents();
+    return _idx + 1 < mol.moleculeComponents().getComponentsCount();
 }
 
 IndigoObject* IndigoComponentsIter::next()
@@ -1298,7 +1298,7 @@ CEXPORT int indigoIterateAtoms(int molecule)
         {
             return self.addObject(new IndigoSGroupAtomsIter(*sg.mol, sg.get()));
         }
-        if (obj.type == IndigoObject::ATTACHMENT_GROUP)
+        if (IndigoAttachmentGroup::is(obj))
         {
             IndigoAttachmentGroup& ag = IndigoAttachmentGroup::cast(obj);
             return self.addObject(new IndigoAttachmentGroupAtomsIter(ag.mol, ag.idx));
@@ -1344,7 +1344,7 @@ CEXPORT int indigoCountAtoms(int molecule)
         if (obj.type == IndigoObject::COMPONENT)
         {
             IndigoMoleculeComponent& mc = (IndigoMoleculeComponent&)obj;
-            return mc.mol.countComponentVertices(mc.index);
+            return mc.mol.moleculeComponents().getComponentVerticesCount(mc.index);
         }
         if (obj.type == IndigoObject::SUBMOLECULE)
         {
@@ -1356,7 +1356,7 @@ CEXPORT int indigoCountAtoms(int molecule)
         if (sg)
             return sg.get().atoms.size();
 
-        if (obj.type == IndigoObject::ATTACHMENT_GROUP)
+        if (IndigoAttachmentGroup::is(obj))
             return static_cast<int>(IndigoAttachmentGroup::cast(obj).get().atoms().size());
 
         BaseMolecule& mol = obj.getBaseMolecule();
@@ -1375,7 +1375,7 @@ CEXPORT int indigoCountBonds(int molecule)
         if (obj.type == IndigoObject::COMPONENT)
         {
             IndigoMoleculeComponent& mc = (IndigoMoleculeComponent&)obj;
-            return mc.mol.countComponentEdges(mc.index);
+            return mc.mol.moleculeComponents().getComponentEdgesCount(mc.index);
         }
         if (obj.type == IndigoObject::SUBMOLECULE)
         {
@@ -1769,7 +1769,14 @@ CEXPORT int indigoGetCharge(int atom, int* charge)
 {
     INDIGO_BEGIN
     {
-        IndigoAtom& ia = IndigoAtom::cast(self.getObject(atom));
+        IndigoObject& obj = self.getObject(atom);
+        if (IndigoAttachmentGroup::is(obj))
+        {
+            *charge = IndigoAttachmentGroup::cast(obj).get().charge();
+            return 1;
+        }
+
+        IndigoAtom& ia = IndigoAtom::cast(obj);
         int ch = ia.mol.getAtomCharge(ia.idx);
         if (ch == CHARGE_UNKNOWN)
         {
@@ -1931,7 +1938,14 @@ CEXPORT int indigoGetRadical(int atom, int* radical)
 {
     INDIGO_BEGIN
     {
-        IndigoAtom& ia = IndigoAtom::cast(self.getObject(atom));
+        IndigoObject& obj = self.getObject(atom);
+        if (IndigoAttachmentGroup::is(obj))
+        {
+            *radical = mapRadicalToIndigoRadical(IndigoAttachmentGroup::cast(obj).get().radical());
+            return 1;
+        }
+
+        IndigoAtom& ia = IndigoAtom::cast(obj);
         int rad = ia.mol.getAtomRadical(ia.idx);
 
         if (rad == -1)
@@ -1949,7 +1963,15 @@ CEXPORT int indigoSetRadical(int atom, int radical)
 {
     INDIGO_BEGIN
     {
-        IndigoAtom& ia = IndigoAtom::cast(self.getObject(atom));
+        IndigoObject& obj = self.getObject(atom);
+        if (IndigoAttachmentGroup::is(obj))
+        {
+            const int group_radical = mapIndigoRadicalToRadical(radical);
+            IndigoAttachmentGroup::cast(obj).edit().setRadical(group_radical);
+            return 1;
+        }
+
+        IndigoAtom& ia = IndigoAtom::cast(obj);
         ia.mol.asMolecule().setAtomRadical(ia.idx, mapIndigoRadicalToRadical(radical));
         return 1;
     }

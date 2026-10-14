@@ -28,6 +28,7 @@
 #include "base_cpp/ptr_reusable_pool.h"
 #include "base_cpp/red_black.h"
 #include "graph/graph.h"
+#include "graph/graph_decomposer.h"
 #include "math/algebra.h"
 #include "molecule/elements.h"
 #include "molecule/ket_annotation.h"
@@ -508,8 +509,14 @@ namespace indigo
         // Atom sets that hold together although no edge joins them: s-group
         // members, query components and haptic bonds. Feeds
         // Graph::countComponents(external_neighbors) — call it whenever a
-        // decomposition must not cut a molecule where it is still one whole.
+        // decomposition must not cut a molecule where it is still one whole. A split
+        // the user sees goes through moleculeComponents() instead.
         void collectExternalNeighbors(std::list<std::unordered_set<int>>& neighbors);
+
+        // The components the public API reports: a haptic bond joins atoms as an edge
+        // does, an S-group does not. Numbered apart from Graph::getDecomposition(), and
+        // kept until connectivity changes - a reference to them does not outlive that.
+        const GraphDecomposer& moleculeComponents();
 
         void unfoldHydrogens(Array<int>* markers_out, int max_h_cnt = -1, bool impl_h_no_throw = false, bool only_selected = false);
         virtual void registerUnfoldedHydrogenQueryComponent(int /*atom_idx*/, int /*added_hydrogen*/){}; // QueryMolecule only
@@ -815,6 +822,7 @@ namespace indigo
 
         // Throws unless the endpoint names something this molecule has.
         void _checkHapticEndpoint(const HapticBond::Endpoint& endpoint);
+        void _hapticConnectivityChanged();
 
         int _addBaseAtom();
         int _addBaseBond(int beg, int end);
@@ -879,6 +887,8 @@ namespace indigo
         // When molecule gets edited then edit revision is increased.
         // If edit revision is the same then molecule wasn't edited
         int _edit_revision;
+
+        std::unique_ptr<GraphDecomposer> _molecule_components;
 
         MetaDataStorage _meta;
 

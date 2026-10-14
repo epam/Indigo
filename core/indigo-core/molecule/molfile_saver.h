@@ -59,6 +59,8 @@ namespace indigo
         };
         constexpr static int MAX_RING_BOND_COUNT = 4;
         constexpr static int MAX_SUBSTITUTION_COUNT = 6;
+        constexpr static int SGROUP_DATA_CHUNK_SIZE = 69;
+        constexpr static int SGROUP_DATA_MAX_DISPLAYED_CHARS = 999;
 
         MolfileSaver(Output& output);
 

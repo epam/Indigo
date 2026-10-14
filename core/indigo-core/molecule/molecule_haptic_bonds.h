@@ -166,7 +166,7 @@ namespace indigo
 
         // Atom sets that must be treated as connected even though no edge joins
         // them: each bond contributes the vertices of both its endpoints.
-        // Feeds Graph::countComponents(external_neighbors).
+        // Feeds Graph::countComponents(external_neighbors) and BaseMolecule::moleculeComponents().
         void collectConnectivitySets(const MoleculeAttachmentGroups& groups, std::list<std::unordered_set<int>>& neighbors) const;
 
         // True when some bond has `atom` as an endpoint of its own, a member of an
