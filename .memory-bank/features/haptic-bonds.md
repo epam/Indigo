@@ -4,8 +4,8 @@
 > a set of atoms rather than one atom.
 > **Skip when:** the work is about ordinary two-atom bonds.
 
-Verified on `f0cc3c423`; the charge and the radical of a group (#3923) on master `55ce330fa` with
-that ticket applied. Ticket family #3233.
+Verified on `f0cc3c423`; the charge and the radical of a group (#3923, #3924) on master `4a44ac57c`
+with #3924 applied. Ticket family #3233.
 
 ## Problem
 
@@ -31,6 +31,10 @@ group** — a named set of atoms acting as one collective end
 - A group has a **charge** and a **radical** of its own — those of the pi-system as a whole, not of
   any member atom (`core/indigo-core/molecule/molecule_attachment_groups.h#setRadical`). The radical
   uses the atom encoding, 0 to 3, and nothing else is accepted.
+- Through the C API and the Python, Java and .NET wrappers a group is an object of its own
+  (`api/c/indigo/indigo.h#indigoAddAttachmentGroup`). The four charge and radical calls of an atom
+  take a group object as well (`api/c/indigo/src/indigo_haptic.cpp#IndigoAttachmentGroup::edit`);
+  no other atom call does, so a group is cleared by setting 0, not by the reset calls.
 - In KET, a connection is discriminated by type `"haptic"`, with `attachmentGroups` and
   `attachmentGroupId` carrying the sets (`molecule/ket_keys.h`). A group object may carry `charge`
   and `radical` (`core/indigo-core/molecule/ket_keys.h#KetKeyCharge`); a value of 0 is not written.
@@ -74,6 +78,10 @@ CDXML refuse a charged variable attachment group the same way.
 
 **When** a KET group object has a `charge` or a `radical` that is not an integer, or a radical
 outside 0–3, **then** loading fails with an error naming the group and the key.
+
+**When** the charge or the radical of a group is set through the API, **then** a view taken from
+the molecule earlier — a submolecule, a component — shows the new value: the molecule is told it
+changed, although no atom or bond did.
 
 **When** a haptic bond connects two atoms rather than a group and an atom, **then** V3000 **drops
 it** — the format has no `ENDPTS` form for that case, and it is discarded like any other feature
@@ -141,9 +149,8 @@ component and still prints as dot-separated SMILES.
 - Binary serialization does not carry attachment groups.
 - SMILES, SMARTS, InChI and CML have no collective endpoint and carry neither the groups nor their
   charge and radical.
-- The C API and the wrappers reach groups and haptic bonds
-  (`api/c/indigo/indigo.h#indigoAddAttachmentGroup`), but not yet the charge and the radical of a
-  group — a separate ticket in the family.
+- R, WASM and the C++ wrapper have no per-object charge or radical: there the two properties of a
+  group travel only inside KET.
 
 Coverage lives in `core/indigo-core/tests/tests/` — `attachment_groups.cpp`, `haptic_bonds.cpp`,
 `haptic_bonds_ket.cpp`, `haptic_molfile.cpp`, `haptic_cdxml.cpp` — plus

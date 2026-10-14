@@ -64,3 +64,52 @@ removed group is gone    core: attachment group 0 does not exist any more
 
 *** removing a haptic bond leaves the group alone ***
 groups=1 haptic bonds=0
+
+*** a group has a charge and a radical of its own ***
+zeise-salt-hydrate.ket:SUCCEED
+as loaded: charge=0 radical=0
+after setting: charge=-1 radical=102
+atom charges unchanged: True
+the same group as the end of its bond: charge=-1 radical=102
+zeise-salt-hydrate-charged.ket:SUCCEED
+zeise-salt-hydrate-charged.mol:SUCCEED
+read back from KET: charge=-1 radical=102
+read back from V3000: charge=-1 radical=102
+unknown radical          core: Unknown radical type
+same on an atom          core: Unknown radical type
+
+*** every radical value, and back to none ***
+singlet: set 101, read 101
+doublet: set 102, read 102
+triplet: set 103, read 103
+none: set 0, read 0
+charge set back: 0
+zeise-salt-hydrate.ket:SUCCEED
+
+*** two groups keep their own values ***
+group 0: charge=1 radical=0
+group 1: charge=2 radical=103
+removed: charge          core: attachment group 0 does not exist any more
+removed: setCharge       core: attachment group 0 does not exist any more
+removed: radical         core: attachment group 0 does not exist any more
+removed: setRadical      core: attachment group 0 does not exist any more
+the other group is as it was: charge=2 radical=103
+
+*** a view taken from the molecule follows the group ***
+before: charge=0 radical=0
+after setCharge: charge=-1 radical=0
+after setRadical: charge=-1 radical=102
+
+*** a group of a query molecule takes them as well ***
+charge=-1 radical=103
+
+*** no other atom call takes a group, and no other object these ***
+resetCharge              core: <attachment group> does not represent an atom
+resetRadical             core: <attachment group> does not represent an atom
+radicalElectrons         core: <attachment group> does not represent an atom
+charge of a bond         core: <bond> does not represent an atom
+of a haptic bond         core: <haptic bond> does not represent an atom
+
+*** V3000 keeps the charge of a haptic group only ***
+variable attachment      molfile saver: attachment group 0 has charge -1 and radical 0, which V3000 can keep only on the star of a haptic bond record
+variable-attachment-charged.ket:SUCCEED

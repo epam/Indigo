@@ -174,6 +174,19 @@ M  END
         }
 
         [TestMethod]
+        public void IndigoTestAttachmentGroupChargeAndRadical()
+        {
+            using var indigo = new Indigo();
+            var m = indigo.loadMolecule("C1=CC=CC1.[Fe]");
+            var group = m.addAttachmentGroup(new int[] { 0, 1, 2, 3, 4 });
+
+            group.setCharge(-1);
+            group.setRadical(Indigo.DOUBLET);
+            Assert.AreEqual(-1, group.charge());
+            Assert.AreEqual(Indigo.DOUBLET, group.radical());
+        }
+
+        [TestMethod]
         public void IndigoTestCopyRGroup()
         {
             using var indigo = new Indigo();

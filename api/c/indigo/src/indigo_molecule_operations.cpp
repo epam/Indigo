@@ -2822,7 +2822,14 @@ CEXPORT int indigoSetCharge(int atom, int charge)
 {
     INDIGO_BEGIN
     {
-        IndigoAtom& ia = IndigoAtom::cast(self.getObject(atom));
+        IndigoObject& obj = self.getObject(atom);
+        if (IndigoAttachmentGroup::is(obj))
+        {
+            IndigoAttachmentGroup::cast(obj).edit().setCharge(charge);
+            return 1;
+        }
+
+        IndigoAtom& ia = IndigoAtom::cast(obj);
 
         ia.mol.asMolecule().setAtomCharge(ia.idx, charge);
         return 1;
