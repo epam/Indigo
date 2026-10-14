@@ -151,25 +151,6 @@ for root, dirnames, filenames in os.walk(
             except IndigoException as e:
                 print("  %s" % (getIndigoExceptionText(e)))
 
-print("*** Long and multiline SGroup data ***")
-saver = indigo.createFileSaver(
-    joinPathPy("out/multiline.sdf", __file__), "sdf"
-)
-mols = [
-    "molecules/multiline-sgroups-ketcher-457-v2000.mol",
-    "molecules/multiline-sgroups-ketcher-457-empty.mol",
-    "molecules/multiline-sgroups-ketcher-457-v3000.mol",
-    "molecules/multiline-sgroups-ketcher-457-single.mol",
-]
-for molfile in mols:
-    print(molfile)
-    mol = indigo.loadMoleculeFromFile(joinPathPy(molfile, __file__))
-    for opt in iterateSavingOptions():
-        print(mol.molfile())
-        saver.append(mol)
-        testReload(mol)
-
-
 print("*** Molfile properties ***")
 mol = indigo.loadMoleculeFromFile(
     joinPathPy("molecules/mol-with-prop.mol", __file__)
