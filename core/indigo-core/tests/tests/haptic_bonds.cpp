@@ -693,8 +693,8 @@ TEST_F(IndigoCoreHapticBondsTest, ExternalNeighborsKeepTheComplexWhole)
 }
 
 // Without them the graph is what it is: three disconnected pieces. That is the
-// answer InChI and the standardizer need, since a haptic bond is dropped on
-// export and the disconnection is then expected.
+// answer InChI and SMILES need, since a haptic bond is dropped on export and the
+// disconnection is then expected.
 TEST_F(IndigoCoreHapticBondsTest, PlainComponentCountLeavesTheComplexApart)
 {
     Molecule mol;

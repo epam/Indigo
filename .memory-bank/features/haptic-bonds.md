@@ -96,6 +96,17 @@ deliberately left behind; without the flags it is remapped into the target.
 **When** the structure is rendered, **then** the haptic bond is drawn to the group as a whole —
 `core/render2d/` knows about attachment groups.
 
+**When** the public API is asked for components (`indigoCountComponents`, `indigoComponent`,
+`indigoIterateComponents`, `indigoComponentIndex`, `indigoCloneComponent`,
+`indigoCount/IterateComponentAtoms/Bonds`, `indigoFragmentedSdf`), `standardize` keeps or removes
+fragments or charges a lone halogen, or `checkSalt` / `stripSalt` look for salts,
+**then** a haptic bond joins atoms as an ordinary bond does: a ferrocene is one component, a counter
+ion that nothing bonds is another, and a complex is never a salt (#3927). An attachment group that no
+bond refers to joins nothing. The answer comes from
+`core/indigo-core/molecule/base_molecule.h#moleculeComponents`, never from the graph's
+`countComponents()`, which SMILES, InChI and substructure search keep using — so a complex is one
+component and still prints as dot-separated SMILES.
+
 ## Guarantees
 
 - **An attachment group is not a vertex of the molecular graph.** It never appears in

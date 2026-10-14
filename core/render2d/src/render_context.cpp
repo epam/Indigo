@@ -19,8 +19,11 @@
 #include "render_context.h"
 #include "base_cpp/output.h"
 #include "molecule/meta_commons.h"
+#include "render_svg_ids.h"
 
+#include <algorithm>
 #include <limits.h>
+#include <new>
 
 using namespace indigo;
 
@@ -226,7 +229,24 @@ cairo_status_t RenderContext::writer(void* closure, const unsigned char* data, u
     return CAIRO_STATUS_SUCCESS;
 }
 
-void RenderContext::createSurface(cairo_write_func_t writer, Output* /*output*/, int /*width*/, int /*height*/)
+cairo_status_t RenderContext::svgWriter(void* closure, const unsigned char* data, unsigned int length)
+{
+    try
+    {
+        static_cast<std::string*>(closure)->append(reinterpret_cast<const char*>(data), length);
+    }
+    catch (const std::bad_alloc&)
+    {
+        return CAIRO_STATUS_NO_MEMORY;
+    }
+    catch (...)
+    {
+        return CAIRO_STATUS_WRITE_ERROR;
+    }
+    return CAIRO_STATUS_SUCCESS;
+}
+
+void RenderContext::createSurface(cairo_write_func_t writer, Output* output, int /*width*/, int /*height*/)
 {
     int mode = opt.mode;
     if (writer == NULL && (mode == MODE_HDC || mode == MODE_PRN))
@@ -245,7 +265,16 @@ void RenderContext::createSurface(cairo_write_func_t writer, Output* /*output*/,
             cairoCheckSurfaceStatus();
             break;
         case MODE_SVG:
-            _surface = cairo_svg_surface_create_for_stream(writer, opt.output, _width, _height);
+            // The probe context (initNullContext) has no output and its SVG is discarded.
+            _svgBuffer.reset();
+            if (opt.svgUniqueId && output != NULL)
+            {
+                // Buffer cairo's output so closeContext() can make the ids unique before it reaches Output.
+                _svgBuffer.emplace();
+                _surface = cairo_svg_surface_create_for_stream(svgWriter, &*_svgBuffer, _width, _height);
+            }
+            else
+                _surface = cairo_svg_surface_create_for_stream(writer, opt.output, _width, _height);
             cairoCheckSurfaceStatus();
             break;
         case MODE_PNG:
@@ -377,9 +406,15 @@ void RenderContext::closeContext(bool discard)
         throw Error("unknown mode: %d", opt.mode);
     }
 
+    cairo_status_t surface_status = CAIRO_STATUS_SUCCESS;
     if (_surface != NULL)
     {
         std::lock_guard<std::mutex> _lock(_cairo_mutex);
+        if (opt.mode == MODE_SVG && !discard)
+        {
+            cairo_surface_finish(_surface);
+            surface_status = cairo_surface_status(_surface);
+        }
         cairo_surface_destroy(_surface);
         _surface = NULL;
     }
@@ -388,6 +423,34 @@ void RenderContext::closeContext(bool discard)
     bbmax.x = bbmax.y = -1;
 
     fontsDispose();
+
+    if (surface_status != CAIRO_STATUS_SUCCESS)
+    {
+        _svgBuffer.reset();
+        throw Error("Cairo error: %s\n", cairo_status_to_string(surface_status));
+    }
+
+    if (_svgBuffer && !discard)
+    {
+        // Cairo can emit an unterminated <image> for an empty (0x0) image, e.g. a mask. Such output is not
+        // well-formed XML; keep it as cairo wrote it rather than fail a render that used to succeed.
+        std::string svg;
+        try
+        {
+            svg = prefixSvgIds(*_svgBuffer, makeSvgIdPrefix(*_svgBuffer));
+        }
+        catch (const Exception&)
+        {
+            svg = std::move(*_svgBuffer);
+        }
+        for (size_t offset = 0; offset < svg.size();)
+        {
+            const int length = static_cast<int>(std::min<size_t>(svg.size() - offset, INT_MAX));
+            opt.output->write(svg.data() + offset, length);
+            offset += length;
+        }
+    }
+    _svgBuffer.reset();
 }
 
 void RenderContext::translate(float dx, float dy)

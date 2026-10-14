@@ -826,6 +826,7 @@ void IndigoRenderer::setOptionsHandlers()
         mgr->setOptionHandlerString("render-catalysts-placement", indigoRenderSetCatalystsPlacement, indigoRenderGetCatalystsPlacement);
         mgr->setOptionHandlerString("render-atom-color-property", SETTER_GETTER_STR_OPTION(rp.rOpt.atomColorProp));
 
+        mgr->setOptionHandlerBool("render-svg-unique-id", SETTER_GETTER_BOOL_OPTION(rp.rOpt.svgUniqueId));
         mgr->setOptionHandlerBool("render-coloring", SETTER_GETTER_BOOL_OPTION(rp.rOpt.atomColoring));
         mgr->setOptionHandlerBool("render-valences-visible", SETTER_GETTER_BOOL_OPTION(rp.rOpt.showValences));
         mgr->setOptionHandlerBool("render-cip-visible", SETTER_GETTER_BOOL_OPTION(rp.rOpt.showCIPLabels));

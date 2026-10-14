@@ -1213,6 +1213,9 @@ void MolfileLoader::_readCtab2000()
                     _scanner.skip(1);
                     _scanner.readCharsFix(3, id);
 
+                    if (sgroup_idx < 0 || sgroup_idx >= _sgroup_types.size())
+                        throw Error("M SCN refers to undefined Sgroup %d", sgroup_idx + 1);
+
                     if (_sgroup_types[sgroup_idx] == SGroup::SG_TYPE_SRU)
                     {
                         RepeatingUnit& ru = (RepeatingUnit&)_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);

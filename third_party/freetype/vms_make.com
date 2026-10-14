@@ -1,6 +1,6 @@
 $! make FreeType 2 under OpenVMS
 $!
-$! Copyright (C) 2003-2022 by
+$! Copyright (C) 2003-2026 by
 $! David Turner, Robert Wilhelm, and Werner Lemberg.
 $!
 $! This file is part of the FreeType project, and may only be used, modified,
@@ -34,6 +34,13 @@ $! 0.01 20040401 First version to receive a number
 $! 0.02 20041030 Add error handling, FreeType 2.1.9
 $!
 $ on error then goto err_exit
+$!
+$! Get platform
+$ vax      = f$getsyi("ARCH_NAME").eqs. "VAX"
+$ axp      = f$getsyi("ARCH_NAME").eqs. "Alpha"
+$ ia64     = f$getsyi("ARCH_NAME").eqs. "IA64"
+$ x86_64   = f$getsyi("ARCH_NAME").eqs. "x86_64"
+$!
 $ true  = 1
 $ false = 0
 $ tmpnam = "temp_" + f$getjpi("","pid")
@@ -48,6 +55,7 @@ $! Setup variables holding "config" information
 $!
 $ Make    = ""
 $ ccopt   = "/name=(as_is,short)/float=ieee"
+$ if ( x86_64 ) then cxxopt = " -names2=shortened "
 $ lopts   = ""
 $ dnsrl   = ""
 $ aconf_in_file = "config.hin"
@@ -71,72 +79,124 @@ $! Which command parameters were given
 $!
 $ gosub check_opts
 $!
-$! Create option file
-$!
-$ open/write optf 'optfile'
 $!
 $! Pull in external libraries
 $!
+$ have_png = f$search("sys$library:libpng.olb") .nes. ""
+$ have_bz2 = f$search("sys$library:libbz2.olb") .nes. ""
+$ have_z = f$search("sys$library:libz.olb") .nes. ""
+$ have_harfbuzz = f$search("sys$library:libharfbuzz.olb") .nes. ""
+$!
 $ create libs.opt
 $ open/write libsf libs.opt
-$ gosub check_create_vmslib
+$ if ( have_harfbuzz ) then write libsf "sys$library:libharfbuzz.olb/lib"
+$ if ( have_png ) then write libsf "sys$library:libpng.olb/lib"
+$ if ( have_bz2 ) then write libsf "sys$library:libbz2.olb/lib"
+$ if ( have_z ) then write libsf "sys$library:libz.olb/lib"
+$ close libsf
+$ open/write libsf libs_cxx.opt
+$ if ( have_harfbuzz ) then write libsf "sys$library:libharfbuzz.olb/lib"
+$ if ( have_png ) then write libsf "sys$library:libpng_cxx.olb/lib"
+$ if ( have_bz2 ) then write libsf "sys$library:libbz2_cxx.olb/lib"
+$ if ( have_z ) then write libsf "sys$library:libz_cxx.olb/lib"
+$ close libsf
+$ open/write libsf libs_cxx32.opt
+$ if ( have_harfbuzz ) then write libsf "sys$library:libharfbuzz.olb/lib"
+$ if ( have_png ) then write libsf "sys$library:libpng_cxx32.olb/lib"
+$ if ( have_bz2 ) then write libsf "sys$library:libbz2_cxx32.olb/lib"
+$ if ( have_z ) then write libsf "sys$library:libz_cxx32.olb/lib"
+$ close libsf
 $!
 $! Create objects
 $!
+$ libdefs = "FT2_BUILD_LIBRARY,FT_CONFIG_OPTION_OLD_INTERNALS"
+$ if ( have_bz2 ) then libdefs=libdefs+",FT_CONFIG_OPTION_USE_BZIP2=1"
+$ if ( have_png ) then libdefs=libdefs+",FT_CONFIG_OPTION_USE_PNG=1"
+$ if ( have_z ) then libdefs=libdefs+",FT_CONFIG_OPTION_SYSTEM_ZLIB=1"
+$ if ( have_harfbuzz ) then libdefs=libdefs+",FT_CONFIG_OPTION_USE_HARFBUZZ=1"
+$ libdefs_cxx = "-DFT2_BUILD_LIBRARY -DFT_CONFIG_OPTION_OLD_INTERNALS"
+$ if ( have_bz2 ) then libdefs_cxx=libdefs_cxx+" -DFT_CONFIG_OPTION_USE_BZIP2=1"
+$ if ( have_png ) then libdefs_cxx=libdefs_cxx+" -DFT_CONFIG_OPTION_USE_PNG=1"
+$ if ( have_z ) then libdefs_cxx=libdefs_cxx+" -DFT_CONFIG_OPTION_SYSTEM_ZLIB=1"
+$ if ( have_harfbuzz ) then libdefs_cxx=libdefs_cxx+" -DFT_CONFIG_OPTION_USE_HARFBUZZ=1"
 $ if libdefs .nes. ""
 $ then
-$   ccopt = ccopt + "/define=(" + f$extract(0,f$length(libdefs)-1,libdefs) + ")"
+$   ccopt = ccopt + "/define=(" + libdefs + ")"
+$ if ( x86_64 ) then cxxopt = cxxopt + libdefs_cxx
 $ endif
 $!
 $ if f$locate("AS_IS",f$edit(ccopt,"UPCASE")) .lt. f$length(ccopt) -
     then s_case = true
 $ gosub crea_mms
 $!
-$ 'Make' /macro=(comp_flags="''ccopt'")
+$ if x86_64
+$ then
+$   'Make' /macro=(comp_flags="''ccopt'",cxxcomp_flags="''cxxopt'","X86=1")
+$ else
+$   'Make' /macro=(comp_flags="''ccopt'")
+$ endif
 $ purge/nolog [...]descrip.mms
 $!
-$! Add them to options
 $!
-$FLOOP:
-$  file = f$edit(f$search("[...]*.obj"),"UPCASE")
-$  if (file .nes. "")
-$  then
-$    if f$locate("DEMOS",file) .eqs. f$length(file) then write optf file
-$    goto floop
-$  endif
+$! Alpha & Itanium get a shareable image
 $!
-$ close optf
-$!
-$!
-$! Alpha gets a shareable image
-$!
-$ If f$getsyi("HW_MODEL") .gt. 1024
+$ If .not. vax
 $ Then
 $   write sys$output "Creating freetype2shr.exe"
-$   If f$getsyi("HW_MODEL") .le. 2048
-$   Then
-$     call anal_obj_axp 'optfile' _link.opt
-$   Else
-$     copy _link.opt_ia64 _link.opt
-$     close libsf
-$     copy libs.opt_ia64 libs.opt
-$   endif
-$   open/append  optf 'optfile'
-$   if s_case then WRITE optf "case_sensitive=YES"
-$   close optf
-$   LINK_/NODEB/SHARE=[.lib]freetype2shr.exe -
-                            'optfile'/opt,libs.opt/opt,_link.opt/opt
+$   library/extract=* [.lib]freetype.olb
+$   set def [.src.tools]
+$   cc apinames.c
+$   link apinames
+$   set def [--]
+$   pur [.include.freetype]ftmac.h
+$   rename [.include.freetype]ftmac.h [.include.freetype]ftmac.h_tmp
+$   bash builds/vms/apinames_vms.bash
+$   rename [.include.freetype]ftmac.h_tmp [.include.freetype]ftmac.h
+$   open/write file  libfreetype.opt
+$   write file "!"
+$   write file "! libfreetype.opt generated by vms_make.com"
+$   write file "!"
+$   write file "IDENTIFICATION=""freetype2 2.0"""
+$   write file "GSMATCH=LEQUAL,2,0
+$   write file "freetype.obj"
+$   close file
+$   link/nodeb/share=[.lib]freetype2shr.exe/map=libfreetype.map/full -
+      libfreetype/opt,freetype_vms/opt,libs/opt
+$   delete freetype.obj;*
+$ endif
+$ if x86_64
+$ then
+$   write sys$output "Creating freetype2shr_cxx.exe"
+$   library/extract=* [.lib]freetype_cxx.olb
+$   open/write file  libfreetype_cxx.opt
+$   write file "!"
+$   write file "! libfreetype_cxx.opt generated by vms_make.com"
+$   write file "!"
+$   write file "IDENTIFICATION=""freetype2 2.0"""
+$   write file "GSMATCH=LEQUAL,2,0
+$   write file "freetype_cxx.obj"
+$   close file
+$   link/nodeb/share=[.lib]freetype2shr_cxx.exe/map=libfreetype_cxx.map/full -
+      libfreetype_cxx/opt,freetype_vms/opt,libs_cxx/opt
+$   delete freetype_cxx.obj;*
+$   write sys$output "Creating freetype2shr_cxx32.exe"
+$   library/extract=* [.lib]freetype_cxx32.olb
+$   open/write file  libfreetype_cxx32.opt
+$   write file "!"
+$   write file "! libfreetype_cxx32.opt generated by vms_make.com"
+$   write file "!"
+$   write file "IDENTIFICATION=""freetype2 2.0"""
+$   write file "GSMATCH=LEQUAL,2,0
+$   write file "freetype_cxx32.obj"
+$   close file
+$   link/nodeb/share=[.lib]freetype2shr_cxx32.exe/map=libfreetype_cxx32.map/full -
+      libfreetype_cxx32/opt,freetype_vms/opt,libs_cxx32/opt
+$   delete freetype_cxx.obj;*
 $ endif
 $!
 $ exit
 $!
 $
-$ERR_LIB:
-$ write sys$output "Error reading config file vmslib.dat"
-$ goto err_exit
-$FT2_ERR:
-$ write sys$output "Could not locate FreeType 2 include files"
-$ goto err_exit
 $ERR_EXIT:
 $ set message/facil/ident/sever/text
 $ close/nolog optf
@@ -174,78 +234,83 @@ $ deck
 # fully.
 $ EOD
 $ write out "CFLAGS = ", ccopt
+$ if x86_64 then write out "CXXFLAGS = ", cxxopt
 $ copy sys$input: out
 $ deck
 
 
 all :
-        define config [--.include.freetype.config]
-        define internal [--.include.freetype.internal]
-        define autofit [-.autofit]
-        define base [-.base]
-        define cache [-.cache]
-        define cff [-.cff]
-        define cid [-.cid]
-        define freetype [--.include.freetype]
-        define pcf [-.pcf]
-        define psaux [-.psaux]
-        define psnames [-.psnames]
-        define raster [-.raster]
-        define sfnt [-.sfnt]
-        define smooth [-.smooth]
-        define truetype [-.truetype]
-        define type1 [-.type1]
-        define winfonts [-.winfonts]
-        if f$search("lib.dir") .eqs. "" then create/directory [.lib]
-        set default [.builds.vms]
-        $(MMS)$(MMSQUALIFIERS)
-        set default [--.src.autofit]
-        $(MMS)$(MMSQUALIFIERS)
-        set default [-.base]
-        $(MMS)$(MMSQUALIFIERS)
-        set default [-.bdf]
-        $(MMS)$(MMSQUALIFIERS)
-        set default [-.cache]
-        $(MMS)$(MMSQUALIFIERS)
-        set default [-.cff]
-        $(MMS)$(MMSQUALIFIERS)
-        set default [-.cid]
-        $(MMS)$(MMSQUALIFIERS)
-        set default [-.gxvalid]
-        $(MMS)$(MMSQUALIFIERS)
-        set default [-.gzip]
-        $(MMS)$(MMSQUALIFIERS)
-        set default [-.bzip2]
-        $(MMS)$(MMSQUALIFIERS)
-        set default [-.lzw]
-        $(MMS)$(MMSQUALIFIERS)
-        set default [-.otvalid]
-        $(MMS)$(MMSQUALIFIERS)
-        set default [-.pcf]
-        $(MMS)$(MMSQUALIFIERS)
-        set default [-.pfr]
-        $(MMS)$(MMSQUALIFIERS)
-        set default [-.psaux]
-        $(MMS)$(MMSQUALIFIERS)
-        set default [-.pshinter]
-        $(MMS)$(MMSQUALIFIERS)
-        set default [-.psnames]
-        $(MMS)$(MMSQUALIFIERS)
-        set default [-.raster]
-        $(MMS)$(MMSQUALIFIERS)
-        set default [-.sfnt]
-        $(MMS)$(MMSQUALIFIERS)
-        set default [-.smooth]
-        $(MMS)$(MMSQUALIFIERS)
-        set default [-.truetype]
-        $(MMS)$(MMSQUALIFIERS)
-        set default [-.type1]
-        $(MMS)$(MMSQUALIFIERS)
-        set default [-.type42]
-        $(MMS)$(MMSQUALIFIERS)
-        set default [-.winfonts]
-        $(MMS)$(MMSQUALIFIERS)
-        set default [--]
+	define config [--.include.freetype.config]
+	define internal [--.include.freetype.internal]
+	define autofit [-.autofit]
+	define base [-.base]
+	define cache [-.cache]
+	define cff [-.cff]
+	define cid [-.cid]
+	define freetype [--.include.freetype]
+	define pcf [-.pcf]
+	define psaux [-.psaux]
+	define psnames [-.psnames]
+	define raster [-.raster]
+	define sfnt [-.sfnt]
+	define smooth [-.smooth]
+	define truetype [-.truetype]
+	define type1 [-.type1]
+	define winfonts [-.winfonts]
+	if f$search("lib.dir") .eqs. "" then create/directory [.lib]
+	set default [.builds.vms]
+	$(MMS)$(MMSQUALIFIERS)
+	set default [--.src.autofit]
+	$(MMS)$(MMSQUALIFIERS)
+	set default [-.base]
+	$(MMS)$(MMSQUALIFIERS)
+	set default [-.bdf]
+	$(MMS)$(MMSQUALIFIERS)
+	set default [-.cache]
+	$(MMS)$(MMSQUALIFIERS)
+	set default [-.cff]
+	$(MMS)$(MMSQUALIFIERS)
+	set default [-.cid]
+	$(MMS)$(MMSQUALIFIERS)
+	set default [-.gxvalid]
+	$(MMS)$(MMSQUALIFIERS)
+	set default [-.gzip]
+	$(MMS)$(MMSQUALIFIERS)
+	set default [-.bzip2]
+	$(MMS)$(MMSQUALIFIERS)
+	set default [-.lzw]
+	$(MMS)$(MMSQUALIFIERS)
+	set default [-.otvalid]
+	$(MMS)$(MMSQUALIFIERS)
+	set default [-.pcf]
+	$(MMS)$(MMSQUALIFIERS)
+	set default [-.pfr]
+	$(MMS)$(MMSQUALIFIERS)
+	set default [-.psaux]
+	$(MMS)$(MMSQUALIFIERS)
+	set default [-.pshinter]
+	$(MMS)$(MMSQUALIFIERS)
+	set default [-.psnames]
+	$(MMS)$(MMSQUALIFIERS)
+	set default [-.raster]
+	$(MMS)$(MMSQUALIFIERS)
+	set default [-.sfnt]
+	$(MMS)$(MMSQUALIFIERS)
+	set default [-.smooth]
+	$(MMS)$(MMSQUALIFIERS)
+	set default [-.svg]
+	$(MMS)$(MMSQUALIFIERS)
+	set default [-.truetype]
+	$(MMS)$(MMSQUALIFIERS)
+	set default [-.type1]
+	$(MMS)$(MMSQUALIFIERS)
+	set default [-.type42]
+	$(MMS)$(MMSQUALIFIERS)
+	set default [-.winfonts]
+	$(MMS)$(MMSQUALIFIERS)
+	set default [-.sdf]
+	$(MMS)$(MMSQUALIFIERS)
+	set default [--]
 
 # EOF
 $ eod
@@ -271,11 +336,47 @@ $ deck
 
 
 CFLAGS=$(COMP_FLAGS)$(DEBUG)/list/show=all/include=([],[--.include],[--.src.base])
+.ifdef X86
+CXXFLAGS=$(CXXCOMP_FLAGS) -I[] -I[--.include] -I[--.src.base]
+.endif
+
+.ifdef X86
+.c.obj :
+	clang $(CXXFLAGS) -pointer-size=32 -o $(MMS$TARGET_NAME)_cxx32.obj $(MMS$TARGET_NAME).c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_cxx.obj $(MMS$TARGET_NAME).c
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_64_cxx.obj $(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.else
+.c.obj :
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=noinfo/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.endif
 
 OBJS=ftsystem.obj
 
+OBJS64=ftsystem_64.obj
+
+OBJSCXX=ftsystem_cxx.obj
+
+OBJSCXX=ftsystem_cxx32.obj
+
 all : $(OBJS)
-        library/create [--.lib]freetype.olb $(OBJS)
+	library/create [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS64)
+.ifdef X86
+	library/create [--.lib]freetype_cxx32.olb $(OBJSCXX32)
+	library/create [--.lib]freetype_cxx.olb $(OBJSCXX)
+	library [--.lib]freetype_cxx.olb $(OBJS64)
+.endif
 
 ftsystem.obj : ftsystem.c ftconfig.h
 
@@ -302,11 +403,47 @@ $ deck
 # fully.
 
 CFLAGS=$(COMP_FLAGS)$(DEBUG)/include=([--.include],[--.src.autofit])
+.ifdef X86
+CXXFLAGS=$(CXXCOMP_FLAGS) -I[] -I[--.include] -I[--.src.base] -Isys$library
+.endif
+
+.ifdef X86
+.c.obj :
+	clang $(CXXFLAGS) -pointer-size=32 -o $(MMS$TARGET_NAME)_cxx32.obj $(MMS$TARGET_NAME).c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_cxx.obj $(MMS$TARGET_NAME).c
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map nl: exclude hb_
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_64_cxx.obj $(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.else
+.c.obj :
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.endif
 
 OBJS=autofit.obj
 
+OBJS64=autofit_64.obj
+
+OBJSCXX=autofit_cxx.obj
+
+OBJSCXX32=autofit_cxx32.obj
+
 all : $(OBJS)
-        library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS64)
+.ifdef X86
+	library [--.lib]freetype_cxx32.olb $(OBJSCXX32)
+	library [--.lib]freetype_cxx.olb $(OBJSCXX)
+	library [--.lib]freetype_cxx.olb $(OBJS64)
+.endif
 
 # EOF
 $ eod
@@ -332,8 +469,33 @@ $ deck
 
 
 CFLAGS=$(COMP_FLAGS)$(DEBUG)/include=([--.builds.vms],[--.include],[--.src.base])
+.ifdef X86
+CXXFLAGS=$(CXXCOMP_FLAGS) -I[] -I[--.include] -I[--.src.base]
+.endif
 
-OBJS=ftbase.obj,\
+.ifdef X86
+.c.obj :
+	clang $(CXXFLAGS) -pointer-size=32 -o $(MMS$TARGET_NAME)_cxx32.obj $(MMS$TARGET_NAME).c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_cxx.obj $(MMS$TARGET_NAME).c
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3,MACROREDEF))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	clang $(CXXFLAGS) -Wno-macro-redefined\
+	-o $(MMS$TARGET_NAME)_64_cxx.obj $(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.else
+.c.obj :
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3,MACROREDEF))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.endif
+
+OBJS=ftbase_vms.obj,\
      ftbbox.obj,\
      ftbdf.obj,\
      ftbitmap.obj,\
@@ -348,10 +510,99 @@ OBJS=ftbase.obj,\
      ftstroke.obj,\
      ftsynth.obj,\
      fttype1.obj,\
-     ftwinfnt.obj
+     ftwinfnt.obj,ftpatent.obj,ftgxval.obj,ftotval.obj
+
+OBJS64=ftbase_vms_64.obj,\
+     ftbbox_64.obj,\
+     ftbdf_64.obj,\
+     ftbitmap_64.obj,\
+     ftcid_64.obj,\
+     ftdebug_64.obj,\
+     ftfstype_64.obj,\
+     ftgasp_64.obj,\
+     ftglyph_64.obj,\
+     ftinit_64.obj,\
+     ftmm_64.obj,\
+     ftpfr_64.obj,\
+     ftstroke_64.obj,\
+     ftsynth_64.obj,\
+     fttype1_64.obj,\
+     ftwinfnt_64.obj,ftpatent_64.obj,ftgxval_64.obj,ftotval_64.obj
+
+OBJSCXX=ftbase_vms_cxx.obj,\
+     ftbbox_cxx.obj,\
+     ftbdf_cxx.obj,\
+     ftbitmap_cxx.obj,\
+     ftcid_cxx.obj,\
+     ftdebug_cxx.obj,\
+     ftfstype_cxx.obj,\
+     ftgasp_cxx.obj,\
+     ftglyph_cxx.obj,\
+     ftinit_cxx.obj,\
+     ftmm_cxx.obj,\
+     ftpfr_cxx.obj,\
+     ftstroke_cxx.obj,\
+     ftsynth_cxx.obj,\
+     fttype1_cxx.obj,\
+     ftwinfnt_cxx.obj,ftpatent_cxx.obj,ftgxval_cxx.obj,ftotval_cxx.obj
+
+OBJSCXX32=ftbase_vms_cxx32.obj,\
+     ftbbox_cxx32.obj,\
+     ftbdf_cxx32.obj,\
+     ftbitmap_cxx32.obj,\
+     ftcid_cxx32.obj,\
+     ftdebug_cxx32.obj,\
+     ftfstype_cxx32.obj,\
+     ftgasp_cxx32.obj,\
+     ftglyph_cxx32.obj,\
+     ftinit_cxx32.obj,\
+     ftmm_cxx32.obj,\
+     ftpfr_cxx32.obj,\
+     ftstroke_cxx32.obj,\
+     ftsynth_cxx32.obj,\
+     fttype1_cxx32.obj,\
+     ftwinfnt_cxx32.obj,ftpatent_cxx32.obj,ftgxval_cxx32.obj,ftotval_cxx32.obj
 
 all : $(OBJS)
-        library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS64)
+.ifdef X86
+	library [--.lib]freetype_cxx32.olb $(OBJSCXX32)
+	library [--.lib]freetype_cxx.olb $(OBJSCXX)
+	library [--.lib]freetype_cxx.olb $(OBJS64)
+.endif
+
+.ifdef X86
+ftbase_vms.obj : ftbase.c ftadvanc.c ftcalc.c_vms ftcolor.c ftdbgmem.c fterrors.c\
+	ftfntfmt.c ftgloadr.c fthash.c ftlcdfil.c ftmac.c ftobjs.c ftoutln.c\
+	ftpsprop.c ftrfork.c ftsnames.c ftstream.c fttrigon.c ftutil.c
+	pipe gsed -e "s/ftcalc.c/ftcalc.c_vms/" < ftbase.c > ftbase_vms.c
+	clang $(CXXFLAGS) -pointer-size=32 -o ftbase_vms_cxx32.obj ftbase_vms.c
+	clang $(CXXFLAGS) -o ftbase_vms_cxx.obj ftbase_vms.c
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all ftbase_vms.c
+	pipe link/map/full/exec=nl: ftbase_vms.obj | copy sys$input nl:
+	mc sys$library:vms_auto64 ftbase_vms.map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3,MACROREDEF))/point=64/obj=ftbase_vms_64.obj\
+	ftbase_vms_64.c
+	clang $(CXXFLAGS) -Wno-macro-redefined\
+	-o ftbase_vms_64_cxx.obj ftbase_vms_64.c
+	delete ftbase_vms_64.c;*
+.else
+ftbase_vms.obj : ftbase.c ftadvanc.c ftcalc.c_vms ftcolor.c ftdbgmem.c fterrors.c\
+	ftfntfmt.c ftgloadr.c fthash.c ftlcdfil.c ftmac.c ftobjs.c ftoutln.c\
+	ftpsprop.c ftrfork.c ftsnames.c ftstream.c fttrigon.c ftutil.c
+	pipe gsed -e "s/ftcalc.c/ftcalc.c_vms/" < ftbase.c > ftbase_vms.c
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all ftbase_vms.c
+	pipe link/map/full/exec=nl: ftbase_vms.obj | copy sys$input nl:
+	mc sys$library:vms_auto64 ftbase_vms.map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3,MACROREDEF))/point=64/obj=ftbase_vms_64.obj\
+	ftbase_vms_64.c
+	delete ftbase_vms_64.c;*
+	delete ftbase_vms.c;*
+.endif
+
+ftcalc.c_vms : ftcalc.c
+	pipe gsed -f [--.builds.vms]patch_ftcalc.sed < ftcalc.c > ftcalc.c_vms
 
 # EOF
 $ eod
@@ -377,11 +628,47 @@ $ deck
 
 
 CFLAGS=$(COMP_FLAGS)$(DEBUG)/include=([--.include],[--.src.bdf])
+.ifdef X86
+CXXFLAGS=$(CXXCOMP_FLAGS) -I[] -I[--.include] -I[--.src.base])
+.endif
+
+.ifdef X86
+.c.obj :
+	clang $(CXXFLAGS) -pointer-size=32 -o $(MMS$TARGET_NAME)_cxx32.obj $(MMS$TARGET_NAME).c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_cxx.obj $(MMS$TARGET_NAME).c
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_64_cxx.obj $(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.else
+.c.obj :
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.endif
 
 OBJS=bdf.obj
 
+OBJS64=bdf_64.obj
+
+OBJSCXX=bdf_cxx.obj
+
+OBJSCXX32=bdf_cxx32.obj
+
 all : $(OBJS)
-        library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS64)
+.ifdef X86
+	library [--.lib]freetype_cxx32.olb $(OBJSCXX32)
+	library [--.lib]freetype_cxx.olb $(OBJSCXX)
+	library [--.lib]freetype_cxx.olb $(OBJS64)
+.endif
 
 # EOF
 $ eod
@@ -407,11 +694,50 @@ $ deck
 
 
 CFLAGS=$(COMP_FLAGS)$(DEBUG)/include=([--.include],[--.src.cache])/nowarn
+.ifdef X86
+CXXFLAGS=$(CXXCOMP_FLAGS) -I[] -I[--.include] -I[--.src.base]
+.endif
+
+.ifdef X86
+.c.obj :
+	clang $(CXXFLAGS) -pointer-size=32 -o $(MMS$TARGET_NAME)_cxx32.obj $(MMS$TARGET_NAME).c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_cxx.obj $(MMS$TARGET_NAME).c
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_64_cxx.obj $(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.else
+.c.obj :
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.endif
 
 OBJS=ftcache.obj
 
+OBJS64=ftcache_64.obj
+
+OBJSCXX=ftcache_cxx.obj
+
+OBJSCXX32=ftcache_cxx32.obj
+
 all : $(OBJS)
-        library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS64)
+.ifdef X86
+	library [--.lib]freetype_cxx32.olb $(OBJSCXX32)
+	library [--.lib]freetype_cxx.olb $(OBJSCXX)
+	library [--.lib]freetype_cxx.olb $(OBJS64)
+.endif
+
+ftcache.obj : ftcache.c ftcbasic.c ftccache.c ftccmap.c ftcglyph.c ftcimage.c \
+	ftcmanag.c ftcmru.c ftcsbits.c
 
 # EOF
 $ eod
@@ -437,11 +763,47 @@ $ deck
 
 
 CFLAGS=$(COMP_FLAGS)$(DEBUG)/include=([--.include],[--.src.cff])
+.ifdef X86
+CXXFLAGS=$(CXXCOMP_FLAGS) -I[] -I[--.include] -I[--.src.base]
+.endif
+
+.ifdef X86
+.c.obj :
+	clang $(CXXFLAGS) -pointer-size=32 -o $(MMS$TARGET_NAME)_cxx32.obj $(MMS$TARGET_NAME).c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_cxx.obj $(MMS$TARGET_NAME).c
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_64_cxx.obj $(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.else
+.c.obj :
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.endif
 
 OBJS=cff.obj
 
+OBJS64=cff_64.obj
+
+OBJSCXX=cff_cxx.obj
+
+OBJSCXX32=cff_cxx32.obj
+
 all : $(OBJS)
-        library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS64)
+.ifdef X86
+	library [--.lib]freetype_cxx32.olb $(OBJSCXX32)
+	library [--.lib]freetype_cxx.olb $(OBJSCXX)
+	library [--.lib]freetype_cxx.olb $(OBJS64)
+.endif
 
 # EOF
 $ eod
@@ -467,11 +829,47 @@ $ deck
 
 
 CFLAGS=$(COMP_FLAGS)$(DEBUG)/include=([--.include],[--.src.cid])
+.ifdef X86
+CXXFLAGS=$(CXXCOMP_FLAGS) -I[] -I[--.include] -I[--.src.base]
+.endif
+
+.ifdef X86
+.c.obj :
+	clang $(CXXFLAGS) -pointer-size=32 -o $(MMS$TARGET_NAME)_cxx32.obj $(MMS$TARGET_NAME).c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_cxx.obj $(MMS$TARGET_NAME).c
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_64_cxx.obj $(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.else
+.c.obj :
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.endif
 
 OBJS=type1cid.obj
 
+OBJS64=type1cid_64.obj
+
+OBJSCXX=type1cid_cxx.obj
+
+OBJSCXX32=type1cid_cxx32.obj
+
 all : $(OBJS)
-        library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS64)
+.ifdef X86
+	library [--.lib]freetype_cxx32.olb $(OBJSCXX32)
+	library [--.lib]freetype_cxx.olb $(OBJSCXX)
+	library [--.lib]freetype_cxx.olb $(OBJS64)
+.endif
 
 # EOF
 $ eod
@@ -497,11 +895,47 @@ $ deck
 
 
 CFLAGS=$(COMP_FLAGS)$(DEBUG)/include=([--.include],[--.src.gxvalid])
+.ifdef X86
+CXXFLAGS=$(CXXCOMP_FLAGS) -I[] -I[--.include] -I[--.src.base]
+.endif
+
+.ifdef X86
+.c.obj :
+	clang $(CXXFLAGS) -pointer-size=32 -o $(MMS$TARGET_NAME)_cxx32.obj $(MMS$TARGET_NAME).c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_cxx.obj $(MMS$TARGET_NAME).c
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_64_cxx.obj $(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.else
+.c.obj :
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.endif
 
 OBJS=gxvalid.obj
 
+OBJS64=gxvalid_64.obj
+
+OBJSCXX=gxvalid_cxx.obj
+
+OBJSCXX32=gxvalid_cxx32.obj
+
 all : $(OBJS)
-        library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS64)
+.ifdef X86
+	library [--.lib]freetype_cxx32.olb $(OBJSCXX32)
+	library [--.lib]freetype_cxx.olb $(OBJSCXX)
+	library [--.lib]freetype_cxx.olb $(OBJS64)
+.endif
 
 # EOF
 $ eod
@@ -524,18 +958,49 @@ $ deck
 # LICENSE.TXT.  By continuing to use, modify, or distribute this file you
 # indicate that you have read the license and understand and accept it
 # fully.
-$EOD
-$ if libincs .nes. "" then write out "LIBINCS = ", libincs - ",", ","
-$ write out "COMP_FLAGS = ", ccopt
-$ copy sys$input: out
-$ deck
 
-CFLAGS=$(COMP_FLAGS)$(DEBUG)/include=($(LIBINCS)[--.include],[--.src.gzip])
+CFLAGS=$(COMP_FLAGS)$(DEBUG)/include=([--.include],[--.src.gzip])
+.ifdef X86
+CXXFLAGS=$(CXXCOMP_FLAGS) -I[] -I[--.include] -I[--.src.base]
+.endif
+
+.ifdef X86
+.c.obj :
+	clang $(CXXFLAGS) -pointer-size=32 -o $(MMS$TARGET_NAME)_cxx32.obj $(MMS$TARGET_NAME).c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_cxx.obj $(MMS$TARGET_NAME).c
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_64_cxx.obj $(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.else
+.c.obj :
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.endif
 
 OBJS=ftgzip.obj
 
+OBJS64=ftgzip_64.obj
+
+OBJSCXX=ftgzip_cxx.obj
+
+OBJSCXX32=ftgzip_cxx32.obj
+
 all : $(OBJS)
-        library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS64)
+.ifdef X86
+	library [--.lib]freetype_cxx32.olb $(OBJSCXX32)
+	library [--.lib]freetype_cxx.olb $(OBJSCXX)
+	library [--.lib]freetype_cxx.olb $(OBJS64)
+.endif
 
 # EOF
 $ eod
@@ -560,18 +1025,49 @@ $ deck
 # LICENSE.TXT.  By continuing to use, modify, or distribute this file you
 # indicate that you have read the license and understand and accept it
 # fully.
-$EOD
-$ if libincs .nes. "" then write out "LIBINCS = ", libincs - ",", ","
-$ write out "COMP_FLAGS = ", ccopt
-$ copy sys$input: out
-$ deck
 
 CFLAGS=$(COMP_FLAGS)$(DEBUG)/include=([--.include],[--.src.bzip2])
+.ifdef X86
+CXXFLAGS=$(CXXCOMP_FLAGS) -I[] -I[--.include] -I[--.src.base] -Isys$library
+.endif
+
+.ifdef X86
+.c.obj :
+	clang $(CXXFLAGS) -pointer-size=32 -o $(MMS$TARGET_NAME)_cxx32.obj $(MMS$TARGET_NAME).c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_cxx.obj $(MMS$TARGET_NAME).c
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_64_cxx.obj $(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.else
+.c.obj :
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.endif
 
 OBJS=ftbzip2.obj
 
+OBJS64=ftbzip2_64.obj
+
+OBJSCXX=ftbzip2_cxx.obj
+
+OBJSCXX32=ftbzip2_cxx32.obj
+
 all : $(OBJS)
-        library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS64)
+.ifdef X86
+	library [--.lib]freetype_cxx32.olb $(OBJSCXX32)
+	library [--.lib]freetype_cxx.olb $(OBJSCXX)
+	library [--.lib]freetype_cxx.olb $(OBJS64)
+.endif
 
 # EOF
 $ eod
@@ -594,18 +1090,49 @@ $ deck
 # LICENSE.TXT.  By continuing to use, modify, or distribute this file you
 # indicate that you have read the license and understand and accept it
 # fully.
-$EOD
-$ if libincs .nes. "" then write out "LIBINCS = ", libincs - ",", ","
-$ write out "COMP_FLAGS = ", ccopt
-$ copy sys$input: out
-$ deck
 
-CFLAGS=$(COMP_FLAGS)$(DEBUG)/include=($(LIBINCS)[--.include],[--.src.lzw])
+CFLAGS=$(COMP_FLAGS)$(DEBUG)/include=([--.include],[--.src.lzw])
+.ifdef X86
+CXXFLAGS=$(CXXCOMP_FLAGS) -I[] -I[--.include] -I[--.src.base]
+.endif
+
+.ifdef X86
+.c.obj :
+	clang $(CXXFLAGS) -pointer-size=32 -o $(MMS$TARGET_NAME)_cxx32.obj $(MMS$TARGET_NAME).c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_cxx.obj $(MMS$TARGET_NAME).c
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_64_cxx.obj $(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.else
+.c.obj :
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.endif
 
 OBJS=ftlzw.obj
 
+OBJS64=ftlzw_64.obj
+
+OBJSCXX=ftlzw_cxx.obj
+
+OBJSCXX32=ftlzw_cxx32.obj
+
 all : $(OBJS)
-        library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS64)
+.ifdef X86
+	library [--.lib]freetype_cxx32.olb $(OBJSCXX32)
+	library [--.lib]freetype_cxx.olb $(OBJSCXX)
+	library [--.lib]freetype_cxx.olb $(OBJS64)
+.endif
 
 # EOF
 $ eod
@@ -631,11 +1158,47 @@ $ deck
 
 
 CFLAGS=$(COMP_FLAGS)$(DEBUG)/include=([--.include],[--.src.otvalid])
+.ifdef X86
+CXXFLAGS=$(CXXCOMP_FLAGS) -I[] -I[--.include] -I[--.src.base]
+.endif
+
+.ifdef X86
+.c.obj :
+	clang $(CXXFLAGS) -pointer-size=32 -o $(MMS$TARGET_NAME)_cxx32.obj $(MMS$TARGET_NAME).c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_cxx.obj $(MMS$TARGET_NAME).c
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_64_cxx.obj $(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.else
+.c.obj :
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.endif
 
 OBJS=otvalid.obj
 
+OBJS64=otvalid_64.obj
+
+OBJSCXX=otvalid_cxx.obj
+
+OBJSCXX32=otvalid_cxx32.obj
+
 all : $(OBJS)
-        library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS64)
+.ifdef X86
+	library [--.lib]freetype_cxx32.olb $(OBJSCXX32)
+	library [--.lib]freetype_cxx.olb $(OBJSCXX)
+	library [--.lib]freetype_cxx.olb $(OBJS64)
+.endif
 
 # EOF
 $ eod
@@ -673,11 +1236,47 @@ $ deck
 
 
 CFLAGS=$(COMP_FLAGS)$(DEBUG)/include=([--.include],[--.src.pcf])
+.ifdef X86
+CXXFLAGS=$(CXXCOMP_FLAGS) -I[] -I[--.include] -I[--.src.base]
+.endif
+
+.ifdef X86
+.c.obj :
+	clang $(CXXFLAGS) -pointer-size=32 -o $(MMS$TARGET_NAME)_cxx32.obj $(MMS$TARGET_NAME).c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_cxx.obj $(MMS$TARGET_NAME).c
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_64_cxx.obj $(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.else
+.c.obj :
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.endif
 
 OBJS=pcf.obj
 
+OBJS64=pcf_64.obj
+
+OBJSCXX=pcf_cxx.obj
+
+OBJSCXX32=pcf_cxx32.obj
+
 all : $(OBJS)
-        library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS64)
+.ifdef X86
+	library [--.lib]freetype_cxx32.olb $(OBJSCXX32)
+	library [--.lib]freetype_cxx.olb $(OBJSCXX)
+	library [--.lib]freetype_cxx.olb $(OBJS64)
+.endif
 
 # EOF
 $ eod
@@ -703,11 +1302,47 @@ $ deck
 
 
 CFLAGS=$(COMP_FLAGS)$(DEBUG)/include=([--.include],[--.src.pfr])
+.ifdef X86
+CXXFLAGS=$(CXXCOMP_FLAGS) -I[] -I[--.include] -I[--.src.base]
+.endif
+
+.ifdef X86
+.c.obj :
+	clang $(CXXFLAGS) -pointer-size=32 -o $(MMS$TARGET_NAME)_cxx32.obj $(MMS$TARGET_NAME).c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_cxx.obj $(MMS$TARGET_NAME).c
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_64_cxx.obj $(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.else
+.c.obj :
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.endif
 
 OBJS=pfr.obj
 
+OBJS64=pfr_64.obj
+
+OBJSCXX=pfr_cxx.obj
+
+OBJSCXX32=pfr_cxx32.obj
+
 all : $(OBJS)
-        library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS64)
+.ifdef X86
+	library [--.lib]freetype_cxx32.olb $(OBJSCXX32)
+	library [--.lib]freetype_cxx.olb $(OBJSCXX)
+	library [--.lib]freetype_cxx.olb $(OBJS64)
+.endif
 
 # EOF
 $ eod
@@ -733,11 +1368,47 @@ $ deck
 
 
 CFLAGS=$(COMP_FLAGS)$(DEBUG)/include=([--.include],[--.src.psaux])
+.ifdef X86
+CXXFLAGS=$(CXXCOMP_FLAGS) -I[] -I[--.include] -I[--.src.base]
+.endif
+
+.ifdef X86
+.c.obj :
+	clang $(CXXFLAGS) -pointer-size=32 -o $(MMS$TARGET_NAME)_cxx32.obj $(MMS$TARGET_NAME).c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_cxx.obj $(MMS$TARGET_NAME).c
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_64_cxx.obj $(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.else
+.c.obj :
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.endif
 
 OBJS=psaux.obj
 
+OBJS64=psaux_64.obj
+
+OBJSCXX=psaux_cxx.obj
+
+OBJSCXX32=psaux_cxx32.obj
+
 all : $(OBJS)
-        library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS64)
+.ifdef X86
+	library [--.lib]freetype_cxx32.olb $(OBJSCXX32)
+	library [--.lib]freetype_cxx.olb $(OBJSCXX)
+	library [--.lib]freetype_cxx.olb $(OBJS64)
+.endif
 
 # EOF
 $ eod
@@ -763,11 +1434,47 @@ $ deck
 
 
 CFLAGS=$(COMP_FLAGS)$(DEBUG)/include=([--.include],[--.src.psnames])
+.ifdef X86
+CXXFLAGS=$(CXXCOMP_FLAGS) -I[] -I[--.include] -I[--.src.base]
+.endif
+
+.ifdef X86
+.c.obj :
+	clang $(CXXFLAGS) -pointer-size=32 -o $(MMS$TARGET_NAME)_cxx32.obj $(MMS$TARGET_NAME).c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_cxx.obj $(MMS$TARGET_NAME).c
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_64_cxx.obj $(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.else
+.c.obj :
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.endif
 
 OBJS=pshinter.obj
 
+OBJS64=pshinter_64.obj
+
+OBJSCXX=pshinter_cxx.obj
+
+OBJSCXX32=pshinter_cxx32.obj
+
 all : $(OBJS)
-        library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS64)
+.ifdef X86
+	library [--.lib]freetype_cxx32.olb $(OBJSCXX32)
+	library [--.lib]freetype_cxx.olb $(OBJSCXX)
+	library [--.lib]freetype_cxx.olb $(OBJS64)
+.endif
 
 # EOF
 $ eod
@@ -793,11 +1500,47 @@ $ deck
 
 
 CFLAGS=$(COMP_FLAGS)$(DEBUG)/include=([--.include],[--.src.psnames])
+.ifdef X86
+CXXFLAGS=$(CXXCOMP_FLAGS) -I[] -I[--.include] -I[--.src.base]
+.endif
+
+.ifdef X86
+.c.obj :
+	clang $(CXXFLAGS) -pointer-size=32 -o $(MMS$TARGET_NAME)_cxx32.obj $(MMS$TARGET_NAME).c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_cxx.obj $(MMS$TARGET_NAME).c
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_64_cxx.obj $(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.else
+.c.obj :
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.endif
 
 OBJS=psnames.obj
 
+OBJS64=psnames_64.obj
+
+OBJSCXX=psnames_cxx.obj
+
+OBJSCXX32=psnames_cxx32.obj
+
 all : $(OBJS)
-        library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS64)
+.ifdef X86
+	library [--.lib]freetype_cxx32.olb $(OBJSCXX32)
+	library [--.lib]freetype_cxx.olb $(OBJSCXX)
+	library [--.lib]freetype_cxx.olb $(OBJS64)
+.endif
 
 # EOF
 $ eod
@@ -823,11 +1566,47 @@ $ deck
 
 
 CFLAGS=$(COMP_FLAGS)$(DEBUG)/include=([--.include],[--.src.raster])
+.ifdef X86
+CXXFLAGS=$(CXXCOMP_FLAGS) -I[] -I[--.include] -I[--.src.base]
+.endif
+
+.ifdef X86
+.c.obj :
+	clang $(CXXFLAGS) -pointer-size=32 -o $(MMS$TARGET_NAME)_cxx32.obj $(MMS$TARGET_NAME).c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_cxx.obj $(MMS$TARGET_NAME).c
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_64_cxx.obj $(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.else
+.c.obj :
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.endif
 
 OBJS=raster.obj
 
+OBJS64=raster_64.obj
+
+OBJSCXX=raster_cxx.obj
+
+OBJSCXX32=raster_cxx32.obj
+
 all : $(OBJS)
-        library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS64)
+.ifdef X86
+	library [--.lib]freetype_cxx32.olb $(OBJSCXX32)
+	library [--.lib]freetype_cxx.olb $(OBJSCXX)
+	library [--.lib]freetype_cxx.olb $(OBJS64)
+.endif
 
 # EOF
 $ eod
@@ -853,11 +1632,48 @@ $ deck
 
 
 CFLAGS=$(COMP_FLAGS)$(DEBUG)/include=([--.include],[--.src.sfnt])
+.ifdef X86
+CXXFLAGS=$(CXXCOMP_FLAGS) -I[] -I[--.include] -I[--.src.base] -Isys$library\
+         -Wno-incompatible-pointer-types
+.endif
+
+.ifdef X86
+.c.obj :
+	clang $(CXXFLAGS) -pointer-size=32 -o $(MMS$TARGET_NAME)_cxx32.obj $(MMS$TARGET_NAME).c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_cxx.obj $(MMS$TARGET_NAME).c
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_64_cxx.obj $(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.else
+.c.obj :
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.endif
 
 OBJS=sfnt.obj
 
+OBJS64=sfnt_64.obj
+
+OBJSCXX=sfnt_cxx.obj
+
+OBJSCXX32=sfnt_cxx32.obj
+
 all : $(OBJS)
-        library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS64)
+.ifdef X86
+	library [--.lib]freetype_cxx32.olb $(OBJSCXX32)
+	library [--.lib]freetype_cxx.olb $(OBJSCXX)
+	library [--.lib]freetype_cxx.olb $(OBJS64)
+.endif
 
 # EOF
 $ eod
@@ -883,11 +1699,113 @@ $ deck
 
 
 CFLAGS=$(COMP_FLAGS)$(DEBUG)/include=([--.include],[--.src.smooth])
+.ifdef X86
+CXXFLAGS=$(CXXCOMP_FLAGS) -I [] -I[--.include] -I[--.src.base]
+.endif
+
+.ifdef X86
+.c.obj :
+	clang $(CXXFLAGS) -pointer-size=32 -o $(MMS$TARGET_NAME)_cxx32.obj $(MMS$TARGET_NAME).c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_cxx.obj $(MMS$TARGET_NAME).c
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_64_cxx.obj $(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.else
+.c.obj :
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.endif
 
 OBJS=smooth.obj
 
+OBJS64=smooth_64.obj
+
+OBJSCXX=smooth_cxx.obj
+
+OBJSCXX32=smooth_cxx32.obj
+
 all : $(OBJS)
-        library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS64)
+.ifdef X86
+	library [--.lib]freetype_cxx32.olb $(OBJSCXX32)
+	library [--.lib]freetype_cxx.olb $(OBJSCXX)
+	library [--.lib]freetype_cxx.olb $(OBJS64)
+.endif
+
+# EOF
+$ eod
+$ close out
+$ write sys$output "... [.src.svg] directory"
+$ create [.src.svg]descrip.mms
+$ open/append out [.src.svg]descrip.mms
+$ copy sys$input: out
+$ deck
+#
+# FreeType 2 smooth renderer module compilation rules for VMS
+#
+
+
+# Copyright 2001-2019 by
+# David Turner, Robert Wilhelm, and Werner Lemberg.
+#
+# This file is part of the FreeType project, and may only be used, modified,
+# and distributed under the terms of the FreeType project license,
+# LICENSE.TXT.  By continuing to use, modify, or distribute this file you
+# indicate that you have read the license and understand and accept it
+# fully.
+
+
+CFLAGS=$(COMP_FLAGS)$(DEBUG)/include=([--.include],[--.src.svg])
+.ifdef X86
+CXXFLAGS=$(CXXCOMP_FLAGS) -I[] -I[--.include] -I[--.src.base]
+.endif
+
+.ifdef X86
+.c.obj :
+	clang $(CXXFLAGS) -pointer-size=32 -o $(MMS$TARGET_NAME)_cxx32.obj $(MMS$TARGET_NAME).c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_cxx.obj $(MMS$TARGET_NAME).c
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_64_cxx.obj $(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.else
+.c.obj :
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.endif
+
+OBJS=svg.obj
+
+OBJS64=svg_64.obj
+
+OBJSCXX=svg_cxx.obj
+
+OBJSCXX32=svg_cxx32.obj
+
+all : $(OBJS)
+	library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS64)
+.ifdef X86
+	library [--.lib]freetype_cxx32.olb $(OBJSCXX32)
+	library [--.lib]freetype_cxx.olb $(OBJSCXX)
+	library [--.lib]freetype_cxx.olb $(OBJS64)
+.endif
 
 # EOF
 $ eod
@@ -913,11 +1831,47 @@ $ deck
 
 
 CFLAGS=$(COMP_FLAGS)$(DEBUG)/include=([--.include],[--.src.truetype])
+.ifdef X86
+CXXFLAGS=$(CXXCOMP_FLAGS) -I[] -I[--.include] -I[--.src.base]
+.endif
+
+.ifdef X86
+.c.obj :
+	clang $(CXXFLAGS) -pointer-size=32 -o $(MMS$TARGET_NAME)_cxx32.obj $(MMS$TARGET_NAME).c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_cxx.obj $(MMS$TARGET_NAME).c
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_64_cxx.obj $(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.else
+.c.obj :
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.endif
 
 OBJS=truetype.obj
 
+OBJS64=truetype_64.obj
+
+OBJSCXX=truetype_cxx.obj
+
+OBJSCXX32=truetype_cxx32.obj
+
 all : $(OBJS)
-        library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS64)
+.ifdef X86
+	library [--.lib]freetype_cxx32.olb $(OBJSCXX32)
+	library [--.lib]freetype_cxx.olb $(OBJSCXX)
+	library [--.lib]freetype_cxx.olb $(OBJS64)
+.endif
 
 # EOF
 $ eod
@@ -943,11 +1897,117 @@ $ deck
 
 
 CFLAGS=$(COMP_FLAGS)$(DEBUG)/include=([--.include],[--.src.type1])
+.ifdef X86
+CXXFLAGS=$(CXXCOMP_FLAGS) -I[] -I[--.include] -I[--.src.base]
+.endif
+
+.ifdef X86
+.c.obj :
+	clang $(CXXFLAGS) -pointer-size=32 -o $(MMS$TARGET_NAME)_cxx32.obj $(MMS$TARGET_NAME).c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_cxx.obj $(MMS$TARGET_NAME).c
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_64_cxx.obj $(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.else
+.c.obj :
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.endif
 
 OBJS=type1.obj
 
+OBJS64=type1_64.obj
+
+OBJSCXX=type1_cxx.obj
+
+OBJSCXX32=type1_cxx32.obj
+
 all : $(OBJS)
-        library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS64)
+.ifdef X86
+	library [--.lib]freetype_cxx32.olb $(OBJSCXX32)
+	library [--.lib]freetype_cxx.olb $(OBJSCXX)
+	library [--.lib]freetype_cxx.olb $(OBJS64)
+.endif
+
+type1.obj : type1.c t1parse.c t1load.c t1objs.c t1driver.c t1gload.c t1afm.c
+
+# EOF
+$ eod
+$ close out
+$ write sys$output "... [.src.sdf] directory"
+$ create [.src.sdf]descrip.mms
+$ open/append out [.src.sdf]descrip.mms
+$ copy sys$input: out
+$ deck
+#
+# FreeType 2 sdf driver compilation rules for VMS
+#
+
+
+# Copyright 1996-2019 by
+# David Turner, Robert Wilhelm, and Werner Lemberg.
+#
+# This file is part of the FreeType project, and may only be used, modified,
+# and distributed under the terms of the FreeType project license,
+# LICENSE.TXT.  By continuing to use, modify, or distribute this file you
+# indicate that you have read the license and understand and accept it
+# fully.
+
+
+CFLAGS=$(COMP_FLAGS)$(DEBUG)/include=([--.include],[--.src.type1])
+.ifdef X86
+CXXFLAGS=$(CXXCOMP_FLAGS) -I[] -I[--.include] -I[--.src.base]
+.endif
+
+.ifdef X86
+.c.obj :
+	clang $(CXXFLAGS) -pointer-size=32 -o $(MMS$TARGET_NAME)_cxx32.obj $(MMS$TARGET_NAME).c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_cxx.obj $(MMS$TARGET_NAME).c
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_64_cxx.obj $(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.else
+.c.obj :
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.endif
+
+OBJS=sdf.obj
+
+OBJS64=sdf_64.obj
+
+OBJSCXX=sdf_cxx.obj
+
+OBJSCXX32=sdf_cxx32.obj
+
+all : $(OBJS)
+	library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS64)
+.ifdef X86
+	library [--.lib]freetype_cxx32.olb $(OBJSCXX32)
+	library [--.lib]freetype_cxx.olb $(OBJSCXX)
+	library [--.lib]freetype_cxx.olb $(OBJS64)
+.endif
+
+sdf.obj : sdf.c ftbsdf.c ftsdf.c ftsdfcommon.c ftsdfrend.c
 
 # EOF
 $ eod
@@ -973,11 +2033,47 @@ $ deck
 
 
 CFLAGS=$(COMP_FLAGS)$(DEBUG)/include=([--.include],[--.src.type42])
+.ifdef X86
+CXXFLAGS=$(CXXCOMP_FLAGS) -I[] -I[--.include] -I[--.src.base]
+.endif
+
+.ifdef X86
+.c.obj :
+	clang $(CXXFLAGS) -pointer-size=32 -o $(MMS$TARGET_NAME)_cxx32.obj $(MMS$TARGET_NAME).c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_cxx.obj $(MMS$TARGET_NAME).c
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_64_cxx.obj $(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.else
+.c.obj :
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.endif
 
 OBJS=type42.obj
 
+OBJS64=type42_64.obj
+
+OBJSCXX=type42_cxx.obj
+
+OBJSCXX32=type42_cxx32.obj
+
 all : $(OBJS)
-        library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS64)
+.ifdef X86
+	library [--.lib]freetype_cxx32.olb $(OBJSCXX32)
+	library [--.lib]freetype_cxx.olb $(OBJSCXX)
+	library [--.lib]freetype_cxx.olb $(OBJS64)
+.endif
 
 # EOF
 $ eod
@@ -1003,11 +2099,47 @@ $ deck
 
 
 CFLAGS=$(COMP_FLAGS)$(DEBUG)/include=([--.include],[--.src.winfonts])
+.ifdef X86
+CXXFLAGS=$(CXXCOMP_FLAGS) -I[] -I[--.include] -I[--.src.base]
+.endif
+
+.ifdef X86
+.c.obj :
+	clang $(CXXFLAGS) -pointer-size=32 -o $(MMS$TARGET_NAME)_cxx32.obj $(MMS$TARGET_NAME).c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_cxx.obj $(MMS$TARGET_NAME).c
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	clang $(CXXFLAGS) -o $(MMS$TARGET_NAME)_64_cxx.obj $(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.else
+.c.obj :
+	cc$(CFLAGS)/warn=noinfo/point=32/list/show=all $(MMS$TARGET_NAME).c
+	pipe link/map/full/exec=nl: $(MMS$TARGET_NAME).obj | copy sys$input nl:
+	mc sys$library:vms_auto64 $(MMS$TARGET_NAME).map
+	cc$(CFLAGS)/warn=(noinfo,disable=(MAYLOSEDATA3))/point=64/obj=$(MMS$TARGET_NAME)_64.obj\
+	$(MMS$TARGET_NAME)_64.c
+	delete $(MMS$TARGET_NAME)_64.c;*
+.endif
 
 OBJS=winfnt.obj
 
+OBJS64=winfnt_64.obj
+
+OBJSCXX=winfnt_cxx.obj
+
+OBJSCXX32=winfnt_cxx32.obj
+
 all : $(OBJS)
-        library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS)
+	library [--.lib]freetype.olb $(OBJS64)
+.ifdef X86
+	library [--.lib]freetype_cxx32.olb $(OBJSCXX32)
+	library [--.lib]freetype_cxx.olb $(OBJSCXX)
+	library [--.lib]freetype_cxx.olb $(OBJS64)
+.endif
 
 # EOF
 $ eod
@@ -1033,6 +2165,7 @@ $   then
 $     start = f$locate("=",cparm) + 1
 $     len   = f$length(cparm) - start
 $     ccopt = ccopt + f$extract(start,len,cparm)
+$     if x86_64 then cxxopt = cxxopt + f$extract(start,len,cparm)
 $   endif
 $   if cparm .eqs. "LINK" then linkonly = true
 $   if f$locate("LOPTS=",cparm) .lt. f$length(cparm)
@@ -1048,14 +2181,14 @@ $     len    = f$length(cparm) - start
 $     cc_com = f$extract(start,len,cparm)
       if (cc_com .nes. "DECC") .and. -
          (cc_com .nes. "VAXC") .and. -
-	 (cc_com .nes. "GNUC")
+         (cc_com .nes. "GNUC")
 $     then
 $       write sys$output "Unsupported compiler choice ''cc_com' ignored"
 $       write sys$output "Use DECC, VAXC, or GNUC instead"
 $     else
-$     	if cc_com .eqs. "DECC" then its_decc = true
-$     	if cc_com .eqs. "VAXC" then its_vaxc = true
-$     	if cc_com .eqs. "GNUC" then its_gnuc = true
+$       if cc_com .eqs. "DECC" then its_decc = true
+$       if cc_com .eqs. "VAXC" then its_vaxc = true
+$       if cc_com .eqs. "GNUC" then its_gnuc = true
 $     endif
 $   endif
 $   if f$locate("MAKE=",cparm) .lt. f$length(cparm)
@@ -1077,230 +2210,4 @@ $ endif
 $ return
 $!------------------------------------------------------------------------------
 $!
-$! Take care of driver file with information about external libraries
-$!
-$! Version history
-$! 0.01 20040220 First version to receive a number
-$! 0.02 20040229 Echo current procedure name; use general error exit handler
-$!               Remove xpm hack -> Replaced by more general dnsrl handling
-$CHECK_CREATE_VMSLIB:
-$!
-$ if f$search("VMSLIB.DAT") .eqs. ""
-$ then
-$   type/out=vmslib.dat sys$input
-!
-! This is a simple driver file with information used by vms_make.com to
-! check if external libraries (like t1lib and FreeType) are available on
-! the system.
-!
-! Layout of the file:
-!
-!    - Lines starting with ! are treated as comments
-!    - Elements in a data line are separated by # signs
-!    - The elements need to be listed in the following order
-!      1.) Name of the Library (only used for informative messages
-!                               from vms_make.com)
-!      2.) Location where the object library can be found
-!      3.) Location where the include files for the library can be found
-!      4.) Include file used to verify library location
-!      5.) CPP define to pass to the build to indicate availability of
-!          the library
-!
-! Example: The following lines show how definitions
-!          might look like. They are site specific and the locations of the
-!          library and include files need almost certainly to be changed.
-!
-! Location: All of the libraries can be found at the following addresses
-!
-!   ZLIB:     http://zinser.no-ip.info/vms/sw/zlib.htmlx
-!
-ZLIB # sys$library:libz.olb # sys$library: # zlib.h # FT_CONFIG_OPTION_SYSTEM_ZLIB
-$   write sys$output "New driver file vmslib.dat created."
-$   write sys$output "Please customize library locations for your site"
-$   write sys$output "and afterwards re-execute ''myproc'"
-$   goto err_exit
-$ endif
-$!
-$! Init symbols used to hold CPP definitions and include path
-$!
-$ libdefs = "FT2_BUILD_LIBRARY,FT_CONFIG_OPTION_OLD_INTERNALS,"
-$ libincs = ""
-$!
-$! Open data file with location of libraries
-$!
-$ open/read/end=end_lib/err=err_lib libdata VMSLIB.DAT
-$LIB_LOOP:
-$ read/end=end_lib libdata libline
-$ libline = f$edit(libline, "UNCOMMENT,COLLAPSE")
-$ if libline .eqs. "" then goto LIB_LOOP ! Comment line
-$ libname = f$edit(f$element(0,"#",libline),"UPCASE")
-$ write sys$output "Processing ''libname' setup ..."
-$ libloc  = f$element(1,"#",libline)
-$ libsrc  = f$element(2,"#",libline)
-$ testinc = f$element(3,"#",libline)
-$ cppdef  = f$element(4,"#",libline)
-$ old_cpp = f$locate("=1",cppdef)
-$ if old_cpp.lt.f$length(cppdef) then cppdef = f$extract(0,old_cpp,cppdef)
-$ if f$search("''libloc'").eqs. ""
-$ then
-$   write sys$output "Can not find library ''libloc' - Skipping ''libname'"
-$   goto LIB_LOOP
-$ endif
-$ libsrc_elem = 0
-$ libsrc_found = false
-$LIBSRC_LOOP:
-$ libsrcdir = f$element(libsrc_elem,",",libsrc)
-$ if (libsrcdir .eqs. ",") then goto END_LIBSRC
-$ if f$search("''libsrcdir'''testinc'") .nes. "" then libsrc_found = true
-$ libsrc_elem = libsrc_elem + 1
-$ goto LIBSRC_LOOP
-$END_LIBSRC:
-$ if .not. libsrc_found
-$ then
-$   write sys$output "Can not find includes at ''libsrc' - Skipping ''libname'"
-$   goto LIB_LOOP
-$ endif
-$ if (cppdef .nes. "") then libdefs = libdefs +  cppdef + ","
-$ libincs = libincs + "," + libsrc
-$ lqual = "/lib"
-$ libtype = f$edit(f$parse(libloc,,,"TYPE"),"UPCASE")
-$ if f$locate("EXE",libtype) .lt. f$length(libtype) then lqual = "/share"
-$ write optf libloc , lqual
-$ if (f$trnlnm("topt") .nes. "") then write topt libloc , lqual
-$!
-$! Nasty hack to get the FreeType includes to work
-$!
-$ ft2def = false
-$ if ((libname .eqs. "FREETYPE") .and. -
-      (f$locate("FREETYPE2",cppdef) .lt. f$length(cppdef)))
-$ then
-$   if ((f$search("freetype:freetype.h") .nes. "") .and. -
-        (f$search("freetype:[internal]ftobjs.h") .nes. ""))
-$   then
-$     write sys$output "Will use local definition of freetype logical"
-$   else
-$     ft2elem = 0
-$FT2_LOOP:
-$     ft2srcdir = f$element(ft2elem,",",libsrc)
-$     if f$search("''ft2srcdir'''testinc'") .nes. ""
-$     then
-$        if f$search("''ft2srcdir'internal.dir") .nes. ""
-$        then
-$          ft2dev  = f$parse("''ft2srcdir'",,,"device","no_conceal")
-$          ft2dir  = f$parse("''ft2srcdir'",,,"directory","no_conceal")
-$          ft2conc = f$locate("][",ft2dir)
-$          ft2len  = f$length(ft2dir)
-$          if ft2conc .lt. ft2len
-$          then
-$             ft2dir = f$extract(0,ft2conc,ft2dir) + -
-                       f$extract(ft2conc+2,ft2len-2,ft2dir)
-$          endif
-$          ft2dir = ft2dir - "]" + ".]"
-$          define freetype 'ft2dev''ft2dir','ft2srcdir'
-$          ft2def = true
-$        else
-$          goto ft2_err
-$        endif
-$     else
-$       ft2elem = ft2elem + 1
-$       goto ft2_loop
-$     endif
-$   endif
-$ endif
-$ goto LIB_LOOP
-$END_LIB:
-$ close libdata
-$ return
-$!------------------------------------------------------------------------------
-$!
-$! Analyze Object files for OpenVMS AXP to extract Procedure and Data
-$! information to build a symbol vector for a shareable image
-$! All the "brains" of this logic was suggested by Hartmut Becker
-$! (Hartmut.Becker@compaq.com). All the bugs were introduced by me
-$! (zinser@zinser.no-ip.info), so if you do have problem reports please do not
-$! bother Hartmut/HP, but get in touch with me
-$!
-$! Version history
-$! 0.01 20040006 Skip over shareable images in option file
-$!
-$ ANAL_OBJ_AXP: Subroutine
-$ V = 'F$Verify(0)
-$ SAY := "WRITE_ SYS$OUTPUT"
-$
-$ IF F$SEARCH("''P1'") .EQS. ""
-$ THEN
-$    SAY "ANAL_OBJ_AXP-E-NOSUCHFILE:  Error, inputfile ''p1' not available"
-$    goto exit_aa
-$ ENDIF
-$ IF "''P2'" .EQS. ""
-$ THEN
-$    SAY "ANAL_OBJ_AXP:  Error, no output file provided"
-$    goto exit_aa
-$ ENDIF
-$
-$ open/read in 'p1
-$ create a.tmp
-$ open/append atmp a.tmp
-$ loop:
-$ read/end=end_loop in line
-$ if f$locate("/SHARE",f$edit(line,"upcase")) .lt. f$length(line)
-$ then
-$   write sys$output "ANAL_SKP_SHR-i-skipshare, ''line'"
-$   goto loop
-$ endif
-$ if f$locate("/LIB",f$edit(line,"upcase")) .lt. f$length(line)
-$ then
-$   write libsf line
-$   write sys$output "ANAL_SKP_LIB-i-skiplib, ''line'"
-$   goto loop
-$ endif
-$ f= f$search(line)
-$ if f .eqs. ""
-$ then
-$	write sys$output "ANAL_OBJ_AXP-w-nosuchfile, ''line'"
-$	goto loop
-$ endif
-$ def/user sys$output nl:
-$ def/user sys$error nl:
-$ anal/obj/gsd 'f /out=x.tmp
-$ open/read xtmp x.tmp
-$ XLOOP:
-$ read/end=end_xloop xtmp xline
-$ xline = f$edit(xline,"compress")
-$ write atmp xline
-$ goto xloop
-$ END_XLOOP:
-$ close xtmp
-$ goto loop
-$ end_loop:
-$ close in
-$ close atmp
-$ if f$search("a.tmp") .eqs. "" -
-	then $ exit
-$ ! all global definitions
-$ search a.tmp "symbol:","EGSY$V_DEF 1","EGSY$V_NORM 1"/out=b.tmp
-$ ! all procedures
-$ search b.tmp "EGSY$V_NORM 1"/wind=(0,1) /out=c.tmp
-$ search c.tmp "symbol:"/out=d.tmp
-$ def/user sys$output nl:
-$ edito/edt/command=sys$input d.tmp
-sub/symbol: "/symbol_vector=(/whole
-sub/"/=PROCEDURE)/whole
-exit
-$ ! all data
-$ search b.tmp "EGSY$V_DEF 1"/wind=(0,1) /out=e.tmp
-$ search e.tmp "symbol:"/out=f.tmp
-$ def/user sys$output nl:
-$ edito/edt/command=sys$input f.tmp
-sub/symbol: "/symbol_vector=(/whole
-sub/"/=DATA)/whole
-exit
-$ sort/nodupl d.tmp,f.tmp 'p2'
-$ delete a.tmp;*,b.tmp;*,c.tmp;*,d.tmp;*,e.tmp;*,f.tmp;*
-$ if f$search("x.tmp") .nes. "" -
-	then $ delete x.tmp;*
-$!
-$ close libsf
-$ EXIT_AA:
-$ if V then set verify
 $ endsubroutine

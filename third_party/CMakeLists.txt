@@ -17,7 +17,16 @@ if (BUILD_INDIGO OR BUILD_INDIGO_UTILS)
         # Force FreeType onto its bundled zlib: find_package(ZLIB) could otherwise pick up a
         # system zlib mismatched with the vendored one libpng links, corrupting the heap.
         option(FT_DISABLE_ZLIB "Disable use of system zlib and use internal zlib library instead." ON)
+        # Preserve Indigo's FreeType feature set when using a clean CMake cache.
+        option(FT_DISABLE_BZIP2 "Disable FreeType BZip2 support" ON)
+        option(FT_DISABLE_PNG "Disable FreeType PNG support" ON)
+        option(FT_DISABLE_HARFBUZZ "Disable FreeType HarfBuzz support" ON)
+        option(FT_DISABLE_BROTLI "Disable FreeType Brotli support" ON)
+        # FreeType's own install(EXPORT) requires every linked target (including our vendored "z")
+        # to be in an export set, which it isn't. We only need the freetype target, not an install.
+        set(SKIP_INSTALL_ALL ON)
         add_subdirectory(freetype)
+        unset(SKIP_INSTALL_ALL)
         add_subdirectory(cairo)
     endif()
 endif ()

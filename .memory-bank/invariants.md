@@ -55,6 +55,28 @@ chemical claim, not a smaller one, and a haptic bond pointing at a partial group
 nothing downstream can detect. The group's anchor atom is deliberately outside this rule: it is
 remapped separately and simply becomes `-1`.
 
+**A7a — A component number belongs to the decomposition that produced it.**
+A molecule has three. `Graph::countComponents()` follows edges only;
+`BaseMolecule::moleculeComponents()` also follows haptic bonds
+(`core/indigo-core/molecule/base_molecule.h#moleculeComponents`);
+`Graph::countComponents(external_neighbors)` follows whatever sets it is given. Graph algorithms use
+the first; the public component API, `fragmentedSdf`, `standardize` and the salt helpers the second;
+the KET saver and the reaction loaders the third. A number taken from one and used with another
+picks the wrong atoms — on a haptic structure always, on an ordinary molecule never, so tests on
+ordinary molecules miss it. See
+[adr/public-components-follow-haptic-bonds.md](adr/public-components-follow-haptic-bonds.md).
+
+**A7b — A change of connectivity has to reach `BaseMolecule::changed()`.**
+`moleculeComponents()` is computed once and kept until `changed()` drops it
+(`core/indigo-core/molecule/src/base_molecule.cpp#BaseMolecule::changed`), and a reference to it is
+good for as long. `Graph` calls `changed()` from `addVertex`, `addEdge`, `removeEdge`,
+`removeAllEdges`, `removeVertex` and `clear`. Whatever changes connectivity another way calls it
+itself: the haptic edits through `_hapticConnectivityChanged()`, and `flipBondWithDirection`, which
+rewires an edge in place. Two paths report nothing of their own and lean on a vertex added earlier in
+the same call: `Graph::_cloneGraph_KeepIndices`, which installs the edges directly, and
+`_mergeWithSubmolecule_Sub`, which copies the haptic bonds after the atoms. A path that skips the
+call leaves the previous answer standing, and nothing fails.
+
 **A8 — Bond orders and query flags are named constants, tests included.**
 `BOND_SINGLE`, `BOND_ZERO`, `_BOND_COORDINATION` and friends — never the underlying integers.
 

@@ -1,0 +1,44 @@
+*** a complex is one component ***
+ferrocene-variant5
+components: 1
+  0: atoms [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 10 bonds, 2 haptic bonds
+  component of each atom: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+ferrocene-variant5_fragments.sdf:SUCCEED
+ferrocene-variant6
+components: 1
+  0: atoms [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 10 bonds, 2 haptic bonds
+  component of each atom: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+ferrocene-variant6_fragments.sdf:SUCCEED
+*** a counter ion is another ***
+components: 3
+  0: atoms [0], 0 bonds, 0 haptic bonds
+  1: atoms [1], 0 bonds, 0 haptic bonds
+  2: atoms [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], 10 bonds, 2 haptic bonds
+  component of each atom: [0, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+ferrocene-variant5_with_ions_fragments.sdf:SUCCEED
+*** a salt whose anion is a complex ***
+components: 3
+  0: atoms [0], 0 bonds, 0 haptic bonds
+  1: atoms [1, 2, 3, 4, 5, 6], 4 bonds, 1 haptic bonds
+  2: atoms [7], 0 bonds, 0 haptic bonds
+  component of each atom: [0, 1, 1, 1, 1, 1, 1, 2]
+zeise-salt-hydrate_fragments.sdf:SUCCEED
+*** a haptic bond joins components, and parts them when it goes ***
+components: 2
+  0: atoms [0, 1, 2, 3, 4], 5 bonds, 0 haptic bonds
+  1: atoms [5], 0 bonds, 0 haptic bonds
+  component of each atom: [0, 0, 0, 0, 0, 1]
+an attachment group over the ring, no bond to it yet
+components: 2
+  0: atoms [0, 1, 2, 3, 4], 5 bonds, 0 haptic bonds
+  1: atoms [5], 0 bonds, 0 haptic bonds
+  component of each atom: [0, 0, 0, 0, 0, 1]
+a haptic bond from the group to the iron
+components: 1
+  0: atoms [0, 1, 2, 3, 4, 5], 5 bonds, 1 haptic bonds
+  component of each atom: [0, 0, 0, 0, 0, 0]
+the haptic bond removed
+components: 2
+  0: atoms [0, 1, 2, 3, 4], 5 bonds, 0 haptic bonds
+  1: atoms [5], 0 bonds, 0 haptic bonds
+  component of each atom: [0, 0, 0, 0, 0, 1]

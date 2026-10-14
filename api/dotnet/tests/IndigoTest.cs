@@ -126,6 +126,28 @@ M  END
         }
 
         [TestMethod]
+        public void IndigoTestCheckSalt()
+        {
+            using var indigo = new Indigo();
+
+            Assert.IsTrue(indigo.loadMolecule("CCO.[Na+]").checkSalt());
+            Assert.IsFalse(indigo.loadMolecule("CCO").checkSalt());
+        }
+
+        [TestMethod]
+        public void IndigoTestStripSalt()
+        {
+            using var indigo = new Indigo();
+            var m = indigo.loadMolecule("CCO.[Na+]");
+
+            Assert.AreEqual("CCO", m.stripSalt().smiles());
+            Assert.AreEqual("CCO.[Na+]", m.smiles(), "a copy was stripped");
+
+            Assert.AreSame(m, m.stripSalt(true));
+            Assert.AreEqual("CCO", m.smiles());
+        }
+
+        [TestMethod]
         public void IndigoTestHapticBond()
         {
             using var indigo = new Indigo();
