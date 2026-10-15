@@ -42,14 +42,21 @@ static const int _sim_mt_size = 50000;
 
 namespace
 {
-    int tryGetDirLock(const std::string& loc_dir)
+    // read_only requests a shared lock (LOCK_SH), which is compatible with any number of
+    // other concurrent shared-lock holders -- i.e. any number of readers may hold it at
+    // once -- while still conflicting with an exclusive lock (LOCK_EX), so a writer (the
+    // non-read_only path, used by create() and any future non-read-only load()) still
+    // can't run concurrently with readers or with another writer. Non-read-only requests
+    // keep the previous exclusive, mutually-exclusive-with-everything behavior.
+    int tryGetDirLock(const std::string& loc_dir, bool read_only)
     {
 #ifndef _WIN32
         const auto lockName = loc_dir + "/lock";
         mode_t m = umask(0);
         int fd = open(lockName.c_str(), O_RDWR | O_CREAT, 0666);
         umask(m);
-        if (fd >= 0 && flock(fd, LOCK_EX | LOCK_NB) < 0)
+        int op = (read_only ? LOCK_SH : LOCK_EX) | LOCK_NB;
+        if (fd >= 0 && flock(fd, op) < 0)
         {
             close(fd);
             fd = -1;
@@ -63,10 +70,17 @@ namespace
     void releaseFileLock(int fd, const std::string& loc_dir)
     {
 #ifndef _WIN32
-        const auto lockName = loc_dir + "/lock";
         if (fd < 0)
             return;
-        remove(lockName.c_str());
+        // Deliberately not removing the lock file here (previously: remove(lockName)).
+        // flock state lives on the open file descriptor/inode, not on the directory entry,
+        // so unlinking is never required for correct unlocking -- but it is actively unsafe
+        // once concurrent *readers* are allowed to share the lock (see tryGetDirLock): if
+        // one reader's close() unlinks the file while a sibling reader still holds it open,
+        // a new reader arriving afterwards calls open(..., O_CREAT) and gets a *different*
+        // file/inode, so its flock no longer contends with anyone -- including a genuine
+        // writer that should have been excluded. Leaving the (harmless, empty) lock file in
+        // place for the life of the database directory avoids that race entirely.
         close(fd);
 #endif
     }
@@ -86,7 +100,8 @@ void BaseIndex::create(const char* location, const MoleculeFingerprintParameters
 
     _location = location;
 
-    _lock_fd = tryGetDirLock(_location);
+    // create() always needs exclusive access: it's establishing a new writable database.
+    _lock_fd = tryGetDirLock(_location, false);
     if (_lock_fd == -1)
     {
         throw Exception("Cannot lock Bingo database folder. Seems like it's already in use.");
@@ -148,7 +163,18 @@ void BaseIndex::load(const char* location, const char* options, int index_id)
 
     _location = location;
 
-    _lock_fd = tryGetDirLock(_location);
+    // Options (specifically read_only) must be known before requesting the directory lock,
+    // since read_only determines whether that lock is shared (concurrent readers allowed)
+    // or exclusive -- see tryGetDirLock. This is just option_map parsing/validation, with
+    // no dependency on anything the lock itself would guard.
+    std::map<std::string, std::string> option_map;
+
+    Properties::parseOptions(options, option_map);
+    _checkOptions(option_map, false);
+
+    _read_only = _getAccessType(option_map);
+
+    _lock_fd = tryGetDirLock(_location, _read_only);
     if (_lock_fd == -1)
     {
         throw Exception("Cannot lock Bingo database folder. Seems like it's already in use.");
@@ -158,13 +184,6 @@ void BaseIndex::load(const char* location, const char* options, int index_id)
     std::string _cf_offset_path = _location + _cf_offset_filename;
     std::string _mapping_path = _location + _id_mapping_filename;
     std::string _mmf_path = _location + _mmf_file;
-
-    std::map<std::string, std::string> option_map;
-
-    Properties::parseOptions(options, option_map);
-    _checkOptions(option_map, false);
-
-    _read_only = _getAccessType(option_map);
 
     MMFAllocator::load(_mmf_path.c_str(), index_id, _read_only);
 
