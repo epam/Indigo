@@ -16,6 +16,7 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include <algorithm>
 #include <cctype>
 #include <memory>
 #include <regex>
@@ -472,6 +473,7 @@ void SequenceLoader::loadIdt(KetDocument& document)
                 {
                     auto mixed_base = idt_alias;
                     std::optional<std::array<float, 4>> ratios;
+                    std::string ratios_owner; // the mixed base as written, e.g. "B1"
                     if (mixed_base.back() == ')')
                     {
                         mixed_base = idt_alias.substr(1, idt_alias.size() - 2);
@@ -490,6 +492,7 @@ void SequenceLoader::loadIdt(KetDocument& document)
                             auto ratios_str = mixed_base.substr(pos + 1, mixed_base.size() - pos - 1);
                             mixed_base = mixed_base.substr(0, pos);
                             check_mixed_base(mixed_base);
+                            ratios_owner = mixed_base;
                             if (ratios_str.size() != 8)
                                 throw Exception("Invalid IDT ambiguous monomer %s", idt_alias.c_str());
                             auto stof = [](const std::string& arg) -> float {
@@ -519,6 +522,23 @@ void SequenceLoader::loadIdt(KetDocument& document)
                         auto it = STANDARD_MIXED_BASES.find(mixed_base);
                         if (it == STANDARD_MIXED_BASES.end())
                             throw Error("Unknown mixed base '%s'", mixed_base.c_str());
+
+                        if (ratios.has_value())
+                        {
+                            auto rna_alias = [&sugar](const std::string& alias) { return sugar == "R" && alias == "T" ? std::string("U") : alias; };
+                            for (const auto& [base_alias, ratio_idx] : IDT_BASE_TO_RATIO_IDX)
+                            {
+                                // "U" shares its percentage with "T", and the mixed base components are listed with "T"
+                                if (base_alias == "U" || ratios.value()[ratio_idx] == 0 ||
+                                    std::find(it->second.begin(), it->second.end(), base_alias) != it->second.end())
+                                    continue;
+                                std::string allowed;
+                                for (const auto& component : it->second)
+                                    allowed += (allowed.empty() ? "" : ", ") + rna_alias(component);
+                                throw Error("Invalid mixed base '%s' - percentage is defined for %s, but only %s are allowed.", ratios_owner.c_str(),
+                                            rna_alias(base_alias).c_str(), allowed.c_str());
+                            }
+                        }
 
                         std::vector<KetAmbiguousMonomerOption> options;
                         for (auto template_alias : it->second)
