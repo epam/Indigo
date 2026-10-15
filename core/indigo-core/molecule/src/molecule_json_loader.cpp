@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <charconv>
 #include <cstring>
 #include <string>
@@ -1018,16 +1019,20 @@ void MoleculeJsonLoader::setStereoFlagPosition(const rapidjson::Value& pos, int 
 static void addCrossingBonds(SGroup& sgroup, BaseMolecule& mol)
 {
     const std::unordered_set<int> atoms(sgroup.atoms.begin(), sgroup.atoms.end());
-    for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
+    for (int atom : atoms)
     {
-        const Edge& edge = mol.getEdge(i);
-        if ((atoms.count(edge.beg) > 0) != (atoms.count(edge.end) > 0))
-            sgroup.xbonds.push(i);
+        const Vertex& vertex = mol.getVertex(atom);
+        for (int i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
+            if (atoms.count(vertex.neiVertex(i)) == 0)
+                sgroup.xbonds.push(vertex.neiEdge(i));
     }
+    std::sort(sgroup.xbonds.begin(), sgroup.xbonds.end());
 }
 
 void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolecule& mol)
 {
+    // Crossing bonds are derived once every multiple group is expanded: an expansion replaces bonds
+    std::vector<int> derived;
     for (SizeType i = 0; i < sgroups.Size(); i++)
     {
         const Value& s = sgroups[i];
@@ -1230,7 +1235,9 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
         if (sg_type != SGroup::SG_TYPE_DAT)
             handleSGroup(sgroup, sgroup_atoms, mol);
 
-        if (s.HasMember("bonds"))
+        // A multiple group is expanded by handleSGroup, while its `bonds` are numbered in the folded structure it was
+        // saved as: its crossing bonds are derived from the expanded atoms instead
+        if (s.HasMember("bonds") && sg_type != SGroup::SG_TYPE_MUL)
         {
             const Value& bonds = s["bonds"];
             for (rapidjson::SizeType j = 0; j < bonds.Size(); ++j)
@@ -1239,8 +1246,11 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
             }
         }
         else if (sg_type != SGroup::SG_TYPE_DAT)
-            addCrossingBonds(sgroup, mol);
+            derived.push_back(grp_idx);
     }
+
+    for (int idx : derived)
+        addCrossingBonds(mol.sgroups.getSGroup(idx), mol);
 }
 
 // Ids of the KET contract are numbers inside strings. Neither obvious route reports
