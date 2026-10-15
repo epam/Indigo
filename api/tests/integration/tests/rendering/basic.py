@@ -252,19 +252,20 @@ renderer.renderToFile(mol, joinPathPy("out/" + png_fname, __file__))
 print(checkImageSimilarity(png_fname))
 
 print("issue 3958 percent sign in s-group label")
+# No render-fonts: the bundled font draws the same picture and the same glyphs
+# on every platform, so one reference serves them all.
 indigo.resetOptions()
-indigo.setOption("render-fonts", "[]")
 indigo.setOption("render-output-format", "png")
+subject_dir = "sgroup_label"
 fname = "sru_label_percent_3958"
 png_fname = fname + ".png"
-mol_fname = joinPathPy("molecules/sgroup_label/%s.mol" % fname, __file__)
+mol_fname = joinPathPy("molecules/%s/%s.mol" % (subject_dir, fname), __file__)
 mol = indigo.loadMoleculeFromFile(mol_fname)
 renderer.renderToFile(mol, joinPathPy("out/" + png_fname, __file__))
-print(checkImageSimilarity(png_fname, "sgroup_label/" + png_fname))
+ref_fname = subject_dir + "/" + png_fname
+print(checkImageSimilarity(png_fname, ref_fname, shared=True))
 # The picture check cannot read a label, so the glyphs of the SVG are printed:
-# cairo names a glyph by font and order of first use. The bundled font keeps
-# the line the same on every platform.
-indigo.resetOptions()
+# cairo names a glyph by font and order of first use.
 indigo.setOption("render-output-format", "svg")
 indigo.setOption("render-svg-unique-id", False)
 svg = "".join(chr(b & 0xFF) for b in renderer.renderToBuffer(mol))
