@@ -32,6 +32,7 @@
 #include "molecule/molecule_3d_constraints.h"
 #include "molecule/molecule_inchi.h"
 #include "molecule/molecule_stereocenters.h"
+#include "molecule/molfile_commons.h"
 #include "molecule/molfile_loader.h"
 #include "molecule/molfile_saver.h"
 #include "molecule/monomer_commons.h"
@@ -42,6 +43,14 @@
 #define STRCMP(a, b) strncmp((a), (b), strlen(b))
 
 using namespace indigo;
+
+// A V3000 Sgroup type or subtype may be spelled out: COPolymer, BLOck. Only this many letters count.
+static const size_t SGROUP_WORD_SIGNIFICANT_LETTERS = 3;
+
+static std::string significantLetters(const Array<char>& sgroup_word)
+{
+    return std::string(sgroup_word.ptr()).substr(0, SGROUP_WORD_SIGNIFICANT_LETTERS);
+}
 
 void MolfileLoader::_readCtab3000()
 {
@@ -1284,20 +1293,19 @@ void MolfileLoader::_readSGroup3000(const char* str)
     int ext_idx = scanner.readInt();
     scanner.skipSpace();
 
-    int idx = sgroups->addSGroup(type.ptr());
+    // An unknown type goes to addSGroup as written, so that its error names the whole word.
+    const int sgroup_type = SGroup::getType(significantLetters(type).c_str());
+    int idx = sgroup_type != -1 ? sgroups->addSGroup(sgroup_type) : sgroups->addSGroup(type.ptr());
     SGroup* sgroup = &sgroups->getSGroup(idx);
     sgroup->index = sgroup_idx;
     sgroup->ext_index = ext_idx;
 
     DataSGroup* dsg = 0;
     Superatom* sup = 0;
-    RepeatingUnit* sru = 0;
     if (sgroup->sgroup_type == SGroup::SG_TYPE_DAT)
         dsg = (DataSGroup*)sgroup;
     else if (sgroup->sgroup_type == SGroup::SG_TYPE_SUP)
         sup = (Superatom*)sgroup;
-    else if (sgroup->sgroup_type == SGroup::SG_TYPE_SRU)
-        sru = (RepeatingUnit*)sgroup;
 
     int n;
 
@@ -1353,17 +1361,14 @@ void MolfileLoader::_readSGroup3000(const char* str)
             }
             scanner.skip(1); // )
         }
-        else if (strcmp(entity.ptr(), "SUBTYPE") == 0)
+        else if (strcmp(entity.ptr(), MOLFILE_SGROUP_SUBTYPE_KEY) == 0)
         {
             QS_DEF(Array<char>, subtype);
             subtype.clear();
             scanner.readWord(subtype, 0);
-            if (strcmp(subtype.ptr(), "ALT") == 0)
-                sgroup->sgroup_subtype = SGroup::SG_SUBTYPE_ALT;
-            else if (strcmp(subtype.ptr(), "RAN") == 0)
-                sgroup->sgroup_subtype = SGroup::SG_SUBTYPE_RAN;
-            else if (strcmp(subtype.ptr(), "BLO") == 0)
-                sgroup->sgroup_subtype = SGroup::SG_SUBTYPE_BLO;
+            const int sgroup_subtype = SGroup::getSubtype(significantLetters(subtype).c_str());
+            if (sgroup_subtype != -1)
+                sgroup->sgroup_subtype = sgroup_subtype;
         }
         else if (strcmp(entity.ptr(), "MULT") == 0)
         {
@@ -1418,18 +1423,15 @@ void MolfileLoader::_readSGroup3000(const char* str)
             brackets[1].set(x2, y2);
             scanner.skip(1); // )
         }
-        else if (strcmp(entity.ptr(), "CONNECT") == 0)
+        else if (strcmp(entity.ptr(), MOLFILE_SGROUP_CONNECTIVITY_KEY) == 0)
         {
-            char c1 = scanner.readChar();
-            char c2 = scanner.readChar();
-
-            if (sgroup->sgroup_type == SGroup::SG_TYPE_SRU)
-            {
-                if (c1 == 'H' && c2 == 'T')
-                    ((RepeatingUnit*)sgroup)->connectivity = SGroup::HEAD_TO_TAIL;
-                else if (c1 == 'H' && c2 == 'H')
-                    ((RepeatingUnit*)sgroup)->connectivity = SGroup::HEAD_TO_HEAD;
-            }
+            QS_DEF(Array<char>, connect);
+            scanner.readWord(connect, 0);
+            _applyConnectivity(*sgroup, connect.ptr());
+        }
+        else if (strcmp(entity.ptr(), MOLFILE_SGROUP_COMPONENT_ORDER_KEY) == 0)
+        {
+            _applyComponentOrder(*sgroup, scanner.readInt());
         }
         else if (strcmp(entity.ptr(), "FIELDNAME") == 0)
         {
@@ -1798,6 +1800,19 @@ void MolfileLoader::_readTGroups3000()
             break;
         }
     }
+}
+
+void MolfileLoader::_applyConnectivity(SGroup& sgroup, const char* connectivity_code)
+{
+    const int connectivity = SGroup::getConnectivity(connectivity_code);
+    if (connectivity != -1 && SGroup::typeHasConnectivity(sgroup.sgroup_type))
+        sgroup.connectivity = connectivity;
+}
+
+void MolfileLoader::_applyComponentOrder(SGroup& sgroup, int component_order)
+{
+    if (sgroup.sgroup_type == SGroup::SG_TYPE_COM && component_order > 0)
+        sgroup.component_order = component_order;
 }
 
 void MolfileLoader::_readSGroupDisplay(Scanner& scanner, DataSGroup& dsg)
