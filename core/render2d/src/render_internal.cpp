@@ -625,7 +625,7 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
             int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
             TextItem& index = _data.textitems[tiIndex];
             index.fontsize = FONT_SIZE_ATTR;
-            bprintf(index.text, group.label.size() > 0 ? group.label.ptr() : "n");
+            bprintf(index.text, "%s", group.label.size() > 0 ? group.label.ptr() : "n");
             _positionIndex(sg, tiIndex, true);
             const int connectivity = group.connectivity.value_or(RepeatingUnit::HEAD_TO_TAIL);
             if (connectivity != RepeatingUnit::HEAD_TO_TAIL)
