@@ -53,6 +53,7 @@ idt_data = {
     "idt_unsplit": "/5UNSPLIT//iUNSPLIT//3UNSPLIT/",
     "idt_mixed_std": "ARAS",
     "idt_mixed_custom": "(N1:10203050)(N1)N",
+    "idt_mixed_custom_indices": "(N1:10203050)(N2:00505000)(N3:50000050)(N4:25252525)(N1)(N2)(N3)(N4)",
     "idt_rna_dna_mixed_custom": "r(R1:50003000)(R1)",
     "idt_5end_without_r2": "/5DigN/rA",
     "idt_3ribog": "rA/3RiboG/",
@@ -93,6 +94,9 @@ idt_errors = {
     "(YY:00330067)": "Invalid mixed base - only numerical index allowed.",
     "(Y:)": "Invalid IDT ambiguous monomer (Y:)",
     "(Y:000010af)": "Invalid number 'af'",
+    "(B5:00653005)": "Invalid mixed base 'B5' - index must be from 1 to 4.",
+    "(B0:00653005)": "Invalid mixed base 'B0' - index must be from 1 to 4.",
+    "(B12:00653005)": "Invalid mixed base 'B12' - index must be from 1 to 4.",
 }
 for idt_seq in sorted(idt_errors.keys()):
     error = idt_errors[idt_seq]
