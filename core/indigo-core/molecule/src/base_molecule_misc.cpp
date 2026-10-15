@@ -27,6 +27,7 @@
 #include "molecule/elements.h"
 #include "molecule/inchi_wrapper.h"
 #include "molecule/molecule_arom_match.h"
+#include "molecule/molecule_cip_calc.h"
 #include "molecule/molecule_dearom.h"
 #include "molecule/molecule_exact_matcher.h"
 #include "molecule/molecule_exact_substructure_matcher.h"
@@ -878,8 +879,7 @@ void BaseMolecule::buildFromBondsAlleneStereo(bool ignore_errors, int* sensible_
 
 void BaseMolecule::addCIP()
 {
-    MoleculeCIPCalculator mcc;
-    have_cip = mcc.addCIPStereoDescriptors(*this);
+    have_cip = indigo::MoleculeCIPCalc::calcCIPLabels(*this);
 }
 
 void BaseMolecule::clearCIP()
