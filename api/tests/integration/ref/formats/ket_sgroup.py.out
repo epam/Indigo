@@ -5,6 +5,9 @@ bracketed-without-bonds KET round trip:SUCCEED
 explicit-bonds-2000.mol:SUCCEED
 explicit-bonds-3000.mol:SUCCEED
 explicit-bonds KET round trip:SUCCEED
+gen-after-mul-2000.mol:SUCCEED
+gen-after-mul-3000.mol:SUCCEED
+gen-after-mul KET round trip:SUCCEED
 gen-before-mul-2000.mol:SUCCEED
 gen-before-mul-3000.mol:SUCCEED
 gen-before-mul KET round trip:SUCCEED
@@ -14,6 +17,9 @@ mul-without-bonds KET round trip:SUCCEED
 no-crossing-bonds-2000.mol:SUCCEED
 no-crossing-bonds-3000.mol:SUCCEED
 no-crossing-bonds KET round trip:SUCCEED
+sru-around-mul-2000.mol:SUCCEED
+sru-around-mul-3000.mol:SUCCEED
+sru-around-mul KET round trip:SUCCEED
 sru-without-bonds-2000.mol:SUCCEED
 sru-without-bonds-3000.mol:SUCCEED
 sru-without-bonds KET round trip:SUCCEED

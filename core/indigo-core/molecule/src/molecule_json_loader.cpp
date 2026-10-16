@@ -1018,7 +1018,17 @@ void MoleculeJsonLoader::setStereoFlagPosition(const rapidjson::Value& pos, int 
 
 static void addCrossingBonds(SGroup& sgroup, BaseMolecule& mol)
 {
-    const std::unordered_set<int> atoms(sgroup.atoms.begin(), sgroup.atoms.end());
+    std::unordered_set<int> atoms(sgroup.atoms.begin(), sgroup.atoms.end());
+    // A group around a multiple group was saved around its folded form, so the repeats count as its own atoms
+    for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
+    {
+        SGroup& other = mol.sgroups.getSGroup(i);
+        if (other.sgroup_type != SGroup::SG_TYPE_MUL)
+            continue;
+        const Array<int>& parent_atoms = ((MultipleGroup&)other).parent_atoms;
+        if (parent_atoms.size() > 0 && std::all_of(parent_atoms.begin(), parent_atoms.end(), [&atoms](int atom) { return atoms.count(atom) > 0; }))
+            atoms.insert(other.atoms.begin(), other.atoms.end());
+    }
     for (int atom : atoms)
     {
         const Vertex& vertex = mol.getVertex(atom);
@@ -1031,8 +1041,10 @@ static void addCrossingBonds(SGroup& sgroup, BaseMolecule& mol)
 
 void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolecule& mol)
 {
-    // Crossing bonds are derived once every multiple group is expanded: an expansion replaces bonds
-    std::vector<int> derived;
+    // Crossing bonds are derived once every multiple group is expanded: an expansion replaces bonds, so `bonds`, numbered
+    // in the folded structure, are then not used for any group
+    std::vector<int> derived, listed;
+    bool expanded = false;
     for (SizeType i = 0; i < sgroups.Size(); i++)
     {
         const Value& s = sgroups[i];
@@ -1234,9 +1246,9 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
 
         if (sg_type != SGroup::SG_TYPE_DAT)
             handleSGroup(sgroup, sgroup_atoms, mol);
+        if (sg_type == SGroup::SG_TYPE_MUL && ((MultipleGroup&)sgroup).multiplier.value_or(0) > 1)
+            expanded = true;
 
-        // A multiple group is expanded by handleSGroup, while its `bonds` are numbered in the folded structure it was
-        // saved as: its crossing bonds are derived from the expanded atoms instead
         if (s.HasMember("bonds") && sg_type != SGroup::SG_TYPE_MUL)
         {
             const Value& bonds = s["bonds"];
@@ -1244,11 +1256,19 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
             {
                 sgroup.getBonds().push(bonds[j].GetInt());
             }
+            if (sg_type != SGroup::SG_TYPE_DAT)
+                listed.push_back(grp_idx);
         }
         else if (sg_type != SGroup::SG_TYPE_DAT)
             derived.push_back(grp_idx);
     }
 
+    if (expanded)
+        for (int idx : listed)
+        {
+            mol.sgroups.getSGroup(idx).xbonds.clear();
+            derived.push_back(idx);
+        }
     for (int idx : derived)
         addCrossingBonds(mol.sgroups.getSGroup(idx), mol);
 }
