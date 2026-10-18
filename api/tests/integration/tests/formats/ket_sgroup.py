@@ -20,11 +20,14 @@ ref_path = joinPathPy("ref/sgroup/", __file__)
 
 files = [
     "bracketed-without-bonds",
+    "dat-bonds",
     "explicit-bonds",
     "gen-after-mul",
     "gen-before-mul",
+    "gen-on-mul-atoms",
     "mul-without-bonds",
     "no-crossing-bonds",
+    "sru-across-connection",
     "sru-around-mul",
     "sru-without-bonds",
 ]
