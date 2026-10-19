@@ -8,3 +8,11 @@ expanded_fg_ss_ket.png rendering status: OK
 contracted_fg_ss_mol.png rendering status: OK
 contracted_expanded_fg_ss_mol.png rendering status: OK
 expanded_fg_ss_mol.png rendering status: OK
+***   issue 3990: S-group without a label   ***
+superatom_no_label.png rendering status: OK
+superatom_no_label.mol: drawn as label ''
+superatom_no_label_expanded.png rendering status: OK
+superatom_no_label_expanded.mol: drawn as label ''
+superatom_no_label.mol, query: drawn as label ''
+superatom_no_label.ket: drawn as label ''
+sru_no_label.mol: drawn as label 'n'
