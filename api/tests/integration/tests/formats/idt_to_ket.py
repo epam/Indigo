@@ -57,6 +57,7 @@ idt_data = {
     "idt_5end_without_r2": "/5DigN/rA",
     "idt_3ribog": "rA/3RiboG/",
     "idt_deoxyi": "/5deoxyI/rA/ideoxyI/rA/3deoxyI/",
+    "idt_ratio_y": "(Y1:00500050)(Y1)",
 }
 
 lib = indigo.loadMonomerLibraryFromFile(
@@ -89,8 +90,10 @@ idt_errors = {
     "/52MOErA/*/3Phos/": "Symbol '*' could be placed only between two nucleotides/nucleosides.",
     "/52MOErA//32MOErA/*": "Monomer /32MOErA/ doesn't have phosphate, so '*' couldn't be applied.",
     "/3Phos/*": "Symbol '*' could be placed only between two nucleotides/nucleosides.",
-    "r(B1:50003000)(B1)": "Unknown mixed base 'B1'",
+    "r(B1:00503020)(B1)": "Unknown mixed base 'B1'",
+    "r(R1:50000050)(R1)": "Invalid mixed base 'R1' - percentage is defined for U, but only A, G are allowed.",
     "(YY:00330067)": "Invalid mixed base - only numerical index allowed.",
+    "(Y:00333334)": "Invalid mixed base 'Y' - percentage is defined for G, but only C, T are allowed.",
     "(Y:)": "Invalid IDT ambiguous monomer (Y:)",
     "(Y:000010af)": "Invalid number 'af'",
 }
