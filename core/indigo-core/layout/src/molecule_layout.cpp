@@ -19,19 +19,12 @@
 #include "layout/molecule_layout.h"
 #include "base_cpp/array.h"
 #include "graph/filter.h"
-#include <algorithm>
-#include <cmath>
+#include "layout/sgroup_bracket_layout.h"
 #include <map>
 #include <utility>
 #include <vector>
 
 using namespace indigo;
-
-// S-group bracket sizes, in bond lengths
-constexpr float CHAIN_BRACKET_LENGTH = 1.5f; // the pair around a chain unit, as BIOVIA and Ketcher draw it
-constexpr float BOND_BRACKET_LENGTH = 1.f;   // one bracket per bond, for two bonds that do not point apart
-constexpr float SHORT_BRACKET_LENGTH = 0.6f; // one per bond for three or more, as BIOVIA draws them; longer ones close up
-constexpr float FAR_BRACKET_GAP = 0.5f;      // beyond the farthest atom of a group with a single crossing bond
 
 IMPL_ERROR(MoleculeLayout, "molecule_layout");
 
@@ -103,157 +96,6 @@ void MoleculeLayout::_init(bool smart_layout)
 
         _layout_graph->getPos(i).set(pos.x, pos.y);
     }
-}
-
-void _collectCrossBonds(Array<int>& crossBonds, Array<bool>& crossBondOut, BaseMolecule& mol, const Array<int>& atoms)
-{
-    QS_DEF(Array<bool>, atomMask);
-    atomMask.clear_resize(mol.vertexEnd());
-    atomMask.fill(false);
-    for (int i = 0; i < atoms.size(); ++i)
-    {
-        int aid = atoms[i];
-        atomMask[aid] = true;
-    }
-    crossBonds.clear();
-    crossBondOut.clear();
-    for (int i = 0; i < atoms.size(); ++i)
-    {
-        int aid = atoms[i];
-        const Vertex& v = mol.getVertex(aid);
-        for (int j = v.neiBegin(); j < v.neiEnd(); j = v.neiNext(j))
-        {
-            int naid = v.neiVertex(j);
-            if (!atomMask[naid])
-            {
-                int bid = v.neiEdge(j);
-                crossBonds.push(bid);
-                crossBondOut.push(mol.getEdge(bid).beg == aid);
-            }
-        }
-    }
-}
-
-// Walking from the first end of a bracket to the second keeps the group on the right: the renderer
-// turns the bracket hooks by this order.
-static void _pushSGroupBracket(Array<Vec2f[2]>& brackets, const Vec2f& center, const Vec2f& outward, float length)
-{
-    Vec2f across(outward);
-    across.rotate(1, 0);
-    Vec2f* const& bracket = brackets.push();
-    bracket[0].lineCombin(center, across, 0.5f * length);
-    bracket[1].lineCombin(center, across, -0.5f * length);
-}
-
-// The renderer writes the subscript at the last bracket; like BIOVIA, put it at the right one, or at the
-// lower one of a vertical pair. The tolerance keeps rounding from deciding a vertical pair.
-static void _putRightBracketLast(Array<Vec2f[2]>& brackets, float bondLength)
-{
-    if (brackets.size() != 2)
-        return;
-    const float x0 = (brackets[0][0].x + brackets[0][1].x) / 2, y0 = (brackets[0][0].y + brackets[0][1].y) / 2;
-    const float x1 = (brackets[1][0].x + brackets[1][1].x) / 2, y1 = (brackets[1][0].y + brackets[1][1].y) / 2;
-    const float tolerance = 0.01f * bondLength;
-    if (x0 > x1 + tolerance || (std::fabs(x0 - x1) <= tolerance && y0 < y1))
-    {
-        std::swap(brackets[0][0], brackets[1][0]);
-        std::swap(brackets[0][1], brackets[1][1]);
-    }
-}
-
-static void _getCrossBond(BaseMolecule& mol, int bid, bool out, Vec2f& inside, Vec2f& middle, Vec2f& outward)
-{
-    const Edge& edge = mol.getEdge(bid);
-    Vec2f outside;
-    Vec2f::projectZ(inside, mol.getAtomXyz(out ? edge.beg : edge.end));
-    Vec2f::projectZ(outside, mol.getAtomXyz(out ? edge.end : edge.beg));
-    middle.lineCombin2(inside, 0.5f, outside, 0.5f);
-    outward.diff(outside, inside);
-    outward.normalize();
-}
-
-// A median, not a mean: the long bonds to the `*` ends of a chain, common in drawings from Ketcher,
-// would stretch a mean.
-static float _medianBondLength(BaseMolecule& mol)
-{
-    std::vector<float> lengths;
-    for (int i = mol.edgeBegin(); i != mol.edgeEnd(); i = mol.edgeNext(i))
-    {
-        const Edge& edge = mol.getEdge(i);
-        Vec2f beg, end;
-        Vec2f::projectZ(beg, mol.getAtomXyz(edge.beg));
-        Vec2f::projectZ(end, mol.getAtomXyz(edge.end));
-        end.sub(beg);
-        // Coincident atoms, such as the copies of a multiple group during layout, say nothing about the scale
-        const float length = end.length();
-        if (length > EPSILON)
-            lengths.push_back(length);
-    }
-    if (lengths.empty())
-        return 0;
-    auto middle = lengths.begin() + lengths.size() / 2;
-    std::nth_element(lengths.begin(), middle, lengths.end());
-    return *middle;
-}
-
-void _placeSGroupBracketsCrossBonds(Array<Vec2f[2]>& brackets, BaseMolecule& mol, const Array<int>& crossBonds, const Array<bool>& crossBondOut,
-                                    float bondLength)
-{
-    brackets.clear();
-    std::vector<Vec2f> middles(crossBonds.size()), outwards(crossBonds.size());
-    Vec2f inside;
-    for (int i = 0; i < crossBonds.size(); ++i)
-        _getCrossBond(mol, crossBonds[i], crossBondOut[i], inside, middles[i], outwards[i]);
-
-    if (crossBonds.size() == 2 && Vec2f::dot(outwards[0], outwards[1]) < -0.3f)
-    {
-        // Each bond has to point away from the other along the axis: offset antiparallel bonds would lie along
-        // brackets across the axis, and bonds pointing at each other would turn the hooks away from the group
-        Vec2f axis;
-        axis.diff(middles[0], middles[1]);
-        if (axis.normalize() && Vec2f::dot(axis, outwards[0]) >= 0.5f && Vec2f::dot(axis, outwards[1]) <= -0.5f)
-        {
-            Vec2f back(axis);
-            back.negate();
-            _pushSGroupBracket(brackets, middles[0], axis, CHAIN_BRACKET_LENGTH * bondLength);
-            _pushSGroupBracket(brackets, middles[1], back, CHAIN_BRACKET_LENGTH * bondLength);
-            _putRightBracketLast(brackets, bondLength);
-            return;
-        }
-    }
-
-    const float length = (crossBonds.size() > 2 ? SHORT_BRACKET_LENGTH : BOND_BRACKET_LENGTH) * bondLength;
-    for (int i = 0; i < crossBonds.size(); ++i)
-        _pushSGroupBracket(brackets, middles[i], outwards[i], length);
-    _putRightBracketLast(brackets, bondLength);
-}
-
-void _placeSGroupBracketsCrossBondSingle(Array<Vec2f[2]>& brackets, BaseMolecule& mol, const Array<int>& atoms, int bid, bool out, float bondLength)
-{
-    brackets.clear();
-    Vec2f inside, middle, outward;
-    _getCrossBond(mol, bid, out, inside, middle, outward);
-    _pushSGroupBracket(brackets, middle, outward, CHAIN_BRACKET_LENGTH * bondLength);
-
-    Vec2f across(outward);
-    across.rotate(1, 0);
-    float farthest = 0, side = 0;
-    for (int aid : atoms)
-    {
-        Vec2f p;
-        Vec2f::projectZ(p, mol.getAtomXyz(aid));
-        p.sub(inside);
-        farthest = std::min(farthest, Vec2f::dot(p, outward));
-        side += Vec2f::dot(p, across);
-    }
-    if (atoms.size() > 0)
-        side /= atoms.size();
-    Vec2f center, back(outward);
-    back.negate();
-    center.lineCombin(inside, outward, farthest - FAR_BRACKET_GAP * bondLength);
-    center.addScaled(across, side);
-    _pushSGroupBracket(brackets, center, back, CHAIN_BRACKET_LENGTH * bondLength);
-    _putRightBracketLast(brackets, bondLength);
 }
 
 void _placeSGroupBracketsHorizontal(Array<Vec2f[2]>& brackets, BaseMolecule& mol, const Array<int>& atoms, float bondLength)
@@ -471,7 +313,7 @@ void MoleculeLayout::_make()
 
     _updateMultipleGroups();
 
-    _updateRepeatingUnits();
+    SGroupBracketLayout(_molecule).placeAll();
 
     _molecule.have_xyz = true;
 }
@@ -497,7 +339,7 @@ void MoleculeLayout::updateSGroups()
 {
     _updateDataSGroups();
     _updateMultipleGroups();
-    _updateRepeatingUnits();
+    SGroupBracketLayout(_molecule).placeAll();
 }
 
 void MoleculeLayout::make()
@@ -576,36 +418,6 @@ void MoleculeLayout::_makeLayout()
     }
     else
         _layout_graph->layout(*_bm, bond_length, 0, respect_existing_layout, multiple_distance);
-}
-
-void MoleculeLayout::_updateRepeatingUnits()
-{
-    QS_DEF(Array<int>, crossBonds);
-    QS_DEF(Array<bool>, crossBondOut);
-    float median_bond_length = -1;
-    for (int i = _molecule.sgroups.begin(); i != _molecule.sgroups.end(); i = _molecule.sgroups.next(i))
-    {
-        SGroup& sg = _molecule.sgroups.getSGroup(i);
-        if (sg.sgroup_type == SGroup::SG_TYPE_SRU)
-        {
-            if (median_bond_length < 0)
-            {
-                median_bond_length = _medianBondLength(_molecule);
-                if (median_bond_length <= 0)
-                    median_bond_length = bond_length;
-            }
-            RepeatingUnit& ru = (RepeatingUnit&)sg;
-            crossBonds.clear();
-            crossBondOut.clear();
-            _collectCrossBonds(crossBonds, crossBondOut, _molecule, ru.atoms);
-            if (crossBonds.size() > 1)
-                _placeSGroupBracketsCrossBonds(ru.brackets, _molecule, crossBonds, crossBondOut, median_bond_length);
-            else if (crossBonds.size() == 1)
-                _placeSGroupBracketsCrossBondSingle(ru.brackets, _molecule, ru.atoms, crossBonds[0], crossBondOut[0], median_bond_length);
-            else
-                _placeSGroupBracketsHorizontal(ru.brackets, _molecule, ru.atoms, median_bond_length);
-        }
-    }
 }
 
 void MoleculeLayout::_updateMultipleGroups()

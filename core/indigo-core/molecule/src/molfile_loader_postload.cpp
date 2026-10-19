@@ -23,6 +23,7 @@
 #include "base_cpp/scanner.h"
 #include "base_cpp/tlscont.h"
 #include "layout/sequence_layout.h"
+#include "layout/sgroup_bracket_layout.h"
 #include "molecule/elements.h"
 #include "molecule/inchi_wrapper.h"
 #include "molecule/molecule.h"
@@ -340,7 +341,7 @@ void MolfileLoader::_postLoad()
     for (auto idx : templates_to_remove)
         _bmol->tgroups.remove(idx);
 
-    // Last, because everything above addresses atoms by their place in the file:
+    // After everything that addresses atoms by their place in the file:
     // the phantom stars of haptic records (_addHapticBond3000) leave the structure.
     if (!_haptic_star_groups.empty())
     {
@@ -351,6 +352,8 @@ void MolfileLoader::_postLoad()
         _bmol->removeAtoms(stars);
         _haptic_star_groups.clear();
     }
+
+    SGroupBracketLayout(*_bmol).placeMissing();
 
     // fix layout
     // if (templates_to_remove.size() && _bmol->countComponents())
