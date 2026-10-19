@@ -42,8 +42,10 @@
 
 using namespace indigo;
 
-// A V2000 property line names an S-group that no M  STY line defines; takes the tag of the line and the number.
+// A V2000 property line names an S-group beyond those M  STY declares; takes the tag of the line and the number.
 static const char* const UNDEFINED_SGROUP_MESSAGE = "M %s refers to undefined Sgroup %d";
+// The line ends before an entry its count announces; takes the tag of the line.
+static const char* const UNEXPECTED_LINE_END_MESSAGE = "Unexpected end of M %s";
 
 int MolfileLoader::_readSGroupLine(const char* property, Array<char>& rest)
 {
@@ -56,13 +58,51 @@ int MolfileLoader::_readSGroupLine(const char* property, Array<char>& rest)
         BufferScanner index_scanner(rest.ptr() + 1, index_end - 1);
         sgroup_idx = index_scanner.readIntFix(index_end - 1) - 1;
     }
-    if (sgroup_idx < 0 || sgroup_idx >= _sgroup_types.size())
-        throw Error(UNDEFINED_SGROUP_MESSAGE, property, sgroup_idx + 1);
+    _checkSGroupIndex(property, sgroup_idx);
 
     rest.remove(0, index_end);
     if (rest.size() > 0 && rest[0] == ' ')
         rest.remove(0);
     return sgroup_idx;
+}
+
+void MolfileLoader::_readSGroupEntryLine(const char* property, std::vector<SGroupLineEntry>& entries)
+{
+    // "nn8 sss vvv ...": the count in three columns, then per entry a separator, the index in three columns,
+    // a separator and the value; the last value may lose its trailing spaces with the end of the line
+    const int count_width = 3;
+    const int separator_width = 1;
+    const int index_width = 3;
+    const int value_width = 3;
+    // An entry needs its index and at least the first character of its value
+    const int shortest_value_width = 1;
+    const int shortest_entry_width = separator_width + index_width + separator_width + shortest_value_width;
+    QS_DEF(Array<char>, line);
+    _scanner.readLine(line, false);
+    BufferScanner line_scanner(line);
+    const int entry_count = line_scanner.readIntFix(count_width);
+
+    entries.clear();
+    for (int entry_number = 0; entry_number < entry_count; entry_number++)
+    {
+        if (line_scanner.length() - line_scanner.tell() < shortest_entry_width)
+            throw Error(UNEXPECTED_LINE_END_MESSAGE, property);
+
+        SGroupLineEntry entry;
+        line_scanner.skip(separator_width);
+        entry.sgroup_idx = line_scanner.readIntFix(index_width) - 1;
+        _checkSGroupIndex(property, entry.sgroup_idx);
+        line_scanner.skip(separator_width);
+        const int value_length = line_scanner.readCharsFlexible(value_width, entry.value);
+        entry.value[value_length] = 0;
+        entries.push_back(entry);
+    }
+}
+
+void MolfileLoader::_checkSGroupIndex(const char* property, int sgroup_idx)
+{
+    if (sgroup_idx < 0 || sgroup_idx >= _sgroup_types.size())
+        throw Error(UNDEFINED_SGROUP_MESSAGE, property, sgroup_idx + 1);
 }
 
 void MolfileLoader::_readCtab2000()
@@ -1202,57 +1242,30 @@ void MolfileLoader::_readCtab2000()
             }
             else if (strncmp(chars, MOLFILE_SGROUP_CONNECTIVITY_TAG, 3) == 0)
             {
-                // The format is the following: M SCNnn8 sss ttt ...
-                int n = _scanner.readIntFix(3);
-
-                bool need_skip_line = true;
-                while (n-- > 0)
+                // M  SCNnn8 sss ttt ...
+                std::vector<SGroupLineEntry> entries;
+                _readSGroupEntryLine(MOLFILE_SGROUP_CONNECTIVITY_TAG, entries);
+                for (const SGroupLineEntry& entry : entries)
                 {
-                    _scanner.skip(1);
-                    int sgroup_idx = _scanner.readIntFix(3) - 1;
-
-                    char id[4];
-                    _scanner.skip(1);
-                    _scanner.readCharsFix(3, id);
-
-                    if (sgroup_idx < 0 || sgroup_idx >= _sgroup_types.size())
-                        throw Error(UNDEFINED_SGROUP_MESSAGE, MOLFILE_SGROUP_CONNECTIVITY_TAG, sgroup_idx + 1);
-
-                    if (_sgroup_mapping[sgroup_idx] >= 0)
-                    {
-                        const char connectivity_code[] = {id[0], id[1], 0};
-                        _applyConnectivity(_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]), connectivity_code);
-                    }
-                    if (id[2] == '\n')
-                    {
-                        if (n != 0)
-                            throw Error("Unexpected end of M SCN");
-                        else
-                            // In some molfiles last space is not written
-                            need_skip_line = false;
-                    }
+                    if (_sgroup_mapping[entry.sgroup_idx] < 0)
+                        continue;
+                    // The code takes two columns; the third is a separator
+                    const char connectivity_code[] = {entry.value[0], entry.value[1], 0};
+                    _applyConnectivity(_bmol->sgroups.getSGroup(_sgroup_mapping[entry.sgroup_idx]), connectivity_code);
                 }
-                if (need_skip_line)
-                    _scanner.skipLine();
             }
             else if (strncmp(chars, MOLFILE_SGROUP_COMPONENT_ORDER_TAG, 3) == 0)
             {
-                // The format is the following: M SNCnn8 sss ooo ...
-                int n = _scanner.readIntFix(3);
-
-                while (n-- > 0)
+                // M  SNCnn8 sss ooo ...
+                std::vector<SGroupLineEntry> entries;
+                _readSGroupEntryLine(MOLFILE_SGROUP_COMPONENT_ORDER_TAG, entries);
+                for (const SGroupLineEntry& entry : entries)
                 {
-                    _scanner.skip(1);
-                    int sgroup_idx = _scanner.readIntFix(3) - 1;
-                    _scanner.skip(1);
-                    int component_order = _scanner.readIntFix(3);
-
-                    if (sgroup_idx < 0 || sgroup_idx >= _sgroup_mapping.size() || _sgroup_mapping[sgroup_idx] < 0)
-                        throw Error(UNDEFINED_SGROUP_MESSAGE, MOLFILE_SGROUP_COMPONENT_ORDER_TAG, sgroup_idx + 1);
-
-                    _applyComponentOrder(_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]), component_order);
+                    BufferScanner order_scanner(entry.value);
+                    const int component_order = order_scanner.readIntFix(static_cast<int>(strlen(entry.value)));
+                    if (_sgroup_mapping[entry.sgroup_idx] >= 0)
+                        _applyComponentOrder(_bmol->sgroups.getSGroup(_sgroup_mapping[entry.sgroup_idx]), component_order);
                 }
-                _scanner.skipLine();
             }
             else if (strncmp(chars, "MRV", 3) == 0)
             {

@@ -135,6 +135,14 @@ namespace indigo
         void _readCtabHeader();
         void _readCtab2000();
         int _readSGroupLine(const char* property, Array<char>& rest);
+        // An entry of a V2000 property line that lists S-groups with a value each, "nn8 sss vvv sss vvv ...".
+        struct SGroupLineEntry
+        {
+            int sgroup_idx;
+            char value[4]; // up to three characters, zero-terminated
+        };
+        void _readSGroupEntryLine(const char* property, std::vector<SGroupLineEntry>& entries);
+        void _checkSGroupIndex(const char* property, int sgroup_idx);
         void _convertCharge(int value, int& charge, int& radical);
         void _read3dFeature2000();
         void _readRGroups2000();

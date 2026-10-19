@@ -76,6 +76,9 @@ files = [
     # a connectivity code that is not HH, HT or EU leaves either/unknown
     "connectivity-not-known-v2000",
     "connectivity-not-known-v3000",
+    # M  SNC names a number M  STY skips, which M  SCN and the other lines
+    # skip as well
+    "component-order-sgroup-without-sty-v2000",
 ]
 for filename in files:
     mol = load(filename)
@@ -86,6 +89,17 @@ for filename in files:
             "connectivity of the repeating unit: %d"
             % unit.getRepeatingUnitConnectivity()
         )
+
+print("*** A line that ends early keeps the next one ***")
+for filename in [
+    # the last order of M  SNC takes two columns instead of three
+    "component-order-short-line-v2000",
+    # the last code of M  SCN takes one column instead of two
+    "connectivity-short-line-v2000",
+]:
+    mol = load(filename)
+    for mode in BOTH_VERSIONS:
+        compare(mol, filename, mode)
 
 print("*** The widest order that M  SNC holds, and the next one ***")
 for filename in ["component-order-999-v3000", "component-order-1000-v3000"]:
@@ -104,8 +118,8 @@ compare(indigo.loadMolecule(saved(mol, V2000)), nine, V2000)
 print("*** Input that is rejected ***")
 for filename in [
     "unknown-sgroup-type-v3000",
-    "component-order-undefined-sgroup-v2000",
     "component-order-sgroup-beyond-list-v2000",
+    "component-order-fewer-entries-v2000",
 ]:
     try:
         load(filename)

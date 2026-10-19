@@ -93,14 +93,19 @@ TEST(MoleculeSGroupsContract, ReusedSlotForgetsConnectivityAndComponentOrder)
     ASSERT_TRUE(sg.getSGroup(component).hasComponentOrder());
     sg.getSGroup(copolymer).connectivity = SGroup::HEAD_TO_TAIL;
     sg.getSGroup(copolymer).sgroup_subtype = SGroup::SG_SUBTYPE_BLO;
+    const SGroup* removed_component = &sg.getSGroup(component);
+    const SGroup* removed_copolymer = &sg.getSGroup(copolymer);
 
     sg.remove(component);
     sg.remove(copolymer);
 
     SGroup& mixture = sg.getSGroup(sg.addSGroup(SGroup::SG_TYPE_MIX));
     SGroup& fresh_copolymer = sg.getSGroup(sg.addSGroup(SGroup::SG_TYPE_COP));
+    // Without reuse there is nothing to forget: the new groups must be the objects just removed.
+    ASSERT_EQ(removed_component, &mixture);
+    ASSERT_EQ(removed_copolymer, &fresh_copolymer);
     EXPECT_FALSE(mixture.hasComponentOrder());
-    EXPECT_EQ(0, fresh_copolymer.connectivity.value());
+    EXPECT_EQ(0, fresh_copolymer.connectivity);
     EXPECT_EQ(0, fresh_copolymer.sgroup_subtype.value());
 }
 
@@ -247,7 +252,7 @@ namespace
         {
             SGroup& sgroup = mol.sgroups.getSGroup(sgroup_idx);
             if (sgroup.atoms.size() > 0)
-                fields.push_back({sgroup.sgroup_type, sgroup.sgroup_subtype.value(), sgroup.connectivity.value(), sgroup.component_order});
+                fields.push_back({sgroup.sgroup_type, sgroup.sgroup_subtype.value(), sgroup.connectivity, sgroup.component_order});
         }
         return sorted(fields);
     }

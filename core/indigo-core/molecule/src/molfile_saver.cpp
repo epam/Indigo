@@ -1303,7 +1303,7 @@ void MolfileSaver::_writeGenericSGroup3000(SGroup& sgroup, const SGroupInfo& inf
     }
     if (SGroup::typeHasConnectivity(sgroup.sgroup_type))
     {
-        output.printf(" %s=%s", MOLFILE_SGROUP_CONNECTIVITY_KEY, SGroup::connectivityToString(sgroup.connectivity.value()));
+        output.printf(" %s=%s", MOLFILE_SGROUP_CONNECTIVITY_KEY, SGroup::connectivityToString(sgroup.connectivity));
     }
 }
 
@@ -1879,7 +1879,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
         }
         _writePropertyEntryLines(output, MOLFILE_SGROUP_CONNECTIVITY_TAG, static_cast<int>(connectivity_infos.size()), [&](int entry) {
             const SGroupInfo& info = *connectivity_infos[entry];
-            output.printf(" %3d %s ", info.new_index, SGroup::connectivityToString(info.sgroup.connectivity.value()));
+            output.printf(" %3d %s ", info.new_index, SGroup::connectivityToString(info.sgroup.connectivity));
         });
         _writePropertyEntryLines(output, MOLFILE_SGROUP_COMPONENT_ORDER_TAG, static_cast<int>(numbered_component_infos.size()), [&](int entry) {
             const SGroupInfo& info = *numbered_component_infos[entry];

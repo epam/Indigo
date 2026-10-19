@@ -370,7 +370,7 @@ void CmfSaver::_encodeExtSection(Molecule& mol, const Mapping& mapping)
             _encode(CMF_REPEATINGUNIT);
             _encodeBaseSGroup(mol, su, mapping);
             _encodeString(su.label);
-            _output->writePackedUInt(su.connectivity.value_or(SGroup::HEAD_TO_TAIL));
+            _output->writePackedUInt(su.connectivity);
         }
         else if (sg.sgroup_type == SGroup::SG_TYPE_MUL)
         {

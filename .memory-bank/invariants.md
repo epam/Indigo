@@ -88,8 +88,11 @@ call leaves the previous answer standing, and nothing fails.
 index from that buffer and rejects one beyond the S-groups declared by `M  STY`, then parse the rest.
 A fixed `skip` or `readIntFix` on the whole-file scanner, the index included, runs into the next
 record when a line ends early: the next line is silently consumed and the next S-group loses its atoms
-or its data, while files Indigo writes itself never trigger it (#3959). `SBV`, `SDS`, `SPA`, `SAP` and
-`SCN` still parse positionally — a new handler, or a change to one of these, should read the line first.
+or its data, while files Indigo writes itself never trigger it (#3959). `M  SCN` and `M  SNC`, which list
+several S-groups with a value each, take their line with
+`core/indigo-core/molecule/src/molfile_loader_v2000.cpp#_readSGroupEntryLine`, which checks every index the
+same way (#3953). `SBV`, `SDS`, `SPA` and `SAP` still parse positionally — a new handler, or a change to one
+of these, should read the line first.
 
 ## Language & platform
 

@@ -318,7 +318,7 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
         }
 
         writer.Key("connectivity");
-        const int connectivity = ru.connectivity.value_or(SGroup::HEAD_TO_TAIL);
+        const int connectivity = ru.connectivity;
         switch (connectivity)
         {
         case SGroup::HEAD_TO_TAIL:
@@ -373,7 +373,7 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
         }
 
         writer.Key("connectivity");
-        const int connectivity = ru.connectivity.value_or(SGroup::HEAD_TO_TAIL);
+        const int connectivity = ru.connectivity;
         switch (connectivity)
         {
         case SGroup::HEAD_TO_TAIL:

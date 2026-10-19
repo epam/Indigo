@@ -122,7 +122,7 @@ namespace indigo
 
         int sgroup_type;              // group type, represnted with STY in Molfile format
         Nullable<int> sgroup_subtype; // group subtype, represnted with SST in Molfile format
-        Nullable<int> connectivity;   // repeat pattern of a polymer group, SCN in Molfile format (CONNECT in V3000); 0 until set
+        int connectivity;             // repeat pattern of a polymer group, SCN in Molfile format (CONNECT in V3000); 0 = not set
         int component_order;          // order of a component, SNC in Molfile format (COMPNO in V3000); 0 = not numbered
         int index;                    // internal SGroup index; V3000 field 1, V2000 M STY sss. Used for cross-refs (PARENT, SPL).
         int ext_index;                // external SGroup index; V3000 field 3 (extindex), V2000 M SLB vvv. 0 = auto-assign per spec.

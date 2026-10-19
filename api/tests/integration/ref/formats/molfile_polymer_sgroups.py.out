@@ -34,6 +34,13 @@ connectivity of the repeating unit: 0
 connectivity-not-known-v3000-2000.mol:SUCCEED
 connectivity-not-known-v3000-3000.mol:SUCCEED
 connectivity of the repeating unit: 0
+component-order-sgroup-without-sty-v2000-2000.mol:SUCCEED
+component-order-sgroup-without-sty-v2000-3000.mol:SUCCEED
+*** A line that ends early keeps the next one ***
+component-order-short-line-v2000-2000.mol:SUCCEED
+component-order-short-line-v2000-3000.mol:SUCCEED
+connectivity-short-line-v2000-2000.mol:SUCCEED
+connectivity-short-line-v2000-3000.mol:SUCCEED
 *** The widest order that M  SNC holds, and the next one ***
 component-order-999-v3000-auto.mol:SUCCEED
 component-order-999-v3000-2000.mol:SUCCEED
@@ -46,5 +53,5 @@ the same after reading the V2000 output
 nine-components-nine-copolymers-v3000-2000.mol:SUCCEED
 *** Input that is rejected ***
 unknown-sgroup-type-v3000: molecule sgroups: Unknown SGroup type = UNKNOWN
-component-order-undefined-sgroup-v2000: molfile loader: M SNC refers to undefined Sgroup 1
 component-order-sgroup-beyond-list-v2000: molfile loader: M SNC refers to undefined Sgroup 3
+component-order-fewer-entries-v2000: molfile loader: Unexpected end of M SNC
