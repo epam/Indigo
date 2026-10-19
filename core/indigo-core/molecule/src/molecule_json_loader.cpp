@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <charconv>
 #include <cstring>
 #include <string>
@@ -920,7 +921,6 @@ void MoleculeJsonLoader::handleSGroup(SGroup& sgroup, const std::unordered_set<i
     int start = -1;
     int end = -1;
     int end_bond = -1, start_bond = -1;
-    QS_DEF(Array<int>, xbonds);
 
     for (auto j : bmol.edges())
     {
@@ -938,7 +938,6 @@ void MoleculeJsonLoader::handleSGroup(SGroup& sgroup, const std::unordered_set<i
         else
         {
             // bond going out of the sgroup
-            xbonds.push(j);
             if (start_bond == -1)
             {
                 start_bond = j;
@@ -1015,6 +1014,47 @@ void MoleculeJsonLoader::setStereoFlagPosition(const rapidjson::Value& pos, int 
         s_pos.z = pos["z"].GetFloat();
 
     mol.setStereoFlagPosition(fragment_index, s_pos);
+}
+
+// A molfile stores a multiple group expanded, and a group around it lists the repeats among its atoms
+static void addRepeatsToEnclosingGroups(BaseMolecule& mol)
+{
+    for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
+    {
+        const SGroup& sgroup = mol.sgroups.getSGroup(i);
+        if (sgroup.sgroup_type != SGroup::SG_TYPE_MUL)
+            continue;
+        const Array<int>& unit = ((const MultipleGroup&)sgroup).parent_atoms;
+        if (unit.size() == 0 || sgroup.atoms.size() == unit.size())
+            continue;
+        const std::unordered_set<int> unit_atoms(unit.begin(), unit.end());
+        for (int j = mol.sgroups.begin(); j != mol.sgroups.end(); j = mol.sgroups.next(j))
+        {
+            SGroup& other = mol.sgroups.getSGroup(j);
+            if (other.sgroup_type == SGroup::SG_TYPE_MUL || other.sgroup_type == SGroup::SG_TYPE_DAT || other.atoms.size() <= unit.size())
+                continue;
+            const std::unordered_set<int> atoms(other.atoms.begin(), other.atoms.end());
+            if (!std::all_of(unit.begin(), unit.end(), [&atoms](int atom) { return atoms.count(atom) > 0; }))
+                continue;
+            for (int atom : sgroup.atoms)
+                if (unit_atoms.count(atom) == 0)
+                    other.atoms.push(atom);
+        }
+    }
+}
+
+static void setCrossingBonds(SGroup& sgroup, BaseMolecule& mol)
+{
+    const std::unordered_set<int> atoms(sgroup.atoms.begin(), sgroup.atoms.end());
+    sgroup.xbonds.clear();
+    for (int atom : atoms)
+    {
+        const Vertex& vertex = mol.getVertex(atom);
+        for (int i = vertex.neiBegin(); i != vertex.neiEnd(); i = vertex.neiNext(i))
+            if (atoms.count(vertex.neiVertex(i)) == 0)
+                sgroup.xbonds.push(vertex.neiEdge(i));
+    }
+    std::sort(sgroup.xbonds.begin(), sgroup.xbonds.end());
 }
 
 void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolecule& mol)
@@ -1221,7 +1261,7 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
         if (sg_type != SGroup::SG_TYPE_DAT)
             handleSGroup(sgroup, sgroup_atoms, mol);
 
-        if (s.HasMember("bonds"))
+        if (s.HasMember("bonds") && sg_type == SGroup::SG_TYPE_DAT)
         {
             const Value& bonds = s["bonds"];
             for (rapidjson::SizeType j = 0; j < bonds.Size(); ++j)
@@ -1230,6 +1270,8 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
             }
         }
     }
+
+    addRepeatsToEnclosingGroups(mol);
 }
 
 // Ids of the KET contract are numbers inside strings. Neither obvious route reports
@@ -2231,6 +2273,15 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
             annotation.parseOptsFromKet(connection["annotation"]);
             mol.setBondAnnotation(idx, annotation);
         }
+    }
+
+    // After the connections: a connection bond can cross a group. `bonds` of a bracketed group is not read: Ketcher does
+    // not write it, and Indigo writes it in the folded numbering
+    for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
+    {
+        SGroup& sgroup = mol.sgroups.getSGroup(i);
+        if (sgroup.sgroup_type != SGroup::SG_TYPE_DAT)
+            setCrossingBonds(sgroup, mol);
     }
 
     MoleculeLayout ml(mol, false);
