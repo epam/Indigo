@@ -1,0 +1,5 @@
+*** KET star atom ***
+sru-star-ends.ket:SUCCEED
+sru-star-ends.ket reloaded as a structure:SUCCEED
+sru-star-ends-query.smarts:SUCCEED
+sru-any-atom-ends.ket: molecule json loader: 'A' label is allowed only for queries

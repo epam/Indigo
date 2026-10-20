@@ -297,8 +297,7 @@ TEST_F(IndigoCoreFormatsTest, smiles_pol_sgroups_conn_and_flip)
     ASSERT_EQ(ru.atoms.at(1), 1);
     ASSERT_EQ(ru.atoms.at(2), 2);
     ASSERT_EQ(ru.atoms.at(3), 4);
-    ASSERT_TRUE(ru.connectivity.has_value());
-    ASSERT_EQ(ru.connectivity.value(), RepeatingUnit::HEAD_TO_HEAD);
+    ASSERT_EQ(ru.connectivity, RepeatingUnit::HEAD_TO_HEAD);
     Array<char> out;
     ArrayOutput std_out(out);
     SmilesSaver saver(std_out);
