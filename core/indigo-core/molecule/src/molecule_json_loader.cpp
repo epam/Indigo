@@ -478,7 +478,9 @@ void MoleculeJsonLoader::parseAtoms(const rapidjson::Value& atoms, BaseMolecule&
                 elem = Element::fromString2(label.c_str());
                 if (elem == -1)
                 {
-                    if (!_pqmol && QueryMolecule::getAtomType(label.c_str()) != _ATOM_PSEUDO)
+                    const int query_atom_type = QueryMolecule::getAtomType(label.c_str());
+                    const bool is_molecule_pseudoatom = query_atom_type == _ATOM_PSEUDO || query_atom_type == _ATOM_STAR;
+                    if (!_pqmol && !is_molecule_pseudoatom)
                         throw Error("'%s' label is allowed only for queries", label.c_str());
                     elem = ELEM_PSEUDO;
                 }
