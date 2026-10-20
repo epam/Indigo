@@ -148,7 +148,7 @@ void MolfileSaver::_calculateSEQIDs(BaseMolecule& mol, const std::vector<std::ma
             {
                 if (mol.getTemplateAtomClass(atom_idx) == kMonomerClassCHEM) // No SEQID for chem
                     continue;
-                if (mol.getTemplateAtomSeqid(atom_idx) < 0)
+                if (mol.getTemplateAtomSeqid(atom_idx) <= 0)
                 {
                     already_calculated = false;
                     break;
