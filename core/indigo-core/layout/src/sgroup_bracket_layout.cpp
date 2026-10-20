@@ -21,48 +21,15 @@
 #include <algorithm>
 #include <cmath>
 
+#include "layout/atom_boxes.h"
 #include "layout/metalayout.h"
+#include "layout/sgroup_texts.h"
 #include "molecule/base_molecule.h"
 
 using namespace indigo;
 
-SGroupBracketLayout::SGroupBracketLayout(BaseMolecule& molecule) : _molecule(molecule)
+SGroupBracketLayout::SGroupBracketLayout(BaseMolecule& molecule) : _molecule(molecule), _nesting(molecule)
 {
-    for (int i = molecule.sgroups.begin(); i != molecule.sgroups.end(); i = molecule.sgroups.next(i))
-    {
-        const SGroup& sgroup = molecule.sgroups.getSGroup(i);
-        // A group without atoms would be nested in every other one
-        if (sgroup.atoms.size() == 0)
-            continue;
-        if (isBracketed(sgroup.sgroup_type))
-            _bracketed.push_back(i);
-        if (isBracketed(sgroup.sgroup_type) || sgroup.sgroup_type == SGroup::SG_TYPE_MUL)
-            _parents[i] = -1;
-    }
-    for (auto& [idx, parent] : _parents)
-        parent = _findParent(idx);
-    // Parents read from a file can form a loop: it is cut where it is found
-    for (auto& [idx, parent] : _parents)
-        if (_depth(idx) >= static_cast<int>(_parents.size()))
-            parent = -1;
-
-    // A parent encloses the brackets of its children: the deepest groups are placed first
-    std::stable_sort(_bracketed.begin(), _bracketed.end(), [this](int a, int b) { return _depth(a) > _depth(b); });
-}
-
-bool SGroupBracketLayout::isBracketed(int sgroup_type)
-{
-    switch (sgroup_type)
-    {
-    case SGroup::SG_TYPE_SRU:
-    case SGroup::SG_TYPE_COP:
-    case SGroup::SG_TYPE_COM:
-    case SGroup::SG_TYPE_MIX:
-    case SGroup::SG_TYPE_FOR:
-        return true;
-    default:
-        return false;
-    }
 }
 
 void SGroupBracketLayout::placeAll()
@@ -77,15 +44,18 @@ void SGroupBracketLayout::placeMissing()
 
 void SGroupBracketLayout::_place(bool only_missing)
 {
-    if (_bracketed.empty() || !_hasCoordinates())
+    std::vector<int> to_place;
+    for (int idx : _nesting.bracketedDeepestFirst())
+        if (!only_missing || !_hasBrackets(_molecule.sgroups.getSGroup(idx)))
+            to_place.push_back(idx);
+    if (to_place.empty() || !_hasCoordinates())
         return;
-    _bondLength = _averageBondLength(_molecule);
-    for (int idx : _bracketed)
-    {
-        SGroup& sgroup = _molecule.sgroups.getSGroup(idx);
-        if (!only_missing || !_hasBrackets(sgroup))
-            _setBrackets(sgroup, _boundingBox(idx));
-    }
+
+    const float bond_length = _averageBondLength(_molecule);
+    const AtomBoxes atoms(_molecule, bond_length);
+    const SGroupTexts texts(_molecule, bond_length);
+    for (int idx : to_place)
+        _setBrackets(_molecule.sgroups.getSGroup(idx), _bracketsBoxAround(idx, _boundingBox(idx, atoms), texts, bond_length));
 }
 
 // The copies of a multiple group stand at one point until it is laid out: bonds of zero length do not count
@@ -124,91 +94,48 @@ bool SGroupBracketLayout::_hasCoordinates() const
     return false;
 }
 
-// The parent from the file if it is a bracketed group around this one: an index into the groups goes stale after a
-// merge or a clone. Otherwise the smallest bracketed group strictly containing its atoms (#3954).
-int SGroupBracketLayout::_findParent(int sgroup_idx) const
-{
-    MoleculeSGroups& sgroups = _molecule.sgroups;
-    const SGroup& sgroup = sgroups.getSGroup(sgroup_idx);
-    std::vector<int> atoms(sgroup.atoms.begin(), sgroup.atoms.end());
-    std::sort(atoms.begin(), atoms.end());
-
-    int parent = sgroup.parent_idx.value_or(-1);
-    if (parent < 0 || !sgroups.hasSGroup(parent))
-    {
-        const int id = sgroup.parent_group.value_or(0);
-        parent = id > 0 ? sgroups.findSGroupById(id) : -1;
-    }
-    if (parent >= 0 && parent != sgroup_idx && isBracketed(sgroups.getSGroup(parent).sgroup_type) && _contains(parent, atoms))
-        return parent;
-
-    int smallest = -1;
-    for (int idx : _bracketed)
-    {
-        const SGroup& other = sgroups.getSGroup(idx);
-        if (idx == sgroup_idx || other.atoms.size() <= sgroup.atoms.size())
-            continue;
-        if (smallest >= 0 && other.atoms.size() >= sgroups.getSGroup(smallest).atoms.size())
-            continue;
-        if (_contains(idx, atoms))
-            smallest = idx;
-    }
-    return smallest;
-}
-
-bool SGroupBracketLayout::_contains(int sgroup_idx, const std::vector<int>& sorted_atoms) const
+Rect2f SGroupBracketLayout::_boundingBox(int sgroup_idx, const AtomBoxes& atoms) const
 {
     const SGroup& sgroup = _molecule.sgroups.getSGroup(sgroup_idx);
-    std::vector<int> group_atoms(sgroup.atoms.begin(), sgroup.atoms.end());
-    std::sort(group_atoms.begin(), group_atoms.end());
-    return std::includes(group_atoms.begin(), group_atoms.end(), sorted_atoms.begin(), sorted_atoms.end());
-}
-
-int SGroupBracketLayout::_depth(int sgroup_idx) const
-{
-    int depth = 0;
-    for (int parent = _parents.at(sgroup_idx); parent >= 0 && depth < static_cast<int>(_parents.size()); parent = _parents.at(parent))
-        depth++;
-    return depth;
-}
-
-Rect2f SGroupBracketLayout::_boundingBox(int sgroup_idx) const
-{
-    const SGroup& sgroup = _molecule.sgroups.getSGroup(sgroup_idx);
-    Vec2f point;
-    Vec2f::projectZ(point, _molecule.getAtomXyz(sgroup.atoms[0]));
-    Rect2f bbox(point, point);
+    Rect2f bbox = atoms.box(sgroup.atoms[0]);
     for (int atom : sgroup.atoms)
-    {
-        Vec2f::projectZ(point, _molecule.getAtomXyz(atom));
-        bbox = Rect2f(bbox, Rect2f(point, point));
-    }
-    for (const auto& [child, parent] : _parents)
-        if (parent == sgroup_idx)
-            if (const std::optional<Rect2f> nested = _bracketsBox(_molecule.sgroups.getSGroup(child)))
-                bbox = Rect2f(bbox, *nested);
+        bbox = Rect2f(bbox, atoms.box(atom));
+    for (int child : _nesting.children(sgroup_idx))
+        if (const std::optional<Rect2f> nested = _bracketsBox(_molecule.sgroups.getSGroup(child)))
+            bbox = Rect2f(bbox, *nested);
     return bbox;
 }
 
-void SGroupBracketLayout::_setBrackets(SGroup& sgroup, const Rect2f& bbox) const
+Rect2f SGroupBracketLayout::_bracketsBoxAround(int sgroup_idx, const Rect2f& bbox, const SGroupTexts& texts, float bond_length) const
 {
-    const float gap = GAP * _bondLength;
-    const float left = bbox.left() - gap, right = bbox.right() + gap;
-    float bottom = bbox.bottom() - gap, top = bbox.top() + gap;
-    const float shortfall = MIN_LENGTH * _bondLength - (top - bottom);
+    const float gap = GAP * bond_length, clearance = TEXT_CLEARANCE * bond_length;
+    float left = bbox.left() - gap, right = bbox.right() + gap, bottom = bbox.bottom() - gap, top = bbox.top() + gap;
+    for (int child : _nesting.children(sgroup_idx))
+        if (const std::optional<Rect2f> text = texts.box(_molecule.sgroups.getSGroup(child)))
+        {
+            left = std::min(left, text->left() - clearance);
+            right = std::max(right, text->right() + clearance);
+            bottom = std::min(bottom, text->bottom() - clearance);
+            top = std::max(top, text->top() + clearance);
+        }
+    const float shortfall = MIN_LENGTH * bond_length - (top - bottom);
     if (shortfall > 0)
     {
         bottom -= shortfall / 2;
         top += shortfall / 2;
     }
+    return Rect2f(Vec2f(left, bottom), Vec2f(right, top));
+}
 
+void SGroupBracketLayout::_setBrackets(SGroup& sgroup, const Rect2f& box)
+{
     sgroup.brackets.clear();
     Vec2f* opening = sgroup.brackets.push();
-    opening[0].set(left, bottom);
-    opening[1].set(left, top);
+    opening[0].set(box.left(), box.bottom());
+    opening[1].set(box.left(), box.top());
     Vec2f* closing = sgroup.brackets.push();
-    closing[0].set(right, top);
-    closing[1].set(right, bottom);
+    closing[0].set(box.right(), box.top());
+    closing[1].set(box.right(), box.bottom());
 }
 
 bool SGroupBracketLayout::_hasBrackets(const SGroup& sgroup)

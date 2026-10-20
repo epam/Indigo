@@ -19,27 +19,21 @@
 #ifndef __sgroup_bracket_layout_h__
 #define __sgroup_bracket_layout_h__
 
-// Brackets of S-groups: ticket #3974.
-
-#include <map>
 #include <optional>
-#include <vector>
 
+#include "layout/sgroup_nesting.h"
 #include "math/algebra.h"
-
-#ifdef _WIN32
-#pragma warning(push)
-#pragma warning(disable : 4251)
-#endif
 
 namespace indigo
 {
+    class AtomBoxes;
     class BaseMolecule;
     class SGroup;
+    class SGroupTexts;
 
-    // Vertical brackets around a group's atoms and the brackets nested in it. The renderer turns the hooks of a bracket
-    // to its right and puts the label at the last bracket: the opening bracket runs up and comes first, the closing
-    // one runs down.
+    // Vertical brackets around a group's atom labels and the brackets and texts nested in it. The renderer turns the
+    // hooks of a bracket to its right and puts the label at the last bracket: the opening bracket runs up and comes
+    // first, the closing one runs down.
     class DLLEXPORT SGroupBracketLayout
     {
     public:
@@ -51,32 +45,24 @@ namespace indigo
         void placeMissing();
 
     private:
+        // In bond lengths
         static constexpr float GAP = 0.3f;
         static constexpr float MIN_LENGTH = 1.f;
-
-        static bool isBracketed(int sgroup_type);
+        static constexpr float TEXT_CLEARANCE = 0.05f;
 
         void _place(bool only_missing);
         bool _hasCoordinates() const;
-        int _findParent(int sgroup_idx) const;
-        bool _contains(int sgroup_idx, const std::vector<int>& sorted_atoms) const;
-        int _depth(int sgroup_idx) const;
-        Rect2f _boundingBox(int sgroup_idx) const;
-        void _setBrackets(SGroup& sgroup, const Rect2f& bbox) const;
+        Rect2f _boundingBox(int sgroup_idx, const AtomBoxes& atoms) const;
+        Rect2f _bracketsBoxAround(int sgroup_idx, const Rect2f& bbox, const SGroupTexts& texts, float bond_length) const;
 
         static float _averageBondLength(BaseMolecule& molecule);
         static bool _hasBrackets(const SGroup& sgroup);
         static std::optional<Rect2f> _bracketsBox(const SGroup& sgroup);
+        static void _setBrackets(SGroup& sgroup, const Rect2f& box);
 
         BaseMolecule& _molecule;
-        float _bondLength = 0;
-        std::vector<int> _bracketed;
-        std::map<int, int> _parents;
+        SGroupNesting _nesting;
     };
 } // namespace indigo
-
-#ifdef _WIN32
-#pragma warning(pop)
-#endif
 
 #endif
