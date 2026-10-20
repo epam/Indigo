@@ -49,6 +49,7 @@ void BaseMolecule::offsetCoordinates(const Vec3f& offset)
 {
     for (int i = 0; i < _xyz.size(); i++)
         _xyz[i].add(offset);
+    sgroups.transformBrackets([&offset](Vec2f& point) { point.add(Vec2f(offset.x, offset.y)); });
 }
 
 void BaseMolecule::getAtomBoundingBox(int atom_idx, float font_size, LABEL_MODE label_mode, Vec2f& bottom_left, Vec2f& top_right, bool multiline_labels)

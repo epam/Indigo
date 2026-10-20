@@ -289,6 +289,7 @@ void MoleculeLayout::_make()
     _layout_graph->haptic_bond_multiplier = haptic_bond_multiplier;
     // 0. Find 2D coordinates via proxy _layout_graph object
     _layout_graph->max_iterations = max_iterations;
+    SGroupBracketLayout brackets(_molecule);
     _makeLayout();
 
     // 1. Update data-sgroup label position before changing molecule atoms positions
@@ -313,7 +314,7 @@ void MoleculeLayout::_make()
 
     _updateMultipleGroups();
 
-    SGroupBracketLayout(_molecule).placeAll();
+    brackets.update();
 
     _molecule.have_xyz = true;
 }
@@ -339,7 +340,7 @@ void MoleculeLayout::updateSGroups()
 {
     _updateDataSGroups();
     _updateMultipleGroups();
-    SGroupBracketLayout(_molecule).placeAll();
+    SGroupBracketLayout(_molecule).update();
 }
 
 void MoleculeLayout::make()

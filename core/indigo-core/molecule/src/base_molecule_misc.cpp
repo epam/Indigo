@@ -481,6 +481,7 @@ void BaseMolecule::scale(const Vec2f& center, float scale)
         p.y = center.y + (p.y - center.y) * scale;
         p.z *= scale;
     }
+    sgroups.transformBrackets([&center, scale](Vec2f& point) { point.set(center.x + (point.x - center.x) * scale, center.y + (point.y - center.y) * scale); });
 }
 
 void BaseMolecule::getAtomSymbol(int v, Array<char>& result)

@@ -20,9 +20,15 @@
 #define __sgroup_bracket_layout_h__
 
 #include <optional>
+#include <vector>
 
 #include "layout/sgroup_nesting.h"
 #include "math/algebra.h"
+
+#ifdef _WIN32
+#pragma warning(push)
+#pragma warning(disable : 4251)
+#endif
 
 namespace indigo
 {
@@ -39,10 +45,9 @@ namespace indigo
     public:
         explicit SGroupBracketLayout(BaseMolecule& molecule);
 
-        void placeAll();
-        // A zero-length bracket counts as missing: loaders write such placeholders where a format has no bracket
-        // coordinates.
-        void placeMissing();
+        // Places brackets for the groups that have none and for those whose atoms moved since construction. The
+        // brackets of the other groups stay as they are, even when they no longer enclose those of their children.
+        void update();
 
     private:
         // In bond lengths
@@ -50,19 +55,23 @@ namespace indigo
         static constexpr float MIN_LENGTH = 1.f;
         static constexpr float TEXT_CLEARANCE = 0.05f;
 
-        void _place(bool only_missing);
+        bool _hasMoved(const SGroup& sgroup) const;
         bool _hasCoordinates() const;
         Rect2f _boundingBox(int sgroup_idx, const AtomBoxes& atoms) const;
         Rect2f _bracketsBoxAround(int sgroup_idx, const Rect2f& bbox, const SGroupTexts& texts, float bond_length) const;
 
         static float _averageBondLength(BaseMolecule& molecule);
-        static bool _hasBrackets(const SGroup& sgroup);
         static std::optional<Rect2f> _bracketsBox(const SGroup& sgroup);
         static void _setBrackets(SGroup& sgroup, const Rect2f& box);
 
         BaseMolecule& _molecule;
         SGroupNesting _nesting;
+        std::vector<Vec2f> _initialPositions;
     };
 } // namespace indigo
+
+#ifdef _WIN32
+#pragma warning(pop)
+#endif
 
 #endif

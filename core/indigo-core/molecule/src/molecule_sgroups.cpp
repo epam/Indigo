@@ -96,6 +96,16 @@ bool SGroup::typeHasConnectivity(int sg_type)
     return sg_type == SGroup::SG_TYPE_SRU || sg_type == SGroup::SG_TYPE_COP;
 }
 
+bool SGroup::hasBrackets() const
+{
+    if (brackets.size() == 0)
+        return false;
+    for (int i = 0; i < brackets.size(); ++i)
+        if (Vec2f::distSqr(brackets[i][0], brackets[i][1]) <= EPSILON)
+            return false;
+    return true;
+}
+
 SGroup::SGroup()
 {
     _reset();
@@ -322,6 +332,23 @@ int MoleculeSGroups::end()
 int MoleculeSGroups::next(int i)
 {
     return _sgroups.next(i);
+}
+
+void MoleculeSGroups::transformBrackets(const std::function<void(Vec2f&)>& transform)
+{
+    for (int i = begin(); i != end(); i = next(i))
+    {
+        SGroup& sgroup = getSGroup(i);
+        // Placeholders stay as loaders wrote them: some savers write them out as they are
+        if (!sgroup.hasBrackets())
+            continue;
+        Array<Vec2f[2]>& brackets = sgroup.brackets;
+        for (int j = 0; j < brackets.size(); ++j)
+        {
+            transform(brackets[j][0]);
+            transform(brackets[j][1]);
+        }
+    }
 }
 
 int MoleculeSGroups::addSGroup(const char* sg_type)

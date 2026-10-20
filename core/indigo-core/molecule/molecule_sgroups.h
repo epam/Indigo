@@ -25,6 +25,7 @@
 #include "base_cpp/ptr_reusable_pool.h"
 #include "base_cpp/reusable.h"
 #include "math/algebra.h"
+#include <functional>
 #include <vector>
 
 #ifdef _WIN32
@@ -147,6 +148,10 @@ namespace indigo
         {
             return component_order != 0;
         }
+
+        // One zero-length bracket means the group has none: loaders write such placeholders where a format has no
+        // bracket coordinates
+        bool hasBrackets() const;
 
         Array<char> label;                  // SMT in Molfile format (LABEL in V3000)
         Nullable<int> brk_style;            // represented with SBT in Molfile format
@@ -352,6 +357,8 @@ namespace indigo
         int begin();
         int end();
         int next(int i);
+
+        void transformBrackets(const std::function<void(Vec2f&)>& transform);
 
         enum PropertyTypes
         {

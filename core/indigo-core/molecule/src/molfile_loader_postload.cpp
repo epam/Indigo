@@ -353,7 +353,7 @@ void MolfileLoader::_postLoad()
         _haptic_star_groups.clear();
     }
 
-    SGroupBracketLayout(*_bmol).placeMissing();
+    SGroupBracketLayout(*_bmol).update();
 
     // fix layout
     // if (templates_to_remove.size() && _bmol->countComponents())

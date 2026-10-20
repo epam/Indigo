@@ -31,11 +31,9 @@ SGroupTexts::SGroupTexts(BaseMolecule& molecule, float bond_length) : _molecule(
 
 std::optional<Rect2f> SGroupTexts::box(const SGroup& sgroup) const
 {
-    if (!SGroupNesting::isBracketed(sgroup.sgroup_type) || sgroup.brackets.size() != 2)
+    if (!SGroupNesting::isBracketed(sgroup.sgroup_type) || sgroup.brackets.size() != 2 || !sgroup.hasBrackets())
         return std::nullopt;
     const Vec2f* closing = sgroup.brackets[1];
-    if (Vec2f::distSqr(closing[0], closing[1]) <= EPSILON)
-        return std::nullopt;
     const bool first_lower = closing[0].y < closing[1].y;
     const Vec2f& lower = first_lower ? closing[0] : closing[1];
     const Vec2f& upper = first_lower ? closing[1] : closing[0];

@@ -30,24 +30,22 @@ using namespace indigo;
 
 SGroupBracketLayout::SGroupBracketLayout(BaseMolecule& molecule) : _molecule(molecule), _nesting(molecule)
 {
+    if (_nesting.bracketedDeepestFirst().empty())
+        return;
+    _initialPositions.resize(molecule.vertexEnd());
+    for (int i = molecule.vertexBegin(); i != molecule.vertexEnd(); i = molecule.vertexNext(i))
+        Vec2f::projectZ(_initialPositions[i], molecule.getAtomXyz(i));
 }
 
-void SGroupBracketLayout::placeAll()
-{
-    _place(false);
-}
-
-void SGroupBracketLayout::placeMissing()
-{
-    _place(true);
-}
-
-void SGroupBracketLayout::_place(bool only_missing)
+void SGroupBracketLayout::update()
 {
     std::vector<int> to_place;
     for (int idx : _nesting.bracketedDeepestFirst())
-        if (!only_missing || !_hasBrackets(_molecule.sgroups.getSGroup(idx)))
+    {
+        const SGroup& sgroup = _molecule.sgroups.getSGroup(idx);
+        if (!sgroup.hasBrackets() || _hasMoved(sgroup))
             to_place.push_back(idx);
+    }
     if (to_place.empty() || !_hasCoordinates())
         return;
 
@@ -56,6 +54,18 @@ void SGroupBracketLayout::_place(bool only_missing)
     const SGroupTexts texts(_molecule, bond_length);
     for (int idx : to_place)
         _setBrackets(_molecule.sgroups.getSGroup(idx), _bracketsBoxAround(idx, _boundingBox(idx, atoms), texts, bond_length));
+}
+
+bool SGroupBracketLayout::_hasMoved(const SGroup& sgroup) const
+{
+    for (int atom : sgroup.atoms)
+    {
+        Vec2f now;
+        Vec2f::projectZ(now, _molecule.getAtomXyz(atom));
+        if (Vec2f::distSqr(now, _initialPositions.at(atom)) > EPSILON)
+            return true;
+    }
+    return false;
 }
 
 // The copies of a multiple group stand at one point until it is laid out: bonds of zero length do not count
@@ -138,19 +148,9 @@ void SGroupBracketLayout::_setBrackets(SGroup& sgroup, const Rect2f& box)
     closing[1].set(box.right(), box.bottom());
 }
 
-bool SGroupBracketLayout::_hasBrackets(const SGroup& sgroup)
-{
-    if (sgroup.brackets.size() == 0)
-        return false;
-    for (int i = 0; i < sgroup.brackets.size(); ++i)
-        if (Vec2f::distSqr(sgroup.brackets[i][0], sgroup.brackets[i][1]) <= EPSILON)
-            return false;
-    return true;
-}
-
 std::optional<Rect2f> SGroupBracketLayout::_bracketsBox(const SGroup& sgroup)
 {
-    if (!_hasBrackets(sgroup))
+    if (!sgroup.hasBrackets())
         return std::nullopt;
     Rect2f box(sgroup.brackets[0][0], sgroup.brackets[0][1]);
     for (int i = 1; i < sgroup.brackets.size(); ++i)

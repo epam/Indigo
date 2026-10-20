@@ -304,15 +304,19 @@ void Metalayout::adjustMol(BaseMolecule& mol, const Vec2f& min, const Vec2f& pos
         }
     }
 
+    auto adjust = [&](Vec2f& v) {
+        v.sub(min);
+        v.scale(_scaleFactor);
+        v.add(pos);
+    };
     for (int i = mol.vertexBegin(); i < mol.vertexEnd(); i = mol.vertexNext(i))
     {
         Vec2f v;
         Vec2f::projectZ(v, mol.getAtomXyz(i));
-        v.sub(min);
-        v.scale(_scaleFactor);
-        v.add(pos);
+        adjust(v);
         mol.setAtomXyz(i, v.x, v.y, 0);
     }
+    mol.sgroups.transformBrackets(adjust);
 
     // Adjust data-sgroup label positions with absolute coordinates
     for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
