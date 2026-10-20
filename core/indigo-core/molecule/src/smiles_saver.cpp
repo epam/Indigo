@@ -1913,7 +1913,7 @@ void SmilesSaver::_writeSGroups()
             _output.writeChar(':');
             writeSgEscapedField(_output, ru.label.ptr());
             _output.writeChar(':');
-            const int connectivity = ru.connectivity.value_or(RepeatingUnit::HEAD_TO_TAIL);
+            const int connectivity = ru.connectivity;
             switch (connectivity)
             {
             case SGroup::HEAD_TO_TAIL:

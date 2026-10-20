@@ -28,44 +28,77 @@
 
 using namespace indigo;
 
-static SGroup::SgType mappingForSgTypes[] = {
+static const SGroup::SgType mappingForSgTypes[] = {
     {SGroup::SG_TYPE_GEN, "GEN"}, {SGroup::SG_TYPE_DAT, "DAT"}, {SGroup::SG_TYPE_SUP, "SUP"}, {SGroup::SG_TYPE_SRU, "SRU"}, {SGroup::SG_TYPE_MUL, "MUL"},
     {SGroup::SG_TYPE_MON, "MON"}, {SGroup::SG_TYPE_MER, "MER"}, {SGroup::SG_TYPE_COP, "COP"}, {SGroup::SG_TYPE_CRO, "CRO"}, {SGroup::SG_TYPE_MOD, "MOD"},
     {SGroup::SG_TYPE_GRA, "GRA"}, {SGroup::SG_TYPE_COM, "COM"}, {SGroup::SG_TYPE_MIX, "MIX"}, {SGroup::SG_TYPE_FOR, "FOR"}, {SGroup::SG_TYPE_ANY, "ANY"},
 };
 
-const char* SGroup::typeToString(int sg_type)
+static const SGroup::SgType mappingForSgSubtypes[] = {{SGroup::SG_SUBTYPE_ALT, "ALT"}, {SGroup::SG_SUBTYPE_RAN, "RAN"}, {SGroup::SG_SUBTYPE_BLO, "BLO"}};
+
+static const SGroup::SgType mappingForSgConnectivity[] = {{SGroup::HEAD_TO_HEAD, "HH"}, {SGroup::HEAD_TO_TAIL, "HT"}, {SGroup::EITHER, "EU"}};
+
+template <size_t mapping_size>
+static const char* codeToString(const SGroup::SgType (&mapping)[mapping_size], int code)
 {
-    for (int i = 0; i < NELEM(mappingForSgTypes); i++)
+    for (const SGroup::SgType& entry : mapping)
     {
-        if (sg_type == mappingForSgTypes[i].int_type)
-            return mappingForSgTypes[i].str_type;
+        if (code == entry.int_type)
+            return entry.str_type;
     }
     return NULL;
 }
 
-int SGroup::getType(const char* sg_type)
+template <size_t mapping_size>
+static int stringToCode(const SGroup::SgType (&mapping)[mapping_size], const char* str)
 {
-    for (int i = 0; i < NELEM(mappingForSgTypes); i++)
+    for (const SGroup::SgType& entry : mapping)
     {
-        if (strcasecmp(sg_type, mappingForSgTypes[i].str_type) == 0)
-        {
-            return mappingForSgTypes[i].int_type;
-        }
+        if (strcasecmp(str, entry.str_type) == 0)
+            return entry.int_type;
     }
     return -1;
 }
 
+const char* SGroup::typeToString(int sg_type)
+{
+    return codeToString(mappingForSgTypes, sg_type);
+}
+
+int SGroup::getType(const char* sg_type)
+{
+    return stringToCode(mappingForSgTypes, sg_type);
+}
+
+const char* SGroup::subtypeToString(int sg_subtype)
+{
+    return codeToString(mappingForSgSubtypes, sg_subtype);
+}
+
+int SGroup::getSubtype(const char* sg_subtype)
+{
+    return stringToCode(mappingForSgSubtypes, sg_subtype);
+}
+
+const char* SGroup::connectivityToString(int connectivity)
+{
+    const char* code = codeToString(mappingForSgConnectivity, connectivity);
+    return code != NULL ? code : codeToString(mappingForSgConnectivity, SGroup::EITHER);
+}
+
+int SGroup::getConnectivity(const char* connectivity)
+{
+    return stringToCode(mappingForSgConnectivity, connectivity);
+}
+
+bool SGroup::typeHasConnectivity(int sg_type)
+{
+    return sg_type == SGroup::SG_TYPE_SRU || sg_type == SGroup::SG_TYPE_COP;
+}
+
 SGroup::SGroup()
 {
-    sgroup_type = SGroup::SG_TYPE_GEN;
-    sgroup_subtype = 0;
-    brk_style = 0;
-    index = 0;
-    ext_index = 0;
-    parent_group = 0;
-    parent_idx = -1;
-    contracted = DisplayOption::Undefined;
+    _reset();
 }
 
 SGroup::~SGroup()
@@ -74,13 +107,7 @@ SGroup::~SGroup()
 
 DataSGroup::DataSGroup()
 {
-    sgroup_type = SGroup::SG_TYPE_DAT;
-    detached = false;
-    relative = false;
-    display_units = false;
-    dasp_pos = 1;
-    num_chars = 0;
-    tag = ' ';
+    _reset();
 }
 
 DataSGroup::~DataSGroup()
@@ -104,13 +131,9 @@ void DataSGroup::setMrv_implicit(int atom_idx, int hydrogens_count)
     detached = true;
 }
 
-Superatom::Superatom() : unresolved(false)
+Superatom::Superatom()
 {
-    sgroup_type = SGroup::SG_TYPE_SUP;
-    seqid = -1;
-    attachment_points.clear();
-    bond_connections.clear();
-    display_position.set(Vec3f(0, 0, 0));
+    _reset();
 }
 
 Superatom::~Superatom()
@@ -119,8 +142,7 @@ Superatom::~Superatom()
 
 RepeatingUnit::RepeatingUnit()
 {
-    sgroup_type = SGroup::SG_TYPE_SRU;
-    connectivity = 0;
+    _reset();
 }
 
 RepeatingUnit::~RepeatingUnit()
@@ -129,8 +151,7 @@ RepeatingUnit::~RepeatingUnit()
 
 CopolymerGroup::CopolymerGroup()
 {
-    sgroup_type = SGroup::SG_TYPE_COP;
-    connectivity = 0;
+    _reset();
 }
 
 CopolymerGroup::~CopolymerGroup()
@@ -139,35 +160,37 @@ CopolymerGroup::~CopolymerGroup()
 
 MultipleGroup::MultipleGroup()
 {
-    sgroup_type = SGroup::SG_TYPE_MUL;
-    multiplier = 1;
+    _reset();
 }
 
 MultipleGroup::~MultipleGroup()
 {
 }
 
-// ---- reuse(): non-destructive reset for PtrReusablePool slot reuse ----------
-// Each reuse() MUST reproduce its constructor field-by-field: the pool hands
-// the same object back out, so any field not restored here would leak stale
-// data from the previous occupant. Keep in exact sync with the ctors above.
+// _reset() is the one list of a class's own defaults. The constructor and reuse() both take them from it,
+// so a pooled slot that is handed out again cannot keep a field of its previous occupant.
 
-void SGroup::reuse()
+void SGroup::_reset()
 {
-    // Mirror SGroup::SGroup() ...
     sgroup_type = SGroup::SG_TYPE_GEN;
     sgroup_subtype = 0;
+    connectivity = 0;
+    component_order = 0;
     brk_style = 0;
     index = 0;
     ext_index = 0;
     parent_group = 0;
     parent_idx = -1;
     contracted = DisplayOption::Undefined;
-    // ... plus the members the ctor leaves default-constructed (empty).
     atoms.clear();
     xbonds.clear();
     label.clear();
     brackets.clear();
+}
+
+void SGroup::reuse()
+{
+    _reset();
 }
 
 void SGroup::reuse(int sg_type)
@@ -176,10 +199,8 @@ void SGroup::reuse(int sg_type)
     sgroup_type = sg_type;
 }
 
-void DataSGroup::reuse()
+void DataSGroup::_reset()
 {
-    SGroup::reuse();
-    // Mirror DataSGroup::DataSGroup() ...
     sgroup_type = SGroup::SG_TYPE_DAT;
     detached = false;
     relative = false;
@@ -187,7 +208,6 @@ void DataSGroup::reuse()
     dasp_pos = 1;
     num_chars = 0;
     tag = ' ';
-    // ... plus default-constructed members.
     cbonds.clear();
     description.clear();
     name.clear();
@@ -199,41 +219,63 @@ void DataSGroup::reuse()
     display_pos.reset();
 }
 
-void Superatom::reuse()
+void DataSGroup::reuse()
 {
     SGroup::reuse();
-    // Mirror Superatom::Superatom() ...
+    _reset();
+}
+
+void Superatom::_reset()
+{
     sgroup_type = SGroup::SG_TYPE_SUP;
     seqid = -1;
     attachment_points.clear();
     bond_connections.clear();
     display_position.set(Vec3f(0, 0, 0));
     unresolved = false;
-    // ... plus default-constructed members.
     sa_class.clear();
     sa_natreplace.clear();
+}
+
+void Superatom::reuse()
+{
+    SGroup::reuse();
+    _reset();
+}
+
+void RepeatingUnit::_reset()
+{
+    sgroup_type = SGroup::SG_TYPE_SRU;
 }
 
 void RepeatingUnit::reuse()
 {
     SGroup::reuse();
-    sgroup_type = SGroup::SG_TYPE_SRU;
-    connectivity = 0;
+    _reset();
+}
+
+void CopolymerGroup::_reset()
+{
+    sgroup_type = SGroup::SG_TYPE_COP;
 }
 
 void CopolymerGroup::reuse()
 {
     SGroup::reuse();
-    sgroup_type = SGroup::SG_TYPE_COP;
-    connectivity = 0;
+    _reset();
+}
+
+void MultipleGroup::_reset()
+{
+    sgroup_type = SGroup::SG_TYPE_MUL;
+    multiplier = 1;
+    parent_atoms.clear();
 }
 
 void MultipleGroup::reuse()
 {
     SGroup::reuse();
-    sgroup_type = SGroup::SG_TYPE_MUL;
-    multiplier = 1;
-    parent_atoms.clear();
+    _reset();
 }
 
 IMPL_ERROR(MoleculeSGroups, "molecule sgroups");

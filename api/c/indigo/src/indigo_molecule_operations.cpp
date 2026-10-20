@@ -2095,7 +2095,7 @@ CEXPORT int indigoGetRepeatingUnitConnectivity(int sgroup)
     INDIGO_BEGIN
     {
         RepeatingUnit& ru = IndigoRepeatingUnit::cast(self.getObject(sgroup)).get();
-        return ru.connectivity.value_or(SGroup::HEAD_TO_TAIL);
+        return ru.connectivity;
     }
     INDIGO_END(-1);
 }

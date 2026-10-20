@@ -135,6 +135,14 @@ namespace indigo
         void _readCtabHeader();
         void _readCtab2000();
         int _readSGroupLine(const char* property, Array<char>& rest);
+        // An entry of a V2000 property line that lists S-groups with a value each, "nn8 sss vvv sss vvv ...".
+        struct SGroupLineEntry
+        {
+            int sgroup_idx;
+            char value[4]; // up to three characters, zero-terminated
+        };
+        void _readSGroupEntryLine(const char* property, std::vector<SGroupLineEntry>& entries);
+        void _checkSGroupIndex(const char* property, int sgroup_idx);
         void _convertCharge(int value, int& charge, int& radical);
         void _read3dFeature2000();
         void _readRGroups2000();
@@ -145,6 +153,11 @@ namespace indigo
         void _readTGroups3000();
         void _checkEndOfMolBlock3000();
         void _readSGroupDisplay(Scanner& scanner, DataSGroup& dsg);
+        // Give an S-group what a V2000 or V3000 property says about it. A value that is not understood - an
+        // unknown connectivity code, an order that is not positive - or that the S-group type does not carry
+        // is skipped and the molecule still loads.
+        static void _applyConnectivity(SGroup& sgroup, const char* connectivity_code);
+        static void _applyComponentOrder(SGroup& sgroup, int component_order);
         void _readCollectionBlock3000();
         void _readSGroupsBlock3000();
         void _readEndpoints3000(Scanner& scanner, std::vector<int>& endpoints);
