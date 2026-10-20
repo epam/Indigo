@@ -140,19 +140,25 @@ void MolfileSaver::_calculateSEQIDs(BaseMolecule& mol, const std::vector<std::ma
 {
     for (auto& sequence : sequences)
     {
-        // Find the maximum existing seq_id in this sequence to avoid conflicts
-        int max_existing_seq_id = 0;
+        // Check that SEQID set for all monomers except CHEM
+        bool already_calculated = true;
         for (auto atom_idx : sequence)
         {
             if (mol.isTemplateAtom(atom_idx))
             {
-                int existing_seq_id = mol.getTemplateAtomSeqid(atom_idx);
-                if (existing_seq_id > max_existing_seq_id)
-                    max_existing_seq_id = existing_seq_id;
+                if (mol.getTemplateAtomClass(atom_idx) == kMonomerClassCHEM) // No SEQID for chem
+                    continue;
+                if (mol.getTemplateAtomSeqid(atom_idx) < 0)
+                {
+                    already_calculated = false;
+                    break;
+                }
             }
         }
+        if (already_calculated) // Use existing ids
+            continue;
 
-        int seq_id = max_existing_seq_id + 1;
+        int seq_id = 1;
         for (auto atom_idx : sequence)
         {
             if (mol.isTemplateAtom(atom_idx))
@@ -160,8 +166,7 @@ void MolfileSaver::_calculateSEQIDs(BaseMolecule& mol, const std::vector<std::ma
                 std::string mon_class = mol.getTemplateAtomClass(atom_idx);
                 if (isBackboneClass(mon_class) && mon_class != kMonomerClassCHEM) // No SEQID for chem
                 {
-                    if (mol.getTemplateAtomSeqid(atom_idx) == -1)
-                        mol.setTemplateAtomSeqid(atom_idx, seq_id);
+                    mol.setTemplateAtomSeqid(atom_idx, seq_id);
                     if (mon_class == kMonomerClassSUGAR)
                     {
                         // set seq_id for base
@@ -176,8 +181,7 @@ void MolfileSaver::_calculateSEQIDs(BaseMolecule& mol, const std::vector<std::ma
                                 seq_name = mol.getTemplateAtom(br_it->second);
                                 if (br_class == kMonomerClassBASE)
                                 {
-                                    if (mol.getTemplateAtomSeqid(br_it->second))
-                                        mol.setTemplateAtomSeqid(br_it->second, seq_id);
+                                    mol.setTemplateAtomSeqid(br_it->second, seq_id);
                                     mol.setTemplateAtomSeqName(br_it->second, seq_name.c_str());
                                     mol.setTemplateAtomSeqName(atom_idx, seq_name.c_str());
                                 }
