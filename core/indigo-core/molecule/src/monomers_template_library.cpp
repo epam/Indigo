@@ -582,6 +582,29 @@ namespace indigo
         IdtAlias idt_alias;
         if (properties.contains("type"))
             mon_type = properties.at("type");
+        const bool is_group = mon_type == "monomerGroupTemplate";
+        const char* item_kind = is_group ? "preset" : "monomer";
+        std::string item_name;
+        if (is_group)
+        {
+            if (!properties.contains("groupName") || !*properties.at("groupName"))
+                throw Error("Load of preset has failed, preset definition contains invalid groupName value. The groupName couldn't be empty");
+            item_name = properties.at("groupName");
+            if (!properties.contains("groupClass") || !*properties.at("groupClass"))
+                throw Error("Load of \"%s\" preset has failed, preset definition contains invalid groupClass value. The groupClass couldn't be empty",
+                            item_name.c_str());
+        }
+        else
+        {
+            if (mol.tgroups.getTGroupCount() > 0)
+            {
+                auto& tg = mol.tgroups.getTGroup(mol.tgroups.begin());
+                if (tg.tgroup_name.size())
+                    item_name = tg.tgroup_name.ptr();
+            }
+            if (mon_type != "monomerTemplate")
+                throw Error("Type: \"%s\" is unknown. \"%s\" monomer hasn't been added to the library.", mon_type.c_str(), item_name.c_str());
+        }
         if (properties.contains("aliasHELM"))
             alias_helm = properties.at("aliasHELM");
         // read idtAliases
@@ -592,6 +615,10 @@ namespace indigo
                 idt_alias_parts = split(properties.at("idtAliases"), ',');
             for (const auto& idt_alias_str : idt_alias_parts)
             {
+                auto eq_pos = idt_alias_str.find('=');
+                if (eq_pos == std::string::npos || eq_pos + 1 == idt_alias_str.size())
+                    throw Error("Load of \"%s\" %s has failed, %s definition contains invalid idtAliases value. The value of \"%s\" couldn't be empty",
+                                item_name.c_str(), item_kind, item_kind, idt_alias_str.substr(0, eq_pos).c_str());
                 auto kvp_vec = split(idt_alias_str, '=');
                 if (kvp_vec.size() == 2)
                 {
@@ -613,7 +640,13 @@ namespace indigo
             std::string modification_types;
             // read monomer template specific properties
             if (properties.contains("modificationTypes"))
+            {
                 modification_types = properties.at("modificationTypes");
+                if (modification_types.empty())
+                    throw Error("Load of \"%s\" monomer has failed, monomer definition contains invalid modificationTypes value. The modificationTypes "
+                                "couldn't be empty",
+                                item_name.c_str());
+            }
             if (mol.tgroups.getTGroupCount() == 1)
             {
                 try
@@ -653,23 +686,17 @@ namespace indigo
             std::optional<std::reference_wrapper<MonomerGroupTemplate>> mgt;
             std::unordered_map<int, std::string> template_id_by_tgroup_idx;
             std::unordered_map<std::pair<std::string, std::string>, std::string, pair_hash> template_id_by_name_class;
-            if (mon_type == "monomerGroupTemplate")
+            if (is_group)
             {
-                std::string group_class, group_name, group_id;
-                // mandatory fields
-                if (properties.contains("groupClass") && properties.contains("groupName"))
-                {
-                    group_class = properties.at("groupClass");
-                    group_name = properties.at("groupName");
-                    group_id = properties.contains("groupId") ? properties.at("groupId") : group_name;
-                    addMonomerGroupTemplate(
-                        MonomerGroupTemplate(group_id, group_name, group_class, idt_alias.hasModifications() ? idt_alias : idt_alias.getBase()));
-                    mgt = getMonomerGroupTemplateById(group_id);
-                    if (properties.contains("groupRef"))
-                        mgt->get().setRef(properties.at("groupRef"));
-                    if (properties.contains("aliasAxoLabs"))
-                        mgt->get().setAliasAxoLabs(properties.at("aliasAxoLabs"));
-                }
+                // the mandatory groupClass and groupName are checked above
+                std::string group_class = properties.at("groupClass");
+                std::string group_id = properties.contains("groupId") ? properties.at("groupId") : item_name;
+                addMonomerGroupTemplate(MonomerGroupTemplate(group_id, item_name, group_class, idt_alias.hasModifications() ? idt_alias : idt_alias.getBase()));
+                mgt = getMonomerGroupTemplateById(group_id);
+                if (properties.contains("groupRef"))
+                    mgt->get().setRef(properties.at("groupRef"));
+                if (properties.contains("aliasAxoLabs"))
+                    mgt->get().setAliasAxoLabs(properties.at("aliasAxoLabs"));
             }
             for (int i = mol.tgroups.begin(); i != mol.tgroups.end(); i = mol.tgroups.next(i))
             {
