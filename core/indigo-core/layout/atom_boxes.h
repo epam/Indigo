@@ -32,12 +32,12 @@ namespace indigo
 {
     class BaseMolecule;
 
-    // The box of every atom: its centre when it is drawn without a label, otherwise the box of its label in the
+    // The box of every atom: its center when it is drawn without a label, otherwise the box of its label in the
     // renderer's default font, the hydrogens on the side the renderer picks for them
     class DLLEXPORT AtomBoxes
     {
     public:
-        static constexpr float LABEL_FONT = 0.4f; // in bond lengths
+        static constexpr float LABEL_FONT_SIZE = 0.4f; // in bond lengths
 
         AtomBoxes(BaseMolecule& molecule, float bond_length);
 

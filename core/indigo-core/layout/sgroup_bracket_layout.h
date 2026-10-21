@@ -19,6 +19,7 @@
 #ifndef __sgroup_bracket_layout_h__
 #define __sgroup_bracket_layout_h__
 
+#include <array>
 #include <optional>
 #include <vector>
 
@@ -34,12 +35,11 @@ namespace indigo
 {
     class AtomBoxes;
     class BaseMolecule;
+    class BracketSpacing;
     class SGroup;
     class SGroupTexts;
 
-    // Vertical brackets around a group's atom labels and the brackets and texts nested in it. The renderer turns the
-    // hooks of a bracket to its right and puts the label at the last bracket: the opening bracket runs up and comes
-    // first, the closing one runs down.
+    // Vertical brackets around a group's atom labels and the brackets and texts nested in it
     class DLLEXPORT SGroupBracketLayout
     {
     public:
@@ -51,18 +51,35 @@ namespace indigo
 
     private:
         // In bond lengths
-        static constexpr float GAP = 0.3f;
-        static constexpr float MIN_LENGTH = 1.f;
-        static constexpr float TEXT_CLEARANCE = 0.05f;
+        static constexpr float MIN_BRACKET_LENGTH = 1.f;
+        static constexpr float UNLABELED_ATOM_RADIUS = 0.05f;
+
+        enum Side
+        {
+            LEFT,
+            BOTTOM,
+            RIGHT,
+            TOP
+        };
+        using Sides = std::array<float, 4>;
 
         bool _hasMoved(const SGroup& sgroup) const;
         bool _hasCoordinates() const;
         Rect2f _boundingBox(int sgroup_idx, const AtomBoxes& atoms) const;
-        Rect2f _bracketsBoxAround(int sgroup_idx, const Rect2f& bbox, const SGroupTexts& texts, float bond_length) const;
+        Rect2f _bracketsBoxAround(int sgroup_idx, const Rect2f& bounding_box, const AtomBoxes& atoms, const SGroupTexts& texts, float bond_length) const;
+        float _sidePosition(int sgroup_idx, Side side, const Rect2f& bounding_box, const AtomBoxes& atoms, const BracketSpacing& spacing,
+                            float bond_length) const;
+        int _nearestAtomOutside(const SGroup& sgroup, Side side, const Rect2f& bounding_box, float gap_start, const AtomBoxes& atoms, float bond_length) const;
+        void _keepClearOfChildren(Sides& sides, int sgroup_idx, const SGroupTexts& texts, float bond_length) const;
+        void _movePastLoneAtoms(Sides& sides, int sgroup_idx, const AtomBoxes& atoms, float bond_length) const;
 
         static float _averageBondLength(BaseMolecule& molecule);
-        static std::optional<Rect2f> _bracketsBox(const SGroup& sgroup);
+        static std::optional<Rect2f> _spannedByBrackets(const SGroup& sgroup);
         static void _setBrackets(SGroup& sgroup, const Rect2f& box);
+        static int _outermostAtom(const SGroup& sgroup, Side side, const AtomBoxes& atoms);
+        static float _sideOf(const Rect2f& box, Side side);
+        static Side _opposite(Side side);
+        static float _outwardSign(Side side);
 
         BaseMolecule& _molecule;
         SGroupNesting _nesting;

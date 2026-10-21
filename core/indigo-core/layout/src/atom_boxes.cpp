@@ -24,11 +24,12 @@ using namespace indigo;
 
 AtomBoxes::AtomBoxes(BaseMolecule& molecule, float bond_length) : _boxes(molecule.vertexEnd())
 {
-    const float font_size = LABEL_FONT * bond_length;
+    const float font_size = LABEL_FONT_SIZE * bond_length;
+    const bool multiline_labels = true;
     for (int i = molecule.vertexBegin(); i != molecule.vertexEnd(); i = molecule.vertexNext(i))
     {
         Vec2f bottom_left, top_right;
-        molecule.getAtomBoundingBox(i, font_size, LABEL_MODE_TERMINAL_HETERO, bottom_left, top_right, true);
+        molecule.getAtomBoundingBox(i, font_size, LABEL_MODE_TERMINAL_HETERO, bottom_left, top_right, multiline_labels);
         _boxes[i] = Rect2f(bottom_left, top_right);
     }
 }

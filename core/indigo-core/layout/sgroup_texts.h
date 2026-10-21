@@ -31,29 +31,31 @@ namespace indigo
     class SGroup;
 
     // The texts at the closing bracket of a group, where BIOVIA and RDKit put them: the label as a subscript at the lower
-    // right and the repeat pattern as a superscript at the upper right, the pattern only when a crossing bond crosses a
-    // bracket
+    // right and the repeat pattern as a superscript at the upper right, the repeat pattern only when a crossing bond
+    // crosses a bracket
     class DLLEXPORT SGroupTexts
     {
     public:
         SGroupTexts(BaseMolecule& molecule, float bond_length);
 
         std::optional<Rect2f> box(const SGroup& sgroup) const;
+        float widthPastBracket(int sgroup_idx) const;
 
     private:
         static std::string _label(const SGroup& sgroup);
-        static std::string _pattern(const SGroup& sgroup);
+        static std::string _repeatPattern(const SGroup& sgroup);
 
-        // In bond lengths; DROP: the share of a text's height past the end of its bracket
-        static constexpr float FONT = AtomBoxes::LABEL_FONT * 2 / 3;
-        static constexpr float CHARACTER_WIDTH = 0.6f * FONT;
-        static constexpr float OFFSET = 0.05f;
-        static constexpr float DROP = 0.75f;
+        // In bond lengths
+        static constexpr float FONT_SIZE = AtomBoxes::LABEL_FONT_SIZE * 2 / 3;
+        static constexpr float CHARACTER_WIDTH = 0.6f * FONT_SIZE;
+        static constexpr float OFFSET_FROM_BRACKET = 0.05f;
+        // The share of a text's height that hangs past the end of its bracket
+        static constexpr float OVERHANG = 0.75f;
 
         Rect2f _labelBox(const Vec2f& lower_end, const std::string& label) const;
-        Rect2f _patternBox(const Vec2f& upper_end, const std::string& pattern) const;
+        Rect2f _repeatPatternBox(const Vec2f& upper_end, const std::string& repeat_pattern) const;
         Rect2f _textBox(float left, float bottom, const std::string& text) const;
-        bool _crossed(const SGroup& sgroup) const;
+        bool _bondCrossesBracket(const SGroup& sgroup) const;
 
         BaseMolecule& _molecule;
         float _bondLength;

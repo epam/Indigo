@@ -37,11 +37,11 @@ SGroupNesting::SGroupNesting(BaseMolecule& molecule) : _molecule(molecule)
         if (isBracketed(sgroup.sgroup_type) || sgroup.sgroup_type == SGroup::SG_TYPE_MUL)
             _parents[i] = -1;
     }
-    for (auto& [idx, parent] : _parents)
-        parent = _findParent(idx);
+    for (auto& [sgroup_idx, parent] : _parents)
+        parent = _findParent(sgroup_idx);
     // Parents read from a file can form a loop: it is cut where it is found
-    for (auto& [idx, parent] : _parents)
-        if (_depth(idx) >= static_cast<int>(_parents.size()))
+    for (auto& [sgroup_idx, parent] : _parents)
+        if (_depth(sgroup_idx) >= static_cast<int>(_parents.size()))
             parent = -1;
 
     std::stable_sort(_bracketed.begin(), _bracketed.end(), [this](int a, int b) { return _depth(a) > _depth(b); });
@@ -76,8 +76,8 @@ std::vector<int> SGroupNesting::children(int sgroup_idx) const
     return found;
 }
 
-// The parent from the file if it is a bracketed group around this one: an index into the groups goes stale after a
-// merge or a clone. Otherwise the smallest bracketed group strictly containing its atoms.
+// The parent from the file, checked to be a bracketed group around this one because an index into the groups goes
+// stale after a merge or a clone. Otherwise the smallest bracketed group strictly containing its atoms.
 int SGroupNesting::_findParent(int sgroup_idx) const
 {
     MoleculeSGroups& sgroups = _molecule.sgroups;
@@ -95,15 +95,15 @@ int SGroupNesting::_findParent(int sgroup_idx) const
         return parent;
 
     int smallest = -1;
-    for (int idx : _bracketed)
+    for (int other_idx : _bracketed)
     {
-        const SGroup& other = sgroups.getSGroup(idx);
-        if (idx == sgroup_idx || other.atoms.size() <= sgroup.atoms.size())
+        const SGroup& other = sgroups.getSGroup(other_idx);
+        if (other_idx == sgroup_idx || other.atoms.size() <= sgroup.atoms.size())
             continue;
         if (smallest >= 0 && other.atoms.size() >= sgroups.getSGroup(smallest).atoms.size())
             continue;
-        if (_contains(idx, atoms))
-            smallest = idx;
+        if (_contains(other_idx, atoms))
+            smallest = other_idx;
     }
     return smallest;
 }
@@ -122,4 +122,43 @@ int SGroupNesting::_depth(int sgroup_idx) const
     for (int parent = _parents.at(sgroup_idx); parent >= 0 && depth < static_cast<int>(_parents.size()); parent = _parents.at(parent))
         depth++;
     return depth;
+}
+
+bool SGroupNesting::_isAncestor(int ancestor_idx, int sgroup_idx) const
+{
+    for (int parent = _parents.at(sgroup_idx); parent >= 0; parent = _parents.at(parent))
+        if (parent == ancestor_idx)
+            return true;
+    return false;
+}
+
+std::vector<int> SGroupNesting::groupsBetween(int first_atom, int second_atom) const
+{
+    std::vector<int> around_first, around_second;
+    for (int sgroup_idx : _bracketed)
+    {
+        const bool has_first = _hasAtom(sgroup_idx, first_atom), has_second = _hasAtom(sgroup_idx, second_atom);
+        if (has_first && !has_second)
+            around_first.push_back(sgroup_idx);
+        else if (has_second && !has_first)
+            around_second.push_back(sgroup_idx);
+    }
+    std::stable_sort(around_second.begin(), around_second.end(), [this](int a, int b) { return _depth(a) < _depth(b); });
+    around_first.insert(around_first.end(), around_second.begin(), around_second.end());
+    return around_first;
+}
+
+std::vector<bool> SGroupNesting::loneAtoms(int sgroup_idx) const
+{
+    std::vector<bool> lone(_molecule.vertexEnd(), true);
+    for (int other_idx : _bracketed)
+        if (!_isAncestor(other_idx, sgroup_idx))
+            for (int atom : _molecule.sgroups.getSGroup(other_idx).atoms)
+                lone[atom] = false;
+    return lone;
+}
+
+bool SGroupNesting::_hasAtom(int sgroup_idx, int atom_idx) const
+{
+    return _molecule.sgroups.getSGroup(sgroup_idx).atoms.find(atom_idx) >= 0;
 }

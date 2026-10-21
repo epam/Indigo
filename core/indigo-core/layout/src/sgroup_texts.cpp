@@ -18,6 +18,7 @@
 
 #include "layout/sgroup_texts.h"
 
+#include <algorithm>
 #include <unordered_set>
 
 #include "layout/sgroup_nesting.h"
@@ -33,16 +34,23 @@ std::optional<Rect2f> SGroupTexts::box(const SGroup& sgroup) const
 {
     if (!SGroupNesting::isBracketed(sgroup.sgroup_type) || sgroup.brackets.size() != 2 || !sgroup.hasBrackets())
         return std::nullopt;
-    const Vec2f* closing = sgroup.brackets[1];
+    const Vec2f* closing = sgroup.brackets[1]; // the renderer puts the texts at the last bracket
     const bool first_lower = closing[0].y < closing[1].y;
     const Vec2f& lower = first_lower ? closing[0] : closing[1];
     const Vec2f& upper = first_lower ? closing[1] : closing[0];
 
     Rect2f box = _labelBox(lower, _label(sgroup));
-    const std::string pattern = _pattern(sgroup);
-    if (!pattern.empty() && _crossed(sgroup))
-        box = Rect2f(box, _patternBox(upper, pattern));
+    const std::string repeat_pattern = _repeatPattern(sgroup);
+    if (!repeat_pattern.empty() && _bondCrossesBracket(sgroup))
+        box.extend(_repeatPatternBox(upper, repeat_pattern));
     return box;
+}
+
+float SGroupTexts::widthPastBracket(int sgroup_idx) const
+{
+    const SGroup& sgroup = _molecule.sgroups.getSGroup(sgroup_idx);
+    const size_t characters = std::max(_label(sgroup).size(), _repeatPattern(sgroup).size());
+    return (OFFSET_FROM_BRACKET + CHARACTER_WIDTH * static_cast<float>(characters)) * _bondLength;
 }
 
 std::string SGroupTexts::_label(const SGroup& sgroup)
@@ -75,7 +83,7 @@ std::string SGroupTexts::_label(const SGroup& sgroup)
 }
 
 // An unset repeat pattern reads as either/unknown, as the Molfile format has it
-std::string SGroupTexts::_pattern(const SGroup& sgroup)
+std::string SGroupTexts::_repeatPattern(const SGroup& sgroup)
 {
     if (!SGroup::typeHasConnectivity(sgroup.sgroup_type) || sgroup.connectivity == SGroup::HEAD_TO_TAIL)
         return "";
@@ -84,21 +92,21 @@ std::string SGroupTexts::_pattern(const SGroup& sgroup)
 
 Rect2f SGroupTexts::_labelBox(const Vec2f& lower_end, const std::string& label) const
 {
-    return _textBox(lower_end.x + OFFSET * _bondLength, lower_end.y - DROP * FONT * _bondLength, label);
+    return _textBox(lower_end.x + OFFSET_FROM_BRACKET * _bondLength, lower_end.y - OVERHANG * FONT_SIZE * _bondLength, label);
 }
 
-Rect2f SGroupTexts::_patternBox(const Vec2f& upper_end, const std::string& pattern) const
+Rect2f SGroupTexts::_repeatPatternBox(const Vec2f& upper_end, const std::string& repeat_pattern) const
 {
-    return _textBox(upper_end.x + OFFSET * _bondLength, upper_end.y - (1 - DROP) * FONT * _bondLength, pattern);
+    return _textBox(upper_end.x + OFFSET_FROM_BRACKET * _bondLength, upper_end.y - (1 - OVERHANG) * FONT_SIZE * _bondLength, repeat_pattern);
 }
 
 Rect2f SGroupTexts::_textBox(float left, float bottom, const std::string& text) const
 {
     const float width = CHARACTER_WIDTH * _bondLength * static_cast<float>(text.size());
-    return Rect2f(Vec2f(left, bottom), Vec2f(left + width, bottom + FONT * _bondLength));
+    return Rect2f(Vec2f(left, bottom), Vec2f(left + width, bottom + FONT_SIZE * _bondLength));
 }
 
-bool SGroupTexts::_crossed(const SGroup& sgroup) const
+bool SGroupTexts::_bondCrossesBracket(const SGroup& sgroup) const
 {
     const std::unordered_set<int> atoms(sgroup.atoms.begin(), sgroup.atoms.end());
     for (int atom : atoms)
