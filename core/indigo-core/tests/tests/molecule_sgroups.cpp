@@ -36,6 +36,7 @@
 #include <vector>
 
 #include <base_cpp/exception.h>
+#include <base_cpp/tree.h>
 #include <molecule/elements.h>
 #include <molecule/molecule.h>
 #include <molecule/molecule_sgroups.h>
@@ -504,4 +505,56 @@ TEST(SGroupParentLinks, RemovingAGroupWithoutAnIndexReparentsNobody)
     mol.removeSGroup(unit);
 
     EXPECT_EQ(std::vector<ParentLink>(), parentLinks(mol));
+}
+
+// ---- tree of S-groups -----------------------------------------------------
+
+namespace
+{
+    void collectLabels(Tree& node, std::vector<int>& labels)
+    {
+        for (int i = 0; i < node.children().size(); i++)
+        {
+            labels.push_back(node.children()[i].label);
+            collectLabels(node.children()[i], labels);
+        }
+    }
+} // namespace
+
+TEST(SGroupTree, AChildListedBeforeItsParentGivesOneNodePerGroup)
+{
+    MoleculeSGroups sgroups;
+    const int child = sgroups.addSGroup(SGroup::SG_TYPE_SRU);
+    const int parent = sgroups.addSGroup(SGroup::SG_TYPE_GEN);
+    sgroups.getSGroup(child).parent_idx = parent;
+
+    Tree tree;
+    sgroups.buildTree(tree);
+
+    std::vector<int> labels;
+    collectLabels(tree, labels);
+    std::sort(labels.begin(), labels.end());
+    EXPECT_EQ(std::vector<int>({child, parent}), labels);
+    ASSERT_EQ(1, tree.children().size());
+    Tree& parent_node = tree.children()[0];
+    EXPECT_EQ(parent, parent_node.label);
+    ASSERT_EQ(1, parent_node.children().size());
+    EXPECT_EQ(child, parent_node.children()[0].label);
+}
+
+TEST(SGroupTree, ACycleOfParentsGivesOneNodePerGroup)
+{
+    MoleculeSGroups sgroups;
+    const int first = sgroups.addSGroup(SGroup::SG_TYPE_GEN);
+    const int second = sgroups.addSGroup(SGroup::SG_TYPE_GEN);
+    sgroups.getSGroup(first).parent_idx = second;
+    sgroups.getSGroup(second).parent_idx = first;
+
+    Tree tree;
+    sgroups.buildTree(tree);
+
+    std::vector<int> labels;
+    collectLabels(tree, labels);
+    std::sort(labels.begin(), labels.end());
+    EXPECT_EQ(std::vector<int>({first, second}), labels);
 }

@@ -413,11 +413,30 @@ int MoleculeSGroups::getSGroupCount(int sg_type)
 
 void MoleculeSGroups::buildTree(Tree& tree)
 {
-    for (auto i = begin(); i != end(); i = next(i))
+    // Tree::insert files a parent it has not seen yet as a placeholder and the parent itself as a second node,
+    // so a parent goes in before its children. A parent met again on its own chain is a cycle: the group is a root.
+    enum class InsertState
     {
-        SGroup& sgroup = getSGroup(i);
-        tree.insert(i, sgroup.parent_idx.value_or(-1));
-    }
+        Pending,
+        Inserting,
+        Inserted
+    };
+    const std::vector<int> parents = resolveParents();
+    std::vector<InsertState> state(parents.size(), InsertState::Pending);
+    auto insert = [&](auto&& self, int idx) -> void {
+        if (state[idx] != InsertState::Pending)
+            return;
+        state[idx] = InsertState::Inserting;
+        int parent = parents[idx];
+        if (parent >= 0 && state[parent] == InsertState::Inserting)
+            parent = -1;
+        else if (parent >= 0)
+            self(self, parent);
+        tree.insert(idx, parent);
+        state[idx] = InsertState::Inserted;
+    };
+    for (int i = begin(); i != end(); i = next(i))
+        insert(insert, i);
 }
 
 std::vector<int> MoleculeSGroups::resolveParents()

@@ -82,7 +82,8 @@ A group names its parent three ways: `parent_idx`, a pool position (the molfile 
 `parent_group` holding the parent's `index` (V2000, V3000, the C API); `parent_group` holding a one-based
 pool position when no group is numbered (the CML reader).
 `core/indigo-core/molecule/src/molecule_sgroups.cpp#MoleculeSGroups::resolveParents` applies them in that order, and
-the savers (`getOrderedSGroups`) and the copy of S-groups (`mergeSGroupsWithSubmolecule`) take the parent from it.
+the savers (`getOrderedSGroups`), the copy of S-groups (`mergeSGroupsWithSubmolecule`) and the tree the renderer
+draws (`buildTree`) take the parent from it.
 A second resolver disagrees with it on some input, and nothing fails: a copy of nested groups into a molecule that
 already had S-groups kept the source's pool positions, a group became its own parent, and the next copy recursed
 until the stack overflowed. The pool hands a freed slot to the next group, so
