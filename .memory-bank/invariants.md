@@ -78,8 +78,8 @@ the same call: `Graph::_cloneGraph_KeepIndices`, which installs the edges direct
 call leaves the previous answer standing, and nothing fails.
 
 **A12 — An S-group's parent is resolved by one rule, and the slot of a removed group is nobody's parent.**
-A group names its parent three ways: `parent_idx`, a pool position (the molfile readers resolve it);
-`parent_group` holding the parent's `index` (V2000, V3000, the C API); `parent_group` holding a one-based
+A group names its parent three ways: `parent_idx`, a pool position (the molfile readers resolve it, the KET reader
+sets it); `parent_group` holding the parent's `index` (V2000, V3000, the C API); `parent_group` holding a one-based
 pool position when no group is numbered (the CML reader).
 `core/indigo-core/molecule/src/molecule_sgroups.cpp#MoleculeSGroups::resolveParents` applies them in that order, and
 the savers (`getOrderedSGroups`), the copy of S-groups (`mergeSGroupsWithSubmolecule`) and the tree the renderer

@@ -22,6 +22,9 @@
 #include "molecule/query_molecule.h"
 #include "molecule/smiles_loader.h"
 
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/writer.h>
+
 #ifdef _MSC_VER
 #pragma warning(push, 4)
 #endif
@@ -31,6 +34,57 @@ using namespace indigo;
 using namespace std;
 
 IMPL_ERROR(MoleculeJsonLoader, "molecule json loader");
+
+namespace
+{
+    // Whether an S-group of the node, or of an R-group fragment under it, names its parent
+    bool nodeNamesSGroupParent(const Value& node)
+    {
+        if (!node.IsObject())
+            return false;
+        if (node.HasMember(KetKeySGroups) && node[KetKeySGroups].IsArray())
+        {
+            const Value& sgroups = node[KetKeySGroups];
+            for (SizeType i = 0; i < sgroups.Size(); ++i)
+            {
+                if (sgroups[i].IsObject() && sgroups[i].HasMember(KetKeyParentId))
+                    return true;
+            }
+        }
+        if (node.HasMember(KetKeyFragments) && node[KetKeyFragments].IsArray())
+        {
+            const Value& fragments = node[KetKeyFragments];
+            for (SizeType i = 0; i < fragments.Size(); ++i)
+            {
+                if (nodeNamesSGroupParent(fragments[i]))
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    // A KET document as an object of nodes, or the array of nodes a nested loader gets
+    bool documentNamesSGroupParent(const Value& document)
+    {
+        if (document.IsArray())
+        {
+            for (SizeType i = 0; i < document.Size(); ++i)
+            {
+                if (nodeNamesSGroupParent(document[i]))
+                    return true;
+            }
+        }
+        else if (document.IsObject())
+        {
+            for (auto member = document.MemberBegin(); member != document.MemberEnd(); ++member)
+            {
+                if (nodeNamesSGroupParent(member->value))
+                    return true;
+            }
+        }
+        return false;
+    }
+}
 
 MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
     : _mol_array(kArrayType), _mol_nodes(_mol_array), _meta_objects(kArrayType), _templates(kArrayType), _monomer_array(kArrayType),
@@ -43,6 +97,7 @@ MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
 
 void MoleculeJsonLoader::parse_ket(Document& ket)
 {
+    _derive_sgroup_parents = !documentNamesSGroupParent(ket);
     if (ket.HasMember("ket_version"))
     {
         _ket_version = ket["ket_version"].GetString();
@@ -200,6 +255,7 @@ MoleculeJsonLoader::MoleculeJsonLoader(Value& mol_nodes)
       treat_x_as_pseudoatom(false), treat_stereo_as(0), valence_mode(ValenceMode::BIOVIA_2009), ignore_bad_valence(false), _components_count(0), _parsed(true),
       _document(), _annotation(kArrayType)
 {
+    _derive_sgroup_parents = !documentNamesSGroupParent(mol_nodes);
 }
 
 void MoleculeJsonLoader::setOptions(const LoaderOptions& opts)
@@ -955,12 +1011,24 @@ void MoleculeJsonLoader::handleSGroup(SGroup& sgroup, const std::unordered_set<i
 
     if (sgroup.sgroup_type == SGroup::SG_TYPE_MUL)
     {
+        // A repeat copies the groups inside the unit, repeating units and multiple groups aside. A group around the unit
+        // is not copied: the repeats join it in addRepeatsToEnclosingGroups.
+        std::unique_ptr<BaseMolecule> unit_source(bmol.neu());
+        unit_source->clone_KeepIndices(bmol);
+        std::vector<int> not_repeated;
+        for (int i = unit_source->sgroups.begin(); i != unit_source->sgroups.end(); i = unit_source->sgroups.next(i))
+        {
+            const SGroup& group = unit_source->sgroups.getSGroup(i);
+            const bool inside = std::all_of(group.atoms.begin(), group.atoms.end(), [&atoms](int atom) { return atoms.count(atom) > 0; });
+            if (!inside || group.sgroup_type == SGroup::SG_TYPE_SRU || group.sgroup_type == SGroup::SG_TYPE_MUL)
+                not_repeated.push_back(i);
+        }
+        for (int i : not_repeated)
+            unit_source->sgroups.remove(i);
+
         QS_DEF(Array<int>, mapping);
         std::unique_ptr<BaseMolecule> rep(bmol.neu());
-        rep->makeSubmolecule(bmol, sgroup.atoms, &mapping, 0);
-
-        rep->sgroups.clear(SGroup::SG_TYPE_SRU);
-        rep->sgroups.clear(SGroup::SG_TYPE_MUL);
+        rep->makeSubmolecule(*unit_source, sgroup.atoms, &mapping, 0);
 
         int rep_start{-1};
         if (start != -1)
@@ -1059,14 +1127,224 @@ static void setCrossingBonds(SGroup& sgroup, BaseMolecule& mol)
     std::sort(sgroup.xbonds.begin(), sgroup.xbonds.end());
 }
 
-void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolecule& mol)
+namespace
 {
+    // The KET contract bounds "mul": a multiple group repeats its unit at least once and at most a thousand times
+    const int MIN_MULTIPLIER = 1;
+    const int MAX_MULTIPLIER = 1000;
+    const int NO_SGROUP = -1;
+
+    // What the reader knows about one item of "sgroups" before it creates any group
+    struct KetSGroupEntry
+    {
+        std::string name; // for messages
+        bool query_component = false;
+        int sg_type = NO_SGROUP;
+        std::unordered_set<int> atoms;
+        int parent = NO_SGROUP;  // position of the parent in "sgroups"
+        int created = NO_SGROUP; // the S-group made of the item
+    };
+
+    // The pool of bonds does not check the range of an index in the release WebAssembly build; the pool of atoms does
+    bool isBondOf(BaseMolecule& mol, int idx)
+    {
+        return idx >= 0 && idx < mol.edgeEnd() && mol.hasEdge(idx);
+    }
+
+    // A type is named exactly as the S-group type table spells it; the table itself ignores case. -1 for anything else
+    int exactSGroupType(const char* name)
+    {
+        const int sg_type = SGroup::getType(name);
+        return sg_type >= 0 && std::strcmp(SGroup::typeToString(sg_type), name) == 0 ? sg_type : -1;
+    }
+
+    std::string jsonText(const Value& value)
+    {
+        StringBuffer buffer;
+        Writer<StringBuffer> writer(buffer);
+        value.Accept(writer);
+        return buffer.GetString();
+    }
+
+    // "S-group #2 (id 5) of molecule #0": positions count from 0, as KET indices do
+    std::string sgroupName(int node_idx, SizeType position, const Value& s)
+    {
+        std::string name = "S-group #" + std::to_string(position);
+        if (s.IsObject() && s.HasMember(KetKeyId))
+            name += " (id " + jsonText(s[KetKeyId]) + ")";
+        return name + " of molecule #" + std::to_string(node_idx);
+    }
+
+    bool isNonNegativeInt(const Value& value)
+    {
+        return value.IsInt() && value.GetInt() >= 0;
+    }
+
+    KetSGroupEntry readSGroupEntry(const Value& s, std::string name, BaseMolecule& mol)
+    {
+        using Error = MoleculeJsonLoader::Error;
+        KetSGroupEntry entry;
+        entry.name = std::move(name);
+        if (!s.IsObject() || !s.HasMember(KetKeyType) || !s[KetKeyType].IsString())
+            throw Error("%s has no '%s' string", entry.name.c_str(), KetKeyType);
+        const char* type_name = s[KetKeyType].GetString();
+        entry.query_component = std::strcmp(type_name, KetSGroupQueryComponent) == 0;
+        if (!entry.query_component)
+        {
+            entry.sg_type = exactSGroupType(type_name);
+            if (!isKetSGroupType(entry.sg_type))
+                throw Error("%s has type '%s', which is not a KET S-group type", entry.name.c_str(), type_name);
+        }
+
+        if (!s.HasMember(KetKeyAtoms) || !s[KetKeyAtoms].IsArray())
+            throw Error("%s has no '%s' array", entry.name.c_str(), KetKeyAtoms);
+        const Value& atoms = s[KetKeyAtoms];
+        for (SizeType i = 0; i < atoms.Size(); ++i)
+        {
+            if (!atoms[i].IsInt() || !mol.hasVertex(atoms[i].GetInt()))
+                throw Error("%s refers to atom %s, which the molecule does not have", entry.name.c_str(), jsonText(atoms[i]).c_str());
+            entry.atoms.insert(atoms[i].GetInt());
+        }
+
+        if (s.HasMember(KetKeyBonds))
+        {
+            const Value& bonds = s[KetKeyBonds];
+            if (!bonds.IsArray())
+                throw Error("%s has '%s' that is not an array", entry.name.c_str(), KetKeyBonds);
+            for (SizeType i = 0; i < bonds.Size(); ++i)
+            {
+                if (!bonds[i].IsInt() || !isBondOf(mol, bonds[i].GetInt()))
+                    throw Error("%s refers to bond %s, which the molecule does not have", entry.name.c_str(), jsonText(bonds[i]).c_str());
+            }
+        }
+
+        if (entry.sg_type == SGroup::SG_TYPE_MUL && s.HasMember(KetKeyMultiplier))
+        {
+            const Value& multiplier = s[KetKeyMultiplier];
+            if (!multiplier.IsInt() || multiplier.GetInt() < MIN_MULTIPLIER || multiplier.GetInt() > MAX_MULTIPLIER)
+                throw Error("%s has '%s' %s, which is not an integer from %d to %d", entry.name.c_str(), KetKeyMultiplier, jsonText(multiplier).c_str(),
+                            MIN_MULTIPLIER, MAX_MULTIPLIER);
+        }
+
+        for (const char* key : {KetKeyId, KetKeyParentId})
+        {
+            if (!s.HasMember(key))
+                continue;
+            if (entry.query_component)
+                throw Error("%s is a query component, which takes no '%s'", entry.name.c_str(), key);
+            if (!isNonNegativeInt(s[key]))
+                throw Error("%s has '%s' %s, which is not a non-negative integer", entry.name.c_str(), key, jsonText(s[key]).c_str());
+        }
+
+        if (s.HasMember(KetKeyComponentOrder))
+        {
+            const Value& order = s[KetKeyComponentOrder];
+            if (entry.sg_type != SGroup::SG_TYPE_COM)
+                throw Error("%s has '%s', which only a component takes", entry.name.c_str(), KetKeyComponentOrder);
+            if (!order.IsInt() || order.GetInt() < 1)
+                throw Error("%s has '%s' %s, which is not a positive integer", entry.name.c_str(), KetKeyComponentOrder, jsonText(order).c_str());
+        }
+
+        for (const char* key : {KetKeyConnectivity, KetKeySubtype})
+        {
+            if (s.HasMember(key) && !s[key].IsString())
+                throw Error("%s has '%s' %s, which is not a string", entry.name.c_str(), key, jsonText(s[key]).c_str());
+        }
+        return entry;
+    }
+
+    // Every item checked before the first group is created; explicit parents resolved, cycles refused
+    std::vector<KetSGroupEntry> readSGroupEntries(const Value& sgroups, int node_idx, BaseMolecule& mol)
+    {
+        using Error = MoleculeJsonLoader::Error;
+        if (!sgroups.IsArray())
+            throw Error("'%s' of molecule #%d is not an array", KetKeySGroups, node_idx);
+
+        std::vector<KetSGroupEntry> entries;
+        std::unordered_map<int, SizeType> position_by_id;
+        for (SizeType i = 0; i < sgroups.Size(); ++i)
+        {
+            entries.push_back(readSGroupEntry(sgroups[i], sgroupName(node_idx, i, sgroups[i]), mol));
+            if (!sgroups[i].HasMember(KetKeyId))
+                continue;
+            const auto inserted = position_by_id.emplace(sgroups[i][KetKeyId].GetInt(), i);
+            if (!inserted.second)
+                throw Error("%s has '%s' %d, which S-group #%u has too", entries[i].name.c_str(), KetKeyId, inserted.first->first, inserted.first->second);
+        }
+
+        for (SizeType i = 0; i < sgroups.Size(); ++i)
+        {
+            if (!sgroups[i].HasMember(KetKeyParentId))
+                continue;
+            const int parent_id = sgroups[i][KetKeyParentId].GetInt();
+            const auto parent = position_by_id.find(parent_id);
+            if (parent == position_by_id.end())
+                throw Error("%s has '%s' %d, which is the id of no S-group of the molecule", entries[i].name.c_str(), KetKeyParentId, parent_id);
+            entries[i].parent = static_cast<int>(parent->second);
+        }
+
+        for (SizeType i = 0; i < entries.size(); ++i)
+        {
+            int ancestor = entries[i].parent;
+            for (std::size_t steps = 0; ancestor != NO_SGROUP; ancestor = entries[ancestor].parent)
+            {
+                if (ancestor == static_cast<int>(i))
+                    throw Error("%s is its own ancestor through '%s'", entries[i].name.c_str(), KetKeyParentId);
+                // the chain runs into a cycle that does not pass through this group; a member of it reports the cycle
+                if (++steps > entries.size())
+                    break;
+            }
+        }
+        return entries;
+    }
+
+    // A document that names no parent: the parent of a group is the smallest group whose atoms strictly contain its atoms,
+    // the first in the array of two equal ones. A group without atoms has no parent this way, a data S-group is nobody's
+    // parent, and a query component is not an S-group.
+    void deriveParentsFromAtoms(std::vector<KetSGroupEntry>& entries)
+    {
+        std::unordered_map<int, std::vector<int>> containers_of_atom;
+        for (int i = 0; i < static_cast<int>(entries.size()); ++i)
+        {
+            if (entries[i].query_component || entries[i].sg_type == SGroup::SG_TYPE_DAT)
+                continue;
+            for (int atom : entries[i].atoms)
+                containers_of_atom[atom].push_back(i);
+        }
+
+        for (int i = 0; i < static_cast<int>(entries.size()); ++i)
+        {
+            KetSGroupEntry& child = entries[i];
+            if (child.query_component || child.atoms.empty())
+                continue;
+            int smallest = NO_SGROUP;
+            for (int candidate : containers_of_atom[*child.atoms.begin()])
+            {
+                const std::unordered_set<int>& atoms = entries[candidate].atoms;
+                if (atoms.size() <= child.atoms.size())
+                    continue;
+                if (smallest != NO_SGROUP && atoms.size() >= entries[smallest].atoms.size())
+                    continue;
+                if (std::all_of(child.atoms.begin(), child.atoms.end(), [&atoms](int atom) { return atoms.count(atom) > 0; }))
+                    smallest = candidate;
+            }
+            child.parent = smallest;
+        }
+    }
+}
+
+void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolecule& mol, int node_idx)
+{
+    std::vector<KetSGroupEntry> entries = readSGroupEntries(sgroups, node_idx, mol);
+    if (_derive_sgroup_parents)
+        deriveParentsFromAtoms(entries);
+
     for (SizeType i = 0; i < sgroups.Size(); i++)
     {
         const Value& s = sgroups[i];
-        const Value& atoms = s["atoms"];
-        std::string sg_type_str = s["type"].GetString(); // GEN, MUL, SRU, SUP, COP
-        if (sg_type_str == "queryComponent")
+        const Value& atoms = s[KetKeyAtoms];
+        KetSGroupEntry& entry = entries[i];
+        if (entry.query_component)
         {
             if (_pqmol)
             {
@@ -1082,16 +1360,15 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
                 throw Error("queryProperties is allowed only for queries");
             continue;
         }
-        int sg_type = SGroup::getType(sg_type_str.c_str());
+        const int sg_type = entry.sg_type;
         int grp_idx = mol.sgroups.addSGroup(sg_type);
+        entry.created = grp_idx;
         SGroup& sgroup = mol.sgroups.getSGroup(grp_idx);
         // add atoms
-        std::unordered_set<int> sgroup_atoms;
         for (rapidjson::SizeType j = 0; j < atoms.Size(); ++j)
         {
             int atom_idx = atoms[j].GetInt();
             sgroup.atoms.push(atom_idx);
-            sgroup_atoms.insert(atom_idx);
             if (sg_type == SGroup::SG_TYPE_MUL)
             {
                 MultipleGroup& mg = (MultipleGroup&)sgroup;
@@ -1108,40 +1385,29 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
         p[0].set(0, 0);
         p[1].set(0, 0);
 
+        // an unknown repeat pattern reads as unset, that is either/unknown
+        if (SGroup::typeHasConnectivity(sg_type) && s.HasMember(KetKeyConnectivity))
+        {
+            const int connectivity = SGroup::getConnectivity(s[KetKeyConnectivity].GetString());
+            if (connectivity >= 0)
+                sgroup.connectivity = connectivity;
+        }
+
         // add specific parameters
         switch (sg_type)
         {
-        case SGroup::SG_TYPE_GEN:
-            // no special parameters
-            break;
         case SGroup::SG_TYPE_MUL: {
             MultipleGroup& mg = (MultipleGroup&)sgroup;
-            if (s.HasMember("mul"))
-            {
-                int mult = s["mul"].GetInt();
-                mg.multiplier = mult;
-            }
+            if (s.HasMember(KetKeyMultiplier))
+                mg.multiplier = s[KetKeyMultiplier].GetInt();
         }
         break;
-        case SGroup::SG_TYPE_SRU: {
-            RepeatingUnit& ru = (RepeatingUnit&)sgroup;
+        case SGroup::SG_TYPE_SRU:
             if (s.HasMember("subscript"))
             {
                 sgroup.label.readString(s["subscript"].GetString(), true);
             }
-
-            if (s.HasMember("connectivity"))
-            {
-                std::string conn = s["connectivity"].GetString();
-                if (conn == "HT")
-                    ru.connectivity = RepeatingUnit::HEAD_TO_TAIL;
-                else if (conn == "HH")
-                    ru.connectivity = RepeatingUnit::HEAD_TO_HEAD;
-                else if (conn == "EU")
-                    ru.connectivity = RepeatingUnit::EITHER;
-            }
-        }
-        break;
+            break;
         case SGroup::SG_TYPE_SUP: {
             Superatom& sg = (Superatom&)sgroup;
             if (s.HasMember("name"))
@@ -1231,46 +1497,40 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
                 dsg.num_chars = s["displayedChars"].GetInt();
         }
         break;
-        case SGroup::SG_TYPE_COP: {
-            CopolymerGroup& ru = (CopolymerGroup&)sgroup;
-            if (s.HasMember("subtype"))
+        case SGroup::SG_TYPE_COP:
+            if (s.HasMember(KetKeySubtype))
             {
-                std::string conn = s["subtype"].GetString();
-                if (conn == "RAN")
-                    ru.sgroup_subtype = SGroup::SG_SUBTYPE_RAN;
-                else if (conn == "ALT")
-                    ru.sgroup_subtype = SGroup::SG_SUBTYPE_ALT;
-                else if (conn == "BLO")
-                    ru.sgroup_subtype = SGroup::SG_SUBTYPE_BLO;
+                const int subtype = SGroup::getSubtype(s[KetKeySubtype].GetString());
+                if (subtype >= 0)
+                    sgroup.sgroup_subtype = subtype;
             }
-
-            if (s.HasMember("connectivity"))
-            {
-                std::string conn = s["connectivity"].GetString();
-                if (conn == "HT")
-                    ru.connectivity = RepeatingUnit::HEAD_TO_TAIL;
-                else if (conn == "HH")
-                    ru.connectivity = RepeatingUnit::HEAD_TO_HEAD;
-                else if (conn == "EU")
-                    ru.connectivity = RepeatingUnit::EITHER;
-            }
-        }
-        break;
+            break;
+        case SGroup::SG_TYPE_COM:
+            if (s.HasMember(KetKeyComponentOrder))
+                sgroup.component_order = s[KetKeyComponentOrder].GetInt();
+            break;
         default:
-            throw Error("Invalid sgroup type %s", sg_type_str.c_str());
+            break;
         }
 
         if (sg_type != SGroup::SG_TYPE_DAT)
-            handleSGroup(sgroup, sgroup_atoms, mol);
+            handleSGroup(sgroup, entry.atoms, mol);
 
-        if (s.HasMember("bonds") && sg_type == SGroup::SG_TYPE_DAT)
+        if (s.HasMember(KetKeyBonds) && sg_type == SGroup::SG_TYPE_DAT)
         {
-            const Value& bonds = s["bonds"];
+            const Value& bonds = s[KetKeyBonds];
             for (rapidjson::SizeType j = 0; j < bonds.Size(); ++j)
             {
                 sgroup.getBonds().push(bonds[j].GetInt());
             }
         }
+    }
+
+    // After the groups exist: the repeats of a multiple group are created without parents
+    for (const KetSGroupEntry& entry : entries)
+    {
+        if (entry.parent != NO_SGROUP)
+            mol.sgroups.getSGroup(entry.created).parent_idx = entries[entry.parent].created;
     }
 
     addRepeatsToEnclosingGroups(mol);
@@ -1943,9 +2203,9 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
             }
 
             // parse SGroups
-            if (mol_node.HasMember("sgroups"))
+            if (mol_node.HasMember(KetKeySGroups))
             {
-                parseSGroups(mol_node["sgroups"], *pmol);
+                parseSGroups(mol_node[KetKeySGroups], *pmol, static_cast<int>(node_idx));
             }
 
             if (mol_node.HasMember("stereoFlagPosition"))
@@ -2002,15 +2262,16 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
                 rgroup.rest_h = rlogic["resth"].GetBool();
             }
         }
-        if (rnode.HasMember("fragments"))
+        if (rnode.HasMember(KetKeyFragments))
         {
-            auto& rfragments = rnode["fragments"];
+            auto& rfragments = rnode[KetKeyFragments];
             for (SizeType i = 0; i < rfragments.Size(); i++)
             {
                 BaseMolecule& fragment = rgroup.fragments.push_t(BaseMolecule::poolFactoryLike(mol));
                 one_rnode.PushBack(rfragments[i], data.GetAllocator());
                 MoleculeJsonLoader loader(one_rnode);
                 loader.setOptions(getOptions());
+                loader._derive_sgroup_parents = _derive_sgroup_parents;
                 loader.loadMolecule(fragment);
                 one_rnode.Clear();
             }
@@ -2021,6 +2282,7 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
             one_rnode.PushBack(rnode, data.GetAllocator());
             MoleculeJsonLoader loader(one_rnode);
             loader.setOptions(getOptions());
+            loader._derive_sgroup_parents = _derive_sgroup_parents;
             loader.loadMolecule(fragment);
         }
     }

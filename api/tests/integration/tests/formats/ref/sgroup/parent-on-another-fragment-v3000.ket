@@ -3,9 +3,6 @@
         "nodes": [
             {
                 "$ref": "mol0"
-            },
-            {
-                "$ref": "mol1"
             }
         ]
     },
@@ -27,30 +24,7 @@
                     0.000,
                     0.000
                 ]
-            }
-        ],
-        "bonds": [
-            {
-                "type": 1,
-                "atoms": [
-                    0,
-                    1
-                ]
-            }
-        ],
-        "sgroups": [
-            {
-                "type": "GEN",
-                "atoms": [
-                    0,
-                    1
-                ]
-            }
-        ]
-    },
-    "mol1": {
-        "type": "molecule",
-        "atoms": [
+            },
             {
                 "label": "O",
                 "location": [
@@ -75,14 +49,30 @@
                     0,
                     1
                 ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    3
+                ]
             }
         ],
         "sgroups": [
             {
                 "type": "GEN",
                 "atoms": [
-                    0
-                ]
+                    0,
+                    1
+                ],
+                "id": 1
+            },
+            {
+                "type": "GEN",
+                "atoms": [
+                    2
+                ],
+                "parentId": 1
             }
         ]
     }
