@@ -52,7 +52,7 @@ recorded in a ticket that the code links to.
   are placed by the layout, two vertical brackets around the group's bounding box, not through the crossing
   bonds and not by the renderer
 - [sgroup-parent-links.md](./sgroup-parent-links.md) — an S-group parent is resolved by one rule;
-  a copy or a removal never leaves a stale link
+  KET sets the pool position only; a copy or a removal never leaves a stale link
 
 Still worth reconstructing from the analyses in `indigo-common/Task/`: the valence-model
 configuration contract (BIOVIA 2009 vs 2017), and the decision to route non-local formats through
