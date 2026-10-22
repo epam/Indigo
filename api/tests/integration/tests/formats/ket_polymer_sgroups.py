@@ -42,6 +42,9 @@ for filename in [
     # a copolymer around a multiple group: the repeats join the copolymer,
     # they do not copy it
     "copolymer-around-multiple-v3000",
+    # a generic S-group on two carbons that a monomer joins: both carbons
+    # go to one molecule node, and the S-group stays one
+    "generic-across-monomer-v3000",
 ]:
     ket = indigo.loadMoleculeFromFile(path(filename + ".mol")).json()
     compare_diff(ref_path, filename + ".ket", ket)
