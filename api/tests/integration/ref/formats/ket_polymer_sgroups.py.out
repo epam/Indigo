@@ -8,6 +8,9 @@ formulation-words-v3000-ket-3000.mol:SUCCEED
 copolymer-around-multiple-v3000.ket:SUCCEED
 copolymer-around-multiple-v3000-ket-2000.mol:SUCCEED
 copolymer-around-multiple-v3000-ket-3000.mol:SUCCEED
+generic-across-monomer-v3000.ket:SUCCEED
+generic-across-monomer-v3000-ket-2000.mol:SUCCEED
+generic-across-monomer-v3000-ket-3000.mol:SUCCEED
 *** KET as Ketcher writes it, without parentId ***
 copolymer-without-parent-ids-2000.mol:SUCCEED
 copolymer-without-parent-ids-3000.mol:SUCCEED

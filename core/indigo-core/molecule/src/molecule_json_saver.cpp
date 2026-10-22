@@ -1601,10 +1601,11 @@ void MoleculeJsonSaver::saveAnnotation(JsonWriter& writer, const KetObjectAnnota
     writer.EndObject();
 }
 
-// A parentId refers to a group of its own molecule node, so a group and its parent are kept in one node even when they
-// share no atom: the neighbour sets of the component split get one set per such pair.
-static void addSGroupParentNeighbors(BaseMolecule& mol, std::list<std::unordered_set<int>>& neighbors)
+// The atom sets a molecule node must not split: an S-group, a haptic bond, a query component, and - since a parentId
+// refers to a group of its own node - an S-group together with its parent, even when they share no atom.
+static void collectNodeNeighbors(BaseMolecule& mol, std::list<std::unordered_set<int>>& neighbors)
 {
+    mol.collectExternalNeighbors(neighbors);
     const std::vector<int> parents = mol.sgroups.resolveParents();
     for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
     {
@@ -1647,8 +1648,7 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
     writer.StartArray();
 
     _s_neighbors.clear();
-    mol.collectExternalNeighbors(_s_neighbors);
-    addSGroupParentNeighbors(mol, _s_neighbors);
+    collectNodeNeighbors(mol, _s_neighbors);
     // save mol references
     // int mol_id = 0;
     for (int idx = 0; idx < mol.countComponents(_s_neighbors); ++idx)
@@ -1679,7 +1679,10 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
                 std::unique_ptr<BaseMolecule> sub_mol(component->neu());
                 sub_mol->makeSubmolecule(*component, vertices, &sub_mapping);
                 mergeMappings(inv_mapping, sub_mapping);
-                for (int sub_idx = 0; sub_idx < sub_mol->countComponents(); ++sub_idx)
+                // Without the monomers the atoms of an S-group may fall apart; the sets keep them in one node
+                std::list<std::unordered_set<int>> sub_neighbors;
+                collectNodeNeighbors(*sub_mol, sub_neighbors);
+                for (int sub_idx = 0; sub_idx < sub_mol->countComponents(sub_neighbors); ++sub_idx)
                 {
                     Array<int> sub_comp_mapping, mapping_cp, inv_sub_comp_mapping;
                     mapping_cp.copy(inv_mapping);

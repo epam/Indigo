@@ -44,6 +44,7 @@ or the REST service.
   patterns, component order and nesting. Brackets are not kept: KET has no place for them yet.
 - `id` is a reference inside one molecule node, not an identifier: a reader may renumber the groups once the
   references are resolved.
+- The atoms of an S-group are saved in one molecule node, also when a monomer joins them.
 
 ## Limitations
 
@@ -54,4 +55,3 @@ or the REST service.
 - `MON`, `MER`, `CRO`, `MOD`, `GRA` and `ANY` are refused by the reader and the writer.
 - A data S-group with neither atoms nor a parent is lost when the structure is copied, saved to KET or read from KET;
   a molfile keeps it.
-- An S-group over atoms that a monomer joins is saved to KET once per molecule node on each side of the monomer.
