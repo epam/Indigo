@@ -536,7 +536,8 @@ size_t SequenceLoader::addHelmMonomer(KetDocument& document, MonomerInfo info, M
         helm_alias = var_templ.alias();
         auto& monomer = document.addAmbiguousMonomer(helm_alias, template_id);
         monomer->setAttachmentPoints(var_templ.attachmentPoints());
-        setKetIntProp(*monomer, seqid, _seq_id++);
+        if (monomer_class != MonomerClass::CHEM)
+            setKetIntProp(*monomer, seqid, _seq_id++);
         monomer->setPosition(pos);
         if (annotaion.size())
             monomer->setTextAnnotation(annotaion);
@@ -591,7 +592,8 @@ size_t SequenceLoader::addHelmMonomer(KetDocument& document, MonomerInfo info, M
         }
         auto& monomer = document.addMonomer(helm_alias, template_id);
         monomer->setAttachmentPoints(document.templates().at(template_id).attachmentPoints());
-        setKetIntProp(*monomer, seqid, _seq_id++);
+        if (monomer_class != MonomerClass::CHEM)
+            setKetIntProp(*monomer, seqid, _seq_id++);
         monomer->setPosition(pos);
         if (annotaion.size())
             monomer->setTextAnnotation(annotaion);
@@ -1028,6 +1030,7 @@ void SequenceLoader::loadHELM(KetDocument& document)
                     {
                         auto base_info = readHelmMonomer(document, MonomerClass::Base);
                         Vec3f base_pos(pos.x, pos.y - LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, 0);
+                        _seq_id--; // all nucleotide parts sequence id should be equal
                         auto base_idx = addHelmMonomer(document, base_info, MonomerClass::Base, base_pos);
                         cur_polymer_map->second[monomer_idx] = base_idx;
                         addMonomerConnection(document, sugar_idx, base_idx, true);
@@ -1044,6 +1047,7 @@ void SequenceLoader::loadHELM(KetDocument& document)
                     monomer_idx++;
                     Vec3f phosphate_pos(_col * LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, -LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH * _row, 0);
                     _col++;
+                    _seq_id--; // all nucleotide parts sequence id should be equal
                     auto phosphate_idx = addHelmMonomer(document, phosphate_info, MonomerClass::Phosphate, phosphate_pos);
                     cur_polymer_map->second[monomer_idx] = phosphate_idx;
                     addMonomerConnection(document, sugar_idx, phosphate_idx);
@@ -1083,6 +1087,7 @@ void SequenceLoader::loadHELM(KetDocument& document)
                     // cleanup to go to next simple polymer
                     simple_polymer_name = "";
                     simple_polymer_type = "";
+                    _seq_id = 1;
                 }
                 else if (ch == '$')
                 {

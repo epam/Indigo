@@ -117,7 +117,7 @@
     "monomer3": {
         "type": "monomer",
         "id": "3",
-        "seqid": 4,
+        "seqid": 1,
         "position": {
             "x": 0.000000,
             "y": -1.500000
@@ -128,7 +128,7 @@
     "monomer4": {
         "type": "monomer",
         "id": "4",
-        "seqid": 5,
+        "seqid": 2,
         "position": {
             "x": 1.500000,
             "y": -1.500000
@@ -139,7 +139,7 @@
     "monomer5": {
         "type": "monomer",
         "id": "5",
-        "seqid": 6,
+        "seqid": 3,
         "position": {
             "x": 3.000000,
             "y": -1.500000
