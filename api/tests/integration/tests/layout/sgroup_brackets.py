@@ -70,6 +70,29 @@ indigo.setOption("molfile-saving-mode", "3000")
 compare_molfile("zero-brackets-v3000", load("zero-brackets.mol"))
 indigo.setOption("molfile-saving-mode", "auto")
 
+print("*** The mock-up structures, as loaded and after layout() ***")
+mockups = [
+    "f01-sru-straight",
+    "f02-sru-zigzag",
+    "f03-sru-steep",
+    "f04-polystyrene",
+    "f05-issue-1969",
+    "f06-block-copolymer",
+    "f07-mixture",
+    "f08-sru-vertical",
+    "f09-sru-branching",
+    "f10-sru-adjacent-sides",
+    "f11-copolymer-in-mixture",
+    "f12-mixture-close",
+    "f13-repeat-pattern",
+    "f14-three-on-one-bond",
+]
+for filename in mockups:
+    mol = load(filename + ".mol")
+    compare_molfile(filename, mol)
+    mol.layout()
+    compare_molfile(filename + "-layout", mol)
+
 print("*** Brackets move with the molecules of a reaction and a pathway ***")
 rxn = indigo.loadReactionFromFile(
     os.path.join(molecules_path, "sru-reaction.rxn")

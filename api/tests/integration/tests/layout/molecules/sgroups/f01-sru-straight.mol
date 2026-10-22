@@ -1,0 +1,17 @@
+f01-sru-straight
+
+A straight repeating unit between two * atoms: CH2 with its hydrogens above the carbon
+  4  3  0  0  0  0  0  0  0  0999 V2000
+    0.0000    0.0000    0.0000 *   0  0  0  0  0  0  0  0  0  0  0  0
+    1.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    2.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    3.0000    0.0000    0.0000 *   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0  0  0  0
+  2  3  1  0  0  0  0
+  3  4  1  0  0  0  0
+M  STY  1   1 SRU
+M  SCN  1   1 HT 
+M  SAL   1  2   2   3
+M  SBL   1  2   1   3
+M  SMT   1 n
+M  END

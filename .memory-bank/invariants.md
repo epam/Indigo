@@ -6,7 +6,7 @@
 Rules that must stay true. Each one is here because breaking it fails **silently** — no compiler
 error, and often no failing test on the machine where the change was made.
 
-Anchors were verified on `f0cc3c423` (master, 2026-09-03). An anchor that no longer resolves is a
+Anchors were verified on `f0cc3c423` (master, 2026-09-03); A12 to A14 on `14018d3d3` (2026-10-22). An anchor that no longer resolves is a
 defect in this file: fix it in the same change that moved the code.
 
 ---
@@ -93,6 +93,33 @@ several S-groups with a value each, take their line with
 `core/indigo-core/molecule/src/molfile_loader_v2000.cpp#_readSGroupEntryLine`, which checks every index the
 same way (#3953). `SBV`, `SDS`, `SPA` and `SAP` still parse positionally — a new handler, or a change to one
 of these, should read the line first.
+
+## S-group brackets
+
+**A12 — The two brackets of a bracketed S-group keep their order and direction: the opening one first, running
+bottom to top, the closing one second, running top to bottom.**
+The renderer turns the hooks of a bracket to the right of its direction and puts the label and the repeat pattern
+at the last bracket (`core/render2d/src/render_internal.cpp#_positionIndex`), and the layout measures the texts
+of a child at its second bracket (`core/indigo-core/layout/src/sgroup_texts.cpp#SGroupTexts::box`). A pair written
+the other way round draws its hooks outwards and its label at the left bracket; nothing fails. The one place that
+writes a pair is `core/indigo-core/layout/src/sgroup_bracket_layout.cpp#_setBrackets`.
+
+**A13 — Whatever moves the atoms of a molecule moves its S-group brackets with them.**
+Brackets are coordinates stored on the group; nothing ties them to the atoms. A rigid move or a scale goes
+through `BaseMolecule::offsetCoordinates`, `BaseMolecule::scale` or `Metalayout::adjustMol`, which carry the
+brackets along (`core/indigo-core/molecule/molecule_sgroups.h#transformBrackets`); a layout that moves atoms
+one by one constructs `SGroupBracketLayout` before the move and calls `update()` after it
+(`core/indigo-core/layout/sgroup_bracket_layout.h#void update()`), which places the brackets of the groups whose
+atoms moved anew. A mover that does neither leaves the brackets where the atoms were, and only a drawing shows
+it. Known gaps: `indigoAlignAtoms`, the centering of the standardizer, the unfolding of hydrogens.
+
+**A14 — A zero-length bracket is a placeholder, not a bracket.**
+The KET loader writes a `(0,0)-(0,0)` pair for every group, because the format carries no bracket coordinates.
+`SGroup::hasBrackets()` is the test (`core/indigo-core/molecule/molecule_sgroups.h#hasBrackets`): one zero-length
+bracket means the group has none. The MOL savers skip such pairs
+(`core/indigo-core/molecule/src/molfile_saver.cpp#hasBrackets`), `transformBrackets` leaves them, and the layout
+replaces them. Code that tests `brackets.size() > 0` instead takes a bracket at the origin for a real one; the
+renderer still checks only the first bracket of a group.
 
 ## Language & platform
 
