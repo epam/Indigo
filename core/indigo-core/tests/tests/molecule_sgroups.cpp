@@ -205,6 +205,7 @@ namespace
     const PolymerFields BLOCK_COPOLYMER = {SGroup::SG_TYPE_COP, SGroup::SG_SUBTYPE_BLO, SGroup::HEAD_TO_TAIL, NOT_NUMBERED};
     const PolymerFields HEAD_TO_TAIL_UNIT = {SGroup::SG_TYPE_SRU, NO_SUBTYPE, SGroup::HEAD_TO_TAIL, NOT_NUMBERED};
     const PolymerFields HEAD_TO_HEAD_UNIT = {SGroup::SG_TYPE_SRU, NO_SUBTYPE, SGroup::HEAD_TO_HEAD, NOT_NUMBERED};
+    const PolymerFields GENERIC = {SGroup::SG_TYPE_GEN, NO_SUBTYPE, NO_CONNECTIVITY, NOT_NUMBERED};
 
     std::vector<PolymerFields> sorted(std::vector<PolymerFields> fields)
     {
@@ -244,6 +245,11 @@ namespace
         addSGroup(mol, HEAD_TO_HEAD_UNIT, {2}, copolymer);
     }
 
+    PolymerFields fieldsOf(SGroup& sgroup)
+    {
+        return {sgroup.sgroup_type, sgroup.sgroup_subtype.value(), sgroup.connectivity, sgroup.component_order};
+    }
+
     // The fields of every S-group that has atoms, sorted: a copy is free to number the groups differently.
     std::vector<PolymerFields> polymerFields(Molecule& mol)
     {
@@ -252,9 +258,36 @@ namespace
         {
             SGroup& sgroup = mol.sgroups.getSGroup(sgroup_idx);
             if (sgroup.atoms.size() > 0)
-                fields.push_back({sgroup.sgroup_type, sgroup.sgroup_subtype.value(), sgroup.connectivity, sgroup.component_order});
+                fields.push_back(fieldsOf(sgroup));
         }
         return sorted(fields);
+    }
+
+    using ParentLink = std::pair<PolymerFields, PolymerFields>; // {child, parent}
+
+    // Every nested group with its parent, by fields and sorted, as the savers resolve the parents.
+    std::vector<ParentLink> parentLinks(Molecule& mol)
+    {
+        std::vector<ParentLink> links;
+        const std::vector<int> parents = mol.sgroups.resolveParents();
+        for (int sgroup_idx = mol.sgroups.begin(); sgroup_idx != mol.sgroups.end(); sgroup_idx = mol.sgroups.next(sgroup_idx))
+        {
+            if (parents[sgroup_idx] >= 0)
+                links.push_back({fieldsOf(mol.sgroups.getSGroup(sgroup_idx)), fieldsOf(mol.sgroups.getSGroup(parents[sgroup_idx]))});
+        }
+        std::sort(links.begin(), links.end());
+        return links;
+    }
+
+    std::vector<ParentLink> formulationParentLinks()
+    {
+        std::vector<ParentLink> links = {{FIRST_COMPONENT, FORMULATION},
+                                         {SECOND_COMPONENT, FORMULATION},
+                                         {BLOCK_COPOLYMER, FIRST_COMPONENT},
+                                         {HEAD_TO_TAIL_UNIT, BLOCK_COPOLYMER},
+                                         {HEAD_TO_HEAD_UNIT, BLOCK_COPOLYMER}};
+        std::sort(links.begin(), links.end());
+        return links;
     }
 } // namespace
 
@@ -317,4 +350,158 @@ TEST(SGroupPolymerFields, SubtypeAndConnectivityHaveMolfileCodes)
     for (int sg_type :
          {SGroup::SG_TYPE_GEN, SGroup::SG_TYPE_DAT, SGroup::SG_TYPE_SUP, SGroup::SG_TYPE_MUL, SGroup::SG_TYPE_COM, SGroup::SG_TYPE_MIX, SGroup::SG_TYPE_FOR})
         EXPECT_FALSE(SGroup::typeHasConnectivity(sg_type)) << SGroup::typeToString(sg_type);
+}
+
+// ---- parent links ---------------------------------------------------------
+
+TEST(SGroupParentLinks, MergeIntoAMoleculeWithAnSGroupKeepsThem)
+{
+    Molecule source;
+    buildPolymerFormulation(source);
+    ASSERT_EQ(formulationParentLinks(), parentLinks(source));
+
+    Molecule merged;
+    merged.addAtom(ELEM_N);
+    addSGroup(merged, GENERIC, {0}, NO_PARENT);
+    merged.mergeWithMolecule(source, nullptr);
+
+    ASSERT_EQ(1 + source.sgroups.getSGroupCount(), merged.sgroups.getSGroupCount());
+    EXPECT_EQ(formulationParentLinks(), parentLinks(merged));
+}
+
+// A molfile reader links a group both ways: by pool position and by the index of the parent.
+TEST(SGroupParentLinks, AChildCopiedWithoutItsParentHasNone)
+{
+    const int parent_index = 5;
+    Molecule source;
+    source.addAtom(ELEM_C);
+    source.addAtom(ELEM_O);
+    const int parent = addSGroup(source, GENERIC, {0}, NO_PARENT);
+    source.sgroups.getSGroup(parent).index = parent_index;
+    const int child_idx = addSGroup(source, GENERIC, {1}, parent);
+    source.sgroups.getSGroup(child_idx).parent_group = parent_index;
+
+    Molecule oxygen;
+    Array<int> oxygen_atoms;
+    oxygen_atoms.push(1);
+    oxygen.makeSubmolecule(source, oxygen_atoms, nullptr);
+
+    ASSERT_EQ(1, oxygen.sgroups.getSGroupCount());
+    const SGroup& child = oxygen.sgroups.getSGroup(oxygen.sgroups.begin());
+    EXPECT_EQ(NO_PARENT, oxygen.sgroups.resolveParents()[oxygen.sgroups.begin()]);
+    EXPECT_EQ(0, child.parent_group.value_or(0));
+}
+
+// A child with atoms of its own goes with its atoms: it is not copied, empty, along with its parent.
+TEST(SGroupParentLinks, AChildWithAtomsElsewhereStaysOutOfItsParentsCopy)
+{
+    Molecule source;
+    source.addAtom(ELEM_C);
+    source.addAtom(ELEM_O);
+    const int parent = addSGroup(source, GENERIC, {0}, NO_PARENT);
+    addSGroup(source, GENERIC, {1}, parent);
+
+    Molecule carbon;
+    Array<int> carbon_atoms;
+    carbon_atoms.push(0);
+    carbon.makeSubmolecule(source, carbon_atoms, nullptr);
+
+    ASSERT_EQ(1, carbon.sgroups.getSGroupCount());
+    EXPECT_EQ(1, carbon.sgroups.getSGroup(carbon.sgroups.begin()).atoms.size());
+}
+
+// The CML reader names a parent only by its one-based position, and a merge moves the groups to new positions.
+TEST(SGroupParentLinks, ALinkByPositionSurvivesAMerge)
+{
+    Molecule source;
+    for (int atom_idx = 0; atom_idx < 2; atom_idx++)
+        source.addAtom(ELEM_C);
+    source.addBond(0, 1, BOND_SINGLE);
+    addSGroup(source, BLOCK_COPOLYMER, {0, 1}, NO_PARENT);
+    const int unit = addSGroup(source, HEAD_TO_TAIL_UNIT, {1}, NO_PARENT);
+    source.sgroups.getSGroup(unit).parent_group = 1;
+    ASSERT_EQ(std::vector<ParentLink>({{HEAD_TO_TAIL_UNIT, BLOCK_COPOLYMER}}), parentLinks(source));
+
+    Molecule merged;
+    merged.addAtom(ELEM_N);
+    addSGroup(merged, GENERIC, {0}, NO_PARENT);
+    merged.mergeWithMolecule(source, nullptr);
+
+    ASSERT_EQ(3, merged.sgroups.getSGroupCount());
+    EXPECT_EQ(std::vector<ParentLink>({{HEAD_TO_TAIL_UNIT, BLOCK_COPOLYMER}}), parentLinks(merged));
+}
+
+// The C API sets a parent by its index only.
+TEST(SGroupParentLinks, ALinkByIndexSurvivesAMerge)
+{
+    const int copolymer_index = 5;
+    Molecule source;
+    for (int atom_idx = 0; atom_idx < 2; atom_idx++)
+        source.addAtom(ELEM_C);
+    source.addBond(0, 1, BOND_SINGLE);
+    const int copolymer = addSGroup(source, BLOCK_COPOLYMER, {0, 1}, NO_PARENT);
+    source.sgroups.getSGroup(copolymer).index = copolymer_index;
+    const int unit = addSGroup(source, HEAD_TO_TAIL_UNIT, {1}, NO_PARENT);
+    source.sgroups.getSGroup(unit).parent_group = copolymer_index;
+    ASSERT_EQ(std::vector<ParentLink>({{HEAD_TO_TAIL_UNIT, BLOCK_COPOLYMER}}), parentLinks(source));
+
+    Molecule merged;
+    merged.addAtom(ELEM_N);
+    addSGroup(merged, GENERIC, {0}, NO_PARENT);
+    merged.mergeWithMolecule(source, nullptr);
+
+    ASSERT_EQ(3, merged.sgroups.getSGroupCount());
+    EXPECT_EQ(std::vector<ParentLink>({{HEAD_TO_TAIL_UNIT, BLOCK_COPOLYMER}}), parentLinks(merged));
+}
+
+TEST(SGroupParentLinks, RemovingAParentMovesItsChildrenUp)
+{
+    Molecule mol;
+    buildPolymerFormulation(mol);
+    int copolymer = -1;
+    for (int sgroup_idx = mol.sgroups.begin(); sgroup_idx != mol.sgroups.end(); sgroup_idx = mol.sgroups.next(sgroup_idx))
+    {
+        if (mol.sgroups.getSGroup(sgroup_idx).sgroup_type == SGroup::SG_TYPE_COP)
+            copolymer = sgroup_idx;
+    }
+    ASSERT_GE(copolymer, 0);
+
+    mol.removeSGroup(copolymer);
+
+    std::vector<ParentLink> expected = {
+        {FIRST_COMPONENT, FORMULATION}, {SECOND_COMPONENT, FORMULATION}, {HEAD_TO_TAIL_UNIT, FIRST_COMPONENT}, {HEAD_TO_HEAD_UNIT, FIRST_COMPONENT}};
+    std::sort(expected.begin(), expected.end());
+    EXPECT_EQ(expected, parentLinks(mol));
+}
+
+TEST(SGroupParentLinks, AGroupInTheSlotOfARemovedParentIsNoParent)
+{
+    MoleculeSGroups sgroups;
+    const int parent = sgroups.addSGroup(SGroup::SG_TYPE_GEN);
+    const int child = sgroups.addSGroup(SGroup::SG_TYPE_GEN);
+    sgroups.getSGroup(child).parent_idx = parent;
+
+    sgroups.remove(parent);
+    const int newcomer = sgroups.addSGroup(SGroup::SG_TYPE_GEN);
+
+    // Without reuse the newcomer could not be mistaken for the parent.
+    ASSERT_EQ(parent, newcomer);
+    EXPECT_EQ(NO_PARENT, sgroups.resolveParents()[child]);
+}
+
+// A group without an index names no parent by it: removing one must not hand its parent to every root group.
+TEST(SGroupParentLinks, RemovingAGroupWithoutAnIndexReparentsNobody)
+{
+    Molecule mol;
+    for (int atom_idx = 0; atom_idx < 3; atom_idx++)
+        mol.addAtom(ELEM_C);
+    addSGroup(mol, BLOCK_COPOLYMER, {0, 1}, NO_PARENT);
+    const int unit = addSGroup(mol, HEAD_TO_TAIL_UNIT, {1}, NO_PARENT);
+    mol.sgroups.getSGroup(unit).parent_group = 1; // the copolymer, by one-based position
+    addSGroup(mol, GENERIC, {2}, NO_PARENT);
+    ASSERT_EQ(std::vector<ParentLink>({{HEAD_TO_TAIL_UNIT, BLOCK_COPOLYMER}}), parentLinks(mol));
+
+    mol.removeSGroup(unit);
+
+    EXPECT_EQ(std::vector<ParentLink>(), parentLinks(mol));
 }

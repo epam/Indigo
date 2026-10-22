@@ -341,8 +341,10 @@ namespace indigo
         bool hasSGroup(int idx);
 
         void buildTree(Tree& tree);
-        bool getParentAtoms(int idx, Array<int>& target);
-        bool getParentAtoms(SGroup& sgroup, Array<int>& target);
+        // The pool position of each group's parent, -1 for none; indexed by pool position, end() entries.
+        // The parent is parent_idx, else the group whose index is parent_group, else - for inputs that
+        // number no group - the group at the one-based pool position parent_group.
+        std::vector<int> resolveParents();
         std::vector<SGroupInfo> getOrderedSGroups();
 
         void remove(int idx);

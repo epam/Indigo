@@ -1295,33 +1295,16 @@ void BaseMolecule::_removeBondsFromSuperatom(Superatom& sa, Array<int>& mapping)
     updateEditRevision();
 }
 
-bool BaseMolecule::_mergeSGroupWithSubmolecule(SGroup& sgroup, SGroup& super, BaseMolecule& supermol, Array<int>& mapping, Array<int>& edge_mapping)
+bool BaseMolecule::_mergeSGroupWithSubmolecule(SGroup& sgroup, SGroup& super, BaseMolecule& supermol, Array<int>& mapping, Array<int>& edge_mapping,
+                                               bool goes_with_ancestor)
 {
     int i;
-    bool merged = false;
-    if (super.parent_group.has_value())
-        sgroup.parent_group = super.parent_group.value();
-    else
-        sgroup.parent_group.reset();
+    bool merged = goes_with_ancestor;
     if (super.sgroup_subtype.has_value())
         sgroup.sgroup_subtype = super.sgroup_subtype.value();
     else
         sgroup.sgroup_subtype.reset();
     sgroup.brackets.copy(super.brackets);
-
-    QS_DEF(Array<int>, parent_atoms);
-    parent_atoms.clear();
-    if (supermol.sgroups.getParentAtoms(super, parent_atoms))
-    {
-        // parent exists
-        for (i = 0; i < parent_atoms.size(); i++)
-        {
-            if (mapping[parent_atoms[i]] >= 0)
-            {
-                merged = true;
-            }
-        }
-    }
 
     for (i = 0; i < super.atoms.size(); i++)
     {

@@ -306,6 +306,13 @@ void MoleculeSGroups::clear(int sg_type)
 
 void MoleculeSGroups::remove(int idx)
 {
+    // The pool hands the slot out again; a child still pointing at it would get the next group as its parent
+    for (int i : _sgroups.indices())
+    {
+        SGroup& sgroup = _sgroups.at(i);
+        if (sgroup.parent_idx.value_or(-1) == idx)
+            sgroup.parent_idx = -1;
+    }
     _sgroups.remove(idx);
 }
 
@@ -413,28 +420,48 @@ void MoleculeSGroups::buildTree(Tree& tree)
     }
 }
 
-bool MoleculeSGroups::getParentAtoms(int idx, Array<int>& target)
+std::vector<int> MoleculeSGroups::resolveParents()
 {
-    return getParentAtoms(getSGroup(idx), target);
-}
+    std::vector<int> parents(end(), -1);
 
-bool MoleculeSGroups::getParentAtoms(SGroup& sgroup, Array<int>& target)
-{
-    int pidx = sgroup.parent_idx.value_or(-1);
-    if (pidx < 0)
-        return false;
-    if (!hasSGroup(pidx))
+    // index -> pool position; -1 marks an index two groups share, which names no parent
+    std::unordered_map<int, int> position_by_index;
+    for (int i = begin(); i != end(); i = next(i))
     {
-        if (!sgroup.parent_group.has_value())
-            return false;
-        pidx = findSGroupById(sgroup.parent_group.value());
-        if (pidx < 0)
-            return false;
+        const int index = getSGroup(i).index;
+        if (index <= 0)
+            continue;
+        auto inserted = position_by_index.emplace(index, i);
+        if (!inserted.second)
+            inserted.first->second = -1;
     }
-    SGroup& parent = getSGroup(pidx);
-    getParentAtoms(parent, target);
-    target.concat(parent.atoms);
-    return true;
+
+    for (int i = begin(); i != end(); i = next(i))
+    {
+        const SGroup& sgroup = getSGroup(i);
+        const int parent_idx = sgroup.parent_idx.value_or(-1);
+        if (hasSGroup(parent_idx))
+        {
+            parents[i] = parent_idx;
+            continue;
+        }
+
+        const int parent_group = sgroup.parent_group.value_or(0);
+        if (parent_group <= 0)
+            continue;
+
+        const auto by_index = position_by_index.find(parent_group);
+        if (by_index != position_by_index.end() && by_index->second >= 0)
+        {
+            parents[i] = by_index->second;
+            continue;
+        }
+
+        const int position = parent_group - 1;
+        if (hasSGroup(position) && getSGroup(position).index == 0)
+            parents[i] = position;
+    }
+    return parents;
 }
 
 bool MoleculeSGroups::isPolimer()
@@ -857,69 +884,29 @@ bool MoleculeSGroups::_cmpIndices(Array<int>& t_inds, Array<int>& q_inds)
 std::vector<SGroupInfo> MoleculeSGroups::getOrderedSGroups()
 {
     std::vector<SGroupInfo> infos;
+    std::vector<int> pool_positions;
     std::unordered_map<int, int> pool_index_to_info_index;
-    std::unordered_map<int, int> original_index_to_info_index;
     const int sgroup_count = getSGroupCount();
     infos.reserve(sgroup_count);
+    pool_positions.reserve(sgroup_count);
     pool_index_to_info_index.reserve(sgroup_count);
-    original_index_to_info_index.reserve(sgroup_count);
 
-    // Phase 1: collect SGroups in pool order and build lookup tables for parent resolution.
+    // Phase 1: collect SGroups in pool order.
     for (int i = begin(); i != end(); i = next(i))
     {
-        SGroup& sg = getSGroup(i);
-        SGroupInfo info = {sg, 0, 0};
-        int info_index = static_cast<int>(infos.size());
-
-        infos.push_back(info);
-        pool_index_to_info_index[i] = info_index;
-
-        if (sg.index > 0)
-        {
-            auto inserted = original_index_to_info_index.emplace(sg.index, info_index);
-            if (!inserted.second)
-                inserted.first->second = -1;
-        }
+        pool_index_to_info_index[i] = static_cast<int>(infos.size());
+        infos.push_back({getSGroup(i), 0, 0});
+        pool_positions.push_back(i);
     }
 
-    // Phase 2: resolve each parent reference to an entry in the collected info array.
+    // Phase 2: each parent as an entry in the collected info array.
+    const std::vector<int> parents = resolveParents();
     std::vector<int> parent_info_index(infos.size(), -1);
-    auto resolve_pool_index = [&](int pool_index) -> int {
-        auto it = pool_index_to_info_index.find(pool_index);
-        if (it == pool_index_to_info_index.end())
-            return -1;
-        return it->second;
-    };
-
     for (int info_index = 0; info_index < static_cast<int>(infos.size()); info_index++)
     {
-        SGroup& sg = infos[info_index].sgroup;
-
-        if (sg.parent_idx.has_value())
-        {
-            int parent_info = resolve_pool_index(sg.parent_idx.value());
-            if (parent_info >= 0)
-            {
-                parent_info_index[info_index] = parent_info;
-                continue;
-            }
-        }
-
-        int parent_id = sg.parent_group.value_or(0);
-        if (parent_id <= 0)
-            continue;
-
-        auto original_it = original_index_to_info_index.find(parent_id);
-        if (original_it != original_index_to_info_index.end() && original_it->second >= 0)
-        {
-            parent_info_index[info_index] = original_it->second;
-            continue;
-        }
-
-        // Some inputs have no persisted SGroup index and refer to parents by one-based pool position.
-        int parent_info = resolve_pool_index(parent_id - 1);
-        if (parent_info >= 0 && infos[parent_info].sgroup.index == 0)
-            parent_info_index[info_index] = parent_info;
+        const int parent = parents[pool_positions[info_index]];
+        if (parent >= 0)
+            parent_info_index[info_index] = pool_index_to_info_index.at(parent);
     }
 
     // Phase 3: run DFS over parent links to resolve depth and reject cycles.

@@ -48,6 +48,8 @@ recorded in a ticket that the code links to.
   graph's components
 - [salt-detection-in-the-core.md](./salt-detection-in-the-core.md) — `checkSalt` / `stripSalt` are
   one implementation behind the C API; the wrappers call it and keep no patterns of their own
+- [sgroup-parent-links.md](./sgroup-parent-links.md) — an S-group parent is resolved by one rule;
+  a copy or a removal never leaves a stale link
 
 Still worth reconstructing from the analyses in `indigo-common/Task/`: the valence-model
 configuration contract (BIOVIA 2009 vs 2017), and the decision to route non-local formats through
