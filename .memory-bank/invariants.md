@@ -6,8 +6,9 @@
 Rules that must stay true. Each one is here because breaking it fails **silently** — no compiler
 error, and often no failing test on the machine where the change was made.
 
-Anchors were verified on `f0cc3c423` (master, 2026-09-03); A12 to A14 on `14018d3d3` (2026-10-22). An anchor that no longer resolves is a
-defect in this file: fix it in the same change that moved the code.
+Anchors were verified on `f0cc3c423` (master, 2026-09-03); A12 to A14 on `14018d3d3` (2026-10-22); B5 on
+2026-10-23. An anchor that no longer resolves is a defect in this file: fix it in the same change that moved
+the code.
 
 ---
 
@@ -161,3 +162,11 @@ every cross-DB comparison — see [testing.md](./testing.md).
 
 **B4 — Run `pytest` from `bingo/tests/`, not from the repository root.**
 `base.SQLAdapter` resolves `db_config.ini` relative to the working directory.
+
+**B5 — A core header the Postgres cartridge reaches must not include `<functional>`.**
+The cartridge includes `postgres.h` before the Indigo headers, and on Windows `postgres.h` defines `bind` as a
+function-like macro, which breaks the declaration of `std::bind` in MSVC's `<functional>`
+(`bingo/postgres/src/pg_common/bingo_pg_fix_pre.h#Thus <functional> must not be included here`). Only the Windows
+build of the cartridge fails, in CI; macOS and Linux compile it. `base_molecule.h` and everything it includes are on
+that path, so a callback stored in such a header is a template parameter, not a `std::function`
+(`core/indigo-core/molecule/molecule_sgroups.h#transformBrackets`).

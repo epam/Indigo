@@ -25,7 +25,6 @@
 #include "base_cpp/ptr_reusable_pool.h"
 #include "base_cpp/reusable.h"
 #include "math/algebra.h"
-#include <functional>
 #include <vector>
 
 #ifdef _WIN32
@@ -358,7 +357,25 @@ namespace indigo
         int end();
         int next(int i);
 
-        void transformBrackets(const std::function<void(Vec2f&)>& transform);
+        // A template, not std::function: this header reaches the Postgres cartridge, where postgres.h defines bind as a
+        // macro on Windows and <functional> no longer compiles
+        template <typename Transform>
+        void transformBrackets(Transform transform)
+        {
+            for (int i = begin(); i != end(); i = next(i))
+            {
+                SGroup& sgroup = getSGroup(i);
+                // Placeholders stay as loaders wrote them: some savers write them out as they are
+                if (!sgroup.hasBrackets())
+                    continue;
+                Array<Vec2f[2]>& brackets = sgroup.brackets;
+                for (int j = 0; j < brackets.size(); ++j)
+                {
+                    transform(brackets[j][0]);
+                    transform(brackets[j][1]);
+                }
+            }
+        }
 
         enum PropertyTypes
         {

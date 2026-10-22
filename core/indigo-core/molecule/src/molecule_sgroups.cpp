@@ -334,23 +334,6 @@ int MoleculeSGroups::next(int i)
     return _sgroups.next(i);
 }
 
-void MoleculeSGroups::transformBrackets(const std::function<void(Vec2f&)>& transform)
-{
-    for (int i = begin(); i != end(); i = next(i))
-    {
-        SGroup& sgroup = getSGroup(i);
-        // Placeholders stay as loaders wrote them: some savers write them out as they are
-        if (!sgroup.hasBrackets())
-            continue;
-        Array<Vec2f[2]>& brackets = sgroup.brackets;
-        for (int j = 0; j < brackets.size(); ++j)
-        {
-            transform(brackets[j][0]);
-            transform(brackets[j][1]);
-        }
-    }
-}
-
 int MoleculeSGroups::addSGroup(const char* sg_type)
 {
     int sgroup_type = SGroup::getType(sg_type);
