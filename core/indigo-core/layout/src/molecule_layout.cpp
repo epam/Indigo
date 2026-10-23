@@ -19,6 +19,7 @@
 #include "layout/molecule_layout.h"
 #include "base_cpp/array.h"
 #include "graph/filter.h"
+#include "layout/sgroup_bracket_layout.h"
 #include <map>
 #include <utility>
 #include <vector>
@@ -95,201 +96,6 @@ void MoleculeLayout::_init(bool smart_layout)
 
         _layout_graph->getPos(i).set(pos.x, pos.y);
     }
-}
-
-void _collectCrossBonds(Array<int>& crossBonds, Array<bool>& crossBondOut, BaseMolecule& mol, const Array<int>& atoms)
-{
-    QS_DEF(Array<bool>, atomMask);
-    atomMask.clear_resize(mol.vertexEnd());
-    atomMask.fill(false);
-    for (int i = 0; i < atoms.size(); ++i)
-    {
-        int aid = atoms[i];
-        atomMask[aid] = true;
-    }
-    crossBonds.clear();
-    crossBondOut.clear();
-    for (int i = 0; i < atoms.size(); ++i)
-    {
-        int aid = atoms[i];
-        const Vertex& v = mol.getVertex(aid);
-        for (int j = v.neiBegin(); j < v.neiEnd(); j = v.neiNext(j))
-        {
-            int naid = v.neiVertex(j);
-            if (!atomMask[naid])
-            {
-                int bid = v.neiEdge(j);
-                crossBonds.push(bid);
-                crossBondOut.push(mol.getEdge(bid).beg == aid);
-            }
-        }
-    }
-}
-
-void _placeSGroupBracketsCrossBonds(Array<Vec2f[2]>& brackets, BaseMolecule& mol, const Array<int>& atoms, const Array<int>& crossBonds,
-                                    const Array<bool>& crossBondOut, float bondLength)
-{
-    brackets.clear();
-    if (crossBonds.size() == 2)
-    {
-        int bid1 = crossBonds[0], bid2 = crossBonds[1];
-        const Edge& edge1 = mol.getEdge(bid1);
-        const Edge& edge2 = mol.getEdge(bid2);
-        Vec2f pb1, pe1, pb2, pe2;
-        Vec2f::projectZ(pb1, mol.getAtomXyz(edge1.beg));
-        Vec2f::projectZ(pe1, mol.getAtomXyz(edge1.end));
-        Vec2f::projectZ(pb2, mol.getAtomXyz(edge2.beg));
-        Vec2f::projectZ(pe2, mol.getAtomXyz(edge2.end));
-        Vec2f d1, d2;
-        d1.diff(pe1, pb1);
-        if (!crossBondOut[0])
-            d1.scale(-1);
-        d1.normalize();
-        d2.diff(pe2, pb2);
-        if (!crossBondOut[1])
-            d2.scale(-1);
-        d2.normalize();
-        if (Vec2f::dot(d1, d2) < -0.3)
-        {
-            Vec2f d, n;
-            d.add(pb1);
-            d.add(pe1);
-            d.sub(pb2);
-            d.sub(pe2);
-            d.normalize();
-            n.copy(d);
-            n.rotate(1, 0);
-            Vec2f min, max, a, b, c;
-            c.add(pb1);
-            c.add(pe1);
-            c.add(pb2);
-            c.add(pe2);
-            c.scale(0.25f);
-            for (int i = 0; i < atoms.size(); ++i)
-            {
-                int aid = atoms[i];
-                const Vec3f& pos = mol.getAtomXyz(aid);
-                Vec2f p2d;
-                Vec2f::projectZ(p2d, pos);
-                p2d.sub(c);
-                p2d.set(Vec2f::dot(p2d, d), Vec2f::dot(p2d, n));
-                if (i == 0)
-                {
-                    min.copy(p2d);
-                    max.copy(p2d);
-                }
-                else
-                {
-                    min.min(p2d);
-                    max.max(p2d);
-                }
-            }
-            Vec2f b1(c), b2;
-            b1.addScaled(d, max.x + 0.3f * bondLength);
-            b2.copy(b1);
-            float factor = 0.5;
-            b1.addScaled(n, factor * bondLength);
-            b2.addScaled(n, -factor * bondLength);
-            Vec2f* const& bracket1 = brackets.push();
-            bracket1[0].copy(b1);
-            bracket1[1].copy(b2);
-
-            b1.copy(c);
-            b1.addScaled(d, min.x - 0.3f * bondLength);
-            b2.copy(b1);
-            b1.addScaled(n, -factor * bondLength);
-            b2.addScaled(n, factor * bondLength);
-            Vec2f* const& bracket2 = brackets.push();
-            bracket2[0].copy(b1);
-            bracket2[1].copy(b2);
-            return;
-        }
-    }
-    for (int i = 0; i < crossBonds.size(); ++i)
-    {
-        int bid = crossBonds[i];
-        const Edge& edge = mol.getEdge(bid);
-        int aidIn = edge.beg, aidOut = edge.end;
-        if (!crossBondOut[i])
-        {
-
-            std::swap(aidIn, aidOut);
-        }
-        Vec2f p2dIn, p2dOut, d, n, b1, b2;
-        Vec2f::projectZ(p2dIn, mol.getAtomXyz(aidIn));
-        Vec2f::projectZ(p2dOut, mol.getAtomXyz(aidOut));
-        d.diff(p2dOut, p2dIn);
-        d.normalize();
-        n.copy(d);
-        n.rotate(1, 0);
-        float offset = 1.0f / 3;
-        b1.lineCombin2(p2dIn, 1 - offset, p2dOut, offset);
-        b2.copy(b1);
-        float factor = 0.5;
-        b1.addScaled(n, factor * bondLength);
-        b2.addScaled(n, -factor * bondLength);
-        Vec2f* const& bracket = brackets.push();
-        bracket[0].copy(b1);
-        bracket[1].copy(b2);
-    }
-}
-
-void _placeSGroupBracketsCrossBondSingle(Array<Vec2f[2]>& brackets, BaseMolecule& mol, const Array<int>& atoms, int bid, bool out, float bondLength)
-{
-    brackets.clear();
-    const Edge& edge = mol.getEdge(bid);
-    int aidIn = edge.beg, aidOut = edge.end;
-    if (!out)
-    {
-
-        std::swap(aidIn, aidOut);
-    }
-
-    Vec2f p2dIn, p2dOut, d, n, b1, b2;
-    Vec2f::projectZ(p2dIn, mol.getAtomXyz(aidIn));
-    Vec2f::projectZ(p2dOut, mol.getAtomXyz(aidOut));
-    d.diff(p2dOut, p2dIn);
-    d.normalize();
-    n.copy(d);
-    n.rotate(1, 0);
-    Vec2f min, max, a, b;
-
-    for (int i = 0; i < atoms.size(); ++i)
-    {
-        int aid = atoms[i];
-        const Vec3f& pos = mol.getAtomXyz(aid);
-        Vec2f p2d;
-        Vec2f::projectZ(p2d, pos);
-        p2d.sub(p2dIn);
-        p2d.set(Vec2f::dot(p2d, d), Vec2f::dot(p2d, n));
-        if (i == 0)
-        {
-            min.copy(p2d);
-            max.copy(p2d);
-        }
-        else
-        {
-            min.min(p2d);
-            max.max(p2d);
-        }
-    }
-
-    b1.lineCombin(p2dIn, d, max.x + 0.3f * bondLength);
-    b2.copy(b1);
-    float factor = 0.5;
-    b1.addScaled(n, factor * bondLength);
-    b2.addScaled(n, -factor * bondLength);
-    Vec2f* const& bracket1 = brackets.push();
-    bracket1[0].copy(b1);
-    bracket1[1].copy(b2);
-
-    b1.lineCombin(p2dIn, d, min.x - 0.3f * bondLength);
-    b2.copy(b1);
-    b1.addScaled(n, -factor * bondLength);
-    b2.addScaled(n, factor * bondLength);
-    Vec2f* const& bracket2 = brackets.push();
-    bracket2[0].copy(b1);
-    bracket2[1].copy(b2);
 }
 
 void _placeSGroupBracketsHorizontal(Array<Vec2f[2]>& brackets, BaseMolecule& mol, const Array<int>& atoms, float bondLength)
@@ -483,6 +289,7 @@ void MoleculeLayout::_make()
     _layout_graph->haptic_bond_multiplier = haptic_bond_multiplier;
     // 0. Find 2D coordinates via proxy _layout_graph object
     _layout_graph->max_iterations = max_iterations;
+    SGroupBracketLayout brackets(_molecule);
     _makeLayout();
 
     // 1. Update data-sgroup label position before changing molecule atoms positions
@@ -507,7 +314,7 @@ void MoleculeLayout::_make()
 
     _updateMultipleGroups();
 
-    _updateRepeatingUnits();
+    brackets.update();
 
     _molecule.have_xyz = true;
 }
@@ -533,7 +340,7 @@ void MoleculeLayout::updateSGroups()
 {
     _updateDataSGroups();
     _updateMultipleGroups();
-    _updateRepeatingUnits();
+    SGroupBracketLayout(_molecule).update();
 }
 
 void MoleculeLayout::make()
@@ -612,29 +419,6 @@ void MoleculeLayout::_makeLayout()
     }
     else
         _layout_graph->layout(*_bm, bond_length, 0, respect_existing_layout, multiple_distance);
-}
-
-void MoleculeLayout::_updateRepeatingUnits()
-{
-    QS_DEF(Array<int>, crossBonds);
-    QS_DEF(Array<bool>, crossBondOut);
-    for (int i = _molecule.sgroups.begin(); i != _molecule.sgroups.end(); i = _molecule.sgroups.next(i))
-    {
-        SGroup& sg = _molecule.sgroups.getSGroup(i);
-        if (sg.sgroup_type == SGroup::SG_TYPE_SRU)
-        {
-            RepeatingUnit& ru = (RepeatingUnit&)sg;
-            crossBonds.clear();
-            crossBondOut.clear();
-            _collectCrossBonds(crossBonds, crossBondOut, _molecule, ru.atoms);
-            if (crossBonds.size() > 1)
-                _placeSGroupBracketsCrossBonds(ru.brackets, _molecule, ru.atoms, crossBonds, crossBondOut, bond_length);
-            else if (crossBonds.size() == 1)
-                _placeSGroupBracketsCrossBondSingle(ru.brackets, _molecule, ru.atoms, crossBonds[0], crossBondOut[0], bond_length);
-            else
-                _placeSGroupBracketsHorizontal(ru.brackets, _molecule, ru.atoms, bond_length);
-        }
-    }
 }
 
 void MoleculeLayout::_updateMultipleGroups()

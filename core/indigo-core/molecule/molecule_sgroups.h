@@ -148,6 +148,10 @@ namespace indigo
             return component_order != 0;
         }
 
+        // One zero-length bracket means the group has none: loaders write such placeholders where a format has no
+        // bracket coordinates
+        bool hasBrackets() const;
+
         Array<char> label;                  // SMT in Molfile format (LABEL in V3000)
         Nullable<int> brk_style;            // represented with SBT in Molfile format
         Array<Vec2f[2]> brackets;           // represented with SDI in Molfile format
@@ -352,6 +356,26 @@ namespace indigo
         int begin();
         int end();
         int next(int i);
+
+        // A template, not std::function: this header reaches the Postgres cartridge, where postgres.h defines bind as a
+        // macro on Windows and <functional> no longer compiles
+        template <typename Transform>
+        void transformBrackets(Transform transform)
+        {
+            for (int i = begin(); i != end(); i = next(i))
+            {
+                SGroup& sgroup = getSGroup(i);
+                // Placeholders stay as loaders wrote them: some savers write them out as they are
+                if (!sgroup.hasBrackets())
+                    continue;
+                Array<Vec2f[2]>& brackets = sgroup.brackets;
+                for (int j = 0; j < brackets.size(); ++j)
+                {
+                    transform(brackets[j][0]);
+                    transform(brackets[j][1]);
+                }
+            }
+        }
 
         enum PropertyTypes
         {

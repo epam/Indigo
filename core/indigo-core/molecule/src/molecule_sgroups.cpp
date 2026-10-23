@@ -96,6 +96,16 @@ bool SGroup::typeHasConnectivity(int sg_type)
     return sg_type == SGroup::SG_TYPE_SRU || sg_type == SGroup::SG_TYPE_COP;
 }
 
+bool SGroup::hasBrackets() const
+{
+    if (brackets.size() == 0)
+        return false;
+    for (int i = 0; i < brackets.size(); ++i)
+        if (Vec2f::distSqr(brackets[i][0], brackets[i][1]) <= EPSILON)
+            return false;
+    return true;
+}
+
 SGroup::SGroup()
 {
     _reset();

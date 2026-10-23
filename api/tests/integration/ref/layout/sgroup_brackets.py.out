@@ -1,0 +1,58 @@
+*** Loaded brackets stay while their atoms stay ***
+sgroups/nested-brackets-from-file.mol:SUCCEED
+sgroups/brackets-from-file.mol:SUCCEED
+sgroups/brackets-from-file-layout-selection.mol:SUCCEED
+sgroups/brackets-from-file-clean2d-selection.mol:SUCCEED
+sgroups/brackets-from-file-clean2d.mol:SUCCEED
+*** Bracketed groups without brackets get them on load and layout ***
+sgroups/copolymer-without-brackets.mol:SUCCEED
+sgroups/copolymer-without-brackets-layout.mol:SUCCEED
+sgroups/copolymer-without-brackets-layout.mol:SUCCEED
+sgroups/formulation-without-brackets.mol:SUCCEED
+sgroups/formulation-without-brackets-layout.mol:SUCCEED
+sgroups/formulation-without-brackets-layout.mol:SUCCEED
+sgroups/mixture-without-brackets.mol:SUCCEED
+sgroups/mixture-without-brackets-layout.mol:SUCCEED
+sgroups/mixture-without-brackets-layout.mol:SUCCEED
+sgroups/sru-without-brackets.mol:SUCCEED
+sgroups/sru-without-brackets-layout.mol:SUCCEED
+sgroups/sru-without-brackets-layout.mol:SUCCEED
+sgroups/zero-brackets.mol:SUCCEED
+sgroups/zero-brackets-layout.mol:SUCCEED
+sgroups/zero-brackets-layout.mol:SUCCEED
+sgroups/copolymer-from-ket.mol:SUCCEED
+*** Zero-length brackets are not written ***
+sgroups/zero-brackets-v3000.mol:SUCCEED
+*** The mock-up structures, as loaded and after layout() ***
+sgroups/f01-sru-straight.mol:SUCCEED
+sgroups/f01-sru-straight-layout.mol:SUCCEED
+sgroups/f02-sru-zigzag.mol:SUCCEED
+sgroups/f02-sru-zigzag-layout.mol:SUCCEED
+sgroups/f03-sru-steep.mol:SUCCEED
+sgroups/f03-sru-steep-layout.mol:SUCCEED
+sgroups/f04-polystyrene.mol:SUCCEED
+sgroups/f04-polystyrene-layout.mol:SUCCEED
+sgroups/f05-issue-1969.mol:SUCCEED
+sgroups/f05-issue-1969-layout.mol:SUCCEED
+sgroups/f06-block-copolymer.mol:SUCCEED
+sgroups/f06-block-copolymer-layout.mol:SUCCEED
+sgroups/f07-mixture.mol:SUCCEED
+sgroups/f07-mixture-layout.mol:SUCCEED
+sgroups/f08-sru-vertical.mol:SUCCEED
+sgroups/f08-sru-vertical-layout.mol:SUCCEED
+sgroups/f09-sru-branching.mol:SUCCEED
+sgroups/f09-sru-branching-layout.mol:SUCCEED
+sgroups/f10-sru-adjacent-sides.mol:SUCCEED
+sgroups/f10-sru-adjacent-sides-layout.mol:SUCCEED
+sgroups/f11-copolymer-in-mixture.mol:SUCCEED
+sgroups/f11-copolymer-in-mixture-layout.mol:SUCCEED
+sgroups/f12-mixture-close.mol:SUCCEED
+sgroups/f12-mixture-close-layout.mol:SUCCEED
+sgroups/f13-repeat-pattern.mol:SUCCEED
+sgroups/f13-repeat-pattern-layout.mol:SUCCEED
+sgroups/f14-three-on-one-bond.mol:SUCCEED
+sgroups/f14-three-on-one-bond-layout.mol:SUCCEED
+*** Brackets move with the molecules of a reaction and a pathway ***
+sgroups/sru-reaction-layout.rxn:SUCCEED
+sgroups/sru-reaction-layout-preserve.rxn:SUCCEED
+sgroups/sru-pathway.rdf:SUCCEED
