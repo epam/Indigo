@@ -1,4 +1,7 @@
 *** MOL -> KET -> MOL ***
+generic-atom-listed-twice-v3000.ket:SUCCEED
+generic-atom-listed-twice-v3000-ket-2000.mol:SUCCEED
+generic-atom-listed-twice-v3000-ket-3000.mol:SUCCEED
 formulation-v2000.ket:SUCCEED
 formulation-v2000-ket-2000.mol:SUCCEED
 formulation-v2000-ket-3000.mol:SUCCEED
@@ -48,3 +51,8 @@ rejected-component-order-on-mixture: molecule json loader: S-group #0 of molecul
 rejected-component-order-zero: molecule json loader: S-group #0 of molecule #0 has 'componentOrder' 0, which is not a positive integer
 rejected-query-component-with-parent-id: molecule json loader: S-group #1 of molecule #0 is a query component, which takes no 'parentId'
 rejected-connectivity-not-string: molecule json loader: S-group #0 of molecule #0 has 'connectivity' 1, which is not a string
+rejected-connectivity-unknown: molecule json loader: S-group #0 of molecule #0 has 'connectivity' "XX", which is not a repeat pattern
+rejected-subtype-unknown: molecule json loader: S-group #0 of molecule #0 has 'subtype' "BLK", which is not a copolymer subtype
+rejected-multiplier-missing: molecule json loader: S-group #0 of molecule #0 has no 'mul' integer
+rejected-atom-repeated: molecule json loader: S-group #0 of molecule #0 refers to atom 0 twice
+rejected-atoms-empty: molecule json loader: S-group #0 of molecule #0 has an empty 'atoms' array, which only a data S-group may have

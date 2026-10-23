@@ -1203,8 +1203,11 @@ namespace
         {
             if (!atoms[i].IsInt() || !mol.hasVertex(atoms[i].GetInt()))
                 throw Error("%s refers to atom %s, which the molecule does not have", entry.name.c_str(), jsonText(atoms[i]).c_str());
-            entry.atoms.insert(atoms[i].GetInt());
+            if (!entry.atoms.insert(atoms[i].GetInt()).second)
+                throw Error("%s refers to atom %d twice", entry.name.c_str(), atoms[i].GetInt());
         }
+        if (entry.atoms.empty() && !entry.query_component && entry.sg_type != SGroup::SG_TYPE_DAT)
+            throw Error("%s has an empty '%s' array, which only a data S-group may have", entry.name.c_str(), KetKeyAtoms);
 
         if (s.HasMember(KetKeyBonds))
         {
@@ -1218,8 +1221,10 @@ namespace
             }
         }
 
-        if (entry.sg_type == SGroup::SG_TYPE_MUL && s.HasMember(KetKeyMultiplier))
+        if (entry.sg_type == SGroup::SG_TYPE_MUL)
         {
+            if (!s.HasMember(KetKeyMultiplier))
+                throw Error("%s has no '%s' integer", entry.name.c_str(), KetKeyMultiplier);
             const Value& multiplier = s[KetKeyMultiplier];
             if (!multiplier.IsInt() || multiplier.GetInt() < MIN_MULTIPLIER || multiplier.GetInt() > MAX_MULTIPLIER)
                 throw Error("%s has '%s' %s, which is not an integer from %d to %d", entry.name.c_str(), KetKeyMultiplier, jsonText(multiplier).c_str(),
@@ -1250,6 +1255,11 @@ namespace
             if (s.HasMember(key) && !s[key].IsString())
                 throw Error("%s has '%s' %s, which is not a string", entry.name.c_str(), key, jsonText(s[key]).c_str());
         }
+        // Only where the type takes the key: elsewhere it is outside the contract and dropped, as any such key
+        if (SGroup::typeHasConnectivity(entry.sg_type) && s.HasMember(KetKeyConnectivity) && SGroup::getConnectivity(s[KetKeyConnectivity].GetString()) < 0)
+            throw Error("%s has '%s' %s, which is not a repeat pattern", entry.name.c_str(), KetKeyConnectivity, jsonText(s[KetKeyConnectivity]).c_str());
+        if (entry.sg_type == SGroup::SG_TYPE_COP && s.HasMember(KetKeySubtype) && SGroup::getSubtype(s[KetKeySubtype].GetString()) < 0)
+            throw Error("%s has '%s' %s, which is not a copolymer subtype", entry.name.c_str(), KetKeySubtype, jsonText(s[KetKeySubtype]).c_str());
         return entry;
     }
 
@@ -1385,21 +1395,15 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
         p[0].set(0, 0);
         p[1].set(0, 0);
 
-        // an unknown repeat pattern reads as unset, that is either/unknown
         if (SGroup::typeHasConnectivity(sg_type) && s.HasMember(KetKeyConnectivity))
-        {
-            const int connectivity = SGroup::getConnectivity(s[KetKeyConnectivity].GetString());
-            if (connectivity >= 0)
-                sgroup.connectivity = connectivity;
-        }
+            sgroup.connectivity = SGroup::getConnectivity(s[KetKeyConnectivity].GetString());
 
         // add specific parameters
         switch (sg_type)
         {
         case SGroup::SG_TYPE_MUL: {
             MultipleGroup& mg = (MultipleGroup&)sgroup;
-            if (s.HasMember(KetKeyMultiplier))
-                mg.multiplier = s[KetKeyMultiplier].GetInt();
+            mg.multiplier = s[KetKeyMultiplier].GetInt();
         }
         break;
         case SGroup::SG_TYPE_SRU:
@@ -1499,11 +1503,7 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
         break;
         case SGroup::SG_TYPE_COP:
             if (s.HasMember(KetKeySubtype))
-            {
-                const int subtype = SGroup::getSubtype(s[KetKeySubtype].GetString());
-                if (subtype >= 0)
-                    sgroup.sgroup_subtype = subtype;
-            }
+                sgroup.sgroup_subtype = SGroup::getSubtype(s[KetKeySubtype].GetString());
             break;
         case SGroup::SG_TYPE_COM:
             if (s.HasMember(KetKeyComponentOrder))

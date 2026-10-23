@@ -35,6 +35,9 @@ def compare_molfiles(mol, ref_name):
 
 print("*** MOL -> KET -> MOL ***")
 for filename in [
+    # a molfile lists an atom of a group twice; KET lists it once, so the
+    # KET loads
+    "generic-atom-listed-twice-v3000",
     # two numbered components of a formulation; the first holds a block
     # copolymer of two repeating units
     "formulation-v2000",
@@ -104,6 +107,11 @@ for filename, load in [
         indigo.loadQueryMoleculeFromFile,
     ),
     ("rejected-connectivity-not-string", indigo.loadMoleculeFromFile),
+    ("rejected-connectivity-unknown", indigo.loadMoleculeFromFile),
+    ("rejected-subtype-unknown", indigo.loadMoleculeFromFile),
+    ("rejected-multiplier-missing", indigo.loadMoleculeFromFile),
+    ("rejected-atom-repeated", indigo.loadMoleculeFromFile),
+    ("rejected-atoms-empty", indigo.loadMoleculeFromFile),
 ]:
     try:
         load(path(filename + ".ket"))

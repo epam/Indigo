@@ -30,13 +30,15 @@ or the REST service.
 - WHEN a structure with nested S-groups is saved THEN every nested group gets `parentId` and every group referred to
   gets `id`; a structure without nesting is saved without either key, as before Indigo 1.50. A parent and a child without a
   common atom are saved in one molecule node.
-- WHEN an S-group has a type in the wrong case or one KET does not carry, an atom or bond the node does not have,
-  `mul` outside 1–1000, an `id` used twice or below 0, a `parentId` naming no group, a cycle of parents,
-  `componentOrder` on another type or below 1, `id` or `parentId` on a query component, or a `connectivity` or
-  `subtype` that is not a string THEN the document fails to load, and the message names the group by its position in
-  `sgroups` (from 0), its `id` and the molecule node.
-- WHEN `connectivity` or `subtype` has a value outside the contract THEN it reads as either/unknown and as no
-  subtype, as before #3954.
+- WHEN an S-group has a type in the wrong case or one KET does not carry, an atom or bond the node does not have, an
+  atom listed twice, an empty `atoms` while it is not a data S-group, no `mul` or one outside 1–1000 on a multiple
+  group, an `id` used twice or below 0, a `parentId` naming no group, a cycle of parents, `componentOrder` on another
+  type or below 1, `id` or `parentId` on a query component, a `connectivity` or `subtype` that is not a string, or a
+  repeat pattern or copolymer subtype the `SGroup` tables do not name THEN the document fails to load, and the message
+  names the group by its position in `sgroups` (from 0), its `id` and the molecule node.
+- WHEN `connectivity` or `subtype` is given to a type that does not take it THEN it is dropped, like any key outside
+  the contract.
+- WHEN a molfile lists an atom of a group twice THEN KET gets it once, so every KET Indigo writes loads back.
 
 ## Guarantees
 
