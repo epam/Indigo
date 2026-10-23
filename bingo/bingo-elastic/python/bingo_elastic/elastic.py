@@ -135,6 +135,7 @@ def build_index_body(
                 "cmf": {"type": "binary"},
                 "hash": {"type": "unsigned_long"},
                 "has_error": {"type": "integer"},
+                "gross_formula": {"type": "keyword"},
             }
         }
     }
@@ -242,7 +243,7 @@ def prepare(
         yield record.as_dict()
 
 
-def response_to_records(
+def response_to_records(  # pylint: disable=too-many-statements
     hits: dict,
     index_name: str,
     postprocess_actions: Optional[PostprocessType] = None,
@@ -340,7 +341,7 @@ class AsyncElasticRepository:
         ):
             pass
 
-    async def filter(  # pylint: disable=too-many-locals
+    async def filter(  # pylint: disable=too-many-locals, too-many-statements
         self,
         query_subject: Optional[
             Union[BaseMatch, IndigoObject, IndigoRecord]
@@ -546,7 +547,7 @@ class ElasticRepository:
         except NotFoundError:
             pass
 
-    def filter(  # pylint: disable=too-many-locals
+    def filter(  # pylint: disable=too-many-locals, too-many-statements
         self,
         query_subject: Optional[
             Union[BaseMatch, IndigoObject, IndigoRecord]
