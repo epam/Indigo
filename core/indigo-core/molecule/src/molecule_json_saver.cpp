@@ -177,6 +177,19 @@ void MoleculeJsonSaver::saveSGroups(BaseMolecule& mol, JsonWriter& writer)
     }
 }
 
+// A molfile may list an atom of a group twice, and the KET reader refuses that: each atom is written once
+static void saveSGroupAtoms(const Array<int>& atoms, JsonWriter& writer)
+{
+    std::unordered_set<int> written;
+    writer.StartArray();
+    for (int atom : atoms)
+    {
+        if (written.insert(atom).second)
+            writer.Int(atom);
+    }
+    writer.EndArray();
+}
+
 void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer, int id, int parent_id)
 {
     if (!isKetSGroupType(sgroup.sgroup_type))
@@ -186,13 +199,8 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer, int id, i
     writer.Key(KetKeyType);
     writer.String(SGroup::typeToString(sgroup.sgroup_type));
     writer.Key(KetKeyAtoms);
-    if (sgroup.sgroup_type != SGroup::SG_TYPE_MUL)
-    {
-        writer.StartArray();
-        for (int i = 0; i < sgroup.atoms.size(); i++)
-            writer.Int(sgroup.atoms[i]);
-        writer.EndArray();
-    }
+    // the atoms of a multiple group are those of its repeating unit
+    saveSGroupAtoms(sgroup.sgroup_type == SGroup::SG_TYPE_MUL ? static_cast<MultipleGroup&>(sgroup).parent_atoms : sgroup.atoms, writer);
 
     switch (sgroup.sgroup_type)
     {
@@ -326,13 +334,6 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer, int id, i
         break;
     case SGroup::SG_TYPE_MUL: {
         MultipleGroup& mg = (MultipleGroup&)sgroup;
-        if (mg.parent_atoms.size())
-        {
-            writer.StartArray();
-            for (int i = 0; i < mg.parent_atoms.size(); i++)
-                writer.Int(mg.parent_atoms[i]);
-            writer.EndArray();
-        }
         writer.Key(KetKeyMultiplier);
         writer.Int(mg.multiplier.value_or(0));
     }
