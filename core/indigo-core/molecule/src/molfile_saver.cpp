@@ -32,6 +32,7 @@
 #include "molecule/elements.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_automorphism_search.h"
+#include "molecule/molecule_cip_calc.h"
 #include "molecule/molecule_cip_calculator.h"
 #include "molecule/molecule_savers.h"
 #include "molecule/molecule_stereocenter_options.h"
@@ -218,7 +219,7 @@ void MolfileSaver::_handleCIP(BaseMolecule& mol)
     MoleculeCIPCalculator mcc;
     mcc.removeCIPSgroups(mol); // remove old CIP-Sroups
 
-    if (add_stereo_desc && mcc.addCIPStereoDescriptors(mol))
+    if (add_stereo_desc && MoleculeCIPCalc::calcCIPLabels(mol))
     {
         mcc.addCIPSgroups(mol);
     }
