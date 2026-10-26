@@ -18,6 +18,7 @@
 
 #include <algorithm>
 #include <numeric>
+#include <unordered_map>
 #include <unordered_set>
 
 #include "base_cpp/crc32.h"
@@ -187,17 +188,36 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
     mergeSGroupsWithSubmolecule(mol, mapping, edge_mapping);
 }
 
+// A group without atoms of its own goes with its parent: true when it has no atoms and an atom of one of its ancestors is
+// mapped. A group with atoms goes with its atoms only. A malformed hierarchy can be cyclic, and no chain is longer than
+// the number of groups.
+static bool goesWithAncestor(MoleculeSGroups& sgroups, const std::vector<int>& parents, int idx, const Array<int>& mapping)
+{
+    if (sgroups.getSGroup(idx).atoms.size() > 0)
+        return false;
+    int steps = sgroups.getSGroupCount();
+    for (int parent = parents[idx]; parent >= 0 && steps > 0; parent = parents[parent], --steps)
+    {
+        for (int atom : sgroups.getSGroup(parent).atoms)
+        {
+            if (mapping[atom] >= 0)
+                return true;
+        }
+    }
+    return false;
+}
+
 void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& mapping, Array<int>& edge_mapping)
 {
-    int i;
-    std::map<int, int> old_idx_to_new;
+    // Parents are resolved in the source, before the copies take their own pool positions
+    const std::vector<int> source_parents = mol.sgroups.resolveParents();
+    std::unordered_map<int, int> copy_of_source;
 
-    for (i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
+    for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
     {
         SGroup& supersg = mol.sgroups.getSGroup(i);
         int idx = sgroups.addSGroup(supersg.sgroup_type);
         SGroup& sg = sgroups.getSGroup(idx);
-        sg.parent_idx = supersg.parent_idx;
         sg.index = supersg.index;
         sg.ext_index = supersg.ext_index;
         sg.parent_group = supersg.parent_group;
@@ -205,10 +225,9 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
         sg.connectivity = supersg.connectivity;
         sg.component_order = supersg.component_order;
 
-        if (_mergeSGroupWithSubmolecule(sg, supersg, mol, mapping, edge_mapping))
+        if (_mergeSGroupWithSubmolecule(sg, supersg, mol, mapping, edge_mapping, goesWithAncestor(mol.sgroups, source_parents, i, mapping)))
         {
-            if (idx != i)
-                old_idx_to_new.emplace(i, idx);
+            copy_of_source.emplace(i, idx);
 
             if (sg.sgroup_type == SGroup::SG_TYPE_DAT)
             {
@@ -289,19 +308,19 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
         }
     }
 
-    // Update parent_idx
-    if (sgroups.getSGroupCount() < mol.sgroups.getSGroupCount())
+    for (const auto& [source_idx, copy_idx] : copy_of_source)
     {
-        for (i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
+        SGroup& copy = sgroups.getSGroup(copy_idx);
+        const auto parent_copy = copy_of_source.find(source_parents[source_idx]);
+        if (parent_copy != copy_of_source.end())
         {
-            SGroup& sgroup = sgroups.getSGroup(i);
-            const int parent_idx = sgroup.parent_idx.value_or(-1);
-            if (parent_idx < 0)
-                continue;
-
-            const auto it = old_idx_to_new.find(parent_idx);
-            if (it != old_idx_to_new.end())
-                sgroup.parent_idx = it->second;
+            copy.parent_idx = parent_copy->second;
+        }
+        else
+        {
+            // A parent left behind is no parent: its index could name a group of this molecule
+            copy.parent_idx = -1;
+            copy.parent_group = 0;
         }
     }
 }
@@ -1287,18 +1306,15 @@ const GraphDecomposer& BaseMolecule::moleculeComponents()
 
 void BaseMolecule::removeSGroup(int idx)
 {
-    SGroup& sg = sgroups.getSGroup(idx);
-    _checkSgroupHierarchy(sg.parent_group.value_or(0), sg.index);
-
+    _moveChildrenToGrandparent(idx);
     sgroups.remove(idx);
 }
 
 void BaseMolecule::removeSGroupWithBasis(int idx)
 {
     QS_DEF(Array<int>, sg_atoms);
-    SGroup& sg = sgroups.getSGroup(idx);
-    _checkSgroupHierarchy(sg.parent_group.value_or(0), sg.index);
-    sg_atoms.copy(sg.atoms);
+    _moveChildrenToGrandparent(idx);
+    sg_atoms.copy(sgroups.getSGroup(idx).atoms);
     removeAtoms(sg_atoms);
 }
 

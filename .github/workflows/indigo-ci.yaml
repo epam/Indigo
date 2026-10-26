@@ -783,7 +783,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ '3.9', '3.10' ]
+        python-version: [ '3.11' ]
     needs: [ merge_indigo_wrappers, test_indigo_dotnet_x86_64 ]
     services:
       elasticsearch:

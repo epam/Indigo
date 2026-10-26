@@ -19,9 +19,10 @@
 #ifndef __ket_keys__
 #define __ket_keys__
 
+#include "molecule/molecule_sgroups.h"
+
 // Field names of the KET wire format, shared by its readers and writers.
-// Covers the haptic bond feature (#3233) only; the rest of the vocabulary is
-// still inline. Contract: Task/3233/KET-CONTRACT.md.
+// Covers haptic bonds and S-groups; the rest of the vocabulary is still inline.
 //
 // A KetKey prefix marks a JSON key. Names without it are KET *values*, in the style
 // of KetConnectionSingle / KetConnectionHydro (monomers_defs.h). The prefix also
@@ -58,6 +59,40 @@ namespace indigo
     // On an atom and on an attachment group alike; a group omits a value of 0.
     inline constexpr const char* KetKeyCharge = "charge";
     inline constexpr const char* KetKeyRadical = "radical";
+
+    // S-groups of a molecule node. An S-group uses the generic KetKeyType, KetKeyId and
+    // KetKeyAtoms above; its type is a name of the S-group type table, spelled exactly.
+    inline constexpr const char* KetKeySGroups = "sgroups";
+    inline constexpr const char* KetKeyBonds = "bonds";
+    inline constexpr const char* KetKeyParentId = "parentId";
+    inline constexpr const char* KetKeyConnectivity = "connectivity";
+    inline constexpr const char* KetKeySubtype = "subtype";
+    inline constexpr const char* KetKeyComponentOrder = "componentOrder";
+    inline constexpr const char* KetKeyMultiplier = "mul";
+    inline constexpr const char* KetSGroupQueryComponent = "queryComponent"; // value of KetKeyType, a query feature
+
+    // The S-group types KET carries; the others are refused by its reader and its writer.
+    inline bool isKetSGroupType(int sg_type)
+    {
+        switch (sg_type)
+        {
+        case SGroup::SG_TYPE_GEN:
+        case SGroup::SG_TYPE_MUL:
+        case SGroup::SG_TYPE_SRU:
+        case SGroup::SG_TYPE_SUP:
+        case SGroup::SG_TYPE_DAT:
+        case SGroup::SG_TYPE_COP:
+        case SGroup::SG_TYPE_COM:
+        case SGroup::SG_TYPE_MIX:
+        case SGroup::SG_TYPE_FOR:
+            return true;
+        default:
+            return false;
+        }
+    }
+
+    // The fragments of an R-group node.
+    inline constexpr const char* KetKeyFragments = "fragments";
 
     // Not a key: the prefix a molecule node is referenced by, as in "mol0".
     inline constexpr const char* KetMoleculeRefPrefix = "mol";

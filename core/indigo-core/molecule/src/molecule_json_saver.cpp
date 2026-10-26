@@ -142,20 +142,25 @@ void MoleculeJsonSaver::saveSGroups(BaseMolecule& mol, JsonWriter& writer)
 
     if (sGroupsCount > 0)
     {
-        writer.Key("sgroups");
-        writer.StartArray();
+        // A group carries an id only when a nested group refers to it, so a structure without nesting is saved as before
+        std::unordered_set<int> parent_ids;
         for (const auto& info : sgroup_infos)
         {
-            SGroup& sgrp = info.sgroup;
-            saveSGroup(sgrp, writer);
+            if (info.new_parent_index > 0)
+                parent_ids.insert(info.new_parent_index);
         }
+
+        writer.Key(KetKeySGroups);
+        writer.StartArray();
+        for (const auto& info : sgroup_infos)
+            saveSGroup(info.sgroup, writer, parent_ids.count(info.new_index) > 0 ? info.new_index : NO_KET_ID, info.new_parent_index);
         // save queryComponent
         if (mol.isQueryMolecule() && componentDefined)
         {
             QueryMolecule& qmol = static_cast<QueryMolecule&>(mol);
             writer.StartObject();
             writer.Key("type");
-            writer.String("queryComponent");
+            writer.String(KetSGroupQueryComponent);
             writer.Key("atoms");
             writer.StartArray();
             for (int i = 0; i < qmol.vertexCount(); i++)
@@ -172,19 +177,30 @@ void MoleculeJsonSaver::saveSGroups(BaseMolecule& mol, JsonWriter& writer)
     }
 }
 
-void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
+// A molfile may list an atom of a group twice, and the KET reader refuses that: each atom is written once
+static void saveSGroupAtoms(const Array<int>& atoms, JsonWriter& writer)
 {
-    writer.StartObject();
-    writer.Key("type");
-    writer.String(SGroup::typeToString(sgroup.sgroup_type));
-    writer.Key("atoms");
-    if (sgroup.sgroup_type != SGroup::SG_TYPE_MUL)
+    std::unordered_set<int> written;
+    writer.StartArray();
+    for (int atom : atoms)
     {
-        writer.StartArray();
-        for (int i = 0; i < sgroup.atoms.size(); i++)
-            writer.Int(sgroup.atoms[i]);
-        writer.EndArray();
+        if (written.insert(atom).second)
+            writer.Int(atom);
     }
+    writer.EndArray();
+}
+
+void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer, int id, int parent_id)
+{
+    if (!isKetSGroupType(sgroup.sgroup_type))
+        throw Error("SG_TYPE_%s not implemented in indigo yet", SGroup::typeToString(sgroup.sgroup_type));
+
+    writer.StartObject();
+    writer.Key(KetKeyType);
+    writer.String(SGroup::typeToString(sgroup.sgroup_type));
+    writer.Key(KetKeyAtoms);
+    // the atoms of a multiple group are those of its repeating unit
+    saveSGroupAtoms(sgroup.sgroup_type == SGroup::SG_TYPE_MUL ? static_cast<MultipleGroup&>(sgroup).parent_atoms : sgroup.atoms, writer);
 
     switch (sgroup.sgroup_type)
     {
@@ -309,113 +325,60 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
         }
     }
     break;
-    case SGroup::SG_TYPE_SRU: {
-        RepeatingUnit& ru = (RepeatingUnit&)sgroup;
+    case SGroup::SG_TYPE_SRU:
         if (sgroup.label.size())
         {
             writer.Key("subscript");
             writer.String(sgroup.label.ptr());
         }
-
-        writer.Key("connectivity");
-        const int connectivity = ru.connectivity;
-        switch (connectivity)
-        {
-        case SGroup::HEAD_TO_TAIL:
-            writer.String("HT");
-            break;
-        case SGroup::HEAD_TO_HEAD:
-            writer.String("HH");
-            break;
-        default:
-            writer.String("EU");
-            break;
-        }
-    }
-    break;
+        break;
     case SGroup::SG_TYPE_MUL: {
         MultipleGroup& mg = (MultipleGroup&)sgroup;
-        if (mg.parent_atoms.size())
-        {
-            writer.StartArray();
-            for (int i = 0; i < mg.parent_atoms.size(); i++)
-                writer.Int(mg.parent_atoms[i]);
-            writer.EndArray();
-        }
-        writer.Key("mul");
+        writer.Key(KetKeyMultiplier);
         writer.Int(mg.multiplier.value_or(0));
     }
     break;
-    case SGroup::SG_TYPE_MON:
-        throw Error("SG_TYPE_MON not implemented in indigo yet");
-        break;
-    case SGroup::SG_TYPE_MER:
-        throw Error("SG_TYPE_MER not implemented in indigo yet");
-        break;
     case SGroup::SG_TYPE_COP: {
-        CopolymerGroup& ru = (CopolymerGroup&)sgroup;
-        const int subtype = ru.sgroup_subtype.value_or(0);
-        if (subtype != 0)
+        const char* subtype = SGroup::subtypeToString(sgroup.sgroup_subtype.value_or(0));
+        if (subtype != nullptr)
         {
-            writer.Key("subtype");
-            if (subtype == SGroup::SG_SUBTYPE_ALT)
-            {
-                writer.String("ALT");
-            }
-            else if (subtype == SGroup::SG_SUBTYPE_RAN)
-            {
-                writer.String("RAN");
-            }
-            else if (subtype == SGroup::SG_SUBTYPE_BLO)
-            {
-                writer.String("BLO");
-            }
-        }
-
-        writer.Key("connectivity");
-        const int connectivity = ru.connectivity;
-        switch (connectivity)
-        {
-        case SGroup::HEAD_TO_TAIL:
-            writer.String("HT");
-            break;
-        case SGroup::HEAD_TO_HEAD:
-            writer.String("HH");
-            break;
-        default:
-            writer.String("EU");
-            break;
+            writer.Key(KetKeySubtype);
+            writer.String(subtype);
         }
     }
     break;
-    case SGroup::SG_TYPE_CRO:
-        throw Error("SG_TYPE_CRO not implemented in indigo yet");
-        break;
-    case SGroup::SG_TYPE_MOD:
-        throw Error("SG_TYPE_MOD not implemented in indigo yet");
-        break;
-    case SGroup::SG_TYPE_GRA:
-        throw Error("SG_TYPE_GRA not implemented in indigo yet");
-        break;
     case SGroup::SG_TYPE_COM:
-        throw Error("SG_TYPE_COM not implemented in indigo yet");
-        break;
-    case SGroup::SG_TYPE_MIX:
-        throw Error("SG_TYPE_MIX not implemented in indigo yet");
-        break;
-    case SGroup::SG_TYPE_FOR:
-        throw Error("SG_TYPE_FOR not implemented in indigo yet");
-        break;
-    case SGroup::SG_TYPE_ANY:
-        throw Error("SG_TYPE_ANY not implemented in indigo yet");
+        if (sgroup.hasComponentOrder())
+        {
+            writer.Key(KetKeyComponentOrder);
+            writer.Int(sgroup.component_order);
+        }
         break;
     default:
         break;
     }
 
+    if (SGroup::typeHasConnectivity(sgroup.sgroup_type))
+    {
+        writer.Key(KetKeyConnectivity);
+        writer.String(SGroup::connectivityToString(sgroup.connectivity));
+    }
+
+    if (id != NO_KET_ID)
+    {
+        writer.Key(KetKeyId);
+        writer.Int(id);
+    }
+
+    if (parent_id != NO_KET_ID)
+    {
+        writer.Key(KetKeyParentId);
+        writer.Int(parent_id);
+    }
+
     if (sgroup.getBonds().size())
     {
-        writer.Key("bonds");
+        writer.Key(KetKeyBonds);
         writer.StartArray();
         for (int i = 0; i < sgroup.getBonds().size(); ++i)
             writer.Int(sgroup.getBonds()[i]);
@@ -1639,6 +1602,25 @@ void MoleculeJsonSaver::saveAnnotation(JsonWriter& writer, const KetObjectAnnota
     writer.EndObject();
 }
 
+// The atom sets a molecule node must not split: an S-group, a haptic bond, a query component, and - since a parentId
+// refers to a group of its own node - an S-group together with its parent, even when they share no atom.
+static void collectNodeNeighbors(BaseMolecule& mol, std::list<std::unordered_set<int>>& neighbors)
+{
+    mol.collectExternalNeighbors(neighbors);
+    const std::vector<int> parents = mol.sgroups.resolveParents();
+    for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
+    {
+        if (parents[i] < 0)
+            continue;
+        std::unordered_set<int> pair_atoms;
+        for (int atom : mol.sgroups.getSGroup(i).atoms)
+            pair_atoms.insert(atom);
+        for (int atom : mol.sgroups.getSGroup(parents[i]).atoms)
+            pair_atoms.insert(atom);
+        neighbors.push_back(std::move(pair_atoms));
+    }
+}
+
 void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
 {
     // Everything the nodes are addressed by is rebuilt from scratch: the node
@@ -1667,7 +1649,7 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
     writer.StartArray();
 
     _s_neighbors.clear();
-    mol.collectExternalNeighbors(_s_neighbors);
+    collectNodeNeighbors(mol, _s_neighbors);
     // save mol references
     // int mol_id = 0;
     for (int idx = 0; idx < mol.countComponents(_s_neighbors); ++idx)
@@ -1698,7 +1680,10 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
                 std::unique_ptr<BaseMolecule> sub_mol(component->neu());
                 sub_mol->makeSubmolecule(*component, vertices, &sub_mapping);
                 mergeMappings(inv_mapping, sub_mapping);
-                for (int sub_idx = 0; sub_idx < sub_mol->countComponents(); ++sub_idx)
+                // Without the monomers the atoms of an S-group may fall apart; the sets keep them in one node
+                std::list<std::unordered_set<int>> sub_neighbors;
+                collectNodeNeighbors(*sub_mol, sub_neighbors);
+                for (int sub_idx = 0; sub_idx < sub_mol->countComponents(sub_neighbors); ++sub_idx)
                 {
                     Array<int> sub_comp_mapping, mapping_cp, inv_sub_comp_mapping;
                     mapping_cp.copy(inv_mapping);

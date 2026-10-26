@@ -20,6 +20,8 @@ feature file must stay true across a refactor.
   option, the failure contract, and why a client may show a different number
 - [haptic-bonds.md](./haptic-bonds.md) — bonds whose endpoint is a set of atoms: what round-trips
   today (KET, rendering) and what does not (V3000, the C API, layout)
+- [ket-sgroups.md](./ket-sgroups.md) — S-groups in KET: component, mixture and formulation, nesting by `parentId`
+  or by atom containment, what makes a document fail to load
 
 ## Worth writing next
 

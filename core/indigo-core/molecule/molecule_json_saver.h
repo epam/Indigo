@@ -102,7 +102,10 @@ namespace indigo
         void saveSuperatomAttachmentPoints(Superatom& sa, JsonWriter& writer);
 
         void saveSGroups(BaseMolecule& mol, JsonWriter& writer);
-        void saveSGroup(SGroup& sgroup, JsonWriter& writer);
+        // id and parent_id are numbers of getOrderedSGroups(), which counts from 1 and gives 0 for no parent;
+        // NO_KET_ID writes no key
+        static constexpr int NO_KET_ID = 0;
+        void saveSGroup(SGroup& sgroup, JsonWriter& writer, int id, int parent_id);
 
         void saveAttachmentPoint(BaseMolecule& mol, int atom_idx, JsonWriter& writer);
         void saveStereoCenter(BaseMolecule& mol, int atom_idx, JsonWriter& writer);

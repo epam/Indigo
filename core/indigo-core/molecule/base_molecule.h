@@ -832,9 +832,10 @@ namespace indigo
         void _removeAtomsFromSuperatom(Superatom& sa, Array<int>& mapping);
         void _removeBondsFromSGroup(SGroup& sgroup, Array<int>& mapping);
         void _removeBondsFromSuperatom(Superatom& sa, Array<int>& mapping);
-        bool _mergeSGroupWithSubmolecule(SGroup& sgroup, SGroup& super, BaseMolecule& supermol, Array<int>& mapping, Array<int>& edge_mapping);
+        bool _mergeSGroupWithSubmolecule(SGroup& sgroup, SGroup& super, BaseMolecule& supermol, Array<int>& mapping, Array<int>& edge_mapping,
+                                         bool goes_with_ancestor);
 
-        void _checkSgroupHierarchy(int pidx, int oidx);
+        void _moveChildrenToGrandparent(int sgroup_idx);
 
         int _transformTGroupToSGroup(int idx, int t_idx);
         int _transformSGroupToTGroup(int idx, int& tg_id);

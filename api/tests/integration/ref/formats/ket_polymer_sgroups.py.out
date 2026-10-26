@@ -1,0 +1,58 @@
+*** MOL -> KET -> MOL ***
+generic-atom-listed-twice-v3000.ket:SUCCEED
+generic-atom-listed-twice-v3000-ket-2000.mol:SUCCEED
+generic-atom-listed-twice-v3000-ket-3000.mol:SUCCEED
+formulation-v2000.ket:SUCCEED
+formulation-v2000-ket-2000.mol:SUCCEED
+formulation-v2000-ket-3000.mol:SUCCEED
+formulation-words-v3000.ket:SUCCEED
+formulation-words-v3000-ket-2000.mol:SUCCEED
+formulation-words-v3000-ket-3000.mol:SUCCEED
+copolymer-around-multiple-v3000.ket:SUCCEED
+copolymer-around-multiple-v3000-ket-2000.mol:SUCCEED
+copolymer-around-multiple-v3000-ket-3000.mol:SUCCEED
+generic-across-monomer-v3000.ket:SUCCEED
+generic-across-monomer-v3000-ket-2000.mol:SUCCEED
+generic-across-monomer-v3000-ket-3000.mol:SUCCEED
+*** KET as Ketcher writes it, without parentId ***
+copolymer-without-parent-ids-2000.mol:SUCCEED
+copolymer-without-parent-ids-3000.mol:SUCCEED
+mixture-over-two-fragments-2000.mol:SUCCEED
+mixture-over-two-fragments-3000.mol:SUCCEED
+formulation-over-two-fragments-2000.mol:SUCCEED
+formulation-over-two-fragments-3000.mol:SUCCEED
+data-and-generic-in-unit-2000.mol:SUCCEED
+data-and-generic-in-unit-3000.mol:SUCCEED
+*** KET with parentId ***
+data-without-atoms-with-parent-id-2000.mol:SUCCEED
+data-without-atoms-with-parent-id-3000.mol:SUCCEED
+nesting-in-second-node-2000.mol:SUCCEED
+nesting-in-second-node-3000.mol:SUCCEED
+rgroup-fragment-without-parent-ids-2000.mol:SUCCEED
+rgroup-fragment-without-parent-ids-3000.mol:SUCCEED
+rgroup-fragments-name-the-parent-2000.mol:SUCCEED
+rgroup-fragments-name-the-parent-3000.mol:SUCCEED
+*** Input that is rejected ***
+rejected-type-lowercase: molecule json loader: S-group #0 of molecule #0 has type 'sru', which is not a KET S-group type
+rejected-type-mon: molecule json loader: S-group #0 of molecule #0 has type 'MON', which is not a KET S-group type
+rejected-type-not-string: molecule json loader: S-group #0 of molecule #0 has no 'type' string
+rejected-atoms-missing: molecule json loader: S-group #0 of molecule #0 has no 'atoms' array
+rejected-atom-out-of-range: molecule json loader: S-group #0 of molecule #0 refers to atom 7, which the molecule does not have
+rejected-atom-negative: molecule json loader: S-group #0 of molecule #0 refers to atom -1, which the molecule does not have
+rejected-bond-out-of-range: molecule json loader: S-group #0 of molecule #0 refers to bond 99, which the molecule does not have
+rejected-query-component-atom-out-of-range: molecule json loader: S-group #0 of molecule #0 refers to atom 50, which the molecule does not have
+rejected-multiplier-zero: molecule json loader: S-group #0 of molecule #0 has 'mul' 0, which is not an integer from 1 to 1000
+rejected-multiplier-1001: molecule json loader: S-group #0 of molecule #0 has 'mul' 1001, which is not an integer from 1 to 1000
+rejected-parent-id-unknown: molecule json loader: S-group #1 of molecule #0 has 'parentId' 9, which is the id of no S-group of the molecule
+rejected-parent-id-cycle: molecule json loader: S-group #0 (id 1) of molecule #0 is its own ancestor through 'parentId'
+rejected-id-repeated: molecule json loader: S-group #1 (id 1) of molecule #0 has 'id' 1, which S-group #0 has too
+rejected-id-negative: molecule json loader: S-group #0 (id -1) of molecule #0 has 'id' -1, which is not a non-negative integer
+rejected-component-order-on-mixture: molecule json loader: S-group #0 of molecule #0 has 'componentOrder', which only a component takes
+rejected-component-order-zero: molecule json loader: S-group #0 of molecule #0 has 'componentOrder' 0, which is not a positive integer
+rejected-query-component-with-parent-id: molecule json loader: S-group #1 of molecule #0 is a query component, which takes no 'parentId'
+rejected-connectivity-not-string: molecule json loader: S-group #0 of molecule #0 has 'connectivity' 1, which is not a string
+rejected-connectivity-unknown: molecule json loader: S-group #0 of molecule #0 has 'connectivity' "XX", which is not a repeat pattern
+rejected-subtype-unknown: molecule json loader: S-group #0 of molecule #0 has 'subtype' "BLK", which is not a copolymer subtype
+rejected-multiplier-missing: molecule json loader: S-group #0 of molecule #0 has no 'mul' integer
+rejected-atom-repeated: molecule json loader: S-group #0 of molecule #0 refers to atom 0 twice
+rejected-atoms-empty: molecule json loader: S-group #0 of molecule #0 has an empty 'atoms' array, which only a data S-group may have
