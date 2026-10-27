@@ -6,7 +6,7 @@
 Rules that must stay true. Each one is here because breaking it fails **silently** — no compiler
 error, and often no failing test on the machine where the change was made.
 
-Anchors were verified on `f0cc3c423` (master, 2026-09-03); A12 to A14 on `14018d3d3` (2026-10-22); B5 on
+Anchors were verified on `f0cc3c423` (master, 2026-09-03); A12 to A14 on `8efe581f0` (2026-10-27); B5 on
 2026-10-23. An anchor that no longer resolves is a defect in this file: fix it in the same change that moved
 the code.
 
@@ -100,9 +100,8 @@ of these, should read the line first.
 **A12 — The two brackets of a bracketed S-group keep their order and direction: the opening one first, running
 bottom to top, the closing one second, running top to bottom.**
 The renderer turns the hooks of a bracket to the right of its direction and puts the label and the repeat pattern
-at the last bracket (`core/render2d/src/render_internal.cpp#_positionIndex`), and the layout measures the texts
-of a child at its second bracket (`core/indigo-core/layout/src/sgroup_texts.cpp#SGroupTexts::box`). A pair written
-the other way round draws its hooks outwards and its label at the left bracket; nothing fails. The one place that
+at the last bracket (`core/render2d/src/render_internal.cpp#_positionIndex`). A pair written the other way round
+draws its hooks outwards and its label at the left bracket; nothing fails. The one place that
 writes a pair is `core/indigo-core/layout/src/sgroup_bracket_layout.cpp#_setBrackets`.
 
 **A13 — Whatever moves the atoms of a molecule moves its S-group brackets with them.**

@@ -1,6 +1,6 @@
-# S-group brackets are placed by the layout, two vertical brackets around the group's bounding box
+# S-group brackets are placed by the layout, two vertical brackets at fixed margins around the group's bounding box
 
-**Date:** 2026-10-22 · **Status:** Accepted · **Ticket:** #3974
+**Date:** 2026-10-22, revised 2026-10-27 · **Status:** Accepted · **Ticket:** #3974
 
 ## Context
 
@@ -13,12 +13,13 @@ BIOVIA Draw to read.
 
 ## Decision
 
-Brackets are a property of the layout, computed in the core by `SGroupBracketLayout` and its helpers
-(`SGroupNesting`, `AtomBoxes`, `SGroupTexts`, `BracketSpacing`), never by the renderer or by a loader
-directly. Every bracketed group gets exactly two vertical brackets around the bounding box of its atom labels
-and nested brackets, with the distances of the ticket's table; brackets read from a file are kept while their
-atoms stay. The classes are split by responsibility and use no inheritance: one spacing rule exists, and a
-second one would introduce the interface.
+Brackets are a property of the layout, computed in the core by `SGroupBracketLayout` and `SGroupNesting`,
+never by the renderer or by a loader directly. Every bracketed group gets exactly two vertical brackets at
+fixed margins: 0.1 bond lengths left and right of the box of its atom labels and 0.3 above and below it, and
+0.2 outside the brackets of the groups nested in it, whichever reaches further. The unit is the default bond
+length constant, the label boxes come from the existing `getAtomBoundingBox` estimate at the font of the
+layout options, and brackets read from a file are kept while their atoms stay. Nothing outside the group is
+consulted.
 
 ## Alternatives considered
 
@@ -26,15 +27,21 @@ second one would introduce the interface.
   writer places them (the first step of the ticket, commit `784b0ac61`): rejected by the Tech Lead review of
   2026-10-17, because a bracket ran through a label, a side group stood outside the brackets, and brackets
   came out horizontal or slanted.
+- Sharing the gap with the nearest atom outside the group: a step from 0.3 down to 0.15, the brackets of a
+  parent kept clear of the children's labels and repeat patterns, brackets at least one bond length long, the
+  unit the mean bond length of the drawing (the second version, branch `3974-sgroup-brackets-gap-sharing`,
+  tag `3974-sgroup-brackets-gap-sharing-v1`). Replaced on 2026-10-27 when the product owner rewrote the
+  ticket to the fixed margins for simplicity: a bracket through a neighbouring atom was accepted as the
+  price.
 - Placement in the renderer: it would not reach the MOL file, which is what Ketcher and BIOVIA read.
 - Measuring labels with the renderer's fonts: needs cairo in the core; the core's estimate was accepted,
   with the exact font metrics left for later.
-- The median bond length as the unit: rejected, the reference planner and the rest of the library use the
-  mean.
 
 ## Consequences
 
 - Every code path that moves atoms must move or re-place brackets (invariant A13); the order of the two
   brackets is a contract with the renderer (A12); zero-length brackets are placeholders (A14).
+- A structure drawn at another bond length gets margins out of proportion, and a bracket can cross a
+  neighbouring atom or the label of a nested group.
 - Ketcher's references with `BRKXYZ` (about 586 files) change when this lands.
 - The layout of reactions (#3981) and the renderer's handling of all five types (#3976) stay separate tickets.

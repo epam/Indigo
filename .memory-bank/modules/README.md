@@ -22,7 +22,7 @@ document that restates the header file saves nothing and should not be written.
 - [bingo-elastic-python.md](./bingo-elastic-python.md) — standalone Python library: API surface,
   fingerprint pre-filter + postprocess pattern, its own test suite
 - [layout-sgroup-brackets.md](./layout-sgroup-brackets.md) — brackets of polymer S-groups: who places them
-  and when, how a group's sides are found, nesting, the mean-bond-length and label-width traps
+  and when, the fixed margins, nesting, the constant-unit and font traps
 
 ## Not yet written
 
