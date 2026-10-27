@@ -93,6 +93,28 @@ for filename in mockups:
     mol.layout()
     compare_molfile(filename + "-layout", mol)
 
+print(
+    "*** Labels are measured at the font size and label mode of the options ***"
+)
+indigo.setOption("render-font-size", 80.0)
+mol = load("f05-issue-1969.mol")
+mol.layout()
+compare_molfile("f05-issue-1969-layout-font-80", mol)
+indigo.setOption("render-font-size", -1.0)
+
+indigo.setOption("render-label-mode", "all")
+mol = load("f05-issue-1969.mol")
+mol.layout()
+compare_molfile("f05-issue-1969-layout-label-mode-all", mol)
+rxn = indigo.loadReactionFromFile(
+    os.path.join(molecules_path, "sru-reaction.rxn")
+)
+rxn.layout()
+compare_diff(
+    ref_path, "sgroups/sru-reaction-layout-label-mode-all.rxn", rxn.rxnfile()
+)
+indigo.setOption("render-label-mode", "terminal-hetero")
+
 print("*** Brackets move with the molecules of a reaction and a pathway ***")
 rxn = indigo.loadReactionFromFile(
     os.path.join(molecules_path, "sru-reaction.rxn")

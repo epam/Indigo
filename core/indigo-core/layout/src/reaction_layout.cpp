@@ -366,6 +366,7 @@ void ReactionLayout::make()
             molLayout.max_iterations = max_iterations;
             molLayout.layout_orientation = layout_orientation;
             molLayout.bond_length = bond_length;
+            molLayout.setLabelOptions(_options);
             molLayout.multiple_distance = MOL_COMPONENT_INTERVAL;
             molLayout.make();
         }

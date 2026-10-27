@@ -79,6 +79,7 @@ CEXPORT int indigoLayout(int object)
 
             ml.max_iterations = self.layout_max_iterations;
             ml.bond_length = LayoutOptions::DEFAULT_BOND_LENGTH;
+            ml.setLabelOptions(self.layout_options);
             ml.layout_orientation = (LAYOUT_ORIENTATION)self.layout_orientation;
             if (self.layout_preserve_existing || mol->hasAtropoStereoBonds())
                 ml.respect_existing_layout = true;

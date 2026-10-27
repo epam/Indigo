@@ -40,6 +40,8 @@ MoleculeLayout::MoleculeLayout(BaseMolecule& molecule, bool smart_layout)
 void MoleculeLayout::_init(bool smart_layout)
 {
     bond_length = 1.f;
+    label_font_size = SGroupBracketLayout::DEFAULT_FONT_SIZE;
+    label_mode = LABEL_MODE_TERMINAL_HETERO;
     haptic_bond_multiplier = MoleculeLayoutGraph::DEFAULT_HAPTIC_BOND_MULTIPLIER;
     filter = 0;
     _smart_layout = smart_layout;
@@ -289,7 +291,7 @@ void MoleculeLayout::_make()
     _layout_graph->haptic_bond_multiplier = haptic_bond_multiplier;
     // 0. Find 2D coordinates via proxy _layout_graph object
     _layout_graph->max_iterations = max_iterations;
-    SGroupBracketLayout brackets(_molecule);
+    SGroupBracketLayout brackets(_molecule, label_font_size, label_mode);
     _makeLayout();
 
     // 1. Update data-sgroup label position before changing molecule atoms positions
@@ -340,7 +342,14 @@ void MoleculeLayout::updateSGroups()
 {
     _updateDataSGroups();
     _updateMultipleGroups();
-    SGroupBracketLayout(_molecule).update();
+    SGroupBracketLayout(_molecule, label_font_size, label_mode).update();
+}
+
+void MoleculeLayout::setLabelOptions(const LayoutOptions& options)
+{
+    if (options.fontSize > EPSILON)
+        label_font_size = options.getFontSizeInAngstroms();
+    label_mode = options.labelMode;
 }
 
 void MoleculeLayout::make()
