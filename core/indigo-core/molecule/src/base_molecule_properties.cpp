@@ -17,7 +17,6 @@
  ***************************************************************************/
 
 #include <algorithm>
-#include <cmath>
 #include <numeric>
 
 #include "base_cpp/crc32.h"
@@ -52,7 +51,7 @@ void BaseMolecule::offsetCoordinates(const Vec3f& offset)
     sgroups.transformBrackets([&offset](Vec2f& point) { point.add(Vec2f(offset.x, offset.y)); });
 }
 
-void BaseMolecule::getAtomBoundingBox(int atom_idx, float font_size, LABEL_MODE label_mode, Vec2f& bottom_left, Vec2f& top_right, bool multiline_labels)
+void BaseMolecule::getAtomBoundingBox(int atom_idx, float font_size, LABEL_MODE label_mode, Vec2f& bottom_left, Vec2f& top_right)
 {
     Vec2f vec = _xyz[atom_idx].projectZ();
     bottom_left = top_right = vec;
@@ -207,54 +206,44 @@ void BaseMolecule::getAtomBoundingBox(int atom_idx, float font_size, LABEL_MODE 
             }
             if (implicit_h > 0)
             {
-                const float h_width = (implicit_h > 1 ? 2 : 1) * symbol_size;
-                // The side the renderer puts the hydrogens on before it settles clashes between labels
-                // (MoleculeRenderInternal::_initHydroPos); the order of the sides breaks ties
-                enum HydrogenSide
+                // add implicit H size
+                if (implicit_h > 1)
+                    len = 2;
+                else
+                    len = 1;
+                bool h_at_right = true;
+                if (vertex.degree() == 0)
                 {
-                    RIGHT,
-                    UP,
-                    DOWN,
-                    LEFT,
-                    SIDE_COUNT
-                };
-                float weights[SIDE_COUNT] = {0.3f, 0.1f, 0.f, 0.2f};
-                if (vertex.degree() == 0 && ElementHydrogenOnLeft(label))
-                    std::swap(weights[RIGHT], weights[LEFT]);
-                float sines[SIDE_COUNT] = {0.f, 0.f, 0.f, 0.f};
-                for (int j = vertex.neiBegin(); j < vertex.neiEnd(); j = vertex.neiNext(j))
-                {
-                    Vec2f d = _xyz[vertex.neiVertex(j)].projectZ();
-                    d.sub(vec);
-                    d.normalize();
-                    const int horizontal = d.x > 0 ? RIGHT : LEFT, vertical = d.y > 0 ? UP : DOWN;
-                    sines[horizontal] = std::max(sines[horizontal], std::abs(d.x));
-                    sines[vertical] = std::max(sines[vertical], std::abs(d.y));
+                    if (ElementHydrogenOnLeft(label))
+                        h_at_right = false;
                 }
-                constexpr float min_sin = 0.49f;
-                int side = RIGHT;
-                for (int candidate = 0; candidate < SIDE_COUNT; ++candidate)
-                {
-                    if (sines[candidate] > min_sin)
-                        weights[candidate] -= sines[candidate];
-                    const bool allowed = multiline_labels || candidate == RIGHT || candidate == LEFT;
-                    if (allowed && weights[candidate] > weights[side])
-                        side = candidate;
-                }
-                if (side == RIGHT)
-                    top_right.x += h_width;
-                else if (side == LEFT)
-                    bottom_left.x -= h_width;
                 else
                 {
-                    // "H" over or under the atom, its count to the right
-                    bottom_left.x = std::min(bottom_left.x, vec.x - symbol_size / 2);
-                    top_right.x = std::max(top_right.x, vec.x - symbol_size / 2 + h_width);
-                    if (side == UP)
-                        top_right.y += 2 * symbol_size;
-                    else
-                        bottom_left.y -= 2 * symbol_size;
+                    constexpr float min_sin = 0.49f;
+                    float right_weight = 0.3f;
+                    float left_weight = 0.2f;
+                    float left_sin = 0, right_sin = 0;
+                    for (int j = vertex.neiBegin(); j < vertex.neiEnd(); j = vertex.neiNext(j))
+                    {
+                        Vec2f d = _xyz[vertex.neiVertex(j)].projectZ();
+                        d.sub(vec);
+                        d.normalize();
+                        if (d.x > 0)
+                            right_sin = std::max(right_sin, d.x);
+                        else
+                            left_sin = std::max(left_sin, -d.x);
+                    }
+                    if (left_sin > min_sin)
+                        left_weight -= left_sin;
+                    if (right_sin > min_sin)
+                        right_weight -= right_sin;
+                    if (left_weight > right_weight)
+                        h_at_right = false;
                 }
+                if (h_at_right)
+                    top_right.x += len * symbol_size;
+                else
+                    bottom_left.x -= len * symbol_size;
             }
         }
     }

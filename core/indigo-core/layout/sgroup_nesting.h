@@ -41,20 +41,13 @@ namespace indigo
 
         const std::vector<int>& bracketedDeepestFirst() const;
         std::vector<int> children(int sgroup_idx) const;
-        // The bracketed groups around the first atom but not the second, innermost first, then those around the second
-        // atom but not the first, outermost first: the order of their brackets between the two atoms
-        std::vector<int> groupsBetween(int first_atom, int second_atom) const;
-        // Atoms in no bracketed group other than the ancestors of this one, such as the `*` at a chain end
-        std::vector<bool> loneAtoms(int sgroup_idx) const;
 
         static bool isBracketed(int sgroup_type);
 
     private:
         int _findParent(int sgroup_idx) const;
         bool _contains(int sgroup_idx, const std::vector<int>& sorted_atoms) const;
-        bool _hasAtom(int sgroup_idx, int atom_idx) const;
         int _depth(int sgroup_idx) const;
-        bool _isAncestor(int ancestor_idx, int sgroup_idx) const;
 
         BaseMolecule& _molecule;
         std::vector<int> _bracketed;

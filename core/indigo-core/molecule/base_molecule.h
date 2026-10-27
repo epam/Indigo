@@ -776,8 +776,7 @@ namespace indigo
         void getBoundingBox(Rect2f& bbox, const Vec2f& minbox) const;
         void getBoundingBox(Vec2f& a, Vec2f& b) const;
         void offsetCoordinates(const Vec3f& offset);
-        // multiline_labels: the implicit hydrogens may take a line above or below the symbol, as the renderer draws them
-        void getAtomBoundingBox(int atom_idx, float font_size, LABEL_MODE label_mode, Vec2f& bottom_left, Vec2f& top_right, bool multiline_labels = false);
+        void getAtomBoundingBox(int atom_idx, float font_size, LABEL_MODE label_mode, Vec2f& bottom_left, Vec2f& top_right);
         void getBoundingBox(float font_size, LABEL_MODE label_mode, Vec2f& bottom_left, Vec2f& top_right);
         void getBoundingBox(float font_size, LABEL_MODE label_mode, Rect2f& bbox);
 
