@@ -45,12 +45,15 @@ mol.clean2d()
 compare_molfile("brackets-from-file-clean2d", mol)
 
 print("*** Bracketed groups without brackets get them on load and layout ***")
-# A second layout() keeps the brackets of the first one
+# A second layout() keeps the brackets of the first one; the ticket-* files
+# are the structures of the pictures in the ticket
 files = [
     "copolymer-without-brackets",
     "formulation-without-brackets",
     "mixture-without-brackets",
     "sru-without-brackets",
+    "ticket-nested-copolymer",
+    "ticket-single-sru",
     "zero-brackets",
 ]
 files.sort()

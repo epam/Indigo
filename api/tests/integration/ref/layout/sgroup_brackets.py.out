@@ -17,6 +17,12 @@ sgroups/mixture-without-brackets-layout.mol:SUCCEED
 sgroups/sru-without-brackets.mol:SUCCEED
 sgroups/sru-without-brackets-layout.mol:SUCCEED
 sgroups/sru-without-brackets-layout.mol:SUCCEED
+sgroups/ticket-nested-copolymer.mol:SUCCEED
+sgroups/ticket-nested-copolymer-layout.mol:SUCCEED
+sgroups/ticket-nested-copolymer-layout.mol:SUCCEED
+sgroups/ticket-single-sru.mol:SUCCEED
+sgroups/ticket-single-sru-layout.mol:SUCCEED
+sgroups/ticket-single-sru-layout.mol:SUCCEED
 sgroups/zero-brackets.mol:SUCCEED
 sgroups/zero-brackets-layout.mol:SUCCEED
 sgroups/zero-brackets-layout.mol:SUCCEED
@@ -52,6 +58,10 @@ sgroups/f13-repeat-pattern.mol:SUCCEED
 sgroups/f13-repeat-pattern-layout.mol:SUCCEED
 sgroups/f14-three-on-one-bond.mol:SUCCEED
 sgroups/f14-three-on-one-bond-layout.mol:SUCCEED
+*** Labels are measured at the font size and label mode of the options ***
+sgroups/f05-issue-1969-layout-font-80.mol:SUCCEED
+sgroups/f05-issue-1969-layout-label-mode-all.mol:SUCCEED
+sgroups/sru-reaction-layout-label-mode-all.rxn:SUCCEED
 *** Brackets move with the molecules of a reaction and a pathway ***
 sgroups/sru-reaction-layout.rxn:SUCCEED
 sgroups/sru-reaction-layout-preserve.rxn:SUCCEED
