@@ -1,0 +1,125 @@
+{
+    "root": {
+        "nodes": [],
+        "templates": [
+            {
+                "$ref": "monomerTemplate-_Nucleotide1"
+            }
+        ]
+    },
+    "monomerTemplate-_Nucleotide1": {
+        "type": "monomerTemplate",
+        "id": "_Nucleotide1",
+        "class": "RNA",
+        "classHELM": "RNA",
+        "fullName": "_Nucleotide1",
+        "alias": "_Nucleotide1",
+        "naturalAnalog": "Ade",
+        "naturalAnalogShort": "A",
+        "idtAliases": {
+            "modifications": {
+                "endpoint5": "5Nuc1",
+                "internal": "iNuc1",
+                "endpoint3": "3Nuc1"
+            }
+        },
+        "attachmentPoints": [
+            {
+                "attachmentAtom": 1,
+                "leavingGroup": {
+                    "atoms": [
+                        2
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 1,
+                "leavingGroup": {
+                    "atoms": [
+                        4
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 1,
+                "leavingGroup": {
+                    "atoms": [
+                        3
+                    ]
+                }
+            }
+        ],
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    -0.866000,
+                    -0.750000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.000000,
+                    -0.250000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    0.000000,
+                    0.750000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    0.866000,
+                    -0.750000,
+                    0.000000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    0.866000,
+                    0.250000,
+                    0.000000
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    4
+                ]
+            }
+        ]
+    }
+}

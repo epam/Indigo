@@ -1,0 +1,14 @@
+*** SDF-monomer library properties ***
+3666-preset.ket:SUCCEED
+3671-modification-types.ket:SUCCEED
+3672-idt-aliases.ket:SUCCEED
+3695-monomer-template-type.ket:SUCCEED
+3666-preset-empty-group-name: core: Error loading monomer library: MonomerTemplateLibrary: Load of preset has failed, preset definition contains invalid groupName value. The groupName couldn't be empty
+3666-preset-without-group-class: core: Error loading monomer library: MonomerTemplateLibrary: Load of "Preset1" preset has failed, preset definition contains invalid groupClass value. The groupClass couldn't be empty
+3666-preset-without-group-name: core: Error loading monomer library: MonomerTemplateLibrary: Load of preset has failed, preset definition contains invalid groupName value. The groupName couldn't be empty
+3671-empty-modification-types: core: Error loading monomer library: MonomerTemplateLibrary: Load of "_Peptide1" monomer has failed, monomer definition contains invalid modificationTypes value. The modificationTypes couldn't be empty
+3672-idt-alias-empty-ep3: core: Error loading monomer library: MonomerTemplateLibrary: Load of "_Nucleotide1" monomer has failed, monomer definition contains invalid idtAliases value. The value of "ep3" couldn't be empty
+3672-idt-alias-without-value: core: Error loading monomer library: MonomerTemplateLibrary: Load of "_Nucleotide1" monomer has failed, monomer definition contains invalid idtAliases value. The value of "ep3" couldn't be empty
+3672-idt-aliases-empty-values: core: Error loading monomer library: MonomerTemplateLibrary: Load of "_Nucleotide1" monomer has failed, monomer definition contains invalid idtAliases value. The value of "base" couldn't be empty
+3695-empty-type: core: Error loading monomer library: MonomerTemplateLibrary: Type: "" is unknown. "_Base1" monomer hasn't been added to the library.
+3695-unknown-type: core: Error loading monomer library: MonomerTemplateLibrary: Type: "wrongTypeHere" is unknown. "_Base1" monomer hasn't been added to the library.
