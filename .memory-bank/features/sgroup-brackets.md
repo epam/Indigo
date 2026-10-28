@@ -4,7 +4,7 @@
 > formulation stand, or when they appear or move.
 > **Skip when:** the question is about superatoms, multiple groups or data S-groups.
 
-Verified on `8efe581f0`. Ticket #3974, under the polymer epic #3971.
+Verified on `1e15006f7`. Ticket #3974, under the polymer epic #3971.
 
 ## Problem
 
@@ -41,9 +41,13 @@ group do not move, even when they do not follow these rules.
 **When** `layout()` or `clean2d()` moves the atoms of a group, **then** the group gets new brackets; a second
 `layout()` of the same structure moves them no more.
 
-**When** a reaction or a pathway is laid out, **then** the brackets move and scale with their molecules.
+**When** a reaction or a pathway is laid out, **then** every bracketed group of a molecule the layout moved or
+scaled gets brackets anew by these rules, also with `layout-preserve-existing`; the brackets of other S-group
+types move and scale with their molecules.
 
-**When** a structure is saved to MOL, **then** zero-length brackets are not written, for any S-group type.
+**When** a structure is saved to MOL, **then** zero-length brackets are not written, for any S-group type; a real
+bracket next to one is written, and a group left with fewer than two real brackets is drawn with the renderer's
+own pair.
 
 ## Guarantees
 
@@ -62,10 +66,10 @@ mock-ups are pinned to four decimals.
 - Labels are measured with an estimated glyph width, 0.7 of the font size per character; the font type is
   not consulted.
 - Two groups with the same atoms and no parent link in the file get coinciding brackets.
-- A group loaded with a single bracket keeps it, and the renderer fails on it (pre-existing).
 - A parent-link loop in a MOL file loads, but saving and cloning the structure still crash (pre-existing).
 - Rigid moves outside the layout (aligning atoms, the standardizer's centering, unfolding hydrogens) leave
-  brackets behind. CDX, CDXML and CML load their groups without brackets.
+  brackets behind. CDX, CDXML and CXSMILES load their groups without brackets, so a MOL converted from them has no
+  `M  SDI` at all.
 - The layout of a reaction can put the components of a mixture so close that their brackets overlap (#3981).
 - A multiple group inside a bracketed group is not re-placed by `clean2d()`, so its parent may stretch to its
   old brackets.

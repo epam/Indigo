@@ -5,7 +5,7 @@
 > **Skip when:** you only need the promised behaviour: that is
 > [../features/sgroup-brackets.md](../features/sgroup-brackets.md).
 
-Verified on `8efe581f0` (ticket #3974).
+Verified on `1e15006f7` (ticket #3974).
 
 ## Responsibility
 
@@ -32,10 +32,12 @@ Callers:
 | `MoleculeLayout::updateSGroups`: the KET loader | at once | at once: every group there has placeholders | default |
 | `MoleculeCleaner2d::do_clean`: `clean2d()`, both passes | after the trivial-structure returns | after the coordinates are written back | default |
 | `MolfileLoader::_postLoad` | at once | at once: only groups without `SDI` / `BRKXYZ` change | default |
+| `ReactionLayout::make`, `PathwayLayout::make`: the metalayout's move and scale of whole molecules | before `Metalayout::process()` / `buildLayoutTree()` | after `process()` / `applyLayout()` | the same options |
 
-Moves that keep the drawing rigid do not re-place: `Metalayout::adjustMol`, `BaseMolecule::scale` and
-`BaseMolecule::offsetCoordinates` carry every group's brackets along through
-`core/indigo-core/molecule/molecule_sgroups.h#transformBrackets` (invariant A13).
+`Metalayout::adjustMol`, `BaseMolecule::scale` and `BaseMolecule::offsetCoordinates` carry every group's real
+brackets along through `core/indigo-core/molecule/molecule_sgroups.h#transformBrackets` (invariant A13); that is
+what the brackets of the other S-group types get, and what the reaction and pathway layouts then override for
+the bracketed types, because a scale changes the margins.
 
 ## How a group is placed
 

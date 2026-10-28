@@ -6,7 +6,7 @@
 Rules that must stay true. Each one is here because breaking it fails **silently** — no compiler
 error, and often no failing test on the machine where the change was made.
 
-Anchors were verified on `f0cc3c423` (master, 2026-09-03); A12 to A14 on `8efe581f0` (2026-10-27); B5 on
+Anchors were verified on `f0cc3c423` (master, 2026-09-03); A12 to A14 on `1e15006f7` (2026-10-28); B5 on
 2026-10-23. An anchor that no longer resolves is a defect in this file: fix it in the same change that moved
 the code.
 
@@ -110,16 +110,21 @@ through `BaseMolecule::offsetCoordinates`, `BaseMolecule::scale` or `Metalayout:
 brackets along (`core/indigo-core/molecule/molecule_sgroups.h#transformBrackets`); a layout that moves atoms
 one by one constructs `SGroupBracketLayout` before the move and calls `update()` after it
 (`core/indigo-core/layout/sgroup_bracket_layout.h#void update()`), which places the brackets of the groups whose
-atoms moved anew. A mover that does neither leaves the brackets where the atoms were, and only a drawing shows
-it. Known gaps: `indigoAlignAtoms`, the centering of the standardizer, the unfolding of hydrogens.
+atoms moved anew; the reaction and pathway layouts do both, since their scale changes the margins. A mover that
+does neither leaves the brackets where the atoms were, and only a drawing shows it. Known gaps: `update()` places only the bracketed types (SRU, COP, COM, MIX, FOR), so `layout()` and
+`clean2d()` leave the brackets of a generic group or a superatom where its atoms were; and `indigoAlignAtoms`,
+the centering of the standardizer and the unfolding of hydrogens move atoms without either call.
 
 **A14 — A zero-length bracket is a placeholder, not a bracket.**
-The KET loader writes a `(0,0)-(0,0)` pair for every group, because the format carries no bracket coordinates.
-`SGroup::hasBrackets()` is the test (`core/indigo-core/molecule/molecule_sgroups.h#hasBrackets`): one zero-length
-bracket means the group has none. The MOL savers skip such pairs
-(`core/indigo-core/molecule/src/molfile_saver.cpp#hasBrackets`), `transformBrackets` leaves them, and the layout
-replaces them. Code that tests `brackets.size() > 0` instead takes a bracket at the origin for a real one; the
-renderer still checks only the first bracket of a group.
+The KET loader writes a `(0,0)-(0,0)` pair for every group, because the format carries no bracket coordinates,
+and the CDXML and CXSMILES loaders leave such pairs too. `SGroup::hasBrackets()` is the test for a group
+(`core/indigo-core/molecule/molecule_sgroups.h#hasBrackets`): one zero-length bracket means the group has none,
+and the layout replaces them. The MOL savers skip each zero-length bracket and keep the real ones next to it
+(`core/indigo-core/molecule/src/molfile_saver.cpp#isZeroLengthBracket`); `transformBrackets` moves the real
+brackets of a group and leaves its placeholders; the renderer takes the file's brackets only when the first two
+are real and draws its own pair otherwise (`core/render2d/src/render_internal.cpp#isBracketsCoordinates`). Code
+that tests `brackets.size() > 0` instead takes a bracket at the origin for a real one: the CML saver writes
+placeholders out that way.
 
 ## Language & platform
 

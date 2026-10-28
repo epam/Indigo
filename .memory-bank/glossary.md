@@ -11,7 +11,7 @@
 | Bracketed S-group | An SRU, COP, COM, MIX or FOR group: drawn with a pair of brackets around its atoms | `layout/sgroup_nesting.cpp`, render2d |
 | BILN | Line notation for biopolymers | `molecule/idt_alias.h`, KET aliases |
 | CIP | Cahn–Ingold–Prelog stereo descriptors (R/S, E/Z) | `molecule/molecule_cip_calculator.h` |
-| Crossing bond | A bond with one atom inside an S-group and the other outside; a bracket may cross it | `layout/src/molecule_layout.cpp`, S-group loaders |
+| Crossing bond | A bond with one atom inside an S-group and the other outside; a bracket may cross it | `molecule/molecule_sgroups.h` (`xbonds`), S-group loaders |
 | CMF | Indigo's compact binary molecule format, used as the stored form in Bingo | `molecule/cmf_*.h` |
 | CTfile | The BIOVIA family of formats: MOL, SDF, RXN, RDF | loaders/savers, `documentation/` |
 | Deconvolution | Splitting a set of structures into a scaffold plus R-group substituents | `indigo-deco`, R-group code |
