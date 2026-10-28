@@ -27,8 +27,11 @@ sgroups/zero-brackets.mol:SUCCEED
 sgroups/zero-brackets-layout.mol:SUCCEED
 sgroups/zero-brackets-layout.mol:SUCCEED
 sgroups/copolymer-from-ket.mol:SUCCEED
+sgroups/sru-valence-out-of-range.mol:SUCCEED
 *** Zero-length brackets are not written ***
 sgroups/zero-brackets-v3000.mol:SUCCEED
+sgroups/gen-sup-zero-next-to-real-v2000.mol:SUCCEED
+sgroups/gen-sup-zero-next-to-real-v3000.mol:SUCCEED
 *** The mock-up structures, as loaded and after layout() ***
 sgroups/f01-sru-straight.mol:SUCCEED
 sgroups/f01-sru-straight-layout.mol:SUCCEED

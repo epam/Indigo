@@ -68,9 +68,21 @@ for filename in files:
 mol = load("copolymer.ket")
 compare_molfile("copolymer-from-ket", mol)
 
+# An explicit valence past the label table adds nothing to the label box
+mol = load("sru-valence-out-of-range.mol")
+compare_molfile("sru-valence-out-of-range", mol)
+
 print("*** Zero-length brackets are not written ***")
 indigo.setOption("molfile-saving-mode", "3000")
 compare_molfile("zero-brackets-v3000", load("zero-brackets.mol"))
+indigo.setOption("molfile-saving-mode", "auto")
+# The real bracket next to a zero-length one is written, for any S-group type
+for mode in ("2000", "3000"):
+    indigo.setOption("molfile-saving-mode", mode)
+    compare_molfile(
+        "gen-sup-zero-next-to-real-v" + mode,
+        load("gen-sup-zero-next-to-real.mol"),
+    )
 indigo.setOption("molfile-saving-mode", "auto")
 
 print("*** The mock-up structures, as loaded and after layout() ***")

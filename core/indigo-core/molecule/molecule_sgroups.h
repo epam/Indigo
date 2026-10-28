@@ -151,6 +151,7 @@ namespace indigo
         // One zero-length bracket means the group has none: loaders write such placeholders where a format has no
         // bracket coordinates
         bool hasBrackets() const;
+        bool isZeroLengthBracket(int bracket_idx) const;
 
         Array<char> label;                  // SMT in Molfile format (LABEL in V3000)
         Nullable<int> brk_style;            // represented with SBT in Molfile format
@@ -365,12 +366,12 @@ namespace indigo
             for (int i = begin(); i != end(); i = next(i))
             {
                 SGroup& sgroup = getSGroup(i);
-                // Placeholders stay as loaders wrote them: some savers write them out as they are
-                if (!sgroup.hasBrackets())
-                    continue;
                 Array<Vec2f[2]>& brackets = sgroup.brackets;
                 for (int j = 0; j < brackets.size(); ++j)
                 {
+                    // Placeholders stay as loaders wrote them: some savers write them out as they are
+                    if (sgroup.isZeroLengthBracket(j))
+                        continue;
                     transform(brackets[j][0]);
                     transform(brackets[j][1]);
                 }

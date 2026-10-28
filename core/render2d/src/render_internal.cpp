@@ -756,7 +756,7 @@ void MoleculeRenderInternal::_loadBracketsAuto(const SGroup& group, Sgroup& sg)
     Array<Vec2f[2]> brackets;
     _placeBrackets(sg, group.atoms, brackets);
 
-    const bool isBracketsCoordinates = group.brackets.size() != 0 && Vec2f::distSqr(group.brackets.at(0)[0], group.brackets.at(0)[1]) > EPSILON;
+    const bool isBracketsCoordinates = group.brackets.size() >= 2 && !group.isZeroLengthBracket(0) && !group.isZeroLengthBracket(1);
     if (isBracketsCoordinates)
     {
         Array<Vec2f[2]> temp;

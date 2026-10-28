@@ -101,9 +101,14 @@ bool SGroup::hasBrackets() const
     if (brackets.size() == 0)
         return false;
     for (int i = 0; i < brackets.size(); ++i)
-        if (Vec2f::distSqr(brackets[i][0], brackets[i][1]) <= EPSILON)
+        if (isZeroLengthBracket(i))
             return false;
     return true;
+}
+
+bool SGroup::isZeroLengthBracket(int bracket_idx) const
+{
+    return Vec2f::distSqr(brackets[bracket_idx][0], brackets[bracket_idx][1]) <= EPSILON;
 }
 
 SGroup::SGroup()
