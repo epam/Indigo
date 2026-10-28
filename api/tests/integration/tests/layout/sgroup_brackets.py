@@ -121,6 +121,10 @@ indigo.setOption("render-label-mode", "all")
 mol = load("f05-issue-1969.mol")
 mol.layout()
 compare_molfile("f05-issue-1969-layout-label-mode-all", mol)
+# The fragments of R-groups are laid out with the same options
+mol = load("rgroup-fragment-sru.mol")
+mol.layout()
+compare_molfile("rgroup-fragment-sru-layout-label-mode-all", mol)
 rxn = indigo.loadReactionFromFile(
     os.path.join(molecules_path, "sru-reaction.rxn")
 )
@@ -130,21 +134,26 @@ compare_diff(
 )
 indigo.setOption("render-label-mode", "terminal-hetero")
 
-print("*** Brackets move with the molecules of a reaction and a pathway ***")
+print(
+    "*** A reaction or a pathway layout places the brackets it moves anew ***"
+)
 rxn = indigo.loadReactionFromFile(
     os.path.join(molecules_path, "sru-reaction.rxn")
 )
 rxn.layout()
 compare_diff(ref_path, "sgroups/sru-reaction-layout.rxn", rxn.rxnfile())
 
+# With the molecules kept as drawn, the layout still scales them to the
+# default bond length, and the brackets follow the rules at the new scale
 indigo.setOption("layout-preserve-existing", True)
-rxn = indigo.loadReactionFromFile(
-    os.path.join(molecules_path, "sru-reaction.rxn")
-)
-rxn.layout()
-compare_diff(
-    ref_path, "sgroups/sru-reaction-layout-preserve.rxn", rxn.rxnfile()
-)
+for filename in ["sru-reaction", "sru-reaction-scaled"]:
+    rxn = indigo.loadReactionFromFile(
+        os.path.join(molecules_path, filename + ".rxn")
+    )
+    rxn.layout()
+    compare_diff(
+        ref_path, "sgroups/" + filename + "-layout-preserve.rxn", rxn.rxnfile()
+    )
 indigo.setOption("layout-preserve-existing", False)
 
 pathway = indigo.loadReactionFromFile(

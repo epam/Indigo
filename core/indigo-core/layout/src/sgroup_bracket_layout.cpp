@@ -34,6 +34,11 @@ SGroupBracketLayout::SGroupBracketLayout(BaseMolecule& molecule, float font_size
         Vec2f::projectZ(_initialPositions[i], molecule.getAtomXyz(i));
 }
 
+float SGroupBracketLayout::labelFontSizeInAngstroms(const LayoutOptions& options)
+{
+    return options.fontSize > EPSILON ? options.getFontSizeInAngstroms() : DEFAULT_FONT_SIZE;
+}
+
 void SGroupBracketLayout::update()
 {
     std::vector<int> to_place;
@@ -43,7 +48,7 @@ void SGroupBracketLayout::update()
         if (!sgroup.hasBrackets() || _hasMoved(sgroup))
             to_place.push_back(sgroup_idx);
     }
-    if (to_place.empty() || !_hasCoordinates())
+    if (to_place.empty() || _allAtomsAtOnePoint())
         return;
     for (int sgroup_idx : to_place)
         _setBrackets(_molecule.sgroups.getSGroup(sgroup_idx), _bracketsBox(sgroup_idx));
@@ -61,19 +66,18 @@ bool SGroupBracketLayout::_hasMoved(const SGroup& sgroup) const
     return false;
 }
 
-// A structure without coordinates has all its atoms at one point
-bool SGroupBracketLayout::_hasCoordinates() const
+bool SGroupBracketLayout::_allAtomsAtOnePoint() const
 {
     if (_molecule.vertexCount() < 2)
-        return true;
+        return false;
     const Vec3f& first = _molecule.getAtomXyz(_molecule.vertexBegin());
     for (int i = _molecule.vertexNext(_molecule.vertexBegin()); i != _molecule.vertexEnd(); i = _molecule.vertexNext(i))
     {
         const Vec3f& other = _molecule.getAtomXyz(i);
         if (std::abs(other.x - first.x) > EPSILON || std::abs(other.y - first.y) > EPSILON)
-            return true;
+            return false;
     }
-    return false;
+    return true;
 }
 
 Rect2f SGroupBracketLayout::_bracketsBox(int sgroup_idx) const

@@ -347,8 +347,7 @@ void MoleculeLayout::updateSGroups()
 
 void MoleculeLayout::setLabelOptions(const LayoutOptions& options)
 {
-    if (options.fontSize > EPSILON)
-        label_font_size = options.getFontSizeInAngstroms();
+    label_font_size = SGroupBracketLayout::labelFontSizeInAngstroms(options);
     label_mode = options.labelMode;
 }
 
@@ -375,6 +374,8 @@ void MoleculeLayout::make()
                     layout.max_iterations = max_iterations;
                     layout.layout_orientation = layout_orientation;
                     layout.bond_length = bond_length;
+                    layout.label_font_size = label_font_size;
+                    layout.label_mode = label_mode;
                     layout.haptic_bond_multiplier = haptic_bond_multiplier;
                     layout.multiple_distance = multiple_distance;
                     layout.make();

@@ -64,8 +64,10 @@ sgroups/f14-three-on-one-bond-layout.mol:SUCCEED
 *** Labels are measured at the font size and label mode of the options ***
 sgroups/f05-issue-1969-layout-font-80.mol:SUCCEED
 sgroups/f05-issue-1969-layout-label-mode-all.mol:SUCCEED
+sgroups/rgroup-fragment-sru-layout-label-mode-all.mol:SUCCEED
 sgroups/sru-reaction-layout-label-mode-all.rxn:SUCCEED
-*** Brackets move with the molecules of a reaction and a pathway ***
+*** A reaction or a pathway layout places the brackets it moves anew ***
 sgroups/sru-reaction-layout.rxn:SUCCEED
 sgroups/sru-reaction-layout-preserve.rxn:SUCCEED
+sgroups/sru-reaction-scaled-layout-preserve.rxn:SUCCEED
 sgroups/sru-pathway.rdf:SUCCEED
