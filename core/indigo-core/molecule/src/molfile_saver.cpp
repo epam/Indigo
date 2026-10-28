@@ -1293,6 +1293,8 @@ void MolfileSaver::_writeGenericSGroup3000(SGroup& sgroup, const SGroupInfo& inf
     }
     for (i = 0; i < sgroup.brackets.size(); i++)
     {
+        if (sgroup.isZeroLengthBracket(i))
+            continue;
         Vec2f* brackets = sgroup.brackets[i];
         output.printf(" BRKXYZ=(9 %f %f %f %f %f %f %f %f %f)", brackets[0].x, brackets[0].y, 0.f, brackets[1].x, brackets[1].y, 0.f, 0.f, 0.f, 0.f);
     }
@@ -2029,6 +2031,8 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             }
             for (j = 0; j < sgroup.brackets.size(); j++)
             {
+                if (sgroup.isZeroLengthBracket(j))
+                    continue;
                 output.printf("M  SDI %3d  4 %9.4f %9.4f %9.4f %9.4f\n", wi, sgroup.brackets[j][0].x, sgroup.brackets[j][0].y, sgroup.brackets[j][1].x,
                               sgroup.brackets[j][1].y);
             }

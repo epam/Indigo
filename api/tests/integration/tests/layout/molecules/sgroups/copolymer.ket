@@ -1,0 +1,142 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "mol0"
+            }
+        ]
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "*",
+                "location": [
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.8659999966621399,
+                    0.5,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    1.732100009918213,
+                    0.0,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    2.598099946975708,
+                    0.5,
+                    0.0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    3.464099884033203,
+                    0.0,
+                    0.0
+                ]
+            },
+            {
+                "label": "*",
+                "location": [
+                    4.330100059509277,
+                    0.5,
+                    0.0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    4
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    4,
+                    5
+                ]
+            }
+        ],
+        "sgroups": [
+            {
+                "type": "COP",
+                "atoms": [
+                    1,
+                    2,
+                    3,
+                    4
+                ],
+                "subtype": "BLO",
+                "connectivity": "EU",
+                "bonds": [
+                    0,
+                    4
+                ]
+            },
+            {
+                "type": "SRU",
+                "atoms": [
+                    1,
+                    2
+                ],
+                "subscript": "n",
+                "connectivity": "HT",
+                "bonds": [
+                    0,
+                    2
+                ]
+            },
+            {
+                "type": "SRU",
+                "atoms": [
+                    3,
+                    4
+                ],
+                "subscript": "m",
+                "connectivity": "HT",
+                "bonds": [
+                    2,
+                    4
+                ]
+            }
+        ]
+    }
+}
