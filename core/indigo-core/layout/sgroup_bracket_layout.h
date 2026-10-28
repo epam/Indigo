@@ -45,8 +45,8 @@ namespace indigo
         // In bond lengths
         static constexpr float HORIZONTAL_MARGIN = 0.1f;
         static constexpr float VERTICAL_MARGIN = 0.3f;
-        static constexpr float HORIZONTAL_SPACE = 0.2f;
-        static constexpr float VERTICAL_SPACE = 0.2f;
+        static constexpr float HORIZONTAL_SPACE = 0.3f;
+        static constexpr float VERTICAL_SPACE = 0.3f;
         static constexpr float DEFAULT_FONT_SIZE =
             LayoutOptions::DEFAULT_FONT_SIZE_PX / LayoutOptions::DEFAULT_BOND_LENGTH_PX * LayoutOptions::DEFAULT_BOND_LENGTH;
 

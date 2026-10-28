@@ -16,7 +16,7 @@ BIOVIA Draw to read.
 Brackets are a property of the layout, computed in the core by `SGroupBracketLayout` and `SGroupNesting`,
 never by the renderer or by a loader directly. Every bracketed group gets exactly two vertical brackets at
 fixed margins: 0.1 bond lengths left and right of the box of its atom labels and 0.3 above and below it, and
-0.2 outside the brackets of the groups nested in it, whichever reaches further. The unit is the default bond
+0.3 outside the brackets of the groups nested in it, whichever reaches further. The unit is the default bond
 length constant, the label boxes come from the existing `getAtomBoundingBox` estimate at the font of the
 layout options, and brackets read from a file are kept while their atoms stay. Nothing outside the group is
 consulted.

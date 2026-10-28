@@ -27,7 +27,7 @@ V3000 (`BRKXYZ`). `layout()` measures atom labels at the session's `render-font-
 two vertical brackets, 0.1 bond lengths left and right of the box of its atom labels, running from 0.3 below
 that box to 0.3 above it, the opening bracket on the left.
 
-**When** a group is nested in another, **then** the parent's brackets stand 0.2 outside the child's brackets
+**When** a group is nested in another, **then** the parent's brackets stand 0.3 outside the child's brackets
 on every side, or 0.1 and 0.3 outside the parent's own atoms where those reach further.
 
 **When** `layout()` runs with `render-font-size` or `render-label-mode` set, **then** the labels are measured

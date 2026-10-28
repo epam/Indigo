@@ -48,7 +48,7 @@ children. For one group (`core/indigo-core/layout/src/sgroup_bracket_layout.cpp#
    its label otherwise, as `core/indigo-core/molecule/src/base_molecule_properties.cpp#getAtomBoundingBox`
    estimates it (`core/indigo-core/layout/src/sgroup_bracket_layout.cpp#_atomsBox`).
 2. **Margin and space**: the atoms box grows by the margin, 0.1 bond lengths to the left and the right and 0.3
-   up and down; the box spanned by each child's brackets grows by the space, 0.2 on every side. The brackets
+   up and down; the box spanned by each child's brackets grows by the space, 0.3 on every side. The brackets
    stand on the left and the right side of the union of these boxes, so whichever reaches further wins
    (`core/indigo-core/layout/sgroup_bracket_layout.h#HORIZONTAL_MARGIN`). A group without children gets
    exactly the margin; a parent whose children cover its atoms gets exactly the space past their brackets.
@@ -73,7 +73,7 @@ be a child, never a parent.
   proportion with its bonds.
 - **Nothing outside the group is looked at.** A bracket runs through a neighbouring atom, the `*` at a chain
   end or a label when it stands within the margin; the texts of a child (`n`, the repeat pattern, #3976) are not
-  part of the child's bracket box, so a parent bracket 0.2 away can touch them. There is no least length: a
+  part of the child's bracket box, so a parent bracket 0.3 away can still touch a long one. There is no least length: a
   one-atom group without a label gets brackets 0.6 long.
 - **The font comes from the layout options only in `layout()`.** The option is a size relative to the bond
   length (`core/indigo-core/layout/metalayout.h#getFontSizeInAngstroms`); 40 pt at the default 100 px bond is

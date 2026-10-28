@@ -249,7 +249,7 @@ TEST_F(IndigoCoreSGroupBracketsTest, Layout_Parent_StandsAtWhicheverReachesFurth
     SGroupBracketLayout(mol, NO_FONT).update();
 
     // Left and right: the margin past its own atoms 0 and 3. Top and bottom: the space past the child's brackets
-    expectBrackets(mol.sgroups.getSGroup(copolymer), 0.f - 0.1f, -0.3f - 0.2f, 3.f + 0.1f, 0.8f + 0.2f);
+    expectBrackets(mol.sgroups.getSGroup(copolymer), 0.f - 0.1f, -0.3f - 0.3f, 3.f + 0.1f, 0.8f + 0.3f);
     expectBrackets(mol.sgroups.getSGroup(unit), 0.9f, -0.3f, 2.1f, 0.8f);
 }
 
@@ -263,7 +263,7 @@ TEST_F(IndigoCoreSGroupBracketsTest, Layout_ParentOfTheSameAtoms_StandsAtTheSpac
 
     SGroupBracketLayout(mol, NO_FONT).update();
 
-    expectBrackets(mol.sgroups.getSGroup(copolymer), 0.9f - 0.2f, -0.3f - 0.2f, 2.1f + 0.2f, 0.8f + 0.2f);
+    expectBrackets(mol.sgroups.getSGroup(copolymer), 0.9f - 0.3f, -0.3f - 0.3f, 2.1f + 0.3f, 0.8f + 0.3f);
 }
 
 TEST_F(IndigoCoreSGroupBracketsTest, Layout_LoadedBrackets_KeptWhileTheAtomsStay)
