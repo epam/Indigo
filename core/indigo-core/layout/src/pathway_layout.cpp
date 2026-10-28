@@ -28,8 +28,8 @@ IMPL_ERROR(PathwayLayout, "pathway_layout");
 void PathwayLayout::make()
 {
     std::vector<SGroupBracketLayout> brackets;
-    brackets.reserve(static_cast<size_t>(_reaction.getMoleculeCount()));
-    for (int i = 0; i < _reaction.getMoleculeCount(); i++)
+    brackets.reserve(static_cast<size_t>(_reaction.count()));
+    for (int i = _reaction.begin(); i != _reaction.end(); i = _reaction.next(i))
         brackets.emplace_back(_reaction.getMolecule(i), SGroupBracketLayout::labelFontSizeInAngstroms(_options), _options.labelMode);
     buildLayoutTree();
     auto roots = _reaction.getRootReactions();
