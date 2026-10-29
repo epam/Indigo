@@ -662,8 +662,14 @@ void IndigoCanonicalSmilesSaver::generateSmarts(IndigoObject& obj, Array<char>& 
         CanonicalSmilesSaver saver(output);
         saver.smarts_mode = true;
 
+        // Query molecules cannot use the implicit-hydrogen elision path: the
+        // base saver rejects ignore_hydrogens for query molecules.  SMARTS
+        // output must preserve query atom hydrogen constraints instead.
         if (mol.isQueryMolecule())
+        {
+            saver.ignore_hydrogens = false;
             saver.saveQueryMolecule(mol.asQueryMolecule());
+        }
         else
             saver.saveMolecule(mol.asMolecule());
     }
