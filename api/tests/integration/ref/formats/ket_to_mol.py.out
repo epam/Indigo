@@ -3,6 +3,7 @@
 3178-any-bond.mol:SUCCEED
 3227-copolymer.mol:SUCCEED
 3343-dir-expanded.mol:SUCCEED
+4004-no-seqid-base.mol:SUCCEED
 5amd.mol:SUCCEED
 accl_no_class.mol:SUCCEED
 acgt_1412.mol:SUCCEED

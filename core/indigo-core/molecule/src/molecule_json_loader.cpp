@@ -2047,7 +2047,12 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
         monomer_id_mapping.emplace(monomer_id, idx);
 
         if (ma.HasMember("seqid"))
-            mol.setTemplateAtomSeqid(idx, ma["seqid"].GetInt());
+        {
+            int val = ma["seqid"].GetInt();
+            if (val < 1)
+                throw Error("Invalid \"seqid\" value");
+            mol.setTemplateAtomSeqid(idx, val);
+        }
 
         if (ma.HasMember("annotation"))
         {
