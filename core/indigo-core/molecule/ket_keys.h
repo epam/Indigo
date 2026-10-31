@@ -22,7 +22,7 @@
 #include "molecule/molecule_sgroups.h"
 
 // Field names of the KET wire format, shared by its readers and writers.
-// Covers haptic bonds and S-groups; the rest of the vocabulary is still inline.
+// Covers the document version, haptic bonds and S-groups; the rest of the vocabulary is still inline.
 //
 // A KetKey prefix marks a JSON key. Names without it are KET *values*, in the style
 // of KetConnectionSingle / KetConnectionHydro (monomers_defs.h). The prefix also
@@ -31,6 +31,9 @@
 
 namespace indigo
 {
+    // On the document object, next to "root".
+    inline constexpr const char* KetKeyKetVersion = "ket_version";
+
     // Generic keys: each is spelled the same wherever it appears, but says nothing
     // about what the object around it is. "type" alone distinguishes a molecule
     // node from an rgroup, a monomerTemplate, a query component and an atom list.
