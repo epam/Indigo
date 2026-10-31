@@ -24,6 +24,8 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cstdio>
+#include <cstring>
 #include <iterator>
 #include <string_view>
 #include <typeindex>
@@ -155,6 +157,11 @@ static const char* const QUERY_TYPE_QUERY = "IQ";
 static const char* const QUERY_OPERATORS[] = {"=", "<>", "<", "<=", ">", ">=", "BETWEEN", "CONTAINS", "LIKE"};
 static constexpr int MIN_DASP_POSITION = 1;
 static constexpr int MAX_DASP_POSITION = 9;
+// F10.4: ten columns, four of them decimals, one a sign
+static constexpr double MIN_DISPLAY_COORDINATE = -9999.9999;
+static constexpr double MAX_DISPLAY_COORDINATE = 99999.9999;
+// "%.4f" of a coordinate in range; snprintf cuts what does not fit
+static constexpr std::size_t DISPLAY_COORDINATE_TEXT_SIZE = 64;
 
 static std::string_view trimmedText(const char* text)
 {
@@ -188,6 +195,26 @@ bool DataSGroup::isValidQueryOperator(const char* text)
     const std::string_view value = trimmedText(text);
     return value.empty() || std::any_of(std::begin(QUERY_OPERATORS), std::end(QUERY_OPERATORS),
                                         [&](const char* query_operator) { return equalsIgnoringCase(value, query_operator); });
+}
+
+bool DataSGroup::isValidDisplayedChars(int count)
+{
+    return count >= 0 && count <= MAX_DISPLAYED_CHARS;
+}
+
+bool DataSGroup::isValidDisplayCoordinate(double coordinate)
+{
+    return coordinate >= MIN_DISPLAY_COORDINATE && coordinate <= MAX_DISPLAY_COORDINATE;
+}
+
+bool DataSGroup::keepsDisplayCoordinate(double coordinate)
+{
+    // the text F10.4 writes, of the value given and of the value display_pos keeps
+    char given[DISPLAY_COORDINATE_TEXT_SIZE];
+    char kept[DISPLAY_COORDINATE_TEXT_SIZE];
+    snprintf(given, sizeof(given), "%.4f", coordinate);
+    snprintf(kept, sizeof(kept), "%.4f", static_cast<double>(static_cast<float>(coordinate)));
+    return std::strcmp(given, kept) == 0;
 }
 
 bool DataSGroup::isValidDaspPosition(int position)

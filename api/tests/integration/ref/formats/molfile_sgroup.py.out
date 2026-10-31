@@ -23,10 +23,6 @@ multiline-sgroups-ketcher-457-v3000-2000.mol:SUCCEED
 multiline-sgroups-ketcher-457-v3000-2000.mol reload:SUCCEED
 multiline-sgroups-ketcher-457-v3000-3000.mol:SUCCEED
 multiline-sgroups-ketcher-457-v3000-3000.mol reload:SUCCEED
-data-displayed-chars-out-of-range-2000.mol:SUCCEED
-data-displayed-chars-out-of-range-2000.mol reload:SUCCEED
-data-displayed-chars-out-of-range-3000.mol:SUCCEED
-data-displayed-chars-out-of-range-3000.mol reload:SUCCEED
 v2000-data-query-operators-2000.mol:SUCCEED
 v2000-data-query-operators-2000.mol reload:SUCCEED
 v2000-data-query-operators-3000.mol:SUCCEED
@@ -83,8 +79,12 @@ v3000-fielddata-forms-2000.mol:SUCCEED
 v3000-fielddata-forms-2000.mol reload:SUCCEED
 v3000-fielddata-forms-3000.mol:SUCCEED
 v3000-fielddata-forms-3000.mol reload:SUCCEED
+sgroup/data-displayed-chars-above-limit.ket: molecule json loader: S-group #0 of molecule #0 has 'displayedChars' 1000, which is not a valid number of characters to display
+sgroup/data-displayed-chars-negative.ket: molecule json loader: S-group #0 of molecule #0 has 'displayedChars' -5, which is not a valid number of characters to display
 sgroup/v2000-sdd-character-count-negative.mol: molfile loader: M SDD of Sgroup 1: '-5' is not a valid number of characters to display
 sgroup/v2000-sdd-character-count-negative-compact.mol: molfile loader: M SDD of Sgroup 1: '-5' is not a valid number of characters to display
+sgroup/v2000-sdd-coordinate-not-a-number.mol: molfile loader: M SDD of Sgroup 1: 'abc' is not a valid coordinate of the value
+sgroup/v2000-sdd-coordinate-not-kept.mol: molfile loader: M SDD of Sgroup 1: '-9999.9999' cannot be kept to four decimals
 sgroup/v2000-sdd-dasp-position-unknown.mol: molfile loader: M SDD of Sgroup 1: 'A' is not a valid DASP position
 sgroup/v2000-sdt-field-type-unknown.mol: molfile loader: M SDT of Sgroup 1: 'X' is not a valid field type
 sgroup/v2000-sdt-query-operator-unknown.mol: molfile loader: M SDT of Sgroup 1: 'QBETWEEN' is not a valid query operator

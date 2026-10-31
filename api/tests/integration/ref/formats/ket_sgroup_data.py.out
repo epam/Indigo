@@ -1,0 +1,12 @@
+*** KET data S-groups ***
+*** Values at the limits of the KET 2.0 keys ***
+data-keys-at-limits-saved.ket:SUCCEED
+*** KET 2.0 keys with values outside the contract ***
+rejected-field-name-not-string: molecule json loader: S-group #0 of molecule #0 has 'fieldName' 5, which is not a string
+rejected-placement-not-boolean: molecule json loader: S-group #0 of molecule #0 has 'placement' 1, which is not a boolean
+rejected-query-operator-unknown: molecule json loader: S-group #0 of molecule #0 has 'queryOp' "QBETWEEN", which is not a valid query operator
+rejected-query-type-unknown: molecule json loader: S-group #0 of molecule #0 has 'queryType' "Q", which is not a valid query type
+rejected-tag-two-characters: molecule json loader: S-group #0 of molecule #0 has 'tag' "ab", which is not a single character
+rejected-x-four-decimals-lost: molecule json loader: S-group #0 of molecule #0 has 'x' 1234.5678, which cannot be kept to four decimals
+rejected-x-not-number: molecule json loader: S-group #0 of molecule #0 has 'x' "1.5", which is not a valid coordinate of the value
+rejected-y-beyond-f10-4: molecule json loader: S-group #0 of molecule #0 has 'y' -10000.0, which is not a valid coordinate of the value

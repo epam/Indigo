@@ -154,8 +154,8 @@ namespace indigo
         void _checkEndOfMolBlock3000();
         // property and sgroup_number name the line in a message, as "M SDD of Sgroup 3" or "FIELDDISP of Sgroup 3"
         void _readSGroupDisplay(Scanner& scanner, DataSGroup& dsg, const char* property, int sgroup_number);
-        // Fails with "<property> of Sgroup <n>: '<value>' is not a valid <field>" unless the value is valid
-        void _checkDataField(bool valid, const char* property, int sgroup_number, const char* value, const char* field);
+        // Fails with "<property> of Sgroup <n>: '<value>' <reason>" unless the value is valid
+        void _checkDataField(bool valid, const char* property, int sgroup_number, const char* value, const char* reason);
         // Give an S-group what a V2000 or V3000 property says about it. A value that is not understood - an
         // unknown connectivity code, an order that is not positive - or that the S-group type does not carry
         // is skipped and the molecule still loads.

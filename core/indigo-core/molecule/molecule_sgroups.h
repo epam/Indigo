@@ -212,20 +212,26 @@ namespace indigo
         void setMrv_implicit(int atom_idx, int hydrogens_count);
 
         // The values the molfile format allows in the fields of a data S-group (CTfile: M  SDT, M  SDD, M  SED).
-        // A blank text is a field that is not set. A reader rejects any other value as "'<value>' is not a valid
-        // <field>", with the name declared next to the check.
-        static constexpr const char* FIELD_TYPE = "field type";
+        // A blank text is a field that is not set. A reader rejects anything else with the reason declared next to
+        // the check, after the value: "'QBETWEEN' is not a valid query operator".
         static bool isValidFieldType(const char* text); // F, N or T
-        static constexpr const char* QUERY_TYPE = "query type";
+        static constexpr const char* INVALID_FIELD_TYPE = "is not a valid field type";
         static bool isValidQueryType(const char* text); // IQ
-        static constexpr const char* QUERY_OPERATOR = "query operator";
+        static constexpr const char* INVALID_QUERY_TYPE = "is not a valid query type";
         static bool isValidQueryOperator(const char* text); // =, <>, <, <=, >, >=, BETWEEN, CONTAINS or LIKE, any case
-        static constexpr const char* DISPLAYED_CHARS = "number of characters to display";
-        static constexpr int MAX_DISPLAYED_CHARS = 999; // three columns of M  SDD; 0 in num_chars stands for ALL
-        static constexpr const char* DASP_POSITION = "DASP position";
+        static constexpr const char* INVALID_QUERY_OPERATOR = "is not a valid query operator";
+        static constexpr int MAX_DISPLAYED_CHARS = 999; // three columns of M  SDD
+        static bool isValidDisplayedChars(int count);   // 0 for all of them (ALL in a molfile), 1 to MAX_DISPLAYED_CHARS
+        static constexpr const char* INVALID_DISPLAYED_CHARS = "is not a valid number of characters to display";
+        static bool isValidDisplayCoordinate(double coordinate); // what F10.4 of M  SDD holds: -9999.9999 to 99999.9999
+        static constexpr const char* INVALID_DISPLAY_COORDINATE = "is not a valid coordinate of the value";
+        // display_pos keeps single precision: whether the four decimals of F10.4 survive it (1234.5678 does not)
+        static bool keepsDisplayCoordinate(double coordinate);
+        static constexpr const char* NOT_KEPT_DISPLAY_COORDINATE = "cannot be kept to four decimals";
         static bool isValidDaspPosition(int position); // 1 to 9
-        static constexpr const char* NUMERIC_VALUE = "numeric value";
+        static constexpr const char* INVALID_DASP_POSITION = "is not a valid DASP position";
         static bool isValidNumber(const char* text);
+        static constexpr const char* INVALID_NUMBER = "is not a valid numeric value";
         // A NUMERIC field holding data rather than a query: each of its lines must be a number
         bool holdsNumbers() const;
 
