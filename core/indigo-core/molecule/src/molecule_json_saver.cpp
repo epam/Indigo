@@ -95,23 +95,7 @@ MoleculeJsonSaver::MoleculeJsonSaver(Output& output, ReactionMultistepDetector& 
 
 void MoleculeJsonSaver::parseFormatMode(const char* version_str, KETVersion& version)
 {
-    auto version_data = split(version_str, '.');
-    for (size_t i = 0; i < version_data.size(); ++i)
-    {
-        int val = std::stoi(version_data[i]);
-        switch (static_cast<KETVersionIndex>(i))
-        {
-        case KETVersionIndex::EMajor:
-            version.major = val;
-            break;
-        case KETVersionIndex::EMinor:
-            version.minor = val;
-            break;
-        case KETVersionIndex::EPatch:
-            version.patch = val;
-            break;
-        }
-    }
+    version = parseKETVersion(version_str);
 }
 
 void MoleculeJsonSaver::saveFormatMode(KETVersion& version, Array<char>& output)
@@ -1637,7 +1621,7 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
     // save KET version
     if (ket_version.major > KETVersion1.major)
     {
-        writer.Key("ket_version");
+        writer.Key(KetKeyKetVersion);
         Array<char> version_str;
         saveFormatMode(ket_version, version_str);
         writer.String(version_str.ptr());

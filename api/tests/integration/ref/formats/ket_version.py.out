@@ -1,0 +1,17 @@
+*** KET version ***
+text-2.0.0.ket saved as 2.0.0:SUCCEED
+text-2.0.0.ket saved as 2.1.0:SUCCEED
+text-2.1.0.ket saved as 2.0.0:SUCCEED
+text-2.1.0.ket saved as 2.1.0:SUCCEED
+text-10.0.0.ket saved as 2.0.0:SUCCEED
+text-10.0.0.ket saved as 2.1.0:SUCCEED
+text-2.1.0-rc.1.ket saved as 2.0.0:SUCCEED
+text-2.1.0-rc.1.ket saved as 2.1.0:SUCCEED
+text-saved-2.1.0.ket reloaded:SUCCEED
+version-not-a-number.ket: 'abc' is not a valid KET version
+version-four-parts.ket: '2.0.0.1' is not a valid KET version
+version-trailing-dot.ket: '2.' is not a valid KET version
+version-number.ket: molecule json loader: ket_version must be a string
+ket-saving-version 2.1: 2.1.0
+ket-saving-version 2.1.0-rc.1: 2.1.0
+ket-saving-version abc: 'abc' is not a valid KET version

@@ -98,9 +98,12 @@ MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
 void MoleculeJsonLoader::parse_ket(Document& ket)
 {
     _derive_sgroup_parents = !documentNamesSGroupParent(ket);
-    if (ket.HasMember("ket_version"))
+    if (ket.HasMember(KetKeyKetVersion))
     {
-        _ket_version = ket["ket_version"].GetString();
+        const Value& ket_version = ket[KetKeyKetVersion];
+        if (!ket_version.IsString())
+            throw Error("%s must be a string", KetKeyKetVersion);
+        _ket_version = parseKETVersion(ket_version.GetString());
     }
 
     Value& root = ket["root"];
@@ -2668,8 +2671,7 @@ void MoleculeJsonLoader::loadMetaObjects(rapidjson::Value& meta_objects, MetaDat
                 }
                 else if (node_type == "text")
                 {
-                    std::string ver2 = std::to_string(KETVersion2.major) + "." + std::to_string(KETVersion2.minor) + "." + std::to_string(KETVersion2.patch);
-                    if (_ket_version == ver2)
+                    if (_ket_version >= KETVersion2)
                         meta_interface.addMetaObject(new SimpleTextObject(mobj));
                 }
             }
