@@ -196,64 +196,64 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer, int id, i
         auto data = dsg.data.ptr();
         if (name && strlen(name))
         {
-            writer.Key("fieldName");
+            writer.Key(KetKeyFieldNameV2_0);
             writer.String(name);
         }
         if (data && strlen(data))
         {
-            writer.Key("fieldData");
+            writer.Key(KetKeyFieldData);
             writer.String(data);
         }
         auto field_type = dsg.description.ptr();
         if (field_type && strlen(field_type))
         {
-            writer.Key("fieldType");
+            writer.Key(KetKeyFieldTypeV2_0);
             writer.String(field_type);
         }
         auto query_code = dsg.querycode.ptr();
         if (query_code && strlen(query_code))
         {
-            writer.Key("queryType");
+            writer.Key(KetKeyQueryTypeV2_0);
             writer.String(query_code);
         }
         auto query_oper = dsg.queryoper.ptr();
         if (query_oper && strlen(query_oper))
         {
-            writer.Key("queryOp");
+            writer.Key(KetKeyQueryOpV2_0);
             writer.String(query_oper);
         }
 
         if (dsg.display_pos.has_value())
         {
             const Vec2f& display_pos = dsg.display_pos.value();
-            writer.Key("x");
+            writer.Key(KetKeyXV2_0);
             writeFloat(writer, display_pos.x);
-            writer.Key("y");
+            writer.Key(KetKeyYV2_0);
             writeFloat(writer, display_pos.y);
         }
 
         if (!dsg.detached)
         {
-            writer.Key("dataDetached");
+            writer.Key(KetKeyDataDetachedV2_0);
             writer.Bool(false);
         }
 
         if (dsg.relative)
         {
-            writer.Key("placement");
+            writer.Key(KetKeyPlacementV2_0);
             writer.Bool(true);
         }
 
         if (dsg.display_units)
         {
-            writer.Key("display");
+            writer.Key(KetKeyDisplayV2_0);
             writer.Bool(true);
         }
 
         char tag = dsg.tag.value_or(0);
         if (tag != 0 && tag != ' ')
         {
-            writer.Key("tag");
+            writer.Key(KetKeyTagV2_0);
             std::string tag_s{tag};
             writer.String(tag_s.c_str());
         }
@@ -261,7 +261,7 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer, int id, i
         const int num_chars = dsg.num_chars.value_or(0);
         if (num_chars > 0)
         {
-            writer.Key("displayedChars");
+            writer.Key(KetKeyDisplayedCharsV2_0);
             writer.Int(num_chars);
         }
     }

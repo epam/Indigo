@@ -74,6 +74,24 @@ namespace indigo
     inline constexpr const char* KetKeyMultiplier = "mul";
     inline constexpr const char* KetSGroupQueryComponent = "queryComponent"; // value of KetKeyType, a query feature
 
+    // The value of a data S-group.
+    inline constexpr const char* KetKeyFieldData = "fieldData";
+
+    // Deprecated since KET 2.1, removed in KET 3.0: the keys of KET 2.0 on a data S-group for its field and its
+    // display. A KET 2.1 document carries the same values in dataFieldDescription and dataDisplayInformation; the
+    // comment after a key names its place there.
+    inline constexpr const char* KetKeyFieldNameV2_0 = "fieldName";           // dataFieldDescription.fieldName
+    inline constexpr const char* KetKeyFieldTypeV2_0 = "fieldType";           // dataFieldDescription.fieldUnits
+    inline constexpr const char* KetKeyQueryTypeV2_0 = "queryType";           // dataFieldDescription.queryType
+    inline constexpr const char* KetKeyQueryOpV2_0 = "queryOp";               // dataFieldDescription.queryOperator
+    inline constexpr const char* KetKeyXV2_0 = "x";                           // dataDisplayInformation.position.x
+    inline constexpr const char* KetKeyYV2_0 = "y";                           // dataDisplayInformation.position.y
+    inline constexpr const char* KetKeyPlacementV2_0 = "placement";           // dataDisplayInformation.placement
+    inline constexpr const char* KetKeyDisplayV2_0 = "display";               // dataDisplayInformation.display
+    inline constexpr const char* KetKeyDataDetachedV2_0 = "dataDetached";     // dataDisplayInformation.display, read only
+    inline constexpr const char* KetKeyDisplayedCharsV2_0 = "displayedChars"; // dataDisplayInformation.displayedChars
+    inline constexpr const char* KetKeyTagV2_0 = "tag";                       // dataDisplayInformation.fieldTag
+
     // The S-group types KET carries; the others are refused by its reader and its writer.
     inline bool isKetSGroupType(int sg_type)
     {
