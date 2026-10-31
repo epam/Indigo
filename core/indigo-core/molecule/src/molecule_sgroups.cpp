@@ -23,6 +23,9 @@
 #include "molecule/molecule_sgroups.h"
 
 #include <algorithm>
+#include <cctype>
+#include <iterator>
+#include <string_view>
 #include <typeindex>
 #include <unordered_map>
 
@@ -144,6 +147,92 @@ void DataSGroup::setMrv_implicit(int atom_idx, int hydrogens_count)
     data.readString(sdata.c_str(), true);
     name.readString(mrv_implicit_h, true);
     detached = true;
+}
+
+static const char* const FIELD_TYPES[] = {"F", "N", "T"};
+static const char* const NUMERIC_FIELD_TYPE = "N";
+static const char* const QUERY_TYPE_QUERY = "IQ";
+static const char* const QUERY_OPERATORS[] = {"=", "<>", "<", "<=", ">", ">=", "BETWEEN", "CONTAINS", "LIKE"};
+static constexpr int MIN_DASP_POSITION = 1;
+static constexpr int MAX_DASP_POSITION = 9;
+
+static std::string_view trimmedText(const char* text)
+{
+    const std::string_view value = text != nullptr ? text : "";
+    const auto first = value.find_first_not_of(' ');
+    if (first == std::string_view::npos)
+        return {};
+    return value.substr(first, value.find_last_not_of(' ') - first + 1);
+}
+
+static bool equalsIgnoringCase(std::string_view lhs, std::string_view rhs)
+{
+    return lhs.size() == rhs.size() &&
+           std::equal(lhs.begin(), lhs.end(), rhs.begin(), [](char l, char r) { return std::toupper((unsigned char)l) == std::toupper((unsigned char)r); });
+}
+
+bool DataSGroup::isValidFieldType(const char* text)
+{
+    const std::string_view value = trimmedText(text);
+    return value.empty() || std::any_of(std::begin(FIELD_TYPES), std::end(FIELD_TYPES), [&](const char* type) { return value == type; });
+}
+
+bool DataSGroup::isValidQueryType(const char* text)
+{
+    const std::string_view value = trimmedText(text);
+    return value.empty() || value == QUERY_TYPE_QUERY;
+}
+
+bool DataSGroup::isValidQueryOperator(const char* text)
+{
+    const std::string_view value = trimmedText(text);
+    return value.empty() || std::any_of(std::begin(QUERY_OPERATORS), std::end(QUERY_OPERATORS),
+                                        [&](const char* query_operator) { return equalsIgnoringCase(value, query_operator); });
+}
+
+bool DataSGroup::isValidDaspPosition(int position)
+{
+    return position >= MIN_DASP_POSITION && position <= MAX_DASP_POSITION;
+}
+
+// A decimal number: an optional sign, digits with an optional fraction, an optional exponent
+bool DataSGroup::isValidNumber(const char* text)
+{
+    const std::string_view value = trimmedText(text);
+    std::size_t pos = 0;
+    const auto skipSign = [&]() {
+        if (pos < value.size() && (value[pos] == '+' || value[pos] == '-'))
+            ++pos;
+    };
+    const auto skipDigits = [&]() {
+        const std::size_t start = pos;
+        while (pos < value.size() && std::isdigit((unsigned char)value[pos]))
+            ++pos;
+        return pos - start;
+    };
+    skipSign();
+    std::size_t mantissa_digits = skipDigits();
+    if (pos < value.size() && value[pos] == '.')
+    {
+        ++pos;
+        mantissa_digits += skipDigits();
+    }
+    if (mantissa_digits == 0)
+        return false;
+    if (pos < value.size() && (value[pos] == 'e' || value[pos] == 'E'))
+    {
+        ++pos;
+        skipSign();
+        if (skipDigits() == 0)
+            return false;
+    }
+    return pos == value.size();
+}
+
+bool DataSGroup::holdsNumbers() const
+{
+    return trimmedText(type.size() ? type.ptr() : nullptr) == NUMERIC_FIELD_TYPE &&
+           trimmedText(querycode.size() ? querycode.ptr() : nullptr) != QUERY_TYPE_QUERY;
 }
 
 Superatom::Superatom()

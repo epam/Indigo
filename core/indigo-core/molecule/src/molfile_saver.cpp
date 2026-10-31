@@ -1130,7 +1130,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                 const char* querycode = dsg.querycode.ptr();
                 if (querycode != 0 && strlen(querycode) > 0)
                 {
-                    out.writeString(" QUERYTYPE=");
+                    out.printf(" %s=", MOLFILE_SGROUP_QUERY_TYPE_KEY);
                     bool space_found = (strchr(querycode, ' ') != NULL);
                     if (space_found)
                         out.writeString("\"");
@@ -1141,7 +1141,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                 const char* queryoper = dsg.queryoper.ptr();
                 if (queryoper != 0 && strlen(queryoper) > 0)
                 {
-                    out.writeString(" QUERYOP=");
+                    out.printf(" %s=", MOLFILE_SGROUP_QUERY_OPERATOR_KEY);
                     bool space_found = (strchr(queryoper, ' ') != NULL);
                     if (space_found)
                         out.writeString("\"");
@@ -1150,7 +1150,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
                         out.writeString("\"");
                 }
 
-                out.printf(" FIELDDISP=\"");
+                out.printf(" %s=\"", MOLFILE_SGROUP_FIELD_DISPLAY_KEY);
                 _writeDataSGroupDisplay(dsg, out);
                 out.printf("\"");
                 if (dsg.data.size() > 0 && dsg.data[0] != 0)
@@ -2195,9 +2195,9 @@ void MolfileSaver::_writeDataSGroupDisplay(DataSGroup& datasgroup, Output& out)
     const char tag = datasgroup.tag.value_or(0);
     const int dasp_pos = datasgroup.dasp_pos.value_or(0);
     if (num_chars <= 0)
-        out.printf("   ALL  1    %c  %1d  ", tag, dasp_pos);
+        out.printf("   %3s  1    %c  %1d  ", MOLFILE_DATA_ALL_CHARACTERS, tag, dasp_pos);
     else
-        out.printf("   %3d  1    %c  %1d  ", std::min(num_chars, SGROUP_DATA_MAX_DISPLAYED_CHARS), tag, dasp_pos);
+        out.printf("   %3d  1    %c  %1d  ", std::min(num_chars, DataSGroup::MAX_DISPLAYED_CHARS), tag, dasp_pos);
 }
 
 bool MolfileSaver::_hasNeighborEitherBond(BaseMolecule& mol, int edge_idx)
