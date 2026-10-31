@@ -46,6 +46,10 @@ using namespace indigo;
 static const char* const UNDEFINED_SGROUP_MESSAGE = "M %s refers to undefined Sgroup %d";
 // The line ends before an entry its count announces; takes the tag of the line.
 static const char* const UNEXPECTED_LINE_END_MESSAGE = "Unexpected end of M %s";
+// The lines of a data S-group, as a message names them
+static const char* const DATA_FIELD_LINE = "M SDT";
+static const char* const DATA_DISPLAY_LINE = "M SDD";
+static const char* const DATA_END_LINE = "M SED";
 
 int MolfileLoader::_readSGroupLine(const char* property, Array<char>& rest)
 {
@@ -1072,6 +1076,13 @@ void MolfileLoader::_readCtab2000()
                             break;
                     }
                     sgroup.queryoper.push(0);
+
+                    const int sgroup_number = sgroup_idx + 1;
+                    _checkDataField(DataSGroup::isValidFieldType(sgroup.type.ptr()), DATA_FIELD_LINE, sgroup_number, sgroup.type.ptr(), DataSGroup::FIELD_TYPE);
+                    _checkDataField(DataSGroup::isValidQueryType(sgroup.querycode.ptr()), DATA_FIELD_LINE, sgroup_number, sgroup.querycode.ptr(),
+                                    DataSGroup::QUERY_TYPE);
+                    _checkDataField(DataSGroup::isValidQueryOperator(sgroup.queryoper.ptr()), DATA_FIELD_LINE, sgroup_number, sgroup.queryoper.ptr(),
+                                    DataSGroup::QUERY_OPERATOR);
                 }
             }
             else if (strncmp(chars, "SDD", 3) == 0)
@@ -1084,7 +1095,7 @@ void MolfileLoader::_readCtab2000()
                     BufferScanner strscan(rest);
                     DataSGroup& sgroup = (DataSGroup&)_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
 
-                    _readSGroupDisplay(strscan, sgroup);
+                    _readSGroupDisplay(strscan, sgroup, DATA_DISPLAY_LINE, sgroup_idx + 1);
                 }
             }
             else if (strncmp(chars, "SED", 3) == 0 || strncmp(chars, "SCD", 3) == 0)
@@ -1112,6 +1123,15 @@ void MolfileLoader::_readCtab2000()
                                 sgroup.data.pop();
                             else
                                 break;
+                        }
+                        if (sgroup.holdsNumbers())
+                        {
+                            // the line the SCD lines before this SED started
+                            int line_start = sgroup.data.size();
+                            while (line_start > 0 && sgroup.data[line_start - 1] != '\n')
+                                line_start--;
+                            const std::string line(sgroup.data.ptr() + line_start, sgroup.data.size() - line_start);
+                            _checkDataField(DataSGroup::isValidNumber(line.c_str()), DATA_END_LINE, sgroup_idx + 1, line.c_str(), DataSGroup::NUMERIC_VALUE);
                         }
                         // Add new paragraph. Last '\n' will be cleaned at the end
                         sgroup.data.push('\n');

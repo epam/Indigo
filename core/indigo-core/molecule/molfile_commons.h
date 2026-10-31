@@ -35,6 +35,12 @@ namespace indigo
     const auto MOLFILE_SGROUP_SUBTYPE_KEY = "SUBTYPE";
     const auto MOLFILE_SGROUP_CONNECTIVITY_KEY = "CONNECT";
     const auto MOLFILE_SGROUP_COMPONENT_ORDER_KEY = "COMPNO";
+    const auto MOLFILE_SGROUP_QUERY_TYPE_KEY = "QUERYTYPE";
+    const auto MOLFILE_SGROUP_QUERY_OPERATOR_KEY = "QUERYOP";
+    const auto MOLFILE_SGROUP_FIELD_DISPLAY_KEY = "FIELDDISP";
+
+    // M  SDD and FIELDDISP: the number of characters to display when it is every character
+    const auto MOLFILE_DATA_ALL_CHARACTERS = "ALL";
 } // namespace indigo
 
 #endif

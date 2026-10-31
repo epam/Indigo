@@ -17,8 +17,10 @@
  ***************************************************************************/
 
 #include <algorithm>
+#include <cctype>
 #include <cstdlib>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "../layout/molecule_layout.h"
@@ -1441,7 +1443,7 @@ void MolfileLoader::_readSGroup3000(const char* str)
         {
             _readStringInQuotes(scanner, dsg ? &dsg->description : NULL);
         }
-        else if (strcmp(entity.ptr(), "FIELDDISP") == 0)
+        else if (strcmp(entity.ptr(), MOLFILE_SGROUP_FIELD_DISPLAY_KEY) == 0)
         {
             QS_DEF(Array<char>, substr);
             substr.clear();
@@ -1451,20 +1453,26 @@ void MolfileLoader::_readSGroup3000(const char* str)
             if (dsg != 0)
             {
                 BufferScanner subscan(substr);
-                _readSGroupDisplay(subscan, *dsg);
+                _readSGroupDisplay(subscan, *dsg, MOLFILE_SGROUP_FIELD_DISPLAY_KEY, sgroup_idx);
             }
         }
         else if (strcmp(entity.ptr(), "FIELDDATA") == 0)
         {
             _readStringInQuotes(scanner, dsg ? &dsg->data : NULL);
         }
-        else if (strcmp(entity.ptr(), "QUERYTYPE") == 0)
+        else if (strcmp(entity.ptr(), MOLFILE_SGROUP_QUERY_TYPE_KEY) == 0)
         {
             _readStringInQuotes(scanner, dsg ? &dsg->querycode : NULL);
+            if (dsg)
+                _checkDataField(DataSGroup::isValidQueryType(dsg->querycode.ptr()), MOLFILE_SGROUP_QUERY_TYPE_KEY, sgroup_idx, dsg->querycode.ptr(),
+                                DataSGroup::QUERY_TYPE);
         }
-        else if (strcmp(entity.ptr(), "QUERYOP") == 0)
+        else if (strcmp(entity.ptr(), MOLFILE_SGROUP_QUERY_OPERATOR_KEY) == 0)
         {
             _readStringInQuotes(scanner, dsg ? &dsg->queryoper : NULL);
+            if (dsg)
+                _checkDataField(DataSGroup::isValidQueryOperator(dsg->queryoper.ptr()), MOLFILE_SGROUP_QUERY_OPERATOR_KEY, sgroup_idx, dsg->queryoper.ptr(),
+                                DataSGroup::QUERY_OPERATOR);
         }
         else if (strcmp(entity.ptr(), "LABEL") == 0)
         {
@@ -1815,7 +1823,35 @@ void MolfileLoader::_applyComponentOrder(SGroup& sgroup, int component_order)
         sgroup.component_order = component_order;
 }
 
-void MolfileLoader::_readSGroupDisplay(Scanner& scanner, DataSGroup& dsg)
+static constexpr std::size_t DISPLAYED_CHARS_WIDTH = 3;
+static const char* const INVALID_DATA_FIELD_MESSAGE = "%s of Sgroup %d: '%s' is not a valid %s";
+
+// jjj of M  SDD: ALL, which num_chars holds as 0, or 1 to 999; a blank field leaves num_chars unset. False for anything else.
+static bool readDisplayedChars(const std::string& text, DataSGroup& dsg)
+{
+    if (text.empty())
+        return true;
+    if (text == MOLFILE_DATA_ALL_CHARACTERS)
+    {
+        dsg.num_chars = 0;
+        return true;
+    }
+    if (text.size() > DISPLAYED_CHARS_WIDTH || !std::all_of(text.begin(), text.end(), [](char c) { return std::isdigit((unsigned char)c); }))
+        return false;
+    const int count = std::stoi(text);
+    if (count < 1 || count > DataSGroup::MAX_DISPLAYED_CHARS)
+        return false;
+    dsg.num_chars = count;
+    return true;
+}
+
+void MolfileLoader::_checkDataField(bool valid, const char* property, int sgroup_number, const char* value, const char* field)
+{
+    if (!valid)
+        throw Error(INVALID_DATA_FIELD_MESSAGE, property, sgroup_number, value, field);
+}
+
+void MolfileLoader::_readSGroupDisplay(Scanner& scanner, DataSGroup& dsg, const char* property, int sgroup_number)
 {
     try
     {
@@ -1868,27 +1904,13 @@ void MolfileLoader::_readSGroupDisplay(Scanner& scanner, DataSGroup& dsg)
             }
         }
 
-        long long cur = scanner.tell();
-
-        char chars[4] = {0, 0, 0, 0};
-        for (int i = 0; i < 3 && !scanner.isEOF(); i++)
-            chars[i] = scanner.readChar();
-        if (strncmp(chars, "ALL", 3) == 0)
-            dsg.num_chars = 0;
-        else if (well_formatted)
-        {
-            char* end;
-            long count = strtol(chars, &end, 10);
-            if (end != chars && count >= 0)
-                dsg.num_chars = static_cast<int>(count);
-        }
-        else
-        {
-            scanner.seek(cur, SEEK_SET);
-            int count = scanner.readInt1();
-            if (count >= 0)
-                dsg.num_chars = count;
-        }
+        // the field of its own columns, or in the compact form the word up to the next blank
+        std::string displayed_chars;
+        for (std::size_t i = 0; !scanner.isEOF() && (well_formatted ? i < DISPLAYED_CHARS_WIDTH : scanner.lookNext() != ' '); i++)
+            displayed_chars.push_back(scanner.readChar());
+        const auto first = displayed_chars.find_first_not_of(' ');
+        displayed_chars = first == std::string::npos ? std::string() : displayed_chars.substr(first, displayed_chars.find_last_not_of(' ') - first + 1);
+        _checkDataField(readDisplayedChars(displayed_chars, dsg), property, sgroup_number, displayed_chars.c_str(), DataSGroup::DISPLAYED_CHARS);
 
         if (well_formatted)
         {
@@ -1912,7 +1934,7 @@ void MolfileLoader::_readSGroupDisplay(Scanner& scanner, DataSGroup& dsg)
         if (scanner.lookNext() == '\n' || scanner.lookNext() == '\r')
             return;
 
-        cur = scanner.tell();
+        const long long cur = scanner.tell();
         scanner.seek(0LL, SEEK_END);
         long long end = scanner.tell();
         scanner.seek(cur, SEEK_SET);
@@ -1925,9 +1947,14 @@ void MolfileLoader::_readSGroupDisplay(Scanner& scanner, DataSGroup& dsg)
                 if (scanner.lookNext() == '\n' || scanner.lookNext() == '\r')
                     return;
             }
-            int c = scanner.readChar();
-            if (c >= '1' && c <= '9')
-                dsg.dasp_pos = c - '0';
+            // 0, which ChemAxon Marvin writes and Indigo writes for a position it does not have, is a position that is not set
+            const char c = scanner.readChar();
+            if (c != '0' && c != ' ' && c != '\r' && c != '\n')
+            {
+                const int position = std::isdigit((unsigned char)c) ? c - '0' : -1;
+                _checkDataField(DataSGroup::isValidDaspPosition(position), property, sgroup_number, std::string(1, c).c_str(), DataSGroup::DASP_POSITION);
+                dsg.dasp_pos = position;
+            }
         }
     }
     catch (Scanner::Error)

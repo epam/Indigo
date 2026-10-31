@@ -31,6 +31,7 @@ files = [
     ("multiline-sgroups-ketcher-457-v2000.mol", all_modes),
     ("multiline-sgroups-ketcher-457-v3000.mol", all_modes),
     ("sgroup/data-displayed-chars-out-of-range.ket", explicit_modes),
+    ("sgroup/v2000-data-query-operators.mol", explicit_modes),
     ("sgroup/v2000-data-single-empty-line.mol", explicit_modes),
     ("sgroup/v2000-sdd-character-count.mol", explicit_modes),
     ("sgroup/v2000-sdd-character-count-forms.mol", explicit_modes),
@@ -46,10 +47,20 @@ files = [
     ("sgroup/v3000-fielddata-forms.mol", explicit_modes),
 ]
 broken_files = [
+    "sgroup/v2000-sdd-character-count-negative.mol",
+    "sgroup/v2000-sdd-character-count-negative-compact.mol",
+    "sgroup/v2000-sdd-dasp-position-unknown.mol",
+    "sgroup/v2000-sdt-field-type-unknown.mol",
+    "sgroup/v2000-sdt-query-operator-unknown.mol",
+    "sgroup/v2000-sdt-query-type-shifted.mol",
+    "sgroup/v2000-sed-numeric-not-a-number.mol",
     "sgroup/v2000-sgroup-index-out-of-range.mol",
     "sgroup/v2000-sgroup-index-zero.mol",
     "sgroup/v2000-sgroup-without-sty.mol",
     "sgroup/v3000-default-without-value.mol",
+    "sgroup/v3000-fielddisp-character-count-negative.mol",
+    "sgroup/v3000-querytype-unknown.mol",
+    "sgroup/v3000-queryop-unknown.mol",
 ]
 
 

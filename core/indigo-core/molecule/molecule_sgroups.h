@@ -211,6 +211,24 @@ namespace indigo
         bool isMrv_implicit();
         void setMrv_implicit(int atom_idx, int hydrogens_count);
 
+        // The values the molfile format allows in the fields of a data S-group (CTfile: M  SDT, M  SDD, M  SED).
+        // A blank text is a field that is not set. A reader rejects any other value as "'<value>' is not a valid
+        // <field>", with the name declared next to the check.
+        static constexpr const char* FIELD_TYPE = "field type";
+        static bool isValidFieldType(const char* text); // F, N or T
+        static constexpr const char* QUERY_TYPE = "query type";
+        static bool isValidQueryType(const char* text); // IQ
+        static constexpr const char* QUERY_OPERATOR = "query operator";
+        static bool isValidQueryOperator(const char* text); // =, <>, <, <=, >, >=, BETWEEN, CONTAINS or LIKE, any case
+        static constexpr const char* DISPLAYED_CHARS = "number of characters to display";
+        static constexpr int MAX_DISPLAYED_CHARS = 999; // three columns of M  SDD; 0 in num_chars stands for ALL
+        static constexpr const char* DASP_POSITION = "DASP position";
+        static bool isValidDaspPosition(int position); // 1 to 9
+        static constexpr const char* NUMERIC_VALUE = "numeric value";
+        static bool isValidNumber(const char* text);
+        // A NUMERIC field holding data rather than a query: each of its lines must be a number
+        bool holdsNumbers() const;
+
     private:
         DataSGroup(const DataSGroup&);
         void _reset();
