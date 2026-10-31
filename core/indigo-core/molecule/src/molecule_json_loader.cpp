@@ -1455,53 +1455,53 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
         break;
         case SGroup::SG_TYPE_DAT: {
             DataSGroup& dsg = (DataSGroup&)sgroup;
-            if (s.HasMember("fieldName"))
-                dsg.name.readString(s["fieldName"].GetString(), true);
+            if (s.HasMember(KetKeyFieldNameV2_0))
+                dsg.name.readString(s[KetKeyFieldNameV2_0].GetString(), true);
 
-            if (s.HasMember("fieldData"))
-                dsg.data.readString(s["fieldData"].GetString(), true);
+            if (s.HasMember(KetKeyFieldData))
+                dsg.data.readString(s[KetKeyFieldData].GetString(), true);
 
-            if (s.HasMember("fieldType"))
-                dsg.description.readString(s["fieldType"].GetString(), true);
+            if (s.HasMember(KetKeyFieldTypeV2_0))
+                dsg.description.readString(s[KetKeyFieldTypeV2_0].GetString(), true);
 
-            if (s.HasMember("queryType"))
-                dsg.querycode.readString(s["queryType"].GetString(), true);
+            if (s.HasMember(KetKeyQueryTypeV2_0))
+                dsg.querycode.readString(s[KetKeyQueryTypeV2_0].GetString(), true);
 
-            if (s.HasMember("queryOp"))
-                dsg.queryoper.readString(s["queryOp"].GetString(), true);
+            if (s.HasMember(KetKeyQueryOpV2_0))
+                dsg.queryoper.readString(s[KetKeyQueryOpV2_0].GetString(), true);
 
-            bool display_units = s.HasMember("display") && s["display"].GetBool();
-            if (s.HasMember("x") || s.HasMember("y") || display_units)
+            bool display_units = s.HasMember(KetKeyDisplayV2_0) && s[KetKeyDisplayV2_0].GetBool();
+            if (s.HasMember(KetKeyXV2_0) || s.HasMember(KetKeyYV2_0) || display_units)
             {
                 Vec2f dp(0.0f, 0.0f);
-                if (s.HasMember("x"))
-                    dp.x = s["x"].GetFloat();
+                if (s.HasMember(KetKeyXV2_0))
+                    dp.x = s[KetKeyXV2_0].GetFloat();
 
-                if (s.HasMember("y"))
-                    dp.y = s["y"].GetFloat();
+                if (s.HasMember(KetKeyYV2_0))
+                    dp.y = s[KetKeyYV2_0].GetFloat();
                 dsg.display_pos.set(dp);
             }
 
-            if (s.HasMember("dataDetached"))
-                dsg.detached = s["dataDetached"].GetBool();
+            if (s.HasMember(KetKeyDataDetachedV2_0))
+                dsg.detached = s[KetKeyDataDetachedV2_0].GetBool();
             else
                 dsg.detached = true;
             // TODO: placement = relative, display = display_units
-            if (s.HasMember("placement"))
-                dsg.relative = s["placement"].GetBool();
+            if (s.HasMember(KetKeyPlacementV2_0))
+                dsg.relative = s[KetKeyPlacementV2_0].GetBool();
 
-            if (s.HasMember("display"))
+            if (s.HasMember(KetKeyDisplayV2_0))
                 dsg.display_units = display_units;
 
-            if (s.HasMember("tag"))
+            if (s.HasMember(KetKeyTagV2_0))
             {
-                auto tag = s["tag"].GetString();
+                auto tag = s[KetKeyTagV2_0].GetString();
                 if (strlen(tag))
                     dsg.tag = *tag;
             }
 
-            if (s.HasMember("displayedChars"))
-                dsg.num_chars = s["displayedChars"].GetInt();
+            if (s.HasMember(KetKeyDisplayedCharsV2_0))
+                dsg.num_chars = s[KetKeyDisplayedCharsV2_0].GetInt();
         }
         break;
         case SGroup::SG_TYPE_COP:
