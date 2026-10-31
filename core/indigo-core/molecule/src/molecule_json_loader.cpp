@@ -1183,6 +1183,45 @@ namespace
         return value.IsInt() && value.GetInt() >= 0;
     }
 
+    // "S-group #0 of molecule #0 has 'queryOp' "QBETWEEN", which is not a valid query operator"
+    void rejectDataKey(const std::string& sgroup_name, const char* key, const Value& value, const char* reason)
+    {
+        throw MoleculeJsonLoader::Error("%s has '%s' %s, which %s", sgroup_name.c_str(), key, jsonText(value).c_str(), reason);
+    }
+
+    // The coordinate of the value of a data S-group, in the range of the molfile and kept to its four decimals
+    void checkDisplayCoordinate(const Value& value, const char* key, const std::string& sgroup_name)
+    {
+        if (!value.IsNumber() || !DataSGroup::isValidDisplayCoordinate(value.GetDouble()))
+            rejectDataKey(sgroup_name, key, value, DataSGroup::INVALID_DISPLAY_COORDINATE);
+        if (!DataSGroup::keepsDisplayCoordinate(value.GetDouble()))
+            rejectDataKey(sgroup_name, key, value, DataSGroup::NOT_KEPT_DISPLAY_COORDINATE);
+    }
+
+    // Deprecated since KET 2.1, removed in KET 3.0: the keys of KET 2.0 on a data S-group, each of its JSON type and
+    // with a value the molfile format allows
+    void checkDataSGroupKeysV2_0(const Value& s, const std::string& sgroup_name)
+    {
+        for (const char* key : {KetKeyFieldData, KetKeyFieldNameV2_0, KetKeyFieldTypeV2_0, KetKeyQueryTypeV2_0, KetKeyQueryOpV2_0, KetKeyTagV2_0})
+            if (s.HasMember(key) && !s[key].IsString())
+                rejectDataKey(sgroup_name, key, s[key], "is not a string");
+        for (const char* key : {KetKeyPlacementV2_0, KetKeyDisplayV2_0, KetKeyDataDetachedV2_0})
+            if (s.HasMember(key) && !s[key].IsBool())
+                rejectDataKey(sgroup_name, key, s[key], "is not a boolean");
+        for (const char* key : {KetKeyXV2_0, KetKeyYV2_0})
+            if (s.HasMember(key))
+                checkDisplayCoordinate(s[key], key, sgroup_name);
+        if (s.HasMember(KetKeyDisplayedCharsV2_0) &&
+            (!s[KetKeyDisplayedCharsV2_0].IsInt() || !DataSGroup::isValidDisplayedChars(s[KetKeyDisplayedCharsV2_0].GetInt())))
+            rejectDataKey(sgroup_name, KetKeyDisplayedCharsV2_0, s[KetKeyDisplayedCharsV2_0], DataSGroup::INVALID_DISPLAYED_CHARS);
+        if (s.HasMember(KetKeyTagV2_0) && s[KetKeyTagV2_0].GetStringLength() != 1)
+            rejectDataKey(sgroup_name, KetKeyTagV2_0, s[KetKeyTagV2_0], "is not a single character");
+        if (s.HasMember(KetKeyQueryTypeV2_0) && !DataSGroup::isValidQueryType(s[KetKeyQueryTypeV2_0].GetString()))
+            rejectDataKey(sgroup_name, KetKeyQueryTypeV2_0, s[KetKeyQueryTypeV2_0], DataSGroup::INVALID_QUERY_TYPE);
+        if (s.HasMember(KetKeyQueryOpV2_0) && !DataSGroup::isValidQueryOperator(s[KetKeyQueryOpV2_0].GetString()))
+            rejectDataKey(sgroup_name, KetKeyQueryOpV2_0, s[KetKeyQueryOpV2_0], DataSGroup::INVALID_QUERY_OPERATOR);
+    }
+
     KetSGroupEntry readSGroupEntry(const Value& s, std::string name, BaseMolecule& mol)
     {
         using Error = MoleculeJsonLoader::Error;
@@ -1263,6 +1302,8 @@ namespace
             throw Error("%s has '%s' %s, which is not a repeat pattern", entry.name.c_str(), KetKeyConnectivity, jsonText(s[KetKeyConnectivity]).c_str());
         if (entry.sg_type == SGroup::SG_TYPE_COP && s.HasMember(KetKeySubtype) && SGroup::getSubtype(s[KetKeySubtype].GetString()) < 0)
             throw Error("%s has '%s' %s, which is not a copolymer subtype", entry.name.c_str(), KetKeySubtype, jsonText(s[KetKeySubtype]).c_str());
+        if (entry.sg_type == SGroup::SG_TYPE_DAT)
+            checkDataSGroupKeysV2_0(s, entry.name);
         return entry;
     }
 

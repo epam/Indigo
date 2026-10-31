@@ -19,6 +19,7 @@
 #include <algorithm>
 #include <cctype>
 #include <cstdlib>
+#include <iterator>
 #include <memory>
 #include <string>
 #include <vector>
@@ -1465,14 +1466,14 @@ void MolfileLoader::_readSGroup3000(const char* str)
             _readStringInQuotes(scanner, dsg ? &dsg->querycode : NULL);
             if (dsg)
                 _checkDataField(DataSGroup::isValidQueryType(dsg->querycode.ptr()), MOLFILE_SGROUP_QUERY_TYPE_KEY, sgroup_idx, dsg->querycode.ptr(),
-                                DataSGroup::QUERY_TYPE);
+                                DataSGroup::INVALID_QUERY_TYPE);
         }
         else if (strcmp(entity.ptr(), MOLFILE_SGROUP_QUERY_OPERATOR_KEY) == 0)
         {
             _readStringInQuotes(scanner, dsg ? &dsg->queryoper : NULL);
             if (dsg)
                 _checkDataField(DataSGroup::isValidQueryOperator(dsg->queryoper.ptr()), MOLFILE_SGROUP_QUERY_OPERATOR_KEY, sgroup_idx, dsg->queryoper.ptr(),
-                                DataSGroup::QUERY_OPERATOR);
+                                DataSGroup::INVALID_QUERY_OPERATOR);
         }
         else if (strcmp(entity.ptr(), "LABEL") == 0)
         {
@@ -1823,8 +1824,35 @@ void MolfileLoader::_applyComponentOrder(SGroup& sgroup, int component_order)
         sgroup.component_order = component_order;
 }
 
+static constexpr std::size_t DISPLAY_COORDINATE_WIDTH = 10; // F10.4
 static constexpr std::size_t DISPLAYED_CHARS_WIDTH = 3;
-static const char* const INVALID_DATA_FIELD_MESSAGE = "%s of Sgroup %d: '%s' is not a valid %s";
+static const char* const INVALID_DATA_FIELD_MESSAGE = "%s of Sgroup %d: '%s' %s";
+
+// A field of fixed columns without the blanks around it
+static std::string readFixedField(Scanner& scanner, std::size_t width)
+{
+    std::string text;
+    while (text.size() < width && !scanner.isEOF())
+        text.push_back(scanner.readChar());
+    const auto first = text.find_first_not_of(' ');
+    return first == std::string::npos ? std::string() : text.substr(first, text.find_last_not_of(' ') - first + 1);
+}
+
+// A coordinate of F10.4: the number within the next ten columns, which in the compact form - " 1.5563 -9.2328 ARU" -
+// ends at the blank after it
+static std::string readCoordinateField(Scanner& scanner)
+{
+    std::string text;
+    for (std::size_t column = 0; column < DISPLAY_COORDINATE_WIDTH && !scanner.isEOF(); column++)
+    {
+        if (scanner.lookNext() == ' ' && !text.empty())
+            break;
+        const char c = scanner.readChar();
+        if (c != ' ')
+            text.push_back(c);
+    }
+    return text;
+}
 
 // jjj of M  SDD: ALL, which num_chars holds as 0, or 1 to 999; a blank field leaves num_chars unset. False for anything else.
 static bool readDisplayedChars(const std::string& text, DataSGroup& dsg)
@@ -1838,17 +1866,18 @@ static bool readDisplayedChars(const std::string& text, DataSGroup& dsg)
     }
     if (text.size() > DISPLAYED_CHARS_WIDTH || !std::all_of(text.begin(), text.end(), [](char c) { return std::isdigit((unsigned char)c); }))
         return false;
+    // all of them is ALL in a molfile, never 0
     const int count = std::stoi(text);
-    if (count < 1 || count > DataSGroup::MAX_DISPLAYED_CHARS)
+    if (count == 0 || !DataSGroup::isValidDisplayedChars(count))
         return false;
     dsg.num_chars = count;
     return true;
 }
 
-void MolfileLoader::_checkDataField(bool valid, const char* property, int sgroup_number, const char* value, const char* field)
+void MolfileLoader::_checkDataField(bool valid, const char* property, int sgroup_number, const char* value, const char* reason)
 {
     if (!valid)
-        throw Error(INVALID_DATA_FIELD_MESSAGE, property, sgroup_number, value, field);
+        throw Error(INVALID_DATA_FIELD_MESSAGE, property, sgroup_number, value, reason);
 }
 
 void MolfileLoader::_readSGroupDisplay(Scanner& scanner, DataSGroup& dsg, const char* property, int sgroup_number)
@@ -1857,10 +1886,23 @@ void MolfileLoader::_readSGroupDisplay(Scanner& scanner, DataSGroup& dsg, const 
     {
         int constexpr MIN_SDD_SIZE = 36;
         bool well_formatted = scanner.length() >= MIN_SDD_SIZE;
-        Vec2f dp;
-        dp.x = scanner.readFloatFix(10);
-        dp.y = scanner.readFloatFix(10);
-        dsg.display_pos.set(dp);
+        // both blank, as in a line that ends after the S-group number: the position is not set
+        const std::string coordinate_texts[] = {readCoordinateField(scanner), readCoordinateField(scanner)};
+        if (!coordinate_texts[0].empty() || !coordinate_texts[1].empty())
+        {
+            float coordinates[std::size(coordinate_texts)];
+            for (std::size_t axis = 0; axis < std::size(coordinate_texts); axis++)
+            {
+                const std::string& text = coordinate_texts[axis];
+                double value = 0;
+                const bool is_number = DataSGroup::isValidNumber(text.c_str()) && BufferScanner(text.c_str()).tryReadDouble(value);
+                _checkDataField(is_number && DataSGroup::isValidDisplayCoordinate(value), property, sgroup_number, text.c_str(),
+                                DataSGroup::INVALID_DISPLAY_COORDINATE);
+                _checkDataField(DataSGroup::keepsDisplayCoordinate(value), property, sgroup_number, text.c_str(), DataSGroup::NOT_KEPT_DISPLAY_COORDINATE);
+                coordinates[axis] = static_cast<float>(value);
+            }
+            dsg.display_pos.set(Vec2f(coordinates[0], coordinates[1]));
+        }
         int ch = ' ';
         if (well_formatted)
         {
@@ -1906,11 +1948,12 @@ void MolfileLoader::_readSGroupDisplay(Scanner& scanner, DataSGroup& dsg, const 
 
         // the field of its own columns, or in the compact form the word up to the next blank
         std::string displayed_chars;
-        for (std::size_t i = 0; !scanner.isEOF() && (well_formatted ? i < DISPLAYED_CHARS_WIDTH : scanner.lookNext() != ' '); i++)
-            displayed_chars.push_back(scanner.readChar());
-        const auto first = displayed_chars.find_first_not_of(' ');
-        displayed_chars = first == std::string::npos ? std::string() : displayed_chars.substr(first, displayed_chars.find_last_not_of(' ') - first + 1);
-        _checkDataField(readDisplayedChars(displayed_chars, dsg), property, sgroup_number, displayed_chars.c_str(), DataSGroup::DISPLAYED_CHARS);
+        if (well_formatted)
+            displayed_chars = readFixedField(scanner, DISPLAYED_CHARS_WIDTH);
+        else
+            while (!scanner.isEOF() && scanner.lookNext() != ' ')
+                displayed_chars.push_back(scanner.readChar());
+        _checkDataField(readDisplayedChars(displayed_chars, dsg), property, sgroup_number, displayed_chars.c_str(), DataSGroup::INVALID_DISPLAYED_CHARS);
 
         if (well_formatted)
         {
@@ -1952,7 +1995,8 @@ void MolfileLoader::_readSGroupDisplay(Scanner& scanner, DataSGroup& dsg, const 
             if (c != '0' && c != ' ' && c != '\r' && c != '\n')
             {
                 const int position = std::isdigit((unsigned char)c) ? c - '0' : -1;
-                _checkDataField(DataSGroup::isValidDaspPosition(position), property, sgroup_number, std::string(1, c).c_str(), DataSGroup::DASP_POSITION);
+                _checkDataField(DataSGroup::isValidDaspPosition(position), property, sgroup_number, std::string(1, c).c_str(),
+                                DataSGroup::INVALID_DASP_POSITION);
                 dsg.dasp_pos = position;
             }
         }

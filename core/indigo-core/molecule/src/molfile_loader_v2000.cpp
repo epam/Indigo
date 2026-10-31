@@ -1078,11 +1078,12 @@ void MolfileLoader::_readCtab2000()
                     sgroup.queryoper.push(0);
 
                     const int sgroup_number = sgroup_idx + 1;
-                    _checkDataField(DataSGroup::isValidFieldType(sgroup.type.ptr()), DATA_FIELD_LINE, sgroup_number, sgroup.type.ptr(), DataSGroup::FIELD_TYPE);
+                    _checkDataField(DataSGroup::isValidFieldType(sgroup.type.ptr()), DATA_FIELD_LINE, sgroup_number, sgroup.type.ptr(),
+                                    DataSGroup::INVALID_FIELD_TYPE);
                     _checkDataField(DataSGroup::isValidQueryType(sgroup.querycode.ptr()), DATA_FIELD_LINE, sgroup_number, sgroup.querycode.ptr(),
-                                    DataSGroup::QUERY_TYPE);
+                                    DataSGroup::INVALID_QUERY_TYPE);
                     _checkDataField(DataSGroup::isValidQueryOperator(sgroup.queryoper.ptr()), DATA_FIELD_LINE, sgroup_number, sgroup.queryoper.ptr(),
-                                    DataSGroup::QUERY_OPERATOR);
+                                    DataSGroup::INVALID_QUERY_OPERATOR);
                 }
             }
             else if (strncmp(chars, "SDD", 3) == 0)
@@ -1131,7 +1132,7 @@ void MolfileLoader::_readCtab2000()
                             while (line_start > 0 && sgroup.data[line_start - 1] != '\n')
                                 line_start--;
                             const std::string line(sgroup.data.ptr() + line_start, sgroup.data.size() - line_start);
-                            _checkDataField(DataSGroup::isValidNumber(line.c_str()), DATA_END_LINE, sgroup_idx + 1, line.c_str(), DataSGroup::NUMERIC_VALUE);
+                            _checkDataField(DataSGroup::isValidNumber(line.c_str()), DATA_END_LINE, sgroup_idx + 1, line.c_str(), DataSGroup::INVALID_NUMBER);
                         }
                         // Add new paragraph. Last '\n' will be cleaned at the end
                         sgroup.data.push('\n');
