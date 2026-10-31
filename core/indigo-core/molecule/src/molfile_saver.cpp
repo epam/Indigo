@@ -163,8 +163,47 @@ void MolfileSaver::_handleMonomers(BaseMolecule& mol)
 
 void MolfileSaver::_calculateSEQIDs(BaseMolecule& mol, const std::vector<std::map<int, int>>& directions_map, std::vector<std::deque<int>>& sequences)
 {
+    auto get_attachment_idx = [&](const std::map<int, int>& dirs, int attachment_point) {
+        auto br_it = dirs.find(attachment_point);
+        if (br_it != dirs.end() && mol.isTemplateAtom(br_it->second))
+        {
+            return br_it->second;
+        }
+        return -1;
+    };
     for (auto& sequence : sequences)
     {
+        // Check that SEQID set for all monomers except CHEM
+        bool already_calculated = true;
+        for (auto atom_idx : sequence)
+        {
+            if (mol.isTemplateAtom(atom_idx))
+            {
+                std::string mon_class = mol.getTemplateAtomClass(atom_idx);
+                if (!isBackboneClass(mon_class) || mon_class == kMonomerClassCHEM) // No SEQID for chem
+                    continue;
+                int base_idx = -1;
+                if (mon_class == kMonomerClassSUGAR)
+                {
+                    auto idx = get_attachment_idx(directions_map[atom_idx], kBranchAttachmentPointIdx);
+                    if (idx >= 0)
+                    {
+                        std::string branch_class = mol.getTemplateAtomClass(idx);
+                        if (branch_class == kMonomerClassBASE)
+                            base_idx = idx;
+                    }
+                }
+
+                if (mol.getTemplateAtomSeqid(atom_idx) <= 0 || (base_idx >= 0 && mol.getTemplateAtomSeqid(base_idx) <= 0))
+                {
+                    already_calculated = false;
+                    break;
+                }
+            }
+        }
+        if (already_calculated) // Use existing ids
+            continue;
+
         int seq_id = 1;
         for (auto atom_idx : sequence)
         {
@@ -181,26 +220,26 @@ void MolfileSaver::_calculateSEQIDs(BaseMolecule& mol, const std::vector<std::ma
                         auto& dirs = directions_map[atom_idx];
                         if (dirs.size())
                         {
-                            auto br_it = dirs.find(kBranchAttachmentPointIdx);
-                            if (br_it != dirs.end() && mol.isTemplateAtom(br_it->second))
+                            auto branch_idx = get_attachment_idx(dirs, kBranchAttachmentPointIdx);
+                            if (branch_idx >= 0)
                             {
-                                std::string br_class = mol.getTemplateAtomClass(br_it->second);
-                                seq_name = mol.getTemplateAtom(br_it->second);
+                                std::string br_class = mol.getTemplateAtomClass(branch_idx);
+                                seq_name = mol.getTemplateAtom(branch_idx);
                                 if (br_class == kMonomerClassBASE)
                                 {
-                                    mol.setTemplateAtomSeqid(br_it->second, seq_id);
-                                    mol.setTemplateAtomSeqName(br_it->second, seq_name.c_str());
+                                    mol.setTemplateAtomSeqid(branch_idx, seq_id);
+                                    mol.setTemplateAtomSeqName(branch_idx, seq_name.c_str());
                                     mol.setTemplateAtomSeqName(atom_idx, seq_name.c_str());
                                 }
                             }
                             if (seq_name.size())
                             {
-                                br_it = dirs.find(kRightAttachmentPointIdx);
-                                if (br_it != dirs.end() && mol.isTemplateAtom(br_it->second))
+                                auto right_idx = get_attachment_idx(dirs, kRightAttachmentPointIdx);
+                                if (right_idx >= 0)
                                 {
-                                    std::string br_class = mol.getTemplateAtomClass(br_it->second);
+                                    std::string br_class = mol.getTemplateAtomClass(right_idx);
                                     if (br_class == kMonomerClassPHOSPHATE)
-                                        mol.setTemplateAtomSeqName(br_it->second, seq_name.c_str());
+                                        mol.setTemplateAtomSeqName(right_idx, seq_name.c_str());
                                 }
                             }
                         }

@@ -6,21 +6,32 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
-from env_indigo import *  # noqa
+from common.util import compare_diff  # noqa
+from env_indigo import (  # noqa
+    Indigo,
+    IndigoException,
+    dataPath,
+    getIndigoExceptionText,
+    isIronPython,
+    joinPathPy,
+)
 
 indigo = Indigo()
 indigo.setOption("molfile-saving-skip-date", "1")
+
+ref_path = joinPathPy("ref/basic_load/", __file__)
+
 mol = indigo.loadMolecule(
     "OCC1C(O)C(O)C(O)C(OC2C(O)C(O)C(OCC3CCCCC3)OC2CO)O1 |ha:0,1,2,3,4,5,6,7,8,9,10,29,hb:0,1,2,3,4,5,6,7,8,9,30,31|"
 )
 print("****** Molfile 2000 ********")
 indigo.setOption("molfile-saving-mode", "2000")
-print(mol.molfile())
+compare_diff(ref_path, "highlighted_smiles-2000.mol", mol.molfile())
 print("****** Molfile 3000 ********")
 indigo.setOption("molfile-saving-mode", "3000")
-print(mol.molfile())
+compare_diff(ref_path, "highlighted_smiles-3000.mol", mol.molfile())
 print("****** CML ********")
-print(mol.cml())
+compare_diff(ref_path, "highlighted_smiles.cml", mol.cml())
 print("****** SMILES ********")
 print(mol.smiles())
 print("****** Canonical SMILES ********")
@@ -40,11 +51,15 @@ m = indigo.loadMolecule("PC{-}O{+n}N")
 print(m.smiles())
 
 print("****** Finding invalid stereocenters ********")
-for item in indigo.iterateSDFile(
-    joinPathPy("molecules/invalid_3d_stereocenters.sdf", __file__)
+for idx, item in enumerate(
+    indigo.iterateSDFile(
+        joinPathPy("molecules/invalid_3d_stereocenters.sdf", __file__)
+    )
 ):
     try:
-        print(item.molfile())
+        compare_diff(
+            ref_path, "invalid_3d_stereocenters_%d.mol" % idx, item.molfile()
+        )
     except IndigoException as e:
         print(getIndigoExceptionText(e))
     try:
@@ -80,7 +95,7 @@ m = indigo.loadMoleculeFromFile(joinPathPy("molecules/H2.mol", __file__))
 indigo.setOption("molfile-saving-mode", "2000")
 print(m.smiles())
 print(m.canonicalSmiles())
-print(m.molfile())
+compare_diff(ref_path, "H2.mol", m.molfile())
 print(m.grossFormula())
 
 print("****** S-group's SCL (CLASS) support ********")
@@ -89,14 +104,14 @@ m = indigo.loadMoleculeFromFile(
 )
 indigo.setOption("molfile-saving-mode", "2000")
 print(m.canonicalSmiles())
-print(m.molfile())
+compare_diff(ref_path, "sa-class-v2000.mol", m.molfile())
 
 indigo.setOption("molfile-saving-mode", "3000")
 m = indigo.loadMoleculeFromFile(
     joinPathPy("molecules/sa-class-v3000.mol", __file__)
 )
 print(m.canonicalSmiles())
-print(m.molfile())
+compare_diff(ref_path, "sa-class-v3000.mol", m.molfile())
 
 print("****** S-group's SPL (PARENT) support ********")
 m = indigo.loadMoleculeFromFile(
@@ -104,45 +119,45 @@ m = indigo.loadMoleculeFromFile(
 )
 indigo.setOption("molfile-saving-mode", "2000")
 print(m.canonicalSmiles())
-print(m.molfile())
+compare_diff(ref_path, "sgroups-V2000.mol", m.molfile())
 
 indigo.setOption("molfile-saving-mode", "3000")
 m = indigo.loadMoleculeFromFile(
     dataPath("molecules/sgroups/sgroups-V3000.mol")
 )
 print(m.canonicalSmiles())
-print(m.molfile())
+compare_diff(ref_path, "sgroups-V3000.mol", m.molfile())
 
 print("****** Load custom collection ********")
 m = indigo.loadMoleculeFromFile(
     joinPathPy("molecules/custom_collection.mol", __file__)
 )
-print(m.molfile())
+compare_diff(ref_path, "custom_collection.mol", m.molfile())
 
 print("****** Load TEMPLATE (SCSR) structure ********")
 m = indigo.loadMoleculeFromFile(
     joinPathPy("molecules/SCSR_test.mol", __file__)
 )
-print(m.molfile())
+compare_diff(ref_path, "SCSR_test.mol", m.molfile())
 
 print("****** Alias handling (V2000) ********")
 m = indigo.loadMoleculeFromFile(
     joinPathPy("molecules/alias_marvin_v2000.mol", __file__)
 )
 indigo.setOption("molfile-saving-mode", "2000")
-print(m.molfile())
+compare_diff(ref_path, "alias_marvin_v2000-2000.mol", m.molfile())
 print("****** Alias handling (V3000) ********")
 indigo.setOption("molfile-saving-mode", "3000")
-print(m.molfile())
+compare_diff(ref_path, "alias_marvin_v2000-3000.mol", m.molfile())
 
 print("****** Alias handling (CML) ********")
-print(m.cml())
+compare_diff(ref_path, "alias_marvin_v2000.cml", m.cml())
 
 m = indigo.loadMoleculeFromFile(
     joinPathPy("molecules/alias_marvin.cml", __file__)
 )
 indigo.setOption("molfile-saving-mode", "2000")
-print(m.molfile())
+compare_diff(ref_path, "alias_marvin.mol", m.molfile())
 
 print("****** Alias handling (SMILES) ********")
 print(m.canonicalSmiles())
@@ -164,7 +179,7 @@ m = indigo.loadMoleculeFromFile(
     joinPathPy("molecules/V3000_disp.mol", __file__)
 )
 indigo.setOption("molfile-saving-mode", "3000")
-print(m.molfile())
+compare_diff(ref_path, "V3000_disp.mol", m.molfile())
 
 print("****** Load V3000 with unknown keyword ********")
 try:

@@ -77,6 +77,7 @@ files = [
     ("3178-any-bond", "3000"),
     ("3227-copolymer", "3000"),
     ("3343-dir-expanded", "3000"),
+    ("4004-no-seqid-base", "auto"),
 ]
 
 files.sort(key=lambda x: x[0])
