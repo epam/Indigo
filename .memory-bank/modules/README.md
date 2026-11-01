@@ -21,6 +21,8 @@ document that restates the header file saves nothing and should not be written.
   the hand-coded config loader, `mango_*`/`ringo_*` parity, install and `cx_Oracle` gotchas
 - [bingo-elastic-python.md](./bingo-elastic-python.md) — standalone Python library: API surface,
   fingerprint pre-filter + postprocess pattern, its own test suite
+- [molecule-stereocenters.md](./molecule-stereocenters.md) — `MoleculeStereocenters`: tetrahedral atom
+  stereochemistry, pyramid representation, _xyzzy/_sign/_onPlane geometry, rigid mapping, enhanced stereo groups
 
 ## Not yet written
 

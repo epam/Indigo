@@ -202,6 +202,11 @@ bool MoleculeCIPCalc::_isAppropriateAtom(BaseMolecule& mol, int atom_idx, int& i
     int charge = mol.getAtomCharge(atom_idx);
     isoelectronic_equivalent = atom_number - charge;
 
+    return isAppropriateAtom(mol, atom_idx, isoelectronic_equivalent);
+}
+
+bool MoleculeCIPCalc::isAppropriateAtom(BaseMolecule& mol, int atom_idx, int isoelectronic_equivalent)
+{
     // Check if the effective atomic number corresponds to appropriate atoms
     switch (isoelectronic_equivalent)
     {

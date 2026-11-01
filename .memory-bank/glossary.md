@@ -16,6 +16,7 @@
 | Fingerprint | Bit vector summarising substructures, used as a search pre-filter | `molecule/molecule_fingerprint.h` |
 | HELM | Notation for macromolecules (peptides, nucleotides) | KET / monomer code |
 | InChI | IUPAC canonical identifier, produced by the bundled third-party library | `molecule/inchi_*.h` |
+| Isoelectronic equivalent | Atomic number minus charge: N+ and B− count as C, S+ as P. The chiral-center definition of issue #3853 is stated in these terms | `MoleculeCIPCalc::isAppropriateAtom`, `MoleculeStereocenters::isPossibleStereocenter` |
 | KET | Ketcher's JSON document format; the interchange format between Indigo and Ketcher | `molecule/ket_*.h` |
 | Markush structure | A generic structure with R-group substitution sites | R-group code |
 | Monomer | A macromolecule building block (amino acid, nucleotide, CHEM) | KET / monomer library |

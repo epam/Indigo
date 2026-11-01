@@ -94,7 +94,7 @@ Check result (reaction) = {"":"Reaction component check result, Structure contai
 ** 20 **
 Check result (reaction) = {"":"Reaction component check result, Structure contains chirality"}
 ** 21 **
-Check result (reaction) = {"":"Reaction component check result, Structure contains stereocenters with undefined stereo configuration: (0,1,6)","":"Reaction component check result, Structure contains stereocenters with undefined stereo configuration: (4)"}
+Check result (reaction) = {"":"Reaction component check result, Structure contains stereocenters with undefined stereo configuration: (1,6)","":"Reaction component check result, Structure contains stereocenters with undefined stereo configuration: (4)"}
 ** 22 **
 Check result (reaction) = {"":"Reaction component check result, Structure contains query features, so valency could not be checked, Structure contains stereocenters with undefined stereo configuration, Structure contains query features, Structure contains query features for atoms: (6), Structure contains query features for bonds: (1,5,6,9,10,11,13,14,15,16,17,18,19), Structure contains chirality, Structure contains query features, so ambiguous H could not be checked","":"Reaction component check result, Structure contains query features, so valency could not be checked, Structure contains stereocenters with undefined stereo configuration, Structure contains query features, Structure contains query features for atoms: (4), Structure contains query features for bonds: (0,1,2,3,4,5,6,7,8,9,10,11,12), Structure contains chirality, Structure contains query features, so ambiguous H could not be checked"}
 ** 23 **
@@ -112,7 +112,7 @@ Check result (reaction) = {}
 ** 29 **
 Check result (reaction) = {}
 ** 30 **
-Check result (reaction) = {"":"Reaction component check result, Structure contains stereocenters with undefined stereo configuration: (2)"}
+Check result (reaction) = {}
 ** 31 **
 Check result (reaction) = {"":"Reaction component check result, Structure contains query features, so valency could not be checked, Structure contains stereocenters with undefined stereo configuration, Structure contains query features, Structure contains query features for bonds: (0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28), Structure contains query features, so ambiguous H could not be checked","":"Reaction component check result, Structure contains query features, so valency could not be checked, Structure contains stereocenters with undefined stereo configuration, Structure contains query features, Structure contains query features for bonds: (0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28), Structure contains query features, so ambiguous H could not be checked"}
 ** 32 **

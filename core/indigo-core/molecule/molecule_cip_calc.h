@@ -42,6 +42,9 @@ namespace indigo
         // Returns true if more than 0 CIP labels were calculated
         static bool calcCIPLabels(BaseMolecule& mol);
 
+        // Check if an atom whose isoelectronic equivalent (atomic number minus charge) is given is appropriate for CIP stereochemistry
+        static bool isAppropriateAtom(BaseMolecule& mol, int atom_idx, int isoelectronic_equivalent);
+
     private:
         // Structure to represent an expanded atom for Rule 1.2 (sphere expansion)
         struct ExpandedAtom

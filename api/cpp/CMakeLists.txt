@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.6)
 
 project(indigo-cpp LANGUAGES CXX)
 
-file(GLOB ${PROJECT_NAME}_SOURCES CONFIUGURE_DEPENDS
+file(GLOB ${PROJECT_NAME}_SOURCES CONFIGURE_DEPENDS
         ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/*.h
 )
