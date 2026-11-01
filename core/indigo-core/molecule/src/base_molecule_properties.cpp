@@ -48,6 +48,7 @@ void BaseMolecule::offsetCoordinates(const Vec3f& offset)
 {
     for (int i = 0; i < _xyz.size(); i++)
         _xyz[i].add(offset);
+    sgroups.transformBrackets([&offset](Vec2f& point) { point.add(Vec2f(offset.x, offset.y)); });
 }
 
 void BaseMolecule::getAtomBoundingBox(int atom_idx, float font_size, LABEL_MODE label_mode, Vec2f& bottom_left, Vec2f& top_right)
@@ -174,26 +175,24 @@ void BaseMolecule::getAtomBoundingBox(int atom_idx, float font_size, LABEL_MODE 
                 bottom_left.x -= len * symbol_size;
             }
             // Add valence at right
-            if (valence > 0)
-            {
-                static constexpr int count[] = {
-                    1, // 0
-                    1, // I
-                    2, // II
-                    3, // III
-                    2, // IV
-                    1, // V
-                    2, // VI
-                    3, // VII
-                    4, // VIII
-                    2, // IX
-                    1, // X
+            static constexpr int count[] = {
+                1, // 0
+                1, // I
+                2, // II
+                3, // III
+                2, // IV
+                1, // V
+                2, // VI
+                3, // VII
+                4, // VIII
+                2, // IX
+                1, // X
 
-                };
+            };
+            if (valence > 0 && valence < static_cast<int>(NELEM(count)))
                 top_right.x += count[valence] * symbol_size;
-            }
             // Add charge at right
-            if (charge != 0)
+            if (charge != 0 && charge != CHARGE_UNKNOWN)
             {
                 if (abs(charge) > 9)
                     len = 3;

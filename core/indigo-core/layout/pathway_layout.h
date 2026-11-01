@@ -66,7 +66,7 @@ namespace indigo
             : _reaction(reaction), _depths(MAX_DEPTHS, 0), _maxDepth(0), _bond_length(options.DEFAULT_BOND_LENGTH),
               _default_arrow_size((float)options.DEFAULT_BOND_LENGTH * ARROW_LENGTH_FACTOR),
               _reaction_margin_size(options.reactionComponentMarginSize / options.ppi), _preserve_molecule_layout(true),
-              _text_line_height((float)options.DEFAULT_BOND_LENGTH * TEXT_LINE_HEIGHT)
+              _text_line_height((float)options.DEFAULT_BOND_LENGTH * TEXT_LINE_HEIGHT), _options(options)
         {
         }
 
@@ -80,6 +80,11 @@ namespace indigo
         {
             return _preserve_molecule_layout;
         };
+
+        const LayoutOptions& layoutOptions() const
+        {
+            return _options;
+        }
 
         void generateTextBlocks(SimpleTextObjectBuilder& tob, const PtrArray<Array<char>>& props, const std::string& style, float& height);
 
@@ -101,6 +106,7 @@ namespace indigo
                     {
                         MoleculeLayout ml(mol, true);
                         ml.bond_length = bondLength;
+                        ml.setLabelOptions(pwl.layoutOptions());
                         ml.make();
                     }
                     else
@@ -126,6 +132,7 @@ namespace indigo
                         {
                             MoleculeLayout ml(mol, true);
                             ml.bond_length = bondLength;
+                            ml.setLabelOptions(pwl.layoutOptions());
                             ml.make();
                         }
                         else
@@ -269,6 +276,7 @@ namespace indigo
         const float _default_arrow_size;
         const float _reaction_margin_size;
         bool _preserve_molecule_layout;
+        const LayoutOptions _options;
     };
 }
 
