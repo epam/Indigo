@@ -1,3 +1,9 @@
 *** A reaction or a pathway layout carries the data values ***
 sgroups/data-reaction-scaled-layout-preserve.rxn:SUCCEED
 sgroups/data-pathway.rdf:SUCCEED
+*** Layout and clean-up keep the data values by their atoms ***
+sgroups/data-on-component-layout.mol:SUCCEED
+sgroups/data-on-component-layout.mol:SUCCEED
+sgroups/data-vertical-copolymer-layout.mol:SUCCEED
+sgroups/data-vertical-copolymer-layout.mol:SUCCEED
+sgroups/data-distorted-copolymer-clean2d.mol:SUCCEED

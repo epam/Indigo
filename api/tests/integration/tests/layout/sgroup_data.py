@@ -16,8 +16,16 @@ molecules_path = joinPathPy("molecules/sgroups/", __file__)
 ref_path = joinPathPy("ref/", __file__)
 
 
+def load_molecule(filename):
+    return indigo.loadMoleculeFromFile(os.path.join(molecules_path, filename))
+
+
 def load_reaction(filename):
     return indigo.loadReactionFromFile(os.path.join(molecules_path, filename))
+
+
+def compare_molfile(name, mol):
+    compare_diff(ref_path, "sgroups/" + name + ".mol", mol.molfile())
 
 
 def rdf(pathway):
@@ -45,3 +53,19 @@ indigo.setOption("layout-preserve-existing", False)
 # Loading a pathway scales its molecules and places them in the scheme
 pathway = load_reaction("data-pathway.rdf")
 compare_diff(ref_path, "sgroups/data-pathway.rdf", rdf(pathway))
+
+print("*** Layout and clean-up keep the data values by their atoms ***")
+# The structures of the ticket. A second layout() leaves the values where the
+# first one put them
+files = ["data-on-component", "data-vertical-copolymer"]
+files.sort()
+for filename in files:
+    mol = load_molecule(filename + ".mol")
+    mol.layout()
+    compare_molfile(filename + "-layout", mol)
+    mol.layout()
+    compare_molfile(filename + "-layout", mol)
+
+mol = load_molecule("data-distorted-copolymer.mol")
+mol.clean2d()
+compare_molfile("data-distorted-copolymer-clean2d", mol)
