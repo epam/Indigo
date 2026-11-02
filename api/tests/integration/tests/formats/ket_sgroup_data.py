@@ -45,3 +45,19 @@ for filename in (
         print("%s: loaded" % filename)
     except IndigoException as e:
         print("%s: %s" % (filename, getIndigoExceptionText(e)))
+
+print("*** Values KET keeps and a molfile does not allow ***")
+for filename in (
+    "molfile-refuses-coordinate",
+    "molfile-refuses-displayed-chars",
+    "molfile-refuses-query-operator",
+    "molfile-refuses-query-type",
+):
+    mol = indigo.loadMoleculeFromFile(path(filename))
+    for mode in ("2000", "3000"):
+        indigo.setOption("molfile-saving-mode", mode)
+        try:
+            mol.molfile()
+            print("%s, V%s: written" % (filename, mode))
+        except IndigoException as e:
+            print("%s, V%s: %s" % (filename, mode, getIndigoExceptionText(e)))

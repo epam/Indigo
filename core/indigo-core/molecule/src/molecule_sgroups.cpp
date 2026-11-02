@@ -160,7 +160,9 @@ static constexpr int MAX_DASP_POSITION = 9;
 // F10.4: ten columns, four of them decimals, one a sign
 static constexpr double MIN_DISPLAY_COORDINATE = -9999.9999;
 static constexpr double MAX_DISPLAY_COORDINATE = 99999.9999;
-// "%.4f" of a coordinate in range; snprintf cuts what does not fit
+// The four decimals of F10.4, without its width
+static const char* const DISPLAY_COORDINATE_FORMAT = "%.4f";
+// Holds any float in that format; snprintf cuts a longer double
 static constexpr std::size_t DISPLAY_COORDINATE_TEXT_SIZE = 64;
 
 static std::string_view trimmedText(const char* text)
@@ -207,14 +209,17 @@ bool DataSGroup::isValidDisplayCoordinate(double coordinate)
     return coordinate >= MIN_DISPLAY_COORDINATE && coordinate <= MAX_DISPLAY_COORDINATE;
 }
 
+std::string DataSGroup::displayCoordinateText(double coordinate)
+{
+    char text[DISPLAY_COORDINATE_TEXT_SIZE];
+    snprintf(text, sizeof(text), DISPLAY_COORDINATE_FORMAT, coordinate);
+    return text;
+}
+
 bool DataSGroup::keepsDisplayCoordinate(double coordinate)
 {
-    // the text F10.4 writes, of the value given and of the value display_pos keeps
-    char given[DISPLAY_COORDINATE_TEXT_SIZE];
-    char kept[DISPLAY_COORDINATE_TEXT_SIZE];
-    snprintf(given, sizeof(given), "%.4f", coordinate);
-    snprintf(kept, sizeof(kept), "%.4f", static_cast<double>(static_cast<float>(coordinate)));
-    return std::strcmp(given, kept) == 0;
+    // the text of the value given and of the value display_pos keeps
+    return displayCoordinateText(coordinate) == displayCoordinateText(static_cast<float>(coordinate));
 }
 
 bool DataSGroup::isValidDaspPosition(int position)

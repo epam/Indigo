@@ -121,6 +121,10 @@ static const int PROPERTY_LINE_ENTRIES = 8;
 // An entry of such a line that pairs two three-character numbers: " sss vvv".
 static const char* const NUMBER_PAIR_ENTRY_FORMAT = " %3d %3d";
 
+// "data S-group 1: 'QBETWEEN' is not a valid query operator": the number the S-group gets in the file, the value and
+// the reason declared by DataSGroup.
+static const char* const INVALID_DATA_SGROUP_FIELD_MESSAGE = "data S-group %d: '%s' %s";
+
 // Writes entry_count entries as "M  <tag>nn8 ..." lines; write_entry(n) prints the n-th entry.
 template <typename EntryWriter>
 static void _writePropertyEntryLines(Output& output, const char* tag, int entry_count, EntryWriter write_entry)
@@ -1104,6 +1108,7 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
             {
                 DataSGroup& dsg = static_cast<DataSGroup&>(sgroup);
+                _checkDataSGroup(dsg, info.new_index);
 
                 const char* name = dsg.name.ptr();
                 if (name != 0 && strlen(name) > 0)
@@ -1974,6 +1979,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
             {
                 DataSGroup& datasgroup = (DataSGroup&)sgroup;
+                _checkDataSGroup(datasgroup, wi);
 
                 output.printf("M  SDT %3d ", wi);
 
@@ -2180,6 +2186,31 @@ bool MolfileSaver::_checkAttPointOrder(BaseMolecule& mol, int rsite)
     return true;
 }
 
+void MolfileSaver::_checkDataSGroup(const DataSGroup& datasgroup, int sgroup_number)
+{
+    const auto reject = [sgroup_number](const char* value, const char* reason) {
+        throw Error(INVALID_DATA_SGROUP_FIELD_MESSAGE, sgroup_number, value, reason);
+    };
+    if (!DataSGroup::isValidFieldType(datasgroup.type.ptr()))
+        reject(datasgroup.type.ptr(), DataSGroup::INVALID_FIELD_TYPE);
+    if (!DataSGroup::isValidQueryType(datasgroup.querycode.ptr()))
+        reject(datasgroup.querycode.ptr(), DataSGroup::INVALID_QUERY_TYPE);
+    if (!DataSGroup::isValidQueryOperator(datasgroup.queryoper.ptr()))
+        reject(datasgroup.queryoper.ptr(), DataSGroup::INVALID_QUERY_OPERATOR);
+    const int num_chars = datasgroup.num_chars.value_or(0);
+    if (!DataSGroup::isValidDisplayedChars(num_chars))
+        reject(std::to_string(num_chars).c_str(), DataSGroup::INVALID_DISPLAYED_CHARS);
+    if (datasgroup.display_pos.has_value())
+    {
+        const Vec2f& display_pos = datasgroup.display_pos.value();
+        for (const float coordinate : {display_pos.x, display_pos.y})
+        {
+            if (!DataSGroup::isValidDisplayCoordinate(coordinate))
+                reject(DataSGroup::displayCoordinateText(coordinate).c_str(), DataSGroup::INVALID_DISPLAY_COORDINATE);
+        }
+    }
+}
+
 void MolfileSaver::_writeDataSGroupDisplay(DataSGroup& datasgroup, Output& out)
 {
     float dp_x = 0.0f;
@@ -2194,10 +2225,10 @@ void MolfileSaver::_writeDataSGroupDisplay(DataSGroup& datasgroup, Output& out)
     const int num_chars = datasgroup.num_chars.value_or(0);
     const char tag = datasgroup.tag.value_or(0);
     const int dasp_pos = datasgroup.dasp_pos.value_or(0);
-    if (num_chars <= 0)
+    if (num_chars == 0)
         out.printf("   %3s  1    %c  %1d  ", MOLFILE_DATA_ALL_CHARACTERS, tag, dasp_pos);
     else
-        out.printf("   %3d  1    %c  %1d  ", std::min(num_chars, DataSGroup::MAX_DISPLAYED_CHARS), tag, dasp_pos);
+        out.printf("   %3d  1    %c  %1d  ", num_chars, tag, dasp_pos);
 }
 
 bool MolfileSaver::_hasNeighborEitherBond(BaseMolecule& mol, int edge_idx)

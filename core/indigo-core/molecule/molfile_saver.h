@@ -122,6 +122,8 @@ namespace indigo
         void _writeHapticKeys(Output& output, BaseMolecule& mol, const HapticRecord& record);
 
         void _writeGenericSGroup3000(SGroup& sgroup, const SGroupInfo& info, Output& output);
+        // Throws on a field value that a molfile, V2000 or V3000 alike, does not allow; KET and the API may hold one
+        static void _checkDataSGroup(const DataSGroup& datasgroup, int sgroup_number);
         void _writeDataSGroupDisplay(DataSGroup& datasgroup, Output& out);
         void _writeFormattedString(Output& output, Array<char>& str, int length);
         static bool _checkAttPointOrder(BaseMolecule& mol, int rsite);

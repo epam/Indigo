@@ -25,6 +25,7 @@
 #include "base_cpp/ptr_reusable_pool.h"
 #include "base_cpp/reusable.h"
 #include "math/algebra.h"
+#include <string>
 #include <vector>
 
 #ifdef _WIN32
@@ -225,6 +226,7 @@ namespace indigo
         static constexpr const char* INVALID_DISPLAYED_CHARS = "is not a valid number of characters to display";
         static bool isValidDisplayCoordinate(double coordinate); // what F10.4 of M  SDD holds: -9999.9999 to 99999.9999
         static constexpr const char* INVALID_DISPLAY_COORDINATE = "is not a valid coordinate of the value";
+        static std::string displayCoordinateText(double coordinate); // with the four decimals of F10.4: "-10000.0000"
         // display_pos keeps single precision: whether the four decimals of F10.4 survive it (1234.5678 does not)
         static bool keepsDisplayCoordinate(double coordinate);
         static constexpr const char* NOT_KEPT_DISPLAY_COORDINATE = "cannot be kept to four decimals";

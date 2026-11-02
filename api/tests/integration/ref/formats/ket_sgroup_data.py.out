@@ -8,3 +8,12 @@ rejected-placement-not-boolean: molecule json loader: S-group #0 of molecule #0 
 rejected-tag-two-characters: molecule json loader: S-group #0 of molecule #0 has 'tag' "ab", which is not a single character
 rejected-x-four-decimals-lost: molecule json loader: S-group #0 of molecule #0 has 'x' 1234.5678, which cannot be kept to four decimals
 rejected-x-not-number: molecule json loader: S-group #0 of molecule #0 has 'x' "1.5", which is not a number
+*** Values KET keeps and a molfile does not allow ***
+molfile-refuses-coordinate, V2000: molfile saver: data S-group 1: '-10000.0000' is not a valid coordinate of the value
+molfile-refuses-coordinate, V3000: molfile saver: data S-group 1: '-10000.0000' is not a valid coordinate of the value
+molfile-refuses-displayed-chars, V2000: molfile saver: data S-group 1: '1000' is not a valid number of characters to display
+molfile-refuses-displayed-chars, V3000: molfile saver: data S-group 1: '1000' is not a valid number of characters to display
+molfile-refuses-query-operator, V2000: molfile saver: data S-group 1: 'query,;:|{}$op' is not a valid query operator
+molfile-refuses-query-operator, V3000: molfile saver: data S-group 1: 'query,;:|{}$op' is not a valid query operator
+molfile-refuses-query-type, V2000: molfile saver: data S-group 1: 'Q' is not a valid query type
+molfile-refuses-query-type, V3000: molfile saver: data S-group 1: 'Q' is not a valid query type
