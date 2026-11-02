@@ -290,6 +290,18 @@ namespace
         std::sort(links.begin(), links.end());
         return links;
     }
+
+    // The last S-group of the type in pool order, -1 for none
+    int lastSGroupOfType(MoleculeSGroups& sgroups, int sg_type)
+    {
+        int found = -1;
+        for (int sgroup_idx = sgroups.begin(); sgroup_idx != sgroups.end(); sgroup_idx = sgroups.next(sgroup_idx))
+        {
+            if (sgroups.getSGroup(sgroup_idx).sgroup_type == sg_type)
+                found = sgroup_idx;
+        }
+        return found;
+    }
 } // namespace
 
 TEST(SGroupPolymerFields, CloneAndMergeKeepThem)
@@ -453,18 +465,17 @@ TEST(SGroupParentLinks, ALinkByIndexSurvivesAMerge)
 
     ASSERT_EQ(3, merged.sgroups.getSGroupCount());
     EXPECT_EQ(std::vector<ParentLink>({{HEAD_TO_TAIL_UNIT, BLOCK_COPOLYMER}}), parentLinks(merged));
+    // The number the C API reports as the parent of the copy is still the copolymer's index, not a position
+    const int unit_copy = lastSGroupOfType(merged.sgroups, SGroup::SG_TYPE_SRU);
+    ASSERT_GE(unit_copy, 0);
+    EXPECT_EQ(copolymer_index, merged.sgroups.getSGroup(unit_copy).parent_group.value_or(0));
 }
 
 TEST(SGroupParentLinks, RemovingAParentMovesItsChildrenUp)
 {
     Molecule mol;
     buildPolymerFormulation(mol);
-    int copolymer = -1;
-    for (int sgroup_idx = mol.sgroups.begin(); sgroup_idx != mol.sgroups.end(); sgroup_idx = mol.sgroups.next(sgroup_idx))
-    {
-        if (mol.sgroups.getSGroup(sgroup_idx).sgroup_type == SGroup::SG_TYPE_COP)
-            copolymer = sgroup_idx;
-    }
+    const int copolymer = lastSGroupOfType(mol.sgroups, SGroup::SG_TYPE_COP);
     ASSERT_GE(copolymer, 0);
 
     mol.removeSGroup(copolymer);
@@ -505,6 +516,97 @@ TEST(SGroupParentLinks, RemovingAGroupWithoutAnIndexReparentsNobody)
     mol.removeSGroup(unit);
 
     EXPECT_EQ(std::vector<ParentLink>(), parentLinks(mol));
+}
+
+namespace
+{
+    // The CML reader numbers no group and names a parent by its one-based pool position
+    void linkByPosition(MoleculeSGroups& sgroups, int child_idx, int parent_idx)
+    {
+        sgroups.getSGroup(child_idx).parent_group = parent_idx + 1;
+    }
+
+    // A reader of a format that stores numbers sees only parent_group: the group's parent_idx is dropped
+    int dropParentIdxAndResolve(MoleculeSGroups& sgroups, int sgroup_idx)
+    {
+        sgroups.getSGroup(sgroup_idx).parent_idx = NO_PARENT;
+        return sgroups.resolveParents()[sgroup_idx];
+    }
+} // namespace
+
+TEST(SGroupParentLinks, ALinkByPositionNamesTheCopyOfTheParent)
+{
+    Molecule source;
+    for (int atom_idx = 0; atom_idx < 2; atom_idx++)
+        source.addAtom(ELEM_C);
+    source.addBond(0, 1, BOND_SINGLE);
+    const int generic = addSGroup(source, GENERIC, {0, 1}, NO_PARENT);
+    const int unit = addSGroup(source, HEAD_TO_TAIL_UNIT, {1}, NO_PARENT);
+    linkByPosition(source.sgroups, unit, generic);
+
+    Molecule merged;
+    merged.addAtom(ELEM_N);
+    const int generic_on_nitrogen = addSGroup(merged, GENERIC, {0}, NO_PARENT);
+    merged.mergeWithMolecule(source, nullptr);
+
+    // The copies follow the generic group on the nitrogen, which was there first
+    const int generic_copy = lastSGroupOfType(merged.sgroups, SGroup::SG_TYPE_GEN);
+    const int unit_copy = lastSGroupOfType(merged.sgroups, SGroup::SG_TYPE_SRU);
+    ASSERT_GE(generic_copy, 0);
+    ASSERT_GE(unit_copy, 0);
+    ASSERT_NE(generic_on_nitrogen, generic_copy);
+    ASSERT_EQ(generic_copy, merged.sgroups.resolveParents()[unit_copy]);
+
+    // The position the source gave the generic group is the position of the one on the nitrogen here
+    EXPECT_EQ(generic_copy, dropParentIdxAndResolve(merged.sgroups, unit_copy));
+}
+
+TEST(SGroupParentLinks, RemovingAParentLinkedByPositionMovesItsChildrenUp)
+{
+    Molecule mol;
+    for (int atom_idx = 0; atom_idx < 3; atom_idx++)
+        mol.addAtom(ELEM_C);
+    const int outer = addSGroup(mol, GENERIC, {0, 1, 2}, NO_PARENT);
+    const int middle = addSGroup(mol, GENERIC, {1, 2}, NO_PARENT);
+    const int unit = addSGroup(mol, HEAD_TO_TAIL_UNIT, {2}, NO_PARENT);
+    linkByPosition(mol.sgroups, middle, outer);
+    linkByPosition(mol.sgroups, unit, middle);
+    ASSERT_EQ(middle, mol.sgroups.resolveParents()[unit]);
+
+    mol.removeSGroup(middle);
+
+    EXPECT_EQ(outer, mol.sgroups.resolveParents()[unit]);
+    EXPECT_EQ(outer, dropParentIdxAndResolve(mol.sgroups, unit));
+}
+
+TEST(SGroupParentLinks, RemovingAGroupOnACycleOfParentsMakesNoGroupItsOwnParent)
+{
+    Molecule mol;
+    mol.addAtom(ELEM_C);
+    const int first = addSGroup(mol, GENERIC, {0}, NO_PARENT);
+    const int second = addSGroup(mol, GENERIC, {0}, first);
+    mol.sgroups.getSGroup(first).parent_idx = second;
+    ASSERT_EQ(first, mol.sgroups.resolveParents()[second]);
+
+    mol.removeSGroup(second);
+
+    EXPECT_EQ(NO_PARENT, mol.sgroups.resolveParents()[first]);
+}
+
+TEST(SGroupParentLinks, ASlotFreedByAParentLinkedByPositionIsNoParent)
+{
+    MoleculeSGroups sgroups;
+    const int parent = sgroups.addSGroup(SGroup::SG_TYPE_GEN);
+    const int child = sgroups.addSGroup(SGroup::SG_TYPE_GEN);
+    linkByPosition(sgroups, child, parent);
+    ASSERT_EQ(parent, sgroups.resolveParents()[child]);
+
+    sgroups.remove(parent);
+    const int newcomer = sgroups.addSGroup(SGroup::SG_TYPE_GEN);
+
+    // Without reuse the newcomer could not be mistaken for the parent.
+    ASSERT_EQ(parent, newcomer);
+    EXPECT_EQ(NO_PARENT, sgroups.resolveParents()[child]);
 }
 
 // ---- tree of S-groups -----------------------------------------------------

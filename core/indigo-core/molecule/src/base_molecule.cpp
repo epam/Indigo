@@ -310,18 +310,9 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
 
     for (const auto& [source_idx, copy_idx] : copy_of_source)
     {
-        SGroup& copy = sgroups.getSGroup(copy_idx);
+        // A parent left behind is no parent, and a link by number left as it was would name a group of this molecule
         const auto parent_copy = copy_of_source.find(source_parents[source_idx]);
-        if (parent_copy != copy_of_source.end())
-        {
-            copy.parent_idx = parent_copy->second;
-        }
-        else
-        {
-            // A parent left behind is no parent: its index could name a group of this molecule
-            copy.parent_idx = -1;
-            copy.parent_group = 0;
-        }
+        sgroups.setParent(copy_idx, parent_copy != copy_of_source.end() ? parent_copy->second : -1);
     }
 }
 
@@ -1306,14 +1297,13 @@ const GraphDecomposer& BaseMolecule::moleculeComponents()
 
 void BaseMolecule::removeSGroup(int idx)
 {
-    _moveChildrenToGrandparent(idx);
-    sgroups.remove(idx);
+    sgroups.removeMovingChildrenToGrandparent(idx);
 }
 
 void BaseMolecule::removeSGroupWithBasis(int idx)
 {
     QS_DEF(Array<int>, sg_atoms);
-    _moveChildrenToGrandparent(idx);
+    sgroups.moveChildrenToGrandparent(idx);
     sg_atoms.copy(sgroups.getSGroup(idx).atoms);
     removeAtoms(sg_atoms);
 }

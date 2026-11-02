@@ -44,24 +44,6 @@
 
 using namespace indigo;
 
-void BaseMolecule::_moveChildrenToGrandparent(int sgroup_idx)
-{
-    SGroup& removed = sgroups.getSGroup(sgroup_idx);
-    const int grandparent_idx = removed.parent_idx.value_or(-1);
-    const int grandparent_group = removed.parent_group.value_or(0);
-    for (int i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
-    {
-        if (i == sgroup_idx)
-            continue;
-        SGroup& sg = sgroups.getSGroup(i);
-        if (sg.parent_idx.value_or(-1) == sgroup_idx)
-            sg.parent_idx = grandparent_idx;
-        // index 0 numbers no group, so a group without an index is nobody's parent
-        if (removed.index > 0 && sg.parent_group.value_or(0) == removed.index)
-            sg.parent_group = grandparent_group;
-    }
-}
-
 int copyBaseBond(BaseMolecule& bm, int beg, int end, int srcId)
 {
     int bid = -1;

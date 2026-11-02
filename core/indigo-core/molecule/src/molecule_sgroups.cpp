@@ -321,14 +321,31 @@ void MoleculeSGroups::clear(int sg_type)
 
 void MoleculeSGroups::remove(int idx)
 {
-    // The pool hands the slot out again; a child still pointing at it would get the next group as its parent
-    for (int i : _sgroups.indices())
-    {
-        SGroup& sgroup = _sgroups.at(i);
-        if (sgroup.parent_idx.value_or(-1) == idx)
-            sgroup.parent_idx = -1;
-    }
+    // The pool hands the slot out again; a child still naming it, by pool position or by number, would get the next
+    // group as its parent
+    for (int child_idx : _childrenOf(idx))
+        setParent(child_idx, -1);
     _sgroups.remove(idx);
+}
+
+void MoleculeSGroups::removeMovingChildrenToGrandparent(int sgroup_idx)
+{
+    // Once its children are moved nothing names the slot, so it is freed without a second search
+    moveChildrenToGrandparent(sgroup_idx);
+    _sgroups.remove(sgroup_idx);
+}
+
+void MoleculeSGroups::moveChildrenToGrandparent(int sgroup_idx)
+{
+    const std::vector<int> children = _childrenOf(sgroup_idx);
+    if (children.empty())
+        return;
+    const int grandparent_idx = resolveParents()[sgroup_idx];
+    for (int child_idx : children)
+    {
+        // On a cycle of parents through the group the child would become its own parent
+        setParent(child_idx, grandparent_idx == child_idx ? -1 : grandparent_idx);
+    }
 }
 
 int MoleculeSGroups::begin()
@@ -496,6 +513,42 @@ std::vector<int> MoleculeSGroups::resolveParents()
             parents[i] = position;
     }
     return parents;
+}
+
+void MoleculeSGroups::setParent(int sgroup_idx, int parent_idx)
+{
+    SGroup& sgroup = getSGroup(sgroup_idx);
+    sgroup.parent_idx = parent_idx;
+    if (sgroup.parent_group.value_or(0) <= 0)
+        return;
+    if (parent_idx < 0)
+    {
+        sgroup.parent_group = 0;
+        return;
+    }
+    const int parent_index = getSGroup(parent_idx).index;
+    sgroup.parent_group = parent_index > 0 ? parent_index : parent_idx + 1;
+}
+
+std::vector<int> MoleculeSGroups::_childrenOf(int sgroup_idx)
+{
+    std::vector<int> children;
+    bool names_a_parent = false;
+    for (int i = begin(); i != end() && !names_a_parent; i = next(i))
+    {
+        const SGroup& sgroup = getSGroup(i);
+        names_a_parent = sgroup.parent_idx.value_or(-1) >= 0 || sgroup.parent_group.value_or(0) > 0;
+    }
+    if (!names_a_parent)
+        return children;
+
+    const std::vector<int> parents = resolveParents();
+    for (int i = begin(); i != end(); i = next(i))
+    {
+        if (i != sgroup_idx && parents[i] == sgroup_idx)
+            children.push_back(i);
+    }
+    return children;
 }
 
 bool MoleculeSGroups::isPolimer()

@@ -87,9 +87,13 @@ the savers (`getOrderedSGroups`), the copy of S-groups (`mergeSGroupsWithSubmole
 draws (`buildTree`) take the parent from it.
 A second resolver disagrees with it on some input, and nothing fails: a copy of nested groups into a molecule that
 already had S-groups kept the source's pool positions, a group became its own parent, and the next copy recursed
-until the stack overflowed. The pool hands a freed slot to the next group, so
-`core/indigo-core/molecule/src/molecule_sgroups.cpp#void MoleculeSGroups::remove(int idx)` clears the `parent_idx`
-of the children of the removed group — the rule A5 states for atoms. A copy whose parent is left behind gets no
+until the stack overflowed. The pool hands a freed slot to the next group of its class, so
+`core/indigo-core/molecule/src/molecule_sgroups.cpp#void MoleculeSGroups::remove(int idx)` clears both links of the
+groups whose resolved parent is the removed one — the rule A5 states for atoms; a link by position left behind
+would name the next group in that slot. Wherever a parent changes, a link by number changes with it: a copy names
+the copy of its parent, a group moved to its grandparent names the grandparent, both through
+`core/indigo-core/molecule/src/molecule_sgroups.cpp#MoleculeSGroups::setParent`, so a reader of the number
+alone — the C API, a format that stores numbers — sees the same parent. A copy whose parent is left behind gets no
 parent at all, `parent_idx` and `parent_group` both, and a group with atoms of its own is copied with its atoms,
 never with its parent. An `index` of 0 numbers no group: a group without one is never found by its `index`. See
 [adr/sgroup-parent-links.md](adr/sgroup-parent-links.md).

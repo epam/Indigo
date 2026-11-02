@@ -21,9 +21,11 @@ it renumbers S-groups when it loads a file.
    `parent_group`, else the group at the one-based position `parent_group` when that group has no `index`. The
    savers, the copy of S-groups and the rendering tree go through it.
 2. A copy resolves the parents in the source and remaps them for every copied group; a parent left behind leaves the
-   copy without a parent, both links cleared.
-3. `MoleculeSGroups::remove` clears `parent_idx` of the children of the removed group. `BaseMolecule::removeSGroup`
-   first moves them to the grandparent, by `parent_group` only when the removed group has an `index`.
+   copy without a parent, both links cleared. A link by number is rewritten to name the parent's copy
+   (`MoleculeSGroups::setParent`): the parent's index, or its one-based position when it has none.
+3. `MoleculeSGroups::remove` clears both links of the groups whose resolved parent is the removed one.
+   `BaseMolecule::removeSGroup` moves them to the grandparent instead, as `resolveParents` finds it
+   (`MoleculeSGroups::removeMovingChildrenToGrandparent`), and rewrites a link by number the same way. A group that named its parent by `parent_idx` only, as KET does, gets no number.
 4. The KET reader resolves `parentId` within its molecule node and sets `parent_idx` only; `index` and `parent_group`
    of a group read from KET stay 0.
 
