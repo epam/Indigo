@@ -42,6 +42,9 @@ for filename in [
     # copolymer of two repeating units
     "formulation-v2000",
     "formulation-words-v3000",
+    # a mixture of two components on two fragments: the mixture is written
+    # to KET in one molecule node with its components
+    "mixture-of-two-components-v3000",
     # a copolymer around a multiple group: the repeats join the copolymer,
     # they do not copy it
     "copolymer-around-multiple-v3000",

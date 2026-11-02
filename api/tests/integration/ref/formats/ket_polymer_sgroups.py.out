@@ -8,6 +8,9 @@ formulation-v2000-ket-3000.mol:SUCCEED
 formulation-words-v3000.ket:SUCCEED
 formulation-words-v3000-ket-2000.mol:SUCCEED
 formulation-words-v3000-ket-3000.mol:SUCCEED
+mixture-of-two-components-v3000.ket:SUCCEED
+mixture-of-two-components-v3000-ket-2000.mol:SUCCEED
+mixture-of-two-components-v3000-ket-3000.mol:SUCCEED
 copolymer-around-multiple-v3000.ket:SUCCEED
 copolymer-around-multiple-v3000-ket-2000.mol:SUCCEED
 copolymer-around-multiple-v3000-ket-3000.mol:SUCCEED
