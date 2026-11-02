@@ -194,6 +194,10 @@ namespace indigo
         /* 223 - Atom mapping to restore */
         CMF_MAPPING,
 
+        /* Context of the data S-group just before it: a record of its own, so that a CMF without one keeps the layout
+           of earlier versions */
+        CMF_DATASGROUP_CONTEXT,
+
         /* Alphabet size = 256. Any number can be used because of writing integer indices */
         CMF_ALPHABET_SIZE = 256
     };

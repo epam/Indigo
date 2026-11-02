@@ -1,0 +1,116 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "mol0"
+            }
+        ]
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    1.0000152587890626,
+                    0.0,
+                    0.0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    2.0,
+                    0.0,
+                    0.0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    2
+                ]
+            }
+        ],
+        "sgroups": [
+            {
+                "type": "DAT",
+                "atoms": [
+                    0,
+                    1,
+                    2
+                ],
+                "fieldName": "F1",
+                "fieldData": "1",
+                "x": 0.0,
+                "y": 0.0
+            },
+            {
+                "type": "DAT",
+                "atoms": [
+                    0,
+                    1,
+                    2
+                ],
+                "fieldName": "F2",
+                "fieldData": "1",
+                "x": 0.0,
+                "y": 0.0
+            },
+            {
+                "type": "DAT",
+                "atoms": [
+                    0,
+                    1,
+                    2
+                ],
+                "fieldName": "F3",
+                "fieldData": "1",
+                "x": 0.0,
+                "y": 0.0
+            },
+            {
+                "type": "DAT",
+                "atoms": [
+                    0,
+                    1,
+                    2
+                ],
+                "fieldName": "F4",
+                "fieldData": "1",
+                "x": 0.0,
+                "y": 0.0
+            },
+            {
+                "type": "DAT",
+                "atoms": [
+                    0,
+                    1,
+                    2
+                ],
+                "fieldName": "F5",
+                "fieldData": "1",
+                "x": 0.0,
+                "y": 0.0
+            }
+        ]
+    }
+}
