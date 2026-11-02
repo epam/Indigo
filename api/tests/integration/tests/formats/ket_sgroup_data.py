@@ -17,6 +17,7 @@ from env_indigo import (  # noqa
 
 indigo = Indigo()
 indigo.setOption("json-saving-pretty", True)
+indigo.setOption("molfile-saving-skip-date", True)
 
 print("*** KET data S-groups ***")
 
@@ -50,6 +51,17 @@ print("*** KET 2.0 keys with values the contract allows ***")
 for filename in ("data-keys-at-limits", "data-keys-beyond-molfile-limits"):
     mol = indigo.loadMoleculeFromFile(path(filename))
     compare_diff(ref_path, filename + "-saved.ket", mol.json())
+
+print("*** Placement and display of KET 2.0, and the offset of a molfile ***")
+filename = "data-placement-and-display"
+mol = indigo.loadMoleculeFromFile(path(filename))
+compare_diff(ref_path, filename + "-saved.ket", mol.json())
+indigo.setOption("molfile-saving-mode", "2000")
+molfile = mol.molfile()
+compare_diff(ref_path, filename + "-2000.mol", molfile)
+compare_diff(
+    ref_path, filename + "-saved.ket", indigo.loadMolecule(molfile).json()
+)
 
 print("*** Contexts of data, saved, cloned and merged ***")
 filename = "data-contexts"

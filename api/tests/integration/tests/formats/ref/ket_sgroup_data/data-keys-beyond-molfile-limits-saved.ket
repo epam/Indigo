@@ -58,8 +58,8 @@
                     1,
                     2
                 ],
-                "fieldName": "F",
                 "fieldData": "1-5",
+                "fieldName": "F",
                 "queryType": "Q",
                 "queryOp": "query,;:|{}$op",
                 "x": 0.0,

@@ -1104,7 +1104,7 @@ std::vector<SGroupInfo> MoleculeSGroups::getOrderedSGroups()
     for (int i = begin(); i != end(); i = next(i))
     {
         pool_index_to_info_index[i] = static_cast<int>(infos.size());
-        infos.push_back({getSGroup(i), 0, 0});
+        infos.push_back({getSGroup(i), i, 0, 0});
         pool_positions.push_back(i);
     }
 

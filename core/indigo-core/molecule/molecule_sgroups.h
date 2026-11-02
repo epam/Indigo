@@ -209,6 +209,10 @@ namespace indigo
         {
             return num_chars.value_or(0); // 0 for all of them
         }
+        Vec2f displayPosition() const
+        {
+            return display_pos.value_or(Vec2f(0, 0));
+        }
         Nullable<int> dasp_pos;
         Nullable<char> tag; // tag
         static constexpr char mrv_implicit_h[] = "MRV_IMPLICIT_H";
@@ -349,6 +353,7 @@ namespace indigo
     struct SGroupInfo
     {
         SGroup& sgroup;
+        int sgroup_idx; // its position in MoleculeSGroups
         int new_index;
         int new_parent_index;
     };

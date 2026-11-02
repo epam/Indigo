@@ -58,9 +58,11 @@
                     1,
                     2
                 ],
+                "fieldData": "1",
+                "context": "Fragment",
                 "fieldName": "F1",
-                "fieldData": "1",
-                "context": "Fragment"
+                "x": 0.0,
+                "y": 0.0
             },
             {
                 "type": "DAT",
@@ -69,9 +71,11 @@
                     1,
                     2
                 ],
+                "fieldData": "1",
+                "context": "Multifragment",
                 "fieldName": "F2",
-                "fieldData": "1",
-                "context": "Multifragment"
+                "x": 0.0,
+                "y": 0.0
             },
             {
                 "type": "DAT",
@@ -80,9 +84,11 @@
                     1,
                     2
                 ],
+                "fieldData": "1",
+                "context": "Bond",
                 "fieldName": "F3",
-                "fieldData": "1",
-                "context": "Bond"
+                "x": 0.0,
+                "y": 0.0
             },
             {
                 "type": "DAT",
@@ -91,9 +97,11 @@
                     1,
                     2
                 ],
+                "fieldData": "1",
+                "context": "Atom",
                 "fieldName": "F4",
-                "fieldData": "1",
-                "context": "Atom"
+                "x": 0.0,
+                "y": 0.0
             },
             {
                 "type": "DAT",
@@ -102,9 +110,11 @@
                     1,
                     2
                 ],
-                "fieldName": "F5",
                 "fieldData": "1",
-                "context": "Group"
+                "context": "Group",
+                "fieldName": "F5",
+                "x": 0.0,
+                "y": 0.0
             }
         ]
     }

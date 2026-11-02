@@ -58,8 +58,8 @@
                     1,
                     2
                 ],
+                "fieldData": "1",
                 "fieldName": "F1",
-                "fieldData": "1",
                 "x": 0.0,
                 "y": 0.0
             },
@@ -70,8 +70,8 @@
                     1,
                     2
                 ],
+                "fieldData": "1",
                 "fieldName": "F2",
-                "fieldData": "1",
                 "x": 0.0,
                 "y": 0.0
             },
@@ -82,8 +82,8 @@
                     1,
                     2
                 ],
+                "fieldData": "1",
                 "fieldName": "F3",
-                "fieldData": "1",
                 "x": 0.0,
                 "y": 0.0
             },
@@ -94,8 +94,8 @@
                     1,
                     2
                 ],
+                "fieldData": "1",
                 "fieldName": "F4",
-                "fieldData": "1",
                 "x": 0.0,
                 "y": 0.0
             },
@@ -106,8 +106,8 @@
                     1,
                     2
                 ],
-                "fieldName": "F5",
                 "fieldData": "1",
+                "fieldName": "F5",
                 "x": 0.0,
                 "y": 0.0
             }

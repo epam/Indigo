@@ -2239,28 +2239,19 @@ void MolfileSaver::_checkDataSGroup(const DataSGroup& datasgroup, int sgroup_num
     const int num_chars = datasgroup.displayedChars();
     if (!DataSGroup::isValidDisplayedChars(num_chars))
         reject(std::to_string(num_chars).c_str(), DataSGroup::INVALID_DISPLAYED_CHARS);
-    if (datasgroup.display_pos.has_value())
+    const Vec2f position = datasgroup.displayPosition();
+    for (const float coordinate : {position.x, position.y})
     {
-        const Vec2f& display_pos = datasgroup.display_pos.value();
-        for (const float coordinate : {display_pos.x, display_pos.y})
-        {
-            if (!DataSGroup::isValidDisplayCoordinate(coordinate))
-                reject(DataSGroup::displayCoordinateText(coordinate).c_str(), DataSGroup::INVALID_DISPLAY_COORDINATE);
-        }
+        if (!DataSGroup::isValidDisplayCoordinate(coordinate))
+            reject(DataSGroup::displayCoordinateText(coordinate).c_str(), DataSGroup::INVALID_DISPLAY_COORDINATE);
     }
 }
 
 void MolfileSaver::_writeDataSGroupDisplay(DataSGroup& datasgroup, Output& out)
 {
-    float dp_x = 0.0f;
-    float dp_y = 0.0f;
-    if (datasgroup.display_pos.has_value())
-    {
-        const Vec2f& display_pos = datasgroup.display_pos.value();
-        dp_x = display_pos.x;
-        dp_y = display_pos.y;
-    }
-    out.printf("%10.4f%10.4f    %c%c%c", dp_x, dp_y, datasgroup.detached ? 'D' : 'A', datasgroup.relative ? 'R' : 'A', datasgroup.display_units ? 'U' : ' ');
+    const Vec2f position = datasgroup.displayPosition();
+    out.printf("%10.4f%10.4f    %c%c%c", position.x, position.y, datasgroup.detached ? 'D' : 'A', datasgroup.relative ? 'R' : 'A',
+               datasgroup.display_units ? 'U' : ' ');
     const int num_chars = datasgroup.displayedChars();
     const char tag = datasgroup.tag.value_or(0);
     const int dasp_pos = datasgroup.dasp_pos.value_or(0);
