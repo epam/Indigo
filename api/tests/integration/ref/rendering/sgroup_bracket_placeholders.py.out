@@ -1,0 +1,5 @@
+*** A real bracket next to a zero-length one, before and after a MOL round trip ***
+as loaded: rendered, 2 brackets saved
+reloaded: rendered, 2 brackets saved
+*** A group with a single bracket in the file ***
+single brackets: rendered, 2 brackets saved

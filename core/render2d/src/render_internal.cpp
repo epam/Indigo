@@ -40,6 +40,12 @@ static bool _isBondWide(const BondDescr& bd)
            _BOND_SINGLE_OR_DOUBLE;
 }
 
+// An S-group read without a label keeps an empty array, and its ptr() is null.
+static const char* _labelText(const SGroup& sgroup, const char* text_when_absent = "")
+{
+    return sgroup.label.size() > 0 ? sgroup.label.ptr() : text_when_absent;
+}
+
 RenderOptions::RenderOptions()
 {
     clearRenderOptions();
@@ -625,9 +631,9 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
             int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
             TextItem& index = _data.textitems[tiIndex];
             index.fontsize = FONT_SIZE_ATTR;
-            bprintf(index.text, group.label.size() > 0 ? group.label.ptr() : "n");
+            bprintf(index.text, "%s", _labelText(group, "n"));
             _positionIndex(sg, tiIndex, true);
-            const int connectivity = group.connectivity.value_or(RepeatingUnit::HEAD_TO_TAIL);
+            const int connectivity = group.connectivity;
             if (connectivity != RepeatingUnit::HEAD_TO_TAIL)
             {
                 int tiConn = _pushTextItem(sg, RenderItem::RIT_SGROUP);
@@ -680,7 +686,7 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
             int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
             TextItem& index = _data.textitems[tiIndex];
             index.fontsize = FONT_SIZE_ATTR;
-            bprintf(index.text, "%s", group.label.ptr());
+            bprintf(index.text, "%s", _labelText(group));
             _positionIndex(sg, tiIndex, true);
 
             parent = ILLEGAL_RECT();
@@ -750,7 +756,7 @@ void MoleculeRenderInternal::_loadBracketsAuto(const SGroup& group, Sgroup& sg)
     Array<Vec2f[2]> brackets;
     _placeBrackets(sg, group.atoms, brackets);
 
-    const bool isBracketsCoordinates = group.brackets.size() != 0 && Vec2f::distSqr(group.brackets.at(0)[0], group.brackets.at(0)[1]) > EPSILON;
+    const bool isBracketsCoordinates = group.brackets.size() >= 2 && !group.isZeroLengthBracket(0) && !group.isZeroLengthBracket(1);
     if (isBracketsCoordinates)
     {
         Array<Vec2f[2]> temp;
@@ -855,16 +861,17 @@ void MoleculeRenderInternal::_prepareSGroups(bool collapseAtLeastOneSuperatom)
                         centre.scale(1.0f / group.atoms.size());
                     }
                     int superAtomID = -1;
+                    const char* label = _labelText(group);
 
                     if (mol.isQueryMolecule())
                     {
-                        superAtomID = mol.asQueryMolecule().addAtom(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, group.label.ptr()));
+                        superAtomID = mol.asQueryMolecule().addAtom(new QueryMolecule::Atom(QueryMolecule::ATOM_PSEUDO, label));
                     }
                     else
                     {
                         Molecule& amol = mol.asMolecule();
                         superAtomID = amol.addAtom(ELEM_PSEUDO);
-                        amol.setPseudoAtom(superAtomID, group.label.ptr());
+                        amol.setPseudoAtom(superAtomID, label);
                     }
                     QS_DEF(RedBlackSet<int>, groupAtoms);
                     groupAtoms.clear();

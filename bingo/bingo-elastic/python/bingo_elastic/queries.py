@@ -1,4 +1,5 @@
 import math
+import re
 from abc import ABCMeta, abstractmethod
 from functools import lru_cache
 from typing import Any, Dict, List, Optional
@@ -168,6 +169,58 @@ class WildcardQuery(CompilableQuery):
             bool_head["must"] = []
         bool_head["must"].append(
             {"wildcard": {f"{self.field}": {"wildcard": self.wildcard}}}
+        )
+        default_script_score(query)
+
+
+_FORMULA_TOKEN = re.compile(r"([A-Z][a-z]?)(\d*)")
+_FORMULA_VALID = re.compile(r"\s*(?:[A-Z][a-z]?\d*\s*)+")
+
+
+def _normalize_formula(formula: str) -> str:
+    """
+    Convert a formula to the Hill notation produced by Indigo's
+    grossFormula() (with spaces stripped): C and H first when carbon is
+    present, otherwise all elements in alphabetical order.
+    """
+    if not _FORMULA_VALID.fullmatch(formula):
+        raise ValueError(
+            f"Unsupported gross formula: {formula!r}. Expected element "
+            "symbols with optional counts, e.g. 'C2H6O', 'C2 H6 O' or "
+            "'CH3CH2OH' (no brackets, charges or lowercase symbols)"
+        )
+    counts: Dict[str, int] = {}
+    for element, count_str in _FORMULA_TOKEN.findall(formula):
+        counts[element] = counts.get(element, 0) + (
+            int(count_str) if count_str else 1
+        )
+    counts = {element: n for element, n in counts.items() if n > 0}
+    if not counts:
+        raise ValueError(f"Gross formula {formula!r} contains no atoms")
+    head = [e for e in ("C", "H") if e in counts] if "C" in counts else []
+    order = head + sorted(e for e in counts if e not in head)
+    return "".join(
+        f"{element}{counts[element]}" if counts[element] > 1 else element
+        for element in order
+    )
+
+
+class GrossFormulaQuery(CompilableQuery):
+    def __init__(self, formula: str) -> None:
+        self._formula = _normalize_formula(formula)
+
+    def compile(
+        self,
+        query: Dict,
+        postprocess_actions: Optional[PostprocessType] = None,
+    ) -> None:
+        bool_head = head_by_path(
+            query, ("query", "script_score", "query", "bool")
+        )
+        if not bool_head.get("must"):
+            bool_head["must"] = []
+        bool_head["must"].append(
+            {"term": {self.field: {"value": self._formula}}}
         )
         default_script_score(query)
 

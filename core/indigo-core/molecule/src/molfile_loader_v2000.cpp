@@ -16,6 +16,7 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include <algorithm>
 #include <memory>
 
 #include "../layout/molecule_layout.h"
@@ -29,6 +30,7 @@
 #include "molecule/molecule_3d_constraints.h"
 #include "molecule/molecule_inchi.h"
 #include "molecule/molecule_stereocenters.h"
+#include "molecule/molfile_commons.h"
 #include "molecule/molfile_loader.h"
 #include "molecule/molfile_saver.h"
 #include "molecule/monomer_commons.h"
@@ -39,6 +41,69 @@
 #define STRCMP(a, b) strncmp((a), (b), strlen(b))
 
 using namespace indigo;
+
+// A V2000 property line names an S-group beyond those M  STY declares; takes the tag of the line and the number.
+static const char* const UNDEFINED_SGROUP_MESSAGE = "M %s refers to undefined Sgroup %d";
+// The line ends before an entry its count announces; takes the tag of the line.
+static const char* const UNEXPECTED_LINE_END_MESSAGE = "Unexpected end of M %s";
+
+int MolfileLoader::_readSGroupLine(const char* property, Array<char>& rest)
+{
+    // " sss d...": a separator, the index in three columns, a separator, the data
+    _scanner.readLine(rest, false);
+    const int index_end = std::min(rest.size(), 4);
+    int sgroup_idx = -1;
+    if (index_end > 1)
+    {
+        BufferScanner index_scanner(rest.ptr() + 1, index_end - 1);
+        sgroup_idx = index_scanner.readIntFix(index_end - 1) - 1;
+    }
+    _checkSGroupIndex(property, sgroup_idx);
+
+    rest.remove(0, index_end);
+    if (rest.size() > 0 && rest[0] == ' ')
+        rest.remove(0);
+    return sgroup_idx;
+}
+
+void MolfileLoader::_readSGroupEntryLine(const char* property, std::vector<SGroupLineEntry>& entries)
+{
+    // "nn8 sss vvv ...": the count in three columns, then per entry a separator, the index in three columns,
+    // a separator and the value; the last value may lose its trailing spaces with the end of the line
+    const int count_width = 3;
+    const int separator_width = 1;
+    const int index_width = 3;
+    const int value_width = 3;
+    // An entry needs its index and at least the first character of its value
+    const int shortest_value_width = 1;
+    const int shortest_entry_width = separator_width + index_width + separator_width + shortest_value_width;
+    QS_DEF(Array<char>, line);
+    _scanner.readLine(line, false);
+    BufferScanner line_scanner(line);
+    const int entry_count = line_scanner.readIntFix(count_width);
+
+    entries.clear();
+    for (int entry_number = 0; entry_number < entry_count; entry_number++)
+    {
+        if (line_scanner.length() - line_scanner.tell() < shortest_entry_width)
+            throw Error(UNEXPECTED_LINE_END_MESSAGE, property);
+
+        SGroupLineEntry entry;
+        line_scanner.skip(separator_width);
+        entry.sgroup_idx = line_scanner.readIntFix(index_width) - 1;
+        _checkSGroupIndex(property, entry.sgroup_idx);
+        line_scanner.skip(separator_width);
+        const int value_length = line_scanner.readCharsFlexible(value_width, entry.value);
+        entry.value[value_length] = 0;
+        entries.push_back(entry);
+    }
+}
+
+void MolfileLoader::_checkSGroupIndex(const char* property, int sgroup_idx)
+{
+    if (sgroup_idx < 0 || sgroup_idx >= _sgroup_types.size())
+        throw Error(UNDEFINED_SGROUP_MESSAGE, property, sgroup_idx + 1);
+}
 
 void MolfileLoader::_readCtab2000()
 {
@@ -798,7 +863,7 @@ void MolfileLoader::_readCtab2000()
 
                 _scanner.skipLine();
             }
-            else if (strncmp(chars, "SST", 3) == 0)
+            else if (strncmp(chars, MOLFILE_SGROUP_SUBTYPE_TAG, 3) == 0)
             {
                 int n = _scanner.readIntFix(3);
 
@@ -811,16 +876,13 @@ void MolfileLoader::_readCtab2000()
                     _scanner.readCharsFix(3, type);
                     int idx = _sgroup_mapping[sgroup_idx];
                     SGroup* sgroup = &_bmol->sgroups.getSGroup(idx);
-                    if (strcmp(type, "ALT") == 0)
-                        sgroup->sgroup_subtype = SGroup::SG_SUBTYPE_ALT;
-                    else if (strcmp(type, "RAN") == 0)
-                        sgroup->sgroup_subtype = SGroup::SG_SUBTYPE_RAN;
-                    else if (strcmp(type, "BLO") == 0)
-                        sgroup->sgroup_subtype = SGroup::SG_SUBTYPE_BLO;
+                    const int subtype = SGroup::getSubtype(type);
+                    if (subtype != -1)
+                        sgroup->sgroup_subtype = subtype;
                 }
                 _scanner.skipLine();
             }
-            else if (strncmp(chars, "STY", 3) == 0)
+            else if (strncmp(chars, MOLFILE_SGROUP_TYPE_TAG, 3) == 0)
             {
                 int n = _scanner.readIntFix(3);
 
@@ -842,7 +904,7 @@ void MolfileLoader::_readCtab2000()
                 }
                 _scanner.skipLine();
             }
-            else if (strncmp(chars, "SPL", 3) == 0 || strncmp(chars, "SBT", 3) == 0)
+            else if (strncmp(chars, MOLFILE_SGROUP_PARENT_TAG, 3) == 0 || strncmp(chars, "SBT", 3) == 0)
             {
                 int n = _scanner.readIntFix(3);
 
@@ -856,14 +918,14 @@ void MolfileLoader::_readCtab2000()
                     _scanner.skip(1);
                     int value = _scanner.readIntFix(3);
 
-                    if (strncmp(chars, "SPL", 3) == 0)
+                    if (strncmp(chars, MOLFILE_SGROUP_PARENT_TAG, 3) == 0)
                         sgroup->parent_group = value;
                     else
                         sgroup->brk_style = value;
                 }
                 _scanner.skipLine();
             }
-            else if (strncmp(chars, "SLB", 3) == 0)
+            else if (strncmp(chars, MOLFILE_SGROUP_EXT_INDEX_TAG, 3) == 0)
             {
                 int n = _scanner.readIntFix(3);
 
@@ -878,29 +940,6 @@ void MolfileLoader::_readCtab2000()
                     int vvv = _scanner.readIntFix(3);
 
                     sgroup->ext_index = vvv;
-                }
-                _scanner.skipLine();
-            }
-            else if (strncmp(chars, "SST", 3) == 0)
-            {
-                int n = _scanner.readIntFix(3);
-
-                while (n-- > 0)
-                {
-                    _scanner.skip(1);
-                    int sgroup_idx = _scanner.readIntFix(3) - 1;
-
-                    SGroup* sgroup = &_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
-
-                    char subtype[4] = {0, 0, 0, 0};
-                    _scanner.readCharsFix(3, subtype);
-
-                    if (strncmp(subtype, "ALT", 3) == 0)
-                        sgroup->sgroup_subtype = SGroup::SG_SUBTYPE_ALT;
-                    else if (strncmp(subtype, "RAN", 3) == 0)
-                        sgroup->sgroup_subtype = SGroup::SG_SUBTYPE_RAN;
-                    else if (strncmp(subtype, "BLO", 3) == 0)
-                        sgroup->sgroup_subtype = SGroup::SG_SUBTYPE_BLO;
                 }
                 _scanner.skipLine();
             }
@@ -945,15 +984,11 @@ void MolfileLoader::_readCtab2000()
             }
             else if (strncmp(chars, "SDT", 3) == 0)
             {
-                _scanner.skip(1);
-                int sgroup_idx = _scanner.readIntFix(3) - 1;
-                _scanner.skip(1);
+                QS_DEF(Array<char>, rest);
+                int sgroup_idx = _readSGroupLine(chars, rest);
 
                 if (_sgroup_types[sgroup_idx] == SGroup::SG_TYPE_DAT)
                 {
-                    QS_DEF(Array<char>, rest);
-
-                    _scanner.readLine(rest, false);
                     BufferScanner strscan(rest);
                     DataSGroup& sgroup = (DataSGroup&)_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
 
@@ -1041,27 +1076,30 @@ void MolfileLoader::_readCtab2000()
             }
             else if (strncmp(chars, "SDD", 3) == 0)
             {
-                _scanner.skip(1);
-                int sgroup_idx = _scanner.readIntFix(3) - 1;
+                QS_DEF(Array<char>, rest);
+                int sgroup_idx = _readSGroupLine(chars, rest);
+
                 if (_sgroup_types[sgroup_idx] == SGroup::SG_TYPE_DAT)
                 {
-                    _scanner.skip(1);
+                    BufferScanner strscan(rest);
                     DataSGroup& sgroup = (DataSGroup&)_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
 
-                    _readSGroupDisplay(_scanner, sgroup);
+                    _readSGroupDisplay(strscan, sgroup);
                 }
-                _scanner.skipLine();
             }
             else if (strncmp(chars, "SED", 3) == 0 || strncmp(chars, "SCD", 3) == 0)
             {
-                _scanner.skip(1);
-                int sgroup_idx = _scanner.readIntFix(3) - 1;
+                QS_DEF(Array<char>, rest);
+                int sgroup_idx = _readSGroupLine(chars, rest);
+
                 if (_sgroup_types[sgroup_idx] == SGroup::SG_TYPE_DAT)
                 {
-                    _scanner.skip(1);
                     DataSGroup& sgroup = (DataSGroup&)_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
+                    while (sgroup.data.size() > 0 && sgroup.data.top() == 0)
+                        sgroup.data.pop();
                     int len = sgroup.data.size();
-                    _scanner.appendLine(sgroup.data, true);
+                    sgroup.data.concat(rest);
+                    sgroup.data.push(0);
 
                     // Remove last spaces because "SED" means end of a paragraph
                     if (strncmp(chars, "SED", 3) == 0)
@@ -1081,39 +1119,43 @@ void MolfileLoader::_readCtab2000()
                             sgroup.data.push(0);
                     }
                 }
-                else
-                    _scanner.skipLine();
             }
             else if (strncmp(chars, "SMT", 3) == 0)
             {
-                _scanner.skip(1);
-                int sgroup_idx = _scanner.readIntFix(3) - 1;
+                QS_DEF(Array<char>, rest);
+                int sgroup_idx = _readSGroupLine(chars, rest);
+
                 if (_sgroup_types[sgroup_idx] == SGroup::SG_TYPE_MUL)
                 {
-                    _scanner.skip(1);
                     MultipleGroup& mg = (MultipleGroup&)_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
-                    mg.multiplier = _scanner.readInt();
-                    _scanner.skipLine();
+                    BufferScanner strscan(rest);
+                    strscan.skipSpace();
+                    if (!strscan.isEOF())
+                        mg.multiplier = strscan.readInt();
                 }
                 else
                 {
                     SGroup& sgroup = _bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
-                    _scanner.skip(1);
-                    _scanner.readQuotedLine(sgroup.label, true);
+                    if (rest.size() > 1 && rest[0] == '"' && rest.top() == '"')
+                    {
+                        rest.pop();
+                        rest.remove(0);
+                    }
+                    sgroup.label.copy(rest);
+                    sgroup.label.push(0);
                 }
             }
             else if (strncmp(chars, "SCL", 3) == 0)
             {
-                _scanner.skip(1);
-                int sgroup_idx = _scanner.readIntFix(3) - 1;
+                QS_DEF(Array<char>, rest);
+                int sgroup_idx = _readSGroupLine(chars, rest);
+
                 if (_sgroup_types[sgroup_idx] == SGroup::SG_TYPE_SUP)
                 {
-                    _scanner.skip(1);
                     Superatom& sup = (Superatom&)_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
-                    _scanner.readLine(sup.sa_class, true);
+                    sup.sa_class.copy(rest);
+                    sup.sa_class.push(0);
                 }
-                else
-                    _scanner.skipLine();
             }
             else if (strncmp(chars, "SBV", 3) == 0)
             {
@@ -1198,51 +1240,32 @@ void MolfileLoader::_readCtab2000()
                 }
                 _scanner.skipLine();
             }
-            else if (strncmp(chars, "SCN", 3) == 0)
+            else if (strncmp(chars, MOLFILE_SGROUP_CONNECTIVITY_TAG, 3) == 0)
             {
-                // The format is the following: M SCNnn8 sss ttt ...
-                int n = _scanner.readIntFix(3);
-
-                bool need_skip_line = true;
-                while (n-- > 0)
+                // M  SCNnn8 sss ttt ...
+                std::vector<SGroupLineEntry> entries;
+                _readSGroupEntryLine(MOLFILE_SGROUP_CONNECTIVITY_TAG, entries);
+                for (const SGroupLineEntry& entry : entries)
                 {
-                    _scanner.skip(1);
-                    int sgroup_idx = _scanner.readIntFix(3) - 1;
-
-                    char id[4];
-                    _scanner.skip(1);
-                    _scanner.readCharsFix(3, id);
-
-                    if (sgroup_idx < 0 || sgroup_idx >= _sgroup_types.size())
-                        throw Error("M SCN refers to undefined Sgroup %d", sgroup_idx + 1);
-
-                    if (_sgroup_types[sgroup_idx] == SGroup::SG_TYPE_SRU)
-                    {
-                        RepeatingUnit& ru = (RepeatingUnit&)_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
-
-                        if (strncmp(id, "HH", 2) == 0)
-                            ru.connectivity = SGroup::HEAD_TO_HEAD;
-                        else if (strncmp(id, "HT", 2) == 0)
-                            ru.connectivity = SGroup::HEAD_TO_TAIL;
-                        else if (strncmp(id, "EU", 2) == 0)
-                            ru.connectivity = SGroup::EITHER;
-                        else
-                        {
-                            id[3] = 0;
-                            throw Error("Undefined Sgroup connectivity: '%s'", id);
-                        }
-                    }
-                    if (id[2] == '\n')
-                    {
-                        if (n != 0)
-                            throw Error("Unexpected end of M SCN");
-                        else
-                            // In some molfiles last space is not written
-                            need_skip_line = false;
-                    }
+                    if (_sgroup_mapping[entry.sgroup_idx] < 0)
+                        continue;
+                    // The code takes two columns; the third is a separator
+                    const char connectivity_code[] = {entry.value[0], entry.value[1], 0};
+                    _applyConnectivity(_bmol->sgroups.getSGroup(_sgroup_mapping[entry.sgroup_idx]), connectivity_code);
                 }
-                if (need_skip_line)
-                    _scanner.skipLine();
+            }
+            else if (strncmp(chars, MOLFILE_SGROUP_COMPONENT_ORDER_TAG, 3) == 0)
+            {
+                // M  SNCnn8 sss ooo ...
+                std::vector<SGroupLineEntry> entries;
+                _readSGroupEntryLine(MOLFILE_SGROUP_COMPONENT_ORDER_TAG, entries);
+                for (const SGroupLineEntry& entry : entries)
+                {
+                    BufferScanner order_scanner(entry.value);
+                    const int component_order = order_scanner.readIntFix(static_cast<int>(strlen(entry.value)));
+                    if (_sgroup_mapping[entry.sgroup_idx] >= 0)
+                        _applyComponentOrder(_bmol->sgroups.getSGroup(_sgroup_mapping[entry.sgroup_idx]), component_order);
+                }
             }
             else if (strncmp(chars, "MRV", 3) == 0)
             {
@@ -1332,7 +1355,7 @@ void MolfileLoader::_readCtab2000()
         if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
         {
             DataSGroup& dsg = (DataSGroup&)sgroup;
-            if (dsg.data.size() > 2 && dsg.data.top(1) == '\n')
+            if (dsg.data.size() >= 2 && dsg.data.top(1) == '\n')
             {
                 dsg.data.pop();
                 dsg.data.top() = 0;

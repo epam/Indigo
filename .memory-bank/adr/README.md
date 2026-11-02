@@ -48,6 +48,9 @@ recorded in a ticket that the code links to.
   graph's components
 - [salt-detection-in-the-core.md](./salt-detection-in-the-core.md) — `checkSalt` / `stripSalt` are
   one implementation behind the C API; the wrappers call it and keep no patterns of their own
+- [sgroup-brackets-by-bounding-box.md](./sgroup-brackets-by-bounding-box.md) — polymer S-group brackets
+  are placed by the layout, two vertical brackets around the group's bounding box, not through the crossing
+  bonds and not by the renderer
 
 Still worth reconstructing from the analyses in `indigo-common/Task/`: the valence-model
 configuration contract (BIOVIA 2009 vs 2017), and the decision to route non-local formats through

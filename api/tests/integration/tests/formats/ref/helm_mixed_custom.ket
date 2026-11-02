@@ -156,14 +156,14 @@
             "x": 0.000000,
             "y": -1.500000
         },
-        "seqid": 2,
+        "seqid": 1,
         "alias": "Var0",
         "templateId": "Var0"
     },
     "monomer2": {
         "type": "monomer",
         "id": "2",
-        "seqid": 3,
+        "seqid": 1,
         "position": {
             "x": 1.500000,
             "y": -0.000000
@@ -174,7 +174,7 @@
     "monomer3": {
         "type": "monomer",
         "id": "3",
-        "seqid": 4,
+        "seqid": 2,
         "position": {
             "x": 3.000000,
             "y": -0.000000
@@ -189,14 +189,14 @@
             "x": 3.000000,
             "y": -1.500000
         },
-        "seqid": 5,
+        "seqid": 2,
         "alias": "Var1",
         "templateId": "Var1"
     },
     "monomer5": {
         "type": "monomer",
         "id": "5",
-        "seqid": 6,
+        "seqid": 2,
         "position": {
             "x": 4.500000,
             "y": -0.000000
@@ -207,7 +207,7 @@
     "monomer6": {
         "type": "monomer",
         "id": "6",
-        "seqid": 7,
+        "seqid": 3,
         "position": {
             "x": 6.000000,
             "y": -0.000000
@@ -222,7 +222,7 @@
             "x": 6.000000,
             "y": -1.500000
         },
-        "seqid": 8,
+        "seqid": 3,
         "alias": "Var2",
         "templateId": "Var2"
     },

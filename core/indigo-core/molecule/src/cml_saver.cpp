@@ -767,7 +767,7 @@ XMLElement* CmlSaver::_addSgroupElement(XMLElement* molecule, const SGroupInfo& 
             sg->SetAttribute("title", name);
         }
 
-        const int connectivity = sru.connectivity.value_or(SGroup::HEAD_TO_TAIL);
+        const int connectivity = sru.connectivity;
         if (connectivity == SGroup::HEAD_TO_TAIL)
         {
             sg->SetAttribute("connect", "ht");

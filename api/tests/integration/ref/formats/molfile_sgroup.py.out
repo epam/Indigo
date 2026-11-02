@@ -1,0 +1,85 @@
+*** Molfile S-groups ***
+multiline-sgroups-ketcher-457-empty-auto.mol:SUCCEED
+multiline-sgroups-ketcher-457-empty-auto.mol reload:SUCCEED
+multiline-sgroups-ketcher-457-empty-2000.mol:SUCCEED
+multiline-sgroups-ketcher-457-empty-2000.mol reload:SUCCEED
+multiline-sgroups-ketcher-457-empty-3000.mol:SUCCEED
+multiline-sgroups-ketcher-457-empty-3000.mol reload:SUCCEED
+multiline-sgroups-ketcher-457-single-auto.mol:SUCCEED
+multiline-sgroups-ketcher-457-single-auto.mol reload:SUCCEED
+multiline-sgroups-ketcher-457-single-2000.mol:SUCCEED
+multiline-sgroups-ketcher-457-single-2000.mol reload:SUCCEED
+multiline-sgroups-ketcher-457-single-3000.mol:SUCCEED
+multiline-sgroups-ketcher-457-single-3000.mol reload:SUCCEED
+multiline-sgroups-ketcher-457-v2000-auto.mol:SUCCEED
+multiline-sgroups-ketcher-457-v2000-auto.mol reload:SUCCEED
+multiline-sgroups-ketcher-457-v2000-2000.mol:SUCCEED
+multiline-sgroups-ketcher-457-v2000-2000.mol reload:SUCCEED
+multiline-sgroups-ketcher-457-v2000-3000.mol:SUCCEED
+multiline-sgroups-ketcher-457-v2000-3000.mol reload:SUCCEED
+multiline-sgroups-ketcher-457-v3000-auto.mol:SUCCEED
+multiline-sgroups-ketcher-457-v3000-auto.mol reload:SUCCEED
+multiline-sgroups-ketcher-457-v3000-2000.mol:SUCCEED
+multiline-sgroups-ketcher-457-v3000-2000.mol reload:SUCCEED
+multiline-sgroups-ketcher-457-v3000-3000.mol:SUCCEED
+multiline-sgroups-ketcher-457-v3000-3000.mol reload:SUCCEED
+data-displayed-chars-out-of-range-2000.mol:SUCCEED
+data-displayed-chars-out-of-range-2000.mol reload:SUCCEED
+data-displayed-chars-out-of-range-3000.mol:SUCCEED
+data-displayed-chars-out-of-range-3000.mol reload:SUCCEED
+v2000-data-single-empty-line-2000.mol:SUCCEED
+v2000-data-single-empty-line-2000.mol reload:SUCCEED
+v2000-data-single-empty-line-3000.mol:SUCCEED
+v2000-data-single-empty-line-3000.mol reload:SUCCEED
+v2000-sdd-character-count-2000.mol:SUCCEED
+v2000-sdd-character-count-2000.mol reload:SUCCEED
+v2000-sdd-character-count-3000.mol:SUCCEED
+v2000-sdd-character-count-3000.mol reload:SUCCEED
+v2000-sdd-character-count-forms-2000.mol:SUCCEED
+v2000-sdd-character-count-forms-2000.mol reload:SUCCEED
+v2000-sdd-character-count-forms-3000.mol:SUCCEED
+v2000-sdd-character-count-forms-3000.mol reload:SUCCEED
+v2000-sdt-on-gen-a-2000.mol:SUCCEED
+v2000-sdt-on-gen-a-2000.mol reload:SUCCEED
+v2000-sdt-on-gen-a-3000.mol:SUCCEED
+v2000-sdt-on-gen-a-3000.mol reload:SUCCEED
+v2000-sdt-on-gen-empty-2000.mol:SUCCEED
+v2000-sdt-on-gen-empty-2000.mol reload:SUCCEED
+v2000-sdt-on-gen-empty-3000.mol:SUCCEED
+v2000-sdt-on-gen-empty-3000.mol reload:SUCCEED
+v2000-sdt-on-gen-g-2000.mol:SUCCEED
+v2000-sdt-on-gen-g-2000.mol reload:SUCCEED
+v2000-sdt-on-gen-g-3000.mol:SUCCEED
+v2000-sdt-on-gen-g-3000.mol reload:SUCCEED
+v2000-sgroup-index-one-column-short-2000.mol:SUCCEED
+v2000-sgroup-index-one-column-short-2000.mol reload:SUCCEED
+v2000-sgroup-index-one-column-short-3000.mol:SUCCEED
+v2000-sgroup-index-one-column-short-3000.mol reload:SUCCEED
+v2000-sgroup-lines-ending-after-index-2000.mol:SUCCEED
+v2000-sgroup-lines-ending-after-index-2000.mol reload:SUCCEED
+v2000-sgroup-lines-ending-after-index-3000.mol:SUCCEED
+v2000-sgroup-lines-ending-after-index-3000.mol reload:SUCCEED
+v3000-data-line-of-69-characters-2000.mol:SUCCEED
+v3000-data-line-of-69-characters-2000.mol reload:SUCCEED
+v3000-data-line-of-69-characters-3000.mol:SUCCEED
+v3000-data-line-of-69-characters-3000.mol reload:SUCCEED
+v3000-data-lines-around-69-characters-2000.mol:SUCCEED
+v3000-data-lines-around-69-characters-2000.mol reload:SUCCEED
+v3000-data-lines-around-69-characters-3000.mol:SUCCEED
+v3000-data-lines-around-69-characters-3000.mol reload:SUCCEED
+v3000-default-forms-2000.mol:SUCCEED
+v3000-default-forms-2000.mol reload:SUCCEED
+v3000-default-forms-3000.mol:SUCCEED
+v3000-default-forms-3000.mol reload:SUCCEED
+v3000-default-line-2000.mol:SUCCEED
+v3000-default-line-2000.mol reload:SUCCEED
+v3000-default-line-3000.mol:SUCCEED
+v3000-default-line-3000.mol reload:SUCCEED
+v3000-fielddata-forms-2000.mol:SUCCEED
+v3000-fielddata-forms-2000.mol reload:SUCCEED
+v3000-fielddata-forms-3000.mol:SUCCEED
+v3000-fielddata-forms-3000.mol reload:SUCCEED
+sgroup/v2000-sgroup-index-out-of-range.mol: molfile loader: M SED refers to undefined Sgroup 5
+sgroup/v2000-sgroup-index-zero.mol: molfile loader: M SMT refers to undefined Sgroup 0
+sgroup/v2000-sgroup-without-sty.mol: molfile loader: M SCL refers to undefined Sgroup 1
+sgroup/v3000-default-without-value.mol: molfile loader: DEFAULT entry: expected '=' after "FOO"

@@ -283,6 +283,10 @@
                     3,
                     4,
                     1
+                ],
+                "bonds": [
+                    0,
+                    4
                 ]
             }
         ]
@@ -416,7 +420,11 @@
                     4
                 ],
                 "name": "sup",
-                "expanded": true
+                "expanded": true,
+                "bonds": [
+                    1,
+                    4
+                ]
             }
         ]
     },
@@ -728,7 +736,11 @@
                     2,
                     3
                 ],
-                "mul": 1
+                "mul": 1,
+                "bonds": [
+                    0,
+                    3
+                ]
             }
         ]
     },
@@ -866,7 +878,11 @@
                     6
                 ],
                 "subscript": "n",
-                "connectivity": "HT"
+                "connectivity": "HT",
+                "bonds": [
+                    3,
+                    6
+                ]
             }
         ]
     }

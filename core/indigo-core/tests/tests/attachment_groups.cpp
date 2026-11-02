@@ -18,13 +18,19 @@
 
 // Tests for the attachment groups behind haptic bonds (#3233, #3837): stable
 // indices, slot reuse, membership as a set, the all-or-nothing rule on removal,
-// and the anchor atom a group points at without owning it. The bonds that
-// address these groups are tested in haptic_bonds.cpp.
+// the anchor atom a group points at without owning it, and the charge and the
+// radical the group holds of its own (#3923). The bonds that address these
+// groups are tested in haptic_bonds.cpp.
+
+#include <string>
 
 #include <gtest/gtest.h>
 
+#include <molecule/elements.h>
 #include <molecule/molecule.h>
 #include <molecule/molecule_attachment_groups.h>
+#include <molecule/molecule_gross_formula.h>
+#include <molecule/molecule_mass.h>
 
 #include "common.h"
 
@@ -78,6 +84,8 @@ TEST_F(IndigoCoreAttachmentGroupsTest, RemoveFreesSlotAndReusesItClean)
     groups.addGroup();
     groups.group(b).addAtom(0);
     groups.group(b).setAnchorAtom(0);
+    groups.group(b).setCharge(-1);
+    groups.group(b).setRadical(RADICAL_DOUBLET);
 
     mol.removeAttachmentGroup(b);
     EXPECT_EQ(2, groups.groupCount());
@@ -87,6 +95,8 @@ TEST_F(IndigoCoreAttachmentGroupsTest, RemoveFreesSlotAndReusesItClean)
     EXPECT_EQ(b, reused); // stable indices: the freed slot comes back
     EXPECT_TRUE(groups.group(reused).atoms().empty());
     EXPECT_EQ(-1, groups.group(reused).anchorAtom()); // no stale anchor
+    EXPECT_EQ(0, groups.group(reused).charge());
+    EXPECT_EQ(0, groups.group(reused).radical());
 }
 
 TEST_F(IndigoCoreAttachmentGroupsTest, IterationSkipsRemovedGroups)
@@ -168,25 +178,106 @@ TEST_F(IndigoCoreAttachmentGroupsTest, RemovingANonMemberAtomLeavesTheGroupAlone
     EXPECT_EQ(5u, mol.attachment_groups.group(group).atoms().size());
 }
 
-// A group is a set of atoms and nothing else: the charge of the pi system stays on
-// the atom the file put it on, and cloning must not invent one anywhere.
-TEST_F(IndigoCoreAttachmentGroupsTest, GroupCarriesNoChargeOfItsOwn)
+// The charge and the radical live on the group: an edit that keeps the group keeps
+// them, and one that drops the group takes them along - no atom inherits them.
+TEST_F(IndigoCoreAttachmentGroupsTest, ChargeAndRadicalShareTheFateOfTheGroupWhenAtomsAreRemoved)
+{
+    Molecule mol;
+    makeRingAndMetal(mol);
+    const int group = addRingGroup(mol);
+    mol.attachment_groups.group(group).setCharge(-1);
+    mol.attachment_groups.group(group).setRadical(RADICAL_DOUBLET);
+
+    mol.removeAtom(5); // the metal is not a member
+    ASSERT_TRUE(mol.attachment_groups.hasGroup(group));
+    EXPECT_EQ(-1, mol.attachment_groups.group(group).charge());
+    EXPECT_EQ(RADICAL_DOUBLET, mol.attachment_groups.group(group).radical());
+
+    mol.removeAtom(2); // a member: the group goes whole
+    EXPECT_EQ(0, mol.attachment_groups.groupCount());
+    for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+        EXPECT_EQ(0, mol.getAtomCharge(i)) << "atom " << i;
+}
+
+// The charge and the radical belong to the pi-system, not to an atom: every copy of
+// the molecule carries them on the group, and the charges of the atoms - one of
+// them charged on its own - come through exactly as they were.
+TEST_F(IndigoCoreAttachmentGroupsTest, ChargeAndRadicalTravelWithTheGroup)
 {
     Molecule source;
     makeRingAndMetal(source);
-    source.setAtomCharge(0, -1); // as a V3000 file may write it, on a ring atom
-    addRingGroup(source);
+    source.setAtomCharge(0, -1);
+    AttachmentGroup& ring = source.attachment_groups.group(addRingGroup(source));
+    ring.setCharge(-1);
+    ring.setRadical(RADICAL_DOUBLET);
 
-    Molecule copy;
-    copy.clone(source);
+    Molecule cloned;
+    cloned.clone(source);
 
-    ASSERT_EQ(1, copy.attachment_groups.groupCount());
-    EXPECT_EQ(5u, copy.attachment_groups.group(copy.attachment_groups.begin()).atoms().size());
+    Array<int> ring_and_metal;
+    for (int i = 5; i >= 0; i--)
+        ring_and_metal.push(i);
+    Molecule extracted;
+    extracted.makeSubmolecule(source, ring_and_metal, nullptr);
 
-    int total = 0;
-    for (int i = copy.vertexBegin(); i != copy.vertexEnd(); i = copy.vertexNext(i))
-        total += copy.getAtomCharge(i);
-    EXPECT_EQ(-1, total) << "the charge must stay exactly where the file put it";
+    Molecule merged;
+    merged.addAtom(ELEM_O);
+    merged.mergeWithMolecule(source, nullptr);
+
+    for (Molecule* copy : {&cloned, &extracted, &merged})
+    {
+        ASSERT_EQ(1, copy->attachment_groups.groupCount());
+        const AttachmentGroup& group = copy->attachment_groups.group(copy->attachment_groups.begin());
+        EXPECT_EQ(-1, group.charge());
+        EXPECT_EQ(RADICAL_DOUBLET, group.radical());
+
+        int total = 0;
+        for (int i = copy->vertexBegin(); i != copy->vertexEnd(); i = copy->vertexNext(i))
+            total += copy->getAtomCharge(i);
+        EXPECT_EQ(-1, total) << "only the atom charged on its own carries a charge";
+    }
+}
+
+// The formula, the mass, the hydrogen counts and the SMILES are made of the atoms;
+// the charge of the group is not an atom's and changes none of them.
+TEST_F(IndigoCoreAttachmentGroupsTest, GroupChargeTakesNoPartInTheAtomCalculations)
+{
+    Molecule neutral;
+    makeRingAndMetal(neutral);
+    addRingGroup(neutral);
+
+    Molecule charged;
+    makeRingAndMetal(charged);
+    AttachmentGroup& ring = charged.attachment_groups.group(addRingGroup(charged));
+    ring.setCharge(-1);
+    ring.setRadical(RADICAL_DOUBLET);
+
+    const auto formula = [](Molecule& mol) {
+        Array<int> gross;
+        MoleculeGrossFormula::collect(mol, gross);
+        Array<char> text;
+        MoleculeGrossFormula::toString(gross, text);
+        return std::string(text.ptr(), static_cast<std::size_t>(text.size()));
+    };
+
+    EXPECT_EQ(formula(neutral), formula(charged));
+    EXPECT_DOUBLE_EQ(MoleculeMass().molecularWeight(neutral), MoleculeMass().molecularWeight(charged));
+    for (int i = 0; i < 5; i++)
+        EXPECT_EQ(neutral.getImplicitH(i), charged.getImplicitH(i)) << "ring atom " << i;
+    EXPECT_EQ(smiles(neutral), smiles(charged)) << "a format without attachment groups carries neither property";
+}
+
+TEST_F(IndigoCoreAttachmentGroupsTest, RadicalOutsideTheAtomEncodingIsRejected)
+{
+    MoleculeAttachmentGroups groups;
+    AttachmentGroup& group = groups.group(groups.addGroup());
+
+    EXPECT_THROW(group.setRadical(RADICAL_TRIPLET + 1), Exception);
+    EXPECT_THROW(group.setRadical(-1), Exception);
+    EXPECT_EQ(0, group.radical()) << "a rejected value leaves the group as it was";
+
+    group.setRadical(RADICAL_TRIPLET);
+    EXPECT_EQ(RADICAL_TRIPLET, group.radical());
 }
 
 // The anchor is a reference to an atom, so it follows the atoms through every

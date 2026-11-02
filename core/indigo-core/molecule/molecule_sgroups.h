@@ -111,11 +111,8 @@ namespace indigo
         SGroup();
         virtual ~SGroup();
 
-        // Reusable: restore the exact default-constructed state so a pooled slot
-        // can be handed back out. MUST mirror the constructor field by field — a
-        // missed field would leak stale data into the reused SGroup. Subclass
-        // overrides call SGroup::reuse() and then restore their own constructor
-        // defaults (including re-setting sgroup_type).
+        // Reusable: restores the default-constructed state, so that a pooled slot can be handed out again.
+        // An override resets the base part through SGroup::reuse().
         void reuse() override;
 
         // Initializing form used by the pool: resets through the virtual
@@ -125,6 +122,8 @@ namespace indigo
 
         int sgroup_type;              // group type, represnted with STY in Molfile format
         Nullable<int> sgroup_subtype; // group subtype, represnted with SST in Molfile format
+        int connectivity;             // repeat pattern of a polymer group, SCN in Molfile format (CONNECT in V3000); 0 = not set
+        int component_order;          // order of a component, SNC in Molfile format (COMPNO in V3000); 0 = not numbered
         int index;                    // internal SGroup index; V3000 field 1, V2000 M STY sss. Used for cross-refs (PARENT, SPL).
         int ext_index;                // external SGroup index; V3000 field 3 (extindex), V2000 M SLB vvv. 0 = auto-assign per spec.
         Nullable<int> parent_group;   // parent group index; represented with PARENT in V3000, SPL in V2000
@@ -143,6 +142,17 @@ namespace indigo
             return xbonds;
         }
 
+        // The readers take only a positive order, so a writer asks no more than this.
+        bool hasComponentOrder() const
+        {
+            return component_order != 0;
+        }
+
+        // One zero-length bracket means the group has none: loaders write such placeholders where a format has no
+        // bracket coordinates
+        bool hasBrackets() const;
+        bool isZeroLengthBracket(int bracket_idx) const;
+
         Array<char> label;                  // SMT in Molfile format (LABEL in V3000)
         Nullable<int> brk_style;            // represented with SBT in Molfile format
         Array<Vec2f[2]> brackets;           // represented with SDI in Molfile format
@@ -150,9 +160,16 @@ namespace indigo
 
         static const char* typeToString(int sg_type);
         static int getType(const char* sg_type);
+        static const char* subtypeToString(int sg_subtype);
+        static int getSubtype(const char* sg_subtype);
+        // An unset connectivity reads as either/unknown, the default of the Molfile format.
+        static const char* connectivityToString(int connectivity);
+        static int getConnectivity(const char* connectivity);
+        static bool typeHasConnectivity(int sg_type);
 
     private:
         SGroup(const SGroup&);
+        void _reset();
     };
 
     class DLLEXPORT DataSGroup : public SGroup
@@ -196,6 +213,7 @@ namespace indigo
 
     private:
         DataSGroup(const DataSGroup&);
+        void _reset();
     };
 
     class DLLEXPORT Superatom : public SGroup
@@ -252,6 +270,7 @@ namespace indigo
 
     private:
         Superatom(const Superatom&);
+        void _reset();
     };
 
     class DLLEXPORT RepeatingUnit : public SGroup
@@ -262,10 +281,9 @@ namespace indigo
 
         void reuse() override;
 
-        Nullable<int> connectivity;
-
     private:
         RepeatingUnit(const RepeatingUnit&);
+        void _reset();
     };
 
     class DLLEXPORT CopolymerGroup : public SGroup
@@ -276,10 +294,9 @@ namespace indigo
 
         void reuse() override;
 
-        Nullable<int> connectivity;
-
     private:
         CopolymerGroup(const CopolymerGroup&);
+        void _reset();
     };
 
     class DLLEXPORT MultipleGroup : public SGroup
@@ -295,6 +312,7 @@ namespace indigo
 
     private:
         MultipleGroup(const MultipleGroup&);
+        void _reset();
     };
 
     struct SGroupInfo
@@ -339,6 +357,26 @@ namespace indigo
         int begin();
         int end();
         int next(int i);
+
+        // A template, not std::function: this header reaches the Postgres cartridge, where postgres.h defines bind as a
+        // macro on Windows and <functional> no longer compiles
+        template <typename Transform>
+        void transformBrackets(Transform transform)
+        {
+            for (int i = begin(); i != end(); i = next(i))
+            {
+                SGroup& sgroup = getSGroup(i);
+                Array<Vec2f[2]>& brackets = sgroup.brackets;
+                for (int j = 0; j < brackets.size(); ++j)
+                {
+                    // Placeholders stay as loaders wrote them: some savers write them out as they are
+                    if (sgroup.isZeroLengthBracket(j))
+                        continue;
+                    transform(brackets[j][0]);
+                    transform(brackets[j][1]);
+                }
+            }
+        }
 
         enum PropertyTypes
         {

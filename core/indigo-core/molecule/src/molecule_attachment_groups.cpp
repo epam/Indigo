@@ -21,8 +21,11 @@
 #include <algorithm>
 #include <unordered_set>
 
+#include "molecule/elements.h"
+
 using namespace indigo;
 
+IMPL_ERROR(AttachmentGroup, "attachment group");
 IMPL_ERROR(MoleculeAttachmentGroups, "molecule attachment groups");
 
 // ---------------------------------------------------------------------------
@@ -42,6 +45,8 @@ void AttachmentGroup::_reset()
 {
     _atoms.clear(); // the buffer is kept: that is the point of a non-destructive reset
     _anchor_atom = -1;
+    _charge = 0;
+    _radical = 0;
 }
 
 void AttachmentGroup::reuse()
@@ -94,6 +99,20 @@ void AttachmentGroup::remapAnchorAtom(const Array<int>& atom_mapping)
         return;
 
     _anchor_atom = _anchor_atom < atom_mapping.size() ? atom_mapping[_anchor_atom] : -1;
+}
+
+const char* const AttachmentGroup::VALID_RADICALS = "0 (none), 1 (singlet), 2 (doublet), 3 (triplet)";
+
+bool AttachmentGroup::isValidRadical(int radical)
+{
+    return radical >= 0 && radical <= RADICAL_TRIPLET;
+}
+
+void AttachmentGroup::setRadical(int radical)
+{
+    if (!isValidRadical(radical))
+        throw Error("radical %d is none of %s", radical, VALID_RADICALS);
+    _radical = radical;
 }
 
 // ---------------------------------------------------------------------------
@@ -208,6 +227,8 @@ void MoleculeAttachmentGroups::mergeWithSubmolecule(const MoleculeAttachmentGrou
         AttachmentGroup& copy = group(idx);
         copy.setAtoms(source.atoms());
         copy.setAnchorAtom(source.anchorAtom());
+        copy.setCharge(source.charge());
+        copy.setRadical(source.radical());
 
         if (copy.remapAtoms(atom_mapping))
         {

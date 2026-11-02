@@ -588,8 +588,11 @@ public:
 
     const char* debugInfo() const override;
 
+    static bool is(IndigoObject& obj);
     static IndigoAttachmentGroup& cast(IndigoObject& obj);
     AttachmentGroup& get();
+    // get() for changing the charge or the radical of the group.
+    AttachmentGroup& edit();
 
     BaseMolecule& mol;
     int idx;

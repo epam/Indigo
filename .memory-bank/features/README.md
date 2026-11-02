@@ -20,6 +20,8 @@ feature file must stay true across a refactor.
   option, the failure contract, and why a client may show a different number
 - [haptic-bonds.md](./haptic-bonds.md) — bonds whose endpoint is a set of atoms: what round-trips
   today (KET, rendering) and what does not (V3000, the C API, layout)
+- [sgroup-brackets.md](./sgroup-brackets.md) — brackets of polymer S-groups: when they are computed, where
+  they stand, what is kept from a file, and what the renderer does not yet draw
 
 ## Worth writing next
 

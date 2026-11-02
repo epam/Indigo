@@ -1,0 +1,74 @@
+
+  -INDIGO-01000000002D
+
+ 16 12  0  0  0  0  0  0  0  0999 V2000
+   -6.8146    3.4266    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -5.4809    2.6566    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -4.1472    3.4266    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -2.8134    2.6566    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -5.0435   -0.2311    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -3.7100   -1.0011    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -2.3761   -0.2311    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.0425   -1.0011    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    0.2912   -0.2311    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -6.3142   -5.3131    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -4.9805   -6.0831    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -3.6467   -5.3131    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -2.3130   -6.0831    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -5.6595  -10.6648    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -4.5707  -11.7537    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -3.0832  -11.3551    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0  0  0  0
+  2  3  1  0  0  0  0
+  3  4  1  0  0  0  0
+  5  6  1  0  0  0  0
+  6  7  1  0  0  0  0
+  7  8  1  0  0  0  0
+  8  9  1  0  0  0  0
+ 10 11  1  0  0  0  0
+ 11 12  1  0  0  0  0
+ 12 13  1  0  0  0  0
+ 14 15  1  0  0  0  0
+ 15 16  1  0  0  0  0
+M  STY  4   1 DAT   2 DAT   3 DAT   4 DAT
+M  SLB  4   1   1   2   2   3   3   4   4
+M  SAL   1  2   3   4
+M  SDT   1 Long line                                                            
+M  SDD   1     2.4985   -1.8557    DR    ALL  1       1  
+M  SCD   1 asdljkfnalsjkdnfklaj nsdfkl jnasdkjlfnakls ndfkaljsn dlkfjna slkdnakl
+M  SCD   1 snd asdf asdf as df asdf as df asd fa sdf asd fa sd fa sdf a sd f a s
+M  SCD   1  df asd fa sd fa sdf as df as df as df as df as df asd fa sd fa sd fa
+M  SED   1  sd f asd fa sd f as dfa sd f a sd fa sdf a sdf                      
+M  SAL   2  2   8   9
+M  SDT   2 Multiline                                                            
+M  SDD   2     2.5123   -1.6940    DR    ALL  1       1  
+M  SED   2 line 1                                                               
+M  SED   2 line 2                                                               
+M  SED   2 line 3                                                               
+M  SED   2 line 4                                                               
+M  SAL   3  2  12  13
+M  SDT   3 LongAndMultI                                                         
+M  SDD   3     2.4985   -1.8557    DR    ALL  1       1  
+M  SED   3 line 1                                                               
+M  SED   3 line 2                                                               
+M  SCD   3 long long line long long line long long line long long line long long
+M  SCD   3  line long long line long long line long long line long long line lon
+M  SCD   3 g long line long long line long long line long long line long long li
+M  SED   3 ne long long line                                                    
+M  SAL   4  2  15  16
+M  SDT   4 Line with spaces                                                     
+M  SDD   4     2.5756   -1.5083    DR    ALL  1       1  
+M  SCD   4 asdfjknasdjkfn aslkjdnf alksdf                                     as
+M  SCD   4 df asdf as dfa sdf asdf                                      asdf    
+M  SCD   4              asdf                              asdf as dfa sdf       
+M  SCD   4                              asdf                                    
+M  SED   4                                                           asdf       
+M  SED   4                                                                      
+M  SED   4                                                                      
+M  SED   4 asdfasd                                                              
+M  SED   4 f                                                                    
+M  SED   4 asdf                                                                 
+M  SED   4 asd                                                                  
+M  SED   4 fa                                                                   
+M  SED   4 sdf                                                                  
+M  END

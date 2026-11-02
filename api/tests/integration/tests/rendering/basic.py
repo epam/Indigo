@@ -1,5 +1,6 @@
 import errno
 import os
+import re
 import sys
 
 sys.path.append(
@@ -249,6 +250,27 @@ ket_fname = joinPathPy("reactions/%s.ket" % fname, __file__)
 mol = indigo.loadReactionFromFile(ket_fname)
 renderer.renderToFile(mol, joinPathPy("out/" + png_fname, __file__))
 print(checkImageSimilarity(png_fname))
+
+print("issue 3958 percent sign in s-group label")
+# No render-fonts: the bundled font draws the same picture and the same glyphs
+# on every platform, so one reference serves them all.
+indigo.resetOptions()
+indigo.setOption("render-output-format", "png")
+subject_dir = "sgroup_label"
+fname = "sru_label_percent_3958"
+png_fname = fname + ".png"
+mol_fname = joinPathPy("molecules/%s/%s.mol" % (subject_dir, fname), __file__)
+mol = indigo.loadMoleculeFromFile(mol_fname)
+renderer.renderToFile(mol, joinPathPy("out/" + png_fname, __file__))
+ref_fname = subject_dir + "/" + png_fname
+print(checkImageSimilarity(png_fname, ref_fname, shared=True))
+# The picture check cannot read a label, so the glyphs of the SVG are printed:
+# cairo names a glyph by font and order of first use.
+indigo.setOption("render-output-format", "svg")
+indigo.setOption("render-svg-unique-id", False)
+svg = "".join(chr(b & 0xFF) for b in renderer.renderToBuffer(mol))
+glyphs = re.findall('href="#glyph-([0-9]+-[0-9]+)"', svg)
+print("glyphs: " + " ".join(glyphs))
 
 if isIronPython():
     renderer.Dispose()

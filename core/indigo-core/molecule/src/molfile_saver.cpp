@@ -37,6 +37,7 @@
 #include "molecule/molecule_savers.h"
 #include "molecule/molecule_stereocenter_options.h"
 #include "molecule/molecule_stereocenters.h"
+#include "molecule/molfile_commons.h"
 #include "molecule/monomer_commons.h"
 #include "molecule/query_molecule.h"
 
@@ -111,6 +112,30 @@ void _removeImplicitSGroups(BaseMolecule& mol, std::list<int>& implicit_sgroups_
         }
     }
 }
+
+// A component order takes three characters in its V2000 property line.
+static const int MAX_V2000_COMPONENT_ORDER = 999;
+
+// A V2000 property line of the form "M  XXXnn8 ..." holds this many entries.
+static const int PROPERTY_LINE_ENTRIES = 8;
+
+// An entry of such a line that pairs two three-character numbers: " sss vvv".
+static const char* const NUMBER_PAIR_ENTRY_FORMAT = " %3d %3d";
+
+// Writes entry_count entries as "M  <tag>nn8 ..." lines; write_entry(n) prints the n-th entry.
+template <typename EntryWriter>
+static void _writePropertyEntryLines(Output& output, const char* tag, int entry_count, EntryWriter write_entry)
+{
+    for (int line_begin = 0; line_begin < entry_count; line_begin += PROPERTY_LINE_ENTRIES)
+    {
+        const int line_end = std::min(entry_count, line_begin + PROPERTY_LINE_ENTRIES);
+        output.printf("M  %s%3d", tag, line_end - line_begin);
+        for (int entry = line_begin; entry < line_end; entry++)
+            write_entry(entry);
+        output.writeCR();
+    }
+}
+
 void MolfileSaver::saveBaseMolecule(BaseMolecule& mol)
 {
     _saveMolecule(mol, mol.isQueryMolecule());
@@ -211,14 +236,14 @@ void MolfileSaver::_saveMolecule(BaseMolecule& bmol, bool query)
     mol->clone_KeepIndices(bmol);
 
     bool has_dat_xbonds = false;
+    bool component_order_needs_v3000 = false;
     for (int i = pmol->sgroups.begin(); i != pmol->sgroups.end(); i = pmol->sgroups.next(i))
     {
         SGroup& sgroup = pmol->sgroups.getSGroup(i);
         if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT && sgroup.xbonds.size() > 0)
-        {
             has_dat_xbonds = true;
-            break;
-        }
+        if (sgroup.component_order > MAX_V2000_COMPONENT_ORDER)
+            component_order_needs_v3000 = true;
     }
 
     if (mode == MODE_2000)
@@ -234,7 +259,7 @@ void MolfileSaver::_saveMolecule(BaseMolecule& bmol, bool query)
         // auto-detect the format: save to v3000 molfile only
         // if v2000 is not enough
         _v2000 = !(pmol->hasHighlighting() || pmol->stereocenters.haveEnhancedStereocenter() ||
-                   (pmol->vertexCount() > 999 || pmol->edgeCount() > 999 || pmol->tgroups.getTGroupCount()) || has_dat_xbonds);
+                   (pmol->vertexCount() > 999 || pmol->edgeCount() > 999 || pmol->tgroups.getTGroupCount()) || has_dat_xbonds || component_order_needs_v3000);
     }
 
     if (mol->tgroups.getTGroupCount() && mol->convertTemplateAtomsToSuperatoms(!_v2000))
@@ -471,12 +496,13 @@ void MolfileSaver::_collectHapticRecords(BaseMolecule& mol, std::vector<HapticRe
 
         const HapticBond::Endpoint& group_end = bond.begin().isGroup() ? bond.begin() : bond.end();
         const HapticBond::Endpoint& atom_end = bond.begin().isGroup() ? bond.end() : bond.begin();
+        const AttachmentGroup& group = mol.attachment_groups.group(group_end.index());
 
         HapticRecord record;
         record.group = group_end.index();
         record.atom = atom_end.index();
         record.type = bond.type();
-        record.anchor = mol.attachment_groups.group(record.group).anchorAtom();
+        record.anchor = group.anchorAtom();
         record.edge = -1;
 
         if (record.anchor >= 0 && mol.hasVertex(record.anchor))
@@ -489,6 +515,13 @@ void MolfileSaver::_collectHapticRecords(BaseMolecule& mol, std::vector<HapticRe
         }
         else
             record.anchor = -1;
+
+        // V3000 keeps the charge and the radical of a group on the phantom star of a
+        // haptic record. A record that ends on an atom of the structure gets no star,
+        // and the star of a variable attachment is an atom with a charge of its own.
+        if ((record.anchor >= 0 || record.type == _BOND_VARIABLE_ATTACHMENT) && (group.charge() != 0 || group.radical() != 0))
+            throw Error("attachment group %d has charge %d and radical %d, which V3000 can keep only on the star of a haptic bond record", record.group,
+                        group.charge(), group.radical());
 
         if (record.edge >= 0)
             by_edge[record.edge] = static_cast<int>(records.size());
@@ -802,6 +835,13 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
 
         convert_xyz_to_string(centre, coords);
         out.printf("%d * %s 0", mol.vertexCount() + k + 1, coords.str().c_str());
+
+        // The star stands for the pi-system, so it carries the group's charge and radical.
+        const AttachmentGroup& group = mol.attachment_groups.group(groups_needing_a_star[k]);
+        if (group.charge() != 0)
+            out.printf(" CHG=%d", group.charge());
+        if (group.radical() != 0)
+            out.printf(" RAD=%d", group.radical());
 
         _writeMultiString(output, buf.ptr(), buf.size());
     }
@@ -1141,42 +1181,12 @@ void MolfileSaver::_writeCtab(Output& output, BaseMolecule& mol, bool query)
             }
             else if (sgroup.sgroup_type == SGroup::SG_TYPE_SRU)
             {
-                RepeatingUnit& ru = static_cast<RepeatingUnit&>(sgroup);
-                const int connectivity = ru.connectivity.value_or(SGroup::HEAD_TO_TAIL);
-                if (connectivity == SGroup::HEAD_TO_HEAD)
-                    out.printf(" CONNECT=HH");
-                else if (connectivity == SGroup::HEAD_TO_TAIL)
-                    out.printf(" CONNECT=HT");
-                else
-                    out.printf(" CONNECT=EU");
                 if (sgroup.label.size() > 1)
                 {
                     if (sgroup.label.find(' ') > -1)
                         out.printf(" LABEL=\"%s\"", sgroup.label.ptr());
                     else
                         out.printf(" LABEL=%s", sgroup.label.ptr());
-                }
-                _writeMultiString(output, buf.ptr(), buf.size());
-            }
-            else if (sgroup.sgroup_type == SGroup::SG_TYPE_COP)
-            {
-                CopolymerGroup& cg = static_cast<CopolymerGroup&>(sgroup);
-                const int connectivity = cg.connectivity.value_or(SGroup::HEAD_TO_TAIL);
-                if (connectivity == SGroup::HEAD_TO_HEAD)
-                    out.printf(" CONNECT=HH");
-                else if (connectivity == SGroup::HEAD_TO_TAIL)
-                    out.printf(" CONNECT=HT");
-                else
-                    out.printf(" CONNECT=EU");
-                const int subtype = cg.sgroup_subtype.value_or(0);
-                if (subtype != 0)
-                {
-                    if (subtype == SGroup::SG_SUBTYPE_ALT)
-                        out.printf(" SUBTYPE=ALT");
-                    else if (subtype == SGroup::SG_SUBTYPE_RAN)
-                        out.printf(" SUBTYPE=RAN");
-                    else if (subtype == SGroup::SG_SUBTYPE_BLO)
-                        out.printf(" SUBTYPE=BLO");
                 }
                 _writeMultiString(output, buf.ptr(), buf.size());
             }
@@ -1269,22 +1279,23 @@ void MolfileSaver::_writeGenericSGroup3000(SGroup& sgroup, const SGroupInfo& inf
             output.printf(")");
         }
     }
-    const int subtype = sgroup.sgroup_subtype.value_or(0);
-    if (subtype > 0)
+    const char* subtype = SGroup::subtypeToString(sgroup.sgroup_subtype.value_or(0));
+    if (subtype != NULL)
     {
-        if (subtype == SGroup::SG_SUBTYPE_ALT)
-            output.printf(" SUBTYPE=ALT");
-        else if (subtype == SGroup::SG_SUBTYPE_RAN)
-            output.printf(" SUBTYPE=RAN");
-        else if (subtype == SGroup::SG_SUBTYPE_BLO)
-            output.printf(" SUBTYPE=BLO");
+        output.printf(" %s=%s", MOLFILE_SGROUP_SUBTYPE_KEY, subtype);
     }
     if (info.new_parent_index > 0)
     {
         output.printf(" PARENT=%d", info.new_parent_index);
     }
+    if (sgroup.hasComponentOrder())
+    {
+        output.printf(" %s=%d", MOLFILE_SGROUP_COMPONENT_ORDER_KEY, sgroup.component_order);
+    }
     for (i = 0; i < sgroup.brackets.size(); i++)
     {
+        if (sgroup.isZeroLengthBracket(i))
+            continue;
         Vec2f* brackets = sgroup.brackets[i];
         output.printf(" BRKXYZ=(9 %f %f %f %f %f %f %f %f %f)", brackets[0].x, brackets[0].y, 0.f, brackets[1].x, brackets[1].y, 0.f, 0.f, 0.f, 0.f);
     }
@@ -1292,6 +1303,10 @@ void MolfileSaver::_writeGenericSGroup3000(SGroup& sgroup, const SGroupInfo& inf
     if (sgroup.brackets.size() > 0 && brk_style > 0)
     {
         output.printf(" BRKTYP=PAREN");
+    }
+    if (SGroup::typeHasConnectivity(sgroup.sgroup_type))
+    {
+        output.printf(" %s=%s", MOLFILE_SGROUP_CONNECTIVITY_KEY, SGroup::connectivityToString(sgroup.connectivity));
     }
 }
 
@@ -1836,16 +1851,10 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
     if (sgroup_count > 0)
     {
         int j;
-        for (j = 0; j < sgroup_count; j += 8)
-        {
-            output.printf("M  STY%3d", std::min(sgroup_count, j + 8) - j);
-            for (i = j; i < std::min(sgroup_count, j + 8); i++)
-            {
-                const auto& info = *sgroup_infos[i];
-                output.printf(" %3d %s", info.new_index, SGroup::typeToString(info.sgroup.sgroup_type));
-            }
-            output.writeCR();
-        }
+        _writePropertyEntryLines(output, MOLFILE_SGROUP_TYPE_TAG, sgroup_count, [&](int entry) {
+            const SGroupInfo& info = *sgroup_infos[entry];
+            output.printf(" %3d %s", info.new_index, SGroup::typeToString(info.sgroup.sgroup_type));
+        });
         for (const auto* info : sgroup_infos)
         {
             if (info->new_parent_index > 0)
@@ -1854,53 +1863,31 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                 parent_ids.push(info->new_parent_index);
             }
         }
-        for (j = 0; j < child_ids.size(); j += 8)
-        {
-            output.printf("M  SPL%3d", std::min(child_ids.size(), j + 8) - j);
-            for (i = j; i < std::min(child_ids.size(), j + 8); i++)
-            {
-                output.printf(" %3d %3d", child_ids[i], parent_ids[i]);
-            }
-            output.writeCR();
-        }
-        for (j = 0; j < sgroup_count; j += 8)
-        {
-            output.printf("M  SLB%3d", std::min(sgroup_count, j + 8) - j);
-            for (i = j; i < std::min(sgroup_count, j + 8); i++)
-            {
-                const auto& info = *sgroup_infos[i];
-                const int external_index = info.sgroup.ext_index != 0 ? info.sgroup.ext_index : info.new_index;
-                output.printf(" %3d %3d", info.new_index, external_index);
-            }
-            output.writeCR();
-        }
+        _writePropertyEntryLines(output, MOLFILE_SGROUP_PARENT_TAG, child_ids.size(),
+                                 [&](int entry) { output.printf(NUMBER_PAIR_ENTRY_FORMAT, child_ids[entry], parent_ids[entry]); });
+        _writePropertyEntryLines(output, MOLFILE_SGROUP_EXT_INDEX_TAG, sgroup_count, [&](int entry) {
+            const SGroupInfo& info = *sgroup_infos[entry];
+            const int external_index = info.sgroup.ext_index != 0 ? info.sgroup.ext_index : info.new_index;
+            output.printf(NUMBER_PAIR_ENTRY_FORMAT, info.new_index, external_index);
+        });
 
-        std::vector<const SGroupInfo*> sru_infos;
+        std::vector<const SGroupInfo*> connectivity_infos;
+        std::vector<const SGroupInfo*> numbered_component_infos;
         for (const auto* info : sgroup_infos)
         {
-            if (info->sgroup.sgroup_type == SGroup::SG_TYPE_SRU)
-                sru_infos.push_back(info);
+            if (SGroup::typeHasConnectivity(info->sgroup.sgroup_type))
+                connectivity_infos.push_back(info);
+            if (info->sgroup.hasComponentOrder() && info->sgroup.component_order <= MAX_V2000_COMPONENT_ORDER)
+                numbered_component_infos.push_back(info);
         }
-        int sru_count = static_cast<int>(sru_infos.size());
-        for (j = 0; j < sru_count; j += 8)
-        {
-            output.printf("M  SCN%3d", std::min(sru_count, j + 8) - j);
-            for (i = j; i < std::min(sru_count, j + 8); i++)
-            {
-                const SGroupInfo& info = *sru_infos[i];
-                RepeatingUnit* ru = (RepeatingUnit*)&info.sgroup;
-                output.printf(" %3d ", info.new_index);
-
-                const int connectivity = ru->connectivity.value_or(SGroup::HEAD_TO_TAIL);
-                if (connectivity == SGroup::HEAD_TO_HEAD)
-                    output.printf("HH ");
-                else if (connectivity == SGroup::HEAD_TO_TAIL)
-                    output.printf("HT ");
-                else
-                    output.printf("EU ");
-            }
-            output.writeCR();
-        }
+        _writePropertyEntryLines(output, MOLFILE_SGROUP_CONNECTIVITY_TAG, static_cast<int>(connectivity_infos.size()), [&](int entry) {
+            const SGroupInfo& info = *connectivity_infos[entry];
+            output.printf(" %3d %s ", info.new_index, SGroup::connectivityToString(info.sgroup.connectivity));
+        });
+        _writePropertyEntryLines(output, MOLFILE_SGROUP_COMPONENT_ORDER_TAG, static_cast<int>(numbered_component_infos.size()), [&](int entry) {
+            const SGroupInfo& info = *numbered_component_infos[entry];
+            output.printf(NUMBER_PAIR_ENTRY_FORMAT, info.new_index, info.sgroup.component_order);
+        });
 
         for (const auto* info : sgroup_infos)
         {
@@ -2010,19 +1997,17 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
                 char* ptr = datasgroup.data.ptr();
                 while (k > 0)
                 {
-                    for (j = 0; j < 69 && j < k; j++)
+                    for (j = 0; j < SGROUP_DATA_CHUNK_SIZE && j < k; j++)
                         if (ptr[j] == '\n')
                             break;
 
+                    const bool line_continues = j == SGROUP_DATA_CHUNK_SIZE && j < k && ptr[j] != '\n';
                     output.writeString("M  ");
-                    if (j != 69 || j == k)
-                        output.writeString("SED ");
-                    else
-                        output.writeString("SCD ");
+                    output.writeString(line_continues ? "SCD " : "SED ");
                     output.printf("%3d ", wi);
 
                     output.write(ptr, j);
-                    if (ptr[j] == '\n')
+                    if (j < k && ptr[j] == '\n')
                         j++;
 
                     ptr += j;
@@ -2047,6 +2032,8 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             }
             for (j = 0; j < sgroup.brackets.size(); j++)
             {
+                if (sgroup.isZeroLengthBracket(j))
+                    continue;
                 output.printf("M  SDI %3d  4 %9.4f %9.4f %9.4f %9.4f\n", wi, sgroup.brackets[j][0].x, sgroup.brackets[j][0].y, sgroup.brackets[j][1].x,
                               sgroup.brackets[j][1].y);
             }
@@ -2055,15 +2042,10 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             {
                 output.printf("M  SBT  1 %3d %3d\n", wi, brk_style);
             }
-            const int subtype = sgroup.sgroup_subtype.value_or(0);
-            if (subtype > 0)
+            const char* subtype = SGroup::subtypeToString(sgroup.sgroup_subtype.value_or(0));
+            if (subtype != NULL)
             {
-                if (subtype == SGroup::SG_SUBTYPE_ALT)
-                    output.printf("M  SST  1 %3d ALT\n", wi);
-                else if (subtype == SGroup::SG_SUBTYPE_RAN)
-                    output.printf("M  SST  1 %3d RAN\n", wi);
-                else if (subtype == SGroup::SG_SUBTYPE_BLO)
-                    output.printf("M  SST  1 %3d BLO\n", wi);
+                output.printf("M  %s  1 %3d %s\n", MOLFILE_SGROUP_SUBTYPE_TAG, wi, subtype);
             }
         }
     }
@@ -2213,10 +2195,10 @@ void MolfileSaver::_writeDataSGroupDisplay(DataSGroup& datasgroup, Output& out)
     const int num_chars = datasgroup.num_chars.value_or(0);
     const char tag = datasgroup.tag.value_or(0);
     const int dasp_pos = datasgroup.dasp_pos.value_or(0);
-    if (num_chars == 0)
+    if (num_chars <= 0)
         out.printf("   ALL  1    %c  %1d  ", tag, dasp_pos);
     else
-        out.printf("   %3d  1    %c  %1d  ", num_chars, tag, dasp_pos);
+        out.printf("   %3d  1    %c  %1d  ", std::min(num_chars, SGROUP_DATA_MAX_DISPLAYED_CHARS), tag, dasp_pos);
 }
 
 bool MolfileSaver::_hasNeighborEitherBond(BaseMolecule& mol, int edge_idx)

@@ -37,3 +37,6 @@ issue 2900 cip always render
 cip_labels_2900.png rendering status: OK
 issue 3049 missing stereolabels
 cip_labels_3049.png rendering status: OK
+issue 3958 percent sign in s-group label
+sru_label_percent_3958.png rendering status: OK
+glyphs: 0-1 0-2 0-1 0-2 0-1 0-2 0-1 0-2 0-1 0-2 0-1 0-2 0-1 0-2 0-1 0-2 0-3 0-4 1-1 1-1

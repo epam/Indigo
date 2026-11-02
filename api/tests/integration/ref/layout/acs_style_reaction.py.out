@@ -27,3 +27,6 @@ acs_issue_2389.ket:SUCCEED
    Molecule #6: Success
    Molecule #7: Success
    Molecule #8: Success
+
+*** query atoms without a charge condition: no charge in the label ***
+acs_query_reaction.rxn:SUCCEED
