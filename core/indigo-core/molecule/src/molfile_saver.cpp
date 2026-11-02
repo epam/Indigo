@@ -2197,7 +2197,7 @@ void MolfileSaver::_checkDataSGroup(const DataSGroup& datasgroup, int sgroup_num
         reject(datasgroup.querycode.ptr(), DataSGroup::INVALID_QUERY_TYPE);
     if (!DataSGroup::isValidQueryOperator(datasgroup.queryoper.ptr()))
         reject(datasgroup.queryoper.ptr(), DataSGroup::INVALID_QUERY_OPERATOR);
-    const int num_chars = datasgroup.num_chars.value_or(0);
+    const int num_chars = datasgroup.displayedChars();
     if (!DataSGroup::isValidDisplayedChars(num_chars))
         reject(std::to_string(num_chars).c_str(), DataSGroup::INVALID_DISPLAYED_CHARS);
     if (datasgroup.display_pos.has_value())
@@ -2222,7 +2222,7 @@ void MolfileSaver::_writeDataSGroupDisplay(DataSGroup& datasgroup, Output& out)
         dp_y = display_pos.y;
     }
     out.printf("%10.4f%10.4f    %c%c%c", dp_x, dp_y, datasgroup.detached ? 'D' : 'A', datasgroup.relative ? 'R' : 'A', datasgroup.display_units ? 'U' : ' ');
-    const int num_chars = datasgroup.num_chars.value_or(0);
+    const int num_chars = datasgroup.displayedChars();
     const char tag = datasgroup.tag.value_or(0);
     const int dasp_pos = datasgroup.dasp_pos.value_or(0);
     if (num_chars == 0)
