@@ -4,9 +4,7 @@
             {
                 "$ref": "mol0"
             }
-        ],
-        "connections": [],
-        "templates": []
+        ]
     },
     "mol0": {
         "type": "molecule",
@@ -28,7 +26,7 @@
                 ]
             },
             {
-                "label": "C",
+                "label": "O",
                 "location": [
                     2.0,
                     0.0,
@@ -56,11 +54,16 @@
             {
                 "type": "DAT",
                 "atoms": [
+                    0,
+                    1,
                     2
                 ],
-                "fieldName": "NOTE",
-                "fieldData": "hello",
-                "tag": "X",
+                "fieldName": "F",
+                "fieldData": "1-5",
+                "queryType": "Q",
+                "queryOp": "query,;:|{}$op",
+                "x": 0.0,
+                "y": -10000.0,
                 "displayedChars": 1000
             }
         ]

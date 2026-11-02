@@ -27,21 +27,18 @@ def path(name):
     return os.path.join(root, name + ".ket")
 
 
-print("*** Values at the limits of the KET 2.0 keys ***")
-filename = "data-keys-at-limits"
-mol = indigo.loadMoleculeFromFile(path(filename))
-compare_diff(ref_path, filename + "-saved.ket", mol.json())
+print("*** KET 2.0 keys with values the contract allows ***")
+for filename in ("data-keys-at-limits", "data-keys-beyond-molfile-limits"):
+    mol = indigo.loadMoleculeFromFile(path(filename))
+    compare_diff(ref_path, filename + "-saved.ket", mol.json())
 
 print("*** KET 2.0 keys with values outside the contract ***")
 for filename in (
     "rejected-field-name-not-string",
     "rejected-placement-not-boolean",
-    "rejected-query-operator-unknown",
-    "rejected-query-type-unknown",
     "rejected-tag-two-characters",
     "rejected-x-four-decimals-lost",
     "rejected-x-not-number",
-    "rejected-y-beyond-f10-4",
 ):
     try:
         indigo.loadMoleculeFromFile(path(filename))

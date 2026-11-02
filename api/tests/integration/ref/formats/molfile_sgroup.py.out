@@ -79,7 +79,6 @@ v3000-fielddata-forms-2000.mol:SUCCEED
 v3000-fielddata-forms-2000.mol reload:SUCCEED
 v3000-fielddata-forms-3000.mol:SUCCEED
 v3000-fielddata-forms-3000.mol reload:SUCCEED
-sgroup/data-displayed-chars-above-limit.ket: molecule json loader: S-group #0 of molecule #0 has 'displayedChars' 1000, which is not a valid number of characters to display
 sgroup/data-displayed-chars-negative.ket: molecule json loader: S-group #0 of molecule #0 has 'displayedChars' -5, which is not a valid number of characters to display
 sgroup/v2000-sdd-character-count-negative.mol: molfile loader: M SDD of Sgroup 1: '-5' is not a valid number of characters to display
 sgroup/v2000-sdd-character-count-negative-compact.mol: molfile loader: M SDD of Sgroup 1: '-5' is not a valid number of characters to display

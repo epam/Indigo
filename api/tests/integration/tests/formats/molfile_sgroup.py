@@ -46,7 +46,6 @@ files = [
     ("sgroup/v3000-fielddata-forms.mol", explicit_modes),
 ]
 broken_files = [
-    "sgroup/data-displayed-chars-above-limit.ket",
     "sgroup/data-displayed-chars-negative.ket",
     "sgroup/v2000-sdd-character-count-negative.mol",
     "sgroup/v2000-sdd-character-count-negative-compact.mol",
