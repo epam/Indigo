@@ -351,6 +351,7 @@ void DataSGroup::_reset()
     querycode.clear();
     queryoper.clear();
     data.clear();
+    context.clear();
     sa_natreplace.clear();
     display_pos.reset();
 }

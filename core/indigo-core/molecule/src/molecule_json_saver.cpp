@@ -204,6 +204,12 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer, int id, i
             writer.Key(KetKeyFieldData);
             writer.String(data);
         }
+        auto context = dsg.context.ptr();
+        if (context && strlen(context))
+        {
+            writer.Key(KetKeyContext);
+            writer.String(context);
+        }
         auto field_type = dsg.description.ptr();
         if (field_type && strlen(field_type))
         {

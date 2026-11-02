@@ -32,8 +32,18 @@ for filename in ("data-keys-at-limits", "data-keys-beyond-molfile-limits"):
     mol = indigo.loadMoleculeFromFile(path(filename))
     compare_diff(ref_path, filename + "-saved.ket", mol.json())
 
+print("*** Contexts of data, saved, cloned and merged ***")
+filename = "data-contexts"
+mol = indigo.loadMoleculeFromFile(path(filename))
+merged = indigo.createMolecule()
+merged.merge(mol)
+for copy in (mol, mol.clone(), merged):
+    compare_diff(ref_path, filename + "-saved.ket", copy.json())
+
 print("*** KET 2.0 keys with values outside the contract ***")
 for filename in (
+    "rejected-context-lowercase",
+    "rejected-context-not-string",
     "rejected-field-name-not-string",
     "rejected-placement-not-boolean",
     "rejected-tag-two-characters",
