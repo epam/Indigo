@@ -19,7 +19,7 @@ it renumbers S-groups when it loads a file.
 
 1. `MoleculeSGroups::resolveParents` is the only resolver: `parent_idx`, else the group whose `index` is
    `parent_group`, else the group at the one-based position `parent_group` when that group has no `index`. The
-   savers, the copy of S-groups and the rendering tree go through it.
+   savers, the copy of S-groups, the rendering tree and the nesting of brackets go through it.
 2. A copy resolves the parents in the source and remaps them for every copied group; a parent left behind leaves the
    copy without a parent, both links cleared. A link by number is rewritten to name the parent's copy
    (`MoleculeSGroups::setParent`): the parent's index, or its one-based position when it has none.

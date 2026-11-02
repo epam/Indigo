@@ -60,8 +60,9 @@ That is the whole rule. The ticket's two pictures are the fixtures
 
 ## Nesting
 
-`SGroupNesting` takes the parent from the file when it is a bracketed group containing the child's atoms,
-otherwise the smallest bracketed group strictly containing them
+`SGroupNesting` takes the parent the structure names — through `MoleculeSGroups::resolveParents`, as everything
+else that needs a parent (invariant A15) — when it is a bracketed group containing the child's atoms, otherwise
+the smallest bracketed group strictly containing them
 (`core/indigo-core/layout/src/sgroup_nesting.cpp#_findParent`). Two groups with the same atoms and no parent
 link are **not** nested, and their brackets coincide. A parent loop from the file is cut. A multiple group can
 be a child, never a parent.
