@@ -290,20 +290,6 @@ float Metalayout::getTotalMoleculeClosestDist(BaseMolecule& mol)
 
 void Metalayout::adjustMol(BaseMolecule& mol, const Vec2f& min, const Vec2f& pos) const
 {
-    // Compute center points for the data sgroups
-    QS_DEF(Array<Vec2f>, data_centers);
-    data_centers.resize(mol.sgroups.getSGroupCount());
-    for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
-    {
-        SGroup& sg = mol.sgroups.getSGroup(i);
-        if (sg.sgroup_type == SGroup::SG_TYPE_DAT)
-        {
-            DataSGroup& group = (DataSGroup&)sg;
-            if (!group.relative)
-                mol.getSGroupAtomsCenterPoint(group, data_centers[i]);
-        }
-    }
-
     auto adjust = [&](Vec2f& v) {
         v.sub(min);
         v.scale(_scaleFactor);
@@ -316,26 +302,7 @@ void Metalayout::adjustMol(BaseMolecule& mol, const Vec2f& min, const Vec2f& pos
         adjust(v);
         mol.setAtomXyz(i, v.x, v.y, 0);
     }
-    mol.sgroups.transformBrackets(adjust);
-
-    // Adjust data-sgroup label positions with absolute coordinates
-    for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
-    {
-        SGroup& sg = mol.sgroups.getSGroup(i);
-        if (sg.sgroup_type == SGroup::SG_TYPE_DAT)
-        {
-            DataSGroup& group = (DataSGroup&)sg;
-            if (!group.relative && group.display_pos.has_value())
-            {
-                Vec2f new_center;
-                mol.getSGroupAtomsCenterPoint(group, new_center);
-                Vec2f dp = group.display_pos.value();
-                dp.add(new_center);
-                dp.sub(data_centers[i]);
-                group.display_pos.set(dp);
-            }
-        }
-    }
+    mol.sgroups.transformPositions(adjust);
 }
 
 #ifdef _WIN32

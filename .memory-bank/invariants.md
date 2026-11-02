@@ -107,7 +107,7 @@ writes a pair is `core/indigo-core/layout/src/sgroup_bracket_layout.cpp#_setBrac
 **A13 — Whatever moves the atoms of a molecule moves its S-group brackets with them.**
 Brackets are coordinates stored on the group; nothing ties them to the atoms. A rigid move or a scale goes
 through `BaseMolecule::offsetCoordinates`, `BaseMolecule::scale` or `Metalayout::adjustMol`, which carry the
-brackets along (`core/indigo-core/molecule/molecule_sgroups.h#transformBrackets`); a layout that moves atoms
+brackets along (`core/indigo-core/molecule/molecule_sgroups.h#transformPositions`); a layout that moves atoms
 one by one constructs `SGroupBracketLayout` before the move and calls `update()` after it
 (`core/indigo-core/layout/sgroup_bracket_layout.h#void update()`), which places the brackets of the groups whose
 atoms moved anew; the reaction and pathway layouts do both, since their scale changes the margins. A mover that
@@ -120,7 +120,7 @@ The KET loader writes a `(0,0)-(0,0)` pair for every group, because the format c
 and the CDXML and CXSMILES loaders leave such pairs too. `SGroup::hasBrackets()` is the test for a group
 (`core/indigo-core/molecule/molecule_sgroups.h#hasBrackets`): one zero-length bracket means the group has none,
 and the layout replaces them. The MOL savers skip each zero-length bracket and keep the real ones next to it
-(`core/indigo-core/molecule/src/molfile_saver.cpp#isZeroLengthBracket`); `transformBrackets` moves the real
+(`core/indigo-core/molecule/src/molfile_saver.cpp#isZeroLengthBracket`); `transformPositions` moves the real
 brackets of a group and leaves its placeholders; the renderer takes the file's brackets only when the first two
 are real and draws its own pair otherwise (`core/render2d/src/render_internal.cpp#isBracketsCoordinates`). Code
 that tests `brackets.size() > 0` instead takes a bracket at the origin for a real one: the CML saver writes
@@ -173,4 +173,4 @@ function-like macro, which breaks the declaration of `std::bind` in MSVC's `<fun
 (`bingo/postgres/src/pg_common/bingo_pg_fix_pre.h#Thus <functional> must not be included here`). Only the Windows
 build of the cartridge fails, in CI; macOS and Linux compile it. `base_molecule.h` and everything it includes are on
 that path, so a callback stored in such a header is a template parameter, not a `std::function`
-(`core/indigo-core/molecule/molecule_sgroups.h#transformBrackets`).
+(`core/indigo-core/molecule/molecule_sgroups.h#transformPositions`).

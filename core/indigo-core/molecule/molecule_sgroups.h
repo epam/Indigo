@@ -361,7 +361,7 @@ namespace indigo
         // A template, not std::function: this header reaches the Postgres cartridge, where postgres.h defines bind as a
         // macro on Windows and <functional> no longer compiles
         template <typename Transform>
-        void transformBrackets(Transform transform)
+        void transformPositions(Transform transform)
         {
             for (int i = begin(); i != end(); i = next(i))
             {
@@ -375,6 +375,8 @@ namespace indigo
                     transform(brackets[j][0]);
                     transform(brackets[j][1]);
                 }
+                if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
+                    _transformDataPosition(static_cast<DataSGroup&>(sgroup), transform);
             }
         }
 
@@ -400,6 +402,24 @@ namespace indigo
 
     private:
         bool _cmpIndices(Array<int>& t_inds, Array<int>& q_inds);
+
+        template <typename Transform>
+        static void _transformDataPosition(DataSGroup& sgroup, Transform transform)
+        {
+            if (!sgroup.display_pos.has_value())
+                return;
+            Vec2f& position = sgroup.display_pos.value();
+            if (!sgroup.relative)
+            {
+                transform(position);
+                return;
+            }
+            // A relative position is an offset from the group's atoms: a move leaves it, a scale scales it
+            Vec2f origin(0.f, 0.f);
+            transform(origin);
+            transform(position);
+            position.sub(origin);
+        }
     };
 
 } // namespace indigo
