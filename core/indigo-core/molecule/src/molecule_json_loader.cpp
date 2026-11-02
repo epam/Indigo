@@ -1189,17 +1189,18 @@ namespace
         throw MoleculeJsonLoader::Error("%s has '%s' %s, which %s", sgroup_name.c_str(), key, jsonText(value).c_str(), reason);
     }
 
-    // The coordinate of the value of a data S-group, in the range of the molfile and kept to its four decimals
+    // The coordinate of the value of a data S-group, kept to four decimals
     void checkDisplayCoordinate(const Value& value, const char* key, const std::string& sgroup_name)
     {
-        if (!value.IsNumber() || !DataSGroup::isValidDisplayCoordinate(value.GetDouble()))
-            rejectDataKey(sgroup_name, key, value, DataSGroup::INVALID_DISPLAY_COORDINATE);
+        if (!value.IsNumber())
+            rejectDataKey(sgroup_name, key, value, "is not a number");
         if (!DataSGroup::keepsDisplayCoordinate(value.GetDouble()))
             rejectDataKey(sgroup_name, key, value, DataSGroup::NOT_KEPT_DISPLAY_COORDINATE);
     }
 
-    // Deprecated since KET 2.1, removed in KET 3.0: the keys of KET 2.0 on a data S-group, each of its JSON type and
-    // with a value the molfile format allows
+    // Deprecated since KET 2.1, removed in KET 3.0: the keys of KET 2.0 on a data S-group, each of its JSON type.
+    // KET does not take the limits of the molfile format: an operator, a query type, a character count or a
+    // coordinate the molfile does not allow is kept as it is.
     void checkDataSGroupKeysV2_0(const Value& s, const std::string& sgroup_name)
     {
         for (const char* key : {KetKeyFieldData, KetKeyFieldNameV2_0, KetKeyFieldTypeV2_0, KetKeyQueryTypeV2_0, KetKeyQueryOpV2_0, KetKeyTagV2_0})
@@ -1211,15 +1212,10 @@ namespace
         for (const char* key : {KetKeyXV2_0, KetKeyYV2_0})
             if (s.HasMember(key))
                 checkDisplayCoordinate(s[key], key, sgroup_name);
-        if (s.HasMember(KetKeyDisplayedCharsV2_0) &&
-            (!s[KetKeyDisplayedCharsV2_0].IsInt() || !DataSGroup::isValidDisplayedChars(s[KetKeyDisplayedCharsV2_0].GetInt())))
+        if (s.HasMember(KetKeyDisplayedCharsV2_0) && !isNonNegativeInt(s[KetKeyDisplayedCharsV2_0]))
             rejectDataKey(sgroup_name, KetKeyDisplayedCharsV2_0, s[KetKeyDisplayedCharsV2_0], DataSGroup::INVALID_DISPLAYED_CHARS);
         if (s.HasMember(KetKeyTagV2_0) && s[KetKeyTagV2_0].GetStringLength() != 1)
             rejectDataKey(sgroup_name, KetKeyTagV2_0, s[KetKeyTagV2_0], "is not a single character");
-        if (s.HasMember(KetKeyQueryTypeV2_0) && !DataSGroup::isValidQueryType(s[KetKeyQueryTypeV2_0].GetString()))
-            rejectDataKey(sgroup_name, KetKeyQueryTypeV2_0, s[KetKeyQueryTypeV2_0], DataSGroup::INVALID_QUERY_TYPE);
-        if (s.HasMember(KetKeyQueryOpV2_0) && !DataSGroup::isValidQueryOperator(s[KetKeyQueryOpV2_0].GetString()))
-            rejectDataKey(sgroup_name, KetKeyQueryOpV2_0, s[KetKeyQueryOpV2_0], DataSGroup::INVALID_QUERY_OPERATOR);
     }
 
     KetSGroupEntry readSGroupEntry(const Value& s, std::string name, BaseMolecule& mol)

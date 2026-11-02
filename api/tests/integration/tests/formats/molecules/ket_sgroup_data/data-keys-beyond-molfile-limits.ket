@@ -61,7 +61,10 @@
                 "fieldName": "F",
                 "fieldData": "1-5",
                 "queryType": "Q",
-                "queryOp": "BETWEEN"
+                "queryOp": "query,;:|{}$op",
+                "displayedChars": 1000,
+                "x": 0.0,
+                "y": -10000.0
             }
         ]
     }
