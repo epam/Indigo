@@ -6,6 +6,12 @@ data-keys-beyond-molfile-limits-saved.ket:SUCCEED
 data-contexts-saved.ket:SUCCEED
 data-contexts-saved.ket:SUCCEED
 data-contexts-saved.ket:SUCCEED
+*** Contexts of data through CMF ***
+data-contexts-unserialized.ket:SUCCEED
+data-contexts-without-context-unserialized.ket:SUCCEED
+data-contexts-without-context written again unchanged: True
+rejected-cmf-context-after-generic-sgroup: CMF loader: a data S-group context that follows no data S-group
+rejected-cmf-context-before-any-sgroup: CMF loader: a data S-group context that follows no data S-group
 *** KET 2.0 keys with values outside the contract ***
 rejected-context-lowercase: molecule json loader: S-group #0 of molecule #0 has 'context' "fragment", which is not a valid context
 rejected-context-not-string: molecule json loader: S-group #0 of molecule #0 has 'context' 5, which is not a string

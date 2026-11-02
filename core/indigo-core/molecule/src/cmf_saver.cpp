@@ -346,6 +346,11 @@ void CmfSaver::_encodeExtSection(Molecule& mol, const Mapping& mapping)
             _output->writeByte(packed);
             _output->writePackedUInt(sd.num_chars.value_or(0));
             _output->writeChar(sd.tag.value_or(0));
+            if (sd.context.size() > 0)
+            {
+                _encode(CMF_DATASGROUP_CONTEXT);
+                _encodeString(sd.context);
+            }
         }
         else if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
         {
