@@ -58,8 +58,8 @@
                     1,
                     2
                 ],
-                "fieldName": "ALL_CHARS",
                 "fieldData": "1",
+                "fieldName": "ALL_CHARS",
                 "x": -1023.9998779296875,
                 "y": 1023.9998779296875
             },
@@ -70,8 +70,8 @@
                     1,
                     2
                 ],
-                "fieldName": "MOST_CHARS",
                 "fieldData": "1",
+                "fieldName": "MOST_CHARS",
                 "x": 0.0,
                 "y": 0.0,
                 "tag": "a",
@@ -84,8 +84,8 @@
                     1,
                     2
                 ],
-                "fieldName": "RANGE",
                 "fieldData": "1-5",
+                "fieldName": "RANGE",
                 "queryType": "IQ",
                 "queryOp": "between",
                 "x": 0.0,

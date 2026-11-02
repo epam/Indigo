@@ -88,11 +88,13 @@
                     2,
                     3
                 ],
-                "fieldName": "name,;:|{}$field",
                 "fieldData": "data,;:|{}$value",
+                "fieldName": "name,;:|{}$field",
                 "fieldType": "unit,;:|{}$text",
                 "queryOp": "query,;:|{}$op",
-                "dataDetached": false
+                "x": 0.0,
+                "y": 0.0,
+                "display": true
             }
         ]
     }

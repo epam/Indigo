@@ -267,11 +267,11 @@
                     13,
                     14
                 ],
-                "fieldName": "MDLBG_FRAGMENT_STEREO",
                 "fieldData": "abs",
-                "x": 2.509000062942505,
-                "y": -2.3745999336242677,
-                "placement": true
+                "fieldName": "MDLBG_FRAGMENT_STEREO",
+                "x": 3.0791332721710207,
+                "y": -1.5776665210723878,
+                "placement": false
             }
         ]
     }

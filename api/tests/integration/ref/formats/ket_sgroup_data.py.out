@@ -2,6 +2,10 @@
 *** KET 2.0 keys with values the contract allows ***
 data-keys-at-limits-saved.ket:SUCCEED
 data-keys-beyond-molfile-limits-saved.ket:SUCCEED
+*** Placement and display of KET 2.0, and the offset of a molfile ***
+data-placement-and-display-saved.ket:SUCCEED
+data-placement-and-display-2000.mol:SUCCEED
+data-placement-and-display-saved.ket:SUCCEED
 *** Contexts of data, saved, cloned and merged ***
 data-contexts-saved.ket:SUCCEED
 data-contexts-saved.ket:SUCCEED

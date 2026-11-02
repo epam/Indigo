@@ -1226,6 +1226,36 @@ namespace
             rejectDataKey(sgroup_name, KetKeyTagV2_0, s[KetKeyTagV2_0], "is not a single character");
     }
 
+    // The keys of KET 2.0 on a data S-group, as the KET 2.0 contract reads them: placement true or absent is absolute;
+    // display true is attached, and without display, dataDetached false is. A relative position is left as the offset
+    // from the centre of the atoms: the ancestor it may count from is not set yet.
+    void readDataSGroupKeysV2_0(const Value& s, DataSGroup& dsg)
+    {
+        if (s.HasMember(KetKeyFieldNameV2_0))
+            dsg.name.readString(s[KetKeyFieldNameV2_0].GetString(), true);
+        if (s.HasMember(KetKeyFieldTypeV2_0))
+            dsg.description.readString(s[KetKeyFieldTypeV2_0].GetString(), true);
+        if (s.HasMember(KetKeyQueryTypeV2_0))
+            dsg.querycode.readString(s[KetKeyQueryTypeV2_0].GetString(), true);
+        if (s.HasMember(KetKeyQueryOpV2_0))
+            dsg.queryoper.readString(s[KetKeyQueryOpV2_0].GetString(), true);
+
+        dsg.relative = s.HasMember(KetKeyPlacementV2_0) && !s[KetKeyPlacementV2_0].GetBool();
+        if (s.HasMember(KetKeyDisplayV2_0))
+            dsg.detached = !s[KetKeyDisplayV2_0].GetBool();
+        else
+            dsg.detached = !s.HasMember(KetKeyDataDetachedV2_0) || s[KetKeyDataDetachedV2_0].GetBool();
+
+        if (s.HasMember(KetKeyXV2_0) || s.HasMember(KetKeyYV2_0) || dsg.relative)
+            dsg.display_pos.set(
+                Vec2f(s.HasMember(KetKeyXV2_0) ? s[KetKeyXV2_0].GetFloat() : 0.0f, s.HasMember(KetKeyYV2_0) ? s[KetKeyYV2_0].GetFloat() : 0.0f));
+
+        if (s.HasMember(KetKeyTagV2_0))
+            dsg.tag = s[KetKeyTagV2_0].GetString()[0];
+        if (s.HasMember(KetKeyDisplayedCharsV2_0))
+            dsg.num_chars = s[KetKeyDisplayedCharsV2_0].GetInt();
+    }
+
     KetSGroupEntry readSGroupEntry(const Value& s, std::string name, BaseMolecule& mol)
     {
         using Error = MoleculeJsonLoader::Error;
@@ -1500,56 +1530,11 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
         break;
         case SGroup::SG_TYPE_DAT: {
             DataSGroup& dsg = (DataSGroup&)sgroup;
-            if (s.HasMember(KetKeyFieldNameV2_0))
-                dsg.name.readString(s[KetKeyFieldNameV2_0].GetString(), true);
-
             if (s.HasMember(KetKeyFieldData))
                 dsg.data.readString(s[KetKeyFieldData].GetString(), true);
-
             if (s.HasMember(KetKeyContext))
                 dsg.context.readString(s[KetKeyContext].GetString(), true);
-
-            if (s.HasMember(KetKeyFieldTypeV2_0))
-                dsg.description.readString(s[KetKeyFieldTypeV2_0].GetString(), true);
-
-            if (s.HasMember(KetKeyQueryTypeV2_0))
-                dsg.querycode.readString(s[KetKeyQueryTypeV2_0].GetString(), true);
-
-            if (s.HasMember(KetKeyQueryOpV2_0))
-                dsg.queryoper.readString(s[KetKeyQueryOpV2_0].GetString(), true);
-
-            bool display_units = s.HasMember(KetKeyDisplayV2_0) && s[KetKeyDisplayV2_0].GetBool();
-            if (s.HasMember(KetKeyXV2_0) || s.HasMember(KetKeyYV2_0) || display_units)
-            {
-                Vec2f dp(0.0f, 0.0f);
-                if (s.HasMember(KetKeyXV2_0))
-                    dp.x = s[KetKeyXV2_0].GetFloat();
-
-                if (s.HasMember(KetKeyYV2_0))
-                    dp.y = s[KetKeyYV2_0].GetFloat();
-                dsg.display_pos.set(dp);
-            }
-
-            if (s.HasMember(KetKeyDataDetachedV2_0))
-                dsg.detached = s[KetKeyDataDetachedV2_0].GetBool();
-            else
-                dsg.detached = true;
-            // TODO: placement = relative, display = display_units
-            if (s.HasMember(KetKeyPlacementV2_0))
-                dsg.relative = s[KetKeyPlacementV2_0].GetBool();
-
-            if (s.HasMember(KetKeyDisplayV2_0))
-                dsg.display_units = display_units;
-
-            if (s.HasMember(KetKeyTagV2_0))
-            {
-                auto tag = s[KetKeyTagV2_0].GetString();
-                if (strlen(tag))
-                    dsg.tag = *tag;
-            }
-
-            if (s.HasMember(KetKeyDisplayedCharsV2_0))
-                dsg.num_chars = s[KetKeyDisplayedCharsV2_0].GetInt();
+            readDataSGroupKeysV2_0(s, dsg);
         }
         break;
         case SGroup::SG_TYPE_COP:
@@ -1582,6 +1567,16 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
     {
         if (entry.parent != NO_SGROUP)
             mol.sgroups.getSGroup(entry.created).parent_idx = entries[entry.parent].created;
+    }
+
+    // Once the parents are set: data without atoms of its own counts a relative position from those of an ancestor
+    for (const KetSGroupEntry& entry : entries)
+    {
+        if (entry.query_component || entry.sg_type != SGroup::SG_TYPE_DAT)
+            continue;
+        DataSGroup& dsg = static_cast<DataSGroup&>(mol.sgroups.getSGroup(entry.created));
+        if (dsg.relative)
+            dsg.display_pos.set(dsg.display_pos.value() + mol.getDataSGroupFirstAtomToCentre(entry.created));
     }
 
     addRepeatsToEnclosingGroups(mol);

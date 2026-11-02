@@ -58,9 +58,9 @@
                     1,
                     2
                 ],
-                "fieldName": "F1",
                 "fieldData": "1",
                 "context": "Fragment",
+                "fieldName": "F1",
                 "x": 0.0,
                 "y": 0.0
             },
@@ -71,9 +71,9 @@
                     1,
                     2
                 ],
-                "fieldName": "F2",
                 "fieldData": "1",
                 "context": "Multifragment",
+                "fieldName": "F2",
                 "x": 0.0,
                 "y": 0.0
             },
@@ -84,9 +84,9 @@
                     1,
                     2
                 ],
-                "fieldName": "F3",
                 "fieldData": "1",
                 "context": "Bond",
+                "fieldName": "F3",
                 "x": 0.0,
                 "y": 0.0
             },
@@ -97,9 +97,9 @@
                     1,
                     2
                 ],
-                "fieldName": "F4",
                 "fieldData": "1",
                 "context": "Atom",
+                "fieldName": "F4",
                 "x": 0.0,
                 "y": 0.0
             },
@@ -110,9 +110,9 @@
                     1,
                     2
                 ],
-                "fieldName": "F5",
                 "fieldData": "1",
                 "context": "Group",
+                "fieldName": "F5",
                 "x": 0.0,
                 "y": 0.0
             }
