@@ -1,0 +1,9 @@
+issue file, reaction: texts ["(+)-1 9R,13S,14R", "R = \u03b2-OH", "(+)-2 R"] pluses 0
+issue file, molecule: texts ["(+)-1 9R,13S,14R", "R = \u03b2-OH", "(+)-2 R"] pluses 0
+issue file + one-run plus: texts ["(+)-1 9R,13S,14R", "R = \u03b2-OH", "(+)-2 R"] pluses 1
+plus in runs with spaces: texts [] pluses 1
+charset x-mac-symbol: texts ["T = 25 \u00b1 1 K, \u0394"] pluses 0
+binary CDX: texts ["(+)-1 9R,13S,14R", "R = \u03b2-OH", "(\u2212)-1", "A \u2192 B, 25\u00b0C"] pluses 1
+binary CDX, line break in a font name: texts ["R = \u03b2-OH"] pluses 0
+binary CDX, font name spelling a table line: texts ["R = b-OH"] pluses 0
+CDXML fonttable attribute: texts ["(+)-1 9R,13S,14R", "R = \u03b2-OH", "(+)-2 R"] pluses 0
