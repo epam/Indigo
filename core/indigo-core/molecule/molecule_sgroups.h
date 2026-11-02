@@ -198,6 +198,7 @@ namespace indigo
         Array<char> querycode;       // SDT in Molfile format (query code)
         Array<char> queryoper;       // SDT in Molfile format (query operator)
         Array<char> data;            // SCD/SED in Molfile format (field data)
+        Array<char> context;         // KET only: what the data belongs to, as the KET contract names it
         Array<char> sa_natreplace;   // NATREPLACE (V3000 - 2017)
         Nullable<Vec2f> display_pos; // SDD in Molfile format
         bool detached;               // or attached

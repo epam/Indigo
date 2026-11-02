@@ -2,7 +2,13 @@
 *** KET 2.0 keys with values the contract allows ***
 data-keys-at-limits-saved.ket:SUCCEED
 data-keys-beyond-molfile-limits-saved.ket:SUCCEED
+*** Contexts of data, saved, cloned and merged ***
+data-contexts-saved.ket:SUCCEED
+data-contexts-saved.ket:SUCCEED
+data-contexts-saved.ket:SUCCEED
 *** KET 2.0 keys with values outside the contract ***
+rejected-context-lowercase: molecule json loader: S-group #0 of molecule #0 has 'context' "fragment", which is not a valid context
+rejected-context-not-string: molecule json loader: S-group #0 of molecule #0 has 'context' 5, which is not a string
 rejected-field-name-not-string: molecule json loader: S-group #0 of molecule #0 has 'fieldName' 5, which is not a string
 rejected-placement-not-boolean: molecule json loader: S-group #0 of molecule #0 has 'placement' 1, which is not a boolean
 rejected-tag-two-characters: molecule json loader: S-group #0 of molecule #0 has 'tag' "ab", which is not a single character

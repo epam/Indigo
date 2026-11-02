@@ -32,6 +32,7 @@
 #include <algorithm>
 #include <array>
 #include <initializer_list>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -659,4 +660,62 @@ TEST(SGroupTree, ACycleOfParentsGivesOneNodePerGroup)
     collectLabels(tree, labels);
     std::sort(labels.begin(), labels.end());
     EXPECT_EQ(std::vector<int>({first, second}), labels);
+}
+
+// ---- context of data --------------------------------------------------------
+
+namespace
+{
+    const char* const FRAGMENT_CONTEXT = "Fragment";
+
+    // The contexts of the data S-groups of a molecule, sorted: a copy is free to number the groups differently.
+    std::vector<std::string> dataContexts(Molecule& mol)
+    {
+        std::vector<std::string> contexts;
+        for (int sgroup_idx = mol.sgroups.begin(); sgroup_idx != mol.sgroups.end(); sgroup_idx = mol.sgroups.next(sgroup_idx))
+        {
+            SGroup& sgroup = mol.sgroups.getSGroup(sgroup_idx);
+            if (sgroup.sgroup_type != SGroup::SG_TYPE_DAT)
+                continue;
+            const Array<char>& context = static_cast<DataSGroup&>(sgroup).context;
+            contexts.push_back(context.size() > 0 ? context.ptr() : "");
+        }
+        std::sort(contexts.begin(), contexts.end());
+        return contexts;
+    }
+} // namespace
+
+TEST(DataSGroupContext, ReusedSlotForgetsIt)
+{
+    MoleculeSGroups sgroups;
+    const int data = sgroups.addSGroup(SGroup::SG_TYPE_DAT);
+    static_cast<DataSGroup&>(sgroups.getSGroup(data)).context.readString(FRAGMENT_CONTEXT, true);
+    const SGroup* removed = &sgroups.getSGroup(data);
+
+    sgroups.remove(data);
+
+    DataSGroup& fresh = static_cast<DataSGroup&>(sgroups.getSGroup(sgroups.addSGroup(SGroup::SG_TYPE_DAT)));
+    // Without reuse there is nothing to forget: the new group must be the object just removed.
+    ASSERT_EQ(removed, &fresh);
+    EXPECT_EQ(0, fresh.context.size());
+}
+
+TEST(DataSGroupContext, CloneAndMergeKeepIt)
+{
+    Molecule source;
+    source.addAtom(ELEM_C);
+    DataSGroup& data = static_cast<DataSGroup&>(source.sgroups.getSGroup(source.sgroups.addSGroup(SGroup::SG_TYPE_DAT)));
+    data.atoms.push(0);
+    data.context.readString(FRAGMENT_CONTEXT, true);
+    const std::vector<std::string> fragment = {FRAGMENT_CONTEXT};
+    ASSERT_EQ(fragment, dataContexts(source));
+
+    Molecule cloned;
+    cloned.clone(source);
+    EXPECT_EQ(fragment, dataContexts(cloned));
+
+    Molecule merged;
+    merged.addAtom(ELEM_N);
+    merged.mergeWithMolecule(source, nullptr);
+    EXPECT_EQ(fragment, dataContexts(merged));
 }

@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <charconv>
 #include <cstring>
+#include <iterator>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -1198,14 +1199,21 @@ namespace
             rejectDataKey(sgroup_name, key, value, DataSGroup::NOT_KEPT_DISPLAY_COORDINATE);
     }
 
-    // Deprecated since KET 2.1, removed in KET 3.0: the keys of KET 2.0 on a data S-group, each of its JSON type.
-    // KET does not take the limits of the molfile format: an operator, a query type, a character count or a
+    // The contexts of a data S-group in the KET contract, in their exact case
+    const char* const DATA_CONTEXTS[] = {"Fragment", "Multifragment", "Bond", "Atom", "Group"};
+
+    // The keys of a data S-group, each of its JSON type: fieldData, context and the keys of KET 2.0 deprecated since
+    // KET 2.1. KET does not take the limits of the molfile format: an operator, a query type, a character count or a
     // coordinate the molfile does not allow is kept as it is.
-    void checkDataSGroupKeysV2_0(const Value& s, const std::string& sgroup_name)
+    void checkDataSGroupKeys(const Value& s, const std::string& sgroup_name)
     {
-        for (const char* key : {KetKeyFieldData, KetKeyFieldNameV2_0, KetKeyFieldTypeV2_0, KetKeyQueryTypeV2_0, KetKeyQueryOpV2_0, KetKeyTagV2_0})
+        for (const char* key :
+             {KetKeyFieldData, KetKeyContext, KetKeyFieldNameV2_0, KetKeyFieldTypeV2_0, KetKeyQueryTypeV2_0, KetKeyQueryOpV2_0, KetKeyTagV2_0})
             if (s.HasMember(key) && !s[key].IsString())
                 rejectDataKey(sgroup_name, key, s[key], "is not a string");
+        if (s.HasMember(KetKeyContext) && std::none_of(std::begin(DATA_CONTEXTS), std::end(DATA_CONTEXTS),
+                                                       [&](const char* context) { return std::strcmp(context, s[KetKeyContext].GetString()) == 0; }))
+            rejectDataKey(sgroup_name, KetKeyContext, s[KetKeyContext], "is not a valid context");
         for (const char* key : {KetKeyPlacementV2_0, KetKeyDisplayV2_0, KetKeyDataDetachedV2_0})
             if (s.HasMember(key) && !s[key].IsBool())
                 rejectDataKey(sgroup_name, key, s[key], "is not a boolean");
@@ -1299,7 +1307,7 @@ namespace
         if (entry.sg_type == SGroup::SG_TYPE_COP && s.HasMember(KetKeySubtype) && SGroup::getSubtype(s[KetKeySubtype].GetString()) < 0)
             throw Error("%s has '%s' %s, which is not a copolymer subtype", entry.name.c_str(), KetKeySubtype, jsonText(s[KetKeySubtype]).c_str());
         if (entry.sg_type == SGroup::SG_TYPE_DAT)
-            checkDataSGroupKeysV2_0(s, entry.name);
+            checkDataSGroupKeys(s, entry.name);
         return entry;
     }
 
@@ -1497,6 +1505,9 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
 
             if (s.HasMember(KetKeyFieldData))
                 dsg.data.readString(s[KetKeyFieldData].GetString(), true);
+
+            if (s.HasMember(KetKeyContext))
+                dsg.context.readString(s[KetKeyContext].GetString(), true);
 
             if (s.HasMember(KetKeyFieldTypeV2_0))
                 dsg.description.readString(s[KetKeyFieldTypeV2_0].GetString(), true);

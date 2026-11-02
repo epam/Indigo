@@ -74,8 +74,9 @@ namespace indigo
     inline constexpr const char* KetKeyMultiplier = "mul";
     inline constexpr const char* KetSGroupQueryComponent = "queryComponent"; // value of KetKeyType, a query feature
 
-    // The value of a data S-group.
+    // The value of a data S-group, and what it belongs to.
     inline constexpr const char* KetKeyFieldData = "fieldData";
+    inline constexpr const char* KetKeyContext = "context";
 
     // Deprecated since KET 2.1, removed in KET 3.0: the keys of KET 2.0 on a data S-group for its field and its
     // display. A KET 2.1 document carries the same values in dataFieldDescription and dataDisplayInformation; the
