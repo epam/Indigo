@@ -1990,7 +1990,7 @@ void MolfileLoader::_readSGroupDisplay(Scanner& scanner, DataSGroup& dsg, const 
                 if (scanner.lookNext() == '\n' || scanner.lookNext() == '\r')
                     return;
             }
-            // 0, which ChemAxon Marvin writes and Indigo writes for a position it does not have, is a position that is not set
+            // DASP 0, outside the 1 to 9 of the CTfile, is read as a position that is not set
             const char c = scanner.readChar();
             if (c != '0' && c != ' ' && c != '\r' && c != '\n')
             {

@@ -264,7 +264,7 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer, int id, i
             writer.String(tag_s.c_str());
         }
 
-        const int num_chars = dsg.num_chars.value_or(0);
+        const int num_chars = dsg.displayedChars();
         if (num_chars > 0)
         {
             writer.Key(KetKeyDisplayedCharsV2_0);
