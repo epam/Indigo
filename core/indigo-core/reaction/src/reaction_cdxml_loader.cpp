@@ -163,6 +163,9 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
                 {
                     for (auto brackets = cdxml_elem->firstChildElement(); brackets->hasContent(); brackets = brackets->nextSiblingElement())
                     {
+                        // a nested bracketedgroup is not an attachment of this one; the molecule loader skips it too
+                        if (brackets->value() != "bracketattachment")
+                            continue;
                         auto id = brackets->findProperty("id");
                         bracket_ids.insert(std::stoi(id->value()));
                         if (id->hasContent())
@@ -194,13 +197,14 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
         if (elem_it != _cdxml_elements.end())
         {
             loader.loadMoleculeFromFragment(*_pmol, *elem_it->second);
+            // A step participant can be a group that holds a caption, or a fragment that holds only graphics.
+            // Keep its non-molecular objects, as for the arrows and the other page elements.
+            rxn.meta().append(_pmol->meta());
             if (_pmol->vertexCount())
             {
                 int index = rxn.addReactantCopy(*_pmol, 0, 0);
                 moleculeToAtomIDs.emplace(std::pair<int, std::unordered_map<int, int>>{index, loader.idToAtomIndexMap()});
             }
-            else
-                throw Error("Empty reactant: %d", id);
             _cdxml_elements.erase(elem_it);
         }
     }
@@ -211,13 +215,12 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
         if (elem_it != _cdxml_elements.end())
         {
             loader.loadMoleculeFromFragment(*_pmol, *elem_it->second);
+            rxn.meta().append(_pmol->meta());
             if (_pmol->vertexCount())
             {
                 int index = rxn.addProductCopy(*_pmol, 0, 0);
                 moleculeToAtomIDs.emplace(std::pair<int, std::unordered_map<int, int>>{index, loader.idToAtomIndexMap()});
             }
-            else
-                throw Error("Empty product: %d", id);
             _cdxml_elements.erase(elem_it);
         }
     }
@@ -228,13 +231,12 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
         if (elem_it != _cdxml_elements.end())
         {
             loader.loadMoleculeFromFragment(*_pmol, *elem_it->second);
+            rxn.meta().append(_pmol->meta());
             if (_pmol->vertexCount())
             {
                 int index = rxn.addIntermediateCopy(*_pmol, 0, 0);
                 moleculeToAtomIDs.emplace(std::pair<int, std::unordered_map<int, int>>{index, loader.idToAtomIndexMap()});
             }
-            else
-                throw Error("Empty product: %d", id);
             _cdxml_elements.erase(elem_it);
         }
     }
