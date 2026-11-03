@@ -290,7 +290,7 @@ void SequenceLoader::loadIdt(KetDocument& document)
     std::string invalid_symbols;
     while (!_scanner.isEOF())
     {
-        _seq_id = 0;
+        _seq_id = 1;
         _last_monomer_idx = -1;
         _col = 0;
 

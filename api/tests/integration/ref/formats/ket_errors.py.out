@@ -1,0 +1,3 @@
+*** KET errors ***
+Test 'ket_invalid_seqid_0': got expected error 'Invalid "seqid" value'
+Test 'ket_invalid_seqid_1': got expected error 'Invalid "seqid" value'

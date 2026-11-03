@@ -14,7 +14,7 @@
     "monomer0": {
         "type": "monomer",
         "id": "0",
-        "seqid": 0,
+        "seqid": 1,
         "position": {
             "x": 0.000000,
             "y": -0.000000

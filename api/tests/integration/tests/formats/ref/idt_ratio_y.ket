@@ -84,7 +84,7 @@
     "monomer0": {
         "type": "monomer",
         "id": "0",
-        "seqid": 0,
+        "seqid": 1,
         "position": {
             "x": 0.000000,
             "y": -0.000000
@@ -99,14 +99,14 @@
             "x": 0.000000,
             "y": -1.500000
         },
-        "seqid": 0,
+        "seqid": 1,
         "alias": "(Y1)",
         "templateId": "(Y1)"
     },
     "monomer2": {
         "type": "monomer",
         "id": "2",
-        "seqid": 0,
+        "seqid": 1,
         "position": {
             "x": 1.500000,
             "y": -0.000000
@@ -117,7 +117,7 @@
     "monomer3": {
         "type": "monomer",
         "id": "3",
-        "seqid": 1,
+        "seqid": 2,
         "position": {
             "x": 3.000000,
             "y": -0.000000
@@ -132,7 +132,7 @@
             "x": 3.000000,
             "y": -1.500000
         },
-        "seqid": 1,
+        "seqid": 2,
         "alias": "(Y1)",
         "templateId": "(Y1)"
     },
