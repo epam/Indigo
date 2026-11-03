@@ -44,16 +44,6 @@
 
 using namespace indigo;
 
-void BaseMolecule::_checkSgroupHierarchy(int pidx, int oidx)
-{
-    for (int i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
-    {
-        SGroup& sg = sgroups.getSGroup(i);
-        if (sg.parent_group == oidx)
-            sg.parent_group = pidx;
-    }
-}
-
 int copyBaseBond(BaseMolecule& bm, int beg, int end, int srcId)
 {
     int bid = -1;

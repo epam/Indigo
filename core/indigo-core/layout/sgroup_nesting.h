@@ -45,7 +45,7 @@ namespace indigo
         static bool isBracketed(int sgroup_type);
 
     private:
-        int _findParent(int sgroup_idx) const;
+        int _findParent(int sgroup_idx, int stored_parent) const;
         bool _contains(int sgroup_idx, const std::vector<int>& sorted_atoms) const;
         int _depth(int sgroup_idx) const;
 

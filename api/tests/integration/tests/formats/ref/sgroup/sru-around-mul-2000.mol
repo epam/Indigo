@@ -16,6 +16,7 @@
   6  7  1  0  0  0  0
   7  4  1  0  0  0  0
 M  STY  2   1 SRU   2 MUL
+M  SPL  1   2   1
 M  SLB  2   1   1   2   2
 M  SCN  1   1 EU 
 M  SAL   1  5   2   3   4   6   7

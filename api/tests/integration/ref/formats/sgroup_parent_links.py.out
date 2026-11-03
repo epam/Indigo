@@ -1,0 +1,7 @@
+*** merge() into a molecule that has an S-group ***
+formulation-v2000-merged-2000.mol:SUCCEED
+formulation-v2000-merged-3000.mol:SUCCEED
+*** A parent and its child on different fragments ***
+parent-on-another-fragment-v3000.ket:SUCCEED
+parent-on-another-fragment-v3000-component-0.mol:SUCCEED
+parent-on-another-fragment-v3000-component-1.mol:SUCCEED
