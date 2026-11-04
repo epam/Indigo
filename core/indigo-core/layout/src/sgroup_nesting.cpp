@@ -37,8 +37,9 @@ SGroupNesting::SGroupNesting(BaseMolecule& molecule) : _molecule(molecule)
         if (isBracketed(sgroup.sgroup_type) || sgroup.sgroup_type == SGroup::SG_TYPE_MUL)
             _parents[i] = -1;
     }
+    const std::vector<int> stored_parents = molecule.sgroups.resolveParents();
     for (auto& [sgroup_idx, parent] : _parents)
-        parent = _findParent(sgroup_idx);
+        parent = _findParent(sgroup_idx, stored_parents[sgroup_idx]);
     // Parents read from a file can form a loop: it is cut where it is found
     for (auto& [sgroup_idx, parent] : _parents)
         if (_depth(sgroup_idx) >= static_cast<int>(_parents.size()))
@@ -76,18 +77,17 @@ std::vector<int> SGroupNesting::children(int sgroup_idx) const
     return found;
 }
 
-// The parent from the file, checked to be a bracketed group around this one because an index into the groups goes
-// stale after a merge or a clone. Otherwise the smallest bracketed group strictly containing its atoms.
-int SGroupNesting::_findParent(int sgroup_idx) const
+// The parent the structure names (MoleculeSGroups::resolveParents), if it is a bracketed group around this one.
+// Otherwise the smallest bracketed group strictly containing its atoms.
+int SGroupNesting::_findParent(int sgroup_idx, int stored_parent) const
 {
     MoleculeSGroups& sgroups = _molecule.sgroups;
     const SGroup& sgroup = sgroups.getSGroup(sgroup_idx);
     std::vector<int> atoms(sgroup.atoms.begin(), sgroup.atoms.end());
     std::sort(atoms.begin(), atoms.end());
 
-    const int parent = sgroups.findParent(sgroup);
-    if (parent >= 0 && parent != sgroup_idx && isBracketed(sgroups.getSGroup(parent).sgroup_type) && _contains(parent, atoms))
-        return parent;
+    if (stored_parent >= 0 && stored_parent != sgroup_idx && isBracketed(sgroups.getSGroup(stored_parent).sgroup_type) && _contains(stored_parent, atoms))
+        return stored_parent;
 
     int smallest = -1;
     for (int other_idx : _bracketed)

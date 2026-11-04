@@ -127,6 +127,40 @@ TEST_F(IndigoCoreSGroupBracketsTest, Nesting_LinkToContainingGroup_WinsOverSmall
     EXPECT_TRUE(nesting.children(inner).empty());
 }
 
+TEST_F(IndigoCoreSGroupBracketsTest, Nesting_LinkByPositionToContainingGroup_WinsOverSmallest)
+{
+    Molecule mol;
+    zigzag(mol, 4);
+    const int unit = addGroup(mol, SGroup::SG_TYPE_SRU, {1, 2});
+    const int inner = addGroup(mol, SGroup::SG_TYPE_COP, {0, 1, 2});
+    const int outer = addGroup(mol, SGroup::SG_TYPE_COP, {0, 1, 2, 3});
+    // The CML reader numbers no group and names a parent by its one-based pool position
+    mol.sgroups.getSGroup(unit).parent_group = outer + 1;
+
+    const SGroupNesting nesting(mol);
+
+    EXPECT_EQ(std::vector<int>({unit, inner}), nesting.children(outer));
+    EXPECT_TRUE(nesting.children(inner).empty());
+}
+
+TEST_F(IndigoCoreSGroupBracketsTest, Nesting_LinkByAnIndexTwoGroupsShare_IsIgnored)
+{
+    const int shared_index = 7;
+    Molecule mol;
+    zigzag(mol, 4);
+    const int unit = addGroup(mol, SGroup::SG_TYPE_SRU, {1, 2});
+    const int outer = addGroup(mol, SGroup::SG_TYPE_COP, {0, 1, 2, 3});
+    const int inner = addGroup(mol, SGroup::SG_TYPE_COP, {0, 1, 2});
+    mol.sgroups.getSGroup(outer).index = shared_index;
+    mol.sgroups.getSGroup(inner).index = shared_index;
+    mol.sgroups.getSGroup(unit).parent_group = shared_index;
+
+    const SGroupNesting nesting(mol);
+
+    EXPECT_EQ(std::vector<int>({unit}), nesting.children(inner));
+    EXPECT_EQ(std::vector<int>({inner}), nesting.children(outer));
+}
+
 TEST_F(IndigoCoreSGroupBracketsTest, Nesting_LinkToGroupNotContainingTheAtoms_IsIgnored)
 {
     Molecule mol;

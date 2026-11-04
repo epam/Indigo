@@ -346,14 +346,19 @@ namespace indigo
         bool hasSGroup(int idx);
 
         void buildTree(Tree& tree);
-        bool getParentAtoms(int idx, Array<int>& target);
-        bool getParentAtoms(SGroup& sgroup, Array<int>& target);
-        // The array position of the parent: parent_idx when it names a group, else the group whose index equals
-        // parent_group; -1 when neither is found
-        int findParent(const SGroup& sgroup);
+        // The pool position of each group's parent, -1 for none; indexed by pool position, end() entries.
+        // The parent is parent_idx, else the group whose index is parent_group, else - for inputs that
+        // number no group - the group at the one-based pool position parent_group.
+        std::vector<int> resolveParents();
+        // Makes parent_idx the parent of a group, -1 none. A group that names its parent by number keeps doing so,
+        // in the form resolveParents reads back: the parent's index, or its one-based pool position when it has none.
+        void setParent(int sgroup_idx, int parent_idx);
         std::vector<SGroupInfo> getOrderedSGroups();
 
+        // The children of a removed group get no parent; with removeMovingChildrenToGrandparent, its own parent.
         void remove(int idx);
+        void removeMovingChildrenToGrandparent(int sgroup_idx);
+        void moveChildrenToGrandparent(int sgroup_idx);
         void clear();
         void clear(int sg_type);
 
@@ -405,6 +410,9 @@ namespace indigo
 
     private:
         bool _cmpIndices(Array<int>& t_inds, Array<int>& q_inds);
+        // The groups whose resolved parent is the group at sgroup_idx. A structure in which no group names a parent
+        // costs one pass and no allocation: removing many groups is quadratic in the number of groups either way.
+        std::vector<int> _childrenOf(int sgroup_idx);
 
         template <typename Transform>
         static void _transformDataPosition(DataSGroup& sgroup, Transform transform)

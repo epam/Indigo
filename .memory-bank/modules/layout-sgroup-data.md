@@ -30,9 +30,10 @@ values through `core/indigo-core/molecule/molecule_sgroups.h#transformPositions`
 
 ## How a value is moved
 
-1. **Reference atoms**: the group's own atoms; without them, the own atoms of its parent, found by `parent_idx` and
-   else by `parent_group` (`core/indigo-core/molecule/molecule_sgroups.h#findParent`, which `SGroupNesting` uses
-   too). Without either the value stays.
+1. **Reference atoms**: the group's own atoms; without them, the own atoms of its parent as
+   `core/indigo-core/molecule/molecule_sgroups.h#resolveParents` finds it, the one rule for S-group parents
+   ([../adr/sgroup-parent-links.md](../adr/sgroup-parent-links.md)), called once per `update()`. Without either the
+   value stays.
 2. If no reference atom moved by more than `EPSILON`, the value stays bit for bit, so a second `layout()` changes
    nothing.
 3. **The fit**: the rotation and the shift that bring the old positions of the reference atoms closest to the new

@@ -78,6 +78,26 @@ the same call: `Graph::_cloneGraph_KeepIndices`, which installs the edges direct
 `_mergeWithSubmolecule_Sub`, which copies the haptic bonds after the atoms. A path that skips the
 call leaves the previous answer standing, and nothing fails.
 
+**A15 — An S-group's parent is resolved by one rule, and the slot of a removed group is nobody's parent.**
+A group names its parent three ways: `parent_idx`, a pool position (the molfile readers resolve it, the KET reader
+sets it); `parent_group` holding the parent's `index` (V2000, V3000, the C API); `parent_group` holding a one-based
+pool position when no group is numbered (the CML reader).
+`core/indigo-core/molecule/src/molecule_sgroups.cpp#MoleculeSGroups::resolveParents` applies them in that order, and
+the savers (`getOrderedSGroups`), the copy of S-groups (`mergeSGroupsWithSubmolecule`), the tree the renderer
+draws (`buildTree`) and the nesting of brackets (`SGroupNesting`) take the parent from it.
+A second resolver disagrees with it on some input, and nothing fails: a copy of nested groups into a molecule that
+already had S-groups kept the source's pool positions, a group became its own parent, and the next copy recursed
+until the stack overflowed. The pool hands a freed slot to the next group of its class, so
+`core/indigo-core/molecule/src/molecule_sgroups.cpp#void MoleculeSGroups::remove(int idx)` clears both links of the
+groups whose resolved parent is the removed one — the rule A5 states for atoms; a link by position left behind
+would name the next group in that slot. Wherever a parent changes, a link by number changes with it: a copy names
+the copy of its parent, a group moved to its grandparent names the grandparent, both through
+`core/indigo-core/molecule/src/molecule_sgroups.cpp#MoleculeSGroups::setParent`, so a reader of the number
+alone — the C API, a format that stores numbers — sees the same parent. A copy whose parent is left behind gets no
+parent at all, `parent_idx` and `parent_group` both, and a group with atoms of its own is copied with its atoms,
+never with its parent. An `index` of 0 numbers no group: a group without one is never found by its `index`. See
+[adr/sgroup-parent-links.md](adr/sgroup-parent-links.md).
+
 **A8 — Bond orders and query flags are named constants, tests included.**
 `BOND_SINGLE`, `BOND_ZERO`, `_BOND_COORDINATION` and friends — never the underlying integers.
 

@@ -1,0 +1,215 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "mol0"
+            },
+            {
+                "$ref": "monomer0"
+            }
+        ],
+        "connections": [
+            {
+                "connectionType": "single",
+                "endpoint1": {
+                    "moleculeId": "mol0",
+                    "atomId": "0"
+                },
+                "endpoint2": {
+                    "monomerId": "monomer0",
+                    "attachmentPointId": "R1"
+                }
+            },
+            {
+                "connectionType": "single",
+                "endpoint1": {
+                    "monomerId": "monomer0",
+                    "attachmentPointId": "R2"
+                },
+                "endpoint2": {
+                    "moleculeId": "mol0",
+                    "atomId": "1"
+                }
+            }
+        ],
+        "templates": [
+            {
+                "$ref": "monomerTemplate-ala_1"
+            }
+        ]
+    },
+    "monomer0": {
+        "type": "monomer",
+        "id": "0",
+        "seqid": 1,
+        "position": {
+            "x": 1.500,
+            "y": 0.000
+        },
+        "alias": "a",
+        "templateId": "ala_1"
+    },
+    "monomerTemplate-ala_1": {
+        "type": "monomerTemplate",
+        "id": "ala_1",
+        "class": "D-AminoAcid",
+        "classHELM": "PEPTIDE",
+        "alias": "da",
+        "name": "ala",
+        "naturalAnalogShort": "A",
+        "naturalAnalog": "Ala",
+        "attachmentPoints": [
+            {
+                "attachmentAtom": 2,
+                "leavingGroup": {
+                    "atoms": [
+                        1
+                    ]
+                }
+            },
+            {
+                "attachmentAtom": 4,
+                "leavingGroup": {
+                    "atoms": [
+                        0
+                    ]
+                }
+            }
+        ],
+        "atoms": [
+            {
+                "label": "O",
+                "location": [
+                    6.627,
+                    -2.066,
+                    0.000
+                ]
+            },
+            {
+                "label": "H",
+                "location": [
+                    5.002,
+                    -2.088,
+                    0.000
+                ]
+            },
+            {
+                "label": "N",
+                "location": [
+                    5.136,
+                    -2.078,
+                    0.000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    5.784,
+                    -1.598,
+                    0.000
+                ],
+                "stereoLabel": "abs"
+            },
+            {
+                "label": "C",
+                "location": [
+                    6.475,
+                    -2.065,
+                    0.000
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    6.475,
+                    -2.898,
+                    0.000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    5.784,
+                    -0.766,
+                    0.000
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    3
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    4
+                ]
+            },
+            {
+                "type": 2,
+                "atoms": [
+                    4,
+                    5
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    3,
+                    6
+                ],
+                "stereo": 6
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    1
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    4,
+                    0
+                ]
+            }
+        ]
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    0.000,
+                    0.000,
+                    0.000
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    3.000,
+                    0.000,
+                    0.000
+                ]
+            }
+        ],
+        "bonds": [],
+        "sgroups": [
+            {
+                "type": "GEN",
+                "atoms": [
+                    0,
+                    1
+                ]
+            }
+        ]
+    }
+}

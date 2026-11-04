@@ -50,7 +50,7 @@ namespace indigo
         // A turn fitted weaker than this share of a perfect fit is decided by rounding, as for a mirrored symmetric ring
         static constexpr float WEAKEST_FIT = 0.001f;
 
-        const SGroup* _referenceGroup(const DataSGroup& sgroup) const;
+        const SGroup* _referenceGroup(const DataSGroup& sgroup, int parent) const;
         bool _hasMoved(const SGroup& reference) const;
         void _place(DataSGroup& sgroup, const Vec2f& initial, const SGroup& reference) const;
         Vec2f _position(int atom) const;

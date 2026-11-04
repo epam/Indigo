@@ -43,7 +43,7 @@ shared one:
 
 | Reference | Searched in order |
 | --- | --- |
-| recorded stdout | `ref/<group>/jython/`, `ref/<group>/iron/`, `ref/<group>/<platform>/`, `ref/<group>/` — `test.py#determine_path_based_on_platform`, and only if the shared `ref/<group>/<subject>.py.out` exists: a platform `.out` on its own is never read |
+| recorded stdout | `ref/<group>/jython/`, `ref/<group>/iron/`, `ref/<group>/<platform>/`, `ref/<group>/` — `api/tests/integration/test.py#determine_path_based_on_platform`, and only if the shared `ref/<group>/<subject>.py.out` exists: a platform `.out` on its own is never read |
 | data files | `tests/<group>/ref/<platform>/`, `tests/<group>/ref/` — `compare_diff`, `getRefFilepath` |
 
 ## 3. Write the test

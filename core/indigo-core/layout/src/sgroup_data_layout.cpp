@@ -43,17 +43,20 @@ SGroupDataLayout::SGroupDataLayout(BaseMolecule& molecule) : _molecule(molecule)
 
 void SGroupDataLayout::update()
 {
+    if (_initialValuePositions.empty())
+        return;
+    const std::vector<int> parents = _molecule.sgroups.resolveParents();
     for (const auto& [sgroup_idx, initial] : _initialValuePositions)
     {
         DataSGroup& sgroup = static_cast<DataSGroup&>(_molecule.sgroups.getSGroup(sgroup_idx));
-        const SGroup* reference = _referenceGroup(sgroup);
+        const SGroup* reference = _referenceGroup(sgroup, parents[sgroup_idx]);
         if (reference == nullptr || !_hasMoved(*reference))
             continue;
         _place(sgroup, initial, *reference);
     }
 }
 
-const SGroup* SGroupDataLayout::_referenceGroup(const DataSGroup& sgroup) const
+const SGroup* SGroupDataLayout::_referenceGroup(const DataSGroup& sgroup, int parent) const
 {
     if (sgroup.atoms.size() > 0)
         return &sgroup;
@@ -61,11 +64,9 @@ const SGroup* SGroupDataLayout::_referenceGroup(const DataSGroup& sgroup) const
     if (sgroup.relative)
         return nullptr;
 
-    MoleculeSGroups& sgroups = _molecule.sgroups;
-    const int parent = sgroups.findParent(sgroup);
-    if (parent < 0 || sgroups.getSGroup(parent).atoms.size() == 0)
+    if (parent < 0 || _molecule.sgroups.getSGroup(parent).atoms.size() == 0)
         return nullptr;
-    return &sgroups.getSGroup(parent);
+    return &_molecule.sgroups.getSGroup(parent);
 }
 
 bool SGroupDataLayout::_hasMoved(const SGroup& reference) const
