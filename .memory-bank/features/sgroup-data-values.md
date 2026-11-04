@@ -5,7 +5,7 @@
 > **Skip when:** the question is about brackets, which is [sgroup-brackets.md](./sgroup-brackets.md), or about which
 > data fields a format keeps.
 
-Verified on `da78213ac`. Ticket #3975, under the polymer epic #3971.
+Verified on `1f71959a5`. Ticket #3975, under the polymer epic #3971.
 
 ## Problem
 
@@ -44,8 +44,8 @@ molecule as the molecule is placed in the scheme, also with `layout-preserve-exi
 
 ## Guarantees
 
-Deterministic for given coordinates. The three structures of the ticket, a reaction drawn at bond length 1.5 and a
-pathway are pinned to four decimals.
+Deterministic for given coordinates. The three structures of the ticket, a reaction drawn at bond length 1.5, laid
+out as drawn and anew, a pathway and a clean-up of a selection are pinned to four decimals.
 
 ## Limitations
 

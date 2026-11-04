@@ -5,7 +5,7 @@
 > **Skip when:** you only need the promised behaviour: that is
 > [../features/sgroup-data-values.md](../features/sgroup-data-values.md).
 
-Verified on `da78213ac` (ticket #3975).
+Verified on `1f71959a5` (ticket #3975).
 
 ## Responsibility
 
@@ -34,8 +34,8 @@ values through `core/indigo-core/molecule/molecule_sgroups.h#transformPositions`
    `core/indigo-core/molecule/molecule_sgroups.h#resolveParents` finds it, the one rule for S-group parents
    ([../adr/sgroup-parent-links.md](../adr/sgroup-parent-links.md)), called once per `update()`. Without either the
    value stays.
-2. If no reference atom moved by more than `EPSILON`, the value stays bit for bit, so a second `layout()` changes
-   nothing.
+2. If no reference atom moved farther than 0.001 (its squared distance against `EPSILON`), the value stays bit for
+   bit, so a second `layout()` changes nothing.
 3. **The fit**: the rotation and the shift that bring the old positions of the reference atoms closest to the new
    ones by least squares, from the sums of dot and cross products around the two centres. One atom, atoms at one
    point, or a fit weaker than a thousandth of a perfect one give a shift only
@@ -54,13 +54,13 @@ values through `core/indigo-core/molecule/molecule_sgroups.h#transformPositions`
 - **`clean2d()` fits each pass.** `MoleculeCleaner2d::clean` runs two passes, each with its own `SGroupDataLayout`.
   On a strongly distorted drawing the result differs from one fit over both passes: by 0.05 and 0.14 bond lengths
   on the ticket's file.
-- **`MoleculeSGroups::getParentAtoms` is not the parent's atoms.** It concatenates the atoms of every ancestor, so a
-  value on a component would follow the whole formulation.
 - **A relative position is an offset from the first atom of the group**, as the renderer resolves it. Turning only
   the offset would leave the value by the first atom when the layout changes the shape of the group, and a value
-  stored as absolute would go elsewhere. For a group without atoms the offset is from the right top corner of a box the renderer takes from the groups above it: the atoms of the nearest repeating
-  unit, or the whole molecule (`core/render2d/src/render_internal.cpp#rightTop`). That box does not turn and is
-  computed anew for every drawing, so such a value is left as it is.
+  stored as absolute would go elsewhere. For a group without atoms the offset is from the right top corner of a box
+  the renderer hands down its tree of groups (`core/render2d/src/render_internal.cpp#rightTop`): a repeating unit
+  passes the box of its atoms, a component, mixture, formulation or copolymer passes on the box it got, starting
+  from the whole molecule, and a data, generic, multiple or superatom group passes none. That box does not turn and
+  is computed anew for every drawing, so such a value is left as it is.
 - **A layout that mirrors a structure** turns the value by the closest rotation instead of reflecting it. For a
   mirrored symmetric group, such as a regular ring, every turn fits equally: the sums are zero, and in float their
   rounding would pick a random turn (about one case in six for a hexagon, by a float32 simulation), so the value is

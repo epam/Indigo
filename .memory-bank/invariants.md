@@ -6,8 +6,8 @@
 Rules that must stay true. Each one is here because breaking it fails **silently** — no compiler
 error, and often no failing test on the machine where the change was made.
 
-Anchors were verified on `f0cc3c423` (master, 2026-09-03); A12 to A14 on `1e15006f7` (2026-10-28); B5 on
-2026-10-23. An anchor that no longer resolves is a defect in this file: fix it in the same change that moved
+Anchors were verified on `f0cc3c423` (master, 2026-09-03); A12 and A14 on `1e15006f7` (2026-10-28); A13 on
+`1f71959a5` (2026-11-04); B5 on 2026-10-23. An anchor that no longer resolves is a defect in this file: fix it in the same change that moved
 the code.
 
 ---

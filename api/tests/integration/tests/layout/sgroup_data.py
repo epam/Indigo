@@ -50,6 +50,14 @@ compare_diff(
 )
 indigo.setOption("layout-preserve-existing", False)
 
+# Laid out anew, a molecule has its values fitted to its new atoms first, then
+# carried with it into the scheme
+rxn = load_reaction("data-reaction-scaled.rxn")
+rxn.layout()
+compare_diff(
+    ref_path, "sgroups/data-reaction-scaled-layout.rxn", rxn.rxnfile()
+)
+
 # Loading a pathway scales its molecules and places them in the scheme
 pathway = load_reaction("data-pathway.rdf")
 compare_diff(ref_path, "sgroups/data-pathway.rdf", rdf(pathway))
@@ -69,3 +77,8 @@ for filename in files:
 mol = load_molecule("data-distorted-copolymer.mol")
 mol.clean2d()
 compare_molfile("data-distorted-copolymer-clean2d", mol)
+
+# A clean-up of the atoms of one value leaves the other value bit for bit
+mol = load_molecule("data-distorted-copolymer.mol")
+mol.getSubmolecule([4, 5, 6, 7, 8]).clean2d()
+compare_molfile("data-distorted-copolymer-clean2d-selection", mol)
