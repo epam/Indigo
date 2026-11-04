@@ -1824,7 +1824,6 @@ void MolfileLoader::_applyComponentOrder(SGroup& sgroup, int component_order)
         sgroup.component_order = component_order;
 }
 
-static constexpr std::size_t DISPLAY_COORDINATE_WIDTH = 10; // F10.4
 static constexpr std::size_t DISPLAYED_CHARS_WIDTH = 3;
 static const char* const INVALID_DATA_FIELD_MESSAGE = "%s of Sgroup %d: '%s' %s";
 
@@ -1843,7 +1842,7 @@ static std::string readFixedField(Scanner& scanner, std::size_t width)
 static std::string readCoordinateField(Scanner& scanner)
 {
     std::string text;
-    for (std::size_t column = 0; column < DISPLAY_COORDINATE_WIDTH && !scanner.isEOF(); column++)
+    for (int column = 0; column < MOLFILE_F10_4_WIDTH && !scanner.isEOF(); column++)
     {
         if (scanner.lookNext() == ' ' && !text.empty())
             break;

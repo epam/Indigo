@@ -784,7 +784,7 @@ M  SDI   1  4    9.4100  -14.3700   10.5100  -14.3700
 M  SDI   1  4   11.0600  -14.2700   11.0600  -17.1200
 M  SAL   2  6  84  74  75  79  85  78
 M  SBL   2  5  81  70  80  79  73
-M  SDT   2 SGroup (FIELDNAME)            T SGroup Description (IQBETWEEN        
+M  SDT   2 SGroup (FIELDNAME)            T Units (FIELDINFO)   IQBETWEEN        
 M  SDD   2     4.0000    5.0000    AR    ALL  1    G  9  
 M  SED   2 Test Data S-group
 M  SAL   3  3 111 110 112

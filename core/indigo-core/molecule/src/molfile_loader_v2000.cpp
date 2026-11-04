@@ -17,6 +17,7 @@
  ***************************************************************************/
 
 #include <algorithm>
+#include <iterator>
 #include <memory>
 
 #include "../layout/molecule_layout.h"
@@ -947,7 +948,36 @@ void MolfileLoader::_readCtab2000()
                 }
                 _scanner.skipLine();
             }
-            else if (strncmp(chars, "SAL", 3) == 0 || strncmp(chars, "SBL", 3) == 0 || strncmp(chars, "SDI", 3) == 0)
+            else if (strncmp(chars, "SDI", 3) == 0)
+            {
+                // " sss nn4" and the four coordinates of a bracket
+                _scanner.skip(1);
+                const int sgroup_idx = _scanner.readIntFix(3) - 1;
+                _checkSGroupIndex(chars, sgroup_idx);
+                const int count = _scanner.readIntFix(3);
+                QS_DEF(Array<char>, rest);
+                _scanner.readLine(rest, false);
+
+                if (count == 4 && _sgroup_mapping[sgroup_idx] >= 0) // the count should always be 4
+                {
+                    BufferScanner line(rest);
+                    Vec2f* brackets = _bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]).brackets.push();
+                    float* const coordinates[] = {&brackets[0].x, &brackets[0].y, &brackets[1].x, &brackets[1].y};
+                    // four F10.4 columns; a shorter line is the free form, its numbers set apart by blanks
+                    const bool well_formatted = rest.size() >= static_cast<int>(std::size(coordinates)) * MOLFILE_F10_4_WIDTH;
+                    for (float* coordinate : coordinates)
+                    {
+                        if (well_formatted)
+                            *coordinate = line.readFloatFix(MOLFILE_F10_4_WIDTH);
+                        else
+                        {
+                            line.skipSpace();
+                            *coordinate = line.readFloat();
+                        }
+                    }
+                }
+            }
+            else if (strncmp(chars, "SAL", 3) == 0 || strncmp(chars, "SBL", 3) == 0)
             {
                 _scanner.skip(1);
                 int sgroup_idx = _scanner.readIntFix(3) - 1;
@@ -957,32 +987,14 @@ void MolfileLoader::_readCtab2000()
                     SGroup* sgroup = &_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
 
                     int n = _scanner.readIntFix(3);
-
-                    if (strncmp(chars, "SDI", 3) == 0)
+                    while (n-- > 0)
                     {
-                        if (n == 4) // should always be 4
-                        {
-                            Vec2f* brackets = sgroup->brackets.push();
-
-                            _scanner.skipSpace();
-                            brackets[0].x = _scanner.readFloat();
-                            _scanner.skipSpace();
-                            brackets[0].y = _scanner.readFloat();
-                            _scanner.skipSpace();
-                            brackets[1].x = _scanner.readFloat();
-                            _scanner.skipSpace();
-                            brackets[1].y = _scanner.readFloat();
-                        }
+                        _scanner.skip(1);
+                        if (strncmp(chars, "SAL", 3) == 0)
+                            sgroup->atoms.push(_scanner.readIntFix(3) - 1);
+                        else // SBL
+                            sgroup->getBonds().push(_scanner.readIntFix(3) - 1);
                     }
-                    else
-                        while (n-- > 0)
-                        {
-                            _scanner.skip(1);
-                            if (strncmp(chars, "SAL", 3) == 0)
-                                sgroup->atoms.push(_scanner.readIntFix(3) - 1);
-                            else // SBL
-                                sgroup->getBonds().push(_scanner.readIntFix(3) - 1);
-                        }
                 }
                 _scanner.skipLine();
             }
@@ -997,7 +1009,7 @@ void MolfileLoader::_readCtab2000()
                     DataSGroup& sgroup = (DataSGroup&)_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
 
                     // Read field name
-                    int k = 30;
+                    int k = MOLFILE_DATA_FIELD_NAME_WIDTH;
                     while (k-- > 0)
                     {
                         if (strscan.isEOF())
@@ -1016,7 +1028,7 @@ void MolfileLoader::_readCtab2000()
                     sgroup.name.push(0);
 
                     // Read field type
-                    k = 2;
+                    k = MOLFILE_DATA_FIELD_TYPE_WIDTH;
                     while (k-- > 0)
                     {
                         if (strscan.isEOF())
@@ -1026,7 +1038,7 @@ void MolfileLoader::_readCtab2000()
                     sgroup.type.push(0);
 
                     // Read field description
-                    k = 20;
+                    k = MOLFILE_DATA_FIELD_UNITS_WIDTH;
                     while (k-- > 0)
                     {
                         if (strscan.isEOF())
@@ -1044,7 +1056,7 @@ void MolfileLoader::_readCtab2000()
                     sgroup.description.push(0);
 
                     // Read query code
-                    k = 2;
+                    k = MOLFILE_DATA_QUERY_TYPE_WIDTH;
                     while (k-- > 0)
                     {
                         if (strscan.isEOF())
@@ -1061,7 +1073,7 @@ void MolfileLoader::_readCtab2000()
                     sgroup.querycode.push(0);
 
                     // Read query operator
-                    k = 20;
+                    k = MOLFILE_DATA_QUERY_OPERATOR_WIDTH;
                     while (k-- > 0)
                     {
                         if (strscan.isEOF())
@@ -1125,12 +1137,14 @@ void MolfileLoader::_readCtab2000()
                             else
                                 break;
                         }
+                        // the line the SCD lines before this SED started, cut as the format cuts a longer one
+                        int line_start = sgroup.data.size();
+                        while (line_start > 0 && sgroup.data[line_start - 1] != '\n')
+                            line_start--;
+                        if (sgroup.data.size() - line_start > MOLFILE_V2000_MAX_DATA_LINE_LENGTH)
+                            sgroup.data.resize(line_start + MOLFILE_V2000_MAX_DATA_LINE_LENGTH);
                         if (sgroup.holdsNumbers())
                         {
-                            // the line the SCD lines before this SED started
-                            int line_start = sgroup.data.size();
-                            while (line_start > 0 && sgroup.data[line_start - 1] != '\n')
-                                line_start--;
                             const std::string line(sgroup.data.ptr() + line_start, sgroup.data.size() - line_start);
                             _checkDataField(DataSGroup::isValidNumber(line.c_str()), DATA_END_LINE, sgroup_idx + 1, line.c_str(), DataSGroup::INVALID_NUMBER);
                         }

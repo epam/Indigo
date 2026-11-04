@@ -21,6 +21,7 @@
 
 #include "base_cpp/tree.h"
 #include "molecule/molecule_sgroups.h"
+#include "molecule/molfile_commons.h"
 
 #include <algorithm>
 #include <cctype>
@@ -169,9 +170,6 @@ static const FieldValue QUERY_OPERATORS[] = {{"=", "EQUAL"},          {"<>", "NO
 static constexpr int MIN_DASP_POSITION = 1;
 static constexpr int MAX_DASP_POSITION = 9;
 static constexpr int DEFAULT_DASP_POSITION = MIN_DASP_POSITION; // the first position, the default of a molfile and of KET
-// F10.4: ten columns, four of them decimals, one a sign
-static constexpr double MIN_DISPLAY_COORDINATE = -9999.9999;
-static constexpr double MAX_DISPLAY_COORDINATE = 99999.9999;
 // The four decimals of F10.4, without its width
 static const char* const DISPLAY_COORDINATE_FORMAT = "%.4f";
 // Holds any float in that format; snprintf cuts a longer double
@@ -304,7 +302,7 @@ bool DataSGroup::isValidDisplayedChars(int count)
 
 bool DataSGroup::isValidDisplayCoordinate(double coordinate)
 {
-    return coordinate >= MIN_DISPLAY_COORDINATE && coordinate <= MAX_DISPLAY_COORDINATE;
+    return molfileFitsF10_4(coordinate);
 }
 
 std::string DataSGroup::displayCoordinateText(double coordinate)

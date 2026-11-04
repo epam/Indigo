@@ -37,8 +37,7 @@ M  SDT   1 Long line                      F
 M  SDD   1     1.6224   -1.2050    DR    ALL  1       1  
 M  SCD   1 asdljkfnalsjkdnfklaj nsdfkl jnasdkjlfnakls ndfkaljsn dlkfjna slkdnakl
 M  SCD   1 snd asdf asdf as df asdf as df asd fa sdf asd fa sd fa sdf a sd f a s
-M  SCD   1  df asd fa sd fa sdf as df as df as df as df as df asd fa sd fa sd fa
-M  SED   1  sd f asd fa sd f as dfa sd f a sd fa sdf a sdf
+M  SED   1  df asd fa sd fa sdf as df as df as df as df as df asd fa sd f
 M  SAL   2  2   8   9
 M  SDT   2 Multiline                      F                                     
 M  SDD   2     1.6314   -1.1000    DR    ALL  1       1  
@@ -53,16 +52,13 @@ M  SED   3 line 1
 M  SED   3 line 2
 M  SCD   3 long long line long long line long long line long long line long long
 M  SCD   3  line long long line long long line long long line long long line lon
-M  SCD   3 g long line long long line long long line long long line long long li
-M  SED   3 ne long long line
+M  SED   3 g long line long long line long long line long long line long 
 M  SAL   4  2  15  16
 M  SDT   4 Line with spaces               F                                     
 M  SDD   4     1.6724   -0.9794    DR    ALL  1       1  
 M  SCD   4 asdfjknasdjkfn aslkjdnf alksdf                                     as
 M  SCD   4 df asdf as dfa sdf asdf                                      asdf    
-M  SCD   4              asdf                              asdf as dfa sdf       
-M  SCD   4                              asdf                                    
-M  SED   4                                                           asdf
+M  SED   4              asdf                              asdf as dfa sdf
 M  SED   4 
 M  SED   4 
 M  SED   4 asdfasd
