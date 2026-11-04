@@ -93,7 +93,9 @@ def summary(reaction):
         reaction.countReactants(),
         reaction.countProducts(),
         len([n for n in nodes if n.get("type") == "arrow"]),
-        sorted(text_content(json.loads(n)) for n in text_nodes(reaction)),
+        json.dumps(
+            sorted(text_content(json.loads(n)) for n in text_nodes(reaction))
+        ),
     )
 
 
