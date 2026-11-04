@@ -174,22 +174,96 @@ static void saveSGroupAtoms(const Array<int>& atoms, JsonWriter& writer)
     writer.EndArray();
 }
 
+// A text of a data S-group that is set; one the model keeps blank is not written
+static bool hasText(const Array<char>& text)
+{
+    return *DataSGroup::textOf(text) != 0;
+}
+
+static void saveTextIfSet(const char* key, const Array<char>& text, JsonWriter& writer)
+{
+    if (hasText(text))
+    {
+        writer.Key(key);
+        writer.String(text.ptr());
+    }
+}
+
+static void saveTag(const char* key, const DataSGroup& dsg, JsonWriter& writer)
+{
+    if (dsg.hasTag())
+    {
+        writer.Key(key);
+        writer.String(std::string{dsg.tag.value()}.c_str());
+    }
+}
+
+// dataFieldDescription of KET 2.1: fieldName and every field with a default always, by its value or the default,
+// the units and the operator when set; an enum by its name, an operator outside the names as it is
+void MoleculeJsonSaver::saveDataFieldDescription(const DataSGroup& dsg, int number, JsonWriter& writer)
+{
+    writer.Key(KetKeyDataFieldDescription);
+    writer.StartObject();
+    writer.Key(KetKeyFieldName);
+    writer.String(DataSGroup::textOf(dsg.name));
+    const auto reject = [number](const char* value, const char* reason) { throw Error(DataSGroup::REJECTED_FIELD_MESSAGE, number, value, reason); };
+    const char* type = DataSGroup::textOf(dsg.type);
+    const char* kind = DataSGroup::fieldTypeName(type);
+    if (kind == nullptr)
+        reject(type, DataSGroup::INVALID_FIELD_TYPE);
+    writer.Key(KetKeyFieldValueType);
+    writer.String(kind);
+    saveTextIfSet(KetKeyFieldUnits, dsg.description, writer);
+    const char* querycode = DataSGroup::textOf(dsg.querycode);
+    const char* query_type = DataSGroup::queryTypeName(querycode);
+    if (query_type == nullptr)
+        reject(querycode, DataSGroup::INVALID_QUERY_TYPE);
+    writer.Key(KetKeyQueryType);
+    writer.String(query_type);
+    if (hasText(dsg.queryoper))
+    {
+        const char* name = DataSGroup::queryOperatorName(dsg.queryoper.ptr());
+        writer.Key(KetKeyQueryOperator);
+        writer.String(name != nullptr ? name : dsg.queryoper.ptr());
+    }
+    writer.EndObject();
+}
+
+// dataDisplayInformation of KET 2.1: every field with a default always, the tag when set
+void MoleculeJsonSaver::saveDataDisplayInformation(const DataSGroup& dsg, const Vec2f& position, JsonWriter& writer)
+{
+    writer.Key(KetKeyDataDisplayInformation);
+    writer.StartObject();
+    writer.Key(KetKeyPosition);
+    writer.StartObject();
+    writer.Key(KetKeyX);
+    writeFloat(writer, position.x);
+    writer.Key(KetKeyY);
+    writeFloat(writer, position.y);
+    writer.EndObject();
+    writer.Key(KetKeyDisplay);
+    writer.String(dsg.detached ? KetDisplayDetached : KetDisplayAttached);
+    writer.Key(KetKeyPlacement);
+    writer.String(dsg.relative ? KetPlacementRelative : KetPlacementAbsolute);
+    writer.Key(KetKeyDisplayUnits);
+    writer.Bool(dsg.display_units);
+    writer.Key(KetKeyDisplayedChars);
+    writer.Int(dsg.displayedChars());
+    saveTag(KetKeyFieldTag, dsg, writer);
+    writer.Key(KetKeyDaspPosition);
+    writer.Int(dsg.daspPosition());
+    writer.EndObject();
+}
+
 // The KET 2.0 contract: fieldName, x and y always; any other key only away from its default, display true for attached
 // data and placement false for a relative position
 void MoleculeJsonSaver::saveDataSGroupKeysV2_0(const DataSGroup& dsg, const Vec2f& position, JsonWriter& writer)
 {
     writer.Key(KetKeyFieldNameV2_0);
-    writer.String(dsg.name.size() > 0 ? dsg.name.ptr() : "");
-    const std::pair<const char*, const Array<char>*> texts[] = {
-        {KetKeyFieldTypeV2_0, &dsg.description}, {KetKeyQueryTypeV2_0, &dsg.querycode}, {KetKeyQueryOpV2_0, &dsg.queryoper}};
-    for (const auto& [key, text] : texts)
-    {
-        if (text->size() > 0 && strlen(text->ptr()) > 0)
-        {
-            writer.Key(key);
-            writer.String(text->ptr());
-        }
-    }
+    writer.String(DataSGroup::textOf(dsg.name));
+    saveTextIfSet(KetKeyFieldTypeV2_0, dsg.description, writer);
+    saveTextIfSet(KetKeyQueryTypeV2_0, dsg.querycode, writer);
+    saveTextIfSet(KetKeyQueryOpV2_0, dsg.queryoper, writer);
 
     writer.Key(KetKeyXV2_0);
     writeFloat(writer, position.x);
@@ -206,12 +280,7 @@ void MoleculeJsonSaver::saveDataSGroupKeysV2_0(const DataSGroup& dsg, const Vec2
         writer.Bool(false);
     }
 
-    const char tag = dsg.tag.value_or(0);
-    if (tag != 0 && tag != ' ')
-    {
-        writer.Key(KetKeyTagV2_0);
-        writer.String(std::string{tag}.c_str());
-    }
+    saveTag(KetKeyTagV2_0, dsg, writer);
     const int num_chars = dsg.displayedChars();
     if (num_chars > 0)
     {
@@ -255,6 +324,12 @@ void MoleculeJsonSaver::saveSGroup(BaseMolecule& mol, const SGroupInfo& info, Js
         Vec2f position = dsg.displayPosition();
         if (dsg.relative)
             position -= mol.getDataSGroupFirstAtomToCentre(info.sgroup_idx);
+        // from KET 2.1 the two objects, and the keys of KET 2.0 with the same values until KET 3.0
+        if (ket_version >= KETVersion2_1)
+        {
+            saveDataFieldDescription(dsg, info.new_index, writer);
+            saveDataDisplayInformation(dsg, position, writer);
+        }
         saveDataSGroupKeysV2_0(dsg, position, writer);
     }
     break;
