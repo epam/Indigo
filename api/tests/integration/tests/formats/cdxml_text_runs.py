@@ -80,7 +80,7 @@ def cdx_document(texts, font_table=CDX_FONTS):
         fonts += struct.pack("<HHH", font_id, charset, len(name)) + name
     page = cdx_object(0x8001, 1, b"".join(texts))
     document = cdx_object(0x8000, 0, cdx_prop(0x0100, fonts) + page)
-    return b"VjCD0100" + struct.pack("<I", 0x01020304) + bytes(10) + document
+    return b"VjCD0100" + struct.pack("<I", 0x01020304) + b"\0" * 10 + document
 
 
 def text_content(node):
@@ -121,7 +121,7 @@ run("plus in runs with spaces", lambda: indigo.loadReaction(spaced_plus))
 # A font that is the Symbol font only by its charset.
 charset_only = CDXML_TEMPLATE % (
     '<font id="5" charset="x-mac-symbol" name="Greek"/>',
-    plus_text(24, [(3, "T = 25 "), (5, "\u00b1"), (3, " 1 K, "), (5, "D")]),
+    plus_text(24, [(3, "T = 25 "), (5, "&#177;"), (3, " 1 K, "), (5, "D")]),
 )
 run("charset x-mac-symbol", lambda: indigo.loadReaction(charset_only))
 
