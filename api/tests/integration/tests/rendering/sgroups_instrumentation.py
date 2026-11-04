@@ -251,7 +251,7 @@ compare_diff(ref_path, "all_features_mol-3000.mol", m.molfile())
 for sg in m.iterateDataSGroups():
     sg.setSGroupData("Test Data S-group")
     sg.setSGroupCoords(1.0, 1.0)
-    sg.setSGroupDescription("SGroup Description (FIELDINFO)")
+    sg.setSGroupDescription("Units (FIELDINFO)")
     sg.setSGroupFieldName("SGroup (FIELDNAME)")
     sg.setSGroupQueryCode("IQ")
     sg.setSGroupQueryOper("BETWEEN")

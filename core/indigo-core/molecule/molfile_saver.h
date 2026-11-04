@@ -124,6 +124,9 @@ namespace indigo
         void _writeGenericSGroup3000(SGroup& sgroup, const SGroupInfo& info, Output& output);
         // Throws on a field value that a molfile, V2000 or V3000 alike, does not allow; KET and the API may hold one
         static void _checkDataSGroup(const DataSGroup& datasgroup, int sgroup_number);
+        // The first thing of the molecule the columns of V2000 cannot hold, named for a message; empty when V2000
+        // holds everything. MODE_AUTO writes V3000 then, and a requested V2000 fails with it
+        static std::string _beyondV2000(BaseMolecule& mol);
         void _writeDataSGroupDisplay(DataSGroup& datasgroup, Output& out);
         void _writeFormattedString(Output& output, Array<char>& str, int length);
         static bool _checkAttPointOrder(BaseMolecule& mol, int rsite);

@@ -19,8 +19,6 @@ multiline-sgroups-ketcher-457-v2000-3000.mol:SUCCEED
 multiline-sgroups-ketcher-457-v2000-3000.mol reload:SUCCEED
 multiline-sgroups-ketcher-457-v3000-auto.mol:SUCCEED
 multiline-sgroups-ketcher-457-v3000-auto.mol reload:SUCCEED
-multiline-sgroups-ketcher-457-v3000-2000.mol:SUCCEED
-multiline-sgroups-ketcher-457-v3000-2000.mol reload:SUCCEED
 multiline-sgroups-ketcher-457-v3000-3000.mol:SUCCEED
 multiline-sgroups-ketcher-457-v3000-3000.mol reload:SUCCEED
 v2000-data-query-operators-2000.mol:SUCCEED
@@ -96,3 +94,28 @@ sgroup/v3000-default-without-value.mol: molfile loader: DEFAULT entry: expected 
 sgroup/v3000-fielddisp-character-count-negative.mol: molfile loader: FIELDDISP of Sgroup 1: '-5' is not a valid number of characters to display
 sgroup/v3000-querytype-unknown.mol: molfile loader: QUERYTYPE of Sgroup 1: 'Q' is not a valid query type
 sgroup/v3000-queryop-unknown.mol: molfile loader: QUERYOP of Sgroup 1: 'QBETWEEN' is not a valid query operator
+*** What V2000 cannot hold: auto writes V3000, a requested V2000 fails ***
+v2000-beyond-field-name-auto.mol:SUCCEED
+v2000-beyond-units-auto.mol:SUCCEED
+v2000-beyond-data-line-auto.mol:SUCCEED
+v2000-beyond-atom-coordinate-auto.mol:SUCCEED
+v3000-beyond-bracket-coordinate-auto.mol:SUCCEED
+multiline-sgroups-ketcher-457-v3000 as V2000: molfile saver: V2000 cannot hold a line of the data of data S-group 1, longer than 200 characters
+v2000-beyond-field-name as V2000: molfile saver: V2000 cannot hold the field name 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN' of data S-group 1, longer than 30 characters
+v2000-beyond-units as V2000: molfile saver: V2000 cannot hold the units 'UUUUUUUUUUUUUUUUUUUUU' of data S-group 1, longer than 20 characters
+v2000-beyond-data-line as V2000: molfile saver: V2000 cannot hold a line of the data of data S-group 1, longer than 200 characters
+v2000-beyond-atom-coordinate as V2000: molfile saver: V2000 cannot hold the coordinate 100000.0000 of atom 2, outside the ten columns of a coordinate
+v3000-beyond-bracket-coordinate as V2000: molfile saver: V2000 cannot hold the bracket coordinate -100000.0000 of S-group 1, outside the ten columns of a coordinate
+*** At the limits of V2000: auto stays V2000, and it reads back ***
+v2000-at-limits-auto.mol:SUCCEED
+v2000-at-limits-auto.mol:SUCCEED
+v3000-bracket-at-limits-auto.mol:SUCCEED
+v3000-bracket-at-limits-auto.mol:SUCCEED
+*** More S-groups than V2000 numbers ***
+999 data S-groups in auto mode: V2000, 999 read back
+999 data S-groups as V2000: written
+1000 data S-groups in auto mode: V3000, 1000 read back
+1000 data S-groups as V2000: molfile saver: V2000 cannot hold 1000 S-groups, more than the 999 their numbers reach
+*** A data line longer than 200 characters is cut when read ***
+v2000-sed-line-of-210-characters: 200 characters read
+v2000-sed-line-of-210-characters-2000.mol:SUCCEED

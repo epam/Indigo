@@ -245,20 +245,20 @@ void MolfileSaver::_saveMolecule(BaseMolecule& bmol, bool query)
             component_order_needs_v3000 = true;
     }
 
-    if (mode == MODE_2000)
-    {
-        _v2000 = true;
-    }
-    else if (mode == MODE_3000)
+    if (mode == MODE_3000)
     {
         _v2000 = false;
     }
     else
     {
+        const std::string beyond_v2000 = _beyondV2000(*pmol);
+        if (mode == MODE_2000 && !beyond_v2000.empty())
+            throw Error("V2000 cannot hold %s", beyond_v2000.c_str());
         // auto-detect the format: save to v3000 molfile only
         // if v2000 is not enough
-        _v2000 = !(pmol->hasHighlighting() || pmol->stereocenters.haveEnhancedStereocenter() ||
-                   (pmol->vertexCount() > 999 || pmol->edgeCount() > 999 || pmol->tgroups.getTGroupCount()) || has_dat_xbonds || component_order_needs_v3000);
+        _v2000 = mode == MODE_2000 || (beyond_v2000.empty() && !(pmol->hasHighlighting() || pmol->stereocenters.haveEnhancedStereocenter() ||
+                                                                 (pmol->vertexCount() > 999 || pmol->edgeCount() > 999 || pmol->tgroups.getTGroupCount()) ||
+                                                                 has_dat_xbonds || component_order_needs_v3000));
     }
 
     if (mol->tgroups.getTGroupCount() && mol->convertTemplateAtomsToSuperatoms(!_v2000))
@@ -1979,11 +1979,11 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
 
                 output.printf("M  SDT %3d ", wi);
 
-                _writeFormattedString(output, datasgroup.name, 30);
-                _writeFormattedString(output, datasgroup.type, 2);
-                _writeFormattedString(output, datasgroup.description, 20);
-                _writeFormattedString(output, datasgroup.querycode, 2);
-                _writeFormattedString(output, datasgroup.queryoper, 15);
+                _writeFormattedString(output, datasgroup.name, MOLFILE_DATA_FIELD_NAME_WIDTH);
+                _writeFormattedString(output, datasgroup.type, MOLFILE_DATA_FIELD_TYPE_WIDTH);
+                _writeFormattedString(output, datasgroup.description, MOLFILE_DATA_FIELD_UNITS_WIDTH);
+                _writeFormattedString(output, datasgroup.querycode, MOLFILE_DATA_QUERY_TYPE_WIDTH);
+                _writeFormattedString(output, datasgroup.queryoper, MOLFILE_DATA_QUERY_OPERATOR_WIDTH);
 
                 output.writeCR();
 
@@ -2035,7 +2035,7 @@ void MolfileSaver::_writeCtab2000(Output& output, BaseMolecule& mol, bool query)
             {
                 if (sgroup.isZeroLengthBracket(j))
                     continue;
-                output.printf("M  SDI %3d  4 %9.4f %9.4f %9.4f %9.4f\n", wi, sgroup.brackets[j][0].x, sgroup.brackets[j][0].y, sgroup.brackets[j][1].x,
+                output.printf("M  SDI %3d  4%10.4f%10.4f%10.4f%10.4f\n", wi, sgroup.brackets[j][0].x, sgroup.brackets[j][0].y, sgroup.brackets[j][1].x,
                               sgroup.brackets[j][1].y);
             }
             const int brk_style = sgroup.brk_style.value_or(0);
@@ -2207,13 +2207,64 @@ void MolfileSaver::_checkDataSGroup(const DataSGroup& datasgroup, int sgroup_num
     }
 }
 
+std::string MolfileSaver::_beyondV2000(BaseMolecule& mol)
+{
+    static const char* const OUTSIDE_F10_4 = ", outside the ten columns of a coordinate";
+    const int sgroup_count = mol.sgroups.getSGroupCount();
+    if (sgroup_count > MOLFILE_V2000_MAX_SGROUP_COUNT)
+        return std::to_string(sgroup_count) + " S-groups, more than the " + std::to_string(MOLFILE_V2000_MAX_SGROUP_COUNT) + " their numbers reach";
+    int atom_number = 0;
+    for (int i = mol.vertexBegin(); i != mol.vertexEnd(); i = mol.vertexNext(i))
+    {
+        ++atom_number;
+        const Vec3f& pos = mol.getAtomXyz(i);
+        for (const float coordinate : {pos.x, pos.y, pos.z})
+            if (!molfileFitsF10_4(coordinate))
+                return "the coordinate " + DataSGroup::displayCoordinateText(coordinate) + " of atom " + std::to_string(atom_number) + OUTSIDE_F10_4;
+    }
+    for (const SGroupInfo& info : mol.sgroups.getOrderedSGroups())
+    {
+        const std::string sgroup_name = "S-group " + std::to_string(info.new_index);
+        for (int j = 0; j < info.sgroup.brackets.size(); j++)
+        {
+            if (info.sgroup.isZeroLengthBracket(j))
+                continue;
+            for (const Vec2f& end : info.sgroup.brackets[j])
+                for (const float coordinate : {end.x, end.y})
+                    if (!molfileFitsF10_4(coordinate))
+                        return "the bracket coordinate " + DataSGroup::displayCoordinateText(coordinate) + " of " + sgroup_name + OUTSIDE_F10_4;
+        }
+        if (info.sgroup.sgroup_type != SGroup::SG_TYPE_DAT)
+            continue;
+        const DataSGroup& dsg = static_cast<const DataSGroup&>(info.sgroup);
+        const auto longer_than = [&](const std::string& what, int width) {
+            return what + " of data " + sgroup_name + ", longer than " + std::to_string(width) + " characters";
+        };
+        const char* name = DataSGroup::textOf(dsg.name);
+        if (std::strlen(name) > MOLFILE_DATA_FIELD_NAME_WIDTH)
+            return longer_than("the field name '" + std::string(name) + "'", MOLFILE_DATA_FIELD_NAME_WIDTH);
+        const char* units = DataSGroup::textOf(dsg.description);
+        if (std::strlen(units) > MOLFILE_DATA_FIELD_UNITS_WIDTH)
+            return longer_than("the units '" + std::string(units) + "'", MOLFILE_DATA_FIELD_UNITS_WIDTH);
+        for (const char* line = DataSGroup::textOf(dsg.data); *line != 0;)
+        {
+            const char* line_end = std::strchr(line, '\n');
+            const std::size_t length = line_end != nullptr ? line_end - line : std::strlen(line);
+            if (length > MOLFILE_V2000_MAX_DATA_LINE_LENGTH)
+                return longer_than("a line of the data", MOLFILE_V2000_MAX_DATA_LINE_LENGTH);
+            line += length + (line_end != nullptr ? 1 : 0);
+        }
+    }
+    return "";
+}
+
 void MolfileSaver::_writeDataSGroupDisplay(DataSGroup& datasgroup, Output& out)
 {
     const Vec2f position = datasgroup.displayPosition();
     out.printf("%10.4f%10.4f    %c%c%c", position.x, position.y, datasgroup.detached ? 'D' : 'A', datasgroup.relative ? 'R' : 'A',
                datasgroup.display_units ? 'U' : ' ');
     const int num_chars = datasgroup.displayedChars();
-    const char tag = datasgroup.tag.value_or(0);
+    const char tag = datasgroup.hasTag() ? datasgroup.tag.value() : ' ';
     const int dasp_pos = datasgroup.daspPosition();
     if (num_chars == 0)
         out.printf("   %3s  1    %c  %1d  ", MOLFILE_DATA_ALL_CHARACTERS, tag, dasp_pos);
