@@ -106,7 +106,10 @@ namespace indigo
         // parent; NO_KET_ID writes no key
         static constexpr int NO_KET_ID = 0;
         void saveSGroup(BaseMolecule& mol, const SGroupInfo& info, JsonWriter& writer, int id);
-        // position: the point of the value as KET counts it
+        // position: the point of the value as KET counts it. The objects are written from KET 2.1, the keys of KET
+        // 2.0 with the same values until KET 3.0; number, counted from 1 as in a molfile, names the group in a refusal
+        void saveDataFieldDescription(const DataSGroup& dsg, int number, JsonWriter& writer);
+        void saveDataDisplayInformation(const DataSGroup& dsg, const Vec2f& position, JsonWriter& writer);
         void saveDataSGroupKeysV2_0(const DataSGroup& dsg, const Vec2f& position, JsonWriter& writer);
 
         void saveAttachmentPoint(BaseMolecule& mol, int atom_idx, JsonWriter& writer);

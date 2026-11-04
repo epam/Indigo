@@ -214,7 +214,11 @@ namespace indigo
             return display_pos.value_or(Vec2f(0, 0));
         }
         Nullable<int> dasp_pos;
-        Nullable<char> tag; // tag
+        int daspPosition() const; // the first of the nine positions when none is set
+        Nullable<char> tag;       // tag
+        bool hasTag() const;      // a blank tag is none
+        // The C string of a text of the group, empty for one that is not set: a cleared Array keeps its old buffer
+        static const char* textOf(const Array<char>& text);
         static constexpr char mrv_implicit_h[] = "MRV_IMPLICIT_H";
         static constexpr char impl_prefix[] = "IMPL_H";
         static constexpr size_t impl_prefix_len = sizeof(impl_prefix) - 1;
@@ -230,6 +234,16 @@ namespace indigo
         static constexpr const char* INVALID_QUERY_TYPE = "is not a valid query type";
         static bool isValidQueryOperator(const char* text); // =, <>, <, <=, >, >=, BETWEEN, CONTAINS or LIKE, any case
         static constexpr const char* INVALID_QUERY_OPERATOR = "is not a valid query operator";
+        // The same values by the names KET gives them: the text of a molfile, trimmed, to its name, and a name, spelled
+        // exactly, to the text the model keeps. nullptr for a text or a name outside the format; a blank type is TEXT
+        // and a blank query type is DATA, while a blank operator has no name
+        static const char* fieldTypeName(const char* text);     // FORMATTED, NUMERIC or TEXT
+        static const char* fieldTypeText(const char* name);     // F, N or T
+        static const char* queryTypeName(const char* text);     // DATA or QUERY
+        static const char* queryTypeText(const char* name);     // blank or IQ
+        static const char* queryOperatorName(const char* text); // EQUAL, NOT_EQUAL, LESS, LESS_OR_EQUAL, GREATER,
+                                                                // GREATER_OR_EQUAL, BETWEEN, CONTAINS or LIKE
+        static const char* queryOperatorText(const char* name);
         static constexpr int MAX_DISPLAYED_CHARS = 999; // three columns of M  SDD
         static bool isValidDisplayedChars(int count);   // 0 for all of them (ALL in a molfile), 1 to MAX_DISPLAYED_CHARS
         static constexpr const char* INVALID_DISPLAYED_CHARS = "is not a valid number of characters to display";
@@ -243,6 +257,8 @@ namespace indigo
         static constexpr const char* INVALID_DASP_POSITION = "is not a valid DASP position";
         static bool isValidNumber(const char* text);
         static constexpr const char* INVALID_NUMBER = "is not a valid numeric value";
+        // A writer's refusal of a value: the number of the group, the value, the reason
+        static constexpr const char* REJECTED_FIELD_MESSAGE = "data S-group %d: '%s' %s";
         // A NUMERIC field holding data rather than a query: each of its lines must be a number
         bool holdsNumbers() const;
 

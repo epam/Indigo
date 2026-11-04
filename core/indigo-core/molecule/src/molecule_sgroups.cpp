@@ -26,6 +26,7 @@
 #include <cctype>
 #include <cstdio>
 #include <cstring>
+#include <functional>
 #include <iterator>
 #include <string_view>
 #include <typeindex>
@@ -151,12 +152,23 @@ void DataSGroup::setMrv_implicit(int atom_idx, int hydrogens_count)
     detached = true;
 }
 
-static const char* const FIELD_TYPES[] = {"F", "N", "T"};
-static const char* const NUMERIC_FIELD_TYPE = "N";
-static const char* const QUERY_TYPE_QUERY = "IQ";
-static const char* const QUERY_OPERATORS[] = {"=", "<>", "<", "<=", ">", ">=", "BETWEEN", "CONTAINS", "LIKE"};
+// A value of a field of a data S-group: the text of a molfile, which the model keeps, and its name in KET
+struct FieldValue
+{
+    const char* text;
+    const char* name;
+};
+static const FieldValue FIELD_TYPES[] = {{"F", "FORMATTED"}, {"N", "NUMERIC"}, {"T", "TEXT"}};
+static const FieldValue& NUMERIC_FIELD_TYPE = FIELD_TYPES[1];
+static const FieldValue& TEXT_FIELD_TYPE = FIELD_TYPES[2];               // what a blank type means
+static const FieldValue QUERY_TYPES[] = {{"", "DATA"}, {"IQ", "QUERY"}}; // a blank query type: the field holds data
+static const FieldValue& QUERY_TYPE_QUERY = QUERY_TYPES[1];
+static const FieldValue QUERY_OPERATORS[] = {{"=", "EQUAL"},          {"<>", "NOT_EQUAL"},      {"<", "LESS"},
+                                             {"<=", "LESS_OR_EQUAL"}, {">", "GREATER"},         {">=", "GREATER_OR_EQUAL"},
+                                             {"BETWEEN", "BETWEEN"},  {"CONTAINS", "CONTAINS"}, {"LIKE", "LIKE"}};
 static constexpr int MIN_DASP_POSITION = 1;
 static constexpr int MAX_DASP_POSITION = 9;
+static constexpr int DEFAULT_DASP_POSITION = MIN_DASP_POSITION; // the first position, the default of a molfile and of KET
 // F10.4: ten columns, four of them decimals, one a sign
 static constexpr double MIN_DISPLAY_COORDINATE = -9999.9999;
 static constexpr double MAX_DISPLAY_COORDINATE = 99999.9999;
@@ -180,23 +192,109 @@ static bool equalsIgnoringCase(std::string_view lhs, std::string_view rhs)
            std::equal(lhs.begin(), lhs.end(), rhs.begin(), [](char l, char r) { return std::toupper((unsigned char)l) == std::toupper((unsigned char)r); });
 }
 
+// The value spelled by the text once trimmed, compared as the field compares its texts; nullptr for any other text
+template <std::size_t N, typename Equals>
+static const FieldValue* valueByText(const FieldValue (&values)[N], const char* text, Equals equals)
+{
+    const std::string_view spelled = trimmedText(text);
+    const auto found = std::find_if(std::begin(values), std::end(values), [&](const FieldValue& value) { return equals(spelled, value.text); });
+    return found != std::end(values) ? found : nullptr;
+}
+
+// The value of the name, spelled exactly; nullptr for any other name
+template <std::size_t N>
+static const FieldValue* valueByName(const FieldValue (&values)[N], const char* name)
+{
+    if (name == nullptr)
+        return nullptr;
+    const auto found = std::find_if(std::begin(values), std::end(values), [&](const FieldValue& value) { return std::strcmp(value.name, name) == 0; });
+    return found != std::end(values) ? found : nullptr;
+}
+
+static const FieldValue* fieldTypeValue(const char* text)
+{
+    return trimmedText(text).empty() ? &TEXT_FIELD_TYPE : valueByText(FIELD_TYPES, text, std::equal_to<std::string_view>());
+}
+
+static const FieldValue* queryTypeValue(const char* text)
+{
+    return valueByText(QUERY_TYPES, text, std::equal_to<std::string_view>());
+}
+
+static const FieldValue* queryOperatorValue(const char* text)
+{
+    return valueByText(QUERY_OPERATORS, text, equalsIgnoringCase);
+}
+
+static const char* valueName(const FieldValue* value)
+{
+    return value != nullptr ? value->name : nullptr;
+}
+
+static const char* valueText(const FieldValue* value)
+{
+    return value != nullptr ? value->text : nullptr;
+}
+
 bool DataSGroup::isValidFieldType(const char* text)
 {
-    const std::string_view value = trimmedText(text);
-    return value.empty() || std::any_of(std::begin(FIELD_TYPES), std::end(FIELD_TYPES), [&](const char* type) { return value == type; });
+    return fieldTypeValue(text) != nullptr;
 }
 
 bool DataSGroup::isValidQueryType(const char* text)
 {
-    const std::string_view value = trimmedText(text);
-    return value.empty() || value == QUERY_TYPE_QUERY;
+    return queryTypeValue(text) != nullptr;
 }
 
 bool DataSGroup::isValidQueryOperator(const char* text)
 {
-    const std::string_view value = trimmedText(text);
-    return value.empty() || std::any_of(std::begin(QUERY_OPERATORS), std::end(QUERY_OPERATORS),
-                                        [&](const char* query_operator) { return equalsIgnoringCase(value, query_operator); });
+    return trimmedText(text).empty() || queryOperatorValue(text) != nullptr;
+}
+
+const char* DataSGroup::fieldTypeName(const char* text)
+{
+    return valueName(fieldTypeValue(text));
+}
+
+const char* DataSGroup::fieldTypeText(const char* name)
+{
+    return valueText(valueByName(FIELD_TYPES, name));
+}
+
+const char* DataSGroup::queryTypeName(const char* text)
+{
+    return valueName(queryTypeValue(text));
+}
+
+const char* DataSGroup::queryTypeText(const char* name)
+{
+    return valueText(valueByName(QUERY_TYPES, name));
+}
+
+const char* DataSGroup::queryOperatorName(const char* text)
+{
+    return valueName(queryOperatorValue(text));
+}
+
+const char* DataSGroup::queryOperatorText(const char* name)
+{
+    return valueText(valueByName(QUERY_OPERATORS, name));
+}
+
+int DataSGroup::daspPosition() const
+{
+    return dasp_pos.value_or(DEFAULT_DASP_POSITION);
+}
+
+bool DataSGroup::hasTag() const
+{
+    const char character = tag.value_or(' ');
+    return character != 0 && character != ' ';
+}
+
+const char* DataSGroup::textOf(const Array<char>& text)
+{
+    return text.size() > 0 ? text.ptr() : "";
 }
 
 bool DataSGroup::isValidDisplayedChars(int count)
@@ -263,8 +361,7 @@ bool DataSGroup::isValidNumber(const char* text)
 
 bool DataSGroup::holdsNumbers() const
 {
-    return trimmedText(type.size() ? type.ptr() : nullptr) == NUMERIC_FIELD_TYPE &&
-           trimmedText(querycode.size() ? querycode.ptr() : nullptr) != QUERY_TYPE_QUERY;
+    return fieldTypeValue(textOf(type)) == &NUMERIC_FIELD_TYPE && queryTypeValue(textOf(querycode)) != &QUERY_TYPE_QUERY;
 }
 
 Superatom::Superatom()
@@ -341,7 +438,7 @@ void DataSGroup::_reset()
     detached = false;
     relative = false;
     display_units = false;
-    dasp_pos = 1;
+    dasp_pos = DEFAULT_DASP_POSITION;
     num_chars = 0;
     tag = ' ';
     cbonds.clear();

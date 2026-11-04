@@ -121,10 +121,6 @@ static const int PROPERTY_LINE_ENTRIES = 8;
 // An entry of such a line that pairs two three-character numbers: " sss vvv".
 static const char* const NUMBER_PAIR_ENTRY_FORMAT = " %3d %3d";
 
-// "data S-group 1: 'QBETWEEN' is not a valid query operator": the number the S-group gets in the file, the value and
-// the reason declared by DataSGroup.
-static const char* const INVALID_DATA_SGROUP_FIELD_MESSAGE = "data S-group %d: '%s' %s";
-
 // Writes entry_count entries as "M  <tag>nn8 ..." lines; write_entry(n) prints the n-th entry.
 template <typename EntryWriter>
 static void _writePropertyEntryLines(Output& output, const char* tag, int entry_count, EntryWriter write_entry)
@@ -2189,14 +2185,17 @@ bool MolfileSaver::_checkAttPointOrder(BaseMolecule& mol, int rsite)
 void MolfileSaver::_checkDataSGroup(const DataSGroup& datasgroup, int sgroup_number)
 {
     const auto reject = [sgroup_number](const char* value, const char* reason) {
-        throw Error(INVALID_DATA_SGROUP_FIELD_MESSAGE, sgroup_number, value, reason);
+        throw Error(DataSGroup::REJECTED_FIELD_MESSAGE, sgroup_number, value, reason);
     };
-    if (!DataSGroup::isValidFieldType(datasgroup.type.ptr()))
-        reject(datasgroup.type.ptr(), DataSGroup::INVALID_FIELD_TYPE);
-    if (!DataSGroup::isValidQueryType(datasgroup.querycode.ptr()))
-        reject(datasgroup.querycode.ptr(), DataSGroup::INVALID_QUERY_TYPE);
-    if (!DataSGroup::isValidQueryOperator(datasgroup.queryoper.ptr()))
-        reject(datasgroup.queryoper.ptr(), DataSGroup::INVALID_QUERY_OPERATOR);
+    const char* type = DataSGroup::textOf(datasgroup.type);
+    if (!DataSGroup::isValidFieldType(type))
+        reject(type, DataSGroup::INVALID_FIELD_TYPE);
+    const char* querycode = DataSGroup::textOf(datasgroup.querycode);
+    if (!DataSGroup::isValidQueryType(querycode))
+        reject(querycode, DataSGroup::INVALID_QUERY_TYPE);
+    const char* queryoper = DataSGroup::textOf(datasgroup.queryoper);
+    if (!DataSGroup::isValidQueryOperator(queryoper))
+        reject(queryoper, DataSGroup::INVALID_QUERY_OPERATOR);
     const int num_chars = datasgroup.displayedChars();
     if (!DataSGroup::isValidDisplayedChars(num_chars))
         reject(std::to_string(num_chars).c_str(), DataSGroup::INVALID_DISPLAYED_CHARS);
@@ -2215,7 +2214,7 @@ void MolfileSaver::_writeDataSGroupDisplay(DataSGroup& datasgroup, Output& out)
                datasgroup.display_units ? 'U' : ' ');
     const int num_chars = datasgroup.displayedChars();
     const char tag = datasgroup.tag.value_or(0);
-    const int dasp_pos = datasgroup.dasp_pos.value_or(0);
+    const int dasp_pos = datasgroup.daspPosition();
     if (num_chars == 0)
         out.printf("   %3s  1    %c  %1d  ", MOLFILE_DATA_ALL_CHARACTERS, tag, dasp_pos);
     else

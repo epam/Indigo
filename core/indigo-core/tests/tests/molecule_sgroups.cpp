@@ -719,3 +719,82 @@ TEST(DataSGroupContext, CloneAndMergeKeepIt)
     merged.mergeWithMolecule(source, nullptr);
     EXPECT_EQ(fragment, dataContexts(merged));
 }
+
+// ---- the names KET gives the values of the fields of data -------------------
+
+TEST(DataSGroupFieldValues, EachMolfileTextHasANameAndBack)
+{
+    const std::pair<const char*, const char*> field_types[] = {{"F", "FORMATTED"}, {"N", "NUMERIC"}, {"T", "TEXT"}};
+    for (const auto& [text, name] : field_types)
+    {
+        EXPECT_STREQ(name, DataSGroup::fieldTypeName(text));
+        EXPECT_STREQ(text, DataSGroup::fieldTypeText(name));
+    }
+    EXPECT_STREQ("QUERY", DataSGroup::queryTypeName("IQ"));
+    EXPECT_STREQ("IQ", DataSGroup::queryTypeText("QUERY"));
+    const std::pair<const char*, const char*> query_operators[] = {{"=", "EQUAL"},          {"<>", "NOT_EQUAL"},      {"<", "LESS"},
+                                                                   {"<=", "LESS_OR_EQUAL"}, {">", "GREATER"},         {">=", "GREATER_OR_EQUAL"},
+                                                                   {"BETWEEN", "BETWEEN"},  {"CONTAINS", "CONTAINS"}, {"LIKE", "LIKE"}};
+    for (const auto& [text, name] : query_operators)
+    {
+        EXPECT_STREQ(name, DataSGroup::queryOperatorName(text));
+        EXPECT_STREQ(text, DataSGroup::queryOperatorText(name));
+    }
+}
+
+TEST(DataSGroupFieldValues, ABlankTypeIsTextAndABlankQueryTypeIsData)
+{
+    for (const char* blank : {"", "  ", static_cast<const char*>(nullptr)})
+    {
+        EXPECT_STREQ("TEXT", DataSGroup::fieldTypeName(blank));
+        EXPECT_STREQ("DATA", DataSGroup::queryTypeName(blank));
+        EXPECT_EQ(nullptr, DataSGroup::queryOperatorName(blank));
+    }
+    EXPECT_STREQ("", DataSGroup::queryTypeText("DATA"));
+}
+
+TEST(DataSGroupFieldValues, TextsAreTrimmedAndOnlyOperatorsIgnoreCase)
+{
+    EXPECT_STREQ("FORMATTED", DataSGroup::fieldTypeName(" F"));
+    EXPECT_EQ(nullptr, DataSGroup::fieldTypeName("f"));
+    EXPECT_STREQ("QUERY", DataSGroup::queryTypeName("IQ "));
+    EXPECT_EQ(nullptr, DataSGroup::queryTypeName("iq"));
+    EXPECT_STREQ("BETWEEN", DataSGroup::queryOperatorName(" between"));
+}
+
+TEST(DataSGroupFieldValues, NothingOutsideTheFormatHasANameOrAText)
+{
+    EXPECT_EQ(nullptr, DataSGroup::fieldTypeName("X"));
+    EXPECT_EQ(nullptr, DataSGroup::fieldTypeText("Formatted"));
+    EXPECT_EQ(nullptr, DataSGroup::fieldTypeText("T "));
+    EXPECT_EQ(nullptr, DataSGroup::fieldTypeText(nullptr));
+    EXPECT_EQ(nullptr, DataSGroup::queryTypeName(" I"));
+    EXPECT_EQ(nullptr, DataSGroup::queryTypeText("IQ"));
+    EXPECT_EQ(nullptr, DataSGroup::queryOperatorName("QBETWEEN"));
+    EXPECT_EQ(nullptr, DataSGroup::queryOperatorText("NOT_LIKE"));
+    EXPECT_EQ(nullptr, DataSGroup::queryOperatorText("="));
+}
+
+TEST(DataSGroupFieldValues, DisplayDefaultsAndTheTag)
+{
+    DataSGroup data;
+    EXPECT_EQ(1, data.daspPosition());
+    EXPECT_FALSE(data.hasTag());
+    data.tag = 'a';
+    EXPECT_TRUE(data.hasTag());
+    data.tag = ' ';
+    EXPECT_FALSE(data.hasTag());
+    data.dasp_pos.reset();
+    EXPECT_EQ(1, data.daspPosition());
+}
+
+TEST(DataSGroupFieldValues, TextOfAClearedArrayIsEmpty)
+{
+    Array<char> text;
+    EXPECT_STREQ("", DataSGroup::textOf(text));
+    text.readString("IQ", true);
+    EXPECT_STREQ("IQ", DataSGroup::textOf(text));
+    text.clear();
+    // the buffer keeps its old bytes; the text is still none
+    EXPECT_STREQ("", DataSGroup::textOf(text));
+}
