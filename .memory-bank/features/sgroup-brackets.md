@@ -2,7 +2,8 @@
 
 > **Read when:** a ticket is about where the brackets of a repeating unit, copolymer, component, mixture or
 > formulation stand, or when they appear or move.
-> **Skip when:** the question is about superatoms, multiple groups or data S-groups.
+> **Skip when:** the question is about superatoms, multiple groups or data S-groups (those are
+> [sgroup-data-values.md](./sgroup-data-values.md)).
 
 Verified on `1e15006f7`. Ticket #3974, under the polymer epic #3971.
 

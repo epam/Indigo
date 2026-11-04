@@ -856,6 +856,15 @@ int MoleculeSGroups::findSGroupById(int id)
     return -1;
 }
 
+int MoleculeSGroups::findParent(const SGroup& sgroup)
+{
+    const int parent_idx = sgroup.parent_idx.value_or(-1);
+    if (parent_idx >= 0 && hasSGroup(parent_idx))
+        return parent_idx;
+    const int id = sgroup.parent_group.value_or(0);
+    return id > 0 ? findSGroupById(id) : -1;
+}
+
 bool MoleculeSGroups::_cmpIndices(Array<int>& t_inds, Array<int>& q_inds)
 {
     for (int i = 0; i < q_inds.size(); i++)

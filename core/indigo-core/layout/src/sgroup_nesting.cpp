@@ -85,12 +85,7 @@ int SGroupNesting::_findParent(int sgroup_idx) const
     std::vector<int> atoms(sgroup.atoms.begin(), sgroup.atoms.end());
     std::sort(atoms.begin(), atoms.end());
 
-    int parent = sgroup.parent_idx.value_or(-1);
-    if (parent < 0 || !sgroups.hasSGroup(parent))
-    {
-        const int id = sgroup.parent_group.value_or(0);
-        parent = id > 0 ? sgroups.findSGroupById(id) : -1;
-    }
+    const int parent = sgroups.findParent(sgroup);
     if (parent >= 0 && parent != sgroup_idx && isBracketed(sgroups.getSGroup(parent).sgroup_type) && _contains(parent, atoms))
         return parent;
 

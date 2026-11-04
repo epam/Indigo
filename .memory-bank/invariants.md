@@ -104,16 +104,21 @@ at the last bracket (`core/render2d/src/render_internal.cpp#_positionIndex`). A 
 draws its hooks outwards and its label at the left bracket; nothing fails. The one place that
 writes a pair is `core/indigo-core/layout/src/sgroup_bracket_layout.cpp#_setBrackets`.
 
-**A13 — Whatever moves the atoms of a molecule moves its S-group brackets with them.**
-Brackets are coordinates stored on the group; nothing ties them to the atoms. A rigid move or a scale goes
-through `BaseMolecule::offsetCoordinates`, `BaseMolecule::scale` or `Metalayout::adjustMol`, which carry the
-brackets along (`core/indigo-core/molecule/molecule_sgroups.h#transformPositions`); a layout that moves atoms
-one by one constructs `SGroupBracketLayout` before the move and calls `update()` after it
-(`core/indigo-core/layout/sgroup_bracket_layout.h#void update()`), which places the brackets of the groups whose
-atoms moved anew; the reaction and pathway layouts do both, since their scale changes the margins. A mover that
-does neither leaves the brackets where the atoms were, and only a drawing shows it. Known gaps: `update()` places only the bracketed types (SRU, COP, COM, MIX, FOR), so `layout()` and
-`clean2d()` leave the brackets of a generic group or a superatom where its atoms were; and `indigoAlignAtoms`,
-the centering of the standardizer and the unfolding of hydrogens move atoms without either call.
+**A13 — Whatever moves the atoms of a molecule moves its S-group brackets and data values with them.**
+Brackets and the stored position of a data value are coordinates on the group; nothing ties them to the atoms.
+A rigid move or a scale goes through `BaseMolecule::offsetCoordinates`, `BaseMolecule::scale` or
+`Metalayout::adjustMol`, which carry both along (`core/indigo-core/molecule/molecule_sgroups.h#transformPositions`):
+an absolute value as a point, a relative one as an offset that scales but does not shift. A layout that moves
+atoms one by one constructs `SGroupBracketLayout` and `SGroupDataLayout` before the move and calls their `update()`
+after it (`core/indigo-core/layout/sgroup_bracket_layout.h#void update()`,
+`core/indigo-core/layout/sgroup_data_layout.h#void update()`): the first places the brackets of the groups whose
+atoms moved anew, the second turns and shifts each value the way its atoms moved. The reaction and pathway layouts
+also construct `SGroupBracketLayout`, since their scale changes the margins, but not `SGroupDataLayout`: its fit has
+no scale and would undo the one the rigid move gave the values. A mover that does neither leaves brackets and values
+where the atoms were, and only a drawing shows it. Known gaps: `update()` places only the bracketed types (SRU, COP,
+COM, MIX, FOR), so `layout()` and `clean2d()` leave the brackets of a generic group or a superatom where its atoms
+were; and `indigoAlignAtoms`, the centering of the standardizer and the unfolding of hydrogens move atoms without
+either call.
 
 **A14 — A zero-length bracket is a placeholder, not a bracket.**
 The KET loader writes a `(0,0)-(0,0)` pair for every group, because the format carries no bracket coordinates,

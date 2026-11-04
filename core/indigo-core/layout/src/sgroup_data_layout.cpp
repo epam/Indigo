@@ -45,26 +45,24 @@ void SGroupDataLayout::update()
 {
     for (const auto& [sgroup_idx, initial] : _initialValuePositions)
     {
-        const SGroup* reference = _referenceGroup(sgroup_idx);
+        DataSGroup& sgroup = static_cast<DataSGroup&>(_molecule.sgroups.getSGroup(sgroup_idx));
+        const SGroup* reference = _referenceGroup(sgroup);
         if (reference == nullptr || !_hasMoved(*reference))
             continue;
-        _place(static_cast<DataSGroup&>(_molecule.sgroups.getSGroup(sgroup_idx)), initial, *reference);
+        _place(sgroup, initial, *reference);
     }
 }
 
-const SGroup* SGroupDataLayout::_referenceGroup(int sgroup_idx) const
+const SGroup* SGroupDataLayout::_referenceGroup(const DataSGroup& sgroup) const
 {
-    MoleculeSGroups& sgroups = _molecule.sgroups;
-    const SGroup& sgroup = sgroups.getSGroup(sgroup_idx);
     if (sgroup.atoms.size() > 0)
         return &sgroup;
+    // The renderer draws a relative value without atoms from a corner of a box it computes anew: it needs no move
+    if (sgroup.relative)
+        return nullptr;
 
-    int parent = sgroup.parent_idx.value_or(-1);
-    if (parent < 0 || !sgroups.hasSGroup(parent))
-    {
-        const int id = sgroup.parent_group.value_or(0);
-        parent = id > 0 ? sgroups.findSGroupById(id) : -1;
-    }
+    MoleculeSGroups& sgroups = _molecule.sgroups;
+    const int parent = sgroups.findParent(sgroup);
     if (parent < 0 || sgroups.getSGroup(parent).atoms.size() == 0)
         return nullptr;
     return &sgroups.getSGroup(parent);
@@ -91,7 +89,7 @@ void SGroupDataLayout::_place(DataSGroup& sgroup, const Vec2f& initial, const SG
     old_center.scale(scale);
     new_center.scale(scale);
 
-    float dot = 0.f, cross = 0.f;
+    float dot = 0.f, cross = 0.f, perfect_length = 0.f;
     for (int atom : reference.atoms)
     {
         Vec2f before = _initialAtomPositions.at(atom), after = _position(atom);
@@ -99,26 +97,26 @@ void SGroupDataLayout::_place(DataSGroup& sgroup, const Vec2f& initial, const SG
         after.sub(new_center);
         dot += Vec2f::dot(before, after);
         cross += Vec2f::cross(before, after);
+        perfect_length += before.length() * after.length();
     }
-    // One atom, or atoms at one point, give no rotation
+    // One atom, atoms at one point, or a turn too weak to tell from rounding give no rotation
     float si = 0.f, co = 1.f;
     const float length = HYPOT(dot, cross);
-    if (length > EPSILON)
+    if (length > EPSILON && length > WEAKEST_FIT * perfect_length)
     {
         si = cross / length;
         co = dot / length;
     }
 
+    // A relative position is an offset from the first atom of the group: the point it marks moves as an absolute one
     Vec2f position = initial;
-    // A relative position is an offset from the group's atoms: it turns with them and does not shift
     if (sgroup.relative)
-        position.rotate(si, co);
-    else
-    {
-        position.sub(old_center);
-        position.rotate(si, co);
-        position.add(new_center);
-    }
+        position.add(_initialAtomPositions.at(sgroup.atoms[0]));
+    position.sub(old_center);
+    position.rotate(si, co);
+    position.add(new_center);
+    if (sgroup.relative)
+        position.sub(_position(sgroup.atoms[0]));
     sgroup.display_pos.set(position);
 }
 

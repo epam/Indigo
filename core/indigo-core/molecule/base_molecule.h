@@ -707,7 +707,6 @@ namespace indigo
         void mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& mapping, Array<int>& edge_mapping);
         void clearSGroups();
 
-        void getSGroupAtomsCenterPoint(SGroup& sgroup, Vec2f& res);
         void getAtomsCenterPoint(Array<int>& atoms, Vec2f& res);
         void getAtomsCenterPoint(Vec2f& res);
         void setAtomsCenterPoint(const Vec3f& center);

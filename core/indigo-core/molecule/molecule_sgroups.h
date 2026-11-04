@@ -348,6 +348,9 @@ namespace indigo
         void buildTree(Tree& tree);
         bool getParentAtoms(int idx, Array<int>& target);
         bool getParentAtoms(SGroup& sgroup, Array<int>& target);
+        // The array position of the parent: parent_idx when it names a group, else the group whose index equals
+        // parent_group; -1 when neither is found
+        int findParent(const SGroup& sgroup);
         std::vector<SGroupInfo> getOrderedSGroups();
 
         void remove(int idx);
@@ -414,7 +417,7 @@ namespace indigo
                 transform(position);
                 return;
             }
-            // A relative position is an offset from the group's atoms: a move leaves it, a scale scales it
+            // A relative position is an offset from the first atom of the group: a move leaves it, a scale scales it
             Vec2f origin(0.f, 0.f);
             transform(origin);
             transform(position);

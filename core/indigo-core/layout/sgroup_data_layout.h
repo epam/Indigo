@@ -35,8 +35,9 @@ namespace indigo
     class DataSGroup;
     class SGroup;
 
-    // Keeps the value of a data S-group where it stood against its atoms, or against its parent's atoms when it has
-    // none: a rotation and a shift fitted to how those atoms moved, without a scale or a mirror
+    // Keeps the value of a data S-group where it stood against its atoms, or, for an absolute value of a group without
+    // atoms, against its parent's atoms: a rotation and a shift fitted to how those atoms moved, without a scale or a
+    // mirror
     class DLLEXPORT SGroupDataLayout
     {
     public:
@@ -46,7 +47,10 @@ namespace indigo
         void update();
 
     private:
-        const SGroup* _referenceGroup(int sgroup_idx) const;
+        // A turn fitted weaker than this share of a perfect fit is decided by rounding, as for a mirrored symmetric ring
+        static constexpr float WEAKEST_FIT = 0.001f;
+
+        const SGroup* _referenceGroup(const DataSGroup& sgroup) const;
         bool _hasMoved(const SGroup& reference) const;
         void _place(DataSGroup& sgroup, const Vec2f& initial, const SGroup& reference) const;
         Vec2f _position(int atom) const;

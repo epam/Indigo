@@ -416,11 +416,6 @@ void BaseMolecule::invalidateAtom(int index, int mask)
     }
 }
 
-void BaseMolecule::getSGroupAtomsCenterPoint(SGroup& sgroup, Vec2f& res)
-{
-    getAtomsCenterPoint(sgroup.atoms, res);
-}
-
 void BaseMolecule::getAtomsCenterPoint(Array<int>& atoms, Vec2f& res)
 {
     res.set(0, 0);

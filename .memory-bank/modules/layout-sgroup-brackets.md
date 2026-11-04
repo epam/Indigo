@@ -35,9 +35,10 @@ Callers:
 | `ReactionLayout::make`, `PathwayLayout::make`: the metalayout's move and scale of whole molecules | before `Metalayout::process()` / `buildLayoutTree()` | after `process()` / `applyLayout()` | the same options |
 
 `Metalayout::adjustMol`, `BaseMolecule::scale` and `BaseMolecule::offsetCoordinates` carry every group's real
-brackets along through `core/indigo-core/molecule/molecule_sgroups.h#transformPositions` (invariant A13); that is
-what the brackets of the other S-group types get, and what the reaction and pathway layouts then override for
-the bracketed types, because a scale changes the margins.
+brackets along through `core/indigo-core/molecule/molecule_sgroups.h#transformPositions` (invariant A13), with the
+positions of data values ([layout-sgroup-data.md](./layout-sgroup-data.md)); that is what the brackets of the other
+S-group types get, and what the reaction and pathway layouts then override for the bracketed types, because a scale
+changes the margins.
 
 ## How a group is placed
 
