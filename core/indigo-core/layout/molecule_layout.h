@@ -81,8 +81,6 @@ namespace indigo
         static BaseMolecule& cb_getMol(int id, void* context);
         static void cb_process(Metalayout::LayoutItem& item, const Vec2f& pos, void* context);
 
-        void _updateDataSGroups();
-
         void _init(bool smart_layout);
 
         // The haptic bonds between two atoms that close a ring of such bonds, as

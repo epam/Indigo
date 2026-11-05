@@ -21,6 +21,7 @@
 #include "base_cpp/profiling.h"
 #include "graph/biconnected_decomposer.h"
 #include "layout/sgroup_bracket_layout.h"
+#include "layout/sgroup_data_layout.h"
 #include "molecule/molecule.h"
 #include <algorithm>
 #include <set>
@@ -821,6 +822,7 @@ void MoleculeCleaner2d::do_clean(bool _clean_external_angles)
         return; // nothing to do for biconnected graph
     clean_external_angles = _clean_external_angles;
     SGroupBracketLayout brackets(_mol);
+    SGroupDataLayout data_values(_mol);
     _updatePositions();
 
     // for (int i = 0; i < vertex_count; i++) printf("%d: (%.5f, %.5f)\n", i, pos[i].x, pos[i].y);
@@ -893,6 +895,7 @@ void MoleculeCleaner2d::do_clean(bool _clean_external_angles)
     for (int i = _mol.vertexBegin(); i != _mol.vertexEnd(); i = _mol.vertexNext(i))
         _mol.setAtomXyz(i, Vec3f(pos[i].x, pos[i].y, 0));
     brackets.update();
+    data_values.update();
 }
 
 float MoleculeCleaner2d::_energy()

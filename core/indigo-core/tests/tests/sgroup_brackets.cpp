@@ -235,7 +235,7 @@ TEST_F(IndigoCoreSGroupBracketsTest, HasBrackets_ZeroLengthPlaceholder_MeansNone
     EXPECT_TRUE(sgroup.isZeroLengthBracket(1));
 }
 
-// ---- MoleculeSGroups::transformBrackets ---------------------------------------------------------------------
+// ---- MoleculeSGroups::transformPositions --------------------------------------------------------------------
 
 TEST_F(IndigoCoreSGroupBracketsTest, RigidMoves_CarryBrackets_LeavePlaceholders)
 {

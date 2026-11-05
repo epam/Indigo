@@ -20,6 +20,7 @@
 #include "base_cpp/array.h"
 #include "graph/filter.h"
 #include "layout/sgroup_bracket_layout.h"
+#include "layout/sgroup_data_layout.h"
 #include <map>
 #include <utility>
 #include <vector>
@@ -132,51 +133,6 @@ void _placeSGroupBracketsHorizontal(Array<Vec2f[2]>& brackets, BaseMolecule& mol
     Vec2f* const& right = brackets.push();
     right[0].set(max.x, max.y);
     right[1].set(max.x, min.y);
-}
-
-void MoleculeLayout::_updateDataSGroups()
-{
-    // Move Data-SGroups with absolute coordinates according to new position
-    QS_DEF(Array<int>, layout_graph_mapping);
-    layout_graph_mapping.resize(_molecule.vertexEnd());
-    layout_graph_mapping.fffill();
-    for (int i = _layout_graph->vertexBegin(); i < _layout_graph->vertexEnd(); i = _layout_graph->vertexNext(i))
-    {
-        int vi = _layout_graph->getVertexExtIdx(i);
-        layout_graph_mapping[vi] = i;
-    }
-
-    for (int i = _molecule.sgroups.begin(); i != _molecule.sgroups.end(); i = _molecule.sgroups.next(i))
-    {
-        SGroup& sg = _molecule.sgroups.getSGroup(i);
-        if (sg.sgroup_type == SGroup::SG_TYPE_DAT)
-        {
-            DataSGroup& group = (DataSGroup&)sg;
-            if (!group.relative && group.display_pos.has_value())
-            {
-                Vec2f before;
-                _molecule.getSGroupAtomsCenterPoint(group, before);
-
-                Vec2f after;
-                for (int j = 0; j < group.atoms.size(); j++)
-                {
-                    int ai = group.atoms[j];
-                    const LayoutVertex& vert = _layout_graph->getLayoutVertex(layout_graph_mapping[ai]);
-                    after.x += vert.pos.x;
-                    after.y += vert.pos.y;
-                }
-
-                if (group.atoms.size() != 0)
-                    after.scale(1.0f / group.atoms.size());
-
-                Vec2f delta;
-                delta.diff(after, before);
-                Vec2f dp = group.display_pos.value();
-                dp.add(delta);
-                group.display_pos.set(dp);
-            }
-        }
-    }
 }
 
 std::vector<std::pair<int, int>> MoleculeLayout::_atomToAtomHapticRings() const
@@ -292,12 +248,10 @@ void MoleculeLayout::_make()
     // 0. Find 2D coordinates via proxy _layout_graph object
     _layout_graph->max_iterations = max_iterations;
     SGroupBracketLayout brackets(_molecule, label_font_size, label_mode);
+    SGroupDataLayout data_values(_molecule);
     _makeLayout();
 
-    // 1. Update data-sgroup label position before changing molecule atoms positions
-    _updateDataSGroups();
-
-    // 2. Update atoms
+    // 1. Update atoms
     for (int i = _layout_graph->vertexBegin(); i < _layout_graph->vertexEnd(); i = _layout_graph->vertexNext(i))
     {
         const LayoutVertex& vert = _layout_graph->getLayoutVertex(i);
@@ -317,6 +271,7 @@ void MoleculeLayout::_make()
     _updateMultipleGroups();
 
     brackets.update();
+    data_values.update();
 
     _molecule.have_xyz = true;
 }
@@ -340,7 +295,6 @@ BaseMolecule& MoleculeLayout::_getMol(int id)
 
 void MoleculeLayout::updateSGroups()
 {
-    _updateDataSGroups();
     _updateMultipleGroups();
     SGroupBracketLayout(_molecule, label_font_size, label_mode).update();
 }

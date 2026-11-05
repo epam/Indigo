@@ -369,7 +369,7 @@ namespace indigo
         // A template, not std::function: this header reaches the Postgres cartridge, where postgres.h defines bind as a
         // macro on Windows and <functional> no longer compiles
         template <typename Transform>
-        void transformBrackets(Transform transform)
+        void transformPositions(Transform transform)
         {
             for (int i = begin(); i != end(); i = next(i))
             {
@@ -383,6 +383,8 @@ namespace indigo
                     transform(brackets[j][0]);
                     transform(brackets[j][1]);
                 }
+                if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
+                    _transformDataPosition(static_cast<DataSGroup&>(sgroup), transform);
             }
         }
 
@@ -411,6 +413,24 @@ namespace indigo
         // The groups whose resolved parent is the group at sgroup_idx. A structure in which no group names a parent
         // costs one pass and no allocation: removing many groups is quadratic in the number of groups either way.
         std::vector<int> _childrenOf(int sgroup_idx);
+
+        template <typename Transform>
+        static void _transformDataPosition(DataSGroup& sgroup, Transform transform)
+        {
+            if (!sgroup.display_pos.has_value())
+                return;
+            Vec2f& position = sgroup.display_pos.value();
+            if (!sgroup.relative)
+            {
+                transform(position);
+                return;
+            }
+            // A relative position is an offset from the first atom of the group: a move leaves it, a scale scales it
+            Vec2f origin(0.f, 0.f);
+            transform(origin);
+            transform(position);
+            position.sub(origin);
+        }
     };
 
 } // namespace indigo
