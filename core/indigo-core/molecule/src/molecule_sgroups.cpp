@@ -29,6 +29,7 @@
 #include <cstring>
 #include <functional>
 #include <iterator>
+#include <optional>
 #include <string_view>
 #include <typeindex>
 #include <unordered_map>
@@ -175,7 +176,7 @@ static const char* const DISPLAY_COORDINATE_FORMAT = "%.4f";
 // Holds any float in that format; snprintf cuts a longer double
 static constexpr std::size_t DISPLAY_COORDINATE_TEXT_SIZE = 64;
 
-static std::string_view trimmedText(const char* text)
+std::string_view DataSGroup::trimmed(const char* text)
 {
     const std::string_view value = text != nullptr ? text : "";
     const auto first = value.find_first_not_of(' ');
@@ -194,7 +195,7 @@ static bool equalsIgnoringCase(std::string_view lhs, std::string_view rhs)
 template <std::size_t N, typename Equals>
 static const FieldValue* valueByText(const FieldValue (&values)[N], const char* text, Equals equals)
 {
-    const std::string_view spelled = trimmedText(text);
+    const std::string_view spelled = DataSGroup::trimmed(text);
     const auto found = std::find_if(std::begin(values), std::end(values), [&](const FieldValue& value) { return equals(spelled, value.text); });
     return found != std::end(values) ? found : nullptr;
 }
@@ -211,7 +212,7 @@ static const FieldValue* valueByName(const FieldValue (&values)[N], const char* 
 
 static const FieldValue* fieldTypeValue(const char* text)
 {
-    return trimmedText(text).empty() ? &TEXT_FIELD_TYPE : valueByText(FIELD_TYPES, text, std::equal_to<std::string_view>());
+    return DataSGroup::trimmed(text).empty() ? &TEXT_FIELD_TYPE : valueByText(FIELD_TYPES, text, std::equal_to<std::string_view>());
 }
 
 static const FieldValue* queryTypeValue(const char* text)
@@ -246,7 +247,7 @@ bool DataSGroup::isValidQueryType(const char* text)
 
 bool DataSGroup::isValidQueryOperator(const char* text)
 {
-    return trimmedText(text).empty() || queryOperatorValue(text) != nullptr;
+    return trimmed(text).empty() || queryOperatorValue(text) != nullptr;
 }
 
 const char* DataSGroup::fieldTypeName(const char* text)
@@ -295,6 +296,11 @@ const char* DataSGroup::textOf(const Array<char>& text)
     return text.size() > 0 ? text.ptr() : "";
 }
 
+bool DataSGroup::hasText(const Array<char>& text)
+{
+    return *textOf(text) != 0;
+}
+
 bool DataSGroup::isValidDisplayedChars(int count)
 {
     return count >= 0 && count <= MAX_DISPLAYED_CHARS;
@@ -326,7 +332,7 @@ bool DataSGroup::isValidDaspPosition(int position)
 // A decimal number: an optional sign, digits with an optional fraction, an optional exponent
 bool DataSGroup::isValidNumber(const char* text)
 {
-    const std::string_view value = trimmedText(text);
+    const std::string_view value = trimmed(text);
     std::size_t pos = 0;
     const auto skipSign = [&]() {
         if (pos < value.size() && (value[pos] == '+' || value[pos] == '-'))
@@ -360,6 +366,24 @@ bool DataSGroup::isValidNumber(const char* text)
 bool DataSGroup::holdsNumbers() const
 {
     return fieldTypeValue(textOf(type)) == &NUMERIC_FIELD_TYPE && queryTypeValue(textOf(querycode)) != &QUERY_TYPE_QUERY;
+}
+
+std::optional<std::string> DataSGroup::lineNotANumber() const
+{
+    if (!holdsNumbers())
+        return std::nullopt;
+    std::string_view lines = textOf(data);
+    while (!lines.empty())
+    {
+        const std::size_t end = lines.find('\n');
+        const std::string line(lines.substr(0, end));
+        if (!line.empty() && !isValidNumber(line.c_str()))
+            return line;
+        if (end == std::string_view::npos)
+            break;
+        lines.remove_prefix(end + 1);
+    }
+    return std::nullopt;
 }
 
 Superatom::Superatom()

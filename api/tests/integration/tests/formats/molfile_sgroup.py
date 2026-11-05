@@ -44,7 +44,13 @@ files = [
     ("sgroup/v3000-data-lines-around-69-characters.mol", explicit_modes),
     ("sgroup/v3000-default-forms.mol", explicit_modes),
     ("sgroup/v3000-default-line.mol", explicit_modes),
+    # inside a quoted value a doubled quote is one
+    ("sgroup/v3000-doubled-quotes.mol", explicit_modes),
     ("sgroup/v3000-fielddata-forms.mol", explicit_modes),
+    # FIELDINFO: a type letter and a blank before the units, or the units alone
+    ("sgroup/v3000-fieldinfo-forms.mol", explicit_modes),
+    # a value is quoted for a blank, a quote, '=', '(' or ')'
+    ("sgroup/v3000-quoting.ket", explicit_modes),
 ]
 broken_files = [
     "sgroup/data-displayed-chars-negative.ket",
@@ -61,6 +67,7 @@ broken_files = [
     "sgroup/v2000-sgroup-index-zero.mol",
     "sgroup/v2000-sgroup-without-sty.mol",
     "sgroup/v3000-default-without-value.mol",
+    "sgroup/v3000-fielddata-not-a-number.mol",
     "sgroup/v3000-fielddisp-character-count-negative.mol",
     "sgroup/v3000-querytype-unknown.mol",
     "sgroup/v3000-queryop-unknown.mol",
