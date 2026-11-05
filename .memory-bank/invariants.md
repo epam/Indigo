@@ -6,10 +6,6 @@
 Rules that must stay true. Each one is here because breaking it fails **silently** — no compiler
 error, and often no failing test on the machine where the change was made.
 
-Anchors were verified on `f0cc3c423` (master, 2026-09-03); A12 to A14 on `1e15006f7` (2026-10-28); B5 on
-2026-10-23. An anchor that no longer resolves is a defect in this file: fix it in the same change that moved
-the code.
-
 ---
 
 ## API & FFI
@@ -145,6 +141,27 @@ brackets of a group and leaves its placeholders; the renderer takes the file's b
 are real and draws its own pair otherwise (`core/render2d/src/render_internal.cpp#isBracketsCoordinates`). Code
 that tests `brackets.size() > 0` instead takes a bracket at the origin for a real one: the CML saver writes
 placeholders out that way.
+
+## S-group data fields
+
+**A15 — A text of a data S-group is read through `textOf` or `hasText`, never through `ptr()` of its `Array`.**
+`Array<char>::clear()` keeps the buffer, so `ptr()` of a cleared text still shows the old characters at size 0, and
+`ptr()` of a text never filled is null (`core/indigo-core/molecule/molecule_sgroups.h#textOf`). A writer that reads
+`ptr()` prints stale text into the file or hands null to a C string function; nothing fails where the file was
+written.
+
+**A16 — The molfile writer refuses what the molfile reader rejects, through the same predicates.**
+`DataSGroup::isValid*` and `lineNotANumber` are the one home of each rule of a data field. The reader applies them at
+`M  SDT`, `M  SDD`, `M  SED` and the V3000 keys (`core/indigo-core/molecule/molfile_loader.h#_checkDataField`); the
+writer applies them before V2000 and V3000 alike (`core/indigo-core/molecule/src/molfile_saver.cpp#_checkDataSGroup`).
+A check added on one side only yields a file Indigo itself cannot load back, found when someone reloads it. KET,
+CXSMILES and the API keep the value; the molfile boundary is the only gate.
+
+**A17 — The keys of a V3000 S-group line come in any order; a check that needs two of them runs once the line is
+read.**
+`FIELDINFO`, which carries the field type, may follow `FIELDDATA`, which carries the value: the NUMERIC check runs
+at the end of `core/indigo-core/molecule/src/molfile_loader_v3000.cpp#_readSGroup3000`, not at the key. A check at
+the key sees the type unset and passes.
 
 ## Language & platform
 
