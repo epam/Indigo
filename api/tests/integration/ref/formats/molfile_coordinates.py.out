@@ -1,0 +1,6 @@
+*** Molfile V3000 coordinates keep their decimals ***
+large-coordinates-auto.mol:SUCCEED
+large-coordinates-auto.mol:SUCCEED
+large-coordinates-3000.mol:SUCCEED
+large-coordinates-3000.mol:SUCCEED
+large-coordinates as V2000: molfile saver: V2000 cannot hold the coordinate 123456.7891 of atom 3, outside the ten columns of a coordinate
