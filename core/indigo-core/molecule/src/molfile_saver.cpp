@@ -19,8 +19,10 @@
 #include "molecule/molfile_saver.h"
 
 #include <algorithm>
+#include <cmath>
 #include <cstring>
 #include <ctime>
+#include <iomanip>
 #include <map>
 #include <optional>
 #include <sstream>
@@ -61,6 +63,15 @@ MolfileSaver::MolfileSaver(Output& output) : _output(output), CP_INIT, TL_CP_GET
  * Utility functions
  */
 const float XYZ_EPSILON = 0.0001f;
+// A coordinate keeps the four decimals the columns of V2000 hold, and the six significant digits of a stream for
+// smaller values; the precision grows with the integer digits, so no value is written with an exponent
+const int COORDINATE_DECIMALS = 4;
+const int COORDINATE_MIN_SIGNIFICANT_DIGITS = 6;
+
+static int integerDigits(float value)
+{
+    return value == 0 ? 0 : std::max(0, (int)std::floor(std::log10(std::fabs(value))) + 1);
+}
 
 void write_c(float c, std::stringstream& coords)
 {
@@ -71,7 +82,7 @@ void write_c(float c, std::stringstream& coords)
     }
     else
     {
-        coords << c;
+        coords << std::setprecision(std::max(COORDINATE_MIN_SIGNIFICANT_DIGITS, integerDigits(c) + COORDINATE_DECIMALS)) << c;
     }
 }
 /*
