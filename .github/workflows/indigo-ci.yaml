@@ -26,23 +26,25 @@ on:
   repository_dispatch:
 
 jobs:
-  # static_analysis:
-  #   runs-on: ubuntu-latest
-  #   container: epmlsop/indigo-tester:latest
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
-  #       with:
-  #         lfs: false
-  #         fetch-depth: 500
-  #     - name: Git fetch tags
-  #       run: |
-  #            git config --global --add safe.directory '*'
-  #            git fetch --tags -f
-  #     - name: Check
-  #       run: |
-  #         python3 -m pip install -r api/python/requirements_dev.txt --break-system-packages
-  #         .ci/static_analysis_check.sh
+  static_analysis:
+    runs-on: ubuntu-latest
+    container: epmlsop/indigo-tester:latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+          fetch-depth: 500
+      - name: Git fetch tags
+        run: |
+             exit 1
+             git config --global --add safe.directory '*'
+             git fetch --tags -f
+      - name: Check
+        run: |
+          python3 -m pip install -r api/python/requirements_dev.txt --break-system-packages
+          .ci/static_analysis_check.sh
+
 
   publish_indigo_to_nuget_dryrun:
     if: startsWith(github.ref, 'refs/tags/indigo-')
