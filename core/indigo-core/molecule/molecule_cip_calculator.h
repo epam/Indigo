@@ -44,7 +44,9 @@ namespace indigo
         S,
         R,
         E,
-        Z
+        Z,
+        p,
+        m,
     };
 
     struct CIPContext

@@ -101,6 +101,16 @@ never with its parent. An `index` of 0 numbers no group: a group without one is 
 **A8 — Bond orders and query flags are named constants, tests included.**
 `BOND_SINGLE`, `BOND_ZERO`, `_BOND_COORDINATION` and friends — never the underlying integers.
 
+**A8a — A query atom is never a possible stereocenter where the same atom in a molecule is not.**
+One check judges both (`core/indigo-core/molecule/src/molecule_stereocenters.cpp#MoleculeStereocenters::isPossibleStereocenter`),
+and for a query atom of uncertain element or charge it tries the readings the query admits
+(`core/indigo-core/molecule/src/molecule_stereocenters.cpp#possibleAsQuery`). A reading wider than the
+atom as drawn — an uncharged N taken as N+ — gives the query of a molecule a stereocenter the molecule
+lacks, and `checkSub` then fails every match through it: the pyramid lookup on the target throws and is
+reported as no match (`core/indigo-core/molecule/src/molecule_stereocenters.cpp#bool MoleculeStereocenters::checkSub`).
+Nothing errors; a substructure search returns fewer hits. Only a self-match test notices
+(`api/tests/integration/tests/substructure/basic.py#checkHasMatchMol`). Verified on the #3853 commit
+that brought the CIP chiral-center definition in.
 ## Formats
 
 **A11 — A V2000 S-group property line is read whole before it is parsed.**
