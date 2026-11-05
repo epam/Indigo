@@ -175,14 +175,9 @@ static void saveSGroupAtoms(const Array<int>& atoms, JsonWriter& writer)
 }
 
 // A text of a data S-group that is set; one the model keeps blank is not written
-static bool hasText(const Array<char>& text)
-{
-    return *DataSGroup::textOf(text) != 0;
-}
-
 static void saveTextIfSet(const char* key, const Array<char>& text, JsonWriter& writer)
 {
-    if (hasText(text))
+    if (DataSGroup::hasText(text))
     {
         writer.Key(key);
         writer.String(text.ptr());
@@ -220,7 +215,7 @@ void MoleculeJsonSaver::saveDataFieldDescription(const DataSGroup& dsg, int numb
         reject(querycode, DataSGroup::INVALID_QUERY_TYPE);
     writer.Key(KetKeyQueryType);
     writer.String(query_type);
-    if (hasText(dsg.queryoper))
+    if (DataSGroup::hasText(dsg.queryoper))
     {
         const char* name = DataSGroup::queryOperatorName(dsg.queryoper.ptr());
         writer.Key(KetKeyQueryOperator);

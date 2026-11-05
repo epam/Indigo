@@ -29,6 +29,8 @@ molfile-refuses-coordinate, V2000: molfile saver: data S-group 1: '-10000.0000' 
 molfile-refuses-coordinate, V3000: molfile saver: data S-group 1: '-10000.0000' is not a valid coordinate of the value
 molfile-refuses-displayed-chars, V2000: molfile saver: data S-group 1: '1000' is not a valid number of characters to display
 molfile-refuses-displayed-chars, V3000: molfile saver: data S-group 1: '1000' is not a valid number of characters to display
+molfile-refuses-numeric-text, V2000: molfile saver: data S-group 1: 'abc' is not a valid numeric value
+molfile-refuses-numeric-text, V3000: molfile saver: data S-group 1: 'abc' is not a valid numeric value
 molfile-refuses-query-operator, V2000: molfile saver: data S-group 1: 'query,;:|{}$op' is not a valid query operator
 molfile-refuses-query-operator, V3000: molfile saver: data S-group 1: 'query,;:|{}$op' is not a valid query operator
 molfile-refuses-query-type, V2000: molfile saver: data S-group 1: 'Q' is not a valid query type

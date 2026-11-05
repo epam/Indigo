@@ -73,10 +73,22 @@ v3000-default-line-2000.mol:SUCCEED
 v3000-default-line-2000.mol reload:SUCCEED
 v3000-default-line-3000.mol:SUCCEED
 v3000-default-line-3000.mol reload:SUCCEED
+v3000-doubled-quotes-2000.mol:SUCCEED
+v3000-doubled-quotes-2000.mol reload:SUCCEED
+v3000-doubled-quotes-3000.mol:SUCCEED
+v3000-doubled-quotes-3000.mol reload:SUCCEED
 v3000-fielddata-forms-2000.mol:SUCCEED
 v3000-fielddata-forms-2000.mol reload:SUCCEED
 v3000-fielddata-forms-3000.mol:SUCCEED
 v3000-fielddata-forms-3000.mol reload:SUCCEED
+v3000-fieldinfo-forms-2000.mol:SUCCEED
+v3000-fieldinfo-forms-2000.mol reload:SUCCEED
+v3000-fieldinfo-forms-3000.mol:SUCCEED
+v3000-fieldinfo-forms-3000.mol reload:SUCCEED
+v3000-quoting-2000.mol:SUCCEED
+v3000-quoting-2000.mol reload:SUCCEED
+v3000-quoting-3000.mol:SUCCEED
+v3000-quoting-3000.mol reload:SUCCEED
 sgroup/data-displayed-chars-negative.ket: molecule json loader: S-group #0 of molecule #0 has 'displayedChars' -5, which is not a valid number of characters to display
 sgroup/v2000-sdd-character-count-negative.mol: molfile loader: M SDD of Sgroup 1: '-5' is not a valid number of characters to display
 sgroup/v2000-sdd-character-count-negative-compact.mol: molfile loader: M SDD of Sgroup 1: '-5' is not a valid number of characters to display
@@ -85,12 +97,13 @@ sgroup/v2000-sdd-coordinate-not-kept.mol: molfile loader: M SDD of Sgroup 1: '-9
 sgroup/v2000-sdd-dasp-position-unknown.mol: molfile loader: M SDD of Sgroup 1: 'A' is not a valid DASP position
 sgroup/v2000-sdt-field-type-unknown.mol: molfile loader: M SDT of Sgroup 1: 'X' is not a valid field type
 sgroup/v2000-sdt-query-operator-unknown.mol: molfile loader: M SDT of Sgroup 1: 'QBETWEEN' is not a valid query operator
-sgroup/v2000-sdt-query-type-shifted.mol: molfile loader: M SDT of Sgroup 1: ' I' is not a valid query type
+sgroup/v2000-sdt-query-type-shifted.mol: molfile loader: M SDT of Sgroup 1: 'I' is not a valid query type
 sgroup/v2000-sed-numeric-not-a-number.mol: molfile loader: M SED of Sgroup 1: 'abc' is not a valid numeric value
 sgroup/v2000-sgroup-index-out-of-range.mol: molfile loader: M SED refers to undefined Sgroup 5
 sgroup/v2000-sgroup-index-zero.mol: molfile loader: M SMT refers to undefined Sgroup 0
 sgroup/v2000-sgroup-without-sty.mol: molfile loader: M SCL refers to undefined Sgroup 1
 sgroup/v3000-default-without-value.mol: molfile loader: DEFAULT entry: expected '=' after "FOO"
+sgroup/v3000-fielddata-not-a-number.mol: molfile loader: FIELDDATA of Sgroup 1: 'abc' is not a valid numeric value
 sgroup/v3000-fielddisp-character-count-negative.mol: molfile loader: FIELDDISP of Sgroup 1: '-5' is not a valid number of characters to display
 sgroup/v3000-querytype-unknown.mol: molfile loader: QUERYTYPE of Sgroup 1: 'Q' is not a valid query type
 sgroup/v3000-queryop-unknown.mol: molfile loader: QUERYOP of Sgroup 1: 'QBETWEEN' is not a valid query operator

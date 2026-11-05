@@ -167,7 +167,13 @@ namespace indigo
         void _addHapticBond3000(int beg, int end, const std::vector<int>& endpoints, int type);
         void _preparePseudoAtomLabel(Array<char>& pseudo);
         void _readMultiString(Array<char>& str);
+        // A V3000 value: up to the next blank, or in double quotes, inside which a doubled quote is one
         void _readStringInQuotes(Scanner& scanner, Array<char>* str);
+        // A field of fixed columns without the blanks around it
+        static std::string _readFixedField(Scanner& scanner, int width);
+        // FIELDINFO: the field type in a letter and a blank before the units, as the columns of M  SDT; a value that
+        // does not start so is the units alone, as earlier versions wrote it
+        static void _readFieldInfo(const char* value, DataSGroup& dsg);
         void _init();
         void _appendQueryAtom(const char* atom_label, std::unique_ptr<QueryMolecule::Atom>& atom);
         void _fillSGroupsParentIndices();

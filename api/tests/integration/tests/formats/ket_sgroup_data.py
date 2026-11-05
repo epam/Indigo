@@ -114,6 +114,7 @@ print("*** Values KET keeps and a molfile does not allow ***")
 for filename in (
     "molfile-refuses-coordinate",
     "molfile-refuses-displayed-chars",
+    "molfile-refuses-numeric-text",
     "molfile-refuses-query-operator",
     "molfile-refuses-query-type",
 ):

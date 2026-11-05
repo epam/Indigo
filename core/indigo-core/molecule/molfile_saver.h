@@ -129,6 +129,9 @@ namespace indigo
         static std::string _beyondV2000(BaseMolecule& mol);
         void _writeDataSGroupDisplay(DataSGroup& datasgroup, Output& out);
         void _writeFormattedString(Output& output, Array<char>& str, int length);
+        // " KEY=value" of V3000: the value in double quotes when it holds a blank, a quote, '=', '(' or ')', with a
+        // double quote inside doubled; FIELDDATA is quoted always
+        static void _writeV3000Value(Output& output, const char* key, const char* value, bool always_quoted);
         static bool _checkAttPointOrder(BaseMolecule& mol, int rsite);
         static bool _hasNeighborEitherBond(BaseMolecule& mol, int edge_idx);
 

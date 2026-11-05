@@ -139,7 +139,7 @@ M  SAL   1  8  33  34  35  36  37  38  39  40
 M  SAL   1  8  41  42  43  44  45  46  47  48
 M  SAL   1  8  49  50  51  52  53  54  55  56
 M  SAL   1  5  57  58  59  60  61
-M  SDT   1 MDLBG_FRAGMENT_STEREO          F                                     
+M  SDT   1 MDLBG_FRAGMENT_STEREO         F                                      
 M  SDD   1     9.2156   -3.3377    DR    ALL  1       1  
 M  SED   1 abs
 M  SAL   2  1   9
@@ -413,7 +413,7 @@ M  SAL   1  8  33  34  35  36  37  38  39  40
 M  SAL   1  8  41  42  43  44  45  46  47  48
 M  SAL   1  8  49  50  51  52  53  54  55  56
 M  SAL   1  5  57  58  59  60  61
-M  SDT   1 MDLBG_FRAGMENT_STEREO          F                                     
+M  SDT   1 MDLBG_FRAGMENT_STEREO         F                                      
 M  SDD   1     9.2156   -3.3377    DR    ALL  1       1  
 M  SED   1 abs
 M  SAL   2  1   9

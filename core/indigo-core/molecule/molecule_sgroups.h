@@ -25,7 +25,9 @@
 #include "base_cpp/ptr_reusable_pool.h"
 #include "base_cpp/reusable.h"
 #include "math/algebra.h"
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #ifdef _WIN32
@@ -219,13 +221,16 @@ namespace indigo
         bool hasTag() const;      // a blank tag is none
         // The C string of a text of the group, empty for one that is not set: a cleared Array keeps its old buffer
         static const char* textOf(const Array<char>& text);
+        static bool hasText(const Array<char>& text);
+        // The text without the blanks around it
+        static std::string_view trimmed(const char* text);
         static constexpr char mrv_implicit_h[] = "MRV_IMPLICIT_H";
         static constexpr char impl_prefix[] = "IMPL_H";
         static constexpr size_t impl_prefix_len = sizeof(impl_prefix) - 1;
         bool isMrv_implicit();
         void setMrv_implicit(int atom_idx, int hydrogens_count);
 
-        // The values the molfile format allows in the fields of a data S-group (CTfile: M  SDT, M  SDD, M  SED).
+        // The values the molfile format allows in the fields of a data S-group (M  SDT, M  SDD, M  SED).
         // A blank text is a field that is not set. A reader rejects anything else with the reason declared next to
         // the check, after the value: "'QBETWEEN' is not a valid query operator".
         static bool isValidFieldType(const char* text); // F, N or T
@@ -261,6 +266,8 @@ namespace indigo
         static constexpr const char* REJECTED_FIELD_MESSAGE = "data S-group %d: '%s' %s";
         // A NUMERIC field holding data rather than a query: each of its lines must be a number
         bool holdsNumbers() const;
+        // The first line of the data that is not a number while the field holds numbers; an empty line is no value
+        std::optional<std::string> lineNotANumber() const;
 
     private:
         DataSGroup(const DataSGroup&);

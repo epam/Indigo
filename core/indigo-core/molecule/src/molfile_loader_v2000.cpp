@@ -19,6 +19,7 @@
 #include <algorithm>
 #include <iterator>
 #include <memory>
+#include <optional>
 
 #include "../layout/molecule_layout.h"
 #include "base_cpp/output.h"
@@ -1008,86 +1009,11 @@ void MolfileLoader::_readCtab2000()
                     BufferScanner strscan(rest);
                     DataSGroup& sgroup = (DataSGroup&)_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
 
-                    // Read field name
-                    int k = MOLFILE_DATA_FIELD_NAME_WIDTH;
-                    while (k-- > 0)
-                    {
-                        if (strscan.isEOF())
-                            break;
-                        sgroup.name.push(strscan.readChar());
-                    }
-                    // Remove last spaces because name can have multiple words
-                    while (sgroup.name.size() > 0)
-                    {
-                        if (isspace(sgroup.name.top()))
-                            sgroup.name.pop();
-                        else
-                            break;
-                    }
-
-                    sgroup.name.push(0);
-
-                    // Read field type
-                    k = MOLFILE_DATA_FIELD_TYPE_WIDTH;
-                    while (k-- > 0)
-                    {
-                        if (strscan.isEOF())
-                            break;
-                        sgroup.type.push(strscan.readChar());
-                    }
-                    sgroup.type.push(0);
-
-                    // Read field description
-                    k = MOLFILE_DATA_FIELD_UNITS_WIDTH;
-                    while (k-- > 0)
-                    {
-                        if (strscan.isEOF())
-                            break;
-                        sgroup.description.push(strscan.readChar());
-                    }
-                    // Remove last spaces because dscription can have multiple words?
-                    while (sgroup.description.size() > 0)
-                    {
-                        if (isspace(sgroup.description.top()))
-                            sgroup.description.pop();
-                        else
-                            break;
-                    }
-                    sgroup.description.push(0);
-
-                    // Read query code
-                    k = MOLFILE_DATA_QUERY_TYPE_WIDTH;
-                    while (k-- > 0)
-                    {
-                        if (strscan.isEOF())
-                            break;
-                        sgroup.querycode.push(strscan.readChar());
-                    }
-                    while (sgroup.querycode.size() > 0)
-                    {
-                        if (isspace(sgroup.querycode.top()))
-                            sgroup.querycode.pop();
-                        else
-                            break;
-                    }
-                    sgroup.querycode.push(0);
-
-                    // Read query operator
-                    k = MOLFILE_DATA_QUERY_OPERATOR_WIDTH;
-                    while (k-- > 0)
-                    {
-                        if (strscan.isEOF())
-                            break;
-                        sgroup.queryoper.push(strscan.readChar());
-                    }
-                    while (sgroup.queryoper.size() > 0)
-                    {
-                        if (isspace(sgroup.queryoper.top()))
-                            sgroup.queryoper.pop();
-                        else
-                            break;
-                    }
-                    sgroup.queryoper.push(0);
+                    sgroup.name.readString(_readFixedField(strscan, MOLFILE_DATA_FIELD_NAME_WIDTH).c_str(), true);
+                    sgroup.type.readString(_readFixedField(strscan, MOLFILE_DATA_FIELD_TYPE_WIDTH).c_str(), true);
+                    sgroup.description.readString(_readFixedField(strscan, MOLFILE_DATA_FIELD_UNITS_WIDTH).c_str(), true);
+                    sgroup.querycode.readString(_readFixedField(strscan, MOLFILE_DATA_QUERY_TYPE_WIDTH).c_str(), true);
+                    sgroup.queryoper.readString(_readFixedField(strscan, MOLFILE_DATA_QUERY_OPERATOR_WIDTH).c_str(), true);
 
                     const int sgroup_number = sgroup_idx + 1;
                     _checkDataField(DataSGroup::isValidFieldType(sgroup.type.ptr()), DATA_FIELD_LINE, sgroup_number, sgroup.type.ptr(),
@@ -1143,15 +1069,13 @@ void MolfileLoader::_readCtab2000()
                             line_start--;
                         if (sgroup.data.size() - line_start > MOLFILE_V2000_MAX_DATA_LINE_LENGTH)
                             sgroup.data.resize(line_start + MOLFILE_V2000_MAX_DATA_LINE_LENGTH);
-                        if (sgroup.holdsNumbers())
-                        {
-                            const std::string line(sgroup.data.ptr() + line_start, sgroup.data.size() - line_start);
-                            _checkDataField(DataSGroup::isValidNumber(line.c_str()), DATA_END_LINE, sgroup_idx + 1, line.c_str(), DataSGroup::INVALID_NUMBER);
-                        }
                         // Add new paragraph. Last '\n' will be cleaned at the end
                         sgroup.data.push('\n');
                         if (sgroup.data.top() != 0)
                             sgroup.data.push(0);
+                        const std::optional<std::string> not_a_number = sgroup.lineNotANumber();
+                        _checkDataField(!not_a_number.has_value(), DATA_END_LINE, sgroup_idx + 1, not_a_number.value_or("").c_str(),
+                                        DataSGroup::INVALID_NUMBER);
                     }
                 }
             }
