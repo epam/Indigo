@@ -1,0 +1,9 @@
+*** CDXML reaction step participants ***
+reactant fragment with only an orbital graphic: reactants 1, products 1, arrows 1, texts []
+product fragment with only an orbital graphic: reactants 1, products 1, arrows 1, texts []
+intermediate fragment with only an orbital graphic: reactants 1, products 1, arrows 2, texts []
+reactant and product groups with a caption: reactants 1, products 1, arrows 1, texts ["(R)-8", "7 [40]"]
+bracketed group nested in a bracketed group: reactants 1, products 1, arrows 1, texts []
+caption on the page, not in a group: reactants 1, products 1, arrows 1, texts ["(R)-8", "7 [40]"]
+*** A caption in a participant group is kept as on the page ***
+same text nodes: True
