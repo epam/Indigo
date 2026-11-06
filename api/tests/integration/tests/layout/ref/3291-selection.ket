@@ -570,44 +570,48 @@
                 "atoms": [
                     3
                 ],
-                "fieldName": "MDLBG_STEREO_KEY",
                 "fieldData": "SR",
-                "x": -24.4893,
-                "y": 15.9961,
-                "display": true
+                "fieldName": "MDLBG_STEREO_KEY",
+                "x": 0.0000,
+                "y": 0.0000,
+                "display": true,
+                "placement": false
             },
             {
                 "type": "DAT",
                 "atoms": [
                     4
                 ],
-                "fieldName": "MDLBG_STEREO_KEY",
                 "fieldData": "SR",
-                "x": -24.3783,
-                "y": 15.0602,
-                "display": true
+                "fieldName": "MDLBG_STEREO_KEY",
+                "x": 0.0000,
+                "y": 0.0000,
+                "display": true,
+                "placement": false
             },
             {
                 "type": "DAT",
                 "atoms": [
                     5
                 ],
-                "fieldName": "MDLBG_STEREO_KEY",
                 "fieldData": "SR",
-                "x": -24.2673,
-                "y": 16.7372,
-                "display": true
+                "fieldName": "MDLBG_STEREO_KEY",
+                "x": 0.0000,
+                "y": 0.0000,
+                "display": true,
+                "placement": false
             },
             {
                 "type": "DAT",
                 "atoms": [
                     2
                 ],
-                "fieldName": "MDLBG_STEREO_KEY",
                 "fieldData": "SR",
-                "x": -24.1645,
-                "y": 14.4936,
-                "display": true
+                "fieldName": "MDLBG_STEREO_KEY",
+                "x": 0.0000,
+                "y": 0.0000,
+                "display": true,
+                "placement": false
             }
         ]
     },

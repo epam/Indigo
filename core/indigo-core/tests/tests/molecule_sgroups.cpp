@@ -32,6 +32,7 @@
 #include <algorithm>
 #include <array>
 #include <initializer_list>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -659,4 +660,141 @@ TEST(SGroupTree, ACycleOfParentsGivesOneNodePerGroup)
     collectLabels(tree, labels);
     std::sort(labels.begin(), labels.end());
     EXPECT_EQ(std::vector<int>({first, second}), labels);
+}
+
+// ---- context of data --------------------------------------------------------
+
+namespace
+{
+    const char* const FRAGMENT_CONTEXT = "Fragment";
+
+    // The contexts of the data S-groups of a molecule, sorted: a copy is free to number the groups differently.
+    std::vector<std::string> dataContexts(Molecule& mol)
+    {
+        std::vector<std::string> contexts;
+        for (int sgroup_idx = mol.sgroups.begin(); sgroup_idx != mol.sgroups.end(); sgroup_idx = mol.sgroups.next(sgroup_idx))
+        {
+            SGroup& sgroup = mol.sgroups.getSGroup(sgroup_idx);
+            if (sgroup.sgroup_type != SGroup::SG_TYPE_DAT)
+                continue;
+            const Array<char>& context = static_cast<DataSGroup&>(sgroup).context;
+            contexts.push_back(context.size() > 0 ? context.ptr() : "");
+        }
+        std::sort(contexts.begin(), contexts.end());
+        return contexts;
+    }
+} // namespace
+
+TEST(DataSGroupContext, ReusedSlotForgetsIt)
+{
+    MoleculeSGroups sgroups;
+    const int data = sgroups.addSGroup(SGroup::SG_TYPE_DAT);
+    static_cast<DataSGroup&>(sgroups.getSGroup(data)).context.readString(FRAGMENT_CONTEXT, true);
+    const SGroup* removed = &sgroups.getSGroup(data);
+
+    sgroups.remove(data);
+
+    DataSGroup& fresh = static_cast<DataSGroup&>(sgroups.getSGroup(sgroups.addSGroup(SGroup::SG_TYPE_DAT)));
+    // Without reuse there is nothing to forget: the new group must be the object just removed.
+    ASSERT_EQ(removed, &fresh);
+    EXPECT_EQ(0, fresh.context.size());
+}
+
+TEST(DataSGroupContext, CloneAndMergeKeepIt)
+{
+    Molecule source;
+    source.addAtom(ELEM_C);
+    DataSGroup& data = static_cast<DataSGroup&>(source.sgroups.getSGroup(source.sgroups.addSGroup(SGroup::SG_TYPE_DAT)));
+    data.atoms.push(0);
+    data.context.readString(FRAGMENT_CONTEXT, true);
+    const std::vector<std::string> fragment = {FRAGMENT_CONTEXT};
+    ASSERT_EQ(fragment, dataContexts(source));
+
+    Molecule cloned;
+    cloned.clone(source);
+    EXPECT_EQ(fragment, dataContexts(cloned));
+
+    Molecule merged;
+    merged.addAtom(ELEM_N);
+    merged.mergeWithMolecule(source, nullptr);
+    EXPECT_EQ(fragment, dataContexts(merged));
+}
+
+// ---- the names KET gives the values of the fields of data -------------------
+
+TEST(DataSGroupFieldValues, EachMolfileTextHasANameAndBack)
+{
+    const std::pair<const char*, const char*> field_types[] = {{"F", "FORMATTED"}, {"N", "NUMERIC"}, {"T", "TEXT"}};
+    for (const auto& [text, name] : field_types)
+    {
+        EXPECT_STREQ(name, DataSGroup::fieldTypeName(text));
+        EXPECT_STREQ(text, DataSGroup::fieldTypeText(name));
+    }
+    EXPECT_STREQ("QUERY", DataSGroup::queryTypeName("IQ"));
+    EXPECT_STREQ("IQ", DataSGroup::queryTypeText("QUERY"));
+    const std::pair<const char*, const char*> query_operators[] = {{"=", "EQUAL"},          {"<>", "NOT_EQUAL"},      {"<", "LESS"},
+                                                                   {"<=", "LESS_OR_EQUAL"}, {">", "GREATER"},         {">=", "GREATER_OR_EQUAL"},
+                                                                   {"BETWEEN", "BETWEEN"},  {"CONTAINS", "CONTAINS"}, {"LIKE", "LIKE"}};
+    for (const auto& [text, name] : query_operators)
+    {
+        EXPECT_STREQ(name, DataSGroup::queryOperatorName(text));
+        EXPECT_STREQ(text, DataSGroup::queryOperatorText(name));
+    }
+}
+
+TEST(DataSGroupFieldValues, ABlankTypeIsTextAndABlankQueryTypeIsData)
+{
+    for (const char* blank : {"", "  ", static_cast<const char*>(nullptr)})
+    {
+        EXPECT_STREQ("TEXT", DataSGroup::fieldTypeName(blank));
+        EXPECT_STREQ("DATA", DataSGroup::queryTypeName(blank));
+        EXPECT_EQ(nullptr, DataSGroup::queryOperatorName(blank));
+    }
+    EXPECT_STREQ("", DataSGroup::queryTypeText("DATA"));
+}
+
+TEST(DataSGroupFieldValues, TextsAreTrimmedAndOnlyOperatorsIgnoreCase)
+{
+    EXPECT_STREQ("FORMATTED", DataSGroup::fieldTypeName(" F"));
+    EXPECT_EQ(nullptr, DataSGroup::fieldTypeName("f"));
+    EXPECT_STREQ("QUERY", DataSGroup::queryTypeName("IQ "));
+    EXPECT_EQ(nullptr, DataSGroup::queryTypeName("iq"));
+    EXPECT_STREQ("BETWEEN", DataSGroup::queryOperatorName(" between"));
+}
+
+TEST(DataSGroupFieldValues, NothingOutsideTheFormatHasANameOrAText)
+{
+    EXPECT_EQ(nullptr, DataSGroup::fieldTypeName("X"));
+    EXPECT_EQ(nullptr, DataSGroup::fieldTypeText("Formatted"));
+    EXPECT_EQ(nullptr, DataSGroup::fieldTypeText("T "));
+    EXPECT_EQ(nullptr, DataSGroup::fieldTypeText(nullptr));
+    EXPECT_EQ(nullptr, DataSGroup::queryTypeName(" I"));
+    EXPECT_EQ(nullptr, DataSGroup::queryTypeText("IQ"));
+    EXPECT_EQ(nullptr, DataSGroup::queryOperatorName("QBETWEEN"));
+    EXPECT_EQ(nullptr, DataSGroup::queryOperatorText("NOT_LIKE"));
+    EXPECT_EQ(nullptr, DataSGroup::queryOperatorText("="));
+}
+
+TEST(DataSGroupFieldValues, DisplayDefaultsAndTheTag)
+{
+    DataSGroup data;
+    EXPECT_EQ(1, data.daspPosition());
+    EXPECT_FALSE(data.hasTag());
+    data.tag = 'a';
+    EXPECT_TRUE(data.hasTag());
+    data.tag = ' ';
+    EXPECT_FALSE(data.hasTag());
+    data.dasp_pos.reset();
+    EXPECT_EQ(1, data.daspPosition());
+}
+
+TEST(DataSGroupFieldValues, TextOfAClearedArrayIsEmpty)
+{
+    Array<char> text;
+    EXPECT_STREQ("", DataSGroup::textOf(text));
+    text.readString("IQ", true);
+    EXPECT_STREQ("IQ", DataSGroup::textOf(text));
+    text.clear();
+    // the buffer keeps its old bytes; the text is still none
+    EXPECT_STREQ("", DataSGroup::textOf(text));
 }

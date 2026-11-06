@@ -25,6 +25,9 @@
 #include "base_cpp/ptr_reusable_pool.h"
 #include "base_cpp/reusable.h"
 #include "math/algebra.h"
+#include <optional>
+#include <string>
+#include <string_view>
 #include <vector>
 
 #ifdef _WIN32
@@ -197,19 +200,74 @@ namespace indigo
         Array<char> querycode;       // SDT in Molfile format (query code)
         Array<char> queryoper;       // SDT in Molfile format (query operator)
         Array<char> data;            // SCD/SED in Molfile format (field data)
+        Array<char> context;         // what the data belongs to, as the KET contract names it; no molfile field holds it
         Array<char> sa_natreplace;   // NATREPLACE (V3000 - 2017)
         Nullable<Vec2f> display_pos; // SDD in Molfile format
         bool detached;               // or attached
         bool relative;               // or absolute
         bool display_units;
         Nullable<int> num_chars; // number of characters
+        int displayedChars() const
+        {
+            return num_chars.value_or(0); // 0 for all of them
+        }
+        Vec2f displayPosition() const
+        {
+            return display_pos.value_or(Vec2f(0, 0));
+        }
         Nullable<int> dasp_pos;
-        Nullable<char> tag; // tag
+        int daspPosition() const; // the first of the nine positions when none is set
+        Nullable<char> tag;       // tag
+        bool hasTag() const;      // a blank tag is none
+        // The C string of a text of the group, empty for one that is not set: a cleared Array keeps its old buffer
+        static const char* textOf(const Array<char>& text);
+        static bool hasText(const Array<char>& text);
+        // The text without the blanks around it
+        static std::string_view trimmed(const char* text);
         static constexpr char mrv_implicit_h[] = "MRV_IMPLICIT_H";
         static constexpr char impl_prefix[] = "IMPL_H";
         static constexpr size_t impl_prefix_len = sizeof(impl_prefix) - 1;
         bool isMrv_implicit();
         void setMrv_implicit(int atom_idx, int hydrogens_count);
+
+        // The values the molfile format allows in the fields of a data S-group (M  SDT, M  SDD, M  SED).
+        // A blank text is a field that is not set. A reader rejects anything else with the reason declared next to
+        // the check, after the value: "'QBETWEEN' is not a valid query operator".
+        static bool isValidFieldType(const char* text); // F, N or T
+        static constexpr const char* INVALID_FIELD_TYPE = "is not a valid field type";
+        static bool isValidQueryType(const char* text); // IQ
+        static constexpr const char* INVALID_QUERY_TYPE = "is not a valid query type";
+        static bool isValidQueryOperator(const char* text); // =, <>, <, <=, >, >=, BETWEEN, CONTAINS or LIKE, any case
+        static constexpr const char* INVALID_QUERY_OPERATOR = "is not a valid query operator";
+        // The same values by the names KET gives them: the text of a molfile, trimmed, to its name, and a name, spelled
+        // exactly, to the text the model keeps. nullptr for a text or a name outside the format; a blank type is TEXT
+        // and a blank query type is DATA, while a blank operator has no name
+        static const char* fieldTypeName(const char* text);     // FORMATTED, NUMERIC or TEXT
+        static const char* fieldTypeText(const char* name);     // F, N or T
+        static const char* queryTypeName(const char* text);     // DATA or QUERY
+        static const char* queryTypeText(const char* name);     // blank or IQ
+        static const char* queryOperatorName(const char* text); // EQUAL, NOT_EQUAL, LESS, LESS_OR_EQUAL, GREATER,
+                                                                // GREATER_OR_EQUAL, BETWEEN, CONTAINS or LIKE
+        static const char* queryOperatorText(const char* name);
+        static constexpr int MAX_DISPLAYED_CHARS = 999; // three columns of M  SDD
+        static bool isValidDisplayedChars(int count);   // 0 for all of them (ALL in a molfile), 1 to MAX_DISPLAYED_CHARS
+        static constexpr const char* INVALID_DISPLAYED_CHARS = "is not a valid number of characters to display";
+        static bool isValidDisplayCoordinate(double coordinate); // what F10.4 of M  SDD holds: -9999.9999 to 99999.9999
+        static constexpr const char* INVALID_DISPLAY_COORDINATE = "is not a valid coordinate of the value";
+        static std::string displayCoordinateText(double coordinate); // with the four decimals of F10.4: "-10000.0000"
+        // display_pos keeps single precision: whether the four decimals of F10.4 survive it (1234.5678 does not)
+        static bool keepsDisplayCoordinate(double coordinate);
+        static constexpr const char* NOT_KEPT_DISPLAY_COORDINATE = "cannot be kept to four decimals";
+        static bool isValidDaspPosition(int position); // 1 to 9
+        static constexpr const char* INVALID_DASP_POSITION = "is not a valid DASP position";
+        static bool isValidNumber(const char* text);
+        static constexpr const char* INVALID_NUMBER = "is not a valid numeric value";
+        // A writer's refusal of a value: the number of the group, the value, the reason
+        static constexpr const char* REJECTED_FIELD_MESSAGE = "data S-group %d: '%s' %s";
+        // A NUMERIC field holding data rather than a query: each of its lines must be a number
+        bool holdsNumbers() const;
+        // The first line of the data that is not a number while the field holds numbers; an empty line is no value
+        std::optional<std::string> lineNotANumber() const;
 
     private:
         DataSGroup(const DataSGroup&);
@@ -318,6 +376,7 @@ namespace indigo
     struct SGroupInfo
     {
         SGroup& sgroup;
+        int sgroup_idx; // its position in MoleculeSGroups
         int new_index;
         int new_parent_index;
     };

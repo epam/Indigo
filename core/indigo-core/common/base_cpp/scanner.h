@@ -81,6 +81,7 @@ namespace indigo
 
         float readFloat(void);
         bool tryReadFloat(float& value);
+        bool tryReadDouble(double& value);
         int readInt(void);
         int readInt1(void);
         int readUnsigned();

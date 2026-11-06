@@ -708,6 +708,9 @@ namespace indigo
         void clearSGroups();
 
         void getSGroupAtomsCenterPoint(SGroup& sgroup, Vec2f& res);
+        // From the origin of a relative position of data in the model and a molfile to its origin in KET, over the atoms
+        // of the group, or of its nearest ancestor with atoms when it has none; zero when no group has them
+        Vec2f getDataSGroupFirstAtomToCentre(int sgroup_idx);
         void getAtomsCenterPoint(Array<int>& atoms, Vec2f& res);
         void getAtomsCenterPoint(Vec2f& res);
         void setAtomsCenterPoint(const Vec3f& center);

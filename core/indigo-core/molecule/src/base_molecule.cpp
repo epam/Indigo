@@ -237,6 +237,7 @@ void BaseMolecule::mergeSGroupsWithSubmolecule(BaseMolecule& mol, Array<int>& ma
                 dg.detached = superdg.detached;
                 dg.display_pos = superdg.display_pos;
                 dg.data.copy(superdg.data);
+                dg.context.copy(superdg.context);
                 dg.sa_natreplace.copy(superdg.sa_natreplace);
                 dg.dasp_pos = superdg.dasp_pos;
                 dg.relative = superdg.relative;

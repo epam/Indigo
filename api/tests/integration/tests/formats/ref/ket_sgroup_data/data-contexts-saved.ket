@@ -4,9 +4,7 @@
             {
                 "$ref": "mol0"
             }
-        ],
-        "connections": [],
-        "templates": []
+        ]
     },
     "mol0": {
         "type": "molecule",
@@ -28,7 +26,7 @@
                 ]
             },
             {
-                "label": "C",
+                "label": "O",
                 "location": [
                     2.0,
                     0.0,
@@ -56,42 +54,67 @@
             {
                 "type": "DAT",
                 "atoms": [
-                    0
-                ],
-                "fieldName": "NOTE",
-                "fieldData": "hello",
-                "tag": "X",
-                "displayedChars": -5
-            },
-            {
-                "type": "DAT",
-                "atoms": [
-                    1
-                ],
-                "fieldName": "NOTE",
-                "fieldData": "hello",
-                "tag": "X",
-                "displayedChars": -100
-            },
-            {
-                "type": "DAT",
-                "atoms": [
+                    0,
+                    1,
                     2
                 ],
-                "fieldName": "NOTE",
-                "fieldData": "hello",
-                "tag": "X",
-                "displayedChars": 1000
+                "fieldData": "1",
+                "context": "Fragment",
+                "fieldName": "F1",
+                "x": 0.0,
+                "y": 0.0
             },
             {
                 "type": "DAT",
                 "atoms": [
-                    0
+                    0,
+                    1,
+                    2
                 ],
-                "fieldName": "NOTE",
-                "fieldData": "hello",
-                "tag": "X",
-                "displayedChars": 1234
+                "fieldData": "1",
+                "context": "Multifragment",
+                "fieldName": "F2",
+                "x": 0.0,
+                "y": 0.0
+            },
+            {
+                "type": "DAT",
+                "atoms": [
+                    0,
+                    1,
+                    2
+                ],
+                "fieldData": "1",
+                "context": "Bond",
+                "fieldName": "F3",
+                "x": 0.0,
+                "y": 0.0
+            },
+            {
+                "type": "DAT",
+                "atoms": [
+                    0,
+                    1,
+                    2
+                ],
+                "fieldData": "1",
+                "context": "Atom",
+                "fieldName": "F4",
+                "x": 0.0,
+                "y": 0.0
+            },
+            {
+                "type": "DAT",
+                "atoms": [
+                    0,
+                    1,
+                    2
+                ],
+                "fieldData": "1",
+                "context": "Group",
+                "fieldName": "F5",
+                "x": 0.0,
+                "y": 0.0
             }
         ]
     }

@@ -17,7 +17,9 @@
  ***************************************************************************/
 
 #include <algorithm>
+#include <iterator>
 #include <memory>
+#include <optional>
 
 #include "../layout/molecule_layout.h"
 #include "base_cpp/output.h"
@@ -46,6 +48,10 @@ using namespace indigo;
 static const char* const UNDEFINED_SGROUP_MESSAGE = "M %s refers to undefined Sgroup %d";
 // The line ends before an entry its count announces; takes the tag of the line.
 static const char* const UNEXPECTED_LINE_END_MESSAGE = "Unexpected end of M %s";
+// The lines of a data S-group, as a message names them
+static const char* const DATA_FIELD_LINE = "M SDT";
+static const char* const DATA_DISPLAY_LINE = "M SDD";
+static const char* const DATA_END_LINE = "M SED";
 
 int MolfileLoader::_readSGroupLine(const char* property, Array<char>& rest)
 {
@@ -943,7 +949,36 @@ void MolfileLoader::_readCtab2000()
                 }
                 _scanner.skipLine();
             }
-            else if (strncmp(chars, "SAL", 3) == 0 || strncmp(chars, "SBL", 3) == 0 || strncmp(chars, "SDI", 3) == 0)
+            else if (strncmp(chars, "SDI", 3) == 0)
+            {
+                // " sss nn4" and the four coordinates of a bracket
+                _scanner.skip(1);
+                const int sgroup_idx = _scanner.readIntFix(3) - 1;
+                _checkSGroupIndex(chars, sgroup_idx);
+                const int count = _scanner.readIntFix(3);
+                QS_DEF(Array<char>, rest);
+                _scanner.readLine(rest, false);
+
+                if (count == 4 && _sgroup_mapping[sgroup_idx] >= 0) // the count should always be 4
+                {
+                    BufferScanner line(rest);
+                    Vec2f* brackets = _bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]).brackets.push();
+                    float* const coordinates[] = {&brackets[0].x, &brackets[0].y, &brackets[1].x, &brackets[1].y};
+                    // four F10.4 columns; a shorter line is the free form, its numbers set apart by blanks
+                    const bool well_formatted = rest.size() >= static_cast<int>(std::size(coordinates)) * MOLFILE_F10_4_WIDTH;
+                    for (float* coordinate : coordinates)
+                    {
+                        if (well_formatted)
+                            *coordinate = line.readFloatFix(MOLFILE_F10_4_WIDTH);
+                        else
+                        {
+                            line.skipSpace();
+                            *coordinate = line.readFloat();
+                        }
+                    }
+                }
+            }
+            else if (strncmp(chars, "SAL", 3) == 0 || strncmp(chars, "SBL", 3) == 0)
             {
                 _scanner.skip(1);
                 int sgroup_idx = _scanner.readIntFix(3) - 1;
@@ -953,32 +988,14 @@ void MolfileLoader::_readCtab2000()
                     SGroup* sgroup = &_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
 
                     int n = _scanner.readIntFix(3);
-
-                    if (strncmp(chars, "SDI", 3) == 0)
+                    while (n-- > 0)
                     {
-                        if (n == 4) // should always be 4
-                        {
-                            Vec2f* brackets = sgroup->brackets.push();
-
-                            _scanner.skipSpace();
-                            brackets[0].x = _scanner.readFloat();
-                            _scanner.skipSpace();
-                            brackets[0].y = _scanner.readFloat();
-                            _scanner.skipSpace();
-                            brackets[1].x = _scanner.readFloat();
-                            _scanner.skipSpace();
-                            brackets[1].y = _scanner.readFloat();
-                        }
+                        _scanner.skip(1);
+                        if (strncmp(chars, "SAL", 3) == 0)
+                            sgroup->atoms.push(_scanner.readIntFix(3) - 1);
+                        else // SBL
+                            sgroup->getBonds().push(_scanner.readIntFix(3) - 1);
                     }
-                    else
-                        while (n-- > 0)
-                        {
-                            _scanner.skip(1);
-                            if (strncmp(chars, "SAL", 3) == 0)
-                                sgroup->atoms.push(_scanner.readIntFix(3) - 1);
-                            else // SBL
-                                sgroup->getBonds().push(_scanner.readIntFix(3) - 1);
-                        }
                 }
                 _scanner.skipLine();
             }
@@ -992,86 +1009,19 @@ void MolfileLoader::_readCtab2000()
                     BufferScanner strscan(rest);
                     DataSGroup& sgroup = (DataSGroup&)_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
 
-                    // Read field name
-                    int k = 30;
-                    while (k-- > 0)
-                    {
-                        if (strscan.isEOF())
-                            break;
-                        sgroup.name.push(strscan.readChar());
-                    }
-                    // Remove last spaces because name can have multiple words
-                    while (sgroup.name.size() > 0)
-                    {
-                        if (isspace(sgroup.name.top()))
-                            sgroup.name.pop();
-                        else
-                            break;
-                    }
+                    sgroup.name.readString(_readFixedField(strscan, MOLFILE_DATA_FIELD_NAME_WIDTH).c_str(), true);
+                    sgroup.type.readString(_readFixedField(strscan, MOLFILE_DATA_FIELD_TYPE_WIDTH).c_str(), true);
+                    sgroup.description.readString(_readFixedField(strscan, MOLFILE_DATA_FIELD_UNITS_WIDTH).c_str(), true);
+                    sgroup.querycode.readString(_readFixedField(strscan, MOLFILE_DATA_QUERY_TYPE_WIDTH).c_str(), true);
+                    sgroup.queryoper.readString(_readFixedField(strscan, MOLFILE_DATA_QUERY_OPERATOR_WIDTH).c_str(), true);
 
-                    sgroup.name.push(0);
-
-                    // Read field type
-                    k = 2;
-                    while (k-- > 0)
-                    {
-                        if (strscan.isEOF())
-                            break;
-                        sgroup.type.push(strscan.readChar());
-                    }
-                    sgroup.type.push(0);
-
-                    // Read field description
-                    k = 20;
-                    while (k-- > 0)
-                    {
-                        if (strscan.isEOF())
-                            break;
-                        sgroup.description.push(strscan.readChar());
-                    }
-                    // Remove last spaces because dscription can have multiple words?
-                    while (sgroup.description.size() > 0)
-                    {
-                        if (isspace(sgroup.description.top()))
-                            sgroup.description.pop();
-                        else
-                            break;
-                    }
-                    sgroup.description.push(0);
-
-                    // Read query code
-                    k = 2;
-                    while (k-- > 0)
-                    {
-                        if (strscan.isEOF())
-                            break;
-                        sgroup.querycode.push(strscan.readChar());
-                    }
-                    while (sgroup.querycode.size() > 0)
-                    {
-                        if (isspace(sgroup.querycode.top()))
-                            sgroup.querycode.pop();
-                        else
-                            break;
-                    }
-                    sgroup.querycode.push(0);
-
-                    // Read query operator
-                    k = 20;
-                    while (k-- > 0)
-                    {
-                        if (strscan.isEOF())
-                            break;
-                        sgroup.queryoper.push(strscan.readChar());
-                    }
-                    while (sgroup.queryoper.size() > 0)
-                    {
-                        if (isspace(sgroup.queryoper.top()))
-                            sgroup.queryoper.pop();
-                        else
-                            break;
-                    }
-                    sgroup.queryoper.push(0);
+                    const int sgroup_number = sgroup_idx + 1;
+                    _checkDataField(DataSGroup::isValidFieldType(sgroup.type.ptr()), DATA_FIELD_LINE, sgroup_number, sgroup.type.ptr(),
+                                    DataSGroup::INVALID_FIELD_TYPE);
+                    _checkDataField(DataSGroup::isValidQueryType(sgroup.querycode.ptr()), DATA_FIELD_LINE, sgroup_number, sgroup.querycode.ptr(),
+                                    DataSGroup::INVALID_QUERY_TYPE);
+                    _checkDataField(DataSGroup::isValidQueryOperator(sgroup.queryoper.ptr()), DATA_FIELD_LINE, sgroup_number, sgroup.queryoper.ptr(),
+                                    DataSGroup::INVALID_QUERY_OPERATOR);
                 }
             }
             else if (strncmp(chars, "SDD", 3) == 0)
@@ -1084,7 +1034,7 @@ void MolfileLoader::_readCtab2000()
                     BufferScanner strscan(rest);
                     DataSGroup& sgroup = (DataSGroup&)_bmol->sgroups.getSGroup(_sgroup_mapping[sgroup_idx]);
 
-                    _readSGroupDisplay(strscan, sgroup);
+                    _readSGroupDisplay(strscan, sgroup, DATA_DISPLAY_LINE, sgroup_idx + 1);
                 }
             }
             else if (strncmp(chars, "SED", 3) == 0 || strncmp(chars, "SCD", 3) == 0)
@@ -1113,10 +1063,19 @@ void MolfileLoader::_readCtab2000()
                             else
                                 break;
                         }
+                        // the line the SCD lines before this SED started, cut as the format cuts a longer one
+                        int line_start = sgroup.data.size();
+                        while (line_start > 0 && sgroup.data[line_start - 1] != '\n')
+                            line_start--;
+                        if (sgroup.data.size() - line_start > MOLFILE_V2000_MAX_DATA_LINE_LENGTH)
+                            sgroup.data.resize(line_start + MOLFILE_V2000_MAX_DATA_LINE_LENGTH);
                         // Add new paragraph. Last '\n' will be cleaned at the end
                         sgroup.data.push('\n');
                         if (sgroup.data.top() != 0)
                             sgroup.data.push(0);
+                        const std::optional<std::string> not_a_number = sgroup.lineNotANumber();
+                        _checkDataField(!not_a_number.has_value(), DATA_END_LINE, sgroup_idx + 1, not_a_number.value_or("").c_str(),
+                                        DataSGroup::INVALID_NUMBER);
                     }
                 }
             }

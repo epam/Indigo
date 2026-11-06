@@ -21,8 +21,16 @@
 
 #include "base_cpp/tree.h"
 #include "molecule/molecule_sgroups.h"
+#include "molecule/molfile_commons.h"
 
 #include <algorithm>
+#include <cctype>
+#include <cstdio>
+#include <cstring>
+#include <functional>
+#include <iterator>
+#include <optional>
+#include <string_view>
 #include <typeindex>
 #include <unordered_map>
 
@@ -146,6 +154,238 @@ void DataSGroup::setMrv_implicit(int atom_idx, int hydrogens_count)
     detached = true;
 }
 
+// A value of a field of a data S-group: the text of a molfile, which the model keeps, and its name in KET
+struct FieldValue
+{
+    const char* text;
+    const char* name;
+};
+static const FieldValue FIELD_TYPES[] = {{"F", "FORMATTED"}, {"N", "NUMERIC"}, {"T", "TEXT"}};
+static const FieldValue& NUMERIC_FIELD_TYPE = FIELD_TYPES[1];
+static const FieldValue& TEXT_FIELD_TYPE = FIELD_TYPES[2];               // what a blank type means
+static const FieldValue QUERY_TYPES[] = {{"", "DATA"}, {"IQ", "QUERY"}}; // a blank query type: the field holds data
+static const FieldValue& QUERY_TYPE_QUERY = QUERY_TYPES[1];
+static const FieldValue QUERY_OPERATORS[] = {{"=", "EQUAL"},          {"<>", "NOT_EQUAL"},      {"<", "LESS"},
+                                             {"<=", "LESS_OR_EQUAL"}, {">", "GREATER"},         {">=", "GREATER_OR_EQUAL"},
+                                             {"BETWEEN", "BETWEEN"},  {"CONTAINS", "CONTAINS"}, {"LIKE", "LIKE"}};
+static constexpr int MIN_DASP_POSITION = 1;
+static constexpr int MAX_DASP_POSITION = 9;
+static constexpr int DEFAULT_DASP_POSITION = MIN_DASP_POSITION; // the first position, the default of a molfile and of KET
+// The four decimals of F10.4, without its width
+static const char* const DISPLAY_COORDINATE_FORMAT = "%.4f";
+// Holds any float in that format; snprintf cuts a longer double
+static constexpr std::size_t DISPLAY_COORDINATE_TEXT_SIZE = 64;
+
+std::string_view DataSGroup::trimmed(const char* text)
+{
+    const std::string_view value = text != nullptr ? text : "";
+    const auto first = value.find_first_not_of(' ');
+    if (first == std::string_view::npos)
+        return {};
+    return value.substr(first, value.find_last_not_of(' ') - first + 1);
+}
+
+static bool equalsIgnoringCase(std::string_view lhs, std::string_view rhs)
+{
+    return lhs.size() == rhs.size() &&
+           std::equal(lhs.begin(), lhs.end(), rhs.begin(), [](char l, char r) { return std::toupper((unsigned char)l) == std::toupper((unsigned char)r); });
+}
+
+// The value spelled by the text once trimmed, compared as the field compares its texts; nullptr for any other text
+template <std::size_t N, typename Equals>
+static const FieldValue* valueByText(const FieldValue (&values)[N], const char* text, Equals equals)
+{
+    const std::string_view spelled = DataSGroup::trimmed(text);
+    const auto found = std::find_if(std::begin(values), std::end(values), [&](const FieldValue& value) { return equals(spelled, value.text); });
+    return found != std::end(values) ? found : nullptr;
+}
+
+// The value of the name, spelled exactly; nullptr for any other name
+template <std::size_t N>
+static const FieldValue* valueByName(const FieldValue (&values)[N], const char* name)
+{
+    if (name == nullptr)
+        return nullptr;
+    const auto found = std::find_if(std::begin(values), std::end(values), [&](const FieldValue& value) { return std::strcmp(value.name, name) == 0; });
+    return found != std::end(values) ? found : nullptr;
+}
+
+static const FieldValue* fieldTypeValue(const char* text)
+{
+    return DataSGroup::trimmed(text).empty() ? &TEXT_FIELD_TYPE : valueByText(FIELD_TYPES, text, std::equal_to<std::string_view>());
+}
+
+static const FieldValue* queryTypeValue(const char* text)
+{
+    return valueByText(QUERY_TYPES, text, std::equal_to<std::string_view>());
+}
+
+static const FieldValue* queryOperatorValue(const char* text)
+{
+    return valueByText(QUERY_OPERATORS, text, equalsIgnoringCase);
+}
+
+static const char* valueName(const FieldValue* value)
+{
+    return value != nullptr ? value->name : nullptr;
+}
+
+static const char* valueText(const FieldValue* value)
+{
+    return value != nullptr ? value->text : nullptr;
+}
+
+bool DataSGroup::isValidFieldType(const char* text)
+{
+    return fieldTypeValue(text) != nullptr;
+}
+
+bool DataSGroup::isValidQueryType(const char* text)
+{
+    return queryTypeValue(text) != nullptr;
+}
+
+bool DataSGroup::isValidQueryOperator(const char* text)
+{
+    return trimmed(text).empty() || queryOperatorValue(text) != nullptr;
+}
+
+const char* DataSGroup::fieldTypeName(const char* text)
+{
+    return valueName(fieldTypeValue(text));
+}
+
+const char* DataSGroup::fieldTypeText(const char* name)
+{
+    return valueText(valueByName(FIELD_TYPES, name));
+}
+
+const char* DataSGroup::queryTypeName(const char* text)
+{
+    return valueName(queryTypeValue(text));
+}
+
+const char* DataSGroup::queryTypeText(const char* name)
+{
+    return valueText(valueByName(QUERY_TYPES, name));
+}
+
+const char* DataSGroup::queryOperatorName(const char* text)
+{
+    return valueName(queryOperatorValue(text));
+}
+
+const char* DataSGroup::queryOperatorText(const char* name)
+{
+    return valueText(valueByName(QUERY_OPERATORS, name));
+}
+
+int DataSGroup::daspPosition() const
+{
+    return dasp_pos.value_or(DEFAULT_DASP_POSITION);
+}
+
+bool DataSGroup::hasTag() const
+{
+    const char character = tag.value_or(' ');
+    return character != 0 && character != ' ';
+}
+
+const char* DataSGroup::textOf(const Array<char>& text)
+{
+    return text.size() > 0 ? text.ptr() : "";
+}
+
+bool DataSGroup::hasText(const Array<char>& text)
+{
+    return *textOf(text) != 0;
+}
+
+bool DataSGroup::isValidDisplayedChars(int count)
+{
+    return count >= 0 && count <= MAX_DISPLAYED_CHARS;
+}
+
+bool DataSGroup::isValidDisplayCoordinate(double coordinate)
+{
+    return molfileFitsF10_4(coordinate);
+}
+
+std::string DataSGroup::displayCoordinateText(double coordinate)
+{
+    char text[DISPLAY_COORDINATE_TEXT_SIZE];
+    snprintf(text, sizeof(text), DISPLAY_COORDINATE_FORMAT, coordinate);
+    return text;
+}
+
+bool DataSGroup::keepsDisplayCoordinate(double coordinate)
+{
+    // the text of the value given and of the value display_pos keeps
+    return displayCoordinateText(coordinate) == displayCoordinateText(static_cast<float>(coordinate));
+}
+
+bool DataSGroup::isValidDaspPosition(int position)
+{
+    return position >= MIN_DASP_POSITION && position <= MAX_DASP_POSITION;
+}
+
+// A decimal number: an optional sign, digits with an optional fraction, an optional exponent
+bool DataSGroup::isValidNumber(const char* text)
+{
+    const std::string_view value = trimmed(text);
+    std::size_t pos = 0;
+    const auto skipSign = [&]() {
+        if (pos < value.size() && (value[pos] == '+' || value[pos] == '-'))
+            ++pos;
+    };
+    const auto skipDigits = [&]() {
+        const std::size_t start = pos;
+        while (pos < value.size() && std::isdigit((unsigned char)value[pos]))
+            ++pos;
+        return pos - start;
+    };
+    skipSign();
+    std::size_t mantissa_digits = skipDigits();
+    if (pos < value.size() && value[pos] == '.')
+    {
+        ++pos;
+        mantissa_digits += skipDigits();
+    }
+    if (mantissa_digits == 0)
+        return false;
+    if (pos < value.size() && (value[pos] == 'e' || value[pos] == 'E'))
+    {
+        ++pos;
+        skipSign();
+        if (skipDigits() == 0)
+            return false;
+    }
+    return pos == value.size();
+}
+
+bool DataSGroup::holdsNumbers() const
+{
+    return fieldTypeValue(textOf(type)) == &NUMERIC_FIELD_TYPE && queryTypeValue(textOf(querycode)) != &QUERY_TYPE_QUERY;
+}
+
+std::optional<std::string> DataSGroup::lineNotANumber() const
+{
+    if (!holdsNumbers())
+        return std::nullopt;
+    std::string_view lines = textOf(data);
+    while (!lines.empty())
+    {
+        const std::size_t end = lines.find('\n');
+        const std::string line(lines.substr(0, end));
+        if (!line.empty() && !isValidNumber(line.c_str()))
+            return line;
+        if (end == std::string_view::npos)
+            break;
+        lines.remove_prefix(end + 1);
+    }
+    return std::nullopt;
+}
+
 Superatom::Superatom()
 {
     _reset();
@@ -220,7 +460,7 @@ void DataSGroup::_reset()
     detached = false;
     relative = false;
     display_units = false;
-    dasp_pos = 1;
+    dasp_pos = DEFAULT_DASP_POSITION;
     num_chars = 0;
     tag = ' ';
     cbonds.clear();
@@ -230,6 +470,7 @@ void DataSGroup::_reset()
     querycode.clear();
     queryoper.clear();
     data.clear();
+    context.clear();
     sa_natreplace.clear();
     display_pos.reset();
 }
@@ -982,7 +1223,7 @@ std::vector<SGroupInfo> MoleculeSGroups::getOrderedSGroups()
     for (int i = begin(); i != end(); i = next(i))
     {
         pool_index_to_info_index[i] = static_cast<int>(infos.size());
-        infos.push_back({getSGroup(i), 0, 0});
+        infos.push_back({getSGroup(i), i, 0, 0});
         pool_positions.push_back(i);
     }
 

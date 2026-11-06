@@ -60,7 +60,6 @@ namespace indigo
         constexpr static int MAX_RING_BOND_COUNT = 4;
         constexpr static int MAX_SUBSTITUTION_COUNT = 6;
         constexpr static int SGROUP_DATA_CHUNK_SIZE = 69;
-        constexpr static int SGROUP_DATA_MAX_DISPLAYED_CHARS = 999;
 
         MolfileSaver(Output& output);
 
@@ -123,8 +122,16 @@ namespace indigo
         void _writeHapticKeys(Output& output, BaseMolecule& mol, const HapticRecord& record);
 
         void _writeGenericSGroup3000(SGroup& sgroup, const SGroupInfo& info, Output& output);
+        // Throws on a field value that a molfile, V2000 or V3000 alike, does not allow; KET and the API may hold one
+        static void _checkDataSGroup(const DataSGroup& datasgroup, int sgroup_number);
+        // The first thing of the molecule the columns of V2000 cannot hold, named for a message; empty when V2000
+        // holds everything. MODE_AUTO writes V3000 then, and a requested V2000 fails with it
+        static std::string _beyondV2000(BaseMolecule& mol);
         void _writeDataSGroupDisplay(DataSGroup& datasgroup, Output& out);
         void _writeFormattedString(Output& output, Array<char>& str, int length);
+        // " KEY=value" of V3000: the value in double quotes when it holds a blank, a quote, '=', '(' or ')', with a
+        // double quote inside doubled; FIELDDATA is quoted always
+        static void _writeV3000Value(Output& output, const char* key, const char* value, bool always_quoted);
         static bool _checkAttPointOrder(BaseMolecule& mol, int rsite);
         static bool _hasNeighborEitherBond(BaseMolecule& mol, int edge_idx);
 
