@@ -41,6 +41,57 @@ bool is_fragment(CdxmlNode& node)
     return node.has_fragment || node.type == kCDXNodeType_Nickname || node.type == kCDXNodeType_Fragment;
 }
 
+static bool is_symbol_font(const std::string& name, int charset)
+{
+    return name == "Symbol" || charset == kCDXCharSetMacSymbol;
+}
+
+// Symbol font codes whose character differs from the ASCII/Latin-1 character with the same code: minus, the Greek
+// letters, and the signs less-than or equal, infinity, the left-right, left and right arrows, greater-than or equal,
+// multiplication, bullet, division, not equal, almost equal and dot operator. From the Adobe Symbol Encoding to Unicode
+// table, https://unicode.org/Public/MAPPINGS/VENDORS/ADOBE/symbol.txt (where it gives two characters for a code, the
+// Greek letter is used). Other codes, such as digits, brackets, "+", the degree and plus-minus signs, are the same.
+static const std::unordered_map<uint32_t, uint32_t> kSymbolFontToUnicode = {
+    {0x2D, 0x2212}, {0x41, 0x0391}, {0x42, 0x0392}, {0x43, 0x03A7}, {0x44, 0x0394}, {0x45, 0x0395}, {0x46, 0x03A6}, {0x47, 0x0393}, {0x48, 0x0397},
+    {0x49, 0x0399}, {0x4A, 0x03D1}, {0x4B, 0x039A}, {0x4C, 0x039B}, {0x4D, 0x039C}, {0x4E, 0x039D}, {0x4F, 0x039F}, {0x50, 0x03A0}, {0x51, 0x0398},
+    {0x52, 0x03A1}, {0x53, 0x03A3}, {0x54, 0x03A4}, {0x55, 0x03A5}, {0x56, 0x03C2}, {0x57, 0x03A9}, {0x58, 0x039E}, {0x59, 0x03A8}, {0x5A, 0x0396},
+    {0x61, 0x03B1}, {0x62, 0x03B2}, {0x63, 0x03C7}, {0x64, 0x03B4}, {0x65, 0x03B5}, {0x66, 0x03C6}, {0x67, 0x03B3}, {0x68, 0x03B7}, {0x69, 0x03B9},
+    {0x6A, 0x03D5}, {0x6B, 0x03BA}, {0x6C, 0x03BB}, {0x6D, 0x03BC}, {0x6E, 0x03BD}, {0x6F, 0x03BF}, {0x70, 0x03C0}, {0x71, 0x03B8}, {0x72, 0x03C1},
+    {0x73, 0x03C3}, {0x74, 0x03C4}, {0x75, 0x03C5}, {0x76, 0x03D6}, {0x77, 0x03C9}, {0x78, 0x03BE}, {0x79, 0x03C8}, {0x7A, 0x03B6}, {0xA3, 0x2264},
+    {0xA5, 0x221E}, {0xAB, 0x2194}, {0xAC, 0x2190}, {0xAE, 0x2192}, {0xB3, 0x2265}, {0xB4, 0x00D7}, {0xB7, 0x2022}, {0xB8, 0x00F7}, {0xB9, 0x2260},
+    {0xBB, 0x2248}, {0xD7, 0x22C5}};
+
+// The text of a Symbol font run is UTF-8 here: CDXML text, or CDX bytes after the Latin-1 conversion, so a code
+// 0x80-0xFF arrives as a two-byte sequence.
+static std::string symbol_font_to_unicode(const std::string& text)
+{
+    std::string result;
+    for (size_t i = 0; i < text.size();)
+    {
+        auto lead = static_cast<unsigned char>(text[i]);
+        size_t len = lead < 0x80 ? 1 : (lead < 0xE0 ? 2 : (lead < 0xF0 ? 3 : 4));
+        uint32_t code = lead;
+        if (len == 2 && i + 1 < text.size())
+            code = ((lead & 0x1F) << 6) | (static_cast<unsigned char>(text[i + 1]) & 0x3F);
+        auto it = len <= 2 ? kSymbolFontToUnicode.find(code) : kSymbolFontToUnicode.end();
+        if (it == kSymbolFontToUnicode.end())
+            result.append(text, i, len);
+        else if (it->second < 0x800)
+        {
+            result.push_back(static_cast<char>(0xC0 | (it->second >> 6)));
+            result.push_back(static_cast<char>(0x80 | (it->second & 0x3F)));
+        }
+        else
+        {
+            result.push_back(static_cast<char>(0xE0 | (it->second >> 12)));
+            result.push_back(static_cast<char>(0x80 | ((it->second >> 6) & 0x3F)));
+            result.push_back(static_cast<char>(0x80 | (it->second & 0x3F)));
+        }
+        i += len;
+    }
+    return result;
+}
+
 IMPL_ERROR(MoleculeCdxmlLoader, "CDXML loader");
 IMPL_ERROR(CDXMLReader, "CDXML reader");
 IMPL_ERROR(CDXElement, "CDX element");
@@ -195,9 +246,30 @@ std::string CDXProperty::formatValue(ECDXType cdx_type) const
     }
     break;
 
-    case ECDXType::CDXFontTable:
-        result = "FontTable not implemented";
-        break;
+    case ECDXType::CDXFontTable: {
+        // UINT16 platform, UINT16 font count, then per font: UINT16 id, UINT16 charset, UINT16 name length, name.
+        // One line per font: "<id> <charset> <name>". A truncated table gives the fonts read so far.
+        uint16_t count = 0;
+        size_t pos = 2 * sizeof(uint16_t);
+        if (_size >= pos)
+            std::memcpy(&count, _data + sizeof(uint16_t), sizeof(count));
+        for (uint16_t i = 0; i < count && pos + 3 * sizeof(uint16_t) <= _size; ++i)
+        {
+            uint16_t font[3]; // id, charset, name length
+            std::memcpy(font, _data + pos, sizeof(font));
+            pos += sizeof(font);
+            if (pos + font[2] > _size)
+                break;
+            // A line break in a font name would start a new line of the table.
+            std::string name(reinterpret_cast<const char*>(_data + pos), font[2]);
+            std::replace_if(name.begin(), name.end(), [](char c) { return c == '\r' || c == '\n'; }, ' ');
+            if (i)
+                result += "\n";
+            result += std::to_string(font[0]) + " " + std::to_string(font[1]) + " " + name;
+            pos += font[2];
+        }
+    }
+    break;
 
     case ECDXType::CDXFontStyle:
         result = "FontStyle not implemented";
@@ -805,7 +877,23 @@ void MoleculeCdxmlLoader::parseCDXMLAttributes(BaseCDXProperty& prop)
                        [](const std::string& s) -> uint32_t { return static_cast<uint32_t>(std::stoul(s)); });
     };
 
-    auto font_table_lambda = [this](const std::string& data) {};
+    // Binary CDX only; CDXML has a <fonttable> element (parseFontTable). Only the Symbol fonts are taken from it,
+    // so a malformed line is skipped: the table must never make a load fail.
+    auto font_table_lambda = [this](const std::string& data) {
+        for (const auto& font : split(data, '\n'))
+        {
+            const char* end = font.data() + font.size();
+            int id = 0, charset = 0;
+            auto parsed = std::from_chars(font.data(), end, id);
+            if (parsed.ec != std::errc{} || parsed.ptr == end || *parsed.ptr != ' ')
+                continue;
+            parsed = std::from_chars(parsed.ptr + 1, end, charset);
+            if (parsed.ec != std::errc{} || parsed.ptr == end || *parsed.ptr != ' ')
+                continue;
+            if (is_symbol_font(std::string(parsed.ptr + 1, end), charset))
+                symbol_fonts.insert(id);
+        }
+    };
 
     std::unordered_map<std::string, std::function<void(const std::string&)>> cdxml_dispatcher = {
         {"BoundingBox", cdxml_bbox_lambda}, {"BondLength", cdxml_bond_length_lambda}, {"colortable", color_table_lambda}, {"fonttable", font_table_lambda}};
@@ -841,6 +929,7 @@ void MoleculeCdxmlLoader::parseFontTable(BaseCDXElement& elem)
         if (font_elem->name() == "font")
         {
             int font_id = 0;
+            int charset = kCDXCharSetUnknown;
             std::string font_name;
             for (auto font_prop = font_elem->firstProperty(); font_prop->hasContent(); font_prop = font_prop->next())
             {
@@ -848,9 +937,17 @@ void MoleculeCdxmlLoader::parseFontTable(BaseCDXElement& elem)
                     font_id = std::stoi(font_prop->value());
                 else if (font_prop->name() == "name")
                     font_name = font_prop->value();
+                else if (font_prop->name() == "charset")
+                {
+                    auto charset_it = kCharsetStrToInt.find(font_prop->value());
+                    if (charset_it != kCharsetStrToInt.end())
+                        charset = charset_it->second;
+                }
             }
             if (font_id && font_name.size())
                 font_table.emplace(font_id, font_name);
+            if (font_id && is_symbol_font(font_name, charset))
+                symbol_fonts.insert(font_id);
         }
     }
 }
@@ -1995,6 +2092,19 @@ void MoleculeCdxmlLoader::_parseLabel(BaseCDXElement& elem, std::string& label)
     }
 }
 
+// A text object is a reaction plus only when its whole text, without surrounding whitespace, is "+". A caption such as
+// "(+)-1" can have its "+" in a run of its own.
+bool MoleculeCdxmlLoader::_isPlusText(BaseCDXElement& elem)
+{
+    std::string text;
+    for (auto text_style = elem.firstChildElement(); text_style->hasContent(); text_style = text_style->nextSiblingElement())
+        if (text_style->name() == "s")
+            text += text_style->getText();
+    const char* spaces = " \t\r\n";
+    auto first = text.find_first_not_of(spaces);
+    return first != std::string::npos && text[first] == '+' && text.find_last_not_of(spaces) == first;
+}
+
 void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vector<SimpleTextObject>& text_objects)
 {
     Vec2f text_pos;
@@ -2032,6 +2142,12 @@ void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vecto
     if (bbox.width() == 0.0f || bbox.height() == 0.0f)
         bbox.copy(Rect2f(text_pos, text_pos));
 
+    if (_isPlusText(elem))
+    {
+        _pluses.push_back(kto.boundingBox().center());
+        return;
+    }
+
     for (auto text_style = elem.firstChildElement(); text_style->hasContent(); text_style = text_style->nextSiblingElement())
     {
         std::string text_element = text_style->name();
@@ -2045,12 +2161,6 @@ void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vecto
             // workaround for empty text. bug in tinyxml2.
             if (style_text.empty())
                 style_text += " ";
-
-            if (style_text == "+")
-            {
-                _pluses.push_back(kto.boundingBox().center());
-                return;
-            }
 
             // add paragraph
             if (kto.block().empty())
@@ -2066,6 +2176,9 @@ void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vecto
                 font_color_index.reset();
                 auto style = text_style->firstProperty();
                 applyDispatcher(*style, style_dispatcher);
+
+                if (symbol_fonts.count(font_id))
+                    style_text = symbol_font_to_unicode(style_text);
 
                 // fill fss
 
@@ -2174,6 +2287,12 @@ void MoleculeCdxmlLoader::_parseText(BaseCDXElement& elem, std::vector<CdxmlText
 
     applyDispatcher(*elem.firstProperty().get(), text_dispatcher);
 
+    if (_isPlusText(elem))
+    {
+        _pluses.push_back(text_bbox.center());
+        return;
+    }
+
     StringBuffer s;
     Writer<StringBuffer> writer(s);
     writer.StartObject();
@@ -2188,12 +2307,6 @@ void MoleculeCdxmlLoader::_parseText(BaseCDXElement& elem, std::vector<CdxmlText
         if (text_element == "s")
         {
             std::string style_text = text_style->getText();
-            if (style_text == "+")
-            {
-                _pluses.push_back(text_bbox.center());
-                return;
-            }
-
             if (ket_text_lines.empty())
                 ket_text_lines.emplace_back();
 

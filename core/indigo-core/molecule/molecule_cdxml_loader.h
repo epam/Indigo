@@ -22,6 +22,7 @@
 #include <charconv>
 #include <functional>
 #include <regex>
+#include <set>
 #include <sstream>
 #include <string>
 #include <tinyxml2.h>
@@ -943,6 +944,8 @@ namespace indigo
         std::vector<CdxmlBracket> brackets;
         std::vector<SimpleTextObject> ket_text_objects;
         std::map<int, std::string> font_table;
+        // Fonts whose runs are in the Symbol font encoding (Greek letters typed as Latin ones).
+        std::set<int> symbol_fonts;
         std::vector<uint32_t> color_table;
 
     protected:
@@ -958,6 +961,7 @@ namespace indigo
         void _parseBracket(CdxmlBracket& bracket, BaseCDXProperty& prop);
         void _parseText(BaseCDXElement& elem, std::vector<CdxmlText>& text_parsed);
         void _parseTextToKetObject(BaseCDXElement& elem, std::vector<SimpleTextObject>& text_objects);
+        bool _isPlusText(BaseCDXElement& elem);
 
         void _parseLabel(BaseCDXElement& elem, std::string& label);
 
