@@ -16,15 +16,14 @@
  * limitations under the License.
  ***************************************************************************/
 
-// How rigid moves carry the values of data S-groups, and where SGroupDataLayout puts them after their atoms moved.
-// Every move is a quarter turn, a shift, a scale, a stretch along an axis or a mirror, so every expected position is
-// exact.
+// How rigid moves carry the values of data S-groups, and where SGroupLayout puts them after their atoms moved. Every
+// move is a quarter turn, a shift, a scale or a mirror, so every expected position is exact up to the rounding of the fit.
 
 #include <initializer_list>
 
 #include <gtest/gtest.h>
 
-#include <layout/sgroup_data_layout.h>
+#include <layout/sgroup_layout.h>
 #include <molecule/elements.h>
 #include <molecule/molecule.h>
 
@@ -32,9 +31,11 @@
 
 using namespace indigo;
 
-class IndigoCoreSGroupDataLayoutTest : public IndigoCoreTest
+class IndigoCoreSGroupValueLayoutTest : public IndigoCoreTest
 {
 protected:
+    static constexpr float POSITION_TOLERANCE = 1e-5f;
+
     static int addAtom(Molecule& mol, float x, float y)
     {
         const int atom = mol.addAtom(ELEM_C);
@@ -61,11 +62,11 @@ protected:
     static void expectPosition(const DataSGroup& value, float x, float y)
     {
         ASSERT_TRUE(value.display_pos.has_value());
-        EXPECT_FLOAT_EQ(x, value.display_pos.value().x);
-        EXPECT_FLOAT_EQ(y, value.display_pos.value().y);
+        EXPECT_NEAR(x, value.display_pos.value().x, POSITION_TOLERANCE);
+        EXPECT_NEAR(y, value.display_pos.value().y, POSITION_TOLERANCE);
     }
 
-    // A quarter turn of the bond (0, 0)-(1, 0) about the origin, then a shift by (2, 3)
+    // A quarter turn of a horizontal bond, then a shift
     static void turnAndShift(Molecule& mol, int first, int second)
     {
         mol.setAtomXyz(first, 2.f, 3.f, 0.f);
@@ -73,7 +74,7 @@ protected:
     }
 };
 
-TEST_F(IndigoCoreSGroupDataLayoutTest, RigidMoves_ShiftAndScaleAbsolute_OnlyScaleRelative)
+TEST_F(IndigoCoreSGroupValueLayoutTest, RigidMoves_ShiftAndScaleAbsolute_OnlyScaleRelative)
 {
     Molecule mol;
     const int first = addAtom(mol, 0.f, 0.f), second = addAtom(mol, 1.f, 0.f);
@@ -92,81 +93,123 @@ TEST_F(IndigoCoreSGroupDataLayoutTest, RigidMoves_ShiftAndScaleAbsolute_OnlyScal
     EXPECT_FALSE(unplaced.display_pos.has_value());
 }
 
-TEST_F(IndigoCoreSGroupDataLayoutTest, Absolute_TurnedAndShifted_KeepsItsPlaceAgainstTheAtoms)
+TEST_F(IndigoCoreSGroupValueLayoutTest, Absolute_TurnedAndShifted_KeepsItsPlaceAgainstTheAtoms)
 {
     Molecule mol;
     const int first = addAtom(mol, 0.f, 0.f), second = addAtom(mol, 1.f, 0.f);
     DataSGroup& value = addValue(mol, {first, second}, 0.5f, -1.f);
 
-    SGroupDataLayout layout(mol);
+    SGroupLayout layout(mol);
     turnAndShift(mol, first, second);
     layout.update();
 
     expectPosition(value, 3.f, 3.5f);
 }
 
-TEST_F(IndigoCoreSGroupDataLayoutTest, Relative_TurnedAndShifted_OnlyTurns)
+TEST_F(IndigoCoreSGroupValueLayoutTest, Relative_TurnedAndShifted_OnlyTurns)
 {
     Molecule mol;
-    const int first = addAtom(mol, 0.f, 0.f), second = addAtom(mol, 1.f, 0.f);
+    const int first = addAtom(mol, 1.f, 2.f), second = addAtom(mol, 2.f, 2.f);
     DataSGroup& value = addValue(mol, {first, second}, 0.5f, -1.f);
     value.relative = true;
 
-    SGroupDataLayout layout(mol);
+    SGroupLayout layout(mol);
     turnAndShift(mol, first, second);
     layout.update();
 
     expectPosition(value, 1.f, 0.5f);
 }
 
-TEST_F(IndigoCoreSGroupDataLayoutTest, Relative_StretchedAtoms_KeepsThePointItMarks)
+TEST_F(IndigoCoreSGroupValueLayoutTest, Relative_ScaledAtoms_ScaleTheOffsetFromTheFirstAtom)
 {
     Molecule mol;
-    const int first = addAtom(mol, 0.f, 0.f), second = addAtom(mol, 1.f, 0.f);
+    const int first = addAtom(mol, 1.f, 1.f), second = addAtom(mol, 2.f, 1.f);
     DataSGroup& value = addValue(mol, {first, second}, 0.5f, -1.f);
     value.relative = true;
 
-    SGroupDataLayout layout(mol);
-    mol.setAtomXyz(first, -1.f, 0.f, 0.f);
-    mol.setAtomXyz(second, 2.f, 0.f, 0.f);
+    SGroupLayout layout(mol);
+    mol.setAtomXyz(first, 0.f, 1.f, 0.f);
+    mol.setAtomXyz(second, 3.f, 1.f, 0.f);
     layout.update();
 
-    expectPosition(value, 1.5f, -1.f);
+    expectPosition(value, 1.5f, -3.f);
 }
 
-TEST_F(IndigoCoreSGroupDataLayoutTest, StretchedAtoms_ShiftTheValueWithoutScalingIt)
+TEST_F(IndigoCoreSGroupValueLayoutTest, ScaledAtoms_ScaleTheDistanceOfTheValue)
 {
     Molecule mol;
     const int first = addAtom(mol, 0.f, 0.f), second = addAtom(mol, 1.f, 0.f);
     DataSGroup& value = addValue(mol, {first, second}, 0.5f, -1.f);
 
-    SGroupDataLayout layout(mol);
+    SGroupLayout layout(mol);
     mol.setAtomXyz(second, 2.f, 0.f, 0.f);
     layout.update();
 
-    expectPosition(value, 1.f, -1.f);
+    expectPosition(value, 1.f, -2.f);
 }
 
-TEST_F(IndigoCoreSGroupDataLayoutTest, MirroredSymmetricAtoms_ShiftTheValueWithoutTurningIt)
+TEST_F(IndigoCoreSGroupValueLayoutTest, MirroredAtoms_MirrorTheValue)
+{
+    Molecule mol;
+    const int left = addAtom(mol, 0.f, 0.f), top = addAtom(mol, 1.f, 0.5f), right = addAtom(mol, 2.f, 0.f);
+    DataSGroup& value = addValue(mol, {left, top, right}, 0.5f, -1.f);
+
+    SGroupLayout layout(mol);
+    mol.setAtomXyz(top, 1.f, -0.5f, 0.f);
+    layout.update();
+
+    expectPosition(value, 0.5f, 1.f);
+}
+
+TEST_F(IndigoCoreSGroupValueLayoutTest, MirroredSymmetricAtoms_MirrorTheValue)
 {
     Molecule mol;
     const int bottom_left = addAtom(mol, 0.f, 0.f), bottom_right = addAtom(mol, 1.f, 0.f);
     const int top_right = addAtom(mol, 1.f, 1.f), top_left = addAtom(mol, 0.f, 1.f);
-    DataSGroup& value = addValue(mol, {bottom_left, bottom_right, top_right, top_left}, 0.5f, -1.f);
+    DataSGroup& value = addValue(mol, {bottom_left, bottom_right, top_right, top_left}, 0.2f, -1.f);
 
-    SGroupDataLayout layout(mol);
-    // The square mirrored about x = 0.5 fits no turn at all; the nudge stands for the rounding that would pick one
-    const float nudge = 1.f / 65536.f;
+    SGroupLayout layout(mol);
+    // The square mirrored about x = 0.5 fits no turn at all; the nudge stands for rounding, which must not pick one
+    const float nudge = 1.f / 1048576.f;
     mol.setAtomXyz(bottom_left, 1.f + nudge, 0.f, 0.f);
     mol.setAtomXyz(bottom_right, 0.f, 0.f, 0.f);
     mol.setAtomXyz(top_right, 0.f, 1.f, 0.f);
     mol.setAtomXyz(top_left, 1.f, 1.f, 0.f);
     layout.update();
 
-    expectPosition(value, 0.5f + nudge / 4.f, -1.f);
+    expectPosition(value, 0.8f, -1.f);
 }
 
-TEST_F(IndigoCoreSGroupDataLayoutTest, NoOwnAtoms_FollowsTheAtomsOfTheParent)
+TEST_F(IndigoCoreSGroupValueLayoutTest, AtomsOnALine_KeepTheValueOffTheLine)
+{
+    Molecule mol;
+    const int left = addAtom(mol, 0.f, 0.f), middle = addAtom(mol, 1.f, 0.f), right = addAtom(mol, 2.f, 0.f);
+    DataSGroup& value = addValue(mol, {left, middle, right}, 1.f, -1.f);
+
+    SGroupLayout layout(mol);
+    mol.setAtomXyz(middle, 1.f, 1.f, 0.f);
+    layout.update();
+
+    expectPosition(value, 1.f, 1.f / 3.f - 1.f);
+}
+
+TEST_F(IndigoCoreSGroupValueLayoutTest, OneAtom_ScaledWithTheMolecule_KeepsTheScaleOfTheMove)
+{
+    Molecule mol;
+    const int atom = addAtom(mol, 1.f, 1.f);
+    DataSGroup& absolute = addValue(mol, {atom}, 1.f, 0.f);
+    DataSGroup& relative = addValue(mol, {atom}, 0.f, -1.f);
+    relative.relative = true;
+
+    SGroupLayout layout(mol);
+    mol.scale(Vec2f(0.f, 0.f), 2.f);
+    layout.update();
+
+    expectPosition(absolute, 2.f, 0.f);
+    expectPosition(relative, 0.f, -2.f);
+}
+
+TEST_F(IndigoCoreSGroupValueLayoutTest, NoOwnAtoms_FollowsTheAtomsOfTheParent)
 {
     Molecule mol;
     const int chain = addAtom(mol, 0.f, 0.f), water = addAtom(mol, 0.5f, -2.f);
@@ -174,7 +217,7 @@ TEST_F(IndigoCoreSGroupDataLayoutTest, NoOwnAtoms_FollowsTheAtomsOfTheParent)
     DataSGroup& value = addValue(mol, {}, 1.5f, -2.f);
     value.parent_idx = component;
 
-    SGroupDataLayout layout(mol);
+    SGroupLayout layout(mol);
     mol.setAtomXyz(chain, 10.f, 10.f, 0.f);
     mol.setAtomXyz(water, 3.5f, 0.f, 0.f);
     layout.update();
@@ -182,7 +225,7 @@ TEST_F(IndigoCoreSGroupDataLayoutTest, NoOwnAtoms_FollowsTheAtomsOfTheParent)
     expectPosition(value, 4.5f, 0.f);
 }
 
-TEST_F(IndigoCoreSGroupDataLayoutTest, NoOwnAtoms_ParentKnownByNumberOnly_IsFound)
+TEST_F(IndigoCoreSGroupValueLayoutTest, NoOwnAtoms_ParentKnownByNumberOnly_IsFound)
 {
     Molecule mol;
     const int water = addAtom(mol, 0.5f, -2.f);
@@ -191,14 +234,14 @@ TEST_F(IndigoCoreSGroupDataLayoutTest, NoOwnAtoms_ParentKnownByNumberOnly_IsFoun
     value.parent_group = 2;
     ASSERT_EQ(-1, value.parent_idx.value());
 
-    SGroupDataLayout layout(mol);
+    SGroupLayout layout(mol);
     mol.setAtomXyz(water, 3.5f, 0.f, 0.f);
     layout.update();
 
     expectPosition(value, 4.5f, 0.f);
 }
 
-TEST_F(IndigoCoreSGroupDataLayoutTest, NoOwnAtoms_Relative_StaysAsItIs)
+TEST_F(IndigoCoreSGroupValueLayoutTest, NoOwnAtoms_Relative_StaysAsItIs)
 {
     Molecule mol;
     const int first = addAtom(mol, 0.f, 0.f), second = addAtom(mol, 1.f, 0.f);
@@ -207,7 +250,7 @@ TEST_F(IndigoCoreSGroupDataLayoutTest, NoOwnAtoms_Relative_StaysAsItIs)
     value.relative = true;
     value.parent_idx = component;
 
-    SGroupDataLayout layout(mol);
+    SGroupLayout layout(mol);
     turnAndShift(mol, first, second);
     layout.update();
 
@@ -215,27 +258,29 @@ TEST_F(IndigoCoreSGroupDataLayoutTest, NoOwnAtoms_Relative_StaysAsItIs)
     EXPECT_EQ(1.f, value.display_pos.value().y);
 }
 
-TEST_F(IndigoCoreSGroupDataLayoutTest, NoOwnAtomsAndNoParent_StaysWhereItWas)
+TEST_F(IndigoCoreSGroupValueLayoutTest, NoOwnAtomsAndNoParent_StaysWhereItWas)
 {
     Molecule mol;
     const int first = addAtom(mol, 0.f, 0.f), second = addAtom(mol, 1.f, 0.f);
     DataSGroup& value = addValue(mol, {}, 0.5f, -1.f);
+    DataSGroup& moved = addValue(mol, {first, second}, 0.5f, -1.f);
 
-    SGroupDataLayout layout(mol);
+    SGroupLayout layout(mol);
     turnAndShift(mol, first, second);
     layout.update();
 
     expectPosition(value, 0.5f, -1.f);
+    expectPosition(moved, 3.f, 3.5f);
 }
 
-TEST_F(IndigoCoreSGroupDataLayoutTest, AtomsThatStayed_LeaveTheValueAsItIs)
+TEST_F(IndigoCoreSGroupValueLayoutTest, AtomsThatStayed_LeaveTheValueAsItIs)
 {
     Molecule mol;
     const int first = addAtom(mol, 0.f, 0.f), second = addAtom(mol, 1.f, 0.f), other = addAtom(mol, 0.3f, 0.7f);
     DataSGroup& moved = addValue(mol, {first, second}, 0.5f, -1.f);
     DataSGroup& stayed = addValue(mol, {other}, 0.1f, 0.3f);
 
-    SGroupDataLayout layout(mol);
+    SGroupLayout layout(mol);
     turnAndShift(mol, first, second);
     layout.update();
 
@@ -244,15 +289,17 @@ TEST_F(IndigoCoreSGroupDataLayoutTest, AtomsThatStayed_LeaveTheValueAsItIs)
     EXPECT_EQ(0.3f, stayed.display_pos.value().y);
 }
 
-TEST_F(IndigoCoreSGroupDataLayoutTest, WithoutPosition_GetsNone)
+TEST_F(IndigoCoreSGroupValueLayoutTest, WithoutPosition_GetsNone)
 {
     Molecule mol;
     const int first = addAtom(mol, 0.f, 0.f), second = addAtom(mol, 1.f, 0.f);
     DataSGroup& value = static_cast<DataSGroup&>(mol.sgroups.getSGroup(addGroup(mol, SGroup::SG_TYPE_DAT, {first, second})));
+    DataSGroup& moved = addValue(mol, {first, second}, 0.5f, -1.f);
 
-    SGroupDataLayout layout(mol);
+    SGroupLayout layout(mol);
     turnAndShift(mol, first, second);
     layout.update();
 
     EXPECT_FALSE(value.display_pos.has_value());
+    expectPosition(moved, 3.f, 3.5f);
 }

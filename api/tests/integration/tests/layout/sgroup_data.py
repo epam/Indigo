@@ -48,6 +48,12 @@ compare_diff(
     "sgroups/data-reaction-scaled-layout-preserve.rxn",
     rxn.rxnfile(),
 )
+# The value of a single atom gets its scale from the move, not from a fit
+rxn = load_reaction("data-reaction-one-atom.rxn")
+rxn.layout()
+compare_diff(
+    ref_path, "sgroups/data-reaction-one-atom-layout.rxn", rxn.rxnfile()
+)
 indigo.setOption("layout-preserve-existing", False)
 
 # Laid out anew, a molecule has its values fitted to its new atoms first, then
@@ -63,9 +69,19 @@ pathway = load_reaction("data-pathway.rdf")
 compare_diff(ref_path, "sgroups/data-pathway.rdf", rdf(pathway))
 
 print("*** Layout and clean-up keep the data values by their atoms ***")
-# The structures of the ticket. A second layout() leaves the values where the
-# first one put them
-files = ["data-on-component", "data-vertical-copolymer"]
+# The structures of the ticket; one molecule drawn turned, mirrored and at other
+# bond lengths; groups on a straight line before or after the layout. A second
+# layout() leaves the values where the first one put them
+files = [
+    "data-bent-nitrile",
+    "data-chain-mirrored",
+    "data-chain-scaled",
+    "data-chain-shrunk",
+    "data-chain-turned",
+    "data-on-component",
+    "data-straight-chain",
+    "data-vertical-copolymer",
+]
 files.sort()
 for filename in files:
     mol = load_molecule(filename + ".mol")

@@ -19,8 +19,7 @@
 #include "layout/molecule_layout.h"
 #include "base_cpp/array.h"
 #include "graph/filter.h"
-#include "layout/sgroup_bracket_layout.h"
-#include "layout/sgroup_data_layout.h"
+#include "layout/sgroup_layout.h"
 #include <map>
 #include <utility>
 #include <vector>
@@ -41,7 +40,7 @@ MoleculeLayout::MoleculeLayout(BaseMolecule& molecule, bool smart_layout)
 void MoleculeLayout::_init(bool smart_layout)
 {
     bond_length = 1.f;
-    label_font_size = SGroupBracketLayout::DEFAULT_FONT_SIZE;
+    label_font_size = SGroupLayout::DEFAULT_FONT_SIZE;
     label_mode = LABEL_MODE_TERMINAL_HETERO;
     haptic_bond_multiplier = MoleculeLayoutGraph::DEFAULT_HAPTIC_BOND_MULTIPLIER;
     filter = 0;
@@ -247,8 +246,7 @@ void MoleculeLayout::_make()
     _layout_graph->haptic_bond_multiplier = haptic_bond_multiplier;
     // 0. Find 2D coordinates via proxy _layout_graph object
     _layout_graph->max_iterations = max_iterations;
-    SGroupBracketLayout brackets(_molecule, label_font_size, label_mode);
-    SGroupDataLayout data_values(_molecule);
+    SGroupLayout sgroup_layout(_molecule, label_font_size, label_mode);
     _makeLayout();
 
     // 1. Update atoms
@@ -270,8 +268,7 @@ void MoleculeLayout::_make()
 
     _updateMultipleGroups();
 
-    brackets.update();
-    data_values.update();
+    sgroup_layout.update();
 
     _molecule.have_xyz = true;
 }
@@ -296,12 +293,12 @@ BaseMolecule& MoleculeLayout::_getMol(int id)
 void MoleculeLayout::updateSGroups()
 {
     _updateMultipleGroups();
-    SGroupBracketLayout(_molecule, label_font_size, label_mode).update();
+    SGroupLayout(_molecule, label_font_size, label_mode).update();
 }
 
 void MoleculeLayout::setLabelOptions(const LayoutOptions& options)
 {
-    label_font_size = SGroupBracketLayout::labelFontSizeInAngstroms(options);
+    label_font_size = SGroupLayout::labelFontSizeInAngstroms(options);
     label_mode = options.labelMode;
 }
 

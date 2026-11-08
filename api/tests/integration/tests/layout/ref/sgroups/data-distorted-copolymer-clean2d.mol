@@ -34,11 +34,11 @@ M  SDI   5  4    5.7626   -0.0626    5.7626    2.6512
 M  SDI   5  4    6.8484    2.6512    6.8484   -0.0626
 M  SAL   1  4   1   2   3   4
 M  SDT   1 AVERAGE_MOLECULAR_WEIGHT      N                                      
-M  SDD   1     0.8911   -1.7371    DA    ALL  1       1  
+M  SDD   1     1.0635   -1.3011    DA    ALL  1       1  
 M  SED   1 5000
 M  SAL   2  5   5   6   7   8   9
 M  SDT   2 AVERAGE_MOLECULAR_WEIGHT      N                                      
-M  SDD   2     5.8723   -1.7093    DA    ALL  1       1  
+M  SDD   2     6.0574   -0.4439    DA    ALL  1       1  
 M  SED   2 1000
 M  SAL   3  8   1   2   3   4   5   6   7   8
 M  SAL   3  1   9

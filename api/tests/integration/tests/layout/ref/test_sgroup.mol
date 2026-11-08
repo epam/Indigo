@@ -80,10 +80,10 @@ M  SDD   1     0.8660    1.0000    DA    ALL  1       1
 M  SED   1 dfg
 M  SAL   2  2  14  15
 M  SDT   2 Var                                                                  
-M  SDD   2     6.3587    0.5454    DAU   ALL  1       1  
+M  SDD   2     6.3297    0.6081    DAU   ALL  1       1  
 M  SED   2 Any text
 M  SAL   3  2  34  33
 M  SDT   3 Var3                                                                 
-M  SDD   3    12.2439   -0.0761    DAU   ALL  1       1  
+M  SDD   3    12.3229    0.2710    DAU   ALL  1       1  
 M  SED   3 Any text 3
 M  END

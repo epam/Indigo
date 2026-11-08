@@ -17,7 +17,7 @@
  ***************************************************************************/
 
 // The brackets of polymer S-groups: which groups nest, when a bracket counts as a placeholder, how rigid moves
-// carry brackets, and where SGroupBracketLayout puts them. At font size 0 an atom's box is its centre, so every
+// carry brackets, and where SGroupLayout puts them. At font size 0 an atom's box is its centre, so every
 // expected bracket is an exact sum of coordinates and constants.
 
 #include <initializer_list>
@@ -26,7 +26,7 @@
 #include <gtest/gtest.h>
 
 #include <base_cpp/exception.h>
-#include <layout/sgroup_bracket_layout.h>
+#include <layout/sgroup_layout.h>
 #include <layout/sgroup_nesting.h>
 #include <molecule/elements.h>
 #include <molecule/molecule.h>
@@ -260,7 +260,7 @@ TEST_F(IndigoCoreSGroupBracketsTest, RigidMoves_CarryBrackets_LeavePlaceholders)
     EXPECT_FLOAT_EQ(0.f, mixed.brackets[1][1].y);
 }
 
-// ---- SGroupBracketLayout -------------------------------------------------------------------------------------
+// ---- SGroupLayout -------------------------------------------------------------------------------------
 
 TEST_F(IndigoCoreSGroupBracketsTest, Layout_GroupWithoutChildren_StandsAtTheMargins)
 {
@@ -268,7 +268,7 @@ TEST_F(IndigoCoreSGroupBracketsTest, Layout_GroupWithoutChildren_StandsAtTheMarg
     zigzag(mol, 4);
     const int unit = addGroup(mol, SGroup::SG_TYPE_SRU, {1, 2});
 
-    SGroupBracketLayout(mol, NO_FONT).update();
+    SGroupLayout(mol, NO_FONT).update();
 
     expectBrackets(mol.sgroups.getSGroup(unit), 1.f - 0.1f, 0.f - 0.3f, 2.f + 0.1f, 0.5f + 0.3f);
 }
@@ -280,7 +280,7 @@ TEST_F(IndigoCoreSGroupBracketsTest, Layout_Parent_StandsAtWhicheverReachesFurth
     const int unit = addGroup(mol, SGroup::SG_TYPE_SRU, {1, 2});
     const int copolymer = addGroup(mol, SGroup::SG_TYPE_COP, {0, 1, 2, 3});
 
-    SGroupBracketLayout(mol, NO_FONT).update();
+    SGroupLayout(mol, NO_FONT).update();
 
     // Left and right: the margin past its own atoms 0 and 3. Top and bottom: the space past the child's brackets
     expectBrackets(mol.sgroups.getSGroup(copolymer), 0.f - 0.1f, -0.3f - 0.3f, 3.f + 0.1f, 0.8f + 0.3f);
@@ -295,7 +295,7 @@ TEST_F(IndigoCoreSGroupBracketsTest, Layout_ParentOfTheSameAtoms_StandsAtTheSpac
     const int copolymer = addGroup(mol, SGroup::SG_TYPE_COP, {1, 2});
     mol.sgroups.getSGroup(unit).parent_idx = copolymer;
 
-    SGroupBracketLayout(mol, NO_FONT).update();
+    SGroupLayout(mol, NO_FONT).update();
 
     expectBrackets(mol.sgroups.getSGroup(copolymer), 0.9f - 0.3f, -0.3f - 0.3f, 2.1f + 0.3f, 0.8f + 0.3f);
 }
@@ -307,11 +307,11 @@ TEST_F(IndigoCoreSGroupBracketsTest, Layout_LoadedBrackets_KeptWhileTheAtomsStay
     SGroup& unit = mol.sgroups.getSGroup(addGroup(mol, SGroup::SG_TYPE_SRU, {1, 2}));
     setBrackets(unit, {{Vec2f(0.5f, -2.f), Vec2f(0.5f, 2.f)}, {Vec2f(2.5f, 2.f), Vec2f(2.5f, -2.f)}});
 
-    SGroupBracketLayout untouched(mol, NO_FONT);
+    SGroupLayout untouched(mol, NO_FONT);
     untouched.update();
     expectBrackets(unit, 0.5f, -2.f, 2.5f, 2.f);
 
-    SGroupBracketLayout moved(mol, NO_FONT);
+    SGroupLayout moved(mol, NO_FONT);
     mol.setAtomXyz(2, 3.f, 0.f, 0.f);
     moved.update();
     expectBrackets(unit, 0.9f, -0.3f, 3.1f, 0.8f);
@@ -326,7 +326,7 @@ TEST_F(IndigoCoreSGroupBracketsTest, Layout_AtomsAtOnePoint_LeavePlaceholders)
     SGroup& unit = mol.sgroups.getSGroup(addGroup(mol, SGroup::SG_TYPE_SRU, {0, 1, 2}));
     setBrackets(unit, {{Vec2f(0.f, 0.f), Vec2f(0.f, 0.f)}});
 
-    SGroupBracketLayout(mol, NO_FONT).update();
+    SGroupLayout(mol, NO_FONT).update();
 
     ASSERT_EQ(1, unit.brackets.size());
     EXPECT_TRUE(unit.isZeroLengthBracket(0));
@@ -338,7 +338,7 @@ TEST_F(IndigoCoreSGroupBracketsTest, Layout_NoBracketedGroups_ChangesNothing)
     zigzag(mol, 2);
     SGroup& generic = mol.sgroups.getSGroup(addGroup(mol, SGroup::SG_TYPE_GEN, {0, 1}));
 
-    SGroupBracketLayout(mol, NO_FONT).update();
+    SGroupLayout(mol, NO_FONT).update();
 
     EXPECT_EQ(0, generic.brackets.size());
 }
@@ -350,7 +350,7 @@ TEST_F(IndigoCoreSGroupBracketsTest, Layout_AtomOutsideTheStructure_ThrowsWithMe
     addGroup(mol, SGroup::SG_TYPE_SRU, {0, 99});
     try
     {
-        SGroupBracketLayout(mol, NO_FONT).update();
+        SGroupLayout(mol, NO_FONT).update();
         FAIL() << "expected an exception";
     }
     catch (Exception& e)
