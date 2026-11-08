@@ -22,9 +22,6 @@
 
 using namespace indigo;
 
-// A straight chain in a file with 4 decimals stands about 0.0001 off its line
-static constexpr float LINE_SECOND_AXIS_SHARE = 0.001f;
-
 bool Transform3f::bestFit(int npoints, const Vec3f points[], const Vec3f goals[], float* sqsum_out)
 {
     QS_DEF(Array<double>, X); // set of points
@@ -105,9 +102,13 @@ bool Transform3f::bestFit(int npoints, const Vec3f points[], const Vec3f goals[]
             R.matrixVectorMultiply(a1, b1);
             //         norm_b0 = b0.length();
             //         norm_b1 = b1.length();
-            // Points or goals on a line fix only the turn of that line: the image of a1 is zero or rounding noise and cannot
-            // be normalized into an axis
-            if (b1.length() < LINE_SECOND_AXIS_SHARE * b0.length())
+            Line3f l1, l2;
+            float sqs1, sqs2;
+            l1.bestFit(npoints, points, &sqs1);
+            l2.bestFit(npoints, goals, &sqs2);
+            // Points or goals on a line fix only the turn of that line, from a0 to its image b0: the directions of the two
+            // lines come from separate fits and have arbitrary signs
+            if (sqs1 < 2 * EPSILON || sqs2 < 2 * EPSILON)
             {
                 Transform3f temp;
                 temp.rotationVecVec(a0, b0);

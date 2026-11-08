@@ -50,11 +50,15 @@ which the renderer reads too (`core/render2d/src/render_internal.cpp#originAtom`
 ## Constraints & traps
 
 - **Reference atoms on a straight line** before or after the layout (a chain drawn straight, a nitrile) fix only the
-  turn of that line, and `bestFit` takes its shortest turn
-  (`core/indigo-core/common/math/best_fit.cpp#LINE_SECOND_AXIS_SHARE`). Without that branch the second axis of the fit
+  turn of that line, and `bestFit` finds the one turn that matches the atoms along it best
+  (`core/indigo-core/common/math/best_fit.cpp#Transform3f::bestFit`). Without that branch the second axis of the fit
   is zero or rounding noise: the value falls onto the line, or, with coordinates rounded to 4 decimals, jumps to the
-  other side of it, and the rms reads 0. `indigoAlignAtoms` and the exact match with an rms threshold use the same fit:
-  `api/tests/integration/tests/basic/align_atoms.py` pins all three.
+  other side of it, and the rms reads 0. The test for a line is the sum of squares off it against an absolute bound,
+  not a ratio of the two axes: a long flat zigzag has a small ratio and must not be taken for a line. A line in
+  reverse order comes out as a half turn on the sheet; in 3D it is a point inversion, since `rotationVecVec` treats
+  antiparallel vectors as codirectional and the scale goes negative. `indigoAlignAtoms` and the exact match with an
+  rms threshold use the same fit: `api/tests/integration/tests/basic/align_atoms.py` pins the line cases, the
+  mirrored long chain and a chain out of the sheet.
 - **A single atom has no scale.** In `layout()` such a value keeps its distance in coordinates: with bonds longer than
   1.0 it ends farther from the atom in bond lengths, with shorter ones closer. In a reaction or a pathway step 3 keeps
   the scale of the move.
