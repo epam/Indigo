@@ -211,6 +211,49 @@ namespace indigo
         bool isMrv_implicit();
         void setMrv_implicit(int atom_idx, int hydrogens_count);
 
+        // The atom a relative position is an offset from, -1 without atoms: the renderer then takes the offset from a corner
+        // of a box it computes anew for every drawing, so such a position follows no atoms
+        int originAtom() const
+        {
+            return atoms.size() > 0 ? atoms[0] : -1;
+        }
+
+        // The point the position stands at on the sheet; a relative position needs originAtom()
+        template <typename AtomPosition>
+        Vec2f displayPoint(AtomPosition atom_position) const
+        {
+            Vec2f point = display_pos.value();
+            if (relative)
+                point.add(atom_position(originAtom()));
+            return point;
+        }
+
+        template <typename AtomPosition>
+        void setDisplayPoint(Vec2f point, AtomPosition atom_position)
+        {
+            if (relative)
+                point.sub(atom_position(originAtom()));
+            display_pos.set(point);
+        }
+
+        template <typename Transform>
+        void transformPosition(Transform transform)
+        {
+            if (!display_pos.has_value())
+                return;
+            Vec2f& position = display_pos.value();
+            if (!relative)
+            {
+                transform(position);
+                return;
+            }
+            // A move leaves an offset as it is, a scale scales it
+            Vec2f origin(0.f, 0.f);
+            transform(origin);
+            transform(position);
+            position.sub(origin);
+        }
+
     private:
         DataSGroup(const DataSGroup&);
         void _reset();
@@ -384,7 +427,7 @@ namespace indigo
                     transform(brackets[j][1]);
                 }
                 if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
-                    _transformDataPosition(static_cast<DataSGroup&>(sgroup), transform);
+                    static_cast<DataSGroup&>(sgroup).transformPosition(transform);
             }
         }
 
@@ -413,24 +456,6 @@ namespace indigo
         // The groups whose resolved parent is the group at sgroup_idx. A structure in which no group names a parent
         // costs one pass and no allocation: removing many groups is quadratic in the number of groups either way.
         std::vector<int> _childrenOf(int sgroup_idx);
-
-        template <typename Transform>
-        static void _transformDataPosition(DataSGroup& sgroup, Transform transform)
-        {
-            if (!sgroup.display_pos.has_value())
-                return;
-            Vec2f& position = sgroup.display_pos.value();
-            if (!sgroup.relative)
-            {
-                transform(position);
-                return;
-            }
-            // A relative position is an offset from the first atom of the group: a move leaves it, a scale scales it
-            Vec2f origin(0.f, 0.f);
-            transform(origin);
-            transform(position);
-            position.sub(origin);
-        }
     };
 
 } // namespace indigo

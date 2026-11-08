@@ -52,7 +52,7 @@ namespace indigo
 
         const SGroup* _referenceGroup(const DataSGroup& sgroup, int parent) const;
         bool _hasMoved(const SGroup& reference) const;
-        void _place(DataSGroup& sgroup, const Vec2f& initial, const SGroup& reference) const;
+        void _place(DataSGroup& sgroup, const SGroup& reference) const;
         Vec2f _position(int atom) const;
 
         BaseMolecule& _molecule;

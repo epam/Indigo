@@ -46,21 +46,21 @@ void SGroupDataLayout::update()
     if (_initialValuePositions.empty())
         return;
     const std::vector<int> parents = _molecule.sgroups.resolveParents();
-    for (const auto& [sgroup_idx, initial] : _initialValuePositions)
+    for (const auto& value : _initialValuePositions)
     {
+        const int sgroup_idx = value.first;
         DataSGroup& sgroup = static_cast<DataSGroup&>(_molecule.sgroups.getSGroup(sgroup_idx));
         const SGroup* reference = _referenceGroup(sgroup, parents[sgroup_idx]);
         if (reference == nullptr || !_hasMoved(*reference))
             continue;
-        _place(sgroup, initial, *reference);
+        _place(sgroup, *reference);
     }
 }
 
 const SGroup* SGroupDataLayout::_referenceGroup(const DataSGroup& sgroup, int parent) const
 {
-    if (sgroup.atoms.size() > 0)
+    if (sgroup.originAtom() >= 0)
         return &sgroup;
-    // The renderer draws a relative value without atoms from a corner of a box it computes anew: it needs no move
     if (sgroup.relative)
         return nullptr;
 
@@ -78,7 +78,7 @@ bool SGroupDataLayout::_hasMoved(const SGroup& reference) const
 }
 
 // The rotation and the shift that bring the old positions of the atoms closest to the new ones by least squares
-void SGroupDataLayout::_place(DataSGroup& sgroup, const Vec2f& initial, const SGroup& reference) const
+void SGroupDataLayout::_place(DataSGroup& sgroup, const SGroup& reference) const
 {
     Vec2f old_center, new_center;
     for (int atom : reference.atoms)
@@ -109,16 +109,11 @@ void SGroupDataLayout::_place(DataSGroup& sgroup, const Vec2f& initial, const SG
         co = dot / length;
     }
 
-    // A relative position is an offset from the first atom of the group: the point it marks moves as an absolute one
-    Vec2f position = initial;
-    if (sgroup.relative)
-        position.add(_initialAtomPositions.at(sgroup.atoms[0]));
-    position.sub(old_center);
-    position.rotate(si, co);
-    position.add(new_center);
-    if (sgroup.relative)
-        position.sub(_position(sgroup.atoms[0]));
-    sgroup.display_pos.set(position);
+    Vec2f point = sgroup.displayPoint([this](int atom) { return _initialAtomPositions.at(atom); });
+    point.sub(old_center);
+    point.rotate(si, co);
+    point.add(new_center);
+    sgroup.setDisplayPoint(point, [this](int atom) { return _position(atom); });
 }
 
 Vec2f SGroupDataLayout::_position(int atom) const
