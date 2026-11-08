@@ -6,8 +6,7 @@
 Rules that must stay true. Each one is here because breaking it fails **silently** — no compiler
 error, and often no failing test on the machine where the change was made.
 
-Anchors were verified on `f0cc3c423` (master, 2026-09-03); A12 and A14 on `1e15006f7` (2026-10-28); A13 on
-`1f71959a5` (2026-11-04); B5 on 2026-10-23. An anchor that no longer resolves is a defect in this file: fix it in the same change that moved
+Anchors were verified on 2026-09-03; A12 and A14 on 2026-10-28; A13 on 2026-11-08; B5 on 2026-10-23. An anchor that no longer resolves is a defect in this file: fix it in the same change that moved
 the code.
 
 ---
@@ -122,20 +121,19 @@ bottom to top, the closing one second, running top to bottom.**
 The renderer turns the hooks of a bracket to the right of its direction and puts the label and the repeat pattern
 at the last bracket (`core/render2d/src/render_internal.cpp#_positionIndex`). A pair written the other way round
 draws its hooks outwards and its label at the left bracket; nothing fails. The one place that
-writes a pair is `core/indigo-core/layout/src/sgroup_bracket_layout.cpp#_setBrackets`.
+writes a pair is `core/indigo-core/layout/src/sgroup_layout.cpp#_setBrackets`.
 
 **A13 — Whatever moves the atoms of a molecule moves its S-group brackets and data values with them.**
 Brackets and the stored position of a data value are coordinates on the group; nothing ties them to the atoms.
 A rigid move or a scale goes through `BaseMolecule::offsetCoordinates`, `BaseMolecule::scale` or
 `Metalayout::adjustMol`, which carry both along (`core/indigo-core/molecule/molecule_sgroups.h#transformPositions`):
 an absolute value as a point, a relative one as an offset that scales but does not shift. A layout that moves
-atoms one by one constructs `SGroupBracketLayout` and `SGroupDataLayout` before the move and calls their `update()`
-after it (`core/indigo-core/layout/sgroup_bracket_layout.h#void update()`,
-`core/indigo-core/layout/sgroup_data_layout.h#void update()`): the first places the brackets of the groups whose
-atoms moved anew, the second turns and shifts each value the way its atoms moved. The reaction and pathway layouts
-also construct `SGroupBracketLayout`, since their scale changes the margins, but not `SGroupDataLayout`: its fit has
-no scale and would undo the one the rigid move gave the values. A mover that does neither leaves brackets and values
-where the atoms were, and only a drawing shows it. Known gaps: `update()` places only the bracketed types (SRU, COP,
+atoms one by one constructs `SGroupLayout` before the move and calls `update()` after it
+(`core/indigo-core/layout/sgroup_layout.h#void update()`): it places the brackets of the groups whose atoms moved
+anew and moves each value the way its atoms moved. The reaction and pathway layouts do both, since their scale changes
+the margins; `update()` leaves a value that a whole-molecule move has already carried, because the fit of a single
+atom has no scale to give it. A mover that does neither leaves brackets and values where the atoms were, and only a
+drawing shows it. Known gaps: `update()` places only the bracketed types (SRU, COP,
 COM, MIX, FOR), so `layout()` and `clean2d()` leave the brackets of a generic group or a superatom where its atoms
 were; and `indigoAlignAtoms`, the centering of the standardizer and the unfolding of hydrogens move atoms without
 either call.
@@ -161,7 +159,8 @@ oldest-supported-GCC build legs reject C++20 constructs. The code must compile u
 The layout chooses between equal alternatives with float comparisons, so the last bit of a
 coordinate decides the drawing. For a float argument MSVC calls `cosf`, `sinf`, `atan2f`, `hypotf`
 and GCC the double functions; with float calls Windows and Linux disagreed on 11 % of a corpus of
-18 237 molecules. Every such call in the layout and in `Vec2f` goes through one of the macros
+18 237 molecules. Every such call in the layout, in `Vec2f` and in the turn `Transform3f::bestFit` builds for a line
+(`core/indigo-core/common/math/transform3f.cpp#rotationVecVec`) goes through one of the macros
 `HYPOT`, `COS`, `SIN`, `TAN`, `ACOS`, `ASIN`, `ATAN2` of `common/math/algebra.h`, which evaluate in
 double and round once, and the two platforms now agree bit for bit on all of them. Write the
 promotion out by hand and the rule has no single home; write the call on a float and the divergence

@@ -5,7 +5,7 @@
 > **Skip when:** the question is about superatoms, multiple groups or data S-groups (those are
 > [sgroup-data-values.md](./sgroup-data-values.md)).
 
-Verified on `1e15006f7`. Ticket #3974, under the polymer epic #3971.
+Verified on 2026-10-28.
 
 ## Problem
 
@@ -58,7 +58,7 @@ mock-ups are pinned to four decimals.
 ## Limitations
 
 - The renderer draws brackets only for repeating units, multiple groups, superatoms and generic groups; those
-  of copolymers, components, mixtures and formulations are in the file but not in the picture (#3976).
+  of copolymers, components, mixtures and formulations are in the file but not in the picture.
 - Distances are in the default bond length, 1.0, whatever the bond length of the drawing: a structure drawn
   at another scale gets margins out of proportion.
 - Nothing outside the group is considered: a bracket can run through a neighbouring atom, the `*` at a chain
@@ -71,6 +71,6 @@ mock-ups are pinned to four decimals.
 - Rigid moves outside the layout (aligning atoms, the standardizer's centering, unfolding hydrogens) leave
   brackets behind. CDX, CDXML and CXSMILES load their groups without brackets, so a MOL converted from them has no
   `M  SDI` at all.
-- The layout of a reaction can put the components of a mixture so close that their brackets overlap (#3981).
+- The layout of a reaction can put the components of a mixture so close that their brackets overlap.
 - A multiple group inside a bracketed group is not re-placed by `clean2d()`, so its parent may stretch to its
   old brackets.

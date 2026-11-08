@@ -5,7 +5,7 @@
 > **Skip when:** the question is about brackets, which is [sgroup-brackets.md](./sgroup-brackets.md), or about which
 > data fields a format keeps.
 
-Verified on `1f71959a5`. Ticket #3975, under the polymer epic #3971.
+Verified on 2026-11-08.
 
 ## Problem
 
@@ -23,8 +23,15 @@ loading a pathway, which lays it out. The position is read from and saved to MOL
 
 ## Expected behaviour
 
-**When** `layout()` or `clean2d()` moves the atoms of a data S-group, **then** its value turns and moves with them:
-it stays on the same side of them, at the same distance. It is not scaled and not mirrored.
+**When** `layout()` or `clean2d()` moves the atoms of a data S-group, **then** its value moves the way they moved, by
+the best fit of a turn or a mirror, a shift and one scale: a drawing turned, mirrored or drawn at another bond length
+gets its value at the same place against the atoms, measured in bonds.
+
+**When** the atoms lie on a straight line before or after the move, **then** the value turns with that line and keeps
+its side of it: a line cannot tell a mirror from a turn.
+
+**When** the group has a single atom, or all its atoms at one point, **then** the value only shifts with them: one
+point gives no turn and no scale.
 
 **When** the group has no atoms of its own, **then** an absolute value follows the atoms of its parent group, such as
 the component it describes, and a relative one stays as it is: the renderer draws it from a corner of a box around
@@ -38,26 +45,29 @@ stays where it was.
 would go, and stays an offset from the first atom of the group.
 
 **When** a reaction or a pathway is laid out, or a pathway is loaded, **then** a value moves and scales with its
-molecule as the molecule is placed in the scheme, also with `layout-preserve-existing`.
+molecule as the molecule is placed in the scheme, also with `layout-preserve-existing` and for a value of a single
+atom.
 
 **When** a value has no stored position, **then** nothing changes: the renderer draws it next to the group.
 
 ## Guarantees
 
-Deterministic for given coordinates. The three structures of the ticket, a reaction drawn at bond length 1.5, laid
-out as drawn and anew, a pathway and a clean-up of a selection are pinned to four decimals.
+Deterministic for given coordinates. Pinned to four decimals: the three structures of the ticket; one molecule drawn
+turned, mirrored and at bond lengths 1.54 and 0.825; groups on a straight line before or after the layout; a reaction
+drawn at bond length 1.5, laid out as drawn and anew, also with a value of a single atom; a pathway; a clean-up of a
+selection.
 
 ## Limitations
 
 - A value can end up outside the brackets of its parent: it keeps its distance from its own atoms, while the
   brackets are placed tight around them.
-- `layout()` brings a drawing to bond length 1.0 but keeps the distance of a value from its atoms in coordinates, so
-  a structure drawn with longer bonds gets its values closer to the atoms, measured in bonds.
+- `layout()` brings a drawing to bond length 1.0 while the value of a single atom keeps its distance in coordinates:
+  with bonds longer than 1.0 it ends farther from the atom, measured in bonds, with shorter ones closer.
+- When the layout changes the shape of a group strongly, the fitted scale is not the change of the bond length: the
+  value can come closer to its atoms or go farther from them.
 - After `clean2d()` of a strongly distorted drawing a value can stand a fraction of a bond length away from where a
-  single best turn and shift would put it.
-- When the layout mirrors a symmetric group, such as a regular ring, the value is only shifted with its atoms: no
-  turn fits such a group better than another.
+  single best fit would put it.
 - Rigid moves outside the layout (aligning atoms, the standardizer's centering, unfolding hydrogens) leave values
   behind, as they leave brackets.
 - Ketcher (RC on Indigo 1.48.0-rc.1, checked on 2026-11-02) sends no value positions to Layout and Clean Up, so it
-  places the values itself and does not show this behaviour; the positions from Ketcher are #3973.
+  places the values itself and does not show this behaviour.

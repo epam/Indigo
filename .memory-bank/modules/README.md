@@ -23,8 +23,8 @@ document that restates the header file saves nothing and should not be written.
   fingerprint pre-filter + postprocess pattern, its own test suite
 - [layout-sgroup-brackets.md](./layout-sgroup-brackets.md) — brackets of polymer S-groups: who places them
   and when, the fixed margins, nesting, the constant-unit and font traps
-- [layout-sgroup-data.md](./layout-sgroup-data.md) — values of data S-groups: who moves them and when, the
-  turn-and-shift fit, why not in the reaction and pathway layouts
+- [layout-sgroup-data.md](./layout-sgroup-data.md) — values of data S-groups: when they move, the fit of their atoms
+  and its line and single-atom cases, what a whole-molecule move leaves to it
 
 ## Not yet written
 
