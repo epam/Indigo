@@ -286,32 +286,17 @@ void MolfileSaver::_saveMolecule(BaseMolecule& bmol, bool query)
     std::unique_ptr<BaseMolecule> mol(bmol.neu());
     mol->clone_KeepIndices(bmol);
 
-    bool has_dat_xbonds = false;
-    bool component_order_needs_v3000 = false;
-    for (int i = pmol->sgroups.begin(); i != pmol->sgroups.end(); i = pmol->sgroups.next(i))
-    {
-        SGroup& sgroup = pmol->sgroups.getSGroup(i);
-        if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT && sgroup.xbonds.size() > 0)
-            has_dat_xbonds = true;
-        if (sgroup.component_order > MAX_V2000_COMPONENT_ORDER)
-            component_order_needs_v3000 = true;
-    }
-
     if (mode == MODE_3000)
-    {
         _v2000 = false;
-    }
-    else
+    else if (mode == MODE_2000)
     {
         const std::string beyond_v2000 = _beyondV2000(*pmol);
-        if (mode == MODE_2000 && !beyond_v2000.empty())
+        if (!beyond_v2000.empty())
             throw Error("V2000 cannot hold %s", beyond_v2000.c_str());
-        // auto-detect the format: save to v3000 molfile only
-        // if v2000 is not enough
-        _v2000 = mode == MODE_2000 || (beyond_v2000.empty() && !(pmol->hasHighlighting() || pmol->stereocenters.haveEnhancedStereocenter() ||
-                                                                 (pmol->vertexCount() > 999 || pmol->edgeCount() > 999 || pmol->tgroups.getTGroupCount()) ||
-                                                                 has_dat_xbonds || component_order_needs_v3000));
+        _v2000 = true;
     }
+    else
+        _v2000 = !autoWritesV3000(*pmol);
 
     if (mol->tgroups.getTGroupCount() && mol->convertTemplateAtomsToSuperatoms(!_v2000))
         pmol = mol.get();
@@ -2239,6 +2224,20 @@ void MolfileSaver::_checkDataSGroup(const DataSGroup& datasgroup, int sgroup_num
     const std::optional<std::string> not_a_number = datasgroup.lineNotANumber();
     if (not_a_number.has_value())
         reject(not_a_number->c_str(), DataSGroup::INVALID_NUMBER);
+}
+
+bool MolfileSaver::autoWritesV3000(BaseMolecule& mol)
+{
+    if (!_beyondV2000(mol).empty() || mol.hasHighlighting() || mol.stereocenters.haveEnhancedStereocenter() ||
+        mol.vertexCount() > MOLFILE_V2000_MAX_ATOM_OR_BOND_COUNT || mol.edgeCount() > MOLFILE_V2000_MAX_ATOM_OR_BOND_COUNT || mol.tgroups.getTGroupCount())
+        return true;
+    for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
+    {
+        const SGroup& sgroup = mol.sgroups.getSGroup(i);
+        if ((sgroup.sgroup_type == SGroup::SG_TYPE_DAT && sgroup.xbonds.size() > 0) || sgroup.component_order > MAX_V2000_COMPONENT_ORDER)
+            return true;
+    }
+    return false;
 }
 
 std::string MolfileSaver::_beyondV2000(BaseMolecule& mol)

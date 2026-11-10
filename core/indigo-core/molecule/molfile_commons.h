@@ -55,6 +55,8 @@ namespace indigo
     // M  SCD and M  SED: a line of the data is cut to this many characters when read, and is not written in V2000
     // when longer
     constexpr int MOLFILE_V2000_MAX_DATA_LINE_LENGTH = 200;
+    // the counts line of V2000 numbers atoms and bonds in three columns each
+    constexpr int MOLFILE_V2000_MAX_ATOM_OR_BOND_COUNT = 999;
     // M  STY and the other property lines number an S-group in three columns
     constexpr int MOLFILE_V2000_MAX_SGROUP_COUNT = 999;
     // F10.4, the column of a coordinate in V2000 and of the position of a data value in both versions: ten columns,

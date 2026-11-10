@@ -70,7 +70,12 @@ namespace indigo
         void saveCtab3000(Molecule& mol);
         void saveQueryCtab3000(QueryMolecule& mol);
 
-        int mode;             // one of MODE_***, MODE_AUTO by default
+        int mode; // one of MODE_***, MODE_AUTO by default
+        // What MODE_AUTO decides for a molecule: V3000 when the columns of V2000 cannot hold it (_beyondV2000) or when it
+        // carries what only V3000 has - highlighting, enhanced stereo, more atoms or bonds than the counts line numbers,
+        // templates, crossing bonds of a data S-group, a component order beyond the V2000 numbers. The reaction saver
+        // asks this for every molecule, so a reaction's auto mode decides the same way
+        static bool autoWritesV3000(BaseMolecule& mol);
         bool no_chiral;       // skip the 'chiral' flag, not regarding of the actual stereochemistry (depricated)
         int chiral_flag;      // set chiral to pre-defined value, not regarding of the actual stereochemistry
                               // (the default value = -1, use actual stereochemistry)

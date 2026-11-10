@@ -136,6 +136,38 @@ for filename in ["multiline-sgroups-ketcher-457-v3000.mol"] + beyond_v2000:
     except IndigoException as e:
         print("%s as V2000: %s" % (base, getIndigoExceptionText(e)))
 
+print("*** A reaction in auto mode decides as a molecule does ***")
+mol = indigo.loadMoleculeFromFile(
+    os.path.join(root, "sgroup/v2000-beyond-field-name.ket")
+)
+rxn = indigo.createReaction()
+rxn.addReactant(mol)
+rxn.addProduct(indigo.loadMolecule("C"))
+indigo.setOption("molfile-saving-mode", "auto")
+compare_diff(
+    ref_path, "v2000-beyond-field-name-reaction-auto.rxn", rxn.rxnfile()
+)
+try:
+    indigo.setOption("molfile-saving-mode", "2000")
+    rxn.rxnfile()
+    print("reaction with the field name as V2000: written")
+except IndigoException as e:
+    print(
+        "reaction with the field name as V2000: %s" % getIndigoExceptionText(e)
+    )
+rxn = indigo.createReaction()
+rxn.addReactant(indigo.loadMolecule("C" * 1000))
+rxn.addProduct(indigo.loadMolecule("C"))
+indigo.setOption("molfile-saving-mode", "auto")
+rxnfile = rxn.rxnfile()
+# the reaction read back is held while its reactant is looked at
+reaction_read = indigo.loadReaction(rxnfile)
+reactant_read = reaction_read.iterateReactants().next()
+print(
+    "1000 atoms in auto mode: %s, %d atoms read back"
+    % (rxnfile.splitlines()[0], reactant_read.countAtoms())
+)
+
 print("*** At the limits of V2000: auto stays V2000, and it reads back ***")
 for filename in [
     "sgroup/v2000-at-limits.ket",

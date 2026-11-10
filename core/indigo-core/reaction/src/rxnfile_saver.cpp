@@ -72,16 +72,11 @@ void RxnfileSaver::_saveReaction()
         _v2000 = true;
     else
     {
+        // the same decision as a molecule's auto mode, for every molecule of the reaction
         _v2000 = true;
-
         for (int i = _brxn->begin(); i != _brxn->end(); i = _brxn->next(i))
         {
-            if (_brxn->getBaseMolecule(i).hasHighlighting())
-            {
-                _v2000 = false;
-                break;
-            }
-            if (_brxn->getBaseMolecule(i).stereocenters.haveEnhancedStereocenter())
+            if (MolfileSaver::autoWritesV3000(_brxn->getBaseMolecule(i)))
             {
                 _v2000 = false;
                 break;

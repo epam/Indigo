@@ -119,6 +119,10 @@ v2000-beyond-units as V2000: molfile saver: V2000 cannot hold the units 'UUUUUUU
 v2000-beyond-data-line as V2000: molfile saver: V2000 cannot hold a line of the data of data S-group 1, longer than 200 characters
 v2000-beyond-atom-coordinate as V2000: molfile saver: V2000 cannot hold the coordinate 100000.0000 of atom 2, outside the ten columns of a coordinate
 v3000-beyond-bracket-coordinate as V2000: molfile saver: V2000 cannot hold the bracket coordinate -100000.0000 of S-group 1, outside the ten columns of a coordinate
+*** A reaction in auto mode decides as a molecule does ***
+v2000-beyond-field-name-reaction-auto.rxn:SUCCEED
+reaction with the field name as V2000: molfile saver: V2000 cannot hold the field name 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN' of data S-group 1, longer than 30 characters
+1000 atoms in auto mode: $RXN V3000, 1000 atoms read back
 *** At the limits of V2000: auto stays V2000, and it reads back ***
 v2000-at-limits-auto.mol:SUCCEED
 v2000-at-limits-auto.mol:SUCCEED
