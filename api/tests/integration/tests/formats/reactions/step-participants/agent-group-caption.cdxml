@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CDXML BondLength="14.4">
+<fonttable><font id="3" charset="iso-8859-1" name="Arial"/></fonttable>
+<page id="1">
+<fragment id="30"><n id="31" p="60 100"/><n id="32" p="72 107"/><n id="33" p="84 100"/><b id="34" B="31" E="32"/><b id="35" B="32" E="33"/></fragment>
+<fragment id="40"><n id="41" p="200 100"/><n id="42" p="212 107"/><n id="43" p="224 100"/><b id="44" B="41" E="42"/><b id="45" B="42" E="43"/></fragment>
+<arrow id="50" ArrowheadHead="Full" ArrowheadType="Solid" HeadSize="1000" Head3D="180 100 0" Tail3D="100 100 0"/>
+<group id="70"><fragment id="71"><n id="72" p="140 90" Element="46"/></fragment><t id="79" p="125 80"><s font="3" size="10">cat. Pd</s></t></group>
+<scheme id="60"><step id="61" ReactionStepReactants="30" ReactionStepProducts="40" ReactionStepArrows="50" ReactionStepObjectsAboveArrow="70"/></scheme>
+</page></CDXML>

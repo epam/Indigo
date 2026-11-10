@@ -1,0 +1,11 @@
+*** CDXML reaction step participants ***
+agent-caption-on-page.ket:SUCCEED
+agent-group-caption.ket:SUCCEED
+agent-text-graphic.ket:SUCCEED
+captions-on-page.ket:SUCCEED
+empty-participant.ket:SUCCEED
+nested-brackets.ket:SUCCEED
+step-participants.ket:SUCCEED
+*** A caption in a participant group is kept as on the page ***
+step-participants and captions-on-page: same text nodes
+agent-group-caption and agent-caption-on-page: same text nodes
