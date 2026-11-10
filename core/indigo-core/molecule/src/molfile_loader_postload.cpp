@@ -23,7 +23,7 @@
 #include "base_cpp/scanner.h"
 #include "base_cpp/tlscont.h"
 #include "layout/sequence_layout.h"
-#include "layout/sgroup_bracket_layout.h"
+#include "layout/sgroup_layout.h"
 #include "molecule/elements.h"
 #include "molecule/inchi_wrapper.h"
 #include "molecule/molecule.h"
@@ -353,7 +353,7 @@ void MolfileLoader::_postLoad()
         _haptic_star_groups.clear();
     }
 
-    SGroupBracketLayout(*_bmol).update();
+    SGroupLayout(*_bmol).update();
 
     // fix layout
     // if (templates_to_remove.size() && _bmol->countComponents())

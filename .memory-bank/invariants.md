@@ -118,25 +118,29 @@ bottom to top, the closing one second, running top to bottom.**
 The renderer turns the hooks of a bracket to the right of its direction and puts the label and the repeat pattern
 at the last bracket (`core/render2d/src/render_internal.cpp#_positionIndex`). A pair written the other way round
 draws its hooks outwards and its label at the left bracket; nothing fails. The one place that
-writes a pair is `core/indigo-core/layout/src/sgroup_bracket_layout.cpp#_setBrackets`.
+writes a pair is `core/indigo-core/layout/src/sgroup_layout.cpp#_setBrackets`.
 
-**A13 — Whatever moves the atoms of a molecule moves its S-group brackets with them.**
-Brackets are coordinates stored on the group; nothing ties them to the atoms. A rigid move or a scale goes
-through `BaseMolecule::offsetCoordinates`, `BaseMolecule::scale` or `Metalayout::adjustMol`, which carry the
-brackets along (`core/indigo-core/molecule/molecule_sgroups.h#transformBrackets`); a layout that moves atoms
-one by one constructs `SGroupBracketLayout` before the move and calls `update()` after it
-(`core/indigo-core/layout/sgroup_bracket_layout.h#void update()`), which places the brackets of the groups whose
-atoms moved anew; the reaction and pathway layouts do both, since their scale changes the margins. A mover that
-does neither leaves the brackets where the atoms were, and only a drawing shows it. Known gaps: `update()` places only the bracketed types (SRU, COP, COM, MIX, FOR), so `layout()` and
-`clean2d()` leave the brackets of a generic group or a superatom where its atoms were; and `indigoAlignAtoms`,
-the centering of the standardizer and the unfolding of hydrogens move atoms without either call.
+**A13 — Whatever moves the atoms of a molecule moves its S-group brackets and data values with them.**
+Brackets and the stored position of a data value are coordinates on the group; nothing ties them to the atoms.
+A rigid move or a scale goes through `BaseMolecule::offsetCoordinates`, `BaseMolecule::scale` or
+`Metalayout::adjustMol`, which carry both along (`core/indigo-core/molecule/molecule_sgroups.h#transformPositions`):
+an absolute value as a point, a relative one as an offset that scales but does not shift. A layout that moves
+atoms one by one constructs `SGroupLayout` before the move and calls `update()` after it
+(`core/indigo-core/layout/sgroup_layout.h#void update()`): it places the brackets of the groups whose atoms moved
+anew and moves each value the way its atoms moved. The reaction and pathway layouts do both, since their scale changes
+the margins; `update()` leaves a value that a whole-molecule move has already carried, because the fit of a single
+atom has no scale to give it. A mover that does neither leaves brackets and values where the atoms were, and only a
+drawing shows it. Known gaps: `update()` places only the bracketed types (SRU, COP,
+COM, MIX, FOR), so `layout()` and `clean2d()` leave the brackets of a generic group or a superatom where its atoms
+were; and `indigoAlignAtoms`, the centering of the standardizer and the unfolding of hydrogens move atoms without
+either call.
 
 **A14 — A zero-length bracket is a placeholder, not a bracket.**
 The KET loader writes a `(0,0)-(0,0)` pair for every group, because the format carries no bracket coordinates,
 and the CDXML and CXSMILES loaders leave such pairs too. `SGroup::hasBrackets()` is the test for a group
 (`core/indigo-core/molecule/molecule_sgroups.h#hasBrackets`): one zero-length bracket means the group has none,
 and the layout replaces them. The MOL savers skip each zero-length bracket and keep the real ones next to it
-(`core/indigo-core/molecule/src/molfile_saver.cpp#isZeroLengthBracket`); `transformBrackets` moves the real
+(`core/indigo-core/molecule/src/molfile_saver.cpp#isZeroLengthBracket`); `transformPositions` moves the real
 brackets of a group and leaves its placeholders; the renderer takes the file's brackets only when the first two
 are real and draws its own pair otherwise (`core/render2d/src/render_internal.cpp#isBracketsCoordinates`). Code
 that tests `brackets.size() > 0` instead takes a bracket at the origin for a real one: the CML saver writes
@@ -173,7 +177,8 @@ oldest-supported-GCC build legs reject C++20 constructs. The code must compile u
 The layout chooses between equal alternatives with float comparisons, so the last bit of a
 coordinate decides the drawing. For a float argument MSVC calls `cosf`, `sinf`, `atan2f`, `hypotf`
 and GCC the double functions; with float calls Windows and Linux disagreed on 11 % of a corpus of
-18 237 molecules. Every such call in the layout and in `Vec2f` goes through one of the macros
+18 237 molecules. Every such call in the layout, in `Vec2f` and in the turn `Transform3f::bestFit` builds for a line
+(`core/indigo-core/common/math/transform3f.cpp#rotationVecVec`) goes through one of the macros
 `HYPOT`, `COS`, `SIN`, `TAN`, `ACOS`, `ASIN`, `ATAN2` of `common/math/algebra.h`, which evaluate in
 double and round once, and the two platforms now agree bit for bit on all of them. Write the
 promotion out by hand and the rule has no single home; write the call on a float and the divergence
@@ -210,4 +215,4 @@ function-like macro, which breaks the declaration of `std::bind` in MSVC's `<fun
 (`bingo/postgres/src/pg_common/bingo_pg_fix_pre.h#Thus <functional> must not be included here`). Only the Windows
 build of the cartridge fails, in CI; macOS and Linux compile it. `base_molecule.h` and everything it includes are on
 that path, so a callback stored in such a header is a template parameter, not a `std::function`
-(`core/indigo-core/molecule/molecule_sgroups.h#transformBrackets`).
+(`core/indigo-core/molecule/molecule_sgroups.h#transformPositions`).

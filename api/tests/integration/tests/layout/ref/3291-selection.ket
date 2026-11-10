@@ -596,8 +596,8 @@
                 ],
                 "fieldData": "SR",
                 "fieldName": "MDLBG_STEREO_KEY",
-                "x": 0.0000,
-                "y": 0.0000,
+                "x": -0.0000,
+                "y": -0.0000,
                 "display": true,
                 "placement": false
             },
@@ -608,7 +608,7 @@
                 ],
                 "fieldData": "SR",
                 "fieldName": "MDLBG_STEREO_KEY",
-                "x": 0.0000,
+                "x": -0.0000,
                 "y": 0.0000,
                 "display": true,
                 "placement": false

@@ -269,6 +269,49 @@ namespace indigo
         // The first line of the data that is not a number while the field holds numbers; an empty line is no value
         std::optional<std::string> lineNotANumber() const;
 
+        // The atom a relative position is an offset from, -1 without atoms: the renderer then takes the offset from a corner
+        // of a box it computes anew for every drawing, so such a position follows no atoms
+        int originAtom() const
+        {
+            return atoms.size() > 0 ? atoms[0] : -1;
+        }
+
+        // The point the position stands at on the sheet; a relative position needs originAtom()
+        template <typename AtomPosition>
+        Vec2f displayPoint(AtomPosition atom_position) const
+        {
+            Vec2f point = display_pos.value();
+            if (relative)
+                point.add(atom_position(originAtom()));
+            return point;
+        }
+
+        template <typename AtomPosition>
+        void setDisplayPoint(Vec2f point, AtomPosition atom_position)
+        {
+            if (relative)
+                point.sub(atom_position(originAtom()));
+            display_pos.set(point);
+        }
+
+        template <typename Transform>
+        void transformPosition(Transform transform)
+        {
+            if (!display_pos.has_value())
+                return;
+            Vec2f& position = display_pos.value();
+            if (!relative)
+            {
+                transform(position);
+                return;
+            }
+            // A move leaves an offset as it is, a scale scales it
+            Vec2f origin(0.f, 0.f);
+            transform(origin);
+            transform(position);
+            position.sub(origin);
+        }
+
     private:
         DataSGroup(const DataSGroup&);
         void _reset();
@@ -428,7 +471,7 @@ namespace indigo
         // A template, not std::function: this header reaches the Postgres cartridge, where postgres.h defines bind as a
         // macro on Windows and <functional> no longer compiles
         template <typename Transform>
-        void transformBrackets(Transform transform)
+        void transformPositions(Transform transform)
         {
             for (int i = begin(); i != end(); i = next(i))
             {
@@ -442,6 +485,8 @@ namespace indigo
                     transform(brackets[j][0]);
                     transform(brackets[j][1]);
                 }
+                if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
+                    static_cast<DataSGroup&>(sgroup).transformPosition(transform);
             }
         }
 

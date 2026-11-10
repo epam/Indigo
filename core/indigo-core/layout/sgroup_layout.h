@@ -16,9 +16,10 @@
  * limitations under the License.
  ***************************************************************************/
 
-#ifndef __sgroup_bracket_layout_h__
-#define __sgroup_bracket_layout_h__
+#ifndef __sgroup_layout_h__
+#define __sgroup_layout_h__
 
+#include <map>
 #include <optional>
 #include <vector>
 
@@ -35,11 +36,14 @@
 namespace indigo
 {
     class BaseMolecule;
+    class DataSGroup;
     class SGroup;
 
-    // Two vertical brackets around a group: a margin outside the boxes of its atom labels, a space outside the brackets
-    // of the groups nested in it, whichever reaches further
-    class DLLEXPORT SGroupBracketLayout
+    // Keeps what is drawn on S-groups in place when the atoms move. Two vertical brackets stand around a group: a margin
+    // outside the boxes of its atom labels, a space outside the brackets of the groups nested in it, whichever reaches
+    // further. The value of a data S-group moves the way its atoms moved, or, for an absolute value of a group without
+    // atoms, the way the atoms of its parent moved.
+    class DLLEXPORT SGroupLayout
     {
     public:
         // In bond lengths
@@ -50,15 +54,26 @@ namespace indigo
         static constexpr float DEFAULT_FONT_SIZE =
             LayoutOptions::DEFAULT_FONT_SIZE_PX / LayoutOptions::DEFAULT_BOND_LENGTH_PX * LayoutOptions::DEFAULT_BOND_LENGTH;
 
-        explicit SGroupBracketLayout(BaseMolecule& molecule, float font_size = DEFAULT_FONT_SIZE, LABEL_MODE label_mode = LABEL_MODE_TERMINAL_HETERO);
+        explicit SGroupLayout(BaseMolecule& molecule, float font_size = DEFAULT_FONT_SIZE, LABEL_MODE label_mode = LABEL_MODE_TERMINAL_HETERO);
         static float labelFontSizeInAngstroms(const LayoutOptions& options);
 
         // Places brackets for the groups that have none and for those whose atoms moved since construction. The
         // brackets of the other groups stay as they are, even when they no longer enclose those of their children.
+        // Moves the values whose reference atoms moved since construction, unless a whole-molecule move has carried them.
         void update();
 
     private:
+        void _placeBrackets();
+        void _moveValues();
+        void _moveValue(DataSGroup& value, const SGroup& reference) const;
+
         bool _hasMoved(const SGroup& sgroup) const;
+        static bool _standApart(const Vec2f& first, const Vec2f& second);
+        Vec2f _position(int atom) const;
+
+        const SGroup* _referenceGroup(const DataSGroup& value, int parent) const;
+        Transform3f _fitOfAtoms(const SGroup& sgroup) const;
+
         bool _allAtomsAtOnePoint() const;
         Rect2f _bracketsBox(int sgroup_idx) const;
         Rect2f _atomsBox(const SGroup& sgroup) const;
@@ -69,7 +84,8 @@ namespace indigo
 
         BaseMolecule& _molecule;
         SGroupNesting _nesting;
-        std::vector<Vec2f> _initialPositions;
+        std::vector<Vec2f> _initialAtoms;
+        std::map<int, Vec2f> _initialValues;
         float _fontSize;
         LABEL_MODE _labelMode;
     };
