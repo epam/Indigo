@@ -28,7 +28,8 @@ explicit_modes = ["2000", "3000"]
 files = [
     ("multiline-sgroups-ketcher-457-empty.mol", all_modes),
     ("multiline-sgroups-ketcher-457-single.mol", all_modes),
-    ("multiline-sgroups-ketcher-457-v2000.mol", all_modes),
+    # a data line of 338 characters is read whole: V2000 cannot hold it, so auto writes V3000
+    ("multiline-sgroups-ketcher-457-v2000.mol", ["auto", "3000"]),
     # a data line of 345 characters: V2000 holds 200, so auto writes V3000
     ("multiline-sgroups-ketcher-457-v3000.mol", ["auto", "3000"]),
     ("sgroup/v2000-data-query-operators.mol", explicit_modes),
@@ -127,7 +128,10 @@ for filename in beyond_v2000:
     mol = indigo.loadMoleculeFromFile(os.path.join(root, filename))
     base = os.path.splitext(os.path.basename(filename))[0]
     compare_diff(ref_path, base + "-auto.mol", saved_as(mol, "auto"))
-for filename in ["multiline-sgroups-ketcher-457-v3000.mol"] + beyond_v2000:
+for filename in [
+    "multiline-sgroups-ketcher-457-v2000.mol",
+    "multiline-sgroups-ketcher-457-v3000.mol",
+] + beyond_v2000:
     mol = indigo.loadMoleculeFromFile(os.path.join(root, filename))
     base = os.path.splitext(os.path.basename(filename))[0]
     try:
@@ -206,11 +210,16 @@ for count in (999, 1000):
             % (count, getIndigoExceptionText(e))
         )
 
-print("*** A data line longer than 200 characters is cut when read ***")
+print("*** A data line longer than 200 characters is read whole ***")
 base = "v2000-sed-line-of-210-characters"
 mol = indigo.loadMoleculeFromFile(
     os.path.join(root, "sgroup/" + base + ".mol")
 )
 for data in mol.iterateDataSGroups():
     print("%s: %d characters read" % (base, len(data.data())))
-compare_diff(ref_path, base + "-2000.mol", saved_as(mol, "2000"))
+compare_diff(ref_path, base + "-auto.mol", saved_as(mol, "auto"))
+try:
+    saved_as(mol, "2000")
+    print("%s as V2000: written" % base)
+except IndigoException as e:
+    print("%s as V2000: %s" % (base, getIndigoExceptionText(e)))

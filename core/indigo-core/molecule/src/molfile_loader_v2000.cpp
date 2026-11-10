@@ -1063,12 +1063,6 @@ void MolfileLoader::_readCtab2000()
                             else
                                 break;
                         }
-                        // the line the SCD lines before this SED started, cut as the format cuts a longer one
-                        int line_start = sgroup.data.size();
-                        while (line_start > 0 && sgroup.data[line_start - 1] != '\n')
-                            line_start--;
-                        if (sgroup.data.size() - line_start > MOLFILE_V2000_MAX_DATA_LINE_LENGTH)
-                            sgroup.data.resize(line_start + MOLFILE_V2000_MAX_DATA_LINE_LENGTH);
                         // Add new paragraph. Last '\n' will be cleaned at the end
                         sgroup.data.push('\n');
                         if (sgroup.data.top() != 0)

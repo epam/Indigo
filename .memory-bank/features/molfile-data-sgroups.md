@@ -39,7 +39,8 @@ Loading a molfile or an SDF entry; `molfile()` / `saveMolfile` with the option `
   ten columns, a field name over 30 characters, units over 20, a data line over 200 — THEN `auto` writes V3000, and
   a requested V2000 fails naming the first thing that did not fit: `V2000 cannot hold the field name '…' of data
   S-group 1, longer than 30 characters`.
-- WHEN a V2000 data line is longer than 200 characters THEN the reader keeps 200 and drops the rest.
+- WHEN a V2000 data line is longer than 200 characters THEN the reader keeps it whole: the model has no limit, and the
+  writer decides - `auto` writes V3000, a requested V2000 fails naming the line.
 - WHEN V3000 `FIELDINFO` starts with `F`, `N` or `T` followed by a blank, or is that letter alone, THEN the letter is
   the field type and the rest the units; any other value is the units alone. Indigo writes the letter, a blank and
   the units, or the units alone when no type is set.
