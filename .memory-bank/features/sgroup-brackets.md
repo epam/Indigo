@@ -2,7 +2,8 @@
 
 > **Read when:** a ticket is about where the brackets of a repeating unit, copolymer, component, mixture or
 > formulation stand, or when they appear or move.
-> **Skip when:** the question is about superatoms, multiple groups or data S-groups.
+> **Skip when:** the question is about superatoms, multiple groups or data S-groups, or about how the brackets
+> and labels look in a picture: that is [sgroup-rendering.md](./sgroup-rendering.md).
 
 Verified on `1e15006f7`. Ticket #3974, under the polymer epic #3971.
 
@@ -56,8 +57,6 @@ mock-ups are pinned to four decimals.
 
 ## Limitations
 
-- The renderer draws brackets only for repeating units, multiple groups, superatoms and generic groups; those
-  of copolymers, components, mixtures and formulations are in the file but not in the picture (#3976).
 - Distances are in the default bond length, 1.0, whatever the bond length of the drawing: a structure drawn
   at another scale gets margins out of proportion.
 - Nothing outside the group is considered: a bracket can run through a neighbouring atom, the `*` at a chain

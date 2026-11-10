@@ -23,7 +23,9 @@ feature file must stay true across a refactor.
 - [ket-sgroups.md](./ket-sgroups.md) — S-groups in KET: component, mixture and formulation, nesting by `parentId`
   or by atom containment, what makes a document fail to load
 - [sgroup-brackets.md](./sgroup-brackets.md) — brackets of polymer S-groups: when they are computed, where
-  they stand, what is kept from a file, and what the renderer does not yet draw
+  they stand, what is kept from a file
+- [sgroup-rendering.md](./sgroup-rendering.md) — brackets, hooks, labels and repeat patterns of S-groups in a
+  picture: which types are drawn, where the label stands, what stayed as it was
 
 ## Worth writing next
 

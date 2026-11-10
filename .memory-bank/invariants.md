@@ -117,12 +117,13 @@ of these, should read the line first.
 
 ## S-group brackets
 
-**A12 — The two brackets of a bracketed S-group keep their order and direction: the opening one first, running
-bottom to top, the closing one second, running top to bottom.**
-The renderer turns the hooks of a bracket to the right of its direction and puts the label and the repeat pattern
-at the last bracket (`core/render2d/src/render_internal.cpp#_positionIndex`). A pair written the other way round
-draws its hooks outwards and its label at the left bracket; nothing fails. The one place that
-writes a pair is `core/indigo-core/layout/src/sgroup_bracket_layout.cpp#_setBrackets`.
+**A12 — The two brackets of a bracketed S-group are written in one order and direction: the opening one first,
+running bottom to top, the closing one second, running top to bottom.**
+Since #3976 nothing in Indigo reads that order: the renderer takes the closing bracket by position, the rightmost
+one, and turns the hooks of every bracket towards the atoms of the group
+(`core/render2d/src/render_sgroups.cpp#SGroupBrackets::closing`), so a pair written the other way round draws
+the same. The order is the convention of the files Indigo writes, for the readers of those files; the one place
+that writes a pair is `core/indigo-core/layout/src/sgroup_bracket_layout.cpp#_setBrackets`.
 
 **A13 — Whatever moves the atoms of a molecule moves its S-group brackets with them.**
 Brackets are coordinates stored on the group; nothing ties them to the atoms. A rigid move or a scale goes
@@ -141,10 +142,12 @@ and the CDXML and CXSMILES loaders leave such pairs too. `SGroup::hasBrackets()`
 (`core/indigo-core/molecule/molecule_sgroups.h#hasBrackets`): one zero-length bracket means the group has none,
 and the layout replaces them. The MOL savers skip each zero-length bracket and keep the real ones next to it
 (`core/indigo-core/molecule/src/molfile_saver.cpp#isZeroLengthBracket`); `transformBrackets` moves the real
-brackets of a group and leaves its placeholders; the renderer takes the file's brackets only when the first two
-are real and draws its own pair otherwise (`core/render2d/src/render_internal.cpp#isBracketsCoordinates`). Code
-that tests `brackets.size() > 0` instead takes a bracket at the origin for a real one: the CML saver writes
-placeholders out that way.
+brackets of a group and leaves its placeholders; the renderer draws the real brackets of a generic or multiple
+group when it has at least two and a pair of its own otherwise
+(`core/render2d/src/render_sgroups.cpp#_storedOrPairAroundAtoms`), and gives a bracketed group without brackets
+a pair by the layout's rules on its own copy of the molecule before drawing
+(`core/render2d/src/render_internal.cpp#_placeMissingBrackets`). Code that tests `brackets.size() > 0` instead
+takes a bracket at the origin for a real one: the CML saver writes placeholders out that way.
 
 ## Language & platform
 

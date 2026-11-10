@@ -23,6 +23,8 @@ document that restates the header file saves nothing and should not be written.
   fingerprint pre-filter + postprocess pattern, its own test suite
 - [layout-sgroup-brackets.md](./layout-sgroup-brackets.md) — brackets of polymer S-groups: who places them
   and when, the fixed margins, nesting, the constant-unit and font traps
+- [render-sgroups.md](./render-sgroups.md) — `render2d/render_sgroups.*`: one drawer class per S-group type,
+  the canvas they draw on, the bracket geometry in page coordinates, how to add a type
 
 ## Not yet written
 
@@ -34,7 +36,8 @@ when a task forces you to reconstruct the knowledge anyway.
 - `molecule-loaders` — the loader/saver matrix, shared options plumbing, error contracts
 - `layout` — the 2D layout pipeline and its cross-platform reproducibility limits (invariant A10); the
   S-group bracket part is covered by [layout-sgroup-brackets.md](./layout-sgroup-brackets.md)
-- `render2d` — rendering pipeline, cairo backend, font and platform dependencies
+- `render2d` — rendering pipeline, cairo backend, font and platform dependencies; the S-group part is
+  covered by [render-sgroups.md](./render-sgroups.md)
 - `c-api` — the FFI surface, session/object registry, `INDIGO_BEGIN`/`INDIGO_END` machinery
 - `wrappers` — how the Python/Java/.NET/WASM bindings are generated and kept in step
 - `indigo-service` — the FastAPI REST service and its Docker packaging
