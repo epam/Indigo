@@ -49,6 +49,9 @@ Data S-groups (since Indigo 1.51):
   `ABSOLUTE` / `RELATIVE`, `displayUnits`, `displayedChars`, `fieldTag`, `daspPosition`), every field with a default
   written, and next to them the keys of KET 2.0 with the same values, deprecated until KET 3.0. Saved as 2.0 it
   carries the 2.0 keys only.
+- WHEN the model holds a field type, a query type or an operator outside the names THEN KET writes the value as it
+  is, in 2.1 as in 2.0, and reads it back as it is; a molfile refuses it when it is written (the molfile writer and
+  readers hold the format's sets).
 - WHEN a document has both an object and the 2.0 keys THEN the object is read and the keys are neither read nor
   checked; a field missing from an object reads as its default; a value outside its set — a type, a display, a
   placement, a `daspPosition` outside 1–9, a tag of more than one character, a field of the wrong JSON type, a

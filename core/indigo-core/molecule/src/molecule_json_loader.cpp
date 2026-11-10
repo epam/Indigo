@@ -1235,16 +1235,6 @@ namespace
         return value.IsString() && value.GetStringLength() == 1;
     }
 
-    bool isFieldValueType(const Value& value)
-    {
-        return value.IsString() && DataSGroup::fieldTypeText(value.GetString()) != nullptr;
-    }
-
-    bool isQueryType(const Value& value)
-    {
-        return value.IsString() && DataSGroup::queryTypeText(value.GetString()) != nullptr;
-    }
-
     bool isOneOf(const Value& value, const char* first, const char* second)
     {
         return value.IsString() && (std::strcmp(value.GetString(), first) == 0 || std::strcmp(value.GetString(), second) == 0);
@@ -1299,15 +1289,14 @@ namespace
         checkDataKey(s, KetKeyTagV2_0, sgroup_name, isSingleCharacter, NOT_A_SINGLE_CHARACTER);
     }
 
-    // dataFieldDescription of KET 2.1: an object whose fields have the types and the enum names of the contract
+    // dataFieldDescription of KET 2.1: an object whose fields are strings; a value outside the enum names is kept
+    // as it is (the ticket: KET keeps such a value), and a molfile refuses it when it is written
     void checkDataFieldDescription(const Value& s, const std::string& sgroup_name)
     {
         checkDataKey(s, KetKeyDataFieldDescription, sgroup_name, isObject, NOT_AN_OBJECT);
         const Value& object = s[KetKeyDataFieldDescription];
-        for (const char* field : {KetKeyFieldName, KetKeyFieldUnits, KetKeyQueryOperator})
+        for (const char* field : {KetKeyFieldName, KetKeyFieldValueType, KetKeyFieldUnits, KetKeyQueryType, KetKeyQueryOperator})
             checkObjectField(object, KetKeyDataFieldDescription, field, sgroup_name, isString, NOT_A_STRING);
-        checkObjectField(object, KetKeyDataFieldDescription, KetKeyFieldValueType, sgroup_name, isFieldValueType, DataSGroup::INVALID_FIELD_TYPE);
-        checkObjectField(object, KetKeyDataFieldDescription, KetKeyQueryType, sgroup_name, isQueryType, DataSGroup::INVALID_QUERY_TYPE);
     }
 
     // dataDisplayInformation of KET 2.1, the same way; the DASP position is one of its nine
@@ -1400,24 +1389,27 @@ namespace
             dsg.num_chars = s[KetKeyDisplayedCharsV2_0].GetInt();
     }
 
+    // The text the model keeps for a name of KET: a value outside the names as it is
+    static const char* modelText(const char* (*textOfName)(const char*), const char* name)
+    {
+        const char* text = textOfName(name);
+        return text != nullptr ? text : name;
+    }
+
     // The field of a data S-group from dataFieldDescription of KET 2.1: an enum name by the text the model keeps for
-    // it, an operator outside the names as it is; an absent field is its default, the blank of the model
+    // it, a value outside the names as it is; an absent field is its default, the blank of the model
     void readDataFieldDescription(const Value& object, DataSGroup& dsg)
     {
         if (object.HasMember(KetKeyFieldName))
             dsg.name.readString(object[KetKeyFieldName].GetString(), true);
         if (object.HasMember(KetKeyFieldValueType))
-            setText(dsg.type, DataSGroup::fieldTypeText(object[KetKeyFieldValueType].GetString()));
+            setText(dsg.type, modelText(DataSGroup::fieldTypeText, object[KetKeyFieldValueType].GetString()));
         if (object.HasMember(KetKeyFieldUnits))
             dsg.description.readString(object[KetKeyFieldUnits].GetString(), true);
         if (object.HasMember(KetKeyQueryType))
-            setText(dsg.querycode, DataSGroup::queryTypeText(object[KetKeyQueryType].GetString()));
+            setText(dsg.querycode, modelText(DataSGroup::queryTypeText, object[KetKeyQueryType].GetString()));
         if (object.HasMember(KetKeyQueryOperator))
-        {
-            const char* name = object[KetKeyQueryOperator].GetString();
-            const char* text = DataSGroup::queryOperatorText(name);
-            dsg.queryoper.readString(text != nullptr ? text : name, true);
-        }
+            dsg.queryoper.readString(modelText(DataSGroup::queryOperatorText, object[KetKeyQueryOperator].GetString()), true);
     }
 
     // The display of a data S-group from dataDisplayInformation of KET 2.1; an absent field is its default, and a

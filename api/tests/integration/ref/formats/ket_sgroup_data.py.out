@@ -46,19 +46,26 @@ objects-written-by-indigo-saved-2.1.ket:SUCCEED
 objects-written-by-indigo-2000.mol:SUCCEED
 objects-written-by-indigo-from-molfile-2.1.ket:SUCCEED
 data-placement-and-display-saved-2.1.ket:SUCCEED
-'X' as 1.0.0: written
-'X' as 2.1.0: molecule json saver: data S-group 2: 'X' is not a valid field type
-' I' as 1.0.0: written
-' I' as 2.1.0: molecule json saver: data S-group 2: ' I' is not a valid query type
+type-outside-names-saved-2.0.ket:SUCCEED
+type-outside-names-saved-2.1.ket:SUCCEED
+type-outside-names-saved-2.1.ket:SUCCEED
+'X' as a molfile: molfile saver: data S-group 2: 'X' is not a valid field type
+query-type-molfile-code-saved-2.0.ket:SUCCEED
+query-type-molfile-code-saved-2.1.ket:SUCCEED
+query-type-molfile-code-saved-2.1.ket:SUCCEED
+' I' as a molfile: molfile saver: data S-group 2: ' I' is not a valid query type
+*** KET 2.1 objects with values outside the names are read as they are ***
+object-field-value-type-outside-names-saved-2.1.ket:SUCCEED
+object-field-value-type-outside-names as a molfile: molfile saver: data S-group 1: 'STRING' is not a valid field type
+object-query-type-molfile-code-saved-2.1.ket:SUCCEED
+object-query-type-molfile-code as a molfile: written
 *** KET 2.1 objects with values outside the contract ***
 rejected-object-dasp-position-zero: molecule json loader: S-group #0 of molecule #0 has 'dataDisplayInformation.daspPosition' 0, which is not a valid DASP position
 rejected-object-description-array: molecule json loader: S-group #0 of molecule #0 has 'dataFieldDescription' [], which is not an object
 rejected-object-display-lowercase: molecule json loader: S-group #0 of molecule #0 has 'dataDisplayInformation.display' "attached", which is not a valid display
 rejected-object-display-units-string: molecule json loader: S-group #0 of molecule #0 has 'dataDisplayInformation.displayUnits' "true", which is not a boolean
 rejected-object-field-tag-empty: molecule json loader: S-group #0 of molecule #0 has 'dataDisplayInformation.fieldTag' "", which is not a single character
-rejected-object-field-value-type-unknown: molecule json loader: S-group #0 of molecule #0 has 'dataFieldDescription.fieldValueType' "STRING", which is not a valid field type
 rejected-object-placement-boolean: molecule json loader: S-group #0 of molecule #0 has 'dataDisplayInformation.placement' false, which is not a valid placement
 rejected-object-position-array: molecule json loader: S-group #0 of molecule #0 has 'dataDisplayInformation.position' [1.0,2.0], which is not an object
 rejected-object-position-x-four-decimals-lost: molecule json loader: S-group #0 of molecule #0 has 'dataDisplayInformation.position.x' 1234.5678, which cannot be kept to four decimals
 rejected-object-query-operator-number: molecule json loader: S-group #0 of molecule #0 has 'dataFieldDescription.queryOperator' 5, which is not a string
-rejected-object-query-type-molfile-code: molecule json loader: S-group #0 of molecule #0 has 'dataFieldDescription.queryType' "IQ", which is not a valid query type

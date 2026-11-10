@@ -171,23 +171,49 @@ compare_diff(
     indigo.loadMoleculeFromFile(path(filename)).json(),
 )
 
-# a kind of the value or a query type outside the names is refused, as the molfile writer refuses it
+# a kind of the value or a query type outside the names is kept as it is, in 2.1 as in 2.0,
+# and read back as it is; a molfile refuses it
 mol = indigo.loadMoleculeFromFile(path("data-placement-and-display"))
 for data in mol.iterateDataSGroups():
     break
-for setter, value, restore in (
-    (data.setSGroupDataType, "X", "T"),
-    (data.setSGroupQueryCode, " I", ""),
+for setter, value, restore, name in (
+    (data.setSGroupDataType, "X", "T", "type-outside-names"),
+    (data.setSGroupQueryCode, " I", "", "query-type-molfile-code"),
 ):
     setter(value)
-    for version in ("1.0.0", VERSION_2_1):
+    for version, suffix in saved_by_version:
         indigo.setOption("ket-saving-version", version)
-        try:
-            mol.json()
-            print("%r as %s: written" % (value, version))
-        except IndigoException as e:
-            print("%r as %s: %s" % (value, version, getIndigoExceptionText(e)))
+        compare_diff(ref_path, name + suffix, mol.json())
+    indigo.setOption("ket-saving-version", VERSION_2_1)
+    compare_diff(
+        ref_path,
+        name + "-saved-2.1.ket",
+        indigo.loadMolecule(mol.json()).json(),
+    )
+    try:
+        indigo.setOption("molfile-saving-mode", "2000")
+        mol.molfile()
+        print("%r as a molfile: written" % value)
+    except IndigoException as e:
+        print("%r as a molfile: %s" % (value, getIndigoExceptionText(e)))
     setter(restore)
+indigo.setOption("ket-saving-version", "1.0.0")
+
+print(
+    "*** KET 2.1 objects with values outside the names are read as they are ***"
+)
+for filename in (
+    "object-field-value-type-outside-names",
+    "object-query-type-molfile-code",
+):
+    mol = indigo.loadMoleculeFromFile(path(filename))
+    indigo.setOption("ket-saving-version", VERSION_2_1)
+    compare_diff(ref_path, filename + "-saved-2.1.ket", mol.json())
+    try:
+        mol.molfile()
+        print("%s as a molfile: written" % filename)
+    except IndigoException as e:
+        print("%s as a molfile: %s" % (filename, getIndigoExceptionText(e)))
 indigo.setOption("ket-saving-version", "1.0.0")
 
 print("*** KET 2.1 objects with values outside the contract ***")
@@ -197,12 +223,10 @@ for filename in (
     "rejected-object-display-lowercase",
     "rejected-object-display-units-string",
     "rejected-object-field-tag-empty",
-    "rejected-object-field-value-type-unknown",
     "rejected-object-placement-boolean",
     "rejected-object-position-array",
     "rejected-object-position-x-four-decimals-lost",
     "rejected-object-query-operator-number",
-    "rejected-object-query-type-molfile-code",
 ):
     try:
         indigo.loadMoleculeFromFile(path(filename))

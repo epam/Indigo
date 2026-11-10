@@ -193,33 +193,33 @@ static void saveTag(const char* key, const DataSGroup& dsg, JsonWriter& writer)
     }
 }
 
+// The name KET gives a value of the model, or the value itself when it is outside the names: KET keeps such a
+// value as it is, a molfile refuses it when it is written
+static const char* nameOrText(const char* name, const char* text)
+{
+    return name != nullptr ? name : text;
+}
+
 // dataFieldDescription of KET 2.1: fieldName and every field with a default always, by its value or the default,
-// the units and the operator when set; an enum by its name, an operator outside the names as it is
-void MoleculeJsonSaver::saveDataFieldDescription(const DataSGroup& dsg, int number, JsonWriter& writer)
+// the units and the operator when set; an enum by its name, a value outside the names as it is
+void MoleculeJsonSaver::saveDataFieldDescription(const DataSGroup& dsg, JsonWriter& writer)
 {
     writer.Key(KetKeyDataFieldDescription);
     writer.StartObject();
     writer.Key(KetKeyFieldName);
     writer.String(DataSGroup::textOf(dsg.name));
-    const auto reject = [number](const char* value, const char* reason) { throw Error(DataSGroup::REJECTED_FIELD_MESSAGE, number, value, reason); };
     const char* type = DataSGroup::textOf(dsg.type);
-    const char* kind = DataSGroup::fieldTypeName(type);
-    if (kind == nullptr)
-        reject(type, DataSGroup::INVALID_FIELD_TYPE);
     writer.Key(KetKeyFieldValueType);
-    writer.String(kind);
+    writer.String(nameOrText(DataSGroup::fieldTypeName(type), type));
     saveTextIfSet(KetKeyFieldUnits, dsg.description, writer);
     const char* querycode = DataSGroup::textOf(dsg.querycode);
-    const char* query_type = DataSGroup::queryTypeName(querycode);
-    if (query_type == nullptr)
-        reject(querycode, DataSGroup::INVALID_QUERY_TYPE);
     writer.Key(KetKeyQueryType);
-    writer.String(query_type);
+    writer.String(nameOrText(DataSGroup::queryTypeName(querycode), querycode));
     if (DataSGroup::hasText(dsg.queryoper))
     {
-        const char* name = DataSGroup::queryOperatorName(dsg.queryoper.ptr());
+        const char* queryoper = DataSGroup::textOf(dsg.queryoper);
         writer.Key(KetKeyQueryOperator);
-        writer.String(name != nullptr ? name : dsg.queryoper.ptr());
+        writer.String(nameOrText(DataSGroup::queryOperatorName(queryoper), queryoper));
     }
     writer.EndObject();
 }
@@ -312,7 +312,7 @@ void MoleculeJsonSaver::saveSGroup(BaseMolecule& mol, const SGroupInfo& info, Js
         // from KET 2.1 the two objects, and the keys of KET 2.0 with the same values until KET 3.0
         if (ket_version >= KETVersion2_1)
         {
-            saveDataFieldDescription(dsg, info.new_index, writer);
+            saveDataFieldDescription(dsg, writer);
             saveDataDisplayInformation(dsg, position, writer);
         }
         saveDataSGroupKeysV2_0(dsg, position, writer);
