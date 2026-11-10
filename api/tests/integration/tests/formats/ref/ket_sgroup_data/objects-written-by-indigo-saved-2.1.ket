@@ -1,0 +1,337 @@
+{
+    "ket_version": "2.1.0",
+    "root": {
+        "nodes": [
+            {
+                "$ref": "mol0"
+            },
+            {
+                "$ref": "mol1"
+            }
+        ]
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "*",
+                "location": [
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    1.0,
+                    0.5,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    2.0,
+                    0.0,
+                    0.0
+                ]
+            },
+            {
+                "label": "*",
+                "location": [
+                    3.0,
+                    0.5,
+                    0.0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    2
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    2,
+                    3
+                ]
+            }
+        ],
+        "sgroups": [
+            {
+                "type": "SRU",
+                "atoms": [
+                    1,
+                    2
+                ],
+                "subscript": "n",
+                "connectivity": "HT",
+                "id": 1,
+                "bonds": [
+                    0,
+                    2
+                ]
+            },
+            {
+                "type": "DAT",
+                "atoms": [
+                    2
+                ],
+                "fieldData": "measured by GPC",
+                "context": "Atom",
+                "dataFieldDescription": {
+                    "fieldName": "NOTE",
+                    "fieldValueType": "TEXT",
+                    "queryType": "DATA"
+                },
+                "dataDisplayInformation": {
+                    "position": {
+                        "x": 3.5,
+                        "y": 1.2000000476837159
+                    },
+                    "display": "DETACHED",
+                    "placement": "ABSOLUTE",
+                    "displayUnits": false,
+                    "displayedChars": 8,
+                    "fieldTag": "a",
+                    "daspPosition": 2
+                },
+                "fieldName": "NOTE",
+                "x": 3.5,
+                "y": 1.2000000476837159,
+                "tag": "a",
+                "displayedChars": 8
+            },
+            {
+                "type": "DAT",
+                "atoms": [
+                    1,
+                    2
+                ],
+                "fieldData": "5000",
+                "context": "Fragment",
+                "dataFieldDescription": {
+                    "fieldName": "AVERAGE_MOLECULAR_WEIGHT",
+                    "fieldValueType": "NUMERIC",
+                    "fieldUnits": "g/mol",
+                    "queryType": "DATA"
+                },
+                "dataDisplayInformation": {
+                    "position": {
+                        "x": 0.0,
+                        "y": -1.5
+                    },
+                    "display": "DETACHED",
+                    "placement": "RELATIVE",
+                    "displayUnits": false,
+                    "displayedChars": 0,
+                    "daspPosition": 1
+                },
+                "fieldName": "AVERAGE_MOLECULAR_WEIGHT",
+                "fieldType": "g/mol",
+                "x": 0.0,
+                "y": -1.5,
+                "placement": false,
+                "parentId": 1,
+                "bonds": [
+                    1
+                ]
+            },
+            {
+                "type": "DAT",
+                "atoms": [
+                    1,
+                    2
+                ],
+                "fieldData": "1000-5000",
+                "context": "Fragment",
+                "dataFieldDescription": {
+                    "fieldName": "MW_RANGE",
+                    "fieldValueType": "NUMERIC",
+                    "fieldUnits": "g/mol",
+                    "queryType": "QUERY",
+                    "queryOperator": "BETWEEN"
+                },
+                "dataDisplayInformation": {
+                    "position": {
+                        "x": 0.0,
+                        "y": -2.200000047683716
+                    },
+                    "display": "DETACHED",
+                    "placement": "RELATIVE",
+                    "displayUnits": false,
+                    "displayedChars": 0,
+                    "daspPosition": 1
+                },
+                "fieldName": "MW_RANGE",
+                "fieldType": "g/mol",
+                "queryType": "IQ",
+                "queryOp": "BETWEEN",
+                "x": 0.0,
+                "y": -2.200000047683716,
+                "placement": false,
+                "parentId": 1,
+                "bonds": [
+                    1
+                ]
+            }
+        ]
+    },
+    "mol1": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    5.0,
+                    0.0,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    6.0,
+                    0.5,
+                    0.0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    7.0,
+                    0.0,
+                    0.0
+                ]
+            },
+            {
+                "label": "O",
+                "location": [
+                    5.5,
+                    -2.0,
+                    0.0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    2
+                ]
+            }
+        ],
+        "sgroups": [
+            {
+                "type": "MIX",
+                "atoms": [
+                    0,
+                    1,
+                    2,
+                    3
+                ],
+                "id": 1
+            },
+            {
+                "type": "COM",
+                "atoms": [
+                    0,
+                    1,
+                    2
+                ],
+                "id": 2,
+                "parentId": 1
+            },
+            {
+                "type": "COM",
+                "atoms": [
+                    3
+                ],
+                "id": 3,
+                "parentId": 1
+            },
+            {
+                "type": "DAT",
+                "atoms": [
+                    0,
+                    1,
+                    2
+                ],
+                "fieldData": "0.5",
+                "context": "Fragment",
+                "dataFieldDescription": {
+                    "fieldName": "WEIGHT_PERCENT",
+                    "fieldValueType": "NUMERIC",
+                    "fieldUnits": "%",
+                    "queryType": "DATA"
+                },
+                "dataDisplayInformation": {
+                    "position": {
+                        "x": 0.0,
+                        "y": -0.800000011920929
+                    },
+                    "display": "ATTACHED",
+                    "placement": "RELATIVE",
+                    "displayUnits": true,
+                    "displayedChars": 0,
+                    "daspPosition": 1
+                },
+                "fieldName": "WEIGHT_PERCENT",
+                "fieldType": "%",
+                "x": 0.0,
+                "y": -0.800000011920929,
+                "display": true,
+                "placement": false,
+                "parentId": 2
+            },
+            {
+                "type": "DAT",
+                "atoms": [],
+                "fieldData": "99.5",
+                "context": "Group",
+                "dataFieldDescription": {
+                    "fieldName": "WEIGHT_PERCENT",
+                    "fieldValueType": "NUMERIC",
+                    "fieldUnits": "%",
+                    "queryType": "DATA"
+                },
+                "dataDisplayInformation": {
+                    "position": {
+                        "x": 6.199999809265137,
+                        "y": -2.0
+                    },
+                    "display": "DETACHED",
+                    "placement": "ABSOLUTE",
+                    "displayUnits": true,
+                    "displayedChars": 0,
+                    "daspPosition": 1
+                },
+                "fieldName": "WEIGHT_PERCENT",
+                "fieldType": "%",
+                "x": 6.199999809265137,
+                "y": -2.0,
+                "parentId": 3
+            }
+        ]
+    }
+}

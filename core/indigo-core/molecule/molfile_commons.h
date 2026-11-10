@@ -35,6 +35,39 @@ namespace indigo
     const auto MOLFILE_SGROUP_SUBTYPE_KEY = "SUBTYPE";
     const auto MOLFILE_SGROUP_CONNECTIVITY_KEY = "CONNECT";
     const auto MOLFILE_SGROUP_COMPONENT_ORDER_KEY = "COMPNO";
+    const auto MOLFILE_SGROUP_FIELD_NAME_KEY = "FIELDNAME";
+    const auto MOLFILE_SGROUP_FIELD_INFO_KEY = "FIELDINFO";
+    const auto MOLFILE_SGROUP_FIELD_DATA_KEY = "FIELDDATA";
+    const auto MOLFILE_SGROUP_QUERY_TYPE_KEY = "QUERYTYPE";
+    const auto MOLFILE_SGROUP_QUERY_OPERATOR_KEY = "QUERYOP";
+    const auto MOLFILE_SGROUP_FIELD_DISPLAY_KEY = "FIELDDISP";
+
+    // M  SDD and FIELDDISP: the number of characters to display when it is every character
+    const auto MOLFILE_DATA_ALL_CHARACTERS = "ALL";
+
+    // M  SDT: the widths of its columns after the S-group number - field name, field type, units or format, query
+    // type, query operator; the reader takes each by its width, the writer pads each to it
+    constexpr int MOLFILE_DATA_FIELD_NAME_WIDTH = 30;
+    constexpr int MOLFILE_DATA_FIELD_TYPE_WIDTH = 2;
+    constexpr int MOLFILE_DATA_FIELD_UNITS_WIDTH = 20;
+    constexpr int MOLFILE_DATA_QUERY_TYPE_WIDTH = 2;
+    constexpr int MOLFILE_DATA_QUERY_OPERATOR_WIDTH = 15;
+    // M  SCD and M  SED: a line of the data is cut to this many characters when read, and is not written in V2000
+    // when longer
+    constexpr int MOLFILE_V2000_MAX_DATA_LINE_LENGTH = 200;
+    // the counts line of V2000 numbers atoms and bonds in three columns each
+    constexpr int MOLFILE_V2000_MAX_ATOM_OR_BOND_COUNT = 999;
+    // M  STY and the other property lines number an S-group in three columns
+    constexpr int MOLFILE_V2000_MAX_SGROUP_COUNT = 999;
+    // F10.4, the column of a coordinate in V2000 and of the position of a data value in both versions: ten columns,
+    // four of them decimals, one a sign
+    constexpr int MOLFILE_F10_4_WIDTH = 10;
+    constexpr double MOLFILE_F10_4_MIN = -9999.9999;
+    constexpr double MOLFILE_F10_4_MAX = 99999.9999;
+    inline bool molfileFitsF10_4(double value)
+    {
+        return value >= MOLFILE_F10_4_MIN && value <= MOLFILE_F10_4_MAX;
+    }
 } // namespace indigo
 
 #endif

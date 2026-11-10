@@ -1,0 +1,34 @@
+
+  -INDIGO-01000000002D
+
+  3  2  0  0  0  0  0  0  0  0999 V2000
+   10.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   12.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   14.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0  0  0  0
+  2  3  1  0  0  0  0
+M  STY  6   1 GEN   2 DAT   3 DAT   4 DAT   6 DAT   5 DAT
+M  SPL  1   6   1
+M  SLB  6   1   1   2   2   3   3   4   4   6   6   5   5
+M  SAL   1  2   2   3
+M  SBL   1  1   1
+M  SAL   2  3   1   2   3
+M  SDT   2 RELATIVE_ATTACHED                                                    
+M  SDD   2     3.0000    2.0000    AR    ALL  1       1  
+M  SED   2 1
+M  SAL   3  3   1   2   3
+M  SDT   3 ATTACHED_BY_DATA_DETACHED                                            
+M  SDD   3     5.0000    6.0000    AA    ALL  1       1  
+M  SED   3 1
+M  SAL   4  3   1   2   3
+M  SDT   4 PLACEMENT_TRUE_IS_ABSOLUTE                                           
+M  SDD   4     1.0000    2.0000    DA    ALL  1       1  
+M  SED   4 1
+M  SDT   6 RELATIVE_TO_PARENT_ATOMS                                             
+M  SDD   6     2.0000    2.0000    DR    ALL  1       1  
+M  SED   6 1
+M  SAL   5  1   1
+M  SDT   5                                                                      
+M  SDD   5     0.0000    0.0000    DA    ALL  1       1  
+M  SED   5 1
+M  END

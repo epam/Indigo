@@ -19,9 +19,7 @@ Target: **$ARGUMENTS**
    - a change in what a capability promises callers → `features/<name>.md`
    - a structural decision that sets precedent → `adr/<slug>.md`
    - a term you had to look up → `glossary.md`
-4. Run `.claude/scripts/check-anchors.sh`. A broken anchor is a defect in the document — fix it
-   while you are there, and never replace a symbol anchor with a line number.
-5. Report each edit as one line: `file — what changed and why`. If nothing qualified, report that.
+4. Report each edit as one line: `file — what changed and why`. If nothing qualified, report that.
 
 ## Mode B — a topic: answer from the bank, then close the gap
 

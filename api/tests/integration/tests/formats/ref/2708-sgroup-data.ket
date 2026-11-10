@@ -71,11 +71,11 @@
                 "atoms": [
                     1
                 ],
-                "fieldName": "Purity",
                 "fieldData": "Purity = 50%",
+                "fieldName": "Purity",
                 "x": -1.781300,
                 "y": -1.125000,
-                "placement": true
+                "placement": false
             }
         ]
     }

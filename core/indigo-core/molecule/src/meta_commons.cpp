@@ -25,7 +25,10 @@
 #include "base_cpp/scanner.h"
 #include "molecule/monomer_commons.h"
 #include "molecule/smiles_saver.h"
+#include <algorithm>
+#include <charconv>
 #include <cppcodec/base64_default_rfc4648.hpp>
+#include <iterator>
 
 namespace indigo
 {
@@ -134,6 +137,25 @@ namespace indigo
             return std::string(dsg.name.ptr()) == "INDIGO_CIP_DESC";
         }
         return false;
+    }
+
+    KETVersion parseKETVersion(const std::string& version_str)
+    {
+        KETVersion version = {0, 0, 0};
+        int* const components[] = {&version.major, &version.minor, &version.patch};
+        const char* pos = version_str.data();
+        const char* const end = pos + std::min(version_str.find_first_of("-+"), version_str.size());
+        for (std::size_t component_idx = 0;; ++component_idx)
+        {
+            const auto [next, error] = std::from_chars(pos, end, *components[component_idx]);
+            pos = next;
+            const bool next_component_follows = error == std::errc() && pos != end && *pos == '.' && component_idx + 1 < std::size(components);
+            if (error != std::errc() || (pos != end && !next_component_follows))
+                throw Exception("'%s' is not a valid KET version", version_str.c_str());
+            if (!next_component_follows)
+                return version;
+            ++pos;
+        }
     }
 
     CIPDesc stringToCIP(const std::string& cip_str)

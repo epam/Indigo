@@ -25,6 +25,7 @@
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
 #include <string>
+#include <tuple>
 #include <unordered_map>
 #include <variant>
 
@@ -71,17 +72,25 @@ namespace indigo
         int major;
         int minor;
         int patch;
+
+        bool operator<(const KETVersion& other) const
+        {
+            return std::tie(major, minor, patch) < std::tie(other.major, other.minor, other.patch);
+        }
+
+        bool operator>=(const KETVersion& other) const
+        {
+            return !(*this < other);
+        }
     };
 
     const KETVersion KETVersion1 = {1, 0, 0};
     const KETVersion KETVersion2 = {2, 0, 0};
+    const KETVersion KETVersion2_1 = {2, 1, 0};
 
-    enum class KETVersionIndex : int
-    {
-        EMajor,
-        EMinor,
-        EPatch
-    };
+    // SemVer MAJOR.MINOR.PATCH with an optional pre-release or build suffix, which is ignored;
+    // MINOR and PATCH may be left out and are then 0. Throws on anything else.
+    KETVersion parseKETVersion(const std::string& version_str);
 
     using KETFontVal = std::variant<std::monostate, std::string, uint32_t>;
 

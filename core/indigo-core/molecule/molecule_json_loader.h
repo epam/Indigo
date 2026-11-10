@@ -29,6 +29,7 @@
 #include "base_cpp/exception.h"
 #include "base_cpp/non_copyable.h"
 #include "molecule/loader_options.h"
+#include "molecule/meta_commons.h"
 #include "molecule/molecule_stereocenter_options.h"
 
 #ifdef _WIN32
@@ -156,7 +157,7 @@ namespace indigo
         Molecule* _pmol;
         QueryMolecule* _pqmol;
         std::vector<EnhancedStereoCenter> _stereo_centers;
-        std::string _ket_version;
+        KETVersion _ket_version = KETVersion1;
         unsigned int _components_count;
         bool _parsed;
         rapidjson::Document _document;

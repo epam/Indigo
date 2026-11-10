@@ -212,6 +212,19 @@ std::string CDXProperty::formatValue(ECDXType cdx_type) const
         return ss.str();
     }
     break;
+    case ECDXType::CDXRepresentsProperty: {
+        // An object id (INT32) and the tag (UINT16) of the property of that object which this object represents.
+        // The value is the CDXML name of that property, as in the "attribute" of a CDXML <represent> element.
+        uint16_t represented_tag = 0;
+        if (_size == sizeof(int32_t) + sizeof(represented_tag))
+        {
+            std::memcpy(&represented_tag, _data + sizeof(int32_t), sizeof(represented_tag));
+            auto it = KCDXPropToName.find(represented_tag);
+            if (it != KCDXPropToName.end())
+                result = it->second.first;
+        }
+    }
+    break;
     case ECDXType::CDXINT16ListWithCounts: {
         auto pcount = (int16_t*)_data;
         auto ptr16 = pcount + 1;
@@ -1823,12 +1836,19 @@ void MoleculeCdxmlLoader::_parseGraphic(BaseCDXElement& elem)
 
     Vec3f center3d, majAxis3d, minAxis3d;
 
+    // A charge symbol of an atom: CDXML writes the link as a <represent> child, binary CDX as a RepresentsProperty.
+    bool atomicCharge = false;
+    auto represents_lambda = [&atomicCharge](const std::string& data) {
+        if (data == "Charge")
+            atomicCharge = true;
+    };
+
     std::unordered_map<std::string, std::function<void(const std::string&)>> graphic_dispatcher = {
-        {"SupersededBy", superseded_lambda},     {"BoundingBox", segLambda(graph_bbox.first, graph_bbox.second)},
-        {"GraphicType", graphic_type_lambda},    {"SymbolType", symbol_type_lambda},
-        {"ArrowType", arrow_type_lambda},        {"HeadSize", head_size_lambda},
-        {"Center3D", posLambda(center3d)},       {"MajorAxisEnd3D", posLambda(majAxis3d)},
-        {"MinorAxisEnd3D", posLambda(minAxis3d)}};
+        {"SupersededBy", superseded_lambda},      {"BoundingBox", segLambda(graph_bbox.first, graph_bbox.second)},
+        {"GraphicType", graphic_type_lambda},     {"SymbolType", symbol_type_lambda},
+        {"ArrowType", arrow_type_lambda},         {"HeadSize", head_size_lambda},
+        {"Center3D", posLambda(center3d)},        {"MajorAxisEnd3D", posLambda(majAxis3d)},
+        {"MinorAxisEnd3D", posLambda(minAxis3d)}, {"RepresentsProperty", represents_lambda}};
 
     applyDispatcher(*elem.firstProperty().get(), graphic_dispatcher);
 
@@ -1898,19 +1918,13 @@ void MoleculeCdxmlLoader::_parseGraphic(BaseCDXElement& elem)
     case kCDXGraphicType_Symbol: {
         if (symbol_type == kCDXSymbolType_Plus)
         {
-            bool atomicCharge = false;
             for (auto child = elem.firstChildElement(); child->hasContent(); child = child->nextSiblingElement())
             {
                 if (child->name() == "represent")
                 {
                     auto attribute = child->findProperty("attribute");
                     if (attribute->hasContent())
-                    {
-                        if (attribute->value() == "Charge")
-                        {
-                            atomicCharge = true;
-                        }
-                    }
+                        represents_lambda(attribute->value());
                 }
             }
 
