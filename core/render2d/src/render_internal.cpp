@@ -551,7 +551,7 @@ void MoleculeRenderInternal::_placeMissingBrackets()
         {
             if (!_own_mol)
                 _cloneAndFillMappings();
-            SGroupBracketLayout(*_mol).update();
+            SGroupBracketLayout(*_mol, SGroupBracketLayout::DEFAULT_FONT_SIZE, _opt.labelMode).update();
             return;
         }
     }

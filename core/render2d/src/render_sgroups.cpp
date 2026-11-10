@@ -423,11 +423,6 @@ float GenericGroupRenderer::_hookLength(const BracketLine& bracket, const SGroup
     return _hookOfBracketLength(bracket);
 }
 
-std::string GenericGroupRenderer::_label(const SGroup&) const
-{
-    return "";
-}
-
 void SuperatomRenderer::draw(const SGroup& sgroup, const std::optional<Rect2f>& frame, SGroupCanvas& canvas) const
 {
     if (_labelText(sgroup).empty())

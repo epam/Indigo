@@ -26,7 +26,7 @@ they are drawn where they are, in any direction; a zero-length bracket is not dr
 
 **When** such a group has no brackets, or only zero-length ones (CDX, CDXML, CXSMILES, a structure built through
 the API), **then** it is drawn with brackets placed by the rules of [sgroup-brackets.md](./sgroup-brackets.md),
-at the default font; the structure itself is not changed.
+at the default font and in the label mode of the rendering; the structure itself is not changed.
 
 **When** a bracket of a bracketed group or of a multiple group is drawn, **then** its hooks are 0.15 bond lengths
 long, perpendicular to the bracket and turned towards the centre of the group's atoms. The hooks of generic
@@ -55,8 +55,8 @@ and was not visible either.
 ## Guarantees
 
 Deterministic for given coordinates; the same drawing in PNG, SVG, PDF and EMF. The forty structures of the
-ticket are pinned as SVG in the integration harness, one reference for every platform, since the glyphs come from
-the font built into the renderer.
+ticket are pinned as SVG in the integration harness, one reference for the CI platforms, since the glyphs come from
+the font built into the renderer; an ARM Mac differs in the sixth decimal of the coordinates.
 
 ## Limitations
 

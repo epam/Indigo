@@ -1,6 +1,6 @@
 sru-brackets-horizontal
 
-A vertical chain: the brackets at the sides, the crossing bonds leave between the hooks
+A vertical chain with two horizontal brackets across the crossing bonds
   4  3  0  0  0  0  0  0  0  0999 V2000
     0.0000    0.0000    0.0000 *   0  0  0  0  0  0  0  0  0  0  0  0
     0.0000    1.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0

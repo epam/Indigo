@@ -47,8 +47,8 @@ scaled gets brackets anew by these rules, also with `layout-preserve-existing`; 
 types move and scale with their molecules.
 
 **When** a structure is saved to MOL, **then** zero-length brackets are not written, for any S-group type; a real
-bracket next to one is written, and a group left with fewer than two real brackets is drawn with the renderer's
-own pair.
+bracket next to one is written, and a group read back with that one bracket keeps it: a generic or multiple group
+is then drawn with the renderer's own pair, a bracketed group with its one bracket.
 
 ## Guarantees
 

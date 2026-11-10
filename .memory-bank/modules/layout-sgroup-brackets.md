@@ -87,5 +87,5 @@ be a child, never a parent.
   the unselected fragments the layout packs anew.
 - **References with layout coordinates are generated on Linux** (invariant A10). On an ARM Mac two `clean2d`
   references of `sgroup_brackets.py` differ in the fourth decimal.
-- The order of the two brackets is a contract with the renderer (A12); zero-length brackets are placeholders
-  (A14).
+- The order of the two brackets is the convention of the files Indigo writes; nothing in Indigo reads it, the
+  renderer finds the closing bracket by position (A12). Zero-length brackets are placeholders (A14).

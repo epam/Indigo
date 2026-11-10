@@ -118,8 +118,8 @@ Rect2f SGroupBracketLayout::_enlarged(const Rect2f& box, float horizontal, float
     return Rect2f(Vec2f(box.left() - horizontal, box.bottom() - vertical), Vec2f(box.right() + horizontal, box.top() + vertical));
 }
 
-// The renderer turns the hooks of a bracket to the right of its direction from the first point to the second and puts
-// the texts at the last bracket: so the opening bracket runs up and comes first, the closing one runs down
+// The order and direction of the files Indigo writes: the opening bracket runs up and comes first, the closing one
+// runs down. The renderer depends on neither: it finds the closing bracket by position
 void SGroupBracketLayout::_setBrackets(SGroup& sgroup, const Rect2f& box)
 {
     sgroup.brackets.clear();

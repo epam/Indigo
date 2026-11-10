@@ -99,7 +99,6 @@ namespace indigo
     class SGroupRenderer
     {
     public:
-        // In bond lengths
         static constexpr float LABEL_OFFSET = 0.05f * LayoutOptions::DEFAULT_BOND_LENGTH;
         static constexpr float BRACKET_HOOK = 0.15f * LayoutOptions::DEFAULT_BOND_LENGTH;
 
@@ -180,7 +179,6 @@ namespace indigo
     protected:
         SGroupBrackets _brackets(const SGroup& sgroup, const SGroupCanvas& canvas) const override;
         float _hookLength(const BracketLine& bracket, const SGroupCanvas& canvas) const override;
-        std::string _label(const SGroup& sgroup) const override;
     };
 
     class SuperatomRenderer : public SGroupRenderer
