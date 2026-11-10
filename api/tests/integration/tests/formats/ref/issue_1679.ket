@@ -25,6 +25,7 @@
                             {
                                 "text": "TEXT message",
                                 "font": {
+                                    "family": "Times New Roman",
                                     "size": 18,
                                     "color": "#0"
                                 }
@@ -47,6 +48,7 @@
                             {
                                 "text": "Huge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message \rHuge TEXT Message Huge TEXT Message Huge TEXT Message",
                                 "font": {
+                                    "family": "Times New Roman",
                                     "size": 18,
                                     "color": "#0"
                                 }
@@ -152,6 +154,7 @@
                             {
                                 "text": "LARGE FONT",
                                 "font": {
+                                    "family": "Times New Roman",
                                     "size": 36,
                                     "color": "#0"
                                 }
@@ -174,6 +177,7 @@
                             {
                                 "text": "ARIAL FONT",
                                 "font": {
+                                    "family": "Arial",
                                     "size": 18,
                                     "color": "#0"
                                 }
@@ -196,6 +200,7 @@
                             {
                                 "text": "ARABIC TRANSPARENT FONT",
                                 "font": {
+                                    "family": "Arabic Transparent",
                                     "size": 18,
                                     "color": "#0"
                                 }
@@ -218,6 +223,7 @@
                             {
                                 "text": "@Magnim Gothic Semilight font",
                                 "font": {
+                                    "family": "@Malgun Gothic Semilight",
                                     "size": 18,
                                     "color": "#0"
                                 }

@@ -22,7 +22,6 @@
 #include <charconv>
 #include <functional>
 #include <regex>
-#include <set>
 #include <sstream>
 #include <string>
 #include <tinyxml2.h>
@@ -309,6 +308,8 @@ namespace indigo
         {
             return _tag;
         }
+
+        std::vector<CDXFont> fontTable() const;
 
         // protected:
         std::string formatValue(ECDXType cdx_type) const;
@@ -943,9 +944,7 @@ namespace indigo
         std::vector<CdxmlBond> bonds;
         std::vector<CdxmlBracket> brackets;
         std::vector<SimpleTextObject> ket_text_objects;
-        std::map<int, std::string> font_table;
-        // Fonts whose runs are in the Symbol font encoding (Greek letters typed as Latin ones).
-        std::set<int> symbol_fonts;
+        std::map<int, CDXFont> font_table;
         std::vector<uint32_t> color_table;
 
     protected:
@@ -962,6 +961,7 @@ namespace indigo
         void _parseText(BaseCDXElement& elem, std::vector<CdxmlText>& text_parsed);
         void _parseTextToKetObject(BaseCDXElement& elem, std::vector<SimpleTextObject>& text_objects);
         bool _isPlusText(BaseCDXElement& elem);
+        std::string _runText(BaseCDXElement& run);
 
         void _parseLabel(BaseCDXElement& elem, std::string& label);
 

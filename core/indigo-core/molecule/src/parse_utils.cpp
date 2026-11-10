@@ -40,10 +40,15 @@ namespace indigo
     const uint8_t kUtf8ExtraByteSz4 = 3;
 
     const uint8_t kUtf8ExtraByteBits = 6;
+    const uint8_t kUtf8Lead2bytes = 0xC0;
+    const uint8_t kUtf8Lead3bytes = 0xE0;
+    const uint8_t kUtf8Lead4bytes = 0xF0;
     const uint8_t kUtf8Lead2bytesMask = 0x1F;
     const uint8_t kUtf8Lead3bytesMask = 0x0F;
     const uint8_t kUtf8Lead4bytesMask = 0x07;
+    const uint32_t kUtf8Max2bytes = 0x800;
     const uint32_t kUtf8Max3bytes = 0x10000;
+    const uint32_t kUnicodeMax = 0x10FFFF;
 
     std::string latin1_to_utf8(const std::string& src)
     {
@@ -124,6 +129,30 @@ namespace indigo
         }
         pos += extra + 1;
         return code_point;
+    }
+
+    void utf8_append_code_point(std::string& str, uint32_t code_point)
+    {
+        if (code_point < kAsciiSize)
+            str.push_back(static_cast<char>(code_point));
+        else if (code_point < kUtf8Max2bytes)
+        {
+            str.push_back(static_cast<char>(kUtf8Lead2bytes | (code_point >> kUtf8ExtraByteBits)));
+            str.push_back(static_cast<char>(kAsciiSize | (code_point & kLower6bitsMask)));
+        }
+        else if (code_point < kUtf8Max3bytes)
+        {
+            str.push_back(static_cast<char>(kUtf8Lead3bytes | (code_point >> (2 * kUtf8ExtraByteBits))));
+            str.push_back(static_cast<char>(kAsciiSize | ((code_point >> kUtf8ExtraByteBits) & kLower6bitsMask)));
+            str.push_back(static_cast<char>(kAsciiSize | (code_point & kLower6bitsMask)));
+        }
+        else if (code_point <= kUnicodeMax)
+        {
+            str.push_back(static_cast<char>(kUtf8Lead4bytes | (code_point >> (3 * kUtf8ExtraByteBits))));
+            str.push_back(static_cast<char>(kAsciiSize | ((code_point >> (2 * kUtf8ExtraByteBits)) & kLower6bitsMask)));
+            str.push_back(static_cast<char>(kAsciiSize | ((code_point >> kUtf8ExtraByteBits) & kLower6bitsMask)));
+            str.push_back(static_cast<char>(kAsciiSize | (code_point & kLower6bitsMask)));
+        }
     }
 
     size_t utf8_length_in_utf16(const std::string& str, size_t pos, size_t count)

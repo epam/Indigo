@@ -31,6 +31,7 @@
                             {
                                 "text": "acid",
                                 "font": {
+                                    "family": "SansSerif",
                                     "size": 15,
                                     "color": "#ff00ff"
                                 }
