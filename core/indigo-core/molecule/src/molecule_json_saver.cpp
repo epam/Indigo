@@ -180,7 +180,7 @@ static void saveTextIfSet(const char* key, const Array<char>& text, JsonWriter& 
     if (DataSGroup::hasText(text))
     {
         writer.Key(key);
-        writer.String(text.ptr());
+        writer.String(DataSGroup::textOf(text));
     }
 }
 
@@ -303,18 +303,8 @@ void MoleculeJsonSaver::saveSGroup(BaseMolecule& mol, const SGroupInfo& info, Js
         break;
     case SGroup::SG_TYPE_DAT: {
         DataSGroup& dsg = (DataSGroup&)sgroup;
-        auto data = dsg.data.ptr();
-        if (data && strlen(data))
-        {
-            writer.Key(KetKeyFieldData);
-            writer.String(data);
-        }
-        auto context = dsg.context.ptr();
-        if (context && strlen(context))
-        {
-            writer.Key(KetKeyContext);
-            writer.String(context);
-        }
+        saveTextIfSet(KetKeyFieldData, dsg.data, writer);
+        saveTextIfSet(KetKeyContext, dsg.context, writer);
 
         Vec2f position = dsg.displayPosition();
         if (dsg.relative)
