@@ -562,7 +562,7 @@ bool MoleculeRenderInternal::_colorsAtoms(const SGroup& sgroup)
     if (sgroup.sgroup_type != SGroup::SG_TYPE_DAT || _opt.atomColorProp.size() == 0)
         return false;
     const DataSGroup& group = static_cast<const DataSGroup&>(sgroup);
-    if (strcmp(_opt.atomColorProp.ptr(), group.name.ptr()) != 0)
+    if (strcmp(_opt.atomColorProp.ptr(), DataSGroup::textOf(group.name)) != 0)
         return false;
 
     Vec3f color;

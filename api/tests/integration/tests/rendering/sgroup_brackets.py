@@ -99,6 +99,13 @@ mol = indigo.loadMoleculeFromFile(
 )
 compare_svg("multiple-group", mol)
 
+print("*** A data S-group without a field name, a colour property set ***")
+indigo.setOption("render-atom-color-property", "color")
+mol = indigo.loadMoleculeFromFile(
+    os.path.join(molecules_path, "sgroups", "data-without-field-name.mol")
+)
+compare_svg("data-without-field-name", mol)
+
 if isIronPython():
     renderer.Dispose()
     indigo.Dispose()

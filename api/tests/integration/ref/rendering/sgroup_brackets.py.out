@@ -41,3 +41,5 @@ sgroups/sru-without-scn.svg:SUCCEED
 sgroups/sru-cxsmiles.svg:SUCCEED
 *** A multiple group keeps its brackets and its multiplier ***
 sgroups/multiple-group.svg:SUCCEED
+*** A data S-group without a field name, a colour property set ***
+sgroups/data-without-field-name.svg:SUCCEED

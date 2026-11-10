@@ -34,6 +34,7 @@ Callers:
 | `MoleculeCleaner2d::do_clean`: `clean2d()`, both passes | after the trivial-structure returns | after the coordinates are written back | default |
 | `MolfileLoader::_postLoad` | at once | at once: only groups without `SDI` / `BRKXYZ` change | default |
 | `ReactionLayout::make`, `PathwayLayout::make`: the metalayout's move and scale of whole molecules | before `Metalayout::process()` / `buildLayoutTree()` | after `process()` / `applyLayout()` | the same options |
+| `MoleculeRenderInternal::_placeMissingBrackets`: a drawing of a bracketed group without brackets | at once, on the renderer's copy of the molecule | at once | default size, `render-label-mode` of the drawing |
 
 `Metalayout::adjustMol`, `BaseMolecule::scale` and `BaseMolecule::offsetCoordinates` carry every group's real
 brackets along through `core/indigo-core/molecule/molecule_sgroups.h#transformPositions` (invariant A13), with the

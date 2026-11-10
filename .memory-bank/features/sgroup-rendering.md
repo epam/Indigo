@@ -5,7 +5,7 @@
 > **Skip when:** the question is where the brackets stand in the structure: that is
 > [sgroup-brackets.md](./sgroup-brackets.md).
 
-Verified on `630c981f5`. Ticket #3976, under the polymer epic #3971.
+Verified on 2026-11-10. Ticket #3976, under the polymer epic #3971.
 
 ## Problem
 

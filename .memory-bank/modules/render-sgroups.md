@@ -5,7 +5,7 @@
 > **Skip when:** you only need the promised picture: that is
 > [../features/sgroup-rendering.md](../features/sgroup-rendering.md).
 
-Verified on `630c981f5` (ticket #3976).
+Verified on 2026-11-10 (ticket #3976).
 
 ## Responsibility
 
