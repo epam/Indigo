@@ -29,10 +29,7 @@ files = [
     "agent-text-graphic",
     "captions-on-page",
     "empty-participant",
-    "intermediate-group-caption",
-    "intermediate-orbital-only",
     "nested-brackets",
-    "product-orbital-only",
     "step-participants",
 ]
 

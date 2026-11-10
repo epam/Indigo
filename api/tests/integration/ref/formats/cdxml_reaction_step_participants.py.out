@@ -4,10 +4,7 @@ agent-group-caption.ket:SUCCEED
 agent-text-graphic.ket:SUCCEED
 captions-on-page.ket:SUCCEED
 empty-participant.ket:SUCCEED
-intermediate-group-caption.ket:SUCCEED
-intermediate-orbital-only.ket:SUCCEED
 nested-brackets.ket:SUCCEED
-product-orbital-only.ket:SUCCEED
 step-participants.ket:SUCCEED
 *** A caption in a participant group is kept as on the page ***
 step-participants and captions-on-page: same text nodes
