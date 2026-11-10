@@ -144,20 +144,20 @@ placeholders out that way.
 
 ## S-group data fields
 
-**A15 — A text of a data S-group is read through `textOf` or `hasText`, never through `ptr()` of its `Array`.**
+**A16 — A text of a data S-group is read through `textOf` or `hasText`, never through `ptr()` of its `Array`.**
 `Array<char>::clear()` keeps the buffer, so `ptr()` of a cleared text still shows the old characters at size 0, and
 `ptr()` of a text never filled is null (`core/indigo-core/molecule/molecule_sgroups.h#textOf`). A writer that reads
 `ptr()` prints stale text into the file or hands null to a C string function; nothing fails where the file was
 written.
 
-**A16 — The molfile writer refuses what the molfile reader rejects, through the same predicates.**
+**A17 — The molfile writer refuses what the molfile reader rejects, through the same predicates.**
 `DataSGroup::isValid*` and `lineNotANumber` are the one home of each rule of a data field. The reader applies them at
 `M  SDT`, `M  SDD`, `M  SED` and the V3000 keys (`core/indigo-core/molecule/molfile_loader.h#_checkDataField`); the
 writer applies them before V2000 and V3000 alike (`core/indigo-core/molecule/src/molfile_saver.cpp#_checkDataSGroup`).
 A check added on one side only yields a file Indigo itself cannot load back, found when someone reloads it. KET,
 CXSMILES and the API keep the value; the molfile boundary is the only gate.
 
-**A17 — The keys of a V3000 S-group line come in any order; a check that needs two of them runs once the line is
+**A18 — The keys of a V3000 S-group line come in any order; a check that needs two of them runs once the line is
 read.**
 `FIELDINFO`, which carries the field type, may follow `FIELDDATA`, which carries the value: the NUMERIC check runs
 at the end of `core/indigo-core/molecule/src/molfile_loader_v3000.cpp#_readSGroup3000`, not at the key. A check at

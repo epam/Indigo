@@ -61,9 +61,6 @@ before it is useful is a tax on every session; a routing table plus honest per-f
   costs the reader more than no anchor at all. A symbol survives edits, survives a rebase, and is
   found with one grep.
 
-  `.claude/scripts/check-anchors.sh` verifies every anchor in this bank and in `.claude/`; run it
-  after editing, and treat a failure as a defect in the document.
-
   Where the claim is about behaviour rather than structure, also name the commit it was verified on.
 - **Non-obvious only.** If a competent reader learns it in thirty seconds from the source, it does
   not belong here. Directory listings, class inventories, and restated signatures are not knowledge.
