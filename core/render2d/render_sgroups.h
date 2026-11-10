@@ -68,8 +68,8 @@ namespace indigo
     class SGroupCanvas
     {
     public:
-        SGroupCanvas(MoleculeRenderData& data, RenderContext& context, const RenderSettings& settings, float scale,
-                     const Vec2f& min, const Vec2f& max, Sgroup& sgroup);
+        SGroupCanvas(MoleculeRenderData& data, RenderContext& context, const RenderSettings& settings, float scale, const Vec2f& min, const Vec2f& max,
+                     Sgroup& sgroup);
 
         Vec2f atomPosition(int atom) const;
         Rect2f atomBox(int atom) const;

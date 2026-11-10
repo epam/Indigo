@@ -96,8 +96,8 @@ Vec2f SGroupBrackets::hookDirection(const BracketLine& bracket, const Vec2f& tow
 
 // ---- SGroupCanvas --------------------------------------------------------------------------------------------------
 
-SGroupCanvas::SGroupCanvas(MoleculeRenderData& data, RenderContext& context, const RenderSettings& settings, float scale, const Vec2f& min,
-                           const Vec2f& max, Sgroup& sgroup)
+SGroupCanvas::SGroupCanvas(MoleculeRenderData& data, RenderContext& context, const RenderSettings& settings, float scale, const Vec2f& min, const Vec2f& max,
+                           Sgroup& sgroup)
     : _data(data), _context(context), _settings(settings), _scale(scale), _min(min), _max(max), _sgroup(sgroup)
 {
 }
