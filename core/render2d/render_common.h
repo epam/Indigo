@@ -206,7 +206,6 @@ namespace indigo
         void clear();
         Vec2f p0, p1, q0, q1, d, n;
         float width, length;
-        bool invertUpperLowerIndex;
     };
 
     struct RenderItemAttachmentPoint : public RenderItem
