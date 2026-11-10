@@ -386,6 +386,10 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                     std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> utf8w;
 
                     auto text_wstr = utf8w.from_bytes(text_item.text);
+                    // The keys of font_styles are byte offsets in the UTF-8 text; text_wstr is indexed by characters.
+                    auto char_index = [&utf8w, &text_item](size_t byte_offset) {
+                        return static_cast<int>(utf8w.from_bytes(text_item.text.substr(0, byte_offset)).size());
+                    };
                     float text_max_height = _getMaxHeight(text_item);
                     auto line_starts = text_item.line_starts;
                     int first_index = -1;
@@ -409,12 +413,12 @@ void RenderItemAuxiliary::_drawMeta(bool idle)
                     {
                         if (first_index == -1)
                         {
-                            first_index = static_cast<int>(kvp.first);
+                            first_index = char_index(kvp.first);
                             current_styles = paragraph_style;
                             current_styles += kvp.second;
                             continue;
                         }
-                        second_index = static_cast<int>(kvp.first);
+                        second_index = char_index(kvp.first);
 
                         std::vector<std::string> styled_lines;
                         while (line_starts.has_value() && line_starts.value().size() && *line_starts.value().begin() <= second_index &&
@@ -723,8 +727,7 @@ float RenderItemAuxiliary::_getMaxHeight(const SimpleTextObject::KETTextParagrap
             continue;
         }
         second_index = static_cast<int>(kvp.first);
-        std::wstring_convert<std::codecvt_utf8<wchar_t>> utf8w;
-        auto sub_text = utf8w.to_bytes(utf8w.from_bytes(tl.text).substr(first_index, second_index - first_index));
+        auto sub_text = tl.text.substr(first_index, second_index - first_index); // byte offsets
         ti.text.readString(sub_text.c_str(), true);
         fillKETStyle(ti, current_styles);
         _rc.setTextItemSize(ti);
