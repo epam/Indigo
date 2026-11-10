@@ -178,6 +178,10 @@ Sgroup::Sgroup()
     clear();
 }
 
+AttachmentGroupLabel::AttachmentGroupLabel() : tibegin(-1), ticount(0), gibegin(-1), gicount(0)
+{
+}
+
 void Sgroup::clear()
 {
     tibegin = gibegin = bibegin = -1;
@@ -283,6 +287,7 @@ void MoleculeRenderData::clear()
     inversions.clear();
     exactChanges.clear();
     sgroups.clear();
+    attachmentGroupLabels.clear();
 }
 
 CP_DEF(RenderSettings);

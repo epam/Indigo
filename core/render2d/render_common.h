@@ -297,6 +297,15 @@ namespace indigo
         Sgroup(const SGroup& sg);
     };
 
+    // The items that write the charge and the radical of an attachment group next to its centre.
+    struct AttachmentGroupLabel
+    {
+        AttachmentGroupLabel();
+
+        int tibegin, ticount;
+        int gibegin, gicount;
+    };
+
     struct BondEnd
     {
         BondEnd();
@@ -395,6 +404,7 @@ namespace indigo
         PtrArray<RenderItemAttachmentPoint> attachmentPoints;
         PtrArray<RenderItemRSiteAttachmentIndex> rSiteAttachmentIndices;
         PtrArray<RenderItemBracket> brackets;
+        PtrArray<AttachmentGroupLabel> attachmentGroupLabels;
         Array<int> aam;
         Array<int> reactingCenters;
         Array<int> inversions;

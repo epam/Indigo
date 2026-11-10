@@ -123,6 +123,15 @@ namespace indigo
         // for a group, which draws no label.
         bool _hapticEndpointPos(const HapticBond::Endpoint& endpoint, Vec2f& pos, int& label_atom);
         void _clipHapticEndToLabel(int label_atom, Vec2f& pos, const Vec2f& other);
+        // The line of a haptic bond, clipped to the label of its atom end; false when nothing is drawn.
+        bool _hapticLine(const HapticBond& bond, Vec2f& begin, Vec2f& end);
+        // The charge and the radical of each attachment group with a haptic bond, in the corners its first haptic
+        // bond selects, moved out of the corner only as far as the drawn bonds and labels require. Prepared after
+        // everything else is drawn, which they never move.
+        void _prepareAttachmentGroupLabels();
+        // `obstacles`: the convex outlines, a margin wider than drawn, of everything the label must not touch.
+        void _prepareAttachmentGroupLabel(const HapticBond& bond, std::vector<std::vector<Vec2f>>& obstacles);
+        void _renderAttachmentGroupLabels();
         void _applyBondOffset();
         void _setBondCenter();
         float _getBondOffset(int aid, const Vec2f& pos, const Vec2f& dir, const float bondWidth);
@@ -171,9 +180,11 @@ namespace indigo
         int _pushTextItem(RenderItem::TYPE type, int color, bool highlighted);
         int _pushTextItem(AtomDesc& ad, RenderItem::TYPE type, int color, bool highlighted);
         int _pushTextItem(Sgroup& sg, RenderItem::TYPE ritype, int color = CWC_BASE);
+        int _pushTextItem(AttachmentGroupLabel& label, RenderItem::TYPE type, int color, bool highlighted);
         int _pushGraphItem(RenderItem::TYPE type, int color, bool highlighted);
         int _pushGraphItem(AtomDesc& ad, RenderItem::TYPE type, int color, bool highlighted);
         int _pushGraphItem(Sgroup& ad, RenderItem::TYPE type, int color = CWC_BASE);
+        int _pushGraphItem(AttachmentGroupLabel& label, RenderItem::TYPE type, int color, bool highlighted);
         const char* _valenceText(const int valence);
         float _ctghalf(float cs);
         void _drawBond(int b);

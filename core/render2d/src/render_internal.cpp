@@ -276,6 +276,10 @@ void MoleculeRenderInternal::render()
 
     _renderLabels();
 
+    _prepareAttachmentGroupLabels();
+
+    _renderAttachmentGroupLabels();
+
     _renderBondIds();
 
     _renderAtomIds();

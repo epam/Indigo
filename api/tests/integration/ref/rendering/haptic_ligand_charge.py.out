@@ -1,0 +1,36 @@
+*** The corner of each quadrant, and the boundaries between them ***
+ring-bond-up.svg:SUCCEED
+ring-bond-right.svg:SUCCEED
+ring-bond-down.svg:SUCCEED
+ring-bond-left.svg:SUCCEED
+benzene-bond-45.svg:SUCCEED
+benzene-bond-135.svg:SUCCEED
+benzene-bond-225.svg:SUCCEED
+benzene-bond-315.svg:SUCCEED
+*** The radical beside the charge ***
+ring-doublet.svg:SUCCEED
+ring-singlet.svg:SUCCEED
+ring-triplet.svg:SUCCEED
+*** Out of the corner when something is in the way ***
+ring-bond-60.svg:SUCCEED
+ring-bond-120.svg:SUCCEED
+ethylene-bond-left.svg:SUCCEED
+ethylene-bond-40.svg:SUCCEED
+ethylene-askew.svg:SUCCEED
+allyl-bond-up.svg:SUCCEED
+allyl-bond-75.svg:SUCCEED
+allyl-bond-75-radical.svg:SUCCEED
+allyl-bond-120.svg:SUCCEED
+*** The first haptic bond decides; sandwiches ***
+ring-two-metals.svg:SUCCEED
+sandwich-vertical.svg:SUCCEED
+sandwich-horizontal.svg:SUCCEED
+*** No label ***
+ring-neutral.svg:SUCCEED
+ring-without-haptic-bond drawn as without the charge: True
+variable-attachment drawn as without the charge: True
+*** A reaction and a grid ***
+ring-bond-up-reaction.svg:SUCCEED
+ring-bond-up-grid.svg:SUCCEED
+*** PNG ***
+sandwich-vertical PNG differs from the one without charges: True
