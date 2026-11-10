@@ -25,6 +25,8 @@ document that restates the header file saves nothing and should not be written.
   and when, the fixed margins, nesting, the constant-unit and font traps
 - [render-sgroups.md](./render-sgroups.md) — `render2d/render_sgroups.*`: one drawer class per S-group type,
   the canvas they draw on, the bracket geometry in page coordinates, how to add a type
+- [layout-sgroup-data.md](./layout-sgroup-data.md) — values of data S-groups: when they move, the fit of their atoms
+  and its line and single-atom cases, what a whole-molecule move leaves to it
 
 ## Not yet written
 
@@ -35,7 +37,8 @@ when a task forces you to reconstruct the knowledge anyway.
   covered by [base-containers.md](./base-containers.md))
 - `molecule-loaders` — the loader/saver matrix, shared options plumbing, error contracts
 - `layout` — the 2D layout pipeline and its cross-platform reproducibility limits (invariant A10); the
-  S-group bracket part is covered by [layout-sgroup-brackets.md](./layout-sgroup-brackets.md)
+  S-group bracket part is covered by [layout-sgroup-brackets.md](./layout-sgroup-brackets.md), the data values by
+  [layout-sgroup-data.md](./layout-sgroup-data.md)
 - `render2d` — rendering pipeline, cairo backend, font and platform dependencies; the S-group part is
   covered by [render-sgroups.md](./render-sgroups.md)
 - `c-api` — the FFI surface, session/object registry, `INDIGO_BEGIN`/`INDIGO_END` machinery

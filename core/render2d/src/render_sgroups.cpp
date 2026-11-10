@@ -465,7 +465,8 @@ std::string SuperatomRenderer::_label(const SGroup& sgroup) const
 void DataSGroupRenderer::draw(const SGroup& sgroup, const std::optional<Rect2f>& frame, SGroupCanvas& canvas) const
 {
     const DataSGroup& group = static_cast<const DataSGroup&>(sgroup);
-    const bool relative_without_origin = group.detached && group.relative && group.atoms.size() == 0 && !frame;
+    const int origin_atom = group.originAtom();
+    const bool relative_without_origin = group.detached && group.relative && origin_atom < 0 && !frame;
     if (relative_without_origin)
         return;
 
@@ -495,7 +496,7 @@ void DataSGroupRenderer::draw(const SGroup& sgroup, const std::optional<Rect2f>&
     {
         if (group.display_pos.has_value())
             item.bbp = canvas.toDrawingOffset(group.display_pos.value());
-        item.bbp.add(group.atoms.size() > 0 ? canvas.atomPosition(group.atoms[0]) : frame->rightTop());
+        item.bbp.add(origin_atom >= 0 ? canvas.atomPosition(origin_atom) : frame->rightTop());
     }
     else if (group.display_pos.has_value())
     {

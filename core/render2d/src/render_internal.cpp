@@ -20,7 +20,7 @@
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/tree.h"
-#include "layout/sgroup_bracket_layout.h"
+#include "layout/sgroup_layout.h"
 #include "layout/sgroup_nesting.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_sgroups.h"
@@ -551,7 +551,7 @@ void MoleculeRenderInternal::_placeMissingBrackets()
         {
             if (!_own_mol)
                 _cloneAndFillMappings();
-            SGroupBracketLayout(*_mol, SGroupBracketLayout::DEFAULT_FONT_SIZE, _opt.labelMode).update();
+            SGroupLayout(*_mol, SGroupLayout::DEFAULT_FONT_SIZE, _opt.labelMode).update();
             return;
         }
     }

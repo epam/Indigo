@@ -35,7 +35,7 @@ and one line in `create`.
 
 Reads `SGroup` and its subclasses; writes `MoleculeRenderData` (`sgroups`, `brackets`, `textitems`); measures
 text through `RenderContext::setTextItemSize`. `MoleculeRenderInternal::_placeMissingBrackets` calls
-`SGroupBracketLayout::update()` on the renderer's copy. The items are drawn by `_renderSGroups`, which the
+`SGroupLayout::update()` on the renderer's copy. The items are drawn by `_renderSGroups`, which the
 change did not touch.
 
 ## Constraints & traps

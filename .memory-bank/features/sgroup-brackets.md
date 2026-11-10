@@ -2,10 +2,11 @@
 
 > **Read when:** a ticket is about where the brackets of a repeating unit, copolymer, component, mixture or
 > formulation stand, or when they appear or move.
-> **Skip when:** the question is about superatoms, multiple groups or data S-groups, or about how the brackets
-> and labels look in a picture: that is [sgroup-rendering.md](./sgroup-rendering.md).
+> **Skip when:** the question is about superatoms, multiple groups or data S-groups (those are
+> [sgroup-data-values.md](./sgroup-data-values.md)), or about how the brackets and labels look in a picture:
+> that is [sgroup-rendering.md](./sgroup-rendering.md).
 
-Verified on `1e15006f7`. Ticket #3974, under the polymer epic #3971.
+Verified on 2026-10-28.
 
 ## Problem
 
@@ -69,6 +70,6 @@ mock-ups are pinned to four decimals.
 - Rigid moves outside the layout (aligning atoms, the standardizer's centering, unfolding hydrogens) leave
   brackets behind. CDX, CDXML and CXSMILES load their groups without brackets, so a MOL converted from them has no
   `M  SDI` at all.
-- The layout of a reaction can put the components of a mixture so close that their brackets overlap (#3981).
+- The layout of a reaction can put the components of a mixture so close that their brackets overlap.
 - A multiple group inside a bracketed group is not re-placed by `clean2d()`, so its parent may stretch to its
   old brackets.

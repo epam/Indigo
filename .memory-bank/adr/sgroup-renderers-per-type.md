@@ -21,7 +21,7 @@ and never through `MoleculeRenderInternal`; the rules that read a bracket on the
 hook side) live in `SGroupBrackets`, in page coordinates.
 
 The renderer places no brackets of its own for bracketed groups: a group that arrives without brackets gets
-them from the layout's `SGroupBracketLayout`, run on the renderer's copy of the molecule.
+them from the layout's `SGroupLayout`, run on the renderer's copy of the molecule.
 
 ## Alternatives considered
 

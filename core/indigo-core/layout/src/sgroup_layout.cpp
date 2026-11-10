@@ -16,7 +16,7 @@
  * limitations under the License.
  ***************************************************************************/
 
-#include "layout/sgroup_bracket_layout.h"
+#include "layout/sgroup_layout.h"
 
 #include <cmath>
 
@@ -24,22 +24,38 @@
 
 using namespace indigo;
 
-SGroupBracketLayout::SGroupBracketLayout(BaseMolecule& molecule, float font_size, LABEL_MODE label_mode)
+SGroupLayout::SGroupLayout(BaseMolecule& molecule, float font_size, LABEL_MODE label_mode)
     : _molecule(molecule), _nesting(molecule), _fontSize(font_size), _labelMode(label_mode)
 {
-    if (_nesting.bracketedDeepestFirst().empty())
+    MoleculeSGroups& sgroups = molecule.sgroups;
+    for (int i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
+    {
+        const SGroup& sgroup = sgroups.getSGroup(i);
+        if (sgroup.sgroup_type != SGroup::SG_TYPE_DAT)
+            continue;
+        const DataSGroup& value = static_cast<const DataSGroup&>(sgroup);
+        if (value.display_pos.has_value())
+            _initialValues.emplace(i, value.display_pos.value());
+    }
+    if (_nesting.bracketedDeepestFirst().empty() && _initialValues.empty())
         return;
-    _initialPositions.resize(molecule.vertexEnd());
+    _initialAtoms.resize(molecule.vertexEnd());
     for (int i = molecule.vertexBegin(); i != molecule.vertexEnd(); i = molecule.vertexNext(i))
-        Vec2f::projectZ(_initialPositions[i], molecule.getAtomXyz(i));
+        _initialAtoms[i] = _position(i);
 }
 
-float SGroupBracketLayout::labelFontSizeInAngstroms(const LayoutOptions& options)
+float SGroupLayout::labelFontSizeInAngstroms(const LayoutOptions& options)
 {
     return options.fontSize > EPSILON ? options.getFontSizeInAngstroms() : DEFAULT_FONT_SIZE;
 }
 
-void SGroupBracketLayout::update()
+void SGroupLayout::update()
+{
+    _placeBrackets();
+    _moveValues();
+}
+
+void SGroupLayout::_placeBrackets()
 {
     std::vector<int> to_place;
     for (int sgroup_idx : _nesting.bracketedDeepestFirst())
@@ -54,19 +70,79 @@ void SGroupBracketLayout::update()
         _setBrackets(_molecule.sgroups.getSGroup(sgroup_idx), _bracketsBox(sgroup_idx));
 }
 
-bool SGroupBracketLayout::_hasMoved(const SGroup& sgroup) const
+void SGroupLayout::_moveValues()
+{
+    if (_initialValues.empty())
+        return;
+    const std::vector<int> parents = _molecule.sgroups.resolveParents();
+    for (const auto& [sgroup_idx, initial] : _initialValues)
+    {
+        DataSGroup& value = static_cast<DataSGroup&>(_molecule.sgroups.getSGroup(sgroup_idx));
+        const SGroup* reference = _referenceGroup(value, parents[sgroup_idx]);
+        if (reference == nullptr || !_hasMoved(*reference))
+            continue;
+        // A whole-molecule move has carried it with the scale, which the fit of a single atom could not give
+        if (_standApart(value.display_pos.value(), initial))
+            continue;
+        _moveValue(value, *reference);
+    }
+}
+
+void SGroupLayout::_moveValue(DataSGroup& value, const SGroup& reference) const
+{
+    Vec3f point = value.displayPoint([this](int atom) { return _initialAtoms.at(atom); });
+    point.transformPoint(_fitOfAtoms(reference));
+    value.setDisplayPoint(point.projectZ(), [this](int atom) { return _position(atom); });
+}
+
+bool SGroupLayout::_hasMoved(const SGroup& sgroup) const
 {
     for (int atom : sgroup.atoms)
-    {
-        Vec2f now;
-        Vec2f::projectZ(now, _molecule.getAtomXyz(atom));
-        if (Vec2f::distSqr(now, _initialPositions.at(atom)) > EPSILON)
+        if (_standApart(_position(atom), _initialAtoms.at(atom)))
             return true;
-    }
     return false;
 }
 
-bool SGroupBracketLayout::_allAtomsAtOnePoint() const
+bool SGroupLayout::_standApart(const Vec2f& first, const Vec2f& second)
+{
+    return Vec2f::distSqr(first, second) > EPSILON;
+}
+
+Vec2f SGroupLayout::_position(int atom) const
+{
+    Vec2f position;
+    Vec2f::projectZ(position, _molecule.getAtomXyz(atom));
+    return position;
+}
+
+const SGroup* SGroupLayout::_referenceGroup(const DataSGroup& value, int parent) const
+{
+    if (value.originAtom() >= 0)
+        return &value;
+    if (value.relative)
+        return nullptr;
+
+    if (parent < 0 || _molecule.sgroups.getSGroup(parent).atoms.size() == 0)
+        return nullptr;
+    return &_molecule.sgroups.getSGroup(parent);
+}
+
+Transform3f SGroupLayout::_fitOfAtoms(const SGroup& sgroup) const
+{
+    std::vector<Vec3f> before, after;
+    before.reserve(sgroup.atoms.size());
+    after.reserve(sgroup.atoms.size());
+    for (int atom : sgroup.atoms)
+    {
+        before.emplace_back(_initialAtoms.at(atom));
+        after.emplace_back(_position(atom));
+    }
+    Transform3f fit;
+    fit.bestFit(sgroup.atoms.size(), before.data(), after.data(), nullptr);
+    return fit;
+}
+
+bool SGroupLayout::_allAtomsAtOnePoint() const
 {
     if (_molecule.vertexCount() < 2)
         return false;
@@ -80,7 +156,7 @@ bool SGroupBracketLayout::_allAtomsAtOnePoint() const
     return true;
 }
 
-Rect2f SGroupBracketLayout::_bracketsBox(int sgroup_idx) const
+Rect2f SGroupLayout::_bracketsBox(int sgroup_idx) const
 {
     const float bond_length = LayoutOptions::DEFAULT_BOND_LENGTH;
     Rect2f box = _enlarged(_atomsBox(_molecule.sgroups.getSGroup(sgroup_idx)), HORIZONTAL_MARGIN * bond_length, VERTICAL_MARGIN * bond_length);
@@ -90,7 +166,7 @@ Rect2f SGroupBracketLayout::_bracketsBox(int sgroup_idx) const
     return box;
 }
 
-Rect2f SGroupBracketLayout::_atomsBox(const SGroup& sgroup) const
+Rect2f SGroupLayout::_atomsBox(const SGroup& sgroup) const
 {
     const auto atom_box = [this](int atom) {
         Vec2f bottom_left, top_right;
@@ -103,7 +179,7 @@ Rect2f SGroupBracketLayout::_atomsBox(const SGroup& sgroup) const
     return box;
 }
 
-std::optional<Rect2f> SGroupBracketLayout::_spannedByBrackets(const SGroup& sgroup)
+std::optional<Rect2f> SGroupLayout::_spannedByBrackets(const SGroup& sgroup)
 {
     if (!sgroup.hasBrackets())
         return std::nullopt;
@@ -113,14 +189,14 @@ std::optional<Rect2f> SGroupBracketLayout::_spannedByBrackets(const SGroup& sgro
     return box;
 }
 
-Rect2f SGroupBracketLayout::_enlarged(const Rect2f& box, float horizontal, float vertical)
+Rect2f SGroupLayout::_enlarged(const Rect2f& box, float horizontal, float vertical)
 {
     return Rect2f(Vec2f(box.left() - horizontal, box.bottom() - vertical), Vec2f(box.right() + horizontal, box.top() + vertical));
 }
 
 // The order and direction of the files Indigo writes: the opening bracket runs up and comes first, the closing one
 // runs down. The renderer depends on neither: it finds the closing bracket by position
-void SGroupBracketLayout::_setBrackets(SGroup& sgroup, const Rect2f& box)
+void SGroupLayout::_setBrackets(SGroup& sgroup, const Rect2f& box)
 {
     sgroup.brackets.clear();
     Vec2f* opening = sgroup.brackets.push();

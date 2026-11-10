@@ -21,7 +21,7 @@
 
 #include "layout/molecule_layout.h"
 #include "layout/reaction_layout.h"
-#include "layout/sgroup_bracket_layout.h"
+#include "layout/sgroup_layout.h"
 #include "molecule/meta_commons.h"
 #include "molecule/molecule.h"
 #include "reaction/pathway_reaction_builder.h"
@@ -457,12 +457,12 @@ void ReactionLayout::make()
     _ml.prepare();
     _ml.scaleMoleculesSize();
     _ml.calcContentSize();
-    std::vector<SGroupBracketLayout> brackets;
-    brackets.reserve(static_cast<size_t>(_r.end()));
+    std::vector<SGroupLayout> sgroup_layouts;
+    sgroup_layouts.reserve(static_cast<size_t>(_r.end()));
     for (int i = _r.begin(); i < _r.end(); i = _r.next(i))
-        brackets.emplace_back(_r.getBaseMolecule(i), SGroupBracketLayout::labelFontSizeInAngstroms(_options), _options.labelMode);
+        sgroup_layouts.emplace_back(_r.getBaseMolecule(i), SGroupLayout::labelFontSizeInAngstroms(_options), _options.labelMode);
     _ml.process();
-    for (SGroupBracketLayout& layout : brackets)
+    for (SGroupLayout& layout : sgroup_layouts)
         layout.update();
     _updateMetadata();
 }
