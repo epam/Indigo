@@ -105,6 +105,7 @@ void TextItem::clear()
 void GraphItem::clear()
 {
     RenderItem::clear();
+    sizeFactor = 1;
 }
 
 void RenderItemAttachmentPoint::clear()

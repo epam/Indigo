@@ -144,6 +144,25 @@ namespace indigo
         int _findClosestBox(Vec2f& p, int aid, const Vec2f& sz, float mrg, int skip = -1);
         void _preparePseudoAtom(int aid, int color, bool highlighted);
         void _prepareChargeLabel(int aid, int color, bool highlighted);
+        // A charge is written as its magnitude, unless that is 1, followed by the sign; `value` is -1 when the
+        // magnitude is not written. Sized `size_factor` times an atom's, positioned by the caller.
+        struct ChargeItems
+        {
+            int value = -1;
+            int sign = -1;
+        };
+        template <class Owner>
+        ChargeItems _pushChargeItems(Owner& owner, int charge, float size_factor, int color, bool highlighted);
+        // A radical is one dot for a doublet, two dots for a singlet, two carets for a triplet, `spacing` apart;
+        // `second` is -1 for a doublet. Sized `size_factor` times an atom's, positioned by the caller.
+        struct RadicalItems
+        {
+            int first = -1;
+            int second = -1;
+            float spacing = 0;
+        };
+        template <class Owner>
+        RadicalItems _pushRadicalItems(Owner& owner, int radical, float size_factor, int color, bool highlighted);
         void _prepareCIPLabel(const int aid, int& skip);
         void _prepareLabelText(int aid);
         void _reverseLabelText(const int aid);

@@ -195,6 +195,8 @@ namespace indigo
         }
         void clear();
         TYPE type;
+        // Multiplies every dimension of the glyph; 1 except where a smaller copy of an atom's glyph is drawn.
+        float sizeFactor;
     };
 
     struct RenderItemBracket : public RenderItem

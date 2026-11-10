@@ -36,6 +36,12 @@
 
 using namespace indigo;
 
+namespace
+{
+    // The size of an atom's charge and radical; the size factor of their glyphs.
+    constexpr float ATOM_LABEL_SIZE_FACTOR = 1;
+}
+
 void MoleculeRenderInternal::_renderBondIds()
 {
     // show bond ids
@@ -1260,6 +1266,60 @@ void MoleculeRenderInternal::_preparePseudoAtom(int aid, int color, bool highlig
     }
 }
 
+template <class Owner>
+MoleculeRenderInternal::ChargeItems MoleculeRenderInternal::_pushChargeItems(Owner& owner, int charge, float size_factor, int color, bool highlighted)
+{
+    ChargeItems items;
+    if (abs(charge) != 1)
+    {
+        items.value = _pushTextItem(owner, RenderItem::RIT_CHARGEVAL, color, highlighted);
+        TextItem& value = _data.textitems[items.value];
+        value.fontsize = FONT_SIZE_ATTR;
+        value.size = size_factor * _cw.fontGetSize(FONT_SIZE_ATTR);
+        bprintf(value.text, "%i", abs(charge));
+        _cw.setTextItemSize(value);
+    }
+
+    items.sign = _pushGraphItem(owner, RenderItem::RIT_CHARGESIGN, color, highlighted);
+    GraphItem& sign = _data.graphitems[items.sign];
+    sign.sizeFactor = size_factor;
+    _cw.setGraphItemSizeSign(sign, charge > 0 ? GraphItem::PLUS : GraphItem::MINUS);
+    return items;
+}
+
+template <class Owner>
+MoleculeRenderInternal::RadicalItems MoleculeRenderInternal::_pushRadicalItems(Owner& owner, int radical, float size_factor, int color, bool highlighted)
+{
+    RadicalItems items;
+    items.first = _pushGraphItem(owner, RenderItem::RIT_RADICAL, color, highlighted);
+    if (radical != RADICAL_DOUBLET)
+        items.second = _pushGraphItem(owner, RenderItem::RIT_RADICAL, color, highlighted);
+
+    GraphItem& first = _data.graphitems[items.first];
+    first.sizeFactor = size_factor;
+    if (radical == RADICAL_DOUBLET)
+    {
+        _cw.setGraphItemSizeDot(first);
+        return items;
+    }
+
+    GraphItem& second = _data.graphitems[items.second];
+    second.sizeFactor = size_factor;
+    if (radical == RADICAL_SINGLET)
+    {
+        _cw.setGraphItemSizeDot(first);
+        _cw.setGraphItemSizeDot(second);
+        items.spacing = size_factor * _settings.radicalTopDistDot;
+    }
+    else // RADICAL_TRIPLET
+    {
+        _cw.setGraphItemSizeCap(first);
+        _cw.setGraphItemSizeCap(second);
+        items.spacing = size_factor * _settings.radicalTopDistCap;
+    }
+    return items;
+}
+
 void MoleculeRenderInternal::_prepareChargeLabel(int aid, int color, bool highlighted)
 {
     AtomDesc& ad = _ad(aid);
@@ -1269,26 +1329,16 @@ void MoleculeRenderInternal::_prepareChargeLabel(int aid, int color, bool highli
     if (charge != CHARGE_UNKNOWN && charge != 0)
     {
         ad.rightMargin += _settings.labelInternalOffset;
-        if (abs(charge) != 1)
+        const ChargeItems items = _pushChargeItems(ad, charge, ATOM_LABEL_SIZE_FACTOR, color, highlighted);
+        if (items.value >= 0)
         {
-            int tiChargeValue = _pushTextItem(ad, RenderItem::RIT_CHARGEVAL, color, highlighted);
-
-            TextItem& itemChargeValue = _data.textitems[tiChargeValue];
-            itemChargeValue.fontsize = FONT_SIZE_ATTR;
-            bprintf(itemChargeValue.text, "%i", abs(charge));
-            _cw.setTextItemSize(itemChargeValue);
-
+            TextItem& itemChargeValue = _data.textitems[items.value];
             itemChargeValue.bbp.set(ad.rightMargin, ad.ypos + _settings.upperIndexShift * ad.height);
             _expandBoundRect(ad, itemChargeValue);
             ad.rightMargin += itemChargeValue.bbsz.x;
         }
 
-        GraphItem::TYPE type = charge > 0 ? GraphItem::PLUS : GraphItem::MINUS;
-        int giChargeSign = _pushGraphItem(ad, RenderItem::RIT_CHARGESIGN, color, highlighted);
-
-        GraphItem& itemChargeSign = _data.graphitems[giChargeSign];
-        _cw.setGraphItemSizeSign(itemChargeSign, type);
-
+        GraphItem& itemChargeSign = _data.graphitems[items.sign];
         itemChargeSign.bbp.set(ad.rightMargin, ad.ypos + _settings.upperIndexShift * ad.height);
         _expandBoundRect(ad, itemChargeSign);
         ad.rightMargin += itemChargeSign.bbsz.x;
@@ -1343,7 +1393,7 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
     bool highlighted = _vertexIsHighlighted(aid);
 
     int tilabel = -1, tihydro = -1, tiHydroIndex = -1, tiValence = -1, tiIsotope = -1, tiindex = -1;
-    int giChargeSign = -1, giRadical = -1, giRadical1 = -1, giRadical2 = -1;
+    int giChargeSign = -1;
     ad.rightMargin = ad.leftMargin = ad.ypos = ad.height = 0;
     int isotope = bm.getAtomIsotope(aid);
 
@@ -1572,12 +1622,11 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
         {
             const TextItem& label = _data.textitems[tilabel];
             Vec2f ltc(label.bbp);
+            const RadicalItems items = _pushRadicalItems(ad, radical, ATOM_LABEL_SIZE_FACTOR, color, highlighted);
 
-            if (radical == RADICAL_DOUBLET)
+            if (items.second < 0)
             {
-                giRadical = _pushGraphItem(ad, RenderItem::RIT_RADICAL, color, highlighted);
-                GraphItem& itemRadical = _data.graphitems[giRadical];
-                _cw.setGraphItemSizeDot(itemRadical);
+                GraphItem& itemRadical = _data.graphitems[items.first];
 
                 if (!(ad.showHydro && ad.hydroPos == HYDRO_POS_RIGHT) && giChargeSign < 0 && tiValence < 0)
                 {
@@ -1595,30 +1644,13 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
             }
             else
             {
-                giRadical1 = _pushGraphItem(ad, RenderItem::RIT_RADICAL, color, highlighted);
-                giRadical2 = _pushGraphItem(ad, RenderItem::RIT_RADICAL, color, highlighted);
-
-                GraphItem& itemRadical1 = _data.graphitems[giRadical1];
-                GraphItem& itemRadical2 = _data.graphitems[giRadical2];
-
-                float dist;
-                if (radical == RADICAL_SINGLET)
-                {
-                    _cw.setGraphItemSizeDot(itemRadical1);
-                    _cw.setGraphItemSizeDot(itemRadical2);
-                    dist = _settings.radicalTopDistDot;
-                }
-                else // if (radical == RADICAL_TRIPLET)
-                {
-                    _cw.setGraphItemSizeCap(itemRadical1);
-                    _cw.setGraphItemSizeCap(itemRadical2);
-                    dist = _settings.radicalTopDistCap;
-                }
+                GraphItem& itemRadical1 = _data.graphitems[items.first];
+                GraphItem& itemRadical2 = _data.graphitems[items.second];
 
                 ltc.y -= itemRadical1.bbsz.y + _settings.radicalTopOffset;
-                ltc.x += label.bbsz.x / 2 - dist / 2 - itemRadical1.bbsz.x;
+                ltc.x += label.bbsz.x / 2 - items.spacing / 2 - itemRadical1.bbsz.x;
                 itemRadical1.bbp.copy(ltc);
-                ltc.x += dist + itemRadical1.bbsz.x;
+                ltc.x += items.spacing + itemRadical1.bbsz.x;
                 itemRadical2.bbp.copy(ltc);
                 _expandBoundRect(ad, itemRadical1);
                 _expandBoundRect(ad, itemRadical2);
