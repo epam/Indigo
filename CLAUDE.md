@@ -13,5 +13,3 @@ reads the same file. This section is the part that only Claude Code can act on.
   for a reference test in the integration harness.
 - **`/memory-bank`** folds finished work back into `.memory-bank/`, or answers a question from it and
   closes the gap when the bank cannot. Run it when a change taught something lasting.
-- **`.claude/scripts/check-anchors.sh`** verifies every `` `<path>#<Symbol>` `` anchor in the
-  documentation. Run it after editing the bank; a broken anchor is a defect in the document.

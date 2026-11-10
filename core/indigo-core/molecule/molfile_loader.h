@@ -152,7 +152,10 @@ namespace indigo
         void _readRGroups3000();
         void _readTGroups3000();
         void _checkEndOfMolBlock3000();
-        void _readSGroupDisplay(Scanner& scanner, DataSGroup& dsg);
+        // property and sgroup_number name the line in a message, as "M SDD of Sgroup 3" or "FIELDDISP of Sgroup 3"
+        void _readSGroupDisplay(Scanner& scanner, DataSGroup& dsg, const char* property, int sgroup_number);
+        // Fails with "<property> of Sgroup <n>: '<value>' <reason>" unless the value is valid
+        void _checkDataField(bool valid, const char* property, int sgroup_number, const char* value, const char* reason);
         // Give an S-group what a V2000 or V3000 property says about it. A value that is not understood - an
         // unknown connectivity code, an order that is not positive - or that the S-group type does not carry
         // is skipped and the molecule still loads.
@@ -164,7 +167,13 @@ namespace indigo
         void _addHapticBond3000(int beg, int end, const std::vector<int>& endpoints, int type);
         void _preparePseudoAtomLabel(Array<char>& pseudo);
         void _readMultiString(Array<char>& str);
+        // A V3000 value: up to the next blank, or in double quotes, inside which a doubled quote is one
         void _readStringInQuotes(Scanner& scanner, Array<char>* str);
+        // A field of fixed columns without the blanks around it
+        static std::string _readFixedField(Scanner& scanner, int width);
+        // FIELDINFO: the field type in a letter and a blank before the units, as the columns of M  SDT; a value that
+        // does not start so is the units alone, as earlier versions wrote it
+        static void _readFieldInfo(const char* value, DataSGroup& dsg);
         void _init();
         void _appendQueryAtom(const char* atom_label, std::unique_ptr<QueryMolecule::Atom>& atom);
         void _fillSGroupsParentIndices();

@@ -1,0 +1,19 @@
+
+  -INDIGO-01000000002D
+
+  2  1  0  0  0  0  0  0  0  0999 V2000
+99999.9922-9999.9902    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+99999.9922    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0  0  0  0
+M  STY  1   1 DAT
+M  SLB  1   1   1
+M  SAL   1  1   1
+M  SDT   1 NNNNNNNNNNNNNNNNNNNNNNNNNNNNNN  UUUUUUUUUUUUUUUUUUUU                 
+M  SDD   1     0.0000    0.0000    DA    ALL  1       1  
+M  SCD   1 ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+M  SCD   1 ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+M  SED   1 dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
+M  SCD   1 eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+M  SCD   1 eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+M  SED   1 eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+M  END

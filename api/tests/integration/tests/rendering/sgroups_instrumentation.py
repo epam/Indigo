@@ -7,6 +7,7 @@ sys.path.append(
         os.path.join(os.path.abspath(__file__), "..", "..", "..", "common")
     )
 )
+from common.util import compare_diff
 from env_indigo import *  # noqa
 from rendering import *
 
@@ -241,18 +242,19 @@ print(m.molfile())
 
 print("****** Get/Set DataSGroup properties ********")
 
+ref_path = joinPathPy("ref/sgroups_instrumentation/", __file__)
 indigo.setOption("molfile-saving-mode", "3000")
 m = indigo.loadMoleculeFromFile(
     dataPath("molecules/basic/all_features_mol.mol")
 )
-print(m.molfile())
+compare_diff(ref_path, "all_features_mol-3000.mol", m.molfile())
 for sg in m.iterateDataSGroups():
     sg.setSGroupData("Test Data S-group")
     sg.setSGroupCoords(1.0, 1.0)
-    sg.setSGroupDescription("SGroup Description (FIELDINFO)")
+    sg.setSGroupDescription("Units (FIELDINFO)")
     sg.setSGroupFieldName("SGroup (FIELDNAME)")
-    sg.setSGroupQueryCode("SGroup (QUERYTYPE)")
-    sg.setSGroupQueryOper("SGroup (QUERYOP)")
+    sg.setSGroupQueryCode("IQ")
+    sg.setSGroupQueryOper("BETWEEN")
     sg.setSGroupDisplay("attached")
     sg.setSGroupLocation("relative")
     sg.setSGroupTag("G")
@@ -261,11 +263,23 @@ for sg in m.iterateDataSGroups():
     sg.setSGroupXCoord(4.0)
     sg.setSGroupYCoord(5.0)
 
-print(m.molfile())
+compare_diff(ref_path, "all_features_mol-set-3000.mol", m.molfile())
 
 indigo.setOption("molfile-saving-mode", "2000")
 
-print(m.molfile())
+compare_diff(ref_path, "all_features_mol-set-2000.mol", m.molfile())
+
+print("****** A data type the molfile does not allow ********")
+
+for sg in m.iterateDataSGroups():
+    sg.setSGroupDataType("TEXT")
+for mode in ("2000", "3000"):
+    indigo.setOption("molfile-saving-mode", mode)
+    try:
+        m.molfile()
+        print("V%s: written" % mode)
+    except IndigoException as e:
+        print("V%s: %s" % (mode, getIndigoExceptionText(e)))
 
 print("****** Find SGroups by properties ********")
 

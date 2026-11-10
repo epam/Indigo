@@ -18,8 +18,8 @@ M  V30 3 1 3 4
 M  V30 4 1 4 5
 M  V30 END BOND
 M  V30 BEGIN SGROUP
-M  V30 1 DAT 1 ATOMS=(2 4 5) FIELDNAME=single-name FIELDDISP="    1.6314   -1-
-M  V30 .1000    DR    ALL  1       1  " FIELDDATA="single-value"
+M  V30 1 DAT 1 ATOMS=(2 4 5) FIELDNAME=single-name FIELDINFO=F FIELDDISP="   -
+M  V30  1.6314   -1.1000    DR    ALL  1       1  " FIELDDATA="single-value"
 M  V30 END SGROUP
 M  V30 END CTAB
 M  END

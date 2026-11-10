@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <charconv>
 #include <cstring>
+#include <iterator>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -98,9 +99,12 @@ MoleculeJsonLoader::MoleculeJsonLoader(Document& ket)
 void MoleculeJsonLoader::parse_ket(Document& ket)
 {
     _derive_sgroup_parents = !documentNamesSGroupParent(ket);
-    if (ket.HasMember("ket_version"))
+    if (ket.HasMember(KetKeyKetVersion))
     {
-        _ket_version = ket["ket_version"].GetString();
+        const Value& ket_version = ket[KetKeyKetVersion];
+        if (!ket_version.IsString())
+            throw Error("%s must be a string", KetKeyKetVersion);
+        _ket_version = parseKETVersion(ket_version.GetString());
     }
 
     Value& root = ket["root"];
@@ -1180,6 +1184,252 @@ namespace
         return value.IsInt() && value.GetInt() >= 0;
     }
 
+    const char* const NOT_A_STRING = "is not a string";
+    const char* const NOT_A_BOOLEAN = "is not a boolean";
+    const char* const NOT_AN_OBJECT = "is not an object";
+    const char* const NOT_A_SINGLE_CHARACTER = "is not a single character";
+
+    // "S-group #0 of molecule #0 has 'queryOp' "QBETWEEN", which is not a valid query operator"
+    void rejectDataKey(const std::string& sgroup_name, const char* key, const Value& value, const char* reason)
+    {
+        throw MoleculeJsonLoader::Error("%s has '%s' %s, which %s", sgroup_name.c_str(), key, jsonText(value).c_str(), reason);
+    }
+
+    // A key of a data S-group, when present, holds what the contract says it holds
+    void checkDataKey(const Value& holder, const char* key, const std::string& sgroup_name, bool (*holds)(const Value&), const char* reason)
+    {
+        if (holder.HasMember(key) && !holds(holder[key]))
+            rejectDataKey(sgroup_name, key, holder[key], reason);
+    }
+
+    // "dataDisplayInformation.daspPosition": a field of a KET 2.1 object, as a message names it
+    std::string objectField(const char* object_key, const char* field)
+    {
+        return std::string(object_key) + "." + field;
+    }
+
+    void checkObjectField(const Value& object, const char* object_key, const char* field, const std::string& sgroup_name, bool (*holds)(const Value&),
+                          const char* reason)
+    {
+        if (object.HasMember(field) && !holds(object[field]))
+            rejectDataKey(sgroup_name, objectField(object_key, field).c_str(), object[field], reason);
+    }
+
+    bool isString(const Value& value)
+    {
+        return value.IsString();
+    }
+
+    bool isBool(const Value& value)
+    {
+        return value.IsBool();
+    }
+
+    bool isObject(const Value& value)
+    {
+        return value.IsObject();
+    }
+
+    bool isSingleCharacter(const Value& value)
+    {
+        return value.IsString() && value.GetStringLength() == 1;
+    }
+
+    bool isOneOf(const Value& value, const char* first, const char* second)
+    {
+        return value.IsString() && (std::strcmp(value.GetString(), first) == 0 || std::strcmp(value.GetString(), second) == 0);
+    }
+
+    bool isDisplay(const Value& value)
+    {
+        return isOneOf(value, KetDisplayAttached, KetDisplayDetached);
+    }
+
+    bool isPlacement(const Value& value)
+    {
+        return isOneOf(value, KetPlacementAbsolute, KetPlacementRelative);
+    }
+
+    bool isDaspPosition(const Value& value)
+    {
+        return value.IsInt() && DataSGroup::isValidDaspPosition(value.GetInt());
+    }
+
+    // The coordinate of the value of a data S-group, kept to four decimals
+    void checkDisplayCoordinate(const Value& value, const char* key, const std::string& sgroup_name)
+    {
+        if (!value.IsNumber())
+            rejectDataKey(sgroup_name, key, value, "is not a number");
+        if (!DataSGroup::keepsDisplayCoordinate(value.GetDouble()))
+            rejectDataKey(sgroup_name, key, value, DataSGroup::NOT_KEPT_DISPLAY_COORDINATE);
+    }
+
+    // The contexts of a data S-group in the KET contract, in their exact case
+    const char* const DATA_CONTEXTS[] = {"Fragment", "Multifragment", "Bond", "Atom", "Group"};
+
+    // The keys of KET 2.0 for the field of a data S-group, each a string. KET does not take the limits of the molfile
+    // format: an operator or a query type the molfile does not allow is kept as it is.
+    void checkDataFieldKeysV2_0(const Value& s, const std::string& sgroup_name)
+    {
+        for (const char* key : {KetKeyFieldNameV2_0, KetKeyFieldTypeV2_0, KetKeyQueryTypeV2_0, KetKeyQueryOpV2_0})
+            checkDataKey(s, key, sgroup_name, isString, NOT_A_STRING);
+    }
+
+    // The keys of KET 2.0 for the display of a data S-group, each of its JSON type; a character count or a coordinate
+    // the molfile does not allow is kept as it is
+    void checkDataDisplayKeysV2_0(const Value& s, const std::string& sgroup_name)
+    {
+        for (const char* key : {KetKeyPlacementV2_0, KetKeyDisplayV2_0, KetKeyDataDetachedV2_0})
+            checkDataKey(s, key, sgroup_name, isBool, NOT_A_BOOLEAN);
+        for (const char* key : {KetKeyXV2_0, KetKeyYV2_0})
+            if (s.HasMember(key))
+                checkDisplayCoordinate(s[key], key, sgroup_name);
+        checkDataKey(s, KetKeyDisplayedCharsV2_0, sgroup_name, isNonNegativeInt, DataSGroup::INVALID_DISPLAYED_CHARS);
+        checkDataKey(s, KetKeyTagV2_0, sgroup_name, isString, NOT_A_STRING);
+        checkDataKey(s, KetKeyTagV2_0, sgroup_name, isSingleCharacter, NOT_A_SINGLE_CHARACTER);
+    }
+
+    // dataFieldDescription of KET 2.1: an object whose fields are strings; a value outside the enum names is kept
+    // as it is (the ticket: KET keeps such a value), and a molfile refuses it when it is written
+    void checkDataFieldDescription(const Value& s, const std::string& sgroup_name)
+    {
+        checkDataKey(s, KetKeyDataFieldDescription, sgroup_name, isObject, NOT_AN_OBJECT);
+        const Value& object = s[KetKeyDataFieldDescription];
+        for (const char* field : {KetKeyFieldName, KetKeyFieldValueType, KetKeyFieldUnits, KetKeyQueryType, KetKeyQueryOperator})
+            checkObjectField(object, KetKeyDataFieldDescription, field, sgroup_name, isString, NOT_A_STRING);
+    }
+
+    // dataDisplayInformation of KET 2.1, the same way; the DASP position is one of its nine
+    void checkDataDisplayInformation(const Value& s, const std::string& sgroup_name)
+    {
+        checkDataKey(s, KetKeyDataDisplayInformation, sgroup_name, isObject, NOT_AN_OBJECT);
+        const Value& object = s[KetKeyDataDisplayInformation];
+        checkObjectField(object, KetKeyDataDisplayInformation, KetKeyPosition, sgroup_name, isObject, NOT_AN_OBJECT);
+        if (object.HasMember(KetKeyPosition))
+        {
+            const std::string position_key = objectField(KetKeyDataDisplayInformation, KetKeyPosition);
+            for (const char* axis : {KetKeyX, KetKeyY})
+                if (object[KetKeyPosition].HasMember(axis))
+                    checkDisplayCoordinate(object[KetKeyPosition][axis], objectField(position_key.c_str(), axis).c_str(), sgroup_name);
+        }
+        checkObjectField(object, KetKeyDataDisplayInformation, KetKeyDisplay, sgroup_name, isDisplay, "is not a valid display");
+        checkObjectField(object, KetKeyDataDisplayInformation, KetKeyPlacement, sgroup_name, isPlacement, "is not a valid placement");
+        checkObjectField(object, KetKeyDataDisplayInformation, KetKeyDisplayUnits, sgroup_name, isBool, NOT_A_BOOLEAN);
+        checkObjectField(object, KetKeyDataDisplayInformation, KetKeyDisplayedChars, sgroup_name, isNonNegativeInt, DataSGroup::INVALID_DISPLAYED_CHARS);
+        checkObjectField(object, KetKeyDataDisplayInformation, KetKeyFieldTag, sgroup_name, isString, NOT_A_STRING);
+        checkObjectField(object, KetKeyDataDisplayInformation, KetKeyFieldTag, sgroup_name, isSingleCharacter, NOT_A_SINGLE_CHARACTER);
+        checkObjectField(object, KetKeyDataDisplayInformation, KetKeyDaspPosition, sgroup_name, isDaspPosition, DataSGroup::INVALID_DASP_POSITION);
+    }
+
+    // The keys of a data S-group: fieldData, context, and its field and its display each from the KET 2.1 object when
+    // the document has one, else from the keys of KET 2.0 that object replaces. An object wins over those keys, which
+    // are then neither read nor checked.
+    void checkDataSGroupKeys(const Value& s, const std::string& sgroup_name)
+    {
+        for (const char* key : {KetKeyFieldData, KetKeyContext})
+            checkDataKey(s, key, sgroup_name, isString, NOT_A_STRING);
+        if (s.HasMember(KetKeyContext) && std::none_of(std::begin(DATA_CONTEXTS), std::end(DATA_CONTEXTS),
+                                                       [&](const char* context) { return std::strcmp(context, s[KetKeyContext].GetString()) == 0; }))
+            rejectDataKey(sgroup_name, KetKeyContext, s[KetKeyContext], "is not a valid context");
+        if (s.HasMember(KetKeyDataFieldDescription))
+            checkDataFieldDescription(s, sgroup_name);
+        else
+            checkDataFieldKeysV2_0(s, sgroup_name);
+        if (s.HasMember(KetKeyDataDisplayInformation))
+            checkDataDisplayInformation(s, sgroup_name);
+        else
+            checkDataDisplayKeysV2_0(s, sgroup_name);
+    }
+
+    // A text of the model from a KET value: blank for an empty one, as the model keeps a field that is not set
+    void setText(Array<char>& field, const char* text)
+    {
+        if (text != nullptr && *text != 0)
+            field.readString(text, true);
+        else
+            field.clear();
+    }
+
+    // The point of the value from the x and y of the holder, 0 for an absent one; a relative position is set even
+    // without them, as a zero offset
+    void readDisplayPosition(const Value& holder, DataSGroup& dsg)
+    {
+        if (holder.HasMember(KetKeyX) || holder.HasMember(KetKeyY) || dsg.relative)
+            dsg.display_pos.set(
+                Vec2f(holder.HasMember(KetKeyX) ? holder[KetKeyX].GetFloat() : 0.0f, holder.HasMember(KetKeyY) ? holder[KetKeyY].GetFloat() : 0.0f));
+    }
+
+    // The field of a data S-group from the keys of KET 2.0: each text as it is
+    void readDataFieldKeysV2_0(const Value& s, DataSGroup& dsg)
+    {
+        if (s.HasMember(KetKeyFieldNameV2_0))
+            dsg.name.readString(s[KetKeyFieldNameV2_0].GetString(), true);
+        if (s.HasMember(KetKeyFieldTypeV2_0))
+            dsg.description.readString(s[KetKeyFieldTypeV2_0].GetString(), true);
+        if (s.HasMember(KetKeyQueryTypeV2_0))
+            dsg.querycode.readString(s[KetKeyQueryTypeV2_0].GetString(), true);
+        if (s.HasMember(KetKeyQueryOpV2_0))
+            dsg.queryoper.readString(s[KetKeyQueryOpV2_0].GetString(), true);
+    }
+
+    // The display of a data S-group from the keys of KET 2.0, as its contract reads them: placement true or absent is
+    // absolute; display true is attached, and without display, dataDetached false is. A relative position is left as
+    // the offset from the centre of the atoms: the ancestor it may count from is not set yet.
+    void readDataDisplayKeysV2_0(const Value& s, DataSGroup& dsg)
+    {
+        dsg.relative = s.HasMember(KetKeyPlacementV2_0) && !s[KetKeyPlacementV2_0].GetBool();
+        if (s.HasMember(KetKeyDisplayV2_0))
+            dsg.detached = !s[KetKeyDisplayV2_0].GetBool();
+        else
+            dsg.detached = !s.HasMember(KetKeyDataDetachedV2_0) || s[KetKeyDataDetachedV2_0].GetBool();
+        readDisplayPosition(s, dsg);
+        if (s.HasMember(KetKeyTagV2_0))
+            dsg.tag = s[KetKeyTagV2_0].GetString()[0];
+        if (s.HasMember(KetKeyDisplayedCharsV2_0))
+            dsg.num_chars = s[KetKeyDisplayedCharsV2_0].GetInt();
+    }
+
+    // The text the model keeps for a name of KET: a value outside the names as it is
+    static const char* modelText(const char* (*textOfName)(const char*), const char* name)
+    {
+        const char* text = textOfName(name);
+        return text != nullptr ? text : name;
+    }
+
+    // The field of a data S-group from dataFieldDescription of KET 2.1: an enum name by the text the model keeps for
+    // it, a value outside the names as it is; an absent field is its default, the blank of the model
+    void readDataFieldDescription(const Value& object, DataSGroup& dsg)
+    {
+        if (object.HasMember(KetKeyFieldName))
+            dsg.name.readString(object[KetKeyFieldName].GetString(), true);
+        if (object.HasMember(KetKeyFieldValueType))
+            setText(dsg.type, modelText(DataSGroup::fieldTypeText, object[KetKeyFieldValueType].GetString()));
+        if (object.HasMember(KetKeyFieldUnits))
+            dsg.description.readString(object[KetKeyFieldUnits].GetString(), true);
+        if (object.HasMember(KetKeyQueryType))
+            setText(dsg.querycode, modelText(DataSGroup::queryTypeText, object[KetKeyQueryType].GetString()));
+        if (object.HasMember(KetKeyQueryOperator))
+            dsg.queryoper.readString(modelText(DataSGroup::queryOperatorText, object[KetKeyQueryOperator].GetString()), true);
+    }
+
+    // The display of a data S-group from dataDisplayInformation of KET 2.1; an absent field is its default, and a
+    // relative position is left as the offset from the centre of the atoms, as from the keys of KET 2.0
+    void readDataDisplayInformation(const Value& object, DataSGroup& dsg)
+    {
+        dsg.detached = !(object.HasMember(KetKeyDisplay) && std::strcmp(object[KetKeyDisplay].GetString(), KetDisplayAttached) == 0);
+        dsg.relative = object.HasMember(KetKeyPlacement) && std::strcmp(object[KetKeyPlacement].GetString(), KetPlacementRelative) == 0;
+        const Value no_position(rapidjson::kObjectType);
+        readDisplayPosition(object.HasMember(KetKeyPosition) ? object[KetKeyPosition] : no_position, dsg);
+        if (object.HasMember(KetKeyDisplayUnits))
+            dsg.display_units = object[KetKeyDisplayUnits].GetBool();
+        if (object.HasMember(KetKeyDisplayedChars))
+            dsg.num_chars = object[KetKeyDisplayedChars].GetInt();
+        if (object.HasMember(KetKeyFieldTag))
+            dsg.tag = object[KetKeyFieldTag].GetString()[0];
+        if (object.HasMember(KetKeyDaspPosition))
+            dsg.dasp_pos = object[KetKeyDaspPosition].GetInt();
+    }
+
     KetSGroupEntry readSGroupEntry(const Value& s, std::string name, BaseMolecule& mol)
     {
         using Error = MoleculeJsonLoader::Error;
@@ -1260,6 +1510,8 @@ namespace
             throw Error("%s has '%s' %s, which is not a repeat pattern", entry.name.c_str(), KetKeyConnectivity, jsonText(s[KetKeyConnectivity]).c_str());
         if (entry.sg_type == SGroup::SG_TYPE_COP && s.HasMember(KetKeySubtype) && SGroup::getSubtype(s[KetKeySubtype].GetString()) < 0)
             throw Error("%s has '%s' %s, which is not a copolymer subtype", entry.name.c_str(), KetKeySubtype, jsonText(s[KetKeySubtype]).c_str());
+        if (entry.sg_type == SGroup::SG_TYPE_DAT)
+            checkDataSGroupKeys(s, entry.name);
         return entry;
     }
 
@@ -1452,53 +1704,19 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
         break;
         case SGroup::SG_TYPE_DAT: {
             DataSGroup& dsg = (DataSGroup&)sgroup;
-            if (s.HasMember("fieldName"))
-                dsg.name.readString(s["fieldName"].GetString(), true);
-
-            if (s.HasMember("fieldData"))
-                dsg.data.readString(s["fieldData"].GetString(), true);
-
-            if (s.HasMember("fieldType"))
-                dsg.description.readString(s["fieldType"].GetString(), true);
-
-            if (s.HasMember("queryType"))
-                dsg.querycode.readString(s["queryType"].GetString(), true);
-
-            if (s.HasMember("queryOp"))
-                dsg.queryoper.readString(s["queryOp"].GetString(), true);
-
-            bool display_units = s.HasMember("display") && s["display"].GetBool();
-            if (s.HasMember("x") || s.HasMember("y") || display_units)
-            {
-                Vec2f dp(0.0f, 0.0f);
-                if (s.HasMember("x"))
-                    dp.x = s["x"].GetFloat();
-
-                if (s.HasMember("y"))
-                    dp.y = s["y"].GetFloat();
-                dsg.display_pos.set(dp);
-            }
-
-            if (s.HasMember("dataDetached"))
-                dsg.detached = s["dataDetached"].GetBool();
+            if (s.HasMember(KetKeyFieldData))
+                dsg.data.readString(s[KetKeyFieldData].GetString(), true);
+            if (s.HasMember(KetKeyContext))
+                dsg.context.readString(s[KetKeyContext].GetString(), true);
+            // an object of KET 2.1 wins over the keys of KET 2.0 it replaces
+            if (s.HasMember(KetKeyDataFieldDescription))
+                readDataFieldDescription(s[KetKeyDataFieldDescription], dsg);
             else
-                dsg.detached = true;
-            // TODO: placement = relative, display = display_units
-            if (s.HasMember("placement"))
-                dsg.relative = s["placement"].GetBool();
-
-            if (s.HasMember("display"))
-                dsg.display_units = display_units;
-
-            if (s.HasMember("tag"))
-            {
-                auto tag = s["tag"].GetString();
-                if (strlen(tag))
-                    dsg.tag = *tag;
-            }
-
-            if (s.HasMember("displayedChars"))
-                dsg.num_chars = s["displayedChars"].GetInt();
+                readDataFieldKeysV2_0(s, dsg);
+            if (s.HasMember(KetKeyDataDisplayInformation))
+                readDataDisplayInformation(s[KetKeyDataDisplayInformation], dsg);
+            else
+                readDataDisplayKeysV2_0(s, dsg);
         }
         break;
         case SGroup::SG_TYPE_COP:
@@ -1531,6 +1749,16 @@ void MoleculeJsonLoader::parseSGroups(const rapidjson::Value& sgroups, BaseMolec
     {
         if (entry.parent != NO_SGROUP)
             mol.sgroups.getSGroup(entry.created).parent_idx = entries[entry.parent].created;
+    }
+
+    // Once the parents are set: data without atoms of its own counts a relative position from those of an ancestor
+    for (const KetSGroupEntry& entry : entries)
+    {
+        if (entry.query_component || entry.sg_type != SGroup::SG_TYPE_DAT)
+            continue;
+        DataSGroup& dsg = static_cast<DataSGroup&>(mol.sgroups.getSGroup(entry.created));
+        if (dsg.relative)
+            dsg.display_pos.set(dsg.display_pos.value() + mol.getDataSGroupFirstAtomToCentre(entry.created));
     }
 
     addRepeatsToEnclosingGroups(mol);
@@ -2668,8 +2896,7 @@ void MoleculeJsonLoader::loadMetaObjects(rapidjson::Value& meta_objects, MetaDat
                 }
                 else if (node_type == "text")
                 {
-                    std::string ver2 = std::to_string(KETVersion2.major) + "." + std::to_string(KETVersion2.minor) + "." + std::to_string(KETVersion2.patch);
-                    if (_ket_version == ver2)
+                    if (_ket_version >= KETVersion2)
                         meta_interface.addMetaObject(new SimpleTextObject(mobj));
                 }
             }

@@ -1,0 +1,150 @@
+{
+    "ket_version": "2.1.0",
+    "root": {
+        "nodes": [
+            {
+                "$ref": "mol0"
+            }
+        ]
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    10.0,
+                    0.0,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    12.0,
+                    0.0,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    14.0,
+                    0.0,
+                    0.0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 1,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 1,
+                "atoms": [
+                    1,
+                    2
+                ]
+            }
+        ],
+        "sgroups": [
+            {
+                "type": "DAT",
+                "atoms": [
+                    0,
+                    1,
+                    2
+                ],
+                "fieldData": "1",
+                "dataFieldDescription": {
+                    "fieldName": "OPERATOR_WITHOUT_QUERY",
+                    "fieldValueType": "TEXT",
+                    "queryType": "DATA",
+                    "queryOperator": "LIKE"
+                },
+                "dataDisplayInformation": {
+                    "position": {
+                        "x": 0.0,
+                        "y": 0.0
+                    },
+                    "display": "DETACHED",
+                    "placement": "ABSOLUTE",
+                    "displayUnits": false,
+                    "displayedChars": 0,
+                    "daspPosition": 1
+                },
+                "fieldName": "OPERATOR_WITHOUT_QUERY",
+                "queryOp": "LIKE",
+                "x": 0.0,
+                "y": 0.0
+            },
+            {
+                "type": "DAT",
+                "atoms": [
+                    0,
+                    1,
+                    2
+                ],
+                "fieldData": "1",
+                "dataFieldDescription": {
+                    "fieldName": "OPERATOR_OUTSIDE_THE_NAMES",
+                    "fieldValueType": "NUMERIC",
+                    "queryType": "QUERY",
+                    "queryOperator": "~"
+                },
+                "dataDisplayInformation": {
+                    "position": {
+                        "x": 1.5,
+                        "y": 0.0
+                    },
+                    "display": "DETACHED",
+                    "placement": "RELATIVE",
+                    "displayUnits": false,
+                    "displayedChars": 0,
+                    "daspPosition": 1
+                },
+                "fieldName": "OPERATOR_OUTSIDE_THE_NAMES",
+                "queryType": "IQ",
+                "queryOp": "~",
+                "x": 1.5,
+                "y": 0.0,
+                "placement": false
+            },
+            {
+                "type": "DAT",
+                "atoms": [
+                    0,
+                    1,
+                    2
+                ],
+                "fieldData": "1",
+                "dataFieldDescription": {
+                    "fieldName": "OPERATOR_BY_NAME",
+                    "fieldValueType": "TEXT",
+                    "queryType": "QUERY",
+                    "queryOperator": "GREATER_OR_EQUAL"
+                },
+                "dataDisplayInformation": {
+                    "position": {
+                        "x": 1.0,
+                        "y": 2.0
+                    },
+                    "display": "DETACHED",
+                    "placement": "ABSOLUTE",
+                    "displayUnits": false,
+                    "displayedChars": 0,
+                    "daspPosition": 1
+                },
+                "fieldName": "OPERATOR_BY_NAME",
+                "queryType": "IQ",
+                "queryOp": ">=",
+                "x": 1.0,
+                "y": 2.0
+            }
+        ]
+    }
+}

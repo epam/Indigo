@@ -37,30 +37,30 @@ M  V30 11 1 14 15
 M  V30 12 1 15 16
 M  V30 END BOND
 M  V30 BEGIN SGROUP
-M  V30 1 DAT 1 ATOMS=(2 3 4) FIELDNAME="Long line" FIELDDISP="    1.6224   -1-
-M  V30 .2050    DR    ALL  1       1  " FIELDDATA="asdljkfnalsjkdnfklaj nsdfk-
-M  V30 l jnasdkjlfnakls ndfkaljsn dlkfjna slkdnaklsnd asdf asdf as df asdf as-
-M  V30  df asd fa sdf asd fa sd fa sdf a sd f a s df asd fa sd fa sdf as df a-
-M  V30 s df as df as df as df asd fa sd fa sd fa sd f asd fa sd f as dfa sd f-
-M  V30  a sd fa sdf a sdf"
-M  V30 2 DAT 2 ATOMS=(2 8 9) FIELDNAME=Multiline FIELDDISP="    1.6314   -1.1-
-M  V30 000    DR    ALL  1       1  " FIELDDATA="line 1" FIELDDATA="line 2" F-
-M  V30 IELDDATA="line 3" FIELDDATA="line 4"
-M  V30 3 DAT 3 ATOMS=(2 12 13) FIELDNAME=LongAndMultI FIELDDISP="    1.6224  -
-M  V30  -1.2050    DR    ALL  1       1  " FIELDDATA="line 1" FIELDDATA="line-
-M  V30  2" FIELDDATA="long long line long long line long long line long long -
-M  V30 line long long line long long line long long line long long line long -
-M  V30 long line long long line long long line long long line long long line -
-M  V30 long long line long long line"
-M  V30 4 DAT 4 ATOMS=(2 15 16) FIELDNAME="Line with spaces" FIELDDISP="    1.-
-M  V30 6724   -0.9794    DR    ALL  1       1  " FIELDDATA="asdfjknasdjkfn as-
-M  V30 lkjdnf alksdf                                     asdf asdf as dfa sdf-
-M  V30  asdf                                      asdf                 asdf  -
-M  V30                             asdf as dfa sdf                           -
-M  V30          asdf                                                         -
-M  V30                                      asdf" FIELDDATA="" FIELDDATA="" F-
-M  V30 IELDDATA="asdfasd" FIELDDATA="f" FIELDDATA="asdf" FIELDDATA="asd" FIEL-
-M  V30 DDATA="fa" FIELDDATA="sdf"
+M  V30 1 DAT 1 ATOMS=(2 3 4) FIELDNAME="Long line" FIELDINFO=F FIELDDISP="   -
+M  V30  1.6224   -1.2050    DR    ALL  1       1  " FIELDDATA="asdljkfnalsjkd-
+M  V30 nfklaj nsdfkl jnasdkjlfnakls ndfkaljsn dlkfjna slkdnaklsnd asdf asdf a-
+M  V30 s df asdf as df asd fa sdf asd fa sd fa sdf a sd f a s df asd fa sd fa-
+M  V30  sdf as df as df as df as df as df asd fa sd fa sd fa sd f asd fa sd f-
+M  V30  as dfa sd f a sd fa sdf a sdf"
+M  V30 2 DAT 2 ATOMS=(2 8 9) FIELDNAME=Multiline FIELDINFO=F FIELDDISP="    1-
+M  V30 .6314   -1.1000    DR    ALL  1       1  " FIELDDATA="line 1" FIELDDAT-
+M  V30 A="line 2" FIELDDATA="line 3" FIELDDATA="line 4"
+M  V30 3 DAT 3 ATOMS=(2 12 13) FIELDNAME=LongAndMultI FIELDINFO=F FIELDDISP="-
+M  V30     1.6224   -1.2050    DR    ALL  1       1  " FIELDDATA="line 1" FIE-
+M  V30 LDDATA="line 2" FIELDDATA="long long line long long line long long lin-
+M  V30 e long long line long long line long long line long long line long lon-
+M  V30 g line long long line long long line long long line long long line lon-
+M  V30 g long line long long line long long line"
+M  V30 4 DAT 4 ATOMS=(2 15 16) FIELDNAME="Line with spaces" FIELDINFO=F FIELD-
+M  V30 DISP="    1.6724   -0.9794    DR    ALL  1       1  " FIELDDATA="asdfj-
+M  V30 knasdjkfn aslkjdnf alksdf                                     asdf asd-
+M  V30 f as dfa sdf asdf                                      asdf           -
+M  V30       asdf                              asdf as dfa sdf               -
+M  V30                      asdf                                             -
+M  V30                                                  asdf" FIELDDATA="" FI-
+M  V30 ELDDATA="" FIELDDATA="asdfasd" FIELDDATA="f" FIELDDATA="asdf" FIELDDAT-
+M  V30 A="asd" FIELDDATA="fa" FIELDDATA="sdf"
 M  V30 END SGROUP
 M  V30 END CTAB
 M  END

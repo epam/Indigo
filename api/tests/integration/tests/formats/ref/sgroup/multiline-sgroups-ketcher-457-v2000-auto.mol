@@ -1,74 +1,66 @@
 
   -INDIGO-01000000002D
 
- 16 12  0  0  0  0  0  0  0  0999 V2000
-   -4.4250    2.2250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -3.5590    1.7250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -2.6929    2.2250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -1.8269    1.7250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -3.2750   -0.1500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -2.4090   -0.6500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -1.5429   -0.1500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -0.6769   -0.6500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.1891   -0.1500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -4.1000   -3.4500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -3.2340   -3.9500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -2.3679   -3.4500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -1.5019   -3.9500    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -3.6750   -6.9250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -2.9679   -7.6321    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -2.0020   -7.3733    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-  1  2  1  0  0  0  0
-  2  3  1  0  0  0  0
-  3  4  1  0  0  0  0
-  5  6  1  0  0  0  0
-  6  7  1  0  0  0  0
-  7  8  1  0  0  0  0
-  8  9  1  0  0  0  0
- 10 11  1  0  0  0  0
- 11 12  1  0  0  0  0
- 12 13  1  0  0  0  0
- 14 15  1  0  0  0  0
- 15 16  1  0  0  0  0
-M  STY  4   1 DAT   2 DAT   3 DAT   4 DAT
-M  SLB  4   1   1   2   2   3   3   4   4
-M  SAL   1  2   3   4
-M  SDT   1 Long line                      F                                     
-M  SDD   1     1.6224   -1.2050    DR    ALL  1       1  
-M  SCD   1 asdljkfnalsjkdnfklaj nsdfkl jnasdkjlfnakls ndfkaljsn dlkfjna slkdnakl
-M  SCD   1 snd asdf asdf as df asdf as df asd fa sdf asd fa sd fa sdf a sd f a s
-M  SCD   1  df asd fa sd fa sdf as df as df as df as df as df asd fa sd fa sd fa
-M  SED   1  sd f asd fa sd f as dfa sd f a sd fa sdf a sdf
-M  SAL   2  2   8   9
-M  SDT   2 Multiline                      F                                     
-M  SDD   2     1.6314   -1.1000    DR    ALL  1       1  
-M  SED   2 line 1
-M  SED   2 line 2
-M  SED   2 line 3
-M  SED   2 line 4
-M  SAL   3  2  12  13
-M  SDT   3 LongAndMultI                   F                                     
-M  SDD   3     1.6224   -1.2050    DR    ALL  1       1  
-M  SED   3 line 1
-M  SED   3 line 2
-M  SCD   3 long long line long long line long long line long long line long long
-M  SCD   3  line long long line long long line long long line long long line lon
-M  SCD   3 g long line long long line long long line long long line long long li
-M  SED   3 ne long long line
-M  SAL   4  2  15  16
-M  SDT   4 Line with spaces               F                                     
-M  SDD   4     1.6724   -0.9794    DR    ALL  1       1  
-M  SCD   4 asdfjknasdjkfn aslkjdnf alksdf                                     as
-M  SCD   4 df asdf as dfa sdf asdf                                      asdf    
-M  SCD   4              asdf                              asdf as dfa sdf       
-M  SCD   4                              asdf                                    
-M  SED   4                                                           asdf
-M  SED   4 
-M  SED   4 
-M  SED   4 asdfasd
-M  SED   4 f
-M  SED   4 asdf
-M  SED   4 asd
-M  SED   4 fa
-M  SED   4 sdf
+  0  0  0  0  0  0  0  0  0  0  0 V3000
+M  V30 BEGIN CTAB
+M  V30 COUNTS 16 12 4 0 0
+M  V30 BEGIN ATOM
+M  V30 1 C -4.425 2.225 0.0 0
+M  V30 2 C -3.559 1.725 0.0 0
+M  V30 3 C -2.6929 2.225 0.0 0
+M  V30 4 C -1.8269 1.725 0.0 0
+M  V30 5 C -3.275 -0.15 0.0 0
+M  V30 6 C -2.409 -0.65 0.0 0
+M  V30 7 C -1.5429 -0.15 0.0 0
+M  V30 8 C -0.6769 -0.65 0.0 0
+M  V30 9 C 0.1891 -0.15 0.0 0
+M  V30 10 C -4.1 -3.45 0.0 0
+M  V30 11 C -3.234 -3.95 0.0 0
+M  V30 12 C -2.3679 -3.45 0.0 0
+M  V30 13 C -1.5019 -3.95 0.0 0
+M  V30 14 C -3.675 -6.925 0.0 0
+M  V30 15 C -2.9679 -7.6321 0.0 0
+M  V30 16 C -2.002 -7.3733 0.0 0
+M  V30 END ATOM
+M  V30 BEGIN BOND
+M  V30 1 1 1 2
+M  V30 2 1 2 3
+M  V30 3 1 3 4
+M  V30 4 1 5 6
+M  V30 5 1 6 7
+M  V30 6 1 7 8
+M  V30 7 1 8 9
+M  V30 8 1 10 11
+M  V30 9 1 11 12
+M  V30 10 1 12 13
+M  V30 11 1 14 15
+M  V30 12 1 15 16
+M  V30 END BOND
+M  V30 BEGIN SGROUP
+M  V30 1 DAT 1 ATOMS=(2 3 4) FIELDNAME="Long line" FIELDINFO=F FIELDDISP="   -
+M  V30  1.6224   -1.2050    DR    ALL  1       1  " FIELDDATA="asdljkfnalsjkd-
+M  V30 nfklaj nsdfkl jnasdkjlfnakls ndfkaljsn dlkfjna slkdnaklsnd asdf asdf a-
+M  V30 s df asdf as df asd fa sdf asd fa sd fa sdf a sd f a s df asd fa sd fa-
+M  V30  sdf as df as df as df as df as df asd fa sd fa sd fa sd f asd fa sd f-
+M  V30  as dfa sd f a sd fa sdf a sdf"
+M  V30 2 DAT 2 ATOMS=(2 8 9) FIELDNAME=Multiline FIELDINFO=F FIELDDISP="    1-
+M  V30 .6314   -1.1000    DR    ALL  1       1  " FIELDDATA="line 1" FIELDDAT-
+M  V30 A="line 2" FIELDDATA="line 3" FIELDDATA="line 4"
+M  V30 3 DAT 3 ATOMS=(2 12 13) FIELDNAME=LongAndMultI FIELDINFO=F FIELDDISP="-
+M  V30     1.6224   -1.2050    DR    ALL  1       1  " FIELDDATA="line 1" FIE-
+M  V30 LDDATA="line 2" FIELDDATA="long long line long long line long long lin-
+M  V30 e long long line long long line long long line long long line long lon-
+M  V30 g line long long line long long line long long line long long line lon-
+M  V30 g long line long long line long long line"
+M  V30 4 DAT 4 ATOMS=(2 15 16) FIELDNAME="Line with spaces" FIELDINFO=F FIELD-
+M  V30 DISP="    1.6724   -0.9794    DR    ALL  1       1  " FIELDDATA="asdfj-
+M  V30 knasdjkfn aslkjdnf alksdf                                     asdf asd-
+M  V30 f as dfa sdf asdf                                      asdf           -
+M  V30       asdf                              asdf as dfa sdf               -
+M  V30                      asdf                                             -
+M  V30                                                  asdf" FIELDDATA="" FI-
+M  V30 ELDDATA="" FIELDDATA="asdfasd" FIELDDATA="f" FIELDDATA="asdf" FIELDDAT-
+M  V30 A="asd" FIELDDATA="fa" FIELDDATA="sdf"
+M  V30 END SGROUP
+M  V30 END CTAB
 M  END
