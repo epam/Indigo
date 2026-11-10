@@ -145,6 +145,7 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
     MoleculeCdxmlLoader loader(_scanner, _is_binary);
     loader.setOptions(getOptions());
     loader.parseCDXMLAttributes(*cdx_reader->rootElement()->firstProperty());
+    std::vector<std::unique_ptr<BaseCDXElement>> brackets_without_crossing_bonds;
 
     for (auto page_elem = cdx_reader->rootElement()->firstChildElement(); page_elem->hasContent(); page_elem = page_elem->nextSiblingElement())
     {
@@ -161,16 +162,23 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
                 }
                 else if (cdxml_elem->value() == "bracketedgroup")
                 {
+                    bool has_crossing_bond = false;
                     for (auto brackets = cdxml_elem->firstChildElement(); brackets->hasContent(); brackets = brackets->nextSiblingElement())
                     {
-                        // a nested bracketedgroup is not an attachment of this one; the molecule loader skips it too
+                        // The subobjects of a bracketedgroup are bracketattachments, which link it to objects outside it,
+                        // and nested bracketedgroups, which are brackets of their own and not attachments of this one.
                         if (brackets->value() != "bracketattachment")
                             continue;
                         auto id = brackets->findProperty("id");
                         bracket_ids.insert(std::stoi(id->value()));
                         if (id->hasContent())
                             _cdxml_elements.emplace(std::stoi(id->value()), cdxml_elem->copy());
+                        if (brackets->firstChildElement()->hasContent())
+                            has_crossing_bond = true;
                     }
+                    // A bracket attachment may contain no crossing bonds, and then nothing names an atom of the bracket.
+                    if (!has_crossing_bond)
+                        brackets_without_crossing_bonds.push_back(cdxml_elem->copy());
                 }
                 else
                 {
@@ -191,75 +199,50 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
     }
 
     std::map<int, std::unordered_map<int, int>> moleculeToAtomIDs;
-    for (auto id : reactants_ids)
-    {
+
+    // The lists of a step (ReactionStepReactants and the others) are CDXObjectIDArrays: they name page objects by id,
+    // not fragments. A participant can be a group that holds a caption, or a fragment that holds only graphics, so it
+    // may hold no atoms. Loads the participant into _pmol and keeps its other objects, as for any other page object.
+    auto loadParticipant = [this, &loader, &rxn](int id) {
         auto elem_it = _cdxml_elements.find(id);
-        if (elem_it != _cdxml_elements.end())
-        {
-            loader.loadMoleculeFromFragment(*_pmol, *elem_it->second);
-            // A step participant can be a group that holds a caption, or a fragment that holds only graphics.
-            // Keep its non-molecular objects, as for the arrows and the other page elements.
-            rxn.meta().append(_pmol->meta());
-            if (_pmol->vertexCount())
-            {
-                int index = rxn.addReactantCopy(*_pmol, 0, 0);
-                moleculeToAtomIDs.emplace(std::pair<int, std::unordered_map<int, int>>{index, loader.idToAtomIndexMap()});
-            }
-            _cdxml_elements.erase(elem_it);
-        }
-    }
+        if (elem_it == _cdxml_elements.end())
+            return false;
+        loader.loadMoleculeFromFragment(*_pmol, *elem_it->second);
+        _cdxml_elements.erase(elem_it);
+        rxn.meta().append(_pmol->meta());
+        return true;
+    };
+
+    for (auto id : reactants_ids)
+        if (loadParticipant(id) && _pmol->vertexCount())
+            moleculeToAtomIDs.emplace(rxn.addReactantCopy(*_pmol, 0, 0), loader.idToAtomIndexMap());
 
     for (auto id : products_ids)
-    {
-        auto elem_it = _cdxml_elements.find(id);
-        if (elem_it != _cdxml_elements.end())
-        {
-            loader.loadMoleculeFromFragment(*_pmol, *elem_it->second);
-            rxn.meta().append(_pmol->meta());
-            if (_pmol->vertexCount())
-            {
-                int index = rxn.addProductCopy(*_pmol, 0, 0);
-                moleculeToAtomIDs.emplace(std::pair<int, std::unordered_map<int, int>>{index, loader.idToAtomIndexMap()});
-            }
-            _cdxml_elements.erase(elem_it);
-        }
-    }
+        if (loadParticipant(id) && _pmol->vertexCount())
+            moleculeToAtomIDs.emplace(rxn.addProductCopy(*_pmol, 0, 0), loader.idToAtomIndexMap());
 
     for (auto id : intermediates_ids)
-    {
-        auto elem_it = _cdxml_elements.find(id);
-        if (elem_it != _cdxml_elements.end())
-        {
-            loader.loadMoleculeFromFragment(*_pmol, *elem_it->second);
-            rxn.meta().append(_pmol->meta());
-            if (_pmol->vertexCount())
-            {
-                int index = rxn.addIntermediateCopy(*_pmol, 0, 0);
-                moleculeToAtomIDs.emplace(std::pair<int, std::unordered_map<int, int>>{index, loader.idToAtomIndexMap()});
-            }
-            _cdxml_elements.erase(elem_it);
-        }
-    }
+        if (loadParticipant(id) && _pmol->vertexCount())
+            moleculeToAtomIDs.emplace(rxn.addIntermediateCopy(*_pmol, 0, 0), loader.idToAtomIndexMap());
 
     for (auto id : agents_ids)
     {
-        auto elem_it = _cdxml_elements.find(id);
-        if (elem_it != _cdxml_elements.end())
+        const int first_meta = rxn.meta().metaData().size();
+        if (!loadParticipant(id))
+            continue;
+        if (_pmol->vertexCount())
+            rxn.addCatalystCopy(*_pmol, 0, 0);
+        else
         {
-            loader.loadMoleculeFromFragment(*_pmol, *elem_it->second);
-            if (_pmol->vertexCount())
-                rxn.addCatalystCopy(*_pmol, 0, 0);
-            else
+            // the texts of an agent without atoms are the reaction conditions
+            for (int i = first_meta; i < rxn.meta().metaData().size(); ++i)
             {
-                for (int i = 0; i < _pmol->meta().getMetaCount(SimpleTextObject::CID); ++i)
-                {
-                    auto& text = (SimpleTextObject&)_pmol->meta().getMetaObject(SimpleTextObject::CID, i);
-                    int idx = rxn.meta().addMetaObject(text.clone());
-                    rxn.addSpecialCondition(
-                        idx, Rect2f(Vec2f(text.boundingBox().left(), text.boundingBox().top()), Vec2f(text.boundingBox().left(), text.boundingBox().top())));
-                }
+                if (rxn.meta().metaData()[i]._class_id != SimpleTextObject::CID)
+                    continue;
+                auto& text = static_cast<const SimpleTextObject&>(rxn.meta().metaData()[i]);
+                rxn.addSpecialCondition(
+                    i, Rect2f(Vec2f(text.boundingBox().left(), text.boundingBox().top()), Vec2f(text.boundingBox().left(), text.boundingBox().top())));
             }
-            _cdxml_elements.erase(elem_it);
         }
     }
 
@@ -335,6 +318,30 @@ void ReactionCdxmlLoader::loadReaction(BaseReaction& rxn)
                 }
             }
         }
+    }
+
+    // Without a crossing bond, the molecule of a bracket is the one that holds its bracketed atoms.
+    for (const auto& bracket : brackets_without_crossing_bonds)
+    {
+        auto bracketed_ids = bracket->findProperty("BracketedObjectIDs");
+        if (!bracketed_ids->hasContent())
+            continue;
+        int molecule = -1;
+        for (const auto& object_id : split(bracketed_ids->value(), ' '))
+        {
+            for (const auto& [moleculeIndex, atomMap] : moleculeToAtomIDs)
+            {
+                if (atomMap.count(std::stoi(object_id)))
+                {
+                    molecule = moleculeIndex;
+                    break;
+                }
+            }
+            if (molecule >= 0)
+                break;
+        }
+        if (molecule >= 0)
+            loader.loadBracket(rxn.getBaseMolecule(molecule), *bracket, moleculeToAtomIDs[molecule]);
     }
 
     for (const auto& bracketID : bracket_ids)
