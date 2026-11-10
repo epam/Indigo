@@ -1,9 +1,20 @@
-issue file, reaction: texts ["(+)-1 9R,13S,14R", "R = \u03b2-OH", "(+)-2 R"] pluses 0
-issue file, molecule: texts ["(+)-1 9R,13S,14R", "R = \u03b2-OH", "(+)-2 R"] pluses 0
-issue file + one-run plus: texts ["(+)-1 9R,13S,14R", "R = \u03b2-OH", "(+)-2 R"] pluses 1
-plus in runs with spaces: texts [] pluses 1
-charset x-mac-symbol: texts ["T = 25 \u00b1 1 K, \u0394"] pluses 0
-binary CDX: texts ["(+)-1 9R,13S,14R", "R = \u03b2-OH", "(\u2212)-1", "A \u2192 B, 25\u00b0C"] pluses 1
-binary CDX, line break in a font name: texts ["R = \u03b2-OH"] pluses 0
-binary CDX, font name spelling a table line: texts ["R = b-OH"] pluses 0
-CDXML fonttable attribute: texts ["(+)-1 9R,13S,14R", "R = \u03b2-OH", "(+)-2 R"] pluses 0
+*** CDX and CDXML text runs to KET ***
+caption-plus-runs.cdxml.ket:SUCCEED
+font-table-truncated.cdx.ket:SUCCEED
+latin1-bold-degree-signs.cdxml.ket:SUCCEED
+plus-with-spaces-one-run.cdxml.ket:SUCCEED
+plus-with-spaces-runs.cdx.ket:SUCCEED
+symbol-by-charset.cdxml.ket:SUCCEED
+symbol-bytes-valid-as-utf8.cdx.ket:SUCCEED
+symbol-codes-above-7f.cdxml.ket:SUCCEED
+symbol-label.cdxml.ket:SUCCEED
+symbol-letter-before-bold.cdx.ket:SUCCEED
+symbol-letter-before-bold.cdxml.ket:SUCCEED
+symbol-letter-subscript-superscript.cdxml.ket:SUCCEED
+symbol-minus-in-caption.cdxml.ket:SUCCEED
+*** KET styles after non-ASCII text to KET 2.0 and CDXML ***
+styles-after-non-ascii.ket.v2.ket:SUCCEED
+styles-after-non-ascii.ket.cdxml:SUCCEED
+*** ChemDraw file: Symbol font run in a text and an S-group label ***
+text "\u03b2Ala" styles [{"length": 4, "offset": 0, "style": "CUSTOM_FONT_SIZE_15px"}]
+S-group names ["D-Trp", "PAThr", "Trp", "\u03b2Ala"]
