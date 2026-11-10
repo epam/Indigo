@@ -1,0 +1,25 @@
+*** A chain on a line, on one side of the fit or on both ***
+straight-chain to zigzag-chain: rms 0.245
+align/straight-chain-to-zigzag-chain.mol:SUCCEED
+zigzag-chain to straight-chain: rms 0.277
+align/zigzag-chain-to-straight-chain.mol:SUCCEED
+slanted-chain to zigzag-chain: rms 0.245
+align/slanted-chain-to-zigzag-chain.mol:SUCCEED
+straight-chain to reversed-chain: rms 0.000
+align/straight-chain-to-reversed-chain.mol:SUCCEED
+straight-chain-3d to straight-chain: rms 0.000
+align/straight-chain-3d-to-straight-chain.mol:SUCCEED
+zigzag-chain to straight-chain-3d: rms 0.277
+align/zigzag-chain-to-straight-chain-3d.mol:SUCCEED
+*** A chain off a line: mirrored and scaled ***
+zigzag-chain to zigzag-mirrored: rms 0.000
+align/zigzag-chain-to-zigzag-mirrored.mol:SUCCEED
+zigzag-chain to zigzag-scaled: rms 0.000
+align/zigzag-chain-to-zigzag-scaled.mol:SUCCEED
+long-zigzag to long-zigzag-mirrored: rms 0.000
+align/long-zigzag-to-long-zigzag-mirrored.mol:SUCCEED
+*** An exact match within an rms uses the same fit ***
+zigzag-chain and straight-chain within rms 0.1: False
+straight-chain and zigzag-chain within rms 0.1: False
+straight-chain and reversed-chain within rms 0.1: True
+long-zigzag and long-zigzag-mirrored within rms 0.1: True

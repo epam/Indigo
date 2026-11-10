@@ -24,6 +24,8 @@ feature file must stay true across a refactor.
   or by atom containment, what makes a document fail to load
 - [sgroup-brackets.md](./sgroup-brackets.md) — brackets of polymer S-groups: when they are computed, where
   they stand, what is kept from a file, and what the renderer does not yet draw
+- [sgroup-data-values.md](./sgroup-data-values.md) — values of data S-groups: how they follow their atoms in
+  layout and clean-up, and what Ketcher does not yet send
 
 ## Worth writing next
 

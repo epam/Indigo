@@ -605,14 +605,8 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
             {
                 if (group.display_pos.has_value())
                     _objDistTransform(ti.bbp, group.display_pos.value());
-                if (group.atoms.size() > 0)
-                {
-                    ti.bbp.add(_ad(group.atoms[0]).pos);
-                }
-                else
-                {
-                    ti.bbp.add(parent.rightTop());
-                }
+                const int origin_atom = group.originAtom();
+                ti.bbp.add(origin_atom >= 0 ? _ad(origin_atom).pos : parent.rightTop());
             }
             else
             {

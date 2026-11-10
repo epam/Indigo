@@ -67,7 +67,7 @@ bool Transform3f::inversion(const Transform3f& matr)
 void Transform3f::rotation(float x, float y, float z, float angle)
 {
     float len = (float)sqrt(x * x + y * y + z * z);
-    float Sin = (float)sin(angle), Cos = (float)cos(angle), Vers = 1 - Cos;
+    float Sin = SIN(angle), Cos = COS(angle), Vers = 1 - Cos;
 
     if (len > EPSILON)
     {
@@ -303,7 +303,7 @@ bool Transform3f::rotationVecVec(const Vec3f& v1, const Vec3f& v2)
     else if (dot < -1.f + EPSILON)
         ang = _2FLOAT(-M_PI);
     else
-        ang = _2FLOAT(-acos(dot));
+        ang = -ACOS(dot);
 
     rotation(cross.x, cross.y, cross.z, ang);
     return true;

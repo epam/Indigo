@@ -1,0 +1,20 @@
+data-bent-nitrile
+  -INDIGO-01000000002D
+
+  3  2  0  0  0  0  0  0  0  0999 V2000
+   -1.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    1.0000    0.0000    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0  0  0  0
+  2  3  3  0  0  0  0
+M  STY  2   1 DAT   2 DAT
+M  SLB  2   1   1   2   2
+M  SAL   1  3   1   2   3
+M  SDT   1 NOTE                          T                                      
+M  SDD   1     0.0000   -1.2125    DA    ALL  1       1  
+M  SED   1 absolute
+M  SAL   2  3   1   2   3
+M  SDT   2 NOTE                          T                                      
+M  SDD   2     1.0000   -1.2125    DR    ALL  1       1  
+M  SED   2 relative
+M  END

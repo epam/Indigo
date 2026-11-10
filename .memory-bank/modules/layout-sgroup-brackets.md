@@ -5,7 +5,7 @@
 > **Skip when:** you only need the promised behaviour: that is
 > [../features/sgroup-brackets.md](../features/sgroup-brackets.md).
 
-Verified on `1e15006f7` (ticket #3974).
+Verified on 2026-11-08.
 
 ## Responsibility
 
@@ -18,12 +18,13 @@ at the labels of nested groups.
 
 ## Public interface
 
-One class, two calls. `SGroupBracketLayout layout(molecule, font_size, label_mode)` remembers where the atoms
-stand; `layout.update()` places brackets for the groups that have none (`SGroup::hasBrackets()` is false) and
+One class, two calls, shared with the values of data S-groups
+([layout-sgroup-data.md](./layout-sgroup-data.md)). `SGroupLayout layout(molecule, font_size, label_mode)` remembers
+where the atoms stand; `layout.update()` places brackets for the groups that have none (`SGroup::hasBrackets()` is false) and
 for those whose own atoms moved since construction
-(`core/indigo-core/layout/sgroup_bracket_layout.h#void update()`). The font size is in the coordinates of
+(`core/indigo-core/layout/sgroup_layout.h#void update()`). The font size is in the coordinates of
 the molecule and defaults to the renderer's font at the default bond length
-(`core/indigo-core/layout/sgroup_bracket_layout.h#DEFAULT_FONT_SIZE`), the label mode to terminal-hetero.
+(`core/indigo-core/layout/sgroup_layout.h#DEFAULT_FONT_SIZE`), the label mode to terminal-hetero.
 Callers:
 
 | Caller | Constructed | `update()` called | Font |
@@ -35,22 +36,23 @@ Callers:
 | `ReactionLayout::make`, `PathwayLayout::make`: the metalayout's move and scale of whole molecules | before `Metalayout::process()` / `buildLayoutTree()` | after `process()` / `applyLayout()` | the same options |
 
 `Metalayout::adjustMol`, `BaseMolecule::scale` and `BaseMolecule::offsetCoordinates` carry every group's real
-brackets along through `core/indigo-core/molecule/molecule_sgroups.h#transformBrackets` (invariant A13); that is
-what the brackets of the other S-group types get, and what the reaction and pathway layouts then override for
-the bracketed types, because a scale changes the margins.
+brackets along through `core/indigo-core/molecule/molecule_sgroups.h#transformPositions` (invariant A13), with the
+positions of data values ([layout-sgroup-data.md](./layout-sgroup-data.md)); that is what the brackets of the other
+S-group types get, and what the reaction and pathway layouts then override for the bracketed types, because a scale
+changes the margins.
 
 ## How a group is placed
 
 Groups are taken deepest first (`SGroupNesting::bracketedDeepestFirst`), so a parent sees the brackets of its
-children. For one group (`core/indigo-core/layout/src/sgroup_bracket_layout.cpp#_bracketsBox`):
+children. For one group (`core/indigo-core/layout/src/sgroup_layout.cpp#_bracketsBox`):
 
 1. **Atoms box**: the union of its atoms' boxes, each the centre of an atom drawn without a label and the box of
    its label otherwise, as `core/indigo-core/molecule/src/base_molecule_properties.cpp#getAtomBoundingBox`
-   estimates it (`core/indigo-core/layout/src/sgroup_bracket_layout.cpp#_atomsBox`).
+   estimates it (`core/indigo-core/layout/src/sgroup_layout.cpp#_atomsBox`).
 2. **Margin and space**: the atoms box grows by the margin, 0.1 bond lengths to the left and the right and 0.3
    up and down; the box spanned by each child's brackets grows by the space, 0.3 on every side. The brackets
    stand on the left and the right side of the union of these boxes, so whichever reaches further wins
-   (`core/indigo-core/layout/sgroup_bracket_layout.h#HORIZONTAL_MARGIN`). A group without children gets
+   (`core/indigo-core/layout/sgroup_layout.h#HORIZONTAL_MARGIN`). A group without children gets
    exactly the margin; a parent whose children cover its atoms gets exactly the space past their brackets.
 
 That is the whole rule. The ticket's two pictures are the fixtures
@@ -73,7 +75,7 @@ be a child, never a parent.
   the existing constant. A structure drawn at another scale gets margins of 0.1 and 0.3 absolute, out of
   proportion with its bonds.
 - **Nothing outside the group is looked at.** A bracket runs through a neighbouring atom, the `*` at a chain
-  end or a label when it stands within the margin; the texts of a child (`n`, the repeat pattern, #3976) are not
+  end or a label when it stands within the margin; the texts of a child (`n`, the repeat pattern) are not
   part of the child's bracket box, so a parent bracket 0.3 away can still touch a long one. There is no least length: a
   one-atom group without a label gets brackets 0.6 long.
 - **The font comes from the layout options only in `layout()`.** The option is a size relative to the bond
