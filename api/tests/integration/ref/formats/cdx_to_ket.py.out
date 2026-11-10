@@ -16759,14 +16759,6 @@ CDXML loader: Not a molecule. Found 1 arrows.
                 "$ref": "mol2"
             },
             {
-                "type": "plus",
-                "location": [
-                    2.2883331775665285,
-                    -1.4446663856506348,
-                    0.0
-                ]
-            },
-            {
                 "type": "text",
                 "data": {
                     "content": "{\"blocks\":[{\"text\":\"TEXT message\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":12,\"style\":\"CUSTOM_FONT_SIZE_18px\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
@@ -19568,14 +19560,6 @@ CDXML loader: Not a molecule. Found 14 arrows.
                         }
                     ]
                 }
-            },
-            {
-                "type": "plus",
-                "location": [
-                    18.743999481201173,
-                    -1.3573334217071534,
-                    0.0
-                ]
             },
             {
                 "type": "text",
