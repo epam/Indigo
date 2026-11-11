@@ -195,6 +195,8 @@ namespace indigo
         }
         void clear();
         TYPE type;
+        // Multiplies every dimension of the glyph; 1 except where a smaller copy of an atom's glyph is drawn.
+        float sizeFactor;
     };
 
     struct RenderItemBracket : public RenderItem
@@ -295,6 +297,15 @@ namespace indigo
         Sgroup(const SGroup& sg);
     };
 
+    // The items that write the charge and the radical of an attachment group next to its centre.
+    struct AttachmentGroupLabel
+    {
+        AttachmentGroupLabel();
+
+        int tibegin, ticount;
+        int gibegin, gicount;
+    };
+
     struct BondEnd
     {
         BondEnd();
@@ -393,6 +404,7 @@ namespace indigo
         PtrArray<RenderItemAttachmentPoint> attachmentPoints;
         PtrArray<RenderItemRSiteAttachmentIndex> rSiteAttachmentIndices;
         PtrArray<RenderItemBracket> brackets;
+        PtrArray<AttachmentGroupLabel> attachmentGroupLabels;
         Array<int> aam;
         Array<int> reactingCenters;
         Array<int> inversions;

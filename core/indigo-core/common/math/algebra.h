@@ -919,34 +919,70 @@ namespace indigo
         return std::abs(area) * 0.5f;
     }
 
+    // The extent of `poly` along `axis`, in units of the length of `axis`.
+    inline std::pair<float, float> projectPolygon(const std::vector<Vec2f>& poly, const Vec2f& axis)
+    {
+        auto [min, max] = std::minmax_element(poly.begin(), poly.end(), [&](const Vec2f& a, const Vec2f& b) { return a * axis < b * axis; });
+        return std::pair{*min * axis, *max * axis};
+    }
+
+    // The normals of the edges of `poly`: the axes on which the separating axis theorem looks for a gap.
+    inline std::vector<Vec2f> edgeNormals(const std::vector<Vec2f>& poly)
+    {
+        std::vector<Vec2f> normals;
+        for (size_t i = 0; i < poly.size(); ++i)
+        {
+            Vec2f edge = poly[(i + 1) % poly.size()] - poly[i];
+            normals.emplace_back(-edge.y, edge.x);
+        }
+        return normals;
+    }
+
     // Separating axis theorem
     inline bool convexPolygonsIntersect(const std::vector<Vec2f>& poly1, const std::vector<Vec2f>& poly2)
     {
-        auto project = [](const std::vector<Vec2f>& poly, const Vec2f& axis) {
-            auto [min, max] = std::minmax_element(poly.begin(), poly.end(), [&](const Vec2f& a, const Vec2f& b) { return a * axis < b * axis; });
-            return std::pair{*min * axis, *max * axis};
-        };
-
         auto overlap = [](const auto& range1, const auto& range2) { return !(range1.first > range2.second || range2.first > range1.second); };
 
-        auto getNormals = [](const std::vector<Vec2f>& poly) {
-            std::vector<Vec2f> normals;
-            for (size_t i = 0; i < poly.size(); ++i)
-            {
-                Vec2f edge = poly[(i + 1) % poly.size()] - poly[i];
-                normals.emplace_back(-edge.y, edge.x);
-            }
-            return normals;
-        };
-
-        auto normals1 = getNormals(poly1), normals2 = getNormals(poly2);
+        auto normals1 = edgeNormals(poly1), normals2 = edgeNormals(poly2);
         for (const auto& normal : normals1)
-            if (!overlap(project(poly1, normal), project(poly2, normal)))
+            if (!overlap(projectPolygon(poly1, normal), projectPolygon(poly2, normal)))
                 return false;
         for (const auto& normal : normals2)
-            if (!overlap(project(poly1, normal), project(poly2, normal)))
+            if (!overlap(projectPolygon(poly1, normal), projectPolygon(poly2, normal)))
                 return false;
         return true;
+    }
+
+    // The shifts t for which convex `moving`, moved by t * `direction`, intersects convex `fixed` - touching counted as
+    // intersecting, as convexPolygonsIntersect counts it: the interval [low, high], or false when there is none.
+    // On each axis of the separating axis theorem the projection of `moving` travels at direction * axis, so the
+    // shifts at which the projections overlap form an interval; the polygons intersect where all of them do.
+    inline bool convexPolygonsIntersectAlong(const std::vector<Vec2f>& moving, const std::vector<Vec2f>& fixed, const Vec2f& direction, float& low, float& high)
+    {
+        std::vector<Vec2f> axes = edgeNormals(moving);
+        const std::vector<Vec2f> fixed_normals = edgeNormals(fixed);
+        axes.insert(axes.end(), fixed_normals.begin(), fixed_normals.end());
+
+        low = -std::numeric_limits<float>::infinity();
+        high = std::numeric_limits<float>::infinity();
+        for (const Vec2f& axis : axes)
+        {
+            const auto [moving_low, moving_high] = projectPolygon(moving, axis);
+            const auto [fixed_low, fixed_high] = projectPolygon(fixed, axis);
+            const float speed = direction * axis;
+            if (speed == 0)
+            {
+                if (moving_low > fixed_high || fixed_low > moving_high)
+                    return false;
+                continue;
+            }
+            // Overlap on the axis: moving_low + t * speed <= fixed_high and moving_high + t * speed >= fixed_low.
+            const float until_past = (fixed_high - moving_low) / speed;
+            const float until_reached = (fixed_low - moving_high) / speed;
+            low = std::max(low, std::min(until_past, until_reached));
+            high = std::min(high, std::max(until_past, until_reached));
+        }
+        return low <= high;
     }
 
     inline Vec2f computeIntersection(const Vec2f& s, const Vec2f& e, const Vec2f& edgeStart, const Vec2f& edgeEnd)

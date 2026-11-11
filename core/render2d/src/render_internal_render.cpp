@@ -28,6 +28,8 @@
 #include "reaction/reaction.h"
 #include "render_context.h"
 #include "render_internal.h"
+#include <algorithm>
+#include <limits>
 #include <regex>
 
 #ifdef _WIN32
@@ -35,6 +37,181 @@
 #endif
 
 using namespace indigo;
+
+namespace
+{
+    // The size of an atom's charge and radical; the size factor of their glyphs.
+    constexpr float ATOM_LABEL_SIZE_FACTOR = 1;
+
+    // The digits of the charge of an attachment group are a third of the font of an atom label; its sign and
+    // radical shrink in the same proportion as the digits.
+    constexpr float ATTACHMENT_GROUP_LABEL_TO_ATOM_LABEL = 1.0f / 3;
+
+    // Clockwise quarter turns from "up" to the quadrant a direction falls in, y pointing up. Up is [135, 45) degrees,
+    // right [45, 315), down [315, 225), left [225, 135): a boundary belongs to the quadrant clockwise of it. A zero
+    // direction counts as up.
+    int quarterTurnsToQuadrant(float dx, float dy)
+    {
+        if (dx > 0 && -dx < dy && dy <= dx)
+            return 1;
+        if (dy < 0 && dy < dx && dx <= -dy)
+            return 2;
+        if (dx < 0 && dx <= dy && dy < -dx)
+            return 3;
+        return 0;
+    }
+
+    // How far a label of a group may move out of its corner, as a share of the distance from the group centre to
+    // its nearest atom: within it the label stays nearer the centre than any atom and reads as the ligand's, not
+    // as an atom's charge.
+    constexpr float ATTACHMENT_GROUP_LABEL_REACH = 0.5f;
+
+    // With the bond pointing up, the charge of a group stands at the top right of its centre and the radical at the
+    // top left (y pointing up); the arrangement turns with the bond.
+    const Vec2f CHARGE_CORNER(1, 1);
+    const Vec2f RADICAL_CORNER(-1, 1);
+
+    // `corner` turned `quarter_turns` times clockwise, with y flipped to point down as on the canvas.
+    Vec2f canvasCorner(Vec2f corner, int quarter_turns)
+    {
+        for (int turn = 0; turn < quarter_turns; ++turn)
+            corner.rotate(-1, 0);
+        return Vec2f(corner.x, -corner.y);
+    }
+
+    // `rect` as a convex polygon, `margin` wider on every side.
+    std::vector<Vec2f> outlineOf(const Rect2f& rect, float margin)
+    {
+        return {Vec2f(rect.left() - margin, rect.bottom() - margin), Vec2f(rect.right() + margin, rect.bottom() - margin),
+                Vec2f(rect.right() + margin, rect.top() + margin), Vec2f(rect.left() - margin, rect.top() + margin)};
+    }
+
+    // The band a stroke from `from` to `to` covers, `half_width` to either side of its axis, as a convex polygon
+    // `margin` wider all round.
+    std::vector<Vec2f> outlineOfStroke(const Vec2f& from, const Vec2f& to, float half_width, float margin)
+    {
+        Vec2f along;
+        along.diff(to, from);
+        if (!along.normalize())
+            along.set(1, 0);
+        Vec2f across(along);
+        across.rotate(1, 0);
+        across.scale(half_width + margin);
+        along.scale(margin);
+
+        Vec2f start, end;
+        start.diff(from, along);
+        end.sum(to, along);
+        return {start - across, end - across, end + across, start + across};
+    }
+
+    // The least shift t >= 0 along `direction` at which `label` intersects none of `obstacles`; a shift at which it
+    // only touches the margin of one counts as free.
+    float leastFreeShift(const std::vector<Vec2f>& label, const Vec2f& direction, const std::vector<std::vector<Vec2f>>& obstacles)
+    {
+        std::vector<std::pair<float, float>> blocked;
+        for (const std::vector<Vec2f>& obstacle : obstacles)
+        {
+            float low, high;
+            if (convexPolygonsIntersectAlong(label, obstacle, direction, low, high))
+                blocked.emplace_back(low, high);
+        }
+        std::sort(blocked.begin(), blocked.end());
+
+        float shift = 0;
+        for (const auto& interval : blocked)
+        {
+            if (interval.first >= shift)
+                break;
+            shift = std::max(shift, interval.second);
+        }
+        return shift;
+    }
+
+    // A variable attachment shares the container of haptic bonds and is drawn its own way: drawn as a haptic bond it
+    // would become one on the picture, and its group would get a label.
+    bool isDrawnAsHapticBond(const HapticBond& bond)
+    {
+        return bond.type() == _BOND_HAPTIC;
+    }
+
+    bool hasChargeOrRadical(const AttachmentGroup& group)
+    {
+        return group.charge() != 0 || group.radical() != 0;
+    }
+
+    // Where the labels of one attachment group may stand on the canvas, y pointing down: `gap` from `centre` on both
+    // axes, at most `reach` further out of a corner, clear of `obstacles`. Each placed label joins `obstacles`,
+    // `clearance` wider.
+    struct LabelPlacement
+    {
+        Vec2f centre;
+        Vec2f toward_metal;
+        float gap;
+        float reach;
+        float clearance;
+        std::vector<std::vector<Vec2f>>& obstacles;
+    };
+
+    // The free place nearest to the centre in the corner `corner` points to: `gap` from the centre on both axes, then,
+    // if anything drawn is in the way, out along the diagonal of the corner or along one of its sides, whichever frees
+    // the label soonest. Returns how far the label had to move.
+    float freePlaceIn(const LabelPlacement& placement, const Vec2f& size, const Vec2f& corner, Vec2f& top_left)
+    {
+        const Vec2f& centre = placement.centre;
+        const float gap = placement.gap;
+        top_left.set(corner.x > 0 ? centre.x + gap : centre.x - gap - size.x, corner.y > 0 ? centre.y + gap : centre.y - gap - size.y);
+        Vec2f bottom_right;
+        bottom_right.sum(top_left, size);
+        const std::vector<Vec2f> box = outlineOf(Rect2f(top_left, bottom_right), 0);
+
+        Vec2f diagonal(corner);
+        diagonal.normalize();
+        const Vec2f directions[3] = {diagonal, Vec2f(corner.x, 0), Vec2f(0, corner.y)};
+        Vec2f best_direction = directions[0];
+        float best_shift = leastFreeShift(box, directions[0], placement.obstacles);
+        for (int k = 1; k < 3; ++k)
+        {
+            const float shift = leastFreeShift(box, directions[k], placement.obstacles);
+            if (shift < best_shift)
+            {
+                best_shift = shift;
+                best_direction = directions[k];
+            }
+        }
+        top_left.addScaled(best_direction, best_shift);
+        return best_shift;
+    }
+
+    // The top left of a label of `size` meant for `corner`: there when that corner has room within reach of the
+    // centre; otherwise in the neighbouring corner on the side of the metal, then in the other neighbouring corner -
+    // the label stays by the ligand rather than end up beside an atom. When no corner has room within reach, its own
+    // corner, however far.
+    Vec2f placeLabel(LabelPlacement& placement, const Vec2f& size, const Vec2f& corner)
+    {
+        Vec2f clockwise(corner), anticlockwise(corner);
+        clockwise.rotate(1, 0);
+        anticlockwise.rotate(-1, 0);
+        const bool clockwise_first = Vec2f::dot(clockwise, placement.toward_metal) >= Vec2f::dot(anticlockwise, placement.toward_metal);
+        const Vec2f corners[3] = {corner, clockwise_first ? clockwise : anticlockwise, clockwise_first ? anticlockwise : clockwise};
+
+        Vec2f top_left;
+        bool within_reach = false;
+        for (const Vec2f& candidate : corners)
+            if (freePlaceIn(placement, size, candidate, top_left) <= placement.reach)
+            {
+                within_reach = true;
+                break;
+            }
+        if (!within_reach)
+            freePlaceIn(placement, size, corner, top_left);
+
+        Vec2f bottom_right;
+        bottom_right.sum(top_left, size);
+        placement.obstacles.push_back(outlineOf(Rect2f(top_left, bottom_right), placement.clearance));
+        return top_left;
+    }
+}
 
 void MoleculeRenderInternal::_renderBondIds()
 {
@@ -252,24 +429,169 @@ void MoleculeRenderInternal::_renderHapticBonds()
 
     for (int i = bonds.begin(); i != bonds.end(); i = bonds.next(i))
     {
-        const HapticBond& bond = bonds.at(i);
-
-        // A variable attachment (#3731) shares the container and is drawn its own
-        // way; drawn here it would become a haptic bond on the picture.
-        if (bond.type() != _BOND_HAPTIC)
-            continue;
-
         Vec2f begin, end;
-        int begin_label = -1, end_label = -1;
-        if (!_hapticEndpointPos(bond.begin(), begin, begin_label) || !_hapticEndpointPos(bond.end(), end, end_label))
+        if (_hapticLine(bonds.at(i), begin, end))
+            _cw.drawLine(begin, end);
+    }
+}
+
+bool MoleculeRenderInternal::_hapticLine(const HapticBond& bond, Vec2f& begin, Vec2f& end)
+{
+    if (!isDrawnAsHapticBond(bond))
+        return false;
+
+    int begin_label = -1, end_label = -1;
+    if (!_hapticEndpointPos(bond.begin(), begin, begin_label) || !_hapticEndpointPos(bond.end(), end, end_label))
+        return false;
+
+    if (Vec2f::dist(begin, end) < EPSILON)
+        return false;
+
+    _clipHapticEndToLabel(begin_label, begin, end);
+    _clipHapticEndToLabel(end_label, end, begin);
+    return true;
+}
+
+void MoleculeRenderInternal::_prepareAttachmentGroupLabels()
+{
+    const MoleculeHapticBonds& bonds = _mol->haptic_bonds;
+    const MoleculeAttachmentGroups& groups = _mol->attachment_groups;
+    bool any_label = false;
+    for (int i = groups.begin(); i != groups.end() && !any_label; i = groups.next(i))
+        any_label = hasChargeOrRadical(groups.group(i));
+    if (bonds.isEmpty() || !any_label)
+        return;
+
+    // Everything already drawn that a label must not touch, kept as far as a bond is kept from an atom label.
+    const float clearance = _settings.boundExtent;
+    std::vector<std::vector<Vec2f>> obstacles;
+    for (int i = _mol->edgeBegin(); i < _mol->edgeEnd(); i = _mol->edgeNext(i))
+    {
+        const BondDescr& bd = _bd(i);
+        obstacles.push_back(outlineOfStroke(_be(bd.be1).p, _be(bd.be2).p, std::max(bd.extP, bd.extN), clearance));
+    }
+    // Every label item drawn so far - atom labels and their charges, indices, S-group labels. Their boxes already
+    // carry that margin (_extendRenderItems); the box an atom keeps of them goes stale when a label is reversed.
+    const auto addItemObstacle = [&obstacles](const RenderItem& item) {
+        Vec2f max;
+        max.sum(item.bbp, item.bbsz);
+        obstacles.push_back(outlineOf(Rect2f(item.bbp, max), 0));
+    };
+    for (int i = 0; i < _data.textitems.size(); ++i)
+        addItemObstacle(_data.textitems[i]);
+    for (int i = 0; i < _data.graphitems.size(); ++i)
+        addItemObstacle(_data.graphitems[i]);
+    for (int i = bonds.begin(); i != bonds.end(); i = bonds.next(i))
+    {
+        Vec2f begin, end;
+        if (_hapticLine(bonds.at(i), begin, end))
+            obstacles.push_back(outlineOfStroke(begin, end, _settings.bondLineWidth / 2, clearance));
+    }
+
+    // Bonds in index order, the order the file lists them: a group's first haptic bond places its label.
+    std::vector<bool> labelled(groups.end(), false);
+    for (int i = bonds.begin(); i != bonds.end(); i = bonds.next(i))
+    {
+        const HapticBond& bond = bonds.at(i);
+        if (!isDrawnAsHapticBond(bond))
             continue;
 
-        if (Vec2f::dist(begin, end) < EPSILON)
+        const HapticBond::Endpoint& group_end = bond.begin().isGroup() ? bond.begin() : bond.end();
+        if (!group_end.isGroup() || !groups.hasGroup(group_end.index()) || labelled[group_end.index()])
             continue;
 
-        _clipHapticEndToLabel(begin_label, begin, end);
-        _clipHapticEndToLabel(end_label, end, begin);
-        _cw.drawLine(begin, end);
+        labelled[group_end.index()] = true;
+        _prepareAttachmentGroupLabel(bond, obstacles);
+    }
+}
+
+void MoleculeRenderInternal::_prepareAttachmentGroupLabel(const HapticBond& bond, std::vector<std::vector<Vec2f>>& obstacles)
+{
+    const bool group_begins = bond.begin().isGroup();
+    const HapticBond::Endpoint& group_end = group_begins ? bond.begin() : bond.end();
+    const int atom = (group_begins ? bond.end() : bond.begin()).index();
+
+    const AttachmentGroup& group = _mol->attachment_groups.group(group_end.index());
+    if (!hasChargeOrRadical(group))
+        return;
+
+    Vec2f centre;
+    int no_label_atom = -1;
+    if (!_hapticEndpointPos(group_end, centre, no_label_atom) || !_mol->hasVertex(atom))
+        return;
+
+    // The quadrant comes from the coordinates of the molecule, where y points up as on the picture: the canvas only
+    // shifts and scales them, and its rounding must not decide a bond lying on a boundary.
+    const Vec3f group_centre = _mol->attachmentGroupCentre(group_end.index());
+    const Vec3f& atom_position = _mol->getAtomXyz(atom);
+    const int quarter_turns = quarterTurnsToQuadrant(atom_position.x - group_centre.x, atom_position.y - group_centre.y);
+
+    AttachmentGroupLabel& label = _data.attachmentGroupLabels.push();
+    // The size of an atom charge times this gives the share of the atom label above.
+    const float size_factor = static_cast<float>(ATTACHMENT_GROUP_LABEL_TO_ATOM_LABEL * _cw.fontGetSize(FONT_SIZE_LABEL) / _cw.fontGetSize(FONT_SIZE_ATTR));
+
+    Vec2f toward_metal;
+    toward_metal.diff(_ad(atom).pos, centre);
+
+    float nearest_atom = std::numeric_limits<float>::infinity();
+    for (int member : group.atoms())
+        nearest_atom = std::min(nearest_atom, Vec2f::dist(_ad(member).pos, centre));
+
+    const float reach = ATTACHMENT_GROUP_LABEL_REACH * nearest_atom;
+    LabelPlacement placement{centre, toward_metal, _settings.labelInternalOffset, reach, _settings.boundExtent, obstacles};
+    const auto place = [&placement](const std::vector<RenderItem*>& parts, const Vec2f& size, const Vec2f& corner) {
+        const Vec2f top_left = placeLabel(placement, size, corner);
+        for (RenderItem* part : parts)
+            part->bbp.add(top_left);
+    };
+
+    if (group.charge() != 0)
+    {
+        const ChargeItems items = _pushChargeItems(label, group.charge(), size_factor, CWC_BASE, false);
+        std::vector<RenderItem*> parts;
+        Vec2f size;
+        if (items.value >= 0)
+        {
+            TextItem& value = _data.textitems[items.value];
+            parts.push_back(&value);
+            size.x += value.bbsz.x;
+            size.y = std::max(size.y, value.bbsz.y);
+        }
+        GraphItem& sign = _data.graphitems[items.sign];
+        sign.bbp.set(size.x, 0);
+        parts.push_back(&sign);
+        size.x += sign.bbsz.x;
+        size.y = std::max(size.y, sign.bbsz.y);
+        place(parts, size, canvasCorner(CHARGE_CORNER, quarter_turns));
+    }
+
+    if (group.radical() != 0)
+    {
+        const RadicalItems items = _pushRadicalItems(label, group.radical(), size_factor, CWC_BASE, false);
+        std::vector<RenderItem*> parts;
+        GraphItem& first = _data.graphitems[items.first];
+        parts.push_back(&first);
+        Vec2f size(first.bbsz);
+        if (items.second >= 0)
+        {
+            GraphItem& second = _data.graphitems[items.second];
+            second.bbp.set(size.x + items.spacing, 0);
+            parts.push_back(&second);
+            size.x += items.spacing + second.bbsz.x;
+        }
+        place(parts, size, canvasCorner(RADICAL_CORNER, quarter_turns));
+    }
+}
+
+void MoleculeRenderInternal::_renderAttachmentGroupLabels()
+{
+    for (int i = 0; i < _data.attachmentGroupLabels.size(); ++i)
+    {
+        const AttachmentGroupLabel& label = _data.attachmentGroupLabels[i];
+        for (int j = 0; j < label.ticount; ++j)
+            _cw.drawTextItemText(_data.textitems[label.tibegin + j], _idle);
+        for (int j = 0; j < label.gicount; ++j)
+            _cw.drawGraphItem(_data.graphitems[label.gibegin + j]);
     }
 }
 
@@ -1260,6 +1582,60 @@ void MoleculeRenderInternal::_preparePseudoAtom(int aid, int color, bool highlig
     }
 }
 
+template <class Owner>
+MoleculeRenderInternal::ChargeItems MoleculeRenderInternal::_pushChargeItems(Owner& owner, int charge, float size_factor, int color, bool highlighted)
+{
+    ChargeItems items;
+    if (abs(charge) != 1)
+    {
+        items.value = _pushTextItem(owner, RenderItem::RIT_CHARGEVAL, color, highlighted);
+        TextItem& value = _data.textitems[items.value];
+        value.fontsize = FONT_SIZE_ATTR;
+        value.size = size_factor * _cw.fontGetSize(FONT_SIZE_ATTR);
+        bprintf(value.text, "%i", abs(charge));
+        _cw.setTextItemSize(value);
+    }
+
+    items.sign = _pushGraphItem(owner, RenderItem::RIT_CHARGESIGN, color, highlighted);
+    GraphItem& sign = _data.graphitems[items.sign];
+    sign.sizeFactor = size_factor;
+    _cw.setGraphItemSizeSign(sign, charge > 0 ? GraphItem::PLUS : GraphItem::MINUS);
+    return items;
+}
+
+template <class Owner>
+MoleculeRenderInternal::RadicalItems MoleculeRenderInternal::_pushRadicalItems(Owner& owner, int radical, float size_factor, int color, bool highlighted)
+{
+    RadicalItems items;
+    items.first = _pushGraphItem(owner, RenderItem::RIT_RADICAL, color, highlighted);
+    if (radical != RADICAL_DOUBLET)
+        items.second = _pushGraphItem(owner, RenderItem::RIT_RADICAL, color, highlighted);
+
+    GraphItem& first = _data.graphitems[items.first];
+    first.sizeFactor = size_factor;
+    if (radical == RADICAL_DOUBLET)
+    {
+        _cw.setGraphItemSizeDot(first);
+        return items;
+    }
+
+    GraphItem& second = _data.graphitems[items.second];
+    second.sizeFactor = size_factor;
+    if (radical == RADICAL_SINGLET)
+    {
+        _cw.setGraphItemSizeDot(first);
+        _cw.setGraphItemSizeDot(second);
+        items.spacing = size_factor * _settings.radicalTopDistDot;
+    }
+    else // RADICAL_TRIPLET
+    {
+        _cw.setGraphItemSizeCap(first);
+        _cw.setGraphItemSizeCap(second);
+        items.spacing = size_factor * _settings.radicalTopDistCap;
+    }
+    return items;
+}
+
 void MoleculeRenderInternal::_prepareChargeLabel(int aid, int color, bool highlighted)
 {
     AtomDesc& ad = _ad(aid);
@@ -1269,26 +1645,16 @@ void MoleculeRenderInternal::_prepareChargeLabel(int aid, int color, bool highli
     if (charge != CHARGE_UNKNOWN && charge != 0)
     {
         ad.rightMargin += _settings.labelInternalOffset;
-        if (abs(charge) != 1)
+        const ChargeItems items = _pushChargeItems(ad, charge, ATOM_LABEL_SIZE_FACTOR, color, highlighted);
+        if (items.value >= 0)
         {
-            int tiChargeValue = _pushTextItem(ad, RenderItem::RIT_CHARGEVAL, color, highlighted);
-
-            TextItem& itemChargeValue = _data.textitems[tiChargeValue];
-            itemChargeValue.fontsize = FONT_SIZE_ATTR;
-            bprintf(itemChargeValue.text, "%i", abs(charge));
-            _cw.setTextItemSize(itemChargeValue);
-
+            TextItem& itemChargeValue = _data.textitems[items.value];
             itemChargeValue.bbp.set(ad.rightMargin, ad.ypos + _settings.upperIndexShift * ad.height);
             _expandBoundRect(ad, itemChargeValue);
             ad.rightMargin += itemChargeValue.bbsz.x;
         }
 
-        GraphItem::TYPE type = charge > 0 ? GraphItem::PLUS : GraphItem::MINUS;
-        int giChargeSign = _pushGraphItem(ad, RenderItem::RIT_CHARGESIGN, color, highlighted);
-
-        GraphItem& itemChargeSign = _data.graphitems[giChargeSign];
-        _cw.setGraphItemSizeSign(itemChargeSign, type);
-
+        GraphItem& itemChargeSign = _data.graphitems[items.sign];
         itemChargeSign.bbp.set(ad.rightMargin, ad.ypos + _settings.upperIndexShift * ad.height);
         _expandBoundRect(ad, itemChargeSign);
         ad.rightMargin += itemChargeSign.bbsz.x;
@@ -1343,7 +1709,7 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
     bool highlighted = _vertexIsHighlighted(aid);
 
     int tilabel = -1, tihydro = -1, tiHydroIndex = -1, tiValence = -1, tiIsotope = -1, tiindex = -1;
-    int giChargeSign = -1, giRadical = -1, giRadical1 = -1, giRadical2 = -1;
+    int giChargeSign = -1;
     ad.rightMargin = ad.leftMargin = ad.ypos = ad.height = 0;
     int isotope = bm.getAtomIsotope(aid);
 
@@ -1572,12 +1938,11 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
         {
             const TextItem& label = _data.textitems[tilabel];
             Vec2f ltc(label.bbp);
+            const RadicalItems items = _pushRadicalItems(ad, radical, ATOM_LABEL_SIZE_FACTOR, color, highlighted);
 
-            if (radical == RADICAL_DOUBLET)
+            if (items.second < 0)
             {
-                giRadical = _pushGraphItem(ad, RenderItem::RIT_RADICAL, color, highlighted);
-                GraphItem& itemRadical = _data.graphitems[giRadical];
-                _cw.setGraphItemSizeDot(itemRadical);
+                GraphItem& itemRadical = _data.graphitems[items.first];
 
                 if (!(ad.showHydro && ad.hydroPos == HYDRO_POS_RIGHT) && giChargeSign < 0 && tiValence < 0)
                 {
@@ -1595,30 +1960,13 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
             }
             else
             {
-                giRadical1 = _pushGraphItem(ad, RenderItem::RIT_RADICAL, color, highlighted);
-                giRadical2 = _pushGraphItem(ad, RenderItem::RIT_RADICAL, color, highlighted);
-
-                GraphItem& itemRadical1 = _data.graphitems[giRadical1];
-                GraphItem& itemRadical2 = _data.graphitems[giRadical2];
-
-                float dist;
-                if (radical == RADICAL_SINGLET)
-                {
-                    _cw.setGraphItemSizeDot(itemRadical1);
-                    _cw.setGraphItemSizeDot(itemRadical2);
-                    dist = _settings.radicalTopDistDot;
-                }
-                else // if (radical == RADICAL_TRIPLET)
-                {
-                    _cw.setGraphItemSizeCap(itemRadical1);
-                    _cw.setGraphItemSizeCap(itemRadical2);
-                    dist = _settings.radicalTopDistCap;
-                }
+                GraphItem& itemRadical1 = _data.graphitems[items.first];
+                GraphItem& itemRadical2 = _data.graphitems[items.second];
 
                 ltc.y -= itemRadical1.bbsz.y + _settings.radicalTopOffset;
-                ltc.x += label.bbsz.x / 2 - dist / 2 - itemRadical1.bbsz.x;
+                ltc.x += label.bbsz.x / 2 - items.spacing / 2 - itemRadical1.bbsz.x;
                 itemRadical1.bbp.copy(ltc);
-                ltc.x += dist + itemRadical1.bbsz.x;
+                ltc.x += items.spacing + itemRadical1.bbsz.x;
                 itemRadical2.bbp.copy(ltc);
                 _expandBoundRect(ad, itemRadical1);
                 _expandBoundRect(ad, itemRadical2);
@@ -1919,6 +2267,15 @@ int MoleculeRenderInternal::_pushTextItem(Sgroup& sg, RenderItem::TYPE ritype, i
     return res;
 }
 
+int MoleculeRenderInternal::_pushTextItem(AttachmentGroupLabel& label, RenderItem::TYPE ritype, int color, bool highlighted)
+{
+    int res = _pushTextItem(ritype, color, highlighted);
+    if (label.tibegin < 0)
+        label.tibegin = res;
+    label.ticount++;
+    return res;
+}
+
 int MoleculeRenderInternal::_pushGraphItem(RenderItem::TYPE ritype, int color, bool highlighted)
 {
     _data.graphitems.push();
@@ -1935,6 +2292,15 @@ int MoleculeRenderInternal::_pushGraphItem(AtomDesc& ad, RenderItem::TYPE ritype
     if (ad.gibegin < 0)
         ad.gibegin = res;
     ad.gicount++;
+    return res;
+}
+
+int MoleculeRenderInternal::_pushGraphItem(AttachmentGroupLabel& label, RenderItem::TYPE ritype, int color, bool highlighted)
+{
+    int res = _pushGraphItem(ritype, color, highlighted);
+    if (label.gibegin < 0)
+        label.gibegin = res;
+    label.gicount++;
     return res;
 }
 
