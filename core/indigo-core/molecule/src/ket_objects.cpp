@@ -459,6 +459,13 @@ const std::map<std::string, int>& KetBaseMonomer::getIntPropStrToIdx() const
     return str_to_idx;
 }
 
+std::pair<bool, int> KetBaseMonomer::getIntPropMinValue(int idx) const
+{
+    if (idx == toUType(IntProps::seqid))
+        return std::make_pair(true, 1);
+    return std::make_pair(false, -1);
+};
+
 IMPL_ERROR(KetMonomer, "Ket Monomer")
 
 const std::map<std::string, int>& KetMonomer::getBoolPropStrToIdx() const

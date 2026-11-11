@@ -76,7 +76,6 @@
     "monomer0": {
         "type": "monomer",
         "id": "0",
-        "seqid": 1,
         "position": {
             "x": 0.000000,
             "y": -0.000000
@@ -87,7 +86,6 @@
     "monomer1": {
         "type": "monomer",
         "id": "1",
-        "seqid": 2,
         "position": {
             "x": 1.500000,
             "y": -0.000000
@@ -102,14 +100,12 @@
             "x": 3.000000,
             "y": -0.000000
         },
-        "seqid": 3,
         "alias": "Var0",
         "templateId": "Var0"
     },
     "monomer3": {
         "type": "monomer",
         "id": "3",
-        "seqid": 1,
         "position": {
             "x": 0.000000,
             "y": -1.500000
@@ -120,7 +116,6 @@
     "monomer4": {
         "type": "monomer",
         "id": "4",
-        "seqid": 1,
         "position": {
             "x": 0.000000,
             "y": -3.000000
