@@ -29,6 +29,7 @@
 #include "base_cpp/exception.h"
 #include "base_cpp/non_copyable.h"
 #include "molecule/loader_options.h"
+#include "molecule/meta_commons.h"
 #include "molecule/molecule_stereocenter_options.h"
 
 #ifdef _WIN32
@@ -113,7 +114,7 @@ namespace indigo
         void parseAtoms(const rapidjson::Value& atoms, BaseMolecule& mol, std::vector<EnhancedStereoCenter>& stereo_centers);
         void parseBonds(const rapidjson::Value& bonds, BaseMolecule& mol);
         void parseHighlight(const rapidjson::Value& highlight, BaseMolecule& mol);
-        void parseSGroups(const rapidjson::Value& sgroups, BaseMolecule& mol);
+        void parseSGroups(const rapidjson::Value& sgroups, BaseMolecule& mol, int node_idx);
 
         // Adds the node's attachment groups to the already-merged molecule, taking
         // the atom mapping of that merge. Returns the KET id -> group index map
@@ -151,10 +152,12 @@ namespace indigo
         // A reference is a name and nothing else: the producer may call a node
         // anything, a uuid included, and list the nodes in any order.
         std::map<std::string, int> _mol_ref_to_index;
+        // A document that names no S-group parent is read the way Ketcher writes it: a parent is found by atom containment
+        bool _derive_sgroup_parents = true;
         Molecule* _pmol;
         QueryMolecule* _pqmol;
         std::vector<EnhancedStereoCenter> _stereo_centers;
-        std::string _ket_version;
+        KETVersion _ket_version = KETVersion1;
         unsigned int _components_count;
         bool _parsed;
         rapidjson::Document _document;

@@ -6,9 +6,6 @@
 Rules that must stay true. Each one is here because breaking it fails **silently** — no compiler
 error, and often no failing test on the machine where the change was made.
 
-Anchors were verified on `f0cc3c423` (master, 2026-09-03). An anchor that no longer resolves is a
-defect in this file: fix it in the same change that moved the code.
-
 ---
 
 ## API & FFI
@@ -77,6 +74,26 @@ the same call: `Graph::_cloneGraph_KeepIndices`, which installs the edges direct
 `_mergeWithSubmolecule_Sub`, which copies the haptic bonds after the atoms. A path that skips the
 call leaves the previous answer standing, and nothing fails.
 
+**A15 — An S-group's parent is resolved by one rule, and the slot of a removed group is nobody's parent.**
+A group names its parent three ways: `parent_idx`, a pool position (the molfile readers resolve it, the KET reader
+sets it); `parent_group` holding the parent's `index` (V2000, V3000, the C API); `parent_group` holding a one-based
+pool position when no group is numbered (the CML reader).
+`core/indigo-core/molecule/src/molecule_sgroups.cpp#MoleculeSGroups::resolveParents` applies them in that order, and
+the savers (`getOrderedSGroups`), the copy of S-groups (`mergeSGroupsWithSubmolecule`), the tree the renderer
+draws (`buildTree`) and the nesting of brackets (`SGroupNesting`) take the parent from it.
+A second resolver disagrees with it on some input, and nothing fails: a copy of nested groups into a molecule that
+already had S-groups kept the source's pool positions, a group became its own parent, and the next copy recursed
+until the stack overflowed. The pool hands a freed slot to the next group of its class, so
+`core/indigo-core/molecule/src/molecule_sgroups.cpp#void MoleculeSGroups::remove(int idx)` clears both links of the
+groups whose resolved parent is the removed one — the rule A5 states for atoms; a link by position left behind
+would name the next group in that slot. Wherever a parent changes, a link by number changes with it: a copy names
+the copy of its parent, a group moved to its grandparent names the grandparent, both through
+`core/indigo-core/molecule/src/molecule_sgroups.cpp#MoleculeSGroups::setParent`, so a reader of the number
+alone — the C API, a format that stores numbers — sees the same parent. A copy whose parent is left behind gets no
+parent at all, `parent_idx` and `parent_group` both, and a group with atoms of its own is copied with its atoms,
+never with its parent. An `index` of 0 numbers no group: a group without one is never found by its `index`. See
+[adr/sgroup-parent-links.md](adr/sgroup-parent-links.md).
+
 **A8 — Bond orders and query flags are named constants, tests included.**
 `BOND_SINGLE`, `BOND_ZERO`, `_BOND_COORDINATION` and friends — never the underlying integers.
 
@@ -94,6 +111,62 @@ several S-groups with a value each, take their line with
 same way (#3953). `SBV`, `SDS`, `SPA` and `SAP` still parse positionally — a new handler, or a change to one
 of these, should read the line first.
 
+## S-group brackets
+
+**A12 — The two brackets of a bracketed S-group keep their order and direction: the opening one first, running
+bottom to top, the closing one second, running top to bottom.**
+The renderer turns the hooks of a bracket to the right of its direction and puts the label and the repeat pattern
+at the last bracket (`core/render2d/src/render_internal.cpp#_positionIndex`). A pair written the other way round
+draws its hooks outwards and its label at the left bracket; nothing fails. The one place that
+writes a pair is `core/indigo-core/layout/src/sgroup_layout.cpp#_setBrackets`.
+
+**A13 — Whatever moves the atoms of a molecule moves its S-group brackets and data values with them.**
+Brackets and the stored position of a data value are coordinates on the group; nothing ties them to the atoms.
+A rigid move or a scale goes through `BaseMolecule::offsetCoordinates`, `BaseMolecule::scale` or
+`Metalayout::adjustMol`, which carry both along (`core/indigo-core/molecule/molecule_sgroups.h#transformPositions`):
+an absolute value as a point, a relative one as an offset that scales but does not shift. A layout that moves
+atoms one by one constructs `SGroupLayout` before the move and calls `update()` after it
+(`core/indigo-core/layout/sgroup_layout.h#void update()`): it places the brackets of the groups whose atoms moved
+anew and moves each value the way its atoms moved. The reaction and pathway layouts do both, since their scale changes
+the margins; `update()` leaves a value that a whole-molecule move has already carried, because the fit of a single
+atom has no scale to give it. A mover that does neither leaves brackets and values where the atoms were, and only a
+drawing shows it. Known gaps: `update()` places only the bracketed types (SRU, COP,
+COM, MIX, FOR), so `layout()` and `clean2d()` leave the brackets of a generic group or a superatom where its atoms
+were; and `indigoAlignAtoms`, the centering of the standardizer and the unfolding of hydrogens move atoms without
+either call.
+
+**A14 — A zero-length bracket is a placeholder, not a bracket.**
+The KET loader writes a `(0,0)-(0,0)` pair for every group, because the format carries no bracket coordinates,
+and the CDXML and CXSMILES loaders leave such pairs too. `SGroup::hasBrackets()` is the test for a group
+(`core/indigo-core/molecule/molecule_sgroups.h#hasBrackets`): one zero-length bracket means the group has none,
+and the layout replaces them. The MOL savers skip each zero-length bracket and keep the real ones next to it
+(`core/indigo-core/molecule/src/molfile_saver.cpp#isZeroLengthBracket`); `transformPositions` moves the real
+brackets of a group and leaves its placeholders; the renderer takes the file's brackets only when the first two
+are real and draws its own pair otherwise (`core/render2d/src/render_internal.cpp#isBracketsCoordinates`). Code
+that tests `brackets.size() > 0` instead takes a bracket at the origin for a real one: the CML saver writes
+placeholders out that way.
+
+## S-group data fields
+
+**A16 — A text of a data S-group is read through `textOf` or `hasText`, never through `ptr()` of its `Array`.**
+`Array<char>::clear()` keeps the buffer, so `ptr()` of a cleared text still shows the old characters at size 0, and
+`ptr()` of a text never filled is null (`core/indigo-core/molecule/molecule_sgroups.h#textOf`). A writer that reads
+`ptr()` prints stale text into the file or hands null to a C string function; nothing fails where the file was
+written.
+
+**A17 — The molfile writer refuses what the molfile reader rejects, through the same predicates.**
+`DataSGroup::isValid*` and `lineNotANumber` are the one home of each rule of a data field. The reader applies them at
+`M  SDT`, `M  SDD`, `M  SED` and the V3000 keys (`core/indigo-core/molecule/molfile_loader.h#_checkDataField`); the
+writer applies them before V2000 and V3000 alike (`core/indigo-core/molecule/src/molfile_saver.cpp#_checkDataSGroup`).
+A check added on one side only yields a file Indigo itself cannot load back, found when someone reloads it. KET,
+CXSMILES and the API keep the value; the molfile boundary is the only gate.
+
+**A18 — The keys of a V3000 S-group line come in any order; a check that needs two of them runs once the line is
+read.**
+`FIELDINFO`, which carries the field type, may follow `FIELDDATA`, which carries the value: the NUMERIC check runs
+at the end of `core/indigo-core/molecule/src/molfile_loader_v3000.cpp#_readSGroup3000`, not at the key. A check at
+the key sees the type unset and passes.
+
 ## Language & platform
 
 **A9 — C++17, no C++20.**
@@ -104,7 +177,8 @@ oldest-supported-GCC build legs reject C++20 constructs. The code must compile u
 The layout chooses between equal alternatives with float comparisons, so the last bit of a
 coordinate decides the drawing. For a float argument MSVC calls `cosf`, `sinf`, `atan2f`, `hypotf`
 and GCC the double functions; with float calls Windows and Linux disagreed on 11 % of a corpus of
-18 237 molecules. Every such call in the layout and in `Vec2f` goes through one of the macros
+18 237 molecules. Every such call in the layout, in `Vec2f` and in the turn `Transform3f::bestFit` builds for a line
+(`core/indigo-core/common/math/transform3f.cpp#rotationVecVec`) goes through one of the macros
 `HYPOT`, `COS`, `SIN`, `TAN`, `ACOS`, `ASIN`, `ATAN2` of `common/math/algebra.h`, which evaluate in
 double and round once, and the two platforms now agree bit for bit on all of them. Write the
 promotion out by hand and the rule has no single home; write the call on a float and the divergence
@@ -134,3 +208,11 @@ every cross-DB comparison — see [testing.md](./testing.md).
 
 **B4 — Run `pytest` from `bingo/tests/`, not from the repository root.**
 `base.SQLAdapter` resolves `db_config.ini` relative to the working directory.
+
+**B5 — A core header the Postgres cartridge reaches must not include `<functional>`.**
+The cartridge includes `postgres.h` before the Indigo headers, and on Windows `postgres.h` defines `bind` as a
+function-like macro, which breaks the declaration of `std::bind` in MSVC's `<functional>`
+(`bingo/postgres/src/pg_common/bingo_pg_fix_pre.h#Thus <functional> must not be included here`). Only the Windows
+build of the cartridge fails, in CI; macOS and Linux compile it. `base_molecule.h` and everything it includes are on
+that path, so a callback stored in such a header is a template parameter, not a `std::function`
+(`core/indigo-core/molecule/molecule_sgroups.h#transformPositions`).

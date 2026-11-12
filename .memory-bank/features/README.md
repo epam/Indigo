@@ -20,6 +20,14 @@ feature file must stay true across a refactor.
   option, the failure contract, and why a client may show a different number
 - [haptic-bonds.md](./haptic-bonds.md) — bonds whose endpoint is a set of atoms: what round-trips
   today (KET, rendering) and what does not (V3000, the C API, layout)
+- [ket-sgroups.md](./ket-sgroups.md) — S-groups in KET: component, mixture and formulation, nesting by `parentId`
+  or by atom containment, the field and display objects of a data S-group, what makes a document fail to load
+- [molfile-data-sgroups.md](./molfile-data-sgroups.md) — data S-groups in molfiles: what the reader rejects and
+  the writer refuses, when `auto` writes V3000, the V3000 field type, quoting and coordinate precision
+- [sgroup-brackets.md](./sgroup-brackets.md) — brackets of polymer S-groups: when they are computed, where
+  they stand, what is kept from a file, and what the renderer does not yet draw
+- [sgroup-data-values.md](./sgroup-data-values.md) — values of data S-groups: how they follow their atoms in
+  layout and clean-up, and what Ketcher does not yet send
 
 ## Worth writing next
 

@@ -25,6 +25,9 @@
 #include "base_cpp/ptr_reusable_pool.h"
 #include "base_cpp/reusable.h"
 #include "math/algebra.h"
+#include <optional>
+#include <string>
+#include <string_view>
 #include <vector>
 
 #ifdef _WIN32
@@ -148,6 +151,11 @@ namespace indigo
             return component_order != 0;
         }
 
+        // One zero-length bracket means the group has none: loaders write such placeholders where a format has no
+        // bracket coordinates
+        bool hasBrackets() const;
+        bool isZeroLengthBracket(int bracket_idx) const;
+
         Array<char> label;                  // SMT in Molfile format (LABEL in V3000)
         Nullable<int> brk_style;            // represented with SBT in Molfile format
         Array<Vec2f[2]> brackets;           // represented with SDI in Molfile format
@@ -192,19 +200,117 @@ namespace indigo
         Array<char> querycode;       // SDT in Molfile format (query code)
         Array<char> queryoper;       // SDT in Molfile format (query operator)
         Array<char> data;            // SCD/SED in Molfile format (field data)
+        Array<char> context;         // what the data belongs to, as the KET contract names it; no molfile field holds it
         Array<char> sa_natreplace;   // NATREPLACE (V3000 - 2017)
         Nullable<Vec2f> display_pos; // SDD in Molfile format
         bool detached;               // or attached
         bool relative;               // or absolute
         bool display_units;
         Nullable<int> num_chars; // number of characters
+        int displayedChars() const
+        {
+            return num_chars.value_or(0); // 0 for all of them
+        }
+        Vec2f displayPosition() const
+        {
+            return display_pos.value_or(Vec2f(0, 0));
+        }
         Nullable<int> dasp_pos;
-        Nullable<char> tag; // tag
+        int daspPosition() const; // the first of the nine positions when none is set
+        Nullable<char> tag;       // tag
+        bool hasTag() const;      // a blank tag is none
+        // The C string of a text of the group, empty for one that is not set: a cleared Array keeps its old buffer
+        static const char* textOf(const Array<char>& text);
+        static bool hasText(const Array<char>& text);
+        // The text without the blanks around it
+        static std::string_view trimmed(const char* text);
         static constexpr char mrv_implicit_h[] = "MRV_IMPLICIT_H";
         static constexpr char impl_prefix[] = "IMPL_H";
         static constexpr size_t impl_prefix_len = sizeof(impl_prefix) - 1;
         bool isMrv_implicit();
         void setMrv_implicit(int atom_idx, int hydrogens_count);
+
+        // The values the molfile format allows in the fields of a data S-group (M  SDT, M  SDD, M  SED).
+        // A blank text is a field that is not set. A reader rejects anything else with the reason declared next to
+        // the check, after the value: "'QBETWEEN' is not a valid query operator".
+        static bool isValidFieldType(const char* text); // F, N or T
+        static constexpr const char* INVALID_FIELD_TYPE = "is not a valid field type";
+        static bool isValidQueryType(const char* text); // IQ
+        static constexpr const char* INVALID_QUERY_TYPE = "is not a valid query type";
+        static bool isValidQueryOperator(const char* text); // =, <>, <, <=, >, >=, BETWEEN, CONTAINS or LIKE, any case
+        static constexpr const char* INVALID_QUERY_OPERATOR = "is not a valid query operator";
+        // The same values by the names KET gives them: the text of a molfile, trimmed, to its name, and a name, spelled
+        // exactly, to the text the model keeps. nullptr for a text or a name outside the format; a blank type is TEXT
+        // and a blank query type is DATA, while a blank operator has no name
+        static const char* fieldTypeName(const char* text);     // FORMATTED, NUMERIC or TEXT
+        static const char* fieldTypeText(const char* name);     // F, N or T
+        static const char* queryTypeName(const char* text);     // DATA or QUERY
+        static const char* queryTypeText(const char* name);     // blank or IQ
+        static const char* queryOperatorName(const char* text); // EQUAL, NOT_EQUAL, LESS, LESS_OR_EQUAL, GREATER,
+                                                                // GREATER_OR_EQUAL, BETWEEN, CONTAINS or LIKE
+        static const char* queryOperatorText(const char* name);
+        static constexpr int MAX_DISPLAYED_CHARS = 999; // three columns of M  SDD
+        static bool isValidDisplayedChars(int count);   // 0 for all of them (ALL in a molfile), 1 to MAX_DISPLAYED_CHARS
+        static constexpr const char* INVALID_DISPLAYED_CHARS = "is not a valid number of characters to display";
+        static bool isValidDisplayCoordinate(double coordinate); // what F10.4 of M  SDD holds: -9999.9999 to 99999.9999
+        static constexpr const char* INVALID_DISPLAY_COORDINATE = "is not a valid coordinate of the value";
+        static std::string displayCoordinateText(double coordinate); // with the four decimals of F10.4: "-10000.0000"
+        // display_pos keeps single precision: whether the four decimals of F10.4 survive it (1234.5678 does not)
+        static bool keepsDisplayCoordinate(double coordinate);
+        static constexpr const char* NOT_KEPT_DISPLAY_COORDINATE = "cannot be kept to four decimals";
+        static bool isValidDaspPosition(int position); // 1 to 9
+        static constexpr const char* INVALID_DASP_POSITION = "is not a valid DASP position";
+        static bool isValidNumber(const char* text);
+        static constexpr const char* INVALID_NUMBER = "is not a valid numeric value";
+        // A writer's refusal of a value: the number of the group, the value, the reason
+        static constexpr const char* REJECTED_FIELD_MESSAGE = "data S-group %d: '%s' %s";
+        // A NUMERIC field holding data rather than a query: each of its lines must be a number
+        bool holdsNumbers() const;
+        // The first line of the data that is not a number while the field holds numbers; an empty line is no value
+        std::optional<std::string> lineNotANumber() const;
+
+        // The atom a relative position is an offset from, -1 without atoms: the renderer then takes the offset from a corner
+        // of a box it computes anew for every drawing, so such a position follows no atoms
+        int originAtom() const
+        {
+            return atoms.size() > 0 ? atoms[0] : -1;
+        }
+
+        // The point the position stands at on the sheet; a relative position needs originAtom()
+        template <typename AtomPosition>
+        Vec2f displayPoint(AtomPosition atom_position) const
+        {
+            Vec2f point = display_pos.value();
+            if (relative)
+                point.add(atom_position(originAtom()));
+            return point;
+        }
+
+        template <typename AtomPosition>
+        void setDisplayPoint(Vec2f point, AtomPosition atom_position)
+        {
+            if (relative)
+                point.sub(atom_position(originAtom()));
+            display_pos.set(point);
+        }
+
+        template <typename Transform>
+        void transformPosition(Transform transform)
+        {
+            if (!display_pos.has_value())
+                return;
+            Vec2f& position = display_pos.value();
+            if (!relative)
+            {
+                transform(position);
+                return;
+            }
+            // A move leaves an offset as it is, a scale scales it
+            Vec2f origin(0.f, 0.f);
+            transform(origin);
+            transform(position);
+            position.sub(origin);
+        }
 
     private:
         DataSGroup(const DataSGroup&);
@@ -313,6 +419,7 @@ namespace indigo
     struct SGroupInfo
     {
         SGroup& sgroup;
+        int sgroup_idx; // its position in MoleculeSGroups
         int new_index;
         int new_parent_index;
     };
@@ -341,17 +448,47 @@ namespace indigo
         bool hasSGroup(int idx);
 
         void buildTree(Tree& tree);
-        bool getParentAtoms(int idx, Array<int>& target);
-        bool getParentAtoms(SGroup& sgroup, Array<int>& target);
+        // The pool position of each group's parent, -1 for none; indexed by pool position, end() entries.
+        // The parent is parent_idx, else the group whose index is parent_group, else - for inputs that
+        // number no group - the group at the one-based pool position parent_group.
+        std::vector<int> resolveParents();
+        // Makes parent_idx the parent of a group, -1 none. A group that names its parent by number keeps doing so,
+        // in the form resolveParents reads back: the parent's index, or its one-based pool position when it has none.
+        void setParent(int sgroup_idx, int parent_idx);
         std::vector<SGroupInfo> getOrderedSGroups();
 
+        // The children of a removed group get no parent; with removeMovingChildrenToGrandparent, its own parent.
         void remove(int idx);
+        void removeMovingChildrenToGrandparent(int sgroup_idx);
+        void moveChildrenToGrandparent(int sgroup_idx);
         void clear();
         void clear(int sg_type);
 
         int begin();
         int end();
         int next(int i);
+
+        // A template, not std::function: this header reaches the Postgres cartridge, where postgres.h defines bind as a
+        // macro on Windows and <functional> no longer compiles
+        template <typename Transform>
+        void transformPositions(Transform transform)
+        {
+            for (int i = begin(); i != end(); i = next(i))
+            {
+                SGroup& sgroup = getSGroup(i);
+                Array<Vec2f[2]>& brackets = sgroup.brackets;
+                for (int j = 0; j < brackets.size(); ++j)
+                {
+                    // Placeholders stay as loaders wrote them: some savers write them out as they are
+                    if (sgroup.isZeroLengthBracket(j))
+                        continue;
+                    transform(brackets[j][0]);
+                    transform(brackets[j][1]);
+                }
+                if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
+                    static_cast<DataSGroup&>(sgroup).transformPosition(transform);
+            }
+        }
 
         enum PropertyTypes
         {
@@ -375,6 +512,9 @@ namespace indigo
 
     private:
         bool _cmpIndices(Array<int>& t_inds, Array<int>& q_inds);
+        // The groups whose resolved parent is the group at sgroup_idx. A structure in which no group names a parent
+        // costs one pass and no allocation: removing many groups is quadratic in the number of groups either way.
+        std::vector<int> _childrenOf(int sgroup_idx);
     };
 
 } // namespace indigo

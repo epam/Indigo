@@ -123,8 +123,6 @@ M  SAL   1  1  17
 M  SMT   1 TBDPS
 M  SDS EXP  1   1
 M  SAP   1  1   1   0  1
-M  SDI   1  4    0.0000    0.0000    0.0000    0.0000
-M  SDI   1  4    0.0000    0.0000    0.0000    0.0000
 M  END
 $MOL
 

@@ -95,23 +95,7 @@ MoleculeJsonSaver::MoleculeJsonSaver(Output& output, ReactionMultistepDetector& 
 
 void MoleculeJsonSaver::parseFormatMode(const char* version_str, KETVersion& version)
 {
-    auto version_data = split(version_str, '.');
-    for (size_t i = 0; i < version_data.size(); ++i)
-    {
-        int val = std::stoi(version_data[i]);
-        switch (static_cast<KETVersionIndex>(i))
-        {
-        case KETVersionIndex::EMajor:
-            version.major = val;
-            break;
-        case KETVersionIndex::EMinor:
-            version.minor = val;
-            break;
-        case KETVersionIndex::EPatch:
-            version.patch = val;
-            break;
-        }
-    }
+    version = parseKETVersion(version_str);
 }
 
 void MoleculeJsonSaver::saveFormatMode(KETVersion& version, Array<char>& output)
@@ -142,20 +126,25 @@ void MoleculeJsonSaver::saveSGroups(BaseMolecule& mol, JsonWriter& writer)
 
     if (sGroupsCount > 0)
     {
-        writer.Key("sgroups");
-        writer.StartArray();
+        // A group carries an id only when a nested group refers to it, so a structure without nesting is saved as before
+        std::unordered_set<int> parent_ids;
         for (const auto& info : sgroup_infos)
         {
-            SGroup& sgrp = info.sgroup;
-            saveSGroup(sgrp, writer);
+            if (info.new_parent_index > 0)
+                parent_ids.insert(info.new_parent_index);
         }
+
+        writer.Key(KetKeySGroups);
+        writer.StartArray();
+        for (const auto& info : sgroup_infos)
+            saveSGroup(mol, info, writer, parent_ids.count(info.new_index) > 0 ? info.new_index : NO_KET_ID);
         // save queryComponent
         if (mol.isQueryMolecule() && componentDefined)
         {
             QueryMolecule& qmol = static_cast<QueryMolecule&>(mol);
             writer.StartObject();
             writer.Key("type");
-            writer.String("queryComponent");
+            writer.String(KetSGroupQueryComponent);
             writer.Key("atoms");
             writer.StartArray();
             for (int i = 0; i < qmol.vertexCount(); i++)
@@ -172,19 +161,141 @@ void MoleculeJsonSaver::saveSGroups(BaseMolecule& mol, JsonWriter& writer)
     }
 }
 
-void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
+// A molfile may list an atom of a group twice, and the KET reader refuses that: each atom is written once
+static void saveSGroupAtoms(const Array<int>& atoms, JsonWriter& writer)
 {
-    writer.StartObject();
-    writer.Key("type");
-    writer.String(SGroup::typeToString(sgroup.sgroup_type));
-    writer.Key("atoms");
-    if (sgroup.sgroup_type != SGroup::SG_TYPE_MUL)
+    std::unordered_set<int> written;
+    writer.StartArray();
+    for (int atom : atoms)
     {
-        writer.StartArray();
-        for (int i = 0; i < sgroup.atoms.size(); i++)
-            writer.Int(sgroup.atoms[i]);
-        writer.EndArray();
+        if (written.insert(atom).second)
+            writer.Int(atom);
     }
+    writer.EndArray();
+}
+
+// A text of a data S-group that is set; one the model keeps blank is not written
+static void saveTextIfSet(const char* key, const Array<char>& text, JsonWriter& writer)
+{
+    if (DataSGroup::hasText(text))
+    {
+        writer.Key(key);
+        writer.String(DataSGroup::textOf(text));
+    }
+}
+
+static void saveTag(const char* key, const DataSGroup& dsg, JsonWriter& writer)
+{
+    if (dsg.hasTag())
+    {
+        writer.Key(key);
+        writer.String(std::string{dsg.tag.value()}.c_str());
+    }
+}
+
+// The name KET gives a value of the model, or the value itself when it is outside the names: KET keeps such a
+// value as it is, a molfile refuses it when it is written
+static const char* nameOrText(const char* name, const char* text)
+{
+    return name != nullptr ? name : text;
+}
+
+// dataFieldDescription of KET 2.1: fieldName and every field with a default always, by its value or the default,
+// the units and the operator when set; an enum by its name, a value outside the names as it is
+void MoleculeJsonSaver::saveDataFieldDescription(const DataSGroup& dsg, JsonWriter& writer)
+{
+    writer.Key(KetKeyDataFieldDescription);
+    writer.StartObject();
+    writer.Key(KetKeyFieldName);
+    writer.String(DataSGroup::textOf(dsg.name));
+    const char* type = DataSGroup::textOf(dsg.type);
+    writer.Key(KetKeyFieldValueType);
+    writer.String(nameOrText(DataSGroup::fieldTypeName(type), type));
+    saveTextIfSet(KetKeyFieldUnits, dsg.description, writer);
+    const char* querycode = DataSGroup::textOf(dsg.querycode);
+    writer.Key(KetKeyQueryType);
+    writer.String(nameOrText(DataSGroup::queryTypeName(querycode), querycode));
+    if (DataSGroup::hasText(dsg.queryoper))
+    {
+        const char* queryoper = DataSGroup::textOf(dsg.queryoper);
+        writer.Key(KetKeyQueryOperator);
+        writer.String(nameOrText(DataSGroup::queryOperatorName(queryoper), queryoper));
+    }
+    writer.EndObject();
+}
+
+// dataDisplayInformation of KET 2.1: every field with a default always, the tag when set
+void MoleculeJsonSaver::saveDataDisplayInformation(const DataSGroup& dsg, const Vec2f& position, JsonWriter& writer)
+{
+    writer.Key(KetKeyDataDisplayInformation);
+    writer.StartObject();
+    writer.Key(KetKeyPosition);
+    writer.StartObject();
+    writer.Key(KetKeyX);
+    writeFloat(writer, position.x);
+    writer.Key(KetKeyY);
+    writeFloat(writer, position.y);
+    writer.EndObject();
+    writer.Key(KetKeyDisplay);
+    writer.String(dsg.detached ? KetDisplayDetached : KetDisplayAttached);
+    writer.Key(KetKeyPlacement);
+    writer.String(dsg.relative ? KetPlacementRelative : KetPlacementAbsolute);
+    writer.Key(KetKeyDisplayUnits);
+    writer.Bool(dsg.display_units);
+    writer.Key(KetKeyDisplayedChars);
+    writer.Int(dsg.displayedChars());
+    saveTag(KetKeyFieldTag, dsg, writer);
+    writer.Key(KetKeyDaspPosition);
+    writer.Int(dsg.daspPosition());
+    writer.EndObject();
+}
+
+// The KET 2.0 contract: fieldName, x and y always; any other key only away from its default, display true for attached
+// data and placement false for a relative position
+void MoleculeJsonSaver::saveDataSGroupKeysV2_0(const DataSGroup& dsg, const Vec2f& position, JsonWriter& writer)
+{
+    writer.Key(KetKeyFieldNameV2_0);
+    writer.String(DataSGroup::textOf(dsg.name));
+    saveTextIfSet(KetKeyFieldTypeV2_0, dsg.description, writer);
+    saveTextIfSet(KetKeyQueryTypeV2_0, dsg.querycode, writer);
+    saveTextIfSet(KetKeyQueryOpV2_0, dsg.queryoper, writer);
+
+    writer.Key(KetKeyXV2_0);
+    writeFloat(writer, position.x);
+    writer.Key(KetKeyYV2_0);
+    writeFloat(writer, position.y);
+    if (!dsg.detached)
+    {
+        writer.Key(KetKeyDisplayV2_0);
+        writer.Bool(true);
+    }
+    if (dsg.relative)
+    {
+        writer.Key(KetKeyPlacementV2_0);
+        writer.Bool(false);
+    }
+
+    saveTag(KetKeyTagV2_0, dsg, writer);
+    const int num_chars = dsg.displayedChars();
+    if (num_chars > 0)
+    {
+        writer.Key(KetKeyDisplayedCharsV2_0);
+        writer.Int(num_chars);
+    }
+}
+
+void MoleculeJsonSaver::saveSGroup(BaseMolecule& mol, const SGroupInfo& info, JsonWriter& writer, int id)
+{
+    SGroup& sgroup = info.sgroup;
+    if (!isKetSGroupType(sgroup.sgroup_type))
+        throw Error("SG_TYPE_%s not implemented in indigo yet", SGroup::typeToString(sgroup.sgroup_type));
+
+    writer.StartObject();
+    writer.Key(KetKeyType);
+    writer.String(SGroup::typeToString(sgroup.sgroup_type));
+    writer.Key(KetKeyAtoms);
+    // the atoms of a multiple group are those of its repeating unit
+    saveSGroupAtoms(sgroup.sgroup_type == SGroup::SG_TYPE_MUL ? static_cast<MultipleGroup&>(sgroup).parent_atoms : sgroup.atoms, writer);
 
     switch (sgroup.sgroup_type)
     {
@@ -192,78 +303,19 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
         break;
     case SGroup::SG_TYPE_DAT: {
         DataSGroup& dsg = (DataSGroup&)sgroup;
-        auto name = dsg.name.ptr();
-        auto data = dsg.data.ptr();
-        if (name && strlen(name))
-        {
-            writer.Key("fieldName");
-            writer.String(name);
-        }
-        if (data && strlen(data))
-        {
-            writer.Key("fieldData");
-            writer.String(data);
-        }
-        auto field_type = dsg.description.ptr();
-        if (field_type && strlen(field_type))
-        {
-            writer.Key("fieldType");
-            writer.String(field_type);
-        }
-        auto query_code = dsg.querycode.ptr();
-        if (query_code && strlen(query_code))
-        {
-            writer.Key("queryType");
-            writer.String(query_code);
-        }
-        auto query_oper = dsg.queryoper.ptr();
-        if (query_oper && strlen(query_oper))
-        {
-            writer.Key("queryOp");
-            writer.String(query_oper);
-        }
+        saveTextIfSet(KetKeyFieldData, dsg.data, writer);
+        saveTextIfSet(KetKeyContext, dsg.context, writer);
 
-        if (dsg.display_pos.has_value())
-        {
-            const Vec2f& display_pos = dsg.display_pos.value();
-            writer.Key("x");
-            writeFloat(writer, display_pos.x);
-            writer.Key("y");
-            writeFloat(writer, display_pos.y);
-        }
-
-        if (!dsg.detached)
-        {
-            writer.Key("dataDetached");
-            writer.Bool(false);
-        }
-
+        Vec2f position = dsg.displayPosition();
         if (dsg.relative)
+            position -= mol.getDataSGroupFirstAtomToCentre(info.sgroup_idx);
+        // from KET 2.1 the two objects, and the keys of KET 2.0 with the same values until KET 3.0
+        if (ket_version >= KETVersion2_1)
         {
-            writer.Key("placement");
-            writer.Bool(true);
+            saveDataFieldDescription(dsg, writer);
+            saveDataDisplayInformation(dsg, position, writer);
         }
-
-        if (dsg.display_units)
-        {
-            writer.Key("display");
-            writer.Bool(true);
-        }
-
-        char tag = dsg.tag.value_or(0);
-        if (tag != 0 && tag != ' ')
-        {
-            writer.Key("tag");
-            std::string tag_s{tag};
-            writer.String(tag_s.c_str());
-        }
-
-        const int num_chars = dsg.num_chars.value_or(0);
-        if (num_chars > 0)
-        {
-            writer.Key("displayedChars");
-            writer.Int(num_chars);
-        }
+        saveDataSGroupKeysV2_0(dsg, position, writer);
     }
     break;
     case SGroup::SG_TYPE_SUP: {
@@ -309,113 +361,60 @@ void MoleculeJsonSaver::saveSGroup(SGroup& sgroup, JsonWriter& writer)
         }
     }
     break;
-    case SGroup::SG_TYPE_SRU: {
-        RepeatingUnit& ru = (RepeatingUnit&)sgroup;
+    case SGroup::SG_TYPE_SRU:
         if (sgroup.label.size())
         {
             writer.Key("subscript");
             writer.String(sgroup.label.ptr());
         }
-
-        writer.Key("connectivity");
-        const int connectivity = ru.connectivity;
-        switch (connectivity)
-        {
-        case SGroup::HEAD_TO_TAIL:
-            writer.String("HT");
-            break;
-        case SGroup::HEAD_TO_HEAD:
-            writer.String("HH");
-            break;
-        default:
-            writer.String("EU");
-            break;
-        }
-    }
-    break;
+        break;
     case SGroup::SG_TYPE_MUL: {
         MultipleGroup& mg = (MultipleGroup&)sgroup;
-        if (mg.parent_atoms.size())
-        {
-            writer.StartArray();
-            for (int i = 0; i < mg.parent_atoms.size(); i++)
-                writer.Int(mg.parent_atoms[i]);
-            writer.EndArray();
-        }
-        writer.Key("mul");
+        writer.Key(KetKeyMultiplier);
         writer.Int(mg.multiplier.value_or(0));
     }
     break;
-    case SGroup::SG_TYPE_MON:
-        throw Error("SG_TYPE_MON not implemented in indigo yet");
-        break;
-    case SGroup::SG_TYPE_MER:
-        throw Error("SG_TYPE_MER not implemented in indigo yet");
-        break;
     case SGroup::SG_TYPE_COP: {
-        CopolymerGroup& ru = (CopolymerGroup&)sgroup;
-        const int subtype = ru.sgroup_subtype.value_or(0);
-        if (subtype != 0)
+        const char* subtype = SGroup::subtypeToString(sgroup.sgroup_subtype.value_or(0));
+        if (subtype != nullptr)
         {
-            writer.Key("subtype");
-            if (subtype == SGroup::SG_SUBTYPE_ALT)
-            {
-                writer.String("ALT");
-            }
-            else if (subtype == SGroup::SG_SUBTYPE_RAN)
-            {
-                writer.String("RAN");
-            }
-            else if (subtype == SGroup::SG_SUBTYPE_BLO)
-            {
-                writer.String("BLO");
-            }
-        }
-
-        writer.Key("connectivity");
-        const int connectivity = ru.connectivity;
-        switch (connectivity)
-        {
-        case SGroup::HEAD_TO_TAIL:
-            writer.String("HT");
-            break;
-        case SGroup::HEAD_TO_HEAD:
-            writer.String("HH");
-            break;
-        default:
-            writer.String("EU");
-            break;
+            writer.Key(KetKeySubtype);
+            writer.String(subtype);
         }
     }
     break;
-    case SGroup::SG_TYPE_CRO:
-        throw Error("SG_TYPE_CRO not implemented in indigo yet");
-        break;
-    case SGroup::SG_TYPE_MOD:
-        throw Error("SG_TYPE_MOD not implemented in indigo yet");
-        break;
-    case SGroup::SG_TYPE_GRA:
-        throw Error("SG_TYPE_GRA not implemented in indigo yet");
-        break;
     case SGroup::SG_TYPE_COM:
-        throw Error("SG_TYPE_COM not implemented in indigo yet");
-        break;
-    case SGroup::SG_TYPE_MIX:
-        throw Error("SG_TYPE_MIX not implemented in indigo yet");
-        break;
-    case SGroup::SG_TYPE_FOR:
-        throw Error("SG_TYPE_FOR not implemented in indigo yet");
-        break;
-    case SGroup::SG_TYPE_ANY:
-        throw Error("SG_TYPE_ANY not implemented in indigo yet");
+        if (sgroup.hasComponentOrder())
+        {
+            writer.Key(KetKeyComponentOrder);
+            writer.Int(sgroup.component_order);
+        }
         break;
     default:
         break;
     }
 
+    if (SGroup::typeHasConnectivity(sgroup.sgroup_type))
+    {
+        writer.Key(KetKeyConnectivity);
+        writer.String(SGroup::connectivityToString(sgroup.connectivity));
+    }
+
+    if (id != NO_KET_ID)
+    {
+        writer.Key(KetKeyId);
+        writer.Int(id);
+    }
+
+    if (info.new_parent_index != NO_KET_ID)
+    {
+        writer.Key(KetKeyParentId);
+        writer.Int(info.new_parent_index);
+    }
+
     if (sgroup.getBonds().size())
     {
-        writer.Key("bonds");
+        writer.Key(KetKeyBonds);
         writer.StartArray();
         for (int i = 0; i < sgroup.getBonds().size(); ++i)
             writer.Int(sgroup.getBonds()[i]);
@@ -1639,6 +1638,25 @@ void MoleculeJsonSaver::saveAnnotation(JsonWriter& writer, const KetObjectAnnota
     writer.EndObject();
 }
 
+// The atom sets a molecule node must not split: an S-group, a haptic bond, a query component, and - since a parentId
+// refers to a group of its own node - an S-group together with its parent, even when they share no atom.
+static void collectNodeNeighbors(BaseMolecule& mol, std::list<std::unordered_set<int>>& neighbors)
+{
+    mol.collectExternalNeighbors(neighbors);
+    const std::vector<int> parents = mol.sgroups.resolveParents();
+    for (int i = mol.sgroups.begin(); i != mol.sgroups.end(); i = mol.sgroups.next(i))
+    {
+        if (parents[i] < 0)
+            continue;
+        std::unordered_set<int> pair_atoms;
+        for (int atom : mol.sgroups.getSGroup(i).atoms)
+            pair_atoms.insert(atom);
+        for (int atom : mol.sgroups.getSGroup(parents[i]).atoms)
+            pair_atoms.insert(atom);
+        neighbors.push_back(std::move(pair_atoms));
+    }
+}
+
 void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
 {
     // Everything the nodes are addressed by is rebuilt from scratch: the node
@@ -1655,7 +1673,7 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
     // save KET version
     if (ket_version.major > KETVersion1.major)
     {
-        writer.Key("ket_version");
+        writer.Key(KetKeyKetVersion);
         Array<char> version_str;
         saveFormatMode(ket_version, version_str);
         writer.String(version_str.ptr());
@@ -1667,7 +1685,7 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
     writer.StartArray();
 
     _s_neighbors.clear();
-    mol.collectExternalNeighbors(_s_neighbors);
+    collectNodeNeighbors(mol, _s_neighbors);
     // save mol references
     // int mol_id = 0;
     for (int idx = 0; idx < mol.countComponents(_s_neighbors); ++idx)
@@ -1698,7 +1716,10 @@ void MoleculeJsonSaver::saveRoot(BaseMolecule& mol, JsonWriter& writer)
                 std::unique_ptr<BaseMolecule> sub_mol(component->neu());
                 sub_mol->makeSubmolecule(*component, vertices, &sub_mapping);
                 mergeMappings(inv_mapping, sub_mapping);
-                for (int sub_idx = 0; sub_idx < sub_mol->countComponents(); ++sub_idx)
+                // Without the monomers the atoms of an S-group may fall apart; the sets keep them in one node
+                std::list<std::unordered_set<int>> sub_neighbors;
+                collectNodeNeighbors(*sub_mol, sub_neighbors);
+                for (int sub_idx = 0; sub_idx < sub_mol->countComponents(sub_neighbors); ++sub_idx)
                 {
                     Array<int> sub_comp_mapping, mapping_cp, inv_sub_comp_mapping;
                     mapping_cp.copy(inv_mapping);

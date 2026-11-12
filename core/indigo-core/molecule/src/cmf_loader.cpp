@@ -922,6 +922,13 @@ void CmfLoader::_readExtSection(Molecule& mol)
             _readUIntArray(bond_mapping_to_restore);
             has_mapping = true;
         }
+        else if (code == CMF_DATASGROUP_CONTEXT)
+        {
+            SGroup* preceding = _sgroup_order.size() > 0 ? &mol.sgroups.getSGroup(_sgroup_order.top()) : nullptr;
+            if (preceding == nullptr || preceding->sgroup_type != SGroup::SG_TYPE_DAT)
+                throw Error("a data S-group context that follows no data S-group");
+            _readString(static_cast<DataSGroup*>(preceding)->context);
+        }
         else
             throw Error("unexpected code: %d", code);
     }

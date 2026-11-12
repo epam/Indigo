@@ -14,7 +14,7 @@
 M  STY  1   1 DAT
 M  SLB  1   1   1
 M  SAL   1  2   4   5
-M  SDT   1 single-name                    F                                     
+M  SDT   1 single-name                   F                                      
 M  SDD   1     1.6314   -1.1000    DR    ALL  1       1  
 M  SED   1 single-value
 M  END

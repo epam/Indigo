@@ -21,8 +21,16 @@
 
 #include "base_cpp/tree.h"
 #include "molecule/molecule_sgroups.h"
+#include "molecule/molfile_commons.h"
 
 #include <algorithm>
+#include <cctype>
+#include <cstdio>
+#include <cstring>
+#include <functional>
+#include <iterator>
+#include <optional>
+#include <string_view>
 #include <typeindex>
 #include <unordered_map>
 
@@ -96,6 +104,21 @@ bool SGroup::typeHasConnectivity(int sg_type)
     return sg_type == SGroup::SG_TYPE_SRU || sg_type == SGroup::SG_TYPE_COP;
 }
 
+bool SGroup::hasBrackets() const
+{
+    if (brackets.size() == 0)
+        return false;
+    for (int i = 0; i < brackets.size(); ++i)
+        if (isZeroLengthBracket(i))
+            return false;
+    return true;
+}
+
+bool SGroup::isZeroLengthBracket(int bracket_idx) const
+{
+    return Vec2f::distSqr(brackets[bracket_idx][0], brackets[bracket_idx][1]) <= EPSILON;
+}
+
 SGroup::SGroup()
 {
     _reset();
@@ -129,6 +152,238 @@ void DataSGroup::setMrv_implicit(int atom_idx, int hydrogens_count)
     data.readString(sdata.c_str(), true);
     name.readString(mrv_implicit_h, true);
     detached = true;
+}
+
+// A value of a field of a data S-group: the text of a molfile, which the model keeps, and its name in KET
+struct FieldValue
+{
+    const char* text;
+    const char* name;
+};
+static const FieldValue FIELD_TYPES[] = {{"F", "FORMATTED"}, {"N", "NUMERIC"}, {"T", "TEXT"}};
+static const FieldValue& NUMERIC_FIELD_TYPE = FIELD_TYPES[1];
+static const FieldValue& TEXT_FIELD_TYPE = FIELD_TYPES[2];               // what a blank type means
+static const FieldValue QUERY_TYPES[] = {{"", "DATA"}, {"IQ", "QUERY"}}; // a blank query type: the field holds data
+static const FieldValue& QUERY_TYPE_QUERY = QUERY_TYPES[1];
+static const FieldValue QUERY_OPERATORS[] = {{"=", "EQUAL"},          {"<>", "NOT_EQUAL"},      {"<", "LESS"},
+                                             {"<=", "LESS_OR_EQUAL"}, {">", "GREATER"},         {">=", "GREATER_OR_EQUAL"},
+                                             {"BETWEEN", "BETWEEN"},  {"CONTAINS", "CONTAINS"}, {"LIKE", "LIKE"}};
+static constexpr int MIN_DASP_POSITION = 1;
+static constexpr int MAX_DASP_POSITION = 9;
+static constexpr int DEFAULT_DASP_POSITION = MIN_DASP_POSITION; // the first position, the default of a molfile and of KET
+// The four decimals of F10.4, without its width
+static const char* const DISPLAY_COORDINATE_FORMAT = "%.4f";
+// Holds any float in that format; snprintf cuts a longer double
+static constexpr std::size_t DISPLAY_COORDINATE_TEXT_SIZE = 64;
+
+std::string_view DataSGroup::trimmed(const char* text)
+{
+    const std::string_view value = text != nullptr ? text : "";
+    const auto first = value.find_first_not_of(' ');
+    if (first == std::string_view::npos)
+        return {};
+    return value.substr(first, value.find_last_not_of(' ') - first + 1);
+}
+
+static bool equalsIgnoringCase(std::string_view lhs, std::string_view rhs)
+{
+    return lhs.size() == rhs.size() &&
+           std::equal(lhs.begin(), lhs.end(), rhs.begin(), [](char l, char r) { return std::toupper((unsigned char)l) == std::toupper((unsigned char)r); });
+}
+
+// The value spelled by the text once trimmed, compared as the field compares its texts; nullptr for any other text
+template <std::size_t N, typename Equals>
+static const FieldValue* valueByText(const FieldValue (&values)[N], const char* text, Equals equals)
+{
+    const std::string_view spelled = DataSGroup::trimmed(text);
+    const auto found = std::find_if(std::begin(values), std::end(values), [&](const FieldValue& value) { return equals(spelled, value.text); });
+    return found != std::end(values) ? found : nullptr;
+}
+
+// The value of the name, spelled exactly; nullptr for any other name
+template <std::size_t N>
+static const FieldValue* valueByName(const FieldValue (&values)[N], const char* name)
+{
+    if (name == nullptr)
+        return nullptr;
+    const auto found = std::find_if(std::begin(values), std::end(values), [&](const FieldValue& value) { return std::strcmp(value.name, name) == 0; });
+    return found != std::end(values) ? found : nullptr;
+}
+
+static const FieldValue* fieldTypeValue(const char* text)
+{
+    return DataSGroup::trimmed(text).empty() ? &TEXT_FIELD_TYPE : valueByText(FIELD_TYPES, text, std::equal_to<std::string_view>());
+}
+
+static const FieldValue* queryTypeValue(const char* text)
+{
+    return valueByText(QUERY_TYPES, text, std::equal_to<std::string_view>());
+}
+
+static const FieldValue* queryOperatorValue(const char* text)
+{
+    return valueByText(QUERY_OPERATORS, text, equalsIgnoringCase);
+}
+
+static const char* valueName(const FieldValue* value)
+{
+    return value != nullptr ? value->name : nullptr;
+}
+
+static const char* valueText(const FieldValue* value)
+{
+    return value != nullptr ? value->text : nullptr;
+}
+
+bool DataSGroup::isValidFieldType(const char* text)
+{
+    return fieldTypeValue(text) != nullptr;
+}
+
+bool DataSGroup::isValidQueryType(const char* text)
+{
+    return queryTypeValue(text) != nullptr;
+}
+
+bool DataSGroup::isValidQueryOperator(const char* text)
+{
+    return trimmed(text).empty() || queryOperatorValue(text) != nullptr;
+}
+
+const char* DataSGroup::fieldTypeName(const char* text)
+{
+    return valueName(fieldTypeValue(text));
+}
+
+const char* DataSGroup::fieldTypeText(const char* name)
+{
+    return valueText(valueByName(FIELD_TYPES, name));
+}
+
+const char* DataSGroup::queryTypeName(const char* text)
+{
+    return valueName(queryTypeValue(text));
+}
+
+const char* DataSGroup::queryTypeText(const char* name)
+{
+    return valueText(valueByName(QUERY_TYPES, name));
+}
+
+const char* DataSGroup::queryOperatorName(const char* text)
+{
+    return valueName(queryOperatorValue(text));
+}
+
+const char* DataSGroup::queryOperatorText(const char* name)
+{
+    return valueText(valueByName(QUERY_OPERATORS, name));
+}
+
+int DataSGroup::daspPosition() const
+{
+    return dasp_pos.value_or(DEFAULT_DASP_POSITION);
+}
+
+bool DataSGroup::hasTag() const
+{
+    const char character = tag.value_or(' ');
+    return character != 0 && character != ' ';
+}
+
+const char* DataSGroup::textOf(const Array<char>& text)
+{
+    return text.size() > 0 ? text.ptr() : "";
+}
+
+bool DataSGroup::hasText(const Array<char>& text)
+{
+    return *textOf(text) != 0;
+}
+
+bool DataSGroup::isValidDisplayedChars(int count)
+{
+    return count >= 0 && count <= MAX_DISPLAYED_CHARS;
+}
+
+bool DataSGroup::isValidDisplayCoordinate(double coordinate)
+{
+    return molfileFitsF10_4(coordinate);
+}
+
+std::string DataSGroup::displayCoordinateText(double coordinate)
+{
+    char text[DISPLAY_COORDINATE_TEXT_SIZE];
+    snprintf(text, sizeof(text), DISPLAY_COORDINATE_FORMAT, coordinate);
+    return text;
+}
+
+bool DataSGroup::keepsDisplayCoordinate(double coordinate)
+{
+    // the text of the value given and of the value display_pos keeps
+    return displayCoordinateText(coordinate) == displayCoordinateText(static_cast<float>(coordinate));
+}
+
+bool DataSGroup::isValidDaspPosition(int position)
+{
+    return position >= MIN_DASP_POSITION && position <= MAX_DASP_POSITION;
+}
+
+// A decimal number: an optional sign, digits with an optional fraction, an optional exponent
+bool DataSGroup::isValidNumber(const char* text)
+{
+    const std::string_view value = trimmed(text);
+    std::size_t pos = 0;
+    const auto skipSign = [&]() {
+        if (pos < value.size() && (value[pos] == '+' || value[pos] == '-'))
+            ++pos;
+    };
+    const auto skipDigits = [&]() {
+        const std::size_t start = pos;
+        while (pos < value.size() && std::isdigit((unsigned char)value[pos]))
+            ++pos;
+        return pos - start;
+    };
+    skipSign();
+    std::size_t mantissa_digits = skipDigits();
+    if (pos < value.size() && value[pos] == '.')
+    {
+        ++pos;
+        mantissa_digits += skipDigits();
+    }
+    if (mantissa_digits == 0)
+        return false;
+    if (pos < value.size() && (value[pos] == 'e' || value[pos] == 'E'))
+    {
+        ++pos;
+        skipSign();
+        if (skipDigits() == 0)
+            return false;
+    }
+    return pos == value.size();
+}
+
+bool DataSGroup::holdsNumbers() const
+{
+    return fieldTypeValue(textOf(type)) == &NUMERIC_FIELD_TYPE && queryTypeValue(textOf(querycode)) != &QUERY_TYPE_QUERY;
+}
+
+std::optional<std::string> DataSGroup::lineNotANumber() const
+{
+    if (!holdsNumbers())
+        return std::nullopt;
+    std::string_view lines = textOf(data);
+    while (!lines.empty())
+    {
+        const std::size_t end = lines.find('\n');
+        const std::string line(lines.substr(0, end));
+        if (!line.empty() && !isValidNumber(line.c_str()))
+            return line;
+        if (end == std::string_view::npos)
+            break;
+        lines.remove_prefix(end + 1);
+    }
+    return std::nullopt;
 }
 
 Superatom::Superatom()
@@ -205,7 +460,7 @@ void DataSGroup::_reset()
     detached = false;
     relative = false;
     display_units = false;
-    dasp_pos = 1;
+    dasp_pos = DEFAULT_DASP_POSITION;
     num_chars = 0;
     tag = ' ';
     cbonds.clear();
@@ -215,6 +470,7 @@ void DataSGroup::_reset()
     querycode.clear();
     queryoper.clear();
     data.clear();
+    context.clear();
     sa_natreplace.clear();
     display_pos.reset();
 }
@@ -306,7 +562,31 @@ void MoleculeSGroups::clear(int sg_type)
 
 void MoleculeSGroups::remove(int idx)
 {
+    // The pool hands the slot out again; a child still naming it, by pool position or by number, would get the next
+    // group as its parent
+    for (int child_idx : _childrenOf(idx))
+        setParent(child_idx, -1);
     _sgroups.remove(idx);
+}
+
+void MoleculeSGroups::removeMovingChildrenToGrandparent(int sgroup_idx)
+{
+    // Once its children are moved nothing names the slot, so it is freed without a second search
+    moveChildrenToGrandparent(sgroup_idx);
+    _sgroups.remove(sgroup_idx);
+}
+
+void MoleculeSGroups::moveChildrenToGrandparent(int sgroup_idx)
+{
+    const std::vector<int> children = _childrenOf(sgroup_idx);
+    if (children.empty())
+        return;
+    const int grandparent_idx = resolveParents()[sgroup_idx];
+    for (int child_idx : children)
+    {
+        // On a cycle of parents through the group the child would become its own parent
+        setParent(child_idx, grandparent_idx == child_idx ? -1 : grandparent_idx);
+    }
 }
 
 int MoleculeSGroups::begin()
@@ -406,35 +686,110 @@ int MoleculeSGroups::getSGroupCount(int sg_type)
 
 void MoleculeSGroups::buildTree(Tree& tree)
 {
-    for (auto i = begin(); i != end(); i = next(i))
+    // Tree::insert files a parent it has not seen yet as a placeholder and the parent itself as a second node,
+    // so a parent goes in before its children. A parent met again on its own chain is a cycle: the group is a root.
+    enum class InsertState
     {
-        SGroup& sgroup = getSGroup(i);
-        tree.insert(i, sgroup.parent_idx.value_or(-1));
-    }
+        Pending,
+        Inserting,
+        Inserted
+    };
+    const std::vector<int> parents = resolveParents();
+    std::vector<InsertState> state(parents.size(), InsertState::Pending);
+    auto insert = [&](auto&& self, int idx) -> void {
+        if (state[idx] != InsertState::Pending)
+            return;
+        state[idx] = InsertState::Inserting;
+        int parent = parents[idx];
+        if (parent >= 0 && state[parent] == InsertState::Inserting)
+            parent = -1;
+        else if (parent >= 0)
+            self(self, parent);
+        tree.insert(idx, parent);
+        state[idx] = InsertState::Inserted;
+    };
+    for (int i = begin(); i != end(); i = next(i))
+        insert(insert, i);
 }
 
-bool MoleculeSGroups::getParentAtoms(int idx, Array<int>& target)
+std::vector<int> MoleculeSGroups::resolveParents()
 {
-    return getParentAtoms(getSGroup(idx), target);
+    std::vector<int> parents(end(), -1);
+
+    // index -> pool position; -1 marks an index two groups share, which names no parent
+    std::unordered_map<int, int> position_by_index;
+    for (int i = begin(); i != end(); i = next(i))
+    {
+        const int index = getSGroup(i).index;
+        if (index <= 0)
+            continue;
+        auto inserted = position_by_index.emplace(index, i);
+        if (!inserted.second)
+            inserted.first->second = -1;
+    }
+
+    for (int i = begin(); i != end(); i = next(i))
+    {
+        const SGroup& sgroup = getSGroup(i);
+        const int parent_idx = sgroup.parent_idx.value_or(-1);
+        if (hasSGroup(parent_idx))
+        {
+            parents[i] = parent_idx;
+            continue;
+        }
+
+        const int parent_group = sgroup.parent_group.value_or(0);
+        if (parent_group <= 0)
+            continue;
+
+        const auto by_index = position_by_index.find(parent_group);
+        if (by_index != position_by_index.end() && by_index->second >= 0)
+        {
+            parents[i] = by_index->second;
+            continue;
+        }
+
+        const int position = parent_group - 1;
+        if (hasSGroup(position) && getSGroup(position).index == 0)
+            parents[i] = position;
+    }
+    return parents;
 }
 
-bool MoleculeSGroups::getParentAtoms(SGroup& sgroup, Array<int>& target)
+void MoleculeSGroups::setParent(int sgroup_idx, int parent_idx)
 {
-    int pidx = sgroup.parent_idx.value_or(-1);
-    if (pidx < 0)
-        return false;
-    if (!hasSGroup(pidx))
+    SGroup& sgroup = getSGroup(sgroup_idx);
+    sgroup.parent_idx = parent_idx;
+    if (sgroup.parent_group.value_or(0) <= 0)
+        return;
+    if (parent_idx < 0)
     {
-        if (!sgroup.parent_group.has_value())
-            return false;
-        pidx = findSGroupById(sgroup.parent_group.value());
-        if (pidx < 0)
-            return false;
+        sgroup.parent_group = 0;
+        return;
     }
-    SGroup& parent = getSGroup(pidx);
-    getParentAtoms(parent, target);
-    target.concat(parent.atoms);
-    return true;
+    const int parent_index = getSGroup(parent_idx).index;
+    sgroup.parent_group = parent_index > 0 ? parent_index : parent_idx + 1;
+}
+
+std::vector<int> MoleculeSGroups::_childrenOf(int sgroup_idx)
+{
+    std::vector<int> children;
+    bool names_a_parent = false;
+    for (int i = begin(); i != end() && !names_a_parent; i = next(i))
+    {
+        const SGroup& sgroup = getSGroup(i);
+        names_a_parent = sgroup.parent_idx.value_or(-1) >= 0 || sgroup.parent_group.value_or(0) > 0;
+    }
+    if (!names_a_parent)
+        return children;
+
+    const std::vector<int> parents = resolveParents();
+    for (int i = begin(); i != end(); i = next(i))
+    {
+        if (i != sgroup_idx && parents[i] == sgroup_idx)
+            children.push_back(i);
+    }
+    return children;
 }
 
 bool MoleculeSGroups::isPolimer()
@@ -857,69 +1212,29 @@ bool MoleculeSGroups::_cmpIndices(Array<int>& t_inds, Array<int>& q_inds)
 std::vector<SGroupInfo> MoleculeSGroups::getOrderedSGroups()
 {
     std::vector<SGroupInfo> infos;
+    std::vector<int> pool_positions;
     std::unordered_map<int, int> pool_index_to_info_index;
-    std::unordered_map<int, int> original_index_to_info_index;
     const int sgroup_count = getSGroupCount();
     infos.reserve(sgroup_count);
+    pool_positions.reserve(sgroup_count);
     pool_index_to_info_index.reserve(sgroup_count);
-    original_index_to_info_index.reserve(sgroup_count);
 
-    // Phase 1: collect SGroups in pool order and build lookup tables for parent resolution.
+    // Phase 1: collect SGroups in pool order.
     for (int i = begin(); i != end(); i = next(i))
     {
-        SGroup& sg = getSGroup(i);
-        SGroupInfo info = {sg, 0, 0};
-        int info_index = static_cast<int>(infos.size());
-
-        infos.push_back(info);
-        pool_index_to_info_index[i] = info_index;
-
-        if (sg.index > 0)
-        {
-            auto inserted = original_index_to_info_index.emplace(sg.index, info_index);
-            if (!inserted.second)
-                inserted.first->second = -1;
-        }
+        pool_index_to_info_index[i] = static_cast<int>(infos.size());
+        infos.push_back({getSGroup(i), i, 0, 0});
+        pool_positions.push_back(i);
     }
 
-    // Phase 2: resolve each parent reference to an entry in the collected info array.
+    // Phase 2: each parent as an entry in the collected info array.
+    const std::vector<int> parents = resolveParents();
     std::vector<int> parent_info_index(infos.size(), -1);
-    auto resolve_pool_index = [&](int pool_index) -> int {
-        auto it = pool_index_to_info_index.find(pool_index);
-        if (it == pool_index_to_info_index.end())
-            return -1;
-        return it->second;
-    };
-
     for (int info_index = 0; info_index < static_cast<int>(infos.size()); info_index++)
     {
-        SGroup& sg = infos[info_index].sgroup;
-
-        if (sg.parent_idx.has_value())
-        {
-            int parent_info = resolve_pool_index(sg.parent_idx.value());
-            if (parent_info >= 0)
-            {
-                parent_info_index[info_index] = parent_info;
-                continue;
-            }
-        }
-
-        int parent_id = sg.parent_group.value_or(0);
-        if (parent_id <= 0)
-            continue;
-
-        auto original_it = original_index_to_info_index.find(parent_id);
-        if (original_it != original_index_to_info_index.end() && original_it->second >= 0)
-        {
-            parent_info_index[info_index] = original_it->second;
-            continue;
-        }
-
-        // Some inputs have no persisted SGroup index and refer to parents by one-based pool position.
-        int parent_info = resolve_pool_index(parent_id - 1);
-        if (parent_info >= 0 && infos[parent_info].sgroup.index == 0)
-            parent_info_index[info_index] = parent_info;
+        const int parent = parents[pool_positions[info_index]];
+        if (parent >= 0)
+            parent_info_index[info_index] = pool_index_to_info_index.at(parent);
     }
 
     // Phase 3: run DFS over parent links to resolve depth and reject cycles.

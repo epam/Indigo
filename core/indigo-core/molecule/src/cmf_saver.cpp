@@ -344,8 +344,13 @@ void CmfSaver::_encodeExtSection(Molecule& mol, const Mapping& mapping)
                 throw Error("DataSGroup dasp_pos field should be less than 10: %d", dasp_pos);
             byte packed = (dasp_pos & 0x0F) | (sd.detached << 4) | (sd.relative << 5) | (sd.display_units << 6);
             _output->writeByte(packed);
-            _output->writePackedUInt(sd.num_chars.value_or(0));
+            _output->writePackedUInt(sd.displayedChars());
             _output->writeChar(sd.tag.value_or(0));
+            if (sd.context.size() > 0)
+            {
+                _encode(CMF_DATASGROUP_CONTEXT);
+                _encodeString(sd.context);
+            }
         }
         else if (sg.sgroup_type == SGroup::SG_TYPE_SUP)
         {

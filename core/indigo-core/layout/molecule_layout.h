@@ -50,8 +50,13 @@ namespace indigo
         void updateSGroups();
 
         void setCancellationHandler(CancellationHandler* cancellation);
+        // The font of the atom labels that the S-group brackets stand outside of: the renderer's default unless the
+        // options set one
+        void setLabelOptions(const LayoutOptions& options);
 
         float bond_length;
+        float label_font_size;
+        LABEL_MODE label_mode;
         // Group-to-atom haptic bond length, in standard bond lengths.
         float haptic_bond_multiplier;
         std::optional<Vec2f> multiple_distance;
@@ -71,13 +76,10 @@ namespace indigo
         BaseMolecule& _getMol(int id);
         void _make();
         void _makeLayout();
-        void _updateRepeatingUnits();
         void _updateMultipleGroups();
 
         static BaseMolecule& cb_getMol(int id, void* context);
         static void cb_process(Metalayout::LayoutItem& item, const Vec2f& pos, void* context);
-
-        void _updateDataSGroups();
 
         void _init(bool smart_layout);
 

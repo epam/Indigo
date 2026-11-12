@@ -50,4 +50,4 @@ goes to `invariants.md`, subsystem knowledge to `modules/`, behaviour to `featur
 decision to `adr/`.
 
 Anchors into code are written as `` `<path>#<Symbol>` `` — never a line number, which goes
-stale silently on the next edit above it. `.claude/scripts/check-anchors.sh` verifies them all.
+stale silently on the next edit above it.

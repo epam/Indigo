@@ -728,7 +728,7 @@ XMLElement* CmlSaver::_addSgroupElement(XMLElement* molecule, const SGroupInfo& 
             sg->SetAttribute("tag", tag);
         }
 
-        const int num_chars = dsg.num_chars.value_or(0);
+        const int num_chars = dsg.displayedChars();
         if (num_chars > 0)
         {
             sg->SetAttribute("displayedChars", num_chars);

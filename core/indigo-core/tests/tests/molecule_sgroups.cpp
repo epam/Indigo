@@ -32,10 +32,12 @@
 #include <algorithm>
 #include <array>
 #include <initializer_list>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include <base_cpp/exception.h>
+#include <base_cpp/tree.h>
 #include <molecule/elements.h>
 #include <molecule/molecule.h>
 #include <molecule/molecule_sgroups.h>
@@ -205,6 +207,7 @@ namespace
     const PolymerFields BLOCK_COPOLYMER = {SGroup::SG_TYPE_COP, SGroup::SG_SUBTYPE_BLO, SGroup::HEAD_TO_TAIL, NOT_NUMBERED};
     const PolymerFields HEAD_TO_TAIL_UNIT = {SGroup::SG_TYPE_SRU, NO_SUBTYPE, SGroup::HEAD_TO_TAIL, NOT_NUMBERED};
     const PolymerFields HEAD_TO_HEAD_UNIT = {SGroup::SG_TYPE_SRU, NO_SUBTYPE, SGroup::HEAD_TO_HEAD, NOT_NUMBERED};
+    const PolymerFields GENERIC = {SGroup::SG_TYPE_GEN, NO_SUBTYPE, NO_CONNECTIVITY, NOT_NUMBERED};
 
     std::vector<PolymerFields> sorted(std::vector<PolymerFields> fields)
     {
@@ -244,6 +247,11 @@ namespace
         addSGroup(mol, HEAD_TO_HEAD_UNIT, {2}, copolymer);
     }
 
+    PolymerFields fieldsOf(SGroup& sgroup)
+    {
+        return {sgroup.sgroup_type, sgroup.sgroup_subtype.value(), sgroup.connectivity, sgroup.component_order};
+    }
+
     // The fields of every S-group that has atoms, sorted: a copy is free to number the groups differently.
     std::vector<PolymerFields> polymerFields(Molecule& mol)
     {
@@ -252,9 +260,48 @@ namespace
         {
             SGroup& sgroup = mol.sgroups.getSGroup(sgroup_idx);
             if (sgroup.atoms.size() > 0)
-                fields.push_back({sgroup.sgroup_type, sgroup.sgroup_subtype.value(), sgroup.connectivity, sgroup.component_order});
+                fields.push_back(fieldsOf(sgroup));
         }
         return sorted(fields);
+    }
+
+    using ParentLink = std::pair<PolymerFields, PolymerFields>; // {child, parent}
+
+    // Every nested group with its parent, by fields and sorted, as the savers resolve the parents.
+    std::vector<ParentLink> parentLinks(Molecule& mol)
+    {
+        std::vector<ParentLink> links;
+        const std::vector<int> parents = mol.sgroups.resolveParents();
+        for (int sgroup_idx = mol.sgroups.begin(); sgroup_idx != mol.sgroups.end(); sgroup_idx = mol.sgroups.next(sgroup_idx))
+        {
+            if (parents[sgroup_idx] >= 0)
+                links.push_back({fieldsOf(mol.sgroups.getSGroup(sgroup_idx)), fieldsOf(mol.sgroups.getSGroup(parents[sgroup_idx]))});
+        }
+        std::sort(links.begin(), links.end());
+        return links;
+    }
+
+    std::vector<ParentLink> formulationParentLinks()
+    {
+        std::vector<ParentLink> links = {{FIRST_COMPONENT, FORMULATION},
+                                         {SECOND_COMPONENT, FORMULATION},
+                                         {BLOCK_COPOLYMER, FIRST_COMPONENT},
+                                         {HEAD_TO_TAIL_UNIT, BLOCK_COPOLYMER},
+                                         {HEAD_TO_HEAD_UNIT, BLOCK_COPOLYMER}};
+        std::sort(links.begin(), links.end());
+        return links;
+    }
+
+    // The last S-group of the type in pool order, -1 for none
+    int lastSGroupOfType(MoleculeSGroups& sgroups, int sg_type)
+    {
+        int found = -1;
+        for (int sgroup_idx = sgroups.begin(); sgroup_idx != sgroups.end(); sgroup_idx = sgroups.next(sgroup_idx))
+        {
+            if (sgroups.getSGroup(sgroup_idx).sgroup_type == sg_type)
+                found = sgroup_idx;
+        }
+        return found;
     }
 } // namespace
 
@@ -317,4 +364,437 @@ TEST(SGroupPolymerFields, SubtypeAndConnectivityHaveMolfileCodes)
     for (int sg_type :
          {SGroup::SG_TYPE_GEN, SGroup::SG_TYPE_DAT, SGroup::SG_TYPE_SUP, SGroup::SG_TYPE_MUL, SGroup::SG_TYPE_COM, SGroup::SG_TYPE_MIX, SGroup::SG_TYPE_FOR})
         EXPECT_FALSE(SGroup::typeHasConnectivity(sg_type)) << SGroup::typeToString(sg_type);
+}
+
+// ---- parent links ---------------------------------------------------------
+
+TEST(SGroupParentLinks, MergeIntoAMoleculeWithAnSGroupKeepsThem)
+{
+    Molecule source;
+    buildPolymerFormulation(source);
+    ASSERT_EQ(formulationParentLinks(), parentLinks(source));
+
+    Molecule merged;
+    merged.addAtom(ELEM_N);
+    addSGroup(merged, GENERIC, {0}, NO_PARENT);
+    merged.mergeWithMolecule(source, nullptr);
+
+    ASSERT_EQ(1 + source.sgroups.getSGroupCount(), merged.sgroups.getSGroupCount());
+    EXPECT_EQ(formulationParentLinks(), parentLinks(merged));
+}
+
+// A molfile reader links a group both ways: by pool position and by the index of the parent.
+TEST(SGroupParentLinks, AChildCopiedWithoutItsParentHasNone)
+{
+    const int parent_index = 5;
+    Molecule source;
+    source.addAtom(ELEM_C);
+    source.addAtom(ELEM_O);
+    const int parent = addSGroup(source, GENERIC, {0}, NO_PARENT);
+    source.sgroups.getSGroup(parent).index = parent_index;
+    const int child_idx = addSGroup(source, GENERIC, {1}, parent);
+    source.sgroups.getSGroup(child_idx).parent_group = parent_index;
+
+    Molecule oxygen;
+    Array<int> oxygen_atoms;
+    oxygen_atoms.push(1);
+    oxygen.makeSubmolecule(source, oxygen_atoms, nullptr);
+
+    ASSERT_EQ(1, oxygen.sgroups.getSGroupCount());
+    const SGroup& child = oxygen.sgroups.getSGroup(oxygen.sgroups.begin());
+    EXPECT_EQ(NO_PARENT, oxygen.sgroups.resolveParents()[oxygen.sgroups.begin()]);
+    EXPECT_EQ(0, child.parent_group.value_or(0));
+}
+
+// A child with atoms of its own goes with its atoms: it is not copied, empty, along with its parent.
+TEST(SGroupParentLinks, AChildWithAtomsElsewhereStaysOutOfItsParentsCopy)
+{
+    Molecule source;
+    source.addAtom(ELEM_C);
+    source.addAtom(ELEM_O);
+    const int parent = addSGroup(source, GENERIC, {0}, NO_PARENT);
+    addSGroup(source, GENERIC, {1}, parent);
+
+    Molecule carbon;
+    Array<int> carbon_atoms;
+    carbon_atoms.push(0);
+    carbon.makeSubmolecule(source, carbon_atoms, nullptr);
+
+    ASSERT_EQ(1, carbon.sgroups.getSGroupCount());
+    EXPECT_EQ(1, carbon.sgroups.getSGroup(carbon.sgroups.begin()).atoms.size());
+}
+
+// The CML reader names a parent only by its one-based position, and a merge moves the groups to new positions.
+TEST(SGroupParentLinks, ALinkByPositionSurvivesAMerge)
+{
+    Molecule source;
+    for (int atom_idx = 0; atom_idx < 2; atom_idx++)
+        source.addAtom(ELEM_C);
+    source.addBond(0, 1, BOND_SINGLE);
+    addSGroup(source, BLOCK_COPOLYMER, {0, 1}, NO_PARENT);
+    const int unit = addSGroup(source, HEAD_TO_TAIL_UNIT, {1}, NO_PARENT);
+    source.sgroups.getSGroup(unit).parent_group = 1;
+    ASSERT_EQ(std::vector<ParentLink>({{HEAD_TO_TAIL_UNIT, BLOCK_COPOLYMER}}), parentLinks(source));
+
+    Molecule merged;
+    merged.addAtom(ELEM_N);
+    addSGroup(merged, GENERIC, {0}, NO_PARENT);
+    merged.mergeWithMolecule(source, nullptr);
+
+    ASSERT_EQ(3, merged.sgroups.getSGroupCount());
+    EXPECT_EQ(std::vector<ParentLink>({{HEAD_TO_TAIL_UNIT, BLOCK_COPOLYMER}}), parentLinks(merged));
+}
+
+// The C API sets a parent by its index only.
+TEST(SGroupParentLinks, ALinkByIndexSurvivesAMerge)
+{
+    const int copolymer_index = 5;
+    Molecule source;
+    for (int atom_idx = 0; atom_idx < 2; atom_idx++)
+        source.addAtom(ELEM_C);
+    source.addBond(0, 1, BOND_SINGLE);
+    const int copolymer = addSGroup(source, BLOCK_COPOLYMER, {0, 1}, NO_PARENT);
+    source.sgroups.getSGroup(copolymer).index = copolymer_index;
+    const int unit = addSGroup(source, HEAD_TO_TAIL_UNIT, {1}, NO_PARENT);
+    source.sgroups.getSGroup(unit).parent_group = copolymer_index;
+    ASSERT_EQ(std::vector<ParentLink>({{HEAD_TO_TAIL_UNIT, BLOCK_COPOLYMER}}), parentLinks(source));
+
+    Molecule merged;
+    merged.addAtom(ELEM_N);
+    addSGroup(merged, GENERIC, {0}, NO_PARENT);
+    merged.mergeWithMolecule(source, nullptr);
+
+    ASSERT_EQ(3, merged.sgroups.getSGroupCount());
+    EXPECT_EQ(std::vector<ParentLink>({{HEAD_TO_TAIL_UNIT, BLOCK_COPOLYMER}}), parentLinks(merged));
+    // The number the C API reports as the parent of the copy is still the copolymer's index, not a position
+    const int unit_copy = lastSGroupOfType(merged.sgroups, SGroup::SG_TYPE_SRU);
+    ASSERT_GE(unit_copy, 0);
+    EXPECT_EQ(copolymer_index, merged.sgroups.getSGroup(unit_copy).parent_group.value_or(0));
+}
+
+TEST(SGroupParentLinks, RemovingAParentMovesItsChildrenUp)
+{
+    Molecule mol;
+    buildPolymerFormulation(mol);
+    const int copolymer = lastSGroupOfType(mol.sgroups, SGroup::SG_TYPE_COP);
+    ASSERT_GE(copolymer, 0);
+
+    mol.removeSGroup(copolymer);
+
+    std::vector<ParentLink> expected = {
+        {FIRST_COMPONENT, FORMULATION}, {SECOND_COMPONENT, FORMULATION}, {HEAD_TO_TAIL_UNIT, FIRST_COMPONENT}, {HEAD_TO_HEAD_UNIT, FIRST_COMPONENT}};
+    std::sort(expected.begin(), expected.end());
+    EXPECT_EQ(expected, parentLinks(mol));
+}
+
+TEST(SGroupParentLinks, AGroupInTheSlotOfARemovedParentIsNoParent)
+{
+    MoleculeSGroups sgroups;
+    const int parent = sgroups.addSGroup(SGroup::SG_TYPE_GEN);
+    const int child = sgroups.addSGroup(SGroup::SG_TYPE_GEN);
+    sgroups.getSGroup(child).parent_idx = parent;
+
+    sgroups.remove(parent);
+    const int newcomer = sgroups.addSGroup(SGroup::SG_TYPE_GEN);
+
+    // Without reuse the newcomer could not be mistaken for the parent.
+    ASSERT_EQ(parent, newcomer);
+    EXPECT_EQ(NO_PARENT, sgroups.resolveParents()[child]);
+}
+
+// A group without an index names no parent by it: removing one must not hand its parent to every root group.
+TEST(SGroupParentLinks, RemovingAGroupWithoutAnIndexReparentsNobody)
+{
+    Molecule mol;
+    for (int atom_idx = 0; atom_idx < 3; atom_idx++)
+        mol.addAtom(ELEM_C);
+    addSGroup(mol, BLOCK_COPOLYMER, {0, 1}, NO_PARENT);
+    const int unit = addSGroup(mol, HEAD_TO_TAIL_UNIT, {1}, NO_PARENT);
+    mol.sgroups.getSGroup(unit).parent_group = 1; // the copolymer, by one-based position
+    addSGroup(mol, GENERIC, {2}, NO_PARENT);
+    ASSERT_EQ(std::vector<ParentLink>({{HEAD_TO_TAIL_UNIT, BLOCK_COPOLYMER}}), parentLinks(mol));
+
+    mol.removeSGroup(unit);
+
+    EXPECT_EQ(std::vector<ParentLink>(), parentLinks(mol));
+}
+
+namespace
+{
+    // The CML reader numbers no group and names a parent by its one-based pool position
+    void linkByPosition(MoleculeSGroups& sgroups, int child_idx, int parent_idx)
+    {
+        sgroups.getSGroup(child_idx).parent_group = parent_idx + 1;
+    }
+
+    // A reader of a format that stores numbers sees only parent_group: the group's parent_idx is dropped
+    int dropParentIdxAndResolve(MoleculeSGroups& sgroups, int sgroup_idx)
+    {
+        sgroups.getSGroup(sgroup_idx).parent_idx = NO_PARENT;
+        return sgroups.resolveParents()[sgroup_idx];
+    }
+} // namespace
+
+TEST(SGroupParentLinks, ALinkByPositionNamesTheCopyOfTheParent)
+{
+    Molecule source;
+    for (int atom_idx = 0; atom_idx < 2; atom_idx++)
+        source.addAtom(ELEM_C);
+    source.addBond(0, 1, BOND_SINGLE);
+    const int generic = addSGroup(source, GENERIC, {0, 1}, NO_PARENT);
+    const int unit = addSGroup(source, HEAD_TO_TAIL_UNIT, {1}, NO_PARENT);
+    linkByPosition(source.sgroups, unit, generic);
+
+    Molecule merged;
+    merged.addAtom(ELEM_N);
+    const int generic_on_nitrogen = addSGroup(merged, GENERIC, {0}, NO_PARENT);
+    merged.mergeWithMolecule(source, nullptr);
+
+    // The copies follow the generic group on the nitrogen, which was there first
+    const int generic_copy = lastSGroupOfType(merged.sgroups, SGroup::SG_TYPE_GEN);
+    const int unit_copy = lastSGroupOfType(merged.sgroups, SGroup::SG_TYPE_SRU);
+    ASSERT_GE(generic_copy, 0);
+    ASSERT_GE(unit_copy, 0);
+    ASSERT_NE(generic_on_nitrogen, generic_copy);
+    ASSERT_EQ(generic_copy, merged.sgroups.resolveParents()[unit_copy]);
+
+    // The position the source gave the generic group is the position of the one on the nitrogen here
+    EXPECT_EQ(generic_copy, dropParentIdxAndResolve(merged.sgroups, unit_copy));
+}
+
+TEST(SGroupParentLinks, RemovingAParentLinkedByPositionMovesItsChildrenUp)
+{
+    Molecule mol;
+    for (int atom_idx = 0; atom_idx < 3; atom_idx++)
+        mol.addAtom(ELEM_C);
+    const int outer = addSGroup(mol, GENERIC, {0, 1, 2}, NO_PARENT);
+    const int middle = addSGroup(mol, GENERIC, {1, 2}, NO_PARENT);
+    const int unit = addSGroup(mol, HEAD_TO_TAIL_UNIT, {2}, NO_PARENT);
+    linkByPosition(mol.sgroups, middle, outer);
+    linkByPosition(mol.sgroups, unit, middle);
+    ASSERT_EQ(middle, mol.sgroups.resolveParents()[unit]);
+
+    mol.removeSGroup(middle);
+
+    EXPECT_EQ(outer, mol.sgroups.resolveParents()[unit]);
+    EXPECT_EQ(outer, dropParentIdxAndResolve(mol.sgroups, unit));
+}
+
+TEST(SGroupParentLinks, RemovingAGroupOnACycleOfParentsMakesNoGroupItsOwnParent)
+{
+    Molecule mol;
+    mol.addAtom(ELEM_C);
+    const int first = addSGroup(mol, GENERIC, {0}, NO_PARENT);
+    const int second = addSGroup(mol, GENERIC, {0}, first);
+    mol.sgroups.getSGroup(first).parent_idx = second;
+    ASSERT_EQ(first, mol.sgroups.resolveParents()[second]);
+
+    mol.removeSGroup(second);
+
+    EXPECT_EQ(NO_PARENT, mol.sgroups.resolveParents()[first]);
+}
+
+TEST(SGroupParentLinks, ASlotFreedByAParentLinkedByPositionIsNoParent)
+{
+    MoleculeSGroups sgroups;
+    const int parent = sgroups.addSGroup(SGroup::SG_TYPE_GEN);
+    const int child = sgroups.addSGroup(SGroup::SG_TYPE_GEN);
+    linkByPosition(sgroups, child, parent);
+    ASSERT_EQ(parent, sgroups.resolveParents()[child]);
+
+    sgroups.remove(parent);
+    const int newcomer = sgroups.addSGroup(SGroup::SG_TYPE_GEN);
+
+    // Without reuse the newcomer could not be mistaken for the parent.
+    ASSERT_EQ(parent, newcomer);
+    EXPECT_EQ(NO_PARENT, sgroups.resolveParents()[child]);
+}
+
+// ---- tree of S-groups -----------------------------------------------------
+
+namespace
+{
+    void collectLabels(Tree& node, std::vector<int>& labels)
+    {
+        for (int i = 0; i < node.children().size(); i++)
+        {
+            labels.push_back(node.children()[i].label);
+            collectLabels(node.children()[i], labels);
+        }
+    }
+} // namespace
+
+TEST(SGroupTree, AChildListedBeforeItsParentGivesOneNodePerGroup)
+{
+    MoleculeSGroups sgroups;
+    const int child = sgroups.addSGroup(SGroup::SG_TYPE_SRU);
+    const int parent = sgroups.addSGroup(SGroup::SG_TYPE_GEN);
+    sgroups.getSGroup(child).parent_idx = parent;
+
+    Tree tree;
+    sgroups.buildTree(tree);
+
+    std::vector<int> labels;
+    collectLabels(tree, labels);
+    std::sort(labels.begin(), labels.end());
+    EXPECT_EQ(std::vector<int>({child, parent}), labels);
+    ASSERT_EQ(1, tree.children().size());
+    Tree& parent_node = tree.children()[0];
+    EXPECT_EQ(parent, parent_node.label);
+    ASSERT_EQ(1, parent_node.children().size());
+    EXPECT_EQ(child, parent_node.children()[0].label);
+}
+
+TEST(SGroupTree, ACycleOfParentsGivesOneNodePerGroup)
+{
+    MoleculeSGroups sgroups;
+    const int first = sgroups.addSGroup(SGroup::SG_TYPE_GEN);
+    const int second = sgroups.addSGroup(SGroup::SG_TYPE_GEN);
+    sgroups.getSGroup(first).parent_idx = second;
+    sgroups.getSGroup(second).parent_idx = first;
+
+    Tree tree;
+    sgroups.buildTree(tree);
+
+    std::vector<int> labels;
+    collectLabels(tree, labels);
+    std::sort(labels.begin(), labels.end());
+    EXPECT_EQ(std::vector<int>({first, second}), labels);
+}
+
+// ---- context of data --------------------------------------------------------
+
+namespace
+{
+    const char* const FRAGMENT_CONTEXT = "Fragment";
+
+    // The contexts of the data S-groups of a molecule, sorted: a copy is free to number the groups differently.
+    std::vector<std::string> dataContexts(Molecule& mol)
+    {
+        std::vector<std::string> contexts;
+        for (int sgroup_idx = mol.sgroups.begin(); sgroup_idx != mol.sgroups.end(); sgroup_idx = mol.sgroups.next(sgroup_idx))
+        {
+            SGroup& sgroup = mol.sgroups.getSGroup(sgroup_idx);
+            if (sgroup.sgroup_type != SGroup::SG_TYPE_DAT)
+                continue;
+            const Array<char>& context = static_cast<DataSGroup&>(sgroup).context;
+            contexts.push_back(context.size() > 0 ? context.ptr() : "");
+        }
+        std::sort(contexts.begin(), contexts.end());
+        return contexts;
+    }
+} // namespace
+
+TEST(DataSGroupContext, ReusedSlotForgetsIt)
+{
+    MoleculeSGroups sgroups;
+    const int data = sgroups.addSGroup(SGroup::SG_TYPE_DAT);
+    static_cast<DataSGroup&>(sgroups.getSGroup(data)).context.readString(FRAGMENT_CONTEXT, true);
+    const SGroup* removed = &sgroups.getSGroup(data);
+
+    sgroups.remove(data);
+
+    DataSGroup& fresh = static_cast<DataSGroup&>(sgroups.getSGroup(sgroups.addSGroup(SGroup::SG_TYPE_DAT)));
+    // Without reuse there is nothing to forget: the new group must be the object just removed.
+    ASSERT_EQ(removed, &fresh);
+    EXPECT_EQ(0, fresh.context.size());
+}
+
+TEST(DataSGroupContext, CloneAndMergeKeepIt)
+{
+    Molecule source;
+    source.addAtom(ELEM_C);
+    DataSGroup& data = static_cast<DataSGroup&>(source.sgroups.getSGroup(source.sgroups.addSGroup(SGroup::SG_TYPE_DAT)));
+    data.atoms.push(0);
+    data.context.readString(FRAGMENT_CONTEXT, true);
+    const std::vector<std::string> fragment = {FRAGMENT_CONTEXT};
+    ASSERT_EQ(fragment, dataContexts(source));
+
+    Molecule cloned;
+    cloned.clone(source);
+    EXPECT_EQ(fragment, dataContexts(cloned));
+
+    Molecule merged;
+    merged.addAtom(ELEM_N);
+    merged.mergeWithMolecule(source, nullptr);
+    EXPECT_EQ(fragment, dataContexts(merged));
+}
+
+// ---- the names KET gives the values of the fields of data -------------------
+
+TEST(DataSGroupFieldValues, EachMolfileTextHasANameAndBack)
+{
+    const std::pair<const char*, const char*> field_types[] = {{"F", "FORMATTED"}, {"N", "NUMERIC"}, {"T", "TEXT"}};
+    for (const auto& [text, name] : field_types)
+    {
+        EXPECT_STREQ(name, DataSGroup::fieldTypeName(text));
+        EXPECT_STREQ(text, DataSGroup::fieldTypeText(name));
+    }
+    EXPECT_STREQ("QUERY", DataSGroup::queryTypeName("IQ"));
+    EXPECT_STREQ("IQ", DataSGroup::queryTypeText("QUERY"));
+    const std::pair<const char*, const char*> query_operators[] = {{"=", "EQUAL"},          {"<>", "NOT_EQUAL"},      {"<", "LESS"},
+                                                                   {"<=", "LESS_OR_EQUAL"}, {">", "GREATER"},         {">=", "GREATER_OR_EQUAL"},
+                                                                   {"BETWEEN", "BETWEEN"},  {"CONTAINS", "CONTAINS"}, {"LIKE", "LIKE"}};
+    for (const auto& [text, name] : query_operators)
+    {
+        EXPECT_STREQ(name, DataSGroup::queryOperatorName(text));
+        EXPECT_STREQ(text, DataSGroup::queryOperatorText(name));
+    }
+}
+
+TEST(DataSGroupFieldValues, ABlankTypeIsTextAndABlankQueryTypeIsData)
+{
+    for (const char* blank : {"", "  ", static_cast<const char*>(nullptr)})
+    {
+        EXPECT_STREQ("TEXT", DataSGroup::fieldTypeName(blank));
+        EXPECT_STREQ("DATA", DataSGroup::queryTypeName(blank));
+        EXPECT_EQ(nullptr, DataSGroup::queryOperatorName(blank));
+    }
+    EXPECT_STREQ("", DataSGroup::queryTypeText("DATA"));
+}
+
+TEST(DataSGroupFieldValues, TextsAreTrimmedAndOnlyOperatorsIgnoreCase)
+{
+    EXPECT_STREQ("FORMATTED", DataSGroup::fieldTypeName(" F"));
+    EXPECT_EQ(nullptr, DataSGroup::fieldTypeName("f"));
+    EXPECT_STREQ("QUERY", DataSGroup::queryTypeName("IQ "));
+    EXPECT_EQ(nullptr, DataSGroup::queryTypeName("iq"));
+    EXPECT_STREQ("BETWEEN", DataSGroup::queryOperatorName(" between"));
+}
+
+TEST(DataSGroupFieldValues, NothingOutsideTheFormatHasANameOrAText)
+{
+    EXPECT_EQ(nullptr, DataSGroup::fieldTypeName("X"));
+    EXPECT_EQ(nullptr, DataSGroup::fieldTypeText("Formatted"));
+    EXPECT_EQ(nullptr, DataSGroup::fieldTypeText("T "));
+    EXPECT_EQ(nullptr, DataSGroup::fieldTypeText(nullptr));
+    EXPECT_EQ(nullptr, DataSGroup::queryTypeName(" I"));
+    EXPECT_EQ(nullptr, DataSGroup::queryTypeText("IQ"));
+    EXPECT_EQ(nullptr, DataSGroup::queryOperatorName("QBETWEEN"));
+    EXPECT_EQ(nullptr, DataSGroup::queryOperatorText("NOT_LIKE"));
+    EXPECT_EQ(nullptr, DataSGroup::queryOperatorText("="));
+}
+
+TEST(DataSGroupFieldValues, DisplayDefaultsAndTheTag)
+{
+    DataSGroup data;
+    EXPECT_EQ(1, data.daspPosition());
+    EXPECT_FALSE(data.hasTag());
+    data.tag = 'a';
+    EXPECT_TRUE(data.hasTag());
+    data.tag = ' ';
+    EXPECT_FALSE(data.hasTag());
+    data.dasp_pos.reset();
+    EXPECT_EQ(1, data.daspPosition());
+}
+
+TEST(DataSGroupFieldValues, TextOfAClearedArrayIsEmpty)
+{
+    Array<char> text;
+    EXPECT_STREQ("", DataSGroup::textOf(text));
+    text.readString("IQ", true);
+    EXPECT_STREQ("IQ", DataSGroup::textOf(text));
+    text.clear();
+    // the buffer keeps its old bytes; the text is still none
+    EXPECT_STREQ("", DataSGroup::textOf(text));
 }

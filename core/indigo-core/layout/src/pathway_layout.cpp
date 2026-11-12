@@ -19,6 +19,7 @@
 #include <queue>
 
 #include "layout/pathway_layout.h"
+#include "layout/sgroup_layout.h"
 
 using namespace indigo;
 
@@ -26,6 +27,10 @@ IMPL_ERROR(PathwayLayout, "pathway_layout");
 
 void PathwayLayout::make()
 {
+    std::vector<SGroupLayout> sgroup_layouts;
+    sgroup_layouts.reserve(static_cast<size_t>(_reaction.count()));
+    for (int i = _reaction.begin(); i != _reaction.end(); i = _reaction.next(i))
+        sgroup_layouts.emplace_back(_reaction.getMolecule(i), SGroupLayout::labelFontSizeInAngstroms(_options), _options.labelMode);
     buildLayoutTree();
     auto roots = _reaction.getRootReactions();
     _layoutRootItems.reserve(roots.size());
@@ -85,6 +90,8 @@ void PathwayLayout::make()
         }
     }
     applyLayout();
+    for (SGroupLayout& layout : sgroup_layouts)
+        layout.update();
 }
 
 void PathwayLayout::buildLayoutTree()

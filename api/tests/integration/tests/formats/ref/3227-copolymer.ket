@@ -311,6 +311,7 @@
                     14
                 ],
                 "connectivity": "HT",
+                "id": 1,
                 "bonds": [
                     2,
                     5,
@@ -350,6 +351,7 @@
                     17
                 ],
                 "connectivity": "HT",
+                "id": 3,
                 "bonds": [
                     15,
                     17
@@ -358,18 +360,20 @@
             {
                 "type": "DAT",
                 "atoms": [],
-                "fieldName": "monD",
                 "fieldData": "Data1",
+                "fieldName": "monD",
                 "x": 2.299999952316284,
-                "y": -1.0
+                "y": -1.0,
+                "parentId": 1
             },
             {
                 "type": "DAT",
                 "atoms": [],
-                "fieldName": "Field2",
                 "fieldData": "Another",
+                "fieldName": "Field2",
                 "x": 7.789999961853027,
-                "y": -1.4800000190734864
+                "y": -1.4800000190734864,
+                "parentId": 3
             }
         ]
     }

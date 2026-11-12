@@ -1,0 +1,28 @@
+f06-block-copolymer
+
+A block copolymer of two units: the outer brackets a step beyond the inner ones and their labels
+  6  5  0  0  0  0  0  0  0  0999 V2000
+    0.0000    0.0000    0.0000 *   0  0  0  0  0  0  0  0  0  0  0  0
+    0.8660    0.5000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    1.7321    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    2.5981    0.5000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    3.4641    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    4.3301    0.5000    0.0000 *   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0  0  0  0
+  2  3  1  0  0  0  0
+  3  4  1  0  0  0  0
+  4  5  1  0  0  0  0
+  5  6  1  0  0  0  0
+M  STY  3   1 COP   2 SRU   3 SRU
+M  SST  1   1 BLO
+M  SCN  2   2 HT    3 HT 
+M  SPL  2   2   1   3   1
+M  SAL   1  4   2   3   4   5
+M  SBL   1  2   1   5
+M  SAL   2  2   2   3
+M  SBL   2  2   1   3
+M  SMT   2 n
+M  SAL   3  2   4   5
+M  SBL   3  2   3   5
+M  SMT   3 m
+M  END

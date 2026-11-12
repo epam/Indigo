@@ -137,7 +137,7 @@ component and still prints as dot-separated SMILES.
 - **Atom-to-atom haptic bonds are lost in V3000.** Silently — see above.
 - **`molfile-saving-mode=auto` writes V2000**, which has no `ENDPTS`: the haptic bonds, the groups
   and the charges of the groups are all left out, silently
-  (`core/indigo-core/molecule/src/molfile_saver.cpp#save to v3000 molfile only`). A round trip
+  (`core/indigo-core/molecule/src/molfile_saver.cpp#autoWritesV3000`). A round trip
   needs mode `3000`.
 - **A group that no haptic bond refers to is not written to V3000** — there is no record to hang it
   on — and its charge goes with it. KET and CDXML keep such a group.

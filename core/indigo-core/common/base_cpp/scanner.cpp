@@ -272,6 +272,15 @@ float Scanner::readFloat(void)
 
 bool Scanner::tryReadFloat(float& value)
 {
+    double res;
+    if (!tryReadDouble(res))
+        return false;
+    value = (float)res;
+    return true;
+}
+
+bool Scanner::tryReadDouble(double& value)
+{
     long long pos = tell();
     double res;
 
@@ -281,7 +290,7 @@ bool Scanner::tryReadFloat(float& value)
         return false;
     }
 
-    value = (float)res;
+    value = res;
     return true;
 }
 

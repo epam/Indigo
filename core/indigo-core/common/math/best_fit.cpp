@@ -106,10 +106,12 @@ bool Transform3f::bestFit(int npoints, const Vec3f points[], const Vec3f goals[]
             float sqs1, sqs2;
             l1.bestFit(npoints, points, &sqs1);
             l2.bestFit(npoints, goals, &sqs2);
-            if (sqs1 < 2 * EPSILON && sqs2 < 2 * EPSILON)
+            // Points or goals on a line fix only the turn of that line, from a0 to its image b0: the directions of the two
+            // lines come from separate fits and have arbitrary signs
+            if (sqs1 < 2 * EPSILON || sqs2 < 2 * EPSILON)
             {
                 Transform3f temp;
-                temp.rotationVecVec(l1.dir, l2.dir);
+                temp.rotationVecVec(a0, b0);
                 for (i = 0; i < 3; i++)
                     for (j = 0; j < 3; j++)
                         rotation.elements[i * 3 + j] = temp.elements[j * 4 + i];

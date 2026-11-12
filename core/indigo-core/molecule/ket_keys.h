@@ -19,9 +19,10 @@
 #ifndef __ket_keys__
 #define __ket_keys__
 
+#include "molecule/molecule_sgroups.h"
+
 // Field names of the KET wire format, shared by its readers and writers.
-// Covers the haptic bond feature (#3233) only; the rest of the vocabulary is
-// still inline. Contract: Task/3233/KET-CONTRACT.md.
+// Covers the document version, haptic bonds and S-groups; the rest of the vocabulary is still inline.
 //
 // A KetKey prefix marks a JSON key. Names without it are KET *values*, in the style
 // of KetConnectionSingle / KetConnectionHydro (monomers_defs.h). The prefix also
@@ -30,6 +31,9 @@
 
 namespace indigo
 {
+    // On the document object, next to "root".
+    inline constexpr const char* KetKeyKetVersion = "ket_version";
+
     // Generic keys: each is spelled the same wherever it appears, but says nothing
     // about what the object around it is. "type" alone distinguishes a molecule
     // node from an rgroup, a monomerTemplate, a query component and an atom list.
@@ -58,6 +62,83 @@ namespace indigo
     // On an atom and on an attachment group alike; a group omits a value of 0.
     inline constexpr const char* KetKeyCharge = "charge";
     inline constexpr const char* KetKeyRadical = "radical";
+
+    // S-groups of a molecule node. An S-group uses the generic KetKeyType, KetKeyId and
+    // KetKeyAtoms above; its type is a name of the S-group type table, spelled exactly.
+    inline constexpr const char* KetKeySGroups = "sgroups";
+    inline constexpr const char* KetKeyBonds = "bonds";
+    inline constexpr const char* KetKeyParentId = "parentId";
+    inline constexpr const char* KetKeyConnectivity = "connectivity";
+    inline constexpr const char* KetKeySubtype = "subtype";
+    inline constexpr const char* KetKeyComponentOrder = "componentOrder";
+    inline constexpr const char* KetKeyMultiplier = "mul";
+    inline constexpr const char* KetSGroupQueryComponent = "queryComponent"; // value of KetKeyType, a query feature
+
+    // The value of a data S-group, and what it belongs to.
+    inline constexpr const char* KetKeyFieldData = "fieldData";
+    inline constexpr const char* KetKeyContext = "context";
+
+    // Since KET 2.1: the two objects of a data S-group, what its field is and how its value is shown, and their
+    // fields. The values of fieldValueType, queryType and queryOperator are the names DataSGroup gives them; the
+    // values of display and placement are the four below.
+    inline constexpr const char* KetKeyDataFieldDescription = "dataFieldDescription";
+    inline constexpr const char* KetKeyFieldName = "fieldName";
+    inline constexpr const char* KetKeyFieldValueType = "fieldValueType";
+    inline constexpr const char* KetKeyFieldUnits = "fieldUnits";
+    inline constexpr const char* KetKeyQueryType = "queryType";
+    inline constexpr const char* KetKeyQueryOperator = "queryOperator";
+    inline constexpr const char* KetKeyDataDisplayInformation = "dataDisplayInformation";
+    inline constexpr const char* KetKeyPosition = "position";
+    inline constexpr const char* KetKeyX = "x";
+    inline constexpr const char* KetKeyY = "y";
+    inline constexpr const char* KetKeyDisplay = "display";
+    inline constexpr const char* KetDisplayAttached = "ATTACHED";
+    inline constexpr const char* KetDisplayDetached = "DETACHED";
+    inline constexpr const char* KetKeyPlacement = "placement";
+    inline constexpr const char* KetPlacementAbsolute = "ABSOLUTE";
+    inline constexpr const char* KetPlacementRelative = "RELATIVE";
+    inline constexpr const char* KetKeyDisplayUnits = "displayUnits";
+    inline constexpr const char* KetKeyDisplayedChars = "displayedChars";
+    inline constexpr const char* KetKeyFieldTag = "fieldTag";
+    inline constexpr const char* KetKeyDaspPosition = "daspPosition";
+
+    // Deprecated since KET 2.1, removed in KET 3.0: the keys of KET 2.0 on a data S-group for its field and its
+    // display. A KET 2.1 document carries the same values in dataFieldDescription and dataDisplayInformation; the
+    // comment after a key names its place there, and a key spelled as a field of an object is that field's name.
+    inline constexpr const char* KetKeyFieldNameV2_0 = KetKeyFieldName;           // dataFieldDescription.fieldName
+    inline constexpr const char* KetKeyFieldTypeV2_0 = "fieldType";               // dataFieldDescription.fieldUnits
+    inline constexpr const char* KetKeyQueryTypeV2_0 = KetKeyQueryType;           // dataFieldDescription.queryType, IQ or absent
+    inline constexpr const char* KetKeyQueryOpV2_0 = "queryOp";                   // dataFieldDescription.queryOperator, the molfile text
+    inline constexpr const char* KetKeyXV2_0 = KetKeyX;                           // dataDisplayInformation.position.x
+    inline constexpr const char* KetKeyYV2_0 = KetKeyY;                           // dataDisplayInformation.position.y
+    inline constexpr const char* KetKeyPlacementV2_0 = KetKeyPlacement;           // dataDisplayInformation.placement, false for RELATIVE
+    inline constexpr const char* KetKeyDisplayV2_0 = KetKeyDisplay;               // dataDisplayInformation.display, true for ATTACHED
+    inline constexpr const char* KetKeyDataDetachedV2_0 = "dataDetached";         // dataDisplayInformation.display, read only
+    inline constexpr const char* KetKeyDisplayedCharsV2_0 = KetKeyDisplayedChars; // dataDisplayInformation.displayedChars
+    inline constexpr const char* KetKeyTagV2_0 = "tag";                           // dataDisplayInformation.fieldTag
+
+    // The S-group types KET carries; the others are refused by its reader and its writer.
+    inline bool isKetSGroupType(int sg_type)
+    {
+        switch (sg_type)
+        {
+        case SGroup::SG_TYPE_GEN:
+        case SGroup::SG_TYPE_MUL:
+        case SGroup::SG_TYPE_SRU:
+        case SGroup::SG_TYPE_SUP:
+        case SGroup::SG_TYPE_DAT:
+        case SGroup::SG_TYPE_COP:
+        case SGroup::SG_TYPE_COM:
+        case SGroup::SG_TYPE_MIX:
+        case SGroup::SG_TYPE_FOR:
+            return true;
+        default:
+            return false;
+        }
+    }
+
+    // The fragments of an R-group node.
+    inline constexpr const char* KetKeyFragments = "fragments";
 
     // Not a key: the prefix a molecule node is referenced by, as in "mol0".
     inline constexpr const char* KetMoleculeRefPrefix = "mol";

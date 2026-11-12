@@ -416,9 +416,21 @@ void BaseMolecule::invalidateAtom(int index, int mask)
     }
 }
 
-void BaseMolecule::getSGroupAtomsCenterPoint(SGroup& sgroup, Vec2f& res)
+Vec2f BaseMolecule::getDataSGroupFirstAtomToCentre(int sgroup_idx)
 {
-    getAtomsCenterPoint(sgroup.atoms, res);
+    const std::vector<int> parents = sgroups.resolveParents();
+    int origin = sgroup_idx;
+    // at most one step per group, so that a cycle of parents ends
+    for (std::size_t steps = 0; origin >= 0 && sgroups.getSGroup(origin).atoms.size() == 0 && steps < parents.size(); steps++)
+        origin = parents[origin];
+    if (origin < 0 || sgroups.getSGroup(origin).atoms.size() == 0)
+        return Vec2f(0, 0);
+
+    Array<int>& atoms = sgroups.getSGroup(origin).atoms;
+    Vec2f centre;
+    getAtomsCenterPoint(atoms, centre);
+    const Vec3f& first = getAtomXyz(atoms[0]);
+    return Vec2f(centre.x - first.x, centre.y - first.y);
 }
 
 void BaseMolecule::getAtomsCenterPoint(Array<int>& atoms, Vec2f& res)
@@ -481,6 +493,7 @@ void BaseMolecule::scale(const Vec2f& center, float scale)
         p.y = center.y + (p.y - center.y) * scale;
         p.z *= scale;
     }
+    sgroups.transformPositions([&center, scale](Vec2f& point) { point.set(center.x + (point.x - center.x) * scale, center.y + (point.y - center.y) * scale); });
 }
 
 void BaseMolecule::getAtomSymbol(int v, Array<char>& result)

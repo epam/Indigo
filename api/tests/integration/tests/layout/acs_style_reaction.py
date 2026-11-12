@@ -73,3 +73,13 @@ res = reactionLayoutDiff(
     update_format="ket",
 )
 print("  Result: {}".format(res))
+
+print(
+    "\n*** query atoms without a charge condition: no charge in the label ***"
+)
+filename = "acs_query_reaction.rxn"
+rxn = indigo.loadQueryReactionFromFile(
+    os.path.join(root, "amide_query_reaction.rxn")
+)
+rxn.layout()
+compare_diff(ref, filename, rxn.rxnfile())
