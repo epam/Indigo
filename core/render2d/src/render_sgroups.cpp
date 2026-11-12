@@ -18,10 +18,12 @@
 
 #include "render_sgroups.h"
 
+#include <algorithm>
 #include <cmath>
 
 #include "molecule/molecule_sgroups.h"
 #include "render_context.h"
+#include "render_internal.h"
 
 using namespace indigo;
 
@@ -50,6 +52,14 @@ const BracketLine& SGroupBrackets::closing() const
             closing = &bracket;
     }
     return *closing;
+}
+
+std::optional<float> SGroupBrackets::pairGap() const
+{
+    if (_brackets.size() != 2)
+        return std::nullopt;
+    const float gap = Vec2f::dist(_middle(_brackets[0]), _middle(_brackets[1]));
+    return gap > EPSILON ? std::optional<float>(gap) : std::nullopt;
 }
 
 bool SGroupBrackets::_closesLaterThan(const BracketLine& bracket, const BracketLine& other)
@@ -96,20 +106,18 @@ Vec2f SGroupBrackets::hookDirection(const BracketLine& bracket, const Vec2f& tow
 
 // ---- SGroupCanvas --------------------------------------------------------------------------------------------------
 
-SGroupCanvas::SGroupCanvas(MoleculeRenderData& data, RenderContext& context, const RenderSettings& settings, float scale, const Vec2f& min, const Vec2f& max,
-                           Sgroup& sgroup)
-    : _data(data), _context(context), _settings(settings), _scale(scale), _min(min), _max(max), _sgroup(sgroup)
+SGroupCanvas::SGroupCanvas(MoleculeRenderInternal& render, Sgroup& items) : _render(render), _items(items)
 {
 }
 
 Vec2f SGroupCanvas::atomPosition(int atom) const
 {
-    return _data.atoms[atom].pos;
+    return _render._data.atoms[atom].pos;
 }
 
 Rect2f SGroupCanvas::atomBox(int atom) const
 {
-    const AtomDesc& desc = _data.atoms[atom];
+    const AtomDesc& desc = _render._data.atoms[atom];
     Vec2f min, max;
     min.sum(desc.pos, desc.boundBoxMin);
     max.sum(desc.pos, desc.boundBoxMax);
@@ -126,7 +134,7 @@ Vec2f SGroupCanvas::atomsCentre(const Array<int>& atoms) const
     return centre;
 }
 
-std::optional<Rect2f> SGroupCanvas::atomsBox(const Array<int>& atoms) const
+std::optional<Rect2f> SGroupCanvas::positionsBox(const Array<int>& atoms) const
 {
     if (atoms.size() == 0)
         return std::nullopt;
@@ -138,35 +146,31 @@ std::optional<Rect2f> SGroupCanvas::atomsBox(const Array<int>& atoms) const
 
 Vec2f SGroupCanvas::toDrawing(const Vec2f& point) const
 {
-    return Vec2f((point.x - _min.x) * _scale, (_max.y - point.y) * _scale);
+    Vec2f on_page;
+    _render._objCoordTransform(on_page, point);
+    return on_page;
 }
 
 Vec2f SGroupCanvas::toDrawingOffset(const Vec2f& offset) const
 {
-    return Vec2f(offset.x * _scale, -offset.y * _scale);
-}
-
-float SGroupCanvas::toDrawingLength(float length) const
-{
-    return length * _scale;
+    Vec2f on_page;
+    _render._objDistTransform(on_page, offset);
+    return on_page;
 }
 
 float SGroupCanvas::lineWidth() const
 {
-    return _settings.unit;
+    return _render._settings.unit;
 }
 
 void SGroupCanvas::addBracket(const BracketLine& line, const Vec2f& hook_direction, float hook_length)
 {
-    if (_sgroup.bicount == 0)
-        _sgroup.bibegin = _data.brackets.size();
-    _sgroup.bicount++;
-    RenderItemBracket& bracket = _data.brackets.push();
+    if (_items.bibegin < 0)
+        _items.bibegin = _render._data.brackets.size();
+    _items.bicount++;
+    RenderItemBracket& bracket = _render._data.brackets.push();
     bracket.p0 = line.from;
     bracket.p1 = line.to;
-    bracket.d.diff(bracket.p1, bracket.p0);
-    bracket.length = bracket.d.length();
-    bracket.d.normalize();
     bracket.n = hook_direction;
     bracket.width = hook_length;
     bracket.q0.lineCombin(bracket.p0, bracket.n, bracket.width);
@@ -175,20 +179,15 @@ void SGroupCanvas::addBracket(const BracketLine& line, const Vec2f& hook_directi
 
 void SGroupCanvas::hideBrackets()
 {
-    _sgroup.hide_brackets = true;
+    _items.hide_brackets = true;
 }
 
 TextItem& SGroupCanvas::addText(const std::string& text, FONT_SIZE font_size, RenderItem::TYPE type)
 {
-    if (_sgroup.ticount == 0)
-        _sgroup.tibegin = _data.textitems.size();
-    _sgroup.ticount++;
-    TextItem& item = _data.textitems.push();
-    item.clear();
-    item.ritype = type;
+    TextItem& item = _render._data.textitems[_render._pushTextItem(_items, type)];
     item.text.readString(text.c_str(), true);
     item.fontsize = font_size;
-    _context.setTextItemSize(item);
+    _render._cw.setTextItemSize(item);
     return item;
 }
 
@@ -227,8 +226,12 @@ void SGroupRenderer::draw(const SGroup& sgroup, const std::optional<Rect2f>&, SG
     if (brackets.empty())
         return;
     const Vec2f centre = canvas.atomsCentre(sgroup.atoms);
+    const std::optional<float> pair_gap = brackets.pairGap();
     for (const BracketLine& bracket : brackets.all())
-        canvas.addBracket(bracket, SGroupBrackets::hookDirection(bracket, centre), _hookLength(bracket, canvas));
+    {
+        const float hook = _hookLength(bracket);
+        canvas.addBracket(bracket, SGroupBrackets::hookDirection(bracket, centre), pair_gap ? std::min(hook, *pair_gap * LONGEST_HOOK_SHARE_OF_GAP) : hook);
+    }
 
     const BracketLine& closing = brackets.closing();
     const float offset = _labelOffset(canvas);
@@ -254,14 +257,14 @@ SGroupBrackets SGroupRenderer::_brackets(const SGroup& sgroup, const SGroupCanva
     return _storedBrackets(sgroup, canvas);
 }
 
-float SGroupRenderer::_hookLength(const BracketLine&, const SGroupCanvas& canvas) const
+float SGroupRenderer::_hookLength(const BracketLine&) const
 {
-    return canvas.toDrawingLength(BRACKET_HOOK);
+    return BRACKET_HOOK;
 }
 
-float SGroupRenderer::_labelOffset(const SGroupCanvas& canvas) const
+float SGroupRenderer::_labelOffset(const SGroupCanvas&) const
 {
-    return canvas.toDrawingLength(LABEL_OFFSET);
+    return LABEL_OFFSET;
 }
 
 void SGroupRenderer::_placeLabel(TextItem& label, const Vec2f& lower_end, float offset) const
@@ -277,11 +280,6 @@ std::string SGroupRenderer::_label(const SGroup&) const
 std::string SGroupRenderer::_repeatPattern(const SGroup&) const
 {
     return "";
-}
-
-std::string SGroupRenderer::_labelText(const SGroup& sgroup)
-{
-    return sgroup.label.size() > 0 ? std::string(sgroup.label.ptr()) : std::string();
 }
 
 std::string SGroupRenderer::_connectivityText(const SGroup& sgroup)
@@ -301,7 +299,7 @@ float SGroupRenderer::_hookOfBracketLength(const BracketLine& bracket)
 {
     Vec2f along;
     along.diff(bracket.to, bracket.from);
-    return along.length() * 0.15f;
+    return along.length() * HOOK_SHARE_OF_BRACKET;
 }
 
 SGroupBrackets SGroupRenderer::_storedBrackets(const SGroup& sgroup, const SGroupCanvas& canvas)
@@ -342,12 +340,12 @@ SGroupBrackets SGroupRenderer::_storedOrPairAroundAtoms(const SGroup& sgroup, co
 
 std::optional<Rect2f> RepeatingUnitRenderer::frameForChildren(const SGroup& sgroup, const std::optional<Rect2f>&, const SGroupCanvas& canvas) const
 {
-    return canvas.atomsBox(sgroup.atoms);
+    return canvas.positionsBox(sgroup.atoms);
 }
 
 std::string RepeatingUnitRenderer::_label(const SGroup& sgroup) const
 {
-    const std::string label = _labelText(sgroup);
+    const std::string label = DataSGroup::textOf(sgroup.label);
     return label.empty() ? "n" : label;
 }
 
@@ -418,14 +416,14 @@ SGroupBrackets GenericGroupRenderer::_brackets(const SGroup& sgroup, const SGrou
     return _storedOrPairAroundAtoms(sgroup, canvas);
 }
 
-float GenericGroupRenderer::_hookLength(const BracketLine& bracket, const SGroupCanvas&) const
+float GenericGroupRenderer::_hookLength(const BracketLine& bracket) const
 {
     return _hookOfBracketLength(bracket);
 }
 
 void SuperatomRenderer::draw(const SGroup& sgroup, const std::optional<Rect2f>& frame, SGroupCanvas& canvas) const
 {
-    if (_labelText(sgroup).empty())
+    if (!DataSGroup::hasText(sgroup.label))
         canvas.hideBrackets();
     SGroupRenderer::draw(sgroup, frame, canvas);
 }
@@ -440,7 +438,7 @@ SGroupBrackets SuperatomRenderer::_brackets(const SGroup& sgroup, const SGroupCa
     return _pairAroundAtoms(sgroup, canvas);
 }
 
-float SuperatomRenderer::_hookLength(const BracketLine& bracket, const SGroupCanvas&) const
+float SuperatomRenderer::_hookLength(const BracketLine& bracket) const
 {
     return _hookOfBracketLength(bracket);
 }
@@ -457,7 +455,7 @@ void SuperatomRenderer::_placeLabel(TextItem& label, const Vec2f& lower_end, flo
 
 std::string SuperatomRenderer::_label(const SGroup& sgroup) const
 {
-    return _labelText(sgroup);
+    return DataSGroup::textOf(sgroup.label);
 }
 
 // ---- Data S-groups -------------------------------------------------------------------------------------------------

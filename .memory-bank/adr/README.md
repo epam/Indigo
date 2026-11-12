@@ -13,7 +13,7 @@ reason to keep it.
 ```markdown
 # <Decision in one line>
 
-**Date:** YYYY-MM-DD · **Status:** Accepted | Superseded by <file> · **Ticket:** #NNNN
+**Date:** YYYY-MM-DD · **Status:** Accepted | Superseded by <file> · **Since:** Indigo X.YY
 
 ## Context
 What forced a choice. Constraints, measurements, the state of the code at the time.

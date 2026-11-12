@@ -36,6 +36,8 @@ namespace indigo
 
     class MoleculeRenderInternal
     {
+        friend class SGroupCanvas;
+
     public:
         MoleculeRenderInternal(const RenderOptions& opt, const RenderSettings& settings, RenderContext& cw, bool idle);
         ~MoleculeRenderInternal();
@@ -98,8 +100,10 @@ namespace indigo
         void _initAtomData();
         void _initRGroups();
         void _prepareSGroups(bool collapseAtLeastOneSuperatom = false);
+        static bool _lacksBracketPair(const SGroup& sgroup);
+        bool _hasMissingBrackets() const;
         void _placeMissingBrackets();
-        bool _colorsAtoms(const SGroup& sgroup);
+        bool _colorAtomsFrom(const SGroup& sgroup);
         void _initSGroups(Tree& sgroups, std::optional<Rect2f> frame);
         void _initSGroups();
 
@@ -177,12 +181,15 @@ namespace indigo
         int _parseColorString(Scanner& str, float& r, float& g, float& b);
 
         void _cloneAndFillMappings();
+        int _originalAtom(int atom) const;
+        int _originalBond(int bond) const;
         void _precalcScale();
 
         // local
         void* _hdc;
         BaseMolecule* _mol;
         bool _own_mol = false;
+        bool _copy_only_renumbers = false;
         RenderContext& _cw;
         float _scale;
         Vec2f _min, _max;

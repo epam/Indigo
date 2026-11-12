@@ -54,7 +54,9 @@ namespace indigo
         static constexpr float DEFAULT_FONT_SIZE =
             LayoutOptions::DEFAULT_FONT_SIZE_PX / LayoutOptions::DEFAULT_BOND_LENGTH_PX * LayoutOptions::DEFAULT_BOND_LENGTH;
 
-        explicit SGroupLayout(BaseMolecule& molecule, float font_size = DEFAULT_FONT_SIZE, LABEL_MODE label_mode = LABEL_MODE_TERMINAL_HETERO);
+        // font_size and bond_length are in the units of the coordinates of the molecule
+        explicit SGroupLayout(BaseMolecule& molecule, float font_size = DEFAULT_FONT_SIZE, LABEL_MODE label_mode = LABEL_MODE_TERMINAL_HETERO,
+                              float bond_length = LayoutOptions::DEFAULT_BOND_LENGTH);
         static float labelFontSizeInAngstroms(const LayoutOptions& options);
 
         // Places brackets for the groups that have none and for those whose atoms moved since construction. The
@@ -88,6 +90,7 @@ namespace indigo
         std::map<int, Vec2f> _initialValues;
         float _fontSize;
         LABEL_MODE _labelMode;
+        float _bondLength;
     };
 } // namespace indigo
 

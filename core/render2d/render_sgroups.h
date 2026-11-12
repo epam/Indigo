@@ -24,12 +24,11 @@
 #include <string>
 #include <vector>
 
-#include "layout/metalayout.h"
 #include "render_common.h"
 
 namespace indigo
 {
-    class RenderContext;
+    class MoleculeRenderInternal;
     class SGroup;
 
     // A bracket on the page: drawing coordinates, y down
@@ -49,6 +48,8 @@ namespace indigo
         const std::vector<BracketLine>& all() const;
         // The rightmost bracket by its middle; of brackets one above the other, the lower one
         const BracketLine& closing() const;
+        // Between the middles of a pair of brackets; none for another number of brackets or a pair in one place
+        std::optional<float> pairGap() const;
         // The end lower on the page; of a horizontal bracket, the left end
         static Vec2f lowerEnd(const BracketLine& bracket);
         // The end higher on the page; of a horizontal bracket, the right end
@@ -63,21 +64,19 @@ namespace indigo
         std::vector<BracketLine> _brackets;
     };
 
-    // What a drawer of S-groups gets from the drawing of the molecule: where the atoms are on the page, how long a
-    // bond is there, and a place for brackets and text. The items added belong to the S-group being drawn.
+    // What a drawer of S-groups gets from the drawing of the molecule: where the atoms are on the page, and a place
+    // for brackets and text. The items added belong to the S-group being drawn.
     class SGroupCanvas
     {
     public:
-        SGroupCanvas(MoleculeRenderData& data, RenderContext& context, const RenderSettings& settings, float scale, const Vec2f& min, const Vec2f& max,
-                     Sgroup& sgroup);
+        SGroupCanvas(MoleculeRenderInternal& render, Sgroup& items);
 
         Vec2f atomPosition(int atom) const;
         Rect2f atomBox(int atom) const;
         Vec2f atomsCentre(const Array<int>& atoms) const;
-        std::optional<Rect2f> atomsBox(const Array<int>& atoms) const;
+        std::optional<Rect2f> positionsBox(const Array<int>& atoms) const;
         Vec2f toDrawing(const Vec2f& point) const;
         Vec2f toDrawingOffset(const Vec2f& offset) const;
-        float toDrawingLength(float length) const;
         float lineWidth() const;
 
         void addBracket(const BracketLine& bracket, const Vec2f& hook_direction, float hook_length);
@@ -86,12 +85,8 @@ namespace indigo
         TextItem& addText(const std::string& text, FONT_SIZE font_size, RenderItem::TYPE type);
 
     private:
-        MoleculeRenderData& _data;
-        RenderContext& _context;
-        const RenderSettings& _settings;
-        float _scale;
-        Vec2f _min, _max;
-        Sgroup& _sgroup;
+        MoleculeRenderInternal& _render;
+        Sgroup& _items;
     };
 
     // Draws an S-group: its brackets with hooks towards its atoms, its label at the lower end of the closing bracket
@@ -99,8 +94,13 @@ namespace indigo
     class SGroupRenderer
     {
     public:
-        static constexpr float LABEL_OFFSET = 0.05f * LayoutOptions::DEFAULT_BOND_LENGTH;
-        static constexpr float BRACKET_HOOK = 0.15f * LayoutOptions::DEFAULT_BOND_LENGTH;
+        // In bond lengths of the drawing
+        static constexpr float LABEL_OFFSET = 0.05f;
+        static constexpr float BRACKET_HOOK = 0.15f;
+
+        static constexpr float HOOK_SHARE_OF_BRACKET = 0.15f;
+        // The hooks of a narrow pair leave a third of the gap free
+        static constexpr float LONGEST_HOOK_SHARE_OF_GAP = 1.0f / 3.0f;
 
         // nullptr for a type that is not drawn
         static std::unique_ptr<SGroupRenderer> create(const SGroup& sgroup);
@@ -112,13 +112,12 @@ namespace indigo
 
     protected:
         virtual SGroupBrackets _brackets(const SGroup& sgroup, const SGroupCanvas& canvas) const;
-        virtual float _hookLength(const BracketLine& bracket, const SGroupCanvas& canvas) const;
+        virtual float _hookLength(const BracketLine& bracket) const;
         virtual float _labelOffset(const SGroupCanvas& canvas) const;
         virtual void _placeLabel(TextItem& label, const Vec2f& lower_end, float offset) const;
         virtual std::string _label(const SGroup& sgroup) const;
         virtual std::string _repeatPattern(const SGroup& sgroup) const;
 
-        static std::string _labelText(const SGroup& sgroup);
         static std::string _connectivityText(const SGroup& sgroup);
         static float _hookOfBracketLength(const BracketLine& bracket);
         static SGroupBrackets _storedBrackets(const SGroup& sgroup, const SGroupCanvas& canvas);
@@ -178,7 +177,7 @@ namespace indigo
 
     protected:
         SGroupBrackets _brackets(const SGroup& sgroup, const SGroupCanvas& canvas) const override;
-        float _hookLength(const BracketLine& bracket, const SGroupCanvas& canvas) const override;
+        float _hookLength(const BracketLine& bracket) const override;
     };
 
     class SuperatomRenderer : public SGroupRenderer
@@ -189,7 +188,7 @@ namespace indigo
 
     protected:
         SGroupBrackets _brackets(const SGroup& sgroup, const SGroupCanvas& canvas) const override;
-        float _hookLength(const BracketLine& bracket, const SGroupCanvas& canvas) const override;
+        float _hookLength(const BracketLine& bracket) const override;
         float _labelOffset(const SGroupCanvas& canvas) const override;
         // Kept as it was: the label ends at the lower end instead of starting there
         void _placeLabel(TextItem& label, const Vec2f& lower_end, float offset) const override;

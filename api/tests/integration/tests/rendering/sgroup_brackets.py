@@ -69,14 +69,15 @@ for filename in reactions:
 
 print("*** Brackets and labels by the rules of the ticket ***")
 # Variants of the structures above: a subtype or repeat pattern changed, or
-# the brackets Indigo placed on load swapped, turned with the atoms or
-# joined by a third one
+# the brackets Indigo placed on load swapped, turned with the atoms, joined
+# by a third one or reduced to one, which the renderer replaces by a pair
 variants = [
     "copolymer-alt",
     "copolymer-ran",
     "copolymer-without-subtype",
     "sru-brackets-horizontal",
     "sru-brackets-swapped",
+    "sru-one-bracket",
     "sru-rotated-30",
     "sru-three-brackets",
     "sru-without-scn",
@@ -92,6 +93,38 @@ mol = indigo.loadMoleculeFromFile(
     os.path.join(molecules_path, "sgroups", "sru-cxsmiles.smi")
 )
 compare_svg("sru-cxsmiles", mol)
+
+print("*** Placed brackets follow the drawn bond and the drawn font ***")
+mol = indigo.loadMoleculeFromFile(
+    os.path.join(molecules_path, "sgroups", "sru-cxsmiles-long-bonds.smi")
+)
+compare_svg("sru-cxsmiles-long-bonds", mol)
+indigo.setOption("render-font-size", 80)
+compare_svg("sru-cxsmiles-long-bonds-font-80", mol)
+indigo.setOption("render-font-size", -1)
+mol = indigo.loadMoleculeFromFile(
+    os.path.join(
+        molecules_path, "sgroups", "sru-cxsmiles-nested-long-bonds.smi"
+    )
+)
+compare_svg("sru-cxsmiles-nested-long-bonds", mol)
+
+print("*** Hooks of brackets close to each other do not meet ***")
+mol = indigo.loadMoleculeFromFile(
+    os.path.join(molecules_path, "sgroups", "sru-single-atom.smi")
+)
+compare_svg("sru-single-atom", mol)
+
+print("*** Atom and bond ids stay those of the molecule ***")
+mol = indigo.loadMoleculeFromFile(
+    os.path.join(molecules_path, "sgroups", "sru-cxsmiles-with-tail.smi")
+)
+mol.getAtom(0).remove()
+indigo.setOption("render-atom-ids-visible", True)
+indigo.setOption("render-bond-ids-visible", True)
+compare_svg("sru-ids-after-atom-removal", mol)
+indigo.setOption("render-atom-ids-visible", False)
+indigo.setOption("render-bond-ids-visible", False)
 
 print("*** A multiple group keeps its brackets and its multiplier ***")
 mol = indigo.loadMoleculeFromFile(

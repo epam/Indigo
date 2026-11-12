@@ -5,7 +5,7 @@
 > **Skip when:** you only need the promised behaviour: that is
 > [../features/sgroup-brackets.md](../features/sgroup-brackets.md).
 
-Verified on 2026-11-08.
+Verified on 2026-11-11.
 
 ## Responsibility
 
@@ -19,7 +19,7 @@ at the labels of nested groups.
 ## Public interface
 
 One class, two calls, shared with the values of data S-groups
-([layout-sgroup-data.md](./layout-sgroup-data.md)). `SGroupLayout layout(molecule, font_size, label_mode)` remembers
+([layout-sgroup-data.md](./layout-sgroup-data.md)). `SGroupLayout layout(molecule, font_size, label_mode, bond_length)` remembers
 where the atoms stand; `layout.update()` places brackets for the groups that have none (`SGroup::hasBrackets()` is false) and
 for those whose own atoms moved since construction
 (`core/indigo-core/layout/sgroup_layout.h#void update()`). The font size is in the coordinates of
@@ -34,7 +34,7 @@ Callers:
 | `MoleculeCleaner2d::do_clean`: `clean2d()`, both passes | after the trivial-structure returns | after the coordinates are written back | default |
 | `MolfileLoader::_postLoad` | at once | at once: only groups without `SDI` / `BRKXYZ` change | default |
 | `ReactionLayout::make`, `PathwayLayout::make`: the metalayout's move and scale of whole molecules | before `Metalayout::process()` / `buildLayoutTree()` | after `process()` / `applyLayout()` | the same options |
-| `MoleculeRenderInternal::_placeMissingBrackets`: a drawing of a bracketed group without brackets | at once, on the renderer's copy of the molecule | at once | default size, `render-label-mode` of the drawing |
+| `MoleculeRenderInternal::_placeMissingBrackets`: a drawing of a bracketed group without a pair of brackets | at once, on the renderer's copy of the molecule | at once | the font and the bond length of the drawing, its `render-label-mode` |
 
 `Metalayout::adjustMol`, `BaseMolecule::scale` and `BaseMolecule::offsetCoordinates` carry every group's real
 brackets along through `core/indigo-core/molecule/molecule_sgroups.h#transformPositions` (invariant A13), with the
@@ -72,9 +72,10 @@ be a child, never a parent.
 
 ## Constraints & traps
 
-- **The unit is `LayoutOptions::DEFAULT_BOND_LENGTH`**, not the bond length of the drawing: the ticket asks for
-  the existing constant. A structure drawn at another scale gets margins of 0.1 and 0.3 absolute, out of
-  proportion with its bonds.
+- **The unit is the `bond_length` of the constructor**, `LayoutOptions::DEFAULT_BOND_LENGTH` unless given. The
+  layout and the loaders leave the default: a structure they handle at another scale gets margins of 0.1 and
+  0.3 absolute, out of proportion with its bonds. The renderer passes the bond length of its drawing
+  ([render-sgroups.md](./render-sgroups.md)).
 - **Nothing outside the group is looked at.** A bracket runs through a neighbouring atom, the `*` at a chain
   end or a label when it stands within the margin; the texts of a child (`n`, the repeat pattern) are not
   part of the child's bracket box, so a parent bracket 0.3 away can still touch a long one. There is no least length: a

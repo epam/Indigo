@@ -5,7 +5,7 @@
 > **Skip when:** the question is where the brackets stand in the structure: that is
 > [sgroup-brackets.md](./sgroup-brackets.md).
 
-Verified on 2026-11-10. Ticket #3976, under the polymer epic #3971.
+Verified on 2026-11-11. Since Indigo 1.51.
 
 ## Problem
 
@@ -21,16 +21,23 @@ Nothing to call: every rendering of a molecule or a reaction, in every output fo
 
 ## Expected behaviour
 
-**When** a bracketed S-group (repeating unit, copolymer, component, mixture, formulation) has brackets, **then**
-they are drawn where they are, in any direction; a zero-length bracket is not drawn.
+**When** a bracketed S-group (repeating unit, copolymer, component, mixture, formulation) has two or more
+brackets, none of zero length, **then** they are drawn where they are, in any direction.
 
-**When** such a group has no brackets, or only zero-length ones (CDX, CDXML, CXSMILES, a structure built through
-the API), **then** it is drawn with brackets placed by the rules of [sgroup-brackets.md](./sgroup-brackets.md),
-at the default font and in the label mode of the rendering; the structure itself is not changed.
+**When** such a group has no brackets, a single one, or a zero-length one among them (CDX, CDXML, CXSMILES, a
+structure built through the API), **then** it is drawn with a pair placed by the rules of
+[sgroup-brackets.md](./sgroup-brackets.md), at the font and in the label mode of the rendering; the structure
+itself is not changed. The margins of those rules are measured in the bond length of the drawing, so the pair
+does not depend on the bond length of the input.
 
 **When** a bracket of a bracketed group or of a multiple group is drawn, **then** its hooks are 0.15 bond lengths
 long, perpendicular to the bracket and turned towards the centre of the group's atoms. The hooks of generic
-groups and superatoms stay 0.15 of the bracket's length, as before.
+groups and superatoms stay 0.15 of the bracket's length, as before. When a group has exactly two brackets, no
+hook is longer than a third of the distance between their middles, so the hooks of a narrow pair do not meet.
+
+**When** atom or bond ids are shown, **then** they are the ids of the molecule given to the renderer, also when
+it draws from a copy made to place brackets. With a multiple group or a contracted superatom in the structure
+they are the ids of the collapsed copy, as before.
 
 **When** a group has a label, **then** it stands at the lower end of the closing bracket: its top edge level
 with that end, its left edge 0.05 bond lengths right of the bracket, horizontal whatever the bracket's direction.
@@ -54,17 +61,24 @@ and was not visible either.
 
 ## Guarantees
 
-Deterministic for given coordinates; the same drawing in PNG, SVG, PDF and EMF. The forty structures of the
-ticket are pinned as SVG in the integration harness, one reference for the CI platforms, since the glyphs come from
-the font built into the renderer; an ARM Mac differs in the sixth decimal of the coordinates.
+Deterministic for given coordinates; the same drawing in PNG, SVG, PDF and EMF. The structures of the
+feature's rendering test are pinned as SVG in the integration harness, one reference for the CI platforms,
+since the glyphs come from the font built into the renderer; an ARM Mac differs in the sixth decimal of the
+coordinates.
 
 ## Limitations
 
-- A repeating unit of one atom without a label has brackets 0.2 bond lengths apart, so their hooks overlap.
+- A repeating unit of one atom without a label has brackets 0.2 bond lengths apart: a narrow pair with short
+  hooks.
+- A bond length is the unit of the drawing, the one the font size and the line width are given in. It is the
+  average bond of the input unless the renderer stretches the bonds (a very long atom label, input bonds longer
+  than 2.5); there hooks, offsets and margins keep their size and do not grow with the bonds.
+- Brackets placed on load (MOL or KET without bracket coordinates) are drawn as stored. A loader places them in
+  molecule units at the default font, so at a bond length other than 1.0 or another `render-font-size` they
+  differ from the pair the renderer places for the same structure read from CXSMILES.
 - Nothing keeps a label clear of the bracket of a neighbouring group, or a bracket clear of a label standing
   within its margin.
-- Brackets placed by the renderer for a group without them use the default font, not `render-font-size`.
 - A generic or multiple group whose file has fewer than two real brackets gets the renderer's own pair, three
-  line widths outside its atom labels, as before.
+  line widths outside its atom labels, as before, not the pair of the layout's rules.
 - The picture of an unnamed superatom no longer reserves room for its empty label, so it is a little smaller
   than before.

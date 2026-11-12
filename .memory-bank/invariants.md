@@ -115,7 +115,7 @@ of these, should read the line first.
 
 **A12 — The two brackets of a bracketed S-group are written in one order and direction: the opening one first,
 running bottom to top, the closing one second, running top to bottom.**
-Since #3976 nothing in Indigo reads that order: the renderer takes the closing bracket by position, the rightmost
+Since Indigo 1.51 nothing in Indigo reads that order: the renderer takes the closing bracket by position, the rightmost
 one, and turns the hooks of every bracket towards the atoms of the group
 (`core/render2d/src/render_sgroups.cpp#SGroupBrackets::closing`), so a pair written the other way round draws
 the same. The order is the convention of the files Indigo writes, for the readers of those files; the one place

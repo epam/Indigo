@@ -47,7 +47,7 @@ void MoleculeRenderInternal::_renderBondIds()
             ti.fontsize = FONT_SIZE_INDICES;
             ti.color = CWC_DARKGREEN;
             int base = _opt.atomBondIdsFromOne ? 1 : 0;
-            bprintf(ti.text, "%i", i + base);
+            bprintf(ti.text, "%i", _originalBond(i) + base);
             Vec2f v;
             v.sum(_be(_bd(i).be1).p, _be(_bd(i).be2).p);
             v.scale(0.5);
@@ -1829,7 +1829,7 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
         index.fontsize = FONT_SIZE_INDICES;
 
         int base = _opt.atomBondIdsFromOne ? 1 : 0;
-        bprintf(index.text, "%i", aid + base);
+        bprintf(index.text, "%i", _originalAtom(aid) + base);
         _cw.setTextItemSize(index, ad.pos);
 
         if (ad.showLabel)

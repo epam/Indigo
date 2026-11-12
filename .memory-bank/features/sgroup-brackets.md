@@ -49,7 +49,8 @@ types move and scale with their molecules.
 
 **When** a structure is saved to MOL, **then** zero-length brackets are not written, for any S-group type; a real
 bracket next to one is written, and a group read back with that one bracket keeps it: a generic or multiple group
-is then drawn with the renderer's own pair, a bracketed group with its one bracket.
+is then drawn with the renderer's own pair, a bracketed group with a pair placed by these rules in the picture
+only ([sgroup-rendering.md](./sgroup-rendering.md)).
 
 ## Guarantees
 

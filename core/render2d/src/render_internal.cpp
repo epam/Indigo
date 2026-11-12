@@ -43,12 +43,6 @@ static bool _isBondWide(const BondDescr& bd)
            _BOND_SINGLE_OR_DOUBLE;
 }
 
-// An S-group read without a label keeps an empty array, and its ptr() is null.
-static const char* _labelText(const SGroup& sgroup, const char* text_when_absent = "")
-{
-    return sgroup.label.size() > 0 ? sgroup.label.ptr() : text_when_absent;
-}
-
 RenderOptions::RenderOptions()
 {
     clearRenderOptions();
@@ -171,7 +165,11 @@ void MoleculeRenderInternal::setMolecule(BaseMolecule* mol)
     {
         _prepareSGroups(isThereAtLeastOneContracted);
     }
-    _placeMissingBrackets();
+    if (!_own_mol && _hasMissingBrackets())
+    {
+        _cloneAndFillMappings();
+        _copy_only_renumbers = true;
+    }
 
     _data.atoms.resize(_mol->vertexEnd());
     for (auto i = _mol->vertexBegin(); i != _mol->vertexEnd(); i = _mol->vertexNext(i))
@@ -233,6 +231,8 @@ void MoleculeRenderInternal::setQueryReactionComponentProperties(const Array<int
 void MoleculeRenderInternal::render()
 {
     _precalcScale();
+
+    _placeMissingBrackets();
 
     _initCoordinates();
 
@@ -542,22 +542,34 @@ void MoleculeRenderInternal::_initRGroups()
     }
 }
 
-void MoleculeRenderInternal::_placeMissingBrackets()
+bool MoleculeRenderInternal::_lacksBracketPair(const SGroup& sgroup)
 {
-    for (int i = _mol->sgroups.begin(); i != _mol->sgroups.end(); i = _mol->sgroups.next(i))
-    {
-        const SGroup& sgroup = _mol->sgroups.getSGroup(i);
-        if (SGroupNesting::isBracketed(sgroup.sgroup_type) && !sgroup.hasBrackets())
-        {
-            if (!_own_mol)
-                _cloneAndFillMappings();
-            SGroupLayout(*_mol, SGroupLayout::DEFAULT_FONT_SIZE, _opt.labelMode).update();
-            return;
-        }
-    }
+    return SGroupNesting::isBracketed(sgroup.sgroup_type) && (sgroup.brackets.size() < 2 || !sgroup.hasBrackets());
 }
 
-bool MoleculeRenderInternal::_colorsAtoms(const SGroup& sgroup)
+bool MoleculeRenderInternal::_hasMissingBrackets() const
+{
+    for (int i = _mol->sgroups.begin(); i != _mol->sgroups.end(); i = _mol->sgroups.next(i))
+        if (_lacksBracketPair(_mol->sgroups.getSGroup(i)))
+            return true;
+    return false;
+}
+
+void MoleculeRenderInternal::_placeMissingBrackets()
+{
+    if (!_own_mol || !_hasMissingBrackets())
+        return;
+    for (int i = _mol->sgroups.begin(); i != _mol->sgroups.end(); i = _mol->sgroups.next(i))
+    {
+        SGroup& sgroup = _mol->sgroups.getSGroup(i);
+        if (_lacksBracketPair(sgroup))
+            sgroup.brackets.clear();
+    }
+    const float drawing_unit_in_molecule = 1.0f / _scale;
+    SGroupLayout(*_mol, _settings.fzz[FONT_SIZE_LABEL] * drawing_unit_in_molecule, _opt.labelMode, drawing_unit_in_molecule).update();
+}
+
+bool MoleculeRenderInternal::_colorAtomsFrom(const SGroup& sgroup)
 {
     if (sgroup.sgroup_type != SGroup::SG_TYPE_DAT || _opt.atomColorProp.size() == 0)
         return false;
@@ -585,11 +597,11 @@ void MoleculeRenderInternal::_initSGroups(Tree& sgroups, std::optional<Rect2f> f
     if (sgroups.label != -1)
     {
         const SGroup& sgroup = _mol->sgroups.getSGroup(sgroups.label);
-        if (_colorsAtoms(sgroup))
+        if (_colorAtomsFrom(sgroup))
             return;
         if (const std::unique_ptr<SGroupRenderer> renderer = SGroupRenderer::create(sgroup))
         {
-            SGroupCanvas canvas(_data, _cw, _settings, _scale, _min, _max, _data.sgroups.push());
+            SGroupCanvas canvas(*this, _data.sgroups.push());
             renderer->draw(sgroup, frame, canvas);
             frame = renderer->frameForChildren(sgroup, frame, canvas);
         }
@@ -621,6 +633,16 @@ void MoleculeRenderInternal::_cloneAndFillMappings()
     }
     _mol = clone;
     _own_mol = true;
+}
+
+int MoleculeRenderInternal::_originalAtom(int atom) const
+{
+    return _copy_only_renumbers ? _atomMapping[atom] : atom;
+}
+
+int MoleculeRenderInternal::_originalBond(int bond) const
+{
+    return _copy_only_renumbers ? _bondMappingInv.at(bond) : bond;
 }
 
 void MoleculeRenderInternal::_prepareSGroups(bool collapseAtLeastOneSuperatom)
@@ -657,7 +679,7 @@ void MoleculeRenderInternal::_prepareSGroups(bool collapseAtLeastOneSuperatom)
                         centre.scale(1.0f / group.atoms.size());
                     }
                     int superAtomID = -1;
-                    const char* label = _labelText(group);
+                    const char* label = DataSGroup::textOf(group.label);
 
                     if (mol.isQueryMolecule())
                     {
