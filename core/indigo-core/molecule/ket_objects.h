@@ -684,6 +684,8 @@ namespace indigo
 
         const std::map<std::string, int>& getIntPropStrToIdx() const override;
 
+        std::pair<bool, int> getIntPropMinValue(int idx) const override;
+
         enum class IntProps
         {
             seqid

@@ -2540,9 +2540,12 @@ void MoleculeJsonLoader::loadMolecule(BaseMolecule& mol, bool load_arrows)
 
         if (ma.HasMember("seqid"))
         {
+            auto constexpr invalid_seqid = "Invalid \"seqid\" value";
+            if (!ma["seqid"].IsInt())
+                throw Error(invalid_seqid);
             int val = ma["seqid"].GetInt();
             if (val < 1)
-                throw Error("Invalid \"seqid\" value");
+                throw Error(invalid_seqid);
             mol.setTemplateAtomSeqid(idx, val);
         }
 
