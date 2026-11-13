@@ -112,7 +112,7 @@ namespace indigo
 
     protected:
         virtual SGroupBrackets _brackets(const SGroup& sgroup, const SGroupCanvas& canvas) const;
-        virtual float _hookLength(const BracketLine& bracket) const;
+        virtual float _hookLength(const BracketLine& bracket, std::optional<float> pair_gap) const;
         virtual float _labelOffset(const SGroupCanvas& canvas) const;
         virtual void _placeLabel(TextItem& label, const Vec2f& lower_end, float offset) const;
         virtual std::string _label(const SGroup& sgroup) const;
@@ -177,7 +177,7 @@ namespace indigo
 
     protected:
         SGroupBrackets _brackets(const SGroup& sgroup, const SGroupCanvas& canvas) const override;
-        float _hookLength(const BracketLine& bracket) const override;
+        float _hookLength(const BracketLine& bracket, std::optional<float> pair_gap) const override;
     };
 
     class SuperatomRenderer : public SGroupRenderer
@@ -188,7 +188,7 @@ namespace indigo
 
     protected:
         SGroupBrackets _brackets(const SGroup& sgroup, const SGroupCanvas& canvas) const override;
-        float _hookLength(const BracketLine& bracket) const override;
+        float _hookLength(const BracketLine& bracket, std::optional<float> pair_gap) const override;
         float _labelOffset(const SGroupCanvas& canvas) const override;
         // Kept as it was: the label ends at the lower end instead of starting there
         void _placeLabel(TextItem& label, const Vec2f& lower_end, float offset) const override;

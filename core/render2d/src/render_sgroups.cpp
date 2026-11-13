@@ -228,10 +228,7 @@ void SGroupRenderer::draw(const SGroup& sgroup, const std::optional<Rect2f>&, SG
     const Vec2f centre = canvas.atomsCentre(sgroup.atoms);
     const std::optional<float> pair_gap = brackets.pairGap();
     for (const BracketLine& bracket : brackets.all())
-    {
-        const float hook = _hookLength(bracket);
-        canvas.addBracket(bracket, SGroupBrackets::hookDirection(bracket, centre), pair_gap ? std::min(hook, *pair_gap * LONGEST_HOOK_SHARE_OF_GAP) : hook);
-    }
+        canvas.addBracket(bracket, SGroupBrackets::hookDirection(bracket, centre), _hookLength(bracket, pair_gap));
 
     const BracketLine& closing = brackets.closing();
     const float offset = _labelOffset(canvas);
@@ -257,9 +254,9 @@ SGroupBrackets SGroupRenderer::_brackets(const SGroup& sgroup, const SGroupCanva
     return _storedBrackets(sgroup, canvas);
 }
 
-float SGroupRenderer::_hookLength(const BracketLine&) const
+float SGroupRenderer::_hookLength(const BracketLine&, std::optional<float> pair_gap) const
 {
-    return BRACKET_HOOK;
+    return pair_gap ? std::min(BRACKET_HOOK, *pair_gap * LONGEST_HOOK_SHARE_OF_GAP) : BRACKET_HOOK;
 }
 
 float SGroupRenderer::_labelOffset(const SGroupCanvas&) const
@@ -416,7 +413,7 @@ SGroupBrackets GenericGroupRenderer::_brackets(const SGroup& sgroup, const SGrou
     return _storedOrPairAroundAtoms(sgroup, canvas);
 }
 
-float GenericGroupRenderer::_hookLength(const BracketLine& bracket) const
+float GenericGroupRenderer::_hookLength(const BracketLine& bracket, std::optional<float>) const
 {
     return _hookOfBracketLength(bracket);
 }
@@ -438,7 +435,7 @@ SGroupBrackets SuperatomRenderer::_brackets(const SGroup& sgroup, const SGroupCa
     return _pairAroundAtoms(sgroup, canvas);
 }
 
-float SuperatomRenderer::_hookLength(const BracketLine& bracket) const
+float SuperatomRenderer::_hookLength(const BracketLine& bracket, std::optional<float>) const
 {
     return _hookOfBracketLength(bracket);
 }

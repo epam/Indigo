@@ -114,6 +114,18 @@ mol = indigo.loadMoleculeFromFile(
     os.path.join(molecules_path, "sgroups", "sru-single-atom.smi")
 )
 compare_svg("sru-single-atom", mol)
+mol = indigo.loadMoleculeFromFile(
+    os.path.join(molecules_path, "sgroups", "mul-single-atom.mol")
+)
+compare_svg("mul-single-atom", mol)
+
+print("*** A generic group and a superatom keep hooks of 0.15 bracket ***")
+mol = indigo.loadMoleculeFromFile(
+    os.path.join(
+        molecules_path, "sgroups", "gen-sup-tall-without-brackets.mol"
+    )
+)
+compare_svg("gen-sup-tall-without-brackets", mol)
 
 print("*** Atom and bond ids stay those of the molecule ***")
 mol = indigo.loadMoleculeFromFile(
@@ -131,6 +143,12 @@ mol = indigo.loadMoleculeFromFile(
     joinPathPy("../formats/molecules/smul.mol", __file__)
 )
 compare_svg("multiple-group", mol)
+
+print("*** A multiple group without brackets gets the renderer's pair ***")
+mol = indigo.loadMoleculeFromFile(
+    os.path.join(molecules_path, "sgroups", "mul-without-brackets.mol")
+)
+compare_svg("mul-without-brackets", mol)
 
 print("*** A data S-group without a field name, a colour property set ***")
 indigo.setOption("render-atom-color-property", "color")

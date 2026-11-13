@@ -5,7 +5,7 @@
 > **Skip when:** you only need the promised picture: that is
 > [../features/sgroup-rendering.md](../features/sgroup-rendering.md).
 
-Verified on 2026-11-11. Since Indigo 1.51.
+Verified on 2026-11-13. Since Indigo 1.51.
 
 ## Responsibility
 
@@ -64,9 +64,10 @@ change did not touch.
   through `_originalAtom` and `_originalBond`, which map back only for a copy made for brackets alone
   (`_copy_only_renumbers`). After a collapse the ids are those of the copy, as before:
   `BaseMolecule::collapse` writes copy indices into the bond mapping.
-- **Hooks of a pair are capped by its gap.** `SGroupRenderer::draw` takes the shorter of the type's hook and
-  `LONGEST_HOOK_SHARE_OF_GAP` of `SGroupBrackets::pairGap()`, for every type. Three or more brackets, or two in
-  one place, are not capped.
+- **Hooks of a pair are capped by its gap, for bracketed and multiple groups.** `SGroupRenderer::_hookLength`
+  returns the shorter of `BRACKET_HOOK` and `LONGEST_HOOK_SHARE_OF_GAP` of `SGroupBrackets::pairGap()`. Generic
+  groups and superatoms override it and are not capped: their hooks stay 0.15 of the bracket, however narrow
+  the pair. Three or more brackets, or two in one place, are not capped.
 - **The colour property is not a drawing.** A data S-group named by `render-atom-color-property` colours its
   atoms and is skipped, children included, before any drawer runs (`MoleculeRenderInternal::_colorAtomsFrom`).
 - **An unnamed superatom no longer gets an empty text item.** Before the change that item widened the picture;

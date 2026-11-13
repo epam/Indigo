@@ -46,9 +46,14 @@ sgroups/sru-cxsmiles-long-bonds-font-80.svg:SUCCEED
 sgroups/sru-cxsmiles-nested-long-bonds.svg:SUCCEED
 *** Hooks of brackets close to each other do not meet ***
 sgroups/sru-single-atom.svg:SUCCEED
+sgroups/mul-single-atom.svg:SUCCEED
+*** A generic group and a superatom keep hooks of 0.15 bracket ***
+sgroups/gen-sup-tall-without-brackets.svg:SUCCEED
 *** Atom and bond ids stay those of the molecule ***
 sgroups/sru-ids-after-atom-removal.svg:SUCCEED
 *** A multiple group keeps its brackets and its multiplier ***
 sgroups/multiple-group.svg:SUCCEED
+*** A multiple group without brackets gets the renderer's pair ***
+sgroups/mul-without-brackets.svg:SUCCEED
 *** A data S-group without a field name, a colour property set ***
 sgroups/data-without-field-name.svg:SUCCEED

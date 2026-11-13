@@ -5,7 +5,7 @@
 > **Skip when:** the question is where the brackets stand in the structure: that is
 > [sgroup-brackets.md](./sgroup-brackets.md).
 
-Verified on 2026-11-11. Since Indigo 1.51.
+Verified on 2026-11-13. Since Indigo 1.51.
 
 ## Problem
 
@@ -31,9 +31,10 @@ itself is not changed. The margins of those rules are measured in the bond lengt
 does not depend on the bond length of the input.
 
 **When** a bracket of a bracketed group or of a multiple group is drawn, **then** its hooks are 0.15 bond lengths
-long, perpendicular to the bracket and turned towards the centre of the group's atoms. The hooks of generic
-groups and superatoms stay 0.15 of the bracket's length, as before. When a group has exactly two brackets, no
-hook is longer than a third of the distance between their middles, so the hooks of a narrow pair do not meet.
+long, perpendicular to the bracket and turned towards the centre of the group's atoms. When such a group has
+exactly two brackets, no hook is longer than a third of the distance between their middles, so the hooks of a
+narrow pair do not meet. The hooks of generic groups and superatoms stay 0.15 of the bracket's length, as
+before, whatever the distance between the brackets.
 
 **When** atom or bond ids are shown, **then** they are the ids of the molecule given to the renderer, also when
 it draws from a copy made to place brackets. With a multiple group or a contracted superatom in the structure
@@ -70,6 +71,8 @@ coordinates.
 
 - A repeating unit of one atom without a label has brackets 0.2 bond lengths apart: a narrow pair with short
   hooks.
+- The hooks of a generic group or a superatom are not shortened for a narrow pair, as before: when its brackets
+  stand closer than 0.3 of their length, the hooks meet or cross.
 - A bond length is the unit of the drawing, the one the font size and the line width are given in. It is the
   average bond of the input unless the renderer stretches the bonds (a very long atom label, input bonds longer
   than 2.5); there hooks, offsets and margins keep their size and do not grow with the bonds.
