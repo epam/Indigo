@@ -1,0 +1,59 @@
+*** The structures of layout/sgroup_brackets.py, as loaded ***
+sgroups/brackets-from-file.svg:SUCCEED
+sgroups/copolymer-without-brackets.svg:SUCCEED
+sgroups/copolymer.svg:SUCCEED
+sgroups/datasgroup.svg:SUCCEED
+sgroups/f01-sru-straight.svg:SUCCEED
+sgroups/f02-sru-zigzag.svg:SUCCEED
+sgroups/f03-sru-steep.svg:SUCCEED
+sgroups/f04-polystyrene.svg:SUCCEED
+sgroups/f05-issue-1969.svg:SUCCEED
+sgroups/f06-block-copolymer.svg:SUCCEED
+sgroups/f07-mixture.svg:SUCCEED
+sgroups/f08-sru-vertical.svg:SUCCEED
+sgroups/f09-sru-branching.svg:SUCCEED
+sgroups/f10-sru-adjacent-sides.svg:SUCCEED
+sgroups/f11-copolymer-in-mixture.svg:SUCCEED
+sgroups/f12-mixture-close.svg:SUCCEED
+sgroups/f13-repeat-pattern.svg:SUCCEED
+sgroups/f14-three-on-one-bond.svg:SUCCEED
+sgroups/formulation-without-brackets.svg:SUCCEED
+sgroups/gen-sup-zero-next-to-real.svg:SUCCEED
+sgroups/mixture-without-brackets.svg:SUCCEED
+sgroups/nested-brackets-from-file.svg:SUCCEED
+sgroups/rgroup-fragment-sru.svg:SUCCEED
+sgroups/sru-without-brackets.svg:SUCCEED
+sgroups/ticket-nested-copolymer.svg:SUCCEED
+sgroups/ticket-single-sru.svg:SUCCEED
+sgroups/zero-brackets.svg:SUCCEED
+sgroups/sru-pathway.svg:SUCCEED
+sgroups/sru-reaction-scaled.svg:SUCCEED
+sgroups/sru-reaction.svg:SUCCEED
+*** Brackets and labels by the rules of the ticket ***
+sgroups/copolymer-alt.svg:SUCCEED
+sgroups/copolymer-ran.svg:SUCCEED
+sgroups/copolymer-without-subtype.svg:SUCCEED
+sgroups/sru-brackets-horizontal.svg:SUCCEED
+sgroups/sru-brackets-swapped.svg:SUCCEED
+sgroups/sru-one-bracket.svg:SUCCEED
+sgroups/sru-rotated-30.svg:SUCCEED
+sgroups/sru-three-brackets.svg:SUCCEED
+sgroups/sru-without-scn.svg:SUCCEED
+sgroups/sru-cxsmiles.svg:SUCCEED
+*** Placed brackets follow the drawn bond and the drawn font ***
+sgroups/sru-cxsmiles-long-bonds.svg:SUCCEED
+sgroups/sru-cxsmiles-long-bonds-font-80.svg:SUCCEED
+sgroups/sru-cxsmiles-nested-long-bonds.svg:SUCCEED
+*** Hooks of brackets close to each other do not meet ***
+sgroups/sru-single-atom.svg:SUCCEED
+sgroups/mul-single-atom.svg:SUCCEED
+*** A generic group and a superatom keep hooks of 0.15 bracket ***
+sgroups/gen-sup-tall-without-brackets.svg:SUCCEED
+*** Atom and bond ids stay those of the molecule ***
+sgroups/sru-ids-after-atom-removal.svg:SUCCEED
+*** A multiple group keeps its brackets and its multiplier ***
+sgroups/multiple-group.svg:SUCCEED
+*** A multiple group without brackets gets the renderer's pair ***
+sgroups/mul-without-brackets.svg:SUCCEED
+*** A data S-group without a field name, a colour property set ***
+sgroups/data-without-field-name.svg:SUCCEED

@@ -24,8 +24,8 @@
 
 using namespace indigo;
 
-SGroupLayout::SGroupLayout(BaseMolecule& molecule, float font_size, LABEL_MODE label_mode)
-    : _molecule(molecule), _nesting(molecule), _fontSize(font_size), _labelMode(label_mode)
+SGroupLayout::SGroupLayout(BaseMolecule& molecule, float font_size, LABEL_MODE label_mode, float bond_length)
+    : _molecule(molecule), _nesting(molecule), _fontSize(font_size), _labelMode(label_mode), _bondLength(bond_length)
 {
     MoleculeSGroups& sgroups = molecule.sgroups;
     for (int i = sgroups.begin(); i != sgroups.end(); i = sgroups.next(i))
@@ -158,11 +158,10 @@ bool SGroupLayout::_allAtomsAtOnePoint() const
 
 Rect2f SGroupLayout::_bracketsBox(int sgroup_idx) const
 {
-    const float bond_length = LayoutOptions::DEFAULT_BOND_LENGTH;
-    Rect2f box = _enlarged(_atomsBox(_molecule.sgroups.getSGroup(sgroup_idx)), HORIZONTAL_MARGIN * bond_length, VERTICAL_MARGIN * bond_length);
+    Rect2f box = _enlarged(_atomsBox(_molecule.sgroups.getSGroup(sgroup_idx)), HORIZONTAL_MARGIN * _bondLength, VERTICAL_MARGIN * _bondLength);
     for (int child_idx : _nesting.children(sgroup_idx))
         if (const std::optional<Rect2f> child_brackets = _spannedByBrackets(_molecule.sgroups.getSGroup(child_idx)))
-            box.extend(_enlarged(*child_brackets, HORIZONTAL_SPACE * bond_length, VERTICAL_SPACE * bond_length));
+            box.extend(_enlarged(*child_brackets, HORIZONTAL_SPACE * _bondLength, VERTICAL_SPACE * _bondLength));
     return box;
 }
 
@@ -194,8 +193,8 @@ Rect2f SGroupLayout::_enlarged(const Rect2f& box, float horizontal, float vertic
     return Rect2f(Vec2f(box.left() - horizontal, box.bottom() - vertical), Vec2f(box.right() + horizontal, box.top() + vertical));
 }
 
-// The renderer turns the hooks of a bracket to the right of its direction from the first point to the second and puts
-// the texts at the last bracket: so the opening bracket runs up and comes first, the closing one runs down
+// The order and direction of the files Indigo writes: the opening bracket runs up and comes first, the closing one
+// runs down. The renderer depends on neither: it finds the closing bracket by position
 void SGroupLayout::_setBrackets(SGroup& sgroup, const Rect2f& box)
 {
     sgroup.brackets.clear();

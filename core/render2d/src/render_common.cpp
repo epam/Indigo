@@ -119,9 +119,7 @@ void RenderItemBracket::clear()
     p1.set(0, 0);
     q0.set(0, 0);
     q1.set(0, 0);
-    d.set(0, 0);
     n.set(0, 0);
-    length = 0;
     width = 0;
 }
 

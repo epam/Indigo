@@ -1,0 +1,11 @@
+data-without-field-name
+  -INDIGO-11102622002D
+A data S-group with a value and no field name line
+  2  1  0  0  0  0  0  0  0  0999 V2000
+    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    1.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0  0  0  0
+M  STY  1   1 DAT
+M  SAL   1  2   1   2
+M  SED   1 value
+M  END

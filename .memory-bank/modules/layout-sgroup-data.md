@@ -23,7 +23,7 @@ absolute values; `ReactionLayout` and `PathwayLayout` move whole molecules, whic
 done for an absolute value; the loaders move nothing.
 
 What a stored position means lives on the group, not here: `core/indigo-core/molecule/molecule_sgroups.h#originAtom`,
-which the renderer reads too (`core/render2d/src/render_internal.cpp#originAtom`),
+which the renderer reads too (`core/render2d/src/render_sgroups.cpp#originAtom`),
 `core/indigo-core/molecule/molecule_sgroups.h#displayPoint`,
 `core/indigo-core/molecule/molecule_sgroups.h#setDisplayPoint` and
 `core/indigo-core/molecule/molecule_sgroups.h#transformPosition`.
@@ -70,7 +70,7 @@ which the renderer reads too (`core/render2d/src/render_internal.cpp#originAtom`
   `data-distorted-copolymer.mol`.
 - **A relative position is an offset from the first atom of the group**, as the renderer resolves it. For a group
   without atoms the offset is from the right top corner of a box the renderer hands down its tree of groups
-  (`core/render2d/src/render_internal.cpp#rightTop`): a repeating unit passes the box of its atoms, a component,
+  (`core/render2d/src/render_sgroups.cpp#rightTop`): a repeating unit passes the box of its atoms, a component,
   mixture, formulation or copolymer passes on the box it got, starting from the whole molecule, and a data, generic,
   multiple or superatom group passes none. That box does not turn and is computed anew for every drawing, so such a
   value is left as it is.
