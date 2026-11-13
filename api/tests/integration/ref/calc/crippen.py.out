@@ -4,9 +4,14 @@ CSc1ccc2Sc3ccccc3N(CCC4CCCCN4C)c2c1 on logP passed
 Nc1ccccc1 on logP passed
 CN1C=NC2=C1C(=O)N(C(=O)N2C)C on logP passed
 C1=CC=NC(=C1)NS(=O)(=O)C2=CC=C(C=C2)N=NC3=CC(=C(C=C3)O)C(=O)O on logP passed
+CCc1ccccc1 on logP passed
+CCCC[N+](CCCC)(CCCC)CCCC.[Br-] on logP passed
 c1ccccc1 on molarRefractivity passed
 C[U] on molarRefractivity passed
 Clc1ccccc1 on molarRefractivity passed
+CCc1ccccc1 on molarRefractivity passed
+Fc1ccccc1 on molarRefractivity passed
+CC(=N)C on molarRefractivity passed
 PEPTIDE:A on pKaValues passed
 PEPTIDE:R on pKaValues passed
 PEPTIDE:N on pKaValues passed
