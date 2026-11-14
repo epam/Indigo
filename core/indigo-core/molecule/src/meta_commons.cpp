@@ -24,6 +24,7 @@
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "molecule/monomer_commons.h"
+#include "molecule/parse_utils.h"
 #include "molecule/smiles_saver.h"
 #include <algorithm>
 #include <charconv>
@@ -291,8 +292,10 @@ namespace indigo
                             Value& style_ranges = blocks[i]["inlineStyleRanges"];
                             for (rapidjson::SizeType j = 0; j < style_ranges.Size(); ++j)
                             {
-                                int style_begin = style_ranges[j]["offset"].GetInt();
-                                int style_end = style_begin + style_ranges[j]["length"].GetInt();
+                                // KET offsets count UTF-16 code units; the keys of font_styles are byte offsets in the UTF-8 text.
+                                int style_offset = style_ranges[j]["offset"].GetInt();
+                                size_t style_begin = utf16_offset_to_utf8(text_line.text, style_offset);
+                                size_t style_end = utf16_offset_to_utf8(text_line.text, style_offset + style_ranges[j]["length"].GetInt());
 
                                 std::string style_name = style_ranges[j]["style"].GetString();
                                 KETFontStyle ket_fs;

@@ -2640,8 +2640,9 @@ void MoleculeJsonSaver::saveTextV1(JsonWriter& writer, const SimpleTextObject& t
                     for (auto& ss : ss_queue)
                     {
                         SimpleTextStyle sts;
-                        sts.offset = ss.offset;
-                        sts.size = ss.size;
+                        // ss counts bytes of the UTF-8 text; KET offsets count UTF-16 code units.
+                        sts.offset = utf8_length_in_utf16(line.text, 0, ss.offset);
+                        sts.size = utf8_length_in_utf16(line.text, ss.offset, ss.size);
                         if (fs == KETFontStyle::FontStyle::ESize)
                         {
                             if (auto pval = std::get_if<uint32_t>(&ss.val))

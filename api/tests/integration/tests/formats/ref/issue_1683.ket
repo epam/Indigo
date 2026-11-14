@@ -26,6 +26,7 @@
                                 "text": "Step-1",
                                 "bold": true,
                                 "font": {
+                                    "family": "Arial",
                                     "size": 15,
                                     "color": "#ff"
                                 }
@@ -49,6 +50,7 @@
                                 "text": "2",
                                 "bold": true,
                                 "font": {
+                                    "family": "Arial",
                                     "size": 15,
                                     "color": "#ff"
                                 }
@@ -71,6 +73,7 @@
                             {
                                 "text": "XY6K, QeBL, \r+11 °F, 23 tec",
                                 "font": {
+                                    "family": "Arial",
                                     "size": 15,
                                     "color": "#ff"
                                 }
@@ -98,6 +101,7 @@
                                 "text": "1",
                                 "bold": true,
                                 "font": {
+                                    "family": "Arial",
                                     "size": 15,
                                     "color": "#ff"
                                 }
@@ -121,6 +125,7 @@
                                 "text": "3",
                                 "bold": true,
                                 "font": {
+                                    "family": "Arial",
                                     "size": 15,
                                     "color": "#ff"
                                 }

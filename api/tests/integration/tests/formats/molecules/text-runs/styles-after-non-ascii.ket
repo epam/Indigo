@@ -1,0 +1,17 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "type": "text",
+                "data": {
+                    "content": "{\"blocks\": [{\"key\": \"a\", \"text\": \"βAla (−)\", \"type\": \"unstyled\", \"depth\": 0, \"inlineStyleRanges\": [{\"offset\": 1, \"length\": 3, \"style\": \"BOLD\"}, {\"offset\": 6, \"length\": 1, \"style\": \"ITALIC\"}], \"entityRanges\": [], \"data\": {}}], \"entityMap\": {}}",
+                    "position": {
+                        "x": 1,
+                        "y": -1,
+                        "z": 0
+                    }
+                }
+            }
+        ]
+    }
+}

@@ -41,6 +41,41 @@ bool is_fragment(CdxmlNode& node)
     return node.has_fragment || node.type == kCDXNodeType_Nickname || node.type == kCDXNodeType_Fragment;
 }
 
+static bool is_symbol_font(const CDXFont& font)
+{
+    return font.name == "Symbol" || font.char_set == kCDXCharSetMacSymbol;
+}
+
+// The character of each Symbol font code 0x20-0xFF, from the Adobe Symbol Encoding to Unicode table,
+// https://unicode.org/Public/MAPPINGS/VENDORS/ADOBE/symbol.txt. Where the table gives two characters for a code, the
+// space is used for 0x20, the Greek letter for 0x44, 0x57 and 0x6D, and the fraction slash for 0xA4. The serif and sans
+// serif forms of the registered, copyright and trademark signs (0xD2-0xD4, 0xE2-0xE4) are those signs, not private use
+// characters. The codes that the table does not define (0x7F-0x9F, 0xF0, 0xFF) keep their value.
+// clang-format off
+static const uint16_t kSymbolFontToUnicode[] = {
+    0x0020, 0x0021, 0x2200, 0x0023, 0x2203, 0x0025, 0x0026, 0x220B, 0x0028, 0x0029, 0x2217, 0x002B, 0x002C, 0x2212, 0x002E, 0x002F, // 0x20
+    0x0030, 0x0031, 0x0032, 0x0033, 0x0034, 0x0035, 0x0036, 0x0037, 0x0038, 0x0039, 0x003A, 0x003B, 0x003C, 0x003D, 0x003E, 0x003F, // 0x30
+    0x2245, 0x0391, 0x0392, 0x03A7, 0x0394, 0x0395, 0x03A6, 0x0393, 0x0397, 0x0399, 0x03D1, 0x039A, 0x039B, 0x039C, 0x039D, 0x039F, // 0x40
+    0x03A0, 0x0398, 0x03A1, 0x03A3, 0x03A4, 0x03A5, 0x03C2, 0x03A9, 0x039E, 0x03A8, 0x0396, 0x005B, 0x2234, 0x005D, 0x22A5, 0x005F, // 0x50
+    0xF8E5, 0x03B1, 0x03B2, 0x03C7, 0x03B4, 0x03B5, 0x03C6, 0x03B3, 0x03B7, 0x03B9, 0x03D5, 0x03BA, 0x03BB, 0x03BC, 0x03BD, 0x03BF, // 0x60
+    0x03C0, 0x03B8, 0x03C1, 0x03C3, 0x03C4, 0x03C5, 0x03D6, 0x03C9, 0x03BE, 0x03C8, 0x03B6, 0x007B, 0x007C, 0x007D, 0x223C, 0x007F, // 0x70
+    0x0080, 0x0081, 0x0082, 0x0083, 0x0084, 0x0085, 0x0086, 0x0087, 0x0088, 0x0089, 0x008A, 0x008B, 0x008C, 0x008D, 0x008E, 0x008F, // 0x80
+    0x0090, 0x0091, 0x0092, 0x0093, 0x0094, 0x0095, 0x0096, 0x0097, 0x0098, 0x0099, 0x009A, 0x009B, 0x009C, 0x009D, 0x009E, 0x009F, // 0x90
+    0x20AC, 0x03D2, 0x2032, 0x2264, 0x2044, 0x221E, 0x0192, 0x2663, 0x2666, 0x2665, 0x2660, 0x2194, 0x2190, 0x2191, 0x2192, 0x2193, // 0xA0
+    0x00B0, 0x00B1, 0x2033, 0x2265, 0x00D7, 0x221D, 0x2202, 0x2022, 0x00F7, 0x2260, 0x2261, 0x2248, 0x2026, 0xF8E6, 0xF8E7, 0x21B5, // 0xB0
+    0x2135, 0x2111, 0x211C, 0x2118, 0x2297, 0x2295, 0x2205, 0x2229, 0x222A, 0x2283, 0x2287, 0x2284, 0x2282, 0x2286, 0x2208, 0x2209, // 0xC0
+    0x2220, 0x2207, 0x00AE, 0x00A9, 0x2122, 0x220F, 0x221A, 0x22C5, 0x00AC, 0x2227, 0x2228, 0x21D4, 0x21D0, 0x21D1, 0x21D2, 0x21D3, // 0xD0
+    0x25CA, 0x2329, 0x00AE, 0x00A9, 0x2122, 0x2211, 0xF8EB, 0xF8EC, 0xF8ED, 0xF8EE, 0xF8EF, 0xF8F0, 0xF8F1, 0xF8F2, 0xF8F3, 0xF8F4, // 0xE0
+    0x00F0, 0x232A, 0x222B, 0x2320, 0xF8F5, 0x2321, 0xF8F6, 0xF8F7, 0xF8F8, 0xF8F9, 0xF8FA, 0xF8FB, 0xF8FC, 0xF8FD, 0xF8FE, 0x00FF, // 0xF0
+};
+// clang-format on
+
+static uint32_t symbol_font_to_unicode(uint32_t code)
+{
+    const uint32_t first = 0x20;
+    return code >= first && code < first + std::size(kSymbolFontToUnicode) ? kSymbolFontToUnicode[code - first] : code;
+}
+
 IMPL_ERROR(MoleculeCdxmlLoader, "CDXML loader");
 IMPL_ERROR(CDXMLReader, "CDXML reader");
 IMPL_ERROR(CDXElement, "CDX element");
@@ -60,6 +95,32 @@ std::unique_ptr<CDXProperty> CDXProperty::nextProp()
 static inline double unitsToPoints(double units)
 {
     return round(units * 100 / kCDXUnitsPerPoint) / 100;
+}
+
+// CDXFontTable: UINT16 platform, UINT16 font count, then per font UINT16 id, UINT16 charset, UINT16 name length and
+// the name. A truncated table gives the fonts read before the end of the property.
+std::vector<CDXFont> CDXProperty::fontTable() const
+{
+    std::vector<CDXFont> fonts;
+    uint16_t count = 0;
+    size_t pos = 2 * sizeof(uint16_t);
+    if (_size >= pos)
+        std::memcpy(&count, _data + sizeof(uint16_t), sizeof(count));
+    for (uint16_t i = 0; i < count && pos + 3 * sizeof(uint16_t) <= _size; ++i)
+    {
+        CDXFont font;
+        uint16_t name_size = 0;
+        std::memcpy(&font.font_id, _data + pos, sizeof(uint16_t));
+        std::memcpy(&font.char_set, _data + pos + sizeof(uint16_t), sizeof(uint16_t));
+        std::memcpy(&name_size, _data + pos + 2 * sizeof(uint16_t), sizeof(uint16_t));
+        pos += 3 * sizeof(uint16_t);
+        if (pos + name_size > _size)
+            break;
+        font.name.assign(reinterpret_cast<const char*>(_data + pos), name_size);
+        pos += name_size;
+        fonts.push_back(font);
+    }
+    return fonts;
 }
 
 std::string CDXProperty::formatValue(ECDXType cdx_type) const
@@ -818,11 +879,20 @@ void MoleculeCdxmlLoader::parseCDXMLAttributes(BaseCDXProperty& prop)
                        [](const std::string& s) -> uint32_t { return static_cast<uint32_t>(std::stoul(s)); });
     };
 
-    auto font_table_lambda = [this](const std::string& data) {};
-
     std::unordered_map<std::string, std::function<void(const std::string&)>> cdxml_dispatcher = {
-        {"BoundingBox", cdxml_bbox_lambda}, {"BondLength", cdxml_bond_length_lambda}, {"colortable", color_table_lambda}, {"fonttable", font_table_lambda}};
+        {"BoundingBox", cdxml_bbox_lambda}, {"BondLength", cdxml_bond_length_lambda}, {"colortable", color_table_lambda}};
     applyDispatcher(prop, cdxml_dispatcher);
+
+    // The font table of binary CDX is a document property; CDXML has a <fonttable> element instead (parseFontTable).
+    if (_is_binary)
+        for (auto ptr = prop.copy(); ptr->hasContent(); ptr = ptr->next())
+            if (auto cdx_prop = dynamic_cast<CDXProperty*>(ptr.get()); cdx_prop && cdx_prop->tag() == kCDXProp_FontTable)
+                for (auto& font : cdx_prop->fontTable())
+                {
+                    if (!is_valid_utf8(font.name))
+                        font.name = latin1_to_utf8(font.name);
+                    font_table.emplace(font.font_id, font);
+                }
 }
 
 void MoleculeCdxmlLoader::parseColorTable(BaseCDXElement& elem)
@@ -854,6 +924,7 @@ void MoleculeCdxmlLoader::parseFontTable(BaseCDXElement& elem)
         if (font_elem->name() == "font")
         {
             int font_id = 0;
+            int charset = kCDXCharSetUnknown;
             std::string font_name;
             for (auto font_prop = font_elem->firstProperty(); font_prop->hasContent(); font_prop = font_prop->next())
             {
@@ -861,9 +932,15 @@ void MoleculeCdxmlLoader::parseFontTable(BaseCDXElement& elem)
                     font_id = std::stoi(font_prop->value());
                 else if (font_prop->name() == "name")
                     font_name = font_prop->value();
+                else if (font_prop->name() == "charset")
+                {
+                    auto charset_it = kCharsetStrToInt.find(font_prop->value());
+                    if (charset_it != kCharsetStrToInt.end())
+                        charset = charset_it->second;
+                }
             }
-            if (font_id && font_name.size())
-                font_table.emplace(font_id, font_name);
+            if (font_id)
+                font_table.emplace(font_id, CDXFont{static_cast<uint16_t>(font_id), static_cast<uint16_t>(charset), font_name});
         }
     }
 }
@@ -1771,6 +1848,7 @@ void MoleculeCdxmlLoader::_parseAltGroup(BaseCDXElement& elem)
             RGroup& rgroup = rgroups.getRGroup(r_labels.front());
             BaseMolecule& fragment = rgroup.fragments.push_t(BaseMolecule::poolFactoryLike(mol));
             alt_loader.setOptions(getOptions());
+            alt_loader.font_table = font_table;
             alt_loader.loadMoleculeFromFragment(fragment, *r_fragments.front());
         }
     }
@@ -2000,13 +2078,42 @@ void MoleculeCdxmlLoader::_parseLabel(BaseCDXElement& elem, std::string& label)
     {
         std::string text_element = text_style->value();
         if (text_element == "s")
-        {
-            auto txt = text_style->getText();
-            if (!is_valid_utf8(txt))
-                txt = latin1_to_utf8(txt);
-            label += txt;
-        }
+            label += _runText(*text_style);
     }
+}
+
+// The text of a run of a text object or a label, as UTF-8. A run in a Symbol font is read in the Symbol font encoding:
+// in binary CDX its bytes are the codes, in CDXML the characters up to U+00FF are. Other binary text is read as UTF-8
+// when it is valid UTF-8 and as Latin-1 otherwise.
+std::string MoleculeCdxmlLoader::_runText(BaseCDXElement& run)
+{
+    std::string text = run.getText();
+    AutoInt font_id = 0;
+    applyDispatcher(*run.firstProperty(), {{"font", intLambda(font_id)}});
+    auto font_it = font_table.find(font_id);
+    if (font_it == font_table.end() || !is_symbol_font(font_it->second))
+        return is_valid_utf8(text) ? text : latin1_to_utf8(text);
+
+    std::string result;
+    for (size_t pos = 0; pos < text.size();)
+    {
+        uint32_t code = _is_binary ? static_cast<uint8_t>(text[pos++]) : utf8_next_code_point(text, pos);
+        utf8_append_code_point(result, code <= 0xFF ? symbol_font_to_unicode(code) : code);
+    }
+    return result;
+}
+
+// A text object is a reaction plus only when its whole text, without surrounding whitespace, is "+". A caption such as
+// "(+)-1" can have its "+" in a run of its own.
+bool MoleculeCdxmlLoader::_isPlusText(BaseCDXElement& elem)
+{
+    std::string text;
+    for (auto text_style = elem.firstChildElement(); text_style->hasContent(); text_style = text_style->nextSiblingElement())
+        if (text_style->name() == "s")
+            text += text_style->getText();
+    const char* spaces = " \t\r\n";
+    auto first = text.find_first_not_of(spaces);
+    return first != std::string::npos && text[first] == '+' && text.find_last_not_of(spaces) == first;
 }
 
 void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vector<SimpleTextObject>& text_objects)
@@ -2046,25 +2153,23 @@ void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vecto
     if (bbox.width() == 0.0f || bbox.height() == 0.0f)
         bbox.copy(Rect2f(text_pos, text_pos));
 
+    if (_isPlusText(elem))
+    {
+        _pluses.push_back(kto.boundingBox().center());
+        return;
+    }
+
     for (auto text_style = elem.firstChildElement(); text_style->hasContent(); text_style = text_style->nextSiblingElement())
     {
         std::string text_element = text_style->name();
         // "s" = parts
         if (text_element == "s")
         {
-            std::string style_text = text_style->getText();
-            if (!is_valid_utf8(style_text))
-                style_text = latin1_to_utf8(style_text);
+            std::string style_text = _runText(*text_style);
 
             // workaround for empty text. bug in tinyxml2.
             if (style_text.empty())
                 style_text += " ";
-
-            if (style_text == "+")
-            {
-                _pluses.push_back(kto.boundingBox().center());
-                return;
-            }
 
             // add paragraph
             if (kto.block().empty())
@@ -2130,8 +2235,8 @@ void MoleculeCdxmlLoader::_parseTextToKetObject(BaseCDXElement& elem, std::vecto
 
                 // set fss font family
                 auto font_it = font_table.find(font_id);
-                if (font_it != font_table.end())
-                    fss.emplace(std::piecewise_construct, std::forward_as_tuple(KETFontStyle::FontStyle::EFamily, font_it->second),
+                if (font_it != font_table.end() && font_it->second.name.size())
+                    fss.emplace(std::piecewise_construct, std::forward_as_tuple(KETFontStyle::FontStyle::EFamily, font_it->second.name),
                                 std::forward_as_tuple(true));
 
                 auto prev_it = paragraph.font_styles.find(paragraph.text.size());

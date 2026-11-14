@@ -971,7 +971,7 @@ test-multi.cdxml
 M  STY  6   1 SUP   2 SUP   3 SUP   4 SUP   5 DAT   6 DAT
 M  SLB  6   1   1   2   2   3   3   4   4   5   5   6   6
 M  SAL   1  5   1   2   3   4   5
-M  SMT   1 bAla
+M  SMT   1 βAla
 M  SAP   1  2   1   0      5   0   
 M  SAL   2  8   6   7   8   9  10  11  12  13
 M  SAL   2  6  14  15  16  17  18  19

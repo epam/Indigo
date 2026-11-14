@@ -16392,7 +16392,7 @@ invalid-ascii.cdx
                 ]
             },
             {
-                "label": "R¢1",
+                "label": "R′1",
                 "location": [
                     4.788332939147949,
                     -2.1083333492279054,
@@ -16626,7 +16626,7 @@ invalid-ascii.cdx
                 ]
             },
             {
-                "label": "R¢1",
+                "label": "R′1",
                 "location": [
                     1.6383334398269654,
                     -4.691666603088379,
@@ -17218,7 +17218,7 @@ CDXML loader: Not a molecule. Found 1 arrows.
             {
                 "type": "text",
                 "data": {
-                    "content": "{\"blocks\":[{\"text\":\"XY6K, QeBL, \\n+11 °F, 23 tec\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":28,\"style\":\"CUSTOM_FONT_SIZE_15px\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
+                    "content": "{\"blocks\":[{\"text\":\"XY6K, QeBL, \\n+11 °F, 23 tec\",\"inlineStyleRanges\":[{\"offset\":0,\"length\":27,\"style\":\"CUSTOM_FONT_SIZE_15px\"}],\"entityRanges\":[],\"data\":{}}],\"entityMap\":{}}",
                     "position": {
                         "x": 1.9953333139419556,
                         "y": -0.917333483695984,
