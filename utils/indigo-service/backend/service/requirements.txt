@@ -1,3 +1,4 @@
+kombu==5.2.4
 celery==5.2.7
 epam.indigo
 flasgger==0.9.7.1
