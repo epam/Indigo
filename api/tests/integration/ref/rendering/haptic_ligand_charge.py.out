@@ -1,4 +1,4 @@
-*** The corner of each quadrant, and the boundaries between them ***
+*** The four directions of the bond, and the diagonals ***
 ring-bond-up.svg:SUCCEED
 ring-bond-right.svg:SUCCEED
 ring-bond-down.svg:SUCCEED
@@ -11,7 +11,7 @@ benzene-bond-315.svg:SUCCEED
 ring-doublet.svg:SUCCEED
 ring-singlet.svg:SUCCEED
 ring-triplet.svg:SUCCEED
-*** Out of the corner when something is in the way ***
+*** Along the line when something is in the way ***
 ring-bond-60.svg:SUCCEED
 ring-bond-120.svg:SUCCEED
 ethylene-bond-left.svg:SUCCEED
@@ -21,6 +21,7 @@ allyl-bond-up.svg:SUCCEED
 allyl-bond-75.svg:SUCCEED
 allyl-bond-75-radical.svg:SUCCEED
 allyl-bond-120.svg:SUCCEED
+allyl-convex-radical.svg:SUCCEED
 *** The first haptic bond decides; sandwiches ***
 ring-two-metals.svg:SUCCEED
 sandwich-vertical.svg:SUCCEED

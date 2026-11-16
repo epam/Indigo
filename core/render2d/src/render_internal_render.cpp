@@ -29,6 +29,7 @@
 #include "render_context.h"
 #include "render_internal.h"
 #include <algorithm>
+#include <cmath>
 #include <limits>
 #include <regex>
 
@@ -47,37 +48,16 @@ namespace
     // radical shrink in the same proportion as the digits.
     constexpr float ATTACHMENT_GROUP_LABEL_TO_ATOM_LABEL = 1.0f / 3;
 
-    // Clockwise quarter turns from "up" to the quadrant a direction falls in, y pointing up. Up is [135, 45) degrees,
-    // right [45, 315), down [315, 225), left [225, 135): a boundary belongs to the quadrant clockwise of it. A zero
-    // direction counts as up.
-    int quarterTurnsToQuadrant(float dx, float dy)
-    {
-        if (dx > 0 && -dx < dy && dy <= dx)
-            return 1;
-        if (dy < 0 && dy < dx && dx <= -dy)
-            return 2;
-        if (dx < 0 && dx <= dy && dy < -dx)
-            return 3;
-        return 0;
-    }
-
-    // How far a label of a group may move out of its corner, as a share of the distance from the group centre to
-    // its nearest atom: within it the label stays nearer the centre than any atom and reads as the ligand's, not
+    // How far the label of a group may move along its haptic line, as a share of the distance from the group centre
+    // to its nearest atom: within it the label stays nearer the centre than any atom and reads as the ligand's, not
     // as an atom's charge.
     constexpr float ATTACHMENT_GROUP_LABEL_REACH = 0.5f;
 
-    // With the bond pointing up, the charge of a group stands at the top right of its centre and the radical at the
-    // top left (y pointing up); the arrangement turns with the bond.
-    const Vec2f CHARGE_CORNER(1, 1);
-    const Vec2f RADICAL_CORNER(-1, 1);
-
-    // `corner` turned `quarter_turns` times clockwise, with y flipped to point down as on the canvas.
-    Vec2f canvasCorner(Vec2f corner, int quarter_turns)
-    {
-        for (int turn = 0; turn < quarter_turns; ++turn)
-            corner.rotate(-1, 0);
-        return Vec2f(corner.x, -corner.y);
-    }
+    // The side of the haptic line each sign of a group takes, as the picture is seen from the group centre towards
+    // the metal: the charge on the right and the radical on the left - top right and top left with the bond pointing
+    // up, turning with the line.
+    constexpr float CHARGE_SIDE = 1;
+    constexpr float RADICAL_SIDE = -1;
 
     // `rect` as a convex polygon, `margin` wider on every side.
     std::vector<Vec2f> outlineOf(const Rect2f& rect, float margin)
@@ -105,17 +85,22 @@ namespace
         return {start - across, end - across, end + across, start + across};
     }
 
-    // The least shift t >= 0 along `direction` at which `label` intersects none of `obstacles`; a shift at which it
-    // only touches the margin of one counts as free.
-    float leastFreeShift(const std::vector<Vec2f>& label, const Vec2f& direction, const std::vector<std::vector<Vec2f>>& obstacles)
+    // An index that names no obstacle.
+    constexpr size_t NO_OBSTACLE = std::numeric_limits<size_t>::max();
+
+    // The least shift t >= 0 along `direction` at which none of `labels` intersects any of `obstacles` but the one at
+    // index `skip`; a shift at which a label only touches the margin of an obstacle counts as free.
+    float leastFreeShift(const std::vector<std::vector<Vec2f>>& labels, const Vec2f& direction, const std::vector<std::vector<Vec2f>>& obstacles,
+                         size_t skip)
     {
         std::vector<std::pair<float, float>> blocked;
-        for (const std::vector<Vec2f>& obstacle : obstacles)
-        {
-            float low, high;
-            if (convexPolygonsIntersectAlong(label, obstacle, direction, low, high))
-                blocked.emplace_back(low, high);
-        }
+        for (const std::vector<Vec2f>& label : labels)
+            for (size_t k = 0; k < obstacles.size(); ++k)
+            {
+                float low, high;
+                if (k != skip && convexPolygonsIntersectAlong(label, obstacles[k], direction, low, high))
+                    blocked.emplace_back(low, high);
+            }
         std::sort(blocked.begin(), blocked.end());
 
         float shift = 0;
@@ -140,76 +125,64 @@ namespace
         return group.charge() != 0 || group.radical() != 0;
     }
 
-    // Where the labels of one attachment group may stand on the canvas, y pointing down: `gap` from `centre` on both
-    // axes, at most `reach` further out of a corner, clear of `obstacles`. Each placed label joins `obstacles`,
-    // `clearance` wider.
+    // One sign of the label of a group, its charge or its radical: the items that draw it, laid out from (0, 0),
+    // their joint box, the side of the haptic line the sign takes, and where the box ends up.
+    struct LabelSign
+    {
+        std::vector<RenderItem*> items;
+        Vec2f size;
+        float side;
+        Vec2f top_left;
+    };
+
+    // Where the signs of one group stand on the canvas, y pointing down: beside the haptic line that runs from
+    // `centre` along `along`, a unit vector, towards the metal - their near side `line_standoff` from its axis, their
+    // near end `gap` from the centre, clear of `obstacles` except the group's own line, `obstacles[own_line]`, which a
+    // sign beside the axis never meets. Each placed sign joins `obstacles`, `clearance` wider.
     struct LabelPlacement
     {
         Vec2f centre;
-        Vec2f toward_metal;
+        Vec2f along;
         float gap;
         float reach;
+        float line_standoff;
         float clearance;
         std::vector<std::vector<Vec2f>>& obstacles;
+        size_t own_line;
     };
 
-    // The free place nearest to the centre in the corner `corner` points to: `gap` from the centre on both axes, then,
-    // if anything drawn is in the way, out along the diagonal of the corner or along one of its sides, whichever frees
-    // the label soonest. Returns how far the label had to move.
-    float freePlaceIn(const LabelPlacement& placement, const Vec2f& size, const Vec2f& corner, Vec2f& top_left)
+    // Puts `signs` beside the line, each on its side, and moves their items there. When something drawn is in the way
+    // of a sign, all of them move together along the line, so that the line keeps running between them and the gap
+    // across it stays: to the nearest free place towards the metal or back towards the ligand, back by at most
+    // `reach`, towards the metal however far.
+    void placeBesideLine(LabelPlacement& placement, std::vector<LabelSign>& signs)
     {
-        const Vec2f& centre = placement.centre;
-        const float gap = placement.gap;
-        top_left.set(corner.x > 0 ? centre.x + gap : centre.x - gap - size.x, corner.y > 0 ? centre.y + gap : centre.y - gap - size.y);
-        Vec2f bottom_right;
-        bottom_right.sum(top_left, size);
-        const std::vector<Vec2f> box = outlineOf(Rect2f(top_left, bottom_right), 0);
-
-        Vec2f diagonal(corner);
-        diagonal.normalize();
-        const Vec2f directions[3] = {diagonal, Vec2f(corner.x, 0), Vec2f(0, corner.y)};
-        Vec2f best_direction = directions[0];
-        float best_shift = leastFreeShift(box, directions[0], placement.obstacles);
-        for (int k = 1; k < 3; ++k)
+        const Vec2f& along = placement.along;
+        const Vec2f right(-along.y, along.x);
+        std::vector<std::vector<Vec2f>> boxes;
+        for (LabelSign& sign : signs)
         {
-            const float shift = leastFreeShift(box, directions[k], placement.obstacles);
-            if (shift < best_shift)
-            {
-                best_shift = shift;
-                best_direction = directions[k];
-            }
+            // The box stays upright: these are its half extents along and across a tilted line.
+            const float half_along = sign.size.x / 2 * std::fabs(along.x) + sign.size.y / 2 * std::fabs(along.y);
+            const float half_across = sign.size.x / 2 * std::fabs(right.x) + sign.size.y / 2 * std::fabs(right.y);
+            Vec2f middle(placement.centre);
+            middle.addScaled(along, placement.gap + half_along);
+            middle.addScaled(right, sign.side * (placement.line_standoff + half_across));
+            sign.top_left.set(middle.x - sign.size.x / 2, middle.y - sign.size.y / 2);
+            boxes.push_back(outlineOf(Rect2f(sign.top_left, sign.top_left + sign.size), 0));
         }
-        top_left.addScaled(best_direction, best_shift);
-        return best_shift;
-    }
 
-    // The top left of a label of `size` meant for `corner`: there when that corner has room within reach of the
-    // centre; otherwise in the neighbouring corner on the side of the metal, then in the other neighbouring corner -
-    // the label stays by the ligand rather than end up beside an atom. When no corner has room within reach, its own
-    // corner, however far.
-    Vec2f placeLabel(LabelPlacement& placement, const Vec2f& size, const Vec2f& corner)
-    {
-        Vec2f clockwise(corner), anticlockwise(corner);
-        clockwise.rotate(1, 0);
-        anticlockwise.rotate(-1, 0);
-        const bool clockwise_first = Vec2f::dot(clockwise, placement.toward_metal) >= Vec2f::dot(anticlockwise, placement.toward_metal);
-        const Vec2f corners[3] = {corner, clockwise_first ? clockwise : anticlockwise, clockwise_first ? anticlockwise : clockwise};
-
-        Vec2f top_left;
-        bool within_reach = false;
-        for (const Vec2f& candidate : corners)
-            if (freePlaceIn(placement, size, candidate, top_left) <= placement.reach)
-            {
-                within_reach = true;
-                break;
-            }
-        if (!within_reach)
-            freePlaceIn(placement, size, corner, top_left);
-
-        Vec2f bottom_right;
-        bottom_right.sum(top_left, size);
-        placement.obstacles.push_back(outlineOf(Rect2f(top_left, bottom_right), placement.clearance));
-        return top_left;
+        float shift = leastFreeShift(boxes, along, placement.obstacles, placement.own_line);
+        const float back = leastFreeShift(boxes, Vec2f(-along.x, -along.y), placement.obstacles, placement.own_line);
+        if (back < shift && back <= placement.reach)
+            shift = -back;
+        for (LabelSign& sign : signs)
+        {
+            sign.top_left.addScaled(along, shift);
+            for (RenderItem* item : sign.items)
+                item->bbp.add(sign.top_left);
+            placement.obstacles.push_back(outlineOf(Rect2f(sign.top_left, sign.top_left + sign.size), placement.clearance));
+        }
     }
 }
 
@@ -481,11 +454,16 @@ void MoleculeRenderInternal::_prepareAttachmentGroupLabels()
         addItemObstacle(_data.textitems[i]);
     for (int i = 0; i < _data.graphitems.size(); ++i)
         addItemObstacle(_data.graphitems[i]);
+    // The line of each haptic bond, by the index of the bond: a label stands beside the line of its own bond.
+    std::vector<size_t> line_of_bond(bonds.end(), NO_OBSTACLE);
     for (int i = bonds.begin(); i != bonds.end(); i = bonds.next(i))
     {
         Vec2f begin, end;
         if (_hapticLine(bonds.at(i), begin, end))
+        {
+            line_of_bond[i] = obstacles.size();
             obstacles.push_back(outlineOfStroke(begin, end, _settings.bondLineWidth / 2, clearance));
+        }
     }
 
     // Bonds in index order, the order the file lists them: a group's first haptic bond places its label.
@@ -501,11 +479,11 @@ void MoleculeRenderInternal::_prepareAttachmentGroupLabels()
             continue;
 
         labelled[group_end.index()] = true;
-        _prepareAttachmentGroupLabel(bond, obstacles);
+        _prepareAttachmentGroupLabel(bond, obstacles, line_of_bond[i]);
     }
 }
 
-void MoleculeRenderInternal::_prepareAttachmentGroupLabel(const HapticBond& bond, std::vector<std::vector<Vec2f>>& obstacles)
+void MoleculeRenderInternal::_prepareAttachmentGroupLabel(const HapticBond& bond, std::vector<std::vector<Vec2f>>& obstacles, size_t own_line)
 {
     const bool group_begins = bond.begin().isGroup();
     const HapticBond::Endpoint& group_end = group_begins ? bond.begin() : bond.end();
@@ -520,67 +498,65 @@ void MoleculeRenderInternal::_prepareAttachmentGroupLabel(const HapticBond& bond
     if (!_hapticEndpointPos(group_end, centre, no_label_atom) || !_mol->hasVertex(atom))
         return;
 
-    // The quadrant comes from the coordinates of the molecule, where y points up as on the picture: the canvas only
-    // shifts and scales them, and its rounding must not decide a bond lying on a boundary.
-    const Vec3f group_centre = _mol->attachmentGroupCentre(group_end.index());
-    const Vec3f& atom_position = _mol->getAtomXyz(atom);
-    const int quarter_turns = quarterTurnsToQuadrant(atom_position.x - group_centre.x, atom_position.y - group_centre.y);
-
     AttachmentGroupLabel& label = _data.attachmentGroupLabels.push();
     // The size of an atom charge times this gives the share of the atom label above.
     const float size_factor = static_cast<float>(ATTACHMENT_GROUP_LABEL_TO_ATOM_LABEL * _cw.fontGetSize(FONT_SIZE_LABEL) / _cw.fontGetSize(FONT_SIZE_ATTR));
 
-    Vec2f toward_metal;
-    toward_metal.diff(_ad(atom).pos, centre);
+    // From the centre towards the metal, as the line runs; a metal drawn on the centre counts as above it.
+    Vec2f along;
+    along.diff(_ad(atom).pos, centre);
+    if (!along.normalize())
+        along.set(0, -1);
 
     float nearest_atom = std::numeric_limits<float>::infinity();
     for (int member : group.atoms())
         nearest_atom = std::min(nearest_atom, Vec2f::dist(_ad(member).pos, centre));
 
-    const float reach = ATTACHMENT_GROUP_LABEL_REACH * nearest_atom;
-    LabelPlacement placement{centre, toward_metal, _settings.labelInternalOffset, reach, _settings.boundExtent, obstacles};
-    const auto place = [&placement](const std::vector<RenderItem*>& parts, const Vec2f& size, const Vec2f& corner) {
-        const Vec2f top_left = placeLabel(placement, size, corner);
-        for (RenderItem* part : parts)
-            part->bbp.add(top_left);
-    };
+    LabelPlacement placement{centre,
+                             along,
+                             _settings.labelInternalOffset,
+                             ATTACHMENT_GROUP_LABEL_REACH * nearest_atom,
+                             _settings.bondLineWidth / 2 + _settings.boundExtent,
+                             _settings.boundExtent,
+                             obstacles,
+                             own_line};
 
+    std::vector<LabelSign> signs;
     if (group.charge() != 0)
     {
         const ChargeItems items = _pushChargeItems(label, group.charge(), size_factor, CWC_BASE, false);
-        std::vector<RenderItem*> parts;
-        Vec2f size;
+        LabelSign charge{{}, Vec2f(), CHARGE_SIDE, Vec2f()};
         if (items.value >= 0)
         {
             TextItem& value = _data.textitems[items.value];
-            parts.push_back(&value);
-            size.x += value.bbsz.x;
-            size.y = std::max(size.y, value.bbsz.y);
+            charge.items.push_back(&value);
+            charge.size.x += value.bbsz.x;
+            charge.size.y = std::max(charge.size.y, value.bbsz.y);
         }
         GraphItem& sign = _data.graphitems[items.sign];
-        sign.bbp.set(size.x, 0);
-        parts.push_back(&sign);
-        size.x += sign.bbsz.x;
-        size.y = std::max(size.y, sign.bbsz.y);
-        place(parts, size, canvasCorner(CHARGE_CORNER, quarter_turns));
+        sign.bbp.set(charge.size.x, 0);
+        charge.items.push_back(&sign);
+        charge.size.x += sign.bbsz.x;
+        charge.size.y = std::max(charge.size.y, sign.bbsz.y);
+        signs.push_back(std::move(charge));
     }
 
     if (group.radical() != 0)
     {
         const RadicalItems items = _pushRadicalItems(label, group.radical(), size_factor, CWC_BASE, false);
-        std::vector<RenderItem*> parts;
         GraphItem& first = _data.graphitems[items.first];
-        parts.push_back(&first);
-        Vec2f size(first.bbsz);
+        LabelSign radical{{&first}, first.bbsz, RADICAL_SIDE, Vec2f()};
         if (items.second >= 0)
         {
             GraphItem& second = _data.graphitems[items.second];
-            second.bbp.set(size.x + items.spacing, 0);
-            parts.push_back(&second);
-            size.x += items.spacing + second.bbsz.x;
+            second.bbp.set(radical.size.x + items.spacing, 0);
+            radical.items.push_back(&second);
+            radical.size.x += items.spacing + second.bbsz.x;
         }
-        place(parts, size, canvasCorner(RADICAL_CORNER, quarter_turns));
+        signs.push_back(std::move(radical));
     }
+
+    placeBesideLine(placement, signs);
 }
 
 void MoleculeRenderInternal::_renderAttachmentGroupLabels()

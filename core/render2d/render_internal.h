@@ -125,12 +125,13 @@ namespace indigo
         void _clipHapticEndToLabel(int label_atom, Vec2f& pos, const Vec2f& other);
         // The line of a haptic bond, clipped to the label of its atom end; false when nothing is drawn.
         bool _hapticLine(const HapticBond& bond, Vec2f& begin, Vec2f& end);
-        // The charge and the radical of each attachment group with a haptic bond, in the corners its first haptic
-        // bond selects, moved out of the corner only as far as the drawn bonds and labels require. Prepared after
-        // everything else is drawn, which they never move.
+        // The charge and the radical of each attachment group with a haptic bond, beside the line of its first haptic
+        // bond, moved along the line only as far as the drawn bonds and labels require. Prepared after everything
+        // else is drawn, which they never move.
         void _prepareAttachmentGroupLabels();
-        // `obstacles`: the convex outlines, a margin wider than drawn, of everything the label must not touch.
-        void _prepareAttachmentGroupLabel(const HapticBond& bond, std::vector<std::vector<Vec2f>>& obstacles);
+        // `obstacles`: the convex outlines, a margin wider than drawn, of everything the label must not touch;
+        // `own_line`: the index in it of the line of `bond`, or none.
+        void _prepareAttachmentGroupLabel(const HapticBond& bond, std::vector<std::vector<Vec2f>>& obstacles, size_t own_line);
         void _renderAttachmentGroupLabels();
         void _applyBondOffset();
         void _setBondCenter();

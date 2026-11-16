@@ -55,7 +55,7 @@ def without_charges(molecule):
     return molecule
 
 
-print("*** The corner of each quadrant, and the boundaries between them ***")
+print("*** The four directions of the bond, and the diagonals ***")
 for name in (
     "ring-bond-up",
     "ring-bond-right",
@@ -72,7 +72,7 @@ print("*** The radical beside the charge ***")
 for name in ("ring-doublet", "ring-singlet", "ring-triplet"):
     compare(name, svg(load(name)))
 
-print("*** Out of the corner when something is in the way ***")
+print("*** Along the line when something is in the way ***")
 for name in (
     "ring-bond-60",
     "ring-bond-120",
@@ -83,6 +83,7 @@ for name in (
     "allyl-bond-75",
     "allyl-bond-75-radical",
     "allyl-bond-120",
+    "allyl-convex-radical",
 ):
     compare(name, svg(load(name)))
 
