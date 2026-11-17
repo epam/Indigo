@@ -3,9 +3,10 @@ The charge and the radical of an attachment group, drawn by the centre of the
 group.
 
 Every picture is compared as SVG: the text of the drawing shows which sign is
-drawn and where it stands, which the coarse hash of a PNG does not. A ligand is
-one fixture, turned to the direction of each case; the charge and the radical
-of a case are set through the API.
+drawn and where it stands, which the coarse hash of a PNG does not. The cases
+of a section share one picture, a grid with the name of each case under it. A
+ligand is one fixture, turned to the direction of each case; the charge and
+the radical of a case are set through the API.
 """
 
 # The Java job runs this suite under Jython 2.7, where a bare print() would print
@@ -35,6 +36,10 @@ renderer = IndigoRenderer(indigo)
 indigo.resetOptions()
 indigo.setOption("render-output-format", "svg")
 indigo.setOption("render-svg-unique-id", False)
+GRID_TITLE = "grid-comment"
+indigo.setOption("render-grid-title-property", GRID_TITLE)
+indigo.setOption("render-grid-margins", "40, 40")
+indigo.setOption("render-grid-title-offset", 10)
 
 
 # Directions in degrees counterclockwise from the x axis.
@@ -107,6 +112,19 @@ def svg(picture):
     return "".join(chr(b & 0xFF) for b in renderer.renderToBuffer(picture))
 
 
+def grid_svg(cells, columns=None):
+    """One picture of the cells, each a (title, molecule), `columns` a row;
+    all of them in one row by default."""
+    grid = indigo.createArray()
+    for title, molecule in cells:
+        molecule.setProperty(GRID_TITLE, title)
+        grid.arrayAdd(molecule)
+    return "".join(
+        chr(b & 0xFF)
+        for b in renderer.renderGridToBuffer(grid, None, columns or len(cells))
+    )
+
+
 def compare(name, picture_svg):
     compare_diff(ref_path, name + ".svg", picture_svg)
 
@@ -120,74 +138,111 @@ def without_charges(molecule):
 
 DIANION = -2
 DIANION_LABELS = (
-    ("dianion", 0),
-    ("dianion-singlet", Indigo.SINGLET),
-    ("dianion-triplet", Indigo.TRIPLET),
+    ("", 0),
+    (" singlet", Indigo.SINGLET),
+    (" triplet", Indigo.TRIPLET),
 )
+DIANION_COLUMNS = 2 * len(DIANION_LABELS)  # two cases a row
 
 
-def compare_dianion(name, make):
-    for suffix, radical in DIANION_LABELS:
-        compare(
-            "%s-%s" % (name, suffix),
-            svg(labelled(make(), DIANION, radical)),
-        )
+def dianion_cells(cases):
+    return [
+        (name + suffix, labelled(make(), DIANION, radical))
+        for name, make in cases
+        for suffix, radical in DIANION_LABELS
+    ]
+
+
+def drawn(cases):
+    return [(name, make()) for name, make in cases]
 
 
 RING_AXIS_CHARGES = ((UP, -1), (RIGHT, -2), (DOWN, 1), (LEFT, 12))
-DIRECTION_CASES = (
-    [oriented(RING, degrees, charge) for degrees, charge in RING_AXIS_CHARGES]
-    + [oriented(BENZENE, degrees) for degrees in DIAGONALS]
-    + [
-        oriented(ligand, degrees)
-        for ligand in (ETHYLENE, ALLYL)
-        for degrees in AXES + DIAGONALS
-    ]
-)
+RING_CASES = [
+    oriented(RING, degrees, charge) for degrees, charge in RING_AXIS_CHARGES
+] + [oriented(BENZENE, degrees) for degrees in DIAGONALS]
+ETHYLENE_CASES = [oriented(ETHYLENE, degrees) for degrees in AXES + DIAGONALS]
+ALLYL_CASES = [oriented(ALLYL, degrees) for degrees in AXES + DIAGONALS]
 ALLYLS_IN_THE_WAY = [
     oriented(ALLYL, ALLYL_LINE_NEAR_BOND),
     oriented(ALLYL, 120),
     as_drawn("allyl-convex-radical"),
 ]
+IN_THE_WAY = "in-the-way"
 
 print("*** The four directions of the bond, and the diagonals ***")
-for name, make in DIRECTION_CASES:
-    compare(name, svg(make()))
+compare(
+    "directions",
+    grid_svg(
+        drawn(RING_CASES + ETHYLENE_CASES + ALLYL_CASES),
+        len(AXES + DIAGONALS),
+    ),
+)
 
 print("*** The radical beside the charge ***")
-for name, degrees, charge, radical in (
-    ("ring-doublet", UP, 0, Indigo.DOUBLET),
-    ("ring-singlet", RIGHT, -1, Indigo.SINGLET),
-    ("ring-triplet", DOWN, -2, Indigo.TRIPLET),
-):
-    compare(name, svg(labelled(bonded(RING, degrees), charge, radical)))
+compare(
+    "radical-beside-charge",
+    grid_svg(
+        [
+            (name, labelled(bonded(RING, degrees), charge, radical))
+            for name, degrees, charge, radical in (
+                ("ring-doublet", UP, 0, Indigo.DOUBLET),
+                ("ring-singlet", RIGHT, -1, Indigo.SINGLET),
+                ("ring-triplet", DOWN, -2, Indigo.TRIPLET),
+            )
+        ]
+    ),
+)
 
 print("*** Along the line when something is in the way ***")
-for name, make in [
-    as_drawn("ring-bond-60"),
-    as_drawn("ring-bond-120"),
-    oriented(ETHYLENE, 40),
-    as_drawn("ethylene-askew"),
-    (
-        "allyl-bond-%d-radical" % ALLYL_LINE_NEAR_BOND,
-        lambda: labelled(
-            bonded(ALLYL, ALLYL_LINE_NEAR_BOND), -1, Indigo.DOUBLET
+compare(
+    IN_THE_WAY,
+    grid_svg(
+        drawn(
+            [
+                as_drawn("ring-bond-60"),
+                as_drawn("ring-bond-120"),
+                oriented(ETHYLENE, 40),
+                as_drawn("ethylene-askew"),
+                (
+                    "allyl-bond-%d-radical" % ALLYL_LINE_NEAR_BOND,
+                    lambda: labelled(
+                        bonded(ALLYL, ALLYL_LINE_NEAR_BOND),
+                        -1,
+                        Indigo.DOUBLET,
+                    ),
+                ),
+            ]
+            + ALLYLS_IN_THE_WAY
         ),
+        4,
     ),
-] + ALLYLS_IN_THE_WAY:
-    compare(name, svg(make()))
+)
 
 print("*** A dianion, alone and with a diradical ***")
-for name, make in DIRECTION_CASES + ALLYLS_IN_THE_WAY:
-    compare_dianion(name, make)
+for group, cases in (
+    (RING, RING_CASES),
+    (ETHYLENE, ETHYLENE_CASES),
+    (ALLYL, ALLYL_CASES),
+    (IN_THE_WAY, ALLYLS_IN_THE_WAY),
+):
+    compare(
+        "dianion-" + group, grid_svg(dianion_cells(cases), DIANION_COLUMNS)
+    )
 
 print("*** The first haptic bond decides; sandwiches ***")
-for name, make in (
-    as_drawn("ring-two-metals"),
-    as_drawn(SANDWICH),
-    ("sandwich-horizontal", lambda: turned(SANDWICH, 90)),
-):
-    compare(name, svg(make()))
+compare(
+    "sandwiches",
+    grid_svg(
+        drawn(
+            [
+                as_drawn("ring-two-metals"),
+                as_drawn(SANDWICH),
+                ("sandwich-horizontal", lambda: turned(SANDWICH, 90)),
+            ]
+        )
+    ),
+)
 
 print("*** No label ***")
 compare("ring-neutral", svg(labelled(bonded(RING, UP), 0, 0)))
@@ -210,19 +265,13 @@ print(
     % (markush_neutral == svg(markush))
 )
 
-print("*** A reaction and a grid ***")
-(first, make_first), (second, make_second) = DIRECTION_CASES[:2]
+print("*** A picture of its own and a reaction ***")
+(first, make_first), (second, make_second) = RING_CASES[:2]
+compare(first, svg(make_first()))
 reaction = indigo.createReaction()
 reaction.addReactant(make_first())
 reaction.addProduct(make_second())
 compare(first + "-reaction", svg(reaction))
-grid = indigo.createArray()
-grid.arrayAdd(make_first())
-grid.arrayAdd(make_second())
-compare(
-    first + "-grid",
-    "".join(chr(b & 0xFF) for b in renderer.renderGridToBuffer(grid, None, 2)),
-)
 
 print("*** PNG ***")
 # The hash of the PNG check does not see a label this small; the picture
