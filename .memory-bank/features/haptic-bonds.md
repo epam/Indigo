@@ -104,6 +104,24 @@ deliberately left behind; without the flags it is remapped into the target.
 **When** the structure is rendered, **then** the haptic bond is drawn to the group as a whole —
 `core/render2d/` knows about attachment groups.
 
+**When** a group that a haptic bond refers to has a charge or a radical, **then** the renderer draws
+them beside the line of the first haptic bond of the group, the digits a third of the font of an atom
+label, the sign and the radical shrunk alike (`core/render2d/render_common.h#sizeFactor`). As the
+picture is seen from the centre of the group towards the metal, the charge stands on the right of the
+line and the radical on its left, each as far from the line as a bond is kept from a label and a small
+gap from the centre along it, the glyphs upright — top right and top left with the bond pointing up,
+turning with the line, so that the line always runs between the two and the gap between them stays
+(`core/render2d/src/render_internal_render.cpp#placeBesideLine`). The signs touch nothing drawn —
+bonds, labels, other haptic lines, the signs of other groups: when something is in the way, both move
+together along the line by the least shift that frees them
+(`core/indigo-core/common/math/algebra.h#convexPolygonsIntersectAlong`), towards the metal or back
+towards the ligand — back by at most half the distance from the centre to the nearest atom of the
+group, so that they are not read as an atom's, towards the metal however far
+(`core/render2d/src/render_internal_render.cpp#MoleculeRenderInternal::_prepareAttachmentGroupLabel`).
+A group with neither, a group no haptic bond refers to and a variable attachment draw nothing. The
+CDXML output of the renderer draws no label: the charge and the radical are attributes of the
+`MultiAttachment` node there.
+
 **When** the public API is asked for components (`indigoCountComponents`, `indigoComponent`,
 `indigoIterateComponents`, `indigoComponentIndex`, `indigoCloneComponent`,
 `indigoCount/IterateComponentAtoms/Bonds`, `indigoFragmentedSdf`), `standardize` keeps or removes
@@ -153,5 +171,6 @@ component and still prints as dot-separated SMILES.
   group travel only inside KET.
 
 Coverage lives in `core/indigo-core/tests/tests/` — `attachment_groups.cpp`, `haptic_bonds.cpp`,
-`haptic_bonds_ket.cpp`, `haptic_molfile.cpp`, `haptic_cdxml.cpp` — plus
-`api/cpp/tests/rendering/haptic.cpp`.
+`haptic_bonds_ket.cpp`, `haptic_molfile.cpp`, `haptic_cdxml.cpp`, and `convex_polygons.cpp` for the
+shift of a label — plus `api/cpp/tests/rendering/haptic.cpp`. The label of a charged group is
+compared as SVG in `api/tests/integration/tests/rendering/haptic_ligand_charge.py`.

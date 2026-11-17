@@ -1,0 +1,22 @@
+*** The four directions of the bond, and the diagonals ***
+directions.svg:SUCCEED
+*** The radical beside the charge ***
+radical-beside-charge.svg:SUCCEED
+*** Along the line when something is in the way ***
+in-the-way.svg:SUCCEED
+*** A dianion, alone and with a diradical ***
+dianion-ring.svg:SUCCEED
+dianion-ethylene.svg:SUCCEED
+dianion-allyl.svg:SUCCEED
+dianion-in-the-way.svg:SUCCEED
+*** The first haptic bond decides; sandwiches ***
+sandwiches.svg:SUCCEED
+*** No label ***
+ring-neutral.svg:SUCCEED
+ring-without-haptic-bond drawn as without the charge: True
+variable-attachment drawn as without the charge: True
+*** A picture of its own and a reaction ***
+ring-bond-up.svg:SUCCEED
+ring-bond-up-reaction.svg:SUCCEED
+*** PNG ***
+sandwich-vertical PNG differs from the one without charges: True
