@@ -90,8 +90,7 @@ namespace
 
     // The least shift t >= 0 along `direction` at which none of `labels` intersects any of `obstacles` but the one at
     // index `skip`; a shift at which a label only touches the margin of an obstacle counts as free.
-    float leastFreeShift(const std::vector<std::vector<Vec2f>>& labels, const Vec2f& direction, const std::vector<std::vector<Vec2f>>& obstacles,
-                         size_t skip)
+    float leastFreeShift(const std::vector<std::vector<Vec2f>>& labels, const Vec2f& direction, const std::vector<std::vector<Vec2f>>& obstacles, size_t skip)
     {
         std::vector<std::pair<float, float>> blocked;
         for (const std::vector<Vec2f>& label : labels)
