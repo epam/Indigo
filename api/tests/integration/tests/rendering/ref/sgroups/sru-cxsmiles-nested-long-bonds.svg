@@ -106,7 +106,7 @@
 <g fill="rgb(0%, 0%, 0%)" fill-opacity="1">
 <use xlink:href="#glyph-0-2" x="341.234375" y="192.613281"/>
 </g>
-<path fill="none" stroke-width="0.0333333" stroke-linecap="butt" stroke-linejoin="miter" stroke="rgb(0%, 0%, 0%)" stroke-opacity="1" stroke-miterlimit="10" d="M 0.61 0.88002 L 0.46 0.88002 L 0.46 -0.88002 L 0.61 -0.88002 " transform="matrix(100, 0, 0, 100, 14.5, 90.052734)"/>
+<path fill="none" stroke-width="0.0333333" stroke-linecap="butt" stroke-linejoin="miter" stroke="rgb(0%, 0%, 0%)" stroke-opacity="1" stroke-miterlimit="10" d="M 0.51 0.88002 L 0.36 0.88002 L 0.36 -0.88002 L 0.51 -0.88002 " transform="matrix(100, 0, 0, 100, 14.5, 90.052734)"/>
 <path fill="none" stroke-width="0.0333333" stroke-linecap="butt" stroke-linejoin="miter" stroke="rgb(0%, 0%, 0%)" stroke-opacity="1" stroke-miterlimit="10" d="M 3.09 -0.88002 L 3.24 -0.88002 L 3.24 0.88002 L 3.09 0.88002 " transform="matrix(100, 0, 0, 100, 14.5, 90.052734)"/>
 </g>
 </g>

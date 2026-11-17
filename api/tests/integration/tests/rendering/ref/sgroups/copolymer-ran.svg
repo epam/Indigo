@@ -65,16 +65,16 @@
 <path fill="none" stroke-width="0.0333333" stroke-linecap="butt" stroke-linejoin="miter" stroke="rgb(0%, 0%, 0%)" stroke-opacity="1" stroke-miterlimit="10" d="M 2.589785 -0.00480466 L 3.472442 0.504805 " transform="matrix(100, 0, 0, 100, 14.494126, 81.499998)"/>
 <path fill="none" stroke-width="0.0333333" stroke-linecap="butt" stroke-linejoin="miter" stroke="rgb(0%, 0%, 0%)" stroke-opacity="1" stroke-miterlimit="10" d="M 3.455801 0.504805 L 4.130254 0.115391 " transform="matrix(100, 0, 0, 100, 14.494126, 81.499998)"/>
 <g fill="rgb(0%, 0%, 0%)" fill-opacity="1">
-<use xlink:href="#glyph-0-1" x="403.640625" y="206.0625"/>
-<use xlink:href="#glyph-0-2" x="414.65396" y="206.0625"/>
-<use xlink:href="#glyph-0-3" x="429.613963" y="206.0625"/>
+<use xlink:href="#glyph-0-1" x="413.640625" y="206.0625"/>
+<use xlink:href="#glyph-0-2" x="424.65396" y="206.0625"/>
+<use xlink:href="#glyph-0-3" x="439.613963" y="206.0625"/>
 </g>
 <g fill="rgb(0%, 0%, 0%)" fill-opacity="1">
-<use xlink:href="#glyph-0-4" x="404.441406" y="21.234375"/>
-<use xlink:href="#glyph-0-5" x="419.481409" y="21.234375"/>
+<use xlink:href="#glyph-0-4" x="414.441406" y="21.234375"/>
+<use xlink:href="#glyph-0-5" x="429.481409" y="21.234375"/>
 </g>
-<path fill="none" stroke-width="0.0333333" stroke-linecap="butt" stroke-linejoin="miter" stroke="rgb(0%, 0%, 0%)" stroke-opacity="1" stroke-miterlimit="10" d="M 0.615996 1.1 L 0.465996 1.1 L 0.465996 -0.6 L 0.615996 -0.6 " transform="matrix(100, 0, 0, 100, 14.494126, 81.499998)"/>
-<path fill="none" stroke-width="0.0333333" stroke-linecap="butt" stroke-linejoin="miter" stroke="rgb(0%, 0%, 0%)" stroke-opacity="1" stroke-miterlimit="10" d="M 3.714121 -0.6 L 3.864121 -0.6 L 3.864121 1.1 L 3.714121 1.1 " transform="matrix(100, 0, 0, 100, 14.494126, 81.499998)"/>
+<path fill="none" stroke-width="0.0333333" stroke-linecap="butt" stroke-linejoin="miter" stroke="rgb(0%, 0%, 0%)" stroke-opacity="1" stroke-miterlimit="10" d="M 0.515996 1.1 L 0.365996 1.1 L 0.365996 -0.6 L 0.515996 -0.6 " transform="matrix(100, 0, 0, 100, 14.494126, 81.499998)"/>
+<path fill="none" stroke-width="0.0333333" stroke-linecap="butt" stroke-linejoin="miter" stroke="rgb(0%, 0%, 0%)" stroke-opacity="1" stroke-miterlimit="10" d="M 3.814121 -0.6 L 3.964121 -0.6 L 3.964121 1.1 L 3.814121 1.1 " transform="matrix(100, 0, 0, 100, 14.494126, 81.499998)"/>
 <g fill="rgb(0%, 0%, 0%)" fill-opacity="1">
 <use xlink:href="#glyph-0-3" x="200.4375" y="176.0625"/>
 </g>
