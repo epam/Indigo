@@ -55,8 +55,17 @@ def without_charges(molecule):
     return molecule
 
 
-print("*** The four directions of the bond, and the diagonals ***")
-for name in (
+DIRADICALS = (("singlet", Indigo.SINGLET), ("triplet", Indigo.TRIPLET))
+
+
+def compare_diradicals(fixture):
+    for suffix, radical in DIRADICALS:
+        molecule = load(fixture)
+        molecule.getAttachmentGroup(0).setRadical(radical)
+        compare("%s-%s" % (fixture, suffix), svg(molecule))
+
+
+DIRECTIONS_AND_DIAGONALS = (
     "ring-bond-up",
     "ring-bond-right",
     "ring-bond-down",
@@ -65,12 +74,21 @@ for name in (
     "benzene-bond-135",
     "benzene-bond-225",
     "benzene-bond-315",
-):
+)
+
+print("*** The four directions of the bond, and the diagonals ***")
+for name in DIRECTIONS_AND_DIAGONALS:
     compare(name, svg(load(name)))
 
 print("*** The radical beside the charge ***")
 for name in ("ring-doublet", "ring-singlet", "ring-triplet"):
     compare(name, svg(load(name)))
+
+print("*** Diradicals in the four directions, and the diagonals ***")
+for name in DIRECTIONS_AND_DIAGONALS:
+    compare_diradicals(name)
+
+ALLYL_LINE_BESIDE_BOND = "allyl-bond-75"
 
 print("*** Along the line when something is in the way ***")
 for name in (
@@ -80,12 +98,13 @@ for name in (
     "ethylene-bond-40",
     "ethylene-askew",
     "allyl-bond-up",
-    "allyl-bond-75",
+    ALLYL_LINE_BESIDE_BOND,
     "allyl-bond-75-radical",
     "allyl-bond-120",
     "allyl-convex-radical",
 ):
     compare(name, svg(load(name)))
+compare_diradicals(ALLYL_LINE_BESIDE_BOND)
 
 print("*** The first haptic bond decides; sandwiches ***")
 for name in ("ring-two-metals", "sandwich-vertical", "sandwich-horizontal"):
@@ -112,7 +131,7 @@ print(
 )
 
 print("*** A reaction and a grid ***")
-first, second = "ring-bond-up", "ring-bond-right"
+first, second = DIRECTIONS_AND_DIAGONALS[:2]
 reaction = indigo.createReaction()
 reaction.addReactant(load(first))
 reaction.addProduct(load(second))

@@ -11,6 +11,23 @@ benzene-bond-315.svg:SUCCEED
 ring-doublet.svg:SUCCEED
 ring-singlet.svg:SUCCEED
 ring-triplet.svg:SUCCEED
+*** Diradicals in the four directions, and the diagonals ***
+ring-bond-up-singlet.svg:SUCCEED
+ring-bond-up-triplet.svg:SUCCEED
+ring-bond-right-singlet.svg:SUCCEED
+ring-bond-right-triplet.svg:SUCCEED
+ring-bond-down-singlet.svg:SUCCEED
+ring-bond-down-triplet.svg:SUCCEED
+ring-bond-left-singlet.svg:SUCCEED
+ring-bond-left-triplet.svg:SUCCEED
+benzene-bond-45-singlet.svg:SUCCEED
+benzene-bond-45-triplet.svg:SUCCEED
+benzene-bond-135-singlet.svg:SUCCEED
+benzene-bond-135-triplet.svg:SUCCEED
+benzene-bond-225-singlet.svg:SUCCEED
+benzene-bond-225-triplet.svg:SUCCEED
+benzene-bond-315-singlet.svg:SUCCEED
+benzene-bond-315-triplet.svg:SUCCEED
 *** Along the line when something is in the way ***
 ring-bond-60.svg:SUCCEED
 ring-bond-120.svg:SUCCEED
@@ -22,6 +39,8 @@ allyl-bond-75.svg:SUCCEED
 allyl-bond-75-radical.svg:SUCCEED
 allyl-bond-120.svg:SUCCEED
 allyl-convex-radical.svg:SUCCEED
+allyl-bond-75-singlet.svg:SUCCEED
+allyl-bond-75-triplet.svg:SUCCEED
 *** The first haptic bond decides; sandwiches ***
 ring-two-metals.svg:SUCCEED
 sandwich-vertical.svg:SUCCEED
