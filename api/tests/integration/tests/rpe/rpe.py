@@ -10,6 +10,8 @@ sys.path.append(
 from env_indigo import Indigo, joinPathPy  # noqa
 
 indigo = Indigo()
+# monomers of tests 6 and 7 mark acyclic N as enhanced stereo centers
+indigo.setOption("ignore-stereochemistry-errors", True)
 
 
 def getProduct(reaction):

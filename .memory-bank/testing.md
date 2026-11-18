@@ -166,5 +166,19 @@ python utils/indigo-service/backend/service/tests/api/indigo_test.py   # termina
   moved, explain what changed in the behaviour and why the new value is right. How a test in this
   harness is written — the comparison helpers, the fixture and reference layout, the per-platform
   references — is in [.claude/rules/integration-tests.md](../.claude/rules/integration-tests.md).
+- **`INDIGO_UPDATE_TESTS=True` in the environment makes every run an update.** `-u` does nothing but
+  set it (`api/tests/integration/test.py#INDIGO_UPDATE_TESTS`). The harness and `compare_diff`
+  (`api/tests/integration/common/util.py#def compare_diff`) then write the current output over the
+  reference *before* comparing, so every test passes and every reference the run reached is
+  rewritten. A shell that exports it reports a green suite that tested nothing. After a run that was
+  not meant to update, `git status -- api/tests/integration` is empty.
+- **`-u` goes last.** Arguments are read in pairs
+  (`api/tests/integration/test.py#range(1, len(sys.argv), 2)`): `-u -p x` takes `-p` as the value of
+  `-u` and stops on "Unexpected options".
+- **A regenerated `.out` is LF with a final newline.** A reference stored with CRLF
+  (`ref/bingo/part_test.py.out`, `ref/inchi/std.py.out`) or without a final newline comes back changed
+  on every line, and a `-u` run leaves the same kind of noise in references whose content did not
+  move. Give each file back the endings it is stored with, and revert the ones that only changed
+  there, so the diff shows what actually moved.
 - **Anything added to the integration harness must run under Jython and IronPython**, not only
   CPython.

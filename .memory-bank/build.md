@@ -31,6 +31,16 @@ cmake --build build --config Release --target indigo-python
 
 Build output lands in `dist/` (Linux) or `api/python/dist/` (Windows).
 
+**A source file added or removed reaches the build one build late under Visual Studio.** The globs use
+`CONFIGURE_DEPENDS` (`core/indigo-core/CMakeLists.txt#CONFIGURE_DEPENDS`), so every build re-checks
+them and re-runs CMake when a file appeared or went away. Under the Visual Studio 2022 generator that
+re-run happens inside the build that noticed it, and MSBuild finishes that build with the old project:
+an added file is compiled by the next build, and a deleted one fails the noticing build with C1083
+(cannot open source file) before the next one succeeds. Other generators were not checked. Until
+`core/indigo-core/` and five `api/` targets were corrected, they spelled the flag `CONFIUGURE_DEPENDS`,
+which CMake accepts silently as one more glob pattern and which froze the source list at configure
+time ([.claude/rules/cmake.md](../.claude/rules/cmake.md)).
+
 ## Notable CMake options
 
 `BUILD_INDIGO`, `BUILD_INDIGO_WRAPPERS`, `BUILD_INDIGO_UTILS`, `BUILD_BINGO`, `BUILD_BINGO_POSTGRES`, `BUILD_BINGO_ORACLE`, `BUILD_BINGO_SQLSERVER`, `BUILD_BINGO_ELASTIC`, `BUILD_STANDALONE`.

@@ -48374,16 +48374,13 @@ Warning: CSmiles are different:
 
   InChI key: KKGGNFRPXOFJLG-MZVJFUNZSA-N
 174:
-  Smiles1: C[N@@]1[C@@H]2CC[C@H]1/C(=C/C1=CC=CC=C1Cl)/C(=O)/C/2=C\C1=CC=CC=C1Cl
-  CSmiles1: C[N@@]1[C@@H]2CC[C@H]1/C(=C/c1ccccc1Cl)/C(=O)/C/2=C\c1ccccc1Cl
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #1
+  Smiles1: CN1[C@@H]2CC[C@H]1/C(=C/C1=CC=CC=C1Cl)/C(=O)/C/2=C\C1=CC=CC=C1Cl
+  CSmiles1: CN1[C@@H]2CC[C@H]1/C(=C/c1ccccc1Cl)/C(=O)/C/2=C\c1ccccc1Cl
   InChI1: InChI=1S/C22H19Cl2NO/c1-25-20-10-11-21(25)17(13-15-7-3-5-9-19(15)24)22(26)16(20)12-14-6-2-4-8-18(14)23/h2-9,12-13,20-21H,10-11H2,1H3/b16-12-,17-13-/t20-,21+
   Smiles2: CN1[C@@]2([H])/C(/C(=O)/C(/[C@]1([H])CC2)=C(\C1C(Cl)=CC=CC=1)/[H])=C(/C1C(Cl)=CC=CC=1)\[H]
   CSmiles2: CN1[C@@H]2CC[C@H]1/C(=C/c1ccccc1Cl)/C(=O)/C/2=C\c1ccccc1Cl
   InChI2: InChI=1S/C22H19Cl2NO/c1-25-20-10-11-21(25)17(13-15-7-3-5-9-19(15)24)22(26)16(20)12-14-6-2-4-8-18(14)23/h2-9,12-13,20-21H,10-11H2,1H3/b16-12-,17-13-/t20-,21+
-Warning: CSmiles are different:
-  C[N@@]1[C@@H]2CC[C@H]1/C(=C/c1ccccc1Cl)/C(=O)/C/2=C\c1ccccc1Cl
-  CN1[C@@H]2CC[C@H]1/C(=C/c1ccccc1Cl)/C(=O)/C/2=C\c1ccccc1Cl
-
   InChI key: BPSIHESMRAEMQU-SUJNSSSASA-N
 175:
   Smiles1: CC(C)(C)C1=CC=C([C@@H]2[C@H](C(=O)N/N=C\C=C\C3=C([N+](=O)[O-])C=CC=C3)C2)C=C1
@@ -48998,16 +48995,13 @@ Warning: CSmiles are different:
   InChI key: KDQDLCOHSZCBLJ-CIAFOILYSA-M
   Warning: Proton(s) added/removed
 236:
-  Smiles1: C1=CC=C(/C=C/[N@H+]2CC[N@]([C@@H]3C(=O)N(C4=CC=CC=C4)C(=O)C3)CC2)C=C1
-  CSmiles1: O=C1[C@H](CC(=O)N1c1ccccc1)[N@@]1CC[N@H+](CC1)/C=C/c1ccccc1
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #9
+  Smiles1: C1=CC=C(/C=C/[N@H+]2CCN([C@@H]3C(=O)N(C4=CC=CC=C4)C(=O)C3)CC2)C=C1
+  CSmiles1: O=C1[C@H](CC(=O)N1c1ccccc1)N1CC[NH+](CC1)/C=C/c1ccccc1
   InChI1: InChI=1S/C22H23N3O2/c26-21-17-20(22(27)25(21)19-9-5-2-6-10-19)24-15-13-23(14-16-24)12-11-18-7-3-1-4-8-18/h1-12,20H,13-17H2/p+1/b12-11+/t20-/m0/s1
   Smiles2: C1C=CC(/C(=C(/[NH+]2CCN([C@@]3(C(=O)N(C(=O)C3)C3C=CC=CC=3)[H])CC2)\[H])/[H])=CC=1
   CSmiles2: O=C1[C@H](CC(=O)N1c1ccccc1)N1CC[NH+](CC1)/C=C/c1ccccc1
   InChI2: InChI=1S/C22H23N3O2/c26-21-17-20(22(27)25(21)19-9-5-2-6-10-19)24-15-13-23(14-16-24)12-11-18-7-3-1-4-8-18/h1-12,20H,13-17H2/p+1/b12-11+/t20-/m0/s1
-Warning: CSmiles are different:
-  O=C1[C@H](CC(=O)N1c1ccccc1)[N@@]1CC[N@H+](CC1)/C=C/c1ccccc1
-  O=C1[C@H](CC(=O)N1c1ccccc1)N1CC[NH+](CC1)/C=C/c1ccccc1
-
   InChI key: SXGJFNBSTXQYMO-SGWGQVFISA-O
   Warning: Proton(s) added/removed
 237:
@@ -59305,16 +59299,13 @@ Warning: CSmiles are different:
   InChI2: InChI=1S/C24H19Cl2NO4/c1-4-9-31-23-16(25)10-13(11-17(23)26)19-18(24(29)30-3)12(2)27-21-14-7-5-6-8-15(14)22(28)20(19)21/h4-8,10-11,18-19H,1,9H2,2-3H3/t18-,19+/m0/s1
   InChI key: CMOWENQSDCNXRZ-RBUKOAKNSA-N
 1287:
-  Smiles1: C[N@@](CCC1=NC=CC=C1)CC1=C(OC)C=CC(Br)=C1
-  CSmiles1: C[N@](Cc1cc(Br)ccc1OC)CCc1cccc[n]1
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #1
+  Smiles1: CN(CCC1=NC=CC=C1)CC1=C(OC)C=CC(Br)=C1
+  CSmiles1: CN(Cc1cc(Br)ccc1OC)CCc1cccc[n]1
   InChI1: InChI=1S/C16H19BrN2O/c1-19(10-8-15-5-3-4-9-18-15)12-13-11-14(17)6-7-16(13)20-2/h3-7,9,11H,8,10,12H2,1-2H3
   Smiles2: CN(CC1C(OC)=CC=C(Br)C=1)CCC1N=CC=CC=1
   CSmiles2: CN(Cc1cc(Br)ccc1OC)CCc1cccc[n]1
   InChI2: InChI=1S/C16H19BrN2O/c1-19(10-8-15-5-3-4-9-18-15)12-13-11-14(17)6-7-16(13)20-2/h3-7,9,11H,8,10,12H2,1-2H3
-Warning: CSmiles are different:
-  C[N@](Cc1cc(Br)ccc1OC)CCc1cccc[n]1
-  CN(Cc1cc(Br)ccc1OC)CCc1cccc[n]1
-
   InChI key: OKWNQXXBELXFGK-UHFFFAOYSA-N
 1288:
   Smiles1: C[C@@H]1CC[N@@H+](CC2N(C[C@H]3OCCC3)C(SCC(=O)NC(=O)NC3=CC=CC=C3)=NN=2)CC1
@@ -59527,14 +59518,15 @@ Warning: CSmiles are different:
   InChI key: ABNYGCZKRVKEPC-LJQANCHMSA-O
   Warning: Proton(s) added/removed
 1308:
-  Smiles1: CC1=CC=C(N2C(=O)[C@@H]([N@H+]3CC[N@](C4=C(F)C=CC=C4)CC3)CC2=O)C=C1
-  CSmiles1: Cc1ccc(cc1)N1C(=O)[C@H](CC1=O)[N@@H+]1CC[N@](CC1)c1ccccc1F
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #12
+  Smiles1: CC1=CC=C(N2C(=O)[C@@H]([N@H+]3CCN(C4=C(F)C=CC=C4)CC3)CC2=O)C=C1
+  CSmiles1: Cc1ccc(cc1)N1C(=O)[C@H](CC1=O)[NH+]1CCN(CC1)c1ccccc1F
   InChI1: InChI=1S/C21H22FN3O2/c1-15-6-8-16(9-7-15)25-20(26)14-19(21(25)27)24-12-10-23(11-13-24)18-5-3-2-4-17(18)22/h2-9,19H,10-14H2,1H3/p+1/t19-/m0/s1
   Smiles2: CC1C=CC(N2C(=O)[C@](N3CC[NH+](C4C(F)=CC=CC=4)CC3)([H])CC2=O)=CC=1
   CSmiles2: Cc1ccc(cc1)N1C(=O)[C@H](CC1=O)N1CC[NH+](CC1)c1ccccc1F
   InChI2: InChI=1S/C21H22FN3O2/c1-15-6-8-16(9-7-15)25-20(26)14-19(21(25)27)24-12-10-23(11-13-24)18-5-3-2-4-17(18)22/h2-9,19H,10-14H2,1H3/p+1/t19-/m0/s1
 Warning: CSmiles are different:
-  Cc1ccc(cc1)N1C(=O)[C@H](CC1=O)[N@@H+]1CC[N@](CC1)c1ccccc1F
+  Cc1ccc(cc1)N1C(=O)[C@H](CC1=O)[NH+]1CCN(CC1)c1ccccc1F
   Cc1ccc(cc1)N1C(=O)[C@H](CC1=O)N1CC[NH+](CC1)c1ccccc1F
 
   InChI key: UBDLRIHNDBCOCC-IBGZPJMESA-O
@@ -60014,14 +60006,15 @@ Warning: CSmiles are different:
 
   InChI key: HXWPYCIMJMUQQY-WIYYLYMNSA-N
 1358:
-  Smiles1: CN1C(=O)N(C)C(=O)C2N(C=NC1=2)C[C@@H](C[N@@H+]1CC[N@@](C2=C(OC)C=CC=C2)CC1)O
-  CSmiles1: COc1ccccc1[N@@]1CC[N@@H+](C[C@@H](O)C[n]2c[n]c3c2C(=O)N(C)C(=O)N3C)CC1
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #12
+  Smiles1: CN1C(=O)N(C)C(=O)C2N(C=NC1=2)C[C@@H](C[N@@H+]1CCN(C2=C(OC)C=CC=C2)CC1)O
+  CSmiles1: COc1ccccc1N1CC[NH+](C[C@@H](O)C[n]2c[n]c3c2C(=O)N(C)C(=O)N3C)CC1
   InChI1: InChI=1S/C21H28N6O4/c1-23-19-18(20(29)24(2)21(23)30)27(14-22-19)13-15(28)12-25-8-10-26(11-9-25)16-6-4-5-7-17(16)31-3/h4-7,14-15,28H,8-13H2,1-3H3/p+1/t15-/m1/s1
   Smiles2: CN1C(=O)N(C(=O)C2N(C=[NH+]C=21)C[C@@](O)([H])CN1CCN(C2C(OC)=CC=CC=2)CC1)C
   CSmiles2: COc1ccccc1N1CCN(C[C@@H](O)C[n]2c[nH+]c3c2C(=O)N(C)C(=O)N3C)CC1
   InChI2: InChI=1S/C21H28N6O4/c1-23-19-18(20(29)24(2)21(23)30)27(14-22-19)13-15(28)12-25-8-10-26(11-9-25)16-6-4-5-7-17(16)31-3/h4-7,14-15,28H,8-13H2,1-3H3/p+1/t15-/m1/s1
 Warning: CSmiles are different:
-  COc1ccccc1[N@@]1CC[N@@H+](C[C@@H](O)C[n]2c[n]c3c2C(=O)N(C)C(=O)N3C)CC1
+  COc1ccccc1N1CC[NH+](C[C@@H](O)C[n]2c[n]c3c2C(=O)N(C)C(=O)N3C)CC1
   COc1ccccc1N1CCN(C[C@@H](O)C[n]2c[nH+]c3c2C(=O)N(C)C(=O)N3C)CC1
 
   InChI key: YEHDTTUOCGKLBC-OAHLLOKOSA-O
@@ -60205,16 +60198,13 @@ Warning: CSmiles are different:
   InChI2: InChI=1S/C18H12F4N4OS/c1-10(27-14-8-6-13(19)7-9-14)16-25-26-15(23-24-17(26)28-16)11-2-4-12(5-3-11)18(20,21)22/h2-10H,1H3/t10-/m0/s1
   InChI key: OTDKIMQQTVAJRM-JTQLQIEISA-N
 1378:
-  Smiles1: COC1=CC=C(N2C3NN=C(C4=CC=C(F)C=C4)C=3C[N@](C3=CC=C(F)C=C3)C2)C=C1
-  CSmiles1: COc1ccc(cc1)N1C[N@](Cc2c1[nH][n]c2-c1ccc(F)cc1)c1ccc(F)cc1
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #8
+  Smiles1: COC1=CC=C(N2C3NN=C(C4=CC=C(F)C=C4)C=3CN(C3=CC=C(F)C=C3)C2)C=C1
+  CSmiles1: COc1ccc(cc1)N1CN(Cc2c1[nH][n]c2-c1ccc(F)cc1)c1ccc(F)cc1
   InChI1: InChI=1S/C24H20F2N4O/c1-31-21-12-10-20(11-13-21)30-15-29(19-8-6-18(26)7-9-19)14-22-23(27-28-24(22)30)16-2-4-17(25)5-3-16/h2-13H,14-15H2,1H3,(H,27,28)
   Smiles2: COC1C=CC(N2C3NN=C(C=3CN(C3C=CC(F)=CC=3)C2)C2C=CC(F)=CC=2)=CC=1
   CSmiles2: COc1ccc(cc1)N1CN(Cc2c1[nH][n]c2-c1ccc(F)cc1)c1ccc(F)cc1
   InChI2: InChI=1S/C24H20F2N4O/c1-31-21-12-10-20(11-13-21)30-15-29(19-8-6-18(26)7-9-19)14-22-23(27-28-24(22)30)16-2-4-17(25)5-3-16/h2-13H,14-15H2,1H3,(H,27,28)
-Warning: CSmiles are different:
-  COc1ccc(cc1)N1C[N@](Cc2c1[nH][n]c2-c1ccc(F)cc1)c1ccc(F)cc1
-  COc1ccc(cc1)N1CN(Cc2c1[nH][n]c2-c1ccc(F)cc1)c1ccc(F)cc1
-
   InChI key: UCRICIVIUAKUHV-UHFFFAOYSA-N
 1379:
   Smiles1: CC1=CC(COC2=CC=C([C@H]3C(C#N)=C(N)OC4[C@@H]3C(=NN=4)C3=CC=C(Cl)C=C3)C=C2)=CC=C1
@@ -60325,16 +60315,13 @@ Warning: CSmiles are different:
   InChI2: InChI=1S/C21H16BrFN2/c22-17-10-6-15(7-11-17)20-14-21(16-8-12-18(23)13-9-16)25(24-20)19-4-2-1-3-5-19/h1-13,21H,14H2/t21-/m1/s1
   InChI key: WVPCREKWYZURDB-OAQYLSRUSA-N
 1389:
-  Smiles1: CCCC[N@@]1C2NN=C(C3=CC=C(Cl)C=C3)C=2C[N@](C2=CC=CC=C2)C1
-  CSmiles1: CCCC[N@]1C[N@](Cc2c([n][nH]c12)-c1ccc(Cl)cc1)c1ccccc1
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #4
+  Smiles1: CCCCN1C2NN=C(C3=CC=C(Cl)C=C3)C=2CN(C2=CC=CC=C2)C1
+  CSmiles1: CCCCN1CN(Cc2c([n][nH]c12)-c1ccc(Cl)cc1)c1ccccc1
   InChI1: InChI=1S/C21H23ClN4/c1-2-3-13-25-15-26(18-7-5-4-6-8-18)14-19-20(23-24-21(19)25)16-9-11-17(22)12-10-16/h4-12H,2-3,13-15H2,1H3,(H,23,24)
   Smiles2: CCCCN1C2NN=C(C=2CN(C2C=CC=CC=2)C1)C1C=CC(Cl)=CC=1
   CSmiles2: CCCCN1CN(Cc2c([n][nH]c12)-c1ccc(Cl)cc1)c1ccccc1
   InChI2: InChI=1S/C21H23ClN4/c1-2-3-13-25-15-26(18-7-5-4-6-8-18)14-19-20(23-24-21(19)25)16-9-11-17(22)12-10-16/h4-12H,2-3,13-15H2,1H3,(H,23,24)
-Warning: CSmiles are different:
-  CCCC[N@]1C[N@](Cc2c([n][nH]c12)-c1ccc(Cl)cc1)c1ccccc1
-  CCCCN1CN(Cc2c([n][nH]c12)-c1ccc(Cl)cc1)c1ccccc1
-
   InChI key: MWBPCHLHZQBLFX-UHFFFAOYSA-N
 1390:
   Smiles1: CC1=C(C(=O)OC)NC(C)=C1C(=O)C1[C@H](C2=CC=NC=C2)N(CCCN2CCOCC2)C(=O)C=1[O-]
@@ -60359,14 +60346,15 @@ Warning: CSmiles are different:
   InChI key: CWEDSANIEIYMDC-OLZOCXBDSA-M
   Warning: Charges were rearranged; Proton(s) added/removed
 1392:
-  Smiles1: CN1C(=O)N(C)C(=O)C2N(C=NC1=2)C[C@H](C[N@@H+]1CC[N@@](C2=C(OC)C=CC=C2)CC1)O
-  CSmiles1: COc1ccccc1[N@@]1CC[N@@H+](C[C@H](O)C[n]2c[n]c3c2C(=O)N(C)C(=O)N3C)CC1
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #12
+  Smiles1: CN1C(=O)N(C)C(=O)C2N(C=NC1=2)C[C@H](C[N@@H+]1CCN(C2=C(OC)C=CC=C2)CC1)O
+  CSmiles1: COc1ccccc1N1CC[NH+](C[C@H](O)C[n]2c[n]c3c2C(=O)N(C)C(=O)N3C)CC1
   InChI1: InChI=1S/C21H28N6O4/c1-23-19-18(20(29)24(2)21(23)30)27(14-22-19)13-15(28)12-25-8-10-26(11-9-25)16-6-4-5-7-17(16)31-3/h4-7,14-15,28H,8-13H2,1-3H3/p+1/t15-/m0/s1
   Smiles2: CN1C(=O)N(C(=O)C2N(C=[NH+]C=21)C[C@](O)([H])CN1CCN(C2C(OC)=CC=CC=2)CC1)C
   CSmiles2: COc1ccccc1N1CCN(C[C@H](O)C[n]2c[nH+]c3c2C(=O)N(C)C(=O)N3C)CC1
   InChI2: InChI=1S/C21H28N6O4/c1-23-19-18(20(29)24(2)21(23)30)27(14-22-19)13-15(28)12-25-8-10-26(11-9-25)16-6-4-5-7-17(16)31-3/h4-7,14-15,28H,8-13H2,1-3H3/p+1/t15-/m0/s1
 Warning: CSmiles are different:
-  COc1ccccc1[N@@]1CC[N@@H+](C[C@H](O)C[n]2c[n]c3c2C(=O)N(C)C(=O)N3C)CC1
+  COc1ccccc1N1CC[NH+](C[C@H](O)C[n]2c[n]c3c2C(=O)N(C)C(=O)N3C)CC1
   COc1ccccc1N1CCN(C[C@H](O)C[n]2c[nH+]c3c2C(=O)N(C)C(=O)N3C)CC1
 
   InChI key: YEHDTTUOCGKLBC-HNNXBMFYSA-O
@@ -60952,16 +60940,13 @@ Warning: CSmiles are different:
   InChI2: InChI=1S/C22H16Cl2N2O2/c23-14-7-5-13(6-8-14)18-12-19-16-3-1-2-4-21(16)28-22(26(19)25-18)17-11-15(24)9-10-20(17)27/h1-11,19,22,27H,12H2/t19-,22-/m1/s1
   InChI key: SXCVFKLKDGHZRL-DENIHFKCSA-N
 1453:
-  Smiles1: CC1(N(C)C(=S)S[C@H]1[N@]1O[C@H]2C(=O)N(C(=O)[C@@H]2[C@@H]1C1=CC=CC=C1)C1=CC=CC=C1)C
-  CSmiles1: CN1C(=S)S[C@@H]([N@]2O[C@@H]3[C@@H]([C@@H]2c2ccccc2)C(=O)N(c2ccccc2)C3=O)C1(C)C
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #4
+  Smiles1: CC1(N(C)C(=S)S[C@H]1N1O[C@H]2C(=O)N(C(=O)[C@@H]2[C@@H]1C1=CC=CC=C1)C1=CC=CC=C1)C
+  CSmiles1: CN1C(=S)S[C@@H](N2O[C@@H]3[C@@H]([C@@H]2c2ccccc2)C(=O)N(c2ccccc2)C3=O)C1(C)C
   InChI1: InChI=1S/C23H23N3O3S2/c1-23(2)21(31-22(30)24(23)3)26-17(14-10-6-4-7-11-14)16-18(29-26)20(28)25(19(16)27)15-12-8-5-9-13-15/h4-13,16-18,21H,1-3H3/t16-,17+,18-,21-/m1/s1
   Smiles2: CC1(N(C(S[C@]1(N1O[C@]2(C(=O)N(C(=O)[C@@]2([C@]1([H])C1C=CC=CC=1)[H])C1C=CC=CC=1)[H])[H])=S)C)C
   CSmiles2: CN1C(=S)S[C@@H](N2O[C@@H]3[C@@H]([C@@H]2c2ccccc2)C(=O)N(c2ccccc2)C3=O)C1(C)C
   InChI2: InChI=1S/C23H23N3O3S2/c1-23(2)21(31-22(30)24(23)3)26-17(14-10-6-4-7-11-14)16-18(29-26)20(28)25(19(16)27)15-12-8-5-9-13-15/h4-13,16-18,21H,1-3H3/t16-,17+,18-,21-/m1/s1
-Warning: CSmiles are different:
-  CN1C(=S)S[C@@H]([N@]2O[C@@H]3[C@@H]([C@@H]2c2ccccc2)C(=O)N(c2ccccc2)C3=O)C1(C)C
-  CN1C(=S)S[C@@H](N2O[C@@H]3[C@@H]([C@@H]2c2ccccc2)C(=O)N(c2ccccc2)C3=O)C1(C)C
-
   InChI key: PFLZKMORWYXNMB-BMQTXXJKSA-N
 1454:
   Smiles1: COC1=CC=C([C@@H]2CC(=O)C3[C@H](NC4=C(NC=3C2)C=CC=C4)C2=CC=C(C(F)(F)F)C=C2)C=C1
@@ -61160,16 +61145,13 @@ Warning: CSmiles are different:
   InChI2: InChI=1S/C18H15F2N/c19-12-6-4-11(5-7-12)18-15-3-1-2-14(15)16-10-13(20)8-9-17(16)21-18/h1-2,4-10,14-15,18,21H,3H2/t14-,15-,18-/m1/s1
   InChI key: CSVQSQUSQOIXQM-IIDMSEBBSA-N
 1475:
-  Smiles1: CC1(N(C)C(=S)S[C@@H]1[N@]1O[C@H]2C(=O)N(C(=O)[C@@H]2[C@@H]1C1=CC=CC=C1)C1=CC=CC=C1)C
-  CSmiles1: CN1C(=S)S[C@H]([N@]2O[C@@H]3[C@@H]([C@@H]2c2ccccc2)C(=O)N(c2ccccc2)C3=O)C1(C)C
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #4
+  Smiles1: CC1(N(C)C(=S)S[C@@H]1N1O[C@H]2C(=O)N(C(=O)[C@@H]2[C@@H]1C1=CC=CC=C1)C1=CC=CC=C1)C
+  CSmiles1: CN1C(=S)S[C@H](N2O[C@@H]3[C@@H]([C@@H]2c2ccccc2)C(=O)N(c2ccccc2)C3=O)C1(C)C
   InChI1: InChI=1S/C23H23N3O3S2/c1-23(2)21(31-22(30)24(23)3)26-17(14-10-6-4-7-11-14)16-18(29-26)20(28)25(19(16)27)15-12-8-5-9-13-15/h4-13,16-18,21H,1-3H3/t16-,17+,18-,21+/m1/s1
   Smiles2: CC1(N(C(S[C@@]1(N1O[C@]2(C(=O)N(C(=O)[C@@]2([C@]1([H])C1C=CC=CC=1)[H])C1C=CC=CC=1)[H])[H])=S)C)C
   CSmiles2: CN1C(=S)S[C@H](N2O[C@@H]3[C@@H]([C@@H]2c2ccccc2)C(=O)N(c2ccccc2)C3=O)C1(C)C
   InChI2: InChI=1S/C23H23N3O3S2/c1-23(2)21(31-22(30)24(23)3)26-17(14-10-6-4-7-11-14)16-18(29-26)20(28)25(19(16)27)15-12-8-5-9-13-15/h4-13,16-18,21H,1-3H3/t16-,17+,18-,21+/m1/s1
-Warning: CSmiles are different:
-  CN1C(=S)S[C@H]([N@]2O[C@@H]3[C@@H]([C@@H]2c2ccccc2)C(=O)N(c2ccccc2)C3=O)C1(C)C
-  CN1C(=S)S[C@H](N2O[C@@H]3[C@@H]([C@@H]2c2ccccc2)C(=O)N(c2ccccc2)C3=O)C1(C)C
-
   InChI key: PFLZKMORWYXNMB-IIMDRIAPSA-N
 1476:
   Smiles1: CCN(CC)C1=CC=C([C@H]2[C@@H](C(=O)OC)[C@](C)(O)CC(=O)[C@@H]2C(=O)OC)C=C1
@@ -61476,16 +61458,13 @@ Warning: CSmiles are different:
   InChI2: InChI=1S/C29H25BrN2O3/c1-35-22-16-10-18(11-17-22)25-26-23(8-5-9-24(26)33)32(21-14-12-20(30)13-15-21)29(31)27(25)28(34)19-6-3-2-4-7-19/h2-4,6-7,10-17,25H,5,8-9,31H2,1H3/t25-/m1/s1
   InChI key: IUPYLEIPKIITOW-RUZDIDTESA-N
 1509:
-  Smiles1: C1=CC(Cl)=CC([N@@]2CC[N@@](C3=NC(OC(C(F)(F)F)C(F)(F)F)=NC(N4CCCCC4)=N3)CC2)=C1
-  CSmiles1: FC(F)(F)C(Oc1[n]c([n]c([n]1)[N@@]1CC[N@](CC1)c1cc(Cl)ccc1)N1CCCCC1)C(F)(F)F
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #3
+  Smiles1: C1=CC(Cl)=CC(N2CCN(C3=NC(OC(C(F)(F)F)C(F)(F)F)=NC(N4CCCCC4)=N3)CC2)=C1
+  CSmiles1: FC(F)(F)C(Oc1[n]c([n]c([n]1)N1CCN(CC1)c1cc(Cl)ccc1)N1CCCCC1)C(F)(F)F
   InChI1: InChI=1S/C21H23ClF6N6O/c22-14-5-4-6-15(13-14)32-9-11-34(12-10-32)18-29-17(33-7-2-1-3-8-33)30-19(31-18)35-16(20(23,24)25)21(26,27)28/h4-6,13,16H,1-3,7-12H2
   Smiles2: C1CCN(C2N=C(OC(C(F)(F)F)C(F)(F)F)N=C(N3CCN(C4C=C(Cl)C=CC=4)CC3)N=2)CC1
   CSmiles2: FC(F)(F)C(Oc1[n]c([n]c([n]1)N1CCN(CC1)c1cc(Cl)ccc1)N1CCCCC1)C(F)(F)F
   InChI2: InChI=1S/C21H23ClF6N6O/c22-14-5-4-6-15(13-14)32-9-11-34(12-10-32)18-29-17(33-7-2-1-3-8-33)30-19(31-18)35-16(20(23,24)25)21(26,27)28/h4-6,13,16H,1-3,7-12H2
-Warning: CSmiles are different:
-  FC(F)(F)C(Oc1[n]c([n]c([n]1)[N@@]1CC[N@](CC1)c1cc(Cl)ccc1)N1CCCCC1)C(F)(F)F
-  FC(F)(F)C(Oc1[n]c([n]c([n]1)N1CCN(CC1)c1cc(Cl)ccc1)N1CCCCC1)C(F)(F)F
-
   InChI key: HEOYKBDPDBYELP-UHFFFAOYSA-N
 1510:
   Smiles1: CCC1=C(NC(=O)C2=CC=C([C@@H]3SCC(=O)N3CC3=CC=CC=C3)C=C2)C(C)=CC=C1
@@ -61911,14 +61890,15 @@ Warning: CSmiles are different:
 
   InChI key: JFGHOLDGIPCTTE-IGCPOSHWSA-N
 1553:
-  Smiles1: CCOC(=O)C1=C([N@]2CC[N@H+](C)CC2)C2=C(C=C(C=C2)C(F)(F)F)N=C1
-  CSmiles1: CCOC(=O)c1c[n]c2cc(ccc2c1[N@@]1CC[N@@H+](C)CC1)C(F)(F)F
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #18
+  Smiles1: CCOC(=O)C1=C(N2CC[N@H+](C)CC2)C2=C(C=C(C=C2)C(F)(F)F)N=C1
+  CSmiles1: CCOC(=O)c1c[n]c2cc(ccc2c1N1CC[NH+](C)CC1)C(F)(F)F
   InChI1: InChI=1S/C18H20F3N3O2/c1-3-26-17(25)14-11-22-15-10-12(18(19,20)21)4-5-13(15)16(14)24-8-6-23(2)7-9-24/h4-5,10-11H,3,6-9H2,1-2H3/p+1
   Smiles2: CCOC(=O)C1C(N2CCN(CC2)C)=C2C(=[NH+]C=1)C=C(C(F)(F)F)C=C2
   CSmiles2: CN1CCN(CC1)c1c2ccc(cc2[nH+]cc1C(=O)OCC)C(F)(F)F
   InChI2: InChI=1S/C18H20F3N3O2/c1-3-26-17(25)14-11-22-15-10-12(18(19,20)21)4-5-13(15)16(14)24-8-6-23(2)7-9-24/h4-5,10-11H,3,6-9H2,1-2H3/p+1
 Warning: CSmiles are different:
-  CCOC(=O)c1c[n]c2cc(ccc2c1[N@@]1CC[N@@H+](C)CC1)C(F)(F)F
+  CCOC(=O)c1c[n]c2cc(ccc2c1N1CC[NH+](C)CC1)C(F)(F)F
   CN1CCN(CC1)c1c2ccc(cc2[nH+]cc1C(=O)OCC)C(F)(F)F
 
   InChI key: VNQVFTQCIACZTL-UHFFFAOYSA-O
@@ -61969,14 +61949,15 @@ Warning: CSmiles are different:
 
   InChI key: OWFZDMNTXFSBGZ-LLVKDONJSA-N
 1558:
-  Smiles1: CN1C(=O)N(C)C(=O)C2N(C=NC1=2)C[C@H](C[N@@H+]1CC[N@@](C2=NC=CC=N2)CC1)O
-  CSmiles1: CN1C(=O)c2c([n]c[n]2C[C@@H](O)C[N@@H+]2CC[N@](CC2)c2[n]ccc[n]2)N(C)C1=O
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #12
+  Smiles1: CN1C(=O)N(C)C(=O)C2N(C=NC1=2)C[C@H](C[N@@H+]1CCN(C2=NC=CC=N2)CC1)O
+  CSmiles1: CN1C(=O)c2c([n]c[n]2C[C@@H](O)C[NH+]2CCN(CC2)c2[n]ccc[n]2)N(C)C1=O
   InChI1: InChI=1S/C18H24N8O3/c1-22-15-14(16(28)23(2)18(22)29)26(12-21-15)11-13(27)10-24-6-8-25(9-7-24)17-19-4-3-5-20-17/h3-5,12-13,27H,6-11H2,1-2H3/p+1/t13-/m0/s1
   Smiles2: CN1C(=O)N(C(=O)C2N(C=NC=21)C[C@](O)([H])CN1CCN(C2N=CC=C[NH+]=2)CC1)C
   CSmiles2: CN1C(=O)c2c([n]c[n]2C[C@@H](O)CN2CCN(CC2)c2[n]ccc[nH+]2)N(C)C1=O
   InChI2: InChI=1S/C18H24N8O3/c1-22-15-14(16(28)23(2)18(22)29)26(12-21-15)11-13(27)10-24-6-8-25(9-7-24)17-19-4-3-5-20-17/h3-5,12-13,27H,6-11H2,1-2H3/p+1/t13-/m0/s1
 Warning: CSmiles are different:
-  CN1C(=O)c2c([n]c[n]2C[C@@H](O)C[N@@H+]2CC[N@](CC2)c2[n]ccc[n]2)N(C)C1=O
+  CN1C(=O)c2c([n]c[n]2C[C@@H](O)C[NH+]2CCN(CC2)c2[n]ccc[n]2)N(C)C1=O
   CN1C(=O)c2c([n]c[n]2C[C@@H](O)CN2CCN(CC2)c2[n]ccc[nH+]2)N(C)C1=O
 
   InChI key: MPQZUWAFVWPPIR-ZDUSSCGKSA-O
@@ -62489,16 +62470,13 @@ Warning: CSmiles are different:
   InChI2: InChI=1S/C15H13BrCl3N3O/c16-12-5-3-11(4-6-12)13(23)22-14(15(17,18)19)21-9-10-2-1-7-20-8-10/h1-8,14,21H,9H2,(H,22,23)/t14-/m1/s1
   InChI key: SBISOGPNPWSTHJ-CQSZACIVSA-N
 1611:
-  Smiles1: CCOC(=O)C1=C([N@]2CC[N@](C)CC2)C2=C(C=CC=C2)[NH+]=C1
-  CSmiles1: C[N@@]1CC[N@](CC1)c1c(c[nH+]c2ccccc21)C(=O)OCC
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #14
+  Smiles1: CCOC(=O)C1=C(N2CCN(C)CC2)C2=C(C=CC=C2)[NH+]=C1
+  CSmiles1: CN1CCN(CC1)c1c(c[nH+]c2ccccc21)C(=O)OCC
   InChI1: InChI=1S/C17H21N3O2/c1-3-22-17(21)14-12-18-15-7-5-4-6-13(15)16(14)20-10-8-19(2)9-11-20/h4-7,12H,3,8-11H2,1-2H3/p+1
   Smiles2: CCOC(=O)C1=C(N2CCN(CC2)C)C2C([NH+]=C1)=CC=CC=2
   CSmiles2: CN1CCN(CC1)c1c(c[nH+]c2ccccc21)C(=O)OCC
   InChI2: InChI=1S/C17H21N3O2/c1-3-22-17(21)14-12-18-15-7-5-4-6-13(15)16(14)20-10-8-19(2)9-11-20/h4-7,12H,3,8-11H2,1-2H3/p+1
-Warning: CSmiles are different:
-  C[N@@]1CC[N@](CC1)c1c(c[nH+]c2ccccc21)C(=O)OCC
-  CN1CCN(CC1)c1c(c[nH+]c2ccccc21)C(=O)OCC
-
   InChI key: CMWRGZCAJGWZCJ-UHFFFAOYSA-O
   Warning: Proton(s) added/removed
 1612:
@@ -63637,16 +63615,13 @@ Warning: CSmiles are different:
   InChI2: InChI=1S/C35H32N2O5/c1-40-26-16-13-22(14-17-26)34-33-28(19-25(20-30(33)38)24-15-18-31(41-2)32(21-24)42-3)36-27-11-7-8-12-29(27)37(34)35(39)23-9-5-4-6-10-23/h4-18,21,25,34,36H,19-20H2,1-3H3/t25-,34-/m1/s1
   InChI key: QEMRRNBETSHQPM-QCBOHVIISA-N
 1726:
-  Smiles1: C1=CC2/C(=N/C3=CC(Br)=CC=C3)/C(=O)N(C[N@H+]3CC[N@](C4=CC=C(F)C=C4)CC3)C=2C=C1
-  CSmiles1: O=C1/C(=N\c2cc(Br)ccc2)/c2ccccc2N1C[N@@H+]1CC[N@](CC1)c1ccc(F)cc1
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #12
+  Smiles1: C1=CC2/C(=N/C3=CC(Br)=CC=C3)/C(=O)N(C[N@H+]3CCN(C4=CC=C(F)C=C4)CC3)C=2C=C1
+  CSmiles1: O=C1/C(=N\c2cc(Br)ccc2)/c2ccccc2N1C[NH+]1CCN(CC1)c1ccc(F)cc1
   InChI1: InChI=1S/C25H22BrFN4O/c26-18-4-3-5-20(16-18)28-24-22-6-1-2-7-23(22)31(25(24)32)17-29-12-14-30(15-13-29)21-10-8-19(27)9-11-21/h1-11,16H,12-15,17H2/p+1/b28-24-
   Smiles2: C1C=C2/C(=N/C3C=C(Br)C=CC=3)/C(=O)N(C2=CC=1)C[NH+]1CCN(C2C=CC(F)=CC=2)CC1
   CSmiles2: O=C1/C(=N\c2cc(Br)ccc2)/c2ccccc2N1C[NH+]1CCN(CC1)c1ccc(F)cc1
   InChI2: InChI=1S/C25H22BrFN4O/c26-18-4-3-5-20(16-18)28-24-22-6-1-2-7-23(22)31(25(24)32)17-29-12-14-30(15-13-29)21-10-8-19(27)9-11-21/h1-11,16H,12-15,17H2/p+1/b28-24-
-Warning: CSmiles are different:
-  O=C1/C(=N\c2cc(Br)ccc2)/c2ccccc2N1C[N@@H+]1CC[N@](CC1)c1ccc(F)cc1
-  O=C1/C(=N\c2cc(Br)ccc2)/c2ccccc2N1C[NH+]1CCN(CC1)c1ccc(F)cc1
-
   InChI key: HIKJORXPFACJBN-COOPMVRXSA-O
   Warning: Proton(s) added/removed
 1727:
@@ -64011,16 +63986,13 @@ Warning: CSmiles are different:
   InChI2: InChI=1S/C23H30N2O3/c1-5-6-9-12-28-22(27)19-15(2)25-17-13-23(3,4)14-18(26)20(17)21(19)16-10-7-8-11-24-16/h7-8,10-11,21,25H,5-6,9,12-14H2,1-4H3/t21-/m1/s1
   InChI key: NIVKXQPUNUJJTD-OAQYLSRUSA-N
 1762:
-  Smiles1: CC1=CC=C([N@]2CC[N@](C[C@@H](CN3C4=CC=CC=C4C4=C3C=CC=C4)O)CC2)C=C1
-  CSmiles1: Cc1ccc(cc1)[N@@]1CC[N@@](C[C@H](O)C[n]2c3ccccc3c3ccccc23)CC1
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #5
+  Smiles1: CC1=CC=C(N2CCN(C[C@@H](CN3C4=CC=CC=C4C4=C3C=CC=C4)O)CC2)C=C1
+  CSmiles1: Cc1ccc(cc1)N1CCN(C[C@H](O)C[n]2c3ccccc3c3ccccc23)CC1
   InChI1: InChI=1S/C26H29N3O/c1-20-10-12-21(13-11-20)28-16-14-27(15-17-28)18-22(30)19-29-25-8-4-2-6-23(25)24-7-3-5-9-26(24)29/h2-13,22,30H,14-19H2,1H3/t22-/m0/s1
   Smiles2: CC1C=CC(N2CCN(C[C@@](O)([H])CN3C4C(C5C3=CC=CC=5)=CC=CC=4)CC2)=CC=1
   CSmiles2: Cc1ccc(cc1)N1CCN(C[C@H](O)C[n]2c3ccccc3c3ccccc23)CC1
   InChI2: InChI=1S/C26H29N3O/c1-20-10-12-21(13-11-20)28-16-14-27(15-17-28)18-22(30)19-29-25-8-4-2-6-23(25)24-7-3-5-9-26(24)29/h2-13,22,30H,14-19H2,1H3/t22-/m0/s1
-Warning: CSmiles are different:
-  Cc1ccc(cc1)[N@@]1CC[N@@](C[C@H](O)C[n]2c3ccccc3c3ccccc23)CC1
-  Cc1ccc(cc1)N1CCN(C[C@H](O)C[n]2c3ccccc3c3ccccc23)CC1
-
   InChI key: BFDOXMLVGVGTAH-QFIPXVFZSA-N
 1763:
   Smiles1: CCCC(=O)C1C(=O)C[C@@H](C2=CC=CC=C2)CC1=NCCC
@@ -65195,14 +65167,15 @@ Warning: CSmiles are different:
   InChI2: InChI=1S/C23H18Cl2N2O/c1-14-2-4-16(5-3-14)23-27-21(19-12-18(25)10-11-22(19)28-23)13-20(26-27)15-6-8-17(24)9-7-15/h2-12,21,23H,13H2,1H3/t21-,23+/m1/s1
   InChI key: UYAHCELMIWOHES-GGAORHGYSA-N
 1886:
-  Smiles1: CC[N@]1CC2SC3NC(=S)N(C4=CC=CC=C4)C(=O)C=3C=2CC1
-  CSmiles1: CC[N@]1Cc2[s]c3NC(=S)N(C(=O)c3c2CC1)c1ccccc1
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #2
+  Smiles1: CCN1CC2SC3NC(=S)N(C4=CC=CC=C4)C(=O)C=3C=2CC1
+  CSmiles1: CCN1Cc2[s]c3NC(=S)N(C(=O)c3c2CC1)c1ccccc1
   InChI1: InChI=1S/C17H17N3OS2/c1-2-19-9-8-12-13(10-19)23-15-14(12)16(21)20(17(22)18-15)11-6-4-3-5-7-11/h3-7H,2,8-10H2,1H3,(H,18,22)
   Smiles2: CCN1CC2SC3N=C(S)N(C(=O)C=3C=2CC1)C1C=CC=CC=1
   CSmiles2: CCN1Cc2[s]c3N=C(S)N(C(=O)c3c2CC1)c1ccccc1
   InChI2: InChI=1S/C17H17N3OS2/c1-2-19-9-8-12-13(10-19)23-15-14(12)16(21)20(17(22)18-15)11-6-4-3-5-7-11/h3-7H,2,8-10H2,1H3,(H,18,22)
 Warning: CSmiles are different:
-  CC[N@]1Cc2[s]c3NC(=S)N(C(=O)c3c2CC1)c1ccccc1
+  CCN1Cc2[s]c3NC(=S)N(C(=O)c3c2CC1)c1ccccc1
   CCN1Cc2[s]c3N=C(S)N(C(=O)c3c2CC1)c1ccccc1
 
   InChI key: UYHMWLFXHFTJFK-UHFFFAOYSA-N
@@ -65635,14 +65608,15 @@ Warning: CSmiles are different:
   InChI key: OZTZHIRBISRRRP-XVAAYUMESA-N
   Warning: Charges were rearranged
 1930:
-  Smiles1: C1=CC([N@@]2CC[N@@H+]([C@@H]3C(=O)N(C4=CC(Cl)=C(Cl)C=C4)C(=O)C3)CC2)=CC(C(F)(F)F)=C1
-  CSmiles1: O=C1[C@H](CC(=O)N1c1ccc(Cl)c(Cl)c1)[N@@H+]1CC[N@](CC1)c1cc(ccc1)C(F)(F)F
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #9
+  Smiles1: C1=CC(N2CC[N@@H+]([C@@H]3C(=O)N(C4=CC(Cl)=C(Cl)C=C4)C(=O)C3)CC2)=CC(C(F)(F)F)=C1
+  CSmiles1: O=C1[C@H](CC(=O)N1c1ccc(Cl)c(Cl)c1)[NH+]1CCN(CC1)c1cc(ccc1)C(F)(F)F
   InChI1: InChI=1S/C21H18Cl2F3N3O2/c22-16-5-4-15(11-17(16)23)29-19(30)12-18(20(29)31)28-8-6-27(7-9-28)14-3-1-2-13(10-14)21(24,25)26/h1-5,10-11,18H,6-9,12H2/p+1/t18-/m0/s1
   Smiles2: C1C=C([NH+]2CCN([C@@]3(C(=O)N(C(=O)C3)C3=CC(Cl)=C(Cl)C=C3)[H])CC2)C=C(C(F)(F)F)C=1
   CSmiles2: O=C1[C@H](CC(=O)N1c1ccc(Cl)c(Cl)c1)N1CC[NH+](CC1)c1cc(ccc1)C(F)(F)F
   InChI2: InChI=1S/C21H18Cl2F3N3O2/c22-16-5-4-15(11-17(16)23)29-19(30)12-18(20(29)31)28-8-6-27(7-9-28)14-3-1-2-13(10-14)21(24,25)26/h1-5,10-11,18H,6-9,12H2/p+1/t18-/m0/s1
 Warning: CSmiles are different:
-  O=C1[C@H](CC(=O)N1c1ccc(Cl)c(Cl)c1)[N@@H+]1CC[N@](CC1)c1cc(ccc1)C(F)(F)F
+  O=C1[C@H](CC(=O)N1c1ccc(Cl)c(Cl)c1)[NH+]1CCN(CC1)c1cc(ccc1)C(F)(F)F
   O=C1[C@H](CC(=O)N1c1ccc(Cl)c(Cl)c1)N1CC[NH+](CC1)c1cc(ccc1)C(F)(F)F
 
   InChI key: SCMQWFZOVLZXDW-SFHVURJKSA-O
@@ -65943,14 +65917,15 @@ Warning: CSmiles are different:
 
   InChI key: STCAOWJZRKINSX-NSHDSACASA-N
 1960:
-  Smiles1: CC(C)CN1C([N@@](C)CC2=CC=CC=C2)=NC2=C1C(=O)NC(=O)N2C
-  CSmiles1: C[N@@](Cc1ccccc1)c1[n]c2c(C(=O)NC(=O)N2C)[n]1CC(C)C
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #13
+  Smiles1: CC(C)CN1C(N(C)CC2=CC=CC=C2)=NC2=C1C(=O)NC(=O)N2C
+  CSmiles1: CN(Cc1ccccc1)c1[n]c2c(C(=O)NC(=O)N2C)[n]1CC(C)C
   InChI1: InChI=1S/C18H23N5O2/c1-12(2)10-23-14-15(22(4)18(25)20-16(14)24)19-17(23)21(3)11-13-8-6-5-7-9-13/h5-9,12H,10-11H2,1-4H3,(H,20,24,25)
   Smiles2: CC(CN1C(N(CC2C=CC=CC=2)C)=NC2N(C(=O)N=C(O)C=21)C)C
   CSmiles2: CN(Cc1ccccc1)c1[n]c2c(C(O)=NC(=O)N2C)[n]1CC(C)C
   InChI2: InChI=1S/C18H23N5O2/c1-12(2)10-23-14-15(22(4)18(25)20-16(14)24)19-17(23)21(3)11-13-8-6-5-7-9-13/h5-9,12H,10-11H2,1-4H3,(H,20,24,25)
 Warning: CSmiles are different:
-  C[N@@](Cc1ccccc1)c1[n]c2c(C(=O)NC(=O)N2C)[n]1CC(C)C
+  CN(Cc1ccccc1)c1[n]c2c(C(=O)NC(=O)N2C)[n]1CC(C)C
   CN(Cc1ccccc1)c1[n]c2c(C(O)=NC(=O)N2C)[n]1CC(C)C
 
   InChI key: IXWRBHQHRXSGOS-UHFFFAOYSA-N
@@ -66507,14 +66482,15 @@ Warning: CSmiles are different:
 
   InChI key: YSJAYHKJJCIQGD-LLVKDONJSA-N
 2019:
-  Smiles1: CC[C@@H](C)N1C([N@@](C)CC2=CC=CC=C2)=NC2=C1C(=O)NC(=O)N2C
-  CSmiles1: CC[C@@H](C)[n]1c2c([n]c1[N@@](C)Cc1ccccc1)N(C)C(=O)NC2=O
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #13
+  Smiles1: CC[C@@H](C)N1C(N(C)CC2=CC=CC=C2)=NC2=C1C(=O)NC(=O)N2C
+  CSmiles1: CC[C@@H](C)[n]1c2c([n]c1N(C)Cc1ccccc1)N(C)C(=O)NC2=O
   InChI1: InChI=1S/C18H23N5O2/c1-5-12(2)23-14-15(22(4)18(25)20-16(14)24)19-17(23)21(3)11-13-9-7-6-8-10-13/h6-10,12H,5,11H2,1-4H3,(H,20,24,25)/t12-/m1/s1
   Smiles2: CC[C@@](N1C(N(CC2C=CC=CC=2)C)=NC2N(C(=O)N=C(O)C=21)C)([H])C
   CSmiles2: CC[C@@H](C)[n]1c2C(O)=NC(=O)N(C)c2[n]c1N(C)Cc1ccccc1
   InChI2: InChI=1S/C18H23N5O2/c1-5-12(2)23-14-15(22(4)18(25)20-16(14)24)19-17(23)21(3)11-13-9-7-6-8-10-13/h6-10,12H,5,11H2,1-4H3,(H,20,24,25)/t12-/m1/s1
 Warning: CSmiles are different:
-  CC[C@@H](C)[n]1c2c([n]c1[N@@](C)Cc1ccccc1)N(C)C(=O)NC2=O
+  CC[C@@H](C)[n]1c2c([n]c1N(C)Cc1ccccc1)N(C)C(=O)NC2=O
   CC[C@@H](C)[n]1c2C(O)=NC(=O)N(C)c2[n]c1N(C)Cc1ccccc1
 
   InChI key: CWPZXWYMMWDUBB-GFCCVEGCSA-N
@@ -66971,14 +66947,15 @@ Warning: CSmiles are different:
 
   InChI key: QGDDACIXDNBGJE-MRVPVSSYSA-N
 2071:
-  Smiles1: CC[C@H](C)N1C([N@](C)CC2=CC=CC=C2)=NC2=C1C(=O)NC(=O)N2C
-  CSmiles1: CC[C@H](C)[n]1c2c([n]c1[N@](C)Cc1ccccc1)N(C)C(=O)NC2=O
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #13
+  Smiles1: CC[C@H](C)N1C(N(C)CC2=CC=CC=C2)=NC2=C1C(=O)NC(=O)N2C
+  CSmiles1: CC[C@H](C)[n]1c2c([n]c1N(C)Cc1ccccc1)N(C)C(=O)NC2=O
   InChI1: InChI=1S/C18H23N5O2/c1-5-12(2)23-14-15(22(4)18(25)20-16(14)24)19-17(23)21(3)11-13-9-7-6-8-10-13/h6-10,12H,5,11H2,1-4H3,(H,20,24,25)/t12-/m0/s1
   Smiles2: CC[C@](N1C(N(CC2C=CC=CC=2)C)=NC2N(C(=O)N=C(O)C=21)C)([H])C
   CSmiles2: CC[C@H](C)[n]1c2C(O)=NC(=O)N(C)c2[n]c1N(C)Cc1ccccc1
   InChI2: InChI=1S/C18H23N5O2/c1-5-12(2)23-14-15(22(4)18(25)20-16(14)24)19-17(23)21(3)11-13-9-7-6-8-10-13/h6-10,12H,5,11H2,1-4H3,(H,20,24,25)/t12-/m0/s1
 Warning: CSmiles are different:
-  CC[C@H](C)[n]1c2c([n]c1[N@](C)Cc1ccccc1)N(C)C(=O)NC2=O
+  CC[C@H](C)[n]1c2c([n]c1N(C)Cc1ccccc1)N(C)C(=O)NC2=O
   CC[C@H](C)[n]1c2C(O)=NC(=O)N(C)c2[n]c1N(C)Cc1ccccc1
 
   InChI key: CWPZXWYMMWDUBB-LBPRGKRZSA-N
@@ -67052,14 +67029,15 @@ Warning: CSmiles are different:
   InChI2: InChI=1S/C26H36N2O3/c1-7-14-31-25(30)22-17(4)27-20-15-26(5,6)16-21(29)24(20)23(22)18-10-12-19(13-11-18)28(8-2)9-3/h10-13,23,27H,7-9,14-16H2,1-6H3/t23-/m0/s1
   InChI key: YSUBIOIMOXDQEK-QHCPKHFHSA-N
 2079:
-  Smiles1: CC1=C(OCCCCC[N@H+]2CC[N@](C)CC2)C(C)=CC=C1
-  CSmiles1: C[N@@]1CC[N@H+](CC1)CCCCCOc1c(C)cccc1C
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #17
+  Smiles1: CC1=C(OCCCCC[N@H+]2CCN(C)CC2)C(C)=CC=C1
+  CSmiles1: CN1CC[NH+](CC1)CCCCCOc1c(C)cccc1C
   InChI1: InChI=1S/C18H30N2O/c1-16-8-7-9-17(2)18(16)21-15-6-4-5-10-20-13-11-19(3)12-14-20/h7-9H,4-6,10-15H2,1-3H3/p+1
   Smiles2: CC1=C(OCCCCCN2CC[NH+](CC2)C)C(=CC=C1)C
   CSmiles2: C[NH+]1CCN(CC1)CCCCCOc1c(C)cccc1C
   InChI2: InChI=1S/C18H30N2O/c1-16-8-7-9-17(2)18(16)21-15-6-4-5-10-20-13-11-19(3)12-14-20/h7-9H,4-6,10-15H2,1-3H3/p+1
 Warning: CSmiles are different:
-  C[N@@]1CC[N@H+](CC1)CCCCCOc1c(C)cccc1C
+  CN1CC[NH+](CC1)CCCCCOc1c(C)cccc1C
   C[NH+]1CCN(CC1)CCCCCOc1c(C)cccc1C
 
   InChI key: YVQXICBFNHRSQU-UHFFFAOYSA-O
@@ -67368,14 +67346,15 @@ Warning: CSmiles are different:
 
   InChI key: HGYMKYLBIORRBA-HXPMCKFVSA-N
 2111:
-  Smiles1: C1=CC(Cl)=CC([N@@]2CC[N@@H+]([C@H]3C(=O)N(C4=CC=C(Br)C=C4)C(=O)C3)CC2)=C1
-  CSmiles1: O=C1[C@@H](CC(=O)N1c1ccc(Br)cc1)[N@@H+]1CC[N@](CC1)c1cc(Cl)ccc1
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #3
+  Smiles1: C1=CC(Cl)=CC(N2CC[N@@H+]([C@H]3C(=O)N(C4=CC=C(Br)C=C4)C(=O)C3)CC2)=C1
+  CSmiles1: O=C1[C@@H](CC(=O)N1c1ccc(Br)cc1)[NH+]1CCN(CC1)c1cc(Cl)ccc1
   InChI1: InChI=1S/C20H19BrClN3O2/c21-14-4-6-16(7-5-14)25-19(26)13-18(20(25)27)24-10-8-23(9-11-24)17-3-1-2-15(22)12-17/h1-7,12,18H,8-11,13H2/p+1/t18-/m1/s1
   Smiles2: C1C=C([NH+]2CCN([C@]3(C(=O)N(C(=O)C3)C3C=CC(Br)=CC=3)[H])CC2)C=C(Cl)C=1
   CSmiles2: O=C1[C@@H](CC(=O)N1c1ccc(Br)cc1)N1CC[NH+](CC1)c1cc(Cl)ccc1
   InChI2: InChI=1S/C20H19BrClN3O2/c21-14-4-6-16(7-5-14)25-19(26)13-18(20(25)27)24-10-8-23(9-11-24)17-3-1-2-15(22)12-17/h1-7,12,18H,8-11,13H2/p+1/t18-/m1/s1
 Warning: CSmiles are different:
-  O=C1[C@@H](CC(=O)N1c1ccc(Br)cc1)[N@@H+]1CC[N@](CC1)c1cc(Cl)ccc1
+  O=C1[C@@H](CC(=O)N1c1ccc(Br)cc1)[NH+]1CCN(CC1)c1cc(Cl)ccc1
   O=C1[C@@H](CC(=O)N1c1ccc(Br)cc1)N1CC[NH+](CC1)c1cc(Cl)ccc1
 
   InChI key: AIPMLXQHSUKNLN-GOSISDBHSA-O
@@ -67482,16 +67461,13 @@ Warning: CSmiles are different:
   InChI key: PELCXBGISVDAOO-PKIAMQTDSA-M
   Warning: Proton(s) added/removed
 2121:
-  Smiles1: CC1=CC=C([N@@]2[C@@H](C3=CC([N+](=O)[O-])=C(SC4N(C)C=CN=4)C=C3)[N@@](C3=CC=C(C)C=C3)CC2)C=C1
-  CSmiles1: C[n]1cc[n]c1Sc1ccc(cc1[N+]([O-])=O)[C@@H]1[N@](CC[N@@]1c1ccc(C)cc1)c1ccc(C)cc1
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #5
+  Smiles1: CC1=CC=C(N2[C@@H](C3=CC([N+](=O)[O-])=C(SC4N(C)C=CN=4)C=C3)N(C3=CC=C(C)C=C3)CC2)C=C1
+  CSmiles1: C[n]1cc[n]c1Sc1ccc(cc1[N+]([O-])=O)C1N(CCN1c1ccc(C)cc1)c1ccc(C)cc1
   InChI1: InChI=1S/C27H27N5O2S/c1-19-4-9-22(10-5-19)30-16-17-31(23-11-6-20(2)7-12-23)26(30)21-8-13-25(24(18-21)32(33)34)35-27-28-14-15-29(27)3/h4-15,18,26H,16-17H2,1-3H3
   Smiles2: CC1C=CC(N2C(N(C3C=CC(=CC=3)C)CC2)C2=CC([N+](=O)[O-])=C(SC3N(C=CN=3)C)C=C2)=CC=1
   CSmiles2: C[n]1cc[n]c1Sc1ccc(cc1[N+]([O-])=O)C1N(CCN1c1ccc(C)cc1)c1ccc(C)cc1
   InChI2: InChI=1S/C27H27N5O2S/c1-19-4-9-22(10-5-19)30-16-17-31(23-11-6-20(2)7-12-23)26(30)21-8-13-25(24(18-21)32(33)34)35-27-28-14-15-29(27)3/h4-15,18,26H,16-17H2,1-3H3
-Warning: CSmiles are different:
-  C[n]1cc[n]c1Sc1ccc(cc1[N+]([O-])=O)[C@@H]1[N@](CC[N@@]1c1ccc(C)cc1)c1ccc(C)cc1
-  C[n]1cc[n]c1Sc1ccc(cc1[N+]([O-])=O)C1N(CCN1c1ccc(C)cc1)c1ccc(C)cc1
-
   InChI key: RHZWXDJGHJAAIP-UHFFFAOYSA-N
   Warning: Charges were rearranged
 2122:
@@ -67785,16 +67761,13 @@ Warning: CSmiles are different:
   InChI2: InChI=1S/C16H15NO5/c1-3-8-22-14(19)12-9(2)17-16(21)11-7-5-4-6-10(11)13(18)15(12,16)20/h3-7,17,20-21H,1,8H2,2H3/t15-,16+/m0/s1
   InChI key: LNEZRLXAIAJLMI-JKSUJKDBSA-N
 2153:
-  Smiles1: C[N@@H+]1CC[N@@](CCOCCOC2=C(Cl)C=C(Cl)C=C2Cl)CC1
-  CSmiles1: C[N@@H+]1CC[N@](CC1)CCOCCOc1c(Cl)cc(Cl)cc1Cl
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #4
+  Smiles1: C[N@@H+]1CCN(CCOCCOC2=C(Cl)C=C(Cl)C=C2Cl)CC1
+  CSmiles1: C[NH+]1CCN(CC1)CCOCCOc1c(Cl)cc(Cl)cc1Cl
   InChI1: InChI=1S/C15H21Cl3N2O2/c1-19-2-4-20(5-3-19)6-7-21-8-9-22-15-13(17)10-12(16)11-14(15)18/h10-11H,2-9H2,1H3/p+1
   Smiles2: C[NH+]1CCN(CCOCCOC2C(Cl)=CC(Cl)=CC=2Cl)CC1
   CSmiles2: C[NH+]1CCN(CC1)CCOCCOc1c(Cl)cc(Cl)cc1Cl
   InChI2: InChI=1S/C15H21Cl3N2O2/c1-19-2-4-20(5-3-19)6-7-21-8-9-22-15-13(17)10-12(16)11-14(15)18/h10-11H,2-9H2,1H3/p+1
-Warning: CSmiles are different:
-  C[N@@H+]1CC[N@](CC1)CCOCCOc1c(Cl)cc(Cl)cc1Cl
-  C[NH+]1CCN(CC1)CCOCCOc1c(Cl)cc(Cl)cc1Cl
-
   InChI key: YHAIUXOOUWRJIE-UHFFFAOYSA-O
   Warning: Proton(s) added/removed
 2154:
@@ -67875,16 +67848,13 @@ Warning: CSmiles are different:
   InChI2: InChI=1S/C26H23ClN2O6S/c1-4-32-17-8-6-15(7-9-17)23-22(25(31)33-5-2)14(3)28-26-29(23)24(30)21(36-26)11-16-10-19-20(12-18(16)27)35-13-34-19/h6-12,23H,4-5,13H2,1-3H3/b21-11-/t23-/m1/s1
   InChI key: ZDXSRHCBFFPPMZ-GSOQPGDSSA-N
 2162:
-  Smiles1: C[C@@H]1CC[N@@]([C@H](C(Cl)(Cl)Cl)NC(=O)C2SC=CC=2)CC1
-  CSmiles1: C[C@@H]1CC[N@](CC1)[C@@H](NC(=O)c1ccc[s]1)C(Cl)(Cl)Cl
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #4
+  Smiles1: C[C@@H]1CCN([C@H](C(Cl)(Cl)Cl)NC(=O)C2SC=CC=2)CC1
+  CSmiles1: CC1CCN(CC1)[C@@H](NC(=O)c1ccc[s]1)C(Cl)(Cl)Cl
   InChI1: InChI=1S/C13H17Cl3N2OS/c1-9-4-6-18(7-5-9)12(13(14,15)16)17-11(19)10-3-2-8-20-10/h2-3,8-9,12H,4-7H2,1H3,(H,17,19)/t12-/m1/s1
   Smiles2: CC1CCN([C@@](NC(=O)C2SC=CC=2)(C(Cl)(Cl)Cl)[H])CC1
   CSmiles2: CC1CCN(CC1)[C@@H](NC(=O)c1ccc[s]1)C(Cl)(Cl)Cl
   InChI2: InChI=1S/C13H17Cl3N2OS/c1-9-4-6-18(7-5-9)12(13(14,15)16)17-11(19)10-3-2-8-20-10/h2-3,8-9,12H,4-7H2,1H3,(H,17,19)/t12-/m1/s1
-Warning: CSmiles are different:
-  C[C@@H]1CC[N@](CC1)[C@@H](NC(=O)c1ccc[s]1)C(Cl)(Cl)Cl
-  CC1CCN(CC1)[C@@H](NC(=O)c1ccc[s]1)C(Cl)(Cl)Cl
-
   InChI key: WYVAIAVZUYFGJH-GFCCVEGCSA-N
 2163:
   Smiles1: CC1N(C)C(=O)N[C@H](C2=CC(Br)=C(O)C(OC)=C2)C=1C(=O)OCCC1=CC=CC=C1
@@ -68017,14 +67987,15 @@ Warning: CSmiles are different:
   InChI key: KGVMWXOXZIZYGK-JEJOPICUSA-O
   Warning: Proton(s) added/removed
 2177:
-  Smiles1: C1=CC=C([N@@]2CC[N@@H+]([C@H]3[C@@H](C4C(=O)OC5(CCCCC5)OC=4O)C(=O)C(Br)=C3)CC2)C=C1
-  CSmiles1: OC1OC2(CCCCC2)OC(=O)C=1[C@@H]1[C@@H](C=C(Br)C1=O)[N@@H+]1CC[N@](CC1)c1ccccc1
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #4
+  Smiles1: C1=CC=C(N2CC[N@@H+]([C@H]3[C@@H](C4C(=O)OC5(CCCCC5)OC=4O)C(=O)C(Br)=C3)CC2)C=C1
+  CSmiles1: OC1OC2(CCCCC2)OC(=O)C=1[C@@H]1[C@@H](C=C(Br)C1=O)[NH+]1CCN(CC1)c1ccccc1
   InChI1: InChI=1S/C24H27BrN2O5/c25-17-15-18(27-13-11-26(12-14-27)16-7-3-1-4-8-16)19(21(17)28)20-22(29)31-24(32-23(20)30)9-5-2-6-10-24/h1,3-4,7-8,15,18-19,29H,2,5-6,9-14H2/p+1/t18-,19+/m1/s1
   Smiles2: C1C=CC([NH+]2CCN([C@]3([C@](C(=O)C(Br)=C3)(C3C(OC4(OC=3O)CCCCC4)=O)[H])[H])CC2)=CC=1
   CSmiles2: OC1OC2(CCCCC2)OC(=O)C=1[C@@H]1[C@@H](C=C(Br)C1=O)N1CC[NH+](CC1)c1ccccc1
   InChI2: InChI=1S/C24H27BrN2O5/c25-17-15-18(27-13-11-26(12-14-27)16-7-3-1-4-8-16)19(21(17)28)20-22(29)31-24(32-23(20)30)9-5-2-6-10-24/h1,3-4,7-8,15,18-19,29H,2,5-6,9-14H2/p+1/t18-,19+/m1/s1
 Warning: CSmiles are different:
-  OC1OC2(CCCCC2)OC(=O)C=1[C@@H]1[C@@H](C=C(Br)C1=O)[N@@H+]1CC[N@](CC1)c1ccccc1
+  OC1OC2(CCCCC2)OC(=O)C=1[C@@H]1[C@@H](C=C(Br)C1=O)[NH+]1CCN(CC1)c1ccccc1
   OC1OC2(CCCCC2)OC(=O)C=1[C@@H]1[C@@H](C=C(Br)C1=O)N1CC[NH+](CC1)c1ccccc1
 
   InChI key: RLFVQRWTJKOELN-MOPGFXCFSA-O
@@ -68090,14 +68061,15 @@ Warning: CSmiles are different:
   InChI2: InChI=1S/C30H35NO5/c1-6-7-14-36-30(33)27-19(3)31-23-15-21(20-12-13-25(34-4)26(17-20)35-5)16-24(32)29(23)28(27)22-11-9-8-10-18(22)2/h8-13,17,21,28,31H,6-7,14-16H2,1-5H3/t21-,28+/m0/s1
   InChI key: GRHSHDFPELOCEA-RBTNQOKQSA-N
 2185:
-  Smiles1: C[N@@]1CC[N@@H+](CCCCCCOC2=C(OC)C=CC=C2)CC1
-  CSmiles1: COc1ccccc1OCCCCCC[N@@H+]1CC[N@@](C)CC1
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #1
+  Smiles1: CN1CC[N@@H+](CCCCCCOC2=C(OC)C=CC=C2)CC1
+  CSmiles1: COc1ccccc1OCCCCCC[NH+]1CCN(C)CC1
   InChI1: InChI=1S/C18H30N2O2/c1-19-12-14-20(15-13-19)11-7-3-4-8-16-22-18-10-6-5-9-17(18)21-2/h5-6,9-10H,3-4,7-8,11-16H2,1-2H3/p+1
   Smiles2: C[NH+]1CCN(CC1)CCCCCCOC1C(OC)=CC=CC=1
   CSmiles2: COc1ccccc1OCCCCCCN1CC[NH+](C)CC1
   InChI2: InChI=1S/C18H30N2O2/c1-19-12-14-20(15-13-19)11-7-3-4-8-16-22-18-10-6-5-9-17(18)21-2/h5-6,9-10H,3-4,7-8,11-16H2,1-2H3/p+1
 Warning: CSmiles are different:
-  COc1ccccc1OCCCCCC[N@@H+]1CC[N@@](C)CC1
+  COc1ccccc1OCCCCCC[NH+]1CCN(C)CC1
   COc1ccccc1OCCCCCCN1CC[NH+](C)CC1
 
   InChI key: MZMLGTPXTGOVJO-UHFFFAOYSA-O
@@ -68185,16 +68157,13 @@ Warning: CSmiles are different:
   InChI2: InChI=1S/C22H21NO3S/c1-25-19-8-3-15(4-9-19)13-23-21(24)14-27-22(23)18-6-5-17-12-20(26-2)10-7-16(17)11-18/h3-12,22H,13-14H2,1-2H3/t22-/m1/s1
   InChI key: MDGVXXRFCJBOMN-JOCHJYFZSA-N
 2195:
-  Smiles1: C[C@H]1CC[N@]([C@@H](C(Cl)(Cl)Cl)NC(=O)C2SC=CC=2)CC1
-  CSmiles1: C[C@@H]1CC[N@](CC1)[C@H](NC(=O)c1ccc[s]1)C(Cl)(Cl)Cl
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #4
+  Smiles1: C[C@H]1CCN([C@@H](C(Cl)(Cl)Cl)NC(=O)C2SC=CC=2)CC1
+  CSmiles1: CC1CCN(CC1)[C@H](NC(=O)c1ccc[s]1)C(Cl)(Cl)Cl
   InChI1: InChI=1S/C13H17Cl3N2OS/c1-9-4-6-18(7-5-9)12(13(14,15)16)17-11(19)10-3-2-8-20-10/h2-3,8-9,12H,4-7H2,1H3,(H,17,19)/t12-/m0/s1
   Smiles2: CC1CCN([C@](NC(=O)C2SC=CC=2)(C(Cl)(Cl)Cl)[H])CC1
   CSmiles2: CC1CCN(CC1)[C@H](NC(=O)c1ccc[s]1)C(Cl)(Cl)Cl
   InChI2: InChI=1S/C13H17Cl3N2OS/c1-9-4-6-18(7-5-9)12(13(14,15)16)17-11(19)10-3-2-8-20-10/h2-3,8-9,12H,4-7H2,1H3,(H,17,19)/t12-/m0/s1
-Warning: CSmiles are different:
-  C[C@@H]1CC[N@](CC1)[C@H](NC(=O)c1ccc[s]1)C(Cl)(Cl)Cl
-  CC1CCN(CC1)[C@H](NC(=O)c1ccc[s]1)C(Cl)(Cl)Cl
-
   InChI key: WYVAIAVZUYFGJH-LBPRGKRZSA-N
 2196:
   Smiles1: CC1NC2C[C@H](CC(=O)C=2[C@@H](C2=CC=C(N(C)C)C=C2)C=1C(=O)OC)C1SC=CC=1
@@ -68225,16 +68194,13 @@ Warning: CSmiles are different:
 
   InChI key: BWZWIBFDWKLJAN-AWEZNQCLSA-N
 2199:
-  Smiles1: CC1=CC=C([N@@]2[C@@H](C3=CC(Cl)=CC=C3)[N@@](C3=CC=C(C)C=C3)CC2)C=C1
-  CSmiles1: Cc1ccc(cc1)[N@]1CC[N@@]([C@H]1c1cc(Cl)ccc1)c1ccc(C)cc1
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #5
+  Smiles1: CC1=CC=C(N2[C@@H](C3=CC(Cl)=CC=C3)N(C3=CC=C(C)C=C3)CC2)C=C1
+  CSmiles1: Cc1ccc(cc1)N1CCN(C1c1cc(Cl)ccc1)c1ccc(C)cc1
   InChI1: InChI=1S/C23H23ClN2/c1-17-6-10-21(11-7-17)25-14-15-26(22-12-8-18(2)9-13-22)23(25)19-4-3-5-20(24)16-19/h3-13,16,23H,14-15H2,1-2H3
   Smiles2: CC1C=CC(N2C(N(C3C=CC(=CC=3)C)CC2)C2=CC(Cl)=CC=C2)=CC=1
   CSmiles2: Cc1ccc(cc1)N1CCN(C1c1cc(Cl)ccc1)c1ccc(C)cc1
   InChI2: InChI=1S/C23H23ClN2/c1-17-6-10-21(11-7-17)25-14-15-26(22-12-8-18(2)9-13-22)23(25)19-4-3-5-20(24)16-19/h3-13,16,23H,14-15H2,1-2H3
-Warning: CSmiles are different:
-  Cc1ccc(cc1)[N@]1CC[N@@]([C@H]1c1cc(Cl)ccc1)c1ccc(C)cc1
-  Cc1ccc(cc1)N1CCN(C1c1cc(Cl)ccc1)c1ccc(C)cc1
-
   InChI key: GUOKJPGTSZNHOB-UHFFFAOYSA-N
 2200:
   Smiles1: C1=CC=C(C2=CC=C([C@@H]3NC4=C(C5=C(C=C4)C=CC=C5)C4CCCC(=O)C3=4)C=C2)C=C1
@@ -68245,14 +68211,15 @@ Warning: CSmiles are different:
   InChI2: InChI=1S/C29H23NO/c31-26-12-6-11-24-27-23-10-5-4-9-21(23)17-18-25(27)30-29(28(24)26)22-15-13-20(14-16-22)19-7-2-1-3-8-19/h1-5,7-10,13-18,29-30H,6,11-12H2/t29-/m0/s1
   InChI key: RESVPDVCOXCQCV-LJAQVGFWSA-N
 2201:
-  Smiles1: CC1=C(CC(=O)NCC2(CCCCC2)[N@]2CC[N@H+](C)CC2)C(=O)OC2=C1C=CC(=C2OC)OC
-  CSmiles1: CC1c2ccc(OC)c(OC)c2OC(=O)C=1CC(=O)NCC1(CCCCC1)[N@@]1CC[N@@H+](C)CC1
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #20
+  Smiles1: CC1=C(CC(=O)NCC2(CCCCC2)N2CC[N@H+](C)CC2)C(=O)OC2=C1C=CC(=C2OC)OC
+  CSmiles1: CC1c2ccc(OC)c(OC)c2OC(=O)C=1CC(=O)NCC1(CCCCC1)N1CC[NH+](C)CC1
   InChI1: InChI=1S/C26H37N3O5/c1-18-19-8-9-21(32-3)24(33-4)23(19)34-25(31)20(18)16-22(30)27-17-26(10-6-5-7-11-26)29-14-12-28(2)13-15-29/h8-9H,5-7,10-17H2,1-4H3,(H,27,30)/p+1
   Smiles2: CC1=C(C(OC2C(OC)=C(OC)C=CC1=2)=O)CC(O)=[NH+]CC1(N2CCN(CC2)C)CCCCC1
   CSmiles2: CN1CCN(CC1)C1(C[NH+]=C(O)CC2C(=O)Oc3c(OC)c(ccc3C=2C)OC)CCCCC1
   InChI2: InChI=1S/C26H37N3O5/c1-18-19-8-9-21(32-3)24(33-4)23(19)34-25(31)20(18)16-22(30)27-17-26(10-6-5-7-11-26)29-14-12-28(2)13-15-29/h8-9H,5-7,10-17H2,1-4H3,(H,27,30)/p+1
 Warning: CSmiles are different:
-  CC1c2ccc(OC)c(OC)c2OC(=O)C=1CC(=O)NCC1(CCCCC1)[N@@]1CC[N@@H+](C)CC1
+  CC1c2ccc(OC)c(OC)c2OC(=O)C=1CC(=O)NCC1(CCCCC1)N1CC[NH+](C)CC1
   CN1CCN(CC1)C1(C[NH+]=C(O)CC2C(=O)Oc3c(OC)c(ccc3C=2C)OC)CCCCC1
 
   InChI key: ZPQCYTYLEOGUTR-UHFFFAOYSA-O
@@ -68312,16 +68279,13 @@ Warning: CSmiles are different:
   InChI key: OUXREEPWQOPTQB-UNMCSNQZSA-N
   Warning: Charges were rearranged
 2208:
-  Smiles1: CC1(N(C)C(=S)S[C@H]1[N@]1O[C@H]2C(=O)N(C(=O)[C@@H]2[C@@H]1C1=CC=C(Cl)C=C1)C1=CC=CC=C1)C
-  CSmiles1: CN1C(=S)S[C@@H]([N@]2O[C@@H]3[C@@H]([C@@H]2c2ccc(Cl)cc2)C(=O)N(c2ccccc2)C3=O)C1(C)C
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #4
+  Smiles1: CC1(N(C)C(=S)S[C@H]1N1O[C@H]2C(=O)N(C(=O)[C@@H]2[C@@H]1C1=CC=C(Cl)C=C1)C1=CC=CC=C1)C
+  CSmiles1: CN1C(=S)S[C@@H](N2O[C@@H]3[C@@H]([C@@H]2c2ccc(Cl)cc2)C(=O)N(c2ccccc2)C3=O)C1(C)C
   InChI1: InChI=1S/C23H22ClN3O3S2/c1-23(2)21(32-22(31)25(23)3)27-17(13-9-11-14(24)12-10-13)16-18(30-27)20(29)26(19(16)28)15-7-5-4-6-8-15/h4-12,16-18,21H,1-3H3/t16-,17+,18-,21-/m1/s1
   Smiles2: CC1(N(C(S[C@]1(N1O[C@]2(C(=O)N(C(=O)[C@@]2([C@]1([H])C1C=CC(Cl)=CC=1)[H])C1C=CC=CC=1)[H])[H])=S)C)C
   CSmiles2: CN1C(=S)S[C@@H](N2O[C@@H]3[C@@H]([C@@H]2c2ccc(Cl)cc2)C(=O)N(c2ccccc2)C3=O)C1(C)C
   InChI2: InChI=1S/C23H22ClN3O3S2/c1-23(2)21(32-22(31)25(23)3)27-17(13-9-11-14(24)12-10-13)16-18(30-27)20(29)26(19(16)28)15-7-5-4-6-8-15/h4-12,16-18,21H,1-3H3/t16-,17+,18-,21-/m1/s1
-Warning: CSmiles are different:
-  CN1C(=S)S[C@@H]([N@]2O[C@@H]3[C@@H]([C@@H]2c2ccc(Cl)cc2)C(=O)N(c2ccccc2)C3=O)C1(C)C
-  CN1C(=S)S[C@@H](N2O[C@@H]3[C@@H]([C@@H]2c2ccc(Cl)cc2)C(=O)N(c2ccccc2)C3=O)C1(C)C
-
   InChI key: QIRZFAXCHZGXTJ-BMQTXXJKSA-N
 2209:
   Smiles1: CC(C)C(=O)N1[C@H](C2SC=CC=2)C2C(=O)CC(CC=2NC2=C1C=CC=C2)(C)C
@@ -68360,14 +68324,15 @@ Warning: CSmiles are different:
   InChI2: InChI=1S/C23H31FO6/c1-21(2,3)29-19(26)17-15(25)12-23(7,28)18(20(27)30-22(4,5)6)16(17)13-9-8-10-14(24)11-13/h8-11,16-18,28H,12H2,1-7H3/t16-,17+,18+,23-/m0/s1
   InChI key: PFQZJEUDBCQQSR-JFNLIGNMSA-N
 2213:
-  Smiles1: C1=C([N@@]2CC[N@@H+](CC(=O)N/N=C/C3OC([N+](=O)[O-])=CC=3)CC2)C=CC(F)=C1
-  CSmiles1: [O-][N+](=O)c1ccc(/C=N/NC(=O)C[N@@H+]2CC[N@](CC2)c2ccc(F)cc2)o1
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #7
+  Smiles1: C1=C(N2CC[N@@H+](CC(=O)N/N=C/C3OC([N+](=O)[O-])=CC=3)CC2)C=CC(F)=C1
+  CSmiles1: [O-][N+](=O)c1ccc(/C=N/NC(=O)C[NH+]2CCN(CC2)c2ccc(F)cc2)o1
   InChI1: InChI=1S/C17H18FN5O4/c18-13-1-3-14(4-2-13)22-9-7-21(8-10-22)12-16(24)20-19-11-15-5-6-17(27-15)23(25)26/h1-6,11H,7-10,12H2,(H,20,24)/p+1/b19-11+
   Smiles2: C1=C(F)C=CC(N2CCN(CC(O)=[NH+]/N=C(/C3OC([N+](=O)[O-])=CC=3)\[H])CC2)=C1
   CSmiles2: [O-][N+](=O)c1ccc(/C=N/[NH+]=C(O)CN2CCN(CC2)c2ccc(F)cc2)o1
   InChI2: InChI=1S/C17H18FN5O4/c18-13-1-3-14(4-2-13)22-9-7-21(8-10-22)12-16(24)20-19-11-15-5-6-17(27-15)23(25)26/h1-6,11H,7-10,12H2,(H,20,24)/p+1/b19-11+
 Warning: CSmiles are different:
-  [O-][N+](=O)c1ccc(/C=N/NC(=O)C[N@@H+]2CC[N@](CC2)c2ccc(F)cc2)o1
+  [O-][N+](=O)c1ccc(/C=N/NC(=O)C[NH+]2CCN(CC2)c2ccc(F)cc2)o1
   [O-][N+](=O)c1ccc(/C=N/[NH+]=C(O)CN2CCN(CC2)c2ccc(F)cc2)o1
 
   InChI key: OHTMMXGSZZHVBQ-YBFXNURJSA-O
@@ -68401,14 +68366,15 @@ Warning: CSmiles are different:
 
   InChI key: GPCBCWHUOZAYNE-SNVBAGLBSA-N
 2217:
-  Smiles1: C1=CC=C([N@]2CC[N@H+]([C@@H]3[C@@H](C4C(=O)OC5(CCCCC5)OC=4O)C(=O)C(Br)=C3)CC2)C=C1
-  CSmiles1: OC1OC2(CCCCC2)OC(=O)C=1[C@@H]1[C@H](C=C(Br)C1=O)[N@@H+]1CC[N@](CC1)c1ccccc1
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #4
+  Smiles1: C1=CC=C(N2CC[N@H+]([C@@H]3[C@@H](C4C(=O)OC5(CCCCC5)OC=4O)C(=O)C(Br)=C3)CC2)C=C1
+  CSmiles1: OC1OC2(CCCCC2)OC(=O)C=1[C@@H]1[C@H](C=C(Br)C1=O)[NH+]1CCN(CC1)c1ccccc1
   InChI1: InChI=1S/C24H27BrN2O5/c25-17-15-18(27-13-11-26(12-14-27)16-7-3-1-4-8-16)19(21(17)28)20-22(29)31-24(32-23(20)30)9-5-2-6-10-24/h1,3-4,7-8,15,18-19,29H,2,5-6,9-14H2/p+1/t18-,19-/m0/s1
   Smiles2: C1C=CC([NH+]2CCN([C@@]3([C@](C(=O)C(Br)=C3)(C3C(OC4(OC=3O)CCCCC4)=O)[H])[H])CC2)=CC=1
   CSmiles2: OC1OC2(CCCCC2)OC(=O)C=1[C@@H]1[C@H](C=C(Br)C1=O)N1CC[NH+](CC1)c1ccccc1
   InChI2: InChI=1S/C24H27BrN2O5/c25-17-15-18(27-13-11-26(12-14-27)16-7-3-1-4-8-16)19(21(17)28)20-22(29)31-24(32-23(20)30)9-5-2-6-10-24/h1,3-4,7-8,15,18-19,29H,2,5-6,9-14H2/p+1/t18-,19-/m0/s1
 Warning: CSmiles are different:
-  OC1OC2(CCCCC2)OC(=O)C=1[C@@H]1[C@H](C=C(Br)C1=O)[N@@H+]1CC[N@](CC1)c1ccccc1
+  OC1OC2(CCCCC2)OC(=O)C=1[C@@H]1[C@H](C=C(Br)C1=O)[NH+]1CCN(CC1)c1ccccc1
   OC1OC2(CCCCC2)OC(=O)C=1[C@@H]1[C@H](C=C(Br)C1=O)N1CC[NH+](CC1)c1ccccc1
 
   InChI key: RLFVQRWTJKOELN-OALUTQOASA-O
@@ -68587,16 +68553,13 @@ Warning: CSmiles are different:
   InChI key: OUXREEPWQOPTQB-IRLDBZIGSA-N
   Warning: Charges were rearranged
 2237:
-  Smiles1: CC1(N(C)C(=S)S[C@@H]1[N@]1O[C@H]2C(=O)N(C(=O)[C@@H]2[C@@H]1C1=CC=C(Cl)C=C1)C1=CC=CC=C1)C
-  CSmiles1: CN1C(=S)S[C@H]([N@]2O[C@@H]3[C@@H]([C@@H]2c2ccc(Cl)cc2)C(=O)N(c2ccccc2)C3=O)C1(C)C
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #4
+  Smiles1: CC1(N(C)C(=S)S[C@@H]1N1O[C@H]2C(=O)N(C(=O)[C@@H]2[C@@H]1C1=CC=C(Cl)C=C1)C1=CC=CC=C1)C
+  CSmiles1: CN1C(=S)S[C@H](N2O[C@@H]3[C@@H]([C@@H]2c2ccc(Cl)cc2)C(=O)N(c2ccccc2)C3=O)C1(C)C
   InChI1: InChI=1S/C23H22ClN3O3S2/c1-23(2)21(32-22(31)25(23)3)27-17(13-9-11-14(24)12-10-13)16-18(30-27)20(29)26(19(16)28)15-7-5-4-6-8-15/h4-12,16-18,21H,1-3H3/t16-,17+,18-,21+/m1/s1
   Smiles2: CC1(N(C(S[C@@]1(N1O[C@]2(C(=O)N(C(=O)[C@@]2([C@]1([H])C1C=CC(Cl)=CC=1)[H])C1C=CC=CC=1)[H])[H])=S)C)C
   CSmiles2: CN1C(=S)S[C@H](N2O[C@@H]3[C@@H]([C@@H]2c2ccc(Cl)cc2)C(=O)N(c2ccccc2)C3=O)C1(C)C
   InChI2: InChI=1S/C23H22ClN3O3S2/c1-23(2)21(32-22(31)25(23)3)27-17(13-9-11-14(24)12-10-13)16-18(30-27)20(29)26(19(16)28)15-7-5-4-6-8-15/h4-12,16-18,21H,1-3H3/t16-,17+,18-,21+/m1/s1
-Warning: CSmiles are different:
-  CN1C(=S)S[C@H]([N@]2O[C@@H]3[C@@H]([C@@H]2c2ccc(Cl)cc2)C(=O)N(c2ccccc2)C3=O)C1(C)C
-  CN1C(=S)S[C@H](N2O[C@@H]3[C@@H]([C@@H]2c2ccc(Cl)cc2)C(=O)N(c2ccccc2)C3=O)C1(C)C
-
   InChI key: QIRZFAXCHZGXTJ-IIMDRIAPSA-N
 2238:
   Smiles1: CCCCOC(=O)C1[C@H](C2=C(C)C=CC=C2)C2C(=O)C[C@H](CC=2NC=1C)C1=CC(OC)=C(OC)C=C1
@@ -68719,14 +68682,15 @@ Warning: CSmiles are different:
 
   InChI key: PNTZNZGIKWFGLZ-LLVKDONJSA-N
 2250:
-  Smiles1: C1=CC=C([N@@]2CC[N@@H+]([C@H]3[C@H](C4C(=O)OC5(CCCCC5)OC=4O)C(=O)C(Br)=C3)CC2)C=C1
-  CSmiles1: OC1OC2(CCCCC2)OC(=O)C=1[C@H]1[C@@H](C=C(Br)C1=O)[N@@H+]1CC[N@](CC1)c1ccccc1
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #4
+  Smiles1: C1=CC=C(N2CC[N@@H+]([C@H]3[C@H](C4C(=O)OC5(CCCCC5)OC=4O)C(=O)C(Br)=C3)CC2)C=C1
+  CSmiles1: OC1OC2(CCCCC2)OC(=O)C=1[C@H]1[C@@H](C=C(Br)C1=O)[NH+]1CCN(CC1)c1ccccc1
   InChI1: InChI=1S/C24H27BrN2O5/c25-17-15-18(27-13-11-26(12-14-27)16-7-3-1-4-8-16)19(21(17)28)20-22(29)31-24(32-23(20)30)9-5-2-6-10-24/h1,3-4,7-8,15,18-19,29H,2,5-6,9-14H2/p+1/t18-,19-/m1/s1
   Smiles2: C1C=CC([NH+]2CCN([C@]3([C@@](C(=O)C(Br)=C3)(C3C(OC4(OC=3O)CCCCC4)=O)[H])[H])CC2)=CC=1
   CSmiles2: OC1OC2(CCCCC2)OC(=O)C=1[C@H]1[C@@H](C=C(Br)C1=O)N1CC[NH+](CC1)c1ccccc1
   InChI2: InChI=1S/C24H27BrN2O5/c25-17-15-18(27-13-11-26(12-14-27)16-7-3-1-4-8-16)19(21(17)28)20-22(29)31-24(32-23(20)30)9-5-2-6-10-24/h1,3-4,7-8,15,18-19,29H,2,5-6,9-14H2/p+1/t18-,19-/m1/s1
 Warning: CSmiles are different:
-  OC1OC2(CCCCC2)OC(=O)C=1[C@H]1[C@@H](C=C(Br)C1=O)[N@@H+]1CC[N@](CC1)c1ccccc1
+  OC1OC2(CCCCC2)OC(=O)C=1[C@H]1[C@@H](C=C(Br)C1=O)[NH+]1CCN(CC1)c1ccccc1
   OC1OC2(CCCCC2)OC(=O)C=1[C@H]1[C@@H](C=C(Br)C1=O)N1CC[NH+](CC1)c1ccccc1
 
   InChI key: RLFVQRWTJKOELN-RTBURBONSA-O
@@ -68780,16 +68744,13 @@ Warning: CSmiles are different:
   InChI2: InChI=1S/C26H25NO6/c1-16-23(26(29)31-13-12-30-18-6-3-2-4-7-18)24(25-19(27-16)8-5-9-20(25)28)17-10-11-21-22(14-17)33-15-32-21/h2-4,6-7,10-11,14,24,27H,5,8-9,12-13,15H2,1H3/t24-/m0/s1
   InChI key: SUBHLCCFBLMMBJ-DEOSSOPVSA-N
 2257:
-  Smiles1: C1=C(C(=O)C2=CC=C(Cl)C=C2)C=CC(OC[C@@H](C[N@]2CC[N@](C3=CC=C(F)C=C3)CC2)O)=C1
-  CSmiles1: O[C@H](C[N@@]1CC[N@](CC1)c1ccc(F)cc1)COc1ccc(cc1)C(=O)c1ccc(Cl)cc1
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #8
+  Smiles1: C1=C(C(=O)C2=CC=C(Cl)C=C2)C=CC(OC[C@@H](CN2CCN(C3=CC=C(F)C=C3)CC2)O)=C1
+  CSmiles1: O[C@H](CN1CCN(CC1)c1ccc(F)cc1)COc1ccc(cc1)C(=O)c1ccc(Cl)cc1
   InChI1: InChI=1S/C26H26ClFN2O3/c27-21-5-1-19(2-6-21)26(32)20-3-11-25(12-4-20)33-18-24(31)17-29-13-15-30(16-14-29)23-9-7-22(28)8-10-23/h1-12,24,31H,13-18H2/t24-/m1/s1
   Smiles2: C1=C(C(=O)C2C=CC(OC[C@@](O)([H])CN3CCN(C4C=CC(F)=CC=4)CC3)=CC=2)C=CC(Cl)=C1
   CSmiles2: O[C@H](CN1CCN(CC1)c1ccc(F)cc1)COc1ccc(cc1)C(=O)c1ccc(Cl)cc1
   InChI2: InChI=1S/C26H26ClFN2O3/c27-21-5-1-19(2-6-21)26(32)20-3-11-25(12-4-20)33-18-24(31)17-29-13-15-30(16-14-29)23-9-7-22(28)8-10-23/h1-12,24,31H,13-18H2/t24-/m1/s1
-Warning: CSmiles are different:
-  O[C@H](C[N@@]1CC[N@](CC1)c1ccc(F)cc1)COc1ccc(cc1)C(=O)c1ccc(Cl)cc1
-  O[C@H](CN1CCN(CC1)c1ccc(F)cc1)COc1ccc(cc1)C(=O)c1ccc(Cl)cc1
-
   InChI key: SVAFARSJRGDQBO-XMMPIXPASA-N
 2258:
   Smiles1: CC1NC2CC(CC(=O)C=2[C@H](C2SC=CC=2)C=1C(=O)OC(C)C)(C)C
@@ -69059,14 +69020,15 @@ Warning: CSmiles are different:
 
   InChI key: JLEXTZGYTDNZBY-INIZCTEOSA-N
 2286:
-  Smiles1: C1=CC=C([N@@]2CC[N@@H+]([C@@H]3[C@H](C4C(=O)OC5(CCCCC5)OC=4O)C(=O)C(Br)=C3)CC2)C=C1
-  CSmiles1: OC1OC2(CCCCC2)OC(=O)C=1[C@H]1[C@H](C=C(Br)C1=O)[N@@H+]1CC[N@](CC1)c1ccccc1
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #4
+  Smiles1: C1=CC=C(N2CC[N@@H+]([C@@H]3[C@H](C4C(=O)OC5(CCCCC5)OC=4O)C(=O)C(Br)=C3)CC2)C=C1
+  CSmiles1: OC1OC2(CCCCC2)OC(=O)C=1[C@H]1[C@H](C=C(Br)C1=O)[NH+]1CCN(CC1)c1ccccc1
   InChI1: InChI=1S/C24H27BrN2O5/c25-17-15-18(27-13-11-26(12-14-27)16-7-3-1-4-8-16)19(21(17)28)20-22(29)31-24(32-23(20)30)9-5-2-6-10-24/h1,3-4,7-8,15,18-19,29H,2,5-6,9-14H2/p+1/t18-,19+/m0/s1
   Smiles2: C1C=CC([NH+]2CCN([C@@]3([C@@](C(=O)C(Br)=C3)(C3C(OC4(OC=3O)CCCCC4)=O)[H])[H])CC2)=CC=1
   CSmiles2: OC1OC2(CCCCC2)OC(=O)C=1[C@H]1[C@H](C=C(Br)C1=O)N1CC[NH+](CC1)c1ccccc1
   InChI2: InChI=1S/C24H27BrN2O5/c25-17-15-18(27-13-11-26(12-14-27)16-7-3-1-4-8-16)19(21(17)28)20-22(29)31-24(32-23(20)30)9-5-2-6-10-24/h1,3-4,7-8,15,18-19,29H,2,5-6,9-14H2/p+1/t18-,19+/m0/s1
 Warning: CSmiles are different:
-  OC1OC2(CCCCC2)OC(=O)C=1[C@H]1[C@H](C=C(Br)C1=O)[N@@H+]1CC[N@](CC1)c1ccccc1
+  OC1OC2(CCCCC2)OC(=O)C=1[C@H]1[C@H](C=C(Br)C1=O)[NH+]1CCN(CC1)c1ccccc1
   OC1OC2(CCCCC2)OC(=O)C=1[C@H]1[C@H](C=C(Br)C1=O)N1CC[NH+](CC1)c1ccccc1
 
   InChI key: RLFVQRWTJKOELN-RBUKOAKNSA-O
@@ -69218,14 +69180,15 @@ Warning: CSmiles are different:
   InChI2: InChI=1S/C28H34N2O5/c1-16(2)27(32)30-20-11-9-8-10-18(20)29-19-14-28(3,4)15-21(31)24(19)25(30)17-12-22(33-5)26(35-7)23(13-17)34-6/h8-13,16,25,29H,14-15H2,1-7H3/t25-/m1/s1
   InChI key: CWRHJPQXJULNQG-RUZDIDTESA-N
 2303:
-  Smiles1: CC1=CC(N2C(=O)[C@@H]([N@H+]3CC[N@](C4=CC(Cl)=CC=C4)CC3)CC2=O)=CC=C1
-  CSmiles1: Cc1cc(ccc1)N1C(=O)[C@H](CC1=O)[N@@H+]1CC[N@](CC1)c1cc(Cl)ccc1
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #13
+  Smiles1: CC1=CC(N2C(=O)[C@@H]([N@H+]3CCN(C4=CC(Cl)=CC=C4)CC3)CC2=O)=CC=C1
+  CSmiles1: Cc1cc(ccc1)N1C(=O)[C@H](CC1=O)[NH+]1CCN(CC1)c1cc(Cl)ccc1
   InChI1: InChI=1S/C21H22ClN3O2/c1-15-4-2-7-18(12-15)25-20(26)14-19(21(25)27)24-10-8-23(9-11-24)17-6-3-5-16(22)13-17/h2-7,12-13,19H,8-11,14H2,1H3/p+1/t19-/m0/s1
   Smiles2: CC1=CC(N2C(=O)[C@](N3CC[NH+](C4C=C(Cl)C=CC=4)CC3)([H])CC2=O)=CC=C1
   CSmiles2: Cc1cc(ccc1)N1C(=O)[C@H](CC1=O)N1CC[NH+](CC1)c1cc(Cl)ccc1
   InChI2: InChI=1S/C21H22ClN3O2/c1-15-4-2-7-18(12-15)25-20(26)14-19(21(25)27)24-10-8-23(9-11-24)17-6-3-5-16(22)13-17/h2-7,12-13,19H,8-11,14H2,1H3/p+1/t19-/m0/s1
 Warning: CSmiles are different:
-  Cc1cc(ccc1)N1C(=O)[C@H](CC1=O)[N@@H+]1CC[N@](CC1)c1cc(Cl)ccc1
+  Cc1cc(ccc1)N1C(=O)[C@H](CC1=O)[NH+]1CCN(CC1)c1cc(Cl)ccc1
   Cc1cc(ccc1)N1C(=O)[C@H](CC1=O)N1CC[NH+](CC1)c1cc(Cl)ccc1
 
   InChI key: XFSBVSQVYWHISX-IBGZPJMESA-O
@@ -69344,16 +69307,13 @@ Warning: CSmiles are different:
   InChI2: InChI=1S/C24H31NO5/c1-6-29-10-11-30-23(27)20-15(2)25-18-13-24(3,4)14-19(26)22(18)21(20)16-8-7-9-17(12-16)28-5/h7-9,12,21,25H,6,10-11,13-14H2,1-5H3/t21-/m0/s1
   InChI key: ZBBGTHLZTQZNQY-NRFANRHFSA-N
 2317:
-  Smiles1: C1=C(C(=O)C2=CC=C(Cl)C=C2)C=CC(OC[C@H](C[N@]2CC[N@](C3=CC=C(F)C=C3)CC2)O)=C1
-  CSmiles1: O[C@@H](C[N@@]1CC[N@](CC1)c1ccc(F)cc1)COc1ccc(cc1)C(=O)c1ccc(Cl)cc1
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #8
+  Smiles1: C1=C(C(=O)C2=CC=C(Cl)C=C2)C=CC(OC[C@H](CN2CCN(C3=CC=C(F)C=C3)CC2)O)=C1
+  CSmiles1: O[C@@H](CN1CCN(CC1)c1ccc(F)cc1)COc1ccc(cc1)C(=O)c1ccc(Cl)cc1
   InChI1: InChI=1S/C26H26ClFN2O3/c27-21-5-1-19(2-6-21)26(32)20-3-11-25(12-4-20)33-18-24(31)17-29-13-15-30(16-14-29)23-9-7-22(28)8-10-23/h1-12,24,31H,13-18H2/t24-/m0/s1
   Smiles2: C1=C(C(=O)C2C=CC(OC[C@](O)([H])CN3CCN(C4C=CC(F)=CC=4)CC3)=CC=2)C=CC(Cl)=C1
   CSmiles2: O[C@@H](CN1CCN(CC1)c1ccc(F)cc1)COc1ccc(cc1)C(=O)c1ccc(Cl)cc1
   InChI2: InChI=1S/C26H26ClFN2O3/c27-21-5-1-19(2-6-21)26(32)20-3-11-25(12-4-20)33-18-24(31)17-29-13-15-30(16-14-29)23-9-7-22(28)8-10-23/h1-12,24,31H,13-18H2/t24-/m0/s1
-Warning: CSmiles are different:
-  O[C@@H](C[N@@]1CC[N@](CC1)c1ccc(F)cc1)COc1ccc(cc1)C(=O)c1ccc(Cl)cc1
-  O[C@@H](CN1CCN(CC1)c1ccc(F)cc1)COc1ccc(cc1)C(=O)c1ccc(Cl)cc1
-
   InChI key: SVAFARSJRGDQBO-DEOSSOPVSA-N
 2318:
   Smiles1: CC1NC2CC(CC(=O)C=2[C@@H](C2SC=CC=2)C=1C(=O)OC(C)C)(C)C
@@ -70213,14 +70173,15 @@ Warning: CSmiles are different:
 
   InChI key: JTAFQTRSVZOHBP-GOSISDBHSA-N
 2409:
-  Smiles1: C1=CC=C([N@@]2CC[N@@H+](CCN3C4=NC5=C(S[C@H]4CC3=O)C=CC=C5)CC2)C=C1
-  CSmiles1: O=C1C[C@@H]2Sc3ccccc3N=C2N1CC[N@@H+]1CC[N@](CC1)c1ccccc1
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #4
+  Smiles1: C1=CC=C(N2CC[N@@H+](CCN3C4=NC5=C(S[C@H]4CC3=O)C=CC=C5)CC2)C=C1
+  CSmiles1: O=C1C[C@@H]2Sc3ccccc3N=C2N1CC[NH+]1CCN(CC1)c1ccccc1
   InChI1: InChI=1S/C22H24N4OS/c27-21-16-20-22(23-18-8-4-5-9-19(18)28-20)26(21)15-12-24-10-13-25(14-11-24)17-6-2-1-3-7-17/h1-9,20H,10-16H2/p+1/t20-/m0/s1
   Smiles2: C1C=CC(N2CCN(CCN3C4=[NH+]C5C(S[C@@]4([H])CC3=O)=CC=CC=5)CC2)=CC=1
   CSmiles2: O=C1C[C@@H]2Sc3ccccc3[NH+]=C2N1CCN1CCN(CC1)c1ccccc1
   InChI2: InChI=1S/C22H24N4OS/c27-21-16-20-22(23-18-8-4-5-9-19(18)28-20)26(21)15-12-24-10-13-25(14-11-24)17-6-2-1-3-7-17/h1-9,20H,10-16H2/p+1/t20-/m0/s1
 Warning: CSmiles are different:
-  O=C1C[C@@H]2Sc3ccccc3N=C2N1CC[N@@H+]1CC[N@](CC1)c1ccccc1
+  O=C1C[C@@H]2Sc3ccccc3N=C2N1CC[NH+]1CCN(CC1)c1ccccc1
   O=C1C[C@@H]2Sc3ccccc3[NH+]=C2N1CCN1CCN(CC1)c1ccccc1
 
   InChI key: KFKOHVGQFBHNQZ-FQEVSTJZSA-O
@@ -71421,14 +71382,15 @@ Warning: CSmiles are different:
   InChI2: InChI=1S/C32H38N2O3S/c35-38(36,34-10-12-37-13-11-34)26-7-4-24(5-8-26)31-28-3-1-2-27(28)29-17-25(6-9-30(29)33-31)32-18-21-14-22(19-32)16-23(15-21)20-32/h1-2,4-9,17,21-23,27-28,31,33H,3,10-16,18-20H2/t21-,22+,23-,27-,28+,31+,32-/m1/s1
   InChI key: WZQFJMQPNAYLGP-SOPLVJAUSA-N
 2533:
-  Smiles1: C1=CC(Br)=CC(N2C(=O)[C@@H]([N@@H+]3CC[N@@](C4=CC=C(Cl)C=C4)CC3)CC2=O)=C1
-  CSmiles1: O=C1[C@H](CC(=O)N1c1cccc(Br)c1)[N@@H+]1CC[N@](CC1)c1ccc(Cl)cc1
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #10
+  Smiles1: C1=CC(Br)=CC(N2C(=O)[C@@H]([N@@H+]3CCN(C4=CC=C(Cl)C=C4)CC3)CC2=O)=C1
+  CSmiles1: O=C1[C@H](CC(=O)N1c1cccc(Br)c1)[NH+]1CCN(CC1)c1ccc(Cl)cc1
   InChI1: InChI=1S/C20H19BrClN3O2/c21-14-2-1-3-17(12-14)25-19(26)13-18(20(25)27)24-10-8-23(9-11-24)16-6-4-15(22)5-7-16/h1-7,12,18H,8-11,13H2/p+1/t18-/m0/s1
   Smiles2: C1C=C(N2C(=O)[C@](N3CC[NH+](C4C=CC(Cl)=CC=4)CC3)([H])CC2=O)C=C(Br)C=1
   CSmiles2: O=C1[C@H](CC(=O)N1c1cccc(Br)c1)N1CC[NH+](CC1)c1ccc(Cl)cc1
   InChI2: InChI=1S/C20H19BrClN3O2/c21-14-2-1-3-17(12-14)25-19(26)13-18(20(25)27)24-10-8-23(9-11-24)16-6-4-15(22)5-7-16/h1-7,12,18H,8-11,13H2/p+1/t18-/m0/s1
 Warning: CSmiles are different:
-  O=C1[C@H](CC(=O)N1c1cccc(Br)c1)[N@@H+]1CC[N@](CC1)c1ccc(Cl)cc1
+  O=C1[C@H](CC(=O)N1c1cccc(Br)c1)[NH+]1CCN(CC1)c1ccc(Cl)cc1
   O=C1[C@H](CC(=O)N1c1cccc(Br)c1)N1CC[NH+](CC1)c1ccc(Cl)cc1
 
   InChI key: CMJWEJCUEKBDFQ-SFHVURJKSA-O
@@ -71450,16 +71412,13 @@ Warning: CSmiles are different:
   InChI2: InChI=1S/C24H31NO5/c1-6-12-29-19-11-10-16(13-20(19)28-5)22-21(24(27)30-14(2)3)15(4)25-17-8-7-9-18(26)23(17)22/h10-11,13-14,22,25H,6-9,12H2,1-5H3/t22-/m0/s1
   InChI key: LBGSUEVJJKMYDJ-QFIPXVFZSA-N
 2536:
-  Smiles1: COC1=CC=C(CSC2N(C3=CC=CC=C3)C(=O)C3C4CC[N@@](CC5=CC=CC=C5)CC=4SC=3N=2)C=C1
-  CSmiles1: COc1ccc(CSC2=Nc3[s]c4C[N@](Cc5ccccc5)CCc4c3C(=O)N2c2ccccc2)cc1
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #24
+  Smiles1: COC1=CC=C(CSC2N(C3=CC=CC=C3)C(=O)C3C4CCN(CC5=CC=CC=C5)CC=4SC=3N=2)C=C1
+  CSmiles1: COc1ccc(CSC2=Nc3[s]c4CN(Cc5ccccc5)CCc4c3C(=O)N2c2ccccc2)cc1
   InChI1: InChI=1S/C30H27N3O2S2/c1-35-24-14-12-22(13-15-24)20-36-30-31-28-27(29(34)33(30)23-10-6-3-7-11-23)25-16-17-32(19-26(25)37-28)18-21-8-4-2-5-9-21/h2-15H,16-20H2,1H3
   Smiles2: COC1C=CC(CSC2N(C(=O)C3=C(SC4=C3CCN(C4)CC3C=CC=CC=3)N=2)C2C=CC=CC=2)=CC=1
   CSmiles2: COc1ccc(CSC2=Nc3[s]c4CN(Cc5ccccc5)CCc4c3C(=O)N2c2ccccc2)cc1
   InChI2: InChI=1S/C30H27N3O2S2/c1-35-24-14-12-22(13-15-24)20-36-30-31-28-27(29(34)33(30)23-10-6-3-7-11-23)25-16-17-32(19-26(25)37-28)18-21-8-4-2-5-9-21/h2-15H,16-20H2,1H3
-Warning: CSmiles are different:
-  COc1ccc(CSC2=Nc3[s]c4C[N@](Cc5ccccc5)CCc4c3C(=O)N2c2ccccc2)cc1
-  COc1ccc(CSC2=Nc3[s]c4CN(Cc5ccccc5)CCc4c3C(=O)N2c2ccccc2)cc1
-
   InChI key: JHPFTYUOSWZHFM-UHFFFAOYSA-N
 2537:
   Smiles1: CC[NH+](CC)CCCN1C(=O)C([O-])=C(C(=O)C2OC3=C(C=CC=C3)C=2)[C@@H]1C1=C(F)C=CC=C1
@@ -72217,16 +72176,13 @@ Warning: CSmiles are different:
   InChI2: InChI=1S/C27H38N2O6/c1-15(28-33-6)27-22(23(29-35-27)24(31)32-5)14-21-19-8-7-17-13-18(34-16(2)30)9-11-25(17,3)20(19)10-12-26(21,27)4/h7,18-22H,8-14H2,1-6H3/b28-15+/t18-,19-,20+,21-,22+,25-,26-,27-/m0/s1
   InChI key: HMAGMEFQRZUDPW-CRZWWHFVSA-N
 2615:
-  Smiles1: C1=CC=C([N@@]2CC[N@@](C3=C4C=CC(=CC4=[NH+]C=C3)Cl)CC2)C=C1
-  CSmiles1: Clc1cc2[nH+]ccc(c2cc1)[N@@]1CC[N@](CC1)c1ccccc1
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #4
+  Smiles1: C1=CC=C(N2CCN(C3=C4C=CC(=CC4=[NH+]C=C3)Cl)CC2)C=C1
+  CSmiles1: Clc1cc2[nH+]ccc(c2cc1)N1CCN(CC1)c1ccccc1
   InChI1: InChI=1S/C19H18ClN3/c20-15-6-7-17-18(14-15)21-9-8-19(17)23-12-10-22(11-13-23)16-4-2-1-3-5-16/h1-9,14H,10-13H2/p+1
   Smiles2: C1C=CC(N2CCN(C3C4=C([NH+]=CC=3)C=C(Cl)C=C4)CC2)=CC=1
   CSmiles2: Clc1cc2[nH+]ccc(c2cc1)N1CCN(CC1)c1ccccc1
   InChI2: InChI=1S/C19H18ClN3/c20-15-6-7-17-18(14-15)21-9-8-19(17)23-12-10-22(11-13-23)16-4-2-1-3-5-16/h1-9,14H,10-13H2/p+1
-Warning: CSmiles are different:
-  Clc1cc2[nH+]ccc(c2cc1)[N@@]1CC[N@](CC1)c1ccccc1
-  Clc1cc2[nH+]ccc(c2cc1)N1CCN(CC1)c1ccccc1
-
   InChI key: SHBIVVWFJHADHA-UHFFFAOYSA-O
   Warning: Proton(s) added/removed
 2616:
@@ -72279,14 +72235,15 @@ Warning: CSmiles are different:
   InChI2: InChI=1S/C18H15ClN4O2/c1-11-16(22-10-6-5-9-15(22)20-11)17-21-23(12(2)24)18(25-17)13-7-3-4-8-14(13)19/h3-10,18H,1-2H3/t18-/m1/s1
   InChI key: SDHAUMLYUUBUHZ-GOSISDBHSA-N
 2622:
-  Smiles1: CC1=C([C@H]2[N@@](CC3=CC=CC=C3)CC[N@@H+]2CC2=CC=CC=C2)SC=C1
-  CSmiles1: Cc1cc[s]c1[C@H]1[N@@](Cc2ccccc2)CC[N@@H+]1Cc1ccccc1
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #17
+  Smiles1: CC1=C([C@H]2N(CC3=CC=CC=C3)CC[N@@H+]2CC2=CC=CC=C2)SC=C1
+  CSmiles1: Cc1cc[s]c1[C@H]1N(Cc2ccccc2)CC[N@@H+]1Cc1ccccc1
   InChI1: InChI=1S/C22H24N2S/c1-18-12-15-25-21(18)22-23(16-19-8-4-2-5-9-19)13-14-24(22)17-20-10-6-3-7-11-20/h2-12,15,22H,13-14,16-17H2,1H3/p+1
   Smiles2: CC1=C(SC=C1)C1N(CC2C=CC=CC=2)CC[NH+]1CC1C=CC=CC=1
   CSmiles2: Cc1cc[s]c1C1N(Cc2ccccc2)CC[NH+]1Cc1ccccc1
   InChI2: InChI=1S/C22H24N2S/c1-18-12-15-25-21(18)22-23(16-19-8-4-2-5-9-19)13-14-24(22)17-20-10-6-3-7-11-20/h2-12,15,22H,13-14,16-17H2,1H3/p+1
 Warning: CSmiles are different:
-  Cc1cc[s]c1[C@H]1[N@@](Cc2ccccc2)CC[N@@H+]1Cc1ccccc1
+  Cc1cc[s]c1[C@H]1N(Cc2ccccc2)CC[N@@H+]1Cc1ccccc1
   Cc1cc[s]c1C1N(Cc2ccccc2)CC[NH+]1Cc1ccccc1
 
   InChI key: DXHYIVXIGALARX-UHFFFAOYSA-O
@@ -72544,16 +72501,13 @@ Warning: CSmiles are different:
   InChI2: InChI=1S/C22H25NO6/c1-5-28-22(26)19-12(2)23-15-7-6-8-16(25)21(15)20(19)14-9-10-17(29-13(3)24)18(11-14)27-4/h9-11,20,23H,5-8H2,1-4H3/t20-/m0/s1
   InChI key: DRRWQWXLYUIXDC-FQEVSTJZSA-N
 2651:
-  Smiles1: COC1=CC=C(N2C(=O)[C@@H]([N@@H+]3CC[N@@](C4=CC=CC=[NH+]4)CC3)CC2=O)C=C1
-  CSmiles1: COc1ccc(cc1)N1C(=O)[C@H](CC1=O)[N@@H+]1CC[N@](CC1)c1cccc[nH+]1
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #13
+  Smiles1: COC1=CC=C(N2C(=O)[C@@H]([N@@H+]3CCN(C4=CC=CC=[NH+]4)CC3)CC2=O)C=C1
+  CSmiles1: COc1ccc(cc1)N1C(=O)[C@H](CC1=O)[NH+]1CCN(CC1)c1cccc[nH+]1
   InChI1: InChI=1S/C20H22N4O3/c1-27-16-7-5-15(6-8-16)24-19(25)14-17(20(24)26)22-10-12-23(13-11-22)18-4-2-3-9-21-18/h2-9,17H,10-14H2,1H3/p+2/t17-/m0/s1
   Smiles2: COC1C=CC(N2C(=O)[C@]([NH+]3CCN(C4[NH+]=CC=CC=4)CC3)([H])CC2=O)=CC=1
   CSmiles2: COc1ccc(cc1)N1C(=O)[C@H](CC1=O)[NH+]1CCN(CC1)c1cccc[nH+]1
   InChI2: InChI=1S/C20H22N4O3/c1-27-16-7-5-15(6-8-16)24-19(25)14-17(20(24)26)22-10-12-23(13-11-22)18-4-2-3-9-21-18/h2-9,17H,10-14H2,1H3/p+2/t17-/m0/s1
-Warning: CSmiles are different:
-  COc1ccc(cc1)N1C(=O)[C@H](CC1=O)[N@@H+]1CC[N@](CC1)c1cccc[nH+]1
-  COc1ccc(cc1)N1C(=O)[C@H](CC1=O)[NH+]1CCN(CC1)c1cccc[nH+]1
-
   InChI key: XKZNLEWENXSSPE-KRWDZBQOSA-P
   Warning: Proton(s) added/removed
 2652:
@@ -73049,14 +73003,15 @@ Warning: CSmiles are different:
   InChI2: InChI=1S/C19H21NO3S/c1-4-13-8-10-14(11-9-13)20-17(21)12-24-19(20)15-6-5-7-16(22-2)18(15)23-3/h5-11,19H,4,12H2,1-3H3/t19-/m0/s1
   InChI key: JGBOVKGZUVKLNL-IBGZPJMESA-N
 2702:
-  Smiles1: C1=CC=C(C[N@H+]2[C@@H](C3NC=CC=3)[N@](CC3=CC=CC=C3)CC2)C=C1
-  CSmiles1: C(c1ccccc1)[N@@]1CC[N@@H+](Cc2ccccc2)[C@H]1c1ccc[nH]1
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #8
+  Smiles1: C1=CC=C(C[N@H+]2[C@@H](C3NC=CC=3)N(CC3=CC=CC=C3)CC2)C=C1
+  CSmiles1: C(c1ccccc1)N1CC[N@@H+](Cc2ccccc2)[C@H]1c1ccc[nH]1
   InChI1: InChI=1S/C21H23N3/c1-3-8-18(9-4-1)16-23-14-15-24(17-19-10-5-2-6-11-19)21(23)20-12-7-13-22-20/h1-13,21-22H,14-17H2/p+1
   Smiles2: C1C=CC(CN2C(N(CC3C=CC=CC=3)CC2)C2[NH2+]C=CC=2)=CC=1
   CSmiles2: C(c1ccccc1)N1CCN(Cc2ccccc2)C1C1=CC=C[NH2+]1
   InChI2: InChI=1S/C21H23N3/c1-3-8-18(9-4-1)16-23-14-15-24(17-19-10-5-2-6-11-19)21(23)20-12-7-13-22-20/h1-13,21-22H,14-17H2/p+1
 Warning: CSmiles are different:
-  C(c1ccccc1)[N@@]1CC[N@@H+](Cc2ccccc2)[C@H]1c1ccc[nH]1
+  C(c1ccccc1)N1CC[N@@H+](Cc2ccccc2)[C@H]1c1ccc[nH]1
   C(c1ccccc1)N1CCN(Cc2ccccc2)C1C1=CC=C[NH2+]1
 
   InChI key: YOQOUNZQPUXLON-UHFFFAOYSA-O
@@ -73102,14 +73057,15 @@ Warning: CSmiles are different:
   InChI2: InChI=1S/C20H13Cl2NO3/c21-9-5-10(22)7-11(6-9)23-19(25)17-14-8-15(24)16(18(17)20(23)26)13-4-2-1-3-12(13)14/h1-7,14,16-18H,8H2/t14-,16-,17+,18+/m0/s1
   InChI key: ZJSYXKOHRTZXIW-DZJNRPSUSA-N
 2707:
-  Smiles1: C[N@H+]1CC[N@](C2=C(C(=O)NC3=CC(Cl)=C(Cl)C=C3)C=C([N+](=O)[O-])C=C2)CC1
-  CSmiles1: C[N@@H+]1CC[N@](CC1)c1ccc(cc1C(=O)Nc1cc(Cl)c(Cl)cc1)[N+]([O-])=O
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #4
+  Smiles1: C[N@H+]1CCN(C2=C(C(=O)NC3=CC(Cl)=C(Cl)C=C3)C=C([N+](=O)[O-])C=C2)CC1
+  CSmiles1: C[NH+]1CCN(CC1)c1ccc(cc1C(=O)Nc1cc(Cl)c(Cl)cc1)[N+]([O-])=O
   InChI1: InChI=1S/C18H18Cl2N4O3/c1-22-6-8-23(9-7-22)17-5-3-13(24(26)27)11-14(17)18(25)21-12-2-4-15(19)16(20)10-12/h2-5,10-11H,6-9H2,1H3,(H,21,25)/p+1
   Smiles2: CN1CCN(C2=C(C(O)=[NH+]C3=CC(Cl)=C(Cl)C=C3)C=C([N+](=O)[O-])C=C2)CC1
   CSmiles2: CN1CCN(CC1)c1ccc(cc1C(O)=[NH+]c1cc(Cl)c(Cl)cc1)[N+]([O-])=O
   InChI2: InChI=1S/C18H18Cl2N4O3/c1-22-6-8-23(9-7-22)17-5-3-13(24(26)27)11-14(17)18(25)21-12-2-4-15(19)16(20)10-12/h2-5,10-11H,6-9H2,1H3,(H,21,25)/p+1
 Warning: CSmiles are different:
-  C[N@@H+]1CC[N@](CC1)c1ccc(cc1C(=O)Nc1cc(Cl)c(Cl)cc1)[N+]([O-])=O
+  C[NH+]1CCN(CC1)c1ccc(cc1C(=O)Nc1cc(Cl)c(Cl)cc1)[N+]([O-])=O
   CN1CCN(CC1)c1ccc(cc1C(O)=[NH+]c1cc(Cl)c(Cl)cc1)[N+]([O-])=O
 
   InChI key: ICRBGIGXWIYWAR-UHFFFAOYSA-O
@@ -73185,16 +73141,13 @@ Warning: CSmiles are different:
   InChI key: ZBQCOPLZGBZOOV-NSHDSACASA-N
   Warning: Charges were rearranged
 2715:
-  Smiles1: CC1=CC=C([N@]2[C@H](C3=C(Cl)C=CC=C3Cl)[N@@](C3=CC=C(C)C=C3)CC2)C=C1
-  CSmiles1: Cc1ccc(cc1)[N@]1CC[N@]([C@@H]1c1c(Cl)cccc1Cl)c1ccc(C)cc1
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #5
+  Smiles1: CC1=CC=C(N2[C@H](C3=C(Cl)C=CC=C3Cl)N(C3=CC=C(C)C=C3)CC2)C=C1
+  CSmiles1: Cc1ccc(cc1)N1CCN(C1c1c(Cl)cccc1Cl)c1ccc(C)cc1
   InChI1: InChI=1S/C23H22Cl2N2/c1-16-6-10-18(11-7-16)26-14-15-27(19-12-8-17(2)9-13-19)23(26)22-20(24)4-3-5-21(22)25/h3-13,23H,14-15H2,1-2H3
   Smiles2: CC1C=CC(N2C(N(C3C=CC(=CC=3)C)CC2)C2C(Cl)=CC=CC=2Cl)=CC=1
   CSmiles2: Cc1ccc(cc1)N1CCN(C1c1c(Cl)cccc1Cl)c1ccc(C)cc1
   InChI2: InChI=1S/C23H22Cl2N2/c1-16-6-10-18(11-7-16)26-14-15-27(19-12-8-17(2)9-13-19)23(26)22-20(24)4-3-5-21(22)25/h3-13,23H,14-15H2,1-2H3
-Warning: CSmiles are different:
-  Cc1ccc(cc1)[N@]1CC[N@]([C@@H]1c1c(Cl)cccc1Cl)c1ccc(C)cc1
-  Cc1ccc(cc1)N1CCN(C1c1c(Cl)cccc1Cl)c1ccc(C)cc1
-
   InChI key: QLCXVJYBJMSLNX-UHFFFAOYSA-N
 2716:
   Smiles1: C1=CC([N+](=O)[O-])=CC(/C=N/N2C(=O)[C@@H]3[C@H]([C@@H]4C5(CC5)[C@H]3C=C4)C2=O)=C1
@@ -73263,16 +73216,13 @@ Warning: CSmiles are different:
   InChI2: InChI=1S/C20H14BrClN2OS/c21-13-5-8-18-15(10-13)17-11-16(19-2-1-9-26-19)23-24(17)20(25-18)12-3-6-14(22)7-4-12/h1-10,17,20H,11H2/t17-,20+/m1/s1
   InChI key: VQDJVPLDKUHNOL-XLIONFOSSA-N
 2723:
-  Smiles1: C[N@]1CC2SC3N=CN4C(=NC(=N4)COC4=C(OC)C=CC=C4)C=3C=2CC1
-  CSmiles1: C[N@]1Cc2[s]c3[n]c[n]4[n]c(COc5ccccc5OC)[n]c4c3c2CC1
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #1
+  Smiles1: CN1CC2SC3N=CN4C(=NC(=N4)COC4=C(OC)C=CC=C4)C=3C=2CC1
+  CSmiles1: CN1Cc2[s]c3[n]c[n]4[n]c(COc5ccccc5OC)[n]c4c3c2CC1
   InChI1: InChI=1S/C19H19N5O2S/c1-23-8-7-12-15(9-23)27-19-17(12)18-21-16(22-24(18)11-20-19)10-26-14-6-4-3-5-13(14)25-2/h3-6,11H,7-10H2,1-2H3
   Smiles2: CN1CC2SC3N=CN4N=C(N=C4C=3C=2CC1)COC1C(OC)=CC=CC=1
   CSmiles2: CN1Cc2[s]c3[n]c[n]4[n]c(COc5ccccc5OC)[n]c4c3c2CC1
   InChI2: InChI=1S/C19H19N5O2S/c1-23-8-7-12-15(9-23)27-19-17(12)18-21-16(22-24(18)11-20-19)10-26-14-6-4-3-5-13(14)25-2/h3-6,11H,7-10H2,1-2H3
-Warning: CSmiles are different:
-  C[N@]1Cc2[s]c3[n]c[n]4[n]c(COc5ccccc5OC)[n]c4c3c2CC1
-  CN1Cc2[s]c3[n]c[n]4[n]c(COc5ccccc5OC)[n]c4c3c2CC1
-
   InChI key: HSHPERDARRBTGN-UHFFFAOYSA-N
 2724:
   Smiles1: CC1N(C)C(=O)N[C@H](C2=C(Br)C=C3OCOC3=C2)C=1C(=O)OCCOC1=CC=CC=C1
@@ -73385,14 +73335,15 @@ Warning: CSmiles are different:
 
   InChI key: WRWHAGKJOUUPEG-GOSISDBHSA-N
 2735:
-  Smiles1: COC1=C(OC)C(OC)=CC(C[N@@H+]2CC[N@@](CC3=CC=C(C(F)(F)F)C=C3)CC2)=C1
-  CSmiles1: COc1c(cc(C[N@@H+]2CC[N@@](Cc3ccc(cc3)C(F)(F)F)CC2)cc1OC)OC
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #9
+  Smiles1: COC1=C(OC)C(OC)=CC(C[N@@H+]2CCN(CC3=CC=C(C(F)(F)F)C=C3)CC2)=C1
+  CSmiles1: COc1c(cc(C[NH+]2CCN(Cc3ccc(cc3)C(F)(F)F)CC2)cc1OC)OC
   InChI1: InChI=1S/C22H27F3N2O3/c1-28-19-12-17(13-20(29-2)21(19)30-3)15-27-10-8-26(9-11-27)14-16-4-6-18(7-5-16)22(23,24)25/h4-7,12-13H,8-11,14-15H2,1-3H3/p+1
   Smiles2: COC1=C(OC)C(OC)=CC(CN2CC[NH+](CC3C=CC(C(F)(F)F)=CC=3)CC2)=C1
   CSmiles2: COc1c(cc(CN2CC[NH+](Cc3ccc(cc3)C(F)(F)F)CC2)cc1OC)OC
   InChI2: InChI=1S/C22H27F3N2O3/c1-28-19-12-17(13-20(29-2)21(19)30-3)15-27-10-8-26(9-11-27)14-16-4-6-18(7-5-16)22(23,24)25/h4-7,12-13H,8-11,14-15H2,1-3H3/p+1
 Warning: CSmiles are different:
-  COc1c(cc(C[N@@H+]2CC[N@@](Cc3ccc(cc3)C(F)(F)F)CC2)cc1OC)OC
+  COc1c(cc(C[NH+]2CCN(Cc3ccc(cc3)C(F)(F)F)CC2)cc1OC)OC
   COc1c(cc(CN2CC[NH+](Cc3ccc(cc3)C(F)(F)F)CC2)cc1OC)OC
 
   InChI key: JWQJZUUTXPAMDH-UHFFFAOYSA-O
@@ -73648,16 +73599,13 @@ Warning: CSmiles are different:
 
   InChI key: ODNNSSVHYRRBGB-QYOOZWMWSA-N
 2761:
-  Smiles1: COC1=C(OC)C=C(CCN2C(=O)[C@@H]([N@@H+]3CC[N@@](C4=CC=CC=[NH+]4)CC3)CC2=O)C=C1
-  CSmiles1: COc1ccc(CCN2C(=O)[C@H](CC2=O)[N@@H+]2CC[N@](CC2)c2cccc[nH+]2)cc1OC
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #15
+  Smiles1: COC1=C(OC)C=C(CCN2C(=O)[C@@H]([N@@H+]3CCN(C4=CC=CC=[NH+]4)CC3)CC2=O)C=C1
+  CSmiles1: COc1ccc(CCN2C(=O)[C@H](CC2=O)[NH+]2CCN(CC2)c2cccc[nH+]2)cc1OC
   InChI1: InChI=1S/C23H28N4O4/c1-30-19-7-6-17(15-20(19)31-2)8-10-27-22(28)16-18(23(27)29)25-11-13-26(14-12-25)21-5-3-4-9-24-21/h3-7,9,15,18H,8,10-14,16H2,1-2H3/p+2/t18-/m0/s1
   Smiles2: COC1=C(OC)C=C(CCN2C(=O)[C@]([NH+]3CCN(C4[NH+]=CC=CC=4)CC3)([H])CC2=O)C=C1
   CSmiles2: COc1ccc(CCN2C(=O)[C@H](CC2=O)[NH+]2CCN(CC2)c2cccc[nH+]2)cc1OC
   InChI2: InChI=1S/C23H28N4O4/c1-30-19-7-6-17(15-20(19)31-2)8-10-27-22(28)16-18(23(27)29)25-11-13-26(14-12-25)21-5-3-4-9-24-21/h3-7,9,15,18H,8,10-14,16H2,1-2H3/p+2/t18-/m0/s1
-Warning: CSmiles are different:
-  COc1ccc(CCN2C(=O)[C@H](CC2=O)[N@@H+]2CC[N@](CC2)c2cccc[nH+]2)cc1OC
-  COc1ccc(CCN2C(=O)[C@H](CC2=O)[NH+]2CCN(CC2)c2cccc[nH+]2)cc1OC
-
   InChI key: ITYBBGVECHLGBK-SFHVURJKSA-P
   Warning: Proton(s) added/removed
 2762:
@@ -73669,14 +73617,15 @@ Warning: CSmiles are different:
   InChI2: InChI=1S/C19H17ClN4O2/c1-11-8-9-23-16(10-11)21-12(2)17(23)18-22-24(13(3)25)19(26-18)14-4-6-15(20)7-5-14/h4-10,19H,1-3H3/t19-/m1/s1
   InChI key: ZRHPFNPAXRRTQY-LJQANCHMSA-N
 2763:
-  Smiles1: C1=C(N2C(=O)[C@@H]([N@H+]3CC[N@](CC4=CC5OCOC=5C=C4)CC3)CC2=O)C=CC(Br)=C1
-  CSmiles1: O=C1[C@H](CC(=O)N1c1ccc(Br)cc1)[N@@H+]1CC[N@@](Cc2cc3OCOc3cc2)CC1
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #14
+  Smiles1: C1=C(N2C(=O)[C@@H]([N@H+]3CCN(CC4=CC5OCOC=5C=C4)CC3)CC2=O)C=CC(Br)=C1
+  CSmiles1: O=C1[C@H](CC(=O)N1c1ccc(Br)cc1)[NH+]1CCN(Cc2cc3OCOc3cc2)CC1
   InChI1: InChI=1S/C22H22BrN3O4/c23-16-2-4-17(5-3-16)26-21(27)12-18(22(26)28)25-9-7-24(8-10-25)13-15-1-6-19-20(11-15)30-14-29-19/h1-6,11,18H,7-10,12-14H2/p+1/t18-/m0/s1
   Smiles2: C1C(C[NH+]2CCN([C@@]3(C(=O)N(C(=O)C3)C3C=CC(Br)=CC=3)[H])CC2)=CC2OCOC=2C=1
   CSmiles2: O=C1[C@H](CC(=O)N1c1ccc(Br)cc1)N1CC[NH+](Cc2cc3OCOc3cc2)CC1
   InChI2: InChI=1S/C22H22BrN3O4/c23-16-2-4-17(5-3-16)26-21(27)12-18(22(26)28)25-9-7-24(8-10-25)13-15-1-6-19-20(11-15)30-14-29-19/h1-6,11,18H,7-10,12-14H2/p+1/t18-/m0/s1
 Warning: CSmiles are different:
-  O=C1[C@H](CC(=O)N1c1ccc(Br)cc1)[N@@H+]1CC[N@@](Cc2cc3OCOc3cc2)CC1
+  O=C1[C@H](CC(=O)N1c1ccc(Br)cc1)[NH+]1CCN(Cc2cc3OCOc3cc2)CC1
   O=C1[C@H](CC(=O)N1c1ccc(Br)cc1)N1CC[NH+](Cc2cc3OCOc3cc2)CC1
 
   InChI key: YHLOEOHWTGKUQL-SFHVURJKSA-O
@@ -73876,16 +73825,13 @@ Warning: CSmiles are different:
   InChI2: InChI=1S/C22H21NO2S/c1-3-15-4-9-19(10-5-15)23-21(24)14-26-22(23)18-7-6-17-13-20(25-2)11-8-16(17)12-18/h4-13,22H,3,14H2,1-2H3/t22-/m0/s1
   InChI key: QRESWGJFPILWQW-QFIPXVFZSA-N
 2784:
-  Smiles1: C/C(=N\NC1N(CC2=CC=CC=C2)C(=O)C2C3CC[N@@](CC4=CC=CC=C4)CC=3SC=2N=1)/C
-  CSmiles1: CC(C)=NNC1=Nc2[s]c3C[N@@](CCc3c2C(=O)N1Cc1ccccc1)Cc1ccccc1
+  Exception: molecule auto loader: SMILES loader: chirality not possible on atom #22
+  Smiles1: C/C(=N\NC1N(CC2=CC=CC=C2)C(=O)C2C3CCN(CC4=CC=CC=C4)CC=3SC=2N=1)/C
+  CSmiles1: CC(C)=NNC1=Nc2[s]c3CN(CCc3c2C(=O)N1Cc1ccccc1)Cc1ccccc1
   InChI1: InChI=1S/C26H27N5OS/c1-18(2)28-29-26-27-24-23(25(32)31(26)16-20-11-7-4-8-12-20)21-13-14-30(17-22(21)33-24)15-19-9-5-3-6-10-19/h3-12H,13-17H2,1-2H3,(H,27,29)
   Smiles2: CC(=NNC1N(C(=O)C2=C(SC3=C2CCN(C3)CC2C=CC=CC=2)N=1)CC1C=CC=CC=1)C
   CSmiles2: CC(C)=NNC1=Nc2[s]c3CN(CCc3c2C(=O)N1Cc1ccccc1)Cc1ccccc1
   InChI2: InChI=1S/C26H27N5OS/c1-18(2)28-29-26-27-24-23(25(32)31(26)16-20-11-7-4-8-12-20)21-13-14-30(17-22(21)33-24)15-19-9-5-3-6-10-19/h3-12H,13-17H2,1-2H3,(H,27,29)
-Warning: CSmiles are different:
-  CC(C)=NNC1=Nc2[s]c3C[N@@](CCc3c2C(=O)N1Cc1ccccc1)Cc1ccccc1
-  CC(C)=NNC1=Nc2[s]c3CN(CCc3c2C(=O)N1Cc1ccccc1)Cc1ccccc1
-
   InChI key: ORYHJMNKLHJOSL-UHFFFAOYSA-N
 2785:
   Smiles1: CC1=C(Br)C=C2NC(=O)[C@]3(C(C#N)=C(N)OC4C=C(OC(=O)C3=4)C)C2=C1

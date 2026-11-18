@@ -11,6 +11,9 @@
 24: stereocenters: stereo types of the opposite bonds mismatch near atom 0
 52: stereocenters: one bond up, one bond down -- indefinite case near atom 4
 90: stereocenters: one bond up, one bond down -- indefinite case near atom 1
+95: CML loader: direction of bond #5 makes no sense
+109: CML loader: direction of bond #0 makes no sense
+133: CML loader: direction of bond #0 makes no sense
 135: stereocenters: one bond up, one bond down -- indefinite case near atom 21
 161: stereocenters: one bond up, one bond down -- indefinite case near atom 1
 163: stereocenters: one bond up, one bond down -- indefinite case near atom 1

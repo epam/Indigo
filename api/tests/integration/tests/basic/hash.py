@@ -9,6 +9,8 @@ sys.path.append(
 from env_indigo import *  # noqa
 
 indigo = Indigo()
+# hashing is under test, not the stereo marks of the sample
+indigo.setOption("ignore-stereochemistry-errors", True)
 
 hashes = {}
 for molecule in indigo.iterateSmilesFile(

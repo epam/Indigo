@@ -39,9 +39,14 @@ def testQueryReactionSaveLoad(filename):
         print("ERROR: rxn != rxn3")
 
 
-testReactionSaveLoad(
-    joinPathPy("reactions/disconnected_w_stereo.rxn", __file__)
-)
+# Its stereo marks are on N atoms with a bond outside the ring, which are not
+# chiral centers (issue #3853 req. 2.2), so the loader rejects it
+try:
+    testReactionSaveLoad(
+        joinPathPy("reactions/disconnected_w_stereo.rxn", __file__)
+    )
+except IndigoException as e:
+    print(getIndigoExceptionText(e))
 testReactionSaveLoad(joinPathPy("reactions/disconnected.rxn", __file__))
 testReactionSaveLoad(joinPathPy("reactions/catalysts3000.rxn", __file__))
 testReactionSaveLoad(joinPathPy("reactions/catalysts2000.rxn", __file__))

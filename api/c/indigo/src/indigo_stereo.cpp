@@ -19,6 +19,7 @@
 #include "indigo_molecule.h"
 #include "indigo_reaction.h"
 #include "molecule/molecule_automorphism_search.h"
+#include "molecule/molecule_cip_calc.h"
 #include "molecule/molecule_exact_matcher.h"
 #include "reaction/reaction.h"
 
@@ -591,8 +592,7 @@ CEXPORT int indigoAddCIPStereoDescriptors(int molecule)
     INDIGO_BEGIN
     {
         BaseMolecule& mol = self.getObject(molecule).getBaseMolecule();
-        indigo::MoleculeCIPCalculator cal;
-        cal.addCIPStereoDescriptors(mol);
+        indigo::MoleculeCIPCalc::calcCIPLabels(mol);
         return 0;
     }
     INDIGO_END(-1);

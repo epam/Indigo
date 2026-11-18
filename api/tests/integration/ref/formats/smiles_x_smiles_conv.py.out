@@ -10444,6 +10444,7 @@ TESTING molecules/pubchem_7m_err.sdf
 52 : stereocenters: 3 hydrogens near stereocenter 11
 53 : stereocenters: angle between bonds is too small
 54 : stereocenters: angle between bonds is too small
+55 : molfile loader: direction of bond #1 makes no sense
 56 : stereocenters: 2 hydrogens near stereocenter 14
 57 : stereocenters: stereo types of non-opposite bonds match near atom 28
 58 : stereocenters: stereo types of non-opposite bonds match near atom 6
@@ -10528,24 +10529,19 @@ element: bad valence on B having 4 drawn bonds, charge 1, and 0 radical electron
 [F-].[F-].[F-].[F-].[F-].[F-].[Si+4].[As+5].C/C(/[O-])=C/C(C)=O.C/C(/[O-])=C/C(C)=O.C/C(/[O-])=C/C(C)=O
 [F-].[F-].[F-].[F-].[F-].[F-].[Si+4].[As+5].C/C(/[O-])=C/C(C)=O.C/C(/[O-])=C/C(C)=O.C/C(/[O-])=C/C(C)=O
 [F-].[F-].[F-].[F-].[F-].[F-].[Si+4].[As+5].C/C(/[O-])=C/C(C)=O.C/C(/[O-])=C/C(C)=O.C/C(/[O-])=C/C(C)=O
-25 structure-55
-C[As@]1(O)CO1
-C[As@]1(O)CO1
-C[As@]1(O)CO1
-C[As@]1(O)CO1
-26 structure-59
+25 structure-59
 element: bad valence on Rb having 2 drawn bonds, charge 0, and 0 radical electrons
-27 structure-61
+26 structure-61
 NC(N)=NC1C=CC(=CC=1)[B@-]1(O)OC[C@@H](CO)O1
 NC(N)=NC1C=CC(=CC=1)[B@-]1(O)OC[C@@H](CO)O1
 NC(N)=NC1C=CC(=CC=1)[B@-]1(O)OC[C@@H](CO)O1
 NC(N)=NC1C=CC(=CC=1)[B@-]1(O)OC[C@@H](CO)O1
-28 structure-62
+27 structure-62
 NC(N)=NCC1C=CC(=CC=1)[B@-]1(O)OC[C@@H](CO)O1
 NC(N)=NCC1C=CC(=CC=1)[B@-]1(O)OC[C@@H](CO)O1
 NC(N)=NCC1C=CC(=CC=1)[B@-]1(O)OC[C@@H](CO)O1
 NC(N)=NCC1C=CC(=CC=1)[B@-]1(O)OC[C@@H](CO)O1
-29 structure-63
+28 structure-63
 NC(N)=NCCC1C=CC(=CC=1)[B@-]1(O)OC[C@@H](CO)O1
 NC(N)=NCCC1C=CC(=CC=1)[B@-]1(O)OC[C@@H](CO)O1
 NC(N)=NCCC1C=CC(=CC=1)[B@-]1(O)OC[C@@H](CO)O1
@@ -10667,7 +10663,7 @@ TESTING molecules/acd2d_err.sdf
 121 : stereocenters: stereo types of the opposite bonds mismatch near atom 14
 122 : stereocenters: stereo types of the opposite bonds mismatch near atom 19
 123 : stereocenters: stereo types of the opposite bonds mismatch near atom 16
-124 : stereocenters: directions of neighbor stereo bonds match near atom 6
+124 : molfile loader: direction of bond #5 makes no sense
 125 : stereocenters: stereo types of the opposite bonds mismatch near atom 9
 127 : stereocenters: stereo types of the opposite bonds mismatch near atom 12
 128 : stereocenters: stereo types of the opposite bonds mismatch near atom 13

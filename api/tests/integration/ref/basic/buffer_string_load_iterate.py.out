@@ -10095,7 +10095,7 @@ stereocenters: one bond up, one bond down -- indefinite case near atom 1
 [2H]NC(=O)/C(/[Co]/C(/C(N[2H])=O)=C(/[C@H](S)C)\[CH2-])=C(\[C@H](S)C)/[CH2-]
 OC(C[C@H](N)C(O)=O)=O
 C1([C@@H](C)C)[C@H](O)C[C@H](C)CC1
-[N@]1(C(C1CC)C)CCC
+CML loader: direction of bond #5 makes no sense
 [S@](=O)(CC)C
 [S@+]([O-])(CC)C
 [N@+](CCCC)([O-])(CC)C
@@ -10109,7 +10109,7 @@ C1([C@@H](C)C)[C@H](O)C[C@H](C)CC1
 [P@+](CCCC)([Se-])(CC)C
 [N@+](CCCC)([S-])(CC)C
 [N@+](CCCC)([Se-])(CC)C
-[N@]1([C@H](C)[C@@H]1C)CCC
+CML loader: direction of bond #0 makes no sense
 [S@](=O)(CC)[O-]
 [S@](=O)(CC)[S-]
 [S@](=O)(CC)[NH3+]
@@ -10133,7 +10133,7 @@ O1CO[C@@H]([C@H](CO)C)[C@@H](O)[C@H]1[C@H](CO)C
 O1CO[C@@H]([C@H](CO)C)[C@@H](O)[C@H]1[C@H](CO)C
 N1(N=C2N(C3C([H])=C([H])C([H])=C([H])C=3[H])[C@]1([H])N2C1C([H])=C([H])C([H])=C([H])C=1[H])C1C([H])=C([H])C([H])=C([H])C=1[H]
 N1(N=C2N(C3C([H])=C([H])C([H])=C([H])C=3[2H])[C@]1([H])N2C1C([H])=C([H])C([2H])=C([H])C=1[H])C1C([H])=C([H])C([H])=C([H])C=1[H]
-C(=C/CC)/[N@@]1CC1
+CML loader: direction of bond #0 makes no sense
 C(C)C[C@@H](CC)C
 stereocenters: one bond up, one bond down -- indefinite case near atom 21
 C1(/[S@](=O)C[S@@]/1=O)=C/C
@@ -10333,7 +10333,7 @@ stereocenters: one bond up, one bond down -- indefinite case near atom 1
 [2H]NC(=O)/C(/[Co]/C(/C(N[2H])=O)=C(/[C@H](S)C)\[CH2-])=C(\[C@H](S)C)/[CH2-]
 OC(C[C@H](N)C(O)=O)=O
 C1([C@@H](C)C)[C@H](O)C[C@H](C)CC1
-[N@]1(C(C1CC)C)CCC
+CML loader: direction of bond #5 makes no sense
 [S@](=O)(CC)C
 [S@+]([O-])(CC)C
 [N@+](CCCC)([O-])(CC)C
@@ -10347,7 +10347,7 @@ C1([C@@H](C)C)[C@H](O)C[C@H](C)CC1
 [P@+](CCCC)([Se-])(CC)C
 [N@+](CCCC)([S-])(CC)C
 [N@+](CCCC)([Se-])(CC)C
-[N@]1([C@H](C)[C@@H]1C)CCC
+CML loader: direction of bond #0 makes no sense
 [S@](=O)(CC)[O-]
 [S@](=O)(CC)[S-]
 [S@](=O)(CC)[NH3+]
@@ -10371,7 +10371,7 @@ O1CO[C@@H]([C@H](CO)C)[C@@H](O)[C@H]1[C@H](CO)C
 O1CO[C@@H]([C@H](CO)C)[C@@H](O)[C@H]1[C@H](CO)C
 N1(N=C2N(C3C([H])=C([H])C([H])=C([H])C=3[H])[C@]1([H])N2C1C([H])=C([H])C([H])=C([H])C=1[H])C1C([H])=C([H])C([H])=C([H])C=1[H]
 N1(N=C2N(C3C([H])=C([H])C([H])=C([H])C=3[2H])[C@]1([H])N2C1C([H])=C([H])C([2H])=C([H])C=1[H])C1C([H])=C([H])C([H])=C([H])C=1[H]
-C(=C/CC)/[N@@]1CC1
+CML loader: direction of bond #0 makes no sense
 C(C)C[C@@H](CC)C
 stereocenters: one bond up, one bond down -- indefinite case near atom 21
 C1(/[S@](=O)C[S@@]/1=O)=C/C

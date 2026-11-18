@@ -75,9 +75,9 @@ TEST_F(IndigoCoreStructureCheckTest, issue731_stereo)
     ASSERT_EQ(result.messages.size(), 2);
     ASSERT_EQ(result.messages[0].code, StructureChecker::CheckMessageCode::CHECK_MSG_RGROUP);
     ASSERT_EQ(result.messages[1].code, StructureChecker::CheckMessageCode::CHECK_MSG_UNDEFINED_STEREO);
-    ASSERT_EQ(result.messages[1].ids.size(), 3);
+    // N4 is not: one of its bonds, to N6, is outside the ring (issue #3853 req. 2.2)
+    ASSERT_EQ(result.messages[1].ids.size(), 2);
     ASSERT_EQ(result.messages[1].ids[0], 3);
-    ASSERT_EQ(result.messages[1].ids[1], 4);
-    ASSERT_EQ(result.messages[1].ids[2], 5);
+    ASSERT_EQ(result.messages[1].ids[1], 5);
     ASSERT_STREQ(result.messages[1].prefix.c_str(), "R-Group R2");
 }

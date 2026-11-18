@@ -124,7 +124,12 @@ namespace indigo
 
         int getAtomIndex(int i) const;
 
+        // The definition of a chiral center that MoleculeCIPCalc applies (issue #3853); the fourth substituent of a three-bonded atom
+        // is an implicit hydrogen or a lone pair
         bool isPossibleStereocenter(BaseMolecule& baseMolecule, int atom_idx, bool* possible_implicit_h = 0, bool* possible_lone_pair = 0);
+        // Also reads the configuration from the stereo bonds into pyramid, left all -1 when they define none; throws on contradicting bonds
+        bool isPossibleStereocenter(BaseMolecule& baseMolecule, int atom_idx, int pyramid[4], bool& is_either, bool bidirectional_mode,
+                                    bool bidirectional_either_mode, const Array<bool>& bond_ignore);
         bool isPossibleAtropocenter(BaseMolecule& baseMolecule, int atom_idx, int& possible_atropo_bond);
         bool hasAtropoStereoBonds(BaseMolecule& baseMolecule, int atom_idx);
         bool findAtropoStereobonds(BaseMolecule& baseMolecule, RedBlackMap<int, int>& directions_map, int atom_idx, std::unordered_set<int>& visited_bonds,
@@ -182,15 +187,6 @@ namespace indigo
             int nei_idx;
             int rank;
             Vec3f vec;
-        };
-
-        struct _Configuration
-        {
-            int elem;
-            int charge;
-            int degree;
-            int n_double_bonds;
-            int implicit_degree;
         };
 
         RedBlackMap<int, _Atom> _stereocenters;
