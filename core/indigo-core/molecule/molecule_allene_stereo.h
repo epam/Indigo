@@ -24,6 +24,9 @@
 #pragma warning(disable : 4251)
 #endif
 
+#include <functional>
+#include <map>
+
 #include "base_cpp/exception.h"
 #include "base_cpp/red_black.h"
 #include "math/algebra.h"
@@ -50,10 +53,7 @@ namespace indigo
 
         bool isCenter(int atom_idx);
         int size();
-        int begin() const;
-        int end() const;
-        int next(int i) const;
-        void get(int i, int& atom_idx, int& left, int& right, int subst[4], int& parity);
+        void forEach(std::function<void(int, int, int, const int[4], int)> callback) const;
         void getByAtomIdx(int atom_idx, int& left, int& right, int subst[4], int& parity);
         void invert(int atom_idx);
         void reset(int atom_idx);
@@ -86,7 +86,7 @@ namespace indigo
 
         bool _isAlleneCenter(BaseMolecule& mol, int idx, _Atom& atom, int* sensible_bonds_out);
 
-        RedBlackMap<int, _Atom> _centers;
+        std::map<int, _Atom> _centers;
     };
 
 } // namespace indigo
