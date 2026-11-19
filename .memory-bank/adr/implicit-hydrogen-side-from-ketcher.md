@@ -11,9 +11,11 @@ the canvas by a third rule. A picture therefore differed from the canvas, and in
 the estimate put the hydrogens where the picture did not.
 
 Ticket #4031 describes a common rule for both products: opposite the bond for an atom with one bond, the first
-free quadrant for an atom with more. Its text and its pictures disagree in places (the bottom carbons of the
-hexane example, a vertical bond, an atom without bonds), and Ketcher's implementation, pull request
-epam/ketcher#12564, had already chosen a reading of each.
+free quadrant for an atom with more. It leaves three cases to the implementation. Its hexane picture has the
+hydrogens of the lower carbons below, where its requirement 2.2 gives the top. A vertical bond lies on the
+boundary of its two halves, so the side would turn on the last digit of a coordinate. An atom without bonds is
+neither terminal nor internal by its definitions. Ketcher's implementation, pull request epam/ketcher#12564, had
+already chosen a reading of each.
 
 ## Decision
 

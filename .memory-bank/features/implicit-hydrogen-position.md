@@ -65,6 +65,7 @@ they are drawn: above or below the symbol it is taller, beside it wider.
   in a file for `H2O`, now meet `OH2` on the other side.
 - A reaction layout measures labels only when a font size is given (`render-font-size`); without it the side of
   the hydrogens does not change where molecules stand.
-- The rule follows the open Ketcher pull request epam/ketcher#12564 (ticket epam/ketcher#12530). Three of its
-  readings differ from the text of the ticket: a vertical bond gives the right both ways, an atom without bonds
-  always has its hydrogens on the right, and the away-from-the-bonds case above (#4031).
+- The rule follows the open Ketcher pull request epam/ketcher#12564 (ticket epam/ketcher#12530). It departs from
+  the text of the ticket in two places: a bond straight up gives the right, where requirement 1 gives the left,
+  and the away-from-the-bonds case above, where requirement 2.2 gives the top. An atom without bonds has its
+  hydrogens on the right as Ketcher reads requirement 1.1 (#4031).
