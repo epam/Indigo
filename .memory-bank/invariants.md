@@ -170,6 +170,20 @@ read.**
 at the end of `core/indigo-core/molecule/src/molfile_loader_v3000.cpp#_readSGroup3000`, not at the key. A check at
 the key sees the type unset and passes.
 
+## Atom labels
+
+**A19 — The side of an atom's implicit hydrogens is decided by one class, and its rule is Ketcher's.**
+`core/indigo-core/molecule/implicit_hydrogen_side.h#ImplicitHydrogenSide` is asked by the drawing
+(`core/render2d/src/render_internal.cpp#ad.hydrogenSide`) and by the estimate of a label box that places S-group
+brackets (`core/indigo-core/molecule/src/base_molecule_properties.cpp#ImplicitHydrogenSide(*this, atom_idx)`). A
+second rule in either place puts brackets around hydrogens that are drawn elsewhere, and only a picture shows it:
+that was the state before Indigo 1.51. The rule itself repeats `getImplicitHydrogenSide` of ketcher-core, with its
+tolerances, so that a picture matches the Ketcher canvas. No test of Indigo can see Ketcher: a change made on one
+side only leaves every suite green, the tables of
+`core/indigo-core/tests/tests/implicit_hydrogen_side.cpp#IndigoCoreImplicitHydrogenSideTest` included, since they
+pin Indigo to the copy. Change both, and the tables with them. See
+[adr/implicit-hydrogen-side-from-ketcher.md](adr/implicit-hydrogen-side-from-ketcher.md).
+
 ## Language & platform
 
 **A9 — C++17, no C++20.**

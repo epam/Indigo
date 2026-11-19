@@ -23,6 +23,7 @@
 #include "graph/graph.h"
 #include "layout/metalayout.h"
 #include "molecule/elements.h"
+#include "molecule/implicit_hydrogen_side.h"
 #include "reaction/base_reaction.h"
 #include "render_cdxml.h"
 
@@ -94,14 +95,6 @@ namespace indigo
         COMMENT_POS_TOP,
         COMMENT_POS_BOTTOM
     };
-    enum HYDRO_POS
-    {
-        HYDRO_POS_RIGHT = 0,
-        HYDRO_POS_UP,
-        HYDRO_POS_DOWN,
-        HYDRO_POS_LEFT
-    };
-
     // cos(a) to cos(a/2)
     double cos2c(const double cs);
     // cos(a) to sin(a/2)
@@ -249,8 +242,7 @@ namespace indigo
 
         int type;
         bool showLabel;
-        bool showHydro;
-        HYDRO_POS hydroPos;
+        ImplicitHydrogenSide::Side hydrogenSide;
         bool isRGroupAttachmentPoint;
         bool fixed;
         bool exactChange;
@@ -268,11 +260,8 @@ namespace indigo
         int implicit_h;
         Array<int> list;
         Array<char> pseudo;
-        Array<int> nearbyAtoms;
         int aam;
         int inversion;
-        float implHPosWeights[4];
-        float upperSin, lowerSin, rightSin, leftSin;
 
         float leftMargin, rightMargin, ypos, height;
 
@@ -421,8 +410,6 @@ namespace indigo
         float bondSpace;
         float boundExtent;
         float upperIndexShift;
-        float radicalRightOffset;
-        float radicalRightVertShift;
         float radicalTopOffset;
         float radicalTopDistDot;
         float radicalTopDistCap;
@@ -456,10 +443,7 @@ namespace indigo
         float arrowHeadSize;
         float equalityInterval;
         float rGroupIfThenInterval;
-        float neighboringLabelTolerance;
         float minSin;
-        float neighboringAtomDistanceTresholdA;
-        float neighboringAtomDistanceTresholdB;
 
     private:
         RenderSettings(const RenderSettings& settings);

@@ -92,11 +92,7 @@ namespace indigo
         bool _vertexIsHighlighted(int aid);
         bool _edgeIsHighlighted(int bid);
         bool _hasQueryModifiers(int aid);
-        void _findNearbyAtoms();
-        void _initHydroPos(int aid);
-        int _hydroPosFindConflict(int i);
-        bool _hydroPosCorrectGreedy();
-        void _hydroPosCorrectRepulse();
+        bool _labelExtendsLeft(int aid);
         void _initAtomData();
         void _initRGroups();
         void _prepareSGroups(bool collapseAtLeastOneSuperatom = false);

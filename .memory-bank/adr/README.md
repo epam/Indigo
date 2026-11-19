@@ -55,6 +55,8 @@ recorded in a ticket that the code links to.
   KET sets the pool position only; a copy or a removal never leaves a stale link
 - [sgroup-renderers-per-type.md](./sgroup-renderers-per-type.md) — the renderer draws S-groups through one
   class per type over a shared default, and places no brackets of its own for bracketed groups
+- [implicit-hydrogen-side-from-ketcher.md](./implicit-hydrogen-side-from-ketcher.md) — one class in the core
+  decides the side of implicit hydrogens for the drawing and for the label box, by Ketcher's rule
 
 Still worth reconstructing from the analyses in `indigo-common/Task/`: the valence-model
 configuration contract (BIOVIA 2009 vs 2017), and the decision to route non-local formats through
