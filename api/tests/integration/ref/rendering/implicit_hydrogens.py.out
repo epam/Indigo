@@ -1,0 +1,15 @@
+*** The examples of the ticket ***
+implicit_hydrogens/ticket-pyrrole.svg:SUCCEED
+implicit_hydrogens/ticket-hexamethyl-sulfur.svg:SUCCEED
+implicit_hydrogens/ticket-hexane.svg:SUCCEED
+*** A terminal atom has its hydrogens opposite its bond ***
+implicit_hydrogens/terminal-atoms.svg:SUCCEED
+implicit_hydrogens/atoms-without-bonds.svg:SUCCEED
+*** An internal atom has them in the first free quadrant ***
+implicit_hydrogens/internal-atoms.svg:SUCCEED
+implicit_hydrogens/piperazine.svg:SUCCEED
+implicit_hydrogens/three-and-four-bonds.svg:SUCCEED
+*** A radical takes the top quadrant ***
+implicit_hydrogens/radicals.svg:SUCCEED
+*** A charge stands clear of hydrogens above and below ***
+implicit_hydrogens/charge-beside-stacked-hydrogens.svg:SUCCEED

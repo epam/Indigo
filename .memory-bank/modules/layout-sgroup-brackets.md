@@ -85,8 +85,9 @@ be a child, never a parent.
   length (`core/indigo-core/layout/metalayout.h#getFontSizeInAngstroms`); 40 pt at the default 100 px bond is
   the default 0.4. Loaders and `clean2d()` have no options and measure at the default, so the brackets a KET
   structure gets on load can differ from those after `layout()` with a font option.
-- **Label widths are estimates**: 0.7 of the font size per character, hydrogens to the left or the right only,
-  as the renderer's own estimate does. The font type is not consulted.
+- **Label sizes are estimates**: 0.7 of the font size per character, with the hydrogens on the side the
+  renderer draws them, beside the symbol or above or below it ([atom-labels.md](./atom-labels.md)). The font
+  type is not consulted.
 - **Loaded brackets are kept while the group's atoms stay** (requirement of the ticket), even when a child gets
   new brackets underneath them. A layout of a selection therefore re-places only the groups it moved, including
   the unselected fragments the layout packs anew.

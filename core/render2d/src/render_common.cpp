@@ -137,7 +137,7 @@ AtomDesc::AtomDesc()
 
 void AtomDesc::clear()
 {
-    showLabel = showHydro = true;
+    showLabel = true;
     tibegin = gibegin = cipBegin = -1;
     ticount = gicount = cipCount = 0;
     attachmentPointBegin = -1;
@@ -152,14 +152,11 @@ void AtomDesc::clear()
     exactChange = false;
     color = CWC_BASE;
     implicit_h = 0;
-    hydroPos = HYDRO_POS_RIGHT;
+    hydrogenSide = ImplicitHydrogenSide::Side::RIGHT;
     aam = -1;
     inversion = STEREO_UNMARKED;
-    nearbyAtoms.clear();
     list.clear();
     pseudo.clear();
-    memset(implHPosWeights, 0, sizeof(implHPosWeights));
-    upperSin = lowerSin = rightSin = leftSin = 0;
     pos.set(0, 0);
     boundBoxMin.set(0, 0);
     boundBoxMax.set(0, 0);
@@ -336,8 +333,6 @@ void RenderSettings::init(float relativeThickness, float bondLineWidthFactor, Ac
     boundExtent = 1.3f * unit;
     labelInternalOffset = unit;
     stereoGroupLabelOffset = 2 * unit;
-    radicalRightOffset = unit / 2;
-    radicalRightVertShift = -0.2f;
     radicalTopOffset = 0.8f * unit;
     radicalTopDistDot = unit;
     radicalTopDistCap = unit / 2;
@@ -391,10 +386,7 @@ void RenderSettings::init(float relativeThickness, float bondLineWidthFactor, Ac
     arrowHeadSize = plusSize / 2;
     equalityInterval = plusSize / 2;
     rGroupIfThenInterval = unit * 4;
-    neighboringLabelTolerance = 1.3f;
     minSin = 0.49f;
-    neighboringAtomDistanceTresholdA = 0.8f;
-    neighboringAtomDistanceTresholdB = 0.5f;
 }
 
 CanvasOptions::CanvasOptions()

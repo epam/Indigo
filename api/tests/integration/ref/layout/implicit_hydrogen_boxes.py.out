@@ -1,0 +1,9 @@
+*** Brackets enclose the hydrogens above and below an atom ***
+implicit_hydrogens/sru-amine-peak.mol:SUCCEED
+implicit_hydrogens/sru-amine-peak-layout.mol:SUCCEED
+implicit_hydrogens/sru-amine-valley.mol:SUCCEED
+implicit_hydrogens/sru-amine-valley-layout.mol:SUCCEED
+implicit_hydrogens/sru-ammonium-peak.mol:SUCCEED
+implicit_hydrogens/sru-ammonium-peak-layout.mol:SUCCEED
+*** A reaction layout leaves room for hydrogens on the right ***
+implicit_hydrogens/reaction-with-water-layout.rxn:SUCCEED

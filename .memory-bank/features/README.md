@@ -30,6 +30,8 @@ feature file must stay true across a refactor.
   picture: which types are drawn, where the label stands, what stayed as it was
 - [sgroup-data-values.md](./sgroup-data-values.md) — values of data S-groups: how they follow their atoms in
   layout and clean-up, and what Ketcher does not yet send
+- [implicit-hydrogen-position.md](./implicit-hydrogen-position.md) — the side of an atom symbol its implicit
+  hydrogens are drawn on, the same as on the Ketcher canvas, and what that does to brackets
 
 ## Worth writing next
 

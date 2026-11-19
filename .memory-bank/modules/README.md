@@ -27,6 +27,8 @@ document that restates the header file saves nothing and should not be written.
   the canvas they draw on, the bracket geometry in page coordinates, how to add a type
 - [layout-sgroup-data.md](./layout-sgroup-data.md) — values of data S-groups: when they move, the fit of their atoms
   and its line and single-atom cases, what a whole-molecule move leaves to it
+- [atom-labels.md](./atom-labels.md) — the side of an atom's implicit hydrogens: the one class that decides
+  it, the drawn label and the core's estimate of its box, what must not be merged with label alignment
 
 ## Not yet written
 
@@ -40,7 +42,8 @@ when a task forces you to reconstruct the knowledge anyway.
   S-group bracket part is covered by [layout-sgroup-brackets.md](./layout-sgroup-brackets.md), the data values by
   [layout-sgroup-data.md](./layout-sgroup-data.md)
 - `render2d` — rendering pipeline, cairo backend, font and platform dependencies; the S-group part is
-  covered by [render-sgroups.md](./render-sgroups.md)
+  covered by [render-sgroups.md](./render-sgroups.md), the hydrogens of atom labels by
+  [atom-labels.md](./atom-labels.md)
 - `c-api` — the FFI surface, session/object registry, `INDIGO_BEGIN`/`INDIGO_END` machinery
 - `wrappers` — how the Python/Java/.NET/WASM bindings are generated and kept in step
 - `indigo-service` — the FastAPI REST service and its Docker packaging

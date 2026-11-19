@@ -1248,7 +1248,7 @@ void MoleculeRenderInternal::_preparePseudoAtom(int aid, int color, bool highlig
         }
     }
     ad.rightMargin += totalwdt;
-    if (ad.hydroPos == HYDRO_POS_LEFT)
+    if (_labelExtendsLeft(aid))
     {
         float dx = totalwdt - width;
         for (int i = 0; i < tis.size(); ++i)
@@ -1334,7 +1334,7 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
     ad.boundBoxMin.set(0, 0);
     ad.boundBoxMax.set(0, 0);
 
-    if (ad.label == 0 && ad.hydroPos == HYDRO_POS_LEFT)
+    if (ad.label == 0 && _labelExtendsLeft(aid))
     {
         _reverseLabelText(aid);
     }
@@ -1343,7 +1343,7 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
     bool highlighted = _vertexIsHighlighted(aid);
 
     int tilabel = -1, tihydro = -1, tiHydroIndex = -1, tiValence = -1, tiIsotope = -1, tiindex = -1;
-    int giChargeSign = -1, giRadical = -1, giRadical1 = -1, giRadical2 = -1;
+    int giRadical = -1, giRadical1 = -1, giRadical2 = -1;
     ad.rightMargin = ad.leftMargin = ad.ypos = ad.height = 0;
     int isotope = bm.getAtomIsotope(aid);
 
@@ -1469,7 +1469,6 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
         }
 
         // hydrogen drawing
-        ad.showHydro = false;
         if (!bm.isQueryMolecule())
         {
             int implicit_h = 0;
@@ -1479,8 +1478,6 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
 
             if (implicit_h > 0 && _opt.implHVisible)
             {
-                ad.showHydro = true;
-
                 tihydro = _pushTextItem(ad, RenderItem::RIT_HYDROGEN, color, highlighted);
                 Vec2f hydrogenGroupSz;
                 {
@@ -1508,22 +1505,23 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
 
                 // take new reference, old one may be corrupted after adding 'tiHydroIndex'
                 TextItem& itemHydrogen = _data.textitems[tihydro];
-                if (ad.hydroPos == HYDRO_POS_LEFT)
+                const bool hydrogensAreStacked = ImplicitHydrogenSide::isStacked(ad.hydrogenSide);
+                if (ad.hydrogenSide == ImplicitHydrogenSide::Side::LEFT)
                 {
                     ad.leftMargin -= hydrogenGroupSz.x;
                     itemHydrogen.bbp.set(ad.leftMargin, ad.ypos);
                 }
-                else if (ad.hydroPos == HYDRO_POS_RIGHT)
+                else if (ad.hydrogenSide == ImplicitHydrogenSide::Side::RIGHT)
                 {
                     ad.rightMargin += _settings.labelInternalOffset;
                     itemHydrogen.bbp.set(ad.rightMargin, ad.ypos);
                     ad.rightMargin += hydrogenGroupSz.x;
                 }
-                else if (ad.hydroPos == HYDRO_POS_UP)
+                else if (ad.hydrogenSide == ImplicitHydrogenSide::Side::TOP)
                 {
                     itemHydrogen.bbp.y = ad.pos.y + ad.boundBoxMin.y - hydrogenGroupSz.y - _settings.unit;
                 }
-                else if (ad.hydroPos == HYDRO_POS_DOWN)
+                else if (ad.hydrogenSide == ImplicitHydrogenSide::Side::BOTTOM)
                 {
                     itemHydrogen.bbp.y = ad.pos.y + ad.boundBoxMax.y + _settings.unit;
                 }
@@ -1531,12 +1529,17 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
                 {
                     throw Error("hydrogen position value invalid");
                 }
+                itemHydrogen.noBondOffset = hydrogensAreStacked;
                 _expandBoundRect(ad, itemHydrogen);
                 if (tiHydroIndex > 0)
                 {
-                    _data.textitems[tiHydroIndex].bbp.set(itemHydrogen.bbp.x + itemHydrogen.bbsz.x + _settings.labelInternalOffset,
-                                                          itemHydrogen.bbp.y + _settings.lowerIndexShift * itemHydrogen.bbsz.y);
-                    _expandBoundRect(ad, _data.textitems[tiHydroIndex]);
+                    TextItem& itemHydroIndex = _data.textitems[tiHydroIndex];
+                    itemHydroIndex.bbp.set(itemHydrogen.bbp.x + itemHydrogen.bbsz.x + _settings.labelInternalOffset,
+                                           itemHydrogen.bbp.y + _settings.lowerIndexShift * itemHydrogen.bbsz.y);
+                    itemHydroIndex.noBondOffset = hydrogensAreStacked;
+                    _expandBoundRect(ad, itemHydroIndex);
+                    if (hydrogensAreStacked)
+                        ad.rightMargin = std::max(ad.rightMargin, itemHydroIndex.bbp.x + itemHydroIndex.bbsz.x);
                 }
             }
         }
@@ -1579,18 +1582,9 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
                 GraphItem& itemRadical = _data.graphitems[giRadical];
                 _cw.setGraphItemSizeDot(itemRadical);
 
-                if (!(ad.showHydro && ad.hydroPos == HYDRO_POS_RIGHT) && giChargeSign < 0 && tiValence < 0)
-                {
-                    ltc.x += label.bbsz.x + _settings.radicalRightOffset;
-                    ltc.y += _settings.radicalRightVertShift * ad.height;
-                    itemRadical.bbp.copy(ltc);
-                }
-                else
-                {
-                    ltc.x += label.bbsz.x / 2 - itemRadical.bbsz.x / 2;
-                    ltc.y -= itemRadical.bbsz.y + _settings.radicalTopOffset;
-                    itemRadical.bbp.copy(ltc);
-                }
+                ltc.x += label.bbsz.x / 2 - itemRadical.bbsz.x / 2;
+                ltc.y -= itemRadical.bbsz.y + _settings.radicalTopOffset;
+                itemRadical.bbp.copy(ltc);
                 _expandBoundRect(ad, itemRadical);
             }
             else
