@@ -40,6 +40,9 @@ GRID_TITLE = "grid-comment"
 indigo.setOption("render-grid-title-property", GRID_TITLE)
 indigo.setOption("render-grid-margins", "40, 40")
 indigo.setOption("render-grid-title-offset", 10)
+# The ring drawn in perspective has wedges on two of its bonds, which the stereo
+# check refuses.
+indigo.setOption("ignore-stereochemistry-errors", True)
 
 
 # Directions in degrees counterclockwise from the x axis.
@@ -103,9 +106,15 @@ def oriented(ligand, degrees, charge=None):
     return "%s-bond-%s" % (ligand, AXIS_NAMES.get(degrees, degrees)), make
 
 
-def as_drawn(fixture):
+def load_query(fixture):
+    return indigo.loadQueryMoleculeFromFile(
+        os.path.join(molecules_path, fixture + ".mol")
+    )
+
+
+def as_drawn(fixture, loader=load):
     """A case drawn from its fixture as it is."""
-    return fixture, lambda: load(fixture)
+    return fixture, lambda: loader(fixture)
 
 
 def svg(picture):
@@ -202,8 +211,10 @@ compare(
             [
                 as_drawn("ring-bond-60"),
                 as_drawn("ring-bond-120"),
+                as_drawn("ring-perspective"),
                 oriented(ETHYLENE, 40),
                 as_drawn("ethylene-askew"),
+                as_drawn("ethylene-single-or-double", load_query),
                 (
                     "allyl-bond-%d-radical" % ALLYL_LINE_NEAR_BOND,
                     lambda: labelled(

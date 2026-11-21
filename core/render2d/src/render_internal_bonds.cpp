@@ -318,6 +318,9 @@ void MoleculeRenderInternal::_bondBoldStereo(BondDescr& bd, const BondEnd& be1, 
     _adjustAngle(r0, be2, be1, true);
     _adjustAngle(l0, be2, be1, false);
     _cw.fillHex(be1.p, r0, r1, be2.p, l1, l0);
+    // The bold line of a double bond lies within the extent its two lines have already set.
+    bd.extP = std::max(bd.extP, w);
+    bd.extN = std::max(bd.extN, w);
 }
 
 void MoleculeRenderInternal::_bondHydrogen(BondDescr& bd, const BondEnd& be1, const BondEnd& be2)
@@ -660,6 +663,7 @@ void MoleculeRenderInternal::_bondSingleOrDouble(BondDescr& bd, const BondEnd& b
         else
             _cw.drawLine(r0, r1);
     }
+    bd.extP = bd.extN = ns.length() + _settings.bondLineWidth / 2;
 }
 
 void MoleculeRenderInternal::_bondAromatic(BondDescr& bd, const BondEnd& be1, const BondEnd& be2)
