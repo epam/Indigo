@@ -55,6 +55,7 @@ RING, BENZENE, ETHYLENE, ALLYL = "ring", "benzene", "ethylene", "allyl"
 LIGANDS = {RING: UP, BENZENE: 45, ETHYLENE: LEFT, ALLYL: UP}
 DECIMALS = 3  # of the coordinates in the fixtures
 SANDWICH = "sandwich-vertical"
+TWO_METALS = "ring-two-metals"
 ALLYL_LINE_NEAR_BOND = 75
 
 
@@ -79,6 +80,14 @@ def turned(fixture, degrees):
             round(sin * x + cos * y, DECIMALS),
             float(xyz[2]),
         )
+    return molecule
+
+
+def shifted(fixture, dx, dy):
+    molecule = load(fixture)
+    for atom in molecule.iterateAtoms():
+        xyz = atom.xyz()
+        atom.setXYZ(float(xyz[0]) + dx, float(xyz[1]) + dy, float(xyz[2]))
     return molecule
 
 
@@ -249,12 +258,23 @@ compare(
     grid_svg(
         drawn(
             [
-                as_drawn("ring-two-metals"),
+                as_drawn(TWO_METALS),
+                as_drawn("ring-two-metals-across"),
                 as_drawn(SANDWICH),
                 ("sandwich-horizontal", lambda: turned(SANDWICH, 90)),
             ]
         )
     ),
+)
+# The signs of a ligand between two metals touch the margin of the second line;
+# a touch must not move them by where the molecule stands on the canvas.
+pictures = [
+    svg(shifted(TWO_METALS, dx, dy))
+    for dx, dy in ((0, 0), (100, 0), (0.1, 0), (1, 1))
+]
+print(
+    "%s drawn the same wherever it stands: %s"
+    % (TWO_METALS, all(picture == pictures[0] for picture in pictures))
 )
 
 print("*** No label ***")

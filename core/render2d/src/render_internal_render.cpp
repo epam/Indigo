@@ -109,16 +109,22 @@ namespace
     // An index that names no obstacle.
     constexpr size_t NO_OBSTACLE = std::numeric_limits<size_t>::max();
 
+    // A sign that overlaps an obstacle by less than this share of a unit only touches it and stays where it is. A
+    // sign is set exactly beside the margin of a haptic line, so such touches are common, and left to rounding they
+    // would move the sign or not depending on where the molecule stands on the canvas.
+    constexpr float LABEL_TOUCH_TOLERANCE = 0.01f;
+
     // The least shift t >= 0 along `direction` at which none of `labels` intersects any of `obstacles` but the one at
-    // index `skip`; a shift at which a label only touches the margin of an obstacle counts as free.
-    float leastFreeShift(const std::vector<std::vector<Vec2f>>& labels, const Vec2f& direction, const std::vector<std::vector<Vec2f>>& obstacles, size_t skip)
+    // index `skip`; a shift at which a label only touches an obstacle, overlapping it by `touch` at most, counts as free.
+    float leastFreeShift(const std::vector<std::vector<Vec2f>>& labels, const Vec2f& direction, const std::vector<std::vector<Vec2f>>& obstacles, size_t skip,
+                         float touch)
     {
         std::vector<std::pair<float, float>> blocked;
         for (const std::vector<Vec2f>& label : labels)
             for (size_t k = 0; k < obstacles.size(); ++k)
             {
                 float low, high;
-                if (k != skip && convexPolygonsIntersectAlong(label, obstacles[k], direction, low, high))
+                if (k != skip && convexPolygonsIntersectAlong(label, obstacles[k], direction, low, high, touch))
                     blocked.emplace_back(low, high);
             }
         std::sort(blocked.begin(), blocked.end());
@@ -158,7 +164,8 @@ namespace
     // Where the signs of one group stand on the canvas, y pointing down: beside the haptic line that runs from
     // `centre` along `along`, a unit vector, towards the metal - their near side `line_standoff` from its axis, their
     // near end `gap` from the centre, clear of `obstacles` except the group's own line, `obstacles[own_line]`, which a
-    // sign beside the axis never meets. Each placed sign joins `obstacles`, `clearance` wider.
+    // sign beside the axis never meets; an overlap up to `touch` is a touch. Each placed sign joins `obstacles`,
+    // `clearance` wider.
     struct LabelPlacement
     {
         Vec2f centre;
@@ -167,6 +174,7 @@ namespace
         float reach;
         float line_standoff;
         float clearance;
+        float touch;
         std::vector<std::vector<Vec2f>>& obstacles;
         size_t own_line;
     };
@@ -192,8 +200,8 @@ namespace
             boxes.push_back(outlineOf(Rect2f(sign.top_left, sign.top_left + sign.size), 0));
         }
 
-        float shift = leastFreeShift(boxes, along, placement.obstacles, placement.own_line);
-        const float back = leastFreeShift(boxes, Vec2f(-along.x, -along.y), placement.obstacles, placement.own_line);
+        float shift = leastFreeShift(boxes, along, placement.obstacles, placement.own_line, placement.touch);
+        const float back = leastFreeShift(boxes, Vec2f(-along.x, -along.y), placement.obstacles, placement.own_line, placement.touch);
         if (back < shift && back <= placement.reach)
             shift = -back;
         for (LabelSign& sign : signs)
@@ -545,6 +553,7 @@ void MoleculeRenderInternal::_prepareAttachmentGroupLabel(const HapticBond& bond
                              ATTACHMENT_GROUP_LABEL_REACH * nearest_atom,
                              _settings.bondLineWidth / 2 + _settings.boundExtent,
                              _settings.boundExtent,
+                             LABEL_TOUCH_TOLERANCE * _settings.unit,
                              obstacles,
                              own_line};
 

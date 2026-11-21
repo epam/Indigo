@@ -957,7 +957,10 @@ namespace indigo
     // intersecting, as convexPolygonsIntersect counts it: the interval [low, high], or false when there is none.
     // On each axis of the separating axis theorem the projection of `moving` travels at direction * axis, so the
     // shifts at which the projections overlap form an interval; the polygons intersect where all of them do.
-    inline bool convexPolygonsIntersectAlong(const std::vector<Vec2f>& moving, const std::vector<Vec2f>& fixed, const Vec2f& direction, float& low, float& high)
+    // An overlap no deeper than `touch` on some axis counts as touching instead: with exact touching left to rounding,
+    // two polygons drawn to touch would meet or not depending on where they stand.
+    inline bool convexPolygonsIntersectAlong(const std::vector<Vec2f>& moving, const std::vector<Vec2f>& fixed, const Vec2f& direction, float& low, float& high,
+                                             float touch = 0)
     {
         std::vector<Vec2f> axes = edgeNormals(moving);
         const std::vector<Vec2f> fixed_normals = edgeNormals(fixed);
@@ -969,16 +972,20 @@ namespace indigo
         {
             const auto [moving_low, moving_high] = projectPolygon(moving, axis);
             const auto [fixed_low, fixed_high] = projectPolygon(fixed, axis);
+            // The axis is an edge normal as long as its edge: `touch` deep along it is touch * its length.
+            const float depth = touch * axis.length();
+            const float fixed_near = fixed_low + depth;
+            const float fixed_far = fixed_high - depth;
             const float speed = direction * axis;
             if (speed == 0)
             {
-                if (moving_low > fixed_high || fixed_low > moving_high)
+                if (moving_low > fixed_far || fixed_near > moving_high)
                     return false;
                 continue;
             }
-            // Overlap on the axis: moving_low + t * speed <= fixed_high and moving_high + t * speed >= fixed_low.
-            const float until_past = (fixed_high - moving_low) / speed;
-            const float until_reached = (fixed_low - moving_high) / speed;
+            // Overlap on the axis: moving_low + t * speed <= fixed_far and moving_high + t * speed >= fixed_near.
+            const float until_past = (fixed_far - moving_low) / speed;
+            const float until_reached = (fixed_near - moving_high) / speed;
             low = std::max(low, std::min(until_past, until_reached));
             high = std::min(high, std::max(until_past, until_reached));
         }

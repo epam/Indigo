@@ -114,3 +114,21 @@ TEST(ConvexPolygonsIntersectAlong, AgreesWithTheStaticTestAtEveryShift)
         EXPECT_EQ(inside, convexPolygonsIntersect(moved(label, direction, shift), band)) << "shift " << shift;
     }
 }
+
+TEST(ConvexPolygonsIntersectAlong, AnOverlapNoDeeperThanTheToleranceIsATouch)
+{
+    // A tall band beside the path of the unit square, overlapping it by 0.001 across: they meet, unless an overlap of
+    // up to 0.01 is a touch.
+    const std::vector<Vec2f> band = {Vec2f(0.999f, -5), Vec2f(1.999f, -5), Vec2f(1.999f, 5), Vec2f(0.999f, 5)};
+    float low, high;
+    EXPECT_TRUE(convexPolygonsIntersectAlong(square(0, 0, 1), band, Vec2f(0, 1), low, high));
+    EXPECT_FALSE(convexPolygonsIntersectAlong(square(0, 0, 1), band, Vec2f(0, 1), low, high, 0.01f));
+}
+
+TEST(ConvexPolygonsIntersectAlong, TheToleranceNarrowsTheMeetingAtBothEnds)
+{
+    float low, high;
+    ASSERT_TRUE(convexPolygonsIntersectAlong(square(0, 0, 1), square(3, 0, 1), Vec2f(1, 0), low, high, 0.1f));
+    EXPECT_FLOAT_EQ(2.1f, low);
+    EXPECT_FLOAT_EQ(3.9f, high);
+}
