@@ -53,6 +53,13 @@ namespace
     // as an atom's charge.
     constexpr float ATTACHMENT_GROUP_LABEL_REACH = 0.5f;
 
+    // The radius of the circle drawn in an aromatic ring, as a share of the radius of the ring.
+    constexpr float AROMATIC_CIRCLE_TO_RING_RADIUS = 0.75f;
+
+    // A circle is kept clear of as the strokes of the chords of a regular polygon in it: with 24 chords a chord stays
+    // within 1% of the radius from its arc, well inside the margin around the stroke.
+    constexpr int CIRCLE_OBSTACLE_CHORDS = 24;
+
     // The side of the haptic line each sign of a group takes, as the picture is seen from the group centre towards
     // the metal: the charge on the right and the radical on the left - top right and top left with the bond pointing
     // up, turning with the line.
@@ -83,6 +90,20 @@ namespace
         start.diff(from, along);
         end.sum(to, along);
         return {start - across, end - across, end + across, start + across};
+    }
+
+    // The stroke of a circle around `centre`, `half_width` to either side of it, as the strokes of the chords of a
+    // regular polygon in it, each `margin` wider all round, added to `outlines`.
+    void addOutlineOfCircle(std::vector<std::vector<Vec2f>>& outlines, const Vec2f& centre, float radius, float half_width, float margin)
+    {
+        Vec2f chord_start(centre.x + radius, centre.y);
+        for (int k = 1; k <= CIRCLE_OBSTACLE_CHORDS; ++k)
+        {
+            const double angle = 2 * M_PI * k / CIRCLE_OBSTACLE_CHORDS;
+            const Vec2f chord_end(centre.x + radius * static_cast<float>(std::cos(angle)), centre.y + radius * static_cast<float>(std::sin(angle)));
+            outlines.push_back(outlineOfStroke(chord_start, chord_end, half_width, margin));
+            chord_start = chord_end;
+        }
     }
 
     // An index that names no obstacle.
@@ -311,7 +332,7 @@ void MoleculeRenderInternal::_renderRings()
         const Ring& ring = _data.rings[i];
         if (ring.aromatic)
         {
-            float r = 0.75f * ring.radius;
+            float r = AROMATIC_CIRCLE_TO_RING_RADIUS * ring.radius;
             for (int k = 0; k < ring.bondEnds.size(); ++k)
             {
                 BondEnd& be = _be(ring.bondEnds[k]);
@@ -441,6 +462,13 @@ void MoleculeRenderInternal::_prepareAttachmentGroupLabels()
     {
         const BondDescr& bd = _bd(i);
         obstacles.push_back(outlineOfStroke(_be(bd.be1).p, _be(bd.be2).p, std::max(bd.extP, bd.extN), clearance));
+    }
+    // The circle of each aromatic ring (_renderRings).
+    for (int i = 0; i < _data.rings.size(); ++i)
+    {
+        const Ring& ring = _data.rings[i];
+        if (ring.aromatic)
+            addOutlineOfCircle(obstacles, ring.center, AROMATIC_CIRCLE_TO_RING_RADIUS * ring.radius, _settings.bondLineWidth / 2, clearance);
     }
     // Every label item drawn so far - atom labels and their charges, indices, S-group labels. Their boxes already
     // carry that margin (_extendRenderItems); the box an atom keeps of them goes stale when a label is reversed.

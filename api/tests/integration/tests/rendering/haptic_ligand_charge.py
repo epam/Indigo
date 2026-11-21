@@ -212,6 +212,8 @@ compare(
                 as_drawn("ring-bond-60"),
                 as_drawn("ring-bond-120"),
                 as_drawn("ring-perspective"),
+                as_drawn("cyclopropenyl-aromatic"),
+                as_drawn("benzene-eta4-aromatic"),
                 oriented(ETHYLENE, 40),
                 as_drawn("ethylene-askew"),
                 as_drawn("ethylene-single-or-double", load_query),
