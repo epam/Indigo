@@ -33,6 +33,12 @@ itself:
 Do not compute the property under test inside the test. If the answer needs geometry, save the structure
 and let the reference carry the geometry.
 
+Print the values the test checks, not a verdict about them: `print(atom.radical())`, not
+`print(atom.radical() == Indigo.DOUBLET)`; when two calls must agree, print both. A verdict computed in the
+script pins only "True" — the reference no longer holds the value, and a change that both calls share
+passes. For the same reason a result written to `out/` is compared with a reference, never left
+unchecked.
+
 ## 2. Place the files, and know where the harness looks
 
 Fixtures join the group's shared `tests/<group>/molecules/`; references go to `tests/<group>/ref/`. A
@@ -130,7 +136,7 @@ verified: Windows, Linux, Jython compile, static analysis
 
 ## Checklist
 
-- [ ] The reference is the assertion; nothing is computed in the test
+- [ ] The reference is the assertion; nothing is computed in the test, and the `.out` holds values, not verdicts
 - [ ] Fixtures in `tests/<group>/molecules/`, references in `tests/<group>/ref/`, `.out` created — no `[NEW]`
 - [ ] `-u` was the last option and the result line appeared
 - [ ] A reason for every changed reference; no output left in the source tree; no `i/crlf` on the references you touched
