@@ -60,7 +60,8 @@ Verified against `.github/workflows/indigo-ci.yaml` and the job logs of run 7682
   and BuildKit skips it — the job log shows only the final stage.
 - **Reduced legs:** Linux ARM64 runs only the `dlopen` smoke tests and `basic/basic.py`; the Windows x86 legs
   run ctest and `basic/basic.py`; IronPython runs on Windows only; macOS runs only for a tag or a manual
-  dispatch with `run_mac_tests`; the MinGW harness step is commented out; clang-tidy does not run.
+  dispatch with `run_mac_tests`; both MinGW jobs, the Indigo libraries and the Bingo Oracle cartridge, are switched
+  off (`if: false`); clang-tidy does not run.
 
 ## 3. Prove the run happened before reading its results
 
@@ -134,7 +135,7 @@ Verified on `60b769879` and CI run 7682, in the order they are likely to cost so
 5. **No performance regression tests** for fingerprints, substructure search or the layout; a slowdown is
    noticed by users, not by CI.
 6. **Platform gaps for a pull request:** no macOS, no ARM64 beyond `basic/basic.py`, the .NET wrapper
-   integration on Windows only, the Java and .NET unit tests on Linux only, no MinGW harness.
+   integration on Windows only, the Java and .NET unit tests on Linux only, no MinGW build at all.
 
 ## Checklist
 
