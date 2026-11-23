@@ -1,6 +1,6 @@
 ---
 name: indigo-testing
-description: "Decide which Indigo test suites a change must pass, know what CI runs for a pull request and what it silently skips, and sort a red run into the change, the build or the machine before calling it a regression."
+description: "Decide which Indigo test suites a change must pass, know what CI runs for a pull request and what it silently skips, and sort a red run into the change, the build, the machine or the test itself before calling it a regression."
 when_to_use: "Use before calling a change tested, when a local or CI run is red and the cause is not yet known, when a suite is green in one place and red in another, or when asked where test coverage is thin. To write a test use /indigo-add-tests; for a reference test in api/tests/integration use /indigo-reference-tests."
 argument-hint: "[changed area, failing suite or run log]"
 allowed-tools: Bash(python api/tests/integration/test.py *) Bash(python3 api/tests/integration/test.py *) Bash(ctest *) Bash(git status *) Bash(git diff *)
@@ -87,7 +87,7 @@ into the working directory, and judge it by its `[  PASSED  ]` and `[  FAILED  ]
 code: on Linux all three binaries are built with AddressSanitizer and LeakSanitizer, and a sanitizer report
 fails a binary whose assertions all passed.
 
-## 4. Sort each failure: the change, the build, or the machine
+## 4. Sort each failure: the change, the build, the machine, or the test itself
 
 Classify only with evidence — a signature from this table, or the same failure in a baseline run.
 
@@ -102,6 +102,7 @@ Classify only with evidence — a signature from this table, or the same failure
 | `BadImageFormatException (0x8007000B)` from `dotnet test` on Windows | environment | `prebuild.ps1` put empty stubs of `msvcp140.dll` and `vcruntime140*.dll`, missing from `dist/lib/windows-x86_64/`, next to the tests | put the real runtime DLLs there |
 | a GTest test with its own `try`/`catch` around C API calls: `thrown in the test body`, in a local MSVC build only | environment | the Ninja generator passes CMake's `/EHsc` and Indigo's `-EHs` together; the `c` survives, and at `/O2` the compiler drops a handler around a call it assumes cannot throw. The Visual Studio generator CI uses keeps the handler — `IndigoSerializeTest.isotopes_basic` and `IndigoApiInchiTest.incorrect_symbols*` are green there | not a regression; new tests use `EXPECT_THROW` (`/indigo-add-tests`) |
 | a Linux GTest binary aborted by a sanitizer report inside `libfontconfig` or the renderer's initialisation | environment | a local toolchain difference — CI builds these binaries in a CentOS 7 image | read the stack; blame the change only if a frame is in the code it touched |
+| a unit test red after a CI runner image or compiler update, with no change in the code it tests; both sides of the assertion print the same value | test | the expected value is computed in the test by a second copy of the implementation's formula, and the new compiler evaluates the two copies differently in the last bit | rewrite the expected value as a literal with a tolerance (`/indigo-add-tests`, §3); not a regression of the change |
 | anything else | change | — | read `<out dir>/<group>/<test>.py.diff` and `_0.err` first |
 
 A failure left unattributed belongs to the change until shown otherwise. To show that it predates the

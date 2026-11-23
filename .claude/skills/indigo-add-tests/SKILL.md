@@ -51,6 +51,31 @@ Required cases for anything with a public surface:
 4. **Round trip** — load → modify → save → load → compare, for anything touching serialisation.
 5. **Parametrised** — at least three inputs where a single one would prove nothing.
 
+### Where the expected value comes from
+
+The expected value is fixed data: a literal, a reference file, or a property of the result whose values
+another test pins. It is never produced by the code under test, by a helper that code delegates to, by a
+production constant, or by the same standard-library and math calls written out again in the test. Such a
+test cannot see a change that both sides share, and it fails when a compiler evaluates the two copies
+differently although nothing changed for a user.
+
+| Not this | But this |
+| --- | --- |
+| `EXPECT_EQ(float(std::acos(double(v.x / v.length()))), v.tiltAngle())` — the implementation's formula again | `EXPECT_NEAR(M_PI / 2, Vec2f(0.f, 1.f).tiltAngle(), TOLERANCE)` |
+| `EXPECT_EQ(arr.at(0).id, arr[0].id)` — two methods with one body | `EXPECT_EQ(7, arr.at(0).id)` |
+| a production constant such as `MAX_RESERVE_PER_BUCKET` as the expected value | the number itself |
+| `Element::calcValence` against the `ValenceModel` call it forwards to | the valence and the hydrogen count as literals |
+
+- **A floating-point result is compared with a tolerance named in the test**: `EXPECT_NEAR`,
+  `assertAlmostEqual`, `pytest.approx`, `Assert.AreEqual(expected, actual, delta)` — never `EXPECT_EQ` on a
+  computed value. The tolerance is a constant of the test with a one-line derivation, not a production
+  threshold such as `EPSILON`, which may change for reasons of its own.
+- **An invariant** — a round trip, determinism, two readers that agree, the aromatic and the Kekulé form
+  giving one answer — is a valid check only next to a test that pins the values. On its own it passes when
+  both sides change together.
+- **A literal you do not know is obtained once by running the current code**, checked against the
+  chemistry or the format specification, and written into the test. From then on it is fixed data.
+
 How each suite asserts the failure contract — the templates already do it this way:
 
 | Suite | Type | Message |
@@ -117,6 +142,7 @@ A test that has never failed has not been shown to test anything.
 
 - [ ] The test is in the suite that owns the code, in the file the table names, from its template
 - [ ] Valid, invalid (type **and** message), empty, round trip where serialisation is touched
+- [ ] Every expected value is a literal, a reference file or an invariant pinned elsewhere; floating-point values through a named tolerance
 - [ ] It failed once on purpose, with output that says what went wrong
 - [ ] Green three times in a row; a GTest test also green on Linux, under the sanitizers
 - [ ] A wrapper test ran locally: a Python one as a `unittest` class, a Java one within the Java 8 API
