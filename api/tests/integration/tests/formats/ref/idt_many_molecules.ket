@@ -570,7 +570,6 @@
     "monomer0": {
         "type": "monomer",
         "id": "0",
-        "seqid": 1,
         "position": {
             "x": 0.000000,
             "y": -0.000000
@@ -581,7 +580,6 @@
     "monomer1": {
         "type": "monomer",
         "id": "1",
-        "seqid": 1,
         "position": {
             "x": 0.000000,
             "y": -1.500000
@@ -592,7 +590,6 @@
     "monomer2": {
         "type": "monomer",
         "id": "2",
-        "seqid": 1,
         "position": {
             "x": 1.500000,
             "y": -0.000000
@@ -603,7 +600,6 @@
     "monomer3": {
         "type": "monomer",
         "id": "3",
-        "seqid": 2,
         "position": {
             "x": 3.000000,
             "y": -0.000000
@@ -614,7 +610,6 @@
     "monomer4": {
         "type": "monomer",
         "id": "4",
-        "seqid": 2,
         "position": {
             "x": 3.000000,
             "y": -1.500000
@@ -625,7 +620,6 @@
     "monomer5": {
         "type": "monomer",
         "id": "5",
-        "seqid": 2,
         "position": {
             "x": 4.500000,
             "y": -0.000000
@@ -636,7 +630,6 @@
     "monomer6": {
         "type": "monomer",
         "id": "6",
-        "seqid": 3,
         "position": {
             "x": 6.000000,
             "y": -0.000000
@@ -647,7 +640,6 @@
     "monomer7": {
         "type": "monomer",
         "id": "7",
-        "seqid": 3,
         "position": {
             "x": 6.000000,
             "y": -1.500000
@@ -658,7 +650,6 @@
     "monomer8": {
         "type": "monomer",
         "id": "8",
-        "seqid": 3,
         "position": {
             "x": 7.500000,
             "y": -0.000000
@@ -669,7 +660,6 @@
     "monomer9": {
         "type": "monomer",
         "id": "9",
-        "seqid": 4,
         "position": {
             "x": 9.000000,
             "y": -0.000000
@@ -680,7 +670,6 @@
     "monomer10": {
         "type": "monomer",
         "id": "10",
-        "seqid": 4,
         "position": {
             "x": 9.000000,
             "y": -1.500000
@@ -691,7 +680,6 @@
     "monomer11": {
         "type": "monomer",
         "id": "11",
-        "seqid": 1,
         "position": {
             "x": 0.000000,
             "y": -3.000000
@@ -702,7 +690,6 @@
     "monomer12": {
         "type": "monomer",
         "id": "12",
-        "seqid": 1,
         "position": {
             "x": 0.000000,
             "y": -4.500000
@@ -713,7 +700,6 @@
     "monomer13": {
         "type": "monomer",
         "id": "13",
-        "seqid": 1,
         "position": {
             "x": 1.500000,
             "y": -3.000000
@@ -724,7 +710,6 @@
     "monomer14": {
         "type": "monomer",
         "id": "14",
-        "seqid": 2,
         "position": {
             "x": 3.000000,
             "y": -3.000000
@@ -735,7 +720,6 @@
     "monomer15": {
         "type": "monomer",
         "id": "15",
-        "seqid": 2,
         "position": {
             "x": 3.000000,
             "y": -4.500000
@@ -746,7 +730,6 @@
     "monomer16": {
         "type": "monomer",
         "id": "16",
-        "seqid": 2,
         "position": {
             "x": 4.500000,
             "y": -3.000000
@@ -757,7 +740,6 @@
     "monomer17": {
         "type": "monomer",
         "id": "17",
-        "seqid": 3,
         "position": {
             "x": 6.000000,
             "y": -3.000000
@@ -768,7 +750,6 @@
     "monomer18": {
         "type": "monomer",
         "id": "18",
-        "seqid": 3,
         "position": {
             "x": 6.000000,
             "y": -4.500000
@@ -779,7 +760,6 @@
     "monomer19": {
         "type": "monomer",
         "id": "19",
-        "seqid": 3,
         "position": {
             "x": 7.500000,
             "y": -3.000000
@@ -790,7 +770,6 @@
     "monomer20": {
         "type": "monomer",
         "id": "20",
-        "seqid": 1,
         "position": {
             "x": 0.000000,
             "y": -6.000000
@@ -801,7 +780,6 @@
     "monomer21": {
         "type": "monomer",
         "id": "21",
-        "seqid": 1,
         "position": {
             "x": 0.000000,
             "y": -7.500000
@@ -812,7 +790,6 @@
     "monomer22": {
         "type": "monomer",
         "id": "22",
-        "seqid": 1,
         "position": {
             "x": 1.500000,
             "y": -6.000000
@@ -823,7 +800,6 @@
     "monomer23": {
         "type": "monomer",
         "id": "23",
-        "seqid": 2,
         "position": {
             "x": 3.000000,
             "y": -6.000000
@@ -834,7 +810,6 @@
     "monomer24": {
         "type": "monomer",
         "id": "24",
-        "seqid": 2,
         "position": {
             "x": 3.000000,
             "y": -7.500000
@@ -845,7 +820,6 @@
     "monomer25": {
         "type": "monomer",
         "id": "25",
-        "seqid": 2,
         "position": {
             "x": 4.500000,
             "y": -6.000000
@@ -856,7 +830,6 @@
     "monomer26": {
         "type": "monomer",
         "id": "26",
-        "seqid": 3,
         "position": {
             "x": 6.000000,
             "y": -6.000000
@@ -867,7 +840,6 @@
     "monomer27": {
         "type": "monomer",
         "id": "27",
-        "seqid": 3,
         "position": {
             "x": 6.000000,
             "y": -7.500000
@@ -878,7 +850,6 @@
     "monomer28": {
         "type": "monomer",
         "id": "28",
-        "seqid": 3,
         "position": {
             "x": 7.500000,
             "y": -6.000000
@@ -889,7 +860,6 @@
     "monomer29": {
         "type": "monomer",
         "id": "29",
-        "seqid": 4,
         "position": {
             "x": 9.000000,
             "y": -6.000000
@@ -900,7 +870,6 @@
     "monomer30": {
         "type": "monomer",
         "id": "30",
-        "seqid": 1,
         "position": {
             "x": 0.000000,
             "y": -9.000000
@@ -911,7 +880,6 @@
     "monomer31": {
         "type": "monomer",
         "id": "31",
-        "seqid": 1,
         "position": {
             "x": 0.000000,
             "y": -10.500000
@@ -922,7 +890,6 @@
     "monomer32": {
         "type": "monomer",
         "id": "32",
-        "seqid": 1,
         "position": {
             "x": 1.500000,
             "y": -9.000000
@@ -933,7 +900,6 @@
     "monomer33": {
         "type": "monomer",
         "id": "33",
-        "seqid": 2,
         "position": {
             "x": 3.000000,
             "y": -9.000000
@@ -944,7 +910,6 @@
     "monomer34": {
         "type": "monomer",
         "id": "34",
-        "seqid": 2,
         "position": {
             "x": 3.000000,
             "y": -10.500000
@@ -955,7 +920,6 @@
     "monomer35": {
         "type": "monomer",
         "id": "35",
-        "seqid": 2,
         "position": {
             "x": 4.500000,
             "y": -9.000000
@@ -966,7 +930,6 @@
     "monomer36": {
         "type": "monomer",
         "id": "36",
-        "seqid": 3,
         "position": {
             "x": 6.000000,
             "y": -9.000000
@@ -977,7 +940,6 @@
     "monomer37": {
         "type": "monomer",
         "id": "37",
-        "seqid": 3,
         "position": {
             "x": 6.000000,
             "y": -10.500000
@@ -988,7 +950,6 @@
     "monomer38": {
         "type": "monomer",
         "id": "38",
-        "seqid": 3,
         "position": {
             "x": 7.500000,
             "y": -9.000000
@@ -999,7 +960,6 @@
     "monomer39": {
         "type": "monomer",
         "id": "39",
-        "seqid": 4,
         "position": {
             "x": 9.000000,
             "y": -9.000000
@@ -1010,7 +970,6 @@
     "monomer40": {
         "type": "monomer",
         "id": "40",
-        "seqid": 4,
         "position": {
             "x": 9.000000,
             "y": -10.500000

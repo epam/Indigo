@@ -81,7 +81,7 @@
         },
         "alias": "12ddR",
         "templateId": "12ddR___1',2'-dideoxyribose",
-        "seqid": 0
+        "seqid": 1
     },
     "monomerTemplate-12ddR___1',2'-dideoxyribose": {
         "type": "monomerTemplate",
@@ -279,7 +279,7 @@
         },
         "alias": "P",
         "templateId": "P___Phosphate",
-        "seqid": 0
+        "seqid": 1
     },
     "monomerTemplate-P___Phosphate": {
         "type": "monomerTemplate",
@@ -391,7 +391,7 @@
         },
         "alias": "12ddR",
         "templateId": "12ddR___1',2'-dideoxyribose",
-        "seqid": 1
+        "seqid": 2
     },
     "monomer3": {
         "type": "monomer",
@@ -402,7 +402,7 @@
         },
         "alias": "P",
         "templateId": "P___Phosphate",
-        "seqid": 1
+        "seqid": 2
     },
     "monomer4": {
         "type": "monomer",
@@ -413,6 +413,6 @@
         },
         "alias": "12ddR",
         "templateId": "12ddR___1',2'-dideoxyribose",
-        "seqid": 2
+        "seqid": 3
     }
 }

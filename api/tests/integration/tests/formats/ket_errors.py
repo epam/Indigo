@@ -24,6 +24,7 @@ print("*** KET errors ***")
 ket_errors = {
     "ket_invalid_seqid_0": 'Invalid "seqid" value',
     "ket_invalid_seqid_1": 'Invalid "seqid" value',
+    "ket_invalid_seqid_not_int": 'Invalid "seqid" value',
 }
 for filename in sorted(ket_errors.keys()):
     error = ket_errors[filename]

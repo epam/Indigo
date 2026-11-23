@@ -113,12 +113,13 @@ of these, should read the line first.
 
 ## S-group brackets
 
-**A12 — The two brackets of a bracketed S-group keep their order and direction: the opening one first, running
-bottom to top, the closing one second, running top to bottom.**
-The renderer turns the hooks of a bracket to the right of its direction and puts the label and the repeat pattern
-at the last bracket (`core/render2d/src/render_internal.cpp#_positionIndex`). A pair written the other way round
-draws its hooks outwards and its label at the left bracket; nothing fails. The one place that
-writes a pair is `core/indigo-core/layout/src/sgroup_layout.cpp#_setBrackets`.
+**A12 — The two brackets of a bracketed S-group are written in one order and direction: the opening one first,
+running bottom to top, the closing one second, running top to bottom.**
+Since Indigo 1.51 nothing in Indigo reads that order: the renderer takes the closing bracket by position, the rightmost
+one, and turns the hooks of every bracket towards the atoms of the group
+(`core/render2d/src/render_sgroups.cpp#SGroupBrackets::closing`), so a pair written the other way round draws
+the same. The order is the convention of the files Indigo writes, for the readers of those files; the one place
+that writes a pair is `core/indigo-core/layout/src/sgroup_layout.cpp#_setBrackets`.
 
 **A13 — Whatever moves the atoms of a molecule moves its S-group brackets and data values with them.**
 Brackets and the stored position of a data value are coordinates on the group; nothing ties them to the atoms.
@@ -141,10 +142,12 @@ and the CDXML and CXSMILES loaders leave such pairs too. `SGroup::hasBrackets()`
 (`core/indigo-core/molecule/molecule_sgroups.h#hasBrackets`): one zero-length bracket means the group has none,
 and the layout replaces them. The MOL savers skip each zero-length bracket and keep the real ones next to it
 (`core/indigo-core/molecule/src/molfile_saver.cpp#isZeroLengthBracket`); `transformPositions` moves the real
-brackets of a group and leaves its placeholders; the renderer takes the file's brackets only when the first two
-are real and draws its own pair otherwise (`core/render2d/src/render_internal.cpp#isBracketsCoordinates`). Code
-that tests `brackets.size() > 0` instead takes a bracket at the origin for a real one: the CML saver writes
-placeholders out that way.
+brackets of a group and leaves its placeholders; the renderer draws the real brackets of a generic or multiple
+group when it has at least two and a pair of its own otherwise
+(`core/render2d/src/render_sgroups.cpp#_storedOrPairAroundAtoms`), and gives a bracketed group without brackets
+a pair by the layout's rules on its own copy of the molecule before drawing
+(`core/render2d/src/render_internal.cpp#_placeMissingBrackets`). Code that tests `brackets.size() > 0` instead
+takes a bracket at the origin for a real one: the CML saver writes placeholders out that way.
 
 ## S-group data fields
 
@@ -182,10 +185,12 @@ and GCC the double functions; with float calls Windows and Linux disagreed on 11
 `HYPOT`, `COS`, `SIN`, `TAN`, `ACOS`, `ASIN`, `ATAN2` of `common/math/algebra.h`, which evaluate in
 double and round once, and the two platforms now agree bit for bit on all of them. Write the
 promotion out by hand and the rule has no single home; write the call on a float and the divergence
-comes back. `tests/tests/layout_math.cpp` sweeps the arguments on which the two spellings differ and
-pins every macro, both rotations of `Vec2f` and both tilt angles to the double value. The square
-root is left alone: IEEE 754 rounds it exactly. Widening the layout energy to double does not
-help and was measured not to. The guarantee covers x86-64 only: a compiler that fuses `a * b + c`
+comes back. What catches it are the layout reference tests in `api/tests/integration/tests/layout/`,
+which run on the Windows and Linux legs of CI: a different last bit changes a drawing, while no
+tolerance of a unit test can see it. `tests/tests/layout_math.cpp` checks the macros and the rotations
+and tilt angles of `Vec2f` against mathematical constants with a tolerance, not against a second copy
+of their formulas compiled into the test. The square root is left alone: IEEE 754 rounds it
+exactly. Widening the layout energy to double does not help and was measured not to. The guarantee covers x86-64 only: a compiler that fuses `a * b + c`
 into one FMA instruction — the default on ARM, including macOS — still produces other bits, so a
 macOS reference may still be needed.
 

@@ -536,8 +536,9 @@ size_t SequenceLoader::addHelmMonomer(KetDocument& document, MonomerInfo info, M
         helm_alias = var_templ.alias();
         auto& monomer = document.addAmbiguousMonomer(helm_alias, template_id);
         monomer->setAttachmentPoints(var_templ.attachmentPoints());
-        if (monomer_class != MonomerClass::CHEM)
-            setKetIntProp(*monomer, seqid, _seq_id++);
+        // as per discussion disable seqid generating for now
+        // if (monomer_class != MonomerClass::CHEM)
+        //     setKetIntProp(*monomer, seqid, _seq_id++);
         monomer->setPosition(pos);
         if (annotaion.size())
             monomer->setTextAnnotation(annotaion);
@@ -592,8 +593,9 @@ size_t SequenceLoader::addHelmMonomer(KetDocument& document, MonomerInfo info, M
         }
         auto& monomer = document.addMonomer(helm_alias, template_id);
         monomer->setAttachmentPoints(document.templates().at(template_id).attachmentPoints());
-        if (monomer_class != MonomerClass::CHEM)
-            setKetIntProp(*monomer, seqid, _seq_id++);
+        // as per discussion disable seqid generating for now
+        // if (monomer_class != MonomerClass::CHEM)
+        //     setKetIntProp(*monomer, seqid, _seq_id++);
         monomer->setPosition(pos);
         if (annotaion.size())
             monomer->setTextAnnotation(annotaion);

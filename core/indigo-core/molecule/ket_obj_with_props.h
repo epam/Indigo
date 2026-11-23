@@ -113,6 +113,8 @@ namespace indigo
             return hasBoolProp(idx) && getBoolProp(idx);
         };
 
+        virtual std::pair<bool, int> getIntPropMinValue(int idx) const;
+
         std::pair<bool, int> getBoolPropIdx(const std::string& name) const;
         std::pair<bool, int> getIntPropIdx(const std::string& name) const;
         std::pair<bool, int> getStringPropIdx(const std::string& name) const;

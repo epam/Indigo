@@ -272,7 +272,8 @@ void SequenceLoader::addAminoAcid(BaseMolecule& mol, char ch)
     std::string aa(1, ch);
     int amino_idx = mol.addTemplateAtom(monomerNameByAlias(kMonomerClassAA, aa).c_str());
     mol.asMolecule().setTemplateAtomClass(amino_idx, kMonomerClassAA);
-    mol.asMolecule().setTemplateAtomSeqid(amino_idx, _seq_id);
+    // as per discussion disable seqid generating for now
+    // mol.asMolecule().setTemplateAtomSeqid(amino_idx, _seq_id);
     mol.asMolecule().setAtomXyz(amino_idx, pos);
 
     if (_seq_id > 1)
@@ -283,11 +284,12 @@ void SequenceLoader::addAminoAcid(BaseMolecule& mol, char ch)
     }
 }
 
-int SequenceLoader::addTemplateAtom(BaseMolecule& mol, const char* alias, const char* monomer_class, int seq_id)
+int SequenceLoader::addTemplateAtom(BaseMolecule& mol, const char* alias, const char* monomer_class, int /* seq_id */)
 {
     int idx = mol.addTemplateAtom(alias);
     mol.asMolecule().setTemplateAtomClass(idx, monomer_class);
-    mol.asMolecule().setTemplateAtomSeqid(idx, seq_id);
+    // as per discussion disable seqid generating for now
+    // mol.asMolecule().setTemplateAtomSeqid(idx, seq_id);
     return idx;
 };
 

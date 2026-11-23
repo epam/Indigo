@@ -61,6 +61,11 @@ int KetObjWithProps::getIntProp(int idx) const
     return it->second;
 };
 
+std::pair<bool, int> KetObjWithProps::getIntPropMinValue(int /*idx*/) const
+{
+    return std::make_pair(false, -1);
+};
+
 const std::string& KetObjWithProps::getStringProp(int idx) const
 {
     auto it = _string_props.find(idx);
@@ -98,19 +103,36 @@ void KetObjWithProps::parseOptsFromKet(const rapidjson::Value& json)
     for (auto it : getBoolPropStrToIdx())
     {
         if (json.HasMember(it.first.c_str()))
+        {
+            if (!json[it.first.c_str()].IsBool())
+                throw Error("Ivalid \"%s\"value", it.first.c_str());
             setBoolProp(it.second, json[it.first.c_str()].GetBool());
+        }
     }
     // Parse int props
     for (auto it : getIntPropStrToIdx())
     {
         if (json.HasMember(it.first.c_str()))
-            setIntProp(it.second, json[it.first.c_str()].GetInt());
+        {
+            auto constexpr invalid_value = "Ivalid \"%s\"value";
+            if (!json[it.first.c_str()].IsInt())
+                throw Error(invalid_value, it.first.c_str());
+            int value = json[it.first.c_str()].GetInt();
+            auto minval = getIntPropMinValue(it.second);
+            if (minval.first && value < minval.second)
+                throw Error(invalid_value, it.first.c_str());
+            setIntProp(it.second, value);
+        }
     }
     // Parse string props
     for (auto it : getStringPropStrToIdx())
     {
         if (json.HasMember(it.first.c_str()))
+        {
+            if (!json[it.first.c_str()].IsString())
+                throw Error("Ivalid \"%s\"value", it.first.c_str());
             setStringProp(it.second, json[it.first.c_str()].GetString());
+        }
     }
 };
 

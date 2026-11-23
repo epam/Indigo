@@ -123,7 +123,8 @@ void SequenceLoader::addAminoAcid(KetDocument& document, const std::string& mono
     auto& amino_acid = ambiguous ? document.addAmbiguousMonomer(monomer, aa_id) : document.addMonomer(monomer, aa_id);
     auto& att_points = ambiguous ? document.ambiguousTemplates().at(aa_id).attachmentPoints() : document.templates().at(aa_id).attachmentPoints();
     amino_acid->setAttachmentPoints(att_points);
-    setKetIntProp(*amino_acid, seqid, _seq_id);
+    // as per discussion disable seqid generating for now
+    // setKetIntProp(*amino_acid, seqid, _seq_id);
     amino_acid->setPosition(pos);
 
     if (_seq_id > 1)
@@ -140,7 +141,8 @@ void SequenceLoader::addNucleotide(KetDocument& document, const std::string& bas
     auto& sugar_id = _alias_to_id.at(make_pair(MonomerClass::Sugar, sugar_alias));
     auto& sugar = document.addMonomer(sugar_alias, sugar_id);
     sugar->setAttachmentPoints(document.templates().at(sugar_id).attachmentPoints());
-    setKetIntProp(*sugar, seqid, _seq_id);
+    // as per discussion disable seqid generating for now
+    // setKetIntProp(*sugar, seqid, _seq_id);
     sugar->setPosition(pos);
 
     // add base
@@ -151,7 +153,8 @@ void SequenceLoader::addNucleotide(KetDocument& document, const std::string& bas
         auto& base = ambiguous ? document.addAmbiguousMonomer(base_alias, base_id) : document.addMonomer(base_alias, base_id);
         auto& base_att_points = ambiguous ? document.ambiguousTemplates().at(base_id).attachmentPoints() : document.templates().at(base_id).attachmentPoints();
         base->setAttachmentPoints(base_att_points);
-        setKetIntProp(*base, seqid, _seq_id);
+        // as per discussion disable seqid generating for now
+        // setKetIntProp(*base, seqid, _seq_id);
         Vec3f base_coord(pos.x, pos.y - LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, 0);
         base->setPosition(base_coord);
 
@@ -170,7 +173,8 @@ void SequenceLoader::addNucleotide(KetDocument& document, const std::string& bas
                 auto& phosphate_id = _alias_to_id.at(make_pair(MonomerClass::Phosphate, phosphate_alias));
                 auto& phosphate = document.addMonomer(phosphate_alias, phosphate_id);
                 phosphate->setAttachmentPoints(document.templates().at(phosphate_id).attachmentPoints());
-                setKetIntProp(*phosphate, seqid, _seq_id - 1);
+                // as per discussion disable seqid generating for now
+                // setKetIntProp(*phosphate, seqid, _seq_id - 1);
                 Vec3f phosphate_coord(pos.x - LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, pos.y, 0);
                 phosphate->setPosition(phosphate_coord);
 
@@ -185,7 +189,8 @@ void SequenceLoader::addNucleotide(KetDocument& document, const std::string& bas
             auto& phosphate_id = _alias_to_id.at(make_pair(MonomerClass::Phosphate, phosphate_alias));
             auto& phosphate = document.addMonomer(phosphate_alias, phosphate_id);
             phosphate->setAttachmentPoints(document.templates().at(phosphate_id).attachmentPoints());
-            setKetIntProp(*phosphate, seqid, _seq_id);
+            // as per discussion disable seqid generating for now
+            // setKetIntProp(*phosphate, seqid, _seq_id);
             Vec3f phosphate_coord(pos.x + LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH, pos.y, 0);
             phosphate->setPosition(phosphate_coord);
 
@@ -684,7 +689,8 @@ void SequenceLoader::loadIdt(KetDocument& document)
             {
                 auto monomer_idx = document.monomers().size();
                 auto& monomer = document.addMonomer(single_monomer_alias, single_monomer);
-                setKetIntProp(*monomer, seqid, _seq_id);
+                // as per discussion disable seqid generating for now
+                // setKetIntProp(*monomer, seqid, _seq_id);
                 monomer->setPosition(getBackboneMonomerPosition());
                 if (_last_monomer_idx >= 0)
                     addMonomerConnection(document, _last_monomer_idx, monomer_idx);
@@ -930,10 +936,11 @@ void SequenceLoader::loadAxoLabs(KetDocument& document)
                 Vec3f pos = getBackboneMonomerPosition();
                 auto monomer_idx = document.monomers().size();
                 auto& monomer_template = document.templates().at(cur_link.mon_id);
-                if (monomer_template.monomerClass() != MonomerClass::Phosphate)
+                if (_seq_id == 0 || monomer_template.monomerClass() != MonomerClass::Phosphate)
                     _seq_id++;
                 auto& monomer = document.addMonomer(getKetStrProp(monomer_template, alias), monomer_template.id());
-                setKetIntProp(*monomer, seqid, _seq_id);
+                // as per discussion disable seqid generating for now
+                // setKetIntProp(*monomer, seqid, _seq_id);
                 monomer->setPosition(pos);
                 if (last_monomer_idx >= 0)
                     addMonomerConnection(document, last_monomer_idx, monomer_idx);
@@ -944,7 +951,8 @@ void SequenceLoader::loadAxoLabs(KetDocument& document)
                     auto& base = document.addMonomer(getKetStrProp(base_template, alias), base_template.id());
                     if (base_id != nullptr)
                         base_id->assign(base->id());
-                    setKetIntProp(*base, seqid, _seq_id);
+                    // as per discussion disable seqid generating for now
+                    // setKetIntProp(*base, seqid, _seq_id);
                     auto base_shift = LayoutOptions::DEFAULT_MONOMER_BOND_LENGTH;
                     if (reverse_base)
                         base_shift = -base_shift;

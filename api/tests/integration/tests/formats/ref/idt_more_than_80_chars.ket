@@ -532,7 +532,7 @@
         },
         "alias": "MOE",
         "templateId": "MOE___2'-O-Methoxyethyl ribose",
-        "seqid": 0
+        "seqid": 1
     },
     "monomerTemplate-MOE___2'-O-Methoxyethyl ribose": {
         "type": "monomerTemplate",
@@ -830,7 +830,7 @@
         },
         "alias": "A",
         "templateId": "A___Adenine",
-        "seqid": 0
+        "seqid": 1
     },
     "monomerTemplate-A___Adenine": {
         "type": "monomerTemplate",
@@ -1036,7 +1036,7 @@
         },
         "alias": "P",
         "templateId": "P___Phosphate",
-        "seqid": 0
+        "seqid": 1
     },
     "monomerTemplate-P___Phosphate": {
         "type": "monomerTemplate",
@@ -1146,7 +1146,7 @@
         },
         "alias": "MOE",
         "templateId": "MOE___2'-O-Methoxyethyl ribose",
-        "seqid": 1
+        "seqid": 2
     },
     "monomer94": {
         "type": "monomer",
@@ -1157,7 +1157,7 @@
         },
         "alias": "A",
         "templateId": "A___Adenine",
-        "seqid": 1
+        "seqid": 2
     },
     "monomer95": {
         "type": "monomer",
@@ -1168,7 +1168,7 @@
         },
         "alias": "P",
         "templateId": "P___Phosphate",
-        "seqid": 1
+        "seqid": 2
     },
     "monomer96": {
         "type": "monomer",
@@ -1179,7 +1179,7 @@
         },
         "alias": "MOE",
         "templateId": "MOE___2'-O-Methoxyethyl ribose",
-        "seqid": 2
+        "seqid": 3
     },
     "monomer97": {
         "type": "monomer",
@@ -1190,7 +1190,7 @@
         },
         "alias": "A",
         "templateId": "A___Adenine",
-        "seqid": 2
+        "seqid": 3
     },
     "monomer98": {
         "type": "monomer",
@@ -1201,7 +1201,7 @@
         },
         "alias": "P",
         "templateId": "P___Phosphate",
-        "seqid": 2
+        "seqid": 3
     },
     "monomer99": {
         "type": "monomer",
@@ -1212,7 +1212,7 @@
         },
         "alias": "MOE",
         "templateId": "MOE___2'-O-Methoxyethyl ribose",
-        "seqid": 3
+        "seqid": 4
     },
     "monomer100": {
         "type": "monomer",
@@ -1223,7 +1223,7 @@
         },
         "alias": "A",
         "templateId": "A___Adenine",
-        "seqid": 3
+        "seqid": 4
     },
     "monomer101": {
         "type": "monomer",
@@ -1234,7 +1234,7 @@
         },
         "alias": "P",
         "templateId": "P___Phosphate",
-        "seqid": 3
+        "seqid": 4
     },
     "monomer102": {
         "type": "monomer",
@@ -1245,7 +1245,7 @@
         },
         "alias": "MOE",
         "templateId": "MOE___2'-O-Methoxyethyl ribose",
-        "seqid": 4
+        "seqid": 5
     },
     "monomer103": {
         "type": "monomer",
@@ -1256,7 +1256,7 @@
         },
         "alias": "A",
         "templateId": "A___Adenine",
-        "seqid": 4
+        "seqid": 5
     },
     "monomer104": {
         "type": "monomer",
@@ -1267,7 +1267,7 @@
         },
         "alias": "P",
         "templateId": "P___Phosphate",
-        "seqid": 4
+        "seqid": 5
     },
     "monomer105": {
         "type": "monomer",
@@ -1278,7 +1278,7 @@
         },
         "alias": "MOE",
         "templateId": "MOE___2'-O-Methoxyethyl ribose",
-        "seqid": 5
+        "seqid": 6
     },
     "monomer106": {
         "type": "monomer",
@@ -1289,7 +1289,7 @@
         },
         "alias": "A",
         "templateId": "A___Adenine",
-        "seqid": 5
+        "seqid": 6
     },
     "monomer107": {
         "type": "monomer",
@@ -1300,7 +1300,7 @@
         },
         "alias": "P",
         "templateId": "P___Phosphate",
-        "seqid": 5
+        "seqid": 6
     },
     "monomer108": {
         "type": "monomer",
@@ -1311,7 +1311,7 @@
         },
         "alias": "MOE",
         "templateId": "MOE___2'-O-Methoxyethyl ribose",
-        "seqid": 6
+        "seqid": 7
     },
     "monomer109": {
         "type": "monomer",
@@ -1322,7 +1322,7 @@
         },
         "alias": "A",
         "templateId": "A___Adenine",
-        "seqid": 6
+        "seqid": 7
     },
     "monomer110": {
         "type": "monomer",
@@ -1333,7 +1333,7 @@
         },
         "alias": "P",
         "templateId": "P___Phosphate",
-        "seqid": 6
+        "seqid": 7
     },
     "monomer111": {
         "type": "monomer",
@@ -1344,7 +1344,7 @@
         },
         "alias": "MOE",
         "templateId": "MOE___2'-O-Methoxyethyl ribose",
-        "seqid": 7
+        "seqid": 8
     },
     "monomer112": {
         "type": "monomer",
@@ -1355,7 +1355,7 @@
         },
         "alias": "A",
         "templateId": "A___Adenine",
-        "seqid": 7
+        "seqid": 8
     },
     "monomer113": {
         "type": "monomer",
@@ -1366,7 +1366,7 @@
         },
         "alias": "P",
         "templateId": "P___Phosphate",
-        "seqid": 7
+        "seqid": 8
     },
     "monomer114": {
         "type": "monomer",
@@ -1377,7 +1377,7 @@
         },
         "alias": "MOE",
         "templateId": "MOE___2'-O-Methoxyethyl ribose",
-        "seqid": 8
+        "seqid": 9
     },
     "monomer115": {
         "type": "monomer",
@@ -1388,7 +1388,7 @@
         },
         "alias": "A",
         "templateId": "A___Adenine",
-        "seqid": 8
+        "seqid": 9
     },
     "monomer116": {
         "type": "monomer",
@@ -1399,7 +1399,7 @@
         },
         "alias": "P",
         "templateId": "P___Phosphate",
-        "seqid": 8
+        "seqid": 9
     },
     "monomer117": {
         "type": "monomer",
@@ -1410,7 +1410,7 @@
         },
         "alias": "MOE",
         "templateId": "MOE___2'-O-Methoxyethyl ribose",
-        "seqid": 9
+        "seqid": 10
     },
     "monomer118": {
         "type": "monomer",
@@ -1421,7 +1421,7 @@
         },
         "alias": "A",
         "templateId": "A___Adenine",
-        "seqid": 9
+        "seqid": 10
     },
     "monomer119": {
         "type": "monomer",
@@ -1432,7 +1432,7 @@
         },
         "alias": "P",
         "templateId": "P___Phosphate",
-        "seqid": 9
+        "seqid": 10
     },
     "monomer120": {
         "type": "monomer",
@@ -1443,7 +1443,7 @@
         },
         "alias": "MOE",
         "templateId": "MOE___2'-O-Methoxyethyl ribose",
-        "seqid": 10
+        "seqid": 11
     },
     "monomer121": {
         "type": "monomer",
@@ -1454,7 +1454,7 @@
         },
         "alias": "A",
         "templateId": "A___Adenine",
-        "seqid": 10
+        "seqid": 11
     },
     "monomer122": {
         "type": "monomer",
@@ -1465,7 +1465,7 @@
         },
         "alias": "P",
         "templateId": "P___Phosphate",
-        "seqid": 10
+        "seqid": 11
     },
     "monomer123": {
         "type": "monomer",
@@ -1476,7 +1476,7 @@
         },
         "alias": "MOE",
         "templateId": "MOE___2'-O-Methoxyethyl ribose",
-        "seqid": 11
+        "seqid": 12
     },
     "monomer124": {
         "type": "monomer",
@@ -1487,7 +1487,7 @@
         },
         "alias": "A",
         "templateId": "A___Adenine",
-        "seqid": 11
+        "seqid": 12
     },
     "monomer125": {
         "type": "monomer",
@@ -1498,7 +1498,7 @@
         },
         "alias": "P",
         "templateId": "P___Phosphate",
-        "seqid": 11
+        "seqid": 12
     },
     "monomer126": {
         "type": "monomer",
@@ -1509,6 +1509,6 @@
         },
         "alias": "P",
         "templateId": "P___Phosphate",
-        "seqid": 12
+        "seqid": 13
     }
 }
