@@ -38,7 +38,7 @@ pull request's workflow runs by itself; everything else is yours to run.
 
 ## 2. What a green check does and does not cover
 
-Verified against `.github/workflows/indigo-ci.yaml` and the job logs of run 7682 (PR #3912, `97a183d5c`).
+Verified against `.github/workflows/indigo-ci.yaml` and its job logs.
 
 - **CI runs for pull requests and `indigo-*` tags only.** The `push` trigger on `master` is commented
   out, so a merge result is not built again.
@@ -124,7 +124,7 @@ evidence; a guess is reported as unattributed.
 
 ## 6. Where the coverage is thin
 
-Verified on `60b769879` and CI run 7682, in the order they are likely to cost something:
+In the order they are likely to cost something:
 
 1. **The HTTP service tests never run in CI** (§2) — nothing there catches a regression in `api/http`.
 2. **pytest-style Python tests never run in CI** (§2) — the sequence layout's tests are among them.
