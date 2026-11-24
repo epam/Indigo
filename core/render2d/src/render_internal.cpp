@@ -20,12 +20,15 @@
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/tree.h"
+#include "layout/sgroup_layout.h"
+#include "layout/sgroup_nesting.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_sgroups.h"
 #include "molecule/query_molecule.h"
 #include "reaction/query_reaction.h"
 #include "reaction/reaction.h"
 #include "render_context.h"
+#include "render_sgroups.h"
 #include <regex>
 
 #ifdef _WIN32
@@ -38,12 +41,6 @@ static bool _isBondWide(const BondDescr& bd)
 {
     return bd.type == BOND_DOUBLE || bd.type == BOND_TRIPLE || bd.queryType == _BOND_DOUBLE_OR_AROMATIC || bd.queryType == _BOND_SINGLE_OR_AROMATIC ||
            _BOND_SINGLE_OR_DOUBLE;
-}
-
-// An S-group read without a label keeps an empty array, and its ptr() is null.
-static const char* _labelText(const SGroup& sgroup, const char* text_when_absent = "")
-{
-    return sgroup.label.size() > 0 ? sgroup.label.ptr() : text_when_absent;
 }
 
 RenderOptions::RenderOptions()
@@ -168,6 +165,11 @@ void MoleculeRenderInternal::setMolecule(BaseMolecule* mol)
     {
         _prepareSGroups(isThereAtLeastOneContracted);
     }
+    if (!_own_mol && _hasMissingBrackets())
+    {
+        _cloneAndFillMappings();
+        _copy_only_renumbers = true;
+    }
 
     _data.atoms.resize(_mol->vertexEnd());
     for (auto i = _mol->vertexBegin(); i != _mol->vertexEnd(); i = _mol->vertexNext(i))
@@ -229,6 +231,8 @@ void MoleculeRenderInternal::setQueryReactionComponentProperties(const Array<int
 void MoleculeRenderInternal::render()
 {
     _precalcScale();
+
+    _placeMissingBrackets();
 
     _initCoordinates();
 
@@ -538,273 +542,83 @@ void MoleculeRenderInternal::_initRGroups()
     }
 }
 
-void MoleculeRenderInternal::_initSGroups(Tree& sgroups, Rect2f parent)
+bool MoleculeRenderInternal::_lacksBracketPair(const SGroup& sgroup)
 {
-    BaseMolecule& mol = *_mol;
+    return SGroupNesting::isBracketed(sgroup.sgroup_type) && (sgroup.brackets.size() < 2 || !sgroup.hasBrackets());
+}
 
+bool MoleculeRenderInternal::_hasMissingBrackets() const
+{
+    for (int i = _mol->sgroups.begin(); i != _mol->sgroups.end(); i = _mol->sgroups.next(i))
+        if (_lacksBracketPair(_mol->sgroups.getSGroup(i)))
+            return true;
+    return false;
+}
+
+void MoleculeRenderInternal::_placeMissingBrackets()
+{
+    if (!_own_mol || !_hasMissingBrackets())
+        return;
+    for (int i = _mol->sgroups.begin(); i != _mol->sgroups.end(); i = _mol->sgroups.next(i))
+    {
+        SGroup& sgroup = _mol->sgroups.getSGroup(i);
+        if (_lacksBracketPair(sgroup))
+            sgroup.brackets.clear();
+    }
+    const float drawing_unit_in_molecule = 1.0f / _scale;
+    SGroupLayout(*_mol, _settings.fzz[FONT_SIZE_LABEL] * drawing_unit_in_molecule, _opt.labelMode, drawing_unit_in_molecule).update();
+}
+
+bool MoleculeRenderInternal::_colorAtomsFrom(const SGroup& sgroup)
+{
+    if (sgroup.sgroup_type != SGroup::SG_TYPE_DAT || _opt.atomColorProp.size() == 0)
+        return false;
+    const DataSGroup& group = static_cast<const DataSGroup&>(sgroup);
+    if (strcmp(_opt.atomColorProp.ptr(), DataSGroup::textOf(group.name)) != 0)
+        return false;
+
+    Vec3f color;
+    BufferScanner scanner(group.data);
+    if (_parseColorString(scanner, color.x, color.y, color.z) < 0)
+        throw Error("Color value format invalid");
+    for (int j = 0; j < group.atoms.size(); ++j)
+    {
+        AtomDesc& ad = _ad(group.atoms[j]);
+        if (ad.hcolorSet)
+            throw Error("An atom belongs to more then one color group");
+        ad.hcolor.copy(color);
+        ad.hcolorSet = true;
+    }
+    return true;
+}
+
+void MoleculeRenderInternal::_initSGroups(Tree& sgroups, std::optional<Rect2f> frame)
+{
     if (sgroups.label != -1)
     {
-        SGroup& sgroup = mol.sgroups.getSGroup(sgroups.label);
-
-        const Rect2f bound = _bound(sgroup.atoms);
-
-        if (sgroup.sgroup_type == SGroup::SG_TYPE_DAT)
+        const SGroup& sgroup = _mol->sgroups.getSGroup(sgroups.label);
+        if (_colorAtomsFrom(sgroup))
+            return;
+        if (const std::unique_ptr<SGroupRenderer> renderer = SGroupRenderer::create(sgroup))
         {
-            const DataSGroup& group = (DataSGroup&)sgroup;
-            const char* atomColorProp = _opt.atomColorProp.size() > 0 ? _opt.atomColorProp.ptr() : NULL;
-            if (atomColorProp != NULL && strcmp(atomColorProp, group.name.ptr()) == 0)
-            {
-                Vec3f color;
-                BufferScanner scanner(group.data);
-                if (_parseColorString(scanner, color.x, color.y, color.z) < 0)
-                    throw Error("Color value format invalid");
-                for (int j = 0; j < group.atoms.size(); ++j)
-                {
-                    AtomDesc& ad = _ad(group.atoms[j]);
-                    if (ad.hcolorSet)
-                        throw Error("An atom belongs to more then one color group");
-                    ad.hcolor.copy(color);
-                    ad.hcolorSet = true;
-                }
-                return;
-            }
-            Sgroup& sg = _data.sgroups.push();
-            int tii = _pushTextItem(sg, RenderItem::RIT_DATASGROUP);
-            TextItem& ti = _data.textitems[tii];
-            const char tag = group.tag.value_or(0);
-            if (tag != 0 && tag != ' ')
-            {
-                ti.text.push(tag);
-                ti.text.appendString(" = ", false);
-            }
-
-            if (group.data.size())
-            {
-                Array<char> data;
-                data.copy(group.data);
-                if (data[0] == '\\')
-                    data.remove(0);
-                ti.text.concat(data);
-            }
-
-            ti.text.push(0);
-            ti.fontsize = FONT_SIZE_DATA_SGROUP;
-            _cw.setTextItemSize(ti);
-
-            if (!group.detached)
-            {
-                if (group.atoms.size() > 0)
-                {
-                    const AtomDesc& ad = _ad(group.atoms[0]);
-                    ti.bbp.copy(_ad(group.atoms[0]).pos);
-                    ti.bbp.x += ad.boundBoxMax.x + _settings.unit * 2;
-                    ti.bbp.y -= ti.bbsz.y / 2;
-                }
-            }
-            else if (group.relative)
-            {
-                if (group.display_pos.has_value())
-                    _objDistTransform(ti.bbp, group.display_pos.value());
-                const int origin_atom = group.originAtom();
-                ti.bbp.add(origin_atom >= 0 ? _ad(origin_atom).pos : parent.rightTop());
-            }
-            else
-            {
-                if (group.display_pos.has_value())
-                    _objCoordTransform(ti.bbp, group.display_pos.value());
-            }
-
-            parent = ILLEGAL_RECT();
-        }
-
-        if (sgroup.sgroup_type == SGroup::SG_TYPE_SRU)
-        {
-            const RepeatingUnit& group = (RepeatingUnit&)sgroup;
-            Sgroup& sg = _data.sgroups.push();
-            _loadBracketsAuto(group, sg);
-            int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
-            TextItem& index = _data.textitems[tiIndex];
-            index.fontsize = FONT_SIZE_ATTR;
-            bprintf(index.text, "%s", _labelText(group, "n"));
-            _positionIndex(sg, tiIndex, true);
-            const int connectivity = group.connectivity;
-            if (connectivity != RepeatingUnit::HEAD_TO_TAIL)
-            {
-                int tiConn = _pushTextItem(sg, RenderItem::RIT_SGROUP);
-                TextItem& conn = _data.textitems[tiConn];
-                conn.fontsize = FONT_SIZE_ATTR;
-                if (connectivity == RepeatingUnit::HEAD_TO_HEAD)
-                {
-                    bprintf(conn.text, "hh");
-                }
-                else
-                {
-                    bprintf(conn.text, "eu");
-                }
-                _positionIndex(sg, tiConn, false);
-            }
-            parent = bound;
-        }
-
-        if (sgroup.sgroup_type == SGroup::SG_TYPE_GEN)
-        {
-            Sgroup& sg = _data.sgroups.push();
-            _loadBracketsAuto(sgroup, sg);
-            parent = ILLEGAL_RECT();
-        }
-
-        if (sgroup.sgroup_type == SGroup::SG_TYPE_MUL)
-        {
-            const MultipleGroup& group = (MultipleGroup&)sgroup;
-            Sgroup& sg = _data.sgroups.push();
-            _loadBracketsAuto(group, sg);
-            int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
-            TextItem& index = _data.textitems[tiIndex];
-            index.fontsize = FONT_SIZE_ATTR;
-            const int multiplier = group.multiplier.value_or(0);
-            bprintf(index.text, "%d", multiplier);
-            _positionIndex(sg, tiIndex, true);
-            parent = ILLEGAL_RECT();
-        }
-
-        if (sgroup.sgroup_type == SGroup::SG_TYPE_SUP)
-        {
-            const Superatom& group = (Superatom&)sgroup;
-            Sgroup& sg = _data.sgroups.push();
-            QS_DEF(Array<Vec2f[2]>, brackets);
-            _placeBrackets(sg, group.atoms, brackets);
-            _loadBrackets(sg, brackets);
-
-            if (group.label.size() == 0 || std::string(group.label.ptr()).empty())
-                sg.hide_brackets = true;
-            int tiIndex = _pushTextItem(sg, RenderItem::RIT_SGROUP);
-            TextItem& index = _data.textitems[tiIndex];
-            index.fontsize = FONT_SIZE_ATTR;
-            bprintf(index.text, "%s", _labelText(group));
-            _positionIndex(sg, tiIndex, true);
-
-            parent = ILLEGAL_RECT();
+            SGroupCanvas canvas(*this, _data.sgroups.push());
+            renderer->draw(sgroup, frame, canvas);
+            frame = renderer->frameForChildren(sgroup, frame, canvas);
         }
     }
 
     PtrArray<Tree>& children = sgroups.children();
     for (int i = 0; i < children.size(); i++)
     {
-        _initSGroups(children[i], parent);
+        _initSGroups(children[i], frame);
     }
 }
 
 void MoleculeRenderInternal::_initSGroups()
 {
-    BaseMolecule& mol = *_mol;
-
     Tree sgroups;
-    mol.sgroups.buildTree(sgroups);
+    _mol->sgroups.buildTree(sgroups);
     _initSGroups(sgroups, Rect2f(_min, _max));
-}
-
-void MoleculeRenderInternal::_loadBrackets(Sgroup& sg, const Array<Vec2f[2]>& coord)
-{
-    for (int j = 0; j < coord.size(); ++j)
-    {
-        int bracketId = _data.brackets.size();
-        if (j == 0)
-        {
-            sg.bibegin = bracketId;
-            sg.bicount = 1;
-        }
-        else
-        {
-            sg.bicount++;
-        }
-        RenderItemBracket& bracket = _data.brackets.push();
-        bracket.p0.copy(coord[j][0]);
-        bracket.p1.copy(coord[j][1]);
-        bracket.d.diff(bracket.p1, bracket.p0);
-        bracket.length = bracket.d.length();
-        bracket.d.normalize();
-        bracket.n.copy(bracket.d);
-        bracket.n.rotateL(-1, 0);
-        bracket.width = bracket.length * 0.15f;
-        bracket.q0.lineCombin(bracket.p0, bracket.n, bracket.width);
-        bracket.q1.lineCombin(bracket.p1, bracket.n, bracket.width);
-        bracket.invertUpperLowerIndex = bracket.n.x > 0;
-    }
-}
-
-void MoleculeRenderInternal::_convertCoordinate(const Array<Vec2f[2]>& original, Array<Vec2f[2]>& converted)
-{
-    auto& left = original.at(0);
-    auto& right = original.at(1);
-    auto& adjLeft = converted.push();
-    auto& adjRight = converted.push();
-
-    _objCoordTransform(adjLeft[0], left[0]);
-    _objCoordTransform(adjLeft[1], left[1]);
-    _objCoordTransform(adjRight[0], right[0]);
-    _objCoordTransform(adjRight[1], right[1]);
-}
-
-void MoleculeRenderInternal::_loadBracketsAuto(const SGroup& group, Sgroup& sg)
-{
-    Array<Vec2f[2]> brackets;
-    _placeBrackets(sg, group.atoms, brackets);
-
-    const bool isBracketsCoordinates = group.brackets.size() >= 2 && !group.isZeroLengthBracket(0) && !group.isZeroLengthBracket(1);
-    if (isBracketsCoordinates)
-    {
-        Array<Vec2f[2]> temp;
-        _convertCoordinate(group.brackets, temp);
-        _loadBrackets(sg, temp);
-        return;
-    }
-
-    _loadBrackets(sg, brackets);
-}
-
-void MoleculeRenderInternal::_positionIndex(Sgroup& sg, int ti, bool lower)
-{
-    RenderItemBracket& bracket = _data.brackets[sg.bibegin + sg.bicount - 1];
-    TextItem& index = _data.textitems[ti];
-    if (bracket.invertUpperLowerIndex)
-        lower = !lower;
-    _cw.setTextItemSize(index, lower ? bracket.p1 : bracket.p0);
-    float xShift = (fabs(index.bbsz.x * bracket.n.x) + fabs(index.bbsz.y * bracket.n.y)) / 2 + _settings.unit;
-    float yShift = (fabs(index.bbsz.x * bracket.d.x) + fabs(index.bbsz.y * bracket.d.y)) / 2;
-    index.bbp.addScaled(bracket.n, -xShift);
-    index.bbp.addScaled(bracket.d, lower ? -yShift : yShift);
-}
-
-void MoleculeRenderInternal::_placeBrackets(Sgroup& /*sg*/, const Array<int>& atoms, Array<Vec2f[2]>& brackets)
-{
-    auto left = brackets.push();
-    auto right = brackets.push();
-
-    Vec2f min, max, a, b;
-    for (int i = 0; i < atoms.size(); ++i)
-    {
-        int aid = atoms[i];
-        const AtomDesc& ad = _ad(aid);
-        a.sum(ad.pos, ad.boundBoxMin);
-        b.sum(ad.pos, ad.boundBoxMax);
-        if (i == 0)
-        {
-            min.copy(a);
-            max.copy(b);
-        }
-        else
-        {
-            min.min(a);
-            max.max(b);
-        }
-    }
-    float extent = _settings.unit * 3;
-    min.sub(Vec2f(extent, extent));
-    max.add(Vec2f(extent, extent));
-    left[0].set(min.x, max.y);
-    left[1].set(min.x, min.y);
-    right[0].set(max.x, min.y);
-    right[1].set(max.x, max.y);
 }
 
 void MoleculeRenderInternal::_cloneAndFillMappings()
@@ -819,6 +633,16 @@ void MoleculeRenderInternal::_cloneAndFillMappings()
     }
     _mol = clone;
     _own_mol = true;
+}
+
+int MoleculeRenderInternal::_originalAtom(int atom) const
+{
+    return _copy_only_renumbers ? _atomMapping[atom] : atom;
+}
+
+int MoleculeRenderInternal::_originalBond(int bond) const
+{
+    return _copy_only_renumbers ? _bondMappingInv.at(bond) : bond;
 }
 
 void MoleculeRenderInternal::_prepareSGroups(bool collapseAtLeastOneSuperatom)
@@ -855,7 +679,7 @@ void MoleculeRenderInternal::_prepareSGroups(bool collapseAtLeastOneSuperatom)
                         centre.scale(1.0f / group.atoms.size());
                     }
                     int superAtomID = -1;
-                    const char* label = _labelText(group);
+                    const char* label = DataSGroup::textOf(group.label);
 
                     if (mol.isQueryMolecule())
                     {

@@ -297,7 +297,7 @@ TEST_F(IndigoCoreSGroupBracketsTest, Layout_ParentOfTheSameAtoms_StandsAtTheSpac
 
     SGroupLayout(mol, NO_FONT).update();
 
-    expectBrackets(mol.sgroups.getSGroup(copolymer), 0.9f - 0.3f, -0.3f - 0.3f, 2.1f + 0.3f, 0.8f + 0.3f);
+    expectBrackets(mol.sgroups.getSGroup(copolymer), 0.9f - 0.4f, -0.3f - 0.3f, 2.1f + 0.4f, 0.8f + 0.3f);
 }
 
 TEST_F(IndigoCoreSGroupBracketsTest, Layout_LoadedBrackets_KeptWhileTheAtomsStay)

@@ -25,7 +25,9 @@ feature file must stay true across a refactor.
 - [molfile-data-sgroups.md](./molfile-data-sgroups.md) — data S-groups in molfiles: what the reader rejects and
   the writer refuses, when `auto` writes V3000, the V3000 field type, quoting and coordinate precision
 - [sgroup-brackets.md](./sgroup-brackets.md) — brackets of polymer S-groups: when they are computed, where
-  they stand, what is kept from a file, and what the renderer does not yet draw
+  they stand, what is kept from a file
+- [sgroup-rendering.md](./sgroup-rendering.md) — brackets, hooks, labels and repeat patterns of S-groups in a
+  picture: which types are drawn, where the label stands, what stayed as it was
 - [sgroup-data-values.md](./sgroup-data-values.md) — values of data S-groups: how they follow their atoms in
   layout and clean-up, and what Ketcher does not yet send
 

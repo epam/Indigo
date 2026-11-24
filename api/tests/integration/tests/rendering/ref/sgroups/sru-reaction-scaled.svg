@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="803" height="133" viewBox="0 0 803 133">
+<defs>
+<filter id="filter-remove-color-and-invert-alpha" x="0%" y="0%" width="100%" height="100%">
+<feColorMatrix color-interpolation-filters="sRGB" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 -1 1"/>
+</filter>
+<filter id="filter-0" x="0%" y="0%" width="100%" height="100%">
+<feImage xlink:href="#compositing-group-1" result="source" x="0" y="0" width="963.6" height="159.6"/>
+<feImage xlink:href="#compositing-group-2" result="destination" x="0" y="0" width="963.6" height="159.6"/>
+<feComposite in="source" in2="destination" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" color-interpolation-filters="sRGB"/>
+</filter>
+<filter id="filter-1" x="0%" y="0%" width="100%" height="100%">
+<feImage xlink:href="#compositing-group-4" result="source" x="0" y="0" width="963.6" height="159.6"/>
+<feImage xlink:href="#compositing-group-5" result="destination" x="0" y="0" width="963.6" height="159.6"/>
+<feComposite in="source" in2="destination" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" color-interpolation-filters="sRGB"/>
+</filter>
+<filter id="filter-2" x="0%" y="0%" width="100%" height="100%">
+<feImage xlink:href="#compositing-group-7" result="source" x="0" y="0" width="963.6" height="159.6"/>
+<feImage xlink:href="#compositing-group-8" result="destination" x="0" y="0" width="963.6" height="159.6"/>
+<feComposite in="source" in2="destination" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" color-interpolation-filters="sRGB"/>
+</filter>
+<filter id="filter-3" x="0%" y="0%" width="100%" height="100%">
+<feImage xlink:href="#compositing-group-10" result="source" x="0" y="0" width="963.6" height="159.6"/>
+<feImage xlink:href="#compositing-group-11" result="destination" x="0" y="0" width="963.6" height="159.6"/>
+<feComposite in="source" in2="destination" operator="arithmetic" k1="0" k2="1" k3="1" k4="0" color-interpolation-filters="sRGB"/>
+</filter>
+<g>
+<g id="glyph-0-0">
+<path d="M 2.5 0 L 2.5 -19.046875 L 13.46875 -19.046875 L 13.46875 0 Z M 3.875 -1.359375 L 12.109375 -1.359375 L 12.109375 -17.6875 L 3.875 -17.6875 Z M 3.875 -1.359375 "/>
+</g>
+<g id="glyph-0-1">
+<path d="M 9.15625 -14.5625 C 10.851562 -14.5625 12.140625 -14.144531 13.015625 -13.3125 C 13.890625 -12.488281 14.328125 -11.15625 14.328125 -9.3125 L 14.328125 0 L 12 0 L 12 -9.15625 C 12 -11.445312 10.929688 -12.59375 8.796875 -12.59375 C 7.210938 -12.59375 6.117188 -12.144531 5.515625 -11.25 C 4.910156 -10.363281 4.609375 -9.085938 4.609375 -7.421875 L 4.609375 0 L 2.265625 0 L 2.265625 -14.296875 L 4.15625 -14.296875 L 4.5 -12.34375 L 4.640625 -12.34375 C 5.097656 -13.09375 5.734375 -13.648438 6.546875 -14.015625 C 7.367188 -14.378906 8.238281 -14.5625 9.15625 -14.5625 Z M 9.15625 -14.5625 "/>
+</g>
+<g id="glyph-0-2">
+<path d="M 7.78125 -14.5625 C 9.007812 -14.5625 10.0625 -14.296875 10.9375 -13.765625 C 11.820312 -13.234375 12.5 -12.484375 12.96875 -11.515625 C 13.445312 -10.546875 13.6875 -9.410156 13.6875 -8.109375 L 13.6875 -6.6875 L 3.890625 -6.6875 C 3.929688 -5.070312 4.347656 -3.84375 5.140625 -3 C 5.929688 -2.15625 7.035156 -1.734375 8.453125 -1.734375 C 9.359375 -1.734375 10.160156 -1.816406 10.859375 -1.984375 C 11.566406 -2.148438 12.296875 -2.394531 13.046875 -2.71875 L 13.046875 -0.671875 C 12.316406 -0.347656 11.59375 -0.113281 10.875 0.03125 C 10.164062 0.1875 9.320312 0.265625 8.34375 0.265625 C 7 0.265625 5.804688 -0.0078125 4.765625 -0.5625 C 3.722656 -1.113281 2.910156 -1.9375 2.328125 -3.03125 C 1.753906 -4.125 1.46875 -5.460938 1.46875 -7.046875 C 1.46875 -8.609375 1.726562 -9.945312 2.25 -11.0625 C 2.78125 -12.1875 3.519531 -13.050781 4.46875 -13.65625 C 5.414062 -14.257812 6.519531 -14.5625 7.78125 -14.5625 Z M 7.765625 -12.640625 C 6.640625 -12.640625 5.753906 -12.28125 5.109375 -11.5625 C 4.460938 -10.84375 4.078125 -9.84375 3.953125 -8.5625 L 11.234375 -8.5625 C 11.210938 -9.769531 10.925781 -10.75 10.375 -11.5 C 9.820312 -12.257812 8.953125 -12.640625 7.765625 -12.640625 Z M 7.765625 -12.640625 "/>
+</g>
+<g id="glyph-0-3">
+<path d="M 14.21875 -14.296875 L 14.21875 0 L 12.296875 0 L 11.953125 -1.890625 L 11.84375 -1.890625 C 11.382812 -1.148438 10.742188 -0.601562 9.921875 -0.25 C 9.097656 0.09375 8.226562 0.265625 7.3125 0.265625 C 5.582031 0.265625 4.28125 -0.144531 3.40625 -0.96875 C 2.539062 -1.800781 2.109375 -3.125 2.109375 -4.9375 L 2.109375 -14.296875 L 4.484375 -14.296875 L 4.484375 -5.09375 C 4.484375 -2.820312 5.539062 -1.6875 7.65625 -1.6875 C 9.238281 -1.6875 10.335938 -2.128906 10.953125 -3.015625 C 11.566406 -3.898438 11.875 -5.179688 11.875 -6.859375 L 11.875 -14.296875 Z M 14.21875 -14.296875 "/>
+</g>
+<g id="glyph-1-0">
+<path d="M 3.765625 0 L 3.765625 -28.5625 L 20.203125 -28.5625 L 20.203125 0 Z M 5.796875 -2.046875 L 18.15625 -2.046875 L 18.15625 -26.515625 L 5.796875 -26.515625 Z M 5.796875 -2.046875 "/>
+</g>
+<g id="glyph-1-1">
+<path d="M 12.875 -30.40625 L 12.078125 -22.71875 L 19.765625 -24.875 L 20.3125 -21.203125 L 12.953125 -20.59375 L 17.71875 -14.28125 L 14.28125 -12.40625 L 10.875 -19.40625 L 7.796875 -12.40625 L 4.234375 -14.28125 L 8.921875 -20.59375 L 1.640625 -21.203125 L 2.203125 -24.875 L 9.796875 -22.71875 L 8.953125 -30.40625 Z M 12.875 -30.40625 "/>
+</g>
+</g>
+<g id="compositing-group-0" transform="translate(80.3, 13.3)">
+<rect x="-80.3" y="-13.3" width="963.6" height="159.6" fill="rgb(0%, 0%, 0%)" fill-opacity="0"/>
+<path fill-rule="nonzero" fill="rgb(100%, 100%, 100%)" fill-opacity="1" d="M 2.261719 71.578125 L 29.609375 71.578125 L 29.609375 98.246094 L 2.261719 98.246094 Z M 2.261719 71.578125 "/>
+</g>
+<mask id="mask-0">
+<use xlink:href="#compositing-group-0"/>
+</mask>
+<mask id="mask-1">
+<use xlink:href="#compositing-group-0" filter="url(#filter-remove-color-and-invert-alpha)"/>
+</mask>
+<g id="compositing-group-1" mask="url(#mask-0)">
+<g transform="translate(80.3, 13.3)">
+</g>
+</g>
+<g id="compositing-group-2" mask="url(#mask-1)">
+<g transform="translate(80.3, 13.3)">
+<path fill="none" stroke-width="0.0333333" stroke-linecap="butt" stroke-linejoin="miter" stroke="rgb(0%, 0%, 0%)" stroke-opacity="1" stroke-miterlimit="10" d="M 0.258086 0.351016 L 0.874336 -0.00480469 " transform="matrix(100, 0, 0, 100, 14.476532, 41.632812)"/>
+<path fill="none" stroke-width="0.0333333" stroke-linecap="butt" stroke-linejoin="miter" stroke="rgb(0%, 0%, 0%)" stroke-opacity="1" stroke-miterlimit="10" d="M 0.857657 -0.00480469 L 1.740391 0.504805 " transform="matrix(100, 0, 0, 100, 14.476532, 41.632812)"/>
+<path fill="none" stroke-width="0.0333333" stroke-linecap="butt" stroke-linejoin="miter" stroke="rgb(0%, 0%, 0%)" stroke-opacity="1" stroke-miterlimit="10" d="M 1.72375 0.504805 L 2.398203 0.115391 " transform="matrix(100, 0, 0, 100, 14.476532, 41.632812)"/>
+<g fill="rgb(0%, 0%, 0%)" fill-opacity="1">
+<use xlink:href="#glyph-0-1" x="197.082031" y="126.195312"/>
+</g>
+<g fill="rgb(0%, 0%, 0%)" fill-opacity="1">
+<use xlink:href="#glyph-0-2" x="197.882812" y="21.367188"/>
+<use xlink:href="#glyph-0-3" x="212.922815" y="21.367188"/>
+</g>
+<path fill="none" stroke-width="0.0333333" stroke-linecap="butt" stroke-linejoin="miter" stroke="rgb(0%, 0%, 0%)" stroke-opacity="1" stroke-miterlimit="10" d="M 0.949336 0.7 L 0.799336 0.7 L 0.799336 -0.2 L 0.949336 -0.2 " transform="matrix(100, 0, 0, 100, 14.476532, 41.632812)"/>
+<path fill="none" stroke-width="0.0333333" stroke-linecap="butt" stroke-linejoin="miter" stroke="rgb(0%, 0%, 0%)" stroke-opacity="1" stroke-miterlimit="10" d="M 1.64875 -0.2 L 1.79875 -0.2 L 1.79875 0.7 L 1.64875 0.7 " transform="matrix(100, 0, 0, 100, 14.476532, 41.632812)"/>
+</g>
+</g>
+<g id="compositing-group-3" transform="translate(80.3, 13.3)">
+<rect x="-80.3" y="-13.3" width="963.6" height="159.6" fill="rgb(0%, 0%, 0%)" fill-opacity="0"/>
+<path fill-rule="nonzero" fill="rgb(100%, 100%, 100%)" fill-opacity="1" d="M 259.152344 21.578125 L 286.5 21.578125 L 286.5 48.246094 L 259.152344 48.246094 Z M 259.152344 21.578125 "/>
+</g>
+<mask id="mask-2">
+<use xlink:href="#compositing-group-3"/>
+</mask>
+<mask id="mask-3">
+<use xlink:href="#compositing-group-3" filter="url(#filter-remove-color-and-invert-alpha)"/>
+</mask>
+<g id="compositing-group-4" mask="url(#mask-2)">
+<g transform="translate(80.3, 13.3)">
+</g>
+</g>
+<g id="compositing-group-5" mask="url(#mask-3)">
+<g transform="translate(80.3, 13.3)">
+<g filter="url(#filter-0)" transform="translate(-80.3, -13.3)">
+<rect x="0" y="0" width="963.6" height="159.6" fill="rgb(0%, 0%, 0%)" fill-opacity="1"/>
+</g>
+</g>
+</g>
+<g id="compositing-group-6" transform="translate(80.3, 13.3)">
+<rect x="-80.3" y="-13.3" width="963.6" height="159.6" fill="rgb(0%, 0%, 0%)" fill-opacity="0"/>
+<path fill-rule="nonzero" fill="rgb(100%, 100%, 100%)" fill-opacity="1" d="M 516.5 71.578125 L 543.847656 71.578125 L 543.847656 98.246094 L 516.5 98.246094 Z M 516.5 71.578125 "/>
+</g>
+<mask id="mask-4">
+<use xlink:href="#compositing-group-6"/>
+</mask>
+<mask id="mask-5">
+<use xlink:href="#compositing-group-6" filter="url(#filter-remove-color-and-invert-alpha)"/>
+</mask>
+<g id="compositing-group-7" mask="url(#mask-4)">
+<g transform="translate(80.3, 13.3)">
+</g>
+</g>
+<g id="compositing-group-8" mask="url(#mask-5)">
+<g transform="translate(80.3, 13.3)">
+<g filter="url(#filter-1)" transform="translate(-80.3, -13.3)">
+<rect x="0" y="0" width="963.6" height="159.6" fill="rgb(0%, 0%, 0%)" fill-opacity="1"/>
+</g>
+<g fill="rgb(0%, 0%, 0%)" fill-opacity="1">
+<use xlink:href="#glyph-1-1" x="4.953125" y="106.3125"/>
+</g>
+<g fill="rgb(0%, 0%, 0%)" fill-opacity="1">
+<use xlink:href="#glyph-1-1" x="261.84375" y="56.3125"/>
+</g>
+<path fill-rule="nonzero" fill="rgb(0%, 0%, 0%)" fill-opacity="1" d="M 326.5 69.625 L 451.5 69.625 L 451.5 79 L 476.5 66.5 L 451.5 54 L 451.5 63.375 L 326.5 63.375 "/>
+<path fill="none" stroke-width="0.0333333" stroke-linecap="butt" stroke-linejoin="miter" stroke="rgb(0%, 0%, 0%)" stroke-opacity="1" stroke-miterlimit="10" d="M 0.258086 0.351016 L 0.874336 -0.00480469 " transform="matrix(100, 0, 0, 100, 528.714821, 41.632812)"/>
+<path fill="none" stroke-width="0.0333333" stroke-linecap="butt" stroke-linejoin="miter" stroke="rgb(0%, 0%, 0%)" stroke-opacity="1" stroke-miterlimit="10" d="M 0.857656 -0.00480469 L 1.740391 0.504805 " transform="matrix(100, 0, 0, 100, 528.714821, 41.632812)"/>
+<path fill="none" stroke-width="0.0333333" stroke-linecap="butt" stroke-linejoin="miter" stroke="rgb(0%, 0%, 0%)" stroke-opacity="1" stroke-miterlimit="10" d="M 1.72375 0.504805 L 2.398203 0.115391 " transform="matrix(100, 0, 0, 100, 528.714821, 41.632812)"/>
+<g fill="rgb(0%, 0%, 0%)" fill-opacity="1">
+<use xlink:href="#glyph-0-1" x="711.320312" y="126.195312"/>
+</g>
+<g fill="rgb(0%, 0%, 0%)" fill-opacity="1">
+<use xlink:href="#glyph-0-2" x="712.121094" y="21.367188"/>
+<use xlink:href="#glyph-0-3" x="727.161096" y="21.367188"/>
+</g>
+<path fill="none" stroke-width="0.0333333" stroke-linecap="butt" stroke-linejoin="miter" stroke="rgb(0%, 0%, 0%)" stroke-opacity="1" stroke-miterlimit="10" d="M 0.949336 0.7 L 0.799336 0.7 L 0.799336 -0.2 L 0.949336 -0.2 " transform="matrix(100, 0, 0, 100, 528.714821, 41.632812)"/>
+<path fill="none" stroke-width="0.0333333" stroke-linecap="butt" stroke-linejoin="miter" stroke="rgb(0%, 0%, 0%)" stroke-opacity="1" stroke-miterlimit="10" d="M 1.64875 -0.2 L 1.79875 -0.2 L 1.79875 0.7 L 1.64875 0.7 " transform="matrix(100, 0, 0, 100, 528.714821, 41.632812)"/>
+</g>
+</g>
+<g id="compositing-group-9" transform="translate(80.3, 13.3)">
+<rect x="-80.3" y="-13.3" width="963.6" height="159.6" fill="rgb(0%, 0%, 0%)" fill-opacity="0"/>
+<path fill-rule="nonzero" fill="rgb(100%, 100%, 100%)" fill-opacity="1" d="M 773.390625 21.578125 L 800.738281 21.578125 L 800.738281 48.246094 L 773.390625 48.246094 Z M 773.390625 21.578125 "/>
+</g>
+<mask id="mask-6">
+<use xlink:href="#compositing-group-9"/>
+</mask>
+<mask id="mask-7">
+<use xlink:href="#compositing-group-9" filter="url(#filter-remove-color-and-invert-alpha)"/>
+</mask>
+<g id="compositing-group-10" mask="url(#mask-6)">
+<g transform="translate(80.3, 13.3)">
+</g>
+</g>
+<g id="compositing-group-11" mask="url(#mask-7)">
+<g transform="translate(80.3, 13.3)">
+<g filter="url(#filter-2)" transform="translate(-80.3, -13.3)">
+<rect x="0" y="0" width="963.6" height="159.6" fill="rgb(0%, 0%, 0%)" fill-opacity="1"/>
+</g>
+</g>
+</g>
+</defs>
+<g filter="url(#filter-3)" transform="translate(-80.3, -13.3)">
+<rect x="0" y="0" width="963.6" height="159.6" fill="rgb(0%, 0%, 0%)" fill-opacity="1"/>
+</g>
+<g fill="rgb(0%, 0%, 0%)" fill-opacity="1">
+<use xlink:href="#glyph-1-1" x="519.191406" y="106.3125"/>
+</g>
+<g fill="rgb(0%, 0%, 0%)" fill-opacity="1">
+<use xlink:href="#glyph-1-1" x="776.082031" y="56.3125"/>
+</g>
+</svg>

@@ -3,7 +3,8 @@
 > **Read when:** a ticket is about where the brackets of a repeating unit, copolymer, component, mixture or
 > formulation stand, or when they appear or move.
 > **Skip when:** the question is about superatoms, multiple groups or data S-groups (those are
-> [sgroup-data-values.md](./sgroup-data-values.md)).
+> [sgroup-data-values.md](./sgroup-data-values.md)), or about how the brackets and labels look in a picture:
+> that is [sgroup-rendering.md](./sgroup-rendering.md).
 
 Verified on 2026-10-28.
 
@@ -28,8 +29,9 @@ V3000 (`BRKXYZ`). `layout()` measures atom labels at the session's `render-font-
 two vertical brackets, 0.1 bond lengths left and right of the box of its atom labels, running from 0.3 below
 that box to 0.3 above it, the opening bracket on the left.
 
-**When** a group is nested in another, **then** the parent's brackets stand 0.3 outside the child's brackets
-on every side, or 0.1 and 0.3 outside the parent's own atoms where those reach further.
+**When** a group is nested in another, **then** the parent's brackets stand 0.4 left and right of the child's
+brackets and 0.3 above and below them, or 0.1 and 0.3 outside the parent's own atoms where those reach
+further.
 
 **When** `layout()` runs with `render-font-size` or `render-label-mode` set, **then** the labels are measured
 at that font and in that mode, and the brackets move out with wider labels. Without the options, and always
@@ -47,8 +49,9 @@ scaled gets brackets anew by these rules, also with `layout-preserve-existing`; 
 types move and scale with their molecules.
 
 **When** a structure is saved to MOL, **then** zero-length brackets are not written, for any S-group type; a real
-bracket next to one is written, and a group left with fewer than two real brackets is drawn with the renderer's
-own pair.
+bracket next to one is written, and a group read back with that one bracket keeps it: a generic or multiple group
+is then drawn with the renderer's own pair, a bracketed group with a pair placed by these rules in the picture
+only ([sgroup-rendering.md](./sgroup-rendering.md)).
 
 ## Guarantees
 
@@ -57,8 +60,6 @@ mock-ups are pinned to four decimals.
 
 ## Limitations
 
-- The renderer draws brackets only for repeating units, multiple groups, superatoms and generic groups; those
-  of copolymers, components, mixtures and formulations are in the file but not in the picture.
 - Distances are in the default bond length, 1.0, whatever the bond length of the drawing: a structure drawn
   at another scale gets margins out of proportion.
 - Nothing outside the group is considered: a bracket can run through a neighbouring atom, the `*` at a chain
