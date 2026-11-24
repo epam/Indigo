@@ -72,12 +72,20 @@ def test_logp():
         "C1=CC=NC(=C1)NS(=O)(=O)C2=CC=C(C=C2)N=NC3=CC(=C(C=C3)O)C(=O)O",
         3.7,
     )
+    # Atom types from Wildman & Crippen 1999, Table 1
+    check_float("logP", "CCc1ccccc1", 2.249, delta=1e-3)  # C10
+    # Br2 (bromide ion)
+    check_float("logP", "CCCC[N+](CCCC)(CCCC)CCCC.[Br-]", 2.0076, delta=1e-3)
 
 
 def test_mr():
     check_float("molarRefractivity", "c1ccccc1", 26.442)
     check_float("molarRefractivity", "C[U]", 5.86)
     check_float("molarRefractivity", "Clc1ccccc1", 31.45)
+    # Atom types from Wildman & Crippen 1999, Table 1
+    check_float("molarRefractivity", "CCc1ccccc1", 35.82, delta=1e-3)  # C10
+    check_float("molarRefractivity", "Fc1ccccc1", 26.4, delta=1e-3)  # F
+    check_float("molarRefractivity", "CC(=N)C", 19.0747, delta=1e-3)  # N5
 
 
 def test_pka():

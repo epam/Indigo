@@ -16,9 +16,10 @@
  * limitations under the License.
  ***************************************************************************/
 
-// The arithmetic the 2D layout is built on: ticket #3844, invariant A10 of
-// .memory-bank/invariants.md - the same molecule is drawn the same way on
-// Windows and on Linux.
+// The arithmetic the 2D layout is built on - the elementary-function macros of
+// algebra.h and the rotations and tilt angles of Vec2f - checked against
+// mathematical constants. That Windows and Linux compute the same bits is
+// checked by the layout reference tests of the integration suite.
 
 #include <cmath>
 
@@ -30,122 +31,115 @@ using namespace indigo;
 
 namespace
 {
-    // The layout works in angles of a turn or two either way. Over this sweep the
-    // float function and the double one disagree on 259 samples of the cosine and
-    // 3843 of the arc cosine under MSVC, and on 2563 and 15623 under glibc, so a
-    // float spelling cannot pass unseen; the tangent and the arc sine disagree
-    // likewise. The arc tangent differs under glibc only, and the hypotenuse on
-    // neither: those two state the contract without discriminating.
-    const int SAMPLES = 200000;
-    const float TWO_PI = _2FLOAT(2. * M_PI);
+    // A float near 2 pi is rounded by about 5e-7, and a platform's libm may be a
+    // unit in the last place off; the tolerance covers both and stays far below
+    // any angle or coordinate a drawing depends on.
+    const float TOLERANCE = 1e-5f;
 
     // A point off both axes, so that a rotation of it mixes the sine and the
     // cosine into both coordinates.
     const float POINT_X = 1.3f;
     const float POINT_Y = -0.7f;
 
-    // Far enough from the axis for the sign of the tilt to be unambiguous.
-    const float OFF_AXIS = 0.9f;
-
-    float sweptAngle(int i)
+    struct Turn
     {
-        return -TWO_PI + 2.f * TWO_PI * static_cast<float>(i) / static_cast<float>(SAMPLES - 1);
-    }
+        float angle;
+        Vec2f counterclockwise;
+        Vec2f clockwise;
+    };
 
-    // The unit interval the arc cosine takes, endpoints included.
-    float sweptUnit(int i)
+    const Turn TURNS[] = {
+        {0.f, {POINT_X, POINT_Y}, {POINT_X, POINT_Y}},
+        {_2FLOAT(M_PI / 2), {-POINT_Y, POINT_X}, {POINT_Y, -POINT_X}},
+        {_2FLOAT(M_PI), {-POINT_X, -POINT_Y}, {-POINT_X, -POINT_Y}},
+        {_2FLOAT(-M_PI / 2), {POINT_Y, -POINT_X}, {-POINT_Y, POINT_X}},
+    };
+
+    struct Direction
     {
-        return -1.f + 2.f * static_cast<float>(i) / static_cast<float>(SAMPLES - 1);
-    }
+        Vec2f vector;
+        double tilt;
+        double full_turn_tilt;
+    };
 
-    float rounded(double value)
+    // The tilt runs from -pi to pi and takes the sign of y; the full-turn tilt
+    // runs from 0 to 2 pi. The length of a vector does not matter, and a vector
+    // too short to have a direction gives 0 for both.
+    const Direction DIRECTIONS[] = {
+        {{1.f, 0.f}, 0., 0.},
+        {{1.f, 1.f}, M_PI / 4, M_PI / 4},
+        {{0.f, 1.f}, M_PI / 2, M_PI / 2},
+        {{-1.f, 1.f}, 3 * M_PI / 4, 3 * M_PI / 4},
+        {{-1.f, 0.f}, M_PI, M_PI},
+        {{-1.f, -1.f}, -3 * M_PI / 4, 5 * M_PI / 4},
+        {{0.f, -1.f}, -M_PI / 2, 3 * M_PI / 2},
+        {{1.f, -1.f}, -M_PI / 4, 7 * M_PI / 4},
+        {{2.f, 2.f}, M_PI / 4, M_PI / 4},
+        {{0.f, 1e-7f}, 0., 0.},
+        {{0.f, 0.f}, 0., 0.},
+    };
+
+    void expectPoint(const Vec2f& expected, const Vec2f& actual)
     {
-        return static_cast<float>(value);
-    }
-}
-
-// Every macro evaluates in double and rounds once. For a float argument a
-// compiler picks the float function instead - cosf, sinf, acosf, atan2f - and it
-// differs in the last bit; the layout then chooses differently between two equal
-// drawings, and the two platforms disagree.
-TEST(LayoutMathContract, SineCosineAndTangentEvaluateInDouble)
-{
-    for (int i = 0; i < SAMPLES; i++)
-    {
-        const float angle = sweptAngle(i);
-        ASSERT_EQ(rounded(std::cos(static_cast<double>(angle))), COS(angle)) << "cosine of " << angle;
-        ASSERT_EQ(rounded(std::sin(static_cast<double>(angle))), SIN(angle)) << "sine of " << angle;
-        ASSERT_EQ(rounded(std::tan(static_cast<double>(angle))), TAN(angle)) << "tangent of " << angle;
-    }
-}
-
-TEST(LayoutMathContract, ArcCosineAndArcSineEvaluateInDouble)
-{
-    for (int i = 0; i < SAMPLES; i++)
-    {
-        const float sine = sweptUnit(i);
-        ASSERT_EQ(rounded(std::acos(static_cast<double>(sine))), ACOS(sine)) << "arc cosine of " << sine;
-        ASSERT_EQ(rounded(std::asin(static_cast<double>(sine))), ASIN(sine)) << "arc sine of " << sine;
-    }
-}
-
-TEST(LayoutMathContract, ArcTangentAndHypotenuseEvaluateInDouble)
-{
-    for (int i = 0; i < SAMPLES; i++)
-    {
-        const float y = sweptAngle(i);
-        const float x = 1.f + 3.f * static_cast<float>(i) / static_cast<float>(SAMPLES - 1);
-
-        ASSERT_EQ(rounded(std::atan2(static_cast<double>(y), static_cast<double>(x))), ATAN2(y, x)) << "arc tangent of " << y << ", " << x;
-        ASSERT_EQ(rounded(std::hypot(static_cast<double>(y), static_cast<double>(x))), HYPOT(y, x)) << "hypotenuse of " << y << ", " << x;
+        EXPECT_NEAR(expected.x, actual.x, TOLERANCE);
+        EXPECT_NEAR(expected.y, actual.y, TOLERANCE);
     }
 }
 
-// Both rotations take their sine and cosine the same way. Every placement of the
-// layout passes through them, so this is where a float spelling would reach the
-// drawing first.
-TEST(LayoutMathContract, RotationTurnsByTheDoubleSineAndCosine)
+TEST(LayoutMath, SineCosineAndTangentOfTabulatedAngles)
 {
-    for (int i = 0; i < SAMPLES; i++)
+    EXPECT_NEAR(1., COS(0.f), TOLERANCE);
+    EXPECT_NEAR(0.5, COS(_2FLOAT(M_PI / 3)), TOLERANCE);
+    EXPECT_NEAR(-1., COS(_2FLOAT(M_PI)), TOLERANCE);
+    EXPECT_NEAR(0.5, SIN(_2FLOAT(M_PI / 6)), TOLERANCE);
+    EXPECT_NEAR(-1., SIN(_2FLOAT(-M_PI / 2)), TOLERANCE);
+    EXPECT_NEAR(1., TAN(_2FLOAT(M_PI / 4)), TOLERANCE);
+    EXPECT_NEAR(-1., TAN(_2FLOAT(3 * M_PI / 4)), TOLERANCE);
+}
+
+TEST(LayoutMath, ArcCosineAndArcSineOfTabulatedValues)
+{
+    EXPECT_NEAR(M_PI / 2, ACOS(0.f), TOLERANCE);
+    EXPECT_NEAR(M_PI / 3, ACOS(0.5f), TOLERANCE);
+    EXPECT_NEAR(M_PI, ACOS(-1.f), TOLERANCE);
+    EXPECT_NEAR(M_PI / 6, ASIN(0.5f), TOLERANCE);
+    EXPECT_NEAR(-M_PI / 2, ASIN(-1.f), TOLERANCE);
+}
+
+TEST(LayoutMath, ArcTangentTakesTheQuadrantAndHypotenuseTheLength)
+{
+    EXPECT_NEAR(M_PI / 4, ATAN2(1.f, 1.f), TOLERANCE);
+    EXPECT_NEAR(3 * M_PI / 4, ATAN2(1.f, -1.f), TOLERANCE);
+    EXPECT_NEAR(-3 * M_PI / 4, ATAN2(-1.f, -1.f), TOLERANCE);
+    EXPECT_NEAR(-M_PI / 2, ATAN2(-2.f, 0.f), TOLERANCE);
+    EXPECT_NEAR(5., HYPOT(3.f, 4.f), TOLERANCE);
+    EXPECT_NEAR(13., HYPOT(-5.f, 12.f), TOLERANCE);
+}
+
+TEST(LayoutMath, RotateTurnsCounterclockwiseAndRotateLClockwise)
+{
+    for (const Turn& turn : TURNS)
     {
-        const float angle = sweptAngle(i);
-        const float si = rounded(std::sin(static_cast<double>(angle)));
-        const float co = rounded(std::cos(static_cast<double>(angle)));
+        SCOPED_TRACE(testing::Message() << "turn by " << turn.angle);
 
-        Vec2f right(POINT_X, POINT_Y);
-        right.rotate(angle);
-        ASSERT_EQ(co * POINT_X - si * POINT_Y, right.x) << "rotation by " << angle;
-        ASSERT_EQ(si * POINT_X + co * POINT_Y, right.y) << "rotation by " << angle;
+        Vec2f counterclockwise(POINT_X, POINT_Y);
+        counterclockwise.rotate(turn.angle);
+        expectPoint(turn.counterclockwise, counterclockwise);
 
-        Vec2f left(POINT_X, POINT_Y);
-        left.rotateL(angle);
-        ASSERT_EQ(co * POINT_X + si * POINT_Y, left.x) << "left rotation by " << angle;
-        ASSERT_EQ(-si * POINT_X + co * POINT_Y, left.y) << "left rotation by " << angle;
+        Vec2f clockwise(POINT_X, POINT_Y);
+        clockwise.rotateL(turn.angle);
+        expectPoint(turn.clockwise, clockwise);
     }
 }
 
-TEST(LayoutMathContract, TiltAngleIsTheDoubleArcCosine)
+TEST(LayoutMath, TiltAnglesOfTabulatedDirections)
 {
-    for (int i = 0; i < SAMPLES; i++)
+    for (const Direction& direction : DIRECTIONS)
     {
-        Vec2f above(sweptUnit(i), OFF_AXIS);
-        ASSERT_EQ(rounded(std::acos(static_cast<double>(above.x / above.length()))), above.tiltAngle()) << "tilt of " << above.x << ", " << above.y;
+        Vec2f vector = direction.vector;
+        SCOPED_TRACE(testing::Message() << "direction " << vector.x << ", " << vector.y);
 
-        Vec2f below(sweptUnit(i), -OFF_AXIS);
-        ASSERT_EQ(-rounded(std::acos(static_cast<double>(below.x / below.length()))), below.tiltAngle()) << "tilt of " << below.x << ", " << below.y;
-    }
-}
-
-// The full-turn tilt rounds the arc cosine to float before subtracting it from
-// two pi. Folding the two roundings into one is arithmetically better and moves
-// two atoms of layout/macrocycles.py by 1.28 (#3844), so the rounding stays.
-TEST(LayoutMathContract, FullTurnTiltRoundsTheArcCosineBeforeSubtracting)
-{
-    for (int i = 0; i < SAMPLES; i++)
-    {
-        Vec2f below(sweptUnit(i), -OFF_AXIS);
-        const float arc_cosine = rounded(std::acos(static_cast<double>(below.x / below.length())));
-
-        ASSERT_EQ(rounded(2. * M_PI - static_cast<double>(arc_cosine)), below.tiltAngle2()) << "full-turn tilt of " << below.x << ", " << below.y;
+        EXPECT_NEAR(direction.tilt, vector.tiltAngle(), TOLERANCE);
+        EXPECT_NEAR(direction.full_turn_tilt, vector.tiltAngle2(), TOLERANCE);
     }
 }

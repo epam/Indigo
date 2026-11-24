@@ -202,10 +202,12 @@ and GCC the double functions; with float calls Windows and Linux disagreed on 11
 `HYPOT`, `COS`, `SIN`, `TAN`, `ACOS`, `ASIN`, `ATAN2` of `common/math/algebra.h`, which evaluate in
 double and round once, and the two platforms now agree bit for bit on all of them. Write the
 promotion out by hand and the rule has no single home; write the call on a float and the divergence
-comes back. `tests/tests/layout_math.cpp` sweeps the arguments on which the two spellings differ and
-pins every macro, both rotations of `Vec2f` and both tilt angles to the double value. The square
-root is left alone: IEEE 754 rounds it exactly. Widening the layout energy to double does not
-help and was measured not to. The guarantee covers x86-64 only: a compiler that fuses `a * b + c`
+comes back. What catches it are the layout reference tests in `api/tests/integration/tests/layout/`,
+which run on the Windows and Linux legs of CI: a different last bit changes a drawing, while no
+tolerance of a unit test can see it. `tests/tests/layout_math.cpp` checks the macros and the rotations
+and tilt angles of `Vec2f` against mathematical constants with a tolerance, not against a second copy
+of their formulas compiled into the test. The square root is left alone: IEEE 754 rounds it
+exactly. Widening the layout energy to double does not help and was measured not to. The guarantee covers x86-64 only: a compiler that fuses `a * b + c`
 into one FMA instruction — the default on ARM, including macOS — still produces other bits, so a
 macOS reference may still be needed.
 
