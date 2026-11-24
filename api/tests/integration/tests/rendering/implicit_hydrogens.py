@@ -35,15 +35,27 @@ indigo.setOption("render-label-mode", "terminal-hetero")
 
 print("*** A terminal atom has its hydrogens opposite its bond ***")
 compare_svg("terminal-atoms")
+compare_svg("near-vertical-bonds")
+
+print("*** An atom without bonds has them where its formula is written ***")
 compare_svg("atoms-without-bonds")
 
 print("*** An internal atom has them in the first free quadrant ***")
 compare_svg("internal-atoms")
+compare_svg("bonds-on-diagonals")
 compare_svg("piperazine")
 compare_svg("three-and-four-bonds")
 
+print("*** Hydrogens above the symbol shorten the lines that reach them ***")
+compare_svg("hydrogens-beside-bonds")
+
 print("*** A radical takes the top quadrant ***")
 compare_svg("radicals")
+compare_svg("radical-kinds")
 
-print("*** A charge stands clear of hydrogens above and below ***")
+print("*** A radical stands where no bond passes ***")
+compare_svg("radicals-with-bond-up")
+compare_svg("radical-places")
+
+print("*** A charge stands to the right of a hydrogen count above it ***")
 compare_svg("charge-beside-stacked-hydrogens")

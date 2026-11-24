@@ -1,5 +1,5 @@
 ticket-hexamethyl-sulfur
-  Third example of the ticket: hydrogens opposite the bond, on the right for the two vertical bonds
+  Third example of the ticket: H3C for the lower methyl, whose bond points up, CH3 for the upper one
 
   7  6  0  0  0  0  0  0  0  0999 V2000
     0.0000    0.0000    0.0000 S   0  0  0  0  0  0  0  0  0  0  0  0

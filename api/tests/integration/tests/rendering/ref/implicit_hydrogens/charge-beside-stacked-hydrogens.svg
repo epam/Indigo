@@ -32,7 +32,7 @@
 <path fill="none" stroke-width="0.0333333" stroke-linecap="butt" stroke-linejoin="miter" stroke="rgb(0%, 0%, 0%)" stroke-opacity="1" stroke-miterlimit="10" d="M 0.874433 1.004785 L 0.253574 0.646387 " transform="matrix(100, 0, 0, 100, 58.306703, 5.001953)"/>
 <path fill="none" stroke-width="0.0333333" stroke-linecap="butt" stroke-linejoin="miter" stroke="rgb(0%, 0%, 0%)" stroke-opacity="1" stroke-miterlimit="10" d="M 1.987792 0.647637 L 2.606386 1.004785 " transform="matrix(100, 0, 0, 100, 58.306703, 5.001953)"/>
 <path fill="none" stroke-width="0.0333333" stroke-linecap="butt" stroke-linejoin="miter" stroke="rgb(0%, 0%, 0%)" stroke-opacity="1" stroke-miterlimit="10" d="M 2.589706 1.004785 L 3.210566 0.646387 " transform="matrix(100, 0, 0, 100, 58.306703, 5.001953)"/>
-<path fill="none" stroke-width="0.0333333" stroke-linecap="butt" stroke-linejoin="miter" stroke="rgb(0%, 0%, 0%)" stroke-opacity="1" stroke-miterlimit="10" d="M 8.291035 0.177168 L 8.606269 -0.00482422 " transform="matrix(100, 0, 0, 100, 58.306703, 5.001953)"/>
+<path fill="none" stroke-width="0.0333333" stroke-linecap="butt" stroke-linejoin="miter" stroke="rgb(0%, 0%, 0%)" stroke-opacity="1" stroke-miterlimit="10" d="M 8.174628 0.244395 L 8.606269 -0.00482422 " transform="matrix(100, 0, 0, 100, 58.306703, 5.001953)"/>
 <path fill="none" stroke-width="0.0333333" stroke-linecap="butt" stroke-linejoin="miter" stroke="rgb(0%, 0%, 0%)" stroke-opacity="1" stroke-miterlimit="10" d="M 8.589589 -0.00482422 L 9.210449 0.353613 " transform="matrix(100, 0, 0, 100, 58.306703, 5.001953)"/>
 <path fill="none" stroke-width="0.0333333" stroke-linecap="butt" stroke-linejoin="miter" stroke="rgb(0%, 0%, 0%)" stroke-opacity="1" stroke-miterlimit="10" d="M 7.476191 0.352324 L 6.857636 -0.00482422 " transform="matrix(100, 0, 0, 100, 58.306703, 5.001953)"/>
 <path fill="none" stroke-width="0.0333333" stroke-linecap="butt" stroke-linejoin="miter" stroke="rgb(0%, 0%, 0%)" stroke-opacity="1" stroke-miterlimit="10" d="M 6.874277 -0.00482422 L 6.253456 0.353613 " transform="matrix(100, 0, 0, 100, 58.306703, 5.001953)"/>
@@ -77,7 +77,7 @@
 <g fill="rgb(0%, 0%, 0%)" fill-opacity="1">
 <use xlink:href="#glyph-1-1" x="844.476562" y="103.34375"/>
 </g>
-<path fill-rule="nonzero" fill="rgb(0%, 0%, 0%)" fill-opacity="1" d="M 861.671875 38.796875 L 867.839844 38.796875 L 867.839844 32.628906 L 870.507812 32.628906 L 870.507812 38.796875 L 876.675781 38.796875 L 876.675781 41.464844 L 870.507812 41.464844 L 870.507812 47.632812 L 867.839844 47.632812 L 867.839844 41.464844 L 861.671875 41.464844 "/>
+<path fill-rule="nonzero" fill="rgb(0%, 0%, 0%)" fill-opacity="1" d="M 846.152344 38.796875 L 852.320312 38.796875 L 852.320312 32.628906 L 854.988281 32.628906 L 854.988281 38.796875 L 861.15625 38.796875 L 861.15625 41.464844 L 854.988281 41.464844 L 854.988281 47.632812 L 852.320312 47.632812 L 852.320312 41.464844 L 846.152344 41.464844 "/>
 <g fill="rgb(0%, 0%, 0%)" fill-opacity="1">
 <use xlink:href="#glyph-0-3" x="991.46875" y="69.28125"/>
 </g>

@@ -74,7 +74,7 @@
 </g>
 <g id="compositing-group-3" transform="translate(51.3, 45.6)">
 <rect x="-51.3" y="-45.6" width="615.6" height="547.2" fill="rgb(0%, 0%, 0%)" fill-opacity="0"/>
-<path fill-rule="nonzero" fill="rgb(100%, 100%, 100%)" fill-opacity="1" d="M 160.921875 358.421875 L 191.429688 358.421875 L 191.429688 395.648438 L 160.921875 395.648438 Z M 160.921875 358.421875 "/>
+<path fill-rule="nonzero" fill="rgb(100%, 100%, 100%)" fill-opacity="1" d="M 106.054688 358.421875 L 136.5625 358.421875 L 136.5625 395.648438 L 106.054688 395.648438 Z M 106.054688 358.421875 "/>
 </g>
 <mask id="mask-2">
 <use xlink:href="#compositing-group-3"/>
@@ -101,6 +101,6 @@
 <use xlink:href="#glyph-1-1" x="133.125" y="391.753906"/>
 </g>
 <g fill="rgb(0%, 0%, 0%)" fill-opacity="1">
-<use xlink:href="#glyph-1-2" x="161.375" y="391.316406"/>
+<use xlink:href="#glyph-1-2" x="106.507813" y="391.316406"/>
 </g>
 </svg>

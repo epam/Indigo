@@ -54,6 +54,16 @@ namespace indigo
         DECL_ERROR;
 
     private:
+        static constexpr float LABEL_RIGHT_PREFERENCE = 0.3f;
+        static constexpr float LABEL_LEFT_PREFERENCE = 0.2f;
+        static constexpr float LABEL_UP_PREFERENCE = 0.1f;
+        static constexpr float LABEL_DOWN_PREFERENCE = 0.0f;
+
+        // A radical dot stands above the symbol, and at its upper right when a bond points up. The sector ends
+        // between the usual bond angles, which are 18 and 30 degrees from the vertical
+        static constexpr float STRAIGHT_UP = 90.f;
+        static constexpr float RADICAL_ABOVE_HALF_SECTOR = 24.f;
+
         bool _idle = false;
 
         enum STEREOGROUPS_MODE
@@ -140,6 +150,7 @@ namespace indigo
         int _findClosestCircle(Vec2f& p, int aid, float radius, int skip = -1);
         int _findClosestBox(Vec2f& p, int aid, const Vec2f& sz, float mrg, int skip = -1);
         void _preparePseudoAtom(int aid, int color, bool highlighted);
+        bool _hasBondWithin(int aid, float axisDegrees, float halfSectorDegrees);
         void _prepareChargeLabel(int aid, int color, bool highlighted);
         void _prepareCIPLabel(const int aid, int& skip);
         void _prepareLabelText(int aid);

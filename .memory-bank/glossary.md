@@ -25,9 +25,9 @@
 | RGroup / SGroup | Substitution site set / labelled atom set (superatom, SRU, data group) | `BaseMolecule` |
 | SMARTS | Substructure query language | `molecule/smiles_loader.h` (query mode) |
 | SMILES | Line notation for structures; "canonical SMILES" is the identity form | `molecule/*smiles*` |
-| Stacked hydrogens | Implicit hydrogens drawn above or below the atom symbol, `H` on a line of its own with the count to its right, instead of beside the symbol | `molecule/implicit_hydrogen_side.h` (`isStacked`), render2d |
+| Stacked hydrogens | Implicit hydrogens drawn above or below the atom symbol, `H` on a line of its own with the count to its right, instead of beside the symbol | `molecule/implicit_hydrogen_side.h` (`Side::TOP`, `Side::BOTTOM`), render2d |
 | Standardize | Apply a configured set of normalisations to a structure | `molecule/molecule_standardize.h` |
 | Superatom | An S-group rendered as an abbreviation (e.g. `Ph`, `Boc`) | S-group code, render2d |
 | Tautomer search | Search treating tautomeric forms as equivalent | Bingo search modes |
-| Terminal atom, internal atom | For the side of implicit hydrogens: an atom with at most one bond, and an atom with two or more | `molecule/implicit_hydrogen_side.h` |
+| Terminal atom, internal atom | For the side of implicit hydrogens: an atom with exactly one bond, and an atom with two or more. An atom without bonds is neither | `molecule/implicit_hydrogen_side.h` |
 | Valence model | The rule set mapping element + charge + bonds to allowed valence and implicit H | valence code, loader options |

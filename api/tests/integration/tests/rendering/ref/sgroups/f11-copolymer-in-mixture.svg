@@ -190,10 +190,10 @@
 <path fill="none" stroke-width="0.0333333" stroke-linecap="butt" stroke-linejoin="miter" stroke="rgb(0%, 0%, 0%)" stroke-opacity="1" stroke-miterlimit="10" d="M 2.91 0.58002 L 2.76 0.58002 L 2.76 -0.86002 L 2.91 -0.86002 " transform="matrix(100, 0, 0, 100, 66.246092, 178.005858)"/>
 <path fill="none" stroke-width="0.0333333" stroke-linecap="butt" stroke-linejoin="miter" stroke="rgb(0%, 0%, 0%)" stroke-opacity="1" stroke-miterlimit="10" d="M 4.37 -0.86002 L 4.52 -0.86002 L 4.52 0.58002 L 4.37 0.58002 " transform="matrix(100, 0, 0, 100, 66.246092, 178.005858)"/>
 <g fill="rgb(0%, 0%, 0%)" fill-opacity="1">
-<use xlink:href="#glyph-0-4" x="399.78125" y="550.566406"/>
+<use xlink:href="#glyph-0-4" x="343.78125" y="550.566406"/>
 </g>
-<path fill="none" stroke-width="0.0333333" stroke-linecap="butt" stroke-linejoin="miter" stroke="rgb(0%, 0%, 0%)" stroke-opacity="1" stroke-miterlimit="10" d="M 2.41 3.57998 L 2.26 3.57998 L 2.26 2.42002 L 2.41 2.42002 " transform="matrix(100, 0, 0, 100, 66.246092, 178.005858)"/>
-<path fill="none" stroke-width="0.0333333" stroke-linecap="butt" stroke-linejoin="miter" stroke="rgb(0%, 0%, 0%)" stroke-opacity="1" stroke-miterlimit="10" d="M 3.15 2.42002 L 3.3 2.42002 L 3.3 3.57998 L 3.15 3.57998 " transform="matrix(100, 0, 0, 100, 66.246092, 178.005858)"/>
+<path fill="none" stroke-width="0.0333333" stroke-linecap="butt" stroke-linejoin="miter" stroke="rgb(0%, 0%, 0%)" stroke-opacity="1" stroke-miterlimit="10" d="M 1.85 3.57998 L 1.7 3.57998 L 1.7 2.42002 L 1.85 2.42002 " transform="matrix(100, 0, 0, 100, 66.246092, 178.005858)"/>
+<path fill="none" stroke-width="0.0333333" stroke-linecap="butt" stroke-linejoin="miter" stroke="rgb(0%, 0%, 0%)" stroke-opacity="1" stroke-miterlimit="10" d="M 2.59 2.42002 L 2.74 2.42002 L 2.74 3.57998 L 2.59 3.57998 " transform="matrix(100, 0, 0, 100, 66.246092, 178.005858)"/>
 </g>
 </g>
 <g id="compositing-group-3" transform="translate(69.3, 59.2)">
@@ -492,7 +492,7 @@
 </g>
 <g id="compositing-group-45" transform="translate(69.3, 59.2)">
 <rect x="-69.3" y="-59.2" width="831.6" height="710.4" fill="rgb(0%, 0%, 0%)" fill-opacity="0"/>
-<path fill-rule="nonzero" fill="rgb(100%, 100%, 100%)" fill-opacity="1" d="M 328.425781 458.972656 L 358.933594 458.972656 L 358.933594 496.199219 L 328.425781 496.199219 Z M 328.425781 458.972656 "/>
+<path fill-rule="nonzero" fill="rgb(100%, 100%, 100%)" fill-opacity="1" d="M 257.640625 458.972656 L 288.148438 458.972656 L 288.148438 496.199219 L 257.640625 496.199219 Z M 257.640625 458.972656 "/>
 </g>
 <mask id="mask-30">
 <use xlink:href="#compositing-group-45"/>
@@ -513,7 +513,7 @@
 </g>
 <g id="compositing-group-48" transform="translate(69.3, 59.2)">
 <rect x="-69.3" y="-59.2" width="831.6" height="710.4" fill="rgb(0%, 0%, 0%)" fill-opacity="0"/>
-<path fill-rule="nonzero" fill="rgb(100%, 100%, 100%)" fill-opacity="1" d="M 353.597656 470.398438 L 374.851562 470.398438 L 374.851562 498.371094 L 353.597656 498.371094 Z M 353.597656 470.398438 "/>
+<path fill-rule="nonzero" fill="rgb(100%, 100%, 100%)" fill-opacity="1" d="M 282.8125 470.398438 L 304.066406 470.398438 L 304.066406 498.371094 L 282.8125 498.371094 Z M 282.8125 470.398438 "/>
 </g>
 <mask id="mask-32">
 <use xlink:href="#compositing-group-48"/>
@@ -582,9 +582,9 @@
 <use xlink:href="#glyph-1-4" x="300.628906" y="492.304688"/>
 </g>
 <g fill="rgb(0%, 0%, 0%)" fill-opacity="1">
-<use xlink:href="#glyph-1-3" x="328.878906" y="491.867188"/>
+<use xlink:href="#glyph-1-3" x="258.09375" y="491.867188"/>
 </g>
 <g fill="rgb(0%, 0%, 0%)" fill-opacity="1">
-<use xlink:href="#glyph-0-9" x="356.652344" y="494.039062"/>
+<use xlink:href="#glyph-0-9" x="285.867188" y="494.039062"/>
 </g>
 </svg>

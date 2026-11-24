@@ -1,5 +1,5 @@
 charge-beside-stacked-hydrogens
-  H2 above or below the symbol: the charge stands to the right of the hydrogen count
+  H2 above the symbol: the charge stands to the right of its count. H2 below: the charge stays at the symbol
 
  15 12  0  0  0  0  0  0  0  0999 V2000
     0.0000    0.0000    0.0000 N   0  0  0  0  0  0  0  0  0  0  0  0

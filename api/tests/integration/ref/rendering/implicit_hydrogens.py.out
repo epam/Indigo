@@ -4,12 +4,21 @@ implicit_hydrogens/ticket-hexamethyl-sulfur.svg:SUCCEED
 implicit_hydrogens/ticket-hexane.svg:SUCCEED
 *** A terminal atom has its hydrogens opposite its bond ***
 implicit_hydrogens/terminal-atoms.svg:SUCCEED
+implicit_hydrogens/near-vertical-bonds.svg:SUCCEED
+*** An atom without bonds has them where its formula is written ***
 implicit_hydrogens/atoms-without-bonds.svg:SUCCEED
 *** An internal atom has them in the first free quadrant ***
 implicit_hydrogens/internal-atoms.svg:SUCCEED
+implicit_hydrogens/bonds-on-diagonals.svg:SUCCEED
 implicit_hydrogens/piperazine.svg:SUCCEED
 implicit_hydrogens/three-and-four-bonds.svg:SUCCEED
+*** Hydrogens above the symbol shorten the lines that reach them ***
+implicit_hydrogens/hydrogens-beside-bonds.svg:SUCCEED
 *** A radical takes the top quadrant ***
 implicit_hydrogens/radicals.svg:SUCCEED
-*** A charge stands clear of hydrogens above and below ***
+implicit_hydrogens/radical-kinds.svg:SUCCEED
+*** A radical stands where no bond passes ***
+implicit_hydrogens/radicals-with-bond-up.svg:SUCCEED
+implicit_hydrogens/radical-places.svg:SUCCEED
+*** A charge stands to the right of a hydrogen count above it ***
 implicit_hydrogens/charge-beside-stacked-hydrogens.svg:SUCCEED

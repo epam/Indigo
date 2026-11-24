@@ -1332,8 +1332,8 @@ bool MoleculeRenderInternal::_labelExtendsLeft(int aid)
             upperSin = std::max(upperSin, -d.y);
     }
     const auto weight = [this](float preference, float bondSin) { return preference - (bondSin > _settings.minSin ? bondSin : 0); };
-    const float left = weight(0.2f, leftSin);
-    return left > weight(0.3f, rightSin) && left > weight(0.1f, upperSin) && left > weight(0.0f, lowerSin);
+    const float left = weight(LABEL_LEFT_PREFERENCE, leftSin);
+    return left > weight(LABEL_RIGHT_PREFERENCE, rightSin) && left > weight(LABEL_UP_PREFERENCE, upperSin) && left > weight(LABEL_DOWN_PREFERENCE, lowerSin);
 }
 
 void MoleculeRenderInternal::_initAtomData()
@@ -1418,8 +1418,6 @@ void MoleculeRenderInternal::_initAtomData()
         if (!bm.isRSite(i) && !bm.isPseudoAtom(i) && !bm.isTemplateAtom(i))
         {
             radical = bm.getAtomRadical_NoThrow(i, -1);
-            if (!bm.isQueryMolecule())
-                ad.implicit_h = bm.asMolecule().getImplicitH_NoThrow(i, 0);
         }
 
         bool plainCarbon = ad.label == ELEM_C && charge == (query ? CHARGE_UNKNOWN : 0) && isotope == (query ? -1 : 0) && radical <= 0 && valence == -1 &&
@@ -1445,8 +1443,6 @@ void MoleculeRenderInternal::_initAtomData()
                 }
             }
         }
-
-        ad.hydrogenSide = ImplicitHydrogenSide(bm, i).side();
 
         int uaid = _atomMappingInv.size() > i ? _atomMappingInv[i] : i;
         if (uaid >= 0)

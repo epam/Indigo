@@ -23,7 +23,6 @@
 #include "graph/graph.h"
 #include "layout/metalayout.h"
 #include "molecule/elements.h"
-#include "molecule/implicit_hydrogen_side.h"
 #include "reaction/base_reaction.h"
 #include "render_cdxml.h"
 
@@ -242,7 +241,6 @@ namespace indigo
 
         int type;
         bool showLabel;
-        ImplicitHydrogenSide::Side hydrogenSide;
         bool isRGroupAttachmentPoint;
         bool fixed;
         bool exactChange;
@@ -257,7 +255,6 @@ namespace indigo
         int color;
         int stereoGroupType;
         int stereoGroupNumber;
-        int implicit_h;
         Array<int> list;
         Array<char> pseudo;
         int aam;
@@ -410,6 +407,8 @@ namespace indigo
         float bondSpace;
         float boundExtent;
         float upperIndexShift;
+        float radicalRightOffset;
+        float radicalRightVertShift;
         float radicalTopOffset;
         float radicalTopDistDot;
         float radicalTopDistCap;

@@ -366,6 +366,35 @@ TEST_F(ElementTest, GetNumOuterElectrons_InvalidElementThrows)
 }
 
 // ============================================================================
+// 27. ElementHydrogenOnLeft (inline function)
+// ============================================================================
+
+TEST_F(ElementTest, ElementHydrogenOnLeft_IncludedElements)
+{
+    EXPECT_TRUE(ElementHydrogenOnLeft(ELEM_O));
+    EXPECT_TRUE(ElementHydrogenOnLeft(ELEM_F));
+    EXPECT_TRUE(ElementHydrogenOnLeft(ELEM_S));
+    EXPECT_TRUE(ElementHydrogenOnLeft(ELEM_Cl));
+    EXPECT_TRUE(ElementHydrogenOnLeft(ELEM_Se));
+    EXPECT_TRUE(ElementHydrogenOnLeft(ELEM_Br));
+    EXPECT_TRUE(ElementHydrogenOnLeft(ELEM_I));
+}
+
+TEST_F(ElementTest, ElementHydrogenOnLeft_ExcludedElements)
+{
+    EXPECT_FALSE(ElementHydrogenOnLeft(ELEM_C));
+    EXPECT_FALSE(ElementHydrogenOnLeft(ELEM_N));
+    EXPECT_FALSE(ElementHydrogenOnLeft(ELEM_P));
+    EXPECT_FALSE(ElementHydrogenOnLeft(ELEM_B));
+    EXPECT_FALSE(ElementHydrogenOnLeft(ELEM_H));
+    EXPECT_FALSE(ElementHydrogenOnLeft(ELEM_Si));
+    EXPECT_FALSE(ElementHydrogenOnLeft(ELEM_Fe));
+    // Note: At and Te are not included despite being same group as I and Se
+    EXPECT_FALSE(ElementHydrogenOnLeft(ELEM_At));
+    EXPECT_FALSE(ElementHydrogenOnLeft(ELEM_Te));
+}
+
+// ============================================================================
 // 28. Isotope data for all 118 elements
 // ============================================================================
 

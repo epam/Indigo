@@ -1,5 +1,5 @@
 atoms-without-bonds
-  Atoms without bonds have their hydrogens on the right
+  Atoms without bonds: hydrogens first for O, S and Cl, last for N and C
 
   5  0  0  0  0  0  0  0  0  0999 V2000
     0.0000    0.0000    0.0000 O   0  0  0  0  0  0  0  0  0  0  0  0

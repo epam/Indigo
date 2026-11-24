@@ -175,6 +175,10 @@ void BaseMolecule::getAtomBoundingBox(int atom_idx, float font_size, LABEL_MODE 
                     len = 1;
                 bottom_left.x -= len * symbol_size;
             }
+            // H above or below the symbol is centred on it, with its count to the right. Valence and charge follow a
+            // count above the symbol; a count below it only widens the box
+            const float stacked_count_right = vec.x + symbol_size / 2 + symbol_size;
+            bool count_stands_below = false;
             if (implicit_h > 0)
             {
                 const bool has_count = implicit_h > 1;
@@ -185,12 +189,16 @@ void BaseMolecule::getAtomBoundingBox(int atom_idx, float font_size, LABEL_MODE 
                 else if (side == ImplicitHydrogenSide::Side::LEFT)
                     bottom_left.x -= hydrogens_width;
                 else if (side == ImplicitHydrogenSide::Side::TOP)
+                {
                     top_right.y += symbol_size;
+                    if (has_count)
+                        top_right.x = std::max(top_right.x, stacked_count_right);
+                }
                 else
+                {
                     bottom_left.y -= symbol_size;
-                // H stands centred on the symbol, its count to the right of it; valence and charge follow the count
-                if (ImplicitHydrogenSide::isStacked(side) && has_count)
-                    top_right.x = std::max(top_right.x, vec.x + symbol_size / 2 + symbol_size);
+                    count_stands_below = has_count;
+                }
             }
             // Add valence at right
             static constexpr int count[] = {
@@ -220,6 +228,8 @@ void BaseMolecule::getAtomBoundingBox(int atom_idx, float font_size, LABEL_MODE 
                     len = 1;
                 top_right.x += len * symbol_size;
             }
+            if (count_stands_below)
+                top_right.x = std::max(top_right.x, stacked_count_right);
         }
     }
     // process AAM

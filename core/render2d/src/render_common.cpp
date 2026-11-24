@@ -151,8 +151,6 @@ void AtomDesc::clear()
     fixed = false;
     exactChange = false;
     color = CWC_BASE;
-    implicit_h = 0;
-    hydrogenSide = ImplicitHydrogenSide::Side::RIGHT;
     aam = -1;
     inversion = STEREO_UNMARKED;
     list.clear();
@@ -333,6 +331,8 @@ void RenderSettings::init(float relativeThickness, float bondLineWidthFactor, Ac
     boundExtent = 1.3f * unit;
     labelInternalOffset = unit;
     stereoGroupLabelOffset = 2 * unit;
+    radicalRightOffset = unit / 2;
+    radicalRightVertShift = -0.2f;
     radicalTopOffset = 0.8f * unit;
     radicalTopDistDot = unit;
     radicalTopDistCap = unit / 2;

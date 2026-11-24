@@ -19,6 +19,7 @@
 #include "base_cpp/output.h"
 #include "base_cpp/scanner.h"
 #include "base_cpp/tree.h"
+#include "molecule/implicit_hydrogen_side.h"
 #include "molecule/molecule.h"
 #include "molecule/molecule_attachment_groups.h"
 #include "molecule/molecule_haptic_bonds.h"
@@ -1260,6 +1261,22 @@ void MoleculeRenderInternal::_preparePseudoAtom(int aid, int color, bool highlig
     }
 }
 
+bool MoleculeRenderInternal::_hasBondWithin(int aid, float axisDegrees, float halfSectorDegrees)
+{
+    const Vec2f axisOnPage(COS(DEG2RAD(axisDegrees)), -SIN(DEG2RAD(axisDegrees)));
+    const float cosOfHalfSector = COS(DEG2RAD(halfSectorDegrees));
+    const Vec2f& position = _ad(aid).pos;
+    const Vertex& vertex = _mol->getVertex(aid);
+    for (int i = vertex.neiBegin(); i < vertex.neiEnd(); i = vertex.neiNext(i))
+    {
+        Vec2f bond(_ad(vertex.neiVertex(i)).pos);
+        bond.sub(position);
+        if (bond.normalize() && Vec2f::dot(bond, axisOnPage) > cosOfHalfSector)
+            return true;
+    }
+    return false;
+}
+
 void MoleculeRenderInternal::_prepareChargeLabel(int aid, int color, bool highlighted)
 {
     AtomDesc& ad = _ad(aid);
@@ -1469,6 +1486,7 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
         }
 
         // hydrogen drawing
+        ImplicitHydrogenSide::Side hydrogenSide = ImplicitHydrogenSide::Side::RIGHT;
         if (!bm.isQueryMolecule())
         {
             int implicit_h = 0;
@@ -1505,23 +1523,23 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
 
                 // take new reference, old one may be corrupted after adding 'tiHydroIndex'
                 TextItem& itemHydrogen = _data.textitems[tihydro];
-                const bool hydrogensAreStacked = ImplicitHydrogenSide::isStacked(ad.hydrogenSide);
-                if (ad.hydrogenSide == ImplicitHydrogenSide::Side::LEFT)
+                hydrogenSide = ImplicitHydrogenSide(bm, aid).side();
+                if (hydrogenSide == ImplicitHydrogenSide::Side::LEFT)
                 {
                     ad.leftMargin -= hydrogenGroupSz.x;
                     itemHydrogen.bbp.set(ad.leftMargin, ad.ypos);
                 }
-                else if (ad.hydrogenSide == ImplicitHydrogenSide::Side::RIGHT)
+                else if (hydrogenSide == ImplicitHydrogenSide::Side::RIGHT)
                 {
                     ad.rightMargin += _settings.labelInternalOffset;
                     itemHydrogen.bbp.set(ad.rightMargin, ad.ypos);
                     ad.rightMargin += hydrogenGroupSz.x;
                 }
-                else if (ad.hydrogenSide == ImplicitHydrogenSide::Side::TOP)
+                else if (hydrogenSide == ImplicitHydrogenSide::Side::TOP)
                 {
                     itemHydrogen.bbp.y = ad.pos.y + ad.boundBoxMin.y - hydrogenGroupSz.y - _settings.unit;
                 }
-                else if (ad.hydrogenSide == ImplicitHydrogenSide::Side::BOTTOM)
+                else if (hydrogenSide == ImplicitHydrogenSide::Side::BOTTOM)
                 {
                     itemHydrogen.bbp.y = ad.pos.y + ad.boundBoxMax.y + _settings.unit;
                 }
@@ -1529,16 +1547,14 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
                 {
                     throw Error("hydrogen position value invalid");
                 }
-                itemHydrogen.noBondOffset = hydrogensAreStacked;
                 _expandBoundRect(ad, itemHydrogen);
                 if (tiHydroIndex > 0)
                 {
                     TextItem& itemHydroIndex = _data.textitems[tiHydroIndex];
                     itemHydroIndex.bbp.set(itemHydrogen.bbp.x + itemHydrogen.bbsz.x + _settings.labelInternalOffset,
                                            itemHydrogen.bbp.y + _settings.lowerIndexShift * itemHydrogen.bbsz.y);
-                    itemHydroIndex.noBondOffset = hydrogensAreStacked;
                     _expandBoundRect(ad, itemHydroIndex);
-                    if (hydrogensAreStacked)
+                    if (hydrogenSide == ImplicitHydrogenSide::Side::TOP)
                         ad.rightMargin = std::max(ad.rightMargin, itemHydroIndex.bbp.x + itemHydroIndex.bbsz.x);
                 }
             }
@@ -1582,9 +1598,13 @@ void MoleculeRenderInternal::_prepareLabelText(int aid)
                 GraphItem& itemRadical = _data.graphitems[giRadical];
                 _cw.setGraphItemSizeDot(itemRadical);
 
-                ltc.x += label.bbsz.x / 2 - itemRadical.bbsz.x / 2;
-                ltc.y -= itemRadical.bbsz.y + _settings.radicalTopOffset;
-                itemRadical.bbp.copy(ltc);
+                const Vec2f rightOfSymbol(ltc.x + label.bbsz.x + _settings.radicalRightOffset, ltc.y + _settings.radicalRightVertShift * ad.height);
+                const Vec2f aboveSymbol(ltc.x + label.bbsz.x / 2 - itemRadical.bbsz.x / 2, ltc.y - itemRadical.bbsz.y - _settings.radicalTopOffset);
+                const int charge = bm.getAtomCharge(aid);
+                const bool rightHoldsLabelPart =
+                    (tihydro >= 0 && hydrogenSide == ImplicitHydrogenSide::Side::RIGHT) || (charge != CHARGE_UNKNOWN && charge != 0) || tiValence >= 0;
+                const bool bondPointsUp = _hasBondWithin(aid, STRAIGHT_UP, RADICAL_ABOVE_HALF_SECTOR);
+                itemRadical.bbp.copy(bondPointsUp && !rightHoldsLabelPart ? rightOfSymbol : aboveSymbol);
                 _expandBoundRect(ad, itemRadical);
             }
             else

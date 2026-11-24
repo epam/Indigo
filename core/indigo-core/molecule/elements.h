@@ -166,6 +166,11 @@ namespace indigo
         ELEM_ATOMLIST
     };
 
+    inline bool ElementHydrogenOnLeft(int el)
+    {
+        return el == ELEM_O || el == ELEM_F || el == ELEM_S || el == ELEM_Cl || el == ELEM_Se || el == ELEM_Br || el == ELEM_I;
+    }
+
     // The d- and f-block. Valence calculation accepts these elements as drawn and gives
     // them no implicit hydrogens; the dative model (ticket #3617, requirement 8) needs the
     // same set to decide which atoms are drawn with hydrogens at all. Kept here, next to
