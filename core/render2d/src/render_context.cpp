@@ -900,21 +900,23 @@ void RenderContext::setTextItemSize(TextItem& ti, const Vec2f& c)
 void RenderContext::setGraphItemSizeDot(GraphItem& gi)
 {
     gi.type = GraphItem::DOT;
-    gi.bbsz.set(2 * _settings.graphItemDotRadius, 2 * _settings.graphItemDotRadius);
-    gi.relpos.set(_settings.graphItemDotRadius, _settings.graphItemDotRadius);
+    const float radius = gi.sizeFactor * _settings.graphItemDotRadius;
+    gi.bbsz.set(2 * radius, 2 * radius);
+    gi.relpos.set(radius, radius);
 }
 
 void RenderContext::setGraphItemSizeCap(GraphItem& gi)
 {
     gi.type = GraphItem::CAP;
-    gi.bbsz.set(2 * _settings.graphItemCapWidth, _settings.graphItemCapWidth * _settings.graphItemCapSlope);
-    gi.relpos.set(0, _settings.graphItemCapWidth * _settings.graphItemCapSlope);
+    const float width = gi.sizeFactor * _settings.graphItemCapWidth;
+    gi.bbsz.set(2 * width, width * _settings.graphItemCapSlope);
+    gi.relpos.set(0, width * _settings.graphItemCapSlope);
 }
 
 void RenderContext::setGraphItemSizeSign(GraphItem& gi, GraphItem::TYPE type)
 {
     gi.type = type;
-    gi.bbsz.set(_settings.graphItemDigitWidth, _settings.graphItemDigitHeight);
+    gi.bbsz.set(gi.sizeFactor * _settings.graphItemDigitWidth, gi.sizeFactor * _settings.graphItemDigitHeight);
     gi.relpos.set(0, 0);
 }
 
@@ -996,44 +998,49 @@ void RenderContext::_drawGraphItem(GraphItem& gi)
 {
     Vec2f v0;
     v0.sum(gi.bbp, gi.relpos);
+    const float slope = _settings.graphItemCapSlope;
+    const float cap_width = gi.sizeFactor * _settings.graphItemCapWidth;
+    const float cap_base = gi.sizeFactor * _settings.graphItemCapBase;
+    const float digit_width = gi.sizeFactor * _settings.graphItemDigitWidth;
+    const float digit_height = gi.sizeFactor * _settings.graphItemDigitHeight;
+    const float sign_line_width = gi.sizeFactor * _settings.graphItemSignLineWidth;
+    const float plus_edge = gi.sizeFactor * _settings.graphItemPlusEdge;
     switch (gi.type)
     {
     case GraphItem::CAP:
         moveTo(v0);
-        lineToRel(_settings.graphItemCapWidth, _settings.graphItemCapSlope * -_settings.graphItemCapWidth);
-        lineToRel(_settings.graphItemCapWidth, _settings.graphItemCapSlope * _settings.graphItemCapWidth);
-        lineToRel(-_settings.graphItemCapBase, 0);
-        lineToRel(_settings.graphItemCapBase - _settings.graphItemCapWidth,
-                  _settings.graphItemCapSlope * (_settings.graphItemCapBase - _settings.graphItemCapWidth));
-        lineToRel(_settings.graphItemCapBase - _settings.graphItemCapWidth,
-                  _settings.graphItemCapSlope * (_settings.graphItemCapWidth - _settings.graphItemCapBase));
+        lineToRel(cap_width, slope * -cap_width);
+        lineToRel(cap_width, slope * cap_width);
+        lineToRel(-cap_base, 0);
+        lineToRel(cap_base - cap_width, slope * (cap_base - cap_width));
+        lineToRel(cap_base - cap_width, slope * (cap_width - cap_base));
         break;
     case GraphItem::DOT:
         moveTo(v0);
-        arc(_cr, v0.x, v0.y, _settings.graphItemDotRadius, 0, 2 * M_PI);
+        arc(_cr, v0.x, v0.y, gi.sizeFactor * _settings.graphItemDotRadius, 0, 2 * M_PI);
         cairoCheckStatus();
         break;
     case GraphItem::PLUS:
         moveTo(v0);
-        moveToRel(0, (_settings.graphItemDigitHeight - _settings.graphItemSignLineWidth) / 2);
-        lineToRel(_settings.graphItemPlusEdge, 0);
-        lineToRel(0, -_settings.graphItemPlusEdge);
-        lineToRel(_settings.graphItemSignLineWidth, 0);
-        lineToRel(0, _settings.graphItemPlusEdge);
-        lineToRel(_settings.graphItemPlusEdge, 0);
-        lineToRel(0, _settings.graphItemSignLineWidth);
-        lineToRel(-_settings.graphItemPlusEdge, 0);
-        lineToRel(0, _settings.graphItemPlusEdge);
-        lineToRel(-_settings.graphItemSignLineWidth, 0);
-        lineToRel(0, -_settings.graphItemPlusEdge);
-        lineToRel(-_settings.graphItemPlusEdge, 0);
+        moveToRel(0, (digit_height - sign_line_width) / 2);
+        lineToRel(plus_edge, 0);
+        lineToRel(0, -plus_edge);
+        lineToRel(sign_line_width, 0);
+        lineToRel(0, plus_edge);
+        lineToRel(plus_edge, 0);
+        lineToRel(0, sign_line_width);
+        lineToRel(-plus_edge, 0);
+        lineToRel(0, plus_edge);
+        lineToRel(-sign_line_width, 0);
+        lineToRel(0, -plus_edge);
+        lineToRel(-plus_edge, 0);
         break;
     case GraphItem::MINUS:
         moveTo(v0);
-        moveToRel(0, (_settings.graphItemDigitHeight - _settings.graphItemSignLineWidth) / 2);
-        lineToRel(_settings.graphItemDigitWidth, 0);
-        lineToRel(0, _settings.graphItemSignLineWidth);
-        lineToRel(-_settings.graphItemDigitWidth, 0);
+        moveToRel(0, (digit_height - sign_line_width) / 2);
+        lineToRel(digit_width, 0);
+        lineToRel(0, sign_line_width);
+        lineToRel(-digit_width, 0);
         break;
     }
     checkPathNonEmpty();

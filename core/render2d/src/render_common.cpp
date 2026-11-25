@@ -105,6 +105,7 @@ void TextItem::clear()
 void GraphItem::clear()
 {
     RenderItem::clear();
+    sizeFactor = 1;
 }
 
 void RenderItemAttachmentPoint::clear()
@@ -168,6 +169,10 @@ void AtomDesc::clear()
 Sgroup::Sgroup()
 {
     clear();
+}
+
+AttachmentGroupLabel::AttachmentGroupLabel() : tibegin(-1), ticount(0), gibegin(-1), gicount(0)
+{
 }
 
 void Sgroup::clear()
@@ -275,6 +280,7 @@ void MoleculeRenderData::clear()
     inversions.clear();
     exactChanges.clear();
     sgroups.clear();
+    attachmentGroupLabels.clear();
 }
 
 CP_DEF(RenderSettings);
