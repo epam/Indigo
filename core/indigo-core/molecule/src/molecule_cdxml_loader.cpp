@@ -549,7 +549,7 @@ void MoleculeCdxmlLoader::_checkFragmentConnection(int node_id, int bond_id)
         }
         else if (is_fragment(fn) && fn.ext_connections.size() > 1)
         {
-            int connectionIndex = 0;
+            std::size_t connectionIndex = 0;
             for (const auto& connection : fn.connections)
             {
                 if (connection.bond_id == bond_id)
@@ -558,6 +558,8 @@ void MoleculeCdxmlLoader::_checkFragmentConnection(int node_id, int bond_id)
                 }
                 ++connectionIndex;
             }
+            if (connectionIndex == fn.connections.size())
+                throw Error("BondOrdering of node %d does not list bond %d", node_id, bond_id);
             fn.bond_id_to_connection_idx.emplace(bond_id, connectionIndex);
 
             int externalNode = -1;

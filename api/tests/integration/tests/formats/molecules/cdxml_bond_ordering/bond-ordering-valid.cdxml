@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CDXML><page><fragment id="100">
+ <n id="1" p="0 0" Element="6"/>
+ <n id="13" p="40 0" Element="8"/>
+ <n id="7" p="20 0" NodeType="Nickname" BondOrdering="8 14">
+  <fragment id="17">
+   <n id="18" p="0 0" Element="6"/>
+   <n id="27" p="10 0" Element="6"/>
+   <n id="28" p="-10 0" NodeType="ExternalConnectionPoint"/>
+   <n id="29" p="20 0" NodeType="ExternalConnectionPoint"/>
+   <b id="39" B="28" E="18"/>
+   <b id="40" B="29" E="27"/>
+   <b id="41" B="18" E="27"/>
+  </fragment>
+ </n>
+ <b id="8" B="1" E="7"/>
+ <b id="14" B="13" E="7"/>
+</fragment></page></CDXML>
