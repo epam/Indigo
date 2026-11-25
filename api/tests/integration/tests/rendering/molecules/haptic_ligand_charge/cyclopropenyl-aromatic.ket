@@ -1,0 +1,101 @@
+{
+    "root": {
+        "nodes": [
+            {
+                "$ref": "mol0"
+            },
+            {
+                "$ref": "mol1"
+            }
+        ],
+        "connections": [
+            {
+                "type": "haptic",
+                "endpoint1": {
+                    "atomId": "0",
+                    "moleculeId": "mol0"
+                },
+                "endpoint2": {
+                    "attachmentGroupId": "0",
+                    "moleculeId": "mol1"
+                }
+            }
+        ]
+    },
+    "mol0": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "Ni",
+                "location": [
+                    0.0,
+                    2.0,
+                    0.0
+                ]
+            }
+        ]
+    },
+    "mol1": {
+        "type": "molecule",
+        "atoms": [
+            {
+                "label": "C",
+                "location": [
+                    0.0,
+                    0.577,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    -0.5,
+                    -0.289,
+                    0.0
+                ]
+            },
+            {
+                "label": "C",
+                "location": [
+                    0.5,
+                    -0.289,
+                    0.0
+                ]
+            }
+        ],
+        "bonds": [
+            {
+                "type": 4,
+                "atoms": [
+                    0,
+                    1
+                ]
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    1,
+                    2
+                ]
+            },
+            {
+                "type": 4,
+                "atoms": [
+                    2,
+                    0
+                ]
+            }
+        ],
+        "attachmentGroups": [
+            {
+                "id": "0",
+                "atoms": [
+                    0,
+                    1,
+                    2
+                ],
+                "charge": 2
+            }
+        ]
+    }
+}
