@@ -38,7 +38,7 @@ pull request's workflow runs by itself; everything else is yours to run.
 
 ## 2. What a green check does and does not cover
 
-Verified against `.github/workflows/indigo-ci.yaml` and the job logs of run 7682 (PR #3912, `97a183d5c`).
+Verified against `.github/workflows/indigo-ci.yaml` and its job logs.
 
 - **CI runs for pull requests and `indigo-*` tags only.** The `push` trigger on `master` is commented
   out, so a merge result is not built again.
@@ -60,8 +60,8 @@ Verified against `.github/workflows/indigo-ci.yaml` and the job logs of run 7682
   and BuildKit skips it — the job log shows only the final stage.
 - **Reduced legs:** Linux ARM64 runs only the `dlopen` smoke tests and `basic/basic.py`; the Windows x86 legs
   run ctest and `basic/basic.py`; IronPython runs on Windows only; macOS runs only for a tag or a manual
-  dispatch with `run_mac_tests`; both MinGW jobs, the Indigo libraries and the Bingo Oracle cartridge, are switched
-  off (`if: false`); clang-tidy does not run.
+  dispatch with `run_mac_tests`; the MinGW jobs build the Indigo libraries with ctest and package the Bingo Oracle
+  cartridge, without the integration harness; clang-tidy does not run.
 
 ## 3. Prove the run happened before reading its results
 
@@ -124,7 +124,7 @@ evidence; a guess is reported as unattributed.
 
 ## 6. Where the coverage is thin
 
-Verified on `60b769879` and CI run 7682, in the order they are likely to cost something:
+In the order they are likely to cost something:
 
 1. **The HTTP service tests never run in CI** (§2) — nothing there catches a regression in `api/http`.
 2. **pytest-style Python tests never run in CI** (§2) — the sequence layout's tests are among them.
@@ -135,7 +135,7 @@ Verified on `60b769879` and CI run 7682, in the order they are likely to cost so
 5. **No performance regression tests** for fingerprints, substructure search or the layout; a slowdown is
    noticed by users, not by CI.
 6. **Platform gaps for a pull request:** no macOS, no ARM64 beyond `basic/basic.py`, the .NET wrapper
-   integration on Windows only, the Java and .NET unit tests on Linux only, no MinGW build at all.
+   integration on Windows only, the Java and .NET unit tests on Linux only, ctest alone on MinGW.
 
 ## Checklist
 

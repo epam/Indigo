@@ -123,8 +123,6 @@ jobs:
           path: dist
 
   build_indigo_windows_mingw_x86_64:
-    # Switched off: MSYS2 no longer installs make with the mingw-w64-x86_64-toolchain group.
-    if: false
     timeout-minutes: 60
     runs-on: windows-latest
     needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_java_i386, test_indigo_dotnet_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, merge_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64, build_indigo_ketcher]
@@ -140,7 +138,7 @@ jobs:
       - uses: msys2/setup-msys2@v2
         with:
           msystem: mingw64
-          install: mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake git mingw-w64-x86_64-python mingw-w64-x86_64-python-pip mingw-w64-x86_64-python-wheel mingw-w64-x86_64-python-pillow
+          install: mingw-w64-x86_64-toolchain mingw-w64-x86_64-make mingw-w64-x86_64-cmake git mingw-w64-x86_64-python mingw-w64-x86_64-python-pip mingw-w64-x86_64-python-wheel mingw-w64-x86_64-python-pillow
       - name: Git fetch tags
         run: |
              git config --global --add safe.directory '*'
@@ -1037,8 +1035,6 @@ jobs:
           path: dist/bingo-oracle*.tgz
 
   build_bingo_oracle_windows_mingw_x86_64:
-    # Switched off with build_indigo_windows_mingw_x86_64.
-    if: false
     runs-on: windows-latest
     needs: [test_indigo_python_x86_64, test_indigo_java_x86_64, test_indigo_dotnet_x86_64, test_indigo_python_i386, test_indigo_java_i386, test_indigo_dotnet_i386, test_indigo_python_aarch64, test_indigo_java_aarch64, merge_bingo_elastic_python_linux_x86_64, test_bingo_elastic_java_linux_x86_64, build_indigo_ketcher]
     defaults:
@@ -1177,7 +1173,7 @@ jobs:
       matrix:
         postgres_major_version: [ 14, 15, 16, 17, 18 ]
     runs-on: ubuntu-latest
-    needs: [build_indigo_ketcher_cjk, build_bingo_oracle_linux_x86_64, build_bingo_oracle_windows_msvc_x86_64]
+    needs: [build_indigo_windows_mingw_x86_64, build_indigo_ketcher_cjk, build_bingo_oracle_linux_x86_64, build_bingo_oracle_windows_mingw_x86_64, build_bingo_oracle_windows_msvc_x86_64]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -1252,7 +1248,7 @@ jobs:
       matrix:
         postgres_major_version: [ "14", "15", "16", "17", "18" ]
     runs-on: windows-latest
-    needs: [build_indigo_ketcher_cjk, build_bingo_oracle_linux_x86_64, build_bingo_oracle_windows_msvc_x86_64]
+    needs: [build_indigo_windows_mingw_x86_64, build_indigo_ketcher_cjk, build_bingo_oracle_linux_x86_64, build_bingo_oracle_windows_mingw_x86_64, build_bingo_oracle_windows_msvc_x86_64]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -1297,7 +1293,7 @@ jobs:
       matrix:
         postgres_major_version: [ 14, 15, 16, 17, 18 ]
     runs-on: macos-15
-    needs: [build_indigo_ketcher_cjk, build_bingo_oracle_linux_x86_64, build_bingo_oracle_windows_msvc_x86_64]
+    needs: [build_indigo_windows_mingw_x86_64, build_indigo_ketcher_cjk, build_bingo_oracle_linux_x86_64, build_bingo_oracle_windows_mingw_x86_64, build_bingo_oracle_windows_msvc_x86_64]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
