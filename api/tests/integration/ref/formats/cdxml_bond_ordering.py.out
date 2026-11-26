@@ -1,0 +1,7 @@
+*** BondOrdering of a fragment node with several external connection points ***
+bond-ordering-valid.cdxml: C3 H8 O
+bond-ordering-valid.ket:SUCCEED
+bond-ordering-duplicated.cdxml: CDXML loader: BondOrdering of node 7 does not list bond 14
+bond-ordering-duplicated-long.cdxml: CDXML loader: BondOrdering of node 7 does not list bond 14
+bond-ordering-incomplete.cdxml: CDXML loader: BondOrdering of node 7 does not list bond 14
+bond-ordering-duplicated.cdx: CDXML loader: BondOrdering of node 12 does not list bond 17

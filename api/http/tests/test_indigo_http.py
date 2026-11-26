@@ -6,7 +6,7 @@ import pathlib
 import xml.etree.ElementTree as elTree
 from typing import Any, BinaryIO, Dict, Iterable, List, Optional
 
-import PyPDF2
+import pypdf
 import pytest
 from fastapi.testclient import TestClient
 from httpx import Response  # type: ignore
@@ -263,7 +263,7 @@ def test_render_pdf_base64() -> None:
         "/indigo/render",
         json=render_request(structure="C", output_format="application/pdf"),
     )
-    read_file = PyPDF2.PdfReader(decode_image(response, "application/pdf"))
+    read_file = pypdf.PdfReader(decode_image(response, "application/pdf"))
     pages_number = len(read_file.pages)
     assert response.status_code == 200
     assert pages_number == 1
@@ -309,7 +309,7 @@ def test_render_pdf_base64_correct_options() -> None:
             options=correct_options,
         ),
     )
-    reader = PyPDF2.PdfReader(decode_image(response, "application/pdf"))
+    reader = pypdf.PdfReader(decode_image(response, "application/pdf"))
     page_height = reader.pages[0].mediabox.height  # pylint: disable=no-member
     page_width = reader.pages[0].mediabox.width  # pylint: disable=no-member
     assert response.status_code == 200
