@@ -1216,6 +1216,9 @@ bool MoleculePkaModel::getAtomLocalFeatureSet(BaseMolecule& mol, int idx, Array<
 
 float MoleculePkaModel::getAcidPkaValue(Molecule& mol, int idx, int level, int min_level)
 {
+    if (!_model.advanced_model_ready)
+        _loadAdvancedPkaModel();
+
     QS_DEF(Array<char>, fp);
     QS_DEF(Array<int>, level_pos);
     fp.clear();
@@ -1270,6 +1273,9 @@ float MoleculePkaModel::getAcidPkaValue(Molecule& mol, int idx, int level, int m
 
 float MoleculePkaModel::getBasicPkaValue(Molecule& mol, int idx, int level, int min_level)
 {
+    if (!_model.advanced_model_ready)
+        _loadAdvancedPkaModel();
+
     QS_DEF(Array<char>, fp);
     QS_DEF(Array<int>, level_pos);
     fp.clear();
