@@ -34,7 +34,7 @@
     "react-router-dom": "^7.18.3",
     "reactstrap": "^9.1.5",
     "sass": "^1.54.0",
-    "serve": "^14.2.5",
+    "serve": "^14.2.8",
     "shx": "^0.3.3",
     "source-map-loader": "^3.0.1",
     "stylelint": "13.13.1",
