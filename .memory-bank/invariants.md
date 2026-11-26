@@ -170,6 +170,23 @@ read.**
 at the end of `core/indigo-core/molecule/src/molfile_loader_v3000.cpp#_readSGroup3000`, not at the key. A check at
 the key sees the type unset and passes.
 
+## Atom labels
+
+**A19 — The side of an atom's implicit hydrogens is decided by one class.**
+`core/indigo-core/molecule/implicit_hydrogen_side.h#ImplicitHydrogenSide` is asked by the drawing
+(`core/render2d/src/render_internal_render.cpp#ImplicitHydrogenSide(bm, aid)`) and by the estimate of a label
+box that places S-group brackets
+(`core/indigo-core/molecule/src/base_molecule_properties.cpp#ImplicitHydrogenSide(*this, atom_idx)`). A
+second rule in either place puts brackets around hydrogens that are drawn elsewhere, and only a picture shows it:
+that was the state before Indigo 1.51. What follows from the side is still written twice: where a charge starts
+next to hydrogens above the symbol is in `core/render2d/src/render_internal_render.cpp#rightMargin` and again in
+the estimate, and nothing compares the two. The rule is the text of its ticket with four stated departures,
+pinned by the tables of
+`core/indigo-core/tests/tests/implicit_hydrogen_side.cpp#IndigoCoreImplicitHydrogenSideTest`. The PNG comparison
+of `rendering/` does not see a label turn from `CH3` to `H3C`: when the rule changed, 13 pictures changed and
+every PNG test stayed green on the old references. See
+[adr/implicit-hydrogen-side-one-rule-in-the-core.md](adr/implicit-hydrogen-side-one-rule-in-the-core.md).
+
 ## Language & platform
 
 **A9 — C++17, no C++20.**

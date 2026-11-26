@@ -25,6 +25,7 @@
 #include "graph/dfs_walk.h"
 #include "molecule/base_molecule.h"
 #include "molecule/elements.h"
+#include "molecule/implicit_hydrogen_side.h"
 #include "molecule/inchi_wrapper.h"
 #include "molecule/molecule_arom_match.h"
 #include "molecule/molecule_dearom.h"
@@ -174,6 +175,31 @@ void BaseMolecule::getAtomBoundingBox(int atom_idx, float font_size, LABEL_MODE 
                     len = 1;
                 bottom_left.x -= len * symbol_size;
             }
+            // H above or below the symbol is centred on it, with its count to the right. Valence and charge follow a
+            // count above the symbol; a count below it only widens the box
+            const float stacked_count_right = vec.x + symbol_size / 2 + symbol_size;
+            bool count_stands_below = false;
+            if (implicit_h > 0)
+            {
+                const bool has_count = implicit_h > 1;
+                const float hydrogens_width = (has_count ? 2 : 1) * symbol_size;
+                const ImplicitHydrogenSide::Side side = ImplicitHydrogenSide(*this, atom_idx).side();
+                if (side == ImplicitHydrogenSide::Side::RIGHT)
+                    top_right.x += hydrogens_width;
+                else if (side == ImplicitHydrogenSide::Side::LEFT)
+                    bottom_left.x -= hydrogens_width;
+                else if (side == ImplicitHydrogenSide::Side::TOP)
+                {
+                    top_right.y += symbol_size;
+                    if (has_count)
+                        top_right.x = std::max(top_right.x, stacked_count_right);
+                }
+                else
+                {
+                    bottom_left.y -= symbol_size;
+                    count_stands_below = has_count;
+                }
+            }
             // Add valence at right
             static constexpr int count[] = {
                 1, // 0
@@ -202,47 +228,8 @@ void BaseMolecule::getAtomBoundingBox(int atom_idx, float font_size, LABEL_MODE 
                     len = 1;
                 top_right.x += len * symbol_size;
             }
-            if (implicit_h > 0)
-            {
-                // add implicit H size
-                if (implicit_h > 1)
-                    len = 2;
-                else
-                    len = 1;
-                bool h_at_right = true;
-                if (vertex.degree() == 0)
-                {
-                    if (ElementHydrogenOnLeft(label))
-                        h_at_right = false;
-                }
-                else
-                {
-                    constexpr float min_sin = 0.49f;
-                    float right_weight = 0.3f;
-                    float left_weight = 0.2f;
-                    float left_sin = 0, right_sin = 0;
-                    for (int j = vertex.neiBegin(); j < vertex.neiEnd(); j = vertex.neiNext(j))
-                    {
-                        Vec2f d = _xyz[vertex.neiVertex(j)].projectZ();
-                        d.sub(vec);
-                        d.normalize();
-                        if (d.x > 0)
-                            right_sin = std::max(right_sin, d.x);
-                        else
-                            left_sin = std::max(left_sin, -d.x);
-                    }
-                    if (left_sin > min_sin)
-                        left_weight -= left_sin;
-                    if (right_sin > min_sin)
-                        right_weight -= right_sin;
-                    if (left_weight > right_weight)
-                        h_at_right = false;
-                }
-                if (h_at_right)
-                    top_right.x += len * symbol_size;
-                else
-                    bottom_left.x -= len * symbol_size;
-            }
+            if (count_stands_below)
+                top_right.x = std::max(top_right.x, stacked_count_right);
         }
     }
     // process AAM

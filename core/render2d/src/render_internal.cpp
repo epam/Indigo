@@ -1311,167 +1311,33 @@ bool MoleculeRenderInternal::_hasQueryModifiers(int aid)
     return hasConstraints || _ad(aid).fixed || _ad(aid).exactChange;
 }
 
-void MoleculeRenderInternal::_findNearbyAtoms()
-{
-    float maxDistance = _settings.neighboringAtomDistanceTresholdA * 2;
-    RedBlackObjMap<int, RedBlackObjMap<int, Array<int>>> buckets;
-
-    for (int i = _mol->vertexBegin(); i < _mol->vertexEnd(); i = _mol->vertexNext(i))
-    {
-        const Vec2f& v = _ad(i).pos;
-        int xBucket = (int)(v.x / maxDistance);
-        int yBucket = (int)(v.y / maxDistance);
-        RedBlackObjMap<int, Array<int>>& bucketRow = buckets.findOrInsert(yBucket);
-        Array<int>& bucket = bucketRow.findOrInsert(xBucket);
-        bucket.push(i);
-    }
-
-    for (int i = _mol->vertexBegin(); i < _mol->vertexEnd(); i = _mol->vertexNext(i))
-    {
-        const Vec2f& v = _ad(i).pos;
-        int xBucket = (int)(v.x / maxDistance);
-        int yBucket = (int)(v.y / maxDistance);
-        for (int j = 0; j < 3; ++j)
-        {
-            for (int k = 0; k < 3; ++k)
-            {
-                int x = xBucket + j - 1;
-                int y = yBucket + k - 1;
-                if (!buckets.find(y))
-                    continue;
-                RedBlackObjMap<int, Array<int>>& bucketRow = buckets.at(y);
-                if (!bucketRow.find(x))
-                    continue;
-                const Array<int>& bucket = bucketRow.at(x);
-                for (int r = 0; r < bucket.size(); ++r)
-                {
-                    int aid = bucket[r];
-                    if (aid == i)
-                        continue;
-                    const Vec2f& v1 = _ad(aid).pos;
-                    if (Vec2f::dist(v, v1) < maxDistance)
-                    {
-                        _ad(i).nearbyAtoms.push(aid);
-                    }
-                }
-            }
-        }
-        // const Array<int>& natoms = _ad(i).nearbyAtoms;
-        // printf("%02d:", i);
-        // for (int j = 0; j < natoms.size(); ++j) {
-        //   printf(" %02d", natoms[j]);
-        //}
-        // printf("\n");
-    }
-    // printf("\n");
-}
-
-int _argMax(float* vv, int length)
-{
-    int iMax = 0;
-    for (int i = 1; i < length; ++i)
-    {
-        if (vv[iMax] < vv[i])
-            iMax = i;
-    }
-    return iMax;
-}
-
 float _sqr(float a)
 {
     return a * a;
 }
 
-void MoleculeRenderInternal::_initHydroPos(int aid)
+bool MoleculeRenderInternal::_labelExtendsLeft(int aid)
 {
-    AtomDesc& ad = _ad(aid);
-    const Vertex& v = _mol->getVertex(aid);
-    if (v.degree() == 0 && ElementHydrogenOnLeft(ad.label))
+    const AtomDesc& ad = _ad(aid);
+    const Vertex& vertex = _mol->getVertex(aid);
+    float rightSin = 0, leftSin = 0, upperSin = 0, lowerSin = 0;
+    for (int j = vertex.neiBegin(); j < vertex.neiEnd(); j = vertex.neiNext(j))
     {
-        ad.implHPosWeights[HYDRO_POS_RIGHT] = 0.2f; // weights are relative, absoute values don't matter
-        ad.implHPosWeights[HYDRO_POS_LEFT] = 0.3f;
+        Vec2f d(_ad(vertex.neiVertex(j)).pos);
+        d.sub(ad.pos);
+        d.normalize();
+        if (d.x > 0)
+            rightSin = std::max(rightSin, d.x);
+        else
+            leftSin = std::max(leftSin, -d.x);
+        if (d.y > 0)
+            lowerSin = std::max(lowerSin, d.y);
+        else
+            upperSin = std::max(upperSin, -d.y);
     }
-    else
-    {
-        ad.implHPosWeights[HYDRO_POS_RIGHT] = 0.3f;
-        ad.implHPosWeights[HYDRO_POS_LEFT] = 0.2f;
-    }
-    ad.implHPosWeights[HYDRO_POS_UP] = 0.1f;
-    ad.implHPosWeights[HYDRO_POS_DOWN] = 0.0f;
-    ad.implHPosWeights[HYDRO_POS_RIGHT] -= ad.rightSin > _settings.minSin ? ad.rightSin : 0;
-    ad.implHPosWeights[HYDRO_POS_LEFT] -= ad.leftSin > _settings.minSin ? ad.leftSin : 0;
-    ad.implHPosWeights[HYDRO_POS_UP] -= ad.upperSin > _settings.minSin ? ad.upperSin : 0;
-    ad.implHPosWeights[HYDRO_POS_DOWN] -= ad.lowerSin > _settings.minSin ? ad.lowerSin : 0;
-}
-
-int MoleculeRenderInternal::_hydroPosFindConflict(int i)
-{
-    const AtomDesc& ad = _ad(i);
-    for (int j = 0; j < ad.nearbyAtoms.size(); ++j)
-    {
-        int aid = ad.nearbyAtoms[j];
-        Vec2f d;
-        d.diff(_ad(aid).pos, ad.pos);
-        HYDRO_POS orientation = d.x < d.y ? (d.x > -d.y ? HYDRO_POS_DOWN : HYDRO_POS_LEFT) : (d.x > -d.y ? HYDRO_POS_RIGHT : HYDRO_POS_UP);
-        float aDist = std::max(fabs(d.x), fabs(d.y));
-        float bDist = std::min(fabs(d.x), fabs(d.y));
-        if (orientation == ad.hydroPos && bDist < _settings.neighboringAtomDistanceTresholdB &&
-            (aDist < _settings.neighboringAtomDistanceTresholdA ||
-             (aDist < _settings.neighboringAtomDistanceTresholdA * 2 && _ad(aid).hydroPos == 3 - ad.hydroPos)))
-            return orientation;
-    }
-    return -1;
-}
-
-bool MoleculeRenderInternal::_hydroPosCorrectGreedy()
-{
-    for (int i = _mol->vertexBegin(); i < _mol->vertexEnd(); i = _mol->vertexNext(i))
-    {
-        AtomDesc& ad = _ad(i);
-        if (!ad.showLabel || ad.implicit_h <= 0)
-            continue;
-
-        int orientation = _hydroPosFindConflict(i);
-        if (orientation >= 0)
-        {
-            ad.implHPosWeights[orientation] -= 1;
-            ad.hydroPos = (HYDRO_POS)_argMax(ad.implHPosWeights, 4);
-        }
-    }
-
-    for (int i = _mol->vertexBegin(); i < _mol->vertexEnd(); i = _mol->vertexNext(i))
-    {
-        AtomDesc& ad = _ad(i);
-        if (!ad.showLabel || ad.implicit_h <= 0)
-            continue;
-
-        int orientation = _hydroPosFindConflict(i);
-        if (orientation >= 0)
-            return false;
-    }
-    return true;
-}
-
-void MoleculeRenderInternal::_hydroPosCorrectRepulse()
-{
-    for (int i = _mol->vertexBegin(); i < _mol->vertexEnd(); i = _mol->vertexNext(i))
-    {
-        AtomDesc& ad = _ad(i);
-        if (!ad.showLabel || ad.implicit_h <= 0)
-            continue;
-        _initHydroPos(i);
-        for (int j = 0; j < ad.nearbyAtoms.size(); ++j)
-        {
-            int aid = ad.nearbyAtoms[j];
-            Vec2f d;
-            d.diff(_ad(aid).pos, ad.pos);
-            if (d.length() < _settings.neighboringLabelTolerance && _ad(aid).showLabel)
-            {
-                ad.implHPosWeights[d.x < d.y ? (d.x > -d.y ? HYDRO_POS_DOWN : HYDRO_POS_LEFT) : (d.x > -d.y ? HYDRO_POS_RIGHT : HYDRO_POS_UP)] -= 1;
-            }
-        }
-        ad.hydroPos = (HYDRO_POS)_argMax(ad.implHPosWeights, 4);
-    }
+    const auto weight = [this](float preference, float bondSin) { return preference - (bondSin > _settings.minSin ? bondSin : 0); };
+    const float left = weight(LABEL_LEFT_PREFERENCE, leftSin);
+    return left > weight(LABEL_RIGHT_PREFERENCE, rightSin) && left > weight(LABEL_UP_PREFERENCE, upperSin) && left > weight(LABEL_DOWN_PREFERENCE, lowerSin);
 }
 
 void MoleculeRenderInternal::_initAtomData()
@@ -1484,7 +1350,6 @@ void MoleculeRenderInternal::_initAtomData()
         if (_data.exactChanges[i])
             _ad(i).exactChange = true;
 
-    _findNearbyAtoms();
     for (int i = _mol->vertexBegin(); i < _mol->vertexEnd(); i = _mol->vertexNext(i))
     {
         AtomDesc& ad = _ad(i);
@@ -1545,25 +1410,6 @@ void MoleculeRenderInternal::_initAtomData()
             ad.color = _cw.getElementColor(ad.label);
 
         Vec2f h(1, 0);
-        bool hasBondOnRight = false, hasBondOnLeft = false;
-        for (int j = vertex.neiBegin(); j < vertex.neiEnd(); j = vertex.neiNext(j))
-        {
-            Vec2f d(_ad(vertex.neiVertex(j)).pos);
-            d.sub(ad.pos);
-            d.normalize();
-            if (d.x > 0)
-                ad.rightSin = std::max(ad.rightSin, d.x);
-            else
-                ad.leftSin = std::max(ad.leftSin, -d.x);
-            if (d.y > 0)
-                ad.lowerSin = std::max(ad.lowerSin, d.y);
-            else
-                ad.upperSin = std::max(ad.upperSin, -d.y);
-        }
-        if (ad.rightSin > 0.7)
-            hasBondOnRight = true;
-        if (ad.leftSin > 0.7)
-            hasBondOnLeft = true;
 
         int charge = bm.getAtomCharge(i);
         int isotope = bm.getAtomIsotope(i);
@@ -1576,8 +1422,6 @@ void MoleculeRenderInternal::_initAtomData()
         if (!bm.isRSite(i) && !bm.isPseudoAtom(i) && !bm.isTemplateAtom(i))
         {
             radical = bm.getAtomRadical_NoThrow(i, -1);
-            if (!bm.isQueryMolecule())
-                ad.implicit_h = bm.asMolecule().getImplicitH_NoThrow(i, 0);
         }
 
         bool plainCarbon = ad.label == ELEM_C && charge == (query ? CHARGE_UNKNOWN : 0) && isotope == (query ? -1 : 0) && radical <= 0 && valence == -1 &&
@@ -1604,9 +1448,6 @@ void MoleculeRenderInternal::_initAtomData()
             }
         }
 
-        _initHydroPos(i);
-        ad.hydroPos = (HYDRO_POS)_argMax(ad.implHPosWeights, 4);
-
         int uaid = _atomMappingInv.size() > i ? _atomMappingInv[i] : i;
         if (uaid >= 0)
         {
@@ -1620,10 +1461,6 @@ void MoleculeRenderInternal::_initAtomData()
             }
         }
     }
-
-    if (!_hydroPosCorrectGreedy())
-        if (!_hydroPosCorrectGreedy())
-            _hydroPosCorrectRepulse();
 }
 
 void MoleculeRenderInternal::_findAnglesOverPi()
