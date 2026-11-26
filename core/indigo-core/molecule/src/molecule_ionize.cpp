@@ -917,6 +917,10 @@ void MoleculePkaModel::_estimate_pKa_Advanced(Molecule& mol, const IonizeOptions
 
     //   _checkCanonicalOrder(mol, can_mol, can_order);
 
+    // The advanced model was built from structures without aromatic bonds,
+    // so aromatic input is evaluated in its Kekule form
+    mol.dearomatize(opts);
+
     for (auto i : mol.vertices())
     {
         int a_lone = 0;

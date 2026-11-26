@@ -1,0 +1,5 @@
+*** Advanced pKa model on aromatic input (#1173) ***
+CC(=O)Oc1ccccc1C(=O)O at pH 7.4: CC(=O)OC1=CC=CC=C1C([O-])=O
+CC(=O)OC1=CC=CC=C1C(=O)O at pH 7.4: CC(=O)OC1=CC=CC=C1C([O-])=O
+c1ccncc1 at pH 3.0: C1=CC=CC=[NH+]1
+N charge 1, hydrogens 1
