@@ -16,6 +16,9 @@
  * limitations under the License.
  ***************************************************************************/
 
+#include <cstdio>
+#include <cstdlib>
+
 #include <gtest/gtest.h>
 
 #include <base_cpp/output.h>
@@ -23,6 +26,7 @@
 #include <molecule/crippen.h>
 #include <molecule/hybridization.h>
 #include <molecule/lipinski.h>
+#include <molecule/molecule_ionize.h>
 #include <molecule/molecule_mass.h>
 #include <molecule/molfile_loader.h>
 #include <molecule/smiles_loader.h>
@@ -308,6 +312,34 @@ TEST_F(IndigoCoreMoleculeTest, pKa)
         loadMolecule("Oc1cc(cc([N+](C)(C)C)c1)C", molecule);
         EXPECT_NEAR(6.5, Crippen::pKa(molecule), 0.01);
     }
+}
+
+// The advanced pKa model is loaded once per process, on first use. Each check
+// runs in a fresh child process, so that its call is the first use there.
+TEST_F(IndigoCoreMoleculeTest, pKa_advanced_acid_without_ionize)
+{
+    GTEST_FLAG_SET(death_test_style, "threadsafe");
+    EXPECT_EXIT(
+        {
+            Molecule molecule;
+            loadMolecule("CC(=O)O", molecule);
+            fprintf(stderr, "pKa %.2f\n", MoleculePkaModel::getAcidPkaValue(molecule, 3, 5, 2));
+            exit(0);
+        },
+        ::testing::ExitedWithCode(0), "pKa 4\\.76");
+}
+
+TEST_F(IndigoCoreMoleculeTest, pKa_advanced_basic_without_ionize)
+{
+    GTEST_FLAG_SET(death_test_style, "threadsafe");
+    EXPECT_EXIT(
+        {
+            Molecule molecule;
+            loadMolecule("CN", molecule);
+            fprintf(stderr, "pKa %.2f\n", MoleculePkaModel::getBasicPkaValue(molecule, 1, 5, 2));
+            exit(0);
+        },
+        ::testing::ExitedWithCode(0), "pKa 10\\.66");
 }
 
 TEST_F(IndigoCoreMoleculeTest, atom_reorder_query)
