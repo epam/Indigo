@@ -1,0 +1,20 @@
+*** CDX and CDXML text runs to KET ***
+caption-plus-runs.cdxml.ket:SUCCEED
+font-table-truncated.cdx.ket:SUCCEED
+latin1-bold-degree-signs.cdxml.ket:SUCCEED
+plus-with-spaces-one-run.cdxml.ket:SUCCEED
+plus-with-spaces-runs.cdx.ket:SUCCEED
+symbol-by-charset.cdxml.ket:SUCCEED
+symbol-bytes-valid-as-utf8.cdx.ket:SUCCEED
+symbol-codes-above-7f.cdxml.ket:SUCCEED
+symbol-label.cdxml.ket:SUCCEED
+symbol-letter-before-bold.cdx.ket:SUCCEED
+symbol-letter-before-bold.cdxml.ket:SUCCEED
+symbol-letter-subscript-superscript.cdxml.ket:SUCCEED
+symbol-minus-in-caption.cdxml.ket:SUCCEED
+*** KET styles after non-ASCII text to KET 2.0 and CDXML ***
+styles-after-non-ascii.ket.v2.ket:SUCCEED
+styles-after-non-ascii.ket.cdxml:SUCCEED
+*** ChemDraw file: Symbol font run in a text and an S-group label ***
+text "\u03b2Ala" styles [{"length": 4, "offset": 0, "style": "CUSTOM_FONT_SIZE_15px"}]
+S-group names ["D-Trp", "PAThr", "Trp", "\u03b2Ala"]

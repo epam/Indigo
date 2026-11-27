@@ -34,6 +34,7 @@
                             {
                                 "text": "II",
                                 "font": {
+                                    "family": "Times New Roman",
                                     "size": 11,
                                     "color": "#ff00ff"
                                 }
@@ -56,6 +57,7 @@
                             {
                                 "text": "III",
                                 "font": {
+                                    "family": "Times New Roman",
                                     "size": 11,
                                     "color": "#ff00ff"
                                 }
@@ -412,7 +414,7 @@
                 ]
             },
             {
-                "label": "R¢1",
+                "label": "R′1",
                 "location": [
                     4.788332939147949,
                     -2.1083333492279054,
@@ -646,7 +648,7 @@
                 ]
             },
             {
-                "label": "R¢1",
+                "label": "R′1",
                 "location": [
                     1.6383334398269654,
                     -4.691666603088379,

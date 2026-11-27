@@ -18,6 +18,7 @@
 
 #include "molecule/parse_utils.h"
 
+#include <algorithm>
 #include <cstdint>
 
 namespace indigo
@@ -37,6 +38,17 @@ namespace indigo
     const uint8_t kUtf8ExtraByteSz2 = 1;
     const uint8_t kUtf8ExtraByteSz3 = 2;
     const uint8_t kUtf8ExtraByteSz4 = 3;
+
+    const uint8_t kUtf8ExtraByteBits = 6;
+    const uint8_t kUtf8Lead2bytes = 0xC0;
+    const uint8_t kUtf8Lead3bytes = 0xE0;
+    const uint8_t kUtf8Lead4bytes = 0xF0;
+    const uint8_t kUtf8Lead2bytesMask = 0x1F;
+    const uint8_t kUtf8Lead3bytesMask = 0x0F;
+    const uint8_t kUtf8Lead4bytesMask = 0x07;
+    const uint32_t kUtf8Max2bytes = 0x800;
+    const uint32_t kUtf8Max3bytes = 0x10000;
+    const uint32_t kUnicodeMax = 0x10FFFF;
 
     std::string latin1_to_utf8(const std::string& src)
     {
@@ -80,6 +92,84 @@ namespace indigo
             }
         }
         return cnt == 0;
+    }
+
+    uint32_t utf8_next_code_point(const std::string& str, size_t& pos)
+    {
+        auto lead = static_cast<uint8_t>(str[pos]);
+        uint8_t extra = 0;
+        uint32_t code_point = lead;
+        if ((lead >> kUtf8Check3HighBits) == kUtf8Magic2bytes)
+        {
+            extra = kUtf8ExtraByteSz2;
+            code_point = lead & kUtf8Lead2bytesMask;
+        }
+        else if ((lead >> kUtf8Check4HighBits) == kUtf8Magic3bytes)
+        {
+            extra = kUtf8ExtraByteSz3;
+            code_point = lead & kUtf8Lead3bytesMask;
+        }
+        else if ((lead >> kUtf8Check5HighBits) == kUtf8Magic4bytes)
+        {
+            extra = kUtf8ExtraByteSz4;
+            code_point = lead & kUtf8Lead4bytesMask;
+        }
+
+        bool complete = (lead < kAsciiSize || extra > 0) && pos + extra < str.size();
+        for (uint8_t i = 1; complete && i <= extra; ++i)
+        {
+            auto ch = static_cast<uint8_t>(str[pos + i]);
+            complete = (ch >> kUtf8Check2HighBits) == kUtf8MagicLowerByte;
+            code_point = (code_point << kUtf8ExtraByteBits) | (ch & kLower6bitsMask);
+        }
+        if (!complete)
+        {
+            ++pos;
+            return lead;
+        }
+        pos += extra + 1;
+        return code_point;
+    }
+
+    void utf8_append_code_point(std::string& str, uint32_t code_point)
+    {
+        if (code_point < kAsciiSize)
+            str.push_back(static_cast<char>(code_point));
+        else if (code_point < kUtf8Max2bytes)
+        {
+            str.push_back(static_cast<char>(kUtf8Lead2bytes | (code_point >> kUtf8ExtraByteBits)));
+            str.push_back(static_cast<char>(kAsciiSize | (code_point & kLower6bitsMask)));
+        }
+        else if (code_point < kUtf8Max3bytes)
+        {
+            str.push_back(static_cast<char>(kUtf8Lead3bytes | (code_point >> (2 * kUtf8ExtraByteBits))));
+            str.push_back(static_cast<char>(kAsciiSize | ((code_point >> kUtf8ExtraByteBits) & kLower6bitsMask)));
+            str.push_back(static_cast<char>(kAsciiSize | (code_point & kLower6bitsMask)));
+        }
+        else if (code_point <= kUnicodeMax)
+        {
+            str.push_back(static_cast<char>(kUtf8Lead4bytes | (code_point >> (3 * kUtf8ExtraByteBits))));
+            str.push_back(static_cast<char>(kAsciiSize | ((code_point >> (2 * kUtf8ExtraByteBits)) & kLower6bitsMask)));
+            str.push_back(static_cast<char>(kAsciiSize | ((code_point >> kUtf8ExtraByteBits) & kLower6bitsMask)));
+            str.push_back(static_cast<char>(kAsciiSize | (code_point & kLower6bitsMask)));
+        }
+    }
+
+    size_t utf8_length_in_utf16(const std::string& str, size_t pos, size_t count)
+    {
+        size_t end = count == std::string::npos ? str.size() : std::min(str.size(), pos + count);
+        size_t length = 0;
+        while (pos < end)
+            length += utf8_next_code_point(str, pos) < kUtf8Max3bytes ? 1 : 2;
+        return length;
+    }
+
+    size_t utf16_offset_to_utf8(const std::string& str, size_t utf16_offset)
+    {
+        size_t pos = 0;
+        for (size_t length = 0; pos < str.size() && length < utf16_offset;)
+            length += utf8_next_code_point(str, pos) < kUtf8Max3bytes ? 1 : 2;
+        return pos;
     }
 
     bool validate_base64(const std::string& str)

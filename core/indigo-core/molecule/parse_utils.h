@@ -19,6 +19,7 @@
 #ifndef __parse_utils__
 #define __parse_utils__
 
+#include <cstdint>
 #include <regex>
 #include <string>
 
@@ -31,6 +32,15 @@ namespace indigo
 {
     std::string latin1_to_utf8(const std::string& src);
     bool is_valid_utf8(const std::string& data);
+
+    // Reads the code point of the UTF-8 sequence at pos and moves pos past it. A byte that does not start a complete
+    // sequence is read as the code point with its value and moves pos by one byte.
+    uint32_t utf8_next_code_point(const std::string& str, size_t& pos);
+    void utf8_append_code_point(std::string& str, uint32_t code_point);
+    // The length of UTF-8 text in UTF-16 code units: the unit of the offsets in KET text (JavaScript strings).
+    size_t utf8_length_in_utf16(const std::string& str, size_t pos = 0, size_t count = std::string::npos);
+    // The byte offset in UTF-8 text of an offset in UTF-16 code units, or the text size when it is past the end.
+    size_t utf16_offset_to_utf8(const std::string& str, size_t utf16_offset);
 
     bool validate_base64(const std::string& str);
 

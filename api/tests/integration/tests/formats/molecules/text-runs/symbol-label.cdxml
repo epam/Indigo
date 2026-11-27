@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CDXML BondLength="14.4">
+<fonttable><font id="3" charset="iso-8859-1" name="Arial"/><font id="4" charset="Unknown" name="Symbol"/></fonttable>
+<page id="1">
+<fragment id="10"><n id="11" p="100 100"><t p="96 104"><s font="4" size="10">b</s><s font="3" size="10">Ala</s></t></n><n id="12" p="112 107"/><b id="13" B="11" E="12"/></fragment>
+</page>
+</CDXML>
